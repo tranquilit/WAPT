@@ -33,17 +33,20 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="1">
+    <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="LCL"/>
+        <PackageName Value="indylaz"/>
+        <MinVersion Major="10" Minor="5" Release="8" Valid="True"/>
       </Item1>
+      <Item2>
+        <PackageName Value="LCL"/>
+      </Item2>
     </RequiredPackages>
     <Units Count="6">
       <Unit0>
         <Filename Value="testwapt.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="testwapt"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
@@ -57,6 +60,7 @@
         <ComponentName Value="Form1"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvistestwapt"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
@@ -104,7 +108,7 @@
         <UsageCount Value="10"/>
       </Unit5>
     </Units>
-    <JumpHistory Count="29" HistoryIndex="28">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="uvistestwapt.pas"/>
         <Caret Line="34" Column="1" TopLine="1"/>
@@ -221,6 +225,10 @@
         <Filename Value="uvistestwapt.pas"/>
         <Caret Line="15" Column="32" TopLine="1"/>
       </Position29>
+      <Position30>
+        <Filename Value="uvistestwapt.pas"/>
+        <Caret Line="10" Column="12" TopLine="1"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

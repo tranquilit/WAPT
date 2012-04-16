@@ -5,13 +5,14 @@ unit uvistestwapt;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, IdHTTPServer;
 
 type
 
   { TForm1 }
 
   TForm1 = class(TForm)
+    IdHTTPServer1: TIdHTTPServer;
     procedure FormCreate(Sender: TObject);
   private
     { private declarations }
