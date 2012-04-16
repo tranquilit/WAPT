@@ -1,0 +1,263 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="9"/>
+    <PathDelim Value="\"/>
+    <General>
+      <MainUnit Value="0"/>
+      <Title Value="TestWAPT"/>
+      <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
+      <Icon Value="0"/>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <i18n>
+      <EnableI18N LFM="False"/>
+    </i18n>
+    <VersionInfo>
+      <UseVersionInfo Value="True"/>
+      <MinorVersionNr Value="1"/>
+      <Language Value="040C"/>
+      <StringTable CompanyName="Tranquil IT Systems" FileDescription="Test WAPT" ProductName="WAPT" ProductVersion=""/>
+    </VersionInfo>
+    <BuildModes Count="1" Active="Default">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="1">
+      <Item1>
+        <PackageName Value="LCL"/>
+      </Item1>
+    </RequiredPackages>
+    <Units Count="6">
+      <Unit0>
+        <Filename Value="testwapt.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="testwapt"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="29" Y="16"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="uvistestwapt.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uvistestwapt"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="12" Y="10"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="tisinstall.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tisinstall"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="22"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="C:\lazarus\lcl\dialogs.pp"/>
+        <UnitName Value="Dialogs"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="59" Y="488"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="C:\lazarus\lcl\include\messagedialogs.inc"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="140"/>
+        <CursorPos X="1" Y="163"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\python4delphi\PythonForDelphi\Components\Sources\Core\WrapDelphi.pas"/>
+        <UnitName Value="WrapDelphi"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="463"/>
+        <CursorPos X="22" Y="471"/>
+        <UsageCount Value="10"/>
+      </Unit5>
+    </Units>
+    <JumpHistory Count="29" HistoryIndex="28">
+      <Position1>
+        <Filename Value="uvistestwapt.pas"/>
+        <Caret Line="34" Column="1" TopLine="1"/>
+      </Position1>
+      <Position2>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="15" Column="1" TopLine="1"/>
+      </Position2>
+      <Position3>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="16" Column="1" TopLine="1"/>
+      </Position3>
+      <Position4>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="17" Column="1" TopLine="1"/>
+      </Position4>
+      <Position5>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="18" Column="1" TopLine="1"/>
+      </Position5>
+      <Position6>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="19" Column="1" TopLine="1"/>
+      </Position6>
+      <Position7>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="85" Column="10" TopLine="51"/>
+      </Position7>
+      <Position8>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="92" Column="9" TopLine="53"/>
+      </Position8>
+      <Position9>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="80" Column="1" TopLine="53"/>
+      </Position9>
+      <Position10>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="81" Column="1" TopLine="53"/>
+      </Position10>
+      <Position11>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="82" Column="1" TopLine="53"/>
+      </Position11>
+      <Position12>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="87" Column="1" TopLine="53"/>
+      </Position12>
+      <Position13>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="90" Column="1" TopLine="53"/>
+      </Position13>
+      <Position14>
+        <Filename Value="C:\lazarus\lcl\include\messagedialogs.inc"/>
+        <Caret Line="163" Column="1" TopLine="140"/>
+      </Position14>
+      <Position15>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="24" Column="6" TopLine="7"/>
+      </Position15>
+      <Position16>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="80" Column="1" TopLine="54"/>
+      </Position16>
+      <Position17>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="22" Column="1" TopLine="1"/>
+      </Position17>
+      <Position18>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="28" Column="1" TopLine="1"/>
+      </Position18>
+      <Position19>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="29" Column="1" TopLine="1"/>
+      </Position19>
+      <Position20>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="30" Column="1" TopLine="1"/>
+      </Position20>
+      <Position21>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="31" Column="1" TopLine="1"/>
+      </Position21>
+      <Position22>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="32" Column="1" TopLine="1"/>
+      </Position22>
+      <Position23>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="33" Column="1" TopLine="1"/>
+      </Position23>
+      <Position24>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="58" Column="1" TopLine="35"/>
+      </Position24>
+      <Position25>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="62" Column="1" TopLine="35"/>
+      </Position25>
+      <Position26>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="63" Column="1" TopLine="35"/>
+      </Position26>
+      <Position27>
+        <Filename Value="uvistestwapt.pas"/>
+        <Caret Line="15" Column="32" TopLine="1"/>
+      </Position27>
+      <Position28>
+        <Filename Value="tisinstall.pas"/>
+        <Caret Line="80" Column="1" TopLine="42"/>
+      </Position28>
+      <Position29>
+        <Filename Value="uvistestwapt.pas"/>
+        <Caret Line="15" Column="32" TopLine="1"/>
+      </Position29>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="9"/>
+    <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="testwapt"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+    <Linking>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+    <Other>
+      <CompilerMessages>
+        <UseMsgFile Value="True"/>
+      </CompilerMessages>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>
