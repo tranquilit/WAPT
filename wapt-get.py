@@ -1,6 +1,6 @@
 import sys
 import os
-import zipfile 
+import zipfile
 import tempfile
 import urllib2
 import shutil
@@ -14,7 +14,7 @@ usage="""\
 
 WAPT install system.
 
-action is either : 
+action is either :
  install : launch all backups or a specific one if -s option is used
  update : removed backups older than retension period
  upgrade : dump the content of database for the last 20 backups
@@ -35,40 +35,6 @@ if len(args) == 0:
   parser.print_usage()
   sys.exit(2)
 
-
-
-
-
-def psource(module):
- 
-    file = os.path.basename( module )
-    dir = os.path.dirname( module )
- 
-    toks = file.split( '.' )
-    modname = toks[0]
- 
-    # Check if dirrectory is really a directory
-    if( os.path.exists( dir ) ):
- 
-    # Check if the file directory already exists in the sys.path array
-        paths = sys.path
-        pathfound = 0
-        for path in paths:
-            if(dir == path):
-                pathfound = 1
- 
-    # If the dirrectory is not part of sys.path add it
-        if not pathfound:
-            sys.path.append( dir )
- 
-    exec ('import ' + modname) in globals()
- 
-    # reload the file to make sure its up to date
-    exec( 'reload( ' + modname + ' )' ) in globals()
- 
-    # This returns the namespace of the file imported
-    return modname
-
 def download(url,destdir):
 	"""Copy the contents of a file from a given URL
 	to a local file.
@@ -82,17 +48,101 @@ def ensure_dir(f):
     if not os.path.exists(d):
         os.makedirs(d)
 
+def psource(module):
+
+    file = os.path.basename( module )
+    dir = os.path.dirname( module )
+
+    toks = file.split( '.' )
+    modname = toks[0]
+
+    # Check if dirrectory is really a directory
+    if( os.path.exists( dir ) ):
+
+    # Check if the file directory already exists in the sys.path array
+        paths = sys.path
+        pathfound = 0
+        for path in paths:
+            if(dir == path):
+                pathfound = 1
+
+    # If the dirrectory is not part of sys.path add it
+        if not pathfound:
+            sys.path.append( dir )
+
+    exec ('import ' + modname) in globals()
+
+    # reload the file to make sure its up to date
+    exec( 'reload( ' + modname + ' )' ) in globals()
+
+    # This returns the namespace of the file imported
+    return modname
+
+
+
+
+class wapt:
+    wapt_repourl=""
+    packagecachedir = ""
+    wapttempdir=""
+    dry_run = False
+
+
+    def install(self,packagename):
+        print ("starting installation")
+        sys.stdout.flush()
+        print ("installing package " + packagename)
+        print ("download package from " + self.wapt_repourl)
+        sys.stdout.flush()
+        print "wapt_repourl = " + self.wapt_repourl
+
+        download( self.wapt_repourl + '/' + packagename , self.packagecachedir)
+
+        # When you import a file you must give it the full path
+        tempdirname = tempfile.mkdtemp(prefix=self.wapttempdir)
+        print ('unziping ' + self.packagecachedir +  '/' + packagename)
+        sys.stdout.flush()
+        zip = zipfile.ZipFile(self.packagecachedir +  '/' + packagename)
+        zip.extractall(path=tempdirname)
+
+        print ("sourcing install file")
+        sys.stdout.flush()
+        psource( tempdirname + '/' + 'setup.py' )
+
+        if self.dry_run==False:
+            print ("executing install script")
+            sys.stdout.flush()
+            setup.install()
+
+        print ("install script finished")
+        print ("cleaning tmp dir")
+        sys.stdout.flush()
+        shutil.rmtree(tempdirname)
+
+    def update(self):
+        print self.wapttempdir
+        if os.path.exists(os.path.join(self.wapttempdir,'Packages')):
+            os.remove (os.path.join(self.wapttempdir,'Packages'))
+        if os.path.exists(os.path.join(self.wapttempdir,'Packages.zip')):
+            os.remove(os.path.join(self.wapttempdir,'Packages.zip'))
+        download( self.wapt_repourl + '/Packages', self.wapttempdir)
+        os.rename(os.path.join(self.wapttempdir,'Packages'), os.path.join(self.wapttempdir,'Packages.zip'))
+        myzip = zipfile.ZipFile(os.path.join(self.wapttempdir,'Packages.zip'),'r')
+        myzip.extract(path=self.wapttempdir,member='Packages')
+
+
+
 def main(argv):
     wapt_start_date = datetime.datetime.now().strftime('%Y%m%d-%Hh%Mm%S')
     action = args[0]
     if action=='install':
-        packagename=args[1] 
+        packagename=args[1]
 
     config_file =options.config
     loglevel = options.loglevel
     dry_run = options.dry_run
     # setup Logger
-    logger = logging.getLogger('tisbackup')
+    logger = logging.getLogger('wapt-get')
     hdlr = logging.StreamHandler()
     hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
     logger.addHandler(hdlr)
@@ -111,6 +161,7 @@ def main(argv):
         logger.error("Error : could not find file : " + config_file + ", please check the path")
     logger.info("Using " + config_file + " config file")
 
+    print config_file
     cp = ConfigParser( )
     cp.read(config_file)
 
@@ -128,34 +179,23 @@ def main(argv):
     wapttempdir = os.path.join(wapt_base_dir, 'tmp') + '/'
     ensure_dir (wapttempdir)
 
-    print ("starting installation")
-    sys.stdout.flush()
-    print ("installing package " + packagename)
-    print ("download package from " + wapt_repourl)
-    sys.stdout.flush()
-    print "wapt_repourl = " + wapt_repourl
+    mywapt = wapt()
+    mywapt.packagecachedir = packagecachedir
+    mywapt.wapttempdir = wapttempdir
+    mywapt.wapt_repourl = wapt_repourl
+    mywapt.dry_run = dry_run
 
-    download( wapt_repourl + '/' + packagename , packagecachedir)
- 
-    # When you import a file you must give it the full path
-    tempdirname = tempfile.mkdtemp(prefix=wapttempdir)
-    print ('unziping ' + packagecachedir +  '/' + packagename)
-    sys.stdout.flush()
-    zip = zipfile.ZipFile(packagecachedir +  '/' + packagename)
-    zip.extractall(path=tempdirname)
+    if action=='install':
+        mywapt.install(packagename)
 
-    print ("sourcing install file")
-    sys.stdout.flush()
-    psource( tempdirname + '/' + 'setup.py' )
+    if action=='update':
+        mywapt.update()
 
-    if dry_run==False:
-        print ("executing install script")
-        sys.stdout.flush()
-        setup.install()
+    if action=='upgrade':
+        mywapt.upgrade()
 
-    print ("install script finished")
-    print ("cleaning tmp dir")
-    sys.stdout.flush()
+    if action=='remove':
+        mywapt.remove()
 
     #shutil.rmtree(tempdirname)
 
