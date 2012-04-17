@@ -306,6 +306,21 @@ class WaptDB:
         self.db.commit()
         return cur.lastrowid
 
+    def list_repo(self):
+        def fcb(fieldname,value):
+          if fieldname in ('backup_start','backup_end'):
+            return time2display(isodate2datetime(value))
+          elif 'bytes' in fieldname:
+            return convert_bytes(value)
+          elif 'count' in fieldname:
+            return splitThousands(value,' ','.')
+          elif 'backup_duration' in fieldname:
+            return hours_minutes(value)
+          else:
+            return value
+        cur = self.db.execute("select * from wapt_repo")
+        return pp(cur,None,1,None)
+
     def add_package_entry(self,package_entry):
         package_name = package_entry.Package
         print "package_name : " + package_name

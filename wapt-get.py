@@ -147,6 +147,10 @@ class wapt:
             splitline= line.split(':')
             setattr(package,splitline[0].strip(),splitline[1].strip())
 
+    def list_repo(self):
+        waptdb = WaptDB(dbpath='c:/wapt/db/waptdb.sqlite')
+        print waptdb.list_repo()
+
 def main(argv):
     wapt_start_date = datetime.datetime.now().strftime('%Y%m%d-%Hh%Mm%S')
     action = args[0]
@@ -211,6 +215,9 @@ def main(argv):
 
     if action=='remove':
         mywapt.remove()
+
+    if action=='list':
+        mywapt.list_repo()
 
     #shutil.rmtree(tempdirname)
 
