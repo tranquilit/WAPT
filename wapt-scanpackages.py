@@ -26,7 +26,7 @@ class package_entry:
     Filename=''
     Size=0
     MD5sum=''
-    
+
     def register_package(self,fname ):
         myzip = zipfile.ZipFile(fname,'r')
         tempdir = tempfile.mkdtemp(prefix='/tmp/wapt-')
@@ -61,24 +61,24 @@ class package_entry:
         val = val +  "Filename : " + self.Filename + '\n'
         val = val +  "size : " + str(self.Size) + '\n'
         val = val +  "MD5sum : " + self.MD5sum + '\n'
-        return val 
-        
+        return val
+
 waptlist = glob.glob('./*.wapt')
 packagefilename = tempfile.mkstemp(prefix="/tmp/wapt-packages-")[1]
 print packagefilename
 packagefile = open(packagefilename,"wb")
 for fname in waptlist:
-    
+
     print fname
     entry = package_entry()
     entry.register_package(fname)
     packagefile.write(entry.printobj())
-     
+
     packagefile.write('\n')
-    
+
 packagefile.close()
-myzipfile = zipfile.ZipFile("Packages", "w")    
-myzipfile.write(packagefilename)
+myzipfile = zipfile.ZipFile("Packages", "w")
+myzipfile.write(filename=packagefilename,arcname= "Packages")
 myzipfile.close()
 os.remove(packagefilename)
 
