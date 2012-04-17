@@ -24,7 +24,7 @@ packagefile = open(packagefilename,"wb")
 for fname in waptlist:
 
     print fname
-    entry = package_entry()
+    entry = Package_Entry()
     entry.register_package(fname)
     packagefile.write(entry.printobj())
 

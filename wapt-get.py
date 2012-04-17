@@ -8,6 +8,8 @@ from iniparse import ConfigParser
 from optparse import OptionParser
 import logging
 import datetime
+from common import WaptDB
+from common import Package_Entry
 
 usage="""\
 %prog -c configfile action
@@ -130,7 +132,20 @@ class wapt:
         myzip = zipfile.ZipFile(os.path.join(self.wapttempdir,'Packages.zip'),'r')
         myzip.extract(path=self.wapttempdir,member='Packages')
 
+        waptdb = WaptDB(dbpath='c:/wapt/db/waptdb.sqlite')
+        packageListFile = open(os.path.join(self.wapttempdir,'Packages'))
 
+        package = Package_Entry()
+        for line in packageListFile:
+            #print "line : " + line
+
+            if line.strip()=='':
+                print package.printobj()
+                waptdb.add_package_entry(package)
+                package = Package_Entry()
+                continue
+            splitline= line.split(':')
+            setattr(package,splitline[0].strip(),splitline[1].strip())
 
 def main(argv):
     wapt_start_date = datetime.datetime.now().strftime('%Y%m%d-%Hh%Mm%S')
