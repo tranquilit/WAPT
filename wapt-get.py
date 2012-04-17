@@ -4,6 +4,40 @@ import zipfile
 import tempfile
 import urllib2
 import shutil
+from iniparse import ConfigParser
+from optparse import OptionParser
+import logging
+import datetime
+
+usage="""\
+%prog -c configfile action
+
+WAPT install system.
+
+action is either : 
+ install : launch all backups or a specific one if -s option is used
+ update : removed backups older than retension period
+ upgrade : dump the content of database for the last 20 backups
+"""
+
+version = "0.2"
+
+parser=OptionParser(usage=usage,version="%prog " + version)
+parser.add_option("-c","--config", dest="config", default='c:/tranquilit/wapt-get.ini', help="Config file full path (default: %default)")
+parser.add_option("-l","--loglevel", dest="loglevel", default='info', type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: %default)")
+parser.add_option("-d","--dry-run",    dest="dry_run",    default=False, action='store_true', help="Dry run (default: %default)")
+
+(options,args)=parser.parse_args()
+
+
+if len(args) == 0:
+  print "ERROR : You must provide one action to perform"
+  parser.print_usage()
+  sys.exit(2)
+
+
+
+
 
 def psource(module):
  
@@ -44,44 +78,88 @@ def download(url,destdir):
 
 def ensure_dir(f):
     d = os.path.dirname(f)
+    print "d : " + d
     if not os.path.exists(d):
         os.makedirs(d)
 
-wapt_repourl = 'http://srvintranet/'
-packagecachedir = 'c:/tranquilit/cache/'
-ensure_dir(packagecachedir)
-wapttempdir = 'c:/tranquilit/tmp/'
-ensure_dir (wapttempdir)
+def main(argv):
+    wapt_start_date = datetime.datetime.now().strftime('%Y%m%d-%Hh%Mm%S')
+    action = args[0]
+    if action=='install':
+        packagename=args[1] 
 
-print ("starting installation")
-sys.stdout.flush()
-packagename = sys.argv[1]
-print ("installing package " + packagename)
-print ("download package from " + wapt_repourl)
-sys.stdout.flush()
+    config_file =options.config
+    loglevel = options.loglevel
+    dry_run = options.dry_run
+    # setup Logger
+    logger = logging.getLogger('tisbackup')
+    hdlr = logging.StreamHandler()
+    hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+    logger.addHandler(hdlr)
 
-download( wapt_repourl + packagename , packagecachedir)
+
+
+    # set loglevel
+    if loglevel in ('debug','warning','info','error','critical'):
+        numeric_level = getattr(logging, loglevel.upper(), None)
+    if not isinstance(numeric_level, int):
+        raise ValueError('Invalid log level: %s' % loglevel)
+    logger.setLevel(numeric_level)
+
+    # Config file
+    if not os.path.isfile(config_file):
+        logger.error("Error : could not find file : " + config_file + ", please check the path")
+    logger.info("Using " + config_file + " config file")
+
+    cp = ConfigParser( )
+    cp.read(config_file)
+
+    wapt_repourl = cp.get('global','repo_url')
+    wapt_base_dir = cp.get('global','base_dir')
+
+    log_dir = os.path.join(wapt_base_dir,'log')
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+
+
+    packagecachedir = os.path.join(wapt_base_dir,'cache') + '/'
+    print packagecachedir
+    ensure_dir(packagecachedir)
+    wapttempdir = os.path.join(wapt_base_dir, 'tmp') + '/'
+    ensure_dir (wapttempdir)
+
+    print ("starting installation")
+    sys.stdout.flush()
+    print ("installing package " + packagename)
+    print ("download package from " + wapt_repourl)
+    sys.stdout.flush()
+    print "wapt_repourl = " + wapt_repourl
+
+    download( wapt_repourl + '/' + packagename , packagecachedir)
  
-# When you import a file you must give it the full path
-tempdirname = tempfile.mkdtemp(prefix=wapttempdir)
-print ('unziping ' + packagecachedir +  '/' + packagename)
-sys.stdout.flush()
+    # When you import a file you must give it the full path
+    tempdirname = tempfile.mkdtemp(prefix=wapttempdir)
+    print ('unziping ' + packagecachedir +  '/' + packagename)
+    sys.stdout.flush()
+    zip = zipfile.ZipFile(packagecachedir +  '/' + packagename)
+    zip.extractall(path=tempdirname)
 
-zip = zipfile.ZipFile(packagecachedir +  '/' + packagename)
-zip.extractall(path=tempdirname)
+    print ("sourcing install file")
+    sys.stdout.flush()
+    psource( tempdirname + '/' + 'setup.py' )
 
-print ("sourcing install file")
-sys.stdout.flush()
+    if dry_run==False:
+        print ("executing install script")
+        sys.stdout.flush()
+        setup.install()
 
-psource( tempdirname + '/' + 'setup.py' )
-print ("executing install script")
-sys.stdout.flush()
+    print ("install script finished")
+    print ("cleaning tmp dir")
+    sys.stdout.flush()
 
-setup.install()
+    #shutil.rmtree(tempdirname)
 
-print ("install script finished")
-print ("cleaning tmp dir")
-sys.stdout.flush()
+if __name__ == "__main__":
+  main(sys.argv[1:])
 
-shutil.rmtree(tempdirname)
 
