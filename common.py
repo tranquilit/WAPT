@@ -232,7 +232,8 @@ class WaptDB:
       Description TEXT,
       Filename TEXT,
       Size TEXT,
-      MD5sum TEXT
+      MD5sum TEXT,
+      repo_url TEXT
       )"""
       )
         self.db.execute("""
@@ -274,7 +275,8 @@ class WaptDB:
           Description='',
           Filename='',
           Size='',
-          MD5sum=''):
+          MD5sum='',
+          repo_url=''):
 
         print "Size : " + str(Size)
         print "MD5sum : " + MD5sum
@@ -289,7 +291,8 @@ class WaptDB:
             Description,
             Filename,
             Size,
-            MD5sum) values (?,?,?,?,?,?,?,?,?,?)
+            MD5sum,
+            repo_url) values (?,?,?,?,?,?,?,?,?,?,?)
         """,(
              Package,
             Version,
@@ -300,7 +303,8 @@ class WaptDB:
             Description,
             Filename,
             Size,
-            MD5sum)
+            MD5sum,
+            repo_url)
            )
 
         self.db.commit()
@@ -335,7 +339,8 @@ class WaptDB:
         package_entry.Description,
         package_entry.Filename,
         package_entry.Size,
-        package_entry.MD5sum)
+        package_entry.MD5sum,
+        package_entry.repo_url)
 
 
     def query(self,query, args=(), one=False):
@@ -398,6 +403,7 @@ class Package_Entry:
     Filename=''
     Size=''
     MD5sum=''
+    repo_url=''
 
     def register_package(self,fname ):
         myzip = zipfile.ZipFile(fname,'r')

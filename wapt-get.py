@@ -10,6 +10,7 @@ import logging
 import datetime
 from common import WaptDB
 from common import Package_Entry
+import pprint
 
 usage="""\
 %prog -c configfile action
@@ -90,15 +91,23 @@ class wapt:
     dry_run = False
 
 
-    def install(self,packagename):
+    def install(self,package):
         print ("starting installation")
         sys.stdout.flush()
-        print ("installing package " + packagename)
-        print ("download package from " + self.wapt_repourl)
-        sys.stdout.flush()
-        print "wapt_repourl = " + self.wapt_repourl
+        print ("installing package " + package)
 
-        download( self.wapt_repourl + '/' + packagename , self.packagecachedir)
+        waptdb = WaptDB(dbpath='c:/wapt/db/waptdb.sqlite')
+        mydict= waptdb.query("select * from wapt_repo where Package=?",(package,))[0]
+        pprint.pprint (mydict)
+        packagename = mydict['Filename'].strip('./')
+        download_url = mydict['repo_url'] + '/' + packagename
+        print download_url
+
+        print ("download package from " + mydict['repo_url'])
+        sys.stdout.flush()
+
+
+        download( download_url, self.packagecachedir)
 
         # When you import a file you must give it the full path
         tempdirname = tempfile.mkdtemp(prefix=self.wapttempdir)
@@ -141,6 +150,7 @@ class wapt:
 
             if line.strip()=='':
                 print package.printobj()
+                package.repo_url = self.wapt_repourl
                 waptdb.add_package_entry(package)
                 package = Package_Entry()
                 continue
