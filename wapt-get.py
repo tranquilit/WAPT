@@ -26,7 +26,7 @@ action is either :
 version = "0.2"
 
 parser=OptionParser(usage=usage,version="%prog " + version)
-parser.add_option("-c","--config", dest="config", default='c:/tranquilit/wapt-get.ini', help="Config file full path (default: %default)")
+parser.add_option("-c","--config", dest="config", default='c:/wapt/wapt-get.ini', help="Config file full path (default: %default)")
 parser.add_option("-l","--loglevel", dest="loglevel", default='info', type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: %default)")
 parser.add_option("-d","--dry-run",    dest="dry_run",    default=False, action='store_true', help="Dry run (default: %default)")
 
