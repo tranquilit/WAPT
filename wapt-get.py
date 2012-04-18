@@ -111,14 +111,14 @@ class wapt:
 
     # When you import a file you must give it the full path
     tempdirname = tempfile.mkdtemp(prefix=self.wapttempdir)
-    print ('unziping ' + self.packagecachedir +  '/' + packagename)
+    print ('unziping ' + self.packagecachedir +  '\\' + packagename)
     sys.stdout.flush()
-    zip = zipfile.ZipFile(self.packagecachedir +  '/' + packagename)
+    zip = zipfile.ZipFile(self.packagecachedir +  '\\' + packagename)
     zip.extractall(path=tempdirname)
 
     print ("sourcing install file")
     sys.stdout.flush()
-    psource( tempdirname + '/' + 'setup.py' )
+    psource( tempdirname + '\\' + 'setup.py' )
 
     if self.dry_run==False:
       print ("executing install script")
