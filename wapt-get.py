@@ -110,17 +110,17 @@ class wapt:
     download( download_url, self.packagecachedir)
 
     # When you import a file you must give it the full path
-    tempdirname = tempfile.mkdtemp(prefix=self.wapttempdir)
+    tempdirname = tempfile.mkdtemp(dir=self.wapttempdir)
     print ('unziping ' + self.packagecachedir +  '\\' + packagename)
     sys.stdout.flush()
-    zip = zipfile.ZipFile(self.packagecachedir +  '\\' + packagename)
+    zip = zipfile.ZipFile( os.path.join(self.packagecachedir , packagename))
     zip.extractall(path=tempdirname)
 
     print ("sourcing install file")
     sys.stdout.flush()
-    psource( tempdirname + '\\' + 'setup.py' )
+    psource( os.path.join( tempdirname,'setup.py' ))
 
-    if self.dry_run==False:
+    if not self.dry_run:
       print ("executing install script")
       sys.stdout.flush()
       setup.install()
@@ -202,10 +202,10 @@ def main(argv):
     os.makedirs(log_dir)
 
 
-  packagecachedir = os.path.join(wapt_base_dir,'cache') + '/'
+  packagecachedir = os.path.join(wapt_base_dir,'cache')
   print packagecachedir
   ensure_dir(packagecachedir)
-  wapttempdir = os.path.join(wapt_base_dir, 'tmp') + '/'
+  wapttempdir = os.path.join(wapt_base_dir, 'tmp')
   ensure_dir (wapttempdir)
 
   mywapt = wapt()
