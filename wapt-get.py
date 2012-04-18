@@ -39,199 +39,198 @@ if len(args) == 0:
   sys.exit(2)
 
 def download(url,destdir):
-	"""Copy the contents of a file from a given URL
-	to a local file.
-	"""
-	import urllib
-	urllib.urlretrieve(url,destdir + '/' + url.split('/')[-1])
+  """Copy the contents of a file from a given URL
+  to a local file.
+  """
+  import urllib
+  urllib.urlretrieve(url,destdir + '/' + url.split('/')[-1])
 
 def ensure_dir(f):
-    d = os.path.dirname(f)
-    print "d : " + d
-    if not os.path.exists(d):
-        os.makedirs(d)
+  d = os.path.dirname(f)
+  print "d : " + d
+  if not os.path.exists(d):
+    os.makedirs(d)
 
 def psource(module):
 
-    file = os.path.basename( module )
-    dir = os.path.dirname( module )
+  file = os.path.basename( module )
+  dir = os.path.dirname( module )
 
-    toks = file.split( '.' )
-    modname = toks[0]
+  toks = file.split( '.' )
+  modname = toks[0]
 
-    # Check if dirrectory is really a directory
-    if( os.path.exists( dir ) ):
+  # Check if dirrectory is really a directory
+  if( os.path.exists( dir ) ):
 
-    # Check if the file directory already exists in the sys.path array
-        paths = sys.path
-        pathfound = 0
-        for path in paths:
-            if(dir == path):
-                pathfound = 1
+  # Check if the file directory already exists in the sys.path array
+    paths = sys.path
+    pathfound = 0
+    for path in paths:
+      if(dir == path):
+        pathfound = 1
 
-    # If the dirrectory is not part of sys.path add it
-        if not pathfound:
-            sys.path.append( dir )
+  # If the dirrectory is not part of sys.path add it
+    if not pathfound:
+      sys.path.append( dir )
 
-    exec ('import ' + modname) in globals()
+  exec ('import ' + modname) in globals()
 
-    # reload the file to make sure its up to date
-    exec( 'reload( ' + modname + ' )' ) in globals()
+  # reload the file to make sure its up to date
+  exec( 'reload( ' + modname + ' )' ) in globals()
 
-    # This returns the namespace of the file imported
-    return modname
+  # This returns the namespace of the file imported
+  return modname
 
 
 
 
 class wapt:
-    wapt_repourl=""
-    packagecachedir = ""
-    wapttempdir=""
-    dry_run = False
+  wapt_repourl=""
+  packagecachedir = ""
+  wapttempdir=""
+  dry_run = False
 
 
-    def install(self,package):
-        print ("starting installation")
-        sys.stdout.flush()
-        print ("installing package " + package)
+  def install(self,package):
+    print ("starting installation")
+    sys.stdout.flush()
+    print ("installing package " + package)
 
-        waptdb = WaptDB(dbpath='c:/wapt/db/waptdb.sqlite')
-        mydict= waptdb.query("select * from wapt_repo where Package=?",(package,))[0]
-        pprint.pprint (mydict)
-        packagename = mydict['Filename'].strip('./')
-        download_url = mydict['repo_url'] + '/' + packagename
-        print download_url
+    waptdb = WaptDB(dbpath='c:/wapt/db/waptdb.sqlite')
+    mydict= waptdb.query("select * from wapt_repo where Package=?",(package,))[0]
+    pprint.pprint (mydict)
+    packagename = mydict['Filename'].strip('./')
+    download_url = mydict['repo_url'] + '/' + packagename
+    print download_url
 
-        print ("download package from " + mydict['repo_url'])
-        sys.stdout.flush()
+    print ("download package from " + mydict['repo_url'])
+    sys.stdout.flush()
 
 
-        download( download_url, self.packagecachedir)
+    download( download_url, self.packagecachedir)
 
-        # When you import a file you must give it the full path
-        tempdirname = tempfile.mkdtemp(prefix=self.wapttempdir)
-        print ('unziping ' + self.packagecachedir +  '/' + packagename)
-        sys.stdout.flush()
-        zip = zipfile.ZipFile(self.packagecachedir +  '/' + packagename)
-        zip.extractall(path=tempdirname)
+    # When you import a file you must give it the full path
+    tempdirname = tempfile.mkdtemp(prefix=self.wapttempdir)
+    print ('unziping ' + self.packagecachedir +  '/' + packagename)
+    sys.stdout.flush()
+    zip = zipfile.ZipFile(self.packagecachedir +  '/' + packagename)
+    zip.extractall(path=tempdirname)
 
-        print ("sourcing install file")
-        sys.stdout.flush()
-        psource( tempdirname + '/' + 'setup.py' )
+    print ("sourcing install file")
+    sys.stdout.flush()
+    psource( tempdirname + '/' + 'setup.py' )
 
-        if self.dry_run==False:
-            print ("executing install script")
-            sys.stdout.flush()
-            setup.install()
+    if self.dry_run==False:
+      print ("executing install script")
+      sys.stdout.flush()
+      setup.install()
 
-        print ("install script finished")
-        print ("cleaning tmp dir")
-        sys.stdout.flush()
-        shutil.rmtree(tempdirname)
+    print ("install script finished")
+    print ("cleaning tmp dir")
+    sys.stdout.flush()
+    shutil.rmtree(tempdirname)
 
-    def update(self):
-        print self.wapttempdir
-        if os.path.exists(os.path.join(self.wapttempdir,'Packages')):
-            os.remove (os.path.join(self.wapttempdir,'Packages'))
-        if os.path.exists(os.path.join(self.wapttempdir,'Packages.zip')):
-            os.remove(os.path.join(self.wapttempdir,'Packages.zip'))
-        download( self.wapt_repourl + '/Packages', self.wapttempdir)
-        os.rename(os.path.join(self.wapttempdir,'Packages'), os.path.join(self.wapttempdir,'Packages.zip'))
-        myzip = zipfile.ZipFile(os.path.join(self.wapttempdir,'Packages.zip'),'r')
-        myzip.extract(path=self.wapttempdir,member='Packages')
+  def update(self):
+    print self.wapttempdir
+    if os.path.exists(os.path.join(self.wapttempdir,'Packages')):
+      os.remove (os.path.join(self.wapttempdir,'Packages'))
+    if os.path.exists(os.path.join(self.wapttempdir,'Packages.zip')):
+      os.remove(os.path.join(self.wapttempdir,'Packages.zip'))
+    download( self.wapt_repourl + '/Packages', self.wapttempdir)
+    os.rename(os.path.join(self.wapttempdir,'Packages'), os.path.join(self.wapttempdir,'Packages.zip'))
+    myzip = zipfile.ZipFile(os.path.join(self.wapttempdir,'Packages.zip'),'r')
+    myzip.extract(path=self.wapttempdir,member='Packages')
 
-        waptdb = WaptDB(dbpath='c:/wapt/db/waptdb.sqlite')
-        packageListFile = open(os.path.join(self.wapttempdir,'Packages'))
+    waptdb = WaptDB(dbpath='c:/wapt/db/waptdb.sqlite')
+    packageListFile = open(os.path.join(self.wapttempdir,'Packages'))
 
+    package = Package_Entry()
+    for line in packageListFile:
+      #print "line : " + line
+
+      if line.strip()=='':
+        print package.printobj()
+        package.repo_url = self.wapt_repourl
+        waptdb.add_package_entry(package)
         package = Package_Entry()
-        for line in packageListFile:
-            #print "line : " + line
+        continue
+      splitline= line.split(':')
+      setattr(package,splitline[0].strip(),splitline[1].strip())
 
-            if line.strip()=='':
-                print package.printobj()
-                package.repo_url = self.wapt_repourl
-                waptdb.add_package_entry(package)
-                package = Package_Entry()
-                continue
-            splitline= line.split(':')
-            setattr(package,splitline[0].strip(),splitline[1].strip())
-
-    def list_repo(self):
-        waptdb = WaptDB(dbpath='c:/wapt/db/waptdb.sqlite')
-        print waptdb.list_repo()
+  def list_repo(self):
+    waptdb = WaptDB(dbpath='c:/wapt/db/waptdb.sqlite')
+    print waptdb.list_repo()
 
 def main(argv):
-    wapt_start_date = datetime.datetime.now().strftime('%Y%m%d-%Hh%Mm%S')
-    action = args[0]
-    if action=='install':
-        packagename=args[1]
+  wapt_start_date = datetime.datetime.now().strftime('%Y%m%d-%Hh%Mm%S')
+  action = args[0]
+  if action=='install':
+    packagename=args[1]
 
-    config_file =options.config
-    loglevel = options.loglevel
-    dry_run = options.dry_run
-    # setup Logger
-    logger = logging.getLogger('wapt-get')
-    hdlr = logging.StreamHandler()
-    hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
-    logger.addHandler(hdlr)
-
-
-
-    # set loglevel
-    if loglevel in ('debug','warning','info','error','critical'):
-        numeric_level = getattr(logging, loglevel.upper(), None)
-    if not isinstance(numeric_level, int):
-        raise ValueError('Invalid log level: %s' % loglevel)
-    logger.setLevel(numeric_level)
-
-    # Config file
-    if not os.path.isfile(config_file):
-        logger.error("Error : could not find file : " + config_file + ", please check the path")
-    logger.info("Using " + config_file + " config file")
-
-    print config_file
-    cp = ConfigParser( )
-    cp.read(config_file)
-
-    wapt_repourl = cp.get('global','repo_url')
-    wapt_base_dir = cp.get('global','base_dir')
-
-    log_dir = os.path.join(wapt_base_dir,'log')
-    if not os.path.exists(log_dir):
-        os.makedirs(log_dir)
+  config_file =options.config
+  loglevel = options.loglevel
+  dry_run = options.dry_run
+  # setup Logger
+  logger = logging.getLogger('wapt-get')
+  hdlr = logging.StreamHandler()
+  hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+  logger.addHandler(hdlr)
 
 
-    packagecachedir = os.path.join(wapt_base_dir,'cache') + '/'
-    print packagecachedir
-    ensure_dir(packagecachedir)
-    wapttempdir = os.path.join(wapt_base_dir, 'tmp') + '/'
-    ensure_dir (wapttempdir)
 
-    mywapt = wapt()
-    mywapt.packagecachedir = packagecachedir
-    mywapt.wapttempdir = wapttempdir
-    mywapt.wapt_repourl = wapt_repourl
-    mywapt.dry_run = dry_run
+  # set loglevel
+  if loglevel in ('debug','warning','info','error','critical'):
+    numeric_level = getattr(logging, loglevel.upper(), None)
+  if not isinstance(numeric_level, int):
+    raise ValueError('Invalid log level: %s' % loglevel)
+  logger.setLevel(numeric_level)
 
-    if action=='install':
-        mywapt.install(packagename)
+  # Config file
+  if not os.path.isfile(config_file):
+    logger.error("Error : could not find file : " + config_file + ", please check the path")
+  logger.info("Using " + config_file + " config file")
 
-    if action=='update':
-        mywapt.update()
+  print config_file
+  cp = ConfigParser( )
+  cp.read(config_file)
 
-    if action=='upgrade':
-        mywapt.upgrade()
+  wapt_repourl = cp.get('global','repo_url')
+  wapt_base_dir = cp.get('global','base_dir')
 
-    if action=='remove':
-        mywapt.remove()
+  log_dir = os.path.join(wapt_base_dir,'log')
+  if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
 
-    if action=='list':
-        mywapt.list_repo()
 
-    #shutil.rmtree(tempdirname)
+  packagecachedir = os.path.join(wapt_base_dir,'cache') + '/'
+  print packagecachedir
+  ensure_dir(packagecachedir)
+  wapttempdir = os.path.join(wapt_base_dir, 'tmp') + '/'
+  ensure_dir (wapttempdir)
+
+  mywapt = wapt()
+  mywapt.packagecachedir = packagecachedir
+  mywapt.wapttempdir = wapttempdir
+  mywapt.wapt_repourl = wapt_repourl
+  mywapt.dry_run = dry_run
+
+  if action=='install':
+    mywapt.install(packagename)
+
+  if action=='update':
+    mywapt.update()
+
+  if action=='upgrade':
+    mywapt.upgrade()
+
+  if action=='remove':
+    mywapt.remove()
+
+  if action=='list':
+    mywapt.list_repo()
+
+  #shutil.rmtree(tempdirname)
 
 if __name__ == "__main__":
   main(sys.argv[1:])
-
 
