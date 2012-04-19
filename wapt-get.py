@@ -140,7 +140,6 @@ class wapt:
     packageListFile = zipfile.ZipFile(cStringIO.StringIO(urllib2.urlopen(self.wapt_repourl + 'Packages').read())).read(name='Packages')
 
     waptdb = WaptDB(dbpath=self.dbpath)
-    packageListFile = open(os.path.join(self.wapttempdir,'Packages'))
 
     package = Package_Entry()
     for line in packageListFile:
@@ -227,5 +226,6 @@ def main(argv):
   #shutil.rmtree(tempdirname)
 
 if __name__ == "__main__":
+  print sys.path
   main(sys.argv[1:])
 
