@@ -178,8 +178,8 @@ var
 {$R *.res}
 
 begin
-  Application.Title:='wapt-get';
   Application:=pwaptget.Create(nil);
+  Application.Title:='wapt-get';
   Application.Run;
   Application.Free;
 end.
