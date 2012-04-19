@@ -262,9 +262,6 @@ class WaptDB:
         """,(total_files_count,written_files_count,total_bytes,written_bytes,log,status,backup_end,backup_duration,backup_location,rowid))
     self.db.commit()
 
-
-
-
   def add_package(self,
                   Package='',
                   Version='',
@@ -427,20 +424,20 @@ class Package_Entry:
 
     shutil.rmtree(tempdir)
 
-  def printobj(self):
-    val=""
-    val = val + "Package : " + self.Package + '\n'
-    val = val + "Version : " + self.Version + '\n'
-    val = val + "Section : " + self.Section + '\n'
-    val = val +   "Priority : " + self.Priority + '\n'
-    val = val +  "Architecture : " + self.Architecture + '\n'
-    val = val +  "Maintainer : " + self.Maintainer + '\n'
-    val = val + "Description : " + self.Description + '\n'
-    val = val +  "Filename : " + self.Filename + '\n'
-    val = val +  "size : " + self.Size + '\n'
-    val = val +  "MD5sum : " + self.MD5sum + '\n'
+  def __str__(self):
+    val = """\
+Package : %(Package)s
+Version : %(Version)s
+Section : %(Section)s
+Priority : %(Priority)s
+Architecture : %(Architecture)s
+Maintainer :   %(Maintainer)s
+Description :  %(Description)s
+Filename :      %(Filename)s
+Size :   %(Size)s
+MD5sum : %(MD5sum)s
+"""  % self.__dict__
     return val
-
 
 if __name__ == '__main__':
   logger = logging.getLogger('wapt-db')
@@ -463,4 +460,4 @@ if __name__ == '__main__':
     Filename='FilenameTest',
     Size=100,
     MD5sum='MD5Sumtest')
-  print "hello"
+  print

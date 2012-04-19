@@ -1,6 +1,9 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
 import sys
 import os
 import zipfile
+import cStringIO
 import tempfile
 import urllib2
 import shutil
@@ -26,7 +29,7 @@ action is either :
 version = "0.2"
 
 parser=OptionParser(usage=usage,version="%prog " + version)
-parser.add_option("-c","--config", dest="config", default='c:/wapt/wapt-get.ini', help="Config file full path (default: %default)")
+parser.add_option("-c","--config", dest="config", default='c:\\wapt\\wapt-get.ini', help="Config file full path (default: %default)")
 parser.add_option("-l","--loglevel", dest="loglevel", default='info', type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: %default)")
 parser.add_option("-d","--dry-run",    dest="dry_run",    default=False, action='store_true', help="Dry run (default: %default)")
 
@@ -43,11 +46,12 @@ def download(url,destdir):
   to a local file.
   """
   import urllib
-  urllib.urlretrieve(url,destdir + '/' + url.split('/')[-1])
+  if not os.path.isdir(destdir):
+    os.makedirs(destdir)
+  urllib.urlretrieve(url,os.path.join(destdir,url.split('/')[-1]))
 
 def ensure_dir(f):
   d = os.path.dirname(f)
-  print "d : " + d
   if not os.path.exists(d):
     os.makedirs(d)
 
@@ -89,6 +93,7 @@ class wapt:
   packagecachedir = ""
   wapttempdir=""
   dry_run = False
+  dbpath = 'c:\\wapt\\db\\waptdb.sqlite'
 
 
   def install(self,package):
@@ -96,7 +101,7 @@ class wapt:
     sys.stdout.flush()
     print ("installing package " + package)
 
-    waptdb = WaptDB(dbpath='c:/wapt/db/waptdb.sqlite')
+    waptdb = WaptDB(dbpath=self.dbpath)
     mydict= waptdb.query("select * from wapt_repo where Package=?",(package,))[0]
     pprint.pprint (mydict)
     packagename = mydict['Filename'].strip('./')
@@ -111,14 +116,14 @@ class wapt:
 
     # When you import a file you must give it the full path
     tempdirname = tempfile.mkdtemp(dir=self.wapttempdir)
-    print ('unziping ' + self.packagecachedir +  '\\' + packagename)
+    print ('unziping %s ' % (os.path.join(self.packagecachedir,packagename)))
     sys.stdout.flush()
     zip = zipfile.ZipFile( os.path.join(self.packagecachedir , packagename))
     zip.extractall(path=tempdirname)
 
     print ("sourcing install file")
     sys.stdout.flush()
-    psource( os.path.join( tempdirname,'setup.py' ))
+    psource(os.path.join( tempdirname,'setup.py'))
 
     if not self.dry_run:
       print ("executing install script")
@@ -132,24 +137,15 @@ class wapt:
 
   def update(self):
     print self.wapttempdir
-    if os.path.exists(os.path.join(self.wapttempdir,'Packages')):
-      os.remove (os.path.join(self.wapttempdir,'Packages'))
-    if os.path.exists(os.path.join(self.wapttempdir,'Packages.zip')):
-      os.remove(os.path.join(self.wapttempdir,'Packages.zip'))
-    download( self.wapt_repourl + '/Packages', self.wapttempdir)
-    os.rename(os.path.join(self.wapttempdir,'Packages'), os.path.join(self.wapttempdir,'Packages.zip'))
-    myzip = zipfile.ZipFile(os.path.join(self.wapttempdir,'Packages.zip'),'r')
-    myzip.extract(path=self.wapttempdir,member='Packages')
+    packageListFile = zipfile.ZipFile(cStringIO.StringIO(urllib2.urlopen(self.wapt_repourl + 'Packages').read())).read(name='Packages')
 
-    waptdb = WaptDB(dbpath='c:/wapt/db/waptdb.sqlite')
+    waptdb = WaptDB(dbpath=self.dbpath)
     packageListFile = open(os.path.join(self.wapttempdir,'Packages'))
 
     package = Package_Entry()
     for line in packageListFile:
-      #print "line : " + line
-
       if line.strip()=='':
-        print package.printobj()
+        print package
         package.repo_url = self.wapt_repourl
         waptdb.add_package_entry(package)
         package = Package_Entry()
@@ -158,7 +154,7 @@ class wapt:
       setattr(package,splitline[0].strip(),splitline[1].strip())
 
   def list_repo(self):
-    waptdb = WaptDB(dbpath='c:/wapt/db/waptdb.sqlite')
+    waptdb = WaptDB(dbpath=self.dbpath)
     print waptdb.list_repo()
 
 def main(argv):
@@ -169,14 +165,12 @@ def main(argv):
 
   config_file =options.config
   loglevel = options.loglevel
-  dry_run = options.dry_run
+
   # setup Logger
   logger = logging.getLogger('wapt-get')
   hdlr = logging.StreamHandler()
   hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
   logger.addHandler(hdlr)
-
-
 
   # set loglevel
   if loglevel in ('debug','warning','info','error','critical'):
@@ -201,18 +195,19 @@ def main(argv):
   if not os.path.exists(log_dir):
     os.makedirs(log_dir)
 
-
   packagecachedir = os.path.join(wapt_base_dir,'cache')
+  if not os.path.exists(packagecachedir):
+    os.makedirs(packagecachedir)
   print packagecachedir
-  ensure_dir(packagecachedir)
   wapttempdir = os.path.join(wapt_base_dir, 'tmp')
-  ensure_dir (wapttempdir)
+  if not os.path.exists(wapttempdir):
+    os.makedirs(wapttempdir)
 
   mywapt = wapt()
   mywapt.packagecachedir = packagecachedir
   mywapt.wapttempdir = wapttempdir
   mywapt.wapt_repourl = wapt_repourl
-  mywapt.dry_run = dry_run
+  mywapt.dry_run = options.dry_run
 
   if action=='install':
     mywapt.install(packagename)
