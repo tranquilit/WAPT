@@ -1,0 +1,7 @@
+backup
+lib
+*.ppu
+*.compiled
+*.dbg
+*.compiled
+*.ppu

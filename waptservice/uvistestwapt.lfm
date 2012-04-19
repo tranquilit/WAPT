@@ -1,0 +1,107 @@
+object Form1: TForm1
+  Left = 354
+  Height = 548
+  Top = 139
+  Width = 659
+  Caption = 'Form1'
+  ClientHeight = 548
+  ClientWidth = 659
+  OnCreate = FormCreate
+  LCLVersion = '0.9.30.4'
+  object Memo1: TMemo
+    Left = 0
+    Height = 183
+    Top = 0
+    Width = 659
+    Align = alTop
+    TabOrder = 0
+  end
+  object Memo2: TMemo
+    Left = 0
+    Height = 319
+    Top = 183
+    Width = 659
+    Align = alClient
+    Lines.Strings = (
+      'print 2+2'
+    )
+    TabOrder = 1
+  end
+  object Panel2: TPanel
+    Left = 0
+    Height = 46
+    Top = 502
+    Width = 659
+    Align = alBottom
+    ClientHeight = 46
+    ClientWidth = 659
+    TabOrder = 2
+    OnClick = Panel2Click
+    object Button1: TButton
+      Left = 223
+      Height = 25
+      Top = 8
+      Width = 75
+      Caption = 'Execute'
+      OnClick = Button1Click
+      TabOrder = 0
+    end
+  end
+  object PythonEngine1: TPythonEngine
+    DllName = 'python27.dll'
+    APIVersion = 1013
+    RegVersion = '2.7'
+    UseLastKnownVersion = False
+    InitScript.Strings = (
+      'import sys'
+      'import os'
+      'import zipfile'
+      'import tempfile'
+      'import urllib2'
+      'import shutil'
+      'from iniparse import ConfigParser'
+      'from optparse import OptionParser'
+      'import logging'
+      'import datetime'
+      'from common import WaptDB'
+      'from common import Package_Entry'
+      'import pprint'
+      ''
+      'usage="""\'
+      '%prog -c configfile action'
+      ''
+      'WAPT install system.'
+      ''
+      'action is either :'
+      ' install : launch all backups or a specific one if -s option is used'
+      ' update : removed backups older than retension period'
+      ' upgrade : dump the content of database for the last 20 backups'
+      '"""'
+      ''
+      'version = "0.2"'
+      ''
+      'parser=OptionParser(usage=usage,version="%prog " + version)'
+      'parser.add_option("-c","--config", dest="config", default=''c:/wapt/wapt-get.ini'', help="Config file full path (default: %default)")'
+      'parser.add_option("-l","--loglevel", dest="loglevel", default=''info'', type=''choice'',  choices=[''debug'',''warning'',''info'',''error'',''critical''], metavar=''LOGLEVEL'',help="Loglevel (default: %default)")'
+      'parser.add_option("-d","--dry-run",    dest="dry_run",    default=False, action=''store_true'', help="Dry run (default: %default)")'
+      ''
+      '(options,args)=parser.parse_args()'
+      ''
+      'print options,args'
+    )
+    PyFlags = [pfIgnoreEnvironmentFlag]
+    RedirectIO = False
+    UseWindowsConsole = True
+    OnAfterInit = PythonEngine1AfterInit
+    left = 124
+    top = 76
+  end
+  object PythonGUIInputOutput1: TPythonGUIInputOutput
+    DelayWrites = True
+    UnicodeIO = False
+    RawOutput = False
+    Output = Memo1
+    left = 366
+    top = 76
+  end
+end

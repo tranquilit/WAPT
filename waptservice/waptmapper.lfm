@@ -1,0 +1,19 @@
+object DaemonMapper1: TDaemonMapper1
+  DaemonDefs = <  
+    item
+      DaemonClassName = 'TWaptDaemon'
+      Name = 'WaptService'
+      Description = 'Wapt Service'
+      DisplayName = 'WaptService'
+      Options = [doAllowStop, doAllowPause]
+      WinBindings.Dependencies = <>
+      WinBindings.StartType = stBoot
+      WinBindings.WaitHint = 0
+      WinBindings.IDTag = 0
+      WinBindings.ServiceType = stWin32
+      WinBindings.ErrorSeverity = esIgnore
+      LogStatusReport = False
+    end>
+  left = 630
+  top = 491
+end

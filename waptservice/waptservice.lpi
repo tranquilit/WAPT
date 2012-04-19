@@ -1,0 +1,224 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="9"/>
+    <PathDelim Value="\"/>
+    <General>
+      <Flags>
+        <MainUnitHasCreateFormStatements Value="False"/>
+      </Flags>
+      <MainUnit Value="0"/>
+      <Title Value="waptservice"/>
+      <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
+      <Icon Value="0"/>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <i18n>
+      <EnableI18N LFM="False"/>
+    </i18n>
+    <VersionInfo>
+      <UseVersionInfo Value="True"/>
+      <Language Value="040C"/>
+      <StringTable CompanyName="Tranquil IT Systems" ProductVersion=""/>
+    </VersionInfo>
+    <BuildModes Count="1" Active="Default">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+        <CommandLineParams Value="--install"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="4">
+      <Item1>
+        <PackageName Value="indylaz"/>
+        <MinVersion Major="10" Minor="5" Release="8" Valid="True"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="LazDaemon"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="LCL"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="FCL"/>
+      </Item4>
+    </RequiredPackages>
+    <Units Count="7">
+      <Unit0>
+        <Filename Value="waptservice.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="waptservice"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="35" Y="7"/>
+        <UsageCount Value="53"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="waptmapper.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DaemonMapper1"/>
+        <UnitName Value="WaptMapper"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="9" Y="11"/>
+        <UsageCount Value="53"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="waptunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WaptDaemon"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <UnitName Value="WaptUnit"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="11"/>
+        <CursorPos X="31" Y="46"/>
+        <UsageCount Value="53"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="unit1.pas"/>
+        <UnitName Value="Unit1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="17"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-extra\src\daemonapp.pp"/>
+        <UnitName Value="daemonapp"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="10"/>
+        <CursorPos X="19" Y="134"/>
+        <UsageCount Value="26"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="C:\lazarus\components\daemon\lazdaemonapp.pp"/>
+        <UnitName Value="lazdaemonapp"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="7"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="C:\lazarus\lcl\interfaces\win32\interfaces.pp"/>
+        <UnitName Value="Interfaces"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="16"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="26"/>
+        <Loaded Value="True"/>
+      </Unit6>
+    </Units>
+    <JumpHistory Count="16" HistoryIndex="15">
+      <Position1>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="8" Column="32" TopLine="2"/>
+      </Position1>
+      <Position2>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="25" Column="24" TopLine="1"/>
+      </Position2>
+      <Position3>
+        <Filename Value="waptservice.lpr"/>
+        <Caret Line="11" Column="8" TopLine="1"/>
+      </Position3>
+      <Position4>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="26" Column="24" TopLine="1"/>
+      </Position4>
+      <Position5>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="14" Column="21" TopLine="1"/>
+      </Position5>
+      <Position6>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="36" Column="3" TopLine="1"/>
+      </Position6>
+      <Position7>
+        <Filename Value="waptservice.lpr"/>
+        <Caret Line="8" Column="32" TopLine="1"/>
+      </Position7>
+      <Position8>
+        <Filename Value="waptservice.lpr"/>
+        <Caret Line="14" Column="1" TopLine="1"/>
+      </Position8>
+      <Position9>
+        <Filename Value="waptservice.lpr"/>
+        <Caret Line="7" Column="63" TopLine="1"/>
+      </Position9>
+      <Position10>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="39" Column="3" TopLine="1"/>
+      </Position10>
+      <Position11>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="53" Column="10" TopLine="10"/>
+      </Position11>
+      <Position12>
+        <Filename Value="waptmapper.pas"/>
+        <Caret Line="8" Column="37" TopLine="1"/>
+      </Position12>
+      <Position13>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="23" Column="38" TopLine="1"/>
+      </Position13>
+      <Position14>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="46" Column="30" TopLine="10"/>
+      </Position14>
+      <Position15>
+        <Filename Value="waptservice.lpr"/>
+        <Caret Line="7" Column="50" TopLine="1"/>
+      </Position15>
+      <Position16>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="40" Column="8" TopLine="9"/>
+      </Position16>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="9"/>
+    <PathDelim Value="\"/>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+    </SearchPaths>
+    <Other>
+      <CompilerMessages>
+        <UseMsgFile Value="True"/>
+      </CompilerMessages>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>
