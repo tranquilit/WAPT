@@ -1,6 +1,7 @@
 backup
 lib
 *.ppu
+*.compiled
 
 # These are the default patterns globally ignored by Subversion:
 *.o
