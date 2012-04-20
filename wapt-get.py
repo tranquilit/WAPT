@@ -56,36 +56,22 @@ def ensure_dir(f):
     os.makedirs(d)
 
 def psource(module):
-
   file = os.path.basename( module )
   dir = os.path.dirname( module )
-
   toks = file.split( '.' )
   modname = toks[0]
 
   # Check if dirrectory is really a directory
-  if( os.path.exists( dir ) ):
-
-  # Check if the file directory already exists in the sys.path array
-    paths = sys.path
-    pathfound = 0
-    for path in paths:
-      if(dir == path):
-        pathfound = 1
-
-  # If the dirrectory is not part of sys.path add it
-    if not pathfound:
+  if(  ):
+    # Check if the file directory already exists in the sys.path array
+    if os.path.exists( dir ) and not dir in sys.path:
       sys.path.append( dir )
 
   exec ('import ' + modname) in globals()
-
-  # reload the file to make sure its up to date
   exec( 'reload( ' + modname + ' )' ) in globals()
 
   # This returns the namespace of the file imported
   return modname
-
-
 
 
 class wapt:
@@ -110,8 +96,6 @@ class wapt:
 
     print ("download package from " + mydict['repo_url'])
     sys.stdout.flush()
-
-
     download( download_url, self.packagecachedir)
 
     # When you import a file you must give it the full path
@@ -137,7 +121,7 @@ class wapt:
 
   def update(self):
     print self.wapttempdir
-    packageListFile = zipfile.ZipFile(cStringIO.StringIO(urllib2.urlopen(self.wapt_repourl + 'Packages').read())).read(name='Packages')
+    packageListFile = zipfile.ZipFile(cStringIO.StringIO(urllib2.urlopen(self.wapt_repourl + 'Packages').read())).read(name='Packages').splitlines()
 
     waptdb = WaptDB(dbpath=self.dbpath)
 
