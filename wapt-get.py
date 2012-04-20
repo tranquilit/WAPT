@@ -61,11 +61,9 @@ def psource(module):
   toks = file.split( '.' )
   modname = toks[0]
 
-  # Check if dirrectory is really a directory
-  if(  ):
-    # Check if the file directory already exists in the sys.path array
-    if os.path.exists( dir ) and not dir in sys.path:
-      sys.path.append( dir )
+  # Check if the file directory already exists in the sys.path array
+  if os.path.exists( dir ) and not dir in sys.path:
+    sys.path.append( dir )
 
   exec ('import ' + modname) in globals()
   exec( 'reload( ' + modname + ' )' ) in globals()
