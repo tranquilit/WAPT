@@ -9,7 +9,7 @@ uses
   Classes, SysUtils, CustApp,
   { you can add units after this }
   PythonEngine,ShellApi,windows,
-  WinInet,zipper;
+  WinInet,zipper,FileUtil,registry;
 type
   { waptget }
 
@@ -24,7 +24,7 @@ type
   end;
 
 
-  function GetInetFile (const fileURL, FileName: String): boolean;
+  function wget(const fileURL, FileName: String): boolean;
    const
      BufferSize = 1024;
    var
@@ -33,28 +33,34 @@ type
      BufferLen: DWORD;
      f: File;
      sAppName: string;
+     Size: Integer;
    begin
     result := false;
     sAppName := ExtractFileName(ParamStr(0)) ;
     hSession := InternetOpen(PChar(sAppName), INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0) ;
     try
-     hURL := InternetOpenURL(hSession, PChar(fileURL), nil, 0, 0, 0) ;
-     try
-      AssignFile(f, FileName) ;
-      Rewrite(f,1) ;
-      repeat
-       InternetReadFile(hURL, @Buffer, SizeOf(Buffer), BufferLen) ;
-       BlockWrite(f, Buffer, BufferLen)
-      until BufferLen = 0;
-      CloseFile(f) ;
-      result := True;
-     finally
-      InternetCloseHandle(hURL)
-     end
+      hURL := InternetOpenURL(hSession, PChar(fileURL), nil, 0, 0, 0) ;
+      Size:=0;
+      try
+        AssignFile(f, FileName) ;
+        Rewrite(f,1) ;
+        repeat
+          BufferLen:= 0;
+          if InternetReadFile(hURL, @Buffer, SizeOf(Buffer), BufferLen) then
+          begin
+            inc(Size,BufferLen);
+            BlockWrite(f, Buffer, BufferLen)
+          end;
+        until BufferLen = 0;
+        CloseFile(f) ;
+        result := (Size>0);
+      finally
+        InternetCloseHandle(hURL)
+      end
     finally
-     InternetCloseHandle(hSession)
+      InternetCloseHandle(hSession)
     end
-   end;
+  end;
 
 Const
   SECURITY_NT_AUTHORITY: TSIDIdentifierAuthority = (Value: (0, 0, 0, 0, 0, 5));
@@ -85,39 +91,104 @@ begin
   end;
 end;
 
+procedure UnzipFile(ZipFilePath,OutputPath:String);
+var
+  UnZipper: TUnZipper;
+begin
+  UnZipper := TUnZipper.Create;
+  try
+    UnZipper.FileName := ZipFilePath;
+    UnZipper.OutputPath := OutputPath;
+    UnZipper.Examine;
+    UnZipper.UnZipAllFiles;
+  finally
+    UnZipper.Free;
+  end;
+end;
+
+procedure AddToUserPath(APath:String);
+var
+  r:TRegistry;
+  SystemPath : String;
+begin
+  with TRegistry.Create do
+  try
+    //RootKey:=HKEY_LOCAL_MACHINE;
+    OpenKey('Environment',False);
+    SystemPath:=ReadString('PATH');
+    if pos(LowerCase(APath),LowerCase(SystemPath))=0 then
+    begin
+      SystemPath:=SystemPath+';'+APath;
+      WriteString('PATH',SystemPath);
+    end;
+  finally
+    Free;
+  end;
+
+end;
+
+procedure AddToSystemPath(APath:String);
+var
+  r:TRegistry;
+  SystemPath : String;
+begin
+  with TRegistry.Create do
+  try
+    RootKey:=HKEY_LOCAL_MACHINE;
+    OpenKey('SYSTEM\CurrentControlSet\Control\Session Manager\Environment',False);
+    SystemPath:=ReadString('PATH');
+    if pos(LowerCase(APath),LowerCase(SystemPath))=0 then
+    begin
+      SystemPath:=SystemPath+';'+APath;
+      WriteString('PATH',SystemPath);
+    end;
+  finally
+    Free;
+  end;
+
+end;
+
+
 { pwaptget }
 
 procedure pwaptget.DoRun;
 var
-  ErrorMsg,ZipFilePath: String;
+  ErrorMsg,InstallPath,ZipFilePath,LibsURL: String;
   MainModule : TStringList;
-  UnZipper: TUnZipper;
 
 begin
+  InstallPath := TrimFilename('c:\wapt');
+
   // parse parameters
-  if HasOption('s','setup') or (not DirectoryExists('c:\wapt')) then begin
+  if HasOption('s','setup') or (not DirectoryExists(InstallPath)) then
+  begin
     if not UserInGroup(DOMAIN_ALIAS_RID_ADMINS) then
       raise Exception.Create('You must run this setup with Admin rights');
-    if not DirectoryExists('c:\wapt') then
-      mkdir('c:\wapt');
-    if LowerCase(ExtractFilePath(ParamStr(0)))<>'c:\wapt' then
-      CopyFile(PChar(ParamStr(0)),PChar('c:\wapt\'+ExtractFileName(ParamStr(0))),False);
+    ForceDirectory(InstallPath);
+    AddToUserPath(InstallPath);
+    // Copy wapt-get.exe to install dir
+    if CompareFilenamesIgnoreCase(ExtractFilePath(ParamStr(0)), AppendPathDelim(InstallPath))=0 then
+      CopyFile(ParamStr(0),AppendPathDelim(InstallPath)+ExtractFileName(ParamStr(0)),True);
     ZipFilePath := ExtractFilePath(ParamStr(0))+'wapt-libs.zip';
-    Writeln('Downloading '+'http://wapt/tiswapt/wapt/wapt-libs.zip'+' to '+ExtractFilePath(ParamStr(0))+'wapt-libs.zip');
-    GetInetFile('http://wapt/tiswapt/wapt/wapt-libs.zip',ExtractFilePath(ParamStr(0))+'wapt-libs.zip');
-    Writeln('Unzipping '+ZipFilePath);
-    UnZipper := TUnZipper.Create;
-    try
-      UnZipper.FileName := ZipFilePath;
-      UnZipper.OutputPath := 'c:\wapt';
-      UnZipper.Examine;
-      UnZipper.UnZipAllFiles;
-    finally
-      UnZipper.Free;
+
+    LibsURL := 'http://wapt/tiswapt/wapt/wapt-libs.zip';
+    Writeln('Downloading '+LibsURL+' to '+ZipFilePath);
+    if not wget(LibsURL,ZipFilePath) then
+    begin
+      LibsURL := 'http://srvinstallation.tranquil-it-systems.fr/tiswapt/wapt/wapt-libs.zip';
+      Writeln('Downloading '+LibsURL+' to '+ZipFilePath);
+      if not wget(LibsURL,ZipFilePath) then
+      begin
+        Writeln('Unable to download '+LibsURL);
+        Terminate;
+        Exit;
+      end;
     end;
-    Writeln();
+    Writeln('Unzipping '+ZipFilePath);
+    UnzipFile(ZipFilePath,InstallPath);
+    FileUtil.DeleteFileUTF8(ZipFilePath);
     Writeln('Installing vcredist_x86.exe');
-    ExecuteProcess(ExtractFilePath(ParamStr(0))+'redist\vcredist_x86.exe','/qn');
+    ExecuteProcess(InstallPath+'\redist\vcredist_x86.exe','/qn');
     Terminate;
     Exit;
   end;
@@ -126,7 +197,7 @@ begin
   with ApythonEngine do
   begin
     DllName := 'python27.dll';
-    APIVersion := 1013;
+    //APIVersion := 1013;
     RegVersion := '2.7';
     UseLastKnownVersion := False;
     PyFlags := [pfIgnoreEnvironmentFlag];
