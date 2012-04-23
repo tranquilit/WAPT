@@ -13,6 +13,7 @@ import logging
 import datetime
 from common import WaptDB
 from common import Package_Entry
+import dns.resolver
 import pprint
 
 usage="""\
@@ -26,7 +27,7 @@ action is either :
  upgrade : dump the content of database for the last 20 backups
 """
 
-version = "0.2"
+version = "0.3"
 
 parser=OptionParser(usage=usage,version="%prog " + version)
 parser.add_option("-c","--config", dest="config", default='c:\\wapt\\wapt-get.ini', help="Config file full path (default: %default)")
@@ -70,6 +71,33 @@ def psource(module):
 
   # This returns the namespace of the file imported
   return modname
+
+def find_wapt_server(configparser):
+    local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
+    servers = []
+    if configparser.get('global','repo_url'):
+        servers.append(configparser.get('global','repo_url'))
+    # find by dns SRV _wapt._tcp
+    answers = dns.resolver.query('_wapt._tcp','SRV')
+    for a in answers:
+        if a.port == 80:
+            servers.append('http://%s/wapt' % (a.target.canonicalize().to_text()[0:-1]))
+        else:
+            servers.append('http://%s:%i/wapt' % (a.target.canonicalize().to_text()[0:-1],a.port))
+    # find by dns CNAME
+    answers = dns.resolver.query('wapt','CNAME')
+    for a in answers:
+        servers.append('http://%s/wapt' % (a.target.canonicalize().to_text()[0:-1]))
+    # hardcoded wapt
+    servers.append('http://wapt/wapt')
+    for s in servers:
+        try:
+            urllib2.urlopen(s)
+            return s
+        except:
+            pass
+
+    return None
 
 
 class wapt:
@@ -169,7 +197,7 @@ def main(argv):
   cp = ConfigParser( )
   cp.read(config_file)
 
-  wapt_repourl = cp.get('global','repo_url')
+  wapt_repourl = find_wapt_server(cp)
   wapt_base_dir = cp.get('global','base_dir')
 
   log_dir = os.path.join(wapt_base_dir,'log')
