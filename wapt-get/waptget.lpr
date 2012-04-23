@@ -187,8 +187,8 @@ begin
     Writeln('Unzipping '+ZipFilePath);
     UnzipFile(ZipFilePath,InstallPath);
     FileUtil.DeleteFileUTF8(ZipFilePath);
-    Writeln('Installing vcredist_x86.exe');
-    ExecuteProcess(InstallPath+'\redist\vcredist_x86.exe','/qn');
+    //Writeln('Installing vcredist_x86.exe');
+    //ExecuteProcess(InstallPath+'\redist\vcredist_x86.exe','/qn');
     Terminate;
     Exit;
   end;
