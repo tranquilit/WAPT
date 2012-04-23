@@ -45,7 +45,7 @@
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="164"/>
-        <CursorPos X="10" Y="173"/>
+        <CursorPos X="96" Y="170"/>
         <UsageCount Value="68"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -367,11 +367,19 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="1">
+    <BreakPoints Count="3">
       <Item1>
         <Source Value="..\..\python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
         <Line Value="4762"/>
       </Item1>
+      <Item2>
+        <Source Value="waptget.lpr"/>
+        <Line Value="171"/>
+      </Item2>
+      <Item3>
+        <Source Value="waptget.lpr"/>
+        <Line Value="170"/>
+      </Item3>
     </BreakPoints>
     <Exceptions Count="3">
       <Item1>
