@@ -156,6 +156,14 @@ var
   ErrorMsg,InstallPath,ZipFilePath,LibsURL: String;
   MainModule : TStringList;
 
+  procedure SetFlag( AFlag: PInt; AValue : Boolean );
+  begin
+    if AValue then
+      AFlag^ := 1
+    else
+      AFlag^ := 0;
+  end;
+
 begin
   InstallPath := TrimFilename('c:\wapt');
 
@@ -200,12 +208,13 @@ begin
     //APIVersion := 1013;
     RegVersion := '2.7';
     UseLastKnownVersion := False;
-    PyFlags := [pfIgnoreEnvironmentFlag];
-    RedirectIO := False;
-    UseWindowsConsole := False  ;
+    Initialize;
+    Py_SetProgramName(PAnsiChar(ParamStr(0)));
+    SetFlag(Py_VerboseFlag,     True);
+    SetFlag(Py_InteractiveFlag, True);
+    SetFlag(Py_NoSiteFlag,      True);
+    SetFlag(Py_IgnoreEnvironmentFlag, True);
   end;
-  APythonEngine.Initialize;
-  APythonEngine.Py_SetProgramName(PAnsiChar(ParamStr(0)));
 
   { add your program here }
   try
