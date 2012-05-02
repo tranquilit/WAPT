@@ -176,7 +176,7 @@ begin
     AddToUserPath(InstallPath);
     // Copy wapt-get.exe to install dir
     if CompareFilenamesIgnoreCase(ExtractFilePath(ParamStr(0)), AppendPathDelim(InstallPath))<>0 then
-      CopyFile(ParamStr(0),AppendPathDelim(InstallPath)+ExtractFileName(ParamStr(0)),True);
+      FileUtil.CopyFile(ParamStr(0),AppendPathDelim(InstallPath)+ExtractFileName(ParamStr(0)),True);
     ZipFilePath := ExtractFilePath(ParamStr(0))+'wapt-libs.zip';
 
     LibsURL := 'http://wapt/tiswapt/wapt/wapt-libs.zip';
