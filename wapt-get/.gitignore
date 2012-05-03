@@ -1,4 +1,5 @@
+*.compiled
+*.or
+*.ppu
 backup
 lib
-*.ppu
-*.compiled
