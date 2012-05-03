@@ -42,7 +42,7 @@ type
       hURL := InternetOpenURL(hSession, PChar(fileURL), nil, 0, 0, 0) ;
       Size:=0;
       try
-        AssignFile(f, FileName) ;
+        AssignFile(f, utf8Toansi(FileName)) ;
         Rewrite(f,1) ;
         repeat
           BufferLen:= 0;
@@ -97,7 +97,7 @@ var
 begin
   UnZipper := TUnZipper.Create;
   try
-    UnZipper.FileName := ZipFilePath;
+    UnZipper.FileName := utf8toAnsi(ZipFilePath);
     UnZipper.OutputPath := OutputPath;
     UnZipper.Examine;
     UnZipper.UnZipAllFiles;
@@ -155,6 +155,7 @@ procedure pwaptget.DoRun;
 var
   ErrorMsg,InstallPath,ZipFilePath,LibsURL: String;
   MainModule : TStringList;
+  downloadPath : String;
 
   procedure SetFlag( AFlag: PInt; AValue : Boolean );
   begin
@@ -175,16 +176,21 @@ begin
     ForceDirectory(InstallPath);
     AddToUserPath(InstallPath);
     // Copy wapt-get.exe to install dir
-    if CompareFilenamesIgnoreCase(ExtractFilePath(ParamStr(0)), AppendPathDelim(InstallPath))<>0 then
-      FileUtil.CopyFile(ParamStr(0),AppendPathDelim(InstallPath)+ExtractFileName(ParamStr(0)),True);
-    ZipFilePath := ExtractFilePath(ParamStr(0))+'wapt-libs.zip';
+    downloadPath:=  ParamStrUTF8(0);
+    if CompareFilenamesIgnoreCase(ExtractFilePath(downloadPath), AppendPathDelim(InstallPath))<>0 then
+    begin
+      writeln(UTF8ToConsole('Copying '+downloadPath+' to '+AppendPathDelim(InstallPath)+ExtractFileName(downloadPath)));
+      if not FileUtil.CopyFile(downloadPath,AppendPathDelim(InstallPath)+ExtractFileName(downloadPath),True) then
+        writeln('  Error : unable to copy, error code : '+intToStr(IOResult));
+    end;
+    ZipFilePath := ExtractFilePath(downloadPath)+'wapt-libs.zip';
 
     LibsURL := 'http://wapt/tiswapt/wapt/wapt-libs.zip';
-    Writeln('Downloading '+LibsURL+' to '+ZipFilePath);
+    Writeln(UTF8ToConsole('Downloading '+LibsURL+' to '+ZipFilePath));
     if not wget(LibsURL,ZipFilePath) then
     begin
       LibsURL := 'http://srvinstallation.tranquil-it-systems.fr/tiswapt/wapt/wapt-libs.zip';
-      Writeln('Downloading '+LibsURL+' to '+ZipFilePath);
+      WriteLn(UTF8ToConsole('Downloading '+LibsURL+' to '+ZipFilePath));
       if not wget(LibsURL,ZipFilePath) then
       begin
         Writeln('Unable to download '+LibsURL);
@@ -210,7 +216,7 @@ begin
     UseLastKnownVersion := False;
     Initialize;
     Py_SetProgramName(PAnsiChar(ParamStr(0)));
-    SetFlag(Py_VerboseFlag,     True);
+    SetFlag(Py_VerboseFlag,     False);
     SetFlag(Py_InteractiveFlag, True);
     SetFlag(Py_NoSiteFlag,      True);
     SetFlag(Py_IgnoreEnvironmentFlag, True);
@@ -250,6 +256,7 @@ procedure pwaptget.WriteHelp;
 begin
   { add your help code here }
   writeln('Usage: ',ExeName,' -h');
+  writeln('  install on c:\wapt : --setup -s');
 end;
 
 var
