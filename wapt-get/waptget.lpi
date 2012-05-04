@@ -21,7 +21,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="3"/>
-      <RevisionNr Value="5"/>
+      <RevisionNr Value="6"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -43,11 +43,12 @@
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="124"/>
         <CursorPos X="26" Y="81"/>
-        <UsageCount Value="144"/>
+        <UsageCount Value="145"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -64,7 +65,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="35" Y="10"/>
-        <UsageCount Value="30"/>
+        <UsageCount Value="29"/>
       </Unit2>
       <Unit3>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\objpas\sysutils\osutilsh.inc"/>
@@ -79,7 +80,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1070"/>
         <CursorPos X="3" Y="1072"/>
-        <UsageCount Value="29"/>
+        <UsageCount Value="28"/>
       </Unit4>
       <Unit5>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-web\src\base\fphttpclient.pp"/>
@@ -87,7 +88,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="124"/>
         <CursorPos X="16" Y="132"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="20"/>
       </Unit5>
       <Unit6>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\winunits-base\src\wininet.pp"/>
@@ -103,7 +104,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="19"/>
       </Unit7>
       <Unit8>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\paszlib\src\ziputils.pas"/>
@@ -111,7 +112,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="8"/>
       </Unit8>
       <Unit9>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\paszlib\src\zip.pas"/>
@@ -119,7 +120,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="124"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="8"/>
       </Unit9>
       <Unit10>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\paszlib\src\unzip.pas"/>
@@ -127,7 +128,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="25" Y="89"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="19"/>
       </Unit10>
       <Unit11>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\paszlib\src\zipper.pp"/>
@@ -142,7 +143,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="5135"/>
         <CursorPos X="11" Y="5162"/>
-        <UsageCount Value="19"/>
+        <UsageCount Value="18"/>
       </Unit12>
       <Unit13>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\objpas\objpas.pp"/>
@@ -187,7 +188,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="61"/>
         <CursorPos X="20" Y="68"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="10"/>
       </Unit18>
       <Unit19>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\win32\windows.pp"/>
@@ -195,14 +196,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="38"/>
         <CursorPos X="1" Y="68"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="10"/>
       </Unit19>
       <Unit20>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\objpas\sysutils\filutilh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="81"/>
         <CursorPos X="10" Y="101"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit20>
       <Unit21>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\sqlite\src\sqlite3.pp"/>
@@ -210,14 +211,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="9" Y="3"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit21>
       <Unit22>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\sqlite\src\sqlite3.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="232"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit22>
       <Unit23>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\sqlite\src\sqlite3db.pas"/>
@@ -225,7 +226,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="127"/>
         <CursorPos X="1" Y="6"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit23>
       <Unit24>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\sqlite\src\sqlite3dyn.pp"/>
@@ -233,7 +234,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit24>
       <Unit25>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-db\src\sqlite\sqlite3ds.pas"/>
@@ -241,7 +242,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="37"/>
         <CursorPos X="35" Y="46"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit25>
       <Unit26>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-db\src\sqlite\customsqliteds.pas"/>
@@ -249,7 +250,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="247"/>
         <CursorPos X="33" Y="248"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit26>
       <Unit27>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-db\src\sqldb\sqlite\sqlite3conn.pp"/>
@@ -257,7 +258,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="31"/>
         <CursorPos X="17" Y="37"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit27>
       <Unit28>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\objpas\classes\classesh.inc"/>
@@ -271,7 +272,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="199"/>
         <CursorPos X="7" Y="208"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="3"/>
       </Unit29>
       <Unit30>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\objpas\sysutils\finah.inc"/>
@@ -320,12 +321,11 @@
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="208"/>
-        <CursorPos X="30" Y="225"/>
-        <UsageCount Value="27"/>
+        <TopLine Value="46"/>
+        <CursorPos X="142" Y="52"/>
+        <UsageCount Value="28"/>
         <Loaded Value="True"/>
       </Unit36>
       <Unit37>
@@ -357,7 +357,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="219"/>
         <CursorPos X="3" Y="224"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="11"/>
       </Unit40>
       <Unit41>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\inc\varianth.inc"/>
@@ -380,7 +380,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="209"/>
         <CursorPos X="10" Y="224"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit43>
       <Unit44>
@@ -389,7 +389,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="2598"/>
         <CursorPos X="27" Y="2622"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit44>
     </Units>
