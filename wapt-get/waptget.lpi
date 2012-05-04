@@ -21,7 +21,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="3"/>
-      <RevisionNr Value="3"/>
+      <RevisionNr Value="5"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -35,44 +35,43 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="--setup"/>
+        <CommandLineParams Value="--upgrade"/>
       </local>
     </RunParams>
-    <Units Count="35">
+    <Units Count="45">
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="171"/>
-        <CursorPos X="57" Y="189"/>
-        <UsageCount Value="130"/>
+        <TopLine Value="124"/>
+        <CursorPos X="26" Y="81"/>
+        <UsageCount Value="144"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-base\src\custapp.pp"/>
         <UnitName Value="CustApp"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="61"/>
-        <CursorPos X="14" Y="76"/>
+        <TopLine Value="46"/>
+        <CursorPos X="14" Y="62"/>
         <UsageCount Value="22"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
         <UnitName Value="PythonEngine"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="3048"/>
-        <CursorPos X="27" Y="3063"/>
-        <UsageCount Value="31"/>
+        <TopLine Value="1"/>
+        <CursorPos X="35" Y="10"/>
+        <UsageCount Value="30"/>
       </Unit2>
       <Unit3>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\objpas\sysutils\osutilsh.inc"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="18"/>
-        <CursorPos X="10" Y="18"/>
-        <UsageCount Value="30"/>
+        <TopLine Value="1"/>
+        <CursorPos X="14" Y="3"/>
+        <UsageCount Value="32"/>
       </Unit3>
       <Unit4>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\win\sysutils.pp"/>
@@ -80,7 +79,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1070"/>
         <CursorPos X="3" Y="1072"/>
-        <UsageCount Value="30"/>
+        <UsageCount Value="29"/>
       </Unit4>
       <Unit5>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-web\src\base\fphttpclient.pp"/>
@@ -88,15 +87,15 @@
         <WindowIndex Value="0"/>
         <TopLine Value="124"/>
         <CursorPos X="16" Y="132"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="21"/>
       </Unit5>
       <Unit6>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\winunits-base\src\wininet.pp"/>
         <UnitName Value="wininet"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="2375"/>
-        <CursorPos X="12" Y="2390"/>
-        <UsageCount Value="22"/>
+        <TopLine Value="835"/>
+        <CursorPos X="6" Y="850"/>
+        <UsageCount Value="21"/>
       </Unit6>
       <Unit7>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\paszlib\src\zinflate.pas"/>
@@ -104,7 +103,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="20"/>
       </Unit7>
       <Unit8>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\paszlib\src\ziputils.pas"/>
@@ -112,7 +111,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="9"/>
       </Unit8>
       <Unit9>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\paszlib\src\zip.pas"/>
@@ -120,7 +119,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="124"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="9"/>
       </Unit9>
       <Unit10>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\paszlib\src\unzip.pas"/>
@@ -128,14 +127,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="25" Y="89"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="20"/>
       </Unit10>
       <Unit11>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\paszlib\src\zipper.pp"/>
         <UnitName Value="zipper"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="359"/>
-        <CursorPos X="11" Y="381"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="21"/>
       </Unit11>
       <Unit12>
@@ -143,58 +142,52 @@
         <WindowIndex Value="0"/>
         <TopLine Value="5135"/>
         <CursorPos X="11" Y="5162"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="19"/>
       </Unit12>
       <Unit13>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\objpas\objpas.pp"/>
         <UnitName Value="objpas"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="76"/>
         <CursorPos X="15" Y="91"/>
-        <UsageCount Value="37"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="39"/>
       </Unit13>
       <Unit14>
         <Filename Value="C:\lazarus\lcl\fileutil.pas"/>
         <UnitName Value="FileUtil"/>
-        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="71"/>
-        <CursorPos X="10" Y="86"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="36"/>
-        <Loaded Value="True"/>
       </Unit14>
       <Unit15>
         <Filename Value="C:\lazarus\lcl\include\fileutil.inc"/>
-        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="986"/>
         <CursorPos X="33" Y="996"/>
         <UsageCount Value="29"/>
-        <Loaded Value="True"/>
       </Unit15>
       <Unit16>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\objpas\sysutils\osutil.inc"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="90"/>
-        <CursorPos X="3" Y="93"/>
-        <UsageCount Value="12"/>
+        <TopLine Value="1"/>
+        <CursorPos X="3" Y="199"/>
+        <UsageCount Value="14"/>
       </Unit16>
       <Unit17>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-registry\src\registry.pp"/>
         <UnitName Value="registry"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="413"/>
-        <CursorPos X="31" Y="436"/>
-        <UsageCount Value="5"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="9"/>
       </Unit17>
       <Unit18>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-registry\src\regini.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="61"/>
         <CursorPos X="20" Y="68"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="11"/>
       </Unit18>
       <Unit19>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\win32\windows.pp"/>
@@ -202,14 +195,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="38"/>
         <CursorPos X="1" Y="68"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="11"/>
       </Unit19>
       <Unit20>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\objpas\sysutils\filutilh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="81"/>
         <CursorPos X="10" Y="101"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="3"/>
       </Unit20>
       <Unit21>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\sqlite\src\sqlite3.pp"/>
@@ -217,14 +210,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="9" Y="3"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="3"/>
       </Unit21>
       <Unit22>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\sqlite\src\sqlite3.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="232"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="3"/>
       </Unit22>
       <Unit23>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\sqlite\src\sqlite3db.pas"/>
@@ -232,7 +225,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="127"/>
         <CursorPos X="1" Y="6"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="3"/>
       </Unit23>
       <Unit24>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\sqlite\src\sqlite3dyn.pp"/>
@@ -240,7 +233,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="3"/>
       </Unit24>
       <Unit25>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-db\src\sqlite\sqlite3ds.pas"/>
@@ -248,7 +241,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="37"/>
         <CursorPos X="35" Y="46"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="3"/>
       </Unit25>
       <Unit26>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-db\src\sqlite\customsqliteds.pas"/>
@@ -256,7 +249,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="247"/>
         <CursorPos X="33" Y="248"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="3"/>
       </Unit26>
       <Unit27>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-db\src\sqldb\sqlite\sqlite3conn.pp"/>
@@ -264,189 +257,247 @@
         <WindowIndex Value="0"/>
         <TopLine Value="31"/>
         <CursorPos X="17" Y="37"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="3"/>
       </Unit27>
       <Unit28>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\objpas\classes\classesh.inc"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="777"/>
-        <CursorPos X="14" Y="792"/>
-        <UsageCount Value="5"/>
+        <TopLine Value="7"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
       </Unit28>
       <Unit29>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\objpas\classes\streams.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="199"/>
         <CursorPos X="7" Y="208"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
       </Unit29>
       <Unit30>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\objpas\sysutils\finah.inc"/>
-        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="15"/>
-        <CursorPos X="10" Y="24"/>
-        <UsageCount Value="25"/>
-        <Loaded Value="True"/>
+        <CursorPos X="43" Y="27"/>
+        <UsageCount Value="27"/>
       </Unit30>
       <Unit31>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\inc\systemh.inc"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1057"/>
         <CursorPos X="11" Y="1072"/>
         <UsageCount Value="24"/>
-        <Loaded Value="True"/>
       </Unit31>
       <Unit32>
         <Filename Value="C:\lazarus\lcl\include\winfileutil.inc"/>
-        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="133"/>
         <CursorPos X="19" Y="146"/>
         <UsageCount Value="24"/>
-        <Loaded Value="True"/>
       </Unit32>
       <Unit33>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\win\wininc\unifun.inc"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="59"/>
         <CursorPos X="10" Y="74"/>
         <UsageCount Value="24"/>
-        <Loaded Value="True"/>
       </Unit33>
       <Unit34>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\inc\ustringh.inc"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="98"/>
         <CursorPos X="10" Y="114"/>
         <UsageCount Value="23"/>
-        <Loaded Value="True"/>
       </Unit34>
+      <Unit35>
+        <Filename Value="..\..\proxyshapers\uVisProxyShapers.pas"/>
+        <UnitName Value="uVisProxyShapers"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="25"/>
+        <CursorPos X="21" Y="37"/>
+        <UsageCount Value="9"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="waptcommon.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="waptcommon"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="208"/>
+        <CursorPos X="30" Y="225"/>
+        <UsageCount Value="27"/>
+        <Loaded Value="True"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-base\src\win\fileinfo.pp"/>
+        <UnitName Value="fileinfo"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="133"/>
+        <CursorPos X="1" Y="76"/>
+        <UsageCount Value="9"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="D:\vcl\vcld6\RemoteDroitsRO.pas"/>
+        <UnitName Value="RemoteDroitsRO"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="543"/>
+        <CursorPos X="12" Y="545"/>
+        <UsageCount Value="9"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\objpas\strutils.pp"/>
+        <UnitName Value="strutils"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="55"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="12"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\objpas\sysutils\fina.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="219"/>
+        <CursorPos X="3" Y="224"/>
+        <UsageCount Value="12"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\inc\varianth.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="46"/>
+        <CursorPos X="4" Y="61"/>
+        <UsageCount Value="11"/>
+      </Unit41>
+      <Unit42>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\win32\system.pp"/>
+        <UnitName Value="System"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="23"/>
+        <CursorPos X="2" Y="38"/>
+        <UsageCount Value="10"/>
+      </Unit42>
+      <Unit43>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\objpas\sysutils\sysstrh.inc"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="209"/>
+        <CursorPos X="10" Y="224"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit43>
+      <Unit44>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\objpas\sysutils\sysstr.inc"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="2598"/>
+        <CursorPos X="27" Y="2622"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit44>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="26" HistoryIndex="25">
       <Position1>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="45" Column="23" TopLine="30"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="207" Column="1" TopLine="192"/>
       </Position1>
       <Position2>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="190" Column="14" TopLine="174"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="208" Column="1" TopLine="192"/>
       </Position2>
       <Position3>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="39" Column="26" TopLine="36"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="210" Column="1" TopLine="192"/>
       </Position3>
       <Position4>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="45" Column="1" TopLine="36"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="213" Column="1" TopLine="201"/>
       </Position4>
       <Position5>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="46" Column="1" TopLine="36"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="216" Column="1" TopLine="201"/>
       </Position5>
       <Position6>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="48" Column="1" TopLine="36"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="217" Column="1" TopLine="201"/>
       </Position6>
       <Position7>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="49" Column="1" TopLine="36"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="218" Column="1" TopLine="201"/>
       </Position7>
       <Position8>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="51" Column="1" TopLine="36"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="219" Column="1" TopLine="201"/>
       </Position8>
       <Position9>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="52" Column="1" TopLine="36"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="220" Column="1" TopLine="201"/>
       </Position9>
       <Position10>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="54" Column="1" TopLine="36"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="222" Column="1" TopLine="201"/>
       </Position10>
       <Position11>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="48" Column="1" TopLine="36"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="223" Column="1" TopLine="201"/>
       </Position11>
       <Position12>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="49" Column="1" TopLine="36"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="224" Column="1" TopLine="201"/>
       </Position12>
       <Position13>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="51" Column="1" TopLine="36"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="227" Column="1" TopLine="208"/>
       </Position13>
       <Position14>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="52" Column="1" TopLine="36"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="229" Column="1" TopLine="208"/>
       </Position14>
       <Position15>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="54" Column="1" TopLine="36"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="227" Column="1" TopLine="208"/>
       </Position15>
       <Position16>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="48" Column="1" TopLine="36"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="229" Column="1" TopLine="208"/>
       </Position16>
       <Position17>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="49" Column="1" TopLine="36"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="227" Column="1" TopLine="208"/>
       </Position17>
       <Position18>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="51" Column="1" TopLine="36"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="229" Column="1" TopLine="208"/>
       </Position18>
       <Position19>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="52" Column="1" TopLine="36"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="231" Column="1" TopLine="208"/>
       </Position19>
       <Position20>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="54" Column="1" TopLine="36"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="232" Column="1" TopLine="208"/>
       </Position20>
       <Position21>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="48" Column="1" TopLine="36"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="234" Column="20" TopLine="220"/>
       </Position21>
       <Position22>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="49" Column="1" TopLine="36"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="196" Column="1" TopLine="181"/>
       </Position22>
       <Position23>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="51" Column="1" TopLine="36"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="244" Column="1" TopLine="190"/>
       </Position23>
       <Position24>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="58" Column="1" TopLine="36"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="199" Column="1" TopLine="190"/>
       </Position24>
       <Position25>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="61" Column="1" TopLine="36"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="200" Column="26" TopLine="190"/>
       </Position25>
       <Position26>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="63" Column="1" TopLine="38"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="202" Column="29" TopLine="178"/>
       </Position26>
-      <Position27>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="201" Column="1" TopLine="186"/>
-      </Position27>
-      <Position28>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="190" Column="14" TopLine="186"/>
-      </Position28>
-      <Position29>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="102" Column="39" TopLine="93"/>
-      </Position29>
-      <Position30>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="27" Column="13" TopLine="22"/>
-      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -467,6 +518,16 @@
     </Other>
   </CompilerOptions>
   <Debugging>
+    <BreakPoints Count="2">
+      <Item1>
+        <Source Value="C:\lazarus\fpc\2.6.0\source\packages\paszlib\src\zipper.pp"/>
+        <Line Value="1757"/>
+      </Item1>
+      <Item2>
+        <Source Value="C:\lazarus\fpc\2.6.0\source\packages\paszlib\src\zipper.pp"/>
+        <Line Value="1853"/>
+      </Item2>
+    </BreakPoints>
     <Exceptions Count="3">
       <Item1>
         <Name Value="EAbort"/>

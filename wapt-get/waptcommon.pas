@@ -1,0 +1,341 @@
+unit waptcommon;
+
+{$mode objfpc}{$H+}
+interface
+  uses
+    Classes, SysUtils,ShellApi,windows,
+     WinInet,zipper,FileUtil,registry,strutils,Variants;
+
+  Function  Wget(const fileURL, DestFileName: String): boolean;
+  Procedure UnzipFile(ZipFilePath,OutputPath:String);
+  Procedure AddToUserPath(APath:String);
+  procedure AddToSystemPath(APath:String);
+  procedure UpdateCurrentApplication(fromURL:String);
+  function  ApplicationVersion(FileName:String=''): String;
+
+  function TISGetComputerName : String;
+  function TISGetUserName : String;
+
+  Const
+    SECURITY_NT_AUTHORITY: TSIDIdentifierAuthority = (Value: (0, 0, 0, 0, 0, 5));
+    SECURITY_BUILTIN_DOMAIN_RID = $00000020;
+    DOMAIN_ALIAS_RID_ADMINS     = $00000220;
+    DOMAIN_ALIAS_RID_USERS      = $00000221;
+    DOMAIN_ALIAS_RID_GUESTS     = $00000222;
+    DOMAIN_ALIAS_RID_POWER_USERS= $00000223;
+
+  function UserInGroup(Group :DWORD) : Boolean;
+
+
+implementation
+
+function wget(const fileURL, DestFileName: String): boolean;
+ const
+   BufferSize = 1024;
+ var
+   hSession, hURL: HInternet;
+   Buffer: array[1..BufferSize] of Byte;
+   BufferLen: DWORD;
+   f: File;
+   sAppName: string;
+   Size: Integer;
+   dwindex,dwcodelen,dwread,dwNumber: cardinal;
+   dwcode : array[1..20] of char;
+   res    : pchar;
+   Str    : pchar;
+
+begin
+  result := false;
+  sAppName := ExtractFileName(ParamStr(0)) ;
+  hSession := InternetOpen(PChar(sAppName), INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0) ;
+  try
+    hURL := InternetOpenURL(hSession, PChar(fileURL), nil, 0, INTERNET_FLAG_RELOAD+INTERNET_FLAG_PRAGMA_NOCACHE, 0) ;
+    if assigned(hURL) then
+    try
+      dwIndex  := 0;
+      dwCodeLen := 10;
+      HttpQueryInfo(hURL, HTTP_QUERY_STATUS_CODE, @dwcode, dwcodeLen, dwIndex);
+      res := pchar(@dwcode);
+      dwNumber := sizeof(Buffer)-1;
+      if (res ='200') or (res ='302') then
+      begin
+        Size:=0;
+        AssignFile(f, utf8Toansi(DestFileName)) ;
+        Rewrite(f,1) ;
+        repeat
+          BufferLen:= 0;
+          if InternetReadFile(hURL, @Buffer, SizeOf(Buffer), BufferLen) then
+          begin
+            inc(Size,BufferLen);
+            BlockWrite(f, Buffer, BufferLen)
+          end;
+        until BufferLen = 0;
+        CloseFile(f) ;
+        result := (Size>0);
+      end
+      else
+        raise Exception.Create('Unable to download: "'+fileURL+'", HTTP Status:'+res);
+    finally
+      InternetCloseHandle(hURL)
+    end
+  finally
+    InternetCloseHandle(hSession)
+  end
+end;
+
+function CheckTokenMembership(TokenHandle: THandle; SidToCheck: PSID; var IsMember: BOOL): BOOL; stdcall; external advapi32;
+
+function UserInGroup(Group :DWORD) : Boolean;
+var
+  pIdentifierAuthority :TSIDIdentifierAuthority;
+  pSid : Windows.PSID;
+  IsMember    : BOOL;
+begin
+  pIdentifierAuthority := SECURITY_NT_AUTHORITY;
+  Result := AllocateAndInitializeSid(pIdentifierAuthority,2, SECURITY_BUILTIN_DOMAIN_RID, Group, 0, 0, 0, 0, 0, 0, pSid);
+  try
+    if Result then
+      if not CheckTokenMembership(0, pSid, IsMember) then //passing 0 means which the function will be use the token of the calling thread.
+         Result:= False
+      else
+         Result:=IsMember;
+  finally
+     FreeSid(pSid);
+  end;
+end;
+
+//Unzip file to path, and return list of files as a string
+Procedure UnzipFile(ZipFilePath,OutputPath:String);
+var
+  UnZipper: TUnZipper;
+begin
+  UnZipper := TUnZipper.Create;
+  try
+    UnZipper.FileName := utf8toAnsi(ZipFilePath);
+    UnZipper.OutputPath := OutputPath;
+    UnZipper.Examine;
+    UnZipper.UnZipAllFiles;
+  finally
+    UnZipper.Free;
+  end;
+end;
+
+procedure AddToUserPath(APath:String);
+var
+  r:TRegistry;
+  SystemPath : String;
+begin
+  with TRegistry.Create do
+  try
+    //RootKey:=HKEY_LOCAL_MACHINE;
+    OpenKey('Environment',False);
+    SystemPath:=ReadString('PATH');
+    if pos(LowerCase(APath),LowerCase(SystemPath))=0 then
+    begin
+      SystemPath:=SystemPath+';'+APath;
+      WriteString('PATH',SystemPath);
+    end;
+  finally
+    Free;
+  end;
+end;
+
+procedure AddToSystemPath(APath:String);
+var
+  r:TRegistry;
+  SystemPath : String;
+begin
+  with TRegistry.Create do
+  try
+    RootKey:=HKEY_LOCAL_MACHINE;
+    OpenKey('SYSTEM\CurrentControlSet\Control\Session Manager\Environment',False);
+    SystemPath:=ReadString('PATH');
+    if pos(LowerCase(APath),LowerCase(SystemPath))=0 then
+    begin
+      SystemPath:=SystemPath+';'+APath;
+      WriteString('PATH',SystemPath);
+    end;
+  finally
+    Free;
+  end;
+end;
+
+procedure UpdateCurrentApplication(fromURL:String);
+var
+  bat: TextFile;
+  tempdir,tempfn,updateBatch,fn,zipfn,version,destdir : String;
+  files:TStringList;
+  UnZipper: TUnZipper;
+  i:integer;
+  ze : TZipFileEntry;
+begin
+  Files := TStringList.Create;
+  try
+    Writeln('Updating current application in place...');
+    tempdir := GetTempFilename(GetTempDir,'waptget');
+    fn :=ExtractFileName(ParamStr(0));
+    destdir := ExtractFileDir(ParamStr(0));
+
+    tempfn := tempdir+'\'+fn;
+    mkdir(tempdir);
+    Writeln('Getting new file from: '+fromURL+' into '+tempfn);
+    try
+      wget(fromURL,tempfn);
+      version := ApplicationVersion(tempfn);
+      if version='' then
+        raise Exception.create('no version information in downloaded file.');
+      writeln(' got '+fn+' version: '+version);
+      Files.Add(fn);
+    except
+      //trying to get a zip file instead (exe files blocked by proxy ...)
+      zipfn:=tempdir+'\'+ChangeFileExt(fn,'.zip');
+      wget(ChangeFileExt(fromURL,'.zip'),zipfn);
+      Writeln('  unzipping file '+zipfn);
+      UnZipper := TUnZipper.Create;
+      try
+        UnZipper.FileName := utf8toAnsi(zipfn);
+        UnZipper.OutputPath := tempdir;
+        UnZipper.Examine;
+        UnZipper.UnZipAllFiles;
+        for i := 0 to UnZipper.Entries.count-1 do
+          if not UnZipper.Entries[i].IsDirectory then
+            Files.Add(StringReplace(UnZipper.Entries[i].DiskFileName,'/','\',[rfReplaceAll]));
+      finally
+        UnZipper.Free;
+      end;
+
+      version := ApplicationVersion(tempfn);
+      if version='' then
+        raise Exception.create('no version information in downloaded exe file.');
+      writeln(' got '+fn+' version: '+version);
+    end;
+
+    if FileExists(tempfn) and (FileSize(tempfn)>0) then
+    begin
+      // small batch to replace current running application
+      updatebatch := tempdir + '\update.bat';
+      AssignFile(bat,updateBatch);
+      Rewrite(bat);
+      try
+        Writeln(' Creating update batch file '+updateBatch);
+        // wait for program to terminate..
+        Writeln(bat,'timeout /T 2');
+        Writeln(bat,'taskkill /im '+fn+' /f');
+        for i:= 0 to files.Count-1 do
+        begin
+          // be sure to have target directory
+          if not DirectoryExists(ExtractFileDir(IncludeTrailingPathDelimiter(destdir)+files[i])) then
+            MkDir(ExtractFileDir(IncludeTrailingPathDelimiter(destdir)+files[i]));
+          writeln(bat,'copy "'+IncludeTrailingPathDelimiter(tempdir)+files[i]+'" "'+IncludeTrailingPathDelimiter(destdir)+files[i]+'"');
+        end;
+        writeln(bat,'cd ..');
+        writeln(bat,'rmdir /s /q "'+tempdir+'"');
+      finally
+        CloseFile(bat)
+      end;
+      Writeln(' Launching update batch file '+updateBatch);
+      ShellExecute(
+        0,
+        'open',
+        PChar( SysUtils.GetEnvironmentVariable('ComSpec')),
+        PChar('/C '+ updatebatch),
+        PChar(TempDir),
+        SW_HIDE);
+      ExitProcess(0);
+    end;
+
+  finally
+    Files.Free;
+  end;
+end;
+
+
+function TISGetUserName : String;
+var
+	 pcUser   : PChar;
+	 dwUSize : DWORD;
+begin
+	 dwUSize := 21; // user name can be up to 20 characters
+	 GetMem( pcUser, dwUSize ); // allocate memory for the string
+	 try
+			if Windows.GetUserName( pcUser, dwUSize ) then
+				 Result := Uppercase(pcUser)
+	 finally
+			FreeMem( pcUser ); // now free the memory allocated for the string
+	 end;
+end;
+
+function TISGetComputerName : String;
+var
+	 pcComputer : PChar;
+	 dwCSize    : DWORD;
+begin
+	 dwCSize := MAX_COMPUTERNAME_LENGTH + 1;
+	 GetMem( pcComputer, dwCSize ); // allocate memory for the string
+	 try
+			if Windows.GetComputerName( pcComputer, dwCSize ) then
+				 Result := pcComputer;
+	 finally
+			FreeMem( pcComputer ); // now free the memory allocated for the string
+	 end;
+end;
+
+ type
+	PFixedFileInfo = ^TFixedFileInfo;
+	TFixedFileInfo = record
+		 dwSignature       : DWORD;
+		 dwStrucVersion    : DWORD;
+		 wFileVersionMS    : WORD;  // Minor Version
+		 wFileVersionLS    : WORD;  // Major Version
+		 wProductVersionMS : WORD;  // Build Number
+		 wProductVersionLS : WORD;  // Release Version
+		 dwFileFlagsMask   : DWORD;
+		 dwFileFlags       : DWORD;
+		 dwFileOS          : DWORD;
+		 dwFileType        : DWORD;
+		 dwFileSubtype     : DWORD;
+		 dwFileDateMS      : DWORD;
+		 dwFileDateLS      : DWORD;
+	end; // TFixedFileInfo
+
+function ApplicationVersion(Filename:String=''): String;
+var
+	dwHandle, dwVersionSize : DWORD;
+	strSubBlock             : String;
+	pTemp                   : Pointer;
+	pData                   : Pointer;
+begin
+  Result:='';
+	if Filename='' then
+    FileName:=ParamStr(0);
+	 strSubBlock := '\';
+
+	 // get version information values
+	 dwVersionSize := GetFileVersionInfoSize( PChar( FileName ), // pointer to filename string
+																						dwHandle );        // pointer to variable to receive zero
+
+	 // if GetFileVersionInfoSize is successful
+	 if dwVersionSize <> 0 then
+	 begin
+			GetMem( pTemp, dwVersionSize );
+			try
+				 if GetFileVersionInfo( PChar( FileName ),             // pointer to filename string
+																dwHandle,                      // ignored
+																dwVersionSize,                 // size of buffer
+																pTemp ) then                   // pointer to buffer to receive file-version info.
+
+						if VerQueryValue( pTemp,                           // pBlock     - address of buffer for version resource
+															PChar( strSubBlock ),            // lpSubBlock - address of value to retrieve
+															pData,                           // lplpBuffer - address of buffer for version pointer
+															dwVersionSize ) then             // puLen      - address of version-value length buffer
+							 with PFixedFileInfo( pData )^ do
+								Result:=IntToSTr(wFileVersionLS)+'.'+IntToSTr(wFileVersionMS)+
+											'.'+IntToStr(wProductVersionLS);
+			finally
+				 FreeMem( pTemp );
+			end; // try
+	 end; // if dwVersionSize
+end;
+
+end.
+
