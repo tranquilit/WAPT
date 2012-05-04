@@ -35,10 +35,10 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="--upgrade"/>
+        <CommandLineParams Value="--version"/>
       </local>
     </RunParams>
-    <Units Count="45">
+    <Units Count="46">
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -46,9 +46,9 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="124"/>
-        <CursorPos X="26" Y="81"/>
-        <UsageCount Value="145"/>
+        <TopLine Value="1"/>
+        <CursorPos X="23" Y="14"/>
+        <UsageCount Value="146"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -321,12 +321,10 @@
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="46"/>
+        <TopLine Value="133"/>
         <CursorPos X="142" Y="52"/>
-        <UsageCount Value="28"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="29"/>
       </Unit36>
       <Unit37>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-base\src\win\fileinfo.pp"/>
@@ -376,128 +374,32 @@
       </Unit42>
       <Unit43>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\objpas\sysutils\sysstrh.inc"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="209"/>
         <CursorPos X="10" Y="224"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit43>
       <Unit44>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\objpas\sysutils\sysstr.inc"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2598"/>
         <CursorPos X="27" Y="2622"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit44>
+      <Unit45>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\winunits-jedi\src\jwawintype.pas"/>
+        <UnitName Value="JwaWinType"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="55"/>
+        <CursorPos X="26" Y="62"/>
+        <UsageCount Value="10"/>
+      </Unit45>
     </Units>
-    <JumpHistory Count="26" HistoryIndex="25">
+    <JumpHistory Count="1" HistoryIndex="0">
       <Position1>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="207" Column="1" TopLine="192"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="11" Column="43" TopLine="1"/>
       </Position1>
-      <Position2>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="208" Column="1" TopLine="192"/>
-      </Position2>
-      <Position3>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="210" Column="1" TopLine="192"/>
-      </Position3>
-      <Position4>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="213" Column="1" TopLine="201"/>
-      </Position4>
-      <Position5>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="216" Column="1" TopLine="201"/>
-      </Position5>
-      <Position6>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="217" Column="1" TopLine="201"/>
-      </Position6>
-      <Position7>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="218" Column="1" TopLine="201"/>
-      </Position7>
-      <Position8>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="219" Column="1" TopLine="201"/>
-      </Position8>
-      <Position9>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="220" Column="1" TopLine="201"/>
-      </Position9>
-      <Position10>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="222" Column="1" TopLine="201"/>
-      </Position10>
-      <Position11>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="223" Column="1" TopLine="201"/>
-      </Position11>
-      <Position12>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="224" Column="1" TopLine="201"/>
-      </Position12>
-      <Position13>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="227" Column="1" TopLine="208"/>
-      </Position13>
-      <Position14>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="229" Column="1" TopLine="208"/>
-      </Position14>
-      <Position15>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="227" Column="1" TopLine="208"/>
-      </Position15>
-      <Position16>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="229" Column="1" TopLine="208"/>
-      </Position16>
-      <Position17>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="227" Column="1" TopLine="208"/>
-      </Position17>
-      <Position18>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="229" Column="1" TopLine="208"/>
-      </Position18>
-      <Position19>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="231" Column="1" TopLine="208"/>
-      </Position19>
-      <Position20>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="232" Column="1" TopLine="208"/>
-      </Position20>
-      <Position21>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="234" Column="20" TopLine="220"/>
-      </Position21>
-      <Position22>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="196" Column="1" TopLine="181"/>
-      </Position22>
-      <Position23>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="244" Column="1" TopLine="190"/>
-      </Position23>
-      <Position24>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="199" Column="1" TopLine="190"/>
-      </Position24>
-      <Position25>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="200" Column="26" TopLine="190"/>
-      </Position25>
-      <Position26>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="202" Column="29" TopLine="178"/>
-      </Position26>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

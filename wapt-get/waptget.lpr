@@ -57,6 +57,9 @@ begin
   if HasOption('g','upgrade') then
     UpdateCurrentApplication(repo+'/'+ExtractFileName(paramstr(0)));
 
+  if HasOption('v','version') then
+    writeln('Win32 Exe wrapper: '+ApplicationName+' '+ApplicationVersion);
+
   if HasOption('s','setup') or (not DirectoryExists(InstallPath)) then
   begin
     if not UserInGroup(DOMAIN_ALIAS_RID_ADMINS) then
