@@ -15,6 +15,7 @@ from common import WaptDB
 from common import Package_Entry
 import dns.resolver
 import pprint
+import socket
 
 usage="""\
 %prog -c configfile action
@@ -36,6 +37,21 @@ parser.add_option("-d","--dry-run",    dest="dry_run",    default=False, action=
 
 (options,args)=parser.parse_args()
 
+# setup Logger
+logger = logging.getLogger('wapt-get')
+config_file =options.config
+loglevel = options.loglevel
+
+hdlr = logging.StreamHandler()
+hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+logger.addHandler(hdlr)
+
+# set loglevel
+if loglevel in ('debug','warning','info','error','critical'):
+  numeric_level = getattr(logging, loglevel.upper(), None)
+  if not isinstance(numeric_level, int):
+    raise ValueError('Invalid log level: %s' % loglevel)
+  logger.setLevel(numeric_level)
 
 if len(args) == 0:
   print "ERROR : You must provide one action to perform"
@@ -78,23 +94,33 @@ def find_wapt_server(configparser):
     if configparser.get('global','repo_url'):
         servers.append(configparser.get('global','repo_url'))
     # find by dns SRV _wapt._tcp
-    answers = dns.resolver.query('_wapt._tcp','SRV')
-    for a in answers:
-        if a.port == 80:
-            servers.append('http://%s/wapt' % (a.target.canonicalize().to_text()[0:-1]))
-        else:
-            servers.append('http://%s:%i/wapt' % (a.target.canonicalize().to_text()[0:-1],a.port))
+    try:
+        answers = dns.resolver.query('_wapt._tcp','SRV')
+        for a in answers:
+            if a.port == 80:
+                servers.append('http://%s/wapt' % (a.target.canonicalize().to_text()[0:-1]))
+            else:
+                servers.append('http://%s:%i/wapt' % (a.target.canonicalize().to_text()[0:-1],a.port))
+    except dns.resolver.NXDOMAIN:
+        pass
     # find by dns CNAME
-    answers = dns.resolver.query('wapt','CNAME')
-    for a in answers:
-        servers.append('http://%s/wapt' % (a.target.canonicalize().to_text()[0:-1]))
+    try:
+        answers = dns.resolver.query('wapt','CNAME')
+        for a in answers:
+            servers.append('http://%s/wapt' % (a.target.canonicalize().to_text()[0:-1]))
+    except dns.resolver.NXDOMAIN:
+        pass
     # hardcoded wapt
+    servers.append('http://wapt/tiswapt')
     servers.append('http://wapt/wapt')
     for s in servers:
         try:
-            urllib2.urlopen(s)
+            logger.debug('Trying %s' % s)
+            urllib2.urlopen(s+'/')
+            logger.debug('OK')
             return s
         except:
+            logger.debug('Not available')
             pass
 
     return None
@@ -114,7 +140,11 @@ class wapt:
     print ("installing package " + package)
 
     waptdb = WaptDB(dbpath=self.dbpath)
-    mydict= waptdb.query("select * from wapt_repo where Package=?",(package,))[0]
+    q = waptdb.query("select * from wapt_repo where Package=?",(package,))
+    if not q:
+        print "Package %s not found in local DB, try update" % package
+        sys.exit(1)
+    mydict = q[0]
     pprint.pprint (mydict)
     packagename = mydict['Filename'].strip('./')
     download_url = mydict['repo_url'] + '/' + packagename
@@ -147,7 +177,7 @@ class wapt:
 
   def update(self):
     print self.wapttempdir
-    packageListFile = zipfile.ZipFile(cStringIO.StringIO(urllib2.urlopen(self.wapt_repourl + 'Packages').read())).read(name='Packages').splitlines()
+    packageListFile = zipfile.ZipFile(cStringIO.StringIO(urllib2.urlopen(self.wapt_repourl + '/Packages').read())).read(name='Packages').splitlines()
 
     waptdb = WaptDB(dbpath=self.dbpath)
 
@@ -172,22 +202,6 @@ def main(argv):
   if action=='install':
     packagename=args[1]
 
-  config_file =options.config
-  loglevel = options.loglevel
-
-  # setup Logger
-  logger = logging.getLogger('wapt-get')
-  hdlr = logging.StreamHandler()
-  hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
-  logger.addHandler(hdlr)
-
-  # set loglevel
-  if loglevel in ('debug','warning','info','error','critical'):
-    numeric_level = getattr(logging, loglevel.upper(), None)
-  if not isinstance(numeric_level, int):
-    raise ValueError('Invalid log level: %s' % loglevel)
-  logger.setLevel(numeric_level)
-
   # Config file
   if not os.path.isfile(config_file):
     logger.error("Error : could not find file : " + config_file + ", please check the path")
@@ -198,6 +212,10 @@ def main(argv):
   cp.read(config_file)
 
   wapt_repourl = find_wapt_server(cp)
+  if not wapt_repourl:
+    print "No valid accessible repository found... aborting"
+    sys.exit(2)
+  print "Using wapt Repository %s" % wapt_repourl
   wapt_base_dir = cp.get('global','base_dir')
 
   log_dir = os.path.join(wapt_base_dir,'log')
@@ -238,4 +256,5 @@ def main(argv):
 if __name__ == "__main__":
   print sys.path
   main(sys.argv[1:])
+
 
