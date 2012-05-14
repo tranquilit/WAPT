@@ -10,7 +10,7 @@ interface
   Procedure UnzipFile(ZipFilePath,OutputPath:String);
   Procedure AddToUserPath(APath:String);
   procedure AddToSystemPath(APath:String);
-  procedure UpdateCurrentApplication(fromURL:String);
+  procedure UpdateCurrentApplication(fromURL:String;Restart:Boolean);
   function  ApplicationVersion(FileName:String=''): String;
 
   function TISGetComputerName : String;
@@ -25,6 +25,11 @@ interface
     DOMAIN_ALIAS_RID_POWER_USERS= $00000223;
 
   function UserInGroup(Group :DWORD) : Boolean;
+
+  function ProcessExists(ExeFileName: string): boolean;
+  function KillTask(ExeFileName: string): integer;
+  function CheckOpenPort(dwPort : Word; ipAddressStr:AnsiString;timeout:integer=5):boolean;
+  function GetIPFromHost(const HostName: string): string;
 
 
 implementation
@@ -160,7 +165,7 @@ begin
   end;
 end;
 
-procedure UpdateCurrentApplication(fromURL:String);
+procedure UpdateCurrentApplication(fromURL:String;restart:Boolean);
 var
   bat: TextFile;
   tempdir,tempfn,updateBatch,fn,zipfn,version,destdir : String;
@@ -230,6 +235,8 @@ begin
         end;
         writeln(bat,'cd ..');
         writeln(bat,'rmdir /s /q "'+tempdir+'"');
+        if restart then
+          writeln(bat,'start "'+ParamStr(0)+'"');
       finally
         CloseFile(bat)
       end;
@@ -336,6 +343,135 @@ begin
 			end; // try
 	 end; // if dwVersionSize
 end;
+
+
+function ProcessExists(ExeFileName: string): boolean;
+{description checks if the process is running. Adapted for freepascal from:
+URL: http://www.swissdelphicenter.ch/torry/showcode.php?id=2554}
+var
+  ContinueLoop: BOOL;
+  FSnapshotHandle: THandle;
+  FProcessEntry32: TProcessEntry32;
+begin
+  FSnapshotHandle := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+  FProcessEntry32.dwSize := SizeOf(FProcessEntry32);
+  ContinueLoop := Process32First(FSnapshotHandle, FProcessEntry32);
+  Result := False;
+
+  while integer(ContinueLoop) <> 0 do
+  begin
+    if ((UpperCase(ExtractFileName(FProcessEntry32.szExeFile)) =
+      UpperCase(ExeFileName)) or (UpperCase(FProcessEntry32.szExeFile) =
+      UpperCase(ExeFileName))) then
+    begin
+      Result := True;
+    end;
+    ContinueLoop := Process32Next(FSnapshotHandle, FProcessEntry32);
+  end;
+  CloseHandle(FSnapshotHandle);
+end;
+
+function KillTask(ExeFileName: string): integer;
+const
+ PROCESS_TERMINATE=$0001;
+var
+ ContinueLoop: BOOL;
+ FSnapshotHandle: THandle;
+ FProcessEntry32: TProcessEntry32;
+begin
+ result := 0;
+
+ FSnapshotHandle := CreateToolhelp32Snapshot
+           (TH32CS_SNAPPROCESS, 0);
+ FProcessEntry32.dwSize := Sizeof(FProcessEntry32);
+ ContinueLoop := Process32First(FSnapshotHandle,
+                 FProcessEntry32);
+
+ while integer(ContinueLoop) <> 0 do
+ begin
+  if ((UpperCase(ExtractFileName(
+            FProcessEntry32.szExeFile)) =
+     UpperCase(ExeFileName)) or
+    (UpperCase(FProcessEntry32.szExeFile) =
+     UpperCase(ExeFileName))) then
+
+   Result := Integer(TerminateProcess(OpenProcess(
+            PROCESS_TERMINATE, BOOL(0),
+            FProcessEntry32.th32ProcessID), 0));
+
+  ContinueLoop := Process32Next(FSnapshotHandle,
+                 FProcessEntry32);
+ end;
+
+ CloseHandle(FSnapshotHandle);
+end;
+
+function PortTCP_IsOpen(dwPort : Word; ipAddressStr:AnsiString) : boolean;
+var
+  client : sockaddr_in;
+  sock   : Integer;
+
+  ret    : Integer;
+  wsdata : WSAData;
+begin
+ Result:=False;
+ ret := WSAStartup($0002, wsdata); //initiates use of the Winsock DLL
+  if ret<>0 then exit;
+  try
+    client.sin_family      := AF_INET;  //Set the protocol to use , in this case (IPv4)
+    client.sin_port        := htons(dwPort); //convert to TCP/IP network byte order (big-endian)
+    client.sin_addr.s_addr := inet_addr(PAnsiChar(ipAddressStr));  //convert to IN_ADDR  structure
+    sock  :=socket(AF_INET, SOCK_STREAM, 0);    //creates a socket
+    Result:=connect(sock,client,SizeOf(client))=0;  //establishes a connection to a specified socket
+  finally
+    WSACleanup;
+  end;
+end;
+
+function GetIPFromHost(const HostName: string): string;
+type
+  TaPInAddr = array[0..10] of PInAddr;
+  PaPInAddr = ^TaPInAddr;
+var
+  phe: PHostEnt;
+  pptr: PaPInAddr;
+  i: Integer;
+  GInitData: TWSAData;
+begin
+  WSAStartup($101, GInitData);
+  Result := '';
+  phe := GetHostByName(PChar(HostName));
+  if phe = nil then Exit;
+  pPtr := PaPInAddr(phe^.h_addr_list);
+  i := 0;
+  while pPtr^[i] <> nil do
+  begin
+    Result := inet_ntoa(pptr^[i]^);
+    Inc(i);
+  end;
+  WSACleanup;
+end;
+
+
+function CheckOpenPort(dwPort : Word; ipAddressStr:AnsiString;timeout:integer=5):boolean;
+var
+  St:TDateTime;
+  ip:String;
+begin
+  try
+    ip := GetIPFromHost(ipAddressStr);
+
+    Screen.cursor := crHourGlass;
+    St := Now;
+    While not PortTCP_IsOpen(dwPort,ip) and (Now-St<timeout/24/3600) do
+      Sleep(1000);
+    Result:=PortTCP_IsOpen(dwPort,ip);
+
+  finally
+    Screen.cursor := crDefault;
+  end;
+end;
+
 
 end.
 
