@@ -16,6 +16,8 @@ interface
   function TISGetComputerName : String;
   function TISGetUserName : String;
 
+  procedure Log(Msg:String);
+
   Const
     SECURITY_NT_AUTHORITY: TSIDIdentifierAuthority = (Value: (0, 0, 0, 0, 0, 5));
     SECURITY_BUILTIN_DOMAIN_RID = $00000020;
@@ -33,6 +35,8 @@ interface
 
 
 implementation
+
+uses Process,Unzip,winsock,JwaTlHelp32;
 
 function wget(const fileURL, DestFileName: String): boolean;
  const
@@ -176,26 +180,26 @@ var
 begin
   Files := TStringList.Create;
   try
-    Writeln('Updating current application in place...');
+    Log('Updating current application in place...');
     tempdir := GetTempFilename(GetTempDir,'waptget');
     fn :=ExtractFileName(ParamStr(0));
     destdir := ExtractFileDir(ParamStr(0));
 
     tempfn := tempdir+'\'+fn;
     mkdir(tempdir);
-    Writeln('Getting new file from: '+fromURL+' into '+tempfn);
+    Log('Getting new file from: '+fromURL+' into '+tempfn);
     try
       wget(fromURL,tempfn);
       version := ApplicationVersion(tempfn);
       if version='' then
         raise Exception.create('no version information in downloaded file.');
-      writeln(' got '+fn+' version: '+version);
+      Log(' got '+fn+' version: '+version);
       Files.Add(fn);
     except
       //trying to get a zip file instead (exe files blocked by proxy ...)
       zipfn:=tempdir+'\'+ChangeFileExt(fn,'.zip');
       wget(ChangeFileExt(fromURL,'.zip'),zipfn);
-      Writeln('  unzipping file '+zipfn);
+      Log('  unzipping file '+zipfn);
       UnZipper := TUnZipper.Create;
       try
         UnZipper.FileName := utf8toAnsi(zipfn);
@@ -212,7 +216,7 @@ begin
       version := ApplicationVersion(tempfn);
       if version='' then
         raise Exception.create('no version information in downloaded exe file.');
-      writeln(' got '+fn+' version: '+version);
+      Log(' got '+fn+' version: '+version);
     end;
 
     if FileExists(tempfn) and (FileSize(tempfn)>0) then
@@ -222,7 +226,7 @@ begin
       AssignFile(bat,updateBatch);
       Rewrite(bat);
       try
-        Writeln(' Creating update batch file '+updateBatch);
+        Log(' Creating update batch file '+updateBatch);
         // wait for program to terminate..
         Writeln(bat,'timeout /T 2');
         Writeln(bat,'taskkill /im '+fn+' /f');
@@ -231,16 +235,16 @@ begin
           // be sure to have target directory
           if not DirectoryExists(ExtractFileDir(IncludeTrailingPathDelimiter(destdir)+files[i])) then
             MkDir(ExtractFileDir(IncludeTrailingPathDelimiter(destdir)+files[i]));
-          writeln(bat,'copy "'+IncludeTrailingPathDelimiter(tempdir)+files[i]+'" "'+IncludeTrailingPathDelimiter(destdir)+files[i]+'"');
+          Writeln(bat,'copy "'+IncludeTrailingPathDelimiter(tempdir)+files[i]+'" "'+IncludeTrailingPathDelimiter(destdir)+files[i]+'"');
         end;
-        writeln(bat,'cd ..');
-        writeln(bat,'rmdir /s /q "'+tempdir+'"');
+        Writeln(bat,'cd ..');
         if restart then
-          writeln(bat,'start "'+ParamStr(0)+'"');
+          Writeln(bat,'start "" "'+ParamStr(0)+'"');
+        Writeln(bat,'rmdir /s /q "'+tempdir+'"');
       finally
         CloseFile(bat)
       end;
-      Writeln(' Launching update batch file '+updateBatch);
+      Log(' Launching update batch file '+updateBatch);
       ShellExecute(
         0,
         'open',
@@ -270,6 +274,12 @@ begin
 	 finally
 			FreeMem( pcUser ); // now free the memory allocated for the string
 	 end;
+end;
+
+procedure Log(Msg: String);
+begin
+  if IsConsole then
+    WriteLn(Msg);
 end;
 
 function TISGetComputerName : String;
@@ -458,18 +468,11 @@ var
   St:TDateTime;
   ip:String;
 begin
-  try
-    ip := GetIPFromHost(ipAddressStr);
-
-    Screen.cursor := crHourGlass;
-    St := Now;
-    While not PortTCP_IsOpen(dwPort,ip) and (Now-St<timeout/24/3600) do
-      Sleep(1000);
-    Result:=PortTCP_IsOpen(dwPort,ip);
-
-  finally
-    Screen.cursor := crDefault;
-  end;
+  ip := GetIPFromHost(ipAddressStr);
+  St := Now;
+  While not PortTCP_IsOpen(dwPort,ip) and (Now-St<timeout/24/3600) do
+    Sleep(1000);
+  Result:=PortTCP_IsOpen(dwPort,ip);
 end;
 
 
