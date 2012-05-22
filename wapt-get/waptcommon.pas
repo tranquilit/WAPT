@@ -6,6 +6,7 @@ interface
     Classes, SysUtils,ShellApi,windows,
      WinInet,zipper,FileUtil,registry,strutils,Variants;
 
+  Function  FindWaptRepo:String;
   Function  Wget(const fileURL, DestFileName: String): boolean;
   Procedure UnzipFile(ZipFilePath,OutputPath:String);
   Procedure AddToUserPath(APath:String);
@@ -17,7 +18,7 @@ interface
   function TISGetUserName : String;
 
   type LogLevel=(DEBUG, INFO, WARNING, ERROR, CRITICAL);
-  procedure Log(Msg:String;level:LogLevel=WARNING);
+  procedure Logger(Msg:String;level:LogLevel=WARNING);
 
   Const
     SECURITY_NT_AUTHORITY: TSIDIdentifierAuthority = (Value: (0, 0, 0, 0, 0, 5));
@@ -43,6 +44,11 @@ const
 implementation
 
 uses Process,Unzip,winsock,JwaTlHelp32;
+
+function FindWaptRepo: String;
+begin
+  result := 'http://srvinstallation.tranquil-it-systems.fr/wapt';
+end;
 
 function wget(const fileURL, DestFileName: String): boolean;
  const
@@ -186,26 +192,26 @@ var
 begin
   Files := TStringList.Create;
   try
-    Log('Updating current application in place...');
+    Logger('Updating current application in place...');
     tempdir := GetTempFilename(GetTempDir,'waptget');
     fn :=ExtractFileName(ParamStr(0));
     destdir := ExtractFileDir(ParamStr(0));
 
     tempfn := tempdir+'\'+fn;
     mkdir(tempdir);
-    Log('Getting new file from: '+fromURL+' into '+tempfn);
+    Logger('Getting new file from: '+fromURL+' into '+tempfn);
     try
       wget(fromURL,tempfn);
       version := ApplicationVersion(tempfn);
       if version='' then
         raise Exception.create('no version information in downloaded file.');
-      Log(' got '+fn+' version: '+version);
+      Logger(' got '+fn+' version: '+version);
       Files.Add(fn);
     except
       //trying to get a zip file instead (exe files blocked by proxy ...)
       zipfn:=tempdir+'\'+ChangeFileExt(fn,'.zip');
       wget(ChangeFileExt(fromURL,'.zip'),zipfn);
-      Log('  unzipping file '+zipfn);
+      Logger('  unzipping file '+zipfn);
       UnZipper := TUnZipper.Create;
       try
         UnZipper.FileName := utf8toAnsi(zipfn);
@@ -222,7 +228,7 @@ begin
       version := ApplicationVersion(tempfn);
       if version='' then
         raise Exception.create('no version information in downloaded exe file.');
-      Log(' got '+fn+' version: '+version);
+      Logger(' got '+fn+' version: '+version);
     end;
 
     if FileExists(tempfn) and (FileSize(tempfn)>0) then
@@ -232,7 +238,7 @@ begin
       AssignFile(bat,updateBatch);
       Rewrite(bat);
       try
-        Log(' Creating update batch file '+updateBatch);
+        Logger(' Creating update batch file '+updateBatch);
         // wait for program to terminate..
         Writeln(bat,'timeout /T 2');
         Writeln(bat,'taskkill /im '+fn+' /f');
@@ -250,7 +256,7 @@ begin
       finally
         CloseFile(bat)
       end;
-      Log(' Launching update batch file '+updateBatch);
+      Logger(' Launching update batch file '+updateBatch);
       ShellExecute(
         0,
         'open',
@@ -282,9 +288,9 @@ begin
 	 end;
 end;
 
-procedure Log(Msg: String;level:LogLevel=WARNING);
+procedure Logger(Msg: String;level:LogLevel=WARNING);
 begin
-  if level>=currentLogLevel then
+  if level<=currentLogLevel then
   begin
     if IsConsole then
       WriteLn(Msg)

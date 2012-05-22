@@ -1,6 +1,7 @@
 program waptget;
 
 {$mode objfpc}{$H+}
+{$R waptget-manifest.rc}
 
 uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
@@ -21,7 +22,6 @@ type
     destructor Destroy; override;
     procedure WriteHelp; virtual;
   end;
-
 
 { pwaptget }
 
@@ -45,14 +45,15 @@ begin
   // parse parameters
   if HasOption('?') then
   begin
+    writeln(' -u --upgrade : upgrade wapt-get.exe');
     writeln(' -s --setup : install/reinstall dependencies (python libs)');
-    writeln(' -r --repo : URL of dependencies libs (default : http://srvinstallation.tranquil-it-systems.fr/tiswapt/wapt)');
+    writeln(' -r --repo : URL of dependencies libs (default : '+FindWaptRepo+')');
   end;
 
   if HasOption('r','repo') then
     repo := GetOptionValue('r','repo')
   else
-    repo := 'http://srvinstallation.tranquil-it-systems.fr/tiswapt/wapt';
+    repo := FindWaptRepo;
 
   if HasOption('l','loglevel') then
   begin
@@ -79,15 +80,17 @@ begin
   begin
     if not UserInGroup(DOMAIN_ALIAS_RID_ADMINS) then
       raise Exception.Create('You must run this setup with Admin rights');
+    Logger('Checking install path '+InstallPath,DEBUG);
     ForceDirectory(InstallPath);
+    Logger('Adding '+InstallPath+' to User PATH',DEBUG);
     AddToUserPath(InstallPath);
     // Copy wapt-get.exe to install dir
     downloadPath:=  ParamStrUTF8(0);
     if CompareFilenamesIgnoreCase(ExtractFilePath(downloadPath), AppendPathDelim(InstallPath))<>0 then
     begin
-      writeln(UTF8ToConsole('Copying '+downloadPath+' to '+AppendPathDelim(InstallPath)+'wapt-get.exe'));
+      logger(UTF8ToConsole('Copying '+downloadPath+' to '+AppendPathDelim(InstallPath)+'wapt-get.exe'),INFO);
       if not FileUtil.CopyFile(downloadPath,AppendPathDelim(InstallPath)+'wapt-get.exe',True) then
-        writeln('  Error : unable to copy, error code : '+intToStr(IOResult));
+        logger('  Error : unable to copy, error code : '+intToStr(IOResult),CRITICAL);
     end;
     ZipFilePath := ExtractFilePath(downloadPath)+'wapt-libs.zip';
 
