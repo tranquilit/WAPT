@@ -4,7 +4,6 @@ import sys
 import os
 import zipfile
 import cStringIO
-import tempfile
 import urllib2
 import shutil
 from iniparse import ConfigParser
@@ -16,6 +15,7 @@ from common import Package_Entry
 import dns.resolver
 import pprint
 import socket
+from setuphelpers import *
 
 usage="""\
 %prog -c configfile action
@@ -57,20 +57,6 @@ if len(args) == 0:
   print "ERROR : You must provide one action to perform"
   parser.print_usage()
   sys.exit(2)
-
-def download(url,destdir):
-  """Copy the contents of a file from a given URL
-  to a local file.
-  """
-  import urllib
-  if not os.path.isdir(destdir):
-    os.makedirs(destdir)
-  urllib.urlretrieve(url,os.path.join(destdir,url.split('/')[-1]))
-
-def ensure_dir(f):
-  d = os.path.dirname(f)
-  if not os.path.exists(d):
-    os.makedirs(d)
 
 def psource(module):
   file = os.path.basename( module )
@@ -129,7 +115,6 @@ def find_wapt_server(configparser):
 class wapt:
   wapt_repourl=""
   packagecachedir = ""
-  wapttempdir=""
   dry_run = False
   dbpath = 'c:\\wapt\\db\\waptdb.sqlite'
 
@@ -142,7 +127,7 @@ class wapt:
     waptdb = WaptDB(dbpath=self.dbpath)
     q = waptdb.query("select * from wapt_repo where Package=?",(package,))
     if not q:
-        print "Package %s not found in local DB, try update" % package
+        print "ERROR : Package %s not found in local DB, try update" % package
         sys.exit(1)
     mydict = q[0]
     pprint.pprint (mydict)
@@ -152,18 +137,19 @@ class wapt:
 
     print ("download package from " + mydict['repo_url'])
     sys.stdout.flush()
-    download( download_url, self.packagecachedir)
+    wget( download_url, self.packagecachedir)
 
     # When you import a file you must give it the full path
-    tempdirname = tempfile.mkdtemp(dir=self.wapttempdir)
+    global packagetempdir
+    packagetempdir = tempfile.mkdtemp(dir=tempdir)
     print ('unziping %s ' % (os.path.join(self.packagecachedir,packagename)))
     sys.stdout.flush()
     zip = zipfile.ZipFile( os.path.join(self.packagecachedir , packagename))
-    zip.extractall(path=tempdirname)
+    zip.extractall(path=packagetempdir)
 
     print ("sourcing install file")
     sys.stdout.flush()
-    psource(os.path.join( tempdirname,'setup.py'))
+    psource(os.path.join( packagetempdir,'setup.py'))
 
     if not self.dry_run:
       print ("executing install script")
@@ -171,12 +157,12 @@ class wapt:
       setup.install()
 
     print ("install script finished")
-    print ("cleaning tmp dir")
+    print ("cleaning package tmp dir")
     sys.stdout.flush()
-    shutil.rmtree(tempdirname)
+    shutil.rmtree(packagetempdir)
 
   def update(self):
-    print self.wapttempdir
+    print tempdir
     packageListFile = zipfile.ZipFile(cStringIO.StringIO(urllib2.urlopen(self.wapt_repourl + '/Packages').read())).read(name='Packages').splitlines()
 
     waptdb = WaptDB(dbpath=self.dbpath)
@@ -199,8 +185,6 @@ class wapt:
 def main(argv):
   wapt_start_date = datetime.datetime.now().strftime('%Y%m%d-%Hh%Mm%S')
   action = args[0]
-  if action=='install':
-    packagename=args[1]
 
   # Config file
   if not os.path.isfile(config_file):
@@ -226,17 +210,17 @@ def main(argv):
   if not os.path.exists(packagecachedir):
     os.makedirs(packagecachedir)
   print packagecachedir
-  wapttempdir = os.path.join(wapt_base_dir, 'tmp')
-  if not os.path.exists(wapttempdir):
-    os.makedirs(wapttempdir)
 
   mywapt = wapt()
   mywapt.packagecachedir = packagecachedir
-  mywapt.wapttempdir = wapttempdir
   mywapt.wapt_repourl = wapt_repourl
   mywapt.dry_run = options.dry_run
 
   if action=='install':
+    if len(args)<2:
+        print "You must provide the package name"
+        sys.exit(1)
+    packagename=args[1]
     mywapt.install(packagename)
 
   if action=='update':
@@ -251,10 +235,6 @@ def main(argv):
   if action=='list':
     mywapt.list_repo()
 
-  #shutil.rmtree(tempdirname)
-
 if __name__ == "__main__":
-  print sys.path
-  main(sys.argv[1:])
-
-
+    logger.debug('Python path %s' % sys.path)
+    main(sys.argv[1:])
