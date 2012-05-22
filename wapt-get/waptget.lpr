@@ -27,10 +27,10 @@ type
 
 procedure pwaptget.DoRun;
 var
-  ErrorMsg,InstallPath,ZipFilePath,LibsURL: String;
+  InstallPath,ZipFilePath,LibsURL: String;
   MainModule : TStringList;
   downloadPath : String;
-  repo : String;
+  repo,logleveloption : String;
 
   procedure SetFlag( AFlag: PInt; AValue : Boolean );
   begin
@@ -54,8 +54,23 @@ begin
   else
     repo := 'http://srvinstallation.tranquil-it-systems.fr/tiswapt/wapt';
 
+  if HasOption('l','loglevel') then
+  begin
+    logleveloption := UpperCase(GetOptionValue('l','loglevel'));
+    if logleveloption = 'DEBUG' then
+      currentLogLevel := DEBUG
+    else if logleveloption = 'INFO' then
+      currentLogLevel := INFO
+    else if logleveloption = 'WARNING' then
+      currentLogLevel := WARNING
+    else if logleveloption = 'ERROR' then
+      currentLogLevel := ERROR
+    else if logleveloption = 'CRITICAL' then
+      currentLogLevel := CRITICAL;
+  end;
+
   if HasOption('g','upgrade') then
-    UpdateCurrentApplication(repo+'/'+ExtractFileName(paramstr(0)));
+    UpdateCurrentApplication(repo+'/'+ExtractFileName(paramstr(0)),False);
 
   if HasOption('v','version') then
     writeln('Win32 Exe wrapper: '+ApplicationName+' '+ApplicationVersion);
@@ -70,8 +85,8 @@ begin
     downloadPath:=  ParamStrUTF8(0);
     if CompareFilenamesIgnoreCase(ExtractFilePath(downloadPath), AppendPathDelim(InstallPath))<>0 then
     begin
-      writeln(UTF8ToConsole('Copying '+downloadPath+' to '+AppendPathDelim(InstallPath)+ExtractFileName(downloadPath)));
-      if not FileUtil.CopyFile(downloadPath,AppendPathDelim(InstallPath)+ExtractFileName(downloadPath),True) then
+      writeln(UTF8ToConsole('Copying '+downloadPath+' to '+AppendPathDelim(InstallPath)+'wapt-get.exe'));
+      if not FileUtil.CopyFile(downloadPath,AppendPathDelim(InstallPath)+'wapt-get.exe',True) then
         writeln('  Error : unable to copy, error code : '+intToStr(IOResult));
     end;
     ZipFilePath := ExtractFilePath(downloadPath)+'wapt-libs.zip';

@@ -16,7 +16,8 @@ interface
   function TISGetComputerName : String;
   function TISGetUserName : String;
 
-  procedure Log(Msg:String);
+  type LogLevel=(DEBUG, INFO, WARNING, ERROR, CRITICAL);
+  procedure Log(Msg:String;level:LogLevel=WARNING);
 
   Const
     SECURITY_NT_AUTHORITY: TSIDIdentifierAuthority = (Value: (0, 0, 0, 0, 0, 5));
@@ -33,6 +34,11 @@ interface
   function CheckOpenPort(dwPort : Word; ipAddressStr:AnsiString;timeout:integer=5):boolean;
   function GetIPFromHost(const HostName: string): string;
 
+var
+  loghook : procedure(logmsg:String) of object;
+
+const
+    currentLogLevel:LogLevel=WARNING;
 
 implementation
 
@@ -276,10 +282,16 @@ begin
 	 end;
 end;
 
-procedure Log(Msg: String);
+procedure Log(Msg: String;level:LogLevel=WARNING);
 begin
-  if IsConsole then
-    WriteLn(Msg);
+  if level>=currentLogLevel then
+  begin
+    if IsConsole then
+      WriteLn(Msg)
+    else
+      if Assigned(loghook) then
+        loghook(Msg);
+  end;
 end;
 
 function TISGetComputerName : String;
