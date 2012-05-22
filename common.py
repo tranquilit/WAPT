@@ -217,6 +217,20 @@ def createShortcut(path, target='', wDir='', icon=''):
             shortcut.IconLocation = icon
         shortcut.save()
 
+def allUserProgramsMenu():
+    objShell = Dispatch("WScript.Shell")
+    return objShell.SpecialFolders("AllUsersPrograms")
+
+def allUserDesktop():
+    objShell = Dispatch("WScript.Shell")
+    return objShell.SpecialFolders("AllUsersDesktop")
+
+def createDesktopShortcut(path, target='', wDir='', icon=''):
+    createShortcut(path,os.path.join(allUserDesktop(),target),wDir,icon)
+
+def createProgramsMenuShortcut(path, target='', wDir='', icon=''):
+    createShortcut(path,os.path.join(allUserProgramsMenu(),target),wDir,icon)
+
 class WaptDB:
   dbpath = ''
   db = None
