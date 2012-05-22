@@ -28,7 +28,7 @@ import sqlite3
 import shutil
 import sys
 import pprint
-
+from win32com.client import Dispatch
 
 
 def datetime2isodate(adatetime = datetime.datetime.now()):
@@ -198,6 +198,24 @@ def html_table(cur,callback=None):
 
   return "<table border=1  cellpadding=2 cellspacing=0>%s%s</table>" % (head,lines)
 
+
+def createShortcut(path, target='', wDir='', icon=''):
+    ext = path[-3:]
+    if ext == 'url':
+        shortcut = file(path, 'w')
+        shortcut.write('[InternetShortcut]\n')
+        shortcut.write('URL=%s' % target)
+        shortcut.close()
+    else:
+        shell = Dispatch('WScript.Shell')
+        shortcut = shell.CreateShortCut(path)
+        shortcut.Targetpath = target
+        shortcut.WorkingDirectory = wDir
+        if icon == '':
+            pass
+        else:
+            shortcut.IconLocation = icon
+        shortcut.save()
 
 class WaptDB:
   dbpath = ''
