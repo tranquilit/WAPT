@@ -30,12 +30,13 @@ action is either :
  search : list available packages
 """
 
-version = "0.3"
+version = "0.4"
 
 parser=OptionParser(usage=usage,version="%prog " + version)
 parser.add_option("-c","--config", dest="config", default='c:\\wapt\\wapt-get.ini', help="Config file full path (default: %default)")
 parser.add_option("-l","--loglevel", dest="loglevel", default='info', type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: %default)")
 parser.add_option("-d","--dry-run",    dest="dry_run",    default=False, action='store_true', help="Dry run (default: %default)")
+parser.add_option("-f","--force",    dest="force",    default=False, action='store_true', help="Force (default: %default)")
 
 (options,args)=parser.parse_args()
 
@@ -149,47 +150,55 @@ class wapt:
 
 
     def install(self,package):
-        print ("starting installation")
+        print("installing package " + package)
         sys.stdout.flush()
-        print ("installing package " + package)
 
         waptdb = WaptDB(dbpath=self.dbpath)
-        q = waptdb.query("select * from wapt_repo where Package=?",(package,))
+
+        q = waptdb.query("""\
+           select wapt_repo.*,wapt_localstatus.Version as CurrentVersion from wapt_repo
+            left join wapt_localstatus on wapt_repo.Package=wapt_localstatus.Package
+            where wapt_repo.Package=?
+           """ , (package,) )
         if not q:
             print "ERROR : Package %s not found in local DB, try update" % package
-            sys.exit(1)
+            return False
         mydict = q[0]
-        pprint.pprint (mydict)
+        logger.debug(pprint.pformat(mydict))
+        if not options.force and mydict['CurrentVersion']>=mydict['Version']:
+            print "Package %s already installed at the latest version" % package
+            return True
         packagename = mydict['Filename'].strip('./')
         download_url = mydict['repo_url'] + '/' + packagename
-        print download_url
+        logger.debug('Download URL: %s' % download_url)
 
-        print ("download package from " + mydict['repo_url'])
+        print ("  downloading package from " + mydict['repo_url'])
         sys.stdout.flush()
         wget( download_url, self.packagecachedir)
 
         # When you import a file you must give it the full path
         global packagetempdir
         packagetempdir = tempfile.mkdtemp(dir=tempdir)
-        print ('unziping %s ' % (os.path.join(self.packagecachedir,packagename)))
+        print('  unzipping %s ' % (os.path.join(self.packagecachedir,packagename)))
         sys.stdout.flush()
         zip = zipfile.ZipFile( os.path.join(self.packagecachedir , packagename))
         zip.extractall(path=packagetempdir)
 
-        print ("sourcing install file")
+        print ("  sourcing install file")
         sys.stdout.flush()
         psource(os.path.join( packagetempdir,'setup.py'))
 
         if not self.dry_run:
-            print ("executing install script")
+            print ("  executing install script")
             sys.stdout.flush()
             setup.install()
 
         waptdb.add_installed_package(mydict['Package'],mydict['Version'])
-        print ("install script finished")
-        print ("cleaning package tmp dir")
+        print("Install script finished")
+        logger.debug("Cleaning package tmp dir")
         sys.stdout.flush()
         shutil.rmtree(packagetempdir)
+        return True
 
     def update(self):
         logger.debug('Temporary directory: %s' % tempdir)
@@ -216,7 +225,7 @@ class wapt:
             where wapt_localstatus.Version<wapt_repo.Version
            """)
         if not q:
-            print "Nothing to upgrade" % package
+            print "Nothing to upgrade"
             sys.exit(1)
         for package in q:
             self.install(q[0])
