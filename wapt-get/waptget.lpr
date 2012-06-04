@@ -1,7 +1,6 @@
 program waptget;
 
 {$mode objfpc}{$H+}
-{$R waptget-manifest.rc}
 
 uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}

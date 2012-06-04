@@ -35,6 +35,8 @@ interface
   function CheckOpenPort(dwPort : Word; ipAddressStr:AnsiString;timeout:integer=5):boolean;
   function GetIPFromHost(const HostName: string): string;
 
+  function RunTask(cmd: string;var ExitStatus:integer): string;
+
 var
   loghook : procedure(logmsg:String) of object;
 
@@ -478,6 +480,27 @@ begin
     Inc(i);
   end;
   WSACleanup;
+end;
+
+function RunTask(cmd: string;var ExitStatus:integer): string;
+var
+  AProcess: TProcess;
+  AStringList: TStringList;
+begin
+    AProcess := TProcess.Create(nil);
+    AStringList := TStringList.Create;
+    try
+      AProcess.CommandLine := cmd;
+      AProcess.CurrentDirectory := ExtractFilePath(cmd);
+      AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
+      AProcess.Execute;
+      AStringList.LoadFromStream(AProcess.Output);
+      Result := AStringList.Text;
+      ExitStatus:= AProcess.ExitStatus;
+    finally
+      AStringList.Free;
+      AProcess.Free;
+    end;
 end;
 
 
