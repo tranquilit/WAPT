@@ -56,12 +56,12 @@ def create_shortcut(path, target='', wDir='', icon=''):
 def create_desktop_shortcut(label, target='', wDir='', icon=''):
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
-    createShortcut(os.path.join(desktop(1),label),target,wDir,icon)
+    create_shortcut(os.path.join(desktop(1),label),target,wDir,icon)
 
 def create_programs_menu_shortcut(label, target='', wDir='', icon=''):
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
-    createShortcut(os.path.join(start_menu(1),label),target,wDir,icon)
+    create_shortcut(os.path.join(start_menu(1),label),target,wDir,icon)
 
 def wgets(url):
     """Return the content of a remote resources as a String"""
@@ -86,7 +86,7 @@ def wget(url,target):
   urllib.urlretrieve(url,os.path.join(dir,filename))
   return os.path.join(dir,filename)
 
-def copyto(filename,target):
+def filecopyto(filename,target):
     """Copy file from package temporary directory to target"""
     (dir,fn) = os.path.split(filename)
     if not dir:
@@ -113,11 +113,8 @@ def isrunning(processname):
     except:
         return False
 
-def killalltasks(processname):
-    for pid in win32pdhutil.FindPerformanceAttributesByName( processname ):
-        handle = win32api.OpenProcess( win32con.PROCESS_TERMINATE, 0, pid )
-        win32api.TerminateProcess( handle, 0 )
-        win32api.CloseHandle( handle )
+def killalltasks(exename):
+    os.system('taskkill /im "%s" /f % exename')
 
 def messagebox(title,msg):
     win32api.MessageBox(0, msg, title, win32con.MB_ICONINFORMATION)
