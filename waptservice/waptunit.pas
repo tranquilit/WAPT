@@ -28,9 +28,11 @@ type
     QLstPackagesVersion: TMemoField;
     SQLTrans: TSQLTransaction;
     waptdb: TSQLite3Connection;
+    procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleStart(Sender: TCustomDaemon; var OK: Boolean);
     procedure IdHTTPServer1CommandGet(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
+    procedure waptdbAfterConnect(Sender: TObject);
   private
     { private declarations }
     Function TableHook(Data,FN:String):String;
@@ -84,6 +86,11 @@ begin
   Application.Log(etInfo,'c:\wapt\wapt-get upgrade');
 end;
 
+procedure TWaptDaemon.DataModuleCreate(Sender: TObject);
+begin
+  IdHTTPServer1.Active:=True;
+end;
+
 procedure TWaptDaemon.IdHTTPServer1CommandGet(AContext: TIdContext;
   ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
 var
@@ -95,10 +102,12 @@ var
     param,value,lst:String;
 begin
   if ARequestInfo.URI='/status' then
-  begin
+  try
     QLstPackages.Close;
     QLstPackages.Open;
     AResponseInfo.ContentText:=DatasetToHTMLtable(QLstPackages,@TableHook);
+  finally
+    SQLTrans.Commit;
   end
   else
   if ARequestInfo.URI='/upgrade' then
@@ -163,6 +172,11 @@ begin
        '<title>Wapt-get management</title></head>'+
        '<body>'+AResponseInfo.ContentText+'</body>';
   AResponseInfo.ResponseNo:=200;
+end;
+
+procedure TWaptDaemon.waptdbAfterConnect(Sender: TObject);
+begin
+
 end;
 
 function TWaptDaemon.TableHook(Data, FN: String): String;

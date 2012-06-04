@@ -1,4 +1,5 @@
 object WaptDaemon: TWaptDaemon
+  OnCreate = DataModuleCreate
   OldCreateOrder = False
   OnStart = DataModuleStart
   Height = 297
@@ -6,7 +7,6 @@ object WaptDaemon: TWaptDaemon
   VerticalOffset = 161
   Width = 360
   object IdHTTPServer1: TIdHTTPServer
-    Active = True
     Bindings = <>
     DefaultPort = 8088
     ServerSoftware = 'Wapt Service'
@@ -17,6 +17,7 @@ object WaptDaemon: TWaptDaemon
   object waptdb: TSQLite3Connection
     Connected = False
     LoginPrompt = False
+    AfterConnect = waptdbAfterConnect
     DatabaseName = 'C:\wapt\db\waptdb.sqlite'
     KeepConnection = False
     Transaction = SQLTrans
@@ -134,6 +135,7 @@ object WaptDaemon: TWaptDaemon
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
+      Visible = False
       BlobType = ftBlob
       Transliterate = False
     end
@@ -146,6 +148,7 @@ object WaptDaemon: TWaptDaemon
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
+      Visible = False
       BlobType = ftBlob
       Transliterate = False
     end
@@ -158,6 +161,7 @@ object WaptDaemon: TWaptDaemon
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
+      Visible = False
       BlobType = ftBlob
       Transliterate = False
     end
@@ -170,6 +174,7 @@ object WaptDaemon: TWaptDaemon
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
+      Visible = False
       BlobType = ftBlob
       Transliterate = False
     end
@@ -194,6 +199,7 @@ object WaptDaemon: TWaptDaemon
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
+      Visible = False
       BlobType = ftBlob
       Transliterate = False
     end
@@ -206,6 +212,7 @@ object WaptDaemon: TWaptDaemon
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
+      Visible = False
       BlobType = ftBlob
       Transliterate = False
     end
@@ -218,6 +225,7 @@ object WaptDaemon: TWaptDaemon
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
+      Visible = False
       BlobType = ftBlob
       Transliterate = False
     end
@@ -230,6 +238,7 @@ object WaptDaemon: TWaptDaemon
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
+      Visible = False
       BlobType = ftBlob
       Transliterate = False
     end
