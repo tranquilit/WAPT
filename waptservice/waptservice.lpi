@@ -19,8 +19,9 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
+      <MinorVersionNr Value="1"/>
       <Language Value="040C"/>
-      <StringTable CompanyName="Tranquil IT Systems" ProductVersion=""/>
+      <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Service helper" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
       <Item1 Name="Default" Default="True"/>
@@ -36,45 +37,48 @@
         <CommandLineParams Value="--install"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="4">
+    <RequiredPackages Count="6">
       <Item1>
-        <PackageName Value="indylaz"/>
-        <MinVersion Major="10" Minor="5" Release="8" Valid="True"/>
+        <PackageName Value="weblaz"/>
+        <MinVersion Valid="True"/>
       </Item1>
       <Item2>
-        <PackageName Value="LazDaemon"/>
+        <PackageName Value="SQLDBLaz"/>
+        <MinVersion Major="1" Release="1" Valid="True"/>
       </Item2>
       <Item3>
-        <PackageName Value="LCL"/>
+        <PackageName Value="indylaz"/>
+        <MinVersion Major="10" Minor="5" Release="8" Valid="True"/>
       </Item3>
       <Item4>
-        <PackageName Value="FCL"/>
+        <PackageName Value="LazDaemon"/>
       </Item4>
+      <Item5>
+        <PackageName Value="LCL"/>
+      </Item5>
+      <Item6>
+        <PackageName Value="FCL"/>
+      </Item6>
     </RequiredPackages>
-    <Units Count="7">
+    <Units Count="23">
       <Unit0>
         <Filename Value="waptservice.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptservice"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="35" Y="7"/>
-        <UsageCount Value="53"/>
-        <Loaded Value="True"/>
+        <CursorPos X="1" Y="17"/>
+        <UsageCount Value="66"/>
       </Unit0>
       <Unit1>
         <Filename Value="waptmapper.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DaemonMapper1"/>
         <UnitName Value="WaptMapper"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="9" Y="11"/>
-        <UsageCount Value="53"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <CursorPos X="18" Y="5"/>
+        <UsageCount Value="66"/>
       </Unit1>
       <Unit2>
         <Filename Value="waptunit.pas"/>
@@ -85,9 +89,9 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="11"/>
-        <CursorPos X="31" Y="46"/>
-        <UsageCount Value="53"/>
+        <TopLine Value="105"/>
+        <CursorPos X="40" Y="121"/>
+        <UsageCount Value="66"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit2>
@@ -97,17 +101,15 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="17"/>
+        <UsageCount Value="16"/>
       </Unit3>
       <Unit4>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-extra\src\daemonapp.pp"/>
         <UnitName Value="daemonapp"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="10"/>
-        <CursorPos X="19" Y="134"/>
-        <UsageCount Value="26"/>
-        <Loaded Value="True"/>
+        <TopLine Value="1"/>
+        <CursorPos X="3" Y="41"/>
+        <UsageCount Value="25"/>
       </Unit4>
       <Unit5>
         <Filename Value="C:\lazarus\components\daemon\lazdaemonapp.pp"/>
@@ -115,97 +117,194 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="6"/>
       </Unit5>
       <Unit6>
         <Filename Value="C:\lazarus\lcl\interfaces\win32\interfaces.pp"/>
         <UnitName Value="Interfaces"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="16"/>
+        <TopLine Value="8"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="26"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="25"/>
       </Unit6>
+      <Unit7>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-web\src\jsonrpc\fpjsonrpc.pp"/>
+        <UnitName Value="fpjsonrpc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="91"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="9"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="..\..\indy\IdCustomHTTPServer.pas"/>
+        <UnitName Value="IdCustomHTTPServer"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1625"/>
+        <CursorPos X="51" Y="1662"/>
+        <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="waptcommon"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="20"/>
+        <CursorPos X="39" Y="48"/>
+        <UsageCount Value="33"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-process\src\process.pp"/>
+        <UnitName Value="process"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="276"/>
+        <CursorPos X="11" Y="160"/>
+        <UsageCount Value="9"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="..\wapt-get\waptget.lpr"/>
+        <UnitName Value="waptget"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="100"/>
+        <CursorPos X="9" Y="9"/>
+        <UsageCount Value="10"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-base\src\custapp.pp"/>
+        <UnitName Value="CustApp"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="55"/>
+        <CursorPos X="23" Y="87"/>
+        <UsageCount Value="9"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-base\src\eventlog.pp"/>
+        <UnitName Value="eventlog"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="229"/>
+        <CursorPos X="26" Y="231"/>
+        <UsageCount Value="9"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-base\src\win\eventlog.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="126"/>
+        <CursorPos X="3" Y="88"/>
+        <UsageCount Value="9"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="..\common.py"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="49"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="Python"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="waptunit.lfm"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="10"/>
+        <CursorPos X="1" Y="30"/>
+        <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="LFM"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="..\..\indy\IdLogBase.pas"/>
+        <UnitName Value="IdLogBase"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="27"/>
+        <CursorPos X="12" Y="45"/>
+        <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="..\..\tishelp\utishelp.pas"/>
+        <ComponentName Value="VisTisHelp"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="utishelp"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="55"/>
+        <CursorPos X="31" Y="84"/>
+        <UsageCount Value="12"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="..\..\tishelp\jcl\source\common\JclSysInfo.pas"/>
+        <UnitName Value="JclSysInfo"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="46"/>
+        <CursorPos X="2" Y="65"/>
+        <UsageCount Value="12"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\objpas\classes\classesh.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="537"/>
+        <CursorPos X="5" Y="556"/>
+        <UsageCount Value="11"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\objpas\classes\stringl.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="188"/>
+        <CursorPos X="18" Y="193"/>
+        <UsageCount Value="11"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\objpas\strutils.pp"/>
+        <UnitName Value="strutils"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="686"/>
+        <CursorPos X="3" Y="709"/>
+        <UsageCount Value="11"/>
+      </Unit22>
     </Units>
-    <JumpHistory Count="16" HistoryIndex="15">
+    <JumpHistory Count="4" HistoryIndex="3">
       <Position1>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="8" Column="32" TopLine="2"/>
+        <Caret Line="113" Column="66" TopLine="93"/>
       </Position1>
       <Position2>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="25" Column="24" TopLine="1"/>
+        <Caret Line="45" Column="32" TopLine="39"/>
       </Position2>
       <Position3>
-        <Filename Value="waptservice.lpr"/>
-        <Caret Line="11" Column="8" TopLine="1"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="123" Column="5" TopLine="99"/>
       </Position3>
       <Position4>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="26" Column="24" TopLine="1"/>
+        <Caret Line="113" Column="78" TopLine="94"/>
       </Position4>
-      <Position5>
-        <Filename Value="waptunit.pas"/>
-        <Caret Line="14" Column="21" TopLine="1"/>
-      </Position5>
-      <Position6>
-        <Filename Value="waptunit.pas"/>
-        <Caret Line="36" Column="3" TopLine="1"/>
-      </Position6>
-      <Position7>
-        <Filename Value="waptservice.lpr"/>
-        <Caret Line="8" Column="32" TopLine="1"/>
-      </Position7>
-      <Position8>
-        <Filename Value="waptservice.lpr"/>
-        <Caret Line="14" Column="1" TopLine="1"/>
-      </Position8>
-      <Position9>
-        <Filename Value="waptservice.lpr"/>
-        <Caret Line="7" Column="63" TopLine="1"/>
-      </Position9>
-      <Position10>
-        <Filename Value="waptunit.pas"/>
-        <Caret Line="39" Column="3" TopLine="1"/>
-      </Position10>
-      <Position11>
-        <Filename Value="waptunit.pas"/>
-        <Caret Line="53" Column="10" TopLine="10"/>
-      </Position11>
-      <Position12>
-        <Filename Value="waptmapper.pas"/>
-        <Caret Line="8" Column="37" TopLine="1"/>
-      </Position12>
-      <Position13>
-        <Filename Value="waptunit.pas"/>
-        <Caret Line="23" Column="38" TopLine="1"/>
-      </Position13>
-      <Position14>
-        <Filename Value="waptunit.pas"/>
-        <Caret Line="46" Column="30" TopLine="10"/>
-      </Position14>
-      <Position15>
-        <Filename Value="waptservice.lpr"/>
-        <Caret Line="7" Column="50" TopLine="1"/>
-      </Position15>
-      <Position16>
-        <Filename Value="waptunit.pas"/>
-        <Caret Line="40" Column="8" TopLine="9"/>
-      </Position16>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="9"/>
     <PathDelim Value="\"/>
     <SearchPaths>
-      <IncludeFiles Value="$(ProjOutDir)"/>
+      <IncludeFiles Value="$(ProjOutDir);D:\projdev\tishelp\jcl\source\include\"/>
+      <OtherUnitFiles Value="..\wapt-get;..\..\tishelp\jcl\source\common;..\..\tishelp\jcl\source\include;..\..\tishelp\jcl\source\windows"/>
     </SearchPaths>
+    <Linking>
+      <Debugging>
+        <UseLineInfoUnit Value="False"/>
+        <StripSymbols Value="True"/>
+      </Debugging>
+      <LinkSmart Value="True"/>
+    </Linking>
     <Other>
       <CompilerMessages>
         <UseMsgFile Value="True"/>
       </CompilerMessages>
       <CompilerPath Value="$(CompPath)"/>
+      <ExecuteBefore>
+        <Command Value="c:\windows\psservice.exe stop waptservice"/>
+        <ShowAllMessages Value="True"/>
+      </ExecuteBefore>
+      <ExecuteAfter>
+        <Command Value="c:\windows\psservice.exe  start waptservice"/>
+        <ShowAllMessages Value="True"/>
+      </ExecuteAfter>
     </Other>
   </CompilerOptions>
   <Debugging>

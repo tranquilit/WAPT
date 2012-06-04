@@ -1,16 +1,244 @@
 object WaptDaemon: TWaptDaemon
-  OnCreate = DataModuleCreate
   OldCreateOrder = False
-  Height = 292
-  HorizontalOffset = 337
-  VerticalOffset = 159
-  Width = 434
+  OnStart = DataModuleStart
+  Height = 297
+  HorizontalOffset = 437
+  VerticalOffset = 161
+  Width = 360
   object IdHTTPServer1: TIdHTTPServer
     Active = True
     Bindings = <>
     DefaultPort = 8088
+    ServerSoftware = 'Wapt Service'
     OnCommandGet = IdHTTPServer1CommandGet
-    left = 120
+    left = 40
+    top = 20
+  end
+  object waptdb: TSQLite3Connection
+    Connected = False
+    LoginPrompt = False
+    DatabaseName = 'C:\wapt\db\waptdb.sqlite'
+    KeepConnection = False
+    Transaction = SQLTrans
+    LogEvents = []
+    Options = []
+    left = 144
+    top = 20
+  end
+  object QLstPackages: TSQLQuery
+    FieldDefs = <    
+      item
+        Name = 'Package'
+        DataType = ftMemo
+        Precision = -1
+        Size = 0
+      end    
+      item
+        Name = 'Version'
+        DataType = ftMemo
+        Precision = -1
+        Size = 0
+      end    
+      item
+        Name = 'Section'
+        DataType = ftMemo
+        Precision = -1
+        Size = 0
+      end    
+      item
+        Name = 'Priority'
+        DataType = ftMemo
+        Precision = -1
+        Size = 0
+      end    
+      item
+        Name = 'Architecture'
+        DataType = ftMemo
+        Precision = -1
+        Size = 0
+      end    
+      item
+        Name = 'Maintainer'
+        DataType = ftMemo
+        Precision = -1
+        Size = 0
+      end    
+      item
+        Name = 'Description'
+        DataType = ftMemo
+        Precision = -1
+        Size = 0
+      end    
+      item
+        Name = 'Filename'
+        DataType = ftMemo
+        Precision = -1
+        Size = 0
+      end    
+      item
+        Name = 'Size'
+        DataType = ftMemo
+        Precision = -1
+        Size = 0
+      end    
+      item
+        Name = 'MD5sum'
+        DataType = ftMemo
+        Precision = -1
+        Size = 0
+      end    
+      item
+        Name = 'repo_url'
+        DataType = ftMemo
+        Precision = -1
+        Size = 0
+      end>
+    Database = waptdb
+    Transaction = SQLTrans
+    SQL.Strings = (
+      ' select * from wapt_repo'
+    )
+    Params = <>
+    left = 144
+    top = 80
+    object QLstPackagesPackage: TMemoField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'Package'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftBlob
+      Transliterate = False
+    end
+    object QLstPackagesVersion: TMemoField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'Version'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftBlob
+      Transliterate = False
+    end
+    object QLstPackagesSection: TMemoField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'Section'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftBlob
+      Transliterate = False
+    end
+    object QLstPackagesPriority: TMemoField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'Priority'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftBlob
+      Transliterate = False
+    end
+    object QLstPackagesArchitecture: TMemoField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'Architecture'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftBlob
+      Transliterate = False
+    end
+    object QLstPackagesMaintainer: TMemoField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'Maintainer'
+      Index = 5
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftBlob
+      Transliterate = False
+    end
+    object QLstPackagesDescription: TMemoField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'Description'
+      Index = 6
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftBlob
+      Transliterate = False
+    end
+    object QLstPackagesFilename: TMemoField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'Filename'
+      Index = 7
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftBlob
+      Transliterate = False
+    end
+    object QLstPackagesSize: TMemoField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'Size'
+      Index = 8
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftBlob
+      Transliterate = False
+    end
+    object QLstPackagesMD5sum: TMemoField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'MD5sum'
+      Index = 9
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftBlob
+      Transliterate = False
+    end
+    object QLstPackagesrepo_url: TMemoField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'repo_url'
+      Index = 10
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftBlob
+      Transliterate = False
+    end
+  end
+  object SQLTrans: TSQLTransaction
+    Active = False
+    Action = caNone
+    Database = waptdb
+    left = 216
     top = 24
   end
 end
