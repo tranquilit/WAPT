@@ -77,21 +77,29 @@ def psource(module):
 def find_wapt_server(configparser):
     def tryurl(url):
         try:
-            logger.debug('Trying %s' % s)
-            urllib2.urlopen(s+'/')
+            logger.debug('Trying %s' % url)
+            urllib2.urlopen(url+'/')
             logger.debug('OK')
             return True
-        except:
-            logger.debug('Not available')
+        except Exception,e:
+            logger.debug('Not available, %s' % e)
             return False
-    
+
     local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
+    logger.debug('Local IPs: %s' % local_ips)
+
+    dnsdomain = dns.resolver.get_default_resolver().domain.to_text()
+    logger.debug('Default DNS domain: %s' % dnsdomain)
+
     url = configparser.get('global','repo_url')
-    if  url and tryurl(url):
+    if url and tryurl(url):
         return url
+    if not url:
+        logger.debug('No url defined in ini file')
     # find by dns SRV _wapt._tcp
     try:
-        answers = dns.resolver.query('_wapt._tcp','SRV')
+        logger.debug('Trying _wapt._tcp.%s SRV records' % dnsdomain)
+        answers = dns.resolver.query('_wapt._tcp.%s' % dnsdomain,'SRV')
         for a in answers:
             if a.port == 80:
                 url = 'http://%s/wapt' % (a.target.canonicalize().to_text()[0:-1])
@@ -101,16 +109,22 @@ def find_wapt_server(configparser):
                 url = 'http://%s:%i/wapt' % (a.target.canonicalize().to_text()[0:-1],a.port)
                 if tryurl(url):
                     return url
+        if not answers:
+            logger.debug('  No _wapt._tcp.%s SRV record found' % dnsdomain)
     except dns.resolver.NXDOMAIN:
         pass
+
     # find by dns CNAME
     try:
-        answers = dns.resolver.query('wapt','CNAME')
+        logger.debug('Trying wapt.%s CNAME records' % dnsdomain)
+        answers = dns.resolver.query('wapt.%s' % dnsdomain,'CNAME')
         for a in answers:
             url = 'http://%s/wapt' % (a.target.canonicalize().to_text()[0:-1])
             if tryurl(url):
                 return url
-            
+        if not answers:
+            logger.debug('  No wapt.%s CNAME SRV record found' % dnsdomain)
+
     except dns.resolver.NXDOMAIN:
         pass
 
@@ -232,10 +246,10 @@ def main(argv):
 
     if action=='install':
         if len(args)<2:
-            print "You must provide the package name"
+            print "You must provide at least one package name"
             sys.exit(1)
-        packagename=args[1]
-        mywapt.install(packagename)
+        for packagename in args[1:]:
+            mywapt.install(packagename)
 
     if action=='update':
         mywapt.update()
