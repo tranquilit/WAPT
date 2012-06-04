@@ -207,8 +207,7 @@ class WaptDB:
     self.dbpath = dbpath
 
     if not os.path.isfile(self.dbpath):
-      dirname =os.path.dirname(self.dbpath)
-      print dirname
+      dirname = os.path.dirname(self.dbpath)
       if os.path.isdir (dirname)==False:
         os.makedirs(dirname)
       os.path.dirname(self.dbpath)
@@ -237,28 +236,18 @@ class WaptDB:
                     )
     self.db.execute("""
     create index idx_package_name on wapt_repo(Package);""")
-    self.db.commit()
 
-  def start(self,backup_name,server_name,description='',backup_location=None):
-    """ Add in stat DB a record for the newly running backup"""
-    return self.add(backup_name=backup_name,server_name=server_name,description=description,backup_start=datetime2isodate(),status='Running')
+    self.db.execute("""
+    create table wapt_localstatus (
+      Package TEXT,
+      Version TEXT,
+      InstallDate TEXT,
+      InstallStatus TEXT
+      )"""
+                    )
+    self.db.execute("""
+    create index idx_localstatus_name on wapt_localstatus(Package);""")
 
-  def finish(self,rowid,total_files_count=None,written_files_count=None,total_bytes=None,written_bytes=None,log=None,status='OK',backup_end=datetime2isodate(),backup_duration=None,backup_location=None):
-    """ Update record in stat DB for the finished backup"""
-    if backup_duration == None:
-      try:
-        # get duration using start of backup datetime
-        backup_duration = (isodate2datetime(backup_end) - isodate2datetime(self.query('select backup_start from stats where rowid=?',(rowid,))[0]['backup_start'])).seconds / 3600.0
-      except:
-        backup_duration = None
-
-    # update stat record
-    self.db.execute("""\
-          update stats set
-            total_files_count=?,written_files_count=?,total_bytes=?,written_bytes=?,log=?,status=?,backup_end=?,backup_duration=?,backup_location=?
-          where
-            rowid = ?
-        """,(total_files_count,written_files_count,total_bytes,written_bytes,log,status,backup_end,backup_duration,backup_location,rowid))
     self.db.commit()
 
   def add_package(self,
@@ -274,8 +263,6 @@ class WaptDB:
                   MD5sum='',
                   repo_url=''):
 
-    print "Size : " + str(Size)
-    print "MD5sum : " + MD5sum
     cur = self.db.execute("""\
           insert into wapt_repo (
               Package,
@@ -307,18 +294,7 @@ class WaptDB:
     return cur.lastrowid
 
   def list_repo(self):
-    def fcb(fieldname,value):
-      if fieldname in ('backup_start','backup_end'):
-        return time2display(isodate2datetime(value))
-      elif 'bytes' in fieldname:
-        return convert_bytes(value)
-      elif 'count' in fieldname:
-        return splitThousands(value,' ','.')
-      elif 'backup_duration' in fieldname:
-        return hours_minutes(value)
-      else:
-        return value
-    cur = self.db.execute("select * from wapt_repo")
+    cur = self.db.execute("select Package,Version,Description from wapt_repo")
     return pp(cur,None,1,None)
 
   def add_package_entry(self,package_entry):
@@ -339,6 +315,29 @@ class WaptDB:
                      package_entry.repo_url)
 
 
+  def add_installed_package(self,package,version):
+    cur = self.db.execute("""delete from wapt_localstatus where Package=?""" ,(package,))
+    cur = self.db.execute("""\
+          insert into wapt_localstatus (
+            Package,
+            Version,
+            InstallDate
+            ) values (?,?,?)
+        """,(
+             package,
+             version,
+             datetime2isodate())
+           )
+    self.db.commit()
+    return cur.lastrowid
+
+  def list_installed_packages(self):
+    cur = self.db.execute("""\
+          select Package,Version,InstallDate from wapt_localstatus order by Package
+        """)
+    return pp(cur,None,1,None)
+
+
   def query(self,query, args=(), one=False):
     """
     execute la requete query sur la db et renvoie un tableau de dictionnaires
@@ -348,45 +347,6 @@ class WaptDB:
                for idx, value in enumerate(row)) for row in cur.fetchall()]
     return (rv[0] if rv else None) if one else rv
 
-  def last_backups(self,backup_name,count=30):
-    if backup_name:
-      cur = self.db.execute('select  * from stats where backup_name=? order by backup_end desc limit ?',(backup_name,count))
-    else:
-      cur = self.db.execute('select  * from stats order by backup_end desc limit ?',(count,))
-
-    def fcb(fieldname,value):
-      if fieldname in ('backup_start','backup_end'):
-        return time2display(isodate2datetime(value))
-      elif 'bytes' in fieldname:
-        return convert_bytes(value)
-      elif 'count' in fieldname:
-        return splitThousands(value,' ','.')
-      elif 'backup_duration' in fieldname:
-        return hours_minutes(value)
-      else:
-        return value
-
-    #for r in self.query('select  * from stats where backup_name=? order by backup_end desc limit ?',(backup_name,count)):
-    print pp(cur,None,1,fcb)
-
-
-  def fcb(self,fields,fieldname,value):
-    if fieldname in ('backup_start','backup_end'):
-      return time2display(isodate2datetime(value))
-    elif 'bytes' in fieldname:
-      return convert_bytes(value)
-    elif 'count' in fieldname:
-      return splitThousands(value,' ','.')
-    elif 'backup_duration' in fieldname:
-      return hours_minutes(value)
-    else:
-      return value
-
-  def as_html(self,cur):
-    if cur:
-      return html_table(cur,self.fcb)
-    else:
-      return html_table(self.db.execute('select * from stats order by backup_start asc'),self.fcb)
 
 class Package_Entry:
   Package=''
@@ -417,8 +377,6 @@ class Package_Entry:
       if line.strip()=='':
         break
       splitline = line.split(':')
-      #keyvalue[splitline[0]] = splitline[1]
-      #print splitline[0] + " " + splitline[1]
       setattr(self,splitline[0].strip(),splitline[1].strip())
 
     shutil.rmtree(tempdir)
@@ -446,17 +404,3 @@ if __name__ == '__main__':
   handler.setFormatter(formatter)
   logger.addHandler(handler)
   waptdb = WaptDB(dbpath='c:/wapt/db/waptdb.sqlite')
-  #pprint.pprint(waptdb.query("select * from wapt_repo"))
-
-  waptdb.add_package(
-    Package='Packagetest',
-    Version='Versiontest',
-    Section='Sessiontest',
-    Priority='Prioritytest',
-    Architecture='Architecturetest',
-    Maintainer='Maintainertest',
-    Description='Descriptiontest',
-    Filename='FilenameTest',
-    Size=100,
-    MD5sum='MD5Sumtest')
-  print

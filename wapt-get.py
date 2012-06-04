@@ -23,9 +23,11 @@ usage="""\
 WAPT install system.
 
 action is either :
- install : launch all backups or a specific one if -s option is used
- update : removed backups older than retension period
- upgrade : dump the content of database for the last 20 backups
+ install : install one or several packages
+ update : update package database
+ upgrade : upgrade installed packages
+ list : list installed packages
+ search : list available packages
 """
 
 version = "0.3"
@@ -139,7 +141,6 @@ def find_wapt_server(configparser):
 
     return None
 
-
 class wapt:
     wapt_repourl=""
     packagecachedir = ""
@@ -184,17 +185,17 @@ class wapt:
             sys.stdout.flush()
             setup.install()
 
+        waptdb.add_installed_package(mydict['Package'],mydict['Version'])
         print ("install script finished")
         print ("cleaning package tmp dir")
         sys.stdout.flush()
         shutil.rmtree(packagetempdir)
 
     def update(self):
-        print tempdir
+        logger.debug('Temporary directory: %s' % tempdir)
         packageListFile = zipfile.ZipFile(cStringIO.StringIO(urllib2.urlopen(self.wapt_repourl + '/Packages').read())).read(name='Packages').splitlines()
 
         waptdb = WaptDB(dbpath=self.dbpath)
-
         package = Package_Entry()
         for line in packageListFile:
             if line.strip()=='':
@@ -202,24 +203,40 @@ class wapt:
                 package.repo_url = self.wapt_repourl
                 waptdb.add_package_entry(package)
                 package = Package_Entry()
-                continue
-            splitline= line.split(':')
-            setattr(package,splitline[0].strip(),splitline[1].strip())
+            else:
+                splitline= line.split(':')
+                setattr(package,splitline[0].strip(),splitline[1].strip())
+        waptdb.db.commit()
+
+    def upgrade(self):
+        waptdb = WaptDB(dbpath=self.dbpath)
+        q = waptdb.query("""\
+           select wapt_repo.Package,wapt_repo.Version from wapt_localstatus
+            left join wapt_repo on wapt_repo.Package=wapt_localstatus.Package
+            where wapt_localstatus.Version<wapt_repo.Version
+           """)
+        if not q:
+            print "Nothing to upgrade" % package
+            sys.exit(1)
+        for package in q:
+            self.install(q[0])
 
     def list_repo(self):
         waptdb = WaptDB(dbpath=self.dbpath)
         print waptdb.list_repo()
 
+    def list_installed_packages(self):
+        waptdb = WaptDB(dbpath=self.dbpath)
+        print waptdb.list_installed_packages()
+
 def main(argv):
-    wapt_start_date = datetime.datetime.now().strftime('%Y%m%d-%Hh%Mm%S')
     action = args[0]
 
     # Config file
     if not os.path.isfile(config_file):
         logger.error("Error : could not find file : " + config_file + ", please check the path")
-    logger.info("Using " + config_file + " config file")
 
-    print config_file
+    logger.debug('Config file: %s' % config_file)
     cp = ConfigParser( )
     cp.read(config_file)
 
@@ -227,7 +244,7 @@ def main(argv):
     if not wapt_repourl:
         print "No valid accessible repository found... aborting"
         sys.exit(2)
-    print "Using wapt Repository %s" % wapt_repourl
+    logger.info("Using wapt Repository %s" % wapt_repourl)
     wapt_base_dir = cp.get('global','base_dir')
 
     log_dir = os.path.join(wapt_base_dir,'log')
@@ -237,7 +254,7 @@ def main(argv):
     packagecachedir = os.path.join(wapt_base_dir,'cache')
     if not os.path.exists(packagecachedir):
         os.makedirs(packagecachedir)
-    print packagecachedir
+    logger.debug('Package cache dir : %s' % packagecachedir)
 
     mywapt = wapt()
     mywapt.packagecachedir = packagecachedir
@@ -260,8 +277,11 @@ def main(argv):
     if action=='remove':
         mywapt.remove()
 
-    if action=='list':
+    if action=='search':
         mywapt.list_repo()
+
+    if action=='list':
+        mywapt.list_installed_packages()
 
 if __name__ == "__main__":
     logger.debug('Python path %s' % sys.path)

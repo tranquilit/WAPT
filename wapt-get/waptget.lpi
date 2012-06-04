@@ -37,7 +37,7 @@
         <CommandLineParams Value="--loglevel DEBUG"/>
       </local>
     </RunParams>
-    <Units Count="46">
+    <Units Count="54">
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -45,8 +45,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="101"/>
-        <CursorPos X="33" Y="113"/>
+        <TopLine Value="124"/>
+        <CursorPos X="21" Y="126"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -316,7 +316,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="29" Y="64"/>
-        <UsageCount Value="105"/>
+        <UsageCount Value="109"/>
       </Unit35>
       <Unit36>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-base\src\win\fileinfo.pp"/>
@@ -394,19 +394,85 @@
         <CursorPos X="21" Y="13"/>
         <UsageCount Value="10"/>
       </Unit45>
+      <Unit46>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\winunits-jedi\src\jwawindns.pas"/>
+        <UnitName Value="JwaWinDNS"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1650"/>
+        <CursorPos X="18" Y="1680"/>
+        <UsageCount Value="11"/>
+      </Unit46>
+      <Unit47>
+        <Filename Value="..\..\indy\IdDNSResolver.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="IdDNSResolver"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="507"/>
+        <CursorPos X="25" Y="544"/>
+        <UsageCount Value="22"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit47>
+      <Unit48>
+        <Filename Value="..\..\indy\IdDNSCommon.pas"/>
+        <UnitName Value="IdDNSCommon"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="580"/>
+        <CursorPos X="6" Y="615"/>
+        <UsageCount Value="10"/>
+      </Unit48>
+      <Unit49>
+        <Filename Value="..\..\indy\IdStack.pas"/>
+        <UnitName Value="IdStack"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="353"/>
+        <CursorPos X="10" Y="383"/>
+        <UsageCount Value="10"/>
+      </Unit49>
+      <Unit50>
+        <Filename Value="..\..\indy\IdGlobal.pas"/>
+        <UnitName Value="IdGlobal"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="6880"/>
+        <CursorPos X="71" Y="6911"/>
+        <UsageCount Value="10"/>
+      </Unit50>
+      <Unit51>
+        <Filename Value="..\..\indy\IdStackWindows.pas"/>
+        <UnitName Value="IdStackWindows"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit51>
+      <Unit52>
+        <Filename Value="..\..\indy\IdWship6.pas"/>
+        <UnitName Value="IdWship6"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="61" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit52>
+      <Unit53>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\winunits-jedi\src\jwawinbase.pas"/>
+        <UnitName Value="JwaWinBase"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="324"/>
+        <CursorPos X="20" Y="351"/>
+        <UsageCount Value="10"/>
+      </Unit53>
     </Units>
     <JumpHistory Count="3" HistoryIndex="2">
       <Position1>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="73" Column="32" TopLine="57"/>
+        <Caret Line="149" Column="18" TopLine="125"/>
       </Position1>
       <Position2>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="32" Column="7" TopLine="9"/>
+        <Caret Line="149" Column="7" TopLine="131"/>
       </Position2>
       <Position3>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="49" Column="71" TopLine="26"/>
+        <Caret Line="142" Column="18" TopLine="124"/>
       </Position3>
     </JumpHistory>
   </ProjectOptions>
@@ -418,7 +484,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS);$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS)\$(LCLWidgetType);d:\projdev\python4delphi\PythonForDelphi\Components\FPC_Units\;d:\projdev\python4delphi\PythonForDelphi\Components\Sources\Core\;d:\projdev\python4delphi\PythonForDelphi\Components\"/>
+      <OtherUnitFiles Value="$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS);$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS)\$(LCLWidgetType);d:\projdev\python4delphi\PythonForDelphi\Components\FPC_Units\;d:\projdev\python4delphi\PythonForDelphi\Components\Sources\Core\;d:\projdev\python4delphi\PythonForDelphi\Components\;..\..\indy"/>
       <UnitOutputDirectory Value="./lib"/>
     </SearchPaths>
     <Linking>
