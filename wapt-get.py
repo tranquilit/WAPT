@@ -30,7 +30,7 @@ action is either :
  search : list available packages
 """
 
-version = "0.4"
+version = "0.4.1"
 
 parser=OptionParser(usage=usage,version="%prog " + version)
 parser.add_option("-c","--config", dest="config", default='c:\\wapt\\wapt-get.ini', help="Config file full path (default: %default)")
@@ -208,7 +208,7 @@ class wapt:
         package = Package_Entry()
         for line in packageListFile:
             if line.strip()=='':
-                print package
+                logger.debug(package)
                 package.repo_url = self.wapt_repourl
                 waptdb.add_package_entry(package)
                 package = Package_Entry()
@@ -228,7 +228,7 @@ class wapt:
             print "Nothing to upgrade"
             sys.exit(1)
         for package in q:
-            self.install(q[0])
+            self.install(package['Package'])
 
     def list_repo(self):
         waptdb = WaptDB(dbpath=self.dbpath)
