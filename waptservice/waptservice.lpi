@@ -60,7 +60,7 @@
         <PackageName Value="FCL"/>
       </Item6>
     </RequiredPackages>
-    <Units Count="23">
+    <Units Count="26">
       <Unit0>
         <Filename Value="waptservice.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -89,8 +89,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="161"/>
-        <CursorPos X="13" Y="195"/>
+        <TopLine Value="89"/>
+        <CursorPos X="15" Y="97"/>
         <UsageCount Value="67"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -258,8 +258,37 @@
         <CursorPos X="3" Y="709"/>
         <UsageCount Value="11"/>
       </Unit22>
+      <Unit23>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-db\src\sqldb\sqlite\sqlite3conn.pp"/>
+        <UnitName Value="sqlite3conn"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="22"/>
+        <CursorPos X="40" Y="28"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\sqlite\src\sqlite3dyn.pp"/>
+        <UnitName Value="sqlite3dyn"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="10" Y="5"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\sqlite\src\sqlite3.inc"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1977"/>
+        <CursorPos X="1" Y="1977"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit25>
     </Units>
-    <JumpHistory Count="15" HistoryIndex="14">
+    <JumpHistory Count="21" HistoryIndex="20">
       <Position1>
         <Filename Value="waptunit.pas"/>
         <Caret Line="113" Column="66" TopLine="93"/>
@@ -320,14 +349,42 @@
         <Filename Value="waptunit.pas"/>
         <Caret Line="91" Column="29" TopLine="89"/>
       </Position15>
+      <Position16>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="197" Column="3" TopLine="140"/>
+      </Position16>
+      <Position17>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="91" Column="6" TopLine="89"/>
+      </Position17>
+      <Position18>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="30" Column="20" TopLine="11"/>
+      </Position18>
+      <Position19>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-db\src\sqldb\sqlite\sqlite3conn.pp"/>
+        <Caret Line="28" Column="40" TopLine="22"/>
+      </Position19>
+      <Position20>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\sqlite\src\sqlite3dyn.pp"/>
+        <Caret Line="5" Column="10" TopLine="1"/>
+      </Position20>
+      <Position21>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="30" Column="20" TopLine="11"/>
+      </Position21>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="9"/>
     <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="../waptservice.exe"/>
+    </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);D:\projdev\tishelp\jcl\source\include\"/>
       <OtherUnitFiles Value="..\wapt-get;..\..\tishelp\jcl\source\common;..\..\tishelp\jcl\source\include;..\..\tishelp\jcl\source\windows"/>
+      <UnitOutputDirectory Value="./lib"/>
     </SearchPaths>
     <Linking>
       <Debugging>

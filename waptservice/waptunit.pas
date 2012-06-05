@@ -88,6 +88,7 @@ end;
 
 procedure TWaptDaemon.DataModuleCreate(Sender: TObject);
 begin
+  SQLiteLibraryName:=AppendPathDelim(ExtractFilePath(ParamStr(0)))+'DLLs\sqlite3.dll';
   IdHTTPServer1.Active:=True;
 end;
 
@@ -193,6 +194,7 @@ end;
 
 
 initialization
-  RegisterDaemon; 
+  RegisterDaemon;
+
 end.
 
