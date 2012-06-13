@@ -15,6 +15,7 @@ from common import Package_Entry
 import dns.resolver
 import pprint
 import socket
+import codecs
 from setuphelpers import *
 
 usage="""\
@@ -30,7 +31,7 @@ action is either :
  search : list available packages
 """
 
-version = "0.4.1"
+version = "0.4.2"
 
 parser=OptionParser(usage=usage,version="%prog " + version)
 parser.add_option("-c","--config", dest="config", default='c:\\wapt\\wapt-get.ini', help="Config file full path (default: %default)")
@@ -202,7 +203,9 @@ class wapt:
 
     def update(self):
         logger.debug('Temporary directory: %s' % tempdir)
-        packageListFile = zipfile.ZipFile(cStringIO.StringIO(urllib2.urlopen(self.wapt_repourl + '/Packages').read())).read(name='Packages').splitlines()
+        packageListFile = codecs.decode(zipfile.ZipFile(
+              cStringIO.StringIO( urllib2.urlopen(self.wapt_repourl + '/Packages').read())
+            ).read(name='Packages'),'UTF-8').splitlines()
 
         waptdb = WaptDB(dbpath=self.dbpath)
         package = Package_Entry()
@@ -241,6 +244,7 @@ class wapt:
 def main(argv):
     action = args[0]
 
+
     # Config file
     if not os.path.isfile(config_file):
         logger.error("Error : could not find file : " + config_file + ", please check the path")
@@ -277,20 +281,22 @@ def main(argv):
         for packagename in args[1:]:
             mywapt.install(packagename)
 
-    if action=='update':
+    elif action=='update':
         mywapt.update()
 
-    if action=='upgrade':
+    elif action=='upgrade':
         mywapt.upgrade()
 
-    if action=='remove':
+    elif action=='remove':
         mywapt.remove()
 
-    if action=='search':
+    elif action=='search':
         mywapt.list_repo()
 
-    if action=='list':
+    elif action=='list':
         mywapt.list_installed_packages()
+    else:
+        print 'Unknown action %s' % action
 
 if __name__ == "__main__":
     logger.debug('Python path %s' % sys.path)
