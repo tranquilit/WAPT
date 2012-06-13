@@ -30,6 +30,7 @@ var
   MainModule : TStringList;
   downloadPath : String;
   repo,logleveloption : String;
+  ExitStatus: Integer;
 
   procedure SetFlag( AFlag: PInt; AValue : Boolean );
   begin
@@ -75,7 +76,9 @@ begin
   if HasOption('v','version') then
     writeln('Win32 Exe wrapper: '+ApplicationName+' '+ApplicationVersion);
 
-  if HasOption('s','setup') or (not DirectoryExists(InstallPath)) then
+  // Auto upgrade
+  if (FileExists(AppendPathDelim(InstallPath)+'wapt-get.exe') and (ApplicationVersion > ApplicationVersion(AppendPathDelim(InstallPath)+'wapt-get.exe')))
+      or HasOption('s','setup') or (not FileExists(AppendPathDelim(InstallPath)+'python27.dll')) then
   begin
     if not UserInGroup(DOMAIN_ALIAS_RID_ADMINS) then
       raise Exception.Create('You must run this setup with Admin rights');
@@ -101,9 +104,18 @@ begin
       Terminate;
       Exit;
     end;
+    Writeln(RunTask('net stop waptservice',ExitStatus));
     Writeln('Unzipping '+ZipFilePath);
     UnzipFile(ZipFilePath,InstallPath);
     FileUtil.DeleteFileUTF8(ZipFilePath);
+    Writeln('Install waptservice');
+    try
+      Writeln(RunTask( AppendPathDelim(InstallPath)+'waptservice.exe /install',ExitStatus));
+    except
+      on e:Exception do Writeln('  Error installing service, error code:'+IntToStr(ExitStatus)+', message: '+e.message);
+    end;
+    Writeln('Start waptservice');
+    Writeln(RunTask('net start waptservice',ExitStatus));
     Terminate;
     Exit;
   end;
@@ -142,7 +154,7 @@ function GetWaptURL:String;
 var
   Resolver:TIdDNSResolver;
 begin
-  Resolver := TIdDNSResolver.Create;
+  {Resolver := TIdDNSResolver.Create;
   try
     Resolver.QueryResult.Clear;
     Resolver.QueryRecords := [qtService];
@@ -150,7 +162,7 @@ begin
 
   finally
     Resolver.Free;
-  end;
+  end;}
 
 end;
 
