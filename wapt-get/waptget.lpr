@@ -73,6 +73,7 @@ begin
   if HasOption('g','upgrade') then
     UpdateCurrentApplication(repo+'/'+ExtractFileName(paramstr(0)),False);
 
+
   if HasOption('v','version') then
     writeln('Win32 Exe wrapper: '+ApplicationName+' '+ApplicationVersion);
 
@@ -110,7 +111,7 @@ begin
     FileUtil.DeleteFileUTF8(ZipFilePath);
     Writeln('Install waptservice');
     try
-      Writeln(RunTask( AppendPathDelim(InstallPath)+'waptservice.exe /install',ExitStatus));
+      Writeln(RunTask(AppendPathDelim(InstallPath)+'waptservice.exe /install',ExitStatus));
     except
       on e:Exception do Writeln('  Error installing service, error code:'+IntToStr(ExitStatus)+', message: '+e.message);
     end;

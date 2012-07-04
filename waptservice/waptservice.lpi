@@ -19,7 +19,7 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <MinorVersionNr Value="1"/>
+      <MinorVersionNr Value="2"/>
       <Language Value="040C"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Service helper" ProductVersion=""/>
     </VersionInfo>
@@ -34,7 +34,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="--install"/>
+        <CommandLineParams Value="--run"/>
       </local>
     </RunParams>
     <RequiredPackages Count="6">
@@ -60,15 +60,17 @@
         <PackageName Value="FCL"/>
       </Item6>
     </RequiredPackages>
-    <Units Count="26">
+    <Units Count="27">
       <Unit0>
         <Filename Value="waptservice.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptservice"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="1" Y="17"/>
-        <UsageCount Value="67"/>
+        <CursorPos X="1" Y="16"/>
+        <UsageCount Value="76"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="waptmapper.pas"/>
@@ -78,7 +80,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="18" Y="5"/>
-        <UsageCount Value="67"/>
+        <UsageCount Value="76"/>
       </Unit1>
       <Unit2>
         <Filename Value="waptunit.pas"/>
@@ -89,9 +91,9 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="89"/>
-        <CursorPos X="15" Y="97"/>
-        <UsageCount Value="67"/>
+        <TopLine Value="25"/>
+        <CursorPos X="18" Y="34"/>
+        <UsageCount Value="76"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit2>
@@ -106,10 +108,12 @@
       <Unit4>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-extra\src\daemonapp.pp"/>
         <UnitName Value="daemonapp"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="3" Y="41"/>
+        <TopLine Value="414"/>
+        <CursorPos X="14" Y="433"/>
         <UsageCount Value="25"/>
+        <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="C:\lazarus\components\daemon\lazdaemonapp.pp"/>
@@ -139,8 +143,8 @@
         <Filename Value="..\..\indy\IdCustomHTTPServer.pas"/>
         <UnitName Value="IdCustomHTTPServer"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1625"/>
-        <CursorPos X="51" Y="1662"/>
+        <TopLine Value="1460"/>
+        <CursorPos X="30" Y="1478"/>
         <UsageCount Value="11"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit8>
@@ -148,10 +152,12 @@
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="20"/>
-        <CursorPos X="39" Y="48"/>
-        <UsageCount Value="34"/>
+        <TopLine Value="165"/>
+        <CursorPos X="1" Y="186"/>
+        <UsageCount Value="43"/>
+        <Loaded Value="True"/>
       </Unit9>
       <Unit10>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-process\src\process.pp"/>
@@ -261,118 +267,157 @@
       <Unit23>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-db\src\sqldb\sqlite\sqlite3conn.pp"/>
         <UnitName Value="sqlite3conn"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="22"/>
+        <TopLine Value="37"/>
         <CursorPos X="40" Y="28"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="13"/>
       </Unit23>
       <Unit24>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\sqlite\src\sqlite3dyn.pp"/>
         <UnitName Value="sqlite3dyn"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="10" Y="5"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="13"/>
       </Unit24>
       <Unit25>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\sqlite\src\sqlite3.inc"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1977"/>
         <CursorPos X="1" Y="1977"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="13"/>
       </Unit25>
+      <Unit26>
+        <Filename Value="..\..\indy\IdStack.pas"/>
+        <UnitName Value="IdStack"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="683"/>
+        <CursorPos X="20" Y="705"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit26>
     </Units>
-    <JumpHistory Count="21" HistoryIndex="20">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="113" Column="66" TopLine="93"/>
+        <Caret Line="222" Column="1" TopLine="196"/>
       </Position1>
       <Position2>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="45" Column="32" TopLine="39"/>
+        <Caret Line="221" Column="1" TopLine="195"/>
       </Position2>
       <Position3>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="123" Column="5" TopLine="99"/>
+        <Caret Line="220" Column="1" TopLine="194"/>
       </Position3>
       <Position4>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="113" Column="78" TopLine="94"/>
+        <Caret Line="219" Column="1" TopLine="193"/>
       </Position4>
       <Position5>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="96" Column="54" TopLine="81"/>
+        <Caret Line="218" Column="1" TopLine="192"/>
       </Position5>
       <Position6>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="217" Column="1" TopLine="191"/>
       </Position6>
       <Position7>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="30" Column="11" TopLine="1"/>
+        <Caret Line="216" Column="1" TopLine="190"/>
       </Position7>
       <Position8>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="215" Column="1" TopLine="189"/>
       </Position8>
       <Position9>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="17" Column="17" TopLine="1"/>
+        <Caret Line="214" Column="1" TopLine="188"/>
       </Position9>
       <Position10>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="18" Column="17" TopLine="1"/>
+        <Caret Line="213" Column="1" TopLine="187"/>
       </Position10>
       <Position11>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="19" Column="17" TopLine="1"/>
+        <Caret Line="214" Column="1" TopLine="188"/>
       </Position11>
       <Position12>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="20" Column="17" TopLine="1"/>
+        <Caret Line="215" Column="1" TopLine="189"/>
       </Position12>
       <Position13>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="40" Column="17" TopLine="20"/>
+        <Caret Line="216" Column="1" TopLine="190"/>
       </Position13>
       <Position14>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="116" Column="18" TopLine="79"/>
+        <Caret Line="123" Column="22" TopLine="101"/>
       </Position14>
       <Position15>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="91" Column="29" TopLine="89"/>
+        <Caret Line="124" Column="22" TopLine="102"/>
       </Position15>
       <Position16>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="197" Column="3" TopLine="140"/>
+        <Caret Line="123" Column="22" TopLine="101"/>
       </Position16>
       <Position17>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="91" Column="6" TopLine="89"/>
+        <Caret Line="134" Column="38" TopLine="102"/>
       </Position17>
       <Position18>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="30" Column="20" TopLine="11"/>
+        <Caret Line="22" Column="9" TopLine="7"/>
       </Position18>
       <Position19>
-        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-db\src\sqldb\sqlite\sqlite3conn.pp"/>
-        <Caret Line="28" Column="40" TopLine="22"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="136" Column="18" TopLine="112"/>
       </Position19>
       <Position20>
-        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\sqlite\src\sqlite3dyn.pp"/>
-        <Caret Line="5" Column="10" TopLine="1"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="117" Column="24" TopLine="85"/>
       </Position20>
       <Position21>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="30" Column="20" TopLine="11"/>
+        <Caret Line="97" Column="3" TopLine="95"/>
       </Position21>
+      <Position22>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="98" Column="1" TopLine="91"/>
+      </Position22>
+      <Position23>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="99" Column="1" TopLine="91"/>
+      </Position23>
+      <Position24>
+        <Filename Value="waptservice.lpr"/>
+        <Caret Line="15" Column="13" TopLine="1"/>
+      </Position24>
+      <Position25>
+        <Filename Value="waptservice.lpr"/>
+        <Caret Line="16" Column="1" TopLine="1"/>
+      </Position25>
+      <Position26>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="138" Column="5" TopLine="121"/>
+      </Position26>
+      <Position27>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-extra\src\daemonapp.pp"/>
+        <Caret Line="433" Column="5" TopLine="414"/>
+      </Position27>
+      <Position28>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="138" Column="5" TopLine="120"/>
+      </Position28>
+      <Position29>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-extra\src\daemonapp.pp"/>
+        <Caret Line="433" Column="5" TopLine="414"/>
+      </Position29>
+      <Position30>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="53" Column="12" TopLine="25"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -388,10 +433,10 @@
     </SearchPaths>
     <Linking>
       <Debugging>
-        <UseLineInfoUnit Value="False"/>
-        <StripSymbols Value="True"/>
+        <GenerateDebugInfo Value="True"/>
+        <GenerateDwarf Value="True"/>
+        <UseExternalDbgSyms Value="True"/>
       </Debugging>
-      <LinkSmart Value="True"/>
     </Linking>
     <Other>
       <CompilerMessages>
@@ -409,7 +454,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="3">
+    <Exceptions Count="4">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -419,6 +464,9 @@
       <Item3>
         <Name Value="EFOpenError"/>
       </Item3>
+      <Item4>
+        <Name Value="EIdSocketError"/>
+      </Item4>
     </Exceptions>
   </Debugging>
 </CONFIG>

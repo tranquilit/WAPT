@@ -3,11 +3,15 @@ object WaptDaemon: TWaptDaemon
   OldCreateOrder = False
   OnStart = DataModuleStart
   Height = 297
-  HorizontalOffset = 437
-  VerticalOffset = 161
+  HorizontalOffset = 482
+  VerticalOffset = 343
   Width = 360
   object IdHTTPServer1: TIdHTTPServer
-    Bindings = <>
+    Bindings = <    
+      item
+        IP = '127.0.0.1'
+        Port = 8088
+      end>
     DefaultPort = 8088
     ServerSoftware = 'Wapt Service'
     OnCommandGet = IdHTTPServer1CommandGet
@@ -15,7 +19,7 @@ object WaptDaemon: TWaptDaemon
     top = 20
   end
   object waptdb: TSQLite3Connection
-    Connected = False
+    Connected = True
     LoginPrompt = False
     AfterConnect = waptdbAfterConnect
     DatabaseName = 'C:\wapt\db\waptdb.sqlite'
@@ -97,7 +101,7 @@ object WaptDaemon: TWaptDaemon
     Database = waptdb
     Transaction = SQLTrans
     SQL.Strings = (
-      ' select * from wapt_repo'
+      'select * from wapt_repo'
     )
     Params = <>
     left = 144
@@ -244,10 +248,112 @@ object WaptDaemon: TWaptDaemon
     end
   end
   object SQLTrans: TSQLTransaction
-    Active = False
+    Active = True
     Action = caNone
     Database = waptdb
     left = 216
     top = 24
+  end
+  object QLstLocalStatus: TSQLQuery
+    FieldDefs = <    
+      item
+        Name = 'Package'
+        DataType = ftMemo
+        Precision = -1
+        Size = 0
+      end    
+      item
+        Name = 'Version'
+        DataType = ftMemo
+        Precision = -1
+        Size = 0
+      end    
+      item
+        Name = 'InstallDate'
+        DataType = ftMemo
+        Precision = -1
+        Size = 0
+      end    
+      item
+        Name = 'InstallStatus'
+        DataType = ftMemo
+        Precision = -1
+        Size = 0
+      end    
+      item
+        Name = 'RepoVersion'
+        DataType = ftMemo
+        Precision = -1
+        Size = 0
+      end>
+    Database = waptdb
+    Transaction = SQLTrans
+    SQL.Strings = (
+      ' select s.*,p.Version as RepoVersion from wapt_localstatus s'
+      ' left join wapt_repo p on p.Package=s.Package'
+    )
+    Params = <>
+    left = 144
+    top = 160
+    object QLstLocalStatusPackage: TMemoField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'Package'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftBlob
+      Transliterate = False
+    end
+    object QLstLocalStatusVersion: TMemoField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'Version'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftBlob
+      Transliterate = False
+    end
+    object QLstLocalStatusInstallDate: TMemoField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'InstallDate'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftBlob
+      Transliterate = False
+    end
+    object QLstLocalStatusInstallStatus: TMemoField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'InstallStatus'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftBlob
+      Transliterate = False
+    end
+    object QLstLocalStatusRepoVersion: TMemoField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'RepoVersion'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftBlob
+      Transliterate = False
+    end
   end
 end

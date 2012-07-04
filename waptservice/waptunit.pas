@@ -1,4 +1,4 @@
-unit WaptUnit; 
+﻿unit WaptUnit;
 
 {$mode objfpc}{$H+}
 
@@ -14,7 +14,13 @@ type
 
   TWaptDaemon = class(TDaemon)
     IdHTTPServer1: TIdHTTPServer;
+    QLstLocalStatusInstallDate: TMemoField;
+    QLstLocalStatusInstallStatus: TMemoField;
+    QLstLocalStatusPackage: TMemoField;
+    QLstLocalStatusRepoVersion: TMemoField;
+    QLstLocalStatusVersion: TMemoField;
     QLstPackages: TSQLQuery;
+    QLstLocalStatus: TSQLQuery;
     QLstPackagesArchitecture: TMemoField;
     QLstPackagesDescription: TMemoField;
     QLstPackagesFilename: TMemoField;
@@ -100,9 +106,18 @@ var
     IP : TStringList;
     Cmd,IPS:String;
     i:integer;
-    param,value,lst:String;
+    param,value,lst,UpgradeResult,SetupResult:String;
 begin
   if ARequestInfo.URI='/status' then
+  try
+    QLstLocalStatus.Close;
+    QLstLocalStatus.Open;
+    AResponseInfo.ContentText:=DatasetToHTMLtable(QLstLocalStatus,@TableHook);
+  finally
+    SQLTrans.Commit;
+  end
+  else
+  if ARequestInfo.URI='/list' then
   try
     QLstPackages.Close;
     QLstPackages.Open;
@@ -113,9 +128,26 @@ begin
   else
   if ARequestInfo.URI='/upgrade' then
   begin
-    Application.Log(etInfo,'c:\wapt\wapt-get upgrade');
+    UpgradeResult:=RunTask('c:\wapt\wapt-get --upgrade',ExitStatus);
+    SetupResult:=RunTask('c:\wapt\wapt-get --setup',ExitStatus);
+    UpgradeResult:=AnsiReplaceStr(UpgradeResult,#13#10,'<br>');
+    SetupResult:=AnsiReplaceStr(SetupResult,#13#10,'<br>');
+    AResponseInfo.ContentText:='Wapt System Upgrade launched<br>'+
+      UpgradeResult+'<br>'+
+      SetupResult+'<br>';
+
+  end
+  else
+  if ARequestInfo.URI='/waptupgrade' then
+  begin
     AResponseInfo.ContentText:='Wapt Upgrade launched<br>'+
       RunTask('c:\wapt\wapt-get upgrade',ExitStatus);
+  end
+  else
+  if ARequestInfo.URI='/waptupdate' then
+  begin
+    AResponseInfo.ContentText:='Wapt Update launched<br><pre>'+
+      StringsReplace(RunTask('c:\wapt\wapt-get update',ExitStatus),[#13#10,#13,#10],['<br>','<br>','<br>'],[rfReplaceAll])+'</pre>';
   end
   else
   if ARequestInfo.URI='/install' then
@@ -152,20 +184,20 @@ begin
       IP.free;
     end;
     GetCpuInfo(CPUInfo);
-    AResponseInfo.ContentText:=(
-      '<h1>Etat du systeme</h1>'+
+    AResponseInfo.ContentText:=  (
+      '<h1>System status</h1>'+
       'URI:'+ARequestInfo.URI+'<br>'+
       'AuthUsername:'+ARequestInfo.AuthUsername+'<br>'+
       'Document:'+ARequestInfo.Document+'<br>'+
       'Params:'+ARequestInfo.Params.Text+'<br>'+
-      'User : '+AnsiToUTF8(GetLocalUserName)+'<br>'+
+      'User : '+GetLocalUserName+'<br>'+
       'Machine: '+GetLocalComputerName+'<br>'+
-      'Domaine: '+GetDomainName+'<br>'+
-      'Adresses IP:'+IPS+'<br>'+
-      'Système: '+GetWindowsVersionString+' '+GetWindowsEditionString+' '+GetWindowsServicePackVersionString+'<br>'+
+      'Domain: '+GetDomainName+'<br>'+
+      'IP Addresses:'+IPS+'<br>'+
+      'System: '+GetWindowsVersionString+' '+GetWindowsEditionString+' '+GetWindowsServicePackVersionString+'<br>'+
       'RAM: '+FormatFloat('###0 MB',GetTotalPhysicalMemory/1024/1024)+'<br>'+
       'CPU: '+CPUInfo.CpuName+'<br>'+
-      'Charge Mémoire: '+IntToStr(GetMemoryLoad)+'%');
+      'Memory Load: '+IntToStr(GetMemoryLoad)+'%');
   end;
   AResponseInfo.ContentText := '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'+
        '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">'+
@@ -173,6 +205,7 @@ begin
        '<title>Wapt-get management</title></head>'+
        '<body>'+AResponseInfo.ContentText+'</body>';
   AResponseInfo.ResponseNo:=200;
+  AResponseInfo.CharSet:='UTF-8';
 end;
 
 procedure TWaptDaemon.waptdbAfterConnect(Sender: TObject);
