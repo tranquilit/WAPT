@@ -38,7 +38,7 @@
         <CommandLineParams Value="upgrade"/>
       </local>
     </RunParams>
-    <Units Count="31">
+    <Units Count="34">
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -46,15 +46,15 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="54"/>
-        <CursorPos X="1" Y="76"/>
+        <TopLine Value="91"/>
+        <CursorPos X="25" Y="118"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-base\src\custapp.pp"/>
         <UnitName Value="CustApp"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="41"/>
         <CursorPos X="14" Y="60"/>
@@ -150,7 +150,7 @@
       <Unit13>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\objpas\objpas.pp"/>
         <UnitName Value="objpas"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="72"/>
         <CursorPos X="15" Y="91"/>
@@ -167,7 +167,7 @@
       </Unit14>
       <Unit15>
         <Filename Value="C:\lazarus\lcl\include\fileutil.inc"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="277"/>
         <CursorPos X="1" Y="300"/>
@@ -213,7 +213,7 @@
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="241"/>
         <CursorPos X="41" Y="256"/>
@@ -293,127 +293,157 @@
         <CursorPos X="20" Y="351"/>
         <UsageCount Value="10"/>
       </Unit30>
+      <Unit31>
+        <Filename Value="..\..\indy\IdDsnCoreResourceStrings.pas"/>
+        <UnitName Value="IdDsnCoreResourceStrings"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="..\..\indy\IdStreamVCL.pas"/>
+        <UnitName Value="IdStreamVCL"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="48"/>
+        <CursorPos X="15" Y="69"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="..\..\indy\IdRegisterCore.pas"/>
+        <UnitName Value="IdRegisterCore"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="136"/>
+        <CursorPos X="12" Y="138"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit33>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="waptcommon.pas"/>
-        <Caret Line="498" Column="1" TopLine="476"/>
+        <Caret Line="497" Column="1" TopLine="483"/>
       </Position1>
       <Position2>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="499" Column="1" TopLine="476"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="18" Column="12" TopLine="10"/>
       </Position2>
       <Position3>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="501" Column="1" TopLine="476"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position3>
       <Position4>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="502" Column="1" TopLine="476"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="73" Column="11" TopLine="51"/>
       </Position4>
       <Position5>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="504" Column="1" TopLine="476"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="76" Column="9" TopLine="51"/>
       </Position5>
       <Position6>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="113" Column="1" TopLine="82"/>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-base\src\custapp.pp"/>
+        <Caret Line="81" Column="57" TopLine="62"/>
       </Position6>
       <Position7>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="487" Column="73" TopLine="476"/>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-base\src\custapp.pp"/>
+        <Caret Line="214" Column="13" TopLine="212"/>
       </Position7>
       <Position8>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="490" Column="1" TopLine="483"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="76" Column="9" TopLine="51"/>
       </Position8>
       <Position9>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="491" Column="1" TopLine="483"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position9>
       <Position10>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="492" Column="1" TopLine="483"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="46" Column="10" TopLine="15"/>
       </Position10>
       <Position11>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="493" Column="1" TopLine="483"/>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-base\src\custapp.pp"/>
+        <Caret Line="304" Column="17" TopLine="302"/>
       </Position11>
       <Position12>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="494" Column="1" TopLine="483"/>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-base\src\custapp.pp"/>
+        <Caret Line="318" Column="18" TopLine="307"/>
       </Position12>
       <Position13>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="496" Column="1" TopLine="483"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="77" Column="17" TopLine="54"/>
       </Position13>
       <Position14>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="497" Column="1" TopLine="483"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="76" Column="3" TopLine="54"/>
       </Position14>
       <Position15>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="18" Column="12" TopLine="10"/>
+        <Caret Line="69" Column="11" TopLine="54"/>
       </Position15>
       <Position16>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="49" Column="25" TopLine="19"/>
       </Position16>
       <Position17>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="73" Column="11" TopLine="51"/>
+        <Caret Line="76" Column="1" TopLine="54"/>
       </Position17>
       <Position18>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="76" Column="9" TopLine="51"/>
+        <Filename Value="..\..\indy\IdDsnCoreResourceStrings.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position18>
       <Position19>
-        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-base\src\custapp.pp"/>
-        <Caret Line="81" Column="57" TopLine="62"/>
+        <Filename Value="..\..\indy\IdStreamVCL.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position19>
       <Position20>
-        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-base\src\custapp.pp"/>
-        <Caret Line="214" Column="13" TopLine="212"/>
+        <Filename Value="..\..\indy\IdStreamVCL.pas"/>
+        <Caret Line="77" Column="12" TopLine="60"/>
       </Position20>
       <Position21>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="76" Column="9" TopLine="51"/>
+        <Filename Value="..\..\indy\IdRegisterCore.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position21>
       <Position22>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="..\..\indy\IdStreamVCL.pas"/>
+        <Caret Line="77" Column="12" TopLine="60"/>
       </Position22>
       <Position23>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="46" Column="10" TopLine="15"/>
+        <Filename Value="..\..\indy\IdRegisterCore.pas"/>
+        <Caret Line="159" Column="20" TopLine="142"/>
       </Position23>
       <Position24>
-        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-base\src\custapp.pp"/>
-        <Caret Line="304" Column="17" TopLine="302"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="21" Column="31" TopLine="1"/>
       </Position24>
       <Position25>
-        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-base\src\custapp.pp"/>
-        <Caret Line="318" Column="18" TopLine="307"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="153" Column="16" TopLine="137"/>
       </Position25>
       <Position26>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="77" Column="17" TopLine="54"/>
+        <Caret Line="154" Column="10" TopLine="137"/>
       </Position26>
       <Position27>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="76" Column="3" TopLine="54"/>
+        <Caret Line="156" Column="3" TopLine="139"/>
       </Position27>
       <Position28>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="69" Column="11" TopLine="54"/>
+        <Caret Line="108" Column="54" TopLine="91"/>
       </Position28>
       <Position29>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="18" Column="30" TopLine="19"/>
+        <Caret Line="154" Column="10" TopLine="137"/>
       </Position29>
       <Position30>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="49" Column="25" TopLine="19"/>
+        <Caret Line="156" Column="3" TopLine="139"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>
@@ -425,7 +455,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS);$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS)\$(LCLWidgetType);d:\projdev\python4delphi\PythonForDelphi\Components\FPC_Units\;d:\projdev\python4delphi\PythonForDelphi\Components\Sources\Core\;d:\projdev\python4delphi\PythonForDelphi\Components\;..\..\indy"/>
+      <OtherUnitFiles Value="$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS);$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS)\$(LCLWidgetType);c:\tranquilit\python4delphi\PythonForDelphi\Components\FPC_Units\;c:\tranquilit\python4delphi\PythonForDelphi\Components\Sources\Core\;c:\tranquilit\python4delphi\PythonForDelphi\Components\;..\..\indy"/>
       <UnitOutputDirectory Value="./lib"/>
     </SearchPaths>
     <Linking>
@@ -439,7 +469,7 @@
       </CompilerMessages>
       <CompilerPath Value="$(CompPath)"/>
       <ExecuteAfter>
-        <Command Value="&quot;c:\Program Files\7-Zip\7z.exe&quot; a d:\projdev\wapt\wapt-get.zip d:\projdev\wapt\wapt-get.exe"/>
+        <Command Value="&quot;c:\Program Files\7-Zip\7z.exe&quot; a c:\tranquilit\wapt\wapt-get.zip c:\tranquilit\wapt\wapt-get.exe"/>
       </ExecuteAfter>
     </Other>
   </CompilerOptions>
