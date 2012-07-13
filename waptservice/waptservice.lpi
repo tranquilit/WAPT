@@ -20,6 +20,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="2"/>
+      <RevisionNr Value="1"/>
       <Language Value="040C"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Service helper" ProductVersion=""/>
     </VersionInfo>
@@ -60,7 +61,7 @@
         <PackageName Value="FCL"/>
       </Item6>
     </RequiredPackages>
-    <Units Count="28">
+    <Units Count="34">
       <Unit0>
         <Filename Value="waptservice.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -68,7 +69,7 @@
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="1" Y="16"/>
+        <CursorPos X="13" Y="4"/>
         <UsageCount Value="76"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -77,12 +78,10 @@
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DaemonMapper1"/>
         <UnitName Value="WaptMapper"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="18" Y="5"/>
         <UsageCount Value="76"/>
-        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="waptunit.pas"/>
@@ -90,12 +89,10 @@
         <ComponentName Value="WaptDaemon"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WaptUnit"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="30"/>
         <CursorPos X="38" Y="62"/>
         <UsageCount Value="76"/>
-        <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="unit1.pas"/>
@@ -144,18 +141,15 @@
         <TopLine Value="1460"/>
         <CursorPos X="30" Y="1478"/>
         <UsageCount Value="11"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="165"/>
         <CursorPos X="19" Y="194"/>
         <UsageCount Value="43"/>
-        <Loaded Value="True"/>
       </Unit9>
       <Unit10>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-process\src\process.pp"/>
@@ -219,7 +213,6 @@
         <TopLine Value="27"/>
         <CursorPos X="12" Y="45"/>
         <UsageCount Value="9"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit17>
       <Unit18>
         <Filename Value="..\..\tishelp\utishelp.pas"/>
@@ -292,28 +285,75 @@
         <TopLine Value="683"/>
         <CursorPos X="20" Y="705"/>
         <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit26>
       <Unit27>
         <Filename Value="..\..\jcl\source\common\JclSysInfo.pas"/>
         <UnitName Value="JclSysInfo"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="48"/>
         <CursorPos X="23" Y="61"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit27>
+      <Unit28>
+        <Filename Value="..\..\jcl\source\common\JclStrings.pas"/>
+        <UnitName Value="JclStrings"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="..\..\jcl\source\common\JclUnicode.pas"/>
+        <UnitName Value="JclUnicode"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1020"/>
+        <CursorPos X="17" Y="1025"/>
+        <UsageCount Value="10"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="..\..\jcl\source\windows\JclShell.pas"/>
+        <UnitName Value="JclShell"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="..\..\jcl\source\common\JclSynch.pas"/>
+        <UnitName Value="JclSynch"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="..\..\jcl\source\common\JclSysUtils.pas"/>
+        <UnitName Value="JclSysUtils"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="4122"/>
+        <CursorPos X="28" Y="4141"/>
+        <UsageCount Value="10"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="..\..\indy\IdStreamVCL.pas"/>
+        <UnitName Value="IdStreamVCL"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="10"/>
+        <CursorPos X="13" Y="18"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit33>
     </Units>
     <JumpHistory Count="2" HistoryIndex="1">
       <Position1>
-        <Filename Value="waptunit.pas"/>
-        <Caret Line="34" Column="18" TopLine="25"/>
+        <Filename Value="..\..\indy\IdStreamVCL.pas"/>
+        <Caret Line="77" Column="12" TopLine="58"/>
       </Position1>
       <Position2>
-        <Filename Value="..\..\jcl\source\common\JclSysInfo.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="..\..\indy\IdStreamVCL.pas"/>
+        <Caret Line="9" Column="44" TopLine="1"/>
       </Position2>
     </JumpHistory>
   </ProjectOptions>
@@ -325,14 +365,13 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);..\..\jcl\source\include"/>
-      <OtherUnitFiles Value="..\wapt-get;..\..\jcl\source\common;..\..\jcl\source\include;..\..\jcl\source\windows"/>
+      <OtherUnitFiles Value="..\wapt-get;..\..\jcl\source\common;..\..\jcl\source\include;..\..\jcl\source\windows;..\..\indy"/>
       <UnitOutputDirectory Value="./lib"/>
     </SearchPaths>
     <Linking>
       <Debugging>
-        <GenerateDebugInfo Value="True"/>
-        <GenerateDwarf Value="True"/>
-        <UseExternalDbgSyms Value="True"/>
+        <UseLineInfoUnit Value="False"/>
+        <StripSymbols Value="True"/>
       </Debugging>
     </Linking>
     <Other>

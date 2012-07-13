@@ -85,8 +85,8 @@ begin
       raise Exception.Create('You must run this setup with Admin rights');
     Logger('Checking install path '+InstallPath,DEBUG);
     ForceDirectory(InstallPath);
-    Logger('Adding '+InstallPath+' to User PATH',DEBUG);
-    AddToUserPath(InstallPath);
+    Logger('Adding '+InstallPath+' to system PATH',DEBUG);
+    AddToSystemPath(InstallPath);
     // Copy wapt-get.exe to install dir
     downloadPath:=  ParamStrUTF8(0);
     if CompareFilenamesIgnoreCase(ExtractFilePath(downloadPath), AppendPathDelim(InstallPath))<>0 then
