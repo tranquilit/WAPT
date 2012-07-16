@@ -31,7 +31,7 @@ action is either :
  search : list available packages
 """
 
-version = "0.4.2"
+version = "0.4.4"
 
 parser=OptionParser(usage=usage,version="%prog " + version)
 parser.add_option("-c","--config", dest="config", default='c:\\wapt\\wapt-get.ini', help="Config file full path (default: %default)")
@@ -100,37 +100,40 @@ def find_wapt_server(configparser):
         return url
     if not url:
         logger.debug('No url defined in ini file')
-    # find by dns SRV _wapt._tcp
-    try:
-        logger.debug('Trying _wapt._tcp.%s SRV records' % dnsdomain)
-        answers = dns.resolver.query('_wapt._tcp.%s' % dnsdomain,'SRV')
-        for a in answers:
-            if a.port == 80:
+    if dnsdomain and dnsdomain <> '.':
+        # find by dns SRV _wapt._tcp
+        try:
+            logger.debug('Trying _wapt._tcp.%s SRV records' % dnsdomain)
+            answers = dns.resolver.query('_wapt._tcp.%s' % dnsdomain,'SRV')
+            for a in answers:
+                if a.port == 80:
+                    url = 'http://%s/wapt' % (a.target.canonicalize().to_text()[0:-1])
+                    if tryurl(url):
+                        return url
+                else:
+                    url = 'http://%s:%i/wapt' % (a.target.canonicalize().to_text()[0:-1],a.port)
+                    if tryurl(url):
+                        return url
+            if not answers:
+                logger.debug('  No _wapt._tcp.%s SRV record found' % dnsdomain)
+        except dns.resolver.NXDOMAIN:
+            pass
+
+        # find by dns CNAME
+        try:
+            logger.debug('Trying wapt.%s CNAME records' % dnsdomain)
+            answers = dns.resolver.query('wapt.%s' % dnsdomain,'CNAME')
+            for a in answers:
                 url = 'http://%s/wapt' % (a.target.canonicalize().to_text()[0:-1])
                 if tryurl(url):
                     return url
-            else:
-                url = 'http://%s:%i/wapt' % (a.target.canonicalize().to_text()[0:-1],a.port)
-                if tryurl(url):
-                    return url
-        if not answers:
-            logger.debug('  No _wapt._tcp.%s SRV record found' % dnsdomain)
-    except dns.resolver.NXDOMAIN:
-        pass
+            if not answers:
+                logger.debug('  No wapt.%s CNAME SRV record found' % dnsdomain)
 
-    # find by dns CNAME
-    try:
-        logger.debug('Trying wapt.%s CNAME records' % dnsdomain)
-        answers = dns.resolver.query('wapt.%s' % dnsdomain,'CNAME')
-        for a in answers:
-            url = 'http://%s/wapt' % (a.target.canonicalize().to_text()[0:-1])
-            if tryurl(url):
-                return url
-        if not answers:
-            logger.debug('  No wapt.%s CNAME SRV record found' % dnsdomain)
-
-    except dns.resolver.NXDOMAIN:
-        pass
+        except dns.resolver.NXDOMAIN:
+            pass
+    else:
+        logger.warning('Local DNS domain not found, skipping SRV _wapt._tcp and CNAME search ')
 
     # hardcoded wapt
     url = 'http://wapt/wapt'
