@@ -4,7 +4,7 @@ Uses
 {$IFDEF UNIX}{$IFDEF UseCThreads}
   CThreads,
 {$ENDIF}{$ENDIF}
-  DaemonApp, lazdaemonapp, weblaz, WaptMapper, WaptUnit, waptcommon, indylaz,
+  DaemonApp, lazdaemonapp, weblaz, WaptMapper, WaptUnit, waptcommon,
   interfaces;
 
 {$R *.res}

@@ -61,27 +61,29 @@
         <PackageName Value="FCL"/>
       </Item6>
     </RequiredPackages>
-    <Units Count="34">
+    <Units Count="37">
       <Unit0>
         <Filename Value="waptservice.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptservice"/>
-        <EditorIndex Value="0"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="13" Y="4"/>
-        <UsageCount Value="76"/>
+        <CursorPos X="69" Y="7"/>
+        <UsageCount Value="79"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="waptmapper.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DaemonMapper1"/>
+        <HasResources Value="True"/>
         <UnitName Value="WaptMapper"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="18" Y="5"/>
-        <UsageCount Value="76"/>
+        <CursorPos X="24" Y="14"/>
+        <UsageCount Value="79"/>
       </Unit1>
       <Unit2>
         <Filename Value="waptunit.pas"/>
@@ -89,10 +91,12 @@
         <ComponentName Value="WaptDaemon"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WaptUnit"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="30"/>
-        <CursorPos X="38" Y="62"/>
-        <UsageCount Value="76"/>
+        <TopLine Value="1"/>
+        <CursorPos X="25" Y="9"/>
+        <UsageCount Value="79"/>
+        <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="unit1.pas"/>
@@ -141,15 +145,16 @@
         <TopLine Value="1460"/>
         <CursorPos X="30" Y="1478"/>
         <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="165"/>
-        <CursorPos X="19" Y="194"/>
-        <UsageCount Value="43"/>
+        <TopLine Value="17"/>
+        <CursorPos X="31" Y="25"/>
+        <UsageCount Value="46"/>
       </Unit9>
       <Unit10>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-process\src\process.pp"/>
@@ -213,6 +218,7 @@
         <TopLine Value="27"/>
         <CursorPos X="12" Y="45"/>
         <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit17>
       <Unit18>
         <Filename Value="..\..\tishelp\utishelp.pas"/>
@@ -285,6 +291,7 @@
         <TopLine Value="683"/>
         <CursorPos X="20" Y="705"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit26>
       <Unit27>
         <Filename Value="..\..\jcl\source\common\JclSysInfo.pas"/>
@@ -298,16 +305,16 @@
         <Filename Value="..\..\jcl\source\common\JclStrings.pas"/>
         <UnitName Value="JclStrings"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
+        <TopLine Value="49"/>
+        <CursorPos X="8" Y="57"/>
         <UsageCount Value="10"/>
       </Unit28>
       <Unit29>
         <Filename Value="..\..\jcl\source\common\JclUnicode.pas"/>
         <UnitName Value="JclUnicode"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1020"/>
-        <CursorPos X="17" Y="1025"/>
+        <TopLine Value="1394"/>
+        <CursorPos X="12" Y="1411"/>
         <UsageCount Value="10"/>
       </Unit29>
       <Unit30>
@@ -330,46 +337,69 @@
         <Filename Value="..\..\jcl\source\common\JclSysUtils.pas"/>
         <UnitName Value="JclSysUtils"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="4122"/>
-        <CursorPos X="28" Y="4141"/>
+        <TopLine Value="4142"/>
+        <CursorPos X="25" Y="4159"/>
         <UsageCount Value="10"/>
       </Unit32>
       <Unit33>
         <Filename Value="..\..\indy\IdStreamVCL.pas"/>
         <UnitName Value="IdStreamVCL"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="10"/>
-        <CursorPos X="13" Y="18"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <CursorPos X="6" Y="31"/>
+        <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit33>
+      <Unit34>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\win\sysutils.pp"/>
+        <UnitName Value="sysutils"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1244"/>
+        <CursorPos X="35" Y="1274"/>
+        <UsageCount Value="10"/>
+      </Unit34>
+      <Unit35>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\winunits-jedi\src\jwatlhelp32.pas"/>
+        <UnitName Value="JwaTlHelp32"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="265"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="..\..\indy\indylaz.pas"/>
+        <UnitName Value="indylaz"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="19" Y="10"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit36>
     </Units>
-    <JumpHistory Count="2" HistoryIndex="1">
+    <JumpHistory Count="1" HistoryIndex="0">
       <Position1>
-        <Filename Value="..\..\indy\IdStreamVCL.pas"/>
-        <Caret Line="77" Column="12" TopLine="58"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="62" Column="38" TopLine="30"/>
       </Position1>
-      <Position2>
-        <Filename Value="..\..\indy\IdStreamVCL.pas"/>
-        <Caret Line="9" Column="44" TopLine="1"/>
-      </Position2>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="9"/>
+    <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="../waptservice.exe"/>
+      <Filename Value="..\waptservice.exe"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);..\..\jcl\source\include"/>
-      <OtherUnitFiles Value="..\wapt-get;..\..\jcl\source\common;..\..\jcl\source\include;..\..\jcl\source\windows;..\..\indy"/>
-      <UnitOutputDirectory Value="./lib"/>
+      <OtherUnitFiles Value="..\wapt-get;..\..\jcl\source\common;..\..\jcl\source\include;..\..\jcl\source\windows;..\..\indy\Core;..\..\indy\System;..\..\indy\Protocols;..\..\indy\Security"/>
+      <UnitOutputDirectory Value=".\lib"/>
     </SearchPaths>
+    <CodeGeneration>
+      <SmartLinkUnit Value="True"/>
+    </CodeGeneration>
     <Linking>
       <Debugging>
+        <GenerateDebugInfo Value="False"/>
         <UseLineInfoUnit Value="False"/>
         <StripSymbols Value="True"/>
       </Debugging>
@@ -390,6 +420,11 @@
     </Other>
   </CompilerOptions>
   <Debugging>
+    <Watches Count="1">
+      <Item1>
+        <Expression Value="DWORD"/>
+      </Item1>
+    </Watches>
     <Exceptions Count="4">
       <Item1>
         <Name Value="EAbort"/>

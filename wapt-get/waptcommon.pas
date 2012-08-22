@@ -4,7 +4,7 @@ unit waptcommon;
 interface
   uses
     Classes, SysUtils,ShellApi,windows,
-     WinInet,zipper,FileUtil,registry,strutils,Variants;
+     WinInet,zipper,registry,strutils,Variants,FileUtil;
 
   Function  FindWaptRepo:String;
   Function  Wget(const fileURL, DestFileName: String): boolean;
@@ -16,6 +16,7 @@ interface
 
   function TISGetComputerName : String;
   function TISGetUserName : String;
+  function TISUserInipath : String;
 
   type LogLevel=(DEBUG, INFO, WARNING, ERROR, CRITICAL);
   procedure Logger(Msg:String;level:LogLevel=WARNING);
@@ -155,7 +156,9 @@ begin
     SystemPath:=ReadString('PATH');
     if pos(LowerCase(APath),LowerCase(SystemPath))=0 then
     begin
-      SystemPath:=SystemPath+';'+APath;
+      if RightStr(SystemPath,1)<>';' then SystemPath:=SystemPath+';';
+      SystemPath:=SystemPath+APath;
+      if RightStr(SystemPath,1)<>';' then SystemPath:=SystemPath+';';
       WriteString('PATH',SystemPath);
     end;
   finally
@@ -175,7 +178,9 @@ begin
     SystemPath:=ReadString('PATH');
     if pos(LowerCase(APath),LowerCase(SystemPath))=0 then
     begin
-      SystemPath:=SystemPath+';'+APath;
+      if RightStr(SystemPath,1)<>';' then SystemPath:=SystemPath+';';
+      SystemPath:=SystemPath+APath;
+      if RightStr(SystemPath,1)<>';' then SystemPath:=SystemPath+';';
       WriteString('PATH',SystemPath);
     end;
   finally
@@ -288,6 +293,11 @@ begin
 	 finally
 			FreeMem( pcUser ); // now free the memory allocated for the string
 	 end;
+end;
+
+function TISUserInipath: String;
+begin
+
 end;
 
 procedure Logger(Msg: String;level:LogLevel=WARNING);
