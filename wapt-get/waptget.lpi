@@ -21,7 +21,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="4"/>
-      <RevisionNr Value="6"/>
+      <RevisionNr Value="7"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -47,7 +47,7 @@
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="39" Y="10"/>
+        <CursorPos X="26" Y="18"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -207,12 +207,10 @@
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="25" Y="21"/>
         <UsageCount Value="207"/>
-        <Loaded Value="True"/>
       </Unit21>
       <Unit22>
         <Filename Value="..\..\python4delphi\PythonForDelphi\Demos\FPC\Demo31\Project1.lpr"/>
@@ -338,65 +336,25 @@
       <Unit37>
         <Filename Value="..\..\indy\Protocols\IdDNSResolver.pas"/>
         <UnitName Value="IdDNSResolver"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="43" Y="26"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit37>
       <Unit38>
         <Filename Value="..\..\indy\Core\IdBuffer.pas"/>
         <UnitName Value="IdBuffer"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit38>
     </Units>
-    <JumpHistory Count="10" HistoryIndex="9">
+    <JumpHistory Count="1" HistoryIndex="0">
       <Position1>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position1>
-      <Position2>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="7" Column="24" TopLine="1"/>
-      </Position2>
-      <Position3>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position3>
-      <Position4>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="7" Column="21" TopLine="1"/>
-      </Position4>
-      <Position5>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="203" Column="41" TopLine="188"/>
-      </Position5>
-      <Position6>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="7" Column="56" TopLine="1"/>
-      </Position6>
-      <Position7>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position7>
-      <Position8>
         <Filename Value="waptget.lpr"/>
         <Caret Line="11" Column="37" TopLine="1"/>
-      </Position8>
-      <Position9>
-        <Filename Value="..\..\indy\Protocols\IdDNSResolver.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position9>
-      <Position10>
-        <Filename Value="..\..\indy\Core\IdBuffer.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position10>
+      </Position1>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
