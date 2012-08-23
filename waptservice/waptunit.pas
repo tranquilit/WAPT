@@ -89,7 +89,7 @@ end;
 
 procedure TWaptDaemon.DataModuleStart(Sender: TCustomDaemon; var OK: Boolean);
 begin
-  Application.Log(etInfo,'c:\wapt\wapt-get upgrade');
+//Application.Log(etInfo,'c:\wapt\wapt-get upgrade');
 end;
 
 procedure TWaptDaemon.DataModuleCreate(Sender: TObject);

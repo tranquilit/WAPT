@@ -1,7 +1,6 @@
 object WaptDaemon: TWaptDaemon
   OnCreate = DataModuleCreate
   OldCreateOrder = False
-  OnStart = DataModuleStart
   Height = 297
   HorizontalOffset = 482
   VerticalOffset = 343
