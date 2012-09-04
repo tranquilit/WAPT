@@ -8,7 +8,7 @@ uses
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, CustApp,
   { you can add units after this }
-  PythonEngine, waptcommon,FileUtil,IdDNSResolver;
+  PythonEngine, waptcommon,FileUtil;
 type
   { waptget }
 
@@ -152,19 +152,7 @@ begin
 end;
 
 function GetWaptURL:String;
-var
-  Resolver:TIdDNSResolver;
 begin
-  {Resolver := TIdDNSResolver.Create;
-  try
-    Resolver.QueryResult.Clear;
-    Resolver.QueryRecords := [qtService];
-    Resolver.Resolve('wapt.'+Resolver.);
-
-  finally
-    Resolver.Free;
-  end;}
-
 end;
 
 constructor pwaptget.Create(TheOwner: TComponent);

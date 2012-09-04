@@ -1,30 +1,46 @@
-Index: common/JclBase.pas
+Index: common/JclAnsiStrings.pas
 ===================================================================
---- common/JclBase.pas	(revision 3860)
-+++ common/JclBase.pas	(working copy)
-@@ -377,7 +377,7 @@
- {$IFDEF FPC}
- // FPC emits a lot of warning because the first parameter of its internal
- // GetMem is a var parameter, which is not initialized before the call to GetMem
--procedure GetMem(out P; Size: Longint);
-+//procedure GetMem(out P; Size: Longint);
- {$ENDIF FPC}
+--- common/JclAnsiStrings.pas	(revision 3860)
++++ common/JclAnsiStrings.pas	(working copy)
+@@ -506,8 +506,8 @@
  
- {$IFDEF UNITVERSIONING}
-@@ -585,11 +585,11 @@
- {$IFDEF FPC}
- // FPC emits a lot of warning because the first parameter of its internal
- // GetMem is a var parameter, which is not initialized before the call to GetMem
--procedure GetMem(out P; Size: Longint);
-+{procedure GetMem(out P; Size: Longint);
- begin
-   Pointer(P) := nil;
-   GetMem(Pointer(P), Size);
--end;
-+end;}
- {$ENDIF FPC}
+ function ArrayOf(List: TJclAnsiStrings): TDynStringArray; overload;
  
- initialization
+-function AnsiCompareNaturalStr(const S1, S2: AnsiString): SizeInt;
+-function AnsiCompareNaturalText(const S1, S2: AnsiString): SizeInt;
++function AnsiCompareNaturalStr(const S1, S2: AnsiString): SizeInt; overload;
++function AnsiCompareNaturalText(const S1, S2: AnsiString): SizeInt;overload;
+ 
+ // internal structures published to make function inlining working
+ const
+Index: common/JclDateTime.pas
+===================================================================
+--- common/JclDateTime.pas	(revision 3860)
++++ common/JclDateTime.pas	(working copy)
+@@ -87,7 +87,7 @@
+ 
+ { Encode / Decode functions }
+ 
+-function EncodeDate(const Year: Integer; Month, Day: Word): TDateTime;
++function EncodeDate(const Year: Integer; Month, Day: Word): TDateTime; overload;
+ procedure DecodeDate(Date: TDateTime; out Year, Month, Day: Word); overload;
+ procedure DecodeDate(Date: TDateTime; out Year: Integer; out Month, Day: Word); overload;
+ procedure DecodeDate(Date: TDateTime; out Year, Month, Day: Integer); overload;
+Index: common/JclStrings.pas
+===================================================================
+--- common/JclStrings.pas	(revision 3860)
++++ common/JclStrings.pas	(working copy)
+@@ -592,8 +592,8 @@
+ {$ENDIF SUPPORTS_UNICODE_STRING}
+ 
+ // natural comparison functions
+-function CompareNaturalStr(const S1, S2: string): SizeInt;
+-function CompareNaturalText(const S1, S2: string): SizeInt;
++function CompareNaturalStr(const S1, S2: string): SizeInt; overload;
++function CompareNaturalText(const S1, S2: string): SizeInt; overload;
+ 
+ {$IFNDEF UNICODE_RTL_DATABASE}
+ // internal structures published to make function inlining working
 Index: common/JclSysUtils.pas
 ===================================================================
 --- common/JclSysUtils.pas	(revision 3860)
@@ -47,24 +63,17 @@ Index: common/JclSysUtils.pas
      function _AddRef: Integer; stdcall;
      function _Release: Integer; stdcall;
    end;
-@@ -2217,7 +2217,7 @@
+@@ -2217,8 +2217,8 @@
      GetOwner.GetInterface(IInterface, FOwnerInterface);
  end;
  
 -function TJclInterfacedPersistent.QueryInterface(const IID: TGUID;
+-  out Obj): HRESULT;
 +function TJclInterfacedPersistent.QueryInterface(constref IID: TGUID;
-   out Obj): HRESULT;
++  out Obj): HRESULT; stdcall;
  begin
    if GetInterface(IID, Obj) then
-@@ -2772,7 +2772,7 @@
- var
-   PipeBytesRead: DWORD;
- begin
--  CancelIo(PipeInfo.PipeRead);
-+  //CancelIo(PipeInfo.PipeRead);
-   GetOverlappedResult(PipeInfo.PipeRead, Overlapped, PipeBytesRead, True);
-   if PipeBytesRead > 0 then
-     InternalExecuteProcessBuffer(PipeInfo, PipeBytesRead);
+     Result := S_OK
 @@ -2855,7 +2855,7 @@
        end;
        InternalAbort := False;
@@ -114,24 +123,41 @@ Index: common/JclUnicode.pas
 ===================================================================
 --- common/JclUnicode.pas	(revision 3860)
 +++ common/JclUnicode.pas	(working copy)
-@@ -2775,7 +2775,7 @@
+@@ -2769,7 +2769,7 @@
+   ClearResults;
+   Run := Text;
+   RunLen := TextLen;
+-  Start := 0;
++{  Start := 0;
+   Stop := 0;
+   // repeat to find all occurences of the pattern
    while Find(Run, RunLen, Start, Stop) do
-   begin
-     // store this result (consider text pointer movement)...
--    AddResult(Start + Run - Text, Stop + Run - Text);
-+    ////AddResult(Start + Run - Text, Stop + Run - Text);
-     // ... and advance text position and length
-     Inc(Run, Stop);
+@@ -2781,6 +2781,8 @@
      Dec(RunLen, Stop);
-@@ -4746,7 +4746,7 @@
+   end;
+   Result := Count > 0;
++}
++raise Exception.create('non implemented');
+ end;
+ 
+ function TUTBMSearch.FindFirst(const Text: WideString; var Start, Stop: SizeInt): Boolean;
+@@ -4741,7 +4743,7 @@
+   Run := Text;
+   RunLen := TextLen;
+   // repeat to find all occurences of the pattern
+-  Start := 0;
++{  Start := 0;
+   Stop := 0;
    while ExecuteURE(0, Run, RunLen, Start, Stop) do
    begin
-     // store this result (consider text pointer movement)...
--    AddResult(Start + Run - Text, Stop + Run - Text);
-+    //AddResult(Start + Run - Text, Stop + Run - Text);
-     // ... and advance text position and length
-     Inc(Run, Stop);
+@@ -4752,6 +4754,7 @@
      Dec(RunLen, Stop);
+   end;
+   Result := FResults.Count > 0;
++  }
+ end;
+ 
+ function TURESearch.FindFirst(const Text: WideString; var Start, Stop: SizeInt): Boolean;
 Index: windows/JclWin32.pas
 ===================================================================
 --- windows/JclWin32.pas	(revision 3860)
@@ -154,12 +180,13 @@ Index: windows/JclWin32.pas
    TPropVariantClear = function (var Prop: TPropVariant): HResult; stdcall;
  
  var
-@@ -8872,7 +8872,7 @@
+@@ -8871,8 +8871,8 @@
+   GetProcedureAddress(Pointer(@_PropVariantClear), Ole32Lib, 'PropVariantClear');
    Result := _PropVariantClear(Prop);
  end;
++  }
  
 -
-+}
  type
    TLsaOpenPolicy = function (SystemName: PLSA_UNICODE_STRING;
      var ObjectAttributes: LSA_OBJECT_ATTRIBUTES; DesiredAccess: ACCESS_MASK;

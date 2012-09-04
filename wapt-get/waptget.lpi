@@ -46,8 +46,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="26" Y="15"/>
+        <TopLine Value="160"/>
+        <CursorPos X="87" Y="180"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -230,7 +230,6 @@
       </Unit23>
       <Unit24>
         <Filename Value="..\..\indy\IdDNSResolver.pas"/>
-        <IsPartOfProject Value="True"/>
         <UnitName Value="IdDNSResolver"/>
         <WindowIndex Value="0"/>
         <TopLine Value="507"/>
@@ -350,11 +349,27 @@
         <UsageCount Value="10"/>
       </Unit38>
     </Units>
-    <JumpHistory Count="1" HistoryIndex="0">
+    <JumpHistory Count="5" HistoryIndex="4">
       <Position1>
         <Filename Value="waptget.lpr"/>
         <Caret Line="11" Column="37" TopLine="1"/>
       </Position1>
+      <Position2>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="15" Column="26" TopLine="1"/>
+      </Position2>
+      <Position3>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="11" Column="36" TopLine="1"/>
+      </Position3>
+      <Position4>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="156" Column="26" TopLine="141"/>
+      </Position4>
+      <Position5>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="20" Column="32" TopLine="34"/>
+      </Position5>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -365,7 +380,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS);$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS)\$(LCLWidgetType);c:\tranquilit\python4delphi\PythonForDelphi\Components\Sources\Core\;c:\tranquilit\python4delphi\PythonForDelphi\Components\;..\..\indy\Core;..\..\indy\Protocols;..\..\indy\Security;..\..\indy\System;$(LazarusDir)\components\lazutils\lib\$(TargetCPU)-$(TargetOS)"/>
+      <OtherUnitFiles Value="$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS);$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS)\$(LCLWidgetType);..\python4delphi\PythonForDelphi\Components\Sources\Core;..\python4delphi\PythonForDelphi\Components;$(LazarusDir)\components\lazutils\lib\$(TargetCPU)-$(TargetOS)"/>
       <UnitOutputDirectory Value="lib"/>
     </SearchPaths>
     <Linking>
@@ -412,4 +427,5 @@
       </Item3>
     </Exceptions>
   </Debugging>
+  <EditorMacros Count="0"/>
 </CONFIG>
