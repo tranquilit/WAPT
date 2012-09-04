@@ -1,0 +1,165 @@
+Index: common/JclBase.pas
+===================================================================
+--- common/JclBase.pas	(revision 3860)
++++ common/JclBase.pas	(working copy)
+@@ -377,7 +377,7 @@
+ {$IFDEF FPC}
+ // FPC emits a lot of warning because the first parameter of its internal
+ // GetMem is a var parameter, which is not initialized before the call to GetMem
+-procedure GetMem(out P; Size: Longint);
++//procedure GetMem(out P; Size: Longint);
+ {$ENDIF FPC}
+ 
+ {$IFDEF UNITVERSIONING}
+@@ -585,11 +585,11 @@
+ {$IFDEF FPC}
+ // FPC emits a lot of warning because the first parameter of its internal
+ // GetMem is a var parameter, which is not initialized before the call to GetMem
+-procedure GetMem(out P; Size: Longint);
++{procedure GetMem(out P; Size: Longint);
+ begin
+   Pointer(P) := nil;
+   GetMem(Pointer(P), Size);
+-end;
++end;}
+ {$ENDIF FPC}
+ 
+ initialization
+Index: common/JclSysUtils.pas
+===================================================================
+--- common/JclSysUtils.pas	(revision 3860)
++++ common/JclSysUtils.pas	(working copy)
+@@ -419,7 +419,7 @@
+   public
+     procedure AfterConstruction; override;
+     { IInterface }
+-    function QueryInterface(const IID: TGUID; out Obj): HRESULT; virtual; stdcall;
++    function QueryInterface(constref IID: TGUID; out Obj): HRESULT; virtual; stdcall;
+     function _AddRef: Integer; stdcall;
+     function _Release: Integer; stdcall;
+   end;
+@@ -644,7 +644,7 @@
+     constructor Create;
+     destructor Destroy; override;
+     { IInterface }
+-    function QueryInterface(const IID: TGUID; out Obj): HRESULT; stdcall;
++    function QueryInterface(constref IID: TGUID; out Obj): HRESULT; stdcall;
+     function _AddRef: Integer; stdcall;
+     function _Release: Integer; stdcall;
+   end;
+@@ -2217,7 +2217,7 @@
+     GetOwner.GetInterface(IInterface, FOwnerInterface);
+ end;
+ 
+-function TJclInterfacedPersistent.QueryInterface(const IID: TGUID;
++function TJclInterfacedPersistent.QueryInterface(constref IID: TGUID;
+   out Obj): HRESULT;
+ begin
+   if GetInterface(IID, Obj) then
+@@ -2772,7 +2772,7 @@
+ var
+   PipeBytesRead: DWORD;
+ begin
+-  CancelIo(PipeInfo.PipeRead);
++  //CancelIo(PipeInfo.PipeRead);
+   GetOverlappedResult(PipeInfo.PipeRead, Overlapped, PipeBytesRead, True);
+   if PipeBytesRead > 0 then
+     InternalExecuteProcessBuffer(PipeInfo, PipeBytesRead);
+@@ -2855,7 +2855,7 @@
+       end;
+       InternalAbort := False;
+       if AbortPtr <> nil then
+-        AbortPtr^ := False
++        AbortPtr^ := Byte(False)
+       else
+         AbortPtr := @InternalAbort;
+       // init the array of events to wait for
+@@ -2897,7 +2897,7 @@
+         InternalExecuteReadPipe(ErrorPipeInfo, ErrorOverlapped);
+       end;
+       // event based loop
+-      while not AbortPtr^ do
++      while not boolean(AbortPtr^) do
+       begin
+         Index := WaitAlertableForMultipleObjects(WaitEvents, False, INFINITE);
+         if Index = WAIT_OBJECT_0 then
+@@ -2927,7 +2927,7 @@
+         if ((Index = (WAIT_OBJECT_0 + 2)) and MergeError) or
+            ((Index = (WAIT_OBJECT_0 + 3)) and not MergeError) then
+           // event on abort
+-          AbortPtr^ := True
++          AbortPtr^ := Byte(True)
+         else
+           {$IFDEF DELPHI11_UP}
+           RaiseLastOSError(Index);
+@@ -2935,7 +2935,7 @@
+           RaiseLastOSError;
+           {$ENDIF DELPHI11_UP}
+       end;
+-      if AbortPtr^ then
++      if boolean(AbortPtr^) then
+         TerminateProcess(ProcessEvent.Handle, Cardinal(ABORT_EXIT_CODE));
+       if (ProcessEvent.WaitForever = wrSignaled) and not GetExitCodeProcess(ProcessEvent.Handle, Result) then
+         Result := $FFFFFFFF;
+@@ -3619,7 +3619,7 @@
+   Result := 0;
+ end;
+ 
+-function TJclIntfCriticalSection.QueryInterface(const IID: TGUID; out Obj): HRESULT;
++function TJclIntfCriticalSection.QueryInterface(constref IID: TGUID; out Obj): HRESULT;
+ begin
+   if GetInterface(IID, Obj) then
+     Result := S_OK
+Index: common/JclUnicode.pas
+===================================================================
+--- common/JclUnicode.pas	(revision 3860)
++++ common/JclUnicode.pas	(working copy)
+@@ -2775,7 +2775,7 @@
+   while Find(Run, RunLen, Start, Stop) do
+   begin
+     // store this result (consider text pointer movement)...
+-    AddResult(Start + Run - Text, Stop + Run - Text);
++    ////AddResult(Start + Run - Text, Stop + Run - Text);
+     // ... and advance text position and length
+     Inc(Run, Stop);
+     Dec(RunLen, Stop);
+@@ -4746,7 +4746,7 @@
+   while ExecuteURE(0, Run, RunLen, Start, Stop) do
+   begin
+     // store this result (consider text pointer movement)...
+-    AddResult(Start + Run - Text, Stop + Run - Text);
++    //AddResult(Start + Run - Text, Stop + Run - Text);
+     // ... and advance text position and length
+     Inc(Run, Stop);
+     Dec(RunLen, Stop);
+Index: windows/JclWin32.pas
+===================================================================
+--- windows/JclWin32.pas	(revision 3860)
++++ windows/JclWin32.pas	(working copy)
+@@ -7242,7 +7242,7 @@
+   PIDMSI_COPYRIGHT   = $0000000B; // VT_LPWSTR
+   {$EXTERNALSYM PIDMSI_COPYRIGHT}
+ 
+-function PropVariantClear(var Prop: TPropVariant): HResult; stdcall;
++//function PropVariantClear(var Prop: TPropVariant): HResult; stdcall;
+ {$EXTERNALSYM PropVariantClear}
+ 
+ 
+@@ -8860,7 +8860,7 @@
+ end;
+ 
+ 
+-type
++{type
+   TPropVariantClear = function (var Prop: TPropVariant): HResult; stdcall;
+ 
+ var
+@@ -8872,7 +8872,7 @@
+   Result := _PropVariantClear(Prop);
+ end;
+ 
+-
++}
+ type
+   TLsaOpenPolicy = function (SystemName: PLSA_UNICODE_STRING;
+     var ObjectAttributes: LSA_OBJECT_ATTRIBUTES; DesiredAccess: ACCESS_MASK;
