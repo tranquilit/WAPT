@@ -38,27 +38,24 @@
         <CommandLineParams Value="--run"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="6">
+    <RequiredPackages Count="5">
       <Item1>
-        <PackageName Value="pl_indycomp"/>
-      </Item1>
-      <Item2>
         <PackageName Value="weblaz"/>
         <MinVersion Valid="True"/>
-      </Item2>
-      <Item3>
+      </Item1>
+      <Item2>
         <PackageName Value="SQLDBLaz"/>
         <MinVersion Major="1" Release="1" Valid="True"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="LazDaemon"/>
       </Item3>
       <Item4>
-        <PackageName Value="LazDaemon"/>
+        <PackageName Value="LCL"/>
       </Item4>
       <Item5>
-        <PackageName Value="LCL"/>
-      </Item5>
-      <Item6>
         <PackageName Value="FCL"/>
-      </Item6>
+      </Item5>
     </RequiredPackages>
     <Units Count="51">
       <Unit0>
@@ -78,7 +75,7 @@
         <ComponentName Value="DaemonMapper1"/>
         <HasResources Value="True"/>
         <UnitName Value="WaptMapper"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="24" Y="14"/>
@@ -94,10 +91,10 @@
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WaptUnit"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="12"/>
+        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="67"/>
-        <CursorPos X="3" Y="96"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="86"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -149,6 +146,7 @@
         <TopLine Value="1460"/>
         <CursorPos X="30" Y="1478"/>
         <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
@@ -221,6 +219,7 @@
         <TopLine Value="27"/>
         <CursorPos X="12" Y="45"/>
         <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit17>
       <Unit18>
         <Filename Value="..\..\tishelp\utishelp.pas"/>
@@ -293,6 +292,7 @@
         <TopLine Value="683"/>
         <CursorPos X="20" Y="705"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit26>
       <Unit27>
         <Filename Value="..\..\jcl\source\common\JclSysInfo.pas"/>
@@ -349,6 +349,7 @@
         <TopLine Value="10"/>
         <CursorPos X="6" Y="31"/>
         <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit33>
       <Unit34>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\win\sysutils.pp"/>
@@ -373,6 +374,7 @@
         <TopLine Value="1"/>
         <CursorPos X="19" Y="10"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit36>
       <Unit37>
         <Filename Value="..\jcl\source\include\jcl.inc"/>
@@ -447,17 +449,15 @@
       <Unit45>
         <Filename Value="C:\codetyphon\lazarus\lcl\interfaces\win32\interfaces.pp"/>
         <UnitName Value="Interfaces"/>
-        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit45>
       <Unit46>
         <Filename Value="..\jcl\source\common\JclStrings.pas"/>
         <UnitName Value="JclStrings"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="580"/>
         <CursorPos X="70" Y="596"/>
@@ -467,7 +467,7 @@
       <Unit47>
         <Filename Value="..\jcl\source\common\JclDateTime.pas"/>
         <UnitName Value="JclDateTime"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="75"/>
         <CursorPos X="81" Y="90"/>
@@ -476,21 +476,17 @@
       </Unit47>
       <Unit48>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\win\wininc\base.inc"/>
-        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="186"/>
         <CursorPos X="6" Y="201"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit48>
       <Unit49>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\systemh.inc"/>
-        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="257"/>
         <CursorPos X="3" Y="272"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit49>
       <Unit50>
         <Filename Value="..\jcl\source\common\JclAnsiStrings.pas"/>
@@ -506,122 +502,122 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="..\jcl\source\common\JclSysUtils.pas"/>
-        <Caret Line="2196" Column="21" TopLine="2172"/>
+        <Caret Line="2221" Column="30" TopLine="2220"/>
       </Position1>
       <Position2>
         <Filename Value="..\jcl\source\common\JclSysUtils.pas"/>
-        <Caret Line="2211" Column="62" TopLine="2187"/>
+        <Caret Line="415" Column="30" TopLine="400"/>
       </Position2>
       <Position3>
         <Filename Value="..\jcl\source\common\JclSysUtils.pas"/>
-        <Caret Line="2221" Column="30" TopLine="2220"/>
+        <Caret Line="640" Column="29" TopLine="625"/>
       </Position3>
       <Position4>
         <Filename Value="..\jcl\source\common\JclSysUtils.pas"/>
-        <Caret Line="415" Column="30" TopLine="400"/>
+        <Caret Line="422" Column="74" TopLine="407"/>
       </Position4>
       <Position5>
         <Filename Value="..\jcl\source\common\JclSysUtils.pas"/>
-        <Caret Line="640" Column="29" TopLine="625"/>
+        <Caret Line="415" Column="27" TopLine="407"/>
       </Position5>
       <Position6>
         <Filename Value="..\jcl\source\common\JclSysUtils.pas"/>
-        <Caret Line="422" Column="74" TopLine="407"/>
+        <Caret Line="2211" Column="33" TopLine="2187"/>
       </Position6>
       <Position7>
         <Filename Value="..\jcl\source\common\JclSysUtils.pas"/>
-        <Caret Line="415" Column="27" TopLine="407"/>
+        <Caret Line="2213" Column="35" TopLine="2189"/>
       </Position7>
       <Position8>
         <Filename Value="..\jcl\source\common\JclSysUtils.pas"/>
-        <Caret Line="2211" Column="33" TopLine="2187"/>
+        <Caret Line="2220" Column="34" TopLine="2196"/>
       </Position8>
       <Position9>
         <Filename Value="..\jcl\source\common\JclSysUtils.pas"/>
-        <Caret Line="2213" Column="35" TopLine="2189"/>
+        <Caret Line="2229" Column="34" TopLine="2205"/>
       </Position9>
       <Position10>
         <Filename Value="..\jcl\source\common\JclSysUtils.pas"/>
-        <Caret Line="2220" Column="34" TopLine="2196"/>
+        <Caret Line="422" Column="37" TopLine="407"/>
       </Position10>
       <Position11>
         <Filename Value="..\jcl\source\common\JclSysUtils.pas"/>
-        <Caret Line="2229" Column="34" TopLine="2205"/>
+        <Caret Line="2220" Column="58" TopLine="2220"/>
       </Position11>
       <Position12>
-        <Filename Value="..\jcl\source\common\JclSysUtils.pas"/>
-        <Caret Line="422" Column="37" TopLine="407"/>
+        <Filename Value="..\jcl\source\common\JclStrings.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position12>
       <Position13>
-        <Filename Value="..\jcl\source\common\JclSysUtils.pas"/>
-        <Caret Line="2220" Column="58" TopLine="2220"/>
+        <Filename Value="..\jcl\source\common\JclStrings.pas"/>
+        <Caret Line="5355" Column="36" TopLine="5340"/>
       </Position13>
       <Position14>
         <Filename Value="..\jcl\source\common\JclStrings.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="595" Column="36" TopLine="594"/>
       </Position14>
       <Position15>
         <Filename Value="..\jcl\source\common\JclStrings.pas"/>
-        <Caret Line="5355" Column="36" TopLine="5340"/>
+        <Caret Line="5360" Column="37" TopLine="5351"/>
       </Position15>
       <Position16>
         <Filename Value="..\jcl\source\common\JclStrings.pas"/>
-        <Caret Line="595" Column="36" TopLine="594"/>
+        <Caret Line="595" Column="10" TopLine="580"/>
       </Position16>
       <Position17>
-        <Filename Value="..\jcl\source\common\JclStrings.pas"/>
-        <Caret Line="5360" Column="37" TopLine="5351"/>
-      </Position17>
-      <Position18>
-        <Filename Value="..\jcl\source\common\JclStrings.pas"/>
-        <Caret Line="595" Column="10" TopLine="580"/>
-      </Position18>
-      <Position19>
         <Filename Value="..\jcl\source\common\JclDateTime.pas"/>
         <Caret Line="1" Column="1" TopLine="1"/>
+      </Position17>
+      <Position18>
+        <Filename Value="..\jcl\source\common\JclSysUtils.pas"/>
+        <Caret Line="647" Column="37" TopLine="625"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\jcl\source\common\JclSysUtils.pas"/>
+        <Caret Line="2858" Column="23" TopLine="2843"/>
       </Position19>
       <Position20>
         <Filename Value="..\jcl\source\common\JclSysUtils.pas"/>
-        <Caret Line="647" Column="37" TopLine="625"/>
+        <Caret Line="2789" Column="47" TopLine="2774"/>
       </Position20>
       <Position21>
         <Filename Value="..\jcl\source\common\JclSysUtils.pas"/>
-        <Caret Line="2858" Column="23" TopLine="2843"/>
+        <Caret Line="2858" Column="33" TopLine="2843"/>
       </Position21>
       <Position22>
         <Filename Value="..\jcl\source\common\JclSysUtils.pas"/>
-        <Caret Line="2789" Column="47" TopLine="2774"/>
+        <Caret Line="2930" Column="34" TopLine="2915"/>
       </Position22>
       <Position23>
         <Filename Value="..\jcl\source\common\JclSysUtils.pas"/>
-        <Caret Line="2858" Column="33" TopLine="2843"/>
+        <Caret Line="2900" Column="35" TopLine="2885"/>
       </Position23>
       <Position24>
         <Filename Value="..\jcl\source\common\JclSysUtils.pas"/>
-        <Caret Line="2930" Column="34" TopLine="2915"/>
+        <Caret Line="2938" Column="28" TopLine="2923"/>
       </Position24>
       <Position25>
-        <Filename Value="..\jcl\source\common\JclSysUtils.pas"/>
-        <Caret Line="2900" Column="35" TopLine="2885"/>
+        <Filename Value="..\jcl\source\common\JclUnicode.pas"/>
+        <Caret Line="2777" Column="35" TopLine="2757"/>
       </Position25>
       <Position26>
-        <Filename Value="..\jcl\source\common\JclSysUtils.pas"/>
-        <Caret Line="2938" Column="28" TopLine="2923"/>
+        <Filename Value="..\jcl\source\common\JclUnicode.pas"/>
+        <Caret Line="2778" Column="44" TopLine="2763"/>
       </Position26>
       <Position27>
         <Filename Value="..\jcl\source\common\JclUnicode.pas"/>
-        <Caret Line="2777" Column="35" TopLine="2757"/>
+        <Caret Line="2785" Column="43" TopLine="2763"/>
       </Position27>
       <Position28>
-        <Filename Value="..\jcl\source\common\JclUnicode.pas"/>
-        <Caret Line="2778" Column="44" TopLine="2763"/>
+        <Filename Value="..\jcl\source\common\JclAnsiStrings.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position28>
       <Position29>
-        <Filename Value="..\jcl\source\common\JclUnicode.pas"/>
-        <Caret Line="2785" Column="43" TopLine="2763"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="78" Column="26" TopLine="67"/>
       </Position29>
       <Position30>
-        <Filename Value="..\jcl\source\common\JclAnsiStrings.pas"/>
+        <Filename Value="waptunit.pas"/>
         <Caret Line="1" Column="1" TopLine="1"/>
       </Position30>
     </JumpHistory>
@@ -683,5 +679,4 @@
       </Item4>
     </Exceptions>
   </Debugging>
-  <EditorMacros Count="0"/>
 </CONFIG>

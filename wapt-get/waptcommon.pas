@@ -3,7 +3,7 @@ unit waptcommon;
 {$mode objfpc}{$H+}
 interface
   uses
-    Classes, SysUtils,ShellApi,windows,
+    Classes, SysUtils,windows,
      WinInet,zipper,registry,strutils,Variants,FileUtil;
 
   Function  FindWaptRepo:String;
@@ -46,7 +46,7 @@ const
 
 implementation
 
-uses Process,Unzip,winsock,JwaTlHelp32;
+uses Process,winsock,JwaTlHelp32;
 
 function FindWaptRepo: String;
 begin
@@ -86,7 +86,7 @@ begin
       if (res ='200') or (res ='302') then
       begin
         Size:=0;
-        AssignFile(f, utf8Toansi(DestFileName)) ;
+        AssignFile(f, DestFileName) ;
         Rewrite(f,1) ;
         repeat
           BufferLen:= 0;
@@ -137,7 +137,7 @@ var
 begin
   UnZipper := TUnZipper.Create;
   try
-    UnZipper.FileName := utf8toAnsi(ZipFilePath);
+    UnZipper.FileName := ZipFilePath;
     UnZipper.OutputPath := OutputPath;
     UnZipper.Examine;
     UnZipper.UnZipAllFiles;
@@ -170,7 +170,6 @@ end;
 
 procedure AddToSystemPath(APath:String);
 var
-  r:TRegistry;
   SystemPath : String;
   aresult:LongWord;
 begin
@@ -185,8 +184,8 @@ begin
       SystemPath:=SystemPath+APath;
       if RightStr(SystemPath,1)<>';' then SystemPath:=SystemPath+';';
       WriteExpandString('Path',SystemPath);
+      Windows.SendMessageTimeout(HWND_BROADCAST,WM_SETTINGCHANGE,0,Longint(PChar('Environment')),0,1000,aresult);
     end;
-    Windows.SendMessageTimeout(HWND_BROADCAST,WM_SETTINGCHANGE,0,Longint(PChar('Environment')),0,1000,aresult);
   finally
     Free;
   end;
@@ -199,7 +198,6 @@ var
   files:TStringList;
   UnZipper: TUnZipper;
   i:integer;
-  ze : TZipFileEntry;
 begin
   Files := TStringList.Create;
   try
@@ -225,7 +223,7 @@ begin
       Logger('  unzipping file '+zipfn);
       UnZipper := TUnZipper.Create;
       try
-        UnZipper.FileName := utf8toAnsi(zipfn);
+        UnZipper.FileName := zipfn;
         UnZipper.OutputPath := tempdir;
         UnZipper.Examine;
         UnZipper.UnZipAllFiles;

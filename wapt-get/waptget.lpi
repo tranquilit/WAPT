@@ -12,6 +12,7 @@
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
       <Icon Value="0"/>
+      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -20,7 +21,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="4"/>
-      <RevisionNr Value="8"/>
+      <RevisionNr Value="10"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -34,19 +35,20 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="list"/>
       </local>
     </RunParams>
-    <Units Count="39">
+    <Units Count="51">
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
         <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="71"/>
-        <CursorPos X="1" Y="58"/>
+        <TopLine Value="87"/>
+        <CursorPos X="87" Y="104"/>
         <UsageCount Value="222"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-base\src\custapp.pp"/>
@@ -204,10 +206,12 @@
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="25" Y="21"/>
+        <TopLine Value="71"/>
+        <CursorPos X="24" Y="85"/>
         <UsageCount Value="207"/>
+        <Loaded Value="True"/>
       </Unit21>
       <Unit22>
         <Filename Value="..\..\python4delphi\PythonForDelphi\Demos\FPC\Demo31\Project1.lpr"/>
@@ -232,7 +236,6 @@
         <TopLine Value="507"/>
         <CursorPos X="25" Y="544"/>
         <UsageCount Value="122"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit24>
       <Unit25>
         <Filename Value="..\..\indy\IdDNSCommon.pas"/>
@@ -241,7 +244,6 @@
         <TopLine Value="580"/>
         <CursorPos X="6" Y="615"/>
         <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit25>
       <Unit26>
         <Filename Value="..\..\indy\IdStack.pas"/>
@@ -250,7 +252,6 @@
         <TopLine Value="353"/>
         <CursorPos X="10" Y="383"/>
         <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit26>
       <Unit27>
         <Filename Value="..\..\indy\IdGlobal.pas"/>
@@ -259,7 +260,6 @@
         <TopLine Value="6880"/>
         <CursorPos X="71" Y="6911"/>
         <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit27>
       <Unit28>
         <Filename Value="..\..\indy\IdStackWindows.pas"/>
@@ -268,7 +268,6 @@
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit28>
       <Unit29>
         <Filename Value="..\..\indy\IdWship6.pas"/>
@@ -277,7 +276,6 @@
         <TopLine Value="1"/>
         <CursorPos X="61" Y="1"/>
         <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit29>
       <Unit30>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\winunits-jedi\src\jwawinbase.pas"/>
@@ -294,7 +292,6 @@
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit31>
       <Unit32>
         <Filename Value="..\..\indy\IdStreamVCL.pas"/>
@@ -303,7 +300,6 @@
         <TopLine Value="60"/>
         <CursorPos X="12" Y="77"/>
         <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit32>
       <Unit33>
         <Filename Value="..\..\indy\IdRegisterCore.pas"/>
@@ -312,7 +308,6 @@
         <TopLine Value="136"/>
         <CursorPos X="12" Y="138"/>
         <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit33>
       <Unit34>
         <Filename Value="..\..\indy\indylaz.pas"/>
@@ -321,7 +316,6 @@
         <TopLine Value="1"/>
         <CursorPos X="3" Y="10"/>
         <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit34>
       <Unit35>
         <Filename Value="..\..\indy\Core\IdAboutVCL.pas"/>
@@ -330,7 +324,6 @@
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit35>
       <Unit36>
         <Filename Value="..\..\indy\Core\IdDsnCoreResourceStrings.pas"/>
@@ -339,7 +332,6 @@
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit36>
       <Unit37>
         <Filename Value="..\..\indy\Protocols\IdDNSResolver.pas"/>
@@ -348,7 +340,6 @@
         <TopLine Value="1"/>
         <CursorPos X="43" Y="26"/>
         <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit37>
       <Unit38>
         <Filename Value="..\..\indy\Core\IdBuffer.pas"/>
@@ -357,10 +348,229 @@
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit38>
+      <Unit39>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-registry\src\registry.pp"/>
+        <UnitName Value="registry"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="426"/>
+        <CursorPos X="38" Y="431"/>
+        <UsageCount Value="10"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\objpas.pp"/>
+        <UnitName Value="objpas"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="206"/>
+        <CursorPos X="30" Y="223"/>
+        <UsageCount Value="10"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="C:\codetyphon\lazarus\components\lazutils\fileutil.pas"/>
+        <UnitName Value="FileUtil"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="203"/>
+        <CursorPos X="10" Y="219"/>
+        <UsageCount Value="10"/>
+      </Unit41>
+      <Unit42>
+        <Filename Value="C:\codetyphon\lazarus\components\lazutils\fileutil.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit42>
+      <Unit43>
+        <Filename Value="C:\codetyphon\lazarus\components\lazutils\lazutf8classes.pas"/>
+        <UnitName Value="lazutf8classes"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="3" Y="11"/>
+        <UsageCount Value="10"/>
+      </Unit43>
+      <Unit44>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\systemh.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="319"/>
+        <CursorPos X="24" Y="336"/>
+        <UsageCount Value="10"/>
+      </Unit44>
+      <Unit45>
+        <Filename Value="C:\codetyphon\lazarus\components\lazutils\winfileutil.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="500"/>
+        <CursorPos X="24" Y="527"/>
+        <UsageCount Value="10"/>
+      </Unit45>
+      <Unit46>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\finah.inc"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="11"/>
+        <CursorPos X="17" Y="22"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit46>
+      <Unit47>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\fina.inc"/>
+        <EditorIndex Value="5"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="16"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit47>
+      <Unit48>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\win\sysutils.pp"/>
+        <UnitName Value="sysutils"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="22"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit48>
+      <Unit49>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\ustringh.inc"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="112"/>
+        <CursorPos X="10" Y="128"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit49>
+      <Unit50>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\ustrings.inc"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1996"/>
+        <CursorPos X="5" Y="2003"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit50>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="104" Column="132" TopLine="88"/>
+      </Position1>
+      <Position2>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="95" Column="18" TopLine="88"/>
+      </Position2>
+      <Position3>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="107" Column="22" TopLine="88"/>
+      </Position3>
+      <Position4>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\finah.inc"/>
+        <Caret Line="21" Column="10" TopLine="5"/>
+      </Position4>
+      <Position5>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\fina.inc"/>
+        <Caret Line="36" Column="3" TopLine="31"/>
+      </Position5>
+      <Position6>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\fina.inc"/>
+        <Caret Line="31" Column="25" TopLine="25"/>
+      </Position6>
+      <Position7>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\fina.inc"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position7>
+      <Position8>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\fina.inc"/>
+        <Caret Line="31" Column="25" TopLine="4"/>
+      </Position8>
+      <Position9>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\fina.inc"/>
+        <Caret Line="219" Column="31" TopLine="199"/>
+      </Position9>
+      <Position10>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\fina.inc"/>
+        <Caret Line="275" Column="55" TopLine="254"/>
+      </Position10>
+      <Position11>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\finah.inc"/>
+        <Caret Line="21" Column="25" TopLine="5"/>
+      </Position11>
+      <Position12>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\finah.inc"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position12>
+      <Position13>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="98" Column="23" TopLine="91"/>
+      </Position13>
+      <Position14>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="100" Column="35" TopLine="91"/>
+      </Position14>
+      <Position15>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\fina.inc"/>
+        <Caret Line="276" Column="53" TopLine="227"/>
+      </Position15>
+      <Position16>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="100" Column="36" TopLine="91"/>
+      </Position16>
+      <Position17>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="9" Column="13" TopLine="1"/>
+      </Position17>
+      <Position18>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="108" Column="25" TopLine="88"/>
+      </Position18>
+      <Position19>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\ustrings.inc"/>
+        <Caret Line="2003" Column="5" TopLine="1996"/>
+      </Position19>
+      <Position20>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="96" Column="12" TopLine="99"/>
+      </Position20>
+      <Position21>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="108" Column="1" TopLine="100"/>
+      </Position21>
+      <Position22>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="29" Column="40" TopLine="21"/>
+      </Position22>
+      <Position23>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="108" Column="1" TopLine="93"/>
+      </Position23>
+      <Position24>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="110" Column="1" TopLine="93"/>
+      </Position24>
+      <Position25>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="111" Column="1" TopLine="93"/>
+      </Position25>
+      <Position26>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="112" Column="1" TopLine="93"/>
+      </Position26>
+      <Position27>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="118" Column="1" TopLine="93"/>
+      </Position27>
+      <Position28>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="119" Column="1" TopLine="102"/>
+      </Position28>
+      <Position29>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="120" Column="1" TopLine="102"/>
+      </Position29>
+      <Position30>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="121" Column="1" TopLine="102"/>
+      </Position30>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
@@ -373,6 +583,11 @@
       <OtherUnitFiles Value="$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS);$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS)\$(LCLWidgetType);..\python4delphi\PythonForDelphi\Components\Sources\Core;..\python4delphi\PythonForDelphi\Components;$(LazarusDir)\components\lazutils\lib\$(TargetCPU)-$(TargetOS)"/>
       <UnitOutputDirectory Value="lib"/>
     </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <SyntaxMode Value="fpc"/>
+      </SyntaxOptions>
+    </Parsing>
     <Linking>
       <Debugging>
         <UseExternalDbgSyms Value="True"/>
@@ -384,12 +599,12 @@
       </CompilerMessages>
       <CompilerPath Value="$(CompPath)"/>
       <ExecuteAfter>
-        <Command Value="&quot;c:\Program Files\7-Zip\7z.exe&quot; a c:\tranquilit\wapt\wapt-get.zip c:\tranquilit\wapt\wapt-get.exe"/>
+        <Command Value="&quot;c:\Program Files\7-Zip\7z.exe&quot; a c:\tranquilit\wapté\wapt-get.zip c:\tranquilit\wapté\wapt-get.exe"/>
       </ExecuteAfter>
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="2">
+    <BreakPoints Count="6">
       <Item1>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsGlobal"/>
@@ -404,6 +619,34 @@
         <Source Value="C:\lazarus\fpc\2.6.0\source\packages\paszlib\src\zipper.pp"/>
         <Line Value="1853"/>
       </Item2>
+      <Item3>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="C:\codetyphon\fpcsrc\rtl\objpas\objpas.pp"/>
+        <Line Value="230"/>
+      </Item3>
+      <Item4>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\fina.inc"/>
+        <Line Value="36"/>
+      </Item4>
+      <Item5>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="C:\codetyphon\fpcsrc\rtl\inc\ustrings.inc"/>
+        <Line Value="2003"/>
+      </Item5>
+      <Item6>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="waptget.lpr"/>
+        <Line Value="108"/>
+      </Item6>
     </BreakPoints>
     <Exceptions Count="3">
       <Item1>
@@ -417,4 +660,5 @@
       </Item3>
     </Exceptions>
   </Debugging>
+  <EditorMacros Count="0"/>
 </CONFIG>

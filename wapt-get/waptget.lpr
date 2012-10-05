@@ -8,7 +8,7 @@ uses
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, CustApp,
   { you can add units after this }
-  PythonEngine, waptcommon,FileUtil;
+  Windows,PythonEngine, waptcommon,FileUtil;
 type
   { waptget }
 
@@ -26,7 +26,7 @@ type
 
 procedure pwaptget.DoRun;
 var
-  InstallPath,ZipFilePath,LibsURL: String;
+  InstallPath,ZipFilePath,LibsURL: Utf8String;
   MainModule : TStringList;
   downloadPath : String;
   repo,logleveloption : String;
@@ -96,17 +96,19 @@ begin
     Logger('Adding '+InstallPath+' to system PATH',DEBUG);
     AddToSystemPath(InstallPath);
     // Copy wapt-get.exe to install dir
-    downloadPath:=  ParamStrUTF8(0);
+    downloadPath := ParamStrUTF8(0);
     if CompareFilenamesIgnoreCase(ExtractFilePath(downloadPath), AppendPathDelim(InstallPath))<>0 then
     begin
-      logger(UTF8ToConsole('Copying '+downloadPath+' to '+AppendPathDelim(InstallPath)+'wapt-get.exe'),INFO);
-      if not FileUtil.CopyFile(downloadPath,AppendPathDelim(InstallPath)+'wapt-get.exe',True) then
+      Writeln(downloadpath);
+      logger('Copying '+downloadPath+' to '+AppendPathDelim(InstallPath)+'wapt-get.exe',INFO);
+      if not Windows.CopyFileW(PWideChar(UTF8Decode(downloadPath)),PWideChar(AppendPathDelim(UTF8Decode(InstallPath+'wapt-get.exe'))),False) then
         logger('  Error : unable to copy, error code : '+intToStr(IOResult),CRITICAL);
     end;
     ZipFilePath := ExtractFilePath(downloadPath)+'wapt-libs.zip';
+    writeln( UTF8Decode(ZipFilePath));
 
     LibsURL := repo+'/wapt-libs.zip';
-    Writeln(UTF8ToConsole('Downloading '+LibsURL+' to '+ZipFilePath));
+    Writeln('Downloading '+LibsURL+' to '+ZipFilePath);
     if not wget(LibsURL,ZipFilePath) then
     begin
       Writeln('Unable to download '+LibsURL);
