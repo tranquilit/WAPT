@@ -11,7 +11,7 @@ interface
   Procedure UnzipFile(ZipFilePath,OutputPath:String);
   Procedure AddToUserPath(APath:String);
   procedure AddToSystemPath(APath:String);
-  procedure UpdateCurrentApplication(fromURL:String;Restart:Boolean);
+  procedure UpdateCurrentApplication(fromURL:String;Restart:Boolean;restartparam:String);
   function  ApplicationVersion(FileName:String=''): String;
 
   function TISGetComputerName : String;
@@ -63,8 +63,10 @@ function wget(const fileURL, DestFileName: String): boolean;
    f: File;
    sAppName: string;
    Size: Integer;
-   dwindex,dwcodelen,dwread,dwNumber: cardinal;
+   dwindex: cardinal;
    dwcode : array[1..20] of char;
+   dwCodeLen : DWORD;
+   dwNumber: DWORD;
    res    : pchar;
    Str    : pchar;
 
@@ -170,25 +172,27 @@ procedure AddToSystemPath(APath:String);
 var
   r:TRegistry;
   SystemPath : String;
+  aresult:LongWord;
 begin
   with TRegistry.Create do
   try
     RootKey:=HKEY_LOCAL_MACHINE;
     OpenKey('SYSTEM\CurrentControlSet\Control\Session Manager\Environment',False);
-    SystemPath:=ReadString('PATH');
+    SystemPath:=ReadString('Path');
     if pos(LowerCase(APath),LowerCase(SystemPath))=0 then
     begin
       if RightStr(SystemPath,1)<>';' then SystemPath:=SystemPath+';';
       SystemPath:=SystemPath+APath;
       if RightStr(SystemPath,1)<>';' then SystemPath:=SystemPath+';';
-      WriteString('PATH',SystemPath);
+      WriteExpandString('Path',SystemPath);
     end;
+    Windows.SendMessageTimeout(HWND_BROADCAST,WM_SETTINGCHANGE,0,Longint(PChar('Environment')),0,1000,aresult);
   finally
     Free;
   end;
 end;
 
-procedure UpdateCurrentApplication(fromURL:String;restart:Boolean);
+procedure UpdateCurrentApplication(fromURL:String;restart:Boolean;restartparam:String);
 var
   bat: TextFile;
   tempdir,tempfn,updateBatch,fn,zipfn,version,destdir : String;
@@ -258,7 +262,7 @@ begin
         end;
         Writeln(bat,'cd ..');
         if restart then
-          Writeln(bat,'start "" "'+ParamStr(0)+'"');
+          Writeln(bat,'start "" "'+ParamStr(0)+'" '+restartparam);
         Writeln(bat,'rmdir /s /q "'+tempdir+'"');
       finally
         CloseFile(bat)
@@ -446,6 +450,7 @@ begin
  CloseHandle(FSnapshotHandle);
 end;
 
+// from http://theroadtodelphi.wordpress.com/2010/02/21/checking-if-a-tcp-port-is-open-using-delphi-and-winsocks/
 function PortTCP_IsOpen(dwPort : Word; ipAddressStr:AnsiString) : boolean;
 var
   client : sockaddr_in;

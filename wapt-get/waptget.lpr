@@ -50,6 +50,12 @@ begin
     writeln(' -r --repo : URL of dependencies libs (default : '+FindWaptRepo+')');
   end;
 
+  if HasOption('p','path') then
+  begin
+    AddToSystemPath(InstallPath);
+    Terminate;
+  end;
+
   if HasOption('r','repo') then
     repo := GetOptionValue('r','repo')
   else
@@ -71,7 +77,9 @@ begin
   end;
 
   if HasOption('g','upgrade') then
-    UpdateCurrentApplication(repo+'/'+ExtractFileName(paramstr(0)),False);
+  begin
+    UpdateCurrentApplication(repo+'/'+ExtractFileName(paramstr(0)),False,' --setup');
+  end;
 
 
   if HasOption('v','version') then
@@ -105,6 +113,7 @@ begin
       Terminate;
       Exit;
     end;
+    ExitStatus := 0;
     Writeln(RunTask('net stop waptservice',ExitStatus));
     Writeln('Unzipping '+ZipFilePath);
     UnzipFile(ZipFilePath,InstallPath);
@@ -151,9 +160,6 @@ begin
   Terminate;
 end;
 
-function GetWaptURL:String;
-begin
-end;
 
 constructor pwaptget.Create(TheOwner: TComponent);
 begin

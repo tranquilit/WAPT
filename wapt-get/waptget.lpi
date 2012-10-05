@@ -12,7 +12,6 @@
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
       <Icon Value="0"/>
-      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -21,7 +20,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="4"/>
-      <RevisionNr Value="7"/>
+      <RevisionNr Value="8"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -44,12 +43,10 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="160"/>
-        <CursorPos X="87" Y="180"/>
+        <TopLine Value="71"/>
+        <CursorPos X="1" Y="58"/>
         <UsageCount Value="222"/>
-        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-base\src\custapp.pp"/>
@@ -235,6 +232,7 @@
         <TopLine Value="507"/>
         <CursorPos X="25" Y="544"/>
         <UsageCount Value="122"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit24>
       <Unit25>
         <Filename Value="..\..\indy\IdDNSCommon.pas"/>
@@ -243,6 +241,7 @@
         <TopLine Value="580"/>
         <CursorPos X="6" Y="615"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit25>
       <Unit26>
         <Filename Value="..\..\indy\IdStack.pas"/>
@@ -251,6 +250,7 @@
         <TopLine Value="353"/>
         <CursorPos X="10" Y="383"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit26>
       <Unit27>
         <Filename Value="..\..\indy\IdGlobal.pas"/>
@@ -259,6 +259,7 @@
         <TopLine Value="6880"/>
         <CursorPos X="71" Y="6911"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit27>
       <Unit28>
         <Filename Value="..\..\indy\IdStackWindows.pas"/>
@@ -267,6 +268,7 @@
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit28>
       <Unit29>
         <Filename Value="..\..\indy\IdWship6.pas"/>
@@ -275,6 +277,7 @@
         <TopLine Value="1"/>
         <CursorPos X="61" Y="1"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit29>
       <Unit30>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\winunits-jedi\src\jwawinbase.pas"/>
@@ -291,6 +294,7 @@
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit31>
       <Unit32>
         <Filename Value="..\..\indy\IdStreamVCL.pas"/>
@@ -299,6 +303,7 @@
         <TopLine Value="60"/>
         <CursorPos X="12" Y="77"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit32>
       <Unit33>
         <Filename Value="..\..\indy\IdRegisterCore.pas"/>
@@ -307,6 +312,7 @@
         <TopLine Value="136"/>
         <CursorPos X="12" Y="138"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit33>
       <Unit34>
         <Filename Value="..\..\indy\indylaz.pas"/>
@@ -315,6 +321,7 @@
         <TopLine Value="1"/>
         <CursorPos X="3" Y="10"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit34>
       <Unit35>
         <Filename Value="..\..\indy\Core\IdAboutVCL.pas"/>
@@ -323,6 +330,7 @@
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit35>
       <Unit36>
         <Filename Value="..\..\indy\Core\IdDsnCoreResourceStrings.pas"/>
@@ -331,6 +339,7 @@
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit36>
       <Unit37>
         <Filename Value="..\..\indy\Protocols\IdDNSResolver.pas"/>
@@ -339,6 +348,7 @@
         <TopLine Value="1"/>
         <CursorPos X="43" Y="26"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit37>
       <Unit38>
         <Filename Value="..\..\indy\Core\IdBuffer.pas"/>
@@ -347,30 +357,10 @@
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit38>
     </Units>
-    <JumpHistory Count="5" HistoryIndex="4">
-      <Position1>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="11" Column="37" TopLine="1"/>
-      </Position1>
-      <Position2>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="15" Column="26" TopLine="1"/>
-      </Position2>
-      <Position3>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="11" Column="36" TopLine="1"/>
-      </Position3>
-      <Position4>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="156" Column="26" TopLine="141"/>
-      </Position4>
-      <Position5>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="20" Column="32" TopLine="34"/>
-      </Position5>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
@@ -427,5 +417,4 @@
       </Item3>
     </Exceptions>
   </Debugging>
-  <EditorMacros Count="0"/>
 </CONFIG>
