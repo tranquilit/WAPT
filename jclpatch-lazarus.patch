@@ -1,0 +1,437 @@
+Index: source/common/JclBase.pas
+===================================================================
+--- source/common/JclBase.pas	(revision 3860)
++++ source/common/JclBase.pas	(working copy)
+@@ -377,7 +377,7 @@
+ {$IFDEF FPC}
+ // FPC emits a lot of warning because the first parameter of its internal
+ // GetMem is a var parameter, which is not initialized before the call to GetMem
+-procedure GetMem(out P; Size: Longint);
++//procedure GetMem(out P; Size: Longint);
+ {$ENDIF FPC}
+ 
+ {$IFDEF UNITVERSIONING}
+@@ -585,11 +585,11 @@
+ {$IFDEF FPC}
+ // FPC emits a lot of warning because the first parameter of its internal
+ // GetMem is a var parameter, which is not initialized before the call to GetMem
+-procedure GetMem(out P; Size: Longint);
++{procedure GetMem(out P; Size: Longint);
+ begin
+   Pointer(P) := nil;
+   GetMem(Pointer(P), Size);
+-end;
++end;}
+ {$ENDIF FPC}
+ 
+ initialization
+Index: source/common/JclSysUtils.pas
+===================================================================
+--- source/common/JclSysUtils.pas	(revision 3860)
++++ source/common/JclSysUtils.pas	(working copy)
+@@ -419,7 +419,7 @@
+   public
+     procedure AfterConstruction; override;
+     { IInterface }
+-    function QueryInterface(const IID: TGUID; out Obj): HRESULT; virtual; stdcall;
++    function QueryInterface(constref IID: TGUID; out Obj): HRESULT; virtual; stdcall;
+     function _AddRef: Integer; stdcall;
+     function _Release: Integer; stdcall;
+   end;
+@@ -644,7 +644,7 @@
+     constructor Create;
+     destructor Destroy; override;
+     { IInterface }
+-    function QueryInterface(const IID: TGUID; out Obj): HRESULT; stdcall;
++    function QueryInterface(constref IID: TGUID; out Obj): HRESULT; stdcall;
+     function _AddRef: Integer; stdcall;
+     function _Release: Integer; stdcall;
+   end;
+@@ -2217,7 +2217,7 @@
+     GetOwner.GetInterface(IInterface, FOwnerInterface);
+ end;
+ 
+-function TJclInterfacedPersistent.QueryInterface(const IID: TGUID;
++function TJclInterfacedPersistent.QueryInterface(constref IID: TGUID;
+   out Obj): HRESULT;
+ begin
+   if GetInterface(IID, Obj) then
+@@ -2772,7 +2772,7 @@
+ var
+   PipeBytesRead: DWORD;
+ begin
+-  CancelIo(PipeInfo.PipeRead);
++  //CancelIo(PipeInfo.PipeRead);
+   GetOverlappedResult(PipeInfo.PipeRead, Overlapped, PipeBytesRead, True);
+   if PipeBytesRead > 0 then
+     InternalExecuteProcessBuffer(PipeInfo, PipeBytesRead);
+@@ -2855,7 +2855,7 @@
+       end;
+       InternalAbort := False;
+       if AbortPtr <> nil then
+-        AbortPtr^ := False
++        AbortPtr^ := Byte(False)
+       else
+         AbortPtr := @InternalAbort;
+       // init the array of events to wait for
+@@ -2897,7 +2897,7 @@
+         InternalExecuteReadPipe(ErrorPipeInfo, ErrorOverlapped);
+       end;
+       // event based loop
+-      while not AbortPtr^ do
++      while not boolean(AbortPtr^) do
+       begin
+         Index := WaitAlertableForMultipleObjects(WaitEvents, False, INFINITE);
+         if Index = WAIT_OBJECT_0 then
+@@ -2927,7 +2927,7 @@
+         if ((Index = (WAIT_OBJECT_0 + 2)) and MergeError) or
+            ((Index = (WAIT_OBJECT_0 + 3)) and not MergeError) then
+           // event on abort
+-          AbortPtr^ := True
++          AbortPtr^ := Byte(True)
+         else
+           {$IFDEF DELPHI11_UP}
+           RaiseLastOSError(Index);
+@@ -2935,7 +2935,7 @@
+           RaiseLastOSError;
+           {$ENDIF DELPHI11_UP}
+       end;
+-      if AbortPtr^ then
++      if boolean(AbortPtr^) then
+         TerminateProcess(ProcessEvent.Handle, Cardinal(ABORT_EXIT_CODE));
+       if (ProcessEvent.WaitForever = wrSignaled) and not GetExitCodeProcess(ProcessEvent.Handle, Result) then
+         Result := $FFFFFFFF;
+@@ -3619,7 +3619,7 @@
+   Result := 0;
+ end;
+ 
+-function TJclIntfCriticalSection.QueryInterface(const IID: TGUID; out Obj): HRESULT;
++function TJclIntfCriticalSection.QueryInterface(constref IID: TGUID; out Obj): HRESULT;
+ begin
+   if GetInterface(IID, Obj) then
+     Result := S_OK
+Index: source/common/JclUnicode.pas
+===================================================================
+--- source/common/JclUnicode.pas	(revision 3860)
++++ source/common/JclUnicode.pas	(working copy)
+@@ -2775,7 +2775,7 @@
+   while Find(Run, RunLen, Start, Stop) do
+   begin
+     // store this result (consider text pointer movement)...
+-    AddResult(Start + Run - Text, Stop + Run - Text);
++    ////AddResult(Start + Run - Text, Stop + Run - Text);
+     // ... and advance text position and length
+     Inc(Run, Stop);
+     Dec(RunLen, Stop);
+@@ -4746,7 +4746,7 @@
+   while ExecuteURE(0, Run, RunLen, Start, Stop) do
+   begin
+     // store this result (consider text pointer movement)...
+-    AddResult(Start + Run - Text, Stop + Run - Text);
++    //AddResult(Start + Run - Text, Stop + Run - Text);
+     // ... and advance text position and length
+     Inc(Run, Stop);
+     Dec(RunLen, Stop);
+Index: source/include/jcld16win32.inc
+===================================================================
+--- source/include/jcld16win32.inc	(revision 0)
++++ source/include/jcld16win32.inc	(working copy)
+@@ -0,0 +1,131 @@
++{**************************************************************************************************}
++{                                                                                                  }
++{ Project JEDI Code Library (JCL)                                                                  }
++{                                                                                                  }
++{ The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License"); }
++{ you may not use this file except in compliance with the License. You may obtain a copy of the    }
++{ License at http://www.mozilla.org/MPL/                                                           }
++{                                                                                                  }
++{ Software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF   }
++{ ANY KIND, either express or implied. See the License for the specific language governing rights  }
++{ and limitations under the License.                                                               }
++{                                                                                                  }
++{ The Original Code is jcl.inc                                                                     }
++{                                                                                                  }
++{ The Initial Developer of the Original Code is Marcel van Brakel.                                 }
++{ Portions created by Marcel van Brakel are Copyright (C) Marcel van Brakel.                       }
++{                                                                                                  }
++{ Contributors:                                                                                    }
++{   Marcel van Brakel                                                                              }
++{   Matthias Thoma (mthoma)                                                                        }
++{   Petr Vones                                                                                     }
++{   Robert Marquardt (marquardt)                                                                   }
++{   Robert Rossmair (rrossmair)                                                                    }
++{   Florent Ouchet (outchy)                                                                        }
++{                                                                                                  }
++{**************************************************************************************************}
++{                                                                                                  }
++{ This include file defines various JCL specific defines.                                          }
++{ The more generic JCL defines are defined in jcl.inc and the generic defines in the jedi.inc file }
++{ which is shared with the JEDI VCL.                                                               }
++{                                                                                                  }
++{**************************************************************************************************}
++{                                                                                                  }
++{ This file is filled by the JCL installer, all the changes made in its content will be lost the   }
++{ next time the JCL is installed.                                                                  }
++{                                                                                                  }
++{**************************************************************************************************}
++
++// $Id: jcl.template.inc 3362 2010-10-05 13:24:05Z outchy $
++
++// Math precision selection, mutually exclusive
++// FPC does not support EXTENDED when targetting x86_64, MATH_DOUBLE_PRECISION is the default in this situation
++{.$DEFINE MATH_EXTENDED_PRECISION} // default
++{.$DEFINE MATH_DOUBLE_PRECISION}
++{.$DEFINE MATH_SINGLE_PRECISION}
++
++
++// Math functions takes care of infinites and NaN
++{.$DEFINE MATH_EXT_EXTREMEVALUES}
++
++
++// JclHookExcept support for hooking exceptions from DLLs
++{.$DEFINE HOOK_DLL_EXCEPTIONS}
++
++
++//Threadsafe directive
++{.$DEFINE THREADSAFE}
++
++
++// To exclude obsolete code from compilation, remove the point from the line below
++{.$DEFINE DROP_OBSOLETE_CODE}
++
++
++//Support for JclUnitVersioning.pas, not supported by Delphi 2005 (automatically disabled afterward)
++{.$DEFINE UNITVERSIONING}
++
++
++// debug sources
++// defining these symbols will the debug source to be automatically registered
++{.$DEFINE DEBUG_NO_BINARY}
++{.$DEFINE DEBUG_NO_TD32}     // automatically defined for FPC
++{.$DEFINE DEBUG_NO_MAP}
++{.$DEFINE DEBUG_NO_EXPORTS}
++{.$DEFINE DEBUG_NO_SYMBOLS}
++
++
++// PCRE options, mutually exclusive
++// IMPORTANT: The static link works only for Delphi 2005 and newer
++//            (an internal error is raised on other compilers)
++// Only one of the following defines can be defined at a time
++//   static link: PCRE_STATICLINK
++//   static dll import: PCRE_LINKDLL
++//   dynamic dll import: PCRE_LINKONREQUEST
++
++{.$DEFINE PCRE_STATICLINK}
++{.$DEFINE PCRE_LINKDLL}
++{.$DEFINE PCRE_LINKONREQUEST} // default
++
++
++// BZIP2 options, mutually exclusive
++
++{.$DEFINE BZIP2_STATICLINK} // default
++{.$DEFINE BZIP2_LINKDLL}
++{.$DEFINE BZIP2_LINKONREQUEST}
++
++
++// ZLIB options, mutually exclusive
++
++{.$DEFINE ZLIB_STATICLINK} // default
++{.$DEFINE ZLIB_LINKDLL}
++{.$DEFINE ZLIB_LINKONREQUEST}
++
++
++// Unicode options
++// use RTL Character Database rather than JCL one, less accurate but reduce executable size
++{.$DEFINE UNICODE_RTL_DATABASE}
++
++// insert a replacement character if sequence is corrupted rather than raising an exception
++{.$DEFINE UNICODE_SILENT_FAILURE}
++
++// defines resource compression (uncompressed, compressed with ZLib, compressed with BZip2), mutually exclusive
++{.$DEFINE UNICODE_RAW_DATA} // default
++{.$DEFINE UNICODE_ZLIB_DATA}
++{.$DEFINE UNICODE_BZIP2_DATA}
++
++
++// container options
++// define mapping of TJclStr* containers to TJclAnsiStr* or TJclWideStr* (mutually exclusive)
++{.$DEFINE CONTAINER_ANSISTR} // default for D2007 and older
++{.$DEFINE CONTAINER_WIDESTR}
++{.$DEFINE CONTAINER_UNICODESTR} // default for D2009 and newer, not supported for Delphi 2007 and older
++{.$DEFINE CONTAINER_NOSTR}
++
++
++// 7Zip options, mutually exclusive
++// IMPORTANT: The static link is not supported yet
++
++{.$DEFINE 7ZIP_STATICLINK} // not supported yet
++{.$DEFINE 7ZIP_LINKDLL}
++{.$DEFINE 7ZIP_LINKONREQUEST} // default
++
+Index: source/include/jcld16win64.inc
+===================================================================
+--- source/include/jcld16win64.inc	(revision 0)
++++ source/include/jcld16win64.inc	(working copy)
+@@ -0,0 +1,131 @@
++{**************************************************************************************************}
++{                                                                                                  }
++{ Project JEDI Code Library (JCL)                                                                  }
++{                                                                                                  }
++{ The contents of this file are subject to the Mozilla Public License Version 1.1 (the "License"); }
++{ you may not use this file except in compliance with the License. You may obtain a copy of the    }
++{ License at http://www.mozilla.org/MPL/                                                           }
++{                                                                                                  }
++{ Software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF   }
++{ ANY KIND, either express or implied. See the License for the specific language governing rights  }
++{ and limitations under the License.                                                               }
++{                                                                                                  }
++{ The Original Code is jcl.inc                                                                     }
++{                                                                                                  }
++{ The Initial Developer of the Original Code is Marcel van Brakel.                                 }
++{ Portions created by Marcel van Brakel are Copyright (C) Marcel van Brakel.                       }
++{                                                                                                  }
++{ Contributors:                                                                                    }
++{   Marcel van Brakel                                                                              }
++{   Matthias Thoma (mthoma)                                                                        }
++{   Petr Vones                                                                                     }
++{   Robert Marquardt (marquardt)                                                                   }
++{   Robert Rossmair (rrossmair)                                                                    }
++{   Florent Ouchet (outchy)                                                                        }
++{                                                                                                  }
++{**************************************************************************************************}
++{                                                                                                  }
++{ This include file defines various JCL specific defines.                                          }
++{ The more generic JCL defines are defined in jcl.inc and the generic defines in the jedi.inc file }
++{ which is shared with the JEDI VCL.                                                               }
++{                                                                                                  }
++{**************************************************************************************************}
++{                                                                                                  }
++{ This file is filled by the JCL installer, all the changes made in its content will be lost the   }
++{ next time the JCL is installed.                                                                  }
++{                                                                                                  }
++{**************************************************************************************************}
++
++// $Id: jcl.template.inc 3362 2010-10-05 13:24:05Z outchy $
++
++// Math precision selection, mutually exclusive
++// FPC does not support EXTENDED when targetting x86_64, MATH_DOUBLE_PRECISION is the default in this situation
++{.$DEFINE MATH_EXTENDED_PRECISION} // default
++{.$DEFINE MATH_DOUBLE_PRECISION}
++{.$DEFINE MATH_SINGLE_PRECISION}
++
++
++// Math functions takes care of infinites and NaN
++{.$DEFINE MATH_EXT_EXTREMEVALUES}
++
++
++// JclHookExcept support for hooking exceptions from DLLs
++{.$DEFINE HOOK_DLL_EXCEPTIONS}
++
++
++//Threadsafe directive
++{.$DEFINE THREADSAFE}
++
++
++// To exclude obsolete code from compilation, remove the point from the line below
++{.$DEFINE DROP_OBSOLETE_CODE}
++
++
++//Support for JclUnitVersioning.pas, not supported by Delphi 2005 (automatically disabled afterward)
++{.$DEFINE UNITVERSIONING}
++
++
++// debug sources
++// defining these symbols will the debug source to be automatically registered
++{.$DEFINE DEBUG_NO_BINARY}
++{.$DEFINE DEBUG_NO_TD32}     // automatically defined for FPC
++{.$DEFINE DEBUG_NO_MAP}
++{.$DEFINE DEBUG_NO_EXPORTS}
++{.$DEFINE DEBUG_NO_SYMBOLS}
++
++
++// PCRE options, mutually exclusive
++// IMPORTANT: The static link works only for Delphi 2005 and newer
++//            (an internal error is raised on other compilers)
++// Only one of the following defines can be defined at a time
++//   static link: PCRE_STATICLINK
++//   static dll import: PCRE_LINKDLL
++//   dynamic dll import: PCRE_LINKONREQUEST
++
++{.$DEFINE PCRE_STATICLINK}
++{.$DEFINE PCRE_LINKDLL}
++{.$DEFINE PCRE_LINKONREQUEST} // default
++
++
++// BZIP2 options, mutually exclusive
++
++{.$DEFINE BZIP2_STATICLINK} // default
++{.$DEFINE BZIP2_LINKDLL}
++{.$DEFINE BZIP2_LINKONREQUEST}
++
++
++// ZLIB options, mutually exclusive
++
++{.$DEFINE ZLIB_STATICLINK} // default
++{.$DEFINE ZLIB_LINKDLL}
++{.$DEFINE ZLIB_LINKONREQUEST}
++
++
++// Unicode options
++// use RTL Character Database rather than JCL one, less accurate but reduce executable size
++{.$DEFINE UNICODE_RTL_DATABASE}
++
++// insert a replacement character if sequence is corrupted rather than raising an exception
++{.$DEFINE UNICODE_SILENT_FAILURE}
++
++// defines resource compression (uncompressed, compressed with ZLib, compressed with BZip2), mutually exclusive
++{.$DEFINE UNICODE_RAW_DATA} // default
++{.$DEFINE UNICODE_ZLIB_DATA}
++{.$DEFINE UNICODE_BZIP2_DATA}
++
++
++// container options
++// define mapping of TJclStr* containers to TJclAnsiStr* or TJclWideStr* (mutually exclusive)
++{.$DEFINE CONTAINER_ANSISTR} // default for D2007 and older
++{.$DEFINE CONTAINER_WIDESTR}
++{.$DEFINE CONTAINER_UNICODESTR} // default for D2009 and newer, not supported for Delphi 2007 and older
++{.$DEFINE CONTAINER_NOSTR}
++
++
++// 7Zip options, mutually exclusive
++// IMPORTANT: The static link is not supported yet
++
++{.$DEFINE 7ZIP_STATICLINK} // not supported yet
++{.$DEFINE 7ZIP_LINKDLL}
++{.$DEFINE 7ZIP_LINKONREQUEST} // default
++
+Index: source/windows/JclWin32.pas
+===================================================================
+--- source/windows/JclWin32.pas	(revision 3860)
++++ source/windows/JclWin32.pas	(working copy)
+@@ -7242,7 +7242,7 @@
+   PIDMSI_COPYRIGHT   = $0000000B; // VT_LPWSTR
+   {$EXTERNALSYM PIDMSI_COPYRIGHT}
+ 
+-function PropVariantClear(var Prop: TPropVariant): HResult; stdcall;
++//function PropVariantClear(var Prop: TPropVariant): HResult; stdcall;
+ {$EXTERNALSYM PropVariantClear}
+ 
+ 
+@@ -8860,7 +8860,7 @@
+ end;
+ 
+ 
+-type
++{type
+   TPropVariantClear = function (var Prop: TPropVariant): HResult; stdcall;
+ 
+ var
+@@ -8872,7 +8872,7 @@
+   Result := _PropVariantClear(Prop);
+ end;
+ 
+-
++}
+ type
+   TLsaOpenPolicy = function (SystemName: PLSA_UNICODE_STRING;
+     var ObjectAttributes: LSA_OBJECT_ATTRIBUTES; DesiredAccess: ACCESS_MASK;
