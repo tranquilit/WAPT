@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, uVisAppWaptService, waptunit;
+  Forms, pl_indycomp, uVisAppWaptService, waptunit;
 
 {$R *.res}
 
