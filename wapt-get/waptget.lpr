@@ -26,9 +26,8 @@ type
 
 procedure pwaptget.DoRun;
 var
-  InstallPath,ZipFilePath,LibsURL: Utf8String;
+  InstallPath,ZipFilePath,LibsURL,downloadPath: Utf8String;
   MainModule : TStringList;
-  downloadPath : String;
   repo,logleveloption : String;
   ExitStatus: Integer;
 
@@ -96,7 +95,8 @@ begin
     Logger('Adding '+InstallPath+' to system PATH',DEBUG);
     AddToSystemPath(InstallPath);
     // Copy wapt-get.exe to install dir
-    downloadPath := ParamStrUTF8(0);
+    writeln(DefaultSystemCodePage);
+    downloadPath := ParamStr(0);
     if CompareFilenamesIgnoreCase(ExtractFilePath(downloadPath), AppendPathDelim(InstallPath))<>0 then
     begin
       Writeln(downloadpath);

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, IdHTTPServer, DaemonApp, IdCustomHTTPServer,
-  IdContext, fphtml, sqlite3conn, sqldb, db;
+  IdContext, sqlite3conn, sqldb, db;
 
 type
 
