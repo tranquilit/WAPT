@@ -4,19 +4,28 @@ unit waptcommon;
 interface
   uses
     Classes, SysUtils,windows,
-     WinInet,zipper,registry,strutils,Variants,FileUtil;
+     WinInet,zipper,registry,strutils,Variants,FileUtil,sqlite3conn,sqldb;
+
+  const
+    waptservice_port = 8080;
 
   Function  FindWaptRepo:String;
-  Function  Wget(const fileURL, DestFileName: String): boolean;
-  Procedure UnzipFile(ZipFilePath,OutputPath:String);
-  Procedure AddToUserPath(APath:String);
-  procedure AddToSystemPath(APath:String);
-  procedure UpdateCurrentApplication(fromURL:String;Restart:Boolean;restartparam:String);
-  function  ApplicationVersion(FileName:String=''): String;
+  Function  GetWaptServer:String;
+
+  Function  Wget(const fileURL, DestFileName: Utf8String): boolean;
+  Procedure UnzipFile(ZipFilePath,OutputPath:Utf8String);
+  Procedure AddToUserPath(APath:Utf8String);
+  procedure AddToSystemPath(APath:Utf8String);
+  procedure UpdateCurrentApplication(fromURL:String;Restart:Boolean;restartparam:Utf8String);
+  function  ApplicationVersion(FileName:Utf8String=''): Utf8String;
 
   function TISGetComputerName : String;
   function TISGetUserName : String;
-  function TISUserInipath : String;
+
+  function GetApplicationName:Utf8String;
+  function GetPersonalFolder:Utf8String;
+  function GetAppdataFolder:Utf8String;
+  function TISAppuserinipath:Utf8String;
 
   type LogLevel=(DEBUG, INFO, WARNING, ERROR, CRITICAL);
   procedure Logger(Msg:String;level:LogLevel=WARNING);
@@ -30,6 +39,7 @@ interface
     DOMAIN_ALIAS_RID_POWER_USERS= $00000223;
 
   function UserInGroup(Group :DWORD) : Boolean;
+  function IsAdminLoggedOn: Boolean;
 
   function ProcessExists(ExeFileName: string): boolean;
   function KillTask(ExeFileName: string): integer;
@@ -37,6 +47,23 @@ interface
   function GetIPFromHost(const HostName: string): string;
 
   function RunTask(cmd: string;var ExitStatus:integer;WorkingDir:String=''): string;
+
+type
+
+  { waptdb }
+
+  { TWAPTDB }
+
+  TWAPTDB = class(TObject)
+  private
+    db : TSQLite3Connection;
+    sqltrans : TSQLTransaction;
+  public
+    constructor create(dbpath:String);
+    destructor Destroy; override;
+    procedure CreateTables;
+
+  end;
 
 var
   loghook : procedure(logmsg:String) of object;
@@ -46,14 +73,28 @@ const
 
 implementation
 
-uses Process,winsock,JwaTlHelp32;
+uses Process,winsock,JwaTlHelp32,JCLSysInfo,shlobj,JCLShell;
 
 function FindWaptRepo: String;
 begin
   result := 'http://srvinstallation.tranquil-it-systems.fr/wapt';
 end;
 
-function wget(const fileURL, DestFileName: String): boolean;
+function GetWaptServer: String;
+begin
+  result := 'http://wapt/waptserver';
+end;
+
+function IsAdminLoggedOn: Boolean;
+{ Returns True if the logged-on user is a member of the Administrators local
+  group. Always returns True on Windows 9x/Me. }
+const
+  DOMAIN_ALIAS_RID_ADMINS = $00000220;
+begin
+  Result := UserInGroup(DOMAIN_ALIAS_RID_ADMINS);
+end;
+
+function wget(const fileURL, DestFileName: Utf8String): boolean;
  const
    BufferSize = 1024;
  var
@@ -61,21 +102,20 @@ function wget(const fileURL, DestFileName: String): boolean;
    Buffer: array[1..BufferSize] of Byte;
    BufferLen: DWORD;
    f: File;
-   sAppName: string;
+   sAppName: Utf8string;
    Size: Integer;
    dwindex: cardinal;
    dwcode : array[1..20] of char;
    dwCodeLen : DWORD;
    dwNumber: DWORD;
-   res    : pchar;
-   Str    : pchar;
+   res : PChar;
 
 begin
   result := false;
   sAppName := ExtractFileName(ParamStr(0)) ;
-  hSession := InternetOpen(PChar(sAppName), INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0) ;
+  hSession := InternetOpenW(PWideChar(UTF8Decode(sAppName)), INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0) ;
   try
-    hURL := InternetOpenURL(hSession, PChar(fileURL), nil, 0, INTERNET_FLAG_RELOAD+INTERNET_FLAG_PRAGMA_NOCACHE+INTERNET_FLAG_KEEP_CONNECTION, 0) ;
+    hURL := InternetOpenUrlW(hSession, PWideChar(UTF8Decode(fileURL)), nil, 0, INTERNET_FLAG_RELOAD+INTERNET_FLAG_PRAGMA_NOCACHE+INTERNET_FLAG_KEEP_CONNECTION, 0) ;
     if assigned(hURL) then
     try
       dwIndex  := 0;
@@ -86,7 +126,7 @@ begin
       if (res ='200') or (res ='302') then
       begin
         Size:=0;
-        AssignFile(f, DestFileName) ;
+        AssignFile(f, UTF8Decode(DestFileName)) ;
         Rewrite(f,1) ;
         repeat
           BufferLen:= 0;
@@ -131,7 +171,7 @@ begin
 end;
 
 //Unzip file to path, and return list of files as a string
-Procedure UnzipFile(ZipFilePath,OutputPath:String);
+Procedure UnzipFile(ZipFilePath,OutputPath:Utf8String);
 var
   UnZipper: TUnZipper;
 begin
@@ -146,10 +186,10 @@ begin
   end;
 end;
 
-procedure AddToUserPath(APath:String);
+procedure AddToUserPath(APath:Utf8String);
 var
   r:TRegistry;
-  SystemPath : String;
+  SystemPath : Utf8String;
 begin
   with TRegistry.Create do
   try
@@ -168,9 +208,9 @@ begin
   end;
 end;
 
-procedure AddToSystemPath(APath:String);
+procedure AddToSystemPath(APath:Utf8String);
 var
-  SystemPath : String;
+  SystemPath : Utf8String;
   aresult:LongWord;
 begin
   with TRegistry.Create do
@@ -191,10 +231,10 @@ begin
   end;
 end;
 
-procedure UpdateCurrentApplication(fromURL:String;restart:Boolean;restartparam:String);
+procedure UpdateCurrentApplication(fromURL:String;restart:Boolean;restartparam:Utf8String);
 var
   bat: TextFile;
-  tempdir,tempfn,updateBatch,fn,zipfn,version,destdir : String;
+  tempdir,tempfn,updateBatch,fn,zipfn,version,destdir : Utf8String;
   files:TStringList;
   UnZipper: TUnZipper;
   i:integer;
@@ -297,14 +337,35 @@ begin
 	 end;
 end;
 
-function TISUserInipath: String;
-begin
 
+function GetApplicationName:Utf8String;
+begin
+  Result := ChangeFileExt(ExtractFileName(ParamStr(0)),'');
+end;
+
+function GetPersonalFolder:Utf8String;
+begin
+  result := GetSpecialFolderLocation(CSIDL_PERSONAL)
+end;
+
+function GetAppdataFolder:Utf8String;
+begin
+  result :=  GetSpecialFolderLocation(CSIDL_APPDATA);
+end;
+
+function TISAppuserinipath:Utf8String;
+var
+  dir : String;
+begin
+  dir := IncludeTrailingPathDelimiter(GetAppdataFolder)+'tisapps';
+  if not DirectoryExists(dir) then
+    MkDir(dir);
+  Result:=IncludeTrailingPathDelimiter(dir)+GetApplicationName+'.ini';
 end;
 
 procedure Logger(Msg: String;level:LogLevel=WARNING);
 begin
-  if level<=currentLogLevel then
+  if level>=currentLogLevel then
   begin
     if IsConsole then
       WriteLn(Msg)
@@ -347,7 +408,8 @@ end;
 		 dwFileDateLS      : DWORD;
 	end; // TFixedFileInfo
 
-function ApplicationVersion(Filename:String=''): String;
+
+function ApplicationVersion(Filename:Utf8String=''): Utf8String;
 var
 	dwHandle, dwVersionSize : DWORD;
 	strSubBlock             : String;
@@ -360,7 +422,7 @@ begin
 	 strSubBlock := '\';
 
 	 // get version information values
-	 dwVersionSize := GetFileVersionInfoSize( PChar( FileName ), // pointer to filename string
+	 dwVersionSize := GetFileVersionInfoSizeW( PWideChar( UTF8Decode(FileName) ), // pointer to filename string
 																						dwHandle );        // pointer to variable to receive zero
 
 	 // if GetFileVersionInfoSize is successful
@@ -528,6 +590,67 @@ begin
   While not PortTCP_IsOpen(dwPort,ip) and (Now-St<timeout/24/3600) do
     Sleep(1000);
   Result:=PortTCP_IsOpen(dwPort,ip);
+end;
+
+{ waptdb }
+
+constructor Twaptdb.create(dbpath:String);
+begin
+  sqltrans := TSQLTransaction.Create(Nil);
+  db := TSQLite3Connection.Create(Nil);
+  db.LoginPrompt := False;
+  if not DirectoryExists(ExtractFileDir(dbpath)) then
+    mkdir(ExtractFileDir(dbpath));
+  db.DatabaseName := dbpath;
+  db.KeepConnection := False;
+  db.Transaction := SQLTrans;
+  sqltrans.DataBase := db;
+  db.Open;
+  CreateTables;
+end;
+
+destructor Twaptdb.Destroy;
+begin
+  if Assigned(db) then
+    db.free;
+  if Assigned(sqltrans) then
+    sqltrans.free;
+
+  inherited Destroy;
+end;
+
+procedure TWAPTDB.CreateTables;
+var
+  lst : TStringList;
+begin
+  lst := TStringList.create;
+  try
+    db.GetTableNames(lst,False);
+    writeln(lst.Text);
+    if lst.IndexOf('wapt_repo')=0 then
+      db.ExecuteDirect('CREATE TABLE wapt_repo ('+
+        'Package TEXT,'+
+        'Version TEXT,'+
+        'Section TEXT,'+
+        'Priority TEXT,'+
+        'Architecture TEXT,'+
+        'Maintainer TEXT,'+
+        'Description TEXT,'+
+        'Filename TEXT,'+
+        'Size TEXT,'+
+        'MD5sum TEXT,'+
+        'repo_url TEXT)');
+
+    if lst.IndexOf('wapt_localstatus')=0 then
+      db.ExecuteDirect('CREATE TABLE wapt_localstatus ('+
+        'Package TEXT,'+
+        'Version TEXT,'+
+        'InstallDate TEXT,'+
+        'InstallStatus TEXT');
+
+  finally
+    lst.Free;
+  end;
 end;
 
 

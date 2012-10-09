@@ -8,31 +8,56 @@ uses
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, CustApp,
   { you can add units after this }
-  Windows,PythonEngine, waptcommon,FileUtil;
+  Windows,PythonEngine, waptcommon, JclSysInfo,FileUtil;
 type
   { waptget }
 
   { pwaptget }
 
   pwaptget = class(TCustomApplication)
+  private
+    FWaptDB: TWAPTDB;
+    function GetWaptDB: TWAPTDB;
+    procedure SetWaptDB(AValue: TWAPTDB);
   protected
     APythonEngine: TPythonEngine;
     procedure DoRun; override;
   public
+    RepoURL:String;
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
-    procedure Setup;
+    procedure StopWaptService;
+    procedure SetupWaptService(InstallPath: Utf8String);
+    procedure Setup(DownloadPath, InstallPath: Utf8String);
+    procedure InitDB;
     procedure WriteHelp; virtual;
+    property WaptDB:TWAPTDB read GetWaptDB write SetWaptDB;
   end;
 
 { pwaptget }
 
+procedure pwaptget.SetWaptDB(AValue: TWAPTDB);
+begin
+  if FWaptDB=AValue then Exit;
+  if Assigned(FWaptDB) then
+    FreeAndNil(FWaptDB);
+  FWaptDB:=AValue;
+end;
+
+function pwaptget.GetWaptDB: TWAPTDB;
+begin
+  if not Assigned(FWaptDB) then
+  begin
+    Fwaptdb := TWAPTDB.Create('c:\wapt\db\wapt.db');
+  end;
+  Result := FWaptDB;
+end;
+
 procedure pwaptget.DoRun;
 var
-  InstallPath,ZipFilePath,LibsURL,downloadPath: Utf8String;
+  InstallPath,downloadPath: Utf8String;
   MainModule : TStringList;
-  repo,logleveloption : String;
-  ExitStatus: Integer;
+  logleveloption : String;
 
   procedure SetFlag( AFlag: PInt; AValue : Boolean );
   begin
@@ -44,6 +69,8 @@ var
 
 begin
   InstallPath := TrimFilename('c:\wapt');
+  DownloadPath := ParamStr(0);
+
   // parse parameters
   if HasOption('?') then
   begin
@@ -59,9 +86,9 @@ begin
   end;
 
   if HasOption('r','repo') then
-    repo := GetOptionValue('r','repo')
+    RepoURL := GetOptionValue('r','repo')
   else
-    repo := FindWaptRepo;
+    RepoURL := FindWaptRepo;
 
   if HasOption('l','loglevel') then
   begin
@@ -80,21 +107,19 @@ begin
 
   if HasOption('g','upgrade') then
   begin
-    UpdateCurrentApplication(repo+'/'+ExtractFileName(paramstr(0)),False,' --setup');
+    UpdateCurrentApplication(RepoURL+'/'+ExtractFileName(paramstr(0)),False,' --setup');
   end;
-
 
   if HasOption('v','version') then
     writeln('Win32 Exe wrapper: '+ApplicationName+' '+ApplicationVersion);
 
   // Auto upgrade
   if (FileExists(AppendPathDelim(InstallPath)+'wapt-get.exe') and (ApplicationVersion > ApplicationVersion(AppendPathDelim(InstallPath)+'wapt-get.exe')))
-      or HasOption('s','setup') or (not FileExists(AppendPathDelim(InstallPath)+'python27.dll')) then
+      or HasOption('s','setup') or (not FileExists(AppendPathDelim(InstallPath)+'python27.dll')) or (not FileExists(AppendPathDelim(InstallPath)+'wapt-get.exe')) then
   begin
-    Setup;
+    Setup(downloadPath,InstallPath);
     Terminate;
     Exit;
-
   end;
 
   // Running python stuff
@@ -137,51 +162,87 @@ destructor pwaptget.Destroy;
 begin
   if Assigned(APythonEngine) then
     APythonEngine.Free;
+  if assigned(waptdb) then
+    waptdb.Free;
   inherited Destroy;
 end;
 
-procedure pwaptget.Setup;
+procedure pwaptget.StopWaptService;
+var
+  ExitStatus : Integer;
 begin
-		  if not UserInGroup(DOMAIN_ALIAS_RID_ADMINS) then
-		  raise Exception.Create('You must run this setup with Admin rights');
-		  Logger('Checking install path '+InstallPath,DEBUG);
-		  ForceDirectory(InstallPath);
-		  Logger('Adding '+InstallPath+' to system PATH',DEBUG);
-		  AddToSystemPath(InstallPath);
-		  // Copy wapt-get.exe to install dir
-		  writeln(DefaultSystemCodePage);
-		  downloadPath := ParamStr(0);
-		  if CompareFilenamesIgnoreCase(ExtractFilePath(downloadPath), AppendPathDelim(InstallPath))<>0 then
-		  begin
-		  Writeln(downloadpath);
-		  logger('Copying '+downloadPath+' to '+AppendPathDelim(InstallPath)+'wapt-get.exe',INFO);
-		  if not Windows.CopyFileW(PWideChar(UTF8Decode(downloadPath)),PWideChar(UTF8Decode(AppendPathDelim(InstallPath)+'wapt-get.exe')),False) then
-		    logger('  Error : unable to copy, error code : '+intToStr(IOResult),CRITICAL);
-		  end;
-		  ZipFilePath := ExtractFilePath(downloadPath)+'wapt-libs.zip';
-		  writeln( UTF8Decode(ZipFilePath));
+  if CheckOpenPort(waptservice_port,'127.0.0.1',1) then
+  begin
+    ExitStatus := 0;
+    Writeln(RunTask('net stop waptservice',ExitStatus));
+  end;
+end;
 
-		  LibsURL := repo+'/wapt-libs.zip';
-		  Writeln('Downloading '+LibsURL+' to '+ZipFilePath);
-		  if not wget(LibsURL,ZipFilePath) then
-		  begin
-		  Writeln('Unable to download '+LibsURL);
-		  Terminate;
-		  Exit;
-		  end;
-		  ExitStatus := 0;
-		  Writeln(RunTask('net stop waptservice',ExitStatus));
-		  Writeln('Unzipping '+ZipFilePath);
-		  UnzipFile(ZipFilePath,InstallPath);
-		  FileUtil.DeleteFileUTF8(ZipFilePath);
-		  Writeln('Install waptservice');
-		  try
-		  Writeln(RunTask(AppendPathDelim(InstallPath)+'waptservice.exe /install',ExitStatus));
-		  except
-		  on e:Exception do Writeln('  Error installing service, error code:'+IntToStr(ExitStatus)+', message: '+e.message);
-		  end;
-		  Writeln('Start waptservice');
-		  Writeln(RunTask('net start waptservice',ExitStatus));
+procedure pwaptget.Setup(DownloadPath,InstallPath:Utf8String);
+var
+  ZipFilePath,LibsURL:Utf8String;
+  ExitStatus: Integer;
+
+begin
+	if not UserInGroup(DOMAIN_ALIAS_RID_ADMINS) then
+  	raise Exception.Create('You must run this setup with Admin rights');
+	Logger('Checking install path '+InstallPath,DEBUG);
+	ForceDirectory(InstallPath);
+
+  Logger('Adding '+InstallPath+' to system PATH',DEBUG);
+	AddToSystemPath(InstallPath);
+
+  // Copy wapt-get.exe to install dir if needed
+	writeln(DefaultSystemCodePage);
+	if CompareFilenamesIgnoreCase(ExtractFilePath(downloadPath), AppendPathDelim(InstallPath))<>0 then
+	begin
+	  logger('Copying '+downloadPath+' to '+AppendPathDelim(InstallPath)+'wapt-get.exe',INFO);
+	  if not Windows.CopyFileW(PWideChar(UTF8Decode(downloadPath)),PWideChar(UTF8Decode(AppendPathDelim(InstallPath)+'wapt-get.exe')),False) then
+		  logger('  Error : unable to copy, error code : '+intToStr(IOResult),CRITICAL)
+    else
+		  logger('  Copy OK',INFO);
+	end;
+
+	ZipFilePath := ExtractFilePath(downloadPath)+'wapt-libs.zip';
+	LibsURL := RepoURL+'/wapt-libs.zip';
+	Writeln('Downloading '+LibsURL+' to '+ZipFilePath);
+	if not wget(LibsURL,ZipFilePath) then
+	  Raise Exception.Create ('Unable to download '+LibsURL+' to '+ZipFilePath);
+
+  //release sqlite3.dll for upgrade
+  StopWaptService;
+  WaptDB := Nil;
+
+	Writeln('Unzipping '+ZipFilePath);
+	UnzipFile(ZipFilePath,InstallPath);
+	if not SysUtils.DeleteFile(ZipFilePath) then
+    logger('  Error : unable to delete temporary zip file, error code : '+intToStr(IOResult),CRITICAL);
+
+  Writeln('Initializing local sqlite DB');
+  InitDB;
+
+  SetupWaptService(InstallPath);
+
+end;
+
+procedure pwaptget.InitDB;
+begin
+  WaptDB.CreateTables;
+end;
+
+procedure pwaptget.SetupWaptService(InstallPath:Utf8String);
+var
+  ExitStatus: Integer;
+
+begin
+	Writeln('Install waptservice');
+	try
+	  Writeln(RunTask(AppendPathDelim(InstallPath)+'waptservice.exe /install',ExitStatus));
+	except
+	  on e:Exception do Writeln('  Error installing service, error code:'+IntToStr(ExitStatus)+', message: '+e.message);
+	end;
+	Writeln('Start waptservice');
+	Writeln(RunTask('net start waptservice',ExitStatus));
 end;
 
 procedure pwaptget.WriteHelp;

@@ -61,7 +61,8 @@
         <Filename Value="waptservice.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptservice"/>
-        <EditorIndex Value="0"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="17" Y="7"/>
@@ -74,7 +75,7 @@
         <ComponentName Value="DaemonMapper1"/>
         <HasResources Value="True"/>
         <UnitName Value="WaptMapper"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="11"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -89,11 +90,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WaptUnit"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
         <TopLine Value="213"/>
-        <CursorPos X="19" Y="220"/>
+        <CursorPos X="10" Y="247"/>
         <UsageCount Value="87"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -150,10 +150,12 @@
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
+        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
+        <TopLine Value="565"/>
+        <CursorPos X="1" Y="602"/>
         <UsageCount Value="54"/>
+        <Loaded Value="True"/>
       </Unit9>
       <Unit10>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-process\src\process.pp"/>
@@ -487,7 +489,7 @@
         <UsageCount Value="10"/>
       </Unit51>
     </Units>
-    <JumpHistory Count="17" HistoryIndex="16">
+    <JumpHistory Count="20" HistoryIndex="19">
       <Position1>
         <Filename Value="waptunit.pas"/>
         <Caret Line="12" Column="24" TopLine="1"/>
@@ -556,6 +558,18 @@
         <Filename Value="waptunit.pas"/>
         <Caret Line="71" Column="21" TopLine="40"/>
       </Position17>
+      <Position18>
+        <Filename Value="waptservice.lpr"/>
+        <Caret Line="7" Column="17" TopLine="1"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position19>
+      <Position20>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="186" Column="15" TopLine="157"/>
+      </Position20>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
