@@ -35,7 +35,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="--run"/>
+        <CommandLineParams Value="/uninstall"/>
       </local>
     </RunParams>
     <RequiredPackages Count="5">
@@ -56,16 +56,17 @@
         <PackageName Value="FCL"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="51">
+    <Units Count="52">
       <Unit0>
         <Filename Value="waptservice.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptservice"/>
-        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="93" Y="16"/>
-        <UsageCount Value="86"/>
+        <CursorPos X="17" Y="7"/>
+        <UsageCount Value="87"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="waptmapper.pas"/>
@@ -73,10 +74,13 @@
         <ComponentName Value="DaemonMapper1"/>
         <HasResources Value="True"/>
         <UnitName Value="WaptMapper"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="24" Y="14"/>
-        <UsageCount Value="86"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="87"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="waptunit.pas"/>
@@ -85,10 +89,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WaptUnit"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="24" Y="12"/>
-        <UsageCount Value="86"/>
+        <TopLine Value="213"/>
+        <CursorPos X="19" Y="220"/>
+        <UsageCount Value="87"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="unit1.pas"/>
@@ -145,7 +153,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="53"/>
+        <UsageCount Value="54"/>
       </Unit9>
       <Unit10>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-process\src\process.pp"/>
@@ -159,8 +167,8 @@
         <Filename Value="..\wapt-get\waptget.lpr"/>
         <UnitName Value="waptget"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="100"/>
-        <CursorPos X="9" Y="9"/>
+        <TopLine Value="149"/>
+        <CursorPos X="36" Y="152"/>
         <UsageCount Value="10"/>
       </Unit11>
       <Unit12>
@@ -436,8 +444,8 @@
         <Filename Value="..\jcl\source\common\JclStrings.pas"/>
         <UnitName Value="JclStrings"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="580"/>
-        <CursorPos X="70" Y="596"/>
+        <TopLine Value="575"/>
+        <CursorPos X="59" Y="595"/>
         <UsageCount Value="10"/>
       </Unit46>
       <Unit47>
@@ -470,8 +478,85 @@
         <CursorPos X="2" Y="504"/>
         <UsageCount Value="10"/>
       </Unit50>
+      <Unit51>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-extra\src\daemonapp.pp"/>
+        <UnitName Value="daemonapp"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="279"/>
+        <CursorPos X="3" Y="298"/>
+        <UsageCount Value="10"/>
+      </Unit51>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="17" HistoryIndex="16">
+      <Position1>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="12" Column="24" TopLine="1"/>
+      </Position1>
+      <Position2>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="126" Column="27" TopLine="101"/>
+      </Position2>
+      <Position3>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="131" Column="48" TopLine="119"/>
+      </Position3>
+      <Position4>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="123" Column="19" TopLine="120"/>
+      </Position4>
+      <Position5>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="124" Column="19" TopLine="121"/>
+      </Position5>
+      <Position6>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="135" Column="52" TopLine="120"/>
+      </Position6>
+      <Position7>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="136" Column="52" TopLine="121"/>
+      </Position7>
+      <Position8>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="135" Column="52" TopLine="120"/>
+      </Position8>
+      <Position9>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="136" Column="52" TopLine="121"/>
+      </Position9>
+      <Position10>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="135" Column="52" TopLine="120"/>
+      </Position10>
+      <Position11>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="137" Column="52" TopLine="122"/>
+      </Position11>
+      <Position12>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="220" Column="69" TopLine="200"/>
+      </Position12>
+      <Position13>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="216" Column="10" TopLine="197"/>
+      </Position13>
+      <Position14>
+        <Filename Value="waptservice.lpr"/>
+        <Caret Line="7" Column="17" TopLine="1"/>
+      </Position14>
+      <Position15>
+        <Filename Value="waptmapper.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position15>
+      <Position16>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="27" Column="25" TopLine="20"/>
+      </Position16>
+      <Position17>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="71" Column="21" TopLine="40"/>
+      </Position17>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
@@ -491,7 +576,6 @@
       <Debugging>
         <GenerateDebugInfo Value="False"/>
         <UseLineInfoUnit Value="False"/>
-        <StripSymbols Value="True"/>
       </Debugging>
     </Linking>
     <Other>

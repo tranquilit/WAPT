@@ -12,6 +12,8 @@ uses
 type
   { waptget }
 
+  { pwaptget }
+
   pwaptget = class(TCustomApplication)
   protected
     APythonEngine: TPythonEngine;
@@ -19,6 +21,7 @@ type
   public
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
+    procedure Setup;
     procedure WriteHelp; virtual;
   end;
 
@@ -88,50 +91,11 @@ begin
   if (FileExists(AppendPathDelim(InstallPath)+'wapt-get.exe') and (ApplicationVersion > ApplicationVersion(AppendPathDelim(InstallPath)+'wapt-get.exe')))
       or HasOption('s','setup') or (not FileExists(AppendPathDelim(InstallPath)+'python27.dll')) then
   begin
-    if not UserInGroup(DOMAIN_ALIAS_RID_ADMINS) then
-      raise Exception.Create('You must run this setup with Admin rights');
-    Logger('Checking install path '+InstallPath,DEBUG);
-    ForceDirectory(InstallPath);
-    Logger('Adding '+InstallPath+' to system PATH',DEBUG);
-    AddToSystemPath(InstallPath);
-    // Copy wapt-get.exe to install dir
-    writeln(DefaultSystemCodePage);
-    downloadPath := ParamStr(0);
-    if CompareFilenamesIgnoreCase(ExtractFilePath(downloadPath), AppendPathDelim(InstallPath))<>0 then
-    begin
-      Writeln(downloadpath);
-      logger('Copying '+downloadPath+' to '+AppendPathDelim(InstallPath)+'wapt-get.exe',INFO);
-      if not Windows.CopyFileW(PWideChar(UTF8Decode(downloadPath)),PWideChar(AppendPathDelim(UTF8Decode(InstallPath+'wapt-get.exe'))),False) then
-        logger('  Error : unable to copy, error code : '+intToStr(IOResult),CRITICAL);
-    end;
-    ZipFilePath := ExtractFilePath(downloadPath)+'wapt-libs.zip';
-    writeln( UTF8Decode(ZipFilePath));
-
-    LibsURL := repo+'/wapt-libs.zip';
-    Writeln('Downloading '+LibsURL+' to '+ZipFilePath);
-    if not wget(LibsURL,ZipFilePath) then
-    begin
-      Writeln('Unable to download '+LibsURL);
-      Terminate;
-      Exit;
-    end;
-    ExitStatus := 0;
-    Writeln(RunTask('net stop waptservice',ExitStatus));
-    Writeln('Unzipping '+ZipFilePath);
-    UnzipFile(ZipFilePath,InstallPath);
-    FileUtil.DeleteFileUTF8(ZipFilePath);
-    Writeln('Install waptservice');
-    try
-      Writeln(RunTask(AppendPathDelim(InstallPath)+'waptservice.exe /install',ExitStatus));
-    except
-      on e:Exception do Writeln('  Error installing service, error code:'+IntToStr(ExitStatus)+', message: '+e.message);
-    end;
-    Writeln('Start waptservice');
-    Writeln(RunTask('net start waptservice',ExitStatus));
+    Setup;
     Terminate;
     Exit;
-  end;
 
+  end;
 
   // Running python stuff
   APythonEngine := TPythonEngine.Create(Self);
@@ -174,6 +138,50 @@ begin
   if Assigned(APythonEngine) then
     APythonEngine.Free;
   inherited Destroy;
+end;
+
+procedure pwaptget.Setup;
+begin
+		  if not UserInGroup(DOMAIN_ALIAS_RID_ADMINS) then
+		  raise Exception.Create('You must run this setup with Admin rights');
+		  Logger('Checking install path '+InstallPath,DEBUG);
+		  ForceDirectory(InstallPath);
+		  Logger('Adding '+InstallPath+' to system PATH',DEBUG);
+		  AddToSystemPath(InstallPath);
+		  // Copy wapt-get.exe to install dir
+		  writeln(DefaultSystemCodePage);
+		  downloadPath := ParamStr(0);
+		  if CompareFilenamesIgnoreCase(ExtractFilePath(downloadPath), AppendPathDelim(InstallPath))<>0 then
+		  begin
+		  Writeln(downloadpath);
+		  logger('Copying '+downloadPath+' to '+AppendPathDelim(InstallPath)+'wapt-get.exe',INFO);
+		  if not Windows.CopyFileW(PWideChar(UTF8Decode(downloadPath)),PWideChar(UTF8Decode(AppendPathDelim(InstallPath)+'wapt-get.exe')),False) then
+		    logger('  Error : unable to copy, error code : '+intToStr(IOResult),CRITICAL);
+		  end;
+		  ZipFilePath := ExtractFilePath(downloadPath)+'wapt-libs.zip';
+		  writeln( UTF8Decode(ZipFilePath));
+
+		  LibsURL := repo+'/wapt-libs.zip';
+		  Writeln('Downloading '+LibsURL+' to '+ZipFilePath);
+		  if not wget(LibsURL,ZipFilePath) then
+		  begin
+		  Writeln('Unable to download '+LibsURL);
+		  Terminate;
+		  Exit;
+		  end;
+		  ExitStatus := 0;
+		  Writeln(RunTask('net stop waptservice',ExitStatus));
+		  Writeln('Unzipping '+ZipFilePath);
+		  UnzipFile(ZipFilePath,InstallPath);
+		  FileUtil.DeleteFileUTF8(ZipFilePath);
+		  Writeln('Install waptservice');
+		  try
+		  Writeln(RunTask(AppendPathDelim(InstallPath)+'waptservice.exe /install',ExitStatus));
+		  except
+		  on e:Exception do Writeln('  Error installing service, error code:'+IntToStr(ExitStatus)+', message: '+e.message);
+		  end;
+		  Writeln('Start waptservice');
+		  Writeln(RunTask('net start waptservice',ExitStatus));
 end;
 
 procedure pwaptget.WriteHelp;

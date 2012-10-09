@@ -5,8 +5,8 @@
 interface
 
 uses
-  Classes, SysUtils, FileUtil, IdHTTPServer, DaemonApp, IdCustomHTTPServer,
-  IdContext, sqlite3conn, sqldb, db;
+  Classes, SysUtils, FileUtil, ExtCtrls, IdHTTPServer, DaemonApp,
+  IdCustomHTTPServer, IdContext, sqlite3conn, sqldb, db;
 
 type
 
@@ -33,14 +33,18 @@ type
     QLstPackagesSize: TMemoField;
     QLstPackagesVersion: TMemoField;
     SQLTrans: TSQLTransaction;
+    Timer1: TTimer;
+    TrayIcon1: TTrayIcon;
     waptdb: TSQLite3Connection;
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleStart(Sender: TCustomDaemon; var OK: Boolean);
     procedure IdHTTPServer1CommandGet(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
+    procedure Timer1Timer(Sender: TObject);
     procedure waptdbAfterConnect(Sender: TObject);
   private
     { private declarations }
+    inTimer:Boolean;
     Function TableHook(Data,FN:String):String;
   public
     { public declarations }
@@ -50,7 +54,7 @@ var
   WaptDaemon: TWaptDaemon;
 
 implementation
-uses Waptcommon,JclSysInfo,StrUtils;
+uses Waptcommon,JclSysInfo,StrUtils,Dialogs;
 
 procedure RegisterDaemon;
 begin
@@ -206,6 +210,19 @@ begin
        '<body>'+AResponseInfo.ContentText+'</body>';
   AResponseInfo.ResponseNo:=200;
   AResponseInfo.CharSet:='UTF-8';
+end;
+
+procedure TWaptDaemon.Timer1Timer(Sender: TObject);
+begin
+  if not InTimer then
+  begin
+    inTimer := True;
+    try
+      ShowMessage('Une mise à jour va être effectuée');
+    finally
+	    InTimer := False;
+    end;
+  end;
 end;
 
 procedure TWaptDaemon.waptdbAfterConnect(Sender: TObject);
