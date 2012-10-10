@@ -38,10 +38,10 @@ def cleanuptemp():
 packagetempdir = tempdir
 
 def ensure_dir(f):
-  """Be sure the directory of f exists on disk. Make it if not"""
-  d = os.path.dirname(f)
-  if not os.path.exists(d):
-    os.makedirs(d)
+    """Be sure the directory of f exists on disk. Make it if not"""
+    d = os.path.dirname(f)
+    if not os.path.exists(d):
+        os.makedirs(d)
 
 def create_shortcut(path, target='', wDir='', icon=''):
     ext = path[-3:]
@@ -68,23 +68,23 @@ def wgets(url):
     return urllib2.urlopen(url).read()
 
 def wget(url,target):
-  """Copy the contents of a file from a given URL
-  to a local file.
-  """
-  if os.path.isdir(target):
-    target = os.path.join(target,'')
+    """Copy the contents of a file from a given URL
+    to a local file.
+    """
+    if os.path.isdir(target):
+        target = os.path.join(target,'')
 
-  (dir,filename) = os.path.split(target)
-  if not filename:
-    filename = url.split('/')[-1]
-  if not dir:
-    dir = tempdir
+    (dir,filename) = os.path.split(target)
+    if not filename:
+        filename = url.split('/')[-1]
+    if not dir:
+        dir = tempdir
 
-  if not os.path.isdir(dir):
-    os.makedirs(dir)
+    if not os.path.isdir(dir):
+        os.makedirs(dir)
 
-  urllib.urlretrieve(url,os.path.join(dir,filename))
-  return os.path.join(dir,filename)
+    urllib.urlretrieve(url,os.path.join(dir,filename))
+    return os.path.join(dir,filename)
 
 def filecopyto(filename,target):
     """Copy file from package temporary directory to target"""
@@ -121,3 +121,4 @@ def messagebox(title,msg):
 
 if __name__ == '__main__':
     main()
+

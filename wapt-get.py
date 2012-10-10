@@ -24,11 +24,11 @@ usage="""\
 WAPT install system.
 
 action is either :
- install : install one or several packages
- update : update package database
- upgrade : upgrade installed packages
- list : list installed packages
- search : list available packages
+  install : install one or several packages
+  update : update package database
+  upgrade : upgrade installed packages
+  list : list installed packages
+  search : list available packages
 """
 
 version = "0.4.4"
@@ -56,11 +56,6 @@ if loglevel in ('debug','warning','info','error','critical'):
     if not isinstance(numeric_level, int):
         raise ValueError('Invalid log level: %s' % loglevel)
     logger.setLevel(numeric_level)
-
-if len(args) == 0:
-    print "ERROR : You must provide one action to perform"
-    parser.print_usage()
-    sys.exit(2)
 
 def psource(module):
     file = os.path.basename( module )
@@ -146,46 +141,21 @@ def find_wapt_server(configparser):
 
     return None
 
-class wapt:
-    wapt_repourl=""
-    packagecachedir = ""
-    dry_run = False
-    dbpath = 'c:\\wapt\\db\\waptdb.sqlite'
+class Wapt:
+    def __init__(self):
+        self.wapt_repourl=""
+        self.packagecachedir = ""
+        self.dry_run = False
+        self.dbpath = 'c:\\wapt\\db\\waptdb.sqlite'
+        self.waptdb = WaptDB(dbpath=self.dbpath)
 
-
-    def install(self,package):
-        print("installing package " + package)
-        sys.stdout.flush()
-
-        waptdb = WaptDB(dbpath=self.dbpath)
-
-        q = waptdb.query("""\
-           select wapt_repo.*,wapt_localstatus.Version as CurrentVersion from wapt_repo
-            left join wapt_localstatus on wapt_repo.Package=wapt_localstatus.Package
-            where wapt_repo.Package=?
-           """ , (package,) )
-        if not q:
-            print "ERROR : Package %s not found in local DB, try update" % package
-            return False
-        mydict = q[0]
-        logger.debug(pprint.pformat(mydict))
-        if not options.force and mydict['CurrentVersion']>=mydict['Version']:
-            print "Package %s already installed at the latest version" % package
-            return True
-        packagename = mydict['Filename'].strip('./')
-        download_url = mydict['repo_url'] + '/' + packagename
-        logger.debug('Download URL: %s' % download_url)
-
-        print ("  downloading package from " + mydict['repo_url'])
-        sys.stdout.flush()
-        wget( download_url, self.packagecachedir)
-
-        # When you import a file you must give it the full path
+    def install_wapt(self,fname):
+        print("installing package " + fname)
         global packagetempdir
-        packagetempdir = tempfile.mkdtemp(dir=tempdir)
-        print('  unzipping %s ' % (os.path.join(self.packagecachedir,packagename)))
+        packagetempdir = tempfile.mkdtemp(prefix="wapt")
+        print('  unzipping %s ' % (fname))
         sys.stdout.flush()
-        zip = zipfile.ZipFile( os.path.join(self.packagecachedir , packagename))
+        zip = zipfile.ZipFile(fname)
         zip.extractall(path=packagetempdir)
 
         print ("  sourcing install file")
@@ -197,35 +167,70 @@ class wapt:
             sys.stdout.flush()
             setup.install()
 
-        waptdb.add_installed_package(mydict['Package'],mydict['Version'])
+        print("Add package to local DB")
+        entry = Package_Entry()
+        entry.load_control_from_wapt(fname)
+        self.waptdb.add_installed_package(entry.Package,entry.Version)
+
         print("Install script finished")
         logger.debug("Cleaning package tmp dir")
         sys.stdout.flush()
         shutil.rmtree(packagetempdir)
-        return True
 
-    def update(self):
+    def install(self,package):
+        sys.stdout.flush()
+        if os.path.isfile(package):
+            self.install_wapt(package)
+        else:
+            q = self.waptdb.query("""\
+               select wapt_repo.*,wapt_localstatus.Version as CurrentVersion from wapt_repo
+                left join wapt_localstatus on wapt_repo.Package=wapt_localstatus.Package
+                where wapt_repo.Package=?
+               """ , (package,) )
+            if not q:
+                print "ERROR : Package %s not found in local DB, try update" % package
+                return False
+            mydict = q[0]
+            logger.debug(pprint.pformat(mydict))
+            if not options.force and mydict['CurrentVersion']>=mydict['Version']:
+                print "Package %s already installed at the latest version" % package
+                return True
+            packagefilename = mydict['Filename'].strip('./')
+            download_url = mydict['repo_url'] + '/' + packagefilename
+            logger.debug('Download URL: %s' % download_url)
+            fullpackagepath = os.path.join(self.packagecachedir,packagefilename)
+
+            if os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath)>0:
+                print ("  using cached package file from " + fullpackagepath)
+            else:
+                print ("  downloading package from " + mydict['repo_url'])
+                sys.stdout.flush()
+                wget( download_url, self.packagecachedir)
+
+            self.install_wapt(fullpackagepath)
+
+    def update(self,repourl=''):
+        if not repourl:
+            repourl = self.wapt_repourl
         logger.debug('Temporary directory: %s' % tempdir)
         packageListFile = codecs.decode(zipfile.ZipFile(
-              cStringIO.StringIO( urllib2.urlopen(self.wapt_repourl + '/Packages').read())
+              cStringIO.StringIO( urllib2.urlopen( repourl + '/Packages').read())
             ).read(name='Packages'),'UTF-8').splitlines()
 
-        waptdb = WaptDB(dbpath=self.dbpath)
         package = Package_Entry()
         for line in packageListFile:
             if line.strip()=='':
                 logger.debug(package)
-                package.repo_url = self.wapt_repourl
-                waptdb.add_package_entry(package)
+                package.repo_url = repourl
+                self.waptdb.add_package_entry(package)
                 package = Package_Entry()
             else:
                 splitline= line.split(':')
                 setattr(package,splitline[0].strip(),splitline[1].strip())
-        waptdb.db.commit()
+        self.waptdb.db.commit()
 
     def upgrade(self):
-        waptdb = WaptDB(dbpath=self.dbpath)
-        q = waptdb.query("""\
+        q = self.waptdb.query("""\
            select wapt_repo.Package,wapt_repo.Version from wapt_localstatus
             left join wapt_repo on wapt_repo.Package=wapt_localstatus.Package
             where wapt_localstatus.Version<wapt_repo.Version
@@ -236,17 +241,31 @@ class wapt:
         for package in q:
             self.install(package['Package'])
 
+    def list_upgrade(self):
+        q = self.waptdb.query("""\
+           select wapt_repo.Package,wapt_repo.Version from wapt_localstatus
+            left join wapt_repo on wapt_repo.Package=wapt_localstatus.Package
+            where wapt_localstatus.Version<wapt_repo.Version
+           """)
+        if not q:
+            print "Nothing to upgrade"
+            sys.exit(1)
+        print common.pp(q,None,1,None)
+
+
     def list_repo(self):
-        waptdb = WaptDB(dbpath=self.dbpath)
-        print waptdb.list_repo()
+        print self.waptdb.list_repo()
 
     def list_installed_packages(self):
-        waptdb = WaptDB(dbpath=self.dbpath)
-        print waptdb.list_installed_packages()
+        print self.waptdb.list_installed_packages()
 
-def main(argv):
+def main():
+    if len(args) == 0:
+        print "ERROR : You must provide one action to perform"
+        parser.print_usage()
+        sys.exit(2)
+
     action = args[0]
-
 
     # Config file
     if not os.path.isfile(config_file):
@@ -272,7 +291,7 @@ def main(argv):
         os.makedirs(packagecachedir)
     logger.debug('Package cache dir : %s' % packagecachedir)
 
-    mywapt = wapt()
+    mywapt = Wapt()
     mywapt.packagecachedir = packagecachedir
     mywapt.wapt_repourl = wapt_repourl
     mywapt.dry_run = options.dry_run
@@ -290,6 +309,9 @@ def main(argv):
     elif action=='upgrade':
         mywapt.upgrade()
 
+    elif action=='list-upgrade':
+        mywapt.list_upgrade()
+
     elif action=='remove':
         mywapt.remove()
 
@@ -303,4 +325,5 @@ def main(argv):
 
 if __name__ == "__main__":
     logger.debug('Python path %s' % sys.path)
-    main(sys.argv[1:])
+    main()
+
