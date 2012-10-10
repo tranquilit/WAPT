@@ -18,7 +18,7 @@ object WaptDaemon: TWaptDaemon
     top = 20
   end
   object waptdb: TSQLite3Connection
-    Connected = True
+    Connected = False
     LoginPrompt = False
     AfterConnect = waptdbAfterConnect
     DatabaseName = 'C:\wapt\db\waptdb.sqlite'

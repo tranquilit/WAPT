@@ -4,7 +4,7 @@ unit waptcommon;
 interface
   uses
     Classes, SysUtils,windows,
-     WinInet,zipper,registry,strutils,Variants,FileUtil,sqlite3conn,sqldb;
+     WinInet,zipper,registry,strutils,Variants,FileUtil,SuperObject,DB,sqldb,sqlite3conn;
 
   const
     waptservice_port = 8080;
@@ -13,19 +13,28 @@ interface
   Function  GetWaptServer:String;
 
   Function  Wget(const fileURL, DestFileName: Utf8String): boolean;
+  Function  Wget_try(const fileURL: Utf8String): boolean;
+
+
   Procedure UnzipFile(ZipFilePath,OutputPath:Utf8String);
   Procedure AddToUserPath(APath:Utf8String);
   procedure AddToSystemPath(APath:Utf8String);
   procedure UpdateCurrentApplication(fromURL:String;Restart:Boolean;restartparam:Utf8String);
   function  ApplicationVersion(FileName:Utf8String=''): Utf8String;
 
-  function TISGetComputerName : String;
-  function TISGetUserName : String;
-
   function GetApplicationName:Utf8String;
   function GetPersonalFolder:Utf8String;
   function GetAppdataFolder:Utf8String;
+
   function TISAppuserinipath:Utf8String;
+  function TISGetComputerName : String;
+  function TISGetUserName : String;
+
+  function SortableVersion(VersionString:String):String;
+
+  function DateTime2StrUTC(ADatetime:TDateTime):String;
+  function StrUTC2DateTime(AUTCStrDatetime:String):TDateTime;
+
 
   type LogLevel=(DEBUG, INFO, WARNING, ERROR, CRITICAL);
   procedure Logger(Msg:String;level:LogLevel=WARNING);
@@ -50,10 +59,7 @@ interface
 
 type
 
-  { waptdb }
-
   { TWAPTDB }
-
   TWAPTDB = class(TObject)
   private
     db : TSQLite3Connection;
@@ -62,7 +68,7 @@ type
     constructor create(dbpath:String);
     destructor Destroy; override;
     procedure CreateTables;
-
+    function Select(SQL:String):ISuperObject;
   end;
 
 var
@@ -73,11 +79,14 @@ const
 
 implementation
 
-uses Process,winsock,JwaTlHelp32,JCLSysInfo,shlobj,JCLShell;
+uses Process,winsock,JwaTlHelp32,JCLSysInfo,shlobj,JCLShell,JCLStrings;
 
 function FindWaptRepo: String;
 begin
-  result := 'http://srvinstallation.tranquil-it-systems.fr/wapt';
+  if Wget_try('http://wapt/wapt') then
+    Result := 'http://wapt/wapt'
+  else
+    result := 'http://srvinstallation.tranquil-it-systems.fr/wapt';
 end;
 
 function GetWaptServer: String;
@@ -148,6 +157,45 @@ begin
     InternetCloseHandle(hSession)
   end
 end;
+
+function wget_try(const fileURL: Utf8String): boolean;
+ const
+   BufferSize = 1024;
+ var
+   hSession, hURL: HInternet;
+   Buffer: array[1..BufferSize] of Byte;
+   BufferLen: DWORD;
+   f: File;
+   sAppName: Utf8string;
+   Size: Integer;
+   dwindex: cardinal;
+   dwcode : array[1..20] of char;
+   dwCodeLen : DWORD;
+   dwNumber: DWORD;
+   res : PChar;
+
+begin
+  result := false;
+  sAppName := ExtractFileName(ParamStr(0)) ;
+  hSession := InternetOpenW(PWideChar(UTF8Decode(sAppName)), INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0) ;
+  try
+    hURL := InternetOpenUrlW(hSession, PWideChar(UTF8Decode(fileURL)), nil, 0, INTERNET_FLAG_RELOAD+INTERNET_FLAG_PRAGMA_NOCACHE+INTERNET_FLAG_KEEP_CONNECTION , 0) ;
+    if assigned(hURL) then
+    try
+      dwIndex  := 0;
+      dwCodeLen := 10;
+      HttpQueryInfo(hURL, HTTP_QUERY_STATUS_CODE, @dwcode, dwcodeLen, dwIndex);
+      res := pchar(@dwcode);
+      dwNumber := sizeof(Buffer)-1;
+      result :=  (res ='200') or (res ='302');
+    finally
+      InternetCloseHandle(hURL)
+    end
+  finally
+    InternetCloseHandle(hSession)
+  end
+end;
+
 
 function CheckTokenMembership(TokenHandle: THandle; SidToCheck: PSID; var IsMember: BOOL): BOOL; stdcall; external advapi32;
 
@@ -353,6 +401,7 @@ begin
   result :=  GetSpecialFolderLocation(CSIDL_APPDATA);
 end;
 
+// to store use specific settings for this application
 function TISAppuserinipath:Utf8String;
 var
   dir : String;
@@ -361,6 +410,31 @@ begin
   if not DirectoryExists(dir) then
     MkDir(dir);
   Result:=IncludeTrailingPathDelimiter(dir)+GetApplicationName+'.ini';
+end;
+
+function SortableVersion(VersionString: String): String;
+var
+  version,tok : String;
+begin
+  version := VersionString;
+  tok := StrToken(version,'.');
+  repeat
+    if StrIsDigit(tok) then
+      Result := Result+FormatFloat('0000',StrToInt(tok))
+    else
+      Result := Result+tok;
+    tok := StrToken(version,'.');
+  until tok='';
+end;
+
+function DateTime2StrUTC(ADatetime: TDateTime): String;
+begin
+  Result := FormatDateTime('yyyy-mm-dd"T"hhnnss',ADatetime);
+end;
+
+function StrUTC2DateTime(AUTCStrDatetime: String): TDateTime;
+begin
+  Result := StrToDate(copy(AUTCStrDatetime,1,10),'-')+StrToTime(Copy(AUTCStrDatetime,12,8),':');
 end;
 
 procedure Logger(Msg: String;level:LogLevel=WARNING);
@@ -596,6 +670,14 @@ end;
 
 constructor Twaptdb.create(dbpath:String);
 begin
+  // The sqlite dll is either in the same dir as application, or in the DLLs directory, or relative to dbpath (in case of initial install)
+  if FileExists(AppendPathDelim(ExtractFilePath(ParamStr(0)))+'sqlite3.dll') then
+    SQLiteLibraryName:=AppendPathDelim(ExtractFilePath(ParamStr(0)))+'sqlite3.dll'
+  else if FileExists(AppendPathDelim(ExtractFilePath(ParamStr(0)))+'DLLs\sqlite3.dll') then
+    SQLiteLibraryName:=AppendPathDelim(ExtractFilePath(ParamStr(0)))+'DLLs\sqlite3.dll'
+  else if FileExists(AppendPathDelim(ExtractFilePath(dbpath))+'..\DLLs\sqlite3.dll') then
+    SQLiteLibraryName:=AppendPathDelim(ExtractFilePath(dbpath))+'..\DLLs\sqlite3.dll';
+
   sqltrans := TSQLTransaction.Create(Nil);
   db := TSQLite3Connection.Create(Nil);
   db.LoginPrompt := False;
@@ -611,6 +693,7 @@ end;
 
 destructor Twaptdb.Destroy;
 begin
+  db.Close;
   if Assigned(db) then
     db.free;
   if Assigned(sqltrans) then
@@ -626,8 +709,7 @@ begin
   lst := TStringList.create;
   try
     db.GetTableNames(lst,False);
-    writeln(lst.Text);
-    if lst.IndexOf('wapt_repo')=0 then
+    if lst.IndexOf('wapt_repo')<0 then
       db.ExecuteDirect('CREATE TABLE wapt_repo ('+
         'Package TEXT,'+
         'Version TEXT,'+
@@ -639,17 +721,61 @@ begin
         'Filename TEXT,'+
         'Size TEXT,'+
         'MD5sum TEXT,'+
-        'repo_url TEXT)');
+        'repo_url TEXT);'+
+        'create index idx_package_name on wapt_repo(Package);');
 
-    if lst.IndexOf('wapt_localstatus')=0 then
+    if lst.IndexOf('wapt_localstatus')<0 then
       db.ExecuteDirect('CREATE TABLE wapt_localstatus ('+
         'Package TEXT,'+
         'Version TEXT,'+
         'InstallDate TEXT,'+
-        'InstallStatus TEXT');
+        'InstallStatus TEXT);'+
+        'create index idx_localstatus_name on wapt_localstatus(Package);');
 
   finally
+    if sqltrans.Active then
+      sqltrans.Commit;
+
     lst.Free;
+  end;
+end;
+
+function TWAPTDB.Select(SQL: String): ISuperObject;
+var
+  query : TSQLQuery;
+  i:integer;
+  recs,rec: ISuperObject;
+begin
+  Query := TSQLQuery.Create(Nil);
+  try
+    Query.DataBase := db;
+    Query.Transaction := sqltrans;
+
+    Query.SQL.Text:=SQL;
+    Query.Open;
+    recs := TSuperObject.Create(stArray);
+    While not Query.EOF do
+    begin
+      rec := TSuperObject.Create(stObject);
+      recs.AsArray.Add(rec);
+      for i:=0 to query.Fields.Count-1 do
+      begin
+        case query.Fields[i].DataType of
+          ftString : rec.S[query.Fields[i].fieldname] := query.Fields[i].AsString;
+          ftInteger : rec.I[query.Fields[i].fieldname] := query.Fields[i].AsInteger;
+          ftFloat : rec.D[query.Fields[i].fieldname] := query.Fields[i].AsFloat;
+          ftBoolean : rec.B[query.Fields[i].fieldname] := query.Fields[i].AsBoolean;
+          ftDateTime : rec.S[query.Fields[i].fieldname] :=  DateTime2StrUTC(query.Fields[i].AsDateTime);
+        else
+          rec.S[query.Fields[i].fieldname] := query.Fields[i].AsString;
+        end;
+      end;
+      Query.Next;
+    end;
+
+  finally
+    Result := recs;
+    Query.Free;
   end;
 end;
 

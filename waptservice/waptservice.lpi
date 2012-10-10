@@ -20,7 +20,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="2"/>
-      <RevisionNr Value="3"/>
+      <RevisionNr Value="4"/>
       <Language Value="040C"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Service helper" ProductVersion=""/>
     </VersionInfo>
@@ -61,11 +61,10 @@
         <Filename Value="waptservice.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptservice"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="17" Y="7"/>
+        <CursorPos X="1" Y="17"/>
         <UsageCount Value="87"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -75,13 +74,10 @@
         <ComponentName Value="DaemonMapper1"/>
         <HasResources Value="True"/>
         <UnitName Value="WaptMapper"/>
-        <EditorIndex Value="11"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="87"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="waptunit.pas"/>
@@ -90,10 +86,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WaptUnit"/>
-        <EditorIndex Value="10"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="213"/>
-        <CursorPos X="10" Y="247"/>
+        <TopLine Value="95"/>
+        <CursorPos X="37" Y="120"/>
         <UsageCount Value="87"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -150,12 +147,10 @@
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="565"/>
         <CursorPos X="1" Y="602"/>
         <UsageCount Value="54"/>
-        <Loaded Value="True"/>
       </Unit9>
       <Unit10>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-process\src\process.pp"/>
@@ -489,7 +484,7 @@
         <UsageCount Value="10"/>
       </Unit51>
     </Units>
-    <JumpHistory Count="20" HistoryIndex="19">
+    <JumpHistory Count="21" HistoryIndex="20">
       <Position1>
         <Filename Value="waptunit.pas"/>
         <Caret Line="12" Column="24" TopLine="1"/>
@@ -547,36 +542,40 @@
         <Caret Line="7" Column="17" TopLine="1"/>
       </Position14>
       <Position15>
-        <Filename Value="waptmapper.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="27" Column="25" TopLine="20"/>
       </Position15>
       <Position16>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="27" Column="25" TopLine="20"/>
+        <Caret Line="71" Column="21" TopLine="40"/>
       </Position16>
       <Position17>
-        <Filename Value="waptunit.pas"/>
-        <Caret Line="71" Column="21" TopLine="40"/>
-      </Position17>
-      <Position18>
         <Filename Value="waptservice.lpr"/>
         <Caret Line="7" Column="17" TopLine="1"/>
-      </Position18>
-      <Position19>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position19>
-      <Position20>
+      </Position17>
+      <Position18>
         <Filename Value="waptunit.pas"/>
         <Caret Line="186" Column="15" TopLine="157"/>
+      </Position18>
+      <Position19>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="247" Column="10" TopLine="213"/>
+      </Position19>
+      <Position20>
+        <Filename Value="waptservice.lpr"/>
+        <Caret Line="17" Column="42" TopLine="1"/>
       </Position20>
+      <Position21>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="101" Column="1" TopLine="99"/>
+      </Position21>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\waptservice.exe"/>
+      <Filename Value="..\waptservice"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);..\jcl\source\include;C:\codetyphon\lazarus\components\pl_Indy\source\base\"/>
