@@ -30,18 +30,27 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="6">
       <Item1>
-        <PackageName Value="pl_indycomp"/>
+        <PackageName Value="sqlite3laz"/>
       </Item1>
       <Item2>
-        <PackageName Value="FCL"/>
+        <PackageName Value="lazdbexport"/>
       </Item2>
       <Item3>
-        <PackageName Value="LCL"/>
+        <PackageName Value="SQLDBLaz"/>
       </Item3>
+      <Item4>
+        <PackageName Value="pl_indycomp"/>
+      </Item4>
+      <Item5>
+        <PackageName Value="FCL"/>
+      </Item5>
+      <Item6>
+        <PackageName Value="LCL"/>
+      </Item6>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="5">
       <Unit0>
         <Filename Value="appwaptservice.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -50,7 +59,7 @@
       <Unit1>
         <Filename Value="uvisappwaptservice.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="Form1"/>
+        <ComponentName Value="VisAppWAPTService"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisAppWaptService"/>
@@ -63,6 +72,16 @@
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WaptUnit"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="waptcommon"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\superobject\superobject.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="superobject"/>
+      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -73,7 +92,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);..\jcl\source\include"/>
-      <OtherUnitFiles Value="..\waptservice;..\wapt-get;..\jcl\source\common;..\jcl\source\include;..\jcl\source\windows;..\indy\Core;..\indy\System;..\indy\Protocols;..\indy\Security"/>
+      <OtherUnitFiles Value="..\waptservice;..\wapt-get;..\jcl\source\common;..\jcl\source\include;..\jcl\source\windows;..\indy\Core;..\indy\System;..\indy\Protocols;..\indy\Security;..\superobject"/>
       <UnitOutputDirectory Value="lib"/>
     </SearchPaths>
     <Linking>

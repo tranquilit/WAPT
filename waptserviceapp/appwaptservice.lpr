@@ -7,14 +7,15 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, pl_indycomp, uVisAppWaptService, waptunit;
+  Forms, pl_indycomp, lazdbexport, sqlite3laz, uVisAppWaptService, waptunit,
+  superobject, waptcommon;
 
 {$R *.res}
 
 begin
   RequireDerivedFormResource := True;
   Application.Initialize;
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TVisAppWAPTService, VisAppWAPTService);
   Application.CreateForm(TWaptDaemon, WaptDaemon);
   Application.Run;
 end.

@@ -30,9 +30,8 @@ type
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
     procedure StopWaptService;
-    procedure SetupWaptService(InstallPath: Utf8String);
+    function SetupWaptService(InstallPath: Utf8String):Boolean;
     procedure Setup(DownloadPath, InstallPath: Utf8String);
-    procedure InitDB;
     procedure RegisterComputer;
     procedure WriteHelp; virtual;
     property WaptDB:TWAPTDB read GetWaptDB write SetWaptDB;
@@ -146,9 +145,16 @@ begin
     so := TSuperObject.Create(stObject);
     so['wapt_repo'] := WaptDB.Select('select * from wapt_repo');
     for test in so['wapt_repo'] do
-      writeln(test.S  ['Description']);
+    begin
+      writeln(test.S['Description']);
+    end;
     so['wapt_localstatus'] := WaptDB.Select('select * from wapt_localstatus');
-    //writeln(so.AsJson);
+    writeln(so.AsJson);
+  end
+  else
+  if Action = 'upgradedb' then
+  begin
+    WaptDB.upgradedb;
   end
   else
   begin
@@ -250,23 +256,22 @@ begin
     logger('  Error : unable to delete temporary zip file, error code : '+intToStr(IOResult),CRITICAL);
 
   Writeln('Initializing local sqlite DB');
-  InitDB;
+  if FileExists(WaptDB.db.DatabaseName) then
+    WaptDB.upgradedb
+  else
+    WaptDB.OpenDB;
 
   SetupWaptService(InstallPath);
 
 end;
 
-procedure pwaptget.InitDB;
-begin
-  WaptDB.CreateTables;
-end;
 
 procedure pwaptget.RegisterComputer;
 begin
 
 end;
 
-procedure pwaptget.SetupWaptService(InstallPath:Utf8String);
+function pwaptget.SetupWaptService(InstallPath:Utf8String):boolean;
 var
   ExitStatus: Integer;
 
@@ -279,6 +284,7 @@ begin
 	end;
 	Writeln('Start waptservice');
 	Writeln(RunTask('net start waptservice',ExitStatus));
+  Result := ExitStatus = 0;
 end;
 
 procedure pwaptget.WriteHelp;

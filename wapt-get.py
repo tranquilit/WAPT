@@ -264,8 +264,8 @@ class Wapt:
         print common.pp(q,None,1,None)
 
 
-    def list_repo(self):
-        print self.waptdb.list_repo()
+    def list_repo(self,search):
+        print self.waptdb.list_repo(search)
 
     def list_installed_packages(self):
         print self.waptdb.list_installed_packages()
@@ -356,7 +356,7 @@ def main():
         mywapt.make_packages()
 
     elif action=='search':
-        mywapt.list_repo()
+        mywapt.list_repo(args[1:])
 
     elif action=='list':
         mywapt.list_installed_packages()

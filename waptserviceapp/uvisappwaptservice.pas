@@ -5,14 +5,22 @@ unit uVisAppWaptService;
 interface
 
 uses
-  Classes, SysUtils, BufDataset, FileUtil, Forms, Controls, Graphics, Dialogs, db;
+  Classes, SysUtils, BufDataset, FileUtil, Forms, Controls, Graphics, Dialogs,
+  ExtCtrls, StdCtrls, DBGrids, db, sqldb, Sqlite3DS;
 
 type
 
-  { TForm1 }
+  { TVisAppWAPTService }
 
-  TForm1 = class(TForm)
+  TVisAppWAPTService = class(TForm)
+    Datasource1: TDatasource;
+    ButSQL: TButton;
+    DBGrid1: TDBGrid;
+    EdSQL: TMemo;
+    Panel1: TPanel;
+    query: TSQLQuery;
     procedure BufDataset1AfterEdit(DataSet: TDataSet);
+    procedure ButSQLClick(Sender: TObject);
   private
     { private declarations }
   public
@@ -20,17 +28,26 @@ type
   end;
 
 var
-  Form1: TForm1;
+  VisAppWAPTService: TVisAppWAPTService;
 
 implementation
 
+uses WaptUnit;
+
 {$R *.lfm}
 
-{ TForm1 }
+{ TVisAppWAPTService }
 
-procedure TForm1.BufDataset1AfterEdit(DataSet: TDataSet);
+procedure TVisAppWAPTService.BufDataset1AfterEdit(DataSet: TDataSet);
 begin
 
+end;
+
+procedure TVisAppWAPTService.ButSQLClick(Sender: TObject);
+begin
+  query.Close;
+  query.SQL.text := EdSQL.Text;
+  query.Open;
 end;
 
 end.

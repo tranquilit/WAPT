@@ -154,10 +154,11 @@ def pp(cursor, data=None, rowlens=0, callback=None):
         lengths.append(l)
     for col in range(len(lengths)):
         if rowlens:
-            rls = [len(str(callback(d[col][0],row[col]))) for row in data if row[col]]
-            lengths[col] = max([lengths[col]]+rls)
+            rls = [len(row[col]) for row in data if row[col]]
+        lengths[col] = max([lengths[col]]+rls)
         rules.append("-"*lengths[col])
-    format = " ".join(["%%-%ss" % l for l in lengths])
+
+    format = u" ".join(["%%-%ss" % l for l in lengths])
     result = [format % tuple(names)]
     result.append(format % tuple(rules))
     for row in data:
@@ -165,7 +166,7 @@ def pp(cursor, data=None, rowlens=0, callback=None):
         for col in range(len(d)):
             row_cb.append(callback(d[col][0],row[col]))
         result.append(format % tuple(row_cb))
-    return "\n".join(result)
+    return u"\n".join(result)
 ## end of http://code.activestate.com/recipes/81189/ }}}
 
 
@@ -224,17 +225,18 @@ class WaptDB:
         self.logger.debug('Initialize stat database')
         self.db.execute("""
         create table wapt_repo (
-          Package TEXT,
-          Version TEXT,
-          Section TEXT,
-          Priority TEXT,
-          Architecture TEXT,
-          Maintainer TEXT,
-          Description TEXT,
-          Filename TEXT,
-          Size TEXT,
-          MD5sum TEXT,
-          repo_url TEXT
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          Package varchar(255),
+          Version varchar(255),
+          Section varchar(255),
+          Priority varchar(255),
+          Architecture varchar(255),
+          Maintainer varchar(255),
+          Description varchar(255),
+          Filename varchar(255),
+          Size integer,
+          MD5sum varchar(255),
+          repo_url varchar(255)
           )"""
                         )
         self.db.execute("""
@@ -242,10 +244,11 @@ class WaptDB:
 
         self.db.execute("""
         create table wapt_localstatus (
-          Package TEXT,
-          Version TEXT,
-          InstallDate TEXT,
-          InstallStatus TEXT
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          Package varchar(255),
+          Version varchar(255),
+          InstallDate varchar(255),
+          InstallStatus varchar(255)
           )"""
                         )
         self.db.execute("""
@@ -296,8 +299,10 @@ class WaptDB:
         self.db.commit()
         return cur.lastrowid
 
-    def list_repo(self):
-        cur = self.db.execute("select Package,Version,Description from wapt_repo")
+    def list_repo(self,words=[]):
+        words = [ "%"+w.lower()+"%" for w in words ]
+        search = ["lower(Description || Package) like ?"] *  len(words)
+        cur = self.db.execute("select Package,Version,Description from wapt_repo where %s" % " and ".join(search),words)
         return pp(cur,None,1,None)
 
     def add_package_entry(self,package_entry):

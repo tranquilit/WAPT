@@ -4,10 +4,10 @@ unit waptcommon;
 interface
   uses
     Classes, SysUtils,windows,
-     WinInet,zipper,registry,strutils,Variants,FileUtil,SuperObject,DB,sqldb,sqlite3conn;
+     WinInet,zipper,registry,strutils,FileUtil,SuperObject,DB,sqldb,sqlite3conn;
 
   const
-    waptservice_port = 8080;
+    waptservice_port = 8088;
 
   Function  FindWaptRepo:String;
   Function  GetWaptServer:String;
@@ -27,13 +27,19 @@ interface
   function GetAppdataFolder:Utf8String;
 
   function TISAppuserinipath:Utf8String;
-  function TISGetComputerName : String;
-  function TISGetUserName : String;
+  function TISGetComputerName : Utf8String;
+  function TISGetUserName : Utf8String;
 
   function SortableVersion(VersionString:String):String;
 
   function DateTime2StrUTC(ADatetime:TDateTime):String;
   function StrUTC2DateTime(AUTCStrDatetime:String):TDateTime;
+
+  function StringList2SuperObject(St:TStringList):ISuperObject;
+  function SplitLines(St:String):ISuperObject;
+
+  function Dataset2SO(DS:TDataset;AllRecords:Boolean=True):ISuperObject;
+  procedure SO2Dataset(SO:ISuperObject;DS:TDataset;ExcludedFields:Array of String);
 
 
   type LogLevel=(DEBUG, INFO, WARNING, ERROR, CRITICAL);
@@ -55,20 +61,33 @@ interface
   function CheckOpenPort(dwPort : Word; ipAddressStr:AnsiString;timeout:integer=5):boolean;
   function GetIPFromHost(const HostName: string): string;
 
-  function RunTask(cmd: string;var ExitStatus:integer;WorkingDir:String=''): string;
+  function RunTask(cmd: utf8string;var ExitStatus:integer;WorkingDir:utf8String=''): utf8string;
 
 type
 
   { TWAPTDB }
   TWAPTDB = class(TObject)
   private
-    db : TSQLite3Connection;
-    sqltrans : TSQLTransaction;
+    fsqltrans : TSQLTransaction;
+    fdb : TSQLite3Connection;
+    procedure CreateTables;
   public
     constructor create(dbpath:String);
     destructor Destroy; override;
-    procedure CreateTables;
+
+    // initializes DB and create missing tables
+    procedure OpenDB;
+
+    // execute SQL query and returns a JSON structure with records (stArray)
     function Select(SQL:String):ISuperObject;
+
+    // backup existing data as JSON structure, renames old DB and recreates one, restores data
+    procedure upgradedb;
+
+    function dumpdb:ISuperObject;
+
+    property db:TSQLite3Connection read FDB;
+    property sqltrans:TSQLTransaction read fsqltrans;
   end;
 
 var
@@ -370,16 +389,16 @@ begin
 end;
 
 
-function TISGetUserName : String;
+function TISGetUserName : Utf8String;
 var
-	 pcUser   : PChar;
+	 pcUser   : PWChar;
 	 dwUSize : DWORD;
 begin
 	 dwUSize := 21; // user name can be up to 20 characters
 	 GetMem( pcUser, dwUSize ); // allocate memory for the string
 	 try
-			if Windows.GetUserName( pcUser, dwUSize ) then
-				 Result := Uppercase(pcUser)
+			if Windows.GetUserNameW( pcUser, dwUSize ) then
+				 Result := pcUser;
 	 finally
 			FreeMem( pcUser ); // now free the memory allocated for the string
 	 end;
@@ -437,6 +456,117 @@ begin
   Result := StrToDate(copy(AUTCStrDatetime,1,10),'-')+StrToTime(Copy(AUTCStrDatetime,12,8),':');
 end;
 
+function StringList2SuperObject(St: TStringList): ISuperObject;
+var
+  i:integer;
+begin
+  Result := TSuperObject.Create(stArray);
+  for i:=0 to st.Count-1 do
+    Result.AsArray.Add(st[i]);
+end;
+
+function SplitLines(St: String): ISuperObject;
+var
+  tok : String;
+begin
+  Result := TSuperObject.Create(stArray);
+  St := StringsReplace(St,[#13#10,#13,#10],[#13,#13,#13],[rfReplaceAll]);
+  repeat
+    tok := StrToken(St,#13);
+    Result.AsArray.Add(tok);
+  until St='';
+end;
+
+function Dataset2SO(DS: TDataset;AllRecords:Boolean=True): ISuperObject;
+var
+  recs,rec: ISuperObject;
+
+  procedure Fillrec(rec:ISuperObject);
+  var
+    i:integer;
+  begin
+    for i:=0 to DS.Fields.Count-1 do
+    begin
+      case DS.Fields[i].DataType of
+        ftString : rec.S[DS.Fields[i].fieldname] := UTF8Decode(DS.Fields[i].AsString);
+        ftInteger : rec.I[DS.Fields[i].fieldname] := DS.Fields[i].AsInteger;
+        ftFloat : rec.D[DS.Fields[i].fieldname] := DS.Fields[i].AsFloat;
+        ftBoolean : rec.B[DS.Fields[i].fieldname] := DS.Fields[i].AsBoolean;
+        ftDateTime : rec.S[DS.Fields[i].fieldname] :=  DateTime2StrUTC(DS.Fields[i].AsDateTime);
+      else
+        rec.S[DS.Fields[i].fieldname] := UTF8Decode(DS.Fields[i].AsString);
+      end;
+    end;
+  end;
+
+begin
+  if AllRecords then
+  begin
+    DS.First;
+    Result := TSuperObject.Create(stArray);
+    While not DS.EOF do
+    begin
+      rec := TSuperObject.Create(stObject);
+      Result.AsArray.Add(rec);
+      Fillrec(Rec);
+      DS.Next;
+    end;
+  end
+  else
+  begin
+    Result := TSuperObject.Create;
+    Fillrec(Result);
+  end;
+end;
+
+procedure SO2Dataset(SO: ISuperObject; DS: TDataset;ExcludedFields:Array of String);
+var
+  arec : ISuperObject;
+  procedure Fillrec(rec:ISuperObject);
+  var
+    i:integer;
+    dt : TDateTime;
+  begin
+    for i:=0 to DS.Fields.Count-1 do
+    begin
+      if StrIsOneOf(DS.Fields[i].fieldname,ExcludedFields) then
+        Continue;
+      if rec.AsObject.Exists(DS.Fields[i].fieldname) then
+        case DS.Fields[i].DataType of
+          ftString : DS.Fields[i].AsString := UTF8Encode(rec.S[DS.Fields[i].fieldname]);
+          ftInteger : DS.Fields[i].AsInteger := rec.I[DS.Fields[i].fieldname];
+          ftFloat : DS.Fields[i].AsFloat := rec.D[DS.Fields[i].fieldname];
+          ftBoolean : DS.Fields[i].AsBoolean := rec.B[DS.Fields[i].fieldname];
+
+          ftDateTime : if ISO8601DateToDelphiDateTime(rec.S[DS.Fields[i].fieldname],dt) then
+            DS.Fields[i].AsDateTime := dt;
+        else
+          DS.Fields[i].AsString := UTF8Encode(rec.S[DS.Fields[i].fieldname]);
+        end;
+    end;
+  end;
+
+begin
+  // If SO is an array, we fill the dataset with all records
+  if SO.DataType = stArray then
+  begin
+    for arec in SO do
+    begin
+      DS.Append;
+      Fillrec(ARec);
+      DS.Post;
+    end;
+  end
+  else
+  begin
+    // If SO is a single object, we fill the dataset with one record
+    if not (DS.State in dsEditModes) then
+      DS.Append;
+    Fillrec(SO);
+    DS.Post;
+  end;
+end;
+
 procedure Logger(Msg: String;level:LogLevel=WARNING);
 begin
   if level>=currentLogLevel then
@@ -449,15 +579,15 @@ begin
   end;
 end;
 
-function TISGetComputerName : String;
+function TISGetComputerName : Utf8String;
 var
-	 pcComputer : PChar;
+	 pcComputer : PWChar;
 	 dwCSize    : DWORD;
 begin
 	 dwCSize := MAX_COMPUTERNAME_LENGTH + 1;
 	 GetMem( pcComputer, dwCSize ); // allocate memory for the string
 	 try
-			if Windows.GetComputerName( pcComputer, dwCSize ) then
+			if Windows.GetComputerNameW( pcComputer, dwCSize ) then
 				 Result := pcComputer;
 	 finally
 			FreeMem( pcComputer ); // now free the memory allocated for the string
@@ -631,7 +761,7 @@ begin
   WSACleanup;
 end;
 
-function RunTask(cmd: string;var ExitStatus:integer;WorkingDir:String=''): string;
+function RunTask(cmd: utf8string;var ExitStatus:integer;WorkingDir:utf8String=''): utf8string;
 var
   AProcess: TProcess;
   AStringList: TStringList;
@@ -642,8 +772,9 @@ begin
       AProcess.CommandLine := cmd;
       if WorkingDir<>'' then
         AProcess.CurrentDirectory := ExtractFilePath(cmd);
-      AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
+      AProcess.Options := AProcess.Options + [poStderrToOutPut, poWaitOnExit, poUsePipes];
       AProcess.Execute;
+      while AProcess.Running do;
       AStringList.LoadFromStream(AProcess.Output);
       Result := AStringList.Text;
       ExitStatus:= AProcess.ExitStatus;
@@ -678,12 +809,17 @@ begin
   else if FileExists(AppendPathDelim(ExtractFilePath(dbpath))+'..\DLLs\sqlite3.dll') then
     SQLiteLibraryName:=AppendPathDelim(ExtractFilePath(dbpath))+'..\DLLs\sqlite3.dll';
 
-  sqltrans := TSQLTransaction.Create(Nil);
-  db := TSQLite3Connection.Create(Nil);
+  fsqltrans := TSQLTransaction.Create(Nil);
+  fdb := TSQLite3Connection.Create(Nil);
   db.LoginPrompt := False;
   if not DirectoryExists(ExtractFileDir(dbpath)) then
     mkdir(ExtractFileDir(dbpath));
   db.DatabaseName := dbpath;
+  OpenDB;
+end;
+
+procedure TWAPTDB.OpenDB;
+begin
   db.KeepConnection := False;
   db.Transaction := SQLTrans;
   sqltrans.DataBase := db;
@@ -711,25 +847,27 @@ begin
     db.GetTableNames(lst,False);
     if lst.IndexOf('wapt_repo')<0 then
       db.ExecuteDirect('CREATE TABLE wapt_repo ('+
-        'Package TEXT,'+
-        'Version TEXT,'+
-        'Section TEXT,'+
-        'Priority TEXT,'+
-        'Architecture TEXT,'+
-        'Maintainer TEXT,'+
-        'Description TEXT,'+
-        'Filename TEXT,'+
-        'Size TEXT,'+
-        'MD5sum TEXT,'+
-        'repo_url TEXT);'+
+        'id INTEGER PRIMARY KEY AUTOINCREMENT,'+
+        'Package VARCHAR(255),'+
+        'Version VARCHAR(255),'+
+        'Section VARCHAR(255),'+
+        'Priority VARCHAR(255),'+
+        'Architecture VARCHAR(255),'+
+        'Maintainer VARCHAR(255),'+
+        'Description VARCHAR(255),'+
+        'Filename VARCHAR(255),'+
+        'Size INTEGER,'+
+        'MD5sum VARCHAR(255),'+
+        'repo_url VARCHAR(255));'+
         'create index idx_package_name on wapt_repo(Package);');
 
     if lst.IndexOf('wapt_localstatus')<0 then
       db.ExecuteDirect('CREATE TABLE wapt_localstatus ('+
-        'Package TEXT,'+
-        'Version TEXT,'+
-        'InstallDate TEXT,'+
-        'InstallStatus TEXT);'+
+        'id INTEGER PRIMARY KEY AUTOINCREMENT,'+
+        'Package VARCHAR(255),'+
+        'Version VARCHAR(255),'+
+        'InstallDate VARCHAR(255),'+
+        'InstallStatus VARCHAR(255));'+
         'create index idx_localstatus_name on wapt_localstatus(Package);');
 
   finally
@@ -743,8 +881,6 @@ end;
 function TWAPTDB.Select(SQL: String): ISuperObject;
 var
   query : TSQLQuery;
-  i:integer;
-  recs,rec: ISuperObject;
 begin
   Query := TSQLQuery.Create(Nil);
   try
@@ -753,32 +889,75 @@ begin
 
     Query.SQL.Text:=SQL;
     Query.Open;
-    recs := TSuperObject.Create(stArray);
-    While not Query.EOF do
-    begin
-      rec := TSuperObject.Create(stObject);
-      recs.AsArray.Add(rec);
-      for i:=0 to query.Fields.Count-1 do
-      begin
-        case query.Fields[i].DataType of
-          ftString : rec.S[query.Fields[i].fieldname] := query.Fields[i].AsString;
-          ftInteger : rec.I[query.Fields[i].fieldname] := query.Fields[i].AsInteger;
-          ftFloat : rec.D[query.Fields[i].fieldname] := query.Fields[i].AsFloat;
-          ftBoolean : rec.B[query.Fields[i].fieldname] := query.Fields[i].AsBoolean;
-          ftDateTime : rec.S[query.Fields[i].fieldname] :=  DateTime2StrUTC(query.Fields[i].AsDateTime);
-        else
-          rec.S[query.Fields[i].fieldname] := query.Fields[i].AsString;
-        end;
-      end;
-      Query.Next;
-    end;
+    Result := Dataset2SO(Query);
 
   finally
-    Result := recs;
     Query.Free;
   end;
 end;
 
+procedure TWAPTDB.upgradedb;
+var
+  databackup : ISuperObject;
+  tablename:ISuperObject;
+  query : TSQLQuery;
+
+begin
+  DataBackup := dumpdb;
+  try
+    writeln(databackup.AsJSon(True));
+    db.Close;
+    if RenameFileUTF8(db.DatabaseName,ChangeFileExt(db.DatabaseName,'')+'-'+FormatDateTime('yyyymmdd-hhnnss',Now)+'.sqlite') then
+    begin
+      OpenDB;
+      try
+        //temporary bufds to insert records
+        Query := TSQLQuery.Create(Nil);
+        Query.DataBase := db;
+        Query.Transaction := sqltrans;
+
+        // recreates data from JSON backup using TBufDataset
+        for tablename in databackup.AsObject.GetNames do
+        begin
+          Query.Close;
+          Query.SQL.Text:= 'select * from '+tablename.AsString;
+          Query.Open;
+          SO2Dataset(databackup[tablename.AsString],Query,['id']);
+          Query.ApplyUpdates;
+          if query.ChangeCount>0 then
+            Raise Exception.Create('Erreur enregistrement pour '+tablename.AsString);
+        end;
+      finally
+        Query.Free;
+      end;
+    end
+    else
+      Raise Exception.Create('Base '+db.DatabaseName+' verrouillée');
+
+
+  finally
+    if sqltrans.Active then
+      sqltrans.commit;
+  end;
+
+end;
+
+function TWAPTDB.dumpdb: ISuperObject;
+var
+  tables:TStringList;
+  i:integer;
+  query : TSQLQuery;
+begin
+  Result := TSuperObject.Create;
+  try
+    tables := TStringList.Create;
+    db.GetTableNames(tables);
+    for i:=0 to tables.Count-1 do
+      Result[tables[i]] := Select('select * from '+tables[i]);
+  finally
+    tables.Free;
+  end;
+end;
 
 end.
 

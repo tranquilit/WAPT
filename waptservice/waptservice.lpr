@@ -5,7 +5,7 @@ Uses
   CThreads,
 {$ENDIF}{$ENDIF}
   DaemonApp, lazdaemonapp, pl_indycomp, WaptMapper, WaptUnit,
-  waptcommon, interfaces;
+  waptcommon, superobject, interfaces;
 
 {$R *.res}
 
