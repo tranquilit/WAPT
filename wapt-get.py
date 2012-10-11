@@ -150,10 +150,12 @@ class Wapt:
         self.dbpath = 'c:\\wapt\\db\\waptdb.sqlite'
         self._waptdb = None
 
-    def wapt_db(self):
+    @property
+    def waptdb(self):
         if not self._waptdb:
             self._waptdb = WaptDB(dbpath=self.dbpath)
         return self._waptdb
+
 
     def install_wapt(self,fname):
         print("installing package " + fname)
