@@ -17,6 +17,7 @@ import pprint
 import socket
 import codecs
 from setuphelpers import *
+import glob
 
 usage="""\
 %prog -c configfile action
@@ -147,7 +148,12 @@ class Wapt:
         self.packagecachedir = ""
         self.dry_run = False
         self.dbpath = 'c:\\wapt\\db\\waptdb.sqlite'
-        self.waptdb = WaptDB(dbpath=self.dbpath)
+        self._waptdb = None
+
+    def wapt_db(self):
+        if not self._waptdb:
+            self._waptdb = WaptDB(dbpath=self.dbpath)
+        return self._waptdb
 
     def install_wapt(self,fname):
         print("installing package " + fname)
@@ -210,6 +216,7 @@ class Wapt:
             self.install_wapt(fullpackagepath)
 
     def update(self,repourl=''):
+        """Get Packages from http repo and update local package database"""
         if not repourl:
             repourl = self.wapt_repourl
         logger.debug('Temporary directory: %s' % tempdir)
@@ -219,11 +226,13 @@ class Wapt:
 
         package = Package_Entry()
         for line in packageListFile:
+            # new package
             if line.strip()=='':
                 logger.debug(package)
                 package.repo_url = repourl
                 self.waptdb.add_package_entry(package)
                 package = Package_Entry()
+            # add ettribute to current package
             else:
                 splitline= line.split(':')
                 setattr(package,splitline[0].strip(),splitline[1].strip())
@@ -258,6 +267,29 @@ class Wapt:
 
     def list_installed_packages(self):
         print self.waptdb.list_installed_packages()
+
+    def update_packages(self,adir):
+        """Scan adir directory for WAPT packages and build a Packages zip file with control data and MD5 hash"""
+        packages_fname = os.path.join(adir,'Packages')
+        previous_packages = codecs.decode(zipfile.ZipFile(packages_fname)).read(name='Packages')
+        previous_packages_mtime = os.path.getmtime(packages_fname)
+
+        waptlist = glob.glob(adir)
+        if not os.path.isdir(adir):
+            raise Exception('%s is not a directory' % (adir))
+
+        packages = []
+        for fname in waptlist:
+            print "Processing %s" % fname
+            entry = common.Package_Entry()
+            entry.register_package(fname)
+            packages.append(str(entry))
+
+        packagefile.close()
+        myzipfile = zipfile.ZipFile("Packages", "w")
+        myzipfile.write(filename=packagefilename,arcname= "Packages")
+        myzipfile.close()
+        os.remove(packagefilename)
 
 def main():
     if len(args) == 0:
@@ -314,6 +346,12 @@ def main():
 
     elif action=='remove':
         mywapt.remove()
+
+    elif action=='make-packages':
+        mywapt.make_packages()
+
+    elif action=='init':
+        mywapt.make_packages()
 
     elif action=='search':
         mywapt.list_repo()
