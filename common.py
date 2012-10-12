@@ -24,13 +24,14 @@ import re
 import logging
 import datetime
 import time
-import sqlite3
-import shutil
 import sys
 import pprint
 import zipfile
 import tempfile
 import hashlib
+import glob
+import codecs
+import sqlite3
 
 def datetime2isodate(adatetime = datetime.datetime.now()):
     assert(isinstance(adatetime,datetime.datetime))
@@ -248,7 +249,8 @@ class WaptDB:
           Package varchar(255),
           Version varchar(255),
           InstallDate varchar(255),
-          InstallStatus varchar(255)
+          InstallStatus varchar(255),
+          InstallOutput TEXT
           )"""
                         )
         self.db.execute("""
@@ -323,18 +325,22 @@ class WaptDB:
                          package_entry.repo_url)
 
 
-    def add_installed_package(self,package,version):
+    def add_installed_package(self,package,version,installstatus,installoutput):
         cur = self.db.execute("""delete from wapt_localstatus where Package=?""" ,(package,))
         cur = self.db.execute("""\
               insert into wapt_localstatus (
                 Package,
                 Version,
-                InstallDate
-                ) values (?,?,?)
+                InstallDate,
+                InstallStatus,
+                InstallOutput
+                ) values (?,?,?,?,?)
             """,(
                  package,
                  version,
-                 datetime2isodate())
+                 datetime2isodate(),
+                 installstatus,
+                 installoutput)
                )
         self.db.commit()
         return cur.lastrowid
@@ -384,10 +390,9 @@ class Package_Entry:
         """Load package attributes from the control file included in WAPT zipfile fname"""
         myzip = zipfile.ZipFile(fname,'r')
         control = myzip.open('control')
-        self.Filename = fname
+        self.Filename = os.path.basename(fname)
         self.MD5sum = md5_for_file(fname)
         self.Size = os.path.getsize(fname)
-        keyvalue = {}
         while 1:
             line = control.readline()
             if not line:
@@ -411,6 +416,56 @@ Size         : %(Size)s
 MD5sum       : %(MD5sum)s
 """  % self.__dict__
         return val
+
+def update_packages(adir):
+    """Scan adir directory for WAPT packages and build a Packages zip file with control data and MD5 hash"""
+    packages_fname = os.path.join(adir,'Packages')
+    if os.path.exists(packages_fname):
+        print "Readind old Packages %s" % packages_fname
+        previous_packages = codecs.decode(zipfile.ZipFile(packages_fname).read(name='Packages'),'utf-8')
+        previous_packages_mtime = os.path.getmtime(packages_fname)
+    else:
+        previous_packages=''
+        previous_packages_mtime = 0
+
+    old_entries = {}
+    # we get old list to not recompute MD5 if filename has not changed
+    package = Package_Entry()
+    for line in previous_packages.splitlines():
+        # new package
+        if line.strip()=='':
+            old_entries[package.Filename] = package
+            package = Package_Entry()
+        # add ettribute to current package
+        else:
+            splitline= line.split(':')
+            name = splitline[0].strip()
+            value = splitline[1].strip()
+            setattr(package,name,value)
+
+    # last one
+    if package.Filename:
+        old_entries[package.Filename] = package
+
+    if not os.path.isdir(adir):
+        raise Exception('%s is not a directory' % (adir))
+
+    waptlist = glob.glob(os.path.join(adir,'*.wapt'))
+    packages = []
+    for fname in waptlist:
+        if os.path.basename(fname) in old_entries:
+            print "  Keeping %s" % fname
+            entry = old_entries[os.path.basename(fname)]
+        else:
+            print "  Processing %s" % fname
+            entry = Package_Entry()
+            entry.load_control_from_wapt(fname)
+        packages.append(str(entry))
+
+    print "Writing new %s" % packages_fname
+    myzipfile = zipfile.ZipFile(packages_fname, "w")
+    myzipfile.writestr("Packages",'\n'.join(packages),compress_type=zipfile.ZIP_DEFLATED)
+    myzipfile.close()
 
 if __name__ == '__main__':
     logger = logging.getLogger('wapt-db')

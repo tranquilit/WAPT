@@ -3,14 +3,14 @@ unit waptcommon;
 {$mode objfpc}{$H+}
 interface
   uses
-    Classes, SysUtils,windows,
-     WinInet,zipper,registry,strutils,FileUtil,SuperObject,DB,sqldb,sqlite3conn;
+     interfaces,Classes, SysUtils,windows,
+     WinInet,zipper,registry,strutils,FileUtil,SuperObject,DB,sqldb,sqlite3conn,Process;
 
   const
     waptservice_port = 8088;
 
   Function  FindWaptRepo:String;
-  Function  GetWaptServer:String;
+  Function  GetWaptServerURL:String;
 
   Function  Wget(const fileURL, DestFileName: Utf8String): boolean;
   Function  Wget_try(const fileURL: Utf8String): boolean;
@@ -61,7 +61,16 @@ interface
   function CheckOpenPort(dwPort : Word; ipAddressStr:AnsiString;timeout:integer=5):boolean;
   function GetIPFromHost(const HostName: string): string;
 
+  function WaptgetPath: Utf8String;
+  function WaptDBPath: Utf8String;
+
   function RunTask(cmd: utf8string;var ExitStatus:integer;WorkingDir:utf8String=''): utf8string;
+
+
+  function GetSystemProductName: String;
+  function GetSystemManufacturer: String;
+  function GetBIOSVendor: String;
+  function GetBIOSVersion: String;
 
 type
 
@@ -80,6 +89,7 @@ type
 
     // execute SQL query and returns a JSON structure with records (stArray)
     function Select(SQL:String):ISuperObject;
+    function QueryCreate(SQL:String):TSQLQuery;
 
     // backup existing data as JSON structure, renames old DB and recreates one, restores data
     procedure upgradedb;
@@ -98,7 +108,7 @@ const
 
 implementation
 
-uses Process,winsock,JwaTlHelp32,JCLSysInfo,shlobj,JCLShell,JCLStrings;
+uses winsock,JwaTlHelp32,JCLSysInfo,shlobj,JCLShell,JCLStrings,JCLRegistry;
 
 function FindWaptRepo: String;
 begin
@@ -108,10 +118,11 @@ begin
     result := 'http://srvinstallation.tranquil-it-systems.fr/wapt';
 end;
 
-function GetWaptServer: String;
+function GetWaptServerURL: String;
 begin
   result := 'http://wapt/waptserver';
 end;
+
 
 function IsAdminLoggedOn: Boolean;
 { Returns True if the logged-on user is a member of the Administrators local
@@ -215,6 +226,59 @@ begin
   end
 end;
 
+function GetSystemProductName: String;
+const
+  WinNT_REG_PATH = 'HARDWARE\DESCRIPTION\System\BIOS';
+  WinNT_REG_KEY  = 'SystemProductName';
+begin
+  try
+    Result := RegReadAnsiString(HKEY_LOCAL_MACHINE, WinNT_REG_PATH, WinNT_REG_KEY);
+  except
+    Result :='';
+  end;
+end;
+
+function GetSystemManufacturer: String;
+const
+  WinNT_REG_PATH = 'HARDWARE\DESCRIPTION\System\BIOS';
+  WinNT_REG_KEY  = 'SystemManufacturer';
+begin
+  try
+    Result := RegReadAnsiString(HKEY_LOCAL_MACHINE, WinNT_REG_PATH, WinNT_REG_KEY);
+  except
+    Result :='';
+  end;
+end;
+
+function GetBIOSVendor: String;
+const
+  WinNT_REG_PATH = 'HARDWARE\DESCRIPTION\System\BIOS';
+  WinNT_REG_KEY  = 'BIOSVendor';
+begin
+  try
+    Result := RegReadAnsiString(HKEY_LOCAL_MACHINE, WinNT_REG_PATH, WinNT_REG_KEY);
+  except
+    Result :='';
+  end;
+end;
+
+function GetBIOSVersion: String;
+const
+  WinNT_REG_PATH = 'HARDWARE\DESCRIPTION\System\BIOS';
+  WinNT_REG_PATH2 = 'HARDWARE\DESCRIPTION\System';
+  WinNT_REG_KEY  = 'BIOSVersion';
+  WinNT_REG_KEY2  = 'SystemBiosVersion';
+begin
+  try
+    Result := RegReadAnsiString(HKEY_LOCAL_MACHINE, WinNT_REG_PATH, WinNT_REG_KEY);
+  except
+    try
+      Result := RegReadAnsiMultiSz(HKEY_LOCAL_MACHINE, WinNT_REG_PATH2, WinNT_REG_KEY2);
+    except
+      Result :='';
+    end;
+  end;
+end;
 
 function CheckTokenMembership(TokenHandle: THandle; SidToCheck: PSID; var IsMember: BOOL): BOOL; stdcall; external advapi32;
 
@@ -470,7 +534,7 @@ var
   tok : String;
 begin
   Result := TSuperObject.Create(stArray);
-  St := StringsReplace(St,[#13#10,#13,#10],[#13,#13,#13],[rfReplaceAll]);
+  St := StrUtils.StringsReplace(St,[#13#10,#13,#10],[#13,#13,#13],[rfReplaceAll]);
   repeat
     tok := StrToken(St,#13);
     Result.AsArray.Add(tok);
@@ -761,6 +825,23 @@ begin
   WSACleanup;
 end;
 
+function WaptgetPath: Utf8String;
+begin
+  if FileExists(ExtractFilePath(ParamStr(0))+'\wapt-get.exe') then
+    result := ExtractFilePath(ParamStr(0))+'\wapt-get.exe'
+  else
+    result := 'c:\wapt\wapt-get.exe';
+end;
+
+function WaptDBPath: Utf8String;
+begin
+  if FileExists(ExtractFilePath(ParamStr(0))+'\db\waptdb.sqlite') then
+    result := ExtractFilePath(ParamStr(0))+'\db\waptdb.sqlite'
+  else
+    result := 'c:\wapt\db\waptdb.sqlite';
+
+end;
+
 function RunTask(cmd: utf8string;var ExitStatus:integer;WorkingDir:utf8String=''): utf8string;
 var
   AProcess: TProcess;
@@ -867,7 +948,8 @@ begin
         'Package VARCHAR(255),'+
         'Version VARCHAR(255),'+
         'InstallDate VARCHAR(255),'+
-        'InstallStatus VARCHAR(255));'+
+        'InstallStatus VARCHAR(255),'+
+        'InstallOutput TEXT);'+
         'create index idx_localstatus_name on wapt_localstatus(Package);');
 
   finally
@@ -894,6 +976,16 @@ begin
   finally
     Query.Free;
   end;
+end;
+
+function TWAPTDB.QueryCreate(SQL: String): TSQLQuery;
+begin
+  Result := TSQLQuery.Create(Nil);
+  Result.DataBase := db;
+  Result.Transaction := sqltrans;
+  Result.SQL.Text:=SQL;
+  if (SQL<>'') and (pos('select',lowercase(SQL))=1) then
+    Result.Open;
 end;
 
 procedure TWAPTDB.upgradedb;
@@ -953,7 +1045,8 @@ begin
     tables := TStringList.Create;
     db.GetTableNames(tables);
     for i:=0 to tables.Count-1 do
-      Result[tables[i]] := Select('select * from '+tables[i]);
+      if tables[i] <> 'sqlite_sequence' then
+        Result[tables[i]] := Select('select * from '+tables[i]);
   finally
     tables.Free;
   end;

@@ -12,12 +12,15 @@ import logging
 import datetime
 from common import WaptDB
 from common import Package_Entry
+from common import update_packages
 import dns.resolver
 import pprint
 import socket
 import codecs
 from setuphelpers import *
-import glob
+import json
+
+
 
 usage="""\
 %prog -c configfile action
@@ -25,14 +28,18 @@ usage="""\
 WAPT install system.
 
 action is either :
-  install : install one or several packages
+  install [packages]: install one or several packages
   update : update package database
   upgrade : upgrade installed packages
   list : list installed packages
-  search : list available packages
+  list-upgrade : list upgradable packages
+  search [keywords] : search packages whose description contains keywords
+
+  update-packages <directory> : rebuild a "Packages" file for http package repository
+
 """
 
-version = "0.4.4"
+version = "0.5.3"
 
 parser=OptionParser(usage=usage,version="%prog " + version)
 parser.add_option("-c","--config", dest="config", default='c:\\wapt\\wapt-get.ini', help="Config file full path (default: %default)")
@@ -142,6 +149,22 @@ def find_wapt_server(configparser):
 
     return None
 
+class LogOutput(object):
+    def __init__(self,console):
+        self.output = []
+        self.console = console
+
+    def write(self,txt):
+        self.console.write(txt)
+        if txt <> '\n':
+            self.output.append(txt)
+
+    def __getattrib__(self, name):
+        if hasattr(self.console,'__getattrib__'):
+            return self.console.__getattrib__(name)
+        else:
+            return self.console.__getattribute__(name)
+
 class Wapt:
     def __init__(self):
         self.wapt_repourl=""
@@ -158,35 +181,46 @@ class Wapt:
 
 
     def install_wapt(self,fname):
-        print("installing package " + fname)
-        global packagetempdir
-        packagetempdir = tempfile.mkdtemp(prefix="wapt")
-        print('  unzipping %s ' % (fname))
-        sys.stdout.flush()
-        zip = zipfile.ZipFile(fname)
-        zip.extractall(path=packagetempdir)
+        old_stdout = sys.stdout
+        # we setup a redirection of stdout to catch print output from install scripts
+        sys.stdout = installoutput = LogOutput(sys.stdout)
+        try:
+            logger.info("installing package " + fname)
+            global packagetempdir
+            packagetempdir = tempfile.mkdtemp(prefix="wapt")
+            logger.info('  unzipping %s ' % (fname))
+            zip = zipfile.ZipFile(fname)
+            zip.extractall(path=packagetempdir)
 
-        print ("  sourcing install file")
-        sys.stdout.flush()
-        psource(os.path.join( packagetempdir,'setup.py'))
+            logger.info("  sourcing install file")
+            psource(os.path.join( packagetempdir,'setup.py'))
 
-        if not self.dry_run:
-            print ("  executing install script")
-            sys.stdout.flush()
-            setup.install()
+            if not self.dry_run:
+                logger.info("  executing install script")
+                #sys.stdout.flush()
+                exitstatus = setup.install()
 
-        print("Add package to local DB")
-        entry = Package_Entry()
-        entry.load_control_from_wapt(fname)
-        self.waptdb.add_installed_package(entry.Package,entry.Version)
+            logger.info("Add package to local DB")
+            entry = Package_Entry()
+            entry.load_control_from_wapt(fname)
+            if exitstatus is None:
+                status = 'UNKNOWN'
+            elif exitstatus == 0:
+                status = 'OK'
+            else:
+                status = 'ERROR'
 
-        print("Install script finished")
-        logger.debug("Cleaning package tmp dir")
-        sys.stdout.flush()
-        shutil.rmtree(packagetempdir)
+            self.waptdb.add_installed_package(entry.Package,entry.Version,status,json.dumps({'output':installoutput.output,'exitstatus':exitstatus}))
+
+            logger.info("Install script finished with status %s" % status)
+            logger.debug("Cleaning package tmp dir")
+            #sys.stdout.flush()
+            shutil.rmtree(packagetempdir)
+        finally:
+            sys.stdout = old_stdout
 
     def install(self,package):
-        sys.stdout.flush()
+        #sys.stdout.flush()
         if os.path.isfile(package):
             self.install_wapt(package)
         else:
@@ -212,7 +246,7 @@ class Wapt:
                 print ("  using cached package file from " + fullpackagepath)
             else:
                 print ("  downloading package from " + mydict['repo_url'])
-                sys.stdout.flush()
+                #sys.stdout.flush()
                 wget( download_url, self.packagecachedir)
 
             self.install_wapt(fullpackagepath)
@@ -238,6 +272,10 @@ class Wapt:
             else:
                 splitline= line.split(':')
                 setattr(package,splitline[0].strip(),splitline[1].strip())
+        # last one
+        if package.Package:
+            self.waptdb.add_package_entry(package)
+
         self.waptdb.db.commit()
 
     def upgrade(self):
@@ -269,29 +307,6 @@ class Wapt:
 
     def list_installed_packages(self):
         print self.waptdb.list_installed_packages()
-
-    def update_packages(self,adir):
-        """Scan adir directory for WAPT packages and build a Packages zip file with control data and MD5 hash"""
-        packages_fname = os.path.join(adir,'Packages')
-        previous_packages = codecs.decode(zipfile.ZipFile(packages_fname)).read(name='Packages')
-        previous_packages_mtime = os.path.getmtime(packages_fname)
-
-        waptlist = glob.glob(adir)
-        if not os.path.isdir(adir):
-            raise Exception('%s is not a directory' % (adir))
-
-        packages = []
-        for fname in waptlist:
-            print "Processing %s" % fname
-            entry = common.Package_Entry()
-            entry.register_package(fname)
-            packages.append(str(entry))
-
-        packagefile.close()
-        myzipfile = zipfile.ZipFile("Packages", "w")
-        myzipfile.write(filename=packagefilename,arcname= "Packages")
-        myzipfile.close()
-        os.remove(packagefilename)
 
 def main():
     if len(args) == 0:
@@ -349,8 +364,11 @@ def main():
     elif action=='remove':
         mywapt.remove()
 
-    elif action=='make-packages':
-        mywapt.make_packages()
+    elif action=='update-packages':
+        if len(args)<2:
+            print "You must provide the directory"
+            sys.exit(1)
+        update_packages(args[1])
 
     elif action=='init':
         mywapt.make_packages()

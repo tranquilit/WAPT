@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, ExtCtrls, IdHTTPServer, DaemonApp,
-  IdCustomHTTPServer, IdContext, sqlite3conn, sqldb, db;
+  IdCustomHTTPServer, IdContext, sqlite3conn, sqldb, db,Waptcommon;
 
 type
 
@@ -14,62 +14,116 @@ type
 
   TWaptDaemon = class(TDaemon)
     IdHTTPServer1: TIdHTTPServer;
-    QLstLocalStatusid: TLongintField;
-    QLstLocalStatusInstallDate: TStringField;
-    QLstLocalStatusInstallStatus: TStringField;
-    QLstLocalStatusPackage: TStringField;
-    QLstLocalStatusRepoVersion: TStringField;
-    QLstLocalStatusVersion: TStringField;
-    QLstPackages: TSQLQuery;
-    QLstLocalStatus: TSQLQuery;
-    QLstPackagesArchitecture: TStringField;
-    QLstPackagesDescription: TStringField;
-    QLstPackagesFilename: TStringField;
-    QLstPackagesid: TLongintField;
-    QLstPackagesMaintainer: TStringField;
-    QLstPackagesMD5sum: TStringField;
-    QLstPackagesPackage: TStringField;
-    QLstPackagesPriority: TStringField;
-    QLstPackagesrepo_url: TStringField;
-    QLstPackagesSection: TStringField;
-    QLstPackagesSize: TLongintField;
-    QLstPackagesVersion: TStringField;
-    SQLTrans: TSQLTransaction;
     Timer1: TTimer;
-    waptdb: TSQLite3Connection;
+
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleStart(Sender: TCustomDaemon; var OK: Boolean);
     procedure IdHTTPServer1CommandGet(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
     procedure Timer1Timer(Sender: TObject);
   private
+    FWAPTdb : TWAPTDB;
     { private declarations }
     inTimer:Boolean;
+    function GetWaptDB: TWAPTDB;
+    procedure SetWaptDB(AValue: TWAPTDB);
     function TableHook(Data, FN: Utf8String): Utf8String;
   public
     { public declarations }
-  end; 
+    property WaptDB:TWAPTDB read GetWaptDB write SetWaptDB;
+  end;
 
 var
   WaptDaemon: TWaptDaemon;
 
 implementation
-uses Waptcommon, superobject,JclSysInfo,StrUtils,JCLRegistry,Windows,IdSocketHandle;
+uses superobject,JclSysInfo,StrUtils,IdSocketHandle,IdGlobal,process;
 
 procedure RegisterDaemon;
 begin
   RegisterDaemonClass(TWaptDaemon)
 end;
 
+
+procedure HttpStartChunkedResponse(AResponseInfo:TIdHTTPResponseInfo;ContentType:String='';charset:String='');
+begin
+  AResponseInfo.TransferEncoding := 'chunked';
+  if charset<>'' then
+    AResponseInfo.CharSet:=charset;
+  if ContentType<>'' then
+    AResponseInfo.ContentType:= ContentType;
+  AResponseInfo.WriteHeader;
+end;
+
+procedure HttpWriteChunk(AContext: TIdContext;Chunk:String;TextEncoding:TIdTextEncoding=Nil);
+var
+  l:Int64;
+begin
+  l := Length(Chunk);
+  AContext.Connection.IOHandler.WriteLn(IntToHex(l,0));
+  AContext.Connection.IOHandler.WriteLn(Chunk,TextEncoding);
+end;
+
+function HttpRunTask(AHttpContext:TIdContext;AResponseInfo:TIdHTTPResponseInfo;cmd: utf8string;var ExitStatus:integer;WorkingDir:utf8String=''): utf8string;
+var
+  AProcess: TProcess;
+  Buffer: string;
+  BytesAvailable: DWord;
+  BytesRead:LongInt;
+  StartTime : TDateTime;
+  StartedOK:Boolean;
+begin
+    Result := '';
+    HttpStartChunkedResponse(AResponseInfo,'text/ascii','utf-8');
+    HttpWriteChunk(AHttpContext,'--- Start '+cmd+' at '+DelphiDateTimeToISO8601Date(Now)+#13#10,Nil);
+    AProcess := TProcess.Create(nil);
+    try
+      AProcess.CommandLine := cmd;
+      if WorkingDir='' then
+        AProcess.CurrentDirectory := ExtractFilePath(cmd);
+      AProcess.Options := [poUsePipes];
+      AProcess.Execute;
+      StartedOK:=True;
+      StartTime:= Now;
+      // Wait for Startup (5 sec)
+      While not AProcess.Running do
+        if (Now-StartTime>5/3600/24) then
+        begin
+          StartedOK:=False;
+          Break;
+        end;
+      if not StartedOK then
+        HttpWriteChunk(AHttpContext,'--- Unable to start process within 5 sec '#13#10,Nil);
+
+      While AProcess.Running do
+      begin
+        BytesAvailable := AProcess.Output.NumBytesAvailable;
+        BytesRead := 0;
+        while BytesAvailable>0 do
+        begin
+          SetLength(Buffer, BytesAvailable);
+          BytesRead := AProcess.OutPut.Read(Buffer[1], BytesAvailable);
+          Result := Result+copy(Buffer,1, BytesRead);
+          HttpWriteChunk(AHttpContext,copy(Buffer,1, BytesRead),Nil);
+          BytesAvailable := AProcess.Output.NumBytesAvailable;
+        end;
+      end;
+      ExitStatus:= AProcess.ExitStatus;
+    finally
+      AProcess.Free;
+      HttpWriteChunk(AHttpContext,'--- End '+DelphiDateTimeToISO8601Date(Now)+#13#10,Nil);
+      HttpWriteChunk(AHttpContext,'');
+    end;
+end;
+
+
 Type TFormatHook = Function(Data,FN:Utf8String):UTF8String of object;
-
-
-
 { TWaptDaemon }
 function DatasetToHTMLtable(ds:TDataset;FormatHook: TFormatHook=Nil):String;
 var
     i:integer;
 begin
+  ds.Open;
   result := '<table><tr>';
   For i:=0 to ds.FieldCount-1 do
     if ds.Fields[i].Visible then
@@ -110,59 +164,6 @@ begin
   IdHTTPServer1.Active:=True;
 end;
 
-function GetSystemProductName: String;
-const
-  WinNT_REG_PATH = 'HARDWARE\DESCRIPTION\System\BIOS';
-  WinNT_REG_KEY  = 'SystemProductName';
-begin
-  try
-    Result := RegReadAnsiString(HKEY_LOCAL_MACHINE, WinNT_REG_PATH, WinNT_REG_KEY);
-  except
-    Result :='';
-  end;
-end;
-
-function GetSystemManufacturer: String;
-const
-  WinNT_REG_PATH = 'HARDWARE\DESCRIPTION\System\BIOS';
-  WinNT_REG_KEY  = 'SystemManufacturer';
-begin
-  try
-    Result := RegReadAnsiString(HKEY_LOCAL_MACHINE, WinNT_REG_PATH, WinNT_REG_KEY);
-  except
-    Result :='';
-  end;
-end;
-
-function GetBIOSVendor: String;
-const
-  WinNT_REG_PATH = 'HARDWARE\DESCRIPTION\System\BIOS';
-  WinNT_REG_KEY  = 'BIOSVendor';
-begin
-  try
-    Result := RegReadAnsiString(HKEY_LOCAL_MACHINE, WinNT_REG_PATH, WinNT_REG_KEY);
-  except
-    Result :='';
-  end;
-end;
-
-function GetBIOSVersion: String;
-const
-  WinNT_REG_PATH = 'HARDWARE\DESCRIPTION\System\BIOS';
-  WinNT_REG_PATH2 = 'HARDWARE\DESCRIPTION\System';
-  WinNT_REG_KEY  = 'BIOSVersion';
-  WinNT_REG_KEY2  = 'SystemBiosVersion';
-begin
-  try
-    Result := RegReadAnsiString(HKEY_LOCAL_MACHINE, WinNT_REG_PATH, WinNT_REG_KEY);
-  except
-    try
-      Result := RegReadAnsiMultiSz(HKEY_LOCAL_MACHINE, WinNT_REG_PATH2, WinNT_REG_KEY2);
-    except
-      Result :='';
-    end;
-  end;
-end;
 
 procedure TWaptDaemon.IdHTTPServer1CommandGet(AContext: TIdContext;
   ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
@@ -171,52 +172,64 @@ var
     CPUInfo:TCpuInfo;
     St : TStringList;
     Cmd,IPS:String;
-    i:integer;
+    i,f:integer;
     param,value,lst,UpgradeResult,SetupResult:String;
     so : ISuperObject;
+    AQuery : TSQLQuery;
 begin
   //Default type
   AResponseInfo.ContentType:='text/html';
   if ARequestInfo.URI='/status' then
   try
-    QLstLocalStatus.Close;
-    QLstLocalStatus.Open;
-    AResponseInfo.ContentText:=DatasetToHTMLtable(QLstLocalStatus,@TableHook);
+    AQuery := WaptDB.QueryCreate('select s.*,p.Version as RepoVersion from wapt_localstatus s'+
+                       ' left join wapt_repo p on p.Package=s.Package');
+    AResponseInfo.ContentText:=DatasetToHTMLtable(AQuery,@TableHook);
   finally
-    SQLTrans.Commit;
+    AQuery.Free;
   end
   else
   if ARequestInfo.URI='/list' then
   try
-    QLstPackages.Close;
-    QLstPackages.Open;
-    AResponseInfo.ContentText:=DatasetToHTMLtable(QLstPackages,@TableHook);
+    AQuery := WaptDB.QueryCreate('select * from wapt_repo');
+    AResponseInfo.ContentText:=DatasetToHTMLtable(AQuery,@TableHook);
   finally
-    SQLTrans.Commit;
+    AQuery.Free;
   end
   else
   if ARequestInfo.URI='/upgrade' then
   begin
-    UpgradeResult:=RunTask('c:\wapt\wapt-get --upgrade',ExitStatus);
+    HttpRunTask(AContext,AResponseInfo,WaptgetPath+' --upgrade',ExitStatus);
+    {UpgradeResult:=RunTask(WaptgetPath+' --upgrade',ExitStatus);
     AResponseInfo.ContentType:='application/json';
     SO:=TSuperObject.Create;
     SO.S['operation'] := 'upgrade';
     SO['output'] := SplitLines(UpgradeResult);
     SO.I['exitstatus'] := ExitStatus;
-    AResponseInfo.ContentText:=so.AsJSon(True);
+    AResponseInfo.ContentText:=so.AsJSon(True);}
+  end
+  else
+  if ARequestInfo.URI='/dumpdb' then
+  begin
+    AResponseInfo.ContentType:='application/json';
+    AResponseInfo.ContentText:=WaptDB.dumpdb.AsJSon(True);
   end
   else
   if ARequestInfo.URI='/waptupgrade' then
+    HttpRunTask(AContext,AResponseInfo,WaptgetPath+' upgrade',ExitStatus)
+  else
+  if ARequestInfo.URI='/chunked' then
   begin
-    AResponseInfo.ContentText:='Wapt Upgrade launched<br>'+
-      RunTask('c:\wapt\wapt-get upgrade',ExitStatus);
+    HttpStartChunkedResponse(AResponseInfo,'application/json','UTF-8');
+    for i := 0 to 10 do
+    begin
+      HttpWriteChunk(AContext,Utf8Encode('Chunk n°'+IntToStr(i)),TIdTextEncoding.UTF8);
+      Sleep(1000);
+    end;
+    HttpWriteChunk(AContext,'');
   end
   else
   if ARequestInfo.URI='/waptupdate' then
-  begin
-    AResponseInfo.ContentText:='Wapt Update launched<br><pre>'+
-      StringsReplace(RunTask('c:\wapt\wapt-get update',ExitStatus),[#13#10,#13,#10],['<br>','<br>','<br>'],[rfReplaceAll])+'</pre>';
-  end
+    HttpRunTask(AContext,AResponseInfo,WaptgetPath+' update',ExitStatus)
   else
   if ARequestInfo.URI='/sysinfo' then
   begin
@@ -251,6 +264,7 @@ begin
     so.S['cpuname'] := Trim(CPUInfo.CpuName);
     so.I['physicalmemory'] := GetTotalPhysicalMemory;
     so.I['virtualmemory'] := GetTotalVirtualMemory;
+    so.S['waptgetversion'] := ApplicationVersion(WaptgetPath);
     AResponseInfo.ContentText:=so.AsJson(True);
   end
   else
@@ -272,11 +286,14 @@ begin
       AResponseInfo.ContentText := '<html>Please provide a "package" parameter</html>';
       Exit;
     end;
+    cmd := WaptgetPath;
+    f:= ARequestInfo.Params.IndexOfName('force');
+    if (f>=0) and (ARequestInfo.Params.ValueFromIndex[f]='yes') then
+      cmd := cmd+' -f ';
     i:= ARequestInfo.Params.IndexOfName('package');
-    cmd := 'c:\wapt\wapt-get install '+ARequestInfo.Params.ValueFromIndex[i];
+    cmd := cmd+' install '+ARequestInfo.Params.ValueFromIndex[i];
     Application.Log(etInfo,cmd);
-    AResponseInfo.ContentText:='Wapt Install launched<br><pre>'+
-      StringsReplace(RunTask(cmd,ExitStatus),[#13#10,#13,#10],['<br>','<br>','<br>'],[rfReplaceAll])+'</pre>';
+    HttpRunTask(AContext,AResponseInfo,cmd,ExitStatus)
   end
   else
   begin
@@ -288,12 +305,10 @@ begin
       St.free;
     end;
     GetCpuInfo(CPUInfo);
-    AResponseInfo.ContentText:=  (
+    AResponseInfo.ContentText:= (
       '<h1>System status</h1>'+
-      'URI:'+ARequestInfo.URI+'<br>'+
-      'AuthUsername:'+ARequestInfo.AuthUsername+'<br>'+
-      'Document:'+ARequestInfo.Document+'<br>'+
-      'Params:'+ARequestInfo.Params.Text+'<br>'+
+      'WAPT Server URL: '+GetWaptServerURL+'<br>'+
+      'wapt-get version: '+ApplicationVersion(ExtractFilePath(ParamStr(0))+'\wapt-get.exe')+'<br>'+
       'User : '+TISGetUserName+'<br>'+
       'Machine: '+TISGetComputerName+'<br>'+
       'Domain: '+ GetWorkGroupName+'<br>'+
@@ -301,7 +316,12 @@ begin
       'System: '+GetWindowsVersionString+' '+GetWindowsEditionString+' '+GetWindowsServicePackVersionString+'<br>'+
       'RAM: '+FormatFloat('###0 MB',GetTotalPhysicalMemory/1024/1024)+'<br>'+
       'CPU: '+CPUInfo.CpuName+'<br>'+
-      'Memory Load: '+IntToStr(GetMemoryLoad)+'%');
+      'Memory Load: '+IntToStr(GetMemoryLoad)+'%'+'<br>'+
+      '<h1>Query info</h1>'+
+      'URI:'+ARequestInfo.URI+'<br>'+
+      'Document:'+ARequestInfo.Document+'<br>'+
+      'Params:'+ARequestInfo.Params.Text+'<br>'+
+      'AuthUsername:'+ARequestInfo.AuthUsername+'<br>');
   end;
 
   if AResponseInfo.ContentType='text/html' then
@@ -314,6 +334,7 @@ begin
   end;
   AResponseInfo.ResponseNo:=200;
   AResponseInfo.CharSet:='UTF-8';
+  WaptDB := Nil;
 end;
 
 procedure TWaptDaemon.Timer1Timer(Sender: TObject);
@@ -328,6 +349,24 @@ begin
     Result:='<a href="/install?package='+Data+'">'+Data+'</a>'
   else
     Result := Data;
+end;
+
+
+function TWaptDaemon.GetWaptDB: TWAPTDB;
+begin
+  if not Assigned(FWaptDB) then
+  begin
+    Fwaptdb := TWAPTDB.Create(WaptDBPath);
+  end;
+  Result := FWaptDB;
+end;
+
+procedure TWaptDaemon.SetWaptDB(AValue: TWAPTDB);
+begin
+  if FWaptDB=AValue then Exit;
+  if Assigned(FWaptDB) then
+    FreeAndNil(FWaptDB);
+  FWaptDB:=AValue;
 end;
 
 

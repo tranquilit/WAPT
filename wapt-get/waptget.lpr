@@ -8,7 +8,8 @@ uses
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, CustApp,
   { you can add units after this }
-  Windows,PythonEngine, waptcommon, JclSysInfo,FileUtil,SuperObject;
+  Windows, PythonEngine, waptcommon, JclSysInfo, FileUtil, pl_indycomp,
+  SuperObject;
 type
   { waptget }
 
@@ -19,7 +20,6 @@ type
     FWaptDB: TWAPTDB;
     FWaptServerURL: String;
     function GetWaptDB: TWAPTDB;
-    function GetWaptServerURL: String;
     procedure SetWaptDB(AValue: TWAPTDB);
   protected
     APythonEngine: TPythonEngine;
@@ -35,7 +35,6 @@ type
     procedure RegisterComputer;
     procedure WriteHelp; virtual;
     property WaptDB:TWAPTDB read GetWaptDB write SetWaptDB;
-    property WaptServerURL:String read GetWaptServerURL write FWaptServerURL;
   end;
 
 { pwaptget }
@@ -56,13 +55,6 @@ begin
     Fwaptdb := TWAPTDB.Create('c:\wapt\db\waptdb.sqlite');
   end;
   Result := FWaptDB;
-end;
-
-function pwaptget.GetWaptServerURL: String;
-begin
-  if FWaptServerURL='' then
-    FWaptServerURL:=GetWaptServer;
-  Result := FWaptServerURL;
 end;
 
 procedure pwaptget.DoRun;
@@ -140,17 +132,8 @@ begin
     RegisterComputer;
   end
   else
-  if Action = 'dump' then
-  begin
-    so := TSuperObject.Create(stObject);
-    so['wapt_repo'] := WaptDB.Select('select * from wapt_repo');
-    for test in so['wapt_repo'] do
-    begin
-      writeln(test.S['Description']);
-    end;
-    so['wapt_localstatus'] := WaptDB.Select('select * from wapt_localstatus');
-    writeln(so.AsJson);
-  end
+  if Action = 'dumpdb' then
+    writeln(WaptDB.dumpdb.AsJson(True))
   else
   if Action = 'upgradedb' then
   begin
