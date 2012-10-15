@@ -250,7 +250,8 @@ class WaptDB:
           Version varchar(255),
           InstallDate varchar(255),
           InstallStatus varchar(255),
-          InstallOutput TEXT
+          InstallOutput TEXT,
+          UninstallKey varchar(255)
           )"""
                         )
         self.db.execute("""
@@ -309,7 +310,6 @@ class WaptDB:
 
     def add_package_entry(self,package_entry):
         package_name = package_entry.Package
-        print "package_name : " + package_name
         cur = self.db.execute("""delete from wapt_repo where Package=?""" ,(package_name,))
 
         self.add_package(package_entry.Package,
@@ -325,24 +325,53 @@ class WaptDB:
                          package_entry.repo_url)
 
 
-    def add_installed_package(self,package,version,installstatus,installoutput):
-        cur = self.db.execute("""delete from wapt_localstatus where Package=?""" ,(package,))
-        cur = self.db.execute("""\
-              insert into wapt_localstatus (
-                Package,
-                Version,
-                InstallDate,
-                InstallStatus,
-                InstallOutput
-                ) values (?,?,?,?,?)
-            """,(
-                 package,
-                 version,
-                 datetime2isodate(),
-                 installstatus,
-                 installoutput)
-               )
-        self.db.commit()
+    def add_start_install(self,package,version):
+        """Register the start of installation in local db"""
+        try:
+            cur = self.db.execute("""delete from wapt_localstatus where Package=?""" ,(package,))
+            cur = self.db.execute("""\
+                  insert into wapt_localstatus (
+                    Package,
+                    Version,
+                    InstallDate,
+                    InstallStatus,
+                    InstallOutput
+                    ) values (?,?,?,?,?)
+                """,(
+                     package,
+                     version,
+                     datetime2isodate(),
+                     'INIT',
+                     '')
+                   )
+        finally:
+            self.db.commit()
+        return cur.lastrowid
+
+    def update_install_status(self,rowid,installstatus,installoutput,uninstallkey=None):
+        """Update status of package installation on localdb"""
+        try:
+            cur = self.db.execute("""\
+                  update wapt_localstatus
+                    set InstallStatus=?,InstallOutput = InstallOutput || ?,UninstallKey=?
+                    where rowid = ?
+                """,(
+                     installstatus,
+                     installoutput,
+                     uninstallkey,
+                     rowid,
+                     )
+                   )
+        finally:
+            self.db.commit()
+        return cur.lastrowid
+
+    def remove_install_status(self,package):
+        """Remove status of package installation from localdb"""
+        try:
+            cur = self.db.execute("""delete from wapt_localstatus where Package=?""" ,(package,))
+        finally:
+            self.db.commit()
         return cur.lastrowid
 
     def list_installed_packages(self):
@@ -350,7 +379,6 @@ class WaptDB:
               select Package,Version,InstallDate from wapt_localstatus order by Package
             """)
         return pp(cur,None,1,None)
-
 
     def query(self,query, args=(), one=False):
         """

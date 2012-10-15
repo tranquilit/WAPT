@@ -19,8 +19,7 @@ import socket
 import codecs
 from setuphelpers import *
 import json
-
-
+from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,QueryInfoKey
 
 usage="""\
 %prog -c configfile action
@@ -39,7 +38,7 @@ action is either :
 
 """
 
-version = "0.5.3"
+version = "0.5.4"
 
 parser=OptionParser(usage=usage,version="%prog " + version)
 parser.add_option("-c","--config", dest="config", default='c:\\wapt\\wapt-get.ini', help="Config file full path (default: %default)")
@@ -149,15 +148,26 @@ def find_wapt_server(configparser):
 
     return None
 
-class LogOutput(object):
-    def __init__(self,console):
+class LogInstallOutput(object):
+    """file like to log print output to db installstatus"""
+    def __init__(self,console,waptdb,rowid):
         self.output = []
         self.console = console
+        self.waptdb = waptdb
+        self.rowid = rowid
 
     def write(self,txt):
         self.console.write(txt)
         if txt <> '\n':
+            try:
+                txt = txt.decode('utf8')
+            except:
+                try:
+                    txt = txt.decode('iso8859')
+                except:
+                    pass
             self.output.append(txt)
+            self.waptdb.update_install_status(self.rowid,'RUNNING',txt+'\n' if not txt == None else None)
 
     def __getattrib__(self, name):
         if hasattr(self.console,'__getattrib__'):
@@ -179,14 +189,54 @@ class Wapt:
             self._waptdb = WaptDB(dbpath=self.dbpath)
         return self._waptdb
 
+    def uninstall_snapshot(self):
+        """return list of uninstall ID from registry"""
+        result = []
+        key = OpenKey(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
+        try:
+            i = 0
+            while True:
+                subkey = EnumKey(key, i)
+                result.append(subkey)
+                i += 1
+        except WindowsError:
+            # WindowsError: [Errno 259] No more data is available
+            pass
+        return result
+
+    def uninstall_cmd(self,guid):
+        """return cmd to uninstall from registry"""
+        key = OpenKey(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s" % guid)
+        try:
+            cmd = QueryValueEx(key,'QuietUninstallString')[0]
+        except WindowsError:
+            cmd = QueryValueEx(key,'UninstallString')[0]
+            if 'msiexec' in cmd.lower():
+                cmd = cmd.replace('/I','/X').replace('/i','/X')
+                if not '/q' in cmd:
+                    cmd = cmd + ' /q'
+            else:
+                # mozilla et autre
+                if ('uninst' in cmd.lower() or 'helper.exe' in cmd.lower()) and not ' /s' in cmd.lower():
+                    cmd = cmd + ' /S'
+
+        return cmd
+
+
 
     def install_wapt(self,fname):
+        logger.info("Register start of install to local DB")
+        status = 'INIT'
+        previous_uninstall = self.uninstall_snapshot()
+        entry = Package_Entry()
+        entry.load_control_from_wapt(fname)
         old_stdout = sys.stdout
+        install_id = self.waptdb.add_start_install(entry.Package ,entry.Version)
         # we setup a redirection of stdout to catch print output from install scripts
-        sys.stdout = installoutput = LogOutput(sys.stdout)
+        sys.stdout = installoutput = LogInstallOutput(sys.stdout,self.waptdb,install_id)
         try:
-            logger.info("installing package " + fname)
-            global packagetempdir
+            logger.info("Installing package " + fname)
+            # ... inutile ? global packagetempdir
             packagetempdir = tempfile.mkdtemp(prefix="wapt")
             logger.info('  unzipping %s ' % (fname))
             zip = zipfile.ZipFile(fname)
@@ -197,24 +247,22 @@ class Wapt:
 
             if not self.dry_run:
                 logger.info("  executing install script")
-                #sys.stdout.flush()
                 exitstatus = setup.install()
 
-            logger.info("Add package to local DB")
-            entry = Package_Entry()
-            entry.load_control_from_wapt(fname)
             if exitstatus is None:
                 status = 'UNKNOWN'
             elif exitstatus == 0:
                 status = 'OK'
             else:
                 status = 'ERROR'
-
-            self.waptdb.add_installed_package(entry.Package,entry.Version,status,json.dumps({'output':installoutput.output,'exitstatus':exitstatus}))
+            new_uninstall = self.uninstall_snapshot()
+            new_uninstall_key = [ k for k in new_uninstall if not k in previous_uninstall]
+            logger.info('  uninstall keys : %s' % (new_uninstall_key,))
+            self.waptdb.update_install_status(install_id,status,'',str(new_uninstall_key))
+            # (entry.Package,entry.Version,status,json.dumps({'output':installoutput.output,'exitstatus':exitstatus}))
 
             logger.info("Install script finished with status %s" % status)
             logger.debug("Cleaning package tmp dir")
-            #sys.stdout.flush()
             shutil.rmtree(packagetempdir)
         finally:
             sys.stdout = old_stdout
@@ -254,32 +302,60 @@ class Wapt:
 
             self.install_wapt(fullpackagepath)
 
+    def remove(self,package):
+        q = self.waptdb.query("""\
+           select * from wapt_localstatus
+            where Package=?
+           """ , (package,) )
+        if not q:
+            print "ERROR : Package %s not found in local DB status" % package
+            return False
+        if not q:
+            print "Package %s not installed, aborting" % package
+            return True
+
+        mydict = q[0]
+        print "Removing package %s version %s from computer..." % (mydict['Package'],mydict['Version'])
+        if mydict['UninstallKey']:
+             guids = eval(mydict['UninstallKey'])
+             for guid in guids:
+                uninstall_cmd = self.uninstall_cmd(guid)
+                logger.info('Launch uninstall cmd %s' % (uninstall_cmd,))
+                print subprocess.check_output(uninstall_cmd)
+             logger.info('Remove status record from local DB')
+             self.waptdb.remove_install_status(package)
+        else:
+            raise Exception('  uninstall key not registered in local DB status, unable to remove')
+
     def update(self,repourl=''):
         """Get Packages from http repo and update local package database"""
-        if not repourl:
-            repourl = self.wapt_repourl
-        logger.debug('Temporary directory: %s' % tempdir)
-        packageListFile = codecs.decode(zipfile.ZipFile(
-              cStringIO.StringIO( urllib2.urlopen( repourl + '/Packages').read())
-            ).read(name='Packages'),'UTF-8').splitlines()
+        try:
+            if not repourl:
+                repourl = self.wapt_repourl
+            logger.debug('Temporary directory: %s' % tempdir)
+            packageListFile = codecs.decode(zipfile.ZipFile(
+                  cStringIO.StringIO( urllib2.urlopen( repourl + '/Packages').read())
+                ).read(name='Packages'),'UTF-8').splitlines()
 
-        package = Package_Entry()
-        for line in packageListFile:
-            # new package
-            if line.strip()=='':
-                logger.debug(package)
-                package.repo_url = repourl
+            package = Package_Entry()
+            for line in packageListFile:
+                # new package
+                if line.strip()=='':
+                    logger.debug(package)
+                    package.repo_url = repourl
+                    print package.Package
+                    self.waptdb.add_package_entry(package)
+                    package = Package_Entry()
+                # add ettribute to current package
+                else:
+                    splitline= line.split(':')
+                    setattr(package,splitline[0].strip(),splitline[1].strip())
+            # last one
+            if package.Package:
+                print package.Package
                 self.waptdb.add_package_entry(package)
-                package = Package_Entry()
-            # add ettribute to current package
-            else:
-                splitline= line.split(':')
-                setattr(package,splitline[0].strip(),splitline[1].strip())
-        # last one
-        if package.Package:
-            self.waptdb.add_package_entry(package)
-
-        self.waptdb.db.commit()
+        finally:
+            self.waptdb.db.commit()
 
     def upgrade(self):
         q = self.waptdb.query("""\
@@ -303,7 +379,6 @@ class Wapt:
             print "Nothing to upgrade"
             sys.exit(1)
         print common.pp(q,None,1,None)
-
 
     def list_repo(self,search):
         print self.waptdb.list_repo(search)
@@ -354,6 +429,13 @@ def main():
             sys.exit(1)
         for packagename in args[1:]:
             mywapt.install(packagename)
+
+    elif action=='remove':
+        if len(args)<2:
+            print "You must provide at least one package name to remove"
+            sys.exit(1)
+        for packagename in args[1:]:
+            mywapt.remove(packagename)
 
     elif action=='update':
         mywapt.update()

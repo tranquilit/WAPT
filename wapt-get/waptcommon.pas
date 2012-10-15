@@ -986,7 +986,8 @@ begin
         'Filename VARCHAR(255),'+
         'Size INTEGER,'+
         'MD5sum VARCHAR(255),'+
-        'repo_url VARCHAR(255));'+
+        'repo_url VARCHAR(255)'+
+        ');'+
         'create index idx_package_name on wapt_repo(Package);');
 
     if lst.IndexOf('wapt_localstatus')<0 then
@@ -996,7 +997,9 @@ begin
         'Version VARCHAR(255),'+
         'InstallDate VARCHAR(255),'+
         'InstallStatus VARCHAR(255),'+
-        'InstallOutput TEXT);'+
+        'InstallOutput TEXT,'+
+        'UninstallKey varchar(255)'+
+        ');'+
         'create index idx_localstatus_name on wapt_localstatus(Package);');
 
   finally
@@ -1040,14 +1043,16 @@ var
   databackup : ISuperObject;
   tablename:ISuperObject;
   query : TSQLQuery;
+  oldfn : String;
 
 begin
   DataBackup := dumpdb;
   try
     writeln(databackup.AsJSon(True));
     db.Close;
-    if RenameFileUTF8(db.DatabaseName,ChangeFileExt(db.DatabaseName,'')+'-'+FormatDateTime('yyyymmdd-hhnnss',Now)+'.sqlite') then
-    begin
+    oldfn := ChangeFileExt(db.DatabaseName,'')+'-'+FormatDateTime('yyyymmdd-hhnnss',Now)+'.sqlite';
+    if RenameFileUTF8(db.DatabaseName,oldfn) then
+    try
       OpenDB;
       try
         //temporary bufds to insert records
@@ -1069,11 +1074,15 @@ begin
       finally
         Query.Free;
       end;
+    except
+      // if error, roolback to old db file
+      if FileExists(db.DatabaseName) then
+        DeleteFileUTF8(db.DatabaseName);
+      RenameFileUTF8(oldfn,db.DatabaseName);
+      raise;
     end
     else
       Raise Exception.Create('Base '+db.DatabaseName+' verrouillée');
-
-
   finally
     if sqltrans.Active then
       sqltrans.commit;

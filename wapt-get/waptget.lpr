@@ -79,11 +79,12 @@ begin
   Action := lowercase(ParamStr(ParamCount));
 
   // parse parameters
-  if HasOption('?') then
+  if HasOption('?') or HasOption('h','--help') then
   begin
-    writeln(' -u --upgrade : upgrade wapt-get.exe');
-    writeln(' -s --setup : install/reinstall dependencies (python libs)');
     writeln(' -r --repo : URL of dependencies libs (default : '+FindWaptRepo+')');
+    writeln(' waptupgrade : upgrade wapt-get.exe');
+    writeln(' waptsetup : install/reinstall dependencies (python libs)');
+    writeln(' register : register computer on wapt-server');
   end;
 
   if HasOption('r','repo') then
@@ -106,27 +107,28 @@ begin
       currentLogLevel := CRITICAL;
   end;
 
-  if HasOption('g','upgrade') then
-  begin
-    Writeln('WAPT-GET Upgrade using repository at '+RepoURL);
-    UpdateCurrentApplication(RepoURL+'/'+ExtractFileName(paramstr(0)),True,' --setup');
-    Terminate;
-    Exit;
-  end;
 
   if HasOption('v','version') then
     writeln('Win32 Exe wrapper: '+ApplicationName+' '+ApplicationVersion);
 
   // Auto install if wapt-get is not yet in the target directory
-  if HasOption('s','setup') or (FileExists(AppendPathDelim(InstallPath)+'wapt-get.exe') and (SortableVersion(ApplicationVersion) > SortableVersion(ApplicationVersion(AppendPathDelim(InstallPath)+'wapt-get.exe'))))
+  if (action = 'waptsetup') or (FileExists(AppendPathDelim(InstallPath)+'wapt-get.exe') and (SortableVersion(ApplicationVersion) > SortableVersion(ApplicationVersion(AppendPathDelim(InstallPath)+'wapt-get.exe'))))
       or (not FileExists(AppendPathDelim(InstallPath)+'python27.dll')) or (not FileExists(AppendPathDelim(InstallPath)+'wapt-get.exe')) then
   begin
     Writeln('WAPT-GET Setup using repository at '+RepoURL);
     Setup(downloadPath,InstallPath);
     Terminate;
     Exit;
-  end;
-
+  end
+  else
+  if (action = 'waptupgrade') then
+  begin
+    Writeln('WAPT-GET Upgrade using repository at '+RepoURL);
+    UpdateCurrentApplication(RepoURL+'/'+ExtractFileName(paramstr(0)),True,' waptsetup');
+    Terminate;
+    Exit;
+  end
+  else
   if Action = 'register' then
   begin
     RegisterComputer;
@@ -136,6 +138,11 @@ begin
     writeln(WaptDB.dumpdb.AsJson(True))
   else
   if Action = 'upgradedb' then
+  begin
+    WaptDB.upgradedb;
+  end
+  else
+  if Action = 'waptupgrade' then
   begin
     WaptDB.upgradedb;
   end

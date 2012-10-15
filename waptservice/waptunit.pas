@@ -76,7 +76,7 @@ var
   StartedOK:Boolean;
 begin
     Result := '';
-    HttpStartChunkedResponse(AResponseInfo,'text/ascii','utf-8');
+    HttpStartChunkedResponse(AResponseInfo,'text/html','utf-8');
     HttpWriteChunk(AHttpContext,'--- Start '+cmd+' at '+DelphiDateTimeToISO8601Date(Now)+#13#10,Nil);
     AProcess := TProcess.Create(nil);
     try
@@ -198,7 +198,7 @@ begin
     AQuery.Free;
   end
   else
-  if ARequestInfo.URI='/upgrade' then
+  if ARequestInfo.URI='/waptupgrade' then
   begin
     HttpRunTask(AContext,AResponseInfo,WaptgetPath+' --upgrade',ExitStatus);
     {UpgradeResult:=RunTask(WaptgetPath+' --upgrade',ExitStatus);
@@ -216,7 +216,7 @@ begin
     AResponseInfo.ContentText:=WaptDB.dumpdb.AsJSon(True);
   end
   else
-  if ARequestInfo.URI='/waptupgrade' then
+  if ARequestInfo.URI='/upgrade' then
     HttpRunTask(AContext,AResponseInfo,WaptgetPath+' upgrade',ExitStatus)
   else
   if ARequestInfo.URI='/chunked' then
@@ -230,7 +230,7 @@ begin
     HttpWriteChunk(AContext,'');
   end
   else
-  if ARequestInfo.URI='/waptupdate' then
+  if ARequestInfo.URI='/update' then
     HttpRunTask(AContext,AResponseInfo,WaptgetPath+' update',ExitStatus)
   else
   if ARequestInfo.URI='/sysinfo' then
