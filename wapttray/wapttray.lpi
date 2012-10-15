@@ -32,12 +32,15 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="1">
+    <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="LCL"/>
+        <PackageName Value="FCL"/>
       </Item1>
+      <Item2>
+        <PackageName Value="LCL"/>
+      </Item2>
     </RequiredPackages>
-    <Units Count="2">
+    <Units Count="5">
       <Unit0>
         <Filename Value="wapttray.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -51,6 +54,21 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uwapttray"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="waptcommon"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\superobject\superobject.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="superobject"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\jcl\source\common\JclSysInfo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="JclSysInfo"/>
+      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -60,7 +78,8 @@
       <Filename Value="wapttray"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="$(ProjOutDir)"/>
+      <IncludeFiles Value="$(ProjOutDir);..\jcl\source\include"/>
+      <OtherUnitFiles Value="..\wapt-get;..\jcl\source\common;..\jcl\source\windows;..\superobject"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>

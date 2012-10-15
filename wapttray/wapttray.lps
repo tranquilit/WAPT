@@ -4,12 +4,17 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="2">
+    <Units Count="6">
       <Unit0>
         <Filename Value="wapttray.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="wapttray"/>
-        <UsageCount Value="20"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="6" Y="4"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="uwapttray.pas"/>
@@ -21,81 +26,178 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="17"/>
-        <CursorPos X="24" Y="19"/>
-        <UsageCount Value="20"/>
+        <TopLine Value="52"/>
+        <CursorPos X="20" Y="80"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="waptcommon"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="228"/>
+        <CursorPos X="19" Y="232"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\superobject\superobject.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="superobject"/>
+        <UsageCount Value="21"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\jcl\source\common\JclSysInfo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="JclSysInfo"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="70"/>
+        <CursorPos X="15" Y="94"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\..\tisvcl\tisutils.pas"/>
+        <UnitName Value="tisutils"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="93"/>
+        <CursorPos X="5" Y="115"/>
+        <UsageCount Value="10"/>
+        <Bookmarks Count="1">
+          <Item0 X="5" Y="115" ID="1"/>
+        </Bookmarks>
+        <Loaded Value="True"/>
+      </Unit5>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="16" HistoryIndex="15">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="15" Column="16" TopLine="1"/>
+        <Filename Value="..\jcl\source\common\JclSysInfo.pas"/>
+        <Caret Line="1409" Column="14" TopLine="1293"/>
       </Position1>
       <Position2>
         <Filename Value="uwapttray.pas"/>
-        <Caret Line="17" Column="16" TopLine="1"/>
+        <Caret Line="75" Column="23" TopLine="48"/>
       </Position2>
       <Position3>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="18" Column="16" TopLine="1"/>
+        <Filename Value="wapttray.lpr"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position3>
       <Position4>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="19" Column="16" TopLine="1"/>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="16" Column="4" TopLine="7"/>
       </Position4>
       <Position5>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="20" Column="16" TopLine="1"/>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="115" Column="20" TopLine="85"/>
       </Position5>
       <Position6>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="21" Column="16" TopLine="1"/>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="116" Column="20" TopLine="86"/>
       </Position6>
       <Position7>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="22" Column="16" TopLine="1"/>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="118" Column="20" TopLine="88"/>
       </Position7>
       <Position8>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="23" Column="16" TopLine="1"/>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="123" Column="18" TopLine="93"/>
       </Position8>
       <Position9>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="24" Column="16" TopLine="1"/>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="162" Column="31" TopLine="132"/>
       </Position9>
       <Position10>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="25" Column="16" TopLine="1"/>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="242" Column="1" TopLine="226"/>
       </Position10>
       <Position11>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="10" Column="28" TopLine="1"/>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="247" Column="38" TopLine="231"/>
       </Position11>
       <Position12>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="46" Column="3" TopLine="11"/>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="211" Column="33" TopLine="195"/>
       </Position12>
       <Position13>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="57" Column="22" TopLine="19"/>
+        <Filename Value="..\..\tisvcl\tisutils.pas"/>
+        <Caret Line="54" Column="3" TopLine="46"/>
       </Position13>
       <Position14>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="53" Column="8" TopLine="23"/>
+        <Filename Value="..\..\tisvcl\tisutils.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position14>
       <Position15>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="55" Column="32" TopLine="29"/>
+        <Filename Value="..\..\tisvcl\tisutils.pas"/>
+        <Caret Line="54" Column="14" TopLine="24"/>
       </Position15>
       <Position16>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="62" Column="32" TopLine="31"/>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="212" Column="22" TopLine="169"/>
       </Position16>
+      <Position17>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="76" Column="74" TopLine="48"/>
+      </Position17>
+      <Position18>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="75" Column="133" TopLine="48"/>
+      </Position18>
+      <Position19>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="77" Column="74" TopLine="48"/>
+      </Position19>
+      <Position20>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="18" Column="26" TopLine="1"/>
+      </Position20>
+      <Position21>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="77" Column="74" TopLine="48"/>
+      </Position21>
+      <Position22>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="78" Column="50" TopLine="51"/>
+      </Position22>
+      <Position23>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="83" Column="40" TopLine="51"/>
+      </Position23>
+      <Position24>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="77" Column="1" TopLine="51"/>
+      </Position24>
+      <Position25>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="70" Column="22" TopLine="51"/>
+      </Position25>
+      <Position26>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="76" Column="22" TopLine="51"/>
+      </Position26>
+      <Position27>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="78" Column="81" TopLine="51"/>
+      </Position27>
+      <Position28>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="56" Column="26" TopLine="51"/>
+      </Position28>
+      <Position29>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="57" Column="26" TopLine="52"/>
+      </Position29>
+      <Position30>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="56" Column="26" TopLine="51"/>
+      </Position30>
     </JumpHistory>
   </ProjectSession>
   <EditorMacros Count="0"/>

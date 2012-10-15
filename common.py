@@ -389,7 +389,7 @@ class Package_Entry:
     def load_control_from_wapt(self,fname ):
         """Load package attributes from the control file included in WAPT zipfile fname"""
         myzip = zipfile.ZipFile(fname,'r')
-        control = myzip.open('control')
+        control = myzip.open('WAPT/control')
         self.Filename = os.path.basename(fname)
         self.MD5sum = md5_for_file(fname)
         self.Size = os.path.getsize(fname)
@@ -400,10 +400,10 @@ class Package_Entry:
             if line.strip()=='':
                 break
             splitline = line.split(':')
-            setattr(self,splitline[0].strip(),splitline[1].strip())
+            setattr(self,splitline[0].strip(),splitline[1].strip().decode('utf8'))
 
-    def __str__(self):
-        val = """\
+    def ascontrol(self):
+        val = u"""\
 Package      : %(Package)s
 Version      : %(Version)s
 Section      : %(Section)s
@@ -416,17 +416,21 @@ Size         : %(Size)s
 MD5sum       : %(MD5sum)s
 """  % self.__dict__
         return val
+    def __str__(self):
+        return self.ascontrol().encode('utf8')
 
 def update_packages(adir):
     """Scan adir directory for WAPT packages and build a Packages zip file with control data and MD5 hash"""
     packages_fname = os.path.join(adir,'Packages')
+    previous_packages=''
+    previous_packages_mtime = 0
     if os.path.exists(packages_fname):
-        print "Readind old Packages %s" % packages_fname
-        previous_packages = codecs.decode(zipfile.ZipFile(packages_fname).read(name='Packages'),'utf-8')
-        previous_packages_mtime = os.path.getmtime(packages_fname)
-    else:
-        previous_packages=''
-        previous_packages_mtime = 0
+        try:
+            print "Readind old Packages %s" % packages_fname
+            previous_packages = codecs.decode(zipfile.ZipFile(packages_fname).read(name='Packages'),'utf-8')
+            previous_packages_mtime = os.path.getmtime(packages_fname)
+        except Exception,e:
+            print 'error reading old Packages file. Reset... (%s)' % e.message
 
     old_entries = {}
     # we get old list to not recompute MD5 if filename has not changed
@@ -460,7 +464,7 @@ def update_packages(adir):
             print "  Processing %s" % fname
             entry = Package_Entry()
             entry.load_control_from_wapt(fname)
-        packages.append(str(entry))
+        packages.append(entry.ascontrol().encode('utf8'))
 
     print "Writing new %s" % packages_fname
     myzipfile = zipfile.ZipFile(packages_fname, "w")

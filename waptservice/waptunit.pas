@@ -37,7 +37,9 @@ var
   WaptDaemon: TWaptDaemon;
 
 implementation
-uses superobject,JclSysInfo,StrUtils,IdSocketHandle,IdGlobal,process;
+uses superobject,JclSysInfo,IdSocketHandle,IdGlobal,process;
+
+//  ,waptwmi,  Variants,Windows,ComObj;
 
 procedure RegisterDaemon;
 begin
@@ -243,7 +245,8 @@ begin
     so.S['biosversion'] := GetBIOSVersion;
     so.S['biosdate'] := DelphiDateTimeToISO8601Date(GetBIOSDate);
     // redirect to a dummy file just to avoid a console creation... bug of route ?
-    so['routingtable'] := SplitLines(RunTask('route print > dummy',ExitStatus));
+    //so['routingtable'] := SplitLines(RunTask('route print > dummy',ExitStatus));
+    //so['ipconfig'] := SplitLines(RunTask('ipconfig /all > dummy',ExitStatus));
     ST := TStringList.Create;
     try
       GetIpAddresses(St);
@@ -265,6 +268,10 @@ begin
     so.I['physicalmemory'] := GetTotalPhysicalMemory;
     so.I['virtualmemory'] := GetTotalVirtualMemory;
     so.S['waptgetversion'] := ApplicationVersion(WaptgetPath);
+
+    // Pose probleme erreur OLE "syntaxe incorrecte"
+    //so['wmi_baseboardinfo'] := WMIBaseBoardInfo;
+
     AResponseInfo.ContentText:=so.AsJson(True);
   end
   else
@@ -377,4 +384,3 @@ initialization
   RegisterDaemon;
 
 end.
-

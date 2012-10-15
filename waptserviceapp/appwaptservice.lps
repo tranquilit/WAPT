@@ -4,15 +4,17 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="21">
+    <Units Count="31">
       <Unit0>
         <Filename Value="appwaptservice.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="appwaptservice"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="10" Y="9"/>
-        <UsageCount Value="35"/>
+        <TopLine Value="3"/>
+        <CursorPos X="10" Y="10"/>
+        <UsageCount Value="36"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="uvisappwaptservice.pas"/>
@@ -21,10 +23,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisAppWaptService"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="18"/>
-        <CursorPos X="15" Y="38"/>
-        <UsageCount Value="35"/>
+        <TopLine Value="57"/>
+        <CursorPos X="19" Y="73"/>
+        <UsageCount Value="36"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\waptservice\waptunit.pas"/>
@@ -33,20 +39,24 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WaptUnit"/>
-        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="321"/>
-        <CursorPos X="1" Y="344"/>
-        <UsageCount Value="35"/>
+        <TopLine Value="364"/>
+        <CursorPos X="19" Y="374"/>
+        <UsageCount Value="36"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="860"/>
-        <CursorPos X="20" Y="895"/>
-        <UsageCount Value="27"/>
+        <TopLine Value="1081"/>
+        <CursorPos X="1" Y="1102"/>
+        <UsageCount Value="28"/>
+        <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\superobject\superobject.pas"/>
@@ -55,9 +65,19 @@
         <WindowIndex Value="0"/>
         <TopLine Value="6675"/>
         <CursorPos X="34" Y="6704"/>
-        <UsageCount Value="28"/>
+        <UsageCount Value="29"/>
       </Unit4>
       <Unit5>
+        <Filename Value="..\waptservice\waptwmi.pas"/>
+        <UnitName Value="waptwmi"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="44"/>
+        <CursorPos X="32" Y="88"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit5>
+      <Unit6>
         <Filename Value="..\waptunit.pas"/>
         <HasResources Value="True"/>
         <UnitName Value="waptunit"/>
@@ -65,130 +85,328 @@
         <TopLine Value="1"/>
         <CursorPos X="22" Y="19"/>
         <UsageCount Value="20"/>
-      </Unit5>
-      <Unit6>
+      </Unit6>
+      <Unit7>
         <Filename Value="..\jcl\source\common\JclBase.pas"/>
         <UnitName Value="JclBase"/>
         <WindowIndex Value="0"/>
         <TopLine Value="364"/>
         <CursorPos X="3" Y="380"/>
         <UsageCount Value="11"/>
-      </Unit6>
-      <Unit7>
+      </Unit7>
+      <Unit8>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-extra\src\daemonapp.pp"/>
         <UnitName Value="daemonapp"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1393"/>
         <CursorPos X="14" Y="1437"/>
         <UsageCount Value="10"/>
-      </Unit7>
-      <Unit8>
+      </Unit8>
+      <Unit9>
         <Filename Value="..\indy\Core\IdIOHandler.pas"/>
         <UnitName Value="IdIOHandler"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1917"/>
         <CursorPos X="1" Y="1933"/>
         <UsageCount Value="10"/>
-      </Unit8>
-      <Unit9>
+      </Unit9>
+      <Unit10>
         <Filename Value="..\jcl\source\common\JclSysInfo.pas"/>
         <UnitName Value="JclSysInfo"/>
         <WindowIndex Value="0"/>
         <TopLine Value="5245"/>
         <CursorPos X="32" Y="5252"/>
         <UsageCount Value="10"/>
-      </Unit9>
-      <Unit10>
+      </Unit10>
+      <Unit11>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-db\src\base\bufdataset.pas"/>
         <UnitName Value="BufDataset"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="17" Y="2057"/>
         <UsageCount Value="12"/>
-      </Unit10>
-      <Unit11>
+      </Unit11>
+      <Unit12>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-db\src\export\fpsimplejsonexport.pp"/>
         <UnitName Value="fpsimplejsonexport"/>
         <WindowIndex Value="0"/>
         <TopLine Value="229"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
-      </Unit11>
-      <Unit12>
+      </Unit12>
+      <Unit13>
         <Filename Value="..\..\tisdash\uvistisdash.pas"/>
         <UnitName Value="uVisTisDash"/>
         <WindowIndex Value="0"/>
         <TopLine Value="218"/>
         <CursorPos X="15" Y="225"/>
         <UsageCount Value="10"/>
-      </Unit12>
-      <Unit13>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-process\src\process.pp"/>
-        <UnitName Value="process"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="7"/>
-        <CursorPos X="45" Y="26"/>
-        <UsageCount Value="10"/>
       </Unit13>
       <Unit14>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-process\src\process.pp"/>
+        <UnitName Value="process"/>
+        <EditorIndex Value="5"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="490"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit14>
+      <Unit15>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdCustomTCPServer.pas"/>
         <UnitName Value="IdCustomTCPServer"/>
         <WindowIndex Value="0"/>
         <TopLine Value="289"/>
         <CursorPos X="5" Y="308"/>
         <UsageCount Value="10"/>
-      </Unit14>
-      <Unit15>
+      </Unit15>
+      <Unit16>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdSocketHandle.pas"/>
         <UnitName Value="IdSocketHandle"/>
         <WindowIndex Value="0"/>
         <TopLine Value="175"/>
         <CursorPos X="3" Y="154"/>
         <UsageCount Value="10"/>
-      </Unit15>
-      <Unit16>
+      </Unit16>
+      <Unit17>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-db\src\sqldb\sqlite\sqlite3conn.pp"/>
         <UnitName Value="sqlite3conn"/>
         <WindowIndex Value="0"/>
         <TopLine Value="21"/>
         <CursorPos X="22" Y="96"/>
         <UsageCount Value="11"/>
-      </Unit16>
-      <Unit17>
+      </Unit17>
+      <Unit18>
         <Filename Value="C:\codetyphon\fpcsrc\packages\sqlite\src\sqlite3dyn.pp"/>
         <UnitName Value="sqlite3dyn"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="11"/>
-      </Unit17>
-      <Unit18>
+      </Unit18>
+      <Unit19>
         <Filename Value="C:\codetyphon\fpcsrc\packages\sqlite\src\sqlite3.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="181"/>
         <CursorPos X="1" Y="181"/>
         <UsageCount Value="11"/>
-      </Unit18>
-      <Unit19>
+      </Unit19>
+      <Unit20>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\classes\classesh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="679"/>
         <CursorPos X="38" Y="707"/>
         <UsageCount Value="10"/>
-      </Unit19>
-      <Unit20>
+      </Unit20>
+      <Unit21>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdIOHandler.pas"/>
         <UnitName Value="IdIOHandler"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1904"/>
         <CursorPos X="1" Y="1934"/>
         <UsageCount Value="10"/>
-      </Unit20>
+      </Unit21>
+      <Unit22>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\win\sysosh.inc"/>
+        <EditorIndex Value="6"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="44"/>
+        <CursorPos X="21" Y="64"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\activex.pp"/>
+        <UnitName Value="ActiveX"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="3972"/>
+        <CursorPos X="20" Y="3990"/>
+        <UsageCount Value="10"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwatlhelp32.pas"/>
+        <UnitName Value="JwaTlHelp32"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="37"/>
+        <CursorPos X="20" Y="41"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="..\jcl\source\windows\JclSecurity.pas"/>
+        <UnitName Value="JclSecurity"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="794"/>
+        <CursorPos X="3" Y="812"/>
+        <UsageCount Value="10"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="..\jcl\source\common\JclFileUtils.pas"/>
+        <UnitName Value="JclFileUtils"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="4951"/>
+        <CursorPos X="58" Y="4968"/>
+        <UsageCount Value="10"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="..\jcl\source\windows\JclConsole.pas"/>
+        <UnitName Value="JclConsole"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="667"/>
+        <CursorPos X="25" Y="685"/>
+        <UsageCount Value="10"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="..\jcl\source\common\JclSysUtils.pas"/>
+        <UnitName Value="JclSysUtils"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="3925"/>
+        <CursorPos X="41" Y="3943"/>
+        <UsageCount Value="10"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="..\jcl\source\common\JclMath.pas"/>
+        <UnitName Value="JclMath"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="849"/>
+        <CursorPos X="3" Y="867"/>
+        <UsageCount Value="10"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="..\jcl\source\common\JclStreams.pas"/>
+        <UnitName Value="JclStreams"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="60"/>
+        <CursorPos X="25" Y="78"/>
+        <UsageCount Value="10"/>
+      </Unit30>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="576" Column="29" TopLine="558"/>
+      </Position1>
+      <Position2>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="587" Column="27" TopLine="569"/>
+      </Position2>
+      <Position3>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="602" Column="48" TopLine="584"/>
+      </Position3>
+      <Position4>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="608" Column="37" TopLine="590"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="593" Column="3" TopLine="584"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="645" Column="52" TopLine="627"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="647" Column="86" TopLine="629"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="650" Column="77" TopLine="632"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="652" Column="87" TopLine="633"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="655" Column="75" TopLine="639"/>
+      </Position10>
+      <Position11>
+        <Filename Value="appwaptservice.lpr"/>
+        <Caret Line="22" Column="3" TopLine="1"/>
+      </Position11>
+      <Position12>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="741" Column="32" TopLine="724"/>
+      </Position12>
+      <Position13>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="42" Column="43" TopLine="22"/>
+      </Position13>
+      <Position14>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="381" Column="7" TopLine="361"/>
+      </Position14>
+      <Position15>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="43" Column="11" TopLine="32"/>
+      </Position15>
+      <Position16>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="337" Column="8" TopLine="329"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="40" Column="61" TopLine="23"/>
+      </Position17>
+      <Position18>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="277" Column="29" TopLine="260"/>
+      </Position18>
+      <Position19>
+        <Filename Value="uvisappwaptservice.pas"/>
+        <Caret Line="58" Column="46" TopLine="31"/>
+      </Position19>
+      <Position20>
+        <Filename Value="uvisappwaptservice.pas"/>
+        <Caret Line="43" Column="41" TopLine="34"/>
+      </Position20>
+      <Position21>
+        <Filename Value="uvisappwaptservice.pas"/>
+        <Caret Line="47" Column="9" TopLine="38"/>
+      </Position21>
+      <Position22>
+        <Filename Value="uvisappwaptservice.pas"/>
+        <Caret Line="29" Column="22" TopLine="15"/>
+      </Position22>
+      <Position23>
+        <Filename Value="uvisappwaptservice.pas"/>
+        <Caret Line="58" Column="39" TopLine="51"/>
+      </Position23>
+      <Position24>
+        <Filename Value="uvisappwaptservice.pas"/>
+        <Caret Line="9" Column="52" TopLine="1"/>
+      </Position24>
+      <Position25>
+        <Filename Value="uvisappwaptservice.pas"/>
+        <Caret Line="70" Column="38" TopLine="52"/>
+      </Position25>
+      <Position26>
+        <Filename Value="uvisappwaptservice.pas"/>
+        <Caret Line="56" Column="14" TopLine="52"/>
+      </Position26>
+      <Position27>
+        <Filename Value="uvisappwaptservice.pas"/>
+        <Caret Line="59" Column="33" TopLine="52"/>
+      </Position27>
+      <Position28>
+        <Filename Value="uvisappwaptservice.pas"/>
+        <Caret Line="71" Column="16" TopLine="52"/>
+      </Position28>
+      <Position29>
+        <Filename Value="uvisappwaptservice.pas"/>
+        <Caret Line="56" Column="1" TopLine="52"/>
+      </Position29>
+      <Position30>
+        <Filename Value="uvisappwaptservice.pas"/>
+        <Caret Line="76" Column="1" TopLine="54"/>
+      </Position30>
+    </JumpHistory>
   </ProjectSession>
   <EditorMacros Count="0"/>
 </CONFIG>

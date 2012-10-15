@@ -7,8 +7,11 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, pl_indycomp, lazdbexport, sqlite3laz, uVisAppWaptService, waptunit,
-  superobject, waptcommon;
+  Forms, superobject,
+  uVisAppWaptService,  lazdbexport, sqlite3laz,waptunit;
+
+  {Forms, pl_indycomp, lazdbexport, sqlite3laz, uVisAppWaptService, waptunit,
+  waptwmi, superobject, waptcommon;}
 
 {$R *.res}
 

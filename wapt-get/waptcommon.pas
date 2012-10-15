@@ -15,6 +15,8 @@ interface
   Function  Wget(const fileURL, DestFileName: Utf8String): boolean;
   Function  Wget_try(const fileURL: Utf8String): boolean;
 
+  function httpGetString(url: string): Utf8String;
+
 
   Procedure UnzipFile(ZipFilePath,OutputPath:Utf8String);
   Procedure AddToUserPath(APath:Utf8String);
@@ -195,9 +197,7 @@ function wget_try(const fileURL: Utf8String): boolean;
    hSession, hURL: HInternet;
    Buffer: array[1..BufferSize] of Byte;
    BufferLen: DWORD;
-   f: File;
    sAppName: Utf8string;
-   Size: Integer;
    dwindex: cardinal;
    dwcode : array[1..20] of char;
    dwCodeLen : DWORD;
@@ -225,6 +225,53 @@ begin
     InternetCloseHandle(hSession)
   end
 end;
+
+function httpGetString(
+    url: string): Utf8String;
+var
+  GlobalhInet,hFile: HINTERNET;
+  localFile: File;
+  buffer: array[1..1024] of byte;
+  bytesRead: DWORD;
+  pos:integer;
+  dwindex,dwcodelen,dwread,dwNumber: cardinal;
+  dwcode : array[1..20] of char;
+  res    : pchar;
+
+begin
+  result := '';
+  //if not Assigned(GlobalhInet) then
+    GlobalhInet := InternetOpen('wapt',
+      INTERNET_OPEN_TYPE_PRECONFIG,nil,nil,0);
+  hFile := InternetOpenURL(GlobalhInet,PChar(url),nil,0,
+    INTERNET_FLAG_IGNORE_CERT_CN_INVALID or INTERNET_FLAG_NO_CACHE_WRITE
+    or INTERNET_FLAG_PRAGMA_NOCACHE or INTERNET_FLAG_RELOAD+INTERNET_FLAG_KEEP_CONNECTION ,0);
+  if Assigned(hFile) then
+  try
+    dwIndex  := 0;
+    dwCodeLen := 10;
+    HttpQueryInfo(hFile, HTTP_QUERY_STATUS_CODE, @dwcode, dwcodeLen, dwIndex);
+    res := pchar(@dwcode);
+    dwNumber := sizeof(Buffer)-1;
+    if (res ='200') or (res ='302') then
+    begin
+      Result:='';
+      pos:=1;
+      repeat
+        FillChar(buffer,SizeOf(buffer),0);
+        InternetReadFile(hFile,@buffer,SizeOf(buffer),bytesRead);
+        SetLength(Result,Length(result)+bytesRead+1);
+        Move(Buffer,Result[pos],bytesRead);
+        inc(pos,bytesRead);
+      until bytesRead = 0;
+    end
+    else
+       raise Exception.Create('Unable to download: "'+URL+'", HTTP Status:'+res);
+  finally
+    InternetCloseHandle(hFile);
+  end;
+end;
+
 
 function GetSystemProductName: String;
 const
@@ -319,7 +366,6 @@ end;
 
 procedure AddToUserPath(APath:Utf8String);
 var
-  r:TRegistry;
   SystemPath : Utf8String;
 begin
   with TRegistry.Create do
@@ -501,6 +547,7 @@ var
 begin
   version := VersionString;
   tok := StrToken(version,'.');
+  Result :='';
   repeat
     if StrIsDigit(tok) then
       Result := Result+FormatFloat('0000',StrToInt(tok))
@@ -543,7 +590,7 @@ end;
 
 function Dataset2SO(DS: TDataset;AllRecords:Boolean=True): ISuperObject;
 var
-  recs,rec: ISuperObject;
+  rec: ISuperObject;
 
   procedure Fillrec(rec:ISuperObject);
   var

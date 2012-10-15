@@ -67,10 +67,19 @@ def wgets(url):
     """Return the content of a remote resources as a String"""
     return urllib2.urlopen(url).read()
 
-def wget(url,target):
+class WaptURLopener(urllib.FancyURLopener):
+  def http_error_default(self, url, fp, errcode, errmsg, headers):
+    raise urllib2.HTTPError(url,errcode,errmsg,headers,fp)
+
+
+def wget(url,target,reporthook=None):
     """Copy the contents of a file from a given URL
     to a local file.
     """
+    def report(bcount,bsize,total):
+        if 100*bcount*bsize/total % 10 == 0:
+            print '%i / %i (%.0f%%)\r' % (bcount*bsize,total,100.0*bcount*bsize/total),
+
     if os.path.isdir(target):
         target = os.path.join(target,'')
 
@@ -83,7 +92,8 @@ def wget(url,target):
     if not os.path.isdir(dir):
         os.makedirs(dir)
 
-    urllib.urlretrieve(url,os.path.join(dir,filename))
+    (localpath,headers) = WaptURLopener().retrieve(url,os.path.join(dir,filename),reporthook or report)
+
     return os.path.join(dir,filename)
 
 def filecopyto(filename,target):

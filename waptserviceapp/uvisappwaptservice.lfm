@@ -6,6 +6,7 @@ object VisAppWAPTService: TVisAppWAPTService
   Caption = 'Run WAPT Service as an application for Debugging purpose'
   ClientHeight = 554
   ClientWidth = 856
+  OnCreate = FormCreate
   LCLVersion = '1.1'
   object DBGrid1: TDBGrid
     Left = 0
@@ -28,6 +29,7 @@ object VisAppWAPTService: TVisAppWAPTService
     ClientHeight = 98
     ClientWidth = 856
     TabOrder = 1
+    OnClick = Panel1Click
     object EdSQL: TMemo
       Left = 8
       Height = 90
@@ -46,6 +48,15 @@ object VisAppWAPTService: TVisAppWAPTService
       Caption = 'ButSQL'
       OnClick = ButSQLClick
       TabOrder = 1
+    end
+    object Button1: TButton
+      Left = 562
+      Height = 25
+      Top = 26
+      Width = 75
+      Caption = 'Button1'
+      OnClick = Button1Click
+      TabOrder = 2
     end
   end
   object Datasource1: TDatasource
@@ -79,8 +90,6 @@ object VisAppWAPTService: TVisAppWAPTService
         Precision = -1
         Size = 0
       end>
-    Database = WaptDaemon.waptdb
-    Transaction = WaptDaemon.SQLTrans
     SQL.Strings = (
       'select * from wapt_localstatus'
     )

@@ -4,6 +4,8 @@ object VisWAPTTray: TVisWAPTTray
   Top = 278
   Width = 567
   Caption = 'Gestion logiciels WAPT'
+  ClientHeight = 468
+  ClientWidth = 567
   Icon.Data = {
     220D000000000100010020210000010018000C0D000016000000280000002000
     0000420000000100180000000000000000004800000048000000000000000000
@@ -113,7 +115,26 @@ object VisWAPTTray: TVisWAPTTray
     000000000000
   }
   OnClose = FormClose
+  OnShow = FormShow
   LCLVersion = '1.1'
+  object sysinfo: TMemo
+    Left = 0
+    Height = 153
+    Top = 312
+    Width = 567
+    Lines.Strings = (
+      'sysinfo'
+    )
+    TabOrder = 0
+  end
+  object ValueListEditor1: TValueListEditor
+    Left = 24
+    Height = 224
+    Top = 16
+    Width = 272
+    FixedCols = 0
+    TabOrder = 1
+  end
   object TrayIcon1: TTrayIcon
     BalloonHint = 'WAPT Service'
     BalloonTitle = 'WAPT Service'

@@ -246,8 +246,11 @@ class Wapt:
                 print ("  using cached package file from " + fullpackagepath)
             else:
                 print ("  downloading package from " + mydict['repo_url'])
-                #sys.stdout.flush()
-                wget( download_url, self.packagecachedir)
+                try:
+                    wget( download_url, self.packagecachedir)
+                except urllib2.HTTPError as e:
+                    print "Error downloading package from http repository, please update... error : %s" % e
+                    raise
 
             self.install_wapt(fullpackagepath)
 
