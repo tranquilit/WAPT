@@ -82,7 +82,7 @@ begin
   if HasOption('?') or HasOption('h','--help') then
   begin
     writeln(' -r --repo : URL of dependencies libs (default : '+FindWaptRepo+')');
-    writeln(' waptupgrade : upgrade wapt-get.exe');
+    writeln(' waptupgrade : upgrade wapt-get.exe and database');
     writeln(' waptsetup : install/reinstall dependencies (python libs)');
     writeln(' register : register computer on wapt-server');
   end;
@@ -112,8 +112,11 @@ begin
     writeln('Win32 Exe wrapper: '+ApplicationName+' '+ApplicationVersion);
 
   // Auto install if wapt-get is not yet in the target directory
-  if (action = 'waptsetup') or (FileExists(AppendPathDelim(InstallPath)+'wapt-get.exe') and (SortableVersion(ApplicationVersion) > SortableVersion(ApplicationVersion(AppendPathDelim(InstallPath)+'wapt-get.exe'))))
-      or (not FileExists(AppendPathDelim(InstallPath)+'python27.dll')) or (not FileExists(AppendPathDelim(InstallPath)+'wapt-get.exe')) then
+  if (action = 'waptsetup') or
+    (FileExists(AppendPathDelim(InstallPath)+'wapt-get.exe') and
+        (SortableVersion(ApplicationVersion) > SortableVersion(ApplicationVersion(AppendPathDelim(InstallPath)+'wapt-get.exe')))) or
+    (not FileExists(AppendPathDelim(InstallPath)+'python27.dll')) or
+    (not FileExists(AppendPathDelim(InstallPath)+'wapt-get.exe')) then
   begin
     Writeln('WAPT-GET Setup using repository at '+RepoURL);
     Setup(downloadPath,InstallPath);

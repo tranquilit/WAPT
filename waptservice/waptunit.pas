@@ -306,7 +306,7 @@ begin
       AResponseInfo.ContentText:=so.AsJson(True);
     end
     else
-    if (ARequestInfo.URI='/install') or (ARequestInfo.URI='/remove') then
+    if (ARequestInfo.URI='/install') or (ARequestInfo.URI='/remove') or (ARequestInfo.URI='/showlog') then
     begin
       if not ARequestInfo.AuthExists or (ARequestInfo.AuthUsername <> 'admin') then
       begin
@@ -333,7 +333,10 @@ begin
         cmd := cmd+' install '+ARequestInfo.Params.ValueFromIndex[i]
       else
       if ARequestInfo.URI = '/remove' then
-        cmd := cmd+' remove '+ARequestInfo.Params.ValueFromIndex[i];
+        cmd := cmd+' remove '+ARequestInfo.Params.ValueFromIndex[i]
+      else
+      if ARequestInfo.URI = '/showlog' then
+        cmd := cmd+' showlog '+ARequestInfo.Params.ValueFromIndex[i];
       Application.Log(etInfo,cmd);
       HttpRunTask(AContext,AResponseInfo,cmd,ExitStatus)
     end
@@ -399,7 +402,7 @@ function TWaptDaemon.StatusTableHook(Data, FN: Utf8String): Utf8String;
 begin
   FN := LowerCase(FN);
   if FN='package' then
-    Result:='<a href="/remove?package='+Data+'">'+Data+'</a>'
+    Result:='<a href="/showlog?package='+Data+'">'+Data+'</a>'
   else
     Result := Data;
 end;

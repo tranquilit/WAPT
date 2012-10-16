@@ -20,7 +20,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="3"/>
-      <RevisionNr Value="4"/>
+      <RevisionNr Value="5"/>
       <Language Value="040C"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Service helper" ProductVersion=""/>
     </VersionInfo>
@@ -61,10 +61,12 @@
         <Filename Value="waptservice.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptservice"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="1" Y="17"/>
+        <CursorPos X="22" Y="14"/>
         <UsageCount Value="148"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="waptmapper.pas"/>
@@ -87,8 +89,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="54"/>
-        <CursorPos X="29" Y="63"/>
+        <TopLine Value="321"/>
+        <CursorPos X="26" Y="330"/>
         <UsageCount Value="148"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -145,7 +147,7 @@
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="955"/>
         <CursorPos X="34" Y="1055"/>
@@ -487,7 +489,7 @@
         <Filename Value="..\superobject\superobject.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="superobject"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3164"/>
         <CursorPos X="2" Y="3185"/>
@@ -598,7 +600,7 @@
       <Unit66>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdCustomHTTPServer.pas"/>
         <UnitName Value="IdCustomHTTPServer"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1217"/>
         <CursorPos X="29" Y="1237"/>
@@ -608,7 +610,7 @@
       <Unit67>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdHTTPHeaderInfo.pas"/>
         <UnitName Value="IdHTTPHeaderInfo"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="209"/>
         <CursorPos X="5" Y="224"/>
@@ -651,7 +653,7 @@
         <Filename Value="waptwmi.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptwmi"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="10" Y="13"/>
@@ -661,7 +663,7 @@
       <Unit73>
         <Filename Value="testwmi.lpr"/>
         <UnitName Value="WmiDelphiWin32_LateBinding"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="100"/>
         <CursorPos X="1" Y="122"/>
@@ -671,7 +673,7 @@
       <Unit74>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\activex.pp"/>
         <UnitName Value="ActiveX"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3901"/>
         <CursorPos X="12" Y="3919"/>
@@ -689,7 +691,7 @@
       <Unit76>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdURI.pas"/>
         <UnitName Value="IdURI"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="66"/>
         <CursorPos X="3" Y="81"/>
@@ -697,30 +699,30 @@
         <Loaded Value="True"/>
       </Unit76>
     </Units>
-    <JumpHistory Count="29" HistoryIndex="28">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="98" Column="23" TopLine="86"/>
+        <Caret Line="189" Column="64" TopLine="166"/>
       </Position1>
       <Position2>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="62" Column="33" TopLine="48"/>
+        <Caret Line="30" Column="20" TopLine="14"/>
       </Position2>
       <Position3>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="396" Column="1" TopLine="365"/>
       </Position3>
       <Position4>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="189" Column="64" TopLine="166"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position4>
       <Position5>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="30" Column="20" TopLine="14"/>
+        <Caret Line="31" Column="29" TopLine="15"/>
       </Position5>
       <Position6>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="396" Column="1" TopLine="365"/>
+        <Caret Line="362" Column="37" TopLine="336"/>
       </Position6>
       <Position7>
         <Filename Value="waptunit.pas"/>
@@ -728,92 +730,96 @@
       </Position7>
       <Position8>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="31" Column="29" TopLine="15"/>
+        <Caret Line="41" Column="68" TopLine="20"/>
       </Position8>
       <Position9>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="362" Column="37" TopLine="336"/>
+        <Caret Line="185" Column="19" TopLine="177"/>
       </Position9>
       <Position10>
-        <Filename Value="waptunit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdCustomHTTPServer.pas"/>
+        <Caret Line="265" Column="61" TopLine="252"/>
       </Position10>
       <Position11>
-        <Filename Value="waptunit.pas"/>
-        <Caret Line="41" Column="68" TopLine="20"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdCustomHTTPServer.pas"/>
+        <Caret Line="1233" Column="36" TopLine="1208"/>
       </Position11>
       <Position12>
-        <Filename Value="waptunit.pas"/>
-        <Caret Line="185" Column="19" TopLine="177"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdCustomHTTPServer.pas"/>
+        <Caret Line="1241" Column="68" TopLine="1224"/>
       </Position12>
       <Position13>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdCustomHTTPServer.pas"/>
-        <Caret Line="265" Column="61" TopLine="252"/>
+        <Caret Line="1237" Column="29" TopLine="1217"/>
       </Position13>
       <Position14>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdCustomHTTPServer.pas"/>
-        <Caret Line="1233" Column="36" TopLine="1208"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="41" Column="75" TopLine="31"/>
       </Position14>
       <Position15>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdCustomHTTPServer.pas"/>
-        <Caret Line="1241" Column="68" TopLine="1224"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="187" Column="23" TopLine="177"/>
       </Position15>
       <Position16>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdCustomHTTPServer.pas"/>
-        <Caret Line="1237" Column="29" TopLine="1217"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="188" Column="58" TopLine="173"/>
       </Position16>
       <Position17>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="41" Column="75" TopLine="31"/>
+        <Caret Line="189" Column="56" TopLine="173"/>
       </Position17>
       <Position18>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="187" Column="23" TopLine="177"/>
+        <Caret Line="191" Column="7" TopLine="176"/>
       </Position18>
       <Position19>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="188" Column="58" TopLine="173"/>
+        <Caret Line="206" Column="73" TopLine="191"/>
       </Position19>
       <Position20>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="189" Column="56" TopLine="173"/>
+        <Caret Line="317" Column="5" TopLine="297"/>
       </Position20>
       <Position21>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="191" Column="7" TopLine="176"/>
+        <Caret Line="86" Column="18" TopLine="69"/>
       </Position21>
       <Position22>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="206" Column="73" TopLine="191"/>
+        <Caret Line="61" Column="25" TopLine="44"/>
       </Position22>
       <Position23>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="317" Column="5" TopLine="297"/>
+        <Caret Line="81" Column="19" TopLine="55"/>
       </Position23>
       <Position24>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="86" Column="18" TopLine="69"/>
+        <Caret Line="99" Column="23" TopLine="74"/>
       </Position24>
       <Position25>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="61" Column="25" TopLine="44"/>
+        <Caret Line="111" Column="44" TopLine="95"/>
       </Position25>
       <Position26>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="81" Column="19" TopLine="55"/>
+        <Caret Line="319" Column="15" TopLine="302"/>
       </Position26>
       <Position27>
-        <Filename Value="waptunit.pas"/>
-        <Caret Line="99" Column="23" TopLine="74"/>
+        <Filename Value="waptservice.lpr"/>
+        <Caret Line="17" Column="1" TopLine="1"/>
       </Position27>
       <Position28>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="111" Column="44" TopLine="95"/>
+        <Caret Line="341" Column="29" TopLine="319"/>
       </Position28>
       <Position29>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="319" Column="15" TopLine="302"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position29>
+      <Position30>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="405" Column="31" TopLine="401"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -855,7 +861,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="3">
+    <BreakPoints Count="1">
       <Item1>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
@@ -863,20 +869,6 @@
         <Source Value="waptunit.pas"/>
         <Line Value="190"/>
       </Item1>
-      <Item2>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="waptunit.pas"/>
-        <Line Value="316"/>
-      </Item2>
-      <Item3>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="waptunit.pas"/>
-        <Line Value="318"/>
-      </Item3>
     </BreakPoints>
     <Watches Count="1">
       <Item1>
