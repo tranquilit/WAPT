@@ -51,6 +51,7 @@ parser.add_option("-c","--config", dest="config", default='c:\\wapt\\wapt-get.in
 parser.add_option("-l","--loglevel", dest="loglevel", default='info', type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: %default)")
 parser.add_option("-d","--dry-run",    dest="dry_run",    default=False, action='store_true', help="Dry run (default: %default)")
 parser.add_option("-f","--force",    dest="force",    default=False, action='store_true', help="Force (default: %default)")
+parser.add_option("-p","--params", dest="params", default='{}', help="Setup params as a JSon Object (default: %default)")
 
 (options,args)=parser.parse_args()
 
@@ -265,8 +266,8 @@ class Wapt:
 
 
 
-    def install_wapt(self,fname):
-        logger.info("Register start of install to local DB")
+    def install_wapt(self,fname,params_dict={}):
+        logger.info("Register start of install %s to local DB with params %s" % (fname,params_dict))
         status = 'INIT'
         previous_uninstall = self.registry_uninstall_snapshot()
         entry = Package_Entry()
@@ -277,15 +278,39 @@ class Wapt:
         sys.stdout = installoutput = LogInstallOutput(sys.stdout,self.waptdb,install_id)
         try:
             logger.info("Installing package " + fname)
-            # ... inutile ? global packagetempdir
-            packagetempdir = tempfile.mkdtemp(prefix="wapt")
-            logger.info('  unzipping %s ' % (fname))
-            zip = zipfile.ZipFile(fname)
-            zip.extractall(path=packagetempdir)
+            # ... inutile ?
+            #global packagetempdir
+            # case wapt is a zipped file, else directory (during developement)
+            istemporary = False
+            if os.path.isfile(fname):
+                packagetempdir = tempfile.mkdtemp(prefix="wapt")
+                logger.info('  unzipping %s to temporary' % (fname))
+                zip = zipfile.ZipFile(fname)
+                zip.extractall(path=packagetempdir)
+                istemporary = True
+            elif os.path.isdir(fname):
+                packagetempdir = fname
+            else:
+                raise Exception('%s is not a file nor a directory, aborting.' % fname)
 
-            logger.info("  sourcing install file")
-            psource(os.path.join( packagetempdir,'setup.py'))
+            setup_filename = os.path.join( packagetempdir,'setup.py')
+            os.chdir(os.path.dirname(setup_filename))
 
+            logger.info("  sourcing install file %s " % setup_filename )
+            psource(setup_filename)
+
+            required_params = []
+            global setup
+            setattr(setup,'basedir',os.path.dirname(setup_filename))
+            if hasattr(setup,'required_params'):
+                required_params = setup.required_params
+
+            for p in required_params:
+                if not p in params_dict:
+                    params_dict[p] = raw_input("%s: " % p)
+
+            # set params dictionary
+            setattr(setup,'params',params_dict)
             if not self.dry_run:
                 logger.info("  executing install script")
                 exitstatus = setup.install()
@@ -296,75 +321,81 @@ class Wapt:
                 status = 'OK'
             else:
                 status = 'ERROR'
-            new_uninstall = self.registry_uninstall_snapshot()
-            new_uninstall_key = [ k for k in new_uninstall if not k in previous_uninstall]
+            if hasattr(setup,'uninstallkey'):
+                new_uninstall_key = '%s' % (setup.uninstallkey,)
+            else:
+                new_uninstall = self.registry_uninstall_snapshot()
+                new_uninstall_key = [ k for k in new_uninstall if not k in previous_uninstall]
             logger.info('  uninstall keys : %s' % (new_uninstall_key,))
-            self.waptdb.update_install_status(install_id,status,'',str(new_uninstall_key))
+
+            if hasattr(setup,'uninstallstring'):
+                uninstallstring = setup.uninstallstring
+            else:
+                uninstallstring = None
+
+            self.waptdb.update_install_status(install_id,status,'',str(new_uninstall_key),uninstallstring)
             # (entry.Package,entry.Version,status,json.dumps({'output':installoutput.output,'exitstatus':exitstatus}))
 
             logger.info("Install script finished with status %s" % status)
-            logger.debug("Cleaning package tmp dir")
-            shutil.rmtree(packagetempdir)
+            if istemporary:
+                logger.debug("Cleaning package tmp dir")
+                shutil.rmtree(packagetempdir)
         finally:
+            if 'setup' in dir():
+                del setup
             sys.stdout = old_stdout
 
-    def install(self,package):
-        """Install a package and its dependencies"""
-        if os.path.isfile(package):
-            self.install_wapt(package)
-        else:
-            depends = self.waptdb.build_depends([package,])
-            allupgrades = self.waptdb.upgradeable().keys()
-            allinstalled = self.waptdb.installed().keys()
-            to_upgrade =  [ p for p in depends if p in allupgrades ]
-            additional_install = [ p for p in depends if not p in allinstalled ]
-            if depends:
-                print "Additional packages to install :\n   %s" % (','.join(depends),)
-            if to_upgrade:
-                print "Packages to upgrade :\n   %s" % (','.join(to_upgrade),)
-            for p in depends:
-                self.install_package(p)
-            self.install_package(package)
+    def install(self,apackages,force=False,params_dict = {}):
+        """Install a list of packages and its dependencies"""
+        allupgrades = self.waptdb.upgradeable()
+        allinstalled = self.waptdb.installed()
+        packages = []
+        if not force:
+            for p in apackages:
+                if not p in allupgrades and p in allinstalled:
+                    print "Package %s already at the latest version (%s), skipping install." % (p,allinstalled[p]['Version'])
+                else:
+                    packages.append(p)
+        # get dependencies of all packages
+        depends = self.waptdb.build_depends(packages)
+        to_upgrade =  [ p for p in depends if p in allupgrades.keys() ]
+        additional_install = [ p for p in depends if not p in allinstalled.keys() ]
+        if additional_install:
+            print "Additional packages to install :\n   %s" % (','.join(additional_install),)
+        if to_upgrade:
+            print "Packages to upgrade :\n   %s" % (','.join(to_upgrade),)
 
-    def download_package(self,package,version=None):
-        entry = self.waptdb.package_entry_from_db(package,version)
-        packagefilename = entry.Filename.strip('./')
-        download_url = entry.repo_url+'/'+packagefilename
-        fullpackagepath = os.path.join(self.packagecachedir,packagefilename)
-        logger.info('Downloading file URL: %s to %s' % (download_url,fullpackagepath))
-        try:
-            wget( download_url, self.packagecachedir)
-        except urllib2.HTTPError as e:
-            print "Error downloading package from http repository, please update... error : %s" % e
-            raise
+        to_install = []
+        to_install.extend(additional_install)
+        to_install.extend(to_upgrade)
+        to_install.extend(packages)
+        # [[package/version],]
+        self.download_packages([(p,None) for p in to_install])
+        def fname(packagefilename):
+            return os.path.join(self.packagecachedir,packagefilename)
 
-    def install_package(self,package):
-        #sys.stdout.flush()
-        if os.path.isfile(package):
-            self.install_wapt(package)
-        else:
-            q = self.waptdb.query("""\
-               select wapt_repo.*,wapt_localstatus.Version as CurrentVersion from wapt_repo
-                left join wapt_localstatus on wapt_repo.Package=wapt_localstatus.Package
-                where wapt_repo.Package=?
-               """ , (package,) )
-            if not q:
-                print "ERROR : Package %s not found in local DB, try update" % package
-                return False
-            mydict = q[0]
-            logger.debug(pprint.pformat(mydict))
-            if not options.force and mydict['CurrentVersion']>=mydict['Version']:
-                print "Package %s already installed at the latest version" % package
-                return True
-            packagefilename = mydict['Filename'].strip('./')
+        for p in additional_install:
+            self.install_wapt(fname(self.waptdb.package_entry_from_db(p).Filename),params_dict)
+        for p in to_upgrade:
+            self.install_wapt(fname(to_upgrade[p]['Filename']),params_dict)
+        for p in packages:
+            self.install_wapt(fname(self.waptdb.package_entry_from_db(p).Filename),params_dict)
+
+    def download_packages(self,packages,usecache=True):
+        for (package,version) in packages:
+            entry = self.waptdb.package_entry_from_db(package,version)
+            packagefilename = entry.Filename.strip('./')
+            download_url = entry.repo_url+'/'+packagefilename
             fullpackagepath = os.path.join(self.packagecachedir,packagefilename)
-            if os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath)>0:
+            if os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath)>0 and usecache:
                 print ("  using cached package file from " + fullpackagepath)
             else:
-                print ("  downloading package from " + mydict['repo_url'])
-                self.download_package(package,mydict['Version'])
-
-            self.install_wapt(fullpackagepath)
+                print ("  downloading package from %s" % download_url)
+                try:
+                    wget( download_url, self.packagecachedir)
+                except urllib2.HTTPError as e:
+                    print "Error downloading package from http repository, please update... error : %s" % e
+                    raise
 
     def remove(self,package):
         q = self.waptdb.query("""\
@@ -381,13 +412,23 @@ class Wapt:
         mydict = q[0]
         print "Removing package %s version %s from computer..." % (mydict['Package'],mydict['Version'])
         if mydict['UninstallKey']:
-             guids = eval(mydict['UninstallKey'])
-             for guid in guids:
+            if mydict['UninstallKey'][0] not in ['[','"',"'"]:
+                guids = mydict['UninstallKey']
+            else:
+                try:
+                    guids = eval(mydict['UninstallKey'])
+                except:
+                    guids = mydict['UninstallKey']
+
+            if isinstance(guids,(unicode,str)):
+                guids = [guids]
+
+            for guid in guids:
                 uninstall_cmd = self.uninstall_cmd(guid)
                 logger.info('Launch uninstall cmd %s' % (uninstall_cmd,))
                 print subprocess.check_output(uninstall_cmd)
-             logger.info('Remove status record from local DB')
-             self.waptdb.remove_install_status(package)
+            logger.info('Remove status record from local DB')
+            self.waptdb.remove_install_status(package)
         else:
             raise Exception('  uninstall key not registered in local DB status, unable to remove')
 
@@ -491,15 +532,22 @@ def main():
         if len(args)<2:
             print "You must provide at least one package name"
             sys.exit(1)
-        for packagename in args[1:]:
-            mywapt.install(packagename)
+        params_dict = {}
+        try:
+            params_dict = json.dumps(options.params)
+        except:
+            raise Exception('Install Parameters should be in json format')
+
+        if os.path.isdir(args[1]) or os.path.isfile(args[1]):
+            mywapt.install_wapt(args[1],)
+        else:
+            mywapt.install(args[1:],force = options.force)
 
     elif action=='download':
         if len(args)<2:
             print "You must provide at least one package name to download"
             sys.exit(1)
-        for packagename in args[1:]:
-            mywapt.download_package(packagename)
+        mywapt.download_packages([(p,None) for p in args[1:]])
 
     elif action=='show':
         if len(args)<2:
@@ -511,10 +559,10 @@ def main():
 
 
     elif action=='list-registry':
-        print "%-70s%-20s" % ('Software','Version')
-        print '-'*70 + '-'*20
+        print "%-39s%-70s%-20s" % ('UninstallKey','Software','Version')
+        print '-'*39+'-'*70 + '-'*20
         for p in mywapt.registry_installed_softwares(' '.join(args[1:])) :
-            print "%-70s%-20s" % (p['DisplayName'],p['DisplayVersion'])
+            print "%-39s%-70s%-20s" % (p['key'],p['DisplayName'],p['DisplayVersion'])
 
     elif action=='remove':
         if len(args)<2:

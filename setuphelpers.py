@@ -79,9 +79,10 @@ def wget(url,target,reporthook=None):
     """
     def report(bcount,bsize,total):
         global last_progress_display
-        if bcount * 100 / (total/bsize) - last_progress_display >= 10:
-            print '%i / %i (%.0f%%)\r' % (bcount*bsize,total,100.0*bcount*bsize/total),
-            last_progress_display = bcount * 100 / (total/bsize)
+        if total>0 and bsize>0:
+            if bcount * bsize * 100 / total - last_progress_display >= 10:
+                print '%i / %i (%.0f%%)\r' % (bcount*bsize,total,100.0*bcount*bsize/total),
+                last_progress_display = bcount * bsize * 100 / total
 
     if os.path.isdir(target):
         target = os.path.join(target,'')

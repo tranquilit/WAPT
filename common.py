@@ -32,6 +32,7 @@ import hashlib
 import glob
 import codecs
 import sqlite3
+import json
 
 def datetime2isodate(adatetime = datetime.datetime.now()):
     assert(isinstance(adatetime,datetime.datetime))
@@ -273,11 +274,12 @@ class WaptDB:
                     Filename='',
                     Size='',
                     MD5sum='',
+                    Depends='',
                     repo_url=''):
 
         cur = self.db.execute("""\
               insert into wapt_repo (
-                  Package,
+                Package,
                 Version,
                 Section,
                 Priority,
@@ -287,7 +289,8 @@ class WaptDB:
                 Filename,
                 Size,
                 MD5sum,
-                repo_url) values (?,?,?,?,?,?,?,?,?,?,?)
+                Depends,
+                repo_url) values (?,?,?,?,?,?,?,?,?,?,?,?)
             """,(
                  Package,
                  Version,
@@ -299,6 +302,7 @@ class WaptDB:
                  Filename,
                  Size,
                  MD5sum,
+                 Depends,
                  repo_url)
                )
 
@@ -325,10 +329,11 @@ class WaptDB:
                          package_entry.Filename,
                          package_entry.Size,
                          package_entry.MD5sum,
+                         package_entry.Depends,
                          package_entry.repo_url)
 
 
-    def add_start_install(self,package,version):
+    def add_start_install(self,package,version,params_dict={}):
         """Register the start of installation in local db"""
         try:
             cur = self.db.execute("""delete from wapt_localstatus where Package=?""" ,(package,))
@@ -338,30 +343,33 @@ class WaptDB:
                     Version,
                     InstallDate,
                     InstallStatus,
-                    InstallOutput
-                    ) values (?,?,?,?,?)
+                    InstallOutput,
+                    InstallParams
+                    ) values (?,?,?,?,?,?)
                 """,(
                      package,
                      version,
                      datetime2isodate(),
                      'INIT',
-                     '')
-                   )
+                     '',
+                     json.dumps(params_dict),
+                   ))
         finally:
             self.db.commit()
         return cur.lastrowid
 
-    def update_install_status(self,rowid,installstatus,installoutput,uninstallkey=None):
+    def update_install_status(self,rowid,installstatus,installoutput,uninstallkey=None,uninstallstring=None,):
         """Update status of package installation on localdb"""
         try:
             cur = self.db.execute("""\
                   update wapt_localstatus
-                    set InstallStatus=?,InstallOutput = InstallOutput || ?,UninstallKey=?
+                    set InstallStatus=?,InstallOutput = InstallOutput || ?,UninstallKey=?,UninstallString=?
                     where rowid = ?
                 """,(
                      installstatus,
                      installoutput,
                      uninstallkey,
+                     uninstallstring,
                      rowid,
                      )
                    )
@@ -391,7 +399,9 @@ class WaptDB:
     def installed(self):
         """Return a dictionary of installed packages : keys=package names, values = package dict """
         q = self.query("""\
-              select * from wapt_localstatus order by Package
+              select wapt_localstatus.*,wapt_repo.Filename from wapt_localstatus
+                left join wapt_repo on wapt_repo.Package=wapt_localstatus.Package
+              order by wapt_localstatus.Package
            """)
         result = {}
         for p in q:
@@ -399,17 +409,16 @@ class WaptDB:
         return result
 
     def upgradeable(self):
-        """Return a dictionary of packages to upgrade : keys=package names, value = (current version,new version)"""
+        """Return a dictionary of packages to upgrade : keys=package names, value = package dict"""
         q = self.query("""\
-           select wapt_repo.Package,wapt_localstatus.Version as V1,wapt_repo.Version as V2 from wapt_localstatus
+           select wapt_localstatus.*,wapt_repo.Version as NewVersion,wapt_repo.Filename from wapt_localstatus
             left join wapt_repo on wapt_repo.Package=wapt_localstatus.Package
             where wapt_localstatus.Version<wapt_repo.Version
            """)
         result = {}
         for p in q:
-            result[p['Package']]=(p['V1'],p['V2'])
+            result[p['Package']]= p
         return result
-
 
     def build_depends(self,packages):
         """Given a list of packages names Return a list of dependencies packages names to install"""
@@ -427,7 +436,7 @@ class WaptDB:
                     # depends is a comma seperated list
                     depends = [s.strip() for s in entry.Depends.split(',') if s.strip()<>'']
                     for d in depends:
-                        alldepends.extend(dodepends(explored,depends))
+                        alldepends.extend(dodepends(explored,depends,depth))
                         if not d in alldepends:
                             alldepends.append(d)
                     explored.append(package)
@@ -486,11 +495,15 @@ class Package_Entry:
 
     def load_control_from_wapt(self,fname ):
         """Load package attributes from the control file included in WAPT zipfile fname"""
-        myzip = zipfile.ZipFile(fname,'r')
-        control = myzip.open('WAPT/control')
+        if os.path.isfile(fname):
+            myzip = zipfile.ZipFile(fname,'r')
+            control = myzip.open('WAPT/control')
+            self.MD5sum = md5_for_file(fname)
+            self.Size = os.path.getsize(fname)
+        elif os.path.isdir(fname):
+            control = open(os.path.join(fname,'WAPT','control'),'r')
+
         self.Filename = os.path.basename(fname)
-        self.MD5sum = md5_for_file(fname)
-        self.Size = os.path.getsize(fname)
         while 1:
             line = control.readline()
             if not line:
@@ -568,7 +581,8 @@ def update_packages(adir):
 
     print "Writing new %s" % packages_fname
     myzipfile = zipfile.ZipFile(packages_fname, "w")
-    myzipfile.writestr("Packages",'\n'.join(packages),compress_type=zipfile.ZIP_DEFLATED)
+    #myzipfile.writestr("Packages",'\n'.join(packages),compress_type=zipfile.ZIP_DEFLATED)
+    myzipfile.writestr("Packages",'\n'.join(packages))
     myzipfile.close()
 
 if __name__ == '__main__':
