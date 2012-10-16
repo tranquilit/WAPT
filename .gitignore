@@ -3,6 +3,8 @@ lib
 *.ppu
 *.compiled
 *.dbg
+appwaptservice.log
+*.log
 
 # These are the default patterns globally ignored by Subversion:
 *.o

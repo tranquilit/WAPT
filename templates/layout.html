@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+Design by Free CSS Templates
+http://www.freecsstemplates.org
+Released for free under a Creative Commons Attribution 2.5 License
+
+Name       : Indication  
+Description: A two-column, fixed-width design with dark color scheme.
+Version    : 1.0
+Released   : 20090910
+
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>WAPT Service status</title>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" type="text/css" href="/static/styles/datatables.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/style.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/jquery.alerts.css">
+    
+    <!-- Scripts -->
+    <script type=text/javascript   src="/static/js/jquery.min.js"></script>
+    <script type=text/javascript   src="/static/js/jquery.dataTables.js"></script>
+    <script type=text/javascript   src="/static/js/jquery.alerts.js"></script>
+    <script type=text/javascript   src="/static/js/jquery.ui.draggable.js"></script>
+</head>
+<body background='/static/images/bg_body.gif'>
+<div id="wrapper">
+	<div id="header">
+		<div id="logo">
+			<h1><a href="/">WAPT Service</a></h1>
+			<p> design by TIS</p>
+		</div>
+	</div>
+	<!-- end #header -->
+	<div id="menu">
+		<ul>
+			<li><a href="/">WAPT</a></li>
+			<li><a href="/status">Status</a></li>
+			<li><a href="/list">Package list</a></li>
+		</ul>
+	</div>
+        <!-- end #menu -->
+        <div id="page">
+        <div id="page-bgtop">
+        <div id="page-bgbtm">
+                <div id="content">
+{% block content %}
+                </div>
+                <div style="clear: both;">&nbsp;</div>
+        </div>
+        <!-- end #page -->
+</div>
+        </div>
+        <!-- end #footer -->
+</div>
+        <div id="footer">
+                <p>Copyright (c) 2012 Tranquil IT Systems. All rights reserved. Design by <a href="http://www.tranquil-it-systems.fr/">TIS</a>.</p>
+        </div>
+</body>
+</html>

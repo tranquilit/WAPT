@@ -986,6 +986,7 @@ begin
         'Filename VARCHAR(255),'+
         'Size INTEGER,'+
         'MD5sum VARCHAR(255),'+
+        'Depends VARCHAR(800),'+
         'repo_url VARCHAR(255)'+
         ');'+
         'create index idx_package_name on wapt_repo(Package);');
@@ -998,6 +999,8 @@ begin
         'InstallDate VARCHAR(255),'+
         'InstallStatus VARCHAR(255),'+
         'InstallOutput TEXT,'+
+        'InstallParams VARCHAR(800),'+
+        'UninstallString varchar(255),'+
         'UninstallKey varchar(255)'+
         ');'+
         'create index idx_localstatus_name on wapt_localstatus(Package);');
