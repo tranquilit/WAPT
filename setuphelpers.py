@@ -71,14 +71,17 @@ class WaptURLopener(urllib.FancyURLopener):
   def http_error_default(self, url, fp, errcode, errmsg, headers):
     raise urllib2.HTTPError(url,errcode,errmsg,headers,fp)
 
+last_progress_display = 0
 
 def wget(url,target,reporthook=None):
     """Copy the contents of a file from a given URL
     to a local file.
     """
     def report(bcount,bsize,total):
-        if 100*bcount*bsize/total % 10 == 0:
+        global last_progress_display
+        if bcount * 100 / (total/bsize) - last_progress_display >= 10:
             print '%i / %i (%.0f%%)\r' % (bcount*bsize,total,100.0*bcount*bsize/total),
+            last_progress_display = bcount * 100 / (total/bsize)
 
     if os.path.isdir(target):
         target = os.path.join(target,'')
@@ -92,8 +95,10 @@ def wget(url,target,reporthook=None):
     if not os.path.isdir(dir):
         os.makedirs(dir)
 
+    global last_progress_display
+    last_progress_display = 0
     (localpath,headers) = WaptURLopener().retrieve(url,os.path.join(dir,filename),reporthook or report)
-
+    print "download %s finished" % url
     return os.path.join(dir,filename)
 
 def filecopyto(filename,target):
@@ -105,10 +110,11 @@ def filecopyto(filename,target):
 
 def shellexecandwait(cmd):
     """Runs the command and wait for it termination
-    returns exit code"""
-    return subprocess.call(cmd,shell=True)
+    returns output, raise exc eption if exitcode is not null"""
+    return subprocess.check_output(cmd,shell=True)
 
 def shelllaunch(cmd):
+    """Launch a command (without arguments) but doesn't wait for its termination"""
     os.startfile(cmd)
 
 def registerapplication(applicationname):

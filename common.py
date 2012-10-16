@@ -127,7 +127,7 @@ def convert_bytes(bytes):
         return size
 
 ## {{{ http://code.activestate.com/recipes/81189/ (r2)
-def pp(cursor, data=None, rowlens=0, callback=None):
+def pptable(cursor, data=None, rowlens=0, callback=None):
     """
     pretty print a query result as a table
     callback is a function called for each field (fieldname,value) to format the output
@@ -237,6 +237,7 @@ class WaptDB:
           Filename varchar(255),
           Size integer,
           MD5sum varchar(255),
+          Depends varchar(800),
           repo_url varchar(255)
           )"""
                         )
@@ -251,6 +252,8 @@ class WaptDB:
           InstallDate varchar(255),
           InstallStatus varchar(255),
           InstallOutput TEXT,
+          InstallParams VARCHAR(800),
+          UninstallString varchar(255),
           UninstallKey varchar(255)
           )"""
                         )
@@ -306,7 +309,7 @@ class WaptDB:
         words = [ "%"+w.lower()+"%" for w in words ]
         search = ["lower(Description || Package) like ?"] *  len(words)
         cur = self.db.execute("select Package,Version,Description from wapt_repo where %s" % " and ".join(search),words)
-        return pp(cur,None,1,None)
+        return pptable(cur,None,1,None)
 
     def add_package_entry(self,package_entry):
         package_name = package_entry.Package
@@ -374,11 +377,77 @@ class WaptDB:
             self.db.commit()
         return cur.lastrowid
 
-    def list_installed_packages(self):
+    def list_installed_packages(self,words=[]):
+        words = [ "%"+w.lower()+"%" for w in words ]
+        search = ["lower(r.Description || l.Package) like ?"] *  len(words)
         cur = self.db.execute("""\
-              select Package,Version,InstallDate from wapt_localstatus order by Package
-            """)
-        return pp(cur,None,1,None)
+              select l.Package,l.Version,l.InstallDate,r.Description from wapt_localstatus l
+              left join wapt_repo r on l.Package=r.Package
+              where %s
+              order by l.Package
+            """ %  (" and ".join(search) or "l.Package is not null",), words )
+        return pptable(cur,None,1,None)
+
+    def installed(self):
+        """Return a dictionary of installed packages : keys=package names, values = package dict """
+        q = self.query("""\
+              select * from wapt_localstatus order by Package
+           """)
+        result = {}
+        for p in q:
+            result[p['Package']]= p
+        return result
+
+    def upgradeable(self):
+        """Return a dictionary of packages to upgrade : keys=package names, value = (current version,new version)"""
+        q = self.query("""\
+           select wapt_repo.Package,wapt_localstatus.Version as V1,wapt_repo.Version as V2 from wapt_localstatus
+            left join wapt_repo on wapt_repo.Package=wapt_localstatus.Package
+            where wapt_localstatus.Version<wapt_repo.Version
+           """)
+        result = {}
+        for p in q:
+            result[p['Package']]=(p['V1'],p['V2'])
+        return result
+
+
+    def build_depends(self,packages):
+        """Given a list of packages names Return a list of dependencies packages names to install"""
+        MAXDEPTH = 30
+        # roots : list of initial packages to avoid infinite loops
+        def dodepends(explored,packages,depth):
+            if depth[0]>MAXDEPTH:
+                raise Exception.create('Max depth in build dependencies reached, aborting')
+            depth[0] += 1
+            alldepends = []
+            # loop over all package names
+            for package in packages:
+                if not package in explored:
+                    entry = self.package_entry_from_db(package)
+                    # depends is a comma seperated list
+                    depends = [s.strip() for s in entry.Depends.split(',') if s.strip()<>'']
+                    for d in depends:
+                        alldepends.extend(dodepends(explored,depends))
+                        if not d in alldepends:
+                            alldepends.append(d)
+                    explored.append(package)
+            return alldepends
+
+        explored = []
+        depth =[0]
+        return dodepends(explored,packages,depth)
+
+    def package_entry_from_db(self,package,version=None):
+        result = Package_Entry()
+        if not version:
+            entries = self.query("""select * from wapt_repo where Package = ? order by version desc""",(package,))
+        else:
+            entries = self.query("""select * from wapt_repo where Package = ? and version=? order by version desc""",(package,version))
+        if not entries:
+            raise Exception('Package %s %s not found in local DB, please update' % (package,version))
+        for k,v in entries[0].iteritems():
+            setattr(result,k,v)
+        return result
 
     def query(self,query, args=(), one=False):
         """
@@ -412,6 +481,7 @@ class Package_Entry:
         self.Filename=''
         self.Size=''
         self.MD5sum=''
+        self.Depends=''
         self.repo_url=''
 
     def load_control_from_wapt(self,fname ):
@@ -441,9 +511,11 @@ Maintainer   : %(Maintainer)s
 Description  : %(Description)s
 Filename     : %(Filename)s
 Size         : %(Size)s
+Depends      : %(Depends)s
 MD5sum       : %(MD5sum)s
 """  % self.__dict__
         return val
+
     def __str__(self):
         return self.ascontrol().encode('utf8')
 

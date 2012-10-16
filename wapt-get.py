@@ -13,6 +13,7 @@ import datetime
 from common import WaptDB
 from common import Package_Entry
 from common import update_packages
+from common import pptable
 import dns.resolver
 import pprint
 import socket
@@ -30,15 +31,20 @@ action is either :
   install [packages]: install one or several packages
   update : update package database
   upgrade : upgrade installed packages
-  list : list installed packages
-  list-upgrade : list upgradable packages
-  search [keywords] : search packages whose description contains keywords
+
+  download [packages]: force download one or several packages
+  show [packages]: show attributes of one or more packages
+
+  list [keywords]: list installed packages
+  list-upgrade  : list upgradable packages
+  list-registry [keywords] : list installed software from Windows Registry
+  search [keywords] : search installable packages whose description contains keywords
 
   update-packages <directory> : rebuild a "Packages" file for http package repository
 
 """
 
-version = "0.5.4"
+version = "0.5.5"
 
 parser=OptionParser(usage=usage,version="%prog " + version)
 parser.add_option("-c","--config", dest="config", default='c:\\wapt\\wapt-get.ini', help="Config file full path (default: %default)")
@@ -189,7 +195,7 @@ class Wapt:
             self._waptdb = WaptDB(dbpath=self.dbpath)
         return self._waptdb
 
-    def uninstall_snapshot(self):
+    def registry_uninstall_snapshot(self):
         """return list of uninstall ID from registry"""
         result = []
         key = OpenKey(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
@@ -198,6 +204,41 @@ class Wapt:
             while True:
                 subkey = EnumKey(key, i)
                 result.append(subkey)
+                i += 1
+        except WindowsError:
+            # WindowsError: [Errno 259] No more data is available
+            pass
+        return result
+
+    def registry_installed_softwares(self,keywords=''):
+        """return list of uninstall ID from registry"""
+        def regget(key,name,default=None):
+            try:
+                return QueryValueEx(key,name)[0]
+            except WindowsError:
+                # WindowsError: [Errno 259] No more data is available
+                return default
+
+        def check_words(target,words):
+            mywords = target.lower()
+            result = not words or mywords
+            for w in words:
+                result = result and w in mywords
+            return result
+
+        result = []
+        key = OpenKey(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
+        try:
+            mykeywords = keywords.lower().split()
+            i = 0
+            while True:
+                subkey = EnumKey(key, i)
+                appkey = OpenKey(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s" % subkey)
+                displayname = regget(appkey,'DisplayName','')
+                displayversion = regget(appkey,'DisplayVersion','')
+                installdate = regget(appkey,'InstallDate','')
+                if displayname and check_words(subkey+' '+displayname+' ',mykeywords):
+                    result.append({'key':subkey,'DisplayName':displayname,'DisplayVersion':displayversion,'InstallDate':installdate})
                 i += 1
         except WindowsError:
             # WindowsError: [Errno 259] No more data is available
@@ -227,7 +268,7 @@ class Wapt:
     def install_wapt(self,fname):
         logger.info("Register start of install to local DB")
         status = 'INIT'
-        previous_uninstall = self.uninstall_snapshot()
+        previous_uninstall = self.registry_uninstall_snapshot()
         entry = Package_Entry()
         entry.load_control_from_wapt(fname)
         old_stdout = sys.stdout
@@ -255,7 +296,7 @@ class Wapt:
                 status = 'OK'
             else:
                 status = 'ERROR'
-            new_uninstall = self.uninstall_snapshot()
+            new_uninstall = self.registry_uninstall_snapshot()
             new_uninstall_key = [ k for k in new_uninstall if not k in previous_uninstall]
             logger.info('  uninstall keys : %s' % (new_uninstall_key,))
             self.waptdb.update_install_status(install_id,status,'',str(new_uninstall_key))
@@ -268,6 +309,36 @@ class Wapt:
             sys.stdout = old_stdout
 
     def install(self,package):
+        """Install a package and its dependencies"""
+        if os.path.isfile(package):
+            self.install_wapt(package)
+        else:
+            depends = self.waptdb.build_depends([package,])
+            allupgrades = self.waptdb.upgradeable().keys()
+            allinstalled = self.waptdb.installed().keys()
+            to_upgrade =  [ p for p in depends if p in allupgrades ]
+            additional_install = [ p for p in depends if not p in allinstalled ]
+            if depends:
+                print "Additional packages to install :\n   %s" % (','.join(depends),)
+            if to_upgrade:
+                print "Packages to upgrade :\n   %s" % (','.join(to_upgrade),)
+            for p in depends:
+                self.install_package(p)
+            self.install_package(package)
+
+    def download_package(self,package,version=None):
+        entry = self.waptdb.package_entry_from_db(package,version)
+        packagefilename = entry.Filename.strip('./')
+        download_url = entry.repo_url+'/'+packagefilename
+        fullpackagepath = os.path.join(self.packagecachedir,packagefilename)
+        logger.info('Downloading file URL: %s to %s' % (download_url,fullpackagepath))
+        try:
+            wget( download_url, self.packagecachedir)
+        except urllib2.HTTPError as e:
+            print "Error downloading package from http repository, please update... error : %s" % e
+            raise
+
+    def install_package(self,package):
         #sys.stdout.flush()
         if os.path.isfile(package):
             self.install_wapt(package)
@@ -286,19 +357,12 @@ class Wapt:
                 print "Package %s already installed at the latest version" % package
                 return True
             packagefilename = mydict['Filename'].strip('./')
-            download_url = mydict['repo_url'] + '/' + packagefilename
-            logger.debug('Download URL: %s' % download_url)
             fullpackagepath = os.path.join(self.packagecachedir,packagefilename)
-
             if os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath)>0:
                 print ("  using cached package file from " + fullpackagepath)
             else:
                 print ("  downloading package from " + mydict['repo_url'])
-                try:
-                    wget( download_url, self.packagecachedir)
-                except urllib2.HTTPError as e:
-                    print "Error downloading package from http repository, please update... error : %s" % e
-                    raise
+                self.download_package(package,mydict['Version'])
 
             self.install_wapt(fullpackagepath)
 
@@ -370,21 +434,21 @@ class Wapt:
             self.install(package['Package'])
 
     def list_upgrade(self):
-        q = self.waptdb.query("""\
-           select wapt_repo.Package,wapt_repo.Version from wapt_localstatus
+        q = self.waptdb.db.execute("""\
+           select wapt_repo.Package,wapt_localstatus.Version as Installed,wapt_repo.Version as Available from wapt_localstatus
             left join wapt_repo on wapt_repo.Package=wapt_localstatus.Package
             where wapt_localstatus.Version<wapt_repo.Version
            """)
         if not q:
             print "Nothing to upgrade"
             sys.exit(1)
-        print common.pp(q,None,1,None)
+        print pptable(q,None,1,None)
 
     def list_repo(self,search):
         print self.waptdb.list_repo(search)
 
-    def list_installed_packages(self):
-        print self.waptdb.list_installed_packages()
+    def list_installed_packages(self,search):
+        print self.waptdb.list_installed_packages(search)
 
 def main():
     if len(args) == 0:
@@ -430,6 +494,28 @@ def main():
         for packagename in args[1:]:
             mywapt.install(packagename)
 
+    elif action=='download':
+        if len(args)<2:
+            print "You must provide at least one package name to download"
+            sys.exit(1)
+        for packagename in args[1:]:
+            mywapt.download_package(packagename)
+
+    elif action=='show':
+        if len(args)<2:
+            print "You must provide at least one package name to show"
+            sys.exit(1)
+        for packagename in args[1:]:
+            entry = mywapt.waptdb.package_entry_from_db(packagename)
+            print entry
+
+
+    elif action=='list-registry':
+        print "%-70s%-20s" % ('Software','Version')
+        print '-'*70 + '-'*20
+        for p in mywapt.registry_installed_softwares(' '.join(args[1:])) :
+            print "%-70s%-20s" % (p['DisplayName'],p['DisplayVersion'])
+
     elif action=='remove':
         if len(args)<2:
             print "You must provide at least one package name to remove"
@@ -462,7 +548,7 @@ def main():
         mywapt.list_repo(args[1:])
 
     elif action=='list':
-        mywapt.list_installed_packages()
+        mywapt.list_installed_packages(args[1:])
     else:
         print 'Unknown action %s' % action
 
