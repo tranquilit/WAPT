@@ -60,7 +60,7 @@ logger = logging.getLogger('wapt-get')
 config_file =options.config
 loglevel = options.loglevel
 
-hdlr = logging.StreamHandler()
+hdlr = logging.StreamHandler(sys.stdout)
 hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
 logger.addHandler(hdlr)
 
@@ -277,6 +277,10 @@ class Wapt:
         install_id = self.waptdb.add_start_install(entry.Package ,entry.Version)
         # we setup a redirection of stdout to catch print output from install scripts
         sys.stdout = installoutput = LogInstallOutput(sys.stdout,self.waptdb,install_id)
+        hdlr = logging.StreamHandler(installoutput)
+        hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+        olf_hdlr = logger.handlers[0]
+        logger.handlers[0] = hdlr
         try:
             logger.info("Installing package " + fname)
             # ... inutile ?
@@ -353,6 +357,7 @@ class Wapt:
         finally:
             if 'setup' in dir():
                 del setup
+            logger.handlers[0] = olf_hdlr
             sys.stdout = old_stdout
 
     def showlog(self,package):
