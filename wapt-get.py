@@ -273,6 +273,7 @@ class Wapt:
         entry = Package_Entry()
         entry.load_control_from_wapt(fname)
         old_stdout = sys.stdout
+        install_id = None
         install_id = self.waptdb.add_start_install(entry.Package ,entry.Version)
         # we setup a redirection of stdout to catch print output from install scripts
         sys.stdout = installoutput = LogInstallOutput(sys.stdout,self.waptdb,install_id)
@@ -294,6 +295,7 @@ class Wapt:
                 raise Exception('%s is not a file nor a directory, aborting.' % fname)
 
             setup_filename = os.path.join( packagetempdir,'setup.py')
+            previous_cwd = os.getcwd()
             os.chdir(os.path.dirname(setup_filename))
 
             logger.info("  sourcing install file %s " % setup_filename )
@@ -302,6 +304,9 @@ class Wapt:
             required_params = []
             global setup
             setattr(setup,'basedir',os.path.dirname(setup_filename))
+            setattr(setup,'run',run)
+            setattr(setup,'run_notfatal',run_notfatal)
+
             if hasattr(setup,'required_params'):
                 required_params = setup.required_params
 
@@ -338,12 +343,29 @@ class Wapt:
 
             logger.info("Install script finished with status %s" % status)
             if istemporary:
+                os.chdir(previous_cwd)
                 logger.debug("Cleaning package tmp dir")
                 shutil.rmtree(packagetempdir)
+        except Exception,e:
+            if install_id:
+                self.waptdb.update_install_status(install_id,'ERROR',e.message)
+            raise
         finally:
             if 'setup' in dir():
                 del setup
             sys.stdout = old_stdout
+
+    def showlog(self,package):
+        q = self.waptdb.query("""\
+           select InstallStatus,InstallOutput from wapt_localstatus
+            where Package=?
+           """ , (package,) )
+        if not q:
+            print "ERROR : Package %s not found in local DB status" % package
+            return False
+
+        print "Last install log from %s: status : %s\n%s" % ( package, q[0]['InstallStatus'], q[0]['InstallOutput'])
+
 
     def install(self,apackages,force=False,params_dict = {}):
         """Install a list of packages and its dependencies"""
@@ -356,6 +378,8 @@ class Wapt:
                     print "Package %s already at the latest version (%s), skipping install." % (p,allinstalled[p]['Version'])
                 else:
                     packages.append(p)
+        else:
+            packages = apackages
         # get dependencies of all packages
         depends = self.waptdb.build_depends(packages)
         to_upgrade =  [ p for p in depends if p in allupgrades.keys() ]
@@ -403,15 +427,17 @@ class Wapt:
             where Package=?
            """ , (package,) )
         if not q:
-            print "ERROR : Package %s not found in local DB status" % package
-            return False
-        if not q:
             print "Package %s not installed, aborting" % package
             return True
 
         mydict = q[0]
         print "Removing package %s version %s from computer..." % (mydict['Package'],mydict['Version'])
-        if mydict['UninstallKey']:
+
+        if mydict['UninstallString']:
+            print subprocess.check_output(mydict['UninstallString'])
+            logger.info('Remove status record from local DB')
+            self.waptdb.remove_install_status(package)
+        elif mydict['UninstallKey']:
             if mydict['UninstallKey'][0] not in ['[','"',"'"]:
                 guids = mydict['UninstallKey']
             else:
@@ -430,7 +456,8 @@ class Wapt:
             logger.info('Remove status record from local DB')
             self.waptdb.remove_install_status(package)
         else:
-            raise Exception('  uninstall key not registered in local DB status, unable to remove')
+            self.waptdb.remove_install_status(package)
+            raise Exception('  uninstall key not registered in local DB status, unable to remove. Unregistering anyway. Please remove manually')
 
     def update(self,repourl=''):
         """Get Packages from http repo and update local package database"""
@@ -471,8 +498,7 @@ class Wapt:
         if not q:
             print "Nothing to upgrade"
             sys.exit(1)
-        for package in q:
-            self.install(package['Package'])
+        self.install([p['Package'] for p in q])
 
     def list_upgrade(self):
         q = self.waptdb.db.execute("""\
@@ -563,6 +589,14 @@ def main():
         print '-'*39+'-'*70 + '-'*20
         for p in mywapt.registry_installed_softwares(' '.join(args[1:])) :
             print "%-39s%-70s%-20s" % (p['key'],p['DisplayName'],p['DisplayVersion'])
+
+
+    elif action=='showlog':
+        if len(args)<2:
+            print "You must provide at least one package name"
+            sys.exit(1)
+        for packagename in args[1:]:
+            mywapt.showlog(packagename)
 
     elif action=='remove':
         if len(args)<2:

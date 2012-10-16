@@ -385,22 +385,32 @@ class WaptDB:
             self.db.commit()
         return cur.lastrowid
 
-    def list_installed_packages(self,words=[]):
+    def list_installed_packages(self,words=[],okonly=False):
         words = [ "%"+w.lower()+"%" for w in words ]
         search = ["lower(r.Description || l.Package) like ?"] *  len(words)
+        if okonly:
+            search.append('l.InstallStatus in ("OK","UNKNOWN")')
         cur = self.db.execute("""\
-              select l.Package,l.Version,l.InstallDate,r.Description from wapt_localstatus l
+              select l.Package,l.Version,l.InstallDate,l.InstallStatus,r.Description from wapt_localstatus l
               left join wapt_repo r on l.Package=r.Package
               where %s
               order by l.Package
             """ %  (" and ".join(search) or "l.Package is not null",), words )
-        return pptable(cur,None,1,None)
+
+        def cb(fieldname,value):
+            if fieldname=='InstallDate':
+                return value[0:16]
+            else:
+                return value
+
+        return pptable(cur,None,1,cb)
 
     def installed(self):
         """Return a dictionary of installed packages : keys=package names, values = package dict """
         q = self.query("""\
               select wapt_localstatus.*,wapt_repo.Filename from wapt_localstatus
                 left join wapt_repo on wapt_repo.Package=wapt_localstatus.Package
+              where wapt_localstatus.InstallStatus in ("OK","UNKNOWN")
               order by wapt_localstatus.Package
            """)
         result = {}
