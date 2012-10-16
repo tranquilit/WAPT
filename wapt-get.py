@@ -560,20 +560,20 @@ def main():
             sys.exit(1)
         params_dict = {}
         try:
-            params_dict = json.dumps(options.params)
+            params_dict = json.loads(options.params.replace("'",'"'))
         except:
             raise Exception('Install Parameters should be in json format')
 
         if os.path.isdir(args[1]) or os.path.isfile(args[1]):
-            mywapt.install_wapt(args[1],)
+            mywapt.install_wapt(args[1],params_dict = params_dict)
         else:
-            mywapt.install(args[1:],force = options.force)
+            mywapt.install(args[1:],force = options.force,params_dict = params_dict)
 
     elif action=='download':
         if len(args)<2:
             print "You must provide at least one package name to download"
             sys.exit(1)
-        mywapt.download_packages([(p,None) for p in args[1:]])
+        mywapt.download_packages([(p,None) for p in args[1:]],usecache = not options.force )
 
     elif action=='show':
         if len(args)<2:

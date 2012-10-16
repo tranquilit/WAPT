@@ -110,7 +110,7 @@ const
 
 implementation
 
-uses winsock,JwaTlHelp32,JCLSysInfo,shlobj,JCLShell,JCLStrings,JCLRegistry;
+uses winsock,JwaTlHelp32,JCLSysInfo,shlobj,JCLShell,JCLStrings,JCLRegistry,idHttp;
 
 function FindWaptRepo: String;
 begin
@@ -271,6 +271,37 @@ begin
     InternetCloseHandle(hFile);
   end;
 end;
+
+function http_post(action_url: string;Params:String): String;
+var
+  St:TMemoryStream;
+  url : String;
+  http:TIdHTTP;
+  paramsStream:TStringStream;
+begin
+  try
+    http := Nil;
+    paramsStream := Nil;
+    http:=TIdHTTP.Create(Nil);
+    paramsStream := TStringStream.Create(Params);
+    HTTP.Request.ContentType := 'application/x-www-form-urlencoded';
+
+    //http.AllowCookies := True;
+    //http.CookieManager := session_cookies;
+
+    if action_url[1]<>'/' then
+      action_url := '/'+action_url;
+    url := GetWaptServerURL+action_url;
+    result := http.Post(url,paramsStream);
+  finally
+    if paramsStream<>Nil then
+      paramsStream.Free;
+    http.DisconnectNotifyPeer;
+    if http<>Nil then
+      http.Free;
+  end;
+end;
+
 
 
 function GetSystemProductName: String;

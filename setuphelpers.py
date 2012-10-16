@@ -112,17 +112,17 @@ def filecopyto(filename,target):
 def run(cmd):
     """Runs the command and wait for it termination
     returns output, raise exc eption if exitcode is not null"""
-    logger.debug('Run "%s"' % cmd)
+    print 'Run "%s"' % cmd
     return subprocess.check_output(cmd,shell=True)
 
 def run_notfatal(cmd):
     """Runs the command and wait for it termination
     returns output, don't raise exception if exitcode is not null but return '' """
     try:
-        logger.debug('Run "%s"' % cmd)
+        print 'Run "%s"' % cmd
         return subprocess.check_output(cmd,shell=True)
     except Exception,e:
-        logger.warning('Warning : %s' % e.message)
+        print 'Warning : %s' % e.message
         return ''
 
 def shelllaunch(cmd):

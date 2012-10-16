@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, ExtCtrls, IdHTTPServer, DaemonApp,
-  IdCustomHTTPServer, IdContext, sqlite3conn, sqldb, db,Waptcommon;
+  IdCustomHTTPServer, IdContext, sqlite3conn, sqldb, db,Waptcommon,superobject;
 
 type
 
@@ -29,6 +29,8 @@ type
     procedure SetWaptDB(AValue: TWAPTDB);
     function RepoTableHook(Data, FN: Utf8String): Utf8String;
     function StatusTableHook(Data, FN: Utf8String): Utf8String;
+    function Sysinfo:ISUperObject;
+    function RegisterComputer:Boolen;
   public
     { public declarations }
     property WaptDB:TWAPTDB read GetWaptDB write SetWaptDB;
@@ -38,7 +40,7 @@ var
   WaptDaemon: TWaptDaemon;
 
 implementation
-uses superobject,JclSysInfo,IdSocketHandle,IdGlobal,process,StrUtils,idURI;
+uses JclSysInfo,IdSocketHandle,IdGlobal,process,StrUtils,idURI;
 
 //  ,waptwmi,  Variants,Windows,ComObj;
 
@@ -264,46 +266,12 @@ begin
     if ARequestInfo.URI='/update' then
       HttpRunTask(AContext,AResponseInfo,WaptgetPath+' update',ExitStatus)
     else
-    if ARequestInfo.URI='/sysinfo' then
+    if (ARequestInfo.URI='/sysinfo') or (ARequestInfo.URI='/register') then
     begin
+      if ARequestInfo.URI='/register' then
+        httpGetString();
       AResponseInfo.ContentType:='application/json';
-      so := TSuperObject.Create;
-      so.S['workgroupname'] := GetWorkGroupName;
-      so.S['localusername'] := TISGetUserName;
-      so.S['computername'] := TISGetComputerName;
-      so.S['systemmanufacturer'] := GetSystemManufacturer;
-      so.S['systemproductname'] := GetSystemProductName;
-      so.S['biosversion'] := GetBIOSVersion;
-      so.S['biosdate'] := DelphiDateTimeToISO8601Date(GetBIOSDate);
-      // redirect to a dummy file just to avoid a console creation... bug of route ?
-      //so['routingtable'] := SplitLines(RunTask('route print > dummy',ExitStatus));
-      //so['ipconfig'] := SplitLines(RunTask('ipconfig /all > dummy',ExitStatus));
-      ST := TStringList.Create;
-      try
-        GetIpAddresses(St);
-        so['ipaddresses'] := StringList2SuperObject(St);
-      finally
-        St.free;
-      end;
-      St := TStringList.Create;
-      try
-        GetMacAddresses('',St);
-        so['macaddresses'] := StringList2SuperObject(St);
-      finally
-        St.free;
-      end;
-
-      so.I['processorcount'] := ProcessorCount;
-      GetCpuInfo(CPUInfo);
-      so.S['cpuname'] := Trim(CPUInfo.CpuName);
-      so.I['physicalmemory'] := GetTotalPhysicalMemory;
-      so.I['virtualmemory'] := GetTotalVirtualMemory;
-      so.S['waptgetversion'] := ApplicationVersion(WaptgetPath);
-
-      // Pose probleme erreur OLE "syntaxe incorrecte"
-      //so['wmi_baseboardinfo'] := WMIBaseBoardInfo;
-
-      AResponseInfo.ContentText:=so.AsJson(True);
+      AResponseInfo.ContentText:= Sysinfo.AsJson(True);
     end
     else
     if (ARequestInfo.URI='/install') or (ARequestInfo.URI='/remove') or (ARequestInfo.URI='/showlog') then
@@ -386,7 +354,11 @@ end;
 
 procedure TWaptDaemon.Timer1Timer(Sender: TObject);
 begin
-
+  try
+    Timer1.Enabled:=False;
+  finally
+    Timer1.Enabled:=True;
+  end;
 end;
 
 function TWaptDaemon.RepoTableHook(Data, FN: Utf8String): Utf8String;
@@ -405,6 +377,51 @@ begin
     Result:='<a href="/showlog?package='+Data+'">'+Data+'</a>'
   else
     Result := Data;
+end;
+
+function TWaptDaemon.Sysinfo: ISUperObject;
+begin
+      so := TSuperObject.Create;
+      so.S['workgroupname'] := GetWorkGroupName;
+      so.S['localusername'] := TISGetUserName;
+      so.S['computername'] := TISGetComputerName;
+      so.S['systemmanufacturer'] := GetSystemManufacturer;
+      so.S['systemproductname'] := GetSystemProductName;
+      so.S['biosversion'] := GetBIOSVersion;
+      so.S['biosdate'] := DelphiDateTimeToISO8601Date(GetBIOSDate);
+      // redirect to a dummy file just to avoid a console creation... bug of route ?
+      //so['routingtable'] := SplitLines(RunTask('route print > dummy',ExitStatus));
+      //so['ipconfig'] := SplitLines(RunTask('ipconfig /all > dummy',ExitStatus));
+      ST := TStringList.Create;
+      try
+        GetIpAddresses(St);
+        so['ipaddresses'] := StringList2SuperObject(St);
+      finally
+        St.free;
+      end;
+      St := TStringList.Create;
+      try
+        GetMacAddresses('',St);
+        so['macaddresses'] := StringList2SuperObject(St);
+      finally
+        St.free;
+      end;
+
+      so.I['processorcount'] := ProcessorCount;
+      GetCpuInfo(CPUInfo);
+      so.S['cpuname'] := Trim(CPUInfo.CpuName);
+      so.I['physicalmemory'] := GetTotalPhysicalMemory;
+      so.I['virtualmemory'] := GetTotalVirtualMemory;
+      so.S['waptgetversion'] := ApplicationVersion(WaptgetPath);
+
+      // Pose probleme erreur OLE "syntaxe incorrecte"
+      //so['wmi_baseboardinfo'] := WMIBaseBoardInfo;
+
+end;
+
+function TWaptDaemon.RegisterComputer: Boolen;
+begin
+
 end;
 
 
