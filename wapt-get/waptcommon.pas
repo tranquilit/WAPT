@@ -723,6 +723,17 @@ end;
 
 function TISGetComputerName : Utf8String;
 var
+  buffer: array[0..255] of char;
+  size: dword;
+begin
+  size := 256;
+  if GetComputerName(buffer, size) then
+    Result := buffer
+  else
+    Result := ''
+end;
+
+{var
 	 pcComputer : PWChar;
 	 dwCSize    : DWORD;
 begin
@@ -735,6 +746,8 @@ begin
 			FreeMem( pcComputer ); // now free the memory allocated for the string
 	 end;
 end;
+}
+
 
  type
 	PFixedFileInfo = ^TFixedFileInfo;

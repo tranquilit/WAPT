@@ -30,7 +30,7 @@ type
     function RepoTableHook(Data, FN: Utf8String): Utf8String;
     function StatusTableHook(Data, FN: Utf8String): Utf8String;
     function Sysinfo:ISUperObject;
-    function RegisterComputer:Boolen;
+    function RegisterComputer:Boolean;
   public
     { public declarations }
     property WaptDB:TWAPTDB read GetWaptDB write SetWaptDB;
@@ -268,8 +268,8 @@ begin
     else
     if (ARequestInfo.URI='/sysinfo') or (ARequestInfo.URI='/register') then
     begin
-      if ARequestInfo.URI='/register' then
-        httpGetString();
+      {if ARequestInfo.URI='/register' then
+        httpGetString();}
       AResponseInfo.ContentType:='application/json';
       AResponseInfo.ContentText:= Sysinfo.AsJson(True);
     end
@@ -318,23 +318,25 @@ begin
         St.free;
       end;
       GetCpuInfo(CPUInfo);
+      //AResponseInfo.ContentText:='tt';
       AResponseInfo.ContentText:= (
-        '<h1>System status</h1>'+
+        '<h1>'+TISGetComputerName+' - System status</h1>'+
         'WAPT Server URL: '+GetWaptServerURL+'<br>'+
         'wapt-get version: '+ApplicationVersion(ExtractFilePath(ParamStr(0))+'\wapt-get.exe')+'<br>'+
-        'User : '+TISGetUserName+'<br>'+
+        //'User : '+TISGetUserName+'<br>'+
         'Machine: '+TISGetComputerName+'<br>'+
         'Domain: '+ GetWorkGroupName+'<br>'+
         'IP Addresses:'+IPS+'<br>'+
         'System: '+GetWindowsVersionString+' '+GetWindowsEditionString+' '+GetWindowsServicePackVersionString+'<br>'+
         'RAM: '+FormatFloat('###0 MB',GetTotalPhysicalMemory/1024/1024)+'<br>'+
         'CPU: '+CPUInfo.CpuName+'<br>'+
-        'Memory Load: '+IntToStr(GetMemoryLoad)+'%'+'<br>'+
-        '<h1>Query info</h1>'+
+        'Memory Load: '+IntToStr(GetMemoryLoad)+'%'+'<br>'
+        {'<h1>Query info</h1>'+
         'URI:'+ARequestInfo.URI+'<br>'+
         'Document:'+ARequestInfo.Document+'<br>'+
         'Params:'+ARequestInfo.Params.Text+'<br>'+
-        'AuthUsername:'+ARequestInfo.AuthUsername+'<br>');
+        'AuthUsername:'+ARequestInfo.AuthUsername+'<br>'}
+        );
     end;
     if AResponseInfo.ContentType='text/html' then
     begin
@@ -380,6 +382,11 @@ begin
 end;
 
 function TWaptDaemon.Sysinfo: ISUperObject;
+var
+      so:TSuperObject;
+      CPUInfo:TCpuInfo;
+      Cmd,IPS:String;
+      st : TStringList;
 begin
       so := TSuperObject.Create;
       so.S['workgroupname'] := GetWorkGroupName;
@@ -416,10 +423,10 @@ begin
 
       // Pose probleme erreur OLE "syntaxe incorrecte"
       //so['wmi_baseboardinfo'] := WMIBaseBoardInfo;
-
+  result := so;
 end;
 
-function TWaptDaemon.RegisterComputer: Boolen;
+function TWaptDaemon.RegisterComputer: Boolean;
 begin
 
 end;
