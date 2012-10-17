@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import os
 import zipfile
 import glob
@@ -24,24 +25,7 @@ def main():
         print "%s does not exists " % wapt_path
         sys.exit(1)
 
-    waptlist = glob.glob(os.path.abspath(wapt_path) + '/*.wapt')
-
-
-    packagefilename = tempfile.mkstemp(prefix="wapt-packages-")[1]
-    packagefile = codecs.open(packagefilename,"wb",encoding='UTF-8')
-    for fname in waptlist:
-        print "Processing %s" % fname
-        entry = common.Package_Entry()
-        entry.load_control_from_wapt(fname)
-        packagefile.write(entry.ascontrol())
-        packagefile.write('\n')
-
-    packagefile.close()
-    myzipfile = zipfile.ZipFile(os.path.join(wapt_path,"Packages"), "w")
-    myzipfile.write(filename=packagefilename,arcname= "Packages")
-    myzipfile.close()
-    os.remove(packagefilename)
-
+    common.update_packages(wapt_path)
 
 if __name__ == "__main__":
     main()
