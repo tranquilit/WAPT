@@ -266,6 +266,24 @@ begin
     if ARequestInfo.URI='/update' then
       HttpRunTask(AContext,AResponseInfo,WaptgetPath+' update',ExitStatus)
     else
+    if ARequestInfo.URI='/enable' then
+      Timer1.Enabled:=True
+    else
+    if ARequestInfo.URI='/check_new' then
+    begin
+      AResponseInfo.ContentType:='application/json';
+      AResponseInfo.ContentText:= ;
+    end
+    else
+    if ARequestInfo.URI='/check_new' then
+    begin
+      AResponseInfo.ContentType:='application/json';
+      AResponseInfo.ContentText:= ;
+    end
+    else
+    if ARequestInfo.URI='/disable' then
+      Timer1.Enabled:=False
+    else
     if (ARequestInfo.URI='/sysinfo') or (ARequestInfo.URI='/register') then
     begin
       {if ARequestInfo.URI='/register' then
@@ -330,12 +348,15 @@ begin
         'System: '+GetWindowsVersionString+' '+GetWindowsEditionString+' '+GetWindowsServicePackVersionString+'<br>'+
         'RAM: '+FormatFloat('###0 MB',GetTotalPhysicalMemory/1024/1024)+'<br>'+
         'CPU: '+CPUInfo.CpuName+'<br>'+
-        'Memory Load: '+IntToStr(GetMemoryLoad)+'%'+'<br>'
-        {'<h1>Query info</h1>'+
+        'Memory Load: '+IntToStr(GetMemoryLoad)+'%'+'<br>'+
+        '<h1>Query info</h1>'+
         'URI:'+ARequestInfo.URI+'<br>'+
         'Document:'+ARequestInfo.Document+'<br>'+
         'Params:'+ARequestInfo.Params.Text+'<br>'+
-        'AuthUsername:'+ARequestInfo.AuthUsername+'<br>'}
+        'AuthUsername:'+ARequestInfo.AuthUsername+'<br>'+
+        '<h1>Service info</h1>'+
+        'Check every:'+FormatFloat('#.##',Timer1.Interval/1000/60)+' min <br>'+
+        'Active:'+BoolToStr(Timer1.Enabled,'Yes','No')+'<br>'+
         );
     end;
     if AResponseInfo.ContentType='text/html' then

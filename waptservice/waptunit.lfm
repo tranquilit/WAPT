@@ -14,7 +14,7 @@ object WaptDaemon: TWaptDaemon
     top = 20
   end
   object Timer1: TTimer
-    Interval = 10000
+    Interval = 60000
     OnTimer = Timer1Timer
     left = 40
     top = 88

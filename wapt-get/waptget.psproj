@@ -237,8 +237,34 @@ CaptureOutput=FALSE
 ConsoleHidden=FALSE
 WaitForTerminate=FALSE
 
+[Project\ChildNodes\Node1\ChildNodes\Node8]
+ClassName=TProjectRunConfiguationNode
+Name=install off licence
+
+[Project\ChildNodes\Node1\ChildNodes\Node8\RunConfig]
+ScriptName=C:\tranquilit\wapt\wapt-get.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=-p "{'licence':'WGHX9MR8YFM9GCFB446YHX6GY','company':'TIS'}" install C:\tranquilit\tis-msoffice2003-wapt
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node8\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+ShortCut=0
+MessagesFormat=$[FileName] $[LineNumber]
+CaptureOutput=FALSE
+ConsoleHidden=FALSE
+WaitForTerminate=FALSE
+
 [Project\ChildNodes\Node1\ChildNodes]
-Count=8
+Count=9
 
 [Project\ChildNodes]
 Count=2

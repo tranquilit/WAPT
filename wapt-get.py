@@ -105,8 +105,11 @@ def find_wapt_server(configparser):
     logger.debug('Default DNS domain: %s' % dnsdomain)
 
     url = configparser.get('global','repo_url')
-    if url and tryurl(url):
-        return url
+    if url:
+        if tryurl(url):
+            return url
+        else:
+            logger.warning('URL defined in ini file %s is not available' % url)
     if not url:
         logger.debug('No url defined in ini file')
     if dnsdomain and dnsdomain <> '.':
@@ -342,14 +345,15 @@ class Wapt:
             else:
                 uninstallstring = None
 
-            self.waptdb.update_install_status(install_id,status,'',str(new_uninstall_key),uninstallstring)
-            # (entry.Package,entry.Version,status,json.dumps({'output':installoutput.output,'exitstatus':exitstatus}))
-
             logger.info("Install script finished with status %s" % status)
             if istemporary:
                 os.chdir(previous_cwd)
                 logger.debug("Cleaning package tmp dir")
                 shutil.rmtree(packagetempdir)
+
+            self.waptdb.update_install_status(install_id,status,'',str(new_uninstall_key),uninstallstring)
+            # (entry.Package,entry.Version,status,json.dumps({'output':installoutput.output,'exitstatus':exitstatus}))
+
         except Exception,e:
             if install_id:
                 self.waptdb.update_install_status(install_id,'ERROR',e.message)
@@ -478,9 +482,9 @@ class Wapt:
             for line in packageListFile:
                 # new package
                 if line.strip()=='':
+                    print package.Package
                     logger.debug(package)
                     package.repo_url = repourl
-                    print package.Package
                     self.waptdb.add_package_entry(package)
                     package = Package_Entry()
                 # add ettribute to current package
@@ -490,7 +494,9 @@ class Wapt:
             # last one
             if package.Package:
                 print package.Package
+                package.repo_url = repourl
                 self.waptdb.add_package_entry(package)
+                logger.debug(package)
         finally:
             self.waptdb.db.commit()
 
