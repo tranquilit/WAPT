@@ -44,7 +44,7 @@ action is either :
 
 """
 
-version = "0.5.5"
+version = "0.5.6"
 
 parser=OptionParser(usage=usage,version="%prog " + version)
 parser.add_option("-c","--config", dest="config", default='c:\\wapt\\wapt-get.ini', help="Config file full path (default: %default)")
@@ -177,7 +177,11 @@ class LogInstallOutput(object):
                 except:
                     pass
             self.output.append(txt)
-            self.waptdb.update_install_status(self.rowid,'RUNNING',txt+'\n' if not txt == None else None)
+            if txt and txt[-1]<>'\n':
+                txtdb = txt+'\n'
+            else:
+                txtdb = txt
+            self.waptdb.update_install_status(self.rowid,'RUNNING',txtdb if not txtdb == None else None)
 
     def __getattrib__(self, name):
         if hasattr(self.console,'__getattrib__'):
@@ -236,8 +240,8 @@ class Wapt:
             mykeywords = keywords.lower().split()
             i = 0
             while True:
-                subkey = EnumKey(key, i)
-                appkey = OpenKey(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s" % subkey)
+                subkey = EnumKey(key, i).decode('iso8859')
+                appkey = OpenKey(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s" % subkey.encode('iso8859'))
                 displayname = regget(appkey,'DisplayName','')
                 displayversion = regget(appkey,'DisplayVersion','')
                 installdate = regget(appkey,'InstallDate','')
@@ -276,13 +280,14 @@ class Wapt:
         entry = Package_Entry()
         entry.load_control_from_wapt(fname)
         old_stdout = sys.stdout
+        old_stderr = sys.stderr
         install_id = None
         install_id = self.waptdb.add_start_install(entry.Package ,entry.Version)
         # we setup a redirection of stdout to catch print output from install scripts
-        sys.stdout = installoutput = LogInstallOutput(sys.stdout,self.waptdb,install_id)
+        sys.stderr = sys.stdout = installoutput = LogInstallOutput(sys.stdout,self.waptdb,install_id)
         hdlr = logging.StreamHandler(installoutput)
         hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
-        olf_hdlr = logger.handlers[0]
+        old_hdlr = logger.handlers[0]
         logger.handlers[0] = hdlr
         try:
             logger.info("Installing package " + fname)
@@ -324,8 +329,12 @@ class Wapt:
             # set params dictionary
             setattr(setup,'params',params_dict)
             if not self.dry_run:
-                logger.info("  executing install script")
-                exitstatus = setup.install()
+                try:
+                    logger.info("  executing install script")
+                    exitstatus = setup.install()
+                except Exception,e:
+                    logger.critical('Fatal error in install script: %s' % e)
+                    raise
 
             if exitstatus is None:
                 status = 'UNKNOWN'
@@ -356,13 +365,14 @@ class Wapt:
 
         except Exception,e:
             if install_id:
-                self.waptdb.update_install_status(install_id,'ERROR',e.message)
+                self.waptdb.update_install_status(install_id,'ERROR',"%s" % e)
             raise
         finally:
             if 'setup' in dir():
                 del setup
-            logger.handlers[0] = olf_hdlr
+            logger.handlers[0] = old_hdlr
             sys.stdout = old_stdout
+            sys.stderr = old_stderr
 
     def showlog(self,package):
         q = self.waptdb.query("""\
@@ -599,7 +609,7 @@ def main():
         print "%-39s%-70s%-20s" % ('UninstallKey','Software','Version')
         print '-'*39+'-'*70 + '-'*20
         for p in mywapt.registry_installed_softwares(' '.join(args[1:])) :
-            print "%-39s%-70s%-20s" % (p['key'],p['DisplayName'],p['DisplayVersion'])
+            print u"%-39s%-70s%-20s" % (p['key'],p['DisplayName'],p['DisplayVersion'])
 
 
     elif action=='showlog':
@@ -648,4 +658,3 @@ def main():
 if __name__ == "__main__":
     logger.debug('Python path %s' % sys.path)
     main()
-

@@ -122,7 +122,7 @@ def run_notfatal(cmd):
         print 'Run "%s"' % cmd
         return subprocess.check_output(cmd,shell=True)
     except Exception,e:
-        print 'Warning : %s' % e.message
+        print 'Warning : %s' % e
         return ''
 
 def shelllaunch(cmd):

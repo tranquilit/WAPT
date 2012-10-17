@@ -553,7 +553,7 @@ def update_packages(adir):
             previous_packages = codecs.decode(zipfile.ZipFile(packages_fname).read(name='Packages'),'utf-8')
             previous_packages_mtime = os.path.getmtime(packages_fname)
         except Exception,e:
-            print 'error reading old Packages file. Reset... (%s)' % e.message
+            print 'error reading old Packages file. Reset... (%s)' % e
 
     old_entries = {}
     # we get old list to not recompute MD5 if filename has not changed
