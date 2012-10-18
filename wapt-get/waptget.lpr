@@ -18,7 +18,6 @@ type
   pwaptget = class(TCustomApplication)
   private
     FWaptDB: TWAPTDB;
-    FWaptServerURL: String;
     function GetWaptDB: TWAPTDB;
     procedure SetWaptDB(AValue: TWAPTDB);
   protected
@@ -62,8 +61,6 @@ var
   InstallPath,downloadPath: Utf8String;
   MainModule : TStringList;
   logleveloption : String;
-  i:integer;
-  so,test:ISuperObject;
 
   procedure SetFlag( AFlag: PInt; AValue : Boolean );
   begin
@@ -211,7 +208,6 @@ end;
 procedure pwaptget.Setup(DownloadPath,InstallPath:Utf8String);
 var
   ZipFilePath,LibsURL:Utf8String;
-  ExitStatus: Integer;
 
 begin
 	if not UserInGroup(DOMAIN_ALIAS_RID_ADMINS) then

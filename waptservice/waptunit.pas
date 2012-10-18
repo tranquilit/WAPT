@@ -80,13 +80,12 @@ var
 begin
     Result := '';
     HttpStartChunkedResponse(AResponseInfo,'text/html','utf-8');
-    HttpWriteChunk(AHttpContext,'--- Start '+cmd+' at '+DelphiDateTimeToISO8601Date(Now)+'<br>',Nil);
     AProcess := TProcess.Create(nil);
     try
       AProcess.CommandLine := cmd;
       if WorkingDir='' then
         AProcess.CurrentDirectory := ExtractFilePath(cmd);
-      AProcess.Options := [poUsePipes];
+      AProcess.Options := [poUsePipes,poNoConsole];
       AProcess.Execute;
       StartedOK:=True;
       StartTime:= Now;
@@ -116,7 +115,6 @@ begin
       end;
       ExitStatus:= AProcess.ExitStatus;
     finally
-      HttpWriteChunk(AHttpContext,'--- End '+DelphiDateTimeToISO8601Date(Now)+'<br>',Nil);
       HttpWriteChunk(AHttpContext,'');
       AProcess.Free;
     end;
@@ -272,13 +270,13 @@ begin
     if ARequestInfo.URI='/check_new' then
     begin
       AResponseInfo.ContentType:='application/json';
-      AResponseInfo.ContentText:= ;
+      AResponseInfo.ContentText:= '';
     end
     else
     if ARequestInfo.URI='/check_new' then
     begin
       AResponseInfo.ContentType:='application/json';
-      AResponseInfo.ContentText:= ;
+      AResponseInfo.ContentText:= '';
     end
     else
     if ARequestInfo.URI='/disable' then
@@ -356,7 +354,7 @@ begin
         'AuthUsername:'+ARequestInfo.AuthUsername+'<br>'+
         '<h1>Service info</h1>'+
         'Check every:'+FormatFloat('#.##',Timer1.Interval/1000/60)+' min <br>'+
-        'Active:'+BoolToStr(Timer1.Enabled,'Yes','No')+'<br>'+
+        'Active:'+BoolToStr(Timer1.Enabled,'Yes','No')+'<br>'
         );
     end;
     if AResponseInfo.ContentType='text/html' then

@@ -33,6 +33,8 @@ import glob
 import codecs
 import sqlite3
 import json
+import cStringIO
+import urllib2
 
 def datetime2isodate(adatetime = datetime.datetime.now()):
     assert(isinstance(adatetime,datetime.datetime))
@@ -367,7 +369,7 @@ class WaptDB:
                     where rowid = ?
                 """,(
                      installstatus,
-                     installoutput,
+                     installoutput.encode('utf8'),
                      uninstallkey,
                      uninstallstring,
                      rowid,
@@ -429,6 +431,43 @@ class WaptDB:
         for p in q:
             result[p['Package']]= p
         return result
+
+    def update_packages_list(self,repourl):
+        """Get Packages from http repo and update local package database"""
+        try:
+            packagesfn = repourl + '/Packages'
+            self.logger.debug('read remote Packages zip file %s' % packagesfn)
+            packageListFile = codecs.decode(zipfile.ZipFile(
+                  cStringIO.StringIO( urllib2.urlopen(packagesfn).read())
+                ).read(name='Packages'),'UTF-8').splitlines()
+
+            self.logger.debug('Purge packages table')
+            self.db.execute('delete from wapt_repo')
+            package = Package_Entry()
+            for line in packageListFile:
+                # new package
+                if line.strip()=='':
+                    print package.Package
+                    self.logger.debug(package)
+                    package.repo_url = repourl
+                    self.add_package_entry(package)
+                    package = Package_Entry()
+                # add ettribute to current package
+                else:
+                    splitline= line.split(':')
+                    setattr(package,splitline[0].strip(),splitline[1].strip())
+            # last one
+            if package.Package:
+                print package.Package
+                package.repo_url = repourl
+                self.add_package_entry(package)
+                self.logger.debug(package)
+            self.logger.debug('Commit wapt_repo updates')
+            self.db.commit()
+        except:
+            self.logger.debug('rollback delete table')
+            self.db.rollback()
+            raise
 
     def build_depends(self,packages):
         """Given a list of packages names Return a list of dependencies packages names to install"""
@@ -504,7 +543,7 @@ class Package_Entry:
         self.repo_url=''
 
     def load_control_from_wapt(self,fname ):
-        """Load package attributes from the control file included in WAPT zipfile fname"""
+        """Load package attributes from the control file (utf8 encoded) included in WAPT zipfile fname"""
         if os.path.isfile(fname):
             myzip = zipfile.ZipFile(fname,'r')
             control = myzip.open('WAPT/control')
@@ -540,10 +579,10 @@ MD5sum       : %(MD5sum)s
         return val
 
     def __str__(self):
-        return self.ascontrol().encode('utf8')
+        return self.ascontrol()
 
 def update_packages(adir):
-    """Scan adir directory for WAPT packages and build a Packages zip file with control data and MD5 hash"""
+    """Scan adir directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash"""
     packages_fname = os.path.join(adir,'Packages')
     previous_packages=''
     previous_packages_mtime = 0

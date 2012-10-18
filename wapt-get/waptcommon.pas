@@ -1018,6 +1018,7 @@ begin
   try
     db.GetTableNames(lst,False);
     if lst.IndexOf('wapt_repo')<0 then
+    begin
       db.ExecuteDirect('CREATE TABLE wapt_repo ('+
         'id INTEGER PRIMARY KEY AUTOINCREMENT,'+
         'Package VARCHAR(255),'+
@@ -1032,10 +1033,13 @@ begin
         'MD5sum VARCHAR(255),'+
         'Depends VARCHAR(800),'+
         'repo_url VARCHAR(255)'+
-        ');'+
-        'create index idx_package_name on wapt_repo(Package);');
+        ')'
+        );
+      db.ExecuteDirect('create index idx_repo_package on wapt_repo(Package,Version)');
+    end;
 
     if lst.IndexOf('wapt_localstatus')<0 then
+    begin
       db.ExecuteDirect('CREATE TABLE wapt_localstatus ('+
         'id INTEGER PRIMARY KEY AUTOINCREMENT,'+
         'Package VARCHAR(255),'+
@@ -1046,9 +1050,9 @@ begin
         'InstallParams VARCHAR(800),'+
         'UninstallString varchar(255),'+
         'UninstallKey varchar(255)'+
-        ');'+
-        'create index idx_localstatus_name on wapt_localstatus(Package);');
-
+        ')');
+        db.ExecuteDirect('create index idx_localstatus_package on wapt_localstatus(Package,Version)');
+    end;
   finally
     if sqltrans.Active then
       sqltrans.Commit;
@@ -1141,7 +1145,6 @@ function TWAPTDB.dumpdb: ISuperObject;
 var
   tables:TStringList;
   i:integer;
-  query : TSQLQuery;
 begin
   Result := TSuperObject.Create;
   try

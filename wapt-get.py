@@ -3,7 +3,6 @@
 import sys
 import os
 import zipfile
-import cStringIO
 import urllib2
 import shutil
 from iniparse import ConfigParser
@@ -20,6 +19,7 @@ import socket
 import codecs
 from setuphelpers import *
 import json
+import glob
 from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,QueryInfoKey
 
 usage="""\
@@ -39,6 +39,7 @@ action is either :
   list-upgrade  : list upgradable packages
   list-registry [keywords] : list installed software from Windows Registry
   search [keywords] : search installable packages whose description contains keywords
+  cleanup : remove all WAPT cached files from local drive
 
   update-packages <directory> : rebuild a "Packages" file for http package repository
 
@@ -365,7 +366,17 @@ class Wapt:
 
         except Exception,e:
             if install_id:
-                self.waptdb.update_install_status(install_id,'ERROR',"%s" % e)
+                try:
+                    try:
+                        uerror = repr(e).decode('iso8859')
+                    except:
+                        try:
+                            uerror = repr(e).decode('utf8')
+                        except:
+                            uerror = repr(e)
+                    self.waptdb.update_install_status(install_id,'ERROR',uerror)
+                except Exception,e2:
+                    logger.critical(e2)
             raise
         finally:
             if 'setup' in dir():
@@ -373,6 +384,22 @@ class Wapt:
             logger.handlers[0] = old_hdlr
             sys.stdout = old_stdout
             sys.stderr = old_stderr
+
+    def get_sources(self,package):
+        """Download sources of package (if referenced in package as a https svn
+           in the current directory"""
+        entry = self.waptdb.package_entry_from_db(package)
+        if not entry.Sources:
+            raise Exception('No source defined in package control file')
+        if "PROGRAMW6432" in os.environ:
+            svncmd = os.path.join(environ['PROGRAMW6432'],'TortoiseSVN','svn.exe')
+        else:
+            svncmd = os.path.join(environ['PROGRAMFILES'],'TortoiseSVN','svn.exe')
+        if not os.path.isfile(svncmd):
+            raise Exception('svn.exe command not available, please install TortoiseSVN with commandline tools')
+        co_dir = entry.source.replace('/trunk','').replace('/tags','').replace('/branch','')
+        print subprocess.check_output('svn co %s %s' % (svncmd,codir))
+
 
     def showlog(self,package):
         q = self.waptdb.query("""\
@@ -385,6 +412,14 @@ class Wapt:
 
         print "Last install log from %s: status : %s\n%s" % ( package, q[0]['InstallStatus'], q[0]['InstallOutput'])
 
+    def cleanup(self):
+        """Remove cached WAPT file from local disk"""
+        logger.info('Cleaning up WAPT cache directory')
+        cachepath = 'c:/wapt/cache'
+        for f in glob.glob(os.path.join(cachepath,'*.wapt')):
+            if os.path.isfile(f):
+                logger.debug('Removing %s' % f)
+                os.remove(f)
 
     def install(self,apackages,force=False,params_dict = {}):
         """Install a list of packages and its dependencies"""
@@ -436,7 +471,9 @@ class Wapt:
                 print ("  downloading package from %s" % download_url)
                 try:
                     wget( download_url, self.packagecachedir)
-                except urllib2.HTTPError as e:
+                except BaseException as e:
+                    if os.path.isfile(fullpackagepath):
+                        os.remove(fullpackagepath)
                     print "Error downloading package from http repository, please update... error : %s" % e
                     raise
 
@@ -478,38 +515,6 @@ class Wapt:
             self.waptdb.remove_install_status(package)
             raise Exception('  uninstall key not registered in local DB status, unable to remove. Unregistering anyway. Please remove manually')
 
-    def update(self,repourl=''):
-        """Get Packages from http repo and update local package database"""
-        try:
-            if not repourl:
-                repourl = self.wapt_repourl
-            logger.debug('Temporary directory: %s' % tempdir)
-            packageListFile = codecs.decode(zipfile.ZipFile(
-                  cStringIO.StringIO( urllib2.urlopen( repourl + '/Packages').read())
-                ).read(name='Packages'),'UTF-8').splitlines()
-
-            package = Package_Entry()
-            for line in packageListFile:
-                # new package
-                if line.strip()=='':
-                    print package.Package
-                    logger.debug(package)
-                    package.repo_url = repourl
-                    self.waptdb.add_package_entry(package)
-                    package = Package_Entry()
-                # add ettribute to current package
-                else:
-                    splitline= line.split(':')
-                    setattr(package,splitline[0].strip(),splitline[1].strip())
-            # last one
-            if package.Package:
-                print package.Package
-                package.repo_url = repourl
-                self.waptdb.add_package_entry(package)
-                logger.debug(package)
-        finally:
-            self.waptdb.db.commit()
-
     def upgrade(self):
         q = self.waptdb.query("""\
            select wapt_repo.Package,wapt_repo.Version from wapt_localstatus
@@ -518,8 +523,8 @@ class Wapt:
            """)
         if not q:
             print "Nothing to upgrade"
-            sys.exit(1)
-        self.install([p['Package'] for p in q])
+        else:
+            self.install([p['Package'] for p in q])
 
     def list_upgrade(self):
         q = self.waptdb.db.execute("""\
@@ -529,8 +534,8 @@ class Wapt:
            """)
         if not q:
             print "Nothing to upgrade"
-            sys.exit(1)
-        print pptable(q,None,1,None)
+        else:
+            print pptable(q,None,1,None)
 
     def list_repo(self,search):
         print self.waptdb.list_repo(search)
@@ -575,85 +580,96 @@ def main():
     mywapt.wapt_repourl = wapt_repourl
     mywapt.dry_run = options.dry_run
 
-    if action=='install':
-        if len(args)<2:
-            print "You must provide at least one package name"
-            sys.exit(1)
-        params_dict = {}
-        try:
-            params_dict = json.loads(options.params.replace("'",'"'))
-        except:
-            raise Exception('Install Parameters should be in json format')
+    try:
+        if action=='install':
+            if len(args)<2:
+                print "You must provide at least one package name"
+                sys.exit(1)
+            params_dict = {}
+            try:
+                params_dict = json.loads(options.params.replace("'",'"'))
+            except:
+                raise Exception('Install Parameters should be in json format')
 
-        if os.path.isdir(args[1]) or os.path.isfile(args[1]):
-            mywapt.install_wapt(args[1],params_dict = params_dict)
+            if os.path.isdir(args[1]) or os.path.isfile(args[1]):
+                mywapt.install_wapt(args[1],params_dict = params_dict)
+            else:
+                mywapt.install(args[1:],force = options.force,params_dict = params_dict)
+
+        elif action=='download':
+            if len(args)<2:
+                print "You must provide at least one package name to download"
+                sys.exit(1)
+            mywapt.download_packages([(p,None) for p in args[1:]],usecache = not options.force )
+
+        elif action=='show':
+            if len(args)<2:
+                print "You must provide at least one package name to show"
+                sys.exit(1)
+            for packagename in args[1:]:
+                entry = mywapt.waptdb.package_entry_from_db(packagename)
+                print entry
+
+
+        elif action=='list-registry':
+            print "%-39s%-70s%-20s" % ('UninstallKey','Software','Version')
+            print '-'*39+'-'*70 + '-'*20
+            for p in mywapt.registry_installed_softwares(' '.join(args[1:])) :
+                print u"%-39s%-70s%-20s" % (p['key'],p['DisplayName'],p['DisplayVersion'])
+
+
+        elif action=='showlog':
+            if len(args)<2:
+                print "You must provide at least one package name"
+                sys.exit(1)
+            for packagename in args[1:]:
+                mywapt.showlog(packagename)
+
+        elif action=='remove':
+            if len(args)<2:
+                print "You must provide at least one package name to remove"
+                sys.exit(1)
+            for packagename in args[1:]:
+                mywapt.remove(packagename)
+
+        elif action=='update':
+            mywapt.waptdb.update_packages_list(mywapt.wapt_repourl)
+
+        elif action=='upgrade':
+            mywapt.upgrade()
+            sys.exit(0)
+
+        elif action=='list-upgrade':
+            mywapt.list_upgrade()
+
+        elif action=='update-packages':
+            if len(args)<2:
+                print "You must provide the directory"
+                sys.exit(1)
+            update_packages(args[1])
+
+        elif action=='source':
+            if len(args)<2:
+                print "You must provide the package name"
+                sys.exit(1)
+            mywapt.get_sources(args[1])
+
+        elif action=='search':
+            mywapt.list_repo(args[1:])
+
+        elif action=='cleanup':
+            mywapt.cleanup()
+
+        elif action=='list':
+            mywapt.list_installed_packages(args[1:])
         else:
-            mywapt.install(args[1:],force = options.force,params_dict = params_dict)
-
-    elif action=='download':
-        if len(args)<2:
-            print "You must provide at least one package name to download"
+            print 'Unknown action %s' % action
             sys.exit(1)
-        mywapt.download_packages([(p,None) for p in args[1:]],usecache = not options.force )
-
-    elif action=='show':
-        if len(args)<2:
-            print "You must provide at least one package name to show"
-            sys.exit(1)
-        for packagename in args[1:]:
-            entry = mywapt.waptdb.package_entry_from_db(packagename)
-            print entry
-
-
-    elif action=='list-registry':
-        print "%-39s%-70s%-20s" % ('UninstallKey','Software','Version')
-        print '-'*39+'-'*70 + '-'*20
-        for p in mywapt.registry_installed_softwares(' '.join(args[1:])) :
-            print u"%-39s%-70s%-20s" % (p['key'],p['DisplayName'],p['DisplayVersion'])
-
-
-    elif action=='showlog':
-        if len(args)<2:
-            print "You must provide at least one package name"
-            sys.exit(1)
-        for packagename in args[1:]:
-            mywapt.showlog(packagename)
-
-    elif action=='remove':
-        if len(args)<2:
-            print "You must provide at least one package name to remove"
-            sys.exit(1)
-        for packagename in args[1:]:
-            mywapt.remove(packagename)
-
-    elif action=='update':
-        mywapt.update()
-
-    elif action=='upgrade':
-        mywapt.upgrade()
-
-    elif action=='list-upgrade':
-        mywapt.list_upgrade()
-
-    elif action=='remove':
-        mywapt.remove()
-
-    elif action=='update-packages':
-        if len(args)<2:
-            print "You must provide the directory"
-            sys.exit(1)
-        update_packages(args[1])
-
-    elif action=='init':
-        mywapt.make_packages()
-
-    elif action=='search':
-        mywapt.list_repo(args[1:])
-
-    elif action=='list':
-        mywapt.list_installed_packages(args[1:])
-    else:
-        print 'Unknown action %s' % action
+    except Exception,e:
+        print "FATAL ERROR : %s" % e
+        if logger.level == logging.DEBUG:
+            raise
+        sys.exit(3)
 
 if __name__ == "__main__":
     logger.debug('Python path %s' % sys.path)
