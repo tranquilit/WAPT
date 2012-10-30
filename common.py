@@ -318,8 +318,7 @@ class WaptDB:
         return pptable(cur,None,1,None)
 
     def add_package_entry(self,package_entry):
-        package_name = package_entry.Package
-        cur = self.db.execute("""delete from wapt_repo where Package=?""" ,(package_name,))
+        cur = self.db.execute("""delete from wapt_repo where Package=? and Version=?""" ,(package_entry.Package,package_entry.Version))
 
         self.add_package(package_entry.Package,
                          package_entry.Version,

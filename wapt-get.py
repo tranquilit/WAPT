@@ -20,7 +20,8 @@ import codecs
 from setuphelpers import *
 import json
 import glob
-from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,QueryInfoKey
+import platform
+from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,QueryInfoKey,KEY_READ,KEY_WOW64_32KEY,KEY_WOW64_64KEY
 
 usage="""\
 %prog -c configfile action
@@ -45,7 +46,7 @@ action is either :
 
 """
 
-version = "0.5.6"
+version = "0.5.8"
 
 parser=OptionParser(usage=usage,version="%prog " + version)
 parser.add_option("-c","--config", dest="config", default='c:\\wapt\\wapt-get.ini', help="Config file full path (default: %default)")
@@ -71,6 +72,13 @@ if loglevel in ('debug','warning','info','error','critical'):
     if not isinstance(numeric_level, int):
         raise ValueError('Invalid log level: %s' % loglevel)
     logger.setLevel(numeric_level)
+
+def OpenKeyNoredir(key, sub_key, sam=KEY_READ):
+    if platform.machine() == 'AMD64':
+        return OpenKey(key,sub_key,0, sam | KEY_WOW64_64KEY)
+    else:
+        return OpenKey(key,sub_key,0,sam)
+
 
 def psource(module):
     file = os.path.basename( module )
@@ -207,16 +215,33 @@ class Wapt:
     def registry_uninstall_snapshot(self):
         """return list of uninstall ID from registry"""
         result = []
-        key = OpenKey(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
+        key = OpenKeyNoredir(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
         try:
             i = 0
             while True:
                 subkey = EnumKey(key, i)
                 result.append(subkey)
                 i += 1
-        except WindowsError:
+        except WindowsError,e:
             # WindowsError: [Errno 259] No more data is available
-            pass
+            if e.winerror == 259:
+                pass
+            else:
+                raise
+        if platform.machine() == 'AMD64':
+            key = OpenKeyNoredir(HKEY_LOCAL_MACHINE,"Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
+            try:
+                i = 0
+                while True:
+                    subkey = EnumKey(key, i)
+                    result.append(subkey)
+                    i += 1
+            except WindowsError,e:
+                # WindowsError: [Errno 259] No more data is available
+                if e.winerror == 259:
+                    pass
+                else:
+                    raise
         return result
 
     def registry_installed_softwares(self,keywords=''):
@@ -235,44 +260,57 @@ class Wapt:
                 result = result and w in mywords
             return result
 
-        result = []
-        key = OpenKey(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
-        try:
+        def list_fromkey(uninstall):
+            result = []
+            key = OpenKeyNoredir(HKEY_LOCAL_MACHINE,uninstall)
             mykeywords = keywords.lower().split()
             i = 0
             while True:
-                subkey = EnumKey(key, i).decode('iso8859')
-                appkey = OpenKey(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s" % subkey.encode('iso8859'))
-                displayname = regget(appkey,'DisplayName','')
-                displayversion = regget(appkey,'DisplayVersion','')
-                installdate = regget(appkey,'InstallDate','')
-                if displayname and check_words(subkey+' '+displayname+' ',mykeywords):
-                    result.append({'key':subkey,'DisplayName':displayname,'DisplayVersion':displayversion,'InstallDate':installdate})
-                i += 1
-        except WindowsError:
-            # WindowsError: [Errno 259] No more data is available
-            pass
+                try:
+                    subkey = EnumKey(key, i).decode('iso8859')
+                    appkey = OpenKeyNoredir(HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,subkey.encode('iso8859')))
+                    displayname = regget(appkey,'DisplayName','')
+                    displayversion = regget(appkey,'DisplayVersion','')
+                    installdate = regget(appkey,'InstallDate','')
+                    if displayname and check_words(subkey+' '+displayname+' ',mykeywords):
+                        result.append({'key':subkey,'DisplayName':displayname,'DisplayVersion':displayversion,'InstallDate':installdate})
+                    i += 1
+                except WindowsError,e:
+                    # WindowsError: [Errno 259] No more data is available
+                    if e.winerror == 259:
+                        break
+                    else:
+                        raise
+            return result
+        result = list_fromkey("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
+        if platform.machine() == 'AMD64':
+            result.extend(list_fromkey("Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall"))
         return result
 
     def uninstall_cmd(self,guid):
         """return cmd to uninstall from registry"""
-        key = OpenKey(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s" % guid)
+        def get_fromkey(uninstall):
+            key = OpenKeyNoredir(HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,guid))
+            try:
+                cmd = QueryValueEx(key,'QuietUninstallString')[0]
+            except WindowsError:
+                cmd = QueryValueEx(key,'UninstallString')[0]
+                if 'msiexec' in cmd.lower():
+                    cmd = cmd.replace('/I','/X').replace('/i','/X')
+                    if not '/q' in cmd:
+                        cmd = cmd + ' /q'
+                else:
+                    # mozilla et autre
+                    if ('uninst' in cmd.lower() or 'helper.exe' in cmd.lower()) and not ' /s' in cmd.lower():
+                        cmd = cmd + ' /S'
+            return cmd
         try:
-            cmd = QueryValueEx(key,'QuietUninstallString')[0]
-        except WindowsError:
-            cmd = QueryValueEx(key,'UninstallString')[0]
-            if 'msiexec' in cmd.lower():
-                cmd = cmd.replace('/I','/X').replace('/i','/X')
-                if not '/q' in cmd:
-                    cmd = cmd + ' /q'
+            return get_fromkey("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
+        except:
+            if platform.machine() == 'AMD64':
+                return get_fromkey("Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
             else:
-                # mozilla et autre
-                if ('uninst' in cmd.lower() or 'helper.exe' in cmd.lower()) and not ' /s' in cmd.lower():
-                    cmd = cmd + ' /S'
-
-        return cmd
-
-
+                raise
 
     def install_wapt(self,fname,params_dict={}):
         logger.info("Register start of install %s to local DB with params %s" % (fname,params_dict))
@@ -337,9 +375,7 @@ class Wapt:
                     logger.critical('Fatal error in install script: %s' % e)
                     raise
 
-            if exitstatus is None:
-                status = 'UNKNOWN'
-            elif exitstatus == 0:
+            if exitstatus is None or exitstatus == 0:
                 status = 'OK'
             else:
                 status = 'ERROR'
@@ -348,12 +384,13 @@ class Wapt:
             else:
                 new_uninstall = self.registry_uninstall_snapshot()
                 new_uninstall_key = [ k for k in new_uninstall if not k in previous_uninstall]
-            logger.info('  uninstall keys : %s' % (new_uninstall_key,))
 
             if hasattr(setup,'uninstallstring'):
                 uninstallstring = setup.uninstallstring
             else:
                 uninstallstring = None
+            logger.info('  uninstall keys : %s' % (new_uninstall_key,))
+            logger.info('  uninstall strings : %s' % (uninstallstring,))
 
             logger.info("Install script finished with status %s" % status)
             if istemporary:
@@ -361,7 +398,7 @@ class Wapt:
                 logger.debug("Cleaning package tmp dir")
                 shutil.rmtree(packagetempdir)
 
-            self.waptdb.update_install_status(install_id,status,'',str(new_uninstall_key),uninstallstring)
+            self.waptdb.update_install_status(install_id,status,'',str(new_uninstall_key),str(uninstallstring))
             # (entry.Package,entry.Version,status,json.dumps({'output':installoutput.output,'exitstatus':exitstatus}))
 
         except Exception,e:
@@ -490,7 +527,21 @@ class Wapt:
         print "Removing package %s version %s from computer..." % (mydict['Package'],mydict['Version'])
 
         if mydict['UninstallString']:
-            print subprocess.check_output(mydict['UninstallString'])
+            if mydict['UninstallString'][0] not in ['[','"',"'"]:
+                guids = mydict['UninstallString']
+            else:
+                try:
+                    guids = eval(mydict['UninstallString'])
+                except:
+                    guids = mydict['UninstallString']
+            if isinstance(guids,(unicode,str)):
+                guids = [guids]
+            for guid in guids:
+                try:
+                    logger.info('Running %s' % guid)
+                    logger.info(subprocess.check_output(guid))
+                except Exception,e:
+                    logger.info("Warning : %s" % e)
             logger.info('Remove status record from local DB')
             self.waptdb.remove_install_status(package)
         elif mydict['UninstallKey']:
