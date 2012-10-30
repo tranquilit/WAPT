@@ -8,8 +8,8 @@ uses
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, CustApp,
   { you can add units after this }
-  Windows, PythonEngine, waptcommon, JclSysInfo, FileUtil, pl_indycomp,
-  SuperObject;
+  Windows, PythonEngine, waptcommon, soutils, tiscommon, JclSysInfo, FileUtil,
+  pl_indycomp, SuperObject;
 type
   { waptget }
 
