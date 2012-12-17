@@ -35,6 +35,7 @@ action is either :
 
   download [packages]: force download one or several packages
   show [packages]: show attributes of one or more packages
+  showparams package: show required and optional parameters of one package
 
   list [keywords]: list installed packages
   list-upgrade  : list upgradable packages
@@ -53,7 +54,7 @@ parser.add_option("-c","--config", dest="config", default='c:\\wapt\\wapt-get.in
 parser.add_option("-l","--loglevel", dest="loglevel", default='info', type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: %default)")
 parser.add_option("-d","--dry-run",    dest="dry_run",    default=False, action='store_true', help="Dry run (default: %default)")
 parser.add_option("-f","--force",    dest="force",    default=False, action='store_true', help="Force (default: %default)")
-parser.add_option("-p","--params", dest="params", default='{}', help="Setup params as a JSon Object (default: %default)")
+parser.add_option("-p","--params", dest="params", default='{}', help="Setup params as a JSon Object (example : {'licence':'AZE-567-34','company':'TIS'}} (default: %default)")
 
 (options,args)=parser.parse_args()
 

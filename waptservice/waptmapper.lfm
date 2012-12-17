@@ -14,6 +14,7 @@ object DaemonMapper1: TDaemonMapper1
       WinBindings.ErrorSeverity = esIgnore
       LogStatusReport = False
     end>
+  OnCreate = DaemonMapper1Create
   left = 615
   top = 417
 end

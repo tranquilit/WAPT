@@ -5,8 +5,9 @@
 interface
 
 uses
-  Classes, SysUtils, FileUtil, ExtCtrls, IdHTTPServer, DaemonApp,
-  IdCustomHTTPServer, IdContext, sqlite3conn, sqldb, db,Waptcommon,superobject;
+  Classes, SysUtils, FileUtil, DaemonApp,
+  ExtCtrls, IdHTTPServer, IdCustomHTTPServer, IdContext, sqlite3conn, sqldb, db, Waptcommon,
+  superobject;
 
 type
 
@@ -29,7 +30,6 @@ type
     procedure SetWaptDB(AValue: TWAPTDB);
     function RepoTableHook(Data, FN: Utf8String): Utf8String;
     function StatusTableHook(Data, FN: Utf8String): Utf8String;
-    function Sysinfo:ISUperObject;
     function RegisterComputer:Boolean;
   public
     { public declarations }
@@ -40,7 +40,7 @@ var
   WaptDaemon: TWaptDaemon;
 
 implementation
-uses JclSysInfo,IdSocketHandle,IdGlobal,process,StrUtils,idURI;
+uses JclSysInfo,IdSocketHandle,IdGlobal,process,StrUtils,idURI,tiscommon,soutils;
 
 //  ,waptwmi,  Variants,Windows,ComObj;
 
@@ -48,7 +48,6 @@ procedure RegisterDaemon;
 begin
   RegisterDaemonClass(TWaptDaemon)
 end;
-
 
 procedure HttpStartChunkedResponse(AResponseInfo:TIdHTTPResponseInfo;ContentType:String='';charset:String='');
 begin
@@ -68,6 +67,55 @@ begin
   AContext.Connection.IOHandler.WriteLn(IntToHex(l,0));
   AContext.Connection.IOHandler.WriteLn(Chunk,TextEncoding);
 end;
+
+function RunTask(cmd: utf8string;var ExitStatus:integer;WorkingDir:utf8String=''): utf8string;
+var
+  AProcess: TProcess;
+  Buffer,chunk: string;
+  BytesAvailable: DWord;
+  BytesRead:LongInt;
+  StartTime : TDateTime;
+  StartedOK:Boolean;
+begin
+    Result := '';
+    AProcess := TProcess.Create(nil);
+    try
+      AProcess.CommandLine := cmd;
+      if WorkingDir='' then
+        AProcess.CurrentDirectory := ExtractFilePath(cmd);
+      AProcess.Options := [poUsePipes,poNoConsole];
+      AProcess.Execute;
+      StartedOK:=True;
+      StartTime:= Now;
+      // Wait for Startup (5 sec)
+      While not AProcess.Running do
+      begin
+        if (Now-StartTime>5/3600/24) then
+        begin
+          StartedOK:=False;
+          Break;
+        end;
+        Sleep(200);
+      end;
+
+      While AProcess.Running do
+      begin
+        BytesAvailable := AProcess.Output.NumBytesAvailable;
+        BytesRead := 0;
+        while BytesAvailable>0 do
+        begin
+          SetLength(Buffer, BytesAvailable);
+          BytesRead := AProcess.OutPut.Read(Buffer[1], BytesAvailable);
+          Result := Result+copy(Buffer,1, BytesRead);
+          BytesAvailable := AProcess.Output.NumBytesAvailable;
+        end;
+      end;
+      ExitStatus:= AProcess.ExitStatus;
+    finally
+      AProcess.Free;
+    end;
+end;
+
 
 function HttpRunTask(AHttpContext:TIdContext;AResponseInfo:TIdHTTPResponseInfo;cmd: utf8string;var ExitStatus:integer;WorkingDir:utf8String=''): utf8string;
 var
@@ -90,19 +138,24 @@ begin
       StartedOK:=True;
       StartTime:= Now;
       // Wait for Startup (5 sec)
-      While not AProcess.Running do
+      {While not AProcess.Running do
+      begin
         if (Now-StartTime>5/3600/24) then
         begin
           StartedOK:=False;
           Break;
         end;
+        Sleep(200);
+      end;
       if not StartedOK then
-        HttpWriteChunk(AHttpContext,'--- Unable to start process within 5 sec '+'<br>',Nil);
+        HttpWriteChunk(AHttpContext,'!!! Unable to start process within 5 sec '+'<br>',Nil);}
 
-      While AProcess.Running do
-      begin
+      repeat
         BytesAvailable := AProcess.Output.NumBytesAvailable;
         BytesRead := 0;
+        if (BytesAvailable=0) and AProcess.Running then
+          Sleep(200)
+        else
         while BytesAvailable>0 do
         begin
           SetLength(Buffer, BytesAvailable);
@@ -112,7 +165,19 @@ begin
           HttpWriteChunk(AHttpContext,Chunk,Nil);
           BytesAvailable := AProcess.Output.NumBytesAvailable;
         end;
+      until not AProcess.Running;
+
+      BytesAvailable := AProcess.Output.NumBytesAvailable;
+      BytesRead := 0;
+      while BytesAvailable>0 do
+      begin
+        SetLength(Buffer, BytesAvailable);
+        BytesRead := AProcess.OutPut.Read(Buffer[1], BytesAvailable);
+        Result := Result+copy(Buffer,1, BytesRead);
+        chunk := StringsReplace(copy(Buffer,1, BytesRead),[#13#10],['<br>'],[rfReplaceAll]);
+        HttpWriteChunk(AHttpContext,Chunk,Nil);
       end;
+
       ExitStatus:= AProcess.ExitStatus;
     finally
       HttpWriteChunk(AHttpContext,'');
@@ -223,7 +288,7 @@ begin
     else
     if ARequestInfo.URI='/list' then
     try
-      AQuery := WaptDB.QueryCreate('select * from wapt_repo');
+      AQuery := WaptDB.QueryCreate('select * from wapt_repo order by Package');
       AResponseInfo.ContentText:=DatasetToHTMLtable(AQuery,@RepoTableHook );
     finally
       AQuery.Free;
@@ -231,13 +296,16 @@ begin
     else
     if ARequestInfo.URI='/waptupgrade' then
     begin
-      HttpRunTask(AContext,AResponseInfo,WaptgetPath+' --upgrade',ExitStatus);
+      HttpRunTask(AContext,AResponseInfo,WaptgetPath+' waptupgrade',ExitStatus);
       {UpgradeResult:=RunTask(WaptgetPath+' --upgrade',ExitStatus);
       AResponseInfo.ContentType:='application/json';
       SO:=TSuperObject.Create;
-      SO.S['operation'] := 'upgrade';
-      SO['output'] := SplitLines(UpgradeResult);
-      SO.I['exitstatus'] := ExitStatus;
+      with so.asObject do
+      begin
+        S['operation'] := 'upgrade';
+        S['output'] := SplitLines(UpgradeResult);
+        I['exitstatus'] := ExitStatus;
+      end;
       AResponseInfo.ContentText:=so.AsJSon(True);}
     end
     else
@@ -287,7 +355,7 @@ begin
       {if ARequestInfo.URI='/register' then
         httpGetString();}
       AResponseInfo.ContentType:='application/json';
-      AResponseInfo.ContentText:= Sysinfo.AsJson(True);
+      AResponseInfo.ContentText:= LocalSysinfo.AsJson(True);
     end
     else
     if (ARequestInfo.URI='/install') or (ARequestInfo.URI='/remove') or (ARequestInfo.URI='/showlog') then
@@ -339,7 +407,8 @@ begin
         '<h1>'+TISGetComputerName+' - System status</h1>'+
         'WAPT Server URL: '+GetWaptServerURL+'<br>'+
         'wapt-get version: '+ApplicationVersion(ExtractFilePath(ParamStr(0))+'\wapt-get.exe')+'<br>'+
-        //'User : '+TISGetUserName+'<br>'+
+        'waptservice version: '+ApplicationVersion(ExtractFilePath(ParamStr(0))+'\waptservice.exe')+'<br>'+
+        'User : '+TISGetUserName+'<br>'+
         'Machine: '+TISGetComputerName+'<br>'+
         'Domain: '+ GetWorkGroupName+'<br>'+
         'IP Addresses:'+IPS+'<br>'+
@@ -400,50 +469,6 @@ begin
     Result := Data;
 end;
 
-function TWaptDaemon.Sysinfo: ISUperObject;
-var
-      so:TSuperObject;
-      CPUInfo:TCpuInfo;
-      Cmd,IPS:String;
-      st : TStringList;
-begin
-      so := TSuperObject.Create;
-      so.S['workgroupname'] := GetWorkGroupName;
-      so.S['localusername'] := TISGetUserName;
-      so.S['computername'] := TISGetComputerName;
-      so.S['systemmanufacturer'] := GetSystemManufacturer;
-      so.S['systemproductname'] := GetSystemProductName;
-      so.S['biosversion'] := GetBIOSVersion;
-      so.S['biosdate'] := DelphiDateTimeToISO8601Date(GetBIOSDate);
-      // redirect to a dummy file just to avoid a console creation... bug of route ?
-      //so['routingtable'] := SplitLines(RunTask('route print > dummy',ExitStatus));
-      //so['ipconfig'] := SplitLines(RunTask('ipconfig /all > dummy',ExitStatus));
-      ST := TStringList.Create;
-      try
-        GetIpAddresses(St);
-        so['ipaddresses'] := StringList2SuperObject(St);
-      finally
-        St.free;
-      end;
-      St := TStringList.Create;
-      try
-        GetMacAddresses('',St);
-        so['macaddresses'] := StringList2SuperObject(St);
-      finally
-        St.free;
-      end;
-
-      so.I['processorcount'] := ProcessorCount;
-      GetCpuInfo(CPUInfo);
-      so.S['cpuname'] := Trim(CPUInfo.CpuName);
-      so.I['physicalmemory'] := GetTotalPhysicalMemory;
-      so.I['virtualmemory'] := GetTotalVirtualMemory;
-      so.S['waptgetversion'] := ApplicationVersion(WaptgetPath);
-
-      // Pose probleme erreur OLE "syntaxe incorrecte"
-      //so['wmi_baseboardinfo'] := WMIBaseBoardInfo;
-  result := so;
-end;
 
 function TWaptDaemon.RegisterComputer: Boolean;
 begin

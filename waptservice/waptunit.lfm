@@ -2,8 +2,8 @@ object WaptDaemon: TWaptDaemon
   OnCreate = DataModuleCreate
   OldCreateOrder = False
   Height = 181
-  HorizontalOffset = 1335
-  VerticalOffset = 409
+  HorizontalOffset = 916
+  VerticalOffset = 293
   Width = 142
   object IdHTTPServer1: TIdHTTPServer
     Bindings = <>

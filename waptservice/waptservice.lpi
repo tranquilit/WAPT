@@ -20,7 +20,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="3"/>
-      <RevisionNr Value="6"/>
+      <RevisionNr Value="9"/>
       <Language Value="040C"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Service helper" ProductVersion=""/>
     </VersionInfo>
@@ -38,33 +38,38 @@
         <CommandLineParams Value="/uninstall"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="5">
+    <RequiredPackages Count="6">
       <Item1>
-        <PackageName Value="pl_indycomp"/>
+        <PackageName Value="pl_lnetcomp"/>
       </Item1>
       <Item2>
-        <PackageName Value="SQLDBLaz"/>
-        <MinVersion Major="1" Release="1" Valid="True"/>
+        <PackageName Value="pl_indycomp"/>
       </Item2>
       <Item3>
-        <PackageName Value="LazDaemon"/>
+        <PackageName Value="SQLDBLaz"/>
+        <MinVersion Major="1" Release="1" Valid="True"/>
       </Item3>
       <Item4>
-        <PackageName Value="LCL"/>
+        <PackageName Value="LazDaemon"/>
       </Item4>
       <Item5>
-        <PackageName Value="FCL"/>
+        <PackageName Value="LCL"/>
       </Item5>
+      <Item6>
+        <PackageName Value="FCL"/>
+      </Item6>
     </RequiredPackages>
-    <Units Count="78">
+    <Units Count="84">
       <Unit0>
         <Filename Value="waptservice.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptservice"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="22" Y="14"/>
-        <UsageCount Value="180"/>
+        <CursorPos X="14" Y="7"/>
+        <UsageCount Value="189"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="waptmapper.pas"/>
@@ -74,8 +79,8 @@
         <UnitName Value="WaptMapper"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="18" Y="20"/>
-        <UsageCount Value="180"/>
+        <CursorPos X="37" Y="6"/>
+        <UsageCount Value="189"/>
       </Unit1>
       <Unit2>
         <Filename Value="waptunit.pas"/>
@@ -84,13 +89,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WaptUnit"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="98"/>
-        <CursorPos X="1" Y="117"/>
-        <UsageCount Value="180"/>
+        <TopLine Value="280"/>
+        <CursorPos X="23" Y="302"/>
+        <UsageCount Value="189"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="unit1.pas"/>
@@ -145,9 +150,9 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="724"/>
-        <CursorPos X="8" Y="729"/>
-        <UsageCount Value="147"/>
+        <TopLine Value="40"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="156"/>
       </Unit9>
       <Unit10>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-process\src\process.pp"/>
@@ -438,9 +443,9 @@
         <Filename Value="..\jcl\source\common\JclStrings.pas"/>
         <UnitName Value="JclStrings"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="3489"/>
-        <CursorPos X="3" Y="3502"/>
-        <UsageCount Value="2"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
       </Unit46>
       <Unit47>
         <Filename Value="..\jcl\source\common\JclDateTime.pas"/>
@@ -476,18 +481,18 @@
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-extra\src\daemonapp.pp"/>
         <UnitName Value="daemonapp"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="279"/>
-        <CursorPos X="3" Y="298"/>
-        <UsageCount Value="2"/>
+        <TopLine Value="234"/>
+        <CursorPos X="34" Y="352"/>
+        <UsageCount Value="10"/>
       </Unit51>
       <Unit52>
         <Filename Value="..\superobject\superobject.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="superobject"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="3164"/>
-        <CursorPos X="2" Y="3185"/>
-        <UsageCount Value="113"/>
+        <TopLine Value="248"/>
+        <CursorPos X="15" Y="271"/>
+        <UsageCount Value="122"/>
       </Unit52>
       <Unit53>
         <Filename Value="..\jcl\source\common\JclSysInfo.pas"/>
@@ -633,12 +638,10 @@
       <Unit71>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-process\src\process.pp"/>
         <UnitName Value="process"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="9"/>
         <CursorPos X="32" Y="26"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="12"/>
       </Unit71>
       <Unit72>
         <Filename Value="waptwmi.pas"/>
@@ -647,7 +650,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="10" Y="13"/>
-        <UsageCount Value="70"/>
+        <UsageCount Value="79"/>
       </Unit72>
       <Unit73>
         <Filename Value="testwmi.lpr"/>
@@ -688,43 +691,91 @@
         <CursorPos X="10" Y="468"/>
         <UsageCount Value="22"/>
       </Unit77>
+      <Unit78>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_LNet\source\lclwineventer.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="58"/>
+        <CursorPos X="1" Y="76"/>
+        <UsageCount Value="10"/>
+      </Unit78>
+      <Unit79>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_LNet\source\lnetcomponents.pas"/>
+        <UnitName Value="lNetComponents"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="78"/>
+        <CursorPos X="17" Y="249"/>
+        <UsageCount Value="10"/>
+      </Unit79>
+      <Unit80>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-extra\src\win\daemonapp.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="27"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit80>
+      <Unit81>
+        <Filename Value="..\wapt-get\soutils.pas"/>
+        <UnitName Value="soutils"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="24" Y="19"/>
+        <UsageCount Value="10"/>
+      </Unit81>
+      <Unit82>
+        <Filename Value="..\jcl\source\include\jclfpc.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="89"/>
+        <CursorPos X="29" Y="104"/>
+        <UsageCount Value="11"/>
+      </Unit82>
+      <Unit83>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <UnitName Value="tiscommon"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="40" Y="18"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit83>
     </Units>
     <JumpHistory Count="12" HistoryIndex="11">
       <Position1>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="63" Column="14" TopLine="45"/>
+        <Caret Line="409" Column="9" TopLine="343"/>
       </Position1>
       <Position2>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="480" Column="7" TopLine="469"/>
       </Position2>
       <Position3>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="297" Column="100" TopLine="300"/>
+        <Caret Line="480" Column="7" TopLine="469"/>
       </Position3>
       <Position4>
-        <Filename Value="waptunit.pas"/>
-        <Caret Line="88" Column="39" TopLine="79"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="27" Column="40" TopLine="13"/>
       </Position4>
       <Position5>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-process\src\process.pp"/>
-        <Caret Line="148" Column="14" TopLine="135"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="580" Column="44" TopLine="580"/>
       </Position5>
       <Position6>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-process\src\process.pp"/>
-        <Caret Line="39" Column="3" TopLine="24"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="28" Column="27" TopLine="15"/>
       </Position6>
       <Position7>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="88" Column="50" TopLine="79"/>
+        <Caret Line="479" Column="39" TopLine="466"/>
       </Position7>
       <Position8>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="274" Column="37" TopLine="259"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position8>
       <Position9>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="356" Column="17" TopLine="361"/>
+        <Caret Line="288" Column="58" TopLine="271"/>
       </Position9>
       <Position10>
         <Filename Value="waptunit.pas"/>
@@ -732,11 +783,11 @@
       </Position10>
       <Position11>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="294" Column="100" TopLine="269"/>
+        <Caret Line="302" Column="23" TopLine="280"/>
       </Position11>
       <Position12>
-        <Filename Value="waptunit.pas"/>
-        <Caret Line="324" Column="38" TopLine="298"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="472" Column="40" TopLine="333"/>
       </Position12>
     </JumpHistory>
   </ProjectOptions>
@@ -779,6 +830,22 @@
     </Other>
   </CompilerOptions>
   <Debugging>
+    <BreakPoints Count="2">
+      <Item1>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="waptunit.pas"/>
+        <Line Value="355"/>
+      </Item1>
+      <Item2>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="waptunit.pas"/>
+        <Line Value="409"/>
+      </Item2>
+    </BreakPoints>
     <Watches Count="1">
       <Item1>
         <Expression Value="DWORD"/>

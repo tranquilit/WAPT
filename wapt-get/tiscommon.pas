@@ -11,6 +11,8 @@ Function  Wget(const fileURL, DestFileName: Utf8String): boolean;
 Function  Wget_try(const fileURL: Utf8String): boolean;
 function  httpGetString(url: string): Utf8String;
 
+procedure WebPostData(const UserAgent: string; const Server: string; const Resource: string; const Data: AnsiString);
+
 Procedure UnzipFile(ZipFilePath,OutputPath:Utf8String);
 Procedure AddToUserPath(APath:Utf8String);
 procedure AddToSystemPath(APath:Utf8String);
@@ -22,8 +24,8 @@ function GetPersonalFolder:Utf8String;
 function GetAppdataFolder:Utf8String;
 
 function TISAppuserinipath:Utf8String;
-function TISGetComputerName : Utf8String;
-function TISGetUserName : Utf8String;
+function TISGetComputerName : UTF8String;
+function TISGetUserName : UTF8String;
 
 function SortableVersion(VersionString:String):String;
 
@@ -207,6 +209,36 @@ begin
        raise Exception.Create('Unable to download: "'+URL+'", HTTP Status:'+res);
   finally
     InternetCloseHandle(hFile);
+  end;
+end;
+
+
+procedure WebPostData(const UserAgent: string; const Server: string; const Resource: string; const Data: AnsiString);
+var
+  hInet: HINTERNET;
+  hHTTP: HINTERNET;
+  hReq: HINTERNET;
+const
+  wall : WideString = '*/*';
+  accept: packed array[0..1] of LPWSTR = (@wall, nil);
+  header: string = 'Content-Type: application/x-www-form-urlencoded';
+begin
+  hInet := InternetOpen(PChar(UserAgent), INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0);
+  try
+    hHTTP := InternetConnect(hInet, PChar(Server), INTERNET_DEFAULT_HTTP_PORT, nil, nil, INTERNET_SERVICE_HTTP, 0, 1);
+    try
+      hReq := HttpOpenRequest(hHTTP, PChar('POST'), PChar(Resource), nil, nil, @accept, 0, 1);
+      try
+        if not HttpSendRequest(hReq, PChar(header), length(header), PChar(Data), length(Data)) then
+          raise Exception.Create('HttpOpenRequest failed. ' + SysErrorMessage(GetLastError));
+      finally
+        InternetCloseHandle(hReq);
+      end;
+    finally
+      InternetCloseHandle(hHTTP);
+    end;
+  finally
+    InternetCloseHandle(hInet);
   end;
 end;
 

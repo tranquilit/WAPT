@@ -8,8 +8,7 @@ uses
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, CustApp,
   { you can add units after this }
-  Windows, PythonEngine, waptcommon, soutils, tiscommon, JclSysInfo, FileUtil,
-  pl_indycomp, SuperObject;
+  Windows, PythonEngine, waptcommon, soutils, tiscommon, FileUtil,JclSvcCtrl;
 type
   { waptget }
 
@@ -198,11 +197,13 @@ procedure pwaptget.StopWaptService;
 var
   ExitStatus : Integer;
 begin
-  if CheckOpenPort(waptservice_port,'127.0.0.1',1) then
+  {if CheckOpenPort(waptservice_port,'127.0.0.1',1) then
   begin
     ExitStatus := 0;
     Writeln(RunTask('net stop waptservice',ExitStatus));
-  end;
+  end;}
+  if (GetServiceStatusByName('','waptservice') = ssRunning) and not StopServiceByName('','waptservice') then
+    Raise Exception.create('Unable to stop waptservice');
 end;
 
 procedure pwaptget.Setup(DownloadPath,InstallPath:Utf8String);
@@ -257,23 +258,28 @@ end;
 
 procedure pwaptget.RegisterComputer;
 begin
-
+  writeln(LocalSysinfo.AsJSon(True));
+  WebPostData('wapt','wapt','register',LocalSysinfo.AsJSon(True));
 end;
 
 function pwaptget.SetupWaptService(InstallPath:Utf8String):boolean;
 var
   ExitStatus: Integer;
+  SvcStatus :  TJclServiceState;
 
 begin
-	Writeln('Install waptservice');
-	try
-	  Writeln(RunTask(AppendPathDelim(InstallPath)+'waptservice.exe /install',ExitStatus));
-	except
-	  on e:Exception do Writeln('  Error installing service, error code:'+IntToStr(ExitStatus)+', message: '+e.message);
-	end;
+  SvcStatus := GetServiceStatusByName('','waptservice');
+  If SvcStatus<>ssStopped then
+    StopServiceByName('','waptservice');
+  if SvcStatus=ssUnknown then
+  begin
+    Writeln('Install waptservice');
+  	Writeln(RunTask(AppendPathDelim(InstallPath)+'waptservice.exe /install',ExitStatus));
+  end;
 	Writeln('Start waptservice');
-	Writeln(RunTask('net start waptservice',ExitStatus));
-  Result := ExitStatus = 0;
+  Result := JclSvcCtrl.StartServiceByName('','waptservice');
+	//Writeln(RunTask('net start waptservice',ExitStatus));
+  //ExitStatus = 0;
 end;
 
 procedure pwaptget.WriteHelp;

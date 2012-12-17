@@ -4,12 +4,12 @@ Uses
 {$IFDEF UNIX}{$IFDEF UseCThreads}
   CThreads,
 {$ENDIF}{$ENDIF}
-  DaemonApp, lazdaemonapp, pl_indycomp, WaptMapper, WaptUnit,
-  waptcommon, superobject, interfaces, waptwmi;
+  DaemonApp, lazdaemonapp, WaptMapper, WaptUnit,
+  waptcommon, superobject, interfaces, pl_indycomp;
+
+{ $DEFINE svcdebug}
 
 {$R *.res}
-
-{$DEFINE svcdebug}
 
 begin
   Application.Initialize;

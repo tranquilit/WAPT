@@ -15,7 +15,9 @@ interface
   function WaptgetPath: Utf8String;
   function WaptDBPath: Utf8String;
 
-  function http_post(url: string;Params:String): String;
+  //function http_post(url: string;Params:String): String;
+
+  function LocalSysinfo: ISUperObject;
 
 
 type
@@ -46,9 +48,11 @@ type
     property sqltrans:TSQLTransaction read fsqltrans;
   end;
 
+
+
 implementation
 
-uses FileUtil,soutils,idHttp,tiscommon;
+uses FileUtil,soutils,tiscommon,JCLSysInfo;
 
 function FindWaptRepo: String;
 begin
@@ -81,7 +85,8 @@ begin
 
 end;
 
-
+{
+idHttp,
 function http_post(url: string;Params:String): String;
 var
   St:TMemoryStream;
@@ -107,7 +112,7 @@ begin
       http.Free;
   end;
 end;
-
+}
 
 
 { waptdb }
@@ -298,6 +303,55 @@ begin
     tables.Free;
   end;
 end;
+
+//////
+
+function LocalSysinfo: ISUperObject;
+var
+      so:ISuperObject;
+      CPUInfo:TCpuInfo;
+      Cmd,IPS:String;
+      st : TStringList;
+begin
+  so := TSuperObject.Create;
+  so.S['workgroupname'] := GetWorkGroupName;
+  so.S['localusername'] := TISGetUserName;
+  so.S['computername'] :=  TISGetComputerName;
+  so.S['systemmanufacturer'] := GetSystemManufacturer;
+  so.S['systemproductname'] := GetSystemProductName;
+  so.S['biosversion'] := GetBIOSVersion;
+  so.S['biosdate'] := DelphiDateTimeToISO8601Date(GetBIOSDate);
+  // redirect to a dummy file just to avoid a console creation... bug of route ?
+  //so['routingtable'] := SplitLines(RunTask('route print > dummy',ExitStatus));
+  //so['ipconfig'] := SplitLines(RunTask('ipconfig /all > dummy',ExitStatus));
+  ST := TStringList.Create;
+  try
+    GetIpAddresses(St);
+    so['ipaddresses'] := StringList2SuperObject(St);
+  finally
+    St.free;
+  end;
+  St := TStringList.Create;
+  try
+    GetMacAddresses('',St);
+    so['macaddresses'] := StringList2SuperObject(St);
+  finally
+    St.free;
+  end;
+
+  so.I['processorcount'] := ProcessorCount;
+  GetCpuInfo(CPUInfo);
+  so.S['cpuname'] := Trim(CPUInfo.CpuName);
+  so.I['physicalmemory'] := GetTotalPhysicalMemory;
+  so.I['virtualmemory'] := GetTotalVirtualMemory;
+  so.S['waptgetversion'] := ApplicationVersion(WaptgetPath);
+
+  // Pose probleme erreur OLE "syntaxe incorrecte"
+  //so['wmi_baseboardinfo'] := WMIBaseBoardInfo;
+  result := so;
+end;
+
+
 
 
 
