@@ -259,7 +259,7 @@ end;
 procedure pwaptget.RegisterComputer;
 begin
   writeln(LocalSysinfo.AsJSon(True));
-  WebPostData('wapt','wapt','register',LocalSysinfo.AsJSon(True));
+  httpPostData('wapt','wapt','register',LocalSysinfo.AsJSon(True));
 end;
 
 function pwaptget.SetupWaptService(InstallPath:Utf8String):boolean;

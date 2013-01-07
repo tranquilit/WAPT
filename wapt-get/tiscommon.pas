@@ -11,7 +11,7 @@ Function  Wget(const fileURL, DestFileName: Utf8String): boolean;
 Function  Wget_try(const fileURL: Utf8String): boolean;
 function  httpGetString(url: string): Utf8String;
 
-procedure WebPostData(const UserAgent: string; const Server: string; const Resource: string; const Data: AnsiString);
+procedure httpPostData(const UserAgent: string; const Server: string; const Resource: string; const Data: AnsiString);
 
 Procedure UnzipFile(ZipFilePath,OutputPath:Utf8String);
 Procedure AddToUserPath(APath:Utf8String);
@@ -213,7 +213,7 @@ begin
 end;
 
 
-procedure WebPostData(const UserAgent: string; const Server: string; const Resource: string; const Data: AnsiString);
+procedure httpPostData(const UserAgent: string; const Server: string; const Resource: string; const Data: AnsiString);
 var
   hInet: HINTERNET;
   hHTTP: HINTERNET;
