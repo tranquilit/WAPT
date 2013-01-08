@@ -20,7 +20,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="3"/>
-      <RevisionNr Value="9"/>
+      <RevisionNr Value="10"/>
       <Language Value="040C"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Service helper" ProductVersion=""/>
     </VersionInfo>
@@ -35,41 +35,42 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="/uninstall"/>
+        <CommandLineParams Value="/install"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="6">
+    <RequiredPackages Count="7">
       <Item1>
-        <PackageName Value="pl_lnetcomp"/>
+        <PackageName Value="pltis_jcl"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_indycomp"/>
+        <PackageName Value="pltis_superobject"/>
       </Item2>
       <Item3>
-        <PackageName Value="SQLDBLaz"/>
-        <MinVersion Major="1" Release="1" Valid="True"/>
+        <PackageName Value="pl_indycomp"/>
       </Item3>
       <Item4>
-        <PackageName Value="LazDaemon"/>
+        <PackageName Value="SQLDBLaz"/>
+        <MinVersion Major="1" Release="1" Valid="True"/>
       </Item4>
       <Item5>
-        <PackageName Value="LCL"/>
+        <PackageName Value="LazDaemon"/>
       </Item5>
       <Item6>
-        <PackageName Value="FCL"/>
+        <PackageName Value="LCL"/>
       </Item6>
+      <Item7>
+        <PackageName Value="FCL"/>
+      </Item7>
     </RequiredPackages>
-    <Units Count="84">
+    <Units Count="92">
       <Unit0>
         <Filename Value="waptservice.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptservice"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="14" Y="7"/>
-        <UsageCount Value="189"/>
-        <Loaded Value="True"/>
+        <CursorPos X="28" Y="11"/>
+        <UsageCount Value="190"/>
       </Unit0>
       <Unit1>
         <Filename Value="waptmapper.pas"/>
@@ -80,7 +81,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="37" Y="6"/>
-        <UsageCount Value="189"/>
+        <UsageCount Value="190"/>
       </Unit1>
       <Unit2>
         <Filename Value="waptunit.pas"/>
@@ -91,11 +92,10 @@
         <UnitName Value="WaptUnit"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="280"/>
-        <CursorPos X="23" Y="302"/>
-        <UsageCount Value="189"/>
+        <TopLine Value="341"/>
+        <CursorPos X="41" Y="358"/>
+        <UsageCount Value="190"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="unit1.pas"/>
@@ -149,10 +149,13 @@
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="40"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="156"/>
+        <TopLine Value="279"/>
+        <CursorPos X="25" Y="321"/>
+        <UsageCount Value="157"/>
+        <Loaded Value="True"/>
       </Unit9>
       <Unit10>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-process\src\process.pp"/>
@@ -487,7 +490,6 @@
       </Unit51>
       <Unit52>
         <Filename Value="..\superobject\superobject.pas"/>
-        <IsPartOfProject Value="True"/>
         <UnitName Value="superobject"/>
         <WindowIndex Value="0"/>
         <TopLine Value="248"/>
@@ -650,7 +652,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="10" Y="13"/>
-        <UsageCount Value="79"/>
+        <UsageCount Value="80"/>
       </Unit72>
       <Unit73>
         <Filename Value="testwmi.lpr"/>
@@ -718,7 +720,7 @@
         <UnitName Value="soutils"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="24" Y="19"/>
+        <CursorPos X="24" Y="14"/>
         <UsageCount Value="10"/>
       </Unit81>
       <Unit82>
@@ -731,64 +733,105 @@
       <Unit83>
         <Filename Value="..\wapt-get\tiscommon.pas"/>
         <UnitName Value="tiscommon"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="40" Y="18"/>
+        <CursorPos X="24" Y="172"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit83>
+      <Unit84>
+        <Filename Value="..\..\pltis_jcl\source\windows\JclShell.pas"/>
+        <UnitName Value="JclShell"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit84>
+      <Unit85>
+        <Filename Value="..\..\pltis_jcl\source\common\JclSysInfo.pas"/>
+        <UnitName Value="JclSysInfo"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="5673"/>
+        <CursorPos X="17" Y="5690"/>
+        <UsageCount Value="10"/>
+      </Unit85>
+      <Unit86>
+        <Filename Value="..\..\pltis_jcl\source\common\JclSysUtils.pas"/>
+        <UnitName Value="JclSysUtils"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit86>
+      <Unit87>
+        <Filename Value="..\..\pltis_jcl\source\common\JclStrings.pas"/>
+        <UnitName Value="JclStrings"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit87>
+      <Unit88>
+        <Filename Value="..\..\pltis_jcl\source\common\JclTrees.pas"/>
+        <UnitName Value="JclTrees"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="12890"/>
+        <CursorPos X="34" Y="12901"/>
+        <UsageCount Value="10"/>
+      </Unit88>
+      <Unit89>
+        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonAction.pas"/>
+        <UnitName Value="PythonAction"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit89>
+      <Unit90>
+        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\p4dlaz.pas"/>
+        <UnitName Value="P4DLaz"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="5"/>
+        <CursorPos X="58" Y="12"/>
+        <UsageCount Value="10"/>
+      </Unit90>
+      <Unit91>
+        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
+        <UnitName Value="PythonEngine"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="2313"/>
+        <CursorPos X="3" Y="2325"/>
+        <UsageCount Value="10"/>
+      </Unit91>
     </Units>
-    <JumpHistory Count="12" HistoryIndex="11">
+    <JumpHistory Count="7" HistoryIndex="6">
       <Position1>
-        <Filename Value="waptunit.pas"/>
-        <Caret Line="409" Column="9" TopLine="343"/>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="1" Column="34" TopLine="1"/>
       </Position1>
       <Position2>
-        <Filename Value="waptunit.pas"/>
-        <Caret Line="480" Column="7" TopLine="469"/>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="313" Column="12" TopLine="302"/>
       </Position2>
       <Position3>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="480" Column="7" TopLine="469"/>
+        <Caret Line="9" Column="26" TopLine="1"/>
       </Position3>
       <Position4>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="27" Column="40" TopLine="13"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position4>
       <Position5>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="580" Column="44" TopLine="580"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="43" Column="16" TopLine="24"/>
       </Position5>
       <Position6>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="28" Column="27" TopLine="15"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="358" Column="41" TopLine="341"/>
       </Position6>
       <Position7>
-        <Filename Value="waptunit.pas"/>
-        <Caret Line="479" Column="39" TopLine="466"/>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="337" Column="18" TopLine="320"/>
       </Position7>
-      <Position8>
-        <Filename Value="waptunit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position8>
-      <Position9>
-        <Filename Value="waptunit.pas"/>
-        <Caret Line="288" Column="58" TopLine="271"/>
-      </Position9>
-      <Position10>
-        <Filename Value="waptunit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position10>
-      <Position11>
-        <Filename Value="waptunit.pas"/>
-        <Caret Line="302" Column="23" TopLine="280"/>
-      </Position11>
-      <Position12>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="472" Column="40" TopLine="333"/>
-      </Position12>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -798,8 +841,8 @@
       <Filename Value="..\waptservice"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="$(ProjOutDir);..\jcl\source\include;C:\codetyphon\lazarus\components\pl_Indy\source\base\"/>
-      <OtherUnitFiles Value="..\wapt-get;..\jcl\source\common;..\jcl\source\windows;..\superobject"/>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="..\wapt-get"/>
       <UnitOutputDirectory Value="lib"/>
     </SearchPaths>
     <CodeGeneration>

@@ -1,11 +1,11 @@
 object VisWAPTTray: TVisWAPTTray
-  Left = 310
+  Left = 276
   Height = 468
-  Top = 278
-  Width = 567
+  Top = 175
+  Width = 328
   Caption = 'Gestion logiciels WAPT'
   ClientHeight = 468
-  ClientWidth = 567
+  ClientWidth = 328
   Icon.Data = {
     220D000000000100010020210000010018000C0D000016000000280000002000
     0000420000000100180000000000000000004800000048000000000000000000

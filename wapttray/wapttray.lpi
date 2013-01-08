@@ -32,15 +32,21 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="2">
+    <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pltis_superobject"/>
       </Item1>
       <Item2>
-        <PackageName Value="LCL"/>
+        <PackageName Value="pltis_jcl"/>
       </Item2>
+      <Item3>
+        <PackageName Value="FCL"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="LCL"/>
+      </Item4>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="4">
       <Unit0>
         <Filename Value="wapttray.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -60,15 +66,10 @@
         <UnitName Value="waptcommon"/>
       </Unit2>
       <Unit3>
-        <Filename Value="..\superobject\superobject.pas"/>
+        <Filename Value="..\..\tisvcl\tisutils.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="superobject"/>
+        <UnitName Value="tisutils"/>
       </Unit3>
-      <Unit4>
-        <Filename Value="..\jcl\source\common\JclSysInfo.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="JclSysInfo"/>
-      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -79,7 +80,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);..\jcl\source\include"/>
-      <OtherUnitFiles Value="..\wapt-get;..\jcl\source\common;..\jcl\source\windows;..\superobject"/>
+      <OtherUnitFiles Value="..\wapt-get;..\jcl\source\windows;..\..\tisvcl"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>

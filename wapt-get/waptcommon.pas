@@ -3,7 +3,7 @@ unit waptcommon;
 {$mode objfpc}{$H+}
 interface
   uses
-     interfaces,Classes, SysUtils,windows,
+     interfaces,Classes, SysUtils,
      DB,sqldb,sqlite3conn,SuperObject;
 
   const
@@ -17,7 +17,7 @@ interface
 
   //function http_post(url: string;Params:String): String;
 
-  function LocalSysinfo: ISUperObject;
+  function LocalSysinfo: ISuperObject;
 
 
 type
@@ -314,13 +314,13 @@ var
       st : TStringList;
 begin
   so := TSuperObject.Create;
-  so.S['workgroupname'] := GetWorkGroupName;
-  so.S['localusername'] := TISGetUserName;
-  so.S['computername'] :=  TISGetComputerName;
-  so.S['systemmanufacturer'] := GetSystemManufacturer;
-  so.S['systemproductname'] := GetSystemProductName;
-  so.S['biosversion'] := GetBIOSVersion;
-  so.S['biosdate'] := DelphiDateTimeToISO8601Date(GetBIOSDate);
+  so.AsObject.S['workgroupname'] := GetWorkGroupName;
+  so.AsObject.S['localusername'] := TISGetUserName;
+  so.AsObject.S['computername'] :=  TISGetComputerName;
+  so.AsObject.S['systemmanufacturer'] := GetSystemManufacturer;
+  so.AsObject.S['systemproductname'] := GetSystemProductName;
+  so.AsObject.S['biosversion'] := GetBIOSVersion;
+  so.AsObject.S['biosdate'] := DelphiDateTimeToISO8601Date(GetBIOSDate);
   // redirect to a dummy file just to avoid a console creation... bug of route ?
   //so['routingtable'] := SplitLines(RunTask('route print > dummy',ExitStatus));
   //so['ipconfig'] := SplitLines(RunTask('ipconfig /all > dummy',ExitStatus));

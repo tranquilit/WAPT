@@ -8,7 +8,7 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, superobject,
-  uVisAppWaptService,  lazdbexport, sqlite3laz,waptunit;
+  uVisAppWaptService, waptunit;
 
   {Forms, pl_indycomp, lazdbexport, sqlite3laz, uVisAppWaptService, waptunit,
   waptwmi, superobject, waptcommon;}

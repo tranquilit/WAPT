@@ -61,8 +61,8 @@ object VisAppWAPTService: TVisAppWAPTService
   end
   object Datasource1: TDatasource
     DataSet = query
-    left = 412
-    top = 133
+    left = 408
+    top = 128
   end
   object query: TSQLQuery
     FieldDefs = <    

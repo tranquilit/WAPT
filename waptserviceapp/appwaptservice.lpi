@@ -32,25 +32,19 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="6">
+    <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="sqlite3laz"/>
+        <PackageName Value="SQLDBLaz"/>
       </Item1>
       <Item2>
-        <PackageName Value="lazdbexport"/>
+        <PackageName Value="pl_indycomp"/>
       </Item2>
       <Item3>
-        <PackageName Value="SQLDBLaz"/>
+        <PackageName Value="FCL"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_indycomp"/>
-      </Item4>
-      <Item5>
-        <PackageName Value="FCL"/>
-      </Item5>
-      <Item6>
         <PackageName Value="LCL"/>
-      </Item6>
+      </Item4>
     </RequiredPackages>
     <Units Count="5">
       <Unit0>
@@ -109,6 +103,10 @@
         <MsgFileName Value=""/>
       </CompilerMessages>
       <CompilerPath Value="$(CompPath)"/>
+      <ExecuteBefore>
+        <Command Value="psservice.exe stop waptservice"/>
+        <CompileReasons Compile="False" Build="False"/>
+      </ExecuteBefore>
     </Other>
   </CompilerOptions>
   <Debugging>

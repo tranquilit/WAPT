@@ -4,14 +4,14 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="38">
+    <Units Count="40">
       <Unit0>
         <Filename Value="appwaptservice.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="appwaptservice"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="10" Y="10"/>
+        <CursorPos X="23" Y="11"/>
         <UsageCount Value="41"/>
       </Unit0>
       <Unit1>
@@ -22,8 +22,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisAppWaptService"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="49"/>
-        <CursorPos X="24" Y="63"/>
+        <TopLine Value="37"/>
+        <CursorPos X="21" Y="55"/>
         <UsageCount Value="41"/>
       </Unit1>
       <Unit2>
@@ -33,10 +33,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WaptUnit"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="344"/>
-        <CursorPos X="40" Y="359"/>
+        <TopLine Value="1"/>
+        <CursorPos X="31" Y="15"/>
         <UsageCount Value="41"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -45,12 +46,10 @@
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="309"/>
         <CursorPos X="32" Y="319"/>
         <UsageCount Value="33"/>
-        <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\superobject\superobject.pas"/>
@@ -307,13 +306,10 @@
       <Unit36>
         <Filename Value="..\wapt-get\tiscommon.pas"/>
         <UnitName Value="tiscommon"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="471"/>
         <CursorPos X="31" Y="471"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
       </Unit36>
       <Unit37>
         <Filename Value="..\jcl\source\windows\JclWin32.pas"/>
@@ -323,11 +319,29 @@
         <CursorPos X="1" Y="8279"/>
         <UsageCount Value="10"/>
       </Unit37>
+      <Unit38>
+        <Filename Value="uvisappwaptservice.lfm"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="73"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="LFM"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="..\..\pl_openerp\openerpdataset.pas"/>
+        <UnitName Value="OpenERPDataset"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit39>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="19" HistoryIndex="18">
+    <JumpHistory Count="20" HistoryIndex="19">
       <Position1>
         <Filename Value="..\waptservice\waptunit.pas"/>
         <Caret Line="518" Column="1" TopLine="479"/>
@@ -389,21 +403,25 @@
         <Caret Line="359" Column="40" TopLine="344"/>
       </Position15>
       <Position16>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="319" Column="32" TopLine="309"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="359" Column="40" TopLine="344"/>
       </Position16>
       <Position17>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="27" Column="37" TopLine="14"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="419" Column="52" TopLine="263"/>
       </Position17>
       <Position18>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="541" Column="31" TopLine="540"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position18>
       <Position19>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="28" Column="10" TopLine="14"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="9" Column="64" TopLine="1"/>
       </Position19>
+      <Position20>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="241" Column="80" TopLine="218"/>
+      </Position20>
     </JumpHistory>
   </ProjectSession>
   <EditorMacros Count="0"/>

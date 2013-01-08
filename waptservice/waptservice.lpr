@@ -5,7 +5,7 @@ Uses
   CThreads,
 {$ENDIF}{$ENDIF}
   DaemonApp, lazdaemonapp, WaptMapper, WaptUnit,
-  waptcommon, superobject, interfaces, pl_indycomp;
+  waptcommon, interfaces, pl_indycomp;
 
 { $DEFINE svcdebug}
 
