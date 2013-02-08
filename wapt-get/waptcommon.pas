@@ -7,7 +7,7 @@ interface
      DB,sqldb,sqlite3conn,SuperObject;
 
   const
-    waptservice_port = 8088;
+    waptservice_port:integer = 8088;
 
   Function  FindWaptRepo:String;
   Function  GetWaptServerURL:String;
@@ -345,6 +345,7 @@ begin
   so.I['physicalmemory'] := GetTotalPhysicalMemory;
   so.I['virtualmemory'] := GetTotalVirtualMemory;
   so.S['waptgetversion'] := ApplicationVersion(WaptgetPath);
+  so.S['biosinfo'] := GetBIOSExtendedInfo;
 
   // Pose probleme erreur OLE "syntaxe incorrecte"
   //so['wmi_baseboardinfo'] := WMIBaseBoardInfo;

@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, DaemonApp,
   ExtCtrls, IdHTTPServer, IdCustomHTTPServer, IdContext, sqlite3conn, sqldb, db, Waptcommon,
-  superobject;
+  superobject,md5;
 
 type
 
@@ -26,6 +26,7 @@ type
     FWAPTdb : TWAPTDB;
     { private declarations }
     inTimer:Boolean;
+    md5_password:TMD5Digest;
     function GetWaptDB: TWAPTDB;
     procedure SetWaptDB(AValue: TWAPTDB);
     function RepoTableHook(Data, FN: Utf8String): Utf8String;
@@ -40,7 +41,7 @@ var
   WaptDaemon: TWaptDaemon;
 
 implementation
-uses JclSysInfo,IdSocketHandle,IdGlobal,process,StrUtils,idURI,tiscommon,soutils;
+uses JclSysInfo,IdSocketHandle,IdGlobal,process,StrUtils,idURI,tiscommon,soutils,IniFiles;
 
 //  ,waptwmi,  Variants,Windows,ComObj;
 
@@ -234,16 +235,37 @@ begin
   end;
 end;
 
+function hexstr2md5(hexstr:String):TMD5Digest;
+var
+  i:integer;
+begin
+  for i:=0 to 15 do
+     result[i]:=Hex2Dec(copy(hexstr,1+i*2,2));
+end;
+
 procedure TWaptDaemon.DataModuleCreate(Sender: TObject);
 var
-    sh : TIdSocketHandle;
+  sh : TIdSocketHandle;
+  ini : TIniFile;
+  md5str : String;
 begin
   SQLiteLibraryName:=AppendPathDelim(ExtractFilePath(ParamStr(0)))+'DLLs\sqlite3.dll';
-  IdHTTPServer1.DefaultPort:=waptservice_port;
+  ini := TIniFile.Create('c:\wapt\wapt-get.ini');
+  try
+    waptservice_port := ini.ReadInteger('global','service_port',waptservice_port);
+    IdHTTPServer1.DefaultPort:= waptservice_port;
+    //default md5 of 'password'
+    md5str := ini.ReadString('global','md5_password','5f4dcc3b5aa765d61d8327deb882cf99');
+    md5_password := hexstr2md5(md5str);
+  finally
+    ini.Free;
+  end;
+
   sh := IdHTTPServer1.Bindings.Add;
   sh.IP:='127.0.0.1';
   sh.Port:=waptservice_port;
   IdHTTPServer1.Active:=True;
+
 end;
 
 
@@ -360,7 +382,8 @@ begin
     else
     if (ARequestInfo.URI='/install') or (ARequestInfo.URI='/remove') or (ARequestInfo.URI='/showlog') then
     begin
-      if not ARequestInfo.AuthExists or (ARequestInfo.AuthUsername <> 'admin') then
+      if not ARequestInfo.AuthExists or (ARequestInfo.AuthUsername <> 'admin') or
+        not MD5Match(MD5String(ARequestInfo.AuthPassword),md5_password) then
       begin
         AResponseInfo.ResponseNo := 401;
         AResponseInfo.ResponseText := 'Authorization required';

@@ -10,6 +10,7 @@
 #-------------------------------------------------------------------------------
 #!/usr/bin/env python
 from winshell import *
+import os
 import urllib,urllib2
 import tempfile
 import shutil
@@ -17,6 +18,8 @@ from regutil import *
 import subprocess
 import win32pdhutil
 import win32api,win32con
+from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,QueryInfoKey,KEY_READ,KEY_WOW64_32KEY,KEY_WOW64_64KEY
+import platform
 
 import logging
 logger = logging.getLogger('wapt-get')
@@ -35,7 +38,8 @@ def cleanuptemp():
 
 # Temporary dir where to unzip/get all files for setup
 # helper assumes files go and comes here per default
-packagetempdir = tempdir
+if not 'packagetempdir' in globals():
+    packagetempdir = tempdir
 
 def ensure_dir(f):
     """Be sure the directory of f exists on disk. Make it if not"""
@@ -108,20 +112,21 @@ def filecopyto(filename,target):
     (dir,fn) = os.path.split(filename)
     if not dir:
         dir = tempdir
-    shutil.copy(os.path.join(dir,fn),target)
+    #shutil.copy(os.path.join(dir,fn),target)
+    shutil.copy(filename,target)
 
-def run(cmd):
+def run(*cmd):
     """Runs the command and wait for it termination
     returns output, raise exc eption if exitcode is not null"""
-    print 'Run "%s"' % cmd
-    return subprocess.check_output(cmd,shell=True)
+    print 'Run "%s"' % (cmd,)
+    return subprocess.check_output(*cmd,shell=True)
 
-def run_notfatal(cmd):
+def run_notfatal(*cmd):
     """Runs the command and wait for it termination
     returns output, don't raise exception if exitcode is not null but return '' """
     try:
-        print 'Run "%s"' % cmd
-        return subprocess.check_output(cmd,shell=True)
+        print 'Run "%s"' % (cmd,)
+        return subprocess.check_output(*cmd,shell=True)
     except Exception,e:
         print 'Warning : %s' % e
         return ''
@@ -130,7 +135,7 @@ def shelllaunch(cmd):
     """Launch a command (without arguments) but doesn't wait for its termination"""
     os.startfile(cmd)
 
-def registerapplication(applicationname):
+def registerapplication(applicationname,uninstallstring):
     pass
 
 def unregisterapplication(applicationname):
@@ -143,11 +148,66 @@ def isrunning(processname):
         return False
 
 def killalltasks(exename):
-    os.system('taskkill /im "%s" /f % exename')
+    run_notfatal('taskkill /im "%s" /f % exename')
 
 def messagebox(title,msg):
     win32api.MessageBox(0, msg, title, win32con.MB_ICONINFORMATION)
 
-if __name__ == '__main__':
-    main()
+def programfiles64():
+    return os.environ['PROGRAMFILES']
+
+def programfiles():
+    #return get_path(shellcon.CSIDL_PROGRAM_FILES)
+    return os.environ['PROGRAMFILES']
+
+def programfiles32():
+    if 'PROGRAMW6432' in os.environ and 'PROGRAMFILES(X86)' in os.environ:
+        return os.environ['PROGRAMFILES(X86)']
+    else:
+        return os.environ['PROGRAMFILES']
+
+def iswin64():
+    return 'PROGRAMW6432' in os.environ
+
+def OpenKeyNoredir(key, sub_key, sam=KEY_READ):
+    if platform.machine() == 'AMD64':
+        return OpenKey(key,sub_key,0, sam | KEY_WOW64_64KEY)
+    else:
+        return OpenKey(key,sub_key,0,sam)
+
+def get_domain_fromregistry():
+    key = OpenKey(HKEY_LOCAL_MACHINE,"SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters")
+    try:
+        (domain,atype) = QueryValueEx(key,'DhcpDomain')
+    except:
+        (domain,atype) = QueryValueEx(key,'Domain')
+    return domain
+
+def _environ_params(dict_or_module={}):
+    """set some environment params in the supplied module or dict"""
+    if type(dict_or_module) is dict:
+        params_dict = dict_or_module
+    else:
+        params_dict = {}
+
+    params_dict['programfiles32'] = programfiles32()
+    params_dict['programfiles64'] = programfiles64()
+    params_dict['programfiles'] = programfiles()
+    params_dict['domainname'] = get_domain_fromregistry()
+    params_dict['computername'] = os.environ['COMPUTERNAME']
+    from types import ModuleType
+    if type(dict_or_module) is ModuleType:
+        for k,v in params_dict.items():
+            setattr(dict_or_module,k,v)
+    return params_dict
+
+# some const
+programfiles = programfiles()
+programfiles32 = programfiles32()
+programfiles64 = programfiles64()
+domainname = get_domain_fromregistry()
+computername = os.environ['COMPUTERNAME']
+
+# to help pyscripter code completion in setup.py
+params = {}
 

@@ -33,7 +33,7 @@ import glob
 import codecs
 import sqlite3
 import json
-import cStringIO
+import StringIO
 import urllib2
 
 def datetime2isodate(adatetime = datetime.datetime.now()):
@@ -219,10 +219,10 @@ class WaptDB:
             if os.path.isdir (dirname)==False:
                 os.makedirs(dirname)
             os.path.dirname(self.dbpath)
-            self.db=sqlite3.connect(self.dbpath)
+            self.db=sqlite3.connect(self.dbpath,detect_types=sqlite3.PARSE_DECLTYPES or sqlite3.PARSE_COLNAMES)
             self.initdb()
         else:
-            self.db=sqlite3.connect(self.dbpath)
+            self.db=sqlite3.connect(self.dbpath,detect_types=sqlite3.PARSE_DECLTYPES+sqlite3.PARSE_COLNAMES)
 
     def initdb(self):
         assert(isinstance(self.db,sqlite3.Connection))
@@ -308,7 +308,6 @@ class WaptDB:
                  repo_url)
                )
 
-        self.db.commit()
         return cur.lastrowid
 
     def list_repo(self,words=[]):
@@ -392,11 +391,14 @@ class WaptDB:
         if okonly:
             search.append('l.InstallStatus in ("OK","UNKNOWN")')
         cur = self.db.execute("""\
-              select l.Package,l.Version,l.InstallDate,l.InstallStatus,r.Description from wapt_localstatus l
-              left join wapt_repo r on l.Package=r.Package
+              select
+                CASE l.Version WHEN l.Version<r.Version THEN 'U' ELSE 'I' END as "Status [datetime]",
+                l.Package,l.Version,l.InstallDate,l.InstallStatus,r.Description from wapt_localstatus l
+              left join wapt_repo r on l.Package=r.Package and l.Version=r.Version
               where %s
               order by l.Package
             """ %  (" and ".join(search) or "l.Package is not null",), words )
+
 
         def cb(fieldname,value):
             if fieldname=='InstallDate':
@@ -437,30 +439,33 @@ class WaptDB:
             packagesfn = repourl + '/Packages'
             self.logger.debug('read remote Packages zip file %s' % packagesfn)
             packageListFile = codecs.decode(zipfile.ZipFile(
-                  cStringIO.StringIO( urllib2.urlopen(packagesfn).read())
+                  StringIO.StringIO( urllib2.urlopen(packagesfn).read())
                 ).read(name='Packages'),'UTF-8').splitlines()
 
             self.logger.debug('Purge packages table')
             self.db.execute('delete from wapt_repo')
-            package = Package_Entry()
-            for line in packageListFile:
-                # new package
-                if line.strip()=='':
+            startline = 0
+            endline = 0
+            def add(start,end):
+                if start <> end:
+                    package = Package_Entry()
+                    package.load_control_from_wapt(packageListFile[start:end])
                     print package.Package
                     self.logger.debug(package)
                     package.repo_url = repourl
                     self.add_package_entry(package)
-                    package = Package_Entry()
+
+            for line in packageListFile:
+                if line.strip()=='':
+                    add(startline,endline)
+                    endline += 1
+                    startline = endline
                 # add ettribute to current package
                 else:
-                    splitline= line.split(':')
-                    setattr(package,splitline[0].strip(),splitline[1].strip())
+                    endline += 1
             # last one
-            if package.Package:
-                print package.Package
-                package.repo_url = repourl
-                self.add_package_entry(package)
-                self.logger.debug(package)
+            add(startline,endline)
+
             self.logger.debug('Commit wapt_repo updates')
             self.db.commit()
         except:
@@ -539,27 +544,44 @@ class Package_Entry:
         self.Size=''
         self.MD5sum=''
         self.Depends=''
+        self.Sources=''
         self.repo_url=''
 
-    def load_control_from_wapt(self,fname ):
+    def load_control_from_wapt(self,fname):
         """Load package attributes from the control file (utf8 encoded) included in WAPT zipfile fname"""
-        if os.path.isfile(fname):
+        if type(fname) is list:
+            control =  StringIO.StringIO(u'\n'.join(fname))
+            self.Filename = ''
+        elif os.path.isfile(fname):
             myzip = zipfile.ZipFile(fname,'r')
-            control = myzip.open('WAPT/control')
+            control = StringIO.StringIO(myzip.open('WAPT/control').read().decode('utf8'))
             self.MD5sum = md5_for_file(fname)
             self.Size = os.path.getsize(fname)
+            self.Filename = os.path.basename(fname)
         elif os.path.isdir(fname):
-            control = open(os.path.join(fname,'WAPT','control'),'r')
+            control = codecs.open(os.path.join(fname,'WAPT','control'),'r','utf8')
+            self.Filename = os.path.basename(fname)
 
-        self.Filename = os.path.basename(fname)
+        (param,value) = ('','')
         while 1:
             line = control.readline()
-            if not line:
+            if not line or not line.strip():
                 break
-            if line.strip()=='':
-                break
-            splitline = line.split(':')
-            setattr(self,splitline[0].strip(),splitline[1].strip().decode('utf8'))
+            if line.startswith(' '):
+                # additional lines begin with a space!
+                value = getattr(self,param)
+                value += '\n '
+                value += line.strip()
+                setattr(self,param,value)
+            else:
+                sc = line.find(':')
+                if sc<0:
+                    raise Exception('Invalid line (no ":" found) : %s' % line)
+                (param,value) = (line[:sc].strip(),line[sc+1:].strip())
+                param = param
+                setattr(self,param,value)
+        return self
+
 
     def ascontrol(self):
         val = u"""\

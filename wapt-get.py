@@ -21,6 +21,9 @@ from setuphelpers import *
 import json
 import glob
 import platform
+import imp
+import shlex
+
 from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,QueryInfoKey,KEY_READ,KEY_WOW64_32KEY,KEY_WOW64_64KEY
 
 usage="""\
@@ -47,7 +50,7 @@ action is either :
 
 """
 
-version = "0.5.8"
+version = "0.6.0"
 
 parser=OptionParser(usage=usage,version="%prog " + version)
 parser.add_option("-c","--config", dest="config", default='c:\\wapt\\wapt-get.ini', help="Config file full path (default: %default)")
@@ -55,6 +58,7 @@ parser.add_option("-l","--loglevel", dest="loglevel", default='info', type='choi
 parser.add_option("-d","--dry-run",    dest="dry_run",    default=False, action='store_true', help="Dry run (default: %default)")
 parser.add_option("-f","--force",    dest="force",    default=False, action='store_true', help="Force (default: %default)")
 parser.add_option("-p","--params", dest="params", default='{}', help="Setup params as a JSon Object (example : {'licence':'AZE-567-34','company':'TIS'}} (default: %default)")
+parser.add_option("-r","--repository", dest="wapt_url", default='', help="URL of wapt repository (override url of ini file, example http://wapt/wapt) (default: %default)")
 
 (options,args)=parser.parse_args()
 
@@ -63,9 +67,10 @@ logger = logging.getLogger('wapt-get')
 config_file =options.config
 loglevel = options.loglevel
 
-hdlr = logging.StreamHandler(sys.stdout)
-hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
-logger.addHandler(hdlr)
+if len(logger.handlers)<1:
+    hdlr = logging.StreamHandler(sys.stdout)
+    hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+    logger.addHandler(hdlr)
 
 # set loglevel
 if loglevel in ('debug','warning','info','error','critical'):
@@ -74,49 +79,38 @@ if loglevel in ('debug','warning','info','error','critical'):
         raise ValueError('Invalid log level: %s' % loglevel)
     logger.setLevel(numeric_level)
 
-def OpenKeyNoredir(key, sub_key, sam=KEY_READ):
-    if platform.machine() == 'AMD64':
-        return OpenKey(key,sub_key,0, sam | KEY_WOW64_64KEY)
-    else:
-        return OpenKey(key,sub_key,0,sam)
+
+def import_setup(setupfilename,modulename=''):
+    """Import setupfilename as modulename, return the module object"""
+    mod_name,file_ext = os.path.splitext(os.path.split(setupfilename)[-1])
+    if not modulename:
+        modulename=mod_name
+    py_mod = imp.load_source(modulename, setupfilename)
+    return py_mod
 
 
-def psource(module):
-    file = os.path.basename( module )
-    dir = os.path.dirname( module )
-    toks = file.split( '.' )
-    modname = toks[0]
-
-    # Check if the file directory already exists in the sys.path array
-    if os.path.exists( dir ) and not dir in sys.path:
-        sys.path.append( dir )
-
-    exec ('import ' + modname) in globals()
-    exec( 'reload( ' + modname + ' )' ) in globals()
-
-    # This returns the namespace of the file imported
-    return modname
+def _tryurl(url):
+    try:
+        logger.debug('Trying %s' % url)
+        urllib2.urlopen(url+'/')
+        logger.debug('OK')
+        return True
+    except Exception,e:
+        logger.debug('Not available, %s' % e)
+        return False
 
 def find_wapt_server(configparser):
-    def tryurl(url):
-        try:
-            logger.debug('Trying %s' % url)
-            urllib2.urlopen(url+'/')
-            logger.debug('OK')
-            return True
-        except Exception,e:
-            logger.debug('Not available, %s' % e)
-            return False
 
     local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
     logger.debug('Local IPs: %s' % local_ips)
 
-    dnsdomain = dns.resolver.get_default_resolver().domain.to_text()
+    #dnsdomain = dns.resolver.get_default_resolver().domain.to_text()
+    dnsdomain = get_domain_fromregistry()
     logger.debug('Default DNS domain: %s' % dnsdomain)
 
     url = configparser.get('global','repo_url')
     if url:
-        if tryurl(url):
+        if _tryurl(url):
             return url
         else:
             logger.warning('URL defined in ini file %s is not available' % url)
@@ -130,11 +124,11 @@ def find_wapt_server(configparser):
             for a in answers:
                 if a.port == 80:
                     url = 'http://%s/wapt' % (a.target.canonicalize().to_text()[0:-1])
-                    if tryurl(url):
+                    if _tryurl(url):
                         return url
                 else:
                     url = 'http://%s:%i/wapt' % (a.target.canonicalize().to_text()[0:-1],a.port)
-                    if tryurl(url):
+                    if _tryurl(url):
                         return url
             if not answers:
                 logger.debug('  No _wapt._tcp.%s SRV record found' % dnsdomain)
@@ -147,7 +141,7 @@ def find_wapt_server(configparser):
             answers = dns.resolver.query('wapt.%s' % dnsdomain,'CNAME')
             for a in answers:
                 url = 'http://%s/wapt' % (a.target.canonicalize().to_text()[0:-1])
-                if tryurl(url):
+                if _tryurl(url):
                     return url
             if not answers:
                 logger.debug('  No wapt.%s CNAME SRV record found' % dnsdomain)
@@ -159,11 +153,11 @@ def find_wapt_server(configparser):
 
     # hardcoded wapt
     url = 'http://wapt/wapt'
-    if tryurl(url):
+    if _tryurl(url):
         return url
 
     url = 'http://wapt/tiswapt'
-    if tryurl(url):
+    if _tryurl(url):
         return url
 
     return None
@@ -273,8 +267,9 @@ class Wapt:
                     displayname = regget(appkey,'DisplayName','')
                     displayversion = regget(appkey,'DisplayVersion','')
                     installdate = regget(appkey,'InstallDate','')
+                    uninstallstring = regget(appkey,'UninstallString','')
                     if displayname and check_words(subkey+' '+displayname+' ',mykeywords):
-                        result.append({'key':subkey,'DisplayName':displayname,'DisplayVersion':displayversion,'InstallDate':installdate})
+                        result.append({'key':subkey,'DisplayName':displayname,'DisplayVersion':displayversion,'InstallDate':installdate,'uninstallstring':uninstallstring})
                     i += 1
                 except WindowsError,e:
                     # WindowsError: [Errno 259] No more data is available
@@ -294,17 +289,20 @@ class Wapt:
             key = OpenKeyNoredir(HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,guid))
             try:
                 cmd = QueryValueEx(key,'QuietUninstallString')[0]
+                return cmd
             except WindowsError:
                 cmd = QueryValueEx(key,'UninstallString')[0]
                 if 'msiexec' in cmd.lower():
                     cmd = cmd.replace('/I','/X').replace('/i','/X')
-                    if not '/q' in cmd:
-                        cmd = cmd + ' /q'
+                    args = shlex.split(cmd,posix=False)
+                    if not '/q' in cmd.lower():
+                        args.append('/q')
                 else:
                     # mozilla et autre
+                    args = shlex.split(cmd,posix=False)
                     if ('uninst' in cmd.lower() or 'helper.exe' in cmd.lower()) and not ' /s' in cmd.lower():
-                        cmd = cmd + ' /S'
-            return cmd
+                        args.append('/S')
+                return args
         try:
             return get_fromkey("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
         except:
@@ -350,24 +348,34 @@ class Wapt:
             previous_cwd = os.getcwd()
             os.chdir(os.path.dirname(setup_filename))
 
+            # import the setup module from package file
             logger.info("  sourcing install file %s " % setup_filename )
-            psource(setup_filename)
-
+            setup = import_setup(setup_filename,'_waptsetup_')
             required_params = []
-            global setup
+
+            # be sure some minimal functions are available in setup module at install step
             setattr(setup,'basedir',os.path.dirname(setup_filename))
             setattr(setup,'run',run)
             setattr(setup,'run_notfatal',run_notfatal)
+            setattr(setup,'WAPT',self)
 
+            # get definitions of required parameters from setup module
             if hasattr(setup,'required_params'):
                 required_params = setup.required_params
 
+            # get value of required parameters if not already supplied
             for p in required_params:
                 if not p in params_dict:
                     params_dict[p] = raw_input("%s: " % p)
 
             # set params dictionary
-            setattr(setup,'params',params_dict)
+            if not hasattr(setup,'params'):
+                # create a params variable for the setup module
+                setattr(setup,'params',params_dict)
+            else:
+                # update the already created params with additional params from command line
+                setup.params.update(params_dict)
+
             if not self.dry_run:
                 try:
                     logger.info("  executing install script")
@@ -380,12 +388,15 @@ class Wapt:
                 status = 'OK'
             else:
                 status = 'ERROR'
+
+            # get uninstallkey from setup module (string or array of strings)
             if hasattr(setup,'uninstallkey'):
                 new_uninstall_key = '%s' % (setup.uninstallkey,)
             else:
                 new_uninstall = self.registry_uninstall_snapshot()
                 new_uninstall_key = [ k for k in new_uninstall if not k in previous_uninstall]
 
+            # get uninstallstring from setup module (string or array of strings)
             if hasattr(setup,'uninstallstring'):
                 uninstallstring = setup.uninstallstring
             else:
@@ -399,7 +410,7 @@ class Wapt:
                 logger.debug("Cleaning package tmp dir")
                 shutil.rmtree(packagetempdir)
 
-            self.waptdb.update_install_status(install_id,status,'',str(new_uninstall_key),str(uninstallstring))
+            self.waptdb.update_install_status(install_id,status,'',str(new_uninstall_key) if new_uninstall_key else '',str(uninstallstring) if uninstallstring else '')
             # (entry.Package,entry.Version,status,json.dumps({'output':installoutput.output,'exitstatus':exitstatus}))
 
         except Exception,e:
@@ -460,7 +471,12 @@ class Wapt:
                 os.remove(f)
 
     def install(self,apackages,force=False,params_dict = {}):
-        """Install a list of packages and its dependencies"""
+        """Install a list of packages and its dependencies
+            apackages is a list of packages names. A specifi version can be specified
+            force=True reinstalls the packafes even if it is already installed
+            params_dict is passed to the install() procedure in the packages setup.py of all packages
+                as params variables and as "setup module" attributes
+        """
         allupgrades = self.waptdb.upgradeable()
         allinstalled = self.waptdb.installed()
         packages = []
@@ -477,9 +493,9 @@ class Wapt:
         to_upgrade =  [ p for p in depends if p in allupgrades.keys() ]
         additional_install = [ p for p in depends if not p in allinstalled.keys() ]
         if additional_install:
-            print "Additional packages to install :\n   %s" % (','.join(additional_install),)
+            print "  Additional packages to install :\n   %s" % (','.join(additional_install),)
         if to_upgrade:
-            print "Packages to upgrade :\n   %s" % (','.join(to_upgrade),)
+            print "  Packages to upgrade :\n   %s" % (','.join(to_upgrade),)
 
         to_install = []
         to_install.extend(additional_install)
@@ -504,9 +520,9 @@ class Wapt:
             download_url = entry.repo_url+'/'+packagefilename
             fullpackagepath = os.path.join(self.packagecachedir,packagefilename)
             if os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath)>0 and usecache:
-                print ("  using cached package file from " + fullpackagepath)
+                print ("  Use cached package file from " + fullpackagepath)
             else:
-                print ("  downloading package from %s" % download_url)
+                print ("  Downloading package from %s" % download_url)
                 try:
                     wget( download_url, self.packagecachedir)
                 except BaseException as e:
@@ -516,6 +532,7 @@ class Wapt:
                     raise
 
     def remove(self,package):
+        """Removes a package giving its package name, unregister from local status DB"""
         q = self.waptdb.query("""\
            select * from wapt_localstatus
             where Package=?
@@ -524,50 +541,54 @@ class Wapt:
             print "Package %s not installed, aborting" % package
             return True
 
-        mydict = q[0]
-        print "Removing package %s version %s from computer..." % (mydict['Package'],mydict['Version'])
+        # several versions installed of teh same package... ?
+        for mydict in q:
+            print "Removing package %s version %s from computer..." % (mydict['Package'],mydict['Version'])
 
-        if mydict['UninstallString']:
-            if mydict['UninstallString'][0] not in ['[','"',"'"]:
-                guids = mydict['UninstallString']
-            else:
-                try:
-                    guids = eval(mydict['UninstallString'])
-                except:
+            if mydict['UninstallString']:
+                if mydict['UninstallString'][0] not in ['[','"',"'"]:
                     guids = mydict['UninstallString']
-            if isinstance(guids,(unicode,str)):
-                guids = [guids]
-            for guid in guids:
-                try:
-                    logger.info('Running %s' % guid)
-                    logger.info(subprocess.check_output(guid))
-                except Exception,e:
-                    logger.info("Warning : %s" % e)
-            logger.info('Remove status record from local DB')
-            self.waptdb.remove_install_status(package)
-        elif mydict['UninstallKey']:
-            if mydict['UninstallKey'][0] not in ['[','"',"'"]:
-                guids = mydict['UninstallKey']
-            else:
-                try:
-                    guids = eval(mydict['UninstallKey'])
-                except:
+                else:
+                    try:
+                        guids = eval(mydict['UninstallString'])
+                    except:
+                        guids = mydict['UninstallString']
+                if isinstance(guids,(unicode,str)):
+                    guids = [guids]
+                for guid in guids:
+                    try:
+                        logger.info('Running %s' % guid)
+                        logger.info(subprocess.check_output(guid))
+                    except Exception,e:
+                        logger.info("Warning : %s" % e)
+                logger.info('Remove status record from local DB')
+                self.waptdb.remove_install_status(package)
+            elif mydict['UninstallKey']:
+                if mydict['UninstallKey'][0] not in ['[','"',"'"]:
                     guids = mydict['UninstallKey']
+                else:
+                    try:
+                        guids = eval(mydict['UninstallKey'])
+                    except:
+                        guids = mydict['UninstallKey']
 
-            if isinstance(guids,(unicode,str)):
-                guids = [guids]
+                if isinstance(guids,(unicode,str)):
+                    guids = [guids]
 
-            for guid in guids:
-                uninstall_cmd = self.uninstall_cmd(guid)
-                logger.info('Launch uninstall cmd %s' % (uninstall_cmd,))
-                print subprocess.check_output(uninstall_cmd)
-            logger.info('Remove status record from local DB')
-            self.waptdb.remove_install_status(package)
-        else:
-            self.waptdb.remove_install_status(package)
-            raise Exception('  uninstall key not registered in local DB status, unable to remove. Unregistering anyway. Please remove manually')
+                for guid in guids:
+                    uninstall_cmd = self.uninstall_cmd(guid)
+                    logger.info('Launch uninstall cmd %s' % (uninstall_cmd,))
+                    print subprocess.check_output(uninstall_cmd,shell=True)
+                logger.info('Remove status record from local DB')
+                self.waptdb.remove_install_status(package)
+            else:
+                self.waptdb.remove_install_status(package)
+                raise Exception('  uninstall key not registered in local DB status, unable to remove. Unregistering anyway. Please remove manually')
 
     def upgrade(self):
+        """\
+Query localstatus database for packages with a version older than repository
+and install all newest packages"""
         q = self.waptdb.query("""\
            select wapt_repo.Package,wapt_repo.Version from wapt_localstatus
             left join wapt_repo on wapt_repo.Package=wapt_localstatus.Package
@@ -579,6 +600,7 @@ class Wapt:
             self.install([p['Package'] for p in q])
 
     def list_upgrade(self):
+        """Displays a list of packages that can be upgraded"""
         q = self.waptdb.db.execute("""\
            select wapt_repo.Package,wapt_localstatus.Version as Installed,wapt_repo.Version as Available from wapt_localstatus
             left join wapt_repo on wapt_repo.Package=wapt_localstatus.Package
@@ -611,7 +633,14 @@ def main():
     cp = ConfigParser( )
     cp.read(config_file)
 
-    wapt_repourl = find_wapt_server(cp)
+    if options.wapt_url:
+        wapt_repourl = options.wapt_url
+        logger.info("Trying wapt Repository %s" % wapt_repourl)
+        if not _tryurl(wapt_repourl):
+            print "Supplied repository %s is not accessible ... aborting" % wapt_repourl
+            sys.exit(2)
+    else:
+        wapt_repourl = find_wapt_server(cp)
     if not wapt_repourl:
         print "No valid accessible repository found... aborting"
         sys.exit(2)
@@ -658,17 +687,26 @@ def main():
             if len(args)<2:
                 print "You must provide at least one package name to show"
                 sys.exit(1)
+            if os.path.isdir(args[1]) or os.path.isfile(args[1]):
+                entry = Package_Entry().load_control_from_wapt(args[1])
+                print "%s" % entry
+            else:
+                for packagename in args[1:]:
+                    entry = mywapt.waptdb.package_entry_from_db(packagename)
+                    print "%s" % entry
+        elif action=='showparams':
+            if len(args)<2:
+                print "You must provide at one package name to show params for"
+                sys.exit(1)
             for packagename in args[1:]:
-                entry = mywapt.waptdb.package_entry_from_db(packagename)
-                print entry
-
+                params = mywapt.waptdb.params(packagename)
+                print "%s" % params
 
         elif action=='list-registry':
-            print "%-39s%-70s%-20s" % ('UninstallKey','Software','Version')
-            print '-'*39+'-'*70 + '-'*20
+            print "%-39s%-70s%-20s%-70s" % ('UninstallKey','Software','Version','Uninstallstring')
+            print '-'*39+'-'*70 + '-'*20 + '-'*70
             for p in mywapt.registry_installed_softwares(' '.join(args[1:])) :
-                print u"%-39s%-70s%-20s" % (p['key'],p['DisplayName'],p['DisplayVersion'])
-
+                print u"%-39s%-70s%-20s%-70s" % (p['key'],p['DisplayName'],p['DisplayVersion'],p['uninstallstring'])
 
         elif action=='showlog':
             if len(args)<2:
