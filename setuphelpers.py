@@ -9,6 +9,9 @@
 # Licence:     GPL
 #-------------------------------------------------------------------------------
 #!/usr/bin/env python
+
+__version__ = "0.1"
+
 from winshell import *
 import os
 import urllib,urllib2

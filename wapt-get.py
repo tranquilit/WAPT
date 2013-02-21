@@ -1,5 +1,8 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
+
+__version__ = "0.6.1"
+
 import sys
 import os
 import zipfile
@@ -17,6 +20,7 @@ import dns.resolver
 import pprint
 import socket
 import codecs
+import setuphelpers
 from setuphelpers import *
 import json
 import glob
@@ -50,9 +54,8 @@ action is either :
 
 """
 
-version = "0.6.0"
 
-parser=OptionParser(usage=usage,version="%prog " + version)
+parser=OptionParser(usage=usage,version="%prog " + __version__+' setuphelpers '+setuphelpers.__version__)
 parser.add_option("-c","--config", dest="config", default='c:\\wapt\\wapt-get.ini', help="Config file full path (default: %default)")
 parser.add_option("-l","--loglevel", dest="loglevel", default='info', type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: %default)")
 parser.add_option("-d","--dry-run",    dest="dry_run",    default=False, action='store_true', help="Dry run (default: %default)")
@@ -300,6 +303,9 @@ class Wapt:
                 else:
                     # mozilla et autre
                     args = shlex.split(cmd,posix=False)
+                    # remove double quotes if any
+                    if args[0].startswith('"') and args[0].endswith('"'):
+                        args[0] = args[0][1:-1]
                     if ('uninst' in cmd.lower() or 'helper.exe' in cmd.lower()) and not ' /s' in cmd.lower():
                         args.append('/S')
                 return args
