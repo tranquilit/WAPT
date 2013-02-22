@@ -308,6 +308,8 @@ class Wapt:
                         args[0] = args[0][1:-1]
                     if ('uninst' in cmd.lower() or 'helper.exe' in cmd.lower()) and not ' /s' in cmd.lower():
                         args.append('/S')
+                    if ('unins000' in cmd.lower()) and not ' /silent' in cmd.lower():
+                        args.append('/silent')
                 return args
         try:
             return get_fromkey("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
