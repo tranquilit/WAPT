@@ -95,7 +95,7 @@ def import_setup(setupfilename,modulename=''):
 def _tryurl(url):
     try:
         logger.debug('Trying %s' % url)
-        urllib2.urlopen(url+'/')
+        urllib2.urlopen(url)
         logger.debug('OK')
         return True
     except Exception,e:
@@ -127,12 +127,20 @@ def find_wapt_server(configparser):
             for a in answers:
                 if a.port == 80:
                     url = 'http://%s/wapt' % (a.target.canonicalize().to_text()[0:-1])
-                    if _tryurl(url):
+                    if _tryurl(url+'/Packages'):
                         return url
+                    else:
+                        url = 'http://%s' % (a.target.canonicalize().to_text()[0:-1])
+                        if _tryurl(url+'/Packages'):
+                            return url
                 else:
                     url = 'http://%s:%i/wapt' % (a.target.canonicalize().to_text()[0:-1],a.port)
-                    if _tryurl(url):
+                    if _tryurl(url+'/Packages'):
                         return url
+                    else:
+                        url = 'http://%s:%i' % (a.target.canonicalize().to_text()[0:-1],a.port)
+                        if _tryurl(url+'/Packages'):
+                            return url
             if not answers:
                 logger.debug('  No _wapt._tcp.%s SRV record found' % dnsdomain)
         except dns.resolver.NXDOMAIN:
@@ -144,7 +152,7 @@ def find_wapt_server(configparser):
             answers = dns.resolver.query('wapt.%s' % dnsdomain,'CNAME')
             for a in answers:
                 url = 'http://%s/wapt' % (a.target.canonicalize().to_text()[0:-1])
-                if _tryurl(url):
+                if _tryurl(url+'/Packages'):
                     return url
             if not answers:
                 logger.debug('  No wapt.%s CNAME SRV record found' % dnsdomain)
@@ -156,11 +164,11 @@ def find_wapt_server(configparser):
 
     # hardcoded wapt
     url = 'http://wapt/wapt'
-    if _tryurl(url):
+    if _tryurl(url+'/Packages'):
         return url
 
     url = 'http://wapt/tiswapt'
-    if _tryurl(url):
+    if _tryurl(url+'/Packages'):
         return url
 
     return None
@@ -267,12 +275,17 @@ class Wapt:
                 try:
                     subkey = EnumKey(key, i).decode('iso8859')
                     appkey = OpenKeyNoredir(HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,subkey.encode('iso8859')))
-                    displayname = regget(appkey,'DisplayName','')
-                    displayversion = regget(appkey,'DisplayVersion','')
-                    installdate = regget(appkey,'InstallDate','')
+                    display_name = regget(appkey,'DisplayName','')
+                    display_version = regget(appkey,'DisplayVersion','')
+                    install_date = regget(appkey,'InstallDate','')
+                    install_location = regget(appkey,'InstallLocation','')
                     uninstallstring = regget(appkey,'UninstallString','')
+                    publisher = regget(appkey,'Publisher','')
                     if displayname and check_words(subkey+' '+displayname+' ',mykeywords):
-                        result.append({'key':subkey,'DisplayName':displayname,'DisplayVersion':displayversion,'InstallDate':installdate,'uninstallstring':uninstallstring})
+                        result.append({'key':subkey,
+                            'name':displayname,'version':displayversion,
+                            'install_date':install_date,'install_location':install_location,
+                            'uninstallstring':uninstallstring,'publisher':publisher,})
                     i += 1
                 except WindowsError,e:
                     # WindowsError: [Errno 259] No more data is available
@@ -757,6 +770,9 @@ def main():
 
         elif action=='cleanup':
             mywapt.cleanup()
+
+        elif action=='inventory':
+            mywapt.inventory()
 
         elif action=='list':
             mywapt.list_installed_packages(args[1:])

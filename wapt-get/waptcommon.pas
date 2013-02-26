@@ -19,7 +19,6 @@ interface
 
   function LocalSysinfo: ISuperObject;
 
-
 type
 
   { TWAPTDB }
@@ -52,7 +51,7 @@ type
 
 implementation
 
-uses FileUtil,soutils,tiscommon,JCLSysInfo;
+uses FileUtil,soutils,tiscommon,JCLSysInfo,  Windows, ActiveX, ComObj, Variants;
 
 function FindWaptRepo: String;
 begin
@@ -306,6 +305,94 @@ end;
 
 //////
 
+function VarArrayToStr(const vArray: variant): string;
+
+    function _VarToStr(const V: variant): string;
+    var
+    Vt: integer;
+    begin
+    Vt := VarType(V);
+        case Vt of
+          varSmallint,
+          varInteger  : Result := IntToStr(integer(V));
+          varSingle,
+          varDouble,
+          varCurrency : Result := FloatToStr(Double(V));
+          varDate     : Result := VarToStr(V);
+          varOleStr   : Result := WideString(V);
+          varBoolean  : Result := VarToStr(V);
+          varVariant  : Result := VarToStr(Variant(V));
+          varByte     : Result := char(byte(V));
+          varString   : Result := String(V);
+          varArray    : Result := VarArrayToStr(Variant(V));
+        end;
+    end;
+
+var
+i : integer;
+begin
+    Result := '[';
+     if (VarType(vArray) and VarArray)=0 then
+       Result := _VarToStr(vArray)
+    else
+    for i := VarArrayLowBound(vArray, 1) to VarArrayHighBound(vArray, 1) do
+     if i=VarArrayLowBound(vArray, 1)  then
+      Result := Result+_VarToStr(vArray[i])
+     else
+      Result := Result+'|'+_VarToStr(vArray[i]);
+
+    Result:=Result+']';
+end;
+
+function VarStrNull(const V:OleVariant):string; //avoid problems with null strings
+begin
+  Result:='';
+  if not VarIsNull(V) then
+  begin
+    if VarIsArray(V) then
+       Result:=VarArrayToStr(V)
+    else
+    Result:=VarToStr(V);
+  end;
+end;
+
+function GetWMIObject(const objectName: String): IDispatch; //create the Wmi instance
+var
+  chEaten: PULONG;
+  BindCtx: IBindCtx;
+  Moniker: IMoniker;
+begin
+  OleCheck(CreateBindCtx(0, bindCtx));
+  OleCheck(MkParseDisplayName(BindCtx, StringToOleStr(objectName), chEaten, Moniker));
+  OleCheck(Moniker.BindToObject(BindCtx, nil, IDispatch, Result));
+end;
+
+function GetWin32_BIOSInfo:ISuperObject;
+var
+  objWMIService : OleVariant;
+  colItems      : OleVariant;
+  colItem       : Variant;
+  oEnum,pEnum   : IEnumvariant;
+  sValue        : string;
+  p             : Variant;
+  i:integer;
+begin;
+  Result := TSuperObject.Create;
+  objWMIService := GetWMIObject('winmgmts:\\localhost\root\CIMV2');
+  colItems      := objWMIService.ExecQuery('SELECT * FROM Win32_BIOS','WQL',0);
+  oEnum         := IUnknown(colItems._NewEnum) as IEnumVariant;
+
+  while oEnum.Next(1, colItem, nil) = 0 do
+  begin
+    Result.S['Manufacturer'] := VarStrNull(colItem.Properties_.Item('Manufacturer').Value);
+    //Result.S['Manufacturer'] := VarStrNull(colItem.Properties_.Item('Manufacturer').Value);
+    Result.S['SerialNumber'] := VarStrNull(colItem.Properties_.Item('SerialNumber').Value);
+    colItem:=Unassigned;
+  end;
+end;
+
+
+
 function LocalSysinfo: ISUperObject;
 var
       so:ISuperObject;
@@ -314,13 +401,13 @@ var
       st : TStringList;
 begin
   so := TSuperObject.Create;
-  so.AsObject.S['workgroupname'] := GetWorkGroupName;
-  so.AsObject.S['localusername'] := TISGetUserName;
-  so.AsObject.S['computername'] :=  TISGetComputerName;
-  so.AsObject.S['systemmanufacturer'] := GetSystemManufacturer;
-  so.AsObject.S['systemproductname'] := GetSystemProductName;
-  so.AsObject.S['biosversion'] := GetBIOSVersion;
-  so.AsObject.S['biosdate'] := DelphiDateTimeToISO8601Date(GetBIOSDate);
+  so.S['workgroupname'] := GetWorkGroupName;
+  so.S['localusername'] := TISGetUserName;
+  so.S['computername'] :=  TISGetComputerName;
+  so.S['systemmanufacturer'] := GetSystemManufacturer;
+  so.S['systemproductname'] := GetSystemProductName;
+  so.S['biosversion'] := GetBIOSVersion;
+  so.S['biosdate'] := DelphiDateTimeToISO8601Date(GetBIOSDate);
   // redirect to a dummy file just to avoid a console creation... bug of route ?
   //so['routingtable'] := SplitLines(RunTask('route print > dummy',ExitStatus));
   //so['ipconfig'] := SplitLines(RunTask('ipconfig /all > dummy',ExitStatus));
@@ -347,14 +434,18 @@ begin
   so.S['waptgetversion'] := ApplicationVersion(WaptgetPath);
   so.S['biosinfo'] := GetBIOSExtendedInfo;
 
+  so['wmibiosinfo'] := GetWin32_BIOSInfo;
+
   // Pose probleme erreur OLE "syntaxe incorrecte"
   //so['wmi_baseboardinfo'] := WMIBaseBoardInfo;
   result := so;
 end;
 
+initialization
+  if not Succeeded(CoInitializeEx(nil, COINIT_MULTITHREADED)) then;
+    //Raise Exception.Create('Unable to initialize ActiveX layer');
 
-
-
-
+finalization
+  CoUninitialize();
 end.
 
