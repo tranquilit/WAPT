@@ -177,8 +177,8 @@ def find_wapt_server(configparser):
 
             if not answers:
                 logger.debug('  No _wapt._tcp.%s SRV record found' % dnsdomain)
-        except dns.resolver.NXDOMAIN:
-            pass
+        except dns.exception.DNSException,e:
+            logger.warning('  DNS resolver error : %s' % (e,))
 
         # find by dns CNAME
         try:
@@ -195,8 +195,8 @@ def find_wapt_server(configparser):
             if not answers:
                 logger.debug('  No wapt.%s CNAME SRV record found' % dnsdomain)
 
-        except dns.resolver.NXDOMAIN:
-            pass
+        except dns.exception.DNSException,e:
+            logger.warning('  DNS resolver error : %s' % (e,))
     else:
         logger.warning('Local DNS domain not found, skipping SRV _wapt._tcp and CNAME search ')
 
