@@ -586,8 +586,7 @@ class Resolver(object):
                 tcp_params = _winreg.OpenKey(lm,
                                              r'SYSTEM\CurrentControlSet'
                                              r'\Services\Tcpip\Parameters')
-                # Patch H Touvet 04/06/2012. Problem when multiple interfaces.
-                want_scan = False
+                want_scan = True
             except EnvironmentError:
                 # ME
                 tcp_params = _winreg.OpenKey(lm,
