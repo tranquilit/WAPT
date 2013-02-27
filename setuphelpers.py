@@ -24,6 +24,7 @@ import win32api,win32con
 from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,QueryInfoKey,KEY_READ,KEY_WOW64_32KEY,KEY_WOW64_64KEY
 import platform
 import socket
+import netifaces
 
 import logging
 logger = logging.getLogger('wapt-get')
@@ -260,6 +261,49 @@ def installed_softwares(self,keywords=''):
         result.extend(list_fromkey("Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall"))
     return result
 
+
+def ipv4_to_int(ipaddr):
+    (a,b,c,d) = ipaddr.split('.')
+    return (int(a) << 24) + (int(b) << 16) + (int(c) << 8) + int(d)
+
+def same_net(ip1,ip2,netmask):
+    """Given 2 ipv4 address and mask, return True if in same subnet"""
+    return (ipv4_to_int(ip1) & ipv4_to_int(netmask)) == (ipv4_to_int(ip2) & ipv4_to_int(netmask))
+
+def host_ipv4():
+    """return a list of (iface,mac,{addr,broadcast,netmask})"""
+    ifaces = netifaces.interfaces()
+    res = []
+    for i in ifaces:
+        params = netifaces.ifaddresses(i)
+        if netifaces.AF_LINK in params and params[netifaces.AF_LINK][0]['addr'] and not params[netifaces.AF_LINK][0]['addr'].startswith('00:00:00'):
+            iface = {'iface':i,'mac':params[netifaces.AF_LINK][0]['addr']}
+            if netifaces.AF_INET in params:
+                iface.update(params[netifaces.AF_INET][0])
+            res.append( iface )
+    return res
+
+def host_info():
+    info = {}
+    info['virtualmemory'] = 2147352576
+    info['computername'] =  "PC623"
+    info['workgroupname'] = "SERMOSTH"
+    info['biosinfo'] = ""
+    info['biosdate'] = "2012-08-15T00:00:00,0+01:00"
+    info['wmibiosinfo']= {
+        'SerialNumber': "GN5Q2Q1",
+        'Manufacturer': "Dell Inc."}
+    info['macaddresses'] = ["5C-26-0A-68-1E-3A"]
+    info['processorcount'] = 4
+    info['ipaddresses'] = [
+      "192.168.149.198"]
+    info['physicalmemory'] = 6317723648
+    info['waptgetversion'] = "0.5.11"
+    info['systemmanufacturer'] = "Dell Inc."
+    info['biosversion'] = "A15"
+    info['systemproductname'] = "Latitude E6520",
+    info['cpuname'] = "Intel(R) Core(TM) i5-2520M CPU @ 2.50GHz"
+    return info
 
 
 # some const
