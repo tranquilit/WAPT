@@ -42,6 +42,9 @@ OutputDir=setup
 OutputBaseFilename=WaptSetup
 SolidCompression=True
 
+[Registry]
+Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"; Check: NeedsAddPath('{app}')
+
 [Run]
 
 
@@ -59,29 +62,54 @@ begin
 end;
 
 procedure DeinitializeSetup();
+var
+  ErrorCode: Integer;
 begin
   if ServiceExists('waptservice') then
     SimpleStartService('waptservice',True,True);
+  
 end;
 
 procedure AfterWaptServiceinstall(exe:String);
+var
+  ErrorCode: Integer;
 begin
-  SimpleCreateService(
-    'waptservice',
-    'waptservice', 
-    ExpandConstant('{app}\waptservice.exe'),
-    SERVICE_AUTO_START,
-    '','', 
-    False, 
-    False);
+//  SimpleCreateService(
+//   'waptservice',
+//    'waptservice', 
+//    ExpandConstant('"{app}\waptservice.exe" --run'),
+//    SERVICE_AUTO_START,
+//    '','', 
+//    False, 
+//    False);
+  if not ShellExec('', ExpandConstant('{app}\waptservice.exe'),
+     '--install', '{app}', SW_SHOW, True, ErrorCode) then
+  begin
+    RaiseException('Error installing waptservice:'+intToStr(ErrorCode));
+  end;
+   
 end;
 
 procedure BeforeWaptServiceinstall(exe:String);
 begin
   if ServiceExists('waptservice') then
-  begin
-    SimpleStopService('waptservice',True,True);
     SimpleDeleteService('waptservice');
-  end;
 end;
+
+function NeedsAddPath(Param: string): boolean;
+var
+  OrigPath: string;
+begin
+  if not RegQueryStringValue(HKEY_LOCAL_MACHINE,'SYSTEM\CurrentControlSet\Control\Session Manager\Environment', 'Path', OrigPath)
+  then begin
+    Result := True;
+    exit;
+  end;
+  // look for the path with leading and trailing semicolon
+  // Pos() returns 0 if not found
+  Result := Pos(';' + UpperCase(Param) + ';', ';' + UpperCase(OrigPath) + ';') = 0;  
+  if Result = True then
+     Result := Pos(';' + UpperCase(Param) + '\;', ';' + UpperCase(OrigPath) + ';') = 0; 
+end;
+
 
