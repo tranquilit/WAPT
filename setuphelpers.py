@@ -23,6 +23,7 @@ import win32pdhutil
 import win32api,win32con
 from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,QueryInfoKey,KEY_READ,KEY_WOW64_32KEY,KEY_WOW64_64KEY
 import platform
+import socket
 
 import logging
 logger = logging.getLogger('wapt-get')
@@ -172,7 +173,13 @@ def programfiles32():
 def iswin64():
     return 'PROGRAMW6432' in os.environ
 
-def OpenKeyNoredir(key, sub_key, sam=KEY_READ):
+def getcomputername():
+    return socket.gethostname()
+
+def getloggedinusers():
+    return []
+
+def openkey_noredir(key, sub_key, sam=KEY_READ):
     if platform.machine() == 'AMD64':
         return OpenKey(key,sub_key,0, sam | KEY_WOW64_64KEY)
     else:
@@ -203,6 +210,57 @@ def _environ_params(dict_or_module={}):
         for k,v in params_dict.items():
             setattr(dict_or_module,k,v)
     return params_dict
+
+def installed_softwares(self,keywords=''):
+    """return list of installed softwrae from registry (both 32bit and 64bit"""
+    def regget(key,name,default=None):
+        try:
+            return QueryValueEx(key,name)[0]
+        except WindowsError:
+            # WindowsError: [Errno 259] No more data is available
+            return default
+
+    def check_words(target,words):
+        mywords = target.lower()
+        result = not words or mywords
+        for w in words:
+            result = result and w in mywords
+        return result
+
+    def list_fromkey(uninstall):
+        result = []
+        key = openkey_noredir(HKEY_LOCAL_MACHINE,uninstall)
+        mykeywords = keywords.lower().split()
+        i = 0
+        while True:
+            try:
+                subkey = EnumKey(key, i).decode('iso8859')
+                appkey = openkey_noredir(HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,subkey.encode('iso8859')))
+                display_name = regget(appkey,'DisplayName','')
+                display_version = regget(appkey,'DisplayVersion','')
+                install_date = regget(appkey,'InstallDate','')
+                install_location = regget(appkey,'InstallLocation','')
+                uninstallstring = regget(appkey,'UninstallString','')
+                publisher = regget(appkey,'Publisher','')
+                if display_name and check_words(subkey+' '+display_name+' '+publisher,mykeywords):
+                    result.append({'key':subkey,
+                        'name':display_name,'version':display_version,
+                        'install_date':install_date,'install_location':install_location,
+                        'uninstallstring':uninstallstring,'publisher':publisher,})
+                i += 1
+            except WindowsError,e:
+                # WindowsError: [Errno 259] No more data is available
+                if e.winerror == 259:
+                    break
+                else:
+                    raise
+        return result
+    result = list_fromkey("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
+    if platform.machine() == 'AMD64':
+        result.extend(list_fromkey("Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall"))
+    return result
+
+
 
 # some const
 programfiles = programfiles()
