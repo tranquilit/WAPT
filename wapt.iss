@@ -30,7 +30,7 @@ Source: "C:\tranquilit\wapt\wapt-get.exe"; DestDir: "{app}";
 [Setup]
 AppName={#AppName}
 AppVersion={#AppVersion}
-DefaultDirName={pf}\{#AppName}
+DefaultDirName="C:\{#AppName}"
 DefaultGroupName={#AppName}
 ChangesEnvironment=True
 AppPublisher=Tranquil IT Systems
@@ -38,18 +38,44 @@ UninstallDisplayName=WAPT libraries and WAPTService
 OutputDir=setup
 OutputBaseFilename=WaptSetup
 SolidCompression=True
+AppPublisherURL=http://www.tranquil.it
+AppUpdatesURL=http://wapt.tranquil.it
+AppContact=dev@tranquil.it
+AppSupportPhone=+33 2 40 97 57 55
 
 [Registry]
 Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"; Check: NeedsAddPath('{app}')
+
+[INI]
+Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL}
 
 [Run]
 
 
 [UninstallRun]
-Filename: "{app}\waptservice.exe"; Parameters: "--install"
+Filename: "net"; Parameters: "stop waptservice"
+Filename: "{app}\waptservice.exe"; Parameters: "--uninstall"
 
 [Code]
 #include "services.iss"
+var
+  RepoURLPage : TInputQueryWizardPage;
+  
+procedure InitializeWizard;
+begin
+  RepoURLPage := CreateInputQueryPage(wpWelcome,
+  'Optional Parameters', 'Please specify the location of WAPT Packages (http or https URL)',
+  'Leave empty if you have a DNS SRV entry for _wapt._tcp.<yourlocaldomain> giving the host and port of the Repository http server');
+
+  // Add items (False means it's not a password edit)
+  RepoURLPage.Add('Optional WAPT repository location:', False);
+
+end;
+
+function GetRepoURL(Param: String):String;
+begin
+  Result := RepoURLPage.Values[0];
+end;
 
 function InitializeSetup(): Boolean;
 begin
@@ -97,16 +123,16 @@ function NeedsAddPath(Param: string): boolean;
 var
   OrigPath: string;
 begin
+  OrigPath := '';
   if not RegQueryStringValue(HKEY_LOCAL_MACHINE,'SYSTEM\CurrentControlSet\Control\Session Manager\Environment', 'Path', OrigPath)
   then begin
     Result := True;
     exit;
   end;
-  // look for the path with leading and trailing semicolon
-  // Pos() returns 0 if not found
-  Result := Pos(';' + UpperCase(Param) + ';', ';' + UpperCase(OrigPath) + ';') = 0;  
-  if Result = True then
-     Result := Pos(';' + UpperCase(Param) + '\;', ';' + UpperCase(OrigPath) + ';') = 0; 
+
+  OrigPath := ';'+OrigPath+';';
+  Result := Pos(';' + UpperCase(ExpandConstant(Param)) + ';', UpperCase(OrigPath)) = 0;
+  
 end;
 
 
