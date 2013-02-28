@@ -315,13 +315,38 @@ CaptureOutput=FALSE
 ConsoleHidden=FALSE
 WaitForTerminate=FALSE
 
+[Project\ChildNodes\Node1\ChildNodes\Node11]
+ClassName=TProjectRunConfiguationNode
+Name=install python27
+
+[Project\ChildNodes\Node1\ChildNodes\Node11\RunConfig]
+ScriptName=C:\wapt\wapt-get.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=install c:\tranquilit\tis-python27-wapt\
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node11\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+ShortCut=0
+MessagesFormat=$[FileName] $[LineNumber]
+CaptureOutput=FALSE
+ConsoleHidden=FALSE
+WaitForTerminate=FALSE
+
 [Project\ChildNodes\Node1\ChildNodes]
-Count=11
+Count=12
 
 [Project\ChildNodes]
 Count=2
 
 [Project\ExtraPythonPath]
-Item0=C:\tranquilit\wapt\lib\site-packages
-Count=1
+Count=0
 

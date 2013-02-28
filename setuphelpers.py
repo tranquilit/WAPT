@@ -15,9 +15,6 @@ __version__ = "0.2"
 from winshell import *
 import os,sys
 import logging
-
-print 'Python path : %s' % (sys.path,)
-
 import urllib,urllib2
 import tempfile
 import shutil

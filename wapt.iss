@@ -4,13 +4,10 @@
 
 [Files]
 Source: "C:\tranquilit\wapt\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
-Source: "C:\tranquilit\wapt\dns\*"; DestDir: "{app}\dns"; Flags: createallsubdirs recursesubdirs
-Source: "C:\tranquilit\wapt\iniparse\*"; DestDir: "{app}\iniparse"; Flags: createallsubdirs recursesubdirs
 Source: "C:\tranquilit\wapt\lib\*"; DestDir: "{app}\lib"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.pyc,test,*.~*" 
 Source: "C:\tranquilit\wapt\libs\*"; DestDir: "{app}\libs"; Flags: createallsubdirs recursesubdirs
 Source: "C:\tranquilit\wapt\static\*"; DestDir: "{app}\static"; Flags: createallsubdirs recursesubdirs
 Source: "C:\tranquilit\wapt\templates\*"; DestDir: "{app}\templates"; Flags: createallsubdirs recursesubdirs
-Source: "C:\tranquilit\wapt\utils\*"; DestDir: "{app}\utils"; Flags: createallsubdirs recursesubdirs
 Source: "C:\tranquilit\wapt\common.py"; DestDir: "{app}"; 
 Source: "C:\tranquilit\wapt\winshell.py"; DestDir: "{app}"; 
 Source: "C:\tranquilit\wapt\setuphelpers.py"; DestDir: "{app}"; 
