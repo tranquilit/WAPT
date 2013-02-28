@@ -13,7 +13,11 @@
 __version__ = "0.2"
 
 from winshell import *
-import os
+import os,sys
+import logging
+
+print 'Python path : %s' % (sys.path,)
+
 import urllib,urllib2
 import tempfile
 import shutil
@@ -24,9 +28,9 @@ import win32api,win32con
 from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,QueryInfoKey,KEY_READ,KEY_WOW64_32KEY,KEY_WOW64_64KEY
 import platform
 import socket
+import dns.resolver
 import netifaces
 
-import logging
 logger = logging.getLogger('wapt-get')
 
 # ensure there is a tempdir available for local work. This is deleted at program exit.
@@ -285,7 +289,7 @@ def host_ipv4():
 
 def host_info():
     info = {}
-    info['virtualmemory'] = 2147352576
+    info['waptgetversion'] = "0.5.11"
     info['computername'] =  "PC623"
     info['workgroupname'] = "SERMOSTH"
     info['biosinfo'] = ""
@@ -298,13 +302,128 @@ def host_info():
     info['ipaddresses'] = [
       "192.168.149.198"]
     info['physicalmemory'] = 6317723648
-    info['waptgetversion'] = "0.5.11"
+    info['virtualmemory'] = 2147352576
     info['systemmanufacturer'] = "Dell Inc."
     info['biosversion'] = "A15"
     info['systemproductname'] = "Latitude E6520",
     info['cpuname'] = "Intel(R) Core(TM) i5-2520M CPU @ 2.50GHz"
     return info
 
+
+def _tryurl(url):
+    try:
+        logger.debug('  trying %s' % url)
+        urllib2.urlopen(url)
+        logger.debug('  OK')
+        return True
+    except Exception,e:
+        logger.debug('  Not available : %s' % e)
+        return False
+
+def find_wapt_server(configparser):
+    """Search the nearest working WAPT repository given the following priority
+       - URL defined in ini file
+       - first SRV record in the same network as one of the connected network interface
+       - first SRV record with the heigher weight
+       - wapt CNAME in the local dns domain (https first then http)
+       - hardcoded http://wapt/wapt
+
+    """
+    local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
+    logger.debug('All interfaces : %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in host_ipv4() if 'addr' in i and 'netmask' in i])
+    connected_interfaces = [ i for i in host_ipv4() if 'addr' in i and 'netmask' in i and i['addr'] in local_ips ]
+    logger.debug('Local connected IPs: %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in connected_interfaces])
+
+    def is_inmysubnets(ip):
+        """Return True if IP is in one of my connected subnets"""
+        for i in connected_interfaces:
+            if same_net(i['addr'],ip,i['netmask']):
+                logger.debug('  %s is in same subnet as %s/%s local connected interface' % (ip,i['addr'],i['netmask']))
+                return True
+        return False
+
+    #dnsdomain = dns.resolver.get_default_resolver().domain.to_text()
+    dnsdomain = get_domain_fromregistry()
+    logger.debug('Default DNS domain: %s' % dnsdomain)
+
+    if configparser:
+        url = configparser.get('global','repo_url')
+        if url:
+            if _tryurl(url):
+                return url
+            else:
+                logger.warning('URL defined in ini file %s is not available' % url)
+        if not url:
+            logger.debug('No url defined in ini file')
+
+    if dnsdomain and dnsdomain <> '.':
+        # find by dns SRV _wapt._tcp
+        try:
+            logger.debug('Trying _wapt._tcp.%s SRV records' % dnsdomain)
+            answers = dns.resolver.query('_wapt._tcp.%s' % dnsdomain,'SRV')
+            working_url = []
+            for a in answers:
+                # get first numerical ipv4 from SRV name record
+                try:
+                    wapthost = a.target.to_text()[0:-1]
+                    ip = dns.resolver.query(a.target)[0].to_text()
+                    if a.port == 80:
+                        url = 'http://%s/wapt' % (wapthost,)
+                        if _tryurl(url+'/Packages'):
+                            working_url.append((a.weight,url))
+                            if is_inmysubnets(ip):
+                                return url
+                    elif a.port == 443:
+                        url = 'https://%s/wapt' % (wapthost,)
+                        if _tryurl(url+'/Packages'):
+                            working_url.append((a.weight,url))
+                            if is_inmysubnets(ip):
+                                return url
+                    else:
+                        url = 'http://%s:%i/wapt' % (wapthost,a.port)
+                        if _tryurl(url+'/Packages'):
+                            working_url.append((a.weight,url))
+                            if is_inmysubnets(ip):
+                                return url
+                except Exception,e:
+                    logging.debug('Unable to resolve : error %s' % (e,))
+
+            if working_url:
+                working_url.sort()
+                logger.debug('  Accessible servers : %s' % (working_url,))
+                return working_url[-1][0][1]
+
+            if not answers:
+                logger.debug('  No _wapt._tcp.%s SRV record found' % dnsdomain)
+        except dns.exception.DNSException,e:
+            logger.warning('  DNS resolver error : %s' % (e,))
+
+        # find by dns CNAME
+        try:
+            logger.debug('Trying wapt.%s CNAME records' % dnsdomain)
+            answers = dns.resolver.query('wapt.%s' % dnsdomain,'CNAME')
+            for a in answers:
+                wapthost = a.target.canonicalize().to_text()[0:-1]
+                url = 'https://%s/wapt' % (wapthost,)
+                if _tryurl(url+'/Packages'):
+                    return url
+                url = 'http://%s/wapt' % (wapthost,)
+                if _tryurl(url+'/Packages'):
+                    return url
+            if not answers:
+                logger.debug('  No wapt.%s CNAME SRV record found' % dnsdomain)
+
+        except dns.exception.DNSException,e:
+            logger.warning('  DNS resolver error : %s' % (e,))
+    else:
+        logger.warning('Local DNS domain not found, skipping SRV _wapt._tcp and CNAME search ')
+
+    # hardcoded wapt
+    url = 'http://wapt/wapt'
+    if _tryurl(url+'/Packages'):
+        return url
+
+    return None
 
 # some const
 programfiles = programfiles()

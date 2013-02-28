@@ -322,5 +322,6 @@ Count=11
 Count=2
 
 [Project\ExtraPythonPath]
-Count=0
+Item0=C:\tranquilit\wapt\lib\site-packages
+Count=1
 

@@ -50,7 +50,7 @@ function pwaptget.GetWaptDB: TWAPTDB;
 begin
   if not Assigned(FWaptDB) then
   begin
-    Fwaptdb := TWAPTDB.Create('c:\wapt\db\waptdb.sqlite');
+    Fwaptdb := TWAPTDB.Create(WaptDBPath);
   end;
   Result := FWaptDB;
 end;
@@ -70,8 +70,6 @@ var
   end;
 
 begin
-  InstallPath := TrimFilename('c:\wapt');
-  DownloadPath := ParamStr(0);
   Action := lowercase(ParamStr(ParamCount));
 
   // parse parameters
@@ -114,6 +112,8 @@ begin
     (not FileExists(AppendPathDelim(InstallPath)+'python27.dll')) or
     (not FileExists(AppendPathDelim(InstallPath)+'wapt-get.exe')) then
   begin
+    InstallPath := TrimFilename('c:\wapt');
+    DownloadPath := ParamStr(0);
     Writeln('WAPT-GET Setup using repository at '+RepoURL);
     Setup(downloadPath,InstallPath);
     Terminate;
