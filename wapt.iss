@@ -20,7 +20,6 @@ Source: "C:\tranquilit\wapt\python27.dll"; DestDir: "{app}";
 Source: "C:\tranquilit\wapt\pythoncom27.dll"; DestDir: "{app}";
 Source: "C:\tranquilit\wapt\pythoncomloader27.dll"; DestDir: "{app}";
 Source: "C:\tranquilit\wapt\pywintypes27.dll"; DestDir: "{app}";
-Source: "C:\tranquilit\wapt\wapt-get.ini"; DestDir: "{app}";
 Source: "C:\tranquilit\wapt\waptservice.exe"; DestDir: "{app}";  BeforeInstall: BeforeWaptServiceInstall('waptservice.exe'); AfterInstall: AfterWaptServiceInstall('waptservice.exe');
 Source: "C:\tranquilit\wapt\wapt-get.py"; DestDir: "{app}"; 
 Source: "C:\tranquilit\wapt\wapt-get.exe.manifest"; DestDir: "{app}";

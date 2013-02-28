@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-__version__ = "0.7.1"
+__version__ = "0.7.2"
 
 import sys
 import os
@@ -81,7 +81,10 @@ if loglevel in ('debug','warning','info','error','critical'):
         raise ValueError('Invalid log level: %s' % loglevel)
     logger.setLevel(numeric_level)
 
-WAPTDBPATH = 'c:\\wapt\\db\\waptdb.sqlite'
+wapt_base_dir = os.path.split(sys.argv[0])[0]
+WAPTDBPATH = os.path.join(wapt_base_dir,'db','waptdb.sqlite')
+
+logger.debug('WAPT base directory : %s' % wapt_base_dir)
 
 def import_setup(setupfilename,modulename=''):
     """Import setupfilename as modulename, return the module object"""
@@ -542,11 +545,6 @@ def main():
         print "No valid accessible repository found... aborting"
         sys.exit(2)
     logger.info("Using wapt Repository %s" % wapt_repourl)
-    wapt_base_dir = cp.get('global','base_dir')
-
-    log_dir = os.path.join(wapt_base_dir,'log')
-    if not os.path.exists(log_dir):
-        os.makedirs(log_dir)
 
     packagecachedir = os.path.join(wapt_base_dir,'cache')
     if not os.path.exists(packagecachedir):
