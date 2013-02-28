@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-__version__ = "0.7.0"
+__version__ = "0.7.1"
 
 import sys
 import os
@@ -113,7 +113,8 @@ def find_wapt_server(configparser):
 
     """
     local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
-    connected_interfaces = [ i for i in host_ipv4() if i['addr'] in local_ips ]
+    logger.debug('All interfaces : %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in host_ipv4() if 'addr' in i and 'netmask' in i])
+    connected_interfaces = [ i for i in host_ipv4() if 'addr' in i and 'netmask' in i and i['addr'] in local_ips ]
     logger.debug('Local connected IPs: %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in connected_interfaces])
 
     def is_inmysubnets(ip):
