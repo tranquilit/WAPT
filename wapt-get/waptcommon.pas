@@ -58,7 +58,7 @@ begin
   if Wget_try('http://wapt/wapt') then
     Result := 'http://wapt/wapt'
   else
-    result := 'http://srvinstallation.tranquil-it-systems.fr/wapt';
+    result := 'http://wapt.tranquil.it/wapt';
 end;
 
 function GetWaptServerURL: String;
