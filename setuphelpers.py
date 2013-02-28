@@ -213,7 +213,7 @@ def _environ_params(dict_or_module={}):
             setattr(dict_or_module,k,v)
     return params_dict
 
-def installed_softwares(self,keywords=''):
+def installed_softwares(keywords=''):
     """return list of installed softwrae from registry (both 32bit and 64bit"""
     def regget(key,name,default=None):
         try:
