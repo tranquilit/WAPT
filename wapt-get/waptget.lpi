@@ -56,32 +56,28 @@
         <PackageName Value="pl_indycomp"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="55">
+    <Units Count="35">
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
-        <EditorIndex Value="0"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="222"/>
-        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="16" Y="26"/>
+        <TopLine Value="396"/>
+        <CursorPos X="1" Y="403"/>
         <UsageCount Value="207"/>
         <Bookmarks Count="1">
           <Item0 X="1" Y="26" ID="2"/>
         </Bookmarks>
-        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\indy\IdDNSResolver.pas"/>
@@ -89,46 +85,39 @@
         <WindowIndex Value="0"/>
         <TopLine Value="507"/>
         <CursorPos X="25" Y="544"/>
-        <UsageCount Value="89"/>
+        <UsageCount Value="87"/>
       </Unit2>
       <Unit3>
-        <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\systemh.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="395"/>
-        <CursorPos X="3" Y="409"/>
-        <UsageCount Value="1"/>
-      </Unit3>
-      <Unit4>
         <Filename Value="..\jcl\source\common\JclSysInfo.pas"/>
         <UnitName Value="JclSysInfo"/>
         <WindowIndex Value="0"/>
         <TopLine Value="5575"/>
         <CursorPos X="47" Y="5598"/>
-        <UsageCount Value="263"/>
-      </Unit4>
-      <Unit5>
+        <UsageCount Value="261"/>
+      </Unit3>
+      <Unit4>
         <Filename Value="..\jcl\source\include\jcl.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="263"/>
-      </Unit5>
-      <Unit6>
+        <UsageCount Value="261"/>
+      </Unit4>
+      <Unit5>
         <Filename Value="..\superobject\superobject.pas"/>
         <UnitName Value="superobject"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3146"/>
         <CursorPos X="31" Y="3164"/>
-        <UsageCount Value="252"/>
-      </Unit6>
-      <Unit7>
+        <UsageCount Value="250"/>
+      </Unit5>
+      <Unit6>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\win\wininc\base.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="136"/>
         <CursorPos X="6" Y="147"/>
-        <UsageCount Value="3"/>
-      </Unit7>
-      <Unit8>
+        <UsageCount Value="1"/>
+      </Unit6>
+      <Unit7>
         <Filename Value="soutils.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="soutils"/>
@@ -136,429 +125,224 @@
         <TopLine Value="88"/>
         <CursorPos X="23" Y="100"/>
         <UsageCount Value="200"/>
-      </Unit8>
-      <Unit9>
+      </Unit7>
+      <Unit8>
         <Filename Value="tiscommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiscommon"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
-      </Unit9>
-      <Unit10>
+      </Unit8>
+      <Unit9>
         <Filename Value="..\jcl\source\common\JclUnicode.pas"/>
         <UnitName Value="JclUnicode"/>
         <WindowIndex Value="0"/>
         <TopLine Value="4724"/>
         <CursorPos X="33" Y="4747"/>
-        <UsageCount Value="78"/>
-      </Unit10>
-      <Unit11>
-        <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\heaph.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="75"/>
-        <CursorPos X="10" Y="94"/>
-        <UsageCount Value="1"/>
-      </Unit11>
-      <Unit12>
-        <Filename Value="C:\codetyphon\fpcsrc\rtl\win\wininc\redef.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="20"/>
-        <CursorPos X="3" Y="31"/>
-        <UsageCount Value="1"/>
-      </Unit12>
-      <Unit13>
-        <Filename Value="..\jcl\source\common\JclStrings.pas"/>
-        <UnitName Value="JclStrings"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="574"/>
-        <CursorPos X="16" Y="591"/>
-        <UsageCount Value="1"/>
-      </Unit13>
-      <Unit14>
-        <Filename Value="..\jcl\source\windows\JclSvcCtrl.pas"/>
-        <UnitName Value="JclSvcCtrl"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="73"/>
-        <CursorPos X="14" Y="92"/>
-        <UsageCount Value="1"/>
-      </Unit14>
-      <Unit15>
+        <UsageCount Value="76"/>
+      </Unit9>
+      <Unit10>
         <Filename Value="..\..\pltis_jcl\struct.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="246"/>
         <CursorPos X="23" Y="265"/>
-        <UsageCount Value="3"/>
-      </Unit15>
-      <Unit16>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwawinsvc.pas"/>
-        <UnitName Value="JwaWinSvc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="416"/>
-        <CursorPos X="3" Y="430"/>
         <UsageCount Value="1"/>
-      </Unit16>
-      <Unit17>
-        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonGUIInputOutput.pas"/>
-        <UnitName Value="PythonGUIInputOutput"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="35"/>
-        <CursorPos X="31" Y="52"/>
-        <UsageCount Value="1"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit17>
-      <Unit18>
-        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\VCL\pyDB.pas"/>
-        <UnitName Value="pyDB"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="105" Y="23"/>
-        <UsageCount Value="1"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit18>
-      <Unit19>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-db\src\base\db.pas"/>
-        <UnitName Value="db"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="393"/>
-        <CursorPos X="14" Y="408"/>
-        <UsageCount Value="1"/>
-      </Unit19>
-      <Unit20>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\maskutils.pp"/>
-        <UnitName Value="maskutils"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="51"/>
-        <CursorPos X="3" Y="67"/>
-        <UsageCount Value="1"/>
-      </Unit20>
-      <Unit21>
-        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\VCL\pyDBTables.pas"/>
-        <UnitName Value="pyDBTables"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="82"/>
-        <CursorPos X="3" Y="100"/>
-        <UsageCount Value="1"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit21>
-      <Unit22>
-        <Filename Value="..\..\pltis_jcl\source\windows\JclShell.pas"/>
-        <UnitName Value="JclShell"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="118"/>
-        <CursorPos X="15" Y="23"/>
-        <UsageCount Value="1"/>
-      </Unit22>
-      <Unit23>
+      </Unit10>
+      <Unit11>
         <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
         <UnitName Value="PythonEngine"/>
         <WindowIndex Value="0"/>
         <TopLine Value="67"/>
         <CursorPos X="17" Y="81"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit23>
-      <Unit24>
+      </Unit11>
+      <Unit12>
         <Filename Value="C:\codetyphon\lazarus\packager\registration\fcllaz.pas"/>
         <UnitName Value="fcllaz"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="13" Y="15"/>
-        <UsageCount Value="8"/>
-      </Unit24>
-      <Unit25>
+        <UsageCount Value="6"/>
+      </Unit12>
+      <Unit13>
         <Filename Value="..\..\pltis_jcl\source\common\JclDateTime.pas"/>
         <UnitName Value="JclDateTime"/>
         <WindowIndex Value="0"/>
         <TopLine Value="233"/>
         <CursorPos X="1" Y="233"/>
-        <UsageCount Value="8"/>
-      </Unit25>
-      <Unit26>
+        <UsageCount Value="6"/>
+      </Unit13>
+      <Unit14>
         <Filename Value="..\..\pltis_jcl\source\common\JclSynch.pas"/>
         <UnitName Value="JclSynch"/>
         <WindowIndex Value="0"/>
         <TopLine Value="744"/>
         <CursorPos X="14" Y="763"/>
-        <UsageCount Value="5"/>
-      </Unit26>
-      <Unit27>
+        <UsageCount Value="3"/>
+      </Unit14>
+      <Unit15>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\win\wininc\defines.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="6072"/>
         <CursorPos X="18" Y="2252"/>
-        <UsageCount Value="5"/>
-      </Unit27>
-      <Unit28>
-        <Filename Value="..\..\pltis_jcl\source\common\JclStringConversions.pas"/>
-        <UnitName Value="JclStringConversions"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="34" Y="13"/>
-        <UsageCount Value="1"/>
-      </Unit28>
-      <Unit29>
-        <Filename Value="C:\codetyphon\fpcsrc\rtl\win\wininc\func.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="947"/>
-        <CursorPos X="10" Y="958"/>
-        <UsageCount Value="1"/>
-      </Unit29>
-      <Unit30>
-        <Filename Value="..\..\pltis_jcl\source\common\JclUnicode.pas"/>
-        <UnitName Value="JclUnicode"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="5130"/>
-        <CursorPos X="20" Y="5144"/>
-        <UsageCount Value="1"/>
-      </Unit30>
-      <Unit31>
-        <Filename Value="C:\codetyphon\fpcsrc\rtl\win\wininc\struct.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="68"/>
-        <CursorPos X="31" Y="90"/>
-        <UsageCount Value="1"/>
-      </Unit31>
-      <Unit32>
+        <UsageCount Value="3"/>
+      </Unit15>
+      <Unit16>
         <Filename Value="..\..\pltis_jcl\source\common\JclHashMaps.pas"/>
         <UnitName Value="JclHashMaps"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="5"/>
-      </Unit32>
-      <Unit33>
+        <UsageCount Value="3"/>
+      </Unit16>
+      <Unit17>
         <Filename Value="..\..\pltis_jcl\source\common\JclContainerIntf.pas"/>
         <UnitName Value="JclContainerIntf"/>
         <WindowIndex Value="0"/>
         <TopLine Value="117"/>
         <CursorPos X="17" Y="131"/>
-        <UsageCount Value="5"/>
-      </Unit33>
-      <Unit34>
-        <Filename Value="..\..\pltis_jcl\source\include\jclfpc.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="116"/>
-        <CursorPos X="3" Y="138"/>
-        <UsageCount Value="2"/>
-      </Unit34>
-      <Unit35>
-        <Filename Value="..\..\pltis_jcl\source\common\JclAnsiStrings.pas"/>
-        <UnitName Value="JclAnsiStrings"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="64" Y="13"/>
-        <UsageCount Value="2"/>
-      </Unit35>
-      <Unit36>
+        <UsageCount Value="3"/>
+      </Unit17>
+      <Unit18>
         <Filename Value="..\..\pltis_jcl\source\windows\JclSvcCtrl.pas"/>
         <UnitName Value="JclSvcCtrl"/>
         <WindowIndex Value="0"/>
         <TopLine Value="7"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="12"/>
-      </Unit36>
-      <Unit37>
-        <Filename Value="..\..\pltis_jcl\source\windows\JclWin32.pas"/>
-        <UnitName Value="JclWin32"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="39"/>
-        <CursorPos X="59" Y="52"/>
-        <UsageCount Value="2"/>
-      </Unit37>
-      <Unit38>
+        <UsageCount Value="10"/>
+      </Unit18>
+      <Unit19>
         <Filename Value="..\..\pltis_jcl\source\common\JclSysInfo.pas"/>
         <UnitName Value="JclSysInfo"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="20"/>
-      </Unit38>
-      <Unit39>
+        <TopLine Value="2403"/>
+        <CursorPos X="56" Y="2418"/>
+        <UsageCount Value="18"/>
+      </Unit19>
+      <Unit20>
         <Filename Value="WbemScripting_TLB.pas"/>
         <UnitName Value="WbemScripting_TLB"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3760"/>
         <CursorPos X="15" Y="3774"/>
-        <UsageCount Value="20"/>
-      </Unit39>
-      <Unit40>
+        <UsageCount Value="18"/>
+      </Unit20>
+      <Unit21>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <UnitName Value="superobject"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2134"/>
         <CursorPos X="3" Y="2136"/>
-        <UsageCount Value="20"/>
-      </Unit40>
-      <Unit41>
+        <UsageCount Value="18"/>
+      </Unit21>
+      <Unit22>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\comobj.pp"/>
         <UnitName Value="comobj"/>
         <WindowIndex Value="0"/>
         <TopLine Value="298"/>
         <CursorPos X="7" Y="315"/>
-        <UsageCount Value="18"/>
-      </Unit41>
-      <Unit42>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\activex.pp"/>
-        <UnitName Value="ActiveX"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="3008"/>
-        <CursorPos X="42" Y="3057"/>
-        <UsageCount Value="2"/>
-      </Unit42>
-      <Unit43>
+        <UsageCount Value="16"/>
+      </Unit22>
+      <Unit23>
         <Filename Value="..\..\issrc-5.5.2\Projects\ScriptFunc.pas"/>
         <UnitName Value="ScriptFunc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="160"/>
         <CursorPos X="22" Y="180"/>
-        <UsageCount Value="11"/>
-      </Unit43>
-      <Unit44>
+        <UsageCount Value="9"/>
+      </Unit23>
+      <Unit24>
         <Filename Value="..\..\issrc-5.5.2\Projects\ScriptFunc_C.pas"/>
         <UnitName Value="ScriptFunc_C"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="5" Y="17"/>
-        <UsageCount Value="11"/>
-      </Unit44>
-      <Unit45>
+        <UsageCount Value="9"/>
+      </Unit24>
+      <Unit25>
         <Filename Value="..\..\issrc-5.5.2\Projects\ScriptFunc_R.pas"/>
         <UnitName Value="ScriptFunc_R"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="13" Y="25"/>
-        <UsageCount Value="11"/>
-      </Unit45>
-      <Unit46>
+        <UsageCount Value="9"/>
+      </Unit25>
+      <Unit26>
         <Filename Value="..\..\issrc-5.5.2\Projects\Install.pas"/>
         <UnitName Value="Install"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1605"/>
         <CursorPos X="27" Y="1620"/>
-        <UsageCount Value="11"/>
-      </Unit46>
-      <Unit47>
+        <UsageCount Value="9"/>
+      </Unit26>
+      <Unit27>
         <Filename Value="..\..\issrc-5.5.2\Projects\InstFnc2.pas"/>
         <UnitName Value="InstFnc2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="400"/>
         <CursorPos X="28" Y="406"/>
-        <UsageCount Value="11"/>
-      </Unit47>
-      <Unit48>
+        <UsageCount Value="9"/>
+      </Unit27>
+      <Unit28>
         <Filename Value="..\..\issrc-5.5.2\Projects\Version.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="44"/>
         <CursorPos X="2" Y="76"/>
-        <UsageCount Value="11"/>
-      </Unit48>
-      <Unit49>
+        <UsageCount Value="9"/>
+      </Unit28>
+      <Unit29>
         <Filename Value="..\..\issrc-5.5.2\Projects\InstFunc.pas"/>
         <UnitName Value="InstFunc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="932"/>
         <CursorPos X="8" Y="1011"/>
-        <UsageCount Value="11"/>
-      </Unit49>
-      <Unit50>
+        <UsageCount Value="9"/>
+      </Unit29>
+      <Unit30>
         <Filename Value="..\..\issrc-5.5.2\Projects\Int64em.pas"/>
         <UnitName Value="Int64Em"/>
         <WindowIndex Value="0"/>
         <TopLine Value="10"/>
         <CursorPos X="4" Y="18"/>
-        <UsageCount Value="11"/>
-      </Unit50>
-      <Unit51>
+        <UsageCount Value="9"/>
+      </Unit30>
+      <Unit31>
         <Filename Value="..\..\issrc-5.5.2\Projects\Regdll.pas"/>
         <UnitName Value="RegDLL"/>
         <WindowIndex Value="0"/>
         <TopLine Value="68"/>
         <CursorPos X="3" Y="82"/>
-        <UsageCount Value="11"/>
-      </Unit51>
-      <Unit52>
+        <UsageCount Value="9"/>
+      </Unit31>
+      <Unit32>
         <Filename Value="..\..\issrc-5.5.2\Projects\Uninstall.pas"/>
         <UnitName Value="Uninstall"/>
         <WindowIndex Value="0"/>
         <TopLine Value="106"/>
         <CursorPos X="4" Y="24"/>
-        <UsageCount Value="11"/>
-      </Unit52>
-      <Unit53>
+        <UsageCount Value="9"/>
+      </Unit32>
+      <Unit33>
         <Filename Value="..\..\issrc-5.5.2\Projects\Helper\Helper.manifest.txt"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="2"/>
         <DefaultSyntaxHighlighter Value="None"/>
-      </Unit53>
-      <Unit54>
+      </Unit33>
+      <Unit34>
         <Filename Value="..\..\issrc-5.5.2\Projects\Helper\Helper.c"/>
         <WindowIndex Value="0"/>
         <TopLine Value="16"/>
         <CursorPos X="4" Y="10"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="2"/>
         <DefaultSyntaxHighlighter Value="C++"/>
-      </Unit54>
+      </Unit34>
     </Units>
-    <JumpHistory Count="13" HistoryIndex="12">
-      <Position1>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="277" Column="25" TopLine="261"/>
-      </Position1>
-      <Position2>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="24" Column="27" TopLine="16"/>
-      </Position2>
-      <Position3>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position3>
-      <Position4>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position4>
-      <Position5>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="57" Column="45" TopLine="39"/>
-      </Position5>
-      <Position6>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="22" Column="30" TopLine="16"/>
-      </Position6>
-      <Position7>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position7>
-      <Position8>
-        <Filename Value="tiscommon.pas"/>
-        <Caret Line="38" Column="18" TopLine="19"/>
-      </Position8>
-      <Position9>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position9>
-      <Position10>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="53" Column="41" TopLine="35"/>
-      </Position10>
-      <Position11>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position11>
-      <Position12>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="115" Column="20" TopLine="101"/>
-      </Position12>
-      <Position13>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="83" Column="16" TopLine="78"/>
-      </Position13>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>

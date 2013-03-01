@@ -346,7 +346,7 @@ def find_wapt_server(configparser):
     if configparser:
         url = configparser.get('global','repo_url')
         if url:
-            if _tryurl(url):
+            if _tryurl(url+'/Packages'):
                 return url
             else:
                 logger.warning('URL defined in ini file %s is not available' % url)
