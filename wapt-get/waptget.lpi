@@ -21,7 +21,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="5"/>
-      <RevisionNr Value="12"/>
+      <RevisionNr Value="14"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -56,15 +56,14 @@
         <PackageName Value="pl_indycomp"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="35">
+    <Units Count="40">
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
+        <TopLine Value="257"/>
+        <CursorPos X="30" Y="280"/>
         <UsageCount Value="222"/>
       </Unit0>
       <Unit1>
@@ -130,10 +129,12 @@
         <Filename Value="tiscommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiscommon"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
+        <TopLine Value="251"/>
+        <CursorPos X="23" Y="263"/>
         <UsageCount Value="200"/>
+        <Loaded Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\jcl\source\common\JclUnicode.pas"/>
@@ -341,8 +342,64 @@
         <UsageCount Value="2"/>
         <DefaultSyntaxHighlighter Value="C++"/>
       </Unit34>
+      <Unit35>
+        <Filename Value="..\..\pltis_jcl\source\common\JclUnicode.pas"/>
+        <UnitName Value="JclUnicode"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1619"/>
+        <CursorPos X="14" Y="1646"/>
+        <UsageCount Value="10"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="..\..\pltis_jcl\source\common\JclSysUtils.pas"/>
+        <UnitName Value="JclSysUtils"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="4336"/>
+        <CursorPos X="5" Y="4363"/>
+        <UsageCount Value="10"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="..\..\pltis_jcl\source\windows\JclConsole.pas"/>
+        <UnitName Value="JclConsole"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="403"/>
+        <CursorPos X="22" Y="408"/>
+        <UsageCount Value="10"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="..\..\pltis_jcl\source\common\JclFileUtils.pas"/>
+        <UnitName Value="JclFileUtils"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="..\..\pltis_jcl\source\windows\JclRegistry.pas"/>
+        <UnitName Value="JclRegistry"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="736"/>
+        <CursorPos X="10" Y="667"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit39>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="3" HistoryIndex="2">
+      <Position1>
+        <Filename Value="tiscommon.pas"/>
+        <Caret Line="263" Column="23" TopLine="251"/>
+      </Position1>
+      <Position2>
+        <Filename Value="..\..\pltis_jcl\source\windows\JclRegistry.pas"/>
+        <Caret Line="1295" Column="3" TopLine="1293"/>
+      </Position2>
+      <Position3>
+        <Filename Value="..\..\pltis_jcl\source\windows\JclRegistry.pas"/>
+        <Caret Line="1287" Column="10" TopLine="1272"/>
+      </Position3>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>

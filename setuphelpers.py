@@ -153,8 +153,9 @@ def isrunning(processname):
     except:
         return False
 
-def killalltasks(exename):
-    run_notfatal('taskkill /im "%s" /f % exename')
+def killalltasks(*exenames):
+    for c in exenames:
+      run_notfatal('taskkill /t /im "%s" /f' % c)
 
 def messagebox(title,msg):
     win32api.MessageBox(0, msg, title, win32con.MB_ICONINFORMATION)
