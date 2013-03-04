@@ -35,12 +35,13 @@ ChangesEnvironment=True
 AppPublisher=Tranquil IT Systems
 UninstallDisplayName=WAPT libraries and WAPTService
 OutputDir=setup
-OutputBaseFilename=WaptSetup
+OutputBaseFilename=waptsetup
 SolidCompression=True
 AppPublisherURL=http://www.tranquil.it
 AppUpdatesURL=http://wapt.tranquil.it
 AppContact=dev@tranquil.it
 AppSupportPhone=+33 2 40 97 57 55
+SignTool=kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f
 
 [Registry]
 Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"; Check: NeedsAddPath('{app}')
@@ -52,8 +53,8 @@ Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetR
 
 
 [UninstallRun]
-Filename: "net"; Parameters: "stop waptservice"
-Filename: "{app}\waptservice.exe"; Parameters: "--uninstall"
+Filename: "net"; Parameters: "stop waptservice"; Flags: runhidden
+Filename: "{app}\waptservice.exe"; Parameters: "--uninstall"; Flags: runhidden
 
 [Code]
 #include "services.iss"
@@ -105,7 +106,7 @@ begin
 //    False, 
 //    False);
   if not ShellExec('', ExpandConstant('{app}\waptservice.exe'),
-     '--install', '{app}', SW_SHOW, True, ErrorCode) then
+     '--install', '{app}', SW_HIDE, True, ErrorCode) then
   begin
     RaiseException('Error installing waptservice:'+intToStr(ErrorCode));
   end;

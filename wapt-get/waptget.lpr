@@ -57,7 +57,7 @@ end;
 
 procedure pwaptget.DoRun;
 var
-  InstallPath,downloadPath: Utf8String;
+  DefaultInstallPath,downloadPath: Utf8String;
   MainModule : TStringList;
   logleveloption : String;
 
@@ -105,17 +105,17 @@ begin
   if HasOption('v','version') then
     writeln('Win32 Exe wrapper: '+ApplicationName+' '+ApplicationVersion);
 
+  DefaultInstallPath := TrimFilename('c:\wapt');
+  DownloadPath := ExtractFilePath(ParamStr(0));
   // Auto install if wapt-get is not yet in the target directory
   if (action = 'waptsetup') or
-    (FileExists(AppendPathDelim(InstallPath)+'wapt-get.exe') and
-        (SortableVersion(ApplicationVersion) > SortableVersion(ApplicationVersion(AppendPathDelim(InstallPath)+'wapt-get.exe')))) or
-    (not FileExists(AppendPathDelim(InstallPath)+'python27.dll')) or
-    (not FileExists(AppendPathDelim(InstallPath)+'wapt-get.exe')) then
+    (FileExists(AppendPathDelim(DefaultInstallPath)+'wapt-get.exe') and
+        (SortableVersion(ApplicationVersion) > SortableVersion(ApplicationVersion(AppendPathDelim(DefaultInstallPath)+'wapt-get.exe')))) or
+    (not FileExists(AppendPathDelim(DownloadPath)+'python27.dll')) or
+    (not FileExists(AppendPathDelim(DownloadPath)+'wapt-get.exe')) then
   begin
-    InstallPath := TrimFilename('c:\wapt');
-    DownloadPath := ParamStr(0);
     Writeln('WAPT-GET Setup using repository at '+RepoURL);
-    Setup(downloadPath,InstallPath);
+    Setup(ParamStr(0),DefaultInstallPath);
     Terminate;
     Exit;
   end
@@ -168,6 +168,7 @@ begin
       MainModule:=TStringList.Create;
       MainModule.LoadFromFile(ExtractFilePath(ParamStr(0))+'wapt-get.py');
       APythonEngine.ExecStrings(MainModule);
+      APythonEngine.UnloadDll;
     finally
       MainModule.Free;
     end;
