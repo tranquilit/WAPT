@@ -210,6 +210,7 @@ def html_table(cur,callback=None):
 
 
 class WaptDB:
+    """Class to manage SQLite database with local installation status"""
     dbpath = ''
     db = None
     logger = logging.getLogger('wapt-get')
@@ -222,10 +223,10 @@ class WaptDB:
             if os.path.isdir (dirname)==False:
                 os.makedirs(dirname)
             os.path.dirname(self.dbpath)
-            self.db=sqlite3.connect(self.dbpath,detect_types=sqlite3.PARSE_DECLTYPES or sqlite3.PARSE_COLNAMES)
+            self.db=sqlite3.connect(self.dbpath,detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
             self.initdb()
         else:
-            self.db=sqlite3.connect(self.dbpath,detect_types=sqlite3.PARSE_DECLTYPES+sqlite3.PARSE_COLNAMES)
+            self.db=sqlite3.connect(self.dbpath,detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
 
     def initdb(self):
         assert(isinstance(self.db,sqlite3.Connection))
@@ -534,6 +535,7 @@ def md5_for_file(fname, block_size=2**20):
     return md5.hexdigest()
 
 class Package_Entry:
+    """Package attributes coming from either control files in WAPT package or local DB"""
     required_attributes = ['Package','Version','Section',]
     def __init__(self):
         self.Package=''
@@ -598,6 +600,7 @@ Description  : %(Description)s
 Filename     : %(Filename)s
 Size         : %(Size)s
 Depends      : %(Depends)s
+Sources      : %(Sources)s
 MD5sum       : %(MD5sum)s
 """  % self.__dict__
         return val

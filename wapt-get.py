@@ -353,16 +353,15 @@ class Wapt:
            in the current directory"""
         entry = self.waptdb.package_entry_from_db(package)
         if not entry.Sources:
-            raise Exception('No source defined in package control file')
+            raise Exception('No sources defined in package control file')
         if "PROGRAMW6432" in os.environ:
             svncmd = os.path.join(environ['PROGRAMW6432'],'TortoiseSVN','svn.exe')
         else:
             svncmd = os.path.join(environ['PROGRAMFILES'],'TortoiseSVN','svn.exe')
         if not os.path.isfile(svncmd):
             raise Exception('svn.exe command not available, please install TortoiseSVN with commandline tools')
-        co_dir = entry.source.replace('/trunk','').replace('/tags','').replace('/branch','')
+        co_dir = re.sub('(/trunk/?$)|(/tags/?$)|(/branch/?$)','',entry.source)
         print subprocess.check_output('svn co %s %s' % (svncmd,codir))
-
 
     def showlog(self,package):
         q = self.waptdb.query("""\
