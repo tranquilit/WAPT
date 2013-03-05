@@ -198,6 +198,7 @@ begin
         'Size INTEGER,'+
         'MD5sum VARCHAR(255),'+
         'Depends VARCHAR(800),'+
+        'Sources VARCHAR(255),'+
         'repo_url VARCHAR(255)'+
         ')'
         );

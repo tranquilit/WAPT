@@ -9,7 +9,6 @@ Source: "..\libs\*"; DestDir: "{app}\libs"; Flags: createallsubdirs recursesubdi
 Source: "..\static\*"; DestDir: "{app}\static"; Flags: createallsubdirs recursesubdirs
 Source: "..\templates\*"; DestDir: "{app}\templates"; Flags: createallsubdirs recursesubdirs
 Source: "..\common.py"; DestDir: "{app}"; 
-Source: "..\winshell.py"; DestDir: "{app}"; 
 Source: "..\setuphelpers.py"; DestDir: "{app}"; 
 Source: "..\sqlite3.dll"; DestDir: "{app}"; 
 Source: "..\Microsoft.VC90.CRT.manifest"; DestDir: "{app}";
@@ -49,7 +48,7 @@ Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environmen
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL}
 
 [Run]
-
+Filename: "{app}\wapt-get.exe"; Parameters: "upgradedb"; Flags: runhidden
 
 [UninstallRun]
 Filename: "net"; Parameters: "stop waptservice"; Flags: runhidden

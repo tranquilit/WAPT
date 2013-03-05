@@ -245,6 +245,7 @@ class WaptDB:
           Size integer,
           MD5sum varchar(255),
           Depends varchar(800),
+          Sources varchar(255),
           repo_url varchar(255)
           )"""
                         )
@@ -281,6 +282,7 @@ class WaptDB:
                     Size='',
                     MD5sum='',
                     Depends='',
+                    Sources='',
                     repo_url=''):
 
         cur = self.db.execute("""\
@@ -296,7 +298,8 @@ class WaptDB:
                 Size,
                 MD5sum,
                 Depends,
-                repo_url) values (?,?,?,?,?,?,?,?,?,?,?,?)
+                Sources,
+                repo_url) values (?,?,?,?,?,?,?,?,?,?,?,?,?)
             """,(
                  Package,
                  Version,
@@ -309,6 +312,7 @@ class WaptDB:
                  Size,
                  MD5sum,
                  Depends,
+                 Sources,
                  repo_url)
                )
 
@@ -334,6 +338,7 @@ class WaptDB:
                          package_entry.Size,
                          package_entry.MD5sum,
                          package_entry.Depends,
+                         package_entry.Sources,
                          package_entry.repo_url)
 
 
