@@ -88,8 +88,8 @@
       <Filename Value="../appwaptservice"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="$(ProjOutDir);..\jcl\source\include"/>
-      <OtherUnitFiles Value="..\jcl\source\common;..\jcl\source\include;..\jcl\source\windows;..\indy\Core;..\indy\System;..\indy\Protocols;..\indy\Security;..\wapt-get;..\waptservice"/>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="..\wapt-get"/>
       <UnitOutputDirectory Value="lib"/>
     </SearchPaths>
     <Linking>
