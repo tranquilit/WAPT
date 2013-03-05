@@ -1,30 +1,29 @@
 
 #define AppName "WAPT"
-#define AppVersion GetFileVersion(AddBackslash(SourcePath) + "wapt-get.exe")
+#define AppVersion GetFileVersion(AddBackslash(SourcePath) + "..\wapt-get.exe")
 
 [Files]
-Source: "C:\tranquilit\wapt\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
-Source: "C:\tranquilit\wapt\lib\*"; DestDir: "{app}\lib"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.pyc,test,*.~*" 
-Source: "C:\tranquilit\wapt\libs\*"; DestDir: "{app}\libs"; Flags: createallsubdirs recursesubdirs
-Source: "C:\tranquilit\wapt\static\*"; DestDir: "{app}\static"; Flags: createallsubdirs recursesubdirs
-Source: "C:\tranquilit\wapt\templates\*"; DestDir: "{app}\templates"; Flags: createallsubdirs recursesubdirs
-Source: "C:\tranquilit\wapt\common.py"; DestDir: "{app}"; 
-Source: "C:\tranquilit\wapt\winshell.py"; DestDir: "{app}"; 
-Source: "C:\tranquilit\wapt\setuphelpers.py"; DestDir: "{app}"; 
-Source: "C:\tranquilit\wapt\sqlite3.dll"; DestDir: "{app}"; 
-Source: "C:\tranquilit\wapt\Microsoft.VC90.CRT.manifest"; DestDir: "{app}";
-Source: "C:\tranquilit\wapt\msvcm90.dll"; DestDir: "{app}";
-Source: "C:\tranquilit\wapt\msvcp90.dll"; DestDir: "{app}";
-Source: "C:\tranquilit\wapt\msvcr90.dll"; DestDir: "{app}";
-Source: "C:\tranquilit\wapt\python27.dll"; DestDir: "{app}";
-Source: "C:\tranquilit\wapt\pythoncom27.dll"; DestDir: "{app}";
-Source: "C:\tranquilit\wapt\pythoncomloader27.dll"; DestDir: "{app}";
-Source: "C:\tranquilit\wapt\pywintypes27.dll"; DestDir: "{app}";
-Source: "C:\tranquilit\wapt\waptservice.exe"; DestDir: "{app}";  BeforeInstall: BeforeWaptServiceInstall('waptservice.exe'); AfterInstall: AfterWaptServiceInstall('waptservice.exe');
-Source: "C:\tranquilit\wapt\wapt-get.py"; DestDir: "{app}"; 
-Source: "C:\tranquilit\wapt\wapt-get.exe.manifest"; DestDir: "{app}";
-Source: "C:\tranquilit\wapt\wapt-get.exe"; DestDir: "{app}";
-
+Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
+Source: "..\lib\*"; DestDir: "{app}\lib"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.pyc,test,*.~*" 
+Source: "..\libs\*"; DestDir: "{app}\libs"; Flags: createallsubdirs recursesubdirs
+Source: "..\static\*"; DestDir: "{app}\static"; Flags: createallsubdirs recursesubdirs
+Source: "..\templates\*"; DestDir: "{app}\templates"; Flags: createallsubdirs recursesubdirs
+Source: "..\common.py"; DestDir: "{app}"; 
+Source: "..\winshell.py"; DestDir: "{app}"; 
+Source: "..\setuphelpers.py"; DestDir: "{app}"; 
+Source: "..\sqlite3.dll"; DestDir: "{app}"; 
+Source: "..\Microsoft.VC90.CRT.manifest"; DestDir: "{app}";
+Source: "..\msvcm90.dll"; DestDir: "{app}";
+Source: "..\msvcp90.dll"; DestDir: "{app}";
+Source: "..\msvcr90.dll"; DestDir: "{app}";
+Source: "..\python27.dll"; DestDir: "{app}";
+Source: "..\pythoncom27.dll"; DestDir: "{app}";
+Source: "..\pythoncomloader27.dll"; DestDir: "{app}";
+Source: "..\pywintypes27.dll"; DestDir: "{app}";
+Source: "..\waptservice.exe"; DestDir: "{app}";  BeforeInstall: BeforeWaptServiceInstall('waptservice.exe'); AfterInstall: AfterWaptServiceInstall('waptservice.exe');
+Source: "..\wapt-get.py"; DestDir: "{app}"; 
+Source: "..\wapt-get.exe.manifest"; DestDir: "{app}";
+Source: "..\wapt-get.exe"; DestDir: "{app}";
 
 [Setup]
 AppName={#AppName}
@@ -34,7 +33,7 @@ DefaultGroupName={#AppName}
 ChangesEnvironment=True
 AppPublisher=Tranquil IT Systems
 UninstallDisplayName=WAPT libraries and WAPTService
-OutputDir=setup
+OutputDir="."
 OutputBaseFilename=waptsetup
 SolidCompression=True
 AppPublisherURL=http://www.tranquil.it
@@ -85,8 +84,6 @@ begin
 end;
 
 procedure DeinitializeSetup();
-var
-  ErrorCode: Integer;
 begin
   if ServiceExists('waptservice') then
     SimpleStartService('waptservice',True,True);

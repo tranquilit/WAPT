@@ -5,6 +5,9 @@ lib
 *.dbg
 appwaptservice.log
 *.log
+.git
+cache
+db
 
 # These are the default patterns globally ignored by Subversion:
 *.o
