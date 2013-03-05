@@ -71,7 +71,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="7" Y="6"/>
-        <UsageCount Value="194"/>
+        <UsageCount Value="195"/>
       </Unit0>
       <Unit1>
         <Filename Value="waptmapper.pas"/>
@@ -83,7 +83,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="37" Y="6"/>
-        <UsageCount Value="194"/>
+        <UsageCount Value="195"/>
       </Unit1>
       <Unit2>
         <Filename Value="waptunit.pas"/>
@@ -96,7 +96,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="194"/>
+        <UsageCount Value="195"/>
       </Unit2>
       <Unit3>
         <Filename Value="unit1.pas"/>
@@ -160,7 +160,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="161"/>
+        <UsageCount Value="162"/>
       </Unit9>
       <Unit10>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-process\src\process.pp"/>
@@ -720,7 +720,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="10" Y="13"/>
-        <UsageCount Value="84"/>
+        <UsageCount Value="85"/>
       </Unit72>
       <Unit73>
         <Filename Value="testwmi.lpr"/>

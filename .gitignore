@@ -1,13 +1,14 @@
-backup
-lib
-*.ppu
 *.compiled
 *.dbg
-appwaptservice.log
 *.log
+*.ppu
 .git
+.gitignore
+appwaptservice.log
+backup
 cache
 db
+lib
 
 # These are the default patterns globally ignored by Subversion:
 *.o
