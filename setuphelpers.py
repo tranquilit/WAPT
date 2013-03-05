@@ -1,14 +1,25 @@
-#-------------------------------------------------------------------------------
-# Name:        setuphelpers
-# Purpose:     common functions to help setup tasks
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+# -----------------------------------------------------------------------
+#    This file is part of WAPT
+#    Copyright (C) 2013  Tranquil IT Systems http://www.tranquil.it
+#    WAPT aims to help Windows systems administrators to deploy
+#    setup and update applications on users PC.
 #
-# Author:      33
+#    WAPT is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
 #
-# Created:     22/05/2012
-# Copyright:   (c) 33 2012
-# Licence:     GPL
-#-------------------------------------------------------------------------------
-#!/usr/bin/env python
+#    WAPT is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
+#
+# -----------------------------------------------------------------------
 
 __version__ = "0.2"
 
@@ -287,23 +298,23 @@ def host_ipv4():
 
 def host_info():
     info = {}
-    info['waptgetversion'] = "0.5.11"
-    info['computername'] =  "PC623"
-    info['workgroupname'] = "SERMOSTH"
+    info['waptgetversion'] = ""
+    info['computername'] =  getcomputername()
+    info['dnsdomain'] = get_domain_fromregistry()
+    info['workgroupname'] = ""
     info['biosinfo'] = ""
     info['biosdate'] = "2012-08-15T00:00:00,0+01:00"
     info['wmibiosinfo']= {
-        'SerialNumber': "GN5Q2Q1",
-        'Manufacturer': "Dell Inc."}
-    info['macaddresses'] = ["5C-26-0A-68-1E-3A"]
-    info['processorcount'] = 4
-    info['ipaddresses'] = [
-      "192.168.149.198"]
-    info['physicalmemory'] = 6317723648
-    info['virtualmemory'] = 2147352576
-    info['systemmanufacturer'] = "Dell Inc."
-    info['biosversion'] = "A15"
-    info['systemproductname'] = "Latitude E6520",
+        'SerialNumber': "",
+        'Manufacturer': ""}
+    info['macaddresses'] =[]
+    info['processorcount'] = 1
+    info['ipaddresses'] = []
+    info['physicalmemory'] = 0
+    info['virtualmemory'] = 0
+    info['systemmanufacturer'] = ""
+    info['biosversion'] = ""
+    info['systemproductname'] = "",
     info['cpuname'] = "Intel(R) Core(TM) i5-2520M CPU @ 2.50GHz"
     return info
 
