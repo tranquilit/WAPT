@@ -479,13 +479,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node13]
 ClassName=TProjectRunConfiguationNode
-Name=buildpackage test
+Name=build-package test
 
 [Project\ChildNodes\Node1\ChildNodes\Node13\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=buildpackage c:\tranquilit\tis-wapttest-wapt
+Parameters=build-package c:\tranquilit\tis-wapttest-wapt
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -502,13 +502,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node14]
 ClassName=TProjectRunConfiguationNode
-Name=buildpackage current
+Name=build-package current
 
 [Project\ChildNodes\Node1\ChildNodes\Node14\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug buildpackage $[ActiveDoc-Dir]
+Parameters=-ldebug build-package $[ActiveDoc-Dir]
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -523,8 +523,54 @@ WorkingDirectory=$[ActiveScript-Dir]
 ShortCut=0
 MessagesFormat=$[FileName] $[LineNumber]
 
+[Project\ChildNodes\Node1\ChildNodes\Node15]
+ClassName=TProjectRunConfiguationNode
+Name=download-upgrades
+
+[Project\ChildNodes\Node1\ChildNodes\Node15\RunConfig]
+ScriptName=C:\tranquilit\wapt\wapt-get.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=download-upgrades
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node15\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+ShortCut=0
+MessagesFormat=$[FileName] $[LineNumber]
+
+[Project\ChildNodes\Node1\ChildNodes\Node16]
+ClassName=TProjectRunConfiguationNode
+Name=make-template
+
+[Project\ChildNodes\Node1\ChildNodes\Node16\RunConfig]
+ScriptName=C:\tranquilit\wapt\wapt-get.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=make-template C:\Users\htouvet\Downloads\KeyFinderInstaller.exe
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node16\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+ShortCut=0
+MessagesFormat=$[FileName] $[LineNumber]
+
 [Project\ChildNodes\Node1\ChildNodes]
-Count=15
+Count=17
 
 [Project\ChildNodes]
 Count=2
