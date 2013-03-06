@@ -604,16 +604,11 @@ class Package_Entry:
         """
         if type(fname) is list:
             control =  StringIO.StringIO(u'\n'.join(fname))
-            self.Filename = ''
         elif os.path.isfile(fname):
             myzip = zipfile.ZipFile(fname,'r')
             control = StringIO.StringIO(myzip.open('WAPT/control').read().decode('utf8'))
-            self.MD5sum = md5_for_file(fname)
-            self.Size = os.path.getsize(fname)
-            self.Filename = os.path.basename(fname)
         elif os.path.isdir(fname):
             control = codecs.open(os.path.join(fname,'WAPT','control'),'r',encoding='utf8')
-            self.Filename = os.path.basename(fname)
 
         (param,value) = ('','')
         while 1:
@@ -633,8 +628,15 @@ class Package_Entry:
                 (param,value) = (line[:sc].strip(),line[sc+1:].strip())
                 param = param
                 setattr(self,param,value)
-        return self
 
+        if os.path.isfile(fname):
+            self.MD5sum = md5_for_file(fname)
+            self.Size = os.path.getsize(fname)
+            self.Filename = os.path.basename(fname)
+        else:
+            self.Filename = self.make_package_filename()
+
+        return self
 
     def ascontrol(self):
         val = u"""\
@@ -652,6 +654,10 @@ Sources      : %(Sources)s
 MD5sum       : %(MD5sum)s
 """  % self.__dict__
         return val
+
+    def make_package_filename(self):
+        """Return the standard package filename based on current attributes"""
+        return self.Package + '_' + self.Version + '_' +  self.Architecture  + '.wapt'
 
     def __str__(self):
         return self.ascontrol()

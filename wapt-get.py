@@ -582,7 +582,7 @@ and install all newest packages"""
                 codecs.open(control_filename,'w',encoding='utf8').write(entry.ascontrol())
             else:
                 entry.load_control_from_wapt(directoryname)
-            package_filename =  entry.Package + '_' + entry.Version + '_' +  entry.Architecture  + '.wapt'
+            package_filename =  entry.make_package_filename()
             result_filename = os.path.abspath(os.path.join( directoryname,'..',package_filename))
 
             create_recursive_zip_signed(
