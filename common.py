@@ -235,7 +235,7 @@ def create_recursive_zip_signed(zipfn, source_root, target_root = "",excludes = 
         elif os.path.isdir(os.path.join(source_root, item)):
             if logger: logger.debug('Add directory %s' % os.path.join(source_root, item))
             result.extend(create_recursive_zip_signed(zipf, os.path.join(source_root, item), os.path.join(target_root,item),excludes))
-    if isinstance(zipfn,str):
+    if isinstance(zipfn,str) or isinstance(zipfn,unicode):
         if logger: logger.debug('  adding md5 sums for all %i files' % len(result))
         # Write a file with all md5 of all files
         zipf.writestr(os.path.join(target_root,'files.md5sum'), "\n".join( ["%s:%s" % (md5[0],md5[1]) for md5 in result] ))
@@ -544,9 +544,9 @@ class WaptDB:
     def package_entry_from_db(self,package,version=None):
         result = Package_Entry()
         if not version:
-            entries = self.query("""select * from wapt_repo where Package = ? order by version desc""",(package,))
+            entries = self.query("""select * from wapt_repo where Package = ? order by version desc limit 1""",(package,))
         else:
-            entries = self.query("""select * from wapt_repo where Package = ? and version=? order by version desc""",(package,version))
+            entries = self.query("""select * from wapt_repo where Package = ? and version=? order by version desc limit 1""",(package,version))
         if not entries:
             raise Exception('Package %s %s not found in local DB, please update' % (package,version))
         for k,v in entries[0].iteritems():

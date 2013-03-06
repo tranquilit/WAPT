@@ -38,14 +38,10 @@ FileName=C:\tranquilit\wapt\wininet.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node1]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\winshell.py
-
-[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node2]
-ClassName=TProjectFileNode
 FileName=C:\tranquilit\wapt\lib\site-packages\wmi.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes]
-Count=3
+Count=2
 
 [Project\ChildNodes\Node0\ChildNodes\Node2]
 ClassName=TProjectFolderNode
@@ -554,7 +550,7 @@ Name=make-template
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=make-template C:\Users\htouvet\Downloads\KeyFinderInstaller.exe
+Parameters=make-template C:\Users\htouvet\Downloads\KeyFinderInstaller.exe tis-keyfinder
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log

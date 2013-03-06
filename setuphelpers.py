@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 
 from winshell import *
 import os,sys
@@ -31,8 +31,11 @@ import tempfile
 import shutil
 from regutil import *
 import subprocess
+import win32api
+import win32con
 import win32pdhutil
-import win32api,win32con
+import win32net
+import msilib
 
 from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,QueryInfoKey,KEY_READ,KEY_WOW64_32KEY,KEY_WOW64_64KEY
 import platform
@@ -445,13 +448,13 @@ def get_file_properties(fname):
         'CompanyName', 'LegalCopyright', 'ProductVersion',
         'FileDescription', 'LegalTrademarks', 'PrivateBuild',
         'FileVersion', 'OriginalFilename', 'SpecialBuild')
-
-    props = {'FixedFileInfo': None, 'StringFileInfo': None, 'FileVersion': None}
+    props = {}
+    for propName in propNames:
+        props[propName] = None
 
     try:
         # backslash as parm returns dictionary of numeric info corresponding to VS_FIXEDFILEINFO struc
         fixedInfo = win32api.GetFileVersionInfo(fname, '\\')
-        props['FixedFileInfo'] = fixedInfo
         props['FileVersion'] = "%d.%d.%d.%d" % (fixedInfo['FileVersionMS'] / 65536,
                 fixedInfo['FileVersionMS'] % 65536, fixedInfo['FileVersionLS'] / 65536,
                 fixedInfo['FileVersionLS'] % 65536)
@@ -463,25 +466,44 @@ def get_file_properties(fname):
         # any other must be of the form \StringfileInfo\%04X%04X\parm_name, middle
         # two are language/codepage pair returned from above
 
-        strInfo = {}
         for propName in propNames:
             strInfoPath = u'\\StringFileInfo\\%04X%04X\\%s' % (lang, codepage, propName)
             ## print str_info
-            strInfo[propName] = win32api.GetFileVersionInfo(fname, strInfoPath)
+            props[propName] = (win32api.GetFileVersionInfo(fname, strInfoPath) or '').strip()
 
-        props['StringFileInfo'] = strInfo
-    except:
-        pass
+    except Exception,e:
+        logger.warning("%s" % e)
 
     return props
+
+# from http://stackoverflow.com/questions/3157955/get-msi-product-name-version-from-command-line
+def get_msi_properties(msi_filename):
+    db = msilib.OpenDatabase(msi_filename, msilib.MSIDBOPEN_READONLY)
+    view = db.OpenView ("SELECT * FROM Property")
+    view.Execute(None)
+    result = {}
+    r = view.Fetch()
+    while r:
+        try:
+            result[r.GetString(1)] = r.GetString(2)
+        except:
+            print"erreur pour %s" % r.GetString(0)
+        try:
+            r = view.Fetch()
+        except:
+            break
+    return result
+
+get_computer_name = win32api.GetComputerName
+get_domain_name = win32api.GetDomainName
+
+
 
 # some const
 programfiles = programfiles()
 programfiles32 = programfiles32()
 programfiles64 = programfiles64()
-domainname = get_domain_fromregistry()
-computername = os.environ['COMPUTERNAME']
+dnsdomainname = get_domain_fromregistry()
 
 # to help pyscripter code completion in setup.py
 params = {}
-

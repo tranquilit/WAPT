@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.7.5"
+__version__ = "0.7.6"
 
 import sys
 import os
@@ -47,6 +47,7 @@ import glob
 import platform
 import imp
 import shlex
+import re
 
 from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,QueryInfoKey,KEY_READ,KEY_WOW64_32KEY,KEY_WOW64_64KEY
 
@@ -56,27 +57,30 @@ usage="""\
 WAPT install system.
 
 action is either :
-  install [packages]: install one or several packages
+  install [packages]: install one or several packages by name, directory or wapt file
   update : update package database
   upgrade : upgrade installed packages
+  remove [packages] : remove installed packages
 
   download [packages]: force download one or several packages
   show [packages]: show attributes of one or more packages
-  showparams package: show required and optional parameters of one package
+  show-params package: show required and optional parameters of one package
 
-  list [keywords]: list installed packages
-  list-upgrade  : list upgradable packages
-  list-registry [keywords] : list installed software from Windows Registry
+  list [keywords]: list installed packages containing keywords
+  list-upgrades  : list upgradable packages
+  download-upgrades : download available upgradable packages
   search [keywords] : search installable packages whose description contains keywords
   cleanup : remove all WAPT cached files from local drive
 
+ For repository management
   update-packages <directory> : rebuild a "Packages" file for http package repository
 
+ For packages development
+  list-registry [keywords] : list installed software from Windows Registry
   sources <package> : get sources of a package (if attribute Sources was supplied in control file)
   build-package <directory> : creates a WAPT package from supplied directory
-  make-template <installer-path> <packagename> <source directoryname> : initializes a package template with an installer
+  make-template <installer-path> [<packagename> [<source directoryname>]] : initializes a package template with an installer
 """
-
 
 parser=OptionParser(usage=usage,version="%prog " + __version__+' setuphelpers '+setuphelpers.__version__)
 parser.add_option("-c","--config", dest="config", default='c:\\wapt\\wapt-get.ini', help="Config file full path (default: %default)")
@@ -561,6 +565,7 @@ and install all newest packages"""
         return inv
 
     def buildpackage(self,directoryname):
+        result_filename =''
         if not os.path.isdir(os.path.join(directoryname,'WAPT')):
             raise Exception('Error building package : There is no WAPT directory in %s' % directoryname)
         if not os.path.isfile(os.path.join(directoryname,'setup.py')):
@@ -578,13 +583,16 @@ and install all newest packages"""
             else:
                 entry.load_control_from_wapt(directoryname)
             package_filename =  entry.Package + '_' + entry.Version + '_' +  entry.Architecture  + '.wapt'
+            result_filename = os.path.abspath(os.path.join( directoryname,'..',package_filename))
+
             create_recursive_zip_signed(
-                zipfn = os.path.join( directoryname,'..',package_filename),
+                zipfn = result_filename,
                 source_root = directoryname,
                 target_root = '' ,
                 excludes=['.svn','.git*','*.pyc'])
         finally:
             sys.path = oldpath
+            return result_filename
 
     def maketemplate(self,installer_path,packagename='',directoryname=''):
         packagename = packagename.lower()
@@ -594,11 +602,12 @@ and install all newest packages"""
         (product_name,ext) = os.path.splitext(installer)
 
         product_desc = product_name
-        if 'StringFileInfo' in props:
-            product_name = props['StringFileInfo'].get('ProductName',product_name).strip()
-            product_desc = "%s (%s)" % (props['StringFileInfo'].get('ProductName',product_name).strip(),props['StringFileInfo'].get('CompanyName','').strip())
+        product_name = props['ProductName'] or props['FileDescription'] or product_desc
+        if props['CompanyName']:
+            product_desc = "%s (%s)" % (product_name,props['CompanyName'])
         if not packagename:
-            packagename = 'tis-%s' %  product_name.lower()
+            simplename = re.sub(r'[\s\(\)]+','',product_name.lower())
+            packagename = 'tis-%s' %  simplename
         if not directoryname:
             directoryname = os.path.join('c:\\','tranquilit',packagename)+'-wapt'
         if not os.path.isdir(os.path.join(directoryname,'WAPT')):
@@ -607,9 +616,22 @@ and install all newest packages"""
 # -*- coding: utf-8 -*-
 from setuphelpers import *
 
+# registry key(s) where WAPT will find how to remove the application(s)
+uninstallkey = []
+
+# command(s) to launch to remove the application(s)
+uninstallstring = []
+
+# list of required parameters names (string) which canb be used during install
+required_params = []
+
 def install():
-  print('installing %(packagename)s')
-  run('%(installer)s /VERYSILENT')
+    # if you want to modify the keys depending on environment (win32/win64... params..)
+    global uninstallkey
+    global uninstallstring
+
+    print('installing %(packagename)s')
+    run('%(installer)s /VERYSILENT')
 """ % locals()
         setuppy_filename = os.path.join(directoryname,'setup.py')
         if not os.path.isfile(setuppy_filename):
@@ -632,7 +654,7 @@ def install():
             codecs.open(control_filename,'w',encoding='utf8').write(entry.ascontrol())
         else:
             logger.info('control file already exists, skip create')
-        shelllaunch(directoryname)
+        return (directoryname)
 
 def main():
     if len(args) == 0:
@@ -706,19 +728,7 @@ def main():
                 for packagename in args[1:]:
                     entry = mywapt.waptdb.package_entry_from_db(packagename)
                     print "%s" % entry
-        elif action=='build-package':
-            if len(args)<2:
-                print "You must provide at least one source directory for package build"
-                sys.exit(1)
-            for source_dir in args[1:]:
-                if os.path.isdir(source_dir):
-                    logger.info('Building  %s' % source_dir)
-                    mywapt.buildpackage(source_dir)
-                    logger.info('...done')
-                else:
-                    logger.critical('Directory %s not found' % source_dir)
-
-        elif action=='showparams':
+        elif action=='show-params':
             if len(args)<2:
                 print "You must provide at one package name to show params for"
                 sys.exit(1)
@@ -775,7 +785,21 @@ def main():
             if len(args)<2:
                 print "You must provide the installer path"
                 sys.exit(1)
-            mywapt.maketemplate(*args[1:])
+            source_dir = mywapt.maketemplate(*args[1:])
+            print "Template created. You can build the WAPT package by launching\n  %s build-package %s" % (sys.argv[0],source_dir)
+            shelllaunch(source_dir)
+
+        elif action=='build-package':
+            if len(args)<2:
+                print "You must provide at least one source directory for package build"
+                sys.exit(1)
+            for source_dir in args[1:]:
+                if os.path.isdir(source_dir):
+                    logger.info('Building  %s' % source_dir)
+                    package_fn = mywapt.buildpackage(source_dir)
+                    logger.info('...done. Package filename %s ' % package_fn)
+                else:
+                    logger.critical('Directory %s not found' % source_dir)
 
         elif action=='search':
             mywapt.list_repo(args[1:])
