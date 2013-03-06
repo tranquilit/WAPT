@@ -322,7 +322,7 @@ begin
     try
       AQuery := WaptDB.QueryCreate('select s.Package,s.Version,p.Version as RepoVersion,s.InstallDate,s.InstallStatus '+
                           ' from wapt_localstatus s'+
-                          ' left join wapt_repo p on p.Package=s.Package '+
+                          ' left join wapt_repo p on p.Package=s.Package and p.Version=s.Version'+
                           ' order by s.Package');
       AResponseInfo.ContentText:=DatasetToHTMLtable(AQuery,@StatusTableHook);
     finally

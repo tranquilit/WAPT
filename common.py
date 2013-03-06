@@ -38,6 +38,7 @@ import sqlite3
 import json
 import StringIO
 import urllib2
+import fnmatch
 
 def datetime2isodate(adatetime = datetime.datetime.now()):
     assert(isinstance(adatetime,datetime.datetime))
@@ -207,7 +208,39 @@ def html_table(cur,callback=None):
 
     return "<table border=1  cellpadding=2 cellspacing=0>%s%s</table>" % (head,lines)
 
-
+def create_recursive_zip_signed(zipfn, source_root, target_root = "",excludes = ['.svn','*.pyc'],logger=None):
+    """Create a zip file with filename zipf from source_root directory with target_root as new root.
+       Don't include file which match excludes file pattern
+    """
+    result = []
+    if isinstance(zipfn,str) or isinstance(zipfn,unicode):
+        if logger: logger.debug('Create zip file %s' % zipfn)
+        zipf = zipfile.ZipFile(zipfn,'w')
+    elif isinstance(zipfn,zipfile.ZipFile):
+        zipf = zipfn
+    else:
+        raise Exception('zipfn must be either a filename (string) or an zipfile.ZipFile')
+    for item in os.listdir(source_root):
+        excluded = False
+        for x in excludes:
+            excluded = fnmatch.fnmatch(item,x)
+            if excluded:
+                break
+        if excluded:
+            continue
+        if os.path.isfile(os.path.join(source_root, item)):
+            if logger: logger.debug(' adding file %s' % os.path.join(source_root, item))
+            zipf.write(os.path.join(source_root, item), os.path.join(target_root,item))
+            result.append([os.path.join(target_root,item),md5_for_file(os.path.join(source_root, item))])
+        elif os.path.isdir(os.path.join(source_root, item)):
+            if logger: logger.debug('Add directory %s' % os.path.join(source_root, item))
+            result.extend(create_recursive_zip_signed(zipf, os.path.join(source_root, item), os.path.join(target_root,item),excludes))
+    if isinstance(zipfn,str):
+        if logger: logger.debug('  adding md5 sums for all %i files' % len(result))
+        # Write a file with all md5 of all files
+        zipf.writestr(os.path.join(target_root,'files.md5sum'), "\n".join( ["%s:%s" % (md5[0],md5[1]) for md5 in result] ))
+        zipf.close()
+    return result
 
 class WaptDB:
     """Class to manage SQLite database with local installation status"""
@@ -376,7 +409,7 @@ class WaptDB:
                     where rowid = ?
                 """,(
                      installstatus,
-                     installoutput.encode('utf8'),
+                     installoutput,
                      uninstallkey,
                      uninstallstring,
                      rowid,
@@ -557,8 +590,18 @@ class Package_Entry:
         self.Sources=''
         self.repo_url=''
 
+    def load_control_from_dict(self,adict):
+        for k in adict:
+            if hasattr(self,k):
+                setattr(self,k,adict[k])
+
     def load_control_from_wapt(self,fname):
-        """Load package attributes from the control file (utf8 encoded) included in WAPT zipfile fname"""
+        """Load package attributes from the control file (utf8 encoded) included in WAPT zipfile fname
+          fname can be
+           - the path to WAPT file itelsef (zip file)
+           - a list with the lines from control file
+           - a path to the directory of wapt file unzipped content (debugging)
+        """
         if type(fname) is list:
             control =  StringIO.StringIO(u'\n'.join(fname))
             self.Filename = ''
@@ -569,7 +612,7 @@ class Package_Entry:
             self.Size = os.path.getsize(fname)
             self.Filename = os.path.basename(fname)
         elif os.path.isdir(fname):
-            control = codecs.open(os.path.join(fname,'WAPT','control'),'r','utf8')
+            control = codecs.open(os.path.join(fname,'WAPT','control'),'r',encoding='utf8')
             self.Filename = os.path.basename(fname)
 
         (param,value) = ('','')

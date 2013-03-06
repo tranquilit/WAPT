@@ -90,19 +90,12 @@ end;
 
 function WaptgetPath: Utf8String;
 begin
-  if FileExists(ExtractFilePath(ParamStr(0))+'\wapt-get.exe') then
-    result := ExtractFilePath(ParamStr(0))+'\wapt-get.exe'
-  else
-    result := 'c:\wapt\wapt-get.exe';
+  result := ExtractFilePath(ParamStr(0))+'\wapt-get.exe'
 end;
 
 function WaptDBPath: Utf8String;
 begin
-  if FileExists(ExtractFilePath(ParamStr(0))+'\db\waptdb.sqlite') then
-    result := ExtractFilePath(ParamStr(0))+'\db\waptdb.sqlite'
-  else
-    result := 'c:\wapt\db\waptdb.sqlite';
-
+  result := ExtractFilePath(ParamStr(0))+'\db\waptdb.sqlite'
 end;
 
 {

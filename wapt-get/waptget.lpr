@@ -162,11 +162,6 @@ begin
     WaptDB.upgradedb;
   end
   else
-  if Action = 'waptupgrade' then
-  begin
-    WaptDB.upgradedb;
-  end
-  else
   begin
     // Running python stuff
     APythonEngine := TPythonEngine.Create(Self);

@@ -36,6 +36,7 @@ from common import WaptDB
 from common import Package_Entry
 from common import update_packages
 from common import pptable
+from common import create_recursive_zip_signed
 import pprint
 import socket
 import codecs
@@ -71,6 +72,9 @@ action is either :
 
   update-packages <directory> : rebuild a "Packages" file for http package repository
 
+  sources <package> : get sources of a package (if attribute Sources was supplied in control file)
+  build-package <directory> : creates a WAPT package from supplied directory
+  make-template <installer-path> <packagename> <source directoryname> : initializes a package template with an installer
 """
 
 
@@ -233,6 +237,10 @@ class Wapt:
         entry.load_control_from_wapt(fname)
         old_stdout = sys.stdout
         old_stderr = sys.stderr
+
+        # we  record old sys.path as we will include current setup.py
+        oldpath = sys.path
+
         install_id = None
         install_id = self.waptdb.add_start_install(entry.Package ,entry.Version)
         # we setup a redirection of stdout to catch print output from install scripts
@@ -261,6 +269,8 @@ class Wapt:
             setup_filename = os.path.join( packagetempdir,'setup.py')
             previous_cwd = os.getcwd()
             os.chdir(os.path.dirname(setup_filename))
+            if not os.getcwd() in sys.path:
+                sys.path.append(os.getcwd())
 
             # import the setup module from package file
             logger.info("  sourcing install file %s " % setup_filename )
@@ -347,6 +357,7 @@ class Wapt:
             logger.handlers[0] = old_hdlr
             sys.stdout = old_stdout
             sys.stderr = old_stderr
+            sys.path = oldpath
 
     def get_sources(self,package):
         """Download sources of package (if referenced in package as a https svn
@@ -377,7 +388,7 @@ class Wapt:
     def cleanup(self):
         """Remove cached WAPT file from local disk"""
         logger.info('Cleaning up WAPT cache directory')
-        cachepath = 'c:/wapt/cache'
+        cachepath = self.packagecachedir
         for f in glob.glob(os.path.join(cachepath,'*.wapt')):
             if os.path.isfile(f):
                 logger.debug('Removing %s' % f)
@@ -524,6 +535,19 @@ and install all newest packages"""
         else:
             print pptable(q,None,1,None)
 
+    def download_upgrades(self):
+        """Download packages that can be upgraded"""
+        q = self.waptdb.db.execute("""\
+           select wapt_repo.Package,wapt_localstatus.Version as Installed,wapt_repo.Version as Available from wapt_localstatus
+            left join wapt_repo on wapt_repo.Package=wapt_localstatus.Package
+            where wapt_localstatus.Version<wapt_repo.Version
+           """)
+        if not q:
+            print "Nothing to upgrade"
+        else:
+            to_download = [ (p[0],p[2]) for p in q ]
+            self.download_packages(to_download)
+
     def list_repo(self,search):
         print self.waptdb.list_repo(search)
 
@@ -535,6 +559,80 @@ and install all newest packages"""
         inv['softwares'] = installed_softwares('')
         inv['packages'] = self.waptdb.installed()
         return inv
+
+    def buildpackage(self,directoryname):
+        if not os.path.isdir(os.path.join(directoryname,'WAPT')):
+            raise Exception('Error building package : There is no WAPT directory in %s' % directoryname)
+        if not os.path.isfile(os.path.join(directoryname,'setup.py')):
+            raise Exception('Error building package : There is no setup.py file in %s' % directoryname)
+        oldpath = sys.path
+        try:
+            sys.path.append(directoryname)
+            setup = import_setup(os.path.join(directoryname,'setup.py'),'_waptsetup_')
+            control_filename = os.path.join(directoryname,'WAPT','control')
+            entry = Package_Entry()
+            if hasattr(setup,'control'):
+                entry.load_control_from_dict(setup.control)
+                # update control file
+                codecs.open(control_filename,'w',encoding='utf8').write(entry.ascontrol())
+            else:
+                entry.load_control_from_wapt(directoryname)
+            package_filename =  entry.Package + '_' + entry.Version + '_' +  entry.Architecture  + '.wapt'
+            create_recursive_zip_signed(
+                zipfn = os.path.join( directoryname,'..',package_filename),
+                source_root = directoryname,
+                target_root = '' ,
+                excludes=['.svn','.git*','*.pyc'])
+        finally:
+            sys.path = oldpath
+
+    def maketemplate(self,installer_path,packagename='',directoryname=''):
+        packagename = packagename.lower()
+
+        installer = os.path.basename(installer_path)
+        props = get_file_properties(installer_path)
+        (product_name,ext) = os.path.splitext(installer)
+
+        product_desc = product_name
+        if 'StringFileInfo' in props:
+            product_name = props['StringFileInfo'].get('ProductName',product_name).strip()
+            product_desc = "%s (%s)" % (props['StringFileInfo'].get('ProductName',product_name).strip(),props['StringFileInfo'].get('CompanyName','').strip())
+        if not packagename:
+            packagename = 'tis-%s' %  product_name.lower()
+        if not directoryname:
+            directoryname = os.path.join('c:\\','tranquilit',packagename)+'-wapt'
+        if not os.path.isdir(os.path.join(directoryname,'WAPT')):
+            os.makedirs(os.path.join(directoryname,'WAPT'))
+        template = """\
+# -*- coding: utf-8 -*-
+from setuphelpers import *
+
+def install():
+  print('installing %(packagename)s')
+  run('%(installer)s /VERYSILENT')
+""" % locals()
+        setuppy_filename = os.path.join(directoryname,'setup.py')
+        if not os.path.isfile(setuppy_filename):
+            codecs.open(setuppy_filename,'w',encoding='utf8').write(template)
+        else:
+            logger.info('setup.py file already exists, skip create')
+        logger.debug('Copy installer %s to target' % installer)
+        shutil.copyfile(installer_path,os.path.join(directoryname,installer))
+
+        control_filename = os.path.join(directoryname,'WAPT','control')
+        if not os.path.isfile(control_filename):
+            entry = Package_Entry()
+            entry.Package = packagename
+            entry.Architecture='all'
+            entry.Description = 'automatic package for %s ' % product_desc
+            entry.Maintainer = win32api.GetUserNameEx(3)
+            entry.Priority = 'optional'
+            entry.Section = 'base'
+            entry.Version = props.get('FileVersion','0.0.0')+'-00'
+            codecs.open(control_filename,'w',encoding='utf8').write(entry.ascontrol())
+        else:
+            logger.info('control file already exists, skip create')
+        shelllaunch(directoryname)
 
 def main():
     if len(args) == 0:
@@ -608,6 +706,18 @@ def main():
                 for packagename in args[1:]:
                     entry = mywapt.waptdb.package_entry_from_db(packagename)
                     print "%s" % entry
+        elif action=='build-package':
+            if len(args)<2:
+                print "You must provide at least one source directory for package build"
+                sys.exit(1)
+            for source_dir in args[1:]:
+                if os.path.isdir(source_dir):
+                    logger.info('Building  %s' % source_dir)
+                    mywapt.buildpackage(source_dir)
+                    logger.info('...done')
+                else:
+                    logger.critical('Directory %s not found' % source_dir)
+
         elif action=='showparams':
             if len(args)<2:
                 print "You must provide at one package name to show params for"
@@ -646,17 +756,26 @@ def main():
         elif action=='list-upgrade':
             mywapt.list_upgrade()
 
+        elif action=='download-upgrades':
+            mywapt.download_upgrades()
+
         elif action=='update-packages':
             if len(args)<2:
                 print "You must provide the directory"
                 sys.exit(1)
             update_packages(args[1])
 
-        elif action=='source':
+        elif action=='sources':
             if len(args)<2:
                 print "You must provide the package name"
                 sys.exit(1)
             mywapt.get_sources(args[1])
+
+        elif action=='make-template':
+            if len(args)<2:
+                print "You must provide the installer path"
+                sys.exit(1)
+            mywapt.maketemplate(*args[1:])
 
         elif action=='search':
             mywapt.list_repo(args[1:])
