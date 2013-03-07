@@ -38,10 +38,14 @@ FileName=C:\tranquilit\wapt\wininet.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node1]
 ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\lib\site-packages\winshell.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node2]
+ClassName=TProjectFileNode
 FileName=C:\tranquilit\wapt\lib\site-packages\wmi.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes]
-Count=2
+Count=3
 
 [Project\ChildNodes\Node0\ChildNodes\Node2]
 ClassName=TProjectFolderNode
@@ -145,7 +149,7 @@ ScriptName=C:\tranquilit\wapt\wapt-get.py
 Description=install 7zip
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=install -f tis-7zip
+Parameters=-ldebug install -f tis-7zip
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -198,7 +202,7 @@ Name=waptgetremove tis7zip
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=remove tis-7zip
+Parameters=-ldebug remove tis-7zip
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -429,7 +433,7 @@ ClassName=TProjectRunConfiguationNode
 Name=install python27
 
 [Project\ChildNodes\Node1\ChildNodes\Node11\RunConfig]
-ScriptName=C:\wapt\wapt-get.py
+ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=install c:\tranquilit\tis-python27-wapt\
@@ -521,13 +525,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node15]
 ClassName=TProjectRunConfiguationNode
-Name=download-upgrades
+Name=download-upgrade
 
 [Project\ChildNodes\Node1\ChildNodes\Node15\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=download-upgrades
+Parameters=download-upgrade
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -550,7 +554,7 @@ Name=make-template
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=make-template C:\Users\htouvet\Downloads\KeyFinderInstaller.exe tis-keyfinder
+Parameters=-ldebug make-template C:\Users\htouvet\Downloads\openvpn-install-2.3.0-I004-i686.exe
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -595,5 +599,6 @@ Count=18
 Count=2
 
 [Project\ExtraPythonPath]
-Count=0
+Item0=C:\tranquilit\wapt
+Count=1
 

@@ -39,9 +39,6 @@ import msilib
 
 from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,QueryInfoKey,KEY_READ,KEY_WOW64_32KEY,KEY_WOW64_64KEY
 import platform
-import socket
-import dns.resolver
-import netifaces
 
 logger = logging.getLogger('wapt-get')
 
@@ -175,14 +172,26 @@ def killalltasks(*exenames):
 def messagebox(title,msg):
     win32api.MessageBox(0, msg, title, win32con.MB_ICONINFORMATION)
 
+def showmessage(msg):
+    win32api.MessageBox(0, msg, 'Information', win32con.MB_ICONINFORMATION)
+
 def programfiles64():
-    return os.environ['PROGRAMFILES']
+    """Return 64 bits program folder, raise an error if only 32bit is available"""
+    if 'PROGRAMW6432' in os.environ :
+        return os.environ['PROGRAMW6432']
+    else:
+        raise Exception('No PROGRAMW6432 in environment variables... not a Win64 machine')
 
 def programfiles():
+    """Return native program directory, ie C:\Program Files for both 64 and 32 bits"""
     #return get_path(shellcon.CSIDL_PROGRAM_FILES)
-    return os.environ['PROGRAMFILES']
+    if 'PROGRAMW6432' in os.environ:
+        return os.environ['PROGRAMW6432']
+    else:
+        return os.environ['PROGRAMFILES']
 
 def programfiles32():
+    """Return 32bits applications folder."""
     if 'PROGRAMW6432' in os.environ and 'PROGRAMFILES(X86)' in os.environ:
         return os.environ['PROGRAMFILES(X86)']
     else:
@@ -196,20 +205,6 @@ def getcomputername():
 
 def getloggedinusers():
     return []
-
-def openkey_noredir(key, sub_key, sam=KEY_READ):
-    if platform.machine() == 'AMD64':
-        return OpenKey(key,sub_key,0, sam | KEY_WOW64_64KEY)
-    else:
-        return OpenKey(key,sub_key,0,sam)
-
-def get_domain_fromregistry():
-    key = OpenKey(HKEY_LOCAL_MACHINE,"SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters")
-    try:
-        (domain,atype) = QueryValueEx(key,'DhcpDomain')
-    except:
-        (domain,atype) = QueryValueEx(key,'Domain')
-    return domain
 
 def _environ_params(dict_or_module={}):
     """set some environment params in the supplied module or dict"""
@@ -279,27 +274,6 @@ def installed_softwares(keywords=''):
     return result
 
 
-def ipv4_to_int(ipaddr):
-    (a,b,c,d) = ipaddr.split('.')
-    return (int(a) << 24) + (int(b) << 16) + (int(c) << 8) + int(d)
-
-def same_net(ip1,ip2,netmask):
-    """Given 2 ipv4 address and mask, return True if in same subnet"""
-    return (ipv4_to_int(ip1) & ipv4_to_int(netmask)) == (ipv4_to_int(ip2) & ipv4_to_int(netmask))
-
-def host_ipv4():
-    """return a list of (iface,mac,{addr,broadcast,netmask})"""
-    ifaces = netifaces.interfaces()
-    res = []
-    for i in ifaces:
-        params = netifaces.ifaddresses(i)
-        if netifaces.AF_LINK in params and params[netifaces.AF_LINK][0]['addr'] and not params[netifaces.AF_LINK][0]['addr'].startswith('00:00:00'):
-            iface = {'iface':i,'mac':params[netifaces.AF_LINK][0]['addr']}
-            if netifaces.AF_INET in params:
-                iface.update(params[netifaces.AF_INET][0])
-            res.append( iface )
-    return res
-
 def host_info():
     info = {}
     info['waptgetversion'] = ""
@@ -323,121 +297,6 @@ def host_info():
     return info
 
 
-def _tryurl(url):
-    try:
-        logger.debug('  trying %s' % url)
-        urllib2.urlopen(url)
-        logger.debug('  OK')
-        return True
-    except Exception,e:
-        logger.debug('  Not available : %s' % e)
-        return False
-
-def find_wapt_server(configparser):
-    """Search the nearest working WAPT repository given the following priority
-       - URL defined in ini file
-       - first SRV record in the same network as one of the connected network interface
-       - first SRV record with the heigher weight
-       - wapt CNAME in the local dns domain (https first then http)
-       - hardcoded http://wapt/wapt
-
-    """
-    local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
-    logger.debug('All interfaces : %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in host_ipv4() if 'addr' in i and 'netmask' in i])
-    connected_interfaces = [ i for i in host_ipv4() if 'addr' in i and 'netmask' in i and i['addr'] in local_ips ]
-    logger.debug('Local connected IPs: %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in connected_interfaces])
-
-    def is_inmysubnets(ip):
-        """Return True if IP is in one of my connected subnets"""
-        for i in connected_interfaces:
-            if same_net(i['addr'],ip,i['netmask']):
-                logger.debug('  %s is in same subnet as %s/%s local connected interface' % (ip,i['addr'],i['netmask']))
-                return True
-        return False
-
-    #dnsdomain = dns.resolver.get_default_resolver().domain.to_text()
-    dnsdomain = get_domain_fromregistry()
-    logger.debug('Default DNS domain: %s' % dnsdomain)
-
-    if configparser:
-        url = configparser.get('global','repo_url')
-        if url:
-            if _tryurl(url+'/Packages'):
-                return url
-            else:
-                logger.warning('URL defined in ini file %s is not available' % url)
-        if not url:
-            logger.debug('No url defined in ini file')
-
-    if dnsdomain and dnsdomain <> '.':
-        # find by dns SRV _wapt._tcp
-        try:
-            logger.debug('Trying _wapt._tcp.%s SRV records' % dnsdomain)
-            answers = dns.resolver.query('_wapt._tcp.%s' % dnsdomain,'SRV')
-            working_url = []
-            for a in answers:
-                # get first numerical ipv4 from SRV name record
-                try:
-                    wapthost = a.target.to_text()[0:-1]
-                    ip = dns.resolver.query(a.target)[0].to_text()
-                    if a.port == 80:
-                        url = 'http://%s/wapt' % (wapthost,)
-                        if _tryurl(url+'/Packages'):
-                            working_url.append((a.weight,url))
-                            if is_inmysubnets(ip):
-                                return url
-                    elif a.port == 443:
-                        url = 'https://%s/wapt' % (wapthost,)
-                        if _tryurl(url+'/Packages'):
-                            working_url.append((a.weight,url))
-                            if is_inmysubnets(ip):
-                                return url
-                    else:
-                        url = 'http://%s:%i/wapt' % (wapthost,a.port)
-                        if _tryurl(url+'/Packages'):
-                            working_url.append((a.weight,url))
-                            if is_inmysubnets(ip):
-                                return url
-                except Exception,e:
-                    logging.debug('Unable to resolve : error %s' % (e,))
-
-            if working_url:
-                working_url.sort()
-                logger.debug('  Accessible servers : %s' % (working_url,))
-                return working_url[-1][0][1]
-
-            if not answers:
-                logger.debug('  No _wapt._tcp.%s SRV record found' % dnsdomain)
-        except dns.exception.DNSException,e:
-            logger.warning('  DNS resolver error : %s' % (e,))
-
-        # find by dns CNAME
-        try:
-            logger.debug('Trying wapt.%s CNAME records' % dnsdomain)
-            answers = dns.resolver.query('wapt.%s' % dnsdomain,'CNAME')
-            for a in answers:
-                wapthost = a.target.canonicalize().to_text()[0:-1]
-                url = 'https://%s/wapt' % (wapthost,)
-                if _tryurl(url+'/Packages'):
-                    return url
-                url = 'http://%s/wapt' % (wapthost,)
-                if _tryurl(url+'/Packages'):
-                    return url
-            if not answers:
-                logger.debug('  No wapt.%s CNAME SRV record found' % dnsdomain)
-
-        except dns.exception.DNSException,e:
-            logger.warning('  DNS resolver error : %s' % (e,))
-    else:
-        logger.warning('Local DNS domain not found, skipping SRV _wapt._tcp and CNAME search ')
-
-    # hardcoded wapt
-    url = 'http://wapt/wapt'
-    if _tryurl(url+'/Packages'):
-        return url
-
-    return None
-
 # from http://stackoverflow.com/questions/580924/python-windows-file-version-attribute
 def get_file_properties(fname):
 #==============================================================================
@@ -450,7 +309,7 @@ def get_file_properties(fname):
         'FileVersion', 'OriginalFilename', 'SpecialBuild')
     props = {}
     for propName in propNames:
-        props[propName] = None
+        props[propName] = ''
 
     try:
         # backslash as parm returns dictionary of numeric info corresponding to VS_FIXEDFILEINFO struc
@@ -497,13 +356,13 @@ def get_msi_properties(msi_filename):
 get_computer_name = win32api.GetComputerName
 get_domain_name = win32api.GetDomainName
 
-
-
 # some const
 programfiles = programfiles()
 programfiles32 = programfiles32()
 programfiles64 = programfiles64()
-dnsdomainname = get_domain_fromregistry()
+
+def service_is_running(service_name):
+    return win32api
 
 # to help pyscripter code completion in setup.py
 params = {}

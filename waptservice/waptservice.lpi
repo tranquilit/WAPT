@@ -20,7 +20,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="3"/>
-      <RevisionNr Value="13"/>
+      <RevisionNr Value="14"/>
       <Language Value="040C"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Service helper" ProductVersion=""/>
     </VersionInfo>
@@ -67,10 +67,12 @@
         <Filename Value="waptservice.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptservice"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="7" Y="6"/>
         <UsageCount Value="202"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="waptmapper.pas"/>
@@ -78,10 +80,12 @@
         <ComponentName Value="DaemonMapper1"/>
         <HasResources Value="True"/>
         <UnitName Value="WaptMapper"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="37" Y="6"/>
         <UsageCount Value="202"/>
+        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="waptunit.pas"/>
@@ -91,10 +95,10 @@
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WaptUnit"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="308"/>
-        <CursorPos X="37" Y="327"/>
+        <TopLine Value="460"/>
+        <CursorPos X="38" Y="454"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -153,8 +157,8 @@
         <UnitName Value="waptcommon"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
+        <TopLine Value="165"/>
+        <CursorPos X="3" Y="195"/>
         <UsageCount Value="169"/>
         <Loaded Value="True"/>
       </Unit9>
@@ -834,7 +838,104 @@
         <UsageCount Value="10"/>
       </Unit95>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="24" HistoryIndex="23">
+      <Position1>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="327" Column="37" TopLine="308"/>
+      </Position1>
+      <Position2>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position2>
+      <Position3>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="243" Column="30" TopLine="218"/>
+      </Position3>
+      <Position4>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="80" Column="15" TopLine="56"/>
+      </Position4>
+      <Position5>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="243" Column="30" TopLine="218"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="90" Column="1" TopLine="88"/>
+      </Position6>
+      <Position7>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="274" Column="30" TopLine="249"/>
+      </Position7>
+      <Position8>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="121" Column="1" TopLine="121"/>
+      </Position8>
+      <Position9>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position9>
+      <Position10>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="294" Column="25" TopLine="283"/>
+      </Position10>
+      <Position11>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="52" Column="5" TopLine="44"/>
+      </Position11>
+      <Position12>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="244" Column="43" TopLine="219"/>
+      </Position12>
+      <Position13>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="276" Column="42" TopLine="251"/>
+      </Position13>
+      <Position14>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="415" Column="89" TopLine="391"/>
+      </Position14>
+      <Position15>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="455" Column="47" TopLine="431"/>
+      </Position15>
+      <Position16>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="482" Column="28" TopLine="458"/>
+      </Position16>
+      <Position17>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="341" Column="43" TopLine="312"/>
+      </Position17>
+      <Position18>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="529" Column="16" TopLine="519"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="86" Column="29" TopLine="77"/>
+      </Position19>
+      <Position20>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="31" Column="1" TopLine="31"/>
+      </Position20>
+      <Position21>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="529" Column="16" TopLine="519"/>
+      </Position21>
+      <Position22>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="274" Column="14" TopLine="259"/>
+      </Position22>
+      <Position23>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="276" Column="42" TopLine="259"/>
+      </Position23>
+      <Position24>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="415" Column="86" TopLine="391"/>
+      </Position24>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
@@ -881,7 +982,7 @@
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="waptunit.pas"/>
-        <Line Value="432"/>
+        <Line Value="434"/>
       </Item1>
     </BreakPoints>
     <Watches Count="1">

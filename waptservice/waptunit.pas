@@ -55,6 +55,7 @@ type
     function RegisterComputer:Boolean;
   public
     { public declarations }
+    BaseDir : String;
     property WaptDB:TWAPTDB read GetWaptDB write SetWaptDB;
   end;
 
@@ -270,8 +271,9 @@ var
   ini : TIniFile;
   md5str : String;
 begin
-  SQLiteLibraryName:=AppendPathDelim(ExtractFilePath(ParamStr(0)))+'DLLs\sqlite3.dll';
-  ini := TIniFile.Create('c:\wapt\wapt-get.ini');
+  Basedir := ExtractFilePath(ParamStr(0));
+  SQLiteLibraryName:=BaseDir+'\DLLs\sqlite3.dll';
+  ini := TIniFile.Create(BaseDir + 'wapt-get.ini');
   try
     waptservice_port := ini.ReadInteger('global','service_port',waptservice_port);
     IdHTTPServer1.DefaultPort:= waptservice_port;
@@ -450,8 +452,8 @@ begin
       AResponseInfo.ContentText:= (
         '<h1>'+TISGetComputerName+' - System status</h1>'+
         'WAPT Server URL: '+GetWaptServerURL+'<br>'+
-        'wapt-get version: '+ApplicationVersion(ExtractFilePath(ParamStr(0))+'\wapt-get.exe')+'<br>'+
-        'waptservice version: '+ApplicationVersion(ExtractFilePath(ParamStr(0))+'\waptservice.exe')+'<br>'+
+        'wapt-get version: '+ApplicationVersion(WaptgetPath)+'<br>'+
+        'waptservice version: '+ApplicationVersion(Basedir+'\waptservice.exe')+'<br>'+
         'User : '+TISGetUserName+'<br>'+
         'Machine: '+TISGetComputerName+'<br>'+
         'Domain: '+ GetWorkGroupName+'<br>'+
