@@ -1438,7 +1438,10 @@ class Wapt:
                 for guid in guids:
                     uninstall_cmd = self.uninstall_cmd(guid)
                     logger.info('Launch uninstall cmd %s' % (uninstall_cmd,))
-                    print subprocess.check_output(uninstall_cmd,shell=True)
+                    try:
+                        print subprocess.check_output(uninstall_cmd,shell=True)
+                    except Exception,e:
+                        logger.info("Warning : %s" % e)
                 logger.info('Remove status record from local DB')
                 self.waptdb.remove_install_status(package)
             else:

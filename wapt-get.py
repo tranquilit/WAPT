@@ -156,13 +156,13 @@ def main():
             else:
                 result = mywapt.install(args[1:],force = options.force,params_dict = params_dict)
                 if result['install']:
-                    print "Installed packages:\n   %s" % (','.join( ["%s" %s for s in  result['install']]),)
+                    print "Installed packages:\n%s" % ('\n'.join( ["  %s" %s for s in  result['install']]),)
                 if result['skipped']:
-                    print "Skipped packages (already at the latest version) :\n   %s" % (','.join( ["%s (%s)" %s for s in  result['skipped']]),)
+                    print "Skipped packages (already at the latest version) :\n%s" %('\n'.join( ["  %s (%s)" %s for s in  result['skipped']]),)
                 if result['additional']:
-                    print "Additional installed packages :\n   %s" % (','.join(result['additional']),)
+                    print "Additional installed packages :\n%s" % ('\n'.join(["  %s" %s for s in  result['additional']]),)
                 if result['upgrade']:
-                    print "Packages upgraded :\n   %s" % (','.join(result['upgrade']),)
+                    print "Packages upgraded :\n%s" % (','.join(["  %s" %s for s in  result['upgrade']]),)
 
         elif action=='download':
             if len(args)<2:
