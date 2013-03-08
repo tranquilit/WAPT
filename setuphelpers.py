@@ -176,11 +176,11 @@ def showmessage(msg):
     win32api.MessageBox(0, msg, 'Information', win32con.MB_ICONINFORMATION)
 
 def programfiles64():
-    """Return 64 bits program folder, raise an error if only 32bit is available"""
+    """Return 64 bits program folder"""
     if 'PROGRAMW6432' in os.environ :
         return os.environ['PROGRAMW6432']
     else:
-        raise Exception('No PROGRAMW6432 in environment variables... not a Win64 machine')
+        return os.environ['PROGRAMFILES']
 
 def programfiles():
     """Return native program directory, ie C:\Program Files for both 64 and 32 bits"""
