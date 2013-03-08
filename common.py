@@ -1268,7 +1268,7 @@ class Wapt:
             else:
                 print ("  Downloading package from %s" % download_url)
                 try:
-                    wget( download_url, self.packagecachedir)
+                    setuphelpers.wget( download_url, self.packagecachedir)
                 except BaseException as e:
                     if os.path.isfile(fullpackagepath):
                         os.remove(fullpackagepath)
