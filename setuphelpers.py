@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.2.2"
+__version__ = "0.3.1"
 
 from winshell import *
 import os,sys
@@ -29,15 +29,17 @@ import logging
 import urllib,urllib2
 import tempfile
 import shutil
-from regutil import *
 import subprocess
 import win32api
 import win32con
 import win32pdhutil
 import win32net
 import msilib
+import win32service
+import win32serviceutil
+import glob
 
-from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,QueryInfoKey,KEY_READ,KEY_WOW64_32KEY,KEY_WOW64_64KEY
+import _winreg
 import platform
 
 logger = logging.getLogger('wapt-get')
@@ -153,12 +155,6 @@ def shelllaunch(cmd):
     """Launch a command (without arguments) but doesn't wait for its termination"""
     os.startfile(cmd)
 
-def registerapplication(applicationname,uninstallstring):
-    pass
-
-def unregisterapplication(applicationname):
-    pass
-
 def isrunning(processname):
     try:
         return len(win32pdhutil.FindPerformanceAttributesByName( processname ))> 0
@@ -224,15 +220,41 @@ def _environ_params(dict_or_module={}):
             setattr(dict_or_module,k,v)
     return params_dict
 
-def installed_softwares(keywords=''):
-    """return list of installed softwrae from registry (both 32bit and 64bit"""
-    def regget(key,name,default=None):
-        try:
-            return QueryValueEx(key,name)[0]
-        except WindowsError:
+###########
+def reg_getvalue(key,name,default=None):
+    try:
+        return _winreg.QueryValueEx(key,name)[0]
+    except WindowsError,e:
+        if e.errno in(259,2):
             # WindowsError: [Errno 259] No more data is available
+            # WindowsError: [Error 2] Le fichier spécifié est introuvable
             return default
+        else:
+            raise
 
+
+def reg_setvalue(key,name,value,type=_winreg.REG_SZ ):
+    return _winreg.SetValueEx(key,name,0,type,value)
+
+def reg_openkey_noredir(key, sub_key, sam=_winreg.KEY_READ,create_if_missing=False):
+    try:
+        if platform.machine() == 'AMD64':
+            return _winreg.OpenKey(key,sub_key,0, sam | _winreg.KEY_WOW64_64KEY)
+        else:
+            return _winreg.OpenKey(key,sub_key,0,sam)
+    except WindowsError,e:
+        if e.errno == 2:
+            if create_if_missing:
+                if platform.machine() == 'AMD64':
+                    return _winreg.CreateKeyEx(key,sub_key,0, sam | _winreg.KEY_WOW64_64KEY | _winreg.KEY_WRITE )
+                else:
+                    return _winreg.CreateKeyEx(key,sub_key,0,sam | _winreg.KEY_WRITE )
+            else:
+                raise WindowsError(e.errno,'The key %s can not be opened' % sub_key)
+
+
+def installed_softwares(keywords=''):
+    """return list of installed software from registry (both 32bit and 64bit"""
     def check_words(target,words):
         mywords = target.lower()
         result = not words or mywords
@@ -242,19 +264,19 @@ def installed_softwares(keywords=''):
 
     def list_fromkey(uninstall):
         result = []
-        key = openkey_noredir(HKEY_LOCAL_MACHINE,uninstall)
+        key = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,uninstall)
         mykeywords = keywords.lower().split()
         i = 0
         while True:
             try:
-                subkey = EnumKey(key, i).decode('iso8859')
-                appkey = openkey_noredir(HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,subkey.encode('iso8859')))
-                display_name = regget(appkey,'DisplayName','')
-                display_version = regget(appkey,'DisplayVersion','')
-                install_date = regget(appkey,'InstallDate','')
-                install_location = regget(appkey,'InstallLocation','')
-                uninstallstring = regget(appkey,'UninstallString','')
-                publisher = regget(appkey,'Publisher','')
+                subkey = _winreg.EnumKey(key, i).decode('iso8859')
+                appkey = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,subkey.encode('iso8859')))
+                display_name = reg_getvalue(appkey,'DisplayName','')
+                display_version = reg_getvalue(appkey,'DisplayVersion','')
+                install_date = reg_getvalue(appkey,'InstallDate','')
+                install_location = reg_getvalue(appkey,'InstallLocation','')
+                uninstallstring = reg_getvalue(appkey,'UninstallString','')
+                publisher = reg_getvalue(appkey,'Publisher','')
                 if display_name and check_words(subkey+' '+display_name+' '+publisher,mykeywords):
                     result.append({'key':subkey,
                         'name':display_name,'version':display_version,
@@ -273,6 +295,38 @@ def installed_softwares(keywords=''):
         result.extend(list_fromkey("Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall"))
     return result
 
+def currentdate():
+    import time
+    return time.strftime('%Y%m%d')
+
+def currentdatetime():
+    import time
+    return time.strftime('%Y%m%d-%H%M%S')
+
+def register_uninstall(uninstallkey,uninstallstring,win64app=False,
+        quiet_uninstall_string='',
+        install_location = None, display_name=None,display_version=None,publisher=''):
+    if iswin64() and not win64app:
+        root = "Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
+    else:
+        root = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
+    appkey = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,"%s\\%s" % (root,uninstallkey.encode('iso8859')),
+        sam=_winreg.KEY_ALL_ACCESS,create_if_missing=True)
+    reg_setvalue(appkey,'UninstallString',uninstallstring)
+    reg_setvalue(appkey,'install_date',currentdate())
+    if quiet_uninstall_string:
+        reg_setvalue(appkey,'QuietUninstallString',quiet_uninstall_string)
+    if display_name:
+        reg_setvalue(appkey,'DisplayName',display_name)
+    if display_version:
+        reg_setvalue(appkey,'DisplayVersion',display_version)
+    if install_location:
+        reg_setvalue(appkey,'InstallLocation',install_location)
+    if publisher:
+        reg_setvalue(appkey,'Publisher',publisher)
+
+def unregister_uninstall(uninstallkey):
+    pass
 
 def host_info():
     info = {}
@@ -361,8 +415,35 @@ programfiles = programfiles()
 programfiles32 = programfiles32()
 programfiles64 = programfiles64()
 
+makepath = os.path.join
+
+def service_installed(service_name):
+    try:
+        service_is_running(service_name)
+        return True
+    except win32service.error,e :
+         if e.winerror == 1060:
+            return False
+         else:
+            raise
+
+def service_start(service_name):
+    return win32serviceutil.StartService(service_name)
+
+def service_stop(service_name):
+    return win32serviceutil.StopService(service_name)
+
 def service_is_running(service_name):
-    return win32api
+    return win32serviceutil.QueryServiceStatus(service_name)[1] == win32service.SERVICE_RUNNING
 
 # to help pyscripter code completion in setup.py
 params = {}
+
+if __name__=='__main__':
+    print service_installed('waptservice')
+    print service_installed('wapt')
+    print get_computer_name()
+    print getloggedinusers()
+    print get_domain_name()
+    print get_msi_properties(glob.glob('C:\\Windows\\Installer\\*.msi')[0])
+    print installed_softwares('offi')

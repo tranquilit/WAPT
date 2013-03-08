@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.7.7"
+__version__ = "0.8.0"
 
 import sys
 import os
@@ -37,10 +37,10 @@ from common import Package_Entry
 from common import update_packages
 from common import pptable
 from common import create_recursive_zip_signed
-from common import find_wapt_server
 import setuphelpers
 #from setuphelpers import *
 import json
+import glob
 
 from common import Wapt
 
@@ -82,6 +82,7 @@ parser.add_option("-d","--dry-run",    dest="dry_run",    default=False, action=
 parser.add_option("-f","--force",    dest="force",    default=False, action='store_true', help="Force (default: %default)")
 parser.add_option("-p","--params", dest="params", default='{}', help="Setup params as a JSon Object (example : {'licence':'AZE-567-34','company':'TIS'}} (default: %default)")
 parser.add_option("-r","--repository", dest="wapt_url", default='', help="URL of wapt repository (override url of ini file, example http://wapt/wapt) (default: %default)")
+parser.add_option("-i","--inc-release",    dest="increlease",    default=False, action='store_true', help="Increase release number when building package (default: %default)")
 
 (options,args)=parser.parse_args()
 
@@ -120,27 +121,26 @@ def main():
     cp = ConfigParser()
     cp.read(config_file)
 
+    wapt_repourl = options.wapt_url
     # override main repo URL by command line option
-    if options.wapt_url:
-        wapt_repourl = options.wapt_url
-        logger.info("Trying wapt Repository %s" % wapt_repourl)
+    if wapt_repourl:
+        logger.info("Trying command line WAPT Repository %s" % wapt_repourl)
         if not _tryurl(wapt_repourl):
             print "Supplied repository %s is not accessible ... aborting" % wapt_repourl
             sys.exit(2)
-    else:
-        wapt_repourl = find_wapt_server(cp)
-    if not wapt_repourl:
-        print "No valid accessible repository found... aborting"
-        sys.exit(2)
 
     mywapt = Wapt(config=cp)
-    mywapt.wapt_repourl = wapt_repourl
+    if wapt_repourl:
+        mywapt.wapt_repourl = wapt_repourl
+    else:
+        mywapt.wapt_repourl = mywapt.find_wapt_server()
     mywapt.dry_run = options.dry_run
     logger.info("Main wapt Repository %s" % mywapt.wapt_repourl)
     logger.debug('WAPT base directory : %s' % mywapt.wapt_base_dir)
     logger.debug('Package cache dir : %s' %  mywapt.packagecachedir)
 
     try:
+        print "Action : %s" % action
         if action=='install':
             if len(args)<2:
                 print "You must provide at least one package name"
@@ -154,13 +154,27 @@ def main():
             if os.path.isdir(args[1]) or os.path.isfile(args[1]):
                 mywapt.install_wapt(args[1],params_dict = params_dict)
             else:
-                mywapt.install(args[1:],force = options.force,params_dict = params_dict)
+                result = mywapt.install(args[1:],force = options.force,params_dict = params_dict)
+                if result['install']:
+                    print "Installed packages:\n   %s" % (','.join( ["%s" %s for s in  result['install']]),)
+                if result['skipped']:
+                    print "Skipped packages (already at the latest version) :\n   %s" % (','.join( ["%s (%s)" %s for s in  result['skipped']]),)
+                if result['additional']:
+                    print "Additional installed packages :\n   %s" % (','.join(result['additional']),)
+                if result['upgrade']:
+                    print "Packages upgraded :\n   %s" % (','.join(result['upgrade']),)
 
         elif action=='download':
             if len(args)<2:
                 print "You must provide at least one package name to download"
                 sys.exit(1)
-            mywapt.download_packages([(p,None) for p in args[1:]],usecache = not options.force )
+            result = mywapt.download_packages([(p,None) for p in args[1:]],usecache = not options.force )
+            print "Downloaded packages : \n%s" % "\n".join([ "  %s" % p for p in result['downloaded'] ])
+            print "Skipped packages : \n%s" % "\n".join([ "  %s" % p for p in result['skipped'] ])
+
+            if result['errors']:
+                logger.critical('Unable to download some files : %s'% (result['errors'],))
+                sys.exit(1)
 
         elif action=='show':
             if len(args)<2:
@@ -172,7 +186,7 @@ def main():
             else:
                 for packagename in args[1:]:
                     entry = mywapt.waptdb.package_entry_from_db(packagename)
-                    print "%s" % entry
+                    print "%s" % entry.ascontrol(with_non_control_attributes=True)
         elif action=='show-params':
             if len(args)<2:
                 print "You must provide at one package name to show params for"
@@ -184,7 +198,7 @@ def main():
         elif action=='list-registry':
             print "%-39s%-70s%-20s%-70s" % ('UninstallKey','Software','Version','Uninstallstring')
             print '-'*39+'-'*70 + '-'*20 + '-'*70
-            for p in installed_softwares(' '.join(args[1:])) :
+            for p in setuphelpers.installed_softwares(' '.join(args[1:])) :
                 print u"%-39s%-70s%-20s%-70s" % (p['key'],p['name'],p['version'],p['uninstallstring'])
 
         elif action=='showlog':
@@ -192,20 +206,32 @@ def main():
                 print "You must provide at least one package name"
                 sys.exit(1)
             for packagename in args[1:]:
-                mywapt.showlog(packagename)
+                result = mywapt.last_install_log(packagename)
+                print "Package : %s\nStatus : %s\n\nInstallation log:\n%s" % (packagename,result['status'],result['log'])
 
         elif action=='remove':
             if len(args)<2:
                 print "You must provide at least one package name to remove"
                 sys.exit(1)
             for packagename in args[1:]:
-                mywapt.remove(packagename)
+                print "Removing %s ..." % (packagename,),
+                mywapt.remove(packagename,force=options.force)
+                print "done"
 
         elif action=='update':
-            mywapt.waptdb.update_packages_list(mywapt.wapt_repourl)
+            result = mywapt.update()
+            print "Total packages : %i" % result['count']
+            print "Added packages : \n%s" % "\n".join([ "  %s (%s)" % p for p in result['added'] ])
+            print "Removed packages : \n%s" % "\n".join([ "  %s (%s)" % p for p in result['removed'] ])
+
 
         elif action=='upgrade':
-            mywapt.upgrade()
+            result = mywapt.upgrade()
+            if not result:
+                print "Nothing to upgrade"
+            else:
+                print "Upgraded packages :\n%s" % ( '\n'.join([' %s (%s)' % (p[0],p[1]) for p in result]),)
+
             sys.exit(0)
 
         elif action=='list-upgrade':
@@ -214,10 +240,15 @@ def main():
                 print "Nothing to upgrade"
             else:
                 print pptable(q,None,1,None)
-            mywapt.list_upgrade()
 
         elif action=='download-upgrade':
-            mywapt.download_upgrades()
+            result = mywapt.download_upgrades()
+            print "Downloaded packages : \n%s" % "\n".join([ "  %s" % p for p in result['downloaded'] ])
+            print "Skipped packages : \n%s" % "\n".join([ "  %s" % p for p in result['skipped'] ])
+
+            if result['errors']:
+                logger.critical('Unable to download some files : %s'% (result['errors'],))
+                sys.exit(1)
 
         elif action=='update-packages':
             if len(args)<2:
@@ -245,17 +276,29 @@ def main():
                 sys.exit(1)
             for source_dir in args[1:]:
                 if os.path.isdir(source_dir):
-                    logger.info('Building  %s' % source_dir)
-                    package_fn = mywapt.buildpackage(source_dir)
-                    logger.info('...done. Package filename %s ' % package_fn)
+                    print('Building  %s' % source_dir)
+                    package_fn = mywapt.buildpackage(source_dir,inc_package_release=options.increlease)
+                    print('...done. Package filename %s ' % package_fn)
                 else:
                     logger.critical('Directory %s not found' % source_dir)
+
+        elif action=='upload-package':
+            if len(args)<2:
+                print "You must provide a package to upload"
+                sys.exit(1)
+            waptfiles = []
+            for a in args[1:]:
+                waptfiles += glob.glob(a)
+            waptfile_arg = " ".join(['"%s"' % f for f in waptfiles])
+            setuphelpers.run(cp.get('global','upload_cmd',raw=True,) % {'waptfile': waptfile_arg  })
 
         elif action=='search':
             mywapt.list_repo(args[1:])
 
         elif action=='cleanup':
-            mywapt.cleanup()
+            result = mywapt.cleanup()
+            print "Removed files : \n%s" % "\n".join([ "  %s" % p for p in result ])
+
 
         elif action=='inventory':
             print mywapt.inventory()

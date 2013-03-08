@@ -48,6 +48,7 @@ import shutil
 import win32api
 from iniparse import ConfigParser
 import shlex
+from collections import namedtuple
 
 from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,QueryInfoKey,KEY_READ,KEY_WOW64_32KEY,KEY_WOW64_64KEY
 import setuphelpers
@@ -114,7 +115,7 @@ def splitThousands( s, tSep=',', dSep='.'):
 
     return lhs + splt[ :-1 ] + rhs
 
-
+"""
 def call_external_process(shell_string):
     p = subprocess.call(shell_string, shell=True)
     if (p != 0 ):
@@ -125,6 +126,7 @@ def check_string(test_string):
     if re.search(pattern, test_string):
         #Character other then . a-z 0-9 was found
         print 'Invalid : %r' % (test_string,)
+"""
 
 def convert_bytes(bytes):
     if bytes is None:
@@ -367,7 +369,7 @@ class LogInstallOutput(object):
             return self.console.__getattribute__(name)
 
 ###########
-def openkey_noredir(key, sub_key, sam=KEY_READ):
+def reg_openkey_noredir(key, sub_key, sam=KEY_READ):
     try:
         if platform.machine() == 'AMD64':
             return OpenKey(key,sub_key,0, sam | KEY_WOW64_64KEY)
@@ -417,112 +419,7 @@ def _tryurl(url):
         logger.debug('  Not available : %s' % e)
         return False
 
-
-def find_wapt_server(configparser):
-    """Search the nearest working WAPT repository given the following priority
-       - URL defined in ini file
-       - first SRV record in the same network as one of the connected network interface
-       - first SRV record with the heigher weight
-       - wapt CNAME in the local dns domain (https first then http)
-       - hardcoded http://wapt/wapt
-
-    """
-    local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
-    logger.debug('All interfaces : %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in host_ipv4() if 'addr' in i and 'netmask' in i])
-    connected_interfaces = [ i for i in host_ipv4() if 'addr' in i and 'netmask' in i and i['addr'] in local_ips ]
-    logger.debug('Local connected IPs: %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in connected_interfaces])
-
-    def is_inmysubnets(ip):
-        """Return True if IP is in one of my connected subnets"""
-        for i in connected_interfaces:
-            if same_net(i['addr'],ip,i['netmask']):
-                logger.debug('  %s is in same subnet as %s/%s local connected interface' % (ip,i['addr'],i['netmask']))
-                return True
-        return False
-
-    #dnsdomain = dns.resolver.get_default_resolver().domain.to_text()
-    dnsdomain = get_domain_fromregistry()
-    logger.debug('Default DNS domain: %s' % dnsdomain)
-
-    if configparser:
-        url = configparser.get('global','repo_url')
-        if url:
-            if _tryurl(url+'/Packages'):
-                return url
-            else:
-                logger.warning('URL defined in ini file %s is not available' % url)
-        if not url:
-            logger.debug('No url defined in ini file')
-
-    if dnsdomain and dnsdomain <> '.':
-        # find by dns SRV _wapt._tcp
-        try:
-            logger.debug('Trying _wapt._tcp.%s SRV records' % dnsdomain)
-            answers = dns.resolver.query('_wapt._tcp.%s' % dnsdomain,'SRV')
-            working_url = []
-            for a in answers:
-                # get first numerical ipv4 from SRV name record
-                try:
-                    wapthost = a.target.to_text()[0:-1]
-                    ip = dns.resolver.query(a.target)[0].to_text()
-                    if a.port == 80:
-                        url = 'http://%s/wapt' % (wapthost,)
-                        if _tryurl(url+'/Packages'):
-                            working_url.append((a.weight,url))
-                            if is_inmysubnets(ip):
-                                return url
-                    elif a.port == 443:
-                        url = 'https://%s/wapt' % (wapthost,)
-                        if _tryurl(url+'/Packages'):
-                            working_url.append((a.weight,url))
-                            if is_inmysubnets(ip):
-                                return url
-                    else:
-                        url = 'http://%s:%i/wapt' % (wapthost,a.port)
-                        if _tryurl(url+'/Packages'):
-                            working_url.append((a.weight,url))
-                            if is_inmysubnets(ip):
-                                return url
-                except Exception,e:
-                    logging.debug('Unable to resolve : error %s' % (e,))
-
-            if working_url:
-                working_url.sort()
-                logger.debug('  Accessible servers : %s' % (working_url,))
-                return working_url[-1][0][1]
-
-            if not answers:
-                logger.debug('  No _wapt._tcp.%s SRV record found' % dnsdomain)
-        except dns.exception.DNSException,e:
-            logger.warning('  DNS resolver error : %s' % (e,))
-
-        # find by dns CNAME
-        try:
-            logger.debug('Trying wapt.%s CNAME records' % dnsdomain)
-            answers = dns.resolver.query('wapt.%s' % dnsdomain,'CNAME')
-            for a in answers:
-                wapthost = a.target.canonicalize().to_text()[0:-1]
-                url = 'https://%s/wapt' % (wapthost,)
-                if _tryurl(url+'/Packages'):
-                    return url
-                url = 'http://%s/wapt' % (wapthost,)
-                if _tryurl(url+'/Packages'):
-                    return url
-            if not answers:
-                logger.debug('  No wapt.%s CNAME SRV record found' % dnsdomain)
-
-        except dns.exception.DNSException,e:
-            logger.warning('  DNS resolver error : %s' % (e,))
-    else:
-        logger.warning('Local DNS domain not found, skipping SRV _wapt._tcp and CNAME search ')
-
-    # hardcoded wapt
-    url = 'http://wapt/wapt'
-    if _tryurl(url+'/Packages'):
-        return url
-
-    return None
-
+PackageKey = namedtuple('Package',('packagename','version'))
 
 class WaptDB:
     """Class to manage SQLite database with local installation status"""
@@ -724,22 +621,28 @@ class WaptDB:
         return cur.lastrowid
 
     def list_installed_packages(self,words=[],okonly=False):
-
+        """Returns a cursor (Status, Package,VersionInstallDate,InstallStatus,Description for installed packets having words in their package name"""
         words = [ "%"+w.lower()+"%" for w in words ]
         search = ["lower(l.Package) like ?"] *  len(words)
         if okonly:
             search.append('l.InstallStatus in ("OK","UNKNOWN")')
         cur = self.db.execute("""\
               select
-                CASE l.Version WHEN l.Version<r.Version THEN 'U' ELSE 'I' END as "Status [datetime]",
+                CASE l.Version WHEN l.Version<r.Version THEN 'U' ELSE 'I' END as "Status",
                 l.Package,l.Version,l.InstallDate,l.InstallStatus,r.Description
               from wapt_localstatus l
                 left join wapt_repo r on l.Package=r.Package and l.Version=r.Version
               where %s
               order by l.Package
             """ %  (" and ".join(search) or "l.Package is not null",), words )
-
         return cur
+
+    def known_packages(self):
+        """return a list of all (package,version)"""
+        q = self.db.execute("""\
+              select distinct wapt_repo.Package,wapt_repo.Version from wapt_repo
+           """)
+        return [PackageKey(*e) for e in q.fetchall()]
 
     def installed(self):
         """Return a dictionary of installed packages : keys=package names, values = package dict """
@@ -781,6 +684,7 @@ class WaptDB:
     def update_packages_list(self,repourl):
         """Get Packages from http repo and update local package database"""
         try:
+            result = []
             packagesfn = repourl + '/Packages'
             logger.debug('read remote Packages zip file %s' % packagesfn)
             packageListFile = codecs.decode(zipfile.ZipFile(
@@ -795,10 +699,11 @@ class WaptDB:
                 if start <> end:
                     package = Package_Entry()
                     package.load_control_from_wapt(packageListFile[start:end])
-                    print package.Package
+                    logger.info("%s (%s)" % (package.Package,package.Version))
                     logger.debug(package)
                     package.repo_url = repourl
                     self.add_package_entry(package)
+                    result.append((package.Package,package.Version))
 
             for line in packageListFile:
                 if line.strip()=='':
@@ -813,13 +718,16 @@ class WaptDB:
 
             logger.debug('Commit wapt_repo updates')
             self.db.commit()
+            return result
         except:
             logger.debug('rollback delete repo')
             self.db.rollback()
             raise
 
     def build_depends(self,packages):
-        """Given a list of packages names Return a list of dependencies packages names to install"""
+        """Given a list of packages names Return a list of dependencies packages names to install
+            TODO : currently doesn't take care on versions...
+        """
         MAXDEPTH = 30
         # roots : list of initial packages to avoid infinite loops
         def dodepends(explored,packages,depth):
@@ -844,14 +752,23 @@ class WaptDB:
         depth =[0]
         return dodepends(explored,packages,depth)
 
-    def package_entry_from_db(self,package,version=None):
+    def package_entry_from_db(self,package,version_min='',version_max=''):
+        """Return the most recent package entry given its packagename and minimum and maximum version"""
         result = Package_Entry()
-        if not version:
+        filter = ""
+        if version_min is None:
+            version_min=""
+        if version_max is None:
+            version_max=""
+
+
+        if not version_min and not version_max:
             entries = self.query("""select * from wapt_repo where Package = ? order by version desc limit 1""",(package,))
         else:
-            entries = self.query("""select * from wapt_repo where Package = ? and version=? order by version desc limit 1""",(package,version))
+            entries = self.query("""select * from wapt_repo where Package = ? and (version>=? or ?="") and (version<=? or ?="") order by version desc limit 1""",
+                (package,version_min,version_min,version_max,version_max))
         if not entries:
-            raise Exception('Package %s %s not found in local DB, please update' % (package,version))
+            raise Exception('Package %s (min : %s, max %s) not found in local DB, please update' % (package,version_min,version_max))
         for k,v in entries[0].iteritems():
             setattr(result,k,v)
         return result
@@ -872,9 +789,9 @@ class Package_Entry:
     def __init__(self):
         self.Package=''
         self.Version=''
+        self.Architecture=''
         self.Section=''
         self.Priority=''
-        self.Architecture=''
         self.Maintainer=''
         self.Description=''
         self.Filename=''
@@ -932,13 +849,26 @@ class Package_Entry:
 
         return self
 
+    def save_control_to_wapt(self,fname):
+        """Load package attributes from the control file (utf8 encoded) included in WAPT zipfile fname
+          fname can be
+           - the path to WAPT file itelsef (zip file)
+           - a path to the directory of wapt file unzipped content (debugging)
+        """
+        if os.path.isfile(fname):
+            myzip = zipfile.ZipFile(fname,'a')
+            myzip.write(self.ascontrol().encode('utf8'),'WAPT/control',compress_type=zipfile.ZIP_STORED)
+        elif os.path.isdir(fname):
+            codecs.open(os.path.join(fname,'WAPT','control'),'w',encoding='utf8').write(self.ascontrol())
+
+
     def ascontrol(self,with_non_control_attributes = False):
         val = u"""\
 Package      : %(Package)s
 Version      : %(Version)s
+Architecture : %(Architecture)s
 Section      : %(Section)s
 Priority     : %(Priority)s
-Architecture : %(Architecture)s
 Maintainer   : %(Maintainer)s
 Description  : %(Description)s
 Depends      : %(Depends)s
@@ -946,19 +876,25 @@ Sources      : %(Sources)s
 """  % self.__dict__
         if with_non_control_attributes:
             for att in self.non_control_attributes:
-                val += u"\%14s: %s\n" % (att, getattr(self,att))
+                val += u"%-13s: %s\n" % (att, getattr(self,att))
         return val
 
     def make_package_filename(self):
         """Return the standard package filename based on current attributes"""
+        if not (self.Package and self.Version and self.Architecture):
+            raise Exception('Not enough information to build the package filename')
         return self.Package + '_' + self.Version + '_' +  self.Architecture  + '.wapt'
 
     def __str__(self):
-        return self.ascontrol()
+        return self.ascontrol(with_non_control_attributes=True)
 
 ######################"""
 class Wapt:
+    """Global WAPT engine"""
     def __init__(self,config=None,defaults=None):
+        """Initialize engine with a configParser instance (inifile) and other defaults in a dictionary
+            Main properties are :
+        """
         self.wapt_base_dir = os.path.dirname(sys.argv[0])
         self.config = config
         # default config file
@@ -970,11 +906,13 @@ class Wapt:
         if not os.path.exists(self.packagecachedir):
             os.makedirs(self.packagecachedir)
         self.dry_run = False
+        # database init
         self.dbdir = os.path.join(self.wapt_base_dir,'db')
         if not os.path.exists(self.dbdir):
             os.makedirs(self.dbdir)
         self.dbpath = os.path.join(self.dbdir,'waptdb.sqlite')
         self._waptdb = None
+        #
         self.upload_cmd = ''
 
     @property
@@ -983,12 +921,117 @@ class Wapt:
             self._waptdb = WaptDB(dbpath=self.dbpath)
         return self._waptdb
 
+    def find_wapt_server(self):
+        """Search the nearest working WAPT repository given the following priority
+           - URL defined in ini file
+           - first SRV record in the same network as one of the connected network interface
+           - first SRV record with the heigher weight
+           - wapt CNAME in the local dns domain (https first then http)
+           - hardcoded http://wapt/wapt
+
+        """
+        local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
+        logger.debug('All interfaces : %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in host_ipv4() if 'addr' in i and 'netmask' in i])
+        connected_interfaces = [ i for i in host_ipv4() if 'addr' in i and 'netmask' in i and i['addr'] in local_ips ]
+        logger.debug('Local connected IPs: %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in connected_interfaces])
+
+        def is_inmysubnets(ip):
+            """Return True if IP is in one of my connected subnets"""
+            for i in connected_interfaces:
+                if same_net(i['addr'],ip,i['netmask']):
+                    logger.debug('  %s is in same subnet as %s/%s local connected interface' % (ip,i['addr'],i['netmask']))
+                    return True
+            return False
+
+        #dnsdomain = dns.resolver.get_default_resolver().domain.to_text()
+        dnsdomain = get_domain_fromregistry()
+        logger.debug('Default DNS domain: %s' % dnsdomain)
+
+        if self.config:
+            url = self.config.get('global','repo_url')
+            if url:
+                if _tryurl(url+'/Packages'):
+                    return url
+                else:
+                    logger.warning('URL defined in ini file %s is not available' % url)
+            if not url:
+                logger.debug('No url defined in ini file')
+
+        if dnsdomain and dnsdomain <> '.':
+            # find by dns SRV _wapt._tcp
+            try:
+                logger.debug('Trying _wapt._tcp.%s SRV records' % dnsdomain)
+                answers = dns.resolver.query('_wapt._tcp.%s' % dnsdomain,'SRV')
+                working_url = []
+                for a in answers:
+                    # get first numerical ipv4 from SRV name record
+                    try:
+                        wapthost = a.target.to_text()[0:-1]
+                        ip = dns.resolver.query(a.target)[0].to_text()
+                        if a.port == 80:
+                            url = 'http://%s/wapt' % (wapthost,)
+                            if _tryurl(url+'/Packages'):
+                                working_url.append((a.weight,url))
+                                if is_inmysubnets(ip):
+                                    return url
+                        elif a.port == 443:
+                            url = 'https://%s/wapt' % (wapthost,)
+                            if _tryurl(url+'/Packages'):
+                                working_url.append((a.weight,url))
+                                if is_inmysubnets(ip):
+                                    return url
+                        else:
+                            url = 'http://%s:%i/wapt' % (wapthost,a.port)
+                            if _tryurl(url+'/Packages'):
+                                working_url.append((a.weight,url))
+                                if is_inmysubnets(ip):
+                                    return url
+                    except Exception,e:
+                        logging.debug('Unable to resolve : error %s' % (e,))
+
+                if working_url:
+                    working_url.sort()
+                    logger.debug('  Accessible servers : %s' % (working_url,))
+                    return working_url[-1][0][1]
+
+                if not answers:
+                    logger.debug('  No _wapt._tcp.%s SRV record found' % dnsdomain)
+            except dns.exception.DNSException,e:
+                logger.warning('  DNS resolver error : %s' % (e,))
+
+            # find by dns CNAME
+            try:
+                logger.debug('Trying wapt.%s CNAME records' % dnsdomain)
+                answers = dns.resolver.query('wapt.%s' % dnsdomain,'CNAME')
+                for a in answers:
+                    wapthost = a.target.canonicalize().to_text()[0:-1]
+                    url = 'https://%s/wapt' % (wapthost,)
+                    if _tryurl(url+'/Packages'):
+                        return url
+                    url = 'http://%s/wapt' % (wapthost,)
+                    if _tryurl(url+'/Packages'):
+                        return url
+                if not answers:
+                    logger.debug('  No wapt.%s CNAME SRV record found' % dnsdomain)
+
+            except dns.exception.DNSException,e:
+                logger.warning('  DNS resolver error : %s' % (e,))
+        else:
+            logger.warning('Local DNS domain not found, skipping SRV _wapt._tcp and CNAME search ')
+
+        # hardcoded wapt
+        url = 'http://wapt/wapt'
+        if _tryurl(url+'/Packages'):
+            return url
+
+        return None
+
     def registry_uninstall_snapshot(self):
         """Return list of uninstall ID from registry
              launched nefore and after an installation to capture uninstallkey
         """
         result = []
-        key = openkey_noredir(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
+        key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
         try:
             i = 0
             while True:
@@ -1002,7 +1045,7 @@ class Wapt:
             else:
                 raise
         if platform.machine() == 'AMD64':
-            key = openkey_noredir(HKEY_LOCAL_MACHINE,"Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
+            key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,"Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
             try:
                 i = 0
                 while True:
@@ -1020,7 +1063,7 @@ class Wapt:
     def uninstall_cmd(self,guid):
         """return cmd to uninstall from registry"""
         def get_fromkey(uninstall):
-            key = openkey_noredir(HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,guid))
+            key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,guid))
             try:
                 cmd = QueryValueEx(key,'QuietUninstallString')[0]
                 return cmd
@@ -1073,8 +1116,13 @@ class Wapt:
         sys.stderr = sys.stdout = installoutput = LogInstallOutput(sys.stdout,self.waptdb,install_id)
         hdlr = logging.StreamHandler(installoutput)
         hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
-        old_hdlr = logger.handlers[0]
-        logger.handlers[0] = hdlr
+        if logger.handlers:
+            old_hdlr = logger.handlers[0]
+            logger.handlers[0] = hdlr
+        else:
+            old_hdlr = None
+            logger.addHandler(hdlr)
+
         try:
             logger.info("Installing package " + fname)
             # ... inutile ?
@@ -1180,7 +1228,10 @@ class Wapt:
         finally:
             if 'setup' in dir():
                 del setup
-            logger.handlers[0] = old_hdlr
+            if old_hdlr:
+                logger.handlers[0] = old_hdlr
+            else:
+                logger.removeHandler(hdlr)
             sys.stdout = old_stdout
             sys.stderr = old_stderr
             sys.path = oldpath
@@ -1198,59 +1249,102 @@ class Wapt:
         if not os.path.isfile(svncmd):
             raise Exception('svn.exe command not available, please install TortoiseSVN with commandline tools')
         co_dir = re.sub('(/trunk/?$)|(/tags/?$)|(/branch/?$)','',entry.source)
-        print subprocess.check_output('svn co %s %s' % (svncmd,codir))
+        logger.info(subprocess.check_output('svn co %s %s' % (svncmd,codir)))
 
-    def showlog(self,package):
+    def last_install_log(self,packagename):
+        """Return last install status and log for package"""
         q = self.waptdb.query("""\
            select InstallStatus,InstallOutput from wapt_localstatus
-            where Package=?
-           """ , (package,) )
+            where Package=? order by InstallDate desc limit 1
+           """ , (packagename,) )
         if not q:
-            print "ERROR : Package %s not found in local DB status" % package
-            return False
-
-        print "Last install log from %s: status : %s\n%s" % ( package, q[0]['InstallStatus'], q[0]['InstallOutput'])
+            raise Exception("Package %s not found in local DB status" % packagename)
+        return {"status" : q[0]['InstallStatus'], "log":q[0]['InstallOutput']}
 
     def cleanup(self):
         """Remove cached WAPT file from local disk"""
+        result = []
         logger.info('Cleaning up WAPT cache directory')
         cachepath = self.packagecachedir
         for f in glob.glob(os.path.join(cachepath,'*.wapt')):
             if os.path.isfile(f):
                 logger.debug('Removing %s' % f)
                 os.remove(f)
+                result.append(f)
+        return result
 
-    def install(self,apackages,force=False,params_dict = {}):
-        """Install a list of packages and its dependencies
-            apackages is a list of packages names. A specifi version can be specified
-            force=True reinstalls the packafes even if it is already installed
-            params_dict is passed to the install() procedure in the packages setup.py of all packages
-                as params variables and as "setup module" attributes
+    def update(self):
+        """Update local database with packages definition from repositories
+            returns a dict of deltas
+                "removed" (Package,Version)
+                "added"  (Package,Version)
         """
+        previous = self.waptdb.known_packages()
+        if not self.wapt_repourl:
+            raise Exception('No main WAPT repository setup')
+        self.waptdb.update_packages_list(self.wapt_repourl)
+        current = self.waptdb.known_packages()
+        result = {
+            "added":   [ p for p in current if not p in previous ],
+            "removed": [ p for p in previous if not p in current],
+            "count" : len(current),
+            "repos" : [self.wapt_repourl],
+            }
+        return result
+
+    def checkinstall(self,apackages,force=False):
+        """Check which package to upgrade, to install"""
+        if not isinstance(apackages,list):
+            apackages = [apackages]
         allupgrades = self.waptdb.upgradeable()
         allinstalled = self.waptdb.installed()
+        # packages to install after skipping already installed ones
         packages = []
+        skipped = []
+        # check already installed top packages
         if not force:
             for p in apackages:
+                # package seul ou avec sa version
+                # Version = None : derniere version
                 if not p in allupgrades and p in allinstalled:
-                    print "Package %s already at the latest version (%s), skipping install." % (p,allinstalled[p]['Version'])
+                    skipped.append((p,allinstalled[p]['Version']))
                 else:
                     packages.append(p)
         else:
             packages = apackages
-        # get dependencies of all packages
+
+        # get dependencies of not installed top packages
         depends = self.waptdb.build_depends(packages)
         to_upgrade =  [ p for p in depends if p in allupgrades.keys() ]
         additional_install = [ p for p in depends if not p in allinstalled.keys() ]
-        if additional_install:
-            print "  Additional packages to install :\n   %s" % (','.join(additional_install),)
-        if to_upgrade:
-            print "  Packages to upgrade :\n   %s" % (','.join(to_upgrade),)
+        # other depencies skipped because they are already installed and at the latest version
+        remaining = [ (p,allinstalled[p]['Version']) for p in depends if not p in to_upgrade and not p in additional_install]
+        if remaining:
+            skipped.extend( remaining )
+        return {'additional':additional_install,'upgrade':to_upgrade,'install':packages,'skipped':skipped}
+
+    def install(self,apackages,force=False,params_dict = {}):
+        """Install a list of packages and its dependencies
+            apackages is a list of packages names. A specific version can be specified
+            force=True reinstalls the packafes even if it is already installed
+            params_dict is passed to the install() procedure in the packages setup.py of all packages
+                as params variables and as "setup module" attributes
+        """
+        if not isinstance(apackages,list):
+            apackages = [apackages]
+
+        actions = self.checkinstall(apackages,force)
+
+        skipped = actions['skipped']
+        additional_install = actions['additional']
+        to_upgrade = actions['upgrade']
+        packages = actions['install']
 
         to_install = []
         to_install.extend(additional_install)
         to_install.extend(to_upgrade)
         to_install.extend(packages)
+
         # [[package/version],]
         self.download_packages([(p,None) for p in to_install])
         def fname(packagefilename):
@@ -1263,37 +1357,53 @@ class Wapt:
         for p in packages:
             self.install_wapt(fname(self.waptdb.package_entry_from_db(p).Filename),params_dict)
 
+        return actions
+
+
     def download_packages(self,packages,usecache=True):
-        for (package,version) in packages:
-            entry = self.waptdb.package_entry_from_db(package,version)
+        downloaded = []
+        skipped = []
+        errors = []
+        packages_versioned = []
+        for p in packages:
+            if not isinstance(p,list) and not isinstance(p,tuple) :
+                packages_versioned.append((p,None))
+            else:
+                packages_versioned.append(p)
+
+        for (package,version) in packages_versioned:
+            entry = self.waptdb.package_entry_from_db(package)
             packagefilename = entry.Filename.strip('./')
             download_url = entry.repo_url+'/'+packagefilename
             fullpackagepath = os.path.join(self.packagecachedir,packagefilename)
             if os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath)>0 and usecache:
-                print ("  Use cached package file from " + fullpackagepath)
+                skipped.append(fullpackagepath)
+                logger.info("  Use cached package file from " + fullpackagepath)
             else:
-                print ("  Downloading package from %s" % download_url)
+                logger.info("  Downloading package from %s" % download_url)
                 try:
                     setuphelpers.wget( download_url, self.packagecachedir)
+                    downloaded.append(fullpackagepath)
                 except BaseException as e:
                     if os.path.isfile(fullpackagepath):
                         os.remove(fullpackagepath)
-                    print "Error downloading package from http repository, please update... error : %s" % e
-                    raise
+                    logger.critical("Error downloading package from http repository, please update... error : %s" % e)
+                    errors.append((download_url,"%s" % e))
+        return {"downloaded":downloaded,"skipped":skipped,"errors":errors}
 
-    def remove(self,package):
+    def remove(self,package,force=False):
         """Removes a package giving its package name, unregister from local status DB"""
         q = self.waptdb.query("""\
            select * from wapt_localstatus
             where Package=?
            """ , (package,) )
         if not q:
-            print "Package %s not installed, aborting" % package
+            logger.warning("Package %s not installed, aborting" % package)
             return True
 
-        # several versions installed of teh same package... ?
+        # several versions installed of the same package... ?
         for mydict in q:
-            print "Removing package %s version %s from computer..." % (mydict['Package'],mydict['Version'])
+            logger.info("Removing package %s version %s from computer..." % (mydict['Package'],mydict['Version']))
 
             if mydict['UninstallString']:
                 if mydict['UninstallString'][0] not in ['[','"',"'"]:
@@ -1332,61 +1442,55 @@ class Wapt:
                 logger.info('Remove status record from local DB')
                 self.waptdb.remove_install_status(package)
             else:
-                self.waptdb.remove_install_status(package)
-                raise Exception('  uninstall key not registered in local DB status, unable to remove. Unregistering anyway. Please remove manually')
+                if force:
+                    logger.critical('uninstall key not registered in local DB status, unable to remove properly. Please remove manually. Forced removal of local status of package')
+                    self.waptdb.remove_install_status(package)
+                else:
+                    raise Exception('  uninstall key not registered in local DB status, unable to remove properly. Please remove manually')
 
     def upgrade(self):
         """\
 Query localstatus database for packages with a version older than repository
 and install all newest packages"""
-        q = self.waptdb.query("""\
-           select wapt_repo.Package,wapt_repo.Version from wapt_localstatus
-            left join wapt_repo on wapt_repo.Package=wapt_localstatus.Package
-            where wapt_localstatus.Version<wapt_repo.Version
-           """)
-        if not q:
-            print "Nothing to upgrade"
-        else:
-            self.install([p['Package'] for p in q])
+        upgrades = self.list_upgrade().fetchall()
+        logger.debug('upgrades : %s' % upgrades)
+        self.install([p[0] for p in upgrades])
+        return upgrades
 
     def list_upgrade(self):
         """Returns a list of packages which can be upgraded
            Package,Current Version,Available version
         """
         q = self.waptdb.db.execute("""\
-           select wapt_repo.Package,wapt_localstatus.Version as Installed,wapt_repo.Version as Available from wapt_localstatus
+           select wapt_repo.Package,max(wapt_repo.Version) as Available from wapt_localstatus
             left join wapt_repo on wapt_repo.Package=wapt_localstatus.Package
-            where wapt_localstatus.Version<wapt_repo.Version
+            where wapt_repo.Version > wapt_localstatus.Version
+            group by wapt_repo.Package
            """)
-        return q.fetchall()
+        return q
 
     def download_upgrades(self):
         """Download packages that can be upgraded"""
-        q = self.waptdb.db.execute("""\
-           select wapt_repo.Package,wapt_localstatus.Version as Installed,wapt_repo.Version as Available from wapt_localstatus
-            left join wapt_repo on wapt_repo.Package=wapt_localstatus.Package
-            where wapt_localstatus.Version<wapt_repo.Version
-           """)
-        if not q:
-            print "Nothing to upgrade"
-        else:
-            to_download = [ (p[0],p[2]) for p in q ]
-            self.download_packages(to_download)
+        q = self.list_upgrade()
+        to_download = [ (p[0],p[1]) for p in q ]
+        return self.download_packages(to_download)
 
     def list_repo(self,search):
         print self.waptdb.list_repo(search)
 
     def list_installed_packages(self,search):
+        """return a SQLIte cursor of status of installed packages"""
         return self.waptdb.list_installed_packages(search)
 
     def inventory(self):
+        """Return software inventory of the computer as a dictionary"""
         inv = {}
-        inv['softwares'] = installed_softwares('')
+        inv['softwares'] = setuphelpers.installed_softwares('')
         inv['packages'] = self.waptdb.installed()
         return inv
 
-    def buildpackage(self,directoryname):
-        """Creates WAPT package from a directory, return the filename of the WAPT file"""
+    def buildpackage(self,directoryname,inc_package_release=False):
+        """Build the WAPT package from a directory, return the filename of the WAPT file"""
         result_filename =''
         if not os.path.isdir(os.path.join(directoryname,'WAPT')):
             raise Exception('Error building package : There is no WAPT directory in %s' % directoryname)
@@ -1396,12 +1500,14 @@ and install all newest packages"""
         try:
             previous_cwd = os.getcwd()
             logger.debug('  Change current directory to %s' % directoryname)
-            os.chdir(os.path.dirname(directoryname))
+            os.chdir(directoryname)
             if not os.getcwd() in sys.path:
-                sys.path.append(os.getcwd())
+                sys.path = [os.getcwd()] + sys.path
+                logger.debug('new sys.path %s' % sys.path)
+            logger.debug('Sourcing %s' % os.path.join(directoryname,'setup.py'))
             setup = import_setup(os.path.join(directoryname,'setup.py'),'_waptsetup_')
              # be sure some minimal functions are available in setup module at install step
-
+            logger.debug('Source import OK')
             control_filename = os.path.join(directoryname,'WAPT','control')
             entry = Package_Entry()
             if hasattr(setup,'control'):
@@ -1413,6 +1519,13 @@ and install all newest packages"""
                 logger.info('Use control informations from control file')
                 entry.load_control_from_wapt(directoryname)
             logger.debug('Control data : \n%s' % entry.ascontrol())
+            if inc_package_release:
+                current_release = entry.Version.split('-')[-1]
+                new_release = "%02i" % (int(current_release) + 1,)
+                new_version = "-".join(entry.Version.split('-')[0:-1]+[new_release])
+                logger.info('Increasing version of package from %s to %s' % (entry.Version,new_version))
+                entry.Version = new_version
+                entry.save_control_to_wapt(directoryname)
             package_filename =  entry.make_package_filename()
             result_filename = os.path.abspath(os.path.join( directoryname,'..',package_filename))
 
@@ -1432,6 +1545,9 @@ and install all newest packages"""
             return result_filename
 
     def maketemplate(self,installer_path,packagename='',directoryname=''):
+        """Build a skeleton of WAPT package based on the properties of the supplied installer
+           Return the path of the skeleton
+        """
         packagename = packagename.lower()
 
         installer = os.path.basename(installer_path)
@@ -1494,5 +1610,19 @@ def install():
         return (directoryname)
 
 if __name__ == '__main__':
-    pass
+    cfg = ConfigParser()
+    cfg.read('c:\\tranquilit\\wapt\\wapt-get.ini')
+    w = Wapt(config=cfg)
+    w.wapt_repourl = w.find_wapt_server()
+    print w.remove('tis-waptdev',force=True)
+    print w.remove('tis-firefox',force=True)
+    print w.install('tis-firefox',force=True)
+    print w.checkinstall(['tis-waptdev'])
+    print w.update()
+    print w.list_upgrade().fetchall()
+    pfn = w.buildpackage('c:\\tranquilit\\tis-wapttest-wapt',True)
+    if not os.path.isfile(pfn):
+        raise Exception("""w.buildpackage('c:\\tranquilit\\tis-wapttest-wapt',True) failed""")
+    print w.install_wapt(pfn,params_dict={'company':'TIS'})
+    print w.install(['tis-wapttest'],force=True)
 
