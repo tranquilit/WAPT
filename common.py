@@ -47,6 +47,7 @@ import netifaces
 import shutil
 import win32api
 from iniparse import ConfigParser
+import shlex
 
 from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,QueryInfoKey,KEY_READ,KEY_WOW64_32KEY,KEY_WOW64_64KEY
 import setuphelpers
@@ -1032,10 +1033,15 @@ class Wapt:
                         args.append('/q')
                 else:
                     # mozilla et autre
-                    args = shlex.split(cmd,posix=False)
-                    # remove double quotes if any
-                    if args[0].startswith('"') and args[0].endswith('"'):
-                        args[0] = args[0][1:-1]
+                    # si pas de "" et des espaces et pas d'option, alors encadrer avec des quotes
+                    if not(' -' in cmd or ' /' in cmd) and ' ' in cmd:
+                        args = [ cmd ]
+                    else:
+                    #sinon splitter sur les paramètres
+                        args = shlex.split(cmd,posix=False)
+                        # remove double quotes if any
+                        if args[0].startswith('"') and args[0].endswith('"') and (not "/" in cmd or not "--" in cmd):
+                            args[0] = args[0][1:-1]
                     if ('uninst' in cmd.lower() or 'helper.exe' in cmd.lower()) and not ' /s' in cmd.lower():
                         args.append('/S')
                     if ('unins000' in cmd.lower()) and not ' /silent' in cmd.lower():
