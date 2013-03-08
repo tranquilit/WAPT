@@ -1,0 +1,40 @@
+Metadata-Version: 1.1
+Name: semver
+Version: 0.0.2
+Summary: Python package to work with Semantic Versioning (http://semver.org/)
+Home-page: https://github.com/k-bx/python-semver
+Author: Konstantine Rybnikov
+Author-email: k-bx@k-bx.com
+License: UNKNOWN
+Download-URL: https://github.com/k-bx/python-semver/downloads
+Description: =================================================
+         Semver -- python module for semantic versioning 
+        =================================================
+        
+        Simple module for comparing versions as noted at
+        `semver.org <http://semver.org/>`_.
+        
+        This module provides just couple of functions, main of which are:
+        
+        ..
+        
+            >>> import semver
+            >>> semver.compare("1.0.0", "2.0.0")
+            1
+            >>> semver.compare("2.0.0", "1.0.0")
+            -1
+            >>> semver.compare("2.0.0", "2.0.0")
+            0
+            >>> semver.match("2.0.0", ">=1.0.0")
+            True
+            >>> semver.match("1.0.0", ">1.0.0")
+            False
+        
+Platform: UNKNOWN
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Django
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
