@@ -124,7 +124,7 @@ def main():
     # override main repo URL by command line option
     if wapt_repourl:
         logger.info("Trying command line WAPT Repository %s" % wapt_repourl)
-        if not _tryurl(wapt_repourl):
+        if not tryurl(wapt_repourl):
             print "Supplied repository %s is not accessible ... aborting" % wapt_repourl
             sys.exit(2)
 
@@ -137,6 +137,8 @@ def main():
     logger.info("Main wapt Repository %s" % mywapt.wapt_repourl)
     logger.debug('WAPT base directory : %s' % mywapt.wapt_base_dir)
     logger.debug('Package cache dir : %s' %  mywapt.packagecachedir)
+
+    logger.info('WAPT DB Structure version;: %s' % mywapt.waptdb.db_version)
 
     try:
         print "Action : %s" % action

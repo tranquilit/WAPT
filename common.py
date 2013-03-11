@@ -381,6 +381,7 @@ class WaptDB:
             os.path.dirname(self.dbpath)
             self.db=sqlite3.connect(self.dbpath,detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
             self.initdb()
+            self.db.commit()
         else:
             self.db=sqlite3.connect(self.dbpath,detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
 
@@ -398,7 +399,35 @@ class WaptDB:
             logger.critical('DB error %s, rollbacking\n' % (value,))
 
     def upgradedb(self):
-        pass
+        try:
+            logger.info('Upgrade database schema')
+            old_datas = {}
+            tables = ['wapt_localstatus','wapt_repo']
+            backupfn = os.path.join(os.path.dirname(self.dbpath),time.strftime('%Y%m%d-%H%M%S')+'.sqlite')
+            shutil.copy(self.dbpath,backupfn)
+            logger.debug(' backup data in memory')
+            for tablename in tables:
+                old_datas[tablename] = self.query('select * from %s' % tablename)
+                logger.debug(' %s table : %i records' % (tablename,len(old_datas[tablename])))
+            logger.debug(' drop tables')
+            for tablename in tables:
+                self.db.execute('drop table if exists %s' % tablename)
+            logger.debug(' recreates new tables ')
+            self.initdb()
+            logger.debug(' fill with old data')
+            for tablename in tables:
+                if old_datas[tablename]:
+                    columns = [ c[0] for c in self.db.execute('select * from %s limit 0' % tablename).description if c[0] in old_datas[tablename][0] ]
+                    insquery = "insert into %s (%s) values (%s)" % (tablename,",".join(columns),",".join("?" * len(columns)))
+                    for rec in old_datas[tablename]:
+                        logger.debug(' %s' %[ rec[columns[i]] for i in range(0,len(columns))])
+                        self.db.execute(insquery,[ rec[columns[i]] for i in range(0,len(columns))] )
+            self.db.commit()
+        except Exception,e:
+            self.db.rollback()
+            logger.critical("UpgradeDB : %s, copy back backup database %s" % (e,backupfn))
+            shutil.copy(backupfn,self.dbpath)
+            raise
 
     def initdb(self):
         assert(isinstance(self.db,sqlite3.Connection))
@@ -408,9 +437,9 @@ class WaptDB:
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           Package varchar(255),
           Version varchar(255),
+          Architecture varchar(255),
           Section varchar(255),
           Priority varchar(255),
-          Architecture varchar(255),
           Maintainer varchar(255),
           Description varchar(255),
           Filename varchar(255),
@@ -429,6 +458,7 @@ class WaptDB:
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           Package varchar(255),
           Version varchar(255),
+          Architecture varchar(255),
           InstallDate varchar(255),
           InstallStatus varchar(255),
           InstallOutput TEXT,
@@ -440,7 +470,39 @@ class WaptDB:
         self.db.execute("""
         create index idx_localstatus_name on wapt_localstatus(Package);""")
 
-        self.db.commit()
+        self.db.execute("""
+        create table if not exists wapt_params (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name  varchar(64),
+          value varchar(255),
+          create_date varchar(255)
+          ) """)
+
+        self.db.execute("""
+          create unique index if not exists idx_params_name on wapt_params(name);
+          """)
+
+    @property
+    def db_version(self):
+        try:
+            return self.db.execute('select value from wapt_params where name="db_version"').fetchone()[0]
+        except Exception,e:
+            logger.critical('Unable to get DB version (%s), upgrading' % e)
+            self.db.rollback()
+            self.upgradedb()
+            self.db.execute('insert into wapt_params(name,value,create_date) values (?,?,?)',('db_version','0000',datetime2isodate()))
+            self.db.commit()
+            return '0000'
+
+    @db_version.setter
+    def db_version(self,value):
+        try:
+            self.db.execute('insert or replace into wapt_params(name,value,create_date) values (?,?,?)',('db_version',value,datetime2isodate()))
+            self.db.commit()
+        except:
+            logger.critical('Unable to set version, upgrading')
+            self.db.rollback()
+            self.upgradedb()
 
     def add_package(self,
                     Package='',
@@ -614,6 +676,23 @@ class WaptDB:
         qsort = []
         for p in q:
              result[p['Package']]= p
+        return result
+
+    def upgradeable2(self):
+        """Return a dictionary of packages to upgrade : keys=package names, value = package dict"""
+        q = self.query_package_entry("""\
+           select l.*,r.Version as NewVersion,r.Filename from wapt_localstatus l
+            left join wapt_repo r on r.Package=l.Package
+           """)
+        result = []
+
+        allinstalled = self.query_package_entry('select Package,Version from wapt_localstatus')
+        allinstalled.sort()
+        for p in allinstalled:
+            available = self.query_package_entry('select Package,Version from wapt_repo where Package=?',(p.Package,))
+            available.sort()
+            if available and available[-1] > p:
+                result.append((p,available[-1]))
         return result
 
     def update_repos_list(url_list):
@@ -1481,17 +1560,19 @@ if __name__ == '__main__':
     cfg.read('c:\\tranquilit\\wapt\\wapt-get.ini')
     w = Wapt(config=cfg)
     w.wapt_repourl = w.find_wapt_server()
+    #w.waptdb.upgradedb()
 
+    print w.waptdb.upgradeable2()
     print w.remove('tis-waptdev',force=True)
-    #print w.remove('tis-firefox',force=True)
-    #print w.install('tis-firefox',force=True)
+    print w.remove('tis-firefox',force=True)
+    print w.install('tis-firefox',force=True)
     print w.checkinstall(['tis-waptdev'],force=False)
     print w.checkinstall(['tis-waptdev'],force=True)
     print w.update()
     print w.list_upgrade().fetchall()
-    #pfn = w.buildpackage('c:\\tranquilit\\tis-wapttest-wapt',True)
-    #if not os.path.isfile(pfn):
-    #    raise Exception("""w.buildpackage('c:\\tranquilit\\tis-wapttest-wapt',True) failed""")
-    #print w.install_wapt(pfn,params_dict={'company':'TIS'})
-    #print w.install(['tis-wapttest'],force=True)
+    pfn = w.buildpackage('c:\\tranquilit\\tis-wapttest-wapt',True)
+    if not os.path.isfile(pfn):
+        raise Exception("""w.buildpackage('c:\\tranquilit\\tis-wapttest-wapt',True) failed""")
+    print w.install_wapt(pfn,params_dict={'company':'TIS'})
+    print w.install(['tis-wapttest'],force=True)
 

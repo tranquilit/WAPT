@@ -117,11 +117,24 @@ class Package_Entry:
             elif not pv2:
                 return -1
             return pvcmp or 0
-        if isinstance(entry_or_version,Package_Entry):
-            v1, v2 = self.parse_version(), entry_or_version.parse_version()
-        else:
-            v1, v2 = self.parse_version(), parse_major_minor_patch_build(entry_or_version)
-        return compare_by_keys(v1, v2)
+        try:
+            if isinstance(entry_or_version,Package_Entry):
+                result = cmp(self.Package,entry_or_version.Package)
+                if result == 0:
+                    v1, v2 = self.parse_version(), entry_or_version.parse_version()
+                    return compare_by_keys(v1, v2)
+                else:
+                    return result
+            else:
+                v1, v2 = self.parse_version(), parse_major_minor_patch_build(entry_or_version)
+                return compare_by_keys(v1, v2)
+        except ValueError,e:
+            logger.warning("%s" % e)
+            if isinstance(entry_or_version,Package_Entry):
+                return cmp((self.Package,self.Version),(entry_or_version.Package,entry_or_version.Version))
+            else:
+                return cmp(self.Version,entry_or_version)
+
 
     def match(self, match_expr):
         prefix = match_expr[:2]
