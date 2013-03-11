@@ -608,8 +608,8 @@ class WaptDB:
         q = self.query("""\
            select l.*,r.Version as NewVersion,r.Filename from wapt_localstatus l
             left join wapt_repo r on r.Package=l.Package
+            where l.Version < r.Version
            """)
-        #where wapt_localstatus.Version<wapt_repo.Version
         result = {}
         qsort = []
         for p in q:
@@ -1483,15 +1483,15 @@ if __name__ == '__main__':
     w.wapt_repourl = w.find_wapt_server()
 
     print w.remove('tis-waptdev',force=True)
-    print w.remove('tis-firefox',force=True)
-    print w.install('tis-firefox',force=True)
+    #print w.remove('tis-firefox',force=True)
+    #print w.install('tis-firefox',force=True)
     print w.checkinstall(['tis-waptdev'],force=False)
     print w.checkinstall(['tis-waptdev'],force=True)
     print w.update()
     print w.list_upgrade().fetchall()
-    pfn = w.buildpackage('c:\\tranquilit\\tis-wapttest-wapt',True)
-    if not os.path.isfile(pfn):
-        raise Exception("""w.buildpackage('c:\\tranquilit\\tis-wapttest-wapt',True) failed""")
-    print w.install_wapt(pfn,params_dict={'company':'TIS'})
-    print w.install(['tis-wapttest'],force=True)
+    #pfn = w.buildpackage('c:\\tranquilit\\tis-wapttest-wapt',True)
+    #if not os.path.isfile(pfn):
+    #    raise Exception("""w.buildpackage('c:\\tranquilit\\tis-wapttest-wapt',True) failed""")
+    #print w.install_wapt(pfn,params_dict={'company':'TIS'})
+    #print w.install(['tis-wapttest'],force=True)
 
