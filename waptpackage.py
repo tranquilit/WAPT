@@ -27,6 +27,8 @@ import hashlib
 import logging
 import glob
 import codecs
+import re
+
 
 logger = logging.getLogger('wapt-get')
 
@@ -40,10 +42,40 @@ def md5_for_file(fname, block_size=2**20):
         md5.update(data)
     return md5.hexdigest()
 
+
+# From Semantic Versioning : http://semver.org/ by Tom Preston-Werner,
+_REGEX = re.compile('^(?P<major>[0-9]+)'
+                    '\.(?P<minor>[0-9]+)'
+                    '\.(?P<patch>[0-9]+)'
+                    '(\-(?P<package>[0-9A-Za-z]+(\.[0-9A-Za-z]+)*))?$')
+
+if 'cmp' not in __builtins__:
+    cmp = lambda a,b: (a > b) - (a < b)
+
+
+def parse_major_minor_patch_build(version):
+    """
+    Parse version to major, minor, patch, pre-release, build parts.
+    """
+    match = _REGEX.match(version)
+    if match is None:
+        raise ValueError('%s is not valid SemVer string' % version)
+
+    verinfo = match.groupdict()
+
+    verinfo['major'] = int(verinfo['major'])
+    verinfo['minor'] = int(verinfo['minor'])
+    verinfo['patch'] = int(verinfo['patch'])
+
+    return verinfo
+
+
 class Package_Entry:
     """Package attributes coming from either control files in WAPT package or local DB"""
-    required_attributes = ['Package','Version','Section',]
+    required_attributes = ['Package','Version','Architecture',]
+    optional_attributes = ['Section','Priority','Maintainer','Description','Depends','Sources',]
     non_control_attributes = ['Filename','Size','repo_url','MD5sum',]
+    all_attributes = required_attributes + optional_attributes + non_control_attributes
     def __init__(self):
         self.Package=''
         self.Version=''
@@ -52,12 +84,70 @@ class Package_Entry:
         self.Priority=''
         self.Maintainer=''
         self.Description=''
+        self.Depends=''
+        self.Sources=''
         self.Filename=''
         self.Size=''
         self.MD5sum=''
-        self.Depends=''
-        self.Sources=''
         self.repo_url=''
+
+    def parse_version(self):
+        """
+        Parse version to major, minor, patch, pre-release, build parts.
+        """
+        return parse_major_minor_patch_build(self.Version)
+
+    def __cmp__(self,entry_or_version):
+        def nat_cmp(a, b):
+            a, b = a or '', b or ''
+            convert = lambda text: text.isdigit() and int(text) or text.lower()
+            alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
+            return cmp(alphanum_key(a), alphanum_key(b))
+
+        def compare_by_keys(d1, d2):
+            for key in ['major', 'minor', 'patch']:
+                v = cmp(d1.get(key), d2.get(key))
+                if v:
+                    return v
+            # package version
+            pv1, pv2 = d1.get('package'), d2.get('package')
+            pvcmp = nat_cmp(pv1, pv2)
+            if not pv1:
+                return 1
+            elif not pv2:
+                return -1
+            return pvcmp or 0
+        if isinstance(entry_or_version,Package_Entry):
+            v1, v2 = self.parse_version(), entry_or_version.parse_version()
+        else:
+            v1, v2 = self.parse_version(), parse_major_minor_patch_build(entry_or_version)
+        return compare_by_keys(v1, v2)
+
+    def match(self, match_expr):
+        prefix = match_expr[:2]
+        if prefix in ('>=', '<=', '=='):
+            match_version = match_expr[2:]
+        elif prefix and prefix[0] in ('>', '<', '='):
+            prefix = prefix[0]
+            match_version = match_expr[1:]
+        else:
+            raise ValueError("match_expr parameter should be in format <op><ver>, "
+                             "where <op> is one of ['<', '>', '==', '<=', '>=']. "
+                             "You provided: %r" % match_expr)
+
+        possibilities_dict = {
+            '>': (1,),
+            '<': (-1,),
+            '=': (0,),
+            '==': (0,),
+            '>=': (0, 1),
+            '<=': (-1, 0)
+        }
+
+        possibilities = possibilities_dict[prefix]
+        cmp_res = self.__cmp__(match_version)
+
+        return cmp_res in possibilities
 
     def load_control_from_dict(self,adict):
         for k in adict:
@@ -214,10 +304,14 @@ if __name__ == '__main__':
     w.Description = u'Package testé'
     w.Package = 'wapttest'
     w.Architecture = 'All'
-    w.Version='0.0.0-00'
+    w.Version='0.1.0-10'
     w.Depends=''
     w.Maintainer = 'TIS'
     print w.ascontrol()
+    assert w.match('>=0.1.0-2')
+    assert w.match('>0.1.0-9')
+    assert w.match('=0.1.0-10')
+    assert w.match('<0.1.0')
     import tempfile
     wfn = tempfile.mktemp(suffix='.wapt')
     w.save_control_to_wapt(wfn)

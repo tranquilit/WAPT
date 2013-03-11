@@ -606,13 +606,14 @@ class WaptDB:
     def upgradeable(self):
         """Return a dictionary of packages to upgrade : keys=package names, value = package dict"""
         q = self.query("""\
-           select wapt_localstatus.*,wapt_repo.Version as NewVersion,wapt_repo.Filename from wapt_localstatus
-            left join wapt_repo on wapt_repo.Package=wapt_localstatus.Package
-            where wapt_localstatus.Version<wapt_repo.Version
+           select l.*,r.Version as NewVersion,r.Filename from wapt_localstatus l
+            left join wapt_repo r on r.Package=l.Package
            """)
+        #where wapt_localstatus.Version<wapt_repo.Version
         result = {}
+        qsort = []
         for p in q:
-            result[p['Package']]= p
+             result[p['Package']]= p
         return result
 
     def update_repos_list(url_list):
@@ -728,6 +729,26 @@ class WaptDB:
                    for idx, value in enumerate(row)) for row in cur.fetchall()]
         return (rv[0] if rv else None) if one else rv
 
+    def query_package_entry(self,query, args=(), one=False):
+        """
+        execute la requete query sur la db et renvoie un tableau de Package_Entry
+        Le matching est fait sur le nom de champs. Les champs qui ne matchent pas un attribut de Package_Entry
+            sont accessibles par un attribut 'fields'
+        """
+        result = []
+        cur = self.db.execute(query, args)
+        for row in cur.fetchall():
+            pe = Package_Entry()
+            rec_dict = dict((cur.description[idx][0], value) for idx, value in enumerate(row))
+            for k in rec_dict:
+                if k in pe.all_attributes:
+                    setattr(pe,k,rec_dict[k])
+            setattr(pe,'fields',rec_dict)
+            result.append(pe)
+        return result
+
+
+
 ######################"""
 class Wapt:
     """Global WAPT engine"""
@@ -747,9 +768,10 @@ class Wapt:
             os.makedirs(self.packagecachedir)
         self.dry_run = False
         # database init
-        self.dbdir =  config.get('global','dbdir')
-        if not self.dbdir:
-            self.dbdir = os.path.join(self.dbdir)
+        if config.has_option('global','dbdir'):
+            self.dbdir =  config.get('global','dbdir')
+        else:
+            self.dbdir = os.path.join(self.wapt_base_dir,'db')
 
         if not os.path.exists(self.dbdir):
             os.makedirs(self.dbdir)
@@ -1247,7 +1269,6 @@ class Wapt:
         # several versions installed of the same package... ?
         for mydict in q:
             logger.info("Removing package %s version %s from computer..." % (mydict['Package'],mydict['Version']))
-
             if mydict['UninstallString']:
                 if mydict['UninstallString'][0] not in ['[','"',"'"]:
                     guids = mydict['UninstallString']
@@ -1460,6 +1481,7 @@ if __name__ == '__main__':
     cfg.read('c:\\tranquilit\\wapt\\wapt-get.ini')
     w = Wapt(config=cfg)
     w.wapt_repourl = w.find_wapt_server()
+
     print w.remove('tis-waptdev',force=True)
     print w.remove('tis-firefox',force=True)
     print w.install('tis-firefox',force=True)
