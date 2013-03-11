@@ -44,7 +44,7 @@ def md5_for_file(fname, block_size=2**20):
 
 
 # From Semantic Versioning : http://semver.org/ by Tom Preston-Werner,
-_REGEX = re.compile('^(?P<major>[0-9]+)'
+_REGEX = re.compile(r'^(?P<major>[0-9]+)'
                     '\.(?P<minor>[0-9]+)'
                     '\.(?P<patch>[0-9]+)'
                     '(\-(?P<package>[0-9A-Za-z]+(\.[0-9A-Za-z]+)*))?$')

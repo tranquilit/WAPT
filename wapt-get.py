@@ -37,6 +37,7 @@ from waptpackage import Package_Entry
 from waptpackage import update_packages
 from common import pptable
 from common import create_recursive_zip_signed
+from common import tryurl
 import setuphelpers
 #from setuphelpers import *
 import json

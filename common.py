@@ -355,7 +355,7 @@ def get_domain_fromregistry():
         (domain,atype) = QueryValueEx(key,'Domain')
     return domain
 
-def _tryurl(url):
+def tryurl(url):
     try:
         logger.debug('  trying %s' % url)
         urllib2.urlopen(url)
@@ -815,7 +815,7 @@ class Wapt:
         if self.config:
             url = self.config.get('global','repo_url')
             if url:
-                if _tryurl(url+'/Packages'):
+                if tryurl(url+'/Packages'):
                     return url
                 else:
                     logger.warning('URL defined in ini file %s is not available' % url)
@@ -835,19 +835,19 @@ class Wapt:
                         ip = dns.resolver.query(a.target)[0].to_text()
                         if a.port == 80:
                             url = 'http://%s/wapt' % (wapthost,)
-                            if _tryurl(url+'/Packages'):
+                            if tryurl(url+'/Packages'):
                                 working_url.append((a.weight,url))
                                 if is_inmysubnets(ip):
                                     return url
                         elif a.port == 443:
                             url = 'https://%s/wapt' % (wapthost,)
-                            if _tryurl(url+'/Packages'):
+                            if tryurl(url+'/Packages'):
                                 working_url.append((a.weight,url))
                                 if is_inmysubnets(ip):
                                     return url
                         else:
                             url = 'http://%s:%i/wapt' % (wapthost,a.port)
-                            if _tryurl(url+'/Packages'):
+                            if tryurl(url+'/Packages'):
                                 working_url.append((a.weight,url))
                                 if is_inmysubnets(ip):
                                     return url
@@ -871,10 +871,10 @@ class Wapt:
                 for a in answers:
                     wapthost = a.target.canonicalize().to_text()[0:-1]
                     url = 'https://%s/wapt' % (wapthost,)
-                    if _tryurl(url+'/Packages'):
+                    if tryurl(url+'/Packages'):
                         return url
                     url = 'http://%s/wapt' % (wapthost,)
-                    if _tryurl(url+'/Packages'):
+                    if tryurl(url+'/Packages'):
                         return url
                 if not answers:
                     logger.debug('  No wapt.%s CNAME SRV record found' % dnsdomain)
@@ -886,7 +886,7 @@ class Wapt:
 
         # hardcoded wapt
         url = 'http://wapt/wapt'
-        if _tryurl(url+'/Packages'):
+        if tryurl(url+'/Packages'):
             return url
 
         return None
