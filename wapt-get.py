@@ -33,8 +33,8 @@ from optparse import OptionParser
 import logging
 import datetime
 from common import WaptDB
-from common import Package_Entry
-from common import update_packages
+from waptpackage import Package_Entry
+from waptpackage import update_packages
 from common import pptable
 from common import create_recursive_zip_signed
 import setuphelpers
@@ -90,8 +90,6 @@ parser.add_option("-i","--inc-release",    dest="increlease",    default=False, 
 logger = logging.getLogger('wapt-get')
 config_file =options.config
 loglevel = options.loglevel
-
-logging.sys
 
 if len(logger.handlers)<1:
     hdlr = logging.StreamHandler(sys.stdout)

@@ -22,27 +22,27 @@
 # -----------------------------------------------------------------------
 
 import os
-import zipfile
-import glob
-import tempfile
-
-import codecs
 import sys
 
 from optparse import OptionParser
 import logging
 
-try:
-  import common
-except:
-  sys.path.append("/opt/wapt")
-  import common
+
+logger = logging.getLogger('wapt-get')
+hdlr = logging.StreamHandler(sys.stdout)
+hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+logger.addHandler(hdlr)
+logger.setLevel(logging.INFO)
+
+from waptpackage import update_packages
 
 usage="""\
 %prog <wapt_directory>
 
 Build a "Packages" file from all wapt file in the specified directory
 """
+
+
 def main():
     if len(sys.argv) < 2:
         sys.stderr.write('Usage: wapt-scanpackage <wapt_directory>\n')
@@ -56,7 +56,7 @@ def main():
         print "%s does not exists " % wapt_path
         sys.exit(1)
 
-    common.update_packages(wapt_path)
+    update_packages(wapt_path)
 
 if __name__ == "__main__":
     main()
