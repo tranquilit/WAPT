@@ -9,6 +9,7 @@ Source: "..\libs\*"; DestDir: "{app}\libs"; Flags: createallsubdirs recursesubdi
 Source: "..\static\*"; DestDir: "{app}\static"; Flags: createallsubdirs recursesubdirs
 Source: "..\templates\*"; DestDir: "{app}\templates"; Flags: createallsubdirs recursesubdirs
 Source: "..\common.py"; DestDir: "{app}"; 
+Source: "..\waptpackage.py"; DestDir: "{app}"; 
 Source: "..\setuphelpers.py"; DestDir: "{app}"; 
 Source: "..\sqlite3.dll"; DestDir: "{app}"; 
 Source: "..\Microsoft.VC90.CRT.manifest"; DestDir: "{app}";
