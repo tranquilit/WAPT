@@ -907,7 +907,10 @@ class Wapt:
             os.makedirs(self.packagecachedir)
         self.dry_run = False
         # database init
-        self.dbdir = os.path.join(self.wapt_base_dir,'db')
+        self.dbdir =  config.get('global','dbdir')
+        if not self.dbdir:
+            self.dbdir = os.path.join(self.dbdir)
+
         if not os.path.exists(self.dbdir):
             os.makedirs(self.dbdir)
         self.dbpath = os.path.join(self.dbdir,'waptdb.sqlite')
@@ -1436,9 +1439,9 @@ class Wapt:
                     guids = [guids]
 
                 for guid in guids:
-                    uninstall_cmd = self.uninstall_cmd(guid)
-                    logger.info('Launch uninstall cmd %s' % (uninstall_cmd,))
                     try:
+                        uninstall_cmd = self.uninstall_cmd(guid)
+                        logger.info('Launch uninstall cmd %s' % (uninstall_cmd,))
                         print subprocess.check_output(uninstall_cmd,shell=True)
                     except Exception,e:
                         logger.info("Warning : %s" % e)
