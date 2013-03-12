@@ -43,20 +43,22 @@ def md5_for_file(fname, block_size=2**20):
 
 
 # From Semantic Versioning : http://semver.org/ by Tom Preston-Werner,
-_REGEX = re.compile(r'^(?P<major>[0-9]+)'
+REGEX_PACKAGE_VERSION = re.compile(r'^(?P<major>[0-9]+)'
                     '\.(?P<minor>[0-9]+)'
                     '\.(?P<patch>[0-9]+)'
                     '(\-(?P<package>[0-9A-Za-z]+(\.[0-9A-Za-z]+)*))?$')
 
+# tis-exodus (>2.3.4-10)
+REGEX_PACKAGE_CONDITION = re.compile('(?P<package>\S*)\s*(\((?P<operator>[\<\=\>]+)\s*(?P<version>\S+)\))?')
+
 if 'cmp' not in __builtins__:
     cmp = lambda a,b: (a > b) - (a < b)
-
 
 def parse_major_minor_patch_build(version):
     """
     Parse version to major, minor, patch, pre-release, build parts.
     """
-    match = _REGEX.match(version)
+    match = REGEX_PACKAGE_VERSION.match(version)
     if match is None:
         raise ValueError('%s is not valid SemVer string' % version)
 
@@ -134,8 +136,17 @@ class Package_Entry:
             else:
                 return cmp(self.Version,entry_or_version)
 
-
     def match(self, match_expr):
+        pcv = REGEX_PACKAGE_CONDITION.match(match_expr).groupdict()
+        if pcv['package'] <> self.Package:
+            return False
+        else:
+            if 'operator' in pcv and pcv['operator']:
+                return self.match_version(pcv['operator']+pcv['version'])
+            else:
+                return True
+
+    def match_version(self, match_expr):
         prefix = match_expr[:2]
         if prefix in ('>=', '<=', '=='):
             match_version = match_expr[2:]
@@ -251,6 +262,10 @@ Sources      : %(Sources)s
     def __str__(self):
         return self.ascontrol(with_non_control_attributes=True)
 
+    def __repr__(self):
+        return self.ascontrol(with_non_control_attributes=True).encode('utf8')
+
+
 def update_packages(adir):
     """Scan adir directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash"""
     packages_fname = os.path.join(adir,'Packages')
@@ -320,10 +335,12 @@ if __name__ == '__main__':
     w.Depends=''
     w.Maintainer = 'TIS'
     print w.ascontrol()
-    assert w.match('>=0.1.0-2')
-    assert w.match('>0.1.0-9')
-    assert w.match('=0.1.0-10')
-    assert w.match('<0.1.0')
+    assert w.match('wapttest (>= 0.1.0-2)')
+    assert w.match('wapttest (>0.1.0-9)')
+    assert w.match('wapttest (>0.0.1-10)')
+    assert w.match('wapttest (=0.1.0-10)')
+    assert w.match('wapttest (< 0.1.0)')
+    assert w.match('wapttest')
     import tempfile
     wfn = tempfile.mktemp(suffix='.wapt')
     w.save_control_to_wapt(wfn)

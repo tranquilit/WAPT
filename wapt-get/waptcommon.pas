@@ -204,6 +204,7 @@ begin
         'id INTEGER PRIMARY KEY AUTOINCREMENT,'+
         'Package VARCHAR(255),'+
         'Version VARCHAR(255),'+
+        'Architecture VARCHAR(255),'+
         'InstallDate VARCHAR(255),'+
         'InstallStatus VARCHAR(255),'+
         'InstallOutput TEXT,'+
@@ -212,6 +213,16 @@ begin
         'UninstallKey varchar(255)'+
         ')');
         db.ExecuteDirect('create index idx_localstatus_package on wapt_localstatus(Package,Version)');
+    end;
+    if lst.IndexOf('wapt_params')<0 then
+    begin
+      db.ExecuteDirect('create table if not exists wapt_params ('+
+        'id INTEGER PRIMARY KEY AUTOINCREMENT,'+
+        'name  varchar(64),'+
+        'value varchar(255),'+
+        'create_date varchar(255)'+
+        ')');
+      db.ExecuteDirect('create unique index if not exists idx_params_name on wapt_params(name)');
     end;
   finally
     if sqltrans.Active then

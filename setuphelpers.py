@@ -21,10 +21,11 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.3.2"
+__version__ = "0.3.3"
 
 from winshell import *
-import os,sys
+import os
+import sys
 import logging
 import urllib,urllib2
 import tempfile
@@ -131,11 +132,13 @@ def wget(url,target,reporthook=None):
     return os.path.join(dir,filename)
 
 def filecopyto(filename,target):
-    """Copy file from package temporary directory to target directory"""
+    """Copy file from package temporary directory to target directory
+        target is either a full filename or a directory name
+        if filename is .exe or .dll, logger prints version numbers"""
     (dir,fn) = os.path.split(filename)
     if not dir:
         dir = tempdir
-    #shutil.copy(os.path.join(dir,fn),target)
+
     if os.path.isdir(target):
         target = os.path.join(target,os.path.basename(filename))
     if os.path.isfile(target):
@@ -152,6 +155,62 @@ def filecopyto(filename,target):
         else:
             logger.info('Copying %s' % (target))
     shutil.copy(filename,target)
+
+def copytree2(src, dst, symlinks=False, ignore=None,onreplace=None):
+    """Copy src dir to dst directory. dst is created if it doesn't exists
+        overwrites existing files on target
+    """
+    # path relative to temp directory...
+    if not os.path.isdir(src) and os.path.isdir(os.path.join(tempdir,src)):
+        src = os.path.join(tempdir,src)
+
+    names = os.listdir(src)
+    if ignore is not None:
+        ignored_names = ignore(src, names)
+    else:
+        ignored_names = set()
+
+    logger.info('Copy tree from %s to %s' % (src,dst))
+    if not os.path.isdir(dst):
+        logger.info('  create target dir  : %s' % dst)
+        os.makedirs(dst)
+    errors = []
+    skipped = []
+    for name in names:
+        if name in ignored_names:
+            continue
+        srcname = os.path.join(src, name)
+        dstname = os.path.join(dst, name)
+        try:
+            if symlinks and os.path.islink(srcname):
+                linkto = os.readlink(srcname)
+                os.symlink(linkto, dstname)
+            elif os.path.isdir(srcname):
+                copytree2(srcname, dstname, symlinks, ignore)
+            else:
+                if os.path.isfile(dstname):
+                    logger.info(' overwrites %s' % dstname)
+                    os.unlink(dstname)
+                else:
+                    logger.info(' copy %s' % dstname)
+                shutil.copy2(srcname, dstname)
+        except (IOError, os.error), why:
+            errors.append((srcname, dstname, str(why)))
+        # catch the Error from the recursive copytree so that we can
+        # continue with other files
+        except Error, err:
+            errors.extend(err.args[0])
+    try:
+        copystat(src, dst)
+    except WindowsError:
+        # can't copy file access times on Windows
+        pass
+    except OSError, why:
+        errors.extend((src, dst, str(why)))
+    if errors:
+        raise Error(errors)
+
+
 
 def run(*cmd):
     """Runs the command and wait for it termination
@@ -446,26 +505,36 @@ def service_installed(service_name):
             raise
 
 def service_start(service_name):
-    return win32serviceutil.StartService(service_name)
+    win32serviceutil.StartService(service_name)
+    return win32serviceutil.WaitForServiceStatus(service_name, win32service.SERVICE_RUNNING, waitSecs=4)
 
 def service_stop(service_name):
-    return win32serviceutil.StopService(service_name)
+    win32serviceutil.StopService(service_name)
+    #
+    win32api.Sleep(1000)
+    return win32serviceutil.WaitForServiceStatus(service_name, win32service.SERVICE_STOPPED, waitSecs=4)
 
 def service_is_running(service_name):
     return win32serviceutil.QueryServiceStatus(service_name)[1] == win32service.SERVICE_RUNNING
 
 # to help pyscripter code completion in setup.py
 params = {}
+"""Specific parameters for install scripts"""
 
 if __name__=='__main__':
-    print isrunning('explorer')
-    print service_installed('waptservice')
-    print service_installed('wapt')
-    print get_computer_name()
-    print getloggedinusers()
-    print get_domain_name()
-    print get_msi_properties(glob.glob('C:\\Windows\\Installer\\*.msi')[0])
-    print installed_softwares('offi')
-    print service_is_running('waptservice')
-    print get_file_properties('c:\\wapt\\waptservice.exe')['FileVersion']
-    print get_file_properties('c:\\wapt\\wapt-get.exe')['FileVersion']
+    assert isrunning('explorer')
+    assert service_installed('waptservice')
+    if not service_is_running('waptservice'):
+        service_start('waptservice')
+    assert service_is_running('waptservice')
+    service_stop('waptservice')
+    assert not service_is_running('waptservice')
+    service_start('waptservice')
+    assert not service_installed('wapt')
+    assert get_computer_name() <> ''
+    #print getloggedinusers()
+    assert get_domain_name() <> ''
+    assert get_msi_properties(glob.glob('C:\\Windows\\Installer\\*.msi')[0])['Manufacturer'] <> ''
+    assert installed_softwares('offi')[0]['uninstallstring'] <> ''
+    assert get_file_properties('c:\\wapt\\waptservice.exe')['FileVersion'] <>''
+    assert get_file_properties('c:\\wapt\\wapt-get.exe')['FileVersion'] <> ''

@@ -404,6 +404,7 @@ class WaptDB:
             old_datas = {}
             tables = ['wapt_localstatus','wapt_repo']
             backupfn = os.path.join(os.path.dirname(self.dbpath),time.strftime('%Y%m%d-%H%M%S')+'.sqlite')
+            logger.debug(' copy old data to %s' % backupfn)
             shutil.copy(self.dbpath,backupfn)
             logger.debug(' backup data in memory')
             for tablename in tables:
@@ -425,7 +426,7 @@ class WaptDB:
             self.db.commit()
         except Exception,e:
             self.db.rollback()
-            logger.critical("UpgradeDB : %s, copy back backup database %s" % (e,backupfn))
+            logger.critical("UpgradeDB ERROR : %s, copy back backup database %s" % (e,backupfn))
             shutil.copy(backupfn,self.dbpath)
             raise
 
@@ -503,6 +504,20 @@ class WaptDB:
             logger.critical('Unable to set version, upgrading')
             self.db.rollback()
             self.upgradedb()
+
+    def set_param(self,name,value):
+        try:
+            self.db.execute('insert or replace into wapt_params(name,value,create_date) values (?,?,?)',(name,value,datetime2isodate()))
+            self.db.commit()
+        except:
+            logger.critical('Unable to set param %s : %s' % (name,value))
+            self.db.rollback()
+
+    def get_param(self,name,default=None):
+        try:
+            return self.db.execute('select value from wapt_params where name=?',name).fetchone()[0]
+        except Exception,e:
+            return default
 
     def add_package(self,
                     Package='',
@@ -582,7 +597,7 @@ class WaptDB:
                          package_entry.repo_url)
 
 
-    def add_start_install(self,package,version,params_dict={}):
+    def add_start_install(self,package,version,architecture,params_dict={}):
         """Register the start of installation in local db"""
         try:
             cur = self.db.execute("""delete from wapt_localstatus where Package=?""" ,(package,))
@@ -590,14 +605,16 @@ class WaptDB:
                   insert into wapt_localstatus (
                     Package,
                     Version,
+                    Architecture,
                     InstallDate,
                     InstallStatus,
                     InstallOutput,
                     InstallParams
-                    ) values (?,?,?,?,?,?)
+                    ) values (?,?,?,?,?,?,?)
                 """,(
                      package,
                      version,
+                     architecture,
                      datetime2isodate(),
                      'INIT',
                      '',
@@ -634,23 +651,6 @@ class WaptDB:
             self.db.commit()
         return cur.lastrowid
 
-    def list_installed_packages(self,words=[],okonly=False):
-        """Returns a cursor (Status, Package,VersionInstallDate,InstallStatus,Description for installed packets having words in their package name"""
-        words = [ "%"+w.lower()+"%" for w in words ]
-        search = ["lower(l.Package) like ?"] *  len(words)
-        if okonly:
-            search.append('l.InstallStatus in ("OK","UNKNOWN")')
-        cur = self.db.execute("""\
-              select
-                CASE l.Version WHEN l.Version<r.Version THEN 'U' ELSE 'I' END as "Status",
-                l.Package,l.Version,l.InstallDate,l.InstallStatus,r.Description
-              from wapt_localstatus l
-                left join wapt_repo r on l.Package=r.Package and l.Version=r.Version
-              where %s
-              order by l.Package
-            """ %  (" and ".join(search) or "l.Package is not null",), words )
-        return cur
-
     def known_packages(self):
         """return a list of all (package,version)"""
         q = self.db.execute("""\
@@ -658,47 +658,44 @@ class WaptDB:
            """)
         return [PackageKey(*e) for e in q.fetchall()]
 
+    def matching(self,package_cond):
+        """Return an ordered list of available packages which match the condition"""
+        pcv_match = REGEX_PACKAGE_CONDITION.match(package_cond)
+        if pcv_match:
+            pcv = pcv_match.groupdict()
+            q = self.query_package_entry("""\
+                  select * from wapt_repo where Package = ?
+               """, (pcv['package'],))
+            result = [ p for p in q if p.match(package_cond)]
+            result.sort()
+            result.reverse()
+            return result
+        else:
+            return []
+
     def installed(self):
-        """Return a dictionary of installed packages : keys=package names, values = package dict """
-        q = self.query("""\
-              select wapt_localstatus.*,wapt_repo.Filename from wapt_localstatus
-                left join wapt_repo on wapt_repo.Package=wapt_localstatus.Package
-              where wapt_localstatus.InstallStatus in ("OK","UNKNOWN")
-              order by wapt_localstatus.Package
+        """Return a dictionary of installed packages : keys=package,version, values = package dict """
+        q = self.query_package_entry("""\
+              select l.InstallDate,l.InstallStatus,l.InstallOutput,l.InstallParams,
+                r.* from wapt_localstatus l
+                left join wapt_repo r on r.Package=l.Package and l.Version=r.Version and (l.Architecture is Null or l.Architecture=r.Architecture)
+              where l.InstallStatus in ("OK","UNKNOWN")
            """)
         result = {}
         for p in q:
-            result[p['Package']]= p
+            result[p.Package]= p
         return result
 
     def upgradeable(self):
-        """Return a dictionary of packages to upgrade : keys=package names, value = package dict"""
-        q = self.query("""\
-           select l.*,r.Version as NewVersion,r.Filename from wapt_localstatus l
-            left join wapt_repo r on r.Package=l.Package
-            where l.Version < r.Version
-           """)
+        """Return a dictionary of upgradable Package entries"""
         result = {}
-        qsort = []
-        for p in q:
-             result[p['Package']]= p
-        return result
-
-    def upgradeable2(self):
-        """Return a dictionary of packages to upgrade : keys=package names, value = package dict"""
-        q = self.query_package_entry("""\
-           select l.*,r.Version as NewVersion,r.Filename from wapt_localstatus l
-            left join wapt_repo r on r.Package=l.Package
-           """)
-        result = []
-
-        allinstalled = self.query_package_entry('select Package,Version from wapt_localstatus')
-        allinstalled.sort()
+        allinstalled = self.installed().values()
         for p in allinstalled:
-            available = self.query_package_entry('select Package,Version from wapt_repo where Package=?',(p.Package,))
+            available = self.query_package_entry("""select * from wapt_repo where Package=?""",(p.Package,))
             available.sort()
-            if available and available[-1] > p:
-                result.append((p,available[-1]))
+            available.reverse()
+            if available and available[0] > p:
+                result[p.Package] = available
         return result
 
     def update_repos_list(url_list):
@@ -770,9 +767,11 @@ class WaptDB:
             # loop over all package names
             for package in packages:
                 if not package in explored:
-                    entry = self.package_entry_from_db(package)
+                    entries = self.matching(package)
+                    if not entries:
+                        raise Exception('Package %s not available' % package)
                     # depends is a comma seperated list
-                    depends = [s.strip() for s in entry.Depends.split(',') if s.strip()<>'']
+                    depends = [s.strip() for s in entries[0].Depends.split(',') if s.strip()<>'']
                     for d in depends:
                         alldepends.extend(dodepends(explored,depends,depth))
                         if not d in alldepends:
@@ -1061,7 +1060,7 @@ class Wapt:
         oldpath = sys.path
 
         install_id = None
-        install_id = self.waptdb.add_start_install(entry.Package ,entry.Version)
+        install_id = self.waptdb.add_start_install(entry.Package ,entry.Version,entry.Architecture)
         # we setup a redirection of stdout to catch print output from install scripts
         sys.stderr = sys.stdout = installoutput = LogInstallOutput(sys.stdout,self.waptdb,install_id)
         hdlr = logging.StreamHandler(installoutput)
@@ -1243,9 +1242,16 @@ class Wapt:
         return result
 
     def checkinstall(self,apackages,force=False):
-        """Check which package to upgrade, to install"""
+        """Given a list of packagename (condition), check which package to upgrade, to install"""
         if not isinstance(apackages,list):
             apackages = [apackages]
+
+        root_packages = []
+        for p in apackages:
+            matches = self.waptdb.matching(p)
+            if matches:
+                root_packages.append(matches[0])
+
         allupgrades = self.waptdb.upgradeable()
         allinstalled = self.waptdb.installed()
         # packages to install after skipping already installed ones
@@ -1253,22 +1259,20 @@ class Wapt:
         skipped = []
         # check already installed top packages
         if not force:
-            for p in apackages:
-                # package seul ou avec sa version
-                # Version = None : derniere version
-                if not p in allupgrades and p in allinstalled:
-                    skipped.append((p,allinstalled[p]['Version']))
+            for p in root_packages:
+                if not p.Package in allupgrades and p.Package in allinstalled:
+                    skipped.append(p.Package)
                 else:
-                    packages.append(p)
+                    packages.append(p.Package)
         else:
-            packages = apackages
+            packages = [ p.Package for p in root_packages ]
 
         # get dependencies of not installed top packages
         depends = self.waptdb.build_depends(packages)
         to_upgrade =  [ p for p in depends if p in allupgrades.keys() ]
-        additional_install = [ p for p in depends if not p in allinstalled.keys() ]
+        additional_install = [ p for p in depends if not p in allinstalled ]
         # other depencies skipped because they are already installed and at the latest version
-        remaining = [ (p,allinstalled[p]['Version']) for p in depends if not p in to_upgrade and not p in additional_install]
+        remaining = [ p for p in depends if not p in to_upgrade and not p in additional_install]
         if remaining:
             skipped.extend( remaining )
         return {'additional':additional_install,'upgrade':to_upgrade,'install':packages,'skipped':skipped}
@@ -1404,10 +1408,10 @@ class Wapt:
         """\
 Query localstatus database for packages with a version older than repository
 and install all newest packages"""
-        upgrades = self.list_upgrade().fetchall()
-        logger.debug('upgrades : %s' % upgrades)
-        self.install([p[0] for p in upgrades])
-        return upgrades
+        upgrades = self.waptdb.upgradeable()
+        logger.debug('upgrades : %s' % upgrades.keys())
+        self.install(upgrades.keys())
+        return upgrades.keys()
 
     def list_upgrade(self):
         """Returns a list of packages which can be upgraded
@@ -1430,9 +1434,23 @@ and install all newest packages"""
     def list_repo(self,search):
         print self.waptdb.list_repo(search)
 
-    def list_installed_packages(self,search):
-        """return a SQLIte cursor of status of installed packages"""
-        return self.waptdb.list_installed_packages(search)
+    def list_installed_packages(self,words=[],okonly=False):
+        """Returns a cursor (Status, Package,VersionInstallDate,InstallStatus,Description for installed packets having words in their package name"""
+        words = [ "%"+w.lower()+"%" for w in words ]
+        search = ["lower(l.Package) like ?"] *  len(words)
+        if okonly:
+            search.append('l.InstallStatus in ("OK","UNKNOWN")')
+        cur = self.waptdb.db.execute("""\
+              select
+                CASE l.Version WHEN l.Version<r.Version THEN 'U' ELSE 'I' END as "Status",
+                l.Package,l.Version,l.InstallDate,l.InstallStatus,r.Description
+              from wapt_localstatus l
+                left join wapt_repo r on l.Package=r.Package and l.Version=r.Version
+              where %s
+              order by l.Package
+            """ %  (" and ".join(search) or "l.Package is not null",), words )
+        return cur
+
 
     def inventory(self):
         """Return software inventory of the computer as a dictionary"""
@@ -1586,7 +1604,7 @@ if __name__ == '__main__':
     w.wapt_repourl = w.find_wapt_server()
     #w.waptdb.upgradedb()
 
-    print w.waptdb.upgradeable2()
+    print w.waptdb.upgradeable()
     print w.remove('tis-waptdev',force=True)
     print w.remove('tis-firefox',force=True)
     print w.install('tis-firefox',force=True)

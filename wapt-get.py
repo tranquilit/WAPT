@@ -294,7 +294,8 @@ def main():
                 if os.path.isdir(source_dir):
                     print('Building  %s' % source_dir)
                     package_fn = mywapt.buildpackage(source_dir,inc_package_release=options.increlease)
-                    print('...done. Package filename %s ' % package_fn)
+                    if package_fn:
+                        print('...done. Package filename %s\n upload with %s upload-package %s ' % (package_fn,sys.argv[0],package_fn ))
                 else:
                     logger.critical('Directory %s not found' % source_dir)
 

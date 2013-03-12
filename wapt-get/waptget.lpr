@@ -31,8 +31,6 @@ uses
   { you can add units after this }
   Windows, PythonEngine, waptcommon, soutils, tiscommon, FileUtil,JclSvcCtrl;
 type
-  { waptget }
-
   { pwaptget }
 
   pwaptget = class(TCustomApplication)
@@ -65,7 +63,6 @@ begin
     FreeAndNil(FWaptDB);
   FWaptDB:=AValue;
 end;
-
 
 function pwaptget.GetWaptDB: TWAPTDB;
 begin
@@ -121,7 +118,6 @@ begin
     else if logleveloption = 'CRITICAL' then
       currentLogLevel := CRITICAL;
   end;
-
 
   if HasOption('v','version') then
     writeln('Win32 Exe wrapper: '+ApplicationName+' '+ApplicationVersion);
@@ -249,18 +245,20 @@ begin
 
 	ZipFilePath := ExtractFilePath(downloadPath)+'wapt-libs.zip';
 	LibsURL := RepoURL+'/wapt-libs.zip';
-	Writeln('Downloading '+LibsURL+' to '+ZipFilePath);
-	if not wget(LibsURL,ZipFilePath) then
-	  Raise Exception.Create ('Unable to download '+LibsURL+' to '+ZipFilePath);
+	Writeln('Trying to download '+LibsURL+' to '+ZipFilePath);
+	if wget(LibsURL,ZipFilePath) then
+  begin
+    //release sqlite3.dll for upgrade
+    StopWaptService;
+    WaptDB := Nil;
 
-  //release sqlite3.dll for upgrade
-  StopWaptService;
-  WaptDB := Nil;
-
-	Writeln('Unzipping '+ZipFilePath);
-	UnzipFile(ZipFilePath,InstallPath);
-	if not SysUtils.DeleteFile(ZipFilePath) then
-    logger('  Error : unable to delete temporary zip file, error code : '+intToStr(IOResult),CRITICAL);
+	  Writeln('Unzipping '+ZipFilePath);
+	  UnzipFile(ZipFilePath,InstallPath);
+	  if not SysUtils.DeleteFile(ZipFilePath) then
+      logger('  Error : unable to delete temporary zip file, error code : '+intToStr(IOResult),CRITICAL);
+  end
+  else
+    Writeln('Warning : Unable to download '+LibsURL+' to '+ZipFilePath);
 
   Writeln('Initializing local sqlite DB');
   if FileExists(WaptDB.db.DatabaseName) then
@@ -269,9 +267,7 @@ begin
     WaptDB.OpenDB;
 
   SetupWaptService(InstallPath);
-
 end;
-
 
 procedure pwaptget.RegisterComputer;
 begin
