@@ -64,7 +64,7 @@ if not 'packagetempdir' in globals():
 def ensure_dir(f):
     """Be sure the directory of f exists on disk. Make it if not"""
     d = os.path.dirname(f)
-    if not os.path.exists(d):
+    if not os.path.isdir(d):
         os.makedirs(d)
 
 def create_shortcut(path, target='', wDir='', icon=''):
@@ -85,7 +85,10 @@ def create_desktop_shortcut(label, target='', wDir='', icon=''):
 def create_programs_menu_shortcut(label, target='', wDir='', icon=''):
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
-    create_shortcut(os.path.join(start_menu(1),label),target,wDir,icon)
+    sc = os.path.join(start_menu(1),label)
+    if os.path.isfile(sc):
+        os.remove(sc)
+    create_shortcut(sc,target,wDir,icon)
 
 def wgets(url):
     """Return the content of a remote resources as a String"""
@@ -128,11 +131,26 @@ def wget(url,target,reporthook=None):
     return os.path.join(dir,filename)
 
 def filecopyto(filename,target):
-    """Copy file from package temporary directory to target"""
+    """Copy file from package temporary directory to target directory"""
     (dir,fn) = os.path.split(filename)
     if not dir:
         dir = tempdir
     #shutil.copy(os.path.join(dir,fn),target)
+    if os.path.isdir(target):
+        target = os.path.join(target,os.path.basename(filename))
+    if os.path.isfile(target):
+        if os.path.splitext(target)[1] in ('.exe','.dll'):
+            ov = get_file_properties(target)['FileVersion']
+            nv = get_file_properties(filename)['FileVersion']
+            logger.info('Replacing %s (%s) -> %s' % (target,ov,nv))
+        else:
+            logger.info('Replacing %s' % target)
+    else:
+        if os.path.splitext(target)[1] in ('.exe','.dll'):
+            nv = get_file_properties(filename)['FileVersion']
+            logger.info('Copying %s (%s)' % (target,nv))
+        else:
+            logger.info('Copying %s' % (target))
     shutil.copy(filename,target)
 
 def run(*cmd):
