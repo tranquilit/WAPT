@@ -284,7 +284,7 @@ def main():
                 sys.exit(1)
             source_dir = mywapt.maketemplate(*[os.path.abspath(p) for p in args[1:]])
             print "Template created. You can build the WAPT package by launching\n  %s build-package %s" % (sys.argv[0],source_dir)
-            setuphelpers.shelllaunch(source_dir)
+            os.startfile(source_dir)
 
         elif action=='build-package':
             if len(args)<2:
