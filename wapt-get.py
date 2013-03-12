@@ -21,14 +21,14 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.0"
+__version__ = "0.8.1"
 
 import sys
 import os
 import zipfile
 import urllib2
 import shutil
-from iniparse import ConfigParser
+from iniparse import RawConfigParser
 from optparse import OptionParser
 import logging
 import datetime
@@ -88,7 +88,7 @@ parser.add_option("-i","--inc-release",    dest="increlease",    default=False, 
 (options,args)=parser.parse_args()
 
 # setup Logger
-logger = logging.getLogger('wapt-get')
+logger = logging.getLogger()
 config_file =options.config
 loglevel = options.loglevel
 
@@ -117,7 +117,22 @@ def main():
         logger.error("Error : could not find file : " + config_file + ", please check the path")
 
     logger.debug('Config file: %s' % config_file)
-    cp = ConfigParser()
+
+    defaults = {
+        'repositories':'',
+        'repo_url':'',
+        'default_source_url':'',
+        'gpgkey':'',
+        'default_development_base':'c:\tranquilit',
+        'default_package_prefix':'tis',
+        'default_sources_suffix':'wapt',
+        'default_sources_url':'',
+        'upload_cmd':'',
+        'wapt_server':'',
+        }
+
+    cp = RawConfigParser(defaults = defaults)
+    cp.add_section('global')
     cp.read(config_file)
 
     wapt_repourl = options.wapt_url
@@ -267,7 +282,7 @@ def main():
             if len(args)<2:
                 print "You must provide the installer path"
                 sys.exit(1)
-            source_dir = mywapt.maketemplate(*args[1:])
+            source_dir = mywapt.maketemplate(*[os.path.abspath(p) for p in args[1:]])
             print "Template created. You can build the WAPT package by launching\n  %s build-package %s" % (sys.argv[0],source_dir)
             setuphelpers.shelllaunch(source_dir)
 
@@ -275,7 +290,7 @@ def main():
             if len(args)<2:
                 print "You must provide at least one source directory for package build"
                 sys.exit(1)
-            for source_dir in args[1:]:
+            for source_dir in [os.path.abspath(p) for p in args[1:]]:
                 if os.path.isdir(source_dir):
                     print('Building  %s' % source_dir)
                     package_fn = mywapt.buildpackage(source_dir,inc_package_release=options.increlease)
@@ -291,7 +306,7 @@ def main():
             for a in args[1:]:
                 waptfiles += glob.glob(a)
             waptfile_arg = " ".join(['"%s"' % f for f in waptfiles])
-            setuphelpers.run(cp.get('global','upload_cmd',raw=True,) % {'waptfile': waptfile_arg  })
+            setuphelpers.run(cp.get('global','upload_cmd') % {'waptfile': waptfile_arg  })
 
         elif action=='search':
             mywapt.list_repo(args[1:])

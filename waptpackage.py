@@ -29,8 +29,7 @@ import glob
 import codecs
 import re
 
-
-logger = logging.getLogger('wapt-get')
+logger = logging.getLogger()
 
 def md5_for_file(fname, block_size=2**20):
     f = open(fname,'rb')

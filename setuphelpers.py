@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.3.1"
+__version__ = "0.3.2"
 
 from winshell import *
 import os,sys
@@ -42,7 +42,7 @@ import glob
 import _winreg
 import platform
 
-logger = logging.getLogger('wapt-get')
+logger = logging.getLogger()
 
 # ensure there is a tempdir available for local work. This is deleted at program exit.
 if not 'tempdir' in globals():
@@ -151,7 +151,7 @@ def run_notfatal(*cmd):
         print 'Warning : %s' % e
         return ''
 
-def shelllaunch(cmd):
+def shell_launch(cmd):
     """Launch a command (without arguments) but doesn't wait for its termination"""
     os.startfile(cmd)
 
@@ -440,6 +440,7 @@ def service_is_running(service_name):
 params = {}
 
 if __name__=='__main__':
+    print isrunning('explorer')
     print service_installed('waptservice')
     print service_installed('wapt')
     print get_computer_name()
@@ -447,3 +448,6 @@ if __name__=='__main__':
     print get_domain_name()
     print get_msi_properties(glob.glob('C:\\Windows\\Installer\\*.msi')[0])
     print installed_softwares('offi')
+    print service_is_running('waptservice')
+    print get_file_properties('c:\\wapt\\waptservice.exe')['FileVersion']
+    print get_file_properties('c:\\wapt\\wapt-get.exe')['FileVersion']

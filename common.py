@@ -57,7 +57,7 @@ from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflec
 
 import setuphelpers
 
-logger = logging.getLogger('wapt-get')
+logger = logging.getLogger()
 
 def datetime2isodate(adatetime = datetime.datetime.now()):
     assert(isinstance(adatetime,datetime.datetime))
@@ -557,6 +557,12 @@ class WaptDB:
         search = ["lower(Description || Package) like ?"] *  len(words)
         cur = self.db.execute("select Package,Version,Description from wapt_repo where %s" % " and ".join(search),words)
         return pptable(cur,None,1,None)
+
+    def list_repo2(self,words=[]):
+        words = [ "%"+w.lower()+"%" for w in words ]
+        search = ["lower(Description || Package) like ?"] *  len(words)
+        result = self.query_package_entry("select * from wapt_repo where %s" % " and ".join(search),words)
+        return result
 
     def add_package_entry(self,package_entry):
         cur = self.db.execute("""delete from wapt_repo where Package=? and Version=?""" ,(package_entry.Package,package_entry.Version))
@@ -1497,18 +1503,27 @@ and install all newest packages"""
         packagename = packagename.lower()
 
         installer = os.path.basename(installer_path)
-        props = setuphelpers.get_file_properties(installer_path)
         (product_name,ext) = os.path.splitext(installer)
-
         product_desc = product_name
-        product_name = props['ProductName'] or props['FileDescription'] or product_desc
-        if props['CompanyName']:
-            product_desc = "%s (%s)" % (product_name,props['CompanyName'])
+
+        if ext=='.exe':
+            props = setuphelpers.get_file_properties(installer_path)
+            product_name = props['ProductName'] or props['FileDescription'] or product_desc
+            if props['CompanyName']:
+                product_desc = "%s (%s)" % (product_name,props['CompanyName'])
+        elif ext=='.msi':
+            props = setuphelpers.get_msi_properties(installer_path)
+            product_name = props['ProductName'] or product_desc
+            if 'Manufacturer' in props and props['Manufacturer']:
+                product_desc = "%s (%s)" % (product_name,props['Manufacturer'])
+        else:
+            props = {}
+
         if not packagename:
             simplename = re.sub(r'[\s\(\)]+','',product_name.lower())
-            packagename = 'tis-%s' %  simplename
+            packagename = '%s-%s' %  (self.config.get('global','default_package_prefix','tis'),simplename)
         if not directoryname:
-            directoryname = os.path.join('c:\\','tranquilit',packagename)+'-wapt'
+            directoryname = os.path.join('c:\\','tranquilit',packagename)+'-%s' % self.config.get('global','default_sources_suffix','wapt')
         if not os.path.isdir(os.path.join(directoryname,'WAPT')):
             os.makedirs(os.path.join(directoryname,'WAPT'))
         template = """\
@@ -1546,10 +1561,19 @@ def install():
             entry.Package = packagename
             entry.Architecture='all'
             entry.Description = 'automatic package for %s ' % product_desc
-            entry.Maintainer = win32api.GetUserNameEx(3)
+            try:
+                entry.Maintainer = win32api.GetUserNameEx(3)
+            except:
+                try:
+                    entry.Maintainer = win32api.GetUserName()
+                except:
+                    entry.Maintainer = os.environ['USERNAME']
+
             entry.Priority = 'optional'
             entry.Section = 'base'
-            entry.Version = props.get('FileVersion','0.0.0')+'-00'
+            entry.Version = props.get('FileVersion',props.get('ProductVersion','0.0.0'))+'-00'
+            if self.config.has_option('global','default_sources_url'):
+                entry.Sources = self.config.get('global','default_sources_url') % {'packagename':packagename}
             codecs.open(control_filename,'w',encoding='utf8').write(entry.ascontrol())
         else:
             logger.info('control file already exists, skip create')
