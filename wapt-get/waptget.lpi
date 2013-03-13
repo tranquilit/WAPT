@@ -21,7 +21,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="5"/>
-      <RevisionNr Value="23"/>
+      <RevisionNr Value="24"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -63,7 +63,7 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="199"/>
+        <TopLine Value="198"/>
         <CursorPos X="26" Y="260"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
@@ -323,7 +323,7 @@
         <UsageCount Value="9"/>
       </Unit31>
     </Units>
-    <JumpHistory Count="8" HistoryIndex="7">
+    <JumpHistory Count="7" HistoryIndex="6">
       <Position1>
         <Filename Value="tiscommon.pas"/>
         <Caret Line="208" Column="83" TopLine="145"/>
@@ -338,24 +338,20 @@
       </Position3>
       <Position4>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="25" Column="15" TopLine="53"/>
+        <Caret Line="100" Column="36" TopLine="75"/>
       </Position4>
       <Position5>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="100" Column="36" TopLine="75"/>
+        <Caret Line="139" Column="5" TopLine="127"/>
       </Position5>
       <Position6>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="139" Column="5" TopLine="127"/>
+        <Caret Line="257" Column="33" TopLine="245"/>
       </Position6>
       <Position7>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="257" Column="33" TopLine="245"/>
-      </Position7>
-      <Position8>
-        <Filename Value="waptget.lpr"/>
         <Caret Line="75" Column="1" TopLine="73"/>
-      </Position8>
+      </Position7>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

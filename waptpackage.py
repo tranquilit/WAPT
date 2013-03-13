@@ -43,13 +43,15 @@ def md5_for_file(fname, block_size=2**20):
 
 
 # From Semantic Versioning : http://semver.org/ by Tom Preston-Werner,
+# valid : 0.0-0  0.0.0-0 0.0.0.0-0
 REGEX_PACKAGE_VERSION = re.compile(r'^(?P<major>[0-9]+)'
                     '\.(?P<minor>[0-9]+)'
-                    '\.(?P<patch>[0-9]+)'
-                    '(\-(?P<package>[0-9A-Za-z]+(\.[0-9A-Za-z]+)*))?$')
+                    '(\.(?P<patch>[0-9]+))?'
+                    '(\.(?P<subpatch>[0-9]+))?'
+                    '(\-(?P<packaging>[0-9A-Za-z]+(\.[0-9A-Za-z]+)*))?$')
 
 # tis-exodus (>2.3.4-10)
-REGEX_PACKAGE_CONDITION = re.compile('(?P<package>\S*)\s*(\((?P<operator>[\<\=\>]+)\s*(?P<version>\S+)\))?')
+REGEX_PACKAGE_CONDITION = re.compile(r'(?P<package>[^\s()]+)\s*(\((?P<operator>[<=>]+)\s*(?P<version>\S+)\))?')
 
 if 'cmp' not in __builtins__:
     cmp = lambda a,b: (a > b) - (a < b)
@@ -63,10 +65,15 @@ def parse_major_minor_patch_build(version):
         raise ValueError('%s is not valid SemVer string' % version)
 
     verinfo = match.groupdict()
-
-    verinfo['major'] = int(verinfo['major'])
-    verinfo['minor'] = int(verinfo['minor'])
-    verinfo['patch'] = int(verinfo['patch'])
+    def int_or_none(name):
+        if name in verinfo and verinfo[name] <> None :
+            return int(verinfo[name])
+        else:
+            return None
+    verinfo['major'] = int_or_none('major')
+    verinfo['minor'] = int_or_none('minor')
+    verinfo['patch'] = int_or_none('patch')
+    verinfo['subpatch'] = int_or_none('subpatch')
 
     return verinfo
 
@@ -76,7 +83,11 @@ class Package_Entry:
     required_attributes = ['Package','Version','Architecture',]
     optional_attributes = ['Section','Priority','Maintainer','Description','Depends','Sources',]
     non_control_attributes = ['Filename','Size','repo_url','MD5sum',]
-    all_attributes = required_attributes + optional_attributes + non_control_attributes
+
+    @property
+    def all_attributes(self):
+        return self.required_attributes + self.optional_attributes + self.non_control_attributes + self.calculated_attributes
+
     def __init__(self):
         self.Package=''
         self.Version=''
@@ -91,12 +102,27 @@ class Package_Entry:
         self.Size=''
         self.MD5sum=''
         self.repo_url=''
+        self.calculated_attributes=[]
 
     def parse_version(self):
         """
         Parse version to major, minor, patch, pre-release, build parts.
         """
         return parse_major_minor_patch_build(self.Version)
+
+    def __getitem__(self,name):
+        if hasattr(self,name):
+            return getattr(self,name)
+        else:
+            raise Exception('No such attribute : %s' % name)
+
+    def __setitem__(self,name,value):
+        if not name in self.all_attributes:
+            self.calculated_attributes.append(name)
+        setattr(self,name,value)
+
+    def __len__(self):
+        return len(self.all_attributes)
 
     def __cmp__(self,entry_or_version):
         def nat_cmp(a, b):
@@ -106,18 +132,22 @@ class Package_Entry:
             return cmp(alphanum_key(a), alphanum_key(b))
 
         def compare_by_keys(d1, d2):
-            for key in ['major', 'minor', 'patch']:
-                v = cmp(d1.get(key), d2.get(key))
+            for key in ['major', 'minor', 'patch','subpatch']:
+                i1,i2  = d1.get(key), d2.get(key)
+                # compare to partial version number (kind of wilcard)
+                if i1 is not None and i2 is None and not isinstance(entry_or_version,Package_Entry):
+                    return 0
+                v = cmp(i1,i2)
                 if v:
                     return v
             # package version
-            pv1, pv2 = d1.get('package'), d2.get('package')
-            pvcmp = nat_cmp(pv1, pv2)
-            if not pv1:
-                return 1
-            elif not pv2:
-                return -1
-            return pvcmp or 0
+            pv1, pv2 = d1.get('packaging'), d2.get('packaging')
+            # compare to partial version number (kind of wilcard)
+            if pv1 is not None and pv2 is None and not isinstance(entry_or_version,Package_Entry):
+                return 0
+            else:
+                pvcmp = nat_cmp(pv1, pv2)
+                return pvcmp or 0
         try:
             if isinstance(entry_or_version,Package_Entry):
                 result = cmp(self.Package,entry_or_version.Package)
@@ -137,6 +167,7 @@ class Package_Entry:
                 return cmp(self.Version,entry_or_version)
 
     def match(self, match_expr):
+        """Return True if package entry match a package string like 'tis-package (>=1.0.1-00)"""
         pcv = REGEX_PACKAGE_CONDITION.match(match_expr).groupdict()
         if pcv['package'] <> self.Package:
             return False
@@ -147,6 +178,7 @@ class Package_Entry:
                 return True
 
     def match_version(self, match_expr):
+        """Return True if package entry match a version string condition like '>=1.0.1-00'"""
         prefix = match_expr[:2]
         if prefix in ('>=', '<=', '=='):
             match_version = match_expr[2:]
@@ -282,26 +314,29 @@ def update_packages(adir):
     old_entries = {}
     # we get old list to not recompute MD5 if filename has not changed
     logger.debug("parsing old entries...")
+    lines = []
     package = Package_Entry()
-    for line in previous_packages.splitlines():
-        # new package
-        if line.strip()=='':
-            package.Filename = package.make_package_filename()
-            old_entries[package.Filename] = package
-            logger.debug("Package %s added" % package.Filename)
-            package = Package_Entry()
-        # add ettribute to current package
-        else:
-            splitline= line.split(':')
-            name = splitline[0].strip()
-            value = splitline[1].strip()
-            setattr(package,name,value)
 
-    # last one
-    if package.Package:
+    # last line
+    def add_package(lines):
+        package = Package_Entry()
+        package.load_control_from_wapt(lines)
         package.Filename = package.make_package_filename()
         old_entries[package.Filename] = package
         logger.debug("Package %s added" % package.Filename)
+
+    for line in previous_packages.splitlines():
+        # new package
+        if line.strip()=='':
+            add_package(lines)
+            lines = []
+        # add ettribute to current package
+        else:
+            lines.append(line)
+    # last
+    if line.strip()=='':
+        add_package(lines)
+        lines = []
 
     if not os.path.isdir(adir):
         raise Exception('%s is not a directory' % (adir))
@@ -335,11 +370,16 @@ if __name__ == '__main__':
     w.Depends=''
     w.Maintainer = 'TIS'
     print w.ascontrol()
+    w['InstallDate'] = '20120501'
+    for a in w.all_attributes:
+        print "%s: %s" % (a,w[a])
+    assert w['InstallDate'] == '20120501'
     assert w.match('wapttest (>= 0.1.0-2)')
     assert w.match('wapttest (>0.1.0-9)')
     assert w.match('wapttest (>0.0.1-10)')
-    assert w.match('wapttest (=0.1.0-10)')
-    assert w.match('wapttest (< 0.1.0)')
+    assert w.match('wapttest(=%s)' % w.Version)
+    assert w.match('wapttest(<= 0.1.0)')
+    assert w.match('wapttest (=0.1.0)')
     assert w.match('wapttest')
     import tempfile
     wfn = tempfile.mktemp(suffix='.wapt')

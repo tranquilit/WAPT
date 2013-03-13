@@ -28,7 +28,7 @@ from optparse import OptionParser
 import logging
 
 
-logger = logging.getLogger('wapt-get')
+logger = logging.getLogger()
 hdlr = logging.StreamHandler(sys.stdout)
 hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
 logger.addHandler(hdlr)

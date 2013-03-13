@@ -21,9 +21,8 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.3.3"
+__version__ = "0.4.0"
 
-from winshell import *
 import os
 import sys
 import logging
@@ -42,6 +41,7 @@ import glob
 
 import _winreg
 import platform
+import winshell
 
 logger = logging.getLogger()
 
@@ -62,6 +62,17 @@ def cleanuptemp():
 if not 'packagetempdir' in globals():
     packagetempdir = tempdir
 
+# common windows diectories
+desktop = winshell.desktop
+application_data = winshell.application_data
+bookmarks = winshell.bookmarks
+start_menu = winshell.start_menu
+programs = winshell.programs
+startup = winshell.startup
+my_documents= winshell.my_documents
+recent = winshell.recent
+sendto = winshell.sendto
+
 def ensure_dir(f):
     """Be sure the directory of f exists on disk. Make it if not"""
     d = os.path.dirname(f)
@@ -76,12 +87,26 @@ def create_shortcut(path, target='', wDir='', icon=''):
         shortcut.write('URL=%s' % target)
         shortcut.close()
     else:
-        CreateShortcut(path,target,'',wDir,(icon,0),'')
+        winshell.CreateShortcut(path,target,'',wDir,(icon,0),'')
 
 def create_desktop_shortcut(label, target='', wDir='', icon=''):
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
-    create_shortcut(os.path.join(desktop(1),label),target,wDir,icon)
+    sc_path = os.path.join(desktop(1),label)
+    if os.path.isfile(sc_path):
+        os.remove(sc_path)
+    create_shortcut(sc_path,target,wDir,icon)
+    return sc_path
+
+
+def create_user_desktop_shortcut(label, target='', wDir='', icon=''):
+    if not (label.endswith('.lnk') or label.endswith('.url')):
+        label += '.lnk'
+    sc_path = os.path.join(desktop(0),label)
+    if os.path.isfile(sc_path):
+        os.remove(sc_path)
+    create_shortcut(sc_path,target,wDir,icon)
+    return sc_path
 
 def create_programs_menu_shortcut(label, target='', wDir='', icon=''):
     if not (label.endswith('.lnk') or label.endswith('.url')):
@@ -90,6 +115,18 @@ def create_programs_menu_shortcut(label, target='', wDir='', icon=''):
     if os.path.isfile(sc):
         os.remove(sc)
     create_shortcut(sc,target,wDir,icon)
+    return sc
+
+def create_user_programs_menu_shortcut(label, target='', wDir='', icon=''):
+    if not (label.endswith('.lnk') or label.endswith('.url')):
+        label += '.lnk'
+    sc = os.path.join(start_menu(0),label)
+    if os.path.isfile(sc):
+        os.remove(sc)
+    create_shortcut(sc,target,wDir,icon)
+    return sc
+
+
 
 def wgets(url):
     """Return the content of a remote resources as a String"""
@@ -156,9 +193,32 @@ def filecopyto(filename,target):
             logger.info('Copying %s' % (target))
     shutil.copy(filename,target)
 
-def copytree2(src, dst, symlinks=False, ignore=None,onreplace=None):
+
+# Copy of an entire tree from install temp directory to target
+def default_oncopy(msg,src,dst):
+    print(u'%s : "%s" to "%s"' % (msg,src,dst))
+    return True
+
+def default_skip(src,dst):
+    print(u'Skipping, file exists on target : "%s"' % (dst,))
+    return False
+
+def default_overwrite(src,dst):
+    print(u'Skipping, file exists on target : "%s"' % (dst,))
+    return False
+
+def default_overwrite_older(src,dst):
+    if os.stat(src) < os.stat(src):
+        print(u'Skipping, file exists on target is newer than source: "%s"' % (dst,))
+    else:
+        print(u'Skipping, file exists on target is newer than source: "%s"' % (dst,))
+    return False
+
+def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy):
     """Copy src dir to dst directory. dst is created if it doesn't exists
-        overwrites existing files on target
+        src can be relative to installation temporary dir
+        oncopy is called for each file copy. if False is returned, copy is skipped
+        onreplace is called when a file will be overwritten.
     """
     # path relative to temp directory...
     if not os.path.isdir(src) and os.path.isdir(os.path.join(tempdir,src)):
@@ -170,10 +230,9 @@ def copytree2(src, dst, symlinks=False, ignore=None,onreplace=None):
     else:
         ignored_names = set()
 
-    logger.info('Copy tree from %s to %s' % (src,dst))
     if not os.path.isdir(dst):
-        logger.info('  create target dir  : %s' % dst)
-        os.makedirs(dst)
+        if oncopy('create directory',src,dst):
+            os.makedirs(dst)
     errors = []
     skipped = []
     for name in names:
@@ -182,18 +241,16 @@ def copytree2(src, dst, symlinks=False, ignore=None,onreplace=None):
         srcname = os.path.join(src, name)
         dstname = os.path.join(dst, name)
         try:
-            if symlinks and os.path.islink(srcname):
-                linkto = os.readlink(srcname)
-                os.symlink(linkto, dstname)
-            elif os.path.isdir(srcname):
-                copytree2(srcname, dstname, symlinks, ignore)
+            if os.path.isdir(srcname):
+                if oncopy('directory',srcname,dstname):
+                    copytree2(srcname, dstname, ignore = ignore,onreplace=onreplace,oncopy=oncopy)
             else:
                 if os.path.isfile(dstname):
-                    logger.info(' overwrites %s' % dstname)
-                    os.unlink(dstname)
+                    if onreplace(srcname,dstname) and oncopy('overwrites',srcname,dstname):
+                        os.unlink(dstname)
                 else:
-                    logger.info(' copy %s' % dstname)
-                shutil.copy2(srcname, dstname)
+                    if oncopy('copy',srcname,dstname):
+                        shutil.copy2(srcname, dstname)
         except (IOError, os.error), why:
             errors.append((srcname, dstname, str(why)))
         # catch the Error from the recursive copytree so that we can
@@ -201,7 +258,7 @@ def copytree2(src, dst, symlinks=False, ignore=None,onreplace=None):
         except Error, err:
             errors.extend(err.args[0])
     try:
-        copystat(src, dst)
+        shutil.copystat(src, dst)
     except WindowsError:
         # can't copy file access times on Windows
         pass
@@ -209,8 +266,6 @@ def copytree2(src, dst, symlinks=False, ignore=None,onreplace=None):
         errors.extend((src, dst, str(why)))
     if errors:
         raise Error(errors)
-
-
 
 def run(*cmd):
     """Runs the command and wait for it termination
@@ -383,6 +438,12 @@ def currentdatetime():
 def register_uninstall(uninstallkey,uninstallstring,win64app=False,
         quiet_uninstall_string='',
         install_location = None, display_name=None,display_version=None,publisher=''):
+    """Register the uninstall method in Windows registry,
+        so that the application is displayed in Cntrol Panel / Programs and features"""
+    if not uninstallkey:
+        raise Exception('No uninstall key provided')
+    if not uninstallstring:
+        raise Exception('No uninstallstring provided')
     if iswin64() and not win64app:
         root = "Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
     else:
@@ -402,8 +463,20 @@ def register_uninstall(uninstallkey,uninstallstring,win64app=False,
     if publisher:
         reg_setvalue(appkey,'Publisher',publisher)
 
-def unregister_uninstall(uninstallkey):
-    pass
+def unregister_uninstall(uninstallkey,win64app=False):
+    """Remove uninstall method from registry"""
+    if not uninstallkey:
+        raise Exception('No uninstall key provided')
+    if iswin64():
+        if not win64app:
+            root = "Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"+uninstallkey
+        else:
+            root = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall"+uninstallkey
+        #key = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,root)
+        _winreg.DeleteKeyEx(_winreg.HKEY_LOCAL_MACHINE,root.encode('iso8859'))
+    else:
+        #root = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
+        _winreg.DeleteKey(_winreg.HKEY_LOCAL_MACHINE,root.encode('iso8859'))
 
 def host_info():
     info = {}
@@ -510,18 +583,44 @@ def service_start(service_name):
 
 def service_stop(service_name):
     win32serviceutil.StopService(service_name)
-    #
-    win32api.Sleep(1000)
+    win32api.Sleep(2000)
     return win32serviceutil.WaitForServiceStatus(service_name, win32service.SERVICE_STOPPED, waitSecs=4)
 
 def service_is_running(service_name):
     return win32serviceutil.QueryServiceStatus(service_name)[1] == win32service.SERVICE_RUNNING
+
+def user_appdata():
+    return
+
+remove_file=os.unlink
+remove_tree=shutil.rmtree
+mkdirs = os.makedirs
+
+isfile=os.path.isfile
+isdir=os.path.isdir
+
+def user_desktop():
+    return desktop(0)
+
+def common_desktop():
+    return desktop(1)
 
 # to help pyscripter code completion in setup.py
 params = {}
 """Specific parameters for install scripts"""
 
 if __name__=='__main__':
+    create_desktop_shortcut('test','c:\\')
+    assert isfile(makepath(common_desktop(),'test.lnk'))
+    shell_launch(makepath(common_desktop(),'test.lnk'))
+    remove_file(makepath(common_desktop(),'test.lnk'))
+    assert not isfile(makepath(common_desktop(),'test.lnk'))
+
+    create_user_desktop_shortcut('test2','c:\\')
+    assert isfile(makepath(desktop(0),'test2.lnk'))
+    remove_file(makepath(desktop(0),'test2.lnk'))
+    assert not isfile(makepath(desktop(0),'test2.lnk'))
+
     assert isrunning('explorer')
     assert service_installed('waptservice')
     if not service_is_running('waptservice'):

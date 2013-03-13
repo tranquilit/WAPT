@@ -197,6 +197,40 @@ def pptable(cursor, data=None, rowlens=0, callback=None):
     return u"\n".join(result)
 ## end of http://code.activestate.com/recipes/81189/ }}}
 
+def ppdicttable(alist, columns = [], callback=None):
+    """
+    pretty print a list of dict as a table
+    columns is an ordered list of (fieldname,width)
+    callback is a function called for each field (fieldname,value) to format the output
+    """
+    def defaultcb(fieldname,value):
+        return value
+
+    if not callback:
+        callback = defaultcb
+
+    if not alist:
+        return "#### NO RESULTS ###"
+
+    lengths = [c[1] for c in columns]
+    names = [c[0] for c in columns]
+    rules = []
+    for col in range(len(lengths)):
+        rules.append("-"*lengths[col])
+
+    format = u" ".join(["%%-%ss" % l for l in lengths])
+    result = [format % tuple(names)]
+    result.append(format % tuple(rules))
+    for row in alist:
+        row_cb=[]
+        for (name,width)in columns:
+            if isinstance(row,dict):
+                row_cb.append(callback(name,row.get(name,None)))
+            else:
+                row_cb.append(callback(name,getattr(row,name,None)))
+        result.append(format % tuple(row_cb))
+    return u"\n".join(result)
+## end of http://code.activestate.com/recipes/81189/ }}}
 
 def html_table(cur,callback=None):
     """
@@ -573,12 +607,6 @@ class WaptDB:
         cur = self.db.execute("select Package,Version,Description from wapt_repo where %s" % " and ".join(search),words)
         return pptable(cur,None,1,None)
 
-    def list_repo2(self,words=[]):
-        words = [ "%"+w.lower()+"%" for w in words ]
-        search = ["lower(Description || Package) like ?"] *  len(words)
-        result = self.query_package_entry("select * from wapt_repo where %s" % " and ".join(search),words)
-        return result
-
     def add_package_entry(self,package_entry):
         cur = self.db.execute("""delete from wapt_repo where Package=? and Version=?""" ,(package_entry.Package,package_entry.Version))
 
@@ -658,7 +686,7 @@ class WaptDB:
            """)
         return [PackageKey(*e) for e in q.fetchall()]
 
-    def matching(self,package_cond):
+    def packages_matching(self,package_cond):
         """Return an ordered list of available packages which match the condition"""
         pcv_match = REGEX_PACKAGE_CONDITION.match(package_cond)
         if pcv_match:
@@ -673,6 +701,20 @@ class WaptDB:
         else:
             return []
 
+    def packages_search(self,searchwords=[]):
+        """Return a list of pacjage entries matching the search words"""
+        if not isinstance(searchwords,list) and not isinstance(searchwords,tuple):
+            searchwords = [searchwords]
+        if not searchwords:
+            words = []
+            search = ['1=1']
+        else:
+            words = [ "%"+w.lower()+"%" for w in searchwords ]
+            search = ["lower(Description || Package) like ?"] *  len(words)
+        result = self.query_package_entry("select * from wapt_repo where %s" % " and ".join(search),words)
+        result.sort()
+        return result
+
     def installed(self):
         """Return a dictionary of installed packages : keys=package,version, values = package dict """
         q = self.query_package_entry("""\
@@ -685,6 +727,38 @@ class WaptDB:
         for p in q:
             result[p.Package]= p
         return result
+
+    def installed_search(self,searchwords=[]):
+        """Return a dictionary of installed packages : keys=package,version, values = package dict """
+        if not isinstance(searchwords,list) and not isinstance(searchwords,tuple):
+            searchwords = [searchwords]
+        if not searchwords:
+            words = []
+            search = ['1=1']
+        else:
+            words = [ "%"+w.lower()+"%" for w in searchwords ]
+            search = ["lower(r.Description || r.Package) like ?"] *  len(words)
+        q = self.query_package_entry("""\
+              select l.InstallDate,l.InstallStatus,l.InstallOutput,l.InstallParams,
+                r.* from wapt_localstatus l
+                left join wapt_repo r on r.Package=l.Package and l.Version=r.Version and (l.Architecture is Null or l.Architecture=r.Architecture)
+              where l.InstallStatus in ("OK","UNKNOWN") and %s
+           """ % " and ".join(search),words)
+        result = {}
+        for p in q:
+            result[p.Package]= p
+        return result
+
+    def installed_matching(self,package_cond):
+        """Return True if one installed package match te package condition 'tis-package (>=version)' """
+        package = REGEX_PACKAGE_CONDITION.match(package_cond).groupdict()['package']
+        q = self.query_package_entry("""\
+              select l.InstallDate,l.InstallStatus,l.InstallOutput,l.InstallParams,
+                r.* from wapt_localstatus l
+                left join wapt_repo r on r.Package=l.Package and l.Version=r.Version and (l.Architecture is Null or l.Architecture=r.Architecture)
+              where l.Package=? and l.InstallStatus in ("OK","UNKNOWN")
+           """,(package,))
+        return q[0] if q and q[0].match(package_cond) else None
 
     def upgradeable(self):
         """Return a dictionary of upgradable Package entries"""
@@ -702,9 +776,11 @@ class WaptDB:
         """Cleanup all"""
         try:
             logger.debug('Purge packages table')
-            self.db.execute('delete from wapt_repo where repo_url no in ?',(url_list,))
-            logger.debug('Commit wapt_repo updates')
+            self.db.execute('delete from wapt_repo where repo_url not in (%s)' % (','.join('"%s"'% url for url in url_list,)))
             self.db.commit()
+            for url in url_list:
+                self.update_packages_list(url)
+            logger.debug('Commit wapt_repo updates')
         except:
             logger.debug('rollback delete table')
             self.db.rollback()
@@ -754,9 +830,12 @@ class WaptDB:
             raise
 
     def build_depends(self,packages):
-        """Given a list of packages names Return a list of dependencies packages names to install
-            TODO : currently doesn't take care on versions...
+        """Given a list of packages conditions (packagename (optionalcondition))
+            return a list of dependencies (packages conditions) to install
+              TODO : choose available dependencies in order to reduce the number of new packages to install
         """
+        if not isinstance(packages,list) and not isinstance(packages,tuple):
+            packages = [packages]
         MAXDEPTH = 30
         # roots : list of initial packages to avoid infinite loops
         def dodepends(explored,packages,depth):
@@ -767,10 +846,11 @@ class WaptDB:
             # loop over all package names
             for package in packages:
                 if not package in explored:
-                    entries = self.matching(package)
+                    entries = self.packages_matching(package)
                     if not entries:
                         raise Exception('Package %s not available' % package)
-                    # depends is a comma seperated list
+                    # get depends of the most recent matching entry
+                    # TODO : use another older if this can limit the number of packages to install !
                     depends = [s.strip() for s in entries[0].Depends.split(',') if s.strip()<>'']
                     for d in depends:
                         alldepends.extend(dodepends(explored,depends,depth))
@@ -816,8 +896,9 @@ class WaptDB:
     def query_package_entry(self,query, args=(), one=False):
         """
         execute la requete query sur la db et renvoie un tableau de Package_Entry
-        Le matching est fait sur le nom de champs. Les champs qui ne matchent pas un attribut de Package_Entry
-            sont accessibles par un attribut 'fields'
+        Le matching est fait sur le nom de champs.
+            Les champs qui ne matchent pas un attribut de Package_Entry
+                sont également mis en attributs !
         """
         result = []
         cur = self.db.execute(query, args)
@@ -825,9 +906,7 @@ class WaptDB:
             pe = Package_Entry()
             rec_dict = dict((cur.description[idx][0], value) for idx, value in enumerate(row))
             for k in rec_dict:
-                if k in pe.all_attributes:
-                    setattr(pe,k,rec_dict[k])
-            setattr(pe,'fields',rec_dict)
+                setattr(pe,k,rec_dict[k])
             result.append(pe)
         return result
 
@@ -1188,17 +1267,21 @@ class Wapt:
     def get_sources(self,package):
         """Download sources of package (if referenced in package as a https svn
            in the current directory"""
-        entry = self.waptdb.package_entry_from_db(package)
+        entry = self.waptdb.packages_matching(package)[-1]
         if not entry.Sources:
             raise Exception('No sources defined in package control file')
         if "PROGRAMW6432" in os.environ:
-            svncmd = os.path.join(environ['PROGRAMW6432'],'TortoiseSVN','svn.exe')
+            svncmd = os.path.join(os.environ['PROGRAMW6432'],'TortoiseSVN','bin','svn.exe')
         else:
-            svncmd = os.path.join(environ['PROGRAMFILES'],'TortoiseSVN','svn.exe')
+            svncmd = os.path.join(os.environ['PROGRAMFILES'],'TortoiseSVN','bin,''svn.exe')
+        logger.debug('svn command : %s'% svncmd)
         if not os.path.isfile(svncmd):
             raise Exception('svn.exe command not available, please install TortoiseSVN with commandline tools')
-        co_dir = re.sub('(/trunk/?$)|(/tags/?$)|(/branch/?$)','',entry.source)
-        logger.info(subprocess.check_output('svn co %s %s' % (svncmd,codir)))
+        co_dir = os.path.join('c:','tranquilit',re.sub('(/trunk/?$)|(/tags/?$)|(/branch/?$)','',entry.Sources))
+        logger.debug('sources : %s'% entry.Sources)
+        logger.debug('checkout dir : %s'% co_dir)
+        os.chdir(co_dir)
+        logger.info(subprocess.check_output('svn co %s %s' % (svncmd,entry.Sources)))
 
     def last_install_log(self,packagename):
         """Return last install status and log for package"""
@@ -1246,36 +1329,41 @@ class Wapt:
         if not isinstance(apackages,list):
             apackages = [apackages]
 
-        root_packages = []
-        for p in apackages:
-            matches = self.waptdb.matching(p)
-            if matches:
-                root_packages.append(matches[0])
-
-        allupgrades = self.waptdb.upgradeable()
+        #allupgrades = self.waptdb.upgradeable()
         allinstalled = self.waptdb.installed()
         # packages to install after skipping already installed ones
-        packages = []
         skipped = []
-        # check already installed top packages
-        if not force:
-            for p in root_packages:
-                if not p.Package in allupgrades and p.Package in allinstalled:
-                    skipped.append(p.Package)
+        unavailable = []
+        additional_install = []
+        to_upgrade = []
+        packages = []
+
+        # search for most recent matching package to install
+        for request in apackages:
+            old_matches = self.waptdb.installed_matching(request)
+            if not force and old_matches:
+                skipped.append(request)
+            else:
+                new_matches = self.waptdb.packages_matching(request)
+                if new_matches:
+                    packages.append(request)
                 else:
-                    packages.append(p.Package)
-        else:
-            packages = [ p.Package for p in root_packages ]
+                    unavailable.append(request)
 
         # get dependencies of not installed top packages
         depends = self.waptdb.build_depends(packages)
-        to_upgrade =  [ p for p in depends if p in allupgrades.keys() ]
-        additional_install = [ p for p in depends if not p in allinstalled ]
-        # other depencies skipped because they are already installed and at the latest version
-        remaining = [ p for p in depends if not p in to_upgrade and not p in additional_install]
-        if remaining:
-            skipped.extend( remaining )
-        return {'additional':additional_install,'upgrade':to_upgrade,'install':packages,'skipped':skipped}
+        for pc in depends:
+            pcd = REGEX_PACKAGE_CONDITION.match(pc).groupdict()
+            if not pcd['package'] in allinstalled:
+                if self.waptdb.packages_matching(pc):
+                    additional_install.append(pc)
+                else:
+                    unavailable.append(pc)
+            elif not force and self.waptdb.installed_matching(pc):
+                skipped.append(pc)
+            else:
+                to_upgrade.append(pc)
+        return {'additional':additional_install,'upgrade':to_upgrade,'install':packages,'skipped':skipped,'unavailable':unavailable}
 
     def install(self,apackages,force=False,params_dict = {}):
         """Install a list of packages and its dependencies
@@ -1299,34 +1387,44 @@ class Wapt:
         to_install.extend(to_upgrade)
         to_install.extend(packages)
 
+        packages = []
+        for p in to_install:
+            packages.append(self.waptdb.packages_matching(p)[0])
+
         # [[package/version],]
-        self.download_packages([(p,None) for p in to_install])
+        downloaded = self.download_packages(packages)
+        logger.debug('Downloaded : %s' % (downloaded,))
         def fname(packagefilename):
             return os.path.join(self.packagecachedir,packagefilename)
 
-        for p in additional_install:
-            self.install_wapt(fname(self.waptdb.package_entry_from_db(p).Filename),params_dict)
-        for p in to_upgrade:
-            self.install_wapt(fname(to_upgrade[p]['Filename']),params_dict)
         for p in packages:
-            self.install_wapt(fname(self.waptdb.package_entry_from_db(p).Filename),params_dict)
+            self.install_wapt(fname(p.Filename),params_dict)
 
         return actions
 
 
     def download_packages(self,packages,usecache=True):
+        """Download a list of packages, packages is a list of package requests
+           returns a dict of {"downloaded,"skipped","errors"}
+        """
         downloaded = []
         skipped = []
         errors = []
         packages_versioned = []
         for p in packages:
-            if not isinstance(p,list) and not isinstance(p,tuple) :
-                packages_versioned.append((p,None))
-            else:
+            if isinstance(p,str):
+                mp = self.waptdb.packages_matching(p)
+                if mp:
+                    packages_versioned.append(mp[0])
+                else:
+                    raise Exception('Unavailable package %s' % (p,))
+            elif isinstance(p,Package_Entry):
                 packages_versioned.append(p)
-
-        for (package,version) in packages_versioned:
-            entry = self.waptdb.package_entry_from_db(package)
+            elif isinstance(p,list) or isinstance(p,tuple):
+                packages_versioned.append(self.waptdb.package_entry_from_db(p[0],version_min=p[1],version_max=p[1]))
+            else:
+                raise Exception('Invalid package request %s' % p)
+        for entry in packages_versioned:
             packagefilename = entry.Filename.strip('./')
             download_url = entry.repo_url+'/'+packagefilename
             fullpackagepath = os.path.join(self.packagecachedir,packagefilename)
@@ -1410,25 +1508,19 @@ Query localstatus database for packages with a version older than repository
 and install all newest packages"""
         upgrades = self.waptdb.upgradeable()
         logger.debug('upgrades : %s' % upgrades.keys())
-        self.install(upgrades.keys())
-        return upgrades.keys()
+        return self.install(upgrades.keys(),force=True)
 
     def list_upgrade(self):
         """Returns a list of packages which can be upgraded
            Package,Current Version,Available version
         """
-        q = self.waptdb.db.execute("""\
-           select wapt_repo.Package,max(wapt_repo.Version) as Available from wapt_localstatus
-            left join wapt_repo on wapt_repo.Package=wapt_localstatus.Package
-            where wapt_repo.Version > wapt_localstatus.Version
-            group by wapt_repo.Package
-           """)
-        return q
+        return self.waptdb.upgradeable().values()
 
     def download_upgrades(self):
         """Download packages that can be upgraded"""
-        q = self.list_upgrade()
-        to_download = [ (p[0],p[1]) for p in q ]
+        q = self.waptdb.upgradeable()
+        # get most recent packages
+        to_download = [p[0] for p in q.values()]
         return self.download_packages(to_download)
 
     def list_repo(self,search):
@@ -1459,7 +1551,7 @@ and install all newest packages"""
         inv['packages'] = self.waptdb.installed()
         return inv
 
-    def buildpackage(self,directoryname,inc_package_release=False):
+    def buildpackage(self,directoryname,inc_package_release=False,excludes=['.svn','.git*','*.pyc','src']):
         """Build the WAPT package from a directory, return the filename of the WAPT file"""
         result_filename =''
         if not os.path.isdir(os.path.join(directoryname,'WAPT')):
@@ -1488,7 +1580,6 @@ and install all newest packages"""
             else:
                 logger.info('Use control informations from control file')
                 entry.load_control_from_wapt(directoryname)
-            logger.debug('Control data : \n%s' % entry.ascontrol())
             if inc_package_release:
                 current_release = entry.Version.split('-')[-1]
                 new_release = "%02i" % (int(current_release) + 1,)
@@ -1497,13 +1588,14 @@ and install all newest packages"""
                 entry.Version = new_version
                 entry.save_control_to_wapt(directoryname)
             package_filename =  entry.make_package_filename()
+            logger.debug('Control data : \n%s' % entry.ascontrol())
             result_filename = os.path.abspath(os.path.join( directoryname,'..',package_filename))
 
-            create_recursive_zip_signed(
+            allfiles = create_recursive_zip_signed(
                 zipfn = result_filename,
                 source_root = directoryname,
                 target_root = '' ,
-                excludes=['.svn','.git*','*.pyc'])
+                excludes=excludes)
         finally:
             if 'setup' in dir():
                 del setup
@@ -1512,7 +1604,7 @@ and install all newest packages"""
             sys.path = oldpath
             logger.debug('  Change current directory to %s' % previous_cwd)
             os.chdir(previous_cwd)
-            return result_filename
+            return {'filename':result_filename,'files':allfiles}
 
     def maketemplate(self,installer_path,packagename='',directoryname=''):
         """Build a skeleton of WAPT package based on the properties of the supplied installer
@@ -1605,6 +1697,8 @@ if __name__ == '__main__':
     #w.waptdb.upgradedb()
 
     print w.waptdb.upgradeable()
+    assert isinstance(w.waptdb,WaptDB)
+    print w.waptdb.get_param('dbversion')
     print w.remove('tis-waptdev',force=True)
     print w.remove('tis-firefox',force=True)
     print w.install('tis-firefox',force=True)

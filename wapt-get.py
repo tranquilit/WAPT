@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.1"
+__version__ = "0.8.2"
 
 import sys
 import os
@@ -35,13 +35,14 @@ import datetime
 from common import WaptDB
 from waptpackage import Package_Entry
 from waptpackage import update_packages
-from common import pptable
+from common import pptable,ppdicttable
 from common import create_recursive_zip_signed
 from common import tryurl
 import setuphelpers
 #from setuphelpers import *
 import json
 import glob
+import codecs
 
 from common import Wapt
 
@@ -58,7 +59,6 @@ action is either :
 
   download [packages]: force download one or several packages
   show [packages]: show attributes of one or more packages
-  show-params package: show required and optional parameters of one package
 
   list [keywords]   : list installed packages containing keywords
   list-upgrade      : list upgradable packages
@@ -67,13 +67,17 @@ action is either :
   cleanup           : remove all WAPT cached files from local drive
 
  For repository management
+  upload-package  <filenames> : upload package to repository (using winscp for example.)
   update-packages <directory> : rebuild a "Packages" file for http package repository
 
  For packages development
-  list-registry [keywords] : list installed software from Windows Registry
-  sources <package> : get sources of a package (if attribute Sources was supplied in control file)
+  list-registry [keywords]  : list installed software from Windows Registry
+  sources <package>         : get sources of a package (if attribute Sources was supplied in control file)
   build-package <directory> : creates a WAPT package from supplied directory
-  make-template <installer-path> [<packagename> [<source directoryname>]] : initializes a package template with an installer
+  make-template <installer-path> [<packagename> [<source directoryname>]] : initializes a package template with an installer (exe or msi)
+
+ For user session setup
+  setup-session [packages,all] : setup local user environment for specific or all installed packages
 """
 
 parser=OptionParser(usage=usage,version="%prog " + __version__+' setuphelpers '+setuphelpers.__version__)
@@ -82,8 +86,10 @@ parser.add_option("-l","--loglevel", dest="loglevel", default='info', type='choi
 parser.add_option("-d","--dry-run",    dest="dry_run",    default=False, action='store_true', help="Dry run (default: %default)")
 parser.add_option("-f","--force",    dest="force",    default=False, action='store_true', help="Force (default: %default)")
 parser.add_option("-p","--params", dest="params", default='{}', help="Setup params as a JSon Object (example : {'licence':'AZE-567-34','company':'TIS'}} (default: %default)")
-parser.add_option("-r","--repository", dest="wapt_url", default='', help="URL of wapt repository (override url of ini file, example http://wapt/wapt) (default: %default)")
+parser.add_option("-r","--repository", dest="wapt_url", default='', help="URL of main wapt repository (override url from ini file, example http://wapt/wapt) (default: %default)")
 parser.add_option("-i","--inc-release",    dest="increlease",    default=False, action='store_true', help="Increase release number when building package (default: %default)")
+parser.add_option("-e","--encoding",    dest="encoding",    default=None, help="Chararacter encoding for the output (default: no change)")
+parser.add_option("-x","--excludes",    dest="excludes",    default='.svn,.git*,*.pyc,*.dbg,src', help="Comma separated list of files or directories to exclude for build-package (default: %default)")
 
 (options,args)=parser.parse_args()
 
@@ -103,6 +109,12 @@ if loglevel in ('debug','warning','info','error','critical'):
     if not isinstance(numeric_level, int):
         raise ValueError('Invalid log level: %s' % loglevel)
     logger.setLevel(numeric_level)
+
+if options.encoding:
+    logger.debug('Default encoding : %s ' % sys.getdefaultencoding())
+    logger.debug('Setting encoding for stdout and stderr to %s ' % options.encoding)
+    sys.stdout = codecs.getwriter(options.encoding)(sys.stdout)
+    sys.stderr = codecs.getwriter(options.encoding)(sys.stderr)
 
 def main():
     if len(args) == 0:
@@ -152,11 +164,9 @@ def main():
     logger.info("Main wapt Repository %s" % mywapt.wapt_repourl)
     logger.debug('WAPT base directory : %s' % mywapt.wapt_base_dir)
     logger.debug('Package cache dir : %s' %  mywapt.packagecachedir)
-
-    logger.info('WAPT DB Structure version;: %s' % mywapt.waptdb.db_version)
+    logger.debug('WAPT DB Structure version;: %s' % mywapt.waptdb.db_version)
 
     try:
-        print "Action : %s" % action
         if action=='install':
             if len(args)<2:
                 print "You must provide at least one package name"
@@ -168,13 +178,15 @@ def main():
                 raise Exception('Install Parameters should be in json format')
 
             if os.path.isdir(args[1]) or os.path.isfile(args[1]):
+                print "installing WAPT file %s" % args[1]
                 mywapt.install_wapt(args[1],params_dict = params_dict)
             else:
+                print "installing WAPT packages %s" % ','.join(args[1:])
                 result = mywapt.install(args[1:],force = options.force,params_dict = params_dict)
                 if result['install']:
                     print "Installed packages:\n%s" % ('\n'.join( ["  %s" %s for s in  result['install']]),)
                 if result['skipped']:
-                    print "Skipped packages (already at the latest version) :\n%s" %('\n'.join( ["  %s (%s)" %s for s in  result['skipped']]),)
+                    print "Skipped packages (already at the latest version) :\n%s" %('\n'.join([ "  %s" % p for p in result['skipped'] ]),)
                 if result['additional']:
                     print "Additional installed packages :\n%s" % ('\n'.join(["  %s" %s for s in  result['additional']]),)
                 if result['upgrade']:
@@ -184,10 +196,12 @@ def main():
             if len(args)<2:
                 print "You must provide at least one package name to download"
                 sys.exit(1)
-            result = mywapt.download_packages([(p,None) for p in args[1:]],usecache = not options.force )
-            print "Downloaded packages : \n%s" % "\n".join([ "  %s" % p for p in result['downloaded'] ])
-            print "Skipped packages : \n%s" % "\n".join([ "  %s" % p for p in result['skipped'] ])
-
+            print "Downloading packages %s" % (','.join(args[1:]),)
+            result = mywapt.download_packages(args[1:],usecache = not options.force )
+            if result['downloaded']:
+                print "\nDownloaded packages : \n%s" % "\n".join([ "  %s" % p for p in result['downloaded'] ])
+            if result['skipped']:
+                print "Skipped packages : \n%s" % "\n".join([ "  %s" % p for p in result['skipped'] ])
             if result['errors']:
                 logger.critical('Unable to download some files : %s'% (result['errors'],))
                 sys.exit(1)
@@ -200,9 +214,14 @@ def main():
                 entry = Package_Entry().load_control_from_wapt(args[1])
                 print "%s" % entry
             else:
+                print "Display package control data for %s\n" % (','.join(args[1:]),)
                 for packagename in args[1:]:
-                    entry = mywapt.waptdb.package_entry_from_db(packagename)
-                    print "%s" % entry.ascontrol(with_non_control_attributes=True)
+                    entries = mywapt.waptdb.packages_matching(packagename)
+                    if entries:
+                        for e in entries:
+                            print "%s\n" % e.ascontrol(with_non_control_attributes=True)
+                    else:
+                        print "None packages found matching package name and version"
         elif action=='show-params':
             if len(args)<2:
                 print "You must provide at one package name to show params for"
@@ -246,7 +265,7 @@ def main():
             if not result:
                 print "Nothing to upgrade"
             else:
-                print "Upgraded packages :\n%s" % ( '\n'.join([' %s (%s)' % (p[0],p[1]) for p in result]),)
+                print "Upgraded packages :\n%s" % ( result,)
 
             sys.exit(0)
 
@@ -255,7 +274,7 @@ def main():
             if not q:
                 print "Nothing to upgrade"
             else:
-                print pptable(q,None,1,None)
+                print ppdicttable([ p[0] for p in  q],[ ('Package',20),('Version',10)])
 
         elif action=='download-upgrade':
             result = mywapt.download_upgrades()
@@ -293,9 +312,17 @@ def main():
             for source_dir in [os.path.abspath(p) for p in args[1:]]:
                 if os.path.isdir(source_dir):
                     print('Building  %s' % source_dir)
-                    package_fn = mywapt.buildpackage(source_dir,inc_package_release=options.increlease)
+                    result = mywapt.buildpackage(source_dir,inc_package_release=options.increlease,excludes=options.excludes.split(','))
+                    package_fn = result['filename']
                     if package_fn:
+                        print "Package content:"
+                        for f in result['files']:
+                            print " %s" % f[0]
                         print('...done. Package filename %s\n upload with %s upload-package %s ' % (package_fn,sys.argv[0],package_fn ))
+                        return 0
+                    else:
+                        logger.critical('package not created')
+                        return 1
                 else:
                     logger.critical('Directory %s not found' % source_dir)
 
@@ -310,7 +337,8 @@ def main():
             setuphelpers.run(cp.get('global','upload_cmd') % {'waptfile': waptfile_arg  })
 
         elif action=='search':
-            mywapt.list_repo(args[1:])
+            result = mywapt.waptdb.packages_search(args[1:])
+            print ppdicttable(result,(('Package',30),('Version',10),('Description',80)))
 
         elif action=='cleanup':
             result = mywapt.cleanup()
@@ -322,12 +350,11 @@ def main():
 
         elif action=='list':
             def cb(fieldname,value):
-                if fieldname=='InstallDate':
+                if value and fieldname=='InstallDate':
                     return value[0:16]
                 else:
                     return value
-            print pptable(mywapt.list_installed_packages(args[1:]),None,1,cb)
-
+            print ppdicttable(mywapt.waptdb.installed_search(args[1:]).values(),(('Package',20),('Version',15),('InstallStatus',10),('InstallDate',16),('Description',80)),callback=cb)
         else:
             print 'Unknown action %s' % action
             sys.exit(1)
