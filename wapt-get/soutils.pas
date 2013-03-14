@@ -34,9 +34,9 @@ function SplitLines(St:String):ISuperObject;
 function Dataset2SO(DS:TDataset;AllRecords:Boolean=True):ISuperObject;
 procedure SO2Dataset(SO:ISuperObject;DS:TDataset;ExcludedFields:Array of String);
 
-
 implementation
-uses StrUtils,JCLStrings;
+uses StrUtils,tisStrings;
+
 
 function StringList2SuperObject(St: TStringList): ISuperObject;
 var

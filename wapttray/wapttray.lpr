@@ -28,7 +28,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, uwapttray, waptcommon, tisutils;
+  Forms, uwapttray, waptcommon, soutils, tiscommon;
 
 {$R *.res}
 

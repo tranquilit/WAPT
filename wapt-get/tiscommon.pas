@@ -5,6 +5,8 @@ unit tiscommon;
 #    WAPT aims to help Windows systems administrators to deploy
 #    setup and update applications on users PC.
 #
+#    Part of this file is based on JEDI JCL library
+#
 #    WAPT is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
@@ -61,6 +63,28 @@ Const
   DOMAIN_ALIAS_RID_GUESTS     = $00000222;
   DOMAIN_ALIAS_RID_POWER_USERS= $00000223;
 
+const
+  CSIDL_LOCAL_APPDATA = $001c;
+  strnShellFolders = 'Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders';
+
+
+type
+  TServiceState =
+   (ssUnknown,         // Just fill the value 0
+    ssStopped,         // SERVICE_STOPPED
+    ssStartPending,    // SERVICE_START_PENDING
+    ssStopPending,     // SERVICE_STOP_PENDING
+    ssRunning,         // SERVICE_RUNNING
+    ssContinuePending, // SERVICE_CONTINUE_PENDING
+    ssPausePending,    // SERVICE_PAUSE_PENDING
+    ssPaused);         // SERVICE_PAUSED
+
+  TServiceStates = set of TServiceState;
+
+const
+  ssPendingStates = [ssStartPending, ssStopPending, ssContinuePending, ssPausePending];
+
+
 function UserInGroup(Group :DWORD) : Boolean;
 function IsAdminLoggedOn: Boolean;
 
@@ -76,6 +100,11 @@ function GetSystemManufacturer: String;
 function GetBIOSVendor: String;
 function GetBIOSVersion: String;
 
+function GetServiceStatusByName(const AServer,AServiceName:string):TServiceState;
+function StartServiceByName(const AServer,AServiceName: String):Boolean;
+function StopServiceByName(const AServer, AServiceName: String):Boolean;
+
+
 var
   loghook : procedure(logmsg:String) of object;
 
@@ -84,8 +113,8 @@ const
 
 implementation
 
-uses registry,strutils,FileUtil,Process,WinInet,JCLRegistry,zipper,JCLShell,
-    shlobj,JCLStrings,JwaTlHelp32,winsock;
+uses registry,strutils,FileUtil,Process,WinInet,zipper,
+    shlobj,winsock,tisstrings,JwaTlHelp32;
 
 function IsAdminLoggedOn: Boolean;
 { Returns True if the logged-on user is a member of the Administrators local
@@ -267,11 +296,18 @@ function GetSystemProductName: String;
 const
   WinNT_REG_PATH = 'HARDWARE\DESCRIPTION\System\BIOS';
   WinNT_REG_KEY  = 'SystemProductName';
+var
+  reg : TRegistry;
 begin
+  reg := TRegistry.Create;
   try
-    Result := RegReadAnsiString(HKEY_LOCAL_MACHINE, WinNT_REG_PATH, WinNT_REG_KEY);
-  except
-    Result :='';
+    reg.RootKey:=HKEY_LOCAL_MACHINE;
+    if reg.OpenKey(WinNT_REG_PATH,False) then
+       Result := reg.ReadString(WinNT_REG_KEY)
+    else
+        Result :='';
+  finally
+    reg.Free;
   end;
 end;
 
@@ -279,11 +315,18 @@ function GetSystemManufacturer: String;
 const
   WinNT_REG_PATH = 'HARDWARE\DESCRIPTION\System\BIOS';
   WinNT_REG_KEY  = 'SystemManufacturer';
+var
+  reg : TRegistry;
 begin
+  reg := TRegistry.Create;
   try
-    Result := RegReadAnsiString(HKEY_LOCAL_MACHINE, WinNT_REG_PATH, WinNT_REG_KEY);
-  except
-    Result :='';
+    reg.RootKey:=HKEY_LOCAL_MACHINE;
+    if reg.OpenKey(WinNT_REG_PATH,False) then
+       Result := reg.ReadString(WinNT_REG_KEY)
+    else
+        Result :='';
+  finally
+    reg.Free;
   end;
 end;
 
@@ -291,11 +334,18 @@ function GetBIOSVendor: String;
 const
   WinNT_REG_PATH = 'HARDWARE\DESCRIPTION\System\BIOS';
   WinNT_REG_KEY  = 'BIOSVendor';
+var
+  reg : TRegistry;
 begin
+  reg := TRegistry.Create;
   try
-    Result := RegReadAnsiString(HKEY_LOCAL_MACHINE, WinNT_REG_PATH, WinNT_REG_KEY);
-  except
-    Result :='';
+    reg.RootKey:=HKEY_LOCAL_MACHINE;
+    if reg.OpenKey(WinNT_REG_PATH,False) then
+       Result := reg.ReadString(WinNT_REG_KEY)
+    else
+        Result :='';
+  finally
+    reg.Free;
   end;
 end;
 
@@ -305,15 +355,18 @@ const
   WinNT_REG_PATH2 = 'HARDWARE\DESCRIPTION\System';
   WinNT_REG_KEY  = 'BIOSVersion';
   WinNT_REG_KEY2  = 'SystemBiosVersion';
+var
+  reg : TRegistry;
 begin
+  reg := TRegistry.Create;
   try
-    Result := RegReadAnsiString(HKEY_LOCAL_MACHINE, WinNT_REG_PATH, WinNT_REG_KEY);
-  except
-    try
-      Result := RegReadAnsiMultiSz(HKEY_LOCAL_MACHINE, WinNT_REG_PATH2, WinNT_REG_KEY2);
-    except
-      Result :='';
-    end;
+    reg.RootKey:=HKEY_LOCAL_MACHINE;
+    if reg.OpenKey(WinNT_REG_PATH,False) then
+       Result := reg.ReadString(WinNT_REG_KEY)
+    else
+        Result :='';
+  finally
+    reg.Free;
   end;
 end;
 
@@ -510,6 +563,67 @@ begin
   Result := ChangeFileExt(ExtractFileName(ParamStr(0)),'');
 end;
 
+function GetSpecialFolderLocation(csidl: Integer; ForceFolder: Boolean = False ): utf8String;
+var
+  i: integer;
+begin
+  SetLength( Result, MAX_PATH );
+  if ForceFolder then
+  begin
+    SHGetFolderPath( 0, csidl or CSIDL_FLAG_CREATE, 0, 0, PChar( Result ));
+  end
+  else
+  begin
+    SHGetFolderPath( 0, csidl, 0, 0, PChar( Result ));
+
+  end;
+
+  i := Pos( #0, Result );
+  if i > 0 then SetLength( Result, Pred(i));
+
+end;
+
+
+function AppendBackslash( strnString: AnsiString ): AnsiString;
+begin
+
+  if strnString = '' then
+  begin
+    Result := '';
+    Exit;
+  end;//if
+
+  if AnsiLastChar( strnString )^ <> '\' then
+  begin
+    Result := strnString + '\';
+  end
+  else
+  begin
+    Result := strnString;
+  end;//if
+
+end;
+
+function GetSendToFolder: AnsiString;
+var
+  Registry: TRegistry;
+begin
+  Registry := TRegistry.Create;
+  Registry.RootKey := HKEY_CURRENT_USER;
+
+  if Registry.OpenKeyReadOnly( strnShellFolders ) then
+  begin
+    Result := AppendBackslash( Registry.ReadString( 'SendTo' ));
+  end
+  else
+  begin
+    Result := '';
+  end;//if
+
+  Registry.Free;
+end;
+
+
 function GetPersonalFolder:Utf8String;
 begin
   result := GetSpecialFolderLocation(CSIDL_PERSONAL)
@@ -519,6 +633,67 @@ function GetAppdataFolder:Utf8String;
 begin
   result :=  GetSpecialFolderLocation(CSIDL_APPDATA);
 end;
+
+function GetStartMenuFolder: Utf8String;
+var
+  Registry: TRegistry;
+begin
+  Registry := TRegistry.Create;
+  Registry.RootKey := HKEY_CURRENT_USER;
+
+  if Registry.OpenKeyReadOnly( strnShellFolders ) then
+  begin
+    Result := AppendBackslash( Registry.ReadString( 'Start Menu' ));
+  end
+  else
+  begin
+    Result := '';
+  end;//if
+
+  Registry.Free;
+end;
+
+
+function GetStartupFolder: Utf8String;
+var
+  Registry: TRegistry;
+begin
+  Registry := TRegistry.Create;
+  Registry.RootKey := HKEY_CURRENT_USER;
+
+  if Registry.OpenKeyReadOnly( strnShellFolders ) then
+  begin
+    Result := AppendBackslash( Registry.ReadString( 'Startup' ));
+  end
+  else
+  begin
+    Result := '';
+  end;//if
+
+  Registry.Free;
+end;
+
+
+
+
+function GetCurrentUser: AnsiString;
+var
+  charBuffer: array[0..128] of Char;
+  strnBuffer: AnsiString;
+  intgBufferSize: DWORD;
+begin
+  intgBufferSize := 128;
+  SetLength( strnBuffer, intgBufferSize );
+  if GetUserName( charBuffer, intgBufferSize ) then
+  begin
+    Result := StrPas( charBuffer );
+  end
+  else
+  begin
+    Result := '';
+  end;//if
+end;
+
 
 // to store use specific settings for this application
 function TISAppuserinipath:Utf8String;
@@ -539,7 +714,7 @@ begin
   tok := StrToken(version,'.');
   Result :='';
   repeat
-    if StrIsDigit(tok) then
+    if tok[1] in ['0'..'9'] then
       Result := Result+FormatFloat('0000',StrToInt(tok))
     else
       Result := Result+tok;
@@ -773,6 +948,92 @@ begin
   While not PortTCP_IsOpen(dwPort,ip) and (Now-St<timeout/24/3600) do
     Sleep(1000);
   Result:=PortTCP_IsOpen(dwPort,ip);
+end;
+
+procedure ResetMemory(out P; Size: Longint);
+begin
+  if Size > 0 then
+  begin
+    Byte(P) := 0;
+    FillChar(P, Size, 0);
+  end;
+end;
+
+
+// From JCL library
+function GetServiceStatusByName(const AServer,AServiceName:string):TServiceState;
+var
+  ServiceHandle,
+  SCMHandle: DWORD;
+  SCMAccess,Access:DWORD;
+  ServiceStatus: TServiceStatus;
+begin
+  Result:=ssUnknown;
+
+  SCMAccess:=SC_MANAGER_CONNECT or SC_MANAGER_ENUMERATE_SERVICE or SC_MANAGER_QUERY_LOCK_STATUS;
+  Access:=SERVICE_INTERROGATE or GENERIC_READ;
+
+  SCMHandle:= OpenSCManager(PChar(AServer), Nil, SCMAccess);
+  if SCMHandle <> 0 then
+  try
+    ServiceHandle:=OpenService(SCMHandle,PChar(AServiceName),Access);
+    if ServiceHandle <> 0 then
+    try
+      ResetMemory(ServiceStatus, SizeOf(ServiceStatus));
+      if QueryServiceStatus(ServiceHandle,ServiceStatus) then
+        Result:=TServiceState(ServiceStatus.dwCurrentState);
+    finally
+      CloseServiceHandle(ServiceHandle);
+    end;
+  finally
+    CloseServiceHandle(SCMHandle);
+  end;
+end;
+
+function StartServiceByName(const AServer,AServiceName: String):Boolean;
+var
+  ServiceHandle,
+  SCMHandle: DWORD;
+  p: PChar;
+begin
+  p:=nil;
+  Result:=False;
+
+  SCMHandle:= OpenSCManager(PChar(AServer), nil, SC_MANAGER_ALL_ACCESS);
+  if SCMHandle <> 0 then
+  try
+    ServiceHandle:=OpenService(SCMHandle,PChar(AServiceName),SERVICE_ALL_ACCESS);
+    if ServiceHandle <> 0 then
+      Result:=StartService(ServiceHandle,0,p);
+
+    CloseServiceHandle(ServiceHandle);
+  finally
+    CloseServiceHandle(SCMHandle);
+  end;
+end;
+
+function StopServiceByName(const AServer, AServiceName: String):Boolean;
+var
+  ServiceHandle,
+  SCMHandle: DWORD;
+  SS: _Service_Status;
+begin
+  Result := False;
+
+  SCMHandle := OpenSCManager(PChar(AServer), nil, SC_MANAGER_ALL_ACCESS);
+  if SCMHandle <> 0 then
+  try
+    ServiceHandle := OpenService(SCMHandle, PChar(AServiceName), SERVICE_ALL_ACCESS);
+    if ServiceHandle <> 0 then
+    begin
+      ResetMemory(SS, SizeOf(SS));
+      Result := ControlService(ServiceHandle, SERVICE_CONTROL_STOP, SS);
+    end;
+
+    CloseServiceHandle(ServiceHandle);
+  finally
+    CloseServiceHandle(SCMHandle);
+  end;
 end;
 
 

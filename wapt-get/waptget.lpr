@@ -29,7 +29,7 @@ uses
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, CustApp,
   { you can add units after this }
-  Windows, PythonEngine, waptcommon, soutils, tiscommon, FileUtil,JclSvcCtrl;
+  Windows, PythonEngine, waptcommon, soutils, tiscommon, FileUtil, NetworkAdapterInfo;
 type
   { pwaptget }
 
@@ -121,7 +121,6 @@ begin
 
   if HasOption('v','version') then
     writeln('Win32 Exe wrapper: '+ApplicationName+' '+ApplicationVersion);
-
   DefaultInstallPath := TrimFilename('c:\wapt');
   DownloadPath := ExtractFilePath(ParamStr(0));
   // Auto install if wapt-get is not yet in the target directory
@@ -278,7 +277,7 @@ end;
 function pwaptget.SetupWaptService(InstallPath:Utf8String):boolean;
 var
   ExitStatus: Integer;
-  SvcStatus :  TJclServiceState;
+  SvcStatus :  TServiceState;
 
 begin
   SvcStatus := GetServiceStatusByName('','waptservice');
@@ -290,7 +289,7 @@ begin
   	Writeln(RunTask(AppendPathDelim(InstallPath)+'waptservice.exe /install',ExitStatus));
   end;
 	Writeln('Start waptservice');
-  Result := JclSvcCtrl.StartServiceByName('','waptservice');
+  Result := StartServiceByName('','waptservice');
 	//Writeln(RunTask('net start waptservice',ExitStatus));
   //ExitStatus = 0;
 end;

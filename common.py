@@ -1606,6 +1606,38 @@ and install all newest packages"""
             os.chdir(previous_cwd)
             return {'filename':result_filename,'files':allfiles}
 
+    def checkinstalled(self):
+        """Source setup.py and launch checkinstalled"""
+        result = False
+        oldpath = sys.path
+        try:
+            previous_cwd = os.getcwd()
+            logger.debug('  Change current directory to %s' % directoryname)
+            os.chdir(directoryname)
+            if not os.getcwd() in sys.path:
+                sys.path = [os.getcwd()] + sys.path
+                logger.debug('new sys.path %s' % sys.path)
+            logger.debug('Sourcing %s' % os.path.join(directoryname,'setup.py'))
+            setup = import_setup(os.path.join(directoryname,'setup.py'),'_waptsetup_')
+             # be sure some minimal functions are available in setup module at install step
+            logger.debug('Source import OK')
+            if hasattr(setup,'checkinstalled'):
+                logger.info('Use control informations from setup.py file')
+                result = setup.checkinstalled()
+            else:
+                logger.info('No checkinstalled function in setup.pyfile')
+                result = False
+        finally:
+            if 'setup' in dir():
+                del setup
+            else:
+                logger.critical('Unable to read setup.py file')
+            sys.path = oldpath
+            logger.debug('  Change current directory to %s' % previous_cwd)
+            os.chdir(previous_cwd)
+            return result
+
+
     def maketemplate(self,installer_path,packagename='',directoryname=''):
         """Build a skeleton of WAPT package based on the properties of the supplied installer
            Return the path of the skeleton

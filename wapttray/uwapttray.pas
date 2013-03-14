@@ -45,7 +45,7 @@ var
 
 implementation
 
-uses waptcommon, superobject,tisutils;
+uses waptcommon, superobject,tiscommon;
 
 {$R *.lfm}
 
@@ -75,7 +75,7 @@ procedure TVisWAPTTray.FormShow(Sender: TObject);
 var
   s:SOString;
 begin
-  s := UTF8Decode(httpGet ('http://localhost:'+intToStr(waptservice_port)+'/sysinfo'));
+  s := UTF8Decode(httpGetString  ('http://localhost:'+intToStr(waptservice_port)+'/sysinfo'));
   sysinfo.Lines.Text:= UTF8Encode(TSuperObject.ParseString(pwidechar(s),False).AsJSon(True));
 end;
 

@@ -4,7 +4,7 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="9">
+    <Units Count="12">
       <Unit0>
         <Filename Value="wapttray.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -22,23 +22,44 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uwapttray"/>
         <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="58"/>
-        <CursorPos X="61" Y="67"/>
+        <TopLine Value="30"/>
+        <CursorPos X="19" Y="38"/>
         <UsageCount Value="22"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="14" Y="6"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="22"/>
+        <Loaded Value="True"/>
       </Unit2>
       <Unit3>
-        <Filename Value="..\..\tisvcl\tisutils.pas"/>
+        <Filename Value="..\wapt-get\soutils.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="soutils"/>
+        <UsageCount Value="20"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiscommon"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\..\tisvcl\tisutils.pas"/>
         <UnitName Value="tisutils"/>
         <WindowIndex Value="0"/>
         <TopLine Value="90"/>
@@ -47,49 +68,112 @@
         <Bookmarks Count="1">
           <Item0 X="5" Y="115" ID="1"/>
         </Bookmarks>
-      </Unit3>
-      <Unit4>
+      </Unit5>
+      <Unit6>
         <Filename Value="..\superobject\superobject.pas"/>
         <UnitName Value="superobject"/>
         <UsageCount Value="21"/>
-      </Unit4>
-      <Unit5>
+      </Unit6>
+      <Unit7>
         <Filename Value="..\jcl\source\common\JclSysInfo.pas"/>
         <UnitName Value="JclSysInfo"/>
         <WindowIndex Value="0"/>
         <TopLine Value="70"/>
         <CursorPos X="15" Y="94"/>
         <UsageCount Value="21"/>
-      </Unit5>
-      <Unit6>
+      </Unit7>
+      <Unit8>
         <Filename Value="..\..\pltis_superobject\soutils.pas"/>
         <UnitName Value="soutils"/>
         <WindowIndex Value="0"/>
         <TopLine Value="7"/>
         <CursorPos X="34" Y="14"/>
         <UsageCount Value="10"/>
-      </Unit6>
-      <Unit7>
+      </Unit8>
+      <Unit9>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-db\src\base\db.pas"/>
         <UnitName Value="db"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1042"/>
         <CursorPos X="3" Y="1341"/>
         <UsageCount Value="10"/>
-      </Unit7>
-      <Unit8>
+      </Unit9>
+      <Unit10>
         <Filename Value="..\..\pltis_openerp\openerpdataset.pas"/>
         <UnitName Value="OpenERPDataset"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="35" Y="4"/>
         <UsageCount Value="10"/>
-      </Unit8>
+      </Unit10>
+      <Unit11>
+        <Filename Value="..\..\pltis_jcl\source\common\JclUnicode.pas"/>
+        <UnitName Value="JclUnicode"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1636"/>
+        <CursorPos X="25" Y="1646"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit11>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="13" HistoryIndex="12">
+      <Position1>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="67" Column="61" TopLine="58"/>
+      </Position1>
+      <Position2>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="46" Column="29" TopLine="33"/>
+      </Position2>
+      <Position3>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="48" Column="39" TopLine="33"/>
+      </Position3>
+      <Position4>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="78" Column="32" TopLine="58"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\..\pltis_jcl\source\common\JclUnicode.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\..\pltis_jcl\source\common\JclUnicode.pas"/>
+        <Caret Line="1651" Column="3" TopLine="1636"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\..\pltis_jcl\source\common\JclUnicode.pas"/>
+        <Caret Line="1644" Column="32" TopLine="1636"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\..\pltis_jcl\source\common\JclUnicode.pas"/>
+        <Caret Line="1651" Column="3" TopLine="1636"/>
+      </Position8>
+      <Position9>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="78" Column="32" TopLine="58"/>
+      </Position9>
+      <Position10>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="48" Column="6" TopLine="25"/>
+      </Position10>
+      <Position11>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="32" Column="39" TopLine="23"/>
+      </Position11>
+      <Position12>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="48" Column="6" TopLine="26"/>
+      </Position12>
+      <Position13>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="49" Column="15" TopLine="29"/>
+      </Position13>
+    </JumpHistory>
   </ProjectSession>
   <EditorMacros Count="0"/>
 </CONFIG>

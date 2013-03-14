@@ -72,13 +72,60 @@ type
 
 implementation
 
-uses FileUtil,soutils,tiscommon,JCLSysInfo,  Windows, ActiveX, ComObj, Variants;
+uses FileUtil,soutils,tiscommon,Windows,Variants,winsock,IdDNSResolver,JwaIpHlpApi,NetworkAdapterInfo;
+//, JCLSysInfo,  ActiveX, Variants;
+
+
 
 function FindWaptRepo: String;
+var
+  resolv : TIdDNSResolver;
+  rec : TResultRecord;
+  i:integer;
+  highest : integer;
+
+
+  ais : TAdapterInfo;
+
 begin
-  if Wget_try('http://wapt/wapt') then
+  result :='';
+  resolv := TIdDNSResolver.Create(Nil);
+  try
+    if Get_EthernetAdapterDetail(ais) then
+    begin
+      for i:=0 to length(ais)-1 do
+      with ais[i] do
+        if (dwType=MIB_IF_TYPE_ETHERNET) and (dwOperStatus>=MIB_IF_OPER_STATUS_CONNECTED) then begin
+          writeln(bDescr,' ',sIpAddress,'/',sIpMask,' ',ais[i].bPhysAddr);
+      end;
+    end;
+    resolv.Host:='192.168.149.11';
+    resolv.ClearInternalQuery;
+    resolv.QueryType := [TQueryRecordTypes.qtService];
+    resolv.Resolve('_wapt._tcp.tranquilit.local');
+    highest:=0;
+    for i := 0 to resolv.QueryResult.count - 1 do
+    begin
+      rec := resolv.QueryResult.Items[i];
+      if rec is TSRVRecord then
+      with (rec as TSRVRecord) do begin
+         if Priority>highest then
+         begin
+           Highest := Priority;
+           if Port=443 then
+              Result := 'https://'+Target+':'+IntToStr(Port)+'/wapt'
+           else
+              Result := 'http://'+Target+':'+IntToStr(Port)+'/wapt';
+         end;
+      end;
+    end;
+  finally
+    resolv.free;
+  end;
+
+  {if Wget_try('http://wapt/wapt') then
     Result := 'http://wapt/wapt'
-  else
+  else}
     result := 'http://wapt.tranquil.it/wapt';
 end;
 
@@ -382,7 +429,7 @@ begin
   end;
 end;
 
-function GetWMIObject(const objectName: String): IDispatch; //create the Wmi instance
+{function GetWMIObject(const objectName: String): IDispatch; //create the Wmi instance
 var
   chEaten: PULONG;
   BindCtx: IBindCtx;
@@ -417,61 +464,84 @@ begin;
   end;
 end;
 
+}
 
+const
+  CFormatIPMask = '%d.%d.%d.%d';
+
+function GetLocalIP: string;
+var
+  I, VAttempt: Integer;
+  VStrTemp, VSitesToTry: TStringList;
+{$IFDEF UNIX}
+  VProcess: TProcess;
+{$ENDIF}
+{$IFDEF MSWINDOWS}
+var
+  VWSAData: TWSAData;
+  VHostEnt: PHostEnt;
+  VName: string;
+{$ENDIF}
+begin
+  Result := '';
+{$IFDEF UNIX}
+      VStrTemp := TStringList.Create;
+      VProcess := TProcess.Create(nil);
+      try
+        VProcess.CommandLine :=
+          'sh -c "ifconfig eth0 | awk ''/inet end/ {print $3}''"';
+        VProcess.Options := [poWaitOnExit, poUsePipes];
+        VProcess.Execute;
+        VStrTemp.LoadFromStream(VProcess.Output);
+        Result := Trim(VStrTemp.Text);
+      finally
+        VStrTemp.Free;
+        VProcess.Free;
+      end;
+{$ENDIF}
+{$IFDEF MSWINDOWS}
+{$HINTS OFF}
+      WSAStartup(2, VWSAData);
+{$HINTS ON}
+      SetLength(VName, 255);
+      GetHostName(PChar(VName), 255);
+      SetLength(VName, StrLen(PChar(VName)));
+      VHostEnt := GetHostByName(PChar(VName));
+      with VHostEnt^ do
+        Result := Format(CFormatIPMask, [Byte(h_addr^[0]), Byte(h_addr^[1]),
+          Byte(h_addr^[2]), Byte(h_addr^[3])]);
+      WSACleanup;
+{$ENDIF}
+end;
 
 function LocalSysinfo: ISUperObject;
 var
       so:ISuperObject;
-      CPUInfo:TCpuInfo;
+      //CPUInfo:TCpuInfo;
       Cmd,IPS:String;
       st : TStringList;
 begin
   so := TSuperObject.Create;
-  so.S['workgroupname'] := GetWorkGroupName;
+  //so.S['workgroupname'] := GetWorkGroupName;
   so.S['localusername'] := TISGetUserName;
   so.S['computername'] :=  TISGetComputerName;
   so.S['systemmanufacturer'] := GetSystemManufacturer;
   so.S['systemproductname'] := GetSystemProductName;
   so.S['biosversion'] := GetBIOSVersion;
-  so.S['biosdate'] := DelphiDateTimeToISO8601Date(GetBIOSDate);
+  //so.S['biosdate'] := DelphiDateTimeToISO8601Date(GetBIOSDate);
   // redirect to a dummy file just to avoid a console creation... bug of route ?
   //so['routingtable'] := SplitLines(RunTask('route print > dummy',ExitStatus));
   //so['ipconfig'] := SplitLines(RunTask('ipconfig /all > dummy',ExitStatus));
-  ST := TStringList.Create;
-  try
-    GetIpAddresses(St);
-    so['ipaddresses'] := StringList2SuperObject(St);
-  finally
-    St.free;
-  end;
-  St := TStringList.Create;
-  try
-    GetMacAddresses('',St);
-    so['macaddresses'] := StringList2SuperObject(St);
-  finally
-    St.free;
-  end;
+  so.S['ipaddresses'] := GetLocalIP;
 
-  so.I['processorcount'] := ProcessorCount;
-  GetCpuInfo(CPUInfo);
-  so.S['cpuname'] := Trim(CPUInfo.CpuName);
-  so.I['physicalmemory'] := GetTotalPhysicalMemory;
-  so.I['virtualmemory'] := GetTotalVirtualMemory;
-  so.S['waptgetversion'] := ApplicationVersion(WaptgetPath);
-  so.S['biosinfo'] := GetBIOSExtendedInfo;
-
-  so['wmibiosinfo'] := GetWin32_BIOSInfo;
-
-  // Pose probleme erreur OLE "syntaxe incorrecte"
-  //so['wmi_baseboardinfo'] := WMIBaseBoardInfo;
   result := so;
 end;
 
 initialization
-  if not Succeeded(CoInitializeEx(nil, COINIT_MULTITHREADED)) then;
+//  if not Succeeded(CoInitializeEx(nil, COINIT_MULTITHREADED)) then;
     //Raise Exception.Create('Unable to initialize ActiveX layer');
 
 finalization
-  CoUninitialize();
+//  CoUninitialize();
 end.
 

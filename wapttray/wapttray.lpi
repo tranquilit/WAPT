@@ -46,7 +46,7 @@
         <PackageName Value="LCL"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="4">
+    <Units Count="5">
       <Unit0>
         <Filename Value="wapttray.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -66,10 +66,15 @@
         <UnitName Value="waptcommon"/>
       </Unit2>
       <Unit3>
-        <Filename Value="..\..\tisvcl\tisutils.pas"/>
+        <Filename Value="..\wapt-get\soutils.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="tisutils"/>
+        <UnitName Value="soutils"/>
       </Unit3>
+      <Unit4>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiscommon"/>
+      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -79,8 +84,8 @@
       <Filename Value="wapttray"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="$(ProjOutDir);..\jcl\source\include"/>
-      <OtherUnitFiles Value="..\wapt-get;..\jcl\source\windows;..\..\tisvcl"/>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="..\wapt-get"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>

@@ -383,7 +383,18 @@ def reg_openkey_noredir(key, sub_key, sam=_winreg.KEY_READ,create_if_missing=Fal
                     return _winreg.CreateKeyEx(key,sub_key,0,sam | _winreg.KEY_WRITE )
             else:
                 raise WindowsError(e.errno,'The key %s can not be opened' % sub_key)
+HKEY_CLASSES_ROOT = _winreg.HKEY_CLASSES_ROOT
+HKEY_CURRENT_USER = _winreg.HKEY_CURRENT_USER
+HKEY_LOCAL_MACHINE = _winreg.HKEY_LOCAL_MACHINE
+HKEY_USERS = _winreg.HKEY_USERS
+HKEY_CURRENT_CONFIG = _winreg.HKEY_CURRENT_CONFIG
 
+KEY_WRITE = _winreg.KEY_WRITE
+KEY_READ = _winreg.KEY_READ
+
+REG_SZ = _winreg.REG_SZ
+REG_MULTI_SZ = _winreg.REG_MULTI_SZ
+REG_DWORD = _winreg.REG_DWORD
 
 def installed_softwares(keywords=''):
     """return list of installed software from registry (both 32bit and 64bit"""
