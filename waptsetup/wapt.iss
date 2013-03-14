@@ -20,7 +20,7 @@ Source: "..\python27.dll"; DestDir: "{app}";
 Source: "..\pythoncom27.dll"; DestDir: "{app}";
 Source: "..\pythoncomloader27.dll"; DestDir: "{app}";
 Source: "..\pywintypes27.dll"; DestDir: "{app}";
-Source: "..\waptservice.exe"; DestDir: "{app}";  BeforeInstall: BeforeWaptServiceInstall('waptservice.exe'); AfterInstall: AfterWaptServiceInstall('waptservice.exe');
+Source: "..\waptservice.exe"; DestDir: "{app}";  BeforeInstall: BeforeWaptServiceInstall('waptservice.exe'); AfterInstall: AfterWaptServiceInstall('waptservice.exe'); Tasks: installService
 Source: "..\wapt-get.py"; DestDir: "{app}"; 
 Source: "..\wapt-get.exe.manifest"; DestDir: "{app}";
 Source: "..\wapt-get.exe"; DestDir: "{app}";
@@ -49,7 +49,14 @@ Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environmen
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL}
 
 [Run]
-Filename: "{app}\wapt-get.exe"; Parameters: "upgradedb"; Flags: runhidden
+Filename: "{app}\wapt-get.exe"; Parameters: "upgradedb"; Flags: runhidden 
+Filename: "{app}\wapt-get.exe"; Parameters: "update"; Tasks: updateWapt; Flags: runhidden; beforeinstall: beforeUpdateWapt()
+
+
+[Tasks]
+Name: updateWapt; Description: "Lancer la mise à jour des paquets après l'installation";
+Name: installService; Description: "installation du service WAPT";
+
 
 [UninstallRun]
 Filename: "net"; Parameters: "stop waptservice"; Flags: runhidden
@@ -58,22 +65,60 @@ Filename: "{app}\waptservice.exe"; Parameters: "--uninstall"; Flags: runhidden
 [Code]
 #include "services.iss"
 var
-  RepoURLPage : TInputQueryWizardPage;
+  rbCustomRepo: TNewRadioButton;
+  rbDnsRepo: TNewRadioButton;
+  cbWaptUpdate : TCheckbox ;
+  bIsVerySilent: boolean;
+  teWaptUrl: TEdit;
   
 procedure InitializeWizard;
+var
+  CustomPage: TWizardPage;
+
 begin
-  RepoURLPage := CreateInputQueryPage(wpWelcome,
-  'Optional Parameters', 'Please specify the location of WAPT Packages (http or https URL)',
-  'Leave empty if you have a DNS SRV entry for _wapt._tcp.<yourlocaldomain> giving the host and port of the Repository http server');
+  CustomPage := CreateCustomPage(wpWelcome, 'Installation type', '');
 
-  // Add items (False means it's not a password edit)
-  RepoURLPage.Add('Optional WAPT repository location:', False);
-
+  rbCustomRepo := TNewRadioButton.Create(WizardForm);
+  rbCustomRepo.Parent := CustomPage.Surface;
+  rbCustomRepo.Checked := True;
+  rbCustomRepo.Caption := 'Dépôt WAPT';
+  
+  teWaptUrl :=TEdit.Create(WizardForm);
+  teWaptUrl.Parent := CustomPage.Surface; 
+  teWaptUrl.Left :=rbCustomRepo.Left + rbCustomRepo.Width;
+  teWaptUrl.Width :=CustomPage.SurfaceWidth - rbCustomRepo.Width;
+  teWaptUrl.Text := 'http://wapt.tranquil.it/wapt';
+  
+  rbDnsRepo := TNewRadioButton.Create(WizardForm);
+  rbDnsRepo.Parent := CustomPage.Surface;
+  rbDnsRepo.Top := rbCustomRepo.Top + rbCustomRepo.Height + ScaleY(15);
+  rbDnsRepo.Width := CustomPage.SurfaceWidth;
+  rbDnsRepo.Caption := 'Auto détection du dépôt grâce au DNS';
+  
+//  cbWaptUpdate := TCheckbox.Create(WizardForm);
+//  cbWaptUpdate.Parent := CustomPage.Surface;
+//  cbWaptUpdate.Top := rbDnsRepo.Top + rbDnsRepo.Height + ScaleY(15);
+//  cbWaptUpdate.Width := CustomPage.SurfaceWidth;
+//  cbWaptUpdate.checked := True;
+//  cbWaptUpdate.Caption := 'mise à jour de la liste des paquets'
+  
+  
 end;
 
 function GetRepoURL(Param: String):String;
+var
+j: Cardinal;
 begin
-  Result := RepoURLPage.Values[0];
+  for j := 1 to ParamCount do
+  begin
+    if (CompareText(ParamStr(j),'/verysilent')=0) then
+      result := ''
+    else
+      if rbCustomRepo.Checked then
+        result := teWaptUrl.Text
+      else
+        result := '';  
+  end;
 end;
 
 function InitializeSetup(): Boolean;
@@ -115,6 +160,24 @@ begin
   if ServiceExists('waptservice') then
     SimpleDeleteService('waptservice');
 end;
+
+procedure beforeUpdateWapt();
+var
+  WinHttpReq: Variant;
+begin
+  try
+    WinHttpReq := CreateOleObject('WinHttp.WinHttpRequest.5.1');
+    WinHttpReq.Open('GET', teWaptUrl.Text, false);
+    WinHttpReq.Send();
+  except
+    MsgBox('l''url du dépôt WAPT est invalide.'#13#10' Veuillez corriger le fichier "C:\WAPT\wapt-get.ini"', mbError, MB_OK);
+  end;
+  if WinHttpReq.Status <> 200 then
+    begin
+    MsgBox('l''url du dépôt WAPT est invalide.'#13#10' Veuillez corriger le fichier "C:\WAPT\wapt-get.ini"', mbError, MB_OK);
+    end
+end;
+
 
 function NeedsAddPath(Param: string): boolean;
 var
