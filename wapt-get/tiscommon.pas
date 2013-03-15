@@ -40,19 +40,23 @@ Procedure UnzipFile(ZipFilePath,OutputPath:Utf8String);
 Procedure AddToUserPath(APath:Utf8String);
 procedure AddToSystemPath(APath:Utf8String);
 procedure UpdateCurrentApplication(fromURL:String;Restart:Boolean;restartparam:Utf8String);
-function  ApplicationVersion(FileName:Utf8String=''): Utf8String;
+function  GetApplicationVersion(FileName:Utf8String=''): Utf8String;
 
-function GetApplicationName:Utf8String;
-function GetPersonalFolder:Utf8String;
-function GetAppdataFolder:Utf8String;
+function GetApplicationName:AnsiString;
+function GetPersonalFolder:AnsiString;
+function GetAppdataFolder:AnsiString;
 
-function TISAppuserinipath:Utf8String;
-function TISGetComputerName : UTF8String;
-function TISGetUserName : UTF8String;
+function Appuserinipath:AnsiString;
+function GetComputerName : AnsiString;
+function GetUserName : AnsiString;
+function GetWorkgroupName: AnsiString;
+function GetDomainName: AnsiString;
+
 
 function SortableVersion(VersionString:String):String;
 
 type LogLevel=(DEBUG, INFO, WARNING, ERROR, CRITICAL);
+const StrLogLevel: array[DEBUG..CRITICAL] of String = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL');
 procedure Logger(Msg:String;level:LogLevel=WARNING);
 
 Const
@@ -99,11 +103,11 @@ function GetSystemProductName: String;
 function GetSystemManufacturer: String;
 function GetBIOSVendor: String;
 function GetBIOSVersion: String;
+function GetBIOSDate:String;
 
 function GetServiceStatusByName(const AServer,AServiceName:string):TServiceState;
 function StartServiceByName(const AServer,AServiceName: String):Boolean;
 function StopServiceByName(const AServer, AServiceName: String):Boolean;
-
 
 var
   loghook : procedure(logmsg:String) of object;
@@ -114,7 +118,7 @@ const
 implementation
 
 uses registry,strutils,FileUtil,Process,WinInet,zipper,
-    shlobj,winsock,tisstrings,JwaTlHelp32;
+    shlobj,winsock,tisstrings,JwaTlHelp32,jwalmwksta,jwalmapibuf;
 
 function IsAdminLoggedOn: Boolean;
 { Returns True if the logged-on user is a member of the Administrators local
@@ -370,6 +374,32 @@ begin
   end;
 end;
 
+function GetBIOSDate: String;
+const
+  WinNT_REG_PATH = 'HARDWARE\DESCRIPTION\System';
+  WinNT_REG_KEY  = 'SystemBiosDate';
+  Win9x_REG_PATH = 'Enum\Root\*PNP0C01\0000';
+  Win9x_REG_KEY  = 'BiosDate';
+var
+  RegStr: string;
+  RegSeparator: Char;
+  R:TRegistry;
+begin
+  Result := '';
+  R :=  TRegistry.Create;
+  try
+    R.RootKey:=HKEY_LOCAL_MACHINE;
+    if Win32Platform = VER_PLATFORM_WIN32_NT then
+    begin
+      if R.OpenKey(WinNT_REG_PATH,False) then Result := R.ReadString(WinNT_REG_KEY)
+    end
+    else
+      if R.OpenKey(Win9x_REG_PATH, False) then Result := R.ReadString(Win9x_REG_KEY);
+  finally
+    R.Free;
+  end;
+end;
+
 function CheckTokenMembership(TokenHandle: THandle; SidToCheck: PSID; var IsMember: BOOL): BOOL; stdcall; external advapi32;
 
 function UserInGroup(Group :DWORD) : Boolean;
@@ -466,19 +496,19 @@ begin
     fn :=ExtractFileName(ParamStr(0));
     destdir := ExtractFileDir(ParamStr(0));
 
-    tempfn := tempdir+'\'+fn;
+    tempfn := AppendPathDelim(tempdir)+fn;
     mkdir(tempdir);
     Logger('Getting new file from: '+fromURL+' into '+tempfn);
     try
       wget(fromURL,tempfn);
-      version := ApplicationVersion(tempfn);
+      version := GetApplicationVersion(tempfn);
       if version='' then
         raise Exception.create('no version information in downloaded file.');
       Logger(' got '+fn+' version: '+version);
       Files.Add(fn);
     except
       //trying to get a zip file instead (exe files blocked by proxy ...)
-      zipfn:=tempdir+'\'+ChangeFileExt(fn,'.zip');
+      zipfn:= AppendPathDelim(tempdir)+ChangeFileExt(fn,'.zip');
       wget(ChangeFileExt(fromURL,'.zip'),zipfn);
       Logger('  unzipping file '+zipfn);
       UnZipper := TUnZipper.Create;
@@ -494,7 +524,7 @@ begin
         UnZipper.Free;
       end;
 
-      version := ApplicationVersion(tempfn);
+      version := GetApplicationVersion(tempfn);
       if version='' then
         raise Exception.create('no version information in downloaded exe file.');
       Logger(' got '+fn+' version: '+version);
@@ -503,7 +533,7 @@ begin
     if FileExists(tempfn) and (FileSize(tempfn)>0) then
     begin
       // small batch to replace current running application
-      updatebatch := tempdir + '\update.bat';
+      updatebatch := AppendPathDelim(tempdir) + 'update.bat';
       AssignFile(bat,updateBatch);
       Rewrite(bat);
       try
@@ -542,65 +572,124 @@ begin
 end;
 
 
-function TISGetUserName : Utf8String;
+function GetUserName : AnsiString;
 var
-	 pcUser   : PWChar;
+	 pcUser   : PChar;
 	 dwUSize : DWORD;
 begin
 	 dwUSize := 21; // user name can be up to 20 characters
 	 GetMem( pcUser, dwUSize ); // allocate memory for the string
 	 try
-			if Windows.GetUserNameW( pcUser, dwUSize ) then
+			if Windows.GetUserName( pcUser, dwUSize ) then
 				 Result := pcUser;
 	 finally
 			FreeMem( pcUser ); // now free the memory allocated for the string
 	 end;
 end;
 
+procedure StrResetLength(var S: AnsiString);
+var
+  I: SizeInt;
+begin
+  for I := 1 to Length(S) do
+    if S[I] = #0 then
+    begin
+      SetLength(S, I);
+      Exit;
+    end;
+end;
 
-function GetApplicationName:Utf8String;
+function GetUserDomainName(const CurUser: string): AnsiString;
+var
+  Count1, Count2: DWORD;
+  Sd: PSID; // PSecurityDescriptor; // FPC requires PSID
+  Snu: SID_Name_Use;
+begin
+  Count1 := 0;
+  Count2 := 0;
+  Sd := nil;
+  Snu := SIDTypeUser;
+  Result := '';
+  LookUpAccountName(nil, PChar(CurUser), Sd, Count1, PChar(Result), Count2, Snu);
+  // set buffer size to Count2 + 2 characters for safety
+  SetLength(Result, Count2 + 1);
+  Sd := AllocMem(Count1);
+  try
+    if LookUpAccountName(nil, PChar(CurUser), Sd, Count1, PChar(Result), Count2, Snu) then
+      StrResetLength(Result)
+    else
+      Result := EmptyStr;
+  finally
+    FreeMem(Sd);
+  end;
+end;
+
+function GetWorkGroupName: AnsiString;
+var
+  WkstaInfo: PByte;
+  WkstaInfo100: PWKSTA_INFO_100;
+begin
+  if NetWkstaGetInfo(nil, 100, WkstaInfo) <> 0 then
+    raise Exception.Create('NetWkstaGetInfo failed');
+  WkstaInfo100 := PWKSTA_INFO_100(WkstaInfo);
+  Result := WkstaInfo100^.wki100_langroup;
+  NetApiBufferFree(Pointer(WkstaInfo));
+end;
+
+function GetDomainName: AnsiString;
+var
+  hProcess, hAccessToken: THandle;
+  InfoBuffer: PChar;
+  AccountName: array [0..UNLEN] of Char;
+  DomainName: array [0..UNLEN] of Char;
+
+  InfoBufferSize: Cardinal;
+  AccountSize: Cardinal;
+  DomainSize: Cardinal;
+  snu: SID_NAME_USE;
+begin
+  InfoBufferSize := 1000;
+  AccountSize := SizeOf(AccountName);
+  DomainSize := SizeOf(DomainName);
+
+  hProcess := GetCurrentProcess;
+  Result :='';
+  if OpenProcessToken(hProcess, TOKEN_READ, hAccessToken) then
+  try
+    GetMem(InfoBuffer, InfoBufferSize);
+    try
+      if GetTokenInformation(hAccessToken, TokenUser, InfoBuffer, InfoBufferSize, InfoBufferSize) then
+        LookupAccountSid(nil, PSIDAndAttributes(InfoBuffer)^.sid, AccountName, AccountSize,
+                         DomainName, DomainSize, snu)
+      else
+        RaiseLastOSError;
+    finally
+      FreeMem(InfoBuffer)
+    end;
+    Result := DomainName;
+  finally
+    CloseHandle(hAccessToken);
+  end
+end;
+
+
+function GetApplicationName:AnsiString;
 begin
   Result := ChangeFileExt(ExtractFileName(ParamStr(0)),'');
 end;
 
-function GetSpecialFolderLocation(csidl: Integer; ForceFolder: Boolean = False ): utf8String;
+function GetSpecialFolderLocation(csidl: Integer; ForceFolder: Boolean = False ): AnsiString;
 var
   i: integer;
 begin
   SetLength( Result, MAX_PATH );
   if ForceFolder then
-  begin
-    SHGetFolderPath( 0, csidl or CSIDL_FLAG_CREATE, 0, 0, PChar( Result ));
-  end
+    SHGetFolderPath( 0, csidl or CSIDL_FLAG_CREATE, 0, 0, PChar( Result ))
   else
-  begin
     SHGetFolderPath( 0, csidl, 0, 0, PChar( Result ));
-
-  end;
 
   i := Pos( #0, Result );
   if i > 0 then SetLength( Result, Pred(i));
-
-end;
-
-
-function AppendBackslash( strnString: AnsiString ): AnsiString;
-begin
-
-  if strnString = '' then
-  begin
-    Result := '';
-    Exit;
-  end;//if
-
-  if AnsiLastChar( strnString )^ <> '\' then
-  begin
-    Result := strnString + '\';
-  end
-  else
-  begin
-    Result := strnString;
-  end;//if
 
 end;
 
@@ -610,26 +699,19 @@ var
 begin
   Registry := TRegistry.Create;
   Registry.RootKey := HKEY_CURRENT_USER;
-
   if Registry.OpenKeyReadOnly( strnShellFolders ) then
-  begin
-    Result := AppendBackslash( Registry.ReadString( 'SendTo' ));
-  end
+    Result := AppendPathDelim(Registry.ReadString( 'SendTo' ))
   else
-  begin
     Result := '';
-  end;//if
-
   Registry.Free;
 end;
 
-
-function GetPersonalFolder:Utf8String;
+function GetPersonalFolder:AnsiString;
 begin
   result := GetSpecialFolderLocation(CSIDL_PERSONAL)
 end;
 
-function GetAppdataFolder:Utf8String;
+function GetAppdataFolder:AnsiString;
 begin
   result :=  GetSpecialFolderLocation(CSIDL_APPDATA);
 end;
@@ -642,13 +724,9 @@ begin
   Registry.RootKey := HKEY_CURRENT_USER;
 
   if Registry.OpenKeyReadOnly( strnShellFolders ) then
-  begin
-    Result := AppendBackslash( Registry.ReadString( 'Start Menu' ));
-  end
+    Result := AppendPathDelim(Registry.ReadString('Start Menu'))
   else
-  begin
     Result := '';
-  end;//if
 
   Registry.Free;
 end;
@@ -662,14 +740,9 @@ begin
   Registry.RootKey := HKEY_CURRENT_USER;
 
   if Registry.OpenKeyReadOnly( strnShellFolders ) then
-  begin
-    Result := AppendBackslash( Registry.ReadString( 'Startup' ));
-  end
+    Result := AppendPathDelim(Registry.ReadString( 'Startup' ))
   else
-  begin
     Result := '';
-  end;//if
-
   Registry.Free;
 end;
 
@@ -684,7 +757,7 @@ var
 begin
   intgBufferSize := 128;
   SetLength( strnBuffer, intgBufferSize );
-  if GetUserName( charBuffer, intgBufferSize ) then
+  if windows.GetUserName( charBuffer, intgBufferSize ) then
   begin
     Result := StrPas( charBuffer );
   end
@@ -696,7 +769,7 @@ end;
 
 
 // to store use specific settings for this application
-function TISAppuserinipath:Utf8String;
+function Appuserinipath:AnsiString;
 var
   dir : String;
 begin
@@ -734,13 +807,13 @@ begin
   end;
 end;
 
-function TISGetComputerName : Utf8String;
+function GetComputerName : AnsiString;
 var
   buffer: array[0..255] of char;
   size: dword;
 begin
   size := 256;
-  if GetComputerName(buffer, size) then
+  if windows.GetComputerName(buffer, size) then
     Result := buffer
   else
     Result := ''
@@ -766,7 +839,7 @@ end;
 	end; // TFixedFileInfo
 
 
-function ApplicationVersion(Filename:Utf8String=''): Utf8String;
+function GetApplicationVersion(Filename:Utf8String=''): Utf8String;
 var
 	dwHandle, dwVersionSize : DWORD;
 	strSubBlock             : String;

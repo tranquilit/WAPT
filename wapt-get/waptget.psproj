@@ -134,8 +134,12 @@ FileName=C:\tranquilit\wapt\setuphelpers.py
 ClassName=TProjectFileNode
 FileName=C:\tranquilit\wapt\wapt-get.py
 
+[Project\ChildNodes\Node0\ChildNodes\Node6]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptpackage.py
+
 [Project\ChildNodes\Node0\ChildNodes]
-Count=6
+Count=7
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode
@@ -228,7 +232,7 @@ Name=download tis7zip
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=download -f tis-irfanview tis-7zip
+Parameters=download tis-irfanview tis-7zip
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log

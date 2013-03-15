@@ -93,7 +93,7 @@ begin
   // parse parameters
   if HasOption('?') or HasOption('h','--help') then
   begin
-    writeln(' -r --repo : URL of dependencies libs (default : '+FindWaptRepo+')');
+    writeln(' -r --repo : URL of dependencies libs (default : '+GetMainWaptRepo+')');
     writeln(' waptupgrade : upgrade wapt-get.exe and database');
     writeln(' waptsetup : install/reinstall dependencies (python libs)');
     writeln(' register : register computer on wapt-server');
@@ -102,7 +102,7 @@ begin
   if HasOption('r','repo') then
     RepoURL := GetOptionValue('r','repo')
   else
-    RepoURL := FindWaptRepo;
+    RepoURL := GetMainWaptRepo;
 
   if HasOption('l','loglevel') then
   begin
@@ -117,16 +117,17 @@ begin
       currentLogLevel := ERROR
     else if logleveloption = 'CRITICAL' then
       currentLogLevel := CRITICAL;
+    Logger('Current loglevel : '+StrLogLevel[currentLogLevel],DEBUG);
   end;
 
   if HasOption('v','version') then
-    writeln('Win32 Exe wrapper: '+ApplicationName+' '+ApplicationVersion);
+    writeln('Win32 Exe wrapper: '+ApplicationName+' '+GetApplicationVersion);
   DefaultInstallPath := TrimFilename('c:\wapt');
   DownloadPath := ExtractFilePath(ParamStr(0));
   // Auto install if wapt-get is not yet in the target directory
   if (action = 'waptsetup') or
     (FileExists(AppendPathDelim(DefaultInstallPath)+'wapt-get.exe') and
-        (SortableVersion(ApplicationVersion) > SortableVersion(ApplicationVersion(AppendPathDelim(DefaultInstallPath)+'wapt-get.exe')))) or
+        (SortableVersion(GetApplicationVersion) > SortableVersion(GetApplicationVersion(AppendPathDelim(DefaultInstallPath)+'wapt-get.exe')))) or
     (not FileExists(AppendPathDelim(DownloadPath)+'python27.dll')) or
     (not FileExists(AppendPathDelim(DownloadPath)+'wapt-get.exe')) then
   begin
@@ -269,9 +270,18 @@ begin
 end;
 
 procedure pwaptget.RegisterComputer;
+var
+  ws : String;
 begin
   writeln(LocalSysinfo.AsJSon(True));
-  httpPostData('wapt','wapt','register',LocalSysinfo.AsJSon(True));
+  ws  := GetWaptServerURL;
+  if ws<>'' then
+  begin
+    writeln(' sending computer info to '+ws);
+    httpPostData('wapt',ws,'register',LocalSysinfo.AsJSon(True));
+  end
+  else
+    writeln(' no wapt_server defined in inifile '+WaptIniFilename);
 end;
 
 function pwaptget.SetupWaptService(InstallPath:Utf8String):boolean;

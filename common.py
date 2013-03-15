@@ -601,12 +601,6 @@ class WaptDB:
 
         return cur.lastrowid
 
-    def list_repo(self,words=[]):
-        words = [ "%"+w.lower()+"%" for w in words ]
-        search = ["lower(Description || Package) like ?"] *  len(words)
-        cur = self.db.execute("select Package,Version,Description from wapt_repo where %s" % " and ".join(search),words)
-        return pptable(cur,None,1,None)
-
     def add_package_entry(self,package_entry):
         cur = self.db.execute("""delete from wapt_repo where Package=? and Version=?""" ,(package_entry.Package,package_entry.Version))
 
@@ -696,7 +690,6 @@ class WaptDB:
                """, (pcv['package'],))
             result = [ p for p in q if p.match(package_cond)]
             result.sort()
-            result.reverse()
             return result
         else:
             return []
@@ -851,7 +844,7 @@ class WaptDB:
                         raise Exception('Package %s not available' % package)
                     # get depends of the most recent matching entry
                     # TODO : use another older if this can limit the number of packages to install !
-                    depends = [s.strip() for s in entries[0].Depends.split(',') if s.strip()<>'']
+                    depends = [s.strip() for s in entries[-1].Depends.split(',') if s.strip()<>'']
                     for d in depends:
                         alldepends.extend(dodepends(explored,depends,depth))
                         if not d in alldepends:
@@ -1089,7 +1082,7 @@ class Wapt:
         return result
 
     def uninstall_cmd(self,guid):
-        """return cmd to uninstall from registry"""
+        """return the command stored in registry to uninstall a package """
         def get_fromkey(uninstall):
             key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,guid))
             try:
@@ -1127,6 +1120,7 @@ class Wapt:
                 raise
 
     def install_wapt(self,fname,params_dict={}):
+        """Install a single wapt package given its WAPT filename."""
         logger.info("Register start of install %s to local DB with params %s" % (fname,params_dict))
         status = 'INIT'
         previous_uninstall = self.registry_uninstall_snapshot()
@@ -1263,6 +1257,7 @@ class Wapt:
             sys.stdout = old_stdout
             sys.stderr = old_stderr
             sys.path = oldpath
+            return status
 
     def get_sources(self,package):
         """Download sources of package (if referenced in package as a https svn
@@ -1284,7 +1279,7 @@ class Wapt:
         logger.info(subprocess.check_output('svn co %s %s' % (svncmd,entry.Sources)))
 
     def last_install_log(self,packagename):
-        """Return last install status and log for package"""
+        """Return a dict {status,log} of the last install of a package"""
         q = self.waptdb.query("""\
            select InstallStatus,InstallOutput from wapt_localstatus
             where Package=? order by InstallDate desc limit 1
@@ -1324,12 +1319,13 @@ class Wapt:
             }
         return result
 
-    def checkinstall(self,apackages,force=False):
-        """Given a list of packagename (condition), check which package to upgrade, to install"""
+    def checkinstall(self,apackages,forceupgrade=False,force=False):
+        """Given a list of packagename (condition), check which packages to upgrade, to install
+            forceupgrae : check if the current installed package is the latest available
+        """
         if not isinstance(apackages,list):
             apackages = [apackages]
 
-        #allupgrades = self.waptdb.upgradeable()
         allinstalled = self.waptdb.installed()
         # packages to install after skipping already installed ones
         skipped = []
@@ -1340,32 +1336,50 @@ class Wapt:
 
         # search for most recent matching package to install
         for request in apackages:
+            # get the current installed package matching the request
             old_matches = self.waptdb.installed_matching(request)
+            # current installed matches
             if not force and old_matches:
-                skipped.append(request)
+                skipped.append([request,old_matches])
             else:
-                new_matches = self.waptdb.packages_matching(request)
-                if new_matches:
-                    packages.append(request)
+                new_availables = self.waptdb.packages_matching(request)
+                if new_availables:
+                    if force or not old_matches or (forceupgrade and old_matches < new_availables[-1]):
+                        packages.append([request,new_availables[-1]])
+                    else:
+                        skipped.append([request,old_matches])
                 else:
-                    unavailable.append(request)
+                    unavailable.append([request,None])
 
         # get dependencies of not installed top packages
-        depends = self.waptdb.build_depends(packages)
-        for pc in depends:
-            pcd = REGEX_PACKAGE_CONDITION.match(pc).groupdict()
-            if not pcd['package'] in allinstalled:
-                if self.waptdb.packages_matching(pc):
-                    additional_install.append(pc)
-                else:
-                    unavailable.append(pc)
-            elif not force and self.waptdb.installed_matching(pc):
-                skipped.append(pc)
+        if forceupgrade:
+            depends = self.waptdb.build_depends(apackages)
+        else:
+            depends = self.waptdb.build_depends([p[0] for p in packages])
+        # search for most recent matching package to install
+        for request in depends:
+            # get the current installed package matching the request
+            old_matches = self.waptdb.installed_matching(request)
+            # current installed matches
+            if not force and old_matches:
+                skipped.append([request,old_matches])
             else:
-                to_upgrade.append(pc)
+                # check if installable or upgradable ?
+                new_availables = self.waptdb.packages_matching(request)
+                if new_availables:
+                    if not old_matches or (forceupgrade and old_matches < new_availables[-1]):
+                        packages.append([request,new_availables[-1]])
+                    else:
+                        skipped.append([request,old_matches])
+                else:
+                    unavailable.append([request,None])
         return {'additional':additional_install,'upgrade':to_upgrade,'install':packages,'skipped':skipped,'unavailable':unavailable}
 
-    def install(self,apackages,force=False,params_dict = {}):
+    def install(self,apackages,
+        force=False,
+        params_dict = {},
+        download_only=False,
+        usecache=True):
         """Install a list of packages and its dependencies
             apackages is a list of packages names. A specific version can be specified
             force=True reinstalls the packafes even if it is already installed
@@ -1375,7 +1389,8 @@ class Wapt:
         if not isinstance(apackages,list):
             apackages = [apackages]
 
-        actions = self.checkinstall(apackages,force)
+        actions = self.checkinstall(apackages,force=download_only or force,forceupgrade=True)
+        actions['errors']=[]
 
         skipped = actions['skipped']
         additional_install = actions['additional']
@@ -1387,44 +1402,46 @@ class Wapt:
         to_install.extend(to_upgrade)
         to_install.extend(packages)
 
-        packages = []
-        for p in to_install:
-            packages.append(self.waptdb.packages_matching(p)[0])
+        # get package entries to install to_install is a list of (request,package)
+        packages = [ p[1] for p in to_install ]
 
-        # [[package/version],]
-        downloaded = self.download_packages(packages)
+        downloaded = self.download_packages(packages,usecache=not download_only and usecache)
+        actions['downloads'] = downloaded
         logger.debug('Downloaded : %s' % (downloaded,))
         def fname(packagefilename):
             return os.path.join(self.packagecachedir,packagefilename)
+        if not download_only:
+            for (request,p) in to_install:
+                result = self.install_wapt(fname(p.Filename),params_dict)
+                if result<>'OK':
+                    actions['errors'].append([request,p])
+            return actions
+        else:
+            logger.info('Download only, no install performed')
+            return actions
 
-        for p in packages:
-            self.install_wapt(fname(p.Filename),params_dict)
-
-        return actions
-
-
-    def download_packages(self,packages,usecache=True):
-        """Download a list of packages, packages is a list of package requests
+    def download_packages(self,package_requests,usecache=True):
+        """Download a list of packages (requests are of the form packagename (>version) )
            returns a dict of {"downloaded,"skipped","errors"}
         """
         downloaded = []
         skipped = []
         errors = []
-        packages_versioned = []
-        for p in packages:
+        packages = []
+        for p in package_requests:
             if isinstance(p,str):
                 mp = self.waptdb.packages_matching(p)
                 if mp:
-                    packages_versioned.append(mp[0])
+                    packages.append(mp[0])
                 else:
                     raise Exception('Unavailable package %s' % (p,))
             elif isinstance(p,Package_Entry):
-                packages_versioned.append(p)
+                packages.append(p)
             elif isinstance(p,list) or isinstance(p,tuple):
-                packages_versioned.append(self.waptdb.package_entry_from_db(p[0],version_min=p[1],version_max=p[1]))
+                packages.append(self.waptdb.package_entry_from_db(p[0],version_min=p[1],version_max=p[1]))
             else:
                 raise Exception('Invalid package request %s' % p)
-        for entry in packages_versioned:
+        for entry in packages:
             packagefilename = entry.Filename.strip('./')
             download_url = entry.repo_url+'/'+packagefilename
             fullpackagepath = os.path.join(self.packagecachedir,packagefilename)
@@ -1522,27 +1539,6 @@ and install all newest packages"""
         # get most recent packages
         to_download = [p[0] for p in q.values()]
         return self.download_packages(to_download)
-
-    def list_repo(self,search):
-        print self.waptdb.list_repo(search)
-
-    def list_installed_packages(self,words=[],okonly=False):
-        """Returns a cursor (Status, Package,VersionInstallDate,InstallStatus,Description for installed packets having words in their package name"""
-        words = [ "%"+w.lower()+"%" for w in words ]
-        search = ["lower(l.Package) like ?"] *  len(words)
-        if okonly:
-            search.append('l.InstallStatus in ("OK","UNKNOWN")')
-        cur = self.waptdb.db.execute("""\
-              select
-                CASE l.Version WHEN l.Version<r.Version THEN 'U' ELSE 'I' END as "Status",
-                l.Package,l.Version,l.InstallDate,l.InstallStatus,r.Description
-              from wapt_localstatus l
-                left join wapt_repo r on l.Package=r.Package and l.Version=r.Version
-              where %s
-              order by l.Package
-            """ %  (" and ".join(search) or "l.Package is not null",), words )
-        return cur
-
 
     def inventory(self):
         """Return software inventory of the computer as a dictionary"""
@@ -1732,6 +1728,7 @@ if __name__ == '__main__':
     assert isinstance(w.waptdb,WaptDB)
     print w.waptdb.get_param('dbversion')
     print w.remove('tis-waptdev',force=True)
+    print w.install(['tis-waptdev'])
     print w.remove('tis-firefox',force=True)
     print w.install('tis-firefox',force=True)
     print w.checkinstall(['tis-waptdev'],force=False)
@@ -1742,5 +1739,4 @@ if __name__ == '__main__':
     if not os.path.isfile(pfn):
         raise Exception("""w.buildpackage('c:\\tranquilit\\tis-wapttest-wapt',True) failed""")
     print w.install_wapt(pfn,params_dict={'company':'TIS'})
-    print w.install(['tis-wapttest'],force=True)
 

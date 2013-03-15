@@ -63,7 +63,7 @@ var
   WaptDaemon: TWaptDaemon;
 
 implementation
-uses JclSysInfo,IdSocketHandle,IdGlobal,process,StrUtils,idURI,tiscommon,soutils,IniFiles;
+uses process,StrUtils,IdGlobal,IdSocketHandle,idURI,tiscommon,soutils,IniFiles;
 
 //  ,waptwmi,  Variants,Windows,ComObj;
 
@@ -184,7 +184,7 @@ begin
           SetLength(Buffer, BytesAvailable);
           BytesRead := AProcess.OutPut.Read(Buffer[1], BytesAvailable);
           Result := Result+copy(Buffer,1, BytesRead);
-          chunk := StringsReplace(copy(Buffer,1, BytesRead),[#13#10],['<br>'],[rfReplaceAll]);
+          chunk := StrUtils.StringsReplace(copy(Buffer,1, BytesRead),[#13#10],['<br>'],[rfReplaceAll]);
           HttpWriteChunk(AHttpContext,Chunk,Nil);
           BytesAvailable := AProcess.Output.NumBytesAvailable;
         end;
@@ -197,7 +197,7 @@ begin
         SetLength(Buffer, BytesAvailable);
         BytesRead := AProcess.OutPut.Read(Buffer[1], BytesAvailable);
         Result := Result+copy(Buffer,1, BytesRead);
-        chunk := StringsReplace(copy(Buffer,1, BytesRead),[#13#10],['<br>'],[rfReplaceAll]);
+        chunk := StrUtils.StringsReplace(copy(Buffer,1, BytesRead),[#13#10],['<br>'],[rfReplaceAll]);
         HttpWriteChunk(AHttpContext,Chunk,Nil);
       end;
 
@@ -296,7 +296,6 @@ procedure TWaptDaemon.IdHTTPServer1CommandGet(AContext: TIdContext;
   ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
 var
     ExitStatus:Integer;
-    CPUInfo:TCpuInfo;
     St : TStringList;
     Cmd,IPS:String;
     i,f:integer;
@@ -309,7 +308,7 @@ begin
   AResponseInfo.ContentType:='text/html';
   if LeftStr(ARequestInfo.URI,length('/static/'))='/static/' then
   begin
-    filepath :=  ExtractFilePath(ParamStr(0))+ StringsReplace(ARequestInfo.URI,['/'],['\'],[rfReplaceAll]);
+    filepath :=  ExtractFilePath(ParamStr(0))+ StrUtils.StringsReplace(ARequestInfo.URI,['/'],['\'],[rfReplaceAll]);
     if FileExists(FilePath) then
     begin
       AResponseInfo.ContentType:=AResponseInfo.HTTPServer.MIMETable.GetFileMIMEType(filepath);
@@ -341,7 +340,8 @@ begin
     else
     if ARequestInfo.URI='/waptupgrade' then
     begin
-      HttpRunTask(AContext,AResponseInfo,WaptgetPath+' waptupgrade',ExitStatus);
+      RunTask(WaptgetPath+' waptupgrade',ExitStatus);
+      //HttpRunTask(AContext,AResponseInfo,WaptgetPath+' waptupgrade',ExitStatus);
       {UpgradeResult:=RunTask(WaptgetPath+' --upgrade',ExitStatus);
       AResponseInfo.ContentType:='application/json';
       SO:=TSuperObject.Create;
@@ -436,32 +436,29 @@ begin
       if ARequestInfo.URI = '/showlog' then
         cmd := cmd+' showlog '+ARequestInfo.Params.ValueFromIndex[i];
       Application.Log(etInfo,cmd);
-      HttpRunTask(AContext,AResponseInfo,cmd,ExitStatus)
+      //HttpRunTask(AContext,AResponseInfo,cmd,ExitStatus)
+       AResponseInfo.ContentText:= RunTask(cmd,ExitStatus)
     end
     else
     begin
-      St := TStringList.Create;
-      try
-        GetIpAddresses(St);
-        IPS := St.Text;
-      finally
-        St.free;
-      end;
-      GetCpuInfo(CPUInfo);
-      //AResponseInfo.ContentText:='tt';
       AResponseInfo.ContentText:= (
-        '<h1>'+TISGetComputerName+' - System status</h1>'+
+        '<h1>'+GetComputerName+' - System status</h1>'+
         'WAPT Server URL: '+GetWaptServerURL+'<br>'+
-        'wapt-get version: '+ApplicationVersion(WaptgetPath)+'<br>'+
-        'waptservice version: '+ApplicationVersion(Basedir+'\waptservice.exe')+'<br>'+
-        'User : '+TISGetUserName+'<br>'+
-        'Machine: '+TISGetComputerName+'<br>'+
-        'Domain: '+ GetWorkGroupName+'<br>'+
-        'IP Addresses:'+IPS+'<br>'+
-        'System: '+GetWindowsVersionString+' '+GetWindowsEditionString+' '+GetWindowsServicePackVersionString+'<br>'+
-        'RAM: '+FormatFloat('###0 MB',GetTotalPhysicalMemory/1024/1024)+'<br>'+
-        'CPU: '+CPUInfo.CpuName+'<br>'+
-        'Memory Load: '+IntToStr(GetMemoryLoad)+'%'+'<br>'+
+        'wapt-get version: '+GetApplicationVersion(WaptgetPath)+'<br>'+
+        'waptservice version: '+GetApplicationVersion(WaptservicePath)+'<br>'+
+        'User : '+GetUserName+'<br>'+
+        'Machine: '+GetComputerName+'<br>'+
+        'Workgroup: '+ GetWorkGroupName+'<br>'+
+        'Domain: '+ GetDomainName+'<br>'+
+        'DNS Server: '+ GetDNSServer+'<br>'+
+        'DNS Domain: '+ GetDNSDomain+'<br>'+
+        'IP Addresses:'+GetLocalIP+'<br>'+
+        'Main WAPT Repository: '+ GetMainWaptRepo+'<br>'+
+        'WAPT server: '+ GetWaptServerURL+'<br>'+
+        //'System: '+GetWindowsVersionString+' '+GetWindowsEditionString+' '+GetWindowsServicePackVersionString+'<br>'+
+        //'RAM: '+FormatFloat('###0 MB',GetTotalPhysicalMemory/1024/1024)+'<br>'+
+        //'CPU: '+CPUInfo.CpuName+'<br>'+
+        //'Memory Load: '+IntToStr(GetMemoryLoad)+'%'+'<br>'+
         '<h1>Query info</h1>'+
         'URI:'+ARequestInfo.URI+'<br>'+
         'Document:'+ARequestInfo.Document+'<br>'+
@@ -475,7 +472,7 @@ begin
     if AResponseInfo.ContentType='text/html' then
     begin
       Template := LoadFile(ExtractFilePath(ParamStr(0))+'\templates\layout.html');
-      AResponseInfo.ContentText :=  StringsReplace(Template,['{% block content %}'],[AResponseInfo.ContentText],[rfReplaceALl]  );
+      AResponseInfo.ContentText :=  strutils.StringsReplace(Template,['{% block content %}'],[AResponseInfo.ContentText],[rfReplaceALl]  );
       {      AResponseInfo.ContentText := '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'+
            '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">'+
            '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" />'+

@@ -32,7 +32,7 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="7">
+    <RequiredPackages Count="6">
       <Item1>
         <PackageName Value="pltis_python4delphi"/>
       </Item1>
@@ -40,22 +40,19 @@
         <PackageName Value="pltis_superobject"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_jcl"/>
+        <PackageName Value="SQLDBLaz"/>
       </Item3>
       <Item4>
-        <PackageName Value="SQLDBLaz"/>
+        <PackageName Value="pl_indycomp"/>
       </Item4>
       <Item5>
-        <PackageName Value="pl_indycomp"/>
+        <PackageName Value="FCL"/>
       </Item5>
       <Item6>
-        <PackageName Value="FCL"/>
-      </Item6>
-      <Item7>
         <PackageName Value="LCL"/>
-      </Item7>
+      </Item6>
     </RequiredPackages>
-    <Units Count="4">
+    <Units Count="8">
       <Unit0>
         <Filename Value="appwaptservice.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -82,6 +79,26 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
       </Unit3>
+      <Unit4>
+        <Filename Value="..\wapt-get\networkadapterinfo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="networkadapterinfo"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\wapt-get\soutils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="soutils"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\wapt-get\tisinifiles.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tisinifiles"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="..\wapt-get\tisstrings.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tisstrings"/>
+      </Unit7>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

@@ -295,7 +295,8 @@ Sources      : %(Sources)s
         return self.ascontrol(with_non_control_attributes=True)
 
     def __repr__(self):
-        return self.ascontrol(with_non_control_attributes=True).encode('utf8')
+        return "%s (%s):%s" % (self.Package,self.Version,self.Architecture)
+        #return self.ascontrol(with_non_control_attributes=True).encode('utf8')
 
 
 def update_packages(adir):

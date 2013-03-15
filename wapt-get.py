@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.2"
+__version__ = "0.8.4"
 
 import sys
 import os
@@ -167,7 +167,7 @@ def main():
     logger.debug('WAPT DB Structure version;: %s' % mywapt.waptdb.db_version)
 
     try:
-        if action=='install':
+        if action=='install' or action=='download':
             if len(args)<2:
                 print "You must provide at least one package name"
                 sys.exit(1)
@@ -179,18 +179,23 @@ def main():
 
             if os.path.isdir(args[1]) or os.path.isfile(args[1]):
                 print "installing WAPT file %s" % args[1]
-                mywapt.install_wapt(args[1],params_dict = params_dict)
+                if action=='install':
+                    mywapt.install_wapt(args[1],params_dict = params_dict)
             else:
-                print "installing WAPT packages %s" % ','.join(args[1:])
-                result = mywapt.install(args[1:],force = options.force,params_dict = params_dict)
-                if result['install']:
-                    print "Installed packages:\n%s" % ('\n'.join( ["  %s" %s for s in  result['install']]),)
-                if result['skipped']:
-                    print "Skipped packages (already at the latest version) :\n%s" %('\n'.join([ "  %s" % p for p in result['skipped'] ]),)
-                if result['additional']:
-                    print "Additional installed packages :\n%s" % ('\n'.join(["  %s" %s for s in  result['additional']]),)
-                if result['upgrade']:
-                    print "Packages upgraded :\n%s" % (','.join(["  %s" %s for s in  result['upgrade']]),)
+                print "%sing WAPT packages %s" % (action,','.join(args[1:]))
+                result = mywapt.install(args[1:],force = options.force,params_dict = params_dict,
+                    download_only= (action=='download'),
+                    )
+                print "\nResults :"
+                if action<>'download':
+                    for k in ('install','additional','upgrade','skipped','errors'):
+                        if result[k]:
+                            print "\n=== %s packages ===\n%s" % (k,'\n'.join( ["  %-30s | %s (%s)" % (s[0],s[1].Package,s[1].Version) for s in  result[k]]),)
+                else:
+                    for k in ('downloaded','skipped','errors'):
+                        if result['\n=== downloads ==='][k]:
+                            print "%s :\n%s" % (k,'\n'.join(["  %s" % (s,) for s in result['downloads'][k]]),)
+
 
         elif action=='download':
             if len(args)<2:

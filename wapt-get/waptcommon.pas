@@ -30,15 +30,21 @@ interface
   const
     waptservice_port:integer = 8088;
 
-  Function  FindWaptRepo:String;
+  Function  GetMainWaptRepo:String;
   Function  GetWaptServerURL:String;
 
+  function WaptIniFilename: Utf8String;
   function WaptgetPath: Utf8String;
+  function WaptservicePath: Utf8String;
   function WaptDBPath: Utf8String;
 
   //function http_post(url: string;Params:String): String;
 
+  function GetEthernetInfo(ConnectedOnly:Boolean):ISuperObject;
   function LocalSysinfo: ISuperObject;
+  function GetLocalIP: string;
+  function GetDNSServer:AnsiString;
+  function GetDNSDomain:AnsiString;
 
 type
 
@@ -61,88 +67,183 @@ type
 
     // backup existing data as JSON structure, renames old DB and recreates one, restores data
     procedure upgradedb;
-
     function dumpdb:ISuperObject;
 
     property db:TSQLite3Connection read FDB;
     property sqltrans:TSQLTransaction read fsqltrans;
+
+    procedure SetParam(name,value:String);
+    function GetParam(name:String):String;
+
   end;
 
 
 
 implementation
 
-uses FileUtil,soutils,tiscommon,Windows,Variants,winsock,IdDNSResolver,JwaIpHlpApi,NetworkAdapterInfo;
-//, JCLSysInfo,  ActiveX, Variants;
+uses FileUtil,soutils,tiscommon,Windows,Variants,winsock,IdDNSResolver,JwaIpHlpApi,
+    NetworkAdapterInfo,tisinifiles,registry;
+//, JCLSysInfo,  ActiveX;
 
+function GetDNSServer:AnsiString;
+var
+  reg:TRegistry;
+begin
+  reg := TRegistry.create;
+  try
+    reg.RootKey:=HKEY_LOCAL_MACHINE;
+    if reg.OpenKeyReadOnly('SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters') then
+    begin
+      if reg.ValueExists('DhcpNameServer') then
+        Result := reg.ReadString('DhcpNameServer')
+      else
+        Result := reg.ReadString('NameServer');
+    end;
+  finally
+    reg.Free;
+  end;
+end;
 
+function GetDNSDomain:AnsiString;
+var
+  reg:TRegistry;
+begin
+  reg := TRegistry.create;
+  try
+    reg.RootKey:=HKEY_LOCAL_MACHINE;
+    if reg.OpenKeyReadOnly('SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters') then
+    begin
+      if reg.ValueExists('DhcpDomain') then
+        Result := reg.ReadString('DhcpDomain')
+      else
+        Result := reg.ReadString('Domain');
+    end;
+  finally
+    reg.Free;
+  end;
+end;
 
-function FindWaptRepo: String;
+function GetMainWaptRepo: String;
 var
   resolv : TIdDNSResolver;
   rec : TResultRecord;
   i:integer;
   highest : integer;
-
-
   ais : TAdapterInfo;
 
+  dnsdomain,
+  dnsserver:String;
+
 begin
-  result :='';
-  resolv := TIdDNSResolver.Create(Nil);
-  try
-    if Get_EthernetAdapterDetail(ais) then
-    begin
-      for i:=0 to length(ais)-1 do
-      with ais[i] do
-        if (dwType=MIB_IF_TYPE_ETHERNET) and (dwOperStatus>=MIB_IF_OPER_STATUS_CONNECTED) then begin
-          writeln(bDescr,' ',sIpAddress,'/',sIpMask,' ',ais[i].bPhysAddr);
-      end;
+  result := IniReadString(WaptIniFilename,'Global','repo_url');
+  if (Result <> '') then
+    exit;
+
+  if Get_EthernetAdapterDetail(ais) then
+  begin
+    for i:=0 to length(ais)-1 do
+    with ais[i] do
+      if (sIpAddress<>'') and (sIpMask<>'') and (dwType=MIB_IF_TYPE_ETHERNET) and (dwOperStatus>=MIB_IF_OPER_STATUS_CONNECTED) then begin
+        Logger(bDescr+' '+sIpAddress+'/'+sIpMask+' mac:'+ais[i].bPhysAddr,INFO);
     end;
-    resolv.Host:='192.168.149.11';
-    resolv.ClearInternalQuery;
-    resolv.QueryType := [TQueryRecordTypes.qtService];
-    resolv.Resolve('_wapt._tcp.tranquilit.local');
-    highest:=0;
-    for i := 0 to resolv.QueryResult.count - 1 do
-    begin
-      rec := resolv.QueryResult.Items[i];
-      if rec is TSRVRecord then
-      with (rec as TSRVRecord) do begin
-         if Priority>highest then
-         begin
-           Highest := Priority;
-           if Port=443 then
-              Result := 'https://'+Target+':'+IntToStr(Port)+'/wapt'
-           else
-              Result := 'http://'+Target+':'+IntToStr(Port)+'/wapt';
-         end;
-      end;
-    end;
-  finally
-    resolv.free;
   end;
 
-  {if Wget_try('http://wapt/wapt') then
-    Result := 'http://wapt/wapt'
-  else}
-    result := 'http://wapt.tranquil.it/wapt';
+  dnsdomain:=GetDNSDomain;
+  dnsserver:=GetDNSServer;
+
+  if (dnsserver<>'') and (dnsdomain<>'') then
+  begin
+    resolv := TIdDNSResolver.Create(Nil);
+    try
+      resolv.Host:=GetDNSServer;
+      resolv.ClearInternalQuery;
+      resolv.QueryType := [TQueryRecordTypes.qtService];
+      resolv.WaitingTime:=1000;
+      resolv.Resolve('_wapt._tcp.'+GetDNSDomain);
+      highest:=0;
+      for i := 0 to resolv.QueryResult.count - 1 do
+      begin
+        rec := resolv.QueryResult.Items[i];
+        if rec is TSRVRecord then
+        with (rec as TSRVRecord) do begin
+           if Priority>highest then
+           begin
+             Highest := Priority;
+             if Port=443 then
+                Result := 'https://'+Target+':'+IntToStr(Port)+'/wapt'
+             else
+                Result := 'http://'+Target+':'+IntToStr(Port)+'/wapt';
+           end;
+        end;
+      end;
+    finally
+      resolv.free;
+    end;
+  end;
+  Logger('trying '+result,INFO);
+  if (Result='') or not  Wget_try(result) then
+    result := '';
+end;
+
+function GetEthernetInfo(ConnectedOnly:Boolean):ISuperObject;
+var
+  i:integer;
+  ais : TAdapterInfo;
+  ao : ISuperObject;
+begin
+  result := TSuperObject.Create(stArray);
+  if Get_EthernetAdapterDetail(ais) then
+  begin
+    for i:=0 to length(ais)-1 do
+    with ais[i] do
+      if  (dwType=MIB_IF_TYPE_ETHERNET) and (dwAdminStatus = MIB_IF_ADMIN_STATUS_UP) and
+        (not ConnectedOnly  or ((dwOperStatus>=MIB_IF_OPER_STATUS_CONNECTED) and (sIpAddress<>'') and (sIpMask<>'')))then begin
+      begin
+        ao := TSuperObject.Create;
+        ao.I['index'] :=  dwIndex;
+        ao.S['type'] := Get_if_type(dwType);
+        ao.I['mtu'] := dwMtu;
+        ao.D['speed'] := dwSpeed;
+        ao.S['mac'] := StringReplace(LowerCase(bPhysAddr),'-',':',[rfReplaceAll]);
+        ao.S['adminStatus:'] := Get_if_admin_status(dwAdminStatus);
+        ao.S['operStatus'] := Get_if_oper_status(dwOperStatus);
+        ao.S['description'] :=  bDescr;
+        ao.S['ipAddress'] := sIpAddress;
+        ao.S['ipMask'] := sIpMask;
+        result.AsArray.Add(ao);
+      end;
+    end;
+  end;
 end;
 
 function GetWaptServerURL: String;
 begin
-  result := 'http://wapt/waptserver';
+  result := IniReadString(WaptIniFilename,'Global','wapt_server');
 end;
-
 
 function WaptgetPath: Utf8String;
 begin
   result := ExtractFilePath(ParamStr(0))+'\wapt-get.exe'
 end;
 
+function WaptservicePath: Utf8String;
+begin
+  result := ExtractFilePath(ParamStr(0))+'\waptservice.exe'
+end;
+
+
+function WaptIniFilename: Utf8String;
+begin
+  result := ExtractFilePath(ParamStr(0))+'\wapt-get.ini';
+end;
+
 function WaptDBPath: Utf8String;
 begin
-  result := ExtractFilePath(ParamStr(0))+'\db\waptdb.sqlite'
+  Result := IniReadString(WaptIniFilename,'Global','dbdir');
+  if Result<>'' then
+    result :=  AppendPathDelim(result)+'waptdb.sqlite'
+  else
+    result := ExtractFilePath(ParamStr(0))+'\db\waptdb.sqlite'
 end;
 
 {
@@ -303,8 +404,7 @@ begin
   Result.DataBase := db;
   Result.Transaction := sqltrans;
   Result.SQL.Text:=SQL;
-  if (SQL<>'') and (pos('select',lowercase(SQL))=1) then
-    Result.Open;
+  Result.ParseSQL:=True;
 end;
 
 procedure TWAPTDB.upgradedb;
@@ -373,6 +473,46 @@ begin
         Result[tables[i]] := Select('select * from '+tables[i]);
   finally
     tables.Free;
+  end;
+end;
+
+procedure TWAPTDB.SetParam(name, value: String);
+var
+  q:TSQLQuery;
+begin
+  q := QueryCreate('insert or replace into wapt_params(name,value,create_date) values (:name,:value,:date)');
+  try
+    try
+      q.ParamByName('name').AsString:=name;
+      q.ParamByName('value').AsString:=value;
+      q.ParamByName('date').AsString:=FormatDateTime('YYYYMMDD-hhnnss',Now);
+      q.ExecSQL;
+      sqltrans.Commit;
+    except
+      sqltrans.Rollback;
+    end;
+  finally
+    q.Free;
+  end;
+end;
+
+function TWAPTDB.GetParam(name: String): String;
+var
+  q:TSQLQuery;
+begin
+  result := '';
+  q := QueryCreate('select value from wapt_params where name=:name');
+  try
+    try
+      q.ParamByName('name').AsString:=name;
+      q.open;
+      Result := q.Fields[0].AsString;
+      sqltrans.Commit;
+    except
+      sqltrans.Rollback;
+    end;
+  finally
+    q.Free;
   end;
 end;
 
@@ -514,26 +654,97 @@ begin
 {$ENDIF}
 end;
 
+procedure QuickSort(var A: Array of String);
+
+procedure Sort(l, r: Integer);
+var
+  i, j,aux: integer;
+  y,x:string;
+begin
+  i := l; j := r; x := a[(l+r) DIV 2];
+  repeat
+    while strIcomp(pchar(a[i]),pchar(x))<0 do i := i + 1;
+    while StrIComp(pchar(x),pchar(a[j]))<0 do j := j - 1;
+    if i <= j then
+    begin
+
+      y := a[i]; a[i] := a[j]; a[j] := y;
+      i := i + 1; j := j - 1;
+    end;
+  until i > j;
+  if l < j then Sort(l, j);
+  if i < r then Sort(i, r);
+end;
+
+begin
+  if length(A)>0 then
+    Sort(Low(A),High(A));
+end;
+
+// Takes first (alphabetical) mac address of connected ethernet interface
+function GetSystemUUID:String;
+var
+  eth,card : ISuperObject;
+  macs: array of String;
+  i:integer;
+  guid : TGUID;
+begin
+  eth := GetEthernetInfo(True);
+  i:=0;
+  for card in eth do
+  begin
+    SetLength(macs,i+1);
+    macs[i] := card.S['mac'];
+    inc(i);
+  end;
+  if length(macs)>0 then
+  begin
+    QuickSort(macs);
+    result := macs[0]
+  end
+  else
+  begin
+    CreateGUID(guid);
+    result := UUIDToString(guid);
+  end;
+end;
+
 function LocalSysinfo: ISUperObject;
 var
       so:ISuperObject;
       //CPUInfo:TCpuInfo;
       Cmd,IPS:String;
       st : TStringList;
+      waptdb:TWAPTDB;
 begin
   so := TSuperObject.Create;
-  //so.S['workgroupname'] := GetWorkGroupName;
-  so.S['localusername'] := TISGetUserName;
-  so.S['computername'] :=  TISGetComputerName;
+  so.S['uuid'] := GetSystemUUID;
+  so.S['workgroupname'] := GetWorkGroupName;
+  so.S['localusername'] := tiscommon.GetUserName;
+  so.S['computername'] :=  tiscommon.GetComputerName;
+  so.S['workgroupname'] :=  tiscommon.GetWorkgroupName;
+  so.S['domainname'] :=  tiscommon.GetDomainName;
   so.S['systemmanufacturer'] := GetSystemManufacturer;
   so.S['systemproductname'] := GetSystemProductName;
   so.S['biosversion'] := GetBIOSVersion;
-  //so.S['biosdate'] := DelphiDateTimeToISO8601Date(GetBIOSDate);
+  so.S['biosvendor'] := GetBIOSVendor;
+  so.S['biosdate'] := GetBIOSDate;
   // redirect to a dummy file just to avoid a console creation... bug of route ?
   //so['routingtable'] := SplitLines(RunTask('route print > dummy',ExitStatus));
   //so['ipconfig'] := SplitLines(RunTask('ipconfig /all > dummy',ExitStatus));
-  so.S['ipaddresses'] := GetLocalIP;
+  so['ethernet'] := GetEthernetInfo(false);
+  so.S['ipaddress'] := GetLocalIP;
+  so.S['waptget-version'] := GetApplicationVersion(WaptgetPath);
+  so.S['waptservice-version'] := GetApplicationVersion(WaptservicePath);
+  so.S['wapt-dbpath'] := WaptDBPath;
 
+  waptdb := TWAPTDB.create(WaptDBPath);
+  try
+    Waptdb.OpenDB;
+    so.S['wapt-dbversion'] := waptdb.GetParam('db_version');
+  finally
+    waptdb.Free;
+  end;
   result := so;
 end;
 
