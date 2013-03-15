@@ -50,7 +50,7 @@ Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetR
 
 [Run]
 Filename: "{app}\wapt-get.exe"; Parameters: "upgradedb"; Flags: runhidden 
-Filename: "{app}\wapt-get.exe"; Parameters: "update"; Tasks: updateWapt; Flags: runhidden; beforeinstall: beforeUpdateWapt()
+Filename: "{app}\wapt-get.exe"; Parameters: "update"; Tasks: updateWapt; Flags: runhidden
 
 
 [Tasks]
