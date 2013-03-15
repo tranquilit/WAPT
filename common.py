@@ -1020,7 +1020,7 @@ class Wapt:
                 if working_url:
                     working_url.sort()
                     logger.debug('  Accessible servers : %s' % (working_url,))
-                    return working_url[-1][0][1]
+                    return working_url[-1][1]
 
                 if not answers:
                     logger.debug('  No _wapt._tcp.%s SRV record found' % dnsdomain)
@@ -1737,7 +1737,7 @@ if __name__ == '__main__':
     print w.checkinstall(['tis-waptdev'],force=False)
     print w.checkinstall(['tis-waptdev'],force=True)
     print w.update()
-    print w.list_upgrade().fetchall()
+    print w.list_upgrade()
     pfn = w.buildpackage('c:\\tranquilit\\tis-wapttest-wapt',True)
     if not os.path.isfile(pfn):
         raise Exception("""w.buildpackage('c:\\tranquilit\\tis-wapttest-wapt',True) failed""")
