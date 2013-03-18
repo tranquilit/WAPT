@@ -267,7 +267,6 @@ class Package_Entry:
                 myzip = zipfile.ZipFile(fname,'w')
             myzip.writestr('WAPT/control',self.ascontrol().encode('utf8'),compress_type=zipfile.ZIP_STORED)
 
-
     def ascontrol(self,with_non_control_attributes = False):
         val = u"""\
 Package      : %(Package)s

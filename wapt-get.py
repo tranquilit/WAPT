@@ -66,18 +66,20 @@ action is either :
   search [keywords] : search installable packages whose description contains keywords
   cleanup           : remove all WAPT cached files from local drive
 
- For repository management
-  upload-package  <filenames> : upload package to repository (using winscp for example.)
-  update-packages <directory> : rebuild a "Packages" file for http package repository
+ For user session setup
+  setup-session [packages,all] : setup local user environment for specific or all installed packages
 
  For packages development
   list-registry [keywords]  : list installed software from Windows Registry
   sources <package>         : get sources of a package (if attribute Sources was supplied in control file)
-  build-package <directory> : creates a WAPT package from supplied directory
   make-template <installer-path> [<packagename> [<source directoryname>]] : initializes a package template with an installer (exe or msi)
+  build-package <directory> : creates a WAPT package from supplied directory
+  sign-package <directory or package>  : add a signature of the manifest using a private SSL key
 
- For user session setup
-  setup-session [packages,all] : setup local user environment for specific or all installed packages
+ For repository management
+  upload-package  <filenames> : upload package to repository (using winscp for example.)
+  update-packages <directory> : rebuild a "Packages" file for http package repository
+
 """
 
 parser=OptionParser(usage=usage,version="%prog " + __version__+' setuphelpers '+setuphelpers.__version__)
@@ -303,13 +305,13 @@ def main():
             if len(args)<2:
                 print "You must provide the directory"
                 sys.exit(1)
-            update_packages(args[1])
+            print update_packages(args[1])
 
         elif action=='sources':
             if len(args)<2:
                 print "You must provide the package name"
                 sys.exit(1)
-            mywapt.get_sources(args[1])
+            print mywapt.get_sources(args[1])
 
         elif action=='make-template':
             if len(args)<2:
@@ -341,6 +343,19 @@ def main():
                         return 1
                 else:
                     logger.critical('Directory %s not found' % source_dir)
+
+        elif action=='sign-package':
+            if len(args)<2:
+                print "You must provide at least one source directory or package to sign"
+                sys.exit(1)
+            for waptfile in [os.path.abspath(p) for p in args[1:]]:
+                if os.path.isdir(waptfile) or os.path.isfile(waptfile):
+                    print('Signing %s' % waptfile)
+                    signature = mywapt.signpackage(waptfile,
+                        excludes=options.excludes.split(','))
+                else:
+                    logger.critical('Package %s not found' % waptfile)
+                    return 1
 
         elif action=='upload-package':
             if len(args)<2:
