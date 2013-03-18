@@ -132,25 +132,25 @@ procedure CurPageChanged(CurPageID: Integer);
 begin
   if curPageId=wpSelectTasks then
   begin
-    teWaptUrl.Text := GetIniString('Global', 'repo_url', 'http://wapt.tranquil.it/wapt', ExpandConstant('{app}/wapt-get.ini'));
-    if teWaptUrl.Text = '' then
-       rbCustomRepo.Checked := True; 
-    teWaptPublicCert.Text := GetIniString('Global', 'public_cert', ExpandConstant('{app}/ssl/tranquilit.crt'), ExpandConstant('{app}/wapt-get.ini'));
+    teWaptUrl.Text := GetIniString('Global', 'repo_url', 'http://wapt.tranquil.it/wapt', ExpandConstant('{app}\wapt-get.ini'));
+    rbCustomRepo.Checked := teWaptUrl.Text <> ''; 
+    rbDnsRepo.Checked := teWaptUrl.Text = ''; 
+    teWaptPublicCert.Text := GetIniString('Global', 'public_cert', ExpandConstant('{app}\ssl\tranquilit.crt'), ExpandConstant('{app}\wapt-get.ini'));
   end;
 end;
 
 function GetRepoURL(Param: String):String;
 begin
-  if pos('SILENT',uppercase(GetCmdTail))=0 then
-    result := GetIniString('Global', 'repo_url', 'http://wapt.tranquil.it/wapt', ExpandConstant('{app}/wapt-get.ini'))
+  if pos('SILENT',uppercase(GetCmdTail))<>0 then
+    result := GetIniString('Global', 'repo_url', 'http://wapt.tranquil.it/wapt',ExpandConstant('{app}\wapt-get.ini'))
   else
     result := teWaptUrl.Text;
 end;
 
 function GetPublicCert(Param: String):String;
 begin
-  if pos('SILENT',uppercase(GetCmdTail))=0 then
-    result := GetIniString('Global', 'public_cert', ExpandConstant('{app}/ssl/tranquilit.crt'), ExpandConstant('{app}}/wapt-get.ini'))
+  if pos('SILENT',uppercase(GetCmdTail))<>0 then
+    result := GetIniString('Global', 'public_cert', ExpandConstant('{app}\ssl\tranquilit.crt'), ExpandConstant('{app}}\wapt-get.ini'))
   else
     result := teWaptPublicCert.Text;
 end;
