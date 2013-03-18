@@ -139,7 +139,7 @@ def main():
         'repo_url':'',
         'default_source_url':'',
         'private_key':'',
-        'public_key':'',
+        'public_cert':'',
         'default_development_base':'c:\tranquilit',
         'default_package_prefix':'tis',
         'default_sources_suffix':'wapt',
@@ -336,7 +336,11 @@ def main():
                         print "Package content:"
                         for f in result['files']:
                             print " %s" % f[0]
-                        print('...done. Package filename %s\n upload with %s upload-package %s ' % (package_fn,sys.argv[0],package_fn ))
+                        print('...done. Package filename %s' % (package_fn,))
+                        if mywapt.private_key:
+                            print '\nYou can sign the package with\n  %s sign-package %s' % (sys.argv[0],package_fn)
+                        if mywapt.upload_cmd:
+                            print '\nYou can upload to repository with\n  %s upload-package %s ' % (sys.argv[0],package_fn )
                         return 0
                     else:
                         logger.critical('package not created')
@@ -353,6 +357,7 @@ def main():
                     print('Signing %s' % waptfile)
                     signature = mywapt.signpackage(waptfile,
                         excludes=options.excludes.split(','))
+                    print "Package %s signed : signature :\n%s" % (waptfile,signature)
                 else:
                     logger.critical('Package %s not found' % waptfile)
                     return 1
@@ -365,7 +370,7 @@ def main():
             for a in args[1:]:
                 waptfiles += glob.glob(a)
             waptfile_arg = " ".join(['"%s"' % f for f in waptfiles])
-            setuphelpers.run(cp.get('global','upload_cmd') % {'waptfile': waptfile_arg  })
+            setuphelpers.run(mywapt.upload_cmd % {'waptfile': waptfile_arg  })
 
         elif action=='search':
             result = mywapt.waptdb.packages_search(args[1:])
