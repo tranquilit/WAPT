@@ -81,7 +81,7 @@ type
 
 implementation
 
-uses FileUtil,soutils,tiscommon,Windows,Variants,winsock,IdDNSResolver,JwaIpHlpApi,
+uses FileUtil,soutils,tiscommon,Windows,Variants,winsock,IdDNSResolver,IdExceptionCore,JwaIpHlpApi,
     NetworkAdapterInfo,tisinifiles,registry;
 //, JCLSysInfo,  ActiveX;
 
@@ -152,7 +152,7 @@ begin
   dnsserver:=GetDNSServer;
 
   if (dnsserver<>'') and (dnsdomain<>'') then
-  begin
+  try
     resolv := TIdDNSResolver.Create(Nil);
     try
       resolv.Host:=dnsserver;
@@ -179,6 +179,11 @@ begin
     finally
       resolv.free;
     end;
+  except
+    on EIdDnsResolverError do
+      Logger('SRV lookup failed',DEBUG)
+    else
+      Raise;
   end;
   Logger('trying '+result,INFO);
   if (Result='') or not  Wget_try(result) then
