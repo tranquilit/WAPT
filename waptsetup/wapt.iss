@@ -22,6 +22,7 @@ Source: "..\pythoncom27.dll"; DestDir: "{app}";
 Source: "..\pythoncomloader27.dll"; DestDir: "{app}";
 Source: "..\pywintypes27.dll"; DestDir: "{app}";
 Source: "..\waptservice.exe"; DestDir: "{app}";  BeforeInstall: BeforeWaptServiceInstall('waptservice.exe'); AfterInstall: AfterWaptServiceInstall('waptservice.exe'); Tasks: installService
+Source: "..\wapt-get.ini"; DestDir: "{app}\wapt-get.ini.tmpl"; 
 Source: "..\wapt-get.py"; DestDir: "{app}"; 
 Source: "..\wapt-get.exe.manifest"; DestDir: "{app}";
 Source: "..\wapt-get.exe"; DestDir: "{app}";
