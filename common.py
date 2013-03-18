@@ -1124,7 +1124,7 @@ class Wapt:
                 if not answers:
                     logger.debug('  No _wapt._tcp.%s SRV record found' % dnsdomain)
             except dns.exception.DNSException,e:
-                logger.warning('  DNS resolver error : %s' % (e,))
+                logger.debug('  DNS resolver failed looking for _SRV records: %s' % (e,))
 
             # find by dns CNAME
             try:
