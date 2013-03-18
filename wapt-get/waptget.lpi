@@ -21,7 +21,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="6"/>
-      <RevisionNr Value="1"/>
+      <RevisionNr Value="2"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -35,7 +35,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="-l debug register"/>
+        <CommandLineParams Value="-h"/>
         <LaunchingApplication PathPlusParams="\usr\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
@@ -58,11 +58,10 @@
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="107"/>
-        <CursorPos X="93" Y="130"/>
+        <TopLine Value="75"/>
+        <CursorPos X="79" Y="96"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -70,10 +69,11 @@
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="2"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="157"/>
-        <CursorPos X="1" Y="186"/>
+        <TopLine Value="151"/>
+        <CursorPos X="30" Y="161"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
       </Unit1>
@@ -181,7 +181,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="144"/>
+        <UsageCount Value="145"/>
       </Unit14>
       <Unit15>
         <Filename Value="tisinifiles.pas"/>
@@ -190,7 +190,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="49"/>
         <CursorPos X="1" Y="49"/>
-        <UsageCount Value="143"/>
+        <UsageCount Value="144"/>
       </Unit15>
       <Unit16>
         <Filename Value="tisregistry.pas"/>
@@ -241,10 +241,10 @@
       <Unit22>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSResolver.pas"/>
         <UnitName Value="IdDNSResolver"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1308"/>
-        <CursorPos X="1" Y="1326"/>
+        <TopLine Value="1553"/>
+        <CursorPos X="1" Y="1582"/>
         <UsageCount Value="51"/>
         <Loaded Value="True"/>
       </Unit22>
@@ -287,7 +287,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="108"/>
         <CursorPos X="10" Y="94"/>
-        <UsageCount Value="139"/>
+        <UsageCount Value="140"/>
       </Unit27>
       <Unit28>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwaiprtrmib.pas"/>
@@ -394,83 +394,127 @@
         <UsageCount Value="4"/>
       </Unit41>
     </Units>
-    <JumpHistory Count="19" HistoryIndex="18">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="120" Column="68" TopLine="102"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSResolver.pas"/>
+        <Caret Line="1554" Column="1" TopLine="1536"/>
       </Position1>
       <Position2>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="172" Column="24" TopLine="148"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSResolver.pas"/>
+        <Caret Line="1555" Column="1" TopLine="1536"/>
       </Position2>
       <Position3>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="109" Column="1" TopLine="63"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSResolver.pas"/>
+        <Caret Line="1556" Column="1" TopLine="1536"/>
       </Position3>
       <Position4>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSResolver.pas"/>
-        <Caret Line="1326" Column="1" TopLine="1308"/>
+        <Caret Line="1557" Column="1" TopLine="1536"/>
       </Position4>
       <Position5>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="161" Column="28" TopLine="145"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSResolver.pas"/>
+        <Caret Line="1558" Column="1" TopLine="1536"/>
       </Position5>
       <Position6>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="151" Column="8" TopLine="145"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSResolver.pas"/>
+        <Caret Line="1560" Column="1" TopLine="1536"/>
       </Position6>
       <Position7>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="157" Column="1" TopLine="145"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSResolver.pas"/>
+        <Caret Line="1562" Column="1" TopLine="1536"/>
       </Position7>
       <Position8>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="158" Column="1" TopLine="145"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSResolver.pas"/>
+        <Caret Line="1563" Column="1" TopLine="1536"/>
       </Position8>
       <Position9>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="159" Column="1" TopLine="145"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSResolver.pas"/>
+        <Caret Line="1564" Column="1" TopLine="1536"/>
       </Position9>
       <Position10>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="160" Column="1" TopLine="145"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSResolver.pas"/>
+        <Caret Line="1566" Column="1" TopLine="1537"/>
       </Position10>
       <Position11>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="161" Column="1" TopLine="145"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSResolver.pas"/>
+        <Caret Line="1567" Column="19" TopLine="1543"/>
       </Position11>
       <Position12>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="162" Column="1" TopLine="145"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSResolver.pas"/>
+        <Caret Line="1575" Column="1" TopLine="1546"/>
       </Position12>
       <Position13>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="163" Column="1" TopLine="145"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSResolver.pas"/>
+        <Caret Line="1576" Column="20" TopLine="1548"/>
       </Position13>
       <Position14>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="164" Column="1" TopLine="145"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSResolver.pas"/>
+        <Caret Line="1582" Column="1" TopLine="1553"/>
       </Position14>
       <Position15>
         <Filename Value="waptcommon.pas"/>
-        <Caret Line="180" Column="1" TopLine="151"/>
+        <Caret Line="163" Column="1" TopLine="151"/>
       </Position15>
       <Position16>
         <Filename Value="waptcommon.pas"/>
-        <Caret Line="183" Column="1" TopLine="154"/>
+        <Caret Line="164" Column="1" TopLine="151"/>
       </Position16>
       <Position17>
         <Filename Value="waptcommon.pas"/>
-        <Caret Line="184" Column="1" TopLine="155"/>
+        <Caret Line="166" Column="1" TopLine="151"/>
       </Position17>
       <Position18>
         <Filename Value="waptcommon.pas"/>
-        <Caret Line="185" Column="1" TopLine="156"/>
+        <Caret Line="167" Column="1" TopLine="151"/>
       </Position18>
       <Position19>
         <Filename Value="waptcommon.pas"/>
-        <Caret Line="186" Column="1" TopLine="157"/>
+        <Caret Line="168" Column="1" TopLine="151"/>
       </Position19>
+      <Position20>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="169" Column="1" TopLine="151"/>
+      </Position20>
+      <Position21>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="161" Column="29" TopLine="151"/>
+      </Position21>
+      <Position22>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="162" Column="1" TopLine="151"/>
+      </Position22>
+      <Position23>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="163" Column="1" TopLine="151"/>
+      </Position23>
+      <Position24>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="164" Column="1" TopLine="151"/>
+      </Position24>
+      <Position25>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="166" Column="1" TopLine="151"/>
+      </Position25>
+      <Position26>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="167" Column="1" TopLine="151"/>
+      </Position26>
+      <Position27>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="168" Column="1" TopLine="151"/>
+      </Position27>
+      <Position28>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="169" Column="1" TopLine="151"/>
+      </Position28>
+      <Position29>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="171" Column="1" TopLine="151"/>
+      </Position29>
+      <Position30>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="172" Column="1" TopLine="151"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -507,7 +551,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="11">
+    <BreakPoints Count="9">
       <Item1>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsGlobal"/>
@@ -562,29 +606,15 @@
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="waptcommon.pas"/>
-        <Line Value="489"/>
+        <Line Value="480"/>
       </Item8>
       <Item9>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="waptcommon.pas"/>
-        <Line Value="480"/>
+        <Line Value="162"/>
       </Item9>
-      <Item10>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="waptcommon.pas"/>
-        <Line Value="744"/>
-      </Item10>
-      <Item11>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="waptcommon.pas"/>
-        <Line Value="156"/>
-      </Item11>
     </BreakPoints>
     <Exceptions Count="3">
       <Item1>

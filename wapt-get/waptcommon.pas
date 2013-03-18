@@ -155,11 +155,11 @@ begin
   begin
     resolv := TIdDNSResolver.Create(Nil);
     try
-      resolv.Host:=GetDNSServer;
+      resolv.Host:=dnsserver;
       resolv.ClearInternalQuery;
       resolv.QueryType := [TQueryRecordTypes.qtService];
-      resolv.WaitingTime:=2;
-      resolv.Resolve('_wapt._tcp.'+GetDNSDomain);
+      resolv.WaitingTime:=400;
+      resolv.Resolve('_wapt._tcp.'+dnsdomain+'.');
       highest:=0;
       for i := 0 to resolv.QueryResult.count - 1 do
       begin
