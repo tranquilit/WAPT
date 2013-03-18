@@ -180,7 +180,6 @@ begin
       MainModule:=TStringList.Create;
       MainModule.LoadFromFile(ExtractFilePath(ParamStr(0))+'wapt-get.py');
       APythonEngine.ExecStrings(MainModule);
-      APythonEngine.UnloadDll;
     finally
       MainModule.Free;
     end;

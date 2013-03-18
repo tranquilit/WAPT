@@ -59,23 +59,19 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="227"/>
-        <CursorPos X="1" Y="232"/>
+        <TopLine Value="161"/>
+        <CursorPos X="1" Y="183"/>
         <UsageCount Value="222"/>
-        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="25" Y="32"/>
         <UsageCount Value="207"/>
-        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\indy\IdDNSResolver.pas"/>
@@ -241,12 +237,10 @@
       <Unit22>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSResolver.pas"/>
         <UnitName Value="IdDNSResolver"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="190"/>
         <CursorPos X="21" Y="208"/>
         <UsageCount Value="56"/>
-        <Loaded Value="True"/>
       </Unit22>
       <Unit23>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSCommon.pas"/>
@@ -396,136 +390,13 @@
       <Unit42>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdExceptionCore.pas"/>
         <UnitName Value="IdExceptionCore"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="73"/>
         <CursorPos X="21" Y="87"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit42>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
-      <Position1>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="188" Column="1" TopLine="169"/>
-      </Position1>
-      <Position2>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="189" Column="1" TopLine="169"/>
-      </Position2>
-      <Position3>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="191" Column="1" TopLine="169"/>
-      </Position3>
-      <Position4>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="97" Column="1" TopLine="80"/>
-      </Position4>
-      <Position5>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="98" Column="1" TopLine="80"/>
-      </Position5>
-      <Position6>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="99" Column="1" TopLine="80"/>
-      </Position6>
-      <Position7>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="102" Column="1" TopLine="80"/>
-      </Position7>
-      <Position8>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="105" Column="1" TopLine="80"/>
-      </Position8>
-      <Position9>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="158" Column="1" TopLine="140"/>
-      </Position9>
-      <Position10>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="159" Column="1" TopLine="140"/>
-      </Position10>
-      <Position11>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="160" Column="1" TopLine="140"/>
-      </Position11>
-      <Position12>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="161" Column="1" TopLine="140"/>
-      </Position12>
-      <Position13>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="162" Column="1" TopLine="140"/>
-      </Position13>
-      <Position14>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="163" Column="1" TopLine="140"/>
-      </Position14>
-      <Position15>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="164" Column="1" TopLine="140"/>
-      </Position15>
-      <Position16>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="166" Column="1" TopLine="140"/>
-      </Position16>
-      <Position17>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="167" Column="1" TopLine="140"/>
-      </Position17>
-      <Position18>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="168" Column="1" TopLine="140"/>
-      </Position18>
-      <Position19>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="169" Column="1" TopLine="140"/>
-      </Position19>
-      <Position20>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="166" Column="1" TopLine="140"/>
-      </Position20>
-      <Position21>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="167" Column="1" TopLine="140"/>
-      </Position21>
-      <Position22>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="168" Column="1" TopLine="140"/>
-      </Position22>
-      <Position23>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="169" Column="1" TopLine="140"/>
-      </Position23>
-      <Position24>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="171" Column="1" TopLine="142"/>
-      </Position24>
-      <Position25>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="172" Column="1" TopLine="143"/>
-      </Position25>
-      <Position26>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="175" Column="1" TopLine="146"/>
-      </Position26>
-      <Position27>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="166" Column="1" TopLine="146"/>
-      </Position27>
-      <Position28>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="167" Column="1" TopLine="146"/>
-      </Position28>
-      <Position29>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="166" Column="1" TopLine="146"/>
-      </Position29>
-      <Position30>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="162" Column="37" TopLine="149"/>
-      </Position30>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
