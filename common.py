@@ -1404,7 +1404,7 @@ class Wapt:
         if "PROGRAMW6432" in os.environ:
             svncmd = os.path.join(os.environ['PROGRAMW6432'],'TortoiseSVN','bin','svn.exe')
         else:
-            svncmd = os.path.join(os.environ['PROGRAMFILES'],'TortoiseSVN','bin,''svn.exe')
+            svncmd = os.path.join(os.environ['PROGRAMFILES'],'TortoiseSVN','bin','svn.exe')
         logger.debug('svn command : %s'% svncmd)
         if not os.path.isfile(svncmd):
             raise Exception('svn.exe command not available, please install TortoiseSVN with commandline tools')
