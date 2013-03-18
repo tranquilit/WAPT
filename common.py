@@ -1829,11 +1829,13 @@ and install all newest packages"""
             product_name = props['ProductName'] or props['FileDescription'] or product_desc
             if props['CompanyName']:
                 product_desc = "%s (%s)" % (product_name,props['CompanyName'])
+            silentflag = '/VERYSILENT'
         elif ext=='.msi':
             props = setuphelpers.get_msi_properties(installer_path)
             product_name = props['ProductName'] or product_desc
             if 'Manufacturer' in props and props['Manufacturer']:
                 product_desc = "%s (%s)" % (product_name,props['Manufacturer'])
+            silentflag = '/q'
         else:
             props = {}
 
@@ -1863,7 +1865,7 @@ def install():
     global uninstallstring
 
     print('installing %(packagename)s')
-    run('%(installer)s /VERYSILENT')
+    run('%(installer)s %(silentflag)s')
 """ % locals()
         setuppy_filename = os.path.join(directoryname,'setup.py')
         if not os.path.isfile(setuppy_filename):
