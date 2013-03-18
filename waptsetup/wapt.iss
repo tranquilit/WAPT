@@ -52,6 +52,7 @@ Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environmen
 
 [INI]
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL}
+Filename: {app}\wapt-get.ini; Section: global; Key: public_cert; String: {code:GetPublicCert}
 
 [Run]
 Filename: "msiexec.exe"; Parameters: "/q /i ""{tmp}\vc_redist\vc_red.msi"""
@@ -75,14 +76,15 @@ var
   rbDnsRepo: TNewRadioButton;
   cbWaptUpdate : TCheckbox ;
   bIsVerySilent: boolean;
-  teWaptUrl: TEdit;
+  teWaptUrl,teWaptPublicCert: TEdit;
+  lab1:TLabel;
   
 procedure InitializeWizard;
 var
   CustomPage: TWizardPage;
 
 begin
-  CustomPage := CreateCustomPage(wpWelcome, 'Installation type', '');
+  CustomPage := CreateCustomPage(wpSelectTasks, 'Installation type', '');
 
   rbCustomRepo := TNewRadioButton.Create(WizardForm);
   rbCustomRepo.Parent := CustomPage.Surface;
@@ -93,13 +95,29 @@ begin
   teWaptUrl.Parent := CustomPage.Surface; 
   teWaptUrl.Left :=rbCustomRepo.Left + rbCustomRepo.Width;
   teWaptUrl.Width :=CustomPage.SurfaceWidth - rbCustomRepo.Width;
-  teWaptUrl.Text := 'http://wapt.tranquil.it/wapt';
+  
+
   
   rbDnsRepo := TNewRadioButton.Create(WizardForm);
   rbDnsRepo.Parent := CustomPage.Surface;
   rbDnsRepo.Top := rbCustomRepo.Top + rbCustomRepo.Height + ScaleY(15);
   rbDnsRepo.Width := CustomPage.SurfaceWidth;
   rbDnsRepo.Caption := 'Auto détection du dépôt grâce au DNS';
+
+
+  lab1 := TLabel.Create(WizardForm);
+  lab1.Caption := 'Certificat public:';
+  lab1.autosize := True;
+  lab1.Parent := CustomPage.Surface; 
+  lab1.Left := rbDnsRepo.Left;
+  lab1.Top := rbDnsRepo.Top + rbDnsRepo.Height + ScaleY(15);
+
+  teWaptPublicCert :=TEdit.Create(WizardForm);
+  teWaptPublicCert.Parent := CustomPage.Surface; 
+  teWaptPublicCert.Left := lab1.left+lab1.width+5;
+  teWaptPublicCert.Top := rbDnsRepo.Top + rbDnsRepo.Height + ScaleY(15);
+  teWaptPublicCert.Width := 300;
+  
   
 //  cbWaptUpdate := TCheckbox.Create(WizardForm);
 //  cbWaptUpdate.Parent := CustomPage.Surface;
@@ -108,23 +126,33 @@ begin
 //  cbWaptUpdate.checked := True;
 //  cbWaptUpdate.Caption := 'mise à jour de la liste des paquets'
   
-  
+end;
+
+procedure CurPageChanged(CurPageID: Integer);
+begin
+  if curPageId=wpSelectTasks then
+  begin
+    teWaptUrl.Text := GetIniString('Global', 'repo_url', 'http://wapt.tranquil.it/wapt', ExpandConstant('{app}/wapt-get.ini'));
+    if teWaptUrl.Text = '' then
+       rbCustomRepo.Checked := True; 
+    teWaptPublicCert.Text := GetIniString('Global', 'public_cert', ExpandConstant('{app}/ssl/tranquilit.crt'), ExpandConstant('{app}/wapt-get.ini'));
+  end;
 end;
 
 function GetRepoURL(Param: String):String;
-var
-j: Cardinal;
 begin
-  for j := 1 to ParamCount do
-  begin
-    if (CompareText(ParamStr(j),'/verysilent')=0) then
-      result := ''
-    else
-      if rbCustomRepo.Checked then
-        result := teWaptUrl.Text
-      else
-        result := '';  
-  end;
+  if pos('SILENT',uppercase(GetCmdTail))=0 then
+    result := GetIniString('Global', 'public_cert', ExpandConstant('{app}/ssl/tranquilit.crt'), ExpandConstant('{app}/wapt-get.ini'))
+  else
+    result := teWaptPublicCert.Text;
+end;
+
+function GetPublicCert(Param: String):String;
+begin
+  if pos('SILENT',uppercase(GetCmdTail))=0 then
+    result := GetIniString('Global', 'public_cert', ExpandConstant('{app}/ssl/tranquilit.crt'), ExpandConstant('{app}}/wapt-get.ini'))
+  else
+    result := teWaptPublicCert.Text;
 end;
 
 function InitializeSetup(): Boolean;
