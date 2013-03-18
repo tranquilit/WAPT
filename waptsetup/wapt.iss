@@ -26,6 +26,9 @@ Source: "..\wapt-get.ini.tmpl"; DestDir: "{app}";
 Source: "..\wapt-get.py"; DestDir: "{app}"; 
 Source: "..\wapt-get.exe.manifest"; DestDir: "{app}";
 Source: "..\wapt-get.exe"; DestDir: "{app}";
+Source: "..\vc_redist"; DestDir: "{tmp}\vc_redist";
+
+
 
 [Setup]
 AppName={#AppName}
@@ -51,6 +54,7 @@ Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environmen
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL}
 
 [Run]
+Filename: "msiexec.exe"; Parameters: "/q /i ""{tmp}\vc_redist\vc_red.msi"""
 Filename: "{app}\wapt-get.exe"; Parameters: "upgradedb"; Flags: runhidden 
 Filename: "{app}\wapt-get.exe"; Parameters: "update"; Tasks: updateWapt; Flags: runhidden
 
