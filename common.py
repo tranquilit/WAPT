@@ -1408,11 +1408,14 @@ class Wapt:
         logger.debug('svn command : %s'% svncmd)
         if not os.path.isfile(svncmd):
             raise Exception('svn.exe command not available, please install TortoiseSVN with commandline tools')
-        co_dir = os.path.join('c:','tranquilit',re.sub('(/trunk/?$)|(/tags/?$)|(/branch/?$)','',entry.Sources))
-        logger.debug('sources : %s'% entry.Sources)
-        logger.debug('checkout dir : %s'% co_dir)
-        os.chdir(co_dir)
-        logger.info(subprocess.check_output('svn co %s %s' % (svncmd,entry.Sources)))
+        if self.config.get('global','default_sources_suffix'):
+            co_dir = os.path.join(self.config.get('global','default_sources_root'),"%s-%s" % (entry.Package,self.config.get('global','default_sources_suffix')))
+        else:
+            co_dir = os.path.join(self.config.get('default_sources_root',entry.Package))
+        logger.info('sources : %s'% entry.Sources)
+        logger.info('checkout dir : %s'% co_dir)
+        logger.info(subprocess.check_output('"%s" co "%s" "%s"' % (svncmd,entry.Sources,co_dir)))
+        return co_dir
 
     def last_install_log(self,packagename):
         """Return a dict {status,log} of the last install of a package"""
@@ -1812,6 +1815,10 @@ and install all newest packages"""
            Return the path of the skeleton
         """
         packagename = packagename.lower()
+        if installer_path:
+            installer_path = os.path.abspath(installer_path)
+        if directoryname:
+             directoryname = os.path.abspath(directoryname)
 
         installer = os.path.basename(installer_path)
         (product_name,ext) = os.path.splitext(installer)
@@ -1834,7 +1841,7 @@ and install all newest packages"""
             simplename = re.sub(r'[\s\(\)]+','',product_name.lower())
             packagename = '%s-%s' %  (self.config.get('global','default_package_prefix','tis'),simplename)
         if not directoryname:
-            directoryname = os.path.join('c:\\','tranquilit',packagename)+'-%s' % self.config.get('global','default_sources_suffix','wapt')
+            directoryname = os.path.join(self.config.get('global','default_sources_root'),packagename)+'-%s' % self.config.get('global','default_sources_suffix','wapt')
         if not os.path.isdir(os.path.join(directoryname,'WAPT')):
             os.makedirs(os.path.join(directoryname,'WAPT'))
         template = """\

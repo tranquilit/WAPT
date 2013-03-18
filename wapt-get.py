@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.6"
+__version__ = "0.8.7"
 
 import sys
 import os
@@ -311,13 +311,13 @@ def main():
             if len(args)<2:
                 print "You must provide the package name"
                 sys.exit(1)
-            print mywapt.get_sources(args[1])
+            os.startfile(mywapt.get_sources(args[1]))
 
         elif action=='make-template':
             if len(args)<2:
                 print "You must provide the installer path"
                 sys.exit(1)
-            source_dir = mywapt.maketemplate(*[os.path.abspath(p) for p in args[1:]])
+            source_dir = mywapt.maketemplate(*args[1:])
             print "Template created. You can build the WAPT package by launching\n  %s build-package %s" % (sys.argv[0],source_dir)
             os.startfile(source_dir)
 
