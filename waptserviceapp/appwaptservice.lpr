@@ -29,7 +29,7 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, uVisAppWaptService, waptcommon, networkadapterinfo, soutils,
-  tisinifiles, tisstrings, waptunit;
+  tisinifiles, tisstrings, waptunit, UnitRedirect;
 
 {$R *.res}
 

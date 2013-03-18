@@ -32,27 +32,30 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="6">
+    <RequiredPackages Count="7">
       <Item1>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="SynEdit"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item2>
       <Item3>
-        <PackageName Value="SQLDBLaz"/>
+        <PackageName Value="pltis_superobject"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_indycomp"/>
+        <PackageName Value="SQLDBLaz"/>
       </Item4>
       <Item5>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pl_indycomp"/>
       </Item5>
       <Item6>
-        <PackageName Value="LCL"/>
+        <PackageName Value="FCL"/>
       </Item6>
+      <Item7>
+        <PackageName Value="LCL"/>
+      </Item7>
     </RequiredPackages>
-    <Units Count="8">
+    <Units Count="9">
       <Unit0>
         <Filename Value="appwaptservice.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -99,6 +102,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="tisstrings"/>
       </Unit7>
+      <Unit8>
+        <Filename Value="..\waptservice\UnitRedirect.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UnitRedirect"/>
+      </Unit8>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

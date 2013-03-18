@@ -26,26 +26,35 @@ unit uVisAppWaptService;
 interface
 
 uses
-  Classes, SysUtils, BufDataset, FileUtil, Forms, Controls, Graphics, Dialogs,
-  ExtCtrls, StdCtrls, DBGrids, db, sqldb,waptcommon;
+  Classes, SysUtils, BufDataset, FileUtil, SynHighlighterPython, SynEdit, Forms,
+  Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, DBGrids, AtomPythonEngine,
+  PythonGUIInputOutput, PythonEngine, db, sqldb, waptcommon;
 
 type
 
   { TVisAppWAPTService }
 
   TVisAppWAPTService = class(TForm)
-    Button1: TButton;
+    PythonEngine1: TAtomPythonEngine;
+    butLoaddll: TButton;
+    butunloadll: TButton;
+    TestPython: TButton;
     Datasource1: TDatasource;
     ButSQL: TButton;
     DBGrid1: TDBGrid;
     EdSQL: TMemo;
     Panel1: TPanel;
+    PythonGUIInputOutput1: TPythonGUIInputOutput;
     query: TSQLQuery;
-    procedure BufDataset1AfterEdit(DataSet: TDataSet);
+    testedit: TSynEdit;
+    SynPythonSyn1: TSynPythonSyn;
+    procedure butLoaddllClick(Sender: TObject);
+    procedure butLoaddllExit(Sender: TObject);
     procedure ButSQLClick(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
+    procedure butunloadllClick(Sender: TObject);
     procedure Panel1Click(Sender: TObject);
+    procedure TestPythonClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { private declarations }
     waptdb : TWAPTDB;
@@ -57,10 +66,7 @@ var
   VisAppWAPTService: TVisAppWAPTService;
 
 implementation
-
-
-
-
+uses tisstrings;
 
 //uses waptwmi;
 
@@ -68,9 +74,13 @@ implementation
 
 { TVisAppWAPTService }
 
-procedure TVisAppWAPTService.BufDataset1AfterEdit(DataSet: TDataSet);
+procedure TVisAppWAPTService.butLoaddllClick(Sender: TObject);
 begin
+    PythonEngine1.Initialize;
+end;
 
+procedure TVisAppWAPTService.butLoaddllExit(Sender: TObject);
+begin
 end;
 
 procedure TVisAppWAPTService.ButSQLClick(Sender: TObject);
@@ -82,19 +92,32 @@ begin
   query.Open;
 end;
 
-procedure TVisAppWAPTService.Button1Click(Sender: TObject);
+procedure TVisAppWAPTService.butunloadllClick(Sender: TObject);
+begin
+  PythonEngine1.Finalize;
+  PythonEngine1.UnloadDll;
+
+
+end;
+
+procedure TVisAppWAPTService.Panel1Click(Sender: TObject);
+begin
+
+end;
+
+procedure TVisAppWAPTService.TestPythonClick(Sender: TObject);
 begin
   //EdSQL.Text := WMIBaseBoardInfo.AsJSon(True);
+  //PythonEngine1.UseWindowsConsole:=True;
+  //PythonEngine1.LoadDll;
+  PythonEngine1.ExecString(testedit.Lines.Text);
+  ShowMessage(PythonEngine1.EvalStringAsStr('mywapt.update()'));
 end;
 
 procedure TVisAppWAPTService.FormCreate(Sender: TObject);
 begin
   waptdb := TWAPTDB.Create(WaptDBPath);
   waptdb.OpenDB;
-end;
-
-procedure TVisAppWAPTService.Panel1Click(Sender: TObject);
-begin
 end;
 
 end.

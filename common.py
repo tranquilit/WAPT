@@ -262,21 +262,60 @@ def html_table(cur,callback=None):
 
     return "<table border=1  cellpadding=2 cellspacing=0>%s%s</table>" % (head,lines)
 
-def md5_for_file(fname, block_size=2**20):
+def sha1_for_file(fname, block_size=2**20):
     f = open(fname,'rb')
-    md5 = hashlib.md5()
+    sha1 = hashlib.sha1()
     while True:
         data = f.read(block_size)
         if not data:
             break
-        md5.update(data)
-    return md5.hexdigest()
+        sha1.update(data)
+    return sha1.hexdigest()
 
-def create_recursive_zip_signed(zipfn, source_root, target_root = "",excludes = ['.svn','*.pyc']):
+def pwd_callback(*args):
+    """Default password callback for opening private keys"""
+    print args
+    import getpass
+    return getpass.getpass(args[0]).encode('ascii')
+
+def ssl_sign_content(content,private_key,callback=pwd_callback):
+    """ Sign content with the private_key, return the signature and the public RSA key as a PEM data"""
+    assert os.path.isfile(private_key)
+    from M2Crypto import EVP
+    key = EVP.load_key(private_key,callback=callback)
+    key.sign_init()
+    key.sign_update(content)
+    signature = key.sign_final()
+    return(signature,key.get_rsa().as_pem())
+
+def ssl_verify_content(content,signature,public_key):
+    """Check that the signature matches the content, using the provided publoc key
+        toto : check that the public key is valid....
+    """
+    assert isinstance(signature,str)
+    assert isinstance(public_key,str) or isinstance(public_key,unicode)
+    if not os.path.isfile(public_key):
+        raise Exception('Public key %s not found' % public_key)
+    from M2Crypto import BIO, RSA, EVP
+    rsa = RSA.load_pub_key(public_key)
+    pubkey = EVP.PKey()
+    pubkey.assign_rsa(rsa)
+    pubkey.verify_init()
+    pubkey.verify_update(content)
+    return pubkey.verify_final(signature) == 1
+
+def create_recursive_zip_signed(zipfn, source_root, target_root = u"",excludes = [u'.svn',u'.git*',u'*.pyc',u'*.dbg',u'src']):
     """Create a zip file with filename zipf from source_root directory with target_root as new root.
        Don't include file which match excludes file pattern
+       add a file WAPT/manifest.sha1 with sha1 hash of all files
+       add a file WAPT/signature with the bas64 encoded signature of WAPT/manifest.sha1
     """
     result = []
+    if not isinstance(source_root,unicode):
+        source_root = unicode(source_root)
+    if not isinstance(source_root,unicode):
+        source_root = unicode(source_root)
+
     if isinstance(zipfn,str) or isinstance(zipfn,unicode):
         if logger: logger.debug('Create zip file %s' % zipfn)
         zipf = zipfile.ZipFile(zipfn,'w')
@@ -295,17 +334,73 @@ def create_recursive_zip_signed(zipfn, source_root, target_root = "",excludes = 
         if os.path.isfile(os.path.join(source_root, item)):
             if logger: logger.debug(' adding file %s' % os.path.join(source_root, item))
             zipf.write(os.path.join(source_root, item), os.path.join(target_root,item))
-            result.append([os.path.join(target_root,item),md5_for_file(os.path.join(source_root, item))])
+            result.append([os.path.join(target_root,item),sha1_for_file(os.path.join(source_root, item))])
         elif os.path.isdir(os.path.join(source_root, item)):
             if logger: logger.debug('Add directory %s' % os.path.join(source_root, item))
             result.extend(create_recursive_zip_signed(zipf, os.path.join(source_root, item), os.path.join(target_root,item),excludes))
     if isinstance(zipfn,str) or isinstance(zipfn,unicode):
         if logger:
-            logger.debug('  adding md5 sums for all %i files' % len(result))
-        # Write a file with all md5 of all files
-        zipf.writestr(os.path.join(target_root,'files.md5sum'), "\n".join( ["%s:%s" % (md5[0],md5[1]) for md5 in result] ))
+            logger.debug('  adding sha1 hash for all %i files' % len(result))
+        # Write a file with all sha1 hashes of all files
+        manifest = [ r for r in result if r[0] not in ('WAPT\\manifest.sha1','WAPT\\signature') ]
+        manifest_data = json.dumps(manifest,indent=True)
+        zipf.writestr(os.path.join(target_root,'WAPT/manifest.sha1'), manifest_data)
         zipf.close()
     return result
+
+
+def get_manifest_data(source_root, target_root=u'', excludes = [u'.svn',u'.git*',u'*.pyc',u'*.dbg',u'src']):
+    """Return a list of [filenames,sha1 hash] from files from source_root directory with target_root as new root.
+       Don't include file which match excludes file pattern
+    """
+    result = []
+    for item in os.listdir(source_root):
+        excluded = False
+        for x in excludes:
+            excluded = fnmatch.fnmatch(item,x)
+            if excluded:
+                break
+        if target_root == 'WAPT' and item in ('manifest.sha1','signature'):
+            excluded = True
+        if excluded:
+            continue
+        if os.path.isfile(os.path.join(source_root, item)):
+            result.append([os.path.join(target_root,item),sha1_for_file(os.path.join(source_root, item))])
+        elif os.path.isdir(os.path.join(source_root, item)):
+            result.extend(get_manifest_data(os.path.join(source_root, item), os.path.join(target_root,item),excludes))
+    return result
+
+
+def importCode(code,name,add_to_sys_modules=0):
+    """
+    Import dynamically generated code as a module. code is the
+    object containing the code (a string, a file handle or an
+    actual compiled code object, same types as accepted by an
+    exec statement). The name is the name to give to the module,
+    and the final argument says wheter to add it to sys.modules
+    or not. If it is added, a subsequent import statement using
+    name will return this module. If it is not added to sys.modules
+    import will try to load it in the normal fashion.
+
+    import foo
+
+    is equivalent to
+
+    foofile = open("/path/to/foo.py")
+    foo = importCode(foofile,"foo",1)
+
+    Returns a newly generated module.
+    From : http://code.activestate.com/recipes/82234-importing-a-dynamically-generated-module/
+    """
+    import sys,imp
+
+    module = imp.new_module(name)
+
+    exec code in module.__dict__
+    if add_to_sys_modules:
+        sys.modules[name] = module
+
+    return module
 
 
 def import_setup(setupfilename,modulename=''):
@@ -315,6 +410,7 @@ def import_setup(setupfilename,modulename=''):
         modulename=mod_name
     py_mod = imp.load_source(modulename, setupfilename)
     return py_mod
+
 
 ###########################"
 class LogInstallOutput(object):
@@ -499,7 +595,8 @@ class WaptDB:
           InstallOutput TEXT,
           InstallParams VARCHAR(800),
           UninstallString varchar(255),
-          UninstallKey varchar(255)
+          UninstallKey varchar(255),
+          setuppy TEXT
           )"""
                         )
         self.db.execute("""
@@ -918,7 +1015,7 @@ class Wapt:
         if not config:
             config = ConfigParser(defaults = defaults)
             config.read(os.path.join(self.wapt_base_dir,'wapt-get.ini'))
-        self.wapt_repourl = ""
+        self.wapt_repourl = config.get('global','repo_url')
         self.packagecachedir = os.path.join(self.wapt_base_dir,'cache')
         if not os.path.exists(self.packagecachedir):
             os.makedirs(self.packagecachedir)
@@ -934,7 +1031,15 @@ class Wapt:
         self.dbpath = os.path.join(self.dbdir,'waptdb.sqlite')
         self._waptdb = None
         #
-        self.upload_cmd = ''
+        if config.has_option('global','private_key'):
+            self.private_key = config.get('global','private_key')
+        else:
+            self.private_key = ''
+
+        if config.has_option('global','allow_unsigned'):
+            self.allow_unsigned = config.getboolean('global','allow_unsigned')
+        else:
+            self.allow_unsigned = False
 
     @property
     def waptdb(self):
@@ -946,10 +1051,8 @@ class Wapt:
         """Search the nearest working WAPT repository given the following priority
            - URL defined in ini file
            - first SRV record in the same network as one of the connected network interface
-           - first SRV record with the heigher weight
+           - first SRV record with the highest weight
            - wapt CNAME in the local dns domain (https first then http)
-           - hardcoded http://wapt/wapt
-
         """
         local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
         logger.debug('All interfaces : %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in host_ipv4() if 'addr' in i and 'netmask' in i])
@@ -982,7 +1085,7 @@ class Wapt:
             # find by dns SRV _wapt._tcp
             try:
                 logger.debug('Trying _wapt._tcp.%s SRV records' % dnsdomain)
-                answers = dns.resolver.query('_wapt._tcp.%s' % dnsdomain,'SRV')
+                answers = dns.resolver.query('_wapt._tcp.%s.' % dnsdomain,'SRV')
                 working_url = []
                 for a in answers:
                     # get first numerical ipv4 from SRV name record
@@ -1023,7 +1126,7 @@ class Wapt:
             # find by dns CNAME
             try:
                 logger.debug('Trying wapt.%s CNAME records' % dnsdomain)
-                answers = dns.resolver.query('wapt.%s' % dnsdomain,'CNAME')
+                answers = dns.resolver.query('wapt.%s.' % dnsdomain,'CNAME')
                 for a in answers:
                     wapthost = a.target.canonicalize().to_text()[0:-1]
                     url = 'https://%s/wapt' % (wapthost,)
@@ -1039,11 +1142,6 @@ class Wapt:
                 logger.warning('  DNS resolver error : %s' % (e,))
         else:
             logger.warning('Local DNS domain not found, skipping SRV _wapt._tcp and CNAME search ')
-
-        # hardcoded wapt
-        url = 'http://wapt/wapt'
-        if tryurl(url+'/Packages'):
-            return url
 
         return None
 
@@ -1119,10 +1217,23 @@ class Wapt:
             else:
                 raise
 
-    def install_wapt(self,fname,params_dict={}):
+    def check_files_sha1(self,rootdir,manifest):
+        """check hexdigest sha1 for the files in manifest, returns a list of non matching files (corrupted)"""
+        assert os.path.isdir(rootdir)
+        assert isinstance(manifest,list) or isinstance(manifest,tuple)
+        errors = []
+        for (filename,sha1) in manifest:
+            fullpath = os.path.join(rootdir,filename)
+            if sha1 <> sha1_for_file(fullpath):
+                errors.append(filename)
+        return errors
+
+    def install_wapt(self,fname,params_dict={},public_key=''):
         """Install a single wapt package given its WAPT filename."""
         logger.info("Register start of install %s to local DB with params %s" % (fname,params_dict))
         status = 'INIT'
+        if not public_key and not self.allow_unsigned:
+            raise Exception('No public Key provided for package signature checking, and unsigned packages install is not allowed')
         previous_uninstall = self.registry_uninstall_snapshot()
         entry = Package_Entry()
         entry.load_control_from_wapt(fname)
@@ -1161,6 +1272,27 @@ class Wapt:
                 packagetempdir = fname
             else:
                 raise Exception('%s is not a file nor a directory, aborting.' % fname)
+
+            # chech sha1
+            manifest_filename = os.path.join( packagetempdir,'WAPT','manifest.sha1')
+            if os.path.isfile(manifest_filename):
+                manifest_data = open(manifest_filename,'r').read()
+                # check signature of manifest
+                signature_filename = os.path.join( packagetempdir,'WAPT','signature')
+                # if public key provided, and signature in wapt file, check it
+                if os.path.isfile(public_key) and os.path.isfile(signature_filename):
+                    signature = open(signature_filename,'r').read().decode('base64')
+                    ssl_verify_content(manifest_data,signature,public_key)
+                else:
+                    if not self.allow_unsigned:
+                        raise Exception('Package does not contain a signature, and unsigned packages install is not allowed')
+
+                manifest = json.loads(manifest_data)
+                if self.check_files_sha1(packagetempdir,manifest):
+                    raise Exception('Files corrupted, SHA1 not matching for %s' % (errors,))
+            else:
+                if not self.allow_unsigned:
+                    raise Exception('Package does not contain a manifest.sha1 file, and unsigned packages install is not allowed')
 
             setup_filename = os.path.join( packagetempdir,'setup.py')
             previous_cwd = os.getcwd()
@@ -1232,6 +1364,7 @@ class Wapt:
 
             self.waptdb.update_install_status(install_id,status,'',str(new_uninstall_key) if new_uninstall_key else '',str(uninstallstring) if uninstallstring else '')
             # (entry.Package,entry.Version,status,json.dumps({'output':installoutput.output,'exitstatus':exitstatus}))
+            return status
 
         except Exception,e:
             if install_id:
@@ -1246,7 +1379,8 @@ class Wapt:
                     self.waptdb.update_install_status(install_id,'ERROR',uerror)
                 except Exception,e2:
                     logger.critical(e2)
-            raise
+            logger.critical(e)
+            raise e
         finally:
             if 'setup' in dir():
                 del setup
@@ -1257,7 +1391,6 @@ class Wapt:
             sys.stdout = old_stdout
             sys.stderr = old_stderr
             sys.path = oldpath
-            return status
 
     def get_sources(self,package):
         """Download sources of package (if referenced in package as a https svn
@@ -1308,7 +1441,7 @@ class Wapt:
         """
         previous = self.waptdb.known_packages()
         if not self.wapt_repourl:
-            raise Exception('No main WAPT repository setup')
+            raise Exception('No main WAPT repository available or setup')
         self.waptdb.update_packages_list(self.wapt_repourl)
         current = self.waptdb.known_packages()
         result = {
@@ -1406,15 +1539,18 @@ class Wapt:
         packages = [ p[1] for p in to_install ]
 
         downloaded = self.download_packages(packages,usecache=not download_only and usecache)
+        if downloaded['errors']:
+            raise Exception('Error downloading some files : %s',(downloaded['errors'],))
         actions['downloads'] = downloaded
         logger.debug('Downloaded : %s' % (downloaded,))
         def fname(packagefilename):
             return os.path.join(self.packagecachedir,packagefilename)
         if not download_only:
             for (request,p) in to_install:
-                result = self.install_wapt(fname(p.Filename),params_dict)
+                result = self.install_wapt(fname(p.Filename),params_dict = params_dict,public_key=self.get_public_key())
                 if result<>'OK':
                     actions['errors'].append([request,p])
+                    logger.critical('Package %s (%s) not installed due to errors' %(request,p))
             return actions
         else:
             logger.info('Download only, no install performed')
@@ -1547,9 +1683,43 @@ and install all newest packages"""
         inv['packages'] = self.waptdb.installed()
         return inv
 
+    def get_public_key(self,repository='global'):
+        if self.config.has_option(repository,'public_key'):
+            return self.config.get(repository,'public_key')
+        else:
+            return ''
+
+    def signpackage(self,zip_or_directoryname,excludes=['.svn','.git*','*.pyc','src'],private_key=None,callback=pwd_callback):
+        """calc the signature of the WAPT/manifest.sha1 file and put/replace it in ZIP or directory.
+            create manifest.sha1 a directory is supplied"""
+        if not isinstance(zip_or_directoryname,unicode):
+            zip_or_directoryname = unicode(zip_or_directoryname)
+        if not private_key:
+            private_key = self.private_key
+        if not private_key:
+            raise Exception('Private key filename not set in private_key')
+        if not os.path.isfile(private_key):
+            raise Exception('Private key file %s not found' % private_key)
+        if os.path.isfile(zip_or_directoryname):
+            waptzip = zipfile.ZipFile(zip_or_directoryname,'a')
+            manifest = waptzip.open('WAPT/manifest.sha1').read()
+        else:
+            manifest_data = get_manifest_data(zip_or_directoryname,excludes=excludes)
+            manifest = json.dumps(manifest_data,indent=True)
+            open(os.path.join(zip_or_directoryname,'WAPT','manifest.sha1'),'w').write(manifest)
+
+        (signature, rsa_public_key) = ssl_sign_content(manifest,private_key=private_key,callback=callback)
+        if os.path.isfile(zip_or_directoryname):
+            waptzip.writestr('WAPT/signature',signature.encode('base64'),compress_type=zipfile.ZIP_STORED)
+        else:
+            open(os.path.join(zip_or_directoryname,'WAPT','signature'),'w').write(signature.encode('base64'))
+        return rsa_public_key
+
     def buildpackage(self,directoryname,inc_package_release=False,excludes=['.svn','.git*','*.pyc','src']):
         """Build the WAPT package from a directory, return the filename of the WAPT file"""
-        result_filename =''
+        if not isinstance(directoryname,unicode):
+            directoryname = unicode(directoryname)
+        result_filename = u''
         if not os.path.isdir(os.path.join(directoryname,'WAPT')):
             raise Exception('Error building package : There is no WAPT directory in %s' % directoryname)
         if not os.path.isfile(os.path.join(directoryname,'setup.py')):
@@ -1592,6 +1762,7 @@ and install all newest packages"""
                 source_root = directoryname,
                 target_root = '' ,
                 excludes=excludes)
+            return {'filename':result_filename,'files':allfiles}
         finally:
             if 'setup' in dir():
                 del setup
@@ -1600,7 +1771,6 @@ and install all newest packages"""
             sys.path = oldpath
             logger.debug('  Change current directory to %s' % previous_cwd)
             os.chdir(previous_cwd)
-            return {'filename':result_filename,'files':allfiles}
 
     def checkinstalled(self):
         """Source setup.py and launch checkinstalled"""
@@ -1632,7 +1802,6 @@ and install all newest packages"""
             logger.debug('  Change current directory to %s' % previous_cwd)
             os.chdir(previous_cwd)
             return result
-
 
     def maketemplate(self,installer_path,packagename='',directoryname=''):
         """Build a skeleton of WAPT package based on the properties of the supplied installer
@@ -1718,11 +1887,24 @@ def install():
         return (directoryname)
 
 if __name__ == '__main__':
+    logger.logLevel = logging.DEBUG
+    if len(logger.handlers)<1:
+        hdlr = logging.StreamHandler(sys.stdout)
+        hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+        logger.addHandler(hdlr)
+
     cfg = ConfigParser()
     cfg.read('c:\\tranquilit\\wapt\\wapt-get.ini')
     w = Wapt(config=cfg)
     w.wapt_repourl = w.find_wapt_server()
     #w.waptdb.upgradedb()
+    #print w.signpackage('c:\\tranquilit\\tis-wapttest-wapt')
+    #print w.signpackage('c:\\tranquilit\\tis-wapttest_0.0.0-40_all.wapt')
+    pfn = w.buildpackage('c:\\tranquilit\\tis-wapttest-wapt',True)
+    if not os.path.isfile(pfn['filename']):
+        raise Exception("""w.buildpackage('c:\\tranquilit\\tis-wapttest-wapt',True) failed""")
+    print w.signpackage(pfn['filename'])
+    print w.install_wapt(pfn['filename'],params_dict={'company':'TIS'},public_key=w.get_public_key())
 
     print w.waptdb.upgradeable()
     assert isinstance(w.waptdb,WaptDB)
@@ -1735,8 +1917,4 @@ if __name__ == '__main__':
     print w.checkinstall(['tis-waptdev'],force=True)
     print w.update()
     print w.list_upgrade()
-    pfn = w.buildpackage('c:\\tranquilit\\tis-wapttest-wapt',True)
-    if not os.path.isfile(pfn):
-        raise Exception("""w.buildpackage('c:\\tranquilit\\tis-wapttest-wapt',True) failed""")
-    print w.install_wapt(pfn,params_dict={'company':'TIS'})
 

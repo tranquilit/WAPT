@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 
 import os
 import sys
@@ -200,22 +200,21 @@ def default_oncopy(msg,src,dst):
     return True
 
 def default_skip(src,dst):
-    print(u'Skipping, file exists on target : "%s"' % (dst,))
     return False
 
 def default_overwrite(src,dst):
-    print(u'Skipping, file exists on target : "%s"' % (dst,))
-    return False
+    return True
 
 def default_overwrite_older(src,dst):
-    if os.stat(src) < os.stat(src):
-        print(u'Skipping, file exists on target is newer than source: "%s"' % (dst,))
+    if os.stat(src).st_mtime <= os.stat(dst).st_mtime:
+        logger.debug(u'Skipping, file on target is newer than source: "%s"' % (dst,))
+        return False
     else:
-        print(u'Skipping, file exists on target is newer than source: "%s"' % (dst,))
-    return False
+        logger.debug(u'Overwriting file on target is older than source: "%s"' % (dst,))
+        return True
 
 def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy):
-    """Copy src dir to dst directory. dst is created if it doesn't exists
+    """Copy src directory to dst directory. dst is created if it doesn't exists
         src can be relative to installation temporary dir
         oncopy is called for each file copy. if False is returned, copy is skipped
         onreplace is called when a file will be overwritten.
@@ -248,6 +247,7 @@ def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy
                 if os.path.isfile(dstname):
                     if onreplace(srcname,dstname) and oncopy('overwrites',srcname,dstname):
                         os.unlink(dstname)
+                        shutil.copy2(srcname, dstname)
                 else:
                     if oncopy('copy',srcname,dstname):
                         shutil.copy2(srcname, dstname)
@@ -332,6 +332,7 @@ def getcomputername():
     return socket.gethostname()
 
 def getloggedinusers():
+    raise NotImplementedError()
     return []
 
 def _environ_params(dict_or_module={}):
@@ -490,13 +491,14 @@ def unregister_uninstall(uninstallkey,win64app=False):
         _winreg.DeleteKey(_winreg.HKEY_LOCAL_MACHINE,root.encode('iso8859'))
 
 def host_info():
+    raise NotImplementedError()
     info = {}
     info['waptgetversion'] = ""
     info['computername'] =  getcomputername()
     info['dnsdomain'] = get_domain_fromregistry()
     info['workgroupname'] = ""
     info['biosinfo'] = ""
-    info['biosdate'] = "2012-08-15T00:00:00,0+01:00"
+    info['biosdate'] = "0"
     info['wmibiosinfo']= {
         'SerialNumber': "",
         'Manufacturer': ""}
@@ -508,7 +510,7 @@ def host_info():
     info['systemmanufacturer'] = ""
     info['biosversion'] = ""
     info['systemproductname'] = "",
-    info['cpuname'] = "Intel(R) Core(TM) i5-2520M CPU @ 2.50GHz"
+    info['cpuname'] = ""
     return info
 
 
@@ -621,6 +623,8 @@ params = {}
 """Specific parameters for install scripts"""
 
 if __name__=='__main__':
+    copytree2('c:\\tmp','c:\\tmp2\\toto',onreplace=default_overwrite)
+    copytree2('c:\\tmp','c:\\tmp2\\toto',onreplace=default_skip)
     create_desktop_shortcut('test','c:\\')
     assert isfile(makepath(common_desktop(),'test.lnk'))
     shell_launch(makepath(common_desktop(),'test.lnk'))

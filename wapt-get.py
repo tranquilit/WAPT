@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.4"
+__version__ = "0.8.5"
 
 import sys
 import os
@@ -90,6 +90,7 @@ parser.add_option("-r","--repository", dest="wapt_url", default='', help="URL of
 parser.add_option("-i","--inc-release",    dest="increlease",    default=False, action='store_true', help="Increase release number when building package (default: %default)")
 parser.add_option("-e","--encoding",    dest="encoding",    default=None, help="Chararacter encoding for the output (default: no change)")
 parser.add_option("-x","--excludes",    dest="excludes",    default='.svn,.git*,*.pyc,*.dbg,src', help="Comma separated list of files or directories to exclude for build-package (default: %default)")
+parser.add_option("-k","--private-key", dest="private_key",    default='', help="Path to the PEM RSA private key to sign packages. Package are unsigned if not provided (default: %default)")
 
 (options,args)=parser.parse_args()
 
@@ -116,6 +117,7 @@ if options.encoding:
     sys.stdout = codecs.getwriter(options.encoding)(sys.stdout)
     sys.stderr = codecs.getwriter(options.encoding)(sys.stderr)
 
+
 def main():
     if len(args) == 0:
         print "ERROR : You must provide one action to perform"
@@ -134,7 +136,8 @@ def main():
         'repositories':'',
         'repo_url':'',
         'default_source_url':'',
-        'gpgkey':'',
+        'private_key':'',
+        'public_key':'',
         'default_development_base':'c:\tranquilit',
         'default_package_prefix':'tis',
         'default_sources_suffix':'wapt',
@@ -146,6 +149,7 @@ def main():
     cp = RawConfigParser(defaults = defaults)
     cp.add_section('global')
     cp.read(config_file)
+
 
     wapt_repourl = options.wapt_url
     # override main repo URL by command line option
@@ -160,6 +164,12 @@ def main():
         mywapt.wapt_repourl = wapt_repourl
     else:
         mywapt.wapt_repourl = mywapt.find_wapt_server()
+
+    if options.private_key:
+        mywapt.private_key = options.private_key
+    else:
+        mywapt.private_key = cp.get('global','private_key')
+
     mywapt.dry_run = options.dry_run
     logger.info("Main wapt Repository %s" % mywapt.wapt_repourl)
     logger.debug('WAPT base directory : %s' % mywapt.wapt_base_dir)
@@ -193,9 +203,8 @@ def main():
                             print "\n=== %s packages ===\n%s" % (k,'\n'.join( ["  %-30s | %s (%s)" % (s[0],s[1].Package,s[1].Version) for s in  result[k]]),)
                 else:
                     for k in ('downloaded','skipped','errors'):
-                        if result['\n=== downloads ==='][k]:
-                            print "%s :\n%s" % (k,'\n'.join(["  %s" % (s,) for s in result['downloads'][k]]),)
-
+                        if result['downloads'][k]:
+                            print "\n=== %s packages ===\n%s" % (k,'\n'.join(["  %s" % (s,) for s in result['downloads'][k]]),)
 
         elif action=='download':
             if len(args)<2:
@@ -317,7 +326,9 @@ def main():
             for source_dir in [os.path.abspath(p) for p in args[1:]]:
                 if os.path.isdir(source_dir):
                     print('Building  %s' % source_dir)
-                    result = mywapt.buildpackage(source_dir,inc_package_release=options.increlease,excludes=options.excludes.split(','))
+                    result = mywapt.buildpackage(source_dir,
+                        inc_package_release=options.increlease,
+                        excludes=options.excludes.split(','))
                     package_fn = result['filename']
                     if package_fn:
                         print "Package content:"

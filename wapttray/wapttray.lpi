@@ -32,19 +32,22 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="4">
+    <RequiredPackages Count="5">
       <Item1>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pl_indycomp"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_jcl"/>
+        <PackageName Value="pltis_superobject"/>
       </Item2>
       <Item3>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pltis_jcl"/>
       </Item3>
       <Item4>
-        <PackageName Value="LCL"/>
+        <PackageName Value="FCL"/>
       </Item4>
+      <Item5>
+        <PackageName Value="LCL"/>
+      </Item5>
     </RequiredPackages>
     <Units Count="5">
       <Unit0>

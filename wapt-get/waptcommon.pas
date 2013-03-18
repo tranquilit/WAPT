@@ -158,7 +158,7 @@ begin
       resolv.Host:=GetDNSServer;
       resolv.ClearInternalQuery;
       resolv.QueryType := [TQueryRecordTypes.qtService];
-      resolv.WaitingTime:=1000;
+      resolv.WaitingTime:=2;
       resolv.Resolve('_wapt._tcp.'+GetDNSDomain);
       highest:=0;
       for i := 0 to resolv.QueryResult.count - 1 do

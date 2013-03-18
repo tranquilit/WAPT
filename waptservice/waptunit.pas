@@ -28,7 +28,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, DaemonApp,
   ExtCtrls, IdHTTPServer, IdCustomHTTPServer, IdContext, sqlite3conn, sqldb, db, Waptcommon,
-  superobject,md5;
+  superobject,md5,PythonEngine,PythonAtom;
 
 type
 
@@ -63,7 +63,7 @@ var
   WaptDaemon: TWaptDaemon;
 
 implementation
-uses process,StrUtils,IdGlobal,IdSocketHandle,idURI,tiscommon,soutils,IniFiles;
+uses process,StrUtils,IdGlobal,IdSocketHandle,idURI,tiscommon,soutils,IniFiles,UnitRedirect;
 
 //  ,waptwmi,  Variants,Windows,ComObj;
 
@@ -291,6 +291,14 @@ begin
 
 end;
 
+function ChangeQuotes(s:String):String;
+var
+  i:integer;
+begin
+  result := s;
+  for i:=1 to Length(result) do
+    if result[i]='"' then result[i] := '''';
+end;
 
 procedure TWaptDaemon.IdHTTPServer1CommandGet(AContext: TIdContext;
   ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
@@ -303,6 +311,8 @@ var
     so : ISuperObject;
     AQuery : TSQLQuery;
     filepath,template : Utf8String;
+    CmdOutput,CmdError:AnsiString;
+    htmloutput:Utf8String;
 begin
   //Default type
   AResponseInfo.ContentType:='text/html';
@@ -423,9 +433,16 @@ begin
         Exit;
       end;
       cmd := WaptgetPath;
+      cmd := cmd+' --encoding=utf8 ';
+
       f:= ARequestInfo.Params.IndexOfName('force');
       if (f>=0) and (ARequestInfo.Params.ValueFromIndex[f]='yes') then
         cmd := cmd+' -f ';
+
+      f:= ARequestInfo.Params.IndexOfName('params');
+      if (f>=0) then
+        cmd := cmd+' -p "'+ChangeQuotes(ARequestInfo.Params.ValueFromIndex[f])+'"';
+
       i:= ARequestInfo.Params.IndexOfName('package');
       if ARequestInfo.URI = '/install' then
         cmd := cmd+' install '+ARequestInfo.Params.ValueFromIndex[i]
@@ -437,7 +454,12 @@ begin
         cmd := cmd+' showlog '+ARequestInfo.Params.ValueFromIndex[i];
       Application.Log(etInfo,cmd);
       //HttpRunTask(AContext,AResponseInfo,cmd,ExitStatus)
-       AResponseInfo.ContentText:= RunTask(cmd,ExitStatus)
+      Sto_RedirectedExecute(cmd,CmdOutput,CmdError);
+      CmdOutput := StrUtils.StringsReplace(CmdOutput,[#13#10],['<br>'],[rfReplaceAll]);
+      //CmdError:=AnsiToUtf8(StrUtils.StringsReplace(CmdError,[#13#10],['<br>'],[rfReplaceAll]));
+      AResponseInfo.ContentText:= '<h2>Output</h2>'+CmdOutput;
+      //+'<h2>Errors</h2>'+CmdError;
+      //AResponseInfo.ContentText:= RunTask(cmd,ExitStatus)
     end
     else
     begin
@@ -472,6 +494,7 @@ begin
     if AResponseInfo.ContentType='text/html' then
     begin
       Template := LoadFile(ExtractFilePath(ParamStr(0))+'\templates\layout.html');
+      //AResponseInfo.ContentText:= AnsiToUtf8(AResponseInfo.ContentText);
       AResponseInfo.ContentText :=  strutils.StringsReplace(Template,['{% block content %}'],[AResponseInfo.ContentText],[rfReplaceALl]  );
       {      AResponseInfo.ContentText := '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'+
            '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">'+
@@ -515,7 +538,7 @@ end;
 
 function TWaptDaemon.RegisterComputer: Boolean;
 begin
-
+  //httpPostData();
 end;
 
 

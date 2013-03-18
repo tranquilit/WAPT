@@ -136,10 +136,14 @@ FileName=C:\tranquilit\wapt\wapt-get.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node6]
 ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\wapt-get.ini
+
+[Project\ChildNodes\Node0\ChildNodes\Node7]
+ClassName=TProjectFileNode
 FileName=C:\tranquilit\wapt\waptpackage.py
 
 [Project\ChildNodes\Node0\ChildNodes]
-Count=7
+Count=8
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode
@@ -489,7 +493,7 @@ Name=build-package test avec inc
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug build-package -i c:\tranquilit\tis-wapttest-wapt
+Parameters=-ldebug -k "c:\tmp\ko.pem" build-package -i c:\tranquilit\tis-wapttest-wapt
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -673,7 +677,7 @@ Name=install wapttest <30
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=install "tis-wapttest (<0.0.0-30)"
+Parameters=-ldebug install "tis-wapttest (<0.0.0-30)"
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log

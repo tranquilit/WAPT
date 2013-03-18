@@ -24,8 +24,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="30"/>
-        <CursorPos X="19" Y="38"/>
+        <TopLine Value="1"/>
+        <CursorPos X="66" Y="17"/>
         <UsageCount Value="22"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -34,12 +34,10 @@
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
+        <TopLine Value="65"/>
+        <CursorPos X="17" Y="89"/>
         <UsageCount Value="22"/>
-        <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\wapt-get\soutils.pas"/>
@@ -51,12 +49,10 @@
         <Filename Value="..\wapt-get\tiscommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiscommon"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="20"/>
-        <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\..\tisvcl\tisutils.pas"/>
@@ -109,18 +105,16 @@
       <Unit11>
         <Filename Value="..\..\pltis_jcl\source\common\JclUnicode.pas"/>
         <UnitName Value="JclUnicode"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1636"/>
         <CursorPos X="25" Y="1646"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit11>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="13" HistoryIndex="12">
+    <JumpHistory Count="9" HistoryIndex="8">
       <Position1>
         <Filename Value="uwapttray.pas"/>
         <Caret Line="67" Column="61" TopLine="58"/>
@@ -138,41 +132,25 @@
         <Caret Line="78" Column="32" TopLine="58"/>
       </Position4>
       <Position5>
-        <Filename Value="..\..\pltis_jcl\source\common\JclUnicode.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="78" Column="32" TopLine="58"/>
       </Position5>
       <Position6>
-        <Filename Value="..\..\pltis_jcl\source\common\JclUnicode.pas"/>
-        <Caret Line="1651" Column="3" TopLine="1636"/>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="48" Column="6" TopLine="25"/>
       </Position6>
       <Position7>
-        <Filename Value="..\..\pltis_jcl\source\common\JclUnicode.pas"/>
-        <Caret Line="1644" Column="32" TopLine="1636"/>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="32" Column="39" TopLine="23"/>
       </Position7>
       <Position8>
-        <Filename Value="..\..\pltis_jcl\source\common\JclUnicode.pas"/>
-        <Caret Line="1651" Column="3" TopLine="1636"/>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="48" Column="6" TopLine="26"/>
       </Position8>
       <Position9>
         <Filename Value="uwapttray.pas"/>
-        <Caret Line="78" Column="32" TopLine="58"/>
-      </Position9>
-      <Position10>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="48" Column="6" TopLine="25"/>
-      </Position10>
-      <Position11>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="32" Column="39" TopLine="23"/>
-      </Position11>
-      <Position12>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="48" Column="6" TopLine="26"/>
-      </Position12>
-      <Position13>
-        <Filename Value="uwapttray.pas"/>
         <Caret Line="49" Column="15" TopLine="29"/>
-      </Position13>
+      </Position9>
     </JumpHistory>
   </ProjectSession>
   <EditorMacros Count="0"/>
