@@ -26,7 +26,7 @@ Source: "..\wapt-get.ini.tmpl"; DestDir: "{app}";
 Source: "..\wapt-get.py"; DestDir: "{app}"; 
 Source: "..\wapt-get.exe.manifest"; DestDir: "{app}";
 Source: "..\wapt-get.exe"; DestDir: "{app}";
-Source: "..\vc_redist"; DestDir: "{tmp}\vc_redist";
+Source: "..\vc_redist\*"; DestDir: "{tmp}\vc_redist";
 
 
 
