@@ -58,15 +58,6 @@ object VisAppWAPTService: TVisAppWAPTService
       OnClick = TestPythonClick
       TabOrder = 2
     end
-    object butunloadll: TButton
-      Left = 928
-      Height = 25
-      Top = 8
-      Width = 75
-      Caption = 'UnloadDLL'
-      OnClick = butunloadllClick
-      TabOrder = 3
-    end
   end
   inline testedit: TSynEdit
     Left = 408
@@ -619,16 +610,6 @@ object VisAppWAPTService: TVisAppWAPTService
       end
     end
   end
-  object butLoaddll: TButton
-    Left = 928
-    Height = 25
-    Top = 40
-    Width = 75
-    Caption = 'LoadDLL'
-    OnClick = butLoaddllClick
-    OnExit = butLoaddllExit
-    TabOrder = 3
-  end
   object Datasource1: TDatasource
     DataSet = query
     left = 408
@@ -667,13 +648,6 @@ object VisAppWAPTService: TVisAppWAPTService
     left = 408
     top = 72
   end
-  object PythonGUIInputOutput1: TPythonGUIInputOutput
-    UnicodeIO = False
-    RawOutput = False
-    Output = EdSQL
-    left = 696
-    top = 75
-  end
   object SynPythonSyn1: TSynPythonSyn
     DefaultFilter = 'Fichiers Python (*.py)|*.py'
     Enabled = False
@@ -693,12 +667,5 @@ object VisAppWAPTService: TVisAppWAPTService
     ErrorAttri.FrameEdges = sfeAround
     left = 509
     top = 75
-  end
-  object PythonEngine1: TAtomPythonEngine
-    DllPath = 'c:\tranquilit\wapt\'
-    InitThreads = True
-    UseWindowsConsole = True
-    left = 742
-    top = 29
   end
 end

@@ -4,15 +4,17 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="12">
+    <Units Count="15">
       <Unit0>
         <Filename Value="wapttray.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="wapttray"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
+        <TopLine Value="22"/>
         <CursorPos X="13" Y="10"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="uwapttray.pas"/>
@@ -24,9 +26,9 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="66" Y="17"/>
-        <UsageCount Value="22"/>
+        <TopLine Value="107"/>
+        <CursorPos X="40" Y="117"/>
+        <UsageCount Value="23"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -35,15 +37,15 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="65"/>
-        <CursorPos X="17" Y="89"/>
-        <UsageCount Value="22"/>
+        <TopLine Value="67"/>
+        <CursorPos X="37" Y="73"/>
+        <UsageCount Value="23"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\wapt-get\soutils.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="soutils"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="21"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\wapt-get\tiscommon.pas"/>
@@ -52,7 +54,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="21"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\..\tisvcl\tisutils.pas"/>
@@ -110,11 +112,35 @@
         <CursorPos X="25" Y="1646"/>
         <UsageCount Value="10"/>
       </Unit11>
+      <Unit12>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\shellapi.pp"/>
+        <UnitName Value="ShellApi"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1105"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-process\src\process.pp"/>
+        <UnitName Value="process"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="19"/>
+        <CursorPos X="17" Y="176"/>
+        <UsageCount Value="10"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\shlobj.pp"/>
+        <UnitName Value="shlobj"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="91"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit14>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="9" HistoryIndex="8">
+    <JumpHistory Count="25" HistoryIndex="24">
       <Position1>
         <Filename Value="uwapttray.pas"/>
         <Caret Line="67" Column="61" TopLine="58"/>
@@ -151,6 +177,70 @@
         <Filename Value="uwapttray.pas"/>
         <Caret Line="49" Column="15" TopLine="29"/>
       </Position9>
+      <Position10>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="6" Column="16" TopLine="1"/>
+      </Position10>
+      <Position11>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="85" Column="52" TopLine="58"/>
+      </Position11>
+      <Position12>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="97" Column="25" TopLine="64"/>
+      </Position12>
+      <Position13>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="102" Column="3" TopLine="83"/>
+      </Position13>
+      <Position14>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="74" Column="50" TopLine="72"/>
+      </Position14>
+      <Position15>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="81" Column="50" TopLine="79"/>
+      </Position15>
+      <Position16>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="71" Column="2" TopLine="69"/>
+      </Position16>
+      <Position17>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="53" Column="47" TopLine="46"/>
+      </Position17>
+      <Position18>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="110" Column="1" TopLine="99"/>
+      </Position18>
+      <Position19>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="71" Column="15" TopLine="61"/>
+      </Position19>
+      <Position20>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="53" Column="55" TopLine="38"/>
+      </Position20>
+      <Position21>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="71" Column="40" TopLine="61"/>
+      </Position21>
+      <Position22>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="72" Column="41" TopLine="62"/>
+      </Position22>
+      <Position23>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="77" Column="44" TopLine="67"/>
+      </Position23>
+      <Position24>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="83" Column="53" TopLine="100"/>
+      </Position24>
+      <Position25>
+        <Filename Value="uwapttray.pas"/>
+        <Caret Line="85" Column="53" TopLine="85"/>
+      </Position25>
     </JumpHistory>
   </ProjectSession>
   <EditorMacros Count="0"/>

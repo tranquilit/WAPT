@@ -26,16 +26,18 @@
 interface
 
 uses
-  Classes, SysUtils, FileUtil, DaemonApp,
+  Classes, SysUtils, FileUtil, SynHighlighterPython, DaemonApp,
   ExtCtrls, IdHTTPServer, IdCustomHTTPServer, IdContext, sqlite3conn, sqldb, db, Waptcommon,
-  superobject,md5,PythonEngine,PythonAtom;
+  superobject,md5,PythonEngine,PythonAtom, AtomPythonEngine;
 
 type
 
   { TWaptDaemon }
 
   TWaptDaemon = class(TDaemon)
+    APythonEngine: TAtomPythonEngine;
     IdHTTPServer1: TIdHTTPServer;
+    PythonIO: TPythonInputOutput;
     Timer1: TTimer;
 
     procedure DataModuleCreate(Sender: TObject);
@@ -289,6 +291,27 @@ begin
   sh.Port:=waptservice_port;
   IdHTTPServer1.Active:=True;
 
+  with ApythonEngine do
+  begin
+    DllName := 'python27.dll';
+    RegVersion := '2.7';
+    UseLastKnownVersion := False;
+    Initialize;
+    Py_SetProgramName(PAnsiChar(ParamStr(0)));
+    SetFlag(Py_VerboseFlag,     False);
+    SetFlag(Py_InteractiveFlag, True);
+    SetFlag(Py_NoSiteFlag,      True);
+    SetFlag(Py_IgnoreEnvironmentFlag, True);
+  end;
+
+  // Load main python application
+  try
+    MainModule:=TStringList.Create;
+    MainModule.LoadFromFile(ExtractFilePath(ParamStr(0))+'waptserviceinit.py');
+    APythonEngine.ExecStrings(MainModule);
+  finally
+    MainModule.Free;
+  end;
 end;
 
 function ChangeQuotes(s:String):String;
@@ -371,7 +394,7 @@ begin
     end
     else
     if ARequestInfo.URI='/upgrade' then
-      HttpRunTask(AContext,AResponseInfo,WaptgetPath+' upgrade',ExitStatus)
+      HttpRunTask(AContext,AResponseInfo,WaptgetPath+' -lcritical upgrade',ExitStatus)
     else
     if ARequestInfo.URI='/chunked' then
     begin
@@ -385,7 +408,7 @@ begin
     end
     else
     if ARequestInfo.URI='/update' then
-      HttpRunTask(AContext,AResponseInfo,WaptgetPath+' update',ExitStatus)
+      RunTask(AContext,AResponseInfo,WaptgetPath+' -lcritical update',ExitStatus)
     else
     if ARequestInfo.URI='/enable' then
       Timer1.Enabled:=True
@@ -488,7 +511,8 @@ begin
         'AuthUsername:'+ARequestInfo.AuthUsername+'<br>'+
         '<h1>Service info</h1>'+
         'Check every:'+FormatFloat('#.##',Timer1.Interval/1000/60)+' min <br>'+
-        'Active:'+BoolToStr(Timer1.Enabled,'Yes','No')+'<br>'
+        'Active:'+BoolToStr(Timer1.Enabled,'Yes','No')+'<br>'+
+        'Python engine:'+APythonEngine.
         );
     end;
     if AResponseInfo.ContentType='text/html' then

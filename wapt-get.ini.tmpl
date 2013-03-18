@@ -1,0 +1,27 @@
+[global]
+repo_url=
+dbdir = c:\wapt\db
+allow_unsigned=1
+public_cert=c:\wapt\ssl\tranquilit.crt
+
+#repositories=private,tranquilit
+
+# for package development
+#private_key=c:\tmp\ko.pem
+default_source_url=
+default_sources_root=c:\tranquilit
+default_package_prefix=tis
+default_sources_suffix=wapt
+upload_cmd="C:\Program Files\WinSCP\WinSCP.exe" root@bureau.tranquil.it /upload %(waptfile)s
+
+# define a wapt_server only if one is running
+#wapt_server=http://wapt.tranquil.it/waptserver
+
+[private]
+repo_url=http://wapt/wapt
+public_cert=c:\wapt\ssl\tranquilit.crt
+
+[tranquilit]
+repo_url=http://wapt.tranquil.it/wapt
+default_source_url=https://dev.tranquil.it/wapt/
+public_cert=c:\tmp\cert.pem

@@ -35,16 +35,12 @@ type
   { TVisAppWAPTService }
 
   TVisAppWAPTService = class(TForm)
-    PythonEngine1: TAtomPythonEngine;
-    butLoaddll: TButton;
-    butunloadll: TButton;
     TestPython: TButton;
     Datasource1: TDatasource;
     ButSQL: TButton;
     DBGrid1: TDBGrid;
     EdSQL: TMemo;
     Panel1: TPanel;
-    PythonGUIInputOutput1: TPythonGUIInputOutput;
     query: TSQLQuery;
     testedit: TSynEdit;
     SynPythonSyn1: TSynPythonSyn;
@@ -94,10 +90,6 @@ end;
 
 procedure TVisAppWAPTService.butunloadllClick(Sender: TObject);
 begin
-  PythonEngine1.Finalize;
-  PythonEngine1.UnloadDll;
-
-
 end;
 
 procedure TVisAppWAPTService.Panel1Click(Sender: TObject);
@@ -107,10 +99,7 @@ end;
 
 procedure TVisAppWAPTService.TestPythonClick(Sender: TObject);
 begin
-  //EdSQL.Text := WMIBaseBoardInfo.AsJSon(True);
-  //PythonEngine1.UseWindowsConsole:=True;
-  //PythonEngine1.LoadDll;
-  PythonEngine1.ExecString(testedit.Lines.Text);
+   PythonEngine1.ExecString(testedit.Lines.Text);
   ShowMessage(PythonEngine1.EvalStringAsStr('mywapt.update()'));
 end;
 

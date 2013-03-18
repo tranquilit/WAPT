@@ -9,10 +9,12 @@
         <Filename Value="appwaptservice.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="appwaptservice"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="6"/>
         <CursorPos X="34" Y="32"/>
-        <UsageCount Value="61"/>
+        <UsageCount Value="64"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="uvisappwaptservice.pas"/>
@@ -21,10 +23,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisAppWaptService"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="87"/>
-        <CursorPos X="31" Y="99"/>
-        <UsageCount Value="61"/>
+        <TopLine Value="64"/>
+        <CursorPos X="5" Y="75"/>
+        <UsageCount Value="64"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\waptservice\waptunit.pas"/>
@@ -33,13 +39,16 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WaptUnit"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="261"/>
-        <CursorPos X="31" Y="281"/>
-        <UsageCount Value="60"/>
+        <TopLine Value="484"/>
+        <CursorPos X="26" Y="488"/>
+        <UsageCount Value="63"/>
         <Bookmarks Count="1">
           <Item0 X="7" Y="457" ID="1"/>
         </Bookmarks>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
@@ -48,31 +57,31 @@
         <WindowIndex Value="0"/>
         <TopLine Value="608"/>
         <CursorPos X="15" Y="608"/>
-        <UsageCount Value="53"/>
+        <UsageCount Value="56"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\wapt-get\networkadapterinfo.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="networkadapterinfo"/>
-        <UsageCount Value="33"/>
+        <UsageCount Value="36"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\wapt-get\soutils.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="soutils"/>
-        <UsageCount Value="33"/>
+        <UsageCount Value="36"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\wapt-get\tisinifiles.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tisinifiles"/>
-        <UsageCount Value="33"/>
+        <UsageCount Value="36"/>
       </Unit6>
       <Unit7>
         <Filename Value="..\wapt-get\tisstrings.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tisstrings"/>
-        <UsageCount Value="33"/>
+        <UsageCount Value="36"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\waptservice\UnitRedirect.pas"/>
@@ -81,7 +90,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="79"/>
         <CursorPos X="12" Y="27"/>
-        <UsageCount Value="32"/>
+        <UsageCount Value="35"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\superobject\superobject.pas"/>
@@ -497,19 +506,41 @@
       <Unit61>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSResolver.pas"/>
         <UnitName Value="IdDNSResolver"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1243"/>
-        <CursorPos X="79" Y="1244"/>
+        <CursorPos X="52" Y="1265"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit61>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="6" HistoryIndex="5">
+      <Position1>
+        <Filename Value="uvisappwaptservice.pas"/>
+        <Caret Line="99" Column="31" TopLine="87"/>
+      </Position1>
+      <Position2>
+        <Filename Value="uvisappwaptservice.pas"/>
+        <Caret Line="98" Column="31" TopLine="86"/>
+      </Position2>
+      <Position3>
+        <Filename Value="uvisappwaptservice.pas"/>
+        <Caret Line="97" Column="31" TopLine="85"/>
+      </Position3>
+      <Position4>
+        <Filename Value="uvisappwaptservice.pas"/>
+        <Caret Line="96" Column="31" TopLine="84"/>
+      </Position4>
+      <Position5>
+        <Filename Value="uvisappwaptservice.pas"/>
+        <Caret Line="95" Column="31" TopLine="83"/>
+      </Position5>
+      <Position6>
+        <Filename Value="uvisappwaptservice.pas"/>
+        <Caret Line="83" Column="20" TopLine="77"/>
+      </Position6>
+    </JumpHistory>
   </ProjectSession>
   <Debugging>
     <BreakPoints Count="1">

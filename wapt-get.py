@@ -278,10 +278,12 @@ def main():
 
         elif action=='upgrade':
             result = mywapt.upgrade()
-            if not result:
+            if not result['install'] and not result['additional'] and not result['upgrade'] and not result['skipped']:
                 print "Nothing to upgrade"
             else:
-                print "Upgraded packages :\n%s" % ( result,)
+                for k in ('install','additional','upgrade','skipped','errors'):
+                    if result[k]:
+                        print "\n=== %s packages ===\n%s" % (k,'\n'.join( ["  %-30s | %s (%s)" % (s[0],s[1].Package,s[1].Version) for s in  result[k]]),)
 
             sys.exit(0)
 

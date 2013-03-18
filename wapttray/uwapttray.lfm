@@ -1,11 +1,11 @@
 object VisWAPTTray: TVisWAPTTray
-  Left = 276
-  Height = 468
-  Top = 175
-  Width = 328
+  Left = 355
+  Height = 269
+  Top = 486
+  Width = 629
   Caption = 'Gestion logiciels WAPT'
-  ClientHeight = 468
-  ClientWidth = 328
+  ClientHeight = 269
+  ClientWidth = 629
   Icon.Data = {
     220D000000000100010020210000010018000C0D000016000000280000002000
     0000420000000100180000000000000000004800000048000000000000000000
@@ -118,22 +118,14 @@ object VisWAPTTray: TVisWAPTTray
   OnShow = FormShow
   LCLVersion = '1.1'
   object sysinfo: TMemo
-    Left = 0
+    Left = 24
     Height = 153
-    Top = 312
+    Top = 96
     Width = 567
     Lines.Strings = (
       'sysinfo'
     )
     TabOrder = 0
-  end
-  object ValueListEditor1: TValueListEditor
-    Left = 24
-    Height = 224
-    Top = 16
-    Width = 272
-    FixedCols = 0
-    TabOrder = 1
   end
   object TrayIcon1: TTrayIcon
     BalloonHint = 'WAPT Service'
@@ -251,12 +243,16 @@ object VisWAPTTray: TVisWAPTTray
     Visible = True
     OnClick = TrayIcon1Click
     OnDblClick = TrayIcon1DblClick
-    left = 24
-    top = 160
+    left = 432
+    top = 16
   end
   object PopupMenu1: TPopupMenu
-    left = 96
-    top = 144
+    left = 496
+    top = 16
+    object MenuItem6: TMenuItem
+      Action = ActShowStatus
+      Default = True
+    end
     object MenuItem4: TMenuItem
       Action = ActShowMain
       Default = True
@@ -269,22 +265,25 @@ object VisWAPTTray: TVisWAPTTray
     end
     object MenuItem3: TMenuItem
       Action = ActUpgrade
+      OnClick = MenuItem3Click
     end
     object MenuItem5: TMenuItem
       Action = ActQuit
     end
   end
   object ActionList1: TActionList
-    left = 160
-    top = 144
+    left = 560
+    top = 16
     object ActUpgrade: TAction
       Caption = 'Installer les mises à jour'
+      OnExecute = ActUpgradeExecute
     end
     object ActForceRegisterComputer: TAction
       Caption = 'Enregistrer l''ordinateur sur le server WAPT'
     end
     object ActUpdate: TAction
       Caption = 'Mettre à jour la liste des packages'
+      OnExecute = ActUpdateExecute
     end
     object ActShowMain: TAction
       Caption = 'Configurer'
@@ -294,5 +293,15 @@ object VisWAPTTray: TVisWAPTTray
       Caption = 'Quitter'
       OnExecute = ActQuitExecute
     end
+    object ActShowStatus: TAction
+      Caption = 'Voir status des packages'
+      OnExecute = ActShowStatusExecute
+    end
+  end
+  object Timer1: TTimer
+    Interval = 30000
+    OnTimer = Timer1Timer
+    left = 56
+    top = 21
   end
 end

@@ -9,6 +9,7 @@ backup
 cache
 db
 lib
+trash
 
 # These are the default patterns globally ignored by Subversion:
 *.o
