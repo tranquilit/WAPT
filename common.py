@@ -1267,7 +1267,7 @@ class Wapt:
             istemporary = False
             if os.path.isfile(fname):
                 packagetempdir = tempfile.mkdtemp(prefix="wapt")
-                logger.info('  unzipping %s to temporary' % (fname))
+                logger.info('  unzipping %s to temporary %s' % (fname,packagetempdir))
                 zip = zipfile.ZipFile(fname)
                 zip.extractall(path=packagetempdir)
                 istemporary = True

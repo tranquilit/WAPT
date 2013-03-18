@@ -46,21 +46,21 @@ import winshell
 logger = logging.getLogger()
 
 # ensure there is a tempdir available for local work. This is deleted at program exit.
-if not 'tempdir' in globals():
-    tempdir = tempfile.mkdtemp()
-    logger.info('Temporary directory created : %s' % tempdir)
+#if not 'tempdir' in globals():
+#    tempdir = tempfile.mkdtemp()
+#    logger.info('Temporary directory created : %s' % tempdir)
 
-import atexit
-@atexit.register
-def cleanuptemp():
-    if 'tempdir' in globals():
-        logger.debug('Removing temporary directory : %s' % tempdir)
-        shutil.rmtree(tempdir)
+#import atexit
+#@atexit.register
+#def cleanuptemp():
+#    if 'tempdir' in globals():
+#        logger.debug('Removing temporary directory : %s' % tempdir)
+#        shutil.rmtree(tempdir)
 
 # Temporary dir where to unzip/get all files for setup
 # helper assumes files go and comes here per default
-if not 'packagetempdir' in globals():
-    packagetempdir = tempdir
+#if not 'packagetempdir' in globals():
+#   packagetempdir = tempdir
 
 # common windows diectories
 desktop = winshell.desktop
@@ -157,7 +157,7 @@ def wget(url,target,reporthook=None):
     if not filename:
         filename = url.split('/')[-1]
     if not dir:
-        dir = tempdir
+        dir = os.getcwd()
 
     if not os.path.isdir(dir):
         os.makedirs(dir)
@@ -174,7 +174,7 @@ def filecopyto(filename,target):
         if filename is .exe or .dll, logger prints version numbers"""
     (dir,fn) = os.path.split(filename)
     if not dir:
-        dir = tempdir
+        dir = os.getcwd()
 
     if os.path.isdir(target):
         target = os.path.join(target,os.path.basename(filename))
@@ -220,6 +220,7 @@ def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy
         onreplace is called when a file will be overwritten.
     """
     # path relative to temp directory...
+    tempdir = os.getcwd()
     if not os.path.isdir(src) and os.path.isdir(os.path.join(tempdir,src)):
         src = os.path.join(tempdir,src)
 
