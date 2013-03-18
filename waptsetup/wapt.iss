@@ -142,9 +142,9 @@ end;
 function GetRepoURL(Param: String):String;
 begin
   if pos('SILENT',uppercase(GetCmdTail))=0 then
-    result := GetIniString('Global', 'public_cert', ExpandConstant('{app}/ssl/tranquilit.crt'), ExpandConstant('{app}/wapt-get.ini'))
+    result := GetIniString('Global', 'repo_url', 'http://wapt.tranquil.it/wapt', ExpandConstant('{app}/wapt-get.ini'))
   else
-    result := teWaptPublicCert.Text;
+    result := teWaptUrl.Text;
 end;
 
 function GetPublicCert(Param: String):String;
