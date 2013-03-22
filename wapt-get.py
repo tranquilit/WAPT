@@ -152,20 +152,9 @@ def main():
     cp.add_section('global')
     cp.read(config_file)
 
-
-    wapt_repourl = options.wapt_url
-    # override main repo URL by command line option
-    if wapt_repourl:
-        logger.info("Trying command line WAPT Repository %s" % wapt_repourl)
-        if not tryurl(wapt_repourl):
-            print "Supplied repository %s is not accessible ... aborting" % wapt_repourl
-            sys.exit(2)
-
     mywapt = Wapt(config=cp)
-    if wapt_repourl:
-        mywapt.wapt_repourl = wapt_repourl
-    else:
-        mywapt.wapt_repourl = mywapt.find_wapt_server()
+    if options.wapt_url:
+        mywapt.wapt_repourl = options.wapt_url
 
     if options.private_key:
         mywapt.private_key = options.private_key
@@ -173,7 +162,7 @@ def main():
         mywapt.private_key = cp.get('global','private_key')
 
     mywapt.dry_run = options.dry_run
-    logger.info("Main wapt Repository %s" % mywapt.wapt_repourl)
+    #logger.info("Main wapt Repository %s" % mywapt.wapt_repourl)
     logger.debug('WAPT base directory : %s' % mywapt.wapt_base_dir)
     logger.debug('Package cache dir : %s' %  mywapt.packagecachedir)
     logger.debug('WAPT DB Structure version;: %s' % mywapt.waptdb.db_version)

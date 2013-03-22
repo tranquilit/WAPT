@@ -26,18 +26,16 @@
 interface
 
 uses
-  Classes, SysUtils, FileUtil, SynHighlighterPython, DaemonApp,
+  Classes, SysUtils, FileUtil, DaemonApp,
   ExtCtrls, IdHTTPServer, IdCustomHTTPServer, IdContext, sqlite3conn, sqldb, db, Waptcommon,
-  superobject,md5,PythonEngine,PythonAtom, AtomPythonEngine;
+  superobject,md5;
 
 type
 
   { TWaptDaemon }
 
   TWaptDaemon = class(TDaemon)
-    APythonEngine: TAtomPythonEngine;
     IdHTTPServer1: TIdHTTPServer;
-    PythonIO: TPythonInputOutput;
     Timer1: TTimer;
 
     procedure DataModuleCreate(Sender: TObject);
@@ -272,6 +270,7 @@ var
   sh : TIdSocketHandle;
   ini : TIniFile;
   md5str : String;
+  mainmodule : TStringList;
 begin
   Basedir := ExtractFilePath(ParamStr(0));
   SQLiteLibraryName:=BaseDir+'\DLLs\sqlite3.dll';
@@ -291,17 +290,12 @@ begin
   sh.Port:=waptservice_port;
   IdHTTPServer1.Active:=True;
 
-  with ApythonEngine do
+  {with ApythonEngine do
   begin
     DllName := 'python27.dll';
     RegVersion := '2.7';
     UseLastKnownVersion := False;
-    Initialize;
     Py_SetProgramName(PAnsiChar(ParamStr(0)));
-    SetFlag(Py_VerboseFlag,     False);
-    SetFlag(Py_InteractiveFlag, True);
-    SetFlag(Py_NoSiteFlag,      True);
-    SetFlag(Py_IgnoreEnvironmentFlag, True);
   end;
 
   // Load main python application
@@ -311,7 +305,7 @@ begin
     APythonEngine.ExecStrings(MainModule);
   finally
     MainModule.Free;
-  end;
+  end;}
 end;
 
 function ChangeQuotes(s:String):String;
@@ -365,7 +359,7 @@ begin
     else
     if ARequestInfo.URI='/list' then
     try
-      AQuery := WaptDB.QueryCreate('select * from wapt_repo order by Package');
+      AQuery := WaptDB.QueryCreate('select Package,Version,Description,Size from wapt_repo order by Package,Version');
       AResponseInfo.ContentText:=DatasetToHTMLtable(AQuery,@RepoTableHook );
     finally
       AQuery.Free;
@@ -408,7 +402,7 @@ begin
     end
     else
     if ARequestInfo.URI='/update' then
-      RunTask(AContext,AResponseInfo,WaptgetPath+' -lcritical update',ExitStatus)
+      HttpRunTask(AContext,AResponseInfo,WaptgetPath+' -lcritical update',ExitStatus)
     else
     if ARequestInfo.URI='/enable' then
       Timer1.Enabled:=True
@@ -456,7 +450,7 @@ begin
         Exit;
       end;
       cmd := WaptgetPath;
-      cmd := cmd+' --encoding=utf8 ';
+      //cmd := cmd+' --encoding=utf8 ';
 
       f:= ARequestInfo.Params.IndexOfName('force');
       if (f>=0) and (ARequestInfo.Params.ValueFromIndex[f]='yes') then
@@ -511,8 +505,8 @@ begin
         'AuthUsername:'+ARequestInfo.AuthUsername+'<br>'+
         '<h1>Service info</h1>'+
         'Check every:'+FormatFloat('#.##',Timer1.Interval/1000/60)+' min <br>'+
-        'Active:'+BoolToStr(Timer1.Enabled,'Yes','No')+'<br>'+
-        'Python engine:'+APythonEngine.
+        'Active:'+BoolToStr(Timer1.Enabled,'Yes','No')+'<br>'
+        //+'Python engine:'+APythonEngine.EvalStringAsStr('mywapt.update()')
         );
     end;
     if AResponseInfo.ContentType='text/html' then

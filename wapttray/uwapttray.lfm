@@ -1,11 +1,9 @@
 object VisWAPTTray: TVisWAPTTray
-  Left = 355
-  Height = 269
-  Top = 486
-  Width = 629
+  Left = 99
+  Height = 261
+  Top = 409
+  Width = 319
   Caption = 'Gestion logiciels WAPT'
-  ClientHeight = 269
-  ClientWidth = 629
   Icon.Data = {
     220D000000000100010020210000010018000C0D000016000000280000002000
     0000420000000100180000000000000000004800000048000000000000000000
@@ -117,16 +115,7 @@ object VisWAPTTray: TVisWAPTTray
   OnClose = FormClose
   OnShow = FormShow
   LCLVersion = '1.1'
-  object sysinfo: TMemo
-    Left = 24
-    Height = 153
-    Top = 96
-    Width = 567
-    Lines.Strings = (
-      'sysinfo'
-    )
-    TabOrder = 0
-  end
+  WindowState = wsMinimized
   object TrayIcon1: TTrayIcon
     BalloonHint = 'WAPT Service'
     BalloonTitle = 'WAPT Service'
@@ -243,37 +232,32 @@ object VisWAPTTray: TVisWAPTTray
     Visible = True
     OnClick = TrayIcon1Click
     OnDblClick = TrayIcon1DblClick
-    left = 432
-    top = 16
+    left = 80
+    top = 19
   end
   object PopupMenu1: TPopupMenu
-    left = 496
-    top = 16
+    left = 144
+    top = 19
     object MenuItem6: TMenuItem
       Action = ActShowStatus
       Default = True
     end
     object MenuItem4: TMenuItem
       Action = ActShowMain
-      Default = True
-    end
-    object MenuItem1: TMenuItem
-      Action = ActUpgrade
     end
     object MenuItem2: TMenuItem
       Action = ActUpdate
     end
-    object MenuItem3: TMenuItem
+    object MenuItem1: TMenuItem
       Action = ActUpgrade
-      OnClick = MenuItem3Click
     end
     object MenuItem5: TMenuItem
       Action = ActQuit
     end
   end
   object ActionList1: TActionList
-    left = 560
-    top = 16
+    left = 208
+    top = 19
     object ActUpgrade: TAction
       Caption = 'Installer les mises à jour'
       OnExecute = ActUpgradeExecute
@@ -287,6 +271,7 @@ object VisWAPTTray: TVisWAPTTray
     end
     object ActShowMain: TAction
       Caption = 'Configurer'
+      Enabled = False
       OnExecute = ActShowMainExecute
     end
     object ActQuit: TAction
@@ -301,7 +286,7 @@ object VisWAPTTray: TVisWAPTTray
   object Timer1: TTimer
     Interval = 30000
     OnTimer = Timer1Timer
-    left = 56
-    top = 21
+    left = 16
+    top = 16
   end
 end

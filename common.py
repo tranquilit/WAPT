@@ -45,15 +45,17 @@ import socket
 import dns.resolver
 from waptpackage import *
 
-from iniparse import ConfigParser
 import shlex
+from iniparse import RawConfigParser
 from collections import namedtuple
+from types import ModuleType
 
 import netifaces
 import shutil
 import win32api
 from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,QueryInfoKey,KEY_READ,KEY_WOW64_32KEY,KEY_WOW64_64KEY
 
+import re
 
 import setuphelpers
 
@@ -790,7 +792,7 @@ class WaptDB:
             return []
 
     def packages_search(self,searchwords=[]):
-        """Return a list of pacjage entries matching the search words"""
+        """Return a list of package entries matching the search words"""
         if not isinstance(searchwords,list) and not isinstance(searchwords,tuple):
             searchwords = [searchwords]
         if not searchwords:
@@ -995,6 +997,9 @@ class WaptDB:
             rec_dict = dict((cur.description[idx][0], value) for idx, value in enumerate(row))
             for k in rec_dict:
                 setattr(pe,k,rec_dict[k])
+                # add joined field to calculated attributes list
+                if not k in pe.all_attributes:
+                    pe.calculated_attributes.append(k)
             result.append(pe)
         return result
 
@@ -1007,13 +1012,14 @@ class Wapt:
         """Initialize engine with a configParser instance (inifile) and other defaults in a dictionary
             Main properties are :
         """
+        assert not config or isinstance(config,RawConfigParser)
         self.wapt_base_dir = os.path.dirname(sys.argv[0])
         self.config = config
         # default config file
         if not config:
-            config = ConfigParser(defaults = defaults)
+            config = RawConfigParser(defaults = defaults)
             config.read(os.path.join(self.wapt_base_dir,'wapt-get.ini'))
-        self.wapt_repourl = config.get('global','repo_url')
+        self._wapt_repourl = config.get('global','repo_url')
         self.packagecachedir = os.path.join(self.wapt_base_dir,'cache')
         if not os.path.exists(self.packagecachedir):
             os.makedirs(self.packagecachedir)
@@ -1049,6 +1055,12 @@ class Wapt:
         if not self._waptdb:
             self._waptdb = WaptDB(dbpath=self.dbpath)
         return self._waptdb
+
+    @property
+    def wapt_repourl(self):
+        if not self._wapt_repourl:
+            self._wapt_repourl = self.find_wapt_server()
+        return self._wapt_repourl
 
     def find_wapt_server(self):
         """Search the nearest working WAPT repository given the following priority
@@ -1899,6 +1911,50 @@ def install():
             logger.info('control file already exists, skip create')
         return (directoryname)
 
+    def is_installed(self,packagename):
+        """Checks if a package is installed.
+            Return package entry and additional local status or None"""
+        return self.waptdb.installed_matching(packagename)
+
+    def is_available(self,packagename):
+        """Checks if a package (with optional version condition) is available.
+            Return package entry or None"""
+        return self.waptdb.packages_matching(packagename)
+
+
+REGEX_MODULE_VERSION = re.compile(
+                    r'^(?P<major>[0-9]+)'
+                     '\.(?P<minor>[0-9]+)'
+                     '(\.(?P<patch>[0-9]+))')
+
+class Version():
+    """Version object of form 0.0.0
+        can compare with respect to natural numbering and not alphabetical
+        ie : 0.10.2 > 0.2.5
+    """
+    def __init__(self,versionstring):
+        assert isinstance(versionstring,ModuleType) or isinstance(versionstring,str) or isinstance(versionstring,unicode)
+        if isinstance(versionstring,ModuleType):
+            versionstring = versionstring.__version__
+        self.keys = REGEX_MODULE_VERSION.match(versionstring).groupdict()
+
+    def __cmp__(self,aversion):
+        def nat_cmp(a, b):
+            a, b = a or '', b or ''
+            convert = lambda text: text.isdigit() and int(text) or text.lower()
+            alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
+            return cmp(alphanum_key(a), alphanum_key(b))
+
+        assert isinstance(aversion,Version)
+        for key in ['major', 'minor', 'patch']:
+            i1,i2  = self.keys[key], aversion.keys[key]
+            v = nat_cmp(i1,i2)
+            if v:
+                return v
+        return 0
+
+
+
 if __name__ == '__main__':
     logger.logLevel = logging.DEBUG
     if len(logger.handlers)<1:
@@ -1906,10 +1962,10 @@ if __name__ == '__main__':
         hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
         logger.addHandler(hdlr)
 
-    cfg = ConfigParser()
+    cfg = RawConfigParser()
     cfg.read('c:\\tranquilit\\wapt\\wapt-get.ini')
     w = Wapt(config=cfg)
-    w.wapt_repourl = w.find_wapt_server()
+    print w.is_installed('tis-firebird')
     #w.waptdb.upgradedb()
     #print w.signpackage('c:\\tranquilit\\tis-wapttest-wapt')
     #print w.signpackage('c:\\tranquilit\\tis-wapttest_0.0.0-40_all.wapt')

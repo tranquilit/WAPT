@@ -21,10 +21,8 @@ type
     ActUpgrade: TAction;
     ActionList1: TActionList;
     MenuItem6: TMenuItem;
-    sysinfo: TMemo;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
-    MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
     PopupMenu1: TPopupMenu;
@@ -98,8 +96,8 @@ procedure TVisWAPTTray.FormShow(Sender: TObject);
 var
   s:SOString;
 begin
-  s := UTF8Decode(httpGetString  ('http://localhost:'+intToStr(waptservice_port)+'/sysinfo'));
-  sysinfo.Lines.Text:= UTF8Encode(TSuperObject.ParseString(pwidechar(s),False).AsJSon(True));
+  {s := UTF8Decode(httpGetString  ('http://localhost:'+intToStr(waptservice_port)+'/sysinfo'));
+  sysinfo.Lines.Text:= UTF8Encode(TSuperObject.ParseString(pwidechar(s),False).AsJSon(True));}
 end;
 
 procedure TVisWAPTTray.MenuItem2Click(Sender: TObject);
@@ -114,7 +112,7 @@ end;
 
 procedure TVisWAPTTray.Timer1Timer(Sender: TObject);
 begin
-  httpGetString('http://localhost:8088/);
+  //update_pending := httpGetString('http://localhost:8088/);
 end;
 
 procedure TVisWAPTTray.TrayIcon1DblClick(Sender: TObject);

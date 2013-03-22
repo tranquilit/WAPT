@@ -35,14 +35,16 @@ type
 
   pwaptget = class(TCustomApplication)
   private
+    FRepoURL: String;
     FWaptDB: TWAPTDB;
+    function GetRepoURL: String;
     function GetWaptDB: TWAPTDB;
+    procedure SetRepoURL(AValue: String);
     procedure SetWaptDB(AValue: TWAPTDB);
   protected
     APythonEngine: TPythonEngine;
     procedure DoRun; override;
   public
-    RepoURL:String;
     Action : String;
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
@@ -52,6 +54,8 @@ type
     procedure RegisterComputer;
     procedure WriteHelp; virtual;
     property WaptDB:TWAPTDB read GetWaptDB write SetWaptDB;
+    property RepoURL:String read GetRepoURL write SetRepoURL;
+
   end;
 
 { pwaptget }
@@ -71,6 +75,19 @@ begin
     Fwaptdb := TWAPTDB.Create(WaptDBPath);
   end;
   Result := FWaptDB;
+end;
+
+function pwaptget.GetRepoURL: String;
+begin
+  if FRepoURL='' then
+    FRepoURL:=GetWaptServerURL;
+  result := FRepoURL;
+end;
+
+procedure pwaptget.SetRepoURL(AValue: String);
+begin
+  if FRepoURL=AValue then Exit;
+  FRepoURL:=AValue;
 end;
 
 procedure pwaptget.DoRun;
@@ -93,16 +110,14 @@ begin
   // parse parameters
   if HasOption('?') or HasOption('h','--help') then
   begin
-    writeln(' -r --repo : URL of dependencies libs (default : '+GetMainWaptRepo+')');
+    writeln(' -r --repo : URL of dependencies libs');
     writeln(' waptupgrade : upgrade wapt-get.exe and database');
     writeln(' waptsetup : install/reinstall dependencies (python libs)');
     writeln(' register : register computer on wapt-server');
   end;
 
   if HasOption('r','repo') then
-    RepoURL := GetOptionValue('r','repo')
-  else
-    RepoURL := GetMainWaptRepo;
+    RepoURL := GetOptionValue('r','repo');
 
   if HasOption('l','loglevel') then
   begin
@@ -122,6 +137,7 @@ begin
 
   if HasOption('v','version') then
     writeln('Win32 Exe wrapper: '+ApplicationName+' '+GetApplicationVersion);
+
   DefaultInstallPath := TrimFilename('c:\wapt');
   DownloadPath := ExtractFilePath(ParamStr(0));
   // Auto install if wapt-get is not yet in the target directory
@@ -131,7 +147,7 @@ begin
     (not FileExists(AppendPathDelim(DownloadPath)+'python27.dll')) or
     (not FileExists(AppendPathDelim(DownloadPath)+'wapt-get.exe')) then
   begin
-    Writeln('WAPT-GET Setup using repository at '+RepoURL);
+    Writeln('WAPT-GET Setup to '+DefaultInstallPath);
     Setup(ParamStr(0),DefaultInstallPath);
     Terminate;
     Exit;
@@ -147,6 +163,7 @@ begin
   else
   if Action = 'register' then
   begin
+    Writeln('WAPT-GET register computer using Waptserver at '+RepoURL);
     RegisterComputer;
   end
   else
@@ -189,7 +206,6 @@ begin
   Terminate;
 end;
 
-
 constructor pwaptget.Create(TheOwner: TComponent);
 begin
   inherited Create(TheOwner);
@@ -209,11 +225,6 @@ procedure pwaptget.StopWaptService;
 var
   ExitStatus : Integer;
 begin
-  {if CheckOpenPort(waptservice_port,'127.0.0.1',1) then
-  begin
-    ExitStatus := 0;
-    Writeln(RunTask('net stop waptservice',ExitStatus));
-  end;}
   if (GetServiceStatusByName('','waptservice') = ssRunning) and not StopServiceByName('','waptservice') then
     Raise Exception.create('Unable to stop waptservice');
 end;

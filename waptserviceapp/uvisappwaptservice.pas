@@ -72,7 +72,6 @@ uses tisstrings;
 
 procedure TVisAppWAPTService.butLoaddllClick(Sender: TObject);
 begin
-    PythonEngine1.Initialize;
 end;
 
 procedure TVisAppWAPTService.butLoaddllExit(Sender: TObject);
@@ -99,8 +98,8 @@ end;
 
 procedure TVisAppWAPTService.TestPythonClick(Sender: TObject);
 begin
-   PythonEngine1.ExecString(testedit.Lines.Text);
-  ShowMessage(PythonEngine1.EvalStringAsStr('mywapt.update()'));
+  //PythonEngine1.ExecString(testedit.Lines.Text);
+  //ShowMessage(PythonEngine1.EvalStringAsStr('mywapt.update()'));
 end;
 
 procedure TVisAppWAPTService.FormCreate(Sender: TObject);

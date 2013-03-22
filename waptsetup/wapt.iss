@@ -26,8 +26,8 @@ Source: "..\wapt-get.ini.tmpl"; DestDir: "{app}";
 Source: "..\wapt-get.py"; DestDir: "{app}"; 
 Source: "..\wapt-get.exe.manifest"; DestDir: "{app}";
 Source: "..\wapt-get.exe"; DestDir: "{app}";
+Source: "..\wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.exe')
 Source: "..\vc_redist\*"; DestDir: "{tmp}\vc_redist";
-
 
 
 [Setup]
@@ -46,6 +46,8 @@ AppUpdatesURL=http://wapt.tranquil.it
 AppContact=dev@tranquil.it
 AppSupportPhone=+33 2 40 97 57 55
 SignTool=kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f
+CloseApplications=False
+PrivilegesRequired=admin
 
 [Registry]
 Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"; Check: NeedsAddPath('{app}')
@@ -58,6 +60,10 @@ Filename: {app}\wapt-get.ini; Section: global; Key: public_cert; String: {code:G
 Filename: "msiexec.exe"; Parameters: "/q /i ""{tmp}\vc_redist\vc_red.msi"""
 Filename: "{app}\wapt-get.exe"; Parameters: "upgradedb"; Flags: runhidden 
 Filename: "{app}\wapt-get.exe"; Parameters: "update"; Tasks: updateWapt; Flags: runhidden
+Filename: "{app}\wapttray.exe"; Flags: runminimized nowait runasoriginaluser
+
+[Icons]
+Name: "{commonstartup}\WAPT tray helper"; Filename: "{app}\wapttray.exe";
 
 
 [Tasks]
@@ -68,6 +74,7 @@ Name: installService; Description: "installation du service WAPT";
 [UninstallRun]
 Filename: "net"; Parameters: "stop waptservice"; Flags: runhidden
 Filename: "{app}\waptservice.exe"; Parameters: "--uninstall"; Flags: runhidden
+
 
 [Code]
 #include "services.iss"
@@ -141,15 +148,18 @@ end;
 
 function GetRepoURL(Param: String):String;
 begin
-  if pos('SILENT',uppercase(GetCmdTail))<>0 then
+  if WizardSilent then
     result := GetIniString('Global', 'repo_url', 'http://wapt.tranquil.it/wapt',ExpandConstant('{app}\wapt-get.ini'))
   else
-    result := teWaptUrl.Text;
+    if rbCustomRepo.Checked then
+       result := teWaptUrl.Text
+    else 
+       result :='';
 end;
 
 function GetPublicCert(Param: String):String;
 begin
-  if pos('SILENT',uppercase(GetCmdTail))<>0 then
+  if WizardSilent then
     result := GetIniString('Global', 'public_cert', ExpandConstant('{app}\ssl\tranquilit.crt'), ExpandConstant('{app}}\wapt-get.ini'))
   else
     result := teWaptPublicCert.Text;
@@ -212,6 +222,12 @@ begin
     end
 end;
 
+procedure killtask(name:String);
+var
+  errorcode:integer;
+begin
+  shellexec('','taskkill','/t /im "'+name+'" /f','',sw_Hide,ewWaitUntilTerminated,Errorcode);
+end;
 
 function NeedsAddPath(Param: string): boolean;
 var

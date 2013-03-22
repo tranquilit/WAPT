@@ -19,15 +19,4 @@ object WaptDaemon: TWaptDaemon
     left = 40
     top = 88
   end
-  object APythonEngine: TAtomPythonEngine
-    IO = PythonIO
-    left = 64
-    top = 168
-  end
-  object PythonIO: TPythonInputOutput
-    UnicodeIO = False
-    RawOutput = False
-    left = 64
-    top = 232
-  end
 end

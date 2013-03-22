@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.4.1"
+__version__ = "0.4.2"
 
 import os
 import sys
@@ -38,6 +38,7 @@ import msilib
 import win32service
 import win32serviceutil
 import glob
+import ctypes
 
 import _winreg
 import platform
@@ -398,6 +399,17 @@ REG_SZ = _winreg.REG_SZ
 REG_MULTI_SZ = _winreg.REG_MULTI_SZ
 REG_DWORD = _winreg.REG_DWORD
 
+def registry_readstring(root,path,keyname,default=''):
+    """Get a string from registry given root (HKLM..) a path and a keyname
+    the path can be either with backslash or slash"""
+    path = path.replace(u'/',u'\\')
+    key = reg_openkey_noredir(root,path)
+    try:
+        result = reg_getvalue(key,keyname,default)
+        return result
+    except:
+        return default
+
 def installed_softwares(keywords=''):
     """return list of installed software from registry (both 32bit and 64bit"""
     def check_words(target,words):
@@ -614,16 +626,44 @@ isfile=os.path.isfile
 isdir=os.path.isdir
 
 def user_desktop():
+    """return path to current logged in user desktop"""
     return desktop(0)
 
 def common_desktop():
+    """return path to public desktop (visible by all users)"""
     return desktop(1)
+
+def register_dll(dllpath):
+    """Register a COM/OLE server DLL in registry (similar to regsvr32)"""
+    dll = ctypes.windll[dllpath]
+    result = dll.DllRegisterServer()
+    logger.info('DLL %s registered' % dllpath)
+    if result:
+        raise Exception('Register DLL %s failed, code %i' % (dllpath,result))
+
+def unregister_dll(dllpath):
+    """Unregister a COM/OLE server DLL from registry"""
+    dll = ctypes.windll[dllpath]
+    result = dll.DllUnregisterServer()
+    logger.info('DLL %s unregistered' % dllpath)
+    if result:
+        raise Exception('Unregister DLL %s failed, code %i' % (dllpath,result))
+
+class EWaptSetupException(Exception):
+    pass
+
+def error(reason):
+    """Raise a fatal error"""
+    raise EWaptSetupException('Fatal error : %s' % reason)
 
 # to help pyscripter code completion in setup.py
 params = {}
 """Specific parameters for install scripts"""
 
 if __name__=='__main__':
+    print registry_readstring(HKEY_LOCAL_MACHINE,'SYSTEM/CurrentControlSet/services/Tcpip/Parameters','Hostname')
+    print registry_readstring(HKEY_LOCAL_MACHINE,'SYSTEM/CurrentControlSet/services/Tcpip/Parameters','DhcpDomain')
+
     copytree2('c:\\tmp','c:\\tmp2\\toto',onreplace=default_overwrite)
     copytree2('c:\\tmp','c:\\tmp2\\toto',onreplace=default_skip)
     create_desktop_shortcut('test','c:\\')

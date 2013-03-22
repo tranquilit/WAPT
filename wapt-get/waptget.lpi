@@ -21,7 +21,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="6"/>
-      <RevisionNr Value="4"/>
+      <RevisionNr Value="6"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -35,7 +35,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="-h"/>
+        <CommandLineParams Value="update"/>
         <LaunchingApplication PathPlusParams="\usr\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
@@ -59,19 +59,23 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
         <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="161"/>
-        <CursorPos X="1" Y="183"/>
+        <TopLine Value="165"/>
+        <CursorPos X="26" Y="179"/>
         <UsageCount Value="222"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="25" Y="32"/>
         <UsageCount Value="207"/>
+        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\indy\IdDNSResolver.pas"/>
@@ -108,19 +112,23 @@
         <Filename Value="soutils.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="soutils"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="37"/>
         <CursorPos X="1" Y="44"/>
         <UsageCount Value="200"/>
+        <Loaded Value="True"/>
       </Unit6>
       <Unit7>
         <Filename Value="tiscommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiscommon"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
+        <TopLine Value="196"/>
+        <CursorPos X="15" Y="58"/>
         <UsageCount Value="200"/>
+        <Loaded Value="True"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\jcl\source\common\JclUnicode.pas"/>
@@ -177,7 +185,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="154"/>
+        <UsageCount Value="156"/>
       </Unit14>
       <Unit15>
         <Filename Value="tisinifiles.pas"/>
@@ -186,7 +194,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="49"/>
         <CursorPos X="1" Y="49"/>
-        <UsageCount Value="153"/>
+        <UsageCount Value="155"/>
       </Unit15>
       <Unit16>
         <Filename Value="tisregistry.pas"/>
@@ -281,7 +289,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="108"/>
         <CursorPos X="10" Y="94"/>
-        <UsageCount Value="149"/>
+        <UsageCount Value="151"/>
       </Unit27>
       <Unit28>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwaiprtrmib.pas"/>
@@ -396,7 +404,128 @@
         <UsageCount Value="10"/>
       </Unit42>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="137" Column="64" TopLine="114"/>
+      </Position1>
+      <Position2>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="120" Column="43" TopLine="110"/>
+      </Position2>
+      <Position3>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="119" Column="1" TopLine="110"/>
+      </Position3>
+      <Position4>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="122" Column="1" TopLine="110"/>
+      </Position4>
+      <Position5>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="138" Column="1" TopLine="122"/>
+      </Position5>
+      <Position6>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="141" Column="1" TopLine="131"/>
+      </Position6>
+      <Position7>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="142" Column="1" TopLine="131"/>
+      </Position7>
+      <Position8>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="144" Column="1" TopLine="131"/>
+      </Position8>
+      <Position9>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="145" Column="1" TopLine="131"/>
+      </Position9>
+      <Position10>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="146" Column="1" TopLine="131"/>
+      </Position10>
+      <Position11>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="147" Column="1" TopLine="131"/>
+      </Position11>
+      <Position12>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="148" Column="1" TopLine="131"/>
+      </Position12>
+      <Position13>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="156" Column="1" TopLine="140"/>
+      </Position13>
+      <Position14>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="164" Column="1" TopLine="155"/>
+      </Position14>
+      <Position15>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="170" Column="1" TopLine="164"/>
+      </Position15>
+      <Position16>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="173" Column="1" TopLine="164"/>
+      </Position16>
+      <Position17>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="180" Column="1" TopLine="170"/>
+      </Position17>
+      <Position18>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="181" Column="1" TopLine="170"/>
+      </Position18>
+      <Position19>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="183" Column="1" TopLine="170"/>
+      </Position19>
+      <Position20>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="185" Column="1" TopLine="170"/>
+      </Position20>
+      <Position21>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="186" Column="1" TopLine="170"/>
+      </Position21>
+      <Position22>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="187" Column="1" TopLine="170"/>
+      </Position22>
+      <Position23>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="188" Column="1" TopLine="170"/>
+      </Position23>
+      <Position24>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="189" Column="1" TopLine="170"/>
+      </Position24>
+      <Position25>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="190" Column="1" TopLine="170"/>
+      </Position25>
+      <Position26>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="191" Column="1" TopLine="170"/>
+      </Position26>
+      <Position27>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="192" Column="1" TopLine="170"/>
+      </Position27>
+      <Position28>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="196" Column="1" TopLine="180"/>
+      </Position28>
+      <Position29>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="197" Column="1" TopLine="180"/>
+      </Position29>
+      <Position30>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="198" Column="1" TopLine="180"/>
+      </Position30>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
@@ -432,7 +561,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="8">
+    <BreakPoints Count="9">
       <Item1>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsGlobal"/>
@@ -489,6 +618,13 @@
         <Source Value="waptcommon.pas"/>
         <Line Value="485"/>
       </Item8>
+      <Item9>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="waptget.lpr"/>
+        <Line Value="119"/>
+      </Item9>
     </BreakPoints>
     <Exceptions Count="3">
       <Item1>
