@@ -56,8 +56,9 @@ import win32api
 from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,QueryInfoKey,KEY_READ,KEY_WOW64_32KEY,KEY_WOW64_64KEY
 
 import re
-
 import setuphelpers
+
+__version__ = "0.0.1"
 
 logger = logging.getLogger()
 
@@ -1099,6 +1100,8 @@ class Wapt:
         if dnsdomain and dnsdomain <> '.':
             # find by dns SRV _wapt._tcp
             try:
+                resolv = dns.resolver.get_default_resolver()
+                logger.debug('DNS server %s' % (resolv.nameservers,))
                 logger.debug('Trying _wapt._tcp.%s SRV records' % dnsdomain)
                 answers = dns.resolver.query('_wapt._tcp.%s.' % dnsdomain,'SRV')
                 working_url = []
