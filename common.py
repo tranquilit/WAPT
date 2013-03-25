@@ -1158,6 +1158,24 @@ class Wapt:
 
             except dns.exception.DNSException,e:
                 logger.warning('  DNS resolver error : %s' % (e,))
+
+            # find by dns A
+            try:
+                wapthost = 'wapt.%s.' % dnsdomain
+                logger.debug('Trying %s A records' % wapthost)
+                answers = dns.resolver.query(wapthost,'A')
+                if answers:
+                    url = 'https://%s/wapt' % (wapthost,)
+                    if tryurl(url+'/Packages'):
+                        return url
+                    url = 'http://%s/wapt' % (wapthost,)
+                    if tryurl(url+'/Packages'):
+                        return url
+                if not answers:
+                    logger.debug('  No %s A record found' % wapthost)
+
+            except dns.exception.DNSException,e:
+                logger.warning('  DNS resolver error : %s' % (e,))
         else:
             logger.warning('Local DNS domain not found, skipping SRV _wapt._tcp and CNAME search ')
 
