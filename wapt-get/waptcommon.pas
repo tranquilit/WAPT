@@ -83,7 +83,6 @@ implementation
 
 uses FileUtil,soutils,tiscommon,Windows,Variants,winsock,IdDNSResolver,IdExceptionCore,JwaIpHlpApi,
     NetworkAdapterInfo,tisinifiles,registry;
-//, JCLSysInfo,  ActiveX;
 
 function GetDNSServer:AnsiString;
 var

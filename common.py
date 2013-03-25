@@ -1324,7 +1324,8 @@ class Wapt:
                         raise Exception('Package does not contain a signature, and unsigned packages install is not allowed')
 
                 manifest = json.loads(manifest_data)
-                if self.check_files_sha1(packagetempdir,manifest):
+                errors = self.check_files_sha1(packagetempdir,manifest)
+                if errors:
                     raise Exception('Files corrupted, SHA1 not matching for %s' % (errors,))
             else:
                 if not self.allow_unsigned:
@@ -1578,7 +1579,7 @@ class Wapt:
         packages = [ p[1] for p in to_install ]
 
         downloaded = self.download_packages(packages,usecache=not download_only and usecache)
-        if downloaded['errors']:
+        if downloaded.get('errors',[]):
             raise Exception('Error downloading some files : %s',(downloaded['errors'],))
         actions['downloads'] = downloaded
         logger.debug('Downloaded : %s' % (downloaded,))

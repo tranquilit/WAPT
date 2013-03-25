@@ -620,7 +620,11 @@ def user_appdata():
 
 remove_file=os.unlink
 remove_tree=shutil.rmtree
-mkdirs = os.makedirs
+
+def mkdirs(path):
+    """Create directory path if it doesn't exists yet"""
+    if not os.path.isdir(path):
+        os.makedirs(path)
 
 isfile=os.path.isfile
 isdir=os.path.isdir

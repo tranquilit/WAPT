@@ -190,11 +190,11 @@ def main():
                 print "\nResults :"
                 if action<>'download':
                     for k in ('install','additional','upgrade','skipped','errors'):
-                        if result[k]:
+                        if result.get(k,[]):
                             print "\n=== %s packages ===\n%s" % (k,'\n'.join( ["  %-30s | %s (%s)" % (s[0],s[1].Package,s[1].Version) for s in  result[k]]),)
                 else:
                     for k in ('downloaded','skipped','errors'):
-                        if result['downloads'][k]:
+                        if result.get('downloads', {'downloaded':[],'skipped':[],'errors':[]} )[k]:
                             print "\n=== %s packages ===\n%s" % (k,'\n'.join(["  %s" % (s,) for s in result['downloads'][k]]),)
 
         elif action=='download':
