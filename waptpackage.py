@@ -78,29 +78,29 @@ def parse_major_minor_patch_build(version):
     return verinfo
 
 
-class Package_Entry:
+class PackageEntry:
     """Package attributes coming from either control files in WAPT package or local DB"""
-    required_attributes = ['Package','Version','Architecture',]
-    optional_attributes = ['Section','Priority','Maintainer','Description','Depends','Sources',]
-    non_control_attributes = ['Filename','Size','repo_url','MD5sum',]
+    required_attributes = ['package','version','architecture',]
+    optional_attributes = ['section','priority','maintainer','description','depends','sources',]
+    non_control_attributes = ['filename','size','repo_url','md5sum',]
 
     @property
     def all_attributes(self):
         return self.required_attributes + self.optional_attributes + self.non_control_attributes + self.calculated_attributes
 
     def __init__(self):
-        self.Package=''
-        self.Version=''
-        self.Architecture=''
-        self.Section=''
-        self.Priority=''
-        self.Maintainer=''
-        self.Description=''
-        self.Depends=''
-        self.Sources=''
-        self.Filename=''
-        self.Size=''
-        self.MD5sum=''
+        self.package=''
+        self.version=''
+        self.architecture=''
+        self.section=''
+        self.priority=''
+        self.maintainer=''
+        self.description=''
+        self.depends=''
+        self.sources=''
+        self.filename=''
+        self.size=''
+        self.md5sum=''
         self.repo_url=''
         self.calculated_attributes=[]
 
@@ -108,15 +108,17 @@ class Package_Entry:
         """
         Parse version to major, minor, patch, pre-release, build parts.
         """
-        return parse_major_minor_patch_build(self.Version)
+        return parse_major_minor_patch_build(self.version)
 
     def __getitem__(self,name):
+        name = name.lower()
         if hasattr(self,name):
             return getattr(self,name)
         else:
             raise Exception('No such attribute : %s' % name)
 
     def __setitem__(self,name,value):
+        name = name.lower()
         if not name in self.all_attributes:
             self.calculated_attributes.append(name)
         setattr(self,name,value)
@@ -135,7 +137,7 @@ class Package_Entry:
             for key in ['major', 'minor', 'patch','subpatch']:
                 i1,i2  = d1.get(key), d2.get(key)
                 # compare to partial version number (kind of wilcard)
-                if i1 is not None and i2 is None and not isinstance(entry_or_version,Package_Entry):
+                if i1 is not None and i2 is None and not isinstance(entry_or_version,PackageEntry):
                     return 0
                 v = cmp(i1,i2)
                 if v:
@@ -143,14 +145,14 @@ class Package_Entry:
             # package version
             pv1, pv2 = d1.get('packaging'), d2.get('packaging')
             # compare to partial version number (kind of wilcard)
-            if pv1 is not None and pv2 is None and not isinstance(entry_or_version,Package_Entry):
+            if pv1 is not None and pv2 is None and not isinstance(entry_or_version,PackageEntry):
                 return 0
             else:
                 pvcmp = nat_cmp(pv1, pv2)
                 return pvcmp or 0
         try:
-            if isinstance(entry_or_version,Package_Entry):
-                result = cmp(self.Package,entry_or_version.Package)
+            if isinstance(entry_or_version,PackageEntry):
+                result = cmp(self.package,entry_or_version.package)
                 if result == 0:
                     v1, v2 = self.parse_version(), entry_or_version.parse_version()
                     return compare_by_keys(v1, v2)
@@ -161,15 +163,15 @@ class Package_Entry:
                 return compare_by_keys(v1, v2)
         except ValueError,e:
             logger.warning("%s" % e)
-            if isinstance(entry_or_version,Package_Entry):
-                return cmp((self.Package,self.Version),(entry_or_version.Package,entry_or_version.Version))
+            if isinstance(entry_or_version,PackageEntry):
+                return cmp((self.package,self.version),(entry_or_version.package,entry_or_version.version))
             else:
-                return cmp(self.Version,entry_or_version)
+                return cmp(self.version,entry_or_version)
 
     def match(self, match_expr):
         """Return True if package entry match a package string like 'tis-package (>=1.0.1-00)"""
         pcv = REGEX_PACKAGE_CONDITION.match(match_expr).groupdict()
-        if pcv['package'] <> self.Package:
+        if pcv['package'] <> self.package:
             return False
         else:
             if 'operator' in pcv and pcv['operator']:
@@ -240,15 +242,15 @@ class Package_Entry:
                 if sc<0:
                     raise Exception('Invalid line (no ":" found) : %s' % line)
                 (param,value) = (line[:sc].strip(),line[sc+1:].strip())
-                param = param
+                param = param.lower()
                 setattr(self,param,value)
 
         if not type(fname) is list and os.path.isfile(fname):
-            self.MD5sum = md5_for_file(fname)
-            self.Size = os.path.getsize(fname)
-            self.Filename = os.path.basename(fname)
+            self.md5sum = md5_for_file(fname)
+            self.size = os.path.getsize(fname)
+            self.filename = os.path.basename(fname)
         else:
-            self.Filename = self.make_package_filename()
+            self.filename = self.make_package_filename()
 
         return self
 
@@ -269,15 +271,15 @@ class Package_Entry:
 
     def ascontrol(self,with_non_control_attributes = False):
         val = u"""\
-Package      : %(Package)s
-Version      : %(Version)s
-Architecture : %(Architecture)s
-Section      : %(Section)s
-Priority     : %(Priority)s
-Maintainer   : %(Maintainer)s
-Description  : %(Description)s
-Depends      : %(Depends)s
-Sources      : %(Sources)s
+package      : %(package)s
+version      : %(version)s
+architecture : %(architecture)s
+section      : %(section)s
+priority     : %(priority)s
+maintainer   : %(maintainer)s
+description  : %(description)s
+depends      : %(depends)s
+sources      : %(sources)s
 """  % self.__dict__
         if with_non_control_attributes:
             for att in self.non_control_attributes:
@@ -286,15 +288,15 @@ Sources      : %(Sources)s
 
     def make_package_filename(self):
         """Return the standard package filename based on current attributes"""
-        if not (self.Package and self.Version and self.Architecture):
+        if not (self.package and self.version and self.architecture):
             raise Exception('Not enough information to build the package filename')
-        return self.Package + '_' + self.Version + '_' +  self.Architecture  + '.wapt'
+        return self.package + '_' + self.version + '_' +  self.architecture  + '.wapt'
 
     def __str__(self):
         return self.ascontrol(with_non_control_attributes=True)
 
     def __repr__(self):
-        return "%s (%s):%s" % (self.Package,self.Version,self.Architecture)
+        return "%s (%s):%s" % (self.package,self.version,self.architecture)
         #return self.ascontrol(with_non_control_attributes=True).encode('utf8')
 
 
@@ -315,15 +317,15 @@ def update_packages(adir):
     # we get old list to not recompute MD5 if filename has not changed
     logger.debug("parsing old entries...")
     lines = []
-    package = Package_Entry()
+    package = PackageEntry()
 
     # last line
     def add_package(lines):
-        package = Package_Entry()
+        package = PackageEntry()
         package.load_control_from_wapt(lines)
-        package.Filename = package.make_package_filename()
-        old_entries[package.Filename] = package
-        logger.debug("Package %s added" % package.Filename)
+        package.filename = package.make_package_filename()
+        old_entries[package.filename] = package
+        logger.debug("Package %s added" % package.filename)
 
     for line in previous_packages.splitlines():
         # new package
@@ -349,35 +351,34 @@ def update_packages(adir):
             entry = old_entries[os.path.basename(fname)]
         else:
             logger.info("  Processing %s" % fname)
-            entry = Package_Entry()
+            entry = PackageEntry()
             entry.load_control_from_wapt(fname)
         packages.append(entry.ascontrol(with_non_control_attributes=True).encode('utf8'))
 
     logger.info("Writing new %s" % packages_fname)
     myzipfile = zipfile.ZipFile(packages_fname, "w")
-    #myzipfile.writestr("Packages",'\n'.join(packages),compress_type=zipfile.ZIP_DEFLATED)
     myzipfile.writestr("Packages",'\n'.join(packages))
     myzipfile.close()
     logger.info("Finished")
 
 
 if __name__ == '__main__':
-    w = Package_Entry()
-    w.Description = u'Package testé'
-    w.Package = 'wapttest'
-    w.Architecture = 'All'
-    w.Version='0.1.0-10'
-    w.Depends=''
-    w.Maintainer = 'TIS'
+    w = PackageEntry()
+    w.description = u'Package testé'
+    w.package = 'wapttest'
+    w.architecture = 'All'
+    w.version='0.1.0-10'
+    w.depends=''
+    w.maintainer = 'TIS'
     print w.ascontrol()
-    w['InstallDate'] = '20120501'
+    w['install_date'] = '20120501'
     for a in w.all_attributes:
         print "%s: %s" % (a,w[a])
-    assert w['InstallDate'] == '20120501'
+    assert w['install_date'] == '20120501'
     assert w.match('wapttest (>= 0.1.0-2)')
     assert w.match('wapttest (>0.1.0-9)')
     assert w.match('wapttest (>0.0.1-10)')
-    assert w.match('wapttest(=%s)' % w.Version)
+    assert w.match('wapttest(=%s)' % w.version)
     assert w.match('wapttest(<= 0.1.0)')
     assert w.match('wapttest (=0.1.0)')
     assert w.match('wapttest')

@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.4.2"
+__version__ = "0.4.3"
 
 import os
 import sys
@@ -438,7 +438,7 @@ def installed_softwares(keywords=''):
                     result.append({'key':subkey,
                         'name':display_name,'version':display_version,
                         'install_date':install_date,'install_location':install_location,
-                        'uninstallstring':uninstallstring,'publisher':publisher,})
+                        'uninstall_string':uninstallstring,'publisher':publisher,})
                 i += 1
             except WindowsError,e:
                 # WindowsError: [Errno 259] No more data is available
