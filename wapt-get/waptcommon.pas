@@ -328,43 +328,44 @@ begin
   lst := TStringList.create;
   try
     db.GetTableNames(lst,False);
-    if lst.IndexOf('wapt_repo')<0 then
+    if lst.IndexOf('wapt_package')<0 then
     begin
-      db.ExecuteDirect('CREATE TABLE wapt_repo ('+
+      db.ExecuteDirect('CREATE TABLE wapt_package ('+
         'id INTEGER PRIMARY KEY AUTOINCREMENT,'+
-        'Package VARCHAR(255),'+
-        'Version VARCHAR(255),'+
-        'Section VARCHAR(255),'+
-        'Priority VARCHAR(255),'+
-        'Architecture VARCHAR(255),'+
-        'Maintainer VARCHAR(255),'+
-        'Description VARCHAR(255),'+
-        'Filename VARCHAR(255),'+
-        'Size INTEGER,'+
-        'MD5sum VARCHAR(255),'+
-        'Depends VARCHAR(800),'+
-        'Sources VARCHAR(255),'+
+        'package VARCHAR(255),'+
+        'version VARCHAR(255),'+
+        'section VARCHAR(255),'+
+        'priority VARCHAR(255),'+
+        'architecture VARCHAR(255),'+
+        'maintainer VARCHAR(255),'+
+        'description VARCHAR(255),'+
+        'filename VARCHAR(255),'+
+        'size INTEGER,'+
+        'md5sum VARCHAR(255),'+
+        'depends VARCHAR(800),'+
+        'sources VARCHAR(255),'+
         'repo_url VARCHAR(255)'+
         ')'
         );
-      db.ExecuteDirect('create index idx_repo_package on wapt_repo(Package,Version)');
+      db.ExecuteDirect('create index idx_repo_package on wapt_repo(package,version)');
     end;
 
     if lst.IndexOf('wapt_localstatus')<0 then
     begin
       db.ExecuteDirect('CREATE TABLE wapt_localstatus ('+
         'id INTEGER PRIMARY KEY AUTOINCREMENT,'+
-        'Package VARCHAR(255),'+
-        'Version VARCHAR(255),'+
-        'Architecture VARCHAR(255),'+
-        'InstallDate VARCHAR(255),'+
-        'InstallStatus VARCHAR(255),'+
-        'InstallOutput TEXT,'+
-        'InstallParams VARCHAR(800),'+
-        'UninstallString varchar(255),'+
-        'UninstallKey varchar(255)'+
+        'package VARCHAR(255),'+
+        'version VARCHAR(255),'+
+        'architecture VARCHAR(255),'+
+        'install_date VARCHAR(255),'+
+        'install_status VARCHAR(255),'+
+        'install_output TEXT,'+
+        'install_params VARCHAR(800),'+
+        'uninstall_string varchar(255),'+
+        'uninstall_key varchar(255),'+
+        'setuppy TEXT'+
         ')');
-        db.ExecuteDirect('create index idx_localstatus_package on wapt_localstatus(Package,Version)');
+        db.ExecuteDirect('create index idx_localstatus_package on wapt_localstatus(package,version)');
     end;
     if lst.IndexOf('wapt_params')<0 then
     begin
@@ -376,6 +377,28 @@ begin
         ')');
       db.ExecuteDirect('create unique index if not exists idx_params_name on wapt_params(name)');
     end;
+
+    if lst.IndexOf('wapt_action')<0 then
+    begin
+      db.ExecuteDirect('CREATE TABLE wapt_action ('+
+        'id integer NOT NULL PRIMARY KEY AUTOINCREMENT,'+
+        'action varchar(16),'+
+        'state varchar(16), '+
+        'current_step varchar(255),'+
+        'start_date varchar(255), '+
+        'finish_date varchar(255),   '+
+        'package_name varchar(255), '+
+        'package_version_min varchar(255),'+
+        'package_version_max varchar(255), '+
+        'rundate_min varchar(255),'+
+        'rundate_max varchar(255),'+
+        'created_date varchar(255),'+
+        'run_params VARCHAR(800),'+
+        'run_output TEXT'+
+        ');');
+       db.ExecuteDirect('create index if not exists idx_action_state on wapt_action(state);');
+    end;
+
   finally
     if sqltrans.Active then
       sqltrans.Commit;
@@ -421,7 +444,6 @@ var
 begin
   DataBackup := dumpdb;
   try
-    writeln(databackup.AsJSon(True));
     db.Close;
     oldfn := ChangeFileExt(db.DatabaseName,'')+'-'+FormatDateTime('yyyymmdd-hhnnss',Now)+'.sqlite';
     if RenameFileUTF8(db.DatabaseName,oldfn) then

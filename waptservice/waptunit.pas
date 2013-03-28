@@ -348,10 +348,10 @@ begin
   begin
     if ARequestInfo.URI='/status' then
     try
-      AQuery := WaptDB.QueryCreate('select s.Package,s.Version,p.Version as RepoVersion,s.InstallDate,s.InstallStatus '+
+      AQuery := WaptDB.QueryCreate('select s.package,s.version,p.version as repo_version,s.install_date,s.install_status '+
                           ' from wapt_localstatus s'+
-                          ' left join wapt_repo p on p.Package=s.Package and p.Version=s.Version'+
-                          ' order by s.Package');
+                          ' left join wapt_package p on p.package=s.package and p.version=s.version'+
+                          ' order by s.package');
       AResponseInfo.ContentText:=DatasetToHTMLtable(AQuery,@StatusTableHook);
     finally
       AQuery.Free;
@@ -359,7 +359,7 @@ begin
     else
     if ARequestInfo.URI='/list' then
     try
-      AQuery := WaptDB.QueryCreate('select Package,Version,Description,Size from wapt_repo order by Package,Version');
+      AQuery := WaptDB.QueryCreate('select package,version,description,size from wapt_package order by package,version');
       AResponseInfo.ContentText:=DatasetToHTMLtable(AQuery,@RepoTableHook );
     finally
       AQuery.Free;

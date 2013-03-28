@@ -78,7 +78,7 @@ def parse_major_minor_patch_build(version):
     return verinfo
 
 
-class PackageEntry:
+class PackageEntry(object):
     """Package attributes coming from either control files in WAPT package or local DB"""
     required_attributes = ['package','version','architecture',]
     optional_attributes = ['section','priority','maintainer','description','depends','sources',]
@@ -375,6 +375,9 @@ if __name__ == '__main__':
     for a in w.all_attributes:
         print "%s: %s" % (a,w[a])
     assert w['install_date'] == '20120501'
+    w.install_date == '20120501'
+    w.install_date == '20120501'
+
     assert w.match('wapttest (>= 0.1.0-2)')
     assert w.match('wapttest (>0.1.0-9)')
     assert w.match('wapttest (>0.0.1-10)')

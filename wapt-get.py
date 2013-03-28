@@ -264,6 +264,12 @@ def main():
             print "Added packages : \n%s" % "\n".join([ "  %s (%s)" % p for p in result['added'] ])
             print "Removed packages : \n%s" % "\n".join([ "  %s (%s)" % p for p in result['removed'] ])
 
+        elif action=='upgradedb':
+            (old,new) = mywapt.waptdb.upgradedb()
+            if old == new:
+                print "No database upgrade required, current %s, required %s" % (old,mywapt.waptdb.curr_db_version)
+            else:
+                print "Old version : %s to new : %s" % (old,new)
 
         elif action=='upgrade':
             result = mywapt.upgrade()

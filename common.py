@@ -500,13 +500,11 @@ PackageKey = namedtuple('package',('packagename','version'))
 
 # tables : old_table_name:[newtablename,{dict of changed field names}]
 db_upgrades = {
- '0000':{
-    'new_version':'20130327',
-    'changes': {
+ ('0000','20130327'):{
         'wapt_localstatus':['wapt_localstatus',{
             'Package':'package',
             'Version':'version',
-            'Architechture':'architecture',
+            'Architecture':'architecture',
             'InstallDate':'install_date',
             'InstallStatus':'install_status',
             'InstallOutput':'install_output',
@@ -532,10 +530,13 @@ db_upgrades = {
     }
 
 
-class WaptDB:
+
+class WaptDB(object):
     """Class to manage SQLite database with local installation status"""
     dbpath = ''
     db = None
+
+    curr_db_version = '20130327'
 
     def __init__(self,dbpath):
         self.dbpath = dbpath
@@ -564,38 +565,72 @@ class WaptDB:
             logger.critical('DB error %s, rollbacking\n' % (value,))
 
     def upgradedb(self):
+        """Update local database structure to current version if rules are described in db_upgrades"""
         try:
+            backupfn = ''
+            old_structure_version = self.db_version
+            if old_structure_version >= self.curr_db_version:
+                logger.critical('upgrade db aborted : current structure version %s is newer or equal to requested structure version %s' % (old_structure_version,self.curr_db_version))
+                return (old_structure_version,old_structure_version)
+
+            if not (old_structure_version,self.curr_db_version) in db_upgrades:
+                raise Exception('Unable to upgrade DB from version %s to version %s, no rules' % (old_structure_version,self.curr_db_version))
             logger.info('Upgrade database schema')
-            old_datas = {}
-            tables = [ c[0] for c in self.db.execute('SELECT name FROM sqlite_master WHERE type = "table" and name like "wapt_%"').fetchall()]
+            # we will backup old data in a file so that we can rollback
             backupfn = os.path.join(os.path.dirname(self.dbpath),time.strftime('%Y%m%d-%H%M%S')+'.sqlite')
             logger.debug(' copy old data to %s' % backupfn)
             shutil.copy(self.dbpath,backupfn)
+
+            # we will backup old data in dictionaries to convert them to new structure
             logger.debug(' backup data in memory')
+            old_datas = {}
+            tables = [ c[0] for c in self.db.execute('SELECT name FROM sqlite_master WHERE type = "table" and name like "wapt_%"').fetchall()]
             for tablename in tables:
                 old_datas[tablename] = self.query('select * from %s' % tablename)
                 logger.debug(' %s table : %i records' % (tablename,len(old_datas[tablename])))
+
             logger.debug(' drop tables')
             for tablename in tables:
                 self.db.execute('drop table if exists %s' % tablename)
+
+            # create new empty structure
             logger.debug(' recreates new tables ')
-            self.initdb()
+            new_structure_version = self.initdb()
+
+            # append old data in new tables
             logger.debug(' fill with old data')
             for tablename in tables:
                 if old_datas[tablename]:
-                    columns = [ c[0] for c in self.db.execute('select * from %s limit 0' % tablename).description if c[0] in old_datas[tablename][0] ]
-                    insquery = "insert into %s (%s) values (%s)" % (tablename,",".join(columns),",".join("?" * len(columns)))
+                    logger.debug(' process table %s' % tablename)
+                    # get rules from db_upgrades dict
+                    (newtablename,newfieldnames) = db_upgrades[(old_structure_version,new_structure_version)].get(tablename,[tablename,{}])
+
+                    allnewcolumns = [ c[0] for c in self.db.execute('select * from %s limit 0' % newtablename).description]
+                    # take only old columns which match a new column in new structure
+                    oldcolumns = [ k for k in old_datas[tablename][0].keys() if newfieldnames.get(k,k) in allnewcolumns ]
+                    logger.debug(' old columns %s' % (oldcolumns,))
+                    newcolumns = [ newfieldnames.get(k,k) for k in oldcolumns ]
+                    logger.debug(' new columns %s' % (newcolumns,))
+
+                    insquery = "insert into %s (%s) values (%s)" % (newtablename,",".join(newcolumns),",".join("?" * len(newcolumns)))
                     for rec in old_datas[tablename]:
-                        logger.debug(' %s' %[ rec[columns[i]] for i in range(0,len(columns))])
-                        self.db.execute(insquery,[ rec[columns[i]] for i in range(0,len(columns))] )
+                        print rec
+                        logger.debug(' %s' %[ rec[oldcolumns[i]] for i in range(0,len(oldcolumns))])
+                        self.db.execute(insquery,[ rec[oldcolumns[i]] for i in range(0,len(oldcolumns))] )
+
+            # be sure to put back new version in table as db upgrade has put the old value in table
+            self.db_version = new_structure_version
             self.db.commit()
+            return (old_structure_version,new_structure_version)
         except Exception,e:
             self.db.rollback()
-            logger.critical("UpgradeDB ERROR : %s, copy back backup database %s" % (e,backupfn))
-            shutil.copy(backupfn,self.dbpath)
+            if backupfn:
+                logger.critical("UpgradeDB ERROR : %s, copy back backup database %s" % (e,backupfn))
+                shutil.copy(backupfn,self.dbpath)
             raise
 
     def initdb(self):
+        """Initialize curretn sqlite db with empty table and return structure version"""
         assert(isinstance(self.db,sqlite3.Connection))
         logger.debug('Initialize Wapt database')
         self.db.execute("""
@@ -668,10 +703,24 @@ class WaptDB:
             );
                 """)
 
+        self.db.execute("""
+          create index if not exists idx_action_state on wapt_action(state);
+          """)
+
+        self.db.execute("""
+          create index if not exists idx_action_package_name on wapt_action(package_name);
+          """)
+
+        return self.curr_db_version
+
     @property
     def db_version(self):
         try:
-            return self.db.execute('select value from wapt_params where name="db_version"').fetchone()[0]
+            val = self.db.execute('select value from wapt_params where name="db_version"').fetchone()
+            if val:
+                return val[0]
+            else:
+                return '0000'
         except Exception,e:
             logger.critical('Unable to get DB version (%s), upgrading' % e)
             self.db.rollback()
@@ -683,12 +732,24 @@ class WaptDB:
     @db_version.setter
     def db_version(self,value):
         try:
-            self.db.execute('insert or replace into wapt_params(name,value,create_date) values (?,?,?)',('db_version',value,datetime2isodate()))
+            self.db.execute('insert or ignore into wapt_params(name,value,create_date) values (?,?,?)',('db_version',value,datetime2isodate()))
+            self.db.execute('update wapt_params set value=?,create_date=? where name=?',(value,datetime2isodate(),'db_version'))
             self.db.commit()
         except:
             logger.critical('Unable to set version, upgrading')
             self.db.rollback()
             self.upgradedb()
+
+    @db_version.deleter
+    def db_version(self):
+        try:
+            self.db.execute("delete from wapt_params where name = 'db_version'")
+            self.db.commit()
+        except:
+            logger.critical('Unable to delete version, upgrading')
+            self.db.rollback()
+            self.upgradedb()
+
 
     def set_param(self,name,value):
         try:
@@ -699,9 +760,10 @@ class WaptDB:
             self.db.rollback()
 
     def get_param(self,name,default=None):
-        try:
-            return self.db.execute('select value from wapt_params where name=?',name).fetchone()[0]
-        except Exception,e:
+        q = self.db.execute('select value from wapt_params where name=?',(name,)).fetchone()
+        if q:
+            return q[0]
+        else:
             return default
 
     def add_package(self,
@@ -835,7 +897,7 @@ class WaptDB:
     def known_packages(self):
         """return a list of all (package,version)"""
         q = self.db.execute("""\
-              select distinct wapt_package.package,wapt_repo.version from wapt_package
+              select distinct wapt_package.package,wapt_package.version from wapt_package
            """)
         return [PackageKey(*e) for e in q.fetchall()]
 
@@ -1068,7 +1130,7 @@ class WaptDB:
 
 
 ######################"""
-class Wapt:
+class Wapt(object):
     """Global WAPT engine"""
     def __init__(self,config=None,defaults=None):
         """Initialize engine with a configParser instance (inifile) and other defaults in a dictionary
@@ -1116,6 +1178,9 @@ class Wapt:
     def waptdb(self):
         if not self._waptdb:
             self._waptdb = WaptDB(dbpath=self.dbpath)
+            if self._waptdb.db_version < self._waptdb.curr_db_version:
+                logger.info('Upgrading db structure from %s to %s' % (self._waptdb.db_version,self._waptdb.curr_db_version))
+                self._waptdb.upgradedb()
         return self._waptdb
 
     @property
@@ -2063,19 +2128,21 @@ if __name__ == '__main__':
     cfg = RawConfigParser()
     cfg.read('c:\\tranquilit\\wapt\\wapt-get.ini')
     w = Wapt(config=cfg)
-    print w.is_installed('tis-firebird')
+    print w.waptdb.get_param('toto')
+    #w.waptdb.db_version='00'
     w.waptdb.upgradedb()
+    print w.is_installed('tis-firebird')
     #print w.signpackage('c:\\tranquilit\\tis-wapttest-wapt')
     #print w.signpackage('c:\\tranquilit\\tis-wapttest_0.0.0-40_all.wapt')
-    pfn = w.buildpackage('c:\\tranquilit\\tis-wapttest-wapt',True)
-    if not os.path.isfile(pfn['filename']):
-        raise Exception("""w.buildpackage('c:\\tranquilit\\tis-wapttest-wapt',True) failed""")
-    print w.signpackage(pfn['filename'])
-    print w.install_wapt(pfn['filename'],params_dict={'company':'TIS'},public_cert=w.get_public_cert())
+    #pfn = w.buildpackage('c:\\tranquilit\\tis-wapttest-wapt',True)
+    #if not os.path.isfile(pfn['filename']):
+    #    raise Exception("""w.buildpackage('c:\\tranquilit\\tis-wapttest-wapt',True) failed""")
+    #print w.signpackage(pfn['filename'])
+    #print w.install_wapt(pfn['filename'],params_dict={'company':'TIS'},public_cert=w.get_public_cert())
 
     print w.waptdb.upgradeable()
     assert isinstance(w.waptdb,WaptDB)
-    print w.waptdb.get_param('dbversion')
+    print w.waptdb.get_param('db_version')
     print w.remove('tis-waptdev',force=True)
     print w.install(['tis-waptdev'])
     print w.remove('tis-firefox',force=True)

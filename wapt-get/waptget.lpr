@@ -141,11 +141,13 @@ begin
   DefaultInstallPath := TrimFilename('c:\wapt');
   DownloadPath := ExtractFilePath(ParamStr(0));
   // Auto install if wapt-get is not yet in the target directory
-  if (action = 'waptsetup') or
+  if (action = 'waptsetup')
+  {or
     (FileExists(AppendPathDelim(DefaultInstallPath)+'wapt-get.exe') and
         (SortableVersion(GetApplicationVersion) > SortableVersion(GetApplicationVersion(AppendPathDelim(DefaultInstallPath)+'wapt-get.exe')))) or
     (not FileExists(AppendPathDelim(DownloadPath)+'python27.dll')) or
-    (not FileExists(AppendPathDelim(DownloadPath)+'wapt-get.exe')) then
+    (not FileExists(AppendPathDelim(DownloadPath)+'wapt-get.exe'))}
+  then
   begin
     Writeln('WAPT-GET Setup to '+DefaultInstallPath);
     Setup(ParamStr(0),DefaultInstallPath);
@@ -169,11 +171,11 @@ begin
   else
   if Action = 'dumpdb' then
     writeln(WaptDB.dumpdb.AsJson(True))
-  else
+  {else
   if Action = 'upgradedb' then
   begin
     WaptDB.upgradedb;
-  end
+  end}
   else
   begin
     // Running python stuff
