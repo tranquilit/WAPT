@@ -325,19 +325,23 @@ def update_packages(adir):
         old_entries[package.filename] = package
         logger.debug("Package %s added" % package.filename)
 
-    lines = []
-    for line in previous_packages.splitlines():
-        # new package
-        if line.strip()=='':
+    try:
+        lines = []
+        for line in previous_packages.splitlines():
+            # new package
+            if line.strip()=='':
+                add_package(lines)
+                lines = []
+            # add ettribute to current package
+            else:
+                lines.append(line)
+        # last
+        if lines:
             add_package(lines)
             lines = []
-        # add ettribute to current package
-        else:
-            lines.append(line)
-    # last
-    if lines:
-        add_package(lines)
-        lines = []
+    except Exception,e:
+        logger.critical('Unable to read old entries... : %s' % e)
+        old_entries = {}
 
     if not os.path.isdir(adir):
         raise Exception('%s is not a directory' % (adir))
@@ -356,7 +360,7 @@ def update_packages(adir):
 
     logger.info("Writing new %s" % packages_fname)
     myzipfile = zipfile.ZipFile(packages_fname, "w")
-    myzipfile.writestr("Packages",'\n'.join(packages))
+    myzipfile.writestr("Packages",'\n'.join(packages),compress_type=zipfile.ZIP_DEFLATED)
     myzipfile.close()
     logger.info("Finished")
 
