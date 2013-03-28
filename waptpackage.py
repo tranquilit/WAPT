@@ -316,8 +316,6 @@ def update_packages(adir):
     old_entries = {}
     # we get old list to not recompute MD5 if filename has not changed
     logger.debug("parsing old entries...")
-    lines = []
-    package = PackageEntry()
 
     # last line
     def add_package(lines):
@@ -327,6 +325,7 @@ def update_packages(adir):
         old_entries[package.filename] = package
         logger.debug("Package %s added" % package.filename)
 
+    lines = []
     for line in previous_packages.splitlines():
         # new package
         if line.strip()=='':
@@ -336,7 +335,7 @@ def update_packages(adir):
         else:
             lines.append(line)
     # last
-    if line.strip()=='':
+    if lines:
         add_package(lines)
         lines = []
 

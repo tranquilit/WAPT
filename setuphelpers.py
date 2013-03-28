@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.4.3"
+__version__ = "0.4.4"
 
 import os
 import sys
@@ -43,6 +43,8 @@ import ctypes
 import _winreg
 import platform
 import winshell
+
+from iniparse import RawConfigParser
 
 logger = logging.getLogger()
 
@@ -409,6 +411,25 @@ def registry_readstring(root,path,keyname,default=''):
         return result
     except:
         return default
+
+def inifile_readstring(inifilename,section,key,default=''):
+    """Read a string parameter from inifile"""
+    inifile = RawConfigParser()
+    inifile.read(inifilename)
+    if inifile.has_section(section) and inifile.has_option(section,key):
+        return inifile.get(section,key)
+    else:
+        return default
+
+
+def inifile_writestring(inifilename,section,key,value):
+    """Write a string parameter to inifile"""
+    inifile = RawConfigParser()
+    inifile.read(inifilename)
+    inifile.set(section,key,value)
+    inifile.write(open(inifilename,'w'))
+
+
 
 def installed_softwares(keywords=''):
     """return list of installed software from registry (both 32bit and 64bit"""
