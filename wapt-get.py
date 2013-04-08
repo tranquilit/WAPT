@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.8"
+__version__ = "0.8.9"
 
 import sys
 import os
@@ -67,7 +67,7 @@ action is either :
   cleanup           : remove all WAPT cached files from local drive
 
  For user session setup
-  setup-session [packages,all] : setup local user environment for specific or all installed packages
+  session-setup [packages,all] : setup local user environment for specific or all installed packages
 
  For packages development
   list-registry [keywords]  : list installed software from Windows Registry
@@ -256,6 +256,22 @@ def main():
             for packagename in args[1:]:
                 print "Removing %s ..." % (packagename,),
                 mywapt.remove(packagename,force=options.force)
+                print "done"
+
+        elif action=='session-setup':
+            if len(args)<2:
+                print "You must provide at least one package to be configured in user's session"
+                sys.exit(1)
+
+            params_dict = {}
+            try:
+                params_dict = json.loads(options.params.replace("'",'"'))
+            except:
+                raise Exception('Install Parameters must be in json format')
+
+            for packagename in args[1:]:
+                print "Configuring %s ..." % (packagename,),
+                mywapt.session_setup(packagename,params_dict=params_dict)
                 print "done"
 
         elif action=='update':

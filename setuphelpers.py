@@ -293,7 +293,7 @@ def shell_launch(cmd):
 
 def isrunning(processname):
     try:
-        return len(win32pdhutil.FindPerformanceAttributesByName( processname ))> 0
+        return len(win32pdhutil.FindPerformanceAttributesByName( processname,bRefresh=1 ))> 0
     except:
         return False
 
@@ -615,6 +615,7 @@ programfiles64 = programfiles64()
 makepath = os.path.join
 
 def service_installed(service_name):
+    """Return True if the service is installed"""
     try:
         service_is_running(service_name)
         return True
@@ -625,6 +626,7 @@ def service_installed(service_name):
             raise
 
 def service_start(service_name):
+    """Start a service by its service name"""
     win32serviceutil.StartService(service_name)
     return win32serviceutil.WaitForServiceStatus(service_name, win32service.SERVICE_RUNNING, waitSecs=4)
 
@@ -634,6 +636,7 @@ def service_stop(service_name):
     return win32serviceutil.WaitForServiceStatus(service_name, win32service.SERVICE_STOPPED, waitSecs=4)
 
 def service_is_running(service_name):
+    """Return True if the service is running"""
     return win32serviceutil.QueryServiceStatus(service_name)[1] == win32service.SERVICE_RUNNING
 
 def user_appdata():

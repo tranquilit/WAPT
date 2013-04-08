@@ -50,7 +50,6 @@ from iniparse import RawConfigParser
 from collections import namedtuple
 from types import ModuleType
 
-import netifaces
 import shutil
 import win32api
 from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,QueryInfoKey,KEY_READ,KEY_WOW64_32KEY,KEY_WOW64_64KEY
@@ -58,7 +57,7 @@ from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflec
 import re
 import setuphelpers
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
 logger = logging.getLogger()
 
@@ -372,7 +371,7 @@ def get_manifest_data(source_root, target_root=u'', excludes = [u'.svn',u'.git*'
     return result
 
 
-def importCode(code,name,add_to_sys_modules=0):
+def import_code(code,name,add_to_sys_modules=0):
     """
     Import dynamically generated code as a module. code is the
     object containing the code (a string, a file handle or an
@@ -388,7 +387,7 @@ def importCode(code,name,add_to_sys_modules=0):
     is equivalent to
 
     foofile = open("/path/to/foo.py")
-    foo = importCode(foofile,"foo",1)
+    foo = import_code(foofile,"foo",1)
 
     Returns a newly generated module.
     From : http://code.activestate.com/recipes/82234-importing-a-dynamically-generated-module/
@@ -411,6 +410,14 @@ def import_setup(setupfilename,modulename=''):
         modulename=mod_name
     py_mod = imp.load_source(modulename, setupfilename)
     return py_mod
+
+def remove_encoding_declaration(source):
+    headers = source.split('\n',3)
+    result = []
+    for h in headers[0:3]:
+        result.append(h.replace('coding:','coding is').replace('coding=','coding is'))
+    result.extend(headers[3:])
+    return "\n".join(result)
 
 
 ###########################"
@@ -467,6 +474,7 @@ def same_net(ip1,ip2,netmask):
 
 def host_ipv4():
     """return a list of (iface,mac,{addr,broadcast,netmask})"""
+    import netifaces
     ifaces = netifaces.interfaces()
     res = []
     for i in ifaces:
@@ -526,6 +534,8 @@ db_upgrades = {
             'Depends':'depends',
             'Sources':'sources',
             }],
+        },
+ ('20130327','20130408'):{
         }
     }
 
@@ -536,9 +546,10 @@ class WaptDB(object):
     dbpath = ''
     db = None
 
-    curr_db_version = '20130327'
+    curr_db_version = '20130408'
 
     def __init__(self,dbpath):
+        self._db_version = None
         self.dbpath = dbpath
         if not os.path.isfile(self.dbpath):
             dirname = os.path.dirname(self.dbpath)
@@ -684,19 +695,25 @@ class WaptDB(object):
           create unique index if not exists idx_params_name on wapt_params(name);
           """)
 
+        # action : install, remove, check, session_setup, update, upgrade
+        # state : draft, planned, postponed, running, done, error, canceled
         self.db.execute("""
-            CREATE TABLE wapt_action (
+            CREATE TABLE wapt_task (
                 id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
                 action varchar(16),
                 state varchar(16),
                 current_step varchar(255),
+                process_id integer,
                 start_date varchar(255),
                 finish_date varchar(255),
                 package_name varchar(255),
+                username varchar(255),
                 package_version_min varchar(255),
                 package_version_max varchar(255),
                 rundate_min varchar(255),
                 rundate_max varchar(255),
+                rundate_nexttry varchar(255),
+                runduration_max integer,
                 created_date varchar(255),
                 run_params VARCHAR(800),
                 run_output TEXT
@@ -704,30 +721,32 @@ class WaptDB(object):
                 """)
 
         self.db.execute("""
-          create index if not exists idx_action_state on wapt_action(state);
+          create index if not exists idx_task_state on wapt_task(state);
           """)
 
         self.db.execute("""
-          create index if not exists idx_action_package_name on wapt_action(package_name);
+          create index if not exists idx_task_package_name on wapt_task(package_name);
           """)
 
         return self.curr_db_version
 
     @property
     def db_version(self):
-        try:
-            val = self.db.execute('select value from wapt_params where name="db_version"').fetchone()
-            if val:
-                return val[0]
-            else:
-                return '0000'
-        except Exception,e:
-            logger.critical('Unable to get DB version (%s), upgrading' % e)
-            self.db.rollback()
-            self.upgradedb()
-            self.db.execute('insert into wapt_params(name,value,create_date) values (?,?,?)',('db_version','0000',datetime2isodate()))
-            self.db.commit()
-            return '0000'
+        if not self._db_version:
+            try:
+                val = self.db.execute('select value from wapt_params where name="db_version"').fetchone()
+                if val:
+                    self._db_version = val[0]
+                else:
+                    self._db_version = '0000'
+            except Exception,e:
+                logger.critical('Unable to get DB version (%s), upgrading' % e)
+                self.db.rollback()
+                self.upgradedb()
+                self.db.execute('insert into wapt_params(name,value,create_date) values (?,?,?)',('db_version','0000',datetime2isodate()))
+                self.db.commit()
+                self._db_version = '0000'
+        return self._db_version
 
     @db_version.setter
     def db_version(self,value):
@@ -735,6 +754,7 @@ class WaptDB(object):
             self.db.execute('insert or ignore into wapt_params(name,value,create_date) values (?,?,?)',('db_version',value,datetime2isodate()))
             self.db.execute('update wapt_params set value=?,create_date=? where name=?',(value,datetime2isodate(),'db_version'))
             self.db.commit()
+            self._db_version = value
         except:
             logger.critical('Unable to set version, upgrading')
             self.db.rollback()
@@ -745,6 +765,7 @@ class WaptDB(object):
         try:
             self.db.execute("delete from wapt_params where name = 'db_version'")
             self.db.commit()
+            self._db_version = None
         except:
             logger.critical('Unable to delete version, upgrading')
             self.db.rollback()
@@ -832,7 +853,7 @@ class WaptDB(object):
                          package_entry.repo_url)
 
 
-    def add_start_install(self,package,version,architecture,params_dict={},setuppy=None):
+    def add_start_install(self,package,version,architecture,params_dict={}):
         """Register the start of installation in local db
             params_dict is the dictionary pf parameters provided on command line with --params
               or by the server
@@ -850,9 +871,8 @@ class WaptDB(object):
                     install_date,
                     install_status,
                     install_output,
-                    install_params,
-                    setuppy
-                    ) values (?,?,?,?,?,?,?,?)
+                    install_params
+                    ) values (?,?,?,?,?,?,?)
                 """,(
                      package,
                      version,
@@ -861,13 +881,12 @@ class WaptDB(object):
                      'INIT',
                      '',
                      json.dumps(params_dict),
-                     setuppy,
                    ))
         finally:
             self.db.commit()
         return cur.lastrowid
 
-    def update_install_status(self,rowid,install_status,install_output,uninstall_key=None,uninstall_string=None,):
+    def update_install_status(self,rowid,install_status,install_output,uninstall_key=None,uninstall_string=None):
         """Update status of package installation on localdb"""
         try:
             cur = self.db.execute("""\
@@ -879,6 +898,22 @@ class WaptDB(object):
                      install_output,
                      uninstall_key,
                      uninstall_string,
+                     rowid,
+                     )
+                   )
+        finally:
+            self.db.commit()
+        return cur.lastrowid
+
+    def store_setuppy(self,rowid,setuppy=None,install_params={}):
+        """Update status of package installation on localdb"""
+        try:
+            cur = self.db.execute("""\
+                  update wapt_localstatus
+                    set setuppy=?,install_params=? where rowid = ?
+                """,(
+                     remove_encoding_declaration(setuppy),
+                     json.dumps(install_params),
                      rowid,
                      )
                    )
@@ -967,7 +1002,7 @@ class WaptDB(object):
         """Return True if one installed package match te package condition 'tis-package (>=version)' """
         package = REGEX_PACKAGE_CONDITION.match(package_cond).groupdict()['package']
         q = self.query_package_entry("""\
-              select l.install_date,l.install_status,l.install_output,l.install_params,
+              select l.install_date,l.install_status,l.install_output,l.install_params,l.setuppy,
                 r.* from wapt_localstatus l
                 left join wapt_package r on r.package=l.package and l.version=r.version and (l.architecture is null or l.architecture=r.architecture)
               where l.package=? and l.install_status in ("OK","UNKNOWN")
@@ -1196,6 +1231,16 @@ class Wapt(object):
            - first SRV record with the highest weight
            - wapt CNAME in the local dns domain (https first then http)
         """
+        if self.config:
+            url = self.config.get('global','repo_url')
+            if url:
+                if tryurl(url+'/Packages'):
+                    return url
+                else:
+                    logger.warning('URL defined in ini file %s is not available' % url)
+            if not url:
+                logger.debug('No url defined in ini file')
+
         local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
         logger.debug('All interfaces : %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in host_ipv4() if 'addr' in i and 'netmask' in i])
         connected_interfaces = [ i for i in host_ipv4() if 'addr' in i and 'netmask' in i and i['addr'] in local_ips ]
@@ -1212,16 +1257,6 @@ class Wapt(object):
         #dnsdomain = dns.resolver.get_default_resolver().domain.to_text()
         dnsdomain = get_domain_fromregistry()
         logger.debug('Default DNS domain: %s' % dnsdomain)
-
-        if self.config:
-            url = self.config.get('global','repo_url')
-            if url:
-                if tryurl(url+'/Packages'):
-                    return url
-                else:
-                    logger.warning('URL defined in ini file %s is not available' % url)
-            if not url:
-                logger.debug('No url defined in ini file')
 
         if dnsdomain and dnsdomain <> '.':
             # find by dns SRV _wapt._tcp
@@ -1405,8 +1440,16 @@ class Wapt(object):
         # we  record old sys.path as we will include current setup.py
         oldpath = sys.path
 
+        # get old install params if the package has been already installed
+        old_install = self.is_installed(entry.package)
+        if old_install:
+            old_install_params = json.loads(old_install['install_params'])
+            for name in old_install_params:
+                if not name in params_dict:
+                    params_dict[name] = old_install_params[name]
+
         install_id = None
-        install_id = self.waptdb.add_start_install(entry.package ,entry.version,entry.architecture)
+        install_id = self.waptdb.add_start_install(entry.package ,entry.version,entry.architecture,params_dict=params_dict)
         # we setup a redirection of stdout to catch print output from install scripts
         sys.stderr = sys.stdout = install_output = LogInstallOutput(sys.stdout,self.waptdb,install_id)
         hdlr = logging.StreamHandler(install_output)
@@ -1491,6 +1534,9 @@ class Wapt(object):
                 # update the already created params with additional params from command line
                 setup.params.update(params_dict)
 
+            # store source of install and params in DB for future use (upgrade, session_setup, uninstall)
+            self.waptdb.store_setuppy(install_id, setuppy = codecs.open(setup_filename,'r',encoding='utf-8').read(),install_params=params_dict)
+
             if not self.dry_run:
                 try:
                     logger.info("  executing install script")
@@ -1538,8 +1584,6 @@ class Wapt(object):
                 else:
                     logger.warning("Unable to clean tmp dir")
 
-
-
             self.waptdb.update_install_status(install_id,status,'',str(new_uninstall_key) if new_uninstall_key else '',str(uninstallstring) if uninstallstring else '')
             # (entry.package,entry.version,status,json.dumps({'output':install_output.output,'exitstatus':exitstatus}))
             return status
@@ -1557,7 +1601,8 @@ class Wapt(object):
                     self.waptdb.update_install_status(install_id,'ERROR',uerror)
                 except Exception,e2:
                     logger.critical(e2)
-            logger.critical(e)
+            else:
+                logger.critical(e)
             raise e
         finally:
             if 'setup' in dir():
@@ -1635,7 +1680,7 @@ class Wapt(object):
 
     def checkinstall(self,apackages,forceupgrade=False,force=False):
         """Given a list of packagename (condition), check which packages to upgrade, to install
-            forceupgrae : check if the current installed package is the latest available
+            forceupgrade : check if the current installed package is the latest available
         """
         if not isinstance(apackages,list):
             apackages = [apackages]
@@ -1653,7 +1698,7 @@ class Wapt(object):
             # get the current installed package matching the request
             old_matches = self.waptdb.installed_matching(request)
             # current installed matches
-            if not force and old_matches:
+            if not force and old_matches and not forceupgrade:
                 skipped.append([request,old_matches])
             else:
                 new_availables = self.waptdb.packages_matching(request)
@@ -1945,6 +1990,60 @@ and install all newest packages"""
                 target_root = '' ,
                 excludes=excludes)
             return {'filename':result_filename,'files':allfiles}
+        finally:
+            if 'setup' in dir():
+                del setup
+            else:
+                logger.critical('Unable to read setup.py file')
+            sys.path = oldpath
+            logger.debug('  Change current directory to %s' % previous_cwd)
+            os.chdir(previous_cwd)
+
+    def session_setup(self,packagename,params_dict={}):
+        """Setup the user session for a specific system wide installed package"
+           Source setup.py from database or filename
+        """
+        logger.info("Session setup for package %s with params %s" % (packagename,params_dict))
+
+        oldpath = sys.path
+        try:
+            previous_cwd = os.getcwd()
+            if os.path.isdir(packagename):
+                setup = import_setup(os.path.join(directoryname,'setup.py'),'__waptsetup__')
+            else:
+                logger.debug('Sourcing setup from DB')
+                setup = import_code(self.is_installed(packagename)['setuppy'],'__waptsetup__')
+
+            required_params = []
+             # be sure some minimal functions are available in setup module at install step
+            logger.debug('Source import OK')
+            if hasattr(setup,'session_setup'):
+                logger.info('Launch session_setup')
+                setattr(setup,'run',setuphelpers.run)
+                setattr(setup,'run_notfatal',setuphelpers.run_notfatal)
+                setattr(setup,'WAPT',self)
+
+                # get definitions of required parameters from setup module
+                if hasattr(setup,'required_params'):
+                    required_params = setup.required_params
+
+                # get value of required parameters if not already supplied
+                for p in required_params:
+                    if not p in params_dict:
+                        params_dict[p] = raw_input("%s: " % p)
+
+                # set params dictionary
+                if not hasattr(setup,'params'):
+                    # create a params variable for the setup module
+                    setattr(setup,'params',params_dict)
+                else:
+                    # update the already created params with additional params from command line
+                    setup.params.update(params_dict)
+
+                result = setup.session_setup()
+                return result
+            else:
+                raise Exception('No session_setup function in setup.py for package %s' % packagename)
         finally:
             if 'setup' in dir():
                 del setup
