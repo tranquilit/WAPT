@@ -72,6 +72,7 @@ Name: installService; Description: "installation du service WAPT";
 
 
 [UninstallRun]
+Filename: "taskkill"; Parameters: "/t /im ""wapttray.exe"" /f"; Flags: runhidden
 Filename: "net"; Parameters: "stop waptservice"; Flags: runhidden
 Filename: "{app}\waptservice.exe"; Parameters: "--uninstall"; Flags: runhidden
 

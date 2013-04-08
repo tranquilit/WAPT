@@ -876,8 +876,31 @@ WorkingDirectory=$[ActiveScript-Dir]
 ShortCut=0
 MessagesFormat=$[FileName] $[LineNumber]
 
+[Project\ChildNodes\Node1\ChildNodes\Node30]
+ClassName=TProjectRunConfiguationNode
+Name=session_setup tis-thunderbird
+
+[Project\ChildNodes\Node1\ChildNodes\Node30\RunConfig]
+ScriptName=C:\tranquilit\wapt\wapt-get.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=session-setup tis-thunderbird
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node30\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+ShortCut=0
+MessagesFormat=$[FileName] $[LineNumber]
+
 [Project\ChildNodes\Node1\ChildNodes]
-Count=30
+Count=31
 
 [Project\ChildNodes]
 Count=2
