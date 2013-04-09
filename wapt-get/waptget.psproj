@@ -132,11 +132,11 @@ FileName=C:\tranquilit\wapt\setuphelpers.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node5]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-get.py
+FileName=C:\tranquilit\wapt\wapt-get.ini
 
 [Project\ChildNodes\Node0\ChildNodes\Node6]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-get.ini
+FileName=C:\tranquilit\wapt\wapt-get.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node7]
 ClassName=TProjectFileNode
@@ -899,8 +899,31 @@ WorkingDirectory=$[ActiveScript-Dir]
 ShortCut=0
 MessagesFormat=$[FileName] $[LineNumber]
 
+[Project\ChildNodes\Node1\ChildNodes\Node31]
+ClassName=TProjectRunConfiguationNode
+Name=build-package wapttest
+
+[Project\ChildNodes\Node1\ChildNodes\Node31\RunConfig]
+ScriptName=C:\tranquilit\wapt\wapt-get.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=build-package c:\tranquilit\tis-wapttest-wapt
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node31\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+ShortCut=0
+MessagesFormat=$[FileName] $[LineNumber]
+
 [Project\ChildNodes\Node1\ChildNodes]
-Count=31
+Count=32
 
 [Project\ChildNodes]
 Count=2

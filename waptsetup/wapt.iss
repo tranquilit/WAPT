@@ -48,6 +48,7 @@ AppSupportPhone=+33 2 40 97 57 55
 SignTool=kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f
 CloseApplications=False
 PrivilegesRequired=admin
+MinVersion=0,5.0sp4
 
 [Registry]
 Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"; Check: NeedsAddPath('{app}')

@@ -57,7 +57,7 @@ from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflec
 import re
 import setuphelpers
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 logger = logging.getLogger()
 
@@ -535,8 +535,35 @@ db_upgrades = {
             'Sources':'sources',
             }],
         },
+ ('0000','20130408'):{
+        'wapt_localstatus':['wapt_localstatus',{
+            'Package':'package',
+            'Version':'version',
+            'Architecture':'architecture',
+            'InstallDate':'install_date',
+            'InstallStatus':'install_status',
+            'InstallOutput':'install_output',
+            'InstallParams':'install_params',
+            'UninstallString':'uninstall_string',
+            'UninstallKey':'uninstall_key',
+            }],
+        'wapt_repo':['wapt_package',{
+            'Package':'package',
+            'Version':'version',
+            'Architecture':'architecture',
+            'Section':'section',
+            'Priority':'priority',
+            'Maintainer':'maintainer',
+            'Description':'description',
+            'Filename':'filename',
+            'Size':'size',
+            'MD5sum':'md5sum',
+            'Depends':'depends',
+            'Sources':'sources',
+            }],
+        },
  ('20130327','20130408'):{
-        }
+        },
     }
 
 
@@ -1456,8 +1483,11 @@ class Wapt(object):
         """Install a single wapt package given its WAPT filename."""
         logger.info("Register start of install %s to local DB with params %s" % (fname,params_dict))
         status = 'INIT'
+        if not public_cert:
+            public_cert = self.get_public_cert()
         if not public_cert and not self.allow_unsigned:
-            raise Exception('No public Key provided for package signature checking, and unsigned packages install is not allowed')
+            raise Exception('No public Key provided for package signature checking, and unsigned packages install is not allowed.\
+                    If you want to allow unsigned packages, add "allow_unsigned=1" in wapt-get.ini file')
         previous_uninstall = self.registry_uninstall_snapshot()
         entry = PackageEntry()
         entry.load_control_from_wapt(fname)
