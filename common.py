@@ -1021,14 +1021,18 @@ class WaptDB(object):
                 result[p.package] = available
         return result
 
-    def update_repos_list(url_list):
+    def update_repos_list(self,url_list):
         """Cleanup all"""
         try:
-            logger.debug('Purge packages table')
+            logger.info('Purge packages table')
             self.db.execute('delete from wapt_package where repo_url not in (%s)' % (','.join('"%s"'% url for url in url_list,)))
             self.db.commit()
             for url in url_list:
-                self.update_packages_list(url)
+                logger.info('Getting packages from %s' % url)
+                try:
+                    self.update_packages_list(url)
+                except Exception,e:
+                    logger.critical('Error getting packages from %s : %s' % (url,e))
             logger.debug('Commit wapt_package updates')
         except:
             logger.debug('rollback delete table')
@@ -1164,6 +1168,19 @@ class WaptDB(object):
 
 
 
+class WaptRepo(object):
+    def __init__(self,name='',url='',certfilename=''):
+        self.name = name
+        self.repo_url = url
+        self.public_cert = certfilename
+
+    def from_inifile(self,config,section=''):
+        if section:
+            self.name = section
+        self.repo_url = config.get(self.name,'repo_url')
+        self.public_cert = config.get(self.name,'public_cert')
+        return self
+
 ######################"""
 class Wapt(object):
     """Global WAPT engine"""
@@ -1208,6 +1225,16 @@ class Wapt(object):
             self.upload_cmd = config.get('global','upload_cmd')
         else:
             self.upload_cmd = False
+
+        self.repositories = []
+        if config.has_option('global','repositories'):
+            names = [n.strip() for n in config.get('global','repositories').split(',')]
+            logger.info('Other repositories : %s' % (names,))
+            for name in names:
+                if name:
+                    w = WaptRepo(name).from_inifile(config)
+                    self.repositories.append(w)
+                    logger.debug('    %s:%s' % (w.name,w.repo_url))
 
     @property
     def waptdb(self):
@@ -1668,13 +1695,15 @@ class Wapt(object):
         previous = self.waptdb.known_packages()
         if not self.wapt_repourl:
             raise Exception('No main WAPT repository available or setup')
-        self.waptdb.update_packages_list(self.wapt_repourl)
+        repos = [self.wapt_repourl] + [r.repo_url for r in self.repositories]
+        self.waptdb.update_repos_list(repos)
+
         current = self.waptdb.known_packages()
         result = {
             "added":   [ p for p in current if not p in previous ],
             "removed": [ p for p in previous if not p in current],
             "count" : len(current),
-            "repos" : [self.wapt_repourl],
+            "repos" : repos,
             }
         return result
 

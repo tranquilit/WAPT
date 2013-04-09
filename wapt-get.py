@@ -84,7 +84,7 @@ action is either :
 
 parser=OptionParser(usage=usage,version="%prog " + __version__+' setuphelpers '+setuphelpers.__version__)
 parser.add_option("-c","--config", dest="config", default=os.path.join(os.path.dirname(sys.argv[0]),'wapt-get.ini') , help="Config file full path (default: %default)")
-parser.add_option("-l","--loglevel", dest="loglevel", default='info', type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: %default)")
+parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
 parser.add_option("-d","--dry-run",    dest="dry_run",    default=False, action='store_true', help="Dry run (default: %default)")
 parser.add_option("-f","--force",    dest="force",    default=False, action='store_true', help="Force (default: %default)")
 parser.add_option("-p","--params", dest="params", default='{}', help="Setup params as a JSon Object (example : {'licence':'AZE-567-34','company':'TIS'}} (default: %default)")
@@ -93,6 +93,7 @@ parser.add_option("-i","--inc-release",    dest="increlease",    default=False, 
 parser.add_option("-e","--encoding",    dest="encoding",    default=None, help="Chararacter encoding for the output (default: no change)")
 parser.add_option("-x","--excludes",    dest="excludes",    default='.svn,.git*,*.pyc,*.dbg,src', help="Comma separated list of files or directories to exclude for build-package (default: %default)")
 parser.add_option("-k","--private-key", dest="private_key",    default='', help="Path to the PEM RSA private key to sign packages. Package are unsigned if not provided (default: %default)")
+parser.add_option("-w","--private-key-passwd", dest="private_key_passwd", default='', help="Path to the password of the private key. (default: %default)")
 
 (options,args)=parser.parse_args()
 
@@ -106,12 +107,18 @@ if len(logger.handlers)<1:
     hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
     logger.addHandler(hdlr)
 
-# set loglevel
-if loglevel in ('debug','warning','info','error','critical'):
-    numeric_level = getattr(logging, loglevel.upper(), None)
-    if not isinstance(numeric_level, int):
-        raise ValueError('Invalid log level: %s' % loglevel)
-    logger.setLevel(numeric_level)
+def setloglevel(loglevel):
+    """set loglevel as string"""
+    if loglevel in ('debug','warning','info','error','critical'):
+        numeric_level = getattr(logging, loglevel.upper(), None)
+        if not isinstance(numeric_level, int):
+            raise ValueError('Invalid log level: %s' % loglevel)
+        logger.setLevel(numeric_level)
+
+if loglevel:
+    setloglevel(loglevel)
+else:
+    setloglevel('warning')
 
 if options.encoding:
     logger.debug('Default encoding : %s ' % sys.getdefaultencoding())
@@ -146,11 +153,17 @@ def main():
         'default_sources_url':'',
         'upload_cmd':'',
         'wapt_server':'',
+        'loglevel':'info',
         }
 
     cp = RawConfigParser(defaults = defaults)
     cp.add_section('global')
     cp.read(config_file)
+
+    global loglevel
+    if not loglevel and cp.has_option('global','loglevel'):
+        loglevel = cp.get('global','loglevel')
+        setloglevel(loglevel)
 
     mywapt = Wapt(config=cp)
     if options.wapt_url:
@@ -279,6 +292,7 @@ def main():
             print "Total packages : %i" % result['count']
             print "Added packages : \n%s" % "\n".join([ "  %s (%s)" % p for p in result['added'] ])
             print "Removed packages : \n%s" % "\n".join([ "  %s (%s)" % p for p in result['removed'] ])
+            print "Repositories URL : \n%s" % "\n".join([ "  %s" % p for p in result['repos'] ])
 
         elif action=='upgradedb':
             (old,new) = mywapt.waptdb.upgradedb()
@@ -350,8 +364,23 @@ def main():
                         for f in result['files']:
                             print " %s" % f[0]
                         print('...done. Package filename %s' % (package_fn,))
+
+                        def pwd_callback(*args):
+                            """Default password callback for opening private keys"""
+                            return open(options.private_key_passwd,'r').read()
+
                         if mywapt.private_key:
-                            print '\nYou can sign the package with\n  %s sign-package %s' % (sys.argv[0],package_fn)
+                            print('Signing %s' % package_fn)
+                            if options.private_key_passwd:
+                                signature = mywapt.signpackage(package_fn,
+                                    excludes=options.excludes.split(','),callback=pwd_callback)
+                            else:
+                                signature = mywapt.signpackage(package_fn,
+                                    excludes=options.excludes.split(','))
+                            print "Package %s signed : signature :\n%s" % (package_fn,signature)
+                        else:
+                            logger.warning('No private key provided, package %s is unsigned !' % package_fn)
+
                         if mywapt.upload_cmd:
                             print '\nYou can upload to repository with\n  %s upload-package %s ' % (sys.argv[0],package_fn )
                         return 0
