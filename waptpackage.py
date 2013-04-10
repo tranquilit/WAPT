@@ -129,7 +129,11 @@ class PackageEntry(object):
     def __cmp__(self,entry_or_version):
         def nat_cmp(a, b):
             a, b = a or '', b or ''
-            convert = lambda text: text.isdigit() and int(text) or text.lower()
+            def convert(text):
+                if text.isdigit():
+                    return int(text)
+                else:
+                    return text.lower()
             alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
             return cmp(alphanum_key(a), alphanum_key(b))
 
@@ -367,6 +371,13 @@ def update_packages(adir):
 
 if __name__ == '__main__':
     w = PackageEntry()
+    w.load_control_from_wapt(r'C:\shapers\openproj-wapt')
+
+    w2=PackageEntry()
+    w2.load_control_from_wapt(r'c:\shapers\openproj_1.4.0-00_all.wapt')
+
+    assert w>w2
+
     w.description = u'Package testé'
     w.package = 'wapttest'
     w.architecture = 'All'

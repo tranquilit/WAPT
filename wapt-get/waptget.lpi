@@ -21,7 +21,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="6"/>
-      <RevisionNr Value="8"/>
+      <RevisionNr Value="9"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -58,11 +58,10 @@
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="176"/>
-        <CursorPos X="72" Y="202"/>
+        <CursorPos X="38" Y="200"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -70,9 +69,10 @@
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="125"/>
+        <TopLine Value="85"/>
         <CursorPos X="3" Y="144"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
@@ -83,7 +83,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="507"/>
         <CursorPos X="25" Y="544"/>
-        <UsageCount Value="52"/>
+        <UsageCount Value="48"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\jcl\source\common\JclSysInfo.pas"/>
@@ -91,14 +91,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="5575"/>
         <CursorPos X="47" Y="5598"/>
-        <UsageCount Value="226"/>
+        <UsageCount Value="222"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\jcl\source\include\jcl.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="226"/>
+        <UsageCount Value="222"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\superobject\superobject.pas"/>
@@ -106,7 +106,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="3146"/>
         <CursorPos X="31" Y="3164"/>
-        <UsageCount Value="215"/>
+        <UsageCount Value="211"/>
       </Unit5>
       <Unit6>
         <Filename Value="soutils.pas"/>
@@ -134,7 +134,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="4724"/>
         <CursorPos X="33" Y="4747"/>
-        <UsageCount Value="41"/>
+        <UsageCount Value="37"/>
       </Unit8>
       <Unit9>
         <Filename Value="tisstrings.pas"/>
@@ -164,7 +164,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="190"/>
         <CursorPos X="21" Y="208"/>
-        <UsageCount Value="41"/>
+        <UsageCount Value="37"/>
       </Unit11>
       <Unit12>
         <Filename Value="networkadapterinfo.pas"/>
@@ -181,7 +181,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="172"/>
         <CursorPos X="23" Y="192"/>
-        <UsageCount Value="38"/>
+        <UsageCount Value="59"/>
         <Loaded Value="True"/>
       </Unit13>
     </Units>

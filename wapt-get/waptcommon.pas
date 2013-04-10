@@ -380,14 +380,16 @@ begin
 
     if lst.IndexOf('wapt_action')<0 then
     begin
-      db.ExecuteDirect('CREATE TABLE wapt_action ('+
+      db.ExecuteDirect('CREATE TABLE wapt_task ('+
         'id integer NOT NULL PRIMARY KEY AUTOINCREMENT,'+
         'action varchar(16),'+
         'state varchar(16), '+
         'current_step varchar(255),'+
+        'process_id integer,'+
         'start_date varchar(255), '+
         'finish_date varchar(255),   '+
         'package_name varchar(255), '+
+        'username varchar(255), '+
         'package_version_min varchar(255),'+
         'package_version_max varchar(255), '+
         'rundate_min varchar(255),'+
@@ -396,7 +398,7 @@ begin
         'run_params VARCHAR(800),'+
         'run_output TEXT'+
         ');');
-       db.ExecuteDirect('create index if not exists idx_action_state on wapt_action(state);');
+       db.ExecuteDirect('create index if not exists idx_task_state on wapt_task(state);');
     end;
 
   finally
