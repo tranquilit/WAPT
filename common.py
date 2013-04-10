@@ -564,16 +564,16 @@ db_upgrades = {
         },
  ('20130327','20130408'):{
         },
+ ('20130408','20130410'):{
+        },
     }
-
-
 
 class WaptDB(object):
     """Class to manage SQLite database with local installation status"""
     dbpath = ''
     db = None
 
-    curr_db_version = '20130408'
+    curr_db_version = '20130410'
 
     def __init__(self,dbpath):
         self._db_version = None
@@ -612,7 +612,9 @@ class WaptDB(object):
                 return (old_structure_version,old_structure_version)
 
             if not (old_structure_version,self.curr_db_version) in db_upgrades:
-                raise Exception('Unable to upgrade DB from version %s to version %s, no rules' % (old_structure_version,self.curr_db_version))
+                logger.warning('no rules to upgrade from version %s to version %s, ' % (old_structure_version,self.curr_db_version))
+                return (old_structure_version,self.curr_db_version)
+
             logger.info('Upgrade database schema')
             # we will backup old data in a file so that we can rollback
             backupfn = os.path.join(os.path.dirname(self.dbpath),time.strftime('%Y%m%d-%H%M%S')+'.sqlite')
@@ -725,7 +727,7 @@ class WaptDB(object):
         # action : install, remove, check, session_setup, update, upgrade
         # state : draft, planned, postponed, running, done, error, canceled
         self.db.execute("""
-            CREATE TABLE wapt_task (
+            CREATE TABLE if not exists wapt_task (
                 id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
                 action varchar(16),
                 state varchar(16),
@@ -754,6 +756,22 @@ class WaptDB(object):
         self.db.execute("""
           create index if not exists idx_task_package_name on wapt_task(package_name);
           """)
+
+
+        self.db.execute("""
+        create table if not exists wapt_sessionsetup (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          username varchar(255),
+          package varchar(255),
+          version varchar(255),
+          architecture varchar(255),
+          install_date varchar(255),
+          install_status varchar(255),
+          install_output TEXT
+          )"""
+                        )
+        self.db.execute("""
+        create index idx_sessionsetup_username on wapt_sessionsetup(username,package);""")
 
         return self.curr_db_version
 
@@ -1725,7 +1743,8 @@ class Wapt(object):
         previous = self.waptdb.known_packages()
         if not self.wapt_repourl:
             raise Exception('No main WAPT repository available or setup')
-        repos = [self.wapt_repourl] + [r.repo_url for r in self.repositories]
+        # put main repo at the end so that it will used in priority
+        repos = [r.repo_url for r in self.repositories] + [self.wapt_repourl]
         self.waptdb.update_repos_list(repos)
 
         current = self.waptdb.known_packages()

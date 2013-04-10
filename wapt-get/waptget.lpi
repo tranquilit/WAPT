@@ -72,8 +72,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="85"/>
-        <CursorPos X="3" Y="144"/>
+        <TopLine Value="373"/>
+        <CursorPos X="52" Y="383"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
       </Unit1>
@@ -83,7 +83,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="507"/>
         <CursorPos X="25" Y="544"/>
-        <UsageCount Value="48"/>
+        <UsageCount Value="47"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\jcl\source\common\JclSysInfo.pas"/>
@@ -91,14 +91,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="5575"/>
         <CursorPos X="47" Y="5598"/>
-        <UsageCount Value="222"/>
+        <UsageCount Value="221"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\jcl\source\include\jcl.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="222"/>
+        <UsageCount Value="221"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\superobject\superobject.pas"/>
@@ -106,7 +106,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="3146"/>
         <CursorPos X="31" Y="3164"/>
-        <UsageCount Value="211"/>
+        <UsageCount Value="210"/>
       </Unit5>
       <Unit6>
         <Filename Value="soutils.pas"/>
@@ -134,7 +134,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="4724"/>
         <CursorPos X="33" Y="4747"/>
-        <UsageCount Value="37"/>
+        <UsageCount Value="36"/>
       </Unit8>
       <Unit9>
         <Filename Value="tisstrings.pas"/>
@@ -164,7 +164,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="190"/>
         <CursorPos X="21" Y="208"/>
-        <UsageCount Value="37"/>
+        <UsageCount Value="36"/>
       </Unit11>
       <Unit12>
         <Filename Value="networkadapterinfo.pas"/>
@@ -181,7 +181,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="172"/>
         <CursorPos X="23" Y="192"/>
-        <UsageCount Value="59"/>
+        <UsageCount Value="64"/>
         <Loaded Value="True"/>
       </Unit13>
     </Units>

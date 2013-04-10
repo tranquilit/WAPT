@@ -378,9 +378,9 @@ begin
       db.ExecuteDirect('create unique index if not exists idx_params_name on wapt_params(name)');
     end;
 
-    if lst.IndexOf('wapt_action')<0 then
+    if lst.IndexOf('wapt_task')<0 then
     begin
-      db.ExecuteDirect('CREATE TABLE wapt_task ('+
+      db.ExecuteDirect('CREATE TABLE if not exists wapt_task ('+
         'id integer NOT NULL PRIMARY KEY AUTOINCREMENT,'+
         'action varchar(16),'+
         'state varchar(16), '+
