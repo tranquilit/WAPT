@@ -271,7 +271,10 @@ class PackageEntry(object):
                 myzip = zipfile.ZipFile(fname,'a')
             else:
                 myzip = zipfile.ZipFile(fname,'w')
-            myzip.writestr('WAPT/control',self.ascontrol().encode('utf8'),compress_type=zipfile.ZIP_STORED)
+            try:
+                myzip.writestr('WAPT/control',self.ascontrol().encode('utf8'),compress_type=zipfile.ZIP_STORED)
+            except:
+                myzip.writestr('WAPT/control',self.ascontrol().encode('utf8'))
 
     def ascontrol(self,with_non_control_attributes = False):
         val = u"""\
@@ -364,7 +367,10 @@ def update_packages(adir):
 
     logger.info("Writing new %s" % packages_fname)
     myzipfile = zipfile.ZipFile(packages_fname, "w")
-    myzipfile.writestr("Packages",'\n'.join(packages),compress_type=zipfile.ZIP_DEFLATED)
+    try:
+        myzipfile.writestr("Packages",'\n'.join(packages),compress_type=zipfile.ZIP_DEFLATED)
+    except:
+        myzipfile.writestr("Packages",'\n'.join(packages))
     myzipfile.close()
     logger.info("Finished")
 
