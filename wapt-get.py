@@ -181,15 +181,16 @@ def main():
     logger.debug('WAPT DB Structure version;: %s' % mywapt.waptdb.db_version)
 
     try:
+        params_dict = {}
+        try:
+            params_dict = json.loads(options.params.replace("'",'"'))
+        except:
+            raise Exception('Install Parameters must be in json format')
+
         if action=='install' or action=='download':
             if len(args)<2:
                 print "You must provide at least one package name"
                 sys.exit(1)
-            params_dict = {}
-            try:
-                params_dict = json.loads(options.params.replace("'",'"'))
-            except:
-                raise Exception('Install Parameters should be in json format')
 
             if os.path.isdir(args[1]) or os.path.isfile(args[1]):
                 print "installing WAPT file %s" % args[1]
@@ -276,16 +277,22 @@ def main():
                 print "You must provide at least one package to be configured in user's session"
                 sys.exit(1)
 
-            params_dict = {}
-            try:
-                params_dict = json.loads(options.params.replace("'",'"'))
-            except:
-                raise Exception('Install Parameters must be in json format')
-
             for packagename in args[1:]:
                 print "Configuring %s ..." % (packagename,),
                 mywapt.session_setup(packagename,params_dict=params_dict)
                 print "done"
+
+        elif action=='uninstall':
+            # launch the setup.uninstall() procedure for the given packages
+            # can be used when registering in registry a custom install with a python script
+            if len(args)<2:
+                print "You must provide at least one package to be uninstalled"
+                sys.exit(1)
+
+            for packagename in args[1:]:
+                print "uninstalling %s ..." % (packagename,),
+                mywapt.uninstall(packagename,params_dict=params_dict)
+                print "uninstall done"
 
         elif action=='update':
             result = mywapt.update()

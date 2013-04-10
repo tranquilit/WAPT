@@ -506,7 +506,7 @@ def tryurl(url):
 
 PackageKey = namedtuple('package',('packagename','version'))
 
-# tables : old_table_name:[newtablename,{dict of changed field names}]
+# tables : (oldversion:newversion) : old_table_name:[newtablename,{dict of changed field names}]
 db_upgrades = {
  ('0000','20130327'):{
         'wapt_localstatus':['wapt_localstatus',{
@@ -536,6 +536,33 @@ db_upgrades = {
             }],
         },
  ('0000','20130408'):{
+        'wapt_localstatus':['wapt_localstatus',{
+            'Package':'package',
+            'Version':'version',
+            'Architecture':'architecture',
+            'InstallDate':'install_date',
+            'InstallStatus':'install_status',
+            'InstallOutput':'install_output',
+            'InstallParams':'install_params',
+            'UninstallString':'uninstall_string',
+            'UninstallKey':'uninstall_key',
+            }],
+        'wapt_repo':['wapt_package',{
+            'Package':'package',
+            'Version':'version',
+            'Architecture':'architecture',
+            'Section':'section',
+            'Priority':'priority',
+            'Maintainer':'maintainer',
+            'Description':'description',
+            'Filename':'filename',
+            'Size':'size',
+            'MD5sum':'md5sum',
+            'Depends':'depends',
+            'Sources':'sources',
+            }],
+        },
+ ('0000','20130410'):{
         'wapt_localstatus':['wapt_localstatus',{
             'Package':'package',
             'Version':'version',
@@ -606,14 +633,15 @@ class WaptDB(object):
         """Update local database structure to current version if rules are described in db_upgrades"""
         try:
             backupfn = ''
-            old_structure_version = self.db_version
+            # use cached value to avoid infinite loop
+            old_structure_version = self._db_version
             if old_structure_version >= self.curr_db_version:
                 logger.critical('upgrade db aborted : current structure version %s is newer or equal to requested structure version %s' % (old_structure_version,self.curr_db_version))
                 return (old_structure_version,old_structure_version)
 
             if not (old_structure_version,self.curr_db_version) in db_upgrades:
-                logger.warning('no rules to upgrade from version %s to version %s, ' % (old_structure_version,self.curr_db_version))
-                return (old_structure_version,self.curr_db_version)
+                logger.critical('no rules to upgrade from version %s to version %s, keeping old database' % (old_structure_version,self.curr_db_version))
+                return (old_structure_version,old_structure_version)
 
             logger.info('Upgrade database schema')
             # we will backup old data in a file so that we can rollback
@@ -670,11 +698,11 @@ class WaptDB(object):
             raise
 
     def initdb(self):
-        """Initialize curretn sqlite db with empty table and return structure version"""
+        """Initialize current sqlite db with empty table and return structure version"""
         assert(isinstance(self.db,sqlite3.Connection))
         logger.debug('Initialize Wapt database')
         self.db.execute("""
-        create table wapt_package (
+        create table if not exists wapt_package (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           package varchar(255),
           version varchar(255),
@@ -692,10 +720,10 @@ class WaptDB(object):
           )"""
                         )
         self.db.execute("""
-        create index idx_package_name on wapt_package(package);""")
+        create index if not exists idx_package_name on wapt_package(package);""")
 
         self.db.execute("""
-        create table wapt_localstatus (
+        create table if not exists wapt_localstatus (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           package varchar(255),
           version varchar(255),
@@ -710,7 +738,7 @@ class WaptDB(object):
           )"""
                         )
         self.db.execute("""
-        create index idx_localstatus_name on wapt_localstatus(package);""")
+        create index if not exists idx_localstatus_name on wapt_localstatus(package);""")
 
         self.db.execute("""
         create table if not exists wapt_params (
@@ -787,10 +815,11 @@ class WaptDB(object):
             except Exception,e:
                 logger.critical('Unable to get DB version (%s), upgrading' % e)
                 self.db.rollback()
+                # pre-params version
+                self._db_version = '0000'
                 self.upgradedb()
                 self.db.execute('insert into wapt_params(name,value,create_date) values (?,?,?)',('db_version','0000',datetime2isodate()))
                 self.db.commit()
-                self._db_version = '0000'
         return self._db_version
 
     @db_version.setter
@@ -2130,6 +2159,57 @@ and install all newest packages"""
             sys.path = oldpath
             logger.debug('  Change current directory to %s' % previous_cwd)
             os.chdir(previous_cwd)
+
+    def uninstall(self,packagename,params_dict={}):
+        """Launch the uninstall script of an installed package"
+           Source setup.py from database or filename
+        """
+        logger.info("setup.Uninstall for package %s with params %s" % (packagename,params_dict))
+
+        oldpath = sys.path
+        try:
+            previous_cwd = os.getcwd()
+            if os.path.isdir(packagename):
+                setup = import_setup(os.path.join(directoryname,'setup.py'),'__waptsetup__')
+            else:
+                logger.debug('Sourcing setup from DB')
+                setup = import_code(self.is_installed(packagename)['setuppy'],'__waptsetup__')
+
+            required_params = []
+             # be sure some minimal functions are available in setup module at install step
+            logger.debug('Source import OK')
+            if hasattr(setup,'uninstall'):
+                logger.info('Launch uninstall')
+                setattr(setup,'run',setuphelpers.run)
+                setattr(setup,'run_notfatal',setuphelpers.run_notfatal)
+                setattr(setup,'WAPT',self)
+
+                # get value of required parameters if not already supplied
+                for p in required_params:
+                    if not p in params_dict:
+                        params_dict[p] = raw_input("%s: " % p)
+
+                # set params dictionary
+                if not hasattr(setup,'params'):
+                    # create a params variable for the setup module
+                    setattr(setup,'params',params_dict)
+                else:
+                    # update the already created params with additional params from command line
+                    setup.params.update(params_dict)
+
+                result = setup.uninstall()
+                return result
+            else:
+                raise Exception('No uninstall() function in setup.py for package %s' % packagename)
+        finally:
+            if 'setup' in dir():
+                del setup
+            else:
+                logger.critical('Unable to read setup.py file')
+            sys.path = oldpath
+            logger.debug('  Change current directory to %s' % previous_cwd)
+            os.chdir(previous_cwd)
+
 
     def checkinstalled(self):
         """Source setup.py and launch checkinstalled"""

@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.4.4"
+__version__ = "0.4.5"
 
 import os
 import sys
@@ -215,6 +215,27 @@ def default_overwrite_older(src,dst):
     else:
         logger.debug(u'Overwriting file on target is older than source: "%s"' % (dst,))
         return True
+
+def register_ext(appname,fileext,shellopen,icon=None,otherverbs=[]):
+    """Associates a file extension with an application, and command to open it"""
+    def setvalue(key,path,value):
+        rootpath = os.path.dirname(path)
+        name = os.path.basename(path)
+        k = reg_openkey_noredir(key,path,sam=KEY_READ | KEY_WRITE,create_if_missing=True)
+        if value<>None:
+            reg_setvalue(k,'',value)
+    filetype = appname+fileext
+    setvalue(HKEY_CLASSES_ROOT,fileext,filetype)
+    setvalue(HKEY_CLASSES_ROOT,filetype,appname+ " file")
+    if icon:
+        setvalue(HKEY_CLASSES_ROOT,makepath(filetype,"DefaultIcon"),icon)
+    setvalue(HKEY_CLASSES_ROOT,makepath(filetype,"shell"),'')
+    setvalue(HKEY_CLASSES_ROOT,makepath(filetype,"shell","open"),'')
+    setvalue(HKEY_CLASSES_ROOT,makepath(filetype,"shell","open","command"),shellopen)
+    if otherverbs:
+        for (verb,cmd) in otherverbs:
+            setvalue(HKEY_CLASSES_ROOT,makepath(filetype,"shell",verb),'')
+            setvalue(HKEY_CLASSES_ROOT,makepath(filetype,"shell",verb,"command"),cmd)
 
 def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy):
     """Copy src directory to dst directory. dst is created if it doesn't exists
@@ -500,6 +521,8 @@ def register_uninstall(uninstallkey,uninstallstring,win64app=False,
     reg_setvalue(appkey,'install_date',currentdate())
     if quiet_uninstall_string:
         reg_setvalue(appkey,'QuietUninstallString',quiet_uninstall_string)
+    else:
+        reg_setvalue(appkey,'QuietUninstallString',uninstallstring)
     if display_name:
         reg_setvalue(appkey,'DisplayName',display_name)
     if display_version:
