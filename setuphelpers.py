@@ -43,6 +43,7 @@ import ctypes
 import _winreg
 import platform
 import winshell
+from win32com.shell import shell, shellcon
 
 from iniparse import RawConfigParser
 
@@ -663,7 +664,7 @@ def service_is_running(service_name):
     return win32serviceutil.QueryServiceStatus(service_name)[1] == win32service.SERVICE_RUNNING
 
 def user_appdata():
-    return
+    return winshell.get_path(shellcon.CSIDL_APPDATA)
 
 remove_file=os.unlink
 remove_tree=shutil.rmtree
