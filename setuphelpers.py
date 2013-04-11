@@ -173,7 +173,7 @@ def wget(url,target,reporthook=None,proxies=None):
 
     total_bytes = int(r.headers['content-length'])
     chunk_size = max([total_bytes/100,1000])
-    print "Downloading %s (%.1f Mb)" % (url,total_bytes/1024/1024)
+    print "Downloading %s (%.1f Mb)" % (url,int(total_bytes)/1024/1024)
 
     output_file = open(os.path.join(dir,filename),'wb')
     try:
@@ -194,7 +194,7 @@ def wget(url,target,reporthook=None,proxies=None):
         output_file.close()
 
     #(localpath,headers) = WaptURLopener(proxies=proxies).retrieve(url=url, filename=os.path.join(dir,filename),reporthook=reporthook or report,)
-    print "  -> download finished (%.0f Kb/s)" % (url,total_bytes/(1024*(time.time()-start_time)))
+    print "  -> download finished (%.0f Kb/s)" % (total_bytes/(1024*(time.time()-start_time)))
     return os.path.join(dir,filename)
 
 def filecopyto(filename,target):
