@@ -21,12 +21,11 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.4.5"
+__version__ = "0.4.6"
 
 import os
 import sys
 import logging
-import urllib,urllib2
 import tempfile
 import shutil
 import subprocess
@@ -39,6 +38,9 @@ import win32service
 import win32serviceutil
 import glob
 import ctypes
+
+import requests
+import time
 
 import _winreg
 import platform
@@ -130,29 +132,27 @@ def create_user_programs_menu_shortcut(label, target='', wDir='', icon=''):
     create_shortcut(sc,target,wDir,icon)
     return sc
 
-
-
-def wgets(url):
+def wgets(url,proxies=None):
     """Return the content of a remote resources as a String"""
-    return urllib2.urlopen(url).read()
+    r = requests.get(url,proxies=proxies)
+    if r.ok:
+        return r.text
+    else:
+        r.raise_for_status()
 
-class WaptURLopener(urllib.FancyURLopener):
-  def http_error_default(self, url, fp, errcode, errmsg, headers):
-    raise urllib2.HTTPError(url,errcode,errmsg,headers,fp)
+last_time_display = 0
 
-last_progress_display = 0
-
-def wget(url,target,reporthook=None):
+def wget(url,target,reporthook=None,proxies=None):
     """Copy the contents of a file from a given URL
     to a local file.
     """
     def report(bcount,bsize,total):
-        global last_progress_display
-
+        global last_time_display
         if total>0 and bsize>0:
-            if bcount * bsize * 100 / total - last_progress_display >= 10:
-                print '%i / %i (%.0f%%)\r' % (bcount*bsize,total,100.0*bcount*bsize/total),
-                last_progress_display = bcount * bsize * 100 / total
+            # print only every second or at end
+            if (time.time()-last_time_display>=.1) or (bcount*bsize>=total) :
+                print '%i / %i (%.0f%%) (%.0f KB/s)\r' % (bcount*bsize,total,100.0*bcount*bsize/total, bsize/(1024*(time.time()-last_time_display))),
+                last_time_display = time.time()
 
     if os.path.isdir(target):
         target = os.path.join(target,'')
@@ -168,8 +168,33 @@ def wget(url,target,reporthook=None):
 
     global last_progress_display
     last_progress_display = 0
-    (localpath,headers) = WaptURLopener().retrieve(url,os.path.join(dir,filename),reporthook or report)
-    print "download %s finished" % url
+    start_time = time.time()
+    r = requests.get(url,stream=True, proxies=proxies)
+
+    total_bytes = int(r.headers['content-length'])
+    chunk_size = max([total_bytes/100,1000])
+    print "Downloading %s (%.1f Mb)" % (url,total_bytes/1024/1024)
+
+    output_file = open(os.path.join(dir,filename),'wb')
+    try:
+        if not reporthook:
+            reporthook = report
+        reporthook(0,chunk_size,total_bytes)
+        cnt = 0
+        if r.ok:
+            for chunk in r.iter_content(chunk_size=chunk_size):
+                output_file.write(chunk)
+                reporthook(cnt,len(chunk),total_bytes)
+                cnt +=1
+            reporthook(total_bytes/chunk_size,chunk_size,total_bytes)
+
+        else:
+            r.raise_for_status()
+    finally:
+        output_file.close()
+
+    #(localpath,headers) = WaptURLopener(proxies=proxies).retrieve(url=url, filename=os.path.join(dir,filename),reporthook=reporthook or report,)
+    print "  -> download finished (%.0f Kb/s)" % (url,total_bytes/(1024*(time.time()-start_time)))
     return os.path.join(dir,filename)
 
 def filecopyto(filename,target):

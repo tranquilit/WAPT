@@ -26,7 +26,6 @@ __version__ = "0.8.10"
 import sys
 import os
 import zipfile
-import urllib2
 import shutil
 from iniparse import RawConfigParser
 from optparse import OptionParser

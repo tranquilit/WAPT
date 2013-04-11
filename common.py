@@ -37,7 +37,7 @@ import codecs
 import sqlite3
 import json
 import StringIO
-import urllib2
+import requests
 import fnmatch
 import platform
 import imp
@@ -494,12 +494,15 @@ def get_domain_fromregistry():
         (domain,atype) = QueryValueEx(key,'Domain')
     return domain
 
-def tryurl(url):
+def tryurl(url,proxies=None):
     try:
         logger.debug('  trying %s' % url)
-        urllib2.urlopen(url)
-        logger.debug('  OK')
-        return True
+        headers = requests.head(url,proxies=proxies)
+        if headers.ok:
+            logger.debug('  OK')
+            return True
+        else:
+            headers.raise_for_status()
     except Exception,e:
         logger.debug('  Not available : %s' % e)
         return False
@@ -1095,7 +1098,7 @@ class WaptDB(object):
                 result[p.package] = available
         return result
 
-    def update_repos_list(self,url_list):
+    def update_repos_list(self,url_list,proxies=None):
         """Cleanup all"""
         try:
             logger.info('Purge packages table')
@@ -1104,7 +1107,7 @@ class WaptDB(object):
             for url in url_list:
                 logger.info('Getting packages from %s' % url)
                 try:
-                    self.update_packages_list(url)
+                    self.update_packages_list(url,proxies=proxies)
                 except Exception,e:
                     logger.critical('Error getting packages from %s : %s' % (url,e))
             logger.debug('Commit wapt_package updates')
@@ -1113,14 +1116,14 @@ class WaptDB(object):
             self.db.rollback()
             raise
 
-    def update_packages_list(self,repourl):
+    def update_packages_list(self,repourl,proxies=None):
         """Get Packages from http repo and update local package database"""
         try:
             result = []
             packagesfn = repourl + '/Packages'
             logger.debug('read remote Packages zip file %s' % packagesfn)
             packageListFile = codecs.decode(zipfile.ZipFile(
-                  StringIO.StringIO( urllib2.urlopen(packagesfn).read())
+                  StringIO.StringIO( requests.get(packagesfn,proxies=proxies).content)
                 ).read(name='Packages'),'UTF-8').splitlines()
 
             logger.debug('Purge packages table')
@@ -1300,6 +1303,11 @@ class Wapt(object):
         else:
             self.upload_cmd = False
 
+        if config.has_option('global','http_proxy'):
+            self.proxies = {'http':config.get('global','http_proxy')}
+        else:
+            self.proxies =None
+
         self.repositories = []
         if config.has_option('global','repositories'):
             names = [n.strip() for n in config.get('global','repositories').split(',')]
@@ -1309,6 +1317,8 @@ class Wapt(object):
                     w = WaptRepo(name).from_inifile(config)
                     self.repositories.append(w)
                     logger.debug('    %s:%s' % (w.name,w.repo_url))
+
+
 
     @property
     def waptdb(self):
@@ -1774,7 +1784,7 @@ class Wapt(object):
             raise Exception('No main WAPT repository available or setup')
         # put main repo at the end so that it will used in priority
         repos = [r.repo_url for r in self.repositories] + [self.wapt_repourl]
-        self.waptdb.update_repos_list(repos)
+        self.waptdb.update_repos_list(repos,proxies=self.proxies)
 
         current = self.waptdb.known_packages()
         result = {
@@ -1920,7 +1930,7 @@ class Wapt(object):
             else:
                 logger.info("  Downloading package from %s" % download_url)
                 try:
-                    setuphelpers.wget( download_url, self.packagecachedir)
+                    setuphelpers.wget( download_url, self.packagecachedir,proxies=self.proxies)
                     downloaded.append(fullpackagepath)
                 except BaseException as e:
                     if os.path.isfile(fullpackagepath):
@@ -2012,6 +2022,11 @@ and install all newest packages"""
     def inventory(self):
         """Return software inventory of the computer as a dictionary"""
         inv = {}
+        inv['wapt'] = {
+            'wapt-exe-version': setuphelpers.get_file_properties(sys.argv[0])['FileVersion'],
+            'setuphelpers-version': setuphelpers.__version__,
+            'wapt-py-version': __version__,
+            }
         inv['softwares'] = setuphelpers.installed_softwares('')
         inv['packages'] = self.waptdb.installed()
         return inv
