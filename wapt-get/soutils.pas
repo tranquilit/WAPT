@@ -30,6 +30,7 @@ uses
 
 function StringList2SuperObject(St:TStringList):ISuperObject;
 function SplitLines(St:String):ISuperObject;
+//function Split(St:String;Sep:String):ISuperObject;
 
 function Dataset2SO(DS:TDataset;AllRecords:Boolean=True):ISuperObject;
 procedure SO2Dataset(SO:ISuperObject;DS:TDataset;ExcludedFields:Array of String);
@@ -56,6 +57,34 @@ begin
   repeat
     tok := StrToken(St,#13);
     Result.AsArray.Add(tok);
+  until St='';
+end;
+
+function Split(St: String; Sep: Char): ISuperObject;
+var
+  tok : String;
+begin
+  Result := TSuperObject.Create(stArray);
+  repeat
+    tok := StrToken(St,Sep);
+    Result.AsArray.Add(tok);
+  until St='';
+end;
+
+type
+  StrArray = Array of String;
+
+function Split(St: String; Sep: Char): StrArray;
+var
+  tok : String;
+  len : integer;
+begin
+  len := 0;
+  repeat
+    SetLength(Result,0);
+    inc(len);
+    tok := StrToken(St,Sep);
+    Result[len] := tok;
   until St='';
 end;
 

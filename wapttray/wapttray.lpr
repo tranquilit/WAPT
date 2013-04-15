@@ -28,14 +28,14 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, pl_indycomp, uwapttray, waptcommon, soutils, tiscommon;
+  Forms, pl_indycomp, uwapttray, waptcommon, soutils, tiscommon, uDMWAPTTray;
 
 {$R *.res}
 
 begin
   RequireDerivedFormResource := True;
   Application.Initialize;
-  Application.CreateForm(TVisWAPTTray, VisWAPTTray);
+  Application.CreateForm(TDMWaptTray, DMWaptTray);
   Application.Run;
 end.
 

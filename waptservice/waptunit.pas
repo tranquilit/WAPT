@@ -47,8 +47,8 @@ type
     FWAPTdb : TWAPTDB;
     { private declarations }
     inTimer:Boolean;
-    md5_password:TMD5Digest;
     function GetWaptDB: TWAPTDB;
+    function MD5PasswordForRepo(url: String): TMD5Digest;
     procedure SetWaptDB(AValue: TWAPTDB);
     function RepoTableHook(Data, FN: Utf8String): Utf8String;
     function StatusTableHook(Data, FN: Utf8String): Utf8String;
@@ -265,6 +265,29 @@ begin
      result[i]:=Hex2Dec(copy(hexstr,1+i*2,2));
 end;
 
+function TWaptDaemon.MD5PasswordForRepo(url:String):TMD5Digest;
+var
+  md5str,section : String;
+  ini : TIniFile;
+  i:integer;
+  repos:Array of String;
+begin
+  ini := TIniFile.Create(BaseDir + 'wapt-get.ini');
+  try
+    if url = '' then
+      section := 'global'
+    else
+    begin
+      //TODO
+      section := url;
+    end;
+    md5str := ini.ReadString(section,'md5_password','5f4dcc3b5aa765d61d8327deb882cf99');
+    MD5PasswordForRepo := hexstr2md5(md5str);
+  finally
+    ini.Free;
+  end;
+end;
+
 procedure TWaptDaemon.DataModuleCreate(Sender: TObject);
 var
   sh : TIdSocketHandle;
@@ -279,8 +302,6 @@ begin
     waptservice_port := ini.ReadInteger('global','service_port',waptservice_port);
     IdHTTPServer1.DefaultPort:= waptservice_port;
     //default md5 of 'password'
-    md5str := ini.ReadString('global','md5_password','5f4dcc3b5aa765d61d8327deb882cf99');
-    md5_password := hexstr2md5(md5str);
   finally
     ini.Free;
   end;
@@ -407,7 +428,7 @@ begin
     if ARequestInfo.URI='/enable' then
       Timer1.Enabled:=True
     else
-    if ARequestInfo.URI='/check_new' then
+    if ARequestInfo.URI='/checkupgrades' then
     begin
       AResponseInfo.ContentType:='application/json';
       AResponseInfo.ContentText:= '';
@@ -433,7 +454,7 @@ begin
     if (ARequestInfo.URI='/install') or (ARequestInfo.URI='/remove') or (ARequestInfo.URI='/showlog') then
     begin
       if not ARequestInfo.AuthExists or (ARequestInfo.AuthUsername <> 'admin') or
-        not MD5Match(MD5String(ARequestInfo.AuthPassword),md5_password) then
+        not MD5Match(MD5String(ARequestInfo.AuthPassword),MD5PasswordForRepo('')) then
       begin
         AResponseInfo.ResponseNo := 401;
         AResponseInfo.ResponseText := 'Authorization required';

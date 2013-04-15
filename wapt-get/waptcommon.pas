@@ -484,7 +484,6 @@ begin
     if sqltrans.Active then
       sqltrans.commit;
   end;
-
 end;
 
 function TWAPTDB.dumpdb: ISuperObject;

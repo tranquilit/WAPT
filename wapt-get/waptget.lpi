@@ -59,22 +59,20 @@
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="176"/>
-        <CursorPos X="38" Y="200"/>
+        <TopLine Value="297"/>
+        <CursorPos X="35" Y="312"/>
         <UsageCount Value="222"/>
-        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="374"/>
-        <CursorPos X="1" Y="405"/>
+        <TopLine Value="74"/>
+        <CursorPos X="24" Y="85"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
       </Unit1>
@@ -84,7 +82,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="507"/>
         <CursorPos X="25" Y="544"/>
-        <UsageCount Value="46"/>
+        <UsageCount Value="43"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\jcl\source\common\JclSysInfo.pas"/>
@@ -92,14 +90,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="5575"/>
         <CursorPos X="47" Y="5598"/>
-        <UsageCount Value="220"/>
+        <UsageCount Value="217"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\jcl\source\include\jcl.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="220"/>
+        <UsageCount Value="217"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\superobject\superobject.pas"/>
@@ -107,7 +105,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="3146"/>
         <CursorPos X="31" Y="3164"/>
-        <UsageCount Value="209"/>
+        <UsageCount Value="206"/>
       </Unit5>
       <Unit6>
         <Filename Value="soutils.pas"/>
@@ -122,12 +120,10 @@
         <Filename Value="tiscommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiscommon"/>
-        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="243"/>
-        <CursorPos X="76" Y="246"/>
+        <TopLine Value="33"/>
+        <CursorPos X="1" Y="49"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\jcl\source\common\JclUnicode.pas"/>
@@ -135,29 +131,25 @@
         <WindowIndex Value="0"/>
         <TopLine Value="4724"/>
         <CursorPos X="33" Y="4747"/>
-        <UsageCount Value="35"/>
+        <UsageCount Value="32"/>
       </Unit8>
       <Unit9>
         <Filename Value="tisstrings.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tisstrings"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1840"/>
         <CursorPos X="1" Y="1883"/>
         <UsageCount Value="260"/>
-        <Loaded Value="True"/>
       </Unit9>
       <Unit10>
         <Filename Value="tisinifiles.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tisinifiles"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="49"/>
         <CursorPos X="1" Y="49"/>
         <UsageCount Value="259"/>
-        <Loaded Value="True"/>
       </Unit10>
       <Unit11>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSResolver.pas"/>
@@ -165,148 +157,56 @@
         <WindowIndex Value="0"/>
         <TopLine Value="190"/>
         <CursorPos X="21" Y="208"/>
-        <UsageCount Value="35"/>
+        <UsageCount Value="32"/>
       </Unit11>
       <Unit12>
         <Filename Value="networkadapterinfo.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="NetworkAdapterInfo"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="108"/>
-        <CursorPos X="10" Y="94"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="255"/>
+        <Loaded Value="True"/>
       </Unit12>
       <Unit13>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\objpash.inc"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="172"/>
         <CursorPos X="23" Y="192"/>
-        <UsageCount Value="68"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="65"/>
       </Unit13>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="7" HistoryIndex="6">
       <Position1>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="52" Column="14" TopLine="34"/>
-      </Position1>
-      <Position2>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="53" Column="15" TopLine="34"/>
-      </Position2>
-      <Position3>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="153" Column="23" TopLine="135"/>
-      </Position3>
-      <Position4>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="152" Column="23" TopLine="135"/>
-      </Position4>
-      <Position5>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="153" Column="5" TopLine="135"/>
-      </Position5>
-      <Position6>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="234" Column="20" TopLine="216"/>
-      </Position6>
-      <Position7>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="281" Column="3" TopLine="264"/>
-      </Position7>
-      <Position8>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="299" Column="19" TopLine="281"/>
-      </Position8>
-      <Position9>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="225" Column="6" TopLine="185"/>
-      </Position9>
-      <Position10>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="164" Column="34" TopLine="141"/>
-      </Position10>
-      <Position11>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="161" Column="40" TopLine="141"/>
-      </Position11>
-      <Position12>
         <Filename Value="waptcommon.pas"/>
         <Caret Line="55" Column="1" TopLine="55"/>
-      </Position12>
-      <Position13>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="115" Column="22" TopLine="108"/>
-      </Position13>
-      <Position14>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="319" Column="1" TopLine="284"/>
-      </Position14>
-      <Position15>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="115" Column="24" TopLine="97"/>
-      </Position15>
-      <Position16>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="142" Column="13" TopLine="131"/>
-      </Position16>
-      <Position17>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="160" Column="29" TopLine="136"/>
-      </Position17>
-      <Position18>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="57" Column="61" TopLine="30"/>
-      </Position18>
-      <Position19>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="80" Column="29" TopLine="53"/>
-      </Position19>
-      <Position20>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="82" Column="14" TopLine="55"/>
-      </Position20>
-      <Position21>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="83" Column="13" TopLine="56"/>
-      </Position21>
-      <Position22>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="84" Column="21" TopLine="57"/>
-      </Position22>
-      <Position23>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="87" Column="30" TopLine="60"/>
-      </Position23>
-      <Position24>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="89" Column="14" TopLine="62"/>
-      </Position24>
-      <Position25>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="90" Column="11" TopLine="63"/>
-      </Position25>
-      <Position26>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="120" Column="12" TopLine="93"/>
-      </Position26>
-      <Position27>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="163" Column="26" TopLine="140"/>
-      </Position27>
-      <Position28>
+      </Position1>
+      <Position2>
         <Filename Value="waptcommon.pas"/>
         <Caret Line="302" Column="22" TopLine="267"/>
-      </Position28>
-      <Position29>
+      </Position2>
+      <Position3>
         <Filename Value="waptcommon.pas"/>
         <Caret Line="453" Column="3" TopLine="439"/>
-      </Position29>
-      <Position30>
+      </Position3>
+      <Position4>
         <Filename Value="waptcommon.pas"/>
         <Caret Line="308" Column="3" TopLine="304"/>
-      </Position30>
+      </Position4>
+      <Position5>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="178" Column="1" TopLine="172"/>
+      </Position5>
+      <Position6>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="85" Column="5" TopLine="78"/>
+      </Position6>
+      <Position7>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="131" Column="21" TopLine="115"/>
+      </Position7>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
