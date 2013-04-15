@@ -299,13 +299,15 @@ sources      : %(sources)s
             raise Exception('Not enough information to build the package filename')
         return self.package + '_' + self.version + '_' +  self.architecture  + '.wapt'
 
+    def asrequirement(self):
+        return "%s (=%s)" % (self.package,self.version)
+
     def __str__(self):
         return self.ascontrol(with_non_control_attributes=True)
 
     def __repr__(self):
         return "%s (%s):%s" % (self.package,self.version,self.architecture)
         #return self.ascontrol(with_non_control_attributes=True).encode('utf8')
-
 
 def update_packages(adir):
     """Scan adir directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash"""

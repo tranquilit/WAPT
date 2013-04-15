@@ -486,13 +486,6 @@ def host_ipv4():
             res.append( iface )
     return res
 
-def get_domain_fromregistry():
-    key = OpenKey(HKEY_LOCAL_MACHINE,"SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters")
-    try:
-        (domain,atype) = QueryValueEx(key,'DhcpDomain')
-    except:
-        (domain,atype) = QueryValueEx(key,'Domain')
-    return domain
 
 def tryurl(url,proxies=None):
     try:
@@ -1042,7 +1035,7 @@ class WaptDB(object):
         return result
 
     def installed(self):
-        """Return a dictionary of installed packages : keys=package,version, values = package dict """
+        """Return a dictionary of installed packages : keys=package, values = PackageEntry """
         q = self.query_package_entry("""\
               select l.install_date,l.install_status,l.install_output,l.install_params,
                 r.* from wapt_localstatus l
@@ -1169,9 +1162,8 @@ class WaptDB(object):
         MAXDEPTH = 30
         # roots : list of initial packages to avoid infinite loops
         def dodepends(explored,packages,depth):
-            if depth[0]>MAXDEPTH:
+            if depth>MAXDEPTH:
                 raise Exception.create('Max depth in build dependencies reached, aborting')
-            depth[0] += 1
             alldepends = []
             # loop over all package names
             for package in packages:
@@ -1183,14 +1175,14 @@ class WaptDB(object):
                     # TODO : use another older if this can limit the number of packages to install !
                     depends = [s.strip() for s in entries[-1].depends.split(',') if s.strip()<>'']
                     for d in depends:
-                        alldepends.extend(dodepends(explored,depends,depth))
+                        alldepends.extend(dodepends(explored,depends,depth+1))
                         if not d in alldepends:
                             alldepends.append(d)
                     explored.append(package)
             return alldepends
 
         explored = []
-        depth =[0]
+        depth = 0
         return dodepends(explored,packages,depth)
 
     def package_entry_from_db(self,package,version_min='',version_max=''):
@@ -1308,6 +1300,11 @@ class Wapt(object):
         else:
             self.proxies =None
 
+        if config.has_option('global','wapt_server'):
+            self.wapt_server = config.get('global','wapt_server')
+        else:
+            self.wapt_server = None
+
         self.repositories = []
         if config.has_option('global','repositories'):
             names = [n.strip() for n in config.get('global','repositories').split(',')]
@@ -1318,10 +1315,9 @@ class Wapt(object):
                     self.repositories.append(w)
                     logger.debug('    %s:%s' % (w.name,w.repo_url))
 
-
-
     @property
     def waptdb(self):
+        """Wapt database"""
         if not self._waptdb:
             self._waptdb = WaptDB(dbpath=self.dbpath)
             if self._waptdb.db_version < self._waptdb.curr_db_version:
@@ -1331,12 +1327,13 @@ class Wapt(object):
 
     @property
     def wapt_repourl(self):
+        """Wapt main repository URL"""
         if not self._wapt_repourl:
             self._wapt_repourl = self.find_wapt_server()
         return self._wapt_repourl
 
     def find_wapt_server(self):
-        """Search the nearest working WAPT repository given the following priority
+        """Search the nearest working main WAPT repository given the following priority
            - URL defined in ini file
            - first SRV record in the same network as one of the connected network interface
            - first SRV record with the highest weight
@@ -1366,7 +1363,7 @@ class Wapt(object):
             return False
 
         #dnsdomain = dns.resolver.get_default_resolver().domain.to_text()
-        dnsdomain = get_domain_fromregistry()
+        dnsdomain = setuphelpers.get_domain_fromregistry()
         logger.debug('Default DNS domain: %s' % dnsdomain)
 
         if dnsdomain and dnsdomain <> '.':
@@ -1455,7 +1452,7 @@ class Wapt(object):
 
     def registry_uninstall_snapshot(self):
         """Return list of uninstall ID from registry
-             launched nefore and after an installation to capture uninstallkey
+             launched before and after an installation to capture uninstallkey
         """
         result = []
         key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
@@ -1488,7 +1485,7 @@ class Wapt(object):
         return result
 
     def uninstall_cmd(self,guid):
-        """return the command stored in registry to uninstall a package """
+        """return the (quiet) command stored in registry to uninstall a software given its registry key"""
         def get_fromkey(uninstall):
             key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,guid))
             try:
@@ -1525,8 +1522,8 @@ class Wapt(object):
             else:
                 raise
 
-    def check_files_sha1(self,rootdir,manifest):
-        """check hexdigest sha1 for the files in manifest, returns a list of non matching files (corrupted)"""
+    def corrupted_files_sha1(self,rootdir,manifest):
+        """check hexdigest sha1 for the files in manifest, returns a list of non matching files (corrupted files)"""
         assert os.path.isdir(rootdir)
         assert isinstance(manifest,list) or isinstance(manifest,tuple)
         errors = []
@@ -1607,7 +1604,7 @@ class Wapt(object):
                         raise Exception('Package does not contain a signature, and unsigned packages install is not allowed')
 
                 manifest = json.loads(manifest_data)
-                errors = self.check_files_sha1(packagetempdir,manifest)
+                errors = self.corrupted_files_sha1(packagetempdir,manifest)
                 if errors:
                     raise Exception('Files corrupted, SHA1 not matching for %s' % (errors,))
             else:
@@ -1730,7 +1727,7 @@ class Wapt(object):
             sys.path = oldpath
 
     def get_sources(self,package):
-        """Download sources of package (if referenced in package as a https svn
+        """Download sources of package (if referenced in package as a https svn)
            in the current directory"""
         entry = self.waptdb.packages_matching(package)[-1]
         if not entry.Sources:
@@ -1762,7 +1759,7 @@ class Wapt(object):
         return {"status" : q[0]['install_status'], "log":q[0]['install_output']}
 
     def cleanup(self):
-        """Remove cached WAPT file from local disk"""
+        """Remove cached WAPT files from local disk"""
         result = []
         logger.info('Cleaning up WAPT cache directory')
         cachepath = self.packagecachedir
@@ -1775,9 +1772,11 @@ class Wapt(object):
 
     def update(self):
         """Update local database with packages definition from repositories
-            returns a dict of deltas
-                "removed" (Package,Version)
-                "added"  (Package,Version)
+            returns a dict of
+                "removed"
+                "added"
+                "count"
+                "repos"
         """
         previous = self.waptdb.known_packages()
         if not self.wapt_repourl:
@@ -1844,7 +1843,7 @@ class Wapt(object):
                 new_availables = self.waptdb.packages_matching(request)
                 if new_availables:
                     if not old_matches or (forceupgrade and old_matches < new_availables[-1]):
-                        packages.append([request,new_availables[-1]])
+                        additional_install.append([request,new_availables[-1]])
                     else:
                         skipped.append([request,old_matches])
                 else:
@@ -1861,9 +1860,20 @@ class Wapt(object):
             force=True reinstalls the packafes even if it is already installed
             params_dict is passed to the install() procedure in the packages setup.py of all packages
                 as params variables and as "setup module" attributes
+
+            Returns a dictionary of (package requirement,package) with 'install','skipped','additional'
         """
         if not isinstance(apackages,list):
             apackages = [apackages]
+
+        # ensure that apackages is a list of package requirements (strings)
+        new_apackages = []
+        for p in apackages:
+            if isinstance(p,PackageEntry):
+                new_apackages.append(p.asrequirement())
+            else:
+                new_apackages.append(p)
+        apackages = new_apackages
 
         actions = self.checkinstall(apackages,force=download_only or force,forceupgrade=True)
         actions['errors']=[]
@@ -1998,10 +2008,24 @@ class Wapt(object):
                 else:
                     raise Exception('  uninstall key not registered in local DB status, unable to remove properly. Please remove manually')
 
+    def host_packagename(self):
+        """Return package name for current computer"""
+        return "%s" % (setuphelpers.get_hostname().lower())
+
     def upgrade(self):
         """\
-Query localstatus database for packages with a version older than repository
-and install all newest packages"""
+        Install "well known" host package from main repository if not already installed
+        then
+        Query localstatus database for packages with a version older than repository
+        and install all newest packages
+        """
+        result = {}
+        logger.debug('Check if host package "%s" is available' % (self.host_packagename(), ))
+        host_packages = self.is_available(self.host_packagename())
+        if host_packages and not self.is_installed(host_packages[-1].asrequirement()):
+            logger.info('Host package %s is available and not installed, installing host package...' % (host_packages[-1],) )
+            result = self.install(host_packages[-1],force=True)
+
         upgrades = self.waptdb.upgradeable()
         logger.debug('upgrades : %s' % upgrades.keys())
         return self.install(upgrades.keys(),force=True)
@@ -2022,6 +2046,7 @@ and install all newest packages"""
     def inventory(self):
         """Return software inventory of the computer as a dictionary"""
         inv = {}
+        inv['host'] = setuphelpers.host_info()
         inv['wapt'] = {
             'wapt-exe-version': setuphelpers.get_file_properties(sys.argv[0])['FileVersion'],
             'setuphelpers-version': setuphelpers.__version__,
@@ -2029,7 +2054,12 @@ and install all newest packages"""
             }
         inv['softwares'] = setuphelpers.installed_softwares('')
         inv['packages'] = self.waptdb.installed()
-        return inv
+        if self.wapt_server:
+            req = requests.post(self.wapt_server,json.dumps(inv))
+            req.raise_for_status()
+            return req.content
+        else:
+            return inv
 
     def get_public_cert(self,repository='global'):
         if self.config.has_option(repository,'public_cert'):
@@ -2270,7 +2300,6 @@ and install all newest packages"""
         installer = os.path.basename(installer_path)
         (product_name,ext) = os.path.splitext(installer)
         product_desc = product_name
-
         if ext=='.exe':
             props = setuphelpers.get_file_properties(installer_path)
             product_name = props['ProductName'] or props['FileDescription'] or product_desc
@@ -2284,6 +2313,7 @@ and install all newest packages"""
                 product_desc = "%s (%s)" % (product_name,props['Manufacturer'])
             silentflag = '/q'
         else:
+            silentflag = ''
             props = {}
 
         if not packagename:
@@ -2345,6 +2375,75 @@ def install():
         else:
             logger.info('control file already exists, skip create')
         return (directoryname)
+
+    def makehosttemplate(self,packagename='',directoryname=''):
+        """Build a skeleton of WAPT package based on the properties of the supplied installer
+           Return the path of the skeleton
+        """
+        packagename = packagename.lower()
+        if directoryname:
+             directoryname = os.path.abspath(directoryname)
+
+        if not packagename:
+            packagename = setuphelpers.get_hostname().lower()
+        else:
+            packagename = packagename.lower()
+
+        if not directoryname:
+            directoryname = os.path.join(self.config.get('global','default_sources_root'),packagename)+'-%s' % self.config.get('global','default_sources_suffix','wapt')
+
+        if not os.path.isdir(os.path.join(directoryname,'WAPT')):
+            os.makedirs(os.path.join(directoryname,'WAPT'))
+        template = """\
+# -*- coding: utf-8 -*-
+from setuphelpers import *
+
+# registry key(s) where WAPT will find how to remove the application(s)
+uninstallkey = []
+
+# command(s) to launch to remove the application(s)
+uninstallstring = []
+
+# list of required parameters names (string) which canb be used during install
+required_params = []
+
+def install():
+    # if you want to modify the keys depending on environment (win32/win64... params..)
+    global uninstallkey
+    global uninstallstring
+    print('installing %(packagename)s')
+""" % locals()
+        setuppy_filename = os.path.join(directoryname,'setup.py')
+        if not os.path.isfile(setuppy_filename):
+            codecs.open(setuppy_filename,'w',encoding='utf8').write(template)
+        else:
+            logger.info('setup.py file already exists, skip create')
+
+        control_filename = os.path.join(directoryname,'WAPT','control')
+        if not os.path.isfile(control_filename):
+            entry = PackageEntry()
+            entry.package = packagename
+            entry.architecture='all'
+            entry.description = 'automatic package for %s ' % packagename
+            try:
+                entry.maintainer = win32api.GetUserNameEx(3)
+            except:
+                try:
+                    entry.maintainer = win32api.GetUserName()
+                except:
+                    entry.maintainer = os.environ['USERNAME']
+
+            entry.priority = 'optional'
+            entry.section = 'host'
+            entry.version = '0.0.0-00'
+            if self.config.has_option('global','default_sources_url'):
+                entry.Sources = self.config.get('global','default_sources_url') % {'packagename':packagename}
+            entry.depends = ','.join([u'%s' % k for k in self.waptdb.installed().keys() if k and k<>packagename ])
+            codecs.open(control_filename,'w',encoding='utf8').write(entry.ascontrol())
+        else:
+            logger.info('control file already exists, skip create')
+        return (directoryname)
+
 
     def is_installed(self,packagename):
         """Checks if a package is installed.

@@ -21,8 +21,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="6"/>
-      <RevisionNr Value="10"/>
-      <BuildNr Value="2"/>
+      <RevisionNr Value="11"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -72,7 +71,7 @@
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="74"/>
-        <CursorPos X="24" Y="85"/>
+        <CursorPos X="42" Y="94"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
       </Unit1>

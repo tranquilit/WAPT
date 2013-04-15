@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.4.6"
+__version__ = "0.4.7"
 
 import os
 import sys
@@ -41,6 +41,7 @@ import ctypes
 
 import requests
 import time
+import socket
 
 import _winreg
 import platform
@@ -379,10 +380,25 @@ def programfiles32():
 def iswin64():
     return 'PROGRAMW6432' in os.environ
 
-def getcomputername():
+def get_computername():
+    """Return host name (without domain part)"""
     return socket.gethostname()
 
-def getloggedinusers():
+def get_hostname():
+    """Return host fully qualified domain name"""
+    return socket.getfqdn()
+
+
+def get_domain_fromregistry():
+    """Return main DNS domain of the computer"""
+    key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE,"SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters")
+    try:
+        (domain,atype) = _winreg.QueryValueEx(key,'DhcpDomain')
+    except:
+        (domain,atype) = _winreg.QueryValueEx(key,'Domain')
+    return domain
+
+def get_loggedinusers():
     raise NotImplementedError()
     return []
 
@@ -573,11 +589,13 @@ def unregister_uninstall(uninstallkey,win64app=False):
         root = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"+uninstallkey
         _winreg.DeleteKey(_winreg.HKEY_LOCAL_MACHINE,root.encode('iso8859'))
 
+wincomputername = win32api.GetComputerName
+windomainname = win32api.GetDomainName
+
 def host_info():
     raise NotImplementedError()
     info = {}
-    info['waptgetversion'] = ""
-    info['computername'] =  getcomputername()
+    info['computername'] =  get_computername()
     info['dnsdomain'] = get_domain_fromregistry()
     info['workgroupname'] = ""
     info['biosinfo'] = ""
@@ -652,9 +670,6 @@ def get_msi_properties(msi_filename):
         except:
             break
     return result
-
-get_computer_name = win32api.GetComputerName
-get_domain_name = win32api.GetDomainName
 
 # some const
 programfiles = programfiles()
@@ -763,9 +778,9 @@ if __name__=='__main__':
     assert not service_is_running('waptservice')
     service_start('waptservice')
     assert not service_installed('wapt')
-    assert get_computer_name() <> ''
+    assert get_computername() <> ''
     #print getloggedinusers()
-    assert get_domain_name() <> ''
+    #assert get_domainname() <> ''
     assert get_msi_properties(glob.glob('C:\\Windows\\Installer\\*.msi')[0])['Manufacturer'] <> ''
     assert installed_softwares('offi')[0]['uninstallstring'] <> ''
     assert get_file_properties('c:\\wapt\\waptservice.exe')['FileVersion'] <>''

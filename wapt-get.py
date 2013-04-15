@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.10"
+__version__ = "0.8.11"
 
 import sys
 import os
@@ -53,7 +53,7 @@ WAPT install system.
 action is either :
   install [packages]: install one or several packages by name, directory or wapt file
   update : update package database
-  upgrade : upgrade installed packages
+  upgrade : upgrade installed packages, install host package if not installed.
   remove [packages] : remove installed packages
 
   download [packages]: force download one or several packages
@@ -354,6 +354,11 @@ def main():
             print "Template created. You can build the WAPT package by launching\n  %s build-package %s" % (sys.argv[0],source_dir)
             os.startfile(source_dir)
 
+        elif action=='make-host-template':
+            source_dir = mywapt.makehosttemplate(*args[1:])
+            print "Template created. You can build the WAPT package by launching\n  %s build-package %s" % (sys.argv[0],source_dir)
+            os.startfile(source_dir)
+
         elif action=='build-package':
             if len(args)<2:
                 print "You must provide at least one source directory for package build"
@@ -427,7 +432,6 @@ def main():
         elif action=='cleanup':
             result = mywapt.cleanup()
             print "Removed files : \n%s" % "\n".join([ "  %s" % p for p in result ])
-
 
         elif action=='inventory':
             print mywapt.inventory()
