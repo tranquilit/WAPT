@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.4.7"
+__version__ = "0.4.8"
 
 import os
 import sys
@@ -386,7 +386,7 @@ def get_computername():
 
 def get_hostname():
     """Return host fully qualified domain name"""
-    return socket.getfqdn()
+    return socket.getfqdn().lower()
 
 
 def get_domain_fromregistry():
@@ -446,9 +446,9 @@ def reg_openkey_noredir(key, sub_key, sam=_winreg.KEY_READ,create_if_missing=Fal
         if e.errno == 2:
             if create_if_missing:
                 if platform.machine() == 'AMD64':
-                    return _winreg.CreateKeyEx(key,sub_key,0, sam | _winreg.KEY_WOW64_64KEY | _winreg.KEY_WRITE )
+                    return _winreg.CreateKeyEx(key,sub_key,0, sam | _winreg.KEY_READ| _winreg.KEY_WOW64_64KEY | _winreg.KEY_WRITE )
                 else:
-                    return _winreg.CreateKeyEx(key,sub_key,0,sam | _winreg.KEY_WRITE )
+                    return _winreg.CreateKeyEx(key,sub_key,0,sam | _winreg.KEY_READ | _winreg.KEY_WRITE )
             else:
                 raise WindowsError(e.errno,'The key %s can not be opened' % sub_key)
 HKEY_CLASSES_ROOT = _winreg.HKEY_CLASSES_ROOT
@@ -463,6 +463,7 @@ KEY_READ = _winreg.KEY_READ
 REG_SZ = _winreg.REG_SZ
 REG_MULTI_SZ = _winreg.REG_MULTI_SZ
 REG_DWORD = _winreg.REG_DWORD
+REG_EXPAND_SZ = _winreg.REG_EXPAND_SZ
 
 def registry_readstring(root,path,keyname,default=''):
     """Get a string from registry given root (HKLM..) a path and a keyname
@@ -593,25 +594,61 @@ wincomputername = win32api.GetComputerName
 windomainname = win32api.GetDomainName
 
 def host_info():
-    raise NotImplementedError()
     info = {}
-    info['computername'] =  get_computername()
-    info['dnsdomain'] = get_domain_fromregistry()
-    info['workgroupname'] = ""
-    info['biosinfo'] = ""
-    info['biosdate'] = "0"
-    info['wmibiosinfo']= {
-        'SerialNumber': "",
-        'Manufacturer': ""}
-    info['macaddresses'] =[]
-    info['processorcount'] = 1
-    info['ipaddresses'] = []
-    info['physicalmemory'] = 0
-    info['virtualmemory'] = 0
-    info['systemmanufacturer'] = ""
-    info['biosversion'] = ""
-    info['systemproductname'] = "",
-    info['cpuname'] = ""
+
+    info['computer_name'] =  wincomputername()
+    info['computer_fqdn'] =  get_hostname()
+    info['dns_domain'] = get_domain_fromregistry()
+    info['workgroup_name'] = windomainname()
+    info['mac_addresses'] =[]
+    info['ip_addresses'] = []
+    info['cpu_name'] = ""
+    info['cpu_count'] = 1
+    info['physical_memory'] = 0
+    info['virtual_memory'] = 0
+    info['system_manufacturer'] = ""
+    info['system_productname'] = "",
+    info['win64'] = iswin64(),
+
+    info['wmi'] = {}
+    try:
+        import wmi
+        wm = wmi.WMI()
+        info['wmi']['Win32_ComputerSystem'] = {}
+        cs = wm.Win32_ComputerSystem()[0]
+        for k in cs.properties.keys():
+            prop = cs.wmi_property(k)
+            if prop:
+                info['wmi']['Win32_ComputerSystem'][k] = prop.Value
+        info['wmi']['Win32_ComputerSystemProduct'] = {}
+        cs = wm.Win32_ComputerSystemProduct()[0]
+        for k in cs.properties.keys():
+            prop = cs.wmi_property(k)
+            if prop:
+                info['wmi']['Win32_ComputerSystemProduct'][k] = prop.Value
+        info['wmi']['Win32_BIOS'] = {}
+        cs = wm.Win32_BIOS()[0]
+        for k in cs.properties.keys():
+            prop = cs.wmi_property(k)
+            if prop:
+                info['wmi']['Win32_BIOS'][k] = prop.Value
+        info['wmi']['Win32_BaseBoard'] = {}
+        cs = wm.Win32_BaseBoard()[0]
+        for k in cs.properties.keys():
+            prop = cs.wmi_property(k)
+            if prop:
+                info['wmi']['Win32_BaseBoard'][k] = prop.Value
+        na = info['wmi']['Win32_NetworkAdapter'] = []
+        for cs in wm.Win32_NetworkAdapter():
+            na.append({})
+            for k in cs.properties.keys():
+                prop = cs.wmi_property(k)
+                if prop:
+                    na[-1][k] = prop.Value
+
+    except:
+        raise
+
     return info
 
 
@@ -740,6 +777,15 @@ def unregister_dll(dllpath):
     logger.info('DLL %s unregistered' % dllpath)
     if result:
         raise Exception('Unregister DLL %s failed, code %i' % (dllpath,result))
+
+def add_to_system_path(path):
+    key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment',sam=KEY_READ | KEY_WRITE)
+    system_path = reg_getvalue(key,'Path').lower().split(';')
+    if not path.lower() in system_path:
+        system_path.append(path)
+        reg_setvalue(key,'Path',';'.join(system_path),type=REG_EXPAND_SZ)
+        win32api.SendMessage(win32con.HWND_BROADCAST,win32con.WM_SETTINGCHANGE,0,'Environment')
+    return system_path
 
 class EWaptSetupException(Exception):
     pass
