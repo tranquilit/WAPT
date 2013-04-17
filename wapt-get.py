@@ -65,6 +65,8 @@ action is either :
   search [keywords] : search installable packages whose description contains keywords
   cleanup           : remove all WAPT cached files from local drive
 
+  setup-tasks       : creates Windows daily scheduled tasks for update/download-upgrade/upgrade
+
  For user session setup
   session-setup [packages,all] : setup local user environment for specific or all installed packages
 
@@ -86,6 +88,7 @@ parser=OptionParser(usage=usage,version="%prog " + __version__+' setuphelpers '+
 parser.add_option("-c","--config", dest="config", default=os.path.join(os.path.dirname(sys.argv[0]),'wapt-get.ini') , help="Config file full path (default: %default)")
 parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
 parser.add_option("-d","--dry-run",    dest="dry_run",    default=False, action='store_true', help="Dry run (default: %default)")
+parser.add_option("-u","--update-packages",    dest="update_packages",  default=False, action='store_true', help="Update Packages first then action (default: %default)")
 parser.add_option("-f","--force",    dest="force",    default=False, action='store_true', help="Force (default: %default)")
 parser.add_option("-p","--params", dest="params", default='{}', help="Setup params as a JSon Object (example : {'licence':'AZE-567-34','company':'TIS'}} (default: %default)")
 parser.add_option("-r","--repository", dest="wapt_url", default='', help="URL of main wapt repository (override url from ini file, example http://wapt/wapt) (default: %default)")
@@ -198,6 +201,10 @@ def main():
                     mywapt.install_wapt(args[1],params_dict = params_dict)
             else:
                 print "%sing WAPT packages %s" % (action,','.join(args[1:]))
+                if options.update_packages:
+                    print "Update package list"
+                    mywapt.update()
+
                 result = mywapt.install(args[1:],force = options.force,params_dict = params_dict,
                     download_only= (action=='download'),
                     )
@@ -215,6 +222,9 @@ def main():
             if len(args)<2:
                 print "You must provide at least one package name to download"
                 sys.exit(1)
+            if options.update_packages:
+                print "Update package list"
+                mywapt.update()
             print "Downloading packages %s" % (','.join(args[1:]),)
             result = mywapt.download_packages(args[1:],usecache = not options.force )
             if result['downloaded']:
@@ -234,6 +244,9 @@ def main():
                 print "%s" % entry
             else:
                 print "Display package control data for %s\n" % (','.join(args[1:]),)
+                if options.update_packages:
+                    print "Update package list"
+                    mywapt.update()
                 for packagename in args[1:]:
                     entries = mywapt.waptdb.packages_matching(packagename)
                     if entries:
@@ -295,6 +308,7 @@ def main():
                 print "uninstall done"
 
         elif action=='update':
+            print "Update package list"
             result = mywapt.update()
             print "Total packages : %i" % result['count']
             print "Added packages : \n%s" % "\n".join([ "  %s (%s)" % p for p in result['added'] ])
@@ -309,6 +323,9 @@ def main():
                 print "Old version : %s to new : %s" % (old,new)
 
         elif action=='upgrade':
+            if options.update_packages:
+                print "Update package list"
+                mywapt.update()
             result = mywapt.upgrade()
             if not result['install'] and not result['additional'] and not result['upgrade'] and not result['skipped']:
                 print "Nothing to upgrade"
@@ -320,6 +337,9 @@ def main():
             sys.exit(0)
 
         elif action=='list-upgrade':
+            if options.update_packages:
+                print "Update package list"
+                mywapt.update()
             q = mywapt.list_upgrade()
             if not q:
                 print "Nothing to upgrade"
@@ -327,6 +347,9 @@ def main():
                 print ppdicttable([ p[0] for p in  q],[ ('package',20),('version',10)])
 
         elif action=='download-upgrade':
+            if options.update_packages:
+                print "Update package list"
+                mywapt.update()
             result = mywapt.download_upgrades()
             print "Downloaded packages : \n%s" % "\n".join([ "  %s" % p for p in result['downloaded'] ])
             print "Skipped packages : \n%s" % "\n".join([ "  %s" % p for p in result['skipped'] ])
@@ -427,6 +450,9 @@ def main():
             setuphelpers.run(mywapt.upload_cmd % {'waptfile': waptfile_arg  })
 
         elif action=='search':
+            if options.update_packages:
+                print "Update package list"
+                mywapt.update()
             result = mywapt.waptdb.packages_search(args[1:])
             print ppdicttable(result,(('package',30),('version',10),('description',80)))
 
@@ -436,6 +462,9 @@ def main():
 
         elif action=='inventory':
             print mywapt.inventory()
+
+        elif action=='setup-tasks':
+            print mywapt.setup_tasks()
 
         elif action=='list':
             def cb(fieldname,value):

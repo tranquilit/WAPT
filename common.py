@@ -2459,10 +2459,25 @@ def install():
         return self.waptdb.packages_matching(packagename)
 
 
+    def setup_tasks(self):
+        result = []
+        # update and download new packages
+        if setuphelpers.task_exists('wapt-update'):
+            setuphelpers.delete_task('wapt-update')
+        task = setuphelpers.create_daily_task('wapt-update',sys.argv[0],'--update-packages download-upgrades',max_runtime=20,repeat_minutes=120)
+        result.append('%s : %s' % ('wapt-update',task.GetTriggerString(0)))
+        # upgrade of packages
+        if setuphelpers.task_exists('wapt-upgrade'):
+            setuphelpers.delete_task('wapt-upgrade')
+        task = setuphelpers.create_daily_task('wapt-upgrade',sys.argv[0],'--update-packages upgrade',max_runtime=120,repeat_minutes=6*60)
+        result.append('%s : %s' % ('wapt-upgrade',task.GetTriggerString(0)))
+        return '\n'.join(result)
+
 REGEX_MODULE_VERSION = re.compile(
                     r'^(?P<major>[0-9]+)'
                      '\.(?P<minor>[0-9]+)'
                      '(\.(?P<patch>[0-9]+))')
+
 
 class Version():
     """Version object of form 0.0.0

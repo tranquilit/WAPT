@@ -46,7 +46,9 @@ import socket
 import _winreg
 import platform
 import winshell
+import pythoncom
 from win32com.shell import shell, shellcon
+from win32com.taskscheduler import taskscheduler
 
 from iniparse import RawConfigParser
 
@@ -786,6 +788,100 @@ def add_to_system_path(path):
         reg_setvalue(key,'Path',';'.join(system_path),type=REG_EXPAND_SZ)
         win32api.SendMessage(win32con.HWND_BROADCAST,win32con.WM_SETTINGCHANGE,0,'Environment')
     return system_path
+
+
+def get_task(name):
+    """Return an instance of PyITask given its name (without .job)"""
+    ts = pythoncom.CoCreateInstance(taskscheduler.CLSID_CTaskScheduler,None,
+                                    pythoncom.CLSCTX_INPROC_SERVER,
+                                    taskscheduler.IID_ITaskScheduler)
+    if '%s.job' % name not in ts.Enum():
+        raise KeyError("%s doesn't exists" % name)
+
+    task = ts.Activate(name)
+    return task
+
+def task_exists(name):
+    """Return true if a sheduled task names 'name.job' is defined"""
+    ts = pythoncom.CoCreateInstance(taskscheduler.CLSID_CTaskScheduler,None,
+                                    pythoncom.CLSCTX_INPROC_SERVER,
+                                    taskscheduler.IID_ITaskScheduler)
+    return '%s.job' % name in ts.Enum()
+
+def delete_task(name):
+    """removes a task"""
+    ts = pythoncom.CoCreateInstance(taskscheduler.CLSID_CTaskScheduler,None,
+                                    pythoncom.CLSCTX_INPROC_SERVER,
+                                    taskscheduler.IID_ITaskScheduler)
+    if '%s.job' % name not in ts.Enum():
+        raise KeyError("%s doesn't exists" % name)
+    ts.Delete(name)
+
+def disable_task(name):
+    """Disable a task"""
+    task = get_task(name)
+    task.SetFlags(task.GetFlags() | taskscheduler.TASK_FLAG_DISABLED)
+    pf = task.QueryInterface(pythoncom.IID_IPersistFile)
+    pf.Save(None,1)
+    return task
+
+
+def enable_task(name):
+    """Enable a task"""
+    task = get_task(name)
+    task.SetFlags(task.GetFlags() & ~taskscheduler.TASK_FLAG_DISABLED)
+    pf = task.QueryInterface(pythoncom.IID_IPersistFile)
+    pf.Save(None,1)
+    return task
+
+def create_daily_task(name,cmd,parameters, max_runtime=10, repeat_minutes=None, start_hour=None, start_minute=None):
+    """creates a daily task
+        Return an instance of PyITask
+    """
+    ts = pythoncom.CoCreateInstance(taskscheduler.CLSID_CTaskScheduler,None,
+                                    pythoncom.CLSCTX_INPROC_SERVER,
+                                    taskscheduler.IID_ITaskScheduler)
+
+    if '%s.job' % name not in ts.Enum():
+        task = ts.NewWorkItem(name)
+
+        task.SetApplicationName(cmd)
+        task.SetParameters(parameters)
+        task.SetAccountInformation('', None)
+        if max_runtime:
+            task.SetMaxRunTime(max_runtime * 60*1000)
+        #task.SetFlags(task.GetFlags() | taskscheduler.TASK_FLAG_)
+        ts.AddWorkItem(name, task)
+        run_time = time.localtime(time.time() + 300)
+        tr_ind, tr = task.CreateTrigger()
+        tt = tr.GetTrigger()
+        tt.Flags = 0
+        tt.BeginYear = int(time.strftime('%Y', run_time))
+        tt.BeginMonth = int(time.strftime('%m', run_time))
+        tt.BeginDay = int(time.strftime('%d', run_time))
+        if start_minute is None:
+            tt.StartMinute = int(time.strftime('%M', run_time))
+        else:
+            tt.StartMinute = minute
+        if start_hour is None:
+            tt.StartHour = int(time.strftime('%H', run_time))
+        else:
+            tt.StartHour = hour
+        tt.TriggerType = int(taskscheduler.TASK_TIME_TRIGGER_DAILY)
+        if repeat_minutes:
+            tt.MinutesInterval = repeat_minutes
+            tt.MinutesDuration = 24*60
+        tr.SetTrigger(tt)
+        pf = task.QueryInterface(pythoncom.IID_IPersistFile)
+        pf.Save(None,1)
+        #task.Run()
+    else:
+        raise KeyError("%s already exists" % name)
+
+    task = ts.Activate(name)
+    #exit_code, startup_error_code = task.GetExitCode()
+    return task
+
 
 class EWaptSetupException(Exception):
     pass
