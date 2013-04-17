@@ -72,6 +72,7 @@ action is either :
   list-registry [keywords]  : list installed software from Windows Registry
   sources <package>         : get sources of a package (if attribute Sources was supplied in control file)
   make-template <installer-path> [<packagename> [<source directoryname>]] : initializes a package template with an installer (exe or msi)
+  make-host-template [<packagename> : initializes a package meta template with currently installed packages. If no package name is given, use FQDN
   build-package <directory> : creates a WAPT package from supplied directory
   sign-package <directory or package>  : add a signature of the manifest using a private SSL key
 

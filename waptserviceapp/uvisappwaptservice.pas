@@ -35,6 +35,12 @@ type
   { TVisAppWAPTService }
 
   TVisAppWAPTService = class(TForm)
+    Button1: TButton;
+    EdGroup: TEdit;
+    eduser: TEdit;
+    edpassword: TEdit;
+    eddomain: TEdit;
+    EdServer: TEdit;
     TestPython: TButton;
     Datasource1: TDatasource;
     ButSQL: TButton;
@@ -47,22 +53,25 @@ type
     procedure butLoaddllClick(Sender: TObject);
     procedure butLoaddllExit(Sender: TObject);
     procedure ButSQLClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
     procedure butunloadllClick(Sender: TObject);
     procedure Panel1Click(Sender: TObject);
     procedure TestPythonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure ToggleBox1Change(Sender: TObject);
   private
     { private declarations }
     waptdb : TWAPTDB;
   public
     { public declarations }
+    pythonengine1:TPythonEngine;
   end;
 
 var
   VisAppWAPTService: TVisAppWAPTService;
 
 implementation
-uses tisstrings;
+uses tisstrings,ldapauth,ldapsend;
 
 //uses waptwmi;
 
@@ -87,6 +96,17 @@ begin
   query.Open;
 end;
 
+procedure TVisAppWAPTService.Button1Click(Sender: TObject);
+var
+ ldap:TLDAPSend;
+begin
+  ldap := LDAPSSLLogin(edserver.Text,eduser.Text,eddomain.text,edpassword.Text);
+  testedit.Lines.Text  := GetUserAndGroups(ldap,'dc=tranquilit,dc=local',eduser.Text,True).AsJSon(True);
+  if UserIngroup(ldap,'dc=tranquilit,dc=local',eduser.Text,EdGroup.Text) then
+    ShowMessage('user  is member of group '+EdGroup.Text);
+  ldap.Free;
+end;
+
 procedure TVisAppWAPTService.butunloadllClick(Sender: TObject);
 begin
 end;
@@ -98,14 +118,19 @@ end;
 
 procedure TVisAppWAPTService.TestPythonClick(Sender: TObject);
 begin
-  //PythonEngine1.ExecString(testedit.Lines.Text);
-  //ShowMessage(PythonEngine1.EvalStringAsStr('mywapt.update()'));
+  PythonEngine1.ExecString(testedit.Lines.Text);
+  ShowMessage(PythonEngine1.EvalStringAsStr('mywapt.update()'));
 end;
 
 procedure TVisAppWAPTService.FormCreate(Sender: TObject);
 begin
   waptdb := TWAPTDB.Create(WaptDBPath);
   waptdb.OpenDB;
+end;
+
+procedure TVisAppWAPTService.ToggleBox1Change(Sender: TObject);
+begin
+
 end;
 
 end.

@@ -56,6 +56,14 @@ type
   public
     { public declarations }
     BaseDir : String;
+    //Active directory server hostname for user authentication
+    ADServer : String;
+    //Base DN for user and groups search
+    BaseDN : String;
+    //ADS Port number (636)
+    ADPort : String;
+
+
     property WaptDB:TWAPTDB read GetWaptDB write SetWaptDB;
   end;
 
@@ -63,7 +71,7 @@ var
   WaptDaemon: TWaptDaemon;
 
 implementation
-uses process,StrUtils,IdGlobal,IdSocketHandle,idURI,tiscommon,soutils,IniFiles,UnitRedirect;
+uses process,StrUtils,IdGlobal,IdSocketHandle,idURI,tiscommon,soutils,IniFiles,UnitRedirect,ldapauth;
 
 //  ,waptwmi,  Variants,Windows,ComObj;
 
@@ -453,15 +461,20 @@ begin
     else
     if (ARequestInfo.URI='/install') or (ARequestInfo.URI='/remove') or (ARequestInfo.URI='/showlog') then
     begin
-      if not ARequestInfo.AuthExists or (ARequestInfo.AuthUsername <> 'admin') or
-        not MD5Match(MD5String(ARequestInfo.AuthPassword),MD5PasswordForRepo('')) then
+      if not ARequestInfo.AuthExists then
       begin
-        AResponseInfo.ResponseNo := 401;
-        AResponseInfo.ResponseText := 'Authorization required';
-        AResponseInfo.ContentType := 'text/html';
-        AResponseInfo.ContentText := '<html>Authentication required for Installation operations </html>';
-        AResponseInfo.CustomHeaders.Values['WWW-Authenticate'] := 'Basic realm="WAPT-GET Authentication"';
-        Exit;
+        if (ADSServer<>'') and (
+        ldap := LDAPSSLLogin(
+        or (ARequestInfo.AuthUsername <> 'admin') or
+          not MD5Match(MD5String(ARequestInfo.AuthPassword),MD5PasswordForRepo('')) then
+        begin
+          AResponseInfo.ResponseNo := 401;
+          AResponseInfo.ResponseText := 'Authorization required';
+          AResponseInfo.ContentType := 'text/html';
+          AResponseInfo.ContentText := '<html>Authentication required for Installation operations </html>';
+          AResponseInfo.CustomHeaders.Values['WWW-Authenticate'] := 'Basic realm="WAPT-GET Authentication"';
+          Exit;
+        end;
       end;
       if ARequestInfo.Params.Count<=0 then
       begin

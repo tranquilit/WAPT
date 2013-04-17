@@ -32,30 +32,33 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="7">
+    <RequiredPackages Count="8">
       <Item1>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="pl_synapsepkg"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="SynEdit"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item3>
       <Item4>
-        <PackageName Value="SQLDBLaz"/>
+        <PackageName Value="pltis_superobject"/>
       </Item4>
       <Item5>
-        <PackageName Value="pl_indycomp"/>
+        <PackageName Value="SQLDBLaz"/>
       </Item5>
       <Item6>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pl_indycomp"/>
       </Item6>
       <Item7>
-        <PackageName Value="LCL"/>
+        <PackageName Value="FCL"/>
       </Item7>
+      <Item8>
+        <PackageName Value="LCL"/>
+      </Item8>
     </RequiredPackages>
-    <Units Count="9">
+    <Units Count="10">
       <Unit0>
         <Filename Value="appwaptservice.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -107,6 +110,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitRedirect"/>
       </Unit8>
+      <Unit9>
+        <Filename Value="..\waptservice\ldapauth.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ldapauth"/>
+      </Unit9>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

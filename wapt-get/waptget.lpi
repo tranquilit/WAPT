@@ -21,7 +21,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="6"/>
-      <RevisionNr Value="11"/>
+      <RevisionNr Value="12"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -53,25 +53,27 @@
         <PackageName Value="pl_indycomp"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="14">
+    <Units Count="15">
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="297"/>
-        <CursorPos X="35" Y="312"/>
+        <TopLine Value="117"/>
+        <CursorPos X="26" Y="130"/>
         <UsageCount Value="222"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="74"/>
-        <CursorPos X="42" Y="94"/>
+        <TopLine Value="52"/>
+        <CursorPos X="14" Y="64"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
       </Unit1>
@@ -119,10 +121,12 @@
         <Filename Value="tiscommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiscommon"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="33"/>
-        <CursorPos X="1" Y="49"/>
+        <TopLine Value="482"/>
+        <CursorPos X="52" Y="548"/>
         <UsageCount Value="200"/>
+        <Loaded Value="True"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\jcl\source\common\JclUnicode.pas"/>
@@ -162,12 +166,10 @@
         <Filename Value="networkadapterinfo.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="NetworkAdapterInfo"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="255"/>
-        <Loaded Value="True"/>
       </Unit12>
       <Unit13>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\objpash.inc"/>
@@ -176,8 +178,18 @@
         <CursorPos X="23" Y="192"/>
         <UsageCount Value="65"/>
       </Unit13>
+      <Unit14>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\ldapsend.pas"/>
+        <UnitName Value="ldapsend"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="151"/>
+        <CursorPos X="15" Y="16"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+      </Unit14>
     </Units>
-    <JumpHistory Count="7" HistoryIndex="6">
+    <JumpHistory Count="16" HistoryIndex="15">
       <Position1>
         <Filename Value="waptcommon.pas"/>
         <Caret Line="55" Column="1" TopLine="55"/>
@@ -206,6 +218,42 @@
         <Filename Value="waptcommon.pas"/>
         <Caret Line="131" Column="21" TopLine="115"/>
       </Position7>
+      <Position8>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="94" Column="42" TopLine="11"/>
+      </Position8>
+      <Position9>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="439" Column="28" TopLine="412"/>
+      </Position9>
+      <Position10>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="315" Column="21" TopLine="297"/>
+      </Position10>
+      <Position11>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="114" Column="26" TopLine="98"/>
+      </Position11>
+      <Position12>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="163" Column="92" TopLine="141"/>
+      </Position12>
+      <Position13>
+        <Filename Value="tiscommon.pas"/>
+        <Caret Line="42" Column="35" TopLine="26"/>
+      </Position13>
+      <Position14>
+        <Filename Value="tiscommon.pas"/>
+        <Caret Line="484" Column="35" TopLine="457"/>
+      </Position14>
+      <Position15>
+        <Filename Value="tiscommon.pas"/>
+        <Caret Line="841" Column="1" TopLine="814"/>
+      </Position15>
+      <Position16>
+        <Filename Value="tiscommon.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position16>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

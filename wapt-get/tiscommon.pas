@@ -39,7 +39,7 @@ procedure httpPostData(const UserAgent: string; const Server: string; const Reso
 Procedure UnzipFile(ZipFilePath,OutputPath:Utf8String);
 Procedure AddToUserPath(APath:Utf8String);
 procedure AddToSystemPath(APath:Utf8String);
-procedure UpdateCurrentApplication(fromURL:String;Restart:Boolean;restartparam:Utf8String);
+procedure UpdateCurrentApplication(fromURL:String;Restart:Boolean;restartparam:Utf8String;exename:String='');
 function  GetApplicationVersion(FileName:Utf8String=''): Utf8String;
 
 function GetApplicationName:AnsiString;
@@ -481,7 +481,7 @@ begin
   end;
 end;
 
-procedure UpdateCurrentApplication(fromURL:String;restart:Boolean;restartparam:Utf8String);
+procedure UpdateCurrentApplication(fromURL:String;restart:Boolean;restartparam:Utf8String;Exename:String='');
 var
   bat: TextFile;
   tempdir,tempfn,updateBatch,fn,zipfn,version,destdir : Utf8String;

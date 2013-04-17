@@ -40,7 +40,7 @@
     </RunParams>
     <RequiredPackages Count="8">
       <Item1>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="pl_synapsepkg"/>
       </Item1>
       <Item2>
         <PackageName Value="pltis_python4delphi"/>
@@ -65,7 +65,7 @@
         <PackageName Value="FCL"/>
       </Item8>
     </RequiredPackages>
-    <Units Count="87">
+    <Units Count="91">
       <Unit0>
         <Filename Value="waptservice.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -93,10 +93,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WaptUnit"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="441"/>
-        <CursorPos X="20" Y="380"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="41"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -145,13 +146,10 @@
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="379"/>
-        <CursorPos X="10" Y="12"/>
+        <TopLine Value="380"/>
+        <CursorPos X="12" Y="384"/>
         <UsageCount Value="206"/>
-        <Loaded Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-process\src\process.pp"/>
@@ -551,7 +549,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="10" Y="13"/>
-        <UsageCount Value="129"/>
+        <UsageCount Value="130"/>
       </Unit59>
       <Unit60>
         <Filename Value="testwmi.lpr"/>
@@ -617,12 +615,10 @@
       <Unit68>
         <Filename Value="..\wapt-get\soutils.pas"/>
         <UnitName Value="soutils"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="17"/>
         <CursorPos X="3" Y="33"/>
         <UsageCount Value="21"/>
-        <Loaded Value="True"/>
       </Unit68>
       <Unit69>
         <Filename Value="..\jcl\source\include\jclfpc.inc"/>
@@ -763,15 +759,48 @@
       <Unit86>
         <Filename Value="UnitRedirect.pas"/>
         <UnitName Value="UnitRedirect"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="11"/>
         <CursorPos X="12" Y="27"/>
         <UsageCount Value="24"/>
-        <Loaded Value="True"/>
       </Unit86>
+      <Unit87>
+        <Filename Value="ldapauth.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ldapauth"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="20" Y="6"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit87>
+      <Unit88>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\blcksock.pas"/>
+        <UnitName Value="blcksock"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit88>
+      <Unit89>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\ssl_openssl.pas"/>
+        <UnitName Value="ssl_openssl"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="73"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit89>
+      <Unit90>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\ssl_openssl_lib.pas"/>
+        <UnitName Value="ssl_openssl_lib"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="193"/>
+        <CursorPos X="25" Y="105"/>
+        <UsageCount Value="10"/>
+      </Unit90>
     </Units>
-    <JumpHistory Count="29" HistoryIndex="28">
+    <JumpHistory Count="26" HistoryIndex="25">
       <Position1>
         <Filename Value="waptunit.pas"/>
         <Caret Line="405" Column="73" TopLine="377"/>
@@ -849,45 +878,33 @@
         <Caret Line="282" Column="18" TopLine="262"/>
       </Position19>
       <Position20>
-        <Filename Value="..\wapt-get\soutils.pas"/>
-        <Caret Line="33" Column="1" TopLine="16"/>
-      </Position20>
-      <Position21>
-        <Filename Value="..\wapt-get\soutils.pas"/>
-        <Caret Line="70" Column="1" TopLine="45"/>
-      </Position21>
-      <Position22>
-        <Filename Value="..\wapt-get\soutils.pas"/>
-        <Caret Line="74" Column="57" TopLine="54"/>
-      </Position22>
-      <Position23>
-        <Filename Value="..\wapt-get\soutils.pas"/>
-        <Caret Line="68" Column="37" TopLine="53"/>
-      </Position23>
-      <Position24>
-        <Filename Value="..\wapt-get\soutils.pas"/>
-        <Caret Line="78" Column="37" TopLine="58"/>
-      </Position24>
-      <Position25>
-        <Filename Value="..\wapt-get\soutils.pas"/>
-        <Caret Line="77" Column="48" TopLine="58"/>
-      </Position25>
-      <Position26>
-        <Filename Value="..\wapt-get\soutils.pas"/>
-        <Caret Line="88" Column="1" TopLine="65"/>
-      </Position26>
-      <Position27>
         <Filename Value="waptunit.pas"/>
         <Caret Line="282" Column="18" TopLine="262"/>
-      </Position27>
-      <Position28>
+      </Position20>
+      <Position21>
         <Filename Value="waptunit.pas"/>
         <Caret Line="50" Column="1" TopLine="25"/>
-      </Position28>
-      <Position29>
+      </Position21>
+      <Position22>
         <Filename Value="waptunit.pas"/>
         <Caret Line="285" Column="46" TopLine="270"/>
-      </Position29>
+      </Position22>
+      <Position23>
+        <Filename Value="ldapauth.pas"/>
+        <Caret Line="11" Column="1" TopLine="2"/>
+      </Position23>
+      <Position24>
+        <Filename Value="ldapauth.pas"/>
+        <Caret Line="52" Column="5" TopLine="20"/>
+      </Position24>
+      <Position25>
+        <Filename Value="ldapauth.pas"/>
+        <Caret Line="17" Column="23" TopLine="1"/>
+      </Position25>
+      <Position26>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="450" Column="3" TopLine="202"/>
+      </Position26>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

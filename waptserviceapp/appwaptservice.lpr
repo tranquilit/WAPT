@@ -28,8 +28,8 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, uVisAppWaptService, waptcommon, networkadapterinfo, soutils,
-  tisinifiles, tisstrings, waptunit, UnitRedirect;
+  Forms, pl_synapsepkg, uVisAppWaptService, waptcommon, networkadapterinfo,
+  soutils, tisinifiles, tisstrings, waptunit, UnitRedirect, ldapauth;
 
 {$R *.res}
 

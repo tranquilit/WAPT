@@ -160,7 +160,7 @@ begin
     if RepoURL='' then
       RepoURL:=GetMainWaptRepo;
     Writeln('WAPT-GET Upgrade using repository at '+RepoURL);
-    UpdateCurrentApplication(RepoURL+'/waptsetup.exe',True,' /VERYSILENT');
+    UpdateCurrentApplication(RepoURL+'/waptsetup.exe',False,' /VERYSILENT','waptsetup.exe');
     Terminate;
     Exit;
   end

@@ -57,7 +57,7 @@ from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflec
 import re
 import setuphelpers
 
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 
 logger = logging.getLogger()
 
@@ -303,7 +303,8 @@ def ssl_verify_content(content,signature,public_cert):
     pubkey.assign_rsa(rsa)
     pubkey.verify_init()
     pubkey.verify_update(content)
-    return pubkey.verify_final(signature) == 1
+    if not pubkey.verify_final(signature):
+        raise Exception('SSL signature verification failed, either public certificate does not match signature or signed content has been changed')
 
 def create_recursive_zip_signed(zipfn, source_root, target_root = u"",excludes = [u'.svn',u'.git*',u'*.pyc',u'*.dbg',u'src']):
     """Create a zip file with filename zipf from source_root directory with target_root as new root.
@@ -1856,12 +1857,14 @@ class Wapt(object):
         download_only=False,
         usecache=True):
         """Install a list of packages and its dependencies
-            apackages is a list of packages names. A specific version can be specified
-            force=True reinstalls the packafes even if it is already installed
-            params_dict is passed to the install() procedure in the packages setup.py of all packages
-                as params variables and as "setup module" attributes
-
             Returns a dictionary of (package requirement,package) with 'install','skipped','additional'
+
+            apackages : list of packages requirements "packagename(=version)" or list of PackageEntry.
+            force : reinstalls the packages even if it is already installed
+            params_dict : dict of parameters passed to the install() procedure in the packages setup.py of all packages
+                          as params variables and as "setup module" attributes
+            download_only : don't install package, but only download them
+            usecache : use the already downloaded packages if available in cache directory
         """
         if not isinstance(apackages,list):
             apackages = [apackages]
