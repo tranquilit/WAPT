@@ -10,6 +10,7 @@ cache
 db
 lib
 trash
+tmp
 
 # These are the default patterns globally ignored by Subversion:
 *.o
