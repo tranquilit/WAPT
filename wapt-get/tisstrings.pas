@@ -25,6 +25,8 @@ uses
 type
   EJclStringError = class(Exception);
 
+
+
 resourcestring
   RsBlankSearchString       = 'Search string cannot be blank';
   RsInvalidEmptyStringItem  = 'String list passed to StringsToMultiSz cannot contain empty strings.';
@@ -279,6 +281,8 @@ function CharLower(const C: Char): Char; {$IFDEF SUPPORTS_INLINE} inline; {$ENDI
 function CharUpper(const C: Char): Char; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 function CharToggleCase(const C: Char): Char;
 
+function Split(St: String; Sep: Char): TDynStringArray;
+function Join(Sep: String; StrArray : TDynStringArray): String;
 
 
 implementation
@@ -2145,6 +2149,36 @@ begin
     Result := nil;
 end;
 
+function Split(St: String; Sep: Char): TDynStringArray;
+var
+  tok : String;
+  len : integer;
+begin
+  len := 0;
+  SetLength(Result,0);
+  repeat
+    tok := StrToken(St,Sep);
+    if tok<>'' then
+    begin
+      inc(len);
+      SetLength(Result,len);
+      Result[len-1] := tok;
+    end;
+  until St='';
+end;
+
+function Join(Sep: String; StrArray: TDynStringArray): String;
+var
+  i:integer;
+begin
+  Result := '';
+  for i:=0 to length(StrArray)-1 do
+  begin
+    Result:=Result+StrArray[i];
+    if i<length(StrArray)-1 then
+      Result := Result+Sep;
+  end;
+end;
 
 
 //=== Character Search and Replace ===========================================

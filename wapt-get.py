@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.11"
+__version__ = "0.8.12"
 
 import sys
 import os
@@ -66,6 +66,8 @@ action is either :
   cleanup           : remove all WAPT cached files from local drive
 
   setup-tasks       : creates Windows daily scheduled tasks for update/download-upgrade/upgrade
+  enable-tasks
+  disable-tasks
 
  For user session setup
   session-setup [packages,all] : setup local user environment for specific or all installed packages
@@ -160,8 +162,9 @@ def main():
         }
 
     cp = RawConfigParser(defaults = defaults)
-    cp.add_section('global')
     cp.read(config_file)
+    if not cp.has_section('global'):
+        cp.add_section('global')
 
     global loglevel
     if not loglevel and cp.has_option('global','loglevel'):
@@ -447,7 +450,9 @@ def main():
             for a in args[1:]:
                 waptfiles += glob.glob(a)
             waptfile_arg = " ".join(['"%s"' % f for f in waptfiles])
-            setuphelpers.run(mywapt.upload_cmd % {'waptfile': waptfile_arg  })
+            print setuphelpers.run(mywapt.upload_cmd % {'waptfile': waptfile_arg  })
+            if mywapt.after_upload:
+                print setuphelpers.run(mywapt.after_upload % {'waptfile': waptfile_arg  })
 
         elif action=='search':
             if options.update_packages:
@@ -465,6 +470,12 @@ def main():
 
         elif action=='setup-tasks':
             print mywapt.setup_tasks()
+
+        elif action=='enable-tasks':
+            print mywapt.enable_tasks()
+
+        elif action=='disable-tasks':
+            print mywapt.disable_tasks()
 
         elif action=='list':
             def cb(fieldname,value):

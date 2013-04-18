@@ -80,7 +80,7 @@ end;
 function pwaptget.GetRepoURL: String;
 begin
   if FRepoURL='' then
-    FRepoURL:=GetWaptServerURL;
+    FRepoURL:=GetMainWaptRepo;
   result := FRepoURL;
 end;
 
@@ -160,7 +160,7 @@ begin
     if RepoURL='' then
       RepoURL:=GetMainWaptRepo;
     Writeln('WAPT-GET Upgrade using repository at '+RepoURL);
-    UpdateCurrentApplication(RepoURL+'/waptsetup.exe',False,' /VERYSILENT','waptsetup.exe');
+    UpdateApplication(RepoURL+'/waptsetup.exe','waptsetup.exe','/VERYSILENT','wapt-get.exe','');
     Terminate;
     Exit;
   end

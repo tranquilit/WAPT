@@ -1261,10 +1261,11 @@ class Wapt(object):
         assert not config or isinstance(config,RawConfigParser)
         self.wapt_base_dir = os.path.dirname(sys.argv[0])
         self.config = config
+        self.config_filename = os.path.join(self.wapt_base_dir,'wapt-get.ini')
         # default config file
         if not config:
             config = RawConfigParser(defaults = defaults)
-            config.read(os.path.join(self.wapt_base_dir,'wapt-get.ini'))
+            config.read(self.config_filename)
         self._wapt_repourl = config.get('global','repo_url')
         self.packagecachedir = os.path.join(self.wapt_base_dir,'cache')
         if not os.path.exists(self.packagecachedir):
@@ -1294,12 +1295,39 @@ class Wapt(object):
         if config.has_option('global','upload_cmd'):
             self.upload_cmd = config.get('global','upload_cmd')
         else:
-            self.upload_cmd = False
+            self.upload_cmd = None
+
+        if config.has_option('global','after_upload'):
+            self.after_upload = config.get('global','after_upload')
+        else:
+            self.after_upload = None
 
         if config.has_option('global','http_proxy'):
             self.proxies = {'http':config.get('global','http_proxy')}
         else:
-            self.proxies =None
+            self.proxies = None
+
+        # windows task scheduling
+        if config.has_option('global','waptupdate_task_period'):
+            self.waptupdate_task_period = int(config.get('global','waptupdate_task_period'))
+        else:
+            self.waptupdate_task_period = None
+
+        if config.has_option('global','waptupdate_task_maxruntime'):
+            self.waptupdate_task_maxruntime = int(config.get('global','waptupdate_task_maxruntime'))
+        else:
+            self.waptupdate_task_maxruntime = 10
+
+        if config.has_option('global','waptupgrade_task_period'):
+            self.waptupgrade_task_period = int(config.get('global','waptupgrade_task_period'))
+        else:
+            self.waptupgrade_task_period = None
+
+        if config.has_option('global','waptupgrade_task_maxruntime'):
+            self.waptupgrade_task_maxruntime = int(config.get('global','waptupgrade_task_maxruntime'))
+        else:
+            self.waptupgrade_task_maxruntime = 180
+
 
         if config.has_option('global','wapt_server'):
             self.wapt_server = config.get('global','wapt_server')
@@ -2464,21 +2492,50 @@ def install():
         # update and download new packages
         if setuphelpers.task_exists('wapt-update'):
             setuphelpers.delete_task('wapt-update')
-        task = setuphelpers.create_daily_task('wapt-update',sys.argv[0],'--update-packages download-upgrades',max_runtime=20,repeat_minutes=120)
-        result.append('%s : %s' % ('wapt-update',task.GetTriggerString(0)))
+        if self.waptupdate_task_period:
+            task = setuphelpers.create_daily_task('wapt-update',sys.argv[0],'--update-packages download-upgrades',
+                max_runtime=self.waptupdate_task_maxruntime,repeat_minutes=self.waptupdate_task_period)
+            result.append('%s : %s' % ('wapt-update',task.GetTriggerString(0)))
         # upgrade of packages
         if setuphelpers.task_exists('wapt-upgrade'):
             setuphelpers.delete_task('wapt-upgrade')
-        task = setuphelpers.create_daily_task('wapt-upgrade',sys.argv[0],'--update-packages upgrade',max_runtime=120,repeat_minutes=6*60)
-        result.append('%s : %s' % ('wapt-upgrade',task.GetTriggerString(0)))
+        if self.waptupgrade_task_period:
+            task = setuphelpers.create_daily_task('wapt-upgrade',sys.argv[0],
+                '--update-packages upgrade',
+                max_runtime=self.waptupgrade_task_maxruntime,
+                repeat_minutes= self.waptupgrade_task_period)
+            result.append('%s : %s' % ('wapt-upgrade',task.GetTriggerString(0)))
         return '\n'.join(result)
+
+    def enable_tasks(self):
+        """Enable Wapt automatic update/upgrade scheduling"""
+        result = []
+        if setuphelpers.task_exists('wapt-upgrade'):
+            setuphelpers.enable_task('wapt-upgrade')
+            result.append('wapt-upgrade')
+        if setuphelpers.task_exists('wapt-update'):
+            setuphelpers.enable_task('wapt-update')
+            result.append('wapt-update')
+        return result
+
+    def disable_tasks(self):
+        """Disable Wapt automatic update/upgrade scheduling"""
+        result = []
+        if setuphelpers.task_exists('wapt-upgrade'):
+            setuphelpers.disable_task('wapt-upgrade')
+            result.append('wapt-upgrade')
+        if setuphelpers.task_exists('wapt-update'):
+            setuphelpers.disable_task('wapt-update')
+            result.append('wapt-update')
+        return result
+
+
+###
 
 REGEX_MODULE_VERSION = re.compile(
                     r'^(?P<major>[0-9]+)'
                      '\.(?P<minor>[0-9]+)'
                      '(\.(?P<patch>[0-9]+))')
-
-
 class Version():
     """Version object of form 0.0.0
         can compare with respect to natural numbering and not alphabetical

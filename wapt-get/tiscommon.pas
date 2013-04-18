@@ -39,7 +39,11 @@ procedure httpPostData(const UserAgent: string; const Server: string; const Reso
 Procedure UnzipFile(ZipFilePath,OutputPath:Utf8String);
 Procedure AddToUserPath(APath:Utf8String);
 procedure AddToSystemPath(APath:Utf8String);
-procedure UpdateCurrentApplication(fromURL:String;Restart:Boolean;restartparam:Utf8String;exename:String='');
+
+procedure UpdateCurrentApplication(fromURL:String;Restart:Boolean;restartparam:Utf8String);
+procedure UpdateApplication(fromURL:String;SetupExename,SetupParams,ExeName,RestartParam:Utf8String);
+
+
 function  GetApplicationVersion(FileName:Utf8String=''): Utf8String;
 
 function GetApplicationName:AnsiString;
@@ -481,7 +485,7 @@ begin
   end;
 end;
 
-procedure UpdateCurrentApplication(fromURL:String;restart:Boolean;restartparam:Utf8String;Exename:String='');
+procedure UpdateCurrentApplication(fromURL:String;restart:Boolean;restartparam:Utf8String);
 var
   bat: TextFile;
   tempdir,tempfn,updateBatch,fn,zipfn,version,destdir : Utf8String;
@@ -550,6 +554,90 @@ begin
         end;
         Writeln(bat,'cd ..');
         if restart then
+          Writeln(bat,'start "" "'+ParamStr(0)+'" '+restartparam);
+        Writeln(bat,'rmdir /s /q "'+tempdir+'"');
+      finally
+        CloseFile(bat)
+      end;
+      Logger(' Launching update batch file '+updateBatch);
+      ShellExecute(
+        0,
+        'open',
+        PChar( SysUtils.GetEnvironmentVariable('ComSpec')),
+        PChar('/C '+ updatebatch),
+        PChar(TempDir),
+        SW_HIDE);
+      ExitProcess(0);
+    end;
+
+  finally
+    Files.Free;
+  end;
+end;
+
+procedure UpdateApplication(fromURL:String;SetupExename,SetupParams,ExeName,RestartParam:Utf8String);
+var
+  bat: TextFile;
+  tempdir,tempfn,updateBatch,zipfn,version : Utf8String;
+  files:TStringList;
+  UnZipper: TUnZipper;
+  i:integer;
+begin
+  Files := TStringList.Create;
+  try
+    Logger('Updating application...');
+    tempdir := GetTempFilename(GetTempDir,'tis');
+    if ExeName='' then
+      ExeName :=ExtractFileName(ParamStr(0));
+
+    tempfn := AppendPathDelim(tempdir)+SetupExename;
+    mkdir(tempdir);
+    Logger('Getting new file from: '+fromURL+' into '+tempfn);
+    try
+      wget(fromURL,tempfn);
+      version := GetApplicationVersion(tempfn);
+      if version='' then
+        raise Exception.create('no version information in downloaded file.');
+      Logger(' got '+SetupExename+' version: '+version);
+      Files.Add(SetupExename);
+    except
+      //trying to get a zip file instead (exe files blocked by proxy ...)
+      zipfn:= AppendPathDelim(tempdir)+ChangeFileExt(SetupExename,'.zip');
+      wget(ChangeFileExt(fromURL,'.zip'),zipfn);
+      Logger('  unzipping file '+zipfn);
+      UnZipper := TUnZipper.Create;
+      try
+        UnZipper.FileName := zipfn;
+        UnZipper.OutputPath := tempdir;
+        UnZipper.Examine;
+        UnZipper.UnZipAllFiles;
+        for i := 0 to UnZipper.Entries.count-1 do
+          if not UnZipper.Entries[i].IsDirectory then
+            Files.Add(StringReplace(UnZipper.Entries[i].DiskFileName,'/','\',[rfReplaceAll]));
+      finally
+        UnZipper.Free;
+      end;
+
+      version := GetApplicationVersion(tempfn);
+      if version='' then
+        raise Exception.create('no version information in downloaded exe file.');
+      Logger(' got '+SetupExename+' version: '+version);
+    end;
+
+    if FileExists(tempfn) and (FileSize(tempfn)>0) then
+    begin
+      // small batch to replace current running application
+      updatebatch := AppendPathDelim(tempdir) + 'update.bat';
+      AssignFile(bat,updateBatch);
+      Rewrite(bat);
+      try
+        Logger(' Creating update batch file '+updateBatch);
+        // wait for program to terminate..
+        Writeln(bat,'timeout /T 2');
+        Writeln(bat,'taskkill /im '+Exename+' /f');
+        Writeln(bat,'"'+IncludeTrailingPathDelimiter(tempdir)+SetupExename+'" '+SetupParams);
+        Writeln(bat,'cd ..');
+        if RestartParam<>'' then
           Writeln(bat,'start "" "'+ParamStr(0)+'" '+restartparam);
         Writeln(bat,'rmdir /s /q "'+tempdir+'"');
       finally
@@ -871,7 +959,7 @@ begin
 															dwVersionSize ) then             // puLen      - address of version-value length buffer
 							 with PFixedFileInfo( pData )^ do
 								Result:=IntToSTr(wFileVersionLS)+'.'+IntToSTr(wFileVersionMS)+
-											'.'+IntToStr(wProductVersionLS);
+											'.'+IntToStr(wProductVersionLS)+'.'+IntToStr(wProductVersionMS);
 			finally
 				 FreeMem( pTemp );
 			end; // try

@@ -18,10 +18,29 @@ default_source_url=
 default_sources_root=c:\tranquilit
 default_package_prefix=tis
 default_sources_suffix=wapt
-upload_cmd="C:\Program Files\WinSCP\WinSCP.exe" root@bureau.tranquil.it /upload %(waptfile)s
+#upload_cmd="C:\Program Files\WinSCP\WinSCP.exe" root@bureau.tranquil.it /upload %(waptfile)s
+# you could put your public authorization key in server's /root/.ssh/authorized_keys 
+# example if you have cygwin : 
+#   create key : c:\cygwin\bin\ssh localhost ssh-keygen   
+#   copy key :   c:\cygwin\bin\ssh localhost ssh-copy-id -i ~/.ssh/id_dsa root@srvwapt
+upload_cmd="c:\Program Files"\putty\pscp -v -l root %(waptfile)s srvwapt:/var/www/wapt/ 
+after_upload="c:\Program Files"\putty\plink -v -l root srvwapt "python /var/www/wapt/wapt-scanpackages.py /var/www/wapt/"
 
 # define a wapt_server only if one is running
 #wapt_server=http://wapt.tranquil.it/waptserver
+
+# for windows task scheduling
+waptupgrade_task_period=360
+waptupgrade_task_maxruntime=360
+
+waptupdate_task_period=30
+waptupdate_task_maxruntime=10
+
+#ldap_server=srvads
+#ldap_basedb=dc=tranquilit,dc=local
+#ldap_port=636
+
+
 
 [private]
 repo_url=http://wapt/wapt

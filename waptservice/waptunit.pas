@@ -49,20 +49,23 @@ type
     inTimer:Boolean;
     function GetWaptDB: TWAPTDB;
     function MD5PasswordForRepo(url: String): TMD5Digest;
+    procedure ReadSettings;
     procedure SetWaptDB(AValue: TWAPTDB);
-    function RepoTableHook(Data, FN: Utf8String): Utf8String;
-    function StatusTableHook(Data, FN: Utf8String): Utf8String;
+    function RepoTableHook(Dataset: TDataset; Data, FN: Utf8String): Utf8String;
+    function StatusTableHook(Dataset: TDataset; Data, FN: Utf8String): Utf8String;
     function RegisterComputer:Boolean;
   public
     { public declarations }
     BaseDir : String;
     //Active directory server hostname for user authentication
-    ADServer : String;
+    ldap_server : String;
     //Base DN for user and groups search
-    BaseDN : String;
+    ldap_basedn : String;
     //ADS Port number (636)
-    ADPort : String;
+    ldap_port : String;
 
+    waptupdate_task_period,
+    waptupgrade_task_period:String;
 
     property WaptDB:TWAPTDB read GetWaptDB write SetWaptDB;
   end;
@@ -71,7 +74,7 @@ var
   WaptDaemon: TWaptDaemon;
 
 implementation
-uses process,StrUtils,IdGlobal,IdSocketHandle,idURI,tiscommon,soutils,IniFiles,UnitRedirect,ldapauth;
+uses process,StrUtils,IdGlobal,IdSocketHandle,idURI,tiscommon,tisstrings,soutils,IniFiles,UnitRedirect,ldapsend,ldapauth;
 
 //  ,waptwmi,  Variants,Windows,ComObj;
 
@@ -217,7 +220,7 @@ begin
 end;
 
 
-Type TFormatHook = Function(Data,FN:Utf8String):UTF8String of object;
+Type TFormatHook = Function(Dataset:TDataset;Data,FN:Utf8String):UTF8String of object;
 { TWaptDaemon }
 function DatasetToHTMLtable(ds:TDataset;FormatHook: TFormatHook=Nil):String;
 var
@@ -237,7 +240,7 @@ begin
       if ds.Fields[i].Visible then
       begin
         if Assigned(FormatHook) then
-          Result := Result + '<td>'+FormatHook(ds.Fields[i].AsString,ds.Fields[i].FieldName)+'</td>'
+          Result := Result + '<td>'+FormatHook(ds,ds.Fields[i].AsString,ds.Fields[i].FieldName)+'</td>'
         else
           Result := Result + '<td>'+ds.Fields[i].AsString+'</td>';
       end;
@@ -278,7 +281,7 @@ var
   md5str,section : String;
   ini : TIniFile;
   i:integer;
-  repos:Array of String;
+  repos:TDynStringArray;
 begin
   ini := TIniFile.Create(BaseDir + 'wapt-get.ini');
   try
@@ -286,6 +289,8 @@ begin
       section := 'global'
     else
     begin
+      repos := tisstrings.Split(ini.ReadString('global','repositories',''),',');
+
       //TODO
       section := url;
     end;
@@ -296,23 +301,62 @@ begin
   end;
 end;
 
-procedure TWaptDaemon.DataModuleCreate(Sender: TObject);
+procedure TWaptDaemon.ReadSettings;
 var
-  sh : TIdSocketHandle;
   ini : TIniFile;
-  md5str : String;
-  mainmodule : TStringList;
+  basedn,ldaptcp : String;
+  dnparts : TDynStringArray;
+  i:integer;
+
 begin
-  Basedir := ExtractFilePath(ParamStr(0));
-  SQLiteLibraryName:=BaseDir+'\DLLs\sqlite3.dll';
   ini := TIniFile.Create(BaseDir + 'wapt-get.ini');
   try
     waptservice_port := ini.ReadInteger('global','service_port',waptservice_port);
     IdHTTPServer1.DefaultPort:= waptservice_port;
-    //default md5 of 'password'
+
+    // par défaut, on considère que l'AD et sur le serveur DNS
+    ldap_server:=ini.ReadString('global','ldap_server','');
+    if ldap_server='' then
+    try
+      ldaptcp := GetLDAPServer;
+      if ldaptcp<>'' then
+        ldap_server := tisStrings.Split(ldaptcp,':')[0];
+      ldap_port:=ini.ReadString('global','ldap_port','');
+      if ldap_port='' then
+        ldap_port := tisStrings.Split(ldaptcp,':')[1];
+    except
+
+    end
+    else
+      ldap_port:=ini.ReadString('global','ldap_port','636');
+
+    // base de recherche pour LDAP basee sur le domaine DNS dc=toto,dc=local
+    basedn := GetDNSDomain;
+    dnparts := tisStrings.Split(basedn,'.');
+    for i:=0 to Length(dnparts)-1 do
+      dnparts[i] := 'dc='+dnparts[i];
+    basedn := Join(',',dnparts);
+
+    ldap_basedn:=ini.ReadString('global','ldap_basedn',basedn);
+    // 636 : pour Active directory en SSL
+
+    waptupgrade_task_period := ini.ReadString('global','waptupgrade_task_period','');
+    waptupdate_task_period := ini.ReadString('global','waptupdate_task_period','');
+
   finally
     ini.Free;
   end;
+end;
+
+procedure TWaptDaemon.DataModuleCreate(Sender: TObject);
+var
+  sh : TIdSocketHandle;
+  mainmodule : TStringList;
+begin
+  Basedir := ExtractFilePath(ParamStr(0));
+  SQLiteLibraryName:=BaseDir+'\DLLs\sqlite3.dll';
+
+  readsettings;
 
   sh := IdHTTPServer1.Bindings.Add;
   sh.IP:='127.0.0.1';
@@ -359,6 +403,8 @@ var
     filepath,template : Utf8String;
     CmdOutput,CmdError:AnsiString;
     htmloutput:Utf8String;
+    ldap : TLdapSend;
+    auth_ok : Boolean;
 begin
   //Default type
   AResponseInfo.ContentType:='text/html';
@@ -377,9 +423,9 @@ begin
   begin
     if ARequestInfo.URI='/status' then
     try
-      AQuery := WaptDB.QueryCreate('select s.package,s.version,p.version as repo_version,s.install_date,s.install_status '+
+      AQuery := WaptDB.QueryCreate('select s.package,s.version,s.install_date,s.install_status,"Remove" as Remove,'+
+                          ' (select max(p.version) from wapt_package p where p.package=s.package) as repo_version'+
                           ' from wapt_localstatus s'+
-                          ' left join wapt_package p on p.package=s.package and p.version=s.version'+
                           ' order by s.package');
       AResponseInfo.ContentText:=DatasetToHTMLtable(AQuery,@StatusTableHook);
     finally
@@ -388,7 +434,7 @@ begin
     else
     if ARequestInfo.URI='/list' then
     try
-      AQuery := WaptDB.QueryCreate('select package,version,description,size from wapt_package order by package,version');
+      AQuery := WaptDB.QueryCreate('select "Install" as install,package,version,description,size from wapt_package order by package,version');
       AResponseInfo.ContentText:=DatasetToHTMLtable(AQuery,@RepoTableHook );
     finally
       AQuery.Free;
@@ -417,24 +463,20 @@ begin
     end
     else
     if ARequestInfo.URI='/upgrade' then
-      HttpRunTask(AContext,AResponseInfo,WaptgetPath+' -lcritical upgrade',ExitStatus)
-    else
-    if ARequestInfo.URI='/chunked' then
-    begin
-      HttpStartChunkedResponse(AResponseInfo,'application/json','UTF-8');
-      for i := 0 to 10 do
-      begin
-        HttpWriteChunk(AContext,Utf8Encode('Chunk n°'+IntToStr(i)),TIdTextEncoding.UTF8);
-        Sleep(1000);
-      end;
-      HttpWriteChunk(AContext,'');
-    end
+      HttpRunTask(AContext,AResponseInfo,WaptgetPath+' -lwarning upgrade',ExitStatus)
     else
     if ARequestInfo.URI='/update' then
-      HttpRunTask(AContext,AResponseInfo,WaptgetPath+' -lcritical update',ExitStatus)
+      HttpRunTask(AContext,AResponseInfo,WaptgetPath+' -lwarning update',ExitStatus)
     else
     if ARequestInfo.URI='/enable' then
-      Timer1.Enabled:=True
+    begin
+      Timer1.Enabled:=True;
+      cmd := WaptgetPath+' -lcritical enable-tasks';
+      Application.Log(etInfo,cmd);
+      Sto_RedirectedExecute(cmd,CmdOutput,CmdError);
+      CmdOutput := StrUtils.StringsReplace(CmdOutput,[#13#10],['<br>'],[rfReplaceAll]);
+      AResponseInfo.ContentText:= '<h2>Output</h2>'+CmdOutput;
+    end
     else
     if ARequestInfo.URI='/checkupgrades' then
     begin
@@ -442,40 +484,53 @@ begin
       AResponseInfo.ContentText:= '';
     end
     else
-    if ARequestInfo.URI='/check_new' then
-    begin
-      AResponseInfo.ContentType:='application/json';
-      AResponseInfo.ContentText:= '';
-    end
-    else
     if ARequestInfo.URI='/disable' then
-      Timer1.Enabled:=False
+    begin
+      Timer1.Enabled:=False;
+      cmd := WaptgetPath+' -lcritical disable-tasks';
+      Application.Log(etInfo,cmd);
+      Sto_RedirectedExecute(cmd,CmdOutput,CmdError);
+      CmdOutput := StrUtils.StringsReplace(CmdOutput,[#13#10],['<br>'],[rfReplaceAll]);
+      AResponseInfo.ContentText:= '<h2>Output</h2>'+CmdOutput;
+    end
     else
     if (ARequestInfo.URI='/sysinfo') or (ARequestInfo.URI='/register') then
     begin
-      {if ARequestInfo.URI='/register' then
-        httpGetString();}
       AResponseInfo.ContentType:='application/json';
       AResponseInfo.ContentText:= LocalSysinfo.AsJson(True);
     end
     else
-    if (ARequestInfo.URI='/install') or (ARequestInfo.URI='/remove') or (ARequestInfo.URI='/showlog') then
+    if (ARequestInfo.URI='/install') or (ARequestInfo.URI='/remove') or (ARequestInfo.URI='/showlog')  or (ARequestInfo.URI='/show') then
     begin
-      if not ARequestInfo.AuthExists then
+      auth_ok := False;
+
+      // Check MD5 auth
+      if not auth_ok then
+        auth_ok := ARequestInfo.AuthExists and (ARequestInfo.AuthUsername = 'admin') and MD5Match(MD5String(ARequestInfo.AuthPassword),MD5PasswordForRepo(''));
+
+      //Check ldap / AD authentication
+      if not auth_ok and ARequestInfo.AuthExists and (ARequestInfo.AuthUsername<>'') and (ARequestInfo.AuthPassword<>'' ) and (ldap_server<>'') then
       begin
-        if (ADSServer<>'') and (
-        ldap := LDAPSSLLogin(
-        or (ARequestInfo.AuthUsername <> 'admin') or
-          not MD5Match(MD5String(ARequestInfo.AuthPassword),MD5PasswordForRepo('')) then
-        begin
-          AResponseInfo.ResponseNo := 401;
-          AResponseInfo.ResponseText := 'Authorization required';
-          AResponseInfo.ContentType := 'text/html';
-          AResponseInfo.ContentText := '<html>Authentication required for Installation operations </html>';
-          AResponseInfo.CustomHeaders.Values['WWW-Authenticate'] := 'Basic realm="WAPT-GET Authentication"';
-          Exit;
+        try
+          ldap := LDAPSSLLogin(ldap_server,ARequestInfo.AuthUsername,GetWorkGroupName,ARequestInfo.AuthPassword);
+          // check if in Domain Admins group
+          auth_ok := ldapauth.UserIngroup(ldap,ldap_basedn,ARequestInfo.AuthUsername,'CN=Domain Admins');
+        except
+          auth_ok :=False;
         end;
       end;
+
+      // Ask for user/Password
+      if not auth_ok then
+      begin
+        AResponseInfo.ResponseNo := 401;
+        AResponseInfo.ResponseText := 'Authorization required';
+        AResponseInfo.ContentType := 'text/html';
+        AResponseInfo.ContentText := '<html>Authentication required for Installation operations </html>';
+        AResponseInfo.CustomHeaders.Values['WWW-Authenticate'] := 'Basic realm="WAPT-GET Authentication"';
+        Exit;
+      end;
+
       if ARequestInfo.Params.Count<=0 then
       begin
         AResponseInfo.ResponseNo := 404;
@@ -503,6 +558,8 @@ begin
       else
       if ARequestInfo.URI = '/showlog' then
         cmd := cmd+' showlog '+ARequestInfo.Params.ValueFromIndex[i];
+      if ARequestInfo.URI = '/show' then
+        cmd := cmd+' show '+ARequestInfo.Params.ValueFromIndex[i];
       Application.Log(etInfo,cmd);
       //HttpRunTask(AContext,AResponseInfo,cmd,ExitStatus)
       Sto_RedirectedExecute(cmd,CmdOutput,CmdError);
@@ -514,6 +571,7 @@ begin
     end
     else
     begin
+      ReadSettings;
       AResponseInfo.ContentText:= (
         '<h1>'+GetComputerName+' - System status</h1>'+
         'WAPT Server URL: '+GetWaptServerURL+'<br>'+
@@ -526,6 +584,7 @@ begin
         'DNS Server: '+ GetDNSServer+'<br>'+
         'DNS Domain: '+ GetDNSDomain+'<br>'+
         'IP Addresses:'+GetLocalIP+'<br>'+
+        'LDAP Server (ADS):'+GetLDAPServer+'<br>'+
         'Main WAPT Repository: '+ GetMainWaptRepo+'<br>'+
         'WAPT server: '+ GetWaptServerURL+'<br>'+
         //'System: '+GetWindowsVersionString+' '+GetWindowsEditionString+' '+GetWindowsServicePackVersionString+'<br>'+
@@ -539,7 +598,10 @@ begin
         'AuthUsername:'+ARequestInfo.AuthUsername+'<br>'+
         '<h1>Service info</h1>'+
         'Check every:'+FormatFloat('#.##',Timer1.Interval/1000/60)+' min <br>'+
-        'Active:'+BoolToStr(Timer1.Enabled,'Yes','No')+'<br>'
+        'Active:'+BoolToStr(Timer1.Enabled,'Yes','No')+'<br>'+
+        'Windows task Wapt-update period (minutes): '+waptupdate_task_period+' min <br>'+
+        'Windows task Wapt-upgrade period (minutes): '+waptupgrade_task_period+' min <br>'
+
         //+'Python engine:'+APythonEngine.EvalStringAsStr('mywapt.update()')
         );
     end;
@@ -569,24 +631,33 @@ begin
   end;
 end;
 
-function TWaptDaemon.RepoTableHook(Data, FN: Utf8String): Utf8String;
+function TWaptDaemon.RepoTableHook(Dataset:TDataset;Data, FN: Utf8String): Utf8String;
+var
+  package:String;
 begin
   FN := LowerCase(FN);
+  package := '"'+Dataset['package']+'(='+Dataset['version']+')"';
   if FN='package' then
-    Result:='<a href="/install?package='+Data+'">'+Data+'</a>'
+    Result:='<a href="'+TIdURI.ParamsEncode('/show?package='+package)+'">'+Data+'</a>'
+  else
+  if FN='install' then
+    Result:='<a class=action href="javascript: if (confirm(''Confirm the installation of '+Dataset['package']+' ?'')) { window.location.href='''+
+      TIdURI.ParamsEncode('/install?package='+package)+''' } else { void('''') }">'+Data+'</a>'
   else
     Result := Data;
 end;
 
-function TWaptDaemon.StatusTableHook(Data, FN: Utf8String): Utf8String;
+function TWaptDaemon.StatusTableHook(Dataset:TDataset;Data, FN: Utf8String): Utf8String;
 begin
   FN := LowerCase(FN);
   if FN='package' then
     Result:='<a href="/showlog?package='+Data+'">'+Data+'</a>'
   else
+  if FN='remove' then
+    Result:='<a class=action href="javascript: if (confirm(''Confirm the removal of '+Dataset['package']+' ?'')) { window.location.href=''/remove?package='+Dataset['package']+''' } else { void('''') }">'+Data+'</a>'
+  else
     Result := Data;
 end;
-
 
 function TWaptDaemon.RegisterComputer: Boolean;
 begin

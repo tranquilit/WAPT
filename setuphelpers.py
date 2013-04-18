@@ -478,7 +478,14 @@ def registry_readstring(root,path,keyname,default=''):
     except:
         return default
 
-def inifile_readstring(inifilename,section,key,default=''):
+
+def inifile_hasoption(inifilename,section,key):
+    """Read a string parameter from inifile"""
+    inifile = RawConfigParser()
+    inifile.read(inifilename)
+    return inifile.has_section(section) and inifile.has_option(section,key)
+
+def inifile_readstring(inifilename,section,key,default=None):
     """Read a string parameter from inifile"""
     inifile = RawConfigParser()
     inifile.read(inifilename)
@@ -487,15 +494,14 @@ def inifile_readstring(inifilename,section,key,default=''):
     else:
         return default
 
-
 def inifile_writestring(inifilename,section,key,value):
     """Write a string parameter to inifile"""
     inifile = RawConfigParser()
     inifile.read(inifilename)
+    if not inifile.has_section(section):
+        inifile.add_section(section)
     inifile.set(section,key,value)
     inifile.write(open(inifilename,'w'))
-
-
 
 def installed_softwares(keywords=''):
     """return list of installed software from registry (both 32bit and 64bit"""
@@ -801,6 +807,10 @@ def get_task(name):
     task = ts.Activate(name)
     return task
 
+def run_task(name):
+    """Launch immediately the task"""
+    get_task(name).Run()
+
 def task_exists(name):
     """Return true if a sheduled task names 'name.job' is defined"""
     ts = pythoncom.CoCreateInstance(taskscheduler.CLSID_CTaskScheduler,None,
@@ -819,20 +829,26 @@ def delete_task(name):
 
 def disable_task(name):
     """Disable a task"""
+    return run('schtasks /Change /TN "%s" /DISABLE' % name)
+    """
     task = get_task(name)
     task.SetFlags(task.GetFlags() | taskscheduler.TASK_FLAG_DISABLED)
     pf = task.QueryInterface(pythoncom.IID_IPersistFile)
     pf.Save(None,1)
     return task
-
+    """
 
 def enable_task(name):
     """Enable a task"""
+    return run('schtasks /Change /TN "%s" /ENABLE' % name)
+
+    """
     task = get_task(name)
     task.SetFlags(task.GetFlags() & ~taskscheduler.TASK_FLAG_DISABLED)
     pf = task.QueryInterface(pythoncom.IID_IPersistFile)
     pf.Save(None,1)
     return task
+    """
 
 def create_daily_task(name,cmd,parameters, max_runtime=10, repeat_minutes=None, start_hour=None, start_minute=None):
     """creates a daily task

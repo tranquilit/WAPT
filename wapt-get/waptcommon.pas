@@ -32,6 +32,7 @@ interface
 
   Function  GetMainWaptRepo:String;
   Function  GetWaptServerURL:String;
+  function  GetLDAPServer(dnsdomain:String=''): String;
 
   function WaptIniFilename: Utf8String;
   function WaptgetPath: Utf8String;
@@ -81,10 +82,49 @@ type
 
 implementation
 
-uses FileUtil,soutils,tiscommon,Windows,Variants,winsock,IdDNSResolver,IdExceptionCore,JwaIpHlpApi,
-    NetworkAdapterInfo,tisinifiles,registry;
+uses FileUtil,soutils,tiscommon,Windows,Variants,winsock,IdDNSResolver,IdExceptionCore,JwaIpHlpApi,JwaIpTypes,
+    NetworkAdapterInfo,tisinifiles,registry,tisstrings;
+
+
+Function GetDNSServers:TDynStringArray;
+var
+  pFI: PFixedInfo;
+  pIPAddr: PIPAddrString;
+  OutLen: Cardinal;
+begin
+  SetLength(Result,0);
+  OutLen := SizeOf(TFixedInfo);
+  GetMem(pFI, SizeOf(TFixedInfo));
+  try
+    if GetNetworkParams(pFI, OutLen) = ERROR_BUFFER_OVERFLOW then
+    begin
+      ReallocMem(pFI, OutLen);
+      if GetNetworkParams(pFI, OutLen) <> NO_ERROR then Exit;
+    end;
+    // If there is no network available there may be no DNS servers defined
+    if pFI^.DnsServerList.IpAddress.S[0] = #0 then Exit;
+    // Add first server
+    SetLength(Result,length(Result)+1);
+    Result[length(Result)-1] := pFI^.DnsServerList.IpAddress.S;
+    // Add rest of servers
+    pIPAddr := pFI^.DnsServerList.Next;
+    while Assigned(pIPAddr) do
+    begin
+      SetLength(Result,length(Result)+1);
+      Result[length(Result)-1] := pIPAddr^.IpAddress.S;
+      pIPAddr := pIPAddr^.Next;
+    end;
+  finally
+    FreeMem(pFI);
+  end;
+end;
 
 function GetDNSServer:AnsiString;
+begin
+  result := GetDNSServers[0];
+end;
+
+{function GetDNSServer:AnsiString;
 var
   reg:TRegistry;
 begin
@@ -101,7 +141,8 @@ begin
   finally
     reg.Free;
   end;
-end;
+end;}
+
 
 function GetDNSDomain:AnsiString;
 var
@@ -159,7 +200,7 @@ begin
       resolv.QueryType := [TQueryRecordTypes.qtService];
       resolv.WaitingTime:=400;
       resolv.Resolve('_wapt._tcp.'+dnsdomain+'.');
-      highest:=0;
+      highest:=-1;
       for i := 0 to resolv.QueryResult.count - 1 do
       begin
         rec := resolv.QueryResult.Items[i];
@@ -188,6 +229,56 @@ begin
   if (Result='') or not  Wget_try(result) then
     result := '';
 end;
+
+function GetLDAPServer(dnsdomain:String=''): String;
+var
+  resolv : TIdDNSResolver;
+  rec : TResultRecord;
+  i:integer;
+  highest : integer;
+  ais : TAdapterInfo;
+
+  dnsserver:String;
+
+begin
+  if dnsdomain='' then
+    dnsdomain:=GetDNSDomain;
+
+  dnsserver:=GetDNSServer;
+
+  if (dnsserver<>'') and (dnsdomain<>'') then
+  try
+    resolv := TIdDNSResolver.Create(Nil);
+    try
+      resolv.Host:=dnsserver;
+      resolv.ClearInternalQuery;
+      resolv.QueryType := [TQueryRecordTypes.qtService];
+      resolv.WaitingTime:=400;
+      resolv.Resolve('_ldap._tcp.'+dnsdomain+'.');
+      highest:=-1;
+      for i := 0 to resolv.QueryResult.count - 1 do
+      begin
+        rec := resolv.QueryResult.Items[i];
+        if rec is TSRVRecord then
+        with (rec as TSRVRecord) do begin
+           if Priority>highest then
+           begin
+             Highest := Priority;
+             Result := Target+':'+IntToStr(Port);
+           end;
+        end;
+      end;
+    finally
+      resolv.free;
+    end;
+  except
+    on EIdDnsResolverError do
+      Logger('SRV lookup failed',DEBUG)
+    else
+      Raise;
+  end;
+end;
+
 
 function GetEthernetInfo(ConnectedOnly:Boolean):ISuperObject;
 var
