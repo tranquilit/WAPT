@@ -423,36 +423,6 @@ def _environ_params(dict_or_module={}):
     return params_dict
 
 ###########
-def reg_getvalue(key,name,default=None):
-    try:
-        return _winreg.QueryValueEx(key,name)[0]
-    except WindowsError,e:
-        if e.errno in(259,2):
-            # WindowsError: [Errno 259] No more data is available
-            # WindowsError: [Error 2] Le fichier spécifié est introuvable
-            return default
-        else:
-            raise
-
-
-def reg_setvalue(key,name,value,type=_winreg.REG_SZ ):
-    return _winreg.SetValueEx(key,name,0,type,value)
-
-def reg_openkey_noredir(key, sub_key, sam=_winreg.KEY_READ,create_if_missing=False):
-    try:
-        if platform.machine() == 'AMD64':
-            return _winreg.OpenKey(key,sub_key,0, sam | _winreg.KEY_WOW64_64KEY)
-        else:
-            return _winreg.OpenKey(key,sub_key,0,sam)
-    except WindowsError,e:
-        if e.errno == 2:
-            if create_if_missing:
-                if platform.machine() == 'AMD64':
-                    return _winreg.CreateKeyEx(key,sub_key,0, sam | _winreg.KEY_READ| _winreg.KEY_WOW64_64KEY | _winreg.KEY_WRITE )
-                else:
-                    return _winreg.CreateKeyEx(key,sub_key,0,sam | _winreg.KEY_READ | _winreg.KEY_WRITE )
-            else:
-                raise WindowsError(e.errno,'The key %s can not be opened' % sub_key)
 HKEY_CLASSES_ROOT = _winreg.HKEY_CLASSES_ROOT
 HKEY_CURRENT_USER = _winreg.HKEY_CURRENT_USER
 HKEY_LOCAL_MACHINE = _winreg.HKEY_LOCAL_MACHINE
@@ -467,8 +437,60 @@ REG_MULTI_SZ = _winreg.REG_MULTI_SZ
 REG_DWORD = _winreg.REG_DWORD
 REG_EXPAND_SZ = _winreg.REG_EXPAND_SZ
 
+def reg_openkey_noredir(key, sub_key, sam=_winreg.KEY_READ,create_if_missing=False):
+    """Open the registry key\subkey with access rights sam
+        Returns a key handle for reg_getvalue and reg_set_value
+       key     : HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER ...
+       sub_key : string like "software\\microsoft\\windows\\currentversion"
+       sam     : a boolean comination of KEY_READ | KEY_WRITE
+       create_if_missing : True to create the sub_key if not exists, access rights will include KEY_WRITE
+    """
+    try:
+        if platform.machine() == 'AMD64':
+            return _winreg.OpenKey(key,sub_key,0, sam | _winreg.KEY_WOW64_64KEY)
+        else:
+            return _winreg.OpenKey(key,sub_key,0,sam)
+    except WindowsError,e:
+        if e.errno == 2:
+            if create_if_missing:
+                if platform.machine() == 'AMD64':
+                    return _winreg.CreateKeyEx(key,sub_key,0, sam | _winreg.KEY_READ| _winreg.KEY_WOW64_64KEY | _winreg.KEY_WRITE )
+                else:
+                    return _winreg.CreateKeyEx(key,sub_key,0,sam | _winreg.KEY_READ | _winreg.KEY_WRITE )
+            else:
+                raise WindowsError(e.errno,'The key %s can not be opened' % sub_key)
+
+def reg_getvalue(key,name,default=None):
+    """Return the value of specified name inside 'key' folder
+         key  : handle of registry key as returned by reg_openkey_noredir()
+         name : value name or None for key default value
+         default : value returned if specified name doesn't exist
+    """
+    try:
+        return _winreg.QueryValueEx(key,name)[0]
+    except WindowsError,e:
+        if e.errno in(259,2):
+            # WindowsError: [Errno 259] No more data is available
+            # WindowsError: [Error 2] Le fichier spécifié est introuvable
+            return default
+        else:
+            raise
+
+
+def reg_setvalue(key,name,value,type=_winreg.REG_SZ ):
+    """Set the value of specified name inside 'key' folder
+         key  : handle of registry key as returned by reg_openkey_noredir()
+         name : value name
+         type : type of value (REG_SZ,REG_MULTI_SZ,REG_DWORD,REG_EXPAND_SZ)
+    """
+    return _winreg.SetValueEx(key,name,0,type,value)
+
 def registry_readstring(root,path,keyname,default=''):
-    """Get a string from registry given root (HKLM..) a path and a keyname
+    """Return a string from registry
+        root    : HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER ...
+        path    : string like "software\\microsoft\\windows\\currentversion"
+                           or "software\\wow6432node\\microsoft\\windows\\currentversion"
+        keyname : None for value of key or str for a specific value like 'CommonFilesDir'
     the path can be either with backslash or slash"""
     path = path.replace(u'/',u'\\')
     key = reg_openkey_noredir(root,path)
@@ -477,7 +499,6 @@ def registry_readstring(root,path,keyname,default=''):
         return result
     except:
         return default
-
 
 def inifile_hasoption(inifilename,section,key):
     """Read a string parameter from inifile"""
@@ -601,23 +622,35 @@ def unregister_uninstall(uninstallkey,win64app=False):
 wincomputername = win32api.GetComputerName
 windomainname = win32api.GetDomainName
 
+def networking():
+    """return a list of (iface,mac,{addr,broadcast,netmask})"""
+    import netifaces
+    ifaces = netifaces.interfaces()
+    res = []
+    for i in ifaces:
+        params = netifaces.ifaddresses(i)
+        if netifaces.AF_LINK in params and params[netifaces.AF_LINK][0]['addr'] and not params[netifaces.AF_LINK][0]['addr'].startswith('00:00:00'):
+            iface = {'iface':i,'mac':params[netifaces.AF_LINK][0]['addr']}
+            if netifaces.AF_INET in params:
+                iface.update(params[netifaces.AF_INET][0])
+            res.append( iface )
+    return res
+
+
 def host_info():
     info = {}
-
     info['computer_name'] =  wincomputername()
     info['computer_fqdn'] =  get_hostname()
     info['dns_domain'] = get_domain_fromregistry()
     info['workgroup_name'] = windomainname()
-    info['mac_addresses'] =[]
-    info['ip_addresses'] = []
-    info['cpu_name'] = ""
+    info['networking'] = networking()
+    info['cpu_name'] = ''
     info['cpu_count'] = 1
     info['physical_memory'] = 0
     info['virtual_memory'] = 0
     info['system_manufacturer'] = ""
     info['system_productname'] = "",
     info['win64'] = iswin64(),
-
     info['wmi'] = {}
     try:
         import wmi

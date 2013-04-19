@@ -77,6 +77,9 @@ def parse_major_minor_patch_build(version):
 
     return verinfo
 
+def make_version(major_minor_patch_build):
+    return '.'.join( [ "%s" % major_minor_patch_build[p] for p in ('major','minor','patch','subpatch') if major_minor_patch_build[p]<>None])+\
+                '-'+major_minor_patch_build['packaging']
 
 class PackageEntry(object):
     """Package attributes coming from either control files in WAPT package or local DB"""
@@ -229,6 +232,8 @@ class PackageEntry(object):
             control = StringIO.StringIO(myzip.open('WAPT/control').read().decode('utf8'))
         elif os.path.isdir(fname):
             control = codecs.open(os.path.join(fname,'WAPT','control'),'r',encoding='utf8')
+        else:
+            raise Exception('No control found for %s' % (fname,))
 
         (param,value) = ('','')
         while 1:
@@ -309,6 +314,15 @@ sources      : %(sources)s
         return "%s (%s):%s" % (self.package,self.version,self.architecture)
         #return self.ascontrol(with_non_control_attributes=True).encode('utf8')
 
+    def inc_build(self):
+        """Increment build number (last part of version)"""
+        version_parts = self.parse_version()
+        if 'packaging' in version_parts:
+            version_parts['packaging'] = "%02i" % (int(version_parts['packaging'])+1,)
+            self.version = make_version(version_parts)
+        else:
+            raise Exception('no build/packaging part in version number %s' % self.version)
+
 def update_packages(adir):
     """Scan adir directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash"""
     packages_fname = os.path.join(adir,'Packages')
@@ -379,19 +393,14 @@ def update_packages(adir):
 
 if __name__ == '__main__':
     w = PackageEntry()
-    w.load_control_from_wapt(r'C:\shapers\openproj-wapt')
-
-    w2=PackageEntry()
-    w2.load_control_from_wapt(r'c:\shapers\openproj_1.4.0-00_all.wapt')
-
-    assert w>w2
-
     w.description = u'Package testé'
     w.package = 'wapttest'
     w.architecture = 'All'
     w.version='0.1.0-10'
     w.depends=''
     w.maintainer = 'TIS'
+    print w.ascontrol()
+    w.inc_build()
     print w.ascontrol()
     w['install_date'] = '20120501'
     for a in w.all_attributes:

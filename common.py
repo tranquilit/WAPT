@@ -57,7 +57,7 @@ from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflec
 import re
 import setuphelpers
 
-__version__ = "0.0.4"
+__version__ = "0.1.0"
 
 logger = logging.getLogger()
 
@@ -844,6 +844,7 @@ class WaptDB(object):
 
 
     def set_param(self,name,value):
+        """Store permanently a (name/value) pair in database, replace existing one"""
         try:
             self.db.execute('insert or replace into wapt_params(name,value,create_date) values (?,?,?)',(name,value,datetime2isodate()))
             self.db.commit()
@@ -852,11 +853,20 @@ class WaptDB(object):
             self.db.rollback()
 
     def get_param(self,name,default=None):
-        q = self.db.execute('select value from wapt_params where name=?',(name,)).fetchone()
+        """Retrieve the value associated with name from database"""
+        q = self.db.execute('select value from wapt_params where name=? order by create_date desc limit 1',(name,)).fetchone()
         if q:
             return q[0]
         else:
             return default
+
+    def delete_param(self,name):
+        try:
+            self.db.execute('delete from wapt_params where name=?',(name,))
+            self.db.commit()
+        except:
+            logger.critical('Unable to delete param %s : %s' % (name,value))
+            self.db.rollback()
 
     def add_package(self,
                     package='',
@@ -1092,8 +1102,8 @@ class WaptDB(object):
                 result[p.package] = available
         return result
 
-    def update_repos_list(self,url_list,proxies=None):
-        """Cleanup all"""
+    def update_repos_list(self,url_list,proxies=None,force=False):
+        """update the packages database with Packages files from the url in url_list"""
         try:
             logger.info('Purge packages table')
             self.db.execute('delete from wapt_package where repo_url not in (%s)' % (','.join('"%s"'% url for url in url_list,)))
@@ -1101,7 +1111,7 @@ class WaptDB(object):
             for url in url_list:
                 logger.info('Getting packages from %s' % url)
                 try:
-                    self.update_packages_list(url,proxies=proxies)
+                    self.update_packages_list(url,proxies=proxies,force=force)
                 except Exception,e:
                     logger.critical('Error getting packages from %s : %s' % (url,e))
             logger.debug('Commit wapt_package updates')
@@ -1110,14 +1120,29 @@ class WaptDB(object):
             self.db.rollback()
             raise
 
-    def update_packages_list(self,repourl,proxies=None):
-        """Get Packages from http repo and update local package database"""
+    def update_packages_list(self,repourl,proxies=None,force=False):
+        """Get Packages from http repo and update local package database
+            return last-update header"""
         try:
-            result = []
-            packagesfn = repourl + '/Packages'
-            logger.debug('read remote Packages zip file %s' % packagesfn)
+            result = None
+            packages_url = repourl + '/Packages'
+            # Check if updated
+            if not force:
+                last_update = self.get_param('last-%s' % repourl[:59])
+                if last_update:
+                    logger.debug('Check last-modified header for %s to avoid unecessary update' % (packages_url,))
+                    current_update = requests.head(packages_url,proxies=proxies).headers['last-modified']
+                    if current_update == last_update:
+                        logger.info('Index from %s has not been updated (last update %s), skipping update' % (packages_url,last_update))
+                        return current_update
+
+            logger.debug('Read remote Packages zip file %s' % packages_url)
+            packages_answer = requests.get(packages_url,proxies=proxies)
+            packages_answer.raise_for_status
+
+            # Packages file is a zipfile with one Packages file inside
             packageListFile = codecs.decode(zipfile.ZipFile(
-                  StringIO.StringIO( requests.get(packagesfn,proxies=proxies).content)
+                  StringIO.StringIO(packages_answer.content)
                 ).read(name='Packages'),'UTF-8').splitlines()
 
             logger.debug('Purge packages table')
@@ -1132,7 +1157,6 @@ class WaptDB(object):
                     logger.debug(package)
                     package.repo_url = repourl
                     self.add_package_entry(package)
-                    result.append((package.package,package.version))
 
             for line in packageListFile:
                 if line.strip()=='':
@@ -1147,7 +1171,10 @@ class WaptDB(object):
 
             logger.debug('Commit wapt_package updates')
             self.db.commit()
-            return result
+            current_update = packages_answer.headers['last-modified']
+            logger.debug('Storing last-modified header for repourl %s : %s' % (repourl,current_update))
+            self.set_param('last-%s' % repourl[:59],current_update)
+            return current_update
         except:
             logger.debug('rollback delete package')
             self.db.rollback()
@@ -1271,6 +1298,10 @@ class Wapt(object):
         if not os.path.exists(self.packagecachedir):
             os.makedirs(self.packagecachedir)
         self.dry_run = False
+
+        # to allow/restrict installation, supplied to packages
+        self.usergroups = None
+
         # database init
         if config.has_option('global','dbdir'):
             self.dbdir =  config.get('global','dbdir')
@@ -1657,6 +1688,8 @@ class Wapt(object):
             setattr(setup,'run_notfatal',setuphelpers.run_notfatal)
             setattr(setup,'WAPT',self)
 
+            setattr(setup,'usergroups',self.usergroups)
+
             # get definitions of required parameters from setup module
             if hasattr(setup,'required_params'):
                 required_params = setup.required_params
@@ -1799,7 +1832,7 @@ class Wapt(object):
                 result.append(f)
         return result
 
-    def update(self):
+    def update(self,force=False):
         """Update local database with packages definition from repositories
             returns a dict of
                 "removed"
@@ -1812,7 +1845,7 @@ class Wapt(object):
             raise Exception('No main WAPT repository available or setup')
         # put main repo at the end so that it will used in priority
         repos = [r.repo_url for r in self.repositories] + [self.wapt_repourl]
-        self.waptdb.update_repos_list(repos,proxies=self.proxies)
+        self.waptdb.update_repos_list(repos,proxies=self.proxies,force=force)
 
         current = self.waptdb.known_packages()
         result = {
@@ -2029,7 +2062,7 @@ class Wapt(object):
                         logger.info('Launch uninstall cmd %s' % (uninstall_cmd,))
                         print subprocess.check_output(uninstall_cmd,shell=True)
                     except Exception,e:
-                        logger.info("Warning : %s" % e)
+                        logger.critical("Critical error during uninstall of %s: %s" % (uninstall_cmd,e))
                 logger.info('Remove status record from local DB')
                 self.waptdb.remove_install_status(package)
             else:
@@ -2204,6 +2237,7 @@ class Wapt(object):
                 logger.info('Launch session_setup')
                 setattr(setup,'run',setuphelpers.run)
                 setattr(setup,'run_notfatal',setuphelpers.run_notfatal)
+                setattr(setup,'usergroups',self.usergroups)
                 setattr(setup,'WAPT',self)
 
                 # get definitions of required parameters from setup module
@@ -2258,6 +2292,7 @@ class Wapt(object):
                 logger.info('Launch uninstall')
                 setattr(setup,'run',setuphelpers.run)
                 setattr(setup,'run_notfatal',setuphelpers.run_notfatal)
+                setattr(setup,'usergroups',self.usergroups)
                 setattr(setup,'WAPT',self)
 
                 # get value of required parameters if not already supplied
@@ -2487,13 +2522,89 @@ def install():
         return self.waptdb.packages_matching(packagename)
 
 
+    def duplicate_package(self,packagename,newname=None,target_directory='',
+        unzip=False,
+        excludes=['.svn','.git*','*.pyc','src'],
+        private_key=None,
+        callback=pwd_callback):
+        """Duplicate an existing package from repositories into targetdirectory with newname.
+            Return the package filename or the directory name of the new package
+            unzip: unzip packages at end for modifications, don't sign, return directory name
+            excludes: excluded files for signing"""
+
+        # suppose target directory
+        if not target_directory:
+            target_directory = self.config.get('global','default_sources_root','')
+            if not target_directory:
+                target_directory = os.getcwd()
+        if target_directory:
+             target_directory = os.path.abspath(target_directory)
+
+        # if no newname supplied, suppose this is for creating a new machine package
+        if not newname:
+            newname = setuphelpers.get_hostname().lower()
+        else:
+            newname = newname.lower()
+
+        # download the source package in cache
+        filenames = self.download_packages([packagename])
+        source_filename = (filenames['downloaded'] or filenames['skipped'])[0]
+        source_control = PackageEntry().load_control_from_wapt(source_filename)
+
+        # duplicate package informations
+        dest_control = PackageEntry()
+        for a in source_control.all_attributes:
+            dest_control[a] = source_control[a]
+
+        # change package name
+        dest_control.package = newname
+
+        # Check existing versions and increment it
+        older_packages = self.is_available(newname)
+        if older_packages and dest_control<=older_packages[-1]:
+            dest_control.version = older_packages[-1].version
+            dest_control.inc_build()
+
+        dest_control.filename = dest_control.make_package_filename()
+        target_filename = os.path.join(target_directory,dest_control.filename)
+
+        logger.debug('Copy package file from %s to %s' % (source_filename,target_filename))
+        shutil.copyfile(source_filename,target_filename)
+        dest_control.save_control_to_wapt(target_filename)
+
+        if not unzip:
+            #get default private_key if not provided
+            if not private_key:
+                private_key = self.private_key
+            # sign package
+            if private_key:
+                self.signpackage(target_filename,excludes=excludes,private_key=private_key,callback=callback)
+            else:
+                logger.warning('No private key provided, packahe is not signed !')
+            return target_filename
+        else:
+            package_dev_dir = os.path.join(target_directory,newname)+'-%s' % self.config.get('global','default_sources_suffix','wapt')
+            logger.info('  unzipping %s to directory %s' % (target_filename,package_dev_dir))
+            zip = zipfile.ZipFile(target_filename)
+            zip.extractall(path=package_dev_dir)
+
+            # remove manifest and signature
+            manifest_filename = os.path.join( package_dev_dir,'WAPT','manifest.sha1')
+            if os.path.isfile(manifest_filename):
+                os.unlink(manifest_filename)
+            # remove signature of manifest
+            signature_filename = os.path.join( package_dev_dir,'WAPT','signature')
+            if os.path.isfile(signature_filename):
+                os.unlink(signature_filename)
+            return package_dev_dir
+
     def setup_tasks(self):
         result = []
         # update and download new packages
         if setuphelpers.task_exists('wapt-update'):
             setuphelpers.delete_task('wapt-update')
         if self.waptupdate_task_period:
-            task = setuphelpers.create_daily_task('wapt-update',sys.argv[0],'--update-packages download-upgrades',
+            task = setuphelpers.create_daily_task('wapt-update',sys.argv[0],'--update-packages download-upgrade',
                 max_runtime=self.waptupdate_task_maxruntime,repeat_minutes=self.waptupdate_task_period)
             result.append('%s : %s' % ('wapt-update',task.GetTriggerString(0)))
         # upgrade of packages
@@ -2529,6 +2640,17 @@ def install():
             result.append('wapt-update')
         return result
 
+    def write_param(name,value):
+        """Store in local db a key/value pair for later use"""
+        self.waptdb.set_param(name,value)
+
+    def read_param(name):
+        """Store in local db a key/value pair for later use"""
+        return self.waptdb.set_param(name,value)
+
+    def delete_param(name):
+        """Store in local db a key/value pair for later use"""
+        self.waptdb.delete_param(name,value)
 
 ###
 

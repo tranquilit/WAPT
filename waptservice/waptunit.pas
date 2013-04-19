@@ -398,7 +398,7 @@ var
     Cmd,IPS:String;
     i,f:integer;
     param,value,lst,UpgradeResult,SetupResult:String;
-    so : ISuperObject;
+    so,groups : ISuperObject;
     AQuery : TSQLQuery;
     filepath,template : Utf8String;
     CmdOutput,CmdError:AnsiString;
@@ -503,6 +503,7 @@ begin
     if (ARequestInfo.URI='/install') or (ARequestInfo.URI='/remove') or (ARequestInfo.URI='/showlog')  or (ARequestInfo.URI='/show') then
     begin
       auth_ok := False;
+      groups := Nil;
 
       // Check MD5 auth
       if not auth_ok then
@@ -514,7 +515,8 @@ begin
         try
           ldap := LDAPSSLLogin(ldap_server,ARequestInfo.AuthUsername,GetWorkGroupName,ARequestInfo.AuthPassword);
           // check if in Domain Admins group
-          auth_ok := ldapauth.UserIngroup(ldap,ldap_basedn,ARequestInfo.AuthUsername,'CN=Domain Admins');
+          auth_ok := True;
+          groups := ldapauth.GetUserAndGroups(ldap,ldap_basedn,ARequestInfo.AuthUsername,False)['user.memberOf'];
         except
           auth_ok :=False;
         end;
@@ -538,6 +540,7 @@ begin
         AResponseInfo.ContentText := '<html>Please provide a "package" parameter</html>';
         Exit;
       end;
+
       cmd := WaptgetPath;
       //cmd := cmd+' --encoding=utf8 ';
 
@@ -548,6 +551,9 @@ begin
       f:= ARequestInfo.Params.IndexOfName('params');
       if (f>=0) then
         cmd := cmd+' -p "'+ChangeQuotes(ARequestInfo.Params.ValueFromIndex[f])+'"';
+
+      if groups<>Nil then
+        cmd := cmd+' -g "'+ChangeQuotes(groups.AsJSon(False))+'"';
 
       i:= ARequestInfo.Params.IndexOfName('package');
       if ARequestInfo.URI = '/install' then
@@ -563,7 +569,7 @@ begin
       Application.Log(etInfo,cmd);
       //HttpRunTask(AContext,AResponseInfo,cmd,ExitStatus)
       Sto_RedirectedExecute(cmd,CmdOutput,CmdError);
-      CmdOutput := StrUtils.StringsReplace(CmdOutput,[#13#10],['<br>'],[rfReplaceAll]);
+      CmdOutput := cmd+'<br>'+StrUtils.StringsReplace(CmdOutput,[#13#10],['<br>'],[rfReplaceAll]);
       //CmdError:=AnsiToUtf8(StrUtils.StringsReplace(CmdError,[#13#10],['<br>'],[rfReplaceAll]));
       AResponseInfo.ContentText:= '<h2>Output</h2>'+CmdOutput;
       //+'<h2>Errors</h2>'+CmdError;
