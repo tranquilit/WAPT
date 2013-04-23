@@ -9,12 +9,10 @@
         <Filename Value="wapttray.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="wapttray"/>
-        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="8"/>
+        <TopLine Value="7"/>
         <CursorPos X="49" Y="5"/>
         <UsageCount Value="25"/>
-        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="uwapttray.pas"/>
@@ -23,13 +21,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uwapttray"/>
-        <EditorIndex Value="0"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="49" Y="8"/>
         <UsageCount Value="25"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
@@ -56,6 +52,18 @@
         <UsageCount Value="23"/>
       </Unit4>
       <Unit5>
+        <Filename Value="udmwapttray.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DMWaptTray"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <UnitName Value="uDMWAPTTray"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="63"/>
+        <CursorPos X="98" Y="80"/>
+        <UsageCount Value="21"/>
+      </Unit5>
+      <Unit6>
         <Filename Value="..\..\tisvcl\tisutils.pas"/>
         <UnitName Value="tisutils"/>
         <WindowIndex Value="0"/>
@@ -65,284 +73,134 @@
         <Bookmarks Count="1">
           <Item0 X="5" Y="115" ID="1"/>
         </Bookmarks>
-      </Unit5>
-      <Unit6>
+      </Unit6>
+      <Unit7>
         <Filename Value="..\superobject\superobject.pas"/>
         <UnitName Value="superobject"/>
         <UsageCount Value="21"/>
-      </Unit6>
-      <Unit7>
+      </Unit7>
+      <Unit8>
         <Filename Value="..\jcl\source\common\JclSysInfo.pas"/>
         <UnitName Value="JclSysInfo"/>
         <WindowIndex Value="0"/>
         <TopLine Value="70"/>
         <CursorPos X="15" Y="94"/>
         <UsageCount Value="21"/>
-      </Unit7>
-      <Unit8>
+      </Unit8>
+      <Unit9>
         <Filename Value="..\..\pltis_superobject\soutils.pas"/>
         <UnitName Value="soutils"/>
         <WindowIndex Value="0"/>
         <TopLine Value="7"/>
         <CursorPos X="34" Y="14"/>
         <UsageCount Value="10"/>
-      </Unit8>
-      <Unit9>
+      </Unit9>
+      <Unit10>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-db\src\base\db.pas"/>
         <UnitName Value="db"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1042"/>
         <CursorPos X="3" Y="1341"/>
         <UsageCount Value="10"/>
-      </Unit9>
-      <Unit10>
+      </Unit10>
+      <Unit11>
         <Filename Value="..\..\pltis_openerp\openerpdataset.pas"/>
         <UnitName Value="OpenERPDataset"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="35" Y="4"/>
         <UsageCount Value="10"/>
-      </Unit10>
-      <Unit11>
+      </Unit11>
+      <Unit12>
         <Filename Value="..\..\pltis_jcl\source\common\JclUnicode.pas"/>
         <UnitName Value="JclUnicode"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1636"/>
         <CursorPos X="25" Y="1646"/>
         <UsageCount Value="10"/>
-      </Unit11>
-      <Unit12>
+      </Unit12>
+      <Unit13>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\shellapi.pp"/>
         <UnitName Value="ShellApi"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1105"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
-      </Unit12>
-      <Unit13>
+      </Unit13>
+      <Unit14>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-process\src\process.pp"/>
         <UnitName Value="process"/>
         <WindowIndex Value="0"/>
         <TopLine Value="19"/>
         <CursorPos X="17" Y="176"/>
         <UsageCount Value="10"/>
-      </Unit13>
-      <Unit14>
+      </Unit14>
+      <Unit15>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\shlobj.pp"/>
         <UnitName Value="shlobj"/>
         <WindowIndex Value="0"/>
         <TopLine Value="91"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
-      </Unit14>
-      <Unit15>
+      </Unit15>
+      <Unit16>
         <Filename Value="C:\codetyphon\lazarus\lcl\forms.pp"/>
         <UnitName Value="Forms"/>
-        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1344"/>
         <CursorPos X="15" Y="1367"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
-      </Unit15>
-      <Unit16>
+      </Unit16>
+      <Unit17>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\customaction.inc"/>
-        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="231"/>
         <CursorPos X="1" Y="253"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
-      </Unit16>
-      <Unit17>
+      </Unit17>
+      <Unit18>
         <Filename Value="C:\codetyphon\lazarus\lcl\interfaces\win32\win32trayicon.inc"/>
-        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="142"/>
         <CursorPos X="1" Y="158"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
-      </Unit17>
-      <Unit18>
-        <Filename Value="C:\codetyphon\lazarus\lcl\interfaces\win32\win32wsextctrls.pp"/>
-        <UnitName Value="Win32WSExtCtrls"/>
-        <EditorIndex Value="6"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit18>
       <Unit19>
-        <Filename Value="C:\codetyphon\lazarus\lcl\include\containedaction.inc"/>
-        <EditorIndex Value="3"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="85"/>
-        <CursorPos X="15" Y="97"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
-      </Unit19>
-      <Unit20>
-        <Filename Value="C:\codetyphon\lazarus\lcl\actnlist.pas"/>
-        <UnitName Value="ActnList"/>
-        <EditorIndex Value="4"/>
+        <Filename Value="C:\codetyphon\lazarus\lcl\interfaces\win32\win32wsextctrls.pp"/>
+        <UnitName Value="Win32WSExtCtrls"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="C:\codetyphon\lazarus\lcl\include\containedaction.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="83"/>
+        <CursorPos X="15" Y="97"/>
+        <UsageCount Value="11"/>
       </Unit20>
       <Unit21>
+        <Filename Value="C:\codetyphon\lazarus\lcl\actnlist.pas"/>
+        <UnitName Value="ActnList"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="11"/>
+      </Unit21>
+      <Unit22>
         <Filename Value="C:\codetyphon\lazarus\lcl\extctrls.pp"/>
         <UnitName Value="ExtCtrls"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1070"/>
         <CursorPos X="83" Y="1096"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
-      </Unit21>
-      <Unit22>
-        <Filename Value="udmwapttray.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="DMWaptTray"/>
-        <ResourceBaseClass Value="DataModule"/>
-        <UnitName Value="uDMWAPTTray"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="65"/>
-        <CursorPos X="8" Y="88"/>
-        <UsageCount Value="21"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit22>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="30" HistoryIndex="29">
-      <Position1>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="56" Column="1" TopLine="34"/>
-      </Position1>
-      <Position2>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="55" Column="1" TopLine="33"/>
-      </Position2>
-      <Position3>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="54" Column="1" TopLine="32"/>
-      </Position3>
-      <Position4>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="53" Column="1" TopLine="31"/>
-      </Position4>
-      <Position5>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="52" Column="1" TopLine="30"/>
-      </Position5>
-      <Position6>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="51" Column="1" TopLine="29"/>
-      </Position6>
-      <Position7>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="50" Column="1" TopLine="28"/>
-      </Position7>
-      <Position8>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="49" Column="1" TopLine="27"/>
-      </Position8>
-      <Position9>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="94" Column="1" TopLine="63"/>
-      </Position9>
-      <Position10>
-        <Filename Value="uwapttray.pas"/>
-        <Caret Line="48" Column="32" TopLine="30"/>
-      </Position10>
-      <Position11>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="95" Column="1" TopLine="63"/>
-      </Position11>
-      <Position12>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="47" Column="23" TopLine="31"/>
-      </Position12>
-      <Position13>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="91" Column="22" TopLine="64"/>
-      </Position13>
-      <Position14>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="47" Column="23" TopLine="31"/>
-      </Position14>
-      <Position15>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="46" Column="57" TopLine="31"/>
-      </Position15>
-      <Position16>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="49" Column="26" TopLine="31"/>
-      </Position16>
-      <Position17>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="51" Column="1" TopLine="31"/>
-      </Position17>
-      <Position18>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="67" Column="3" TopLine="65"/>
-      </Position18>
-      <Position19>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="73" Column="3" TopLine="71"/>
-      </Position19>
-      <Position20>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="64" Column="3" TopLine="62"/>
-      </Position20>
-      <Position21>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="54" Column="3" TopLine="52"/>
-      </Position21>
-      <Position22>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="81" Column="3" TopLine="76"/>
-      </Position22>
-      <Position23>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="61" Column="3" TopLine="59"/>
-      </Position23>
-      <Position24>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="81" Column="3" TopLine="76"/>
-      </Position24>
-      <Position25>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="55" Column="3" TopLine="53"/>
-      </Position25>
-      <Position26>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="47" Column="20" TopLine="32"/>
-      </Position26>
-      <Position27>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="81" Column="1" TopLine="63"/>
-      </Position27>
-      <Position28>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="87" Column="34" TopLine="64"/>
-      </Position28>
-      <Position29>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="93" Column="9" TopLine="65"/>
-      </Position29>
-      <Position30>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="88" Column="3" TopLine="65"/>
-      </Position30>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectSession>
   <EditorMacros Count="0"/>
 </CONFIG>

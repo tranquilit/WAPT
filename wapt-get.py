@@ -21,11 +21,10 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.13"
+__version__ = "0.8.14"
 
 import sys
 import os
-import zipfile
 import shutil
 from iniparse import RawConfigParser
 from optparse import OptionParser
@@ -34,9 +33,7 @@ import datetime
 from common import WaptDB
 from waptpackage import PackageEntry
 from waptpackage import update_packages
-from common import pptable,ppdicttable
-from common import create_recursive_zip_signed
-from common import tryurl
+from common import ppdicttable
 import setuphelpers
 #from setuphelpers import *
 import json
@@ -79,7 +76,8 @@ action is either :
   make-host-template [<packagename> : initializes a package meta template with currently installed packages. If no package name is given, use FQDN
   build-package <directory> : creates a WAPT package from supplied directory
   sign-package <directory or package>  : add a signature of the manifest using a private SSL key
-  duplicate <directory or package> <new-package-name> : duplicate an existing package, changing its name (can be used for duplication of host packages...)
+  duplicate <directory or package> [<new-package-name> [<new-version> [<target directory>]]]: duplicate an existing package,
+                                            changing its name (can be used for duplication of host packages...)
 
  For repository management
   upload-package  <filenames> : upload package to repository (using winscp for example.)
@@ -396,7 +394,7 @@ def main():
             if len(args)<2:
                 print "You must provide at least the source package. New  name will be FQDN of the host if not provided"
                 sys.exit(1)
-            source_dir = mywapt.duplicate_package(*args[1:3],unzip=False,private_key=options.private_key)
+            source_dir = mywapt.duplicate_package(*args[1:5],build=True,private_key=options.private_key)
             if os.path.isdir(source_dir):
                 os.startfile( source_dir)
                 print "Package duplicated. You can build the new WAPT package by launching\n  %s build-package %s" % (sys.argv[0],source_dir)

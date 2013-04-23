@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.4.8"
+__version__ = "0.4.9"
 
 import os
 import sys
@@ -49,8 +49,10 @@ import winshell
 import pythoncom
 from win32com.shell import shell, shellcon
 from win32com.taskscheduler import taskscheduler
+import locale
 
 from iniparse import RawConfigParser
+
 
 logger = logging.getLogger()
 
@@ -535,13 +537,14 @@ def installed_softwares(keywords=''):
 
     def list_fromkey(uninstall):
         result = []
+        os_encoding=locale.getpreferredencoding()
         key = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,uninstall)
         mykeywords = keywords.lower().split()
         i = 0
         while True:
             try:
-                subkey = _winreg.EnumKey(key, i).decode('iso8859')
-                appkey = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,subkey.encode('iso8859')))
+                subkey = _winreg.EnumKey(key, i).decode(os_encoding)
+                appkey = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,subkey.encode(os_encoding)))
                 display_name = reg_getvalue(appkey,'DisplayName','')
                 display_version = reg_getvalue(appkey,'DisplayVersion','')
                 install_date = reg_getvalue(appkey,'InstallDate','')
@@ -587,7 +590,7 @@ def register_uninstall(uninstallkey,uninstallstring,win64app=False,
         root = "Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
     else:
         root = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
-    appkey = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,"%s\\%s" % (root,uninstallkey.encode('iso8859')),
+    appkey = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,"%s\\%s" % (root,uninstallkey.encode(locale.getpreferredencoding())),
         sam=_winreg.KEY_ALL_ACCESS,create_if_missing=True)
     reg_setvalue(appkey,'UninstallString',uninstallstring)
     reg_setvalue(appkey,'install_date',currentdate())
@@ -614,10 +617,10 @@ def unregister_uninstall(uninstallkey,win64app=False):
         else:
             root = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"+uninstallkey
         #key = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,root)
-        _winreg.DeleteKeyEx(_winreg.HKEY_LOCAL_MACHINE,root.encode('iso8859'))
+        _winreg.DeleteKeyEx(_winreg.HKEY_LOCAL_MACHINE,root.encode(locale.getpreferredencoding()))
     else:
         root = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"+uninstallkey
-        _winreg.DeleteKey(_winreg.HKEY_LOCAL_MACHINE,root.encode('iso8859'))
+        _winreg.DeleteKey(_winreg.HKEY_LOCAL_MACHINE,root.encode(locale.getpreferredencoding()))
 
 wincomputername = win32api.GetComputerName
 windomainname = win32api.GetDomainName
@@ -931,6 +934,10 @@ def create_daily_task(name,cmd,parameters, max_runtime=10, repeat_minutes=None, 
     #exit_code, startup_error_code = task.GetExitCode()
     return task
 
+
+def language():
+    """Get the default locale like fr, en, pl etc..  etc"""
+    return locale.getdefaultlocale()[0].split('_')[0]
 
 class EWaptSetupException(Exception):
     pass

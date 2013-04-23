@@ -513,7 +513,7 @@ begin
       if not auth_ok and ARequestInfo.AuthExists and (ARequestInfo.AuthUsername<>'') and (ARequestInfo.AuthPassword<>'' ) and (ldap_server<>'') then
       begin
         try
-          ldap := LDAPSSLLogin(ldap_server,ARequestInfo.AuthUsername,GetWorkGroupName,ARequestInfo.AuthPassword);
+          ldap := LDAPSSLLogin(ldap_server,ARequestInfo.AuthUsername,GetWorkGroupName,ARequestInfo.AuthPassword,ldap_port);
           // check if in Domain Admins group
           auth_ok := True;
           groups := ldapauth.GetUserAndGroups(ldap,ldap_basedn,ARequestInfo.AuthUsername,False)['user.memberOf'];
@@ -528,7 +528,7 @@ begin
         AResponseInfo.ResponseNo := 401;
         AResponseInfo.ResponseText := 'Authorization required';
         AResponseInfo.ContentType := 'text/html';
-        AResponseInfo.ContentText := '<html>Authentication required for Installation operations </html>';
+        AResponseInfo.ContentText := '<html>Authentication required for Installation operations</html>';
         AResponseInfo.CustomHeaders.Values['WWW-Authenticate'] := 'Basic realm="WAPT-GET Authentication"';
         Exit;
       end;
@@ -590,9 +590,12 @@ begin
         'DNS Server: '+ GetDNSServer+'<br>'+
         'DNS Domain: '+ GetDNSDomain+'<br>'+
         'IP Addresses:'+GetLocalIP+'<br>'+
-        'LDAP Server (ADS):'+GetLDAPServer+'<br>'+
+        'LDAP Server (ADS):'+ldap_server+'<br>'+
+        'LDAP port:'+ldap_port+'<br>'+
+        'LDAP base DN:'+ldap_basedn+'<br>'+
         'Main WAPT Repository: '+ GetMainWaptRepo+'<br>'+
         'WAPT server: '+ GetWaptServerURL+'<br>'+
+        'Configuration file: '+WaptIniFilename+'<br>'+
         //'System: '+GetWindowsVersionString+' '+GetWindowsEditionString+' '+GetWindowsServicePackVersionString+'<br>'+
         //'RAM: '+FormatFloat('###0 MB',GetTotalPhysicalMemory/1024/1024)+'<br>'+
         //'CPU: '+CPUInfo.CpuName+'<br>'+

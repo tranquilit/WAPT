@@ -37,7 +37,8 @@ begin
   ldap.UserName := FUserName+'@'+FDomain;
   ldap.Password := FPassword;
   ldap.Version := FVersion;
-  ldap.FullSSL := True;
+  ldap.FullSSL := Fport<>'389';
+  ldap.AutoTLS := Fport='389';
   try
     //The following code borrowed from Lou Feliz
     if ldap.Login then

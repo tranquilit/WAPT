@@ -17,6 +17,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="1"/>
+      <RevisionNr Value="1"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Tray Icon" ProductName="WAPT" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -82,6 +83,7 @@
         <Filename Value="udmwapttray.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DMWaptTray"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="uDMWAPTTray"/>
       </Unit5>
