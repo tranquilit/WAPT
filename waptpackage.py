@@ -86,7 +86,7 @@ class PackageEntry(object):
     """Package attributes coming from either control files in WAPT package or local DB"""
     required_attributes = ['package','version','architecture',]
     optional_attributes = ['section','priority','maintainer','description','depends','sources',]
-    non_control_attributes = ['filename','size','repo_url','md5sum',]
+    non_control_attributes = ['filename','size','repo_url','md5sum','repo',]
 
     @property
     def all_attributes(self):
@@ -106,6 +106,7 @@ class PackageEntry(object):
         self.size=''
         self.md5sum=''
         self.repo_url=''
+        self.repo=''
         self.calculated_attributes=[]
 
     def parse_version(self):

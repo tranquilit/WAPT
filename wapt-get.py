@@ -323,7 +323,7 @@ def main():
             print "Repositories URL : \n%s" % "\n".join([ "  %s" % p for p in result['repos'] ])
 
         elif action=='upgradedb':
-            (old,new) = mywapt.waptdb.upgradedb()
+            (old,new) = mywapt.waptdb.upgradedb(force=options.force)
             if old == new:
                 print "No database upgrade required, current %s, required %s" % (old,mywapt.waptdb.curr_db_version)
             else:
@@ -474,7 +474,7 @@ def main():
                 print "Update package list"
                 mywapt.update()
             result = mywapt.waptdb.packages_search(args[1:])
-            print ppdicttable(result,(('package',30),('version',10),('description',80)))
+            print ppdicttable(result,(('package',30),('version',10),('description',80),('repo',10)))
 
         elif action=='cleanup':
             result = mywapt.cleanup()

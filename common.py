@@ -799,16 +799,6 @@ db_upgrades = {
             'Sources':'sources',
             }],
         },
- ('20130327','20130408'):{
-        },
- ('20130408','20130410'):{
-        },
- ('20130410','20130423'):{
-        },
- ('20130327','20130423'):{
-        },
- ('20130408','20130423'):{
-        },
     }
 
 class WaptDB(object):
@@ -845,18 +835,14 @@ class WaptDB(object):
             self.db.close()
             logger.critical('DB error %s, rollbacking\n' % (value,))
 
-    def upgradedb(self):
+    def upgradedb(self,force=False):
         """Update local database structure to current version if rules are described in db_upgrades"""
         try:
             backupfn = ''
             # use cached value to avoid infinite loop
             old_structure_version = self._db_version
-            if old_structure_version >= self.curr_db_version:
+            if old_structure_version >= self.curr_db_version and not force:
                 logger.critical('upgrade db aborted : current structure version %s is newer or equal to requested structure version %s' % (old_structure_version,self.curr_db_version))
-                return (old_structure_version,old_structure_version)
-
-            if not (old_structure_version,self.curr_db_version) in db_upgrades:
-                logger.critical('no rules to upgrade from version %s to version %s, keeping old database' % (old_structure_version,self.curr_db_version))
                 return (old_structure_version,old_structure_version)
 
             logger.info('Upgrade database schema')
@@ -887,7 +873,10 @@ class WaptDB(object):
                 if old_datas[tablename]:
                     logger.debug(' process table %s' % tablename)
                     # get rules from db_upgrades dict
-                    (newtablename,newfieldnames) = db_upgrades[(old_structure_version,new_structure_version)].get(tablename,[tablename,{}])
+                    if new_structure_version>old_structure_version and (old_structure_version,new_structure_version) in db_upgrades:
+                        (newtablename,newfieldnames) = db_upgrades[(old_structure_version,new_structure_version)].get(tablename,[tablename,{}])
+                    else:
+                        (newtablename,newfieldnames) = (tablename,{})
 
                     allnewcolumns = [ c[0] for c in self.db.execute('select * from %s limit 0' % newtablename).description]
                     # take only old columns which match a new column in new structure
@@ -932,7 +921,8 @@ class WaptDB(object):
           md5sum varchar(255),
           depends varchar(800),
           sources varchar(255),
-          repo_url varchar(255)
+          repo_url varchar(255),
+          repo varchar(255)
           )"""
                         )
         self.db.execute("""
@@ -1102,7 +1092,8 @@ class WaptDB(object):
                     md5sum='',
                     depends='',
                     sources='',
-                    repo_url=''):
+                    repo_url='',
+                    repo='',):
 
         cur = self.db.execute("""\
               insert into wapt_package (
@@ -1118,7 +1109,8 @@ class WaptDB(object):
                 md5sum,
                 depends,
                 sources,
-                repo_url) values (?,?,?,?,?,?,?,?,?,?,?,?,?)
+                repo_url,
+                repo) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             """,(
                  package,
                  version,
@@ -1132,7 +1124,8 @@ class WaptDB(object):
                  md5sum,
                  depends,
                  sources,
-                 repo_url)
+                 repo_url,
+                 repo)
                )
 
         return cur.lastrowid
@@ -1152,7 +1145,8 @@ class WaptDB(object):
                          package_entry.md5sum,
                          package_entry.depends,
                          package_entry.sources,
-                         package_entry.repo_url)
+                         package_entry.repo_url,
+                         package_entry.repo)
 
 
     def add_start_install(self,package,version,architecture,params_dict={}):
@@ -1323,25 +1317,25 @@ class WaptDB(object):
                 result[p.package] = available
         return result
 
-    def update_repos_list(self,url_list,proxies=None,force=False):
-        """update the packages database with Packages files from the url in url_list"""
+    def update_repos_list(self,repos_list,proxies=None,force=False):
+        """update the packages database with Packages files from the url repos_list"""
         try:
             logger.info('Purge packages table')
-            self.db.execute('delete from wapt_package where repo_url not in (%s)' % (','.join('"%s"'% url for url in url_list,)))
+            self.db.execute('delete from wapt_package where repo_url not in (%s)' % (','.join('"%s"'% r.repo_url for r in repos_list,)))
             self.db.commit()
-            for url in url_list:
-                logger.info('Getting packages from %s' % url)
+            for repo in repos_list:
+                logger.info('Getting packages from %s' % repo.repo_url)
                 try:
-                    self.update_packages_list(url,proxies=proxies,force=force)
+                    self.update_packages_list(repo.repo_url,repo.name,proxies=proxies,force=force)
                 except Exception,e:
-                    logger.critical('Error getting packages from %s : %s' % (url,e))
+                    logger.critical('Error getting packages from %s : %s' % (repo.repo_url,e))
             logger.debug('Commit wapt_package updates')
         except:
             logger.debug('rollback delete table')
             self.db.rollback()
             raise
 
-    def update_packages_list(self,repourl,proxies=None,force=False):
+    def update_packages_list(self,repourl,repo_name=None,proxies=None,force=False):
         """Get Packages from http repo and update local package database
             return last-update header"""
         try:
@@ -1377,6 +1371,7 @@ class WaptDB(object):
                     logger.info("%s (%s)" % (package.package,package.version))
                     logger.debug(package)
                     package.repo_url = repourl
+                    package.repo = repo_name
                     self.add_package_entry(package)
 
             for line in packageListFile:
@@ -1586,7 +1581,9 @@ class Wapt(object):
         else:
             self.wapt_server = None
 
+        # Stores the configuration of all repositories (url, public_cert...)
         self.repositories = []
+        # secondary
         if config.has_option('global','repositories'):
             names = [n.strip() for n in config.get('global','repositories').split(',')]
             logger.info('Other repositories : %s' % (names,))
@@ -1595,6 +1592,11 @@ class Wapt(object):
                     w = WaptRepo(name).from_inifile(config)
                     self.repositories.append(w)
                     logger.debug('    %s:%s' % (w.name,w.repo_url))
+        # last is main repository so it overrides the secondary repositories
+        w = WaptRepo('global').from_inifile(config)
+        # override with calculated url
+        w.repo_url = self.wapt_repourl
+        self.repositories.append(w)
 
     @property
     def waptdb(self):
@@ -2064,16 +2066,15 @@ class Wapt(object):
         previous = self.waptdb.known_packages()
         if not self.wapt_repourl:
             raise Exception('No main WAPT repository available or setup')
-        # put main repo at the end so that it will used in priority
-        repos = [r.repo_url for r in self.repositories] + [self.wapt_repourl]
-        self.waptdb.update_repos_list(repos,proxies=self.proxies,force=force)
+        # (main repo is at the end so that it will used in priority)
+        self.waptdb.update_repos_list(self.repositories,proxies=self.proxies,force=force)
 
         current = self.waptdb.known_packages()
         result = {
             "added":   [ p for p in current if not p in previous ],
             "removed": [ p for p in previous if not p in current],
             "count" : len(current),
-            "repos" : repos,
+            "repos" : [r.repo_url for r in self.repositories],
             }
         return result
 
@@ -2380,7 +2381,9 @@ class Wapt(object):
         return signature.encode('base64')
 
     def buildpackage(self,directoryname,inc_package_release=False,excludes=['.svn','.git*','*.pyc','src']):
-        """Build the WAPT package from a directory, return the filename of the WAPT file"""
+        """Build the WAPT package from a directory
+            return a dict {'filename':waptfilename,'files':[list of files]}
+        """
         if not isinstance(directoryname,unicode):
             directoryname = unicode(directoryname)
         result_filename = u''
@@ -2809,8 +2812,7 @@ def install():
 
         # build package
         if build:
-            target_filename = os.path.join(target_directory,dest_control.filename)
-            self.buildpackage(target_directory,inc_package_release=False,excludes=excludes)
+            target_filename = self.buildpackage(package_dev_dir,inc_package_release=False,excludes=excludes)['filename']
             #get default private_key if not provided
             if not private_key:
                 private_key = self.private_key
