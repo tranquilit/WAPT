@@ -1329,6 +1329,7 @@ class WaptDB(object):
         try:
             logger.info('Purge packages table')
             self.db.execute('delete from wapt_package where repo_url not in (%s)' % (','.join('"%s"'% r.repo_url for r in repos_list,)))
+            self.db.execute('delete from wapt_params where name like "last-http%%" and name not in (%s)' % (','.join('"last-%s"'% r.repo_url for r in repos_list,)))
             self.db.commit()
             for repo in repos_list:
                 logger.info('Getting packages from %s' % repo.repo_url)
@@ -2955,10 +2956,10 @@ if __name__ == '__main__':
     print w.waptdb.upgradeable()
     assert isinstance(w.waptdb,WaptDB)
     print w.waptdb.get_param('db_version')
-    print w.remove('tis-waptdev',force=True)
-    print w.install(['tis-waptdev'])
-    print w.remove('tis-firefox',force=True)
-    print w.install('tis-firefox',force=True)
+    #print w.remove('tis-waptdev',force=True)
+    #print w.install(['tis-waptdev'])
+    #print w.remove('tis-firefox',force=True)
+    #print w.install('tis-firefox',force=True)
     print w.checkinstall(['tis-waptdev'],force=False)
     print w.checkinstall(['tis-waptdev'],force=True)
     print w.update()

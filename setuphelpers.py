@@ -649,41 +649,35 @@ def host_info():
     info['dns_domain'] = get_domain_fromregistry()
     info['workgroup_name'] = windomainname()
     info['networking'] = networking()
-    info['cpu_name'] = ''
-    info['cpu_count'] = 1
-    info['physical_memory'] = 0
-    info['virtual_memory'] = 0
-    info['system_manufacturer'] = ""
-    info['system_productname'] = "",
+    info['connected_ips'] = socket.gethostbyname_ex(socket.gethostname())[2]
+    info['mac'] = [ c['mac'] for c in networking() if 'mac' in c]
     info['win64'] = iswin64(),
     info['wmi'] = {}
     try:
         import wmi
         wm = wmi.WMI()
+
         info['wmi']['Win32_ComputerSystem'] = {}
         cs = wm.Win32_ComputerSystem()[0]
         for k in cs.properties.keys():
             prop = cs.wmi_property(k)
             if prop:
                 info['wmi']['Win32_ComputerSystem'][k] = prop.Value
+
         info['wmi']['Win32_ComputerSystemProduct'] = {}
         cs = wm.Win32_ComputerSystemProduct()[0]
         for k in cs.properties.keys():
             prop = cs.wmi_property(k)
             if prop:
                 info['wmi']['Win32_ComputerSystemProduct'][k] = prop.Value
+
         info['wmi']['Win32_BIOS'] = {}
         cs = wm.Win32_BIOS()[0]
         for k in cs.properties.keys():
             prop = cs.wmi_property(k)
             if prop:
                 info['wmi']['Win32_BIOS'][k] = prop.Value
-        info['wmi']['Win32_BaseBoard'] = {}
-        cs = wm.Win32_BaseBoard()[0]
-        for k in cs.properties.keys():
-            prop = cs.wmi_property(k)
-            if prop:
-                info['wmi']['Win32_BaseBoard'][k] = prop.Value
+
         na = info['wmi']['Win32_NetworkAdapter'] = []
         for cs in wm.Win32_NetworkAdapter():
             na.append({})
@@ -694,6 +688,14 @@ def host_info():
 
     except:
         raise
+
+    info['cpu_name'] = info['wmi']['Win32_ComputerSystem']['NumberOfProcessors']
+    info['cpu_count'] = info['wmi']['Win32_ComputerSystem']['NumberOfProcessors']
+    info['physical_memory'] = info['wmi']['Win32_ComputerSystem']['TotalPhysicalMemory']
+    info['virtual_memory'] = info['wmi']['Win32_ComputerSystem']['NumberOfProcessors']
+    info['system_manufacturer'] = info['wmi']['Win32_ComputerSystem']['Manufacturer']
+    info['system_productname'] = info['wmi']['Win32_ComputerSystem']['Model']
+    info['serial_nr'] = info['wmi']['Win32_ComputerSystemProduct']['IdentifyingNumber']
 
     return info
 
@@ -940,6 +942,14 @@ def create_daily_task(name,cmd,parameters, max_runtime=10, repeat_minutes=None, 
 def language():
     """Get the default locale like fr, en, pl etc..  etc"""
     return locale.getdefaultlocale()[0].split('_')[0]
+
+def get_appath(exename):
+    if iswin64():
+        key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\App Paths\%s' % exename)
+    else:
+        key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\%s' % exename)
+    return reg_getvalue(key,None)
+
 
 class EWaptSetupException(Exception):
     pass
