@@ -699,7 +699,6 @@ begin
   Snu := SIDTypeUser;
   Result := '';
   LookUpAccountName(nil, PChar(CurUser), Sd, Count1, PChar(Result), Count2, Snu);
-  // set buffer size to Count2 + 2 characters for safety
   SetLength(Result, Count2 + 1);
   Sd := AllocMem(Count1);
   try
@@ -819,7 +818,6 @@ begin
   Registry.Free;
 end;
 
-
 function GetStartupFolder: Utf8String;
 var
   Registry: TRegistry;
@@ -833,9 +831,6 @@ begin
     Result := '';
   Registry.Free;
 end;
-
-
-
 
 function GetCurrentUser: AnsiString;
 var
@@ -854,7 +849,6 @@ begin
     Result := '';
   end;//if
 end;
-
 
 // to store use specific settings for this application
 function Appuserinipath:AnsiString;

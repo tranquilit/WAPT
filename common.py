@@ -43,6 +43,10 @@ import platform
 import imp
 import socket
 import dns.resolver
+
+import winsys.security
+import winsys.accounts
+
 from waptpackage import *
 
 import locale
@@ -61,7 +65,7 @@ import struct
 import re
 import setuphelpers
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 logger = logging.getLogger()
 
@@ -800,6 +804,9 @@ db_upgrades = {
             }],
         },
     }
+
+def is_system_user():
+    return winsys.accounts.me().name == winsys.accounts.principal(winsys.accounts.WELL_KNOWN_SID['LocalSystem']).name
 
 class WaptDB(object):
     """Class to manage SQLite database with local installation status"""
@@ -1818,7 +1825,7 @@ class Wapt(object):
 
     def install_wapt(self,fname,params_dict={},public_cert=''):
         """Install a single wapt package given its WAPT filename."""
-        logger.info("Register start of install %s to local DB with params %s" % (fname,params_dict))
+        logger.info("Register start of install %s as user sys %s to local DB with params %s" % (fname, winsys.accounts.me().name, params_dict))
         status = 'INIT'
         if not public_cert:
             public_cert = self.get_public_cert()
@@ -1857,9 +1864,7 @@ class Wapt(object):
 
         try:
             logger.info("Installing package " + fname)
-            # ... inutile ?
-            #global packagetempdir
-            # case wapt is a zipped file, else directory (during developement)
+            # case where fname is a wapt zipped file, else directory (during developement)
             istemporary = False
             if os.path.isfile(fname):
                 packagetempdir = tempfile.mkdtemp(prefix="wapt")
@@ -1891,7 +1896,8 @@ class Wapt(object):
                 if errors:
                     raise Exception('Files corrupted, SHA1 not matching for %s' % (errors,))
             else:
-                if not self.allow_unsigned:
+                # we allow unsigned in development mode where fname is a directory
+                if not self.allow_unsigned and istemporary:
                     raise Exception('Package does not contain a manifest.sha1 file, and unsigned packages install is not allowed')
 
             setup_filename = os.path.join( packagetempdir,'setup.py')
@@ -1910,6 +1916,7 @@ class Wapt(object):
             setattr(setup,'run',setuphelpers.run)
             setattr(setup,'run_notfatal',setuphelpers.run_notfatal)
             setattr(setup,'WAPT',self)
+            setattr(setup,'control',entry)
 
             setattr(setup,'usergroups',self.usergroups)
 
@@ -1920,7 +1927,11 @@ class Wapt(object):
             # get value of required parameters if not already supplied
             for p in required_params:
                 if not p in params_dict:
-                    params_dict[p] = raw_input("%s: " % p)
+                    if not is_system_user():
+                        params_dict[p] = raw_input("%s: " % p)
+                    else:
+                        raise Exception('Required parameters %s is not supplied' % p)
+            logger.info('Install parameters : %s' % (params_dict,))
 
             # set params dictionary
             if not hasattr(setup,'params'):
@@ -2339,7 +2350,7 @@ class Wapt(object):
             'wapt-py-version': __version__,
             }
         inv['softwares'] = setuphelpers.installed_softwares('')
-        inv['packages'] = self.waptdb.installed()
+        inv['packages'] = [p.as_dict() for p in self.waptdb.installed().values()]
         if self.wapt_server:
             req = requests.post(self.wapt_server,json.dumps(inv))
             req.raise_for_status()
@@ -2471,7 +2482,10 @@ class Wapt(object):
                 # get value of required parameters if not already supplied
                 for p in required_params:
                     if not p in params_dict:
-                        params_dict[p] = raw_input("%s: " % p)
+                        if not is_system_user():
+                            params_dict[p] = raw_input("%s: " % p)
+                        else:
+                            raise Exception('Required parameters %s is not supplied' % p)
 
                 # set params dictionary
                 if not hasattr(setup,'params'):
@@ -2522,7 +2536,10 @@ class Wapt(object):
                 # get value of required parameters if not already supplied
                 for p in required_params:
                     if not p in params_dict:
-                        params_dict[p] = raw_input("%s: " % p)
+                        if not is_system_user():
+                            params_dict[p] = raw_input("%s: " % p)
+                        else:
+                            raise Exception('Required parameters %s is not supplied' % p)
 
                 # set params dictionary
                 if not hasattr(setup,'params'):

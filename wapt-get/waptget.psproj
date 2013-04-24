@@ -1091,7 +1091,7 @@ Name=duplicate tis-firefox
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=duplicate tis-firefox testff 20.0.1-00
+Parameters=duplicate tis-firefox testff 20.0.1-55
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1114,5 +1114,6 @@ Count=2
 
 [Project\ExtraPythonPath]
 Item0=C:\tranquilit\wapt
-Count=1
+Item1=C:\tranquilit\wapt\lib\site-packages
+Count=2
 

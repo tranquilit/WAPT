@@ -20,7 +20,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="4"/>
-      <RevisionNr Value="6"/>
+      <RevisionNr Value="7"/>
       <Language Value="040C"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Service helper" ProductVersion=""/>
     </VersionInfo>
@@ -65,12 +65,11 @@
         <PackageName Value="FCL"/>
       </Item8>
     </RequiredPackages>
-    <Units Count="93">
+    <Units Count="94">
       <Unit0>
         <Filename Value="waptservice.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptservice"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="25" Y="26"/>
@@ -82,7 +81,6 @@
         <ComponentName Value="DaemonMapper1"/>
         <HasResources Value="True"/>
         <UnitName Value="WaptMapper"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="29"/>
         <CursorPos X="37" Y="6"/>
@@ -96,15 +94,17 @@
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WaptUnit"/>
         <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="37"/>
-        <CursorPos X="1" Y="1"/>
+        <TopLine Value="50"/>
+        <CursorPos X="29" Y="57"/>
         <UsageCount Value="202"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="unit1.pas"/>
         <UnitName Value="Unit1"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -113,7 +113,6 @@
       <Unit4>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-extra\src\daemonapp.pp"/>
         <UnitName Value="daemonapp"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="307"/>
         <CursorPos X="27" Y="308"/>
@@ -122,7 +121,6 @@
       <Unit5>
         <Filename Value="C:\lazarus\components\daemon\lazdaemonapp.pp"/>
         <UnitName Value="lazdaemonapp"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -131,7 +129,6 @@
       <Unit6>
         <Filename Value="C:\lazarus\lcl\interfaces\win32\interfaces.pp"/>
         <UnitName Value="Interfaces"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="8"/>
         <CursorPos X="1" Y="1"/>
@@ -140,7 +137,6 @@
       <Unit7>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-web\src\jsonrpc\fpjsonrpc.pp"/>
         <UnitName Value="fpjsonrpc"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="91"/>
         <CursorPos X="1" Y="1"/>
@@ -150,7 +146,6 @@
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="314"/>
         <CursorPos X="3" Y="317"/>
@@ -159,7 +154,6 @@
       <Unit9>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-process\src\process.pp"/>
         <UnitName Value="process"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="276"/>
         <CursorPos X="11" Y="160"/>
@@ -168,7 +162,6 @@
       <Unit10>
         <Filename Value="..\wapt-get\waptget.lpr"/>
         <UnitName Value="waptget"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -177,7 +170,6 @@
       <Unit11>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-base\src\custapp.pp"/>
         <UnitName Value="CustApp"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="55"/>
         <CursorPos X="23" Y="87"/>
@@ -186,7 +178,6 @@
       <Unit12>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-base\src\eventlog.pp"/>
         <UnitName Value="eventlog"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="229"/>
         <CursorPos X="26" Y="231"/>
@@ -194,7 +185,6 @@
       </Unit12>
       <Unit13>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-base\src\win\eventlog.inc"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="126"/>
         <CursorPos X="3" Y="88"/>
@@ -202,7 +192,6 @@
       </Unit13>
       <Unit14>
         <Filename Value="..\common.py"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="49"/>
         <CursorPos X="1" Y="1"/>
@@ -211,7 +200,6 @@
       </Unit14>
       <Unit15>
         <Filename Value="waptunit.lfm"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="10"/>
         <CursorPos X="1" Y="30"/>
@@ -221,7 +209,6 @@
       <Unit16>
         <Filename Value="..\..\indy\IdLogBase.pas"/>
         <UnitName Value="IdLogBase"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="27"/>
         <CursorPos X="12" Y="45"/>
@@ -230,7 +217,6 @@
       <Unit17>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-db\src\sqldb\sqlite\sqlite3conn.pp"/>
         <UnitName Value="sqlite3conn"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="37"/>
         <CursorPos X="40" Y="28"/>
@@ -239,7 +225,6 @@
       <Unit18>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\sqlite\src\sqlite3dyn.pp"/>
         <UnitName Value="sqlite3dyn"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="10" Y="5"/>
@@ -247,7 +232,6 @@
       </Unit18>
       <Unit19>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\sqlite\src\sqlite3.inc"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1977"/>
         <CursorPos X="1" Y="1977"/>
@@ -256,7 +240,6 @@
       <Unit20>
         <Filename Value="..\..\indy\IdStack.pas"/>
         <UnitName Value="IdStack"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="683"/>
         <CursorPos X="20" Y="705"/>
@@ -265,7 +248,6 @@
       <Unit21>
         <Filename Value="..\..\jcl\source\common\JclSysInfo.pas"/>
         <UnitName Value="JclSysInfo"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="48"/>
         <CursorPos X="23" Y="61"/>
@@ -274,7 +256,6 @@
       <Unit22>
         <Filename Value="..\..\jcl\source\common\JclStrings.pas"/>
         <UnitName Value="JclStrings"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="49"/>
         <CursorPos X="8" Y="57"/>
@@ -283,7 +264,6 @@
       <Unit23>
         <Filename Value="..\..\jcl\source\common\JclUnicode.pas"/>
         <UnitName Value="JclUnicode"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1394"/>
         <CursorPos X="12" Y="1411"/>
@@ -292,7 +272,6 @@
       <Unit24>
         <Filename Value="..\..\jcl\source\windows\JclShell.pas"/>
         <UnitName Value="JclShell"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -301,7 +280,6 @@
       <Unit25>
         <Filename Value="..\..\jcl\source\common\JclSynch.pas"/>
         <UnitName Value="JclSynch"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -310,7 +288,6 @@
       <Unit26>
         <Filename Value="..\..\jcl\source\common\JclSysUtils.pas"/>
         <UnitName Value="JclSysUtils"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="4142"/>
         <CursorPos X="25" Y="4159"/>
@@ -319,7 +296,6 @@
       <Unit27>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\win\sysutils.pp"/>
         <UnitName Value="sysutils"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1244"/>
         <CursorPos X="35" Y="1274"/>
@@ -328,7 +304,6 @@
       <Unit28>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\winunits-jedi\src\jwatlhelp32.pas"/>
         <UnitName Value="JwaTlHelp32"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="265"/>
         <CursorPos X="1" Y="1"/>
@@ -337,7 +312,6 @@
       <Unit29>
         <Filename Value="..\..\indy\indylaz.pas"/>
         <UnitName Value="indylaz"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="19" Y="10"/>
@@ -345,7 +319,6 @@
       </Unit29>
       <Unit30>
         <Filename Value="..\jcl\source\include\jcl.inc"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="141"/>
         <CursorPos X="8" Y="156"/>
@@ -354,7 +327,6 @@
       <Unit31>
         <Filename Value="..\..\jcl\source\windows\JclWin32.pas"/>
         <UnitName Value="JclWin32"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="8851"/>
         <CursorPos X="15" Y="8864"/>
@@ -362,7 +334,6 @@
       </Unit31>
       <Unit32>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-extra\src\win\daemonapp.inc"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="355"/>
         <CursorPos X="36" Y="363"/>
@@ -371,7 +342,6 @@
       <Unit33>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\pl_indycomp.pas"/>
         <UnitName Value="pl_indycomp"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -380,7 +350,6 @@
       <Unit34>
         <Filename Value="C:\codetyphon\lazarus\packager\registration\lazaruspackageintf.pas"/>
         <UnitName Value="LazarusPackageIntf"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="64"/>
         <CursorPos X="1" Y="1"/>
@@ -389,7 +358,6 @@
       <Unit35>
         <Filename Value="C:\codetyphon\lazarus\lcl\interfaces\win32\interfaces.pp"/>
         <UnitName Value="Interfaces"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -398,7 +366,6 @@
       <Unit36>
         <Filename Value="..\jcl\source\common\JclStrings.pas"/>
         <UnitName Value="JclStrings"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -407,7 +374,6 @@
       <Unit37>
         <Filename Value="..\jcl\source\common\JclDateTime.pas"/>
         <UnitName Value="JclDateTime"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="844"/>
         <CursorPos X="97" Y="862"/>
@@ -415,7 +381,6 @@
       </Unit37>
       <Unit38>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\win\wininc\base.inc"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="186"/>
         <CursorPos X="6" Y="201"/>
@@ -423,7 +388,6 @@
       </Unit38>
       <Unit39>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\systemh.inc"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="257"/>
         <CursorPos X="3" Y="272"/>
@@ -432,7 +396,6 @@
       <Unit40>
         <Filename Value="..\jcl\source\common\JclAnsiStrings.pas"/>
         <UnitName Value="JclAnsiStrings"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="494"/>
         <CursorPos X="2" Y="504"/>
@@ -441,7 +404,6 @@
       <Unit41>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-extra\src\daemonapp.pp"/>
         <UnitName Value="daemonapp"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="911"/>
         <CursorPos X="31" Y="925"/>
@@ -450,7 +412,6 @@
       <Unit42>
         <Filename Value="..\superobject\superobject.pas"/>
         <UnitName Value="superobject"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="248"/>
         <CursorPos X="15" Y="271"/>
@@ -459,7 +420,6 @@
       <Unit43>
         <Filename Value="..\jcl\source\windows\JclSecurity.pas"/>
         <UnitName Value="JclSecurity"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="804"/>
         <CursorPos X="45" Y="821"/>
@@ -468,7 +428,6 @@
       <Unit44>
         <Filename Value="..\jcl\source\common\JclSynch.pas"/>
         <UnitName Value="JclSynch"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -477,7 +436,6 @@
       <Unit45>
         <Filename Value="..\jcl\source\common\JclStreams.pas"/>
         <UnitName Value="JclStreams"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3009"/>
         <CursorPos X="53" Y="3027"/>
@@ -486,7 +444,6 @@
       <Unit46>
         <Filename Value="..\jcl\source\windows\JclConsole.pas"/>
         <UnitName Value="JclConsole"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="731"/>
         <CursorPos X="56" Y="749"/>
@@ -494,7 +451,6 @@
       </Unit46>
       <Unit47>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\win\wininc\defines.inc"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1414"/>
         <CursorPos X="6" Y="1430"/>
@@ -503,7 +459,6 @@
       <Unit48>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\strutils.pp"/>
         <UnitName Value="strutils"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -512,7 +467,6 @@
       <Unit49>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdCustomTCPServer.pas"/>
         <UnitName Value="IdCustomTCPServer"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="290"/>
         <CursorPos X="5" Y="308"/>
@@ -521,7 +475,6 @@
       <Unit50>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdSocketHandle.pas"/>
         <UnitName Value="IdSocketHandle"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="360"/>
         <CursorPos X="1" Y="385"/>
@@ -529,7 +482,6 @@
       </Unit50>
       <Unit51>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\classes\classesh.inc"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="616"/>
         <CursorPos X="3" Y="617"/>
@@ -537,7 +489,6 @@
       </Unit51>
       <Unit52>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\classes\collect.inc"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="312"/>
         <CursorPos X="3" Y="314"/>
@@ -546,7 +497,6 @@
       <Unit53>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdCustomHTTPServer.pas"/>
         <UnitName Value="IdCustomHTTPServer"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1217"/>
         <CursorPos X="29" Y="1237"/>
@@ -555,7 +505,6 @@
       <Unit54>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdHTTPHeaderInfo.pas"/>
         <UnitName Value="IdHTTPHeaderInfo"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="209"/>
         <CursorPos X="5" Y="224"/>
@@ -564,7 +513,6 @@
       <Unit55>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdHTTPServer.pas"/>
         <UnitName Value="IdHTTPServer"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="17"/>
         <CursorPos X="21" Y="48"/>
@@ -573,7 +521,6 @@
       <Unit56>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdIOHandler.pas"/>
         <UnitName Value="IdIOHandler"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="533"/>
         <CursorPos X="15" Y="549"/>
@@ -582,7 +529,6 @@
       <Unit57>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdGlobal.pas"/>
         <UnitName Value="IdGlobal"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="5368"/>
         <CursorPos X="14" Y="5383"/>
@@ -591,7 +537,6 @@
       <Unit58>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-process\src\process.pp"/>
         <UnitName Value="process"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="9"/>
         <CursorPos X="32" Y="26"/>
@@ -601,7 +546,6 @@
         <Filename Value="waptwmi.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptwmi"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="10" Y="13"/>
@@ -610,7 +554,6 @@
       <Unit60>
         <Filename Value="testwmi.lpr"/>
         <UnitName Value="WmiDelphiWin32_LateBinding"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="100"/>
         <CursorPos X="1" Y="122"/>
@@ -619,7 +562,6 @@
       <Unit61>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\activex.pp"/>
         <UnitName Value="ActiveX"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3901"/>
         <CursorPos X="12" Y="3919"/>
@@ -628,7 +570,6 @@
       <Unit62>
         <Filename Value="..\wapt-get\winget.pas"/>
         <UnitName Value="Winget"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="127"/>
         <CursorPos X="54" Y="22"/>
@@ -637,7 +578,6 @@
       <Unit63>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdURI.pas"/>
         <UnitName Value="IdURI"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="66"/>
         <CursorPos X="3" Y="81"/>
@@ -645,7 +585,6 @@
       </Unit63>
       <Unit64>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\win\wininc\redef.inc"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="452"/>
         <CursorPos X="10" Y="468"/>
@@ -653,7 +592,6 @@
       </Unit64>
       <Unit65>
         <Filename Value="C:\codetyphon\lazarus\components\pl_LNet\source\lclwineventer.inc"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="58"/>
         <CursorPos X="1" Y="76"/>
@@ -662,7 +600,6 @@
       <Unit66>
         <Filename Value="C:\codetyphon\lazarus\components\pl_LNet\source\lnetcomponents.pas"/>
         <UnitName Value="lNetComponents"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="78"/>
         <CursorPos X="17" Y="249"/>
@@ -670,7 +607,6 @@
       </Unit66>
       <Unit67>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-extra\src\win\daemonapp.inc"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="27"/>
         <CursorPos X="1" Y="1"/>
@@ -679,7 +615,6 @@
       <Unit68>
         <Filename Value="..\wapt-get\soutils.pas"/>
         <UnitName Value="soutils"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="17"/>
         <CursorPos X="3" Y="33"/>
@@ -687,7 +622,6 @@
       </Unit68>
       <Unit69>
         <Filename Value="..\jcl\source\include\jclfpc.inc"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="89"/>
         <CursorPos X="29" Y="104"/>
@@ -696,7 +630,6 @@
       <Unit70>
         <Filename Value="..\wapt-get\tiscommon.pas"/>
         <UnitName Value="tiscommon"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="939"/>
         <CursorPos X="86" Y="966"/>
@@ -705,7 +638,6 @@
       <Unit71>
         <Filename Value="..\..\pltis_jcl\source\windows\JclShell.pas"/>
         <UnitName Value="JclShell"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -714,7 +646,6 @@
       <Unit72>
         <Filename Value="..\..\pltis_jcl\source\common\JclSysInfo.pas"/>
         <UnitName Value="JclSysInfo"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2377"/>
         <CursorPos X="47" Y="2408"/>
@@ -723,7 +654,6 @@
       <Unit73>
         <Filename Value="..\..\pltis_jcl\source\common\JclSysUtils.pas"/>
         <UnitName Value="JclSysUtils"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -732,7 +662,6 @@
       <Unit74>
         <Filename Value="..\..\pltis_jcl\source\common\JclStrings.pas"/>
         <UnitName Value="JclStrings"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -741,7 +670,6 @@
       <Unit75>
         <Filename Value="..\..\pltis_jcl\source\common\JclTrees.pas"/>
         <UnitName Value="JclTrees"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="12890"/>
         <CursorPos X="34" Y="12901"/>
@@ -750,7 +678,6 @@
       <Unit76>
         <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonAction.pas"/>
         <UnitName Value="PythonAction"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -760,7 +687,6 @@
       <Unit77>
         <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\p4dlaz.pas"/>
         <UnitName Value="P4DLaz"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="5"/>
         <CursorPos X="58" Y="12"/>
@@ -770,7 +696,6 @@
       <Unit78>
         <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
         <UnitName Value="PythonEngine"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2313"/>
         <CursorPos X="3" Y="2325"/>
@@ -780,7 +705,6 @@
       <Unit79>
         <Filename Value="C:\codetyphon\fpcsrc\tests\bench\shootout\obsolete\hash.pp"/>
         <UnitName Value="hash"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="9"/>
@@ -789,7 +713,6 @@
       <Unit80>
         <Filename Value="C:\codetyphon\fpcsrc\packages\hash\src\md5.pp"/>
         <UnitName Value="md5"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -797,7 +720,6 @@
       </Unit80>
       <Unit81>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\sysstrh.inc"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="200"/>
         <CursorPos X="10" Y="218"/>
@@ -805,7 +727,6 @@
       </Unit81>
       <Unit82>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\sysstr.inc"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -814,7 +735,6 @@
       <Unit83>
         <Filename Value="..\wapt-get\networkadapterinfo.pas"/>
         <UnitName Value="NetworkAdapterInfo"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="5" Y="14"/>
@@ -823,7 +743,6 @@
       <Unit84>
         <Filename Value="..\..\pltis_jcl\source\common\JclAnsiStrings.pas"/>
         <UnitName Value="JclAnsiStrings"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2389"/>
         <CursorPos X="1" Y="2421"/>
@@ -832,7 +751,6 @@
       <Unit85>
         <Filename Value="C:\codetyphon\lazarus\components\daemon\lazdaemonapp.pp"/>
         <UnitName Value="lazdaemonapp"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -841,17 +759,15 @@
       <Unit86>
         <Filename Value="UnitRedirect.pas"/>
         <UnitName Value="UnitRedirect"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="11"/>
-        <CursorPos X="12" Y="27"/>
+        <TopLine Value="139"/>
+        <CursorPos X="3" Y="136"/>
         <UsageCount Value="24"/>
       </Unit86>
       <Unit87>
         <Filename Value="ldapauth.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="ldapauth"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="8"/>
         <CursorPos X="16" Y="38"/>
@@ -860,7 +776,6 @@
       <Unit88>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\blcksock.pas"/>
         <UnitName Value="blcksock"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -869,7 +784,6 @@
       <Unit89>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\ssl_openssl.pas"/>
         <UnitName Value="ssl_openssl"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="73"/>
         <CursorPos X="1" Y="1"/>
@@ -878,7 +792,6 @@
       <Unit90>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\ssl_openssl_lib.pas"/>
         <UnitName Value="ssl_openssl_lib"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="193"/>
         <CursorPos X="25" Y="105"/>
@@ -887,7 +800,6 @@
       <Unit91>
         <Filename Value="..\wapt-get\tisstrings.pas"/>
         <UnitName Value="tisstrings"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="256"/>
         <CursorPos X="1" Y="285"/>
@@ -896,12 +808,18 @@
       <Unit92>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\ldapsend.pas"/>
         <UnitName Value="ldapsend"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="896"/>
         <CursorPos X="14" Y="927"/>
         <UsageCount Value="11"/>
       </Unit92>
+      <Unit93>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\win\wininc\struct.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="5718"/>
+        <CursorPos X="6" Y="5734"/>
+        <UsageCount Value="10"/>
+      </Unit93>
     </Units>
     <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>

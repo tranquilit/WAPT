@@ -9,6 +9,7 @@
         <Filename Value="wapttray.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="wapttray"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="7"/>
         <CursorPos X="49" Y="5"/>
@@ -31,6 +32,7 @@
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="67"/>
         <CursorPos X="37" Y="73"/>
@@ -46,6 +48,7 @@
         <Filename Value="..\wapt-get\tiscommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiscommon"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -58,6 +61,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="uDMWAPTTray"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="63"/>
         <CursorPos X="98" Y="80"/>
@@ -66,6 +70,7 @@
       <Unit6>
         <Filename Value="..\..\tisvcl\tisutils.pas"/>
         <UnitName Value="tisutils"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="90"/>
         <CursorPos X="5" Y="115"/>
@@ -82,6 +87,7 @@
       <Unit8>
         <Filename Value="..\jcl\source\common\JclSysInfo.pas"/>
         <UnitName Value="JclSysInfo"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="70"/>
         <CursorPos X="15" Y="94"/>
@@ -90,6 +96,7 @@
       <Unit9>
         <Filename Value="..\..\pltis_superobject\soutils.pas"/>
         <UnitName Value="soutils"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="7"/>
         <CursorPos X="34" Y="14"/>
@@ -98,6 +105,7 @@
       <Unit10>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-db\src\base\db.pas"/>
         <UnitName Value="db"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1042"/>
         <CursorPos X="3" Y="1341"/>
@@ -106,6 +114,7 @@
       <Unit11>
         <Filename Value="..\..\pltis_openerp\openerpdataset.pas"/>
         <UnitName Value="OpenERPDataset"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="35" Y="4"/>
@@ -114,6 +123,7 @@
       <Unit12>
         <Filename Value="..\..\pltis_jcl\source\common\JclUnicode.pas"/>
         <UnitName Value="JclUnicode"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1636"/>
         <CursorPos X="25" Y="1646"/>
@@ -122,6 +132,7 @@
       <Unit13>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\shellapi.pp"/>
         <UnitName Value="ShellApi"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1105"/>
         <CursorPos X="1" Y="1"/>
@@ -130,6 +141,7 @@
       <Unit14>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-process\src\process.pp"/>
         <UnitName Value="process"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="19"/>
         <CursorPos X="17" Y="176"/>
@@ -138,6 +150,7 @@
       <Unit15>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\shlobj.pp"/>
         <UnitName Value="shlobj"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="91"/>
         <CursorPos X="1" Y="1"/>
@@ -146,6 +159,7 @@
       <Unit16>
         <Filename Value="C:\codetyphon\lazarus\lcl\forms.pp"/>
         <UnitName Value="Forms"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1344"/>
         <CursorPos X="15" Y="1367"/>
@@ -153,6 +167,7 @@
       </Unit16>
       <Unit17>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\customaction.inc"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="231"/>
         <CursorPos X="1" Y="253"/>
@@ -160,6 +175,7 @@
       </Unit17>
       <Unit18>
         <Filename Value="C:\codetyphon\lazarus\lcl\interfaces\win32\win32trayicon.inc"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="142"/>
         <CursorPos X="1" Y="158"/>
@@ -168,6 +184,7 @@
       <Unit19>
         <Filename Value="C:\codetyphon\lazarus\lcl\interfaces\win32\win32wsextctrls.pp"/>
         <UnitName Value="Win32WSExtCtrls"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -175,6 +192,7 @@
       </Unit19>
       <Unit20>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\containedaction.inc"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="83"/>
         <CursorPos X="15" Y="97"/>
@@ -183,6 +201,7 @@
       <Unit21>
         <Filename Value="C:\codetyphon\lazarus\lcl\actnlist.pas"/>
         <UnitName Value="ActnList"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -191,6 +210,7 @@
       <Unit22>
         <Filename Value="C:\codetyphon\lazarus\lcl\extctrls.pp"/>
         <UnitName Value="ExtCtrls"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1070"/>
         <CursorPos X="83" Y="1096"/>

@@ -516,7 +516,11 @@ begin
           ldap := LDAPSSLLogin(ldap_server,ARequestInfo.AuthUsername,GetWorkGroupName,ARequestInfo.AuthPassword,ldap_port);
           // check if in Domain Admins group
           auth_ok := True;
-          groups := ldapauth.GetUserAndGroups(ldap,ldap_basedn,ARequestInfo.AuthUsername,False)['user.memberOf'];
+          try
+            groups := ldapauth.GetUserAndGroups(ldap,ldap_basedn,ARequestInfo.AuthUsername,False)['user.memberOf'];
+          except
+            groups :='';
+          end;
         except
           auth_ok :=False;
         end;

@@ -397,9 +397,11 @@ def get_domain_fromregistry():
     """Return main DNS domain of the computer"""
     key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE,"SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters")
     try:
-        (domain,atype) = _winreg.QueryValueEx(key,'DhcpDomain')
-    except:
         (domain,atype) = _winreg.QueryValueEx(key,'Domain')
+        if domain=='':
+            (domain,atype) = _winreg.QueryValueEx(key,'DhcpDomain')
+    except:
+        (domain,atype) = _winreg.QueryValueEx(key,'DhcpDomain')
     return domain
 
 def get_loggedinusers():

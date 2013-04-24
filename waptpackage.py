@@ -29,6 +29,7 @@ import glob
 import codecs
 import re
 import time
+import json
 
 logger = logging.getLogger()
 
@@ -315,6 +316,12 @@ sources      : %(sources)s
 
     def asrequirement(self):
         return "%s (=%s)" % (self.package,self.version)
+
+    def as_dict(self):
+        result ={}
+        for k in self.all_attributes:
+            result[k] = getattr(self,k)
+        return result
 
     def __str__(self):
         return self.ascontrol(with_non_control_attributes=True)

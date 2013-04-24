@@ -124,26 +124,7 @@ begin
   result := GetDNSServers[0];
 end;
 
-{function GetDNSServer:AnsiString;
-var
-  reg:TRegistry;
-begin
-  reg := TRegistry.create;
-  try
-    reg.RootKey:=HKEY_LOCAL_MACHINE;
-    if reg.OpenKeyReadOnly('SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters') then
-    begin
-      if reg.ValueExists('DhcpNameServer') then
-        Result := reg.ReadString('DhcpNameServer')
-      else
-        Result := reg.ReadString('NameServer');
-    end;
-  finally
-    reg.Free;
-  end;
-end;}
-
-
+//Get dns domain from global tcpip parameters in registry
 function GetDNSDomain:AnsiString;
 var
   reg:TRegistry;
@@ -153,10 +134,11 @@ begin
     reg.RootKey:=HKEY_LOCAL_MACHINE;
     if reg.OpenKeyReadOnly('SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters') then
     begin
-      if reg.ValueExists('DhcpDomain') then
-        Result := reg.ReadString('DhcpDomain')
-      else
+      if reg.ValueExists('Domain') then
         Result := reg.ReadString('Domain');
+      if Result='' then
+        if reg.ValueExists('DhcpDomain') then
+          Result := reg.ReadString('DhcpDomain');
     end;
   finally
     reg.Free;
@@ -168,7 +150,7 @@ var
   resolv : TIdDNSResolver;
   rec : TResultRecord;
   i:integer;
-  highest : integer;
+  first : integer;
   ais : TAdapterInfo;
 
   dnsdomain,
@@ -200,15 +182,15 @@ begin
       resolv.QueryType := [TQueryRecordTypes.qtService];
       resolv.WaitingTime:=400;
       resolv.Resolve('_wapt._tcp.'+dnsdomain+'.');
-      highest:=-1;
+      first:=MaxInt;
       for i := 0 to resolv.QueryResult.count - 1 do
       begin
         rec := resolv.QueryResult.Items[i];
         if rec is TSRVRecord then
         with (rec as TSRVRecord) do begin
-           if Priority>highest then
+           if Priority<first then
            begin
-             Highest := Priority;
+             first := Priority;
              if Port=443 then
                 Result := 'https://'+Target+':'+IntToStr(Port)+'/wapt'
              else
