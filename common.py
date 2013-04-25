@@ -53,6 +53,8 @@ import locale
 
 import shlex
 from iniparse import RawConfigParser
+from optparse import OptionParser
+
 from collections import namedtuple
 from types import ModuleType
 
@@ -65,7 +67,7 @@ import struct
 import re
 import setuphelpers
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 logger = logging.getLogger()
 
@@ -139,7 +141,7 @@ def check_string(test_string):
     pattern = r'[^\.A-Za-z0-9\-_]'
     if re.search(pattern, test_string):
         #Character other then . a-z 0-9 was found
-        print 'Invalid : %r' % (test_string,)
+        print u'Invalid : %r' % (test_string,)
 """
 
 def convert_bytes(bytes):
@@ -509,7 +511,7 @@ def create_recursive_zip_signed(zipfn, source_root, target_root = u"",excludes =
         source_root = unicode(source_root)
 
     if isinstance(zipfn,str) or isinstance(zipfn,unicode):
-        if logger: logger.debug('Create zip file %s' % zipfn)
+        if logger: logger.debug(u'Create zip file %s' % zipfn)
         zipf = ZipFile2(zipfn,'w')
     elif isinstance(zipfn,ZipFile2):
         zipf = zipfn
@@ -524,15 +526,15 @@ def create_recursive_zip_signed(zipfn, source_root, target_root = u"",excludes =
         if excluded:
             continue
         if os.path.isfile(os.path.join(source_root, item)):
-            if logger: logger.debug(' adding file %s' % os.path.join(source_root, item))
+            if logger: logger.debug(u' adding file %s' % os.path.join(source_root, item))
             zipf.write(os.path.join(source_root, item), os.path.join(target_root,item))
             result.append([os.path.join(target_root,item),sha1_for_file(os.path.join(source_root, item))])
         elif os.path.isdir(os.path.join(source_root, item)):
-            if logger: logger.debug('Add directory %s' % os.path.join(source_root, item))
+            if logger: logger.debug(u'Add directory %s' % os.path.join(source_root, item))
             result.extend(create_recursive_zip_signed(zipf, os.path.join(source_root, item), os.path.join(target_root,item),excludes))
     if isinstance(zipfn,str) or isinstance(zipfn,unicode):
         if logger:
-            logger.debug('  adding sha1 hash for all %i files' % len(result))
+            logger.debug(u'  adding sha1 hash for all %i files' % len(result))
         # Write a file with all sha1 hashes of all files
         manifest = [ r for r in result if r[0] not in ('WAPT\\manifest.sha1','WAPT\\signature') ]
         manifest_data = json.dumps(manifest,indent=True)
@@ -680,15 +682,15 @@ def host_ipv4():
 
 def tryurl(url,proxies=None):
     try:
-        logger.debug('  trying %s' % url)
+        logger.debug(u'  trying %s' % url)
         headers = requests.head(url,proxies=proxies)
         if headers.ok:
-            logger.debug('  OK')
+            logger.debug(u'  OK')
             return True
         else:
             headers.raise_for_status()
     except Exception,e:
-        logger.debug('  Not available : %s' % e)
+        logger.debug(u'  Not available : %s' % e)
         return False
 
 PackageKey = namedtuple('package',('packagename','version'))
@@ -836,11 +838,11 @@ class WaptDB(object):
         if not value:
             self.db.commit()
             self.db.close()
-            logger.debug('DB commit')
+            logger.debug(u'DB commit')
         else:
             self.db.rollback()
             self.db.close()
-            logger.critical('DB error %s, rollbacking\n' % (value,))
+            logger.critical(u'DB error %s, rollbacking\n' % (value,))
 
     def upgradedb(self,force=False):
         """Update local database structure to current version if rules are described in db_upgrades"""
@@ -849,36 +851,36 @@ class WaptDB(object):
             # use cached value to avoid infinite loop
             old_structure_version = self._db_version
             if old_structure_version >= self.curr_db_version and not force:
-                logger.critical('upgrade db aborted : current structure version %s is newer or equal to requested structure version %s' % (old_structure_version,self.curr_db_version))
+                logger.critical(u'upgrade db aborted : current structure version %s is newer or equal to requested structure version %s' % (old_structure_version,self.curr_db_version))
                 return (old_structure_version,old_structure_version)
 
-            logger.info('Upgrade database schema')
+            logger.info(u'Upgrade database schema')
             # we will backup old data in a file so that we can rollback
             backupfn = os.path.join(os.path.dirname(self.dbpath),time.strftime('%Y%m%d-%H%M%S')+'.sqlite')
-            logger.debug(' copy old data to %s' % backupfn)
+            logger.debug(u' copy old data to %s' % backupfn)
             shutil.copy(self.dbpath,backupfn)
 
             # we will backup old data in dictionaries to convert them to new structure
-            logger.debug(' backup data in memory')
+            logger.debug(u' backup data in memory')
             old_datas = {}
             tables = [ c[0] for c in self.db.execute('SELECT name FROM sqlite_master WHERE type = "table" and name like "wapt_%"').fetchall()]
             for tablename in tables:
                 old_datas[tablename] = self.query('select * from %s' % tablename)
-                logger.debug(' %s table : %i records' % (tablename,len(old_datas[tablename])))
+                logger.debug(u' %s table : %i records' % (tablename,len(old_datas[tablename])))
 
-            logger.debug(' drop tables')
+            logger.debug(u' drop tables')
             for tablename in tables:
                 self.db.execute('drop table if exists %s' % tablename)
 
             # create new empty structure
-            logger.debug(' recreates new tables ')
+            logger.debug(u' recreates new tables ')
             new_structure_version = self.initdb()
 
             # append old data in new tables
-            logger.debug(' fill with old data')
+            logger.debug(u' fill with old data')
             for tablename in tables:
                 if old_datas[tablename]:
-                    logger.debug(' process table %s' % tablename)
+                    logger.debug(u' process table %s' % tablename)
                     # get rules from db_upgrades dict
                     if new_structure_version>old_structure_version and (old_structure_version,new_structure_version) in db_upgrades:
                         (newtablename,newfieldnames) = db_upgrades[(old_structure_version,new_structure_version)].get(tablename,[tablename,{}])
@@ -888,14 +890,14 @@ class WaptDB(object):
                     allnewcolumns = [ c[0] for c in self.db.execute('select * from %s limit 0' % newtablename).description]
                     # take only old columns which match a new column in new structure
                     oldcolumns = [ k for k in old_datas[tablename][0].keys() if newfieldnames.get(k,k) in allnewcolumns ]
-                    logger.debug(' old columns %s' % (oldcolumns,))
+                    logger.debug(u' old columns %s' % (oldcolumns,))
                     newcolumns = [ newfieldnames.get(k,k) for k in oldcolumns ]
-                    logger.debug(' new columns %s' % (newcolumns,))
+                    logger.debug(u' new columns %s' % (newcolumns,))
 
                     insquery = "insert into %s (%s) values (%s)" % (newtablename,",".join(newcolumns),",".join("?" * len(newcolumns)))
                     for rec in old_datas[tablename]:
                         print rec
-                        logger.debug(' %s' %[ rec[oldcolumns[i]] for i in range(0,len(oldcolumns))])
+                        logger.debug(u' %s' %[ rec[oldcolumns[i]] for i in range(0,len(oldcolumns))])
                         self.db.execute(insquery,[ rec[oldcolumns[i]] for i in range(0,len(oldcolumns))] )
 
             # be sure to put back new version in table as db upgrade has put the old value in table
@@ -905,14 +907,14 @@ class WaptDB(object):
         except Exception,e:
             self.db.rollback()
             if backupfn:
-                logger.critical("UpgradeDB ERROR : %s, copy back backup database %s" % (e,backupfn))
+                logger.critical(u"UpgradeDB ERROR : %s, copy back backup database %s" % (e,backupfn))
                 shutil.copy(backupfn,self.dbpath)
             raise
 
     def initdb(self):
         """Initialize current sqlite db with empty table and return structure version"""
         assert(isinstance(self.db,sqlite3.Connection))
-        logger.debug('Initialize Wapt database')
+        logger.debug(u'Initialize Wapt database')
         self.db.execute("""
         create table if not exists wapt_package (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -1028,7 +1030,7 @@ class WaptDB(object):
                 else:
                     self._db_version = '0000'
             except Exception,e:
-                logger.critical('Unable to get DB version (%s), upgrading' % e)
+                logger.critical(u'Unable to get DB version (%s), upgrading' % e)
                 self.db.rollback()
                 # pre-params version
                 self._db_version = '0000'
@@ -1045,7 +1047,7 @@ class WaptDB(object):
             self.db.commit()
             self._db_version = value
         except:
-            logger.critical('Unable to set version, upgrading')
+            logger.critical(u'Unable to set version, upgrading')
             self.db.rollback()
             self.upgradedb()
 
@@ -1056,7 +1058,7 @@ class WaptDB(object):
             self.db.commit()
             self._db_version = None
         except:
-            logger.critical('Unable to delete version, upgrading')
+            logger.critical(u'Unable to delete version, upgrading')
             self.db.rollback()
             self.upgradedb()
 
@@ -1067,7 +1069,7 @@ class WaptDB(object):
             self.db.execute('insert or replace into wapt_params(name,value,create_date) values (?,?,?)',(name,value,datetime2isodate()))
             self.db.commit()
         except:
-            logger.critical('Unable to set param %s : %s' % (name,value))
+            logger.criticalu('Unable to set param %s : %s' % (name,value))
             self.db.rollback()
 
     def get_param(self,name,default=None):
@@ -1083,7 +1085,7 @@ class WaptDB(object):
             self.db.execute('delete from wapt_params where name=?',(name,))
             self.db.commit()
         except:
-            logger.critical('Unable to delete param %s : %s' % (name,value))
+            logger.critical(u'Unable to delete param %s : %s' % (name,value))
             self.db.rollback()
 
     def add_package(self,
@@ -1327,19 +1329,19 @@ class WaptDB(object):
     def update_repos_list(self,repos_list,proxies=None,force=False):
         """update the packages database with Packages files from the url repos_list"""
         try:
-            logger.info('Purge packages table')
+            logger.info(u'Purge packages table')
             self.db.execute('delete from wapt_package where repo_url not in (%s)' % (','.join('"%s"'% r.repo_url for r in repos_list,)))
             self.db.execute('delete from wapt_params where name like "last-http%%" and name not in (%s)' % (','.join('"last-%s"'% r.repo_url for r in repos_list,)))
             self.db.commit()
             for repo in repos_list:
-                logger.info('Getting packages from %s' % repo.repo_url)
+                logger.info(u'Getting packages from %s' % repo.repo_url)
                 try:
                     self.update_packages_list(repo.repo_url,repo.name,proxies=proxies,force=force)
                 except Exception,e:
-                    logger.critical('Error getting packages from %s : %s' % (repo.repo_url,e))
-            logger.debug('Commit wapt_package updates')
+                    logger.critical(u'Error getting packages from %s : %s' % (repo.repo_url,e))
+            logger.debug(u'Commit wapt_package updates')
         except:
-            logger.debug('rollback delete table')
+            logger.debug(u'rollback delete table')
             self.db.rollback()
             raise
 
@@ -1353,13 +1355,13 @@ class WaptDB(object):
             if not force:
                 last_update = self.get_param('last-%s' % repourl[:59])
                 if last_update:
-                    logger.debug('Check last-modified header for %s to avoid unecessary update' % (packages_url,))
+                    logger.debug(u'Check last-modified header for %s to avoid unecessary update' % (packages_url,))
                     current_update = requests.head(packages_url,proxies=proxies).headers['last-modified']
                     if current_update == last_update:
-                        logger.info('Index from %s has not been updated (last update %s), skipping update' % (packages_url,last_update))
+                        logger.info(u'Index from %s has not been updated (last update %s), skipping update' % (packages_url,last_update))
                         return current_update
 
-            logger.debug('Read remote Packages zip file %s' % packages_url)
+            logger.debug(u'Read remote Packages zip file %s' % packages_url)
             packages_answer = requests.get(packages_url,proxies=proxies)
             packages_answer.raise_for_status
 
@@ -1368,7 +1370,7 @@ class WaptDB(object):
                   StringIO.StringIO(packages_answer.content)
                 ).read(name='Packages'),'UTF-8').splitlines()
 
-            logger.debug('Purge packages table')
+            logger.debug(u'Purge packages table')
             self.db.execute('delete from wapt_package where repo_url=?',(repourl,))
             startline = 0
             endline = 0
@@ -1376,7 +1378,7 @@ class WaptDB(object):
                 if start <> end:
                     package = PackageEntry()
                     package.load_control_from_wapt(packageListFile[start:end])
-                    logger.info("%s (%s)" % (package.package,package.version))
+                    logger.info(u"%s (%s)" % (package.package,package.version))
                     logger.debug(package)
                     package.repo_url = repourl
                     package.repo = repo_name
@@ -1393,14 +1395,14 @@ class WaptDB(object):
             # last one
             add(startline,endline)
 
-            logger.debug('Commit wapt_package updates')
+            logger.debug(u'Commit wapt_package updates')
             self.db.commit()
             current_update = packages_answer.headers['last-modified']
-            logger.debug('Storing last-modified header for repourl %s : %s' % (repourl,current_update))
+            logger.debug(u'Storing last-modified header for repourl %s : %s' % (repourl,current_update))
             self.set_param('last-%s' % repourl[:59],current_update)
             return current_update
         except:
-            logger.debug('rollback delete package')
+            logger.debug(u'rollback delete package')
             self.db.rollback()
             raise
 
@@ -1524,6 +1526,7 @@ class Wapt(object):
         self.dry_run = False
 
         # to allow/restrict installation, supplied to packages
+        self.user = winsys.accounts.me().name
         self.usergroups = None
 
         # database init
@@ -1589,17 +1592,24 @@ class Wapt(object):
         else:
             self.wapt_server = None
 
+        if config.has_option('global','language'):
+            self.language = config.get('global','language')
+        else:
+            self.language = None
+
+        self.options = OptionParser()
+
         # Stores the configuration of all repositories (url, public_cert...)
         self.repositories = []
         # secondary
         if config.has_option('global','repositories'):
             names = [n.strip() for n in config.get('global','repositories').split(',')]
-            logger.info('Other repositories : %s' % (names,))
+            logger.info(u'Other repositories : %s' % (names,))
             for name in names:
                 if name:
                     w = WaptRepo(name).from_inifile(config)
                     self.repositories.append(w)
-                    logger.debug('    %s:%s' % (w.name,w.repo_url))
+                    logger.debug(u'    %s:%s' % (w.name,w.repo_url))
         # last is main repository so it overrides the secondary repositories
         w = WaptRepo('global').from_inifile(config)
         # override with calculated url
@@ -1612,7 +1622,7 @@ class Wapt(object):
         if not self._waptdb:
             self._waptdb = WaptDB(dbpath=self.dbpath)
             if self._waptdb.db_version < self._waptdb.curr_db_version:
-                logger.info('Upgrading db structure from %s to %s' % (self._waptdb.db_version,self._waptdb.curr_db_version))
+                logger.info(u'Upgrading db structure from %s to %s' % (self._waptdb.db_version,self._waptdb.curr_db_version))
                 self._waptdb.upgradedb()
         return self._waptdb
 
@@ -1636,33 +1646,33 @@ class Wapt(object):
                 if tryurl(url+'/Packages'):
                     return url
                 else:
-                    logger.warning('URL defined in ini file %s is not available' % url)
+                    logger.warning(u'URL defined in ini file %s is not available' % url)
             if not url:
-                logger.debug('No url defined in ini file')
+                logger.debug(u'No url defined in ini file')
 
         local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
-        logger.debug('All interfaces : %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in host_ipv4() if 'addr' in i and 'netmask' in i])
+        logger.debug(u'All interfaces : %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in host_ipv4() if 'addr' in i and 'netmask' in i])
         connected_interfaces = [ i for i in host_ipv4() if 'addr' in i and 'netmask' in i and i['addr'] in local_ips ]
-        logger.debug('Local connected IPs: %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in connected_interfaces])
+        logger.debug(u'Local connected IPs: %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in connected_interfaces])
 
         def is_inmysubnets(ip):
             """Return True if IP is in one of my connected subnets"""
             for i in connected_interfaces:
                 if same_net(i['addr'],ip,i['netmask']):
-                    logger.debug('  %s is in same subnet as %s/%s local connected interface' % (ip,i['addr'],i['netmask']))
+                    logger.debug(u'  %s is in same subnet as %s/%s local connected interface' % (ip,i['addr'],i['netmask']))
                     return True
             return False
 
         #dnsdomain = dns.resolver.get_default_resolver().domain.to_text()
         dnsdomain = setuphelpers.get_domain_fromregistry()
-        logger.debug('Default DNS domain: %s' % dnsdomain)
+        logger.debug(u'Default DNS domain: %s' % dnsdomain)
 
         if dnsdomain and dnsdomain <> '.':
             # find by dns SRV _wapt._tcp
             try:
                 resolv = dns.resolver.get_default_resolver()
-                logger.debug('DNS server %s' % (resolv.nameservers,))
-                logger.debug('Trying _wapt._tcp.%s SRV records' % dnsdomain)
+                logger.debug(u'DNS server %s' % (resolv.nameservers,))
+                logger.debug(u'Trying _wapt._tcp.%s SRV records' % dnsdomain)
                 answers = dns.resolver.query('_wapt._tcp.%s.' % dnsdomain,'SRV')
                 working_url = []
                 for a in answers:
@@ -1693,17 +1703,17 @@ class Wapt(object):
 
                 if working_url:
                     working_url.sort()
-                    logger.debug('  Accessible servers : %s' % (working_url,))
+                    logger.debug(u'  Accessible servers : %s' % (working_url,))
                     return working_url[-1][1]
 
                 if not answers:
-                    logger.debug('  No _wapt._tcp.%s SRV record found' % dnsdomain)
+                    logger.debug(u'  No _wapt._tcp.%s SRV record found' % dnsdomain)
             except dns.exception.DNSException,e:
-                logger.debug('  DNS resolver failed looking for _SRV records: %s' % (e,))
+                logger.debug(u'  DNS resolver failed looking for _SRV records: %s' % (e,))
 
             # find by dns CNAME
             try:
-                logger.debug('Trying wapt.%s CNAME records' % dnsdomain)
+                logger.debug(u'Trying wapt.%s CNAME records' % dnsdomain)
                 answers = dns.resolver.query('wapt.%s.' % dnsdomain,'CNAME')
                 for a in answers:
                     wapthost = a.target.canonicalize().to_text()[0:-1]
@@ -1714,15 +1724,15 @@ class Wapt(object):
                     if tryurl(url+'/Packages'):
                         return url
                 if not answers:
-                    logger.debug('  No wapt.%s CNAME SRV record found' % dnsdomain)
+                    logger.debug(u'  No wapt.%s CNAME SRV record found' % dnsdomain)
 
             except dns.exception.DNSException,e:
-                logger.warning('  DNS resolver error : %s' % (e,))
+                logger.warning(u'  DNS resolver error : %s' % (e,))
 
             # find by dns A
             try:
                 wapthost = 'wapt.%s.' % dnsdomain
-                logger.debug('Trying %s A records' % wapthost)
+                logger.debug(u'Trying %s A records' % wapthost)
                 answers = dns.resolver.query(wapthost,'A')
                 if answers:
                     url = 'https://%s/wapt' % (wapthost,)
@@ -1732,12 +1742,12 @@ class Wapt(object):
                     if tryurl(url+'/Packages'):
                         return url
                 if not answers:
-                    logger.debug('  No %s A record found' % wapthost)
+                    logger.debug(u'  No %s A record found' % wapthost)
 
             except dns.exception.DNSException,e:
-                logger.warning('  DNS resolver error : %s' % (e,))
+                logger.warning(u'  DNS resolver error : %s' % (e,))
         else:
-            logger.warning('Local DNS domain not found, skipping SRV _wapt._tcp and CNAME search ')
+            logger.warning(u'Local DNS domain not found, skipping SRV _wapt._tcp and CNAME search ')
 
         return None
 
@@ -1826,7 +1836,8 @@ class Wapt(object):
 
     def install_wapt(self,fname,params_dict={},public_cert=''):
         """Install a single wapt package given its WAPT filename."""
-        logger.info("Register start of install %s as user sys %s to local DB with params %s" % (fname, winsys.accounts.me().name, params_dict))
+        logger.info(u"Register start of install %s as user %s to local DB with params %s" % (fname, winsys.accounts.me().name, params_dict))
+        logger.info(u"Interactive user:%s, usergroups %s" % (self.user,self.usergroups))
         status = 'INIT'
         if not public_cert:
             public_cert = self.get_public_cert()
@@ -1864,7 +1875,7 @@ class Wapt(object):
             logger.addHandler(hdlr)
 
         try:
-            logger.info("Installing package " + fname)
+            logger.info(u"Installing package " + fname)
             # case where fname is a wapt zipped file, else directory (during developement)
             istemporary = False
             if os.path.isfile(fname):
@@ -1918,7 +1929,9 @@ class Wapt(object):
             setattr(setup,'run_notfatal',setuphelpers.run_notfatal)
             setattr(setup,'WAPT',self)
             setattr(setup,'control',entry)
+            setattr(setup,'language',self.language or setuphelpers.language() )
 
+            setattr(setup,'user',self.user)
             setattr(setup,'usergroups',self.usergroups)
 
             # get definitions of required parameters from setup module
@@ -1950,10 +1963,10 @@ class Wapt(object):
                     logger.info("  executing install script")
                     exitstatus = setup.install()
                 except Exception,e:
-                    logger.critical('Fatal error in install script: %s' % e)
+                    logger.critical(u'Fatal error in install script: %s' % e)
                     raise
             else:
-                logger.warning('Dry run, not actually running setup.install()')
+                logger.warning(u'Dry run, not actually running setup.install()')
                 exitstatus = None
 
             if exitstatus is None or exitstatus == 0:
@@ -1979,7 +1992,7 @@ class Wapt(object):
             logger.info("Install script finished with status %s" % status)
             if istemporary:
                 os.chdir(previous_cwd)
-                logger.debug("Cleaning package tmp dir")
+                logger.debug(u"Cleaning package tmp dir")
                 # trying 3 times to remove
                 cnt = 3
                 while cnt>0:
@@ -1990,7 +2003,7 @@ class Wapt(object):
                         cnt -= 1
                         time.sleep(2)
                 else:
-                    logger.warning("Unable to clean tmp dir")
+                    logger.warning(u"Unable to clean tmp dir")
 
             self.waptdb.update_install_status(install_id,status,'',str(new_uninstall_key) if new_uninstall_key else '',str(uninstallstring) if uninstallstring else '')
             # (entry.package,entry.version,status,json.dumps({'output':install_output.output,'exitstatus':exitstatus}))
@@ -2033,7 +2046,7 @@ class Wapt(object):
             svncmd = os.path.join(os.environ['PROGRAMW6432'],'TortoiseSVN','bin','svn.exe')
         else:
             svncmd = os.path.join(os.environ['PROGRAMFILES'],'TortoiseSVN','bin','svn.exe')
-        logger.debug('svn command : %s'% svncmd)
+        logger.debug(u'svn command : %s'% svncmd)
         if not os.path.isfile(svncmd):
             raise Exception('svn.exe command not available, please install TortoiseSVN with commandline tools')
         if self.config.get('global','default_sources_suffix'):
@@ -2062,7 +2075,7 @@ class Wapt(object):
         cachepath = self.packagecachedir
         for f in glob.glob(os.path.join(cachepath,'*.wapt')):
             if os.path.isfile(f):
-                logger.debug('Removing %s' % f)
+                logger.debug(u'Removing %s' % f)
                 os.remove(f)
                 result.append(f)
         return result
@@ -2193,7 +2206,7 @@ class Wapt(object):
         if downloaded.get('errors',[]):
             raise Exception('Error downloading some files : %s',(downloaded['errors'],))
         actions['downloads'] = downloaded
-        logger.debug('Downloaded : %s' % (downloaded,))
+        logger.debug(u'Downloaded : %s' % (downloaded,))
         def fname(packagefilename):
             return os.path.join(self.packagecachedir,packagefilename)
         if not download_only:
@@ -2201,7 +2214,7 @@ class Wapt(object):
                 result = self.install_wapt(fname(p.filename),params_dict = params_dict,public_cert=self.get_public_cert())
                 if result<>'OK':
                     actions['errors'].append([request,p])
-                    logger.critical('Package %s (%s) not installed due to errors' %(request,p))
+                    logger.critical(u'Package %s (%s) not installed due to errors' %(request,p))
             return actions
         else:
             logger.info('Download only, no install performed')
@@ -2243,7 +2256,7 @@ class Wapt(object):
                 except BaseException as e:
                     if os.path.isfile(fullpackagepath):
                         os.remove(fullpackagepath)
-                    logger.critical("Error downloading package from http repository, please update... error : %s" % e)
+                    logger.critical(u"Error downloading package from http repository, please update... error : %s" % e)
                     errors.append((download_url,"%s" % e))
         return {"downloaded":downloaded,"skipped":skipped,"errors":errors}
 
@@ -2254,7 +2267,7 @@ class Wapt(object):
             where package=?
            """ , (package,) )
         if not q:
-            logger.warning("Package %s not installed, aborting" % package)
+            logger.warning(u"Package %s not installed, aborting" % package)
             return True
 
         # several versions installed of the same package... ?
@@ -2291,17 +2304,19 @@ class Wapt(object):
                     guids = [guids]
 
                 for guid in guids:
-                    try:
-                        uninstall_cmd = self.uninstall_cmd(guid)
-                        logger.info('Launch uninstall cmd %s' % (uninstall_cmd,))
-                        print subprocess.check_output(uninstall_cmd,shell=True)
-                    except Exception,e:
-                        logger.critical("Critical error during uninstall of %s: %s" % (uninstall_cmd,e))
+                    if guid:
+                        try:
+                            uninstall_cmd =''
+                            uninstall_cmd = self.uninstall_cmd(guid)
+                            logger.info(u'Launch uninstall cmd %s' % (uninstall_cmd,))
+                            print subprocess.check_output(uninstall_cmd,shell=True)
+                        except Exception,e:
+                            logger.critical(u"Critical error during uninstall of %s: %s" % (uninstall_cmd,e))
                 logger.info('Remove status record from local DB')
                 self.waptdb.remove_install_status(package)
             else:
                 if force:
-                    logger.critical('uninstall key not registered in local DB status, unable to remove properly. Please remove manually. Forced removal of local status of package')
+                    logger.critical(u'uninstall key not registered in local DB status, unable to remove properly. Please remove manually. Forced removal of local status of package')
                     self.waptdb.remove_install_status(package)
                 else:
                     raise Exception('  uninstall key not registered in local DB status, unable to remove properly. Please remove manually')
@@ -2318,14 +2333,14 @@ class Wapt(object):
         and install all newest packages
         """
         result = {}
-        logger.debug('Check if host package "%s" is available' % (self.host_packagename(), ))
+        logger.debug(u'Check if host package "%s" is available' % (self.host_packagename(), ))
         host_packages = self.is_available(self.host_packagename())
         if host_packages and not self.is_installed(host_packages[-1].asrequirement()):
             logger.info('Host package %s is available and not installed, installing host package...' % (host_packages[-1],) )
             result = self.install(host_packages[-1],force=True)
 
         upgrades = self.waptdb.upgradeable()
-        logger.debug('upgrades : %s' % upgrades.keys())
+        logger.debug(u'upgrades : %s' % upgrades.keys())
         return self.install(upgrades.keys(),force=True)
 
     def list_upgrade(self):
@@ -2406,15 +2421,15 @@ class Wapt(object):
         oldpath = sys.path
         try:
             previous_cwd = os.getcwd()
-            logger.debug('  Change current directory to %s' % directoryname)
+            logger.debug(u'  Change current directory to %s' % directoryname)
             os.chdir(directoryname)
             if not os.getcwd() in sys.path:
                 sys.path = [os.getcwd()] + sys.path
-                logger.debug('new sys.path %s' % sys.path)
-            logger.debug('Sourcing %s' % os.path.join(directoryname,'setup.py'))
+                logger.debug(u'new sys.path %s' % sys.path)
+            logger.debug(u'Sourcing %s' % os.path.join(directoryname,'setup.py'))
             setup = import_setup(os.path.join(directoryname,'setup.py'),'_waptsetup_')
              # be sure some minimal functions are available in setup module at install step
-            logger.debug('Source import OK')
+            logger.debug(u'Source import OK')
             control_filename = os.path.join(directoryname,'WAPT','control')
             entry = PackageEntry()
             if hasattr(setup,'control'):
@@ -2433,7 +2448,7 @@ class Wapt(object):
                 entry.version = new_version
                 entry.save_control_to_wapt(directoryname)
             package_filename =  entry.make_package_filename()
-            logger.debug('Control data : \n%s' % entry.ascontrol())
+            logger.debug(u'Control data : \n%s' % entry.ascontrol())
             result_filename = os.path.abspath(os.path.join( directoryname,'..',package_filename))
 
             allfiles = create_recursive_zip_signed(
@@ -2446,9 +2461,9 @@ class Wapt(object):
             if 'setup' in dir():
                 del setup
             else:
-                logger.critical('Unable to read setup.py file')
+                logger.critical(u'Unable to read setup.py file')
             sys.path = oldpath
-            logger.debug('  Change current directory to %s' % previous_cwd)
+            logger.debug(u'  Change current directory to %s' % previous_cwd)
             os.chdir(previous_cwd)
 
     def session_setup(self,packagename,params_dict={}):
@@ -2463,18 +2478,20 @@ class Wapt(object):
             if os.path.isdir(packagename):
                 setup = import_setup(os.path.join(directoryname,'setup.py'),'__waptsetup__')
             else:
-                logger.debug('Sourcing setup from DB')
+                logger.debug(u'Sourcing setup from DB')
                 setup = import_code(self.is_installed(packagename)['setuppy'],'__waptsetup__')
 
             required_params = []
              # be sure some minimal functions are available in setup module at install step
-            logger.debug('Source import OK')
+            logger.debug(u'Source import OK')
             if hasattr(setup,'session_setup'):
                 logger.info('Launch session_setup')
                 setattr(setup,'run',setuphelpers.run)
                 setattr(setup,'run_notfatal',setuphelpers.run_notfatal)
+                setattr(setup,'user',self.user)
                 setattr(setup,'usergroups',self.usergroups)
                 setattr(setup,'WAPT',self)
+                setattr(setup,'language',self.language or setuphelpers.language() )
 
                 # get definitions of required parameters from setup module
                 if hasattr(setup,'required_params'):
@@ -2504,9 +2521,9 @@ class Wapt(object):
             if 'setup' in dir():
                 del setup
             else:
-                logger.critical('Unable to read setup.py file')
+                logger.critical(u'Unable to read setup.py file')
             sys.path = oldpath
-            logger.debug('  Change current directory to %s' % previous_cwd)
+            logger.debug(u'  Change current directory to %s' % previous_cwd)
             os.chdir(previous_cwd)
 
     def uninstall(self,packagename,params_dict={}):
@@ -2521,18 +2538,20 @@ class Wapt(object):
             if os.path.isdir(packagename):
                 setup = import_setup(os.path.join(directoryname,'setup.py'),'__waptsetup__')
             else:
-                logger.debug('Sourcing setup from DB')
+                logger.debug(u'Sourcing setup from DB')
                 setup = import_code(self.is_installed(packagename)['setuppy'],'__waptsetup__')
 
             required_params = []
              # be sure some minimal functions are available in setup module at install step
-            logger.debug('Source import OK')
+            logger.debug(u'Source import OK')
             if hasattr(setup,'uninstall'):
                 logger.info('Launch uninstall')
                 setattr(setup,'run',setuphelpers.run)
                 setattr(setup,'run_notfatal',setuphelpers.run_notfatal)
+                setattr(setup,'user',self.user)
                 setattr(setup,'usergroups',self.usergroups)
                 setattr(setup,'WAPT',self)
+                setattr(setup,'language',self.language or setuphelpers.language() )
 
                 # get value of required parameters if not already supplied
                 for p in required_params:
@@ -2558,9 +2577,9 @@ class Wapt(object):
             if 'setup' in dir():
                 del setup
             else:
-                logger.critical('Unable to read setup.py file')
+                logger.critical(u'Unable to read setup.py file')
             sys.path = oldpath
-            logger.debug('  Change current directory to %s' % previous_cwd)
+            logger.debug(u'  Change current directory to %s' % previous_cwd)
             os.chdir(previous_cwd)
 
 
@@ -2570,15 +2589,15 @@ class Wapt(object):
         oldpath = sys.path
         try:
             previous_cwd = os.getcwd()
-            logger.debug('  Change current directory to %s' % directoryname)
+            logger.debug(u'  Change current directory to %s' % directoryname)
             os.chdir(directoryname)
             if not os.getcwd() in sys.path:
                 sys.path = [os.getcwd()] + sys.path
-                logger.debug('new sys.path %s' % sys.path)
-            logger.debug('Sourcing %s' % os.path.join(directoryname,'setup.py'))
+                logger.debug(u'new sys.path %s' % sys.path)
+            logger.debug(u'Sourcing %s' % os.path.join(directoryname,'setup.py'))
             setup = import_setup(os.path.join(directoryname,'setup.py'),'_waptsetup_')
              # be sure some minimal functions are available in setup module at install step
-            logger.debug('Source import OK')
+            logger.debug(u'Source import OK')
             if hasattr(setup,'checkinstalled'):
                 logger.info('Use control informations from setup.py file')
                 result = setup.checkinstalled()
@@ -2589,9 +2608,9 @@ class Wapt(object):
             if 'setup' in dir():
                 del setup
             else:
-                logger.critical('Unable to read setup.py file')
+                logger.critical(u'Unable to read setup.py file')
             sys.path = oldpath
-            logger.debug('  Change current directory to %s' % previous_cwd)
+            logger.debug(u'  Change current directory to %s' % previous_cwd)
             os.chdir(previous_cwd)
             return result
 
@@ -2657,7 +2676,7 @@ def install():
             codecs.open(setuppy_filename,'w',encoding='utf8').write(template)
         else:
             logger.info('setup.py file already exists, skip create')
-        logger.debug('Copy installer %s to target' % installer)
+        logger.debug(u'Copy installer %s to target' % installer)
         shutil.copyfile(installer_path,os.path.join(directoryname,installer))
 
         control_filename = os.path.join(directoryname,'WAPT','control')
@@ -2838,7 +2857,7 @@ def install():
             if private_key:
                 self.signpackage(target_filename,excludes=excludes,private_key=private_key,callback=callback)
             else:
-                logger.warning('No private key provided, packahe is not signed !')
+                logger.warning(u'No private key provided, packahe is not signed !')
             return target_filename
         else:
             return package_dev_dir

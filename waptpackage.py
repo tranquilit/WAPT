@@ -64,7 +64,7 @@ def parse_major_minor_patch_build(version):
     """
     match = REGEX_PACKAGE_VERSION.match(version)
     if match is None:
-        raise ValueError('%s is not valid SemVer string' % version)
+        raise ValueError(u'%s is not valid SemVer string' % version)
 
     verinfo = match.groupdict()
     def int_or_none(name):
@@ -80,7 +80,7 @@ def parse_major_minor_patch_build(version):
     return verinfo
 
 def make_version(major_minor_patch_build):
-    return '.'.join( [ "%s" % major_minor_patch_build[p] for p in ('major','minor','patch','subpatch') if major_minor_patch_build[p]<>None])+\
+    return u'.'.join( [ "%s" % major_minor_patch_build[p] for p in ('major','minor','patch','subpatch') if major_minor_patch_build[p]<>None])+\
                 '-'+major_minor_patch_build['packaging']
 
 class PackageEntry(object):
@@ -252,7 +252,7 @@ class PackageEntry(object):
             else:
                 sc = line.find(':')
                 if sc<0:
-                    raise Exception('Invalid line (no ":" found) : %s' % line)
+                    raise Exception(u'Invalid line (no ":" found) : %s' % line)
                 (param,value) = (line[:sc].strip(),line[sc+1:].strip())
                 param = param.lower()
                 setattr(self,param,value)
@@ -283,7 +283,7 @@ class PackageEntry(object):
                 except:
                     control_exist = False
                 if control_exist:
-                    raise Exception('control file already exist in WAPT file %s' % fname)
+                    raise Exception(u'control file already exist in WAPT file %s' % fname)
             else:
                 myzip = zipfile.ZipFile(fname,'w')
             try:
@@ -337,7 +337,7 @@ sources      : %(sources)s
             version_parts['packaging'] = "%02i" % (int(version_parts['packaging'])+1,)
             self.version = make_version(version_parts)
         else:
-            raise Exception('no build/packaging part in version number %s' % self.version)
+            raise Exception(u'no build/packaging part in version number %s' % self.version)
 
 def update_packages(adir):
     """Scan adir directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash"""
@@ -346,15 +346,15 @@ def update_packages(adir):
     previous_packages_mtime = 0
     if os.path.exists(packages_fname):
         try:
-            logger.info("Reading old Packages %s" % packages_fname)
+            logger.info(u"Reading old Packages %s" % packages_fname)
             previous_packages = codecs.decode(zipfile.ZipFile(packages_fname).read(name='Packages'),'utf-8')
             previous_packages_mtime = os.path.getmtime(packages_fname)
         except Exception,e:
-            logger.warning('error reading old Packages file. Reset... (%s)' % e)
+            logger.warning(u'error reading old Packages file. Reset... (%s)' % e)
 
     old_entries = {}
     # we get old list to not recompute MD5 if filename has not changed
-    logger.debug("parsing old entries...")
+    logger.debug(u"parsing old entries...")
 
     # last line
     def add_package(lines):
@@ -362,7 +362,7 @@ def update_packages(adir):
         package.load_control_from_wapt(lines)
         package.filename = package.make_package_filename()
         old_entries[package.filename] = package
-        logger.debug("Package %s added" % package.filename)
+        logger.debug(u"Package %s added" % package.filename)
 
     try:
         lines = []
@@ -379,38 +379,38 @@ def update_packages(adir):
             add_package(lines)
             lines = []
     except Exception,e:
-        logger.critical('Unable to read old entries... : %s' % e)
+        logger.critical(u'Unable to read old entries... : %s' % e)
         old_entries = {}
 
     if not os.path.isdir(adir):
-        raise Exception('%s is not a directory' % (adir))
+        raise Exception(u'%s is not a directory' % (adir))
 
     waptlist = glob.glob(os.path.join(adir,'*.wapt'))
     packages = []
     for fname in waptlist:
         if os.path.basename(fname) in old_entries:
-            logger.info("  Keeping %s" % fname)
+            logger.info(u"  Keeping %s" % fname)
             entry = old_entries[os.path.basename(fname)]
         else:
-            logger.info("  Processing %s" % fname)
+            logger.info(u"  Processing %s" % fname)
             entry = PackageEntry()
             entry.load_control_from_wapt(fname)
         packages.append(entry.ascontrol(with_non_control_attributes=True).encode('utf8'))
 
-    logger.info("Writing new %s" % packages_fname)
+    logger.info(u"Writing new %s" % packages_fname)
     myzipfile = zipfile.ZipFile(packages_fname, "w")
     try:
-        zi = zipfile.ZipInfo("Packages",date_time = time.localtime())
+        zi = zipfile.ZipInfo(u"Packages",date_time = time.localtime())
         zi.compress_type = zipfile.ZIP_DEFLATED
-        myzipfile.writestr(zi,'\n'.join(packages))
+        myzipfile.writestr(zi,u'\n'.join(packages))
 
-        myzipfile.writestr("Packages",'\n'.join(packages),compress_type=zipfile.ZIP_DEFLATED)
+        myzipfile.writestr(u"Packages",u'\n'.join(packages),compress_type=zipfile.ZIP_DEFLATED)
     except:
-        zi = zipfile.ZipInfo("Packages",date_time = time.localtime())
+        zi = zipfile.ZipInfo(u"Packages",date_time = time.localtime())
         zi.compress_type = zipfile.ZIP_DEFLATED
-        myzipfile.writestr(zi,'\n'.join(packages))
+        myzipfile.writestr(zi,u'\n'.join(packages))
     myzipfile.close()
-    logger.info("Finished")
+    logger.info(u"Finished")
 
 
 if __name__ == '__main__':

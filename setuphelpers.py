@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.4.9"
+__version__ = "0.4.10"
 
 import os
 import sys
@@ -156,7 +156,7 @@ def wget(url,target,reporthook=None,proxies=None):
         if total>0 and bsize>0:
             # print only every second or at end
             if (time.time()-last_time_display>=.1) or (bcount*bsize>=total) :
-                print '%i / %i (%.0f%%) (%.0f KB/s)\r' % (bcount*bsize,total,100.0*bcount*bsize/total, bsize/(1024*(time.time()-last_time_display))),
+                print u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (bcount*bsize,total,100.0*bcount*bsize/total, bsize/(1024*(time.time()-last_time_display))),
                 last_time_display = time.time()
 
     if os.path.isdir(target):
@@ -178,7 +178,7 @@ def wget(url,target,reporthook=None,proxies=None):
 
     total_bytes = int(r.headers['content-length'])
     chunk_size = max([total_bytes/100,1000])
-    print "Downloading %s (%.1f Mb)" % (url,int(total_bytes)/1024/1024)
+    print u"Downloading %s (%.1f Mb)" % (url,int(total_bytes)/1024/1024)
 
     output_file = open(os.path.join(dir,filename),'wb')
     try:
@@ -199,7 +199,7 @@ def wget(url,target,reporthook=None,proxies=None):
         output_file.close()
 
     #(localpath,headers) = WaptURLopener(proxies=proxies).retrieve(url=url, filename=os.path.join(dir,filename),reporthook=reporthook or report,)
-    print "  -> download finished (%.0f Kb/s)" % (total_bytes/(1024*(time.time()-start_time)))
+    print u"  -> download finished (%.0f Kb/s)" % (total_bytes/(1024*(time.time()-start_time)))
     return os.path.join(dir,filename)
 
 def filecopyto(filename,target):
@@ -326,17 +326,17 @@ def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy
 def run(*cmd):
     """Runs the command and wait for it termination
     returns output, raise exc eption if exitcode is not null"""
-    print 'Run "%s"' % (cmd,)
+    print u'Run "%s"' % (cmd,)
     return subprocess.check_output(*cmd,shell=True)
 
 def run_notfatal(*cmd):
     """Runs the command and wait for it termination
     returns output, don't raise exception if exitcode is not null but return '' """
     try:
-        print 'Run "%s"' % (cmd,)
+        print u'Run "%s"' % (cmd,)
         return subprocess.check_output(*cmd,shell=True)
     except Exception,e:
-        print 'Warning : %s' % e
+        print u'Warning : %s' % e
         return ''
 
 def shell_launch(cmd):
@@ -749,7 +749,7 @@ def get_msi_properties(msi_filename):
         try:
             result[r.GetString(1)] = r.GetString(2)
         except:
-            print"erreur pour %s" % r.GetString(0)
+            print u"erreur pour %s" % r.GetString(0)
         try:
             r = view.Fetch()
         except:

@@ -61,7 +61,7 @@ object DMWaptTray: TDMWaptTray
       Default = True
     end
     object MenuItem4: TMenuItem
-      Action = ActShowMain
+      Action = ActConfigure
     end
     object MenuItem2: TMenuItem
       Action = ActUpdate
@@ -99,6 +99,10 @@ object DMWaptTray: TDMWaptTray
     object ActShowStatus: TAction
       Caption = 'Voir status des packages'
       OnExecute = ActShowStatusExecute
+    end
+    object ActConfigure: TAction
+      Caption = 'Configuration'
+      OnExecute = ActConfigureExecute
     end
   end
   object Timer1: TTimer

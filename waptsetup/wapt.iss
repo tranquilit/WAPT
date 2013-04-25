@@ -31,6 +31,8 @@ Source: "..\wapt-get.exe.manifest"; DestDir: "{app}";
 Source: "..\wapt-get.exe"; DestDir: "{app}";
 Source: "..\wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.exe'); Tasks: installTray
 Source: "..\vc_redist\*"; DestDir: "{tmp}\vc_redist";
+Source: "..\lib\site-packages\M2Crypto\libeay32.dll" ; DestDir: "{app}"; 
+Source: "..\lib\site-packages\M2Crypto\ssleay32.dll" ; DestDir: "{app}";
 
 
 [Setup]
@@ -56,6 +58,9 @@ SignTool=kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f
 CloseApplications=False
 PrivilegesRequired=admin
 MinVersion=0,5.0sp4
+LicenseFile=..\COPYING.txt
+RestartIfNeededByRun=False
+SetupIconFile=..\wapt.ico
 
 [Registry]
 Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"; Check: NeedsAddPath('{app}')
@@ -66,26 +71,24 @@ Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetR
 Filename: {app}\wapt-get.ini; Section: global; Key: public_cert; String: {code:GetPublicCert}
 
 [Run]
-Filename: "msiexec.exe"; Parameters: "/q /i ""{tmp}\vc_redist\vc_red.msi"""
-Filename: "{app}\wapt-get.exe"; Parameters: "upgradedb"; Flags: runhidden 
-Filename: "{app}\wapt-get.exe"; Parameters: "update"; Tasks: updateWapt; Flags: runhidden
-Filename: "{app}\wapttray.exe"; Tasks: installTray; Flags: runminimized nowait runasoriginaluser
+Filename: "msiexec.exe"; Parameters: "/q /i ""{tmp}\vc_redist\vc_red.msi"""; WorkingDir: "{tmp}"; StatusMsg: "Updating MS VC++ libraries for OpenSSL..."; Description: "Update MS VC++ libraries"
+Filename: "{app}\wapt-get.exe"; Parameters: "upgradedb"; Flags: runhidden; StatusMsg: "Upgrading local sqlite database structure"; Description: "Upgrade packages list"
+Filename: "{app}\wapt-get.exe"; Parameters: "update"; Tasks: updateWapt; Flags: runhidden; StatusMsg: "Updating packages list"; Description: "Update packages list from main repository"
+Filename: "{app}\wapttray.exe"; Tasks: installTray; Flags: runminimized nowait runasoriginaluser postinstall; StatusMsg: "Launch WAPT tray icon"; Description: "Launch WAPT tray icon"
 
 [Icons]
-Name: "{commonstartup}\WAPT tray helper"; Filename: "{app}\wapttray.exe";
-
+Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\wapttray.exe";
 
 [Tasks]
 Name: updateWapt; Description: "Update package list after setup";
 Name: installService; Description: "Install WAPT Service";
 Name: installTray; Description: "Install WAPT Tray icon";
-
+Name: autorunTray; Description: "Start WAPT Tray icon at logon";
 
 [UninstallRun]
-Filename: "taskkill"; Parameters: "/t /im ""wapttray.exe"" /f"; Flags: runhidden
-Filename: "net"; Parameters: "stop waptservice"; Flags: runhidden
-Filename: "{app}\waptservice.exe"; Parameters: "--uninstall"; Flags: runhidden
-
+Filename: "taskkill"; Parameters: "/t /im ""wapttray.exe"" /f"; Flags: runhidden; StatusMsg: "Stopping wapt tray"
+Filename: "net"; Parameters: "stop waptservice"; Flags: runhidden; StatusMsg: "Stop swaptservice"
+Filename: "{app}\waptservice.exe"; Parameters: "--uninstall"; Flags: runhidden; StatusMsg: "Uninstall swaptservice"
 
 [Code]
 #include "services.iss"
@@ -102,7 +105,7 @@ var
   CustomPage: TWizardPage;
 
 begin
-  CustomPage := CreateCustomPage(wpSelectTasks, 'Installation type', '');
+  CustomPage := CreateCustomPage(wpSelectTasks, 'Installation options', '');
 
   rbCustomRepo := TNewRadioButton.Create(WizardForm);
   rbCustomRepo.Parent := CustomPage.Surface;
@@ -124,7 +127,7 @@ begin
 
 
   lab1 := TLabel.Create(WizardForm);
-  lab1.Caption := 'Certificat public:';
+  lab1.Caption := 'Public certificate for packages validation:';
   lab1.autosize := True;
   lab1.Parent := CustomPage.Surface; 
   lab1.Left := rbDnsRepo.Left;
@@ -186,8 +189,7 @@ end;
 procedure DeinitializeSetup();
 begin
   if ServiceExists('waptservice') then
-    SimpleStartService('waptservice',True,True);
-  
+    SimpleStartService('waptservice',True,True); 
 end;
 
 procedure AfterWaptServiceinstall(exe:String);
@@ -225,12 +227,10 @@ begin
     WinHttpReq.Open('GET', teWaptUrl.Text, false);
     WinHttpReq.Send();
   except
-    MsgBox('l''url du dépôt WAPT est invalide.'#13#10' Veuillez corriger le fichier "C:\WAPT\wapt-get.ini"', mbError, MB_OK);
+    MsgBox('WAPT repository URL is invalid/unreachable.'#13#10' please check repo_url in "wapt-get.ini" file', mbError, MB_OK);
   end;
   if WinHttpReq.Status <> 200 then
-    begin
-    MsgBox('l''url du dépôt WAPT est invalide.'#13#10' Veuillez corriger le fichier "C:\WAPT\wapt-get.ini"', mbError, MB_OK);
-    end
+    MsgBox('WAPT repository URL is invalid/unreachable.'#13#10' please check repo_url in "wapt-get.ini" file', mbError, MB_OK);
 end;
 
 procedure killtask(name:String);

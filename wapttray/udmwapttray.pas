@@ -13,6 +13,7 @@ type
 
   TDMWaptTray = class(TDataModule)
     ActForceRegisterComputer: TAction;
+    ActConfigure: TAction;
     ActionList1: TActionList;
     ActQuit: TAction;
     ActShowMain: TAction;
@@ -28,6 +29,7 @@ type
     PopupMenu1: TPopupMenu;
     Timer1: TTimer;
     TrayIcon1: TTrayIcon;
+    procedure ActConfigureExecute(Sender: TObject);
     procedure ActForceRegisterComputerExecute(Sender: TObject);
     procedure ActQuitExecute(Sender: TObject);
     procedure ActShowMainExecute(Sender: TObject);
@@ -46,7 +48,7 @@ var
   DMWaptTray: TDMWaptTray;
 
 implementation
-uses LCLIntf,Forms,windows,waptcommon, superobject,tiscommon,Process;
+uses LCLIntf,Forms,windows,waptcommon, superobject,tiscommon;
 
 {$R *.lfm}
 
@@ -55,7 +57,7 @@ uses LCLIntf,Forms,windows,waptcommon, superobject,tiscommon,Process;
 procedure TDMWaptTray.ActShowMainExecute(Sender: TObject);
 begin
   TrayIcon1.Icons := ImageList1;
-  TrayIcon1.Animate:=True;
+  //TrayIcon1.Animate:=True;
 end;
 
 procedure TDMWaptTray.ActShowStatusExecute(Sender: TObject);
@@ -76,6 +78,11 @@ end;
 procedure TDMWaptTray.ActForceRegisterComputerExecute(Sender: TObject);
 begin
 
+end;
+
+procedure TDMWaptTray.ActConfigureExecute(Sender: TObject);
+begin
+  OpenDocument(WaptIniFilename);
 end;
 
 procedure TDMWaptTray.ActQuitExecute(Sender: TObject);

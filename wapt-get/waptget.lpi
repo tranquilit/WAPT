@@ -22,7 +22,7 @@
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="6"/>
       <RevisionNr Value="15"/>
-      <BuildNr Value="1"/>
+      <BuildNr Value="4"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -68,10 +68,11 @@
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="73"/>
-        <CursorPos X="1" Y="16"/>
+        <TopLine Value="87"/>
+        <CursorPos X="77" Y="111"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
       </Unit1>
@@ -119,11 +120,10 @@
         <Filename Value="tiscommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiscommon"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="931"/>
-        <CursorPos X="10" Y="958"/>
+        <TopLine Value="16"/>
+        <CursorPos X="3" Y="31"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit7>
@@ -252,8 +252,8 @@
         <Caret Line="129" Column="1" TopLine="118"/>
       </Position10>
       <Position11>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="16" Column="1" TopLine="73"/>
+        <Filename Value="tiscommon.pas"/>
+        <Caret Line="958" Column="6" TopLine="931"/>
       </Position11>
     </JumpHistory>
   </ProjectOptions>
