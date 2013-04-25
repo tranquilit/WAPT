@@ -1,6 +1,9 @@
 
 #define AppName "WAPT"
-#define AppVersion GetFileVersion(AddBackslash(SourcePath) + "..\wapt-get.exe")
+#define SrcApp AddBackslash(SourcePath) + "..\wapt-get.exe"
+#define FileVerStr GetFileVersion(SrcApp)
+#define StripBuild(str VerStr) Copy(VerStr, 1, RPos(".", VerStr)-1)
+#define AppVerStr StripBuild(FileVerStr)
 
 [Files]
 Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
@@ -26,23 +29,27 @@ Source: "..\wapt-get.ini.tmpl"; DestDir: "{app}";
 Source: "..\wapt-get.py"; DestDir: "{app}"; 
 Source: "..\wapt-get.exe.manifest"; DestDir: "{app}";
 Source: "..\wapt-get.exe"; DestDir: "{app}";
-Source: "..\wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.exe')
+Source: "..\wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.exe'); Tasks: installTray
 Source: "..\vc_redist\*"; DestDir: "{tmp}\vc_redist";
 
 
 [Setup]
 AppName={#AppName}
-AppVersion={#AppVersion}
+AppVersion={#AppVerStr}
+AppVerName={#AppName} {#AppVerStr}
+UninstallDisplayName={#AppName} {#AppVerStr}
+VersionInfoVersion={#FileVerStr}
+VersionInfoTextVersion={#AppVerStr}
+AppCopyright=Tranquil IT Systems
 DefaultDirName="C:\{#AppName}"
 DefaultGroupName={#AppName}
 ChangesEnvironment=True
 AppPublisher=Tranquil IT Systems
-UninstallDisplayName=WAPT libraries and WAPTService
 OutputDir="."
 OutputBaseFilename=waptsetup
 SolidCompression=True
 AppPublisherURL=http://www.tranquil.it
-AppUpdatesURL=http://wapt.tranquil.it
+AppUpdatesURL=http://wapt.tranquil.it/wapt/waptsetup.exe
 AppContact=dev@tranquil.it
 AppSupportPhone=+33 2 40 97 57 55
 SignTool=kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f
@@ -62,15 +69,16 @@ Filename: {app}\wapt-get.ini; Section: global; Key: public_cert; String: {code:G
 Filename: "msiexec.exe"; Parameters: "/q /i ""{tmp}\vc_redist\vc_red.msi"""
 Filename: "{app}\wapt-get.exe"; Parameters: "upgradedb"; Flags: runhidden 
 Filename: "{app}\wapt-get.exe"; Parameters: "update"; Tasks: updateWapt; Flags: runhidden
-Filename: "{app}\wapttray.exe"; Flags: runminimized nowait runasoriginaluser
+Filename: "{app}\wapttray.exe"; Tasks: installTray; Flags: runminimized nowait runasoriginaluser
 
 [Icons]
 Name: "{commonstartup}\WAPT tray helper"; Filename: "{app}\wapttray.exe";
 
 
 [Tasks]
-Name: updateWapt; Description: "Lancer la mise à jour des paquets après l'installation";
-Name: installService; Description: "installation du service WAPT";
+Name: updateWapt; Description: "Update package list after setup";
+Name: installService; Description: "Install WAPT Service";
+Name: installTray; Description: "Install WAPT Tray icon";
 
 
 [UninstallRun]
@@ -99,7 +107,7 @@ begin
   rbCustomRepo := TNewRadioButton.Create(WizardForm);
   rbCustomRepo.Parent := CustomPage.Surface;
   rbCustomRepo.Checked := True;
-  rbCustomRepo.Caption := 'Dépôt WAPT';
+  rbCustomRepo.Caption := 'WAPT repository';
   
   teWaptUrl :=TEdit.Create(WizardForm);
   teWaptUrl.Parent := CustomPage.Surface; 
@@ -112,7 +120,7 @@ begin
   rbDnsRepo.Parent := CustomPage.Surface;
   rbDnsRepo.Top := rbCustomRepo.Top + rbCustomRepo.Height + ScaleY(15);
   rbDnsRepo.Width := CustomPage.SurfaceWidth;
-  rbDnsRepo.Caption := 'Auto détection du dépôt grâce au DNS';
+  rbDnsRepo.Caption := 'Detect WAPT repository with DNS records';
 
 
   lab1 := TLabel.Create(WizardForm);

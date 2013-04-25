@@ -22,6 +22,7 @@
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="6"/>
       <RevisionNr Value="15"/>
+      <BuildNr Value="1"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -67,11 +68,10 @@
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="118"/>
-        <CursorPos X="1" Y="129"/>
+        <TopLine Value="73"/>
+        <CursorPos X="1" Y="16"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
       </Unit1>
@@ -119,10 +119,13 @@
         <Filename Value="tiscommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiscommon"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="833"/>
-        <CursorPos X="16" Y="866"/>
+        <TopLine Value="931"/>
+        <CursorPos X="10" Y="958"/>
         <UsageCount Value="200"/>
+        <Loaded Value="True"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\jcl\source\common\JclUnicode.pas"/>
@@ -207,7 +210,7 @@
         <UsageCount Value="9"/>
       </Unit17>
     </Units>
-    <JumpHistory Count="9" HistoryIndex="8">
+    <JumpHistory Count="11" HistoryIndex="10">
       <Position1>
         <Filename Value="waptcommon.pas"/>
         <Caret Line="107" Column="18" TopLine="87"/>
@@ -244,6 +247,14 @@
         <Filename Value="waptcommon.pas"/>
         <Caret Line="122" Column="10" TopLine="106"/>
       </Position9>
+      <Position10>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="129" Column="1" TopLine="118"/>
+      </Position10>
+      <Position11>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="16" Column="1" TopLine="73"/>
+      </Position11>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
