@@ -519,7 +519,7 @@ def main():
             print u'Unknown action %s' % action
             sys.exit(1)
     except Exception,e:
-        print u"FATAL ERROR : %s" % e
+        print ("FATAL ERROR : %s" % e).decode(encoding)
         if logger.level == logging.DEBUG:
             raise
         sys.exit(3)

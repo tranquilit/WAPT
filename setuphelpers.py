@@ -84,6 +84,7 @@ my_documents= winshell.my_documents
 recent = winshell.recent
 sendto = winshell.sendto
 
+
 def ensure_dir(f):
     """Be sure the directory of f exists on disk. Make it if not"""
     d = os.path.dirname(f)
@@ -789,7 +790,7 @@ def service_is_running(service_name):
     return win32serviceutil.QueryServiceStatus(service_name)[1] == win32service.SERVICE_RUNNING
 
 def user_appdata():
-    return winshell.get_path(shellcon.CSIDL_APPDATA)
+    return unicode(winshell.get_path(shellcon.CSIDL_APPDATA))
 
 remove_file=os.unlink
 remove_tree=shutil.rmtree
@@ -804,11 +805,11 @@ isdir=os.path.isdir
 
 def user_desktop():
     """return path to current logged in user desktop"""
-    return desktop(0)
+    return unicode(desktop(0))
 
 def common_desktop():
     """return path to public desktop (visible by all users)"""
-    return desktop(1)
+    return unicode(desktop(1))
 
 def register_dll(dllpath):
     """Register a COM/OLE server DLL in registry (similar to regsvr32)"""
