@@ -7,7 +7,7 @@ unit UnitRedirect;
 //
 
 interface
-uses Windows, Classes;
+uses Windows, Classes,JWAWinBase;
 
   /// <summary>
   ///   Runs a console application and captures the stdoutput and
@@ -25,10 +25,25 @@ uses Windows, Classes;
   /// <returns>True if process could be started and did not reach the
   ///   timeout.</returns>
   function Sto_RedirectedExecute(CmdLine: String;
-    var Output, Error: String; const Input: String = '';
-    const Wait: DWORD = 3600000): Boolean;
+    const Input: String = '';
+    const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString=''): String;
+
+
+  const
+    LOGON_WITH_PROFILE = $00000001;
+
+  function CreateProcessWithLogonW(lpUsername, lpDomain, lpPassword: PWideChar;
+    dwLogonFlags: dword; lpApplicationName, lpCommandLine: PWideChar;
+    dwCreationFlags: dword; lpEnvironment: pointer;
+    lpCurrentDirectory: PWideChar; lpStartupInfo: PStartUpInfoW;
+    lpProcessInfo: PProcessInformation): boolean; stdcall;
+    external 'advapi32.dll';
+
+
 
 implementation
+
+uses sysutils;
 
 type
   TStoReadPipeThread = class(TThread)
@@ -77,7 +92,7 @@ var
 begin
   repeat
     // try to read from pipe
-    if ReadFile(FPipe, myBuffer, BLOCK_SIZE, iBytesRead, nil) then
+    if Windows.ReadFile(FPipe, myBuffer, BLOCK_SIZE, iBytesRead, nil) then
       FContent.Write(myBuffer, iBytesRead);
   // a process may write less than BLOCK_SIZE, even if not at the end
   // of the output, so checking for < BLOCK_SIZE would block the pipe.
@@ -118,7 +133,7 @@ begin
   iBytesToWrite := FContent.Read(myBuffer, BLOCK_SIZE);
   while (iBytesToWrite > 0) do
   begin
-    WriteFile(FPipe, myBuffer, iBytesToWrite, iBytesWritten, nil);
+    Windows.WriteFile(FPipe, myBuffer, iBytesToWrite, iBytesWritten, nil);
     iBytesToWrite := FContent.Read(myBuffer, BLOCK_SIZE);
   end;
   // close our handle to let the other process know, that
@@ -128,8 +143,8 @@ begin
 end;
 
 function Sto_RedirectedExecute(CmdLine: String;
-  var Output, Error: String; const Input: String = '';
-  const Wait: DWORD = 3600000): Boolean;
+  const Input: String = '';
+  const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString=''): String;
 var
   mySecurityAttributes: SECURITY_ATTRIBUTES;
   myStartupInfo: STARTUPINFO;
@@ -141,76 +156,104 @@ var
   myReadOutputThread: TStoReadPipeThread;
   myReadErrorThread: TStoReadPipeThread;
   iWaitRes: Integer;
+
+  wcmd,wparams,woutput,winput:WideString;
+  output,error:String;
+
 begin
-  // prepare security structure
-  ZeroMemory(@mySecurityAttributes, SizeOf(SECURITY_ATTRIBUTES));
-  mySecurityAttributes.nLength := SizeOf(SECURITY_ATTRIBUTES);
-  mySecurityAttributes.bInheritHandle := TRUE;
-  // create pipe to set stdinput
-  hPipeInputRead := 0;
-  hPipeInputWrite := 0;
-  if (Input <> '') then
+  try
+    ZeroMemory(@mySecurityAttributes, SizeOf(SECURITY_ATTRIBUTES));
+    mySecurityAttributes.nLength := SizeOf(SECURITY_ATTRIBUTES);
+    mySecurityAttributes.bInheritHandle := TRUE;
+    // create pipe to set stdinput
+    hPipeInputRead := 0;
+    hPipeInputWrite := 0;
     CreatePipe(hPipeInputRead, hPipeInputWrite, @mySecurityAttributes, 0);
-  // create pipes to get stdoutput and stderror
-  CreatePipe(hPipeOutputRead, hPipeOutputWrite, @mySecurityAttributes, 0);
-  CreatePipe(hPipeErrorRead, hPipeErrorWrite, @mySecurityAttributes, 0);
+    CreatePipe(hPipeOutputRead, hPipeOutputWrite, @mySecurityAttributes, 0);
+    CreatePipe(hPipeErrorRead, hPipeErrorWrite, @mySecurityAttributes, 0);
 
-  // prepare startupinfo structure
-  ZeroMemory(@myStartupInfo, SizeOf(STARTUPINFO));
-  myStartupInfo.cb := Sizeof(STARTUPINFO);
-  // hide application
-  myStartupInfo.dwFlags := STARTF_USESHOWWINDOW;
-  myStartupInfo.wShowWindow := SW_HIDE;
-  // assign pipes
-  myStartupInfo.dwFlags := myStartupInfo.dwFlags or STARTF_USESTDHANDLES;
-  myStartupInfo.hStdInput := hPipeInputRead;
-  myStartupInfo.hStdOutput := hPipeOutputWrite;
-  myStartupInfo.hStdError := hPipeErrorWrite;
+    try
+      // prepare startupinfo structure
+      ZeroMemory(@myStartupInfo, SizeOf(STARTUPINFO));
+      myStartupInfo.cb := Sizeof(STARTUPINFO);
 
-  // since Delphi calls CreateProcessW, literal strings cannot be used anymore
-  UniqueString(CmdLine);
+      // hide application
+      myStartupInfo.dwFlags := STARTF_USESHOWWINDOW;
+      myStartupInfo.wShowWindow := SW_HIDE;
+      // assign pipes
+      myStartupInfo.dwFlags := myStartupInfo.dwFlags or STARTF_USESTDHANDLES;
+      myStartupInfo.hStdInput := hPipeInputRead;
+      myStartupInfo.hStdOutput := hPipeOutputWrite;
+      myStartupInfo.hStdError := hPipeErrorWrite;
 
-  // start the process
-  Result := CreateProcess(nil, PChar(CmdLine), nil, nil, True,
-    CREATE_NEW_CONSOLE, nil, nil, myStartupInfo, myProcessInfo);
-  // close the ends of the pipes, now used by the process
-  CloseHandle(hPipeInputRead);
-  CloseHandle(hPipeOutputWrite);
-  CloseHandle(hPipeErrorWrite);
 
-  // could process be started ?
-  if Result then
-  begin
-    myWriteInputThread := nil;
-    if (hPipeInputWrite <> 0) then
-      myWriteInputThread := TStoWritePipeThread.Create(hPipeInputWrite, Input);
+      // since Delphi calls CreateProcessW, literal strings cannot be used anymore
+      UniqueString(CmdLine);
+
+      // start the process
+      if user<>'' then
+      begin
+        UniqueString(user);
+        UniqueString(password);
+        UniqueString(domain);
+        // prepare startupinfo structure
+        //Result := CreateProcessWith (token, nil, PChar(CmdLine), nil, nil, false, NORMAL_PRIORITY_CLASS or CREATE_NEW_CONSOLE, nil, nil, @myStartupInfo, @myProcessInfo)
+        wcmd := 'cmd.exe';
+        wparams := CmdLine;
+        winput:=Input;
+        if not CreateProcessWithLogonW(PWidechar(user),pwidechar(domain),pwidechar(password),0, Nil,PWideChar(wparams), CREATE_NEW_CONSOLE,nil,nil,@myStartupInfo, @myProcessInfo) then
+          RaiseLastOSError;
+      end
+      else
+      begin
+        if  not CreateProcess(nil, PChar(CmdLine), nil, nil, True,
+              CREATE_NEW_CONSOLE, nil, nil, myStartupInfo, myProcessInfo) then
+          RaiseLastOSError();
+      end;
+
+
+    finally
+      // close the ends of the pipes, now used by the process
+      CloseHandle(hPipeInputRead);
+      CloseHandle(hPipeOutputWrite);
+      CloseHandle(hPipeErrorWrite);
+    end;
+
+    myWriteInputThread := TStoWritePipeThread.Create(hPipeInputWrite, Input);
     myReadOutputThread := TStoReadPipeThread.Create(hPipeOutputRead);
     myReadErrorThread := TStoReadPipeThread.Create(hPipeErrorRead);
     try
-    // wait unitl there is no more data to receive, or the timeout is reached
-    iWaitRes := WaitForSingleObject(myProcessInfo.hProcess, Wait);
-    // timeout reached ?
-    if (iWaitRes = WAIT_TIMEOUT) then
-    begin
-      Result := False;
-      TerminateProcess(myProcessInfo.hProcess, UINT(ERROR_CANCELLED));
-    end;
-    // return output
-    myReadOutputThread.WaitFor;
-    Output := myReadOutputThread.Content;
-    myReadErrorThread.WaitFor;
-    Error := myReadErrorThread.Content;
+      // wait unitl there is no more data to receive, or the timeout is reached
+      iWaitRes := WaitForSingleObject(myProcessInfo.hProcess, Wait);
+      // timeout reached ?
+      if (iWaitRes = WAIT_TIMEOUT) then
+      begin
+        TerminateProcess(myProcessInfo.hProcess, UINT(ERROR_CANCELLED));
+        raise Exception.Create('Timeout');
+      end;
+      // return output
+      myReadOutputThread.WaitFor;
+      Output := myReadOutputThread.Content;
+      Result := output;
+      myReadErrorThread.WaitFor;
+      Error := myReadErrorThread.Content;
+      {if error<>'' then
+        Raise Exception.Create(error);}
+
     finally
-      myWriteInputThread.Free;
-      myReadOutputThread.Free;
-      myReadErrorThread.Free;
+      if myReadOutputThread<>Nil then  myWriteInputThread.Free;
+      if myReadOutputThread<>Nil then myReadOutputThread.Free;
+      if myReadErrorThread<>Nil then myReadErrorThread.Free;
       CloseHandle(myProcessInfo.hThread);
       CloseHandle(myProcessInfo.hProcess);
     end;
+
+  finally
+    // close our ends of the pipes
+    CloseHandle(hPipeOutputRead);
+    CloseHandle(hPipeErrorRead);
+
   end;
-  // close our ends of the pipes
-  CloseHandle(hPipeOutputRead);
-  CloseHandle(hPipeErrorRead);
 end;
 
 end.

@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.4.10"
+__version__ = "0.4.11"
 
 import os
 import sys
@@ -50,6 +50,7 @@ import pythoncom
 from win32com.shell import shell, shellcon
 from win32com.taskscheduler import taskscheduler
 import locale
+from waptpackage import PackageEntry
 
 from iniparse import RawConfigParser
 
@@ -345,14 +346,16 @@ def shell_launch(cmd):
     os.startfile(cmd)
 
 def isrunning(processname):
+    """Check if a process is running, example isrunning('explorer')"""
     try:
         return len(win32pdhutil.FindPerformanceAttributesByName( processname,bRefresh=1 ))> 0
     except:
         return False
 
 def killalltasks(*exenames):
+    """Kill the task by their exename : example killalltasks('explorer.exe') """
     for c in exenames:
-      run_notfatal('taskkill /t /im "%s" /f' % c)
+      run(u'taskkill /t /im "%s" /f /FI "STATUS eq RUNNING"' % c)
 
 def messagebox(title,msg):
     win32api.MessageBox(0, msg, title, win32con.MB_ICONINFORMATION)
@@ -406,8 +409,15 @@ def get_domain_fromregistry():
     return domain
 
 def get_loggedinusers():
-    raise NotImplementedError()
-    return []
+    result = []
+    try:
+        import win32ts
+        for session in win32ts.WTSEnumerateSessions():
+            if session['State']==win32ts.WTSActive:
+                result.append(WTSQuerySessionInformation(win32ts.WTS_CURRENT_SERVER_HANDLE,session['SessionId'],win32ts.WTSUserName))
+        return result
+    except:
+        return [setuphelpers.get_current_user()]
 
 def _environ_params(dict_or_module={}):
     """set some environment params in the supplied module or dict"""
@@ -542,7 +552,11 @@ def installed_softwares(keywords=''):
         result = []
         os_encoding=locale.getpreferredencoding()
         key = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,uninstall)
-        mykeywords = keywords.lower().split()
+        if isinstance(keywords,str) or isinstance(keywords,unicode):
+            mykeywords = keywords.lower().split()
+        else:
+            mykeywords = [ unicode(k).lower() for k in keywords ]
+
         i = 0
         while True:
             try:
@@ -940,6 +954,18 @@ def create_daily_task(name,cmd,parameters, max_runtime=10, repeat_minutes=None, 
     return task
 
 
+def get_current_user():
+    """
+    Get the login name for the current user.
+    """
+    import ctypes
+    MAX_PATH = 260                  # according to a recent WinDef.h
+    name = ctypes.create_unicode_buffer(MAX_PATH)
+    namelen = ctypes.c_int(len(name)) # len in chars, NOT bytes
+    if not ctypes.windll.advapi32.GetUserNameW(name, ctypes.byref(namelen)):
+        raise ctypes.WinError()
+    return name.value
+
 def language():
     """Get the default locale like fr, en, pl etc..  etc"""
     return locale.getdefaultlocale()[0].split('_')[0]
@@ -962,6 +988,8 @@ def error(reason):
 # to help pyscripter code completion in setup.py
 params = {}
 """Specific parameters for install scripts"""
+
+control = PackageEntry()
 
 if __name__=='__main__':
     print registry_readstring(HKEY_LOCAL_MACHINE,'SYSTEM/CurrentControlSet/services/Tcpip/Parameters','Hostname')

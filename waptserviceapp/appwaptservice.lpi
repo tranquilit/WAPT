@@ -107,7 +107,7 @@
         <UnitName Value="tisstrings"/>
       </Unit7>
       <Unit8>
-        <Filename Value="..\waptservice\UnitRedirect.pas"/>
+        <Filename Value="..\waptservice\unitredirect.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitRedirect"/>
       </Unit8>
@@ -148,7 +148,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="4">
+    <Exceptions Count="5">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -161,6 +161,9 @@
       <Item4>
         <Name Value="EIdConnClosedGracefully"/>
       </Item4>
+      <Item5>
+        <Name Value="EIdSocketError"/>
+      </Item5>
     </Exceptions>
   </Debugging>
 </CONFIG>

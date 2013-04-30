@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.15"
+__version__ = "0.8.16"
 
 import sys
 import os
@@ -113,7 +113,7 @@ loglevel = options.loglevel
 
 if len(logger.handlers)<1:
     hdlr = logging.StreamHandler(sys.stdout)
-    hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+    hdlr.setFormatter(logging.Formatter(u'%(asctime)s %(levelname)s %(message)s'))
     logger.addHandler(hdlr)
 
 def setloglevel(loglevel):
@@ -148,7 +148,7 @@ def main():
 
     # Config file
     if not os.path.isfile(config_file):
-        logger.error("Error : could not find file : " + config_file + ", please check the path")
+        logger.error(u"Error : could not find file : " + config_file + ", please check the path")
 
     logger.debug(u'Config file: %s' % config_file)
 

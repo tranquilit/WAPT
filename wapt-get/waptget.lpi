@@ -22,7 +22,7 @@
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="6"/>
       <RevisionNr Value="15"/>
-      <BuildNr Value="5"/>
+      <BuildNr Value="6"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -59,22 +59,22 @@
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="71"/>
-        <CursorPos X="30" Y="83"/>
+        <TopLine Value="288"/>
+        <CursorPos X="34" Y="317"/>
         <UsageCount Value="222"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="87"/>
-        <CursorPos X="77" Y="111"/>
+        <CursorPos X="52" Y="103"/>
         <UsageCount Value="207"/>
-        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\indy\IdDNSResolver.pas"/>
@@ -120,12 +120,10 @@
         <Filename Value="tiscommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiscommon"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="16"/>
-        <CursorPos X="3" Y="31"/>
+        <TopLine Value="1065"/>
+        <CursorPos X="1" Y="1094"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\jcl\source\common\JclUnicode.pas"/>
@@ -210,52 +208,7 @@
         <UsageCount Value="9"/>
       </Unit17>
     </Units>
-    <JumpHistory Count="11" HistoryIndex="10">
-      <Position1>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="107" Column="18" TopLine="87"/>
-      </Position1>
-      <Position2>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="113" Column="20" TopLine="94"/>
-      </Position2>
-      <Position3>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="177" Column="1" TopLine="157"/>
-      </Position3>
-      <Position4>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="178" Column="1" TopLine="157"/>
-      </Position4>
-      <Position5>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="181" Column="1" TopLine="157"/>
-      </Position5>
-      <Position6>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="193" Column="1" TopLine="167"/>
-      </Position6>
-      <Position7>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="209" Column="15" TopLine="194"/>
-      </Position7>
-      <Position8>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="185" Column="30" TopLine="159"/>
-      </Position8>
-      <Position9>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="122" Column="10" TopLine="106"/>
-      </Position9>
-      <Position10>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="129" Column="1" TopLine="118"/>
-      </Position10>
-      <Position11>
-        <Filename Value="tiscommon.pas"/>
-        <Caret Line="958" Column="6" TopLine="931"/>
-      </Position11>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>

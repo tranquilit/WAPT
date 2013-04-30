@@ -397,11 +397,11 @@ var
     St : TStringList;
     Cmd,IPS:String;
     i,f:integer;
-    param,value,lst,UpgradeResult,SetupResult:String;
+    param,value,lst,UpgradeResult:String;
     so,auth_groups : ISuperObject;
     AQuery : TSQLQuery;
     filepath,template : Utf8String;
-    CmdOutput,CmdError:AnsiString;
+    CmdOutput:Utf8String;
     htmloutput:Utf8String;
     ldap : TLdapSend;
     auth_ok : Boolean;
@@ -464,17 +464,29 @@ begin
     end
     else
     if ARequestInfo.URI='/upgrade' then
-      HttpRunTask(AContext,AResponseInfo,WaptgetPath+' -lwarning upgrade',ExitStatus)
+    begin
+    //HttpRunTask(AContext,AResponseInfo,WaptgetPath+' -e utf8 -lwarning upgrade',ExitStatus)
+      cmd := WaptgetPath+' -lwarning upgrade';
+      CmdOutput := Sto_RedirectedExecute(cmd);
+      CmdOutput := cmd+'<br>'+StrUtils.StringsReplace(CmdOutput,[#13#10],['<br>'],[rfReplaceAll]);
+      AResponseInfo.ContentText:= '<h2>Output</h2>'+CmdOutput;
+    end
     else
     if ARequestInfo.URI='/update' then
-      HttpRunTask(AContext,AResponseInfo,WaptgetPath+' -lwarning update',ExitStatus)
+    begin
+      //HttpRunTask(AContext,AResponseInfo,WaptgetPath+' -e utf8 -lwarning update',ExitStatus)
+      cmd := WaptgetPath+' -lwarning update';
+      CmdOutput := Sto_RedirectedExecute(cmd);
+      CmdOutput := cmd+'<br>'+StrUtils.StringsReplace(CmdOutput,[#13#10],['<br>'],[rfReplaceAll]);
+      AResponseInfo.ContentText:= '<h2>Output</h2>'+CmdOutput;
+    end
     else
     if ARequestInfo.URI='/enable' then
     begin
       Timer1.Enabled:=True;
       cmd := WaptgetPath+' -lcritical enable-tasks';
       Application.Log(etInfo,cmd);
-      Sto_RedirectedExecute(cmd,CmdOutput,CmdError);
+      CmdOutput := Sto_RedirectedExecute(cmd);
       CmdOutput := StrUtils.StringsReplace(CmdOutput,[#13#10],['<br>'],[rfReplaceAll]);
       AResponseInfo.ContentText:= '<h2>Output</h2>'+CmdOutput;
     end
@@ -490,7 +502,7 @@ begin
       Timer1.Enabled:=False;
       cmd := WaptgetPath+' -lcritical disable-tasks';
       Application.Log(etInfo,cmd);
-      Sto_RedirectedExecute(cmd,CmdOutput,CmdError);
+      CmdOutput := Sto_RedirectedExecute(cmd);
       CmdOutput := StrUtils.StringsReplace(CmdOutput,[#13#10],['<br>'],[rfReplaceAll]);
       AResponseInfo.ContentText:= '<h2>Output</h2>'+CmdOutput;
     end
@@ -588,7 +600,7 @@ begin
         cmd := cmd+' show '+ARequestInfo.Params.ValueFromIndex[i];
       Application.Log(etInfo,cmd);
       //HttpRunTask(AContext,AResponseInfo,cmd,ExitStatus)
-      Sto_RedirectedExecute(cmd,CmdOutput,CmdError);
+      CmdOutput := Sto_RedirectedExecute(cmd);
       CmdOutput := cmd+'<br>'+StrUtils.StringsReplace(CmdOutput,[#13#10],['<br>'],[rfReplaceAll]);
       //CmdError:=AnsiToUtf8(StrUtils.StringsReplace(CmdError,[#13#10],['<br>'],[rfReplaceAll]));
       AResponseInfo.ContentText:= '<h2>Output</h2>'+CmdOutput;
@@ -636,14 +648,9 @@ begin
     end;
     if AResponseInfo.ContentType='text/html' then
     begin
+      AResponseInfo.ContentText :=  AResponseInfo.ContentText;
       Template := LoadFile(ExtractFilePath(ParamStr(0))+'\templates\layout.html');
-      //AResponseInfo.ContentText:= AnsiToUtf8(AResponseInfo.ContentText);
       AResponseInfo.ContentText :=  strutils.StringsReplace(Template,['{% block content %}'],[AResponseInfo.ContentText],[rfReplaceALl]  );
-      {      AResponseInfo.ContentText := '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'+
-           '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">'+
-           '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" />'+
-           '<title>Wapt-get management</title></head>'+
-           '<body>'+AResponseInfo.ContentText+'</body>';}
     end;
     AResponseInfo.ResponseNo:=200;
     AResponseInfo.CharSet:='UTF-8';

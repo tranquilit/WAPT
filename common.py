@@ -67,7 +67,9 @@ import struct
 import re
 import setuphelpers
 
-__version__ = "0.1.4"
+import types
+
+__version__ = "0.1.5"
 
 logger = logging.getLogger()
 
@@ -323,6 +325,10 @@ class ZipFile2(zipfile.ZipFile):
     """ Class with methods to open, read, write, remove, close, list zip files.
         patch to add remove() coming from http://bugs.python.org/file21188/zipfile.remove.2.patch
     """
+    def __init__(self,*args,**kwargs):
+        zipfile.ZipFile.__init__(self,*args,**kwargs)
+        self._allowZip64 = True
+
     def _get_data_descriptor_size(self, zinfo):
        if self.mode not in ("r", "a"):
            raise RuntimeError('to read the data descriptor requires mode "r" or "a"')
@@ -808,7 +814,7 @@ db_upgrades = {
     }
 
 def is_system_user():
-    return winsys.accounts.me().name == winsys.accounts.principal(winsys.accounts.WELL_KNOWN_SID['LocalSystem']).name
+    return setuphelpers.get_current_user() == 'system'
 
 class WaptDB(object):
     """Class to manage SQLite database with local installation status"""
@@ -1142,20 +1148,20 @@ class WaptDB(object):
     def add_package_entry(self,package_entry):
         cur = self.db.execute("""delete from wapt_package where package=? and version=?""" ,(package_entry.package,package_entry.version))
 
-        self.add_package(package_entry.package,
-                         package_entry.version,
-                         package_entry.section,
-                         package_entry.priority,
-                         package_entry.architecture,
-                         package_entry.maintainer,
-                         package_entry.description,
-                         package_entry.filename,
-                         package_entry.size,
-                         package_entry.md5sum,
-                         package_entry.depends,
-                         package_entry.sources,
-                         package_entry.repo_url,
-                         package_entry.repo)
+        self.add_package(package=package_entry.package,
+                         version=package_entry.version,
+                         section=package_entry.section,
+                         priority=package_entry.priority,
+                         architecture=package_entry.architecture,
+                         maintainer=package_entry.maintainer,
+                         description=package_entry.description,
+                         filename=package_entry.filename,
+                         size=package_entry.size,
+                         md5sum=package_entry.md5sum,
+                         depends=package_entry.depends,
+                         sources=package_entry.sources,
+                         repo_url=package_entry.repo_url,
+                         repo=package_entry.repo)
 
 
     def add_start_install(self,package,version,architecture,params_dict={}):
@@ -1272,8 +1278,10 @@ class WaptDB(object):
     def installed(self):
         """Return a dictionary of installed packages : keys=package, values = PackageEntry """
         q = self.query_package_entry("""\
-              select l.install_date,l.install_status,l.install_output,l.install_params,
-                r.* from wapt_localstatus l
+              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,
+                r.section,r.priority,r.maintainer,r.description,r.depends,r.sources,r.filename,r.size,
+                r.repo_url,r.md5sum,r.repo
+                from wapt_localstatus l
                 left join wapt_package r on r.package=l.package and l.version=r.version and (l.architecture is null or l.architecture=r.architecture)
               where l.install_status in ("OK","UNKNOWN")
            """)
@@ -1291,10 +1299,12 @@ class WaptDB(object):
             search = ['1=1']
         else:
             words = [ "%"+w.lower()+"%" for w in searchwords ]
-            search = ["lower(r.description || r.package) like ?"] *  len(words)
+            search = ["lower(l.package || (case when r.description is NULL then '' else r.description end) ) like ?"] *  len(words)
         q = self.query_package_entry("""\
-              select l.install_date,l.install_status,l.install_output,l.install_params,
-                r.* from wapt_localstatus l
+              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,
+                r.section,r.priority,r.maintainer,r.description,r.depends,r.sources,r.filename,r.size,
+                r.repo_url,r.md5sum,r.repo
+                 from wapt_localstatus l
                 left join wapt_package r on r.package=l.package and l.version=r.version and (l.architecture is null or l.architecture=r.architecture)
               where l.install_status in ("OK","UNKNOWN") and %s
            """ % " and ".join(search),words)
@@ -1307,8 +1317,10 @@ class WaptDB(object):
         """Return True if one installed package match te package condition 'tis-package (>=version)' """
         package = REGEX_PACKAGE_CONDITION.match(package_cond).groupdict()['package']
         q = self.query_package_entry("""\
-              select l.install_date,l.install_status,l.install_output,l.install_params,l.setuppy,
-                r.* from wapt_localstatus l
+              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.setuppy,
+                r.section,r.priority,r.maintainer,r.description,r.depends,r.sources,r.filename,r.size,
+                r.repo_url,r.md5sum,r.repo
+                from wapt_localstatus l
                 left join wapt_package r on r.package=l.package and l.version=r.version and (l.architecture is null or l.architecture=r.architecture)
               where l.package=? and l.install_status in ("OK","UNKNOWN")
            """,(package,))
@@ -1526,7 +1538,7 @@ class Wapt(object):
         self.dry_run = False
 
         # to allow/restrict installation, supplied to packages
-        self.user = win32api.GetUserName()
+        self.user = setuphelpers.get_current_user()
         self.usergroups = None
 
         # database init
@@ -1836,13 +1848,13 @@ class Wapt(object):
 
     def install_wapt(self,fname,params_dict={},public_cert=''):
         """Install a single wapt package given its WAPT filename."""
-        logger.info(u"Register start of install %s as user %s to local DB with params %s" % (fname, winsys.accounts.me().name, params_dict))
+        logger.info(u"Register start of install %s as user %s to local DB with params %s" % (fname, setuphelpers.get_current_user(), params_dict))
         logger.info(u"Interactive user:%s, usergroups %s" % (self.user,self.usergroups))
         status = 'INIT'
         if not public_cert:
             public_cert = self.get_public_cert()
         if not public_cert and not self.allow_unsigned:
-            raise Exception('No public Key provided for package signature checking, and unsigned packages install is not allowed.\
+            raise Exception(u'No public Key provided for package signature checking, and unsigned packages install is not allowed.\
                     If you want to allow unsigned packages, add "allow_unsigned=1" in wapt-get.ini file')
         previous_uninstall = self.registry_uninstall_snapshot()
         entry = PackageEntry()
@@ -1866,7 +1878,7 @@ class Wapt(object):
         # we setup a redirection of stdout to catch print output from install scripts
         sys.stderr = sys.stdout = install_output = LogInstallOutput(sys.stdout,self.waptdb,install_id)
         hdlr = logging.StreamHandler(install_output)
-        hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+        hdlr.setFormatter(logging.Formatter(u'%(asctime)s %(levelname)s %(message)s'))
         if logger.handlers:
             old_hdlr = logger.handlers[0]
             logger.handlers[0] = hdlr
@@ -1880,7 +1892,7 @@ class Wapt(object):
             istemporary = False
             if os.path.isfile(fname):
                 packagetempdir = tempfile.mkdtemp(prefix="wapt")
-                logger.info('  unzipping %s to temporary %s' % (fname,packagetempdir))
+                logger.info(u'  unzipping %s to temporary %s' % (fname,packagetempdir))
                 zip = ZipFile2(fname)
                 zip.extractall(path=packagetempdir)
                 istemporary = True
@@ -2236,20 +2248,21 @@ class Wapt(object):
 
         downloaded = self.download_packages(packages,usecache=not download_only and usecache)
         if downloaded.get('errors',[]):
-            raise Exception('Error downloading some files : %s',(downloaded['errors'],))
+            raise Exception(u'Error downloading some files : %s',(downloaded['errors'],))
         actions['downloads'] = downloaded
         logger.debug(u'Downloaded : %s' % (downloaded,))
         def fname(packagefilename):
             return os.path.join(self.packagecachedir,packagefilename)
         if not download_only:
             for (request,p) in to_install:
+                print u"install %s" % (p,)
                 result = self.install_wapt(fname(p.filename),params_dict = params_dict,public_cert=self.get_public_cert())
                 if result<>'OK':
                     actions['errors'].append([request,p])
                     logger.critical(u'Package %s (%s) not installed due to errors' %(request,p))
             return actions
         else:
-            logger.info('Download only, no install performed')
+            logger.info(u'Download only, no install performed')
             return actions
 
     def download_packages(self,package_requests,usecache=True):
@@ -2462,23 +2475,53 @@ class Wapt(object):
             setup = import_setup(os.path.join(directoryname,'setup.py'),'_waptsetup_')
              # be sure some minimal functions are available in setup module at install step
             logger.debug(u'Source import OK')
+
+            # check minimal requirements of setup.py
+            # check encoding
+            try:
+                codecs.open(os.path.join(directoryname,'setup.py'),mode='r',encoding='utf8')
+            except:
+                raise Exception('Encoding of setup.py is not utf8')
+
+            mandatory = [('install',types.FunctionType) ,('uninstallkey',types.ListType),('uninstallstring',types.ListType)]
+            for (attname,atttype) in mandatory:
+                if not hasattr(setup,attname):
+                    raise Exception('setup.py has no %s (%s)' % (attname,atttype))
+
             control_filename = os.path.join(directoryname,'WAPT','control')
             entry = PackageEntry()
-            if hasattr(setup,'control'):
-                logger.info('Use control informations from setup.py file')
-                entry.load_control_from_dict(setup.control)
-                # update control file
-                codecs.open(control_filename,'w',encoding='utf8').write(entry.ascontrol())
-            else:
-                logger.info('Use control informations from control file')
-                entry.load_control_from_wapt(directoryname)
+            logger.info('Load control informations from control file')
+            entry.load_control_from_wapt(directoryname)
+
+            # optionally, setup.py can update some attributes of control files using
+            # a procedure called update_control(package_entry)
+            # this can help automates version maintenance
+            # a check of version collision is operated automatically
+            if hasattr(setup,'update_control'):
+                logger.info('Update control informations with update_control function from setup.py file')
+                setup.update_control(entry)
+
+                logger.debug('Check existing versions and increment it')
+                older_packages = self.is_available(entry.package)
+                if older_packages and entry<=older_packages[-1]:
+                    entry.version = older_packages[-1].version
+                    entry.inc_build()
+                    logger.warning('Older package with same name exists, incrementing packaging version to %s' % (entry.version,))
+
+                # save control file
+                entry.save_control_to_wapt(directoryname)
+
             if inc_package_release:
+                entry.inc_build()
+                """
                 current_release = entry.version.split('-')[-1]
                 new_release = "%02i" % (int(current_release) + 1,)
                 new_version = "-".join(entry.version.split('-')[0:-1]+[new_release])
                 logger.info('Increasing version of package from %s to %s' % (entry.version,new_version))
                 entry.version = new_version
+                """
                 entry.save_control_to_wapt(directoryname)
+
             package_filename =  entry.make_package_filename()
             logger.debug(u'Control data : \n%s' % entry.ascontrol())
             result_filename = os.path.abspath(os.path.join( directoryname,'..',package_filename))
@@ -2721,7 +2764,7 @@ def install():
                 entry.maintainer = win32api.GetUserNameEx(3)
             except:
                 try:
-                    entry.maintainer = win32api.GetUserName()
+                    entry.maintainer = setuphelpers.get_current_user()
                 except:
                     entry.maintainer = os.environ['USERNAME']
 
@@ -2788,7 +2831,7 @@ def install():
                 entry.maintainer = win32api.GetUserNameEx(3)
             except:
                 try:
-                    entry.maintainer = win32api.GetUserName()
+                    entry.maintainer = setuphelpers.get_current_user()
                 except:
                     entry.maintainer = os.environ['USERNAME']
 
@@ -2999,7 +3042,7 @@ if __name__ == '__main__':
     logger.logLevel = logging.DEBUG
     if len(logger.handlers)<1:
         hdlr = logging.StreamHandler(sys.stdout)
-        hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+        hdlr.setFormatter(logging.Formatter(u'%(asctime)s %(levelname)s %(message)s'))
         logger.addHandler(hdlr)
 
     cfg = RawConfigParser()

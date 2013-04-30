@@ -21,7 +21,7 @@
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="4"/>
       <RevisionNr Value="7"/>
-      <BuildNr Value="4"/>
+      <BuildNr Value="7"/>
       <Language Value="040C"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Service helper" ProductVersion=""/>
     </VersionInfo>
@@ -71,11 +71,10 @@
         <Filename Value="waptservice.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptservice"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="25" Y="24"/>
+        <CursorPos X="55" Y="22"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -97,10 +96,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WaptUnit"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="53"/>
-        <CursorPos X="103" Y="78"/>
+        <TopLine Value="505"/>
+        <CursorPos X="28" Y="480"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -552,7 +552,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="10" Y="13"/>
-        <UsageCount Value="148"/>
+        <UsageCount Value="149"/>
       </Unit59>
       <Unit60>
         <Filename Value="testwmi.lpr"/>
@@ -774,7 +774,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="8"/>
         <CursorPos X="16" Y="38"/>
-        <UsageCount Value="39"/>
+        <UsageCount Value="40"/>
       </Unit87>
       <Unit88>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\blcksock.pas"/>
@@ -783,7 +783,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="91"/>
         <CursorPos X="1" Y="91"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit88>
       <Unit89>
@@ -817,7 +817,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="49"/>
         <CursorPos X="27" Y="66"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit92>
       <Unit93>
@@ -834,7 +834,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="112"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit94>
       <Unit95>
@@ -845,111 +845,127 @@
         <UsageCount Value="10"/>
       </Unit95>
     </Units>
-    <JumpHistory Count="26" HistoryIndex="25">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="569" Column="15" TopLine="549"/>
+        <Caret Line="78" Column="103" TopLine="53"/>
       </Position1>
       <Position2>
-        <Filename Value="waptservice.lpr"/>
-        <Caret Line="26" Column="25" TopLine="1"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="479" Column="7" TopLine="461"/>
       </Position2>
       <Position3>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="575" Column="38" TopLine="553"/>
+        <Caret Line="493" Column="45" TopLine="477"/>
       </Position3>
       <Position4>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="595" Column="69" TopLine="575"/>
       </Position4>
       <Position5>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="548" Column="104" TopLine="524"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position5>
       <Position6>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="507" Column="40" TopLine="478"/>
+        <Caret Line="499" Column="64" TopLine="490"/>
       </Position6>
       <Position7>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="16" Column="1" TopLine="16"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position7>
       <Position8>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="78" Column="103" TopLine="53"/>
+        <Caret Line="89" Column="32" TopLine="63"/>
       </Position8>
       <Position9>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\ldapsend.pas"/>
-        <Caret Line="66" Column="27" TopLine="49"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="96" Column="87" TopLine="71"/>
       </Position9>
       <Position10>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\blcksock.pas"/>
-        <Caret Line="1" Column="1" TopLine="88"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="102" Column="58" TopLine="77"/>
       </Position10>
       <Position11>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\blcksock.pas"/>
-        <Caret Line="48" Column="32" TopLine="33"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="575" Column="9" TopLine="550"/>
       </Position11>
       <Position12>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\blcksock.pas"/>
-        <Caret Line="240" Column="26" TopLine="240"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position12>
       <Position13>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\blcksock.pas"/>
-        <Caret Line="241" Column="7" TopLine="235"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="54" Column="74" TopLine="29"/>
       </Position13>
       <Position14>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\blcksock.pas"/>
-        <Caret Line="243" Column="11" TopLine="235"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="55" Column="76" TopLine="30"/>
       </Position14>
       <Position15>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\blcksock.pas"/>
-        <Caret Line="244" Column="11" TopLine="235"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="105" Column="88" TopLine="80"/>
       </Position15>
       <Position16>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\blcksock.pas"/>
-        <Caret Line="273" Column="13" TopLine="249"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="154" Column="150" TopLine="129"/>
       </Position16>
       <Position17>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\blcksock.pas"/>
-        <Caret Line="274" Column="34" TopLine="250"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="223" Column="70" TopLine="198"/>
       </Position17>
       <Position18>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\blcksock.pas"/>
-        <Caret Line="943" Column="39" TopLine="919"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="258" Column="44" TopLine="233"/>
       </Position18>
       <Position19>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\blcksock.pas"/>
-        <Caret Line="949" Column="21" TopLine="953"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="403" Column="29" TopLine="378"/>
       </Position19>
       <Position20>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\blcksock.pas"/>
-        <Caret Line="1256" Column="25" TopLine="1251"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="405" Column="20" TopLine="380"/>
       </Position20>
       <Position21>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\blcksock.pas"/>
-        <Caret Line="1428" Column="51" TopLine="1405"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="468" Column="63" TopLine="444"/>
       </Position21>
       <Position22>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\blcksock.pas"/>
-        <Caret Line="4" Column="19" TopLine="1"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="469" Column="35" TopLine="445"/>
       </Position22>
       <Position23>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\blcksock.pas"/>
-        <Caret Line="67" Column="30" TopLine="43"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="477" Column="65" TopLine="453"/>
       </Position23>
       <Position24>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\blcksock.pas"/>
-        <Caret Line="357" Column="72" TopLine="342"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="478" Column="35" TopLine="454"/>
       </Position24>
       <Position25>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\blcksock.pas"/>
-        <Caret Line="442" Column="11" TopLine="472"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="574" Column="37" TopLine="550"/>
       </Position25>
       <Position26>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\blcksock.pas"/>
-        <Caret Line="91" Column="1" TopLine="91"/>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="605" Column="29" TopLine="581"/>
       </Position26>
+      <Position27>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="652" Column="47" TopLine="628"/>
+      </Position27>
+      <Position28>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="675" Column="80" TopLine="650"/>
+      </Position28>
+      <Position29>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="691" Column="82" TopLine="666"/>
+      </Position29>
+      <Position30>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

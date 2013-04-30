@@ -20,6 +20,9 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
+
+__version__ = "0.1.0"
+
 import os
 import zipfile
 import StringIO
@@ -231,7 +234,7 @@ class PackageEntry(object):
         if type(fname) is list:
             control =  StringIO.StringIO(u'\n'.join(fname))
         elif os.path.isfile(fname):
-            myzip = zipfile.ZipFile(fname,'r')
+            myzip = zipfile.ZipFile(fname,'r',allowZip64=True)
             control = StringIO.StringIO(myzip.open(u'WAPT/control').read().decode('utf8'))
         elif os.path.isdir(fname):
             control = codecs.open(os.path.join(fname,'WAPT','control'),'r',encoding='utf8')
@@ -285,11 +288,8 @@ class PackageEntry(object):
                 if control_exist:
                     raise Exception(u'control file already exist in WAPT file %s' % fname)
             else:
-                myzip = zipfile.ZipFile(fname,'w')
-            try:
-                myzip.writestr(u'WAPT/control',self.ascontrol().encode('utf8'),compress_type=zipfile.ZIP_STORED)
-            except:
-                myzip.writestr(u'WAPT/control',self.ascontrol().encode('utf8'))
+                myzip = zipfile.ZipFile(fname,'w',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
+            myzip.writestr(u'WAPT/control',self.ascontrol().encode('utf8'))
 
     def ascontrol(self,with_non_control_attributes = False):
         val = u"""\
@@ -388,30 +388,24 @@ def update_packages(adir):
     waptlist = glob.glob(os.path.join(adir,'*.wapt'))
     packages = []
     for fname in waptlist:
-        if os.path.basename(fname) in old_entries:
-            logger.info(u"  Keeping %s" % fname)
-            entry = old_entries[os.path.basename(fname)]
-        else:
-            logger.info(u"  Processing %s" % fname)
-            entry = PackageEntry()
-            entry.load_control_from_wapt(fname)
-        packages.append(entry.ascontrol(with_non_control_attributes=True).encode('utf8'))
+        try:
+            if os.path.basename(fname) in old_entries:
+                logger.info(u"  Keeping %s" % fname)
+                entry = old_entries[os.path.basename(fname)]
+            else:
+                logger.info(u"  Processing %s" % fname)
+                entry = PackageEntry()
+                entry.load_control_from_wapt(fname)
+            packages.append(entry.ascontrol(with_non_control_attributes=True))
+        except Exception,e:
+            logger.critical("package %s: %s" % (fname,e))
 
     logger.info(u"Writing new %s" % packages_fname)
-    myzipfile = zipfile.ZipFile(packages_fname, "w")
-    try:
-        zi = zipfile.ZipInfo(u"Packages",date_time = time.localtime())
-        zi.compress_type = zipfile.ZIP_DEFLATED
-        myzipfile.writestr(zi,u'\n'.join(packages))
-
-        myzipfile.writestr(u"Packages",u'\n'.join(packages),compress_type=zipfile.ZIP_DEFLATED)
-    except:
-        zi = zipfile.ZipInfo(u"Packages",date_time = time.localtime())
-        zi.compress_type = zipfile.ZIP_DEFLATED
-        myzipfile.writestr(zi,u'\n'.join(packages))
+    myzipfile = zipfile.ZipFile(packages_fname, "w",compression=zipfile.ZIP_DEFLATED)
+    zi = zipfile.ZipInfo(u"Packages",date_time = time.localtime())
+    myzipfile.writestr(zi,u'\n'.join(packages).encode('utf8'))
     myzipfile.close()
     logger.info(u"Finished")
-
 
 if __name__ == '__main__':
     w = PackageEntry()
