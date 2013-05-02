@@ -51,7 +51,6 @@ type
     procedure StopWaptService;
     function SetupWaptService(InstallPath: Utf8String):Boolean;
     procedure Setup(DownloadPath, InstallPath: Utf8String);
-    procedure RegisterComputer;
     procedure WriteHelp; virtual;
     property WaptDB:TWAPTDB read GetWaptDB write SetWaptDB;
     property RepoURL:String read GetRepoURL write SetRepoURL;
@@ -113,7 +112,6 @@ begin
     writeln(' -r --repo : URL of dependencies libs');
     writeln(' waptupgrade : upgrade wapt-get.exe and database');
     writeln(' waptsetup : install/reinstall dependencies (python libs)');
-    writeln(' register : register computer on wapt-server');
   end;
 
   if HasOption('r','repo') then
@@ -142,11 +140,6 @@ begin
   DownloadPath := ExtractFilePath(ParamStr(0));
   // Auto install if wapt-get is not yet in the target directory
   if (action = 'waptsetup')
-  {or
-    (FileExists(AppendPathDelim(DefaultInstallPath)+'wapt-get.exe') and
-        (SortableVersion(GetApplicationVersion) > SortableVersion(GetApplicationVersion(AppendPathDelim(DefaultInstallPath)+'wapt-get.exe')))) or
-    (not FileExists(AppendPathDelim(DownloadPath)+'python27.dll')) or
-    (not FileExists(AppendPathDelim(DownloadPath)+'wapt-get.exe'))}
   then
   begin
     Writeln('WAPT-GET Setup to '+DefaultInstallPath);
@@ -165,19 +158,8 @@ begin
     Exit;
   end
   else
-  if Action = 'register' then
-  begin
-    Writeln('WAPT-GET register computer using Waptserver at '+RepoURL);
-    RegisterComputer;
-  end
-  else
   if Action = 'dumpdb' then
     writeln(WaptDB.dumpdb.AsJson(True))
-  {else
-  if Action = 'upgradedb' then
-  begin
-    WaptDB.upgradedb;
-  end}
   else
   begin
     // Running python stuff
@@ -281,21 +263,6 @@ begin
     WaptDB.OpenDB;
 
   SetupWaptService(InstallPath);
-end;
-
-procedure pwaptget.RegisterComputer;
-var
-  ws : String;
-begin
-  writeln(LocalSysinfo.AsJSon(True));
-  ws  := GetWaptServerURL;
-  if ws<>'' then
-  begin
-    writeln(' sending computer info to '+ws);
-    httpPostData('wapt',ws,'register',LocalSysinfo.AsJSon(True));
-  end
-  else
-    writeln(' no wapt_server defined in inifile '+WaptIniFilename);
 end;
 
 function pwaptget.SetupWaptService(InstallPath:Utf8String):boolean;

@@ -657,8 +657,36 @@ def networking():
     return res
 
 
-def host_info():
+# from http://stackoverflow.com/questions/2017545/get-memory-usage-of-computer-in-windows-with-python
+def memory_status():
+    class MEMORYSTATUSEX(ctypes.Structure):
+        _fields_ = [
+            ("dwLength", ctypes.c_ulong),
+            ("dwMemoryLoad", ctypes.c_ulong),
+            ("ullTotalPhys", ctypes.c_ulonglong),
+            ("ullAvailPhys", ctypes.c_ulonglong),
+            ("ullTotalPageFile", ctypes.c_ulonglong),
+            ("ullAvailPageFile", ctypes.c_ulonglong),
+            ("ullTotalVirtual", ctypes.c_ulonglong),
+            ("ullAvailVirtual", ctypes.c_ulonglong),
+            ("sullAvailExtendedVirtual", ctypes.c_ulonglong),
+        ]
+
+        def __init__(self):
+            # have to initialize this to the size of MEMORYSTATUSEX
+            self.dwLength = ctypes.sizeof(self)
+            super(MEMORYSTATUSEX, self).__init__()
+
+    stat = MEMORYSTATUSEX()
+    if ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat)):
+        return stat
+    else:
+        raise Exception('Error in function GlobalMemoryStatusEx')
+
+def host_info(with_wmi=False):
     info = {}
+    #run('dmidecode')
+    info['uuid'] = 'to be filled'
     info['computer_name'] =  wincomputername()
     info['computer_fqdn'] =  get_hostname()
     info['dns_domain'] = get_domain_fromregistry()
@@ -666,51 +694,67 @@ def host_info():
     info['networking'] = networking()
     info['connected_ips'] = socket.gethostbyname_ex(socket.gethostname())[2]
     info['mac'] = [ c['mac'] for c in networking() if 'mac' in c]
-    info['win64'] = iswin64(),
-    info['wmi'] = {}
-    try:
-        import wmi
-        wm = wmi.WMI()
+    info['win64'] = iswin64()
+    info['description'] = registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\LanmanServer\Parameters','srvcomment')
+    info['registered_organization'] =  'to be filled'
+    info['registered_owner'] =  'to be filled'
+    info['windows_version'] =  'to be filled'
+    info['windows_partnr'] =  'to be filled'
+    info['windows_productid'] =  'to be filled'
+    info['windows_key'] =  'to be filled'
 
-        info['wmi']['Win32_ComputerSystem'] = {}
-        cs = wm.Win32_ComputerSystem()[0]
-        for k in cs.properties.keys():
-            prop = cs.wmi_property(k)
-            if prop:
-                info['wmi']['Win32_ComputerSystem'][k] = prop.Value
+    if with_wmi:
+        info['wmi'] = {}
+        try:
+            import wmi
+            wm = wmi.WMI()
 
-        info['wmi']['Win32_ComputerSystemProduct'] = {}
-        cs = wm.Win32_ComputerSystemProduct()[0]
-        for k in cs.properties.keys():
-            prop = cs.wmi_property(k)
-            if prop:
-                info['wmi']['Win32_ComputerSystemProduct'][k] = prop.Value
-
-        info['wmi']['Win32_BIOS'] = {}
-        cs = wm.Win32_BIOS()[0]
-        for k in cs.properties.keys():
-            prop = cs.wmi_property(k)
-            if prop:
-                info['wmi']['Win32_BIOS'][k] = prop.Value
-
-        na = info['wmi']['Win32_NetworkAdapter'] = []
-        for cs in wm.Win32_NetworkAdapter():
-            na.append({})
+            info['wmi']['Win32_ComputerSystem'] = {}
+            cs = wm.Win32_ComputerSystem()[0]
             for k in cs.properties.keys():
                 prop = cs.wmi_property(k)
                 if prop:
-                    na[-1][k] = prop.Value
+                    info['wmi']['Win32_ComputerSystem'][k] = prop.Value
 
-    except:
-        raise
+            info['wmi']['Win32_ComputerSystemProduct'] = {}
+            cs = wm.Win32_ComputerSystemProduct()[0]
+            for k in cs.properties.keys():
+                prop = cs.wmi_property(k)
+                if prop:
+                    info['wmi']['Win32_ComputerSystemProduct'][k] = prop.Value
 
-    info['cpu_name'] = info['wmi']['Win32_ComputerSystem']['NumberOfProcessors']
-    info['cpu_count'] = info['wmi']['Win32_ComputerSystem']['NumberOfProcessors']
-    info['physical_memory'] = info['wmi']['Win32_ComputerSystem']['TotalPhysicalMemory']
-    info['virtual_memory'] = info['wmi']['Win32_ComputerSystem']['NumberOfProcessors']
-    info['system_manufacturer'] = info['wmi']['Win32_ComputerSystem']['Manufacturer']
-    info['system_productname'] = info['wmi']['Win32_ComputerSystem']['Model']
-    info['serial_nr'] = info['wmi']['Win32_ComputerSystemProduct']['IdentifyingNumber']
+            info['wmi']['Win32_BIOS'] = {}
+            cs = wm.Win32_BIOS()[0]
+            for k in cs.properties.keys():
+                prop = cs.wmi_property(k)
+                if prop:
+                    info['wmi']['Win32_BIOS'][k] = prop.Value
+
+            na = info['wmi']['Win32_NetworkAdapter'] = []
+            for cs in wm.Win32_NetworkAdapter():
+                na.append({})
+                for k in cs.properties.keys():
+                    prop = cs.wmi_property(k)
+                    if prop:
+                        na[-1][k] = prop.Value
+
+        except:
+            raise
+
+        info['cpu_name'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\CentralProcessor\0','ProcessorNameString')
+        info['cpu_count'] = info['wmi']['Win32_ComputerSystem']['NumberOfProcessors']
+        info['physical_memory'] = info['wmi']['Win32_ComputerSystem']['TotalPhysicalMemory']
+        info['system_manufacturer'] = info['wmi']['Win32_ComputerSystem']['Manufacturer']
+        info['system_productname'] = info['wmi']['Win32_ComputerSystem']['Model']
+        info['serial_nr'] = info['wmi']['Win32_ComputerSystemProduct']['IdentifyingNumber']
+    else:
+        info['system_manufacturer'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\BIOS','SystemManufacturer')
+        info['system_productname'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\BIOS','SystemProductname')
+        info['cpu_name'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\CentralProcessor\0','ProcessorNameString')
+        info['physical_memory'] = memory_status().ullTotalPhys
+        info['virtual_memory'] = memory_status().ullTotalVirtual
+        info['serial_nr'] = 'to be filled'
+
 
     return info
 

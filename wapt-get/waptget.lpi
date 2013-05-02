@@ -62,8 +62,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="288"/>
-        <CursorPos X="34" Y="317"/>
+        <TopLine Value="250"/>
+        <CursorPos X="1" Y="268"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -71,10 +71,12 @@
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="87"/>
-        <CursorPos X="52" Y="103"/>
+        <TopLine Value="806"/>
+        <CursorPos X="22" Y="822"/>
         <UsageCount Value="207"/>
+        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\indy\IdDNSResolver.pas"/>
@@ -208,7 +210,32 @@
         <UsageCount Value="9"/>
       </Unit17>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="6" HistoryIndex="5">
+      <Position1>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="298" Column="62" TopLine="201"/>
+      </Position1>
+      <Position2>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="4" Column="10" TopLine="25"/>
+      </Position2>
+      <Position3>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="54" Column="1" TopLine="44"/>
+      </Position3>
+      <Position4>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="116" Column="1" TopLine="98"/>
+      </Position4>
+      <Position5>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="274" Column="1" TopLine="267"/>
+      </Position5>
+      <Position6>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="160" Column="1" TopLine="142"/>
+      </Position6>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>

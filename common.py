@@ -2401,6 +2401,13 @@ class Wapt(object):
         to_download = [p[0] for p in q.values()]
         return self.download_packages(to_download)
 
+
+    def register_computer(self,description=None):
+        """Return computer as a dictionary"""
+        if description:
+            pass
+        self.inventory()
+
     def inventory(self):
         """Return software inventory of the computer as a dictionary"""
         inv = {}
@@ -2413,11 +2420,11 @@ class Wapt(object):
         inv['softwares'] = setuphelpers.installed_softwares('')
         inv['packages'] = [p.as_dict() for p in self.waptdb.installed().values()]
         if self.wapt_server:
-            req = requests.post(self.wapt_server,json.dumps(inv))
+            req = requests.post("%s/add_host" % (self.wapt_server,),json.dumps(inv))
             req.raise_for_status()
             return req.content
         else:
-            return inv
+            return json.dumps(inv,indent=True)
 
     def get_public_cert(self,repository='global'):
         if self.config.has_option(repository,'public_cert'):

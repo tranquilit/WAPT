@@ -68,6 +68,10 @@ action is either :
   enable-tasks
   disable-tasks
 
+  registercomputer [description] : Add the computer to the WAPT server database,
+                                     change the description of the computer.
+  inventory         : update the WAPT server database with locally installed packages and softwares
+
  For user session setup
   session-setup [packages,all] : setup local user environment for specific or all installed packages
 
@@ -495,6 +499,9 @@ def main():
         elif action=='cleanup':
             result = mywapt.cleanup()
             print u"Removed files : \n%s" % "\n".join([ "  %s" % p for p in result ])
+
+        elif action=='registercomputer':
+            print mywapt.register_computer()
 
         elif action=='inventory':
             print mywapt.inventory()

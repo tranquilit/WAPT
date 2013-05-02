@@ -100,7 +100,7 @@
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="505"/>
-        <CursorPos X="28" Y="480"/>
+        <CursorPos X="100" Y="521"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -552,7 +552,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="10" Y="13"/>
-        <UsageCount Value="149"/>
+        <UsageCount Value="150"/>
       </Unit59>
       <Unit60>
         <Filename Value="testwmi.lpr"/>
@@ -774,7 +774,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="8"/>
         <CursorPos X="16" Y="38"/>
-        <UsageCount Value="40"/>
+        <UsageCount Value="41"/>
       </Unit87>
       <Unit88>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\blcksock.pas"/>
