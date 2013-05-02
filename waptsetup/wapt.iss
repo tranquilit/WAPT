@@ -29,6 +29,7 @@ Source: "..\wapt-get.ini.tmpl"; DestDir: "{app}";
 Source: "..\wapt-get.py"; DestDir: "{app}"; 
 Source: "..\wapt-get.exe.manifest"; DestDir: "{app}";
 Source: "..\wapt-get.exe"; DestDir: "{app}";
+Source: "..\dmidecode.exe"; DestDir: "{app}";
 Source: "..\wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.exe'); Tasks: installTray
 Source: "..\vc_redist\*"; DestDir: "{tmp}\vc_redist";
 Source: "..\lib\site-packages\M2Crypto\libeay32.dll" ; DestDir: "{app}"; 
