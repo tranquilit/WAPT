@@ -69,7 +69,7 @@ import setuphelpers
 
 import types
 
-__version__ = "0.1.6"
+__version__ = "0.1.7"
 
 logger = logging.getLogger()
 
@@ -2403,28 +2403,39 @@ class Wapt(object):
 
 
     def register_computer(self,description=None):
-        """Return computer as a dictionary"""
+        """Send computer informations to WAPT Server
+            if decsription is provided, updates local registry with new description
+        """
         if description:
-            pass
-        self.inventory()
+             #reg_openkey_noredir
+             pass
 
-    def inventory(self):
-        """Return software inventory of the computer as a dictionary"""
-        inv = {}
-        inv['host'] = setuphelpers.host_info()
-        inv['wapt'] = {
-            'wapt-exe-version': setuphelpers.get_file_properties(sys.argv[0])['FileVersion'],
-            'setuphelpers-version': setuphelpers.__version__,
-            'wapt-py-version': __version__,
-            }
-        inv['softwares'] = setuphelpers.installed_softwares('')
-        inv['packages'] = [p.as_dict() for p in self.waptdb.installed().values()]
+        inv = self.inventory()
         if self.wapt_server:
             req = requests.post("%s/add_host" % (self.wapt_server,),json.dumps(inv))
             req.raise_for_status()
             return req.content
         else:
             return json.dumps(inv,indent=True)
+
+    def inventory(self,with_soft=True):
+        """Return software inventory of the computer as a dictionary"""
+        inv = {}
+        inv['host'] = setuphelpers.host_info()
+        inv['wapt'] = {}
+        if os.path.isfile(sys.argv[0]):
+            inv['wapt']['wapt-exe-version'] = setuphelpers.get_file_properties(sys.argv[0])['FileVersion']
+        waptservice =  os.path.join( os.path.dirname(sys.argv[0]),'waptservice.exe')
+        if os.path.isfile(waptservice):
+            inv['wapt']['waptservice-version'] = setuphelpers.get_file_properties(waptservice)['FileVersion']
+        inv['wapt']['setuphelpers-version'] = setuphelpers.__version__
+        inv['wapt']['wapt-py-version'] = __version__
+        inv['wapt']['common-version'] = __version__
+
+        if with_soft:
+            inv['softwares'] = setuphelpers.installed_softwares('')
+        inv['packages'] = [p.as_dict() for p in self.waptdb.installed().values()]
+        return inv
 
     def get_public_cert(self,repository='global'):
         if self.config.has_option(repository,'public_cert'):

@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.17"
+__version__ = "0.8.18"
 
 import sys
 import os
@@ -70,7 +70,7 @@ action is either :
 
   registercomputer [description] : Add the computer to the WAPT server database,
                                      change the description of the computer.
-  inventory         : update the WAPT server database with locally installed packages and softwares
+  inventory         : get json encoded list of host data, installed packages and softwares as supplied to server with registercomputer
 
  For user session setup
   session-setup [packages,all] : setup local user environment for specific or all installed packages
@@ -504,7 +504,7 @@ def main():
             print mywapt.register_computer()
 
         elif action=='inventory':
-            print mywapt.inventory()
+            print json.dumps(mywapt.inventory(),indent=True)
 
         elif action=='setup-tasks':
             print mywapt.setup_tasks()

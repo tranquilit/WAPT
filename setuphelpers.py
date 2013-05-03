@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.4.12"
+__version__ = "0.4.13"
 
 import os
 import sys
@@ -54,6 +54,7 @@ from waptpackage import PackageEntry
 
 from iniparse import RawConfigParser
 
+import keyfinder
 
 logger = logging.getLogger()
 
@@ -508,8 +509,8 @@ def registry_readstring(root,path,keyname,default=''):
         keyname : None for value of key or str for a specific value like 'CommonFilesDir'
     the path can be either with backslash or slash"""
     path = path.replace(u'/',u'\\')
-    key = reg_openkey_noredir(root,path)
     try:
+        key = reg_openkey_noredir(root,path)
         result = reg_getvalue(key,keyname,default)
         return result
     except:
@@ -659,6 +660,7 @@ def networking():
 
 # from http://stackoverflow.com/questions/2017545/get-memory-usage-of-computer-in-windows-with-python
 def memory_status():
+    # Return system memory statistics
     class MEMORYSTATUSEX(ctypes.Structure):
         _fields_ = [
             ("dwLength", ctypes.c_ulong),
@@ -685,8 +687,35 @@ def memory_status():
 
 def host_info(with_wmi=False):
     info = {}
-    #run('dmidecode')
-    info['uuid'] = 'to be filled'
+    #dmiout = run(os.path.join(os.path.dirname(sys.argv[0]),'dmidecode'))
+    dmiout = subprocess.check_output('dmidecode -q',shell=True)
+    dmi_info = {}
+    for l in dmiout.splitlines():
+        if not l.strip() or l.startswith('#'):
+            continue
+        if not l.startswith('\t'):
+            currobject={}
+            dmi_info[l.strip()]=currobject
+        else:
+            if not l.startswith('\t\t'):
+                currarray = []
+                (name,value)=l.split(':',1)
+                currobject[name.strip()]=value.strip()
+            else:
+                # first line of array
+                if not currarray:
+                    currobject[name.strip()]=currarray
+                currarray.append(l.strip())
+    info['dmi'] = dmi_info
+
+    info['uuid'] = dmi_info.get('System Information',{}).get('UUID','')
+    if not info['uuid']:
+        info['uuid']=get_hostname()
+
+    info['serial_nr'] = dmi_info.get('System Information',{}).get('Serial Number','')
+    info['system_manufacturer'] = dmi_info.get('System Information',{}).get('Manufacturer','')
+    info['system_productname'] = dmi_info.get('System Information',{}).get('Product Name','')
+
     info['computer_name'] =  wincomputername()
     info['computer_fqdn'] =  get_hostname()
     info['dns_domain'] = get_domain_fromregistry()
@@ -696,12 +725,20 @@ def host_info(with_wmi=False):
     info['mac'] = [ c['mac'] for c in networking() if 'mac' in c]
     info['win64'] = iswin64()
     info['description'] = registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\LanmanServer\Parameters','srvcomment')
+
     info['registered_organization'] =  'to be filled'
     info['registered_owner'] =  'to be filled'
-    info['windows_version'] =  'to be filled'
-    info['windows_partnr'] =  'to be filled'
-    info['windows_productid'] =  'to be filled'
-    info['windows_key'] =  'to be filled'
+    win_info = keyfinder.windows_product_infos()
+    info['windows_version'] =  platform.platform()
+    info['windows_product_infos'] =  win_info
+
+    info['cpu_name'] = dmi_info.get('Processor Information',{}).get('Version','')
+    if not info['cpu_name']:
+        info['cpu_name'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\CentralProcessor\0','ProcessorNameString','')
+
+    info['physical_memory'] = memory_status().ullTotalPhys
+    info['virtual_memory'] = memory_status().ullTotalVirtual
+
 
     if with_wmi:
         info['wmi'] = {}
@@ -741,23 +778,7 @@ def host_info(with_wmi=False):
         except:
             raise
 
-        info['cpu_name'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\CentralProcessor\0','ProcessorNameString')
-        info['cpu_count'] = info['wmi']['Win32_ComputerSystem']['NumberOfProcessors']
-        info['physical_memory'] = info['wmi']['Win32_ComputerSystem']['TotalPhysicalMemory']
-        info['system_manufacturer'] = info['wmi']['Win32_ComputerSystem']['Manufacturer']
-        info['system_productname'] = info['wmi']['Win32_ComputerSystem']['Model']
-        info['serial_nr'] = info['wmi']['Win32_ComputerSystemProduct']['IdentifyingNumber']
-    else:
-        info['system_manufacturer'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\BIOS','SystemManufacturer')
-        info['system_productname'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\BIOS','SystemProductname')
-        info['cpu_name'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\CentralProcessor\0','ProcessorNameString')
-        info['physical_memory'] = memory_status().ullTotalPhys
-        info['virtual_memory'] = memory_status().ullTotalVirtual
-        info['serial_nr'] = 'to be filled'
-
-
     return info
-
 
 # from http://stackoverflow.com/questions/580924/python-windows-file-version-attribute
 def get_file_properties(fname):
@@ -1036,6 +1057,8 @@ params = {}
 control = PackageEntry()
 
 if __name__=='__main__':
+    print host_info()['serial_nr']
+
     print registry_readstring(HKEY_LOCAL_MACHINE,'SYSTEM/CurrentControlSet/services/Tcpip/Parameters','Hostname')
     print registry_readstring(HKEY_LOCAL_MACHINE,'SYSTEM/CurrentControlSet/services/Tcpip/Parameters','DhcpDomain')
 
@@ -1065,6 +1088,6 @@ if __name__=='__main__':
     #print getloggedinusers()
     #assert get_domainname() <> ''
     assert get_msi_properties(glob.glob('C:\\Windows\\Installer\\*.msi')[0])['Manufacturer'] <> ''
-    assert installed_softwares('offi')[0]['uninstallstring'] <> ''
+    assert installed_softwares('offi')[0]['uninstall_string'] <> ''
     assert get_file_properties('c:\\wapt\\waptservice.exe')['FileVersion'] <>''
     assert get_file_properties('c:\\wapt\\wapt-get.exe')['FileVersion'] <> ''
