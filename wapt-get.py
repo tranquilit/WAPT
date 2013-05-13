@@ -110,13 +110,20 @@ parser.add_option("-L","--language",    dest="language",    default=None, help="
 
 (options,args)=parser.parse_args()
 
+encoding = options.encoding
+if not encoding:
+    encoding = sys.stdout.encoding or 'cp850'
+
+sys.stdout = codecs.getwriter(encoding)(sys.stdout)
+sys.stderr = codecs.getwriter(encoding)(sys.stderr)
+
 # setup Logger
 logger = logging.getLogger()
 config_file =options.config
 loglevel = options.loglevel
 
 if len(logger.handlers)<1:
-    hdlr = logging.StreamHandler(sys.stdout)
+    hdlr = logging.StreamHandler(sys.stderr)
     hdlr.setFormatter(logging.Formatter(u'%(asctime)s %(levelname)s %(message)s'))
     logger.addHandler(hdlr)
 
@@ -133,14 +140,8 @@ if loglevel:
 else:
     setloglevel('warning')
 
-encoding = options.encoding
-if not encoding:
-    encoding = sys.stdout.encoding or 'cp850'
-
 logger.debug(u'Default encoding : %s ' % sys.getdefaultencoding())
 logger.debug(u'Setting encoding for stdout and stderr to %s ' % encoding)
-sys.stdout = codecs.getwriter(encoding)(sys.stdout)
-sys.stderr = codecs.getwriter(encoding)(sys.stderr)
 
 def main():
     if len(args) == 0:
@@ -496,12 +497,17 @@ def main():
             result = mywapt.waptdb.packages_search(args[1:])
             print ppdicttable(result,(('package',30),('version',10),('description',80),('repo',10)))
 
+        elif action=='searchjson':
+            if options.update_packages:
+                mywapt.update()
+            print json.dumps([p.as_dict() for p in mywapt.waptdb.packages_search(args[1:])])
+
         elif action=='cleanup':
             result = mywapt.cleanup()
             print u"Removed files : \n%s" % "\n".join([ "  %s" % p for p in result ])
 
         elif action=='registercomputer':
-            print mywapt.register_computer()
+            print mywapt.register_computer(force=options.force)
 
         elif action=='inventory':
             print json.dumps(mywapt.inventory(),indent=True)
@@ -522,6 +528,10 @@ def main():
                 else:
                     return value
             print ppdicttable(mywapt.waptdb.installed_search(args[1:]).values(),(('package',20),('version',15),('install_status',10),('install_date',16),('description',80)),callback=cb)
+
+        elif action=='listjson':
+            print json.dumps([p.as_dict() for p in mywapt.waptdb.installed_search(args[1:]).values()])
+
         else:
             print u'Unknown action %s' % action
             sys.exit(1)

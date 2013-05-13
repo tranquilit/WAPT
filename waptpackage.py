@@ -50,16 +50,13 @@ def md5_for_file(fname, block_size=2**20):
 # From Semantic Versioning : http://semver.org/ by Tom Preston-Werner,
 # valid : 0.0-0  0.0.0-0 0.0.0.0-0
 REGEX_PACKAGE_VERSION = re.compile(r'^(?P<major>[0-9]+)'
-                    '\.(?P<minor>[0-9]+)'
+                    '(\.(?P<minor>[0-9]+))?'
                     '(\.(?P<patch>[0-9]+))?'
                     '(\.(?P<subpatch>[0-9]+))?'
                     '(\-(?P<packaging>[0-9A-Za-z]+(\.[0-9A-Za-z]+)*))?$')
 
 # tis-exodus (>2.3.4-10)
 REGEX_PACKAGE_CONDITION = re.compile(r'(?P<package>[^\s()]+)\s*(\((?P<operator>[<=>]+)\s*(?P<version>\S+)\))?')
-
-if 'cmp' not in __builtins__:
-    cmp = lambda a,b: (a > b) - (a < b)
 
 def parse_major_minor_patch_build(version):
     """
@@ -286,10 +283,12 @@ class PackageEntry(object):
                 except:
                     control_exist = False
                 if control_exist:
+                    myzip.close()
                     raise Exception(u'control file already exist in WAPT file %s' % fname)
             else:
                 myzip = zipfile.ZipFile(fname,'w',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
             myzip.writestr(u'WAPT/control',self.ascontrol().encode('utf8'))
+            myzip.close()
 
     def ascontrol(self,with_non_control_attributes = False):
         val = u"""\
@@ -403,6 +402,7 @@ def update_packages(adir):
     logger.info(u"Writing new %s" % packages_fname)
     myzipfile = zipfile.ZipFile(packages_fname, "w",compression=zipfile.ZIP_DEFLATED)
     zi = zipfile.ZipInfo(u"Packages",date_time = time.localtime())
+    zi.compress_type = zipfile.ZIP_DEFLATED
     myzipfile.writestr(zi,u'\n'.join(packages).encode('utf8'))
     myzipfile.close()
     logger.info(u"Finished")

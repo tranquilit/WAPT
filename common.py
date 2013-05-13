@@ -1275,16 +1275,19 @@ class WaptDB(object):
         result.sort()
         return result
 
-    def installed(self):
+    def installed(self,include_errors=False):
         """Return a dictionary of installed packages : keys=package, values = PackageEntry """
-        q = self.query_package_entry("""\
+        sql = ["""\
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,
                 r.section,r.priority,r.maintainer,r.description,r.depends,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo
                 from wapt_localstatus l
                 left join wapt_package r on r.package=l.package and l.version=r.version and (l.architecture is null or l.architecture=r.architecture)
-              where l.install_status in ("OK","UNKNOWN")
-           """)
+           """]
+        if not include_errors:
+            sql.append('where l.install_status in ("OK","UNKNOWN")')
+
+        q = self.query_package_entry('\n'.join(sql))
         result = {}
         for p in q:
             result[p.package]= p
@@ -1329,7 +1332,7 @@ class WaptDB(object):
     def upgradeable(self):
         """Return a dictionary of upgradable Package entries"""
         result = {}
-        allinstalled = self.installed().values()
+        allinstalled = self.installed(include_errors=True).values()
         for p in allinstalled:
             available = self.query_package_entry("""select * from wapt_package where package=?""",(p.package,))
             available.sort()
@@ -2402,7 +2405,7 @@ class Wapt(object):
         return self.download_packages(to_download)
 
 
-    def register_computer(self,description=None):
+    def register_computer(self,description=None,force=False):
         """Send computer informations to WAPT Server
             if decsription is provided, updates local registry with new description
         """
@@ -2411,6 +2414,8 @@ class Wapt(object):
              pass
 
         inv = self.inventory()
+        if force:
+            inv['force']=True
         if self.wapt_server:
             req = requests.post("%s/add_host" % (self.wapt_server,),json.dumps(inv))
             req.raise_for_status()
@@ -2434,7 +2439,7 @@ class Wapt(object):
 
         if with_soft:
             inv['softwares'] = setuphelpers.installed_softwares('')
-        inv['packages'] = [p.as_dict() for p in self.waptdb.installed().values()]
+        inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
         return inv
 
     def get_public_cert(self,repository='global'):
