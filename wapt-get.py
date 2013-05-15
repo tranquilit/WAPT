@@ -184,12 +184,12 @@ def main():
         loglevel = cp.get('global','loglevel')
         setloglevel(loglevel)
 
+    if options.wapt_url:
+        cp.set('global','repo_url',options.wapt_url)
+
     mywapt = Wapt(config=cp)
 
     mywapt.options = options
-
-    if options.wapt_url:
-        mywapt.wapt_repourl = options.wapt_url
 
     if options.private_key:
         mywapt.private_key = options.private_key
