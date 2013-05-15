@@ -22,7 +22,7 @@
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="6"/>
       <RevisionNr Value="16"/>
-      <BuildNr Value="5"/>
+      <BuildNr Value="6"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -60,16 +60,17 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
         <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="250"/>
-        <CursorPos X="42" Y="274"/>
+        <TopLine Value="95"/>
+        <CursorPos X="5" Y="118"/>
         <UsageCount Value="222"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="806"/>
         <CursorPos X="22" Y="822"/>
@@ -78,43 +79,38 @@
       <Unit2>
         <Filename Value="..\..\indy\IdDNSResolver.pas"/>
         <UnitName Value="IdDNSResolver"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="507"/>
         <CursorPos X="25" Y="544"/>
-        <UsageCount Value="38"/>
+        <UsageCount Value="37"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\jcl\source\common\JclSysInfo.pas"/>
         <UnitName Value="JclSysInfo"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="5575"/>
         <CursorPos X="47" Y="5598"/>
-        <UsageCount Value="212"/>
+        <UsageCount Value="211"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\jcl\source\include\jcl.inc"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="212"/>
+        <UsageCount Value="211"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\superobject\superobject.pas"/>
         <UnitName Value="superobject"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3146"/>
         <CursorPos X="31" Y="3164"/>
-        <UsageCount Value="201"/>
+        <UsageCount Value="200"/>
       </Unit5>
       <Unit6>
         <Filename Value="soutils.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="soutils"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="37"/>
         <CursorPos X="1" Y="44"/>
@@ -124,7 +120,6 @@
         <Filename Value="tiscommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiscommon"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1065"/>
         <CursorPos X="1" Y="1094"/>
@@ -133,17 +128,15 @@
       <Unit8>
         <Filename Value="..\jcl\source\common\JclUnicode.pas"/>
         <UnitName Value="JclUnicode"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="4724"/>
         <CursorPos X="33" Y="4747"/>
-        <UsageCount Value="27"/>
+        <UsageCount Value="26"/>
       </Unit8>
       <Unit9>
         <Filename Value="tisstrings.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tisstrings"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1840"/>
         <CursorPos X="1" Y="1883"/>
@@ -153,7 +146,6 @@
         <Filename Value="tisinifiles.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tisinifiles"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="49"/>
         <CursorPos X="1" Y="49"/>
@@ -162,17 +154,15 @@
       <Unit11>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSResolver.pas"/>
         <UnitName Value="IdDNSResolver"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="455"/>
         <CursorPos X="14" Y="449"/>
-        <UsageCount Value="32"/>
+        <UsageCount Value="31"/>
       </Unit11>
       <Unit12>
         <Filename Value="networkadapterinfo.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="NetworkAdapterInfo"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -180,50 +170,54 @@
       </Unit12>
       <Unit13>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\objpash.inc"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="172"/>
         <CursorPos X="23" Y="192"/>
-        <UsageCount Value="60"/>
+        <UsageCount Value="59"/>
       </Unit13>
       <Unit14>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\ldapsend.pas"/>
         <UnitName Value="ldapsend"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="151"/>
         <CursorPos X="15" Y="16"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="24"/>
       </Unit14>
       <Unit15>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSCommon.pas"/>
         <UnitName Value="IdDNSCommon"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="598"/>
         <CursorPos X="1" Y="600"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit15>
       <Unit16>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwaiphlpapi.pas"/>
         <UnitName Value="jwaiphlpapi"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="327"/>
         <CursorPos X="16" Y="327"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="8"/>
       </Unit16>
       <Unit17>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwaiptypes.pas"/>
         <UnitName Value="jwaiptypes"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="96"/>
         <CursorPos X="3" Y="115"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="8"/>
       </Unit17>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="2" HistoryIndex="1">
+      <Position1>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="274" Column="42" TopLine="250"/>
+      </Position1>
+      <Position2>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position2>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>

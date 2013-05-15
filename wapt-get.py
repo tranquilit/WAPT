@@ -311,9 +311,13 @@ def main():
                 print u"You must provide at least one package name to remove"
                 sys.exit(1)
             for packagename in args[1:]:
-                print u"Removing %s ..." % (packagename,),
-                mywapt.remove(packagename,force=options.force)
-                print u"done"
+                print u"Removing %s ..." % (packagename,)
+                result = mywapt.remove(packagename,force=options.force)
+                if result['removed']:
+                    print u"Removed packages : \n%s" % u"\n".join([ u"  %s" % p for p in result['removed'] ])
+                if result['errors']:
+                    logger.critical(u'Errors removing some packages : %s'% (result['errors'],))
+                    sys.exit(1)
 
         elif action=='session-setup':
             if len(args)<2:

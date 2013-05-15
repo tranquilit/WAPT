@@ -43,6 +43,7 @@ import platform
 import imp
 import socket
 import dns.resolver
+import copy
 
 import winsys.security
 import winsys.accounts
@@ -266,6 +267,24 @@ def html_table(cur,callback=None):
             lines=lines+"<tr>"+"".join(["<td>"+safe_unicode(c)+"</td>" for c in r])+"</tr>"
 
     return "<table border=1  cellpadding=2 cellspacing=0>%s%s</table>" % (head,lines)
+
+
+def merge_dict(d1,d2):
+    """merge similar dict"""
+    result = copy.deepcopy(d1)
+    for k in d2:
+        if k in result:
+            if isinstance(result[k],list):
+                for item in d2[k]:
+                    if not item in result[k]:
+                        result[k].append(item)
+            elif isinstance(result[k],dict):
+                result[k]=merge_dict(result[k],d2[k])
+            else:
+                raise Exception('Unsupported merge')
+        else:
+            result[k] = d2[k]
+    return result
 
 def sha1_for_file(fname, block_size=2**20):
     f = open(fname,'rb')
@@ -2263,7 +2282,7 @@ class Wapt(object):
             return os.path.join(self.packagecachedir,packagefilename)
         if not download_only:
             for (request,p) in to_install:
-                print u"install %s" % (p,)
+                print u"install %s" % (p.package,)
                 result = self.install_wapt(fname(p.filename),params_dict = params_dict,public_cert=self.get_public_cert())
                 if result<>'OK':
                     actions['errors'].append([request,p])
@@ -2315,14 +2334,14 @@ class Wapt(object):
 
     def remove(self,package,force=False):
         """Removes a package giving its package name, unregister from local status DB"""
+        result = {'removed':[],'errors':[]}
         q = self.waptdb.query("""\
            select * from wapt_localstatus
             where package=?
            """ , (package,) )
         if not q:
             logger.warning(u"Package %s not installed, aborting" % package)
-            return True
-        result = {'removed':[],'errors':[]}
+            return result
         # several versions installed of the same package... ?
         for mydict in q:
             logger.info("Removing package %s version %s from computer..." % (mydict['package'],mydict['version']))
@@ -2347,11 +2366,12 @@ class Wapt(object):
                 if isinstance(guids,(unicode,str)):
                     guids = [guids]
                 for guid in guids:
-                    try:
-                        logger.info('Running %s' % guid)
-                        logger.info(ensure_unicode(subprocess.check_output(guid)))
-                    except Exception,e:
-                        logger.info("Warning : %s" % e)
+                    if guid:
+                        try:
+                            logger.info('Running %s' % guid)
+                            logger.info(ensure_unicode(subprocess.check_output(guid)))
+                        except Exception,e:
+                            logger.info("Warning : %s" % e)
                 logger.info('Remove status record from local DB for %s' % package)
                 self.waptdb.remove_install_status(package)
                 result['removed'].append(package)
@@ -2373,10 +2393,12 @@ class Wapt(object):
                         try:
                             uninstall_cmd =''
                             uninstall_cmd = self.uninstall_cmd(guid)
-                            logger.info(u'Launch uninstall cmd %s' % (uninstall_cmd,))
-                            print ensure_unicode(subprocess.check_output(uninstall_cmd,shell=True))
+                            if uninstall_cmd:
+                                logger.info(u'Launch uninstall cmd %s' % (uninstall_cmd,))
+                                print ensure_unicode(subprocess.check_output(uninstall_cmd,shell=True))
                         except Exception,e:
-                            logger.critical(u"Critical error during uninstall of %s: %s" % (uninstall_cmd,e))
+                            logger.critical(u"Critical error during uninstall of %s: %s" % (uninstall_cmd,ensure_unicode(e)))
+                            result['errors'].append(package)
                 logger.info('Remove status record from local DB for %s' % package)
                 self.waptdb.remove_install_status(package)
                 result['removed'].append(package)
@@ -2402,16 +2424,18 @@ class Wapt(object):
         Query localstatus database for packages with a version older than repository
         and install all newest packages
         """
-        result = {}
+        hostresult = {}
         logger.debug(u'Check if host package "%s" is available' % (self.host_packagename(), ))
         host_packages = self.is_available(self.host_packagename())
         if host_packages and not self.is_installed(host_packages[-1].asrequirement()):
-            logger.info('Host package %s is available and not installed, installing host package...' % (host_packages[-1],) )
-            result = self.install(host_packages[-1],force=True)
+            logger.info('Host package %s is available and not installed, installing host package...' % (host_packages[-1].package,) )
+            hostresult = self.install(host_packages[-1],force=True)
 
         upgrades = self.waptdb.upgradeable()
         logger.debug(u'upgrades : %s' % upgrades.keys())
-        return self.install(upgrades.keys(),force=True)
+        result = self.install(upgrades.keys(),force=True)
+        # merge results
+        return merge_dict(result,hostresult)
 
     def list_upgrade(self):
         """Returns a list of packages which can be upgraded
@@ -2852,7 +2876,7 @@ uninstallkey = []
 # command(s) to launch to remove the application(s)
 uninstallstring = []
 
-# list of required parameters names (string) which canb be used during install
+# list of required parameters names (string) which can be used during install
 required_params = []
 
 def install():
