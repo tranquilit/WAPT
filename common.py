@@ -1388,7 +1388,6 @@ class WaptDB(object):
                     package = PackageEntry()
                     package.load_control_from_wapt(packageListFile[start:end])
                     logger.info(u"%s (%s)" % (package.package,package.version))
-                    logger.debug(package)
                     package.repo_url = repourl
                     package.repo = repo_name
                     self.add_package_entry(package)
@@ -1816,9 +1815,11 @@ class Wapt(object):
                     else:
                     #sinon splitter sur les paramètres
                         args = shlex.split(cmd,posix=False)
-                        # remove double quotes if any
-                        if args[0].startswith('"') and args[0].endswith('"') and (not "/" in cmd or not "--" in cmd):
-                            args[0] = args[0][1:-1]
+
+                    # remove double quotes if any
+                    if args[0].startswith('"') and args[0].endswith('"') and (not "/" in cmd or not "--" in cmd):
+                        args[0] = args[0][1:-1]
+
                     if ('spuninst' in cmd.lower()):
                          if not ' /quiet' in cmd.lower():
                             args.append('/quiet')
