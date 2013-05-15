@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.4.13"
+__version__ = "0.4.14"
 
 import os
 import sys
@@ -50,6 +50,8 @@ import pythoncom
 from win32com.shell import shell, shellcon
 from win32com.taskscheduler import taskscheduler
 import locale
+import types
+
 from waptpackage import PackageEntry
 
 from iniparse import RawConfigParser
@@ -57,23 +59,6 @@ from iniparse import RawConfigParser
 import keyfinder
 
 logger = logging.getLogger()
-
-# ensure there is a tempdir available for local work. This is deleted at program exit.
-#if not 'tempdir' in globals():
-#    tempdir = tempfile.mkdtemp()
-#    logger.info('Temporary directory created : %s' % tempdir)
-
-#import atexit
-#@atexit.register
-#def cleanuptemp():
-#    if 'tempdir' in globals():
-#        logger.debug('Removing temporary directory : %s' % tempdir)
-#        shutil.rmtree(tempdir)
-
-# Temporary dir where to unzip/get all files for setup
-# helper assumes files go and comes here per default
-#if not 'packagetempdir' in globals():
-#   packagetempdir = tempdir
 
 # common windows diectories
 desktop = winshell.desktop
@@ -92,6 +77,33 @@ def ensure_dir(f):
     d = os.path.dirname(f)
     if not os.path.isdir(d):
         os.makedirs(d)
+
+# from opsi
+def ensure_unicode(data):
+    """Return a unicode string from data object"""
+    if type(data) is types.UnicodeType:
+        return data
+    if type(data) is types.StringType:
+        return unicode(data, 'utf-8', 'replace')
+    if type(data) is WindowsError:
+        return u"%s : %s" % (data.args[0], data.args[1].decode(sys.getfilesystemencoding()))
+    if type(data) is UnicodeDecodeError:
+        return u"%s : faulty string is '%s'" % (data,data.args[1].decode(sys.getfilesystemencoding()))
+    if hasattr(data, '__unicode__'):
+        try:
+            return data.__unicode__()
+        except:
+            pass
+    try:
+        return unicode(data)
+    except:
+       pass
+    if hasattr(data, '__repr__'):
+        data = data.__repr__()
+        if type(data) is types.UnicodeType:
+            return data
+        return unicode(data, 'utf-8', 'replace')
+    return unicode(data)
 
 def create_shortcut(path, target='', wDir='', icon=''):
     ext = path[-3:]
@@ -330,14 +342,14 @@ def run(*cmd):
     """Runs the command and wait for it termination
     returns output, raise exc eption if exitcode is not null"""
     print u'Run "%s"' % (cmd,)
-    return subprocess.check_output(*cmd,shell=True)
+    return ensure_unicode(subprocess.check_output(*cmd,shell=True))
 
 def run_notfatal(*cmd):
     """Runs the command and wait for it termination
     returns output, don't raise exception if exitcode is not null but return '' """
     try:
         print u'Run "%s"' % (cmd,)
-        return subprocess.check_output(*cmd,shell=True)
+        return ensure_unicode(subprocess.check_output(*cmd,shell=True))
     except Exception,e:
         print u'Warning : %s' % e
         return ''
@@ -396,7 +408,6 @@ def get_computername():
 def get_hostname():
     """Return host fully qualified domain name"""
     return socket.getfqdn().lower()
-
 
 def get_domain_fromregistry():
     """Return main DNS domain of the computer"""
@@ -483,7 +494,11 @@ def reg_getvalue(key,name,default=None):
          default : value returned if specified name doesn't exist
     """
     try:
-        return _winreg.QueryValueEx(key,name)[0]
+        value = _winreg.QueryValueEx(key,name)[0]
+        if type(value) is types.StringTypes:
+            return ensure_unicode(value)
+        else:
+            return value
     except WindowsError,e:
         if e.errno in(259,2):
             # WindowsError: [Errno 259] No more data is available
@@ -500,6 +515,19 @@ def reg_setvalue(key,name,value,type=_winreg.REG_SZ ):
          type : type of value (REG_SZ,REG_MULTI_SZ,REG_DWORD,REG_EXPAND_SZ)
     """
     return _winreg.SetValueEx(key,name,0,type,value)
+
+def registry_setstring(root,path,keyname,value,type=_winreg.REG_SZ):
+    """Set the value of a string key in registry
+        root    : HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER ...
+        path    : string like "software\\microsoft\\windows\\currentversion"
+                           or "software\\wow6432node\\microsoft\\windows\\currentversion"
+        keyname : None for value of key or str for a specific value like 'CommonFilesDir'
+        value   : string to put in keyname
+    the path can be either with backslash or slash"""
+    path = path.replace(u'/',u'\\')
+    key = reg_openkey_noredir(root,path)
+    result = reg_setvalue(key,keyname,value,type=type)
+    return result
 
 def registry_readstring(root,path,keyname,default=''):
     """Return a string from registry
@@ -556,7 +584,7 @@ def installed_softwares(keywords=''):
         if isinstance(keywords,str) or isinstance(keywords,unicode):
             mykeywords = keywords.lower().split()
         else:
-            mykeywords = [ unicode(k).lower() for k in keywords ]
+            mykeywords = [ ensure_unicode(k).lower() for k in keywords ]
 
         i = 0
         while True:
@@ -688,7 +716,7 @@ def memory_status():
 def host_info(with_wmi=False):
     info = {}
     #dmiout = run(os.path.join(os.path.dirname(sys.argv[0]),'dmidecode'))
-    dmiout = subprocess.check_output('dmidecode -q',shell=True)
+    dmiout = ensure_unicode(subprocess.check_output('dmidecode -q',shell=True))
     dmi_info = {}
     for l in dmiout.splitlines():
         if not l.strip() or l.startswith('#'):
@@ -814,7 +842,7 @@ def get_file_properties(fname):
             props[propName] = (win32api.GetFileVersionInfo(fname, strInfoPath) or '').strip()
 
     except Exception,e:
-        logger.warning("%s" % e)
+        logger.warning(u"%s" % ensure_unicode(e))
 
     return props
 
@@ -827,9 +855,9 @@ def get_msi_properties(msi_filename):
     r = view.Fetch()
     while r:
         try:
-            result[r.GetString(1)] = r.GetString(2)
+            result[ensure_unicode(r.GetString(1))] = ensure_unicode(r.GetString(2))
         except:
-            print u"erreur pour %s" % r.GetString(0)
+            logger.warning(u"erreur pour %s" % ensure_unicode(r.GetString(0)))
         try:
             r = view.Fetch()
         except:
@@ -869,7 +897,7 @@ def service_is_running(service_name):
     return win32serviceutil.QueryServiceStatus(service_name)[1] == win32service.SERVICE_RUNNING
 
 def user_appdata():
-    return unicode(winshell.get_path(shellcon.CSIDL_APPDATA))
+    return ensure_unicode((winshell.get_path(shellcon.CSIDL_APPDATA)))
 
 remove_file=os.unlink
 remove_tree=shutil.rmtree
@@ -914,7 +942,6 @@ def add_to_system_path(path):
         reg_setvalue(key,'Path',';'.join(system_path),type=REG_EXPAND_SZ)
         win32api.SendMessage(win32con.HWND_BROADCAST,win32con.WM_SETTINGCHANGE,0,'Environment')
     return system_path
-
 
 def get_task(name):
     """Return an instance of PyITask given its name (without .job)"""
@@ -1029,7 +1056,7 @@ def get_current_user():
     namelen = ctypes.c_int(len(name)) # len in chars, NOT bytes
     if not ctypes.windll.advapi32.GetUserNameW(name, ctypes.byref(namelen)):
         raise ctypes.WinError()
-    return name.value
+    return ensure_unicode(name.value)
 
 def language():
     """Get the default locale like fr, en, pl etc..  etc"""
@@ -1042,13 +1069,12 @@ def get_appath(exename):
         key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\%s' % exename)
     return reg_getvalue(key,None)
 
-
 class EWaptSetupException(Exception):
     pass
 
 def error(reason):
     """Raise a fatal error"""
-    raise EWaptSetupException('Fatal error : %s' % reason)
+    raise EWaptSetupException(u'Fatal error : %s' % reason)
 
 # to help pyscripter code completion in setup.py
 params = {}

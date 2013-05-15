@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.18"
+__version__ = "0.8.19"
 
 import sys
 import os
@@ -35,6 +35,8 @@ from waptpackage import PackageEntry
 from waptpackage import update_packages
 from common import ppdicttable
 import setuphelpers
+from setuphelpers import ensure_unicode
+
 import locale
 
 #from setuphelpers import *
@@ -68,9 +70,9 @@ action is either :
   enable-tasks
   disable-tasks
 
-  registercomputer [description] : Add the computer to the WAPT server database,
+  register [description] : Add the computer to the WAPT server database,
                                      change the description of the computer.
-  inventory         : get json encoded list of host data, installed packages and softwares as supplied to server with registercomputer
+  inventory         : get json encoded list of host data, installed packages and softwares as supplied to server with register
 
  For user session setup
   session-setup [packages,all] : setup local user environment for specific or all installed packages
@@ -114,8 +116,8 @@ encoding = options.encoding
 if not encoding:
     encoding = sys.stdout.encoding or 'cp850'
 
-sys.stdout = codecs.getwriter(encoding)(sys.stdout)
-sys.stderr = codecs.getwriter(encoding)(sys.stderr)
+sys.stdout = codecs.getwriter(encoding)(sys.stdout,'replace')
+sys.stderr = codecs.getwriter(encoding)(sys.stderr,'replace')
 
 # setup Logger
 logger = logging.getLogger()
@@ -424,7 +426,7 @@ def main():
 
         elif action=='build-package':
             if len(args)<2:
-                print u"You must provide at least one source directory for package build"
+                print u"You must provide at least one source directory for package building"
                 sys.exit(1)
             for source_dir in [os.path.abspath(p) for p in args[1:]]:
                 if os.path.isdir(source_dir):
@@ -457,12 +459,13 @@ def main():
 
                         if mywapt.upload_cmd:
                             print u'\nYou can upload to repository with\n  %s upload-package %s ' % (sys.argv[0],package_fn )
-                        return 0
+                        sys.exit(0)
                     else:
                         logger.critical(u'package not created')
-                        return 1
+                        sys.exit(1)
                 else:
                     logger.critical(u'Directory %s not found' % source_dir)
+                    sys.exit(1)
 
         elif action=='sign-package':
             if len(args)<2:
@@ -474,9 +477,10 @@ def main():
                     signature = mywapt.signpackage(waptfile,
                         excludes=options.excludes.split(','))
                     print u"Package %s signed : signature :\n%s" % (waptfile,signature)
+                    sys.exit(0)
                 else:
                     logger.critical(u'Package %s not found' % waptfile)
-                    return 1
+                    sys.exit(1)
 
         elif action=='upload-package':
             if len(args)<2:
@@ -497,7 +501,7 @@ def main():
             result = mywapt.waptdb.packages_search(args[1:])
             print ppdicttable(result,(('package',30),('version',10),('description',80),('repo',10)))
 
-        elif action=='searchjson':
+        elif action=='search-json':
             if options.update_packages:
                 mywapt.update()
             print json.dumps([p.as_dict() for p in mywapt.waptdb.packages_search(args[1:])])
@@ -506,8 +510,8 @@ def main():
             result = mywapt.cleanup()
             print u"Removed files : \n%s" % "\n".join([ "  %s" % p for p in result ])
 
-        elif action=='registercomputer':
-            print mywapt.register_computer(force=options.force)
+        elif action=='register':
+            print u"%s" % mywapt.register_computer(description=" ".join(args[1:]),force=options.force)
 
         elif action=='inventory':
             print json.dumps(mywapt.inventory(),indent=True)
@@ -529,14 +533,14 @@ def main():
                     return value
             print ppdicttable(mywapt.waptdb.installed_search(args[1:]).values(),(('package',20),('version',15),('install_status',10),('install_date',16),('description',80)),callback=cb)
 
-        elif action=='listjson':
+        elif action=='list-json':
             print json.dumps([p.as_dict() for p in mywapt.waptdb.installed_search(args[1:]).values()])
 
         else:
             print u'Unknown action %s' % action
             sys.exit(1)
     except Exception,e:
-        print ("FATAL ERROR : %s" % e).decode(encoding)
+        print "FATAL ERROR : %s" % (ensure_unicode(e),)
         if logger.level == logging.DEBUG:
             raise
         sys.exit(3)
