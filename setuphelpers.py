@@ -170,7 +170,7 @@ def wget(url,target,reporthook=None,proxies=None):
         global last_time_display
         if total>0 and bsize>0:
             # print only every second or at end
-            if (time.time()-last_time_display>=.1) or (bcount*bsize>=total) :
+            if (time.time()-last_time_display>=1) or (bcount*bsize>=total) :
                 print u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (bcount*bsize,total,100.0*bcount*bsize/total, bsize/(1024*(time.time()-last_time_display))),
                 last_time_display = time.time()
 

@@ -61,6 +61,9 @@ from types import ModuleType
 
 import shutil
 import win32api
+import ntsecuritycon
+import win32security
+
 from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,QueryInfoKey,KEY_READ,KEY_WOW64_32KEY,KEY_WOW64_64KEY
 
 import struct
@@ -828,6 +831,17 @@ db_upgrades = {
 
 def is_system_user():
     return setuphelpers.get_current_user() == 'system'
+
+def adjust_privileges():
+    flags = ntsecuritycon.TOKEN_ADJUST_PRIVILEGES | ntsecuritycon.TOKEN_QUERY
+    htoken = win32security.OpenProcessToken(win32api.GetCurrentProcess(),flags)
+    load_id = win32security.LookupPrivilegeValue(None, 'SeRestorePrivilege')
+    save_id = win32security.LookupPrivilegeValue(None, 'SeBackupPrivilege')
+    load_privilege = [(load_id, ntsecuritycon.SE_PRIVILEGE_ENABLED)]
+    save_privilege = [(save_id, ntsecuritycon.SE_PRIVILEGE_ENABLED)]
+    win32security.AdjustTokenPrivileges(htoken, 0, load_privilege)
+    win32security.AdjustTokenPrivileges(htoken, 0, save_privilege)
+
 
 class WaptDB(object):
     """Class to manage SQLite database with local installation status"""
