@@ -6,13 +6,8 @@
     <General>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
-      <Title Value="appwaptservice"/>
-      <UseAppBundle Value="False"/>
+      <Title Value="wapt-gui"/>
       <ResourceType Value="res"/>
-      <XPManifest>
-        <DpiAware Value="True"/>
-        <UIAccess Value="True"/>
-      </XPManifest>
       <Icon Value="0"/>
     </General>
     <i18n>
@@ -20,7 +15,6 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <MinorVersionNr Value="1"/>
       <RevisionNr Value="1"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
@@ -37,53 +31,47 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="8">
+    <RequiredPackages Count="7">
       <Item1>
-        <PackageName Value="pl_synapsepkg"/>
+        <PackageName Value="pl_lazsolutions"/>
       </Item1>
       <Item2>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="FCL"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="pl_indycomp"/>
       </Item3>
       <Item4>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item4>
       <Item5>
-        <PackageName Value="SQLDBLaz"/>
+        <PackageName Value="SynEdit"/>
       </Item5>
       <Item6>
-        <PackageName Value="pl_indycomp"/>
+        <PackageName Value="pltis_superobject"/>
       </Item6>
       <Item7>
-        <PackageName Value="FCL"/>
-      </Item7>
-      <Item8>
         <PackageName Value="LCL"/>
-      </Item8>
+      </Item7>
     </RequiredPackages>
-    <Units Count="10">
+    <Units Count="7">
       <Unit0>
-        <Filename Value="appwaptservice.lpr"/>
+        <Filename Value="waptgui.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="appwaptservice"/>
+        <UnitName Value="waptgui"/>
       </Unit0>
       <Unit1>
-        <Filename Value="uvisappwaptservice.pas"/>
+        <Filename Value="uwaptgui.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="VisAppWAPTService"/>
+        <ComponentName Value="VisWaptGUI"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uVisAppWaptService"/>
+        <UnitName Value="uwaptgui"/>
       </Unit1>
       <Unit2>
-        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Filename Value="..\wapt-get\tisstrings.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="WaptDaemon"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="DataModule"/>
-        <UnitName Value="WaptUnit"/>
+        <UnitName Value="tisstrings"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
@@ -91,49 +79,38 @@
         <UnitName Value="waptcommon"/>
       </Unit3>
       <Unit4>
-        <Filename Value="..\wapt-get\networkadapterinfo.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="networkadapterinfo"/>
-      </Unit4>
-      <Unit5>
         <Filename Value="..\wapt-get\soutils.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="soutils"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiscommon"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\wapt-get\tisinifiles.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tisinifiles"/>
       </Unit6>
-      <Unit7>
-        <Filename Value="..\wapt-get\tisstrings.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tisstrings"/>
-      </Unit7>
-      <Unit8>
-        <Filename Value="..\waptservice\UnitRedirect.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="UnitRedirect"/>
-      </Unit8>
-      <Unit9>
-        <Filename Value="..\waptservice\ldapauth.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="ldapauth"/>
-      </Unit9>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="../appwaptservice"/>
+      <Filename Value="..\waptgui"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\wapt-get;..\waptservice"/>
-      <UnitOutputDirectory Value="lib"/>
+      <OtherUnitFiles Value="..\wapt-get"/>
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
+      <Debugging>
+        <UseExternalDbgSyms Value="True"/>
+      </Debugging>
+      <LinkSmart Value="True"/>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>
@@ -145,14 +122,10 @@
         <MsgFileName Value=""/>
       </CompilerMessages>
       <CompilerPath Value="$(CompPath)"/>
-      <ExecuteBefore>
-        <Command Value="..\utils\psservice.exe stop waptservice"/>
-        <CompileReasons Compile="False" Build="False"/>
-      </ExecuteBefore>
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="5">
+    <Exceptions Count="4">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -163,11 +136,8 @@
         <Name Value="EFOpenError"/>
       </Item3>
       <Item4>
-        <Name Value="EIdConnClosedGracefully"/>
+        <Name Value="EPyAttributeError"/>
       </Item4>
-      <Item5>
-        <Name Value="EIdSocketError"/>
-      </Item5>
     </Exceptions>
   </Debugging>
 </CONFIG>

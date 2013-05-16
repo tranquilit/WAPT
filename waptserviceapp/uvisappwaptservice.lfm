@@ -1,7 +1,7 @@
 object VisAppWAPTService: TVisAppWAPTService
-  Left = 314
+  Left = 204
   Height = 609
-  Top = 250
+  Top = 270
   Width = 1280
   Caption = 'Run WAPT Service as an application for Debugging purpose'
   ClientHeight = 609
@@ -50,9 +50,9 @@ object VisAppWAPTService: TVisAppWAPTService
       TabOrder = 1
     end
     object TestPython: TButton
-      Left = 528
+      Left = 392
       Height = 25
-      Top = 56
+      Top = 40
       Width = 75
       Caption = 'TestPython'
       OnClick = TestPythonClick
@@ -561,7 +561,7 @@ object VisAppWAPTService: TVisAppWAPTService
       'from optparse import OptionParser'
       'from common import WaptDB'
       ''
-      'from waptpackage import Package_Entry'
+      'from waptpackage import PackageEntry'
       'import setuphelpers'
       'import json'
       'import glob'
@@ -603,8 +603,6 @@ object VisAppWAPTService: TVisAppWAPTService
       '    logger.setLevel(numeric_level)'
       ''
       'mywapt = Wapt(config=cp)'
-      'mywapt.wapt_repourl = mywapt.find_wapt_server()'
-      ''
       'print mywapt.wapt_repourl'
       ''
     )
@@ -717,5 +715,13 @@ object VisAppWAPTService: TVisAppWAPTService
     ErrorAttri.FrameEdges = sfeAround
     left = 509
     top = 75
+  end
+  object PythonEngine1: TAtomPythonEngine
+    DllName = 'python27.dll'
+    APIVersion = 1013
+    RegVersion = '2.5'
+    UseLastKnownVersion = False
+    left = 624
+    top = 80
   end
 end

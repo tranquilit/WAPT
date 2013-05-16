@@ -331,6 +331,16 @@ def ssl_verify_content(content,signature,public_cert):
     if not pubkey.verify_final(signature):
         raise Exception('SSL signature verification failed, either public certificate does not match signature or signed content has been changed')
 
+
+def default_json(o):
+    if isinstance(o,PackageEntry):
+        return o.as_dict()
+    else:
+        return u"%s" % (ensure_unicode(o),)
+
+def jsondump(o,**kwargs):
+    return json.dumps(o,default=default_json,**kwargs)
+
 _FHF_HAS_DATA_DESCRIPTOR = 0x8
 dataDescriptorSignature = 0x08074b50
 
@@ -835,12 +845,15 @@ def is_system_user():
 def adjust_privileges():
     flags = ntsecuritycon.TOKEN_ADJUST_PRIVILEGES | ntsecuritycon.TOKEN_QUERY
     htoken = win32security.OpenProcessToken(win32api.GetCurrentProcess(),flags)
-    load_id = win32security.LookupPrivilegeValue(None, 'SeRestorePrivilege')
-    save_id = win32security.LookupPrivilegeValue(None, 'SeBackupPrivilege')
-    load_privilege = [(load_id, ntsecuritycon.SE_PRIVILEGE_ENABLED)]
-    save_privilege = [(save_id, ntsecuritycon.SE_PRIVILEGE_ENABLED)]
-    win32security.AdjustTokenPrivileges(htoken, 0, load_privilege)
-    win32security.AdjustTokenPrivileges(htoken, 0, save_privilege)
+
+    privileges = [
+        (win32security.LookupPrivilegeValue(None, 'SeSystemProfilePrivilege'), ntsecuritycon.SE_PRIVILEGE_ENABLED),
+        (win32security.LookupPrivilegeValue(None, 'SeSecurityPrivilege'), ntsecuritycon.SE_PRIVILEGE_ENABLED),
+        (win32security.LookupPrivilegeValue(None, 'SeRestorePrivilege'), ntsecuritycon.SE_PRIVILEGE_ENABLED),
+        (win32security.LookupPrivilegeValue(None, 'SeBackupPrivilege'), ntsecuritycon.SE_PRIVILEGE_ENABLED),
+        ]
+
+    return win32security.AdjustTokenPrivileges(htoken, 0, privileges)
 
 
 class WaptDB(object):
@@ -1321,7 +1334,7 @@ class WaptDB(object):
         return result
 
     def installed_search(self,searchwords=[]):
-        """Return a dictionary of installed packages : keys=package,version, values = package dict """
+        """Return a list of installed package entries"""
         if not isinstance(searchwords,list) and not isinstance(searchwords,tuple):
             searchwords = [searchwords]
         if not searchwords:
@@ -1338,10 +1351,7 @@ class WaptDB(object):
                 left join wapt_package r on r.package=l.package and l.version=r.version and (l.architecture is null or l.architecture=r.architecture)
               where l.install_status in ("OK","UNKNOWN") and %s
            """ % " and ".join(search),words)
-        result = {}
-        for p in q:
-            result[p.package]= p
-        return result
+        return q
 
     def installed_matching(self,package_cond):
         """Return True if one installed package match te package condition 'tis-package (>=version)' """
@@ -2085,7 +2095,7 @@ class Wapt(object):
         """Download sources of package (if referenced in package as a https svn)
            in the current directory"""
         entry = self.waptdb.packages_matching(package)[-1]
-        if not entry.Sources:
+        if not entry.sources:
             raise Exception('No sources defined in package control file')
         if "PROGRAMW6432" in os.environ:
             svncmd = os.path.join(os.environ['PROGRAMW6432'],'TortoiseSVN','bin','svn.exe')
@@ -2456,6 +2466,37 @@ class Wapt(object):
            Package,Current Version,Available version
         """
         return self.waptdb.upgradeable().values()
+
+    def search(self,searchwords=[]):
+        """Returns a list of packages which have the searchwords
+           in their description
+        """
+        available = self.waptdb.packages_search(searchwords=searchwords)
+        installed = self.waptdb.installed(include_errors=True)
+        upgradable =  self.waptdb.upgradeable()
+        for p in available:
+            if p.package in installed:
+                current = installed[p.package]
+                if p.version == current.version:
+                    p['installed'] = current
+                    if p.package in upgradable:
+                        p['status'] = 'U'
+                    else:
+                        p['status'] = 'I'
+                else:
+                    p['installed'] = None
+                    p['status'] = '-'
+            else:
+                p['installed'] = None
+                p['status'] = '-'
+
+        return available
+
+    def list(self,searchwords=[]):
+        """Returns a list of installed packages which have the searchwords
+           in their description
+        """
+        return self.waptdb.installed_search(searchwords=searchwords)
 
     def download_upgrades(self):
         """Download packages that can be upgraded"""
@@ -2856,7 +2897,7 @@ def install():
             entry.section = 'base'
             entry.version = props.get('FileVersion',props.get('ProductVersion','0.0.0'))+'-00'
             if self.config.has_option('global','default_sources_url'):
-                entry.Sources = self.config.get('global','default_sources_url') % {'packagename':packagename}
+                entry.sources = self.config.get('global','default_sources_url') % {'packagename':packagename}
             codecs.open(control_filename,'w',encoding='utf8').write(entry.ascontrol())
         else:
             logger.info('control file already exists, skip create')
@@ -2932,7 +2973,7 @@ def install():
             entry.filename = entry.make_package_filename()
 
             if self.config.has_option('global','default_sources_url'):
-                entry.Sources = self.config.get('global','default_sources_url') % {'packagename':packagename}
+                entry.sources = self.config.get('global','default_sources_url') % {'packagename':packagename}
             entry.depends = ','.join([u'%s' % k for k in self.waptdb.installed().keys() if k and k<>packagename ])
             codecs.open(control_filename,'w',encoding='utf8').write(entry.ascontrol())
         else:

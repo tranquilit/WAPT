@@ -251,12 +251,6 @@ def main():
                                 print u"\n=== %s packages ===\n%s" % (k,'\n'.join(["  %s" % (s,) for s in result['downloads'][k]]),)
 
             else:
-                def default_json(o):
-                    if isinstance(o,PackageEntry):
-                        return o.as_dict()
-                    else:
-                        return u"%s" % (ensure_unicode(o),)
-
                 if os.path.isdir(args[1]) or os.path.isfile(args[1]):
                     if action=='install':
                         print json.dumps(mywapt.install_wapt(args[1],params_dict = params_dict),default=default_json,indent=True)
@@ -523,13 +517,13 @@ def main():
             if options.update_packages:
                 print u"Update package list"
                 mywapt.update()
-            result = mywapt.waptdb.packages_search(args[1:])
-            print ppdicttable(result,(('package',30),('version',10),('description',80),('repo',10)))
+            result = mywapt.search(args[1:])
+            print ppdicttable(result,(('status',10),('package',30),('version',10),('description',80),('repo',10)))
 
         elif action=='search-json':
             if options.update_packages:
                 mywapt.update()
-            print json.dumps([p.as_dict() for p in mywapt.waptdb.packages_search(args[1:])])
+            print json.dumps([p.as_dict() for p in mywapt.search(args[1:])])
 
         elif action=='cleanup':
             result = mywapt.cleanup()
@@ -556,10 +550,10 @@ def main():
                     return value[0:16]
                 else:
                     return value
-            print ppdicttable(mywapt.waptdb.installed_search(args[1:]).values(),(('package',20),('version',15),('install_status',10),('install_date',16),('description',80)),callback=cb)
+            print ppdicttable(mywapt.list(args[1:]),(('package',20),('version',15),('install_status',10),('install_date',16),('description',80)),callback=cb)
 
         elif action=='list-json':
-            print json.dumps([p.as_dict() for p in mywapt.waptdb.installed_search(args[1:]).values()])
+            print json.dumps([p.as_dict() for p in mywapt.search(args[1:])])
 
         else:
             print u'Unknown action %s' % action

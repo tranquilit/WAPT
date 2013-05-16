@@ -35,6 +35,7 @@ type
   { TVisAppWAPTService }
 
   TVisAppWAPTService = class(TForm)
+    PythonEngine1: TAtomPythonEngine;
     Button1: TButton;
     EdGroup: TEdit;
     eduser: TEdit;
@@ -64,7 +65,6 @@ type
     waptdb : TWAPTDB;
   public
     { public declarations }
-    pythonengine1:TPythonEngine;
   end;
 
 var
@@ -118,12 +118,24 @@ end;
 
 procedure TVisAppWAPTService.TestPythonClick(Sender: TObject);
 begin
+
   PythonEngine1.ExecString(testedit.Lines.Text);
   ShowMessage(PythonEngine1.EvalStringAsStr('mywapt.update()'));
 end;
 
+
 procedure TVisAppWAPTService.FormCreate(Sender: TObject);
 begin
+  with pythonEngine1 do
+  begin
+    DllName := 'python27.dll';
+    RegVersion := '2.7';
+    UseLastKnownVersion := False;
+    LoadDLL;
+    Initialize;
+    Py_SetProgramName(PAnsiChar(ParamStr(0)));
+  end;
+
   waptdb := TWAPTDB.Create(WaptDBPath);
   waptdb.OpenDB;
 end;
