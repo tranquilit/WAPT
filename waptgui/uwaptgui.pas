@@ -6,8 +6,9 @@ interface
 
 uses
   Classes, SysUtils, memds, BufDataset, FileUtil, SynHighlighterPython, SynEdit,
-  SynMemo, LSControls, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
-  ComCtrls, ActnList, Menus, AtomPythonEngine, PythonGUIInputOutput;
+  SynMemo, vte_edittree, LSControls, Forms, Controls, Graphics, Dialogs,
+  ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, AtomPythonEngine,
+  PythonGUIInputOutput;
 
 type
 
@@ -43,6 +44,7 @@ type
     TabSheet3: TTabSheet;
     TabSheet4: TTabSheet;
     testedit: TSynEdit;
+    VirtualEditTree1: TVirtualEditTree;
     procedure ActInstallExecute(Sender: TObject);
     procedure ActSearchPackageExecute(Sender: TObject);
     procedure butInitWaptClick(Sender: TObject);
@@ -113,7 +115,7 @@ end;
 
 procedure TVisWaptGUI.ActSearchPackageExecute(Sender: TObject);
 var
-  expr,res:String;
+  expr,res:UTF8String;
   packages,package:ISuperObject;
   item : TListItem;
 begin
@@ -122,7 +124,7 @@ begin
   Memo1.Lines.Append(expr);
   res := PythonEngine1.EvalStringAsStr(expr);
   Memo1.Lines.Append(res);
-  packages := SO(res);
+  packages := SO( UTF8Decode(res) );
   if packages<>Nil then
   try
     lstPackages.BeginUpdate;

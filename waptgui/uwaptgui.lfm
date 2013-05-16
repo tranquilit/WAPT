@@ -1,21 +1,21 @@
 object VisWaptGUI: TVisWaptGUI
   Left = 506
-  Height = 662
-  Top = 248
+  Height = 495
+  Top = 415
   Width = 1147
   Caption = 'VisWaptGUI'
-  ClientHeight = 662
+  ClientHeight = 495
   ClientWidth = 1147
   OnCreate = FormCreate
   LCLVersion = '1.1'
   object PageControl1: TPageControl
     Left = 0
-    Height = 544
+    Height = 377
     Top = 0
     Width = 1147
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Align = alClient
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Sources'
@@ -644,7 +644,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object TabSheet2: TTabSheet
       Caption = 'Recherche packages'
-      ClientHeight = 518
+      ClientHeight = 351
       ClientWidth = 1139
       object Panel4: TPanel
         Left = 0
@@ -675,7 +675,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object lstPackages: TListView
         Left = 0
-        Height = 484
+        Height = 317
         Top = 34
         Width = 1139
         Align = alClient
@@ -719,6 +719,31 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 1
         ViewStyle = vsReport
       end
+      object VirtualEditTree1: TVirtualEditTree
+        Left = 604
+        Height = 272
+        Top = 66
+        Width = 344
+        BorderStyle = bsSingle
+        Color = clWhite
+        DefaultText = 'Node'
+        Header.AutoSizeIndex = 0
+        Header.Columns = <        
+          item
+            Position = 0
+          end        
+          item
+            Position = 1
+          end        
+          item
+            Position = 2
+          end        
+          item
+            Position = 3
+          end>
+        Header.DefaultHeight = 17
+        TabOrder = 2
+      end
     end
     object TabSheet3: TTabSheet
       Caption = 'Mise à jour package'
@@ -730,7 +755,7 @@ object VisWaptGUI: TVisWaptGUI
   object Panel3: TPanel
     Left = 0
     Height = 118
-    Top = 544
+    Top = 377
     Width = 1147
     Align = alBottom
     ClientHeight = 118
