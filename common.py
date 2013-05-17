@@ -74,7 +74,7 @@ from setuphelpers import ensure_unicode
 
 import types
 
-__version__ = "0.1.9"
+__version__ = "0.1.10"
 
 logger = logging.getLogger()
 
@@ -1204,10 +1204,12 @@ class WaptDB(object):
                          repo=package_entry.repo)
 
 
-    def add_start_install(self,package,version,architecture,params_dict={}):
+    def add_start_install(self,package,version,architecture,params_dict={},explicit_by=None):
         """Register the start of installation in local db
             params_dict is the dictionary pf parameters provided on command line with --params
               or by the server
+            explicit_by : username of initiator of the install.
+                          if not None, install is not a dependencie but an explicit manual install
             setuppy is the python source code used for install, uninstall or session_setup
               code used for uninstall or session_setup must use only wapt self library as
               package content is not longer available at this step.
@@ -1222,8 +1224,9 @@ class WaptDB(object):
                     install_date,
                     install_status,
                     install_output,
-                    install_params
-                    ) values (?,?,?,?,?,?,?)
+                    install_params,
+                    explicit_by
+                    ) values (?,?,?,?,?,?,?,?)
                 """,(
                      package,
                      version,
@@ -1232,6 +1235,7 @@ class WaptDB(object):
                      'INIT',
                      '',
                      json.dumps(params_dict),
+                     explicit_by,
                    ))
         finally:
             self.db.commit()
@@ -1255,6 +1259,22 @@ class WaptDB(object):
         finally:
             self.db.commit()
         return cur.lastrowid
+
+    def switch_to_explicit_mode(self,package,user_id):
+        """Set package install mode to manual so that package is not removed when meta packages don't require it anymore"""
+        try:
+            cur = self.db.execute("""\
+                  update wapt_localstatus
+                    set explicit_by=? where package = ?
+                """,(
+                     user_id,
+                     package,
+                     )
+                   )
+        finally:
+            self.db.commit()
+        return cur.lastrowid
+
 
     def store_setuppy(self,rowid,setuppy=None,install_params={}):
         """Update status of package installation on localdb"""
@@ -1318,7 +1338,7 @@ class WaptDB(object):
     def installed(self,include_errors=False):
         """Return a dictionary of installed packages : keys=package, values = PackageEntry """
         sql = ["""\
-              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,
+              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,
                 r.section,r.priority,r.maintainer,r.description,r.depends,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo
                 from wapt_localstatus l
@@ -1344,7 +1364,7 @@ class WaptDB(object):
             words = [ "%"+w.lower()+"%" for w in searchwords ]
             search = ["lower(l.package || (case when r.description is NULL then '' else r.description end) ) like ?"] *  len(words)
         q = self.query_package_entry("""\
-              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,
+              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,
                 r.section,r.priority,r.maintainer,r.description,r.depends,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo
                  from wapt_localstatus l
@@ -1357,7 +1377,7 @@ class WaptDB(object):
         """Return True if one installed package match te package condition 'tis-package (>=version)' """
         package = REGEX_PACKAGE_CONDITION.match(package_cond).groupdict()['package']
         q = self.query_package_entry("""\
-              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.setuppy,
+              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.setuppy,l.explicit_by,
                 r.section,r.priority,r.maintainer,r.description,r.depends,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo
                 from wapt_localstatus l
@@ -1892,7 +1912,7 @@ class Wapt(object):
                 errors.append(filename)
         return errors
 
-    def install_wapt(self,fname,params_dict={},public_cert=''):
+    def install_wapt(self,fname,params_dict={},public_cert='',explicit_by=None):
         """Install a single wapt package given its WAPT filename."""
         logger.info(u"Register start of install %s as user %s to local DB with params %s" % (fname, setuphelpers.get_current_user(), params_dict))
         logger.info(u"Interactive user:%s, usergroups %s" % (self.user,self.usergroups))
@@ -1920,7 +1940,7 @@ class Wapt(object):
                     params_dict[name] = old_install_params[name]
 
         install_id = None
-        install_id = self.waptdb.add_start_install(entry.package ,entry.version,entry.architecture,params_dict=params_dict)
+        install_id = self.waptdb.add_start_install(entry.package ,entry.version,entry.architecture,params_dict=params_dict,explicit_by=explicit_by)
         # we setup a redirection of stdout to catch print output from install scripts
         sys.stderr = sys.stdout = install_output = LogInstallOutput(sys.stdout,self.waptdb,install_id)
         hdlr = logging.StreamHandler(install_output)
@@ -2305,9 +2325,19 @@ class Wapt(object):
         def fname(packagefilename):
             return os.path.join(self.packagecachedir,packagefilename)
         if not download_only:
+            # switch to manual mode
+            for (request,p) in skipped:
+                if request in apackages and not p.explicit_by:
+                    logger.info('switch to manual mode for %s' % (request,))
+                    self.waptdb.switch_to_explicit_mode(p.package,self.user)
+
             for (request,p) in to_install:
                 print u"install %s" % (p.package,)
-                result = self.install_wapt(fname(p.filename),params_dict = params_dict,public_cert=self.get_public_cert(repository=p.repo))
+                result = self.install_wapt(fname(p.filename),
+                    params_dict = params_dict,
+                    public_cert=self.get_public_cert(repository=p.repo),
+                    explicit_by=self.user if request in apackages else None
+                    )
                 if result<>'OK':
                     actions['errors'].append([request,p])
                     logger.critical(u'Package %s (%s) not installed due to errors' %(request,p))
@@ -2916,8 +2946,9 @@ def install():
             logger.info('control file already exists, skip create')
         return (directoryname)
 
-    def makehosttemplate(self,packagename='',directoryname=''):
+    def makehosttemplate(self,packagename='',depends=None,directoryname=''):
         """Build a skeleton of WAPT package based on the properties of the supplied installer
+            depends : list of package dependencies. If None, use currently explicitly installed packages
            Return the path of the skeleton
         """
         packagename = packagename.lower()
@@ -2959,12 +2990,17 @@ def install():
         else:
             logger.info('setup.py file already exists, skip create')
 
+        if depends and not isinstance(depends,list):
+            depends = depends.split(',')
+
         control_filename = os.path.join(directoryname,'WAPT','control')
+        entry = PackageEntry()
         if not os.path.isfile(control_filename):
-            entry = PackageEntry()
-            entry.package = packagename
+            entry.priority = 'standard'
+            entry.section = 'host'
+            entry.version = '0.0.0-00'
             entry.architecture='all'
-            entry.description = 'host package for %s ' % packagename
+            entry.description = 'Host package for %s ' % packagename
             try:
                 entry.maintainer = ensure_unicode(win32api.GetUserNameEx(3))
             except:
@@ -2972,25 +3008,30 @@ def install():
                     entry.maintainer = ensure_unicode(setuphelpers.get_current_user())
                 except:
                     entry.maintainer = os.environ['USERNAME']
-
-            entry.priority = 'optional'
-            entry.section = 'host'
-            entry.version = '0.0.0-00'
-
-            # Check existing versions and increment it
-            older_packages = self.is_available(entry.package)
-            if older_packages and entry<=older_packages[-1]:
-                entry.version = older_packages[-1].version
-                entry.inc_build()
-
-            entry.filename = entry.make_package_filename()
-
-            if self.config.has_option('global','default_sources_url'):
-                entry.sources = self.config.get('global','default_sources_url') % {'packagename':packagename}
-            entry.depends = ','.join([u'%s' % k for k in self.waptdb.installed().keys() if k and k<>packagename ])
-            codecs.open(control_filename,'w',encoding='utf8').write(entry.ascontrol())
         else:
-            logger.info('control file already exists, skip create')
+            entry.load_control_from_wapt(directoryname)
+
+        entry.package = packagename
+
+        # Check existing versions and increment it
+        older_packages = self.is_available(entry.package)
+        if older_packages and entry<=older_packages[-1]:
+            entry.version = older_packages[-1].version
+            entry.inc_build()
+
+        entry.filename = entry.make_package_filename()
+
+        if self.config.has_option('global','default_sources_url'):
+            entry.sources = self.config.get('global','default_sources_url') % {'packagename':packagename}
+        if depends is None:
+            # get list of explicitly installed packages
+            entry.depends = ','.join([u'%s' % p.package for p in self.waptdb.installed().values() if p and p.package <> packagename and p.explicit_by])
+        elif depends:
+            # use supplied list of packages
+            entry.depends = ','.join([u'%s' % p for p in depends if p and p<>packagename ])
+
+        codecs.open(control_filename,'w',encoding='utf8').write(entry.ascontrol())
+
         return (directoryname)
 
 
@@ -3007,6 +3048,11 @@ def install():
         """Checks if a package (with optional version condition) is available.
             Return package entry or None"""
         return self.waptdb.packages_matching(packagename)
+
+    def edit_package(self,packagename,target_directory=''):
+        """Download an existing package from repositories into targetdirectory for modification
+            Return the the directory name of the package sources"""
+        return self.duplicate_package(packagename=packagename,newname=packagename,target_directory=target_directory,build=False)
 
     def duplicate_package(self,packagename,newname=None,newversion='',target_directory='',
             build=True,

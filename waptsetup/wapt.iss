@@ -1,4 +1,3 @@
-
 #define AppName "WAPT"
 #define SrcApp AddBackslash(SourcePath) + "..\wapt-get.exe"
 #define FileVerStr GetFileVersion(SrcApp)
@@ -56,13 +55,13 @@ AppPublisherURL=http://www.tranquil.it
 AppUpdatesURL=http://wapt.tranquil.it/wapt/waptsetup.exe
 AppContact=dev@tranquil.it
 AppSupportPhone=+33 2 40 97 57 55
-SignTool=kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f
 CloseApplications=False
 PrivilegesRequired=admin
 MinVersion=0,5.0sp4
 LicenseFile=..\COPYING.txt
 RestartIfNeededByRun=False
 SetupIconFile=..\wapt.ico
+SignTool=kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f
 
 [Registry]
 Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"; Check: NeedsAddPath('{app}')
@@ -73,6 +72,9 @@ Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetR
 Filename: {app}\wapt-get.ini; Section: global; Key: public_cert; String: {code:GetPublicCert}
 Filename: {app}\wapt-get.ini; Section: global; Key: waptupdate_task_period; String: 120; Flags: createkeyifdoesntexist 
 Filename: {app}\wapt-get.ini; Section: global; Key: waptupdate_task_maxruntime; String: 30; Flags: createkeyifdoesntexist
+Filename: {app}\wapt-get.ini; Section: tranquilit; Key: repo_url; String: {code:GetSecondRepoURL}
+Filename: {app}\wapt-get.ini; Section: tranquilit; Key: public_cert; String: {code:GetSecondPublicCert}
+Filename: {app}\wapt-get.ini; Section: global; Key: repositories; String: tranquilit; Flags: createkeyifdoesntexist
 
 [Run]
 Filename: "msiexec.exe"; Parameters: "/q /i ""{tmp}\vc_redist\vc_red.msi"""; WorkingDir: "{tmp}"; StatusMsg: "Updating MS VC++ libraries for OpenSSL..."; Description: "Update MS VC++ libraries"
@@ -101,7 +103,7 @@ Filename: "{app}\waptservice.exe"; Parameters: "--uninstall"; Flags: runhidden; 
 var
   rbCustomRepo: TNewRadioButton;
   rbDnsRepo: TNewRadioButton;
-  cbWaptUpdate : TCheckbox ;
+  cbSecondRepos : TCheckbox ;
   bIsVerySilent: boolean;
   teWaptUrl,teWaptPublicCert: TEdit;
   lab1:TLabel;
@@ -146,13 +148,12 @@ begin
   teWaptPublicCert.Width := 300;
   
   
-//  cbWaptUpdate := TCheckbox.Create(WizardForm);
-//  cbWaptUpdate.Parent := CustomPage.Surface;
-//  cbWaptUpdate.Top := rbDnsRepo.Top + rbDnsRepo.Height + ScaleY(15);
-//  cbWaptUpdate.Width := CustomPage.SurfaceWidth;
-//  cbWaptUpdate.checked := True;
-//  cbWaptUpdate.Caption := 'mise à jour de la liste des paquets'
-  
+  cbSecondRepos := TCheckbox.Create(WizardForm);
+  cbSecondRepos.Parent := CustomPage.Surface;
+  cbSecondRepos.Top := lab1.Top + lab1.Height + ScaleY(15);
+  cbSecondRepos.Width := CustomPage.SurfaceWidth;
+  cbSecondRepos.checked := False;
+  cbSecondRepos.Caption := 'Use Tranquilit public repository as secondary source'
 end;
 
 procedure CurPageChanged(CurPageID: Integer);
@@ -175,6 +176,24 @@ begin
        result := teWaptUrl.Text
     else 
        result :='';
+end;
+
+function GetSecondRepoURL(Param: String):String;
+begin
+  if WizardSilent then
+    result := GetIniString('tranquilit', 'repo_url', 'http://wapt/wapt-tranquilit',ExpandConstant('{app}\wapt-get.ini'))
+  else
+    if cbSecondRepos.Checked then
+       result := GetIniString('tranquilit', 'repo_url', 'http://wapt/wapt-tranquilit',ExpandConstant('{app}\wapt-get.ini'))
+end;
+
+function GetSecondPublicCert(Param: String):String;
+begin
+  if WizardSilent then
+    result := GetIniString('tranquilit', 'public_cert', ExpandConstant('{app}\ssl\tranquilit.crt'), ExpandConstant('{app}}\wapt-get.ini'))
+  else
+    if cbSecondRepos.Checked then
+      result := GetIniString('tranquilit', 'public_cert', ExpandConstant('{app}\ssl\tranquilit.crt'), ExpandConstant('{app}}\wapt-get.ini'))
 end;
 
 function GetPublicCert(Param: String):String;
@@ -261,5 +280,4 @@ begin
   Result := Pos(';' + UpperCase(ExpandConstant(Param)) + ';', UpperCase(OrigPath)) = 0;
   
 end;
-
 

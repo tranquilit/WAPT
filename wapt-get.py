@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.20"
+__version__ = "0.8.21"
 
 import sys
 import os
@@ -64,7 +64,7 @@ action is either :
   list-upgrade      : list upgradable packages
   download-upgrade  : download available upgradable packages
   search [keywords] : search installable packages whose description contains keywords
-  cleanup           : remove all WAPT cached files from local drive
+  clean             : remove all WAPT cached files from local drive
 
   setup-tasks       : creates Windows daily scheduled tasks for update/download-upgrade/upgrade
   enable-tasks
@@ -81,7 +81,11 @@ action is either :
   list-registry [keywords]  : list installed software from Windows Registry
   sources <package>         : get sources of a package (if attribute Sources was supplied in control file)
   make-template <installer-path> [<packagename> [<source directoryname>]] : initializes a package template with an installer (exe or msi)
-  make-host-template [<packagename> : initializes a package meta template with currently installed packages. If no package name is given, use FQDN
+  make-host-template <machinename> [[<package>,<package>,...] [directory]] :
+                                initializes a package meta template with packages.
+                                If no package name is given, use FQDN
+                                If no packages are given, use currently installed
+
   build-package <directory> : creates a WAPT package from supplied directory
   sign-package <directory or package>  : add a signature of the manifest using a private SSL key
   build-upload <directory> : creates a WAPT package from supplied directory, sign it and upload it
@@ -530,7 +534,7 @@ def main():
                 mywapt.update()
             print json.dumps([p.as_dict() for p in mywapt.search(args[1:])])
 
-        elif action=='cleanup':
+        elif action in ('clean','cleanup'):
             result = mywapt.cleanup()
             print u"Removed files : \n%s" % "\n".join([ "  %s" % p for p in result ])
 
