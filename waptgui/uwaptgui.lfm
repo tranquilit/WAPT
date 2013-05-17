@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 506
+  Left = 463
   Height = 495
-  Top = 415
+  Top = 122
   Width = 1147
   Caption = 'VisWaptGUI'
   ClientHeight = 495
@@ -684,27 +684,27 @@ object VisWaptGUI: TVisWaptGUI
           item
             AutoSize = True
             Caption = 'Package'
-            Width = 64
-          end        
-          item
-            AutoSize = True
-            Caption = 'Status'
             Width = 71
           end        
           item
             AutoSize = True
+            Caption = 'Status'
+            Width = 43
+          end        
+          item
+            AutoSize = True
             Caption = 'Version'
-            Width = 59
+            Width = 47
           end        
           item
             AutoSize = True
             Caption = 'Description'
-            Width = 77
+            Width = 65
           end        
           item
             AutoSize = True
             Caption = 'Depends'
-            Width = 864
+            Width = 909
           end>
         Items.LazData = {
           8300000003000000FFFFFFFFFFFFFFFFFFFFFFFF030000000400000074657374
@@ -810,15 +810,15 @@ object VisWaptGUI: TVisWaptGUI
     UseLastKnownVersion = False
     IO = PythonGUIInputOutput1
     OnAfterInit = PythonEngine1AfterInit
-    left = 456
-    top = 184
+    left = 352
+    top = 128
   end
   object PythonGUIInputOutput1: TPythonGUIInputOutput
     UnicodeIO = False
     RawOutput = False
     Output = Memo1
-    left = 456
-    top = 240
+    left = 352
+    top = 184
   end
   object BufDataset1: TBufDataset
     FieldDefs = <>

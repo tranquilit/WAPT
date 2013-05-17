@@ -221,7 +221,7 @@ class PackageEntry(object):
             if hasattr(self,k):
                 setattr(self,k,adict[k])
 
-    def load_control_from_wapt(self,fname):
+    def load_control_from_wapt(self,fname,calc_md5=True):
         """Load package attributes from the control file (utf8 encoded) included in WAPT zipfile fname
           fname can be
            - the path to WAPT file itelsef (zip file)
@@ -258,7 +258,10 @@ class PackageEntry(object):
                 setattr(self,param,value)
 
         if not type(fname) is list and os.path.isfile(fname):
-            self.md5sum = md5_for_file(fname)
+            if calc_md5:
+                self.md5sum = md5_for_file(fname)
+            else:
+                self.md5sum = ''
             self.size = os.path.getsize(fname)
             self.filename = os.path.basename(fname)
         else:
@@ -309,9 +312,12 @@ sources      : %(sources)s
 
     def make_package_filename(self):
         """Return the standard package filename based on current attributes"""
-        if not (self.package and self.version and self.architecture):
+        if not self.section in ['host'] and not (self.package and self.version and self.architecture):
             raise Exception(u'Not enough information to build the package filename')
-        return self.package + '_' + self.version + '_' +  self.architecture  + '.wapt'
+        if self.section in ['host']:
+            return self.package+'.wapt'
+        else:
+            return self.package + '_' + self.version + '_' +  self.architecture  + '.wapt'
 
     def asrequirement(self):
         return "%s (=%s)" % (self.package,self.version)
@@ -352,7 +358,7 @@ def update_packages(adir):
             logger.warning(u'error reading old Packages file. Reset... (%s)' % e)
 
     old_entries = {}
-    # we get old list to not recompute MD5 if filename has not changed
+    # we get old list to not recompute MD5 if version has not changed
     logger.debug(u"parsing old entries...")
 
     # last line
@@ -388,12 +394,17 @@ def update_packages(adir):
     packages = []
     for fname in waptlist:
         try:
+            entry = PackageEntry()
             if os.path.basename(fname) in old_entries:
-                logger.info(u"  Keeping %s" % fname)
-                entry = old_entries[os.path.basename(fname)]
+                entry.load_control_from_wapt(fname,calc_md5=False)
+                if entry == old_entries[os.path.basename(fname)]:
+                    logger.info(u"  Keeping %s" % fname)
+                    entry = old_entries[os.path.basename(fname)]
+                else:
+                    logger.info(u"  Processing %s" % fname)
+                    entry.load_control_from_wapt(fname)
             else:
                 logger.info(u"  Processing %s" % fname)
-                entry = PackageEntry()
                 entry.load_control_from_wapt(fname)
             packages.append(entry.ascontrol(with_non_control_attributes=True))
         except Exception,e:

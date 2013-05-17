@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.19"
+__version__ = "0.8.20"
 
 import sys
 import os
@@ -84,6 +84,7 @@ action is either :
   make-host-template [<packagename> : initializes a package meta template with currently installed packages. If no package name is given, use FQDN
   build-package <directory> : creates a WAPT package from supplied directory
   sign-package <directory or package>  : add a signature of the manifest using a private SSL key
+  build-upload <directory> : creates a WAPT package from supplied directory, sign it and upload it
   duplicate <directory or package> [<new-package-name> [<new-version> [<target directory>]]]: duplicate an existing package,
                                             changing its name (can be used for duplication of host packages...)
 
@@ -261,7 +262,6 @@ def main():
                     print json.dumps(mywapt.install(args[1:],force = options.force,params_dict = params_dict,
                         download_only= (action=='download'),
                         ),default=default_json,indent=True)
-
 
         elif action=='download':
             if len(args)<2:
@@ -443,7 +443,7 @@ def main():
             else:
                 print u"Package duplicated. You can upload the new WAPT package to repository by launching\n  %s upload-package %s" % (sys.argv[0],source_dir)
 
-        elif action=='build-package':
+        elif action in ('build-package','build-upload'):
             if len(args)<2:
                 print u"You must provide at least one source directory for package building"
                 sys.exit(1)
@@ -477,7 +477,12 @@ def main():
                             logger.warning(u'No private key provided, package %s is unsigned !' % package_fn)
 
                         if mywapt.upload_cmd:
-                            print u'\nYou can upload to repository with\n  %s upload-package %s ' % (sys.argv[0],package_fn )
+                            if action == 'build-upload':
+                                print setuphelpers.run(mywapt.upload_cmd % {'waptfile': package_fn  })
+                                if mywapt.after_upload:
+                                    print setuphelpers.run(mywapt.after_upload % {'waptfile': package_fn  })
+                            else:
+                                print u'\nYou can upload to repository with\n  %s upload-package %s ' % (sys.argv[0],package_fn )
                         sys.exit(0)
                     else:
                         logger.critical(u'package not created')
