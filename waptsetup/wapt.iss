@@ -71,11 +71,13 @@ Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\wapt-ge
 [INI]
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL}
 Filename: {app}\wapt-get.ini; Section: global; Key: public_cert; String: {code:GetPublicCert}
+Filename: {app}\wapt-get.ini; Section: global; Key: waptupdate_task_period; String: 120
 
 [Run]
 Filename: "msiexec.exe"; Parameters: "/q /i ""{tmp}\vc_redist\vc_red.msi"""; WorkingDir: "{tmp}"; StatusMsg: "Updating MS VC++ libraries for OpenSSL..."; Description: "Update MS VC++ libraries"
 Filename: "{app}\wapt-get.exe"; Parameters: "upgradedb"; Flags: runhidden; StatusMsg: "Upgrading local sqlite database structure"; Description: "Upgrade packages list"
 Filename: "{app}\wapt-get.exe"; Parameters: "update"; Tasks: updateWapt; Flags: runhidden; StatusMsg: "Updating packages list"; Description: "Update packages list from main repository"
+Filename: "{app}\wapt-get.exe"; Parameters: "setuptasks"; Tasks: setuptasks; Flags: runhidden; StatusMsg: "Setting up daily sheduled tasks"; Description: "Set up daily sheduled tasks"
 Filename: "{app}\wapttray.exe"; Tasks: installTray; Flags: runminimized nowait runasoriginaluser postinstall; StatusMsg: "Launch WAPT tray icon"; Description: "Launch WAPT tray icon"
 
 [Icons]
@@ -86,6 +88,7 @@ Name: updateWapt; Description: "Update package list after setup";
 Name: installService; Description: "Install WAPT Service";
 Name: installTray; Description: "Install WAPT Tray icon";
 Name: autorunTray; Description: "Start WAPT Tray icon at logon";
+Name: setuptasks; Description: "Creates windows scheduled tasks for update and upgrade";
 
 [UninstallRun]
 Filename: "taskkill"; Parameters: "/t /im ""wapttray.exe"" /f"; Flags: runhidden; StatusMsg: "Stopping wapt tray"
