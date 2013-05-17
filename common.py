@@ -74,7 +74,7 @@ from setuphelpers import ensure_unicode
 
 import types
 
-__version__ = "0.1.10"
+__version__ = "0.1.11"
 
 logger = logging.getLogger()
 
@@ -2990,9 +2990,6 @@ def install():
         else:
             logger.info('setup.py file already exists, skip create')
 
-        if depends and not isinstance(depends,list):
-            depends = depends.split(',')
-
         control_filename = os.path.join(directoryname,'WAPT','control')
         entry = PackageEntry()
         if not os.path.isfile(control_filename):
@@ -3023,6 +3020,22 @@ def install():
 
         if self.config.has_option('global','default_sources_url'):
             entry.sources = self.config.get('global','default_sources_url') % {'packagename':packagename}
+
+        # check if depends should be appended to existing depends
+        if (isinstance(depends,str) or isinstance(depends,unicode)) and depends.startswith('+'):
+            append_depends = True
+            depends = depends[1:]
+            current = entry.depends.split(',')
+            for d in depends.split(','):
+                if not d in current:
+                    current.append(d)
+            depends = current
+        else:
+            append_depends = False
+
+        if depends and not isinstance(depends,list):
+            depends = depends.split(',')
+
         if depends is None:
             # get list of explicitly installed packages
             entry.depends = ','.join([u'%s' % p.package for p in self.waptdb.installed().values() if p and p.package <> packagename and p.explicit_by])

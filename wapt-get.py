@@ -447,6 +447,15 @@ def main():
             else:
                 print u"Package duplicated. You can upload the new WAPT package to repository by launching\n  %s upload-package %s" % (sys.argv[0],source_dir)
 
+        elif action=='edit':
+            if len(args)<2:
+                print u"You must provide the package to edit"
+                sys.exit(1)
+            source_dir = mywapt.edit_package(*args[1:5])
+            if os.path.isdir(source_dir):
+                os.startfile( source_dir)
+                print u"Package edited. You can build the new WAPT package by launching\n  %s build-package %s" % (sys.argv[0],source_dir)
+
         elif action in ('build-package','build-upload'):
             if len(args)<2:
                 print u"You must provide at least one source directory for package building"

@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.4.15"
+__version__ = "0.4.16"
 
 import os
 import sys
@@ -168,7 +168,7 @@ def wget(url,target,reporthook=None,proxies=None):
     """
     def report(bcount,bsize,total):
         global last_time_display
-        if total>0 and bsize>0:
+        if total>1 and bsize>1:
             # print only every second or at end
             if (time.time()-last_time_display>=1) or (bcount*bsize>=total) :
                 print u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (bcount*bsize,total,100.0*bcount*bsize/total, bsize/(1024*(time.time()-last_time_display))),
@@ -199,6 +199,7 @@ def wget(url,target,reporthook=None,proxies=None):
     try:
         if not reporthook:
             reporthook = report
+        last_time_display = 0
         reporthook(0,chunk_size,total_bytes)
         cnt = 0
         if r.ok:
@@ -214,7 +215,7 @@ def wget(url,target,reporthook=None,proxies=None):
         output_file.close()
 
     #(localpath,headers) = WaptURLopener(proxies=proxies).retrieve(url=url, filename=os.path.join(dir,filename),reporthook=reporthook or report,)
-    print u"  -> download finished (%.0f Kb/s)" % (total_bytes/(1024*(time.time()-start_time)))
+    print u"  -> download finished (%.0f Kb/s)" % (total_bytes/(1024.0*(time.time()+1.0-start_time)))
     return os.path.join(dir,filename)
 
 def filecopyto(filename,target):
