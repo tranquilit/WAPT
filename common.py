@@ -655,15 +655,6 @@ class LogInstallOutput(object):
         txt = ensure_unicode(txt)
         self.console.write(txt)
         if txt <> '\n':
-            """
-            try:
-                txt = txt.decode('utf8')
-            except:
-                try:
-                    txt = txt.decode(locale.getpreferredencoding())
-                except:
-                    pass
-            """
             self.output.append(txt)
             if txt and txt[-1]<>'\n':
                 txtdb = txt+'\n'
@@ -1353,6 +1344,23 @@ class WaptDB(object):
             result[p.package]= p
         return result
 
+    def install_status(self,id):
+        """Return a PackageEntry of the local install status for id"""
+        sql = ["""\
+              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,l.setuppy,
+                r.section,r.priority,r.maintainer,r.description,r.depends,r.sources,r.filename,r.size,
+                r.repo_url,r.md5sum,r.repo
+                from wapt_localstatus l
+                left join wapt_package r on r.package=l.package and l.version=r.version and (l.architecture is null or l.architecture=r.architecture)
+                where l.id = ?
+           """]
+
+        q = self.query_package_entry('\n'.join(sql),args = [id])
+        if q:
+            return q[0]
+        else:
+            return None
+
     def installed_search(self,searchwords=[]):
         """Return a list of installed package entries"""
         if not isinstance(searchwords,list) and not isinstance(searchwords,tuple):
@@ -1913,7 +1921,8 @@ class Wapt(object):
         return errors
 
     def install_wapt(self,fname,params_dict={},public_cert='',explicit_by=None):
-        """Install a single wapt package given its WAPT filename."""
+        """Install a single wapt package given its WAPT filename.
+        return install status"""
         logger.info(u"Register start of install %s as user %s to local DB with params %s" % (fname, setuphelpers.get_current_user(), params_dict))
         logger.info(u"Interactive user:%s, usergroups %s" % (self.user,self.usergroups))
         status = 'INIT'
@@ -1942,7 +1951,8 @@ class Wapt(object):
         install_id = None
         install_id = self.waptdb.add_start_install(entry.package ,entry.version,entry.architecture,params_dict=params_dict,explicit_by=explicit_by)
         # we setup a redirection of stdout to catch print output from install scripts
-        sys.stderr = sys.stdout = install_output = LogInstallOutput(sys.stdout,self.waptdb,install_id)
+        sys.stderr = sys.stdout = install_output = LogInstallOutput(sys.stderr,self.waptdb,install_id)
+        """
         hdlr = logging.StreamHandler(install_output)
         hdlr.setFormatter(logging.Formatter(u'%(asctime)s %(levelname)s %(message)s'))
         if logger.handlers:
@@ -1951,7 +1961,7 @@ class Wapt(object):
         else:
             old_hdlr = None
             logger.addHandler(hdlr)
-
+        """
         try:
             logger.info(u"Installing package " + fname)
             # case where fname is a wapt zipped file, else directory (during developement)
@@ -2084,8 +2094,7 @@ class Wapt(object):
                     logger.warning(u"Unable to clean tmp dir")
 
             self.waptdb.update_install_status(install_id,status,'',str(new_uninstall_key) if new_uninstall_key else '',str(uninstallstring) if uninstallstring else '')
-            # (entry.package,entry.version,status,json.dumps({'output':install_output.output,'exitstatus':exitstatus}))
-            return status
+            return self.waptdb.install_status(install_id)
 
         except Exception,e:
             if install_id:
@@ -2103,10 +2112,12 @@ class Wapt(object):
         finally:
             if 'setup' in dir():
                 del setup
+            """
             if old_hdlr:
                 logger.handlers[0] = old_hdlr
             else:
                 logger.removeHandler(hdlr)
+            """
             sys.stdout = old_stdout
             sys.stderr = old_stderr
             sys.path = oldpath
@@ -2338,7 +2349,10 @@ class Wapt(object):
                     public_cert=self.get_public_cert(repository=p.repo),
                     explicit_by=self.user if request in apackages else None
                     )
-                if result<>'OK':
+                if result:
+                    for k in result.as_dict():
+                        p[k] = result[k]
+                if not result or result['install_status']<>'OK':
                     actions['errors'].append([request,p])
                     logger.critical(u'Package %s (%s) not installed due to errors' %(request,p))
             return actions
@@ -2375,7 +2389,7 @@ class Wapt(object):
             if os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath)>0 and usecache:
                 # check version
                 try:
-                    cached = PackageEntry
+                    cached = PackageEntry()
                     cached.load_control_from_wapt(fullpackagepath,calc_md5=False)
                     if entry == cached:
                         skipped.append(fullpackagepath)

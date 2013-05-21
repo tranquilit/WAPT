@@ -34,6 +34,7 @@ from common import WaptDB
 from waptpackage import PackageEntry
 from waptpackage import update_packages
 from common import ppdicttable
+from common import jsondump
 import setuphelpers
 from setuphelpers import ensure_unicode
 
@@ -151,83 +152,108 @@ else:
 logger.debug(u'Default encoding : %s ' % sys.getdefaultencoding())
 logger.debug(u'Setting encoding for stdout and stderr to %s ' % encoding)
 
+class JsonOutput(object):
+    """file like to print output to json"""
+    def __init__(self,output,logger):
+        self.output = output
+        self.logger = logger
+
+    def write(self,txt):
+        txt = ensure_unicode(txt)
+        if txt <> '\n':
+            logger.info(txt)
+            self.output.append(txt)
+
+    def __getattrib__(self, name):
+        if hasattr(self.console,'__getattrib__'):
+            return self.console.__getattrib__(name)
+        else:
+            return self.console.__getattribute__(name)
+
 def main():
-    if len(args) == 0:
-        print u"ERROR : You must provide one action to perform"
-        parser.print_usage()
-        sys.exit(2)
-
-    action = args[0]
-
-    # Config file
-    if not os.path.isfile(config_file):
-        logger.error(u"Error : could not find file : " + config_file + ", please check the path")
-
-    logger.debug(u'Config file: %s' % config_file)
-
-    defaults = {
-        'repositories':'',
-        'repo_url':'',
-        'default_source_url':'',
-        'private_key':'',
-        'public_cert':'',
-        'default_development_base':'c:\tranquilit',
-        'default_package_prefix':'tis',
-        'default_sources_suffix':'wapt',
-        'default_sources_url':'',
-        'upload_cmd':'',
-        'wapt_server':'',
-        'loglevel':'info',
-        }
-
-    cp = RawConfigParser(defaults = defaults)
-    cp.read(config_file)
-    if not cp.has_section('global'):
-        cp.add_section('global')
-
-    global loglevel
-    if not loglevel and cp.has_option('global','loglevel'):
-        loglevel = cp.get('global','loglevel')
-        setloglevel(loglevel)
-
-    if options.wapt_url:
-        cp.set('global','repo_url',options.wapt_url)
-
-    mywapt = Wapt(config=cp)
-
-    mywapt.options = options
-
-    if options.private_key:
-        mywapt.private_key = options.private_key
-    else:
-        mywapt.private_key = cp.get('global','private_key')
-
-    if options.language:
-        mywapt.language = options.language
-
-    if options.usergroups:
-        mywapt.usergroups = json.loads(options.usergroups.replace("'",'"'))
-        logger.info(u'User Groups:%s' % (mywapt.usergroups,))
-
-    if options.user:
-        mywapt.user = options.user
-        logger.info(u'Interactive user :%s' % (mywapt.user,))
-
-    mywapt.dry_run = options.dry_run
-    #logger.info(u"Main wapt Repository %s" % mywapt.wapt_repourl)
-    logger.debug(u'WAPT base directory : %s' % mywapt.wapt_base_dir)
-    logger.debug(u'Package cache dir : %s' %  mywapt.packagecachedir)
-    logger.debug(u'WAPT DB Structure version;: %s' % mywapt.waptdb.db_version)
+    jsonresult = {'output':[]}
+    if options.json_output:
+        # redirect output to json list
+        old_stdout = sys.stdout
+        old_stderr = sys.stderr
+        sys.stderr = sys.stdout = output = JsonOutput(jsonresult['output'],logger)
 
     try:
-        params_dict = {}
-        try:
-            params_dict = json.loads(options.params.replace("'",'"'))
-        except:
-            raise Exception('Install Parameters must be in json format')
+        if len(args) == 0:
+            print u"ERROR : You must provide one action to perform"
+            parser.print_usage()
+            sys.exit(2)
 
-        if action=='install' or action=='download':
-            if not options.json_output:
+        action = args[0]
+
+        # Config file
+        if not os.path.isfile(config_file):
+            logger.error(u"Error : could not find file : " + config_file + ", please check the path")
+
+        logger.debug(u'Config file: %s' % config_file)
+
+        defaults = {
+            'repositories':'',
+            'repo_url':'',
+            'default_source_url':'',
+            'private_key':'',
+            'public_cert':'',
+            'default_development_base':'c:\tranquilit',
+            'default_package_prefix':'tis',
+            'default_sources_suffix':'wapt',
+            'default_sources_url':'',
+            'upload_cmd':'',
+            'wapt_server':'',
+            'loglevel':'info',
+            }
+
+        cp = RawConfigParser(defaults = defaults)
+        cp.read(config_file)
+        if not cp.has_section('global'):
+            cp.add_section('global')
+
+        global loglevel
+        if not loglevel and cp.has_option('global','loglevel'):
+            loglevel = cp.get('global','loglevel')
+            setloglevel(loglevel)
+
+        if options.wapt_url:
+            cp.set('global','repo_url',options.wapt_url)
+
+        mywapt = Wapt(config=cp)
+
+        mywapt.options = options
+
+        if options.private_key:
+            mywapt.private_key = options.private_key
+        else:
+            mywapt.private_key = cp.get('global','private_key')
+
+        if options.language:
+            mywapt.language = options.language
+
+        if options.usergroups:
+            mywapt.usergroups = json.loads(options.usergroups.replace("'",'"'))
+            logger.info(u'User Groups:%s' % (mywapt.usergroups,))
+
+        if options.user:
+            mywapt.user = options.user
+            logger.info(u'Interactive user :%s' % (mywapt.user,))
+
+        mywapt.dry_run = options.dry_run
+        #logger.info(u"Main wapt Repository %s" % mywapt.wapt_repourl)
+        logger.debug(u'WAPT base directory : %s' % mywapt.wapt_base_dir)
+        logger.debug(u'Package cache dir : %s' %  mywapt.packagecachedir)
+        logger.debug(u'WAPT DB Structure version;: %s' % mywapt.waptdb.db_version)
+
+        try:
+            params_dict = {}
+            try:
+                params_dict = json.loads(options.params.replace("'",'"'))
+            except:
+                raise Exception('Install Parameters must be in json format')
+
+            if action=='install' or action=='download':
                 if len(args)<2:
                     print u"You must provide at least one package name"
                     sys.exit(1)
@@ -235,16 +261,20 @@ def main():
                 if os.path.isdir(args[1]) or os.path.isfile(args[1]):
                     print u"installing WAPT file %s" % args[1]
                     if action=='install':
-                        mywapt.install_wapt(args[1],params_dict = params_dict)
+                        result = mywapt.install_wapt(args[1],params_dict = params_dict)
                 else:
                     print u"%sing WAPT packages %s" % (action,','.join(args[1:]))
                     if options.update_packages:
                         print u"Update package list"
-                        mywapt.update()
+                        result = mywapt.update()
 
                     result = mywapt.install(args[1:],force = options.force,params_dict = params_dict,
                         download_only= (action=='download'),
                         )
+
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
                     print u"\nResults :"
                     if action<>'download':
                         for k in ('install','additional','upgrade','skipped','errors'):
@@ -255,332 +285,404 @@ def main():
                             if result.get('downloads', {'downloaded':[],'skipped':[],'errors':[]} )[k]:
                                 print u"\n=== %s packages ===\n%s" % (k,'\n'.join(["  %s" % (s,) for s in result['downloads'][k]]),)
 
-            else:
-                if os.path.isdir(args[1]) or os.path.isfile(args[1]):
-                    if action=='install':
-                        print json.dumps(mywapt.install_wapt(args[1],params_dict = params_dict),default=default_json,indent=True)
-                else:
-                    if options.update_packages:
-                        print json.dumps(mywapt.update(),default=default_json,indent=True)
 
-                    print json.dumps(mywapt.install(args[1:],force = options.force,params_dict = params_dict,
-                        download_only= (action=='download'),
-                        ),default=default_json,indent=True)
-
-        elif action=='download':
-            if len(args)<2:
-                print u"You must provide at least one package name to download"
-                sys.exit(1)
-            if options.update_packages:
-                print u"Update package list"
-                mywapt.update()
-            print u"Downloading packages %s" % (','.join(args[1:]),)
-            result = mywapt.download_packages(args[1:],usecache = not options.force )
-            if result['downloaded']:
-                print u"\nDownloaded packages : \n%s" % u"\n".join([ "  %s" % p for p in result['downloaded'] ])
-            if result['skipped']:
-                print u"Skipped packages : \n%s" % u"\n".join([ u"  %s" % p for p in result['skipped'] ])
-            if result['errors']:
-                logger.critical(u'Unable to download some files : %s'% (result['errors'],))
-                sys.exit(1)
-
-        elif action=='show':
-            if len(args)<2:
-                print u"You must provide at least one package name to show"
-                sys.exit(1)
-            if os.path.isdir(args[1]) or os.path.isfile(args[1]):
-                entry = PackageEntry().load_control_from_wapt(args[1])
-                print u"%s" % entry
-            else:
-                print u"Display package control data for %s\n" % (','.join(args[1:]),)
+            elif action=='download':
+                if len(args)<2:
+                    print u"You must provide at least one package name to download"
+                    sys.exit(1)
                 if options.update_packages:
                     print u"Update package list"
                     mywapt.update()
-                for packagename in args[1:]:
-                    entries = mywapt.waptdb.packages_matching(packagename)
-                    if entries:
-                        for e in entries:
-                            print u"%s\n" % e.ascontrol(with_non_control_attributes=True)
-                    else:
-                        print u"None packages found matching package name and version"
-        elif action=='show-params':
-            if len(args)<2:
-                print u"You must provide at one package name to show params for"
-                sys.exit(1)
-            for packagename in args[1:]:
-                params = mywapt.waptdb.params(packagename)
-                print u"%s" % params
-
-        elif action=='list-registry':
-            print u"%-39s%-70s%-20s%-70s" % ('UninstallKey','Software','Version','Uninstallstring')
-            print u'-'*39+'-'*70 + '-'*20 + '-'*70
-            for p in setuphelpers.installed_softwares(' '.join(args[1:])) :
-                print u"%-39s%-70s%-20s%-70s" % (p['key'],p['name'],p['version'],p['uninstall_string'])
-
-        elif action=='showlog':
-            if len(args)<2:
-                print u"You must provide at least one package name"
-                sys.exit(1)
-            for packagename in args[1:]:
-                result = mywapt.last_install_log(packagename)
-                print u"Package : %s\nStatus : %s\n\nInstallation log:\n%s" % (packagename,result['status'],result['log'])
-
-        elif action=='remove':
-            if len(args)<2:
-                print u"You must provide at least one package name to remove"
-                sys.exit(1)
-            for packagename in args[1:]:
-                print u"Removing %s ..." % (packagename,)
-                result = mywapt.remove(packagename,force=options.force)
-                if result['removed']:
-                    print u"Removed packages : \n%s" % u"\n".join([ u"  %s" % p for p in result['removed'] ])
+                print u"Downloading packages %s" % (','.join(args[1:]),)
+                result = mywapt.download_packages(args[1:],usecache = not options.force )
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    if result['downloaded']:
+                        print u"\nDownloaded packages : \n%s" % u"\n".join([ "  %s" % p for p in result['downloaded'] ])
+                    if result['skipped']:
+                        print u"Skipped packages : \n%s" % u"\n".join([ u"  %s" % p for p in result['skipped'] ])
                 if result['errors']:
-                    logger.critical(u'Errors removing some packages : %s'% (result['errors'],))
+                    logger.critical(u'Unable to download some files : %s'% (result['errors'],))
                     sys.exit(1)
 
-        elif action=='session-setup':
-            if len(args)<2:
-                print u"You must provide at least one package to be configured in user's session"
-                sys.exit(1)
+            elif action=='show':
+                if len(args)<2:
+                    print u"You must provide at least one package name to show"
+                    sys.exit(1)
+                result = []
+                if os.path.isdir(args[1]) or os.path.isfile(args[1]):
+                    result.append[PackageEntry().load_control_from_wapt(args[1])]
+                else:
+                    if options.update_packages:
+                        print u"Update package list"
+                        mywapt.update()
+                    for packagename in args[1:]:
+                        result.extend(mywapt.waptdb.packages_matching(packagename))
 
-            for packagename in args[1:]:
-                print u"Configuring %s ..." % (packagename,),
-                mywapt.session_setup(packagename,params_dict=params_dict)
-                print u"done"
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print u"Display package control data for %s\n" % (','.join(args[1:]),)
+                    for p in result:
+                        print p.ascontrol(with_non_control_attributes=True)
 
-        elif action=='uninstall':
-            # launch the setup.uninstall() procedure for the given packages
-            # can be used when registering in registry a custom install with a python script
-            if len(args)<2:
-                print u"You must provide at least one package to be uninstalled"
-                sys.exit(1)
+            elif action=='show-params':
+                if len(args)<2:
+                    print u"You must provide at one package name to show params for"
+                    sys.exit(1)
+                for packagename in args[1:]:
+                    params = mywapt.waptdb.params(packagename)
+                    print u"%s" % params
 
-            for packagename in args[1:]:
-                print u"uninstalling %s ..." % (packagename,),
-                mywapt.uninstall(packagename,params_dict=params_dict)
-                print u"uninstall done"
+            elif action=='list-registry':
+                print u"%-39s%-70s%-20s%-70s" % ('UninstallKey','Software','Version','Uninstallstring')
+                print u'-'*39+'-'*70 + '-'*20 + '-'*70
+                for p in setuphelpers.installed_softwares(' '.join(args[1:])) :
+                    print u"%-39s%-70s%-20s%-70s" % (p['key'],p['name'],p['version'],p['uninstall_string'])
 
-        elif action=='update':
-            print u"Update package list"
-            result = mywapt.update(force=options.force)
-            print u"Total packages : %i" % result['count']
-            print u"Added packages : \n%s" % "\n".join([ "  %s (%s)" % p for p in result['added'] ])
-            print u"Removed packages : \n%s" % "\n".join([ "  %s (%s)" % p for p in result['removed'] ])
-            print u"Repositories URL : \n%s" % "\n".join([ "  %s" % p for p in result['repos'] ])
+            elif action=='showlog':
+                if len(args)<2:
+                    print u"You must provide at least one package name"
+                    sys.exit(1)
+                for packagename in args[1:]:
+                    result = mywapt.last_install_log(packagename)
+                    print u"Package : %s\nStatus : %s\n\nInstallation log:\n%s" % (packagename,result['status'],result['log'])
 
-        elif action=='upgradedb':
-            (old,new) = mywapt.waptdb.upgradedb(force=options.force)
-            if old == new:
-                print u"No database upgrade required, current %s, required %s" % (old,mywapt.waptdb.curr_db_version)
-            else:
-                print u"Old version : %s to new : %s" % (old,new)
-
-        elif action=='upgrade':
-            if options.update_packages:
-                print u"Update package list"
-                mywapt.update()
-            result = mywapt.upgrade()
-            if not result['install'] and not result['additional'] and not result['upgrade'] and not result['skipped']:
-                print u"Nothing to upgrade"
-            else:
-                for k in ('install','additional','upgrade','skipped','errors'):
-                    if result[k]:
-                        print u"\n=== %s packages ===\n%s" % (k,'\n'.join( ["  %-30s | %s (%s)" % (s[0],s[1].package,s[1].version) for s in  result[k]]),)
-
-            sys.exit(0)
-
-        elif action=='list-upgrade':
-            if options.update_packages:
-                print u"Update package list"
-                mywapt.update()
-            q = mywapt.list_upgrade()
-            if not q:
-                print u"Nothing to upgrade"
-            else:
-                print ppdicttable([ p[0] for p in  q],[ ('package',20),('version',10)])
-
-        elif action=='download-upgrade':
-            if options.update_packages:
-                print u"Update package list"
-                mywapt.update()
-            result = mywapt.download_upgrades()
-            print u"Downloaded packages : \n%s" % "\n".join([ "  %s" % p for p in result['downloaded'] ])
-            print u"Skipped packages : \n%s" % "\n".join([ "  %s" % p for p in result['skipped'] ])
-
-            if result['errors']:
-                logger.critical(u'Unable to download some files : %s'% (result['errors'],))
-                sys.exit(1)
-
-        elif action=='update-packages':
-            if len(args)<2:
-                print u"You must provide the directory"
-                sys.exit(1)
-            print update_packages(args[1])
-
-        elif action=='sources':
-            if len(args)<2:
-                print u"You must provide the package name"
-                sys.exit(1)
-            os.startfile(mywapt.get_sources(args[1]))
-
-        elif action=='make-template':
-            if len(args)<2:
-                print u"You must provide the installer path"
-                sys.exit(1)
-            source_dir = mywapt.maketemplate(*args[1:])
-            print u"Template created. You can build the WAPT package by launching\n  %s build-package %s" % (sys.argv[0],source_dir)
-            os.startfile(source_dir)
-
-        elif action=='make-host-template':
-            source_dir = mywapt.makehosttemplate(*args[1:])
-            print u"Template created. You can build the WAPT package by launching\n  %s build-package %s" % (sys.argv[0],source_dir)
-            os.startfile(source_dir)
-
-        elif action=='duplicate':
-            if len(args)<2:
-                print u"You must provide at least the source package. New  name will be FQDN of the host if not provided"
-                sys.exit(1)
-            source_dir = mywapt.duplicate_package(*args[1:5],build=True,private_key=options.private_key)
-            if os.path.isdir(source_dir):
-                os.startfile( source_dir)
-                print u"Package duplicated. You can build the new WAPT package by launching\n  %s build-package %s" % (sys.argv[0],source_dir)
-            else:
-                print u"Package duplicated. You can upload the new WAPT package to repository by launching\n  %s upload-package %s" % (sys.argv[0],source_dir)
-
-        elif action=='edit':
-            if len(args)<2:
-                print u"You must provide the package to edit"
-                sys.exit(1)
-            source_dir = mywapt.edit_package(*args[1:5])
-            if os.path.isdir(source_dir):
-                os.startfile( source_dir)
-                print u"Package edited. You can build the new WAPT package by launching\n  %s build-package %s" % (sys.argv[0],source_dir)
-
-        elif action in ('build-package','build-upload'):
-            if len(args)<2:
-                print u"You must provide at least one source directory for package building"
-                sys.exit(1)
-            for source_dir in [os.path.abspath(p) for p in args[1:]]:
-                if os.path.isdir(source_dir):
-                    print('Building  %s' % source_dir)
-                    result = mywapt.buildpackage(source_dir,
-                        inc_package_release=options.increlease,
-                        excludes=options.excludes.split(','))
-                    package_fn = result['filename']
-                    if package_fn:
-                        print u"Package content:"
-                        for f in result['files']:
-                            print u" %s" % f[0]
-                        print('...done. Package filename %s' % (package_fn,))
-
-                        def pwd_callback(*args):
-                            """Default password callback for opening private keys"""
-                            return open(options.private_key_passwd,'r').read()
-
-                        if mywapt.private_key:
-                            print('Signing %s' % package_fn)
-                            if options.private_key_passwd:
-                                signature = mywapt.signpackage(package_fn,
-                                    excludes=options.excludes.split(','),callback=pwd_callback)
-                            else:
-                                signature = mywapt.signpackage(package_fn,
-                                    excludes=options.excludes.split(','))
-                            print u"Package %s signed : signature :\n%s" % (package_fn,signature)
+            elif action=='remove':
+                if len(args)<2:
+                    print u"You must provide at least one package name to remove"
+                    sys.exit(1)
+                for packagename in args[1:]:
+                    print u"Removing %s ..." % (packagename,)
+                    result = mywapt.remove(packagename,force=options.force)
+                    if options.json_output:
+                        jsonresult['result'] = result
+                        if not result['removed']:
+                            print "No package removed"
+                            sys.exit(2)
+                    else:
+                        if result['removed']:
+                            print u"Removed packages : \n%s" % u"\n".join([ u"  %s" % p for p in result['removed'] ])
                         else:
-                            logger.warning(u'No private key provided, package %s is unsigned !' % package_fn)
+                            print "No package removed"
+                            sys.exit(2)
+                    if result['errors']:
+                        logger.critical(u'Errors removing some packages : %s'% (result['errors'],))
+                        sys.exit(1)
 
+            elif action=='session-setup':
+                if len(args)<2:
+                    print u"You must provide at least one package to be configured in user's session"
+                    sys.exit(1)
+
+                for packagename in args[1:]:
+                    print u"Configuring %s ..." % (packagename,),
+                    mywapt.session_setup(packagename,params_dict=params_dict)
+                    print u"done"
+
+            elif action=='uninstall':
+                # launch the setup.uninstall() procedure for the given packages
+                # can be used when registering in registry a custom install with a python script
+                if len(args)<2:
+                    print u"You must provide at least one package to be uninstalled"
+                    sys.exit(1)
+
+                for packagename in args[1:]:
+                    print u"uninstalling %s ..." % (packagename,),
+                    print mywapt.uninstall(packagename,params_dict=params_dict)
+                    print u"uninstall done"
+
+            elif action=='update':
+                print u"Update package list"
+                result = mywapt.update(force=options.force)
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print u"Total packages : %i" % result['count']
+                    print u"Added packages : \n%s" % "\n".join([ "  %s (%s)" % p for p in result['added'] ])
+                    print u"Removed packages : \n%s" % "\n".join([ "  %s (%s)" % p for p in result['removed'] ])
+                    print u"Repositories URL : \n%s" % "\n".join([ "  %s" % p for p in result['repos'] ])
+
+            elif action=='upgradedb':
+                (old,new) = mywapt.waptdb.upgradedb(force=options.force)
+                if old == new:
+                    print u"No database upgrade required, current %s, required %s" % (old,mywapt.waptdb.curr_db_version)
+                else:
+                    print u"Old version : %s to new : %s" % (old,new)
+
+            elif action=='upgrade':
+                if options.update_packages:
+                    print u"Update package list"
+                    mywapt.update()
+                result = mywapt.upgrade()
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    if not result['install'] and not result['additional'] and not result['upgrade'] and not result['skipped']:
+                        print u"Nothing to upgrade"
+                    else:
+                        for k in ('install','additional','upgrade','skipped','errors'):
+                            if result[k]:
+                                print u"\n=== %s packages ===\n%s" % (k,'\n'.join( ["  %-30s | %s (%s)" % (s[0],s[1].package,s[1].version) for s in  result[k]]),)
+                sys.exit(0)
+
+            elif action=='list-upgrade':
+                if options.update_packages:
+                    print u"Update package list"
+                    mywapt.update()
+                result = mywapt.list_upgrade()
+                if not result:
+                    print u"Nothing to upgrade"
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print ppdicttable([ p[0] for p in  result],[ ('package',20),('version',10)])
+
+            elif action=='download-upgrade':
+                if options.update_packages:
+                    print u"Update package list"
+                    mywapt.update()
+                result = mywapt.download_upgrades()
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print u"Downloaded packages : \n%s" % "\n".join([ "  %s" % p for p in result['downloaded'] ])
+                    print u"Skipped packages : \n%s" % "\n".join([ "  %s" % p for p in result['skipped'] ])
+
+                    if result['errors']:
+                        logger.critical(u'Unable to download some files : %s'% (result['errors'],))
+                        sys.exit(1)
+
+            elif action=='update-packages':
+                if len(args)<2:
+                    print u"You must provide the directory"
+                    sys.exit(1)
+                print update_packages(args[1])
+
+            elif action=='sources':
+                if len(args)<2:
+                    print u"You must provide the package name"
+                    sys.exit(1)
+                os.startfile(mywapt.get_sources(args[1]))
+
+            elif action=='make-template':
+                if len(args)<2:
+                    print u"You must provide the installer path"
+                    sys.exit(1)
+                result = mywapt.maketemplate(*args[1:])
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print u"Template created. You can build the WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result)
+                    os.startfile(result)
+
+            elif action=='make-host-template':
+                result = mywapt.makehosttemplate(*args[1:])
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print u"Template created. You can build the WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result)
+                    os.startfile(result)
+
+            elif action=='duplicate':
+                if len(args)<2:
+                    print u"You must provide at least the source package. New  name will be FQDN of the host if not provided"
+                    sys.exit(1)
+                result = mywapt.duplicate_package(*args[1:5],build=True,private_key=options.private_key)
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    if os.path.isdir(result):
+                        os.startfile( result)
+                        print u"Package duplicated. You can build the new WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result)
+                    else:
+                        print u"Package duplicated. You can upload the new WAPT package to repository by launching\n  %s upload-package %s" % (sys.argv[0],result)
+
+            elif action=='edit':
+                if len(args)<2:
+                    print u"You must provide the package to edit"
+                    sys.exit(1)
+                result = mywapt.edit_package(*args[1:5])
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    if os.path.isdir(result):
+                        os.startfile( result)
                         if mywapt.upload_cmd:
-                            if action == 'build-upload':
-                                print setuphelpers.run(mywapt.upload_cmd % {'waptfile': package_fn  })
-                                if mywapt.after_upload:
-                                    print setuphelpers.run(mywapt.after_upload % {'waptfile': package_fn  })
+                            print u"Package edited. You can build and upload the new WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result)
+                        else:
+                            print u"Package edited. You can build the new WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result)
+
+            elif action in ('build-package','build-upload'):
+                if len(args)<2:
+                    print u"You must provide at least one source directory for package building"
+                    sys.exit(1)
+                for source_dir in [os.path.abspath(p) for p in args[1:]]:
+                    if os.path.isdir(source_dir):
+                        print('Building  %s' % source_dir)
+                        result = mywapt.buildpackage(source_dir,
+                            inc_package_release=options.increlease,
+                            excludes=options.excludes.split(','))
+                        package_fn = result['filename']
+                        if package_fn:
+                            print u"Package content:"
+                            for f in result['files']:
+                                print u" %s" % f[0]
+                            print('...done. Package filename %s' % (package_fn,))
+
+                            def pwd_callback(*args):
+                                """Default password callback for opening private keys"""
+                                return open(options.private_key_passwd,'r').read()
+
+                            if mywapt.private_key:
+                                print('Signing %s' % package_fn)
+                                if options.private_key_passwd:
+                                    signature = mywapt.signpackage(package_fn,
+                                        excludes=options.excludes.split(','),callback=pwd_callback)
+                                else:
+                                    signature = mywapt.signpackage(package_fn,
+                                        excludes=options.excludes.split(','))
+                                print u"Package %s signed : signature :\n%s" % (package_fn,signature)
                             else:
-                                print u'\nYou can upload to repository with\n  %s upload-package %s ' % (sys.argv[0],package_fn )
+                                logger.warning(u'No private key provided, package %s is unsigned !' % package_fn)
+
+                            if mywapt.upload_cmd:
+                                if action == 'build-upload':
+                                    print setuphelpers.run(mywapt.upload_cmd % {'waptfile': package_fn  })
+                                    if mywapt.after_upload:
+                                        print setuphelpers.run(mywapt.after_upload % {'waptfile': package_fn  })
+                                else:
+                                    print u'\nYou can upload to repository with\n  %s upload-package %s ' % (sys.argv[0],package_fn )
+                            sys.exit(0)
+                        else:
+                            logger.critical(u'package not created')
+                            sys.exit(1)
+                    else:
+                        logger.critical(u'Directory %s not found' % source_dir)
+                        sys.exit(1)
+
+            elif action=='sign-package':
+                if len(args)<2:
+                    print u"You must provide at least one source directory or package to sign"
+                    sys.exit(1)
+                for waptfile in [os.path.abspath(p) for p in args[1:]]:
+                    if os.path.isdir(waptfile) or os.path.isfile(waptfile):
+                        print('Signing %s' % waptfile)
+                        signature = mywapt.signpackage(waptfile,
+                            excludes=options.excludes.split(','))
+                        print u"Package %s signed : signature :\n%s" % (waptfile,signature)
                         sys.exit(0)
                     else:
-                        logger.critical(u'package not created')
+                        logger.critical(u'Package %s not found' % waptfile)
                         sys.exit(1)
-                else:
-                    logger.critical(u'Directory %s not found' % source_dir)
+
+            elif action=='upload-package':
+                if len(args)<2:
+                    print u"You must provide a package to upload"
                     sys.exit(1)
+                waptfiles = []
+                for a in args[1:]:
+                    waptfiles += glob.glob(a)
+                waptfile_arg = " ".join(['"%s"' % f for f in waptfiles])
+                print setuphelpers.run(mywapt.upload_cmd % {'waptfile': waptfile_arg  })
+                if mywapt.after_upload:
+                    print setuphelpers.run(mywapt.after_upload % {'waptfile': waptfile_arg  })
 
-        elif action=='sign-package':
-            if len(args)<2:
-                print u"You must provide at least one source directory or package to sign"
-                sys.exit(1)
-            for waptfile in [os.path.abspath(p) for p in args[1:]]:
-                if os.path.isdir(waptfile) or os.path.isfile(waptfile):
-                    print('Signing %s' % waptfile)
-                    signature = mywapt.signpackage(waptfile,
-                        excludes=options.excludes.split(','))
-                    print u"Package %s signed : signature :\n%s" % (waptfile,signature)
-                    sys.exit(0)
+            elif action=='search':
+                if options.update_packages:
+                    print u"Update package list"
+                    mywapt.update()
+                result = mywapt.search(args[1:])
+                if options.json_output:
+                    jsonresult['result'] = result
                 else:
-                    logger.critical(u'Package %s not found' % waptfile)
-                    sys.exit(1)
+                    print ppdicttable(result,(('status',10),('package',30),('version',10),('description',80),('repo',10)))
 
-        elif action=='upload-package':
-            if len(args)<2:
-                print u"You must provide a package to upload"
-                sys.exit(1)
-            waptfiles = []
-            for a in args[1:]:
-                waptfiles += glob.glob(a)
-            waptfile_arg = " ".join(['"%s"' % f for f in waptfiles])
-            print setuphelpers.run(mywapt.upload_cmd % {'waptfile': waptfile_arg  })
-            if mywapt.after_upload:
-                print setuphelpers.run(mywapt.after_upload % {'waptfile': waptfile_arg  })
-
-        elif action=='search':
-            if options.update_packages:
-                print u"Update package list"
-                mywapt.update()
-            result = mywapt.search(args[1:])
-            print ppdicttable(result,(('status',10),('package',30),('version',10),('description',80),('repo',10)))
-
-        elif action=='search-json':
-            if options.update_packages:
-                mywapt.update()
-            print json.dumps([p.as_dict() for p in mywapt.search(args[1:])])
-
-        elif action in ('clean','cleanup'):
-            result = mywapt.cleanup()
-            print u"Removed files : \n%s" % "\n".join([ "  %s" % p for p in result ])
-
-        elif action=='register':
-            print u"%s" % mywapt.register_computer(description=" ".join(args[1:]),force=options.force)
-
-        elif action=='inventory':
-            print json.dumps(mywapt.inventory(),indent=True)
-
-        elif action=='setup-tasks':
-            print mywapt.setup_tasks()
-
-        elif action=='enable-tasks':
-            print mywapt.enable_tasks()
-
-        elif action=='disable-tasks':
-            print mywapt.disable_tasks()
-
-        elif action=='list':
-            def cb(fieldname,value):
-                if value and fieldname=='install_date':
-                    return value[0:16]
+            elif action in ('clean','cleanup'):
+                result = mywapt.cleanup()
+                if options.json_output:
+                    jsonresult['result'] = result
                 else:
-                    return value
-            print ppdicttable(mywapt.list(args[1:]),(('package',20),('version',15),('install_status',10),('install_date',16),('description',80)),callback=cb)
+                    print u"Removed files : \n%s" % "\n".join([ "  %s" % p for p in result ])
 
-        elif action=='list-json':
-            print json.dumps([p.as_dict() for p in mywapt.search(args[1:])])
+            elif action=='register':
+                result = mywapt.register_computer(description=" ".join(args[1:]),force=options.force)
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print u"%s" % result
 
-        else:
-            print u'Unknown action %s' % action
-            sys.exit(1)
+            elif action=='inventory':
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print jsondump(mywapt.inventory(),indent=True)
+
+            elif action=='setup-tasks':
+                result = mywapt.setup_tasks()
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print result
+
+            elif action=='enable-tasks':
+                result = mywapt.enable_tasks()
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print result
+
+            elif action=='disable-tasks':
+                result = mywapt.disable_tasks()
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print result
+
+            elif action=='list':
+                def cb(fieldname,value):
+                    if value and fieldname=='install_date':
+                        return value[0:16]
+                    else:
+                        return value
+                result = mywapt.list(args[1:])
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print ppdicttable(result,(('package',20),('version',15),('install_status',10),('install_date',16),('description',80)),callback=cb)
+
+            else:
+                print u'Unknown action %s' % action
+                sys.exit(1)
+
+        except Exception,e:
+            print "FATAL ERROR : %s" % (ensure_unicode(e),)
+            if logger.level == logging.DEBUG:
+                raise
+            sys.exit(3)
+
+    except SystemExit,e:
+        # catch exit code for json output
+        if options.json_output:
+            jsonresult['exit_code'] = e.code
+        raise
+
     except Exception,e:
-        print "FATAL ERROR : %s" % (ensure_unicode(e),)
-        if logger.level == logging.DEBUG:
-            raise
-        sys.exit(3)
+        # catch exceptions for json output
+        if options.json_output:
+            jsonresult['error'] = ensure_unicode(e)
+        raise
+
+    finally:
+        if options.json_output:
+            # restore stdin/stdout
+            sys.stdout = old_stdout
+            sys.stderr = old_stderr
+            # print final result
+            print jsondump(jsonresult,indent=True)
+
+
 
 if __name__ == "__main__":
     logger.debug(u'Python path %s' % sys.path)
