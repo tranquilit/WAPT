@@ -336,10 +336,14 @@ def main():
                     print u"%s" % params
 
             elif action=='list-registry':
-                print u"%-39s%-70s%-20s%-70s" % ('UninstallKey','Software','Version','Uninstallstring')
-                print u'-'*39+'-'*70 + '-'*20 + '-'*70
-                for p in setuphelpers.installed_softwares(' '.join(args[1:])) :
-                    print u"%-39s%-70s%-20s%-70s" % (p['key'],p['name'],p['version'],p['uninstall_string'])
+                result = setuphelpers.installed_softwares(' '.join(args[1:]))
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print u"%-39s%-70s%-20s%-70s" % ('UninstallKey','Software','Version','Uninstallstring')
+                    print u'-'*39+'-'*70 + '-'*20 + '-'*70
+                    for p in result:
+                        print u"%-39s%-70s%-20s%-70s" % (p['key'],p['name'],p['version'],p['uninstall_string'])
 
             elif action=='showlog':
                 if len(args)<2:
@@ -375,11 +379,13 @@ def main():
                 if len(args)<2:
                     print u"You must provide at least one package to be configured in user's session"
                     sys.exit(1)
-
+                result = []
                 for packagename in args[1:]:
                     print u"Configuring %s ..." % (packagename,),
-                    mywapt.session_setup(packagename,params_dict=params_dict)
-                    print u"done"
+                    result.append(mywapt.session_setup(packagename,params_dict=params_dict))
+                    print "Done"
+                if options.json_output:
+                    jsonresult['result'] = result
 
             elif action=='uninstall':
                 # launch the setup.uninstall() procedure for the given packages

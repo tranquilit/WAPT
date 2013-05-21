@@ -719,31 +719,6 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 1
         ViewStyle = vsReport
       end
-      object VirtualEditTree1: TVirtualEditTree
-        Left = 604
-        Height = 272
-        Top = 66
-        Width = 344
-        BorderStyle = bsSingle
-        Color = clWhite
-        DefaultText = 'Node'
-        Header.AutoSizeIndex = 0
-        Header.Columns = <        
-          item
-            Position = 0
-          end        
-          item
-            Position = 1
-          end        
-          item
-            Position = 2
-          end        
-          item
-            Position = 3
-          end>
-        Header.DefaultHeight = 17
-        TabOrder = 2
-      end
     end
     object TabSheet3: TTabSheet
       Caption = 'Mise à jour package'
@@ -836,12 +811,19 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Rechercher'
       OnExecute = ActSearchPackageExecute
     end
+    object ActRemove: TAction
+      Caption = 'Désinstaller le paquet'
+      OnExecute = ActRemoveExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
     top = 150
     object MenuItem1: TMenuItem
       Action = ActInstall
+    end
+    object MenuItem2: TMenuItem
+      Action = ActRemove
     end
   end
 end

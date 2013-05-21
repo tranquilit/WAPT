@@ -16,6 +16,7 @@ type
 
   TVisWaptGUI = class(TForm)
     ActInstall: TAction;
+    ActRemove: TAction;
     ActSearchPackage: TAction;
     ActionList1: TActionList;
     BufDataset1: TBufDataset;
@@ -30,6 +31,7 @@ type
     lstPackages: TListView;
     Memo1: TMemo;
     MenuItem1: TMenuItem;
+    MenuItem2: TMenuItem;
     PageControl1: TPageControl;
     Panel1: TPanel;
     Panel2: TPanel;
@@ -44,8 +46,8 @@ type
     TabSheet3: TTabSheet;
     TabSheet4: TTabSheet;
     testedit: TSynEdit;
-    VirtualEditTree1: TVirtualEditTree;
     procedure ActInstallExecute(Sender: TObject);
+    procedure ActRemoveExecute(Sender: TObject);
     procedure ActSearchPackageExecute(Sender: TObject);
     procedure butInitWaptClick(Sender: TObject);
     procedure butRunClick(Sender: TObject);
@@ -108,6 +110,20 @@ begin
   begin
     package := lstPackages.Selected.Caption+' (='+lstPackages.Selected.SubItems[1]+')';
     expr := format('jsondump(mywapt.install("%s"))',[package]);
+    res := PythonEngine1.EvalStringAsStr(expr);
+    ActSearchPackage.Execute;
+  end;
+end;
+
+procedure TVisWaptGUI.ActRemoveExecute(Sender: TObject);
+var
+  expr,res:String;
+  package:String;
+begin
+  if lstPackages.Focused then
+  begin
+    package := lstPackages.Selected.Caption;
+    expr := format('jsondump(mywapt.remove("%s"))',[package]);
     res := PythonEngine1.EvalStringAsStr(expr);
     ActSearchPackage.Execute;
   end;
