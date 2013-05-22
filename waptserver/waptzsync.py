@@ -39,23 +39,25 @@ logger.setLevel(logging.CRITICAL)
 
 
 #Remote WAPT Repository 
-#mainRepo = "http://wapt/wapt/"
-mainRepo = "http://srvinstallation.tranquil.it/wapt/"
+mainRepo = "http://wapt/wapt-test/"
+#mainRepo = "http://srvinstallation.tranquil.it/wapt/"
 
 #Local WAPT Repository
-waptDir = "/var/www/wapt/"
+#waptDir = "/var/www/wapt/"
+waptDir = "/home/homes/ssamson/wapt/"
 
 
 # download new packages if present
 donwloadNewPackages = True
 
+os.chdir(waptDir)
+os.system('cd '+waptDir)
 
 urllib.urlretrieve(mainRepo+"wapt-scanpackages.py", waptDir+'wapt-scanpackages.py')
 urllib.urlretrieve(mainRepo+"waptpackage.py", waptDir+'waptpackage.py')
 os.system("/usr/bin/zsync  %s.zsync -o %s" % (mainRepo+"waptsetup.exe", waptDir+"waptsetup.exe"))
 
-if not os.path.exists(waptDir+"Packages"):
-    os.system('cd '+waptDir+'&& python wapt-scanpackages.py .')
+os.system('cd '+waptDir+'&& python wapt-scanpackages.py .')
 
 sys.path.append(waptDir)
 from waptpackage import PackageEntry
@@ -84,35 +86,35 @@ def packagesFileToList(pathTofile):
     for line in listPackages.splitlines():
         # new package
         if line.strip()=='':
-          add_package(lines)
-          lines = []
-          # add ettribute to current package
+            add_package(lines)
+            lines = []
+            # add ettribute to current package
         else:
-          lines.append(line)
-	
+            lines.append(line)
+
     if lines:
-	    add_package(lines)
-	    lines = []
-    
+        add_package(lines)
+        lines = []
+
     return packages
 
 
 
 def downloadRepoPackages(mainRepo):
-   tempDir  =  tempfile.mkdtemp()
-   packagesTemp = tempDir+"/Packages"
-   urllib.urlretrieve(mainRepo+"Packages", packagesTemp)
-   packages =  packagesFileToList(packagesTemp)
-   if os.path.exists(tempDir):
-     shutil.rmtree(tempDir)
-   return packages 
+    tempDir  =  tempfile.mkdtemp()
+    packagesTemp = tempDir+"/Packages"
+    urllib.urlretrieve(mainRepo+"Packages", packagesTemp)
+    packages =  packagesFileToList(packagesTemp)
+    if os.path.exists(tempDir):
+        shutil.rmtree(tempDir)
+    return packages 
 
 
 def downloadPackages(packages):
-  for package in packages:
-    print "Downloading : %s version => %s" % ( package.package, package.version )
-    os.system("/usr/bin/zsync  %s.zsync -o %s" % (mainRepo+package.filename, waptDir+package.filename))
-   
+    for package in packages:
+        print "Downloading : %s version => %s" % ( package.package, package.version )
+        os.system("/usr/bin/zsync  %s.zsync -o %s" % (mainRepo+package.filename, waptDir+package.filename))
+
 
 
 repoPackages = downloadRepoPackages(mainRepo)
@@ -122,22 +124,26 @@ for repoPackage in repoPackages:
     matchPackage = [ package for package in localPackages if repoPackage.package == package.package ]
     if len(matchPackage) == 1:
         if repoPackage > matchPackage[0]:
-        	packagesToUpgrade.append(repoPackage)
+            packagesToUpgrade.append(repoPackage)
     elif len(matchPackage) > 1: 
-	if not [ x for x in matchPackage if repoPackage.version in x.version ]:
-	  packagesToUpgrade.append(repoPackage)
+        if not [ x for x in matchPackage if repoPackage.version in x.version ]:
+            packagesToUpgrade.append(repoPackage)
     elif donwloadNewPackages :
-	  newPackages.append(repoPackage)
+        newPackages.append(repoPackage)
     else:
         print "New package: "+repoPackage.package
 
 
 if packagesToUpgrade:
-  downloadPackages( packagesToUpgrade)
+    downloadPackages( packagesToUpgrade)
 else :
-  print "The system is already up to date"
+    print "The system is already up to date"
 if newPackages:
-  downloadPackages(newPackages)
+    downloadPackages(newPackages)
 
 if packagesToUpgrade or newPackages:
-  os.system('cd '+waptDir+'&& python wapt-scanpackages.py .')
+    os.system('cd '+waptDir+'&& python wapt-scanpackages.py .')
+    
+    
+
+os.system('chmod 644 %s*'%waptDir)
