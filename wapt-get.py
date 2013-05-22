@@ -44,6 +44,7 @@ import locale
 import json
 import glob
 import codecs
+import getpass
 
 from common import Wapt
 
@@ -74,6 +75,7 @@ action is either :
   register [description] : Add the computer to the WAPT server database,
                                      change the description of the computer.
   inventory         : get json encoded list of host data, installed packages and softwares as supplied to server with register
+  update-status     : Send packages and softwares status to the WAPT server,
 
  For user session setup
   session-setup [packages,all] : setup local user environment for specific or all installed packages
@@ -151,6 +153,8 @@ else:
 
 logger.debug(u'Default encoding : %s ' % sys.getdefaultencoding())
 logger.debug(u'Setting encoding for stdout and stderr to %s ' % encoding)
+
+key_passwd = None
 
 class JsonOutput(object):
     """file like to print output to json"""
@@ -284,6 +288,8 @@ def main():
                         for k in ('downloaded','skipped','errors'):
                             if result.get('downloads', {'downloaded':[],'skipped':[],'errors':[]} )[k]:
                                 print u"\n=== %s packages ===\n%s" % (k,'\n'.join(["  %s" % (s,) for s in result['downloads'][k]]),)
+                if mywapt.wapt_server:
+                    mywapt.update_server_status()
 
 
             elif action=='download':
@@ -360,6 +366,8 @@ def main():
                 for packagename in args[1:]:
                     print u"Removing %s ..." % (packagename,)
                     result = mywapt.remove(packagename,force=options.force)
+                    if mywapt.wapt_server:
+                        mywapt.update_server_status()
                     if options.json_output:
                         jsonresult['result'] = result
                         if not result['removed']:
@@ -431,6 +439,8 @@ def main():
                         for k in ('install','additional','upgrade','skipped','errors'):
                             if result[k]:
                                 print u"\n=== %s packages ===\n%s" % (k,'\n'.join( ["  %-30s | %s (%s)" % (s[0],s[1].package,s[1].version) for s in  result[k]]),)
+                if mywapt.wapt_server:
+                    mywapt.update_server_status()
                 sys.exit(0)
 
             elif action=='list-upgrade':
@@ -499,11 +509,11 @@ def main():
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
-                    if os.path.isdir(result):
+                    if os.path.isdir(result['target']):
                         os.startfile( result)
-                        print u"Package duplicated. You can build the new WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result)
+                        print u"Package duplicated. You can build the new WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result['target'])
                     else:
-                        print u"Package duplicated. You can upload the new WAPT package to repository by launching\n  %s upload-package %s" % (sys.argv[0],result)
+                        print u"Package duplicated. You can upload the new WAPT package to repository by launching\n  %s upload-package %s" % (sys.argv[0],result['target'])
 
             elif action=='edit':
                 if len(args)<2:
@@ -513,17 +523,18 @@ def main():
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
-                    if os.path.isdir(result):
-                        os.startfile( result)
+                    if os.path.isdir(result['target']):
+                        os.startfile( result['target'])
                         if mywapt.upload_cmd:
-                            print u"Package edited. You can build and upload the new WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result)
+                            print u"Package edited. You can build and upload the new WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result['target'])
                         else:
-                            print u"Package edited. You can build the new WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result)
+                            print u"Package edited. You can build the new WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result['target'])
 
             elif action in ('build-package','build-upload'):
                 if len(args)<2:
                     print u"You must provide at least one source directory for package building"
                     sys.exit(1)
+                targets = []
                 for source_dir in [os.path.abspath(p) for p in args[1:]]:
                     if os.path.isdir(source_dir):
                         print('Building  %s' % source_dir)
@@ -532,14 +543,23 @@ def main():
                             excludes=options.excludes.split(','))
                         package_fn = result['filename']
                         if package_fn:
-                            print u"Package content:"
-                            for f in result['files']:
-                                print u" %s" % f[0]
+                            targets.append(package_fn)
+                            if not options.json_output:
+                                print u"Package content:"
+                                for f in result['files']:
+                                    print u" %s" % f[0]
                             print('...done. Package filename %s' % (package_fn,))
 
                             def pwd_callback(*args):
                                 """Default password callback for opening private keys"""
                                 return open(options.private_key_passwd,'r').read()
+
+                            def pwd_callback2(*args):
+                                """Default password callback for opening private keys"""
+                                global key_passwd
+                                if not key_passwd:
+                                    key_passwd = getpass.getpass('Private key password :').encode('ascii')
+                                return key_passwd
 
                             if mywapt.private_key:
                                 print('Signing %s' % package_fn)
@@ -548,25 +568,27 @@ def main():
                                         excludes=options.excludes.split(','),callback=pwd_callback)
                                 else:
                                     signature = mywapt.signpackage(package_fn,
-                                        excludes=options.excludes.split(','))
+                                        excludes=options.excludes.split(','),callback=pwd_callback2)
                                 print u"Package %s signed : signature :\n%s" % (package_fn,signature)
                             else:
                                 logger.warning(u'No private key provided, package %s is unsigned !' % package_fn)
 
-                            if mywapt.upload_cmd:
-                                if action == 'build-upload':
-                                    print setuphelpers.run(mywapt.upload_cmd % {'waptfile': package_fn  })
-                                    if mywapt.after_upload:
-                                        print setuphelpers.run(mywapt.after_upload % {'waptfile': package_fn  })
-                                else:
-                                    print u'\nYou can upload to repository with\n  %s upload-package %s ' % (sys.argv[0],package_fn )
-                            sys.exit(0)
                         else:
-                            logger.critical(u'package not created')
+                            logger.critical(u'package %s not created' % package_fn)
                             sys.exit(1)
                     else:
                         logger.critical(u'Directory %s not found' % source_dir)
                         sys.exit(1)
+
+                # continue with upload
+                print 'Uploading files...'
+                if mywapt.upload_cmd and 'build-upload':
+                    print setuphelpers.run(mywapt.upload_cmd % {'waptfile': ' '.join(targets)})
+                    if mywapt.after_upload:
+                        print 'Run after upload script...'
+                        print setuphelpers.run(mywapt.after_upload % {'waptfile': ' '.join(targets) })
+                    else:
+                        print u'\nYou can upload to repository with\n  %s upload-package %s ' % (sys.argv[0],'"%s"' % (' '.join(targets),) )
 
             elif action=='sign-package':
                 if len(args)<2:
@@ -614,6 +636,13 @@ def main():
 
             elif action=='register':
                 result = mywapt.register_computer(description=" ".join(args[1:]),force=options.force)
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print u"%s" % result
+
+            elif action=='update-status':
+                result = mywapt.update_server_status (force=options.force)
                 if options.json_output:
                     jsonresult['result'] = result
                 else:

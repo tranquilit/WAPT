@@ -1,31 +1,32 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 463
-  Height = 495
-  Top = 122
-  Width = 1147
+  Left = 93
+  Height = 583
+  Top = 129
+  Width = 1224
   Caption = 'VisWaptGUI'
-  ClientHeight = 495
-  ClientWidth = 1147
+  ClientHeight = 583
+  ClientWidth = 1224
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   LCLVersion = '1.1'
   object PageControl1: TPageControl
     Left = 0
-    Height = 377
+    Height = 460
     Top = 0
-    Width = 1147
+    Width = 1224
     ActivePage = TabSheet2
     Align = alClient
     TabIndex = 1
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Sources'
-      ClientHeight = 518
-      ClientWidth = 1139
+      ClientHeight = 434
+      ClientWidth = 1216
       inline testedit: TSynEdit
         Left = 0
-        Height = 390
+        Height = 400
         Top = 34
-        Width = 1139
+        Width = 1216
         Align = alClient
         Font.Height = -13
         Font.Name = 'Courier New'
@@ -571,59 +572,26 @@ object VisWaptGUI: TVisWaptGUI
           end
         end
       end
-      object Panel2: TPanel
-        Left = 0
-        Height = 94
-        Top = 424
-        Width = 1139
-        Align = alBottom
-        BevelOuter = bvNone
-        Caption = 'Panel2'
-        ClientHeight = 94
-        ClientWidth = 1139
-        TabOrder = 1
-        object jsonmemo: TMemo
-          Left = 833
-          Height = 94
-          Top = 0
-          Width = 306
-          Align = alRight
-          Lines.Strings = (
-            'jsonmemo'
-          )
-          TabOrder = 0
-        end
-        object ListBox1: TListBox
-          Left = 581
-          Height = 94
-          Top = 0
-          Width = 252
-          Align = alRight
-          ItemHeight = 0
-          TabOrder = 1
-        end
-      end
       object Panel1: TPanel
         Left = 0
         Height = 34
         Top = 0
-        Width = 1139
+        Width = 1216
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 34
-        ClientWidth = 1139
-        TabOrder = 2
+        ClientWidth = 1216
+        TabOrder = 1
         object butInitWapt: TButton
-          Left = 16
+          Left = 4
           Height = 25
           Top = 5
-          Width = 75
-          Caption = 'butInitWapt'
-          OnClick = butInitWaptClick
+          Width = 196
+          Action = ActInit
           TabOrder = 0
         end
         object EdRun: TEdit
-          Left = 140
+          Left = 292
           Height = 21
           Top = 5
           Width = 168
@@ -632,29 +600,28 @@ object VisWaptGUI: TVisWaptGUI
           Text = 'mywapt.update()'
         end
         object butRun: TButton
-          Left = 316
+          Left = 468
           Height = 25
-          Top = 5
+          Top = 2
           Width = 88
-          Caption = 'butRun'
-          OnClick = butRunClick
+          Action = ActEvaluate
           TabOrder = 2
         end
       end
     end
     object TabSheet2: TTabSheet
       Caption = 'Recherche packages'
-      ClientHeight = 351
-      ClientWidth = 1139
+      ClientHeight = 434
+      ClientWidth = 1216
       object Panel4: TPanel
         Left = 0
         Height = 34
         Top = 0
-        Width = 1139
+        Width = 1216
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 34
-        ClientWidth = 1139
+        ClientWidth = 1216
         TabOrder = 0
         object EdSearch: TEdit
           Left = 4
@@ -675,9 +642,9 @@ object VisWaptGUI: TVisWaptGUI
       end
       object lstPackages: TListView
         Left = 0
-        Height = 317
+        Height = 400
         Top = 34
-        Width = 1139
+        Width = 1216
         Align = alClient
         Checkboxes = True
         Columns = <        
@@ -704,7 +671,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             AutoSize = True
             Caption = 'Depends'
-            Width = 909
+            Width = 986
           end>
         Items.LazData = {
           8300000003000000FFFFFFFFFFFFFFFFFFFFFFFF030000000400000074657374
@@ -722,40 +689,441 @@ object VisWaptGUI: TVisWaptGUI
     end
     object TabSheet3: TTabSheet
       Caption = 'Mise à jour package'
+      ClientHeight = 434
+      ClientWidth = 1216
+      object tvjson: TVirtualJSONInspector
+        Left = 0
+        Height = 400
+        Top = 34
+        Width = 1216
+        PropertyDefs = <>
+        Align = alClient
+        Color = clWhite
+        Header.AutoSizeIndex = -1
+        Header.Columns = <        
+          item
+            Position = 0
+            Text = 'Property'
+            Width = 150
+          end        
+          item
+            Position = 1
+            Text = 'Value'
+            Width = 1062
+          end>
+        Header.DefaultHeight = 17
+        Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
+        TabOrder = 0
+        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
+        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+        TreeOptions.SelectionOptions = [toExtendedFocus]
+      end
+      object Panel5: TPanel
+        Left = 0
+        Height = 34
+        Top = 0
+        Width = 1216
+        Align = alTop
+        BevelOuter = bvNone
+        Caption = 'Panel5'
+        ClientHeight = 34
+        ClientWidth = 1216
+        TabOrder = 1
+        object Button1: TButton
+          Left = 12
+          Height = 25
+          Top = 2
+          Width = 248
+          Action = ActUpdate
+          TabOrder = 0
+        end
+      end
     end
     object TabSheet4: TTabSheet
       Caption = 'Mise à jour système'
+      ClientHeight = 434
+      ClientWidth = 1216
+      object Panel6: TPanel
+        Left = 0
+        Height = 34
+        Top = 0
+        Width = 1216
+        Align = alTop
+        BevelOuter = bvNone
+        ClientHeight = 34
+        ClientWidth = 1216
+        TabOrder = 0
+        object Button2: TButton
+          Left = 12
+          Height = 25
+          Top = 2
+          Width = 248
+          Action = ActUpgrade
+          TabOrder = 0
+        end
+      end
+      object tvjson1: TVirtualJSONInspector
+        Left = 0
+        Height = 400
+        Top = 34
+        Width = 1216
+        PropertyDefs = <>
+        Align = alClient
+        Color = clWhite
+        Header.AutoSizeIndex = -1
+        Header.Columns = <        
+          item
+            Position = 0
+            Text = 'Property'
+            Width = 150
+          end        
+          item
+            Position = 1
+            Text = 'Value'
+            Width = 1062
+          end>
+        Header.DefaultHeight = 17
+        Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
+        TabOrder = 1
+        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
+        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+        TreeOptions.SelectionOptions = [toExtendedFocus]
+      end
+    end
+    object pgEditPackage: TTabSheet
+      Caption = 'Editer package'
+      ClientHeight = 434
+      ClientWidth = 1216
+      object Panel2: TPanel
+        Left = 0
+        Height = 50
+        Top = 0
+        Width = 1216
+        Align = alTop
+        BevelOuter = bvNone
+        ClientHeight = 50
+        ClientWidth = 1216
+        TabOrder = 0
+        object EdPackage: TEdit
+          Left = 52
+          Height = 21
+          Top = 2
+          Width = 120
+          TabOrder = 0
+          Text = 'EdPackage'
+        end
+        object EdVersion: TEdit
+          Left = 220
+          Height = 21
+          Top = 2
+          Width = 80
+          TabOrder = 1
+          Text = 'EdVersion'
+        end
+        object Label1: TLabel
+          Left = 4
+          Height = 13
+          Top = 7
+          Width = 40
+          Caption = 'Package'
+          ParentColor = False
+        end
+        object Label2: TLabel
+          Left = 180
+          Height = 13
+          Top = 7
+          Width = 35
+          Caption = 'Version'
+          ParentColor = False
+        end
+        object Eddescription: TEdit
+          Left = 372
+          Height = 21
+          Top = 2
+          Width = 128
+          TabOrder = 2
+          Text = 'EdDescription'
+        end
+        object Label3: TLabel
+          Left = 316
+          Height = 13
+          Top = 7
+          Width = 53
+          Caption = 'Description'
+          ParentColor = False
+        end
+        object EdSourceDir: TEdit
+          Left = 604
+          Height = 21
+          Top = 2
+          Width = 136
+          TabOrder = 3
+        end
+        object Label4: TLabel
+          Left = 516
+          Height = 13
+          Top = 7
+          Width = 86
+          Caption = 'Répertoire source'
+          ParentColor = False
+        end
+        object Button3: TButton
+          Left = -1276
+          Height = 25
+          Top = 10
+          Width = 88
+          Caption = 'Button3'
+          TabOrder = 4
+        end
+        object EdSection: TComboBox
+          Left = 372
+          Height = 21
+          Top = 26
+          Width = 132
+          ItemHeight = 13
+          ItemIndex = 0
+          Items.Strings = (
+            'base'
+            'libre'
+            'restricted'
+            'host'
+            'group'
+          )
+          TabOrder = 5
+          Text = 'base'
+        end
+        object Button4: TButton
+          Left = 756
+          Height = 25
+          Top = 7
+          Width = 75
+          Action = ActEditSavePackage
+          TabOrder = 6
+        end
+        object Button5: TButton
+          Left = 836
+          Height = 25
+          Top = 7
+          Width = 112
+          Action = ActBuildUpload
+          TabOrder = 7
+        end
+      end
+      object lstDepends: TListView
+        Left = 0
+        Height = 384
+        Top = 50
+        Width = 926
+        Align = alClient
+        Columns = <        
+          item
+            AutoSize = True
+            Caption = 'Package'
+            Width = 71
+          end        
+          item
+            AutoSize = True
+            Caption = 'Status'
+            Width = 43
+          end        
+          item
+            AutoSize = True
+            Caption = 'Version'
+            Width = 64
+          end        
+          item
+            AutoSize = True
+            Caption = 'Description'
+            Width = 65
+          end        
+          item
+            AutoSize = True
+            Caption = 'Depends'
+            Width = 679
+          end>
+        Items.LazData = {
+          7A00000003000000FFFFFFFFFFFFFFFFFFFFFFFF020000000400000074657374
+          05000000302E302E300B0000006465637372697074696F6EFFFFFFFFFFFFFFFF
+          FFFFFFFF0000000009000000456CC3A96D656E7431FFFFFFFFFFFFFFFFFFFFFF
+          FF0000000009000000456CC3A96D656E7432FFFFFFFFFFFFFFFF
+        }
+        MultiSelect = True
+        PopupMenu = PopupMenuPackages
+        ReadOnly = True
+        TabOrder = 1
+        ViewStyle = vsReport
+        OnDragDrop = lstDependsDragDrop
+        OnDragOver = lstDependsDragOver
+      end
+      object Panel8: TPanel
+        Left = 926
+        Height = 384
+        Top = 50
+        Width = 290
+        Align = alRight
+        Caption = 'Panel8'
+        ClientHeight = 384
+        ClientWidth = 290
+        TabOrder = 2
+        object Panel9: TPanel
+          Left = 1
+          Height = 34
+          Top = 1
+          Width = 288
+          Align = alTop
+          BevelOuter = bvNone
+          ClientHeight = 34
+          ClientWidth = 288
+          TabOrder = 0
+          object EdSearch1: TEdit
+            Left = 4
+            Height = 21
+            Top = 2
+            Width = 136
+            OnKeyPress = EdSearch1KeyPress
+            TabOrder = 0
+          end
+          object butSearchPackages1: TButton
+            Left = 148
+            Height = 25
+            Top = 2
+            Width = 120
+            Action = ActEditSearch
+            TabOrder = 1
+          end
+        end
+        object lstPackages1: TListView
+          Left = 1
+          Height = 348
+          Top = 35
+          Width = 288
+          Align = alClient
+          Columns = <          
+            item
+              AutoSize = True
+              Caption = 'Package'
+              Width = 71
+            end          
+            item
+              AutoSize = True
+              Caption = 'Version'
+              Width = 47
+            end          
+            item
+              AutoSize = True
+              Caption = 'Description'
+              Width = 65
+            end          
+            item
+              AutoSize = True
+              Caption = 'Depends'
+              Width = 986
+            end>
+          DragMode = dmAutomatic
+          Items.LazData = {
+            8300000003000000FFFFFFFFFFFFFFFFFFFFFFFF030000000400000074657374
+            010000004905000000302E302E300B0000006465637372697074696F6EFFFFFF
+            FFFFFFFFFFFFFFFFFF0000000009000000456CC3A96D656E7431FFFFFFFFFFFF
+            FFFFFFFFFFFF0000000009000000456CC3A96D656E7432FFFFFFFFFFFFFFFFFF
+            FFFFFF
+          }
+          MultiSelect = True
+          PopupMenu = PopupMenuPackages
+          ReadOnly = True
+          TabOrder = 1
+          ViewStyle = vsReport
+        end
+      end
     end
   end
   object Panel3: TPanel
     Left = 0
     Height = 118
-    Top = 377
-    Width = 1147
+    Top = 465
+    Width = 1224
     Align = alBottom
     ClientHeight = 118
-    ClientWidth = 1147
+    ClientWidth = 1224
     TabOrder = 1
-    object Memo1: TMemo
+    object Panel7: TPanel
       Left = 1
       Height = 116
       Top = 1
-      Width = 1145
+      Width = 1222
       Align = alClient
-      Lines.Strings = (
-        'Memo1'
-      )
-      TabOrder = 0
+      Caption = 'Panel7'
+      ClientHeight = 116
+      ClientWidth = 1222
+      TabOrder = 1
+      object Memo1: TMemo
+        Left = 1
+        Height = 114
+        Top = 1
+        Width = 609
+        Align = alClient
+        Lines.Strings = (
+          'Memo1'
+        )
+        TabOrder = 0
+      end
+      object jsonlog: TVirtualJSONInspector
+        Left = 615
+        Height = 114
+        Top = 1
+        Width = 606
+        PropertyDefs = <>
+        Align = alRight
+        Color = clWhite
+        Header.AutoSizeIndex = -1
+        Header.Columns = <        
+          item
+            Position = 0
+            Text = 'Property'
+            Width = 150
+          end        
+          item
+            Position = 1
+            Text = 'Value'
+            Width = 452
+          end>
+        Header.DefaultHeight = 17
+        Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
+        TabOrder = 1
+        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
+        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+        TreeOptions.SelectionOptions = [toExtendedFocus]
+      end
+      object Splitter2: TSplitter
+        Left = 610
+        Height = 114
+        Top = 1
+        Width = 5
+        Align = alRight
+        ResizeAnchor = akRight
+      end
     end
     object cbShowLog: TCheckBox
       Left = 8
       Height = 17
       Top = 96
-      Width = 74
-      Caption = 'cbShowLog'
+      Width = 136
+      Anchors = [akLeft, akBottom]
+      Caption = 'Voir infos de débuggage'
       OnClick = cbShowLogClick
-      TabOrder = 1
+      TabOrder = 0
     end
+  end
+  object Splitter1: TSplitter
+    Cursor = crVSplit
+    Left = 0
+    Height = 5
+    Top = 460
+    Width = 1224
+    Align = alBottom
+    ResizeAnchor = akBottom
   end
   object SynPythonSyn1: TSynPythonSyn
     DefaultFilter = 'Fichiers Python (*.py)|*.py'
@@ -784,16 +1152,14 @@ object VisWaptGUI: TVisWaptGUI
     RegVersion = '2.5'
     UseLastKnownVersion = False
     IO = PythonGUIInputOutput1
-    OnAfterInit = PythonEngine1AfterInit
     left = 352
-    top = 128
+    top = 144
   end
   object PythonGUIInputOutput1: TPythonGUIInputOutput
     UnicodeIO = False
     RawOutput = False
-    Output = Memo1
     left = 352
-    top = 184
+    top = 200
   end
   object BufDataset1: TBufDataset
     FieldDefs = <>
@@ -801,8 +1167,8 @@ object VisWaptGUI: TVisWaptGUI
     top = 192
   end
   object ActionList1: TActionList
-    left = 424
-    top = 32
+    left = 352
+    top = 88
     object ActInstall: TAction
       Caption = 'Installer'
       OnExecute = ActInstallExecute
@@ -815,6 +1181,42 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Désinstaller le paquet'
       OnExecute = ActRemoveExecute
     end
+    object ActEditpackage: TAction
+      Caption = 'Editer le paquet'
+      OnExecute = ActEditpackageExecute
+    end
+    object ActUpdate: TAction
+      Caption = 'Mise à jour des paquets disponibles'
+      OnExecute = ActUpdateExecute
+    end
+    object ActUpgrade: TAction
+      Caption = 'Mise à jour du système'
+      OnExecute = ActUpgradeExecute
+    end
+    object ActInit: TAction
+      Caption = 'Exécuter le code source python'
+      OnExecute = ActInitExecute
+    end
+    object ActEvaluate: TAction
+      Caption = 'Evaluer'
+      OnExecute = ActEvaluateExecute
+    end
+    object ActBuildUpload: TAction
+      Caption = 'Activer le paquet'
+      OnExecute = ActBuildUploadExecute
+    end
+    object ActEditSearch: TAction
+      Caption = 'Rechercher'
+      OnExecute = ActEditSearchExecute
+    end
+    object ActEditRemove: TAction
+      Caption = 'Enlever'
+      OnExecute = ActEditRemoveExecute
+    end
+    object ActEditSavePackage: TAction
+      Caption = 'Sauver'
+      OnExecute = ActEditSavePackageExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
@@ -824,6 +1226,16 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem2: TMenuItem
       Action = ActRemove
+    end
+    object MenuItem3: TMenuItem
+      Action = ActEditpackage
+    end
+  end
+  object PopupMenuEditDepends: TPopupMenu
+    left = 144
+    top = 280
+    object MenuItem4: TMenuItem
+      Action = ActEditRemove
     end
   end
 end
