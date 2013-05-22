@@ -75,7 +75,7 @@ from setuphelpers import ensure_unicode
 
 import types
 
-__version__ = "0.1.12"
+__version__ = "0.1.13"
 
 logger = logging.getLogger()
 
@@ -2529,6 +2529,15 @@ class Wapt(object):
         """Return package name for current computer"""
         return "%s" % (setuphelpers.get_hostname().lower())
 
+    def check_host_package(self):
+        hostresult = {}
+        logger.debug(u'Check if host package "%s" is available' % (self.host_packagename(), ))
+        host_packages = self.is_available(self.host_packagename())
+        if host_packages and not self.is_installed(host_packages[-1].asrequirement()):
+            return host_packages
+        else:
+            return None
+
     def upgrade(self):
         """\
         Install "well known" host package from main repository if not already installed
@@ -2536,10 +2545,9 @@ class Wapt(object):
         Query localstatus database for packages with a version older than repository
         and install all newest packages
         """
-        hostresult = {}
-        logger.debug(u'Check if host package "%s" is available' % (self.host_packagename(), ))
-        host_packages = self.is_available(self.host_packagename())
-        if host_packages and not self.is_installed(host_packages[-1].asrequirement()):
+
+        host_package = self.check_host_package()
+        if host_package:
             logger.info('Host package %s is available and not installed, installing host package...' % (host_packages[-1].package,) )
             hostresult = self.install(host_packages[-1],force=True)
 
@@ -2564,7 +2572,12 @@ class Wapt(object):
         """Returns a list of packages which can be upgraded
            Package,Current Version,Available version
         """
-        return self.waptdb.upgradeable().values()
+        result = []
+        host_package = self.check_host_package()
+        if host_package:
+            result.append(host_package)
+        result.extend(self.waptdb.upgradeable().values())
+        return result
 
     def search(self,searchwords=[]):
         """Returns a list of packages which have the searchwords
