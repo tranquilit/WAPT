@@ -717,6 +717,7 @@ object VisAppWAPTService: TVisAppWAPTService
     top = 75
   end
   object PythonEngine1: TAtomPythonEngine
+    AutoLoad = False
     DllName = 'python27.dll'
     APIVersion = 1013
     RegVersion = '2.5'

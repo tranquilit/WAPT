@@ -132,7 +132,6 @@ begin
     RegVersion := '2.7';
     UseLastKnownVersion := False;
     LoadDLL;
-    Initialize;
     Py_SetProgramName(PAnsiChar(ParamStr(0)));
   end;
 

@@ -13,7 +13,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="73" Y="18"/>
-        <UsageCount Value="139"/>
+        <UsageCount Value="140"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -23,12 +23,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisAppWaptService"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="115"/>
-        <CursorPos X="50" Y="119"/>
-        <UsageCount Value="139"/>
+        <TopLine Value="116"/>
+        <CursorPos X="48" Y="129"/>
+        <UsageCount Value="140"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -39,31 +38,35 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WaptUnit"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="359"/>
-        <CursorPos X="67" Y="399"/>
-        <UsageCount Value="138"/>
+        <TopLine Value="482"/>
+        <CursorPos X="35" Y="498"/>
+        <UsageCount Value="139"/>
         <Bookmarks Count="2">
-          <Item0 X="1" Y="498" ID="1"/>
-          <Item1 X="70" Y="518" ID="2"/>
+          <Item0 X="1" Y="499" ID="1"/>
+          <Item1 X="70" Y="521" ID="2"/>
         </Bookmarks>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="285"/>
-        <CursorPos X="22" Y="303"/>
-        <UsageCount Value="131"/>
+        <TopLine Value="497"/>
+        <CursorPos X="3" Y="522"/>
+        <UsageCount Value="132"/>
         <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\wapt-get\networkadapterinfo.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="networkadapterinfo"/>
-        <UsageCount Value="111"/>
+        <UsageCount Value="112"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\wapt-get\soutils.pas"/>
@@ -72,13 +75,13 @@
         <WindowIndex Value="0"/>
         <TopLine Value="48"/>
         <CursorPos X="12" Y="67"/>
-        <UsageCount Value="111"/>
+        <UsageCount Value="112"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\wapt-get\tisinifiles.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tisinifiles"/>
-        <UsageCount Value="111"/>
+        <UsageCount Value="112"/>
       </Unit6>
       <Unit7>
         <Filename Value="..\wapt-get\tisstrings.pas"/>
@@ -87,7 +90,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="2152"/>
         <CursorPos X="6" Y="2195"/>
-        <UsageCount Value="111"/>
+        <UsageCount Value="112"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\waptservice\UnitRedirect.pas"/>
@@ -96,7 +99,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="209"/>
         <CursorPos X="25" Y="209"/>
-        <UsageCount Value="110"/>
+        <UsageCount Value="111"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\waptservice\ldapauth.pas"/>
@@ -105,7 +108,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="27"/>
         <CursorPos X="1" Y="46"/>
-        <UsageCount Value="94"/>
+        <UsageCount Value="95"/>
       </Unit9>
       <Unit10>
         <Filename Value="..\superobject\superobject.pas"/>
@@ -479,11 +482,11 @@
       <Unit57>
         <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
         <UnitName Value="PythonEngine"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1792"/>
         <CursorPos X="49" Y="1804"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit57>
@@ -619,99 +622,127 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="23" HistoryIndex="22">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="uvisappwaptservice.pas"/>
-        <Caret Line="93" Column="42" TopLine="85"/>
+        <Caret Line="121" Column="1" TopLine="105"/>
       </Position1>
       <Position2>
-        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="3525" Column="29" TopLine="3506"/>
+        <Filename Value="uvisappwaptservice.pas"/>
+        <Caret Line="142" Column="1" TopLine="113"/>
       </Position2>
       <Position3>
         <Filename Value="uvisappwaptservice.pas"/>
-        <Caret Line="122" Column="14" TopLine="99"/>
+        <Caret Line="136" Column="86" TopLine="120"/>
       </Position3>
       <Position4>
-        <Filename Value="uvisappwaptservice.pas"/>
-        <Caret Line="67" Column="18" TopLine="52"/>
+        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="4678" Column="44" TopLine="4660"/>
       </Position4>
       <Position5>
         <Filename Value="uvisappwaptservice.pas"/>
-        <Caret Line="121" Column="16" TopLine="94"/>
+        <Caret Line="138" Column="1" TopLine="117"/>
       </Position5>
       <Position6>
-        <Filename Value="uvisappwaptservice.pas"/>
-        <Caret Line="122" Column="28" TopLine="95"/>
+        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="4673" Column="1" TopLine="4661"/>
       </Position6>
       <Position7>
         <Filename Value="uvisappwaptservice.pas"/>
-        <Caret Line="68" Column="1" TopLine="36"/>
+        <Caret Line="135" Column="13" TopLine="117"/>
       </Position7>
       <Position8>
-        <Filename Value="uvisappwaptservice.pas"/>
-        <Caret Line="122" Column="54" TopLine="105"/>
+        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="4678" Column="1" TopLine="4661"/>
       </Position8>
       <Position9>
         <Filename Value="uvisappwaptservice.pas"/>
-        <Caret Line="134" Column="1" TopLine="105"/>
+        <Caret Line="134" Column="16" TopLine="115"/>
       </Position9>
       <Position10>
         <Filename Value="uvisappwaptservice.pas"/>
-        <Caret Line="121" Column="1" TopLine="105"/>
+        <Caret Line="135" Column="3" TopLine="115"/>
       </Position10>
       <Position11>
-        <Filename Value="uvisappwaptservice.pas"/>
-        <Caret Line="142" Column="1" TopLine="113"/>
+        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="2179" Column="17" TopLine="2157"/>
       </Position11>
       <Position12>
-        <Filename Value="uvisappwaptservice.pas"/>
-        <Caret Line="136" Column="86" TopLine="120"/>
+        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="3321" Column="12" TopLine="3294"/>
       </Position12>
       <Position13>
         <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="4678" Column="44" TopLine="4660"/>
+        <Caret Line="3362" Column="14" TopLine="3335"/>
       </Position13>
       <Position14>
-        <Filename Value="uvisappwaptservice.pas"/>
-        <Caret Line="138" Column="1" TopLine="117"/>
+        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="3383" Column="12" TopLine="3356"/>
       </Position14>
       <Position15>
-        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="4673" Column="1" TopLine="4661"/>
+        <Filename Value="uvisappwaptservice.pas"/>
+        <Caret Line="119" Column="50" TopLine="115"/>
       </Position15>
       <Position16>
         <Filename Value="uvisappwaptservice.pas"/>
-        <Caret Line="135" Column="13" TopLine="117"/>
+        <Caret Line="95" Column="28" TopLine="79"/>
       </Position16>
       <Position17>
-        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="4678" Column="1" TopLine="4661"/>
+        <Filename Value="uvisappwaptservice.pas"/>
+        <Caret Line="121" Column="6" TopLine="98"/>
       </Position17>
       <Position18>
         <Filename Value="uvisappwaptservice.pas"/>
-        <Caret Line="134" Column="16" TopLine="115"/>
+        <Caret Line="122" Column="16" TopLine="98"/>
       </Position18>
       <Position19>
         <Filename Value="uvisappwaptservice.pas"/>
-        <Caret Line="135" Column="3" TopLine="115"/>
+        <Caret Line="123" Column="28" TopLine="99"/>
       </Position19>
       <Position20>
-        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="2179" Column="17" TopLine="2157"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="399" Column="67" TopLine="359"/>
       </Position20>
       <Position21>
-        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="3321" Column="12" TopLine="3294"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="495" Column="37" TopLine="471"/>
       </Position21>
       <Position22>
-        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="3362" Column="14" TopLine="3335"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="484" Column="23" TopLine="471"/>
       </Position22>
       <Position23>
-        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="3383" Column="12" TopLine="3356"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position23>
+      <Position24>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="402" Column="23" TopLine="378"/>
+      </Position24>
+      <Position25>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="428" Column="7" TopLine="404"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="431" Column="61" TopLine="408"/>
+      </Position26>
+      <Position27>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="433" Column="13" TopLine="410"/>
+      </Position27>
+      <Position28>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="439" Column="59" TopLine="416"/>
+      </Position28>
+      <Position29>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="441" Column="13" TopLine="418"/>
+      </Position29>
+      <Position30>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="497" Column="93" TopLine="473"/>
+      </Position30>
     </JumpHistory>
   </ProjectSession>
   <EditorMacros Count="0"/>

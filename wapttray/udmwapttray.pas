@@ -37,11 +37,13 @@ type
     procedure ActUpdateExecute(Sender: TObject);
     procedure ActUpgradeExecute(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
+    procedure TrayIcon1Click(Sender: TObject);
     procedure TrayIcon1DblClick(Sender: TObject);
   private
     { private declarations }
   public
     { public declarations }
+    previousupgrades:String;
   end;
 
 var
@@ -56,8 +58,6 @@ uses LCLIntf,Forms,windows,waptcommon, superobject,tiscommon;
 
 procedure TDMWaptTray.ActShowMainExecute(Sender: TObject);
 begin
-  TrayIcon1.Icons := ImageList1;
-  //TrayIcon1.Animate:=True;
 end;
 
 procedure TDMWaptTray.ActShowStatusExecute(Sender: TObject);
@@ -91,13 +91,51 @@ begin
 end;
 
 procedure TDMWaptTray.Timer1Timer(Sender: TObject);
+var
+  sob:ISuperObject;
+  new_updates,new_upgrades : String;
 begin
-  //update_pending := httpGetString('http://localhost:8088/checkupdates');
+  try
+    new_updates := httpGetString('http://localhost:8088/checkupgrades');
+    sob := SO(new_updates);
+    new_upgrades := SOb.S['upgrades'];
+    if new_upgrades<>'[]' then
+    begin
+      TrayIcon1.Icons := ImageList1;
+      TrayIcon1.Animate:=True;
+      TrayIcon1.Hint:='Mises à jour disponibles pour : '+new_upgrades;
+    end
+    else
+    begin
+      TrayIcon1.Hint:='Système à jour';
+      TrayIcon1.Animate:=False;
+    end;
+
+    if new_upgrades<>previousupgrades then
+    begin
+      if new_upgrades<>'[]' then
+        TrayIcon1.BalloonHint:='Nouvelles mises à jour disponibles'
+      else
+        TrayIcon1.BalloonHint:='Système à jour';
+
+      TrayIcon1.ShowBalloonHint;
+      previousupgrades:=new_upgrades;
+    end;
+  except
+    TrayIcon1.Hint:='Impossible d''obtenir les status de mise à jour';
+    //TrayIcon1.Hint:='Impossible d''obtenir les status de mise à jour';
+    //TrayIcon1.ShowBalloonHint;
+  end;
+end;
+
+procedure TDMWaptTray.TrayIcon1Click(Sender: TObject);
+begin
+
 end;
 
 procedure TDMWaptTray.TrayIcon1DblClick(Sender: TObject);
 begin
-  ActShowMain.Execute;
+  Timer1Timer(Sender);
 end;
 
 end.

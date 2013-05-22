@@ -726,7 +726,6 @@ object VisWaptGUI: TVisWaptGUI
         Width = 1216
         Align = alTop
         BevelOuter = bvNone
-        Caption = 'Panel5'
         ClientHeight = 34
         ClientWidth = 1216
         TabOrder = 1

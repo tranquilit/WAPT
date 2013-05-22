@@ -75,7 +75,7 @@ from setuphelpers import ensure_unicode
 
 import types
 
-__version__ = "0.1.11"
+__version__ = "0.1.12"
 
 logger = logging.getLogger()
 
@@ -1001,7 +1001,7 @@ class WaptDB(object):
         create table if not exists wapt_params (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name  varchar(64),
-          value varchar(255),
+          value text,
           create_date varchar(255)
           ) """)
 
@@ -1108,8 +1108,8 @@ class WaptDB(object):
         try:
             self.db.execute('insert or replace into wapt_params(name,value,create_date) values (?,?,?)',(name,value,datetime2isodate()))
             self.db.commit()
-        except:
-            logger.criticalu('Unable to set param %s : %s' % (name,value))
+        except Exception,e:
+            logger.critical('Unable to set param %s : %s : %s' % (name,value,ensure_unicode(e)))
             self.db.rollback()
 
     def get_param(self,name,default=None):
@@ -2125,6 +2125,18 @@ class Wapt(object):
             sys.stderr = old_stderr
             sys.path = oldpath
 
+            try:
+                status={
+                    "upgrades": [ "%s" % (p[0].asrequirement(),) for p in self.list_upgrade()],
+                    "date":datetime2isodate(),
+                    }
+                logger.debug("store status in DB")
+                self.write_param('last_update_status',jsondump(status))
+            except Exception,e:
+                logger.critical('Unable to store status of update in DB : %s'% ensure_unicode(e))
+
+
+
     def get_sources(self,package):
         """Download sources of package (if referenced in package as a https svn)
            in the current directory"""
@@ -2189,7 +2201,14 @@ class Wapt(object):
             "removed": [ p for p in previous if not p in current],
             "count" : len(current),
             "repos" : [r.repo_url for r in self.repositories],
+            "upgrades": [ "%s" % (p[0].asrequirement(),) for p in self.list_upgrade()],
+            "date":datetime2isodate(),
             }
+        try:
+            logger.debug("store status in DB")
+            self.write_param('last_update_status',jsondump( {'upgrades':result['upgrades'],"date":datetime2isodate()} ))
+        except Exception,e:
+            logger.critical('Unable to store status of update in DB : %s'% ensure_unicode(e))
         return result
 
     def checkinstall(self,apackages,forceupgrade=False,force=False,assume_removed=[]):
@@ -2493,6 +2512,17 @@ class Wapt(object):
                 else:
                     result['errors'].append(package)
                     raise Exception('  uninstall key not registered in local DB status, unable to remove properly. Please remove manually')
+
+        try:
+            status={
+                "upgrades": [ "%s" % (p[0].asrequirement(),) for p in self.list_upgrade()],
+                "date":datetime2isodate(),
+                }
+            logger.debug("store status in DB")
+            self.write_param('last_update_status',jsondump(status))
+        except Exception,e:
+            logger.critical('Unable to store status of update in DB : %s'% ensure_unicode(e))
+
         return result
 
     def host_packagename(self):
@@ -2516,6 +2546,17 @@ class Wapt(object):
         upgrades = self.waptdb.upgradeable()
         logger.debug(u'upgrades : %s' % upgrades.keys())
         result = self.install(upgrades.keys(),force=True)
+
+        try:
+            status={
+                "upgrades": [ "%s" % (p[0].asrequirement(),) for p in self.list_upgrade()],
+                "date":datetime2isodate(),
+                }
+            logger.debug("store status in DB")
+            self.write_param('last_update_status',jsondump(status))
+        except Exception,e:
+            logger.critical('Unable to store status of update in DB : %s'% ensure_unicode(e))
+
         # merge results
         return merge_dict(result,hostresult)
 

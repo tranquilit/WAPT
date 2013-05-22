@@ -492,9 +492,15 @@ begin
     end
     else
     if ARequestInfo.URI='/checkupgrades' then
-    begin
+    try
+      AQuery := WaptDB.QueryCreate('select * from wapt_params where name="last_update_status"');
+      AQuery.Open;
       AResponseInfo.ContentType:='application/json';
-      AResponseInfo.ContentText:= '';
+      //AResponseInfo.ContentText:= Dataset2SO(AQuery).AsJson;
+      AResponseInfo.ContentText:= AQuery.FieldByName('value').AsString;
+    finally
+      AQuery.Free;
+      WaptDB.db.Close;
     end
     else
     if ARequestInfo.URI='/disable' then

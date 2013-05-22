@@ -4,7 +4,7 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="29">
+    <Units Count="30">
       <Unit0>
         <Filename Value="wapttray.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -12,7 +12,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="7"/>
         <CursorPos X="49" Y="5"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="26"/>
       </Unit0>
       <Unit1>
         <Filename Value="uwapttray.pas"/>
@@ -24,34 +24,34 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="49" Y="8"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="26"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="73"/>
         <CursorPos X="6" Y="94"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="26"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\wapt-get\soutils.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="soutils"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="24"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\wapt-get\tiscommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiscommon"/>
-        <EditorIndex Value="10"/>
+        <EditorIndex Value="12"/>
         <WindowIndex Value="0"/>
         <TopLine Value="25"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit4>
       <Unit5>
@@ -64,9 +64,9 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="69"/>
-        <CursorPos X="32" Y="85"/>
-        <UsageCount Value="21"/>
+        <TopLine Value="95"/>
+        <CursorPos X="71" Y="116"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit5>
@@ -160,11 +160,11 @@
       </Unit16>
       <Unit17>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\customaction.inc"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="245"/>
         <CursorPos X="15" Y="248"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit17>
       <Unit18>
@@ -192,85 +192,96 @@
       <Unit21>
         <Filename Value="C:\codetyphon\lazarus\lcl\actnlist.pas"/>
         <UnitName Value="ActnList"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="190"/>
         <CursorPos X="14" Y="203"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit21>
       <Unit22>
         <Filename Value="C:\codetyphon\lazarus\lcl\extctrls.pp"/>
         <UnitName Value="ExtCtrls"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1070"/>
-        <CursorPos X="83" Y="1096"/>
+        <TopLine Value="1057"/>
+        <CursorPos X="25" Y="1070"/>
         <UsageCount Value="11"/>
+        <Loaded Value="True"/>
       </Unit22>
       <Unit23>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\winutils.pp"/>
         <UnitName Value="winutils"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="11"/>
         <WindowIndex Value="0"/>
         <TopLine Value="8"/>
         <CursorPos X="40" Y="48"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit23>
       <Unit24>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\win32\winsysut.pp"/>
         <UnitName Value="winsysut"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
         <TopLine Value="13"/>
         <CursorPos X="22" Y="31"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit24>
       <Unit25>
         <Filename Value="C:\codetyphon\fpcsrc\packages\cdrom\src\wincd.pp"/>
         <UnitName Value="wincd"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="10"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit25>
       <Unit26>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\winver.pp"/>
         <UnitName Value="winver"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="4"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit26>
       <Unit27>
         <Filename Value="C:\codetyphon\lazarus\lcl\lclintf.pas"/>
         <UnitName Value="LCLIntf"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="69"/>
         <CursorPos X="10" Y="84"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit27>
       <Unit28>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\sysenvapis_win.inc"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="3" Y="40"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit28>
+      <Unit29>
+        <Filename Value="C:\codetyphon\lazarus\lcl\include\customtrayicon.inc"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="153"/>
+        <CursorPos X="242" Y="180"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit29>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="11" HistoryIndex="10">
+    <JumpHistory Count="24" HistoryIndex="23">
       <Position1>
         <Filename Value="udmwapttray.pas"/>
         <Caret Line="80" Column="98" TopLine="63"/>
@@ -315,6 +326,58 @@
         <Filename Value="udmwapttray.pas"/>
         <Caret Line="80" Column="2" TopLine="57"/>
       </Position11>
+      <Position12>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="78" Column="29" TopLine="69"/>
+      </Position12>
+      <Position13>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="29" Column="1" TopLine="29"/>
+      </Position13>
+      <Position14>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="105" Column="20" TopLine="95"/>
+      </Position14>
+      <Position15>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="112" Column="24" TopLine="103"/>
+      </Position15>
+      <Position16>
+        <Filename Value="C:\codetyphon\lazarus\lcl\extctrls.pp"/>
+        <Caret Line="1095" Column="61" TopLine="1081"/>
+      </Position16>
+      <Position17>
+        <Filename Value="C:\codetyphon\lazarus\lcl\extctrls.pp"/>
+        <Caret Line="1096" Column="80" TopLine="1081"/>
+      </Position17>
+      <Position18>
+        <Filename Value="C:\codetyphon\lazarus\lcl\include\customtrayicon.inc"/>
+        <Caret Line="338" Column="18" TopLine="333"/>
+      </Position18>
+      <Position19>
+        <Filename Value="C:\codetyphon\lazarus\lcl\include\customtrayicon.inc"/>
+        <Caret Line="340" Column="18" TopLine="333"/>
+      </Position19>
+      <Position20>
+        <Filename Value="C:\codetyphon\lazarus\lcl\include\customtrayicon.inc"/>
+        <Caret Line="345" Column="19" TopLine="333"/>
+      </Position20>
+      <Position21>
+        <Filename Value="C:\codetyphon\lazarus\lcl\include\customtrayicon.inc"/>
+        <Caret Line="346" Column="16" TopLine="333"/>
+      </Position21>
+      <Position22>
+        <Filename Value="C:\codetyphon\lazarus\lcl\include\customtrayicon.inc"/>
+        <Caret Line="55" Column="49" TopLine="39"/>
+      </Position22>
+      <Position23>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="123" Column="49" TopLine="97"/>
+      </Position23>
+      <Position24>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="113" Column="30" TopLine="102"/>
+      </Position24>
     </JumpHistory>
   </ProjectSession>
   <EditorMacros Count="0"/>

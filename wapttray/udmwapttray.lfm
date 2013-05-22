@@ -49,6 +49,7 @@ object DMWaptTray: TDMWaptTray
     }
     Hint = 'WAPT Service'
     Visible = True
+    OnClick = TrayIcon1Click
     OnDblClick = TrayIcon1DblClick
     left = 108
     top = 47
