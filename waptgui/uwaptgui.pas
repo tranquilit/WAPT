@@ -224,13 +224,14 @@ end;
 procedure TVisWaptGUI.ActEditRemoveExecute(Sender: TObject);
 var
   i:integer;
+  sop : ISuperObject;
 begin
+  sop := Split(PackageEdited.S['depends'],',');
   for i:=0 to lstDepends.Items.Count-1 do
   begin
     if lstDepends.Items[i].Selected then
 
   end;
-
 end;
 
 procedure TVisWaptGUI.ActEditSavePackageExecute(Sender: TObject);
@@ -240,26 +241,25 @@ var
 begin
   Screen.Cursor:=crHourGlass;
   try
-  PackageEdited.S['package'] := EdPackage.Text;
-  PackageEdited.S['version'] := EdVersion.Text;
-  PackageEdited.S['description'] := EdDescription.Text;
-  PackageEdited.S['section'] := EdSection.Text;
-  Depends:='';
-  for i:=0 to lstDepends.Items.Count-1 do
-  begin
-    if Depends<>'' then
-      Depends:=Depends+','+lstDepends.Items[i].Caption
-    else
-      Depends:=lstDepends.Items[i].Caption;
-  end;
-  PackageEdited.S['depends'] := depends;
-  PythonEngine1.ExecString('p = PackageEntry()');
-  PythonEngine1.ExecString(format('p.load_control_from_dict(json.loads(''%s''))',[PackageEdited.AsJson]));
-  PythonEngine1.ExecString(format('p.save_control_to_wapt(r''%s'')',[EdSourceDir.Text]));
+    PackageEdited.S['package'] := EdPackage.Text;
+    PackageEdited.S['version'] := EdVersion.Text;
+    PackageEdited.S['description'] := EdDescription.Text;
+    PackageEdited.S['section'] := EdSection.Text;
+    Depends:='';
+    for i:=0 to lstDepends.Items.Count-1 do
+    begin
+      if Depends<>'' then
+        Depends:=Depends+','+lstDepends.Items[i].Caption
+      else
+        Depends:=lstDepends.Items[i].Caption;
+    end;
+    PackageEdited.S['depends'] := depends;
+    PythonEngine1.ExecString('p = PackageEntry()');
+    PythonEngine1.ExecString(format('p.load_control_from_dict(json.loads(''%s''))',[PackageEdited.AsJson]));
+    PythonEngine1.ExecString(format('p.save_control_to_wapt(r''%s'')',[EdSourceDir.Text]));
   finally
-      Screen.Cursor:=crDefault;
+    Screen.Cursor:=crDefault;
   end;
-
 end;
 
 procedure TVisWaptGUI.ActEditSearchExecute(Sender: TObject);

@@ -2548,8 +2548,10 @@ class Wapt(object):
 
         host_package = self.check_host_package()
         if host_package:
-            logger.info('Host package %s is available and not installed, installing host package...' % (host_packages[-1].package,) )
-            hostresult = self.install(host_packages[-1],force=True)
+            logger.info('Host package %s is available and not installed, installing host package...' % (host_package[-1].package,) )
+            hostresult = self.install(host_package[-1],force=True)
+        else:
+            hostresult = []
 
         upgrades = self.waptdb.upgradeable()
         logger.debug(u'upgrades : %s' % upgrades.keys())

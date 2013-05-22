@@ -1,11 +1,11 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 93
+  Left = 174
   Height = 583
-  Top = 129
-  Width = 1224
+  Top = 181
+  Width = 1028
   Caption = 'VisWaptGUI'
   ClientHeight = 583
-  ClientWidth = 1224
+  ClientWidth = 1028
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '1.1'
@@ -13,10 +13,10 @@ object VisWaptGUI: TVisWaptGUI
     Left = 0
     Height = 460
     Top = 0
-    Width = 1224
-    ActivePage = TabSheet2
+    Width = 1028
+    ActivePage = pgEditPackage
     Align = alClient
-    TabIndex = 1
+    TabIndex = 4
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Sources'
@@ -612,16 +612,16 @@ object VisWaptGUI: TVisWaptGUI
     object TabSheet2: TTabSheet
       Caption = 'Recherche packages'
       ClientHeight = 434
-      ClientWidth = 1216
+      ClientWidth = 1020
       object Panel4: TPanel
         Left = 0
         Height = 34
         Top = 0
-        Width = 1216
+        Width = 1020
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 34
-        ClientWidth = 1216
+        ClientWidth = 1020
         TabOrder = 0
         object EdSearch: TEdit
           Left = 4
@@ -644,7 +644,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 400
         Top = 34
-        Width = 1216
+        Width = 1020
         Align = alClient
         Checkboxes = True
         Columns = <        
@@ -671,7 +671,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             AutoSize = True
             Caption = 'Depends'
-            Width = 986
+            Width = 790
           end>
         Items.LazData = {
           8300000003000000FFFFFFFFFFFFFFFFFFFFFFFF030000000400000074657374
@@ -794,16 +794,16 @@ object VisWaptGUI: TVisWaptGUI
     object pgEditPackage: TTabSheet
       Caption = 'Editer package'
       ClientHeight = 434
-      ClientWidth = 1216
+      ClientWidth = 1020
       object Panel2: TPanel
         Left = 0
         Height = 50
         Top = 0
-        Width = 1216
+        Width = 1020
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 50
-        ClientWidth = 1216
+        ClientWidth = 1020
         TabOrder = 0
         object EdPackage: TEdit
           Left = 52
@@ -914,13 +914,13 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 384
         Top = 50
-        Width = 926
+        Width = 730
         Align = alClient
         Columns = <        
           item
             AutoSize = True
             Caption = 'Package'
-            Width = 71
+            Width = 52
           end        
           item
             AutoSize = True
@@ -940,7 +940,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             AutoSize = True
             Caption = 'Depends'
-            Width = 679
+            Width = 698
           end>
         Items.LazData = {
           7A00000003000000FFFFFFFFFFFFFFFFFFFFFFFF020000000400000074657374
@@ -949,7 +949,7 @@ object VisWaptGUI: TVisWaptGUI
           FF0000000009000000456CC3A96D656E7432FFFFFFFFFFFFFFFF
         }
         MultiSelect = True
-        PopupMenu = PopupMenuPackages
+        PopupMenu = PopupMenuEditDepends
         ReadOnly = True
         TabOrder = 1
         ViewStyle = vsReport
@@ -957,7 +957,7 @@ object VisWaptGUI: TVisWaptGUI
         OnDragOver = lstDependsDragOver
       end
       object Panel8: TPanel
-        Left = 926
+        Left = 730
         Height = 384
         Top = 50
         Width = 290
@@ -1003,7 +1003,7 @@ object VisWaptGUI: TVisWaptGUI
             item
               AutoSize = True
               Caption = 'Package'
-              Width = 71
+              Width = 52
             end          
             item
               AutoSize = True
@@ -1018,7 +1018,7 @@ object VisWaptGUI: TVisWaptGUI
             item
               AutoSize = True
               Caption = 'Depends'
-              Width = 986
+              Width = 120
             end>
           DragMode = dmAutomatic
           Items.LazData = {
@@ -1041,26 +1041,26 @@ object VisWaptGUI: TVisWaptGUI
     Left = 0
     Height = 118
     Top = 465
-    Width = 1224
+    Width = 1028
     Align = alBottom
     ClientHeight = 118
-    ClientWidth = 1224
+    ClientWidth = 1028
     TabOrder = 1
     object Panel7: TPanel
       Left = 1
       Height = 116
       Top = 1
-      Width = 1222
+      Width = 1026
       Align = alClient
       Caption = 'Panel7'
       ClientHeight = 116
-      ClientWidth = 1222
+      ClientWidth = 1026
       TabOrder = 1
       object Memo1: TMemo
         Left = 1
         Height = 114
         Top = 1
-        Width = 609
+        Width = 413
         Align = alClient
         Lines.Strings = (
           'Memo1'
@@ -1068,7 +1068,7 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 0
       end
       object jsonlog: TVirtualJSONInspector
-        Left = 615
+        Left = 419
         Height = 114
         Top = 1
         Width = 606
@@ -1096,7 +1096,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.SelectionOptions = [toExtendedFocus]
       end
       object Splitter2: TSplitter
-        Left = 610
+        Left = 414
         Height = 114
         Top = 1
         Width = 5
@@ -1120,7 +1120,7 @@ object VisWaptGUI: TVisWaptGUI
     Left = 0
     Height = 5
     Top = 460
-    Width = 1224
+    Width = 1028
     Align = alBottom
     ResizeAnchor = akBottom
   end

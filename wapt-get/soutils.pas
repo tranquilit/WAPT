@@ -54,10 +54,11 @@ var
 begin
   Result := TSuperObject.Create(stArray);
   St := StrUtils.StringsReplace(St,[#13#10,#13,#10],[#13,#13,#13],[rfReplaceAll]);
-  repeat
+  while St<>'' do
+  begin
     tok := StrToken(St,#13);
     Result.AsArray.Add(tok);
-  until St='';
+  end;
 end;
 
 function Split(St: String; Sep: Char): ISuperObject;
@@ -65,11 +66,11 @@ var
   tok : String;
 begin
   Result := TSuperObject.Create(stArray);
-  repeat
+  while st<>'' do
+  begin
     tok := StrToken(St,Sep);
-    if (tok<>'') and (length(st)>0) then
-      Result.AsArray.Add(tok);
-  until St='';
+    Result.AsArray.Add(tok);
+  end;
 end;
 
 function Dataset2SO(DS: TDataset;AllRecords:Boolean=True): ISuperObject;

@@ -24,8 +24,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="206"/>
-        <CursorPos X="50" Y="219"/>
+        <TopLine Value="339"/>
+        <CursorPos X="3" Y="346"/>
         <UsageCount Value="57"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -46,24 +46,24 @@
         <UsageCount Value="57"/>
       </Unit3>
       <Unit4>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiscommon"/>
+        <UsageCount Value="57"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\wapt-get\tisinifiles.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tisinifiles"/>
+        <UsageCount Value="57"/>
+      </Unit5>
+      <Unit6>
         <Filename Value="..\wapt-get\soutils.pas"/>
         <UnitName Value="soutils"/>
         <WindowIndex Value="0"/>
         <TopLine Value="22"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="54"/>
-      </Unit4>
-      <Unit5>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tiscommon"/>
-        <UsageCount Value="57"/>
-      </Unit5>
-      <Unit6>
-        <Filename Value="..\wapt-get\tisinifiles.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tisinifiles"/>
-        <UsageCount Value="57"/>
       </Unit6>
       <Unit7>
         <Filename Value="..\waptserviceapp\uvisappwaptservice.pas"/>
@@ -215,124 +215,124 @@
     </General>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="115" Column="18" TopLine="91"/>
-      </Position1>
-      <Position2>
         <Filename Value="..\..\pltis_superobject\soutils.pas"/>
         <Caret Line="303" Column="13" TopLine="232"/>
+      </Position1>
+      <Position2>
+        <Filename Value="uwaptgui.pas"/>
+        <Caret Line="115" Column="18" TopLine="91"/>
       </Position2>
       <Position3>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="115" Column="18" TopLine="91"/>
+        <Caret Line="190" Column="33" TopLine="96"/>
       </Position3>
       <Position4>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="190" Column="33" TopLine="96"/>
+        <Caret Line="135" Column="1" TopLine="106"/>
       </Position4>
       <Position5>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="135" Column="1" TopLine="106"/>
+        <Caret Line="215" Column="34" TopLine="184"/>
       </Position5>
       <Position6>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="215" Column="34" TopLine="184"/>
+        <Caret Line="381" Column="25" TopLine="358"/>
       </Position6>
       <Position7>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="381" Column="25" TopLine="358"/>
+        <Caret Line="388" Column="25" TopLine="365"/>
       </Position7>
       <Position8>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="388" Column="25" TopLine="365"/>
+        <Caret Line="217" Column="13" TopLine="214"/>
       </Position8>
       <Position9>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="217" Column="13" TopLine="214"/>
+        <Caret Line="200" Column="1" TopLine="190"/>
       </Position9>
       <Position10>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="200" Column="1" TopLine="190"/>
+        <Caret Line="375" Column="21" TopLine="347"/>
       </Position10>
       <Position11>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="375" Column="21" TopLine="347"/>
+        <Caret Line="403" Column="11" TopLine="390"/>
       </Position11>
       <Position12>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="403" Column="11" TopLine="390"/>
+        <Caret Line="404" Column="11" TopLine="391"/>
       </Position12>
       <Position13>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="404" Column="11" TopLine="391"/>
+        <Caret Line="403" Column="11" TopLine="390"/>
       </Position13>
       <Position14>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="403" Column="11" TopLine="390"/>
+        <Caret Line="404" Column="11" TopLine="391"/>
       </Position14>
       <Position15>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="404" Column="11" TopLine="391"/>
+        <Caret Line="411" Column="11" TopLine="398"/>
       </Position15>
       <Position16>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="411" Column="11" TopLine="398"/>
+        <Caret Line="253" Column="43" TopLine="234"/>
       </Position16>
       <Position17>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="253" Column="43" TopLine="234"/>
+        <Caret Line="254" Column="60" TopLine="231"/>
       </Position17>
       <Position18>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="254" Column="60" TopLine="231"/>
+        <Caret Line="258" Column="60" TopLine="235"/>
       </Position18>
       <Position19>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="258" Column="60" TopLine="235"/>
+        <Caret Line="257" Column="60" TopLine="234"/>
       </Position19>
       <Position20>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="257" Column="60" TopLine="234"/>
+        <Caret Line="256" Column="60" TopLine="233"/>
       </Position20>
       <Position21>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="256" Column="60" TopLine="233"/>
+        <Caret Line="257" Column="1" TopLine="233"/>
       </Position21>
       <Position22>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="257" Column="1" TopLine="233"/>
+        <Caret Line="258" Column="1" TopLine="234"/>
       </Position22>
       <Position23>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="258" Column="1" TopLine="234"/>
+        <Caret Line="257" Column="1" TopLine="233"/>
       </Position23>
       <Position24>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="257" Column="1" TopLine="233"/>
+        <Caret Line="258" Column="1" TopLine="234"/>
       </Position24>
       <Position25>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="258" Column="1" TopLine="234"/>
+        <Caret Line="259" Column="1" TopLine="235"/>
       </Position25>
       <Position26>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="259" Column="1" TopLine="235"/>
+        <Caret Line="258" Column="1" TopLine="234"/>
       </Position26>
       <Position27>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="258" Column="1" TopLine="234"/>
+        <Caret Line="301" Column="36" TopLine="293"/>
       </Position27>
       <Position28>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="301" Column="36" TopLine="293"/>
+        <Caret Line="307" Column="68" TopLine="294"/>
       </Position28>
       <Position29>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="307" Column="68" TopLine="294"/>
+        <Caret Line="258" Column="1" TopLine="235"/>
       </Position29>
       <Position30>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="258" Column="1" TopLine="235"/>
+        <Caret Line="219" Column="50" TopLine="206"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>
