@@ -165,10 +165,12 @@ for repoPackage in repoPackages:
 
 if packagesToUpgrade:
     downloadPackages( packagesToUpgrade)
-else :
-    print "The system is already up to date"
+
 if newPackages:
     downloadPackages(newPackages)
+    
+if not (packagesToUpgrade or newPackages):
+    print "The system is already up to date"
 
 if packagesToUpgrade or newPackages:
     os.system('cd '+wapt_dir+'&& python wapt-scanpackages.py .')
