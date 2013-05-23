@@ -30,7 +30,7 @@ import shutil
 import sys 
 import logging
 import ConfigParser
-import argparse
+from optparse import OptionParser
 
 
 logger = logging.getLogger()
@@ -39,12 +39,12 @@ hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
 logger.addHandler(hdlr)
 logger.setLevel(logging.CRITICAL)
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-c', help='pass config file')
-args = parser.parse_args()
+parser = OptionParser()
+parser.add_option('-c', help='pass config file')
+(options, args) = parser.parse_args()
 
-if args.c:
-    config_file = args.c
+if options.c:
+    config_file = options.c
 else:
     config_file = '/etc/tis/config-waptzsync.ini'
 
