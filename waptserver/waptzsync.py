@@ -121,14 +121,18 @@ repoPackages = downloadRepoPackages(mainRepo)
 localPackages = packagesFileToList(waptDir+'Packages') 
 
 for repoPackage in repoPackages:
+    if not repoPackage.section != "host":
+        continue
+        
     matchPackage = [ package for package in localPackages if repoPackage.package == package.package ]
+
     if len(matchPackage) == 1:
         if repoPackage > matchPackage[0]:
             packagesToUpgrade.append(repoPackage)
     elif len(matchPackage) > 1: 
         if not [ x for x in matchPackage if repoPackage.version in x.version ]:
             packagesToUpgrade.append(repoPackage)
-    elif donwloadNewPackages :
+    elif donwloadNewPackages:
         newPackages.append(repoPackage)
     else:
         print "New package: "+repoPackage.package
