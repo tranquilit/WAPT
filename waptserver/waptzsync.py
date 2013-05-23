@@ -30,6 +30,7 @@ import shutil
 import sys 
 import logging
 import ConfigParser
+import argparse
 
 
 logger = logging.getLogger()
@@ -38,7 +39,16 @@ hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
 logger.addHandler(hdlr)
 logger.setLevel(logging.CRITICAL)
 
-config_file = './config-waptzsync.ini'
+parser = argparse.ArgumentParser()
+parser.add_argument('-c', help='pass config file')
+args = parser.parse_args()
+
+if args.c:
+    config_file = args.c
+else:
+    config_file = '/etc/tis/config-waptzsync.ini'
+
+
 if not os.path.exists(config_file):
     raise Exception("No config file found")
 
