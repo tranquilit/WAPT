@@ -1,0 +1,6 @@
+[default]
+main_repo=http://srvinstallation.tranquil.it/wapt/
+#Local WAPT Repository
+wapt_dir=/var/www/wapt/
+# download new packages if present
+donwload_new_packages=True
