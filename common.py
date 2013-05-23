@@ -2782,6 +2782,9 @@ class Wapt(object):
                 # save control file
                 entry.save_control_to_wapt(directoryname)
 
+            # check version syntax
+            parse_major_minor_patch_build(entry.version)
+
             if inc_package_release:
                 entry.inc_build()
                 """

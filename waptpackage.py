@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 import os
 import zipfile
@@ -80,8 +80,12 @@ def parse_major_minor_patch_build(version):
     return verinfo
 
 def make_version(major_minor_patch_build):
-    return u'.'.join( [ "%s" % major_minor_patch_build[p] for p in ('major','minor','patch','subpatch') if major_minor_patch_build[p]<>None])+\
-                '-'+major_minor_patch_build['packaging']
+    p1 = u'.'.join( [ "%s" % major_minor_patch_build[p] for p in ('major','minor','patch','subpatch') if major_minor_patch_build[p]<>None])
+    if major_minor_patch_build['packaging']<>None:
+        return '-'.join([p1,major_minor_patch_build['packaging']])
+    else:
+        return p1
+
 
 class PackageEntry(object):
     """Package attributes coming from either control files in WAPT package or local DB"""
@@ -338,11 +342,12 @@ sources      : %(sources)s
     def inc_build(self):
         """Increment build number (last part of version)"""
         version_parts = self.parse_version()
-        if 'packaging' in version_parts:
-            version_parts['packaging'] = "%02i" % (int(version_parts['packaging'])+1,)
-            self.version = make_version(version_parts)
-        else:
-            raise Exception(u'no build/packaging part in version number %s' % self.version)
+        for part in ('packaging','subpatch','patch','minor','major'):
+            if part in version_parts and version_parts[part] <> None :
+                version_parts[part] = "%i" % (int(version_parts[part])+1,)
+                self.version = make_version(version_parts)
+                return
+        raise Exception(u'no build/packaging part in version number %s' % self.version)
 
 def update_packages(adir):
     """Scan adir directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash"""
