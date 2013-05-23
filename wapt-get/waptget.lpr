@@ -29,7 +29,7 @@ uses
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, CustApp,
   { you can add units after this }
-  Windows, PythonEngine, waptcommon, soutils, tiscommon, FileUtil, NetworkAdapterInfo;
+  Windows, PythonEngine, waptcommon, tiscommon, FileUtil, NetworkAdapterInfo;
 type
   { pwaptget }
 

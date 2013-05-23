@@ -63,7 +63,7 @@
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="112"/>
-        <CursorPos X="35" Y="136"/>
+        <CursorPos X="24" Y="118"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -109,7 +109,6 @@
       </Unit5>
       <Unit6>
         <Filename Value="soutils.pas"/>
-        <IsPartOfProject Value="True"/>
         <UnitName Value="soutils"/>
         <WindowIndex Value="0"/>
         <TopLine Value="37"/>
@@ -138,8 +137,8 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="tisstrings"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1840"/>
-        <CursorPos X="1" Y="1883"/>
+        <TopLine Value="241"/>
+        <CursorPos X="1" Y="269"/>
         <UsageCount Value="260"/>
       </Unit9>
       <Unit10>
