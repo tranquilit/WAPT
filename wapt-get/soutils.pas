@@ -29,14 +29,23 @@ uses
   Classes, SysUtils,SuperObject,DB;
 
 function StringList2SuperObject(St:TStringList):ISuperObject;
-function SplitLines(St:String):ISuperObject;
-function Split(St: String; Sep: Char): ISuperObject;
+function SplitLines(const St:String):ISuperObject;
+function Split(const St: String; Sep: Char): ISuperObject;
+function StrIn(const St: String; List:ISuperObject): Boolean;
+function StrIsOneOf(const S: string; const List: array of string): Boolean;
 
 function Dataset2SO(DS:TDataset;AllRecords:Boolean=True):ISuperObject;
 procedure SO2Dataset(SO:ISuperObject;DS:TDataset;ExcludedFields:Array of String);
 
 implementation
 uses StrUtils,tisStrings;
+
+
+function StrIsOneOf(const S: string; const List: array of string): Boolean;
+begin
+  Result := StrIndex(S, List) > -1;
+end;
+
 
 
 function StringList2SuperObject(St: TStringList): ISuperObject;
@@ -48,29 +57,46 @@ begin
     Result.AsArray.Add(st[i]);
 end;
 
-function SplitLines(St: String): ISuperObject;
+function SplitLines(const St: String): ISuperObject;
 var
   tok : String;
+  St2:String;
 begin
   Result := TSuperObject.Create(stArray);
-  St := StrUtils.StringsReplace(St,[#13#10,#13,#10],[#13,#13,#13],[rfReplaceAll]);
-  while St<>'' do
+  St2 := StrUtils.StringsReplace(St,[#13#10,#13,#10],[#13,#13,#13],[rfReplaceAll]);
+  while St2<>'' do
   begin
-    tok := StrToken(St,#13);
+    tok := StrToken(St2,#13);
     Result.AsArray.Add(tok);
   end;
 end;
 
-function Split(St: String; Sep: Char): ISuperObject;
+function Split(const St: String; Sep: Char): ISuperObject;
 var
   tok : String;
+  St2:String;
 begin
   Result := TSuperObject.Create(stArray);
-  while st<>'' do
+  St2 := St;
+  while St2<>'' do
   begin
-    tok := StrToken(St,Sep);
+    tok := StrToken(St2,Sep);
     Result.AsArray.Add(tok);
   end;
+end;
+
+// return True if St is in the List list of string
+function StrIn(const St: String; List: ISuperObject): Boolean;
+var
+  it:ISuperObject;
+begin
+  for it in List do
+    if (it.DataType=stString) and (it.AsString=St) then
+    begin
+      result := True;
+      Exit;
+    end;
+  result := False;
 end;
 
 function Dataset2SO(DS: TDataset;AllRecords:Boolean=True): ISuperObject;
