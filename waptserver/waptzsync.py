@@ -39,12 +39,12 @@ logger.setLevel(logging.CRITICAL)
 
 
 #Remote WAPT Repository 
-mainRepo = "http://wapt/wapt-test/"
-#mainRepo = "http://srvinstallation.tranquil.it/wapt/"
+#mainRepo = "http://wapt/wapt-test/"
+mainRepo = "http://srvinstallation.tranquil.it/wapt/"
 
 #Local WAPT Repository
-#waptDir = "/var/www/wapt/"
-waptDir = "/home/homes/ssamson/wapt/"
+waptDir = "/var/www/wapt/"
+#waptDir = "/home/homes/ssamson/wapt/"
 
 
 # download new packages if present
