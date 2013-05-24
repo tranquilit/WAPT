@@ -22,7 +22,6 @@
 # -----------------------------------------------------------------------
 
 import os
-import subprocess
 import re
 import logging
 import datetime
@@ -45,6 +44,7 @@ import socket
 import dns.resolver
 import copy
 import getpass
+import psutil
 
 import winsys.security
 import winsys.accounts
@@ -75,7 +75,7 @@ from setuphelpers import ensure_unicode
 
 import types
 
-__version__ = "0.1.13"
+__version__ = "0.6.18"
 
 logger = logging.getLogger()
 
@@ -101,6 +101,8 @@ def fileisodate(filename):
 
 def dateof(adatetime):
     return adatetime.replace(hour=0,minute=0,second=0,microsecond=0)
+
+ArchitecturesList = ('all','x86','x64')
 
 #####################################
 # http://code.activestate.com/recipes/498181-add-thousands-separator-commas-to-formatted-number/
@@ -855,7 +857,7 @@ class WaptDB(object):
     dbpath = ''
     db = None
 
-    curr_db_version = '20130423'
+    curr_db_version = '20130523'
 
     def __init__(self,dbpath):
         self._db_version = None
@@ -991,7 +993,8 @@ class WaptDB(object):
           install_params VARCHAR(800),
           uninstall_string varchar(255),
           uninstall_key varchar(255),
-          setuppy TEXT
+          setuppy TEXT,
+          process_id integer
           )"""
                         )
         self.db.execute("""
@@ -1219,8 +1222,9 @@ class WaptDB(object):
                     install_status,
                     install_output,
                     install_params,
-                    explicit_by
-                    ) values (?,?,?,?,?,?,?,?)
+                    explicit_by,
+                    process_id
+                    ) values (?,?,?,?,?,?,?,?,?)
                 """,(
                      package,
                      version,
@@ -1230,6 +1234,7 @@ class WaptDB(object):
                      '',
                      json.dumps(params_dict),
                      explicit_by,
+                     os.getpid()
                    ))
         finally:
             self.db.commit()
@@ -1238,16 +1243,36 @@ class WaptDB(object):
     def update_install_status(self,rowid,install_status,install_output,uninstall_key=None,uninstall_string=None):
         """Update status of package installation on localdb"""
         try:
+            if install_status in ('OK','ERROR'):
+                pid = None
+            else:
+                pid = os.getpid()
             cur = self.db.execute("""\
                   update wapt_localstatus
-                    set install_status=?,install_output = install_output || ?,uninstall_key=?,uninstall_string=?
+                    set install_status=?,install_output = install_output || ?,uninstall_key=?,uninstall_string=?,process_id=?
                     where rowid = ?
                 """,(
                      install_status,
                      install_output,
                      uninstall_key,
                      uninstall_string,
+                     pid,
                      rowid,
+                     )
+                   )
+        finally:
+            self.db.commit()
+        return cur.lastrowid
+
+    def update_install_status_pid(self,pid,install_status='ERROR'):
+        """Update status of package installation on localdb"""
+        try:
+            cur = self.db.execute("""\
+                  update wapt_localstatus
+                    set install_status=? where process_id = ?
+                """,(
+                     install_status,
+                     pid,
                      )
                    )
         finally:
@@ -1380,12 +1405,12 @@ class WaptDB(object):
                 r.repo_url,r.md5sum,r.repo
                  from wapt_localstatus l
                 left join wapt_package r on r.package=l.package and l.version=r.version and (l.architecture is null or l.architecture=r.architecture)
-              where l.install_status in ("OK","UNKNOWN") and %s
+              where %s
            """ % " and ".join(search),words)
         return q
 
     def installed_matching(self,package_cond):
-        """Return True if one installed package match te package condition 'tis-package (>=version)' """
+        """Return True if one properly installed package match the package condition 'tis-package (>=version)' """
         package = REGEX_PACKAGE_CONDITION.match(package_cond).groupdict()['package']
         q = self.query_package_entry("""\
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.setuppy,l.explicit_by,
@@ -1589,19 +1614,23 @@ class WaptRepo(object):
 ######################"""
 class Wapt(object):
     """Global WAPT engine"""
-    def __init__(self,config=None,defaults=None):
+    def __init__(self,config=None,config_filename=None,defaults=None):
         """Initialize engine with a configParser instance (inifile) and other defaults in a dictionary
             Main properties are :
         """
         assert not config or isinstance(config,RawConfigParser)
         self.wapt_base_dir = os.path.dirname(sys.argv[0])
+        self.config_filename = config_filename
+        if not self.config_filename:
+            self.config_filename = os.path.join(self.wapt_base_dir,'wapt-get.ini')
+
         self.config = config
-        self.config_filename = os.path.join(self.wapt_base_dir,'wapt-get.ini')
-        # default config file
-        if not config:
-            config = RawConfigParser(defaults = defaults)
-            config.read(self.config_filename)
-        self._wapt_repourl = config.get('global','repo_url')
+        if not self.config:
+            # default config file
+            self.config = RawConfigParser(defaults = defaults)
+            self.config.read(self.config_filename)
+
+        self._wapt_repourl = self.config.get('global','repo_url')
         self.packagecachedir = os.path.join(self.wapt_base_dir,'cache')
         if not os.path.exists(self.packagecachedir):
             os.makedirs(self.packagecachedir)
@@ -1612,8 +1641,8 @@ class Wapt(object):
         self.usergroups = None
 
         # database init
-        if config.has_option('global','dbdir'):
-            self.dbdir =  config.get('global','dbdir')
+        if self.config.has_option('global','dbdir'):
+            self.dbdir =  self.config.get('global','dbdir')
         else:
             self.dbdir = os.path.join(self.wapt_base_dir,'db')
 
@@ -1622,60 +1651,60 @@ class Wapt(object):
         self.dbpath = os.path.join(self.dbdir,'waptdb.sqlite')
         self._waptdb = None
         #
-        if config.has_option('global','private_key'):
-            self.private_key = config.get('global','private_key')
+        if self.config.has_option('global','private_key'):
+            self.private_key = self.config.get('global','private_key')
         else:
             self.private_key = ''
 
-        if config.has_option('global','allow_unsigned'):
-            self.allow_unsigned = config.getboolean('global','allow_unsigned')
+        if self.config.has_option('global','allow_unsigned'):
+            self.allow_unsigned = self.config.getboolean('global','allow_unsigned')
         else:
             self.allow_unsigned = False
 
-        if config.has_option('global','upload_cmd'):
-            self.upload_cmd = config.get('global','upload_cmd')
+        if self.config.has_option('global','upload_cmd'):
+            self.upload_cmd = self.config.get('global','upload_cmd')
         else:
             self.upload_cmd = None
 
-        if config.has_option('global','after_upload'):
-            self.after_upload = config.get('global','after_upload')
+        if self.config.has_option('global','after_upload'):
+            self.after_upload = self.config.get('global','after_upload')
         else:
             self.after_upload = None
 
-        if config.has_option('global','http_proxy'):
-            self.proxies = {'http':config.get('global','http_proxy')}
+        if self.config.has_option('global','http_proxy'):
+            self.proxies = {'http':self.config.get('global','http_proxy')}
         else:
             self.proxies = None
 
         # windows task scheduling
-        if config.has_option('global','waptupdate_task_period'):
-            self.waptupdate_task_period = int(config.get('global','waptupdate_task_period'))
+        if self.config.has_option('global','waptupdate_task_period'):
+            self.waptupdate_task_period = int(self.config.get('global','waptupdate_task_period'))
         else:
             self.waptupdate_task_period = None
 
-        if config.has_option('global','waptupdate_task_maxruntime'):
-            self.waptupdate_task_maxruntime = int(config.get('global','waptupdate_task_maxruntime'))
+        if self.config.has_option('global','waptupdate_task_maxruntime'):
+            self.waptupdate_task_maxruntime = int(self.config.get('global','waptupdate_task_maxruntime'))
         else:
             self.waptupdate_task_maxruntime = 10
 
-        if config.has_option('global','waptupgrade_task_period'):
-            self.waptupgrade_task_period = int(config.get('global','waptupgrade_task_period'))
+        if self.config.has_option('global','waptupgrade_task_period'):
+            self.waptupgrade_task_period = int(self.config.get('global','waptupgrade_task_period'))
         else:
             self.waptupgrade_task_period = None
 
-        if config.has_option('global','waptupgrade_task_maxruntime'):
-            self.waptupgrade_task_maxruntime = int(config.get('global','waptupgrade_task_maxruntime'))
+        if self.config.has_option('global','waptupgrade_task_maxruntime'):
+            self.waptupgrade_task_maxruntime = int(self.config.get('global','waptupgrade_task_maxruntime'))
         else:
             self.waptupgrade_task_maxruntime = 180
 
 
-        if config.has_option('global','wapt_server'):
-            self.wapt_server = config.get('global','wapt_server')
+        if self.config.has_option('global','wapt_server'):
+            self.wapt_server = self.config.get('global','wapt_server')
         else:
             self.wapt_server = None
 
-        if config.has_option('global','language'):
-            self.language = config.get('global','language')
+        if self.config.has_option('global','language'):
+            self.language = self.config.get('global','language')
         else:
             self.language = None
 
@@ -1684,8 +1713,8 @@ class Wapt(object):
         # Stores the configuration of all repositories (url, public_cert...)
         self.repositories = []
         # secondary
-        if config.has_option('global','repositories'):
-            names = [n.strip() for n in config.get('global','repositories').split(',')]
+        if self.config.has_option('global','repositories'):
+            names = [n.strip() for n in self.config.get('global','repositories').split(',')]
             logger.info(u'Other repositories : %s' % (names,))
             for name in names:
                 if name:
@@ -1833,6 +1862,45 @@ class Wapt(object):
 
         return None
 
+    def check_install_running(self,max_ttl=60):
+        """ Check if an install is in progress, return list of pids of install in progress
+            Kill old stucked wapt-get processes/children and update db status
+            max_ttl is maximum age of wapt-get in minutes
+        """
+        wapt_processes = [ p for p in setuphelpers.find_processes('wapt-get') if p.pid <> os.getpid() ]
+
+        # kill old wapt-get
+        mindate = time.time() - max_ttl*60
+
+        # to keep the list of supposedly killed wapt-get processes
+        killed=[]
+        for p in wapt_processes:
+            if p.create_time < mindate:
+                setuphelpers.killtree(p.pid)
+                killed.append(p.pid)
+
+        # reset install_status
+        init_run_pids = self.waptdb.query("""\
+           select process_id from wapt_localstatus
+              where install_status in ('INIT','RUNNING')
+           """ )
+
+        all_pids = psutil.get_pid_list()
+        reset_error = []
+        result = []
+        for rec in init_run_pids:
+            # check if process is no more running
+            if not rec['process_id'] in all_pids or rec['process_id'] in killed:
+                reset_error.append(rec['process_id'])
+            else:
+                # install in progress
+                result.append(rec['process_id'])
+
+        for pid in reset_error:
+            self.waptdb.update_install_status_pid(pid,'ERROR')
+        # return pids of install in progress
+        return result
+
     def registry_uninstall_snapshot(self):
         """Return list of uninstall ID from registry
              launched before and after an installation to capture uninstallkey
@@ -1913,7 +1981,8 @@ class Wapt(object):
                 raise
 
     def corrupted_files_sha1(self,rootdir,manifest):
-        """check hexdigest sha1 for the files in manifest, returns a list of non matching files (corrupted files)"""
+        """check hexdigest sha1 for the files in manifest
+        returns a list of non matching files (corrupted files)"""
         assert os.path.isdir(rootdir)
         assert isinstance(manifest,list) or isinstance(manifest,tuple)
         errors = []
@@ -2156,7 +2225,7 @@ class Wapt(object):
             co_dir = os.path.join(self.config.get('default_sources_root',entry.package))
         logger.info('sources : %s'% entry.sources)
         logger.info('checkout dir : %s'% co_dir)
-        logger.info(ensure_unicode(subprocess.check_output(u'"%s" co "%s" "%s"' % (svncmd,entry.sources,co_dir))))
+        logger.info(setuphelpers.run(u'"%s" co "%s" "%s"' % (svncmd,entry.sources,co_dir)))
         return co_dir
 
     def last_install_log(self,packagename):
@@ -2470,7 +2539,7 @@ class Wapt(object):
                     if guid:
                         try:
                             logger.info('Running %s' % guid)
-                            logger.info(ensure_unicode(subprocess.check_output(guid)))
+                            logger.info(setuphelpers.run(guid))
                         except Exception,e:
                             logger.info("Warning : %s" % ensure_unicode(e))
                 logger.info('Remove status record from local DB for %s' % package)
@@ -2496,7 +2565,7 @@ class Wapt(object):
                             uninstall_cmd = self.uninstall_cmd(guid)
                             if uninstall_cmd:
                                 logger.info(u'Launch uninstall cmd %s' % (uninstall_cmd,))
-                                print ensure_unicode(subprocess.check_output(uninstall_cmd,shell=True))
+                                print setuphelpers.run(uninstall_cmd)
                         except Exception,e:
                             logger.critical(u"Critical error during uninstall of %s: %s" % (uninstall_cmd,ensure_unicode(e)))
                             result['errors'].append(package)
@@ -2610,7 +2679,7 @@ class Wapt(object):
         """Returns a list of installed packages which have the searchwords
            in their description
         """
-        return self.waptdb.installed_search(searchwords=searchwords)
+        return self.waptdb.installed_search(searchwords=searchwords,)
 
     def download_upgrades(self):
         """Download packages that can be upgraded"""
@@ -2626,7 +2695,7 @@ class Wapt(object):
         """
         if description:
             #logger.info(u'Updating computer description to %s' % ensure_unicode(description))
-            out = subprocess.check_output("WMIC os set description='%s'" % description)
+            out = setuphelpers.run(u"WMIC os set description='%s'" % description,shell=False)
             logger.info(ensure_unicode(out))
 
         inv = self.inventory()
@@ -2638,7 +2707,7 @@ class Wapt(object):
         if force:
             inv['force']=True
         if self.wapt_server:
-            req = requests.post("%s/add_host" % (self.wapt_server,),json.dumps(inv))
+            req = requests.post("%s/add_host" % (self.wapt_server,),json.dumps(inv),proxies=self.proxies)
             req.raise_for_status()
             return req.content
         else:
@@ -2659,7 +2728,7 @@ class Wapt(object):
                 inv['force']=True
 
             if self.wapt_server:
-                req = requests.post("%s/update_host" % (self.wapt_server,),json.dumps(inv))
+                req = requests.post("%s/update_host" % (self.wapt_server,),json.dumps(inv),proxies=self.proxies)
                 try:
                     req.raise_for_status()
                 except Exception,e:
@@ -2754,7 +2823,7 @@ class Wapt(object):
             except:
                 raise Exception('Encoding of setup.py is not utf8')
 
-            mandatory = [('install',types.FunctionType) ,('uninstallkey',types.ListType),('uninstallstring',types.ListType)]
+            mandatory = [('install',types.FunctionType) ,('uninstallkey',types.ListType),]
             for (attname,atttype) in mandatory:
                 if not hasattr(setup,attname):
                     raise Exception('setup.py has no %s (%s)' % (attname,atttype))
@@ -2785,6 +2854,10 @@ class Wapt(object):
             # check version syntax
             parse_major_minor_patch_build(entry.version)
 
+            # check architecture
+            if not entry.architecture in ArchitecturesList:
+                raise Exception('Architecture should one of %s' % (ArchitecturesList,))
+
             if inc_package_release:
                 entry.inc_build()
                 """
@@ -2805,7 +2878,7 @@ class Wapt(object):
                 source_root = directoryname,
                 target_root = '' ,
                 excludes=excludes)
-            return {'filename':result_filename,'files':allfiles}
+            return {'filename':result_filename,'files':allfiles,'package':entry}
         finally:
             if 'setup' in dir():
                 del setup
@@ -2816,6 +2889,9 @@ class Wapt(object):
             os.chdir(previous_cwd)
 
     def build_upload(self,source_dir):
+        """Build a list of packages and upload the resulting packages to the main repository.
+           if section of package is group or host, user specific wapt-host or wapt-group
+        """
         print('Building  %s' % source_dir)
         result = self.buildpackage(source_dir)
         package_fn = result['filename']
@@ -3285,6 +3361,11 @@ def install():
         result['package'] = dest_control
         return result
 
+    def check_waptupgrades(self):
+        if self.config.has_option('global','waptupgrade_url'):
+            upgradeurl = self.config.get('global','waptupgrade_url')
+        pass
+
     def setup_tasks(self):
         result = []
         # update and download new packages
@@ -3374,7 +3455,7 @@ class Version():
 
 
 if __name__ == '__main__':
-    logger.logLevel = logging.DEBUG
+    logger.setLevel(logging.DEBUG)
     if len(logger.handlers)<1:
         hdlr = logging.StreamHandler(sys.stdout)
         hdlr.setFormatter(logging.Formatter(u'%(asctime)s %(levelname)s %(message)s'))
@@ -3384,6 +3465,7 @@ if __name__ == '__main__':
     cfg.read('c:\\tranquilit\\wapt\\wapt-get.ini')
     w = Wapt(config=cfg)
     print w.waptdb.get_param('toto')
+    print w.check_install_running(max_ttl = 1)
 
     w.remove('tis-winscp')
 

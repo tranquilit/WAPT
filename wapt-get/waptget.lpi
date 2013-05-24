@@ -22,7 +22,7 @@
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="6"/>
       <RevisionNr Value="18"/>
-      <BuildNr Value="1"/>
+      <BuildNr Value="3"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -62,8 +62,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="112"/>
-        <CursorPos X="24" Y="118"/>
+        <TopLine Value="17"/>
+        <CursorPos X="50" Y="35"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -207,7 +207,7 @@
         <UsageCount Value="7"/>
       </Unit17>
     </Units>
-    <JumpHistory Count="2" HistoryIndex="1">
+    <JumpHistory Count="4" HistoryIndex="3">
       <Position1>
         <Filename Value="waptget.lpr"/>
         <Caret Line="274" Column="42" TopLine="250"/>
@@ -216,6 +216,14 @@
         <Filename Value="waptget.lpr"/>
         <Caret Line="1" Column="1" TopLine="1"/>
       </Position2>
+      <Position3>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="126" Column="37" TopLine="112"/>
+      </Position3>
+      <Position4>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="33" Column="12" TopLine="16"/>
+      </Position4>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

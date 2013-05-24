@@ -10,7 +10,6 @@ uses
 type
 
   { TDMWaptTray }
-
   TDMWaptTray = class(TDataModule)
     ActForceRegisterComputer: TAction;
     ActConfigure: TAction;
@@ -36,23 +35,112 @@ type
     procedure ActShowStatusExecute(Sender: TObject);
     procedure ActUpdateExecute(Sender: TObject);
     procedure ActUpgradeExecute(Sender: TObject);
+    procedure DataModuleCreate(Sender: TObject);
+    procedure DataModuleDestroy(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure TrayIcon1Click(Sender: TObject);
     procedure TrayIcon1DblClick(Sender: TObject);
   private
+    procedure SetTrayIcon(idx: integer);
     { private declarations }
   public
     { public declarations }
-    previousupgrades:String;
+    check_thread:TThread;
   end;
 
 var
   DMWaptTray: TDMWaptTray;
 
 implementation
-uses LCLIntf,Forms,windows,waptcommon, superobject,tiscommon;
+uses LCLIntf,Forms,windows,superobject,graphics,tiscommon,waptcommon;
 
 {$R *.lfm}
+type
+
+  { TCheckThread }
+
+  TCheckThread = Class(TThread)
+    public
+      new_updates,new_upgrades : String;
+      new_hint:String;
+      new_ballon:String;
+      animate:Boolean;
+      icon_idx:integer;
+      previousupgrades:String;
+      DMTray:TDMWaptTray;
+      procedure Execute; override;
+      procedure SetTrayStatus;
+  end;
+
+{ TCheckThread }
+
+procedure TCheckThread.Execute;
+var
+  sob:ISuperObject;
+begin
+  while not Terminated do
+  begin
+    try
+      new_hint :='';
+      new_ballon:='';
+      animate := False;
+      icon_idx:=-1;
+      new_updates := httpGetString('http://localhost:8088/checkupgrades');
+      sob := SO(new_updates);
+      new_upgrades := sob.S['upgrades'];
+      if new_upgrades<>'[]' then
+      begin
+        animate:=True;
+        new_hint:='Mises à jour disponibles pour : '+new_upgrades;
+      end
+      else
+      begin
+        new_hint:='Système à jour';
+        icon_idx:=0;
+      end;
+
+      if new_upgrades<>previousupgrades then
+      begin
+        if new_upgrades<>'[]' then
+          new_ballon:='Nouvelles mises à jour disponibles'
+        else
+          new_ballon:='Système à jour';
+
+        previousupgrades:=new_upgrades;
+      end;
+      Synchronize(@SetTrayStatus);
+    except
+      on e:Exception do
+      begin
+        new_hint:='Impossible d''obtenir le status de mise à jour'+#13#10+e.Message;
+        icon_idx := 1;
+        Synchronize(@SetTrayStatus);
+      end;
+    end;
+    Sleep(10000);
+  end;
+end;
+
+procedure TCheckThread.SetTrayStatus;
+begin
+    if animate then
+    begin
+      DMTray.TrayIcon1.Icons := DMTray.ImageList1;
+      DMTray.TrayIcon1.Animate:=True;
+    end
+    else
+    if icon_idx>=0 then
+      DMTray.SetTrayIcon(icon_idx);
+
+    if new_hint<>'' then
+      DMTray.TrayIcon1.Hint:=new_hint;
+
+    if new_ballon<>'' then
+    begin
+      DMTray.TrayIcon1.BalloonHint:=new_ballon;
+      DMTray.TrayIcon1.ShowBalloonHint;
+    end;
+end;
 
 { TVisWAPTTray }
 
@@ -75,6 +163,19 @@ begin
   OpenURL('http://localhost:8088/upgrade');
 end;
 
+procedure TDMWaptTray.DataModuleCreate(Sender: TObject);
+begin
+  check_thread :=  TCheckThread.Create(True);
+  TCheckThread(check_thread).DMTray := Self;
+  check_thread.Resume;
+end;
+
+procedure TDMWaptTray.DataModuleDestroy(Sender: TObject);
+begin
+  check_thread.Terminate;
+  FreeAndNil(check_thread);
+end;
+
 procedure TDMWaptTray.ActForceRegisterComputerExecute(Sender: TObject);
 begin
 
@@ -90,42 +191,24 @@ begin
   Application.Terminate;
 end;
 
-procedure TDMWaptTray.Timer1Timer(Sender: TObject);
+procedure TDMWaptTray.SetTrayIcon(idx:integer);
 var
-  sob:ISuperObject;
-  new_updates,new_upgrades : String;
+  lBitmap: TBitmap;
 begin
+  TrayIcon1.Animate:=False;
+  lBitmap := TBitmap.Create;
   try
-    new_updates := httpGetString('http://localhost:8088/checkupgrades');
-    sob := SO(new_updates);
-    new_upgrades := SOb.S['upgrades'];
-    if new_upgrades<>'[]' then
-    begin
-      TrayIcon1.Icons := ImageList1;
-      TrayIcon1.Animate:=True;
-      TrayIcon1.Hint:='Mises à jour disponibles pour : '+new_upgrades;
-    end
-    else
-    begin
-      TrayIcon1.Hint:='Système à jour';
-      TrayIcon1.Animate:=False;
-    end;
-
-    if new_upgrades<>previousupgrades then
-    begin
-      if new_upgrades<>'[]' then
-        TrayIcon1.BalloonHint:='Nouvelles mises à jour disponibles'
-      else
-        TrayIcon1.BalloonHint:='Système à jour';
-
-      TrayIcon1.ShowBalloonHint;
-      previousupgrades:=new_upgrades;
-    end;
-  except
-    TrayIcon1.Hint:='Impossible d''obtenir les status de mise à jour';
-    //TrayIcon1.Hint:='Impossible d''obtenir les status de mise à jour';
-    //TrayIcon1.ShowBalloonHint;
+    ImageList1.GetBitmap(idx, lBitmap);
+    TrayIcon1.Icon.Assign(lBitmap);
+    TrayIcon1.InternalUpdate();
+  finally
+    lBitmap.Free;
   end;
+end;
+
+
+procedure TDMWaptTray.Timer1Timer(Sender: TObject);
+begin
 end;
 
 procedure TDMWaptTray.TrayIcon1Click(Sender: TObject);

@@ -145,9 +145,9 @@ end;
 procedure TVisWaptGUI.cbShowLogClick(Sender: TObject);
 begin
   if cbShowLog.Checked then
-    PythonGUIInputOutput1.Output := Memo1
+    PythonEngine1.ExecString('logger.setLevel(logging.DEBUG)')
   else
-    PythonGUIInputOutput1.Output := Nil;
+    PythonEngine1.ExecString('logger.setLevel(logging.WARNING)');
 
 end;
 

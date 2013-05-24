@@ -267,6 +267,10 @@ begin
        raise Exception.Create('Unable to download: "'+URL+'", HTTP Status:'+res);
   finally
     InternetCloseHandle(hFile);
+  end
+  else
+  begin
+     raise Exception.Create('Unable to download: "'+URL+'", connection refused');
   end;
 end;
 

@@ -9,10 +9,12 @@
         <Filename Value="waptgui.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptgui"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="49" Y="18"/>
-        <UsageCount Value="57"/>
+        <CursorPos X="43" Y="13"/>
+        <UsageCount Value="80"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="uwaptgui.pas"/>
@@ -24,9 +26,9 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="339"/>
-        <CursorPos X="3" Y="346"/>
-        <UsageCount Value="57"/>
+        <TopLine Value="136"/>
+        <CursorPos X="26" Y="150"/>
+        <UsageCount Value="80"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -34,7 +36,12 @@
         <Filename Value="..\wapt-get\tisstrings.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tisstrings"/>
-        <UsageCount Value="57"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="121"/>
+        <CursorPos X="1" Y="128"/>
+        <UsageCount Value="80"/>
+        <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
@@ -43,27 +50,27 @@
         <WindowIndex Value="0"/>
         <TopLine Value="828"/>
         <CursorPos X="91" Y="845"/>
-        <UsageCount Value="57"/>
+        <UsageCount Value="80"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\wapt-get\tiscommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiscommon"/>
-        <UsageCount Value="57"/>
+        <UsageCount Value="80"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\wapt-get\tisinifiles.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tisinifiles"/>
-        <UsageCount Value="57"/>
+        <UsageCount Value="80"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\wapt-get\soutils.pas"/>
         <UnitName Value="soutils"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="22"/>
+        <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="54"/>
+        <UsageCount Value="53"/>
       </Unit6>
       <Unit7>
         <Filename Value="..\waptserviceapp\uvisappwaptservice.pas"/>
@@ -74,7 +81,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="118"/>
         <CursorPos X="1" Y="138"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="3"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
@@ -82,16 +89,18 @@
         <WindowIndex Value="0"/>
         <TopLine Value="647"/>
         <CursorPos X="3" Y="439"/>
-        <UsageCount Value="17"/>
+        <UsageCount Value="15"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <UnitName Value="superobject"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="118"/>
-        <CursorPos X="3" Y="134"/>
-        <UsageCount Value="17"/>
+        <TopLine Value="458"/>
+        <CursorPos X="13" Y="487"/>
+        <UsageCount Value="27"/>
+        <Loaded Value="True"/>
       </Unit9>
       <Unit10>
         <Filename Value="C:\codetyphon\lazarus\components\pl_PascalSCADA\sources\psbufdataset.pas"/>
@@ -99,7 +108,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="3"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit10>
       <Unit11>
@@ -108,7 +117,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="448"/>
         <CursorPos X="1" Y="448"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="3"/>
       </Unit11>
       <Unit12>
         <Filename Value="C:\codetyphon\lazarus\lcl\comctrls.pp"/>
@@ -116,7 +125,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="834"/>
         <CursorPos X="12" Y="830"/>
-        <UsageCount Value="16"/>
+        <UsageCount Value="14"/>
       </Unit12>
       <Unit13>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-process\src\process.pp"/>
@@ -124,7 +133,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="425"/>
         <CursorPos X="3" Y="455"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
       </Unit13>
       <Unit14>
         <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTreesExtra\source\vte_json.pas"/>
@@ -132,7 +141,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="98"/>
         <CursorPos X="14" Y="112"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="7"/>
       </Unit14>
       <Unit15>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-json\src\fpjson.pp"/>
@@ -140,21 +149,21 @@
         <WindowIndex Value="0"/>
         <TopLine Value="338"/>
         <CursorPos X="14" Y="345"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="7"/>
       </Unit15>
       <Unit16>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\sysutilh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="284"/>
         <CursorPos X="13" Y="299"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="7"/>
       </Unit16>
       <Unit17>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\sysutils.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="145"/>
         <CursorPos X="9" Y="156"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="7"/>
       </Unit17>
       <Unit18>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-json\src\jsonparser.pp"/>
@@ -162,51 +171,51 @@
         <WindowIndex Value="0"/>
         <TopLine Value="101"/>
         <CursorPos X="3" Y="104"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="7"/>
       </Unit18>
       <Unit19>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\control.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2700"/>
         <CursorPos X="1" Y="2719"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit19>
       <Unit20>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\containedaction.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="87"/>
         <CursorPos X="1" Y="106"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit20>
       <Unit21>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\customaction.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="238"/>
         <CursorPos X="1" Y="253"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit21>
       <Unit22>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\buttoncontrol.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="42"/>
         <CursorPos X="1" Y="57"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit22>
       <Unit23>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\buttons.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="161"/>
         <CursorPos X="1" Y="176"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit23>
       <Unit24>
         <Filename Value="..\..\pltis_superobject\soutils.pas"/>
         <UnitName Value="soutils"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="303"/>
-        <CursorPos X="1" Y="319"/>
-        <UsageCount Value="19"/>
+        <TopLine Value="23"/>
+        <CursorPos X="1" Y="41"/>
+        <UsageCount Value="31"/>
         <Loaded Value="True"/>
       </Unit24>
     </Units>
@@ -216,123 +225,123 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="303" Column="13" TopLine="232"/>
+        <Caret Line="19" Column="18" TopLine="7"/>
       </Position1>
       <Position2>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="115" Column="18" TopLine="91"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="20" Column="19" TopLine="7"/>
       </Position2>
       <Position3>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="190" Column="33" TopLine="96"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="305" Column="18" TopLine="272"/>
       </Position3>
       <Position4>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="135" Column="1" TopLine="106"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="322" Column="19" TopLine="289"/>
       </Position4>
       <Position5>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="215" Column="34" TopLine="184"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="371" Column="20" TopLine="338"/>
       </Position5>
       <Position6>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="381" Column="25" TopLine="358"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="385" Column="20" TopLine="352"/>
       </Position6>
       <Position7>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="388" Column="25" TopLine="365"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="19" Column="18" TopLine="1"/>
       </Position7>
       <Position8>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="217" Column="13" TopLine="214"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="20" Column="19" TopLine="1"/>
       </Position8>
       <Position9>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="200" Column="1" TopLine="190"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="305" Column="18" TopLine="272"/>
       </Position9>
       <Position10>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="375" Column="21" TopLine="347"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="322" Column="19" TopLine="289"/>
       </Position10>
       <Position11>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="403" Column="11" TopLine="390"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="371" Column="20" TopLine="338"/>
       </Position11>
       <Position12>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="404" Column="11" TopLine="391"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="385" Column="20" TopLine="352"/>
       </Position12>
       <Position13>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="403" Column="11" TopLine="390"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="19" Column="18" TopLine="1"/>
       </Position13>
       <Position14>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="404" Column="11" TopLine="391"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="20" Column="19" TopLine="1"/>
       </Position14>
       <Position15>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="411" Column="11" TopLine="398"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="305" Column="18" TopLine="272"/>
       </Position15>
       <Position16>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="253" Column="43" TopLine="234"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="322" Column="19" TopLine="289"/>
       </Position16>
       <Position17>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="254" Column="60" TopLine="231"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="371" Column="20" TopLine="338"/>
       </Position17>
       <Position18>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="258" Column="60" TopLine="235"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="385" Column="20" TopLine="352"/>
       </Position18>
       <Position19>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="257" Column="60" TopLine="234"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="15" Column="26" TopLine="1"/>
       </Position19>
       <Position20>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="256" Column="60" TopLine="233"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="86" Column="26" TopLine="53"/>
       </Position20>
       <Position21>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="257" Column="1" TopLine="233"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="248" Column="35" TopLine="215"/>
       </Position21>
       <Position22>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="258" Column="1" TopLine="234"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="293" Column="33" TopLine="260"/>
       </Position22>
       <Position23>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="257" Column="1" TopLine="233"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="66" Column="1" TopLine="43"/>
       </Position23>
       <Position24>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="258" Column="1" TopLine="234"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="42" Column="1" TopLine="26"/>
       </Position24>
       <Position25>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="259" Column="1" TopLine="235"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="16" Column="1" TopLine="1"/>
       </Position25>
       <Position26>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="258" Column="1" TopLine="234"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="148" Column="10" TopLine="128"/>
       </Position26>
       <Position27>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="301" Column="36" TopLine="293"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="67" Column="1" TopLine="32"/>
       </Position27>
       <Position28>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="307" Column="68" TopLine="294"/>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <Caret Line="200" Column="1" TopLine="160"/>
       </Position28>
       <Position29>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="258" Column="1" TopLine="235"/>
+        <Caret Line="229" Column="31" TopLine="205"/>
       </Position29>
       <Position30>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="219" Column="50" TopLine="206"/>
+        <Caret Line="145" Column="62" TopLine="142"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

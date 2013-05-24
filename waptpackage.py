@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.1.3"
+__version__ = "0.6.18"
 
 import os
 import zipfile
@@ -316,9 +316,9 @@ sources      : %(sources)s
 
     def make_package_filename(self):
         """Return the standard package filename based on current attributes"""
-        if not self.section in ['host'] and not (self.package and self.version and self.architecture):
+        if not self.section in ['host','group'] and not (self.package and self.version and self.architecture):
             raise Exception(u'Not enough information to build the package filename')
-        if self.section in ['host']:
+        if self.section in ['host','group']:
             return self.package+'.wapt'
         else:
             return self.package + '_' + self.version + '_' +  self.architecture  + '.wapt'

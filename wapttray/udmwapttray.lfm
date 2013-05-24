@@ -1,4 +1,6 @@
 object DMWaptTray: TDMWaptTray
+  OnCreate = DataModuleCreate
+  OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 288
   HorizontalOffset = 521
@@ -108,7 +110,6 @@ object DMWaptTray: TDMWaptTray
   end
   object Timer1: TTimer
     Interval = 30000
-    OnTimer = Timer1Timer
     left = 44
     top = 44
   end

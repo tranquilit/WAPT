@@ -71,10 +71,11 @@
         <Filename Value="waptservice.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptservice"/>
-        <EditorIndex Value="7"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="55" Y="22"/>
+        <TopLine Value="8"/>
+        <CursorPos X="26" Y="29"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -96,7 +97,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WaptUnit"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="484"/>
@@ -620,12 +620,10 @@
       <Unit68>
         <Filename Value="..\wapt-get\soutils.pas"/>
         <UnitName Value="soutils"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="22"/>
         <CursorPos X="11" Y="36"/>
         <UsageCount Value="20"/>
-        <Loaded Value="True"/>
       </Unit68>
       <Unit69>
         <Filename Value="..\jcl\source\include\jclfpc.inc"/>
@@ -783,7 +781,7 @@
       <Unit88>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\blcksock.pas"/>
         <UnitName Value="blcksock"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="91"/>
         <CursorPos X="1" Y="91"/>
@@ -817,7 +815,7 @@
       <Unit92>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\ldapsend.pas"/>
         <UnitName Value="ldapsend"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="49"/>
         <CursorPos X="27" Y="66"/>
@@ -834,7 +832,7 @@
       <Unit94>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\synautil.pas"/>
         <UnitName Value="synautil"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="112"/>
         <CursorPos X="1" Y="1"/>
@@ -851,7 +849,7 @@
       <Unit96>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <UnitName Value="superobject"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="567"/>
         <CursorPos X="14" Y="580"/>

@@ -21,14 +21,23 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.4.16"
+__version__ = "0.6.18"
 
 import os
 import sys
 import logging
 import tempfile
 import shutil
+
+# use backported subprocess from python 3.2
+#import subprocess32 as subprocess
+#from subprocess32 import Popen, PIPE
+
+import _subprocess
 import subprocess
+from subprocess import Popen, PIPE
+import psutil
+
 import win32api
 import win32con
 import win32pdhutil
@@ -52,12 +61,11 @@ from win32com.taskscheduler import taskscheduler
 import locale
 import types
 
+import threading
+
 from waptpackage import PackageEntry
-
 from iniparse import RawConfigParser
-
 import keyfinder
-
 logger = logging.getLogger()
 
 # common windows diectories
@@ -246,7 +254,7 @@ def filecopyto(filename,target):
 
 # Copy of an entire tree from install temp directory to target
 def default_oncopy(msg,src,dst):
-    print(u'%s : "%s" to "%s"' % (msg,src,dst))
+    logger.debug(u'%s : "%s" to "%s"' % (msg,src,dst))
     return True
 
 def default_skip(src,dst):
@@ -290,6 +298,7 @@ def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy
         oncopy is called for each file copy. if False is returned, copy is skipped
         onreplace is called when a file will be overwritten.
     """
+    logger.debug('Copy tree from "%s" to "%s"' % (ensure_unicode(src),ensure_unicode(dst)))
     # path relative to temp directory...
     tempdir = os.getcwd()
     if not os.path.isdir(src) and os.path.isdir(os.path.join(tempdir,src)):
@@ -324,6 +333,7 @@ def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy
                     if oncopy('copy',srcname,dstname):
                         shutil.copy2(srcname, dstname)
         except (IOError, os.error), why:
+            logger.critical(u'Error copying from "%s" to "%s" : %s' % (ensure_unicode(src),ensure_unicode(dst),ensure_unicode(why)))
             errors.append((srcname, dstname, str(why)))
         # catch the Error from the recursive copytree so that we can
         # continue with other files
@@ -339,18 +349,94 @@ def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy
     if errors:
         raise Error(errors)
 
-def run(*cmd):
+
+
+class RunReader(threading.Thread):
+    # helper thread to read output of run command
+    def __init__(self, callable, *args, **kwargs):
+        super(RunReader, self).__init__()
+        self.callable = callable
+        self.args = args
+        self.kwargs = kwargs
+        self.setDaemon(True)
+
+    def run(self):
+        try:
+            self.callable(*self.args, **self.kwargs)
+        except Exception, e:
+            print e
+
+class TimeoutExpired(Exception):
+    """This exception is raised when the timeout expires while waiting for a
+    child process.
+    """
+    def __init__(self, cmd, output=None, timeout=None):
+        self.cmd = cmd
+        self.output = output
+        self.timeout = timeout
+
+    def __str__(self):
+        return ("Command '%s' timed out after %s seconds with output '%s'" %
+                (self.cmd, self.timeout, self.output))
+
+def run(*cmd,**args):
+    """Run the command cmd and return the output and error text
+        shell=True is assumed
+        timeout=600 (seconds) after that time, a TimeoutExpired is raised
+        if return code of cmd is non zero, a CalledProcessError is raised
+    """
+    logger.info(u'Run "%s"' % (cmd,))
+    output = []
+    def worker(pipe):
+        while True:
+            line = pipe.readline()
+            if line == '':
+                break
+            else:
+                output.append(line)
+
+    if 'timeout' in args:
+        timeout = args['timeout']
+        del args['timeout']
+    else:
+        timeout = 10*60.0
+
+    if not "shell" in args:
+        args['shell']=True
+
+    proc = psutil.Popen(*cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE,**args)
+
+    stdout_worker = RunReader(worker, proc.stdout)
+    stderr_worker = RunReader(worker, proc.stderr)
+    stdout_worker.start()
+    stderr_worker.start()
+    stdout_worker.join(timeout)
+    if stdout_worker.is_alive():
+        # kill the task and all subtasks
+        killtree(proc.pid)
+        raise subprocess.TimeoutExpired(cmd,timeout,''.join(output))
+    stderr_worker.join(timeout)
+    if stderr_worker.is_alive():
+        proc.kill()
+        raise subprocess.TimeoutExpired(cmd,timeout,''.join(output))
+    proc.returncode = _subprocess.GetExitCodeProcess(proc._handle)
+    if proc.returncode<>0:
+        raise subprocess.CalledProcessError(proc.returncode,cmd,''.join(output))
+    return ensure_unicode(''.join(output))
+
+def run_old(*cmd,**args):
     """Runs the command and wait for it termination
     returns output, raise exc eption if exitcode is not null"""
     print u'Run "%s"' % (cmd,)
-    return ensure_unicode(subprocess.check_output(*cmd,shell=True))
+    if not 'shell' in args:
+        args['shell'] = True
+    return ensure_unicode(subprocess.check_output(*cmd,**args))
 
-def run_notfatal(*cmd):
+def run_notfatal(*cmd,**args):
     """Runs the command and wait for it termination
     returns output, don't raise exception if exitcode is not null but return '' """
     try:
-        print u'Run "%s"' % (cmd,)
-        return ensure_unicode(subprocess.check_output(*cmd,shell=True))
+        return run(*cmd,**args)
     except Exception,e:
         print u'Warning : %s' % e
         return ''
@@ -361,15 +447,53 @@ def shell_launch(cmd):
 
 def isrunning(processname):
     """Check if a process is running, example isrunning('explorer')"""
+    processname = processname.lower()
+    for p in psutil.process_iter():
+        if p.name.lower() == processname or p.name.lower() == processname+'.exe':
+            return True
+    return False
+    """
     try:
         return len(win32pdhutil.FindPerformanceAttributesByName( processname,bRefresh=1 ))> 0
     except:
         return False
+    """
 
-def killalltasks(*exenames):
+
+def killalltasks(exenames,include_children=True):
     """Kill the task by their exename : example killalltasks('explorer.exe') """
+    logger.debug('Kill tasks %s' % (exenames,))
+    if not isinstance(exenames,list):
+        exenames = [exenames]
+    exenames = [exe.lower() for exe in exenames]+[exe.lower()+'.exe' for exe in exenames]
+    for p in psutil.process_iter():
+        if p.name.lower() in exenames:
+            logger.debug('Kill process %i' % (p.pid,))
+            if include_children:
+                killtree(p.pid)
+            else:
+                p.kill()
+
+    """
     for c in exenames:
       run(u'taskkill /t /im "%s" /f /FI "STATUS eq RUNNING"' % c)
+    """
+
+def killtree(pid, including_parent=True):
+    parent = psutil.Process(pid)
+    for child in parent.get_children(recursive=True):
+        child.kill()
+    if including_parent:
+        parent.kill()
+
+def processnames_list():
+    """return all process name of running processes in lower case"""
+    return list(set([p.name.lower() for p in psutil.get_process_list()]))
+
+def find_processes(process_name):
+    """Return list of Process having process_name"""
+    process_name = process_name.lower()
+    return [p for p in psutil.get_process_list() if p.name.lower() in [process_name,process_name+'.exe'] ]
 
 def messagebox(title,msg):
     win32api.MessageBox(0, msg, title, win32con.MB_ICONINFORMATION)
@@ -714,27 +838,44 @@ def memory_status():
     else:
         raise Exception('Error in function GlobalMemoryStatusEx')
 
-def host_info(with_wmi=False):
-    info = {}
-    #dmiout = run(os.path.join(os.path.dirname(sys.argv[0]),'dmidecode'))
-    dmiout = ensure_unicode(subprocess.check_output('dmidecode -q',shell=True))
+def dmidecode_dict(dmiout):
+    """Convert dmidecode -q output to python dict"""
     dmi_info = {}
+    new_section = True
+
     for l in dmiout.splitlines():
         if not l.strip() or l.startswith('#'):
+            new_section = True
             continue
-        if not l.startswith('\t'):
+
+        if not l.startswith('\t') or new_section:
             currobject={}
             dmi_info[l.strip()]=currobject
+            if l.startswith('\t'):
+                print l
         else:
             if not l.startswith('\t\t'):
                 currarray = []
-                (name,value)=l.split(':',1)
-                currobject[name.strip()]=value.strip()
+                if ':' in l:
+                    (name,value)=l.split(':',1)
+                    currobject[name.strip()]=value.strip()
+                else:
+                    print "Error in line : %s" % l
             else:
                 # first line of array
                 if not currarray:
                     currobject[name.strip()]=currarray
                 currarray.append(l.strip())
+        new_section = False
+
+    return dmi_info
+
+
+def host_info(with_wmi=False):
+    info = {}
+    #dmiout = run(os.path.join(os.path.dirname(sys.argv[0]),'dmidecode'))
+    dmiout = run('dmidecode -q',shell=False)
+    dmi_info =  dmidecode_dict(dmiout)
     info['dmi'] = dmi_info
 
     info['uuid'] = dmi_info.get('System Information',{}).get('UUID','')
@@ -885,10 +1026,12 @@ def service_installed(service_name):
 
 def service_start(service_name):
     """Start a service by its service name"""
+    logger.debug('Starting service %s' % service_name)
     win32serviceutil.StartService(service_name)
     return win32serviceutil.WaitForServiceStatus(service_name, win32service.SERVICE_RUNNING, waitSecs=4)
 
 def service_stop(service_name):
+    logger.debug('Stopping service %s' % service_name)
     win32serviceutil.StopService(service_name)
     win32api.Sleep(2000)
     return win32serviceutil.WaitForServiceStatus(service_name, win32service.SERVICE_STOPPED, waitSecs=4)
@@ -1084,7 +1227,20 @@ params = {}
 control = PackageEntry()
 
 if __name__=='__main__':
+
+    dmi =  dmidecode_dict(open('c:\\tmp\\dmi.out','r').read())
     print host_info()['serial_nr']
+    print run_timed('dir c:',timeout=3)
+    print run_timed('notepad',timeout=10)
+    try:
+        print run_timed('wapt-get -ldebug ss',timeout=10,shell=False)
+    except subprocess.CalledProcessError,e:
+        print ensure_unicode(e.output)
+        raise
+
+
+
+    sys.exit(0)
 
     print registry_readstring(HKEY_LOCAL_MACHINE,'SYSTEM/CurrentControlSet/services/Tcpip/Parameters','Hostname')
     print registry_readstring(HKEY_LOCAL_MACHINE,'SYSTEM/CurrentControlSet/services/Tcpip/Parameters','DhcpDomain')

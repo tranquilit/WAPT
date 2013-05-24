@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 174
+  Left = 405
   Height = 583
-  Top = 181
+  Top = 265
   Width = 1028
   Caption = 'VisWaptGUI'
   ClientHeight = 583
@@ -742,16 +742,16 @@ object VisWaptGUI: TVisWaptGUI
     object TabSheet4: TTabSheet
       Caption = 'Mise à jour système'
       ClientHeight = 434
-      ClientWidth = 1216
+      ClientWidth = 1020
       object Panel6: TPanel
         Left = 0
         Height = 34
         Top = 0
-        Width = 1216
+        Width = 1020
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 34
-        ClientWidth = 1216
+        ClientWidth = 1020
         TabOrder = 0
         object Button2: TButton
           Left = 12
@@ -766,7 +766,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 400
         Top = 34
-        Width = 1216
+        Width = 1020
         PropertyDefs = <>
         Align = alClient
         Color = clWhite
@@ -780,7 +780,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Position = 1
             Text = 'Value'
-            Width = 1062
+            Width = 866
           end>
         Header.DefaultHeight = 17
         Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
@@ -940,7 +940,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             AutoSize = True
             Caption = 'Depends'
-            Width = 698
+            Width = 502
           end>
         Items.LazData = {
           7A00000003000000FFFFFFFFFFFFFFFFFFFFFFFF020000000400000074657374
@@ -1157,6 +1157,7 @@ object VisWaptGUI: TVisWaptGUI
   object PythonGUIInputOutput1: TPythonGUIInputOutput
     UnicodeIO = False
     RawOutput = False
+    Output = Memo1
     left = 352
     top = 200
   end
