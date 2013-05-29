@@ -14,9 +14,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 460
     Top = 0
     Width = 1028
-    ActivePage = pgEditPackage
+    ActivePage = TabSheet2
     Align = alClient
-    TabIndex = 4
+    TabIndex = 1
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Sources'
@@ -1035,6 +1035,9 @@ object VisWaptGUI: TVisWaptGUI
           ViewStyle = vsReport
         end
       end
+    end
+    object pgInventory: TTabSheet
+      Caption = 'Inventaire'
     end
   end
   object Panel3: TPanel

@@ -19,14 +19,14 @@ type
     ActShowStatus: TAction;
     ActUpdate: TAction;
     ActUpgrade: TAction;
-    ImageList1: TImageList;
+    TrayUpdate: TImageList;
+    TrayRunning: TImageList;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
     PopupMenu1: TPopupMenu;
-    Timer1: TTimer;
     TrayIcon1: TTrayIcon;
     procedure ActConfigureExecute(Sender: TObject);
     procedure ActForceRegisterComputerExecute(Sender: TObject);
@@ -61,13 +61,15 @@ type
 
   TCheckThread = Class(TThread)
     public
-      new_updates,new_upgrades : String;
+      new_updates,new_upgrades,runstatus : String;
       new_hint:String;
       new_ballon:String;
-      animate:Boolean;
+      animate_upgrade,
+      animate_running:Boolean;
       icon_idx:integer;
       previousupgrades:String;
       DMTray:TDMWaptTray;
+      running : ISuperObject;
       procedure Execute; override;
       procedure SetTrayStatus;
   end;
@@ -76,37 +78,59 @@ type
 
 procedure TCheckThread.Execute;
 var
-  sob:ISuperObject;
+  sob,rs:ISuperObject;
 begin
-  while not Terminated do
-  begin
+  repeat
     try
       new_hint :='';
       new_ballon:='';
-      animate := False;
+      animate_running := False;
+      animate_upgrade := False;
       icon_idx:=-1;
-      new_updates := httpGetString('http://localhost:8088/checkupgrades');
-      sob := SO(new_updates);
-      new_upgrades := sob.S['upgrades'];
-      if new_upgrades<>'[]' then
+
+      //test running tasks first
+      runstatus := httpGetString('http://localhost:8088/runstatus');
+      rs := SO(runstatus);
+      if rs.S['value']<>'' then
       begin
-        animate:=True;
-        new_hint:='Mises à jour disponibles pour : '+new_upgrades;
+        animate_running :=True;
+        new_hint:=rs.S['value'];
       end
       else
       begin
-        new_hint:='Système à jour';
-        icon_idx:=0;
-      end;
+        new_updates := httpGetString('http://localhost:8088/checkupgrades');
+        sob := SO(new_updates);
+        running := sob['running_tasks'];
+        new_upgrades := sob.S['upgrades'];
 
-      if new_upgrades<>previousupgrades then
-      begin
-        if new_upgrades<>'[]' then
-          new_ballon:='Nouvelles mises à jour disponibles'
+        if (running<>Nil) and (running.AsArray.Length>0) then
+        begin
+          animate_running :=True;
+          new_hint:='Installation en cours : '+running.AsString;
+        end
         else
-          new_ballon:='Système à jour';
+        if new_upgrades<>'[]' then
+        begin
+          animate_upgrade :=True;
+          new_hint:='Mises à jour disponibles pour : '+new_upgrades;
+        end
+        else
+        begin
+          new_hint:='Système à jour';
+          icon_idx:=0;
+        end;
 
-        previousupgrades:=new_upgrades;
+        if new_upgrades<>previousupgrades then
+        begin
+          if (new_upgrades<>'[]') and (Length(new_upgrades)>length(previousupgrades)) then
+            new_ballon:='Nouvelles mises à jour disponibles'
+          else
+            if (running<>Nil) and (running.AsArray.Length>0) then
+              new_ballon:='Installation en cours : '+running.AsString
+            else if (new_upgrades='[]') then
+              new_ballon:='Système à jour';
+          previousupgrades:=new_upgrades;
+        end;
       end;
       Synchronize(@SetTrayStatus);
     except
@@ -117,15 +141,22 @@ begin
         Synchronize(@SetTrayStatus);
       end;
     end;
-    Sleep(10000);
-  end;
+    if not Terminated then
+      Sleep(10000);
+  until Terminated;
 end;
 
 procedure TCheckThread.SetTrayStatus;
 begin
-    if animate then
+    if animate_running then
     begin
-      DMTray.TrayIcon1.Icons := DMTray.ImageList1;
+      DMTray.TrayIcon1.Icons := DMTray.TrayRunning;
+      DMTray.TrayIcon1.Animate:=True;
+    end
+    else
+    if animate_upgrade then
+    begin
+      DMTray.TrayIcon1.Icons := DMTray.TrayUpdate;
       DMTray.TrayIcon1.Animate:=True;
     end
     else
@@ -160,7 +191,7 @@ end;
 
 procedure TDMWaptTray.ActUpgradeExecute(Sender: TObject);
 begin
-  OpenURL('http://localhost:8088/upgrade');
+  httpGetString( 'http://localhost:8088/upgrade');
 end;
 
 procedure TDMWaptTray.DataModuleCreate(Sender: TObject);
@@ -198,7 +229,7 @@ begin
   TrayIcon1.Animate:=False;
   lBitmap := TBitmap.Create;
   try
-    ImageList1.GetBitmap(idx, lBitmap);
+    TrayUpdate.GetBitmap(idx, lBitmap);
     TrayIcon1.Icon.Assign(lBitmap);
     TrayIcon1.InternalUpdate();
   finally
@@ -217,8 +248,18 @@ begin
 end;
 
 procedure TDMWaptTray.TrayIcon1DblClick(Sender: TObject);
+var
+  tct:TCheckThread;
 begin
-  Timer1Timer(Sender);
+  {with TCheckThread.Create(True) do
+  try
+    TCheckThread(check_thread).DMTray := Self;
+    TCheckThread(check_thread).previousupgrades:='';
+    check_thread.Resume;
+    check_thread.Terminate;
+  finally
+    Free;
+  end;}
 end;
 
 end.

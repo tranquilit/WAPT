@@ -36,13 +36,11 @@ type
 
   TWaptDaemon = class(TDaemon)
     IdHTTPServer1: TIdHTTPServer;
-    Timer1: TTimer;
 
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleStart(Sender: TCustomDaemon; var OK: Boolean);
     procedure IdHTTPServer1CommandGet(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
-    procedure Timer1Timer(Sender: TObject);
   private
     FWAPTdb : TWAPTDB;
     { private declarations }
@@ -54,6 +52,10 @@ type
     function RepoTableHook(Dataset: TDataset; Data, FN: Utf8String): Utf8String;
     function StatusTableHook(Dataset: TDataset; Data, FN: Utf8String): Utf8String;
     function RegisterComputer:Boolean;
+
+    function WaptRunstatus:ISuperObject;
+
+
   public
     { public declarations }
     BaseDir : String;
@@ -74,7 +76,8 @@ var
   WaptDaemon: TWaptDaemon;
 
 implementation
-uses process,StrUtils,IdGlobal,IdSocketHandle,idURI,tiscommon,tisstrings,soutils,IniFiles,UnitRedirect,ldapsend,ldapauth;
+uses LCLIntf,process,StrUtils,IdGlobal,IdSocketHandle,idURI,tiscommon,tisstrings,soutils,
+    IniFiles,UnitRedirect,ldapsend,ldapauth,shellapi;
 
 //  ,waptwmi,  Variants,Windows,ComObj;
 
@@ -398,7 +401,7 @@ var
     Cmd,IPS:String;
     i,f:integer;
     param,value,lst,UpgradeResult:String;
-    so,auth_groups : ISuperObject;
+    auth_groups : ISuperObject;
     AQuery : TSQLQuery;
     filepath,template : Utf8String;
     CmdOutput:Utf8String;
@@ -406,6 +409,8 @@ var
     ldap : TLdapSend;
     auth_ok : Boolean;
     auth_user,last_error:String;
+    groups : TDynStringArray;
+    htok : Cardinal;
 begin
   //Default type
   AResponseInfo.ContentType:='text/html';
@@ -425,7 +430,7 @@ begin
     if ARequestInfo.URI='/status' then
     try
       AQuery := WaptDB.QueryCreate('select s.package,s.version,s.install_date,s.install_status,"Remove" as Remove,'+
-                          ' (select max(p.version) from wapt_package p where p.package=s.package) as repo_version'+
+                          ' (select max(p.version) from wapt_package p where p.package=s.package) as repo_version,explicit_by as install_par'+
                           ' from wapt_localstatus s'+
                           ' order by s.package');
       AResponseInfo.ContentText:=DatasetToHTMLtable(AQuery,@StatusTableHook);
@@ -435,7 +440,7 @@ begin
     else
     if ARequestInfo.URI='/list' then
     try
-      AQuery := WaptDB.QueryCreate('select "Install" as install,package,version,description,size from wapt_package order by package,version');
+      AQuery := WaptDB.QueryCreate('select "Install" as install,package,version,description,size from wapt_package where section<>"host" order by package,version');
       AResponseInfo.ContentText:=DatasetToHTMLtable(AQuery,@RepoTableHook );
     finally
       AQuery.Free;
@@ -466,9 +471,14 @@ begin
     if ARequestInfo.URI='/upgrade' then
     begin
     //HttpRunTask(AContext,AResponseInfo,WaptgetPath+' -e utf8 -lwarning upgrade',ExitStatus)
-      cmd := WaptgetPath+' -lwarning upgrade';
-      CmdOutput := Sto_RedirectedExecute(cmd);
-      CmdOutput := cmd+'<br>'+StrUtils.StringsReplace(CmdOutput,[#13#10],['<br>'],[rfReplaceAll]);
+      cmd := WaptgetPath;
+      if ShellExecute(0, nil, pchar(cmd),pchar('-lwarning upgrade'), nil, 0) > 32 then
+      //CmdOutput := Sto_RedirectedExecute(cmd);
+      //CmdOutput := cmd+'<br>'+StrUtils.StringsReplace(CmdOutput,[#13#10],['<br>'],[rfReplaceAll]);
+        CmdOutput:='process '+Cmd+' launched in background'
+      else
+        CmdOutput:='ERROR launching process '+Cmd+' in background';
+
       AResponseInfo.ContentText:= '<h2>Output</h2>'+CmdOutput;
     end
     else
@@ -483,7 +493,6 @@ begin
     else
     if ARequestInfo.URI='/enable' then
     begin
-      Timer1.Enabled:=True;
       cmd := WaptgetPath+' -lcritical enable-tasks';
       Application.Log(etInfo,cmd);
       CmdOutput := Sto_RedirectedExecute(cmd);
@@ -491,12 +500,17 @@ begin
       AResponseInfo.ContentText:= '<h2>Output</h2>'+CmdOutput;
     end
     else
+    if ARequestInfo.URI='/runstatus' then
+    begin
+      AResponseInfo.ContentType:='application/json';
+      AResponseInfo.ContentText:= WaptRunstatus.AsJSon;
+    end
+    else
     if ARequestInfo.URI='/checkupgrades' then
     try
       AQuery := WaptDB.QueryCreate('select * from wapt_params where name="last_update_status"');
       AQuery.Open;
       AResponseInfo.ContentType:='application/json';
-      //AResponseInfo.ContentText:= Dataset2SO(AQuery).AsJson;
       AResponseInfo.ContentText:= AQuery.FieldByName('value').AsString;
     finally
       AQuery.Free;
@@ -505,7 +519,6 @@ begin
     else
     if ARequestInfo.URI='/disable' then
     begin
-      Timer1.Enabled:=False;
       cmd := WaptgetPath+' -lcritical disable-tasks';
       Application.Log(etInfo,cmd);
       CmdOutput := Sto_RedirectedExecute(cmd);
@@ -526,30 +539,29 @@ begin
 
       // Check MD5 auth
       if not auth_ok then
+      begin
         auth_ok := ARequestInfo.AuthExists and (ARequestInfo.AuthUsername = 'admin') and MD5Match(MD5String(ARequestInfo.AuthPassword),MD5PasswordForRepo(''));
+        If auth_ok then
+        begin
+          SetLength(groups,1);
+          groups[0] := 'wapt-selfservice';
+        end;
+      end;
 
-      //Check ldap / AD authentication
-      if not auth_ok and ARequestInfo.AuthExists and (ARequestInfo.AuthUsername<>'') and (ARequestInfo.AuthPassword<>'' ) and (ldap_server<>'') then
+      //Check Windows local auth
+      if not auth_ok and ARequestInfo.AuthExists and (ARequestInfo.AuthUsername<>'') and (ARequestInfo.AuthPassword<>'' ) and (GetDomainName <>'') then
       begin
         try
-          ldap := LDAPSSLLogin(ldap_server,ARequestInfo.AuthUsername,GetWorkGroupName,ARequestInfo.AuthPassword,ldap_port);
+          htok := UserLogin(ARequestInfo.AuthUsername, ARequestInfo.AuthPassword,GetDomainName);
           // check if in Domain Admins group
           auth_ok := True;
-          try
-            auth_groups := ldapauth.GetUserAndGroups(ldap,ldap_basedn,ARequestInfo.AuthUsername,False)['user.memberOf'];
-          except
-            on e:Exception do
-            begin
-              last_error:= e.Message;
-              LogMessage('error getting ldap ads groups '+e.Message);
-              auth_groups := Nil;
-            end;
-          end;
+          groups := GetGroups(GetDNSDomain,ARequestInfo.AuthUsername);
+          auth_groups := DynArr2SuperObject(groups);
         except
           on e:Exception do
           begin
             last_error:= e.Message;
-            LogMessage('error ldapssllogin '+e.Message);
+            LogMessage('error Windows Login '+e.Message);
             auth_ok :=False;
           end;
         end;
@@ -587,28 +599,36 @@ begin
       if (f>=0) then
         cmd := cmd+' -p "'+ChangeQuotes(ARequestInfo.Params.ValueFromIndex[f])+'"';
 
-      if auth_groups<>Nil then
-        cmd := cmd+' -g "'+ChangeQuotes(auth_groups.AsJSon(False))+'"';
+      if auth_groups <> Nil then
+        cmd := cmd+' -g "'+ChangeQuotes(auth_groups.AsJSon)+'"';
 
       if auth_user<>'' then
         cmd := cmd+' -U "'+auth_user+'"';
 
-      i:= ARequestInfo.Params.IndexOfName('package');
-      if ARequestInfo.URI = '/install' then
-        cmd := cmd+' install '+ARequestInfo.Params.ValueFromIndex[i]
+      if StrIsOneOf(ARequestInfo.URI,['/install','/remove']) and
+        not StrIsOneOf('wapt-selfservice',groups) then
+      begin
+        CmdOutput:='Not authorized to install/remove this package, user "'+ARequestInfo.AuthUsername+'" is not member of "'+'wapt-selfservice'+'"';
+      end
       else
-      if ARequestInfo.URI = '/remove' then
-        cmd := cmd+' remove '+ARequestInfo.Params.ValueFromIndex[i]
-      else
-      if ARequestInfo.URI = '/showlog' then
-        cmd := cmd+' showlog '+ARequestInfo.Params.ValueFromIndex[i];
-      if ARequestInfo.URI = '/show' then
-        cmd := cmd+' show '+ARequestInfo.Params.ValueFromIndex[i];
-      Application.Log(etInfo,cmd);
-      //HttpRunTask(AContext,AResponseInfo,cmd,ExitStatus)
-      CmdOutput := Sto_RedirectedExecute(cmd);
-      CmdOutput := cmd+'<br>'+StrUtils.StringsReplace(CmdOutput,[#13#10],['<br>'],[rfReplaceAll]);
-      //CmdError:=AnsiToUtf8(StrUtils.StringsReplace(CmdError,[#13#10],['<br>'],[rfReplaceAll]));
+      begin
+        i:= ARequestInfo.Params.IndexOfName('package');
+        if ARequestInfo.URI = '/install' then
+          cmd := cmd+' install '+ARequestInfo.Params.ValueFromIndex[i]
+        else
+        if ARequestInfo.URI = '/remove' then
+          cmd := cmd+' remove '+ARequestInfo.Params.ValueFromIndex[i]
+        else
+        if ARequestInfo.URI = '/showlog' then
+          cmd := cmd+' showlog '+ARequestInfo.Params.ValueFromIndex[i];
+        if ARequestInfo.URI = '/show' then
+          cmd := cmd+' show '+ARequestInfo.Params.ValueFromIndex[i];
+        Application.Log(etInfo,cmd);
+        //HttpRunTask(AContext,AResponseInfo,cmd,ExitStatus)
+        CmdOutput := Sto_RedirectedExecute(cmd);
+        CmdOutput := cmd+'<br>'+StrUtils.StringsReplace(CmdOutput,[#13#10],['<br>'],[rfReplaceAll]);
+        //CmdError:=AnsiToUtf8(StrUtils.StringsReplace(CmdError,[#13#10],['<br>'],[rfReplaceAll]));
+      end;
       AResponseInfo.ContentText:= '<h2>Output</h2>'+CmdOutput;
       //+'<h2>Errors</h2>'+CmdError;
       //AResponseInfo.ContentText:= RunTask(cmd,ExitStatus)
@@ -620,7 +640,8 @@ begin
         '<h1>'+GetComputerName+' - System status</h1>'+
         'WAPT Server URL: '+GetWaptServerURL+'<br>'+
         'wapt-get version: '+GetApplicationVersion(WaptgetPath)+'<br>'+
-        'waptservice version: '+GetApplicationVersion(WaptservicePath)+'<br>'+
+        'waptservice version: '+GetApplicationVersion(WaptservicePath)+'<br>'+'<br>'+
+        'Current status: '+WaptRunstatus.S['value']+'<br>'+
         'User : '+GetUserName+'<br>'+
         'Machine: '+GetComputerName+'<br>'+
         'Workgroup: '+ GetWorkGroupName+'<br>'+
@@ -644,8 +665,8 @@ begin
         'Params:'+ARequestInfo.Params.Text+'<br>'+
         'AuthUsername:'+ARequestInfo.AuthUsername+'<br>'+
         '<h1>Service info</h1>'+
-        'Check every:'+FormatFloat('#.##',Timer1.Interval/1000/60)+' min <br>'+
-        'Active:'+BoolToStr(Timer1.Enabled,'Yes','No')+'<br>'+
+        //'Check every:'+FormatFloat('#.##',Timer1.Interval/1000/60)+' min <br>'+
+        //'Active:'+BoolToStr(Timer1.Enabled,'Yes','No')+'<br>'+
         'Windows task Wapt-update period (minutes): '+waptupdate_task_period+' min <br>'+
         'Windows task Wapt-upgrade period (minutes): '+waptupgrade_task_period+' min <br>'
 
@@ -662,15 +683,6 @@ begin
     AResponseInfo.CharSet:='UTF-8';
   end;
   WaptDB := Nil;
-end;
-
-procedure TWaptDaemon.Timer1Timer(Sender: TObject);
-begin
-  try
-    Timer1.Enabled:=False;
-  finally
-    Timer1.Enabled:=True;
-  end;
 end;
 
 function TWaptDaemon.RepoTableHook(Dataset:TDataset;Data, FN: Utf8String): Utf8String;
@@ -698,6 +710,9 @@ begin
   if FN='remove' then
     Result:='<a class=action href="javascript: if (confirm(''Confirm the removal of '+Dataset['package']+' ?'')) { window.location.href=''/remove?package='+Dataset['package']+''' } else { void('''') }">'+Data+'</a>'
   else
+  if FN='install_date' then
+    Result:=copy(data,1,10)+' '+copy(data,12,5)
+  else
     Result := Data;
 end;
 
@@ -706,6 +721,18 @@ begin
   //httpPostData();
 end;
 
+function TWaptDaemon.WaptRunstatus: ISuperObject;
+var
+  AQuery: TSQLQuery;
+begin
+  try
+    AQuery := WaptDB.QueryCreate('select value,create_date from wapt_params where name=''runstatus''');
+    Result := Dataset2SO(AQuery,False);
+  finally
+    AQuery.Free;
+    WaptDB.db.Close;
+  end
+end;
 
 function TWaptDaemon.GetWaptDB: TWAPTDB;
 begin

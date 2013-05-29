@@ -82,6 +82,7 @@ type
     TabSheet3: TTabSheet;
     TabSheet4: TTabSheet;
     pgEditPackage: TTabSheet;
+    pgInventory: TTabSheet;
     testedit: TSynEdit;
     tvjson: TVirtualJSONInspector;
     tvjson1: TVirtualJSONInspector;

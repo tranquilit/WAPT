@@ -70,29 +70,32 @@ Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\wapt-ge
 [INI]
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL}
 Filename: {app}\wapt-get.ini; Section: global; Key: public_cert; String: {code:GetPublicCert}
-Filename: {app}\wapt-get.ini; Section: global; Key: waptupdate_task_period; String: 120; Flags: createkeyifdoesntexist 
+Filename: {app}\wapt-get.ini; Section: global; Key: waptupdate_task_period; String: 120; Flags:  createkeyifdoesntexist 
 Filename: {app}\wapt-get.ini; Section: global; Key: waptupdate_task_maxruntime; String: 30; Flags: createkeyifdoesntexist
+Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: http://srvwapt:8080; Tasks: usewaptserver; Flags: createkeyifdoesntexist
 Filename: {app}\wapt-get.ini; Section: tranquilit; Key: repo_url; String: http://wapt.tranquil.it/wapt; Tasks: usetispublic; Flags: createkeyifdoesntexist
 Filename: {app}\wapt-get.ini; Section: tranquilit; Key: public_cert; String: {app}\ssl\tranquilit.crt; Tasks: usetispublic; Flags: createkeyifdoesntexist
-Filename: {app}\wapt-get.ini; Section: global; Key: repositories; String: tranquilit; Flags: createkeyifdoesntexist; Tasks: usetispublic
+Filename: {app}\wapt-get.ini; Section: global; Key: repositories; String: tranquilit; Flags: createkeyifdoesntexist; Tasks: useTISPublic
 
 [Run]
 Filename: "{tmp}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "Updating MS VC++ libraries for OpenSSL..."; Description: "Update MS VC++ libraries"
 Filename: "{app}\wapt-get.exe"; Parameters: "upgradedb"; Flags: runhidden; StatusMsg: "Upgrading local sqlite database structure"; Description: "Upgrade packages list"
 Filename: "{app}\wapt-get.exe"; Parameters: "update"; Tasks: updateWapt; Flags: runhidden; StatusMsg: "Updating packages list"; Description: "Update packages list from main repository"
 Filename: "{app}\wapt-get.exe"; Parameters: "setup-tasks"; Tasks: setuptasks; Flags: runhidden; StatusMsg: "Setting up daily sheduled tasks"; Description: "Set up daily sheduled tasks"
-Filename: "{app}\wapttray.exe"; Tasks: installTray; Flags: runminimized nowait runasoriginaluser postinstall; StatusMsg: "Launch WAPT tray icon"; Description: "Launch WAPT tray icon"
+Filename: "{app}\wapt-get.exe"; Parameters: "register"; Tasks: useWaptServer; Flags: runhidden postinstall; StatusMsg: "Register computer on the WAPT server"; Description: "Register computer on the WAPT server"
+Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait runasoriginaluser postinstall; StatusMsg: "Launch WAPT tray icon"; Description: "Launch WAPT tray icon"
 
 [Icons]
 Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\wapttray.exe";
 
 [Tasks]
 Name: updateWapt; Description: "Update package list after setup";
-Name: installService; Description: "Install WAPT Service";
+Name: installService; Description: "Install WAPT Service"; 
 Name: installTray; Description: "Install WAPT Tray icon";
-Name: autorunTray; Description: "Start WAPT Tray icon at logon";
-Name: setuptasks; Description: "Creates windows scheduled tasks for update and upgrade";
-Name: usetispublic; Description: "Use Tranquil IT public repository as a secondary source";
+Name: autorunTray; Description: "Start WAPT Tray icon at logon"; Flags: unchecked
+Name: setupTasks; Description: "Creates windows scheduled tasks for update and upgrade"; 
+Name: useTISPublic; Description: "Use Tranquil IT public repository as a secondary source"; Flags: unchecked
+Name: useWaptServer; Description: "Register http://srvwapt:8080 as the central WAPT manage server"; Flags: unchecked
 
 
 [UninstallRun]
@@ -166,7 +169,7 @@ end;
 function GetRepoURL(Param: String):String;
 begin
   if WizardSilent then
-    result := GetIniString('Global', 'repo_url', 'http://wapt.tranquil.it/wapt',ExpandConstant('{app}\wapt-get.ini'))
+    result := GetIniString('Global', 'repo_url', '',ExpandConstant('{app}\wapt-get.ini'))
   else
     if rbCustomRepo.Checked then
        result := teWaptUrl.Text

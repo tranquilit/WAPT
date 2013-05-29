@@ -1709,6 +1709,7 @@ class Wapt(object):
             self.language = None
 
         self.options = OptionParser()
+        self.options.force = False
 
         # Stores the configuration of all repositories (url, public_cert...)
         self.repositories = []
@@ -1718,11 +1719,11 @@ class Wapt(object):
             logger.info(u'Other repositories : %s' % (names,))
             for name in names:
                 if name:
-                    w = WaptRepo(name).from_inifile(config)
+                    w = WaptRepo(name).from_inifile(self.config)
                     self.repositories.append(w)
                     logger.debug(u'    %s:%s' % (w.name,w.repo_url))
         # last is main repository so it overrides the secondary repositories
-        w = WaptRepo('global').from_inifile(config)
+        w = WaptRepo('global').from_inifile(self.config)
         # override with calculated url
         w.repo_url = self.wapt_repourl
         self.repositories.append(w)
@@ -1743,6 +1744,18 @@ class Wapt(object):
         if not self._wapt_repourl:
             self._wapt_repourl = self.find_wapt_server()
         return self._wapt_repourl
+
+    @property
+    def runstatus(self):
+        """returns the current run status for tray display"""
+        return self.read_param('runstatus','')
+
+    @runstatus.setter
+    def runstatus(self,waptstatus):
+        """Stores in local db the current run status for tray display"""
+        logger.info('Status : %s' % ensure_unicode(waptstatus))
+        self.write_param('runstatus',waptstatus)
+
 
     def find_wapt_server(self):
         """Search the nearest working main WAPT repository given the following priority
@@ -2006,6 +2019,7 @@ class Wapt(object):
         previous_uninstall = self.registry_uninstall_snapshot()
         entry = PackageEntry()
         entry.load_control_from_wapt(fname)
+        self.runstatus="Installing package %s version %s ..." % (entry.package,entry.version)
         old_stdout = sys.stdout
         old_stderr = sys.stderr
 
@@ -2194,17 +2208,40 @@ class Wapt(object):
             sys.stderr = old_stderr
             sys.path = oldpath
 
-            try:
-                status={
-                    "upgrades": [ "%s" % (p[0].asrequirement(),) for p in self.list_upgrade()],
-                    "date":datetime2isodate(),
-                    }
-                logger.debug("store status in DB")
-                self.write_param('last_update_status',jsondump(status))
-            except Exception,e:
-                logger.critical('Unable to store status of update in DB : %s'% ensure_unicode(e))
+            self.store_upgrade_status()
+            self.runstatus=''
 
+    def running_tasks(self):
+        """return current install tasks"""
+        running = self.waptdb.query_package_entry("""\
+           select * from wapt_localstatus
+              where install_status in ('INIT','DOWNLOAD','RUNNING')
+           """ )
+        return running
 
+    def error_packages(self):
+        """return install tasks with error status"""
+        q = self.waptdb.query_package_entry("""\
+           select * from wapt_localstatus
+              where install_status in ('ERROR')
+           """ )
+        return q
+
+    def store_upgrade_status(self):
+        """Stores in DB the current pending upgrades and running installs for
+          query by waptservice"""
+        try:
+            status={
+                "running_tasks": [ "%s : %s" % (p.asrequirement(),p.install_status) for p in self.running_tasks()],
+                "errors": [ "%s : %s" % (p.asrequirement(),p.install_status) for p in self.error_packages()],
+                "upgrades": [ "%s" % (p[0].asrequirement(),) for p in self.list_upgrade()],
+                "date":datetime2isodate(),
+                }
+            logger.debug("store status in DB")
+            self.write_param('last_update_status',jsondump(status))
+            return status
+        except Exception,e:
+            logger.critical('Unable to store status of update in DB : %s'% ensure_unicode(e))
 
     def get_sources(self,package):
         """Download sources of package (if referenced in package as a https svn)
@@ -2273,11 +2310,12 @@ class Wapt(object):
             "upgrades": [ "%s" % (p[0].asrequirement(),) for p in self.list_upgrade()],
             "date":datetime2isodate(),
             }
+
+        self.store_upgrade_status()
         try:
-            logger.debug("store status in DB")
-            self.write_param('last_update_status',jsondump( {'upgrades':result['upgrades'],"date":datetime2isodate()} ))
+            self.update_server_status()
         except Exception,e:
-            logger.critical('Unable to store status of update in DB : %s'% ensure_unicode(e))
+            logger.critical('Unable to update server with current status : %s' % ensure_unicode(e))
         return result
 
     def checkinstall(self,apackages,forceupgrade=False,force=False,assume_removed=[]):
@@ -2493,9 +2531,17 @@ class Wapt(object):
             if not skip:
                 logger.info("  Downloading package from %s" % download_url)
                 try:
-                    setuphelpers.wget( download_url, self.packagecachedir,proxies=self.proxies)
+                    def report(received,total,speed):
+                        stat = u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total, speed)
+                        print stat,
+                        self.runstatus='Downloading %s : %s' % (entry.package,stat)
+
+                    self.runstatus='Downloading %s' % download_url
+                    setuphelpers.wget( download_url, self.packagecachedir,proxies=self.proxies,printhook = report)
                     downloaded.append(fullpackagepath)
+                    self.runstatus=''
                 except BaseException as e:
+                    self.runstatus=''
                     if os.path.isfile(fullpackagepath):
                         os.remove(fullpackagepath)
                     logger.critical(u"Error downloading package from http repository, please update... error : %s" % ensure_unicode(e))
@@ -2514,7 +2560,7 @@ class Wapt(object):
             return result
         # several versions installed of the same package... ?
         for mydict in q:
-            logger.info("Removing package %s version %s from computer..." % (mydict['package'],mydict['version']))
+            self.runstatus="Removing package %s version %s from computer..." % (mydict['package'],mydict['version'])
 
             # removes recursively meta packages which are not satisfied anymore
             additional_removes = self.checkremove(package)
@@ -2582,16 +2628,8 @@ class Wapt(object):
                     result['errors'].append(package)
                     raise Exception('  uninstall key not registered in local DB status, unable to remove properly. Please remove manually')
 
-        try:
-            status={
-                "upgrades": [ "%s" % (p[0].asrequirement(),) for p in self.list_upgrade()],
-                "date":datetime2isodate(),
-                }
-            logger.debug("store status in DB")
-            self.write_param('last_update_status',jsondump(status))
-        except Exception,e:
-            logger.critical('Unable to store status of update in DB : %s'% ensure_unicode(e))
-
+        self.store_upgrade_status()
+        self.runstatus=''
         return result
 
     def host_packagename(self):
@@ -2614,30 +2652,25 @@ class Wapt(object):
         Query localstatus database for packages with a version older than repository
         and install all newest packages
         """
-
-        host_package = self.check_host_package()
-        if host_package:
-            logger.info('Host package %s is available and not installed, installing host package...' % (host_package[-1].package,) )
-            hostresult = self.install(host_package[-1],force=True)
-        else:
-            hostresult = []
-
-        upgrades = self.waptdb.upgradeable()
-        logger.debug(u'upgrades : %s' % upgrades.keys())
-        result = self.install(upgrades.keys(),force=True)
-
+        self.runstatus='Upgrade system'
         try:
-            status={
-                "upgrades": [ "%s" % (p[0].asrequirement(),) for p in self.list_upgrade()],
-                "date":datetime2isodate(),
-                }
-            logger.debug("store status in DB")
-            self.write_param('last_update_status',jsondump(status))
-        except Exception,e:
-            logger.critical('Unable to store status of update in DB : %s'% ensure_unicode(e))
+            host_package = self.check_host_package()
+            if host_package:
+                logger.info('Host package %s is available and not installed, installing host package...' % (host_package[-1].package,) )
+                hostresult = self.install(host_package[-1],force=True)
+            else:
+                hostresult = []
 
-        # merge results
-        return merge_dict(result,hostresult)
+            upgrades = self.waptdb.upgradeable()
+            logger.debug(u'upgrades : %s' % upgrades.keys())
+            result = self.install(upgrades.keys(),force=True)
+
+            self.store_upgrade_status()
+
+            # merge results
+            return merge_dict(result,hostresult)
+        finally:
+            self.runstatus=''
 
     def list_upgrade(self):
         """Returns a list of packages which can be upgraded
@@ -2683,11 +2716,14 @@ class Wapt(object):
 
     def download_upgrades(self):
         """Download packages that can be upgraded"""
-        q = self.waptdb.upgradeable()
-        # get most recent packages
-        to_download = [p[0] for p in q.values()]
-        return self.download_packages(to_download)
-
+        self.runstatus='Download upgrades'
+        try:
+            q = self.waptdb.upgradeable()
+            # get most recent packages
+            to_download = [p[0] for p in q.values()]
+            return self.download_packages(to_download)
+        finally:
+            self.runstatus=''
 
     def register_computer(self,description=None,force=False):
         """Send computer informations to WAPT Server
@@ -2699,11 +2735,9 @@ class Wapt(object):
             logger.info(ensure_unicode(out))
 
         inv = self.inventory()
-        uuid = self.read_param('uuid')
-        if not uuid:
-            uuid = inv['host']['uuid']
-            self.write_param('uuid',uuid)
-        inv['uuid'] = uuid
+        # store uuid for future use to avoid the use of dmidecode
+        if not self.read_param('uuid'):
+            self.write_param('uuid',inv['uuid'])
         if force:
             inv['force']=True
         if self.wapt_server:
@@ -2721,6 +2755,7 @@ class Wapt(object):
             self.register_computer(force=force)
         else:
             inv = {'uuid': uuid}
+            inv['wapt'] = {}
             inv['softwares'] = setuphelpers.installed_softwares('')
             inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
 
@@ -2737,24 +2772,32 @@ class Wapt(object):
             else:
                 return json.dumps(inv,indent=True)
 
+    def wapt_status(self):
+        """retrun wapt version info"""
+        result = {}
+        if os.path.isfile(sys.argv[0]):
+            result['wapt-exe-version'] = setuphelpers.get_file_properties(sys.argv[0])['FileVersion']
+        waptservice =  os.path.join( os.path.dirname(sys.argv[0]),'waptservice.exe')
+        if os.path.isfile(waptservice):
+            result['waptservice-version'] = setuphelpers.get_file_properties(waptservice)['FileVersion']
+        result['setuphelpers-version'] = setuphelpers.__version__
+        result['wapt-py-version'] = __version__
+        result['common-version'] = __version__
+        return result
 
-    def inventory(self,with_soft=True):
+
+    def inventory(self):
         """Return software inventory of the computer as a dictionary"""
         inv = {}
         inv['host'] = setuphelpers.host_info()
-        inv['wapt'] = {}
-        if os.path.isfile(sys.argv[0]):
-            inv['wapt']['wapt-exe-version'] = setuphelpers.get_file_properties(sys.argv[0])['FileVersion']
-        waptservice =  os.path.join( os.path.dirname(sys.argv[0]),'waptservice.exe')
-        if os.path.isfile(waptservice):
-            inv['wapt']['waptservice-version'] = setuphelpers.get_file_properties(waptservice)['FileVersion']
-        inv['wapt']['setuphelpers-version'] = setuphelpers.__version__
-        inv['wapt']['wapt-py-version'] = __version__
-        inv['wapt']['common-version'] = __version__
-
-        if with_soft:
-            inv['softwares'] = setuphelpers.installed_softwares('')
+        inv['dmi'] = setuphelpers.dmi_info()
+        inv['wapt'] = self.wapt_status()
+        inv['softwares'] = setuphelpers.installed_softwares('')
         inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
+        try:
+            inv['uuid'] = inv['dmi']['System Information']['UUID']
+        except:
+            inv['uuid'] = inv['host']['computer_fqdn']
         return inv
 
     def get_public_cert(self,repository='global'):

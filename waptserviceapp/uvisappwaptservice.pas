@@ -71,7 +71,7 @@ var
   VisAppWAPTService: TVisAppWAPTService;
 
 implementation
-uses tisstrings,ldapauth,ldapsend;
+uses tisstrings,ldapauth,ldapsend,tiscommon,superobject,soutils,jwawinbase;
 
 //uses waptwmi;
 
@@ -99,12 +99,25 @@ end;
 procedure TVisAppWAPTService.Button1Click(Sender: TObject);
 var
  ldap:TLDAPSend;
+ gr:TDynStringArray;
+ groups : ISuperObject;
+ htok:THandle;
 begin
-  ldap := LDAPSSLLogin(edserver.Text,eduser.Text,eddomain.text,edpassword.Text);
+  {ldap := LDAPSSLLogin(edserver.Text,eduser.Text,eddomain.text,edpassword.Text);
   testedit.Lines.Text  := GetUserAndGroups(ldap,'dc=tranquilit,dc=local',eduser.Text,True).AsJSon(True);
   if UserIngroup(ldap,'dc=tranquilit,dc=local',eduser.Text,EdGroup.Text) then
     ShowMessage('user  is member of group '+EdGroup.Text);
-  ldap.Free;
+  ldap.Free;}
+  htok := UserLogin(eduser.Text,edpassword.Text,eddomain.Text);
+  gr := GetGroups(GetDNSDomain,eduser.Text);
+  if length(gr)>0 then
+  begin
+    groups := DynArr2SuperObject(gr);
+    if groups<>Nil then
+      ShowMessage(groups.asjson);
+  end;
+  if htok>0 then
+    closeHandle(htok);
 end;
 
 procedure TVisAppWAPTService.butunloadllClick(Sender: TObject);
@@ -137,6 +150,10 @@ begin
 
   waptdb := TWAPTDB.Create(WaptDBPath);
   waptdb.OpenDB;
+
+  eduser.text := tiscommon.GetUserName;
+  eddomain.Text := GetWorkgroupName;
+
 end;
 
 procedure TVisAppWAPTService.ToggleBox1Change(Sender: TObject);

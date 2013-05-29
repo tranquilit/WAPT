@@ -4,17 +4,16 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="37">
+    <Units Count="17">
       <Unit0>
         <Filename Value="wapttray.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="wapttray"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="11"/>
-        <CursorPos X="26" Y="35"/>
-        <UsageCount Value="33"/>
+        <TopLine Value="8"/>
+        <CursorPos X="13" Y="38"/>
+        <UsageCount Value="172"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -27,33 +26,33 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="49" Y="8"/>
-        <UsageCount Value="33"/>
+        <UsageCount Value="172"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="70"/>
         <CursorPos X="43" Y="86"/>
-        <UsageCount Value="33"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="172"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\wapt-get\soutils.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="soutils"/>
-        <UsageCount Value="31"/>
+        <UsageCount Value="170"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\wapt-get\tiscommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiscommon"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="20"/>
-        <CursorPos X="11" Y="35"/>
-        <UsageCount Value="31"/>
+        <TopLine Value="240"/>
+        <CursorPos X="11" Y="245"/>
+        <UsageCount Value="170"/>
+        <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="udmwapttray.pas"/>
@@ -62,11 +61,12 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="uDMWAPTTray"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="30"/>
-        <CursorPos X="67" Y="55"/>
-        <UsageCount Value="29"/>
+        <TopLine Value="172"/>
+        <CursorPos X="38" Y="183"/>
+        <UsageCount Value="168"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit5>
@@ -76,7 +76,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="90"/>
         <CursorPos X="5" Y="115"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="7"/>
         <Bookmarks Count="1">
           <Item0 X="5" Y="115" ID="1"/>
         </Bookmarks>
@@ -84,7 +84,7 @@
       <Unit7>
         <Filename Value="..\superobject\superobject.pas"/>
         <UnitName Value="superobject"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="7"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\jcl\source\common\JclSysInfo.pas"/>
@@ -92,345 +92,201 @@
         <WindowIndex Value="0"/>
         <TopLine Value="70"/>
         <CursorPos X="15" Y="94"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="7"/>
       </Unit8>
       <Unit9>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <UnitName Value="soutils"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="7"/>
-        <CursorPos X="34" Y="14"/>
-        <UsageCount Value="9"/>
-      </Unit9>
-      <Unit10>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-db\src\base\db.pas"/>
-        <UnitName Value="db"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1042"/>
-        <CursorPos X="3" Y="1341"/>
-        <UsageCount Value="9"/>
-      </Unit10>
-      <Unit11>
-        <Filename Value="..\..\pltis_openerp\openerpdataset.pas"/>
-        <UnitName Value="OpenERPDataset"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="35" Y="4"/>
-        <UsageCount Value="9"/>
-      </Unit11>
-      <Unit12>
-        <Filename Value="..\..\pltis_jcl\source\common\JclUnicode.pas"/>
-        <UnitName Value="JclUnicode"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1636"/>
-        <CursorPos X="25" Y="1646"/>
-        <UsageCount Value="9"/>
-      </Unit12>
-      <Unit13>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\shellapi.pp"/>
-        <UnitName Value="ShellApi"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1105"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="9"/>
-      </Unit13>
-      <Unit14>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-process\src\process.pp"/>
-        <UnitName Value="process"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="19"/>
-        <CursorPos X="17" Y="176"/>
-        <UsageCount Value="9"/>
-      </Unit14>
-      <Unit15>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\shlobj.pp"/>
-        <UnitName Value="shlobj"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="91"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="9"/>
-      </Unit15>
-      <Unit16>
-        <Filename Value="C:\codetyphon\lazarus\lcl\forms.pp"/>
-        <UnitName Value="Forms"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1344"/>
-        <CursorPos X="15" Y="1367"/>
-        <UsageCount Value="10"/>
-      </Unit16>
-      <Unit17>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\customaction.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="241"/>
         <CursorPos X="15" Y="248"/>
-        <UsageCount Value="13"/>
-      </Unit17>
-      <Unit18>
-        <Filename Value="C:\codetyphon\lazarus\lcl\interfaces\win32\win32trayicon.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="142"/>
-        <CursorPos X="1" Y="158"/>
         <UsageCount Value="10"/>
-      </Unit18>
-      <Unit19>
-        <Filename Value="C:\codetyphon\lazarus\lcl\interfaces\win32\win32wsextctrls.pp"/>
-        <UnitName Value="Win32WSExtCtrls"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="10"/>
-      </Unit19>
-      <Unit20>
-        <Filename Value="C:\codetyphon\lazarus\lcl\include\containedaction.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="83"/>
-        <CursorPos X="15" Y="97"/>
-        <UsageCount Value="10"/>
-      </Unit20>
-      <Unit21>
+      </Unit9>
+      <Unit10>
         <Filename Value="C:\codetyphon\lazarus\lcl\actnlist.pas"/>
         <UnitName Value="ActnList"/>
         <WindowIndex Value="0"/>
         <TopLine Value="190"/>
         <CursorPos X="14" Y="203"/>
-        <UsageCount Value="13"/>
-      </Unit21>
-      <Unit22>
+        <UsageCount Value="10"/>
+      </Unit10>
+      <Unit11>
         <Filename Value="C:\codetyphon\lazarus\lcl\extctrls.pp"/>
         <UnitName Value="ExtCtrls"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1070"/>
         <CursorPos X="15" Y="1091"/>
-        <UsageCount Value="14"/>
-      </Unit22>
-      <Unit23>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\winutils.pp"/>
-        <UnitName Value="winutils"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="8"/>
-        <CursorPos X="40" Y="48"/>
-        <UsageCount Value="12"/>
-      </Unit23>
-      <Unit24>
-        <Filename Value="C:\codetyphon\fpcsrc\rtl\win32\winsysut.pp"/>
-        <UnitName Value="winsysut"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="13"/>
-        <CursorPos X="22" Y="31"/>
-        <UsageCount Value="12"/>
-      </Unit24>
-      <Unit25>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\cdrom\src\wincd.pp"/>
-        <UnitName Value="wincd"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="10"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="12"/>
-      </Unit25>
-      <Unit26>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\winver.pp"/>
-        <UnitName Value="winver"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="4"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="12"/>
-      </Unit26>
-      <Unit27>
-        <Filename Value="C:\codetyphon\lazarus\lcl\lclintf.pas"/>
-        <UnitName Value="LCLIntf"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="69"/>
-        <CursorPos X="10" Y="84"/>
-        <UsageCount Value="12"/>
-      </Unit27>
-      <Unit28>
-        <Filename Value="C:\codetyphon\lazarus\lcl\include\sysenvapis_win.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="3" Y="40"/>
-        <UsageCount Value="12"/>
-      </Unit28>
-      <Unit29>
+        <UsageCount Value="1"/>
+      </Unit11>
+      <Unit12>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\customtrayicon.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="242"/>
         <CursorPos X="24" Y="253"/>
-        <UsageCount Value="13"/>
-      </Unit29>
-      <Unit30>
-        <Filename Value="C:\codetyphon\lazarus\lcl\imglist.pp"/>
-        <UnitName Value="ImgList"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="175"/>
-        <CursorPos X="15" Y="194"/>
         <UsageCount Value="10"/>
-      </Unit30>
-      <Unit31>
-        <Filename Value="C:\codetyphon\lazarus\lcl\include\imglist.inc"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <UnitName Value="superobject"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="686"/>
-        <CursorPos X="5" Y="712"/>
+        <TopLine Value="4575"/>
+        <CursorPos X="1" Y="4592"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <UnitName Value="wininet"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="2449"/>
+        <CursorPos X="12" Y="2463"/>
         <UsageCount Value="10"/>
-      </Unit31>
-      <Unit32>
-        <Filename Value="C:\codetyphon\lazarus\lcl\include\icon.inc"/>
+        <Loaded Value="True"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="C:\codetyphon\lazarus\lcl\lclintf.pas"/>
+        <UnitName Value="LCLIntf"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="357"/>
-        <CursorPos X="1" Y="390"/>
+        <TopLine Value="34"/>
+        <CursorPos X="13" Y="44"/>
         <UsageCount Value="10"/>
-      </Unit32>
-      <Unit33>
-        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\classes\classesh.inc"/>
+        <Loaded Value="True"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="C:\codetyphon\lazarus\lcl\include\sysenvapis_win.inc"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1598"/>
-        <CursorPos X="21" Y="1611"/>
-        <UsageCount Value="11"/>
-      </Unit33>
-      <Unit34>
-        <Filename Value="C:\codetyphon\fpcsrc\rtl\win\tthread.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="83"/>
-        <CursorPos X="3" Y="110"/>
+        <TopLine Value="1"/>
+        <CursorPos X="3" Y="26"/>
         <UsageCount Value="10"/>
-      </Unit34>
-      <Unit35>
-        <Filename Value="C:\codetyphon\fpcsrc\rtl\win\wininc\defines.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1071"/>
-        <CursorPos X="6" Y="1086"/>
-        <UsageCount Value="10"/>
-      </Unit35>
-      <Unit36>
-        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\classes\classes.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="172"/>
-        <CursorPos X="5" Y="174"/>
-        <UsageCount Value="10"/>
-      </Unit36>
+        <Loaded Value="True"/>
+      </Unit16>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="48" Column="10" TopLine="24"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="325" Column="30" TopLine="302"/>
       </Position1>
       <Position2>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="60" Column="11" TopLine="35"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="319" Column="7" TopLine="305"/>
       </Position2>
       <Position3>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="62" Column="9" TopLine="37"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="322" Column="18" TopLine="305"/>
       </Position3>
       <Position4>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="75" Column="9" TopLine="50"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="310" Column="1" TopLine="290"/>
       </Position4>
       <Position5>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="78" Column="17" TopLine="52"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="314" Column="58" TopLine="290"/>
       </Position5>
       <Position6>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="88" Column="64" TopLine="63"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="313" Column="1" TopLine="290"/>
       </Position6>
       <Position7>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="140" Column="17" TopLine="114"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="315" Column="1" TopLine="291"/>
       </Position7>
       <Position8>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="167" Column="1" TopLine="150"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="316" Column="1" TopLine="292"/>
       </Position8>
       <Position9>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="111" Column="19" TopLine="96"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="317" Column="1" TopLine="293"/>
       </Position9>
       <Position10>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="102" Column="30" TopLine="87"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="312" Column="44" TopLine="296"/>
       </Position10>
       <Position11>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="111" Column="11" TopLine="87"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="310" Column="1" TopLine="296"/>
       </Position11>
       <Position12>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="111" Column="12" TopLine="87"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="308" Column="38" TopLine="296"/>
       </Position12>
       <Position13>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="71" Column="17" TopLine="56"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="310" Column="1" TopLine="296"/>
       </Position13>
       <Position14>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="111" Column="33" TopLine="96"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="312" Column="1" TopLine="296"/>
       </Position14>
       <Position15>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="117" Column="22" TopLine="102"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="313" Column="1" TopLine="296"/>
       </Position15>
       <Position16>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="195" Column="13" TopLine="141"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="315" Column="1" TopLine="296"/>
       </Position16>
       <Position17>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="195" Column="13" TopLine="141"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="316" Column="1" TopLine="296"/>
       </Position17>
       <Position18>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="317" Column="1" TopLine="296"/>
       </Position18>
       <Position19>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="116" Column="27" TopLine="94"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="313" Column="62" TopLine="296"/>
       </Position19>
       <Position20>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="126" Column="5" TopLine="124"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="310" Column="1" TopLine="296"/>
       </Position20>
       <Position21>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="135" Column="1" TopLine="121"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="312" Column="1" TopLine="296"/>
       </Position21>
       <Position22>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="113" Column="34" TopLine="100"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="313" Column="1" TopLine="296"/>
       </Position22>
       <Position23>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="99" Column="10" TopLine="82"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="316" Column="34" TopLine="296"/>
       </Position23>
       <Position24>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="55" Column="6" TopLine="31"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="317" Column="54" TopLine="302"/>
       </Position24>
       <Position25>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="88" Column="35" TopLine="73"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="316" Column="16" TopLine="302"/>
       </Position25>
       <Position26>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="55" Column="58" TopLine="30"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="311" Column="1" TopLine="302"/>
       </Position26>
       <Position27>
         <Filename Value="udmwapttray.pas"/>
-        <Caret Line="186" Column="16" TopLine="171"/>
+        <Caret Line="203" Column="44" TopLine="172"/>
       </Position27>
       <Position28>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="94" Column="6" TopLine="73"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="184" Column="6" TopLine="172"/>
       </Position28>
       <Position29>
-        <Filename Value="wapttray.lpr"/>
-        <Caret Line="31" Column="8" TopLine="11"/>
+        <Filename Value="C:\codetyphon\lazarus\lcl\lclintf.pas"/>
+        <Caret Line="83" Column="10" TopLine="69"/>
       </Position29>
       <Position30>
-        <Filename Value="wapttray.lpr"/>
-        <Caret Line="29" Column="40" TopLine="11"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="184" Column="6" TopLine="172"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

@@ -28,11 +28,12 @@ unit tiscommon;
 interface
 
 uses
-  interfaces,Classes, SysUtils,windows;
+  interfaces,Classes, SysUtils,tisstrings,windows,jwawintype;
 
 Function  Wget(const fileURL, DestFileName: Utf8String): boolean;
 Function  Wget_try(const fileURL: Utf8String): boolean;
 function  httpGetString(url: string): Utf8String;
+procedure httpGetNull(url: string);
 
 procedure httpPostData(const UserAgent: string; const Server: string; const Resource: string; const Data: AnsiString);
 
@@ -42,7 +43,6 @@ procedure AddToSystemPath(APath:Utf8String);
 
 procedure UpdateCurrentApplication(fromURL:String;Restart:Boolean;restartparam:Utf8String);
 procedure UpdateApplication(fromURL:String;SetupExename,SetupParams,ExeName,RestartParam:Utf8String);
-
 
 function  GetApplicationVersion(FileName:Utf8String=''): Utf8String;
 
@@ -56,6 +56,11 @@ function GetUserName : AnsiString;
 function GetWorkgroupName: AnsiString;
 function GetDomainName: AnsiString;
 
+function UserLogin(user,password,domain:String):THandle;
+function UserDomain(htoken:THandle):String;
+
+
+function GetGroups(srvName, usrName: WideString):TDynStringArray;
 
 function SortableVersion(VersionString:String):String;
 
@@ -63,14 +68,14 @@ type LogLevel=(DEBUG, INFO, WARNING, ERROR, CRITICAL);
 const StrLogLevel: array[DEBUG..CRITICAL] of String = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL');
 procedure Logger(Msg:String;level:LogLevel=WARNING);
 
-Const
+{Const
   SECURITY_NT_AUTHORITY: TSIDIdentifierAuthority = (Value: (0, 0, 0, 0, 0, 5));
   SECURITY_BUILTIN_DOMAIN_RID = $00000020;
   DOMAIN_ALIAS_RID_ADMINS     = $00000220;
   DOMAIN_ALIAS_RID_USERS      = $00000221;
   DOMAIN_ALIAS_RID_GUESTS     = $00000222;
   DOMAIN_ALIAS_RID_POWER_USERS= $00000223;
-
+}
 const
   CSIDL_LOCAL_APPDATA = $001c;
   strnShellFolders = 'Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders';
@@ -122,7 +127,7 @@ const
 implementation
 
 uses registry,strutils,FileUtil,Process,WinInet,zipper,
-    shlobj,winsock,tisstrings,JwaTlHelp32,jwalmwksta,jwalmapibuf;
+    shlobj,winsock,JwaTlHelp32,jwalmwksta,jwalmapibuf,JwaWinBase,jwalmaccess,jwalmcons,jwalmerr,JwaWinNT,jwawinuser;
 
 function IsAdminLoggedOn: Boolean;
 { Returns True if the logged-on user is a member of the Administrators local
@@ -275,6 +280,47 @@ begin
 end;
 
 
+
+// just launches a process with http request
+procedure httpGetNull(url: string);
+var
+  GlobalhInet,hConn,hRequest: HINTERNET;
+  bResult:Boolean;
+  aURLC: TURLComponents;
+
+begin
+    FillChar(aURLC, SizeOf(TURLComponents), 0);
+    with aURLC do
+    begin
+      lpszScheme := nil;
+      dwSchemeLength := INTERNET_MAX_SCHEME_LENGTH;
+      lpszHostName := nil;
+      dwHostNameLength := INTERNET_MAX_HOST_NAME_LENGTH;
+      lpszUserName := nil;
+      dwUserNameLength := INTERNET_MAX_USER_NAME_LENGTH;
+      lpszPassword := nil;
+      dwPasswordLength := INTERNET_MAX_PASSWORD_LENGTH;
+      lpszUrlPath := nil;
+      dwUrlPathLength := INTERNET_MAX_PATH_LENGTH;
+      lpszExtraInfo := nil;
+      dwExtraInfoLength := INTERNET_MAX_PATH_LENGTH;
+      dwStructSize := SizeOf(aURLC);
+    end;
+    if InternetCrackUrl(PChar(url), 0, 0, aURLC) then
+    begin
+      GlobalhInet := InternetOpen('wapt',
+          INTERNET_OPEN_TYPE_PRECONFIG,nil,nil,0);
+      hConn := InternetConnect(GlobalhInet,pchar('localhost'),aURLC.nPort,aURLC.lpszUserName,aURLC.lpszPassword,INTERNET_SERVICE_HTTP,0,0);
+      hRequest := HttpOpenRequest(hConn,PChar('GET'),aURLC.lpszUrlPath,Nil,Nil,Nil,INTERNET_FLAG_IGNORE_CERT_CN_INVALID or INTERNET_FLAG_NO_CACHE_WRITE
+        or INTERNET_FLAG_PRAGMA_NOCACHE or INTERNET_FLAG_RELOAD ,0);
+      bResult := HttpSendRequest(hRequest, Nil, 0, Nil, 0);
+      if Assigned(hRequest) then InternetCloseHandle(hRequest);
+      if Assigned(hConn) then InternetCloseHandle(hConn);
+      if Assigned(GlobalhInet) then InternetCloseHandle(GlobalhInet);
+    end;
+end;
+
+
 procedure httpPostData(const UserAgent: string; const Server: string; const Resource: string; const Data: AnsiString);
 var
   hInet: HINTERNET;
@@ -408,16 +454,16 @@ begin
   end;
 end;
 
-function CheckTokenMembership(TokenHandle: THandle; SidToCheck: PSID; var IsMember: BOOL): BOOL; stdcall; external advapi32;
+//function CheckTokenMembership(TokenHandle: THandle; SidToCheck: PSID; var IsMember: BOOL): BOOL; stdcall; external advapi32;
 
 function UserInGroup(Group :DWORD) : Boolean;
 var
-  pIdentifierAuthority :TSIDIdentifierAuthority;
-  pSid : Windows.PSID;
+  pIdentifierAuthority :TSidIdentifierAuthority;
+  pSid : jwawinnt.PSID;
   IsMember    : BOOL;
 begin
   pIdentifierAuthority := SECURITY_NT_AUTHORITY;
-  Result := AllocateAndInitializeSid(pIdentifierAuthority,2, SECURITY_BUILTIN_DOMAIN_RID, Group, 0, 0, 0, 0, 0, 0, pSid);
+  Result := AllocateAndInitializeSid(@pIdentifierAuthority,2, SECURITY_BUILTIN_DOMAIN_RID, Group, 0, 0, 0, 0, 0, 0, pSid);
   try
     if Result then
       if not CheckTokenMembership(0, pSid, IsMember) then //passing 0 means which the function will be use the token of the calling thread.
@@ -482,7 +528,7 @@ begin
       SystemPath:=SystemPath+APath;
       if RightStr(SystemPath,1)<>';' then SystemPath:=SystemPath+';';
       WriteExpandString('Path',SystemPath);
-      Windows.SendMessageTimeout(HWND_BROADCAST,WM_SETTINGCHANGE,0,Longint(PChar('Environment')),0,1000,aresult);
+      SendMessageTimeout(HWND_BROADCAST,WM_SETTINGCHANGE,0,Longint(PChar('Environment')),0,1000,aresult);
     end;
   finally
     Free;
@@ -500,7 +546,7 @@ begin
   Files := TStringList.Create;
   try
     Logger('Updating current application in place...');
-    tempdir := GetTempFilename(GetTempDir,'waptget');
+    tempdir := fileutil.GetTempFilename(GetTempDir,'waptget');
     fn :=ExtractFileName(ParamStr(0));
     destdir := ExtractFileDir(ParamStr(0));
 
@@ -590,7 +636,7 @@ begin
   Files := TStringList.Create;
   try
     Logger('Updating application...');
-    tempdir := GetTempFilename(GetTempDir,'tis');
+    tempdir := fileutil.GetTempFilename(GetTempDir,'tis');
     if ExeName='' then
       ExeName :=ExtractFileName(ParamStr(0));
 
@@ -1192,6 +1238,84 @@ begin
     CloseServiceHandle(ServiceHandle);
   finally
     CloseServiceHandle(SCMHandle);
+  end;
+end;
+
+function GetGroups(srvName, usrName: WideString):TDynStringArray;
+var
+  dwEntriesRead, dwEntriesTotal: DWORD;
+  grpi0: Pointer;
+  pInfo: PGroupInfo0;
+  nErr: Integer;
+begin
+  SetLength(Result,0);
+  nErr := NetUserGetGroups(PWideChar(srvName), PWideChar(usrName), 0, grpi0,MAX_PREFERRED_LENGTH, @dwEntriesRead, @dwEntriesTotal);
+  if nErr = NERR_SUCCESS then
+  begin
+    pInfo := grpi0;
+    while dwEntriesRead > 0 do
+    begin
+      SetLength(result,length(result)+1);
+      result[length(result)-1] := pInfo^.grpi0_name;
+      Inc(pInfo);
+      Dec(dwEntriesRead);
+    end;
+    NetAPIBufferFree(grpi0);
+  end;
+end;
+
+function UserLogin(user,password,domain:String):THandle;
+var
+  htok:THandle;
+begin
+  if not LogonUser(pchar(user),pchar(domain),pchar(password),LOGON32_LOGON_NETWORK,LOGON32_PROVIDER_DEFAULT,htok) then
+    raise EXCEPTION.Create('Unable to login as '+user+' on domain '+domain);
+  result := htok;
+end;
+
+function UserDomain(htoken:THandle):String;
+var
+  cbBuf: Cardinal;
+  ptiUser: PTOKEN_USER;
+  snu: SID_NAME_USE;
+  ProcessHandle: THandle;
+  UserSize, DomainSize: DWORD;
+  bSuccess: Boolean;
+  user,domain:String;
+begin
+  Result := '';
+  bSuccess := GetTokenInformation(hToken, TokenUser, nil, 0, cbBuf);
+  ptiUser  := nil;
+  while (not bSuccess) and (GetLastError = ERROR_INSUFFICIENT_BUFFER) do
+  begin
+    ReallocMem(ptiUser, cbBuf);
+    bSuccess := GetTokenInformation(hToken, TokenUser, ptiUser, cbBuf, cbBuf);
+  end;
+
+  if not bSuccess then
+  begin
+    Exit;
+  end;
+
+  UserSize := 0;
+  DomainSize := 0;
+  LookupAccountSid(nil, ptiUser^.User.Sid, nil, UserSize, nil, DomainSize, snu);
+  if (UserSize <> 0) and (DomainSize <> 0) then
+  begin
+    SetLength(User, UserSize);
+    SetLength(Domain, DomainSize);
+    if LookupAccountSid(nil, ptiUser^.User.Sid, PChar(User), UserSize,
+      PChar(Domain), DomainSize, snu) then
+    begin
+      User := StrPas(PChar(User));
+      Domain := StrPas(PChar(Domain));
+      Result := Domain;
+    end;
+  end;
+
+  if bSuccess then
+  begin
+    FreeMem(ptiUser);
   end;
 end;
 
