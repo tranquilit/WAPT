@@ -31,31 +31,34 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="8">
+    <RequiredPackages Count="9">
       <Item1>
-        <PackageName Value="pl_virtualtreesextra"/>
+        <PackageName Value="pl_glscene"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_lazsolutions"/>
+        <PackageName Value="pl_virtualtreesextra"/>
       </Item2>
       <Item3>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pl_lazsolutions"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_indycomp"/>
+        <PackageName Value="FCL"/>
       </Item4>
       <Item5>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="pl_indycomp"/>
       </Item5>
       <Item6>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item6>
       <Item7>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="SynEdit"/>
       </Item7>
       <Item8>
-        <PackageName Value="LCL"/>
+        <PackageName Value="pltis_superobject"/>
       </Item8>
+      <Item9>
+        <PackageName Value="LCL"/>
+      </Item9>
     </RequiredPackages>
     <Units Count="6">
       <Unit0>

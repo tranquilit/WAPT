@@ -4,16 +4,16 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="25">
+    <Units Count="28">
       <Unit0>
         <Filename Value="waptgui.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptgui"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="43" Y="13"/>
-        <UsageCount Value="89"/>
+        <CursorPos X="9" Y="17"/>
+        <UsageCount Value="102"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -26,9 +26,9 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="217"/>
-        <CursorPos X="8" Y="234"/>
-        <UsageCount Value="89"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="102"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -36,33 +36,35 @@
         <Filename Value="..\wapt-get\tisstrings.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tisstrings"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="121"/>
-        <CursorPos X="1" Y="128"/>
-        <UsageCount Value="89"/>
+        <CursorPos X="1" Y="131"/>
+        <UsageCount Value="102"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="828"/>
-        <CursorPos X="91" Y="845"/>
-        <UsageCount Value="89"/>
+        <TopLine Value="256"/>
+        <CursorPos X="3" Y="303"/>
+        <UsageCount Value="102"/>
+        <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\wapt-get\tiscommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiscommon"/>
-        <UsageCount Value="89"/>
+        <UsageCount Value="102"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\wapt-get\tisinifiles.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tisinifiles"/>
-        <UsageCount Value="89"/>
+        <UsageCount Value="102"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\wapt-get\soutils.pas"/>
@@ -70,7 +72,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="53"/>
+        <UsageCount Value="52"/>
       </Unit6>
       <Unit7>
         <Filename Value="..\waptserviceapp\uvisappwaptservice.pas"/>
@@ -81,25 +83,27 @@
         <WindowIndex Value="0"/>
         <TopLine Value="118"/>
         <CursorPos X="1" Y="138"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
         <UnitName Value="PythonEngine"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="647"/>
-        <CursorPos X="3" Y="439"/>
-        <UsageCount Value="15"/>
+        <TopLine Value="5391"/>
+        <CursorPos X="24" Y="5410"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <UnitName Value="superobject"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="458"/>
-        <CursorPos X="13" Y="487"/>
-        <UsageCount Value="32"/>
+        <TopLine Value="3145"/>
+        <CursorPos X="1" Y="3155"/>
+        <UsageCount Value="38"/>
         <Loaded Value="True"/>
       </Unit9>
       <Unit10>
@@ -108,7 +112,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit10>
       <Unit11>
@@ -117,7 +121,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="448"/>
         <CursorPos X="1" Y="448"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit11>
       <Unit12>
         <Filename Value="C:\codetyphon\lazarus\lcl\comctrls.pp"/>
@@ -125,7 +129,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="834"/>
         <CursorPos X="12" Y="830"/>
-        <UsageCount Value="14"/>
+        <UsageCount Value="13"/>
       </Unit12>
       <Unit13>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-process\src\process.pp"/>
@@ -133,220 +137,257 @@
         <WindowIndex Value="0"/>
         <TopLine Value="425"/>
         <CursorPos X="3" Y="455"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit13>
       <Unit14>
         <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTreesExtra\source\vte_json.pas"/>
         <UnitName Value="vte_json"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="98"/>
-        <CursorPos X="14" Y="112"/>
-        <UsageCount Value="7"/>
+        <TopLine Value="249"/>
+        <CursorPos X="23" Y="262"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
       </Unit14>
       <Unit15>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-json\src\fpjson.pp"/>
         <UnitName Value="fpjson"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="338"/>
-        <CursorPos X="14" Y="345"/>
-        <UsageCount Value="7"/>
+        <TopLine Value="7"/>
+        <CursorPos X="9" Y="17"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
       </Unit15>
       <Unit16>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\sysutilh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="284"/>
         <CursorPos X="13" Y="299"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="6"/>
       </Unit16>
       <Unit17>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\sysutils.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="145"/>
         <CursorPos X="9" Y="156"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="6"/>
       </Unit17>
       <Unit18>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-json\src\jsonparser.pp"/>
         <UnitName Value="jsonparser"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="101"/>
-        <CursorPos X="3" Y="104"/>
-        <UsageCount Value="7"/>
+        <TopLine Value="91"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
       </Unit18>
       <Unit19>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\control.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2700"/>
         <CursorPos X="1" Y="2719"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit19>
       <Unit20>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\containedaction.inc"/>
+        <EditorIndex Value="11"/>
         <WindowIndex Value="0"/>
         <TopLine Value="87"/>
-        <CursorPos X="1" Y="106"/>
-        <UsageCount Value="6"/>
+        <CursorPos X="16" Y="102"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
       </Unit20>
       <Unit21>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\customaction.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="238"/>
         <CursorPos X="1" Y="253"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit21>
       <Unit22>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\buttoncontrol.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="42"/>
         <CursorPos X="1" Y="57"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit22>
       <Unit23>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\buttons.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="161"/>
         <CursorPos X="1" Y="176"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit23>
       <Unit24>
         <Filename Value="..\..\pltis_superobject\soutils.pas"/>
         <UnitName Value="soutils"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="23"/>
-        <CursorPos X="1" Y="41"/>
-        <UsageCount Value="36"/>
+        <TopLine Value="97"/>
+        <CursorPos X="18" Y="111"/>
+        <UsageCount Value="42"/>
         <Loaded Value="True"/>
       </Unit24>
+      <Unit25>
+        <Filename Value="C:\codetyphon\lazarus\lcl\lclproc.pas"/>
+        <UnitName Value="LCLProc"/>
+        <EditorIndex Value="12"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="851"/>
+        <CursorPos X="1" Y="865"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="C:\codetyphon\lazarus\lcl\include\customlistview.inc"/>
+        <EditorIndex Value="13"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1019"/>
+        <CursorPos X="28" Y="1037"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <UnitName Value="VirtualTrees"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="210"/>
+        <CursorPos X="50" Y="176"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+      </Unit27>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="371" Column="20" TopLine="338"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="18060" Column="34" TopLine="18055"/>
       </Position1>
       <Position2>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="385" Column="20" TopLine="352"/>
+        <Filename Value="waptgui.lpr"/>
+        <Caret Line="13" Column="43" TopLine="1"/>
       </Position2>
       <Position3>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="19" Column="18" TopLine="1"/>
+        <Filename Value="uwaptgui.pas"/>
+        <Caret Line="481" Column="102" TopLine="463"/>
       </Position3>
       <Position4>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="20" Column="19" TopLine="1"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="24174" Column="13" TopLine="24150"/>
       </Position4>
       <Position5>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="305" Column="18" TopLine="272"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position5>
       <Position6>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="322" Column="19" TopLine="289"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="176" Column="50" TopLine="152"/>
       </Position6>
       <Position7>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="371" Column="20" TopLine="338"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="248" Column="91" TopLine="224"/>
       </Position7>
       <Position8>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="385" Column="20" TopLine="352"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position8>
       <Position9>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="19" Column="18" TopLine="1"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="176" Column="50" TopLine="152"/>
       </Position9>
       <Position10>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="20" Column="19" TopLine="1"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="248" Column="91" TopLine="224"/>
       </Position10>
       <Position11>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="305" Column="18" TopLine="272"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="1639" Column="53" TopLine="1615"/>
       </Position11>
       <Position12>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="322" Column="19" TopLine="289"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="2498" Column="69" TopLine="2476"/>
       </Position12>
       <Position13>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="371" Column="20" TopLine="338"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="3186" Column="69" TopLine="3162"/>
       </Position13>
       <Position14>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="385" Column="20" TopLine="352"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="3565" Column="23" TopLine="3543"/>
       </Position14>
       <Position15>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="15" Column="26" TopLine="1"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="3804" Column="23" TopLine="3782"/>
       </Position15>
       <Position16>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="86" Column="26" TopLine="53"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="9903" Column="15" TopLine="9888"/>
       </Position16>
       <Position17>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="248" Column="35" TopLine="215"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="9905" Column="21" TopLine="9888"/>
       </Position17>
       <Position18>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="293" Column="33" TopLine="260"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="15218" Column="61" TopLine="15204"/>
       </Position18>
       <Position19>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="66" Column="1" TopLine="43"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="15253" Column="63" TopLine="15230"/>
       </Position19>
       <Position20>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="42" Column="1" TopLine="26"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="15255" Column="22" TopLine="15232"/>
       </Position20>
       <Position21>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="16" Column="1" TopLine="1"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="15746" Column="66" TopLine="15723"/>
       </Position21>
       <Position22>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="148" Column="10" TopLine="128"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="15834" Column="62" TopLine="15811"/>
       </Position22>
       <Position23>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="67" Column="1" TopLine="32"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="29824" Column="52" TopLine="29812"/>
       </Position23>
       <Position24>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="200" Column="1" TopLine="160"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTreesExtra\source\vte_json.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position24>
       <Position25>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="229" Column="31" TopLine="205"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTreesExtra\source\vte_json.pas"/>
+        <Caret Line="262" Column="23" TopLine="240"/>
       </Position25>
       <Position26>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="145" Column="62" TopLine="142"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTreesExtra\source\vte_json.pas"/>
+        <Caret Line="486" Column="23" TopLine="464"/>
       </Position26>
       <Position27>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="111" Column="19" TopLine="98"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTreesExtra\source\vte_json.pas"/>
+        <Caret Line="695" Column="23" TopLine="673"/>
       </Position27>
       <Position28>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="224" Column="9" TopLine="221"/>
+        <Caret Line="483" Column="3" TopLine="480"/>
       </Position28>
       <Position29>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="225" Column="9" TopLine="222"/>
+        <Caret Line="489" Column="1" TopLine="465"/>
       </Position29>
       <Position30>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="233" Column="29" TopLine="202"/>
+        <Caret Line="205" Column="22" TopLine="172"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
-    <BreakPoints Count="1">
+    <BreakPoints Count="3">
       <Item1>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
@@ -354,6 +395,20 @@
         <Source Value="..\waptserviceapp\uvisappwaptservice.pas"/>
         <Line Value="129"/>
       </Item1>
+      <Item2>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="uwaptgui.pas"/>
+        <Line Value="218"/>
+      </Item2>
+      <Item3>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="uwaptgui.pas"/>
+        <Line Value="485"/>
+      </Item3>
     </BreakPoints>
   </Debugging>
   <EditorMacros Count="0"/>

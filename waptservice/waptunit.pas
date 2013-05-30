@@ -338,7 +338,7 @@ begin
     dnparts := tisStrings.Split(basedn,'.');
     for i:=0 to Length(dnparts)-1 do
       dnparts[i] := 'dc='+dnparts[i];
-    basedn := Join(',',dnparts);
+    basedn := tisstrings.Join(',',dnparts);
 
     ldap_basedn:=ini.ReadString('global','ldap_basedn',basedn);
     // 636 : pour Active directory en SSL
@@ -475,9 +475,9 @@ begin
       if ShellExecute(0, nil, pchar(cmd),pchar('-lwarning upgrade'), nil, 0) > 32 then
       //CmdOutput := Sto_RedirectedExecute(cmd);
       //CmdOutput := cmd+'<br>'+StrUtils.StringsReplace(CmdOutput,[#13#10],['<br>'],[rfReplaceAll]);
-        CmdOutput:='process '+Cmd+' launched in background'
+        CmdOutput:='OK : Process '+Cmd+' launched in background'
       else
-        CmdOutput:='ERROR launching process '+Cmd+' in background';
+        CmdOutput:='ERROR Launching process '+Cmd+' in background';
 
       AResponseInfo.ContentText:= '<h2>Output</h2>'+CmdOutput;
     end
@@ -608,7 +608,7 @@ begin
       if StrIsOneOf(ARequestInfo.URI,['/install','/remove']) and
         not StrIsOneOf('wapt-selfservice',groups) then
       begin
-        CmdOutput:='Not authorized to install/remove this package, user "'+ARequestInfo.AuthUsername+'" is not member of "'+'wapt-selfservice'+'"';
+        CmdOutput:='Not authorized to install/remove this package, user "'+ARequestInfo.AuthUsername+'" is not a member of the group "'+'wapt-selfservice'+'"';
       end
       else
       begin

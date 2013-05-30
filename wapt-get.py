@@ -94,6 +94,7 @@ action is either :
   build-upload <directory> : creates a WAPT package from supplied directory, sign it and upload it
   duplicate <directory or package> [<new-package-name> [<new-version> [<target directory>]]]: duplicate an existing package,
                                             changing its name (can be used for duplication of host packages...)
+  edit <package> : download an unzip a package. Open in Explorer the target directory
 
  For repository management
   upload-package  <filenames> : upload package to repository (using winscp for example.)
@@ -256,7 +257,7 @@ def main():
             try:
                 params_dict = json.loads(options.params.replace("'",'"'))
             except:
-                raise Exception('Install Parameters must be in json format')
+                raise Exception('Installation Parameters must be in json format')
 
             # cleanup environement, remove stalled wapt-get, update install_status
             running_install = mywapt.check_install_running(max_ttl=options.max_ttl)
@@ -333,7 +334,7 @@ def main():
                     result.append[PackageEntry().load_control_from_wapt(args[1])]
                 else:
                     if options.update_packages:
-                        print u"Update package list"
+                        print u"Update packages list"
                         mywapt.update()
                     for packagename in args[1:]:
                         result.extend(mywapt.waptdb.packages_matching(packagename))
@@ -448,7 +449,7 @@ def main():
 
             elif action=='upgrade':
                 if options.update_packages:
-                    print u"Update package list"
+                    print u"Update packages list"
                     mywapt.update()
                 # abort if there is already a running install in progress
                 if running_install:
@@ -485,7 +486,7 @@ def main():
 
             elif action=='download-upgrade':
                 if options.update_packages:
-                    print u"Update package list"
+                    print u"Update packages list"
                     mywapt.update()
                 result = mywapt.download_upgrades()
                 if options.json_output:

@@ -75,7 +75,7 @@ from setuphelpers import ensure_unicode
 
 import types
 
-__version__ = "0.6.18"
+__version__ = "0.6.19"
 
 logger = logging.getLogger()
 
@@ -3348,10 +3348,25 @@ def install():
         else:
             newname = newname.lower()
 
+        package_dev_dir = os.path.join(target_directory,newname)+'-%s' % self.config.get('global','default_sources_suffix','wapt')
+
         # download the source package in cache
-        filenames = self.download_packages([packagename])
-        source_filename = (filenames['downloaded'] or filenames['skipped'])[0]
-        source_control = PackageEntry().load_control_from_wapt(source_filename)
+        if os.path.isdir(packagename):
+            source_control = PackageEntry().load_control_from_wapt(packagename)
+            shutil.copytree(packagename,package_dev_dir)
+        elif os.path.isfile(packagename):
+            source_filename = packagename
+            source_control = PackageEntry().load_control_from_wapt(source_filename)
+            logger.info('  unzipping %s to directory %s' % (source_filename,package_dev_dir))
+            zip = ZipFile2(source_filename)
+            zip.extractall(path=package_dev_dir)
+        else:
+            filenames = self.download_packages([packagename])
+            source_filename = (filenames['downloaded'] or filenames['skipped'])[0]
+            source_control = PackageEntry().load_control_from_wapt(source_filename)
+            logger.info('  unzipping %s to directory %s' % (source_filename,package_dev_dir))
+            zip = ZipFile2(source_filename)
+            zip.extractall(path=package_dev_dir)
 
         # duplicate package informations
         dest_control = PackageEntry()
@@ -3370,11 +3385,6 @@ def install():
             dest_control.inc_build()
 
         dest_control.filename = dest_control.make_package_filename()
-
-        package_dev_dir = os.path.join(target_directory,newname)+'-%s' % self.config.get('global','default_sources_suffix','wapt')
-        logger.info('  unzipping %s to directory %s' % (source_filename,package_dev_dir))
-        zip = ZipFile2(source_filename)
-        zip.extractall(path=package_dev_dir)
         dest_control.save_control_to_wapt(package_dev_dir)
 
         # remove manifest and signature

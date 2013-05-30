@@ -22,6 +22,7 @@
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="6"/>
       <RevisionNr Value="19"/>
+      <BuildNr Value="1"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -61,8 +62,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="10"/>
-        <CursorPos X="22" Y="39"/>
+        <TopLine Value="179"/>
+        <CursorPos X="41" Y="197"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -135,10 +136,12 @@
         <Filename Value="tisstrings.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tisstrings"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="241"/>
-        <CursorPos X="1" Y="269"/>
+        <TopLine Value="35"/>
+        <CursorPos X="28" Y="45"/>
         <UsageCount Value="260"/>
+        <Loaded Value="True"/>
       </Unit9>
       <Unit10>
         <Filename Value="tisinifiles.pas"/>
@@ -206,7 +209,7 @@
         <UsageCount Value="7"/>
       </Unit17>
     </Units>
-    <JumpHistory Count="4" HistoryIndex="3">
+    <JumpHistory Count="5" HistoryIndex="4">
       <Position1>
         <Filename Value="waptget.lpr"/>
         <Caret Line="274" Column="42" TopLine="250"/>
@@ -223,6 +226,10 @@
         <Filename Value="waptget.lpr"/>
         <Caret Line="33" Column="12" TopLine="16"/>
       </Position4>
+      <Position5>
+        <Filename Value="tisstrings.pas"/>
+        <Caret Line="269" Column="1" TopLine="241"/>
+      </Position5>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
