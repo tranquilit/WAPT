@@ -13,12 +13,15 @@ type
   TDMWaptTray = class(TDataModule)
     ActForceRegisterComputer: TAction;
     ActConfigure: TAction;
+    ActLaunchGui: TAction;
     ActionList1: TActionList;
     ActQuit: TAction;
     ActShowMain: TAction;
     ActShowStatus: TAction;
     ActUpdate: TAction;
     ActUpgrade: TAction;
+    MenuItem3: TMenuItem;
+    MenuItem7: TMenuItem;
     TrayUpdate: TImageList;
     TrayRunning: TImageList;
     MenuItem1: TMenuItem;
@@ -29,19 +32,18 @@ type
     PopupMenu1: TPopupMenu;
     TrayIcon1: TTrayIcon;
     procedure ActConfigureExecute(Sender: TObject);
-    procedure ActForceRegisterComputerExecute(Sender: TObject);
+    procedure ActLaunchGuiExecute(Sender: TObject);
+    procedure ActLaunchGuiUpdate(Sender: TObject);
     procedure ActQuitExecute(Sender: TObject);
-    procedure ActShowMainExecute(Sender: TObject);
     procedure ActShowStatusExecute(Sender: TObject);
     procedure ActUpdateExecute(Sender: TObject);
     procedure ActUpgradeExecute(Sender: TObject);
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
-    procedure TrayIcon1Click(Sender: TObject);
     procedure TrayIcon1DblClick(Sender: TObject);
   private
     procedure SetTrayIcon(idx: integer);
+    function WinapticFileName: String;
     { private declarations }
   public
     { public declarations }
@@ -175,10 +177,6 @@ end;
 
 { TVisWAPTTray }
 
-procedure TDMWaptTray.ActShowMainExecute(Sender: TObject);
-begin
-end;
-
 procedure TDMWaptTray.ActShowStatusExecute(Sender: TObject);
 begin
   OpenURL('http://localhost:8088/status');
@@ -203,13 +201,8 @@ end;
 
 procedure TDMWaptTray.DataModuleDestroy(Sender: TObject);
 begin
-  check_thread.Terminate;
+  TerminateThread(check_thread.Handle,0);
   FreeAndNil(check_thread);
-end;
-
-procedure TDMWaptTray.ActForceRegisterComputerExecute(Sender: TObject);
-begin
-
 end;
 
 procedure TDMWaptTray.ActConfigureExecute(Sender: TObject);
@@ -217,8 +210,27 @@ begin
   OpenDocument(WaptIniFilename);
 end;
 
+procedure TDMWaptTray.ActLaunchGuiExecute(Sender: TObject);
+var
+  cmd:String;
+begin
+  cmd := WinapticFileName;
+  ShellExecute(0,Pchar('open'),PChar(cmd),Nil,Nil,0);
+end;
+
+function TDMWaptTray.WinapticFileName:String;
+begin
+  result:=AppendPathDelim(ExtractFileDir(ParamStr(0)))+'winaptic.exe';
+end;
+
+procedure TDMWaptTray.ActLaunchGuiUpdate(Sender: TObject);
+begin
+  ActLaunchGui.Enabled:=FileExists(WinapticFileName);
+end;
+
 procedure TDMWaptTray.ActQuitExecute(Sender: TObject);
 begin
+  check_thread.Terminate;
   Application.Terminate;
 end;
 
@@ -237,15 +249,6 @@ begin
   end;
 end;
 
-
-procedure TDMWaptTray.Timer1Timer(Sender: TObject);
-begin
-end;
-
-procedure TDMWaptTray.TrayIcon1Click(Sender: TObject);
-begin
-
-end;
 
 procedure TDMWaptTray.TrayIcon1DblClick(Sender: TObject);
 var

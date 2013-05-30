@@ -51,8 +51,7 @@ object DMWaptTray: TDMWaptTray
     }
     Hint = 'WAPT Service'
     Visible = True
-    OnClick = TrayIcon1Click
-    OnDblClick = TrayIcon1DblClick
+    OnDblClick = ActShowStatusExecute
     left = 108
     top = 47
   end
@@ -72,6 +71,13 @@ object DMWaptTray: TDMWaptTray
     object MenuItem1: TMenuItem
       Action = ActUpgrade
     end
+    object MenuItem7: TMenuItem
+      Caption = '-'
+      Enabled = False
+    end
+    object MenuItem3: TMenuItem
+      Action = ActLaunchGui
+    end
     object MenuItem5: TMenuItem
       Action = ActQuit
     end
@@ -84,28 +90,31 @@ object DMWaptTray: TDMWaptTray
       OnExecute = ActUpgradeExecute
     end
     object ActForceRegisterComputer: TAction
-      Caption = 'Enregistrer l''ordinateur sur le server WAPT'
-      OnExecute = ActForceRegisterComputerExecute
+      Caption = 'Enregistrer l''ordinateur sur le serveur WAPT'
     end
     object ActUpdate: TAction
-      Caption = 'Mettre à jour la liste des packages'
+      Caption = 'Mettre à jour la liste des logiciels'
       OnExecute = ActUpdateExecute
     end
     object ActShowMain: TAction
       Caption = 'Configurer'
-      OnExecute = ActShowMainExecute
     end
     object ActQuit: TAction
       Caption = 'Quitter'
       OnExecute = ActQuitExecute
     end
     object ActShowStatus: TAction
-      Caption = 'Voir status des packages'
+      Caption = 'Voir status des logiciels'
       OnExecute = ActShowStatusExecute
     end
     object ActConfigure: TAction
       Caption = 'Configuration'
       OnExecute = ActConfigureExecute
+    end
+    object ActLaunchGui: TAction
+      Caption = 'Lancer l''interface graphique WAPT'
+      OnExecute = ActLaunchGuiExecute
+      OnUpdate = ActLaunchGuiUpdate
     end
   end
   object TrayUpdate: TImageList
