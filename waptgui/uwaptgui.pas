@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, memds, BufDataset, FileUtil, SynHighlighterPython, SynEdit,
-  SynMemo, GLHeightTileFileHDS, vte_edittree, vte_json, LSControls, Forms,
+  SynMemo, vte_edittree, vte_json, LSControls, Forms,
   Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus,
   EditBtn, AtomPythonEngine, PythonGUIInputOutput, process, fpJson, jsonparser,
   superobject, VirtualTrees;
@@ -48,7 +48,6 @@ type
     EdVersion: TEdit;
     EdRun: TEdit;
     EdSearch: TEdit;
-    GLHeightTileFileHDS1: TGLHeightTileFileHDS;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -112,6 +111,9 @@ type
       State: TDragState; var Accept: Boolean);
     procedure VirtualJSONListView1Edited(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex);
+    procedure VirtualJSONListView1InitNode(Sender: TBaseVirtualTree;
+      ParentNode, Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates
+      );
     procedure VirtualJSONListView1KeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure VirtualJSONListView1NewText(Sender: TBaseVirtualTree;
@@ -191,6 +193,8 @@ procedure TVisWaptGUI.ActInstallExecute(Sender: TObject);
 var
   expr,res:String;
   package:String;
+  i:integer;
+  N : PVirtualNode;
 begin
   if lstPackages.Focused then
   begin
@@ -199,7 +203,16 @@ begin
     ActSearchPackage.Execute;
   end
   else
-  if
+  begin
+    N := VirtualJSONListView1.GetFirstSelected;
+    while N<>Nil do
+    begin
+      package := VirtualJSONListView1.Text[N,0]+' (='+VirtualJSONListView1.Text[N,2]+')';
+      RunJSON(format('mywapt.install("%s")',[package]),jsonlog);
+      N := VirtualJSONListView1.GetNextSelected(N);
+    end;
+    ActSearchPackage.Execute;
+  end;
 end;
 
 procedure TVisWaptGUI.ActEditpackageExecute(Sender: TObject);
@@ -374,6 +387,7 @@ begin
     jsp := TJSONParser.Create(packages.AsJSon);
     VirtualJSONListView1.Data := jsp.Parse;
     VirtualJSONListView1.LoadData;
+    VirtualJSONListView1.Header.AutoFitColumns;
     jsp.Free;
     lstPackages.BeginUpdate;
     if packages.DataType = stArray then
@@ -479,10 +493,16 @@ begin
 
 end;
 
+procedure TVisWaptGUI.VirtualJSONListView1InitNode(Sender: TBaseVirtualTree;
+  ParentNode, Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
+begin
+  InitialStates:=InitialStates + [vsMultiline];
+end;
+
 procedure TVisWaptGUI.VirtualJSONListView1KeyDown(Sender: TObject;
   var Key: Word; Shift: TShiftState);
 begin
-  VirtualJSONListView1.EditNode(VirtualJSONListView1.FocusedNode,VirtualJSONListView1.FocusedColumn);
+  //VirtualJSONListView1.EditNode(VirtualJSONListView1.FocusedNode,VirtualJSONListView1.FocusedColumn);
 end;
 
 procedure TVisWaptGUI.VirtualJSONListView1NewText(Sender: TBaseVirtualTree;

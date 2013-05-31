@@ -687,10 +687,10 @@ object VisWaptGUI: TVisWaptGUI
         ViewStyle = vsReport
       end
       object VirtualJSONListView1: TVirtualJSONListView
-        Left = 348
-        Height = 304
-        Top = 82
-        Width = 552
+        Left = 300
+        Height = 376
+        Top = 18
+        Width = 696
         Color = clWhite
         Header.AutoSizeIndex = 0
         Header.Columns = <        
@@ -698,7 +698,7 @@ object VisWaptGUI: TVisWaptGUI
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
             Position = 0
             Text = 'package'
-            Width = 348
+            Width = 300
             PropertyName = 'package'
           end        
           item
@@ -711,6 +711,7 @@ object VisWaptGUI: TVisWaptGUI
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
             Position = 2
             Text = 'version'
+            Width = 30
             PropertyName = 'version'
           end        
           item
@@ -732,8 +733,9 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 2
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-        TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect]
+        TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
         OnEdited = VirtualJSONListView1Edited
+        OnInitNode = VirtualJSONListView1InitNode
         OnKeyDown = VirtualJSONListView1KeyDown
         OnNewText = VirtualJSONListView1NewText
       end
@@ -1291,11 +1293,5 @@ object VisWaptGUI: TVisWaptGUI
     object MenuItem4: TMenuItem
       Action = ActEditRemove
     end
-  end
-  object GLHeightTileFileHDS1: TGLHeightTileFileHDS
-    MaxPoolSize = 0
-    DefaultHeight = 0
-    left = 104
-    top = 14
   end
 end

@@ -268,7 +268,7 @@ def main():
                     sys.exit(1)
 
                 if os.path.isdir(args[1]) or os.path.isfile(args[1]):
-                    print u"installing WAPT file %s" % args[1]
+                    print u"Installing WAPT file %s" % args[1]
                     if action=='install':
                         # abort if there is already a running install in progress
                         if running_install:
@@ -424,9 +424,9 @@ def main():
                     sys.exit(1)
 
                 for packagename in args[1:]:
-                    print u"uninstalling %s ..." % (packagename,),
+                    print u"Uninstalling %s ..." % (packagename,),
                     print mywapt.uninstall(packagename,params_dict=params_dict)
-                    print u"uninstall done"
+                    print u"Uninstallation done"
 
             elif action=='update':
                 print u"Update package list"

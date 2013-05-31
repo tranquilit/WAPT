@@ -169,23 +169,27 @@ def wgets(url,proxies=None):
         r.raise_for_status()
 
 last_time_display = 0
+last_downloaded = 0
 
 def wget(url,target,reporthook=None,printhook=None,proxies=None):
     """Copy the contents of a file from a given URL
     to a local file.
     """
+
     def report(bcount,bsize,total):
         global last_time_display
+        global last_downloaded
         if total>1 and bsize>1:
             # print only every second or at end
             if (time.time()-last_time_display>=1) or (bcount*bsize>=total) :
                 received = bcount*bsize
-                speed = bsize/(1024*(time.time()-last_time_display))
+                speed = (bcount * bsize - last_downloaded) /(1024*(time.time()-last_time_display))
                 if printhook:
                     printhook(received,total,speed)
                 else:
                     print u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total,speed ),
                 last_time_display = time.time()
+                last_downloaded = bcount * bsize
 
     if os.path.isdir(target):
         target = os.path.join(target,'')
@@ -199,8 +203,6 @@ def wget(url,target,reporthook=None,printhook=None,proxies=None):
     if not os.path.isdir(dir):
         os.makedirs(dir)
 
-    global last_progress_display
-    last_progress_display = 0
     start_time = time.time()
     r = requests.get(url,stream=True, proxies=proxies)
 
@@ -213,6 +215,7 @@ def wget(url,target,reporthook=None,printhook=None,proxies=None):
         if not reporthook:
             reporthook = report
         last_time_display = 0
+        last_downloaded = 0
         reporthook(0,chunk_size,total_bytes)
         cnt = 0
         if r.ok:
@@ -228,7 +231,7 @@ def wget(url,target,reporthook=None,printhook=None,proxies=None):
         output_file.close()
 
     #(localpath,headers) = WaptURLopener(proxies=proxies).retrieve(url=url, filename=os.path.join(dir,filename),reporthook=reporthook or report,)
-    print u"  -> download finished (%.0f Kb/s)" % (total_bytes/(1024.0*(time.time()+1.0-start_time)))
+    print u"  -> download finished (%.0f Kb/s)" % (total_bytes/(1024.0*(time.time()+.001-start_time)))
     return os.path.join(dir,filename)
 
 def filecopyto(filename,target):
@@ -808,6 +811,8 @@ def networking():
     """return a list of (iface,mac,{addr,broadcast,netmask})"""
     import netifaces
     ifaces = netifaces.interfaces()
+    local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
+
     res = []
     for i in ifaces:
         params = netifaces.ifaddresses(i)
@@ -815,6 +820,7 @@ def networking():
             iface = {'iface':i,'mac':params[netifaces.AF_LINK][0]['addr']}
             if netifaces.AF_INET in params:
                 iface.update(params[netifaces.AF_INET][0])
+                iface['connected'] = 'addr' in iface and iface['addr'] in local_ips
             res.append( iface )
     return res
 

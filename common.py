@@ -2472,7 +2472,7 @@ class Wapt(object):
                     self.waptdb.switch_to_explicit_mode(p.package,self.user)
 
             for (request,p) in to_install:
-                print u"install %s" % (p.package,)
+                print u"Installing %s" % (p.package,)
                 result = self.install_wapt(fname(p.filename),
                     params_dict = params_dict,
                     public_cert=self.get_public_cert(repository=p.repo),
