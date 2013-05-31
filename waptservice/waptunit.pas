@@ -366,22 +366,6 @@ begin
   sh.Port:=waptservice_port;
   IdHTTPServer1.Active:=True;
 
-  {with ApythonEngine do
-  begin
-    DllName := 'python27.dll';
-    RegVersion := '2.7';
-    UseLastKnownVersion := False;
-    Py_SetProgramName(PAnsiChar(ParamStr(0)));
-  end;
-
-  // Load main python application
-  try
-    MainModule:=TStringList.Create;
-    MainModule.LoadFromFile(ExtractFilePath(ParamStr(0))+'waptserviceinit.py');
-    APythonEngine.ExecStrings(MainModule);
-  finally
-    MainModule.Free;
-  end;}
 end;
 
 function ChangeQuotes(s:String):String;
@@ -449,17 +433,6 @@ begin
     if ARequestInfo.URI='/waptupgrade' then
     begin
       RunTask(WaptgetPath+' waptupgrade',ExitStatus);
-      //HttpRunTask(AContext,AResponseInfo,WaptgetPath+' waptupgrade',ExitStatus);
-      {UpgradeResult:=RunTask(WaptgetPath+' --upgrade',ExitStatus);
-      AResponseInfo.ContentType:='application/json';
-      SO:=TSuperObject.Create;
-      with so.asObject do
-      begin
-        S['operation'] := 'upgrade';
-        S['output'] := SplitLines(UpgradeResult);
-        I['exitstatus'] := ExitStatus;
-      end;
-      AResponseInfo.ContentText:=so.AsJSon(True);}
     end
     else
     if ARequestInfo.URI='/dumpdb' then
@@ -470,21 +443,16 @@ begin
     else
     if ARequestInfo.URI='/upgrade' then
     begin
-    //HttpRunTask(AContext,AResponseInfo,WaptgetPath+' -e utf8 -lwarning upgrade',ExitStatus)
       cmd := WaptgetPath;
       if ShellExecute(0, nil, pchar(cmd),pchar('-lwarning upgrade'), nil, 0) > 32 then
-      //CmdOutput := Sto_RedirectedExecute(cmd);
-      //CmdOutput := cmd+'<br>'+StrUtils.StringsReplace(CmdOutput,[#13#10],['<br>'],[rfReplaceAll]);
         CmdOutput:='OK : Process '+Cmd+' launched in background'
       else
         CmdOutput:='ERROR Launching process '+Cmd+' in background';
-
       AResponseInfo.ContentText:= '<h2>Output</h2>'+CmdOutput;
     end
     else
     if ARequestInfo.URI='/update' then
     begin
-      //HttpRunTask(AContext,AResponseInfo,WaptgetPath+' -e utf8 -lwarning update',ExitStatus)
       cmd := WaptgetPath+' -lwarning update';
       CmdOutput := Sto_RedirectedExecute(cmd);
       CmdOutput := cmd+'<br>'+StrUtils.StringsReplace(CmdOutput,[#13#10],['<br>'],[rfReplaceAll]);

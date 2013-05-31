@@ -5,7 +5,7 @@ unit uDMWAPTTray;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, ExtCtrls, Menus, ActnList, Controls;
+  Classes, SysUtils, FileUtil, ExtCtrls, Menus, ActnList, Controls,uniqueinstance;
 
 type
 
@@ -31,6 +31,7 @@ type
     MenuItem6: TMenuItem;
     PopupMenu1: TPopupMenu;
     TrayIcon1: TTrayIcon;
+    UniqueInstance1:TUniqueInstance;
     procedure ActConfigureExecute(Sender: TObject);
     procedure ActLaunchGuiExecute(Sender: TObject);
     procedure ActLaunchGuiUpdate(Sender: TObject);
@@ -41,6 +42,8 @@ type
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
     procedure TrayIcon1DblClick(Sender: TObject);
+    procedure UniqueInstance1OtherInstance(Sender: TObject;
+      ParamCount: Integer; Parameters: array of String);
   private
     procedure SetTrayIcon(idx: integer);
     function WinapticFileName: String;
@@ -48,13 +51,14 @@ type
   public
     { public declarations }
     check_thread:TThread;
+    checkinterval:Integer;
   end;
 
 var
   DMWaptTray: TDMWaptTray;
 
 implementation
-uses LCLIntf,Forms,windows,superobject,graphics,tiscommon,waptcommon;
+uses LCLIntf,Forms,windows,superobject,graphics,tiscommon,waptcommon,tisinifiles;
 
 {$R *.lfm}
 type
@@ -72,8 +76,10 @@ type
       previousupgrades:String;
       DMTray:TDMWaptTray;
       running : ISuperObject;
+      checkinterval:integer;
       procedure Execute; override;
       procedure SetTrayStatus;
+      procedure ResetPreviousUpgrades;
   end;
 
 { TCheckThread }
@@ -144,7 +150,7 @@ begin
       end;
     end;
     if not Terminated then
-      Sleep(10000);
+      Sleep(CheckInterval);
   until Terminated;
 end;
 
@@ -175,6 +181,11 @@ begin
     end;
 end;
 
+procedure TCheckThread.ResetPreviousUpgrades;
+begin
+  previousupgrades:='';
+end;
+
 { TVisWAPTTray }
 
 procedure TDMWaptTray.ActShowStatusExecute(Sender: TObject);
@@ -184,18 +195,35 @@ end;
 
 procedure TDMWaptTray.ActUpdateExecute(Sender: TObject);
 begin
+  TCheckThread(check_thread).Synchronize(@TCheckThread(check_thread).ResetPreviousUpgrades);
   OpenURL('http://localhost:8088/update');
+
+  TrayIcon1.BalloonHint:='Mise à jour des logiciels disponibles lancée';
+  TrayIcon1.ShowBalloonHint;
 end;
 
 procedure TDMWaptTray.ActUpgradeExecute(Sender: TObject);
+var
+  res : String;
 begin
-  httpGetString( 'http://localhost:8088/upgrade');
+  TCheckThread(check_thread).Synchronize(@TCheckThread(check_thread).ResetPreviousUpgrades);
+  res := httpGetString( 'http://localhost:8088/upgrade');
+  if pos('ERROR',uppercase(res))<=0 then
+    TrayIcon1.BalloonHint:='Mise à jour des logiciels lancée en tâche de fond...'
+  else
+    TrayIcon1.BalloonHint:='Erreur au lancement de la mise à jour des logiciels...';
+  TrayIcon1.ShowBalloonHint;
 end;
 
 procedure TDMWaptTray.DataModuleCreate(Sender: TObject);
 begin
+  checkinterval:=IniReadInteger(WaptIniFilename,'Global','tray_check_interval')*1000;
+  if checkinterval=0 then
+    checkinterval:=10000;
+
   check_thread :=  TCheckThread.Create(True);
   TCheckThread(check_thread).DMTray := Self;
+  TCheckThread(check_thread).checkinterval:=checkinterval;
   check_thread.Resume;
 end;
 
@@ -251,18 +279,14 @@ end;
 
 
 procedure TDMWaptTray.TrayIcon1DblClick(Sender: TObject);
-var
-  tct:TCheckThread;
 begin
-  {with TCheckThread.Create(True) do
-  try
-    TCheckThread(check_thread).DMTray := Self;
-    TCheckThread(check_thread).previousupgrades:='';
-    check_thread.Resume;
-    check_thread.Terminate;
-  finally
-    Free;
-  end;}
+  TCheckThread(check_thread).Synchronize(@TCheckThread(check_thread).ResetPreviousUpgrades);
+end;
+
+procedure TDMWaptTray.UniqueInstance1OtherInstance(Sender: TObject;
+  ParamCount: Integer; Parameters: array of String);
+begin
+
 end;
 
 end.

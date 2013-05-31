@@ -33,7 +33,6 @@ uses
 Function  Wget(const fileURL, DestFileName: Utf8String): boolean;
 Function  Wget_try(const fileURL: Utf8String): boolean;
 function  httpGetString(url: string): Utf8String;
-procedure httpGetNull(url: string);
 
 procedure httpPostData(const UserAgent: string; const Server: string; const Resource: string; const Data: AnsiString);
 
@@ -277,47 +276,6 @@ begin
   begin
      raise Exception.Create('Unable to download: "'+URL+'", connection refused');
   end;
-end;
-
-
-
-// just launches a process with http request
-procedure httpGetNull(url: string);
-var
-  GlobalhInet,hConn,hRequest: HINTERNET;
-  bResult:Boolean;
-  aURLC: TURLComponents;
-
-begin
-    FillChar(aURLC, SizeOf(TURLComponents), 0);
-    with aURLC do
-    begin
-      lpszScheme := nil;
-      dwSchemeLength := INTERNET_MAX_SCHEME_LENGTH;
-      lpszHostName := nil;
-      dwHostNameLength := INTERNET_MAX_HOST_NAME_LENGTH;
-      lpszUserName := nil;
-      dwUserNameLength := INTERNET_MAX_USER_NAME_LENGTH;
-      lpszPassword := nil;
-      dwPasswordLength := INTERNET_MAX_PASSWORD_LENGTH;
-      lpszUrlPath := nil;
-      dwUrlPathLength := INTERNET_MAX_PATH_LENGTH;
-      lpszExtraInfo := nil;
-      dwExtraInfoLength := INTERNET_MAX_PATH_LENGTH;
-      dwStructSize := SizeOf(aURLC);
-    end;
-    if InternetCrackUrl(PChar(url), 0, 0, aURLC) then
-    begin
-      GlobalhInet := InternetOpen('wapt',
-          INTERNET_OPEN_TYPE_PRECONFIG,nil,nil,0);
-      hConn := InternetConnect(GlobalhInet,pchar('localhost'),aURLC.nPort,aURLC.lpszUserName,aURLC.lpszPassword,INTERNET_SERVICE_HTTP,0,0);
-      hRequest := HttpOpenRequest(hConn,PChar('GET'),aURLC.lpszUrlPath,Nil,Nil,Nil,INTERNET_FLAG_IGNORE_CERT_CN_INVALID or INTERNET_FLAG_NO_CACHE_WRITE
-        or INTERNET_FLAG_PRAGMA_NOCACHE or INTERNET_FLAG_RELOAD ,0);
-      bResult := HttpSendRequest(hRequest, Nil, 0, Nil, 0);
-      if Assigned(hRequest) then InternetCloseHandle(hRequest);
-      if Assigned(hConn) then InternetCloseHandle(hConn);
-      if Assigned(GlobalhInet) then InternetCloseHandle(GlobalhInet);
-    end;
 end;
 
 

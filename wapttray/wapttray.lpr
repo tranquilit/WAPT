@@ -24,11 +24,13 @@ program wapttray;
 {$mode objfpc}{$H+}
 
 uses
+  //heaptrc,
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, uwapttray, waptcommon, soutils, tiscommon, uDMWAPTTray;
+  Forms,
+  uDMWAPTTray,waptcommon, soutils, pl_luicontrols, tiscommon;
 
 {$R *.res}
 

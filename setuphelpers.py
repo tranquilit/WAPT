@@ -932,7 +932,7 @@ def host_info():
     info['workgroup_name'] = windomainname()
     info['networking'] = networking()
     info['connected_ips'] = socket.gethostbyname_ex(socket.gethostname())[2]
-    info['mac'] = [ c['mac'] for c in networking() if 'mac' in c and c['addr'] in info['connected_ips']]
+    info['mac'] = [ c['mac'] for c in networking() if 'mac' in c and 'addr' in c and c['addr'] in info['connected_ips']]
     info['win64'] = iswin64()
     info['description'] = registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\LanmanServer\Parameters','srvcomment')
 

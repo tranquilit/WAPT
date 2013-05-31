@@ -9,7 +9,7 @@ uses
   SynMemo, vte_edittree, vte_json, LSControls, Forms,
   Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus,
   EditBtn, AtomPythonEngine, PythonGUIInputOutput, process, fpJson, jsonparser,
-  superobject, VirtualTrees;
+  superobject, UniqueInstance, VirtualTrees;
 
 type
 
@@ -97,6 +97,7 @@ type
     tvjson: TVirtualJSONInspector;
     tvjson1: TVirtualJSONInspector;
     jsonlog: TVirtualJSONInspector;
+    UniqueInstance1: TUniqueInstance;
     VirtualJSONListView1: TVirtualJSONListView;
     VirtualJSONListView2: TVirtualJSONListView;
     VirtualJSONListView3: TVirtualJSONListView;

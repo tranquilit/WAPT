@@ -47,6 +47,8 @@ interface
   function GetDNSServer:AnsiString;
   function GetDNSDomain:AnsiString;
 
+  function WAPTJsonGet(action:String):ISuperObject;
+
 type
 
   { TWAPTDB }
@@ -143,6 +145,14 @@ begin
   finally
     reg.Free;
   end;
+end;
+
+function WAPTJsonGet(action: String): ISuperObject;
+var
+  strresult : String;
+begin
+  strresult:=httpGetString(GetWaptServerURL+action);
+  Result := SO(strresult);
 end;
 
 function GetMainWaptRepo: String;

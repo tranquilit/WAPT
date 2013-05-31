@@ -1172,9 +1172,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 400
         Top = 34
         Width = 572
-        ActivePage = pgSoftwares
+        ActivePage = pgHostPackage
         Align = alClient
-        TabIndex = 2
+        TabIndex = 0
         TabOrder = 2
         object pgHostPackage: TTabSheet
           Caption = 'Configuration machine'
@@ -1498,5 +1498,9 @@ object VisWaptGUI: TVisWaptGUI
     object MenuItem4: TMenuItem
       Action = ActEditRemove
     end
+  end
+  object UniqueInstance1: TUniqueInstance
+    left = 632
+    top = 144
   end
 end
