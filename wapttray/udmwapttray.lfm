@@ -358,7 +358,6 @@ object DMWaptTray: TDMWaptTray
   object UniqueInstance1: TUniqueInstance
     Enabled = True
     Identifier = 'wapttray'
-    OnOtherInstance = UniqueInstance1OtherInstance
     left = 177
     top = 147
   end

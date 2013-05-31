@@ -451,6 +451,16 @@ begin
       AResponseInfo.ContentText:= '<h2>Output</h2>'+CmdOutput;
     end
     else
+    if ARequestInfo.URI='/updatebg' then
+    begin
+      cmd := WaptgetPath;
+      if ShellExecute(0, nil, pchar(cmd),pchar('-lwarning update'), nil, 0) > 32 then
+        CmdOutput:='OK : Process '+Cmd+' launched in background'
+      else
+        CmdOutput:='ERROR Launching process '+Cmd+' in background';
+      AResponseInfo.ContentText:= '<h2>Output</h2>'+CmdOutput;
+    end
+    else
     if ARequestInfo.URI='/update' then
     begin
       cmd := WaptgetPath+' -lwarning update';

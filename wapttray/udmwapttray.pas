@@ -42,8 +42,6 @@ type
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
     procedure TrayIcon1DblClick(Sender: TObject);
-    procedure UniqueInstance1OtherInstance(Sender: TObject;
-      ParamCount: Integer; Parameters: array of String);
   private
     procedure SetTrayIcon(idx: integer);
     function WinapticFileName: String;
@@ -279,14 +277,16 @@ end;
 
 
 procedure TDMWaptTray.TrayIcon1DblClick(Sender: TObject);
+var
+  res:String;
 begin
   TCheckThread(check_thread).Synchronize(@TCheckThread(check_thread).ResetPreviousUpgrades);
-end;
-
-procedure TDMWaptTray.UniqueInstance1OtherInstance(Sender: TObject;
-  ParamCount: Integer; Parameters: array of String);
-begin
-
+  res := httpGetString( 'http://localhost:8088/updatebg');
+  if pos('ERROR',uppercase(res))<=0 then
+    TrayIcon1.BalloonHint:='Vérification en cours...'
+  else
+    TrayIcon1.BalloonHint:='Erreur au lancement de la vérification...';
+  TrayIcon1.ShowBalloonHint;
 end;
 
 end.
