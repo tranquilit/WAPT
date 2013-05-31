@@ -14,9 +14,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 460
     Top = 0
     Width = 1028
-    ActivePage = TabSheet2
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 1
+    TabIndex = 5
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Sources'
@@ -1091,6 +1091,211 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgInventory: TTabSheet
       Caption = 'Inventaire'
+      ClientHeight = 434
+      ClientWidth = 1020
+      object Panel10: TPanel
+        Left = 0
+        Height = 34
+        Top = 0
+        Width = 1020
+        Align = alTop
+        ClientHeight = 34
+        ClientWidth = 1020
+        TabOrder = 0
+        object Edit1: TEdit
+          Left = 60
+          Height = 21
+          Top = 6
+          Width = 136
+          TabOrder = 0
+        end
+        object Label5: TLabel
+          Left = 4
+          Height = 13
+          Top = 10
+          Width = 51
+          Caption = 'Recherche'
+          ParentColor = False
+        end
+        object CheckBox1: TCheckBox
+          Left = 228
+          Height = 17
+          Top = 10
+          Width = 151
+          Caption = 'Nécessite des mises à jours'
+          TabOrder = 1
+        end
+        object CheckBox2: TCheckBox
+          Left = 404
+          Height = 17
+          Top = 10
+          Width = 102
+          Caption = 'Avec des erreurs'
+          TabOrder = 2
+        end
+      end
+      object GridHosts: TVirtualJSONListView
+        Left = 0
+        Height = 400
+        Top = 34
+        Width = 448
+        Align = alLeft
+        Color = clWhite
+        Header.AutoSizeIndex = -1
+        Header.Columns = <        
+          item
+            Position = 0
+          end        
+          item
+            Position = 1
+          end        
+          item
+            Position = 2
+          end>
+        Header.DefaultHeight = 17
+        Header.MainColumn = 1
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
+        Header.Style = hsFlatButtons
+        PopupMenu = PopupMenuPackages
+        TabOrder = 1
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+        TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+        OnChange = GridHostsChange
+        OnEdited = VirtualJSONListView1Edited
+        OnInitNode = VirtualJSONListView1InitNode
+        OnKeyDown = VirtualJSONListView1KeyDown
+        OnNewText = VirtualJSONListView1NewText
+      end
+      object PageControl2: TPageControl
+        Left = 448
+        Height = 400
+        Top = 34
+        Width = 572
+        ActivePage = pgSoftwares
+        Align = alClient
+        TabIndex = 2
+        TabOrder = 2
+        object pgHostPackage: TTabSheet
+          Caption = 'Configuration machine'
+        end
+        object pgPackages: TTabSheet
+          Caption = 'Packages'
+          ClientHeight = 374
+          ClientWidth = 564
+          object VirtualJSONListView2: TVirtualJSONListView
+            Left = 0
+            Height = 376
+            Top = 0
+            Width = 544
+            Color = clWhite
+            Header.AutoSizeIndex = 0
+            Header.Columns = <            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 0
+                Text = 'package'
+                Width = 300
+                PropertyName = 'package'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 1
+                Text = 'status'
+                PropertyName = 'status'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 2
+                Text = 'version'
+                Width = 30
+                PropertyName = 'version'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 3
+                Text = 'description'
+                PropertyName = 'description'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 4
+                Text = 'depends'
+                PropertyName = 'depends'
+              end>
+            Header.DefaultHeight = 17
+            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
+            Header.Style = hsFlatButtons
+            PopupMenu = PopupMenuPackages
+            TabOrder = 0
+            TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+            TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+            TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+            OnEdited = VirtualJSONListView1Edited
+            OnInitNode = VirtualJSONListView1InitNode
+            OnKeyDown = VirtualJSONListView1KeyDown
+            OnNewText = VirtualJSONListView1NewText
+          end
+        end
+        object pgSoftwares: TTabSheet
+          Caption = 'Logiciels installés'
+          ClientHeight = 374
+          ClientWidth = 564
+          object VirtualJSONListView3: TVirtualJSONListView
+            Left = 0
+            Height = 376
+            Top = 0
+            Width = 544
+            Color = clWhite
+            Header.AutoSizeIndex = 0
+            Header.Columns = <            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 0
+                Text = 'package'
+                Width = 300
+                PropertyName = 'package'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 1
+                Text = 'status'
+                PropertyName = 'status'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 2
+                Text = 'version'
+                Width = 30
+                PropertyName = 'version'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 3
+                Text = 'description'
+                PropertyName = 'description'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 4
+                Text = 'depends'
+                PropertyName = 'depends'
+              end>
+            Header.DefaultHeight = 17
+            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
+            Header.Style = hsFlatButtons
+            PopupMenu = PopupMenuPackages
+            TabOrder = 0
+            TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+            TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+            TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+            OnEdited = VirtualJSONListView1Edited
+            OnInitNode = VirtualJSONListView1InitNode
+            OnKeyDown = VirtualJSONListView1KeyDown
+            OnNewText = VirtualJSONListView1NewText
+          end
+        end
+      end
     end
   end
   object Panel3: TPanel

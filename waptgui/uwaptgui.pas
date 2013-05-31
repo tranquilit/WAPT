@@ -40,6 +40,9 @@ type
     Button4: TButton;
     Button5: TButton;
     cbShowLog: TCheckBox;
+    CheckBox1: TCheckBox;
+    CheckBox2: TCheckBox;
+    Edit1: TEdit;
     EdSection: TComboBox;
     Eddescription: TEdit;
     EdSearch1: TEdit;
@@ -48,10 +51,12 @@ type
     EdVersion: TEdit;
     EdRun: TEdit;
     EdSearch: TEdit;
+    GridHosts: TVirtualJSONListView;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
+    Label5: TLabel;
     lstPackages: TListView;
     lstDepends: TListView;
     lstPackages1: TListView;
@@ -61,7 +66,9 @@ type
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
     PageControl1: TPageControl;
+    PageControl2: TPageControl;
     Panel1: TPanel;
+    Panel10: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
     Panel4: TPanel;
@@ -83,11 +90,16 @@ type
     TabSheet4: TTabSheet;
     pgEditPackage: TTabSheet;
     pgInventory: TTabSheet;
+    pgPackages: TTabSheet;
+    pgSoftwares: TTabSheet;
+    pgHostPackage: TTabSheet;
     testedit: TSynEdit;
     tvjson: TVirtualJSONInspector;
     tvjson1: TVirtualJSONInspector;
     jsonlog: TVirtualJSONInspector;
     VirtualJSONListView1: TVirtualJSONListView;
+    VirtualJSONListView2: TVirtualJSONListView;
+    VirtualJSONListView3: TVirtualJSONListView;
     procedure ActBuildUploadExecute(Sender: TObject);
     procedure ActEditpackageExecute(Sender: TObject);
     procedure ActEditRemoveExecute(Sender: TObject);
@@ -106,6 +118,7 @@ type
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure lstDependsDragDrop(Sender, Source: TObject; X, Y: Integer);
     procedure lstDependsDragOver(Sender, Source: TObject; X, Y: Integer;
       State: TDragState; var Accept: Boolean);
@@ -455,6 +468,12 @@ procedure TVisWaptGUI.FormDestroy(Sender: TObject);
 begin
   if Assigned(jsondata) then
     FreeAndNil(jsondata);
+end;
+
+procedure TVisWaptGUI.GridHostsChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+begin
+
 end;
 
 procedure TVisWaptGUI.lstDependsDragDrop(Sender, Source: TObject; X, Y: Integer
