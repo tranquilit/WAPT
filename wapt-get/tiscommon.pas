@@ -57,6 +57,7 @@ function GetDomainName: AnsiString;
 
 function UserLogin(user,password,domain:String):THandle;
 function UserDomain(htoken:THandle):String;
+function OnSystemAccount: Boolean;
 
 
 function GetGroups(srvName, usrName: WideString):TDynStringArray;
@@ -1230,6 +1231,23 @@ begin
     raise EXCEPTION.Create('Unable to login as '+user+' on domain '+domain);
   result := htok;
 end;
+
+function OnSystemAccount(): Boolean;
+const
+  cnMaxNameLen = 254;
+var
+  sName: string;
+  dwNameLen: DWORD;
+begin
+  dwNameLen := cnMaxNameLen - 1;
+  SetLength(sName, cnMaxNameLen);
+  windows.GetUserName(PChar(sName), dwNameLen);
+  SetLength(sName, dwNameLen);
+  if UpperCase(Trim(sName)) = 'SYSTEM' then Result := True
+  else
+    Result := False;
+end;
+
 
 function UserDomain(htoken:THandle):String;
 var

@@ -21,10 +21,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uwaptgui"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="50" Y="6"/>
+        <TopLine Value="502"/>
+        <CursorPos X="5" Y="519"/>
         <UsageCount Value="117"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -235,19 +236,16 @@
       <Unit28>
         <Filename Value="C:\codetyphon\lazarus\components\pl_LuiControls\source\uniqueinstance\uniqueinstance.pas"/>
         <UnitName Value="UniqueInstance"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="105"/>
-        <CursorPos X="25" Y="158"/>
+        <CursorPos X="87" Y="122"/>
         <UsageCount Value="16"/>
-        <Loaded Value="True"/>
       </Unit28>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="23" HistoryIndex="22">
+    <JumpHistory Count="25" HistoryIndex="24">
       <Position1>
         <Filename Value="uwaptgui.pas"/>
         <Caret Line="10" Column="37" TopLine="1"/>
@@ -340,10 +338,18 @@
         <Filename Value="uwaptgui.pas"/>
         <Caret Line="6" Column="50" TopLine="1"/>
       </Position23>
+      <Position24>
+        <Filename Value="uwaptgui.pas"/>
+        <Caret Line="352" Column="35" TopLine="343"/>
+      </Position24>
+      <Position25>
+        <Filename Value="uwaptgui.pas"/>
+        <Caret Line="246" Column="23" TopLine="232"/>
+      </Position25>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
-    <BreakPoints Count="2">
+    <BreakPoints Count="1">
       <Item1>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
@@ -351,13 +357,6 @@
         <Source Value="..\waptserviceapp\uvisappwaptservice.pas"/>
         <Line Value="129"/>
       </Item1>
-      <Item2>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="uwaptgui.pas"/>
-        <Line Value="245"/>
-      </Item2>
     </BreakPoints>
   </Debugging>
   <EditorMacros Count="0"/>

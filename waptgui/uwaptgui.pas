@@ -242,7 +242,7 @@ begin
     result := RunJSON(format('mywapt.edit_package("%s")',[package]),jsonlog);
     {if DirectoryExists(result.S['target']) then
       OpenDocument(Format('%s\WAPT\control',[result.S['target']]));}
-    //EditPackage( );
+    EditPackage(result);
   end;
 end;
 
@@ -516,7 +516,7 @@ end;
 procedure TVisWaptGUI.VirtualJSONListView1InitNode(Sender: TBaseVirtualTree;
   ParentNode, Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
 begin
-  InitialStates:=InitialStates + [vsMultiline];
+  //InitialStates:=InitialStates + [vsMultiline];
 end;
 
 procedure TVisWaptGUI.VirtualJSONListView1KeyDown(Sender: TObject;

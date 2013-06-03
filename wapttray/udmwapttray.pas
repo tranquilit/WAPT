@@ -9,6 +9,8 @@ uses
 
 type
 
+  TTrayMode = (tmOK,tmRunning,tmUpgrades,tmErrors);
+
   { TDMWaptTray }
   TDMWaptTray = class(TDataModule)
     ActForceRegisterComputer: TAction;
@@ -50,6 +52,7 @@ type
     { public declarations }
     check_thread:TThread;
     checkinterval:Integer;
+    trayMode:TTrayMode;
   end;
 
 var
@@ -65,15 +68,14 @@ type
 
   TCheckThread = Class(TThread)
     public
-      new_updates,new_upgrades,runstatus : String;
+      new_updates,new_runstatus : String;
       new_hint:String;
       new_ballon:String;
-      animate_upgrade,
-      animate_running:Boolean;
+      new_traymode:TTrayMode;
       icon_idx:integer;
-      previousupgrades:String;
+      previous_runstatus:String;
       DMTray:TDMWaptTray;
-      running : ISuperObject;
+      previous_upgrades,upgrades,running : ISuperObject;
       checkinterval:integer;
       procedure Execute; override;
       procedure SetTrayStatus;
@@ -84,66 +86,73 @@ type
 
 procedure TCheckThread.Execute;
 var
-  sob,rs:ISuperObject;
+  upgrade_status:ISuperObject;
 begin
   repeat
     try
       new_hint :='';
       new_ballon:='';
-      animate_running := False;
-      animate_upgrade := False;
       icon_idx:=-1;
 
+      if previous_upgrades=Nil then
+        previous_upgrades := TSuperObject.Create(stArray);
+
       //test running tasks first
-      runstatus := httpGetString('http://localhost:8088/runstatus');
-      rs := SO(runstatus);
-      if rs.S['value']<>'' then
+      new_runstatus := WAPTLocalJsonGet('runstatus').S['value'];
+      if new_runstatus<>'' then
       begin
-        animate_running :=True;
-        new_hint:=rs.S['value'];
+        new_traymode:=tmRunning;
+        new_hint:=new_runstatus;
       end
       else
       begin
-        new_updates := httpGetString('http://localhost:8088/checkupgrades');
-        sob := SO(new_updates);
-        running := sob['running_tasks'];
-        new_upgrades := sob.S['upgrades'];
+        // Then check if new upgrades are available
+        upgrade_status := WAPTLocalJsonGet('checkupgrades');
+        running := upgrade_status['running_tasks'];
+        upgrades := upgrade_status['upgrades'];
 
         if (running<>Nil) and (running.AsArray.Length>0) then
         begin
-          animate_running :=True;
+          new_traymode:=tmRunning;
           new_hint:='Installation en cours : '+running.AsString;
         end
         else
-        if new_upgrades<>'[]' then
+        if (upgrades<>Nil) and (upgrades.AsArray.Length>0) then
         begin
-          animate_upgrade :=True;
-          new_hint:='Mises à jour disponibles pour : '+new_upgrades;
+          new_traymode:=tmUpgrades;
+          new_hint:='Mises à jour disponibles pour : '+upgrades.AsJson;
         end
         else
         begin
           new_hint:='Système à jour';
-          icon_idx:=0;
+          new_traymode:=tmOK;
         end;
+      end;
 
-        if new_upgrades<>previousupgrades then
-        begin
-          if (new_upgrades<>'[]') and (Length(new_upgrades)>length(previousupgrades)) then
-            new_ballon:='Nouvelles mises à jour disponibles'
-          else
-            if (running<>Nil) and (running.AsArray.Length>0) then
-              new_ballon:='Installation en cours : '+running.AsString
-            else if (new_upgrades='[]') then
-              new_ballon:='Système à jour';
-          previousupgrades:=new_upgrades;
-        end;
+      // show balloon if run_status has changed
+      if (new_runstatus<>previous_runstatus) and (new_runstatus<>'') then
+      begin
+        new_ballon:=new_runstatus;
+        previous_runstatus:=new_runstatus;
+      end
+      else
+      if (upgrades.AsJSon<>previous_upgrades.AsJSon) then
+      begin
+        if upgrades.AsArray.Length>previous_upgrades.AsArray.Length then
+          new_ballon:='Nouvelles mises à jour disponibles'
+        else
+          if (running<>Nil) and (running.AsArray.Length>0) then
+            new_ballon:='Installation en cours : '+running.AsString
+          else if upgrades.AsArray.Length=0 then
+            new_ballon:='Système à jour';
+        previous_upgrades:= upgrades;
       end;
       Synchronize(@SetTrayStatus);
     except
       on e:Exception do
       begin
         new_hint:='Impossible d''obtenir le status de mise à jour'+#13#10+e.Message;
-        icon_idx := 1;
+        new_traymode:=tmErrors;
         Synchronize(@SetTrayStatus);
       end;
     end;
@@ -154,47 +163,59 @@ end;
 
 procedure TCheckThread.SetTrayStatus;
 begin
-    if animate_running then
+  if new_traymode<>DMTray.trayMode  then
+  begin
+    if new_traymode = tmOK then
+      DMTray.SetTrayIcon(0)
+    else
+    if new_traymode = tmRunning then
     begin
       DMTray.TrayIcon1.Icons := DMTray.TrayRunning;
       DMTray.TrayIcon1.Animate:=True;
     end
     else
-    if animate_upgrade then
+    if new_traymode = tmUpgrades then
     begin
       DMTray.TrayIcon1.Icons := DMTray.TrayUpdate;
       DMTray.TrayIcon1.Animate:=True;
     end
     else
-    if icon_idx>=0 then
-      DMTray.SetTrayIcon(icon_idx);
-
-    if new_hint<>'' then
-      DMTray.TrayIcon1.Hint:=new_hint;
-
-    if new_ballon<>'' then
+    if new_traymode = tmErrors then
     begin
-      DMTray.TrayIcon1.BalloonHint:=new_ballon;
-      DMTray.TrayIcon1.ShowBalloonHint;
+      DMTray.TrayIcon1.Icons := DMTray.TrayUpdate;
+      DMTray.TrayIcon1.Animate:=False;
+      DMTray.SetTrayIcon(1);
     end;
+    DMTray.trayMode := new_traymode;
+  end;
+
+  if new_hint<>'' then
+    DMTray.TrayIcon1.Hint:=new_hint;
+
+  if new_ballon<>'' then
+  begin
+    DMTray.TrayIcon1.BalloonHint:=new_ballon;
+    DMTray.TrayIcon1.ShowBalloonHint;
+  end;
+
 end;
 
 procedure TCheckThread.ResetPreviousUpgrades;
 begin
-  previousupgrades:='';
+  previous_upgrades := TSuperObject.Create(stArray);
 end;
 
 { TVisWAPTTray }
 
 procedure TDMWaptTray.ActShowStatusExecute(Sender: TObject);
 begin
-  OpenURL('http://localhost:8088/status');
+  OpenURL(GetWaptLocalURL+'/status');
 end;
 
 procedure TDMWaptTray.ActUpdateExecute(Sender: TObject);
 begin
   TCheckThread(check_thread).Synchronize(@TCheckThread(check_thread).ResetPreviousUpgrades);
-  OpenURL('http://localhost:8088/update');
+  OpenURL(GetWaptLocalURL+'/update');
 
   TrayIcon1.BalloonHint:='Mise à jour des logiciels disponibles lancée';
   TrayIcon1.ShowBalloonHint;
@@ -205,7 +226,7 @@ var
   res : String;
 begin
   TCheckThread(check_thread).Synchronize(@TCheckThread(check_thread).ResetPreviousUpgrades);
-  res := httpGetString( 'http://localhost:8088/upgrade');
+  res := httpGetString(GetWaptLocalURL+'/upgrade');
   if pos('ERROR',uppercase(res))<=0 then
     TrayIcon1.BalloonHint:='Mise à jour des logiciels lancée en tâche de fond...'
   else
@@ -281,7 +302,7 @@ var
   res:String;
 begin
   TCheckThread(check_thread).Synchronize(@TCheckThread(check_thread).ResetPreviousUpgrades);
-  res := httpGetString( 'http://localhost:8088/updatebg');
+  res := httpGetString(GetWaptLocalURL+'/updatebg');
   if pos('ERROR',uppercase(res))<=0 then
     TrayIcon1.BalloonHint:='Vérification en cours...'
   else

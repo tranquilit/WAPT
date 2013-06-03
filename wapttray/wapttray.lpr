@@ -35,6 +35,8 @@ uses
 {$R *.res}
 
 begin
+  if OnSystemAccount then
+    Exit;
   RequireDerivedFormResource := True;
   Application.Initialize;
   Application.CreateForm(TDMWaptTray, DMWaptTray);

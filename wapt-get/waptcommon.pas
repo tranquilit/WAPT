@@ -34,6 +34,9 @@ interface
   Function  GetWaptServerURL:String;
   function  GetLDAPServer(dnsdomain:String=''): String;
 
+  Function  GetWaptLocalURL:String;
+
+
   function WaptIniFilename: Utf8String;
   function WaptgetPath: Utf8String;
   function WaptservicePath: Utf8String;
@@ -47,7 +50,8 @@ interface
   function GetDNSServer:AnsiString;
   function GetDNSDomain:AnsiString;
 
-  function WAPTJsonGet(action:String):ISuperObject;
+  function WAPTServerJsonGet(action:String):ISuperObject;
+  function WAPTLocalJsonGet(action:String):ISuperObject;
 
 type
 
@@ -147,11 +151,23 @@ begin
   end;
 end;
 
-function WAPTJsonGet(action: String): ISuperObject;
+function WAPTServerJsonGet(action: String): ISuperObject;
 var
   strresult : String;
 begin
+  if StrLeft(action,1)<>'/' then
+    action := '/'+action;
   strresult:=httpGetString(GetWaptServerURL+action);
+  Result := SO(strresult);
+end;
+
+function WAPTLocalJsonGet(action: String): ISuperObject;
+var
+  strresult : String;
+begin
+  if StrLeft(action,1)<>'/' then
+    action := '/'+action;
+  strresult:=httpGetString(GetWaptLocalURL+action);
   Result := SO(strresult);
 end;
 
@@ -306,6 +322,11 @@ end;
 function GetWaptServerURL: String;
 begin
   result := IniReadString(WaptIniFilename,'Global','wapt_server');
+end;
+
+function GetWaptLocalURL: String;
+begin
+  result := format('http://127.0.0.1:%d',[waptservice_port]);
 end;
 
 function WaptgetPath: Utf8String;
