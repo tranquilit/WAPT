@@ -23,8 +23,8 @@ default_sources_suffix=wapt
 # example if you have cygwin : 
 #   create key : c:\cygwin\bin\ssh localhost ssh-keygen   
 #   copy key :   c:\cygwin\bin\ssh localhost ssh-copy-id -i ~/.ssh/id_dsa root@srvwapt
-upload_cmd="c:\Program Files"\putty\pscp -v -l root %(waptfile)s srvwapt:/var/www/wapt/ 
-after_upload="c:\Program Files"\putty\plink -v -l root srvwapt "python /var/www/wapt/wapt-scanpackages.py /var/www/wapt/"
+upload_cmd="c:\Program Files"\putty\pscp -v -l root %(waptfile)s srvwapt:/var/www/%(waptdir)s/ 
+after_upload="c:\Program Files"\putty\plink -v -l root srvwapt "python /var/www/wapt/wapt-scanpackages.py /var/www/%(waptdir)s/"
 
 # define a wapt_server only if one is running
 #wapt_server=http://wapt.tranquil.it/waptserver

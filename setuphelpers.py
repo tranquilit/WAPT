@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.6.19"
+__version__ = "0.6.20.1"
 
 import os
 import sys
@@ -553,7 +553,10 @@ def get_domain_fromregistry():
         if domain=='':
             (domain,atype) = _winreg.QueryValueEx(key,'DhcpDomain')
     except:
-        (domain,atype) = _winreg.QueryValueEx(key,'DhcpDomain')
+        try:
+            (domain,atype) = _winreg.QueryValueEx(key,'DhcpDomain')
+        except:
+            domain = None
     return domain
 
 def get_loggedinusers():
@@ -661,7 +664,7 @@ def registry_setstring(root,path,keyname,value,type=_winreg.REG_SZ):
         value   : string to put in keyname
     the path can be either with backslash or slash"""
     path = path.replace(u'/',u'\\')
-    key = reg_openkey_noredir(root,path)
+    key = reg_openkey_noredir(root,path,sam=KEY_WRITE,create_if_missing=True)
     result = reg_setvalue(key,keyname,value,type=type)
     return result
 

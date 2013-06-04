@@ -243,39 +243,45 @@ var
 
 begin
   result := '';
-  //if not Assigned(GlobalhInet) then
-    GlobalhInet := InternetOpen('wapt',
+  GlobalhInet:=Nil;
+  hFile:=Nil;
+  GlobalhInet := InternetOpen('wapt',
       INTERNET_OPEN_TYPE_PRECONFIG,nil,nil,0);
-  hFile := InternetOpenURL(GlobalhInet,PChar(url),nil,0,
-    INTERNET_FLAG_IGNORE_CERT_CN_INVALID or INTERNET_FLAG_NO_CACHE_WRITE
-    or INTERNET_FLAG_PRAGMA_NOCACHE or INTERNET_FLAG_RELOAD+INTERNET_FLAG_KEEP_CONNECTION ,0);
-  if Assigned(hFile) then
   try
-    dwIndex  := 0;
-    dwCodeLen := 10;
-    HttpQueryInfo(hFile, HTTP_QUERY_STATUS_CODE, @dwcode, dwcodeLen, dwIndex);
-    res := pchar(@dwcode);
-    dwNumber := sizeof(Buffer)-1;
-    if (res ='200') or (res ='302') then
-    begin
-      Result:='';
-      pos:=1;
-      repeat
-        FillChar(buffer,SizeOf(buffer),0);
-        InternetReadFile(hFile,@buffer,SizeOf(buffer),bytesRead);
-        SetLength(Result,Length(result)+bytesRead+1);
-        Move(Buffer,Result[pos],bytesRead);
-        inc(pos,bytesRead);
-      until bytesRead = 0;
+    hFile := InternetOpenURL(GlobalhInet,PChar(url),nil,0,
+      INTERNET_FLAG_IGNORE_CERT_CN_INVALID or INTERNET_FLAG_NO_CACHE_WRITE
+      or INTERNET_FLAG_PRAGMA_NOCACHE or INTERNET_FLAG_RELOAD,0);
+    if Assigned(hFile) then
+    try
+      dwIndex  := 0;
+      dwCodeLen := 10;
+      HttpQueryInfo(hFile, HTTP_QUERY_STATUS_CODE, @dwcode, dwcodeLen, dwIndex);
+      res := pchar(@dwcode);
+      dwNumber := sizeof(Buffer)-1;
+      if (res ='200') or (res ='302') then
+      begin
+        Result:='';
+        pos:=1;
+        repeat
+          FillChar(buffer,SizeOf(buffer),0);
+          InternetReadFile(hFile,@buffer,SizeOf(buffer),bytesRead);
+          SetLength(Result,Length(result)+bytesRead+1);
+          Move(Buffer,Result[pos],bytesRead);
+          inc(pos,bytesRead);
+        until bytesRead = 0;
+      end
+      else
+         raise Exception.Create('Unable to download: "'+URL+'", HTTP Status:'+res);
+    finally
+      if Assigned(hFile) then
+        InternetCloseHandle(hFile);
     end
     else
-       raise Exception.Create('Unable to download: "'+URL+'", HTTP Status:'+res);
+       raise Exception.Create('Unable to download: "'+URL+'", connection refused');
+
   finally
-    InternetCloseHandle(hFile);
-  end
-  else
-  begin
-     raise Exception.Create('Unable to download: "'+URL+'", connection refused');
+    if Assigned(GlobalhInet) then
+      InternetCloseHandle(GlobalhInet);
   end;
 end;
 

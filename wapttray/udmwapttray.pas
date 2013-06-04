@@ -70,13 +70,14 @@ type
     public
       new_updates,new_runstatus : String;
       new_hint:String;
-      new_ballon:String;
+      new_balloon:String;
       new_traymode:TTrayMode;
       icon_idx:integer;
       previous_runstatus:String;
       DMTray:TDMWaptTray;
-      previous_upgrades,upgrades,running : ISuperObject;
+      previous_upgrades,upgrades,running,errors : ISuperObject;
       checkinterval:integer;
+      force_balloon :Boolean;
       procedure Execute; override;
       procedure SetTrayStatus;
       procedure ResetPreviousUpgrades;
@@ -91,7 +92,7 @@ begin
   repeat
     try
       new_hint :='';
-      new_ballon:='';
+      new_balloon:='';
       icon_idx:=-1;
 
       if previous_upgrades=Nil then
@@ -110,6 +111,7 @@ begin
         upgrade_status := WAPTLocalJsonGet('checkupgrades');
         running := upgrade_status['running_tasks'];
         upgrades := upgrade_status['upgrades'];
+        errors := upgrade_status['errors'];
 
         if (running<>Nil) and (running.AsArray.Length>0) then
         begin
@@ -123,6 +125,12 @@ begin
           new_hint:='Mises à jour disponibles pour : '+upgrades.AsJson;
         end
         else
+        if (errors<>Nil) and (errors.AsArray.Length>0) then
+        begin
+          new_hint:='Erreurs : '+errors.AsJson;
+          new_traymode:=tmErrors;
+        end
+        else
         begin
           new_hint:='Système à jour';
           new_traymode:=tmOK;
@@ -132,20 +140,21 @@ begin
       // show balloon if run_status has changed
       if (new_runstatus<>previous_runstatus) and (new_runstatus<>'') then
       begin
-        new_ballon:=new_runstatus;
+        new_balloon:=new_runstatus;
         previous_runstatus:=new_runstatus;
       end
       else
-      if (upgrades.AsJSon<>previous_upgrades.AsJSon) then
+      if (upgrades.AsJSon<>previous_upgrades.AsJSon) or force_balloon then
       begin
         if upgrades.AsArray.Length>previous_upgrades.AsArray.Length then
-          new_ballon:='Nouvelles mises à jour disponibles'
+          new_balloon:='Nouvelles mises à jour disponibles'
         else
           if (running<>Nil) and (running.AsArray.Length>0) then
-            new_ballon:='Installation en cours : '+running.AsString
+            new_balloon:='Installation en cours : '+running.AsString
           else if upgrades.AsArray.Length=0 then
-            new_ballon:='Système à jour';
+            new_balloon:='Système à jour';
         previous_upgrades:= upgrades;
+        force_balloon := False;
       end;
       Synchronize(@SetTrayStatus);
     except
@@ -192,17 +201,17 @@ begin
   if new_hint<>'' then
     DMTray.TrayIcon1.Hint:=new_hint;
 
-  if new_ballon<>'' then
+  if new_balloon<>'' then
   begin
-    DMTray.TrayIcon1.BalloonHint:=new_ballon;
+    DMTray.TrayIcon1.BalloonHint:=new_balloon;
     DMTray.TrayIcon1.ShowBalloonHint;
   end;
-
 end;
 
 procedure TCheckThread.ResetPreviousUpgrades;
 begin
   previous_upgrades := TSuperObject.Create(stArray);
+  force_balloon:=True;
 end;
 
 { TVisWAPTTray }

@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.6.19"
+__version__ = "0.6.20"
 
 import sys
 import os
@@ -632,7 +632,7 @@ def main():
                                 else:
                                     print "Don't forget to update Packages index on repository !"
                 else:
-                    print u'\nYou can upload to repository with\n  %s upload-package %s ' % (sys.argv[0],'"%s"' % (' '.join(packages),) )
+                    print u'\nYou can upload to repository with\n  %s upload-package %s ' % (sys.argv[0],'"%s"' % (' '.join([p['filename'] for p in packages]),) )
 
             elif action=='sign-package':
                 if len(args)<2:

@@ -21,6 +21,7 @@
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="4"/>
       <RevisionNr Value="15"/>
+      <BuildNr Value="2"/>
       <Language Value="040C"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Service helper" ProductVersion=""/>
     </VersionInfo>
@@ -93,11 +94,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WaptUnit"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="444"/>
-        <CursorPos X="1" Y="460"/>
+        <TopLine Value="347"/>
+        <CursorPos X="14" Y="365"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -146,10 +146,13 @@
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="796"/>
-        <CursorPos X="32" Y="802"/>
+        <TopLine Value="312"/>
+        <CursorPos X="63" Y="317"/>
         <UsageCount Value="206"/>
+        <Loaded Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-process\src\process.pp"/>
@@ -549,7 +552,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="10" Y="13"/>
-        <UsageCount Value="159"/>
+        <UsageCount Value="160"/>
       </Unit59>
       <Unit60>
         <Filename Value="testwmi.lpr"/>
@@ -771,7 +774,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="8"/>
         <CursorPos X="16" Y="38"/>
-        <UsageCount Value="50"/>
+        <UsageCount Value="51"/>
       </Unit87>
       <Unit88>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\blcksock.pas"/>
@@ -859,7 +862,7 @@
         <UsageCount Value="10"/>
       </Unit98>
     </Units>
-    <JumpHistory Count="21" HistoryIndex="20">
+    <JumpHistory Count="24" HistoryIndex="23">
       <Position1>
         <Filename Value="waptunit.pas"/>
         <Caret Line="757" Column="62" TopLine="733"/>
@@ -944,6 +947,18 @@
         <Filename Value="waptunit.pas"/>
         <Caret Line="473" Column="54" TopLine="452"/>
       </Position21>
+      <Position22>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="802" Column="32" TopLine="796"/>
+      </Position22>
+      <Position23>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="416" Column="62" TopLine="402"/>
+      </Position23>
+      <Position24>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="329" Column="37" TopLine="311"/>
+      </Position24>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
