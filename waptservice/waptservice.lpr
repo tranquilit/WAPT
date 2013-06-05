@@ -26,7 +26,7 @@ Uses
   CThreads,
 {$ENDIF}{$ENDIF}
   DaemonApp, lazdaemonapp, WaptMapper, WaptUnit,
-  waptcommon, interfaces,ldapauth;
+  waptcommon, interfaces;
 
 { $DEFINE svcdebug}
 

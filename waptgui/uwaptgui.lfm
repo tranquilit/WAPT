@@ -640,57 +640,12 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 1
         end
       end
-      object lstPackages: TListView
+      object lstPackages: TVirtualJSONListView
         Left = 0
         Height = 400
         Top = 34
         Width = 1020
         Align = alClient
-        Checkboxes = True
-        Columns = <        
-          item
-            AutoSize = True
-            Caption = 'Package'
-            Width = 71
-          end        
-          item
-            AutoSize = True
-            Caption = 'Status'
-            Width = 43
-          end        
-          item
-            AutoSize = True
-            Caption = 'Version'
-            Width = 47
-          end        
-          item
-            AutoSize = True
-            Caption = 'Description'
-            Width = 65
-          end        
-          item
-            AutoSize = True
-            Caption = 'Depends'
-            Width = 790
-          end>
-        Items.LazData = {
-          8300000003000000FFFFFFFFFFFFFFFFFFFFFFFF030000000400000074657374
-          010000004905000000302E302E300B0000006465637372697074696F6EFFFFFF
-          FFFFFFFFFFFFFFFFFF0000000009000000456CC3A96D656E7431FFFFFFFFFFFF
-          FFFFFFFFFFFF0000000009000000456CC3A96D656E7432FFFFFFFFFFFFFFFFFF
-          FFFFFF
-        }
-        MultiSelect = True
-        PopupMenu = PopupMenuPackages
-        ReadOnly = True
-        TabOrder = 1
-        ViewStyle = vsReport
-      end
-      object VirtualJSONListView1: TVirtualJSONListView
-        Left = 300
-        Height = 376
-        Top = 18
-        Width = 696
         Color = clWhite
         Header.AutoSizeIndex = 0
         Header.Columns = <        
@@ -725,19 +680,22 @@ object VisWaptGUI: TVisWaptGUI
             Position = 4
             Text = 'depends'
             PropertyName = 'depends'
+          end        
+          item
+            Position = 5
+            Text = 'explicit_by'
+            PropertyName = 'explicit_by'
           end>
         Header.DefaultHeight = 17
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
         Header.Style = hsFlatButtons
         PopupMenu = PopupMenuPackages
-        TabOrder = 2
+        TabOrder = 1
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
         TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
-        OnEdited = VirtualJSONListView1Edited
-        OnInitNode = VirtualJSONListView1InitNode
-        OnKeyDown = VirtualJSONListView1KeyDown
-        OnNewText = VirtualJSONListView1NewText
+        OnInitNode = lstPackagesInitNode
+        OnKeyDown = lstPackagesKeyDown
       end
     end
     object TabSheet3: TTabSheet
@@ -1161,11 +1119,8 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
         TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
-        OnChange = GridHostsChange
-        OnEdited = VirtualJSONListView1Edited
-        OnInitNode = VirtualJSONListView1InitNode
-        OnKeyDown = VirtualJSONListView1KeyDown
-        OnNewText = VirtualJSONListView1NewText
+        OnInitNode = lstPackagesInitNode
+        OnKeyDown = lstPackagesKeyDown
       end
       object PageControl2: TPageControl
         Left = 448
@@ -1231,10 +1186,8 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
             TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
             TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
-            OnEdited = VirtualJSONListView1Edited
-            OnInitNode = VirtualJSONListView1InitNode
-            OnKeyDown = VirtualJSONListView1KeyDown
-            OnNewText = VirtualJSONListView1NewText
+            OnInitNode = lstPackagesInitNode
+            OnKeyDown = lstPackagesKeyDown
           end
         end
         object pgSoftwares: TTabSheet
@@ -1289,10 +1242,8 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
             TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
             TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
-            OnEdited = VirtualJSONListView1Edited
-            OnInitNode = VirtualJSONListView1InitNode
-            OnKeyDown = VirtualJSONListView1KeyDown
-            OnNewText = VirtualJSONListView1NewText
+            OnInitNode = lstPackagesInitNode
+            OnKeyDown = lstPackagesKeyDown
           end
         end
       end

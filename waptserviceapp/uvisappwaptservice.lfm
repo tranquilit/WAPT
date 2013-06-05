@@ -722,7 +722,7 @@ object VisAppWAPTService: TVisAppWAPTService
     APIVersion = 1013
     RegVersion = '2.5'
     UseLastKnownVersion = False
-    left = 624
-    top = 80
+    left = 592
+    top = 75
   end
 end

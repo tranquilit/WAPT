@@ -127,7 +127,7 @@ type
 
 
 implementation
-uses Windows,JwaIpRtrMib,winsock;
+uses Windows,JwaIpRtrMib,winsock,Jwaiphlpapi;
 
 function GetIfTable(pIfTable: P_IfTable; var pdwSize: LongInt; bOrder: BOOL): DWORD; stdcall; external 'IPHLPAPI.DLL';
 function GetIpAddrTable(pIpAddrTable: P_IpAddrTable; var pdwSize: LongInt; bOrder: BOOL): DWORD; stdcall; external 'IPHLPAPI.DLL';
@@ -317,10 +317,8 @@ begin
         Exit;
       end;
   finally
-    if Assigned(pIfTable) then
-    begin
-      FreeMem(pIfTable, ifTableSize);
-    end;
+    if Assigned(pIpTable) then FreeMem(pIpTable,ipTableSize);
+    if Assigned(pIfTable) then FreeMem(pIfTable, ifTableSize);
 
     FreeAndNil(IPMasks);
     FreeAndNil(IPAddresses);

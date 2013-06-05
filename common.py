@@ -1273,7 +1273,7 @@ class WaptDB(object):
                 try:
                     repo.update_db(proxies=proxies,force=force)
                 except Exception,e:
-                    logger.critical(u'Error getting packages from %s : %s' % (repo.repo_url,ensure_unicode(e)))
+                    logger.critical(u'Error getting Packages index from %s : %s' % (repo.repo_url,ensure_unicode(e)))
             logger.debug(u'Commit wapt_package updates')
         except:
             logger.debug(u'rollback delete table')

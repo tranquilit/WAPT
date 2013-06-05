@@ -6,8 +6,13 @@ object WaptDaemon: TWaptDaemon
   VerticalOffset = 286
   Width = 184
   object IdHTTPServer1: TIdHTTPServer
-    Bindings = <>
+    Bindings = <    
+      item
+        IP = '127.0.0.1'
+        Port = 8088
+      end>
     DefaultPort = 8088
+    MaxConnections = 10
     ServerSoftware = 'Wapt Service'
     OnCommandGet = IdHTTPServer1CommandGet
     left = 40

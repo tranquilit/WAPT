@@ -57,7 +57,6 @@ type
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
-    lstPackages: TListView;
     lstDepends: TListView;
     lstPackages1: TListView;
     Memo1: TMemo;
@@ -98,7 +97,7 @@ type
     tvjson1: TVirtualJSONInspector;
     jsonlog: TVirtualJSONInspector;
     UniqueInstance1: TUniqueInstance;
-    VirtualJSONListView1: TVirtualJSONListView;
+    lstPackages: TVirtualJSONListView;
     VirtualJSONListView2: TVirtualJSONListView;
     VirtualJSONListView3: TVirtualJSONListView;
     procedure ActBuildUploadExecute(Sender: TObject);
@@ -119,20 +118,16 @@ type
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure lstDependsDragDrop(Sender, Source: TObject; X, Y: Integer);
     procedure lstDependsDragOver(Sender, Source: TObject; X, Y: Integer;
       State: TDragState; var Accept: Boolean);
-    procedure VirtualJSONListView1Edited(Sender: TBaseVirtualTree;
-      Node: PVirtualNode; Column: TColumnIndex);
-    procedure VirtualJSONListView1InitNode(Sender: TBaseVirtualTree;
+    procedure lstPackagesInitNode(Sender: TBaseVirtualTree;
       ParentNode, Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates
       );
-    procedure VirtualJSONListView1KeyDown(Sender: TObject; var Key: Word;
+    procedure lstPackagesKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure VirtualJSONListView1NewText(Sender: TBaseVirtualTree;
-      Node: PVirtualNode; Column: TColumnIndex; const NewText: String);
   private
+    procedure FillEditLstDepends(depends: String);
     { private declarations }
     function RunJSON(expr:UTF8String;jsonView:TVirtualJSONInspector=Nil):ISuperObject;
     procedure EditPackage(PackageEntry:ISuperObject);
@@ -212,18 +207,12 @@ var
 begin
   if lstPackages.Focused then
   begin
-    package := lstPackages.Selected.Caption+' (='+lstPackages.Selected.SubItems[1]+')';
-    RunJSON(format('mywapt.install("%s")',[package]),jsonlog);
-    ActSearchPackage.Execute;
-  end
-  else
-  begin
-    N := VirtualJSONListView1.GetFirstSelected;
+    N := lstPackages.GetFirstSelected;
     while N<>Nil do
     begin
-      package := VirtualJSONListView1.Text[N,0]+' (='+VirtualJSONListView1.Text[N,2]+')';
+      package := lstPackages.Text[N,0]+' (='+lstPackages.Text[N,2]+')';
       RunJSON(format('mywapt.install("%s")',[package]),jsonlog);
-      N := VirtualJSONListView1.GetNextSelected(N);
+      N := lstPackages.GetNextSelected(N);
     end;
     ActSearchPackage.Execute;
   end;
@@ -234,32 +223,40 @@ var
   expr,res,depends,dep:String;
   package:String;
   result:ISuperObject;
-  item : TListItem;
+  N : PVirtualNode;
 begin
   if lstPackages.Focused then
   begin
-    package := lstPackages.Selected.Caption;
+    N := lstPackages.GetFirstSelected;
+    //package := lstPackages.Text[N,0]+' (='+lstPackages.Text[N,2]+')';
+    package := lstPackages.Text[N,0];
     result := RunJSON(format('mywapt.edit_package("%s")',[package]),jsonlog);
     {if DirectoryExists(result.S['target']) then
       OpenDocument(Format('%s\WAPT\control',[result.S['target']]));}
     EditPackage(result);
+    PageControl1.ActivePage := pgEditPackage;
   end;
 end;
 
 procedure TVisWaptGUI.EditPackage(PackageEntry:ISuperObject);
-var
-  depends,dep:String;
-  result:ISuperObject;
-  item : TListItem;
 begin
   PackageEdited := PackageEntry;
   EdSourceDir.Text:=PackageEdited.S['target'];
-  EdPackage.Text:=PackageEdited.S['package'];
-  EdVersion.Text:=PackageEdited.S['version'];
-  EdDescription.Text:=PackageEdited.S['description'];
-  EdSection.Text:=PackageEdited.S['section'];
+  EdPackage.Text:=PackageEdited['package'].S['package'];
+  EdVersion.Text:=PackageEdited['package'].S['version'];
+  EdDescription.Text:=PackageEdited['package'].S['description'];
+  EdSection.Text:=PackageEdited['package'].S['section'];
+  FillEditLstDepends(PackageEdited.S['package.depends']);
+
+end;
+
+procedure TVisWaptGUI.FillEditLstDepends(depends:String);
+var
+  dep:String;
+  result:ISuperObject;
+  item : TListItem;
+begin
   lstDepends.Clear;
-  depends := PackageEdited.S['depends'];
   while depends<>'' do
   begin
     dep := StrToken(depends,',');
@@ -268,19 +265,18 @@ begin
   end;
 end;
 
+
 procedure TVisWaptGUI.ActEditRemoveExecute(Sender: TObject);
 var
   i:integer;
   oldepends,newdepends : ISuperObject;
 begin
-  oldepends := Split(PackageEdited.S['depends'],',');
+  oldepends := Split(PackageEdited.S['package.depends'],',');
   newdepends := TSuperObject.Create(stArray);
   for i:=0 to lstDepends.Items.Count-1 do
     if not lstDepends.Items[i].Selected then
       newdepends.AsArray.Add(lstDepends.Items[i].Caption);
-  PackageEdited.S['depends'] := Join(',',newdepends);
-  ActEditSavePackage.Execute;
-  EditPackage(PackageEdited);
+  FillEditLstDepends(Join(',',newdepends));
 end;
 
 procedure TVisWaptGUI.ActEditSavePackageExecute(Sender: TObject);
@@ -290,10 +286,10 @@ var
 begin
   Screen.Cursor:=crHourGlass;
   try
-    PackageEdited.S['package'] := EdPackage.Text;
-    PackageEdited.S['version'] := EdVersion.Text;
-    PackageEdited.S['description'] := EdDescription.Text;
-    PackageEdited.S['section'] := EdSection.Text;
+    PackageEdited.S['package.package'] := EdPackage.Text;
+    PackageEdited.S['package.version'] := EdVersion.Text;
+    PackageEdited.S['package.description'] := EdDescription.Text;
+    PackageEdited.S['package.section'] := EdSection.Text;
     Depends:='';
     for i:=0 to lstDepends.Items.Count-1 do
     begin
@@ -302,9 +298,9 @@ begin
       else
         Depends:=lstDepends.Items[i].Caption;
     end;
-    PackageEdited.S['depends'] := depends;
+    PackageEdited.S['package.depends'] := depends;
     PythonEngine1.ExecString('p = PackageEntry()');
-    PythonEngine1.ExecString(format('p.load_control_from_dict(json.loads(''%s''))',[PackageEdited.AsJson]));
+    PythonEngine1.ExecString(format('p.load_control_from_dict(json.loads(''%s''))',[PackageEdited['package'].AsJson]));
     PythonEngine1.ExecString(format('p.save_control_to_wapt(r''%s'')',[EdSourceDir.Text]));
   finally
     Screen.Cursor:=crDefault;
@@ -376,12 +372,18 @@ procedure TVisWaptGUI.ActRemoveExecute(Sender: TObject);
 var
   expr,res:String;
   package:String;
+  i:integer;
+  N : PVirtualNode;
 begin
   if lstPackages.Focused then
   begin
-    package := lstPackages.Selected.Caption;
-    expr := format('mywapt.remove("%s")',[package]);
-    RunJSON(expr,jsonlog);
+    N := lstPackages.GetFirstSelected;
+    while N<>Nil do
+    begin
+      package := lstPackages.Text[N,0];
+      RunJSON(format('mywapt.remove("%s")',[package]),jsonlog);
+      N := lstPackages.GetNextSelected(N);
+    end;
     ActSearchPackage.Execute;
   end;
 end;
@@ -399,26 +401,10 @@ begin
   if packages<>Nil then
   try
     jsp := TJSONParser.Create(packages.AsJSon);
-    VirtualJSONListView1.Data := jsp.Parse;
-    VirtualJSONListView1.LoadData;
-    VirtualJSONListView1.Header.AutoFitColumns;
+    lstPackages.Data := jsp.Parse;
+    lstPackages.LoadData;
+    lstPackages.Header.AutoFitColumns;
     jsp.Free;
-    lstPackages.BeginUpdate;
-    if packages.DataType = stArray then
-    begin
-      for package in packages do
-      begin
-        item := lstPackages.Items.Add;
-        item.Caption:=package.S['package'];
-        item.SubItems.Add(package.S['status']);
-        item.SubItems.Add(package.S['version']);
-        item.SubItems.Add(package.S['description']);
-        item.SubItems.Add(package.S['depends']);
-        if package.S['status'][1] in  ['I','U'] then
-          item.Checked:=True;
-      end;
-    end;
-
   finally
     lstPackages.EndUpdate;
   end;
@@ -471,12 +457,6 @@ begin
     FreeAndNil(jsondata);
 end;
 
-procedure TVisWaptGUI.GridHostsChange(Sender: TBaseVirtualTree;
-  Node: PVirtualNode);
-begin
-
-end;
-
 procedure TVisWaptGUI.lstDependsDragDrop(Sender, Source: TObject; X, Y: Integer
   );
 var
@@ -507,28 +487,16 @@ begin
   Accept := Source = lstPackages1;
 end;
 
-procedure TVisWaptGUI.VirtualJSONListView1Edited(Sender: TBaseVirtualTree;
-  Node: PVirtualNode; Column: TColumnIndex);
-begin
-
-end;
-
-procedure TVisWaptGUI.VirtualJSONListView1InitNode(Sender: TBaseVirtualTree;
+procedure TVisWaptGUI.lstPackagesInitNode(Sender: TBaseVirtualTree;
   ParentNode, Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
 begin
   //InitialStates:=InitialStates + [vsMultiline];
 end;
 
-procedure TVisWaptGUI.VirtualJSONListView1KeyDown(Sender: TObject;
+procedure TVisWaptGUI.lstPackagesKeyDown(Sender: TObject;
   var Key: Word; Shift: TShiftState);
 begin
-  //VirtualJSONListView1.EditNode(VirtualJSONListView1.FocusedNode,VirtualJSONListView1.FocusedColumn);
-end;
-
-procedure TVisWaptGUI.VirtualJSONListView1NewText(Sender: TBaseVirtualTree;
-  Node: PVirtualNode; Column: TColumnIndex; const NewText: String);
-begin
-
+  //lstPackages.EditNode(lstPackages.FocusedNode,lstPackages.FocusedColumn);
 end;
 
 procedure TVisWaptGUI.LoadJson(data: UTF8String);

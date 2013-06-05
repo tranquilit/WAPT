@@ -37,33 +37,30 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="8">
+    <RequiredPackages Count="7">
       <Item1>
-        <PackageName Value="pl_synapsepkg"/>
+        <PackageName Value="SynEdit"/>
       </Item1>
       <Item2>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="pltis_superobject"/>
       </Item3>
       <Item4>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="SQLDBLaz"/>
       </Item4>
       <Item5>
-        <PackageName Value="SQLDBLaz"/>
+        <PackageName Value="pl_indycomp"/>
       </Item5>
       <Item6>
-        <PackageName Value="pl_indycomp"/>
+        <PackageName Value="FCL"/>
       </Item6>
       <Item7>
-        <PackageName Value="FCL"/>
-      </Item7>
-      <Item8>
         <PackageName Value="LCL"/>
-      </Item8>
+      </Item7>
     </RequiredPackages>
-    <Units Count="10">
+    <Units Count="9">
       <Unit0>
         <Filename Value="appwaptservice.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -93,7 +90,7 @@
       <Unit4>
         <Filename Value="..\wapt-get\networkadapterinfo.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="networkadapterinfo"/>
+        <UnitName Value="NetworkAdapterInfo"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\wapt-get\soutils.pas"/>
@@ -115,11 +112,6 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitRedirect"/>
       </Unit8>
-      <Unit9>
-        <Filename Value="..\waptservice\ldapauth.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="ldapauth"/>
-      </Unit9>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

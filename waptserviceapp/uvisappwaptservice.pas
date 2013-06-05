@@ -71,7 +71,7 @@ var
   VisAppWAPTService: TVisAppWAPTService;
 
 implementation
-uses tisstrings,ldapauth,ldapsend,tiscommon,superobject,soutils,jwawinbase;
+uses tisstrings,tiscommon,superobject,soutils,jwawinbase;
 
 //uses waptwmi;
 
@@ -98,7 +98,7 @@ end;
 
 procedure TVisAppWAPTService.Button1Click(Sender: TObject);
 var
- ldap:TLDAPSend;
+ //ldap:TLDAPSend;
  gr:TDynStringArray;
  groups : ISuperObject;
  htok:THandle;

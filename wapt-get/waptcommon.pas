@@ -849,7 +849,7 @@ var
       waptdb:TWAPTDB;
 begin
   so := TSuperObject.Create;
-  so.S['uuid'] := GetSystemUUID;
+  //so.S['uuid'] := GetSystemUUID;
   so.S['workgroupname'] := GetWorkGroupName;
   so.S['localusername'] := tiscommon.GetUserName;
   so.S['computername'] :=  tiscommon.GetComputerName;

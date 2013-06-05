@@ -24,12 +24,13 @@ program appwaptservice;
 {$mode objfpc}{$H+}
 
 uses
+  heaptrc,
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, pl_synapsepkg, uVisAppWaptService, waptcommon, networkadapterinfo,
-  soutils, tisinifiles, tisstrings, waptunit, UnitRedirect, ldapauth;
+  Forms, uVisAppWaptService, waptcommon, networkadapterinfo,
+  soutils, tisinifiles, tisstrings, waptunit, UnitRedirect;
 
 {$R *.res}
 

@@ -409,9 +409,7 @@ begin
   try
     R.RootKey:=HKEY_LOCAL_MACHINE;
     if Win32Platform = VER_PLATFORM_WIN32_NT then
-    begin
       if R.OpenKey(WinNT_REG_PATH,False) then Result := R.ReadString(WinNT_REG_KEY)
-    end
     else
       if R.OpenKey(Win9x_REG_PATH, False) then Result := R.ReadString(Win9x_REG_KEY);
   finally
