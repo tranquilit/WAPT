@@ -48,9 +48,6 @@ type
     Action : String;
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
-    procedure StopWaptService;
-    function SetupWaptService(InstallPath: Utf8String):Boolean;
-    procedure Setup(DownloadPath, InstallPath: Utf8String);
     procedure WriteHelp; virtual;
     property WaptDB:TWAPTDB read GetWaptDB write SetWaptDB;
     property RepoURL:String read GetRepoURL write SetRepoURL;
@@ -138,16 +135,7 @@ begin
 
   DefaultInstallPath := TrimFilename('c:\wapt');
   DownloadPath := ExtractFilePath(ParamStr(0));
-  // Auto install if wapt-get is not yet in the target directory
-  if (action = 'waptsetup')
-  then
-  begin
-    Writeln('WAPT-GET Setup to '+DefaultInstallPath);
-    Setup(ParamStr(0),DefaultInstallPath);
-    Terminate;
-    Exit;
-  end
-  else
+
   if (action = 'waptupgrade') then
   begin
     if RepoURL='' then
@@ -205,84 +193,6 @@ begin
   if assigned(waptdb) then
     waptdb.Free;
   inherited Destroy;
-end;
-
-procedure pwaptget.StopWaptService;
-var
-  ExitStatus : Integer;
-begin
-  if (GetServiceStatusByName('','waptservice') = ssRunning) and not StopServiceByName('','waptservice') then
-    Raise Exception.create('Unable to stop waptservice');
-end;
-
-procedure pwaptget.Setup(DownloadPath,InstallPath:Utf8String);
-var
-  ZipFilePath,LibsURL:Utf8String;
-
-begin
-	if not UserInGroup(DOMAIN_ALIAS_RID_ADMINS) then
-  	raise Exception.Create('You must run this setup with Admin rights');
-	Logger('Checking install path '+InstallPath,DEBUG);
-	ForceDirectory(InstallPath);
-
-  Logger('Adding '+InstallPath+' to system PATH',DEBUG);
-	AddToSystemPath(InstallPath);
-
-  // Copy wapt-get.exe to install dir if needed
-	writeln(DefaultSystemCodePage);
-	if CompareFilenamesIgnoreCase(ExtractFilePath(downloadPath), AppendPathDelim(InstallPath))<>0 then
-	begin
-	  logger('Copying '+downloadPath+' to '+AppendPathDelim(InstallPath)+'wapt-get.exe',INFO);
-	  if not Windows.CopyFileW(PWideChar(UTF8Decode(downloadPath)),PWideChar(UTF8Decode(AppendPathDelim(InstallPath)+'wapt-get.exe')),False) then
-		  logger('  Error : unable to copy, error code : '+intToStr(IOResult),CRITICAL)
-    else
-		  logger('  Copy OK',INFO);
-	end;
-
-	ZipFilePath := ExtractFilePath(downloadPath)+'wapt-libs.zip';
-	LibsURL := RepoURL+'/wapt-libs.zip';
-	Writeln('Trying to download '+LibsURL+' to '+ZipFilePath);
-	if wget(LibsURL,ZipFilePath) then
-  begin
-    //release sqlite3.dll for upgrade
-    StopWaptService;
-    WaptDB := Nil;
-
-	  Writeln('Unzipping '+ZipFilePath);
-	  UnzipFile(ZipFilePath,InstallPath);
-	  if not SysUtils.DeleteFile(ZipFilePath) then
-      logger('  Error : unable to delete temporary zip file, error code : '+intToStr(IOResult),CRITICAL);
-  end
-  else
-    Writeln('Warning : Unable to download '+LibsURL+' to '+ZipFilePath);
-
-  Writeln('Initializing local sqlite DB');
-  if FileExists(WaptDB.db.DatabaseName) then
-    WaptDB.upgradedb
-  else
-    WaptDB.OpenDB;
-
-  SetupWaptService(InstallPath);
-end;
-
-function pwaptget.SetupWaptService(InstallPath:Utf8String):boolean;
-var
-  ExitStatus: Integer;
-  SvcStatus :  TServiceState;
-
-begin
-  SvcStatus := GetServiceStatusByName('','waptservice');
-  If SvcStatus<>ssStopped then
-    StopServiceByName('','waptservice');
-  if SvcStatus=ssUnknown then
-  begin
-    Writeln('Install waptservice');
-  	Writeln(RunTask(AppendPathDelim(InstallPath)+'waptservice.exe /install',ExitStatus));
-  end;
-	Writeln('Start waptservice');
-  Result := StartServiceByName('','waptservice');
-	//Writeln(RunTask('net start waptservice',ExitStatus));
-  //ExitStatus = 0;
 end;
 
 procedure pwaptget.WriteHelp;

@@ -9,11 +9,12 @@
         <Filename Value="appwaptservice.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="appwaptservice"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="13"/>
-        <CursorPos X="52" Y="38"/>
-        <UsageCount Value="180"/>
+        <TopLine Value="1"/>
+        <CursorPos X="44" Y="37"/>
+        <UsageCount Value="181"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -26,7 +27,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="62"/>
         <CursorPos X="24" Y="105"/>
-        <UsageCount Value="180"/>
+        <UsageCount Value="181"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\waptservice\waptunit.pas"/>
@@ -35,15 +36,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WaptUnit"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="216"/>
-        <CursorPos X="34" Y="368"/>
-        <UsageCount Value="179"/>
+        <TopLine Value="478"/>
+        <CursorPos X="58" Y="497"/>
+        <UsageCount Value="180"/>
         <Bookmarks Count="2">
-          <Item0 X="72" Y="391" ID="2"/>
-          <Item1 X="1" Y="260" ID="1"/>
+          <Item0 X="72" Y="368" ID="2"/>
+          <Item1 X="1" Y="237" ID="1"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -52,23 +52,19 @@
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="93"/>
-        <CursorPos X="9" Y="103"/>
-        <UsageCount Value="172"/>
-        <Loaded Value="True"/>
+        <TopLine Value="400"/>
+        <CursorPos X="14" Y="415"/>
+        <UsageCount Value="173"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\wapt-get\networkadapterinfo.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="NetworkAdapterInfo"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="261"/>
         <CursorPos X="41" Y="272"/>
-        <UsageCount Value="152"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="153"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\wapt-get\soutils.pas"/>
@@ -77,7 +73,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="48"/>
         <CursorPos X="12" Y="67"/>
-        <UsageCount Value="152"/>
+        <UsageCount Value="153"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\wapt-get\tisinifiles.pas"/>
@@ -86,7 +82,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="80"/>
         <CursorPos X="3" Y="87"/>
-        <UsageCount Value="152"/>
+        <UsageCount Value="153"/>
       </Unit6>
       <Unit7>
         <Filename Value="..\wapt-get\tisstrings.pas"/>
@@ -95,7 +91,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="2152"/>
         <CursorPos X="3" Y="2157"/>
-        <UsageCount Value="152"/>
+        <UsageCount Value="153"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\waptservice\UnitRedirect.pas"/>
@@ -104,7 +100,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="105"/>
         <CursorPos X="15" Y="121"/>
-        <UsageCount Value="151"/>
+        <UsageCount Value="152"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\waptservice\ldapauth.pas"/>
@@ -167,9 +163,9 @@
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-process\src\process.pp"/>
         <UnitName Value="process"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="19"/>
-        <CursorPos X="16" Y="178"/>
-        <UsageCount Value="6"/>
+        <TopLine Value="446"/>
+        <CursorPos X="3" Y="450"/>
+        <UsageCount Value="10"/>
       </Unit16>
       <Unit17>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdCustomTCPServer.pas"/>
@@ -274,18 +270,16 @@
         <UnitName Value="IdStack"/>
         <WindowIndex Value="0"/>
         <TopLine Value="689"/>
-        <CursorPos X="22" Y="689"/>
+        <CursorPos X="13" Y="701"/>
         <UsageCount Value="10"/>
       </Unit30>
       <Unit31>
         <Filename Value="..\wapt-get\tiscommon.pas"/>
         <UnitName Value="tiscommon"/>
-        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="33"/>
-        <Loaded Value="True"/>
       </Unit31>
       <Unit32>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\heaph.inc"/>
@@ -402,12 +396,10 @@
       <Unit46>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <UnitName Value="superobject"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3140"/>
         <CursorPos X="11" Y="3153"/>
         <UsageCount Value="24"/>
-        <Loaded Value="True"/>
       </Unit46>
       <Unit47>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\synacode.pas"/>
@@ -435,12 +427,10 @@
       <Unit50>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-registry\src\registry.pp"/>
         <UnitName Value="registry"/>
-        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="72"/>
+        <TopLine Value="71"/>
         <CursorPos X="14" Y="87"/>
         <UsageCount Value="18"/>
-        <Loaded Value="True"/>
       </Unit50>
       <Unit51>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\inifiles.pp"/>
@@ -453,12 +443,10 @@
       <Unit52>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwaiphlpapi.pas"/>
         <UnitName Value="jwaiphlpapi"/>
-        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="8"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit52>
       <Unit53>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdURI.pas"/>
@@ -608,142 +596,136 @@
       </Unit71>
       <Unit72>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-registry\src\winreg.inc"/>
-        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="248"/>
         <CursorPos X="11" Y="274"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit72>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="29" HistoryIndex="28">
       <Position1>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="488" Column="12" TopLine="465"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="124" Column="1" TopLine="108"/>
       </Position1>
       <Position2>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="804" Column="22" TopLine="776"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="80" Column="9" TopLine="63"/>
       </Position2>
       <Position3>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="829" Column="22" TopLine="800"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="119" Column="1" TopLine="93"/>
       </Position3>
       <Position4>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="845" Column="22" TopLine="815"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="170" Column="55" TopLine="149"/>
       </Position4>
       <Position5>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="852" Column="3" TopLine="841"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="92" Column="1" TopLine="75"/>
       </Position5>
       <Position6>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="816" Column="10" TopLine="790"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="281" Column="54" TopLine="266"/>
       </Position6>
       <Position7>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="329" Column="19" TopLine="312"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="280" Column="44" TopLine="266"/>
       </Position7>
       <Position8>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="141" Column="19" TopLine="125"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="286" Column="38" TopLine="271"/>
       </Position8>
       <Position9>
         <Filename Value="..\waptservice\waptunit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="329" Column="50" TopLine="314"/>
       </Position9>
       <Position10>
         <Filename Value="..\waptservice\waptunit.pas"/>
-        <Caret Line="54" Column="22" TopLine="28"/>
+        <Caret Line="355" Column="49" TopLine="340"/>
       </Position10>
       <Position11>
         <Filename Value="..\waptservice\waptunit.pas"/>
-        <Caret Line="76" Column="19" TopLine="50"/>
+        <Caret Line="382" Column="47" TopLine="367"/>
       </Position11>
       <Position12>
         <Filename Value="..\waptservice\waptunit.pas"/>
-        <Caret Line="78" Column="11" TopLine="52"/>
+        <Caret Line="431" Column="61" TopLine="416"/>
       </Position12>
       <Position13>
         <Filename Value="..\waptservice\waptunit.pas"/>
-        <Caret Line="376" Column="71" TopLine="358"/>
+        <Caret Line="464" Column="87" TopLine="449"/>
       </Position13>
       <Position14>
         <Filename Value="..\waptservice\waptunit.pas"/>
-        <Caret Line="373" Column="35" TopLine="358"/>
+        <Caret Line="466" Column="21" TopLine="451"/>
       </Position14>
       <Position15>
         <Filename Value="..\waptservice\waptunit.pas"/>
-        <Caret Line="374" Column="1" TopLine="358"/>
+        <Caret Line="467" Column="23" TopLine="452"/>
       </Position15>
       <Position16>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="3155" Column="1" TopLine="3140"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="281" Column="54" TopLine="266"/>
       </Position16>
       <Position17>
         <Filename Value="..\waptservice\waptunit.pas"/>
-        <Caret Line="374" Column="20" TopLine="358"/>
+        <Caret Line="198" Column="3" TopLine="182"/>
       </Position17>
       <Position18>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="865" Column="4" TopLine="849"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="175" Column="3" TopLine="158"/>
       </Position18>
       <Position19>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="866" Column="28" TopLine="849"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="87" Column="16" TopLine="70"/>
       </Position19>
       <Position20>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="291" Column="10" TopLine="293"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="174" Column="1" TopLine="158"/>
       </Position20>
       <Position21>
-        <Filename Value="..\wapt-get\networkadapterinfo.pas"/>
-        <Caret Line="217" Column="9" TopLine="203"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="185" Column="25" TopLine="163"/>
       </Position21>
       <Position22>
-        <Filename Value="..\wapt-get\networkadapterinfo.pas"/>
-        <Caret Line="130" Column="41" TopLine="116"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="196" Column="1" TopLine="180"/>
       </Position22>
       <Position23>
-        <Filename Value="..\wapt-get\networkadapterinfo.pas"/>
-        <Caret Line="187" Column="1" TopLine="159"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="277" Column="54" TopLine="261"/>
       </Position23>
       <Position24>
-        <Filename Value="..\wapt-get\networkadapterinfo.pas"/>
-        <Caret Line="237" Column="35" TopLine="212"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="325" Column="50" TopLine="310"/>
       </Position24>
       <Position25>
         <Filename Value="..\waptservice\waptunit.pas"/>
-        <Caret Line="373" Column="34" TopLine="358"/>
+        <Caret Line="351" Column="49" TopLine="336"/>
       </Position25>
       <Position26>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="866" Column="189" TopLine="857"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="378" Column="47" TopLine="363"/>
       </Position26>
       <Position27>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="103" Column="3" TopLine="87"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="427" Column="61" TopLine="412"/>
       </Position27>
       <Position28>
-        <Filename Value="..\wapt-get\networkadapterinfo.pas"/>
-        <Caret Line="322" Column="1" TopLine="296"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="456" Column="37" TopLine="441"/>
       </Position28>
       <Position29>
-        <Filename Value="..\wapt-get\networkadapterinfo.pas"/>
-        <Caret Line="248" Column="5" TopLine="233"/>
+        <Filename Value="..\waptservice\waptunit.pas"/>
+        <Caret Line="497" Column="58" TopLine="478"/>
       </Position29>
-      <Position30>
-        <Filename Value="..\wapt-get\networkadapterinfo.pas"/>
-        <Caret Line="237" Column="5" TopLine="231"/>
-      </Position30>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
-    <BreakPoints Count="1">
+    <BreakPoints Count="2">
       <Item1>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
@@ -751,6 +733,13 @@
         <Source Value="..\wapt-get\tiscommon.pas"/>
         <Line Value="1276"/>
       </Item1>
+      <Item2>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\waptservice\waptunit.pas"/>
+        <Line Value="282"/>
+      </Item2>
     </BreakPoints>
   </Debugging>
   <EditorMacros Count="0"/>

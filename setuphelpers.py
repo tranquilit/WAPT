@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.6.20.1"
+__version__ = "0.6.21"
 
 import os
 import sys
@@ -886,39 +886,37 @@ def dmi_info():
         new_section = False
     return result
 
-def wmi_info():
+def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_BIOS','Win32_NetworkAdapter']):
     result = {}
     import wmi
     wm = wmi.WMI()
+    for key in keys:
+        cs = getattr(wm,key)()
+        if len(cs)>1:
+            for cs2 in cs:
+                na = result[key] = []
+                na.append({})
+                for k in cs2.properties.keys():
+                    prop = cs2.wmi_property(k)
+                    if prop:
+                        na[-1][k] = prop.Value
+        else:
+            result[key] = {}
+            for k in cs[0].properties.keys():
+                prop = cs[0].wmi_property(k)
+                if prop:
+                    result[key][k] = prop.Value
 
-    result['Win32_ComputerSystem'] = {}
-    cs = wm.Win32_ComputerSystem()[0]
-    for k in cs.properties.keys():
-        prop = cs.wmi_property(k)
-        if prop:
-            result['Win32_ComputerSystem'][k] = prop.Value
 
-    result['Win32_ComputerSystemProduct'] = {}
-    cs = wm.Win32_ComputerSystemProduct()[0]
-    for k in cs.properties.keys():
-        prop = cs.wmi_property(k)
-        if prop:
-            result['Win32_ComputerSystemProduct'][k] = prop.Value
 
-    result['Win32_BIOS'] = {}
-    cs = wm.Win32_BIOS()[0]
-    for k in cs.properties.keys():
-        prop = cs.wmi_property(k)
-        if prop:
-            result['Win32_BIOS'][k] = prop.Value
-
-    na = result['Win32_NetworkAdapter'] = []
+    """na = result['Win32_NetworkAdapter'] = []
     for cs in wm.Win32_NetworkAdapter():
         na.append({})
         for k in cs.properties.keys():
             prop = cs.wmi_property(k)
             if prop:
                 na[-1][k] = prop.Value
+    """
     return result
 
 def host_info():

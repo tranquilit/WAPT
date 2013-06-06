@@ -60,7 +60,6 @@ type
   private
     fsqltrans : TSQLTransaction;
     fdb : TSQLite3Connection;
-    procedure CreateTables;
   public
     constructor create(dbpath:String);
     destructor Destroy; override;
@@ -72,8 +71,6 @@ type
     function Select(SQL:String):ISuperObject;
     function QueryCreate(SQL:String):TSQLQuery;
 
-    // backup existing data as JSON structure, renames old DB and recreates one, restores data
-    procedure upgradedb;
     function dumpdb:ISuperObject;
 
     property db:TSQLite3Connection read FDB;
@@ -411,106 +408,20 @@ begin
   db.Transaction := SQLTrans;
   sqltrans.DataBase := db;
   db.Open;
-  CreateTables;
 end;
 
 destructor Twaptdb.Destroy;
 begin
-  db.Close;
-  if Assigned(db) then
-    db.free;
-  if Assigned(sqltrans) then
-    sqltrans.free;
+  try
+    db.Close;
+  finally
+    if Assigned(db) then
+      db.free;
+    if Assigned(sqltrans) then
+      sqltrans.free;
+  end;
 
   inherited Destroy;
-end;
-
-procedure TWAPTDB.CreateTables;
-var
-  lst : TStringList;
-begin
-  lst := TStringList.create;
-  try
-    db.GetTableNames(lst,False);
-    if lst.IndexOf('wapt_package')<0 then
-    begin
-      db.ExecuteDirect('CREATE TABLE wapt_package ('+
-        'id INTEGER PRIMARY KEY AUTOINCREMENT,'+
-        'package VARCHAR(255),'+
-        'version VARCHAR(255),'+
-        'section VARCHAR(255),'+
-        'priority VARCHAR(255),'+
-        'architecture VARCHAR(255),'+
-        'maintainer VARCHAR(255),'+
-        'description VARCHAR(255),'+
-        'filename VARCHAR(255),'+
-        'size INTEGER,'+
-        'md5sum VARCHAR(255),'+
-        'depends VARCHAR(800),'+
-        'sources VARCHAR(255),'+
-        'repo_url VARCHAR(255)'+
-        ')'
-        );
-      db.ExecuteDirect('create index idx_repo_package on wapt_repo(package,version)');
-    end;
-
-    if lst.IndexOf('wapt_localstatus')<0 then
-    begin
-      db.ExecuteDirect('CREATE TABLE wapt_localstatus ('+
-        'id INTEGER PRIMARY KEY AUTOINCREMENT,'+
-        'package VARCHAR(255),'+
-        'version VARCHAR(255),'+
-        'architecture VARCHAR(255),'+
-        'install_date VARCHAR(255),'+
-        'install_status VARCHAR(255),'+
-        'install_output TEXT,'+
-        'install_params VARCHAR(800),'+
-        'uninstall_string varchar(255),'+
-        'uninstall_key varchar(255),'+
-        'setuppy TEXT'+
-        ')');
-        db.ExecuteDirect('create index idx_localstatus_package on wapt_localstatus(package,version)');
-    end;
-    if lst.IndexOf('wapt_params')<0 then
-    begin
-      db.ExecuteDirect('create table if not exists wapt_params ('+
-        'id INTEGER PRIMARY KEY AUTOINCREMENT,'+
-        'name  varchar(64),'+
-        'value varchar(255),'+
-        'create_date varchar(255)'+
-        ')');
-      db.ExecuteDirect('create unique index if not exists idx_params_name on wapt_params(name)');
-    end;
-
-    if lst.IndexOf('wapt_task')<0 then
-    begin
-      db.ExecuteDirect('CREATE TABLE if not exists wapt_task ('+
-        'id integer NOT NULL PRIMARY KEY AUTOINCREMENT,'+
-        'action varchar(16),'+
-        'state varchar(16), '+
-        'current_step varchar(255),'+
-        'process_id integer,'+
-        'start_date varchar(255), '+
-        'finish_date varchar(255),   '+
-        'package_name varchar(255), '+
-        'username varchar(255), '+
-        'package_version_min varchar(255),'+
-        'package_version_max varchar(255), '+
-        'rundate_min varchar(255),'+
-        'rundate_max varchar(255),'+
-        'created_date varchar(255),'+
-        'run_params VARCHAR(800),'+
-        'run_output TEXT'+
-        ');');
-       db.ExecuteDirect('create index if not exists idx_task_state on wapt_task(state);');
-    end;
-
-  finally
-    if sqltrans.Active then
-      sqltrans.Commit;
-
-    lst.Free;
-  end;
 end;
 
 function TWAPTDB.Select(SQL: String): ISuperObject;
@@ -538,56 +449,6 @@ begin
   Result.Transaction := sqltrans;
   Result.SQL.Text:=SQL;
   Result.ParseSQL:=True;
-end;
-
-procedure TWAPTDB.upgradedb;
-var
-  databackup : ISuperObject;
-  tablename:ISuperObject;
-  query : TSQLQuery;
-  oldfn : String;
-
-begin
-  DataBackup := dumpdb;
-  try
-    db.Close;
-    oldfn := ChangeFileExt(db.DatabaseName,'')+'-'+FormatDateTime('yyyymmdd-hhnnss',Now)+'.sqlite';
-    if RenameFileUTF8(db.DatabaseName,oldfn) then
-    try
-      OpenDB;
-      try
-        //temporary bufds to insert records
-        Query := TSQLQuery.Create(Nil);
-        Query.DataBase := db;
-        Query.Transaction := sqltrans;
-
-        // recreates data from JSON backup using TBufDataset
-        for tablename in databackup.AsObject.GetNames do
-        begin
-          Query.Close;
-          Query.SQL.Text:= 'select * from '+tablename.AsString;
-          Query.Open;
-          SO2Dataset(databackup[tablename.AsString],Query,['id']);
-          Query.ApplyUpdates;
-          if query.ChangeCount>0 then
-            Raise Exception.Create('Erreur enregistrement pour '+tablename.AsString);
-        end;
-      finally
-        Query.Free;
-      end;
-    except
-      // if error, roolback to old db file
-      if FileExists(db.DatabaseName) then
-        DeleteFileUTF8(db.DatabaseName);
-      RenameFileUTF8(oldfn,db.DatabaseName);
-      raise;
-    end
-    else
-      Raise Exception.Create('Base '+db.DatabaseName+' verrouillée');
-  finally
-    if sqltrans.Active then
-      sqltrans.commit;
-  end;
 end;
 
 function TWAPTDB.dumpdb: ISuperObject;
@@ -860,9 +721,6 @@ begin
   so.S['biosversion'] := GetBIOSVersion;
   so.S['biosvendor'] := GetBIOSVendor;
   so.S['biosdate'] := GetBIOSDate;
-  // redirect to a dummy file just to avoid a console creation... bug of route ?
-  //so['routingtable'] := SplitLines(RunTask('route print > dummy',ExitStatus));
-  //so['ipconfig'] := SplitLines(RunTask('ipconfig /all > dummy',ExitStatus));
   so['ethernet'] := GetEthernetInfo(false);
   so.S['ipaddress'] := GetLocalIP;
   so.S['waptget-version'] := GetApplicationVersion(WaptgetPath);

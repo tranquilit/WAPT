@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.6.20"
+__version__ = "0.6.21"
 
 import sys
 import os
@@ -429,6 +429,9 @@ def main():
                     print u"Uninstallation done"
 
             elif action=='update':
+                # abort if there is already a running install in progress
+                if running_install:
+                    raise Exception('Running wapt-get in progress, please wait...')
                 print u"Update package list"
                 result = mywapt.update(force=options.force)
                 if options.json_output:
@@ -441,6 +444,9 @@ def main():
                     print u"Repositories URL : \n%s" % "\n".join([ "  %s" % p for p in result['repos'] ])
 
             elif action=='upgradedb':
+                # abort if there is already a running install in progress
+                if running_install:
+                    raise Exception('Running wapt-get in progress, please wait...')
                 (old,new) = mywapt.waptdb.upgradedb(force=options.force)
                 if old == new:
                     print u"No database upgrade required, current %s, required %s" % (old,mywapt.waptdb.curr_db_version)
@@ -485,6 +491,9 @@ def main():
                     print ppdicttable([ p[0] for p in  result],[ ('package',20),('version',10)])
 
             elif action=='download-upgrade':
+                # abort if there is already a running install in progress
+                if running_install:
+                    raise Exception('Running wapt-get in progress, please wait...')
                 if options.update_packages:
                     print u"Update packages list"
                     mywapt.update()

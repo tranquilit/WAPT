@@ -76,7 +76,7 @@ from setuphelpers import ensure_unicode
 
 import types
 
-__version__ = "0.6.20.1"
+__version__ = "0.6.21"
 
 logger = logging.getLogger()
 
@@ -460,6 +460,22 @@ def remove_encoding_declaration(source):
     return "\n".join(result)
 
 
+def is_system_user():
+    return setuphelpers.get_current_user() == 'system'
+
+def adjust_privileges():
+    flags = ntsecuritycon.TOKEN_ADJUST_PRIVILEGES | ntsecuritycon.TOKEN_QUERY
+    htoken = win32security.OpenProcessToken(win32api.GetCurrentProcess(),flags)
+
+    privileges = [
+        (win32security.LookupPrivilegeValue(None, 'SeSystemProfilePrivilege'), ntsecuritycon.SE_PRIVILEGE_ENABLED),
+        (win32security.LookupPrivilegeValue(None, 'SeSecurityPrivilege'), ntsecuritycon.SE_PRIVILEGE_ENABLED),
+        (win32security.LookupPrivilegeValue(None, 'SeRestorePrivilege'), ntsecuritycon.SE_PRIVILEGE_ENABLED),
+        (win32security.LookupPrivilegeValue(None, 'SeBackupPrivilege'), ntsecuritycon.SE_PRIVILEGE_ENABLED),
+        ]
+
+    return win32security.AdjustTokenPrivileges(htoken, 0, privileges)
+
 ###########################"
 class LogInstallOutput(object):
     """file like to log print output to db installstatus"""
@@ -534,18 +550,162 @@ def tryurl(url,proxies=None):
         logger.debug(u'  Not available : %s' % ensure_unicode(e))
         return False
 
+class WaptBaseDB(object):
+    dbpath = ''
+    db = None
+    curr_db_version = '20130523'
 
-class WaptSessionDB(object):
+    def __init__(self,dbpath):
+        self._db_version = None
+        self.dbpath = dbpath
+        if not os.path.isfile(self.dbpath):
+            dirname = os.path.dirname(self.dbpath)
+            if os.path.isdir (dirname)==False:
+                os.makedirs(dirname)
+            os.path.dirname(self.dbpath)
+            self.db=sqlite3.connect(self.dbpath,detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+            self.initdb()
+            self.db.commit()
+        else:
+            self.db=sqlite3.connect(self.dbpath,detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        if not value:
+            self.db.commit()
+            self.db.close()
+            logger.debug(u'DB commit')
+        else:
+            self.db.rollback()
+            self.db.close()
+            logger.critical(u'DB error %s, rollbacking\n' % (value,))
+
+    @property
+    def db_version(self):
+        if not self._db_version:
+            try:
+                val = self.db.execute('select value from wapt_params where name="db_version"').fetchone()
+                if val:
+                    self._db_version = val[0]
+                else:
+                    self._db_version = '0000'
+            except Exception,e:
+                logger.critical(u'Unable to get DB version (%s), upgrading' % ensure_unicode(e))
+                self.db.rollback()
+                # pre-params version
+                self._db_version = '0000'
+                self.upgradedb()
+                self.db.execute('insert into wapt_params(name,value,create_date) values (?,?,?)',('db_version','0000',datetime2isodate()))
+                self.db.commit()
+        return self._db_version
+
+    @db_version.setter
+    def db_version(self,value):
+        try:
+            self.db.execute('insert or ignore into wapt_params(name,value,create_date) values (?,?,?)',('db_version',value,datetime2isodate()))
+            self.db.execute('update wapt_params set value=?,create_date=? where name=?',(value,datetime2isodate(),'db_version'))
+            self.db.commit()
+            self._db_version = value
+        except:
+            logger.critical(u'Unable to set version, upgrading')
+            self.db.rollback()
+            self.upgradedb()
+
+    @db_version.deleter
+    def db_version(self):
+        try:
+            self.db.execute("delete from wapt_params where name = 'db_version'")
+            self.db.commit()
+            self._db_version = None
+        except:
+            logger.critical(u'Unable to delete version, upgrading')
+            self.db.rollback()
+            self.upgradedb()
+
+
+    def initdb(self):
+        pass
+
+    def set_param(self,name,value):
+        """Store permanently a (name/value) pair in database, replace existing one"""
+        try:
+            self.db.execute('insert or replace into wapt_params(name,value,create_date) values (?,?,?)',(name,value,datetime2isodate()))
+            self.db.commit()
+        except Exception,e:
+            logger.critical('Unable to set param %s : %s : %s' % (name,value,ensure_unicode(e)))
+            self.db.rollback()
+
+    def get_param(self,name,default=None):
+        """Retrieve the value associated with name from database"""
+        q = self.db.execute('select value from wapt_params where name=? order by create_date desc limit 1',(name,)).fetchone()
+        if q:
+            return q[0]
+        else:
+            return default
+
+    def delete_param(self,name):
+        try:
+            self.db.execute('delete from wapt_params where name=?',(name,))
+            self.db.commit()
+        except:
+            logger.critical(u'Unable to delete param %s : %s' % (name,value))
+            self.db.rollback()
+
+    def query(self,query, args=(), one=False):
+        """
+        execute la requete query sur la db et renvoie un tableau de dictionnaires
+        """
+        cur = self.db.execute(query, args)
+        rv = [dict((cur.description[idx][0], value)
+                   for idx, value in enumerate(row)) for row in cur.fetchall()]
+        return (rv[0] if rv else None) if one else rv
+
+
+
+class WaptSessionDB(WaptBaseDB):
     def __init__(self,username=''):
         if not username:
             username = setuphelpers.get_current_user()
         self.username = username
         self.dbpath = os.path.join(setuphelpers.application_data(),'wapt','waptsession.sqlite')
-        setuphelpers.ensure_dir(self.dbpath)
+        super(WaptSessionDB,self).__init__(self.dbpath)
 
 
-class WaptBaseDB(object):
-    pass
+    def initdb(self):
+        """Initialize current sqlite db with empty table and return structure version"""
+        assert(isinstance(self.db,sqlite3.Connection))
+        logger.debug(u'Initialize Wapt session database')
+
+        self.db.execute("""
+        create table if not exists wapt_sessionsetup (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          username varchar(255),
+          package varchar(255),
+          version varchar(255),
+          architecture varchar(255),
+          install_date varchar(255),
+          install_status varchar(255),
+          install_output TEXT
+          )"""
+                        )
+        self.db.execute("""
+        create index idx_sessionsetup_username on wapt_sessionsetup(username,package);""")
+
+        self.db.execute("""
+        create table if not exists wapt_params (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name  varchar(64),
+          value text,
+          create_date varchar(255)
+          ) """)
+
+        self.db.execute("""
+          create unique index if not exists idx_params_name on wapt_params(name);
+          """)
+
+        return self.curr_db_version
 
 
 PackageKey = namedtuple('package',('packagename','version'))
@@ -662,56 +822,13 @@ db_upgrades = {
         },
     }
 
-def is_system_user():
-    return setuphelpers.get_current_user() == 'system'
 
-def adjust_privileges():
-    flags = ntsecuritycon.TOKEN_ADJUST_PRIVILEGES | ntsecuritycon.TOKEN_QUERY
-    htoken = win32security.OpenProcessToken(win32api.GetCurrentProcess(),flags)
-
-    privileges = [
-        (win32security.LookupPrivilegeValue(None, 'SeSystemProfilePrivilege'), ntsecuritycon.SE_PRIVILEGE_ENABLED),
-        (win32security.LookupPrivilegeValue(None, 'SeSecurityPrivilege'), ntsecuritycon.SE_PRIVILEGE_ENABLED),
-        (win32security.LookupPrivilegeValue(None, 'SeRestorePrivilege'), ntsecuritycon.SE_PRIVILEGE_ENABLED),
-        (win32security.LookupPrivilegeValue(None, 'SeBackupPrivilege'), ntsecuritycon.SE_PRIVILEGE_ENABLED),
-        ]
-
-    return win32security.AdjustTokenPrivileges(htoken, 0, privileges)
-
-
-class WaptDB(object):
+class WaptDB(WaptBaseDB):
     """Class to manage SQLite database with local installation status"""
     dbpath = ''
     db = None
 
     curr_db_version = '20130523'
-
-    def __init__(self,dbpath):
-        self._db_version = None
-        self.dbpath = dbpath
-        if not os.path.isfile(self.dbpath):
-            dirname = os.path.dirname(self.dbpath)
-            if os.path.isdir (dirname)==False:
-                os.makedirs(dirname)
-            os.path.dirname(self.dbpath)
-            self.db=sqlite3.connect(self.dbpath,detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
-            self.initdb()
-            self.db.commit()
-        else:
-            self.db=sqlite3.connect(self.dbpath,detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, type, value, traceback):
-        if not value:
-            self.db.commit()
-            self.db.close()
-            logger.debug(u'DB commit')
-        else:
-            self.db.rollback()
-            self.db.close()
-            logger.critical(u'DB error %s, rollbacking\n' % (value,))
 
     def upgradedb(self,force=False):
         """Update local database structure to current version if rules are described in db_upgrades"""
@@ -889,74 +1006,6 @@ class WaptDB(object):
         create index idx_sessionsetup_username on wapt_sessionsetup(username,package);""")
 
         return self.curr_db_version
-
-    @property
-    def db_version(self):
-        if not self._db_version:
-            try:
-                val = self.db.execute('select value from wapt_params where name="db_version"').fetchone()
-                if val:
-                    self._db_version = val[0]
-                else:
-                    self._db_version = '0000'
-            except Exception,e:
-                logger.critical(u'Unable to get DB version (%s), upgrading' % ensure_unicode(e))
-                self.db.rollback()
-                # pre-params version
-                self._db_version = '0000'
-                self.upgradedb()
-                self.db.execute('insert into wapt_params(name,value,create_date) values (?,?,?)',('db_version','0000',datetime2isodate()))
-                self.db.commit()
-        return self._db_version
-
-    @db_version.setter
-    def db_version(self,value):
-        try:
-            self.db.execute('insert or ignore into wapt_params(name,value,create_date) values (?,?,?)',('db_version',value,datetime2isodate()))
-            self.db.execute('update wapt_params set value=?,create_date=? where name=?',(value,datetime2isodate(),'db_version'))
-            self.db.commit()
-            self._db_version = value
-        except:
-            logger.critical(u'Unable to set version, upgrading')
-            self.db.rollback()
-            self.upgradedb()
-
-    @db_version.deleter
-    def db_version(self):
-        try:
-            self.db.execute("delete from wapt_params where name = 'db_version'")
-            self.db.commit()
-            self._db_version = None
-        except:
-            logger.critical(u'Unable to delete version, upgrading')
-            self.db.rollback()
-            self.upgradedb()
-
-
-    def set_param(self,name,value):
-        """Store permanently a (name/value) pair in database, replace existing one"""
-        try:
-            self.db.execute('insert or replace into wapt_params(name,value,create_date) values (?,?,?)',(name,value,datetime2isodate()))
-            self.db.commit()
-        except Exception,e:
-            logger.critical('Unable to set param %s : %s : %s' % (name,value,ensure_unicode(e)))
-            self.db.rollback()
-
-    def get_param(self,name,default=None):
-        """Retrieve the value associated with name from database"""
-        q = self.db.execute('select value from wapt_params where name=? order by create_date desc limit 1',(name,)).fetchone()
-        if q:
-            return q[0]
-        else:
-            return default
-
-    def delete_param(self,name):
-        try:
-            self.db.execute('delete from wapt_params where name=?',(name,))
-            self.db.commit()
-        except:
-            logger.critical(u'Unable to delete param %s : %s' % (name,value))
-            self.db.rollback()
 
     def add_package(self,
                     package='',
@@ -1335,15 +1384,6 @@ class WaptDB(object):
             setattr(result,k,v)
         return result
 
-    def query(self,query, args=(), one=False):
-        """
-        execute la requete query sur la db et renvoie un tableau de dictionnaires
-        """
-        cur = self.db.execute(query, args)
-        rv = [dict((cur.description[idx][0], value)
-                   for idx, value in enumerate(row)) for row in cur.fetchall()]
-        return (rv[0] if rv else None) if one else rv
-
     def query_package_entry(self,query, args=(), one=False):
         """
         execute la requete query sur la db et renvoie un tableau de PackageEntry
@@ -1472,7 +1512,7 @@ class WaptHostRepo(WaptRepo):
 
         else:
             logger.debug(u'No host package available at %s' % host_package_url)
-
+            self.waptdb.delete_param('host_package_date')
 
         return host_package_date
 
@@ -1766,12 +1806,12 @@ class Wapt(object):
         # to keep the list of supposedly killed wapt-get processes
         killed=[]
         for p in wapt_processes:
-            if p.create_time < mindate:
-                try:
+            try:
+                if p.create_time < mindate:
                     killed.append(p.pid)
                     setuphelpers.killtree(p.pid)
-                except psutil.NoSuchProcess,psutil.AccessDenied:
-                    pass
+            except psutil.NoSuchProcess,psutil.AccessDenied:
+                pass
 
         # reset install_status
         init_run_pids = self.waptdb.query("""\

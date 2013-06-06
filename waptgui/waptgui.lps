@@ -144,7 +144,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="2700"/>
         <CursorPos X="1" Y="2719"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit16>
       <Unit17>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\containedaction.inc"/>
@@ -165,14 +165,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="42"/>
         <CursorPos X="1" Y="57"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit19>
       <Unit20>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\buttons.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="161"/>
         <CursorPos X="1" Y="176"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit20>
       <Unit21>
         <Filename Value="..\..\pltis_superobject\soutils.pas"/>
@@ -217,7 +217,7 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="22" HistoryIndex="21">
+    <JumpHistory Count="21" HistoryIndex="20">
       <Position1>
         <Filename Value="uwaptgui.pas"/>
         <Caret Line="389" Column="1" TopLine="364"/>
@@ -260,52 +260,48 @@
       </Position10>
       <Position11>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="321" Column="1" TopLine="326"/>
+        <Caret Line="368" Column="32" TopLine="340"/>
       </Position11>
       <Position12>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="368" Column="32" TopLine="340"/>
+        <Caret Line="379" Column="36" TopLine="353"/>
       </Position12>
       <Position13>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="379" Column="36" TopLine="353"/>
+        <Caret Line="25" Column="18" TopLine="9"/>
       </Position13>
       <Position14>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="25" Column="18" TopLine="9"/>
+        <Caret Line="29" Column="14" TopLine="9"/>
       </Position14>
       <Position15>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="29" Column="14" TopLine="9"/>
+        <Caret Line="105" Column="28" TopLine="80"/>
       </Position15>
       <Position16>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="105" Column="28" TopLine="80"/>
+        <Caret Line="111" Column="24" TopLine="86"/>
       </Position16>
       <Position17>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="111" Column="24" TopLine="86"/>
+        <Caret Line="273" Column="1" TopLine="249"/>
       </Position17>
       <Position18>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="273" Column="1" TopLine="249"/>
+        <Caret Line="267" Column="51" TopLine="108"/>
       </Position18>
       <Position19>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="267" Column="51" TopLine="108"/>
+        <Caret Line="317" Column="33" TopLine="305"/>
       </Position19>
       <Position20>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="317" Column="33" TopLine="305"/>
+        <Caret Line="408" Column="45" TopLine="399"/>
       </Position20>
       <Position21>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="408" Column="45" TopLine="399"/>
-      </Position21>
-      <Position22>
-        <Filename Value="uwaptgui.pas"/>
         <Caret Line="407" Column="5" TopLine="393"/>
-      </Position22>
+      </Position21>
     </JumpHistory>
   </ProjectSession>
   <Debugging>

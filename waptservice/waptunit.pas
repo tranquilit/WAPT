@@ -38,23 +38,18 @@ type
     IdHTTPServer1: TIdHTTPServer;
 
     procedure DataModuleCreate(Sender: TObject);
-    procedure DataModuleStart(Sender: TCustomDaemon; var OK: Boolean);
     procedure IdHTTPServer1CommandGet(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
   private
     FWAPTdb : TWAPTDB;
     { private declarations }
-    inTimer:Boolean;
     function GetWaptDB: TWAPTDB;
     function MD5PasswordForRepo(url: String): TMD5Digest;
     procedure ReadSettings;
     procedure SetWaptDB(AValue: TWAPTDB);
     function RepoTableHook(Dataset: TDataset; Data, FN: Utf8String): Utf8String;
     function StatusTableHook(Dataset: TDataset; Data, FN: Utf8String): Utf8String;
-    function RegisterComputer:Boolean;
-
     function WaptRunstatus:ISuperObject;
-
 
   public
     { public declarations }
@@ -70,8 +65,8 @@ var
   WaptDaemon: TWaptDaemon;
 
 implementation
-uses LCLIntf,process,StrUtils,IdGlobal,IdSocketHandle,idURI,tiscommon,tisstrings,soutils,
-    IniFiles,UnitRedirect,shellapi,windows;
+uses LCLIntf,process,StrUtils,IdGlobal,idURI,tiscommon,tisstrings,soutils,
+    IniFiles,UnitRedirect,windows;
 
 procedure RegisterDaemon;
 begin
@@ -81,11 +76,10 @@ end;
 function RunTask(cmd: utf8string;var ExitStatus:integer;WorkingDir:utf8String=''): utf8string;
 var
   AProcess: TProcess;
-  Buffer,chunk: string;
+  Buffer: string;
   BytesAvailable: DWord;
   BytesRead:LongInt;
   StartTime : TDateTime;
-  StartedOK:Boolean;
 begin
     Result := '';
     AProcess := TProcess.Create(nil);
@@ -95,16 +89,12 @@ begin
         AProcess.CurrentDirectory := ExtractFilePath(cmd);
       AProcess.Options := [poUsePipes,poNoConsole];
       AProcess.Execute;
-      StartedOK:=True;
       StartTime:= Now;
       // Wait for Startup (5 sec)
       While not AProcess.Running do
       begin
         if (Now-StartTime>5/3600/24) then
-        begin
-          StartedOK:=False;
           Break;
-        end;
         Sleep(200);
       end;
 
@@ -125,7 +115,6 @@ begin
       AProcess.Free;
     end;
 end;
-
 
 Type TFormatHook = Function(Dataset:TDataset;Data,FN:Utf8String):UTF8String of object;
 { TWaptDaemon }
@@ -157,11 +146,6 @@ begin
   result:=result+'</table>';
 end;
 
-procedure TWaptDaemon.DataModuleStart(Sender: TCustomDaemon; var OK: Boolean);
-begin
-//Application.Log(etInfo,'c:\wapt\wapt-get upgrade');
-end;
-
 function LoadFile(FileName:Utf8String):Utf8String;
 var
   f:TStringList;
@@ -187,7 +171,6 @@ function TWaptDaemon.MD5PasswordForRepo(url:String):TMD5Digest;
 var
   md5str,section : String;
   ini : TIniFile;
-  i:integer;
   repos:TDynStringArray;
 begin
   ini := TIniFile.Create(BaseDir + 'wapt-get.ini');
@@ -197,9 +180,8 @@ begin
     else
     begin
       repos := tisstrings.Split(ini.ReadString('global','repositories',''),',');
-
       //TODO
-      section := url;
+      section := 'global';
     end;
     md5str := ini.ReadString(section,'md5_password','5f4dcc3b5aa765d61d8327deb882cf99');
     MD5PasswordForRepo := hexstr2md5(md5str);
@@ -211,8 +193,6 @@ end;
 procedure TWaptDaemon.ReadSettings;
 var
   ini : TIniFile;
-  i:integer;
-
 begin
   ini := TIniFile.Create(BaseDir + 'wapt-get.ini');
   try
@@ -248,15 +228,12 @@ procedure TWaptDaemon.IdHTTPServer1CommandGet(AContext: TIdContext;
   ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
 var
     ExitStatus:Integer;
-    St : TStringList;
-    Cmd,IPS:String;
+    Cmd:String;
     i,f:integer;
-    param,value,lst,UpgradeResult:String;
     auth_groups : ISuperObject;
     AQuery : TSQLQuery;
     filepath,template : Utf8String;
     CmdOutput:Utf8String;
-    htmloutput:Utf8String;
     auth_ok : Boolean;
     auth_user,last_error:String;
     groups : TDynStringArray;
@@ -302,7 +279,7 @@ begin
       if ARequestInfo.URI='/dumpdb' then
       begin
         AResponseInfo.ContentType:='application/json';
-        AResponseInfo.ContentText:=WaptDB.dumpdb.AsJSon(True);
+        AResponseInfo.ContentText:=String(WaptDB.dumpdb.AsJSon(True));
       end
       else
       if ARequestInfo.URI='/upgrade' then
@@ -478,7 +455,7 @@ begin
         //ReadSettings;
         AResponseInfo.ContentText:= (
           '<h1>'+tiscommon.GetComputerName+' - System status</h1>'+
-{          'WAPT Server URL: '+GetWaptServerURL+'<br>'+
+          'WAPT Server URL: '+GetWaptServerURL+'<br>'+
           'wapt-get version: '+GetApplicationVersion(WaptgetPath)+'<br>'+
           'waptservice version: '+GetApplicationVersion(WaptservicePath)+'<br>'+'<br>'+
           'Current status: '+WaptRunstatus.S['value']+'<br>'+
@@ -498,7 +475,7 @@ begin
           'Params:'+ARequestInfo.Params.Text+'<br>'+
           'AuthUsername:'+ARequestInfo.AuthUsername+'<br>'+
           '<h1>Service info</h1>'+
-          'Windows task Wapt-update period (minutes): '+waptupdate_task_period+' min <br>'+}
+          'Windows task Wapt-update period (minutes): '+waptupdate_task_period+' min <br>'+
           'Windows task Wapt-upgrade period (minutes): '+waptupgrade_task_period+' min <br>'
           );
       end;
@@ -545,10 +522,6 @@ begin
     Result:=copy(data,1,10)+' '+copy(data,12,5)
   else
     Result := Data;
-end;
-
-function TWaptDaemon.RegisterComputer: Boolean;
-begin
 end;
 
 function TWaptDaemon.WaptRunstatus: ISuperObject;
