@@ -1480,12 +1480,20 @@ class WaptRepo(object):
             raise
 
 class WaptHostRepo(WaptRepo):
-    def update_db(self,force=False,proxies=None):
+    def update_db(self,force=False,proxies=None,hosts_list=[]):
+        current_host = setuphelpers.get_hostname().lower()
+        if not current_host in hosts_list:
+            hosts_list.append(current_host)
+        result = {}
+        for host in hosts_list:
+            result[host] = self.update_host(host,force=force,proxies=proxies)
 
-        host_package_url = "%s/%s.wapt" % (self.repo_url,setuphelpers.get_hostname().lower())
+    def update_host(self,host,force=False,proxies=None):
+        host_package_url = "%s/%s.wapt" % (self.repo_url,host)
         host_package_date = requests.head(host_package_url,proxies=proxies).headers['last-modified']
+        host_cachedate = 'date-%s' % (host,)
         if host_package_date:
-            if (force or host_package_date <> self.waptdb.get_param('host_package_date')):
+            if (force or host_package_date <> self.waptdb.get_param(host_cachedate)):
                 host_package = requests.get(host_package_url,proxies=proxies)
                 host_package.raise_for_status
 
@@ -1506,16 +1514,15 @@ class WaptHostRepo(WaptRepo):
 
                 logger.debug(u'Commit wapt_package updates')
                 self.waptdb.db.commit()
-                self.waptdb.set_param('host_package_date',host_package_date)
+                self.waptdb.set_param(host_cachedate,host_package_date)
             else:
                 logger.debug(u'No change on host package at %s (%s)' % (host_package_url,host_package_date))
 
         else:
             logger.debug(u'No host package available at %s' % host_package_url)
-            self.waptdb.delete_param('host_package_date')
+            self.waptdb.delete_param(host_cachedate)
 
         return host_package_date
-
 
 ######################"""
 key_passwd = None
@@ -3315,7 +3322,17 @@ def install():
     def edit_package(self,packagename,target_directory=''):
         """Download an existing package from repositories into targetdirectory for modification
             Return the the directory name of the package sources"""
+
         return self.duplicate_package(packagename=packagename,newname=packagename,target_directory=target_directory,build=False)
+
+    def edit_host(self,hostname,target_directory=''):
+        """Download an host package from host repositories into targetdirectory for modification
+            Return the the directory name of the package sources."""
+        hostdate = self.repositories[-1].update_host(hostname)
+        if hostdate:
+            return self.duplicate_package(packagename=hostname,newname=hostname,target_directory=target_directory,build=False)
+        else:
+            return ''
 
     def duplicate_package(self,packagename,newname=None,newversion='',target_directory='',
             build=True,
@@ -3470,12 +3487,11 @@ def install():
 
     def create_self_signed_key(self,orgname,destdir='c:\\private',
             country='FR',
-            locality=u'St-Sébastien sur Loire',
-            organization=u'Tranquil IT Systems',
-            unit='IT Support',
-            commonname='wapt.tranquilit.local',
-            email='info@tranquil.it',
-            update_ini=False,
+            locality=u'',
+            organization=u'',
+            unit='',
+            commonname='',
+            email='',
         ):
         """Creates a self signed key/certificate and returns the paths (keyfilename,crtfilename)"""
         destpem = os.path.join(destdir,'%s.pem' % orgname)
@@ -3579,6 +3595,11 @@ if __name__ == '__main__':
 
     os.remove('c:/private/toto.pem')
     w.create_self_signed_key('toto')
+
+    w.edit_host('htlaptop.tranquilit.local')
+
+    #os.remove('c:/private/toto.pem')
+    #w.create_self_signed_key('toto')
 
     sys.exit(0)
 
