@@ -1,0 +1,60 @@
+object VisCreateKey: TVisCreateKey
+  Left = 329
+  Height = 403
+  Top = 313
+  Width = 464
+  Caption = 'Créer une clé privée et un certificat autosigné'
+  ClientHeight = 403
+  ClientWidth = 464
+  LCLVersion = '1.1'
+  object Panel1: TPanel
+    Left = 0
+    Height = 27
+    Top = 376
+    Width = 464
+    Align = alBottom
+    ClientHeight = 27
+    ClientWidth = 464
+    TabOrder = 0
+    object BitBtn1: TBitBtn
+      Left = 304
+      Height = 23
+      Top = 3
+      Width = 75
+      Anchors = [akTop, akRight]
+      Default = True
+      DefaultCaption = True
+      Kind = bkOK
+      ModalResult = 1
+      TabOrder = 0
+    end
+    object BitBtn2: TBitBtn
+      Left = 384
+      Height = 23
+      Top = 3
+      Width = 75
+      Anchors = [akTop, akRight]
+      Cancel = True
+      DefaultCaption = True
+      Kind = bkCancel
+      ModalResult = 2
+      TabOrder = 1
+    end
+  end
+  object Label1: TLabel
+    Left = 8
+    Height = 13
+    Top = 16
+    Width = 63
+    Caption = 'Nom de la clé'
+    ParentColor = False
+  end
+  object EdOrgName: TEdit
+    Left = 80
+    Height = 21
+    Top = 13
+    Width = 104
+    TabOrder = 1
+    Text = 'EdOrgName'
+  end
+end

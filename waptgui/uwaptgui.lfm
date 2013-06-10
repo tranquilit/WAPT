@@ -4,19 +4,20 @@ object VisWaptGUI: TVisWaptGUI
   Top = 265
   Width = 1028
   Caption = 'VisWaptGUI'
-  ClientHeight = 583
+  ClientHeight = 564
   ClientWidth = 1028
+  Menu = MainMenu1
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '1.1'
   object PageControl1: TPageControl
     Left = 0
-    Height = 460
+    Height = 441
     Top = 0
     Width = 1028
-    ActivePage = TabSheet2
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 1
+    TabIndex = 5
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Sources'
@@ -1050,7 +1051,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgInventory: TTabSheet
       Caption = 'Inventaire'
-      ClientHeight = 434
+      ClientHeight = 415
       ClientWidth = 1020
       object Panel10: TPanel
         Left = 0
@@ -1095,7 +1096,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object GridHosts: TVirtualJSONListView
         Left = 0
-        Height = 400
+        Height = 381
         Top = 34
         Width = 448
         Align = alLeft
@@ -1125,7 +1126,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object PageControl2: TPageControl
         Left = 448
-        Height = 400
+        Height = 381
         Top = 34
         Width = 572
         ActivePage = pgHostPackage
@@ -1253,7 +1254,7 @@ object VisWaptGUI: TVisWaptGUI
   object Panel3: TPanel
     Left = 0
     Height = 118
-    Top = 465
+    Top = 446
     Width = 1028
     Align = alBottom
     ClientHeight = 118
@@ -1332,7 +1333,7 @@ object VisWaptGUI: TVisWaptGUI
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 460
+    Top = 441
     Width = 1028
     Align = alBottom
     ResizeAnchor = akBottom
@@ -1430,6 +1431,13 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Sauver'
       OnExecute = ActEditSavePackageExecute
     end
+    object ActCreateCertificate: TAction
+      Caption = 'Création de certificat auto-signé'
+      OnExecute = ActCreateCertificateExecute
+    end
+    object ActCreateWaptSetup: TAction
+      Caption = 'Créer un Installeur Wapt personnalisé'
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
@@ -1454,5 +1462,48 @@ object VisWaptGUI: TVisWaptGUI
   object UniqueInstance1: TUniqueInstance
     left = 632
     top = 144
+  end
+  object MainMenu1: TMainMenu
+    left = 488
+    top = 104
+    object MenuItem5: TMenuItem
+      Caption = 'Fichier'
+      object MenuItem6: TMenuItem
+        Caption = 'Nouveau'
+      end
+      object MenuItem7: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem8: TMenuItem
+        Caption = 'Ouvrir...'
+      end
+      object MenuItem9: TMenuItem
+        Caption = 'Réouvrir'
+      end
+      object MenuItem10: TMenuItem
+        Caption = 'Enregistrer ...'
+      end
+      object MenuItem11: TMenuItem
+        Caption = 'Enregistrer sous'
+      end
+      object MenuItem12: TMenuItem
+        Caption = '&Fermer'
+      end
+      object MenuItem13: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem14: TMenuItem
+        Caption = 'Quitter'
+      end
+    end
+    object MenuItem15: TMenuItem
+      Caption = 'Outils'
+      object MenuItem16: TMenuItem
+        Action = ActCreateCertificate
+      end
+      object MenuItem17: TMenuItem
+        Action = ActCreateWaptSetup
+      end
+    end
   end
 end

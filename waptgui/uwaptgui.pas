@@ -24,6 +24,8 @@ type
     ActEditSearch: TAction;
     ActEditRemove: TAction;
     ActEditSavePackage: TAction;
+    ActCreateCertificate: TAction;
+    ActCreateWaptSetup: TAction;
     ActUpgrade: TAction;
     ActUpdate: TAction;
     ActRemove: TAction;
@@ -59,11 +61,25 @@ type
     Label5: TLabel;
     lstDepends: TListView;
     lstPackages1: TListView;
+    MainMenu1: TMainMenu;
     Memo1: TMemo;
     MenuItem1: TMenuItem;
+    MenuItem10: TMenuItem;
+    MenuItem11: TMenuItem;
+    MenuItem12: TMenuItem;
+    MenuItem13: TMenuItem;
+    MenuItem14: TMenuItem;
+    MenuItem15: TMenuItem;
+    MenuItem16: TMenuItem;
+    MenuItem17: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
+    MenuItem5: TMenuItem;
+    MenuItem6: TMenuItem;
+    MenuItem7: TMenuItem;
+    MenuItem8: TMenuItem;
+    MenuItem9: TMenuItem;
     PageControl1: TPageControl;
     PageControl2: TPageControl;
     Panel1: TPanel;
@@ -101,6 +117,7 @@ type
     VirtualJSONListView2: TVirtualJSONListView;
     VirtualJSONListView3: TVirtualJSONListView;
     procedure ActBuildUploadExecute(Sender: TObject);
+    procedure ActCreateCertificateExecute(Sender: TObject);
     procedure ActEditpackageExecute(Sender: TObject);
     procedure ActEditRemoveExecute(Sender: TObject);
     procedure ActEditSavePackageExecute(Sender: TObject);
@@ -146,7 +163,7 @@ var
   VisWaptGUI: TVisWaptGUI;
 
 implementation
-uses LCLIntf,soutils,waptcommon;
+uses LCLIntf,soutils,waptcommon,uVisCreateKey;
 {$R *.lfm}
 
 { TVisWaptGUI }
@@ -356,6 +373,30 @@ begin
   ActEditSavePackage.Execute;
   result := RunJSON(format('mywapt.build_upload(r"%s")',[EdSourceDir.Text]),jsonlog);
 
+end;
+
+procedure TVisWaptGUI.ActCreateCertificateExecute(Sender: TObject);
+var
+  params:String;
+begin
+  With TVisCreateKey.Create(Self) do
+  try
+    if ShowModal=mrOk then
+    begin
+      params :='';
+      params := params+format('orgname="%s",',[edOrgName.text]);
+      params := params+'destdir="%s"'c:\\private',
+      params := params+'country='FR',
+      params := params+'locality=u'St-Sébastien sur Loire',
+      params := params+'organization=u'Tranquil IT Systems',
+      params := params+'unit='IT Support',
+      params := params+'commonname='wapt.tranquilit.local',
+      params := params+'email='info@tranquil.it'
+      result := RunJSON(format('mywapt.create_self_signed_key(%s)',[params]),jsonlog);
+    end;
+  finally
+    Free;
+  end;
 end;
 
 procedure TVisWaptGUI.ActEvaluateExecute(Sender: TObject);
