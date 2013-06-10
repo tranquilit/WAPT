@@ -1432,10 +1432,12 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActEditSavePackageExecute
     end
     object ActCreateCertificate: TAction
+      Category = 'Tools'
       Caption = 'Création de certificat auto-signé'
       OnExecute = ActCreateCertificateExecute
     end
     object ActCreateWaptSetup: TAction
+      Category = 'Tools'
       Caption = 'Créer un Installeur Wapt personnalisé'
     end
   end
