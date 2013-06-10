@@ -7,8 +7,8 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, pl_glscene, pl_luicontrols, uwaptgui, tisstrings,
-  waptcommon, tiscommon, tisinifiles, uVisCreateKey
+  Forms, pl_glscene, pl_luicontrols, uwaptgui, uVisCreateKey, tisstrings,
+  waptcommon, tiscommon, tisinifiles, uVisGenerateWaptSetup
   { you can add units after this };
 
 {$R *.res}
@@ -18,6 +18,7 @@ begin
   RequireDerivedFormResource := True;
   Application.Initialize;
   Application.CreateForm(TVisWaptGUI, VisWaptGUI);
+  Application.CreateForm(TVisGenerateWaptSetup, VisGenerateWaptSetup);
   Application.Run;
 end.
 

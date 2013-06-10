@@ -63,7 +63,7 @@
         <PackageName Value="LCL"/>
       </Item10>
     </RequiredPackages>
-    <Units Count="7">
+    <Units Count="8">
       <Unit0>
         <Filename Value="waptgui.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -101,9 +101,17 @@
         <Filename Value="uviscreatekey.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisCreateKey"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisCreateKey"/>
       </Unit6>
+      <Unit7>
+        <Filename Value="uvisgeneratewaptsetup.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisGenerateWaptSetup"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uVisGenerateWaptSetup"/>
+      </Unit7>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

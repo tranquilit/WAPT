@@ -3500,7 +3500,27 @@ def install():
         out = setuphelpers.run('%(opensslbin)s req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout %(destpem)s -out %(destcrt)s' %
             {'opensslbin':opensslbin,'orgname':orgname,'destcrt':destcrt,'destpem':destpem})
         print out
-        return (destpem,destcrt)
+        return {'pem_filename':destpem,'crt_filename':destcrt}
+
+    def create_wapt_setup(self,iss_template,crt_file):
+        """Build a customized waptsetup.exe with included provided certificate
+        Returns filename"""
+        iss = codecs.open(iss_template,'r',encoding='utf8').read().splitlines()
+        new_iss = []
+        for line in iss:
+            if line.startswith('#define certfile'):
+                new_iss.append('#define certfile "%s"' % (os.path.basename(crt_file),))
+            elif not line.startswith('SignTool'):
+                new_iss.append(line)
+
+
+        setuphelpers.filecopyto(crt_file,os.path.join(os.path.dirname(iss_template),'..','ssl'))
+        codecs.open(iss_template,'w',encoding='utf8').write('\n'.join(new_iss))
+        proc = win32api.ShellExecute(0, 'Compile' , iss_template , None , None , 1 )
+        #win32api.WaitForSingleObject(proc, win32api.INFINITE)
+        #win32api.CloseHandle(proc);
+        return iss_template
+
 
     def add_repository(self,url,public_cert,private_key=None):
         pass
@@ -3552,6 +3572,11 @@ if __name__ == '__main__':
     w = Wapt(config=cfg)
     """
     w = Wapt(config_filename='c:/wapt/wapt-get.ini')
+    w.create_wapt_setup('c:\\tranquilit\\wapt\\waptsetup\\wapt.iss','c:\\private\\test.crt')
+
+    #os.remove('c:/private/toto.pem')
+    #w.create_self_signed_key('toto',unit='essai',email='htouvet@tranquil.it',update_ini=True)
+
     os.remove('c:/private/toto.pem')
     w.create_self_signed_key('toto')
 
