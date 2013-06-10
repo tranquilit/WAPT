@@ -126,6 +126,9 @@ type
       );
     procedure lstPackagesKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure lstPackagesPaintText(Sender: TBaseVirtualTree;
+      const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+      TextType: TVSTTextType);
   private
     procedure FillEditLstDepends(depends: String);
     { private declarations }
@@ -164,6 +167,8 @@ begin
   end;
 end;
 
+
+
 procedure TVisWaptGUI.cbShowLogClick(Sender: TObject);
 begin
   if cbShowLog.Checked then
@@ -198,6 +203,12 @@ begin
 
 end;
 
+
+function GetValue(ListView:TVirtualJSONListView;N:PVirtualNode;FieldName:String;Default:String=''):String;
+begin
+  result := TJSONObject(ListView.GetData(N)).get(FieldName,Default);
+end;
+
 procedure TVisWaptGUI.ActInstallExecute(Sender: TObject);
 var
   expr,res:String;
@@ -210,7 +221,7 @@ begin
     N := lstPackages.GetFirstSelected;
     while N<>Nil do
     begin
-      package := lstPackages.Text[N,0]+' (='+lstPackages.Text[N,2]+')';
+      package := GetValue(lstPackages,N,'package')+' (='+GetValue(lstPackages,N,'version')+')';
       RunJSON(format('mywapt.install("%s")',[package]),jsonlog);
       N := lstPackages.GetNextSelected(N);
     end;
@@ -229,7 +240,7 @@ begin
   begin
     N := lstPackages.GetFirstSelected;
     //package := lstPackages.Text[N,0]+' (='+lstPackages.Text[N,2]+')';
-    package := lstPackages.Text[N,0];
+    package := GetValue(lstPackages,N,'package');
     result := RunJSON(format('mywapt.edit_package("%s")',[package]),jsonlog);
     {if DirectoryExists(result.S['target']) then
       OpenDocument(Format('%s\WAPT\control',[result.S['target']]));}
@@ -497,6 +508,17 @@ procedure TVisWaptGUI.lstPackagesKeyDown(Sender: TObject;
   var Key: Word; Shift: TShiftState);
 begin
   //lstPackages.EditNode(lstPackages.FocusedNode,lstPackages.FocusedColumn);
+end;
+
+procedure TVisWaptGUI.lstPackagesPaintText(Sender: TBaseVirtualTree;
+  const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+  TextType: TVSTTextType);
+begin
+  if StrIsOneOf(GetValue(lstPackages,Node,'status'),['I','U']) then
+    lstPackages.Font.style := lstPackages.Font.style + [fsBold]
+  else
+    lstPackages.Font.style := lstPackages.Font.style - [fsBold]
+
 end;
 
 procedure TVisWaptGUI.LoadJson(data: UTF8String);

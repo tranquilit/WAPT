@@ -25,7 +25,7 @@ unit waptcommon;
 interface
   uses
      interfaces,Classes, SysUtils,
-     DB,sqldb,sqlite3conn,SuperObject;
+     DB,sqldb,sqlite3conn,SuperObject,syncobjs;
 
   const
     waptservice_port:integer = 8088;
@@ -53,32 +53,30 @@ interface
   function WAPTServerJsonGet(action:String):ISuperObject;
   function WAPTLocalJsonGet(action:String):ISuperObject;
 
-type
+Type
+  TFormatHook = Function(Dataset:TDataset;Data,FN:Utf8String):UTF8String of object;
 
   { TWAPTDB }
   TWAPTDB = class(TObject)
   private
     fsqltrans : TSQLTransaction;
     fdb : TSQLite3Connection;
+    dbinuse : TCriticalSection;
+    function QueryCreate(SQL: String): TSqlQuery;
+    property db:TSQLite3Connection read fDB;
+    property sqltrans:TSQLTransaction read fsqltrans;
   public
     constructor create(dbpath:String);
     destructor Destroy; override;
 
-    // initializes DB and create missing tables
-    procedure OpenDB;
-
     // execute SQL query and returns a JSON structure with records (stArray)
     function Select(SQL:String):ISuperObject;
-    function QueryCreate(SQL:String):TSQLQuery;
-
     function dumpdb:ISuperObject;
-
-    property db:TSQLite3Connection read FDB;
-    property sqltrans:TSQLTransaction read fsqltrans;
 
     procedure SetParam(name,value:String);
     function GetParam(name:String):String;
 
+    function QueryToHTMLtable(SQL: String; FormatHook: TFormatHook=nil): String;
   end;
 
 
@@ -385,6 +383,8 @@ end;
 
 constructor Twaptdb.create(dbpath:String);
 begin
+  dbinuse := syncobjs.TCriticalSection.Create;
+
   // The sqlite dll is either in the same dir as application, or in the DLLs directory, or relative to dbpath (in case of initial install)
   if FileExists(AppendPathDelim(ExtractFilePath(ParamStr(0)))+'sqlite3.dll') then
     SQLiteLibraryName:=AppendPathDelim(ExtractFilePath(ParamStr(0)))+'sqlite3.dll'
@@ -399,15 +399,10 @@ begin
   if not DirectoryExists(ExtractFileDir(dbpath)) then
     mkdir(ExtractFileDir(dbpath));
   db.DatabaseName := dbpath;
-  OpenDB;
-end;
-
-procedure TWAPTDB.OpenDB;
-begin
   db.KeepConnection := False;
   db.Transaction := SQLTrans;
   sqltrans.DataBase := db;
-  db.Open;
+
 end;
 
 destructor Twaptdb.Destroy;
@@ -415,6 +410,7 @@ begin
   try
     db.Close;
   finally
+    dbinuse.Free;
     if Assigned(db) then
       db.free;
     if Assigned(sqltrans) then
@@ -428,43 +424,48 @@ function TWAPTDB.Select(SQL: String): ISuperObject;
 var
   query : TSQLQuery;
 begin
-  Query := TSQLQuery.Create(Nil);
+  dbinuse.Acquire;
   try
-    Query.DataBase := db;
-    Query.Transaction := sqltrans;
+    //db.Open;
+    Query := TSQLQuery.Create(Nil);
+    try
+      Query.DataBase := db;
+      Query.Transaction := sqltrans;
 
-    Query.SQL.Text:=SQL;
-    Query.Open;
-    Result := Dataset2SO(Query);
+      Query.SQL.Text:=SQL;
+      Query.Open;
+      Result := Dataset2SO(Query);
 
+    finally
+      Query.Free;
+      db.Close;
+    end;
   finally
-    Query.Free;
+    dbinuse.Leave;
   end;
 end;
 
-function TWAPTDB.QueryCreate(SQL: String): TSQLQuery;
-begin
-  Result := TSQLQuery.Create(Nil);
-  Result.DataBase := db;
-  Result.Transaction := sqltrans;
-  Result.SQL.Text:=SQL;
-  Result.ParseSQL:=True;
-end;
 
 function TWAPTDB.dumpdb: ISuperObject;
 var
   tables:TStringList;
   i:integer;
 begin
-  Result := TSuperObject.Create;
+  dbinuse.Acquire;
   try
-    tables := TStringList.Create;
-    db.GetTableNames(tables);
-    for i:=0 to tables.Count-1 do
-      if tables[i] <> 'sqlite_sequence' then
-        Result[tables[i]] := Select('select * from '+tables[i]);
+    Result := TSuperObject.Create;
+    try
+      tables := TStringList.Create;
+      db.GetTableNames(tables);
+      for i:=0 to tables.Count-1 do
+        if tables[i] <> 'sqlite_sequence' then
+          Result[tables[i]] := Select('select * from '+tables[i]);
+    finally
+      tables.Free;
+    end;
+
   finally
-    tables.Free;
+    dbinuse.Release;
   end;
 end;
 
@@ -472,19 +473,25 @@ procedure TWAPTDB.SetParam(name, value: String);
 var
   q:TSQLQuery;
 begin
-  q := QueryCreate('insert or replace into wapt_params(name,value,create_date) values (:name,:value,:date)');
   try
+    dbinuse.Acquire;
+    q := QueryCreate('insert or replace into wapt_params(name,value,create_date) values (:name,:value,:date)');
     try
-      q.ParamByName('name').AsString:=name;
-      q.ParamByName('value').AsString:=value;
-      q.ParamByName('date').AsString:=FormatDateTime('YYYYMMDD-hhnnss',Now);
-      q.ExecSQL;
-      sqltrans.Commit;
-    except
-      sqltrans.Rollback;
+      try
+        q.ParamByName('name').AsString:=name;
+        q.ParamByName('value').AsString:=value;
+        q.ParamByName('date').AsString:=FormatDateTime('YYYYMMDD-hhnnss',Now);
+        q.ExecSQL;
+        sqltrans.Commit;
+      except
+        sqltrans.Rollback;
+      end;
+    finally
+      q.Free;
     end;
   finally
-    q.Free;
+    db.Close;
+    dbinuse.Release;
   end;
 end;
 
@@ -492,21 +499,84 @@ function TWAPTDB.GetParam(name: String): String;
 var
   q:TSQLQuery;
 begin
-  result := '';
-  q := QueryCreate('select value from wapt_params where name=:name');
   try
+    dbinuse.Acquire;
+    result := '';
+    q := QueryCreate('select value from wapt_params where name=:name');
     try
-      q.ParamByName('name').AsString:=name;
-      q.open;
-      Result := q.Fields[0].AsString;
-      sqltrans.Commit;
-    except
-      sqltrans.Rollback;
+      try
+        q.ParamByName('name').AsString:=name;
+        q.open;
+        Result := q.Fields[0].AsString;
+        sqltrans.Commit;
+      except
+        sqltrans.Rollback;
+      end;
+    finally
+      q.Free;
     end;
+
   finally
-    q.Free;
+    db.Close;
+    dbinuse.Release;
   end;
 end;
+
+function TWAPTDB.QueryCreate(SQL: String):TSQLQuery;
+var
+    ds:TSQLQuery;
+begin
+  ds := TSQLQuery.Create(Nil);
+  ds.DataBase := db;
+  ds.Transaction := sqltrans;
+  ds.SQL.Text:=SQL;
+  ds.ParseSQL:=True;
+  ds.Open;
+  result := ds;
+end;
+
+function TWAPTDB.QueryToHTMLtable(SQL: String;FormatHook: TFormatHook=Nil):String;
+var
+    ds:TSQLQuery;
+    i:integer;
+begin
+  dbinuse.Acquire;
+  try
+    ds := TSQLQuery.Create(Nil);
+    ds.DataBase := db;
+    ds.Transaction := sqltrans;
+    ds.SQL.Text:=SQL;
+    ds.ParseSQL:=True;
+    ds.Open;
+
+    result := '<table><tr>';
+    For i:=0 to ds.FieldCount-1 do
+      if ds.Fields[i].Visible then
+        Result := Result + '<th>'+ds.Fields[i].DisplayLabel+'</th>';
+    result := Result+'</tr>';
+    ds.First;
+    while not ds.EOF do
+    begin
+      result := Result + '<tr>';
+      For i:=0 to ds.FieldCount-1 do
+        if ds.Fields[i].Visible then
+        begin
+          if Assigned(FormatHook) then
+            Result := Result + '<td>'+FormatHook(ds,ds.Fields[i].AsString,ds.Fields[i].FieldName)+'</td>'
+          else
+            Result := Result + '<td>'+ds.Fields[i].AsString+'</td>';
+        end;
+      result := Result+'</tr>';
+      ds.Next;
+    end;
+    result:=result+'</table>';
+  finally
+    db.Close;
+    dbinuse.Release;
+  end;
+end;
+
+
 
 //////
 
@@ -729,7 +799,6 @@ begin
 
   waptdb := TWAPTDB.create(WaptDBPath);
   try
-    Waptdb.OpenDB;
     so.S['wapt-dbversion'] := waptdb.GetParam('db_version');
   finally
     waptdb.Free;

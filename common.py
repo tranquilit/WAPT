@@ -3077,6 +3077,45 @@ class Wapt(object):
             os.chdir(previous_cwd)
             return result
 
+    def getsilentflags(self,installer_path):
+        """Detect the type of installer and returns silent silent install flags"""
+        (product_name,ext) = os.path.splitext(installer_path)
+        ext = ext.lower()
+        if ext=='.exe':
+            silentflag = '/VERYSILENT'
+        elif ext=='.msi':
+            silentflag = '/q'
+        else:
+            silentflag = ''
+        return silentflag
+
+    def getproductprops(self,installer_path):
+        """returns a dict {'product','description','version','publisher'}"""
+        (product_name,ext) = os.path.splitext(installer_path.lower())
+        product_desc = product_name
+        version ='0.0.0'
+        publisher =''
+
+        if ext=='.exe':
+            props = setuphelpers.get_file_properties(installer_path)
+            product_name = props['ProductName'] or product_desc
+
+            if 'Manufacturer' in props and props['Manufacturer']:
+                publisher = props['Manufacturer']
+                product_desc = "%s (%s)" % (product_name,publisher)
+        elif ext=='.msi':
+            props = setuphelpers.get_msi_properties(installer_path)
+            product_name = props['ProductName'] or props['FileDescription'] or product_desc
+            if props['CompanyName']:
+                publisher = props['CompanyName']
+                product_desc = "%s (%s)" % (product_name,publisher)
+
+        props['product'] = product_name
+        props['description'] = product_desc
+        props['version'] = version
+        props['publisher'] = publisher
+        return props
+
     def maketemplate(self,installer_path,packagename='',directoryname=''):
         """Build a skeleton of WAPT package based on the properties of the supplied installer
            Return the path of the skeleton
@@ -3088,26 +3127,11 @@ class Wapt(object):
              directoryname = os.path.abspath(directoryname)
 
         installer = os.path.basename(installer_path)
-        (product_name,ext) = os.path.splitext(installer)
-        product_desc = product_name
-        if ext=='.exe':
-            props = setuphelpers.get_file_properties(installer_path)
-            product_name = props['ProductName'] or props['FileDescription'] or product_desc
-            if props['CompanyName']:
-                product_desc = "%s (%s)" % (product_name,props['CompanyName'])
-            silentflag = '/VERYSILENT'
-        elif ext=='.msi':
-            props = setuphelpers.get_msi_properties(installer_path)
-            product_name = props['ProductName'] or product_desc
-            if 'Manufacturer' in props and props['Manufacturer']:
-                product_desc = "%s (%s)" % (product_name,props['Manufacturer'])
-            silentflag = '/q'
-        else:
-            silentflag = ''
-            props = {}
+        props = self.getproductprops(installer_path)
+        silentflags = self.getsilentflags(installer_path)
 
         if not packagename:
-            simplename = re.sub(r'[\s\(\)]+','',product_name.lower())
+            simplename = re.sub(r'[\s\(\)]+','',props['product'].lower())
             packagename = '%s-%s' %  (self.config.get('global','default_package_prefix','tis'),simplename)
         if not directoryname:
             directoryname = os.path.join(self.config.get('global','default_sources_root'),packagename)+'-%s' % self.config.get('global','default_sources_suffix','wapt')
@@ -3132,7 +3156,7 @@ def install():
     global uninstallstring
 
     print('installing %(packagename)s')
-    run('%(installer)s %(silentflag)s')
+    run('%(installer)s %(silentflags)s')
 """ % locals()
         setuppy_filename = os.path.join(directoryname,'setup.py')
         if not os.path.isfile(setuppy_filename):
@@ -3147,7 +3171,7 @@ def install():
             entry = PackageEntry()
             entry.package = packagename
             entry.architecture='all'
-            entry.description = 'automatic package for %s ' % product_desc
+            entry.description = 'automatic package for %s ' % props['description']
             try:
                 entry.maintainer = ensure_unicode(win32api.GetUserNameEx(3))
             except:
@@ -3158,7 +3182,7 @@ def install():
 
             entry.priority = 'optional'
             entry.section = 'base'
-            entry.version = props.get('FileVersion',props.get('ProductVersion','0.0.0'))+'-00'
+            entry.version = props['version']
             if self.config.has_option('global','default_sources_url'):
                 entry.sources = self.config.get('global','default_sources_url') % {'packagename':packagename}
             codecs.open(control_filename,'w',encoding='utf8').write(entry.ascontrol())

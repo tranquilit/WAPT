@@ -56,6 +56,7 @@ type
     procedure ButSQLClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure butunloadllClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure Panel1Click(Sender: TObject);
     procedure TestPythonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -90,8 +91,8 @@ end;
 procedure TVisAppWAPTService.ButSQLClick(Sender: TObject);
 begin
   query.Close;
-  query.DataBase := waptdb.db;
-  query.Transaction := waptdb.sqltrans;
+  //query.DataBase := waptdb.db;
+  //query.Transaction := waptdb.sqltrans;
   query.SQL.text := EdSQL.Text;
   query.Open;
 end;
@@ -124,6 +125,11 @@ procedure TVisAppWAPTService.butunloadllClick(Sender: TObject);
 begin
 end;
 
+procedure TVisAppWAPTService.FormDestroy(Sender: TObject);
+begin
+  waptdb.Free;
+end;
+
 procedure TVisAppWAPTService.Panel1Click(Sender: TObject);
 begin
 
@@ -149,7 +155,6 @@ begin
   end;
 
   waptdb := TWAPTDB.Create(WaptDBPath);
-  waptdb.OpenDB;
 
   eduser.text := tiscommon.GetUserName;
   eddomain.Text := GetWorkgroupName;

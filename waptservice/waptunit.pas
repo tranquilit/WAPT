@@ -28,7 +28,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, DaemonApp,
   ExtCtrls, IdHTTPServer, IdCustomHTTPServer, IdContext, sqlite3conn, sqldb, db, Waptcommon,
-  superobject,md5;
+  superobject,md5,syncobjs;
 
 type
 
@@ -38,6 +38,7 @@ type
     IdHTTPServer1: TIdHTTPServer;
 
     procedure DataModuleCreate(Sender: TObject);
+    procedure DataModuleDestroy(Sender: TObject);
     procedure IdHTTPServer1CommandGet(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
   private
@@ -116,36 +117,6 @@ begin
     end;
 end;
 
-Type TFormatHook = Function(Dataset:TDataset;Data,FN:Utf8String):UTF8String of object;
-{ TWaptDaemon }
-function DatasetToHTMLtable(ds:TDataset;FormatHook: TFormatHook=Nil):String;
-var
-    i:integer;
-begin
-  ds.Open;
-  result := '<table><tr>';
-  For i:=0 to ds.FieldCount-1 do
-    if ds.Fields[i].Visible then
-      Result := Result + '<th>'+ds.Fields[i].DisplayLabel+'</th>';
-  result := Result+'</tr>';
-  ds.First;
-  while not ds.EOF do
-  begin
-    result := Result + '<tr>';
-    For i:=0 to ds.FieldCount-1 do
-      if ds.Fields[i].Visible then
-      begin
-        if Assigned(FormatHook) then
-          Result := Result + '<td>'+FormatHook(ds,ds.Fields[i].AsString,ds.Fields[i].FieldName)+'</td>'
-        else
-          Result := Result + '<td>'+ds.Fields[i].AsString+'</td>';
-      end;
-    result := Result+'</tr>';
-    ds.Next;
-  end;
-  result:=result+'</table>';
-end;
-
 function LoadFile(FileName:Utf8String):Utf8String;
 var
   f:TStringList;
@@ -215,6 +186,11 @@ begin
   IdHTTPServer1.Active:=True;
 end;
 
+procedure TWaptDaemon.DataModuleDestroy(Sender: TObject);
+begin
+  WaptDB := Nil;
+end;
+
 function ChangeQuotes(s:String):String;
 var
   i:integer;
@@ -230,8 +206,8 @@ var
     ExitStatus:Integer;
     Cmd:String;
     i,f:integer;
-    auth_groups : ISuperObject;
-    AQuery : TSQLQuery;
+    auth_groups,sel : ISuperObject;
+    AQuery : String;
     filepath,template : Utf8String;
     CmdOutput:Utf8String;
     auth_ok : Boolean;
@@ -256,21 +232,19 @@ begin
     begin
       if ARequestInfo.URI='/status' then
       try
-        AQuery := WaptDB.QueryCreate('select s.package,s.version,s.install_date,s.install_status,"Remove" as Remove,'+
+        AQuery := 'select s.package,s.version,s.install_date,s.install_status,"Remove" as Remove,'+
                             ' (select max(p.version) from wapt_package p where p.package=s.package) as repo_version,explicit_by as install_par'+
                             ' from wapt_localstatus s'+
-                            ' order by s.package');
-        AResponseInfo.ContentText:=DatasetToHTMLtable(AQuery,@StatusTableHook);
+                            ' order by s.package';
+        AResponseInfo.ContentText:= WaptDB.QueryToHTMLtable(AQuery,@RepoTableHook);
       finally
-        AQuery.Free;
       end
       else
       if ARequestInfo.URI='/list' then
       try
-        AQuery := WaptDB.QueryCreate('select "Install" as install,package,version,description,size from wapt_package where section<>"host" order by package,version');
-        AResponseInfo.ContentText:=DatasetToHTMLtable(AQuery,@RepoTableHook );
+        AQuery := 'select "Install" as install,package,version,description,size from wapt_package where section<>"host" order by package,version';
+        AResponseInfo.ContentText:=WaptDB.QueryToHTMLtable(AQuery,@StatusTableHook);
       finally
-        AQuery.Free;
       end
       else
       if ARequestInfo.URI='/waptupgrade' then
@@ -327,13 +301,14 @@ begin
       else
       if ARequestInfo.URI='/checkupgrades' then
       try
-        AQuery := WaptDB.QueryCreate('select * from wapt_params where name="last_update_status"');
-        AQuery.Open;
         AResponseInfo.ContentType:='application/json';
-        AResponseInfo.ContentText:= AQuery.FieldByName('value').AsString;
+        sel := WaptDB.Select('select * from wapt_params where name="last_update_status"');
+        if (sel<>Nil) and (sel.AsArray.Length>0) then
+          AResponseInfo.ContentText:= sel.AsArray[0].S['value']
+        else
+          AResponseInfo.ContentText:= '{"date": "", "running_tasks": [], "errors": [], "upgrades": []}';
+
       finally
-        FreeAndNil(AQuery);
-        WaptDB.db.Close;
       end
       else
       if ARequestInfo.URI='/disable' then
@@ -489,7 +464,6 @@ begin
       AResponseInfo.CharSet:='UTF-8';
     end;
   finally
-    WaptDB := Nil;
   end;
 end;
 
@@ -525,16 +499,8 @@ begin
 end;
 
 function TWaptDaemon.WaptRunstatus: ISuperObject;
-var
-  AQuery: TSQLQuery;
 begin
-  try
-    AQuery := WaptDB.QueryCreate('select value,create_date from wapt_params where name=''runstatus''');
-    Result := Dataset2SO(AQuery,False);
-  finally
-    AQuery.Free;
-    WaptDB.db.Close;
-  end
+  Result := WaptDB.Select('select value,create_date from wapt_params where name=''runstatus''');
 end;
 
 function TWaptDaemon.GetWaptDB: TWAPTDB;
