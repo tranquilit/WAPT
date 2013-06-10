@@ -76,7 +76,7 @@ from setuphelpers import ensure_unicode
 
 import types
 
-__version__ = "0.6.21"
+__version__ = "0.6.22"
 
 logger = logging.getLogger()
 
@@ -2208,8 +2208,11 @@ class Wapt(object):
         for f in glob.glob(os.path.join(cachepath,'*.wapt')):
             if os.path.isfile(f):
                 logger.debug(u'Removing %s' % f)
-                os.remove(f)
-                result.append(f)
+                try:
+                    os.remove(f)
+                    result.append(f)
+                except Exception,e:
+                    logger.warning('Unable to remove %s : %s' % (f,ensure_unicode(e)))
         return result
 
     def update(self,force=False):
@@ -3550,7 +3553,7 @@ if __name__ == '__main__':
     """
     w = Wapt(config_filename='c:/wapt/wapt-get.ini')
     os.remove('c:/private/toto.pem')
-    w.create_self_signed_key('toto',unit='essai',email='htouvet@tranquil.it',update_ini=True)
+    w.create_self_signed_key('toto')
 
     sys.exit(0)
 

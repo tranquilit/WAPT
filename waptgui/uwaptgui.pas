@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, memds, BufDataset, FileUtil, SynHighlighterPython, SynEdit,
   SynMemo, vte_edittree, vte_json, LSControls, Forms,
   Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus,
-  EditBtn, AtomPythonEngine, PythonGUIInputOutput, process, fpJson, jsonparser,
+  EditBtn, PythonEngine, AtomPythonEngine, PythonGUIInputOutput, process, fpJson, jsonparser,
   superobject, UniqueInstance, VirtualTrees;
 
 type
@@ -41,6 +41,7 @@ type
     Button3: TButton;
     Button4: TButton;
     Button5: TButton;
+    Button6: TButton;
     cbShowLog: TCheckBox;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
@@ -129,6 +130,7 @@ type
     procedure ActSearchPackageExecute(Sender: TObject);
     procedure ActUpdateExecute(Sender: TObject);
     procedure ActUpgradeExecute(Sender: TObject);
+    procedure Button6Click(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure EdRunKeyPress(Sender: TObject; var Key: char);
     procedure EdSearch1KeyPress(Sender: TObject; var Key: char);
@@ -377,14 +379,19 @@ end;
 
 procedure TVisWaptGUI.ActCreateCertificateExecute(Sender: TObject);
 var
-  params:String;
+  //params:String;
+  //params : ISuperObject;
+  params: PPyObject;
 begin
   With TVisCreateKey.Create(Self) do
   try
     if ShowModal=mrOk then
     begin
-      params :='';
-      params := params+format('orgname="%s",',[edOrgName.text]);
+      params := PythonEngine1.ArrayToPyDict(['orgname',edOrgName.text]);
+      {params := TSuperObject.Create;
+      params.S['orgname']=edOrgName.text;
+
+
       params := params+'destdir="%s"'c:\\private',
       params := params+'country='FR',
       params := params+'locality=u'St-Sébastien sur Loire',
@@ -392,7 +399,8 @@ begin
       params := params+'unit='IT Support',
       params := params+'commonname='wapt.tranquilit.local',
       params := params+'email='info@tranquil.it'
-      result := RunJSON(format('mywapt.create_self_signed_key(%s)',[params]),jsonlog);
+      result := RunJSON(format('mywapt.create_self_signed_key(%s)',[params]),jsonlog);}
+      PythonEngine1.EvalFunction(PythonEngine1.VariantAsPyObject() 'mywapt.create_self_signed_key',['toto']);
     end;
   finally
     Free;
@@ -478,6 +486,11 @@ procedure TVisWaptGUI.ActUpgradeExecute(Sender: TObject);
 begin
   RunJSON('mywapt.upgrade()',jsonlog);
   tvjson1.RootData := jsonlog.RootData;
+end;
+
+procedure TVisWaptGUI.Button6Click(Sender: TObject);
+begin
+
 end;
 
 

@@ -93,8 +93,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="225"/>
-        <CursorPos X="50" Y="238"/>
+        <TopLine Value="273"/>
+        <CursorPos X="34" Y="292"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -876,7 +876,7 @@
         <UsageCount Value="16"/>
       </Unit101>
     </Units>
-    <JumpHistory Count="13" HistoryIndex="12">
+    <JumpHistory Count="16" HistoryIndex="14">
       <Position1>
         <Filename Value="waptunit.pas"/>
         <Caret Line="120" Column="1" TopLine="97"/>
@@ -919,16 +919,28 @@
       </Position10>
       <Position11>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="218" Column="3" TopLine="227"/>
+        <Caret Line="239" Column="69" TopLine="228"/>
       </Position11>
       <Position12>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="239" Column="69" TopLine="228"/>
+        <Caret Line="51" Column="27" TopLine="37"/>
       </Position12>
       <Position13>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="51" Column="27" TopLine="37"/>
+        <Caret Line="238" Column="50" TopLine="225"/>
       </Position13>
+      <Position14>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position14>
+      <Position15>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="245" Column="86" TopLine="218"/>
+      </Position15>
+      <Position16>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="486" Column="37" TopLine="470"/>
+      </Position16>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -983,7 +995,7 @@
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="waptunit.pas"/>
-        <Line Value="678"/>
+        <Line Value="686"/>
       </Item2>
       <Item3>
         <Kind Value="bpkSource"/>

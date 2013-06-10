@@ -8,7 +8,7 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, pl_glscene, pl_luicontrols, uwaptgui, tisstrings,
-  waptcommon, tiscommon, tisinifiles
+  waptcommon, tiscommon, tisinifiles, uVisCreateKey
   { you can add units after this };
 
 {$R *.res}
