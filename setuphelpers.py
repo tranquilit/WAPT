@@ -683,6 +683,26 @@ def registry_readstring(root,path,keyname,default=''):
     except:
         return default
 
+def registry_set(root,path,keyname,value,type=None):
+    """Set the value of a key in registry, tajing in account calue type
+        root    : HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER ...
+        path    : string like "software\\microsoft\\windows\\currentversion"
+                           or "software\\wow6432node\\microsoft\\windows\\currentversion"
+        keyname : None for value of key or str for a specific value like 'CommonFilesDir'
+        value   : value (integer or string type) to put in keyname
+    the path can be either with backslash or slash"""
+    path = path.replace(u'/',u'\\')
+    key = reg_openkey_noredir(root,path,sam=KEY_WRITE,create_if_missing=True)
+    if not type:
+        if isinstance(value,list):
+            type = REG_MULTI_SZ
+        elif isinstance(value,int):
+            type = REG_DWORD
+        else:
+            type = REG_SZ
+    result = reg_setvalue(key,keyname,value,type=type)
+    return result
+
 def inifile_hasoption(inifilename,section,key):
     """Read a string parameter from inifile"""
     inifile = RawConfigParser()

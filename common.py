@@ -3462,6 +3462,45 @@ def install():
         """Remove a key from local db"""
         self.waptdb.delete_param(name)
 
+    def create_self_signed_key(self,orgname,destdir='c:/private',
+            country='FR',
+            locality=u'St-Sébastien sur Loire',
+            organization=u'Tranquil IT Systems',
+            unit='IT Support',
+            commonname='wapt.tranquilit.local',
+            email='info@tranquil.it',
+            update_ini=False,
+        ):
+        """Creates a self signed key/certificate and returns the paths (keyfilename,crtfilename)"""
+        destpem = os.path.join(destdir,'%s.pem' % orgname)
+        destcrt = os.path.join(self.wapt_base_dir,'ssl','%s.crt' % orgname)
+        if os.path.isfile(destpem):
+            raise Exception('Destination SSL key %s already exist' % destpem)
+        if not os.path.isdir(destdir):
+            os.makedirs(destdir)
+        os.chdir(destdir)
+        params = {
+            'country':'FR',
+            'locality':u'St-Sébastien sur Loire',
+            'organization':u'Tranquil IT Systems',
+            'unit':'IT Support',
+            'commonname':'wapt.tranquilit.local',
+            'email':'info@tranquil.it',
+        }
+        openssl_bin = os.path.join(self.wapt_base_dir,'lib','site-packages','M2Crypto','openssl.exe')
+        opensslcfg = codecs.open(os.path.join(self.wapt_base_dir,'openssl_template.cfg'),'r',encoding='utf8').read() % params
+        opensslcfg_fn = os.path.join(destdir,'openssl.cfg')
+        codecs.open(opensslcfg_fn,'w',encoding='utf8').write(opensslcfg)
+        os.environ['OPENSSL_CONF'] =  'openssl.cfg'
+        out = setuphelpers.run('%(openssl_bin)s req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout %(destpem)s -out %(destcrt)s' %
+            {'openssl_bin':openssl_bin,'orgname':orgname,'destcrt':destcrt,'destpem':destpem})
+        print out
+        if update_ini:
+            setuphelpers.inifile_writestring(self.config_filename,'global','private_key',destpem)
+            setuphelpers.inifile_writestring(self.config_filename,'global','public_cert',destcrt)
+
+        return (destpem,destcrt)
+
 ###
 
 REGEX_MODULE_VERSION = re.compile(
@@ -3497,6 +3536,7 @@ class Version():
 
 
 if __name__ == '__main__':
+    """
     logger.setLevel(logging.DEBUG)
     if len(logger.handlers)<1:
         hdlr = logging.StreamHandler(sys.stdout)
@@ -3506,6 +3546,13 @@ if __name__ == '__main__':
     cfg = RawConfigParser()
     cfg.read('c:\\tranquilit\\wapt\\wapt-get.ini')
     w = Wapt(config=cfg)
+    """
+    w = Wapt(config_filename='c:/wapt/wapt-get.ini')
+    os.remove('c:/private/toto.pem')
+    w.create_self_signed_key('toto',unit='essai',email='htouvet@tranquil.it',update_ini=True)
+
+    sys.exit(0)
+
     print w.waptdb.get_param('toto')
     print w.check_install_running(max_ttl = 1)
 
