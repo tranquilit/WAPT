@@ -95,6 +95,7 @@ action is either :
   duplicate <directory or package> [<new-package-name> [<new-version> [<target directory>]]]: duplicate an existing package,
                                             changing its name (can be used for duplication of host packages...)
   edit <package> : download an unzip a package. Open in Explorer the target directory
+  edit-host <host fwqdn> : download an unzip a host package. Open in Explorer the target directory
 
  For repository management
   upload-package  <filenames> : upload package to repository (using winscp for example.)
@@ -558,6 +559,21 @@ def main():
                     print u"You must provide the package to edit"
                     sys.exit(1)
                 result = mywapt.edit_package(*args[1:5])
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    if os.path.isdir(result['target']):
+                        os.startfile( result['target'])
+                        if mywapt.upload_cmd:
+                            print u"Package edited. You can build and upload the new WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result['target'])
+                        else:
+                            print u"Package edited. You can build the new WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result['target'])
+
+            elif action=='edit-host':
+                if len(args)<2:
+                    print u"You must provide the host fqdn package to edit"
+                    sys.exit(1)
+                result = mywapt.edit_host(*args[1:5])
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
