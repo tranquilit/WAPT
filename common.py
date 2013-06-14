@@ -76,7 +76,7 @@ from setuphelpers import ensure_unicode
 
 import types
 
-__version__ = "0.6.22"
+__version__ = "0.6.23"
 
 logger = logging.getLogger()
 
@@ -3194,7 +3194,7 @@ class Wapt(object):
             codecs.open(control_filename,'w',encoding='utf8').write(entry.ascontrol())
         else:
             logger.info('control file already exists, skip create')
-        return (directoryname)
+        return directoryname
 
     def makehosttemplate(self,packagename='',depends=None,directoryname=''):
         """Build a skeleton of WAPT package based on the properties of the supplied installer
@@ -3227,7 +3227,7 @@ class Wapt(object):
         if not os.path.isfile(control_filename):
             entry.priority = 'standard'
             entry.section = 'host'
-            entry.version = '0.0.0-00'
+            entry.version = '0'
             entry.architecture='all'
             entry.description = 'Host package for %s ' % packagename
             try:
@@ -3277,7 +3277,7 @@ class Wapt(object):
 
         codecs.open(control_filename,'w',encoding='utf8').write(entry.ascontrol())
 
-        return (directoryname)
+        return directoryname
 
 
     def is_installed(self,packagename):
@@ -3307,7 +3307,8 @@ class Wapt(object):
         if hostdate:
             return self.duplicate_package(packagename=hostname,newname=hostname,target_directory=target_directory,build=False)
         else:
-            return ''
+            new_source = self.makehosttemplate(packagename=hostname,directoryname=target_directory)
+            return {'target':new_source,'source_dir':new_source,'package':PackageEntry().load_control_from_wapt(new_source)}
 
     def duplicate_package(self,packagename,newname=None,newversion='',target_directory='',
             build=True,
@@ -3399,6 +3400,7 @@ class Wapt(object):
         else:
             result['target'] = package_dev_dir
         result['package'] = dest_control
+        result['source_dir'] = package_dev_dir
         return result
 
     def check_waptupgrades(self):

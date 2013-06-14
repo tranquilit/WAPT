@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.6.22"
+__version__ = "0.6.23"
 
 import sys
 import os
@@ -530,6 +530,8 @@ def main():
                     jsonresult['result'] = result
                 else:
                     print u"Template created. You can build the WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result)
+                    if mywapt.upload_cmd:
+                        print u"You can build and upload the WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result)
                     os.startfile(result)
 
             elif action=='make-host-template':
@@ -538,6 +540,8 @@ def main():
                     jsonresult['result'] = result
                 else:
                     print u"Template created. You can build the WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result)
+                    if mywapt.upload_cmd:
+                        print u"You can build and upload the WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result)
                     os.startfile(result)
 
             elif action=='duplicate':
@@ -550,9 +554,12 @@ def main():
                 else:
                     if os.path.isdir(result['target']):
                         os.startfile( result)
-                        print u"Package duplicated. You can build the new WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result['target'])
+                        print u"Package duplicated. You can build the new WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result['source_dir'])
+                        if mywapt.upload_cmd:
+                            print u"You can build and upload the new WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result['source_dir'])
                     else:
                         print u"Package duplicated. You can upload the new WAPT package to repository by launching\n  %s upload-package %s" % (sys.argv[0],result['target'])
+                        print u"You can rebuild and upload the new WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result['source_dir'])
 
             elif action=='edit':
                 if len(args)<2:
