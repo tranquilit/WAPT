@@ -98,8 +98,13 @@ begin
       if previous_upgrades=Nil then
         previous_upgrades := TSuperObject.Create(stArray);
 
+      upgrade_status := Nil;
+      running := Nil;
+      upgrades := Nil;
+      errors := Nil;
+
       //test running tasks first
-      new_runstatus := WAPTLocalJsonGet('runstatus').S['value'];
+      new_runstatus := WAPTLocalJsonGet('runstatus')['0'].S['value'];
       if new_runstatus<>'' then
       begin
         new_traymode:=tmRunning;
@@ -144,7 +149,7 @@ begin
         previous_runstatus:=new_runstatus;
       end
       else
-      if (upgrades.AsJSon<>previous_upgrades.AsJSon) or force_balloon then
+      if (upgrades<>Nil) and (previous_upgrades<>Nil) and ((upgrades.AsJSon<>previous_upgrades.AsJSon) or force_balloon) then
       begin
         if upgrades.AsArray.Length>previous_upgrades.AsArray.Length then
           new_balloon:='Nouvelles mises à jour disponibles'

@@ -17,8 +17,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="1"/>
-      <RevisionNr Value="12"/>
-      <BuildNr Value="4"/>
+      <RevisionNr Value="13"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Tray Icon" ProductName="WAPT" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">

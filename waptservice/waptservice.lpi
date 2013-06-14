@@ -90,11 +90,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WaptUnit"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="273"/>
-        <CursorPos X="34" Y="292"/>
+        <TopLine Value="126"/>
+        <CursorPos X="1" Y="139"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -143,10 +142,13 @@
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
+        <TopLine Value="274"/>
+        <CursorPos X="45" Y="16"/>
         <UsageCount Value="206"/>
+        <Loaded Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-process\src\process.pp"/>
@@ -876,7 +878,7 @@
         <UsageCount Value="16"/>
       </Unit101>
     </Units>
-    <JumpHistory Count="16" HistoryIndex="14">
+    <JumpHistory Count="23" HistoryIndex="22">
       <Position1>
         <Filename Value="waptunit.pas"/>
         <Caret Line="120" Column="1" TopLine="97"/>
@@ -939,8 +941,36 @@
       </Position15>
       <Position16>
         <Filename Value="waptunit.pas"/>
-        <Caret Line="486" Column="37" TopLine="470"/>
+        <Caret Line="292" Column="34" TopLine="188"/>
       </Position16>
+      <Position17>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="59" Column="27" TopLine="37"/>
+      </Position17>
+      <Position18>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="174" Column="78" TopLine="144"/>
+      </Position18>
+      <Position19>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="461" Column="79" TopLine="432"/>
+      </Position19>
+      <Position20>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="59" Column="27" TopLine="41"/>
+      </Position20>
+      <Position21>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="174" Column="78" TopLine="144"/>
+      </Position21>
+      <Position22>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="461" Column="79" TopLine="432"/>
+      </Position22>
+      <Position23>
+        <Filename Value="waptunit.pas"/>
+        <Caret Line="114" Column="27" TopLine="95"/>
+      </Position23>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

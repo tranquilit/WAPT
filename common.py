@@ -2933,7 +2933,9 @@ class Wapt(object):
                 others[1].append(p['filename'])
         for package_group in (hosts,others):
             if package_group[1]:
-                cmd_dict =  {'waptfile': ' '.join(package_group[1]),'waptdir':package_group[0]}
+                # add quotes for command line
+                files_list = ['"%s"' % f for f in package_group[1]]
+                cmd_dict =  {'waptfile': ' '.join(files_list),'waptdir':package_group[0]}
                 print setuphelpers.run(self.upload_cmd % cmd_dict)
                 if package_group<>hosts:
                     if self.after_upload:

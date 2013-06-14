@@ -1,8 +1,16 @@
+#define Company "Tranquil IT Systems"
 #define AppName "WAPT"
 #define SrcApp AddBackslash(SourcePath) + "..\wapt-get.exe"
 #define FileVerStr GetFileVersion(SrcApp)
 #define StripBuild(str VerStr) Copy(VerStr, 1, RPos(".", VerStr)-1)
 #define AppVerStr StripBuild(FileVerStr)
+
+#define default_repo_url "http://wapt.tranquil.it/wapt"
+#define default_public_cert "tranquilit.crt"
+
+#define default_wapt_server "http://srvwapt:8080"
+#define default_update_period "120"
+#define default_update_maxruntime "30"
 
 [Files]
 Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
@@ -35,7 +43,6 @@ Source: "..\vc_redist\*"; DestDir: "{tmp}\vc_redist";
 Source: "..\lib\site-packages\M2Crypto\libeay32.dll" ; DestDir: "{app}"; 
 Source: "..\lib\site-packages\M2Crypto\ssleay32.dll" ; DestDir: "{app}";
 
-
 [Setup]
 AppName={#AppName}
 AppVersion={#AppVerStr}
@@ -43,11 +50,11 @@ AppVerName={#AppName} {#AppVerStr}
 UninstallDisplayName={#AppName} {#AppVerStr}
 VersionInfoVersion={#FileVerStr}
 VersionInfoTextVersion={#AppVerStr}
-AppCopyright=Tranquil IT Systems
+AppCopyright={#Company}
 DefaultDirName="C:\{#AppName}"
 DefaultGroupName={#AppName}
 ChangesEnvironment=True
-AppPublisher=Tranquil IT Systems
+AppPublisher={#Company}
 OutputDir="."
 OutputBaseFilename=waptsetup
 SolidCompression=True
@@ -61,6 +68,7 @@ MinVersion=0,5.0sp4
 LicenseFile=..\COPYING.txt
 RestartIfNeededByRun=False
 SetupIconFile=..\wapt.ico
+SignTool=kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f
 
 [Registry]
 Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"; Check: NeedsAddPath('{app}')
@@ -69,9 +77,9 @@ Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\wapt-ge
 [INI]
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL}
 Filename: {app}\wapt-get.ini; Section: global; Key: public_cert; String: {code:GetPublicCert}
-Filename: {app}\wapt-get.ini; Section: global; Key: waptupdate_task_period; String: 120; Flags:  createkeyifdoesntexist 
-Filename: {app}\wapt-get.ini; Section: global; Key: waptupdate_task_maxruntime; String: 30; Flags: createkeyifdoesntexist
-Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: http://srvwapt:8080; Tasks: usewaptserver; Flags: createkeyifdoesntexist
+Filename: {app}\wapt-get.ini; Section: global; Key: waptupdate_task_period; String: {#default_update_period}; Flags:  createkeyifdoesntexist 
+Filename: {app}\wapt-get.ini; Section: global; Key: waptupdate_task_maxruntime; String: {#default_update_maxruntime}; Flags: createkeyifdoesntexist
+Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {#default_wapt_server}; Tasks: usewaptserver; Flags: createkeyifdoesntexist
 Filename: {app}\wapt-get.ini; Section: tranquilit; Key: repo_url; String: http://wapt.tranquil.it/wapt; Tasks: usetispublic; Flags: createkeyifdoesntexist
 Filename: {app}\wapt-get.ini; Section: tranquilit; Key: public_cert; String: {app}\ssl\tranquilit.crt; Tasks: usetispublic; Flags: createkeyifdoesntexist
 Filename: {app}\wapt-get.ini; Section: global; Key: repositories; String: tranquilit; Flags: createkeyifdoesntexist; Tasks: useTISPublic
@@ -95,7 +103,6 @@ Name: autorunTray; Description: "Start WAPT Tray icon at logon"; Flags: unchecke
 Name: setupTasks; Description: "Creates windows scheduled tasks for update and upgrade"; 
 Name: useTISPublic; Description: "Use Tranquil IT public repository as a secondary source"; Flags: unchecked
 Name: useWaptServer; Description: "Register http://srvwapt:8080 as the central WAPT manage server"; Flags: unchecked
-
 
 [UninstallRun]
 Filename: "taskkill"; Parameters: "/t /im ""wapttray.exe"" /f"; Flags: runhidden; StatusMsg: "Stopping wapt tray"
@@ -158,10 +165,10 @@ procedure CurPageChanged(CurPageID: Integer);
 begin
   if curPageId=wpSelectTasks then
   begin
-    teWaptUrl.Text := GetIniString('Global', 'repo_url', 'http://wapt.tranquil.it/wapt', ExpandConstant('{app}\wapt-get.ini'));
+    teWaptUrl.Text := GetIniString('Global', 'repo_url', '{#default_repo_url}', ExpandConstant('{app}\wapt-get.ini'));
     rbCustomRepo.Checked := teWaptUrl.Text <> ''; 
     rbDnsRepo.Checked := teWaptUrl.Text = ''; 
-    teWaptPublicCert.Text := GetIniString('Global', 'public_cert', ExpandConstant('{app}\ssl\tranquilit.crt'), ExpandConstant('{app}\wapt-get.ini'));
+    teWaptPublicCert.Text := GetIniString('Global', 'public_cert', ExpandConstant('{app}\ssl\{#default_public_cert}'), ExpandConstant('{app}\wapt-get.ini'));
   end;
 end;
 
@@ -181,7 +188,7 @@ end;
 function GetPublicCert(Param: String):String;
 begin
   if WizardSilent then
-    result := GetIniString('Global', 'public_cert', ExpandConstant('{app}\ssl\tranquilit.crt'), ExpandConstant('{app}}\wapt-get.ini'))
+    result := GetIniString('Global', 'public_cert', ExpandConstant('{app}\ssl\{#default_public_cert}'), ExpandConstant('{app}}\wapt-get.ini'))
   else
     result := teWaptPublicCert.Text;
 end;
@@ -262,3 +269,4 @@ begin
   Result := Pos(';' + UpperCase(ExpandConstant(Param)) + ';', UpperCase(OrigPath)) = 0;
   
 end;
+

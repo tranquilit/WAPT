@@ -648,7 +648,9 @@ def main():
                             others[1].append(p['filename'])
                     for package_group in (hosts,others):
                         if package_group[1]:
-                            cmd_dict =  {'waptfile': ' '.join(package_group[1]),'waptdir':package_group[0]}
+                            # add quotes for command line
+                            files_list = ['"%s"' % f for f in package_group[1]]
+                            cmd_dict =  {'waptfile': ' '.join(files_list),'waptdir':package_group[0]}
                             print setuphelpers.run(mywapt.upload_cmd % cmd_dict)
                             if package_group<>hosts:
                                 if mywapt.after_upload:
@@ -690,13 +692,15 @@ def main():
                     p = PackageEntry()
                     p.load_control_from_wapt(w)
                     if p.section == 'host':
-                        hosts[1].append(p['filename'])
+                        hosts[1].append(w)
                     else:
-                        others[1].append(p['filename'])
+                        others[1].append(w)
 
                 for package_group in (hosts,others):
                     if package_group[1]:
-                        cmd_dict =  {'waptfile': ' '.join(package_group[1]),'waptdir':package_group[0]}
+                        # add quotes for command line
+                        files_list = ['"%s"' % f for f in package_group[1]]
+                        cmd_dict =  {'waptfile': ' '.join(files_list),'waptdir':package_group[0]}
                         print setuphelpers.run(mywapt.upload_cmd % cmd_dict)
                         if package_group<>hosts:
                             if mywapt.after_upload:
