@@ -63,8 +63,9 @@ OutputDir="."
 OutputBaseFilename=waptsetup
 SolidCompression=True
 AppPublisherURL=http://www.tranquil.it
-AppUpdatesURL=http://wapt.tranquil.it/wapt/waptsetup.exe
-AppContact=dev@tranquil.it
+AppUpdatesURL=http://wapt.tranquil.it/wapt
+AppSupportURL=http://dev.tranquil.it/index.php/WAPT_-_apt-get_pour_Windows
+AppContact=wapt@lists.tranquil.it
 AppSupportPhone=+33 2 40 97 57 55
 CloseApplications=False
 PrivilegesRequired=admin
@@ -106,12 +107,12 @@ Name: installTray; Description: "Install WAPT Tray icon";
 Name: autorunTray; Description: "Start WAPT Tray icon at logon"; Flags: unchecked
 Name: setupTasks; Description: "Creates windows scheduled tasks for update and upgrade"; 
 Name: useTISPublic; Description: "Use Tranquil IT public repository as a secondary source"; Flags: unchecked
-Name: useWaptServer; Description: "Register http://srvwapt:8080 as the central WAPT manage server"; Flags: unchecked
+Name: useWaptServer; Description: "Register {#default_wapt_server} as the central WAPT manage server"; Flags: unchecked
 
 [UninstallRun]
 Filename: "taskkill"; Parameters: "/t /im ""wapttray.exe"" /f"; Flags: runhidden; StatusMsg: "Stopping wapt tray"
-Filename: "net"; Parameters: "stop waptservice"; Flags: runhidden; StatusMsg: "Stop swaptservice"
-Filename: "{app}\waptservice.exe"; Parameters: "--uninstall"; Flags: runhidden; StatusMsg: "Uninstall swaptservice"
+Filename: "net"; Parameters: "stop waptservice"; Flags: runhidden; StatusMsg: "Stop waptservice"
+Filename: "{app}\waptservice.exe"; Parameters: "--uninstall"; Flags: runhidden; StatusMsg: "Uninstall waptservice"
 
 [Code]
 #include "services.iss"
@@ -139,15 +140,12 @@ begin
   teWaptUrl.Parent := CustomPage.Surface; 
   teWaptUrl.Left :=rbCustomRepo.Left + rbCustomRepo.Width;
   teWaptUrl.Width :=CustomPage.SurfaceWidth - rbCustomRepo.Width;
-  
-
-  
+   
   rbDnsRepo := TNewRadioButton.Create(WizardForm);
   rbDnsRepo.Parent := CustomPage.Surface;
   rbDnsRepo.Top := rbCustomRepo.Top + rbCustomRepo.Height + ScaleY(15);
   rbDnsRepo.Width := CustomPage.SurfaceWidth;
   rbDnsRepo.Caption := 'Detect WAPT repository with DNS records';
-
 
   lab1 := TLabel.Create(WizardForm);
   lab1.Caption := 'Public certificate for packages validation:';

@@ -3163,27 +3163,7 @@ class Wapt(object):
             directoryname = os.path.join(self.config.get('global','default_sources_root'),packagename)+'-%s' % self.config.get('global','default_sources_suffix','wapt')
         if not os.path.isdir(os.path.join(directoryname,'WAPT')):
             os.makedirs(os.path.join(directoryname,'WAPT'))
-        template = """\
-# -*- coding: utf-8 -*-
-from setuphelpers import *
-
-# registry key(s) where WAPT will find how to remove the application(s)
-uninstallkey = []
-
-# command(s) to launch to remove the application(s)
-uninstallstring = []
-
-# list of required parameters names (string) which canb be used during install
-required_params = []
-
-def install():
-    # if you want to modify the keys depending on environment (win32/win64... params..)
-    global uninstallkey
-    global uninstallstring
-
-    print('installing %(packagename)s')
-    run('%(installer)s %(silentflags)s')
-""" % locals()
+        template = codecs.open(os.path.join(self.wapt_base_dir,'templates','setup_package_template.py'),encoding='utf8').read() % locals()
         setuppy_filename = os.path.join(directoryname,'setup.py')
         if not os.path.isfile(setuppy_filename):
             codecs.open(setuppy_filename,'w',encoding='utf8').write(template)
@@ -3235,25 +3215,7 @@ def install():
 
         if not os.path.isdir(os.path.join(directoryname,'WAPT')):
             os.makedirs(os.path.join(directoryname,'WAPT'))
-        template = """\
-# -*- coding: utf-8 -*-
-from setuphelpers import *
-
-# registry key(s) where WAPT will find how to remove the application(s)
-uninstallkey = []
-
-# command(s) to launch to remove the application(s)
-uninstallstring = []
-
-# list of required parameters names (string) which can be used during install
-required_params = []
-
-def install():
-    # if you want to modify the keys depending on environment (win32/win64... params..)
-    global uninstallkey
-    global uninstallstring
-    print('installing %(packagename)s')
-""" % locals()
+        template = codecs.open(os.path.join(self.wapt_base_dir,'templates','setup_host_template.py'),encoding='utf8').read() % locals()
         setuppy_filename = os.path.join(directoryname,'setup.py')
         if not os.path.isfile(setuppy_filename):
             codecs.open(setuppy_filename,'w',encoding='utf8').write(template)
@@ -3497,64 +3459,6 @@ def install():
     def delete_param(self,name):
         """Remove a key from local db"""
         self.waptdb.delete_param(name)
-
-    def create_self_signed_key(self,orgname,destdir='c:\\private',
-            country='FR',
-            locality=u'',
-            organization=u'',
-            unit='',
-            commonname='',
-            email='',
-        ):
-        """Creates a self signed key/certificate and returns the paths (keyfilename,crtfilename)"""
-        destpem = os.path.join(destdir,'%s.pem' % orgname)
-        destcrt = os.path.join(destdir,'%s.crt' % orgname)
-        if os.path.isfile(destpem):
-            raise Exception('Destination SSL key %s already exist' % destpem)
-        if not os.path.isdir(destdir):
-            os.makedirs(destdir)
-        params = {
-            'country':country,
-            'locality':locality,
-            'organization':organization,
-            'unit':unit,
-            'commonname':commonname,
-            'email':email,
-        }
-        opensslbin = os.path.join(self.wapt_base_dir,'lib','site-packages','M2Crypto','openssl.exe')
-        opensslcfg = codecs.open(os.path.join(self.wapt_base_dir,'openssl_template.cfg'),'r',encoding='utf8').read() % params
-        opensslcfg_fn = os.path.join(destdir,'openssl.cfg')
-        codecs.open(opensslcfg_fn,'w',encoding='utf8').write(opensslcfg)
-        os.environ['OPENSSL_CONF'] =  os.path.join(destdir,'openssl.cfg')
-        out = setuphelpers.run('%(opensslbin)s req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout %(destpem)s -out %(destcrt)s' %
-            {'opensslbin':opensslbin,'orgname':orgname,'destcrt':destcrt,'destpem':destpem})
-        print out
-        return {'pem_filename':destpem,'crt_filename':destcrt}
-
-    def create_wapt_setup(self,rep_work,crt_file):
-        """Build a customized waptsetup.exe with included provided certificate
-        Returns filename"""
-        setuphelpers.ensure_dir(rep_work)
-        wapt_Source='https://github.com/tranquilit/WAPT/archive/master.zip'
-        print('Download Source to %s' %rep_work)
-        setuphelpers.wget('https://github.com/tranquilit/WAPT/archive/master.zip',rep_work)
-        print('Extract to %s' %setuphelpers.makepath(rep_work,'master.zip'))
-        master_zip = ZipFile(setuphelpers.makepath(rep_work,'master.zip'))
-        master_zip.extractall(rep_work)
-        iss_template = setuphelpers.makepath(rep_work,'WAPT-master','waptsetup','wapt.iss')
-        iss = codecs.open(iss_template,'r',encoding='utf8').read().splitlines()
-        new_iss=[]
-        for line in iss:
-            if line.startswith('#define default_public_cert'):
-                new_iss.append('#define default_public_cert "%s"' % (os.path.basename(crt_file),))
-            elif not line.startswith('SignTool'):
-                new_iss.append(line)
-        setuphelpers.filecopyto(crt_file,os.path.join(os.path.dirname(iss_template),'..','ssl'))
-        codecs.open(iss_template,'w',encoding='utf8').write('\n'.join(new_iss))
-        setuphelpers.run('"C:\Program Files\Inno Setup 5\Compil32.exe" /cc %s' % iss_template)
-        print('waptsetup.exe finish to compile in %s' %os.path.dirname(iss_template))
-        return iss_template
-
 
     def add_repository(self,url,public_cert,private_key=None):
         pass
