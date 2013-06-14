@@ -3529,23 +3529,28 @@ def install():
         print out
         return {'pem_filename':destpem,'crt_filename':destcrt}
 
-    def create_wapt_setup(self,iss_template,crt_file):
+    def create_wapt_setup(self,rep_work,crt_file):
         """Build a customized waptsetup.exe with included provided certificate
         Returns filename"""
+        setuphelpers.ensure_dir(rep_work)
+        wapt_Source='https://github.com/tranquilit/WAPT/archive/master.zip'
+        print('Download Source to %s' %rep_work)
+        setuphelpers.wget('https://github.com/tranquilit/WAPT/archive/master.zip',rep_work)
+        print('Extract to %s' %setuphelpers.makepath(rep_work,'master.zip'))
+        master_zip = ZipFile(setuphelpers.makepath(rep_work,'master.zip'))
+        master_zip.extractall(rep_work)
+        iss_template = setuphelpers.makepath(rep_work,'WAPT-master','waptsetup','wapt.iss')
         iss = codecs.open(iss_template,'r',encoding='utf8').read().splitlines()
-        new_iss = []
+        new_iss=[]
         for line in iss:
-            if line.startswith('#define certfile'):
-                new_iss.append('#define certfile "%s"' % (os.path.basename(crt_file),))
+            if line.startswith('#define default_public_cert'):
+                new_iss.append('#define default_public_cert "%s"' % (os.path.basename(crt_file),))
             elif not line.startswith('SignTool'):
                 new_iss.append(line)
-
-
         setuphelpers.filecopyto(crt_file,os.path.join(os.path.dirname(iss_template),'..','ssl'))
         codecs.open(iss_template,'w',encoding='utf8').write('\n'.join(new_iss))
-        proc = win32api.ShellExecute(0, 'Compile' , iss_template , None , None , 1 )
-        #win32api.WaitForSingleObject(proc, win32api.INFINITE)
-        #win32api.CloseHandle(proc);
+        setuphelpers.run('"C:\Program Files\Inno Setup 5\Compil32.exe" /cc %s' % iss_template)
+        print('waptsetup.exe finish to compile in %s' %os.path.dirname(iss_template))
         return iss_template
 
 
@@ -3599,15 +3604,15 @@ if __name__ == '__main__':
     w = Wapt(config=cfg)
     """
     w = Wapt(config_filename='c:/wapt/wapt-get.ini')
-    w.create_wapt_setup('c:\\tranquilit\\wapt\\waptsetup\\wapt.iss','c:\\private\\test.crt')
+    w.create_wapt_setup('C:\\test\\','c:\\private\\test2.crt')
 
     #os.remove('c:/private/toto.pem')
     #w.create_self_signed_key('toto',unit='essai',email='htouvet@tranquil.it',update_ini=True)
 
-    os.remove('c:/private/toto.pem')
-    w.create_self_signed_key('toto')
+    #os.remove('c:/private/toto.pem')
+    #w.create_self_signed_key('toto')
 
-    w.edit_host('htlaptop.tranquilit.local')
+    #w.edit_host('htlaptop.tranquilit.local')
 
     #os.remove('c:/private/toto.pem')
     #w.create_self_signed_key('toto')
