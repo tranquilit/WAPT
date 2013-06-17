@@ -359,7 +359,7 @@ def create_recursive_zip_signed(zipfn, source_root, target_root = u"",excludes =
 
     if isinstance(zipfn,str) or isinstance(zipfn,unicode):
         if logger: logger.debug(u'Create zip file %s' % zipfn)
-        zipf = ZipFile(zipfn,'w')
+        zipf = ZipFile(zipfn,'w',allowZip64=True)
     elif isinstance(zipfn,ZipFile):
         zipf = zipfn
     else:
@@ -1844,6 +1844,10 @@ class Wapt(object):
 
         for pid in reset_error:
             self.waptdb.update_install_status_pid(pid,'ERROR')
+
+        if reset_error or not init_run_pids:
+            self.runstatus = ''
+
         # return pids of install in progress
         return result
 
@@ -2767,7 +2771,7 @@ class Wapt(object):
         if not os.path.isfile(private_key):
             raise Exception('Private key file %s not found' % private_key)
         if os.path.isfile(zip_or_directoryname):
-            waptzip = ZipFile(zip_or_directoryname,'a')
+            waptzip = ZipFile(zip_or_directoryname,'a',allowZip64=True)
             manifest = waptzip.open('WAPT/manifest.sha1').read()
         else:
             manifest_data = get_manifest_data(zip_or_directoryname,excludes=excludes)
@@ -3346,14 +3350,14 @@ class Wapt(object):
             source_filename = packagename
             source_control = PackageEntry().load_control_from_wapt(source_filename)
             logger.info('  unzipping %s to directory %s' % (source_filename,package_dev_dir))
-            zip = ZipFile(source_filename)
+            zip = ZipFile(source_filename,allowZip64=True)
             zip.extractall(path=package_dev_dir)
         else:
             filenames = self.download_packages([packagename])
             source_filename = (filenames['downloaded'] or filenames['skipped'])[0]
             source_control = PackageEntry().load_control_from_wapt(source_filename)
             logger.info('  unzipping %s to directory %s' % (source_filename,package_dev_dir))
-            zip = ZipFile(source_filename)
+            zip = ZipFile(source_filename,allowZip64=True)
             zip.extractall(path=package_dev_dir)
 
         # duplicate package informations

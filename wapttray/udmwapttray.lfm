@@ -56,6 +56,7 @@ object DMWaptTray: TDMWaptTray
     top = 47
   end
   object PopupMenu1: TPopupMenu
+    OnPopup = PopupMenu1Popup
     left = 172
     top = 47
     object MenuItem6: TMenuItem
@@ -77,6 +78,18 @@ object DMWaptTray: TDMWaptTray
     end
     object MenuItem3: TMenuItem
       Action = ActLaunchGui
+    end
+    object MenuItem8: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem9: TMenuItem
+      Action = ActWaptUpgrade
+    end
+    object MenuItem11: TMenuItem
+      Caption = '-'
+    end
+    object MenuWaptVersion: TMenuItem
+      Caption = 'Version WAPT'
     end
     object MenuItem5: TMenuItem
       Action = ActQuit
@@ -115,6 +128,10 @@ object DMWaptTray: TDMWaptTray
       Caption = 'Lancer l''interface graphique WAPT'
       OnExecute = ActLaunchGuiExecute
       OnUpdate = ActLaunchGuiUpdate
+    end
+    object ActWaptUpgrade: TAction
+      Caption = 'Mettre à jour le logiciel WAPT'
+      OnExecute = ActWaptUpgradeExecute
     end
   end
   object TrayUpdate: TImageList

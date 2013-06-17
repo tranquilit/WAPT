@@ -15,6 +15,7 @@ type
   TDMWaptTray = class(TDataModule)
     ActForceRegisterComputer: TAction;
     ActConfigure: TAction;
+    ActWaptUpgrade: TAction;
     ActLaunchGui: TAction;
     ActionList1: TActionList;
     ActQuit: TAction;
@@ -22,8 +23,12 @@ type
     ActShowStatus: TAction;
     ActUpdate: TAction;
     ActUpgrade: TAction;
+    MenuWaptVersion: TMenuItem;
+    MenuItem11: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem7: TMenuItem;
+    MenuItem8: TMenuItem;
+    MenuItem9: TMenuItem;
     TrayUpdate: TImageList;
     TrayRunning: TImageList;
     MenuItem1: TMenuItem;
@@ -41,8 +46,10 @@ type
     procedure ActShowStatusExecute(Sender: TObject);
     procedure ActUpdateExecute(Sender: TObject);
     procedure ActUpgradeExecute(Sender: TObject);
+    procedure ActWaptUpgradeExecute(Sender: TObject);
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
+    procedure PopupMenu1Popup(Sender: TObject);
     procedure TrayIcon1DblClick(Sender: TObject);
   private
     procedure SetTrayIcon(idx: integer);
@@ -59,7 +66,7 @@ var
   DMWaptTray: TDMWaptTray;
 
 implementation
-uses LCLIntf,Forms,windows,superobject,graphics,tiscommon,waptcommon,tisinifiles;
+uses LCLIntf,Forms,windows,superobject,graphics,tiscommon,waptcommon,tisinifiles,soutils;
 
 {$R *.lfm}
 type
@@ -87,7 +94,7 @@ type
 
 procedure TCheckThread.Execute;
 var
-  upgrade_status:ISuperObject;
+  upgrade_status,new_runstatus_so:ISuperObject;
 begin
   repeat
     try
@@ -104,7 +111,11 @@ begin
       errors := Nil;
 
       //test running tasks first
-      new_runstatus := WAPTLocalJsonGet('runstatus')['0'].S['value'];
+      new_runstatus_so := WAPTLocalJsonGet('runstatus');
+      if (new_runstatus_so<>Nil) and (new_runstatus_so.AsArray.Length>0)  then
+        new_runstatus := new_runstatus_so['0'].S['value']
+      else
+        new_runstatus := 'Impossible de récupérer l''action en cours';
       if new_runstatus<>'' then
       begin
         new_traymode:=tmRunning;
@@ -127,12 +138,12 @@ begin
         if (upgrades<>Nil) and (upgrades.AsArray.Length>0) then
         begin
           new_traymode:=tmUpgrades;
-          new_hint:='Mises à jour disponibles pour : '+upgrades.AsJson;
+          new_hint:='Mises à jour disponibles pour : '+#13#10+soutils.join(#13#10,upgrades);
         end
         else
         if (errors<>Nil) and (errors.AsArray.Length>0) then
         begin
-          new_hint:='Erreurs : '+errors.AsJson;
+          new_hint:='Erreurs : '+#13#10+ Join(#13#10,errors);
           new_traymode:=tmErrors;
         end
         else
@@ -152,10 +163,12 @@ begin
       if (upgrades<>Nil) and (previous_upgrades<>Nil) and ((upgrades.AsJSon<>previous_upgrades.AsJSon) or force_balloon) then
       begin
         if upgrades.AsArray.Length>previous_upgrades.AsArray.Length then
-          new_balloon:='Nouvelles mises à jour disponibles'
+          new_balloon:='Mises à jour disponibles pour : '+#13#10+soutils.join(#13#10,upgrades)
         else
           if (running<>Nil) and (running.AsArray.Length>0) then
             new_balloon:='Installation en cours : '+running.AsString
+          else if (errors<>Nil) and (errors.AsArray.Length>0) then
+            new_balloon:='Erreurs : '+#13#10+ Join(#13#10,errors)
           else if upgrades.AsArray.Length=0 then
             new_balloon:='Système à jour';
         previous_upgrades:= upgrades;
@@ -248,6 +261,16 @@ begin
   TrayIcon1.ShowBalloonHint;
 end;
 
+procedure TDMWaptTray.ActWaptUpgradeExecute(Sender: TObject);
+var
+  res : String;
+begin
+  TCheckThread(check_thread).Synchronize(@TCheckThread(check_thread).ResetPreviousUpgrades);
+  res := httpGetString(GetWaptLocalURL+'/waptupgrade');
+  TrayIcon1.BalloonHint:='Mise à jour du logiciel WAPT lancée en arrière plan...';
+  TrayIcon1.ShowBalloonHint;
+end;
+
 procedure TDMWaptTray.DataModuleCreate(Sender: TObject);
 begin
   checkinterval:=IniReadInteger(WaptIniFilename,'Global','tray_check_interval')*1000;
@@ -264,6 +287,11 @@ procedure TDMWaptTray.DataModuleDestroy(Sender: TObject);
 begin
   TerminateThread(check_thread.Handle,0);
   FreeAndNil(check_thread);
+end;
+
+procedure TDMWaptTray.PopupMenu1Popup(Sender: TObject);
+begin
+  MenuWaptVersion.Caption:=GetApplicationVersion(WaptgetPath);
 end;
 
 procedure TDMWaptTray.ActConfigureExecute(Sender: TObject);
