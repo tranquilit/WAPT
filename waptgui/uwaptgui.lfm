@@ -4,7 +4,7 @@ object VisWaptGUI: TVisWaptGUI
   Top = 216
   Width = 1028
   Caption = 'VisWaptGUI'
-  ClientHeight = 563
+  ClientHeight = 564
   ClientWidth = 1028
   Menu = MainMenu1
   OnCreate = FormCreate
@@ -12,20 +12,20 @@ object VisWaptGUI: TVisWaptGUI
   LCLVersion = '1.1'
   object PageControl1: TPageControl
     Left = 0
-    Height = 440
+    Height = 441
     Top = 0
     Width = 1028
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Align = alClient
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Sources'
-      ClientHeight = 414
+      ClientHeight = 415
       ClientWidth = 1020
       inline testedit: TSynEdit
         Left = 0
-        Height = 380
+        Height = 381
         Top = 34
         Width = 1020
         Align = alClient
@@ -612,7 +612,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object TabSheet2: TTabSheet
       Caption = 'Recherche packages'
-      ClientHeight = 414
+      ClientHeight = 415
       ClientWidth = 1020
       object Panel4: TPanel
         Left = 0
@@ -643,7 +643,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object lstPackages: TVirtualJSONListView
         Left = 0
-        Height = 380
+        Height = 381
         Top = 34
         Width = 1020
         Align = alClient
@@ -933,12 +933,12 @@ object VisWaptGUI: TVisWaptGUI
           item
             AutoSize = True
             Caption = 'Package'
-            Width = 55
+            Width = 52
           end        
           item
             AutoSize = True
             Caption = 'Status'
-            Width = 46
+            Width = 43
           end        
           item
             AutoSize = True
@@ -948,12 +948,12 @@ object VisWaptGUI: TVisWaptGUI
           item
             AutoSize = True
             Caption = 'Description'
-            Width = 68
+            Width = 65
           end        
           item
             AutoSize = True
             Caption = 'Depends'
-            Width = 493
+            Width = 502
           end>
         Items.LazData = {
           7A00000003000000FFFFFFFFFFFFFFFFFFFFFFFF020000000400000074657374
@@ -1016,21 +1016,22 @@ object VisWaptGUI: TVisWaptGUI
             item
               AutoSize = True
               Caption = 'Package'
-              Width = 55
+              Width = 52
             end          
             item
               AutoSize = True
               Caption = 'Version'
+              Width = 47
             end          
             item
               AutoSize = True
               Caption = 'Description'
-              Width = 68
+              Width = 65
             end          
             item
               AutoSize = True
               Caption = 'Depends'
-              Width = 111
+              Width = 120
             end>
           DragMode = dmAutomatic
           Items.LazData = {
@@ -1253,7 +1254,7 @@ object VisWaptGUI: TVisWaptGUI
   object Panel3: TPanel
     Left = 0
     Height = 118
-    Top = 445
+    Top = 446
     Width = 1028
     Align = alBottom
     ClientHeight = 118
@@ -1321,7 +1322,7 @@ object VisWaptGUI: TVisWaptGUI
       Left = 8
       Height = 17
       Top = 96
-      Width = 134
+      Width = 136
       Anchors = [akLeft, akBottom]
       Caption = 'Voir infos de débuggage'
       OnClick = cbShowLogClick
@@ -1332,7 +1333,7 @@ object VisWaptGUI: TVisWaptGUI
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 440
+    Top = 441
     Width = 1028
     Align = alBottom
     ResizeAnchor = akBottom

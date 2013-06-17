@@ -9,10 +9,10 @@
         <Filename Value="waptgui.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptgui"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="1" Y="23"/>
+        <CursorPos X="37" Y="11"/>
         <UsageCount Value="166"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -26,8 +26,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="379"/>
-        <CursorPos X="45" Y="420"/>
+        <TopLine Value="556"/>
+        <CursorPos X="44" Y="588"/>
         <UsageCount Value="166"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -69,7 +69,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisCreateKey"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="50" Y="66"/>
@@ -87,7 +87,6 @@
         <TopLine Value="12"/>
         <CursorPos X="24" Y="24"/>
         <UsageCount Value="21"/>
-        <LoadedDesigner Value="True"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\wapt-get\soutils.pas"/>
@@ -100,12 +99,10 @@
       <Unit9>
         <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
         <UnitName Value="PythonEngine"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="5453"/>
-        <CursorPos X="81" Y="5457"/>
+        <CursorPos X="10" Y="5453"/>
         <UsageCount Value="18"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit9>
       <Unit10>
@@ -264,7 +261,7 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="18" HistoryIndex="17">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="uviscreatekey.pas"/>
         <Caret Line="38" Column="70" TopLine="25"/>
@@ -337,10 +334,58 @@
         <Filename Value="uwaptgui.pas"/>
         <Caret Line="588" Column="1" TopLine="586"/>
       </Position18>
+      <Position19>
+        <Filename Value="uwaptgui.pas"/>
+        <Caret Line="400" Column="54" TopLine="379"/>
+      </Position19>
+      <Position20>
+        <Filename Value="uwaptgui.pas"/>
+        <Caret Line="167" Column="46" TopLine="149"/>
+      </Position20>
+      <Position21>
+        <Filename Value="uwaptgui.pas"/>
+        <Caret Line="425" Column="4" TopLine="402"/>
+      </Position21>
+      <Position22>
+        <Filename Value="waptgui.lpr"/>
+        <Caret Line="21" Column="1" TopLine="1"/>
+      </Position22>
+      <Position23>
+        <Filename Value="uwaptgui.pas"/>
+        <Caret Line="10" Column="76" TopLine="19"/>
+      </Position23>
+      <Position24>
+        <Filename Value="uwaptgui.pas"/>
+        <Caret Line="193" Column="14" TopLine="498"/>
+      </Position24>
+      <Position25>
+        <Filename Value="uwaptgui.pas"/>
+        <Caret Line="588" Column="65" TopLine="567"/>
+      </Position25>
+      <Position26>
+        <Filename Value="uwaptgui.pas"/>
+        <Caret Line="477" Column="1" TopLine="459"/>
+      </Position26>
+      <Position27>
+        <Filename Value="uwaptgui.pas"/>
+        <Caret Line="615" Column="1" TopLine="597"/>
+      </Position27>
+      <Position28>
+        <Filename Value="uwaptgui.pas"/>
+        <Caret Line="237" Column="1" TopLine="219"/>
+      </Position28>
+      <Position29>
+        <Filename Value="uwaptgui.pas"/>
+        <Caret Line="498" Column="1" TopLine="480"/>
+      </Position29>
+      <Position30>
+        <Filename Value="uwaptgui.pas"/>
+        <Caret Line="535" Column="1" TopLine="543"/>
+      </Position30>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
-    <BreakPoints Count="1">
+    <BreakPoints Count="8">
       <Item1>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
@@ -348,6 +393,55 @@
         <Source Value="..\waptserviceapp\uvisappwaptservice.pas"/>
         <Line Value="129"/>
       </Item1>
+      <Item2>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="uwaptgui.pas"/>
+        <Line Value="457"/>
+      </Item2>
+      <Item3>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="uwaptgui.pas"/>
+        <Line Value="434"/>
+      </Item3>
+      <Item4>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="uwaptgui.pas"/>
+        <Line Value="385"/>
+      </Item4>
+      <Item5>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="uwaptgui.pas"/>
+        <Line Value="345"/>
+      </Item5>
+      <Item6>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="uwaptgui.pas"/>
+        <Line Value="192"/>
+      </Item6>
+      <Item7>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="uwaptgui.pas"/>
+        <Line Value="207"/>
+      </Item7>
+      <Item8>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="uwaptgui.pas"/>
+        <Line Value="175"/>
+      </Item8>
     </BreakPoints>
   </Debugging>
   <EditorMacros Count="0"/>

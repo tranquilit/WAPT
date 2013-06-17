@@ -164,7 +164,7 @@ var
   VisWaptGUI: TVisWaptGUI;
 
 implementation
-uses LCLIntf,soutils,waptcommon,uVisCreateKey,uVisGenerateWaptSetup;
+uses LCLIntf,soutils,waptcommon,uVisCreateKey;
 {$R *.lfm}
 
 { TVisWaptGUI }
@@ -417,12 +417,12 @@ end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
 begin
-  With TVisGenerateWaptSetup.Create(self) do
+  {With TVisGenerateWaptSetup.Create(self) do
   try
 
   finally
   end;
-
+  }
 
 end;
 
@@ -583,9 +583,9 @@ procedure TVisWaptGUI.lstPackagesPaintText(Sender: TBaseVirtualTree;
   TextType: TVSTTextType);
 begin
   if StrIsOneOf(GetValue(lstPackages,Node,'status'),['I','U']) then
-    lstPackages.Font.style := lstPackages.Font.style + [fsBold]
+    TargetCanvas.Font.style := TargetCanvas.Font.style + [fsBold]
   else
-    lstPackages.Font.style := lstPackages.Font.style - [fsBold]
+    TargetCanvas.Font.style := TargetCanvas.Font.style - [fsBold]
 
 end;
 
