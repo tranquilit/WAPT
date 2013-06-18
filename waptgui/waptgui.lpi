@@ -15,7 +15,7 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <RevisionNr Value="3"/>
+      <RevisionNr Value="4"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -106,11 +106,12 @@
         <UnitName Value="uVisCreateKey"/>
       </Unit6>
       <Unit7>
-        <Filename Value="uvisgeneratewaptsetup.pas"/>
+        <Filename Value="dmwaptpython.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="VisGenerateWaptSetup"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uVisGenerateWaptSetup"/>
+        <ComponentName Value="DMPython"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <UnitName Value="dmwaptpython"/>
       </Unit7>
     </Units>
   </ProjectOptions>

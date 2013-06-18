@@ -1406,11 +1406,27 @@ class WaptDB(WaptBaseDB):
 
 
 class WaptRepo(object):
-    def __init__(self,waptdb,name='',url='',certfilename=''):
+    def __init__(self,wapt,name='',url=None,certfilename=''):
         self.name = name
-        self.repo_url = url
+        self._repo_url = url
         self.public_cert = certfilename
-        self.waptdb = waptdb
+        self.wapt = wapt
+
+    @property
+    def waptdb(self):
+        return self.wapt.waptdb
+
+    @property
+    def repo_url(self):
+        if self._repo_url:
+            return self._repo_url
+        else:
+            return self.wapt.wapt_repourl
+
+    @repo_url.setter
+    def repo_url(self,value):
+        """Wapt main repository URL"""
+        self._repo_url = value
 
     def load_config(self,config,section=''):
         if section:
@@ -1526,6 +1542,10 @@ class WaptHostRepo(WaptRepo):
 
         return host_package_date
 
+    @property
+    def repo_url(self):
+        return self.wapt.wapt_repourl+'-host'
+
 ######################"""
 key_passwd = None
 
@@ -1638,20 +1658,20 @@ class Wapt(object):
             logger.info(u'Other repositories : %s' % (names,))
             for name in names:
                 if name:
-                    w = WaptRepo(self.waptdb,name).load_config(self.config)
+                    w = WaptRepo(self,name).load_config(self.config)
                     self.repositories.append(w)
                     logger.debug(u'    %s:%s' % (w.name,w.repo_url))
         # last is main repository so it overrides the secondary repositories
-        main = WaptRepo(self.waptdb,'global').load_config(self.config)
+        main = WaptRepo(self,'global').load_config(self.config)
         # override with calculated url
-        main.repo_url = self.wapt_repourl
+        # delayed
+        #main.repo_url = self.wapt_repourl
         self.repositories.append(main)
 
         # add an automatic host repo
-        host_repo = WaptHostRepo(self.waptdb,'wapt-host')
+        host_repo = WaptHostRepo(self,'wapt-host',certfilename=main.public_cert)
         # override with calculated url
-        host_repo.repo_url = main.repo_url+'-host'
-        host_repo.public_cert = main.public_cert
+        #host_repo.repo_url = main.repo_url+'-host'
         self.repositories.append(host_repo)
 
     def load_config(self,config_filename):
@@ -3468,6 +3488,23 @@ class Wapt(object):
 
     def add_repository(self,url,public_cert,private_key=None):
         pass
+
+    def dependencies(self,packagename,expand=False):
+        packages = self.is_available(packagename)
+        result = []
+        errors = []
+        if packages:
+            for dep in packages[-1].depends.split(','):
+                subpackages = self.is_available(dep)
+                if subpackages:
+                    if expand:
+                        result.extend(self.dependencies(dep))
+                    if not subpackages[-1] in result:
+                        result.append(subpackages[-1])
+                else:
+                    errors.append(dep)
+
+        return result
 
 ###
 

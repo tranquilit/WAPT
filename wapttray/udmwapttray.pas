@@ -15,6 +15,7 @@ type
   TDMWaptTray = class(TDataModule)
     ActForceRegisterComputer: TAction;
     ActConfigure: TAction;
+    ActLocalInfo: TAction;
     ActWaptUpgrade: TAction;
     ActLaunchGui: TAction;
     ActionList1: TActionList;
@@ -23,12 +24,15 @@ type
     ActShowStatus: TAction;
     ActUpdate: TAction;
     ActUpgrade: TAction;
-    MenuWaptVersion: TMenuItem;
-    MenuItem11: TMenuItem;
+    MenuItem10: TMenuItem;
+    MenuItem12: TMenuItem;
+    MenuItem13: TMenuItem;
     MenuItem3: TMenuItem;
+    MenuItem11: TMenuItem;
     MenuItem7: TMenuItem;
     MenuItem8: TMenuItem;
     MenuItem9: TMenuItem;
+    MenuWaptVersion: TMenuItem;
     TrayUpdate: TImageList;
     TrayRunning: TImageList;
     MenuItem1: TMenuItem;
@@ -42,6 +46,7 @@ type
     procedure ActConfigureExecute(Sender: TObject);
     procedure ActLaunchGuiExecute(Sender: TObject);
     procedure ActLaunchGuiUpdate(Sender: TObject);
+    procedure ActLocalInfoExecute(Sender: TObject);
     procedure ActQuitExecute(Sender: TObject);
     procedure ActShowStatusExecute(Sender: TObject);
     procedure ActUpdateExecute(Sender: TObject);
@@ -66,7 +71,7 @@ var
   DMWaptTray: TDMWaptTray;
 
 implementation
-uses LCLIntf,Forms,windows,superobject,graphics,tiscommon,waptcommon,tisinifiles,soutils;
+uses LCLIntf,Forms,dialogs,windows,superobject,graphics,tiscommon,waptcommon,tisinifiles,soutils;
 
 {$R *.lfm}
 type
@@ -315,6 +320,11 @@ end;
 procedure TDMWaptTray.ActLaunchGuiUpdate(Sender: TObject);
 begin
   ActLaunchGui.Enabled:=FileExists(WinapticFileName);
+end;
+
+procedure TDMWaptTray.ActLocalInfoExecute(Sender: TObject);
+begin
+  ShowMessage(GetCurrentUserSid);
 end;
 
 procedure TDMWaptTray.ActQuitExecute(Sender: TObject);

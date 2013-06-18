@@ -443,6 +443,7 @@ begin
           'waptservice version: '+GetApplicationVersion(WaptservicePath)+'<br>'+'<br>'+
           'Current status: '+WaptRunstatus.S['value']+'<br>'+
           'User : '+tiscommon.GetUserName+'<br>'+
+          'User SID : '+tiscommon.GetCurrentUserSid+'<br>'+
           'Machine: '+tiscommon.GetComputerName+'<br>'+
           'Workgroup: '+ GetWorkGroupName+'<br>'+
           'Domain: '+ GetDomainName+'<br>'+

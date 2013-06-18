@@ -1,20 +1,19 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 880
-  Height = 583
-  Top = 216
-  Width = 1028
+  Left = 297
+  Height = 642
+  Top = 294
+  Width = 998
   Caption = 'VisWaptGUI'
-  ClientHeight = 564
-  ClientWidth = 1028
+  ClientHeight = 623
+  ClientWidth = 998
   Menu = MainMenu1
   OnCreate = FormCreate
-  OnDestroy = FormDestroy
   LCLVersion = '1.1'
   object PageControl1: TPageControl
     Left = 0
-    Height = 441
+    Height = 500
     Top = 0
-    Width = 1028
+    Width = 998
     ActivePage = TabSheet2
     Align = alClient
     TabIndex = 1
@@ -588,7 +587,7 @@ object VisWaptGUI: TVisWaptGUI
           Height = 25
           Top = 5
           Width = 196
-          Action = ActInit
+          Action = ActExecCode
           TabOrder = 0
         end
         object EdRun: TEdit
@@ -608,21 +607,29 @@ object VisWaptGUI: TVisWaptGUI
           Action = ActEvaluate
           TabOrder = 2
         end
+        object Button6: TButton
+          Left = 580
+          Height = 25
+          Top = 2
+          Width = 144
+          Action = ActEvaluateVar
+          TabOrder = 3
+        end
       end
     end
     object TabSheet2: TTabSheet
       Caption = 'Recherche packages'
-      ClientHeight = 415
-      ClientWidth = 1020
+      ClientHeight = 474
+      ClientWidth = 990
       object Panel4: TPanel
         Left = 0
         Height = 34
         Top = 0
-        Width = 1020
+        Width = 990
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 34
-        ClientWidth = 1020
+        ClientWidth = 990
         TabOrder = 0
         object EdSearch: TEdit
           Left = 4
@@ -636,177 +643,110 @@ object VisWaptGUI: TVisWaptGUI
           Left = 148
           Height = 25
           Top = 2
-          Width = 120
+          Width = 88
           Action = ActSearchPackage
           TabOrder = 1
+        end
+        object Button8: TButton
+          Left = 268
+          Height = 25
+          Top = 2
+          Width = 184
+          Action = ActUpdate
+          TabOrder = 2
+        end
+        object Button2: TButton
+          Left = 460
+          Height = 25
+          Top = 2
+          Width = 136
+          Action = ActUpgrade
+          TabOrder = 3
+        end
+        object Button1: TButton
+          Left = 604
+          Height = 25
+          Top = 2
+          Width = 224
+          Action = ActRegisterHost
+          TabOrder = 4
         end
       end
       object lstPackages: TVirtualJSONListView
         Left = 0
-        Height = 381
+        Height = 440
         Top = 34
-        Width = 1020
+        Width = 990
         Align = alClient
         Color = clWhite
         Header.AutoSizeIndex = 0
         Header.Columns = <        
           item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+            MaxWidth = 100
             Position = 0
-            Text = 'package'
+            Text = 'Section'
+            PropertyName = 'section'
+          end        
+          item
+            MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+            Position = 1
+            Text = 'Paquet'
             Width = 300
             PropertyName = 'package'
           end        
           item
+            MaxWidth = 200
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-            Position = 1
-            Text = 'status'
+            Position = 2
+            Text = 'Status'
             PropertyName = 'status'
           end        
           item
+            MaxWidth = 200
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-            Position = 2
-            Text = 'version'
+            Position = 3
+            Text = 'Version'
             Width = 30
             PropertyName = 'version'
           end        
           item
+            MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-            Position = 3
-            Text = 'description'
+            Position = 4
+            Text = 'Description'
             PropertyName = 'description'
           end        
           item
+            MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-            Position = 4
-            Text = 'depends'
+            Position = 5
+            Text = 'Dépendances'
             PropertyName = 'depends'
           end        
           item
-            Position = 5
-            Text = 'explicit_by'
+            Position = 6
+            Text = 'Installé par'
             PropertyName = 'explicit_by'
           end>
         Header.DefaultHeight = 17
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
+        Header.SortColumn = 0
         Header.Style = hsFlatButtons
         PopupMenu = PopupMenuPackages
         TabOrder = 1
+        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
         TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+        OnCompareNodes = lstPackagesCompareNodes
         OnPaintText = lstPackagesPaintText
-        OnInitNode = lstPackagesInitNode
-        OnKeyDown = lstPackagesKeyDown
-      end
-    end
-    object TabSheet3: TTabSheet
-      Caption = 'Mise à jour package'
-      ClientHeight = 414
-      ClientWidth = 1020
-      object tvjson: TVirtualJSONInspector
-        Left = 0
-        Height = 380
-        Top = 34
-        Width = 1020
-        PropertyDefs = <>
-        Align = alClient
-        Color = clWhite
-        Header.AutoSizeIndex = -1
-        Header.Columns = <        
-          item
-            Position = 0
-            Text = 'Property'
-            Width = 150
-          end        
-          item
-            Position = 1
-            Text = 'Value'
-            Width = 866
-          end>
-        Header.DefaultHeight = 17
-        Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
-        TabOrder = 0
-        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes]
-        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
-        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-        TreeOptions.SelectionOptions = [toExtendedFocus]
-      end
-      object Panel5: TPanel
-        Left = 0
-        Height = 34
-        Top = 0
-        Width = 1020
-        Align = alTop
-        BevelOuter = bvNone
-        ClientHeight = 34
-        ClientWidth = 1020
-        TabOrder = 1
-        object Button1: TButton
-          Left = 12
-          Height = 25
-          Top = 2
-          Width = 248
-          Action = ActUpdate
-          TabOrder = 0
-        end
-      end
-    end
-    object TabSheet4: TTabSheet
-      Caption = 'Mise à jour système'
-      ClientHeight = 434
-      ClientWidth = 1020
-      object Panel6: TPanel
-        Left = 0
-        Height = 34
-        Top = 0
-        Width = 1020
-        Align = alTop
-        BevelOuter = bvNone
-        ClientHeight = 34
-        ClientWidth = 1020
-        TabOrder = 0
-        object Button2: TButton
-          Left = 12
-          Height = 25
-          Top = 2
-          Width = 248
-          Action = ActUpgrade
-          TabOrder = 0
-        end
-      end
-      object tvjson1: TVirtualJSONInspector
-        Left = 0
-        Height = 400
-        Top = 34
-        Width = 1020
-        PropertyDefs = <>
-        Align = alClient
-        Color = clWhite
-        Header.AutoSizeIndex = -1
-        Header.Columns = <        
-          item
-            Position = 0
-            Text = 'Property'
-            Width = 150
-          end        
-          item
-            Position = 1
-            Text = 'Value'
-            Width = 866
-          end>
-        Header.DefaultHeight = 17
-        Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
-        TabOrder = 1
-        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes]
-        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
-        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-        TreeOptions.SelectionOptions = [toExtendedFocus]
+        OnHeaderClick = lstPackagesHeaderClick
       end
     end
     object pgEditPackage: TTabSheet
       Caption = 'Editer package'
-      ClientHeight = 434
+      ClientHeight = 415
       ClientWidth = 1020
       object Panel2: TPanel
         Left = 0
@@ -923,62 +863,16 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 7
         end
       end
-      object lstDepends: TListView
-        Left = 0
-        Height = 384
-        Top = 50
-        Width = 730
-        Align = alClient
-        Columns = <        
-          item
-            AutoSize = True
-            Caption = 'Package'
-            Width = 52
-          end        
-          item
-            AutoSize = True
-            Caption = 'Status'
-            Width = 43
-          end        
-          item
-            AutoSize = True
-            Caption = 'Version'
-            Width = 64
-          end        
-          item
-            AutoSize = True
-            Caption = 'Description'
-            Width = 65
-          end        
-          item
-            AutoSize = True
-            Caption = 'Depends'
-            Width = 502
-          end>
-        Items.LazData = {
-          7A00000003000000FFFFFFFFFFFFFFFFFFFFFFFF020000000400000074657374
-          05000000302E302E300B0000006465637372697074696F6EFFFFFFFFFFFFFFFF
-          FFFFFFFF0000000009000000456CC3A96D656E7431FFFFFFFFFFFFFFFFFFFFFF
-          FF0000000009000000456CC3A96D656E7432FFFFFFFFFFFFFFFF
-        }
-        MultiSelect = True
-        PopupMenu = PopupMenuEditDepends
-        ReadOnly = True
-        TabOrder = 1
-        ViewStyle = vsReport
-        OnDragDrop = lstDependsDragDrop
-        OnDragOver = lstDependsDragOver
-      end
       object Panel8: TPanel
         Left = 730
-        Height = 384
+        Height = 365
         Top = 50
         Width = 290
         Align = alRight
         Caption = 'Panel8'
-        ClientHeight = 384
+        ClientHeight = 365
         ClientWidth = 290
-        TabOrder = 2
+        TabOrder = 1
         object Panel9: TPanel
           Left = 1
           Height = 34
@@ -1008,7 +902,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object lstPackages1: TListView
           Left = 1
-          Height = 348
+          Height = 329
           Top = 35
           Width = 288
           Align = alClient
@@ -1048,21 +942,81 @@ object VisWaptGUI: TVisWaptGUI
           ViewStyle = vsReport
         end
       end
+      object lstDepends: TVirtualJSONListView
+        Left = 0
+        Height = 365
+        Top = 50
+        Width = 725
+        Align = alClient
+        Color = clWhite
+        Header.AutoSizeIndex = -1
+        Header.Columns = <        
+          item
+            MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+            Position = 0
+            Text = 'Paquet'
+            Width = 300
+            PropertyName = 'package'
+          end        
+          item
+            MaxWidth = 100
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
+            Position = 1
+            Text = 'Version'
+            Width = 30
+            PropertyName = 'version'
+          end        
+          item
+            MaxWidth = 400
+            Position = 2
+            Text = 'Description'
+            PropertyName = 'description'
+          end        
+          item
+            MaxWidth = 400
+            Position = 3
+            Text = 'Dépendances'
+            PropertyName = 'depends'
+          end>
+        Header.DefaultHeight = 17
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
+        Header.Style = hsFlatButtons
+        PopupMenu = PopupMenuEditDepends
+        TabOrder = 2
+        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+        TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+        OnCompareNodes = lstPackagesCompareNodes
+        OnDragOver = lstDependsDragOver
+        OnDragDrop = lstDependsDragDrop
+        OnPaintText = lstPackagesPaintText
+        OnHeaderClick = lstPackagesHeaderClick
+      end
+      object Splitter3: TSplitter
+        Left = 725
+        Height = 365
+        Top = 50
+        Width = 5
+        Align = alRight
+        ResizeAnchor = akRight
+      end
     end
     object pgInventory: TTabSheet
       Caption = 'Inventaire'
-      ClientHeight = 414
-      ClientWidth = 1020
+      ClientHeight = 474
+      ClientWidth = 990
       object Panel10: TPanel
         Left = 0
         Height = 34
         Top = 0
-        Width = 1020
+        Width = 990
         Align = alTop
         ClientHeight = 34
-        ClientWidth = 1020
+        ClientWidth = 990
         TabOrder = 0
-        object Edit1: TEdit
+        object EdSearchHost: TEdit
           Left = 60
           Height = 21
           Top = 6
@@ -1078,203 +1032,365 @@ object VisWaptGUI: TVisWaptGUI
           ParentColor = False
         end
         object CheckBox1: TCheckBox
-          Left = 228
+          Left = 364
           Height = 17
           Top = 10
-          Width = 149
+          Width = 151
           Caption = 'Nécessite des mises à jours'
           TabOrder = 1
         end
         object CheckBox2: TCheckBox
-          Left = 404
+          Left = 524
           Height = 17
           Top = 10
-          Width = 100
+          Width = 102
           Caption = 'Avec des erreurs'
           TabOrder = 2
+        end
+        object Button7: TButton
+          Left = 212
+          Height = 25
+          Top = 6
+          Width = 123
+          Action = ActSearchHost
+          TabOrder = 3
         end
       end
       object GridHosts: TVirtualJSONListView
         Left = 0
-        Height = 380
+        Height = 440
         Top = 34
-        Width = 448
-        Align = alLeft
+        Width = 413
+        Align = alClient
         Color = clWhite
         Header.AutoSizeIndex = -1
         Header.Columns = <        
           item
+            MaxWidth = 400
             Position = 0
+            Text = 'name'
+            Width = 100
+            PropertyName = 'name'
           end        
           item
+            MaxWidth = 400
             Position = 1
+            Text = 'description'
+            Width = 100
+            PropertyName = 'description'
           end        
           item
+            MaxWidth = 400
             Position = 2
+            Text = 'manufacturer'
+            Width = 100
+            PropertyName = 'manufacturer'
+          end        
+          item
+            MaxWidth = 400
+            Position = 3
+            Text = 'model'
+            Width = 100
+            PropertyName = 'model'
+          end        
+          item
+            MaxWidth = 400
+            Position = 4
+            Text = 'serial'
+            Width = 100
+            PropertyName = 'serial'
+          end        
+          item
+            MaxWidth = 400
+            Position = 5
+            Text = 'last_query_date'
+            Width = 100
+            PropertyName = 'last_query_date'
+          end        
+          item
+            MaxWidth = 400
+            Position = 6
+            Text = 'mac'
+            Width = 100
+            PropertyName = 'mac'
+          end        
+          item
+            MaxWidth = 400
+            Position = 7
+            Text = 'last_known_ip'
+            Width = 100
+            PropertyName = 'last_known_ip'
+          end        
+          item
+            MaxWidth = 400
+            Position = 8
+            Text = 'uuid'
+            Width = 100
+            PropertyName = 'uuid'
+          end        
+          item
+            MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 9
+            Text = 'md5sum'
+            Width = 100
+            PropertyName = 'md5sum'
+          end        
+          item
+            MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 10
+            Text = 'purchase_order'
+            Width = 100
+            PropertyName = 'purchase_order'
+          end        
+          item
+            MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 11
+            Text = 'purchase_date'
+            Width = 100
+            PropertyName = 'purchase_date'
+          end        
+          item
+            MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 12
+            Text = 'groups'
+            Width = 100
+            PropertyName = 'groups'
+          end        
+          item
+            MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 13
+            Text = 'attributes'
+            Width = 100
+            PropertyName = 'attributes'
+          end        
+          item
+            MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 14
+            Text = 'id'
+            Width = 100
+            PropertyName = 'id'
           end>
         Header.DefaultHeight = 17
         Header.MainColumn = 1
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
         Header.Style = hsFlatButtons
-        PopupMenu = PopupMenuPackages
+        PopupMenu = PopupMenuHosts
         TabOrder = 1
-        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-        TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
-        OnInitNode = lstPackagesInitNode
-        OnKeyDown = lstPackagesKeyDown
+        TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
+        OnChange = GridHostsChange
+        OnCompareNodes = lstPackagesCompareNodes
+        OnHeaderClick = lstPackagesHeaderClick
       end
-      object PageControl2: TPageControl
-        Left = 448
-        Height = 380
+      object HostPages: TPageControl
+        Left = 418
+        Height = 440
         Top = 34
         Width = 572
         ActivePage = pgHostPackage
-        Align = alClient
+        Align = alRight
         TabIndex = 0
         TabOrder = 2
         object pgHostPackage: TTabSheet
           Caption = 'Configuration machine'
+          ClientHeight = 414
+          ClientWidth = 564
+          object GridhostAttribs: TVirtualJSONInspector
+            Left = 0
+            Height = 414
+            Top = 0
+            Width = 564
+            PropertyDefs = <>
+            Align = alClient
+            Color = clWhite
+            DragMode = dmAutomatic
+            Header.AutoSizeIndex = -1
+            Header.Columns = <            
+              item
+                Position = 0
+                Text = 'Propriété'
+                Width = 150
+              end            
+              item
+                Position = 1
+                Text = 'Valeur'
+                Width = 410
+              end>
+            Header.DefaultHeight = 17
+            Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
+            TabOrder = 0
+            TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes]
+            TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
+            TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+            TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
+          end
         end
         object pgPackages: TTabSheet
           Caption = 'Packages'
-          ClientHeight = 374
-          ClientWidth = 564
-          object VirtualJSONListView2: TVirtualJSONListView
+          ClientHeight = 355
+          ClientWidth = 559
+          object GridHostPackages: TVirtualJSONListView
             Left = 0
-            Height = 376
+            Height = 355
             Top = 0
-            Width = 544
+            Width = 559
+            Align = alClient
             Color = clWhite
             Header.AutoSizeIndex = 0
             Header.Columns = <            
               item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
                 Position = 0
-                Text = 'package'
-                Width = 300
-                PropertyName = 'package'
+                Text = 'Section'
+                PropertyName = 'section'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
                 Position = 1
-                Text = 'status'
-                PropertyName = 'status'
+                Text = 'Nom paquet'
+                Width = 300
+                PropertyName = 'name'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
                 Position = 2
-                Text = 'version'
+                Text = 'Status'
+                PropertyName = 'status'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 3
+                Text = 'Version'
                 Width = 30
                 PropertyName = 'version'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-                Position = 3
-                Text = 'description'
+                Position = 4
+                Text = 'Description'
                 PropertyName = 'description'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-                Position = 4
-                Text = 'depends'
+                Position = 5
+                Text = 'Dependances'
                 PropertyName = 'depends'
               end>
             Header.DefaultHeight = 17
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
             Header.Style = hsFlatButtons
-            PopupMenu = PopupMenuPackages
             TabOrder = 0
+            TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
             TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
             TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
             TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
-            OnInitNode = lstPackagesInitNode
-            OnKeyDown = lstPackagesKeyDown
+            OnCompareNodes = lstPackagesCompareNodes
+            OnHeaderClick = lstPackagesHeaderClick
           end
         end
         object pgSoftwares: TTabSheet
           Caption = 'Logiciels installés'
-          ClientHeight = 374
+          ClientHeight = 355
           ClientWidth = 564
-          object VirtualJSONListView3: TVirtualJSONListView
+          object GridHostSoftwares: TVirtualJSONListView
             Left = 0
-            Height = 376
+            Height = 355
             Top = 0
-            Width = 544
+            Width = 564
+            Align = alClient
             Color = clWhite
-            Header.AutoSizeIndex = 0
+            Header.AutoSizeIndex = -1
             Header.Columns = <            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
                 Position = 0
-                Text = 'package'
-                Width = 300
-                PropertyName = 'package'
+                Text = 'Editeur'
+                PropertyName = 'publisher'
               end            
               item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
                 Position = 1
-                Text = 'status'
-                PropertyName = 'status'
+                Text = 'Logiciel'
+                PropertyName = 'name'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
                 Position = 2
-                Text = 'version'
+                Text = 'Version'
                 Width = 30
                 PropertyName = 'version'
               end            
               item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
                 Position = 3
-                Text = 'description'
-                PropertyName = 'description'
+                Text = 'Date d''install'
+                PropertyName = 'install_date'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
                 Position = 4
-                Text = 'depends'
-                PropertyName = 'depends'
+                Text = 'Numéro de licence'
+                PropertyName = 'serial_nr'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 5
+                Text = 'Répertoire d''installation'
+                PropertyName = 'install_location'
               end>
             Header.DefaultHeight = 17
+            Header.MainColumn = 1
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
             Header.Style = hsFlatButtons
-            PopupMenu = PopupMenuPackages
             TabOrder = 0
+            TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
             TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
             TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
             TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
-            OnInitNode = lstPackagesInitNode
-            OnKeyDown = lstPackagesKeyDown
+            OnCompareNodes = lstPackagesCompareNodes
+            OnHeaderClick = lstPackagesHeaderClick
           end
         end
+      end
+      object Splitter4: TSplitter
+        Left = 413
+        Height = 440
+        Top = 34
+        Width = 5
+        Align = alRight
+        ResizeAnchor = akRight
       end
     end
   end
   object Panel3: TPanel
     Left = 0
     Height = 118
-    Top = 446
-    Width = 1028
+    Top = 505
+    Width = 998
     Align = alBottom
     ClientHeight = 118
-    ClientWidth = 1028
+    ClientWidth = 998
     TabOrder = 1
     object Panel7: TPanel
       Left = 1
       Height = 116
       Top = 1
-      Width = 1026
+      Width = 996
       Align = alClient
       Caption = 'Panel7'
       ClientHeight = 116
-      ClientWidth = 1026
+      ClientWidth = 996
       TabOrder = 1
       object Memo1: TMemo
         Left = 1
         Height = 114
         Top = 1
-        Width = 413
+        Width = 383
         Align = alClient
         Lines.Strings = (
           'Memo1'
@@ -1282,7 +1398,7 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 0
       end
       object jsonlog: TVirtualJSONInspector
-        Left = 419
+        Left = 389
         Height = 114
         Top = 1
         Width = 606
@@ -1310,7 +1426,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.SelectionOptions = [toExtendedFocus]
       end
       object Splitter2: TSplitter
-        Left = 414
+        Left = 384
         Height = 114
         Top = 1
         Width = 5
@@ -1333,8 +1449,8 @@ object VisWaptGUI: TVisWaptGUI
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 441
-    Width = 1028
+    Top = 500
+    Width = 998
     Align = alBottom
     ResizeAnchor = akBottom
   end
@@ -1357,23 +1473,6 @@ object VisWaptGUI: TVisWaptGUI
     ErrorAttri.FrameEdges = sfeAround
     left = 72
     top = 368
-  end
-  object PythonEngine1: TAtomPythonEngine
-    AutoLoad = False
-    DllName = 'python27.dll'
-    APIVersion = 1013
-    RegVersion = '2.5'
-    UseLastKnownVersion = False
-    IO = PythonGUIInputOutput1
-    left = 352
-    top = 144
-  end
-  object PythonGUIInputOutput1: TPythonGUIInputOutput
-    UnicodeIO = False
-    RawOutput = False
-    Output = Memo1
-    left = 352
-    top = 200
   end
   object BufDataset1: TBufDataset
     FieldDefs = <>
@@ -1407,9 +1506,9 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Mise à jour du système'
       OnExecute = ActUpgradeExecute
     end
-    object ActInit: TAction
+    object ActExecCode: TAction
       Caption = 'Exécuter le code source python'
-      OnExecute = ActInitExecute
+      OnExecute = ActExecCodeExecute
     end
     object ActEvaluate: TAction
       Caption = 'Evaluer'
@@ -1441,6 +1540,24 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Créer un Installeur Wapt personnalisé'
       OnExecute = ActCreateWaptSetupExecute
     end
+    object ActEvaluateVar: TAction
+      Caption = 'Evaluer Variant'
+      OnExecute = ActEvaluateVarExecute
+    end
+    object ActSearchHost: TAction
+      Category = 'hosts'
+      Caption = 'Rechercher machine'
+      OnExecute = ActSearchHostExecute
+    end
+    object ActEditHostPackage: TAction
+      Category = 'hosts'
+      Caption = 'Modifier la configuration du poste'
+      OnExecute = ActEditHostPackageExecute
+    end
+    object ActRegisterHost: TAction
+      Caption = 'Enregistrer l''ordinateur sur le serveur Wapt'
+      OnExecute = ActRegisterHostExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
@@ -1457,7 +1574,7 @@ object VisWaptGUI: TVisWaptGUI
   end
   object PopupMenuEditDepends: TPopupMenu
     left = 144
-    top = 280
+    top = 224
     object MenuItem4: TMenuItem
       Action = ActEditRemove
     end
@@ -1507,6 +1624,13 @@ object VisWaptGUI: TVisWaptGUI
       object MenuItem17: TMenuItem
         Action = ActCreateWaptSetup
       end
+    end
+  end
+  object PopupMenuHosts: TPopupMenu
+    left = 144
+    top = 296
+    object MenuItem18: TMenuItem
+      Action = ActEditHostPackage
     end
   end
 end

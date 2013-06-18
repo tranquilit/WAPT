@@ -50,7 +50,7 @@ interface
   function GetDNSServer:AnsiString;
   function GetDNSDomain:AnsiString;
 
-  function WAPTServerJsonGet(action:String):ISuperObject;
+  function WAPTServerJsonGet(action: String;args:Array of const): ISuperObject;
   function WAPTLocalJsonGet(action:String):ISuperObject;
 
 Type
@@ -121,8 +121,14 @@ begin
 end;
 
 function GetDNSServer:AnsiString;
+var
+  dnsserv : TDynStringArray;
 begin
-  result := GetDNSServers[0];
+  dnsserv := GetDNSServers;
+  if length(dnsserv)>0 then
+    result := GetDNSServers[0]
+  else
+    result :='';
 end;
 
 //Get dns domain from global tcpip parameters in registry
@@ -146,12 +152,14 @@ begin
   end;
 end;
 
-function WAPTServerJsonGet(action: String): ISuperObject;
+function WAPTServerJsonGet(action: String;args:Array of const): ISuperObject;
 var
   strresult : String;
 begin
   if StrLeft(action,1)<>'/' then
     action := '/'+action;
+  if length(args)>0 then
+    action := format(action,args);
   strresult:=httpGetString(GetWaptServerURL+action);
   Result := SO(strresult);
 end;

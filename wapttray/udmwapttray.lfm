@@ -63,9 +63,6 @@ object DMWaptTray: TDMWaptTray
       Action = ActShowStatus
       Default = True
     end
-    object MenuItem4: TMenuItem
-      Action = ActConfigure
-    end
     object MenuItem2: TMenuItem
       Action = ActUpdate
     end
@@ -76,20 +73,29 @@ object DMWaptTray: TDMWaptTray
       Caption = '-'
       Enabled = False
     end
-    object MenuItem3: TMenuItem
+    object MenuItem4: TMenuItem
       Action = ActLaunchGui
     end
-    object MenuItem8: TMenuItem
-      Caption = '-'
-    end
-    object MenuItem9: TMenuItem
-      Action = ActWaptUpgrade
+    object MenuItem10: TMenuItem
+      Caption = 'Configuration'
+      object MenuItem13: TMenuItem
+        Action = ActConfigure
+      end
+      object MenuItem3: TMenuItem
+        Action = ActWaptUpgrade
+      end
+      object MenuItem8: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem9: TMenuItem
+        Action = ActLocalInfo
+      end
+      object MenuWaptVersion: TMenuItem
+        Caption = 'Version'
+      end
     end
     object MenuItem11: TMenuItem
       Caption = '-'
-    end
-    object MenuWaptVersion: TMenuItem
-      Caption = 'Version WAPT'
     end
     object MenuItem5: TMenuItem
       Action = ActQuit
@@ -121,7 +127,7 @@ object DMWaptTray: TDMWaptTray
       OnExecute = ActShowStatusExecute
     end
     object ActConfigure: TAction
-      Caption = 'Configuration'
+      Caption = 'Voir le fichier de configuration'
       OnExecute = ActConfigureExecute
     end
     object ActLaunchGui: TAction
@@ -130,8 +136,12 @@ object DMWaptTray: TDMWaptTray
       OnUpdate = ActLaunchGuiUpdate
     end
     object ActWaptUpgrade: TAction
-      Caption = 'Mettre à jour le logiciel WAPT'
+      Caption = 'Mettre à jour le logiciel WAPT de cette machine'
       OnExecute = ActWaptUpgradeExecute
+    end
+    object ActLocalInfo: TAction
+      Caption = 'Informations sur le poste'
+      OnExecute = ActLocalInfoExecute
     end
   end
   object TrayUpdate: TImageList
