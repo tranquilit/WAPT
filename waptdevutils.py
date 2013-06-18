@@ -23,6 +23,8 @@
 
 import common
 from setuphelpers import *
+import active_directory
+import codecs
 
 def registered_organization():
     return registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOrganization')
@@ -54,7 +56,7 @@ def create_self_signed_key(wapt,orgname,destdir='c:\\private',
     opensslcfg = codecs.open(os.path.join(wapt.wapt_base_dir,'templates','openssl_template.cfg'),'r',encoding='utf8').read() % params
     opensslcfg_fn = os.path.join(destdir,'openssl.cfg')
     codecs.open(opensslcfg_fn,'w',encoding='utf8').write(opensslcfg)
-    os.environ['OPENSSL_CONF'] =  os.path.join(destdir,'templates','openssl.cfg')
+    os.environ['OPENSSL_CONF'] =  opensslcfg_fn
     out = run('%(opensslbin)s req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout %(destpem)s -out %(destcrt)s' %
         {'opensslbin':opensslbin,'orgname':orgname,'destcrt':destcrt,'destpem':destpem})
     print out
@@ -71,15 +73,45 @@ def create_wapt_setup(wapt,rep_work,default_public_cert='',default_default_repo_
     new_iss=[]
     for line in iss:
         if line.startswith('#define default_public_cert'):
-            new_iss.append('#define default_public_cert "%s"' % (os.path.basename(crt_file),))
+            new_iss.append('#define default_public_cert "%s"' % (os.path.basename(default_public_cert),))
         elif line.startswith('#define default_public_cert'):
-            new_iss.append('#define default_public_cert "%s"' % (os.path.basename(crt_file),))
+            new_iss.append('#define default_public_cert "%s"' % (os.path.basename(default_public_cert),))
         elif not line.startswith('SignTool'):
             new_iss.append(line)
-    filecopyto(crt_file,os.path.join(os.path.dirname(iss_template),'..','ssl'))
+    filecopyto(default_public_cert,os.path.join(os.path.dirname(iss_template),'..','ssl'))
     codecs.open(iss_template,'w',encoding='utf8').write('\n'.join(new_iss))
-    run('"C:\Program Files\Inno Setup 5\Compil32.exe" /cc %s' % iss_template)
+    inno_directory = '%s\\Inno Setup 5\\Compil32.exe'%programfiles32
+    run('"%s" /cc %s' % (inno_directory,iss_template))
     print('waptsetup.exe finish to compile in %s' %os.path.dirname(iss_template))
     return iss_template
+
+def diff_computer_ad_wapt(wapt):
+    """Return the computer in the Active Directory but not in Wapt Serveur """
+    computer_ad =  set([ c['dnshostname'] for c in  list(active_directory.search("objectClass='computer'"))])
+    computer_wapt = set( [ c['name'] for c in json.loads(requests.request('GET','%s/json/host_list'%wapt.wapt_server).content)])
+    diff = list(set(computer_ad)-set(computer_wapt))
+    return diff
+
+
+def diff_computer_wapt_ad(wapt):
+    """Return the computer in Wapt Serveur but not in the Active Directory"""
+    computer_ad =  set([ c['dnshostname'] for c in  list(active_directory.search("objectClass='computer'"))])
+    computer_wapt = set( [ c['name'] for c in json.loads(requests.request('GET','%s/json/host_list'%wapt.wapt_server).content)])
+    result = list(set(computer_wapt)-set(computer_ad))
+    return result
+
+def search_bad_waptseup(wapt,wapt_version):
+    """Return list of computers in the Wapt Server who have not the version of Wapt specified"""
+    hosts =  json.loads(requests.request('GET','%s/json/host_data'%wapt.wapt_server).content)
+    result = dict()
+    for i in hosts:
+        wapt = [w for w in  i['softwares'] if w['key'] == 'WAPT_is1' ]
+        if wapt[0]['version'] != wapt_version:
+            result[i['name']] = wapt[0]['version']
+    return result
+
+wapt = common.Wapt(config_filename='c://wapt//wapt-get.ini')
+#print(search_bad_waptseup(wapt,'0.6.23'))
+#print diff_computer_ad_wapt(wapt)
 
 
