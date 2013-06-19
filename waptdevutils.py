@@ -25,6 +25,7 @@ import common
 from setuphelpers import *
 import active_directory
 import codecs
+from iniparse import RawConfigParser
 
 def registered_organization():
     return registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOrganization')
@@ -110,8 +111,22 @@ def search_bad_waptseup(wapt,wapt_version):
             result[i['name']] = wapt[0]['version']
     return result
 
+def add_remove_option_inifile(wapt,choice,section='',option='',value=''):
+    wapt_get_ini = RawConfigParser()
+    wapt_get_ini.read(makepath(wapt.wapt_base_dir,'wapt-get.ini'))
+    if choice == True:
+        wapt_get_ini.set(section,option,value)
+    elif choice == False:
+        wapt_get_ini.remove_option(section,option)
+    with open('c://wapt//wapt-get.ini', 'wb') as configfile:
+        wapt_get_ini.write(configfile)
+
+
+
+
 wapt = common.Wapt(config_filename='c://wapt//wapt-get.ini')
 #print(search_bad_waptseup(wapt,'0.6.23'))
 #print diff_computer_ad_wapt(wapt)
 
+add_remove_option_inifile(wapt,True,'global','upload_cmd','"c:\Program Files"\putty\pscp -v -l root %(waptfile)s srvwapt:/var/www/%(waptdir)s/')
 
