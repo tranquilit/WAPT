@@ -1,0 +1,25 @@
+object DMPython: TDMPython
+  OnCreate = DataModuleCreate
+  OnDestroy = DataModuleDestroy
+  OldCreateOrder = False
+  Height = 189
+  HorizontalOffset = 344
+  VerticalOffset = 336
+  Width = 178
+  object PythonEng: TPythonEngine
+    AutoLoad = False
+    DllName = 'python27.dll'
+    APIVersion = 1013
+    RegVersion = '2.5'
+    UseLastKnownVersion = False
+    IO = PythonOutput
+    left = 64
+    top = 32
+  end
+  object PythonOutput: TPythonGUIInputOutput
+    UnicodeIO = False
+    RawOutput = False
+    left = 64
+    top = 88
+  end
+end
