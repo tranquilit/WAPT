@@ -7,8 +7,9 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, pl_luicontrols, uwaptgui, uVisCreateKey, tisstrings,
-  waptcommon, tiscommon, tisinifiles, dmwaptpython;
+  Forms, pl_luicontrols, pl_bgracontrols, pl_graphics32ext, uwaptgui,
+  uVisCreateKey, tisstrings, waptcommon, tiscommon, tisinifiles, dmwaptpython,
+  uVisEditPackage;
 
 {$R *.res}
 

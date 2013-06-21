@@ -4,7 +4,7 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="36">
+    <Units Count="39">
       <Unit0>
         <Filename Value="waptgui.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -12,7 +12,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="45" Y="13"/>
-        <UsageCount Value="188"/>
+        <UsageCount Value="208"/>
       </Unit0>
       <Unit1>
         <Filename Value="uwaptgui.pas"/>
@@ -21,14 +21,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uwaptgui"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="287"/>
-        <CursorPos X="45" Y="281"/>
-        <UsageCount Value="188"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <TopLine Value="458"/>
+        <CursorPos X="1" Y="464"/>
+        <UsageCount Value="208"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\wapt-get\tisstrings.pas"/>
@@ -37,7 +33,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="2151"/>
         <CursorPos X="1" Y="2157"/>
-        <UsageCount Value="188"/>
+        <UsageCount Value="208"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
@@ -46,7 +42,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="140"/>
         <CursorPos X="12" Y="155"/>
-        <UsageCount Value="188"/>
+        <UsageCount Value="208"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\wapt-get\tiscommon.pas"/>
@@ -55,13 +51,13 @@
         <WindowIndex Value="0"/>
         <TopLine Value="262"/>
         <CursorPos X="48" Y="276"/>
-        <UsageCount Value="188"/>
+        <UsageCount Value="208"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\wapt-get\tisinifiles.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tisinifiles"/>
-        <UsageCount Value="188"/>
+        <UsageCount Value="208"/>
       </Unit5>
       <Unit6>
         <Filename Value="uviscreatekey.pas"/>
@@ -73,7 +69,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="50" Y="66"/>
-        <UsageCount Value="48"/>
+        <UsageCount Value="68"/>
       </Unit6>
       <Unit7>
         <Filename Value="dmwaptpython.pas"/>
@@ -82,12 +78,31 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="dmwaptpython"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="42"/>
+        <UsageCount Value="62"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit7>
       <Unit8>
+        <Filename Value="uviseditpackage.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisEditPackage"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uviseditpackage"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="118"/>
+        <CursorPos X="103" Y="135"/>
+        <UsageCount Value="39"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit8>
+      <Unit9>
         <Filename Value="uvisgeneratewaptsetup.pas"/>
         <ComponentName Value="VisGenerateWaptSetup"/>
         <ResourceBaseClass Value="Form"/>
@@ -95,48 +110,40 @@
         <WindowIndex Value="0"/>
         <TopLine Value="12"/>
         <CursorPos X="24" Y="24"/>
-        <UsageCount Value="21"/>
-      </Unit8>
-      <Unit9>
+        <UsageCount Value="19"/>
+      </Unit9>
+      <Unit10>
         <Filename Value="..\wapt-get\soutils.pas"/>
         <UnitName Value="soutils"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="46"/>
-      </Unit9>
-      <Unit10>
+        <UsageCount Value="44"/>
+      </Unit10>
+      <Unit11>
         <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
         <UnitName Value="PythonEngine"/>
         <WindowIndex Value="0"/>
         <TopLine Value="5380"/>
         <CursorPos X="1" Y="5394"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="22"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit10>
-      <Unit11>
+      </Unit11>
+      <Unit12>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <UnitName Value="superobject"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3144"/>
         <CursorPos X="11" Y="3164"/>
-        <UsageCount Value="38"/>
-      </Unit11>
-      <Unit12>
+        <UsageCount Value="36"/>
+      </Unit12>
+      <Unit13>
         <Filename Value="C:\codetyphon\lazarus\lcl\comctrls.pp"/>
         <UnitName Value="ComCtrls"/>
         <WindowIndex Value="0"/>
         <TopLine Value="834"/>
         <CursorPos X="12" Y="830"/>
-        <UsageCount Value="7"/>
-      </Unit12>
-      <Unit13>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-process\src\process.pp"/>
-        <UnitName Value="process"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="425"/>
-        <CursorPos X="3" Y="455"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="5"/>
       </Unit13>
       <Unit14>
         <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTreesExtra\source\vte_json.pas"/>
@@ -144,7 +151,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1198"/>
         <CursorPos X="1" Y="1213"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="11"/>
       </Unit14>
       <Unit15>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-json\src\fpjson.pp"/>
@@ -152,21 +159,21 @@
         <WindowIndex Value="0"/>
         <TopLine Value="394"/>
         <CursorPos X="20" Y="434"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="11"/>
       </Unit15>
       <Unit16>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\sysutilh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="284"/>
         <CursorPos X="13" Y="299"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
       </Unit16>
       <Unit17>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\sysutils.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="145"/>
         <CursorPos X="9" Y="156"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
       </Unit17>
       <Unit18>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-json\src\jsonparser.pp"/>
@@ -174,42 +181,42 @@
         <WindowIndex Value="0"/>
         <TopLine Value="91"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="5"/>
       </Unit18>
       <Unit19>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\control.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3238"/>
         <CursorPos X="1" Y="3264"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="11"/>
       </Unit19>
       <Unit20>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\containedaction.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="86"/>
         <CursorPos X="1" Y="104"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="10"/>
       </Unit20>
       <Unit21>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\customaction.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="238"/>
         <CursorPos X="1" Y="247"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="7"/>
       </Unit21>
       <Unit22>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\buttoncontrol.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="42"/>
         <CursorPos X="1" Y="57"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="7"/>
       </Unit22>
       <Unit23>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\buttons.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="161"/>
         <CursorPos X="1" Y="176"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="7"/>
       </Unit23>
       <Unit24>
         <Filename Value="..\..\pltis_superobject\soutils.pas"/>
@@ -217,7 +224,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="10" Y="12"/>
-        <UsageCount Value="40"/>
+        <UsageCount Value="38"/>
       </Unit24>
       <Unit25>
         <Filename Value="C:\codetyphon\lazarus\lcl\lclproc.pas"/>
@@ -225,21 +232,21 @@
         <WindowIndex Value="0"/>
         <TopLine Value="851"/>
         <CursorPos X="1" Y="865"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="5"/>
       </Unit25>
       <Unit26>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\customlistview.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1019"/>
         <CursorPos X="28" Y="1037"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="5"/>
       </Unit26>
       <Unit27>
         <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
         <UnitName Value="VirtualTrees"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="26727"/>
-        <CursorPos X="1" Y="26730"/>
+        <TopLine Value="1399"/>
+        <CursorPos X="3" Y="1414"/>
         <UsageCount Value="15"/>
       </Unit27>
       <Unit28>
@@ -248,15 +255,15 @@
         <WindowIndex Value="0"/>
         <TopLine Value="105"/>
         <CursorPos X="87" Y="122"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="9"/>
       </Unit28>
       <Unit29>
         <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTreesExtra\source\vte_edittree.pas"/>
         <UnitName Value="vte_edittree"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
+        <TopLine Value="136"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="9"/>
       </Unit29>
       <Unit30>
         <Filename Value="C:\codetyphon\lazarus\lcl\controls.pp"/>
@@ -264,7 +271,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1133"/>
         <CursorPos X="14" Y="1144"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="9"/>
       </Unit30>
       <Unit31>
         <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\AtomPythonEngine.pas"/>
@@ -272,7 +279,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="19"/>
         <CursorPos X="15" Y="35"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit31>
       <Unit32>
@@ -280,7 +287,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="23" Y="6"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
         <DefaultSyntaxHighlighter Value="LFM"/>
       </Unit32>
       <Unit33>
@@ -289,7 +296,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="40"/>
         <CursorPos X="97" Y="56"/>
-        <UsageCount Value="16"/>
+        <UsageCount Value="14"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit33>
       <Unit34>
@@ -297,145 +304,69 @@
         <WindowIndex Value="0"/>
         <TopLine Value="15"/>
         <CursorPos X="12" Y="20"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="9"/>
       </Unit34>
       <Unit35>
         <Filename Value="uwaptgui.lfm"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1174"/>
         <CursorPos X="56" Y="1194"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
         <DefaultSyntaxHighlighter Value="LFM"/>
       </Unit35>
+      <Unit36>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Graphics32EXT\source\XGR32_DesktopControl.pas"/>
+        <UnitName Value="XGR32_DesktopControl"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="4"/>
+        <CursorPos X="36" Y="54"/>
+        <UsageCount Value="8"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="C:\codetyphon\lazarus\lcl\actnlist.pas"/>
+        <UnitName Value="ActnList"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="218"/>
+        <CursorPos X="3" Y="231"/>
+        <UsageCount Value="8"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\activex.pp"/>
+        <UnitName Value="ActiveX"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="18"/>
+      </Unit38>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="5" HistoryIndex="4">
       <Position1>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="366" Column="1" TopLine="346"/>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="214" Column="11" TopLine="204"/>
       </Position1>
       <Position2>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="372" Column="22" TopLine="352"/>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="112" Column="5" TopLine="94"/>
       </Position2>
       <Position3>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="358" Column="17" TopLine="352"/>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="175" Column="3" TopLine="169"/>
       </Position3>
       <Position4>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="603" Column="1" TopLine="599"/>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position4>
       <Position5>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="602" Column="1" TopLine="598"/>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="112" Column="15" TopLine="99"/>
       </Position5>
-      <Position6>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="603" Column="1" TopLine="599"/>
-      </Position6>
-      <Position7>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="602" Column="1" TopLine="598"/>
-      </Position7>
-      <Position8>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="601" Column="1" TopLine="597"/>
-      </Position8>
-      <Position9>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="602" Column="1" TopLine="598"/>
-      </Position9>
-      <Position10>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="601" Column="1" TopLine="597"/>
-      </Position10>
-      <Position11>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="600" Column="1" TopLine="596"/>
-      </Position11>
-      <Position12>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="599" Column="1" TopLine="595"/>
-      </Position12>
-      <Position13>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="598" Column="1" TopLine="594"/>
-      </Position13>
-      <Position14>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="597" Column="1" TopLine="593"/>
-      </Position14>
-      <Position15>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="596" Column="1" TopLine="592"/>
-      </Position15>
-      <Position16>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="602" Column="26" TopLine="592"/>
-      </Position16>
-      <Position17>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="609" Column="26" TopLine="599"/>
-      </Position17>
-      <Position18>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="265" Column="3" TopLine="356"/>
-      </Position18>
-      <Position19>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="605" Column="1" TopLine="592"/>
-      </Position19>
-      <Position20>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="265" Column="52" TopLine="263"/>
-      </Position20>
-      <Position21>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="266" Column="52" TopLine="264"/>
-      </Position21>
-      <Position22>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="267" Column="52" TopLine="265"/>
-      </Position22>
-      <Position23>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="266" Column="52" TopLine="264"/>
-      </Position23>
-      <Position24>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="267" Column="52" TopLine="265"/>
-      </Position24>
-      <Position25>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="266" Column="52" TopLine="264"/>
-      </Position25>
-      <Position26>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="267" Column="52" TopLine="265"/>
-      </Position26>
-      <Position27>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="266" Column="52" TopLine="264"/>
-      </Position27>
-      <Position28>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="282" Column="80" TopLine="265"/>
-      </Position28>
-      <Position29>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="283" Column="80" TopLine="266"/>
-      </Position29>
-      <Position30>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="282" Column="80" TopLine="265"/>
-      </Position30>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
-    <BreakPoints Count="2">
+    <BreakPoints Count="1">
       <Item1>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
@@ -443,13 +374,6 @@
         <Source Value="..\waptserviceapp\uvisappwaptservice.pas"/>
         <Line Value="129"/>
       </Item1>
-      <Item2>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="uwaptgui.pas"/>
-        <Line Value="472"/>
-      </Item2>
     </BreakPoints>
   </Debugging>
   <EditorMacros Count="0"/>

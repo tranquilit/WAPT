@@ -31,39 +31,45 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="10">
+    <RequiredPackages Count="12">
       <Item1>
-        <PackageName Value="pl_luicontrols"/>
+        <PackageName Value="pl_graphics32ext"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_glscene"/>
+        <PackageName Value="pl_bgracontrols"/>
       </Item2>
       <Item3>
-        <PackageName Value="pl_virtualtreesextra"/>
+        <PackageName Value="pl_luicontrols"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_lazsolutions"/>
+        <PackageName Value="pl_glscene"/>
       </Item4>
       <Item5>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pl_virtualtreesextra"/>
       </Item5>
       <Item6>
-        <PackageName Value="pl_indycomp"/>
+        <PackageName Value="pl_lazsolutions"/>
       </Item6>
       <Item7>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="FCL"/>
       </Item7>
       <Item8>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="pl_indycomp"/>
       </Item8>
       <Item9>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item9>
       <Item10>
-        <PackageName Value="LCL"/>
+        <PackageName Value="SynEdit"/>
       </Item10>
+      <Item11>
+        <PackageName Value="pltis_superobject"/>
+      </Item11>
+      <Item12>
+        <PackageName Value="LCL"/>
+      </Item12>
     </RequiredPackages>
-    <Units Count="8">
+    <Units Count="9">
       <Unit0>
         <Filename Value="waptgui.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -113,6 +119,14 @@
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="dmwaptpython"/>
       </Unit7>
+      <Unit8>
+        <Filename Value="uviseditpackage.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisEditPackage"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uviseditpackage"/>
+      </Unit8>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

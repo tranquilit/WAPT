@@ -1,0 +1,1033 @@
+object VisEditPackage: TVisEditPackage
+  Left = 296
+  Height = 600
+  Top = 135
+  Width = 800
+  Caption = 'Editer le paquet'
+  ClientHeight = 600
+  ClientWidth = 800
+  Constraints.MinHeight = 600
+  Constraints.MinWidth = 800
+  OnCreate = FormCreate
+  LCLVersion = '1.1'
+  object PageControl1: TPageControl
+    Left = 0
+    Height = 394
+    Top = 50
+    Width = 800
+    ActivePage = pgEditPackage
+    Align = alClient
+    TabIndex = 1
+    TabOrder = 0
+    object TabSheet1: TTabSheet
+      Caption = 'setup.py'
+      ClientHeight = 368
+      ClientWidth = 792
+      inline EdSetupPy: TSynEdit
+        Left = 0
+        Height = 334
+        Top = 34
+        Width = 792
+        Align = alClient
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Pitch = fpFixed
+        Font.Quality = fqNonAntialiased
+        ParentColor = False
+        ParentFont = False
+        TabOrder = 0
+        Gutter.Width = 57
+        Gutter.MouseActions = <>
+        RightGutter.Width = 0
+        RightGutter.MouseActions = <>
+        Highlighter = SynPythonSyn1
+        Keystrokes = <        
+          item
+            Command = ecUp
+            ShortCut = 38
+          end        
+          item
+            Command = ecSelUp
+            ShortCut = 8230
+          end        
+          item
+            Command = ecScrollUp
+            ShortCut = 16422
+          end        
+          item
+            Command = ecDown
+            ShortCut = 40
+          end        
+          item
+            Command = ecSelDown
+            ShortCut = 8232
+          end        
+          item
+            Command = ecScrollDown
+            ShortCut = 16424
+          end        
+          item
+            Command = ecLeft
+            ShortCut = 37
+          end        
+          item
+            Command = ecSelLeft
+            ShortCut = 8229
+          end        
+          item
+            Command = ecWordLeft
+            ShortCut = 16421
+          end        
+          item
+            Command = ecSelWordLeft
+            ShortCut = 24613
+          end        
+          item
+            Command = ecRight
+            ShortCut = 39
+          end        
+          item
+            Command = ecSelRight
+            ShortCut = 8231
+          end        
+          item
+            Command = ecWordRight
+            ShortCut = 16423
+          end        
+          item
+            Command = ecSelWordRight
+            ShortCut = 24615
+          end        
+          item
+            Command = ecPageDown
+            ShortCut = 34
+          end        
+          item
+            Command = ecSelPageDown
+            ShortCut = 8226
+          end        
+          item
+            Command = ecPageBottom
+            ShortCut = 16418
+          end        
+          item
+            Command = ecSelPageBottom
+            ShortCut = 24610
+          end        
+          item
+            Command = ecPageUp
+            ShortCut = 33
+          end        
+          item
+            Command = ecSelPageUp
+            ShortCut = 8225
+          end        
+          item
+            Command = ecPageTop
+            ShortCut = 16417
+          end        
+          item
+            Command = ecSelPageTop
+            ShortCut = 24609
+          end        
+          item
+            Command = ecLineStart
+            ShortCut = 36
+          end        
+          item
+            Command = ecSelLineStart
+            ShortCut = 8228
+          end        
+          item
+            Command = ecEditorTop
+            ShortCut = 16420
+          end        
+          item
+            Command = ecSelEditorTop
+            ShortCut = 24612
+          end        
+          item
+            Command = ecLineEnd
+            ShortCut = 35
+          end        
+          item
+            Command = ecSelLineEnd
+            ShortCut = 8227
+          end        
+          item
+            Command = ecEditorBottom
+            ShortCut = 16419
+          end        
+          item
+            Command = ecSelEditorBottom
+            ShortCut = 24611
+          end        
+          item
+            Command = ecToggleMode
+            ShortCut = 45
+          end        
+          item
+            Command = ecCopy
+            ShortCut = 16429
+          end        
+          item
+            Command = ecPaste
+            ShortCut = 8237
+          end        
+          item
+            Command = ecDeleteChar
+            ShortCut = 46
+          end        
+          item
+            Command = ecCut
+            ShortCut = 8238
+          end        
+          item
+            Command = ecDeleteLastChar
+            ShortCut = 8
+          end        
+          item
+            Command = ecDeleteLastChar
+            ShortCut = 8200
+          end        
+          item
+            Command = ecDeleteLastWord
+            ShortCut = 16392
+          end        
+          item
+            Command = ecUndo
+            ShortCut = 32776
+          end        
+          item
+            Command = ecRedo
+            ShortCut = 40968
+          end        
+          item
+            Command = ecLineBreak
+            ShortCut = 13
+          end        
+          item
+            Command = ecSelectAll
+            ShortCut = 16449
+          end        
+          item
+            Command = ecCopy
+            ShortCut = 16451
+          end        
+          item
+            Command = ecBlockIndent
+            ShortCut = 24649
+          end        
+          item
+            Command = ecLineBreak
+            ShortCut = 16461
+          end        
+          item
+            Command = ecInsertLine
+            ShortCut = 16462
+          end        
+          item
+            Command = ecDeleteWord
+            ShortCut = 16468
+          end        
+          item
+            Command = ecBlockUnindent
+            ShortCut = 24661
+          end        
+          item
+            Command = ecPaste
+            ShortCut = 16470
+          end        
+          item
+            Command = ecCut
+            ShortCut = 16472
+          end        
+          item
+            Command = ecDeleteLine
+            ShortCut = 16473
+          end        
+          item
+            Command = ecDeleteEOL
+            ShortCut = 24665
+          end        
+          item
+            Command = ecUndo
+            ShortCut = 16474
+          end        
+          item
+            Command = ecRedo
+            ShortCut = 24666
+          end        
+          item
+            Command = ecGotoMarker0
+            ShortCut = 16432
+          end        
+          item
+            Command = ecGotoMarker1
+            ShortCut = 16433
+          end        
+          item
+            Command = ecGotoMarker2
+            ShortCut = 16434
+          end        
+          item
+            Command = ecGotoMarker3
+            ShortCut = 16435
+          end        
+          item
+            Command = ecGotoMarker4
+            ShortCut = 16436
+          end        
+          item
+            Command = ecGotoMarker5
+            ShortCut = 16437
+          end        
+          item
+            Command = ecGotoMarker6
+            ShortCut = 16438
+          end        
+          item
+            Command = ecGotoMarker7
+            ShortCut = 16439
+          end        
+          item
+            Command = ecGotoMarker8
+            ShortCut = 16440
+          end        
+          item
+            Command = ecGotoMarker9
+            ShortCut = 16441
+          end        
+          item
+            Command = ecSetMarker0
+            ShortCut = 24624
+          end        
+          item
+            Command = ecSetMarker1
+            ShortCut = 24625
+          end        
+          item
+            Command = ecSetMarker2
+            ShortCut = 24626
+          end        
+          item
+            Command = ecSetMarker3
+            ShortCut = 24627
+          end        
+          item
+            Command = ecSetMarker4
+            ShortCut = 24628
+          end        
+          item
+            Command = ecSetMarker5
+            ShortCut = 24629
+          end        
+          item
+            Command = ecSetMarker6
+            ShortCut = 24630
+          end        
+          item
+            Command = ecSetMarker7
+            ShortCut = 24631
+          end        
+          item
+            Command = ecSetMarker8
+            ShortCut = 24632
+          end        
+          item
+            Command = ecSetMarker9
+            ShortCut = 24633
+          end        
+          item
+            Command = EcFoldLevel1
+            ShortCut = 41009
+          end        
+          item
+            Command = EcFoldLevel2
+            ShortCut = 41010
+          end        
+          item
+            Command = EcFoldLevel1
+            ShortCut = 41011
+          end        
+          item
+            Command = EcFoldLevel1
+            ShortCut = 41012
+          end        
+          item
+            Command = EcFoldLevel1
+            ShortCut = 41013
+          end        
+          item
+            Command = EcFoldLevel6
+            ShortCut = 41014
+          end        
+          item
+            Command = EcFoldLevel7
+            ShortCut = 41015
+          end        
+          item
+            Command = EcFoldLevel8
+            ShortCut = 41016
+          end        
+          item
+            Command = EcFoldLevel9
+            ShortCut = 41017
+          end        
+          item
+            Command = EcFoldLevel0
+            ShortCut = 41008
+          end        
+          item
+            Command = EcFoldCurrent
+            ShortCut = 41005
+          end        
+          item
+            Command = EcUnFoldCurrent
+            ShortCut = 41003
+          end        
+          item
+            Command = EcToggleMarkupWord
+            ShortCut = 32845
+          end        
+          item
+            Command = ecNormalSelect
+            ShortCut = 24654
+          end        
+          item
+            Command = ecColumnSelect
+            ShortCut = 24643
+          end        
+          item
+            Command = ecLineSelect
+            ShortCut = 24652
+          end        
+          item
+            Command = ecTab
+            ShortCut = 9
+          end        
+          item
+            Command = ecShiftTab
+            ShortCut = 8201
+          end        
+          item
+            Command = ecMatchBracket
+            ShortCut = 24642
+          end        
+          item
+            Command = ecColSelUp
+            ShortCut = 40998
+          end        
+          item
+            Command = ecColSelDown
+            ShortCut = 41000
+          end        
+          item
+            Command = ecColSelLeft
+            ShortCut = 40997
+          end        
+          item
+            Command = ecColSelRight
+            ShortCut = 40999
+          end        
+          item
+            Command = ecColSelPageDown
+            ShortCut = 40994
+          end        
+          item
+            Command = ecColSelPageBottom
+            ShortCut = 57378
+          end        
+          item
+            Command = ecColSelPageUp
+            ShortCut = 40993
+          end        
+          item
+            Command = ecColSelPageTop
+            ShortCut = 57377
+          end        
+          item
+            Command = ecColSelLineStart
+            ShortCut = 40996
+          end        
+          item
+            Command = ecColSelLineEnd
+            ShortCut = 40995
+          end        
+          item
+            Command = ecColSelEditorTop
+            ShortCut = 57380
+          end        
+          item
+            Command = ecColSelEditorBottom
+            ShortCut = 57379
+          end>
+        MouseActions = <>
+        MouseSelActions = <>
+        Lines.Strings = (
+          '# -*- coding: utf-8 -*-'
+          'from setuphelpers import *'
+          ''
+          '# registry key(s) where WAPT will find how to remove the application(s)'
+          'uninstallkey = []'
+          ''
+          '# command(s) to launch to remove the application(s)'
+          'uninstallstring = []'
+          ''
+          '# list of required parameters names (string) which can be used during install'
+          'required_params = []'
+          ''
+          'def install():'
+          '    print(''install'')'
+        )
+        VisibleSpecialChars = [vscSpace, vscTabAtLast]
+        SelectedColor.BackPriority = 50
+        SelectedColor.ForePriority = 50
+        SelectedColor.FramePriority = 50
+        SelectedColor.BoldPriority = 50
+        SelectedColor.ItalicPriority = 50
+        SelectedColor.UnderlinePriority = 50
+        BracketHighlightStyle = sbhsBoth
+        BracketMatchColor.Background = clNone
+        BracketMatchColor.Foreground = clNone
+        BracketMatchColor.Style = [fsBold]
+        FoldedCodeColor.Background = clNone
+        FoldedCodeColor.Foreground = clGray
+        FoldedCodeColor.FrameColor = clGray
+        MouseLinkColor.Background = clNone
+        MouseLinkColor.Foreground = clBlue
+        LineHighlightColor.Background = clNone
+        LineHighlightColor.Foreground = clNone
+        inline SynLeftGutterPartList1: TSynGutterPartList
+          object SynGutterMarks1: TSynGutterMarks
+            Width = 24
+            MouseActions = <>
+          end
+          object SynGutterLineNumber1: TSynGutterLineNumber
+            Width = 17
+            MouseActions = <>
+            MarkupInfo.Background = clBtnFace
+            MarkupInfo.Foreground = clNone
+            DigitCount = 2
+            ShowOnlyLineNumbersMultiplesOf = 1
+            ZeroStart = False
+            LeadingZeros = False
+          end
+          object SynGutterChanges1: TSynGutterChanges
+            Width = 4
+            MouseActions = <>
+            ModifiedColor = 59900
+            SavedColor = clGreen
+          end
+          object SynGutterSeparator1: TSynGutterSeparator
+            Width = 2
+            MouseActions = <>
+          end
+          object SynGutterCodeFolding1: TSynGutterCodeFolding
+            MouseActions = <>
+            MarkupInfo.Background = clNone
+            MarkupInfo.Foreground = clGray
+            MouseActionsExpanded = <>
+            MouseActionsCollapsed = <>
+          end
+        end
+      end
+      object Panel1: TPanel
+        Left = 0
+        Height = 34
+        Top = 0
+        Width = 792
+        Align = alTop
+        BevelOuter = bvNone
+        ClientHeight = 34
+        ClientWidth = 792
+        TabOrder = 1
+        object butInitWapt: TButton
+          Left = 0
+          Height = 25
+          Top = 4
+          Width = 196
+          Action = ActExecCode
+          TabOrder = 0
+        end
+      end
+    end
+    object pgEditPackage: TTabSheet
+      Caption = 'Editer les dépendances'
+      ClientHeight = 368
+      ClientWidth = 792
+      object Panel8: TPanel
+        Left = 502
+        Height = 368
+        Top = 0
+        Width = 290
+        Align = alRight
+        ClientHeight = 368
+        ClientWidth = 290
+        TabOrder = 0
+        object Panel9: TPanel
+          Left = 1
+          Height = 29
+          Top = 1
+          Width = 288
+          Align = alTop
+          BevelOuter = bvNone
+          ClientHeight = 29
+          ClientWidth = 288
+          TabOrder = 0
+          object EdSearch: TEdit
+            Left = 4
+            Height = 21
+            Top = 3
+            Width = 136
+            OnKeyPress = EdSearchKeyPress
+            TabOrder = 0
+          end
+          object butSearchPackages1: TButton
+            Left = 148
+            Height = 25
+            Top = 2
+            Width = 120
+            Action = ActEditSearch
+            TabOrder = 1
+          end
+        end
+        object GridPackages: TVirtualJSONListView
+          Left = 1
+          Height = 337
+          Top = 30
+          Width = 288
+          Align = alClient
+          Color = clWhite
+          Header.AutoSizeIndex = 0
+          Header.Columns = <          
+            item
+              MaxWidth = 100
+              MinWidth = 50
+              Position = 0
+              Text = 'Section'
+              PropertyName = 'section'
+            end          
+            item
+              MaxWidth = 400
+              MinWidth = 50
+              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+              Position = 1
+              Text = 'Paquet'
+              Width = 200
+              PropertyName = 'package'
+            end          
+            item
+              MaxWidth = 200
+              MinWidth = 50
+              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+              Position = 2
+              Text = 'Status'
+              PropertyName = 'status'
+            end          
+            item
+              MaxWidth = 200
+              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+              Position = 3
+              Text = 'Version'
+              Width = 30
+              PropertyName = 'version'
+            end          
+            item
+              MaxWidth = 400
+              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+              Position = 4
+              Text = 'Description'
+              PropertyName = 'description'
+            end          
+            item
+              MaxWidth = 400
+              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+              Position = 5
+              Text = 'Dépendances'
+              PropertyName = 'depends'
+            end          
+            item
+              MaxWidth = 200
+              Position = 6
+              Text = 'Installé par'
+              PropertyName = 'explicit_by'
+            end>
+          Header.DefaultHeight = 17
+          Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
+          Header.SortColumn = 0
+          Header.Style = hsFlatButtons
+          TabOrder = 1
+          TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+          TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+          TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+          TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+          OnCompareNodes = GridPackagesCompareNodes
+          OnPaintText = GridPackagesPaintText
+          OnHeaderClick = GridPackagesHeaderClick
+        end
+      end
+      object GridDepends: TVirtualJSONListView
+        Left = 0
+        Height = 368
+        Top = 0
+        Width = 497
+        Align = alClient
+        Color = clWhite
+        Header.AutoSizeIndex = -1
+        Header.Columns = <        
+          item
+            MaxWidth = 400
+            MinWidth = 100
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+            Position = 0
+            Text = 'Paquet'
+            Width = 300
+            PropertyName = 'package'
+          end        
+          item
+            MaxWidth = 100
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
+            Position = 1
+            Text = 'Version'
+            Width = 30
+            PropertyName = 'version'
+          end        
+          item
+            MaxWidth = 400
+            Position = 2
+            Text = 'Description'
+            PropertyName = 'description'
+          end        
+          item
+            MaxWidth = 400
+            Position = 3
+            Text = 'Dépendances'
+            PropertyName = 'depends'
+          end>
+        Header.DefaultHeight = 17
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+        Header.Style = hsFlatButtons
+        PopupMenu = PopupMenuEditDepends
+        TabOrder = 1
+        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+        TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+        OnCompareNodes = GridPackagesCompareNodes
+        OnDragOver = GridDependsDragOver
+        OnDragDrop = GridDependsDragDrop
+        OnPaintText = GridPackagesPaintText
+        OnHeaderClick = GridPackagesHeaderClick
+      end
+      object Splitter3: TSplitter
+        Left = 497
+        Height = 368
+        Top = 0
+        Width = 5
+        Align = alRight
+        ResizeAnchor = akRight
+      end
+    end
+  end
+  object Panel3: TPanel
+    Left = 0
+    Height = 118
+    Top = 449
+    Width = 800
+    Align = alBottom
+    ClientHeight = 118
+    ClientWidth = 800
+    TabOrder = 1
+    object Panel7: TPanel
+      Left = 1
+      Height = 116
+      Top = 1
+      Width = 798
+      Align = alClient
+      Caption = 'Panel7'
+      ClientHeight = 116
+      ClientWidth = 798
+      TabOrder = 0
+      object MemoLog: TMemo
+        Left = 1
+        Height = 114
+        Top = 1
+        Width = 185
+        Align = alClient
+        TabOrder = 0
+      end
+      object jsonlog: TVirtualJSONInspector
+        Left = 191
+        Height = 114
+        Top = 1
+        Width = 606
+        PropertyDefs = <>
+        Align = alRight
+        Color = clWhite
+        Header.AutoSizeIndex = -1
+        Header.Columns = <        
+          item
+            Position = 0
+            Text = 'Property'
+            Width = 150
+          end        
+          item
+            Position = 1
+            Text = 'Value'
+            Width = 452
+          end>
+        Header.DefaultHeight = 17
+        Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
+        TabOrder = 1
+        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
+        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+        TreeOptions.SelectionOptions = [toExtendedFocus]
+      end
+      object Splitter2: TSplitter
+        Left = 186
+        Height = 114
+        Top = 1
+        Width = 5
+        Align = alRight
+        ResizeAnchor = akRight
+      end
+    end
+  end
+  object Splitter1: TSplitter
+    Cursor = crVSplit
+    Left = 0
+    Height = 5
+    Top = 444
+    Width = 800
+    Align = alBottom
+    ResizeAnchor = akBottom
+  end
+  object Panel2: TPanel
+    Left = 0
+    Height = 50
+    Top = 0
+    Width = 800
+    Align = alTop
+    BevelOuter = bvNone
+    ClientHeight = 50
+    ClientWidth = 800
+    TabOrder = 3
+    object EdPackage: TEdit
+      Left = 52
+      Height = 21
+      Top = 2
+      Width = 252
+      TabOrder = 0
+      Text = 'EdPackage'
+    end
+    object EdVersion: TEdit
+      Left = 52
+      Height = 21
+      Top = 24
+      Width = 80
+      TabOrder = 1
+      Text = 'EdVersion'
+    end
+    object Label1: TLabel
+      Left = 7
+      Height = 13
+      Top = 4
+      Width = 40
+      Caption = 'Package'
+      ParentColor = False
+    end
+    object Label2: TLabel
+      Left = 12
+      Height = 13
+      Top = 29
+      Width = 35
+      Caption = 'Version'
+      ParentColor = False
+    end
+    object Eddescription: TEdit
+      Left = 372
+      Height = 21
+      Top = 2
+      Width = 424
+      Anchors = [akTop, akLeft, akRight]
+      TabOrder = 2
+      Text = 'EdDescription'
+    end
+    object Label3: TLabel
+      Left = 316
+      Height = 13
+      Top = 4
+      Width = 53
+      Caption = 'Description'
+      ParentColor = False
+    end
+    object EdSourceDir: TEdit
+      Left = 432
+      Height = 21
+      Top = 24
+      Width = 136
+      TabOrder = 3
+    end
+    object Label4: TLabel
+      Left = 344
+      Height = 13
+      Top = 29
+      Width = 86
+      Caption = 'Répertoire source'
+      ParentColor = False
+    end
+    object Button3: TButton
+      Left = -1276
+      Height = 25
+      Top = 10
+      Width = 88
+      Caption = 'Button3'
+      TabOrder = 4
+    end
+    object EdSection: TComboBox
+      Left = 188
+      Height = 21
+      Top = 24
+      Width = 132
+      ItemHeight = 13
+      ItemIndex = 0
+      Items.Strings = (
+        'base'
+        'libre'
+        'restricted'
+        'host'
+        'group'
+      )
+      TabOrder = 5
+      Text = 'base'
+    end
+    object Label5: TLabel
+      Left = 144
+      Height = 13
+      Top = 26
+      Width = 35
+      Caption = 'Section'
+      ParentColor = False
+    end
+    object cbShowLog: TCheckBox
+      Left = 658
+      Height = 17
+      Top = 26
+      Width = 136
+      Anchors = [akRight, akBottom]
+      Caption = 'Voir infos de débuggage'
+      OnClick = cbShowLogClick
+      TabOrder = 6
+    end
+  end
+  object Panel4: TPanel
+    Left = 0
+    Height = 33
+    Top = 567
+    Width = 800
+    Align = alBottom
+    BevelOuter = bvNone
+    ClientHeight = 33
+    ClientWidth = 800
+    TabOrder = 4
+    object BitBtn1: TBitBtn
+      Left = 641
+      Height = 26
+      Top = 4
+      Width = 74
+      Anchors = [akTop, akRight]
+      Default = True
+      DefaultCaption = True
+      Kind = bkOK
+      ModalResult = 1
+      TabOrder = 0
+    end
+    object BitBtn2: TBitBtn
+      Left = 720
+      Height = 26
+      Top = 4
+      Width = 74
+      Anchors = [akTop, akRight]
+      Cancel = True
+      DefaultCaption = True
+      Kind = bkCancel
+      ModalResult = 2
+      TabOrder = 1
+    end
+    object Button4: TButton
+      Left = 440
+      Height = 25
+      Top = 4
+      Width = 75
+      Action = ActEditSavePackage
+      Anchors = [akTop, akRight]
+      TabOrder = 2
+    end
+    object Button5: TButton
+      Left = 520
+      Height = 25
+      Top = 4
+      Width = 112
+      Action = ActBuildUpload
+      Anchors = [akTop, akRight]
+      TabOrder = 3
+    end
+  end
+  object SynPythonSyn1: TSynPythonSyn
+    DefaultFilter = 'Fichiers Python (*.py)|*.py'
+    Enabled = False
+    CommentAttri.FrameEdges = sfeAround
+    IdentifierAttri.FrameEdges = sfeAround
+    KeyAttri.FrameEdges = sfeAround
+    NonKeyAttri.FrameEdges = sfeAround
+    SystemAttri.FrameEdges = sfeAround
+    NumberAttri.FrameEdges = sfeAround
+    HexAttri.FrameEdges = sfeAround
+    OctalAttri.FrameEdges = sfeAround
+    FloatAttri.FrameEdges = sfeAround
+    SpaceAttri.FrameEdges = sfeAround
+    StringAttri.FrameEdges = sfeAround
+    DocStringAttri.FrameEdges = sfeAround
+    SymbolAttri.FrameEdges = sfeAround
+    ErrorAttri.FrameEdges = sfeAround
+    left = 148
+    top = 288
+  end
+  object ActionList1: TActionList
+    left = 148
+    top = 148
+    object ActSearchPackage: TAction
+      Caption = 'Rechercher'
+      OnExecute = ActSearchPackageExecute
+    end
+    object ActExecCode: TAction
+      Caption = 'Exécuter le code source python'
+      OnExecute = ActExecCodeExecute
+    end
+    object ActBuildUpload: TAction
+      Caption = 'Activer le paquet'
+      OnExecute = ActBuildUploadExecute
+    end
+    object ActEditSearch: TAction
+      Caption = 'Rechercher'
+      OnExecute = ActEditSearchExecute
+    end
+    object ActEditRemove: TAction
+      Caption = 'Enlever'
+      OnExecute = ActEditRemoveExecute
+    end
+    object ActEditSavePackage: TAction
+      Caption = 'Sauver'
+      OnExecute = ActEditSavePackageExecute
+    end
+  end
+  object PopupMenuEditDepends: TPopupMenu
+    left = 148
+    top = 220
+    object MenuItem4: TMenuItem
+      Action = ActEditRemove
+    end
+  end
+end

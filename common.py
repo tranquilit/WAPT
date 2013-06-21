@@ -3318,10 +3318,19 @@ class Wapt(object):
             Return package entry or None"""
         return self.waptdb.packages_matching(packagename)
 
+    def get_default_development_dir(self,packagecond):
+        packagename = REGEX_PACKAGE_CONDITION.match(packagecond).groupdict()['package']
+        return os.path.join(self.config.get('global','default_sources_root',os.getcwd()),packagename)+'-%s' % self.config.get('global','default_sources_suffix','wapt')
+
     def edit_package(self,packagename,target_directory=''):
         """Download an existing package from repositories into targetdirectory for modification
             Return the the directory name of the package sources"""
-
+        # check if already downloaded ...
+        devdir = self.get_default_development_dir(packagename)
+        if os.path.isdir(devdir):
+            package=PackageEntry().load_control_from_wapt(devdir)
+            if package.match(packagename):
+                return {'target':devdir,'source_dir':devdir,'package':package}
         return self.duplicate_package(packagename=packagename,newname=packagename,target_directory=target_directory,build=False)
 
     def edit_host(self,hostname,target_directory=''):
@@ -3329,13 +3338,14 @@ class Wapt(object):
             Return the the directory name of the package sources."""
         hostdate = self.repositories[-1].update_host(hostname)
         if hostdate:
-            return self.duplicate_package(packagename=hostname,newname=hostname,target_directory=target_directory,build=False)
+            return self.edit_package(packagename=hostname,target_directory=target_directory)
         else:
             new_source = self.makehosttemplate(packagename=hostname,directoryname=target_directory)
             return {'target':new_source,'source_dir':new_source,'package':PackageEntry().load_control_from_wapt(new_source)}
 
     def duplicate_package(self,packagename,newname=None,newversion='',target_directory='',
             build=True,
+            keep_sources=True,
             excludes=['.svn','.git*','*.pyc','src'],
             private_key=None,
             callback=pwd_callback):
@@ -3343,7 +3353,6 @@ class Wapt(object):
             Return a dict with the PackageEntry and the package filename or the directory name of the new package
             unzip: unzip packages at end for modifications, don't sign, return directory name
             excludes: excluded files for signing"""
-        result = {'target':None,'package':PackageEntry()}
 
         # suppose target directory
         if not target_directory:
@@ -3359,17 +3368,24 @@ class Wapt(object):
             newname = setuphelpers.get_hostname().lower()
         else:
             newname = newname.lower()
-
         package_dev_dir = os.path.join(target_directory,newname)+'-%s' % self.config.get('global','default_sources_suffix','wapt')
+
+        result = {'target':package_dev_dir,'package':PackageEntry(),'source_dir':package_dev_dir}
+
+        if os.path.isdir(package_dev_dir):
+            raise Exception('Target directory "%s" for package source already exist' % package_dev_dir)
 
         # download the source package in cache
         if os.path.isdir(packagename):
             source_control = PackageEntry().load_control_from_wapt(packagename)
-            shutil.copytree(packagename,package_dev_dir)
+            if packagename<>package_dev_dir:
+                shutil.copytree(packagename,package_dev_dir)
         elif os.path.isfile(packagename):
             source_filename = packagename
             source_control = PackageEntry().load_control_from_wapt(source_filename)
             logger.info('  unzipping %s to directory %s' % (source_filename,package_dev_dir))
+            if os.path.isdir(package_dev_dir):
+                raise Exception('Target directory "%s" for package source already exist' % package_dev_dir)
             zip = ZipFile(source_filename,allowZip64=True)
             zip.extractall(path=package_dev_dir)
         else:
@@ -3504,6 +3520,21 @@ class Wapt(object):
                 else:
                     errors.append(dep)
 
+        return result
+
+    def get_package_entries(self,packages_names):
+        """Return most up to date packages entries for packages_names
+        packages_names is either a list or a string
+        return a dictionnary with {'packages':[],'missing':[]}"""
+        result = {'packages':[],'missing':[]}
+        if isinstance(packages_names,str) or isinstance(packages_names,unicode):
+            packages_names=packages_names.split(",")
+        for package_name in packages_names:
+            matches = self.waptdb.packages_matching(package_name)
+            if matches:
+                result['packages'].append(matches[-1])
+            else:
+                result['missing'].append(package_name)
         return result
 
 ###
