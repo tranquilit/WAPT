@@ -132,12 +132,13 @@ type
     procedure GridPackagesPaintText(Sender: TBaseVirtualTree;
       const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType);
+    procedure HostPagesChange(Sender: TObject);
   private
-    function EditPackage(packagename: String): ISuperObject;
     { private declarations }
     procedure GridLoadData(grid: TVirtualJSONListView; jsondata: String);
     procedure PythonOutputSendData(Sender: TObject; const Data: AnsiString);
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: String);
+    procedure UpdateHostPages(Sender: TObject);
   public
     { public declarations }
     PackageEdited:ISuperObject;
@@ -152,6 +153,18 @@ uses LCLIntf,tisstrings,soutils,waptcommon,uVisCreateKey,dmwaptpython,uviseditpa
 {$R *.lfm}
 
 { TVisWaptGUI }
+
+function GetValue(ListView:TVirtualJSONListView;N:PVirtualNode;FieldName:String;Default:String=''):String;
+begin
+  result := TJSONObject(ListView.GetData(N)).get(FieldName,Default);
+end;
+
+procedure SetValue(ListView:TVirtualJSONListView;N:PVirtualNode;FieldName:String;Value:String);
+var
+  js : TJSONData;
+begin
+  TJSONObject(ListView.GetData(N)).Add(FieldName,Value);
+end;
 
 procedure TVisWaptGUI.cbShowLogClick(Sender: TObject);
 begin
@@ -178,17 +191,48 @@ begin
 
 end;
 
-
-function GetValue(ListView:TVirtualJSONListView;N:PVirtualNode;FieldName:String;Default:String=''):String;
-begin
-  result := TJSONObject(ListView.GetData(N)).get(FieldName,Default);
-end;
-
-procedure SetValue(ListView:TVirtualJSONListView;N:PVirtualNode;FieldName:String;Value:String);
+procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
-  js : TJSONData;
+  currhost,attribs_json,packages_json,softwares_json:String;
+  node:PVirtualNode;
 begin
-  TJSONObject(ListView.GetData(N)).Add(FieldName,Value);
+  LabHostCnt.Caption := format('Nombre d''enregistrements : %d',[GridHosts.SelectedCount]);
+  Node := GridHosts.FocusedNode;
+  if Node<>Nil then
+  begin
+    currhost := GetValue(GridHosts,Node,'name');
+    if HostPages.ActivePage=pgPackages then
+    begin
+      packages_json:=GetValue(GridHosts,Node,'packages');
+      if packages_json='' then
+      begin
+        packages_json := WAPTServerJsonGet('client_package_list/%s',[currhost]).AsJSon();
+        SetValue(GridHosts,Node,'packages',packages_JSon);
+      end;
+      GridLoadData(GridHostPackages,packages_json);
+    end
+    else if HostPages.ActivePage=pgSoftwares then
+    begin
+      softwares_json:=GetValue(GridHosts,Node,'softwares');
+      if softwares_json='' then
+      begin
+        softwares_json := WAPTServerJsonGet('client_software_list/%s',[currhost]).AsJSon();
+        SetValue(GridHosts,Node,'softwares',softwares_json);
+      end;
+      GridLoadData(GridHostSoftwares,softwares_json);
+    end
+    else if HostPages.ActivePage=pgHostPackage then
+    begin
+      attribs_json := GetValue(GridHosts,Node,'attributes');
+      TreeLoadData(GridhostAttribs,attribs_json);
+    end;
+  end
+  else
+  begin
+    GridHostPackages.Clear;
+    GridHostSoftwares.Clear;
+    GridhostAttribs.Clear;
+  end;
 end;
 
 procedure TVisWaptGUI.ActInstallExecute(Sender: TObject);
@@ -451,45 +495,8 @@ end;
 
 procedure TVisWaptGUI.GridHostsChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
-var
-  currhost,attribs_json,packages_json,softwares_json:String;
 begin
-  LabHostCnt.Caption:=format('Nombre d''enregistrements : %d',[Sender.SelectedCount]);
-  if Node<>Nil then
-  begin
-    currhost := GetValue(GridHosts,Node,'name');
-    if HostPages.ActivePage=pgPackages then
-    begin
-      packages_json:=GetValue(GridHosts,Node,'packages');
-      if packages_json='' then
-      begin
-        packages_json := WAPTServerJsonGet('client_package_list/%s',[currhost]).AsJSon();
-        SetValue(GridHosts,Node,'packages',packages_JSon);
-      end;
-      GridLoadData(GridHostPackages,packages_json);
-    end
-    else if HostPages.ActivePage=pgSoftwares then
-    begin
-      softwares_json:=GetValue(GridHosts,Node,'softwares');
-      if softwares_json='' then
-      begin
-        softwares_json := WAPTServerJsonGet('client_software_list/%s',[currhost]).AsJSon();
-        SetValue(GridHosts,Node,'softwares',softwares_json);
-      end;
-      GridLoadData(GridHostSoftwares,softwares_json);
-    end
-    else if HostPages.ActivePage=pgHostPackage then
-    begin
-      attribs_json := GetValue(GridHosts,Node,'attributes');
-      TreeLoadData(GridhostAttribs,attribs_json);
-    end;
-  end
-  else
-  begin
-    GridHostPackages.Clear;
-    GridHostSoftwares.Clear;
-    GridhostAttribs.Clear;
-  end;
+  UpdateHostPages(Sender);
 end;
 
 procedure TVisWaptGUI.PythonOutputSendData(Sender: TObject; const Data: AnsiString
@@ -540,26 +547,11 @@ begin
     TargetCanvas.Font.style := TargetCanvas.Font.style + [fsBold]
   else
     TargetCanvas.Font.style := TargetCanvas.Font.style - [fsBold]
-
 end;
 
-function TVisWaptGUI.EditPackage(packagename:String):ISuperObject;
+procedure TVisWaptGUI.HostPagesChange(Sender: TObject);
 begin
-  Screen.Cursor:=crHourGlass;
-  try
-    with TVisEditPackage.Create(Self) do
-    try
-      PackageRequest := packagename;
-      if ShowModal then
-        result := PackageEdited;
-      else
-        result := Nil;
-    finally
-      Free;
-    end;
-  finally
-    Screen.Cursor:=crDefault;
-  end;
+  UpdateHostPages(Sender);
 end;
 
 end.

@@ -66,11 +66,14 @@ type
     procedure ActBuildUploadExecute(Sender: TObject);
     procedure ActEditRemoveExecute(Sender: TObject);
     procedure ActEditSavePackageExecute(Sender: TObject);
+    procedure ActEditSavePackageUpdate(Sender: TObject);
     procedure ActEditSearchExecute(Sender: TObject);
     procedure ActExecCodeExecute(Sender: TObject);
     procedure ActSearchPackageExecute(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
+    procedure EdSectionChange(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure GridDependsDragDrop(Sender: TBaseVirtualTree; Source: TObject;
       DataObject: IDataObject; Formats: TFormatArray; Shift: TShiftState;
@@ -83,8 +86,14 @@ type
     procedure GridPackagesHeaderClick(Sender: TVTHeader;
       HitInfo: TVTHeaderHitInfo);
   private
+    FIsUpdated: Boolean;
+    function CheckUpdated: Boolean;
+    procedure SetIsUpdated(AValue: Boolean);
+    function GetIsUpdated: Boolean;
+  private
     FDepends: String;
     function GetDepends: String;
+    property IsUpdated: Boolean read GetIsUpdated write SetIsUpdated;
     procedure SetDepends(AValue: String);
   private
     FPackageRequest: String;
@@ -110,26 +119,20 @@ var
   VisEditPackage: TVisEditPackage;
 
 implementation
-uses LCLIntf,tisstrings,soutils,waptcommon,dmwaptpython;
+uses LCLIntf,tisstrings,soutils,waptcommon,dmwaptpython,jwawinuser;
 {$R *.lfm}
-
 
 function EditPackage(packagename:String):ISuperObject;
 begin
-  Screen.Cursor:=crHourGlass;
+  with TVisEditPackage.Create(Nil) do
   try
-    with TVisEditPackage.Create(Nil) do
-    try
-      PackageRequest := packagename;
-      if ShowModal then
-        result := PackageEdited;
-      else
-        result := Nil;
-    finally
-      Free;
-    end;
+    PackageRequest := packagename;
+    if ShowModal=mrOK then
+      result := PackageEdited
+    else
+      result := Nil;
   finally
-    Screen.Cursor:=crDefault;
+    Free;
   end;
 end;
 
@@ -149,6 +152,37 @@ begin
   begin
     EdSearch.SelectAll;
     ActSearchPackage.Execute;
+  end;
+end;
+
+procedure TVisEditPackage.EdSectionChange(Sender: TObject);
+begin
+  FIsUpdated:=True;
+end;
+
+procedure TVisEditPackage.FormCloseQuery(Sender: TObject; var CanClose: boolean
+  );
+begin
+  CanClose := CheckUpdated;
+
+end;
+
+function TVisEditPackage.CheckUpdated:Boolean;
+var
+  Rep,i: Integer;
+  dsnames,msg:String;
+begin
+  Result := not IsUpdated ;
+  if not Result then
+  begin
+    msg := 'Sauvegarder les modifications ?';
+  	Rep := Application.MessageBox(pchar(msg), 'Confirmer',
+  								 MB_APPLMODAL+MB_ICONQUESTION+MB_YESNOCANCEL);
+  	if (Rep = IdYes) then
+  		Result := ActEditSavePackage.Execute
+  	else
+  	  if (Rep = IdNo) then
+  		  Result := True
   end;
 end;
 
@@ -174,6 +208,7 @@ begin
   // get a list of package entries given a
   Depends:=PackageEdited.S['depends'];
   EdSetupPy.Lines.LoadFromFile(AppendPathDelim(FSourcePath)+'setup.py');
+  IsUpdated := False;
 end;
 
 function gridFind(grid:TVirtualJSONListView;Fieldname,AText:String):PVirtualNode;
@@ -198,25 +233,19 @@ procedure TVisEditPackage.GridDependsDragDrop(Sender: TBaseVirtualTree;
   Shift: TShiftState; const Pt: TPoint; var Effect: DWORD; Mode: TDropMode);
 var
   i:integer;
-  li : TListItem;
-  jsonObject:TJSONObject;
+  sel : TNodeArray;
+  olddepends :ISuperObject;
+  package : String;
 begin
-  {for i:=0 to GridPackages.Items.Count-1 do
+  olddepends := Split(Depends,',');
+  sel := GridPackages.GetSortedSelection(False);
+  for i:=0 to length(sel)-1 do
   begin
-    if GridPackages.Items[i].Selected then
-    begin
-      if gridFind(GridDepends,'package',GridPackages.Items[i].Caption)=Nil then
-      begin
-        jsonObject := TJSONObject.Create([
-          'package',GridPackages.Items[i].Caption,
-          'description',GridPackages.Items[i].SubItems[1],
-          'depends',GridPackages.Items[i].SubItems[2]
-          ]);
-        TJSONArray(GridDepends.Data).Add(jsonObject);
-      end;
-    end;
-  end;}
-  GridDepends.LoadData;
+    package := GetValue(GridPackages,sel[i],'package');
+    if not StrIn(package,olddepends) then
+      olddepends.AsArray.Add(package);
+  end;
+  Depends:=Join(',',olddepends);
 end;
 
 procedure TVisEditPackage.GridDependsDragOver(Sender: TBaseVirtualTree;
@@ -229,6 +258,7 @@ end;
 procedure TVisEditPackage.ActEditRemoveExecute(Sender: TObject);
 begin
   GridDepends.DeleteSelectedNodes;
+  Depends:=Depends;
 end;
 
 procedure TVisEditPackage.ActEditSavePackageExecute(Sender: TObject);
@@ -247,9 +277,20 @@ begin
     DMPython.PythonEng.ExecString(format('p.load_control_from_dict(json.loads(''%s''))',[PackageEdited.AsJson]));
     DMPython.PythonEng.ExecString(format('p.save_control_to_wapt(r''%s'')',[EdSourceDir.Text]));
     EdSetupPy.Lines.SaveToFile(AppendPathDelim(FSourcePath)+'setup.py');
+    IsUpdated:=False;
   finally
     Screen.Cursor:=crDefault;
   end;
+end;
+
+procedure TVisEditPackage.ActEditSavePackageUpdate(Sender: TObject);
+begin
+  ActEditSavePackage.Enabled:=IsUpdated;
+end;
+
+function TVisEditPackage.GetIsUpdated:Boolean;
+begin
+   Result := FIsUpdated or EdPackage.Modified or EdSetupPy.Modified or EdSourceDir.Modified or Eddescription.Modified;
 end;
 
 procedure TVisEditPackage.ActEditSearchExecute(Sender: TObject);
@@ -269,8 +310,7 @@ var
   result:ISuperObject;
 begin
   ActEditSavePackage.Execute;
-  result := DMPython.RunJSON(format('mywapt.build_upload(r"%s")',[EdSourceDir.Text]),jsonlog);
-
+  result := DMPython.RunJSON(format('mywapt.build_upload(r"%s")',[FSourcePath]),jsonlog);
 end;
 
 procedure TVisEditPackage.ActExecCodeExecute(Sender: TObject);
@@ -343,10 +383,15 @@ var
   res:ISuperObject;
 begin
   if FPackageRequest=AValue then Exit;
-  FPackageRequest:=AValue;
-  res := DMPython.RunJSON(format('mywapt.edit_package("%s")',[FPackageRequest]));
-  FSourcePath:= res.S['source_dir'];
-  PackageEdited := res['package'];
+  Screen.Cursor:=crHourGlass;
+  try
+    FPackageRequest:=AValue;
+    res := DMPython.RunJSON(format('mywapt.edit_package("%s")',[FPackageRequest]));
+    FSourcePath:= res.S['source_dir'];
+    PackageEdited := res['package'];
+  finally
+    Screen.Cursor:=crDefault;
+  end;
   EditPackage;
 end;
 
@@ -356,8 +401,12 @@ var
 begin
   if FSourcePath=AValue then Exit;
   FSourcePath:=AValue;
-  res := DMPython.RunJSON(format('mywapt.edit_package("%s")',[FSourcePath]));
-  PackageEdited := res['package'];
+  try
+    res := DMPython.RunJSON(format('mywapt.edit_package("%s")',[FSourcePath]));
+    PackageEdited := res['package'];
+  finally
+    Screen.Cursor:=crDefault;
+  end;
   EditPackage;
 end;
 
@@ -392,17 +441,29 @@ begin
   Sender.Treeview.Invalidate;
 end;
 
+procedure TVisEditPackage.SetIsUpdated(AValue: Boolean);
+begin
+  FIsUpdated:=AValue;
+  if not AValue then
+  begin
+    EdPackage.Modified:=False;
+    Eddescription.Modified:=False;
+    EdVersion.Modified:=False;
+    EdSourceDir.Modified:=False;
+    EdSetupPy.Modified:=False;
+  end;
+end;
+
 procedure TVisEditPackage.SetDepends(AValue: String);
 var
   dependencies:ISuperObject;
 begin
-  if FDepends=AValue then Exit;
   FDepends:=AValue;
   dependencies := DMPython.RunJSON(format('mywapt.get_package_entries("%s")',[FDepends]));
   GridLoadData(GridDepends,dependencies['packages'].AsJSon);
   if dependencies['missing'].AsArray.Length>0 then
     ShowMessageFmt('Attention, les paquets %s ont été ignorés car introuvables',[dependencies.S['missing']]);
-
+  FIsUpdated:=True;
 end;
 
 function TVisEditPackage.GetDepends: String;
@@ -413,10 +474,10 @@ begin
   n := GridDepends.GetFirst;
   while (n<>Nil) do
   begin
-    if Depends<>'' then
-      Depends:=Depends+','+GetValue(GridDepends,n,'package')
+    if FDepends<>'' then
+      FDepends:=FDepends+','+GetValue(GridDepends,n,'package')
     else
-      Depends:=GetValue(GridDepends,n,'package');
+      FDepends:=GetValue(GridDepends,n,'package');
     n := GridDepends.GetNext(n)
   end;
   Result := FDepends;
