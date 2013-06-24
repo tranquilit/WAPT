@@ -2214,10 +2214,9 @@ class Wapt(object):
         logger.debug(u'svn command : %s'% svncmd)
         if not os.path.isfile(svncmd):
             raise Exception('svn.exe command not available, please install TortoiseSVN with commandline tools')
-        if self.config.get('global','default_sources_suffix'):
-            co_dir = os.path.join(self.config.get('global','default_sources_root'),"%s-%s" % (entry.package,self.config.get('global','default_sources_suffix')))
-        else:
-            co_dir = os.path.join(self.config.get('default_sources_root',entry.package))
+
+        co_dir = self.get_default_development_dir(entry.package)
+
         logger.info('sources : %s'% entry.sources)
         logger.info('checkout dir : %s'% co_dir)
         logger.info(setuphelpers.run(u'"%s" co "%s" "%s"' % (svncmd,entry.sources,co_dir)))
@@ -3183,10 +3182,13 @@ class Wapt(object):
         if not packagename:
             simplename = re.sub(r'[\s\(\)]+','',props['product'].lower())
             packagename = '%s-%s' %  (self.config.get('global','default_package_prefix','tis'),simplename)
+
         if not directoryname:
-            directoryname = os.path.join(self.config.get('global','default_sources_root'),packagename)+'-%s' % self.config.get('global','default_sources_suffix','wapt')
+            directoryname = self.get_default_development_dir(packagename)
+
         if not os.path.isdir(os.path.join(directoryname,'WAPT')):
             os.makedirs(os.path.join(directoryname,'WAPT'))
+
         template = codecs.open(os.path.join(self.wapt_base_dir,'templates','setup_package_template.py'),encoding='utf8').read() % locals()
         setuppy_filename = os.path.join(directoryname,'setup.py')
         if not os.path.isfile(setuppy_filename):
@@ -3235,7 +3237,7 @@ class Wapt(object):
             packagename = packagename.lower()
 
         if not directoryname:
-            directoryname = os.path.join(self.config.get('global','default_sources_root'),packagename)+'-%s' % self.config.get('global','default_sources_suffix','wapt')
+            directoryname = self.get_default_development_dir(packagename)
 
         if not os.path.isdir(os.path.join(directoryname,'WAPT')):
             os.makedirs(os.path.join(directoryname,'WAPT'))
@@ -3319,18 +3321,25 @@ class Wapt(object):
         return self.waptdb.packages_matching(packagename)
 
     def get_default_development_dir(self,packagecond):
+        """Returns the default developement directory for package named "packagecond" based on default_sources_root and default_sources_suffix ini parameters*
+            packagecond can be of the form "name (=version)" or a simple package name
+        """
         packagename = REGEX_PACKAGE_CONDITION.match(packagecond).groupdict()['package']
         return os.path.join(self.config.get('global','default_sources_root',os.getcwd()),packagename)+'-%s' % self.config.get('global','default_sources_suffix','wapt')
 
-    def edit_package(self,packagename,target_directory=''):
+    def edit_package(self,packagename,target_directory='',ignore_local_sources=False):
         """Download an existing package from repositories into targetdirectory for modification
+            if ignore_local_source is True, overwrite current local edited data if any.
             Return the the directory name of the package sources"""
         # check if already downloaded ...
         devdir = self.get_default_development_dir(packagename)
         if os.path.isdir(devdir):
-            package=PackageEntry().load_control_from_wapt(devdir)
-            if package.match(packagename):
-                return {'target':devdir,'source_dir':devdir,'package':package}
+            if not ignore_local_sources:
+                package=PackageEntry().load_control_from_wapt(devdir)
+                if package.match(packagename):
+                    return {'target':devdir,'source_dir':devdir,'package':package}
+            else:
+                os.unlink(devdir)
         return self.duplicate_package(packagename=packagename,newname=packagename,target_directory=target_directory,build=False)
 
     def edit_host(self,hostname,target_directory=''):
@@ -3368,7 +3377,8 @@ class Wapt(object):
             newname = setuphelpers.get_hostname().lower()
         else:
             newname = newname.lower()
-        package_dev_dir = os.path.join(target_directory,newname)+'-%s' % self.config.get('global','default_sources_suffix','wapt')
+
+        package_dev_dir = self.get_default_development_dir(newname)
 
         result = {'target':package_dev_dir,'package':PackageEntry(),'source_dir':package_dev_dir}
 

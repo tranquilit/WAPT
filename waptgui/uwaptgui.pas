@@ -133,8 +133,8 @@ type
       const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType);
   private
+    function EditPackage(packagename: String): ISuperObject;
     { private declarations }
-    procedure EditPackage(PackageEntry:ISuperObject);
     procedure GridLoadData(grid: TVirtualJSONListView; jsondata: String);
     procedure PythonOutputSendData(Sender: TObject; const Data: AnsiString);
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: String);
@@ -148,7 +148,7 @@ var
   VisWaptGUI: TVisWaptGUI;
 
 implementation
-uses LCLIntf,tisstrings,soutils,waptcommon,uVisCreateKey,dmwaptpython;
+uses LCLIntf,tisstrings,soutils,waptcommon,uVisCreateKey,dmwaptpython,uviseditpackage;
 {$R *.lfm}
 
 { TVisWaptGUI }
@@ -219,23 +219,17 @@ end;
 procedure TVisWaptGUI.ActEditpackageExecute(Sender: TObject);
 var
   expr,res,depends,dep:String;
-  package:String;
+  Selpackage:String;
   result:ISuperObject;
   N : PVirtualNode;
 begin
   if GridPackages.Focused then
   begin
     N := GridPackages.GetFirstSelected;
-    package := GetValue(GridPackages,N,'package');
-    result := DMPython.RunJSON(format('mywapt.edit_package("%s")',[package]),jsonlog);
-    EditPackage(result);
-    ////
+    Selpackage := GetValue(GridPackages,N,'package');
+    if EditPackage(Selpackage)<>Nil then
+      ActSearchPackage.Execute;
   end;
-end;
-
-procedure TVisWaptGUI.EditPackage(PackageEntry:ISuperObject);
-begin
-  ////TODO
 end;
 
 function gridFind(grid:TVirtualJSONListView;Fieldname,AText:String):PVirtualNode;
@@ -296,13 +290,12 @@ end;
 
 procedure TVisWaptGUI.ActEditHostPackageExecute(Sender: TObject);
 var
-  package : String;
+  selpackage : String;
   result : ISuperObject;
 begin
-  package := GetValue(GridHosts,GridHosts.FocusedNode,'name');
-  result := DMPython.RunJSON(format('mywapt.edit_host("%s")',[package]),jsonlog);
-  EditPackage(result);
-  ////
+  selpackage := GetValue(GridHosts,GridHosts.FocusedNode,'name');
+  if EditPackage(selpackage)<>Nil then
+    ActSearchHost.Execute;
 end;
 
 procedure TVisWaptGUI.ActEvaluateExecute(Sender: TObject);
@@ -548,6 +541,25 @@ begin
   else
     TargetCanvas.Font.style := TargetCanvas.Font.style - [fsBold]
 
+end;
+
+function TVisWaptGUI.EditPackage(packagename:String):ISuperObject;
+begin
+  Screen.Cursor:=crHourGlass;
+  try
+    with TVisEditPackage.Create(Self) do
+    try
+      PackageRequest := packagename;
+      if ShowModal then
+        result := PackageEdited;
+      else
+        result := Nil;
+    finally
+      Free;
+    end;
+  finally
+    Screen.Cursor:=crDefault;
+  end;
 end;
 
 end.

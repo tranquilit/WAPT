@@ -64,29 +64,14 @@ type
     EdSetupPy: TSynEdit;
     jsonlog: TVirtualJSONInspector;
     procedure ActBuildUploadExecute(Sender: TObject);
-    procedure ActCreateCertificateExecute(Sender: TObject);
-    procedure ActCreateWaptSetupExecute(Sender: TObject);
-    procedure ActEditHostPackageExecute(Sender: TObject);
-    procedure ActEditpackageExecute(Sender: TObject);
     procedure ActEditRemoveExecute(Sender: TObject);
     procedure ActEditSavePackageExecute(Sender: TObject);
     procedure ActEditSearchExecute(Sender: TObject);
-    procedure ActEvaluateExecute(Sender: TObject);
-    procedure ActEvaluateVarExecute(Sender: TObject);
     procedure ActExecCodeExecute(Sender: TObject);
-    procedure actHostSelectAllExecute(Sender: TObject);
-    procedure ActInstallExecute(Sender: TObject);
-    procedure ActRegisterHostExecute(Sender: TObject);
-    procedure ActRemoveExecute(Sender: TObject);
-    procedure ActSearchHostExecute(Sender: TObject);
     procedure ActSearchPackageExecute(Sender: TObject);
-    procedure ActUpdateExecute(Sender: TObject);
-    procedure ActUpgradeExecute(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
-    procedure EdRunKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
-    procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridDependsDragDrop(Sender: TBaseVirtualTree; Source: TObject;
       DataObject: IDataObject; Formats: TFormatArray; Shift: TShiftState;
       const Pt: TPoint; var Effect: DWORD; Mode: TDropMode);
@@ -97,27 +82,29 @@ type
       Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
     procedure GridPackagesHeaderClick(Sender: TVTHeader;
       HitInfo: TVTHeaderHitInfo);
-    procedure GridPackagesPaintText(Sender: TBaseVirtualTree;
-      const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
-      TextType: TVSTTextType);
+  private
+    FDepends: String;
+    function GetDepends: String;
+    procedure SetDepends(AValue: String);
   private
     FPackageRequest: String;
     FSourcePath: String;
     { private declarations }
     procedure GridLoadData(grid: TVirtualJSONListView; jsondata: String);
-    procedure PythonOutputSendData(Sender: TObject; const Data: AnsiString);
     procedure SetPackageRequest(AValue: String);
     procedure SetSourcePath(AValue: String);
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: String);
+    property Depends:String read GetDepends write SetDepends;
   public
     { public declarations }
     waptpath:String;
     PackageEdited:ISuperObject;
     procedure EditPackage;
-    procedure PostPackage;
     property SourcePath:String read FSourcePath write SetSourcePath;
     property PackageRequest:String read FPackageRequest write SetPackageRequest;
   end;
+
+function EditPackage(packagename:String):ISuperObject;
 
 var
   VisEditPackage: TVisEditPackage;
@@ -126,6 +113,27 @@ implementation
 uses LCLIntf,tisstrings,soutils,waptcommon,dmwaptpython;
 {$R *.lfm}
 
+
+function EditPackage(packagename:String):ISuperObject;
+begin
+  Screen.Cursor:=crHourGlass;
+  try
+    with TVisEditPackage.Create(Nil) do
+    try
+      PackageRequest := packagename;
+      if ShowModal then
+        result := PackageEdited;
+      else
+        result := Nil;
+    finally
+      Free;
+    end;
+  finally
+    Screen.Cursor:=crDefault;
+  end;
+end;
+
+
 { TVisEditPackage }
 procedure TVisEditPackage.cbShowLogClick(Sender: TObject);
 begin
@@ -133,11 +141,6 @@ begin
     DMPython.PythonEng.ExecString('logger.setLevel(logging.DEBUG)')
   else
     DMPython.PythonEng.ExecString('logger.setLevel(logging.WARNING)');
-
-end;
-
-procedure TVisEditPackage.EdRunKeyPress(Sender: TObject; var Key: char);
-begin
 end;
 
 procedure TVisEditPackage.EdSearchKeyPress(Sender: TObject; var Key: char);
@@ -161,39 +164,17 @@ begin
   TJSONObject(ListView.GetData(N)).Add(FieldName,Value);
 end;
 
-procedure TVisEditPackage.ActInstallExecute(Sender: TObject);
-begin
-end;
-
-procedure TVisEditPackage.ActRegisterHostExecute(Sender: TObject);
-begin
-end;
-
-procedure TVisEditPackage.ActEditpackageExecute(Sender: TObject);
-begin
-end;
-
 procedure TVisEditPackage.EditPackage;
-var
-  dependencies:ISuperObject;
-  dep:String;
 begin
-  EdSourceDir.Text:=PackageEdited.S['target'];
-  EdPackage.Text:=PackageEdited['package'].S['package'];
-  EdVersion.Text:=PackageEdited['package'].S['version'];
-  EdDescription.Text:=PackageEdited['package'].S['description'];
-  EdSection.Text:=PackageEdited['package'].S['section'];
-  dep := PackageEdited.S['package.depends'];
-  //FillEditLstDepends(PackageEdited.S['package.depends']);
-  dependencies := DMPython.RunJSON(format('mywapt.get_package_entries("%s")',[EdPackage.Text]));
-  GridLoadData(GridDepends,dependencies['packages'].AsJSon);
+  EdSourceDir.Text:=FSourcePath;
+  EdPackage.Text:=PackageEdited.S['package'];
+  EdVersion.Text:=PackageEdited.S['version'];
+  EdDescription.Text:=PackageEdited.S['description'];
+  EdSection.Text:=PackageEdited.S['section'];
+  // get a list of package entries given a
+  Depends:=PackageEdited.S['depends'];
+  EdSetupPy.Lines.LoadFromFile(AppendPathDelim(FSourcePath)+'setup.py');
 end;
-
-procedure TVisEditPackage.PostPackage;
-begin
-
-end;
-
 
 function gridFind(grid:TVirtualJSONListView;Fieldname,AText:String):PVirtualNode;
 var
@@ -252,38 +233,33 @@ end;
 
 procedure TVisEditPackage.ActEditSavePackageExecute(Sender: TObject);
 var
-  Depends:String;
   i:integer;
   n:PVirtualNode;
 begin
   Screen.Cursor:=crHourGlass;
   try
-    PackageEdited.S['package.package'] := EdPackage.Text;
-    PackageEdited.S['package.version'] := EdVersion.Text;
-    PackageEdited.S['package.description'] := EdDescription.Text;
-    PackageEdited.S['package.section'] := EdSection.Text;
-    Depends:='';
-    n := GridDepends.GetFirst;
-    while (n<>Nil) do
-    begin
-      if Depends<>'' then
-        Depends:=Depends+','+GetValue(GridDepends,n,'package')
-      else
-        Depends:=GetValue(GridDepends,n,'package');
-      n := GridDepends.GetNextSelected(n)
-    end;
-
-    PackageEdited.S['package.depends'] := depends;
+    PackageEdited.S['package'] := EdPackage.Text;
+    PackageEdited.S['version'] := EdVersion.Text;
+    PackageEdited.S['description'] := EdDescription.Text;
+    PackageEdited.S['section'] := EdSection.Text;
+    PackageEdited.S['depends'] := Depends;
     DMPython.PythonEng.ExecString('p = PackageEntry()');
-    DMPython.PythonEng.ExecString(format('p.load_control_from_dict(json.loads(''%s''))',[PackageEdited['package'].AsJson]));
+    DMPython.PythonEng.ExecString(format('p.load_control_from_dict(json.loads(''%s''))',[PackageEdited.AsJson]));
     DMPython.PythonEng.ExecString(format('p.save_control_to_wapt(r''%s'')',[EdSourceDir.Text]));
+    EdSetupPy.Lines.SaveToFile(AppendPathDelim(FSourcePath)+'setup.py');
   finally
     Screen.Cursor:=crDefault;
   end;
 end;
 
 procedure TVisEditPackage.ActEditSearchExecute(Sender: TObject);
+var
+  expr:UTF8String;
+  packages:ISuperObject;
 begin
+  expr := format('mywapt.search("%s".split())',[EdSearch.Text]);
+  packages := DMPython.RunJSON(expr);
+  GridLoadData(GridPackages,packages.AsJSon);
 end;
 
 procedure TVisEditPackage.ActBuildUploadExecute(Sender: TObject);
@@ -297,42 +273,10 @@ begin
 
 end;
 
-procedure TVisEditPackage.ActCreateCertificateExecute(Sender: TObject);
-begin
-end;
-
-procedure TVisEditPackage.ActCreateWaptSetupExecute(Sender: TObject);
-begin
-end;
-
-procedure TVisEditPackage.ActEditHostPackageExecute(Sender: TObject);
-begin
-end;
-
-procedure TVisEditPackage.ActEvaluateExecute(Sender: TObject);
-begin
-end;
-
-procedure TVisEditPackage.ActEvaluateVarExecute(Sender: TObject);
-begin
-end;
-
 procedure TVisEditPackage.ActExecCodeExecute(Sender: TObject);
 begin
   MemoLog.Clear;
   DMPython.PythonEng.ExecString(EdSetupPy.Lines.Text);
-end;
-
-procedure TVisEditPackage.actHostSelectAllExecute(Sender: TObject);
-begin
-end;
-
-procedure TVisEditPackage.ActRemoveExecute(Sender: TObject);
-begin
-end;
-
-procedure TVisEditPackage.ActSearchHostExecute(Sender: TObject);
-begin
 end;
 
 procedure TVisEditPackage.ActSearchPackageExecute(Sender: TObject);
@@ -345,15 +289,6 @@ begin
   packages := DMPython.RunJSON(expr);
   GridLoadData(GridPackages,packages.AsJSon);
 end;
-
-procedure TVisEditPackage.ActUpdateExecute(Sender: TObject);
-begin
-end;
-
-procedure TVisEditPackage.ActUpgradeExecute(Sender: TObject);
-begin
-end;
-
 
 procedure TVisEditPackage.FormCreate(Sender: TObject);
 begin
@@ -403,29 +338,26 @@ begin
 end;
 
 
-procedure TVisEditPackage.GridHostsChange(Sender: TBaseVirtualTree;
-  Node: PVirtualNode);
-begin
-end;
-
-procedure TVisEditPackage.PythonOutputSendData(Sender: TObject; const Data: AnsiString
-  );
-begin
-end;
-
 procedure TVisEditPackage.SetPackageRequest(AValue: String);
+var
+  res:ISuperObject;
 begin
   if FPackageRequest=AValue then Exit;
   FPackageRequest:=AValue;
-  PackageEdited := DMPython.RunJSON(format('mywapt.edit_package("%s")',[AValue]))['package'];
+  res := DMPython.RunJSON(format('mywapt.edit_package("%s")',[FPackageRequest]));
+  FSourcePath:= res.S['source_dir'];
+  PackageEdited := res['package'];
   EditPackage;
 end;
 
 procedure TVisEditPackage.SetSourcePath(AValue: String);
+var
+  res:ISuperObject;
 begin
   if FSourcePath=AValue then Exit;
   FSourcePath:=AValue;
-  PackageEdited := DMPython.RunJSON(format('mywapt.edit_package("%s")',[FSourcePath]))['package'];
+  res := DMPython.RunJSON(format('mywapt.edit_package("%s")',[FSourcePath]));
+  PackageEdited := res['package'];
   EditPackage;
 end;
 
@@ -460,12 +392,35 @@ begin
   Sender.Treeview.Invalidate;
 end;
 
-procedure TVisEditPackage.GridPackagesPaintText(Sender: TBaseVirtualTree;
-  const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
-  TextType: TVSTTextType);
+procedure TVisEditPackage.SetDepends(AValue: String);
+var
+  dependencies:ISuperObject;
 begin
+  if FDepends=AValue then Exit;
+  FDepends:=AValue;
+  dependencies := DMPython.RunJSON(format('mywapt.get_package_entries("%s")',[FDepends]));
+  GridLoadData(GridDepends,dependencies['packages'].AsJSon);
+  if dependencies['missing'].AsArray.Length>0 then
+    ShowMessageFmt('Attention, les paquets %s ont été ignorés car introuvables',[dependencies.S['missing']]);
+
 end;
 
+function TVisEditPackage.GetDepends: String;
+var
+  n:PVirtualNode;
+begin
+  FDepends:='';
+  n := GridDepends.GetFirst;
+  while (n<>Nil) do
+  begin
+    if Depends<>'' then
+      Depends:=Depends+','+GetValue(GridDepends,n,'package')
+    else
+      Depends:=GetValue(GridDepends,n,'package');
+    n := GridDepends.GetNext(n)
+  end;
+  Result := FDepends;
+end;
 
 end.
 

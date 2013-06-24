@@ -643,6 +643,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
         TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
         OnCompareNodes = GridPackagesCompareNodes
+        OnDblClick = ActEditpackageExecute
         OnPaintText = GridPackagesPaintText
         OnHeaderClick = GridPackagesHeaderClick
       end
@@ -719,17 +720,17 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgInventory: TTabSheet
       Caption = 'Inventaire'
-      ClientHeight = 454
-      ClientWidth = 990
+      ClientHeight = 596
+      ClientWidth = 1165
       object Panel10: TPanel
         Left = 0
         Height = 34
         Top = 0
-        Width = 990
+        Width = 1165
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 34
-        ClientWidth = 990
+        ClientWidth = 1165
         TabOrder = 0
         object EdSearchHost: TEdit
           Left = 60
@@ -773,9 +774,9 @@ object VisWaptGUI: TVisWaptGUI
       end
       object GridHosts: TVirtualJSONListView
         Left = 0
-        Height = 420
+        Height = 562
         Top = 34
-        Width = 413
+        Width = 588
         Align = alClient
         Color = clWhite
         Header.AutoSizeIndex = -1
@@ -906,8 +907,8 @@ object VisWaptGUI: TVisWaptGUI
         OnHeaderClick = GridPackagesHeaderClick
       end
       object HostPages: TPageControl
-        Left = 418
-        Height = 420
+        Left = 593
+        Height = 562
         Top = 34
         Width = 572
         ActivePage = TabSheet3
@@ -1073,11 +1074,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object TabSheet3: TTabSheet
           Caption = 'Paquets disponibles'
-          ClientHeight = 394
+          ClientHeight = 536
           ClientWidth = 564
           object GridHostPackages1: TVirtualJSONListView
             Left = 0
-            Height = 364
+            Height = 506
             Top = 30
             Width = 564
             Align = alClient
@@ -1223,8 +1224,8 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
       object Splitter4: TSplitter
-        Left = 413
-        Height = 420
+        Left = 588
+        Height = 562
         Top = 34
         Width = 5
         Align = alRight

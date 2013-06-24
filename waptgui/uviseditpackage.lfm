@@ -663,7 +663,6 @@ object VisEditPackage: TVisEditPackage
           TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
           TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
           OnCompareNodes = GridPackagesCompareNodes
-          OnPaintText = GridPackagesPaintText
           OnHeaderClick = GridPackagesHeaderClick
         end
       end
@@ -717,7 +716,6 @@ object VisEditPackage: TVisEditPackage
         OnCompareNodes = GridPackagesCompareNodes
         OnDragOver = GridDependsDragOver
         OnDragDrop = GridDependsDragDrop
-        OnPaintText = GridPackagesPaintText
         OnHeaderClick = GridPackagesHeaderClick
       end
       object Splitter3: TSplitter
