@@ -224,6 +224,7 @@ object VisWaptGUI: TVisWaptGUI
         Height = 562
         Top = 34
         Width = 588
+        OnGetText = GridHostsGetText
         Align = alClient
         Color = clWhite
         Header.AutoSizeIndex = -1
@@ -231,37 +232,37 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Position = 0
-            Text = 'name'
+            Text = 'Machine'
             Width = 100
-            PropertyName = 'name'
+            PropertyName = 'host.computer_fqdn'
           end        
           item
             MaxWidth = 400
             Position = 1
-            Text = 'description'
+            Text = 'host.description'
             Width = 100
-            PropertyName = 'description'
+            PropertyName = 'host.description'
           end        
           item
             MaxWidth = 400
             Position = 2
-            Text = 'manufacturer'
+            Text = 'host.system_manufacturer'
             Width = 100
-            PropertyName = 'manufacturer'
+            PropertyName = 'host.system_manufacturer'
           end        
           item
             MaxWidth = 400
             Position = 3
-            Text = 'model'
+            Text = 'host.system_productname'
             Width = 100
-            PropertyName = 'model'
+            PropertyName = 'host.system_productname'
           end        
           item
             MaxWidth = 400
             Position = 4
-            Text = 'serial'
+            Text = 'dmi.''Chassis Information''.''Serial Number'''
             Width = 100
-            PropertyName = 'serial'
+            PropertyName = 'dmi.''Chassis Information''.''Serial Number'''
           end        
           item
             MaxWidth = 400

@@ -125,6 +125,9 @@ type
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
     procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure GridHostsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Data: TJSONData; Column: TColumnIndex; TextType: TVSTTextType;
+      var CellText: String);
     procedure GridPackagesCompareNodes(Sender: TBaseVirtualTree; Node1,
       Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
     procedure GridPackagesHeaderClick(Sender: TVTHeader;
@@ -156,7 +159,10 @@ uses LCLIntf,tisstrings,soutils,waptcommon,uVisCreateKey,dmwaptpython,uviseditpa
 
 function GetValue(ListView:TVirtualJSONListView;N:PVirtualNode;FieldName:String;Default:String=''):String;
 begin
-  result := TJSONObject(ListView.GetData(N)).get(FieldName,Default);
+  if FieldName='' then
+    result := TJSONObject(ListView.GetData(N)).AsJSON
+  else
+    result := TJSONObject(ListView.GetData(N)).get(FieldName,Default);
 end;
 
 procedure SetValue(ListView:TVirtualJSONListView;N:PVirtualNode;FieldName:String;Value:String);
@@ -223,7 +229,7 @@ begin
     end
     else if HostPages.ActivePage=pgHostPackage then
     begin
-      attribs_json := GetValue(GridHosts,Node,'attributes');
+      attribs_json := GetValue(GridHosts,Node,'');
       TreeLoadData(GridhostAttribs,attribs_json);
     end;
   end
@@ -497,6 +503,16 @@ procedure TVisWaptGUI.GridHostsChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
   UpdateHostPages(Sender);
+end;
+
+procedure TVisWaptGUI.GridHostsGetText(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Data: TJSONData; Column: TColumnIndex;
+  TextType: TVSTTextType; var CellText: String);
+var
+  js : ISuperObject;
+begin
+  js := SO(Data.AsJSON);
+  CellText:=js.S[TVirtualJSONListViewColumn(GridHosts.Header.Columns[column]).PropertyName];
 end;
 
 procedure TVisWaptGUI.PythonOutputSendData(Sender: TObject; const Data: AnsiString
