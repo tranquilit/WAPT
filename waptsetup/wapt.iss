@@ -6,7 +6,6 @@
 #define AppVerStr StripBuild(FileVerStr)
 
 #define default_repo_url "http://wapt.tranquil.it/wapt"
-#define default_public_cert "tranquilit.crt"
 
 #define default_wapt_server "http://srvwapt:8080"
 #define default_update_period "120"
@@ -81,12 +80,10 @@ Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\wapt-ge
 
 [INI]
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL}
-Filename: {app}\wapt-get.ini; Section: global; Key: public_cert; String: {code:GetPublicCert}
 Filename: {app}\wapt-get.ini; Section: global; Key: waptupdate_task_period; String: {#default_update_period}; Flags:  createkeyifdoesntexist 
 Filename: {app}\wapt-get.ini; Section: global; Key: waptupdate_task_maxruntime; String: {#default_update_maxruntime}; Flags: createkeyifdoesntexist
 Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {#default_wapt_server}; Tasks: usewaptserver; Flags: createkeyifdoesntexist
 Filename: {app}\wapt-get.ini; Section: tranquilit; Key: repo_url; String: http://wapt.tranquil.it/wapt; Tasks: usetispublic; Flags: createkeyifdoesntexist
-Filename: {app}\wapt-get.ini; Section: tranquilit; Key: public_cert; String: {app}\ssl\tranquilit.crt; Tasks: usetispublic; Flags: createkeyifdoesntexist
 Filename: {app}\wapt-get.ini; Section: global; Key: repositories; String: tranquilit; Flags: createkeyifdoesntexist; Tasks: useTISPublic
 
 [Run]
@@ -121,8 +118,7 @@ var
   rbDnsRepo: TNewRadioButton;
   cbSecondRepos : TCheckbox ;
   bIsVerySilent: boolean;
-  teWaptUrl,teWaptPublicCert: TEdit;
-  lab1:TLabel;
+  teWaptUrl: TEdit;
   
 procedure InitializeWizard;
 var
@@ -146,20 +142,6 @@ begin
   rbDnsRepo.Top := rbCustomRepo.Top + rbCustomRepo.Height + ScaleY(15);
   rbDnsRepo.Width := CustomPage.SurfaceWidth;
   rbDnsRepo.Caption := 'Detect WAPT repository with DNS records';
-
-  lab1 := TLabel.Create(WizardForm);
-  lab1.Caption := 'Public certificate for packages validation:';
-  lab1.autosize := True;
-  lab1.Parent := CustomPage.Surface; 
-  lab1.Left := rbDnsRepo.Left;
-  lab1.Top := rbDnsRepo.Top + rbDnsRepo.Height + ScaleY(15);
-
-  teWaptPublicCert :=TEdit.Create(WizardForm);
-  teWaptPublicCert.Parent := CustomPage.Surface; 
-  teWaptPublicCert.Left := lab1.left+lab1.width+5;
-  teWaptPublicCert.Top := rbDnsRepo.Top + rbDnsRepo.Height + ScaleY(15);
-  teWaptPublicCert.Width := 300;
-  
   
 end;
 
@@ -170,7 +152,6 @@ begin
     teWaptUrl.Text := GetIniString('Global', 'repo_url', '{#default_repo_url}', ExpandConstant('{app}\wapt-get.ini'));
     rbCustomRepo.Checked := teWaptUrl.Text <> ''; 
     rbDnsRepo.Checked := teWaptUrl.Text = ''; 
-    teWaptPublicCert.Text := GetIniString('Global', 'public_cert', ExpandConstant('{app}\ssl\{#default_public_cert}'), ExpandConstant('{app}\wapt-get.ini'));
   end;
 end;
 
@@ -183,16 +164,6 @@ begin
        result := teWaptUrl.Text
     else 
        result :='';
-end;
-
-
-
-function GetPublicCert(Param: String):String;
-begin
-  if WizardSilent then
-    result := GetIniString('Global', 'public_cert', ExpandConstant('{app}\ssl\{#default_public_cert}'), ExpandConstant('{app}}\wapt-get.ini'))
-  else
-    result := teWaptPublicCert.Text;
 end;
 
 function InitializeSetup(): Boolean;

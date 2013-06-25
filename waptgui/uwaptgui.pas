@@ -158,11 +158,14 @@ uses LCLIntf,tisstrings,soutils,waptcommon,uVisCreateKey,dmwaptpython,uviseditpa
 { TVisWaptGUI }
 
 function GetValue(ListView:TVirtualJSONListView;N:PVirtualNode;FieldName:String;Default:String=''):String;
+var
+  js : ISuperObject;
 begin
+  js := SO(ListView.GetData(N).AsJSON);
   if FieldName='' then
-    result := TJSONObject(ListView.GetData(N)).AsJSON
+    result := js.AsJSon
   else
-    result := TJSONObject(ListView.GetData(N)).get(FieldName,Default);
+    result := js.S[FieldName];
 end;
 
 procedure SetValue(ListView:TVirtualJSONListView;N:PVirtualNode;FieldName:String;Value:String);
@@ -206,7 +209,7 @@ begin
   Node := GridHosts.FocusedNode;
   if Node<>Nil then
   begin
-    currhost := GetValue(GridHosts,Node,'name');
+    currhost := GetValue(GridHosts,Node,'uuid');
     if HostPages.ActivePage=pgPackages then
     begin
       packages_json:=GetValue(GridHosts,Node,'packages');
@@ -343,7 +346,7 @@ var
   hostname : String;
   result : ISuperObject;
 begin
-  hostname := GetValue(GridHosts,GridHosts.FocusedNode,'name');
+  hostname := GetValue(GridHosts,GridHosts.FocusedNode,'host.computer_fqdn');
   if EditHost(hostname)<>Nil then
     ActSearchHost.Execute;
 end;

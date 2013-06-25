@@ -204,7 +204,6 @@ def main():
             'repo_url':'',
             'default_source_url':'',
             'private_key':'',
-            'public_cert':'',
             'default_development_base':'c:\tranquilit',
             'default_package_prefix':'tis',
             'default_sources_suffix':'wapt',
@@ -599,7 +598,7 @@ def main():
                 for source_dir in [os.path.abspath(p) for p in args[1:]]:
                     if os.path.isdir(source_dir):
                         print('Building  %s' % source_dir)
-                        result = mywapt.buildpackage(source_dir,
+                        result = mywapt.build_package(source_dir,
                             inc_package_release=options.increlease,
                             excludes=options.excludes.split(','))
                         package_fn = result['filename']
@@ -625,10 +624,10 @@ def main():
                             if mywapt.private_key:
                                 print('Signing %s' % package_fn)
                                 if options.private_key_passwd:
-                                    signature = mywapt.signpackage(package_fn,
+                                    signature = mywapt.sign_package(package_fn,
                                         excludes=options.excludes.split(','),callback=pwd_callback)
                                 else:
-                                    signature = mywapt.signpackage(package_fn,
+                                    signature = mywapt.sign_package(package_fn,
                                         excludes=options.excludes.split(','),callback=pwd_callback2)
                                 print u"Package %s signed : signature :\n%s" % (package_fn,signature)
                             else:
@@ -675,7 +674,7 @@ def main():
                 for waptfile in [os.path.abspath(p) for p in args[1:]]:
                     if os.path.isdir(waptfile) or os.path.isfile(waptfile):
                         print('Signing %s' % waptfile)
-                        signature = mywapt.signpackage(waptfile,
+                        signature = mywapt.sign_package(waptfile,
                             excludes=options.excludes.split(','))
                         print u"Package %s signed : signature :\n%s" % (waptfile,signature)
                         sys.exit(0)

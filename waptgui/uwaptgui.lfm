@@ -360,9 +360,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 562
         Top = 34
         Width = 572
-        ActivePage = pgHostPackage
+        ActivePage = pgSoftwares
         Align = alRight
-        TabIndex = 0
+        TabIndex = 2
         TabOrder = 2
         OnChange = HostPagesChange
         object pgHostPackage: TTabSheet
@@ -422,13 +422,13 @@ object VisWaptGUI: TVisWaptGUI
                 Position = 1
                 Text = 'Nom paquet'
                 Width = 300
-                PropertyName = 'name'
+                PropertyName = 'package'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
                 Position = 2
                 Text = 'Status'
-                PropertyName = 'status'
+                PropertyName = 'install_status'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
@@ -448,6 +448,11 @@ object VisWaptGUI: TVisWaptGUI
                 Position = 5
                 Text = 'Dependances'
                 PropertyName = 'depends'
+              end            
+              item
+                Position = 6
+                Text = 'Date installation'
+                PropertyName = 'install_date'
               end>
             Header.DefaultHeight = 17
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]

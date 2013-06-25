@@ -786,7 +786,7 @@ def register_uninstall(uninstallkey,uninstallstring,win64app=False,
         quiet_uninstall_string='',
         install_location = None, display_name=None,display_version=None,publisher=''):
     """Register the uninstall method in Windows registry,
-        so that the application is displayed in Cntrol Panel / Programs and features"""
+        so that the application is displayed in Control Panel / Programs and features"""
     if not uninstallkey:
         raise Exception('No uninstall key provided')
     if not uninstallstring:
@@ -907,6 +907,7 @@ def dmi_info():
     return result
 
 def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_BIOS','Win32_NetworkAdapter']):
+    """Get WMI machine informations as dictionaries"""
     result = {}
     import wmi
     wm = wmi.WMI()
@@ -972,7 +973,6 @@ def host_info():
 
 # from http://stackoverflow.com/questions/580924/python-windows-file-version-attribute
 def get_file_properties(fname):
-#==============================================================================
     """
     Read all properties of the given file return them as a dictionary.
     """
@@ -1031,6 +1031,11 @@ programfiles = programfiles()
 programfiles32 = programfiles32()
 programfiles64 = programfiles64()
 
+# some shortcuts
+isfile=os.path.isfile
+isdir=os.path.isdir
+remove_file=os.unlink
+remove_tree=shutil.rmtree
 makepath = os.path.join
 
 def service_installed(service_name):
@@ -1063,16 +1068,11 @@ def service_is_running(service_name):
 def user_appdata():
     return ensure_unicode((winshell.get_path(shellcon.CSIDL_APPDATA)))
 
-remove_file=os.unlink
-remove_tree=shutil.rmtree
-
 def mkdirs(path):
     """Create directory path if it doesn't exists yet"""
     if not os.path.isdir(path):
         os.makedirs(path)
 
-isfile=os.path.isfile
-isdir=os.path.isdir
 
 def user_desktop():
     """return path to current logged in user desktop"""
@@ -1099,6 +1099,7 @@ def unregister_dll(dllpath):
         raise Exception('Unregister DLL %s failed, code %i' % (dllpath,result))
 
 def add_to_system_path(path):
+    """Add path to the global search PATH environment variable if it is not yet"""
     key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment',sam=KEY_READ | KEY_WRITE)
     system_path = reg_getvalue(key,'Path').lower().split(';')
     if not path.lower() in system_path:
@@ -1119,7 +1120,7 @@ def get_task(name):
     return task
 
 def run_task(name):
-    """Launch immediately the task"""
+    """Launch immediately the Windows Scheduled task"""
     get_task(name).Run()
 
 def task_exists(name):
@@ -1130,7 +1131,7 @@ def task_exists(name):
     return '%s.job' % name in ts.Enum()
 
 def delete_task(name):
-    """removes a task"""
+    """removes a Windows scheduled task"""
     ts = pythoncom.CoCreateInstance(taskscheduler.CLSID_CTaskScheduler,None,
                                     pythoncom.CLSCTX_INPROC_SERVER,
                                     taskscheduler.IID_ITaskScheduler)
@@ -1139,7 +1140,7 @@ def delete_task(name):
     ts.Delete(name)
 
 def disable_task(name):
-    """Disable a task"""
+    """Disable a Windows scheduled task"""
     return run('schtasks /Change /TN "%s" /DISABLE' % name)
     """
     task = get_task(name)
@@ -1150,7 +1151,7 @@ def disable_task(name):
     """
 
 def enable_task(name):
-    """Enable a task"""
+    """Enable a Windows scheduled task"""
     return run('schtasks /Change /TN "%s" /ENABLE' % name)
 
     """
@@ -1162,7 +1163,7 @@ def enable_task(name):
     """
 
 def create_daily_task(name,cmd,parameters, max_runtime=10, repeat_minutes=None, start_hour=None, start_minute=None):
-    """creates a daily task
+    """creates a Windows scheduled daily task
         Return an instance of PyITask
     """
     ts = pythoncom.CoCreateInstance(taskscheduler.CLSID_CTaskScheduler,None,
@@ -1227,6 +1228,7 @@ def language():
     return locale.getdefaultlocale()[0].split('_')[0]
 
 def get_appath(exename):
+    """Get the registered application location from registry given its executable name"""
     if iswin64():
         key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\App Paths\%s' % exename)
     else:
@@ -1236,8 +1238,10 @@ def get_appath(exename):
 class EWaptSetupException(Exception):
     pass
 
+CalledProcessError = subprocess.CalledProcessError
+
 def error(reason):
-    """Raise a fatal error"""
+    """Raise a WAPT fatal error"""
     raise EWaptSetupException(u'Fatal error : %s' % reason)
 
 # to help pyscripter code completion in setup.py

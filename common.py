@@ -303,6 +303,11 @@ def sha1_for_file(fname, block_size=2**20):
         sha1.update(data)
     return sha1.hexdigest()
 
+def sha1_for_data(data):
+    sha1 = hashlib.sha1()
+    sha1.update(data)
+    return sha1.hexdigest()
+
 def pwd_callback(*args):
     """Default password callback for opening private keys"""
     import getpass
@@ -318,22 +323,28 @@ def ssl_sign_content(content,private_key,callback=pwd_callback):
     signature = key.sign_final()
     return signature
 
-def ssl_verify_content(content,signature,public_cert):
+def ssl_verify_content(content,signature,public_certs):
     """Check that the signature matches the content, using the provided publoc key
         toto : check that the public key is valid....
     """
     assert isinstance(signature,str)
-    assert isinstance(public_cert,str) or isinstance(public_cert,unicode)
-    if not os.path.isfile(public_cert):
-        raise Exception('Public certificate %s not found' % public_cert)
+    assert isinstance(public_certs,str) or isinstance(public_certs,unicode) or isinstance(public_certs,list)
+    if not isinstance(public_certs,list):
+        public_certs = [public_certs]
+    for fn in public_certs:
+        if not os.path.isfile(fn):
+            raise Exception('Public certificate %s not found' % fn)
     from M2Crypto import EVP, X509
-    rsa = X509.load_cert(public_cert).get_pubkey().get_rsa()
-    pubkey = EVP.PKey()
-    pubkey.assign_rsa(rsa)
-    pubkey.verify_init()
-    pubkey.verify_update(content)
-    if not pubkey.verify_final(signature):
-        raise Exception('SSL signature verification failed, either public certificate does not match signature or signed content has been changed')
+    for public_cert in public_certs:
+        crt = X509.load_cert(public_cert)
+        rsa = crt.get_pubkey().get_rsa()
+        pubkey = EVP.PKey()
+        pubkey.assign_rsa(rsa)
+        pubkey.verify_init()
+        pubkey.verify_update(content)
+        if pubkey.verify_final(signature):
+            return crt.get_subject().as_text()
+    raise Exception('SSL signature verification failed, either none public certificates match signature or signed content has been changed')
 
 
 def default_json(o):
@@ -1406,10 +1417,9 @@ class WaptDB(WaptBaseDB):
 
 
 class WaptRepo(object):
-    def __init__(self,wapt,name='',url=None,certfilename=''):
+    def __init__(self,wapt,name='',url=None):
         self.name = name
         self._repo_url = url
-        self.public_cert = certfilename
         self.wapt = wapt
 
     @property
@@ -1432,7 +1442,6 @@ class WaptRepo(object):
         if section:
             self.name = section
         self.repo_url = config.get(self.name,'repo_url')
-        self.public_cert = config.get(self.name,'public_cert')
         return self
 
     def update_db(self,force=False,proxies=None):
@@ -1650,7 +1659,10 @@ class Wapt(object):
         self.options = OptionParser()
         self.options.force = False
 
-        # Get the configuration of all repositories (url, public_cert...)
+        # get the list of certificates to use :
+        self.public_certs = glob.glob(os.path.join(self.wapt_base_dir,'ssl','*.crt'))
+
+        # Get the configuration of all repositories (url, ...)
         self.repositories = []
         # secondary
         if self.config.has_option('global','repositories'):
@@ -1669,7 +1681,7 @@ class Wapt(object):
         self.repositories.append(main)
 
         # add an automatic host repo
-        host_repo = WaptHostRepo(self,'wapt-host',certfilename=main.public_cert)
+        host_repo = WaptHostRepo(self,'wapt-host')
         # override with calculated url
         #host_repo.repo_url = main.repo_url+'-host'
         self.repositories.append(host_repo)
@@ -1962,16 +1974,13 @@ class Wapt(object):
                 errors.append(filename)
         return errors
 
-    def install_wapt(self,fname,params_dict={},public_cert='',explicit_by=None):
+    def install_wapt(self,fname,params_dict={},explicit_by=None):
         """Install a single wapt package given its WAPT filename.
         return install status"""
         logger.info(u"Register start of install %s as user %s to local DB with params %s" % (fname, setuphelpers.get_current_user(), params_dict))
         logger.info(u"Interactive user:%s, usergroups %s" % (self.user,self.usergroups))
         status = 'INIT'
-        # default is to use the main repo certificate
-        if not public_cert:
-            public_cert = self.get_public_cert()
-        if not public_cert and not self.allow_unsigned:
+        if not self.public_certs and not self.allow_unsigned:
             raise Exception(u'No public Key provided for package signature checking, and unsigned packages install is not allowed.\
                     If you want to allow unsigned packages, add "allow_unsigned=1" in wapt-get.ini file')
         previous_uninstall = self.registry_uninstall_snapshot()
@@ -2029,12 +2038,13 @@ class Wapt(object):
                 signature_filename = os.path.join( packagetempdir,'WAPT','signature')
                 # if public key provided, and signature in wapt file, check it
                 if not self.allow_unsigned:
-                    if os.path.isfile(public_cert) and os.path.isfile(signature_filename):
+                    if self.public_certs and os.path.isfile(signature_filename):
                         signature = open(signature_filename,'r').read().decode('base64')
-                        ssl_verify_content(manifest_data,signature,public_cert)
+                        subject = ssl_verify_content(manifest_data,signature,self.public_certs)
+                        logger.info('Package issued by %s' % (subject,))
                     else:
                         if not self.allow_unsigned:
-                            raise Exception('Package does not contain a signature, and unsigned packages install is not allowed')
+                            raise Exception('No certificate provided or package does not contain a signature, and unsigned packages install is not allowed')
 
                 manifest = json.loads(manifest_data)
                 errors = self.corrupted_files_sha1(packagetempdir,manifest)
@@ -2283,7 +2293,7 @@ class Wapt(object):
         """Given a list of packagename or requirement "name (=version)",
                 return a dictionnary of {'additional' 'upgrade' 'install' 'skipped' 'unavailable'} of
                     [packagerequest,matching PackageEntry]
-            forceupgrade : check if the current installed package is the latest available
+            forceupgrade : check if the current installed packages is the latest available
             force : install the latest version even if the package is already there and match the requirement
             assume_removed: list of packagename which are assumed to be absent even if they are installed to check the
                             consequences of removal of packages, implies force=True
@@ -2422,6 +2432,26 @@ class Wapt(object):
         downloaded = self.download_packages(packages,usecache=not download_only and usecache)
         if downloaded.get('errors',[]):
             raise Exception(u'Error downloading some files : %s',(downloaded['errors'],))
+
+        # check downloaded packages signatures and merge control data in local database
+        if not self.allow_unsigned:
+            for fname in downloaded['downloaded'] + downloaded['skipped']:
+                waptfile = zipfile.ZipFile(fname,'r',allowZip64=True)
+                control = waptfile.open(u'WAPT/control').read().decode('utf8')
+                manifest_content = waptfile.open(u'WAPT/manifest.sha1').read()
+                manifest = json.loads(manifest_content)
+                signature = waptfile.open(u'WAPT/signature').read().decode('base64')
+                subject = ssl_verify_content(manifest_content,signature,self.public_certs)
+                logger.info('Package issued by %s' % (subject,))
+
+                for (fn,sha1) in manifest:
+                    if fn == 'WAPT\\control':
+                        if sha1 <> sha1_for_data(control):
+                            raise Exception("WAPT/control file of %s is corrupted, sha1 digests don't match" % fname)
+                        break
+                # Merge updated control data
+                # TODO
+
         actions['downloads'] = downloaded
         logger.debug(u'Downloaded : %s' % (downloaded,))
         def fname(packagefilename):
@@ -2437,7 +2467,6 @@ class Wapt(object):
                 print u"Installing %s" % (p.package,)
                 result = self.install_wapt(fname(p.filename),
                     params_dict = params_dict,
-                    public_cert=self.get_public_cert(name=p.repo),
                     explicit_by=self.user if request in apackages else None
                     )
                 if result:
@@ -2771,16 +2800,7 @@ class Wapt(object):
                 return r
         return None
 
-    def get_public_cert(self,name='global'):
-        repo = self.get_repo(name)
-        if repo.public_cert:
-            return repo.public_cert
-        else:
-            repo = self.get_repo('global')
-            return repo.public_cert
-
-
-    def signpackage(self,zip_or_directoryname,excludes=['.svn','.git*','*.pyc','src'],private_key=None,callback=pwd_callback):
+    def sign_package(self,zip_or_directoryname,excludes=['.svn','.git*','*.pyc','src'],private_key=None,callback=pwd_callback):
         """calc the signature of the WAPT/manifest.sha1 file and put/replace it in ZIP or directory.
             create manifest.sha1 a directory is supplied"""
         if not isinstance(zip_or_directoryname,unicode):
@@ -2807,7 +2827,7 @@ class Wapt(object):
 
         return signature.encode('base64')
 
-    def buildpackage(self,directoryname,inc_package_release=False,excludes=['.svn','.git*','*.pyc','src']):
+    def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git*','*.pyc','src']):
         """Build the WAPT package from a directory
             return a dict {'filename':waptfilename,'files':[list of files]}
         """
@@ -2914,7 +2934,7 @@ class Wapt(object):
         for source_dir in [os.path.abspath(p) for p in sources_directories]:
             if os.path.isdir(source_dir):
                 print('Building  %s' % source_dir)
-                buildresult = self.buildpackage(source_dir)
+                buildresult = self.build_package(source_dir)
                 package_fn = buildresult['filename']
                 if package_fn:
                     result.append(buildresult)
@@ -2934,9 +2954,9 @@ class Wapt(object):
                     if self.private_key:
                         print('Signing %s' % package_fn)
                         if private_key_passwd is None:
-                            signature = self.signpackage(package_fn,callback=pwd_callback2)
+                            signature = self.sign_package(package_fn,callback=pwd_callback2)
                         else:
-                            signature = self.signpackage(package_fn,callback=pwd_callback)
+                            signature = self.sign_package(package_fn,callback=pwd_callback)
                         print u"Package %s signed : signature :\n%s" % (package_fn,signature)
                     else:
                         logger.warning(u'No private key provided, package %s is unsigned !' % package_fn)
@@ -3441,13 +3461,13 @@ class Wapt(object):
 
         # build package
         if build:
-            target_filename = self.buildpackage(package_dev_dir,inc_package_release=False,excludes=excludes)['filename']
+            target_filename = self.build_package(package_dev_dir,inc_package_release=False,excludes=excludes)['filename']
             #get default private_key if not provided
             if not private_key:
                 private_key = self.private_key
             # sign package
             if private_key:
-                self.signpackage(target_filename,excludes=excludes,private_key=private_key,callback=callback)
+                self.sign_package(target_filename,excludes=excludes,private_key=private_key,callback=callback)
             else:
                 logger.warning(u'No private key provided, packahe is not signed !')
             result['target'] = target_filename
@@ -3515,9 +3535,6 @@ class Wapt(object):
     def delete_param(self,name):
         """Remove a key from local db"""
         self.waptdb.delete_param(name)
-
-    def add_repository(self,url,public_cert,private_key=None):
-        pass
 
     def dependencies(self,packagename,expand=False):
         packages = self.is_available(packagename)
@@ -3630,13 +3647,13 @@ if __name__ == '__main__':
     #w.waptdb.db_version='00'
     w.waptdb.upgradedb()
     print w.is_installed('tis-firebird')
-    #print w.signpackage('c:\\tranquilit\\tis-wapttest-wapt')
-    #print w.signpackage('c:\\tranquilit\\tis-wapttest_0.0.0-40_all.wapt')
-    #pfn = w.buildpackage('c:\\tranquilit\\tis-wapttest-wapt',True)
+    #print w.sign_package('c:\\tranquilit\\tis-wapttest-wapt')
+    #print w.sign_package('c:\\tranquilit\\tis-wapttest_0.0.0-40_all.wapt')
+    #pfn = w.build_package('c:\\tranquilit\\tis-wapttest-wapt',True)
     #if not os.path.isfile(pfn['filename']):
-    #    raise Exception("""w.buildpackage('c:\\tranquilit\\tis-wapttest-wapt',True) failed""")
-    #print w.signpackage(pfn['filename'])
-    #print w.install_wapt(pfn['filename'],params_dict={'company':'TIS'},public_cert=w.get_public_cert())
+    #    raise Exception("""w.build_package('c:\\tranquilit\\tis-wapttest-wapt',True) failed""")
+    #print w.sign_package(pfn['filename'])
+    #print w.install_wapt(pfn['filename'],params_dict={'company':'TIS'})
 
     print w.waptdb.upgradeable()
     assert isinstance(w.waptdb,WaptDB)
