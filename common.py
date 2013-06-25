@@ -1509,7 +1509,7 @@ class WaptHostRepo(WaptRepo):
         host_package_date = requests.head(host_package_url,proxies=proxies).headers['last-modified']
         host_cachedate = 'date-%s' % (host,)
         if host_package_date:
-            if (force or host_package_date <> self.waptdb.get_param(host_cachedate)):
+            if force or host_package_date <> self.waptdb.get_param(host_cachedate) or not self.waptdb.packages_matching(host):
                 host_package = requests.get(host_package_url,proxies=proxies)
                 host_package.raise_for_status
 
@@ -2028,12 +2028,13 @@ class Wapt(object):
                 # check signature of manifest
                 signature_filename = os.path.join( packagetempdir,'WAPT','signature')
                 # if public key provided, and signature in wapt file, check it
-                if os.path.isfile(public_cert) and os.path.isfile(signature_filename):
-                    signature = open(signature_filename,'r').read().decode('base64')
-                    ssl_verify_content(manifest_data,signature,public_cert)
-                else:
-                    if not self.allow_unsigned:
-                        raise Exception('Package does not contain a signature, and unsigned packages install is not allowed')
+                if not self.allow_unsigned:
+                    if os.path.isfile(public_cert) and os.path.isfile(signature_filename):
+                        signature = open(signature_filename,'r').read().decode('base64')
+                        ssl_verify_content(manifest_data,signature,public_cert)
+                    else:
+                        if not self.allow_unsigned:
+                            raise Exception('Package does not contain a signature, and unsigned packages install is not allowed')
 
                 manifest = json.loads(manifest_data)
                 errors = self.corrupted_files_sha1(packagetempdir,manifest)
@@ -2192,7 +2193,7 @@ class Wapt(object):
             status={
                 "running_tasks": [ "%s : %s" % (p.asrequirement(),p.install_status) for p in self.running_tasks()],
                 "errors": [ "%s : %s" % (p.asrequirement(),p.install_status) for p in self.error_packages()],
-                "upgrades": [ "%s" % (p[0].asrequirement(),) for p in self.list_upgrade()],
+                "upgrades": [ "%s" % (p.asrequirement(),) for p in self.list_upgrade()],
                 "date":datetime2isodate(),
                 }
             logger.debug("store status in DB")
@@ -2267,7 +2268,7 @@ class Wapt(object):
             "removed": [ p for p in previous if not p in current],
             "count" : len(current),
             "repos" : [r.repo_url for r in self.repositories],
-            "upgrades": [ "%s" % (p[0].asrequirement(),) for p in self.list_upgrade()],
+            "upgrades": [ "%s" % (p.asrequirement(),) for p in self.list_upgrade()],
             "date":datetime2isodate(),
             }
 
@@ -2278,9 +2279,10 @@ class Wapt(object):
             logger.critical('Unable to update server with current status : %s' % ensure_unicode(e))
         return result
 
-    def checkinstall(self,apackages,forceupgrade=False,force=False,assume_removed=[]):
+    def check_depends(self,apackages,forceupgrade=False,force=False,assume_removed=[]):
         """Given a list of packagename or requirement "name (=version)",
-                return a dictionnary of {'additional' 'upgrade' 'install' 'skipped' 'unavailable'} of PackageEntry
+                return a dictionnary of {'additional' 'upgrade' 'install' 'skipped' 'unavailable'} of
+                    [packagerequest,matching PackageEntry]
             forceupgrade : check if the current installed package is the latest available
             force : install the latest version even if the package is already there and match the requirement
             assume_removed: list of packagename which are assumed to be absent even if they are installed to check the
@@ -2358,7 +2360,7 @@ class Wapt(object):
         result =  {'additional':additional_install,'upgrade':to_upgrade,'install':packages,'skipped':skipped,'unavailable':unavailable}
         return {'additional':additional_install,'upgrade':to_upgrade,'install':packages,'skipped':skipped,'unavailable':unavailable}
 
-    def checkremove(self,apackages):
+    def check_remove(self,apackages):
         """return a list of additional package to remove if apackages are removed"""
         if not isinstance(apackages,list):
             apackages = [apackages]
@@ -2366,7 +2368,7 @@ class Wapt(object):
         installed = [ p.package for p in self.installed().values() if p.package not in apackages ]
         for packagename in installed:
             # test for each installed package if the removal would imply a reinstall
-            test = self.checkinstall(packagename,assume_removed=apackages)
+            test = self.check_depends(packagename,assume_removed=apackages)
             # get package names only
             reinstall = [ p[0] for p in (test['upgrade'] + test['additional'])]
             for p in reinstall:
@@ -2401,7 +2403,7 @@ class Wapt(object):
                 new_apackages.append(p)
         apackages = new_apackages
 
-        actions = self.checkinstall(apackages,force=download_only or force,forceupgrade=True)
+        actions = self.check_depends(apackages,force=download_only or force,forceupgrade=True)
         actions['errors']=[]
 
         skipped = actions['skipped']
@@ -2524,7 +2526,7 @@ class Wapt(object):
                 self.runstatus="Removing package %s version %s from computer..." % (mydict['package'],mydict['version'])
 
                 # removes recursively meta packages which are not satisfied anymore
-                additional_removes = self.checkremove(package)
+                additional_removes = self.check_remove(package)
                 if additional_removes:
                     logger.info('Additional packages to remove : %s' % additional_removes)
                     for apackage in additional_removes:
@@ -2598,13 +2600,14 @@ class Wapt(object):
         """Return package name for current computer"""
         return "%s" % (setuphelpers.get_hostname().lower())
 
-    def check_host_package(self):
+    def check_host_package_outdated(self):
+        """Check and return the host package if available and not installed"""
         hostresult = {}
         logger.debug(u'Check if host package "%s" is available' % (self.host_packagename(), ))
 
         host_packages = self.is_available(self.host_packagename())
         if host_packages and not self.is_installed(host_packages[-1].asrequirement()):
-            return host_packages
+            return host_packages[-1]
         else:
             return None
 
@@ -2617,10 +2620,10 @@ class Wapt(object):
         """
         self.runstatus='Upgrade system'
         try:
-            host_package = self.check_host_package()
+            host_package = self.check_host_package_outdated()
             if host_package:
-                logger.info('Host package %s is available and not installed, installing host package...' % (host_package[-1].package,) )
-                hostresult = self.install(host_package[-1],force=True)
+                logger.info('Host package %s is available and not installed, installing host package...' % (host_package.package,) )
+                hostresult = self.install(host_package,force=True)
             else:
                 hostresult = []
 
@@ -2640,10 +2643,11 @@ class Wapt(object):
            Package,Current Version,Available version
         """
         result = []
-        host_package = self.check_host_package()
-        if host_package:
+        # only most up to date (first one in list)
+        result.extend([p[0] for p in self.waptdb.upgradeable().values()])
+        host_package = self.check_host_package_outdated()
+        if host_package and not host_package in result:
             result.append(host_package)
-        result.extend(self.waptdb.upgradeable().values())
         return result
 
     def search(self,searchwords=[]):
@@ -2681,9 +2685,7 @@ class Wapt(object):
         """Download packages that can be upgraded"""
         self.runstatus='Download upgrades'
         try:
-            q = self.waptdb.upgradeable()
-            # get most recent packages
-            to_download = [p[0] for p in q.values()]
+            to_download = self.list_upgrade()
             return self.download_packages(to_download)
         finally:
             self.runstatus=''
@@ -3176,6 +3178,8 @@ class Wapt(object):
              directoryname = os.path.abspath(directoryname)
 
         installer = os.path.basename(installer_path)
+        if not os.path.isfile(installer):
+            raise Exception('The parameter "%s" is not a file, it must be the path to an .exe or .msi installer' % installer_path)
         props = self.getproductprops(installer_path)
         silentflags = self.getsilentflags(installer_path)
 
@@ -3594,7 +3598,9 @@ if __name__ == '__main__':
     w = Wapt(config=cfg)
     """
     w = Wapt(config_filename='c:/wapt/wapt-get.ini')
-    w.create_wapt_setup('C:\\test\\','c:\\private\\test2.crt')
+    w.edit_host('testnuit.tranquilit.local')
+
+    #w.create_wapt_setup('C:\\test\\','c:\\private\\test2.crt')
 
     #os.remove('c:/private/toto.pem')
     #w.create_self_signed_key('toto',unit='essai',email='htouvet@tranquil.it',update_ini=True)
@@ -3614,8 +3620,8 @@ if __name__ == '__main__':
 
     w.remove('tis-winscp')
 
-    print w.checkremove('tis-base')
-    print w.checkinstall('tis-base',force=True,assume_removed=['tis-firefox'])
+    print w._('tis-base')
+    print w.check_depends('tis-base',force=True,assume_removed=['tis-firefox'])
 
     print w.remove('tis-wapttestsub')
 
@@ -3639,8 +3645,8 @@ if __name__ == '__main__':
     #print w.install(['tis-waptdev'])
     #print w.remove('tis-firefox',force=True)
     #print w.install('tis-firefox',force=True)
-    print w.checkinstall(['tis-waptdev'],force=False)
-    print w.checkinstall(['tis-waptdev'],force=True)
+    print w.check_depends(['tis-waptdev'],force=False)
+    print w.check_depends(['tis-waptdev'],force=True)
     print w.update()
     print w.list_upgrade()
 

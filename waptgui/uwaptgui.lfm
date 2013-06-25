@@ -351,6 +351,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
         OnChange = GridHostsChange
         OnCompareNodes = GridPackagesCompareNodes
+        OnDblClick = ActEditHostPackageExecute
         OnHeaderClick = GridPackagesHeaderClick
       end
       object HostPages: TPageControl

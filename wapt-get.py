@@ -489,7 +489,7 @@ def main():
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
-                    print ppdicttable([ p[0] for p in  result],[ ('package',20),('version',10)])
+                    print ppdicttable([ p for p in  result],[ ('package',20),('version',10)])
 
             elif action=='download-upgrade':
                 # abort if there is already a running install in progress

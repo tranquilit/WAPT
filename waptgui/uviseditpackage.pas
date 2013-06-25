@@ -107,6 +107,7 @@ type
   public
     { public declarations }
     waptpath:String;
+    IsHost:Boolean;
     PackageEdited:ISuperObject;
     procedure EditPackage;
     property SourcePath:String read FSourcePath write SetSourcePath;
@@ -114,6 +115,7 @@ type
   end;
 
 function EditPackage(packagename:String):ISuperObject;
+function EditHost(hostname:String):ISuperObject;
 
 var
   VisEditPackage: TVisEditPackage;
@@ -127,6 +129,21 @@ begin
   with TVisEditPackage.Create(Nil) do
   try
     PackageRequest := packagename;
+    if ShowModal=mrOK then
+      result := PackageEdited
+    else
+      result := Nil;
+  finally
+    Free;
+  end;
+end;
+
+function EditHost(hostname:String):ISuperObject;
+begin
+  with TVisEditPackage.Create(Nil) do
+  try
+    IsHost:=True;
+    PackageRequest := hostname;
     if ShowModal=mrOK then
       result := PackageEdited
     else
@@ -386,7 +403,10 @@ begin
   Screen.Cursor:=crHourGlass;
   try
     FPackageRequest:=AValue;
-    res := DMPython.RunJSON(format('mywapt.edit_package("%s")',[FPackageRequest]));
+    if IsHost then
+      res := DMPython.RunJSON(format('mywapt.edit_host("%s")',[FPackageRequest]))
+    else
+      res := DMPython.RunJSON(format('mywapt.edit_package("%s")',[FPackageRequest]));
     FSourcePath:= res.S['source_dir'];
     PackageEdited := res['package'];
   finally

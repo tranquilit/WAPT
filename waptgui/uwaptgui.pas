@@ -334,11 +334,11 @@ end;
 
 procedure TVisWaptGUI.ActEditHostPackageExecute(Sender: TObject);
 var
-  selpackage : String;
+  hostname : String;
   result : ISuperObject;
 begin
-  selpackage := GetValue(GridHosts,GridHosts.FocusedNode,'name');
-  if EditPackage(selpackage)<>Nil then
+  hostname := GetValue(GridHosts,GridHosts.FocusedNode,'name');
+  if EditHost(hostname)<>Nil then
     ActSearchHost.Execute;
 end;
 
