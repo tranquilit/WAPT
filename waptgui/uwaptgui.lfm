@@ -4,16 +4,16 @@ object VisWaptGUI: TVisWaptGUI
   Top = 142
   Width = 1173
   Caption = 'VisWaptGUI'
-  ClientHeight = 508
-  ClientWidth = 790
+  ClientHeight = 745
+  ClientWidth = 1173
   Menu = MainMenu1
   OnCreate = FormCreate
   LCLVersion = '1.1'
   object PageControl1: TPageControl
     Left = 0
-    Height = 385
+    Height = 622
     Top = 0
-    Width = 790
+    Width = 1173
     ActivePage = pgInventory
     Align = alClient
     TabIndex = 1
@@ -1244,27 +1244,27 @@ object VisWaptGUI: TVisWaptGUI
   object Panel3: TPanel
     Left = 0
     Height = 118
-    Top = 390
-    Width = 790
+    Top = 627
+    Width = 1173
     Align = alBottom
     ClientHeight = 118
-    ClientWidth = 790
+    ClientWidth = 1173
     TabOrder = 1
     object Panel7: TPanel
       Left = 1
       Height = 116
       Top = 1
-      Width = 788
+      Width = 1171
       Align = alClient
       Caption = 'Panel7'
       ClientHeight = 116
-      ClientWidth = 788
+      ClientWidth = 1171
       TabOrder = 1
       object MemoLog: TMemo
         Left = 1
         Height = 114
         Top = 1
-        Width = 175
+        Width = 558
         Align = alClient
         Lines.Strings = (
           ''
@@ -1272,7 +1272,7 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 0
       end
       object jsonlog: TVirtualJSONInspector
-        Left = 181
+        Left = 564
         Height = 114
         Top = 1
         Width = 606
@@ -1300,7 +1300,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.SelectionOptions = [toExtendedFocus]
       end
       object Splitter2: TSplitter
-        Left = 176
+        Left = 559
         Height = 114
         Top = 1
         Width = 5
@@ -1323,8 +1323,8 @@ object VisWaptGUI: TVisWaptGUI
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 385
-    Width = 790
+    Top = 622
+    Width = 1173
     Align = alBottom
     ResizeAnchor = akBottom
   end

@@ -23,7 +23,7 @@
 
 import common
 from setuphelpers import *
-import active_directory
+#import active_directory
 import codecs
 from iniparse import RawConfigParser
 
@@ -63,23 +63,24 @@ def create_self_signed_key(wapt,orgname,destdir='c:\\private',
     print out
     return {'pem_filename':destpem,'crt_filename':destcrt}
 
-def create_wapt_setup(wapt,rep_work,default_public_cert='',default_default_repo_url='',company='',default_wapt_server=''):
+def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',company=''):
     """Build a customized waptsetup.exe with included provided certificate
     Returns filename"""
+    print default_public_cert
     if not company:
         company = registered_organization()
-    ensure_dir(rep_work)
     iss_template = makepath(wapt.wapt_base_dir,'waptsetup','wapt.iss')
     iss = codecs.open(iss_template,'r',encoding='utf8').read().splitlines()
     new_iss=[]
     for line in iss:
         if line.startswith('#define default_public_cert'):
             new_iss.append('#define default_public_cert "%s"' % (os.path.basename(default_public_cert),))
-        elif line.startswith('#define default_public_cert'):
-            new_iss.append('#define default_public_cert "%s"' % (os.path.basename(default_public_cert),))
+        elif line.startswith('#define default_repo_url'):
+            new_iss.append('#define default_repo_url "%s"' % (default_repo_url))
         elif not line.startswith('SignTool'):
             new_iss.append(line)
-    filecopyto(default_public_cert,os.path.join(os.path.dirname(iss_template),'..','ssl'))
+    print os.path.normpath(default_public_cert)
+    filecopyto(os.path.normpath(default_public_cert),os.path.join(os.path.dirname(iss_template),'..','ssl'))
     codecs.open(iss_template,'w',encoding='utf8').write('\n'.join(new_iss))
     inno_directory = '%s\\Inno Setup 5\\Compil32.exe'%programfiles32
     run('"%s" /cc %s' % (inno_directory,iss_template))
@@ -111,22 +112,22 @@ def search_bad_waptseup(wapt,wapt_version):
             result[i['name']] = wapt[0]['version']
     return result
 
-def add_remove_option_inifile(wapt,choice,section='',option='',value=''):
+def add_remove_option_inifile(wapt,choice,section,option,value):
     wapt_get_ini = RawConfigParser()
-    wapt_get_ini.read(makepath(wapt.wapt_base_dir,'wapt-get.ini'))
+    waptini_fn = makepath(wapt.wapt_base_dir,'wapt-get.ini')
+    wapt_get_ini.read(waptini_fn)
     if choice == True:
         wapt_get_ini.set(section,option,value)
     elif choice == False:
         wapt_get_ini.remove_option(section,option)
-    with open('c://wapt//wapt-get.ini', 'wb') as configfile:
+    with open(waptini_fn, 'w') as configfile:
         wapt_get_ini.write(configfile)
 
 
+if __name__ == '__main__':
+    wapt = common.Wapt(config_filename='c://wapt//wapt-get.ini')
+    #print(search_bad_waptseup(wapt,'0.6.23'))
+    #print diff_computer_ad_wapt(wapt)
+    #add_remove_option_inifile(wapt,True,'global','repo_url','http://wapt/wapt-sid')
 
-
-wapt = common.Wapt(config_filename='c://wapt//wapt-get.ini')
-#print(search_bad_waptseup(wapt,'0.6.23'))
-#print diff_computer_ad_wapt(wapt)
-
-add_remove_option_inifile(wapt,True,'global','upload_cmd','"c:\Program Files"\putty\pscp -v -l root %(waptfile)s srvwapt:/var/www/%(waptdir)s/')
-
+    #create_wapt_setup(wapt,'C:\private\titit.crt',default_repo_url='',company='')

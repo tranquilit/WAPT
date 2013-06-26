@@ -11,6 +11,7 @@ db
 lib
 trash
 tmp
+.rnd
 
 # These are the default patterns globally ignored by Subversion:
 *.o

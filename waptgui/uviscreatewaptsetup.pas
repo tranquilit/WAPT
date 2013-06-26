@@ -40,19 +40,24 @@ implementation
 { TVisCreateWaptSetup }
 procedure TVisCreateWaptSetup.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
+  CanClose:= True;
   if (ModalResult=mrOk) then
-     begin
-          showMessage('Veuillez rentrer clé public');
-          CanClose:=False;
-      end
-  else
-      if (ModalResult=mrOk) and (edRepoUrl.Text = '') then
-      begin
-           ShowMessage('Veuillez rentrer l''adresse du dépot Wapt ');
-           CanClose:=False;
-      end
-      else
-          CanClose:=True;
+  begin
+    {Canclose :=  (fnPublicCert.FileName<>'') and (edRepoUrl.Text <> '');
+    if not CanClose then
+      showMessage('Veuillez rentrer une clé publique et l''adress du dépôt WAPT');
+    }
+    if fnPublicCert.FileName='' then
+    begin
+      showMessage('Veuillez rentrer clé public');
+      CanClose:=False;
+    end;
+    if (edRepoUrl.Text = '') then
+    begin
+      ShowMessage('Veuillez rentrer l''adresse du dépot Wapt ');
+      CanClose:=False;
+    end
+  end;
 end;
 
 end.

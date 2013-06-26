@@ -156,7 +156,7 @@ var
   VisWaptGUI: TVisWaptGUI;
 
 implementation
-uses LCLIntf,tisstrings,soutils,waptcommon,uVisCreateKey,uVisCreateWaptSetup,uvisOptionIniFile,dmwaptpython;
+uses LCLIntf,tisstrings,soutils,waptcommon,uVisCreateKey,uVisCreateWaptSetup,uvisOptionIniFile,dmwaptpython,uviseditpackage;
 {$R *.lfm}
 
 { TVisWaptGUI }

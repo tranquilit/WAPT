@@ -44,16 +44,16 @@ object VisOptionIniFile: TVisOptionIniFile
       TabOrder = 1
     end
   end
-  object tCheckTestRepo: TCheckBox
+  object cbTestRepo: TCheckBox
     Left = 24
     Height = 17
     Top = 16
     Width = 86
     Caption = 'Dépot de test'
-    OnChange = tCheckTestRepoChange
+    OnChange = cbTestRepoChange
     TabOrder = 1
   end
-  object tCheckPrefix: TCheckBox
+  object cbPrefix: TCheckBox
     Left = 24
     Height = 17
     Top = 48
@@ -61,7 +61,7 @@ object VisOptionIniFile: TVisOptionIniFile
     Caption = 'Préfix des paquets Wapt:'
     TabOrder = 2
   end
-  object tCheckPrivateKey: TCheckBox
+  object cbPrivateKey: TCheckBox
     Left = 24
     Height = 17
     Top = 76
@@ -89,7 +89,7 @@ object VisOptionIniFile: TVisOptionIniFile
     Width = 172
     TabOrder = 5
   end
-  object tCheckUpload: TCheckBox
+  object cbUpload: TCheckBox
     Left = 24
     Height = 17
     Top = 108
@@ -97,7 +97,7 @@ object VisOptionIniFile: TVisOptionIniFile
     Caption = 'Configurer l''envoi de paquet'
     TabOrder = 6
   end
-  object tCheckAfterUpload: TCheckBox
+  object cbAfterUpload: TCheckBox
     Left = 24
     Height = 17
     Top = 136
