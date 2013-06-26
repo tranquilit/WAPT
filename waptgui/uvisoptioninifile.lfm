@@ -1,14 +1,12 @@
 object VisOptionIniFile: TVisOptionIniFile
-  Left = 100
+  Left = 1929
   Height = 290
   Top = 160
   Width = 385
   Caption = 'Ajouter ou supprimer des options dans wapt-get.ini'
   ClientHeight = 290
   ClientWidth = 385
-  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
-  Position = poDefaultSizeOnly
   LCLVersion = '1.1'
   object Panel1: TPanel
     Left = 0
@@ -44,16 +42,16 @@ object VisOptionIniFile: TVisOptionIniFile
       TabOrder = 1
     end
   end
-  object cbTestRepo: TCheckBox
+  object tCheckTestRepo: TCheckBox
     Left = 24
     Height = 17
     Top = 16
     Width = 86
     Caption = 'Dépot de test'
-    OnChange = cbTestRepoChange
+    OnChange = tCheckTestRepoChange
     TabOrder = 1
   end
-  object cbPrefix: TCheckBox
+  object tCheckPrefix: TCheckBox
     Left = 24
     Height = 17
     Top = 48
@@ -61,7 +59,7 @@ object VisOptionIniFile: TVisOptionIniFile
     Caption = 'Préfix des paquets Wapt:'
     TabOrder = 2
   end
-  object cbPrivateKey: TCheckBox
+  object tCheckPrivateKey: TCheckBox
     Left = 24
     Height = 17
     Top = 76
@@ -89,7 +87,7 @@ object VisOptionIniFile: TVisOptionIniFile
     Width = 172
     TabOrder = 5
   end
-  object cbUpload: TCheckBox
+  object tCheckUpload: TCheckBox
     Left = 24
     Height = 17
     Top = 108
@@ -97,7 +95,7 @@ object VisOptionIniFile: TVisOptionIniFile
     Caption = 'Configurer l''envoi de paquet'
     TabOrder = 6
   end
-  object cbAfterUpload: TCheckBox
+  object tCheckAfterUpload: TCheckBox
     Left = 24
     Height = 17
     Top = 136

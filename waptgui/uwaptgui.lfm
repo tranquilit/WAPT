@@ -20,13 +20,13 @@ object VisWaptGUI: TVisWaptGUI
     TabOrder = 0
     object TabSheet2: TTabSheet
       Caption = 'Recherche packages'
-      ClientHeight = 359
-      ClientWidth = 782
+      ClientHeight = 596
+      ClientWidth = 1165
       object GridPackages: TVirtualJSONListView
         Left = 0
-        Height = 309
+        Height = 546
         Top = 30
-        Width = 782
+        Width = 1165
         Align = alClient
         Color = clWhite
         Header.AutoSizeIndex = 0
@@ -97,12 +97,12 @@ object VisWaptGUI: TVisWaptGUI
       object Panel5: TPanel
         Left = 0
         Height = 20
-        Top = 339
-        Width = 782
+        Top = 576
+        Width = 1165
         Align = alBottom
         BevelOuter = bvNone
         ClientHeight = 20
-        ClientWidth = 782
+        ClientWidth = 1165
         TabOrder = 2
         object LabHostCnt: TLabel
           Left = 4
@@ -117,11 +117,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 30
         Top = 0
-        Width = 782
+        Width = 1165
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 782
+        ClientWidth = 1165
         TabOrder = 0
         object EdSearch: TEdit
           Left = 4
@@ -202,7 +202,7 @@ object VisWaptGUI: TVisWaptGUI
           Caption = 'Nécessite des mises à jours'
           TabOrder = 1
         end
-        object CheckBox2: TCheckBox
+        object CheckBox_error: TCheckBox
           Left = 524
           Height = 17
           Top = 6
@@ -1394,7 +1394,6 @@ object VisWaptGUI: TVisWaptGUI
     object ActCreateWaptSetup: TAction
       Category = 'Tools'
       Caption = 'Créer un Installeur Wapt personnalisé'
-      OnExecute = ActCreateWaptSetupExecute
     end
     object ActEvaluateVar: TAction
       Caption = 'Evaluer Variant'
@@ -1419,11 +1418,6 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Tout Sélectionner'
       OnExecute = actHostSelectAllExecute
       ShortCut = 16449
-    end
-    object ActAddRemoveOptionIniFile: TAction
-      Category = 'Tools'
-      Caption = 'Ajout,supression d''option dans le wapt-get.ini'
-      OnExecute = ActAddRemoveOptionIniFileExecute
     end
   end
   object PopupMenuPackages: TPopupMenu
@@ -1490,9 +1484,6 @@ object VisWaptGUI: TVisWaptGUI
       end
       object MenuItem17: TMenuItem
         Action = ActCreateWaptSetup
-      end
-      object MenuItem20: TMenuItem
-        Action = ActAddRemoveOptionIniFile
       end
     end
   end

@@ -26,7 +26,6 @@ type
     ActEvaluateVar: TAction;
     ActEditHostPackage: TAction;
     actHostSelectAll: TAction;
-    ActAddRemoveOptionIniFile: TAction;
     ActRegisterHost: TAction;
     ActSearchHost: TAction;
     ActUpgrade: TAction;
@@ -45,7 +44,7 @@ type
     Button8: TButton;
     cbShowLog: TCheckBox;
     CheckBox1: TCheckBox;
-    CheckBox2: TCheckBox;
+    CheckBox_error: TCheckBox;
     EdSearch2: TEdit;
     EdSearchHost: TEdit;
     EdRun: TEdit;
@@ -70,7 +69,6 @@ type
     MenuItem18: TMenuItem;
     MenuItem19: TMenuItem;
     MenuItem2: TMenuItem;
-    MenuItem20: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
@@ -108,9 +106,7 @@ type
     GridPackages: TVirtualJSONListView;
     GridHostPackages: TVirtualJSONListView;
     GridHostSoftwares: TVirtualJSONListView;
-    procedure ActAddRemoveOptionIniFileExecute(Sender: TObject);
     procedure ActCreateCertificateExecute(Sender: TObject);
-    procedure ActCreateWaptSetupExecute(Sender: TObject);
     procedure ActEditHostPackageExecute(Sender: TObject);
     procedure ActEditpackageExecute(Sender: TObject);
     procedure ActEvaluateExecute(Sender: TObject);
@@ -156,7 +152,7 @@ var
   VisWaptGUI: TVisWaptGUI;
 
 implementation
-uses LCLIntf,tisstrings,soutils,waptcommon,uVisCreateKey,uVisCreateWaptSetup,uvisOptionIniFile,dmwaptpython,uviseditpackage;
+uses LCLIntf,tisstrings,soutils,waptcommon,uVisCreateKey,dmwaptpython,uviseditpackage;
 {$R *.lfm}
 
 { TVisWaptGUI }
@@ -317,7 +313,6 @@ begin
     repeat
       if ShowModal=mrOk then
       try
-        DMPython.PythonEng.ExecString('import waptdevutils');
         params :='';
         params := params+format('orgname="%s",',[edOrgName.text]);
         params := params+format('destdir="%s",',[DirectoryCert.Directory]);
@@ -327,7 +322,7 @@ begin
         params := params+format('unit="%s",',[edUnit.Text]);
         params := params+format('commonname="%s",',[edCommonName.Text]);
         params := params+format('email="%s",',[edEmail.Text]);
-        result := DMPython.RunJSON(format('waptdevutils.create_self_signed_key(mywapt,%s)',[params]),jsonlog);
+        result := DMPython.RunJSON(format('mywapt.create_self_signed_key(%s)',[params]),jsonlog);
         done := FileExists(result.S['pem_filename']);
         if done then
            ShowMessageFmt('La clé %s a été créée avec succès',[result.S['pem_filename']]);
@@ -344,55 +339,6 @@ begin
   finally
     Free;
   end;
-end;
-
-procedure TVisWaptGUI.ActAddRemoveOptionIniFileExecute(Sender: TObject);
-begin
-  with TVisOptionIniFile.Create(self) do
-  try
-    if ShowModal=mrOK then
-    try
-
-    except
-    end;
-
-  finally
-  end;
-end;
-
-procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
-var
-  params:String;
-  result:ISuperObject;
-  done : Boolean;
-begin
-  with TVisCreateWaptSetup.Create(self) do
-  try
-    repeat
-      if ShowModal=mrOK then
-      begin
-        try
-          DMPython.PythonEng.ExecString('import waptdevutils');
-          params :='';
-          params := params+format('default_public_cert="%s",',[fnPublicCert.FileName]);
-          params := params+format('default_repo_url="%s",',[edRepoUrl.text]);
-          params := params+format('company="%s",',[edOrgName.Text]);
-          result := DMPython.RunJSON(format('waptdevutils.create_wapt_setup(mywapt,%s)',[params]),jsonlog);
-          done := FileExists(result.S['pem_filename']);
-        except
-          on e:Exception do
-          begin
-            ShowMessage('Erreur à la création du waptsetup.exe: '+e.Message);
-            done := False;
-          end;
-        end;
-      end
-      else
-        done := True;
-      until done;
-    finally
-      free;
-    end;
 end;
 
 procedure TVisWaptGUI.ActEditHostPackageExecute(Sender: TObject);
@@ -474,8 +420,12 @@ end;
 procedure TVisWaptGUI.ActSearchHostExecute(Sender: TObject);
 var
   hosts:String;
+  url:String='json/host_list';
 begin
-  hosts := WAPTServerJsonGet('json/host_list',[]).AsJson;
+  if CheckBox_error.Checked = True then
+    url:= url + '?error=true';
+
+  hosts := WAPTServerJsonGet(url,[]).AsJson;
   GridLoadData(GridHosts,hosts);
 end;
 
@@ -626,5 +576,6 @@ procedure TVisWaptGUI.HostPagesChange(Sender: TObject);
 begin
   UpdateHostPages(Sender);
 end;
+
 end.
 
