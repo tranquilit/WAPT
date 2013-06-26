@@ -15,71 +15,121 @@ type
   TVisOptionIniFile = class(TForm)
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
-    tCheckTestRepo: TCheckBox;
-    tCheckPrefix: TCheckBox;
-    tCheckPrivateKey: TCheckBox;
-    tCheckUpload: TCheckBox;
-    tCheckAfterUpload: TCheckBox;
+    cbTestRepo: TCheckBox;
+    cbPrefix: TCheckBox;
+    cbPrivateKey: TCheckBox;
+    cbUpload: TCheckBox;
+    cbAfterUpload: TCheckBox;
     Edit1: TEdit;
     FileNameEdit1: TFileNameEdit;
     Panel1: TPanel;
     jsonlog: TVirtualJSONInspector;
+    procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
-    procedure tCheckTestRepoChange(Sender: TObject);
-    procedure FileNameEdit1Change(Sender: TObject);
+    procedure cbTestRepoChange(Sender: TObject);
   private
     { private declarations }
   public
     { public declarations }
+    cbTestRepoChanged:Boolean;
   end;
 
 var
   VisOptionIniFile: TVisOptionIniFile;
 
 implementation
-uses dmwaptpython;
+uses dmwaptpython,waptcommon,tisinifiles;
 
 {$R *.lfm}
 
 { TVisOptionIniFile }
 
 
-procedure TVisOptionIniFile.tCheckTestRepoChange(Sender: TObject);
+procedure TVisOptionIniFile.cbTestRepoChange(Sender: TObject);
+begin
+  cbTestRepoChanged := True;
+end;
+
+procedure TVisOptionIniFile.FormCreate(Sender: TObject);
+begin
+  DMPython.PythonEng.ExecString('import waptdevutils');
+  cbTestRepo.Checked:= (IniReadString(WaptIniFilename,'global','repo_url') = 'http://wapt/wapt-sid');
+  cbUpload.Checked:= (IniReadString(WaptIniFilename,'global','upload_cmd') <> '');
+  cbAfterUpload.Checked:= (IniReadString(WaptIniFilename,'global','after_upload') <> '');
+end;
+
+procedure TVisOptionIniFile.FormCloseQuery(Sender: TObject;
+  var CanClose: boolean);
 var
   params:String;
   result:ISuperObject;
   done : Boolean;
   choice : Boolean;
 begin
-  if tCheckTestRepo.Checked then
+  if ModalResult=mrOk then
   begin
-    params :='';
-    choice := True;
-    params := params+format('"%s",',['global']);
-    params := params+format('"%s",',['repo_url']);
-    params := params+format('"%s",',['http://wapt/wapt-sid']);
-    result := DMPython.RunJSON(format('waptdevutils.add_remove_option_inifile(mywapt,True,%s)',[params]),jsonlog);
-  end
-  else
-  begin
-    params :='';
-    choice := True;
-    params := params+format('"%s",',['global']);
-    params := params+format('"%s",',['repo_url']);
-    params := params+format('"%s",',['']);
-    result := DMPython.RunJSON(format('waptdevutils.add_remove_option_inifile(mywapt,True,%s)',[params]),jsonlog);
+    if cbTestRepoChanged then
+    begin
+      if cbTestRepo.Checked then
+      begin
+        params :='';
+        choice := True;
+        params := params+format('"%s",',['global']);
+        params := params+format('"%s",',['repo_url']);
+        params := params+format('"%s",',['http://wapt/wapt-sid']);
+        result := DMPython.RunJSON(format('waptdevutils.add_remove_option_inifile(mywapt,True,%s)',[params]),jsonlog);
+
+        if cbUpload.Checked then
+        begin
+          params :='';
+          choice := True;
+          params := params+format('"%s",',['global']);
+          params := params+format('"%s",',['upload_cmd']);
+          params := params+format('"%s",',['c:\Program Files\putty\pscp -v -l root %(waptfile)s srvwapt:/var/www/wapt-sid/']);
+          result := DMPython.RunJSON(format('waptdevutils.add_remove_option_inifile(mywapt,True,%s)',[params]),jsonlog);
+        end;
+
+        if cbAfterUpload.Checked then
+        begin
+          params :='';
+          choice := True;
+          params := params+format('"%s",',['global']);
+          params := params+format('"%s",',['after_upload']);
+          params := params+format('"%s",',['c:\Program Files (x86)\putty\plink -v -l root  -i c:\Users\htouvet\ssl\htouvet-priv.ppk srvwapt python /var/www/wapt/wapt-scanpackages.py /var/www/wapt-sid/']);
+          result := DMPython.RunJSON(format('waptdevutils.add_remove_option_inifile(mywapt,True,%s)',[params]),jsonlog);
+        end;
+      end
+      else
+      begin
+        params :='';
+        choice := True;
+        params := params+format('"%s",',['global']);
+        params := params+format('"%s",',['repo_url']);
+        params := params+format('"%s",',['']);
+        result := DMPython.RunJSON(format('waptdevutils.add_remove_option_inifile(mywapt,True,%s)',[params]),jsonlog);
+
+        if cbUpload.Checked then
+        begin
+          params :='';
+          choice := True;
+          params := params+format('"%s",',['global']);
+          params := params+format('"%s",',['upload_cmd']);
+          params := params+format('"%s",',['c:\Program Files\putty\pscp -v -l root %(waptfile)s srvwapt:/var/www/%(waptdir)s/']);
+          result := DMPython.RunJSON(format('waptdevutils.add_remove_option_inifile(mywapt,True,%s)',[params]),jsonlog);
+        end;
+
+        if cbAfterUpload.Checked then
+        begin
+          params :='';
+          choice := True;
+          params := params+format('"%s",',['global']);
+          params := params+format('"%s",',['after_upload']);
+          params := params+format('"%s",',['c:\Program Files (x86)\putty\plink -v -l root  -i c:\Users\htouvet\ssl\htouvet-priv.ppk srvwapt python /var/www/wapt/wapt-scanpackages.py /var/www/%(waptdir)s/']);
+          result := DMPython.RunJSON(format('waptdevutils.add_remove_option_inifile(mywapt,True,%s)',[params]),jsonlog);
+        end;
+      end;
+    end;
   end;
-
-end;
-
-procedure TVisOptionIniFile.FormCreate(Sender: TObject);
-begin
-   DMPython.PythonEng.ExecString('import waptdevutils');
-end;
-
-procedure TVisOptionIniFile.FileNameEdit1Change(Sender: TObject);
-begin
-
 end;
 
 end.

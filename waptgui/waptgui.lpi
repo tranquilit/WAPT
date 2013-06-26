@@ -16,7 +16,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <RevisionNr Value="5"/>
-      <BuildNr Value="2"/>
+      <BuildNr Value="1"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -73,7 +73,7 @@
         <PackageName Value="LCL"/>
       </Item13>
     </RequiredPackages>
-    <Units Count="9">
+    <Units Count="11">
       <Unit0>
         <Filename Value="waptgui.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -131,6 +131,22 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviseditpackage"/>
       </Unit8>
+      <Unit9>
+        <Filename Value="uvisoptioninifile.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisOptionIniFile"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uvisOptionIniFile"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="uviscreatewaptsetup.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisCreateWaptSetup"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uVisCreateWaptSetup"/>
+      </Unit10>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
