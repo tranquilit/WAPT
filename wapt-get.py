@@ -21,12 +21,11 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.6.23"
+__version__ = "0.6.24"
 
 import sys
 import os
 import shutil
-from iniparse import RawConfigParser
 from optparse import OptionParser
 import logging
 import datetime
@@ -199,41 +198,20 @@ def main():
 
         logger.debug(u'Config file: %s' % config_file)
 
-        defaults = {
-            'repositories':'',
-            'repo_url':'',
-            'default_source_url':'',
-            'private_key':'',
-            'default_development_base':'c:\tranquilit',
-            'default_package_prefix':'tis',
-            'default_sources_suffix':'wapt',
-            'default_sources_url':'',
-            'upload_cmd':'',
-            'wapt_server':'',
-            'loglevel':'info',
-            }
 
-        cp = RawConfigParser(defaults = defaults)
-        cp.read(config_file)
-        if not cp.has_section('global'):
-            cp.add_section('global')
+        mywapt = Wapt(config_filename=config_file)
+        if options.wapt_url:
+            mywapt.config.set('global','repo_url',options.wapt_url)
 
         global loglevel
-        if not loglevel and cp.has_option('global','loglevel'):
-            loglevel = cp.get('global','loglevel')
+        if not loglevel and mywapt.config.has_option('global','loglevel'):
+            loglevel = mywapt.config.get('global','loglevel')
             setloglevel(loglevel)
-
-        if options.wapt_url:
-            cp.set('global','repo_url',options.wapt_url)
-
-        mywapt = Wapt(config=cp)
 
         mywapt.options = options
 
         if options.private_key:
             mywapt.private_key = options.private_key
-        else:
-            mywapt.private_key = cp.get('global','private_key')
 
         if options.language:
             mywapt.language = options.language
@@ -247,7 +225,7 @@ def main():
             logger.info(u'Interactive user :%s' % (mywapt.user,))
 
         mywapt.dry_run = options.dry_run
-        #logger.info(u"Main wapt Repository %s" % mywapt.wapt_repourl)
+
         logger.debug(u'WAPT base directory : %s' % mywapt.wapt_base_dir)
         logger.debug(u'Package cache dir : %s' %  mywapt.packagecachedir)
         logger.debug(u'WAPT DB Structure version;: %s' % mywapt.waptdb.db_version)
@@ -534,7 +512,7 @@ def main():
                     os.startfile(result)
 
             elif action=='make-host-template':
-                result = mywapt.makehosttemplate(*args[1:])
+                result = mywapt.make_host_template(*args[1:])
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
