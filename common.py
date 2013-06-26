@@ -304,6 +304,7 @@ def sha1_for_file(fname, block_size=2**20):
     return sha1.hexdigest()
 
 def sha1_for_data(data):
+    assert(isinstance(data,str))
     sha1 = hashlib.sha1()
     sha1.update(data)
     return sha1.hexdigest()
@@ -1586,7 +1587,6 @@ class Wapt(object):
                     'default_sources_root':'c:\\waptdev',
                     'default_sources_url':'',
                     'upload_cmd':'',
-                    'upload_cmd_host':'',
                     'wapt_server':'',
                     'loglevel':'warning',
                     }
@@ -1629,6 +1629,11 @@ class Wapt(object):
             self.upload_cmd = self.config.get('global','upload_cmd')
         else:
             self.upload_cmd = None
+
+        if self.config.has_option('global','upload_cmd_host'):
+            self.upload_cmd_host = self.config.get('global','upload_cmd_host')
+        else:
+            self.upload_cmd_host = self.upload_cmd
 
         if self.config.has_option('global','after_upload'):
             self.after_upload = self.config.get('global','after_upload')
@@ -2462,7 +2467,7 @@ class Wapt(object):
 
                 for (fn,sha1) in manifest:
                     if fn == 'WAPT\\control':
-                        if sha1 <> sha1_for_data(control):
+                        if sha1 <> sha1_for_data(control.encode('utf8')):
                             raise Exception("WAPT/control file of %s is corrupted, sha1 digests don't match" % fname)
                         break
                 # Merge updated control data
@@ -3001,7 +3006,11 @@ class Wapt(object):
                 # add quotes for command line
                 files_list = ['"%s"' % f for f in package_group[1]]
                 cmd_dict =  {'waptfile': ' '.join(files_list),'waptdir':package_group[0]}
-                print setuphelpers.run(self.upload_cmd % cmd_dict)
+                if package_group[0] == 'wapt-host':
+                    print setuphelpers.run(self.upload_cmd_host % cmd_dict)
+                else:
+                    print setuphelpers.run(self.upload_cmd % cmd_dict)
+
                 if package_group<>hosts:
                     if self.after_upload:
                         print 'Run after upload script...'
