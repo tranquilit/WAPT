@@ -1,0 +1,108 @@
+object VisOptionIniFile: TVisOptionIniFile
+  Left = 100
+  Height = 290
+  Top = 160
+  Width = 385
+  Caption = 'Ajouter ou supprimer des options dans wapt-get.ini'
+  ClientHeight = 290
+  ClientWidth = 385
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  Position = poDefaultSizeOnly
+  LCLVersion = '1.1'
+  object Panel1: TPanel
+    Left = 0
+    Height = 27
+    Top = 263
+    Width = 385
+    Align = alBottom
+    ClientHeight = 27
+    ClientWidth = 385
+    TabOrder = 0
+    object BitBtn1: TBitBtn
+      Left = 222
+      Height = 23
+      Top = 1
+      Width = 75
+      Anchors = [akTop, akRight]
+      Default = True
+      DefaultCaption = True
+      Kind = bkOK
+      ModalResult = 1
+      TabOrder = 0
+    end
+    object BitBtn2: TBitBtn
+      Left = 304
+      Height = 23
+      Top = 1
+      Width = 75
+      Anchors = [akTop, akRight]
+      Cancel = True
+      DefaultCaption = True
+      Kind = bkCancel
+      ModalResult = 2
+      TabOrder = 1
+    end
+  end
+  object tCheckTestRepo: TCheckBox
+    Left = 24
+    Height = 17
+    Top = 16
+    Width = 86
+    Caption = 'Dépot de test'
+    OnChange = tCheckTestRepoChange
+    TabOrder = 1
+  end
+  object tCheckPrefix: TCheckBox
+    Left = 24
+    Height = 17
+    Top = 48
+    Width = 143
+    Caption = 'Préfix des paquets Wapt:'
+    TabOrder = 2
+  end
+  object tCheckPrivateKey: TCheckBox
+    Left = 24
+    Height = 17
+    Top = 76
+    Width = 66
+    Caption = 'Clé Privé:'
+    TabOrder = 3
+  end
+  object FileNameEdit1: TFileNameEdit
+    Left = 184
+    Height = 21
+    Top = 76
+    Width = 172
+    FilterIndex = 0
+    HideDirectories = False
+    ButtonWidth = 23
+    NumGlyphs = 1
+    MaxLength = 0
+    TabOrder = 4
+    OnChange = FileNameEdit1Change
+  end
+  object Edit1: TEdit
+    Left = 184
+    Height = 21
+    Top = 48
+    Width = 172
+    TabOrder = 5
+  end
+  object tCheckUpload: TCheckBox
+    Left = 24
+    Height = 17
+    Top = 108
+    Width = 156
+    Caption = 'Configurer l''envoi de paquet'
+    TabOrder = 6
+  end
+  object tCheckAfterUpload: TCheckBox
+    Left = 24
+    Height = 17
+    Top = 136
+    Width = 266
+    Caption = 'scanner automatique le serveur Wapt après upload'
+    TabOrder = 7
+  end
+end
