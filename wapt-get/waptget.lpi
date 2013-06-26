@@ -22,7 +22,7 @@
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="6"/>
       <RevisionNr Value="24"/>
-      <BuildNr Value="1"/>
+      <BuildNr Value="2"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -61,8 +61,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="152"/>
-        <CursorPos X="51" Y="184"/>
+        <TopLine Value="153"/>
+        <CursorPos X="78" Y="172"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -81,7 +81,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="507"/>
         <CursorPos X="25" Y="544"/>
-        <UsageCount Value="35"/>
+        <UsageCount Value="34"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\jcl\source\common\JclSysInfo.pas"/>
@@ -89,14 +89,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="5575"/>
         <CursorPos X="47" Y="5598"/>
-        <UsageCount Value="209"/>
+        <UsageCount Value="208"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\jcl\source\include\jcl.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="209"/>
+        <UsageCount Value="208"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\superobject\superobject.pas"/>
@@ -104,7 +104,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="3146"/>
         <CursorPos X="31" Y="3164"/>
-        <UsageCount Value="198"/>
+        <UsageCount Value="197"/>
       </Unit5>
       <Unit6>
         <Filename Value="soutils.pas"/>
@@ -112,7 +112,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="37"/>
         <CursorPos X="1" Y="44"/>
-        <UsageCount Value="199"/>
+        <UsageCount Value="198"/>
       </Unit6>
       <Unit7>
         <Filename Value="tiscommon.pas"/>
@@ -129,7 +129,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="4724"/>
         <CursorPos X="33" Y="4747"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="23"/>
       </Unit8>
       <Unit9>
         <Filename Value="tisstrings.pas"/>
@@ -155,7 +155,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="455"/>
         <CursorPos X="14" Y="449"/>
-        <UsageCount Value="29"/>
+        <UsageCount Value="28"/>
       </Unit11>
       <Unit12>
         <Filename Value="networkadapterinfo.pas"/>
@@ -171,7 +171,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="172"/>
         <CursorPos X="23" Y="192"/>
-        <UsageCount Value="57"/>
+        <UsageCount Value="56"/>
       </Unit13>
       <Unit14>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\ldapsend.pas"/>
@@ -179,7 +179,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="151"/>
         <CursorPos X="15" Y="16"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="21"/>
       </Unit14>
       <Unit15>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSCommon.pas"/>
@@ -187,7 +187,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="598"/>
         <CursorPos X="1" Y="600"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="6"/>
       </Unit15>
       <Unit16>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwaiphlpapi.pas"/>
@@ -195,7 +195,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="327"/>
         <CursorPos X="16" Y="327"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit16>
       <Unit17>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwaiptypes.pas"/>
@@ -203,7 +203,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="96"/>
         <CursorPos X="3" Y="115"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit17>
       <Unit18>
         <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
@@ -211,7 +211,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit18>
     </Units>

@@ -2751,7 +2751,7 @@ class Wapt(object):
 
         inv = self.inventory()
         # store uuid for future use to avoid the use of dmidecode
-        if not self.read_param('uuid'):
+        if not self.read_param('uuid') or self.read_param('uuid') <> inv['uuid']:
             self.write_param('uuid',inv['uuid'])
         if force:
             inv['force']=True
@@ -2785,7 +2785,7 @@ class Wapt(object):
                     logger.warning('Unable to update server status : %s' % ensure_unicode(e))
                 result = json.loads(req.content)
                 # force register if computer has not been registered or hostname has changed
-                if not result or not 'host' in result or result['host']['computer_fqdn'] <> setuphelpers.get_computername():
+                if not result or not 'host' in result or result['host']['computer_fqdn'] <> setuphelpers.get_hostname():
                     self.register_computer()
                 return result
             else:
