@@ -33,10 +33,7 @@ type
     Label9: TLabel;
     Panel1: TPanel;
     Panel2: TPanel;
-    SelectDirectoryCert: TSelectDirectoryDialog;
-    procedure Button1Click(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
-    procedure Panel2Click(Sender: TObject);
   private
     { private declarations }
   public
@@ -50,13 +47,6 @@ implementation
 {$R *.lfm}
 
 { TVisCreateKey }
-
-
-
-procedure TVisCreateKey.Button1Click(Sender: TObject);
-begin
-
-end;
 
 procedure TVisCreateKey.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 var
@@ -76,13 +66,6 @@ begin
       end
       else
           CanClose:=True;
-end;
-
-
-
-procedure TVisCreateKey.Panel2Click(Sender: TObject);
-begin
-
 end;
 
 end.

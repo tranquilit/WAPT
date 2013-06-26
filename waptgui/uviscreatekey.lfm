@@ -1,11 +1,11 @@
 object VisCreateKey: TVisCreateKey
-  Left = 1099
+  Left = 864
   Height = 251
-  Top = 424
-  Width = 415
+  Top = 552
+  Width = 432
   Caption = 'Créer une clé privée et un certificat autosigné'
   ClientHeight = 251
-  ClientWidth = 415
+  ClientWidth = 432
   Font.CharSet = ANSI_CHARSET
   Font.Color = clBlack
   Font.Height = -11
@@ -13,19 +13,20 @@ object VisCreateKey: TVisCreateKey
   Font.Pitch = fpVariable
   Font.Quality = fqDraft
   OnCloseQuery = FormCloseQuery
+  Position = poMainFormCenter
   ShowHint = True
   LCLVersion = '1.1'
   object Panel1: TPanel
     Left = 0
     Height = 27
     Top = 224
-    Width = 415
+    Width = 432
     Align = alBottom
     ClientHeight = 27
-    ClientWidth = 415
+    ClientWidth = 432
     TabOrder = 0
     object BitBtn1: TBitBtn
-      Left = 255
+      Left = 272
       Height = 23
       Top = 3
       Width = 75
@@ -37,7 +38,7 @@ object VisCreateKey: TVisCreateKey
       TabOrder = 0
     end
     object BitBtn2: TBitBtn
-      Left = 335
+      Left = 352
       Height = 23
       Top = 3
       Width = 75
@@ -53,12 +54,11 @@ object VisCreateKey: TVisCreateKey
     Left = 0
     Height = 224
     Top = 0
-    Width = 415
+    Width = 432
     Align = alClient
     ClientHeight = 224
-    ClientWidth = 415
+    ClientWidth = 432
     TabOrder = 1
-    OnClick = Panel2Click
     object Label9: TLabel
       Left = 12
       Height = 13
@@ -208,9 +208,5 @@ object VisCreateKey: TVisCreateKey
       MaxLength = 0
       TabOrder = 7
     end
-  end
-  object SelectDirectoryCert: TSelectDirectoryDialog
-    left = 344
-    top = 112
   end
 end
