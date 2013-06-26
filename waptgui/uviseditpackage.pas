@@ -307,7 +307,7 @@ end;
 
 function TVisEditPackage.GetIsUpdated:Boolean;
 begin
-   Result := FIsUpdated or EdPackage.Modified or EdSetupPy.Modified or EdSourceDir.Modified or Eddescription.Modified;
+   Result := FIsUpdated or EdPackage.Modified or EdVersion.Modified or EdSetupPy.Modified or EdSourceDir.Modified or Eddescription.Modified;
 end;
 
 procedure TVisEditPackage.ActEditSearchExecute(Sender: TObject);

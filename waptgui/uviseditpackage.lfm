@@ -868,7 +868,8 @@ object VisEditPackage: TVisEditPackage
       Left = 432
       Height = 21
       Top = 24
-      Width = 136
+      Width = 220
+      Anchors = [akTop, akLeft, akRight]
       TabOrder = 3
     end
     object Label4: TLabel

@@ -260,9 +260,9 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Position = 4
-            Text = 'dmi.''Chassis Information''.''Serial Number'''
+            Text = 'dmi.Chassis\sInformation.Serial\sNumber'
             Width = 100
-            PropertyName = 'dmi.''Chassis Information''.''Serial Number'''
+            PropertyName = 'dmi.Chassis\sInformation.Serial\sNumber'
           end        
           item
             MaxWidth = 400
