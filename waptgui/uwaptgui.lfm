@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 296
+  Left = 375
   Height = 764
-  Top = 135
+  Top = 142
   Width = 1173
   Caption = 'VisWaptGUI'
   ClientHeight = 745
@@ -274,16 +274,16 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Position = 6
-            Text = 'mac'
+            Text = 'host.mac'
             Width = 100
-            PropertyName = 'mac'
+            PropertyName = 'host.mac'
           end        
           item
             MaxWidth = 400
             Position = 7
-            Text = 'last_known_ip'
+            Text = 'host.connected_ips'
             Width = 100
-            PropertyName = 'last_known_ip'
+            PropertyName = 'host.connected_ips'
           end        
           item
             MaxWidth = 400
