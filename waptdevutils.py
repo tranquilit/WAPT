@@ -73,9 +73,7 @@ def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',company=''
     iss = codecs.open(iss_template,'r',encoding='utf8').read().splitlines()
     new_iss=[]
     for line in iss:
-        if line.startswith('#define default_public_cert'):
-            new_iss.append('#define default_public_cert "%s"' % (os.path.basename(default_public_cert),))
-        elif line.startswith('#define default_repo_url'):
+        if line.startswith('#define default_repo_url'):
             new_iss.append('#define default_repo_url "%s"' % (default_repo_url))
         elif not line.startswith('SignTool'):
             new_iss.append(line)
