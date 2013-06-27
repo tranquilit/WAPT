@@ -487,6 +487,9 @@ begin
   if CheckBoxMaj.Checked = True then
     urlParams.AsArray.Add('need_upgrade=true');
 
+  if EdSearchHost.Text <> '' then
+     urlParams.AsArray.Add('q='+EdSearchHost.Text);
+
   req := url +'?'+Join('&',urlParams);
 
   hosts := WAPTServerJsonGet(req,[]).AsJson;
