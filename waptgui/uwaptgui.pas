@@ -44,7 +44,7 @@ type
     Button7: TButton;
     Button8: TButton;
     cbShowLog: TCheckBox;
-    CheckBox1: TCheckBox;
+    CheckBoxMaj: TCheckBox;
     CheckBox_error: TCheckBox;
     EdSearch2: TEdit;
     EdSearchHost: TEdit;
@@ -473,13 +473,23 @@ end;
 
 procedure TVisWaptGUI.ActSearchHostExecute(Sender: TObject);
 var
-  hosts:String;
-  url:String='json/host_list';
+  req,hosts:String;
+  urlParams:ISuperObject;
+const
+    url:String='json/host_list';
 begin
-  if CheckBox_error.Checked = True then
-    url:= url + '?error=true';
 
-  hosts := WAPTServerJsonGet(url,[]).AsJson;
+  urlParams := TSuperObject.create(stArray);
+
+  if CheckBox_error.Checked = True then
+   urlParams.AsArray.Add('package_error=true');
+
+  if CheckBoxMaj.Checked = True then
+    urlParams.AsArray.Add('need_upgrade=true');
+
+  req := url +'?'+Join('&',urlParams);
+
+  hosts := WAPTServerJsonGet(req,[]).AsJson;
   GridLoadData(GridHosts,hosts);
 end;
 

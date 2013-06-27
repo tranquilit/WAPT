@@ -194,7 +194,7 @@ object VisWaptGUI: TVisWaptGUI
           Caption = 'Recherche'
           ParentColor = False
         end
-        object CheckBox1: TCheckBox
+        object CheckBoxMaj: TCheckBox
           Left = 364
           Height = 17
           Top = 6
