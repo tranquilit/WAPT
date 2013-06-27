@@ -184,6 +184,7 @@ object VisWaptGUI: TVisWaptGUI
           Height = 21
           Top = 2
           Width = 136
+          OnKeyPress = EdSearchHostKeyPress
           TabOrder = 0
         end
         object Label5: TLabel

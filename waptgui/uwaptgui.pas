@@ -126,6 +126,7 @@ type
     procedure ActUpgradeExecute(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure EdRunKeyPress(Sender: TObject; var Key: char);
+    procedure EdSearchHostKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
     procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
@@ -192,6 +193,15 @@ procedure TVisWaptGUI.EdRunKeyPress(Sender: TObject; var Key: char);
 begin
   if Key=#13 then
     ActEvaluate.Execute;
+end;
+
+procedure TVisWaptGUI.EdSearchHostKeyPress(Sender: TObject; var Key: char);
+begin
+  if Key=#13 then
+  begin
+    EdSearchHost.SelectAll;
+    ActSearchHost.Execute;
+  end;
 end;
 
 procedure TVisWaptGUI.EdSearchKeyPress(Sender: TObject; var Key: char);
