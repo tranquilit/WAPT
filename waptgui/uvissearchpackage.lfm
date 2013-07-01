@@ -1,0 +1,288 @@
+object VisSearchPackage: TVisSearchPackage
+  Left = 296
+  Height = 600
+  Top = 135
+  Width = 800
+  Caption = 'Sélectionner des paquets'
+  ClientHeight = 600
+  ClientWidth = 800
+  Constraints.MinHeight = 600
+  Constraints.MinWidth = 800
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  LCLVersion = '1.1'
+  object Panel3: TPanel
+    Left = 0
+    Height = 118
+    Top = 449
+    Width = 800
+    Align = alBottom
+    ClientHeight = 118
+    ClientWidth = 800
+    TabOrder = 0
+    object Panel7: TPanel
+      Left = 1
+      Height = 116
+      Top = 1
+      Width = 798
+      Align = alClient
+      Caption = 'Panel7'
+      ClientHeight = 116
+      ClientWidth = 798
+      TabOrder = 0
+      object MemoLog: TMemo
+        Left = 1
+        Height = 114
+        Top = 1
+        Width = 185
+        Align = alClient
+        TabOrder = 0
+      end
+      object jsonlog: TVirtualJSONInspector
+        Left = 191
+        Height = 114
+        Top = 1
+        Width = 606
+        PropertyDefs = <>
+        Align = alRight
+        Color = clWhite
+        Header.AutoSizeIndex = -1
+        Header.Columns = <        
+          item
+            Position = 0
+            Text = 'Property'
+            Width = 150
+          end        
+          item
+            Position = 1
+            Text = 'Value'
+            Width = 452
+          end>
+        Header.DefaultHeight = 17
+        Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
+        TabOrder = 1
+        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
+        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+        TreeOptions.SelectionOptions = [toExtendedFocus]
+      end
+      object Splitter2: TSplitter
+        Left = 186
+        Height = 114
+        Top = 1
+        Width = 5
+        Align = alRight
+        ResizeAnchor = akRight
+      end
+    end
+  end
+  object Splitter1: TSplitter
+    Cursor = crVSplit
+    Left = 0
+    Height = 5
+    Top = 444
+    Width = 800
+    Align = alBottom
+    ResizeAnchor = akBottom
+  end
+  object Panel4: TPanel
+    Left = 0
+    Height = 33
+    Top = 567
+    Width = 800
+    Align = alBottom
+    BevelOuter = bvNone
+    ClientHeight = 33
+    ClientWidth = 800
+    TabOrder = 2
+    object BitBtn1: TBitBtn
+      Left = 641
+      Height = 26
+      Top = 4
+      Width = 74
+      Anchors = [akTop, akRight]
+      DefaultCaption = True
+      Kind = bkOK
+      ModalResult = 1
+      TabOrder = 0
+    end
+    object BitBtn2: TBitBtn
+      Left = 720
+      Height = 26
+      Top = 4
+      Width = 74
+      Anchors = [akTop, akRight]
+      Cancel = True
+      DefaultCaption = True
+      Kind = bkCancel
+      ModalResult = 2
+      TabOrder = 1
+    end
+  end
+  object Panel8: TPanel
+    Left = 0
+    Height = 444
+    Top = 0
+    Width = 800
+    Align = alClient
+    ClientHeight = 444
+    ClientWidth = 800
+    TabOrder = 3
+    object Panel9: TPanel
+      Left = 1
+      Height = 29
+      Top = 1
+      Width = 798
+      Align = alTop
+      BevelOuter = bvNone
+      ClientHeight = 29
+      ClientWidth = 798
+      TabOrder = 0
+      object EdSearch: TEdit
+        Left = 4
+        Height = 21
+        Top = 3
+        Width = 183
+        OnKeyPress = EdSearchKeyPress
+        TabOrder = 0
+      end
+      object butSearchPackages1: TButton
+        Left = 195
+        Height = 25
+        Top = 2
+        Width = 120
+        Action = ActEditSearch
+        TabOrder = 1
+      end
+      object cbOnlyGroup: TCheckBox
+        Left = 342
+        Height = 17
+        Top = 3
+        Width = 117
+        Caption = 'Paquets de Groupes'
+        TabOrder = 2
+      end
+      object cbShowLog: TCheckBox
+        Left = 503
+        Height = 17
+        Top = 3
+        Width = 136
+        Anchors = [akRight, akBottom]
+        Caption = 'Voir infos de débuggage'
+        TabOrder = 3
+      end
+    end
+    object GridPackages: TVirtualJSONListView
+      Left = 1
+      Height = 413
+      Top = 30
+      Width = 798
+      Align = alClient
+      Color = clWhite
+      DragMode = dmAutomatic
+      DragType = dtVCL
+      Header.AutoSizeIndex = 0
+      Header.Columns = <      
+        item
+          MaxWidth = 100
+          MinWidth = 50
+          Position = 0
+          Text = 'Section'
+          PropertyName = 'section'
+        end      
+        item
+          MaxWidth = 400
+          MinWidth = 50
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+          Position = 1
+          Text = 'Paquet'
+          Width = 200
+          PropertyName = 'package'
+        end      
+        item
+          MaxWidth = 200
+          MinWidth = 50
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+          Position = 2
+          Text = 'Status'
+          PropertyName = 'status'
+        end      
+        item
+          MaxWidth = 200
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+          Position = 3
+          Text = 'Version'
+          Width = 30
+          PropertyName = 'version'
+        end      
+        item
+          MaxWidth = 400
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+          Position = 4
+          Text = 'Description'
+          PropertyName = 'description'
+        end      
+        item
+          MaxWidth = 400
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+          Position = 5
+          Text = 'Dépendances'
+          PropertyName = 'depends'
+        end      
+        item
+          MaxWidth = 200
+          Position = 6
+          Text = 'Installé par'
+          PropertyName = 'explicit_by'
+        end>
+      Header.DefaultHeight = 17
+      Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
+      Header.SortColumn = 0
+      Header.Style = hsFlatButtons
+      TabOrder = 1
+      TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+      TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+      TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+      TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+      OnCompareNodes = GridPackagesCompareNodes
+      OnHeaderClick = GridPackagesHeaderClick
+    end
+  end
+  object ActionList1: TActionList
+    left = 148
+    top = 148
+    object ActSearchPackage: TAction
+      Caption = 'Rechercher'
+      OnExecute = ActSearchPackageExecute
+    end
+    object ActExecCode: TAction
+      Caption = 'Exécuter le code source python'
+      OnExecute = ActExecCodeExecute
+    end
+    object ActBuildUpload: TAction
+      Caption = 'Activer le paquet'
+      OnExecute = ActBuildUploadExecute
+    end
+    object ActEditSearch: TAction
+      Caption = 'Rechercher'
+      OnExecute = ActEditSearchExecute
+    end
+    object ActEditRemove: TAction
+      Caption = 'Enlever'
+      OnExecute = ActEditRemoveExecute
+    end
+    object ActEditSavePackage: TAction
+      Caption = 'Sauver'
+      OnExecute = ActEditSavePackageExecute
+      OnUpdate = ActEditSavePackageUpdate
+      ShortCut = 16467
+    end
+  end
+  object PopupMenuEditDepends: TPopupMenu
+    left = 148
+    top = 220
+    object MenuItem4: TMenuItem
+      Action = ActEditRemove
+    end
+  end
+end
