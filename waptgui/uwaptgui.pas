@@ -27,6 +27,8 @@ type
     ActEditHostPackage: TAction;
     actHostSelectAll: TAction;
     ActAddRemoveOptionIniFile: TAction;
+    ActHostSearchPackage: TAction;
+    ActHostsAddPackages: TAction;
     ActRegisterHost: TAction;
     ActSearchHost: TAction;
     ActUpgrade: TAction;
@@ -37,21 +39,19 @@ type
     butInitWapt: TButton;
     butRun: TButton;
     butSearchPackages: TButton;
-    butSearchPackages2: TButton;
     Button1: TButton;
     Button2: TButton;
     Button6: TButton;
     Button7: TButton;
     Button8: TButton;
     cbShowLog: TCheckBox;
+    cbShowHostPackagesSoft: TCheckBox;
+    cbShowHostPackagesGroup: TCheckBox;
     CheckBoxMaj: TCheckBox;
     CheckBox_error: TCheckBox;
-    EdSearch2: TEdit;
     EdSearchHost: TEdit;
     EdRun: TEdit;
     EdSearch: TEdit;
-    GridHostPackages1: TVirtualJSONListView;
-    GridHostPackages2: TVirtualJSONListView;
     GridHosts: TVirtualJSONListView;
     GridhostAttribs: TVirtualJSONInspector;
     Label5: TLabel;
@@ -82,7 +82,7 @@ type
     HostPages: TPageControl;
     Panel1: TPanel;
     Panel10: TPanel;
-    Panel11: TPanel;
+    Panel2: TPanel;
     Panel3: TPanel;
     Panel4: TPanel;
     Panel5: TPanel;
@@ -100,8 +100,6 @@ type
     pgPackages: TTabSheet;
     pgSoftwares: TTabSheet;
     pgHostPackage: TTabSheet;
-    TabSheet3: TTabSheet;
-    TabSheet4: TTabSheet;
     testedit: TSynEdit;
     jsonlog: TVirtualJSONInspector;
     UniqueInstance1: TUniqueInstance;
@@ -116,6 +114,8 @@ type
     procedure ActEvaluateExecute(Sender: TObject);
     procedure ActEvaluateVarExecute(Sender: TObject);
     procedure ActExecCodeExecute(Sender: TObject);
+    procedure ActHostsAddPackagesExecute(Sender: TObject);
+    procedure ActHostSearchPackageExecute(Sender: TObject);
     procedure actHostSelectAllExecute(Sender: TObject);
     procedure ActInstallExecute(Sender: TObject);
     procedure ActRegisterHostExecute(Sender: TObject);
@@ -125,7 +125,10 @@ type
     procedure ActUpdateExecute(Sender: TObject);
     procedure ActUpgradeExecute(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
+    procedure CheckBoxMajChange(Sender: TObject);
+    procedure CheckBox_errorChange(Sender: TObject);
     procedure EdRunKeyPress(Sender: TObject; var Key: char);
+    procedure EdSearch2KeyPress(Sender: TObject; var Key: char);
     procedure EdSearchHostKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
@@ -167,10 +170,15 @@ var
   js : ISuperObject;
 begin
   js := SO(ListView.GetData(N).AsJSON);
-  if FieldName='' then
-    result := js.AsJSon
+  if js<>Nil then
+  begin
+    if FieldName='' then
+      result := js.AsJSon
+    else
+      result := js.S[FieldName];
+  end
   else
-    result := js.S[FieldName];
+    Result:='';
 end;
 
 procedure SetValue(ListView:TVirtualJSONListView;N:PVirtualNode;FieldName:String;Value:String);
@@ -189,10 +197,24 @@ begin
 
 end;
 
+procedure TVisWaptGUI.CheckBoxMajChange(Sender: TObject);
+begin
+  ActHostSearchPackage.Execute;
+end;
+
+procedure TVisWaptGUI.CheckBox_errorChange(Sender: TObject);
+begin
+  ActHostSearchPackage.Execute;
+end;
+
 procedure TVisWaptGUI.EdRunKeyPress(Sender: TObject; var Key: char);
 begin
   if Key=#13 then
     ActEvaluate.Execute;
+end;
+
+procedure TVisWaptGUI.EdSearch2KeyPress(Sender: TObject; var Key: char);
+begin
 end;
 
 procedure TVisWaptGUI.EdSearchHostKeyPress(Sender: TObject; var Key: char);
@@ -454,6 +476,15 @@ procedure TVisWaptGUI.ActExecCodeExecute(Sender: TObject);
 begin
   MemoLog.Clear;
   DMPython.PythonEng.ExecString(testedit.Lines.Text);
+end;
+
+procedure TVisWaptGUI.ActHostsAddPackagesExecute(Sender: TObject);
+begin
+
+end;
+
+procedure TVisWaptGUI.ActHostSearchPackageExecute(Sender: TObject);
+begin
 end;
 
 procedure TVisWaptGUI.actHostSelectAllExecute(Sender: TObject);

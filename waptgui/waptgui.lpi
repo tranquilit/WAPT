@@ -15,8 +15,7 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <RevisionNr Value="5"/>
-      <BuildNr Value="1"/>
+      <RevisionNr Value="7"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -73,7 +72,7 @@
         <PackageName Value="LCL"/>
       </Item13>
     </RequiredPackages>
-    <Units Count="9">
+    <Units Count="10">
       <Unit0>
         <Filename Value="waptgui.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -131,6 +130,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviseditpackage"/>
       </Unit8>
+      <Unit9>
+        <Filename Value="uvissearchpackage.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisSearchPackage"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uvissearchpackage"/>
+      </Unit9>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

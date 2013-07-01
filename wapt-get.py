@@ -87,6 +87,8 @@ action is either :
                                 initializes a package meta template with packages.
                                 If no package name is given, use FQDN
                                 If no packages are given, use currently installed
+  make-group-template <groupname> [[<package>,<package>,...] [directory]] :
+                                initializes a meta package template with supplied dependencies.
 
   build-package <directory> : creates a WAPT package from supplied directory
   sign-package <directory or package>  : add a signature of the manifest using a private SSL key
@@ -511,8 +513,11 @@ def main():
                         print u"You can build and upload the WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result)
                     os.startfile(result)
 
-            elif action=='make-host-template':
-                result = mywapt.make_host_template(*args[1:])
+            elif action in ('make-host-template','make-group-template'):
+                if action == 'make-host-template':
+                    result = mywapt.make_host_template(*args[1:])
+                else:
+                    result = mywapt.make_group_template(*args[1:])
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
