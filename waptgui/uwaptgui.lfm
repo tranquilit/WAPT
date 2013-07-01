@@ -16,414 +16,8 @@ object VisWaptGUI: TVisWaptGUI
     Width = 1173
     ActivePage = pgInventory
     Align = alClient
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
-    object pgInventory: TTabSheet
-      Caption = 'Inventaire'
-      ClientHeight = 596
-      ClientWidth = 1165
-      object Panel10: TPanel
-        Left = 0
-        Height = 34
-        Top = 0
-        Width = 1165
-        Align = alTop
-        BevelOuter = bvNone
-        ClientHeight = 34
-        ClientWidth = 1165
-        TabOrder = 0
-        object EdSearchHost: TEdit
-          Left = 60
-          Height = 21
-          Top = 2
-          Width = 136
-          OnKeyPress = EdSearchHostKeyPress
-          TabOrder = 0
-        end
-        object Label5: TLabel
-          Left = 4
-          Height = 13
-          Top = 6
-          Width = 51
-          Caption = 'Recherche'
-          ParentColor = False
-        end
-        object CheckBoxMaj: TCheckBox
-          Left = 364
-          Height = 17
-          Top = 6
-          Width = 151
-          Caption = 'Nécessite des mises à jours'
-          OnChange = CheckBoxMajChange
-          TabOrder = 1
-        end
-        object CheckBox_error: TCheckBox
-          Left = 524
-          Height = 17
-          Top = 6
-          Width = 102
-          Caption = 'Avec des erreurs'
-          OnChange = CheckBox_errorChange
-          TabOrder = 2
-        end
-        object Button7: TButton
-          Left = 212
-          Height = 25
-          Top = 2
-          Width = 123
-          Action = ActSearchHost
-          TabOrder = 3
-        end
-      end
-      object GridHosts: TVirtualJSONListView
-        Left = 0
-        Height = 562
-        Top = 34
-        Width = 588
-        OnGetText = GridHostsGetText
-        Align = alClient
-        Color = clWhite
-        Header.AutoSizeIndex = -1
-        Header.Columns = <        
-          item
-            MaxWidth = 400
-            Position = 0
-            Text = 'Machine'
-            Width = 100
-            PropertyName = 'host.computer_fqdn'
-          end        
-          item
-            MaxWidth = 400
-            Position = 1
-            Text = 'Description'
-            Width = 100
-            PropertyName = 'host.description'
-          end        
-          item
-            MaxWidth = 400
-            Position = 2
-            Text = 'Fabricant'
-            Width = 100
-            PropertyName = 'host.system_manufacturer'
-          end        
-          item
-            MaxWidth = 400
-            Position = 3
-            Text = 'Modèle'
-            Width = 100
-            PropertyName = 'host.system_productname'
-          end        
-          item
-            MaxWidth = 400
-            Position = 4
-            Text = 'Numéro de série'
-            Width = 100
-            PropertyName = 'dmi.Chassis\sInformation.Serial\sNumber'
-          end        
-          item
-            MaxWidth = 400
-            Position = 5
-            Text = 'Dernière MAJ'
-            Width = 100
-            PropertyName = 'last_query_date'
-          end        
-          item
-            MaxWidth = 400
-            Position = 6
-            Text = 'Adresses Mac'
-            Width = 100
-            PropertyName = 'host.mac'
-          end        
-          item
-            MaxWidth = 400
-            Position = 7
-            Text = 'Adresses Ips'
-            Width = 100
-            PropertyName = 'host.connected_ips'
-          end        
-          item
-            MaxWidth = 400
-            Position = 8
-            Text = 'uuid'
-            Width = 100
-            PropertyName = 'uuid'
-          end        
-          item
-            MaxWidth = 400
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 9
-            Text = 'md5sum'
-            Width = 100
-            PropertyName = 'md5sum'
-          end        
-          item
-            MaxWidth = 400
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 10
-            Text = 'purchase_order'
-            Width = 100
-            PropertyName = 'purchase_order'
-          end        
-          item
-            MaxWidth = 400
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 11
-            Text = 'purchase_date'
-            Width = 100
-            PropertyName = 'purchase_date'
-          end        
-          item
-            MaxWidth = 400
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 12
-            Text = 'groups'
-            Width = 100
-            PropertyName = 'groups'
-          end        
-          item
-            MaxWidth = 400
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 13
-            Text = 'attributes'
-            Width = 100
-            PropertyName = 'attributes'
-          end        
-          item
-            MaxWidth = 400
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 14
-            Text = 'id'
-            Width = 100
-            PropertyName = 'id'
-          end>
-        Header.DefaultHeight = 17
-        Header.MainColumn = 1
-        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
-        Header.Style = hsFlatButtons
-        PopupMenu = PopupMenuHosts
-        TabOrder = 1
-        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
-        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
-        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-        TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
-        OnChange = GridHostsChange
-        OnCompareNodes = GridPackagesCompareNodes
-        OnDblClick = ActEditHostPackageExecute
-        OnHeaderClick = GridPackagesHeaderClick
-      end
-      object HostPages: TPageControl
-        Left = 593
-        Height = 562
-        Top = 34
-        Width = 572
-        ActivePage = pgHostPackage
-        Align = alRight
-        TabIndex = 0
-        TabOrder = 2
-        OnChange = HostPagesChange
-        object pgHostPackage: TTabSheet
-          Caption = 'Configuration machine'
-          ClientHeight = 536
-          ClientWidth = 564
-          object GridhostAttribs: TVirtualJSONInspector
-            Left = 0
-            Height = 536
-            Top = 0
-            Width = 564
-            PropertyDefs = <>
-            Align = alClient
-            Color = clWhite
-            DragMode = dmAutomatic
-            Header.AutoSizeIndex = -1
-            Header.Columns = <            
-              item
-                Position = 0
-                Text = 'Propriété'
-                Width = 150
-              end            
-              item
-                Position = 1
-                Text = 'Valeur'
-                Width = 410
-              end>
-            Header.DefaultHeight = 17
-            Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
-            TabOrder = 0
-            TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
-            TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
-            TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-            TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
-          end
-        end
-        object pgPackages: TTabSheet
-          Caption = 'Packages'
-          ClientHeight = 536
-          ClientWidth = 564
-          object GridHostPackages: TVirtualJSONListView
-            Left = 0
-            Height = 514
-            Top = 22
-            Width = 564
-            Align = alClient
-            Color = clWhite
-            Header.AutoSizeIndex = 0
-            Header.Columns = <            
-              item
-                Position = 0
-                Text = 'Section'
-                PropertyName = 'section'
-              end            
-              item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-                Position = 1
-                Text = 'Nom paquet'
-                Width = 300
-                PropertyName = 'package'
-              end            
-              item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-                Position = 2
-                Text = 'Status'
-                PropertyName = 'install_status'
-              end            
-              item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-                Position = 3
-                Text = 'Version'
-                Width = 30
-                PropertyName = 'version'
-              end            
-              item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-                Position = 4
-                Text = 'Description'
-                PropertyName = 'description'
-              end            
-              item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-                Position = 5
-                Text = 'Dependances'
-                PropertyName = 'depends'
-              end            
-              item
-                Position = 6
-                Text = 'Date installation'
-                PropertyName = 'install_date'
-              end>
-            Header.DefaultHeight = 17
-            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
-            Header.Style = hsFlatButtons
-            TabOrder = 0
-            TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
-            TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
-            TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-            TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
-            OnCompareNodes = GridPackagesCompareNodes
-            OnHeaderClick = GridPackagesHeaderClick
-          end
-          object Panel2: TPanel
-            Left = 0
-            Height = 22
-            Top = 0
-            Width = 564
-            Align = alTop
-            BevelOuter = bvNone
-            ClientHeight = 22
-            ClientWidth = 564
-            TabOrder = 1
-            object cbShowHostPackagesSoft: TCheckBox
-              Left = 3
-              Height = 17
-              Top = 2
-              Width = 104
-              Caption = 'Packages logiciels'
-              Checked = True
-              State = cbChecked
-              TabOrder = 0
-            end
-            object cbShowHostPackagesGroup: TCheckBox
-              Left = 127
-              Height = 17
-              Top = 2
-              Width = 60
-              Caption = 'Groupes'
-              Checked = True
-              State = cbChecked
-              TabOrder = 1
-            end
-          end
-        end
-        object pgSoftwares: TTabSheet
-          Caption = 'Logiciels installés'
-          ClientHeight = 536
-          ClientWidth = 564
-          object GridHostSoftwares: TVirtualJSONListView
-            Left = 0
-            Height = 536
-            Top = 0
-            Width = 564
-            Align = alClient
-            Color = clWhite
-            Header.AutoSizeIndex = -1
-            Header.Columns = <            
-              item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-                Position = 0
-                Text = 'Editeur'
-                PropertyName = 'publisher'
-              end            
-              item
-                Position = 1
-                Text = 'Logiciel'
-                PropertyName = 'name'
-              end            
-              item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-                Position = 2
-                Text = 'Version'
-                Width = 30
-                PropertyName = 'version'
-              end            
-              item
-                Position = 3
-                Text = 'Date d''install'
-                PropertyName = 'install_date'
-              end            
-              item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-                Position = 4
-                Text = 'Numéro de licence'
-                PropertyName = 'serial_nr'
-              end            
-              item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-                Position = 5
-                Text = 'Répertoire d''installation'
-                PropertyName = 'install_location'
-              end>
-            Header.DefaultHeight = 17
-            Header.MainColumn = 1
-            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
-            Header.Style = hsFlatButtons
-            TabOrder = 0
-            TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
-            TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
-            TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-            TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
-            OnCompareNodes = GridPackagesCompareNodes
-            OnHeaderClick = GridPackagesHeaderClick
-          end
-        end
-      end
-      object Splitter4: TSplitter
-        Left = 588
-        Height = 562
-        Top = 34
-        Width = 5
-        Align = alRight
-        ResizeAnchor = akRight
-      end
-    end
     object TabSheet2: TTabSheet
       Caption = 'Recherche packages'
       ClientHeight = 596
@@ -569,6 +163,549 @@ object VisWaptGUI: TVisWaptGUI
           Action = ActRegisterHost
           TabOrder = 4
         end
+      end
+    end
+    object pgInventory: TTabSheet
+      Caption = 'Inventaire'
+      ClientHeight = 596
+      ClientWidth = 1165
+      object Panel10: TPanel
+        Left = 0
+        Height = 54
+        Top = 0
+        Width = 1165
+        Align = alTop
+        BevelOuter = bvNone
+        ClientHeight = 54
+        ClientWidth = 1165
+        TabOrder = 0
+        object EdSearchHost: TEdit
+          Left = 60
+          Height = 21
+          Top = 4
+          Width = 136
+          OnKeyPress = EdSearchHostKeyPress
+          TabOrder = 0
+        end
+        object Label5: TLabel
+          Left = 4
+          Height = 13
+          Top = 6
+          Width = 51
+          Caption = 'Recherche'
+          ParentColor = False
+        end
+        object CheckBoxMaj: TCheckBox
+          Left = 327
+          Height = 17
+          Top = 7
+          Width = 151
+          Caption = 'Nécessite des mises à jours'
+          TabOrder = 1
+        end
+        object CheckBox_error: TCheckBox
+          Left = 490
+          Height = 17
+          Top = 7
+          Width = 102
+          Caption = 'Avec des erreurs'
+          TabOrder = 2
+        end
+        object Button7: TButton
+          Left = 204
+          Height = 25
+          Top = 2
+          Width = 110
+          Action = ActSearchHost
+          TabOrder = 3
+        end
+        object cbSearchAll: TCheckBox
+          Left = 31
+          Height = 17
+          Top = 30
+          Width = 42
+          Caption = 'Tout'
+          Checked = True
+          OnChange = cbSearchAllChange
+          State = cbChecked
+          TabOrder = 4
+        end
+        object cbSearchHost: TCheckBox
+          Left = 76
+          Height = 17
+          Top = 30
+          Width = 42
+          Caption = 'Host'
+          State = cbGrayed
+          TabOrder = 5
+        end
+      end
+      object GridHosts: TVirtualJSONListView
+        Left = 0
+        Height = 542
+        Top = 54
+        Width = 588
+        OnGetText = GridHostsGetText
+        Align = alClient
+        Color = clWhite
+        Header.AutoSizeIndex = -1
+        Header.Columns = <        
+          item
+            MaxWidth = 400
+            Position = 0
+            Text = 'Machine'
+            Width = 100
+            PropertyName = 'host.computer_fqdn'
+          end        
+          item
+            MaxWidth = 400
+            Position = 1
+            Text = 'Description'
+            Width = 100
+            PropertyName = 'host.description'
+          end        
+          item
+            MaxWidth = 400
+            Position = 2
+            Text = 'Fabricant'
+            Width = 100
+            PropertyName = 'host.system_manufacturer'
+          end        
+          item
+            MaxWidth = 400
+            Position = 3
+            Text = 'Modèle'
+            Width = 100
+            PropertyName = 'host.system_productname'
+          end        
+          item
+            MaxWidth = 400
+            Position = 4
+            Text = 'Numéro de série'
+            Width = 100
+            PropertyName = 'dmi.Chassis\sInformation.Serial\sNumber'
+          end        
+          item
+            MaxWidth = 400
+            Position = 5
+            Text = 'Dernière MAJ'
+            Width = 100
+            PropertyName = 'last_query_date'
+          end        
+          item
+            MaxWidth = 400
+            Position = 6
+            Text = 'Adresses Mac'
+            Width = 100
+            PropertyName = 'host.mac'
+          end        
+          item
+            MaxWidth = 400
+            Position = 7
+            Text = 'Adresses Ips'
+            Width = 100
+            PropertyName = 'host.connected_ips'
+          end        
+          item
+            MaxWidth = 400
+            Position = 8
+            Text = 'uuid'
+            Width = 100
+            PropertyName = 'uuid'
+          end        
+          item
+            MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 9
+            Text = 'md5sum'
+            Width = 100
+            PropertyName = 'md5sum'
+          end        
+          item
+            MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 10
+            Text = 'purchase_order'
+            Width = 100
+            PropertyName = 'purchase_order'
+          end        
+          item
+            MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 11
+            Text = 'purchase_date'
+            Width = 100
+            PropertyName = 'purchase_date'
+          end        
+          item
+            MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 12
+            Text = 'groups'
+            Width = 100
+            PropertyName = 'groups'
+          end        
+          item
+            MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 13
+            Text = 'attributes'
+            Width = 100
+            PropertyName = 'attributes'
+          end        
+          item
+            MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 14
+            Text = 'id'
+            Width = 100
+            PropertyName = 'id'
+          end>
+        Header.DefaultHeight = 17
+        Header.MainColumn = 1
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
+        Header.Style = hsFlatButtons
+        PopupMenu = PopupMenuHosts
+        TabOrder = 1
+        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+        TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
+        OnChange = GridHostsChange
+        OnCompareNodes = GridPackagesCompareNodes
+        OnDblClick = ActEditHostPackageExecute
+        OnHeaderClick = GridPackagesHeaderClick
+      end
+      object HostPages: TPageControl
+        Left = 593
+        Height = 542
+        Top = 54
+        Width = 572
+        ActivePage = pgSoftwares
+        Align = alRight
+        TabIndex = 2
+        TabOrder = 2
+        OnChange = HostPagesChange
+        object pgHostPackage: TTabSheet
+          Caption = 'Configuration machine'
+          ClientHeight = 536
+          ClientWidth = 564
+          object GridhostAttribs: TVirtualJSONInspector
+            Left = 0
+            Height = 536
+            Top = 0
+            Width = 564
+            PropertyDefs = <>
+            Align = alClient
+            Color = clWhite
+            DragMode = dmAutomatic
+            Header.AutoSizeIndex = -1
+            Header.Columns = <            
+              item
+                Position = 0
+                Text = 'Propriété'
+                Width = 150
+              end            
+              item
+                Position = 1
+                Text = 'Valeur'
+                Width = 410
+              end>
+            Header.DefaultHeight = 17
+            Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
+            TabOrder = 0
+            TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes]
+            TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
+            TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+            TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
+          end
+        end
+        object pgPackages: TTabSheet
+          Caption = 'Packages'
+          ClientHeight = 536
+          ClientWidth = 564
+          object GridHostPackages: TVirtualJSONListView
+            Left = 0
+            Height = 536
+            Top = 0
+            Width = 564
+            Align = alClient
+            Color = clWhite
+            Header.AutoSizeIndex = 0
+            Header.Columns = <            
+              item
+                Position = 0
+                Text = 'Section'
+                PropertyName = 'section'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 1
+                Text = 'Nom paquet'
+                Width = 300
+                PropertyName = 'package'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 2
+                Text = 'Status'
+                PropertyName = 'install_status'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 3
+                Text = 'Version'
+                Width = 30
+                PropertyName = 'version'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 4
+                Text = 'Description'
+                PropertyName = 'description'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 5
+                Text = 'Dependances'
+                PropertyName = 'depends'
+              end            
+              item
+                Position = 6
+                Text = 'Date installation'
+                PropertyName = 'install_date'
+              end>
+            Header.DefaultHeight = 17
+            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
+            Header.Style = hsFlatButtons
+            TabOrder = 0
+            TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+            TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+            TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+            TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+            OnCompareNodes = GridPackagesCompareNodes
+            OnHeaderClick = GridPackagesHeaderClick
+          end
+        end
+        object pgSoftwares: TTabSheet
+          Caption = 'Logiciels installés'
+          ClientHeight = 516
+          ClientWidth = 564
+          object GridHostSoftwares: TVirtualJSONListView
+            Left = 0
+            Height = 516
+            Top = 0
+            Width = 564
+            Align = alClient
+            Color = clWhite
+            Header.AutoSizeIndex = -1
+            Header.Columns = <            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 0
+                Text = 'Editeur'
+                PropertyName = 'publisher'
+              end            
+              item
+                Position = 1
+                Text = 'Logiciel'
+                PropertyName = 'name'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 2
+                Text = 'Version'
+                Width = 30
+                PropertyName = 'version'
+              end            
+              item
+                Position = 3
+                Text = 'Date d''install'
+                PropertyName = 'install_date'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 4
+                Text = 'Numéro de licence'
+                PropertyName = 'serial_nr'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 5
+                Text = 'Répertoire d''installation'
+                PropertyName = 'install_location'
+              end>
+            Header.DefaultHeight = 17
+            Header.MainColumn = 1
+            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
+            Header.Style = hsFlatButtons
+            TabOrder = 0
+            TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+            TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+            TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+            TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+            OnCompareNodes = GridPackagesCompareNodes
+            OnHeaderClick = GridPackagesHeaderClick
+          end
+        end
+        object TabSheet3: TTabSheet
+          Caption = 'Paquets disponibles'
+          ClientHeight = 536
+          ClientWidth = 564
+          object GridHostPackages1: TVirtualJSONListView
+            Left = 0
+            Height = 506
+            Top = 30
+            Width = 564
+            Align = alClient
+            Color = clWhite
+            Header.AutoSizeIndex = 0
+            Header.Columns = <            
+              item
+                Position = 0
+                Text = 'Section'
+                PropertyName = 'section'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 1
+                Text = 'Nom paquet'
+                Width = 300
+                PropertyName = 'name'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 2
+                Text = 'Status'
+                PropertyName = 'status'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 3
+                Text = 'Version'
+                Width = 30
+                PropertyName = 'version'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 4
+                Text = 'Description'
+                PropertyName = 'description'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 5
+                Text = 'Dependances'
+                PropertyName = 'depends'
+              end>
+            Header.DefaultHeight = 17
+            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
+            Header.Style = hsFlatButtons
+            TabOrder = 0
+            TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+            TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+            TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+            TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+            OnCompareNodes = GridPackagesCompareNodes
+            OnHeaderClick = GridPackagesHeaderClick
+          end
+          object Panel11: TPanel
+            Left = 0
+            Height = 30
+            Top = 0
+            Width = 564
+            Align = alTop
+            BevelOuter = bvNone
+            ClientHeight = 30
+            ClientWidth = 564
+            TabOrder = 1
+            object EdSearch2: TEdit
+              Left = 4
+              Height = 21
+              Top = 2
+              Width = 174
+              TabOrder = 0
+            end
+            object butSearchPackages2: TButton
+              Left = 186
+              Height = 25
+              Top = 2
+              Width = 120
+              Caption = 'Rechercher'
+              TabOrder = 1
+            end
+          end
+        end
+        object TabSheet4: TTabSheet
+          Caption = 'Groupes'
+          ClientHeight = 394
+          ClientWidth = 564
+          object GridHostPackages2: TVirtualJSONListView
+            Left = 0
+            Height = 394
+            Top = 0
+            Width = 564
+            Align = alClient
+            Color = clWhite
+            Header.AutoSizeIndex = 0
+            Header.Columns = <            
+              item
+                Position = 0
+                Text = 'Section'
+                PropertyName = 'section'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 1
+                Text = 'Nom paquet'
+                Width = 300
+                PropertyName = 'name'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 2
+                Text = 'Status'
+                PropertyName = 'status'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 3
+                Text = 'Version'
+                Width = 30
+                PropertyName = 'version'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 4
+                Text = 'Description'
+                PropertyName = 'description'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 5
+                Text = 'Dependances'
+                PropertyName = 'depends'
+              end>
+            Header.DefaultHeight = 17
+            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
+            Header.Style = hsFlatButtons
+            TabOrder = 0
+            TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+            TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+            TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+            TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+            OnCompareNodes = GridPackagesCompareNodes
+            OnHeaderClick = GridPackagesHeaderClick
+          end
+        end
+      end
+      object Splitter4: TSplitter
+        Left = 588
+        Height = 542
+        Top = 54
+        Width = 5
+        Align = alRight
+        ResizeAnchor = akRight
       end
     end
     object TabSheet1: TTabSheet
@@ -1212,6 +1349,33 @@ object VisWaptGUI: TVisWaptGUI
     Align = alBottom
     ResizeAnchor = akBottom
   end
+  object cbSearchPackages: TCheckBox
+    Left = 236
+    Height = 17
+    Top = 52
+    Width = 65
+    Caption = 'Packages'
+    State = cbGrayed
+    TabOrder = 3
+  end
+  object cbSearchDMI: TCheckBox
+    Left = 124
+    Height = 17
+    Top = 52
+    Width = 37
+    Caption = 'Dmi'
+    State = cbGrayed
+    TabOrder = 4
+  end
+  object cbSearchSoftwares: TCheckBox
+    Left = 164
+    Height = 17
+    Top = 52
+    Width = 69
+    Caption = 'Softwares'
+    State = cbGrayed
+    TabOrder = 5
+  end
   object SynPythonSyn1: TSynPythonSyn
     DefaultFilter = 'Fichiers Python (*.py)|*.py'
     Enabled = False
@@ -1302,16 +1466,6 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Tout Sélectionner'
       OnExecute = actHostSelectAllExecute
       ShortCut = 16449
-    end
-    object ActHostSearchPackage: TAction
-      Category = 'hosts'
-      Caption = 'Rechercher'
-      OnExecute = ActHostSearchPackageExecute
-    end
-    object ActHostsAddPackages: TAction
-      Category = 'hosts'
-      Caption = 'Ajouter des paquets aux machines'
-      OnExecute = ActHostsAddPackagesExecute
     end
   end
   object PopupMenuPackages: TPopupMenu

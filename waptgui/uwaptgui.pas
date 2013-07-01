@@ -44,7 +44,12 @@ type
     Button6: TButton;
     Button7: TButton;
     Button8: TButton;
+    cbSearchHost: TCheckBox;
+    cbSearchPackages: TCheckBox;
+    cbSearchDMI: TCheckBox;
+    cbSearchSoftwares: TCheckBox;
     cbShowLog: TCheckBox;
+    cbSearchAll: TCheckBox;
     cbShowHostPackagesSoft: TCheckBox;
     cbShowHostPackagesGroup: TCheckBox;
     CheckBoxMaj: TCheckBox;
@@ -124,6 +129,7 @@ type
     procedure ActSearchPackageExecute(Sender: TObject);
     procedure ActUpdateExecute(Sender: TObject);
     procedure ActUpgradeExecute(Sender: TObject);
+    procedure cbSearchAllChange(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure CheckBoxMajChange(Sender: TObject);
     procedure CheckBox_errorChange(Sender: TObject);
@@ -133,6 +139,7 @@ type
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
     procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure GridHostsChecked(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridHostsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Data: TJSONData; Column: TColumnIndex; TextType: TVSTTextType;
       var CellText: String);
@@ -514,13 +521,14 @@ end;
 
 procedure TVisWaptGUI.ActSearchHostExecute(Sender: TObject);
 var
-  req,hosts:String;
+  req,hosts,filter:String;
   urlParams:ISuperObject;
 const
     url:String='json/host_list';
 begin
 
   urlParams := TSuperObject.create(stArray);
+
 
   if CheckBox_error.Checked = True then
    urlParams.AsArray.Add('package_error=true');
@@ -530,6 +538,24 @@ begin
 
   if EdSearchHost.Text <> '' then
      urlParams.AsArray.Add('q='+EdSearchHost.Text);
+
+  if cbSearchAll.Checked = False then
+  begin
+    if cbSearchHost.Checked = True then
+      filter:= filter + 'host,';
+
+    if cbSearchDMI.Checked = True then
+      filter:= filter + 'dmi,';
+
+    if cbSearchSoftwares.Checked = True then
+      filter:= filter + 'softwares,';
+
+    if cbSearchPackages.Checked = True then
+      filter:= filter + 'packages,';
+
+    urlParams.AsArray.Add('filter='+filter);
+  end;
+
 
   req := url +'?'+Join('&',urlParams);
 
@@ -559,6 +585,21 @@ end;
 procedure TVisWaptGUI.ActUpgradeExecute(Sender: TObject);
 begin
   DMPython.RunJSON('mywapt.upgrade()',jsonlog);
+end;
+
+procedure TVisWaptGUI.cbSearchAllChange(Sender: TObject);
+begin
+     cbSearchDMI.Checked:=cbSearchAll.Checked;
+     cbSearchDMI.Enabled:= not cbSearchAll.Checked;
+
+     cbSearchSoftwares.Checked:=cbSearchAll.Checked;
+     cbSearchSoftwares.Enabled:= not cbSearchAll.Checked;
+
+     cbSearchPackages.Checked:=cbSearchAll.Checked;
+     cbSearchPackages.Enabled:= not cbSearchAll.Checked;
+
+     cbSearchHost.Checked:=cbSearchAll.Checked;
+     cbSearchHost.Enabled:= not cbSearchAll.Checked;
 end;
 
 procedure TVisWaptGUI.FormCreate(Sender: TObject);
@@ -619,6 +660,13 @@ procedure TVisWaptGUI.GridHostsChange(Sender: TBaseVirtualTree;
 begin
   UpdateHostPages(Sender);
 end;
+
+procedure TVisWaptGUI.GridHostsChecked(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+begin
+
+end;
+
 
 procedure TVisWaptGUI.GridHostsGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Data: TJSONData; Column: TColumnIndex;
