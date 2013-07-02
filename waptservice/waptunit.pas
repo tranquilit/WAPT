@@ -259,7 +259,7 @@ begin
       if ARequestInfo.URI='/upgrade' then
       begin
         cmd := WaptgetPath;
-        if ShellExecute(0, nil, pchar(cmd),pchar('-lwarning upgrade'), nil, 0) > 32 then
+        if ShellExecute(0, nil, pchar(cmd),pchar(' --update-packages --loglevel warning upgrade'), nil, 0) > 32 then
           CmdOutput:='OK : Process '+Cmd+' launched in background'
         else
           CmdOutput:='ERROR Launching process '+Cmd+' in background';
@@ -332,6 +332,14 @@ begin
       begin
         AResponseInfo.ContentType:='application/json';
         AResponseInfo.ContentText:= LocalSysinfo.AsJson(True);
+      end
+      else
+      if (ARequestInfo.URI='/register') then
+      begin
+        cmd := WaptgetPath+' -lwarning register';
+        CmdOutput := Sto_RedirectedExecute(cmd);
+        CmdOutput := cmd+'<br>'+StrUtils.StringsReplace(CmdOutput,[#13#10],['<br>'],[rfReplaceAll]);
+        AResponseInfo.ContentText:= '<h2>Output</h2>'+CmdOutput;
       end
       else
       if (ARequestInfo.URI='/install') or (ARequestInfo.URI='/remove') or (ARequestInfo.URI='/showlog')  or (ARequestInfo.URI='/show') then

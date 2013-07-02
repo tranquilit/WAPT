@@ -1223,7 +1223,7 @@ def get_current_user():
         raise ctypes.WinError()
     return ensure_unicode(name.value)
 
-def language():
+def get_language():
     """Get the default locale like fr, en, pl etc..  etc"""
     return locale.getdefaultlocale()[0].split('_')[0]
 

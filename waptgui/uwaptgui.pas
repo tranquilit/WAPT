@@ -9,7 +9,7 @@ uses
   vte_json, LSControls, Forms,
   Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus,
   EditBtn, fpJson, jsonparser, superobject,
-  UniqueInstance, VirtualTrees, VarPyth;
+  UniqueInstance, VirtualTrees, VarPyth, windows, ActiveX;
 
 type
 
@@ -29,6 +29,7 @@ type
     ActAddRemoveOptionIniFile: TAction;
     ActHostSearchPackage: TAction;
     ActHostsAddPackages: TAction;
+    ActHostsCopy: TAction;
     ActRegisterHost: TAction;
     ActSearchHost: TAction;
     ActUpgrade: TAction;
@@ -120,6 +121,7 @@ type
     procedure ActEvaluateVarExecute(Sender: TObject);
     procedure ActExecCodeExecute(Sender: TObject);
     procedure ActHostsAddPackagesExecute(Sender: TObject);
+    procedure ActHostsCopyExecute(Sender: TObject);
     procedure ActHostSearchPackageExecute(Sender: TObject);
     procedure actHostSelectAllExecute(Sender: TObject);
     procedure ActInstallExecute(Sender: TObject);
@@ -143,6 +145,11 @@ type
     procedure GridHostsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Data: TJSONData; Column: TColumnIndex; TextType: TVSTTextType;
       var CellText: String);
+    procedure GridHostsGetUserClipboardFormats(Sender: TBaseVirtualTree;
+      var Formats: TFormatEtcArray);
+    procedure GridHostsRenderOLEData(Sender: TBaseVirtualTree;
+      const FormatEtcIn: TFormatEtc; out Medium: TStgMedium;
+      ForClipboard: Boolean; var Result: HRESULT);
     procedure GridPackagesCompareNodes(Sender: TBaseVirtualTree; Node1,
       Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
     procedure GridPackagesHeaderClick(Sender: TVTHeader;
@@ -490,6 +497,11 @@ begin
 
 end;
 
+procedure TVisWaptGUI.ActHostsCopyExecute(Sender: TObject);
+begin
+  GridHosts.CopyToClipBoard;
+end;
+
 procedure TVisWaptGUI.ActHostSearchPackageExecute(Sender: TObject);
 begin
 end;
@@ -676,6 +688,18 @@ var
 begin
   js := SO(Data.AsJSON);
   CellText:=js.S[TVirtualJSONListViewColumn(GridHosts.Header.Columns[column]).PropertyName];
+end;
+
+procedure TVisWaptGUI.GridHostsGetUserClipboardFormats(
+  Sender: TBaseVirtualTree; var Formats: TFormatEtcArray);
+begin
+end;
+
+procedure TVisWaptGUI.GridHostsRenderOLEData(Sender: TBaseVirtualTree;
+  const FormatEtcIn: TFormatEtc; out Medium: TStgMedium; ForClipboard: Boolean;
+  var Result: HRESULT);
+begin
+
 end;
 
 procedure TVisWaptGUI.PythonOutputSendData(Sender: TObject; const Data: AnsiString

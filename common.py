@@ -1566,6 +1566,7 @@ key_passwd = None
 
 class Wapt(object):
     """Global WAPT engine"""
+
     def __init__(self,config=None,config_filename=None,defaults=None):
         """Initialize engine with a configParser instance (inifile) and other defaults in a dictionary
             Main properties are :
@@ -2108,7 +2109,7 @@ class Wapt(object):
             setattr(setup,'run_notfatal',setuphelpers.run_notfatal)
             setattr(setup,'WAPT',self)
             setattr(setup,'control',entry)
-            setattr(setup,'language',self.language or setuphelpers.language() )
+            setattr(setup,'language',self.language or setuphelpers.get_language() )
 
             setattr(setup,'user',self.user)
             setattr(setup,'usergroups',self.usergroups)
@@ -3060,7 +3061,7 @@ class Wapt(object):
                 setattr(setup,'user',self.user)
                 setattr(setup,'usergroups',self.usergroups)
                 setattr(setup,'WAPT',self)
-                setattr(setup,'language',self.language or setuphelpers.language() )
+                setattr(setup,'language',self.language or setuphelpers.get_language() )
 
                 # get definitions of required parameters from setup module
                 if hasattr(setup,'required_params'):
@@ -3120,7 +3121,7 @@ class Wapt(object):
                 setattr(setup,'user',self.user)
                 setattr(setup,'usergroups',self.usergroups)
                 setattr(setup,'WAPT',self)
-                setattr(setup,'language',self.language or setuphelpers.language() )
+                setattr(setup,'language',self.language or setuphelpers.get_language() )
 
                 # get value of required parameters if not already supplied
                 for p in required_params:

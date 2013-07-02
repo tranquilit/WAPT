@@ -374,7 +374,9 @@ object VisWaptGUI: TVisWaptGUI
         OnChange = GridHostsChange
         OnCompareNodes = GridPackagesCompareNodes
         OnDblClick = ActEditHostPackageExecute
+        OnGetUserClipboardFormats = GridHostsGetUserClipboardFormats
         OnHeaderClick = GridPackagesHeaderClick
+        OnRenderOLEData = GridHostsRenderOLEData
       end
       object HostPages: TPageControl
         Left = 593
@@ -1467,6 +1469,11 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = actHostSelectAllExecute
       ShortCut = 16449
     end
+    object ActHostsCopy: TAction
+      Category = 'hosts'
+      Caption = 'Copier'
+      OnExecute = ActHostsCopyExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
@@ -1540,6 +1547,9 @@ object VisWaptGUI: TVisWaptGUI
     top = 296
     object MenuItem18: TMenuItem
       Action = ActEditHostPackage
+    end
+    object MenuItem20: TMenuItem
+      Action = ActHostsCopy
     end
     object MenuItem19: TMenuItem
       Action = actHostSelectAll

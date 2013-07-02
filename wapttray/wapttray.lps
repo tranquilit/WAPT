@@ -58,10 +58,13 @@
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="uDMWAPTTray"/>
         <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="302"/>
-        <CursorPos X="16" Y="304"/>
+        <TopLine Value="243"/>
+        <CursorPos X="49" Y="261"/>
         <UsageCount Value="201"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\..\tisvcl\tisutils.pas"/>
