@@ -624,7 +624,7 @@ def main():
                         sys.exit(1)
 
                 # continue with upload
-                if mywapt.upload_cmd and action == 'build-upload':
+                if action == 'build-upload':
                     print 'Uploading files...'
                     # groups by www target : wapt or wapt-host
                     hosts = ('wapt-host',[])
@@ -639,14 +639,15 @@ def main():
                         if package_group[1]:
                             # add quotes for command line
                             files_list = ['"%s"' % f for f in package_group[1]]
-                            cmd_dict =  {'waptfile': ' '.join(files_list),'waptdir':package_group[0]}
-                            print setuphelpers.run(mywapt.upload_cmd % cmd_dict)
+                            cmd_dict =  {'waptfile': files_list,'waptdir':package_group[0]}
+                            print mywapt.upload_package(cmd_dict)
+
+
                             if package_group<>hosts:
                                 if mywapt.after_upload:
                                     print 'Run after upload script...'
                                     print setuphelpers.run(mywapt.after_upload % cmd_dict)
-                                else:
-                                    print "Don't forget to update Packages index on repository !"
+
                 else:
                     print u'\nYou can upload to repository with\n  %s upload-package %s ' % (sys.argv[0],'"%s"' % (' '.join([p['filename'] for p in packages]),) )
 
@@ -689,14 +690,13 @@ def main():
                     if package_group[1]:
                         # add quotes for command line
                         files_list = ['"%s"' % f for f in package_group[1]]
-                        cmd_dict =  {'waptfile': ' '.join(files_list),'waptdir':package_group[0]}
-                        print setuphelpers.run(mywapt.upload_cmd % cmd_dict)
+                        cmd_dict =  {'waptfile': files_list,'waptdir':package_group[0]}
+
+                        print mywapt.upload_package(cmd_dict)
                         if package_group<>hosts:
                             if mywapt.after_upload:
                                 print 'Run after upload script...'
                                 print setuphelpers.run(mywapt.after_upload % cmd_dict)
-                            else:
-                                print "Don't forget to update Packages index on repository !"
 
             elif action=='search':
                 if options.update_packages:

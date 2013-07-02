@@ -1873,6 +1873,19 @@ class Wapt(object):
 
         return None
 
+    def upload_package(self,cmd_dict,is_host=False):
+      if self.upload_cmd:
+        cmd_dict['waptfile'] = ' '.join(cmd_dict['waptfile'])
+        return setuphelpers.run(mywapt.upload_cmd % cmd_dict)
+      else:
+        for file in cmd_dict['waptfile']:
+          file = file.replace('"','')
+          req = requests.post("%s/upload_package" % (self.wapt_server),files={'file':open(file,'rb')},proxies=self.proxies)
+          req.raise_for_status()
+        return req.content
+
+
+
     def check_install_running(self,max_ttl=60):
         """ Check if an install is in progress, return list of pids of install in progress
             Kill old stucked wapt-get processes/children and update db status
