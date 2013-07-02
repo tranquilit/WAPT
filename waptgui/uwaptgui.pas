@@ -40,14 +40,15 @@ type
     butInitWapt: TButton;
     butRun: TButton;
     butSearchPackages: TButton;
+    butSearchPackages2: TButton;
     Button1: TButton;
     Button2: TButton;
     Button6: TButton;
     Button7: TButton;
     Button8: TButton;
+    cbSearchDMI: TCheckBox;
     cbSearchHost: TCheckBox;
     cbSearchPackages: TCheckBox;
-    cbSearchDMI: TCheckBox;
     cbSearchSoftwares: TCheckBox;
     cbShowLog: TCheckBox;
     cbSearchAll: TCheckBox;
@@ -55,9 +56,12 @@ type
     cbShowHostPackagesGroup: TCheckBox;
     CheckBoxMaj: TCheckBox;
     CheckBox_error: TCheckBox;
+    EdSearch2: TEdit;
     EdSearchHost: TEdit;
     EdRun: TEdit;
     EdSearch: TEdit;
+    GridHostPackages1: TVirtualJSONListView;
+    GridHostPackages2: TVirtualJSONListView;
     GridHosts: TVirtualJSONListView;
     GridhostAttribs: TVirtualJSONInspector;
     Label5: TLabel;
@@ -88,6 +92,7 @@ type
     HostPages: TPageControl;
     Panel1: TPanel;
     Panel10: TPanel;
+    Panel11: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
     Panel4: TPanel;
@@ -106,6 +111,8 @@ type
     pgPackages: TTabSheet;
     pgSoftwares: TTabSheet;
     pgHostPackage: TTabSheet;
+    TabSheet3: TTabSheet;
+    TabSheet4: TTabSheet;
     testedit: TSynEdit;
     jsonlog: TVirtualJSONInspector;
     UniqueInstance1: TUniqueInstance;

@@ -328,6 +328,7 @@ var
 begin
   ActEditSavePackage.Execute;
   result := DMPython.RunJSON(format('mywapt.build_upload(r"%s")',[FSourcePath]),jsonlog);
+  ModalResult:= mrOk;
 end;
 
 procedure TVisEditPackage.ActExecCodeExecute(Sender: TObject);
