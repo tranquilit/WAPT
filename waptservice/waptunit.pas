@@ -328,7 +328,7 @@ begin
         AResponseInfo.ContentText:= '<h2>Output</h2>'+CmdOutput;
       end
       else
-      if (ARequestInfo.URI='/sysinfo') or (ARequestInfo.URI='/register') then
+      if (ARequestInfo.URI='/sysinfo') then
       begin
         AResponseInfo.ContentType:='application/json';
         AResponseInfo.ContentText:= LocalSysinfo.AsJson(True);

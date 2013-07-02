@@ -84,6 +84,9 @@ object DMWaptTray: TDMWaptTray
       object MenuItem3: TMenuItem
         Action = ActWaptUpgrade
       end
+      object MenuItem12: TMenuItem
+        Action = ActForceRegister
+      end
       object MenuItem8: TMenuItem
         Caption = '-'
       end
@@ -107,9 +110,6 @@ object DMWaptTray: TDMWaptTray
     object ActUpgrade: TAction
       Caption = 'Installer les mises à jour'
       OnExecute = ActUpgradeExecute
-    end
-    object ActForceRegisterComputer: TAction
-      Caption = 'Enregistrer l''ordinateur sur le serveur WAPT'
     end
     object ActUpdate: TAction
       Caption = 'Mettre à jour la liste des logiciels'
@@ -142,6 +142,10 @@ object DMWaptTray: TDMWaptTray
     object ActLocalInfo: TAction
       Caption = 'Informations sur le poste'
       OnExecute = ActLocalInfoExecute
+    end
+    object ActForceRegister: TAction
+      Caption = 'Enregistrer l''inventaire de l''ordinateur sur le serveur'
+      OnExecute = ActForceRegisterExecute
     end
   end
   object TrayUpdate: TImageList

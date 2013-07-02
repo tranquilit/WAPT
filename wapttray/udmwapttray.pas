@@ -13,8 +13,8 @@ type
 
   { TDMWaptTray }
   TDMWaptTray = class(TDataModule)
-    ActForceRegisterComputer: TAction;
     ActConfigure: TAction;
+    ActForceRegister: TAction;
     ActLocalInfo: TAction;
     ActWaptUpgrade: TAction;
     ActLaunchGui: TAction;
@@ -44,6 +44,7 @@ type
     TrayIcon1: TTrayIcon;
     UniqueInstance1:TUniqueInstance;
     procedure ActConfigureExecute(Sender: TObject);
+    procedure ActForceRegisterExecute(Sender: TObject);
     procedure ActLaunchGuiExecute(Sender: TObject);
     procedure ActLaunchGuiUpdate(Sender: TObject);
     procedure ActLocalInfoExecute(Sender: TObject);
@@ -302,6 +303,16 @@ end;
 procedure TDMWaptTray.ActConfigureExecute(Sender: TObject);
 begin
   OpenDocument(WaptIniFilename);
+end;
+
+procedure TDMWaptTray.ActForceRegisterExecute(Sender: TObject);
+var
+  res : String;
+begin
+  TCheckThread(check_thread).Synchronize(@TCheckThread(check_thread).ResetPreviousUpgrades);
+  res := httpGetString(GetWaptLocalURL+'/register');
+  TrayIcon1.BalloonHint:='Enregistrement de l''ordinateur lancé en arrière plan...';
+  TrayIcon1.ShowBalloonHint;
 end;
 
 procedure TDMWaptTray.ActLaunchGuiExecute(Sender: TObject);
