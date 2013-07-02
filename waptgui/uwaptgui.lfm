@@ -1475,6 +1475,11 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Copier'
       OnExecute = ActHostsCopyExecute
     end
+    object ActHostsDelete: TAction
+      Category = 'hosts'
+      Caption = 'ActHostsDelete'
+      OnExecute = ActHostsDeleteExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
@@ -1551,6 +1556,10 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem20: TMenuItem
       Action = ActHostsCopy
+    end
+    object MenuItem21: TMenuItem
+      Action = ActHostsDelete
+      Caption = 'Supprimer'
     end
     object MenuItem19: TMenuItem
       Action = actHostSelectAll

@@ -30,6 +30,7 @@ type
     ActHostSearchPackage: TAction;
     ActHostsAddPackages: TAction;
     ActHostsCopy: TAction;
+    ActHostsDelete: TAction;
     ActRegisterHost: TAction;
     ActSearchHost: TAction;
     ActUpgrade: TAction;
@@ -81,6 +82,7 @@ type
     MenuItem19: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem20: TMenuItem;
+    MenuItem21: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
@@ -129,6 +131,7 @@ type
     procedure ActExecCodeExecute(Sender: TObject);
     procedure ActHostsAddPackagesExecute(Sender: TObject);
     procedure ActHostsCopyExecute(Sender: TObject);
+    procedure ActHostsDeleteExecute(Sender: TObject);
     procedure ActHostSearchPackageExecute(Sender: TObject);
     procedure actHostSelectAllExecute(Sender: TObject);
     procedure ActInstallExecute(Sender: TObject);
@@ -509,6 +512,26 @@ begin
   GridHosts.CopyToClipBoard;
 end;
 
+procedure TVisWaptGUI.ActHostsDeleteExecute(Sender: TObject);
+var
+  expr,res:String;
+  host:String;
+  i:integer;
+  N : PVirtualNode;
+begin
+  if GridHosts.Focused then
+    begin
+      N := GridHosts.GetFirstSelected;
+      while N<>Nil do
+      begin
+        host := GetValue(GridHosts,N,'uuid');
+        WAPTServerJsonGet('/delete_host/'+host,[]).AsJson;
+        N := GridHosts.GetNextSelected(N);
+      end;
+      ActSearchHost.Execute;
+    end;
+end;
+
 procedure TVisWaptGUI.ActHostSearchPackageExecute(Sender: TObject);
 begin
 end;
@@ -534,7 +557,7 @@ begin
       DMPython.RunJSON(format('mywapt.remove("%s")',[package]),jsonlog);
       N := GridPackages.GetNextSelected(N);
     end;
-    ActSearchPackage.Execute;
+    ActSearchHost.Execute;
   end;
 end;
 
