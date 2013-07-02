@@ -177,4 +177,4 @@ if packagesToUpgrade or newPackages:
     
     
 
-os.system('chmod 644 %s*'%wapt_dir)
+os.system('chmod 664 %s*'%wapt_dir)
