@@ -32,6 +32,7 @@ type
     ActHostsCopy: TAction;
     ActHostsDelete: TAction;
     ActDeletePackage: TAction;
+    ActAdvancedMode: TAction;
     ActRegisterHost: TAction;
     ActSearchHost: TAction;
     ActUpgrade: TAction;
@@ -85,6 +86,7 @@ type
     MenuItem20: TMenuItem;
     MenuItem21: TMenuItem;
     MenuItem22: TMenuItem;
+    MenuItem23: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
@@ -124,6 +126,7 @@ type
     GridHostPackages: TVirtualJSONListView;
     GridHostSoftwares: TVirtualJSONListView;
     procedure ActAddRemoveOptionIniFileExecute(Sender: TObject);
+    procedure ActAdvancedModeExecute(Sender: TObject);
     procedure ActCreateCertificateExecute(Sender: TObject);
     procedure ActCreateWaptSetupExecute(Sender: TObject);
     procedure ActDeletePackageExecute(Sender: TObject);
@@ -431,6 +434,11 @@ begin
 
   finally
   end;
+end;
+
+procedure TVisWaptGUI.ActAdvancedModeExecute(Sender: TObject);
+begin
+    TabSheet1.TabVisible:= not TabSheet1.TabVisible;
 end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);

@@ -741,6 +741,7 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Sources'
       ClientHeight = 596
       ClientWidth = 1165
+      TabVisible = False
       inline testedit: TSynEdit
         Left = 0
         Height = 562
@@ -1488,6 +1489,10 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActDeletePackageExecute
       OnUpdate = ActDeletePackageUpdate
     end
+    object ActAdvancedMode: TAction
+      Caption = 'ActAdvancedMode'
+      OnExecute = ActAdvancedModeExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
@@ -1557,6 +1562,10 @@ object VisWaptGUI: TVisWaptGUI
       end
       object MenuItem17: TMenuItem
         Action = ActCreateWaptSetup
+      end
+      object MenuItem23: TMenuItem
+        Action = ActAdvancedMode
+        Caption = 'Mode Avancé'
       end
     end
   end
