@@ -4,12 +4,12 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="15">
+    <Units Count="16">
       <Unit0>
         <Filename Value="waptgui.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptgui"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="57" Y="12"/>
@@ -26,11 +26,11 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="502"/>
-        <CursorPos X="28" Y="531"/>
+        <TopLine Value="457"/>
+        <CursorPos X="40" Y="485"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="1">
-          <Item0 X="1" Y="376" ID="1"/>
+          <Item0 X="1" Y="393" ID="1"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -48,7 +48,7 @@
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="118"/>
         <CursorPos X="47" Y="155"/>
@@ -104,7 +104,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviseditpackage"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="323"/>
         <CursorPos X="41" Y="332"/>
@@ -118,12 +118,12 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="8"/>
       </Unit9>
       <Unit10>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <UnitName Value="superobject"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3112"/>
         <CursorPos X="1" Y="3156"/>
@@ -136,12 +136,12 @@
         <WindowIndex Value="0"/>
         <TopLine Value="153"/>
         <CursorPos X="20" Y="177"/>
-        <UsageCount Value="15"/>
+        <UsageCount Value="10"/>
       </Unit11>
       <Unit12>
         <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
         <UnitName Value="VirtualTrees"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="17726"/>
         <CursorPos X="1" Y="17742"/>
@@ -150,7 +150,7 @@
       </Unit12>
       <Unit13>
         <Filename Value="waptgui.lps"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -161,13 +161,23 @@
       <Unit14>
         <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTreesExtra\source\vte_json.pas"/>
         <UnitName Value="vte_json"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="284"/>
         <CursorPos X="3" Y="311"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="32"/>
         <Loaded Value="True"/>
       </Unit14>
+      <Unit15>
+        <Filename Value="C:\codetyphon\lazarus\lcl\dialogs.pp"/>
+        <UnitName Value="Dialogs"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="9"/>
+        <CursorPos X="70" Y="36"/>
+        <UsageCount Value="13"/>
+        <Loaded Value="True"/>
+      </Unit15>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
@@ -175,123 +185,123 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="144" Column="19" TopLine="118"/>
+        <Caret Line="345" Column="48" TopLine="322"/>
       </Position1>
       <Position2>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="494" Column="34" TopLine="456"/>
+        <Filename Value="waptgui.lpr"/>
+        <Caret Line="12" Column="56" TopLine="1"/>
       </Position2>
       <Position3>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="493" Column="34" TopLine="455"/>
+        <Filename Value="waptgui.lpr"/>
+        <Caret Line="13" Column="24" TopLine="1"/>
       </Position3>
       <Position4>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="494" Column="1" TopLine="467"/>
+        <Caret Line="165" Column="40" TopLine="112"/>
       </Position4>
       <Position5>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="495" Column="1" TopLine="468"/>
+        <Caret Line="164" Column="40" TopLine="132"/>
       </Position5>
       <Position6>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="496" Column="1" TopLine="469"/>
+        <Caret Line="163" Column="40" TopLine="131"/>
       </Position6>
       <Position7>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="497" Column="1" TopLine="470"/>
+        <Caret Line="162" Column="40" TopLine="130"/>
       </Position7>
       <Position8>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="499" Column="1" TopLine="472"/>
+        <Caret Line="172" Column="40" TopLine="140"/>
       </Position8>
       <Position9>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="602" Column="32" TopLine="599"/>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="2" Column="1" TopLine="1"/>
       </Position9>
       <Position10>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="611" Column="1" TopLine="602"/>
+        <Caret Line="428" Column="69" TopLine="415"/>
       </Position10>
       <Position11>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="545" Column="54" TopLine="540"/>
+        <Caret Line="430" Column="69" TopLine="417"/>
       </Position11>
       <Position12>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="516" Column="5" TopLine="514"/>
       </Position12>
       <Position13>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="276" Column="1" TopLine="223"/>
+        <Caret Line="517" Column="5" TopLine="515"/>
       </Position13>
       <Position14>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="545" Column="28" TopLine="541"/>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTreesExtra\source\vte_json.pas"/>
+        <Caret Line="311" Column="3" TopLine="284"/>
       </Position14>
       <Position15>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="514" Column="24" TopLine="475"/>
+        <Caret Line="528" Column="9" TopLine="518"/>
       </Position15>
       <Position16>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="345" Column="48" TopLine="322"/>
+        <Caret Line="538" Column="38" TopLine="532"/>
       </Position16>
       <Position17>
-        <Filename Value="waptgui.lpr"/>
-        <Caret Line="12" Column="56" TopLine="1"/>
+        <Filename Value="uwaptgui.pas"/>
+        <Caret Line="545" Column="38" TopLine="539"/>
       </Position17>
       <Position18>
-        <Filename Value="waptgui.lpr"/>
-        <Caret Line="13" Column="24" TopLine="1"/>
+        <Filename Value="uwaptgui.pas"/>
+        <Caret Line="469" Column="42" TopLine="447"/>
       </Position18>
       <Position19>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="165" Column="40" TopLine="112"/>
+        <Caret Line="464" Column="38" TopLine="437"/>
       </Position19>
       <Position20>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="164" Column="40" TopLine="132"/>
+        <Caret Line="123" Column="5" TopLine="97"/>
       </Position20>
       <Position21>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="163" Column="40" TopLine="131"/>
+        <Caret Line="464" Column="37" TopLine="418"/>
       </Position21>
       <Position22>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="162" Column="40" TopLine="130"/>
+        <Filename Value="C:\codetyphon\lazarus\lcl\dialogs.pp"/>
+        <Caret Line="500" Column="10" TopLine="473"/>
       </Position22>
       <Position23>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="172" Column="40" TopLine="140"/>
+        <Caret Line="464" Column="81" TopLine="428"/>
       </Position23>
       <Position24>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="2" Column="1" TopLine="1"/>
+        <Filename Value="uwaptgui.pas"/>
+        <Caret Line="468" Column="41" TopLine="438"/>
       </Position24>
       <Position25>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="428" Column="69" TopLine="415"/>
+        <Caret Line="486" Column="59" TopLine="484"/>
       </Position25>
       <Position26>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="430" Column="69" TopLine="417"/>
+        <Caret Line="334" Column="19" TopLine="306"/>
       </Position26>
       <Position27>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="516" Column="5" TopLine="514"/>
+        <Caret Line="330" Column="22" TopLine="308"/>
       </Position27>
       <Position28>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="517" Column="5" TopLine="515"/>
+        <Caret Line="608" Column="12" TopLine="606"/>
       </Position28>
       <Position29>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTreesExtra\source\vte_json.pas"/>
-        <Caret Line="311" Column="3" TopLine="284"/>
+        <Filename Value="uwaptgui.pas"/>
+        <Caret Line="484" Column="60" TopLine="456"/>
       </Position29>
       <Position30>
         <Filename Value="uwaptgui.pas"/>
-        <Caret Line="528" Column="9" TopLine="518"/>
+        <Caret Line="485" Column="24" TopLine="457"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

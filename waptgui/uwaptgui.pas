@@ -31,6 +31,7 @@ type
     ActHostsAddPackages: TAction;
     ActHostsCopy: TAction;
     ActHostsDelete: TAction;
+    ActDeletePackage: TAction;
     ActRegisterHost: TAction;
     ActSearchHost: TAction;
     ActUpgrade: TAction;
@@ -83,6 +84,7 @@ type
     MenuItem2: TMenuItem;
     MenuItem20: TMenuItem;
     MenuItem21: TMenuItem;
+    MenuItem22: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
@@ -124,8 +126,11 @@ type
     procedure ActAddRemoveOptionIniFileExecute(Sender: TObject);
     procedure ActCreateCertificateExecute(Sender: TObject);
     procedure ActCreateWaptSetupExecute(Sender: TObject);
+    procedure ActDeletePackageExecute(Sender: TObject);
+    procedure ActDeletePackageUpdate(Sender: TObject);
     procedure ActEditHostPackageExecute(Sender: TObject);
     procedure ActEditpackageExecute(Sender: TObject);
+    procedure ActEditpackageUpdate(Sender: TObject);
     procedure ActEvaluateExecute(Sender: TObject);
     procedure ActEvaluateVarExecute(Sender: TObject);
     procedure ActExecCodeExecute(Sender: TObject);
@@ -135,8 +140,10 @@ type
     procedure ActHostSearchPackageExecute(Sender: TObject);
     procedure actHostSelectAllExecute(Sender: TObject);
     procedure ActInstallExecute(Sender: TObject);
+    procedure ActInstallUpdate(Sender: TObject);
     procedure ActRegisterHostExecute(Sender: TObject);
     procedure ActRemoveExecute(Sender: TObject);
+    procedure ActRemoveUpdate(Sender: TObject);
     procedure ActSearchHostExecute(Sender: TObject);
     procedure ActSearchPackageExecute(Sender: TObject);
     procedure ActUpdateExecute(Sender: TObject);
@@ -324,6 +331,11 @@ begin
   end;
 end;
 
+procedure TVisWaptGUI.ActInstallUpdate(Sender: TObject);
+begin
+  ActInstall.Enabled := GridPackages.SelectedCount>0;
+end;
+
 procedure TVisWaptGUI.ActRegisterHostExecute(Sender: TObject);
 begin
   DMPython.RunJSON('mywapt.register_computer()',jsonlog);
@@ -343,6 +355,11 @@ begin
     if EditPackage(Selpackage)<>Nil then
       ActSearchPackage.Execute;
   end;
+end;
+
+procedure TVisWaptGUI.ActEditpackageUpdate(Sender: TObject);
+begin
+  ActEditpackage.Enabled := GridPackages.SelectedCount>0;
 end;
 
 function gridFind(grid:TVirtualJSONListView;Fieldname,AText:String):PVirtualNode;
@@ -451,6 +468,33 @@ begin
     end;
 end;
 
+procedure TVisWaptGUI.ActDeletePackageExecute(Sender: TObject);
+var
+ expr,res:String;
+  package:String;
+  i:integer;
+  N : PVirtualNode;
+begin
+  if MessageDlg('Confirmer la suppression','Etes vous sûr de vouloir supprimer ce(s) package(s) du serveur ?',mtConfirmation,mbYesNoCancel,0)=mrYes then
+    begin
+      N := GridPackages.GetFirstSelected;
+      while N<>Nil do
+      begin
+        package := GetValue(GridPackages,N,'filename');
+        res := WAPTServerJsonGet('/delete_package/'+package,[]).AsJson;
+        if res <> 'ok' then
+          raise exception.Create(res);
+        N := GridPackages.GetNextSelected(N);
+      end;
+      ActSearchPackage.Execute;
+    end;
+end;
+
+procedure TVisWaptGUI.ActDeletePackageUpdate(Sender: TObject);
+begin
+  ActDeletePackage.Enabled := GridPackages.SelectedCount>0;
+end;
+
 procedure TVisWaptGUI.ActEditHostPackageExecute(Sender: TObject);
 var
   hostname : String;
@@ -543,7 +587,7 @@ end;
 
 procedure TVisWaptGUI.ActRemoveExecute(Sender: TObject);
 var
-  expr,res:String;
+ expr,res:String;
   package:String;
   i:integer;
   N : PVirtualNode;
@@ -559,6 +603,11 @@ begin
     end;
     ActSearchHost.Execute;
   end;
+end;
+
+procedure TVisWaptGUI.ActRemoveUpdate(Sender: TObject);
+begin
+  ActRemove.Enabled := GridPackages.SelectedCount>0;
 end;
 
 procedure TVisWaptGUI.ActSearchHostExecute(Sender: TObject);
