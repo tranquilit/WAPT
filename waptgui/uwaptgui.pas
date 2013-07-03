@@ -487,6 +487,7 @@ begin
           raise exception.Create(res.S['error']);
         N := GridPackages.GetNextSelected(N);
       end;
+      ActUpdate.Execute;
       ActSearchPackage.Execute;
     end;
 end;
