@@ -470,7 +470,8 @@ end;
 
 procedure TVisWaptGUI.ActDeletePackageExecute(Sender: TObject);
 var
- expr,res:String;
+  expr:String;
+  res : ISuperObject;
   package:String;
   i:integer;
   N : PVirtualNode;
@@ -481,9 +482,9 @@ begin
       while N<>Nil do
       begin
         package := GetValue(GridPackages,N,'filename');
-        res := WAPTServerJsonGet('/delete_package/'+package,[]).AsJson;
-        if res <> 'ok' then
-          raise exception.Create(res);
+        res := WAPTServerJsonGet('/delete_package/'+package,[]);
+        if not ObjectIsNull(res['error'])  then
+          raise exception.Create(res.S['error']);
         N := GridPackages.GetNextSelected(N);
       end;
       ActSearchPackage.Execute;
