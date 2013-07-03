@@ -156,6 +156,8 @@ function WAPTServerJsonGet(action: String;args:Array of const): ISuperObject;
 var
   strresult : String;
 begin
+  if GetWaptServerURL = '' then
+    raise Exception.Create('wapt_server is not defined in your wapt-get.ini file');
   if StrLeft(action,1)<>'/' then
     action := '/'+action;
   if length(args)>0 then
