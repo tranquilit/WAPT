@@ -4,7 +4,7 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="16">
+    <Units Count="15">
       <Unit0>
         <Filename Value="waptgui.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -47,11 +47,10 @@
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="122"/>
-        <CursorPos X="50" Y="160"/>
+        <TopLine Value="164"/>
+        <CursorPos X="27" Y="165"/>
         <UsageCount Value="208"/>
         <Loaded Value="True"/>
       </Unit3>
@@ -59,10 +58,13 @@
         <Filename Value="..\wapt-get\tiscommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiscommon"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="461"/>
-        <CursorPos X="71" Y="475"/>
+        <TopLine Value="237"/>
+        <CursorPos X="8" Y="262"/>
         <UsageCount Value="208"/>
+        <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\wapt-get\tisinifiles.pas"/>
@@ -110,45 +112,24 @@
         <CursorPos X="41" Y="332"/>
         <UsageCount Value="215"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit8>
       <Unit9>
-        <Filename Value="..\wapt-get\soutils.pas"/>
-        <UnitName Value="soutils"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="8"/>
-      </Unit9>
-      <Unit10>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <UnitName Value="superobject"/>
-        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2090"/>
         <CursorPos X="23" Y="2134"/>
         <UsageCount Value="154"/>
-        <Loaded Value="True"/>
-      </Unit10>
-      <Unit11>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <UnitName Value="soutils"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="153"/>
-        <CursorPos X="20" Y="177"/>
-        <UsageCount Value="10"/>
-      </Unit11>
-      <Unit12>
+      </Unit9>
+      <Unit10>
         <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
         <UnitName Value="VirtualTrees"/>
-        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="17726"/>
         <CursorPos X="1" Y="17742"/>
         <UsageCount Value="135"/>
-        <Loaded Value="True"/>
-      </Unit12>
-      <Unit13>
+      </Unit10>
+      <Unit11>
         <Filename Value="waptgui.lps"/>
         <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
@@ -157,151 +138,159 @@
         <UsageCount Value="105"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="XML"/>
-      </Unit13>
-      <Unit14>
+      </Unit11>
+      <Unit12>
         <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTreesExtra\source\vte_json.pas"/>
         <UnitName Value="vte_json"/>
         <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="284"/>
         <CursorPos X="3" Y="311"/>
-        <UsageCount Value="35"/>
+        <UsageCount Value="148"/>
         <Loaded Value="True"/>
-      </Unit14>
-      <Unit15>
+      </Unit12>
+      <Unit13>
         <Filename Value="C:\codetyphon\lazarus\lcl\dialogs.pp"/>
         <UnitName Value="Dialogs"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="9"/>
         <CursorPos X="70" Y="36"/>
-        <UsageCount Value="16"/>
+        <UsageCount Value="129"/>
         <Loaded Value="True"/>
-      </Unit15>
+      </Unit13>
+      <Unit14>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <UnitName Value="wininet"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="6" Y="34"/>
+        <UsageCount Value="101"/>
+      </Unit14>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="877" Column="5" TopLine="824"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="258" Column="138" TopLine="244"/>
       </Position1>
       <Position2>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="852" Column="5" TopLine="802"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="132" Column="48" TopLine="212"/>
       </Position2>
       <Position3>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="180" Column="48" TopLine="797"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="31" Column="70" TopLine="1"/>
       </Position3>
       <Position4>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="582" Column="26" TopLine="541"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="132" Column="40" TopLine="86"/>
       </Position4>
       <Position5>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="53" Column="29" TopLine="26"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="302" Column="9" TopLine="275"/>
       </Position5>
       <Position6>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="163" Column="44" TopLine="116"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="307" Column="9" TopLine="280"/>
       </Position6>
       <Position7>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="329" Column="15" TopLine="283"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="301" Column="1" TopLine="280"/>
       </Position7>
       <Position8>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="582" Column="26" TopLine="541"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="305" Column="5" TopLine="280"/>
       </Position8>
       <Position9>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="683" Column="14" TopLine="637"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="255" Column="50" TopLine="300"/>
       </Position9>
       <Position10>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="711" Column="51" TopLine="665"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="320" Column="1" TopLine="300"/>
       </Position10>
       <Position11>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="25" Column="20" TopLine="1"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="321" Column="1" TopLine="300"/>
       </Position11>
       <Position12>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="131" Column="30" TopLine="86"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="322" Column="1" TopLine="300"/>
       </Position12>
       <Position13>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="197" Column="74" TopLine="151"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="323" Column="1" TopLine="300"/>
       </Position13>
       <Position14>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="288" Column="34" TopLine="242"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="336" Column="1" TopLine="300"/>
       </Position14>
       <Position15>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="298" Column="35" TopLine="252"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="255" Column="12" TopLine="234"/>
       </Position15>
       <Position16>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="493" Column="24" TopLine="447"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="262" Column="9" TopLine="255"/>
       </Position16>
       <Position17>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="582" Column="17" TopLine="536"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="264" Column="62" TopLine="223"/>
       </Position17>
       <Position18>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="663" Column="20" TopLine="617"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="255" Column="28" TopLine="228"/>
       </Position18>
       <Position19>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="288" Column="34" TopLine="261"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="313" Column="17" TopLine="267"/>
       </Position19>
       <Position20>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="493" Column="33" TopLine="464"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="525" Column="34" TopLine="479"/>
       </Position20>
       <Position21>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="582" Column="26" TopLine="536"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="527" Column="34" TopLine="481"/>
       </Position21>
       <Position22>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="663" Column="29" TopLine="617"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="547" Column="34" TopLine="501"/>
       </Position22>
       <Position23>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="288" Column="43" TopLine="261"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="549" Column="34" TopLine="503"/>
       </Position23>
       <Position24>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="298" Column="44" TopLine="261"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="607" Column="49" TopLine="562"/>
       </Position24>
       <Position25>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="493" Column="33" TopLine="447"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="697" Column="49" TopLine="652"/>
       </Position25>
       <Position26>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="582" Column="26" TopLine="536"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="255" Column="34" TopLine="229"/>
       </Position26>
       <Position27>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="663" Column="29" TopLine="617"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="260" Column="39" TopLine="228"/>
       </Position27>
       <Position28>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="288" Column="43" TopLine="261"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="255" Column="18" TopLine="228"/>
       </Position28>
       <Position29>
-        <Filename Value="uwaptgui.pas"/>
-        <Caret Line="298" Column="44" TopLine="261"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="262" Column="9" TopLine="228"/>
       </Position29>
       <Position30>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="53" Column="29" TopLine="26"/>
+        <Filename Value="..\wapt-get\tiscommon.pas"/>
+        <Caret Line="255" Column="15" TopLine="228"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

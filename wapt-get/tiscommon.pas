@@ -28,13 +28,14 @@ unit tiscommon;
 interface
 
 uses
-  interfaces,Classes, SysUtils,tisstrings,windows,jwawintype;
+  interfaces,Classes, SysUtils,tisstrings,windows,jwawintype, wininet;
 
 Function  Wget(const fileURL, DestFileName: Utf8String): boolean;
 Function  Wget_try(const fileURL: Utf8String): boolean;
 function  httpGetString(url: string): Utf8String;
 
 procedure httpPostData(const UserAgent: string; const Server: string; const Resource: string; const Data: AnsiString);
+function SetToIgnoreCerticateErrors(oRequestHandle:HINTERNET; var aErrorMsg: string): Boolean;
 
 Procedure UnzipFile(ZipFilePath,OutputPath:Utf8String);
 Procedure AddToUserPath(APath:Utf8String);
@@ -128,7 +129,7 @@ const
 
 implementation
 
-uses registry,strutils,FileUtil,Process,WinInet,zipper,
+uses registry,strutils,FileUtil,Process,zipper,
     shlobj,winsock,JwaTlHelp32,jwalmwksta,jwalmapibuf,JwaWinBase,jwalmaccess,jwalmcons,jwalmerr,JwaWinNT,jwawinuser;
 
 function IsAdminLoggedOn: Boolean;
@@ -242,6 +243,7 @@ var
   dwindex,dwcodelen,dwread,dwNumber: cardinal;
   dwcode : array[1..20] of char;
   res    : pchar;
+  error: String;
 
 begin
   result := '';
@@ -250,9 +252,18 @@ begin
   GlobalhInet := InternetOpen('wapt',
       INTERNET_OPEN_TYPE_PRECONFIG,nil,nil,0);
   try
-    hFile := InternetOpenURL(GlobalhInet,PChar(url),nil,0,
-      INTERNET_FLAG_IGNORE_CERT_CN_INVALID or INTERNET_FLAG_NO_CACHE_WRITE
-      or INTERNET_FLAG_PRAGMA_NOCACHE or INTERNET_FLAG_RELOAD,0);
+    if (system.Pos('https', url ) > 0  ) then
+    begin
+      hFile := InternetOpenURL(GlobalhInet,PChar(url),nil,0, INTERNET_FLAG_SECURE or
+        INTERNET_FLAG_IGNORE_CERT_CN_INVALID or INTERNET_FLAG_NO_CACHE_WRITE
+        or INTERNET_FLAG_PRAGMA_NOCACHE or INTERNET_FLAG_RELOAD,0);
+      if not SetToIgnoreCerticateErrors(hFile, error) then
+        raise EXCEPTION.Create(error);
+    end
+    else
+      hFile := InternetOpenURL(GlobalhInet,PChar(url),nil,0, INTERNET_FLAG_IGNORE_CERT_CN_INVALID or INTERNET_FLAG_NO_CACHE_WRITE
+        or INTERNET_FLAG_PRAGMA_NOCACHE or INTERNET_FLAG_RELOAD,0);
+
     if Assigned(hFile) then
     try
       dwIndex  := 0;
@@ -284,6 +295,50 @@ begin
   finally
     if Assigned(GlobalhInet) then
       InternetCloseHandle(GlobalhInet);
+  end;
+end;
+
+function GetWinInetError(ErrorCode:Cardinal): string;
+const
+   winetdll = 'wininet.dll';
+var
+  Len: Integer;
+  Buffer: PChar;
+begin
+  Len := FormatMessage(
+  FORMAT_MESSAGE_FROM_HMODULE or FORMAT_MESSAGE_FROM_SYSTEM or
+  FORMAT_MESSAGE_ALLOCATE_BUFFER or FORMAT_MESSAGE_IGNORE_INSERTS or  FORMAT_MESSAGE_ARGUMENT_ARRAY,
+  Pointer(GetModuleHandle(winetdll)), ErrorCode, 0, @Buffer, SizeOf(Buffer), nil);
+  try
+    while (Len > 0) and {$IFDEF UNICODE}(CharInSet(Buffer[Len - 1], [#0..#32, '.'])) {$ELSE}(Buffer[Len - 1] in [#0..#32, '.']) {$ENDIF} do Dec(Len);
+    SetString(Result, Buffer, Len);
+  finally
+    LocalFree(HLOCAL(Buffer));
+  end;
+end;
+
+function SetToIgnoreCerticateErrors(oRequestHandle:HINTERNET; var aErrorMsg: string): Boolean;
+var
+  vDWFlags: DWord;
+  vDWFlagsLen: DWord;
+begin
+  Result := False;
+  try
+    vDWFlagsLen := SizeOf(vDWFlags);
+    if not InternetQueryOptionA(oRequestHandle, INTERNET_OPTION_SECURITY_FLAGS, @vDWFlags, vDWFlagsLen) then begin
+      aErrorMsg := 'Internal error in SetToIgnoreCerticateErrors when trying to get wininet flags.' + GetWininetError(GetLastError);
+      Exit;
+    end;
+    vDWFlags := vDWFlags or SECURITY_FLAG_IGNORE_UNKNOWN_CA or SECURITY_FLAG_IGNORE_CERT_DATE_INVALID or SECURITY_FLAG_IGNORE_CERT_CN_INVALID or SECURITY_FLAG_IGNORE_REVOCATION;
+    if not InternetSetOptionA(oRequestHandle, INTERNET_OPTION_SECURITY_FLAGS, @vDWFlags, vDWFlagsLen) then begin
+      aErrorMsg := 'Internal error in SetToIgnoreCerticateErrors when trying to set wininet INTERNET_OPTION_SECURITY_FLAGS flag .' + GetWininetError(GetLastError);
+      Exit;
+    end;
+    Result := True;
+  except
+    on E: Exception do begin
+      aErrorMsg := 'Unknown error in SetToIgnoreCerticateErrors.' + E.Message;
+    end;
   end;
 end;
 
