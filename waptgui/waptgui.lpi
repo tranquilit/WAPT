@@ -15,7 +15,7 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <RevisionNr Value="8"/>
+      <RevisionNr Value="9"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">

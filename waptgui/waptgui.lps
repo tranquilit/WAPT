@@ -4,7 +4,7 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="15">
+    <Units Count="16">
       <Unit0>
         <Filename Value="waptgui.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -25,7 +25,7 @@
         <UnitName Value="uwaptgui"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="261"/>
+        <TopLine Value="282"/>
         <CursorPos X="44" Y="298"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="1">
@@ -49,8 +49,8 @@
         <UnitName Value="waptcommon"/>
         <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="164"/>
-        <CursorPos X="27" Y="165"/>
+        <TopLine Value="170"/>
+        <CursorPos X="62" Y="102"/>
         <UsageCount Value="208"/>
         <Loaded Value="True"/>
       </Unit3>
@@ -61,8 +61,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="237"/>
-        <CursorPos X="8" Y="262"/>
+        <TopLine Value="61"/>
+        <CursorPos X="38" Y="102"/>
         <UsageCount Value="208"/>
         <Loaded Value="True"/>
       </Unit4>
@@ -119,7 +119,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="2090"/>
         <CursorPos X="23" Y="2134"/>
-        <UsageCount Value="154"/>
+        <UsageCount Value="149"/>
       </Unit9>
       <Unit10>
         <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
@@ -127,7 +127,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="17726"/>
         <CursorPos X="1" Y="17742"/>
-        <UsageCount Value="135"/>
+        <UsageCount Value="130"/>
       </Unit10>
       <Unit11>
         <Filename Value="waptgui.lps"/>
@@ -162,135 +162,147 @@
       <Unit14>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
         <UnitName Value="wininet"/>
+        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="6" Y="34"/>
-        <UsageCount Value="101"/>
+        <TopLine Value="72"/>
+        <CursorPos X="58" Y="80"/>
+        <UsageCount Value="100"/>
+        <Loaded Value="True"/>
       </Unit14>
+      <Unit15>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdURI.pas"/>
+        <UnitName Value="IdURI"/>
+        <EditorIndex Value="8"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="390"/>
+        <CursorPos X="5" Y="439"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit15>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="258" Column="138" TopLine="244"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="2284" Column="52" TopLine="2242"/>
       </Position1>
       <Position2>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="132" Column="48" TopLine="212"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="2191" Column="20" TopLine="2166"/>
       </Position2>
       <Position3>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="31" Column="70" TopLine="1"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="2114" Column="45" TopLine="2089"/>
       </Position3>
       <Position4>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="132" Column="40" TopLine="86"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="2113" Column="45" TopLine="2089"/>
       </Position4>
       <Position5>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="302" Column="9" TopLine="275"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1909" Column="86" TopLine="1884"/>
       </Position5>
       <Position6>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="307" Column="9" TopLine="280"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1495" Column="19" TopLine="1470"/>
       </Position6>
       <Position7>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="301" Column="1" TopLine="280"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1484" Column="19" TopLine="1470"/>
       </Position7>
       <Position8>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="305" Column="5" TopLine="280"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1400" Column="13" TopLine="1375"/>
       </Position8>
       <Position9>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="255" Column="50" TopLine="300"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1237" Column="15" TopLine="1212"/>
       </Position9>
       <Position10>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="320" Column="1" TopLine="300"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1234" Column="6" TopLine="1212"/>
       </Position10>
       <Position11>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="321" Column="1" TopLine="300"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1232" Column="36" TopLine="1212"/>
       </Position11>
       <Position12>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="322" Column="1" TopLine="300"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1230" Column="6" TopLine="1212"/>
       </Position12>
       <Position13>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="323" Column="1" TopLine="300"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1229" Column="6" TopLine="1212"/>
       </Position13>
       <Position14>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="336" Column="1" TopLine="300"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1228" Column="6" TopLine="1212"/>
       </Position14>
       <Position15>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="255" Column="12" TopLine="234"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1227" Column="6" TopLine="1212"/>
       </Position15>
       <Position16>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="262" Column="9" TopLine="255"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1225" Column="30" TopLine="1212"/>
       </Position16>
       <Position17>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="264" Column="62" TopLine="223"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1223" Column="6" TopLine="1212"/>
       </Position17>
       <Position18>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="255" Column="28" TopLine="228"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1222" Column="6" TopLine="1212"/>
       </Position18>
       <Position19>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="313" Column="17" TopLine="267"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1221" Column="6" TopLine="1212"/>
       </Position19>
       <Position20>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="525" Column="34" TopLine="479"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1220" Column="6" TopLine="1212"/>
       </Position20>
       <Position21>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="527" Column="34" TopLine="481"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1218" Column="6" TopLine="1210"/>
       </Position21>
       <Position22>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="547" Column="34" TopLine="501"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1217" Column="6" TopLine="1209"/>
       </Position22>
       <Position23>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="549" Column="34" TopLine="503"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1216" Column="6" TopLine="1208"/>
       </Position23>
       <Position24>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="607" Column="49" TopLine="562"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1215" Column="6" TopLine="1207"/>
       </Position24>
       <Position25>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="697" Column="49" TopLine="652"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1214" Column="6" TopLine="1206"/>
       </Position25>
       <Position26>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="255" Column="34" TopLine="229"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1213" Column="6" TopLine="1205"/>
       </Position26>
       <Position27>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="260" Column="39" TopLine="228"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1210" Column="28" TopLine="1202"/>
       </Position27>
       <Position28>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="255" Column="18" TopLine="228"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1207" Column="6" TopLine="1199"/>
       </Position28>
       <Position29>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="262" Column="9" TopLine="228"/>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <Caret Line="1206" Column="6" TopLine="1198"/>
       </Position29>
       <Position30>
         <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <Caret Line="255" Column="15" TopLine="228"/>
+        <Caret Line="310" Column="93" TopLine="313"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>
