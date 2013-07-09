@@ -1877,7 +1877,7 @@ class Wapt(object):
       if cmd_dict['waptdir'] == "wapt-host" or is_host:
         if self.upload_cmd_host:
           cmd_dict['waptfile'] = ' '.join(cmd_dict['waptfile'])
-          return setuphelpers.run(mywapt.upload_cmd_host % cmd_dict)
+          return setuphelpers.run(self.upload_cmd_host % cmd_dict)
         else:
            for file in cmd_dict['waptfile']:
               file = file.replace('"','')
@@ -1888,7 +1888,7 @@ class Wapt(object):
       else:
         if self.upload_cmd:
           cmd_dict['waptfile'] = ' '.join(cmd_dict['waptfile'])
-          return setuphelpers.run(mywapt.upload_cmd % cmd_dict)
+          return setuphelpers.run(self.upload_cmd % cmd_dict)
         else:
           for file in cmd_dict['waptfile']:
             file = file.replace('"','')
