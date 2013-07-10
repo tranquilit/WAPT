@@ -283,7 +283,7 @@ class PackageEntry(object):
             codecs.open(os.path.join(fname,u'WAPT','control'),'w',encoding='utf8').write(self.ascontrol())
         else:
             if os.path.isfile(fname):
-                myzip = zipfile.ZipFile(fname,'a',allowZip64=True)
+                myzip = zipfile.ZipFile(fname,'a',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
                 try:
                     zi = myzip.getinfo(u'WAPT/control')
                     control_exist = True

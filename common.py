@@ -371,7 +371,7 @@ def create_recursive_zip_signed(zipfn, source_root, target_root = u"",excludes =
 
     if isinstance(zipfn,str) or isinstance(zipfn,unicode):
         if logger: logger.debug(u'Create zip file %s' % zipfn)
-        zipf = ZipFile(zipfn,'w',allowZip64=True)
+        zipf = ZipFile(zipfn,'w',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
     elif isinstance(zipfn,ZipFile):
         zipf = zipfn
     else:
@@ -2878,7 +2878,7 @@ class Wapt(object):
         if not os.path.isfile(private_key):
             raise Exception('Private key file %s not found' % private_key)
         if os.path.isfile(zip_or_directoryname):
-            waptzip = ZipFile(zip_or_directoryname,'a',allowZip64=True)
+            waptzip = ZipFile(zip_or_directoryname,'a',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
             manifest = waptzip.open('WAPT/manifest.sha1').read()
         else:
             manifest_data = get_manifest_data(zip_or_directoryname,excludes=excludes)
@@ -3677,12 +3677,10 @@ class Wapt(object):
                 result['missing'].append(package_name)
         return result
 
-###
-
 REGEX_MODULE_VERSION = re.compile(
                     r'^(?P<major>[0-9]+)'
-                     '\.(?P<minor>[0-9]+)'
-                     '(\.(?P<patch>[0-9]+))')
+                    '(\.(?P<minor>[0-9]+))?'
+                    '(\.(?P<patch>[0-9]+))?')
 class Version():
     """Version object of form 0.0.0
         can compare with respect to natural numbering and not alphabetical
@@ -3692,12 +3690,20 @@ class Version():
         assert isinstance(versionstring,ModuleType) or isinstance(versionstring,str) or isinstance(versionstring,unicode)
         if isinstance(versionstring,ModuleType):
             versionstring = versionstring.__version__
-        self.keys = REGEX_MODULE_VERSION.match(versionstring).groupdict()
+        v = REGEX_MODULE_VERSION.match(versionstring)
+        if v:
+            self.keys = v.groupdict()
+        else:
+            self.keys = {'major':'0','minor':'0','patch':'0'}
 
     def __cmp__(self,aversion):
         def nat_cmp(a, b):
             a, b = a or '', b or ''
-            convert = lambda text: text.isdigit() and int(text) or text.lower()
+            def convert(text):
+                if text.isdigit():
+                    return int(text)
+                else:
+                    return text.lower()
             alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
             return cmp(alphanum_key(a), alphanum_key(b))
 
@@ -3708,7 +3714,6 @@ class Version():
             if v:
                 return v
         return 0
-
 
 
 if __name__ == '__main__':
