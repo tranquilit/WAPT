@@ -3232,6 +3232,8 @@ class Wapt(object):
         elif ext=='.msi':
             props = setuphelpers.get_msi_properties(installer_path)
             product_name = props['ProductName'] or props['FileDescription'] or product_desc
+        else:
+            props = {}
 
         if 'Manufacturer' in props and props['Manufacturer']:
             publisher = props['Manufacturer']

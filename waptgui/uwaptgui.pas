@@ -438,7 +438,8 @@ end;
 
 procedure TVisWaptGUI.ActAdvancedModeExecute(Sender: TObject);
 begin
-    TabSheet1.TabVisible:= not TabSheet1.TabVisible;
+  ActAdvancedMode.Checked:=not ActAdvancedMode.Checked;
+  TabSheet1.TabVisible:= ActAdvancedMode.Checked;
 end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);

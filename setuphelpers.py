@@ -345,8 +345,9 @@ def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy
             errors.append((srcname, dstname, str(why)))
         # catch the Error from the recursive copytree so that we can
         # continue with other files
-        except Error, err:
-            errors.extend(err.args[0])
+        except shutil.Error, err:
+            #errors.extend(err.args[0])
+            errors.append(err)
     try:
         shutil.copystat(src, dst)
     except WindowsError:
@@ -355,7 +356,7 @@ def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy
     except OSError, why:
         errors.extend((src, dst, str(why)))
     if errors:
-        raise Error(errors)
+        raise shutil.Error(errors)
 
 
 
