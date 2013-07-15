@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.6.28"
+__version__ = "0.6.29"
 
 import sys
 import os
@@ -240,7 +240,10 @@ def main():
                 raise Exception('Installation Parameters must be in json format')
 
             # cleanup environement, remove stalled wapt-get, update install_status
-            running_install = mywapt.check_install_running(max_ttl=options.max_ttl)
+            if action in ('install','download','remove','uninstall','update','upgrade'):
+                running_install = mywapt.check_install_running(max_ttl=options.max_ttl)
+            else:
+                running_install = []
 
             if action=='install' or action=='download':
                 if len(args)<2:

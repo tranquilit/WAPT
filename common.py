@@ -1988,6 +1988,7 @@ class Wapt(object):
             max_ttl is maximum age of wapt-get in minutes
         """
 
+        logger.debug('Checking if old install in progress')
         # kill old wapt-get
         mindate = time.time() - max_ttl*60
 
@@ -1998,12 +1999,15 @@ class Wapt(object):
         for p in wapt_processes:
             try:
                 if p.create_time < mindate:
-                    killed.append(p.pid)
+                    logger.debug('Killing process tree of pid %i' % p.pid)
                     setuphelpers.killtree(p.pid)
+                    logger.debug('Killing pid %i' % p.pid)
+                    killed.append(p.pid)
             except psutil.NoSuchProcess,psutil.AccessDenied:
                 pass
 
         # reset install_status
+        logger.debug('reset stalled install_status in database')
         init_run_pids = self.waptdb.query("""\
            select process_id from wapt_localstatus
               where install_status in ('INIT','RUNNING')
