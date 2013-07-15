@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.6.24"
+__version__ = "0.6.28"
 
 import sys
 import os
@@ -77,7 +77,7 @@ action is either :
   update-status     : Send packages and softwares status to the WAPT server,
 
  For user session setup
-  session-setup [packages,all] : setup local user environment for specific or all installed packages
+  session-setup [packages,ALL] : setup local user environment for specific or all installed packages
 
  For packages development
   list-registry [keywords]  : list installed software from Windows Registry
@@ -386,13 +386,20 @@ def main():
 
             elif action=='session-setup':
                 if len(args)<2:
-                    print u"You must provide at least one package to be configured in user's session"
+                    print u"You must provide at least one package to be configured in user's session or ALL (in uppercase) for all currently installed packages of this system"
                     sys.exit(1)
                 result = []
-                for packagename in args[1:]:
-                    print u"Configuring %s ..." % (packagename,),
-                    result.append(mywapt.session_setup(packagename,params_dict=params_dict))
-                    print "Done"
+                if args[1] == 'ALL':
+                    packages_list = mywapt.installed().keys()
+                else:
+                    packages_list =  args[1:]
+                for packagename in packages_list:
+                    try:
+                        print u"Configuring %s ..." % (packagename,),
+                        result.append(mywapt.session_setup(packagename))
+                        print "Done"
+                    except Exception,e:
+                        logger.critical(ensure_unicode(e))
                 if options.json_output:
                     jsonresult['result'] = result
 

@@ -15,6 +15,7 @@ type
   TDMWaptTray = class(TDataModule)
     ActConfigure: TAction;
     ActForceRegister: TAction;
+    ActSessionSetup: TAction;
     ActLocalInfo: TAction;
     ActWaptUpgrade: TAction;
     ActLaunchGui: TAction;
@@ -27,6 +28,8 @@ type
     MenuItem10: TMenuItem;
     MenuItem12: TMenuItem;
     MenuItem13: TMenuItem;
+    MenuItem14: TMenuItem;
+    MenuItem15: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem11: TMenuItem;
     MenuItem7: TMenuItem;
@@ -49,6 +52,7 @@ type
     procedure ActLaunchGuiUpdate(Sender: TObject);
     procedure ActLocalInfoExecute(Sender: TObject);
     procedure ActQuitExecute(Sender: TObject);
+    procedure ActSessionSetupExecute(Sender: TObject);
     procedure ActShowStatusExecute(Sender: TObject);
     procedure ActUpdateExecute(Sender: TObject);
     procedure ActUpgradeExecute(Sender: TObject);
@@ -72,7 +76,7 @@ var
   DMWaptTray: TDMWaptTray;
 
 implementation
-uses LCLIntf,Forms,dialogs,windows,superobject,graphics,tiscommon,waptcommon,tisinifiles,soutils;
+uses LCLIntf,Forms,dialogs,windows,superobject,graphics,tiscommon,waptcommon,tisinifiles,soutils,UnitRedirect;
 
 {$R *.lfm}
 type
@@ -342,6 +346,19 @@ procedure TDMWaptTray.ActQuitExecute(Sender: TObject);
 begin
   check_thread.Terminate;
   Application.Terminate;
+end;
+
+procedure TDMWaptTray.ActSessionSetupExecute(Sender: TObject);
+var
+  status:integer;
+  res : String;
+begin
+  try
+    res := Sto_RedirectedExecute(WaptgetPath+' session-setup ALL','',120*1000);
+    ShowMessage('Configuration des paquets pour la session utilisateur effectuée')
+  except
+    MessageDlg('Erreur','Erreur lors de la configuration des paquets pour la session utilisateur',mtError,[mbOK],0);
+  end
 end;
 
 procedure TDMWaptTray.SetTrayIcon(idx:integer);

@@ -30,7 +30,7 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms,
-  uDMWAPTTray,waptcommon, soutils, pl_luicontrols, tiscommon;
+  uDMWAPTTray,waptcommon, soutils, pl_luicontrols, tiscommon, UnitRedirect;
 
 {$R *.res}
 

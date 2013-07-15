@@ -76,7 +76,7 @@ from setuphelpers import ensure_unicode
 
 import types
 
-__version__ = "0.6.24"
+__version__ = "0.6.28"
 
 logger = logging.getLogger()
 
@@ -514,6 +514,8 @@ class LogInstallOutput(object):
         else:
             return self.console.__getattribute__(name)
 
+
+
 ###########
 def reg_openkey_noredir(key, sub_key, sam=KEY_READ):
     try:
@@ -703,11 +705,12 @@ class WaptSessionDB(WaptBaseDB):
           architecture varchar(255),
           install_date varchar(255),
           install_status varchar(255),
-          install_output TEXT
+          install_output TEXT,
+          process_id integer
           )"""
                         )
         self.db.execute("""
-        create index if not exists idx_sessionsetup_username on wapt_sessionsetup(username,package);""")
+            create index if not exists idx_sessionsetup_username on wapt_sessionsetup(username,package);""")
 
         self.db.execute("""
         create table if not exists wapt_params (
@@ -722,6 +725,88 @@ class WaptSessionDB(WaptBaseDB):
           """)
 
         return self.curr_db_version
+
+    def add_start_install(self,package,version,architecture):
+        """Register the start of installation in local db
+        """
+        try:
+            cur = self.db.execute("""delete from wapt_sessionsetup where package=?""" ,(package,))
+            cur = self.db.execute("""\
+                  insert into wapt_sessionsetup (
+                    username,
+                    package,
+                    version,
+                    architecture,
+                    install_date,
+                    install_status,
+                    install_output,
+                    process_id
+                    ) values (?,?,?,?,?,?,?,?)
+                """,(
+                     self.username,
+                     package,
+                     version,
+                     architecture,
+                     datetime2isodate(),
+                     'INIT',
+                     '',
+                     os.getpid()
+                   ))
+        finally:
+            self.db.commit()
+        return cur.lastrowid
+
+    def update_install_status(self,rowid,install_status,install_output):
+        """Update status of package installation on localdb"""
+        try:
+            if install_status in ('OK','ERROR'):
+                pid = None
+            else:
+                pid = os.getpid()
+            cur = self.db.execute("""\
+                  update wapt_sessionsetup
+                    set install_status=?,install_output = install_output || ?,process_id=?
+                    where rowid = ?
+                """,(
+                     install_status,
+                     install_output,
+                     pid,
+                     rowid,
+                     )
+                   )
+        finally:
+            self.db.commit()
+        return cur.lastrowid
+
+    def update_install_status_pid(self,pid,install_status='ERROR'):
+        """Update status of package installation on localdb"""
+        try:
+            cur = self.db.execute("""\
+                  update wapt_sessionsetup
+                    set install_status=? where process_id = ?
+                """,(
+                     install_status,
+                     pid,
+                     )
+                   )
+        finally:
+            self.db.commit()
+        return cur.lastrowid
+
+    def remove_install_status(self,package):
+        """Remove status of package installation from localdb"""
+        try:
+            cur = self.db.execute("""delete from wapt_sessionsetup where package=?""" ,(package,))
+        finally:
+            self.db.commit()
+        return cur.lastrowid
+
+    def is_installed(self,package,version):
+        p = self.query('select * from  wapt_sessionsetup where package=? and version=?',(package,version))
+        if p:
+            return p[0]
+        else:
+            return None
 
 
 PackageKey = namedtuple('package',('packagename','version'))
@@ -1585,7 +1670,6 @@ class Wapt(object):
                 defaults = {
                     'repositories':'',
                     'repo_url':'',
-                    'default_source_url':'',
                     'private_key':'',
                     'default_package_prefix':'tis',
                     'default_sources_suffix':'wapt',
@@ -2278,6 +2362,11 @@ class Wapt(object):
         """Download sources of package (if referenced in package as a https svn)
            in the current directory"""
         entry = self.waptdb.packages_matching(package)[-1]
+
+        if not entry.sources:
+            if self.config.has_option('global','default_sources_url'):
+                entry.sources = self.config.get('global','default_sources_url') % {'packagename':package}
+
         if not entry.sources:
             raise Exception('No sources defined in package control file')
         if "PROGRAMW6432" in os.environ:
@@ -3058,65 +3147,123 @@ class Wapt(object):
 
         return result
 
-    def session_setup(self,packagename,params_dict={}):
+    def session_setup(self,packagename,force=False):
         """Setup the user session for a specific system wide installed package"
            Source setup.py from database or filename
         """
-        logger.info("Session setup for package %s with params %s" % (packagename,params_dict))
+        logger.info("Session setup for package %s and user %s" % (packagename,self.user))
 
         oldpath = sys.path
-        try:
-            previous_cwd = os.getcwd()
-            if os.path.isdir(packagename):
-                setup = import_setup(os.path.join(directoryname,'setup.py'),'__waptsetup__')
-            else:
-                logger.debug(u'Sourcing setup from DB')
-                setup = import_code(self.is_installed(packagename)['setuppy'],'__waptsetup__')
 
-            required_params = []
-             # be sure some minimal functions are available in setup module at install step
-            logger.debug(u'Source import OK')
-            if hasattr(setup,'session_setup'):
-                logger.info('Launch session_setup')
-                setattr(setup,'run',setuphelpers.run)
-                setattr(setup,'run_notfatal',setuphelpers.run_notfatal)
-                setattr(setup,'user',self.user)
-                setattr(setup,'usergroups',self.usergroups)
-                setattr(setup,'WAPT',self)
-                setattr(setup,'language',self.language or setuphelpers.get_language() )
+        if os.path.isdir(packagename):
+            package_entry = PackageEntry().load_control_from_wapt(packagename)
+        else:
+            package_entry = self.is_installed(packagename)
 
-                # get definitions of required parameters from setup module
-                if hasattr(setup,'required_params'):
-                    required_params = setup.required_params
+        if not package_entry:
+            raise Exception('Package %s is not installed' % packagename)
 
-                # get value of required parameters if not already supplied
-                for p in required_params:
-                    if not p in params_dict:
-                        if not is_system_user():
-                            params_dict[p] = raw_input("%s: " % p)
+
+        # initialize a session db for the user
+        session_db =  WaptSessionDB(self.user) # WaptSessionDB()
+        with session_db:
+            if force or not session_db.is_installed(package_entry.package,package_entry.version):
+                try:
+                    previous_cwd = os.getcwd()
+
+                    # source setup.py to get session_setup func
+                    if os.path.isdir(packagename):
+                        package_fn = os.path.join(packagename,'setup.py')
+                        setup = import_setup(package_fn,'__waptsetup__')
+                        logger.debug(u'Source import OK from %s' % package_fn)
+                    else:
+                        logger.debug(u'Sourcing setup from DB (only if session_setup found)')
+                        setuppy = package_entry['setuppy']
+                        if not setuppy:
+                            raise Exception('Source setup.py of package %s not stored in local database' % packagename)
+                        if 'session_setup()' in setuppy:
+                            setup = import_code(setuppy,'__waptsetup__')
+                            logger.debug(u'Source setup.py import OK from database')
                         else:
-                            raise Exception('Required parameters %s is not supplied' % p)
+                            setup = None
 
-                # set params dictionary
-                if not hasattr(setup,'params'):
-                    # create a params variable for the setup module
-                    setattr(setup,'params',params_dict)
-                else:
-                    # update the already created params with additional params from command line
-                    setup.params.update(params_dict)
+                    required_params = []
 
-                result = setup.session_setup()
-                return result
+                     # be sure some minimal functions are available in setup module at install step
+                    if setup and hasattr(setup,'session_setup'):
+                        logger.info('Launch session_setup')
+                        # initialize a session record for this package
+                        install_id = session_db.add_start_install(package_entry.package,package_entry.version,package_entry.architecture)
+
+                        # redirect output to get print into session db log
+                        old_stdout = sys.stdout
+                        old_stderr = sys.stderr
+
+                        sys.stderr = sys.stdout = install_output = LogInstallOutput(sys.stderr,session_db,install_id)
+                        try:
+                            setattr(setup,'run',setuphelpers.run)
+                            setattr(setup,'run_notfatal',setuphelpers.run_notfatal)
+                            setattr(setup,'user',self.user)
+                            setattr(setup,'usergroups',self.usergroups)
+                            setattr(setup,'WAPT',self)
+                            setattr(setup,'language',self.language or setuphelpers.get_language() )
+
+                            # get definitions of required parameters from setup module
+                            if hasattr(setup,'required_params'):
+                                required_params = setup.required_params
+
+                            # get value of required parameters from system wide install
+                            try:
+                                params_dict=json.loads(self.waptdb.query("select install_params from wapt_localstatus where package=?",[package_entry.package,])[0]['install_params'])
+                            except:
+                                logger.warning('Unable to get installation parameters from wapt database for package %s' % package_entry.package)
+                                params_dict={}
+
+                            # set params dictionary
+                            if not hasattr(setup,'params'):
+                                # create a params variable for the setup module
+                                setattr(setup,'params',params_dict)
+                            else:
+                                # update the already created params with additional params from command line
+                                setup.params.update(params_dict)
+
+                            session_db.update_install_status(install_id,'RUNNING','Launch session_setup()\n')
+                            result = setup.session_setup()
+                            session_db.update_install_status(install_id,'OK','session_setup() done\n')
+                            return result
+
+                        except Exception,e:
+                            if install_id:
+                                try:
+                                    try:
+                                        uerror = repr(e).decode(locale.getpreferredencoding())
+                                    except:
+                                        uerror = ensure_unicode(e)
+                                    self.waptdb.update_install_status(install_id,'ERROR',uerror)
+                                except Exception,e2:
+                                    logger.critical(ensure_unicode(e2))
+                            else:
+                                logger.critical(ensure_unicode(e))
+                            raise e
+                        finally:
+                            # restore normal output
+                            sys.stdout = old_stdout
+                            sys.stderr = old_stderr
+                            sys.path = oldpath
+
+                    else:
+                        print 'No session-setup.',
+                finally:
+                    # cleanup
+                    if 'setup' in dir():
+                        del setup
+                    else:
+                        logger.critical(u'Unable to read setup.py file.')
+                    sys.path = oldpath
+                    logger.debug(u'  Change current directory to %s.' % previous_cwd)
+                    os.chdir(previous_cwd)
             else:
-                raise Exception('No session_setup function in setup.py for package %s' % packagename)
-        finally:
-            if 'setup' in dir():
-                del setup
-            else:
-                logger.critical(u'Unable to read setup.py file')
-            sys.path = oldpath
-            logger.debug(u'  Change current directory to %s' % previous_cwd)
-            os.chdir(previous_cwd)
+                print 'Already installed.',
 
     def uninstall(self,packagename,params_dict={}):
         """Launch the uninstall script of an installed package"

@@ -13,22 +13,46 @@ allow_unsigned=0
 
 # for package development
 #private_key=c:\tmp\ko.pem
-default_source_url=
+
+# default sources location (
+default_sources_url=
+# https://svn.tranquil.it/sources/%(packagename)s-wapt/trunk/
+
+# where to create templates of packages, or unzip packages to edit
 default_sources_root=c:\waptdev
+
+# where to create templates of host packages, or unzip packages for editing hosts 
 default_sources_root_host=c:\waptdev\hosts
+
+# default prefix to add to software name when creating package templates
 default_package_prefix=tis
+
+# default suffix to add to package name for package development directory
 default_sources_suffix=wapt
 
+# command to run for uploading a package to your server (wapt-get upload-package or build-upload)
+# if no command is supplied, it is assumed your wapt server is running waptserver and support /upload_package POST with a file form-encoded parameter 
 #upload_cmd="C:\Program Files\WinSCP\WinSCP.exe" root@bureau.tranquil.it /upload %(waptfile)s
 # you could put your public authorization key in server's /root/.ssh/authorized_keys 
 # example if you have cygwin : 
 #   create key : c:\cygwin\bin\ssh localhost ssh-keygen   
 #   copy key :   c:\cygwin\bin\ssh localhost ssh-copy-id -i ~/.ssh/id_dsa root@srvwapt
-upload_cmd="c:\Program Files"\putty\pscp -v -l root %(waptfile)s srvwapt:/var/www/%(waptdir)s/ 
-#upload_cmd_host="c:\Program Files"\putty\pscp -v -l root %(waptfile)s srvwapt:/var/www/wapt-host/ 
-after_upload="c:\Program Files"\putty\plink -v -l root srvwapt "python /var/www/wapt/wapt-scanpackages.py /var/www/%(waptdir)s/"
+#upload_cmd="c:\Program Files"\putty\pscp -v -l waptserver %(waptfile)s srvwapt:/var/www/%(waptdir)s/ 
+
+# command to run 
+#after_upload="c:\Program Files"\putty\plink -v -l waptserver srvwapt "python /var/www/wapt/wapt-scanpackages.py /var/www/%(waptdir)s/"
+
+
+# command to use to upload host package to your server (wapt-get upload-package or build-upload of a host package)
+# if no command is supplied, it is assumed your wapt server is running waptserver and support /upload_host POST with a file form-encoded parameter 
+#upload_cmd_host="c:\Program Files"\putty\pscp -v -l waptserver %(waptfile)s srvwapt:/var/www/wapt-host/ 
 
 # define a wapt_server only if one is running
+# a wapt server support the following url : 
+#   /add_host
+#   /update_host
+#   /upload_package
+#   /upload_host
 #wapt_server=http://wapt.tranquil.it/waptserver
 
 # for windows task scheduling

@@ -100,6 +100,12 @@ object DMWaptTray: TDMWaptTray
     object MenuItem11: TMenuItem
       Caption = '-'
     end
+    object MenuItem14: TMenuItem
+      Action = ActSessionSetup
+    end
+    object MenuItem15: TMenuItem
+      Caption = '-'
+    end
     object MenuItem5: TMenuItem
       Action = ActQuit
     end
@@ -146,6 +152,10 @@ object DMWaptTray: TDMWaptTray
     object ActForceRegister: TAction
       Caption = 'Enregistrer l''inventaire de l''ordinateur sur le serveur'
       OnExecute = ActForceRegisterExecute
+    end
+    object ActSessionSetup: TAction
+      Caption = 'Configurer tous les paquets installés pour votre propre session'
+      OnExecute = ActSessionSetupExecute
     end
   end
   object TrayUpdate: TImageList

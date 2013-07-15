@@ -10,6 +10,7 @@
 #define default_wapt_server "http://srvwapt:8080"
 #define default_update_period "120"
 #define default_update_maxruntime "30"
+ 
 
 [Files]
 Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
@@ -41,7 +42,7 @@ Source: "..\wapt.ico"; DestDir: "{app}";
 Source: "wapt.iss"; DestDir: "{app}\waptsetup";
 Source: "services.iss"; DestDir: "{app}\waptsetup";
 Source: "..\COPYING.txt"; DestDir: "{app}";
-Source: "..\wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.exe'); Tasks: installTray
+Source: "..\wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.exe'); 
 Source: "..\vc_redist\*"; DestDir: "{app}\vc_redist";
 Source: "..\lib\site-packages\M2Crypto\libeay32.dll" ; DestDir: "{app}"; 
 Source: "..\lib\site-packages\M2Crypto\ssleay32.dll" ; DestDir: "{app}";
@@ -95,13 +96,14 @@ Filename: "{app}\wapt-get.exe"; Parameters: "register"; Tasks: useWaptServer; Fl
 Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait runasoriginaluser postinstall; StatusMsg: "Launch WAPT tray icon"; Description: "Launch WAPT tray icon"
 
 [Icons]
-Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\wapttray.exe";
+Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\wapttray.exe"; Flags: excludefromshowinnewinstall;
+Name: "{commonstartup}\WAPT session setup"; Tasks: autorunSessionSetup; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
 
 [Tasks]
 Name: updateWapt; Description: "Update package list after setup";
 Name: installService; Description: "Install WAPT Service"; 
-Name: installTray; Description: "Install WAPT Tray icon";
 Name: autorunTray; Description: "Start WAPT Tray icon at logon"; Flags: unchecked
+Name: autorunSessionSetup; Description: "Launch WAPT session setup for all packages at logon"; Flags: unchecked
 Name: setupTasks; Description: "Creates windows scheduled tasks for update and upgrade"; 
 Name: useTISPublic; Description: "Use Tranquil IT public repository as a secondary source"; Flags: unchecked
 Name: useWaptServer; Description: "Register {#default_wapt_server} as the central WAPT manage server"; Flags: unchecked

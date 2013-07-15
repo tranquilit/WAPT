@@ -21,7 +21,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="6"/>
-      <RevisionNr Value="27"/>
+      <RevisionNr Value="28"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -61,7 +61,7 @@
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="29" Y="161"/>
+        <CursorPos X="33" Y="4"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -69,10 +69,12 @@
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="806"/>
-        <CursorPos X="22" Y="822"/>
+        <TopLine Value="493"/>
+        <CursorPos X="1" Y="494"/>
         <UsageCount Value="207"/>
+        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\indy\IdDNSResolver.pas"/>
@@ -214,7 +216,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit18>
     </Units>
-    <JumpHistory Count="9" HistoryIndex="8">
+    <JumpHistory Count="11" HistoryIndex="10">
       <Position1>
         <Filename Value="waptget.lpr"/>
         <Caret Line="193" Column="55" TopLine="1"/>
@@ -251,6 +253,14 @@
         <Filename Value="waptget.lpr"/>
         <Caret Line="50" Column="35" TopLine="31"/>
       </Position9>
+      <Position10>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="822" Column="22" TopLine="774"/>
+      </Position10>
+      <Position11>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="826" Column="1" TopLine="795"/>
+      </Position11>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

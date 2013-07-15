@@ -160,6 +160,9 @@ var
   wcmd,wparams,woutput,winput:WideString;
   output,error:String;
 
+  exitCode:LongWord;
+  ose : EOSError;
+
 begin
   try
     ZeroMemory(@mySecurityAttributes, SizeOf(SECURITY_ATTRIBUTES));
@@ -229,7 +232,7 @@ begin
       if (iWaitRes = WAIT_TIMEOUT) then
       begin
         TerminateProcess(myProcessInfo.hProcess, UINT(ERROR_CANCELLED));
-        raise Exception.Create('Timeout');
+        raise Exception.Create('Timeout running '+CmdLine);
       end;
       // return output
       myReadOutputThread.WaitFor;
@@ -237,6 +240,9 @@ begin
       Result := output;
       myReadErrorThread.WaitFor;
       Error := myReadErrorThread.Content;
+      if not GetExitCodeProcess(myProcessInfo.hProcess, exitCode) or (exitCode>0) then
+        RaiseLastOSError(exitCode);
+
       {if error<>'' then
         Raise Exception.Create(error);}
 
