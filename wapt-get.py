@@ -81,7 +81,7 @@ action is either :
 
  For packages development
   list-registry [keywords]  : list installed software from Windows Registry
-  sources <package>         : get sources of a package (if attribute Sources was supplied in control file)
+  sources <package>         : checkout or update sources of a package from SVN repository (if attribute Sources was supplied in control file)
   make-template <installer-path> [<packagename> [<source directoryname>]] : initializes a package template with an installer (exe or msi)
   make-host-template <machinename> [[<package>,<package>,...] [directory]] :
                                 initializes a package meta template with packages.
@@ -93,9 +93,9 @@ action is either :
   build-package <directory> : creates a WAPT package from supplied directory
   sign-package <directory or package>  : add a signature of the manifest using a private SSL key
   build-upload <directory> : creates a WAPT package from supplied directory, sign it and upload it
-  duplicate <directory or package> [<new-package-name> [<new-version> [<target directory>]]]: duplicate an existing package,
+  duplicate <directory or package> <new-package-name> [<new-version> [<target directory>]] : duplicate an existing package,
                                             changing its name (can be used for duplication of host packages...)
-  edit <package> : download an unzip a package. Open in Explorer the target directory
+  edit <package> : download and unzip a package. Open in Explorer the target directory
   edit-host <host fwqdn> : download an unzip a host package. Open in Explorer the target directory
 
  For repository management
@@ -537,8 +537,8 @@ def main():
                     os.startfile(result)
 
             elif action=='duplicate':
-                if len(args)<2:
-                    print u"You must provide at least the source package. New  name will be FQDN of the host if not provided"
+                if len(args)<3:
+                    print u"You must provide the source package and the new name"
                     sys.exit(1)
                 result = mywapt.duplicate_package(*args[1:5],build=True,private_key=options.private_key)
                 if options.json_output:

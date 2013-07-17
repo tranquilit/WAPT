@@ -564,6 +564,21 @@ def tryurl(url,proxies=None):
         logger.debug(u'  Not available : %s' % ensure_unicode(e))
         return False
 
+def force_utf8_no_bom(filename):
+    BUFSIZE = 4096
+    BOMLEN = len(codecs.BOM_UTF8)
+
+    content = open(filename, mode='rb').read(BOMLEN)
+    if content.startswith(codecs.BOM_UTF8):
+        content = open(filename,'rb').read()
+        open(filename, mode='wb').write(content[BOMLEN:])
+    else:
+        try:
+            content = codecs.open(filename, encoding='utf8').read()
+        except:
+            content = codecs.open(filename, encoding='iso8859-15').read()
+            codecs.open(filename, mode='wb', encoding='utf8').write(content)
+
 class WaptBaseDB(object):
     dbpath = ''
     db = None
@@ -2381,11 +2396,16 @@ class Wapt(object):
         if not os.path.isfile(svncmd):
             raise Exception('svn.exe command not available, please install TortoiseSVN with commandline tools')
 
+        # checkout directory
         co_dir = self.get_default_development_dir(entry.package, section = entry.section)
 
         logger.info('sources : %s'% entry.sources)
         logger.info('checkout dir : %s'% co_dir)
-        logger.info(setuphelpers.run(u'"%s" co "%s" "%s"' % (svncmd,entry.sources,co_dir)))
+        # if already checked out...
+        if os.path.isdir(os.path.join(co_dir,'.svn')):
+            print setuphelpers.run(u'"%s" up "%s"' % (svncmd,co_dir))
+        else:
+            print setuphelpers.run(u'"%s" co "%s" "%s"' % (svncmd,entry.sources,co_dir))
         return co_dir
 
     def last_install_log(self,packagename):
@@ -2995,6 +3015,8 @@ class Wapt(object):
         result_filename = u''
         if not os.path.isdir(os.path.join(directoryname,'WAPT')):
             raise Exception('Error building package : There is no WAPT directory in %s' % directoryname)
+        if not os.path.isfile(os.path.join(directoryname,'WAPT','control')):
+            raise Exception('Error building package : There is no control file in WAPT directory')
         if not os.path.isfile(os.path.join(directoryname,'setup.py')):
             raise Exception('Error building package : There is no setup.py file in %s' % directoryname)
         oldpath = sys.path
@@ -3017,12 +3039,17 @@ class Wapt(object):
             except:
                 raise Exception('Encoding of setup.py is not utf8')
 
-            mandatory = [('install',types.FunctionType) ,('uninstallkey',types.ListType),]
+            if hasattr(setup,'uninstallstring'):
+                mandatory = [('install',types.FunctionType) ,('uninstallstring',types.ListType),]
+            else:
+                mandatory = [('install',types.FunctionType) ,('uninstallkey',types.ListType),]
             for (attname,atttype) in mandatory:
                 if not hasattr(setup,attname):
                     raise Exception('setup.py has no %s (%s)' % (attname,atttype))
 
             control_filename = os.path.join(directoryname,'WAPT','control')
+            force_utf8_no_bom(control_filename)
+
             entry = PackageEntry()
             logger.info('Load control informations from control file')
             entry.load_control_from_wapt(directoryname)
@@ -3881,6 +3908,10 @@ if __name__ == '__main__':
     cfg.read('c:\\tranquilit\\wapt\\wapt-get.ini')
     w = Wapt(config=cfg)
     """
+    force_utf8_no_bom(r'C:\tranquilit\tis-waptini-wapt\WAPT\control')
+
+    sys.exit(0)
+
     w = Wapt(config_filename='c:/wapt/wapt-get.ini')
     sdb = w.waptsessiondb()
 
