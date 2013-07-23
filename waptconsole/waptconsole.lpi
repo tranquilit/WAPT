@@ -6,7 +6,7 @@
     <General>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
-      <Title Value="wapt-gui"/>
+      <Title Value="waptconsole"/>
       <ResourceType Value="res"/>
       <Icon Value="0"/>
     </General>
@@ -72,19 +72,19 @@
         <PackageName Value="LCL"/>
       </Item13>
     </RequiredPackages>
-    <Units Count="9">
+    <Units Count="10">
       <Unit0>
-        <Filename Value="waptgui.lpr"/>
+        <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="waptgui"/>
+        <UnitName Value="waptconsole"/>
       </Unit0>
       <Unit1>
-        <Filename Value="uwaptgui.pas"/>
+        <Filename Value="uwaptconsole.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisWaptGUI"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uwaptgui"/>
+        <UnitName Value="uwaptconsole"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\wapt-get\tisstrings.pas"/>
@@ -130,13 +130,21 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviseditpackage"/>
       </Unit8>
+      <Unit9>
+        <Filename Value="uviscreatewaptsetup.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisCreateWaptSetup"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uVisCreateWaptSetup"/>
+      </Unit9>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\waptgui"/>
+      <Filename Value="..\waptconsole"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>

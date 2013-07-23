@@ -69,6 +69,7 @@ def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',company=''
     print default_public_cert
     if not company:
         company = registered_organization()
+    outputfile = ''
     iss_template = makepath(wapt.wapt_base_dir,'waptsetup','wapt.iss')
     iss = codecs.open(iss_template,'r',encoding='utf8').read().splitlines()
     new_iss=[]
@@ -77,13 +78,15 @@ def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',company=''
             new_iss.append('#define default_repo_url "%s"' % (default_repo_url))
         elif not line.startswith('SignTool'):
             new_iss.append(line)
+            if line.startswith('OutputBaseFilename'):
+                outputfile = makepath(wapt.wapt_base_dir,'waptsetup','%s.exe' % line.split('=')[1])
     print os.path.normpath(default_public_cert)
     filecopyto(os.path.normpath(default_public_cert),os.path.join(os.path.dirname(iss_template),'..','ssl'))
     codecs.open(iss_template,'w',encoding='utf8').write('\n'.join(new_iss))
-    inno_directory = '%s\\Inno Setup 5\\Compil32.exe'%programfiles32
+    inno_directory = '%s\\Inno Setup 5\\Compil32.exe' % programfiles32
     run('"%s" /cc %s' % (inno_directory,iss_template))
-    print('waptsetup.exe finish to compile in %s' %os.path.dirname(iss_template))
-    return iss_template
+    print('%s compiled successfully' % (outputfile, ))
+    return outputfile
 
 def diff_computer_ad_wapt(wapt):
     """Return the computer in the Active Directory but not in Wapt Serveur """

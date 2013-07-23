@@ -1,0 +1,20 @@
+Installation des dépendances 
+ apt-get install python python-dev mongodb build-essential python-dev python-setuptools
+ easy_install flask uwsgi pymongo
+ 
+
+Création de l'utilisateur waptserver et des fichiers de log 
+ useradd -d /opt/waptserver waptserver
+ touch  /var/log/waptserver.log
+ touch  /var/run/waptserver.pid
+ chown waptserver  /var/log/waptserver.log
+ chown waptserver  /var/run/waptserver.pid
+ chown waptserver  -R /opt/waptserver
+
+Mise en place du script init.d 
+ cp /opt/waptserver/scripts/waptserver-init /etc/init.d/waptserver
+ chmod +x /etc/init.d/waptserver
+
+Lancer les services 
+ update-rc.d waptserver defaults 
+ /etc/init.d/waptserver start

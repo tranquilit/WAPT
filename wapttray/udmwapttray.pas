@@ -18,7 +18,7 @@ type
     ActSessionSetup: TAction;
     ActLocalInfo: TAction;
     ActWaptUpgrade: TAction;
-    ActLaunchGui: TAction;
+    ActLaunchWaptConsole: TAction;
     ActionList1: TActionList;
     ActQuit: TAction;
     ActShowMain: TAction;
@@ -48,8 +48,8 @@ type
     UniqueInstance1:TUniqueInstance;
     procedure ActConfigureExecute(Sender: TObject);
     procedure ActForceRegisterExecute(Sender: TObject);
-    procedure ActLaunchGuiExecute(Sender: TObject);
-    procedure ActLaunchGuiUpdate(Sender: TObject);
+    procedure ActLaunchWaptConsoleExecute(Sender: TObject);
+    procedure ActLaunchWaptConsoleUpdate(Sender: TObject);
     procedure ActLocalInfoExecute(Sender: TObject);
     procedure ActQuitExecute(Sender: TObject);
     procedure ActSessionSetupExecute(Sender: TObject);
@@ -63,7 +63,7 @@ type
     procedure TrayIcon1DblClick(Sender: TObject);
   private
     procedure SetTrayIcon(idx: integer);
-    function WinapticFileName: String;
+    function WaptConsoleFileName: String;
     { private declarations }
   public
     { public declarations }
@@ -319,22 +319,22 @@ begin
   TrayIcon1.ShowBalloonHint;
 end;
 
-procedure TDMWaptTray.ActLaunchGuiExecute(Sender: TObject);
+procedure TDMWaptTray.ActLaunchWaptConsoleExecute(Sender: TObject);
 var
   cmd:String;
 begin
-  cmd := WinapticFileName;
+  cmd := WaptConsoleFileName;
   ShellExecute(0,Pchar('open'),PChar(cmd),Nil,Nil,0);
 end;
 
-function TDMWaptTray.WinapticFileName:String;
+function TDMWaptTray.WaptConsoleFileName: String;
 begin
-  result:=AppendPathDelim(ExtractFileDir(ParamStr(0)))+'winaptic.exe';
+  result:=AppendPathDelim(ExtractFileDir(ParamStr(0)))+'waptconsole.exe';
 end;
 
-procedure TDMWaptTray.ActLaunchGuiUpdate(Sender: TObject);
+procedure TDMWaptTray.ActLaunchWaptConsoleUpdate(Sender: TObject);
 begin
-  ActLaunchGui.Enabled:=FileExists(WinapticFileName);
+  //ActLaunchWaptConsole.Enabled:=FileExists(WinapticFileName);
 end;
 
 procedure TDMWaptTray.ActLocalInfoExecute(Sender: TObject);

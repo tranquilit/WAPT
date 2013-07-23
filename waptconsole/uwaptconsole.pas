@@ -1,4 +1,4 @@
-unit uwaptgui;
+unit uwaptconsole;
 
 {$mode objfpc}{$H+}
 
@@ -137,10 +137,8 @@ type
     procedure ActEvaluateExecute(Sender: TObject);
     procedure ActEvaluateVarExecute(Sender: TObject);
     procedure ActExecCodeExecute(Sender: TObject);
-    procedure ActHostsAddPackagesExecute(Sender: TObject);
     procedure ActHostsCopyExecute(Sender: TObject);
     procedure ActHostsDeleteExecute(Sender: TObject);
-    procedure ActHostSearchPackageExecute(Sender: TObject);
     procedure actHostSelectAllExecute(Sender: TObject);
     procedure ActInstallExecute(Sender: TObject);
     procedure ActInstallUpdate(Sender: TObject);
@@ -154,22 +152,16 @@ type
     procedure cbSearchAllChange(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure CheckBoxMajChange(Sender: TObject);
+    procedure CheckBoxMajClick(Sender: TObject);
     procedure CheckBox_errorChange(Sender: TObject);
     procedure EdRunKeyPress(Sender: TObject; var Key: char);
-    procedure EdSearch2KeyPress(Sender: TObject; var Key: char);
     procedure EdSearchHostKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
     procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
-    procedure GridHostsChecked(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridHostsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Data: TJSONData; Column: TColumnIndex; TextType: TVSTTextType;
       var CellText: String);
-    procedure GridHostsGetUserClipboardFormats(Sender: TBaseVirtualTree;
-      var Formats: TFormatEtcArray);
-    procedure GridHostsRenderOLEData(Sender: TBaseVirtualTree;
-      const FormatEtcIn: TFormatEtc; out Medium: TStgMedium;
-      ForClipboard: Boolean; var Result: HRESULT);
     procedure GridPackagesCompareNodes(Sender: TBaseVirtualTree; Node1,
       Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
     procedure GridPackagesHeaderClick(Sender: TVTHeader;
@@ -178,6 +170,7 @@ type
       const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType);
     procedure HostPagesChange(Sender: TObject);
+    procedure MenuItem14Click(Sender: TObject);
   private
     { private declarations }
     procedure GridLoadData(grid: TVirtualJSONListView; jsondata: String);
@@ -236,6 +229,11 @@ begin
   ActHostSearchPackage.Execute;
 end;
 
+procedure TVisWaptGUI.CheckBoxMajClick(Sender: TObject);
+begin
+  Gridhosts.Clear;
+end;
+
 procedure TVisWaptGUI.CheckBox_errorChange(Sender: TObject);
 begin
   ActHostSearchPackage.Execute;
@@ -245,10 +243,6 @@ procedure TVisWaptGUI.EdRunKeyPress(Sender: TObject; var Key: char);
 begin
   if Key=#13 then
     ActEvaluate.Execute;
-end;
-
-procedure TVisWaptGUI.EdSearch2KeyPress(Sender: TObject; var Key: char);
-begin
 end;
 
 procedure TVisWaptGUI.EdSearchHostKeyPress(Sender: TObject; var Key: char);
@@ -557,11 +551,6 @@ begin
   DMPython.PythonEng.ExecString(testedit.Lines.Text);
 end;
 
-procedure TVisWaptGUI.ActHostsAddPackagesExecute(Sender: TObject);
-begin
-
-end;
-
 procedure TVisWaptGUI.ActHostsCopyExecute(Sender: TObject);
 begin
   GridHosts.CopyToClipBoard;
@@ -585,10 +574,6 @@ begin
       end;
       ActSearchHost.Execute;
     end;
-end;
-
-procedure TVisWaptGUI.ActHostSearchPackageExecute(Sender: TObject);
-begin
 end;
 
 procedure TVisWaptGUI.actHostSelectAllExecute(Sender: TObject);
@@ -715,6 +700,7 @@ begin
   GridPackages.Clear;
   MemoLog.Clear;
 
+  PageControl1.ActivePage :=  pgInventory;
 end;
 
 procedure TVisWaptGUI.GridLoadData(grid:TVirtualJSONListView;jsondata:string);
@@ -763,13 +749,6 @@ begin
   UpdateHostPages(Sender);
 end;
 
-procedure TVisWaptGUI.GridHostsChecked(Sender: TBaseVirtualTree;
-  Node: PVirtualNode);
-begin
-
-end;
-
-
 procedure TVisWaptGUI.GridHostsGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Data: TJSONData; Column: TColumnIndex;
   TextType: TVSTTextType; var CellText: String);
@@ -778,18 +757,6 @@ var
 begin
   js := SO(Data.AsJSON);
   CellText:=js.S[TVirtualJSONListViewColumn(GridHosts.Header.Columns[column]).PropertyName];
-end;
-
-procedure TVisWaptGUI.GridHostsGetUserClipboardFormats(
-  Sender: TBaseVirtualTree; var Formats: TFormatEtcArray);
-begin
-end;
-
-procedure TVisWaptGUI.GridHostsRenderOLEData(Sender: TBaseVirtualTree;
-  const FormatEtcIn: TFormatEtc; out Medium: TStgMedium; ForClipboard: Boolean;
-  var Result: HRESULT);
-begin
-
 end;
 
 procedure TVisWaptGUI.PythonOutputSendData(Sender: TObject; const Data: AnsiString
@@ -845,6 +812,11 @@ end;
 procedure TVisWaptGUI.HostPagesChange(Sender: TObject);
 begin
   UpdateHostPages(Sender);
+end;
+
+procedure TVisWaptGUI.MenuItem14Click(Sender: TObject);
+begin
+  Close;
 end;
 
 end.

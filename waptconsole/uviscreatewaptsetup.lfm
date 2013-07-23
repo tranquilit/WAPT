@@ -2,13 +2,13 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   Left = 266
   Height = 172
   Top = 219
-  Width = 431
+  Width = 535
   Caption = 'Créer le waptsetup.exe'
   ClientHeight = 172
-  ClientWidth = 431
+  ClientWidth = 535
   LCLVersion = '1.1'
   object fnPublicCert: TFileNameEdit
-    Left = 172
+    Left = 196
     Height = 21
     Top = 20
     Width = 216
@@ -23,15 +23,16 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Left = 8
     Height = 13
     Top = 20
-    Width = 56
-    Caption = 'Clé public:'
+    Width = 77
+    Caption = 'Clé publique : '
     Font.Style = [fsBold]
     ParentColor = False
     ParentFont = False
   end
   object edRepoUrl: TEdit
-    Left = 172
+    Left = 196
     Height = 21
+    Hint = 'exemple : http://wapt.tranquilit.local/wapt'
     Top = 48
     Width = 216
     TabOrder = 1
@@ -40,16 +41,17 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Left = 8
     Height = 13
     Top = 48
-    Width = 134
-    Caption = 'adresse du dépot Wapt:'
+    Width = 186
+    Caption = 'Adresse du dépot Wapt principal:'
     Font.Style = [fsBold]
     ParentColor = False
     ParentFont = False
   end
   object edOrgName: TEdit
-    Left = 172
+    Left = 196
     Height = 21
-    Top = 76
+    Hint = 'Exemple : Tranquil IT Systems'
+    Top = 72
     Width = 216
     TabOrder = 2
   end
@@ -65,13 +67,14 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Left = 0
     Height = 27
     Top = 145
-    Width = 431
+    Width = 535
     Align = alBottom
+    BevelOuter = bvNone
     ClientHeight = 27
-    ClientWidth = 431
+    ClientWidth = 535
     TabOrder = 3
     object BitBtn1: TBitBtn
-      Left = 270
+      Left = 374
       Height = 23
       Top = 3
       Width = 75
@@ -83,7 +86,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       TabOrder = 0
     end
     object BitBtn2: TBitBtn
-      Left = 350
+      Left = 454
       Height = 23
       Top = 3
       Width = 75

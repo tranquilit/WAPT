@@ -1,13 +1,14 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 375
+  Left = 326
   Height = 764
-  Top = 142
+  Top = 178
   Width = 1173
-  Caption = 'VisWaptGUI'
+  Caption = 'VisWaptConsole'
   ClientHeight = 745
   ClientWidth = 1173
   Menu = MainMenu1
   OnCreate = FormCreate
+  Position = poDefaultPosOnly
   LCLVersion = '1.1'
   object PageControl1: TPageControl
     Left = 0
@@ -54,6 +55,7 @@ object VisWaptGUI: TVisWaptGUI
           Top = 7
           Width = 151
           Caption = 'Nécessite des mises à jours'
+          OnClick = CheckBoxMajClick
           TabOrder = 1
         end
         object CheckBox_error: TCheckBox
@@ -62,6 +64,7 @@ object VisWaptGUI: TVisWaptGUI
           Top = 7
           Width = 102
           Caption = 'Avec des erreurs'
+          OnClick = CheckBoxMajClick
           TabOrder = 2
         end
         object Button7: TButton
@@ -80,6 +83,7 @@ object VisWaptGUI: TVisWaptGUI
           Caption = 'Tout'
           Checked = True
           OnChange = cbSearchAllChange
+          OnClick = CheckBoxMajClick
           State = cbChecked
           TabOrder = 4
         end
@@ -89,6 +93,7 @@ object VisWaptGUI: TVisWaptGUI
           Top = 30
           Width = 42
           Caption = 'Host'
+          OnClick = CheckBoxMajClick
           State = cbGrayed
           TabOrder = 5
         end
@@ -98,6 +103,7 @@ object VisWaptGUI: TVisWaptGUI
           Top = 30
           Width = 37
           Caption = 'Dmi'
+          OnClick = CheckBoxMajClick
           State = cbGrayed
           TabOrder = 6
         end
@@ -107,6 +113,7 @@ object VisWaptGUI: TVisWaptGUI
           Top = 30
           Width = 69
           Caption = 'Softwares'
+          OnClick = CheckBoxMajClick
           State = cbGrayed
           TabOrder = 7
         end
@@ -116,6 +123,7 @@ object VisWaptGUI: TVisWaptGUI
           Top = 30
           Width = 65
           Caption = 'Packages'
+          OnClick = CheckBoxMajClick
           State = cbGrayed
           TabOrder = 8
         end
@@ -254,9 +262,7 @@ object VisWaptGUI: TVisWaptGUI
         OnChange = GridHostsChange
         OnCompareNodes = GridPackagesCompareNodes
         OnDblClick = ActEditHostPackageExecute
-        OnGetUserClipboardFormats = GridHostsGetUserClipboardFormats
         OnHeaderClick = GridPackagesHeaderClick
-        OnRenderOLEData = GridHostsRenderOLEData
       end
       object HostPages: TPageControl
         Left = 593
@@ -1553,6 +1559,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object MenuItem14: TMenuItem
         Caption = 'Quitter'
+        OnClick = MenuItem14Click
       end
     end
     object MenuItem15: TMenuItem

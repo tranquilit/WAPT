@@ -74,7 +74,7 @@ object DMWaptTray: TDMWaptTray
       Enabled = False
     end
     object MenuItem4: TMenuItem
-      Action = ActLaunchGui
+      Action = ActLaunchWaptConsole
     end
     object MenuItem10: TMenuItem
       Caption = 'Configuration'
@@ -136,10 +136,10 @@ object DMWaptTray: TDMWaptTray
       Caption = 'Voir le fichier de configuration'
       OnExecute = ActConfigureExecute
     end
-    object ActLaunchGui: TAction
-      Caption = 'Lancer l''interface graphique WAPT'
-      OnExecute = ActLaunchGuiExecute
-      OnUpdate = ActLaunchGuiUpdate
+    object ActLaunchWaptConsole: TAction
+      Caption = 'Lancer la console WAPT'
+      OnExecute = ActLaunchWaptConsoleExecute
+      OnUpdate = ActLaunchWaptConsoleUpdate
     end
     object ActWaptUpgrade: TAction
       Caption = 'Mettre à jour le logiciel WAPT de cette machine'

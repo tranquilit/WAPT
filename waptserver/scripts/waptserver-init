@@ -1,0 +1,135 @@
+#!/usr/bin/env bash
+
+### BEGIN INIT INFO
+# Provides: tis-compliance
+# Required-Start: $all
+# Required-Stop: $all
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: starts the uwsgi app server for tis-compliance
+# Description: starts uwsgi app server for tis-compliance using start-stop-daemon
+### END INIT INFO
+set -e
+
+VERSION=waptserver
+PATH=/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/local/bin/$VERSION
+RUN=/var/run
+NAME=$VERSION
+CONFIG_FILE=/opt/waptserver/waptserver.ini
+LOGFILE=/var/log/$NAME.log
+OWNER=waptserver
+GROUP=www-data
+DESC=$VERSION
+OP=$1
+
+DAEMON_OPTS=""
+
+# Include uwsgi defaults if available
+if [[ -f /etc/default/$VERSION ]]; then
+    . /etc/default/$VERSION
+fi
+
+do_pid_check()
+{
+    local PIDFILE=$1
+    [[ -f $PIDFILE ]] || return 0
+    local PID=$(cat $PIDFILE)
+    for p in $(pgrep uwsgi_python); do
+        [[ $p == $PID ]] && return 1
+    done
+    return 0
+}
+
+
+do_start()
+{
+#    for config in $ENABLED_CONFIGS; do
+        local PIDFILE=$RUN/$NAME.pid
+        if do_pid_check $PIDFILE; then
+            /usr/bin/uwsgi -d $LOGFILE --pidfile $PIDFILE --ini $CONFIG_FILE --uid $OWNER --gid $GROUP
+        
+#            sudo -u $OWNER -i $VERSION $config $DAEMON_OPTS --pidfile $PIDFILE
+        else
+            echo "Already running!"
+        fi
+#    done
+}
+
+send_sig()
+{
+        local PIDFILE=$RUN/$NAME.pid
+        set +e
+        [[ -f $PIDFILE ]] && kill $1 $(cat $PIDFILE) > /dev/null 2>&1
+        set -e
+}
+
+wait_and_clean_pidfiles()
+{
+        local PIDFILE=$RUN/$NAME.pid
+        until do_pid_check $PIDFILE; do
+            echo -n "";
+        done
+        rm -f $PIDFILE
+}
+
+do_stop()
+{
+    send_sig -3
+    wait_and_clean_pidfiles
+}
+
+do_reload()
+{
+    send_sig -1
+}
+
+do_force_reload()
+{
+    send_sig -15
+}
+
+get_status()
+{
+    send_sig -10
+}
+
+case "$OP" in
+    start)
+        echo "Starting $DESC: "
+        do_start
+        echo "$NAME."
+        ;;
+    stop)
+        echo -n "Stopping $DESC: "
+        do_stop
+        echo "$NAME."
+        ;;
+    reload)
+        echo -n "Reloading $DESC: "
+        do_reload
+        echo "$NAME."
+        ;;
+    force-reload)
+        echo -n "Force-reloading $DESC: "
+        do_force_reload
+        echo "$NAME."
+       ;;
+    restart)
+        echo "Restarting $DESC: "
+        do_stop
+	sleep 3
+        do_start
+        echo "$NAME."
+        ;;
+    status)
+        get_status
+        ;;
+    *)
+        N=/etc/init.d/$NAME
+        echo "Usage: $N {start|stop|restart|reload|force-reload|status}" >&2
+        exit 1
+        ;;
+esac
+exit 0
+

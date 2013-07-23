@@ -43,13 +43,9 @@ begin
   CanClose:= True;
   if (ModalResult=mrOk) then
   begin
-    {Canclose :=  (fnPublicCert.FileName<>'') and (edRepoUrl.Text <> '');
-    if not CanClose then
-      showMessage('Veuillez rentrer une clé publique et l''adress du dépôt WAPT');
-    }
     if fnPublicCert.FileName='' then
     begin
-      showMessage('Veuillez rentrer clé public');
+      showMessage('Veuillez rentrer le chemin vers la clé publique');
       CanClose:=False;
     end;
     if (edRepoUrl.Text = '') then
