@@ -2718,6 +2718,10 @@ class Wapt(object):
         """Removes a package giving its package name, unregister from local status DB"""
         result = {'removed':[],'errors':[]}
         try:
+            # development mode, remove a package by its directory
+            if os.path.isfile(os.path.join(package,'WAPT','control')):
+                package = PackageEntry().load_control_from_wapt(package).package
+
             q = self.waptdb.query("""\
                select * from wapt_localstatus
                 where package=?
@@ -3198,7 +3202,7 @@ class Wapt(object):
         # initialize a session db for the user
         session_db =  WaptSessionDB(self.user) # WaptSessionDB()
         with session_db:
-            if force or not session_db.is_installed(package_entry.package,package_entry.version):
+            if force or os.path.isdir(packagename) or not session_db.is_installed(package_entry.package,package_entry.version):
                 try:
                     previous_cwd = os.getcwd()
 
@@ -3390,6 +3394,24 @@ class Wapt(object):
         ext = ext.lower()
         if ext=='.exe':
             silentflag = '/VERYSILENT'
+            props = setuphelpers.get_file_properties(installer_path)
+            if props.get('InternalName','').lower() == 'sfxcab.exe':
+                silentflag = '/quiet'
+            elif props.get('InternalName','').lower() == '7zs.sfx':
+                silentflag = '/s'
+            elif props.get('InternalName','').lower() == 'setup launcher':
+                silentflag = '/s'
+            elif props.get('InternalName','').lower() == 'wextract':
+                silentflag = '/Q'
+            else:
+                content = open(installer_path,'rb').read(600000)
+                if 'Inno.Setup' in content:
+                    silentflag = '/VERYSILENT'
+                elif 'Quiet installer' in content:
+                    silentflag = '-q'
+                elif 'nsis.sf.net' in content or 'Nullsoft.NSIS' in content:
+                    silentflag = '/S'
+
         elif ext=='.msi':
             silentflag = '/q'
         else:
@@ -3434,7 +3456,7 @@ class Wapt(object):
         props['publisher'] = publisher
         return props
 
-    def maketemplate(self,installer_path,packagename='',directoryname=''):
+    def make_package_template(self,installer_path,packagename='',directoryname=''):
         """Build a skeleton of WAPT package based on the properties of the supplied installer
            Return the path of the skeleton
         """
@@ -3445,10 +3467,26 @@ class Wapt(object):
              directoryname = os.path.abspath(directoryname)
 
         installer = os.path.basename(installer_path)
-        if not os.path.isfile(installer_path):
-            raise Exception('The parameter "%s" is not a file, it must be the path to an .exe or .msi installer' % installer_path)
-        props = self.getproductprops(installer_path)
-        silentflags = self.getsilentflags(installer_path)
+        uninstallkey = ''
+
+        if not os.path.exists(installer_path):
+            raise Exception('The parameter "%s" is not a file or a directory, it must be the path to a directory, or an .exe or .msi installer' % installer_path)
+        if os.path.isfile(installer_path):
+            # case of an installer
+            props = self.getproductprops(installer_path)
+            silentflags = self.getsilentflags(installer_path)
+            # for MSI, uninstallkey is in properties
+            if 'ProductCode' in props:
+                uninstallkey = '"%s"' % props['ProductCode']
+        else:
+            # case of a directory
+            props = {
+                'product':installer,
+                'description':installer,
+                'version':'0',
+                'publisher':ensure_unicode(setuphelpers.get_current_user())
+                }
+            silentflags = ''
 
         if not packagename:
             simplename = re.sub(r'[\s\(\)]+','',props['product'].lower())
@@ -3467,7 +3505,10 @@ class Wapt(object):
         else:
             logger.info('setup.py file already exists, skip create')
         logger.debug(u'Copy installer %s to target' % installer)
-        shutil.copyfile(installer_path,os.path.join(directoryname,installer))
+        if os.path.isfile(installer_path):
+            shutil.copyfile(installer_path,os.path.join(directoryname,installer))
+        else:
+            setuphelpers.copytree2(installer_path,os.path.join(directoryname,installer))
 
         control_filename = os.path.join(directoryname,'WAPT','control')
         if not os.path.isfile(control_filename):
@@ -3497,7 +3538,7 @@ class Wapt(object):
         return self.make_group_template(packagename=packagename,depends=depends,directoryname=directoryname,section='host')
 
     def make_group_template(self,packagename='',depends=None,directoryname='',section='group'):
-        """Build a skeleton of WAPT package based on the properties of the supplied installer
+        """Build a skeleton of WAPT group package
             depends : list of package dependencies. If None, use currently explicitly installed packages
            Return the path of the skeleton
         """
@@ -3569,7 +3610,7 @@ class Wapt(object):
             append_depends = False
 
         if depends and not isinstance(depends,list):
-            depends = depends.split(',')
+            depends = [s.strip() for s in depends.split(',')]
 
         if depends is None:
             # get list of explicitly installed packages
@@ -3613,7 +3654,8 @@ class Wapt(object):
             root = os.path.join(root,'%(package)s-%(suffix)s')
         return root % {'package':packagename,'section':section,'suffix':suffix}
 
-    def edit_package(self,packagename,target_directory='',ignore_local_sources=False):
+    def edit_package(self,packagename,target_directory='',ignore_local_sources=False,
+            append_depends=None):
         """Download an existing package from repositories into targetdirectory for modification
             if ignore_local_source is True, overwrite current local edited data if any.
             Return the the directory name of the package sources"""
@@ -3631,13 +3673,14 @@ class Wapt(object):
             else:
                 os.unlink(devdir)
         if p:
-            return self.duplicate_package(packagename=p[-1].package,newname=p[-1].package,target_directory=target_directory,build=False)
+            return self.duplicate_package(packagename=p[-1].package,newname=p[-1].package,target_directory=target_directory,build=False,append_depends = append_depends)
         else:
-            return self.duplicate_package(packagename=packagename,newname=packagename,target_directory=target_directory,build=False)
+            return self.duplicate_package(packagename=packagename,newname=packagename,target_directory=target_directory,build=False,append_depends = append_depends)
 
-    def edit_host(self,hostname,target_directory='',ignore_local_sources=False):
+    def edit_host(self,hostname,target_directory='',ignore_local_sources=False,append_depends=None):
         """Download an host package from host repositories into targetdirectory for modification
-            Return the the directory name of the package sources."""
+            Return the the directory name of the package sources.
+            Change """
         hostdate = self.repositories[-1].update_host(hostname)
         if hostdate:
             # check if already downloaded ...
@@ -3649,9 +3692,9 @@ class Wapt(object):
                         return {'target':devdir,'source_dir':devdir,'package':package}
                 else:
                     os.unlink(devdir)
-            return self.duplicate_package(packagename=hostname,newname=hostname,target_directory=target_directory,build=False)
+            return self.duplicate_package(packagename=hostname,newname=hostname,target_directory=target_directory,build=False,append_depends = append_depends)
         else:
-            new_source = self.make_host_template(packagename=hostname,directoryname=target_directory,depends='')
+            new_source = self.make_host_template(packagename=hostname,directoryname=target_directory,depends=append_depends)
             return {'target':new_source,'source_dir':new_source,'package':PackageEntry().load_control_from_wapt(new_source)}
 
     def duplicate_package(self,packagename,newname=None,newversion='',target_directory='',
@@ -3659,11 +3702,13 @@ class Wapt(object):
             keep_sources=True,
             excludes=['.svn','.git*','*.pyc','src'],
             private_key=None,
-            callback=pwd_callback):
+            callback=pwd_callback,
+            append_depends=None):
         """Duplicate an existing package from repositories into targetdirectory with newname.
             Return a dict with the PackageEntry and the package filename or the directory name of the new package
             unzip: unzip packages at end for modifications, don't sign, return directory name
-            excludes: excluded files for signing"""
+            excludes: excluded files for signing
+            append_depends : comma str or list of depends to append. """
 
         # suppose target directory
         if not target_directory:
@@ -3724,6 +3769,15 @@ class Wapt(object):
         for a in source_control.all_attributes:
             dest_control[a] = source_control[a]
 
+        if append_depends:
+            if not isinstance(append_depends,list):
+                append_depends = [s.strip() for s in append_depends.split(',')]
+            prev_depends = dest_control.depends.split(',')
+            for d in append_depends:
+                if not d in prev_depends:
+                    prev_depends.append(d)
+            dest_control.depends = ','.join(prev_depends)
+
         # change package name
         dest_control.package = newname
         if newversion:
@@ -3770,6 +3824,14 @@ class Wapt(object):
         if self.config.has_option('global','waptupgrade_url'):
             upgradeurl = self.config.get('global','waptupgrade_url')
         pass
+
+    def packages_add_depends(packages,append_depends):
+        """ Add a list of dependencies to existing packages, inc version and build-upload
+            packages : list of package names
+            append_depends : list of dependencies packages
+        """
+        pass
+        self.build_upload()
 
     def setup_tasks(self):
         result = []

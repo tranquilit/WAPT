@@ -95,8 +95,8 @@ action is either :
   build-upload <directory> : creates a WAPT package from supplied directory, sign it and upload it
   duplicate <directory or package> <new-package-name> [<new-version> [<target directory>]] : duplicate an existing package,
                                             changing its name (can be used for duplication of host packages...)
-  edit <package> : download and unzip a package. Open in Explorer the target directory
-  edit-host <host fwqdn> : download an unzip a host package. Open in Explorer the target directory
+  edit <package> [p1,p2,..]: download and unzip a package. Open in Explorer the target directory. Appends dependencies p1, p2 ...
+  edit-host <host fqdn> [p1,p2,..]: download an unzip a host package. Open in Explorer the target directory. Appends dependencies p1, p2 ...
 
  For repository management
   upload-package  <filenames> : upload package to repository (using winscp for example.)
@@ -514,7 +514,7 @@ def main():
                 if len(args)<2:
                     print u"You must provide the installer path"
                     sys.exit(1)
-                result = mywapt.maketemplate(*args[1:])
+                result = mywapt.make_package_template(*args[1:])
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
@@ -557,7 +557,10 @@ def main():
                 if len(args)<2:
                     print u"You must provide the package to edit"
                     sys.exit(1)
-                result = mywapt.edit_package(*args[1:5])
+                if len(args)>=3:
+                    result = mywapt.edit_package(packagename = args[1],append_depends = args[2] )
+                else:
+                    result = mywapt.edit_package(packagename = args[1])
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
@@ -572,7 +575,10 @@ def main():
                 if len(args)<2:
                     print u"You must provide the host fqdn package to edit"
                     sys.exit(1)
-                result = mywapt.edit_host(*args[1:5])
+                if len(args)>=3:
+                    result = mywapt.edit_host(hostname = args[1],append_depends = args[2] )
+                else:
+                    result = mywapt.edit_host(hostname = args[1],append_depends = args[2] )
                 if options.json_output:
                     jsonresult['result'] = result
                 else:

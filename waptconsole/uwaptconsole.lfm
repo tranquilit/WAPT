@@ -438,11 +438,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object TabSheet3: TTabSheet
           Caption = 'Paquets disponibles'
-          ClientHeight = 536
+          ClientHeight = 516
           ClientWidth = 564
           object GridHostPackages1: TVirtualJSONListView
             Left = 0
-            Height = 506
+            Height = 486
             Top = 30
             Width = 564
             Align = alClient

@@ -755,6 +755,7 @@ procedure TVisWaptGUI.GridHostsGetText(Sender: TBaseVirtualTree;
 var
   js : ISuperObject;
 begin
+  exit;
   js := SO(Data.AsJSON);
   CellText:=js.S[TVirtualJSONListViewColumn(GridHosts.Header.Columns[column]).PropertyName];
 end;

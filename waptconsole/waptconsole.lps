@@ -24,8 +24,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="559"/>
-        <CursorPos X="18" Y="587"/>
+        <TopLine Value="752"/>
+        <CursorPos X="8" Y="758"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="1">
           <Item0 X="1" Y="390" ID="1"/>
@@ -115,7 +115,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="25"/>
         <CursorPos X="43" Y="40"/>
-        <UsageCount Value="32"/>
+        <UsageCount Value="64"/>
       </Unit9>
       <Unit10>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
@@ -123,7 +123,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="2090"/>
         <CursorPos X="23" Y="2134"/>
-        <UsageCount Value="146"/>
+        <UsageCount Value="143"/>
       </Unit10>
       <Unit11>
         <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
@@ -140,7 +140,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="102"/>
+        <UsageCount Value="99"/>
         <DefaultSyntaxHighlighter Value="XML"/>
       </Unit12>
       <Unit13>
@@ -149,7 +149,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="297"/>
         <CursorPos X="3" Y="311"/>
-        <UsageCount Value="146"/>
+        <UsageCount Value="143"/>
       </Unit13>
       <Unit14>
         <Filename Value="C:\codetyphon\lazarus\lcl\dialogs.pp"/>
@@ -157,7 +157,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="9"/>
         <CursorPos X="70" Y="36"/>
-        <UsageCount Value="126"/>
+        <UsageCount Value="123"/>
       </Unit14>
       <Unit15>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
@@ -165,7 +165,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="72"/>
         <CursorPos X="58" Y="80"/>
-        <UsageCount Value="97"/>
+        <UsageCount Value="94"/>
       </Unit15>
       <Unit16>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdURI.pas"/>
@@ -173,7 +173,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="390"/>
         <CursorPos X="5" Y="439"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="5"/>
       </Unit16>
       <Unit17>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\activex.pp"/>
@@ -182,14 +182,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1364"/>
         <CursorPos X="4" Y="1378"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="27"/>
         <Loaded Value="True"/>
       </Unit17>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="14" HistoryIndex="13">
+    <JumpHistory Count="15" HistoryIndex="14">
       <Position1>
         <Filename Value="uwaptconsole.pas"/>
         <Caret Line="152" Column="33" TopLine="110"/>
@@ -246,6 +246,10 @@
         <Filename Value="uwaptconsole.pas"/>
         <Caret Line="235" Column="1" TopLine="224"/>
       </Position14>
+      <Position15>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="819" Column="8" TopLine="777"/>
+      </Position15>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
