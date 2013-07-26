@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.6.29"
+__version__ = "0.6.31"
 
 import sys
 import os
@@ -177,6 +177,19 @@ class JsonOutput(object):
             return self.console.__getattrib__(name)
         else:
             return self.console.__getattribute__(name)
+
+def wapt_sources_edit(wapt_sources_dir):
+    psproj_filename = os.path.join(wapt_sources_dir,'WAPT','wapt.psproj')
+    control_filename = os.path.join(wapt_sources_dir,'WAPT','control')
+    setup_filename = os.path.join(wapt_sources_dir,'setup.py')
+    pyscripter_filename = os.path.join(setuphelpers.programfiles32,'PyScripter','PyScripter.exe')
+    if os.path.isfile(pyscripter_filename) and os.path.isfile(psproj_filename):
+        import psutil
+        p = psutil.Popen('"%s" --newinstance --project "%s" "%s" "%s"' % (pyscripter_filename,psproj_filename,setup_filename,control_filename),
+            cwd = os.path.join(setuphelpers.programfiles32,'PyScripter'))
+    else:
+        os.startfile(wapt_sources_dir)
+
 
 def main():
     jsonresult = {'output':[]}
@@ -491,11 +504,11 @@ def main():
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
-                    print u"Downloaded packages : \n%s" % "\n".join([ "  %s" % p for p in result['downloaded'] ])
-                    print u"Skipped packages : \n%s" % "\n".join([ "  %s" % p for p in result['skipped'] ])
+                    print u"Downloaded packages : \n%s" % "\n".join([ "  %s" % p for p in result['downloads']['downloaded'] ])
+                    print u"Skipped packages : \n%s" % "\n".join([ "  %s" % p for p in result['downloads']['skipped'] ])
 
                     if result['errors']:
-                        logger.critical(u'Unable to download some files : %s'% (result['errors'],))
+                        logger.critical(u'Unable to download some files : %s'% (result['downloads']['errors'],))
                         sys.exit(1)
 
             elif action=='update-packages':
@@ -519,9 +532,9 @@ def main():
                     jsonresult['result'] = result
                 else:
                     print u"Template created. You can build the WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result)
-                    if mywapt.upload_cmd:
+                    if mywapt.upload_cmd or mywapt.wapt_server:
                         print u"You can build and upload the WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result)
-                    os.startfile(result)
+                    wapt_sources_edit(result)
 
             elif action in ('make-host-template','make-group-template'):
                 if action == 'make-host-template':
@@ -532,9 +545,9 @@ def main():
                     jsonresult['result'] = result
                 else:
                     print u"Template created. You can build the WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result)
-                    if mywapt.upload_cmd:
+                    if mywapt.upload_cmd or mywapt.wapt_server:
                         print u"You can build and upload the WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result)
-                    os.startfile(result)
+                    wapt_sources_edit(result)
 
             elif action=='duplicate':
                 if len(args)<3:
@@ -545,10 +558,10 @@ def main():
                     jsonresult['result'] = result
                 else:
                     if os.path.isdir(result['target']):
-                        os.startfile( result)
                         print u"Package duplicated. You can build the new WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result['source_dir'])
-                        if mywapt.upload_cmd:
+                        if mywapt.upload_cmd or mywapt.wapt_server:
                             print u"You can build and upload the new WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result['source_dir'])
+                        wapt_sources_edit(result)
                     else:
                         print u"Package duplicated. You can upload the new WAPT package to repository by launching\n  %s upload-package %s" % (sys.argv[0],result['target'])
                         print u"You can rebuild and upload the new WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result['source_dir'])
@@ -565,11 +578,11 @@ def main():
                     jsonresult['result'] = result
                 else:
                     if os.path.isdir(result['target']):
-                        os.startfile( result['target'])
-                        if mywapt.upload_cmd:
-                            print u"Package edited. You can build and upload the new WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result['target'])
+                        wapt_sources_edit(result['target'])
+                        if mywapt.upload_cmd or mywapt.wapt_server:
+                            print u"Package edited. You can build and upload the new WAPT package by launching\n  %s -i build-upload %s" % (sys.argv[0],result['target'])
                         else:
-                            print u"Package edited. You can build the new WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result['target'])
+                            print u"Package edited. You can build the new WAPT package by launching\n  %s -i build-package %s" % (sys.argv[0],result['target'])
 
             elif action=='edit-host':
                 if len(args)<2:
@@ -583,11 +596,11 @@ def main():
                     jsonresult['result'] = result
                 else:
                     if os.path.isdir(result['target']):
-                        os.startfile( result['target'])
-                        if mywapt.upload_cmd:
-                            print u"Package edited. You can build and upload the new WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result['target'])
+                        wapt_sources_edit(result['target'])
+                        if mywapt.upload_cmd or mywapt.wapt_server:
+                            print u"Package edited. You can build and upload the new WAPT package by launching\n  %s -i build-upload %s" % (sys.argv[0],result['target'])
                         else:
-                            print u"Package edited. You can build the new WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result['target'])
+                            print u"Package edited. You can build the new WAPT package by launching\n  %s -i build-package %s" % (sys.argv[0],result['target'])
 
             elif action in ('build-package','build-upload'):
                 if len(args)<2:

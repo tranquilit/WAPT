@@ -132,11 +132,11 @@ FileName=C:\tranquilit\wapt\setuphelpers.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node5]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-get.py
+FileName=C:\tranquilit\wapt\wapt-get.ini
 
 [Project\ChildNodes\Node0\ChildNodes\Node6]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-get.ini
+FileName=C:\tranquilit\wapt\wapt-get.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node7]
 ClassName=TProjectFileNode
@@ -539,7 +539,7 @@ Name=download-upgrade
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=download-upgrade
+Parameters=-ldebug download-upgrade
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -602,13 +602,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node18]
 ClassName=TProjectRunConfiguationNode
-Name=remove thunder
+Name=remove current
 
 [Project\ChildNodes\Node1\ChildNodes\Node18\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug remove tis-thunderbird
+Parameters=-ldebug remove $[ActiveDoc-Dir]
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -878,13 +878,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node30]
 ClassName=TProjectRunConfiguationNode
-Name=session-setup tis-thunderbird
+Name=session-setup current
 
 [Project\ChildNodes\Node1\ChildNodes\Node30\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug session-setup tis-remoteng
+Parameters=-f -ldebug session-setup $[ActiveDoc-Dir]
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1336,8 +1336,100 @@ WorkingDirectory=$[ActiveScript-Dir]
 ShortCut=0
 MessagesFormat=$[FileName] $[LineNumber]
 
+[Project\ChildNodes\Node1\ChildNodes\Node50]
+ClassName=TProjectRunConfiguationNode
+Name=make-template directory
+
+[Project\ChildNodes\Node1\ChildNodes\Node50\RunConfig]
+ScriptName=C:\tranquilit\wapt\wapt-get.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=make-template C:\tmp\cert_utils
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node50\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+ShortCut=0
+MessagesFormat=$[FileName] $[LineNumber]
+
+[Project\ChildNodes\Node1\ChildNodes\Node51]
+ClassName=TProjectRunConfiguationNode
+Name=edit adminpak
+
+[Project\ChildNodes\Node1\ChildNodes\Node51\RunConfig]
+ScriptName=C:\tranquilit\wapt\wapt-get.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=-ldebug edit tis-adminpak2003
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node51\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+ShortCut=0
+MessagesFormat=$[FileName] $[LineNumber]
+
+[Project\ChildNodes\Node1\ChildNodes\Node52]
+ClassName=TProjectRunConfiguationNode
+Name=download htlaptop.tranquilit.local
+
+[Project\ChildNodes\Node1\ChildNodes\Node52\RunConfig]
+ScriptName=C:\tranquilit\wapt\wapt-get.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=download htlaptop.tranquilit.local
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node52\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+ShortCut=0
+MessagesFormat=$[FileName] $[LineNumber]
+
+[Project\ChildNodes\Node1\ChildNodes\Node53]
+ClassName=TProjectRunConfiguationNode
+Name=edit-host +pac
+
+[Project\ChildNodes\Node1\ChildNodes\Node53\RunConfig]
+ScriptName=C:\tranquilit\wapt\wapt-get.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=edit-host htlaptop.tranquilit.local tis-geogebra4.2
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node53\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+ShortCut=0
+MessagesFormat=$[FileName] $[LineNumber]
+
 [Project\ChildNodes\Node1\ChildNodes]
-Count=50
+Count=54
 
 [Project\ChildNodes]
 Count=2

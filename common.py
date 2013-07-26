@@ -76,7 +76,7 @@ from setuphelpers import ensure_unicode
 
 import types
 
-__version__ = "0.6.28"
+__version__ = "0.6.31"
 
 logger = logging.getLogger()
 
@@ -2588,7 +2588,7 @@ class Wapt(object):
                 new_apackages.append(p)
         apackages = new_apackages
 
-        actions = self.check_depends(apackages,force=download_only or force,forceupgrade=True)
+        actions = self.check_depends(apackages,force=force,forceupgrade=True)
         actions['errors']=[]
 
         skipped = actions['skipped']
@@ -2604,7 +2604,7 @@ class Wapt(object):
         # get package entries to install to_install is a list of (request,package)
         packages = [ p[1] for p in to_install ]
 
-        downloaded = self.download_packages(packages,usecache=not download_only and usecache)
+        downloaded = self.download_packages(packages,usecache=usecache)
         if downloaded.get('errors',[]):
             raise Exception(u'Error downloading some files : %s',(downloaded['errors'],))
 
@@ -2894,7 +2894,7 @@ class Wapt(object):
         self.runstatus='Download upgrades'
         try:
             to_download = self.list_upgrade()
-            return self.download_packages(to_download)
+            return self.install(to_download,download_only=True)
         finally:
             self.runstatus=''
 
@@ -3456,7 +3456,7 @@ class Wapt(object):
         props['publisher'] = publisher
         return props
 
-    def make_package_template(self,installer_path,packagename='',directoryname=''):
+    def make_package_template(self,installer_path,packagename='',directoryname='',section='',description=''):
         """Build a skeleton of WAPT package based on the properties of the supplied installer
            Return the path of the skeleton
         """
@@ -3515,7 +3515,7 @@ class Wapt(object):
             entry = PackageEntry()
             entry.package = packagename
             entry.architecture='all'
-            entry.description = 'automatic package for %s ' % props['description']
+            entry.description = description or 'automatic package for %s ' % props['description']
             try:
                 entry.maintainer = ensure_unicode(win32api.GetUserNameEx(3))
             except:
@@ -3525,19 +3525,24 @@ class Wapt(object):
                     entry.maintainer = os.environ['USERNAME']
 
             entry.priority = 'optional'
-            entry.section = 'base'
+            entry.section = section or 'base'
             entry.version = props['version']+'-0'
             if self.config.has_option('global','default_sources_url'):
                 entry.sources = self.config.get('global','default_sources_url') % {'packagename':packagename}
             codecs.open(control_filename,'w',encoding='utf8').write(entry.ascontrol())
         else:
             logger.info('control file already exists, skip create')
+
+        psproj_filename = os.path.join(directoryname,'WAPT','wapt.psproj')
+        if not os.path.isfile(psproj_filename):
+            proj_template = codecs.open(os.path.join(self.wapt_base_dir,'templates','wapt.psproj'),encoding='utf8').read() % locals()
+            codecs.open(psproj_filename,'w',encoding='utf8').write(proj_template)
         return directoryname
 
     def make_host_template(self,packagename='',depends=None,directoryname=''):
         return self.make_group_template(packagename=packagename,depends=depends,directoryname=directoryname,section='host')
 
-    def make_group_template(self,packagename='',depends=None,directoryname='',section='group'):
+    def make_group_template(self,packagename='',depends=None,directoryname='',section='group',description=''):
         """Build a skeleton of WAPT group package
             depends : list of package dependencies. If None, use currently explicitly installed packages
            Return the path of the skeleton
@@ -3573,7 +3578,7 @@ class Wapt(object):
             entry.section = section
             entry.version = '0'
             entry.architecture='all'
-            entry.description = '%s package for %s ' % (section,packagename)
+            entry.description = description or '%s package for %s ' % (section,packagename)
             try:
                 entry.maintainer = ensure_unicode(win32api.GetUserNameEx(3))
             except:
@@ -3669,6 +3674,16 @@ class Wapt(object):
             if not ignore_local_sources:
                 package=PackageEntry().load_control_from_wapt(devdir)
                 if package.match(packagename):
+                    if append_depends:
+                        if not isinstance(append_depends,list):
+                            append_depends = [s.strip() for s in append_depends.split(',')]
+                        prev_depends = package.depends.split(',')
+                        for d in append_depends:
+                            if not d in prev_depends:
+                                prev_depends.append(d)
+                        package.depends = ','.join(prev_depends)
+                        package.save_control_to_wapt(devdir)
+
                     return {'target':devdir,'source_dir':devdir,'package':package}
             else:
                 os.unlink(devdir)
@@ -3689,6 +3704,16 @@ class Wapt(object):
                 if not ignore_local_sources:
                     package=PackageEntry().load_control_from_wapt(devdir)
                     if package.match(hostname):
+                        if append_depends:
+                            if not isinstance(append_depends,list):
+                                append_depends = [s.strip() for s in append_depends.split(',')]
+                            prev_depends = package.depends.split(',')
+                            for d in append_depends:
+                                if not d in prev_depends:
+                                    prev_depends.append(d)
+                            package.depends = ','.join(prev_depends)
+                            package.save_control_to_wapt(devdir)
+
                         return {'target':devdir,'source_dir':devdir,'package':package}
                 else:
                     os.unlink(devdir)
@@ -3970,12 +3995,12 @@ if __name__ == '__main__':
     cfg.read('c:\\tranquilit\\wapt\\wapt-get.ini')
     w = Wapt(config=cfg)
     """
-    force_utf8_no_bom(r'C:\tranquilit\tis-waptini-wapt\WAPT\control')
+    #force_utf8_no_bom(r'C:\tranquilit\tis-waptini-wapt\WAPT\control')
 
-    sys.exit(0)
+    w = Wapt(config_filename='c:/tranquilit/wapt/wapt-get.ini')
+    w.install(['tis-certutils','htlaptop.tranquilit.local'],download_only=True,usecache=True)
 
-    w = Wapt(config_filename='c:/wapt/wapt-get.ini')
-    sdb = w.waptsessiondb()
+    #sdb = w.waptsessiondb()
 
     #w.edit_host('testnuit.tranquilit.local')
 
@@ -4007,8 +4032,8 @@ if __name__ == '__main__':
 
 
     #w.waptdb.db_version='00'
-    w.waptdb.upgradedb()
-    print w.is_installed('tis-firebird')
+    #w.waptdb.upgradedb()
+    #print w.is_installed('tis-firebird')
     #print w.sign_package('c:\\tranquilit\\tis-wapttest-wapt')
     #print w.sign_package('c:\\tranquilit\\tis-wapttest_0.0.0-40_all.wapt')
     #pfn = w.build_package('c:\\tranquilit\\tis-wapttest-wapt',True)
