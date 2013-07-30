@@ -10,7 +10,7 @@ uses
   Forms, pl_luicontrols, pl_bgracontrols, pl_graphics32ext,
   runtimetypeinfocontrols, uwaptconsole, uVisCreateKey, tisstrings, waptcommon,
   tiscommon, tisinifiles, dmwaptpython, uVisEditPackage, uvisoptioninifile,
-  uviscreatewaptsetup; //uvissearchpackage;
+  uviscreatewaptsetup, uvispassword; //uvissearchpackage;
 
 {$R *.res}
 

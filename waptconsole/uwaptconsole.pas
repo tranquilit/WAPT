@@ -187,7 +187,7 @@ var
   VisWaptGUI: TVisWaptGUI;
 
 implementation
-uses LCLIntf,tisstrings,soutils,waptcommon,uVisCreateKey,uVisCreateWaptSetup,uvisOptionIniFile,dmwaptpython,uviseditpackage;
+uses LCLIntf,tisstrings,soutils,waptcommon,uVisCreateKey,uVisCreateWaptSetup,uvisOptionIniFile,dmwaptpython,uviseditpackage,uvispassword;
 {$R *.lfm}
 
 { TVisWaptGUI }
@@ -690,6 +690,8 @@ begin
 end;
 
 procedure TVisWaptGUI.FormCreate(Sender: TObject);
+var
+  done : Boolean=False;
 begin
   waptpath := ExtractFileDir(paramstr(0));
   //butInitWapt.Click;
@@ -701,6 +703,23 @@ begin
   MemoLog.Clear;
 
   PageControl1.ActivePage :=  pgInventory;
+
+  if waptServerPassword = '' then
+  begin
+    With TVisPassword.Create(Self) do
+    try
+      laPassword.Caption:='Mot de passe du serveur WAPT:';
+      repeat
+        if ShowModal=mrOk then
+        begin
+          waptServerPassword := edPassword.Text ;
+          done := True;
+        end;
+      until done;
+    finally
+      Free;
+    end;
+  end;
 end;
 
 procedure TVisWaptGUI.GridLoadData(grid:TVirtualJSONListView;jsondata:string);

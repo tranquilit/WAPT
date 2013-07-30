@@ -1,7 +1,7 @@
 object VisEditPackage: TVisEditPackage
-  Left = 296
+  Left = 856
   Height = 600
-  Top = 135
+  Top = 162
   Width = 800
   Caption = 'Editer le paquet'
   ClientHeight = 600

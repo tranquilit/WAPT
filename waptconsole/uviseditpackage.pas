@@ -119,9 +119,11 @@ function EditHost(hostname:String):ISuperObject;
 
 var
   VisEditPackage: TVisEditPackage;
+  privateKeyPassword: String = '';
+  waptServerPassword: String = '';
 
 implementation
-uses LCLIntf,tisstrings,soutils,waptcommon,dmwaptpython,jwawinuser;
+uses LCLIntf,tisstrings,soutils,waptcommon,dmwaptpython,jwawinuser, uvispassword;
 {$R *.lfm}
 
 function EditPackage(packagename:String):ISuperObject;
@@ -325,9 +327,26 @@ var
   expr,res:String;
   package:String;
   result:ISuperObject;
+  done : Boolean=False;
 begin
   ActEditSavePackage.Execute;
-  result := DMPython.RunJSON(format('mywapt.build_upload(r"%s")',[FSourcePath]),jsonlog);
+  if privateKeyPassword = '' then
+  begin
+    With TVisPassword.Create(Self) do
+    try
+      laPassword.Caption:='Mot de passe de la clé privé:';
+      repeat
+        if ShowModal=mrOk then
+        begin
+          privateKeyPassword := edPassword.Text;
+          done := True;
+        end;
+      until done;
+    finally
+      Free;
+    end;
+  end;
+  result := DMPython.RunJSON(format('mywapt.build_upload(r"%s",r"%s",r"%s")',[FSourcePath,privateKeyPassword,waptServerPassword]),jsonlog);
   ModalResult:= mrOk;
 end;
 
