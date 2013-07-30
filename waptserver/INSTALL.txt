@@ -1,3 +1,22 @@
+==Installation on Windows==
+Configuration of WAPTServer on windows
+
+C:\WAPT\waptserver\mongodb>mongod.exe --config c:\wapt\waptserver\mongodb\mongod.cfg --install
+c:\python27\python waptserver_servicewrapper.py --startup=auto install 
+
+net start waptmongodb
+net start waptserver
+
+
+Uninstall of waptserver services
+
+net stop waptserver
+sc delete waptserver
+net stop waptmongodb
+sc delete waptmongodb
+
+==Installation on Linux==
+
 Installation des dépendances 
  apt-get install python python-dev mongodb build-essential python-dev python-setuptools
  easy_install flask uwsgi pymongo
