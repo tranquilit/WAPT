@@ -1,4 +1,4 @@
-from flask import request, Flask,Response
+from flask import request, Flask,Response, send_from_directory
 import time
 import sys
 import json
@@ -9,23 +9,38 @@ from werkzeug import secure_filename
 from waptpackage import update_packages
 import logging
 import ConfigParser
-config = ConfigParser.RawConfigParser()
-config.read('waptserver.ini')
+
 
 mongodb_port = ""
 mongodb_ip = ""
 wapt_folder = ""
 
-if config.has_section('options'):
-    if config.has_option('options', 'mongodb_port'):
-        mongodb_port = config.get('options', 'mongodb_port')
-    if config.has_option('options', 'mongodb_ip'):
-        mongodb_ip = config.get('options', 'mongodb_ip')
-    if config.has_option('options', 'wapt_folder'):
-        wapt_folder = config.get('options', 'wapt_folder')
-        if wapt_folder.endswith('/'):
-            wapt_folder = wapt_folder[:-1]
-    
+
+config = ConfigParser.RawConfigParser()
+ini_file_path='c:\\wapt\\waptserver\\waptserver.ini'
+
+if os.path.exists(ini_file_path):
+    config.read(ini_file_path)
+    if config.has_section('options'):
+        if config.has_option('options', 'mongodb_port'):
+            mongodb_port = config.get('options', 'mongodb_port')
+        if config.has_option('options', 'mongodb_ip'):
+            mongodb_ip = config.get('options', 'mongodb_ip')
+        if config.has_option('options', 'wapt_folder'):
+            wapt_folder = config.get('options', 'wapt_folder')
+            if wapt_folder.endswith('/'):
+                wapt_folder = wapt_folder[:-1]
+
+if not wapt_folder:
+    wapt_folder = '/var/www/wapt'
+
+if os.path.exists(wapt_folder)==False:
+    raise Exception("Folder missing : %s" % wapt_folder)
+if os.path.exists(wapt_folder + '-host')==False:
+    raise Exception("Folder missing : %s-host" % wapt_folder )
+if os.path.exists(wapt_folder + '-group')==False:
+    raise Exception("Folder missing : %s-group" % wapt_folder )
+
 
 logger = logging.getLogger()
 hdlr = logging.StreamHandler(sys.stdout)
@@ -41,10 +56,8 @@ else :
 db = client.wapt
 hosts = db.hosts
 
-if not wapt_folder:
-    wapt_folder = '/var/www/wapt'
 
-    
+
 ALLOWED_EXTENSIONS = set(['wapt'])
 
 
@@ -59,6 +72,10 @@ def get_host_data(uuid, filter = {}, delete_id = True):
     if data and delete_id:
         data.pop("_id")
     return data
+
+@app.route('/')
+def index():
+    return "welcome on waptserver!"
 
 
 @app.route('/json/host_list',methods=['GET'])
@@ -78,7 +95,7 @@ def get_host_list():
         search = data['q'].lower()
     if "filter" in data.keys():
         search_filter = data['filter'].split(',')
-            
+
     #{"host":1,"dmi":1,"uuid":1, "wapt":1, "update_status":1,"last_query_date":1}
 
     for host in hosts.find( query):
@@ -88,16 +105,16 @@ def get_host_list():
                 if host.has_key(key) and search in json.dumps(host[key]).lower():
                     host["softwares"] = ""
                     host["packages"] = ""
-                    list_hosts.append(host)  
+                    list_hosts.append(host)
                     continue
         elif search and search in json.dumps(host).lower():
             host["softwares"] = ""
-            host["packages"] = ""           
-            list_hosts.append(host)  
+            host["packages"] = ""
+            list_hosts.append(host)
         elif search == "":
             host["softwares"] = ""
-            host["packages"] = ""            
-            list_hosts.append(host)  
+            host["packages"] = ""
+            list_hosts.append(host)
 
     return  Response(response=json.dumps(list_hosts),
                     status=200,
@@ -169,7 +186,7 @@ def upload_package():
     except:
         e = sys.exc_info()
         return str(e)
-    
+
 @app.route('/upload_host',methods=['POST'])
 def upload_host():
     try:
@@ -186,7 +203,7 @@ def upload_host():
     except:
         e = sys.exc_info()
         return str(e)
-    
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
@@ -203,6 +220,23 @@ def delete_package(filename=""):
             return json.dumps({'error': "%s" % e })
     else:
         return json.dumps({'error': "The file %s doesn't exist in wapt folder (%s)" % (filename, wapt_folder)})
+
+@app.route('/wapt/<string:input_package_name>')
+def get_wapt_package(input_package_name):
+    global wapt_folder
+    package_name = secure_filename(input_package_name)
+    return send_from_directory(wapt_folder, package_name)
+
+
 if __name__ == "__main__":
-    app.run(host='0.0.0.0',port=8080, debug=False)
+    port = 8080
+#    ssl_a = cheroot.ssllib.ssl_builtin.BuiltinSSLAdapter(cert, cert_priv)  ...  ssl_adapter=ssl_a)
+    import  cheroot.wsgi
+    wsgi_d = cheroot.wsgi.WSGIPathInfoDispatcher({'/': app})
+    server = cheroot.wsgi.WSGIServer(('0.0.0.0', port),wsgi_app=wsgi_d)
+    try:
+        server.start()
+    except KeyboardInterrupt:
+        server.stop()
+
 
