@@ -124,7 +124,7 @@ var
   waptServerUser: String = '';
 
 implementation
-uses LCLIntf,tisstrings,soutils,waptcommon,dmwaptpython,jwawinuser, uvisprivatekeyauth;
+uses LCLIntf,tisstrings,soutils,waptcommon,dmwaptpython,jwawinuser, uvisprivatekeyauth, strutils;
 {$R *.lfm}
 
 function EditPackage(packagename:String):ISuperObject;

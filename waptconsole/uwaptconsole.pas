@@ -712,7 +712,7 @@ begin
       repeat
         if ShowModal=mrOk  then
         begin
-          waptServerPassword := edPassword.Text ;
+          waptServerPassword := DMPython.RunJSON(format('sha512_for_data("%s")', [ edPassword.Text])).AsString;
           waptServerUser:=edUser.Text;
           done := StrToBool(WAPTServerJsonGet(format('login?username=%s&password=%s',[waptServerUser,waptServerPassword]),[]).S['auth']);
         end
@@ -723,6 +723,7 @@ begin
       Free;
     end;
   end;
+  //ShowMessage(DMPython.RunJSON(format('sha512_for_data("%s")', [ waptServerPassword ])).AsJSon());
 end;
 
 procedure TVisWaptGUI.GridLoadData(grid:TVirtualJSONListView;jsondata:string);
