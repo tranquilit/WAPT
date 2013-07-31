@@ -23,7 +23,7 @@ if os.name=='nt':
     except:
         wapt_root_dir = 'c:\\\\wapt\\'
 
-if os.name='posix':
+if os.name=='posix':
     wapt_root_dir = '/opt/wapt/'
 
 config.read(os.path.join(wapt_root_dir,'waptserver','waptserver.ini'))
@@ -46,19 +46,27 @@ wapt_password = ""
 if config.has_section('options'):
     if config.has_option('options', 'wapt_user'):
         wapt_user = config.get('options', 'wapt_user')
+
     if config.has_option('options', 'wapt_password'):
         wapt_password = config.get('options', 'wapt_password')
+
     if config.has_option('options', 'mongodb_port'):
         mongodb_port = config.get('options', 'mongodb_port')
+    else:
+        mongodb_port='38999'
+
     if config.has_option('options', 'mongodb_ip'):
         mongodb_ip = config.get('options', 'mongodb_ip')
+    else:
+        mongodb_ip = '127.0.0.1'
+
     if config.has_option('options', 'wapt_folder'):
         wapt_folder = config.get('options', 'wapt_folder')
         if wapt_folder.endswith('/'):
             wapt_folder = wapt_folder[:-1]
 
 if not wapt_folder:
-    wapt_folder = '/var/www/wapt'
+    wapt_folder = os.path.join(wapt_root_dir,'wapt_server','repository','wapt')
 
 if os.path.exists(wapt_folder)==False:
     try:
@@ -85,8 +93,6 @@ logger.setLevel(logging.INFO)
 
 if mongodb_port and mongodb_ip:
     client = MongoClient(mongodb_ip, int(mongodb_port))
-else :
-    client = MongoClient()
 
 db = client.wapt
 hosts = db.hosts
