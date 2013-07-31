@@ -1,0 +1,460 @@
+/*   
+Theme Name: Tranquil IT
+Theme URI: http://www.terresnouvelles.com/
+Description: theme based on twentyten and blueprintcss for the code. Design by TNI.
+Author: Olivier Jan
+Author URI: http://www.cms-fr.net
+Template: twentyten
+Version: 1.0
+.
+General comments/License Statement if any.
+.
+*/
+
+@import url('css/screen.css');
+@import url('css/buttons.css');
+
+body
+{
+	background-image:url('img/bgd.png');
+	background-repeat:repeat-x;
+}
+
+.container {
+	background: #fff;	
+}
+
+h2, h3, h4 {
+	color: #1888c5 ;
+	text-decoration:none;
+}
+
+h1 { 
+	color: #1888c5 ;
+	font-size: 2.5em; 
+	line-height: 1; 
+	margin-bottom: 0.5em; 
+}
+
+a:link {color:#085680;}      /* unvisited link */
+a:visited {color:#1888c5;}  /* visited link */
+a:hover {color:#4daee2;}  /* mouse over link */
+a:active {color:#327294;}  /* selected link */
+
+#news,  #sectionaside, #sectionaside2, #help, #sub_page_navigation-3, #text-7 {
+	background: #b1daf1;
+	color: #315d73;
+	margin-bottom: 10px;
+	margin-top: 25px;
+	margin-right: 20px;
+	padding-bottom: 1px;
+	padding-top: 15px;
+	padding-left: 5px;
+	min-height: 125px;
+}
+
+#news h3, #sectionaside h3, #sectionaside2 h3, #help h3, #sub_page_navigation-3 h3, #text-7 h3 {
+	padding-left: 15px;
+}
+
+#sectionaside, #sub_page_navigation-3 {
+	background: #fafafa;
+}
+
+#sectionaside2 {
+	background: #fafafa;	
+}
+
+#help, #text-7 {
+	background: #f2f3f3;
+	color: #085680;	
+}
+
+#news .widget-title, #news p, #news li {
+	color:#1888c5 ;
+	margin-left:10px;
+	margin-right:10px;
+}
+
+
+#content{
+	margin-left: 20px;
+	margin-top: 25px;
+}
+
+#footer{
+	margin-top: 5px;
+}
+
+#news{
+	margin-right: 20px;
+}
+
+#subcontent p, #subcontent2 p {
+	margin-right:25px;
+}
+
+#ticker h2 {
+	font-size: 1.0em;
+	font-weight: bold;
+	text-decoration: none;
+	color: #000;
+	margin-top: 2px;
+	margin-left: 40px;
+	}
+
+#site-description{
+	margin-left:20px;
+	margin-bottom:10px;
+	margin-top:48px;
+	font-size: 1.1em;		
+}
+
+#branding {
+	margin-top:5px;
+	margin-bottom:5px;
+	margin-left:20px;
+}
+
+#contact {
+	margin-top:30px;
+	margin-left:40px;		
+}
+
+.span.feature{
+	margin-left:10px;
+}
+/* Text meant only for screen readers */
+.screen-reader-text {
+	position: absolute;
+	left: -9000px;
+}
+
+h3#comments-title, h3#reply-title, #access .menu, #access div.menu ul,
+#cancel-comment-reply-link, .form-allowed-tags, #site-info, #site-title, #wp-calendar, .comment-meta, .comment-body tr th,
+.comment-body thead th,
+.entry-content label, .entry-content tr th,
+.entry-content thead th,
+.entry-meta, .entry-title, .entry-utility, #respond label, .navigation, .page-title, .pingback p, .reply, .widget_search label, .widget-title, input[type=submit] { font-family: "Helvetica Neue" , Arial, Helvetica, "Nimbus Sans L" , sans-serif; }
+
+ul {
+	list-style: square;
+	margin: 0 0 18px 1.5em;
+	}
+
+
+#access .menu-header, div.menu {
+	font-size: 13px;
+	margin-left: 12px;
+	}
+
+#access, .entry-meta, .entry-utility, .widget_search label, .navigation, .widget-area { -webkit-text-size-adjust: 120%; }
+
+#access, #search {
+	background: #085680;
+	}
+
+#footer ul, #footer li li,
+#primary ul,
+#secondary ul, {
+	list-style: none;
+}
+
+.newsticker {
+	list-style-type: none;
+	border: 1px solid #dedede;
+	background: #f6f6f6;
+	padding: 3px;
+	margin: 0;
+}
+
+p {
+}
+
+/* Images
+-------------------------------------------------------------- */
+
+#content img {
+	margin: 0;
+	max-width: 640px;
+}
+.single-attachment #content img {
+	max-width: 900px;
+}
+#content .alignleft,
+#content img.alignleft, #text-7 img.alignleft {
+	display: inline;
+	float: left;
+	margin-right: 24px;
+	margin-top: 4px;
+}
+#content .alignright,
+#content img.alignright {
+	display: inline;
+	float: right;
+	margin-left: 24px;
+	margin-top: 4px;
+}
+#content .aligncenter,
+#content img.aligncenter {
+	clear: both;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+#content img.alignleft, 
+#content img.alignright, 
+#content img.aligncenter {
+	margin-bottom: 12px;
+}
+#content .wp-caption {
+	background: #f1f1f1;
+	color: #888;
+	font-size: 12px;
+	line-height: 18px;
+	text-align: center;
+	margin-bottom: 20px;
+	padding: 4px;
+}
+#content .wp-caption img {
+	margin: 5px;
+}
+#content .wp-caption p.wp-caption-text {
+	margin: 0 0 4px;
+}
+#content .wp-smiley {
+	margin:0;
+}
+#content .gallery {
+	margin: auto;
+}
+#content .gallery .gallery-item {
+	float: left;
+	margin-top: 0;
+	text-align: center;
+	width: 33%;
+}
+#content .gallery img {
+	border: 2px solid #cfcfcf;
+}
+#content .gallery .gallery-caption {
+	color: #888;
+	font-size: 12px;
+	margin: 0 0 12px;
+}
+#content .gallery dl {
+	margin: 0;
+}
+#content .gallery img {
+	border: 10px solid #f1f1f1;
+}
+#content .gallery br+br {
+	display: none;
+}
+
+
+/* =Menu
+-------------------------------------------------------------- */
+
+#access {
+	background: #085680;
+}
+#access .menu-header,
+div.menu {
+	font-size: 13px;
+	margin-left: 12px;
+}
+#access .menu-header ul,
+div.menu ul {
+	list-style: none;
+	margin: 0;
+}
+#access .menu-header li,
+div.menu li {
+	float:left;
+	position: relative;
+}
+#access a {
+	display:block;
+	text-decoration:none;
+	color:#b1daf1;
+	padding:0 10px;
+	line-height:38px;
+}
+#access ul ul {
+	display:none;
+	position:absolute;
+	top:38px;
+	left:0;
+	float:left;
+	box-shadow: 0px 3px 3px rgba(0,0,0,0.2);
+	-moz-box-shadow: 0px 3px 3px rgba(0,0,0,0.2);
+	-webkit-box-shadow: 0px 3px 3px rgba(0,0,0,0.2);
+	z-index: 99999;
+}
+#access ul ul li {
+	min-width: 260px;	
+}
+#access ul ul ul {
+	left:100%;
+	top:0;
+}
+#access ul ul a {
+	background:#327294;
+	height:auto;
+	line-height:1em;
+	padding:10px;
+	width: 240px;
+}
+#access li:hover > a,
+#access ul ul :hover > a {
+	color:#fff;
+	background:#327294;
+}
+#access ul li:hover > ul {
+	display:block;
+}
+#access ul li.current_page_item > a,
+#access ul li.current-menu-ancestor > a,
+#access ul li.current-menu-item > a,
+#access ul li.current-menu-parent > a {
+	color: #fff;
+}
+
+* html #access ul li.current_page_item a,
+* html #access ul li.current-menu-ancestor a,
+* html #access ul li.current-menu-item a,
+* html #access ul li.current-menu-parent a,
+* html #access ul li a:hover {
+	color:#fff;
+}
+
+/* =Widget Areas
+-------------------------------------------------------------- */
+
+.widget-area ul {
+	list-style: none;
+	margin-bottom: 10px;
+	margin-top:10px;
+}
+.widget-area ul ul {
+	list-style: square;
+}
+.widget_search #s { /* This keeps the search inputs in line */
+	width: 60%;
+}
+.widget_search label {
+	display:none;
+}
+
+/* =TOC Areas
+-------------------------------------------------------------- */
+
+div.toc {
+	border: 1px solid #ccc;
+	font-size: .75em;
+}
+div.toc.toc-left {
+	max-width: 22em;
+	float: left;
+	margin: 5px 5px 5px 0;
+}
+div.toc.toc-right {
+	max-width: 22em;
+	float: right;
+	margin: 5px 0 5px 5px;
+}
+
+div.toc a.toc-header {
+	display: block;
+	background-color: #f8f8ec;
+	border-top: 1px solid #fcfcfc;
+	border-left: 1px solid #fcfcfc;
+	border-bottom: 1px solid #f0f0e0;
+	border-right: 1px solid #f0f0e0;
+	color: #777;
+
+/** Styling regarding TOC title: **/
+	padding: 1px 2px;
+	text-align: left;
+	font-size: 1.25em;
+	font-weight: bold;
+}
+
+div.toc a.toc-header:hover {
+	border-top: 1px solid #ccc;
+	border-left: 1px solid #ccc;
+	border-bottom: 1px solid #fcfcfc;
+	border-right: 1px solid #fcfcfc;
+}
+
+
+div.toc ul {
+	list-style: none;
+	
+	margin: 0;
+	padding: 5px;
+	background-color: #fcfcfc;
+	overflow: hidden;
+	white-space: nowrap;
+}
+div.toc.auto-collapse ul {
+	display: none;
+}
+
+div.toc li a {
+	text-decoration: none;
+	border: 0 none;
+	color: #777;
+}
+div.toc li.toc-level-1 {
+	font-weight: bold;
+}
+div.toc li.toc-level-2 {
+	font-weight: bold;
+	padding-left: .25em;
+}
+div.toc li.toc-level-3 {
+	padding-left: .5em;
+}
+div.toc li.toc-level-4 {
+	padding-left: .75em;
+}
+
+/* =Footer ULs */
+#footer2 {
+	padding:1.5em;
+}
+#footer2 ul {
+	margin:0;
+	padding:1.2em;
+	background:#F6F6F6;
+}
+#footer2 ul ul {
+	margin:0;
+	padding:0;
+}
+#footer2 a {
+	text-decoration:none;
+}
+#footer2 a:hover {
+	text-decoration:underline;
+}
+#footer2 ul li {
+	list-style:none;
+	position:relative;
+	float:left;
+	width:25%;
+}
+#footer2 ul ul li {
+	width:100%;
+}
+#footer2 ul a {
+	color:#085680;
+	font-weight:bold;
+}
+#footer2 ul ul a {
+	color:#444;
+	font-weight:normal;
+}
+
