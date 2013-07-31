@@ -2,6 +2,7 @@ from flask import request, Flask,Response, send_from_directory
 import time
 import sys
 import json
+import hashlib
 import pymongo
 import os
 from pymongo import MongoClient
@@ -253,7 +254,7 @@ def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
-    return wapt_user and wapt_password
+    return wapt_user == username and wapt_password == hashlib.sha512(password).hexdigest()
 
 def authenticate():
     """Sends a 401 response that enables basic auth"""

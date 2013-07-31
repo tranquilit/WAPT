@@ -9,3 +9,5 @@ chdir=/opt/waptserver/
 #mongodb_port=27017
 #mongodb_ip=srvwapt
 #wapt_folder=/var/www/wapt/
+wapt_user=admin
+wapt_password=sha512password
