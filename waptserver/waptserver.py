@@ -1,4 +1,5 @@
-from flask import request, Flask,Response, send_from_directory
+from flask import request, Flask,Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
+
 import time
 import sys
 import json
@@ -102,7 +103,7 @@ hosts = db.hosts
 ALLOWED_EXTENSIONS = set(['wapt'])
 
 
-app = Flask(__name__)
+app = Flask(__name__,static_folder='./templates/static')
 app.config['PROPAGATE_EXCEPTIONS'] = True
 
 def get_host_data(uuid, filter = {}, delete_id = True):
@@ -116,7 +117,11 @@ def get_host_data(uuid, filter = {}, delete_id = True):
 
 @app.route('/')
 def index():
-    return "welcome on waptserver!"
+    return render_template("index.html")
+
+@app.route('/wapt/')
+def wapt_listing():
+    return render_template('listing.html')
 
 
 @app.route('/json/host_list',methods=['GET'])
@@ -177,6 +182,7 @@ def delete_host(uuid=""):
         return "error"
     else:
         return "ok"
+
 @app.route('/add_host',methods=['POST'])
 def add_host():
     data = json.loads(request.data)
