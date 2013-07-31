@@ -12,11 +12,25 @@ from functools import wraps
 import logging
 import ConfigParser
 config = ConfigParser.RawConfigParser()
-config.read('waptserver.ini')
 
-sys.path.append("c:\wapt_dev\lib")
-sys.path.append("c:\wapt_dev\waptserver")
-sys.path.append("c:\wapt_dev\lib\site-packages")
+
+wapt_root_dir = ''
+if os.name=='nt':
+    import _winreg
+    try:
+        key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE,"SOFTWARE\\TranquilIT\\WAPT")
+        (wapt_root_dir,atype) = _winreg.QueryValueEx(key,'install_dir')
+    except:
+        wapt_root_dir = 'c:\\\\wapt\\'
+
+if os.name='posix':
+    wapt_root_dir = '/opt/wapt/'
+
+config.read(os.path.join(wapt_root_dir,'waptserver','waptserver.ini'))
+
+sys.path.append(os.path.join(wapt_root_dir,'lib'))
+sys.path.append(os.path.join(wapt_root_dir,'waptserver'))
+sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
 
 ##from OpenSSL import SSL
 ##context = SSL.Context(SSL.SSLv23_METHOD)
@@ -47,11 +61,20 @@ if not wapt_folder:
     wapt_folder = '/var/www/wapt'
 
 if os.path.exists(wapt_folder)==False:
-    raise Exception("Folder missing : %s" % wapt_folder)
+    try:
+        os.makedirs(wapt_folder)
+    except:
+        raise Exception("Folder missing : %s" % wapt_folder)
 if os.path.exists(wapt_folder + '-host')==False:
-    raise Exception("Folder missing : %s-host" % wapt_folder )
+    try:
+        os.makedirs(wapt_folder + '-host')
+    except:
+        raise Exception("Folder missing : %s-host" % wapt_folder )
 if os.path.exists(wapt_folder + '-group')==False:
-    raise Exception("Folder missing : %s-group" % wapt_folder )
+    try:
+        os.makedirs(wapt_folder + '-group')
+    except:
+        raise Exception("Folder missing : %s-group" % wapt_folder )
 
 
 logger = logging.getLogger()
