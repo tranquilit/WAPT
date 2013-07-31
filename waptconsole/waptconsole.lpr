@@ -10,7 +10,7 @@ uses
   Forms, pl_luicontrols, pl_bgracontrols, pl_graphics32ext,
   runtimetypeinfocontrols, uwaptconsole, uVisCreateKey, tisstrings, waptcommon,
   tiscommon, tisinifiles, dmwaptpython, uVisEditPackage, uvisoptioninifile,
-  uviscreatewaptsetup, uvispassword; //uvissearchpackage;
+  uviscreatewaptsetup, uvispassword, uvisprivatekeyauth; //uvissearchpackage;
 
 {$R *.res}
 
@@ -19,6 +19,7 @@ begin
   Application.Initialize;
   Application.CreateForm(TDMPython, DMPython);
   Application.CreateForm(TVisWaptGUI, VisWaptGUI);
+  Application.CreateForm(TvisPrivateKeyAuth, visPrivateKeyAuth);
   Application.Run;
 end.
 

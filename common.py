@@ -1972,10 +1972,11 @@ class Wapt(object):
 
         return None
 
-    def upload_package(self,cmd_dict,wapt_server_passwd=None):
-      if not self.upload_cmd and not wapt_server_passwd:
+    def upload_package(self,cmd_dict,wapt_server_user=None,wapt_server_passwd=None):
+      if not self.upload_cmd and not wapt_server_user:
+        wapt_server_user = raw_input('WAPT Server user :')
         wapt_server_passwd = getpass.getpass('WAPT Server password :').encode('ascii')
-      auth =  ('admin', wapt_server_passwd)
+      auth =  (wapt_server_user, wapt_server_passwd)
 
       if cmd_dict['waptdir'] == "wapt-host":
         if self.upload_cmd_host:
@@ -3117,14 +3118,13 @@ class Wapt(object):
             logger.debug(u'  Change current directory to %s' % previous_cwd)
             os.chdir(previous_cwd)
 
-    def build_upload(self,sources_directories,private_key_passwd=None,wapt_server_passwd=None):
+    def build_upload(self,sources_directories,private_key_passwd=None,wapt_server_user=None,wapt_server_passwd=None):
         """Build a list of packages and upload the resulting packages to the main repository.
            if section of package is group or host, user specific wapt-host or wapt-group
         """
         if not isinstance(sources_directories,list):
             sources_directories = [sources_directories]
         result = []
-        print private_key_passwd,wapt_server_passwd
         for source_dir in [os.path.abspath(p) for p in sources_directories]:
             if os.path.isdir(source_dir):
                 print('Building  %s' % source_dir)
@@ -3175,7 +3175,7 @@ class Wapt(object):
                 # add quotes for command line
                 files_list = ['"%s"' % f for f in package_group[1]]
                 cmd_dict =  {'waptfile': files_list,'waptdir':package_group[0]}
-                print self.upload_package(cmd_dict,wapt_server_passwd)
+                print self.upload_package(cmd_dict,wapt_server_user,wapt_server_passwd)
 
                 if package_group<>hosts:
                     if self.after_upload:

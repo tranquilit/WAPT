@@ -692,6 +692,7 @@ end;
 procedure TVisWaptGUI.FormCreate(Sender: TObject);
 var
   done : Boolean=False;
+
 begin
   waptpath := ExtractFileDir(paramstr(0));
   //butInitWapt.Click;
@@ -703,18 +704,20 @@ begin
   MemoLog.Clear;
 
   PageControl1.ActivePage :=  pgInventory;
-
   if waptServerPassword = '' then
   begin
     With TVisPassword.Create(Self) do
     try
-      laPassword.Caption:='Mot de passe du serveur WAPT:';
+      edWaptServerName.Text:=GetWaptServerURL;
       repeat
-        if ShowModal=mrOk then
+        if ShowModal=mrOk  then
         begin
           waptServerPassword := edPassword.Text ;
-          done := True;
-        end;
+          waptServerUser:=edUser.Text;
+          done := StrToBool(WAPTServerJsonGet(format('login?username=%s&password=%s',[waptServerUser,waptServerPassword]),[]).S['auth']);
+        end
+        else
+          halt;
       until done;
     finally
       Free;

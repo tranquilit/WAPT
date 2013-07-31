@@ -32,6 +32,8 @@ interface
 
   Function  GetMainWaptRepo:String;
   Function  GetWaptServerURL:String;
+  function GetWaptPrivateKey: String;
+
   function  GetLDAPServer(dnsdomain:String=''): String;
 
   Function  GetWaptLocalURL:String;
@@ -329,6 +331,10 @@ begin
   result := IniReadString(WaptIniFilename,'Global','wapt_server');
 end;
 
+function GetWaptPrivateKey: String;
+begin
+  result := IniReadString(WaptIniFilename,'Global','private_key');
+end;
 function GetWaptLocalURL: String;
 begin
   result := format('http://localhost:%d',[waptservice_port]);

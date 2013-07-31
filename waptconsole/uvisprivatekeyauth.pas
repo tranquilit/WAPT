@@ -1,4 +1,4 @@
-unit uvispassword;
+unit uvisprivatekeyauth;
 
 {$mode objfpc}{$H+}
 
@@ -10,19 +10,17 @@ uses
 
 type
 
-  { TVisPassword }
+  { TvisPrivateKeyAuth }
 
-  TVisPassword = class(TForm)
+  TvisPrivateKeyAuth = class(TForm)
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
-    edPassword: TEdit;
-    edUser: TEdit;
-    edWaptServerName: TEdit;
+    edPasswordKey: TEdit;
     Label1: TLabel;
+    laKeyPath: TLabel;
     laPassword: TLabel;
-    laPassword1: TLabel;
     Panel1: TPanel;
-    procedure edPasswordKeyPress(Sender: TObject; var Key: char);
+    procedure BitBtn1KeyPress(Sender: TObject; var Key: char);
   private
     { private declarations }
   public
@@ -30,15 +28,15 @@ type
   end;
 
 var
-  VisPassword: TVisPassword;
+  visPrivateKeyAuth: TvisPrivateKeyAuth;
 
 implementation
 
 {$R *.lfm}
 
-{ TVisPassword }
+{ TvisPrivateKeyAuth }
 
-procedure TVisPassword.edPasswordKeyPress(Sender: TObject; var Key: char);
+procedure TvisPrivateKeyAuth.BitBtn1KeyPress(Sender: TObject; var Key: char);
 begin
   if Key=#13 then
   begin

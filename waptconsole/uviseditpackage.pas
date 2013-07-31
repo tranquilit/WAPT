@@ -121,9 +121,10 @@ var
   VisEditPackage: TVisEditPackage;
   privateKeyPassword: String = '';
   waptServerPassword: String = '';
+  waptServerUser: String = '';
 
 implementation
-uses LCLIntf,tisstrings,soutils,waptcommon,dmwaptpython,jwawinuser, uvispassword;
+uses LCLIntf,tisstrings,soutils,waptcommon,dmwaptpython,jwawinuser, uvisprivatekeyauth;
 {$R *.lfm}
 
 function EditPackage(packagename:String):ISuperObject;
@@ -332,13 +333,13 @@ begin
   ActEditSavePackage.Execute;
   if privateKeyPassword = '' then
   begin
-    With TVisPassword.Create(Self) do
+    With TvisPrivateKeyAuth.Create(Self) do
     try
-      laPassword.Caption:='Mot de passe de la clé privé:';
+      laKeyPath.Caption:= GetWaptPrivateKey;
       repeat
         if ShowModal=mrOk then
         begin
-          privateKeyPassword := edPassword.Text;
+          privateKeyPassword := edPasswordKey.Text;
           done := True;
         end;
       until done;
@@ -346,7 +347,7 @@ begin
       Free;
     end;
   end;
-  result := DMPython.RunJSON(format('mywapt.build_upload(r"%s",r"%s",r"%s")',[FSourcePath,privateKeyPassword,waptServerPassword]),jsonlog);
+  result := DMPython.RunJSON(format('mywapt.build_upload(r"%s",r"%s",r"%s",r"%s")',[FSourcePath,privateKeyPassword,waptServerUser,waptServerPassword]),jsonlog);
   ModalResult:= mrOk;
 end;
 
