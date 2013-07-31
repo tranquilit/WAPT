@@ -42,22 +42,6 @@ if config.has_section('options'):
         if wapt_folder.endswith('/'):
             wapt_folder = wapt_folder[:-1]
 
-
-config = ConfigParser.RawConfigParser()
-ini_file_path='c:\\wapt\\waptserver\\waptserver.ini'
-
-if os.path.exists(ini_file_path):
-    config.read(ini_file_path)
-    if config.has_section('options'):
-        if config.has_option('options', 'mongodb_port'):
-            mongodb_port = config.get('options', 'mongodb_port')
-        if config.has_option('options', 'mongodb_ip'):
-            mongodb_ip = config.get('options', 'mongodb_ip')
-        if config.has_option('options', 'wapt_folder'):
-            wapt_folder = config.get('options', 'wapt_folder')
-            if wapt_folder.endswith('/'):
-                wapt_folder = wapt_folder[:-1]
-
 if not wapt_folder:
     wapt_folder = '/var/www/wapt'
 
