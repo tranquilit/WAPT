@@ -7,13 +7,40 @@ import os
 from pymongo import MongoClient
 from werkzeug import secure_filename
 from waptpackage import update_packages
+from functools import wraps
 import logging
 import ConfigParser
+config = ConfigParser.RawConfigParser()
+config.read('waptserver.ini')
 
+sys.path.append("c:\wapt_dev\lib")
+sys.path.append("c:\wapt_dev\waptserver")
+sys.path.append("c:\wapt_dev\lib\site-packages")
+
+##from OpenSSL import SSL
+##context = SSL.Context(SSL.SSLv23_METHOD)
+##context.use_privatekey_file('srvlts1.key')
+##context.use_certificate_file('srvlts1.crt')
 
 mongodb_port = ""
 mongodb_ip = ""
 wapt_folder = ""
+wapt_user = ""
+wapt_password = ""
+
+if config.has_section('options'):
+    if config.has_option('options', 'wapt_user'):
+        wapt_user = config.get('options', 'wapt_user')
+    if config.has_option('options', 'wapt_password'):
+        wapt_password = config.get('options', 'wapt_password')
+    if config.has_option('options', 'mongodb_port'):
+        mongodb_port = config.get('options', 'mongodb_port')
+    if config.has_option('options', 'mongodb_ip'):
+        mongodb_ip = config.get('options', 'mongodb_ip')
+    if config.has_option('options', 'wapt_folder'):
+        wapt_folder = config.get('options', 'wapt_folder')
+        if wapt_folder.endswith('/'):
+            wapt_folder = wapt_folder[:-1]
 
 
 config = ConfigParser.RawConfigParser()
@@ -169,7 +196,17 @@ def get_client_package_list(uuid=""):
                     mimetype="application/json")
 
 
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
+
 @app.route('/upload_package',methods=['POST'])
+@requires_auth
 def upload_package():
     try:
         if request.method == 'POST':
@@ -188,6 +225,7 @@ def upload_package():
         return str(e)
 
 @app.route('/upload_host',methods=['POST'])
+@requires_auth
 def upload_host():
     try:
         if request.method == 'POST':
@@ -227,6 +265,20 @@ def get_wapt_package(input_package_name):
     package_name = secure_filename(input_package_name)
     return send_from_directory(wapt_folder, package_name)
 
+def check_auth(username, password):
+    """This function is called to check if a username /
+    password combination is valid.
+    """
+    return wapt_user and wapt_password
+
+def authenticate():
+    """Sends a 401 response that enables basic auth"""
+    return Response(
+    'Could not verify your access level for that URL.\n'
+    'You have to login with proper credentials', 401,
+    {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
+
 
 if __name__ == "__main__":
     port = 8080
@@ -238,5 +290,4 @@ if __name__ == "__main__":
         server.start()
     except KeyboardInterrupt:
         server.stop()
-
 
