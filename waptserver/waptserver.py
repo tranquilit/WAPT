@@ -12,6 +12,7 @@ from waptpackage import update_packages
 from functools import wraps
 import logging
 import ConfigParser
+import  cheroot.wsgi, cheroot.ssllib.ssl_builtin
 config = ConfigParser.RawConfigParser()
 
 
@@ -32,11 +33,6 @@ config.read(os.path.join(wapt_root_dir,'waptserver','waptserver.ini'))
 sys.path.append(os.path.join(wapt_root_dir,'lib'))
 sys.path.append(os.path.join(wapt_root_dir,'waptserver'))
 sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
-
-##from OpenSSL import SSL
-##context = SSL.Context(SSL.SSLv23_METHOD)
-##context.use_privatekey_file('srvlts1.key')
-##context.use_certificate_file('srvlts1.crt')
 
 mongodb_port = ""
 mongodb_ip = ""
@@ -97,8 +93,6 @@ if mongodb_port and mongodb_ip:
 
 db = client.wapt
 hosts = db.hosts
-
-
 
 ALLOWED_EXTENSIONS = set(['wapt'])
 
@@ -262,6 +256,14 @@ def upload_host():
         e = sys.exc_info()
         return str(e)
 
+@app.route('/login')
+def login():
+    d = request.args
+    if "username" in d.keys() and "password" in d.keys():
+        if check_auth(d["username"], d["password"]):
+            return json.dumps({"auth": True})
+    return json.dumps({"auth": False})
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
@@ -289,7 +291,7 @@ def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
-    return wapt_user == username and wapt_password == hashlib.sha512(password).hexdigest()
+    return wapt_user == username and wapt_password == password
 
 def authenticate():
     """Sends a 401 response that enables basic auth"""
@@ -301,9 +303,13 @@ def authenticate():
 
 
 if __name__ == "__main__":
+    # SSL Support 
+    #port = 8443
+    #ssl_a = cheroot.ssllib.ssl_builtin.BuiltinSSLAdapter("srvlts1.crt", "srvlts1.key")
+    #wsgi_d = cheroot.wsgi.WSGIPathInfoDispatcher({'/': app})
+    #server = cheroot.wsgi.WSGIServer(('0.0.0.0', port),wsgi_app=wsgi_d,ssl_adapter=ssl_a)    
+
     port = 8080
-#    ssl_a = cheroot.ssllib.ssl_builtin.BuiltinSSLAdapter(cert, cert_priv)  ...  ssl_adapter=ssl_a)
-    import  cheroot.wsgi
     wsgi_d = cheroot.wsgi.WSGIPathInfoDispatcher({'/': app})
     server = cheroot.wsgi.WSGIServer(('0.0.0.0', port),wsgi_app=wsgi_d)
     try:
