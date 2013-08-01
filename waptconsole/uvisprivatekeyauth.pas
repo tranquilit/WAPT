@@ -20,7 +20,7 @@ type
     laKeyPath: TLabel;
     laPassword: TLabel;
     Panel1: TPanel;
-    procedure BitBtn1KeyPress(Sender: TObject; var Key: char);
+    procedure edPasswordKeyKeyPress(Sender: TObject; var Key: char);
   private
     { private declarations }
   public
@@ -36,7 +36,8 @@ implementation
 
 { TvisPrivateKeyAuth }
 
-procedure TvisPrivateKeyAuth.BitBtn1KeyPress(Sender: TObject; var Key: char);
+procedure TvisPrivateKeyAuth.edPasswordKeyKeyPress(Sender: TObject;
+  var Key: char);
 begin
   if Key=#13 then
   begin

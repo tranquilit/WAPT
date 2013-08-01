@@ -1,11 +1,11 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 2005
+  Left = 430
   Height = 764
-  Top = 125
+  Top = 109
   Width = 1173
   Caption = 'VisWaptConsole'
-  ClientHeight = 745
-  ClientWidth = 1173
+  ClientHeight = 0
+  ClientWidth = 0
   Menu = MainMenu1
   OnCreate = FormCreate
   Position = poDefaultPosOnly

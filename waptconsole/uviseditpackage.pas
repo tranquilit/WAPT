@@ -329,9 +329,12 @@ var
   package:String;
   result:ISuperObject;
   done : Boolean=False;
+  isEncrypt : Boolean;
 begin
   ActEditSavePackage.Execute;
-  if privateKeyPassword = '' then
+  DMPython.PythonEng.ExecString('import waptdevutils');
+  isEncrypt := StrToBool(DMPython.RunJSON(format('waptdevutils.is_encrypt_private_key(r"%s")',[GetWaptPrivateKey])).AsString);
+  if (privateKeyPassword = '' ) and (isEncrypt ) then
   begin
     With TvisPrivateKeyAuth.Create(Self) do
     try
@@ -341,7 +344,9 @@ begin
         begin
           privateKeyPassword := edPasswordKey.Text;
           done := True;
-        end;
+        end
+        else
+          Exit;
       until done;
     finally
       Free;

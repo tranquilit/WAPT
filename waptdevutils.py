@@ -22,6 +22,7 @@
 # -----------------------------------------------------------------------
 
 import common
+from M2Crypto import EVP
 from setuphelpers import *
 #import active_directory
 import codecs
@@ -29,6 +30,20 @@ from iniparse import RawConfigParser
 
 def registered_organization():
     return registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOrganization')
+
+def is_encrypt_private_key(key):
+    def callback(*args):
+        return ''
+    try:
+        EVP.load_key(key, callback)
+    except Exception as e:
+        if "bad password" in str(e):
+            return True
+        else:
+            print str(e)
+    return False
+
+
 
 def create_self_signed_key(wapt,orgname,destdir='c:\\private',
         country='FR',
