@@ -6,10 +6,10 @@ interface
 
 uses
   Classes, SysUtils, memds, BufDataset, FileUtil, SynHighlighterPython, SynEdit,
-  SynMemo, vte_edittree, vte_json, LSControls, Forms,
-  Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus,
-  EditBtn, Buttons, process, fpJson, jsonparser,
-  superobject, UniqueInstance, VirtualTrees,VarPyth, types, ActiveX;
+  SynMemo, vte_edittree, vte_json, LSControls, Forms, Controls, Graphics,
+  Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, EditBtn, Buttons,
+  process, fpJson, jsonparser, superobject, UniqueInstance, VirtualTrees,
+  VarPyth, types, ActiveX, LMessages, LCLIntf, LCL;
 
 type
 
@@ -75,6 +75,7 @@ type
     procedure EdSectionChange(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
+    procedure FormShortCut(var Msg: TLMKey; var Handled: Boolean);
     procedure GridDependsDragDrop(Sender: TBaseVirtualTree; Source: TObject;
       DataObject: IDataObject; Formats: TFormatArray; Shift: TShiftState;
       const Pt: TPoint; var Effect: DWORD; Mode: TDropMode);
@@ -124,7 +125,8 @@ var
   waptServerUser: String = '';
 
 implementation
-uses LCLIntf,tisstrings,soutils,waptcommon,dmwaptpython,jwawinuser, uvisprivatekeyauth, strutils;
+uses tisstrings, soutils, LCLType, waptcommon, dmwaptpython, jwawinuser,
+  uvisprivatekeyauth, strutils;
 {$R *.lfm}
 
 function EditPackage(packagename:String):ISuperObject;
@@ -379,6 +381,23 @@ begin
   MemoLog.Clear;
 
   GridDepends.Clear;
+end;
+
+procedure TVisEditPackage.FormShortCut(var Msg: TLMKey; var Handled: Boolean);
+begin
+
+  if (Msg.CharCode = VK_RETURN)
+  and (HiWord(Msg.KeyData) and MK_CONTROL <> 0)
+  then begin
+    BitBtn1.Click;
+    Handled := TRUE;
+  end;
+   if (Msg.CharCode = VK_Q)
+    and (HiWord(Msg.KeyData) and MK_CONTROL <> 0)
+  then begin
+    Close;
+    Handled := TRUE;
+  end;
 end;
 
 procedure TVisEditPackage.GridLoadData(grid:TVirtualJSONListView;jsondata:string);

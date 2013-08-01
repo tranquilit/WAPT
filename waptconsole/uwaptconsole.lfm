@@ -1,13 +1,14 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 430
+  Left = 417
   Height = 764
-  Top = 109
+  Top = 127
   Width = 1173
   Caption = 'VisWaptConsole'
   ClientHeight = 745
   ClientWidth = 1173
   Menu = MainMenu1
   OnCreate = FormCreate
+  OnShortCut = FormShortCut
   Position = poDefaultPosOnly
   LCLVersion = '1.1'
   object PageControl1: TPageControl
@@ -15,9 +16,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 622
     Top = 0
     Width = 1173
-    ActivePage = TabSheet2
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     object pgInventory: TTabSheet
       Caption = 'Inventaire'

@@ -9,7 +9,7 @@ uses
   vte_json, LSControls, Forms,
   Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus,
   EditBtn, fpJson, jsonparser, superobject,
-  UniqueInstance, VirtualTrees, VarPyth, windows, ActiveX;
+  UniqueInstance, VirtualTrees, VarPyth, windows, ActiveX, LMessages;
 
 type
 
@@ -160,6 +160,7 @@ type
     procedure EdSearchHostKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
+    procedure FormShortCut(var Msg: TLMKey; var Handled: Boolean);
     procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridHostsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Data: TJSONData; Column: TColumnIndex; TextType: TVSTTextType;
@@ -727,8 +728,24 @@ begin
       Free;
     end;
   end;
-  ActSearchHostExecute(Sender);
-  ActSearchPackageExecute(Sender);
+  ActSearchHost.Execute;
+  ActSearchPackage.Execute;
+end;
+
+procedure TVisWaptGUI.FormShortCut(var Msg: TLMKey; var Handled: Boolean);
+begin
+  if (Msg.CharCode = VK_F5) then
+  begin
+    ActSearchHost.Execute;
+    ActSearchPackage.Execute;
+    Handled := True;
+  end;
+   if (Msg.CharCode = VK_Q)
+    and (HiWord(Msg.KeyData) and MK_CONTROL <> 0)
+  then begin
+    Close;
+    Handled := TRUE;
+  end;
 end;
 
 procedure TVisWaptGUI.GridLoadData(grid:TVirtualJSONListView;jsondata:string);

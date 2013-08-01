@@ -10,6 +10,7 @@ object VisEditPackage: TVisEditPackage
   Constraints.MinWidth = 800
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnShortCut = FormShortCut
   LCLVersion = '1.1'
   object PageControl1: TPageControl
     Left = 0
