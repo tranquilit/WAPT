@@ -24,8 +24,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="149"/>
-        <CursorPos X="63" Y="184"/>
+        <TopLine Value="152"/>
+        <CursorPos X="48" Y="176"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="1">
           <Item0 X="1" Y="392" ID="1"/>
@@ -124,7 +124,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="11"/>
         <CursorPos X="117" Y="40"/>
-        <UsageCount Value="192"/>
+        <UsageCount Value="193"/>
       </Unit9>
       <Unit10>
         <Filename Value="uvispassword.pas"/>
@@ -137,7 +137,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="30" Y="32"/>
-        <UsageCount Value="120"/>
+        <UsageCount Value="121"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit10>
@@ -296,7 +296,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="875"/>
         <CursorPos X="81" Y="887"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit30>
       <Unit31>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\customform.inc"/>
@@ -376,123 +376,123 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="744" Column="1" TopLine="721"/>
+        <Caret Line="743" Column="31" TopLine="735"/>
       </Position1>
       <Position2>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="735" Column="1" TopLine="735"/>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="230" Column="38" TopLine="204"/>
       </Position2>
       <Position3>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="743" Column="20" TopLine="730"/>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="379" Column="3" TopLine="377"/>
       </Position3>
       <Position4>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="162" Column="43" TopLine="169"/>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="390" Column="18" TopLine="385"/>
       </Position4>
       <Position5>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="743" Column="31" TopLine="735"/>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="388" Column="14" TopLine="363"/>
       </Position5>
       <Position6>
         <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="230" Column="38" TopLine="204"/>
+        <Caret Line="394" Column="16" TopLine="369"/>
       </Position6>
       <Position7>
         <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="379" Column="3" TopLine="377"/>
+        <Caret Line="388" Column="35" TopLine="363"/>
       </Position7>
       <Position8>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="390" Column="18" TopLine="385"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="8" Column="120" TopLine="1"/>
       </Position8>
       <Position9>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="388" Column="14" TopLine="363"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="737" Column="23" TopLine="653"/>
       </Position9>
       <Position10>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="394" Column="16" TopLine="369"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="12" Column="45" TopLine="1"/>
       </Position10>
       <Position11>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="388" Column="35" TopLine="363"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="9" Column="23" TopLine="714"/>
       </Position11>
       <Position12>
         <Filename Value="dmwaptpython.pas"/>
         <Caret Line="8" Column="120" TopLine="1"/>
       </Position12>
       <Position13>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="737" Column="23" TopLine="653"/>
-      </Position13>
-      <Position14>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="12" Column="45" TopLine="1"/>
-      </Position14>
-      <Position15>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="9" Column="23" TopLine="714"/>
-      </Position15>
-      <Position16>
-        <Filename Value="dmwaptpython.pas"/>
-        <Caret Line="8" Column="120" TopLine="1"/>
-      </Position16>
-      <Position17>
         <Filename Value="uviseditpackage.pas"/>
         <Caret Line="388" Column="35" TopLine="363"/>
+      </Position13>
+      <Position14>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="21" Column="72" TopLine="1"/>
+      </Position14>
+      <Position15>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="128" Column="97" TopLine="110"/>
+      </Position15>
+      <Position16>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="9" Column="23" TopLine="423"/>
+      </Position16>
+      <Position17>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="43" Column="15" TopLine="18"/>
       </Position17>
       <Position18>
         <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="21" Column="72" TopLine="1"/>
+        <Caret Line="388" Column="19" TopLine="363"/>
       </Position18>
       <Position19>
         <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="128" Column="97" TopLine="110"/>
+        <Caret Line="12" Column="68" TopLine="1"/>
       </Position19>
       <Position20>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="9" Column="23" TopLine="423"/>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="392" Column="138" TopLine="372"/>
       </Position20>
       <Position21>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="43" Column="15" TopLine="18"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="8" Column="120" TopLine="1"/>
       </Position21>
       <Position22>
         <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="388" Column="19" TopLine="363"/>
+        <Caret Line="388" Column="14" TopLine="363"/>
       </Position22>
       <Position23>
         <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="12" Column="68" TopLine="1"/>
+        <Caret Line="387" Column="9" TopLine="362"/>
       </Position23>
       <Position24>
         <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="392" Column="138" TopLine="372"/>
+        <Caret Line="388" Column="3" TopLine="363"/>
       </Position24>
       <Position25>
-        <Filename Value="dmwaptpython.pas"/>
-        <Caret Line="8" Column="120" TopLine="1"/>
-      </Position25>
-      <Position26>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="388" Column="14" TopLine="363"/>
-      </Position26>
-      <Position27>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="387" Column="9" TopLine="362"/>
-      </Position27>
-      <Position28>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="388" Column="3" TopLine="363"/>
-      </Position28>
-      <Position29>
         <Filename Value="uviseditpackage.pas"/>
         <Caret Line="390" Column="10" TopLine="365"/>
+      </Position25>
+      <Position26>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="193" Column="137" TopLine="246"/>
+      </Position26>
+      <Position27>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="280" Column="15" TopLine="245"/>
+      </Position27>
+      <Position28>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="867" Column="1" TopLine="820"/>
+      </Position28>
+      <Position29>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="863" Column="23" TopLine="820"/>
       </Position29>
       <Position30>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="193" Column="137" TopLine="246"/>
+        <Caret Line="441" Column="42" TopLine="437"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

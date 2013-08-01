@@ -1308,6 +1308,7 @@ object VisWaptGUI: TVisWaptGUI
     ClientHeight = 118
     ClientWidth = 1173
     TabOrder = 1
+    Visible = False
     object Panel7: TPanel
       Left = 1
       Height = 116

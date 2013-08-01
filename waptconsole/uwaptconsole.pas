@@ -437,6 +437,7 @@ procedure TVisWaptGUI.ActAdvancedModeExecute(Sender: TObject);
 begin
   ActAdvancedMode.Checked:=not ActAdvancedMode.Checked;
   TabSheet1.TabVisible:= ActAdvancedMode.Checked;
+  Panel3.Visible:=ActAdvancedMode.Checked;
   if TabSheet1.TabVisible then
     PageControl1.ActivePage:=TabSheet1;
 end;
