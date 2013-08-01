@@ -504,6 +504,8 @@ procedure TVisEditPackage.SetDepends(AValue: String);
 var
   dependencies:ISuperObject;
 begin
+  if AValue = '' then
+    Exit;
   FDepends:=AValue;
   dependencies := DMPython.RunJSON(format('mywapt.get_package_entries("%s")',[FDepends]));
   GridLoadData(GridDepends,dependencies['packages'].AsJSon);

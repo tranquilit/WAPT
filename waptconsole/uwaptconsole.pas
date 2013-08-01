@@ -87,6 +87,8 @@ type
     MenuItem21: TMenuItem;
     MenuItem22: TMenuItem;
     MenuItem23: TMenuItem;
+    MenuItem24: TMenuItem;
+    MenuItem25: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
@@ -434,6 +436,8 @@ procedure TVisWaptGUI.ActAdvancedModeExecute(Sender: TObject);
 begin
   ActAdvancedMode.Checked:=not ActAdvancedMode.Checked;
   TabSheet1.TabVisible:= ActAdvancedMode.Checked;
+  if TabSheet1.TabVisible then
+    PageControl1.ActivePage:=TabSheet1;
 end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
@@ -723,6 +727,8 @@ begin
       Free;
     end;
   end;
+  ActSearchHostExecute(Sender);
+  ActSearchPackageExecute(Sender);
 end;
 
 procedure TVisWaptGUI.GridLoadData(grid:TVirtualJSONListView;jsondata:string);

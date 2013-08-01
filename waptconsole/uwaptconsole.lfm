@@ -4,8 +4,8 @@ object VisWaptGUI: TVisWaptGUI
   Top = 109
   Width = 1173
   Caption = 'VisWaptConsole'
-  ClientHeight = 0
-  ClientWidth = 0
+  ClientHeight = 745
+  ClientWidth = 1173
   Menu = MainMenu1
   OnCreate = FormCreate
   Position = poDefaultPosOnly
@@ -15,9 +15,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 622
     Top = 0
     Width = 1173
-    ActivePage = pgInventory
+    ActivePage = TabSheet2
     Align = alClient
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     object pgInventory: TTabSheet
       Caption = 'Inventaire'
@@ -1560,6 +1560,12 @@ object VisWaptGUI: TVisWaptGUI
       object MenuItem14: TMenuItem
         Caption = 'Quitter'
         OnClick = MenuItem14Click
+      end
+    end
+    object MenuItem24: TMenuItem
+      Caption = 'Edition'
+      object MenuItem25: TMenuItem
+        Caption = 'New Item16'
       end
     end
     object MenuItem15: TMenuItem
