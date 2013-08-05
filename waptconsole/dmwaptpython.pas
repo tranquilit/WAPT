@@ -54,6 +54,7 @@ begin
       st.Append('import requests');
       st.Append('import json');
       st.Append('import os');
+      st.Append('import waptdevutils');
       st.Append('logging.basicConfig(level=logging.WARNING)');
       st.Append(format('mywapt = Wapt(config_filename=r"%s")',[AValue]));
       PythonEng.ExecStrings(St);

@@ -202,6 +202,7 @@ object VisEditPackage: TVisEditPackage
       Caption = 'setup.py'
       ClientHeight = 368
       ClientWidth = 792
+      TabVisible = False
       inline EdSetupPy: TSynEdit
         Left = 0
         Height = 334
@@ -732,7 +733,7 @@ object VisEditPackage: TVisEditPackage
       end
     end
   end
-  object Panel3: TPanel
+  object PanelEdit3: TPanel
     Left = 0
     Height = 118
     Top = 449
@@ -741,6 +742,7 @@ object VisEditPackage: TVisEditPackage
     ClientHeight = 118
     ClientWidth = 800
     TabOrder = 1
+    Visible = False
     object Panel7: TPanel
       Left = 1
       Height = 116
@@ -872,6 +874,7 @@ object VisEditPackage: TVisEditPackage
       Width = 220
       Anchors = [akTop, akLeft, akRight]
       TabOrder = 3
+      Visible = False
     end
     object Label4: TLabel
       Left = 344
@@ -880,6 +883,7 @@ object VisEditPackage: TVisEditPackage
       Width = 86
       Caption = 'Répertoire source'
       ParentColor = False
+      Visible = False
     end
     object Button3: TButton
       Left = -1276
@@ -906,6 +910,7 @@ object VisEditPackage: TVisEditPackage
       OnChange = EdSectionChange
       TabOrder = 5
       Text = 'base'
+      Visible = False
     end
     object Label5: TLabel
       Left = 144
@@ -914,6 +919,7 @@ object VisEditPackage: TVisEditPackage
       Width = 35
       Caption = 'Section'
       ParentColor = False
+      Visible = False
     end
     object cbShowLog: TCheckBox
       Left = 658
@@ -924,6 +930,7 @@ object VisEditPackage: TVisEditPackage
       Caption = 'Voir infos de débuggage'
       OnClick = cbShowLogClick
       TabOrder = 6
+      Visible = False
     end
   end
   object Panel4: TPanel

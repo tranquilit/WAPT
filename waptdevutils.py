@@ -139,9 +139,16 @@ def add_remove_option_inifile(wapt,choice,section,option,value):
     with open(waptini_fn, 'w') as configfile:
         wapt_get_ini.write(configfile)
 
+def updateTisRepo(wapt,search_string):
+    wapt = common.Wapt(config_filename=wapt)
+    wapt.update()
+    return wapt.search(search_string)
+
+
 
 if __name__ == '__main__':
-    wapt = common.Wapt(config_filename='c://wapt//wapt-get.ini')
+    #wapt = common.Wapt(config_filename='c://wapt//wapt-get.ini')
+    updateTisRepo(r'C:\tranquilit\wapt\wapt-get-public.ini')
     #print(search_bad_waptseup(wapt,'0.6.23'))
     #print diff_computer_ad_wapt(wapt)
     #add_remove_option_inifile(wapt,True,'global','repo_url','http://wapt/wapt-sid')

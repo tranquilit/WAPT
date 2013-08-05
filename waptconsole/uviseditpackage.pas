@@ -49,7 +49,7 @@ type
     PageControl1: TPageControl;
     Panel1: TPanel;
     Panel2: TPanel;
-    Panel3: TPanel;
+    PanelEdit3: TPanel;
     Panel4: TPanel;
     Panel7: TPanel;
     Panel8: TPanel;
@@ -126,7 +126,7 @@ var
 
 implementation
 uses tisstrings, soutils, LCLType, waptcommon, dmwaptpython, jwawinuser,
-  uvisprivatekeyauth, strutils;
+  uvisprivatekeyauth, strutils,uwaptconsole;
 {$R *.lfm}
 
 function EditPackage(packagename:String):ISuperObject;
@@ -381,6 +381,20 @@ begin
   MemoLog.Clear;
 
   GridDepends.Clear;
+
+  // Advance mode in mainWindow -> tools => advance
+  PanelEdit3.Visible:=isAdvancedMode;
+  Label5.Visible:=isAdvancedMode;
+  EdSection.Visible:=isAdvancedMode;
+  Label4.Visible:=isAdvancedMode;
+  EdSourceDir.Visible:=isAdvancedMode;
+  cbShowLog.Visible:=isAdvancedMode;
+  TabSheet1.TabVisible:=isAdvancedMode;
+
+
+
+
+
 end;
 
 procedure TVisEditPackage.FormShortCut(var Msg: TLMKey; var Handled: Boolean);
