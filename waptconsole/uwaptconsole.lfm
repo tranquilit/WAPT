@@ -16,9 +16,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 622
     Top = 0
     Width = 1173
-    ActivePage = TabSheet2
+    ActivePage = TabSheet5
     Align = alClient
-    TabIndex = 1
+    TabIndex = 2
     TabOrder = 0
     OnChange = PageControl1Change
     object pgInventory: TTabSheet
@@ -520,7 +520,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
         TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
         OnCompareNodes = GridPackagesCompareNodes
-        OnDblClick = ActPackageDuplicat
+        OnDblClick = ActPackageEdit
         OnPaintText = GridPackagesPaintText
         OnHeaderClick = GridPackagesHeaderClick
       end
@@ -705,7 +705,7 @@ object VisWaptGUI: TVisWaptGUI
           Height = 21
           Top = 2
           Width = 136
-          OnKeyPress = EdSearchKeyPress
+          OnKeyPress = EdSearch1KeyPress
           TabOrder = 0
         end
         object butSearchPackages1: TButton
@@ -1401,7 +1401,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActEditpackage: TAction
       Caption = 'Editer le paquet'
-      OnExecute = ActPackageDuplicat
+      OnExecute = ActPackageEdit
       OnUpdate = ActEditpackageUpdate
     end
     object ActUpdate: TAction
@@ -1565,6 +1565,13 @@ object VisWaptGUI: TVisWaptGUI
       object MenuItem23: TMenuItem
         Action = ActAdvancedMode
         Caption = 'Mode Avancé'
+      end
+    end
+    object MenuItem26: TMenuItem
+      Caption = '?'
+      object MenuItem27: TMenuItem
+        Caption = 'A propos'
+        OnClick = MenuItem27Click
       end
     end
   end

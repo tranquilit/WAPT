@@ -334,7 +334,6 @@ var
   isEncrypt : Boolean;
 begin
   ActEditSavePackage.Execute;
-  DMPython.PythonEng.ExecString('import waptdevutils');
   isEncrypt := StrToBool(DMPython.RunJSON(format('waptdevutils.is_encrypt_private_key(r"%s")',[GetWaptPrivateKey])).AsString);
   if (privateKeyPassword = '' ) and (isEncrypt ) then
   begin

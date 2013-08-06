@@ -90,6 +90,8 @@ type
     MenuItem23: TMenuItem;
     MenuItem24: TMenuItem;
     MenuItem25: TMenuItem;
+    MenuItem26: TMenuItem;
+    MenuItem27: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
@@ -136,7 +138,7 @@ type
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
     procedure ActEditHostPackageExecute(Sender: TObject);
-    procedure ActPackageDuplicat(Sender: TObject);
+    procedure ActPackageEdit(Sender: TObject);
     procedure ActEditpackageUpdate(Sender: TObject);
     procedure ActEvaluateExecute(Sender: TObject);
     procedure ActEvaluateVarExecute(Sender: TObject);
@@ -161,6 +163,7 @@ type
     procedure CheckBoxMajClick(Sender: TObject);
     procedure CheckBox_errorChange(Sender: TObject);
     procedure EdRunKeyPress(Sender: TObject; var Key: char);
+    procedure EdSearch1KeyPress(Sender: TObject; var Key: char);
     procedure EdSearchHostKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
@@ -178,6 +181,7 @@ type
 
     procedure HostPagesChange(Sender: TObject);
     procedure MenuItem14Click(Sender: TObject);
+    procedure MenuItem27Click(Sender: TObject);
     procedure PageControl1Change(Sender: TObject);
   private
     { private declarations }
@@ -196,7 +200,7 @@ var
 
 implementation
 
-uses LCLIntf, tisstrings, soutils, waptcommon, uVisCreateKey, uVisCreateWaptSetup,
+uses LCLIntf,uvisprivatekeyauth, tisstrings, soutils, waptcommon, uVisCreateKey, uVisCreateWaptSetup,
   uvisOptionIniFile, dmwaptpython, uviseditpackage, uvispassword;
 
 {$R *.lfm}
@@ -256,6 +260,15 @@ procedure TVisWaptGUI.EdRunKeyPress(Sender: TObject; var Key: char);
 begin
   if Key = #13 then
     ActEvaluate.Execute;
+end;
+
+procedure TVisWaptGUI.EdSearch1KeyPress(Sender: TObject; var Key: char);
+begin
+  if Key = #13 then
+  begin
+    EdSearch1.SelectAll;
+    butSearchPackages1.Click;
+  end;
 end;
 
 procedure TVisWaptGUI.EdSearchHostKeyPress(Sender: TObject; var Key: char);
@@ -351,8 +364,61 @@ begin
 end;
 
 procedure TVisWaptGUI.ActPackageDuplicateExecute(Sender: TObject);
+var
+  prefix,oldName,newName,sourceDir:String;
+  uploadResult:ISuperObject;
+  done : Boolean=False;
+  isEncrypt : Boolean;
+
 begin
-  ShowMessage('Ducplicate Package');
+
+ prefix :=  DMPython.RunJSON('mywapt.config.get("global","default_package_prefix")').AsString;
+ if prefix = 'tis' then
+ begin
+  ShowMessage(Format('Vous devez changer la valeur "default_package_prefix=%s" de wapt-get.ini', [prefix]));
+  Exit;
+ end;
+ oldName:= GetValue(GridPackages1, GridPackages1.GetFirstSelected, 'package');
+ newName:=oldName;
+ StrReplace(newName, 'tis-', prefix+'-');
+
+ if MessageDlg('Confirmer la duplication',
+    format('Etes vous sûr de vouloir dupliquer %s dans votre dépot ?', [oldName]),
+    mtConfirmation, mbYesNoCancel, 0) <> mrYes then
+    Exit;
+
+ sourceDir := DMPython.RunJSON(Format('waptdevutils.duplicate_from_tis_repo(r"%s","%s","%s")', [waptpath + '\wapt-get-public.ini',oldName, newName])).AsString;
+ if sourceDir <> 'error' then
+begin
+  isEncrypt := StrToBool(DMPython.RunJSON(format('waptdevutils.is_encrypt_private_key(r"%s")',[GetWaptPrivateKey])).AsString);
+  if (privateKeyPassword = '' ) and (isEncrypt ) then
+  begin
+    With TvisPrivateKeyAuth.Create(Self) do
+    try
+      laKeyPath.Caption:= GetWaptPrivateKey;
+      repeat
+        if ShowModal=mrOk then
+        begin
+          privateKeyPassword := edPasswordKey.Text;
+          done := True;
+        end
+        else
+          Exit;
+      until done;
+    finally
+      Free;
+    end;
+  end;
+  uploadResult := DMPython.RunJSON(format('mywapt.build_upload(r"%s",r"%s",r"%s",r"%s")',[sourceDir,privateKeyPassword,waptServerUser,waptServerPassword]),jsonlog);
+  if uploadResult.AsString <> '' then
+    ShowMessage(format('%s dupliqué avec succès.', [newName]))
+  else
+    ShowMessage('Erreur lors de la duplication.');
+
+  ModalResult:= mrOk;
+
+ end;
+
 end;
 
 procedure TVisWaptGUI.ActRegisterHostExecute(Sender: TObject);
@@ -360,7 +426,7 @@ begin
   DMPython.RunJSON('mywapt.register_computer()', jsonlog);
 end;
 
-procedure TVisWaptGUI.ActPackageDuplicat(Sender: TObject);
+procedure TVisWaptGUI.ActPackageEdit(Sender: TObject);
 var
   expr, res, depends, dep: string;
   Selpackage: string;
@@ -900,6 +966,11 @@ end;
 procedure TVisWaptGUI.MenuItem14Click(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TVisWaptGUI.MenuItem27Click(Sender: TObject);
+begin
+  ShowMessage('Tranquil IT Systems: http://www.tranquil-it-systems.fr/');
 end;
 
 procedure CopyMenu(menuItemSource: TPopupMenu; menuItemTarget: TMenuItem);

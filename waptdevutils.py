@@ -144,11 +144,22 @@ def updateTisRepo(wapt,search_string):
     wapt.update()
     return wapt.search(search_string)
 
+def duplicate_from_tis_repo(wapt,old_file_name,new_file_name):
+    wapt = common.Wapt(config_filename=wapt)
+    wapt.update()
+    result = wapt.duplicate_package(old_file_name,new_file_name)
+    if 'source_dir' in result:
+        return result['source_dir']
+    else:
+        return "error"
+
+
 
 
 if __name__ == '__main__':
     #wapt = common.Wapt(config_filename='c://wapt//wapt-get.ini')
-    updateTisRepo(r'C:\tranquilit\wapt\wapt-get-public.ini')
+    #updateTisRepo(r'C:\tranquilit\wapt\wapt-get-public.ini')
+     duplicate_from_tis_repo(r'C:\tranquilit\wapt\wapt-get-public.ini','tis-filezilla','totsso2-filezilla')
     #print(search_bad_waptseup(wapt,'0.6.23'))
     #print diff_computer_ad_wapt(wapt)
     #add_remove_option_inifile(wapt,True,'global','repo_url','http://wapt/wapt-sid')
