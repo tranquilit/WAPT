@@ -225,7 +225,7 @@ begin
   EdSourceDir.Text:=FSourcePath;
   EdPackage.Text:=PackageEdited.S['package'];
   EdVersion.Text:=PackageEdited.S['version'];
-  EdDescription.Text:=PackageEdited.S['description'];
+  EdDescription.Text:=UTF8Encode(PackageEdited.S['description']);
   EdSection.Text:=PackageEdited.S['section'];
   // get a list of package entries given a
   Depends:=PackageEdited.S['depends'];

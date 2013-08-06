@@ -16,9 +16,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 622
     Top = 0
     Width = 1173
-    ActivePage = TabSheet5
+    ActivePage = TabSheet2
     Align = alClient
-    TabIndex = 2
+    TabIndex = 1
     TabOrder = 0
     OnChange = PageControl1Change
     object pgInventory: TTabSheet
@@ -1468,7 +1468,7 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActHostsDeleteExecute
     end
     object ActDeletePackage: TAction
-      Caption = 'ActDeletePackage'
+      Caption = 'Supprimer'
       OnExecute = ActDeletePackageExecute
       OnUpdate = ActDeletePackageUpdate
     end
@@ -1489,7 +1489,6 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem22: TMenuItem
       Action = ActDeletePackage
-      Caption = 'Supprimer'
     end
     object MenuItem2: TMenuItem
       Action = ActRemove
