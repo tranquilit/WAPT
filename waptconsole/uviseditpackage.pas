@@ -23,12 +23,10 @@ type
     ActEditSavePackage: TAction;
     ActSearchPackage: TAction;
     ActionList1: TActionList;
-    BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     butInitWapt: TButton;
     butSearchPackages1: TButton;
     Button3: TButton;
-    Button4: TButton;
     Button5: TButton;
     cbShowLog: TCheckBox;
     Eddescription: TEdit;
@@ -344,7 +342,8 @@ begin
         if ShowModal=mrOk then
         begin
           privateKeyPassword := edPasswordKey.Text;
-          done := True;
+          if StrToBool(DMPython.RunJSON(format('waptdevutils.is_match_password(r"%s","%s")',[GetWaptPrivateKey,privateKeyPassword])).AsString) then
+            done := True;
         end
         else
           Exit;
@@ -402,7 +401,7 @@ begin
   if (Msg.CharCode = VK_RETURN)
   and (HiWord(Msg.KeyData) and MK_CONTROL <> 0)
   then begin
-    BitBtn1.Click;
+    Button5.Click;
     Handled := TRUE;
   end;
    if (Msg.CharCode = VK_Q)

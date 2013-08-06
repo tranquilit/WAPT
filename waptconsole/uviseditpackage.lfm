@@ -943,17 +943,6 @@ object VisEditPackage: TVisEditPackage
     ClientHeight = 33
     ClientWidth = 800
     TabOrder = 4
-    object BitBtn1: TBitBtn
-      Left = 641
-      Height = 26
-      Top = 4
-      Width = 74
-      Anchors = [akTop, akRight]
-      DefaultCaption = True
-      Kind = bkOK
-      ModalResult = 1
-      TabOrder = 0
-    end
     object BitBtn2: TBitBtn
       Left = 720
       Height = 26
@@ -964,25 +953,17 @@ object VisEditPackage: TVisEditPackage
       DefaultCaption = True
       Kind = bkCancel
       ModalResult = 2
-      TabOrder = 1
-    end
-    object Button4: TButton
-      Left = 440
-      Height = 25
-      Top = 4
-      Width = 75
-      Action = ActEditSavePackage
-      Anchors = [akTop, akRight]
-      TabOrder = 2
+      TabOrder = 0
     end
     object Button5: TButton
-      Left = 520
+      Left = 603
       Height = 25
       Top = 4
       Width = 112
       Action = ActBuildUpload
       Anchors = [akTop, akRight]
-      TabOrder = 3
+      Caption = 'Sauver'
+      TabOrder = 1
     end
   end
   object SynPythonSyn1: TSynPythonSyn

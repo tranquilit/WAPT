@@ -838,6 +838,7 @@ begin
   end;
   ActSearchHost.Execute;
   ActSearchPackage.Execute;
+  butSearchPackages1.Click;
 end;
 
 procedure TVisWaptGUI.FormShortCut(var Msg: TLMKey; var Handled: boolean);

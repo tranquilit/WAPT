@@ -33,7 +33,7 @@ def registered_organization():
 
 def is_encrypt_private_key(key):
     def callback(*args):
-        return ''
+        return ""
     try:
         EVP.load_key(key, callback)
     except Exception as e:
@@ -41,9 +41,17 @@ def is_encrypt_private_key(key):
             return True
         else:
             print str(e)
+            return True
     return False
 
-
+def  is_match_password(key,password=""):
+    def callback(*args):
+        return password
+    try:
+        EVP.load_key(key, callback)
+    except Exception as e:
+            return False
+    return True
 
 def create_self_signed_key(wapt,orgname,destdir='c:\\private',
         country='FR',
@@ -158,8 +166,9 @@ def duplicate_from_tis_repo(wapt,old_file_name,new_file_name):
 
 if __name__ == '__main__':
     #wapt = common.Wapt(config_filename='c://wapt//wapt-get.ini')
+    print is_encrypt_private_key(r'c:\tmp\ko.pem')
     #updateTisRepo(r'C:\tranquilit\wapt\wapt-get-public.ini')
-     duplicate_from_tis_repo(r'C:\tranquilit\wapt\wapt-get-public.ini','tis-filezilla','totsso2-filezilla')
+    #duplicate_from_tis_repo(r'C:\tranquilit\wapt\wapt-get-public.ini','tis-filezilla','totsso2-filezilla')
     #print(search_bad_waptseup(wapt,'0.6.23'))
     #print diff_computer_ad_wapt(wapt)
     #add_remove_option_inifile(wapt,True,'global','repo_url','http://wapt/wapt-sid')
