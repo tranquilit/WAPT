@@ -836,9 +836,17 @@ begin
           begin
             waptServerPassword := edPassword.Text;
             waptServerUser := edUser.Text;
-            resp := DMPython.RunJSON(
+            try
+              resp := DMPython.RunJSON(
               format('waptdevutils.login_to_waptserver("%s","%s","%s")',
               [GetWaptServerURL + '/login', waptServerUser, waptServerPassword]));
+            except
+               on E : Exception do
+               begin
+                ShowMessage('Erreur: '+E.Message);
+                halt;
+               end;
+            end;
             try
               done := StrToBool(resp.AsString);
               if not done then
