@@ -194,13 +194,16 @@ type
     PackageEdited: ISuperObject;
     waptpath: string;
   end;
-  function isAdvancedMode: Boolean;
+
+function isAdvancedMode: boolean;
+
 var
   VisWaptGUI: TVisWaptGUI;
 
 implementation
 
-uses LCLIntf,uvisprivatekeyauth, tisstrings, soutils, waptcommon, uVisCreateKey, uVisCreateWaptSetup,
+uses LCLIntf, uvisprivatekeyauth, tisstrings, soutils, waptcommon,
+  uVisCreateKey, uVisCreateWaptSetup,
   uvisOptionIniFile, dmwaptpython, uviseditpackage, uvispassword;
 
 {$R *.lfm}
@@ -365,59 +368,67 @@ end;
 
 procedure TVisWaptGUI.ActPackageDuplicateExecute(Sender: TObject);
 var
-  prefix,oldName,newName,sourceDir:String;
-  uploadResult:ISuperObject;
-  done : Boolean=False;
-  isEncrypt : Boolean;
+  prefix, oldName, newName, sourceDir: string;
+  uploadResult: ISuperObject;
+  done: boolean = False;
+  isEncrypt: boolean;
 
 begin
 
- prefix :=  DMPython.RunJSON('mywapt.config.get("global","default_package_prefix")').AsString;
- if prefix = 'tis' then
- begin
-  ShowMessage(Format('Vous devez changer la valeur "default_package_prefix=%s" de wapt-get.ini', [prefix]));
-  Exit;
- end;
- oldName:= GetValue(GridPackages1, GridPackages1.GetFirstSelected, 'package');
- newName:=oldName;
- StrReplace(newName, 'tis-', prefix+'-');
+  prefix := DMPython.RunJSON(
+    'mywapt.config.get("global","default_package_prefix")').AsString;
+  if prefix = 'tis' then
+  begin
+    ShowMessage(Format(
+      'Vous devez changer la valeur "default_package_prefix=%s" de wapt-get.ini',
+      [prefix]));
+    Exit;
+  end;
+  oldName := GetValue(GridPackages1, GridPackages1.GetFirstSelected, 'package');
+  newName := oldName;
+  StrReplace(newName, 'tis-', prefix + '-');
 
- if MessageDlg('Confirmer la duplication',
+  if MessageDlg('Confirmer la duplication',
     format('Etes vous sûr de vouloir dupliquer %s dans votre dépot ?', [oldName]),
     mtConfirmation, mbYesNoCancel, 0) <> mrYes then
     Exit;
 
- sourceDir := DMPython.RunJSON(Format('waptdevutils.duplicate_from_tis_repo(r"%s","%s","%s")', [waptpath + '\wapt-get-public.ini',oldName, newName])).AsString;
- if sourceDir <> 'error' then
-begin
-  isEncrypt := StrToBool(DMPython.RunJSON(format('waptdevutils.is_encrypt_private_key(r"%s")',[GetWaptPrivateKey])).AsString);
-  if (privateKeyPassword = '' ) and (isEncrypt ) then
+  sourceDir := DMPython.RunJSON(
+    Format('waptdevutils.duplicate_from_tis_repo(r"%s","%s","%s")',
+    [waptpath + '\wapt-get-public.ini', oldName, newName])).AsString;
+  if sourceDir <> 'error' then
   begin
-    With TvisPrivateKeyAuth.Create(Self) do
-    try
-      laKeyPath.Caption:= GetWaptPrivateKey;
-      repeat
-        if ShowModal=mrOk then
-        begin
-          privateKeyPassword := edPasswordKey.Text;
-          done := True;
-        end
-        else
-          Exit;
-      until done;
-    finally
-      Free;
+    isEncrypt := StrToBool(DMPython.RunJSON(
+      format('waptdevutils.is_encrypt_private_key(r"%s")', [GetWaptPrivateKey])).AsString);
+    if (privateKeyPassword = '') and (isEncrypt) then
+    begin
+      with TvisPrivateKeyAuth.Create(Self) do
+        try
+          laKeyPath.Caption := GetWaptPrivateKey;
+          repeat
+            if ShowModal = mrOk then
+            begin
+              privateKeyPassword := edPasswordKey.Text;
+              done := True;
+            end
+            else
+              Exit;
+          until done;
+        finally
+          Free;
+        end;
     end;
+    uploadResult := DMPython.RunJSON(
+      format('mywapt.build_upload(r"%s",r"%s",r"%s",r"%s")',
+      [sourceDir, privateKeyPassword, waptServerUser, waptServerPassword]), jsonlog);
+    if uploadResult.AsString <> '' then
+      ShowMessage(format('%s dupliqué avec succès.', [newName]))
+    else
+      ShowMessage('Erreur lors de la duplication.');
+
+    ModalResult := mrOk;
+
   end;
-  uploadResult := DMPython.RunJSON(format('mywapt.build_upload(r"%s",r"%s",r"%s",r"%s")',[sourceDir,privateKeyPassword,waptServerUser,waptServerPassword]),jsonlog);
-  if uploadResult.AsString <> '' then
-    ShowMessage(format('%s dupliqué avec succès.', [newName]))
-  else
-    ShowMessage('Erreur lors de la duplication.');
-
-  ModalResult:= mrOk;
-
- end;
 
 end;
 
@@ -778,7 +789,8 @@ var
   packages, package: ISuperObject;
   jsp: TJSONParser;
 begin
-  expr := format('waptdevutils.updateTisRepo(r"%s","%s")', [waptpath + '\wapt-get-public.ini', EdSearch1.Text]);
+  expr := format('waptdevutils.updateTisRepo(r"%s","%s")',
+    [waptpath + '\wapt-get-public.ini', EdSearch1.Text]);
   packages := DMPython.RunJSON(expr);
   GridLoadData(GridPackages1, packages.AsJSon);
 end;
@@ -801,6 +813,7 @@ end;
 procedure TVisWaptGUI.FormCreate(Sender: TObject);
 var
   done: boolean = False;
+  resp: ISuperObject;
 
 begin
   waptpath := ExtractFileDir(ParamStr(0));
@@ -821,13 +834,18 @@ begin
         repeat
           if ShowModal = mrOk then
           begin
-            waptServerPassword :=
-              DMPython.RunJSON(format('sha512_for_data("%s")',
-              [edPassword.Text])).AsString;
+            waptServerPassword := edPassword.Text;
             waptServerUser := edUser.Text;
-            done := StrToBool(WAPTServerJsonGet(
-              format('login?username=%s&password=%s',
-              [waptServerUser, waptServerPassword]), []).S['auth']);
+            resp := DMPython.RunJSON(
+              format('waptdevutils.login_to_waptserver("%s","%s","%s")',
+              [GetWaptServerURL + '/login', waptServerUser, waptServerPassword]));
+            try
+              done := StrToBool(resp.AsString);
+              if not done then
+                ShowMessage('Mauvais mot de passe');
+            except
+              ShowMessage(resp.AsString);
+            end;
           end
           else
             halt;
@@ -998,9 +1016,9 @@ begin
   end;
 end;
 
-function isAdvancedMode: Boolean;
+function isAdvancedMode: boolean;
 begin
-  result:= VisWaptGUI.ActAdvancedMode.Checked;
+  Result := VisWaptGUI.ActAdvancedMode.Checked;
 end;
 
 end.

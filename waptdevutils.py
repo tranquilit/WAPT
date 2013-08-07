@@ -22,6 +22,7 @@
 # -----------------------------------------------------------------------
 
 import common
+import json
 from M2Crypto import EVP
 from setuphelpers import *
 #import active_directory
@@ -161,12 +162,18 @@ def duplicate_from_tis_repo(wapt,old_file_name,new_file_name):
     else:
         return "error"
 
+def login_to_waptserver(url, login, passwd):
+    data = {"username":login, "password": passwd}
+    resp = requests.post(url, json.dumps(data))
+    return resp.text
+
 
 
 
 if __name__ == '__main__':
     #wapt = common.Wapt(config_filename='c://wapt//wapt-get.ini')
-    print is_encrypt_private_key(r'c:\tmp\ko.pem')
+    #print is_encrypt_private_key(r'c:\tmp\ko.pem')
+    print login_to_waptserver("http://srvlts1:8080/login", "admin", "secret")
     #updateTisRepo(r'C:\tranquilit\wapt\wapt-get-public.ini')
     #duplicate_from_tis_repo(r'C:\tranquilit\wapt\wapt-get-public.ini','tis-filezilla','totsso2-filezilla')
     #print(search_bad_waptseup(wapt,'0.6.23'))
