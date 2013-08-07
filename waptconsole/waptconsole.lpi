@@ -150,6 +150,7 @@
         <Filename Value="uvisprivatekeyauth.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="visPrivateKeyAuth"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvisprivatekeyauth"/>
       </Unit11>

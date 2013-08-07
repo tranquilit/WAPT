@@ -6,6 +6,7 @@ object visPrivateKeyAuth: TvisPrivateKeyAuth
   Caption = 'Authentification Clé privée'
   ClientHeight = 115
   ClientWidth = 311
+  Position = poScreenCenter
   LCLVersion = '1.1'
   object edPasswordKey: TEdit
     Left = 178

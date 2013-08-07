@@ -776,6 +776,7 @@ var
   res: variant;
 begin
   res := MainModule.mywapt.update(NOARGS);
+  ActSearchPackageExecute(Sender);
 end;
 
 procedure TVisWaptGUI.ActUpgradeExecute(Sender: TObject);

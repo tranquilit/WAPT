@@ -174,9 +174,11 @@ def login_to_waptserver(url, login, passwd):
 
 
 if __name__ == '__main__':
-    #wapt = common.Wapt(config_filename='c://wapt//wapt-get.ini')
+    wapt = common.Wapt(config_filename=r'C:\tranquilit\wapt\wapt-get.ini')
+    print wapt.update()
+    print wapt.download_packages(['tis-clamwin'])
     #print is_encrypt_private_key(r'c:\tmp\ko.pem')
-    print login_to_waptserver("https://srvlts1:8180/login", "admin", "secret")
+    #print login_to_waptserver("https://srvlts1:8180/login", "admin", "secret")
     #updateTisRepo(r'C:\tranquilit\wapt\wapt-get-public.ini')
     #duplicate_from_tis_repo(r'C:\tranquilit\wapt\wapt-get-public.ini','tis-filezilla','totsso2-filezilla')
     #print(search_bad_waptseup(wapt,'0.6.23'))
