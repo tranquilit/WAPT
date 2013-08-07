@@ -843,7 +843,7 @@ begin
             except
                on E : Exception do
                begin
-                ShowMessage('Erreur: '+E.Message);
+                ShowMessage('Erreur: '+UTF8Encode(E.Message));
                 halt;
                end;
             end;
@@ -852,7 +852,7 @@ begin
               if not done then
                 ShowMessage('Mauvais mot de passe');
             except
-              ShowMessage(resp.AsString);
+              ShowMessage(UTF8Encode(resp.AsString));
             end;
           end
           else

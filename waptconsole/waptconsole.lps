@@ -24,8 +24,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="824"/>
-        <CursorPos X="74" Y="846"/>
+        <TopLine Value="823"/>
+        <CursorPos X="53" Y="855"/>
         <FoldState Value=" T46051 T7HG}B T8lD2[F43le0FA pj7k10J4 pifjR035]IOjd0O9]93k403618]Tama0B7 T6lg01Q T1m10BA]PYk30D6]9ek50a7]9bkU0E[R6K0511D[B4]l82 T0m425B]Hck5459 pj5lfC3833 TLve2C)"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="1">
@@ -105,9 +105,9 @@
         <UnitName Value="uviseditpackage"/>
         <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="358"/>
-        <CursorPos X="1" Y="326"/>
-        <FoldState Value=" T4605 T8j0241 T3kV069 pifjO053]K316 T1kW05612]E4221412 T0kg234212]t6lI];37i"/>
+        <TopLine Value="157"/>
+        <CursorPos X="33" Y="226"/>
+        <FoldState Value=" T4605 T8j0241 T3kV0661625 piamd0I216 T1kW05612131112221412 T0kg234212]v6lI],37i"/>
         <UsageCount Value="215"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -396,7 +396,7 @@
       </Position29>
       <Position30>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="846" Column="28" TopLine="824"/>
+        <Caret Line="846" Column="60" TopLine="824"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>
