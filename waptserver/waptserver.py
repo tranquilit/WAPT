@@ -256,13 +256,20 @@ def upload_host():
         e = sys.exc_info()
         return str(e)
 
-@app.route('/login')
+@app.route('/login',methods=['POST'])
 def login():
-    d = request.args
-    if "username" in d.keys() and "password" in d.keys():
-        if check_auth(d["username"], d["password"]):
-            return json.dumps({"auth": True})
-    return json.dumps({"auth": False})
+    try:
+        if request.method == 'POST':
+            d= json.loads(request.data)  
+            if "username" in d and "password" in d:
+                if check_auth(d["username"], d["password"]):
+                    return "True"
+            return "False"
+        else:
+            return "Unsupported method"
+    except:
+        e = sys.exc_info()
+        return str(e)    
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -285,13 +292,15 @@ def delete_package(filename=""):
 def get_wapt_package(input_package_name):
     global wapt_folder
     package_name = secure_filename(input_package_name)
-    return send_from_directory(wapt_folder, package_name)
+    r =  send_from_directory(wapt_folder, package_name)
+    r.headers.add_header('Content-Length', os.path.getsize(os.path.join(wapt_folder,package_name)))
+    return r
 
 def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
-    return wapt_user == username and wapt_password == password
+    return wapt_user == username and wapt_password == hashlib.sha512(password).hexdigest()
 
 def authenticate():
     """Sends a 401 response that enables basic auth"""
@@ -305,7 +314,7 @@ def authenticate():
 if __name__ == "__main__":
     # SSL Support 
     #port = 8443
-    #ssl_a = cheroot.ssllib.ssl_builtin.BuiltinSSLAdapter("srvlts1.crt", "srvlts1.key")
+    #ssl_a = cheroot.ssllib.ssl_builtin.BuiltinSSLAdapter("srvlts1.crt", "srvlts1.key", "ca.crt")
     #wsgi_d = cheroot.wsgi.WSGIPathInfoDispatcher({'/': app})
     #server = cheroot.wsgi.WSGIServer(('0.0.0.0', port),wsgi_app=wsgi_d,ssl_adapter=ssl_a)    
 
