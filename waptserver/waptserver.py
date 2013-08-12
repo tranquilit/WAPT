@@ -28,7 +28,12 @@ if os.name=='nt':
 if os.name=='posix':
     wapt_root_dir = '/opt/wapt/'
 
-config.read(os.path.join(wapt_root_dir,'waptserver','waptserver.ini'))
+config_file = os.path.join(wapt_root_dir,'waptserver','waptserver.ini')
+
+if os.path.exists(config_file)==True:
+    config.read(os.path.join(wapt_root_dir,'waptserver','waptserver.ini'))
+else:
+    raise Exception("FATAL. Couldn't open config file : " + config_file)
 
 sys.path.append(os.path.join(wapt_root_dir,'lib'))
 sys.path.append(os.path.join(wapt_root_dir,'waptserver'))
@@ -50,7 +55,7 @@ if config.has_section('options'):
 
     if config.has_option('options', 'wapt_password'):
         wapt_password = config.get('options', 'wapt_password')
-    else
+    else:
         raise Exception ('No waptserver admin password set in wapt-get.ini configuration file')
 
     if config.has_option('options', 'mongodb_port'):
@@ -63,9 +68,11 @@ if config.has_section('options'):
         wapt_folder = config.get('options', 'wapt_folder')
         if wapt_folder.endswith('/'):
             wapt_folder = wapt_folder[:-1]
+else:
+    raise Exception ("FATAL, configuration file " + config_file + " has no section [options]. Please check Waptserver documentation")
 
 if not wapt_folder:
-    wapt_folder = os.path.join(wapt_root_dir,'wapt_server','repository','wapt')
+    wapt_folder = os.path.join(wapt_root_dir,'waptserver','repository','wapt')
 
 if os.path.exists(wapt_folder)==False:
     try:
@@ -312,8 +319,6 @@ def authenticate():
     'Could not verify your access level for that URL.\n'
     'You have to login with proper credentials', 401,
     {'WWW-Authenticate': 'Basic realm="Login Required"'})
-
-
 
 if __name__ == "__main__":
     # SSL Support
