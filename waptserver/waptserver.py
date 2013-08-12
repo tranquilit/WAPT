@@ -13,6 +13,8 @@ from functools import wraps
 import logging
 import ConfigParser
 import  cheroot.wsgi, cheroot.ssllib.ssl_builtin
+import logging
+
 config = ConfigParser.RawConfigParser()
 
 
@@ -24,6 +26,14 @@ if os.name=='nt':
         (wapt_root_dir,atype) = _winreg.QueryValueEx(key,'install_dir')
     except:
         wapt_root_dir = 'c:\\\\wapt\\'
+
+
+import logging
+log_directory = 'c:\wapt\waptserver\log\\'
+if os.path.exists(log_directory)==False:
+    os.mkdirs(log_directory)
+logging.basicConfig(filename='c:\wapt\waptserver\log\waptserver.log',format='%(asctime)s %(message)s')
+logging.info('waptserver starting')
 
 if os.name=='posix':
     wapt_root_dir = '/opt/wapt/'
@@ -301,10 +311,33 @@ def delete_package(filename=""):
 
 @app.route('/wapt/<string:input_package_name>')
 def get_wapt_package(input_package_name):
+    logging.info( "get wapt package : "+ input_package_name)
     global wapt_folder
     package_name = secure_filename(input_package_name)
     r =  send_from_directory(wapt_folder, package_name)
     r.headers.add_header('Content-Length', os.path.getsize(os.path.join(wapt_folder,package_name)))
+    return r
+
+@app.route('/wapt-host/<string:input_package_name>')
+def get_host_package(input_package_name):
+    global wapt_folder
+    host_folder = wapt_folder + '-host'
+    logging.info( "get host package : " + input_package_name)
+    package_name = secure_filename(input_package_name)
+    r =  send_from_directory(host_folder, package_name)
+    #TODO straighten this -host stuff
+    r.headers.add_header('Content-Length', os.path.getsize(os.path.join(host_folder,package_name)))
+    return r
+
+@app.route('/wapt-group/<string:input_package_name>')
+def get_group_package(input_package_name):
+    global wapt_folder
+    group_folder = wapt_folder + '-group'
+    logging.info( "get group package : " + input_package_name)
+    package_name = secure_filename(input_package_name)
+    r =  send_from_directory(group_folder, package_name)
+    #TODO straighten this -group stuff
+    r.headers.add_header('Content-Length', os.path.getsize(os.path.join(group_folder + '-group',package_name)))
     return r
 
 def check_auth(username, password):
@@ -326,12 +359,17 @@ if __name__ == "__main__":
     #ssl_a = cheroot.ssllib.ssl_builtin.BuiltinSSLAdapter("srvlts1.crt", "srvlts1.key", "ca.crt")
     #wsgi_d = cheroot.wsgi.WSGIPathInfoDispatcher({'/': app})
     #server = cheroot.wsgi.WSGIServer(('0.0.0.0', port),wsgi_app=wsgi_d,ssl_adapter=ssl_a)
-
-    port = 8080
-    wsgi_d = cheroot.wsgi.WSGIPathInfoDispatcher({'/': app})
-    server = cheroot.wsgi.WSGIServer(('0.0.0.0', port),wsgi_app=wsgi_d)
-    try:
-        server.start()
-    except KeyboardInterrupt:
-        server.stop()
+    debug=False
+    if debug==True:
+        app.run(host='0.0.0.0',port=30880,debug=True)
+    else:
+        port = 8080
+        wsgi_d = cheroot.wsgi.WSGIPathInfoDispatcher({'/': app})
+        server = cheroot.wsgi.WSGIServer(('0.0.0.0', port),wsgi_app=wsgi_d)
+        try:
+            print ("starting waptserver")
+            server.start()
+        except KeyboardInterrupt:
+            print ("stopping waptserver")
+            server.stop()
 
