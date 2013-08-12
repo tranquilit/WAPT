@@ -33,6 +33,8 @@ type
     Label9: TLabel;
     Panel1: TPanel;
     Panel2: TPanel;
+    Shape1: TShape;
+    StaticText1: TStaticText;
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
   private
     { private declarations }

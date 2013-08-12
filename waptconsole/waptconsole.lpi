@@ -72,7 +72,7 @@
         <PackageName Value="LCL"/>
       </Item13>
     </RequiredPackages>
-    <Units Count="12">
+    <Units Count="13">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -154,6 +154,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvisprivatekeyauth"/>
       </Unit11>
+      <Unit12>
+        <Filename Value="uvisloading.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="visloading"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uvisloading"/>
+      </Unit12>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 630
+  Left = 530
   Height = 764
-  Top = 178
+  Top = 105
   Width = 1173
   Caption = 'VisWaptConsole'
   ClientHeight = 745
@@ -16,9 +16,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 622
     Top = 0
     Width = 1173
-    ActivePage = TabSheet2
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     OnChange = PageControl1Change
     object pgInventory: TTabSheet
@@ -271,55 +271,25 @@ object VisWaptGUI: TVisWaptGUI
         Height = 542
         Top = 54
         Width = 572
-        ActivePage = pgHostPackage
+        ActivePage = pgPackages
         Align = alRight
         TabIndex = 0
         TabOrder = 2
         OnChange = HostPagesChange
-        object pgHostPackage: TTabSheet
-          Caption = 'Configuration machine'
-          ClientHeight = 516
-          ClientWidth = 564
-          object GridhostAttribs: TVirtualJSONInspector
-            Left = 0
-            Height = 516
-            Top = 0
-            Width = 564
-            PropertyDefs = <>
-            Align = alClient
-            Color = clWhite
-            DragMode = dmAutomatic
-            Header.AutoSizeIndex = -1
-            Header.Columns = <            
-              item
-                Position = 0
-                Text = 'Propriété'
-                Width = 150
-              end            
-              item
-                Position = 1
-                Text = 'Valeur'
-                Width = 410
-              end>
-            Header.DefaultHeight = 17
-            Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
-            TabOrder = 0
-            TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes]
-            TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
-            TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-            TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
-          end
-        end
         object pgPackages: TTabSheet
-          Caption = 'Packages'
+          AnchorSideTop.Side = asrBottom
+          Caption = 'Résumé'
           ClientHeight = 516
           ClientWidth = 564
           object GridHostPackages: TVirtualJSONListView
+            AnchorSideTop.Control = Panel9
+            AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 516
-            Top = 0
+            Height = 396
+            Top = 120
             Width = 564
-            Align = alClient
+            Align = alBottom
+            Anchors = [akTop, akLeft, akRight, akBottom]
             Color = clWhite
             Header.AutoSizeIndex = 0
             Header.Columns = <            
@@ -376,9 +346,208 @@ object VisWaptGUI: TVisWaptGUI
             OnCompareNodes = GridPackagesCompareNodes
             OnHeaderClick = GridPackagesHeaderClick
           end
+          object Panel9: TPanel
+            AnchorSideBottom.Control = GridHostPackages
+            Left = 0
+            Height = 120
+            Top = 0
+            Width = 564
+            Align = alTop
+            BevelOuter = bvNone
+            ClientHeight = 120
+            ClientWidth = 564
+            Constraints.MaxHeight = 120
+            TabOrder = 1
+            object Label1: TLabel
+              Left = 11
+              Height = 13
+              Top = 78
+              Width = 56
+              Anchors = []
+              Caption = 'Addresse ip'
+              ParentBidiMode = False
+              ParentColor = False
+            end
+            object Label3: TLabel
+              Left = 359
+              Height = 13
+              Top = 36
+              Width = 34
+              Anchors = []
+              Caption = 'Modèle'
+              ParentBidiMode = False
+              ParentColor = False
+            end
+            object Label4: TLabel
+              Left = 359
+              Height = 13
+              Top = 78
+              Width = 48
+              Anchors = []
+              Caption = 'Utilisateur'
+              ParentBidiMode = False
+              ParentColor = False
+            end
+            object Label2: TLabel
+              Left = 359
+              Height = 13
+              Top = 14
+              Width = 52
+              Anchors = []
+              Caption = 'Fabriquant'
+              ParentBidiMode = False
+              ParentColor = False
+            end
+            object Label6: TLabel
+              Left = 11
+              Height = 13
+              Top = 14
+              Width = 21
+              Anchors = []
+              Caption = 'Nom'
+              ParentBidiMode = False
+              ParentColor = False
+            end
+            object Label7: TLabel
+              Left = 11
+              Height = 13
+              Top = 58
+              Width = 108
+              Anchors = []
+              Caption = 'Système d''exploitation'
+              ParentBidiMode = False
+              ParentColor = False
+            end
+            object Label8: TLabel
+              Left = 11
+              Height = 13
+              Top = 36
+              Width = 53
+              Anchors = []
+              Caption = 'Description'
+              ParentBidiMode = False
+              ParentColor = False
+            end
+            object Label9: TLabel
+              Left = 359
+              Height = 13
+              Top = 58
+              Width = 46
+              Anchors = []
+              Caption = 'Mis à jour'
+              ParentBidiMode = False
+              ParentColor = False
+            end
+            object Edit1: TEdit
+              Left = 127
+              Height = 21
+              Top = 10
+              Width = 216
+              Anchors = []
+              Enabled = False
+              TabOrder = 0
+            end
+            object Edit2: TEdit
+              Left = 127
+              Height = 21
+              Top = 32
+              Width = 216
+              Anchors = []
+              Enabled = False
+              TabOrder = 1
+            end
+            object Edit3: TEdit
+              Left = 127
+              Height = 21
+              Top = 54
+              Width = 216
+              Anchors = []
+              Enabled = False
+              TabOrder = 2
+            end
+            object Edit4: TEdit
+              Left = 127
+              Height = 21
+              Top = 76
+              Width = 216
+              Anchors = []
+              Enabled = False
+              TabOrder = 3
+            end
+            object Edit5: TEdit
+              Left = 419
+              Height = 21
+              Top = 10
+              Width = 132
+              Anchors = []
+              Enabled = False
+              TabOrder = 4
+            end
+            object Edit6: TEdit
+              Left = 419
+              Height = 21
+              Top = 32
+              Width = 132
+              Anchors = []
+              Enabled = False
+              TabOrder = 5
+            end
+            object Edit7: TEdit
+              Left = 419
+              Height = 21
+              Top = 54
+              Width = 132
+              Anchors = []
+              Enabled = False
+              TabOrder = 6
+            end
+            object Edit8: TEdit
+              Left = 419
+              Height = 21
+              Top = 76
+              Width = 132
+              Anchors = []
+              Enabled = False
+              TabOrder = 7
+            end
+          end
+        end
+        object pgHostPackage: TTabSheet
+          Caption = 'Inventaire matériel'
+          ClientHeight = 516
+          ClientWidth = 564
+          object GridhostAttribs: TVirtualJSONInspector
+            Left = 0
+            Height = 516
+            Top = 0
+            Width = 564
+            PropertyDefs = <>
+            Align = alClient
+            Color = clWhite
+            DragMode = dmAutomatic
+            Header.AutoSizeIndex = -1
+            Header.Columns = <            
+              item
+                Position = 0
+                Text = 'Propriété'
+                Width = 150
+              end            
+              item
+                Position = 1
+                Text = 'Valeur'
+                Width = 410
+              end>
+            Header.DefaultHeight = 17
+            Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
+            TabOrder = 0
+            TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes]
+            TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
+            TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+            TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
+          end
         end
         object pgSoftwares: TTabSheet
-          Caption = 'Logiciels installés'
+          Caption = 'Inventaire logiciels'
           ClientHeight = 516
           ClientWidth = 564
           object GridHostSoftwares: TVirtualJSONListView
@@ -449,7 +618,7 @@ object VisWaptGUI: TVisWaptGUI
       end
     end
     object TabSheet2: TTabSheet
-      Caption = 'Recherche packages'
+      Caption = 'Dépôt privé'
       ClientHeight = 596
       ClientWidth = 1165
       object GridPackages: TVirtualJSONListView
@@ -596,7 +765,7 @@ object VisWaptGUI: TVisWaptGUI
       end
     end
     object TabSheet5: TTabSheet
-      Caption = 'Dépôt TIS'
+      Caption = 'Dépôt public TIS'
       ClientHeight = 596
       ClientWidth = 1165
       object GridPackages1: TVirtualJSONListView
@@ -716,6 +885,15 @@ object VisWaptGUI: TVisWaptGUI
           Caption = 'Rechercher'
           OnClick = butSearchPackages1Click
           TabOrder = 1
+        end
+        object Button3: TButton
+          Left = 240
+          Height = 25
+          Top = 2
+          Width = 75
+          Caption = 'Dupliquer'
+          OnClick = ActPackageDuplicateExecute
+          TabOrder = 2
         end
       end
     end

@@ -1,0 +1,36 @@
+object visloading: Tvisloading
+  Left = 967
+  Height = 109
+  Top = 413
+  Width = 342
+  BorderStyle = bsSingle
+  Caption = 'Chargement'
+  ClientHeight = 109
+  ClientWidth = 342
+  FormStyle = fsStayOnTop
+  Position = poScreenCenter
+  LCLVersion = '1.1'
+  Visible = True
+  object ProgressBar1: TProgressBar
+    Left = 92
+    Height = 20
+    Top = 60
+    Width = 172
+    Smooth = True
+    Step = 1
+    TabOrder = 0
+  end
+  object Chargement: TLabel
+    Left = 112
+    Height = 13
+    Top = 20
+    Width = 115
+    Caption = 'Chargement en cours...'
+    ParentColor = False
+  end
+  object Timer1: TTimer
+    OnTimer = Timer1Timer
+    left = 39
+    top = 67
+  end
+end

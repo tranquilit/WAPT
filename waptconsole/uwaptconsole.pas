@@ -47,6 +47,7 @@ type
     butSearchPackages1: TButton;
     Button1: TButton;
     Button2: TButton;
+    Button3: TButton;
     Button6: TButton;
     Button7: TButton;
     Button8: TButton;
@@ -60,6 +61,14 @@ type
     cbShowHostPackagesGroup: TCheckBox;
     CheckBoxMaj: TCheckBox;
     CheckBox_error: TCheckBox;
+    Edit1: TEdit;
+    Edit2: TEdit;
+    Edit3: TEdit;
+    Edit4: TEdit;
+    Edit5: TEdit;
+    Edit6: TEdit;
+    Edit7: TEdit;
+    Edit8: TEdit;
     EdSearch1: TEdit;
     EdSearchHost: TEdit;
     EdRun: TEdit;
@@ -67,7 +76,15 @@ type
     GridHosts: TVirtualJSONListView;
     GridhostAttribs: TVirtualJSONInspector;
     GridPackages1: TVirtualJSONListView;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
     Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
     LabHostCnt: TLabel;
     LabHostCnt1: TLabel;
     MainMenu1: TMainMenu;
@@ -103,13 +120,13 @@ type
     HostPages: TPageControl;
     Panel1: TPanel;
     Panel10: TPanel;
-    Panel2: TPanel;
     Panel3: TPanel;
     Panel4: TPanel;
     Panel5: TPanel;
     Panel6: TPanel;
     Panel7: TPanel;
     Panel8: TPanel;
+    Panel9: TPanel;
     PopupMenuHosts: TPopupMenu;
     PopupMenuPackages: TPopupMenu;
     PopupMenuEditDepends: TPopupMenu;
@@ -202,7 +219,7 @@ var
 
 implementation
 
-uses LCLIntf, uvisprivatekeyauth, tisstrings, soutils, waptcommon,
+uses LCLIntf,IniFiles, uvisprivatekeyauth, uvisloading, tisstrings, soutils, waptcommon,
   uVisCreateKey, uVisCreateWaptSetup,
   uvisOptionIniFile, dmwaptpython, uviseditpackage, uvispassword;
 
@@ -313,6 +330,14 @@ begin
           [currhost]).AsJSon();
         SetValue(GridHosts, Node, 'packages', packages_JSon);
       end;
+      Edit1.Text := GetValue(GridHosts, Node, 'host.computer_name');
+      Edit2.Text := GetValue(GridHosts, Node, 'host.description');
+      Edit3.Text := GetValue(GridHosts, Node, 'host.windows_product_infos.version');
+      Edit4.Text := GetValue(GridHosts, Node, 'host.connected_ips');
+      Edit5.Text := GetValue(GridHosts, Node, 'host.system_manufacturer');
+      Edit6.Text := GetValue(GridHosts, Node, 'host.system_productname');
+      Edit7.Text := GetValue(GridHosts, Node, 'last_query_date');
+      Edit8.Text := GetValue(GridHosts, Node, 'host.user');
       GridLoadData(GridHostPackages, packages_json);
     end
     else if HostPages.ActivePage = pgSoftwares then
@@ -349,6 +374,7 @@ var
 begin
   if GridPackages.Focused then
   begin
+
     N := GridPackages.GetFirstSelected;
     while N <> nil do
     begin
@@ -377,13 +403,12 @@ begin
 
   prefix := DMPython.RunJSON(
     'mywapt.config.get("global","default_package_prefix")').AsString;
-  if prefix = 'tis' then
+  {if prefix = 'tis' then
   begin
     ShowMessage(Format(
-      'Vous devez changer la valeur "default_package_prefix=%s" de wapt-get.ini',
+      'Attention: votre préfixe est "default_package_prefix=%s" dans wapt-get.ini',
       [prefix]));
-    Exit;
-  end;
+  end;}
   oldName := GetValue(GridPackages1, GridPackages1.GetFirstSelected, 'package');
   newName := oldName;
   StrReplace(newName, 'tis-', prefix + '-');
@@ -477,9 +502,10 @@ end;
 
 procedure TVisWaptGUI.ActCreateCertificateExecute(Sender: TObject);
 var
-  params: string;
+  params,certFile,privateKey: string;
   Result: ISuperObject;
   done: boolean;
+  INI: TINIFile;
 begin
   with TVisCreateKey.Create(Self) do
     try
@@ -501,8 +527,19 @@ begin
               [params]), jsonlog);
             done := FileExists(Result.S['pem_filename']);
             if done then
+            begin
               ShowMessageFmt('La clé %s a été créée avec succès',
                 [Result.S['pem_filename']]);
+                certFile := Result.S['pem_filename'];
+                StrReplace(certFile, '.pem', '.crt');
+                if not CopyFile(PChar(certFile), PChar(waptpath+'\ssl\'+ExtractFileName(certFile)), True) then
+                  ShowMessage('Erreur lors de la copie de la clé publique');
+
+                INI := TINIFile.Create(WaptIniFilename);
+                INI.WriteString('global', 'private_key', Result.S['pem_filename']);
+                INI.Free;
+            end;
+
           except
             on e: Exception do
             begin
@@ -839,14 +876,14 @@ begin
             waptServerUser := edUser.Text;
             try
               resp := DMPython.RunJSON(
-              format('waptdevutils.login_to_waptserver("%s","%s","%s")',
-              [GetWaptServerURL + '/login', waptServerUser, waptServerPassword]));
+                format('waptdevutils.login_to_waptserver("%s","%s","%s")',
+                [GetWaptServerURL + '/login', waptServerUser, waptServerPassword]));
             except
-               on E : Exception do
-               begin
-                ShowMessage('Erreur: '+UTF8Encode(E.Message));
+              on E: Exception do
+              begin
+                ShowMessage('Erreur: ' + UTF8Encode(E.Message));
                 halt;
-               end;
+              end;
             end;
             try
               done := StrToBool(resp.AsString);
@@ -863,6 +900,7 @@ begin
         Free;
       end;
   end;
+
   ActSearchHost.Execute;
   ActSearchPackage.Execute;
   butSearchPackages1.Click;
@@ -882,6 +920,7 @@ begin
     Handled := True;
   end;
 end;
+
 
 procedure TVisWaptGUI.GridLoadData(grid: TVirtualJSONListView; jsondata: string);
 var
