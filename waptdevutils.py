@@ -154,6 +154,9 @@ def updateTisRepo(wapt,search_string):
     return wapt.search(search_string)
 
 def duplicate_from_tis_repo(wapt,old_file_name,new_file_name):
+    # TODO : clean this quick hack
+    if os.path.exists('c:\\wapt\\db\\tis')==False:
+        os.makedirs('c:\\wapt\\db\\tis')
     wapt = common.Wapt(config_filename=wapt)
     wapt.update()
     result = wapt.duplicate_package(old_file_name,new_file_name)
