@@ -5,7 +5,7 @@
 #define StripBuild(str VerStr) Copy(VerStr, 1, RPos(".", VerStr)-1)
 #define AppVerStr StripBuild(FileVerStr)
 
-#define default_repo_url "http://wapt.tranquil.it/wapt"
+#define default_repo_url "http://srvwapt:8080/wapt"
 
 #define default_wapt_server "http://srvwapt:8080"
 #define default_update_period "120"
@@ -35,8 +35,12 @@ Source: "..\waptservice.exe"; DestDir: "{app}";  BeforeInstall: BeforeWaptServic
 Source: "..\wapt-get.ini.tmpl"; DestDir: "{app}"; 
 Source: "..\wapt-get.py"; DestDir: "{app}"; 
 Source: "..\keyfinder.py"; DestDir: "{app}"; 
+Source: "..\waptdevutils.py"; DestDir: "{app}"; 
 Source: "..\wapt-get.exe.manifest"; DestDir: "{app}";
 Source: "..\wapt-get.exe"; DestDir: "{app}";
+Source: "..\waptconsole.exe.manifest"; DestDir: "{app}";
+Source: "..\waptconsole.exe"; DestDir: "{app}";
+Source: "..\waptdevutils.py"; DestDir: "{app}";
 Source: "..\dmidecode.exe"; DestDir: "{app}";
 Source: "..\wapt.ico"; DestDir: "{app}";
 Source: "wapt.iss"; DestDir: "{app}\waptsetup";
@@ -76,7 +80,6 @@ MinVersion=0,5.0sp4
 LicenseFile=..\COPYING.txt
 RestartIfNeededByRun=False
 SetupIconFile=..\wapt.ico
-SignTool=kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f
 
 [Registry]
 Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"; Check: NeedsAddPath('{app}')
@@ -247,4 +250,3 @@ begin
   Result := Pos(';' + UpperCase(ExpandConstant(Param)) + ';', UpperCase(OrigPath)) = 0;
   
 end;
-
