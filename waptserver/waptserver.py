@@ -235,9 +235,16 @@ def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         auth = request.authorization
-        #logging("authenticating : %s" % auth.username)
-        if not auth or not check_auth(auth.username, auth.password):
+
+        if not auth:
+            logging.info('no credential given')
             return authenticate()
+
+        logging.info("authenticating : %s" % auth.username)
+
+        if not check_auth(auth.username, auth.password):
+            return authenticate()
+        logging.info("user %s authenticated" % auth.username)
         return f(*args, **kwargs)
     return decorated
 
@@ -263,13 +270,10 @@ def upload_package():
 @app.route('/upload_host',methods=['POST'])
 @requires_auth
 def upload_host():
-
+    logging.debug("Entering upload_host")
     try:
-        if request.method != 'POST':
-            return "Unsupported method"
-
         file = request.files['file']
-        logging('uploading host file : %s' % file)
+        logging.info('uploading host file : %s' % file)
 
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
@@ -321,29 +325,34 @@ def get_wapt_package(input_package_name):
     global wapt_folder
     package_name = secure_filename(input_package_name)
     r =  send_from_directory(wapt_folder, package_name)
-    r.headers.add_header('Content-Length', os.path.getsize(os.path.join(wapt_folder,package_name)))
+    if 'content-length' not in r.headers:
+        r.headers.add_header('content-length', os.path.getsize(os.path.join(wapt_folder,package_name)))
     return r
 
 @app.route('/wapt-host/<string:input_package_name>')
 def get_host_package(input_package_name):
     global wapt_folder
+    #TODO straighten this -host stuff
     host_folder = wapt_folder + '-host'
     logging.info( "get host package : " + input_package_name)
     package_name = secure_filename(input_package_name)
     r =  send_from_directory(host_folder, package_name)
-    #TODO straighten this -host stuff
-    r.headers.add_header('Content-Length', os.path.getsize(os.path.join(host_folder,package_name)))
+    # on line content-length is not added to the header.
+    if 'content-length' not in r.headers:
+        r.headers.add_header('content-length', os.path.getsize(os.path.join(host_folder,package_name)))
     return r
 
 @app.route('/wapt-group/<string:input_package_name>')
 def get_group_package(input_package_name):
     global wapt_folder
+    #TODO straighten this -group stuff
     group_folder = wapt_folder + '-group'
     logging.info( "get group package : " + input_package_name)
     package_name = secure_filename(input_package_name)
     r =  send_from_directory(group_folder, package_name)
-    #TODO straighten this -group stuff
-    r.headers.add_header('Content-Length', os.path.getsize(os.path.join(group_folder + '-group',package_name)))
+    # on line content-length is not added to the header.
+    if 'content-length' not in r.headers:
+        r.headers.add_header('content-length', os.path.getsize(os.path.join(group_folder + '-group',package_name)))
     return r
 
 def check_auth(username, password):
