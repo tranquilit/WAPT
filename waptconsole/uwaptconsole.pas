@@ -33,6 +33,7 @@ type
     ActHostsDelete: TAction;
     ActDeletePackage: TAction;
     ActAdvancedMode: TAction;
+    ActPackageGroupAdd: TAction;
     ActPackageDuplicate: TAction;
     ActRegisterHost: TAction;
     ActSearchHost: TAction;
@@ -109,6 +110,7 @@ type
     MenuItem25: TMenuItem;
     MenuItem26: TMenuItem;
     MenuItem27: TMenuItem;
+    MenuItem28: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
@@ -166,6 +168,7 @@ type
     procedure ActInstallExecute(Sender: TObject);
     procedure ActInstallUpdate(Sender: TObject);
     procedure ActPackageDuplicateExecute(Sender: TObject);
+    procedure ActPackageGroupAddExecute(Sender: TObject);
     procedure ActRegisterHostExecute(Sender: TObject);
     procedure ActRemoveExecute(Sender: TObject);
     procedure ActRemoveUpdate(Sender: TObject);
@@ -184,7 +187,7 @@ type
     procedure EdSearchHostKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
-    procedure FormShortCut(var Msg: TLMKey; var Handled: boolean);
+    procedure FormShortCut(var Msg: TLMKey; var Handled: boolean;keyState : TShiftState);
     procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridHostsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Data: TJSONData; Column: TColumnIndex; TextType: TVSTTextType;
@@ -455,6 +458,11 @@ begin
 
   end;
 
+end;
+
+procedure TVisWaptGUI.ActPackageGroupAddExecute(Sender: TObject);
+begin
+  CreatePackage('test');
 end;
 
 procedure TVisWaptGUI.ActRegisterHostExecute(Sender: TObject);
@@ -906,7 +914,7 @@ begin
   butSearchPackages1.Click;
 end;
 
-procedure TVisWaptGUI.FormShortCut(var Msg: TLMKey; var Handled: boolean);
+procedure TVisWaptGUI.FormShortCut(var Msg: TLMKey; var Handled: boolean;keyState : TShiftState);
 begin
   if (Msg.CharCode = VK_F5) then
   begin
@@ -914,9 +922,10 @@ begin
     ActSearchPackage.Execute;
     Handled := True;
   end;
-  if (Msg.CharCode = VK_Q) and (HiWord(Msg.KeyData) and MK_CONTROL <> 0) then
+  if (Msg.CharCode = VK_Q) and (ssCtrl in KeyState) then
   begin
-    Close;
+
+   // Close;
     Handled := True;
   end;
 end;

@@ -1978,7 +1978,7 @@ class Wapt(object):
     def upload_package(self,cmd_dict,wapt_server_user=None,wapt_server_passwd=None):
       if not self.upload_cmd and not wapt_server_user:
         wapt_server_user = raw_input('WAPT Server user :')
-        wapt_server_passwd = sha512_for_data(getpass.getpass('WAPT Server password :').encode('ascii'))
+        wapt_server_passwd = getpass.getpass('WAPT Server password :').encode('ascii')
       auth =  (wapt_server_user, wapt_server_passwd)
 
       if cmd_dict['waptdir'] == "wapt-host":

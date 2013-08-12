@@ -1658,10 +1658,17 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Dupliquer'
       OnExecute = ActPackageDuplicateExecute
     end
+    object ActPackageGroupAdd: TAction
+      Caption = 'Nouveau paquet groupe'
+      OnExecute = ActPackageGroupAddExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
     top = 150
+    object MenuItem28: TMenuItem
+      Action = ActPackageGroupAdd
+    end
     object MenuItem1: TMenuItem
       Action = ActInstall
     end

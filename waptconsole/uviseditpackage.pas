@@ -107,6 +107,7 @@ type
     { public declarations }
     waptpath:String;
     IsHost:Boolean;
+    IsNewPackage:Boolean;
     PackageEdited:ISuperObject;
     procedure EditPackage;
     property SourcePath:String read FSourcePath write SetSourcePath;
@@ -114,6 +115,7 @@ type
   end;
 
 function EditPackage(packagename:String):ISuperObject;
+function CreatePackage(packagename:String):ISuperObject;
 function EditHost(hostname:String):ISuperObject;
 
 var
@@ -132,6 +134,23 @@ begin
   with TVisEditPackage.Create(Nil) do
   try
     PackageRequest := packagename;
+    if ShowModal=mrOK then
+      result :=  PackageEdited
+    else
+      result := Nil;
+  finally
+    Free;
+  end;
+end;
+
+function CreatePackage(packagename:String):ISuperObject;
+begin
+  with TVisEditPackage.Create(Nil) do
+  try
+    IsNewPackage:=True;
+    Eddescription.Enabled:=False;
+    PackageRequest := packagename;
+    EdSection.ItemIndex:=4;
     if ShowModal=mrOK then
       result := PackageEdited
     else
@@ -288,16 +307,21 @@ var
 begin
   Screen.Cursor:=crHourGlass;
   try
-    PackageEdited.S['package'] := EdPackage.Text;
-    PackageEdited.S['version'] := EdVersion.Text;
-    PackageEdited.S['description'] := EdDescription.Text;
-    PackageEdited.S['section'] := EdSection.Text;
-    PackageEdited.S['depends'] := Depends;
-    DMPython.PythonEng.ExecString('p = PackageEntry()');
-    DMPython.PythonEng.ExecString(format('p.load_control_from_dict(json.loads(''%s''))',[PackageEdited.AsJson]));
-    DMPython.PythonEng.ExecString(format('p.save_control_to_wapt(r''%s'')',[EdSourceDir.Text]));
-    EdSetupPy.Lines.SaveToFile(AppendPathDelim(FSourcePath)+'setup.py');
-    IsUpdated:=False;
+    if IsNewPackage then
+      FSourcePath := DMPython.RunJSON(format('mywapt.make_group_template("%s","%s")',[Trim(EdPackage.Text), Depends ])).AsString
+    else
+      begin
+      PackageEdited.S['package'] := EdPackage.Text;
+      PackageEdited.S['version'] := EdVersion.Text;
+      PackageEdited.S['description'] := EdDescription.Text;
+      PackageEdited.S['section'] := EdSection.Text;
+      PackageEdited.S['depends'] := Depends;
+      DMPython.PythonEng.ExecString('p = PackageEntry()');
+      DMPython.PythonEng.ExecString(format('p.load_control_from_dict(json.loads(''%s''))',[PackageEdited.AsJson]));
+      DMPython.PythonEng.ExecString(format('p.save_control_to_wapt(r''%s'')',[EdSourceDir.Text]));
+      EdSetupPy.Lines.SaveToFile(AppendPathDelim(FSourcePath)+'setup.py');
+    end;
+      IsUpdated:=False;
   finally
     Screen.Cursor:=crDefault;
   end;
@@ -388,16 +412,10 @@ begin
   EdSourceDir.Visible:=isAdvancedMode;
   cbShowLog.Visible:=isAdvancedMode;
   TabSheet1.TabVisible:=isAdvancedMode;
-
-
-
-
-
 end;
 
 procedure TVisEditPackage.FormShortCut(var Msg: TLMKey; var Handled: Boolean);
 begin
-
   if (Msg.CharCode = VK_RETURN)
   and (HiWord(Msg.KeyData) and MK_CONTROL <> 0)
   then begin
@@ -407,7 +425,7 @@ begin
    if (Msg.CharCode = VK_Q)
     and (HiWord(Msg.KeyData) and MK_CONTROL <> 0)
   then begin
-    Close;
+    //Close;
     Handled := TRUE;
   end;
 end;
@@ -460,16 +478,20 @@ begin
   Screen.Cursor:=crHourGlass;
   try
     FPackageRequest:=AValue;
+    if not IsNewPackage then
+    begin
     if IsHost then
       res := DMPython.RunJSON(format('mywapt.edit_host("%s")',[FPackageRequest]))
     else
       res := DMPython.RunJSON(format('mywapt.edit_package("%s")',[FPackageRequest]));
     FSourcePath:= res.S['source_dir'];
     PackageEdited := res['package'];
+    end;
   finally
     Screen.Cursor:=crDefault;
   end;
-  EditPackage;
+  if not IsNewPackage then
+    EditPackage;
 end;
 
 procedure TVisEditPackage.SetSourcePath(AValue: String);
