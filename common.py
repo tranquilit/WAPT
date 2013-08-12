@@ -3121,7 +3121,7 @@ class Wapt(object):
             logger.debug(u'  Change current directory to %s' % previous_cwd)
             os.chdir(previous_cwd)
 
-    def build_upload(self,sources_directories,private_key_passwd=None,wapt_server_user=None,wapt_server_passwd=None):
+    def build_upload(self,sources_directories,private_key_passwd=None,wapt_server_user=None,wapt_server_passwd=None,inc_package_release=False):
         """Build a list of packages and upload the resulting packages to the main repository.
            if section of package is group or host, user specific wapt-host or wapt-group
         """
@@ -3131,7 +3131,10 @@ class Wapt(object):
         for source_dir in [os.path.abspath(p) for p in sources_directories]:
             if os.path.isdir(source_dir):
                 print('Building  %s' % source_dir)
-                buildresult = self.build_package(source_dir)
+                if inc_package_release==False:
+                    buildresult = self.build_package(source_dir)
+                else:
+                    buildresult = self.build_package(source_dir,inc_package_release=True)
                 package_fn = buildresult['filename']
                 if package_fn:
                     result.append(buildresult)

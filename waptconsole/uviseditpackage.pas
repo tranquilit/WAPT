@@ -376,7 +376,7 @@ begin
       Free;
     end;
   end;
-  result := DMPython.RunJSON(format('mywapt.build_upload(r"%s",r"%s",r"%s",r"%s")',[FSourcePath,privateKeyPassword,waptServerUser,waptServerPassword]),jsonlog);
+  result := DMPython.RunJSON(format('mywapt.build_upload(r"%s",r"%s",r"%s",r"%s",True)',[FSourcePath,privateKeyPassword,waptServerUser,waptServerPassword]),jsonlog);
   ModalResult:= mrOk;
 end;
 
