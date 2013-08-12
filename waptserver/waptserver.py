@@ -32,7 +32,7 @@ import logging
 log_directory = 'c:\wapt\waptserver\log\\'
 if os.path.exists(log_directory)==False:
     os.mkdirs(log_directory)
-logging.basicConfig(filename='c:\wapt\waptserver\log\waptserver.log',format='%(asctime)s %(message)s')
+logging.basicConfig(filename='c:\\wapt\\waptserver\\log\\waptserver.log',format='%(asctime)s %(message)s')
 logging.info('waptserver starting')
 
 if os.name=='posix':
@@ -235,6 +235,7 @@ def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         auth = request.authorization
+        #logging("authenticating : %s" % auth.username)
         if not auth or not check_auth(auth.username, auth.password):
             return authenticate()
         return f(*args, **kwargs)
@@ -262,17 +263,22 @@ def upload_package():
 @app.route('/upload_host',methods=['POST'])
 @requires_auth
 def upload_host():
+
     try:
-        if request.method == 'POST':
-            file = request.files['file']
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(wapt_folder+'-host', filename))
-                return "ok"
-            else:
-                return "wrong file type"
-        else:
+        if request.method != 'POST':
             return "Unsupported method"
+
+        file = request.files['file']
+        logging('uploading host file : %s' % file)
+
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(wapt_folder+'-host', filename))
+            return "ok"
+        else:
+            return "wrong file type"
+
+
     except:
         e = sys.exc_info()
         return str(e)
