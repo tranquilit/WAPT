@@ -34,8 +34,10 @@ sys.path.append(os.path.join(wapt_root_dir,'lib'))
 sys.path.append(os.path.join(wapt_root_dir,'waptserver'))
 sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
 
-mongodb_port = ""
-mongodb_ip = ""
+#default mongodb configuration for wapt
+mongodb_port = "38999"
+mongodb_ip = "127.0.0.1"
+
 wapt_folder = ""
 wapt_user = ""
 wapt_password = ""
@@ -43,19 +45,19 @@ wapt_password = ""
 if config.has_section('options'):
     if config.has_option('options', 'wapt_user'):
         wapt_user = config.get('options', 'wapt_user')
+    else:
+        wapt_user='admin'
 
     if config.has_option('options', 'wapt_password'):
         wapt_password = config.get('options', 'wapt_password')
+    else
+        raise Exception ('No waptserver admin password set in wapt-get.ini configuration file')
 
     if config.has_option('options', 'mongodb_port'):
         mongodb_port = config.get('options', 'mongodb_port')
-    else:
-        mongodb_port='38999'
 
     if config.has_option('options', 'mongodb_ip'):
         mongodb_ip = config.get('options', 'mongodb_ip')
-    else:
-        mongodb_ip = '127.0.0.1'
 
     if config.has_option('options', 'wapt_folder'):
         wapt_folder = config.get('options', 'wapt_folder')
@@ -88,8 +90,10 @@ hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
 logger.addHandler(hdlr)
 logger.setLevel(logging.INFO)
 
-if mongodb_port and mongodb_ip:
+try:
     client = MongoClient(mongodb_ip, int(mongodb_port))
+except:
+    raise Exception("Could not connect do mongodb database")
 
 db = client.wapt
 hosts = db.hosts
@@ -260,7 +264,7 @@ def upload_host():
 def login():
     try:
         if request.method == 'POST':
-            d= json.loads(request.data)  
+            d= json.loads(request.data)
             if "username" in d and "password" in d:
                 if check_auth(d["username"], d["password"]):
                     return "True"
@@ -269,7 +273,7 @@ def login():
             return "Unsupported method"
     except:
         e = sys.exc_info()
-        return str(e)    
+        return str(e)
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -312,11 +316,11 @@ def authenticate():
 
 
 if __name__ == "__main__":
-    # SSL Support 
+    # SSL Support
     #port = 8443
     #ssl_a = cheroot.ssllib.ssl_builtin.BuiltinSSLAdapter("srvlts1.crt", "srvlts1.key", "ca.crt")
     #wsgi_d = cheroot.wsgi.WSGIPathInfoDispatcher({'/': app})
-    #server = cheroot.wsgi.WSGIServer(('0.0.0.0', port),wsgi_app=wsgi_d,ssl_adapter=ssl_a)    
+    #server = cheroot.wsgi.WSGIServer(('0.0.0.0', port),wsgi_app=wsgi_d,ssl_adapter=ssl_a)
 
     port = 8080
     wsgi_d = cheroot.wsgi.WSGIPathInfoDispatcher({'/': app})
