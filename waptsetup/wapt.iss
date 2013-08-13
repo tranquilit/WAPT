@@ -11,6 +11,7 @@
 #define default_update_period "120"
 #define default_update_maxruntime "30"
  
+#define waptserver=1
 
 [Files]
 Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
@@ -51,9 +52,30 @@ Source: "..\wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.e
 Source: "..\vc_redist\*"; DestDir: "{app}\vc_redist";
 Source: "..\lib\site-packages\M2Crypto\libeay32.dll" ; DestDir: "{app}"; 
 Source: "..\lib\site-packages\M2Crypto\ssleay32.dll" ; DestDir: "{app}";
+#ifdef waptserver
+Source: "..\waptpython.exe"; DestDir: "{app}";
+Source: "..\waptserver\waptserver.ini.template"; DestDir: "{app}\waptserver"; DestName: "waptserver.ini"
+Source: "..\waptserver\*.py"; DestDir: "{app}\waptserver";       
+Source: "..\waptserver\*.template"; DestDir: "{app}\waptserver";  
+Source: "..\waptserver\templates\*"; DestDir: "{app}\waptserver\templates"; Flags: createallsubdirs recursesubdirs
+Source: "..\waptserver\scripts\*"; DestDir: "{app}\waptserver\scripts"; Flags: createallsubdirs recursesubdirs
+Source: "..\waptserver\mongodb\mongod.*"; DestDir: "{app}\waptserver\mongodb"; Flags: createallsubdirs recursesubdirs
+#endif
+
 
 [Dirs]
+#ifdef waptserver
+Name: "{app}\waptserver\repository"
+Name: "{app}\waptserver\log"
+Name: "{app}\waptserver\repository\wapt"
+Name: "{app}\waptserver\repository\wapt-host"
+Name: "{app}\waptserver\repository\wapt-group"
+Name: "{app}\waptserver\mongodb\data"
+Name: "{app}\waptserver\mongodb\log"
+#endif
+
 Name: "{app}"; Permissions: everyone-readexec authusers-readexec admins-full  
+
 
 [Setup]
 AppName={#AppName}
@@ -103,6 +125,13 @@ Filename: "{app}\wapt-get.exe"; Parameters: "setup-tasks"; Tasks: setuptasks; Fl
 Filename: "cmd"; Parameters: "/C echo O| cacls {app} /S:""D:PAI(A;OICI;FA;;;BA)(A;OICI;FA;;;SY)(A;OICI;0x1200a9;;;BU)(A;OICI;0x1201a9;;;AU)"""; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Changing rights on wapt directory..."; Description: "Changing rights on wapt directory"
 Filename: "{app}\wapt-get.exe"; Parameters: "register"; Tasks: useWaptServer; Flags: runhidden postinstall; StatusMsg: "Register computer on the WAPT server"; Description: "Register computer on the WAPT server"
 Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait runasoriginaluser postinstall; StatusMsg: "Launch WAPT tray icon"; Description: "Launch WAPT tray icon"
+
+#ifdef waptserver
+Filename: "{app}\waptserver\mongodb\mongod.exe"; Parameters: " --config c:\wapt\waptserver\mongodb\mongod.cfg --install";      StatusMsg: "Registering mongodb service..."; Description: "Set up MongoDB Service"
+Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptserver\waptserver_servicewrapper.py --startup=auto install"; StatusMsg: "Registering WaptServer Service"    ; Description: "Setup WaptServer Service"
+Filename: "net"; Parameters: "start waptmongodb"; StatusMsg: "Starting WaptMongodb service"
+Filename: "net"; Parameters: "start waptserver"; StatusMsg: "Starting waptserver service"
+#endif
 
 [Icons]
 Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\wapttray.exe"; Flags: excludefromshowinnewinstall;
@@ -251,3 +280,4 @@ begin
   Result := Pos(';' + UpperCase(ExpandConstant(Param)) + ';', UpperCase(OrigPath)) = 0;
   
 end;
+
