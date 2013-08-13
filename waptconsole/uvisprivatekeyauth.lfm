@@ -1,7 +1,7 @@
 object visPrivateKeyAuth: TvisPrivateKeyAuth
-  Left = 499
+  Left = 503
   Height = 115
-  Top = 369
+  Top = 370
   Width = 311
   Caption = 'Authentification Clé privée'
   ClientHeight = 115

@@ -187,7 +187,7 @@ type
     procedure EdSearchHostKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
-    procedure FormShortCut(var Msg: TLMKey; var Handled: boolean;keyState : TShiftState);
+    procedure FormShortCut(var Msg: TLMKey; var Handled: boolean; keyState: TShiftState);
     procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridHostsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Data: TJSONData; Column: TColumnIndex; TextType: TVSTTextType;
@@ -222,7 +222,7 @@ var
 
 implementation
 
-uses LCLIntf,IniFiles, uvisprivatekeyauth, uvisloading, tisstrings, soutils, waptcommon,
+uses LCLIntf, IniFiles, uvisprivatekeyauth, uvisloading, tisstrings, soutils, waptcommon,
   uVisCreateKey, uVisCreateWaptSetup,
   uvisOptionIniFile, dmwaptpython, uviseditpackage, uvispassword;
 
@@ -437,7 +437,10 @@ begin
             if ShowModal = mrOk then
             begin
               privateKeyPassword := edPasswordKey.Text;
-              done := True;
+              if StrToBool(DMPython.RunJSON(
+                format('waptdevutils.is_match_password(r"%s","%s")',
+                [GetWaptPrivateKey, privateKeyPassword])).AsString) then
+                done := True;
             end
             else
               Exit;
@@ -510,7 +513,7 @@ end;
 
 procedure TVisWaptGUI.ActCreateCertificateExecute(Sender: TObject);
 var
-  params,certFile,privateKey: string;
+  params, certFile, privateKey: string;
   Result: ISuperObject;
   done: boolean;
   INI: TINIFile;
@@ -538,14 +541,15 @@ begin
             begin
               ShowMessageFmt('La clé %s a été créée avec succès',
                 [Result.S['pem_filename']]);
-                certFile := Result.S['pem_filename'];
-                StrReplace(certFile, '.pem', '.crt');
-                if not CopyFile(PChar(certFile), PChar(waptpath+'\ssl\'+ExtractFileName(certFile)), True) then
-                  ShowMessage('Erreur lors de la copie de la clé publique');
+              certFile := Result.S['pem_filename'];
+              StrReplace(certFile, '.pem', '.crt');
+              if not CopyFile(PChar(certFile),
+                PChar(waptpath + '\ssl\' + ExtractFileName(certFile)), True) then
+                ShowMessage('Erreur lors de la copie de la clé publique');
 
-                INI := TINIFile.Create(WaptIniFilename);
-                INI.WriteString('global', 'private_key', Result.S['pem_filename']);
-                INI.Free;
+              INI := TINIFile.Create(WaptIniFilename);
+              INI.WriteString('global', 'private_key', Result.S['pem_filename']);
+              INI.Free;
             end;
 
           except
@@ -588,8 +592,7 @@ end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
 var
-  params: string;
-  Result: ISuperObject;
+  params,waptsetupPath: string;
   done: boolean;
 begin
   with TVisCreateWaptSetup.Create(self) do
@@ -604,9 +607,10 @@ begin
               [fnPublicCert.FileName]);
             params := params + format('default_repo_url=r"%s",', [edRepoUrl.Text]);
             params := params + format('company=r"%s",', [edOrgName.Text]);
-            Result := DMPython.RunJSON(
-              format('waptdevutils.create_wapt_setup(mywapt,%s)', [params]), jsonlog);
-            done := FileExists(Result.S['pem_filename']);
+            waptsetupPath := DMPython.RunJSON(format('waptdevutils.create_wapt_setup(mywapt,%s)', [params]), jsonlog).AsString;
+            done := FileExists(waptsetupPath);
+            if done then
+              ShowMessage('waptsetup.exe créé avec succès: '+waptsetupPath);
           except
             on e: Exception do
             begin
@@ -914,7 +918,8 @@ begin
   butSearchPackages1.Click;
 end;
 
-procedure TVisWaptGUI.FormShortCut(var Msg: TLMKey; var Handled: boolean;keyState : TShiftState);
+procedure TVisWaptGUI.FormShortCut(var Msg: TLMKey;
+  var Handled: boolean; keyState: TShiftState);
 begin
   if (Msg.CharCode = VK_F5) then
   begin
@@ -925,7 +930,7 @@ begin
   if (Msg.CharCode = VK_Q) and (ssCtrl in KeyState) then
   begin
 
-   // Close;
+    // Close;
     Handled := True;
   end;
 end;

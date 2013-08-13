@@ -1,7 +1,7 @@
 object visloading: Tvisloading
-  Left = 967
+  Left = 971
   Height = 109
-  Top = 413
+  Top = 415
   Width = 342
   BorderStyle = bsSingle
   Caption = 'Chargement'

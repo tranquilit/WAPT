@@ -104,8 +104,10 @@ def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',company=''
             new_iss.append(line)
             if line.startswith('OutputBaseFilename'):
                 outputfile = makepath(wapt.wapt_base_dir,'waptsetup','%s.exe' % line.split('=')[1])
-    print os.path.normpath(default_public_cert)
-    filecopyto(os.path.normpath(default_public_cert),os.path.join(os.path.dirname(iss_template),'..','ssl'))
+    source = os.path.normpath(default_public_cert)
+    target = os.path.join(os.path.dirname(iss_template),'..','ssl')
+    if not (os.path.normcase(os.path.abspath( os.path.dirname(source))) == os.path.normcase(os.path.abspath(target))):
+        filecopyto(source,target)
     codecs.open(iss_template,'w',encoding='utf8').write('\n'.join(new_iss))
     inno_directory = '%s\\Inno Setup 5\\Compil32.exe' % programfiles32
     run('"%s" /cc %s' % (inno_directory,iss_template))
@@ -188,4 +190,4 @@ if __name__ == '__main__':
     #print diff_computer_ad_wapt(wapt)
     #add_remove_option_inifile(wapt,True,'global','repo_url','http://wapt/wapt-sid')
 
-    #create_wapt_setup(wapt,'C:\private\titit.crt',default_repo_url='',company='')
+    create_wapt_setup(wapt,r'C:\tranquilit\wapt\ssl\sdeded.crt',default_repo_url='',company='')

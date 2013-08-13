@@ -1,5 +1,5 @@
 object VisCreateWaptSetup: TVisCreateWaptSetup
-  Left = 299
+  Left = 737
   Height = 172
   Top = 164
   Width = 535
@@ -99,7 +99,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     end
   end
   object ActionList1: TActionList
-    left = 407
-    top = 79
+    left = 488
+    top = 104
   end
 end
