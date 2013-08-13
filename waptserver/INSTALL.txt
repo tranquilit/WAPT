@@ -1,7 +1,7 @@
 ﻿==Installation on Windows==
 Configuration of WAPTServer on windows
 
-C:\WAPT\waptserver\mongodb>mongod.exe --config c:\wapt\waptserver\mongodb\mongod.cfg --install
+C:\WAPT\waptserver\mongodb\mongod.exe --config c:\wapt\waptserver\mongodb\mongod.cfg --install
 c:\wapt\waptpython.exe c:\wapt\waptserver\waptserver_servicewrapper.py --startup=auto install 
 
 net start waptmongodb
