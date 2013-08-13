@@ -31,7 +31,7 @@ if os.name=='nt':
 import logging
 log_directory = 'c:\wapt\waptserver\log\\'
 if os.path.exists(log_directory)==False:
-    os.mkdirs(log_directory)
+    os.mkdir(log_directory)
 logging.basicConfig(filename='c:\\wapt\\waptserver\\log\\waptserver.log',format='%(asctime)s %(message)s')
 logging.info('waptserver starting')
 
