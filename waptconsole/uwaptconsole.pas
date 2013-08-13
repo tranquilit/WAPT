@@ -606,6 +606,7 @@ begin
             params := params + format('default_public_cert=r"%s",',
               [fnPublicCert.FileName]);
             params := params + format('default_repo_url=r"%s",', [edRepoUrl.Text]);
+            params := params + format('destination=r"%s",', [fnWaptDirectory.Directory]);
             params := params + format('company=r"%s",', [edOrgName.Text]);
             waptsetupPath := DMPython.RunJSON(format('waptdevutils.create_wapt_setup(mywapt,%s)', [params]), jsonlog).AsString;
             done := FileExists(waptsetupPath);

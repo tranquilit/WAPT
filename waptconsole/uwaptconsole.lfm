@@ -1,9 +1,9 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 4
+  Left = 667
   Height = 695
-  Top = 1
+  Top = 208
   Width = 1014
-  Caption = 'VisWaptConsole'
+  Caption = 'Console WAPT'
   ClientHeight = 676
   ClientWidth = 1014
   Menu = MainMenu1

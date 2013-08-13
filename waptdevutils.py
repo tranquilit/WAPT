@@ -87,7 +87,7 @@ def create_self_signed_key(wapt,orgname,destdir='c:\\private',
     print out
     return {'pem_filename':destpem,'crt_filename':destcrt}
 
-def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',company=''):
+def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',destination='',company=''):
     """Build a customized waptsetup.exe with included provided certificate
     Returns filename"""
     print default_public_cert
@@ -112,7 +112,8 @@ def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',company=''
     inno_directory = '%s\\Inno Setup 5\\Compil32.exe' % programfiles32
     run('"%s" /cc %s' % (inno_directory,iss_template))
     print('%s compiled successfully' % (outputfile, ))
-    return outputfile
+    filecopyto(outputfile,destination)
+    return os.path.join(destination,os.path.basename(outputfile))
 
 def diff_computer_ad_wapt(wapt):
     """Return the computer in the Active Directory but not in Wapt Serveur """
@@ -190,4 +191,4 @@ if __name__ == '__main__':
     #print diff_computer_ad_wapt(wapt)
     #add_remove_option_inifile(wapt,True,'global','repo_url','http://wapt/wapt-sid')
 
-    create_wapt_setup(wapt,r'C:\tranquilit\wapt\ssl\sdeded.crt',default_repo_url='',company='')
+    create_wapt_setup(wapt,r'C:\tranquilit\wapt\ssl\sdeded.crt',destination='c:\wapt',default_repo_url='',company='')
