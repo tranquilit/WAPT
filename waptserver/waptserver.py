@@ -17,7 +17,7 @@ import logging
 
 config = ConfigParser.RawConfigParser()
 
-
+import pprint
 wapt_root_dir = ''
 if os.name=='nt':
     import _winreg
@@ -325,8 +325,11 @@ def get_wapt_package(input_package_name):
     global wapt_folder
     package_name = secure_filename(input_package_name)
     r =  send_from_directory(wapt_folder, package_name)
+    logging.info("checking if content-length is there or not")
     if 'content-length' not in r.headers:
-        r.headers.add_header('content-length', os.path.getsize(os.path.join(wapt_folder,package_name)))
+        r.headers.add_header('content-length', int(os.path.getsize(os.path.join(wapt_folder,package_name))))
+        logging.info('adding content-length')
+    logging.info(pprint.pformat(r.headers))
     return r
 
 @app.route('/wapt-host/<string:input_package_name>')
@@ -338,8 +341,13 @@ def get_host_package(input_package_name):
     package_name = secure_filename(input_package_name)
     r =  send_from_directory(host_folder, package_name)
     # on line content-length is not added to the header.
-    if 'content-length' not in r.headers:
-        r.headers.add_header('content-length', os.path.getsize(os.path.join(host_folder,package_name)))
+    logging.info(pprint.pformat(r.headers))
+
+    logging.info("checking if content-length is there or not")
+    if 'Content-Length' not in r.headers:
+        r.headers.add_header('Content-Length', int(os.path.getsize(os.path.join(host_folder,package_name))))
+        logging.info('content-length added')
+    logging.info(pprint.pformat(r.headers))
     return r
 
 @app.route('/wapt-group/<string:input_package_name>')
