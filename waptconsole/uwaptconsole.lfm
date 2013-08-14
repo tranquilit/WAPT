@@ -1,11 +1,11 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 509
+  Left = 664
   Height = 695
-  Top = 647
-  Width = 1014
+  Top = 159
+  Width = 1096
   Caption = 'Console WAPT'
   ClientHeight = 676
-  ClientWidth = 1014
+  ClientWidth = 1096
   Menu = MainMenu1
   OnCreate = FormCreate
   OnShortCut = FormShortCut
@@ -15,7 +15,7 @@ object VisWaptGUI: TVisWaptGUI
     Left = 0
     Height = 553
     Top = 0
-    Width = 1014
+    Width = 1096
     ActivePage = pgInventory
     Align = alClient
     TabIndex = 0
@@ -24,16 +24,16 @@ object VisWaptGUI: TVisWaptGUI
     object pgInventory: TTabSheet
       Caption = 'Inventaire'
       ClientHeight = 527
-      ClientWidth = 1006
+      ClientWidth = 1088
       object Panel10: TPanel
         Left = 0
         Height = 54
         Top = 0
-        Width = 1006
+        Width = 1088
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 54
-        ClientWidth = 1006
+        ClientWidth = 1088
         TabOrder = 0
         object EdSearchHost: TEdit
           Left = 60
@@ -134,7 +134,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 473
         Top = 54
-        Width = 429
+        Width = 511
         OnGetText = GridHostsGetText
         Align = alClient
         Color = clWhite
@@ -267,7 +267,7 @@ object VisWaptGUI: TVisWaptGUI
         OnHeaderClick = GridPackagesHeaderClick
       end
       object HostPages: TPageControl
-        Left = 434
+        Left = 516
         Height = 473
         Top = 54
         Width = 572
@@ -609,7 +609,7 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
       object Splitter4: TSplitter
-        Left = 429
+        Left = 511
         Height = 473
         Top = 54
         Width = 5
@@ -619,13 +619,13 @@ object VisWaptGUI: TVisWaptGUI
     end
     object TabSheet2: TTabSheet
       Caption = 'Dépôt privé'
-      ClientHeight = 596
-      ClientWidth = 1165
+      ClientHeight = 527
+      ClientWidth = 1006
       object GridPackages: TVirtualJSONListView
         Left = 0
-        Height = 546
+        Height = 477
         Top = 30
-        Width = 1165
+        Width = 1006
         Align = alClient
         Color = clWhite
         Header.AutoSizeIndex = 0
@@ -696,12 +696,12 @@ object VisWaptGUI: TVisWaptGUI
       object Panel5: TPanel
         Left = 0
         Height = 20
-        Top = 576
-        Width = 1165
+        Top = 507
+        Width = 1006
         Align = alBottom
         BevelOuter = bvNone
         ClientHeight = 20
-        ClientWidth = 1165
+        ClientWidth = 1006
         TabOrder = 2
         object LabHostCnt: TLabel
           Left = 4
@@ -716,11 +716,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 30
         Top = 0
-        Width = 1165
+        Width = 1006
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 1165
+        ClientWidth = 1006
         TabOrder = 0
         object EdSearch: TEdit
           Left = 4
@@ -1456,27 +1456,27 @@ object VisWaptGUI: TVisWaptGUI
     Left = 0
     Height = 118
     Top = 558
-    Width = 1014
+    Width = 1096
     Align = alBottom
     ClientHeight = 118
-    ClientWidth = 1014
+    ClientWidth = 1096
     TabOrder = 1
     Visible = False
     object Panel7: TPanel
       Left = 1
       Height = 116
       Top = 1
-      Width = 1012
+      Width = 1094
       Align = alClient
       Caption = 'Panel7'
       ClientHeight = 116
-      ClientWidth = 1012
+      ClientWidth = 1094
       TabOrder = 1
       object MemoLog: TMemo
         Left = 1
         Height = 114
         Top = 1
-        Width = 399
+        Width = 481
         Align = alClient
         Lines.Strings = (
           ''
@@ -1484,7 +1484,7 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 0
       end
       object jsonlog: TVirtualJSONInspector
-        Left = 405
+        Left = 487
         Height = 114
         Top = 1
         Width = 606
@@ -1512,7 +1512,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.SelectionOptions = [toExtendedFocus]
       end
       object Splitter2: TSplitter
-        Left = 400
+        Left = 482
         Height = 114
         Top = 1
         Width = 5
@@ -1536,7 +1536,7 @@ object VisWaptGUI: TVisWaptGUI
     Left = 0
     Height = 5
     Top = 553
-    Width = 1014
+    Width = 1096
     Align = alBottom
     ResizeAnchor = akBottom
   end
@@ -1662,6 +1662,11 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Nouveau paquet groupe'
       OnExecute = ActPackageGroupAddExecute
     end
+    object ActChangePassword: TAction
+      Category = 'Tools'
+      Caption = 'Changer le mot de passe'
+      OnExecute = ActChangePasswordExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
@@ -1740,6 +1745,9 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem15: TMenuItem
       Caption = 'Outils'
+      object MenuItem29: TMenuItem
+        Action = ActChangePassword
+      end
       object MenuItem16: TMenuItem
         Action = ActCreateCertificate
       end

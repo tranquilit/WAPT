@@ -33,6 +33,7 @@ type
     ActHostsDelete: TAction;
     ActDeletePackage: TAction;
     ActAdvancedMode: TAction;
+    ActChangePassword: TAction;
     ActPackageGroupAdd: TAction;
     ActPackageDuplicate: TAction;
     ActRegisterHost: TAction;
@@ -111,6 +112,7 @@ type
     MenuItem26: TMenuItem;
     MenuItem27: TMenuItem;
     MenuItem28: TMenuItem;
+    MenuItem29: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
@@ -152,6 +154,7 @@ type
     GridHostSoftwares: TVirtualJSONListView;
     procedure ActAddRemoveOptionIniFileExecute(Sender: TObject);
     procedure ActAdvancedModeExecute(Sender: TObject);
+    procedure ActChangePasswordExecute(Sender: TObject);
     procedure ActCreateCertificateExecute(Sender: TObject);
     procedure ActCreateWaptSetupExecute(Sender: TObject);
     procedure ActDeletePackageExecute(Sender: TObject);
@@ -387,14 +390,12 @@ begin
         begin
           package := GetValue(GridPackages, N, 'package') + ' (=' + GetValue(
             GridPackages, N, 'version') + ')';
-
           Chargement.Caption :=
             'Installation de ' + GetValue(GridPackages, N, 'package') + ' en cours ...';
           ProgressBar1.Position := trunc((i / selects) * 100);
           Application.ProcessMessages;
           i := i + 1;
           DMPython.RunJSON(format('mywapt.install("%s")', [package]), jsonlog);
-
           N := GridPackages.GetNextSelected(N);
         end;
       finally
@@ -619,6 +620,21 @@ begin
   Panel3.Visible := ActAdvancedMode.Checked;
   if TabSheet1.TabVisible then
     PageControl1.ActivePage := TabSheet1;
+end;
+
+procedure TVisWaptGUI.ActChangePasswordExecute(Sender: TObject);
+var newPass:String;
+begin
+  with TvisPrivateKeyAuth.Create(self) do
+  try
+    newPass:= PasswordBox('Serveur WAPT', 'Nouveau mot de passe');
+    DMPython.RunJSON(
+                format('waptdevutils.login_to_waptserver("%s","%s","%s","%s")',
+                [GetWaptServerURL + '/login', waptServerUser, waptServerPassword, newPass]));
+
+  finally
+    Free;
+  end;
 end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
@@ -979,7 +995,6 @@ begin
     Handled := True;
   end;
 end;
-
 
 procedure TVisWaptGUI.GridLoadData(grid: TVirtualJSONListView; jsondata: string);
 var

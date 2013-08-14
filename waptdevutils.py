@@ -168,9 +168,11 @@ def duplicate_from_tis_repo(wapt,old_file_name,new_file_name):
     else:
         return "error"
 
-def login_to_waptserver(url, login, passwd):
+def login_to_waptserver(url, login, passwd,newPass=""):
     try:
         data = {"username":login, "password": passwd}
+        if newPass:
+            data['newPass'] = newPass
         resp = requests.post(url, json.dumps(data))
         return resp.text
     except Exception as e:
@@ -180,15 +182,15 @@ def login_to_waptserver(url, login, passwd):
 
 
 if __name__ == '__main__':
-    wapt = common.Wapt(config_filename=r'C:\tranquilit\wapt\wapt-get.ini')
-    print wapt.update()
-    print wapt.download_packages(['tis-clamwin'])
+    #wapt = common.Wapt(config_filename=r'C:\tranquilit\wapt\wapt-get.ini')
+    #print wapt.update()
+   # print wapt.download_packages(['tis-clamwin'])
     #print is_encrypt_private_key(r'c:\tmp\ko.pem')
-    #print login_to_waptserver("https://srvlts1:8180/login", "admin", "secret")
+    print login_to_waptserver("http://srvlts1:8080/login", "admin", "secret", "test")
     #updateTisRepo(r'C:\tranquilit\wapt\wapt-get-public.ini')
     #duplicate_from_tis_repo(r'C:\tranquilit\wapt\wapt-get-public.ini','tis-filezilla','totsso2-filezilla')
     #print(search_bad_waptseup(wapt,'0.6.23'))
     #print diff_computer_ad_wapt(wapt)
     #add_remove_option_inifile(wapt,True,'global','repo_url','http://wapt/wapt-sid')
 
-    create_wapt_setup(wapt,r'C:\tranquilit\wapt\ssl\sdeded.crt',destination='c:\wapt',default_repo_url='',company='')
+    #{create_wapt_setup(wapt,r'C:\tranquilit\wapt\ssl\sdeded.crt',destination='c:\wapt',default_repo_url='',company='')
