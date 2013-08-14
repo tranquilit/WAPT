@@ -11,7 +11,6 @@
 #define default_update_period "120"
 #define default_update_maxruntime "30"
  
-#define waptserver=1
 
 [Files]
 Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
