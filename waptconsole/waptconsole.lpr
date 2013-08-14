@@ -20,7 +20,6 @@ begin
   Application.Initialize;
   Application.CreateForm(TDMPython, DMPython);
   Application.CreateForm(TVisWaptGUI, VisWaptGUI);
-  //Application.CreateForm(TvisPrivateKeyAuth, visPrivateKeyAuth);
   Application.Run;
 end.
 

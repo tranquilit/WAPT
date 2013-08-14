@@ -372,20 +372,34 @@ procedure TVisWaptGUI.ActInstallExecute(Sender: TObject);
 var
   expr, res: string;
   package: string;
-  i: integer;
+  i: integer = 0;
+  selects: integer;
   N: PVirtualNode;
 begin
   if GridPackages.Focused then
   begin
 
     N := GridPackages.GetFirstSelected;
-    while N <> nil do
-    begin
-      package := GetValue(GridPackages, N, 'package') + ' (=' + GetValue(
-        GridPackages, N, 'version') + ')';
-      DMPython.RunJSON(format('mywapt.install("%s")', [package]), jsonlog);
-      N := GridPackages.GetNextSelected(N);
-    end;
+    selects := GridPackages.SelectedCount;
+    with  Tvisloading.Create(Self) do
+      try
+        while N <> nil do
+        begin
+          package := GetValue(GridPackages, N, 'package') + ' (=' + GetValue(
+            GridPackages, N, 'version') + ')';
+
+          Chargement.Caption :=
+            'Installation de ' + GetValue(GridPackages, N, 'package') + ' en cours ...';
+          ProgressBar1.Position := trunc((i / selects) * 100);
+          Application.ProcessMessages;
+          i := i + 1;
+          DMPython.RunJSON(format('mywapt.install("%s")', [package]), jsonlog);
+
+          N := GridPackages.GetNextSelected(N);
+        end;
+      finally
+        Free;
+      end;
     ActSearchPackage.Execute;
   end;
 end;
@@ -401,6 +415,7 @@ var
   uploadResult: ISuperObject;
   done: boolean = False;
   isEncrypt: boolean;
+  Load: Tvisloading;
 
 begin
 
@@ -421,46 +436,62 @@ begin
     mtConfirmation, mbYesNoCancel, 0) <> mrYes then
     Exit;
 
-  sourceDir := DMPython.RunJSON(
-    Format('waptdevutils.duplicate_from_tis_repo(r"%s","%s","%s")',
-    [waptpath + '\wapt-get-public.ini', oldName, newName])).AsString;
-  if sourceDir <> 'error' then
-  begin
-    isEncrypt := StrToBool(DMPython.RunJSON(
-      format('waptdevutils.is_encrypt_private_key(r"%s")', [GetWaptPrivateKey])).AsString);
-    if (privateKeyPassword = '') and (isEncrypt) then
-    begin
-      with TvisPrivateKeyAuth.Create(Self) do
-        try
-          laKeyPath.Caption := GetWaptPrivateKey;
-          repeat
-            if ShowModal = mrOk then
-            begin
-              privateKeyPassword := edPasswordKey.Text;
-              if StrToBool(DMPython.RunJSON(
-                format('waptdevutils.is_match_password(r"%s","%s")',
-                [GetWaptPrivateKey, privateKeyPassword])).AsString) then
-                done := True;
-            end
-            else
-              Exit;
-          until done;
-        finally
-          Free;
+
+  with  Tvisloading.Create(Self) do
+    try
+      Chargement.Caption := 'Téléchargement en cours';
+      Application.ProcessMessages;
+
+
+      sourceDir := DMPython.RunJSON(
+        Format('waptdevutils.duplicate_from_tis_repo(r"%s","%s","%s")',
+        [waptpath + '\wapt-get-public.ini', oldName, newName])).AsString;
+      if sourceDir <> 'error' then
+      begin
+        isEncrypt := StrToBool(DMPython.RunJSON(
+          format('waptdevutils.is_encrypt_private_key(r"%s")',
+          [GetWaptPrivateKey])).AsString);
+        if (privateKeyPassword = '') and (isEncrypt) then
+        begin
+          with TvisPrivateKeyAuth.Create(Self) do
+            try
+              laKeyPath.Caption := GetWaptPrivateKey;
+              repeat
+                if ShowModal = mrOk then
+                begin
+                  privateKeyPassword := edPasswordKey.Text;
+                  if StrToBool(DMPython.RunJSON(
+                    format('waptdevutils.is_match_password(r"%s","%s")',
+                    [GetWaptPrivateKey, privateKeyPassword])).AsString) then
+                    done := True;
+                end
+                else
+                  Exit;
+              until done;
+            finally
+              Free;
+            end;
         end;
+
+        ProgressBar1.Position := 50;
+        Chargement.Caption := 'Upload en cours';
+        Application.ProcessMessages;
+
+
+        uploadResult := DMPython.RunJSON(
+          format('mywapt.build_upload(r"%s",r"%s",r"%s",r"%s")',
+          [sourceDir, privateKeyPassword, waptServerUser, waptServerPassword]), jsonlog);
+        if uploadResult.AsString <> '' then
+          ShowMessage(format('%s dupliqué avec succès.', [newName]))
+        else
+          ShowMessage('Erreur lors de la duplication.');
+
+        ModalResult := mrOk;
+
+      end;
+    finally
+      Free;
     end;
-    uploadResult := DMPython.RunJSON(
-      format('mywapt.build_upload(r"%s",r"%s",r"%s",r"%s")',
-      [sourceDir, privateKeyPassword, waptServerUser, waptServerPassword]), jsonlog);
-    if uploadResult.AsString <> '' then
-      ShowMessage(format('%s dupliqué avec succès.', [newName]))
-    else
-      ShowMessage('Erreur lors de la duplication.');
-
-    ModalResult := mrOk;
-
-  end;
-
 end;
 
 procedure TVisWaptGUI.ActPackageGroupAddExecute(Sender: TObject);
@@ -592,7 +623,7 @@ end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
 var
-  params,waptsetupPath: string;
+  params, waptsetupPath: string;
   done: boolean;
 begin
   with TVisCreateWaptSetup.Create(self) do
@@ -608,10 +639,12 @@ begin
             params := params + format('default_repo_url=r"%s",', [edRepoUrl.Text]);
             params := params + format('destination=r"%s",', [fnWaptDirectory.Directory]);
             params := params + format('company=r"%s",', [edOrgName.Text]);
-            waptsetupPath := DMPython.RunJSON(format('waptdevutils.create_wapt_setup(mywapt,%s)', [params]), jsonlog).AsString;
+            waptsetupPath := DMPython.RunJSON(
+              format('waptdevutils.create_wapt_setup(mywapt,%s)', [params]),
+              jsonlog).AsString;
             done := FileExists(waptsetupPath);
             if done then
-              ShowMessage('waptsetup.exe créé avec succès: '+waptsetupPath);
+              ShowMessage('waptsetup.exe créé avec succès: ' + waptsetupPath);
           except
             on e: Exception do
             begin
@@ -745,19 +778,30 @@ procedure TVisWaptGUI.ActRemoveExecute(Sender: TObject);
 var
   expr, res: string;
   package: string;
-  i: integer;
+  i: integer = 0;
+  selects: integer;
   N: PVirtualNode;
 begin
   if GridPackages.Focused then
   begin
     N := GridPackages.GetFirstSelected;
-    while N <> nil do
-    begin
-      package := GetValue(GridPackages, N, 'package');
-      DMPython.RunJSON(format('mywapt.remove("%s")', [package]), jsonlog);
-      N := GridPackages.GetNextSelected(N);
-    end;
-    ActSearchHost.Execute;
+    selects := GridPackages.SelectedCount;
+    with  Tvisloading.Create(Self) do
+      try
+        while N <> nil do
+        begin
+          package := GetValue(GridPackages, N, 'package');
+          Chargement.Caption := 'Désinstallation de ' + package + ' en cours ...';
+          ProgressBar1.Position := trunc((i / selects) * 100);
+          Application.ProcessMessages;
+          i := i + 1;
+          DMPython.RunJSON(format('mywapt.remove("%s")', [package]), jsonlog);
+          N := GridPackages.GetNextSelected(N);
+        end;
+      finally
+        Free;
+      end;
+    ActSearchPackage.Execute;
   end;
 end;
 
@@ -919,8 +963,8 @@ begin
   butSearchPackages1.Click;
 end;
 
-procedure TVisWaptGUI.FormShortCut(var Msg: TLMKey;
-  var Handled: boolean; keyState: TShiftState);
+procedure TVisWaptGUI.FormShortCut(var Msg: TLMKey; var Handled: boolean;
+  keyState: TShiftState);
 begin
   if (Msg.CharCode = VK_F5) then
   begin

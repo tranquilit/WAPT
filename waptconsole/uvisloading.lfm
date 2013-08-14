@@ -12,25 +12,32 @@ object visloading: Tvisloading
   LCLVersion = '1.1'
   Visible = True
   object ProgressBar1: TProgressBar
-    Left = 92
+    Left = 40
     Height = 20
-    Top = 60
-    Width = 172
+    Top = 69
+    Width = 262
+    Align = alBottom
+    BorderSpacing.Left = 40
+    BorderSpacing.Right = 40
+    BorderSpacing.Bottom = 20
     Smooth = True
     Step = 1
     TabOrder = 0
   end
   object Chargement: TLabel
-    Left = 112
-    Height = 13
-    Top = 20
-    Width = 115
+    Left = 0
+    Height = 44
+    Top = 25
+    Width = 342
+    Align = alClient
+    Alignment = taCenter
+    BorderSpacing.Top = 25
     Caption = 'Chargement en cours...'
     ParentColor = False
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    left = 39
-    top = 67
+    left = 4
+    top = 24
   end
 end

@@ -1,7 +1,7 @@
 object VisCreateWaptSetup: TVisCreateWaptSetup
-  Left = 777
+  Left = 401
   Height = 172
-  Top = 269
+  Top = 128
   Width = 535
   Caption = 'Créer le waptsetup.exe'
   ClientHeight = 172
@@ -22,6 +22,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object Label1: TLabel
     Left = 8
     Height = 13
+    Hint = 'certificat que vous venez de créer (clé.crt)'
     Top = 20
     Width = 77
     Caption = 'Clé publique : '
@@ -40,6 +41,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object Label2: TLabel
     Left = 8
     Height = 13
+    Hint = 'Addresse de votre dépôt wapt (http://wapt/wapt)'
     Top = 76
     Width = 186
     Caption = 'Adresse du dépot Wapt principal:'
@@ -58,6 +60,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object Label3: TLabel
     Left = 8
     Height = 13
+    Hint = 'Nom de votre société'
     Top = 104
     Width = 65
     Caption = 'Organisation:'
@@ -101,6 +104,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object Label4: TLabel
     Left = 8
     Height = 13
+    Hint = 'Dossier dans lequel waptsetup.exe sera enregistrer'
     Top = 48
     Width = 194
     Caption = 'Enregistrer waptsetup.exe sous...  '
