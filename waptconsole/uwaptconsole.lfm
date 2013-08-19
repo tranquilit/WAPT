@@ -8,7 +8,6 @@ object VisWaptGUI: TVisWaptGUI
   ClientWidth = 1096
   Menu = MainMenu1
   OnCreate = FormCreate
-  OnShortCut = FormShortCut
   Position = poScreenCenter
   LCLVersion = '1.1'
   object PageControl1: TPageControl
@@ -617,15 +616,15 @@ object VisWaptGUI: TVisWaptGUI
         ResizeAnchor = akRight
       end
     end
-    object TabSheet2: TTabSheet
+    object pgPrivateRepo: TTabSheet
       Caption = 'Dépôt privé'
       ClientHeight = 527
-      ClientWidth = 1006
+      ClientWidth = 1088
       object GridPackages: TVirtualJSONListView
         Left = 0
         Height = 477
         Top = 30
-        Width = 1006
+        Width = 1088
         Align = alClient
         Color = clWhite
         Header.AutoSizeIndex = 0
@@ -697,11 +696,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 20
         Top = 507
-        Width = 1006
+        Width = 1088
         Align = alBottom
         BevelOuter = bvNone
         ClientHeight = 20
-        ClientWidth = 1006
+        ClientWidth = 1088
         TabOrder = 2
         object LabHostCnt: TLabel
           Left = 4
@@ -716,11 +715,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 30
         Top = 0
-        Width = 1006
+        Width = 1088
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 1006
+        ClientWidth = 1088
         TabOrder = 0
         object EdSearch: TEdit
           Left = 4
@@ -764,15 +763,15 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
     end
-    object TabSheet5: TTabSheet
+    object pgTISRepo: TTabSheet
       Caption = 'Dépôt public TIS'
-      ClientHeight = 596
-      ClientWidth = 1165
+      ClientHeight = 527
+      ClientWidth = 1088
       object GridPackages1: TVirtualJSONListView
         Left = 0
-        Height = 546
+        Height = 477
         Top = 30
-        Width = 1165
+        Width = 1088
         Align = alClient
         Color = clWhite
         Header.AutoSizeIndex = 0
@@ -843,12 +842,12 @@ object VisWaptGUI: TVisWaptGUI
       object Panel6: TPanel
         Left = 0
         Height = 20
-        Top = 576
-        Width = 1165
+        Top = 507
+        Width = 1088
         Align = alBottom
         BevelOuter = bvNone
         ClientHeight = 20
-        ClientWidth = 1165
+        ClientWidth = 1088
         TabOrder = 1
         object LabHostCnt1: TLabel
           Left = 4
@@ -863,11 +862,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 30
         Top = 0
-        Width = 1165
+        Width = 1088
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 1165
+        ClientWidth = 1088
         TabOrder = 2
         object EdSearch1: TEdit
           Left = 4
@@ -899,14 +898,14 @@ object VisWaptGUI: TVisWaptGUI
     end
     object TabSheet1: TTabSheet
       Caption = 'Sources'
-      ClientHeight = 596
-      ClientWidth = 1165
+      ClientHeight = 527
+      ClientWidth = 1088
       TabVisible = False
       inline testedit: TSynEdit
         Left = 0
-        Height = 562
+        Height = 493
         Top = 34
-        Width = 1165
+        Width = 1088
         Align = alClient
         Font.Height = -13
         Font.Name = 'Courier New'
@@ -1410,11 +1409,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 34
         Top = 0
-        Width = 1165
+        Width = 1088
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 34
-        ClientWidth = 1165
+        ClientWidth = 1088
         TabOrder = 1
         object butInitWapt: TButton
           Left = 4
@@ -1667,6 +1666,16 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Changer le mot de passe'
       OnExecute = ActChangePasswordExecute
     end
+    object actQuit: TAction
+      Caption = 'Quitter'
+      OnExecute = actQuitExecute
+      ShortCut = 16465
+    end
+    object actRefresh: TAction
+      Caption = 'Actualiser'
+      OnExecute = actRefreshExecute
+      ShortCut = 116
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
@@ -1695,8 +1704,8 @@ object VisWaptGUI: TVisWaptGUI
     end
   end
   object UniqueInstance1: TUniqueInstance
-    left = 528
-    top = 116
+    left = 444
+    top = 172
   end
   object MainMenu1: TMainMenu
     left = 440
@@ -1736,8 +1745,7 @@ object VisWaptGUI: TVisWaptGUI
         Visible = False
       end
       object MenuItem14: TMenuItem
-        Caption = 'Quitter'
-        OnClick = MenuItem14Click
+        Action = actQuit
       end
     end
     object MenuItem24: TMenuItem

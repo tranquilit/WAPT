@@ -3,6 +3,7 @@ object visPrivateKeyAuth: TvisPrivateKeyAuth
   Height = 115
   Top = 370
   Width = 311
+  BorderStyle = bsDialog
   Caption = 'Authentification Clé privée'
   ClientHeight = 115
   ClientWidth = 311
@@ -24,6 +25,7 @@ object visPrivateKeyAuth: TvisPrivateKeyAuth
     Top = 85
     Width = 311
     Align = alBottom
+    BevelOuter = bvNone
     ClientHeight = 30
     ClientWidth = 311
     TabOrder = 1
@@ -41,7 +43,7 @@ object visPrivateKeyAuth: TvisPrivateKeyAuth
     object BitBtn2: TBitBtn
       Left = 231
       Height = 23
-      Top = 3
+      Top = 4
       Width = 75
       Anchors = [akTop, akRight]
       DefaultCaption = True

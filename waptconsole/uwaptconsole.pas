@@ -34,6 +34,8 @@ type
     ActDeletePackage: TAction;
     ActAdvancedMode: TAction;
     ActChangePassword: TAction;
+    actRefresh: TAction;
+    actQuit: TAction;
     ActPackageGroupAdd: TAction;
     ActPackageDuplicate: TAction;
     ActRegisterHost: TAction;
@@ -140,12 +142,12 @@ type
     Splitter4: TSplitter;
     SynPythonSyn1: TSynPythonSyn;
     TabSheet1: TTabSheet;
-    TabSheet2: TTabSheet;
+    pgPrivateRepo: TTabSheet;
     pgInventory: TTabSheet;
     pgPackages: TTabSheet;
     pgSoftwares: TTabSheet;
     pgHostPackage: TTabSheet;
-    TabSheet5: TTabSheet;
+    pgTISRepo: TTabSheet;
     testedit: TSynEdit;
     jsonlog: TVirtualJSONInspector;
     UniqueInstance1: TUniqueInstance;
@@ -172,6 +174,8 @@ type
     procedure ActInstallUpdate(Sender: TObject);
     procedure ActPackageDuplicateExecute(Sender: TObject);
     procedure ActPackageGroupAddExecute(Sender: TObject);
+    procedure actQuitExecute(Sender: TObject);
+    procedure actRefreshExecute(Sender: TObject);
     procedure ActRegisterHostExecute(Sender: TObject);
     procedure ActRemoveExecute(Sender: TObject);
     procedure ActRemoveUpdate(Sender: TObject);
@@ -190,7 +194,6 @@ type
     procedure EdSearchHostKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
-    procedure FormShortCut(var Msg: TLMKey; var Handled: boolean; keyState: TShiftState);
     procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridHostsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Data: TJSONData; Column: TColumnIndex; TextType: TVSTTextType;
@@ -203,7 +206,6 @@ type
       TextType: TVSTTextType);
 
     procedure HostPagesChange(Sender: TObject);
-    procedure MenuItem14Click(Sender: TObject);
     procedure MenuItem27Click(Sender: TObject);
     procedure PageControl1Change(Sender: TObject);
   private
@@ -498,6 +500,23 @@ end;
 procedure TVisWaptGUI.ActPackageGroupAddExecute(Sender: TObject);
 begin
   CreatePackage('test');
+end;
+
+procedure TVisWaptGUI.actQuitExecute(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TVisWaptGUI.actRefreshExecute(Sender: TObject);
+begin
+  Screen.Cursor := crHourGlass;
+  try
+    ActSearchHost.Execute;
+    ActSearchPackage.Execute;
+
+  finally
+    Screen.Cursor := crDefault;
+  end;
 end;
 
 procedure TVisWaptGUI.ActRegisterHostExecute(Sender: TObject);
@@ -979,23 +998,6 @@ begin
   butSearchPackages1.Click;
 end;
 
-procedure TVisWaptGUI.FormShortCut(var Msg: TLMKey; var Handled: boolean;
-  keyState: TShiftState);
-begin
-  if (Msg.CharCode = VK_F5) then
-  begin
-    ActSearchHost.Execute;
-    ActSearchPackage.Execute;
-    Handled := True;
-  end;
-  if (Msg.CharCode = VK_Q) and (ssCtrl in KeyState) then
-  begin
-
-    // Close;
-    Handled := True;
-  end;
-end;
-
 procedure TVisWaptGUI.GridLoadData(grid: TVirtualJSONListView; jsondata: string);
 var
   jsp: TJSONParser;
@@ -1104,11 +1106,6 @@ begin
   UpdateHostPages(Sender);
 end;
 
-procedure TVisWaptGUI.MenuItem14Click(Sender: TObject);
-begin
-  Close;
-end;
-
 procedure TVisWaptGUI.MenuItem27Click(Sender: TObject);
 begin
   ShowMessage('Tranquil IT Systems: http://www.tranquil-it-systems.fr/');
@@ -1130,12 +1127,12 @@ end;
 
 procedure TVisWaptGUI.PageControl1Change(Sender: TObject);
 begin
-  case PageControl1.ActivePage.Name of
-    'pgInventory': CopyMenu(PopupMenuHosts, MenuItem24);
-    'TabSheet2': CopyMenu(PopupMenuPackages, MenuItem24);
-    'TabSheet5': CopyMenu(PopupMenuPackagesTIS, MenuItem24);
-    //'TabSheet1': ShowMessage('sources');
-  end;
+  if PageControl1.ActivePage = pgInventory then
+    CopyMenu(PopupMenuHosts, MenuItem24)
+  else if PageControl1.ActivePage = pgPrivateRepo then
+    CopyMenu(PopupMenuPackages, MenuItem24)
+  else if PageControl1.ActivePage = pgTISRepo then
+    CopyMenu(PopupMenuPackagesTIS, MenuItem24);
 end;
 
 function isAdvancedMode: boolean;
