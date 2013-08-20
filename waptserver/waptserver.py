@@ -19,6 +19,7 @@ config = ConfigParser.RawConfigParser()
 
 import pprint
 wapt_root_dir = ''
+
 if os.name=='nt':
     import _winreg
     try:
@@ -26,22 +27,21 @@ if os.name=='nt':
         (wapt_root_dir,atype) = _winreg.QueryValueEx(key,'install_dir')
     except:
         wapt_root_dir = 'c:\\\\wapt\\'
-
+else:
+    wapt_root_dir = '/opt/wapt/'
 
 import logging
-log_directory = 'c:\wapt\waptserver\log\\'
-if os.path.exists(log_directory)==False:
+log_directory = os.path.join(wapt_root_dir,'log')
+if not os.path.exists(log_directory):
     os.mkdir(log_directory)
-logging.basicConfig(filename='c:\\wapt\\waptserver\\log\\waptserver.log',format='%(asctime)s %(message)s')
-logging.info('waptserver starting')
 
-if os.name=='posix':
-    wapt_root_dir = '/opt/wapt/'
+logging.basicConfig(filename=os.path.join(log_directory,'waptserver.log'),format='%(asctime)s %(message)s')
+logging.info('waptserver starting')
 
 config_file = os.path.join(wapt_root_dir,'waptserver','waptserver.ini')
 
-if os.path.exists(config_file)==True:
-    config.read(os.path.join(wapt_root_dir,'waptserver','waptserver.ini'))
+if os.path.exists(config_file):
+    config.read(config_file)
 else:
     raise Exception("FATAL. Couldn't open config file : " + config_file)
 
