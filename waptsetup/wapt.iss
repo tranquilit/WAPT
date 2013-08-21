@@ -10,7 +10,8 @@
 #define default_wapt_server "http://srvwapt:8080"
 #define default_update_period "120"
 #define default_update_maxruntime "30"
- 
+
+;#define waptserver 
 
 [Files]
 Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
@@ -90,7 +91,12 @@ DefaultGroupName={#AppName}
 ChangesEnvironment=True
 AppPublisher={#Company}
 OutputDir="."
+#ifdef waptserver
+OutputBaseFilename=waptsetupserver
+#else
 OutputBaseFilename=waptsetup
+#endif
+
 SolidCompression=True
 AppPublisherURL=http://www.tranquil.it
 AppUpdatesURL=http://wapt.tranquil.it/wapt
