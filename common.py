@@ -80,7 +80,9 @@ __version__ = "0.6.31"
 
 logger = logging.getLogger()
 
-def datetime2isodate(adatetime = datetime.datetime.now()):
+def datetime2isodate(adatetime = None):
+    if not adatetime:
+        adatetime = datetime.datetime.now()
     assert(isinstance(adatetime,datetime.datetime))
     return adatetime.isoformat()
 
