@@ -293,7 +293,13 @@ def login():
         if request.method == 'POST':
             d= json.loads(request.data)
             if "username" in d and "password" in d:
-                if check_auth(d["username"], d["password"]):
+                if check_auth(d["username"], d["password"]):                    
+                    if "newPass" in d:
+                        global wapt_password
+                        wapt_password = hashlib.sha512(d["newPass"]).hexdigest()
+                        config.set('options', 'wapt_password', wapt_password)
+                        with open(os.path.join(wapt_root_dir,'waptserver','waptserver.ini'), 'wb') as configfile:
+                            config.write(configfile)                        
                     return "True"
             return "False"
         else:
