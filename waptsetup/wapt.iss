@@ -59,6 +59,7 @@ Source: "..\waptserver\*.template"; DestDir: "{app}\waptserver";
 Source: "..\waptserver\templates\*"; DestDir: "{app}\waptserver\templates"; Flags: createallsubdirs recursesubdirs
 Source: "..\waptserver\scripts\*"; DestDir: "{app}\waptserver\scripts"; Flags: createallsubdirs recursesubdirs
 Source: "..\waptserver\mongodb\mongod.*"; DestDir: "{app}\waptserver\mongodb"; Flags: createallsubdirs recursesubdirs
+Source: "..\python27.dll"; DestDir: "{sys}"; Flags: sharedfile 32bit;
 #endif
 
 
