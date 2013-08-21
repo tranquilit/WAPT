@@ -50,8 +50,8 @@ Source: "services.iss"; DestDir: "{app}\waptsetup";
 Source: "..\COPYING.txt"; DestDir: "{app}";
 Source: "..\wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.exe'); 
 Source: "..\vc_redist\*"; DestDir: "{app}\vc_redist";
-Source: "..\lib\site-packages\M2Crypto\libeay32.dll" ; DestDir: "{app}"; 
-Source: "..\lib\site-packages\M2Crypto\ssleay32.dll" ; DestDir: "{app}";
+Source: "..\lib\site-packages\M2Crypto-0.21.1-py2.7.egg\M2Crypto\libeay32.dll" ; DestDir: "{app}"; 
+Source: "..\lib\site-packages\M2Crypto-0.21.1-py2.7.egg\M2Crypto\ssleay32.dll" ; DestDir: "{app}";
 #ifdef waptserver
 Source: "..\waptpython.exe"; DestDir: "{app}";
 Source: "..\waptserver\waptserver.ini.template"; DestDir: "{app}\waptserver"; DestName: "waptserver.ini"
