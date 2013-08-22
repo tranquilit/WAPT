@@ -591,7 +591,7 @@ def main():
                 if len(args)>=3:
                     result = mywapt.edit_host(hostname = args[1],append_depends = args[2] )
                 else:
-                    result = mywapt.edit_host(hostname = args[1],append_depends = args[2] )
+                    result = mywapt.edit_host(hostname = args[1] )
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
