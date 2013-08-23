@@ -822,7 +822,7 @@ class WaptSessionDB(WaptBaseDB):
         return cur.lastrowid
 
     def is_installed(self,package,version):
-        p = self.query('select * from  wapt_sessionsetup where package=? and version=?',(package,version))
+        p = self.query('select * from  wapt_sessionsetup where package=? and version=? and status="OK"',(package,version))
         if p:
             return p[0]
         else:
