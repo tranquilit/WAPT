@@ -229,7 +229,7 @@ implementation
 
 uses LCLIntf, IniFiles, uvisprivatekeyauth, uvisloading, tisstrings, soutils, waptcommon,
   uVisCreateKey, uVisCreateWaptSetup,
-  uvisOptionIniFile, dmwaptpython, uviseditpackage, uvispassword;
+  uvisOptionIniFile, dmwaptpython, uviseditpackage, uvispassword, tiscommon;
 
 {$R *.lfm}
 
@@ -390,8 +390,8 @@ begin
       try
         while N <> nil do
         begin
-          package := GetValue(GridPackages, N, 'package') + ' (=' + GetValue(
-            GridPackages, N, 'version') + ')';
+          package := GetValue(GridPackages, N, 'package') + ' (=' +
+            GetValue(GridPackages, N, 'version') + ')';
           Chargement.Caption :=
             'Installation de ' + GetValue(GridPackages, N, 'package') + ' en cours ...';
           ProgressBar1.Position := trunc((i / selects) * 100);
@@ -642,18 +642,20 @@ begin
 end;
 
 procedure TVisWaptGUI.ActChangePasswordExecute(Sender: TObject);
-var newPass:String;
+var
+  newPass: string;
 begin
   with TvisPrivateKeyAuth.Create(self) do
-  try
-    newPass:= PasswordBox('Serveur WAPT', 'Nouveau mot de passe');
-    DMPython.RunJSON(
-                format('waptdevutils.login_to_waptserver("%s","%s","%s","%s")',
-                [GetWaptServerURL + '/login', waptServerUser, waptServerPassword, newPass]));
+    try
+      newPass := PasswordBox('Serveur WAPT', 'Nouveau mot de passe');
+      DMPython.RunJSON(
+        format('waptdevutils.login_to_waptserver("%s","%s","%s","%s")',
+        [GetWaptServerURL + '/login', waptServerUser,
+        waptServerPassword, newPass]));
 
-  finally
-    Free;
-  end;
+    finally
+      Free;
+    end;
 end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
@@ -940,12 +942,32 @@ begin
   cbSearchHost.Enabled := not cbSearchAll.Checked;
 end;
 
+function checkReadWriteAccess(dir: string): boolean;
+var
+  fn: string;
+begin
+  try
+    fn := FileUtil.GetTempFilename(dir, 'test');
+    StringToFile(fn, '');
+    FileUtil.DeleteFileUTF8(fn);
+    Result := True;
+  except
+    Result := False;
+  end;
+end;
+
 procedure TVisWaptGUI.FormCreate(Sender: TObject);
 var
   done: boolean = False;
   resp: ISuperObject;
 
 begin
+  if not checkReadWriteAccess(ExtractFileDir(WaptDBPath)) then
+  begin
+    ShowMessage('Vous n''etes pas administrateur de la machine');
+    halt;
+  end;
+
   waptpath := ExtractFileDir(ParamStr(0));
   //butInitWapt.Click;
 

@@ -69,11 +69,11 @@ type
     procedure ActExecCodeExecute(Sender: TObject);
     procedure ActSearchPackageExecute(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
-    procedure EdSearchKeyPress(Sender: TObject; var Key: char);
+    procedure EdSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
+      );
     procedure EdSectionChange(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
-    procedure FormShortCut(var Msg: TLMKey; var Handled: boolean);
     procedure GridDependsDragDrop(Sender: TBaseVirtualTree; Source: TObject;
       DataObject: IDataObject; Formats: TFormatArray; Shift: TShiftState;
       const Pt: TPoint; var Effect: DWORD; Mode: TDropMode);
@@ -186,13 +186,15 @@ begin
     DMPython.PythonEng.ExecString('logger.setLevel(logging.WARNING)');
 end;
 
-procedure TVisEditPackage.EdSearchKeyPress(Sender: TObject; var Key: char);
+procedure TVisEditPackage.EdSearchKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
 begin
-  if Key = #13 then
+  if Key = VK_RETURN then
   begin
     EdSearch.SelectAll;
     ActSearchPackage.Execute;
   end;
+
 end;
 
 procedure TVisEditPackage.EdSectionChange(Sender: TObject);
@@ -431,20 +433,6 @@ begin
   EdSourceDir.Visible := isAdvancedMode;
   cbShowLog.Visible := isAdvancedMode;
   TabSheet1.TabVisible := isAdvancedMode;
-end;
-
-procedure TVisEditPackage.FormShortCut(var Msg: TLMKey; var Handled: boolean);
-begin
-  if (Msg.CharCode = VK_RETURN) and (HiWord(Msg.KeyData) and MK_CONTROL <> 0) then
-  begin
-    Button5.Click;
-    Handled := True;
-  end;
-  if (Msg.CharCode = VK_Q) and (HiWord(Msg.KeyData) and MK_CONTROL <> 0) then
-  begin
-    //Close;
-    Handled := True;
-  end;
 end;
 
 procedure TVisEditPackage.GridLoadData(grid: TVirtualJSONListView; jsondata: string);

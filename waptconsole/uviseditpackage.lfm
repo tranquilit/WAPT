@@ -10,7 +10,6 @@ object VisEditPackage: TVisEditPackage
   Constraints.MinWidth = 800
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
-  OnShortCut = FormShortCut
   Position = poDesktopCenter
   LCLVersion = '1.1'
   object PageControl1: TPageControl
@@ -50,7 +49,7 @@ object VisEditPackage: TVisEditPackage
             Height = 21
             Top = 3
             Width = 136
-            OnKeyPress = EdSearchKeyPress
+            OnKeyDown = EdSearchKeyDown
             TabOrder = 0
           end
           object butSearchPackages1: TButton
