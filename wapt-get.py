@@ -412,7 +412,7 @@ def main():
                 for packagename in packages_list:
                     try:
                         print u"Configuring %s ..." % (packagename,),
-                        result.append(mywapt.session_setup(packagename))
+                        result.append(mywapt.session_setup(packagename,force=options.force))
                         print "Done"
                     except Exception,e:
                         logger.critical(ensure_unicode(e))
