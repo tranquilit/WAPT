@@ -285,7 +285,7 @@ procedure TDMWaptTray.DataModuleCreate(Sender: TObject);
 begin
   checkinterval:=IniReadInteger(WaptIniFilename,'Global','tray_check_interval')*1000;
   if checkinterval=0 then
-    checkinterval:=10000;
+    checkinterval:=3000;
 
   check_thread :=  TCheckThread.Create(True);
   TCheckThread(check_thread).DMTray := Self;
