@@ -1,7 +1,7 @@
 object VisEditPackage: TVisEditPackage
-  Left = 623
+  Left = 573
   Height = 600
-  Top = 68
+  Top = 674
   Width = 800
   Caption = 'Editer le paquet'
   ClientHeight = 600
@@ -916,7 +916,7 @@ object VisEditPackage: TVisEditPackage
     object Label5: TLabel
       Left = 144
       Height = 13
-      Top = 26
+      Top = 29
       Width = 35
       Caption = 'Section'
       ParentColor = False

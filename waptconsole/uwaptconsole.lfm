@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 664
+  Left = 520
   Height = 695
-  Top = 159
+  Top = 190
   Width = 1096
   Caption = 'Console WAPT'
   ClientHeight = 676
@@ -140,64 +140,68 @@ object VisWaptGUI: TVisWaptGUI
         Header.AutoSizeIndex = -1
         Header.Columns = <        
           item
-            MaxWidth = 400
             Position = 0
+            Text = 'Status'
+          end        
+          item
+            MaxWidth = 400
+            Position = 1
             Text = 'Machine'
             Width = 100
             PropertyName = 'host.computer_fqdn'
           end        
           item
             MaxWidth = 400
-            Position = 1
+            Position = 2
             Text = 'Description'
             Width = 100
             PropertyName = 'host.description'
           end        
           item
             MaxWidth = 400
-            Position = 2
+            Position = 3
             Text = 'Fabricant'
             Width = 100
             PropertyName = 'host.system_manufacturer'
           end        
           item
             MaxWidth = 400
-            Position = 3
+            Position = 4
             Text = 'Modèle'
             Width = 100
             PropertyName = 'host.system_productname'
           end        
           item
             MaxWidth = 400
-            Position = 4
+            Position = 5
             Text = 'Numéro de série'
             Width = 100
             PropertyName = 'dmi.Chassis\sInformation.Serial\sNumber'
           end        
           item
             MaxWidth = 400
-            Position = 5
+            Position = 6
             Text = 'Dernière MAJ'
             Width = 100
             PropertyName = 'last_query_date'
           end        
           item
             MaxWidth = 400
-            Position = 6
+            Position = 7
             Text = 'Adresses Mac'
             Width = 100
             PropertyName = 'host.mac'
           end        
           item
             MaxWidth = 400
-            Position = 7
+            Position = 8
             Text = 'Adresses Ips'
             Width = 100
             PropertyName = 'host.connected_ips'
           end        
           item
             MaxWidth = 400
-            Position = 8
+            Position = 9
             Text = 'uuid'
             Width = 100
             PropertyName = 'uuid'
@@ -205,7 +209,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 9
+            Position = 10
             Text = 'md5sum'
             Width = 100
             PropertyName = 'md5sum'
@@ -213,7 +217,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 10
+            Position = 11
             Text = 'purchase_order'
             Width = 100
             PropertyName = 'purchase_order'
@@ -221,7 +225,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 11
+            Position = 12
             Text = 'purchase_date'
             Width = 100
             PropertyName = 'purchase_date'
@@ -229,7 +233,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 12
+            Position = 13
             Text = 'groups'
             Width = 100
             PropertyName = 'groups'
@@ -237,7 +241,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 13
+            Position = 14
             Text = 'attributes'
             Width = 100
             PropertyName = 'attributes'
@@ -245,7 +249,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 14
+            Position = 15
             Text = 'id'
             Width = 100
             PropertyName = 'id'
@@ -254,6 +258,7 @@ object VisWaptGUI: TVisWaptGUI
         Header.MainColumn = 1
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
         Header.Style = hsFlatButtons
+        Images = ImageList1
         PopupMenu = PopupMenuHosts
         TabOrder = 1
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
@@ -263,6 +268,7 @@ object VisWaptGUI: TVisWaptGUI
         OnChange = GridHostsChange
         OnCompareNodes = GridPackagesCompareNodes
         OnDblClick = ActEditHostPackageExecute
+        OnGetImageIndexEx = GridHostsGetImageIndexEx
         OnHeaderClick = GridPackagesHeaderClick
       end
       object HostPages: TPageControl
@@ -443,7 +449,7 @@ object VisWaptGUI: TVisWaptGUI
               Top = 10
               Width = 216
               Anchors = []
-              Enabled = False
+              ReadOnly = True
               TabOrder = 0
             end
             object Edit2: TEdit
@@ -452,7 +458,7 @@ object VisWaptGUI: TVisWaptGUI
               Top = 32
               Width = 216
               Anchors = []
-              Enabled = False
+              ReadOnly = True
               TabOrder = 1
             end
             object Edit3: TEdit
@@ -461,7 +467,7 @@ object VisWaptGUI: TVisWaptGUI
               Top = 54
               Width = 216
               Anchors = []
-              Enabled = False
+              ReadOnly = True
               TabOrder = 2
             end
             object Edit4: TEdit
@@ -470,7 +476,7 @@ object VisWaptGUI: TVisWaptGUI
               Top = 76
               Width = 216
               Anchors = []
-              Enabled = False
+              ReadOnly = True
               TabOrder = 3
             end
             object Edit5: TEdit
@@ -479,7 +485,7 @@ object VisWaptGUI: TVisWaptGUI
               Top = 10
               Width = 132
               Anchors = []
-              Enabled = False
+              ReadOnly = True
               TabOrder = 4
             end
             object Edit6: TEdit
@@ -488,7 +494,7 @@ object VisWaptGUI: TVisWaptGUI
               Top = 32
               Width = 132
               Anchors = []
-              Enabled = False
+              ReadOnly = True
               TabOrder = 5
             end
             object Edit7: TEdit
@@ -497,7 +503,7 @@ object VisWaptGUI: TVisWaptGUI
               Top = 54
               Width = 132
               Anchors = []
-              Enabled = False
+              ReadOnly = True
               TabOrder = 6
             end
             object Edit8: TEdit
@@ -506,18 +512,18 @@ object VisWaptGUI: TVisWaptGUI
               Top = 76
               Width = 132
               Anchors = []
-              Enabled = False
+              ReadOnly = True
               TabOrder = 7
             end
           end
         end
         object pgHostPackage: TTabSheet
           Caption = 'Inventaire matériel'
-          ClientHeight = 516
+          ClientHeight = 447
           ClientWidth = 564
           object GridhostAttribs: TVirtualJSONInspector
             Left = 0
-            Height = 516
+            Height = 447
             Top = 0
             Width = 564
             PropertyDefs = <>
@@ -547,11 +553,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgSoftwares: TTabSheet
           Caption = 'Inventaire logiciels'
-          ClientHeight = 516
+          ClientHeight = 447
           ClientWidth = 564
           object GridHostSoftwares: TVirtualJSONListView
             Left = 0
-            Height = 516
+            Height = 447
             Top = 0
             Width = 564
             Align = alClient
@@ -1797,5 +1803,76 @@ object VisWaptGUI: TVisWaptGUI
     object MenuItem25: TMenuItem
       Action = ActPackageDuplicate
     end
+  end
+  object ImageList1: TImageList
+    left = 332
+    top = 272
+    Bitmap = {
+      4C69020000001000000010000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00E6B3
+      4D0ADAA7474BE5C58295FFFFFFFFEED7ADD3D9A64879DAA64645DBB64907FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00D8A94741D9A7
+      47DCD9A747FFDEB25FFFF3E4C6FFE6C484FFDEB25FFFDDAF58FFD9A747D7DBA6
+      4839FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00D9A64887D9A747FED9A7
+      47FFD9A747FFD9A747FFD9A747FFD9A747FFD9A747FFDAAA4DFFDFB462FFD9A7
+      47FDD9A74880FFFFFF00FFFFFF00FFFFFF00D9A64650D9A747FFD9A747FFD9A7
+      47FFD9A747FFD9A747FFD9A747FFD9A747FFD9A747FFD9A747FFDAAA4EFFE0B7
+      68FFD9A747FFDBA6464DFFFFFF00DEA64317D9A747EBD9A747FFD9A747FFDCAF
+      57FFE6C687FFE6C585FFE5C483FFE0B86AFFD9A747FFD9A747FFD9A747FFE1B9
+      6DFFD9A848FFD9A747E9DCA24616DAA7486ED9A747FFD9A747FFDEB25DFFE7C7
+      8BFFD9A747FFD9A747FFD9A747FFDEB361FFE1BA6FFFD9A747FFD9A747FFDAA9
+      4BFFE1BB70FFD9A747FFD9A74671D8A847ACD9A747FFD9A747FFE7C88DFFDCAD
+      54FFE0B86AFFDAAA4EFFD9A747FFD9A747FFE3BE78FFD9A747FFD9A747FFD9A7
+      47FFE3BE77FFD9A747FFDAA748ABD09A32B8C98D1FC5C68A1AD7DAB46EE8DCB8
+      77EBFFFFFFFFDDB76BD4D9A645F6D9A747FFE1BA6FFFDAA94BFFD9A747FFDCAF
+      57FFF0DCB6FFE1B96DFFD9A747E5C58818ECC58818FFC88D22FFD6AA5AFFD09E
+      43FFE4C792FFCB9531FFC58818F2C78D1EC4DDB870CFD29D39CED8A544F3E0B8
+      6AFFFFFFFFFFE7CC98E1C68A1CC8C58818B8C58818FFCB9430FFD4A653FFC588
+      18FFC78C1FFFCA932DFFC58818FFCD9736FFD3A551FFC58818FFC58818FDC88D
+      22F0E0BF82FFCA932EFFC58818B8C5881783C58818FFC58818FFDCB773FFC588
+      18FFC58818FFC78B1EFFCE9A3AFFC98F26FFC58818FFC58818FFC58818FFD09E
+      43FFCD9939FFC58818FFC5881783C688172DC58818F9C58818FFD09F44FFD2A2
+      4BFFC58818FFC58818FFC58818FFC58818FFC58818FFC58818FFCA912AFFDAB3
+      6BFFC58818FFC58818F9C688172DFFFFFF00C4891779C58818FFC58818FFDDB9
+      76FFF4E9D4FFDDB976FFC58818FFC58818FFC58819FFD8AE62FFD8AE62FFC588
+      19FFC58818FFC4891779FFFFFF00FFFFFF00AAAA0003C48819BBC58818FFCC96
+      32FFFAF4EAFFE9D2A8FFD7AE61FFD8AF64FFDAB26AFFC99129FFC58818FFC588
+      18FFC48819BBAAAA0003FFFFFF00FFFFFF00FFFFFF00AAAA0003C4871875C588
+      18F7C58818FFC58818FFC58818FFC58818FFC58818FFC58818FFC58818F7C487
+      1875FF800002FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00C489
+      1A27C5871880C58718B3C58818E6C58818E6C58718B3C5871880C4891A27FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00000000000000000000000000000000000000
+      00000000000013509A010000000000000000002E7C0000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000056A4DCFD408ECDE30000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000002F61A48160C6FFFF5EC7FFFF0D3F8B5B00000000000000000000
+      000000000000000000000000000000000000000000000000000000000000002A
+      700000000007599ED8FF4AB0F8FF41B3FFFF4293D2F300000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000406CA79954ACEBFF41A8F3FF39ACFDFF4BBDFFFF13438E75000000000000
+      0000000000000000000000000000000000000000000000000000001F69000000
+      16165B9FD6FF3A98E2FF91C8F0FF80C0F2FF24A3FEFF3A8FD3FF00000000001B
+      5500000000000000000000000000000000000000000000000000000000004473
+      ABB542A1E9FF2A8FE2FFE5F3FCFFCEE7FCFF1796FAFF30B0FFFF1247908F0000
+      00000000000000000000000000000000000000000000001963000000472C54A2
+      E0FF3799E6FF218CE5FFE5F3FDFFCEE7FBFF0984F3FF007FFDFF1A82D9FF0000
+      000F001D5E0000000000000000000000000000000000000000003E76B2D1349A
+      ECFF2E98EDFF188EEFFFE3F4FEFFC5DFFBFF006EF1FF007EFCFF0891FFFF1251
+      9AA800000000000000000000000000000000001763000018624846A5ECFF2E9D
+      F3FF269DF9FF0481FBFFE2F5FFFFCFE7FFFF0076FBFF0080FEFF0288FFFF1585
+      E0FF00003424002164000000000000000000000000003076BCE82D9FF6FF1C98
+      FCFF0386FEFF068CFFFF168DF5FF118BF6FF068DFFFF0186FFFF048AFFFF0B95
+      FFFF10519DC600000000000000000000000008337D6834A5F9FF0B88FCFF0186
+      FFFF0D93FFFF0C95FFFFF8FCFEFFDEF0FEFF1099FFFF1094FFFF078DFFFF0990
+      FFFF1087E8FF00094A3F00256A00000000000E67C6FB0078F7FF0185FFFF0E94
+      FFFF22A1FFFF33ACFFFF83CFFFFF7ACBFFFF36ADFFFF25A4FFFF1196FFFF098F
+      FFFF0893FFFF0751A3DF00000000175CAA7A0072F0FF007DFDFF058DFFFF1A9D
+      FFFF33ADFFFF50BBFFFF63C5FFFF64C6FFFF53BEFFFF37B0FFFF1D9FFFFF078F
+      FFFF0389FFFF0182F3FF415D87573677B2730054B6E0045EBCDC0D69C0DB1B72
+      C2DA2C7AC3DA3A81C4DA4686C3D94786C4DA3C81C1DB2F79BEDB1E70BADC0E6C
+      C3E60565C4EA0364C7EC487AA76B000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000
+    }
   end
 end

@@ -9,7 +9,7 @@ uses
   vte_json, LSControls, Forms,
   Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus,
   EditBtn, fpJson, jsonparser, superobject,
-  UniqueInstance, VirtualTrees, VarPyth, Windows, ActiveX, LMessages, types;
+  UniqueInstance, VirtualTrees, VarPyth, Windows, ActiveX, LMessages, ImgList;
 
 type
 
@@ -80,6 +80,7 @@ type
     GridHosts: TVirtualJSONListView;
     GridhostAttribs: TVirtualJSONInspector;
     GridPackages1: TVirtualJSONListView;
+    ImageList1: TImageList;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -195,6 +196,10 @@ type
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
     procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure GridHostsGetImageIndexEx(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+      var Ghosted: Boolean; var ImageIndex: Integer;
+      var ImageList: TCustomImageList);
     procedure GridHostsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Data: TJSONData; Column: TColumnIndex; TextType: TVSTTextType;
       var CellText: string);
@@ -249,8 +254,26 @@ begin
       Result := js.S[FieldName];
   end
   else
-    Result := '';
+    Result := Default;
 end;
+
+function GetGridSOValue(ListView: TVirtualJSONListView; N: PVirtualNode;
+  FieldName: string): ISuperObject;
+var
+  js: ISuperObject;
+begin
+  js := SO(ListView.GetData(N).AsJSON);
+  if js <> nil then
+  begin
+    if FieldName = '' then
+      Result := js
+    else
+      Result := js[FieldName];
+  end
+  else
+    Result := Nil;
+end;
+
 
 procedure SetValue(ListView: TVirtualJSONListView; N: PVirtualNode;
   FieldName: string; Value: string);
@@ -485,7 +508,10 @@ begin
           format('mywapt.build_upload(r"%s",r"%s",r"%s",r"%s")',
           [sourceDir, privateKeyPassword, waptServerUser, waptServerPassword]), jsonlog);
         if uploadResult.AsString <> '' then
-          ShowMessage(format('%s dupliqué avec succès.', [newName]))
+        begin
+          ShowMessage(format('%s dupliqué avec succès.', [newName]));
+          ActUpdate.Execute;
+        end
         else
           ShowMessage('Erreur lors de la duplication.');
 
@@ -1062,6 +1088,32 @@ end;
 procedure TVisWaptGUI.GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 begin
   UpdateHostPages(Sender);
+end;
+
+procedure TVisWaptGUI.GridHostsGetImageIndexEx(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+  var Ghosted: Boolean; var ImageIndex: Integer; var ImageList: TCustomImageList
+  );
+var
+  update_status,upgrades,errors : ISuperObject;
+begin
+  if Column = 0 then
+  begin
+    update_status := GetGridSOValue(GridHosts,Node,'update_status');
+    if (update_status<>Nil) then
+    begin
+      ImageList := ImageList1;
+      errors := update_status['errors'];
+      upgrades := update_status['upgrades'];
+      if (errors<>Nil) and (errors.AsArray.Length>0) then
+        ImageIndex:=1
+      else
+      if (upgrades<>Nil) and (upgrades.AsArray.Length>0) then
+        ImageIndex:=0
+      else
+        ImageIndex:=-1;
+    end;
+  end;
 end;
 
 procedure TVisWaptGUI.GridHostsGetText(Sender: TBaseVirtualTree;
