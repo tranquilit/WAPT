@@ -68,10 +68,13 @@
         <Filename Value="waptservice.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptservice"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="11"/>
-        <CursorPos X="15" Y="26"/>
+        <TopLine Value="15"/>
+        <CursorPos X="49" Y="27"/>
         <UsageCount Value="202"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="waptmapper.pas"/>
@@ -91,11 +94,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WaptUnit"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="16"/>
-        <CursorPos X="12" Y="29"/>
+        <CursorPos X="56" Y="32"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -877,7 +879,7 @@
         <UsageCount Value="16"/>
       </Unit101>
     </Units>
-    <JumpHistory Count="24" HistoryIndex="23">
+    <JumpHistory Count="23" HistoryIndex="22">
       <Position1>
         <Filename Value="waptunit.pas"/>
         <Caret Line="305" Column="43" TopLine="290"/>
@@ -970,10 +972,6 @@
         <Filename Value="waptunit.pas"/>
         <Caret Line="328" Column="33" TopLine="319"/>
       </Position23>
-      <Position24>
-        <Filename Value="waptunit.pas"/>
-        <Caret Line="1" Column="1" TopLine="16"/>
-      </Position24>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
