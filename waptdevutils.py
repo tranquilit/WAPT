@@ -87,7 +87,7 @@ def create_self_signed_key(wapt,orgname,destdir='c:\\private',
     print out
     return {'pem_filename':destpem,'crt_filename':destcrt}
 
-def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',destination='',company=''):
+def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wapt_server='',destination='',company=''):
     """Build a customized waptsetup.exe with included provided certificate
     Returns filename"""
     print default_public_cert
@@ -100,6 +100,8 @@ def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',destinatio
     for line in iss:
         if line.startswith('#define default_repo_url'):
             new_iss.append('#define default_repo_url "%s"' % (default_repo_url))
+        elif line.startswith('#define default_wapt_server'):
+            new_iss.append('#define default_wapt_server "%s"' % (default_wapt_server))
         elif not line.startswith('SignTool'):
             new_iss.append(line)
             if line.startswith('OutputBaseFilename'):

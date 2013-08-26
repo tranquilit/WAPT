@@ -1,7 +1,7 @@
 object visPrivateKeyAuth: TvisPrivateKeyAuth
-  Left = 503
+  Left = 291
   Height = 115
-  Top = 370
+  Top = 264
   Width = 311
   BorderStyle = bsDialog
   Caption = 'Authentification Clé privée'

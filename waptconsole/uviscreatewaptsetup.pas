@@ -16,6 +16,7 @@ type
     ActionList1: TActionList;
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
+    edWaptServerUrl: TEdit;
     fnWaptDirectory: TDirectoryEdit;
     edRepoUrl: TEdit;
     edOrgName: TEdit;
@@ -24,6 +25,7 @@ type
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
+    Label5: TLabel;
     Panel1: TPanel;
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
   private
@@ -53,6 +55,11 @@ begin
     if (edRepoUrl.Text = '') then
     begin
       ShowMessage('Veuillez rentrer l''adresse du dépot Wapt ');
+      CanClose:=False;
+    end;
+    if (edWaptServerUrl.Text = '') then
+    begin
+      ShowMessage('Veuillez rentrer l''adresse du serveur Wapt ');
       CanClose:=False;
     end;
     if DirectoryExists(fnWaptDirectory.Directory) then

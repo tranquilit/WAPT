@@ -197,7 +197,7 @@ type
     procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridHostsGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
-      var Ghosted: Boolean; var ImageIndex: Integer;
+      var Ghosted: boolean; var ImageIndex: integer;
       var ImageList: TCustomImageList);
     procedure GridHostsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Data: TJSONData; Column: TColumnIndex; TextType: TVSTTextType;
@@ -270,7 +270,7 @@ begin
       Result := js[FieldName];
   end
   else
-    Result := Nil;
+    Result := nil;
 end;
 
 
@@ -675,8 +675,8 @@ begin
       newPass := PasswordBox('Serveur WAPT', 'Nouveau mot de passe');
       DMPython.RunJSON(
         format('waptdevutils.login_to_waptserver("%s","%s","%s","%s")',
-        [GetWaptServerURL + '/login', waptServerUser,
-        waptServerPassword, newPass]));
+        [GetWaptServerURL + '/login', waptServerUser, waptServerPassword,
+        newPass]));
 
     finally
       Free;
@@ -699,6 +699,7 @@ begin
             params := params + format('default_public_cert=r"%s",',
               [fnPublicCert.FileName]);
             params := params + format('default_repo_url=r"%s",', [edRepoUrl.Text]);
+            params := params + format('default_wapt_server=r"%s",', [edWaptServerUrl.Text]);
             params := params + format('destination=r"%s",', [fnWaptDirectory.Directory]);
             params := params + format('company=r"%s",', [edOrgName.Text]);
             waptsetupPath := DMPython.RunJSON(
@@ -1091,26 +1092,26 @@ end;
 
 procedure TVisWaptGUI.GridHostsGetImageIndexEx(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
-  var Ghosted: Boolean; var ImageIndex: Integer; var ImageList: TCustomImageList
-  );
+  var Ghosted: boolean; var ImageIndex: integer; var ImageList: TCustomImageList);
 var
-  update_status,upgrades,errors : ISuperObject;
+  update_status, upgrades, errors: ISuperObject;
 begin
   if Column = 0 then
   begin
-    update_status := GetGridSOValue(GridHosts,Node,'update_status');
-    if (update_status<>Nil) then
+    update_status := GetGridSOValue(GridHosts, Node, 'update_status');
+    if (update_status <> nil) then
     begin
       ImageList := ImageList1;
       errors := update_status['errors'];
       upgrades := update_status['upgrades'];
-      if (errors<>Nil) and (errors.AsArray.Length>0) then
-        ImageIndex:=1
+      if (errors <> nil) and (errors.AsArray.Length > 0) then
+        ImageIndex := 1
       else
-      if (upgrades<>Nil) and (upgrades.AsArray.Length>0) then
-        ImageIndex:=0
+      if (upgrades <> nil) and (upgrades.AsArray.Length > 0) then
+        ImageIndex := 0
       else
-        ImageIndex:=-1;
+        ImageIndex := -1;
+
     end;
   end;
 end;
