@@ -11,6 +11,8 @@
 #define default_update_period "120"
 #define default_update_maxruntime "30"
 
+#define output_dir "."
+
 ;#define waptserver 
 
 [Files]
@@ -90,7 +92,7 @@ DefaultDirName="C:\{#AppName}"
 DefaultGroupName={#AppName}
 ChangesEnvironment=True
 AppPublisher={#Company}
-OutputDir="."
+OutputDir={#output_dir}
 #ifdef waptserver
 OutputBaseFilename=waptserversetup
 #else
@@ -148,10 +150,15 @@ Name: "{commonstartup}\WAPT session setup"; Tasks: autorunSessionSetup; Filename
 Name: updateWapt; Description: "Update package list after setup";
 Name: installService; Description: "Install WAPT Service"; 
 Name: autorunTray; Description: "Start WAPT Tray icon at logon"; Flags: unchecked
-Name: autorunSessionSetup; Description: "Launch WAPT session setup for all packages at logon"; Flags: unchecked
+Name: autorunSessionSetup; Description: "Launch WAPT session setup for all packages at logon";
 Name: setupTasks; Description: "Creates windows scheduled tasks for update and upgrade"; 
 Name: useTISPublic; Description: "Use Tranquil IT public repository as a secondary source"; Flags: unchecked
-Name: useWaptServer; Description: "Register {#default_wapt_server} as the central WAPT manage server"; Flags: unchecked
+
+#ifdef waptserver
+Name: useWaptServer; Description: "Manage this machine from a central WAPT manage server";
+#else
+Name: useWaptServer; Description: "Manage this machine from a central WAPT manage server";  Flags: unchecked
+#endif
 
 [UninstallRun]
 Filename: "taskkill"; Parameters: "/t /im ""waptconsole.exe"" /f"; Flags: runhidden; StatusMsg: "Stopping waptconsole"
@@ -218,7 +225,7 @@ begin
     teWaptServerUrl.Text := GetIniString('Global', 'wapt_server', '{#default_wapt_server}', ExpandConstant('{app}\wapt-get.ini'));
     rbCustomRepo.Checked := teWaptUrl.Text <> ''; 
     rbDnsRepo.Checked := teWaptUrl.Text = ''; 
-    tewaptServerUrl.enabled := isTaskSelected('useWaptServer');
+    tewaptServerUrl.Visible := isTaskSelected('useWaptServer');
   end
 end;
 
