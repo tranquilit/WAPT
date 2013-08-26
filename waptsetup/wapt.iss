@@ -11,7 +11,7 @@
 #define default_update_period "120"
 #define default_update_maxruntime "30"
 
-;#define waptserver 
+!#define waptserver 
 
 [Files]
 Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
@@ -137,6 +137,7 @@ Filename: "{app}\waptserver\mongodb\mongod.exe"; Parameters: " --config c:\wapt\
 Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptserver\waptserver_servicewrapper.py --startup=auto install"; StatusMsg: "Registering WaptServer Service"    ; Description: "Setup WaptServer Service"
 Filename: "net"; Parameters: "start waptmongodb"; StatusMsg: "Starting WaptMongodb service"
 Filename: "net"; Parameters: "start waptserver"; StatusMsg: "Starting waptserver service"
+Filename: "{app}\wapt-get.exe"; Parameters: "update-packages {app}\waptserver\repository\wapt"; Flags: runhidden postinstall; StatusMsg: "Index des Packages"; Description: "Index des Packages"
 #endif
 
 [Icons]
