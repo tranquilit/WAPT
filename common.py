@@ -3286,7 +3286,7 @@ class Wapt(object):
                                         uerror = repr(e).decode(locale.getpreferredencoding())
                                     except:
                                         uerror = ensure_unicode(e)
-                                    self.waptdb.update_install_status(install_id,'ERROR',uerror)
+                                    session_db.update_install_status(install_id,'ERROR',uerror)
                                 except Exception,e2:
                                     logger.critical(ensure_unicode(e2))
                             else:
