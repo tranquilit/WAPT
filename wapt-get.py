@@ -375,30 +375,33 @@ def main():
                 # abort if there is already a running install in progress
                 if running_install:
                     raise Exception('Running wapt-get in progress, please wait...')
+                removed = []
+                errors = []
                 for packagename in args[1:]:
                     print u"Removing %s ..." % (packagename,)
-                    result = mywapt.remove(packagename,force=options.force)
+                    try:
+                        result = mywapt.remove(packagename,force=options.force)
+                        errors.extend(result['errors'])
+                        removed.extend(result['removed'])
+                    except:
+                        errors.append(packagename)
 
-                    if mywapt.wapt_server:
-                        try:
-                            mywapt.update_server_status()
-                        except Exception,e:
-                            logger.critical('Unable to update server with current status : %s' % ensure_unicode(e))
-
-                    if options.json_output:
-                        jsonresult['result'] = result
-                        if not result['removed']:
-                            print "No package removed"
-                            sys.exit(2)
+                if options.json_output:
+                    jsonresult['result'] = {'errors':errors,'removed':removed}
+                else:
+                    if removed:
+                        print u"=== Removed packages ===\n%s" % u"\n".join([ u"  %s" % p for p in removed ])
                     else:
-                        if result['removed']:
-                            print u"Removed packages : \n%s" % u"\n".join([ u"  %s" % p for p in result['removed'] ])
-                        else:
-                            print "No package removed"
-                            sys.exit(2)
-                    if result['errors']:
-                        logger.critical(u'Errors removing some packages : %s'% (result['errors'],))
-                        sys.exit(1)
+                        print u"No package removed !"
+
+                    if errors:
+                        print u"=== Error removing packages ===\n%s" % u"\n".join([ u"  %s" % p for p in errors ])
+
+                if mywapt.wapt_server:
+                    try:
+                        mywapt.update_server_status()
+                    except Exception,e:
+                        logger.critical('Unable to update server with current status : %s' % ensure_unicode(e))
 
             elif action=='session-setup':
                 if len(args)<2:
