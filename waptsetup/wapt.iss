@@ -11,7 +11,7 @@
 #define default_update_period "120"
 #define default_update_maxruntime "30"
 
-!#define waptserver 
+;#define waptserver 
 
 [Files]
 Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
@@ -118,7 +118,7 @@ Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\wapt-ge
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL}
 Filename: {app}\wapt-get.ini; Section: global; Key: waptupdate_task_period; String: {#default_update_period}; Flags:  createkeyifdoesntexist 
 Filename: {app}\wapt-get.ini; Section: global; Key: waptupdate_task_maxruntime; String: {#default_update_maxruntime}; Flags: createkeyifdoesntexist
-Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {#default_wapt_server}; Tasks: usewaptserver; Flags: createkeyifdoesntexist
+Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: String: {code:GetWaptServerURL}; Tasks: useWaptServer; Flags: createkeyifdoesntexist
 Filename: {app}\wapt-get.ini; Section: tranquilit; Key: repo_url; String: http://wapt.tranquil.it/wapt; Tasks: usetispublic; Flags: createkeyifdoesntexist
 Filename: {app}\wapt-get.ini; Section: global; Key: repositories; String: tranquilit; Flags: createkeyifdoesntexist; Tasks: useTISPublic
 
@@ -137,7 +137,7 @@ Filename: "{app}\waptserver\mongodb\mongod.exe"; Parameters: " --config c:\wapt\
 Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptserver\waptserver_servicewrapper.py --startup=auto install"; StatusMsg: "Registering WaptServer Service"    ; Description: "Setup WaptServer Service"
 Filename: "net"; Parameters: "start waptmongodb"; StatusMsg: "Starting WaptMongodb service"
 Filename: "net"; Parameters: "start waptserver"; StatusMsg: "Starting waptserver service"
-Filename: "{app}\wapt-get.exe"; Parameters: "update-packages {app}\waptserver\repository\wapt"; Flags: runhidden postinstall; StatusMsg: "Index des Packages"; Description: "Index des Packages"
+Filename: "{app}\wapt-get.exe"; Parameters: "update-packages {app}\waptserver\repository\wapt"; StatusMsg: "Updating server Packages index";
 #endif
 
 [Icons]
@@ -154,29 +154,36 @@ Name: useTISPublic; Description: "Use Tranquil IT public repository as a seconda
 Name: useWaptServer; Description: "Register {#default_wapt_server} as the central WAPT manage server"; Flags: unchecked
 
 [UninstallRun]
+Filename: "taskkill"; Parameters: "/t /im ""waptconsole.exe"" /f"; Flags: runhidden; StatusMsg: "Stopping waptconsole"
 Filename: "taskkill"; Parameters: "/t /im ""wapttray.exe"" /f"; Flags: runhidden; StatusMsg: "Stopping wapt tray"
 Filename: "net"; Parameters: "stop waptservice"; Flags: runhidden; StatusMsg: "Stop waptservice"
 Filename: "{app}\waptservice.exe"; Parameters: "--uninstall"; Flags: runhidden; StatusMsg: "Uninstall waptservice"
+#ifdef waptserver
+Filename: "net"; Parameters: "stop waptserver"; Flags: runhidden; StatusMsg: "Stop waptserver"
+Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptserver\waptserver_servicewrapper.py remove"; StatusMsg: "Unregistering WaptServer Service"
+Filename: "net"; Parameters: "stop waptmongod"; Flags: runhidden; StatusMsg: "Stop wapt mongodb"
+Filename: "{app}\waptserver\mongodb\mongod.exe"; Parameters: " --config c:\wapt\waptserver\mongodb\mongod.cfg --remove";      StatusMsg: "Unregistering mongodb service..."
+#endif
 
 [Code]
 #include "services.iss"
 var
   rbCustomRepo: TNewRadioButton;
   rbDnsRepo: TNewRadioButton;
-  teWaptUrl: TEdit;
-  
-procedure InitializeWizard;
-var
+  teWaptUrl,teWaptServerUrl: TEdit;
+  lb1:TLabel;
   CustomPage: TWizardPage;
 
+  
+procedure InitializeWizard;
 begin
   CustomPage := CreateCustomPage(wpSelectTasks, 'Installation options', '');
-
+  
   rbCustomRepo := TNewRadioButton.Create(WizardForm);
   rbCustomRepo.Parent := CustomPage.Surface;
   rbCustomRepo.Checked := True;
   rbCustomRepo.Caption := 'WAPT repository';
-  
+
   teWaptUrl :=TEdit.Create(WizardForm);
   teWaptUrl.Parent := CustomPage.Surface; 
   teWaptUrl.Left :=rbCustomRepo.Left + rbCustomRepo.Width;
@@ -187,17 +194,32 @@ begin
   rbDnsRepo.Top := rbCustomRepo.Top + rbCustomRepo.Height + ScaleY(15);
   rbDnsRepo.Width := CustomPage.SurfaceWidth;
   rbDnsRepo.Caption := 'Detect WAPT repository with DNS records';
+
+  lb1 := TLabel.Create(WizardForm);
+  lb1.Caption := 'Waptserver URL';
+  lb1.Parent := CustomPage.Surface; 
+  lb1.Top := rbCustomRepo.Top + rbCustomRepo.Height + 3 * ScaleY(15);
+  lb1.Left :=rbCustomRepo.Left;
+
+  teWaptServerUrl :=TEdit.Create(WizardForm);
+  teWaptServerUrl.Parent := CustomPage.Surface; 
+  teWaptServerUrl.Top := lb1.Top - 4;
+  teWaptServerUrl.Left :=rbCustomRepo.Left + lb1.Width+5;
+  teWaptServerUrl.Width :=CustomPage.SurfaceWidth;
   
+    
 end;
 
 procedure CurPageChanged(CurPageID: Integer);
 begin
-  if curPageId=wpSelectTasks then
+  if curPageId=customPage.Id then
   begin
     teWaptUrl.Text := GetIniString('Global', 'repo_url', '{#default_repo_url}', ExpandConstant('{app}\wapt-get.ini'));
+    teWaptServerUrl.Text := GetIniString('Global', 'wapt_server', '{#default_wapt_server}', ExpandConstant('{app}\wapt-get.ini'));
     rbCustomRepo.Checked := teWaptUrl.Text <> ''; 
     rbDnsRepo.Checked := teWaptUrl.Text = ''; 
-  end;
+    tewaptServerUrl.enabled := isTaskSelected('useWaptServer');
+  end
 end;
 
 function GetRepoURL(Param: String):String;
@@ -211,10 +233,25 @@ begin
        result :='';
 end;
 
+function GetWaptServerURL(Param: String):String;
+begin
+  if WizardSilent then
+    result := GetIniString('Global', 'wapt_server', '',ExpandConstant('{app}\wapt-get.ini'))
+  else
+    result := teWaptServerUrl.Text;
+end;
+
+
 function InitializeSetup(): Boolean;
 begin
   if ServiceExists('waptservice') then
     SimpleStopService('waptservice',True,True);
+  if ServiceExists('waptserver') then
+    SimpleStopService('waptserver',True,True);
+  if ServiceExists('waptmongod') then
+    SimpleStopService('waptmongod',True,True);
+  
+
   Result := True;
 end;
 
