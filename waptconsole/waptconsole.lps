@@ -9,12 +9,10 @@
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptconsole"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="32" Y="21"/>
         <UsageCount Value="208"/>
-        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="uwaptconsole.pas"/>
@@ -23,14 +21,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uwaptconsole"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="463"/>
-        <CursorPos X="25" Y="466"/>
-        <FoldState Value=" T8m0251 T4mJ02 T3nJ069 pj9jZ0W118]BJmX0C4 pifjK03[I4BjW036222B T6mT0101O p0+H013 T1nN029]mejc0P]@]BgmR0B7[94kB0E[94ak8044[@60oH23[L4YiO433121A[D4r72952]E TLrJ251s"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="1">
-          <Item0 X="1" Y="1048" ID="1"/>
+          <Item0 X="1" Y="1047" ID="1"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -39,34 +37,28 @@
         <Filename Value="..\wapt-get\tisstrings.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tisstrings"/>
-        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="212"/>
         <CursorPos X="11" Y="235"/>
         <UsageCount Value="208"/>
-        <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="323"/>
         <CursorPos X="27" Y="400"/>
         <UsageCount Value="208"/>
-        <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\wapt-get\tiscommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiscommon"/>
-        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="13"/>
         <CursorPos X="21" Y="55"/>
         <UsageCount Value="208"/>
-        <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\wapt-get\tisinifiles.pas"/>
@@ -108,14 +100,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviseditpackage"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="13"/>
         <WindowIndex Value="0"/>
         <TopLine Value="93"/>
         <CursorPos X="33" Y="111"/>
         <UsageCount Value="215"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="uviscreatewaptsetup.pas"/>
@@ -136,13 +124,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvispassword"/>
-        <EditorIndex Value="14"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3"/>
         <CursorPos X="150" Y="26"/>
         <UsageCount Value="300"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit10>
       <Unit11>
         <Filename Value="uvisprivatekeyauth.pas"/>
@@ -151,13 +136,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvisprivatekeyauth"/>
-        <EditorIndex Value="11"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="20" Y="26"/>
         <UsageCount Value="250"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit11>
       <Unit12>
         <Filename Value="uvisloading.pas"/>
@@ -166,13 +148,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvisloading"/>
-        <EditorIndex Value="12"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="69" Y="33"/>
         <UsageCount Value="175"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit12>
       <Unit13>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
@@ -185,12 +164,10 @@
       <Unit14>
         <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
         <UnitName Value="VirtualTrees"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="634"/>
         <CursorPos X="3" Y="655"/>
         <UsageCount Value="75"/>
-        <Loaded Value="True"/>
       </Unit14>
       <Unit15>
         <Filename Value="waptgui.lps"/>
@@ -203,12 +180,10 @@
       <Unit16>
         <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTreesExtra\source\vte_json.pas"/>
         <UnitName Value="vte_json"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="314"/>
         <CursorPos X="14" Y="334"/>
         <UsageCount Value="90"/>
-        <Loaded Value="True"/>
       </Unit16>
       <Unit17>
         <Filename Value="C:\codetyphon\lazarus\lcl\dialogs.pp"/>
@@ -280,12 +255,10 @@
       <Unit26>
         <Filename Value="C:\codetyphon\lazarus\components\lazutils\fileutil.pas"/>
         <UnitName Value="FileUtil"/>
-        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="168"/>
         <CursorPos X="10" Y="191"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit26>
       <Unit27>
         <Filename Value="C:\codetyphon\lazarus\components\lazutils\fileutil.inc"/>
@@ -356,12 +329,10 @@
       </Unit35>
       <Unit36>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\objpash.inc"/>
-        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
         <TopLine Value="169"/>
         <CursorPos X="23" Y="192"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
       </Unit36>
       <Unit37>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\objpas.inc"/>
@@ -372,148 +343,136 @@
       </Unit37>
       <Unit38>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\filutilh.inc"/>
-        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="68"/>
         <CursorPos X="10" Y="104"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit38>
       <Unit39>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-json\src\fpjson.pp"/>
         <UnitName Value="fpjson"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="48"/>
         <CursorPos X="3" Y="49"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit39>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="28" HistoryIndex="27">
       <Position1>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1025" Column="3" TopLine="1000"/>
+        <Caret Line="198" Column="45" TopLine="180"/>
       </Position1>
       <Position2>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1074" Column="35" TopLine="1014"/>
+        <Caret Line="12" Column="69" TopLine="1"/>
       </Position2>
       <Position3>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="200" Column="13" TopLine="177"/>
+        <Caret Line="200" Column="13" TopLine="179"/>
       </Position3>
       <Position4>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="198" Column="45" TopLine="180"/>
+        <Caret Line="22" Column="1" TopLine="22"/>
       </Position4>
       <Position5>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="12" Column="69" TopLine="1"/>
+        <Caret Line="200" Column="14" TopLine="180"/>
       </Position5>
       <Position6>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="200" Column="13" TopLine="179"/>
+        <Caret Line="1076" Column="1" TopLine="1013"/>
       </Position6>
       <Position7>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="22" Column="1" TopLine="22"/>
+        <Caret Line="1030" Column="20" TopLine="1020"/>
       </Position7>
       <Position8>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="200" Column="14" TopLine="180"/>
+        <Caret Line="247" Column="44" TopLine="220"/>
       </Position8>
       <Position9>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1076" Column="1" TopLine="1013"/>
+        <Caret Line="228" Column="7" TopLine="194"/>
       </Position9>
       <Position10>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1030" Column="20" TopLine="1020"/>
+        <Caret Line="1032" Column="14" TopLine="1024"/>
       </Position10>
       <Position11>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="247" Column="44" TopLine="220"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position11>
       <Position12>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTreesExtra\source\vte_json.pas"/>
-        <Caret Line="334" Column="14" TopLine="314"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="260" Column="24" TopLine="252"/>
       </Position12>
       <Position13>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="228" Column="7" TopLine="194"/>
+        <Caret Line="1052" Column="39" TopLine="1030"/>
       </Position13>
       <Position14>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1032" Column="14" TopLine="1024"/>
+        <Caret Line="1051" Column="3" TopLine="1034"/>
       </Position14>
       <Position15>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="1090" Column="1" TopLine="1039"/>
       </Position15>
       <Position16>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="260" Column="24" TopLine="252"/>
+        <Caret Line="200" Column="14" TopLine="179"/>
       </Position16>
       <Position17>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1052" Column="39" TopLine="1030"/>
+        <Caret Line="1099" Column="33" TopLine="1045"/>
       </Position17>
       <Position18>
-        <Filename Value="waptconsole.lpr"/>
-        <Caret Line="22" Column="51" TopLine="1"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="1110" Column="3" TopLine="1094"/>
       </Position18>
       <Position19>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1051" Column="3" TopLine="1034"/>
+        <Caret Line="1089" Column="7" TopLine="1087"/>
       </Position19>
       <Position20>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1090" Column="1" TopLine="1039"/>
+        <Caret Line="1113" Column="5" TopLine="1088"/>
       </Position20>
       <Position21>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="200" Column="14" TopLine="179"/>
+        <Caret Line="1111" Column="1" TopLine="1093"/>
       </Position21>
       <Position22>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1099" Column="33" TopLine="1045"/>
+        <Caret Line="1108" Column="58" TopLine="1065"/>
       </Position22>
       <Position23>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1110" Column="3" TopLine="1094"/>
+        <Caret Line="1102" Column="30" TopLine="1085"/>
       </Position23>
       <Position24>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1089" Column="7" TopLine="1087"/>
+        <Caret Line="1108" Column="54" TopLine="1085"/>
       </Position24>
       <Position25>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1113" Column="5" TopLine="1088"/>
+        <Caret Line="1111" Column="24" TopLine="1087"/>
       </Position25>
       <Position26>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1111" Column="1" TopLine="1093"/>
+        <Caret Line="304" Column="52" TopLine="268"/>
       </Position26>
       <Position27>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1108" Column="58" TopLine="1065"/>
+        <Caret Line="1127" Column="20" TopLine="728"/>
       </Position27>
       <Position28>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1102" Column="30" TopLine="1085"/>
+        <Caret Line="259" Column="13" TopLine="218"/>
       </Position28>
-      <Position29>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1108" Column="54" TopLine="1085"/>
-      </Position29>
-      <Position30>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1111" Column="24" TopLine="1087"/>
-      </Position30>
     </JumpHistory>
   </ProjectSession>
   <Debugging>

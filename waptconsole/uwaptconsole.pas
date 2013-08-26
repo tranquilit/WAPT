@@ -6,10 +6,9 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, SynHighlighterPython, SynEdit,
-  vte_json, LSControls, Forms,
-  Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus,
-  EditBtn, fpJson, jsonparser, superobject,
-  UniqueInstance, VirtualTrees, VarPyth, Windows, ActiveX, LMessages, ImgList;
+  vte_json, Forms,
+  Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, fpJson, jsonparser, superobject,
+  UniqueInstance, VirtualTrees, VarPyth, Windows, LMessages, ImgList;
 
 type
 
@@ -234,7 +233,7 @@ implementation
 
 uses LCLIntf, IniFiles, uvisprivatekeyauth, uvisloading, tisstrings, soutils, waptcommon,
   uVisCreateKey, uVisCreateWaptSetup,
-  uvisOptionIniFile, dmwaptpython, uviseditpackage, uvispassword, tiscommon;
+  uvisOptionIniFile, dmwaptpython, uviseditpackage, uvispassword;
 
 {$R *.lfm}
 
