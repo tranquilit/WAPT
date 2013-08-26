@@ -3556,7 +3556,7 @@ class Wapt(object):
 
     def make_group_template(self,packagename='',depends=None,directoryname='',section='group',description=''):
         """Build a skeleton of WAPT group package
-            depends : list of package dependencies. If None, use currently explicitly installed packages
+            depends : list of package dependencies.
            Return the path of the skeleton
         """
         packagename = packagename.lower()
@@ -3629,10 +3629,7 @@ class Wapt(object):
         if depends and not isinstance(depends,list):
             depends = [s.strip() for s in depends.split(',')]
 
-        if depends is None:
-            # get list of explicitly installed packages
-            entry.depends = ','.join([u'%s' % p.package for p in self.waptdb.installed().values() if p and p.package <> packagename and p.explicit_by])
-        elif depends:
+        if depends:
             # use supplied list of packages
             entry.depends = ','.join([u'%s' % p for p in depends if p and p<>packagename ])
 

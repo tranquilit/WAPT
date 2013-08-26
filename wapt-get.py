@@ -86,7 +86,6 @@ action is either :
   make-host-template <machinename> [[<package>,<package>,...] [directory]] :
                                 initializes a package meta template with packages.
                                 If no package name is given, use FQDN
-                                If no packages are given, use currently installed
   make-group-template <groupname> [[<package>,<package>,...] [directory]] :
                                 initializes a meta package template with supplied dependencies.
 
