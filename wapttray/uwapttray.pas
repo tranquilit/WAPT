@@ -5,8 +5,7 @@ unit uwapttray;
 interface
 
 uses
-  Classes, SysUtils, BufDataset, FileUtil, Forms, Controls, Graphics, Dialogs,
-  ExtCtrls, Menus, ActnList, StdCtrls, ValEdit, ComCtrls;
+  Forms, ComCtrls;
 
 type
 
@@ -27,7 +26,6 @@ var
 
 implementation
 
-uses waptcommon, superobject,tiscommon,Process,LCLIntf;
 
 {$R *.lfm}
 

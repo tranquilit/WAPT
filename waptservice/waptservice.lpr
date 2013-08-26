@@ -25,8 +25,7 @@ Uses
 {$IFDEF UNIX}{$IFDEF UseCThreads}
   CThreads,
 {$ENDIF}{$ENDIF}
-  DaemonApp, lazdaemonapp, WaptMapper, WaptUnit,
-  waptcommon, interfaces;
+  DaemonApp;
 
 { $DEFINE svcdebug}
 

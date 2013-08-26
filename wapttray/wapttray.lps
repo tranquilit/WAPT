@@ -11,7 +11,7 @@
         <UnitName Value="wapttray"/>
         <WindowIndex Value="0"/>
         <TopLine Value="15"/>
-        <CursorPos X="13" Y="31"/>
+        <CursorPos X="48" Y="34"/>
         <UsageCount Value="201"/>
       </Unit0>
       <Unit1>
@@ -23,7 +23,7 @@
         <UnitName Value="uwapttray"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="56" Y="17"/>
+        <CursorPos X="21" Y="18"/>
         <UsageCount Value="201"/>
       </Unit1>
       <Unit2>
@@ -36,41 +36,42 @@
         <UsageCount Value="201"/>
       </Unit2>
       <Unit3>
-        <Filename Value="..\wapt-get\soutils.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="soutils"/>
-        <UsageCount Value="200"/>
-      </Unit3>
-      <Unit4>
         <Filename Value="..\wapt-get\tiscommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiscommon"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="88"/>
-        <CursorPos X="29" Y="92"/>
+        <TopLine Value="1"/>
+        <CursorPos X="30" Y="6"/>
         <UsageCount Value="200"/>
-      </Unit4>
-      <Unit5>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
         <Filename Value="udmwapttray.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DMWaptTray"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="uDMWAPTTray"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="281"/>
-        <CursorPos X="72" Y="291"/>
+        <CursorPos X="87" Y="292"/>
         <UsageCount Value="201"/>
-      </Unit5>
-      <Unit6>
+      </Unit4>
+      <Unit5>
         <Filename Value="..\waptservice\UnitRedirect.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitRedirect"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="11"/>
+        <TopLine Value="1"/>
         <CursorPos X="12" Y="27"/>
         <UsageCount Value="23"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\wapt-get\soutils.pas"/>
+        <UnitName Value="soutils"/>
+        <UsageCount Value="200"/>
       </Unit6>
       <Unit7>
         <Filename Value="..\..\tisvcl\tisutils.pas"/>

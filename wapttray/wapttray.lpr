@@ -28,9 +28,8 @@ uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
-  Interfaces, // this includes the LCL widgetset
-  Forms,
-  uDMWAPTTray,waptcommon, soutils, pl_luicontrols, tiscommon, UnitRedirect;
+  Forms, Interfaces,
+  uDMWAPTTray, tiscommon;
 
 {$R *.res}
 

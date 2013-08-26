@@ -76,7 +76,7 @@ from setuphelpers import ensure_unicode
 
 import types
 
-__version__ = "0.6.31"
+__version__ = "0.7.2"
 
 logger = logging.getLogger()
 

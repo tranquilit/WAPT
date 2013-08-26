@@ -29,7 +29,7 @@ uses
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, CustApp,
   { you can add units after this }
-  Windows, PythonEngine, waptcommon, tiscommon, FileUtil, NetworkAdapterInfo;
+  Windows, PythonEngine, waptcommon, tiscommon;
 type
   { pwaptget }
 
@@ -88,7 +88,6 @@ end;
 
 procedure pwaptget.DoRun;
 var
-  DefaultInstallPath,downloadPath: Utf8String;
   MainModule : TStringList;
   logleveloption : String;
 
@@ -132,9 +131,6 @@ begin
 
   if HasOption('v','version') then
     writeln('Win32 Exe wrapper: '+ApplicationName+' '+GetApplicationVersion);
-
-  DefaultInstallPath := TrimFilename('c:\wapt');
-  DownloadPath := ExtractFilePath(ParamStr(0));
 
   if (action = 'waptupgrade') then
   begin

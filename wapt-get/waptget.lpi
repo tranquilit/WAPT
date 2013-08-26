@@ -21,7 +21,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="7"/>
-      <RevisionNr Value="1"/>
+      <RevisionNr Value="2"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -52,16 +52,15 @@
         <PackageName Value="pl_indycomp"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="19">
+    <Units Count="20">
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="78" Y="15"/>
+        <TopLine Value="19"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -69,10 +68,11 @@
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="493"/>
-        <CursorPos X="1" Y="494"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
       </Unit1>
@@ -215,8 +215,16 @@
         <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit18>
+      <Unit19>
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdURI.pas"/>
+        <UnitName Value="IdURI"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="200"/>
+        <CursorPos X="69" Y="257"/>
+        <UsageCount Value="10"/>
+      </Unit19>
     </Units>
-    <JumpHistory Count="11" HistoryIndex="10">
+    <JumpHistory Count="14" HistoryIndex="13">
       <Position1>
         <Filename Value="waptget.lpr"/>
         <Caret Line="193" Column="55" TopLine="1"/>
@@ -261,6 +269,18 @@
         <Filename Value="waptcommon.pas"/>
         <Caret Line="826" Column="1" TopLine="795"/>
       </Position11>
+      <Position12>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="15" Column="78" TopLine="1"/>
+      </Position12>
+      <Position13>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="91" Column="1" TopLine="84"/>
+      </Position13>
+      <Position14>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="494" Column="1" TopLine="493"/>
+      </Position14>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

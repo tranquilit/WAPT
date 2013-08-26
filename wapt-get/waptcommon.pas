@@ -24,7 +24,7 @@ unit waptcommon;
 {$mode objfpc}{$H+}
 interface
   uses
-     interfaces,Classes, SysUtils,
+     Classes, SysUtils,
      DB,sqldb,sqlite3conn,SuperObject,syncobjs;
 
   const

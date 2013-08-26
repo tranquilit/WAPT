@@ -17,7 +17,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="1"/>
-      <RevisionNr Value="20"/>
+      <RevisionNr Value="21"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Tray Icon" ProductName="WAPT" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -50,7 +50,7 @@
         <PackageName Value="LCL"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="7">
+    <Units Count="6">
       <Unit0>
         <Filename Value="wapttray.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -70,28 +70,23 @@
         <UnitName Value="waptcommon"/>
       </Unit2>
       <Unit3>
-        <Filename Value="..\wapt-get\soutils.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="soutils"/>
-      </Unit3>
-      <Unit4>
         <Filename Value="..\wapt-get\tiscommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiscommon"/>
-      </Unit4>
-      <Unit5>
+      </Unit3>
+      <Unit4>
         <Filename Value="udmwapttray.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DMWaptTray"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="uDMWAPTTray"/>
-      </Unit5>
-      <Unit6>
+      </Unit4>
+      <Unit5>
         <Filename Value="..\waptservice\UnitRedirect.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitRedirect"/>
-      </Unit6>
+      </Unit5>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
