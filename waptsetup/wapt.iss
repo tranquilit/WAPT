@@ -11,7 +11,7 @@
 #define default_update_period "120"
 #define default_update_maxruntime "30"
 
-;#define waptserver 
+#define waptserver 
 
 [Files]
 Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
@@ -92,7 +92,7 @@ ChangesEnvironment=True
 AppPublisher={#Company}
 OutputDir="."
 #ifdef waptserver
-OutputBaseFilename=waptsetupserver
+OutputBaseFilename=waptserversetup
 #else
 OutputBaseFilename=waptsetup
 #endif
