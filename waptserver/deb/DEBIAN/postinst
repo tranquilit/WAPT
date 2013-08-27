@@ -2,13 +2,13 @@
 
 
 easy_install flask uwsgi pymongo cheroot
-
+useradd -d /opt/wapt/waptserver waptserver
 touch  /var/log/waptserver.log
 touch  /var/run/waptserver.pid
 chown waptserver  /var/log/waptserver.log
 chown waptserver  /var/run/waptserver.pid
-chown waptserver  -R /opt/waptserver
-cp /opt/waptserver/scripts/waptserver-init /etc/init.d/waptserver
+chown waptserver  -R /opt/wapt/waptserver
+cp /opt/wapt/waptserver/scripts/waptserver-init /etc/init.d/waptserver
 chmod +x /etc/init.d/waptserver
 
 #TODO : check if waptserver exists of make a new one
@@ -17,5 +17,5 @@ chmod +x /etc/init.d/waptserver
 
 
 update-rc.d waptserver defaults 
-/etc/init.d/waptserver start
-
+printf '\e[1;31m%-6s\e[m' "the installation of waptserver is finished !!\n"
+printf '\e[1;31m%-6s\e[m' "please refer to the INSTALL.txt in /opt/wapt/waptserver for conclude the configuration \n"
