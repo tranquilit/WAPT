@@ -504,7 +504,7 @@ begin
 
 
         uploadResult := DMPython.RunJSON(
-          format('mywapt.build_upload(r"%s",r"%s",r"%s",r"%s")',
+          format('mywapt.build_upload(r"%s",r"%s",r"%s",r"%s","False","True")',
           [sourceDir, privateKeyPassword, waptServerUser, waptServerPassword]), jsonlog);
         if uploadResult.AsString <> '' then
         begin

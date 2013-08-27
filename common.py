@@ -1745,6 +1745,7 @@ class Wapt(object):
         else:
             self.upload_cmd_host = self.upload_cmd
 
+
         if self.config.has_option('global','after_upload'):
             self.after_upload = self.config.get('global','after_upload')
         else:
@@ -2000,7 +2001,8 @@ class Wapt(object):
           return setuphelpers.run(self.upload_cmd % cmd_dict)
         else:
           for file in cmd_dict['waptfile']:
-            file = file.replace('"','')
+            # file is surrounded by quotes for shell usage
+            file = file[1:-1]
             req = requests.post("%s/upload_package" % (self.wapt_server),files={'file':open(file,'rb')},proxies=self.proxies,verify=False,auth=auth)
             req.raise_for_status()
           return req.content
@@ -3123,7 +3125,7 @@ class Wapt(object):
             logger.debug(u'  Change current directory to %s' % previous_cwd)
             os.chdir(previous_cwd)
 
-    def build_upload(self,sources_directories,private_key_passwd=None,wapt_server_user=None,wapt_server_passwd=None,inc_package_release=False):
+    def build_upload(self,sources_directories,private_key_passwd=None,wapt_server_user=None,wapt_server_passwd=None,inc_package_release=False,delete_package=False):
         """Build a list of packages and upload the resulting packages to the main repository.
            if section of package is group or host, user specific wapt-host or wapt-group
         """
@@ -3185,12 +3187,19 @@ class Wapt(object):
                 cmd_dict =  {'waptfile': files_list,'waptdir':package_group[0]}
                 print self.upload_package(cmd_dict,wapt_server_user,wapt_server_passwd)
 
+                if delete_package:
+                    dir=os.path.dirname(files_list[0][1:-1])
+                    if os.path.isdir(dir):
+                        logger.debug(u'Deleting directory %s' % dir )
+                        shutil.rmtree(dir)
+
                 if package_group<>hosts:
                     if self.after_upload:
                         print 'Run after upload script...'
                         print setuphelpers.run(self.after_upload % cmd_dict)
                     elif self.upload_cmd:
                         print "Don't forget to update Packages index on repository !"
+
 
         return result
 

@@ -17,7 +17,6 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="1"/>
-      <RevisionNr Value="1"/>
       <BuildNr Value="1"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
@@ -36,40 +35,40 @@
     </RunParams>
     <RequiredPackages Count="13">
       <Item1>
-        <PackageName Value="RunTimeTypeInfoControls"/>
+        <PackageName Value="pltis_superobject"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_graphics32ext"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item2>
       <Item3>
-        <PackageName Value="pl_bgracontrols"/>
+        <PackageName Value="RunTimeTypeInfoControls"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_luicontrols"/>
+        <PackageName Value="pl_graphics32ext"/>
       </Item4>
       <Item5>
-        <PackageName Value="pl_glscene"/>
+        <PackageName Value="pl_bgracontrols"/>
       </Item5>
       <Item6>
-        <PackageName Value="pl_virtualtreesextra"/>
+        <PackageName Value="pl_luicontrols"/>
       </Item6>
       <Item7>
-        <PackageName Value="pl_lazsolutions"/>
+        <PackageName Value="pl_glscene"/>
       </Item7>
       <Item8>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pl_virtualtreesextra"/>
       </Item8>
       <Item9>
-        <PackageName Value="pl_indycomp"/>
+        <PackageName Value="pl_lazsolutions"/>
       </Item9>
       <Item10>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="FCL"/>
       </Item10>
       <Item11>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="pl_indycomp"/>
       </Item11>
       <Item12>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="SynEdit"/>
       </Item12>
       <Item13>
         <PackageName Value="LCL"/>
