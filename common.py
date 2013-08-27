@@ -2878,6 +2878,9 @@ class Wapt(object):
         installed = self.waptdb.installed(include_errors=True)
         upgradable =  self.waptdb.upgradeable()
         for p in available:
+            if p['section'] == 'host':
+                available.remove(p)
+                continue
             if p.package in installed:
                 current = installed[p.package]
                 if p.version == current.version:
