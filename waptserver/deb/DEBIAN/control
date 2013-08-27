@@ -1,0 +1,8 @@
+Package: tis-waptserver
+Version: 0.0.7
+Section: base
+Priority: optional
+Architecture: all
+Depends: python, python-dev, mongodb, build-essential, python-dev, python-setuptools
+Maintainer: TIS <technique@tranquil-it-systems.fr>
+Description: WAPT Server for linux
