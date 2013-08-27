@@ -1682,6 +1682,10 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = actRefreshExecute
       ShortCut = 116
     end
+    object ActUpdateWaptGetINI: TAction
+      Caption = 'Recharger wapt-get.ini'
+      OnExecute = ActUpdateWaptGetINIExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
@@ -1761,6 +1765,9 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Outils'
       object MenuItem29: TMenuItem
         Action = ActChangePassword
+      end
+      object MenuItem30: TMenuItem
+        Action = ActUpdateWaptGetINI
       end
       object MenuItem16: TMenuItem
         Action = ActCreateCertificate

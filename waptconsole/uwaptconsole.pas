@@ -33,6 +33,7 @@ type
     ActDeletePackage: TAction;
     ActAdvancedMode: TAction;
     ActChangePassword: TAction;
+    ActUpdateWaptGetINI: TAction;
     actRefresh: TAction;
     actQuit: TAction;
     ActPackageGroupAdd: TAction;
@@ -116,6 +117,7 @@ type
     MenuItem28: TMenuItem;
     MenuItem29: TMenuItem;
     MenuItem3: TMenuItem;
+    MenuItem30: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
@@ -182,6 +184,7 @@ type
     procedure ActSearchHostExecute(Sender: TObject);
     procedure ActSearchPackageExecute(Sender: TObject);
     procedure ActUpdateExecute(Sender: TObject);
+    procedure ActUpdateWaptGetINIExecute(Sender: TObject);
     procedure ActUpgradeExecute(Sender: TObject);
     procedure butSearchPackages1Click(Sender: TObject);
     procedure cbSearchAllChange(Sender: TObject);
@@ -626,6 +629,8 @@ begin
               INI := TINIFile.Create(WaptIniFilename);
               INI.WriteString('global', 'private_key', Result.S['pem_filename']);
               INI.Free;
+
+              ActUpdateWaptGetINIExecute(self);
             end;
 
           except
@@ -936,6 +941,12 @@ begin
   ActSearchPackageExecute(Sender);
 end;
 
+procedure TVisWaptGUI.ActUpdateWaptGetINIExecute(Sender: TObject);
+begin
+  DMPython.WaptConfigFileName := waptpath + '\wapt-get.ini';
+  DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
+end;
+
 procedure TVisWaptGUI.ActUpgradeExecute(Sender: TObject);
 begin
   DMPython.RunJSON('mywapt.upgrade()', jsonlog);
@@ -996,10 +1007,7 @@ begin
 
   waptpath := ExtractFileDir(ParamStr(0));
   //butInitWapt.Click;
-
-  DMPython.WaptConfigFileName := waptpath + '\wapt-get.ini';
-  DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
-
+  ActUpdateWaptGetINIExecute(Self);
   GridPackages.Clear;
   MemoLog.Clear;
 

@@ -4,15 +4,17 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="38">
+    <Units Count="39">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptconsole"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="32" Y="21"/>
         <UsageCount Value="208"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="uwaptconsole.pas"/>
@@ -24,13 +26,15 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="469"/>
-        <CursorPos X="56" Y="501"/>
+        <TopLine Value="473"/>
+        <CursorPos X="37" Y="500"/>
+        <FoldState Value=" T46041 T8m225]83mT0FB11131315 pjBse038[94jW03[K7l90I]KiejX085 T6mV01U T1mX0B[-5[;59 p0vQ021431A]lZo9024 T0ma25[;4cjg64263]o62]jt62E5]OYlb4C1 TLrL251%"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="1">
-          <Item0 X="1" Y="1047" ID="1"/>
+          <Item0 X="1" Y="1055" ID="1"/>
         </Bookmarks>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\wapt-get\tisstrings.pas"/>
@@ -45,10 +49,12 @@
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="323"/>
-        <CursorPos X="27" Y="400"/>
+        <TopLine Value="334"/>
+        <CursorPos X="3" Y="336"/>
         <UsageCount Value="208"/>
+        <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\wapt-get\tiscommon.pas"/>
@@ -87,10 +93,12 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="dmwaptpython"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="77"/>
-        <CursorPos X="3" Y="91"/>
+        <TopLine Value="37"/>
+        <CursorPos X="3" Y="46"/>
         <UsageCount Value="238"/>
+        <Loaded Value="True"/>
       </Unit7>
       <Unit8>
         <Filename Value="uviseditpackage.pas"/>
@@ -155,25 +163,29 @@
       <Unit13>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <UnitName Value="superobject"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="4572"/>
-        <CursorPos X="1" Y="4596"/>
+        <TopLine Value="3085"/>
+        <CursorPos X="1" Y="3120"/>
         <UsageCount Value="84"/>
+        <Loaded Value="True"/>
       </Unit13>
       <Unit14>
         <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
         <UnitName Value="VirtualTrees"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="634"/>
-        <CursorPos X="3" Y="655"/>
-        <UsageCount Value="70"/>
+        <TopLine Value="23688"/>
+        <CursorPos X="1" Y="23735"/>
+        <UsageCount Value="69"/>
+        <Loaded Value="True"/>
       </Unit14>
       <Unit15>
         <Filename Value="waptgui.lps"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="39"/>
+        <UsageCount Value="38"/>
         <DefaultSyntaxHighlighter Value="XML"/>
       </Unit15>
       <Unit16>
@@ -182,7 +194,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="314"/>
         <CursorPos X="14" Y="334"/>
-        <UsageCount Value="85"/>
+        <UsageCount Value="84"/>
       </Unit16>
       <Unit17>
         <Filename Value="C:\codetyphon\lazarus\lcl\dialogs.pp"/>
@@ -190,7 +202,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="475"/>
         <CursorPos X="10" Y="500"/>
-        <UsageCount Value="63"/>
+        <UsageCount Value="62"/>
       </Unit17>
       <Unit18>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
@@ -198,21 +210,21 @@
         <WindowIndex Value="0"/>
         <TopLine Value="72"/>
         <CursorPos X="58" Y="80"/>
-        <UsageCount Value="34"/>
+        <UsageCount Value="33"/>
       </Unit18>
       <Unit19>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\wincontrol.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="5300"/>
         <CursorPos X="1" Y="5324"/>
-        <UsageCount Value="51"/>
+        <UsageCount Value="50"/>
       </Unit19>
       <Unit20>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\control.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2088"/>
         <CursorPos X="1" Y="2112"/>
-        <UsageCount Value="51"/>
+        <UsageCount Value="50"/>
       </Unit20>
       <Unit21>
         <Filename Value="C:\codetyphon\lazarus\lcl\lclmessageglue.pas"/>
@@ -220,36 +232,36 @@
         <WindowIndex Value="0"/>
         <TopLine Value="100"/>
         <CursorPos X="1" Y="128"/>
-        <UsageCount Value="51"/>
+        <UsageCount Value="50"/>
       </Unit21>
       <Unit22>
         <Filename Value="C:\codetyphon\lazarus\lcl\interfaces\win32\win32callback.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2544"/>
         <CursorPos X="1" Y="2577"/>
-        <UsageCount Value="51"/>
+        <UsageCount Value="50"/>
       </Unit22>
       <Unit23>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\buttoncontrol.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2"/>
         <CursorPos X="1" Y="22"/>
-        <UsageCount Value="51"/>
+        <UsageCount Value="50"/>
       </Unit23>
       <Unit24>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\buttons.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="311"/>
         <CursorPos X="1" Y="356"/>
-        <UsageCount Value="51"/>
+        <UsageCount Value="50"/>
       </Unit24>
       <Unit25>
         <Filename Value="C:\codetyphon\lazarus\lcl\actnlist.pas"/>
         <UnitName Value="ActnList"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="181"/>
-        <CursorPos X="65" Y="199"/>
-        <UsageCount Value="5"/>
+        <TopLine Value="176"/>
+        <CursorPos X="14" Y="203"/>
+        <UsageCount Value="9"/>
       </Unit25>
       <Unit26>
         <Filename Value="C:\codetyphon\lazarus\components\lazutils\fileutil.pas"/>
@@ -257,21 +269,21 @@
         <WindowIndex Value="0"/>
         <TopLine Value="168"/>
         <CursorPos X="10" Y="191"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit26>
       <Unit27>
         <Filename Value="C:\codetyphon\lazarus\components\lazutils\fileutil.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1005"/>
         <CursorPos X="3" Y="988"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit27>
       <Unit28>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\containedaction.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="77"/>
         <CursorPos X="1" Y="104"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
       </Unit28>
       <Unit29>
         <Filename Value="C:\codetyphon\lazarus\lcl\forms.pp"/>
@@ -279,7 +291,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="699"/>
         <CursorPos X="17" Y="715"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit29>
       <Unit30>
         <Filename Value="C:\codetyphon\lazarus\lcl\lmessages.pp"/>
@@ -287,14 +299,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="497"/>
         <CursorPos X="3" Y="430"/>
-        <UsageCount Value="41"/>
+        <UsageCount Value="40"/>
       </Unit30>
       <Unit31>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\customform.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3042"/>
         <CursorPos X="1" Y="3061"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit31>
       <Unit32>
         <Filename Value="C:\codetyphon\lazarus\lcl\interfaces\win32\win32wsbuttons.pp"/>
@@ -302,7 +314,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="476"/>
         <CursorPos X="1" Y="491"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit32>
       <Unit33>
         <Filename Value="C:\codetyphon\lazarus\lcl\editbtn.pas"/>
@@ -310,28 +322,28 @@
         <WindowIndex Value="0"/>
         <TopLine Value="345"/>
         <CursorPos X="3" Y="368"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="24"/>
       </Unit33>
       <Unit34>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\objpash.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="169"/>
         <CursorPos X="23" Y="192"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="6"/>
       </Unit34>
       <Unit35>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\objpas.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="269"/>
         <CursorPos X="9" Y="269"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
       </Unit35>
       <Unit36>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\filutilh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="68"/>
         <CursorPos X="10" Y="104"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit36>
       <Unit37>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-json\src\fpjson.pp"/>
@@ -339,129 +351,142 @@
         <WindowIndex Value="0"/>
         <TopLine Value="48"/>
         <CursorPos X="3" Y="49"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit37>
+      <Unit38>
+        <Filename Value="C:\codetyphon\lazarus\lcl\include\progressbar.inc"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="151"/>
+        <CursorPos X="1" Y="183"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit38>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="29" HistoryIndex="28">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1111" Column="1" TopLine="1093"/>
+        <Caret Line="947" Column="3" TopLine="601"/>
       </Position1>
       <Position2>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1108" Column="58" TopLine="1065"/>
+        <Caret Line="508" Column="114" TopLine="492"/>
       </Position2>
       <Position3>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1102" Column="30" TopLine="1085"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="35" Column="22" TopLine="1"/>
       </Position3>
       <Position4>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1108" Column="54" TopLine="1085"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="12" Column="14" TopLine="1"/>
       </Position4>
       <Position5>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1111" Column="24" TopLine="1087"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="14" Column="12" TopLine="1"/>
       </Position5>
       <Position6>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="304" Column="52" TopLine="268"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="35" Column="22" TopLine="1"/>
       </Position6>
       <Position7>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1127" Column="20" TopLine="728"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="41" Column="20" TopLine="1"/>
       </Position7>
       <Position8>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="259" Column="13" TopLine="218"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="68" Column="20" TopLine="21"/>
       </Position8>
       <Position9>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="705" Column="26" TopLine="685"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="80" Column="20" TopLine="33"/>
       </Position9>
       <Position10>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="708" Column="26" TopLine="685"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="87" Column="19" TopLine="40"/>
       </Position10>
       <Position11>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="709" Column="30" TopLine="685"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="105" Column="20" TopLine="58"/>
       </Position11>
       <Position12>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="713" Column="86" TopLine="685"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="12" Column="14" TopLine="1"/>
       </Position12>
       <Position13>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="721" Column="1" TopLine="689"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="14" Column="12" TopLine="1"/>
       </Position13>
       <Position14>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="723" Column="1" TopLine="691"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="35" Column="22" TopLine="1"/>
       </Position14>
       <Position15>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="725" Column="1" TopLine="693"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="41" Column="20" TopLine="1"/>
       </Position15>
       <Position16>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="708" Column="45" TopLine="693"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="68" Column="20" TopLine="21"/>
       </Position16>
       <Position17>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="709" Column="1" TopLine="693"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="80" Column="20" TopLine="33"/>
       </Position17>
       <Position18>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="698" Column="87" TopLine="693"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="87" Column="19" TopLine="40"/>
       </Position18>
       <Position19>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="708" Column="1" TopLine="693"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="105" Column="20" TopLine="58"/>
       </Position19>
       <Position20>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="709" Column="1" TopLine="693"/>
+        <Filename Value="waptconsole.lpr"/>
+        <Caret Line="21" Column="32" TopLine="1"/>
       </Position20>
       <Position21>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="710" Column="1" TopLine="693"/>
+        <Caret Line="947" Column="39" TopLine="758"/>
       </Position21>
       <Position22>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="723" Column="63" TopLine="693"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="61" Column="1" TopLine="14"/>
       </Position22>
       <Position23>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="709" Column="1" TopLine="693"/>
+        <Caret Line="482" Column="1" TopLine="451"/>
       </Position23>
       <Position24>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="710" Column="1" TopLine="693"/>
+        <Caret Line="947" Column="6" TopLine="846"/>
       </Position24>
       <Position25>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="726" Column="63" TopLine="692"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="28" Column="14" TopLine="1"/>
       </Position25>
       <Position26>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="11" Column="63" TopLine="565"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="49" Column="47" TopLine="41"/>
       </Position26>
       <Position27>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="10" Column="99" TopLine="1"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="56" Column="44" TopLine="37"/>
       </Position27>
       <Position28>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="335" Column="56" TopLine="294"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="45" Column="1" TopLine="37"/>
       </Position28>
       <Position29>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="39" Column="24" TopLine="11"/>
+        <Filename Value="dmwaptpython.pas"/>
+        <Caret Line="46" Column="3" TopLine="37"/>
       </Position29>
+      <Position30>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="482" Column="1" TopLine="451"/>
+      </Position30>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
