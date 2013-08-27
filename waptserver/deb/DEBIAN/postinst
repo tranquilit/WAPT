@@ -17,5 +17,5 @@ chmod +x /etc/init.d/waptserver
 
 
 update-rc.d waptserver defaults 
-printf '\e[1;31m%-6s\e[m' "the installation of waptserver is finished !!\n"
-printf '\e[1;31m%-6s\e[m' "please refer to the INSTALL.txt in /opt/wapt/waptserver for conclude the configuration \n"
+printf '\e[1;31m%-6s\e[m\n' "the installation of waptserver is finished !!"
+printf '\e[1;31m%-6s\e[m\n' "please refer to the INSTALL.txt in /opt/wapt/waptserver for conclude the configuration "
