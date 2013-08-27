@@ -160,9 +160,6 @@ def updateTisRepo(wapt,search_string):
 
 def duplicate_from_tis_repo(wapt,old_file_name,new_file_name):
     import tempfile
-    # TODO : clean this quick hack
-    if os.path.exists('c:\\wapt\\db\\tis')==False:
-        os.makedirs('c:\\wapt\\db\\tis')
     wapt = common.Wapt(config_filename=wapt)
     wapt.config.set('global','default_sources_root',tempfile.mkdtemp())
     wapt.update()
@@ -186,6 +183,5 @@ def login_to_waptserver(url, login, passwd,newPass=""):
 
 
 if __name__ == '__main__':
-
-    print "test"
     #{create_wapt_setup(wapt,r'C:\tranquilit\wapt\ssl\sdeded.crt',destination='c:\wapt',default_repo_url='',company='')
+    pass
