@@ -1531,6 +1531,8 @@ class WaptDB(WaptBaseDB):
 class WaptRepo(object):
     def __init__(self,wapt,name='',url=None):
         self.name = name
+        if url and url[-1]=='/':
+            url = url.rstrip('/')
         self._repo_url = url
         self.wapt = wapt
 
@@ -1548,6 +1550,9 @@ class WaptRepo(object):
     @repo_url.setter
     def repo_url(self,value):
         """Wapt main repository URL"""
+        # remove / at the end
+        if value:
+            value = value.rstrip('/')
         self._repo_url = value
 
     def load_config(self,config,section=''):
@@ -1688,10 +1693,6 @@ class Wapt(object):
         self.upload_cmd_host = self.upload_cmd
         self.after_upload = None
         self.proxies = None
-        self.waptupdate_task_period = None
-        self.waptupdate_task_maxruntime = 10
-        self.waptupgrade_task_period = None
-        self.waptupgrade_task_maxruntime = 180
         self.wapt_server = None
         self.language = None
         self.wapt_base_dir = os.path.dirname(__file__)
@@ -1735,10 +1736,6 @@ class Wapt(object):
             'after_upload':'',
             'allow_unsigned':'0',
             'http_proxy':'',
-            'waptupdate_task_period':None,
-            'waptupdate_task_maxruntime':10,
-            'waptupgrade_task_period':None,
-            'waptupgrade_task_maxruntime':180,
             'tray_check_interval':2,
             }
 
@@ -1751,6 +1748,8 @@ class Wapt(object):
         self.config.read(self.config_filename)
 
         self._wapt_repourl = self.config.get('global','repo_url')
+        if self._wapt_repourl and self._wapt_repourl[-1] == '/':
+            self._wapt_repourl = self._wapt_repourl.rstrip('/')
 
         if self.config.has_option('global','dbdir'):
             self.dbdir =  self.config.get('global','dbdir')
@@ -1777,19 +1776,6 @@ class Wapt(object):
 
         if self.config.has_option('global','http_proxy'):
             self.proxies = {'http':self.config.get('global','http_proxy')}
-
-        # windows task scheduling
-        if self.config.has_option('global','waptupdate_task_period'):
-            self.waptupdate_task_period = int(self.config.get('global','waptupdate_task_period'))
-
-        if self.config.has_option('global','waptupdate_task_maxruntime'):
-            self.waptupdate_task_maxruntime = int(self.config.get('global','waptupdate_task_maxruntime'))
-
-        if self.config.has_option('global','waptupgrade_task_period'):
-            self.waptupgrade_task_period = int(self.config.get('global','waptupgrade_task_period'))
-
-        if self.config.has_option('global','waptupgrade_task_maxruntime'):
-            self.waptupgrade_task_maxruntime = int(self.config.get('global','waptupgrade_task_maxruntime'))
 
         if self.config.has_option('global','wapt_server'):
             self.wapt_server = self.config.get('global','wapt_server')
@@ -1882,6 +1868,8 @@ class Wapt(object):
         if self.config:
             url = self.config.get('global','repo_url')
             if url:
+                url = url.rstrip('/')
+
                 if tryurl(url+'/Packages'):
                     return url
                 else:
@@ -3901,18 +3889,25 @@ class Wapt(object):
         # update and download new packages
         if setuphelpers.task_exists('wapt-update'):
             setuphelpers.delete_task('wapt-update')
-        if self.waptupdate_task_period:
-            task = setuphelpers.create_daily_task('wapt-update',sys.argv[0],'--update-packages download-upgrade',
-                max_runtime=self.waptupdate_task_maxruntime,repeat_minutes=self.waptupdate_task_period)
+        if self.config.has_option('global','waptupdate_task_period'):
+            task = setuphelpers.create_daily_task(
+                'wapt-update',
+                sys.argv[0],
+                '--update-packages download-upgrade',
+                max_runtime=int(self.config.get('global','waptupdate_task_maxruntime')),
+                repeat_minutes=int(self.config.get('global','waptupdate_task_period')))
             result.append('%s : %s' % ('wapt-update',task.GetTriggerString(0)))
+
         # upgrade of packages
         if setuphelpers.task_exists('wapt-upgrade'):
             setuphelpers.delete_task('wapt-upgrade')
         if self.waptupgrade_task_period:
-            task = setuphelpers.create_daily_task('wapt-upgrade',sys.argv[0],
+            task = setuphelpers.create_daily_task(
+                'wapt-upgrade',
+                sys.argv[0],
                 '--update-packages upgrade',
-                max_runtime=self.waptupgrade_task_maxruntime,
-                repeat_minutes= self.waptupgrade_task_period)
+                max_runtime=int(self.config.get('global','waptupgrade_task_maxruntime')),
+                repeat_minutes= int(self.config.get('global','waptupgrade_task_period')))
             result.append('%s : %s' % ('wapt-upgrade',task.GetTriggerString(0)))
         return '\n'.join(result)
 
@@ -4035,7 +4030,9 @@ if __name__ == '__main__':
     """
     #force_utf8_no_bom(r'C:\tranquilit\tis-waptini-wapt\WAPT\control')
 
-    w = Wapt(config_filename='c:/tranquilit/wapt/wapt-get.ini')
+    #w = Wapt(config_filename='c:/tranquilit/wapt/wapt-get.ini')
+    w = common.Wapt(config_filename=r'c:/tranquilit/wapt/wapt-get-public.ini')
+    w.update()
     #w.install(['tis-certutils','htlaptop.tranquilit.local'],download_only=True,usecache=True)
 
     #sdb = w.waptsessiondb()
