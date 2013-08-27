@@ -278,7 +278,7 @@ def main():
                     if running_install and action=='install':
                         raise Exception('Running wapt-get in progress, please wait...')
                     result = mywapt.install(args[1:],force = options.force,params_dict = params_dict,
-                        download_only= (action=='download'),
+                        download_only= (action=='download'), usecache = not (action == 'download' and options.force)
                         )
 
                 if options.json_output:
