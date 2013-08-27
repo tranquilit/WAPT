@@ -3901,7 +3901,7 @@ class Wapt(object):
         # upgrade of packages
         if setuphelpers.task_exists('wapt-upgrade'):
             setuphelpers.delete_task('wapt-upgrade')
-        if self.waptupgrade_task_period:
+        if self.config.has_option('global','waptupgrade_task_period'):
             task = setuphelpers.create_daily_task(
                 'wapt-upgrade',
                 sys.argv[0],
