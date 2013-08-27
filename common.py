@@ -1337,7 +1337,7 @@ class WaptDB(WaptBaseDB):
         else:
             return []
 
-    def packages_search(self,searchwords=[]):
+    def packages_search(self,searchwords=[],exclude_host_repo=True):
         """Return a list of package entries matching the search words"""
         if not isinstance(searchwords,list) and not isinstance(searchwords,tuple):
             searchwords = [searchwords]
@@ -1347,6 +1347,8 @@ class WaptDB(WaptBaseDB):
         else:
             words = [ "%"+w.lower()+"%" for w in searchwords ]
             search = ["lower(description || package) like ?"] *  len(words)
+        if exclude_host_repo:
+            search.append('repo <> "wapt-host"')
         result = self.query_package_entry("select * from wapt_package where %s" % " and ".join(search),words)
         result.sort()
         return result
@@ -1677,122 +1679,123 @@ class Wapt(object):
             Main properties are :
         """
         assert not config or isinstance(config,RawConfigParser)
-        #self.wapt_base_dir = os.path.dirname(sys.argv[0])
+        self._waptdb = None
+        self._waptsessiondb = None
+        self.dry_run = False
+        self.private_key = ''
+        self.allow_unsigned = False
+        self.upload_cmd = None
+        self.upload_cmd_host = self.upload_cmd
+        self.after_upload = None
+        self.proxies = None
+        self.waptupdate_task_period = None
+        self.waptupdate_task_maxruntime = 10
+        self.waptupgrade_task_period = None
+        self.waptupgrade_task_maxruntime = 180
+        self.wapt_server = None
+        self.language = None
         self.wapt_base_dir = os.path.dirname(__file__)
+
+        self.config = config
         self.config_filename = config_filename
         if not self.config_filename:
             self.config_filename = os.path.join(self.wapt_base_dir,'wapt-get.ini')
 
-        self.config = config
-        if not self.config:
-            # default config file
-            if not defaults:
-                defaults = {
-                    'repositories':'',
-                    'repo_url':'',
-                    'private_key':'',
-                    'default_package_prefix':'tis',
-                    'default_sources_suffix':'wapt',
-                    'default_sources_root':'c:\\waptdev',
-                    'default_sources_url':'',
-                    'upload_cmd':'',
-                    'wapt_server':'',
-                    'loglevel':'warning',
-                    }
+        # get the list of certificates to use :
+        self.public_certs = glob.glob(os.path.join(self.wapt_base_dir,'ssl','*.crt'))
 
-            self.config = RawConfigParser(defaults = defaults)
-            self.config.read(self.config_filename)
-
-        self._wapt_repourl = self.config.get('global','repo_url')
         self.packagecachedir = os.path.join(self.wapt_base_dir,'cache')
         if not os.path.exists(self.packagecachedir):
             os.makedirs(self.packagecachedir)
-        self.dry_run = False
 
         # to allow/restrict installation, supplied to packages
         self.user = setuphelpers.get_current_user()
         self.usergroups = None
 
-        # database init
-        if self.config.has_option('global','dbdir'):
-            self.dbdir =  self.config.get('global','dbdir')
-        else:
-            self.dbdir = os.path.join(self.wapt_base_dir,'db')
-
-        if not os.path.exists(self.dbdir):
-            os.makedirs(self.dbdir)
-        self.dbpath = os.path.join(self.dbdir,'waptdb.sqlite')
-        self._waptdb = None
-        self._waptsessiondb = None
-        #
-        if self.config.has_option('global','private_key'):
-            self.private_key = self.config.get('global','private_key')
-        else:
-            self.private_key = ''
-
-        if self.config.has_option('global','allow_unsigned'):
-            self.allow_unsigned = self.config.getboolean('global','allow_unsigned')
-        else:
-            self.allow_unsigned = False
-
-        if self.config.has_option('global','upload_cmd'):
-            self.upload_cmd = self.config.get('global','upload_cmd')
-        else:
-            self.upload_cmd = None
-
-        if self.config.has_option('global','upload_cmd_host'):
-            self.upload_cmd_host = self.config.get('global','upload_cmd_host')
-        else:
-            self.upload_cmd_host = self.upload_cmd
-
-
-        if self.config.has_option('global','after_upload'):
-            self.after_upload = self.config.get('global','after_upload')
-        else:
-            self.after_upload = None
-
-        if self.config.has_option('global','http_proxy'):
-            self.proxies = {'http':self.config.get('global','http_proxy')}
-        else:
-            self.proxies = None
-
-        # windows task scheduling
-        if self.config.has_option('global','waptupdate_task_period'):
-            self.waptupdate_task_period = int(self.config.get('global','waptupdate_task_period'))
-        else:
-            self.waptupdate_task_period = None
-
-        if self.config.has_option('global','waptupdate_task_maxruntime'):
-            self.waptupdate_task_maxruntime = int(self.config.get('global','waptupdate_task_maxruntime'))
-        else:
-            self.waptupdate_task_maxruntime = 10
-
-        if self.config.has_option('global','waptupgrade_task_period'):
-            self.waptupgrade_task_period = int(self.config.get('global','waptupgrade_task_period'))
-        else:
-            self.waptupgrade_task_period = None
-
-        if self.config.has_option('global','waptupgrade_task_maxruntime'):
-            self.waptupgrade_task_maxruntime = int(self.config.get('global','waptupgrade_task_maxruntime'))
-        else:
-            self.waptupgrade_task_maxruntime = 180
-
-
-        if self.config.has_option('global','wapt_server'):
-            self.wapt_server = self.config.get('global','wapt_server')
-        else:
-            self.wapt_server = None
-
-        if self.config.has_option('global','language'):
-            self.language = self.config.get('global','language')
-        else:
-            self.language = None
+        self.load_config(config_filename = self.config_filename)
 
         self.options = OptionParser()
         self.options.force = False
 
-        # get the list of certificates to use :
-        self.public_certs = glob.glob(os.path.join(self.wapt_base_dir,'ssl','*.crt'))
+    def load_config(self,config_filename=None):
+        """Load configuration parameters from supplied inifilename
+        """
+        # default config file
+        defaults = {
+            'repo_url':'',
+            'private_key':'',
+            'wapt_server':'',
+            'loglevel':'warning',
+            'default_package_prefix':'tis',
+            'default_sources_suffix':'wapt',
+            'default_sources_root':'c:\\waptdev',
+            'default_sources_url':'',
+            'upload_cmd':'',
+            'upload_cmd_host':'',
+            'after_upload':'',
+            'allow_unsigned':'0',
+            'http_proxy':'',
+            'waptupdate_task_period':None,
+            'waptupdate_task_maxruntime':10,
+            'waptupgrade_task_period':None,
+            'waptupgrade_task_maxruntime':180,
+            'tray_check_interval':2,
+            }
+
+        if not self.config:
+            self.config = RawConfigParser(defaults = defaults)
+
+        if config_filename:
+            self.config_filename = config_filename
+
+        self.config.read(self.config_filename)
+
+        self._wapt_repourl = self.config.get('global','repo_url')
+
+        if self.config.has_option('global','dbdir'):
+            self.dbdir =  self.config.get('global','dbdir')
+        else:
+            self.dbdir = os.path.join(self.wapt_base_dir,'db')
+        if not os.path.exists(self.dbdir):
+            os.makedirs(self.dbdir)
+        self.dbpath = os.path.join(self.dbdir,'waptdb.sqlite')
+
+        if self.config.has_option('global','private_key'):
+            self.private_key = self.config.get('global','private_key')
+
+        if self.config.has_option('global','allow_unsigned'):
+            self.allow_unsigned = self.config.getboolean('global','allow_unsigned')
+
+        if self.config.has_option('global','upload_cmd'):
+            self.upload_cmd = self.config.get('global','upload_cmd')
+
+        if self.config.has_option('global','upload_cmd_host'):
+            self.upload_cmd_host = self.config.get('global','upload_cmd_host')
+
+        if self.config.has_option('global','after_upload'):
+            self.after_upload = self.config.get('global','after_upload')
+
+        if self.config.has_option('global','http_proxy'):
+            self.proxies = {'http':self.config.get('global','http_proxy')}
+
+        # windows task scheduling
+        if self.config.has_option('global','waptupdate_task_period'):
+            self.waptupdate_task_period = int(self.config.get('global','waptupdate_task_period'))
+
+        if self.config.has_option('global','waptupdate_task_maxruntime'):
+            self.waptupdate_task_maxruntime = int(self.config.get('global','waptupdate_task_maxruntime'))
+
+        if self.config.has_option('global','waptupgrade_task_period'):
+            self.waptupgrade_task_period = int(self.config.get('global','waptupgrade_task_period'))
+
+        if self.config.has_option('global','waptupgrade_task_maxruntime'):
+            self.waptupgrade_task_maxruntime = int(self.config.get('global','waptupgrade_task_maxruntime'))
+
+        if self.config.has_option('global','wapt_server'):
+            self.wapt_server = self.config.get('global','wapt_server')
+
+        if self.config.has_option('global','language'):
+            self.language = self.config.get('global','language')
 
         # Get the configuration of all repositories (url, ...)
         self.repositories = []
@@ -1818,8 +1821,17 @@ class Wapt(object):
         #host_repo.repo_url = main.repo_url+'-host'
         self.repositories.append(host_repo)
 
-    def load_config(self,config_filename):
-        pass
+    def write_config(self,config_filename=None):
+        """Update configuration parameters to supplied inifilename
+        """
+        for key in self.config.defaults():
+            if hasattr(self,key) and getattr(self,key) <> self.config.defaults()[key]:
+                logger.debug('update config global.%s : %s' % (key,getattr(self,key)))
+                self.config.set('global',key,getattr(self,key))
+        repositories_names = ','.join([ r.name for r in self.repositories if r.name not in ('global','wapt-host')])
+        if self.config.has_option('global','repositories') and repositories_names <> '':
+            self.config.set('global','repositories',repositories_names)
+        self.config.write(open(self.config_filename,'wb'))
 
     @property
     def waptdb(self):
@@ -1991,8 +2003,9 @@ class Wapt(object):
         else:
            for file in cmd_dict['waptfile']:
               file = file.replace('"','')
-              req = requests.post("%s/upload_host" % (self.wapt_server),files={'file':open(file,'rb')},proxies=self.proxies,verify=False,auth=auth)
-              req.raise_for_status()
+              with open(file,'rb') as afile:
+                req = requests.post("%s/upload_host" % (self.wapt_server,),files={'file':afile},proxies=self.proxies,verify=False,auth=auth)
+                req.raise_for_status()
            return req.content
 
       else:
@@ -2003,11 +2016,10 @@ class Wapt(object):
           for file in cmd_dict['waptfile']:
             # file is surrounded by quotes for shell usage
             file = file[1:-1]
-            req = requests.post("%s/upload_package" % (self.wapt_server),files={'file':open(file,'rb')},proxies=self.proxies,verify=False,auth=auth)
-            req.raise_for_status()
+            with open(file,'rb') as afile:
+                req = requests.post("%s/upload_package" % (self.wapt_server),files={'file':afile},proxies=self.proxies,verify=False,auth=auth)
+                req.raise_for_status()
           return req.content
-
-
 
     def check_install_running(self,max_ttl=60):
         """ Check if an install is in progress, return list of pids of install in progress
@@ -2150,6 +2162,14 @@ class Wapt(object):
             if sha1 <> sha1_for_file(fullpath):
                 errors.append(filename)
         return errors
+
+    def set_local_password(self,pwd):
+        """Set password for waptservice in ini file as a MD5 hex hash"""
+        import md5
+        conf = RawConfigParser()
+        conf.read(self.config_filename)
+        conf.set('global','md5_password',md5.md5(pwd).hexdigest())
+        conf.write(open(self.config_filename,'wb'))
 
     def install_wapt(self,fname,params_dict={},explicit_by=None):
         """Install a single wapt package given its WAPT filename.
@@ -2870,17 +2890,14 @@ class Wapt(object):
             result.append(host_package)
         return result
 
-    def search(self,searchwords=[]):
+    def search(self,searchwords=[],exclude_host_repo=True):
         """Returns a list of packages which have the searchwords
            in their description
         """
-        available = self.waptdb.packages_search(searchwords=searchwords)
+        available = self.waptdb.packages_search(searchwords=searchwords,exclude_host_repo=exclude_host_repo)
         installed = self.waptdb.installed(include_errors=True)
         upgradable =  self.waptdb.upgradeable()
         for p in available:
-            if p['section'] == 'host':
-                available.remove(p)
-                continue
             if p.package in installed:
                 current = installed[p.package]
                 if p.version == current.version:
@@ -4019,7 +4036,7 @@ if __name__ == '__main__':
     #force_utf8_no_bom(r'C:\tranquilit\tis-waptini-wapt\WAPT\control')
 
     w = Wapt(config_filename='c:/tranquilit/wapt/wapt-get.ini')
-    w.install(['tis-certutils','htlaptop.tranquilit.local'],download_only=True,usecache=True)
+    #w.install(['tis-certutils','htlaptop.tranquilit.local'],download_only=True,usecache=True)
 
     #sdb = w.waptsessiondb()
 
