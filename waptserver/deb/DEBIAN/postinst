@@ -15,8 +15,10 @@ chmod +x /etc/init.d/waptserver
 #TODO : check if waptserver exists of make a new one
 #if [ -e /opt/wapt/waptserver/waptserver.ini ]
 #  cp 
-
+if [ ! -f /tmp/foo.txt ]
+then
+	/opt/wapt/waptserver/scripts/postconf.py
+fi
 
 update-rc.d waptserver defaults 
 printf '\e[1;31m%-6s\e[m\n' "the installation of waptserver is finished !!"
-printf '\e[1;31m%-6s\e[m\n' "please refer to the INSTALL.txt in /opt/wapt/waptserver for conclude the configuration "
