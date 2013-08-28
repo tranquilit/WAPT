@@ -1,0 +1,29 @@
+#!/bin/bash
+
+echo "Creating wapt root diretory" 
+mkdir -p /var/www/wapt/
+chown www-data:www-data /var/www/wapt/
+ln -s /opt/wapt/waptrepo/waptpackage.py /var/www/wapt/
+ln -s /opt/wapt/waptrepo/wapt-scanpackages.py /var/www/wapt/
+chmod +x /opt/wapt/waptrepo/waptpackage.py
+chmod +x /opt/wapt/waptrepo/wapt-scanpackages.py
+/usr/bin/python /var/www/wapt/wapt-scanpackages.py /var/www/wapt/
+
+#echo "Configuring cron" 
+#CRON_FILE=/etc/cron.d/wapt
+#if [ -f "$CRON_FILE" ]
+#then
+#  if ! grep -q  PATH "$CRON_FILE"
+#  then
+#    echo "PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin" >> "$CRON_FILE"
+#  fi
+#  if ! grep -q  waptzsync.py "$CRON_FILE"
+#  then
+#    echo "30 21 * * * root /usr/bin/python /opt/waptrepo/waptzsync.py >> /var/log/waptzsync.log" >> "$CRON_FILE"
+#  fi
+#else
+#  echo "PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+#30 21 * * * root /usr/bin/python /opt/waptrepo/waptzsync.py >> /var/log/waptzsync.log" > "$CRON_FILE"
+#fi
+#echo "run cp /opt/waptrepo/config-waptzsync.ini.template /etc/tis/config-waptzsync.ini"
+#echo "Run /opt/waptrepo/waptzsync.py for the first sync"
