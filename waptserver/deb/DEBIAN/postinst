@@ -8,6 +8,7 @@ touch  /var/run/waptserver.pid
 chown waptserver  /var/log/waptserver.log
 chown waptserver  /var/run/waptserver.pid
 chown waptserver  -R /opt/wapt/waptserver
+chown waptserver:www-data -R /var/www/wapt/
 cp /opt/wapt/waptserver/scripts/waptserver-init /etc/init.d/waptserver
 chmod +x /etc/init.d/waptserver
 
