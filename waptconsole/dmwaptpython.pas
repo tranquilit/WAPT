@@ -42,7 +42,7 @@ procedure TDMPython.SetWaptConfigFileName(AValue: String);
 var
   St:TStringList;
 begin
- // if FWaptConfigFileName=AValue then Exit;
+  if FWaptConfigFileName=AValue then Exit;
   FWaptConfigFileName:=AValue;
   if AValue<>'' then
   begin
@@ -75,6 +75,7 @@ begin
     LoadDLL;
     Py_SetProgramName(PAnsiChar(ParamStr(0)));
   end;
+
 end;
 
 procedure TDMPython.DataModuleDestroy(Sender: TObject);

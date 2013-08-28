@@ -6,7 +6,7 @@
     <General>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
-      <Title Value="wapttray"/>
+      <Title Value="waptexit"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
       <Icon Value="0"/>
@@ -17,8 +17,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="1"/>
-      <RevisionNr Value="21"/>
-      <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Tray Icon" ProductName="WAPT" ProductVersion=""/>
+      <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
@@ -33,73 +32,56 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="5">
+    <RequiredPackages Count="3">
       <Item1>
-        <PackageName Value="pl_luicontrols"/>
+        <PackageName Value="pl_indycomp"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_indycomp"/>
+        <PackageName Value="pltis_superobject"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_superobject"/>
-      </Item3>
-      <Item4>
-        <PackageName Value="FCL"/>
-      </Item4>
-      <Item5>
         <PackageName Value="LCL"/>
-      </Item5>
+      </Item3>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="4">
       <Unit0>
-        <Filename Value="wapttray.lpr"/>
+        <Filename Value="waptexit.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="wapttray"/>
+        <UnitName Value="waptexit"/>
       </Unit0>
       <Unit1>
+        <Filename Value="uwaptexit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisWaptExit"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uwaptexit"/>
+      </Unit1>
+      <Unit2>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-      </Unit1>
-      <Unit2>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tiscommon"/>
       </Unit2>
       <Unit3>
-        <Filename Value="udmwapttray.pas"/>
+        <Filename Value="..\wapt-get\tisstrings.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="DMWaptTray"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="DataModule"/>
-        <UnitName Value="uDMWAPTTray"/>
+        <UnitName Value="tisstrings"/>
       </Unit3>
-      <Unit4>
-        <Filename Value="..\waptservice\UnitRedirect.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="UnitRedirect"/>
-      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="../wapttray"/>
+      <Filename Value="..\..\tis-waptexit-wapt\waptexit"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\wapt-get;..\waptservice"/>
+      <OtherUnitFiles Value="..\wapt-get"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
-    <CodeGeneration>
-      <SmartLinkUnit Value="True"/>
-      <SmallerCode Value="True"/>
-    </CodeGeneration>
     <Linking>
       <Debugging>
-        <UseLineInfoUnit Value="False"/>
-        <StripSymbols Value="True"/>
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
       <LinkSmart Value="True"/>

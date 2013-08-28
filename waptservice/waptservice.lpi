@@ -68,10 +68,9 @@
         <Filename Value="waptservice.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptservice"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="15"/>
+        <TopLine Value="5"/>
         <CursorPos X="49" Y="27"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
@@ -94,10 +93,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="WaptUnit"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="16"/>
-        <CursorPos X="56" Y="32"/>
+        <TopLine Value="295"/>
+        <CursorPos X="30" Y="312"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>

@@ -135,32 +135,37 @@ begin
       begin
         // Then check if new upgrades are available
         upgrade_status := WAPTLocalJsonGet('checkupgrades');
-        running := upgrade_status['running_tasks'];
-        upgrades := upgrade_status['upgrades'];
-        errors := upgrade_status['errors'];
+        if upgrade_status<> nil then
+        begin
+          running := upgrade_status['running_tasks'];
+          upgrades := upgrade_status['upgrades'];
+          errors := upgrade_status['errors'];
 
-        if (running<>Nil) and (running.AsArray.Length>0) then
-        begin
-          new_traymode:=tmRunning;
-          new_hint:='Installation en cours : '+running.AsString;
+          if (running<>Nil) and (running.AsArray.Length>0) then
+          begin
+            new_traymode:=tmRunning;
+            new_hint:='Installation en cours : '+running.AsString;
+          end
+          else
+          if (upgrades<>Nil) and (upgrades.AsArray.Length>0) then
+          begin
+            new_traymode:=tmUpgrades;
+            new_hint:='Mises à jour disponibles pour : '+#13#10+soutils.join(#13#10,upgrades);
+          end
+          else
+          if (errors<>Nil) and (errors.AsArray.Length>0) then
+          begin
+            new_hint:='Erreurs : '+#13#10+ Join(#13#10,errors);
+            new_traymode:=tmErrors;
+          end
+          else
+          begin
+            new_hint:='Système à jour';
+            new_traymode:=tmOK;
+          end;
         end
         else
-        if (upgrades<>Nil) and (upgrades.AsArray.Length>0) then
-        begin
-          new_traymode:=tmUpgrades;
-          new_hint:='Mises à jour disponibles pour : '+#13#10+soutils.join(#13#10,upgrades);
-        end
-        else
-        if (errors<>Nil) and (errors.AsArray.Length>0) then
-        begin
-          new_hint:='Erreurs : '+#13#10+ Join(#13#10,errors);
-          new_traymode:=tmErrors;
-        end
-        else
-        begin
-          new_hint:='Système à jour';
-          new_traymode:=tmOK;
-        end;
+          Raise Exception.Create('Le service local WaptService n''a pas renvoyé d''information');
       end;
 
       // show balloon if run_status has changed

@@ -287,6 +287,7 @@ end;
 
 procedure TVisWaptGUI.cbShowLogClick(Sender: TObject);
 begin
+  DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
   if cbShowLog.Checked then
     DMPython.PythonEng.ExecString('logger.setLevel(logging.DEBUG)')
   else
@@ -626,9 +627,12 @@ begin
                 PChar(waptpath + '\ssl\' + ExtractFileName(certFile)), True) then
                 ShowMessage('Erreur lors de la copie de la clé publique');
 
-              INI := TINIFile.Create(WaptIniFilename);
-              INI.WriteString('global', 'private_key', Result.S['pem_filename']);
-              INI.Free;
+              with TINIFile.Create(WaptIniFilename) do
+              try
+                WriteString('global', 'private_key', Result.S['pem_filename']);
+              finally
+                Free;
+              end;
 
               ActUpdateWaptGetINIExecute(self);
             end;
@@ -943,8 +947,7 @@ end;
 
 procedure TVisWaptGUI.ActUpdateWaptGetINIExecute(Sender: TObject);
 begin
-  DMPython.WaptConfigFileName := waptpath + '\wapt-get.ini';
-  DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
+  DMPython.RunJSON('mywapt.load_config()', jsonlog);
 end;
 
 procedure TVisWaptGUI.ActUpgradeExecute(Sender: TObject);
@@ -1006,7 +1009,10 @@ begin
   end;
 
   waptpath := ExtractFileDir(ParamStr(0));
-  //butInitWapt.Click;
+
+  DMPython.WaptConfigFileName := waptpath + '\wapt-get.ini';
+  DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
+
   ActUpdateWaptGetINIExecute(Self);
   GridPackages.Clear;
   MemoLog.Clear;
