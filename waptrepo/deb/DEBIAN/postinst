@@ -2,7 +2,11 @@
 
 echo "Creating wapt root diretory" 
 mkdir -p /var/www/wapt/
+mkdir -p /var/www/wapt-host
+mkdir -p /var/www/wapt-group
 chown www-data:www-data /var/www/wapt/
+chown www-data:www-data /var/www/wapt-host
+chown www-data:www-data /var/www/wapt-group
 ln -s /opt/wapt/waptrepo/waptpackage.py /var/www/wapt/
 ln -s /opt/wapt/waptrepo/wapt-scanpackages.py /var/www/wapt/
 chmod +x /opt/wapt/waptrepo/waptpackage.py
