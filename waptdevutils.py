@@ -102,6 +102,8 @@ def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wa
             new_iss.append('#define default_repo_url "%s"' % (default_repo_url))
         elif line.startswith('#define default_wapt_server'):
             new_iss.append('#define default_wapt_server "%s"' % (default_wapt_server))
+        elif line.startswith('#define output_dir'):
+            new_iss.append('#define output_dir "%s"' % (destination))
         elif not line.startswith('SignTool'):
             new_iss.append(line)
             if line.startswith('OutputBaseFilename'):
@@ -114,7 +116,7 @@ def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wa
     inno_directory = '%s\\Inno Setup 5\\Compil32.exe' % programfiles32
     run('"%s" /cc %s' % (inno_directory,iss_template))
     print('%s compiled successfully' % (outputfile, ))
-    filecopyto(outputfile,destination)
+   # filecopyto(outputfile,destination)
     return os.path.join(destination,os.path.basename(outputfile))
 
 def diff_computer_ad_wapt(wapt):
