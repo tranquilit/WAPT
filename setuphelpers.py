@@ -970,6 +970,7 @@ def host_info():
     info['physical_memory'] = memory_status().ullTotalPhys
     info['virtual_memory'] = memory_status().ullTotalVirtual
 
+    info['current_user'] = get_current_user()
     return info
 
 # from http://stackoverflow.com/questions/580924/python-windows-file-version-attribute

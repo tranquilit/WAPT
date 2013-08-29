@@ -372,7 +372,7 @@ begin
       Edit5.Text := GetValue(GridHosts, Node, 'host.system_manufacturer');
       Edit6.Text := GetValue(GridHosts, Node, 'host.system_productname');
       Edit7.Text := GetValue(GridHosts, Node, 'last_query_date');
-      Edit8.Text := GetValue(GridHosts, Node, 'host.user');
+      Edit8.Text := GetValue(GridHosts, Node, 'host.current_user');
       GridLoadData(GridHostPackages, packages_json);
     end
     else if HostPages.ActivePage = pgSoftwares then
