@@ -7,7 +7,8 @@ interface
 uses
   Classes, SysUtils, FileUtil, SynHighlighterPython, SynEdit,
   vte_json, Forms,
-  Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, fpJson, jsonparser, superobject,
+  Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList,
+  Menus, fpJson, jsonparser, superobject,
   UniqueInstance, VirtualTrees, VarPyth, Windows, LMessages, ImgList;
 
 type
@@ -474,7 +475,7 @@ begin
 
       sourceDir := DMPython.RunJSON(
         Format('waptdevutils.duplicate_from_tis_repo(r"%s","%s","%s")',
-        [waptpath + '\wapt-get-public.ini', oldName, newName])).AsString;
+        [waptpath + '\wapt-get.ini', oldName, newName])).AsString;
       if sourceDir <> 'error' then
       begin
         isEncrypt := StrToBool(DMPython.RunJSON(
@@ -708,7 +709,8 @@ begin
             params := params + format('default_public_cert=r"%s",',
               [fnPublicCert.FileName]);
             params := params + format('default_repo_url=r"%s",', [edRepoUrl.Text]);
-            params := params + format('default_wapt_server=r"%s",', [edWaptServerUrl.Text]);
+            params := params + format('default_wapt_server=r"%s",',
+              [edWaptServerUrl.Text]);
             params := params + format('destination=r"%s",', [fnWaptDirectory.Directory]);
             params := params + format('company=r"%s",', [edOrgName.Text]);
             waptsetupPath := DMPython.RunJSON(
@@ -962,7 +964,7 @@ var
   jsp: TJSONParser;
 begin
   expr := format('waptdevutils.updateTisRepo(r"%s","%s")',
-    [waptpath + '\wapt-get-public.ini', EdSearch1.Text]);
+    [waptpath + '\wapt-get.ini', EdSearch1.Text]);
   packages := DMPython.RunJSON(expr);
   GridLoadData(GridPackages1, packages.AsJSon);
 end;

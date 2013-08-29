@@ -155,15 +155,19 @@ def add_remove_option_inifile(wapt,choice,section,option,value):
 
 def updateTisRepo(wapt,search_string):
     wapt = common.Wapt(config_filename=wapt)
-    wapt.update()
+    wapt.repositories[0].repo_url = 'http://wapt.tranquil.it/wapt'
+    wapt.dbpath = r'c:\wapt\db\tis.sqlite'
+    wapt.update(force=True)
     return wapt.search(search_string)
 
 def duplicate_from_tis_repo(wapt,old_file_name,new_file_name):
     import tempfile
     wapt = common.Wapt(config_filename=wapt)
     wapt.config.set('global','default_sources_root',tempfile.mkdtemp())
-    wapt.update()
-    result = wapt.duplicate_package(old_file_name,new_file_name)
+    wapt.repositories[0].repo_url = 'http://wapt.tranquil.it/wapt'
+    wapt.dbpath = r'c:\wapt\db\tis.sqlite'
+    wapt.update(force=True)
+    result = wapt.duplicate_package(old_file_name,new_file_name,build=False)
     if 'source_dir' in result:
         return result['source_dir']
     else:
