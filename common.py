@@ -595,11 +595,15 @@ class WaptBaseDB(object):
         self.connect()
 
     def connect(self):
-        if not os.path.isfile(self.dbpath):
+        if not self.dbpath == ':memory:' and not os.path.isfile(self.dbpath):
             dirname = os.path.dirname(self.dbpath)
             if os.path.isdir (dirname)==False:
                 os.makedirs(dirname)
             os.path.dirname(self.dbpath)
+            self.db=sqlite3.connect(self.dbpath,detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+            self.initdb()
+            self.db.commit()
+        elif self.dbpath == ':memory:':
             self.db=sqlite3.connect(self.dbpath,detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
             self.initdb()
             self.db.commit()
@@ -2456,10 +2460,9 @@ class Wapt(object):
     def update(self,force=False):
         """Update local database with packages definition from repositories
             returns a dict of
-                "removed"
-                "added"
-                "count"
-                "repos"
+                "added","removed","count","repos","upgrades","date"
+            force : update even if Packages on repository has not been updated
+                    since last update (based on http headers)
         """
         previous = self.waptdb.known_packages()
         if not self.wapt_repourl:
