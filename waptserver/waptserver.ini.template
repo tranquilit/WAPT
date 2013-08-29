@@ -1,3 +1,10 @@
+[uwsgi]
+http = 0.0.0.0:8080
+master = true
+processes = 4
+wsgi=waptserver:app
+chdir=/opt/wapt/waptserver/
+
 [options]
 #mongodb_port=27017
 #mongodb_ip=srvwapt

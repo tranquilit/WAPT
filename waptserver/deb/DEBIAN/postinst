@@ -9,16 +9,15 @@ chown waptserver  /var/log/waptserver.log
 chown waptserver  /var/run/waptserver.pid
 chown waptserver  -R /opt/wapt/waptserver
 chown waptserver:www-data -R /var/www/wapt/
+chown waptserver -R /opt/wapt/
 cp /opt/wapt/waptserver/scripts/waptserver-init /etc/init.d/waptserver
 chmod +x /etc/init.d/waptserver
 
 #TODO : check if waptserver exists of make a new one
 #if [ -e /opt/wapt/waptserver/waptserver.ini ]
 #  cp 
-if [ ! -f /tmp/foo.txt ]
-then
-	/opt/wapt/waptserver/scripts/postconf.py
-fi
 
 update-rc.d waptserver defaults 
 printf '\e[1;31m%-6s\e[m\n' "the installation of waptserver is finished !!"
+printf '\e[1;31m%-6s\e[m\n' "if you want to use zsync please launch /opt/wapt/waptrepo/configure_zsync.sh"
+printf '\e[1;31m%-6s\e[m\n' "for postconf please run: /usr/bin/python /opt/wapt/waptserver/scripts/postconf.py"

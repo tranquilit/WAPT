@@ -3,6 +3,7 @@ from iniparse import RawConfigParser
 import shutil
 import fileinput
 import os,glob,sys
+import hashlib
 
 
 def replaceAll(file,searchExp,replaceExp):
@@ -49,11 +50,20 @@ if postconf.yesno("Do you wan't to launch post configuration tool ?") == postcon
             else:
                 waptserver_ini.set('options','mongodb_port',mongodb_port)
         elif code<>postconf.DIALOG_OK:
-            exit(0)    
+            exit(0)   
+        
+
+    (code,wapt_password) = postconf.inputbox("wapt serveur password:  ")
+    if code<>postconf.DIALOG_OK:
+        exit(0)
+    else:
+        password = hashlib.sha512(wapt_password).hexdigest()
+        waptserver_ini.set('options','wapt_password',password)
 
         
             
     with open('/opt/wapt/waptserver/waptserver.ini','w') as inifile:
-        waptserver_ini.write(inifile)    
+        waptserver_ini.write(inifile) 
+    postconf.msgbox("Postconf is finished !! \n please start wapt server with /etc/init.d/waptserver start")
 else:
     exit(0)
