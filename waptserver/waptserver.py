@@ -16,7 +16,7 @@ import  cheroot.wsgi, cheroot.ssllib.ssl_builtin
 import logging
 import pprint
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 config = ConfigParser.RawConfigParser()
 wapt_root_dir = ''

@@ -85,6 +85,7 @@ type
     procedure GridPackagesHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
   private
     FIsUpdated: boolean;
+    GridDependsUpdated:Boolean;
     function CheckUpdated: boolean;
     procedure SetIsUpdated(AValue: boolean);
     function GetIsUpdated: boolean;
@@ -149,7 +150,6 @@ begin
   with TVisEditPackage.Create(nil) do
     try
       IsNewPackage := True;
-      Eddescription.Enabled := False;
       PackageRequest := packagename;
       EdSection.ItemIndex := 4;
       if ShowModal = mrOk then
@@ -308,13 +308,18 @@ procedure TVisEditPackage.ActEditSavePackageExecute(Sender: TObject);
 var
   i: integer;
   n: PVirtualNode;
+  res : ISuperObject;
 begin
   Screen.Cursor := crHourGlass;
   try
     if IsNewPackage then
-      FSourcePath := DMPython.RunJSON(
-        format('mywapt.make_group_template("%s","%s")',
-        [Trim(EdPackage.Text), Depends])).AsString
+    begin
+      res := DMPython.RunJSON(
+        format('mywapt.make_group_template(packagename="%s",depends="%s",description="%s")',
+        [Trim(EdPackage.Text), Depends, Eddescription.Text]));
+      FSourcePath:= res.S['source_dir'];
+      PackageEdited := res['package'];
+    end
     else
     begin
       PackageEdited.S['package'] := EdPackage.Text;
@@ -343,7 +348,7 @@ end;
 function TVisEditPackage.GetIsUpdated: boolean;
 begin
   Result := FIsUpdated or EdPackage.Modified or EdVersion.Modified or
-    EdSetupPy.Modified or EdSourceDir.Modified or Eddescription.Modified;
+    EdSetupPy.Modified or EdSourceDir.Modified or Eddescription.Modified or GridDependsUpdated;
 end;
 
 procedure TVisEditPackage.ActEditSearchExecute(Sender: TObject);
@@ -565,6 +570,7 @@ begin
     EdVersion.Modified := False;
     EdSourceDir.Modified := False;
     EdSetupPy.Modified := False;
+    GridDependsUpdated:=False;
   end;
 end;
 
@@ -579,8 +585,11 @@ begin
     format('mywapt.get_package_entries("%s")', [FDepends]));
   GridLoadData(GridDepends, dependencies['packages'].AsJSon);
   if dependencies['missing'].AsArray.Length > 0 then
+  begin
     ShowMessageFmt('Attention, les paquets %s ont été ignorés car introuvables',
       [dependencies.S['missing']]);
+    GridDependsUpdated:=True;
+  end;
   FIsUpdated := True;
 end;
 

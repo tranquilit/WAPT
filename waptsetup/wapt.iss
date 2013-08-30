@@ -44,7 +44,6 @@ Source: "..\wapt-get.exe"; DestDir: "{app}";
 Source: "..\waptconsole.exe.manifest"; DestDir: "{app}";
 Source: "..\waptconsole.exe"; DestDir: "{app}";
 Source: "..\waptdevutils.py"; DestDir: "{app}";
-Source: "..\wapt-get-public.ini"; DestDir: "{app}";
 Source: "..\dmidecode.exe"; DestDir: "{app}";
 Source: "..\wapt.ico"; DestDir: "{app}";
 Source: "wapt.iss"; DestDir: "{app}\waptsetup";

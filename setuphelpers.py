@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.7.2"
+__version__ = "0.7.3"
 
 import os
 import sys
@@ -566,10 +566,10 @@ def get_loggedinusers():
         import win32ts
         for session in win32ts.WTSEnumerateSessions():
             if session['State']==win32ts.WTSActive:
-                result.append(WTSQuerySessionInformation(win32ts.WTS_CURRENT_SERVER_HANDLE,session['SessionId'],win32ts.WTSUserName))
+                result.append(win32ts.WTSQuerySessionInformation(win32ts.WTS_CURRENT_SERVER_HANDLE,session['SessionId'],win32ts.WTSUserName))
         return result
     except:
-        return [setuphelpers.get_current_user()]
+        return [get_current_user()]
 
 def _environ_params(dict_or_module={}):
     """set some environment params in the supplied module or dict"""
@@ -970,7 +970,7 @@ def host_info():
     info['physical_memory'] = memory_status().ullTotalPhys
     info['virtual_memory'] = memory_status().ullTotalVirtual
 
-    info['current_user'] = get_current_user()
+    info['current_user'] = get_loggedinusers()
     return info
 
 # from http://stackoverflow.com/questions/580924/python-windows-file-version-attribute

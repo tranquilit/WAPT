@@ -17,7 +17,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="1"/>
-      <BuildNr Value="1"/>
+      <RevisionNr Value="2"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -33,48 +33,60 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="13">
+    <RequiredPackages Count="17">
       <Item1>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pl_orpheus"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="pl_fpspreadsheet"/>
       </Item2>
       <Item3>
-        <PackageName Value="RunTimeTypeInfoControls"/>
+        <PackageName Value="pl_virtualtrees"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_graphics32ext"/>
+        <PackageName Value="pl_cindy"/>
       </Item4>
       <Item5>
-        <PackageName Value="pl_bgracontrols"/>
+        <PackageName Value="pltis_superobject"/>
       </Item5>
       <Item6>
-        <PackageName Value="pl_luicontrols"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item6>
       <Item7>
-        <PackageName Value="pl_glscene"/>
+        <PackageName Value="RunTimeTypeInfoControls"/>
       </Item7>
       <Item8>
-        <PackageName Value="pl_virtualtreesextra"/>
+        <PackageName Value="pl_graphics32ext"/>
       </Item8>
       <Item9>
-        <PackageName Value="pl_lazsolutions"/>
+        <PackageName Value="pl_bgracontrols"/>
       </Item9>
       <Item10>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pl_luicontrols"/>
       </Item10>
       <Item11>
-        <PackageName Value="pl_indycomp"/>
+        <PackageName Value="pl_glscene"/>
       </Item11>
       <Item12>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="pl_virtualtreesextra"/>
       </Item12>
       <Item13>
-        <PackageName Value="LCL"/>
+        <PackageName Value="pl_lazsolutions"/>
       </Item13>
+      <Item14>
+        <PackageName Value="FCL"/>
+      </Item14>
+      <Item15>
+        <PackageName Value="pl_indycomp"/>
+      </Item15>
+      <Item16>
+        <PackageName Value="SynEdit"/>
+      </Item16>
+      <Item17>
+        <PackageName Value="LCL"/>
+      </Item17>
     </RequiredPackages>
-    <Units Count="13">
+    <Units Count="15">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -164,6 +176,22 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvisloading"/>
       </Unit12>
+      <Unit13>
+        <Filename Value="uvisoptioninifile.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisOptionIniFile"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uvisOptionIniFile"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="uviswaptconfig.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisWAPTConfig"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uviswaptconfig"/>
+      </Unit14>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -177,6 +205,18 @@
       <OtherUnitFiles Value="..\wapt-get"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
+    <CodeGeneration>
+      <Checks>
+        <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
+      <VerifyObjMethodCallValidity Value="True"/>
+      <Optimizations>
+        <OptimizationLevel Value="0"/>
+      </Optimizations>
+    </CodeGeneration>
     <Linking>
       <Debugging>
         <UseExternalDbgSyms Value="True"/>

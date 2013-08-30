@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.7.2"
+__version__ = "0.7.3"
 
 import sys
 import os
@@ -546,10 +546,10 @@ def main():
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
-                    print u"Template created. You can build the WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result)
+                    print u"Template created. You can build the WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result['source_dir'])
                     if mywapt.upload_cmd or mywapt.wapt_server:
-                        print u"You can build and upload the WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result)
-                    wapt_sources_edit(result)
+                        print u"You can build and upload the WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result['source_dir'])
+                    wapt_sources_edit(result['source_dir'])
 
             elif action=='duplicate':
                 if len(args)<3:

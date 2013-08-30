@@ -76,7 +76,7 @@ from setuphelpers import ensure_unicode
 
 import types
 
-__version__ = "0.7.2"
+__version__ = "0.7.3"
 
 logger = logging.getLogger()
 
@@ -1728,6 +1728,7 @@ class Wapt(object):
         # default config file
         defaults = {
             'repo_url':'',
+            'templates_repo_url':'',
             'private_key':'',
             'wapt_server':'',
             'loglevel':'warning',
@@ -3445,7 +3446,9 @@ class Wapt(object):
                     silentflag = '/S'
 
         elif ext=='.msi':
-            silentflag = '/q'
+            silentflag = '/q /norestart'
+        elif ext=='.msu':
+            silentflag = '/quiet /norestart'
         else:
             silentflag = ''
         return silentflag
@@ -3589,7 +3592,7 @@ class Wapt(object):
             packagename = packagename.lower()
 
         if not directoryname:
-            directoryname = self.get_default_development_dir(packagename,section='host')
+            directoryname = self.get_default_development_dir(packagename,section=section)
 
         if not os.path.isdir(os.path.join(directoryname,'WAPT')):
             os.makedirs(os.path.join(directoryname,'WAPT'))
@@ -3655,7 +3658,11 @@ class Wapt(object):
 
         codecs.open(control_filename,'w',encoding='utf8').write(entry.ascontrol())
 
-        return directoryname
+        result = {}
+        result['package'] = entry
+        result['source_dir'] = directoryname
+        result['target'] = directoryname
+        return result
 
 
     def is_installed(self,packagename):
@@ -3713,6 +3720,10 @@ class Wapt(object):
                         package.depends = ','.join(prev_depends)
                         package.save_control_to_wapt(devdir)
 
+                    psproj_filename = os.path.join(devdir,'WAPT','wapt.psproj')
+                    if not os.path.isfile(psproj_filename):
+                        proj_template = codecs.open(os.path.join(self.wapt_base_dir,'templates','wapt.psproj'),encoding='utf8').read() % locals()
+                        codecs.open(psproj_filename,'w',encoding='utf8').write(proj_template)
                     return {'target':devdir,'source_dir':devdir,'package':package}
             else:
                 os.unlink(devdir)
@@ -3748,8 +3759,7 @@ class Wapt(object):
                     os.unlink(devdir)
             return self.duplicate_package(packagename=hostname,newname=hostname,target_directory=target_directory,build=False,append_depends = append_depends)
         else:
-            new_source = self.make_host_template(packagename=hostname,directoryname=target_directory,depends=append_depends)
-            return {'target':new_source,'source_dir':new_source,'package':PackageEntry().load_control_from_wapt(new_source)}
+            return self.make_host_template(packagename=hostname,directoryname=target_directory,depends=append_depends)
 
     def duplicate_package(self,packagename,newname=None,newversion='',target_directory='',
             build=True,

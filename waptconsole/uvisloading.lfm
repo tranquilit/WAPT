@@ -3,11 +3,10 @@ object visloading: Tvisloading
   Height = 109
   Top = 415
   Width = 342
-  BorderStyle = bsSingle
+  BorderStyle = bsDialog
   Caption = 'Chargement'
   ClientHeight = 109
   ClientWidth = 342
-  FormStyle = fsStayOnTop
   Position = poScreenCenter
   LCLVersion = '1.1'
   Visible = True

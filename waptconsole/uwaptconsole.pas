@@ -5,7 +5,7 @@ unit uwaptconsole;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, SynHighlighterPython, SynEdit,
+  Classes, SysUtils, FileUtil, SynHighlighterPython, SynEdit, cyVirtualGrid,
   vte_json, Forms,
   Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList,
   Menus, fpJson, jsonparser, superobject,
@@ -34,6 +34,7 @@ type
     ActDeletePackage: TAction;
     ActAdvancedMode: TAction;
     ActChangePassword: TAction;
+    ActWAPTLocalConfig: TAction;
     ActUpdateWaptGetINI: TAction;
     actRefresh: TAction;
     actQuit: TAction;
@@ -119,6 +120,8 @@ type
     MenuItem29: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem30: TMenuItem;
+    MenuItem31: TMenuItem;
+    MenuItem32: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
@@ -187,6 +190,7 @@ type
     procedure ActUpdateExecute(Sender: TObject);
     procedure ActUpdateWaptGetINIExecute(Sender: TObject);
     procedure ActUpgradeExecute(Sender: TObject);
+    procedure ActWAPTLocalConfigExecute(Sender: TObject);
     procedure butSearchPackages1Click(Sender: TObject);
     procedure cbSearchAllChange(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
@@ -235,9 +239,9 @@ var
 
 implementation
 
-uses LCLIntf, IniFiles, uvisprivatekeyauth, uvisloading, tisstrings, soutils, waptcommon,
-  uVisCreateKey, uVisCreateWaptSetup,
-  uvisOptionIniFile, dmwaptpython, uviseditpackage, uvispassword;
+uses LCLIntf, IniFiles, uvisprivatekeyauth, uvisloading, tisstrings, soutils,
+  waptcommon, uVisCreateKey, uVisCreateWaptSetup, uvisOptionIniFile,
+  dmwaptpython, uviseditpackage, uvispassword, uviswaptconfig;
 
 {$R *.lfm}
 
@@ -530,6 +534,8 @@ end;
 procedure TVisWaptGUI.ActPackageGroupAddExecute(Sender: TObject);
 begin
   CreatePackage('test');
+  ActUpdate.Execute;
+
 end;
 
 procedure TVisWaptGUI.actQuitExecute(Sender: TObject);
@@ -697,39 +703,51 @@ procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
 var
   params, waptsetupPath: string;
   done: boolean;
+  ini:TIniFile;
 begin
   with TVisCreateWaptSetup.Create(self) do
     try
-      repeat
-        if ShowModal = mrOk then
-        begin
-          try
-            DMPython.PythonEng.ExecString('import waptdevutils');
-            params := '';
-            params := params + format('default_public_cert=r"%s",',
-              [fnPublicCert.FileName]);
-            params := params + format('default_repo_url=r"%s",', [edRepoUrl.Text]);
-            params := params + format('default_wapt_server=r"%s",',
-              [edWaptServerUrl.Text]);
-            params := params + format('destination=r"%s",', [fnWaptDirectory.Directory]);
-            params := params + format('company=r"%s",', [edOrgName.Text]);
-            waptsetupPath := DMPython.RunJSON(
-              format('waptdevutils.create_wapt_setup(mywapt,%s)', [params]),
-              jsonlog).AsString;
-            done := FileExists(waptsetupPath);
-            if done then
-              ShowMessage('waptsetup.exe créé avec succès: ' + waptsetupPath);
-          except
-            on e: Exception do
-            begin
-              ShowMessage('Erreur à la création du waptsetup.exe: ' + e.Message);
-              done := False;
+      ini :=  TIniFile.Create(WaptIniFilename);
+      try
+        repeat
+          edWaptServerUrl.Text := ini.ReadString('global','wapt_server','');
+          edRepoUrl.Text:= ini.ReadString('global','repo_url','');
+          if DirectoryExists( IncludeTrailingPathDelimiter(waptpath)+'waptserver\repository\wapt') then
+            fnWaptDirectory.Directory := IncludeTrailingPathDelimiter(waptpath)+'waptserver\repository\wapt';
+
+          if ShowModal = mrOk then
+          begin
+            try
+              DMPython.PythonEng.ExecString('import waptdevutils');
+              params := '';
+              params := params + format('default_public_cert=r"%s",',
+                [fnPublicCert.FileName]);
+              params := params + format('default_repo_url=r"%s",', [edRepoUrl.Text]);
+              params := params + format('default_wapt_server=r"%s",',
+                [edWaptServerUrl.Text]);
+              params := params + format('destination=r"%s",', [fnWaptDirectory.Directory]);
+              params := params + format('company=r"%s",', [edOrgName.Text]);
+              waptsetupPath := DMPython.RunJSON(
+                format('waptdevutils.create_wapt_setup(mywapt,%s)', [params]),
+                jsonlog).AsString;
+              done := FileExists(waptsetupPath);
+              if done then
+                ShowMessage('waptsetup.exe créé avec succès: ' + waptsetupPath);
+            except
+              on e: Exception do
+              begin
+                ShowMessage('Erreur à la création du waptsetup.exe: ' + e.Message);
+                done := False;
+              end;
             end;
-          end;
-        end
-        else
-          done := True;
-      until done;
+          end
+          else
+            done := True;
+        until done;
+
+      finally
+        ini.Free;
+      end;
     finally
       Free;
     end;
@@ -955,6 +973,53 @@ end;
 procedure TVisWaptGUI.ActUpgradeExecute(Sender: TObject);
 begin
   DMPython.RunJSON('mywapt.upgrade()', jsonlog);
+end;
+
+procedure TVisWaptGUI.ActWAPTLocalConfigExecute(Sender: TObject);
+var
+  inifile:TIniFile;
+  wapt,conf : Variant;
+begin
+  inifile := TIniFile.Create(WaptIniFilename);
+  try
+
+    with TVisWAPTConfig.Create(self) do
+    try
+      //wapt := VarPyth.VarPythonEval('mywapt') ;
+      //conf := wapt.config;
+
+      edrepo_url.text := inifile.ReadString('global','repo_url','');
+      edhttp_proxy.text := inifile.ReadString('global','proxy_http','');
+      //edrepo_url.text := VarPythonAsString(conf.get('global','repo_url'));
+      eddefault_package_prefix.text := inifile.ReadString('global','default_package_prefix','');
+      edwapt_server.text := inifile.ReadString('global','wapt_server','');
+      eddefault_sources_root.Text := inifile.ReadString('global','default_sources_root','');
+      edprivate_key.Text := inifile.ReadString('global','private_key','');
+      edtemplates_repo_url.Text :=  inifile.readString('global','templates_repo_url','');
+      //eddefault_sources_root.Directory := inifile.ReadString('global','default_sources_root','');
+      //eddefault_sources_url.text = inifile.ReadString('global','default_sources_url','https://srvdev/sources/%(packagename)s-wapt/trunk');
+
+      if ShowModal = mrOK then
+      begin
+        inifile.WriteString('global','repo_url',edrepo_url.text);
+        inifile.WriteString('global','http_proxy',edhttp_proxy.text);
+        inifile.WriteString('global','default_package_prefix',eddefault_package_prefix.text);
+        inifile.WriteString('global','wapt_server',edwapt_server.text);
+        inifile.WriteString('global','default_sources_root',eddefault_sources_root.text);
+        inifile.WriteString('global','private_key',edprivate_key.text);
+        inifile.WriteString('global','templates_repo_url',edtemplates_repo_url.Text);
+        inifile.WriteString('global','default_sources_root',eddefault_sources_root.Text);
+        //inifile.WriteString('global','default_sources_url',eddefault_sources_url.text);
+        ActUpdateWaptGetINI.Execute;
+        ActUpdate.Execute;
+      end;
+    finally
+      Free;
+    end;
+
+  finally
+    inifile.Free;
+  end;
 end;
 
 procedure TVisWaptGUI.butSearchPackages1Click(Sender: TObject);

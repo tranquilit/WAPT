@@ -1686,6 +1686,10 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Recharger wapt-get.ini'
       OnExecute = ActUpdateWaptGetINIExecute
     end
+    object ActWAPTLocalConfig: TAction
+      Caption = 'Configuration WAPT locale'
+      OnExecute = ActWAPTLocalConfigExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
@@ -1778,6 +1782,12 @@ object VisWaptGUI: TVisWaptGUI
       object MenuItem23: TMenuItem
         Action = ActAdvancedMode
         Caption = 'Mode Avancé'
+      end
+      object MenuItem32: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem31: TMenuItem
+        Action = ActWAPTLocalConfig
       end
     end
     object MenuItem26: TMenuItem

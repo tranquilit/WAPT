@@ -15,20 +15,6 @@
         <UsageCount Value="201"/>
       </Unit0>
       <Unit1>
-        <Filename Value="uwapttray.pas"/>
-        <ComponentName Value="VisWAPTTray"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uwapttray"/>
-        <EditorIndex Value="1"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="3"/>
-        <CursorPos X="21" Y="18"/>
-        <UsageCount Value="201"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
-      </Unit1>
-      <Unit2>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
@@ -36,8 +22,8 @@
         <TopLine Value="795"/>
         <CursorPos X="87" Y="800"/>
         <UsageCount Value="201"/>
-      </Unit2>
-      <Unit3>
+      </Unit1>
+      <Unit2>
         <Filename Value="..\wapt-get\tiscommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiscommon"/>
@@ -45,8 +31,8 @@
         <TopLine Value="55"/>
         <CursorPos X="30" Y="6"/>
         <UsageCount Value="200"/>
-      </Unit3>
-      <Unit4>
+      </Unit2>
+      <Unit3>
         <Filename Value="udmwapttray.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DMWaptTray"/>
@@ -61,8 +47,8 @@
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
-      </Unit4>
-      <Unit5>
+      </Unit3>
+      <Unit4>
         <Filename Value="..\waptservice\UnitRedirect.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitRedirect"/>
@@ -70,6 +56,20 @@
         <TopLine Value="1"/>
         <CursorPos X="12" Y="27"/>
         <UsageCount Value="23"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="uwapttray.pas"/>
+        <ComponentName Value="VisWAPTTray"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uwapttray"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="3"/>
+        <CursorPos X="21" Y="18"/>
+        <UsageCount Value="201"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\wapt-get\soutils.pas"/>
