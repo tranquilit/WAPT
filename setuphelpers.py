@@ -888,7 +888,7 @@ def dmi_info():
 
         if not l.startswith('\t') or new_section:
             currobject={}
-            result[l.strip()]=currobject
+            result[l.strip().replace(' ','_')]=currobject
             if l.startswith('\t'):
                 print l
         else:
@@ -896,13 +896,13 @@ def dmi_info():
                 currarray = []
                 if ':' in l:
                     (name,value)=l.split(':',1)
-                    currobject[name.strip()]=value.strip()
+                    currobject[name.strip().replace(' ','_')]=value.strip()
                 else:
                     print "Error in line : %s" % l
             else:
                 # first line of array
                 if not currarray:
-                    currobject[name.strip()]=currarray
+                    currobject[name.strip().replace(' ','_')]=currarray
                 currarray.append(l.strip())
         new_section = False
     return result
@@ -945,7 +945,7 @@ def host_info():
     info = {}
     info['description'] = registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\LanmanServer\Parameters','srvcomment')
 
-    #info['serial_nr'] = dmi_info.get('System Information',{}).get('Serial Number','')
+    #info['serial_nr'] = dmi_info.get('System_Information',{}).get('Serial_Number','')
     info['system_manufacturer'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\BIOS','SystemManufacturer')
     info['system_productname'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\BIOS','SystemProductName')
 

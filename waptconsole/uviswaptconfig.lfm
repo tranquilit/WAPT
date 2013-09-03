@@ -1,0 +1,180 @@
+object VisWAPTConfig: TVisWAPTConfig
+  Left = 419
+  Height = 283
+  Top = 371
+  Width = 507
+  BorderStyle = bsDialog
+  Caption = 'Configuration locale WAPT'
+  ClientHeight = 283
+  ClientWidth = 507
+  ShowHint = True
+  LCLVersion = '1.1'
+  object ButtonPanel1: TButtonPanel
+    Left = 6
+    Height = 34
+    Top = 243
+    Width = 495
+    OKButton.Name = 'OKButton'
+    OKButton.DefaultCaption = True
+    HelpButton.Name = 'HelpButton'
+    HelpButton.DefaultCaption = True
+    CloseButton.Name = 'CloseButton'
+    CloseButton.DefaultCaption = True
+    CloseButton.Enabled = False
+    CancelButton.Name = 'CancelButton'
+    CancelButton.DefaultCaption = True
+    TabOrder = 7
+    ShowButtons = [pbOK, pbCancel]
+  end
+  object eddefault_package_prefix: TLabeledEdit
+    Left = 279
+    Height = 21
+    Hint = 'exemple : tis'#13#10'Préfixe à utiliser dans le nom des paquets lors de la duplication de paquets ou lors de la création initiale'
+    Top = 164
+    Width = 80
+    EditLabel.AnchorSideTop.Control = eddefault_package_prefix
+    EditLabel.AnchorSideTop.Side = asrCenter
+    EditLabel.AnchorSideRight.Control = eddefault_package_prefix
+    EditLabel.AnchorSideBottom.Control = eddefault_package_prefix
+    EditLabel.AnchorSideBottom.Side = asrBottom
+    EditLabel.Left = 75
+    EditLabel.Height = 13
+    EditLabel.Top = 168
+    EditLabel.Width = 201
+    EditLabel.Caption = 'Préfixe pour la création de paquets WAPT'
+    EditLabel.ParentColor = False
+    LabelPosition = lpLeft
+    TabOrder = 5
+  end
+  object eddefault_sources_root: TDirectoryEdit
+    Left = 279
+    Height = 21
+    Hint = 'Exemple : c:\waptdev'#13#10'Emplacement local pour stocker les projets de développement de paquets'
+    Top = 140
+    Width = 196
+    ShowHidden = False
+    ButtonWidth = 23
+    NumGlyphs = 1
+    MaxLength = 0
+    TabOrder = 4
+  end
+  object Label1: TLabel
+    Left = 15
+    Height = 13
+    Top = 144
+    Width = 262
+    Caption = 'Répertoire de base pour le développement de paquets'
+    ParentColor = False
+  end
+  object edrepo_url: TLabeledEdit
+    Left = 280
+    Height = 21
+    Hint = 'exemple : http://wapt.tranquilit.local/wapt'#13#10'laisser vide pour utiliser une recherche DNS automatique'
+    Top = 4
+    Width = 220
+    EditLabel.AnchorSideTop.Control = edrepo_url
+    EditLabel.AnchorSideTop.Side = asrCenter
+    EditLabel.AnchorSideRight.Control = edrepo_url
+    EditLabel.AnchorSideBottom.Control = edrepo_url
+    EditLabel.AnchorSideBottom.Side = asrBottom
+    EditLabel.Left = 170
+    EditLabel.Height = 13
+    EditLabel.Top = 8
+    EditLabel.Width = 107
+    EditLabel.Caption = 'URL du dépôt principal'
+    EditLabel.ParentColor = False
+    LabelPosition = lpLeft
+    TabOrder = 0
+  end
+  object edprivate_key: TFileNameEdit
+    Left = 279
+    Height = 21
+    Hint = 'exemple c:\private\tranquilit.pem'#13#10'Chemin vers la clé privée pour signer les nouveaux paquets.'#13#10'Uniquement utilse sur les machines de développement'
+    Top = 188
+    Width = 196
+    Filter = 'Fichiers PEM|*.pem|Tous les fichiers|*.*'
+    FilterIndex = 0
+    HideDirectories = False
+    ButtonWidth = 23
+    NumGlyphs = 1
+    MaxLength = 0
+    TabOrder = 6
+  end
+  object Label2: TLabel
+    Left = 51
+    Height = 13
+    Top = 192
+    Width = 225
+    Caption = 'Chemin de la clé privée pour signer les paquets'
+    ParentColor = False
+  end
+  object edtemplates_repo_url: TLabeledEdit
+    Left = 279
+    Height = 21
+    Hint = 'exemple : http://wapt.tranquil.it/wapt'#13#10'Sert dans la console WAPT pour la duplication de packages'
+    Top = 112
+    Width = 220
+    EditLabel.AnchorSideTop.Control = edtemplates_repo_url
+    EditLabel.AnchorSideTop.Side = asrCenter
+    EditLabel.AnchorSideRight.Control = edtemplates_repo_url
+    EditLabel.AnchorSideBottom.Control = edtemplates_repo_url
+    EditLabel.AnchorSideBottom.Side = asrBottom
+    EditLabel.Left = 107
+    EditLabel.Height = 13
+    EditLabel.Top = 116
+    EditLabel.Width = 169
+    EditLabel.Caption = 'URL du dépôt des paquets modèles'
+    EditLabel.ParentColor = False
+    LabelPosition = lpLeft
+    TabOrder = 3
+    Text = 'http://wapt.tranquil.it/wapt'
+  end
+  object edwapt_server: TLabeledEdit
+    Left = 280
+    Height = 21
+    Hint = 'exemple : http://srvwapt.tranquilit.local:8080'#13#10'laisser vide pour ne pas utiliser un serveur central d''administration'
+    Top = 28
+    Width = 220
+    EditLabel.AnchorSideTop.Control = edwapt_server
+    EditLabel.AnchorSideTop.Side = asrCenter
+    EditLabel.AnchorSideRight.Control = edwapt_server
+    EditLabel.AnchorSideBottom.Control = edwapt_server
+    EditLabel.AnchorSideBottom.Side = asrBottom
+    EditLabel.Left = 171
+    EditLabel.Height = 13
+    EditLabel.Top = 32
+    EditLabel.Width = 106
+    EditLabel.Caption = 'URL du serveur WAPT'
+    EditLabel.ParentColor = False
+    LabelPosition = lpLeft
+    TabOrder = 1
+  end
+  object edhttp_proxy: TLabeledEdit
+    Left = 280
+    Height = 21
+    Hint = 'exemple : http://proxy.tranquilit.local:3128'#13#10'renseigner uniquement si un proxy est nécessaire.'
+    Top = 52
+    Width = 220
+    EditLabel.AnchorSideTop.Control = edhttp_proxy
+    EditLabel.AnchorSideTop.Side = asrCenter
+    EditLabel.AnchorSideRight.Control = edhttp_proxy
+    EditLabel.AnchorSideBottom.Control = edhttp_proxy
+    EditLabel.AnchorSideBottom.Side = asrBottom
+    EditLabel.Left = 49
+    EditLabel.Height = 13
+    EditLabel.Top = 56
+    EditLabel.Width = 228
+    EditLabel.Caption = 'Proxy http à utiliser (si seulement si nécessaire)'
+    EditLabel.ParentColor = False
+    LabelPosition = lpLeft
+    TabOrder = 2
+  end
+  object Label3: TLabel
+    Left = 6
+    Height = 13
+    Top = 92
+    Width = 174
+    Caption = 'Pour le développement de paquets :'
+    ParentColor = False
+  end
+end

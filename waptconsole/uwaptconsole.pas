@@ -54,6 +54,7 @@ type
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
+    Button4: TButton;
     Button6: TButton;
     Button7: TButton;
     Button8: TButton;
@@ -128,6 +129,7 @@ type
     MenuItem7: TMenuItem;
     MenuItem8: TMenuItem;
     MenuItem9: TMenuItem;
+    MyTree: TVirtualStringTree;
     PageControl1: TPageControl;
     HostPages: TPageControl;
     Panel1: TPanel;
@@ -154,6 +156,7 @@ type
     pgSoftwares: TTabSheet;
     pgHostPackage: TTabSheet;
     pgTISRepo: TTabSheet;
+    TabSheet2: TTabSheet;
     testedit: TSynEdit;
     jsonlog: TVirtualJSONInspector;
     UniqueInstance1: TUniqueInstance;
@@ -192,6 +195,7 @@ type
     procedure ActUpgradeExecute(Sender: TObject);
     procedure ActWAPTLocalConfigExecute(Sender: TObject);
     procedure butSearchPackages1Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
     procedure cbSearchAllChange(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure CheckBoxMajChange(Sender: TObject);
@@ -219,6 +223,16 @@ type
 
     procedure HostPagesChange(Sender: TObject);
     procedure MenuItem27Click(Sender: TObject);
+    procedure MyTreeCompareNodes(Sender: TBaseVirtualTree; Node1,
+      Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
+    procedure MyTreeFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure MyTreeGetImageIndexEx(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+      var Ghosted: Boolean; var ImageIndex: Integer;
+      var ImageList: TCustomImageList);
+    procedure MyTreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
+    procedure MyTreeHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
     procedure PageControl1Change(Sender: TObject);
   private
     { private declarations }
@@ -228,7 +242,7 @@ type
     procedure UpdateHostPages(Sender: TObject);
   public
     { public declarations }
-    PackageEdited: ISuperObject;
+    Hosts,PackageEdited: ISuperObject;
     waptpath: string;
   end;
 
@@ -246,6 +260,200 @@ uses LCLIntf, IniFiles, uvisprivatekeyauth, uvisloading, tisstrings, soutils,
 {$R *.lfm}
 
 { TVisWaptGUI }
+
+type
+  TEntryData = record
+    //This point to my index into my array
+    //Instead of index, here you can
+    //store the pointer to your data.
+    //That depend of what is your intentions
+    //and your data structure
+    soentry:ISuperObject;
+    caption:String;
+  end;
+
+  PEntryData = ^TEntryData;
+
+
+procedure TVisWaptGUI.Button4Click(Sender: TObject);
+var
+  Node: PVirtualNode;
+  data:PEntryData;
+  //entry :
+  sorec : ISuperObject;
+  NewColumn: TVirtualTreeColumn;
+  i,Idx: integer;
+begin
+  MyTree.BeginUpdate;
+  MyTree.NodeDataSize := sizeof(TEntryData);
+  MyTree.RootNodeCount := 0;
+  MyTree.Header.Columns.Clear;
+  for i:=0 to GridHosts.Header.Columns.Count-1 do
+  begin
+    with MyTree.Header do
+    begin
+
+      NewColumn := Columns.Add;
+
+      NewColumn.Text      := TVirtualJSONListViewColumn(GridHosts.Header.Columns[i]).PropertyName;
+      NewColumn.Width     := GridHosts.Header.Columns[i].Width;
+      NewColumn.Alignment := GridHosts.Header.Columns[i].Alignment;
+
+    end;
+  end;
+
+  for i := 0 to Hosts.AsArray.Length -1 do
+  begin
+    // Add a node to the root of the Tree
+    sorec := Hosts.AsArray[i];
+    Node := MyTree.AddChild(nil);
+    Data :=  MyTree.GetNodeData(Node);
+    Data^.soentry := sorec;
+    data^.caption := IntToHex(integer(pointer(Data^.soentry)),8)+' - '+IntToStr(Data^.soentry._AddRef-1);
+    Data^.soentry._Release;
+    //sorec._AddRef;
+
+  end;
+  MyTree.EndUpdate;
+
+end;
+
+procedure TVisWaptGUI.MyTreeGetText(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
+  var CellText: String);
+var
+  data : PEntryData;
+
+begin
+  data := Sender.GetNodeData(Node);
+  if (node<>Nil) and (data<>Nil) then
+    if (Column>=1) then
+    begin
+      //CellText:=ISuperObject(data).S['host.computer_fqdn'];
+      CellText:=data^.soentry.S[TVirtualJSONListViewColumn(GridHosts.Header.Columns[column]).PropertyName] ;
+    end
+    else
+      CellText:=data^.caption
+  else
+    CellText:='';
+end;
+
+procedure TVisWaptGUI.MyTreeHeaderClick(Sender: TVTHeader;
+  HitInfo: TVTHeaderHitInfo);
+var
+  Direction : TSortDirection;
+begin
+  with HitInfo do
+  begin
+    // Descending order with pressed Shift, otherwise Ascending
+    // Or you can save Direction or use
+    // MyTree.Header.SortDirection and MyTree.Header.SortColumn
+    // to get automatically Descending/Ascending sorting
+    // by only clicking on header
+
+    if ssShift in  Shift
+    then
+      Direction := sdDescending
+    else
+      Direction := sdAscending;
+
+    // Set direction image on the sorted column
+    MyTree.Header.SortColumn := Column;
+
+    // Set the right direction image
+    MyTree.Header.SortDirection := Direction;
+
+    // Sorting process
+    MyTree.SortTree(Column, Direction);
+
+  end;
+
+end;
+
+procedure TVisWaptGUI.MyTreeCompareNodes(Sender: TBaseVirtualTree; Node1,
+  Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
+var
+  n1,n2: PEntryData;
+  d1,d2: ISuperObject;
+begin
+  n1 := MyTree.GetNodeData(Node1);
+  n2 := MyTree.GetNodeData(Node2);
+
+  // Get the pointers where your data are
+  // in the array, to speed-up process
+  if (n1<>Nil) and (n2<>Nil) then
+  begin
+    d1 := n1^.soentry;
+    d2 := n2^.soentry;
+    Result := CompareText(
+       d1.S[TVirtualJSONListViewColumn(GridHosts.Header.Columns[column]).PropertyName],
+       d2.S[TVirtualJSONListViewColumn(GridHosts.Header.Columns[column]).PropertyName]
+       )
+  end
+  else
+    Result := 0;
+
+end;
+
+procedure TVisWaptGUI.MyTreeFreeNode(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+var
+  data : PEntryData;
+begin
+  data :=  MyTree.GetNodeData(Node);
+  if data<>Nil then
+  begin
+    data^.soentry := Nil;
+    data^.caption := '';
+  end;
+end;
+
+procedure TVisWaptGUI.MyTreeGetImageIndexEx(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+  var Ghosted: Boolean; var ImageIndex: Integer; var ImageList: TCustomImageList
+  );
+var
+
+  data:PEntryData;
+  update_status, upgrades, errors: ISuperObject;
+begin
+  if (Column = 0)  then
+  begin
+    data:=Sender.GetNodeData(Node);
+    if data<>Nil then
+    begin
+      update_status := data^.soentry['update_status'];
+      if (update_status <> nil) then
+      begin
+        if ImageList=Nil then
+          ImageList := ImageList1;
+        errors := update_status['errors'];
+        upgrades := update_status['upgrades'];
+        if (errors <> nil) and (errors.AsArray.Length > 0) then
+          ImageIndex := 2
+        else
+        if (upgrades <> nil) and (upgrades.AsArray.Length > 0) then
+          ImageIndex := 1
+        else
+          ImageIndex := 0;
+
+      end;
+    end;
+  end;
+end;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function GetValue(ListView: TVirtualJSONListView; N: PVirtualNode;
   FieldName: string; Default: string = ''): string;
@@ -904,7 +1112,7 @@ end;
 
 procedure TVisWaptGUI.ActSearchHostExecute(Sender: TObject);
 var
-  req, hosts, filter: string;
+  req, filter: string;
   urlParams: ISuperObject;
 const
   url: string = 'json/host_list';
@@ -942,8 +1150,8 @@ begin
 
   req := url + '?' + Join('&', urlParams);
 
-  hosts := WAPTServerJsonGet(req, []).AsJson;
-  GridLoadData(GridHosts, hosts);
+  hosts := WAPTServerJsonGet(req, []);
+  GridLoadData(GridHosts, hosts.AsJSon);
 end;
 
 procedure TVisWaptGUI.ActSearchPackageExecute(Sender: TObject);
@@ -1186,12 +1394,12 @@ begin
       errors := update_status['errors'];
       upgrades := update_status['upgrades'];
       if (errors <> nil) and (errors.AsArray.Length > 0) then
-        ImageIndex := 1
+        ImageIndex := 2
       else
       if (upgrades <> nil) and (upgrades.AsArray.Length > 0) then
-        ImageIndex := 0
+        ImageIndex := 1
       else
-        ImageIndex := -1;
+        ImageIndex := 0;
 
     end;
   end;

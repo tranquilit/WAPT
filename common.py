@@ -2996,7 +2996,7 @@ class Wapt(object):
         inv['softwares'] = setuphelpers.installed_softwares('')
         inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
         try:
-            inv['uuid'] = inv['dmi']['System Information']['UUID']
+            inv['uuid'] = inv['dmi']['System_Information']['UUID']
         except:
             inv['uuid'] = inv['host']['computer_fqdn']
         return inv

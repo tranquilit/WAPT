@@ -121,8 +121,8 @@ function EditHost(hostname: string): ISuperObject;
 var
   VisEditPackage: TVisEditPackage;
   privateKeyPassword: string = '';
-  waptServerPassword: string = '';
-  waptServerUser: string = '';
+  waptServerPassword: string = 'password';
+  waptServerUser: string = 'admin';
 
 implementation
 
