@@ -202,6 +202,10 @@ type
     procedure EdSearchHostKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
+    procedure GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+      var Ghosted: Boolean; var ImageIndex: Integer;
+      var ImageList: TCustomImageList);
     procedure GridHostsFocusChanged(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex);
     procedure GridHostsGetImageIndexEx(Sender: TBaseVirtualTree;
@@ -1109,9 +1113,30 @@ begin
       end;
   end;
 
-  //ActSearchHost.Execute;
-  //ActSearchPackage.Execute;
-  //butSearchPackages1.Click;
+  ActSearchHost.Execute;
+  ActSearchPackage.Execute;
+  butSearchPackages1.Click;
+end;
+
+procedure TVisWaptGUI.GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+  var Ghosted: Boolean; var ImageIndex: Integer; var ImageList: TCustomImageList
+  );
+var
+  install_status, upgrades, errors: ISuperObject;
+begin
+  if Column = 0 then
+  begin
+    install_status := GridHostPackages.GetData(Node)['install_status'];
+    if (install_status <> nil) then
+    begin
+      case  install_status.AsString of
+       'OK' :  ImageIndex := 0;
+       'ERROR': ImageIndex := 2;
+       'UPGRADE': ImageIndex:=1;
+      end;
+    end;
+  end;
 end;
 
 procedure TVisWaptGUI.GridHostsFocusChanged(Sender: TBaseVirtualTree;

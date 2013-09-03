@@ -15,9 +15,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 553
     Top = 0
     Width = 1096
-    ActivePage = pgTISRepo
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 0
     OnChange = PageControl1Change
     object pgInventory: TTabSheet
@@ -300,55 +300,61 @@ object VisWaptGUI: TVisWaptGUI
             Header.Columns = <            
               item
                 Position = 0
+                Text = 'Status'
+              end            
+              item
+                Position = 1
                 Text = 'Section'
                 PropertyName = 'section'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-                Position = 1
+                Position = 2
                 Text = 'Nom paquet'
                 Width = 300
                 PropertyName = 'package'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-                Position = 2
+                Position = 3
                 Text = 'Status'
                 PropertyName = 'install_status'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-                Position = 3
+                Position = 4
                 Text = 'Version'
                 Width = 30
                 PropertyName = 'version'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-                Position = 4
+                Position = 5
                 Text = 'Description'
                 PropertyName = 'description'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-                Position = 5
+                Position = 6
                 Text = 'Dependances'
                 PropertyName = 'depends'
               end            
               item
-                Position = 6
+                Position = 7
                 Text = 'Date installation'
                 PropertyName = 'install_date'
               end>
             Header.DefaultHeight = 17
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
             Header.Style = hsFlatButtons
+            Images = ImageList1
             TabOrder = 0
             TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
             TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
             TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
             TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
             OnCompareNodes = GridPackagesCompareNodes
+            OnGetImageIndexEx = GridHostPackagesGetImageIndexEx
             OnHeaderClick = GridPackagesHeaderClick
           end
           object Panel9: TPanel
