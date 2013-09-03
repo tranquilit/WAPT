@@ -8,15 +8,17 @@ import pymongo
 import os
 from pymongo import MongoClient
 from werkzeug import secure_filename
-from waptpackage import update_packages
+from waptpackage import update_packages,PackageEntry
 from functools import wraps
 import logging
 import ConfigParser
 import  cheroot.wsgi, cheroot.ssllib.ssl_builtin
 import logging
+import codecs
+import zipfile
 import pprint
 
-__version__ = "0.1.1"
+__version__ = "0.7.2"
 
 config = ConfigParser.RawConfigParser()
 wapt_root_dir = ''
@@ -224,9 +226,45 @@ def get_client_software_list(uuid=""):
                     status=200,
                     mimetype="application/json")
 
+
+def packagesFileToList(pathTofile):
+    listPackages = codecs.decode(zipfile.ZipFile(pathTofile).read(name='Packages'),'utf-8')
+    packages = []
+
+    def add_package(lines):
+        package = PackageEntry()
+        package.load_control_from_wapt(lines)
+        package.filename = package.make_package_filename()
+        packages.append(package)
+
+
+    lines = []
+    for line in listPackages.splitlines():
+        # new package
+        if line.strip()=='':
+            add_package(lines)
+            lines = []
+            # add ettribute to current package
+        else:
+            lines.append(line)
+
+    if lines:
+        add_package(lines)
+        lines = []
+
+    return packages
+
 @app.route('/client_package_list/<string:uuid>')
 def get_client_package_list(uuid=""):
     packages = get_host_data(uuid, {"packages":1})
+    repo_packages = packagesFileToList(os.path.join(wapt_folder, 'Packages'))
+    for p in packages['packages']:
+        package = PackageEntry()
+        package.load_control_from_dict(p)        
+        match = [ x for x in repo_packages if package.package == x.package ]
+        if match and package.version < match[0].version:
+            p['install_status'] = 'UPGRADE'
+            
     return  Response(response=json.dumps(packages['packages']),
                     status=200,
                     mimetype="application/json")
