@@ -54,7 +54,6 @@ type
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
-    Button6: TButton;
     Button7: TButton;
     Button8: TButton;
     cbSearchDMI: TCheckBox;
@@ -171,7 +170,6 @@ type
     procedure ActPackageEdit(Sender: TObject);
     procedure ActEditpackageUpdate(Sender: TObject);
     procedure ActEvaluateExecute(Sender: TObject);
-    procedure ActEvaluateVarExecute(Sender: TObject);
     procedure ActExecCodeExecute(Sender: TObject);
     procedure ActHostsCopyExecute(Sender: TObject);
     procedure ActHostsDeleteExecute(Sender: TObject);
@@ -202,6 +200,7 @@ type
     procedure EdSearchHostKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: Boolean; var ImageIndex: Integer;
@@ -212,9 +211,6 @@ type
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: boolean; var ImageIndex: integer;
       var ImageList: TCustomImageList);
-    procedure GridPackagesCompareNodes(Sender: TBaseVirtualTree;
-      Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: integer);
-    procedure GridPackagesHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
     procedure GridPackagesPaintText(Sender: TBaseVirtualTree;
       const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType);
@@ -249,37 +245,6 @@ uses LCLIntf, IniFiles, uvisprivatekeyauth, uvisloading, tisstrings, soutils,
 
 { TVisWaptGUI }
 
-type
-  TEntryData = record
-    //This point to my index into my array
-    //Instead of index, here you can
-    //store the pointer to your data.
-    //That depend of what is your intentions
-    //and your data structure
-    soentry:ISuperObject;
-    caption:String;
-  end;
-
-  PEntryData = ^TEntryData;
-
-
-function GetValue(ListView: TSOGrid; N: PVirtualNode;
-  FieldName: string; Default: string = ''): string;
-var
-  data : ISUperObject;
-begin
-  data := ListView.GetData(N)[FieldName];
-  if data<>Nil then
-    Result := data.AsString
-  else
-    Result := Default;
-end;
-
-procedure SetValue(ListView: TSOGrid; N: PVirtualNode;
-  FieldName: string; Value: string);
-begin
-  ListView.GetData(N).S[FieldName] := Value;
-end;
 
 procedure TVisWaptGUI.cbShowLogClick(Sender: TObject);
 begin
@@ -351,7 +316,7 @@ begin
   Node := GridHosts.FocusedNode;
   if Node <> nil then
   begin
-    currhost := GetValue(GridHosts, Node, 'uuid');
+    currhost := GridHosts.GetColumnValue(Node, 'uuid');
     if HostPages.ActivePage = pgPackages then
     begin
       packages := GridHosts.GetData(Node)['packages'];
@@ -360,14 +325,14 @@ begin
         packages := WAPTServerJsonGet('client_package_list/%s',[currhost]);
         GridHosts.GetData(Node)['packages'] := packages;
       end;
-      Edit1.Text := GetValue(GridHosts, Node, 'host.computer_name');
-      Edit2.Text := GetValue(GridHosts, Node, 'host.description');
-      Edit3.Text := GetValue(GridHosts, Node, 'host.windows_product_infos.version');
-      Edit4.Text := GetValue(GridHosts, Node, 'host.connected_ips');
-      Edit5.Text := GetValue(GridHosts, Node, 'host.system_manufacturer');
-      Edit6.Text := GetValue(GridHosts, Node, 'host.system_productname');
-      Edit7.Text := GetValue(GridHosts, Node, 'last_query_date');
-      Edit8.Text := GetValue(GridHosts, Node, 'host.current_user');
+      Edit1.Text := GridHosts.GetColumnValue(Node, 'host.computer_name');
+      Edit2.Text := GridHosts.GetColumnValue(Node, 'host.description');
+      Edit3.Text := GridHosts.GetColumnValue(Node, 'host.windows_product_infos.version');
+      Edit4.Text := GridHosts.GetColumnValue(Node, 'host.connected_ips');
+      Edit5.Text := GridHosts.GetColumnValue(Node, 'host.system_manufacturer');
+      Edit6.Text := GridHosts.GetColumnValue(Node, 'host.system_productname');
+      Edit7.Text := GridHosts.GetColumnValue(Node, 'last_query_date');
+      Edit8.Text := GridHosts.GetColumnValue(Node, 'host.current_user');
       GridHostPackages.Data := packages;
       GridHostPackages.Header.AutoFitColumns(False);
     end
@@ -406,17 +371,16 @@ var
 begin
   if GridPackages.Focused then
   begin
-
     N := GridPackages.GetFirstSelected;
     selects := GridPackages.SelectedCount;
     with  Tvisloading.Create(Self) do
       try
         while N <> nil do
         begin
-          package := GetValue(GridPackages, N, 'package') + ' (=' +
-            GetValue(GridPackages, N, 'version') + ')';
+          package := GridPackages.GetColumnValue(N, 'package') + ' (=' +
+            GridPackages.GetColumnValue(N, 'version') + ')';
           Chargement.Caption :=
-            'Installation de ' + GetValue(GridPackages, N, 'package') + ' en cours ...';
+            'Installation de ' + GridPackages.GetColumnValue(N, 'package') + ' en cours ...';
           ProgressBar1.Position := trunc((i / selects) * 100);
           Application.ProcessMessages;
           i := i + 1;
@@ -453,7 +417,7 @@ begin
       'Attention: votre préfixe est "default_package_prefix=%s" dans wapt-get.ini',
       [prefix]));
   end;}
-  oldName := GetValue(GridPackages1, GridPackages1.GetFirstSelected, 'package');
+  oldName := GridPackages1.GetColumnValue(GridPackages1.GetFirstSelected, 'package');
   newName := oldName;
   StrReplace(newName, 'tis-', prefix + '-');
 
@@ -562,7 +526,7 @@ begin
   if GridPackages.Focused then
   begin
     N := GridPackages.GetFirstSelected;
-    Selpackage := GetValue(GridPackages, N, 'package');
+    Selpackage := GridPackages.GetColumnValue(N, 'package');
     if EditPackage(Selpackage) <> nil then
       ActSearchPackage.Execute;
   end;
@@ -581,7 +545,7 @@ begin
   n := grid.GetFirst;
   while n <> nil do
   begin
-    if GetValue(grid, n, Fieldname) = AText then
+    if grid.GetColumnValue(n, Fieldname) = AText then
     begin
       Result := n;
       Break;
@@ -760,7 +724,7 @@ begin
     N := GridPackages.GetFirstSelected;
     while N <> nil do
     begin
-      package := GetValue(GridPackages, N, 'filename');
+      package := GridPackages.GetColumnValue( N, 'filename');
       res := WAPTServerJsonGet('/delete_package/' + package, []);
       if not ObjectIsNull(res['error']) then
         raise Exception.Create(res.S['error']);
@@ -781,7 +745,7 @@ var
   hostname: string;
   Result: ISuperObject;
 begin
-  hostname := GetValue(GridHosts, GridHosts.FocusedNode, 'host.computer_fqdn');
+  hostname := GridHosts.GetColumnValue(GridHosts.FocusedNode, 'host.computer_fqdn');
   if EditHost(hostname) <> nil then
     ActSearchHost.Execute;
 end;
@@ -800,26 +764,6 @@ begin
   end;
 
   sob := DMPython.RunJSON(EdRun.Text, jsonlog);
-end;
-
-procedure TVisWaptGUI.ActEvaluateVarExecute(Sender: TObject);
-var
-  res, r, myiter, w: variant;
-  i: integer;
-begin
-  {w := MainModule.Wapt(config_filename:='c:\wapt\wapt-get.ini');
-  res := w.update(NOARGS);
-  ShowMessage(res.getitem('added'));
-  res :=  MainModule.installed_softwares('office');
-  myiter:=iter(res);
-  for i:=0 to len(res)-1 do
-  begin
-    r := myiter.next(NOARGS);
-    //r := res.GetItem(i);
-    showmessage(inttostr(len(r)));
-    showmessage(r.Keys(NOARGS).getitem(0));
-    showmessage(r.Getitem('publisher'));
-  end;}
 end;
 
 procedure TVisWaptGUI.ActExecCodeExecute(Sender: TObject);
@@ -845,7 +789,7 @@ begin
     N := GridHosts.GetFirstSelected;
     while N <> nil do
     begin
-      host := GetValue(GridHosts, N, 'uuid');
+      host := GridHosts.GetColumnValue( N, 'uuid');
       WAPTServerJsonGet('/delete_host/' + host, []).AsJson;
       N := GridHosts.GetNextSelected(N);
     end;
@@ -874,7 +818,7 @@ begin
       try
         while N <> nil do
         begin
-          package := GetValue(GridPackages, N, 'package');
+          package := GridPackages.GetColumnValue( N, 'package');
           Chargement.Caption := 'Désinstallation de ' + package + ' en cours ...';
           ProgressBar1.Position := trunc((i / selects) * 100);
           Application.ProcessMessages;
@@ -903,7 +847,6 @@ const
 begin
 
   urlParams := TSuperObject.Create(stArray);
-
 
   if CheckBox_error.Checked = True then
     urlParams.AsArray.Add('package_error=true');
@@ -936,7 +879,6 @@ begin
 
   hosts := WAPTServerJsonGet(req, []);
   GridHosts.Data:=hosts;
-  //GridLoadData(GridHosts, );
 end;
 
 procedure TVisWaptGUI.ActSearchPackageExecute(Sender: TObject);
@@ -1072,7 +1014,7 @@ begin
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
 
   ActUpdateWaptGetINIExecute(Self);
-  GridPackages.Clear;
+
   MemoLog.Clear;
 
   PageControl1.ActivePage := pgInventory;
@@ -1113,6 +1055,10 @@ begin
       end;
   end;
 
+end;
+
+procedure TVisWaptGUI.FormShow(Sender: TObject);
+begin
   ActSearchHost.Execute;
   ActSearchPackage.Execute;
   butSearchPackages1.Click;
@@ -1211,48 +1157,11 @@ begin
   Result := CompareText(v1, v2);
 end;
 
-procedure TVisWaptGUI.GridPackagesCompareNodes(Sender: TBaseVirtualTree;
-  Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: integer);
-var
-  n1,n2,d1,d2: ISuperObject;
-  propname:String;
-begin
-  n1 := (Sender as TSOGrid).GetData(Node1);
-  n2 := (Sender as TSOGrid).GetData(Node2);
-
-  if (Column>=0) and (n1<>Nil) and (n2<>Nil) then
-  begin
-    propname:=TSOGridColumn(TSOGrid(Sender).Header.Columns[column]).PropertyName;
-    d1 := n1[propname];
-    d2 := n2[propname];
-    if (d1<>Nil) and (d2<>Nil) then
-      Result := CompareText(d1.AsString,d2.AsString)
-    else
-      Result:=0;
-  end
-  else
-    Result := 0;
-
-end;
-
-procedure TVisWaptGUI.GridPackagesHeaderClick(Sender: TVTHeader;
-  HitInfo: TVTHeaderHitInfo);
-begin
-  if Sender.SortColumn <> HitInfo.Column then
-    Sender.SortColumn := HitInfo.Column
-  else
-  if Sender.SortDirection = sdAscending then
-    Sender.SortDirection := sdDescending
-  else
-    Sender.SortDirection := sdAscending;
-  Sender.Treeview.Invalidate;
-end;
-
 procedure TVisWaptGUI.GridPackagesPaintText(Sender: TBaseVirtualTree;
   const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
   TextType: TVSTTextType);
 begin
-  if StrIsOneOf(GetValue(GridPackages, Node, 'status'), ['I', 'U']) then
+  if StrIsOneOf(GridPackages.GetColumnValue( Node, 'status'), ['I', 'U']) then
     TargetCanvas.Font.style := TargetCanvas.Font.style + [fsBold]
   else
     TargetCanvas.Font.style := TargetCanvas.Font.style - [fsBold];

@@ -6,10 +6,10 @@ interface
 
 uses
   Classes, SysUtils, memds, BufDataset, FileUtil, SynHighlighterPython, SynEdit,
-  SynMemo, vte_edittree, vte_json, LSControls, Forms, Controls, Graphics,
+  SynMemo, LSControls, Forms, Controls, Graphics,
   Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, EditBtn, Buttons,
-  process, fpJson, jsonparser, superobject, UniqueInstance, VirtualTrees,
-  VarPyth, types, ActiveX, LMessages, LCLIntf, LCL;
+  process, superobject, UniqueInstance, VirtualTrees,
+  VarPyth, types, ActiveX, LMessages, LCLIntf, LCL,sogrid,vte_json,jsonparser;
 
 type
 
@@ -40,8 +40,8 @@ type
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
-    GridDepends: TVirtualJSONListView;
-    GridPackages: TVirtualJSONListView;
+    GridDepends: TSOGrid;
+    GridPackages: TSOGrid;
     MemoLog: TMemo;
     MenuItem4: TMenuItem;
     PageControl1: TPageControl;
@@ -80,9 +80,6 @@ type
     procedure GridDependsDragOver(Sender: TBaseVirtualTree; Source: TObject;
       Shift: TShiftState; State: TDragState; const Pt: TPoint;
       Mode: TDropMode; var Effect: DWORD; var Accept: boolean);
-    procedure GridPackagesCompareNodes(Sender: TBaseVirtualTree;
-      Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: integer);
-    procedure GridPackagesHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
   private
     FIsUpdated: boolean;
     GridDependsUpdated:Boolean;
@@ -98,7 +95,6 @@ type
     FPackageRequest: string;
     FSourcePath: string;
     { private declarations }
-    procedure GridLoadData(grid: TVirtualJSONListView; jsondata: string);
     procedure SetPackageRequest(AValue: string);
     procedure SetSourcePath(AValue: string);
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: string);
@@ -227,20 +223,6 @@ begin
   end;
 end;
 
-function GetValue(ListView: TVirtualJSONListView; N: PVirtualNode;
-  FieldName: string; Default: string = ''): string;
-begin
-  Result := TJSONObject(ListView.GetData(N)).get(FieldName, Default);
-end;
-
-procedure SetValue(ListView: TVirtualJSONListView; N: PVirtualNode;
-  FieldName: string; Value: string);
-var
-  js: TJSONData;
-begin
-  TJSONObject(ListView.GetData(N)).Add(FieldName, Value);
-end;
-
 procedure TVisEditPackage.EditPackage;
 begin
   EdSourceDir.Text := FSourcePath;
@@ -254,7 +236,7 @@ begin
   IsUpdated := False;
 end;
 
-function gridFind(grid: TVirtualJSONListView; Fieldname, AText: string): PVirtualNode;
+function gridFind(grid: TSOGrid; Fieldname, AText: string): PVirtualNode;
 var
   n: PVirtualNode;
 begin
@@ -262,7 +244,7 @@ begin
   n := grid.GetFirst;
   while n <> nil do
   begin
-    if GetValue(grid, n, Fieldname) = AText then
+    if grid.GetColumnValue(n, Fieldname) = AText then
     begin
       Result := n;
       Break;
@@ -284,7 +266,7 @@ begin
   sel := GridPackages.GetSortedSelection(False);
   for i := 0 to length(sel) - 1 do
   begin
-    package := GetValue(GridPackages, sel[i], 'package');
+    package := GridPackages.GetColumnValue(sel[i], 'package');
     if not StrIn(package, olddepends) then
       olddepends.AsArray.Add(package);
   end;
@@ -358,7 +340,7 @@ var
 begin
   expr := format('mywapt.search("%s".split())', [EdSearch.Text]);
   packages := DMPython.RunJSON(expr);
-  GridLoadData(GridPackages, packages.AsJSon);
+  GridPackages.Data := packages;
 end;
 
 procedure TVisEditPackage.ActBuildUploadExecute(Sender: TObject);
@@ -415,12 +397,11 @@ end;
 procedure TVisEditPackage.ActSearchPackageExecute(Sender: TObject);
 var
   expr, res: UTF8String;
-  packages, package: ISuperObject;
-  jsp: TJSONParser;
+  packages: ISuperObject;
 begin
   expr := format('mywapt.search("%s".split())', [EdSearch.Text]);
   packages := DMPython.RunJSON(expr);
-  GridLoadData(GridPackages, packages.AsJSon);
+  GridPackages.data := packages;
 end;
 
 procedure TVisEditPackage.FormCreate(Sender: TObject);
@@ -438,26 +419,6 @@ begin
   EdSourceDir.Visible := isAdvancedMode;
   cbShowLog.Visible := isAdvancedMode;
   TabSheet1.TabVisible := isAdvancedMode;
-end;
-
-procedure TVisEditPackage.GridLoadData(grid: TVirtualJSONListView; jsondata: string);
-var
-  jsp: TJSONParser;
-begin
-  grid.Clear;
-  if (jsondata <> '') then
-    try
-      grid.BeginUpdate;
-      jsp := TJSONParser.Create(jsondata);
-      if assigned(grid.Data) then
-        grid.Data.Free;
-      grid.Data := jsp.Parse;
-      grid.LoadData;
-      grid.Header.AutoFitColumns;
-      jsp.Free;
-    finally
-      grid.EndUpdate;
-    end;
 end;
 
 procedure TVisEditPackage.TreeLoadData(tree: TVirtualJSONInspector; jsondata: string);
@@ -529,37 +490,6 @@ begin
   EditPackage;
 end;
 
-function CompareVersion(v1, v2: string): integer;
-begin
-end;
-
-procedure TVisEditPackage.GridPackagesCompareNodes(Sender: TBaseVirtualTree;
-  Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: integer);
-var
-  propname: string;
-begin
-  if column >= 0 then
-    propname := TVirtualJSONListViewColumn(TVirtualJSONListView(
-      Sender).Header.Columns[Column]).PropertyName
-  else
-    propname := 'name';
-  Result := CompareText(GetValue(TVirtualJSONListView(Sender), Node1, propname),
-    GetValue(TVirtualJSONListView(Sender), Node2, propname));
-end;
-
-procedure TVisEditPackage.GridPackagesHeaderClick(Sender: TVTHeader;
-  HitInfo: TVTHeaderHitInfo);
-begin
-  if Sender.SortColumn <> HitInfo.Column then
-    Sender.SortColumn := HitInfo.Column
-  else
-  if Sender.SortDirection = sdAscending then
-    Sender.SortDirection := sdDescending
-  else
-    Sender.SortDirection := sdAscending;
-  Sender.Treeview.Invalidate;
-end;
-
 procedure TVisEditPackage.SetIsUpdated(AValue: boolean);
 begin
   FIsUpdated := AValue;
@@ -583,7 +513,7 @@ begin
   FDepends := AValue;
   dependencies := DMPython.RunJSON(
     format('mywapt.get_package_entries("%s")', [FDepends]));
-  GridLoadData(GridDepends, dependencies['packages'].AsJSon);
+  GridDepends.Data := dependencies['packages'];
   if dependencies['missing'].AsArray.Length > 0 then
   begin
     ShowMessageFmt('Attention, les paquets %s ont été ignorés car introuvables',
@@ -602,9 +532,9 @@ begin
   while (n <> nil) do
   begin
     if FDepends <> '' then
-      FDepends := FDepends + ',' + GetValue(GridDepends, n, 'package')
+      FDepends := FDepends + ',' + GridDepends.GetColumnValue(n, 'package')
     else
-      FDepends := GetValue(GridDepends, n, 'package');
+      FDepends := GridDepends.GetColumnValue(n, 'package');
     n := GridDepends.GetNext(n);
   end;
   Result := FDepends;

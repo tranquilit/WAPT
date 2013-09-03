@@ -61,7 +61,7 @@ object VisEditPackage: TVisEditPackage
             TabOrder = 1
           end
         end
-        object GridPackages: TVirtualJSONListView
+        object GridPackages: TSOGrid
           Left = 1
           Height = 337
           Top = 30
@@ -133,11 +133,9 @@ object VisEditPackage: TVisEditPackage
           TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
           TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
           TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
-          OnCompareNodes = GridPackagesCompareNodes
-          OnHeaderClick = GridPackagesHeaderClick
         end
       end
-      object GridDepends: TVirtualJSONListView
+      object GridDepends: TSOGrid
         Left = 0
         Height = 368
         Top = 0
@@ -184,10 +182,8 @@ object VisEditPackage: TVisEditPackage
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
         TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
-        OnCompareNodes = GridPackagesCompareNodes
         OnDragOver = GridDependsDragOver
         OnDragDrop = GridDependsDragDrop
-        OnHeaderClick = GridPackagesHeaderClick
       end
       object Splitter3: TSplitter
         Left = 497

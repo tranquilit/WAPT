@@ -8,6 +8,7 @@ object VisWaptGUI: TVisWaptGUI
   ClientWidth = 1096
   Menu = MainMenu1
   OnCreate = FormCreate
+  OnShow = FormShow
   Position = poScreenCenter
   LCLVersion = '1.1'
   object PageControl1: TPageControl
@@ -15,9 +16,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 553
     Top = 0
     Width = 1096
-    ActivePage = pgInventory
+    ActivePage = pgTISRepo
     Align = alClient
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 0
     OnChange = PageControl1Change
     object pgInventory: TTabSheet
@@ -255,21 +256,17 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'id'
           end>
         Header.DefaultHeight = 17
-        Header.MainColumn = 1
-        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
+        Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
         Header.Style = hsFlatButtons
         Images = ImageList1
         PopupMenu = PopupMenuHosts
         TabOrder = 1
-        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
-        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-        TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
-        OnCompareNodes = GridPackagesCompareNodes
+        TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect]
         OnDblClick = ActEditHostPackageExecute
         OnFocusChanged = GridHostsFocusChanged
         OnGetImageIndexEx = GridHostsGetImageIndexEx
-        OnHeaderClick = GridPackagesHeaderClick
       end
       object HostPages: TPageControl
         Left = 516
@@ -353,9 +350,7 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
             TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
             TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
-            OnCompareNodes = GridPackagesCompareNodes
             OnGetImageIndexEx = GridHostPackagesGetImageIndexEx
-            OnHeaderClick = GridPackagesHeaderClick
           end
           object Panel9: TPanel
             AnchorSideBottom.Control = GridHostPackages
@@ -615,8 +610,6 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
             TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
             TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
-            OnCompareNodes = GridPackagesCompareNodes
-            OnHeaderClick = GridPackagesHeaderClick
           end
         end
       end
@@ -700,10 +693,8 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
         TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
-        OnCompareNodes = GridPackagesCompareNodes
         OnDblClick = ActPackageEdit
         OnPaintText = GridPackagesPaintText
-        OnHeaderClick = GridPackagesHeaderClick
       end
       object Panel5: TPanel
         Left = 0
@@ -847,10 +838,8 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
         TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
-        OnCompareNodes = GridPackagesCompareNodes
         OnDblClick = ActPackageDuplicateExecute
         OnPaintText = GridPackagesPaintText
-        OnHeaderClick = GridPackagesHeaderClick
       end
       object Panel6: TPanel
         Left = 0
@@ -1453,14 +1442,6 @@ object VisWaptGUI: TVisWaptGUI
           Action = ActEvaluate
           TabOrder = 2
         end
-        object Button6: TButton
-          Left = 580
-          Height = 25
-          Top = 2
-          Width = 144
-          Action = ActEvaluateVar
-          TabOrder = 3
-        end
       end
     end
   end
@@ -1625,7 +1606,6 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActEvaluateVar: TAction
       Caption = 'Evaluer Variant'
-      OnExecute = ActEvaluateVarExecute
     end
     object ActSearchHost: TAction
       Category = 'hosts'
