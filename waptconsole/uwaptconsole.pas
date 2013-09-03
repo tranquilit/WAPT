@@ -5,11 +5,11 @@ unit uwaptconsole;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, SynHighlighterPython, SynEdit, cyVirtualGrid,
+  Classes, SysUtils, FileUtil, SynHighlighterPython, SynEdit,
   vte_json, Forms,
   Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList,
   Menus, fpJson, jsonparser, superobject,
-  UniqueInstance, VirtualTrees, VarPyth, Windows, LMessages, ImgList;
+  UniqueInstance, VirtualTrees, VarPyth, Windows, LMessages, ImgList,SOGrid;
 
 type
 
@@ -54,7 +54,6 @@ type
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
-    Button4: TButton;
     Button6: TButton;
     Button7: TButton;
     Button8: TButton;
@@ -80,9 +79,9 @@ type
     EdSearchHost: TEdit;
     EdRun: TEdit;
     EdSearch: TEdit;
-    GridHosts: TVirtualJSONListView;
+    GridHosts: TSOGrid;
     GridhostAttribs: TVirtualJSONInspector;
-    GridPackages1: TVirtualJSONListView;
+    GridPackages1: TSOGrid;
     ImageList1: TImageList;
     Label1: TLabel;
     Label2: TLabel;
@@ -129,7 +128,6 @@ type
     MenuItem7: TMenuItem;
     MenuItem8: TMenuItem;
     MenuItem9: TMenuItem;
-    MyTree: TVirtualStringTree;
     PageControl1: TPageControl;
     HostPages: TPageControl;
     Panel1: TPanel;
@@ -156,13 +154,12 @@ type
     pgSoftwares: TTabSheet;
     pgHostPackage: TTabSheet;
     pgTISRepo: TTabSheet;
-    TabSheet2: TTabSheet;
     testedit: TSynEdit;
     jsonlog: TVirtualJSONInspector;
     UniqueInstance1: TUniqueInstance;
-    GridPackages: TVirtualJSONListView;
-    GridHostPackages: TVirtualJSONListView;
-    GridHostSoftwares: TVirtualJSONListView;
+    GridPackages: TSOGrid;
+    GridHostPackages: TSOGrid;
+    GridHostSoftwares: TSOGrid;
     procedure ActAddRemoveOptionIniFileExecute(Sender: TObject);
     procedure ActAdvancedModeExecute(Sender: TObject);
     procedure ActChangePasswordExecute(Sender: TObject);
@@ -195,7 +192,6 @@ type
     procedure ActUpgradeExecute(Sender: TObject);
     procedure ActWAPTLocalConfigExecute(Sender: TObject);
     procedure butSearchPackages1Click(Sender: TObject);
-    procedure Button4Click(Sender: TObject);
     procedure cbSearchAllChange(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure CheckBoxMajChange(Sender: TObject);
@@ -206,14 +202,12 @@ type
     procedure EdSearchHostKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
-    procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure GridHostsFocusChanged(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Column: TColumnIndex);
     procedure GridHostsGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: boolean; var ImageIndex: integer;
       var ImageList: TCustomImageList);
-    procedure GridHostsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
-      Data: TJSONData; Column: TColumnIndex; TextType: TVSTTextType;
-      var CellText: string);
     procedure GridPackagesCompareNodes(Sender: TBaseVirtualTree;
       Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: integer);
     procedure GridPackagesHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
@@ -223,20 +217,10 @@ type
 
     procedure HostPagesChange(Sender: TObject);
     procedure MenuItem27Click(Sender: TObject);
-    procedure MyTreeCompareNodes(Sender: TBaseVirtualTree; Node1,
-      Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
-    procedure MyTreeFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
-    procedure MyTreeGetImageIndexEx(Sender: TBaseVirtualTree;
-      Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
-      var Ghosted: Boolean; var ImageIndex: Integer;
-      var ImageList: TCustomImageList);
-    procedure MyTreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
-      Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
-    procedure MyTreeHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
     procedure PageControl1Change(Sender: TObject);
   private
     { private declarations }
-    procedure GridLoadData(grid: TVirtualJSONListView; jsondata: string);
+    procedure GridLoadData(grid: TSOGrid; jsondata: string);
     procedure PythonOutputSendData(Sender: TObject; const Data: ansistring);
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: string);
     procedure UpdateHostPages(Sender: TObject);
@@ -275,227 +259,22 @@ type
   PEntryData = ^TEntryData;
 
 
-procedure TVisWaptGUI.Button4Click(Sender: TObject);
-var
-  Node: PVirtualNode;
-  data:PEntryData;
-  //entry :
-  sorec : ISuperObject;
-  NewColumn: TVirtualTreeColumn;
-  i,Idx: integer;
-begin
-  MyTree.BeginUpdate;
-  MyTree.NodeDataSize := sizeof(TEntryData);
-  MyTree.RootNodeCount := 0;
-  MyTree.Header.Columns.Clear;
-  for i:=0 to GridHosts.Header.Columns.Count-1 do
-  begin
-    with MyTree.Header do
-    begin
-
-      NewColumn := Columns.Add;
-
-      NewColumn.Text      := TVirtualJSONListViewColumn(GridHosts.Header.Columns[i]).PropertyName;
-      NewColumn.Width     := GridHosts.Header.Columns[i].Width;
-      NewColumn.Alignment := GridHosts.Header.Columns[i].Alignment;
-
-    end;
-  end;
-
-  for i := 0 to Hosts.AsArray.Length -1 do
-  begin
-    // Add a node to the root of the Tree
-    sorec := Hosts.AsArray[i];
-    Node := MyTree.AddChild(nil);
-    Data :=  MyTree.GetNodeData(Node);
-    Data^.soentry := sorec;
-    data^.caption := IntToHex(integer(pointer(Data^.soentry)),8)+' - '+IntToStr(Data^.soentry._AddRef-1);
-    Data^.soentry._Release;
-    //sorec._AddRef;
-
-  end;
-  MyTree.EndUpdate;
-
-end;
-
-procedure TVisWaptGUI.MyTreeGetText(Sender: TBaseVirtualTree;
-  Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
-  var CellText: String);
-var
-  data : PEntryData;
-
-begin
-  data := Sender.GetNodeData(Node);
-  if (node<>Nil) and (data<>Nil) then
-    if (Column>=1) then
-    begin
-      //CellText:=ISuperObject(data).S['host.computer_fqdn'];
-      CellText:=data^.soentry.S[TVirtualJSONListViewColumn(GridHosts.Header.Columns[column]).PropertyName] ;
-    end
-    else
-      CellText:=data^.caption
-  else
-    CellText:='';
-end;
-
-procedure TVisWaptGUI.MyTreeHeaderClick(Sender: TVTHeader;
-  HitInfo: TVTHeaderHitInfo);
-var
-  Direction : TSortDirection;
-begin
-  with HitInfo do
-  begin
-    // Descending order with pressed Shift, otherwise Ascending
-    // Or you can save Direction or use
-    // MyTree.Header.SortDirection and MyTree.Header.SortColumn
-    // to get automatically Descending/Ascending sorting
-    // by only clicking on header
-
-    if ssShift in  Shift
-    then
-      Direction := sdDescending
-    else
-      Direction := sdAscending;
-
-    // Set direction image on the sorted column
-    MyTree.Header.SortColumn := Column;
-
-    // Set the right direction image
-    MyTree.Header.SortDirection := Direction;
-
-    // Sorting process
-    MyTree.SortTree(Column, Direction);
-
-  end;
-
-end;
-
-procedure TVisWaptGUI.MyTreeCompareNodes(Sender: TBaseVirtualTree; Node1,
-  Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
-var
-  n1,n2: PEntryData;
-  d1,d2: ISuperObject;
-begin
-  n1 := MyTree.GetNodeData(Node1);
-  n2 := MyTree.GetNodeData(Node2);
-
-  // Get the pointers where your data are
-  // in the array, to speed-up process
-  if (n1<>Nil) and (n2<>Nil) then
-  begin
-    d1 := n1^.soentry;
-    d2 := n2^.soentry;
-    Result := CompareText(
-       d1.S[TVirtualJSONListViewColumn(GridHosts.Header.Columns[column]).PropertyName],
-       d2.S[TVirtualJSONListViewColumn(GridHosts.Header.Columns[column]).PropertyName]
-       )
-  end
-  else
-    Result := 0;
-
-end;
-
-procedure TVisWaptGUI.MyTreeFreeNode(Sender: TBaseVirtualTree;
-  Node: PVirtualNode);
-var
-  data : PEntryData;
-begin
-  data :=  MyTree.GetNodeData(Node);
-  if data<>Nil then
-  begin
-    data^.soentry := Nil;
-    data^.caption := '';
-  end;
-end;
-
-procedure TVisWaptGUI.MyTreeGetImageIndexEx(Sender: TBaseVirtualTree;
-  Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
-  var Ghosted: Boolean; var ImageIndex: Integer; var ImageList: TCustomImageList
-  );
-var
-
-  data:PEntryData;
-  update_status, upgrades, errors: ISuperObject;
-begin
-  if (Column = 0)  then
-  begin
-    data:=Sender.GetNodeData(Node);
-    if data<>Nil then
-    begin
-      update_status := data^.soentry['update_status'];
-      if (update_status <> nil) then
-      begin
-        if ImageList=Nil then
-          ImageList := ImageList1;
-        errors := update_status['errors'];
-        upgrades := update_status['upgrades'];
-        if (errors <> nil) and (errors.AsArray.Length > 0) then
-          ImageIndex := 2
-        else
-        if (upgrades <> nil) and (upgrades.AsArray.Length > 0) then
-          ImageIndex := 1
-        else
-          ImageIndex := 0;
-
-      end;
-    end;
-  end;
-end;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function GetValue(ListView: TVirtualJSONListView; N: PVirtualNode;
+function GetValue(ListView: TSOGrid; N: PVirtualNode;
   FieldName: string; Default: string = ''): string;
 var
-  js: ISuperObject;
+  data : ISUperObject;
 begin
-  js := SO(ListView.GetData(N).AsJSON);
-  if js <> nil then
-  begin
-    if FieldName = '' then
-      Result := js.AsJSon
-    else
-      Result := js.S[FieldName];
-  end
+  data := ListView.GetData(N)[FieldName];
+  if data<>Nil then
+    Result := data.AsString
   else
     Result := Default;
 end;
 
-function GetGridSOValue(ListView: TVirtualJSONListView; N: PVirtualNode;
-  FieldName: string): ISuperObject;
-var
-  js: ISuperObject;
-begin
-  js := SO(ListView.GetData(N).AsJSON);
-  if js <> nil then
-  begin
-    if FieldName = '' then
-      Result := js
-    else
-      Result := js[FieldName];
-  end
-  else
-    Result := nil;
-end;
-
-
-procedure SetValue(ListView: TVirtualJSONListView; N: PVirtualNode;
+procedure SetValue(ListView: TSOGrid; N: PVirtualNode;
   FieldName: string; Value: string);
-var
-  js: TJSONData;
 begin
-  TJSONObject(ListView.GetData(N)).Add(FieldName, Value);
+  ListView.GetData(N).S[FieldName] := Value;
 end;
 
 procedure TVisWaptGUI.cbShowLogClick(Sender: TObject);
@@ -559,7 +338,8 @@ end;
 
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
-  currhost, attribs_json, packages_json, softwares_json: string;
+  currhost:String;
+  attribs, packages, softwares: ISuperObject;
   node: PVirtualNode;
 begin
   LabHostCnt.Caption := format('Nombre d''enregistrements : %d',
@@ -570,12 +350,11 @@ begin
     currhost := GetValue(GridHosts, Node, 'uuid');
     if HostPages.ActivePage = pgPackages then
     begin
-      packages_json := GetValue(GridHosts, Node, 'packages');
-      if packages_json = '' then
+      packages := GridHosts.GetData(Node)['packages'];
+      if (packages = Nil) or (packages.AsArray=Nil) then
       begin
-        packages_json := WAPTServerJsonGet('client_package_list/%s',
-          [currhost]).AsJSon();
-        SetValue(GridHosts, Node, 'packages', packages_JSon);
+        packages := WAPTServerJsonGet('client_package_list/%s',[currhost]);
+        GridHosts.GetData(Node)['packages'] := packages;
       end;
       Edit1.Text := GetValue(GridHosts, Node, 'host.computer_name');
       Edit2.Text := GetValue(GridHosts, Node, 'host.description');
@@ -585,23 +364,24 @@ begin
       Edit6.Text := GetValue(GridHosts, Node, 'host.system_productname');
       Edit7.Text := GetValue(GridHosts, Node, 'last_query_date');
       Edit8.Text := GetValue(GridHosts, Node, 'host.current_user');
-      GridLoadData(GridHostPackages, packages_json);
+      GridHostPackages.Data := packages;
+      GridHostPackages.Header.AutoFitColumns(False);
     end
     else if HostPages.ActivePage = pgSoftwares then
     begin
-      softwares_json := GetValue(GridHosts, Node, 'softwares');
-      if softwares_json = '' then
+      softwares := GridHosts.GetData(Node)['softwares'];
+      if (softwares = Nil) or (softwares.AsArray=Nil) then
       begin
-        softwares_json := WAPTServerJsonGet('client_software_list/%s',
-          [currhost]).AsJSon();
-        SetValue(GridHosts, Node, 'softwares', softwares_json);
+        softwares := WAPTServerJsonGet('client_software_list/%s',[currhost]);
+        GridHostSoftwares.GetData(Node)['softwares'] := softwares;
+        GridHostSoftwares.Header.AutoFitColumns(False);
       end;
-      GridLoadData(GridHostSoftwares, softwares_json);
+      GridHostSoftwares.data := softwares;
     end
     else if HostPages.ActivePage = pgHostPackage then
     begin
-      attribs_json := GetValue(GridHosts, Node, '');
-      TreeLoadData(GridhostAttribs, attribs_json);
+      attribs := GridHosts.GetData(Node);
+      TreeLoadData(GridhostAttribs, attribs.AsJSon());
     end;
   end
   else
@@ -789,7 +569,7 @@ begin
   ActEditpackage.Enabled := GridPackages.SelectedCount > 0;
 end;
 
-function gridFind(grid: TVirtualJSONListView; Fieldname, AText: string): PVirtualNode;
+function gridFind(grid: TSOGrid; Fieldname, AText: string): PVirtualNode;
 var
   n: PVirtualNode;
 begin
@@ -1071,7 +851,7 @@ end;
 
 procedure TVisWaptGUI.actHostSelectAllExecute(Sender: TObject);
 begin
-  TVirtualJSONListView(GridHosts).SelectAll(False);
+  TSOGrid(GridHosts).SelectAll(False);
 end;
 
 procedure TVisWaptGUI.ActRemoveExecute(Sender: TObject);
@@ -1151,7 +931,8 @@ begin
   req := url + '?' + Join('&', urlParams);
 
   hosts := WAPTServerJsonGet(req, []);
-  GridLoadData(GridHosts, hosts.AsJSon);
+  GridHosts.Data:=hosts;
+  //GridLoadData(GridHosts, );
 end;
 
 procedure TVisWaptGUI.ActSearchPackageExecute(Sender: TObject);
@@ -1162,7 +943,8 @@ var
 begin
   expr := format('mywapt.search("%s".split())', [EdSearch.Text]);
   packages := DMPython.RunJSON(expr);
-  GridLoadData(GridPackages, packages.AsJSon);
+  GridPackages.Data := package;
+  //GridLoadData(GridPackages, packages.AsJSon);
 end;
 
 procedure TVisWaptGUI.ActUpdateExecute(Sender: TObject);
@@ -1239,7 +1021,8 @@ begin
   expr := format('waptdevutils.updateTisRepo(r"%s","%s")',
     [waptpath + '\wapt-get.ini', EdSearch1.Text]);
   packages := DMPython.RunJSON(expr);
-  GridLoadData(GridPackages1, packages.AsJSon);
+  GridPackages1.Data := package;
+  //GridLoadData(GridPackages1, packages.AsJSon);
 end;
 
 procedure TVisWaptGUI.cbSearchAllChange(Sender: TObject);
@@ -1330,28 +1113,23 @@ begin
       end;
   end;
 
-  ActSearchHost.Execute;
-  ActSearchPackage.Execute;
-  butSearchPackages1.Click;
+  //ActSearchHost.Execute;
+  //ActSearchPackage.Execute;
+  //butSearchPackages1.Click;
 end;
 
-procedure TVisWaptGUI.GridLoadData(grid: TVirtualJSONListView; jsondata: string);
-var
-  jsp: TJSONParser;
+procedure TVisWaptGUI.GridHostsFocusChanged(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex);
 begin
-  grid.Clear;
+  UpdateHostPages(Sender);
+end;
+
+procedure TVisWaptGUI.GridLoadData(grid:TSOGrid; jsondata: string);
+begin
   if (jsondata <> '') then
     try
-      grid.BeginUpdate;
-      jsp := TJSONParser.Create(jsondata);
-      if assigned(grid.Data) then
-        grid.Data.Free;
-      grid.Data := jsp.Parse;
-      grid.LoadData;
-      grid.Header.AutoFitColumns;
-      jsp.Free;
+      Grid.JSonData := jsondata;
     finally
-      grid.EndUpdate;
     end;
 end;
 
@@ -1374,11 +1152,6 @@ begin
     end;
 end;
 
-procedure TVisWaptGUI.GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
-begin
-  UpdateHostPages(Sender);
-end;
-
 procedure TVisWaptGUI.GridHostsGetImageIndexEx(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
   var Ghosted: boolean; var ImageIndex: integer; var ImageList: TCustomImageList);
@@ -1387,7 +1160,7 @@ var
 begin
   if Column = 0 then
   begin
-    update_status := GetGridSOValue(GridHosts, Node, 'update_status');
+    update_status := GridHosts.GetData(Node)['update_status'];
     if (update_status <> nil) then
     begin
       ImageList := ImageList1;
@@ -1405,16 +1178,6 @@ begin
   end;
 end;
 
-procedure TVisWaptGUI.GridHostsGetText(Sender: TBaseVirtualTree;
-  Node: PVirtualNode; Data: TJSONData; Column: TColumnIndex;
-  TextType: TVSTTextType; var CellText: string);
-var
-  js: ISuperObject;
-begin
-  js := SO(Data.AsJSON);
-  CellText := js.S[TVirtualJSONListViewColumn(GridHosts.Header.Columns[column]).PropertyName];
-end;
-
 procedure TVisWaptGUI.PythonOutputSendData(Sender: TObject; const Data: ansistring);
 begin
   MemoLog.Lines.Add(Data);
@@ -1430,15 +1193,25 @@ end;
 procedure TVisWaptGUI.GridPackagesCompareNodes(Sender: TBaseVirtualTree;
   Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: integer);
 var
-  propname: string;
+  n1,n2,d1,d2: ISuperObject;
+  propname:String;
 begin
-  if column >= 0 then
-    propname := TVirtualJSONListViewColumn(TVirtualJSONListView(
-      Sender).Header.Columns[Column]).PropertyName
+  n1 := (Sender as TSOGrid).GetData(Node1);
+  n2 := (Sender as TSOGrid).GetData(Node2);
+
+  if (Column>=0) and (n1<>Nil) and (n2<>Nil) then
+  begin
+    propname:=TSOGridColumn(TSOGrid(Sender).Header.Columns[column]).PropertyName;
+    d1 := n1[propname];
+    d2 := n2[propname];
+    if (d1<>Nil) and (d2<>Nil) then
+      Result := CompareText(d1.AsString,d2.AsString)
+    else
+      Result:=0;
+  end
   else
-    propname := 'name';
-  Result := CompareText(GetValue(TVirtualJSONListView(Sender), Node1, propname),
-    GetValue(TVirtualJSONListView(Sender), Node2, propname));
+    Result := 0;
+
 end;
 
 procedure TVisWaptGUI.GridPackagesHeaderClick(Sender: TVTHeader;

@@ -128,22 +128,12 @@ object VisWaptGUI: TVisWaptGUI
           State = cbGrayed
           TabOrder = 8
         end
-        object Button4: TButton
-          Left = 704
-          Height = 25
-          Top = 2
-          Width = 75
-          Caption = 'Button4'
-          OnClick = Button4Click
-          TabOrder = 9
-        end
       end
-      object GridHosts: TVirtualJSONListView
+      object GridHosts: TSOGrid
         Left = 0
         Height = 473
         Top = 54
         Width = 511
-        OnGetText = GridHostsGetText
         Align = alClient
         Color = clWhite
         Header.AutoSizeIndex = -1
@@ -275,9 +265,9 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
         TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
-        OnChange = GridHostsChange
         OnCompareNodes = GridPackagesCompareNodes
         OnDblClick = ActEditHostPackageExecute
+        OnFocusChanged = GridHostsFocusChanged
         OnGetImageIndexEx = GridHostsGetImageIndexEx
         OnHeaderClick = GridPackagesHeaderClick
       end
@@ -286,9 +276,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 473
         Top = 54
         Width = 572
-        ActivePage = TabSheet2
+        ActivePage = pgPackages
         Align = alRight
-        TabIndex = 3
+        TabIndex = 0
         TabOrder = 2
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -296,7 +286,7 @@ object VisWaptGUI: TVisWaptGUI
           Caption = 'Résumé'
           ClientHeight = 447
           ClientWidth = 564
-          object GridHostPackages: TVirtualJSONListView
+          object GridHostPackages: TSOGrid
             AnchorSideTop.Control = Panel9
             AnchorSideTop.Side = asrBottom
             Left = 0
@@ -565,7 +555,7 @@ object VisWaptGUI: TVisWaptGUI
           Caption = 'Inventaire logiciels'
           ClientHeight = 447
           ClientWidth = 564
-          object GridHostSoftwares: TVirtualJSONListView
+          object GridHostSoftwares: TSOGrid
             Left = 0
             Height = 447
             Top = 0
@@ -607,11 +597,12 @@ object VisWaptGUI: TVisWaptGUI
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
                 Position = 5
                 Text = 'Répertoire d''installation'
+                Width = 330
                 PropertyName = 'install_location'
               end>
             Header.DefaultHeight = 17
             Header.MainColumn = 1
-            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
+            Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
             Header.Style = hsFlatButtons
             TabOrder = 0
             TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
@@ -620,101 +611,6 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
             OnCompareNodes = GridPackagesCompareNodes
             OnHeaderClick = GridPackagesHeaderClick
-          end
-        end
-        object TabSheet2: TTabSheet
-          Caption = 'TabSheet2'
-          ClientHeight = 447
-          ClientWidth = 564
-          object MyTree: TVirtualStringTree
-            Left = 0
-            Height = 447
-            Top = 0
-            Width = 564
-            Align = alClient
-            DefaultText = 'Node'
-            Header.AutoSizeIndex = 0
-            Header.Columns = <            
-              item
-                Position = 0
-                Text = 'Status'
-                Width = 10
-              end            
-              item
-                MaxWidth = 400
-                Position = 1
-                Text = 'Machine'
-              end            
-              item
-                MaxWidth = 400
-                Position = 2
-                Text = 'Description'
-              end            
-              item
-                MaxWidth = 400
-                Position = 3
-                Text = 'Fabricant'
-              end            
-              item
-                MaxWidth = 400
-                Position = 4
-                Text = 'Modèle'
-              end            
-              item
-                MaxWidth = 500
-                Position = 5
-                Text = 'Numéro de série'
-              end            
-              item
-                MaxWidth = 400
-                Position = 6
-                Text = 'Dernière MAJ'
-              end            
-              item
-                MaxWidth = 400
-                Position = 7
-                Text = 'Adresses Mac'
-              end            
-              item
-                MaxWidth = 400
-                Position = 8
-                Text = 'Adresses IP'
-              end            
-              item
-                MaxWidth = 400
-                Position = 9
-                Text = 'uuid'
-              end            
-              item
-                MaxWidth = 400
-                Position = 10
-                Text = 'md5sum'
-              end            
-              item
-                MaxWidth = 400
-                Position = 11
-                Text = 'attributes'
-              end            
-              item
-                MaxWidth = 400
-                Position = 12
-                Text = 'id'
-              end>
-            Header.DefaultHeight = 17
-            Header.MaxHeight = 400
-            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoDisableAnimatedResize]
-            Header.Style = hsFlatButtons
-            Images = ImageList1
-            RootNodeCount = 4
-            TabOrder = 0
-            TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning, toNodeHeightDblClickResize, toEditOnClick]
-            TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-            TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect]
-            OnCompareNodes = MyTreeCompareNodes
-            OnFreeNode = MyTreeFreeNode
-            OnGetText = MyTreeGetText
-            OnGetImageIndexEx = MyTreeGetImageIndexEx
-            OnHeaderClick = MyTreeHeaderClick
           end
         end
       end
@@ -731,7 +627,7 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Dépôt privé'
       ClientHeight = 527
       ClientWidth = 1088
-      object GridPackages: TVirtualJSONListView
+      object GridPackages: TSOGrid
         Left = 0
         Height = 477
         Top = 30
@@ -878,7 +774,7 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Dépôt public TIS'
       ClientHeight = 527
       ClientWidth = 1088
-      object GridPackages1: TVirtualJSONListView
+      object GridPackages1: TSOGrid
         Left = 0
         Height = 477
         Top = 30
