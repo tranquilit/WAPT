@@ -938,13 +938,11 @@ end;
 procedure TVisWaptGUI.ActSearchPackageExecute(Sender: TObject);
 var
   expr, res: UTF8String;
-  packages, package: ISuperObject;
-  jsp: TJSONParser;
+  packages: ISuperObject;
 begin
   expr := format('mywapt.search("%s".split())', [EdSearch.Text]);
   packages := DMPython.RunJSON(expr);
-  GridPackages.Data := package;
-  //GridLoadData(GridPackages, packages.AsJSon);
+  GridPackages.Data := packages;
 end;
 
 procedure TVisWaptGUI.ActUpdateExecute(Sender: TObject);
@@ -1015,14 +1013,12 @@ end;
 procedure TVisWaptGUI.butSearchPackages1Click(Sender: TObject);
 var
   expr, res: UTF8String;
-  packages, package: ISuperObject;
-  jsp: TJSONParser;
+  packages: ISuperObject;
 begin
   expr := format('waptdevutils.updateTisRepo(r"%s","%s")',
     [waptpath + '\wapt-get.ini', EdSearch1.Text]);
   packages := DMPython.RunJSON(expr);
-  GridPackages1.Data := package;
-  //GridLoadData(GridPackages1, packages.AsJSon);
+  GridPackages1.Data := packages;
 end;
 
 procedure TVisWaptGUI.cbSearchAllChange(Sender: TObject);
