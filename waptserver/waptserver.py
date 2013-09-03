@@ -18,7 +18,7 @@ import codecs
 import zipfile
 import pprint
 
-__version__ = "0.7.2"
+__version__ = "0.7.3"
 
 config = ConfigParser.RawConfigParser()
 wapt_root_dir = ''
@@ -261,8 +261,7 @@ def get_client_package_list(uuid=""):
     for p in packages['packages']:
         package = PackageEntry()
         package.load_control_from_dict(p)        
-        match = [ x for x in repo_packages if package.package == x.package ]
-        if match and package.version < match[0].version:
+        if [ x for x in repo_packages if package.package == x.package and package.version < x.version ]:
             p['install_status'] = 'UPGRADE'
             
     return  Response(response=json.dumps(packages['packages']),
