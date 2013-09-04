@@ -48,7 +48,7 @@ type
     PageControl1: TPageControl;
     Panel1: TPanel;
     Panel2: TPanel;
-    PanelEdit3: TPanel;
+    PanelDevlop: TPanel;
     Panel4: TPanel;
     Panel7: TPanel;
     Panel8: TPanel;
@@ -58,7 +58,7 @@ type
     Splitter2: TSplitter;
     Splitter3: TSplitter;
     SynPythonSyn1: TSynPythonSyn;
-    TabSheet1: TTabSheet;
+    pgDevelop: TTabSheet;
     pgEditPackage: TTabSheet;
     EdSetupPy: TSynEdit;
     jsonlog: TVirtualJSONInspector;
@@ -106,32 +106,34 @@ type
     IsHost: boolean;
     IsNewPackage: boolean;
     PackageEdited: ISuperObject;
+    isAdvancedMode:Boolean;
     procedure EditPackage;
     property SourcePath: string read FSourcePath write SetSourcePath;
     property PackageRequest: string read FPackageRequest write SetPackageRequest;
   end;
 
-function EditPackage(packagename: string): ISuperObject;
-function CreatePackage(packagename: string): ISuperObject;
-function EditHost(hostname: string): ISuperObject;
+function EditPackage(packagename: string;advancedMode:Boolean): ISuperObject;
+function CreatePackage(packagename: string;advancedMode:Boolean): ISuperObject;
+function EditHost(hostname: string;advancedMode:Boolean): ISuperObject;
 
 var
   VisEditPackage: TVisEditPackage;
   privateKeyPassword: string = '';
-  waptServerPassword: string = 'password';
+  waptServerPassword: string = '';
   waptServerUser: string = 'admin';
 
 implementation
 
 uses tisstrings, soutils, LCLType, waptcommon, dmwaptpython, jwawinuser, uvisloading,
-  uvisprivatekeyauth, strutils, uwaptconsole;
+  uvisprivatekeyauth, strutils;
 
 {$R *.lfm}
 
-function EditPackage(packagename: string): ISuperObject;
+function EditPackage(packagename: string;advancedMode:Boolean): ISuperObject;
 begin
   with TVisEditPackage.Create(nil) do
     try
+      isAdvancedMode:=advancedMode;
       PackageRequest := packagename;
       if ShowModal = mrOk then
         Result := PackageEdited
@@ -142,10 +144,11 @@ begin
     end;
 end;
 
-function CreatePackage(packagename: string): ISuperObject;
+function CreatePackage(packagename: string;advancedMode:Boolean): ISuperObject;
 begin
   with TVisEditPackage.Create(nil) do
     try
+      isAdvancedMode:=advancedMode;
       IsNewPackage := True;
       PackageRequest := packagename;
       EdSection.ItemIndex := 4;
@@ -158,10 +161,11 @@ begin
     end;
 end;
 
-function EditHost(hostname: string): ISuperObject;
+function EditHost(hostname: string;advancedMode:Boolean): ISuperObject;
 begin
   with TVisEditPackage.Create(nil) do
     try
+      isAdvancedMode:=advancedMode;
       IsHost := True;
       PackageRequest := hostname;
       if ShowModal = mrOk then
@@ -413,13 +417,13 @@ begin
   GridDepends.Clear;
 
   // Advance mode in mainWindow -> tools => advance
-  PanelEdit3.Visible := isAdvancedMode;
+  PanelDevlop.Visible := isAdvancedMode;
   Label5.Visible := isAdvancedMode;
   EdSection.Visible := isAdvancedMode;
   Label4.Visible := isAdvancedMode;
   EdSourceDir.Visible := isAdvancedMode;
   cbShowLog.Visible := isAdvancedMode;
-  TabSheet1.TabVisible := isAdvancedMode;
+  pgDevelop.TabVisible := isAdvancedMode;
 end;
 
 procedure TVisEditPackage.TreeLoadData(tree: TVirtualJSONInspector; jsondata: string);

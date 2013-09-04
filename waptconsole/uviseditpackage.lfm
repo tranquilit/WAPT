@@ -194,7 +194,7 @@ object VisEditPackage: TVisEditPackage
         ResizeAnchor = akRight
       end
     end
-    object TabSheet1: TTabSheet
+    object pgDevelop: TTabSheet
       Caption = 'setup.py'
       ClientHeight = 368
       ClientWidth = 792
@@ -729,7 +729,7 @@ object VisEditPackage: TVisEditPackage
       end
     end
   end
-  object PanelEdit3: TPanel
+  object PanelDevlop: TPanel
     Left = 0
     Height = 118
     Top = 449

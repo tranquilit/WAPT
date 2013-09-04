@@ -148,7 +148,7 @@ type
     Splitter2: TSplitter;
     Splitter4: TSplitter;
     SynPythonSyn1: TSynPythonSyn;
-    TabSheet1: TTabSheet;
+    pgDevelop: TTabSheet;
     pgPrivateRepo: TTabSheet;
     pgInventory: TTabSheet;
     pgPackages: TTabSheet;
@@ -232,8 +232,6 @@ type
     Hosts,PackageEdited: ISuperObject;
     waptpath: string;
   end;
-
-function isAdvancedMode: boolean;
 
 var
   VisWaptGUI: TVisWaptGUI;
@@ -351,9 +349,9 @@ begin
       begin
         softwares := WAPTServerJsonGet('client_software_list/%s',[currhost]);
         GridHostSoftwares.GetData(Node)['softwares'] := softwares;
-        GridHostSoftwares.Header.AutoFitColumns(False);
       end;
       GridHostSoftwares.data := softwares;
+      GridHostSoftwares.Header.AutoFitColumns(False);
     end
     else if HostPages.ActivePage = pgHostPackage then
     begin
@@ -495,7 +493,7 @@ end;
 
 procedure TVisWaptGUI.ActPackageGroupAddExecute(Sender: TObject);
 begin
-  CreatePackage('test');
+  CreatePackage('agroup',ActAdvancedMode.Checked);
   ActUpdate.Execute;
 
 end;
@@ -533,7 +531,7 @@ begin
   begin
     N := GridPackages.GetFirstSelected;
     Selpackage := GridPackages.GetColumnValue(N, 'package');
-    if EditPackage(Selpackage) <> nil then
+    if EditPackage(Selpackage,ActAdvancedMode.Checked) <> nil then
       ActSearchPackage.Execute;
   end;
 end;
@@ -638,10 +636,8 @@ end;
 procedure TVisWaptGUI.ActAdvancedModeExecute(Sender: TObject);
 begin
   ActAdvancedMode.Checked := not ActAdvancedMode.Checked;
-  TabSheet1.TabVisible := ActAdvancedMode.Checked;
+  pgDevelop.TabVisible := ActAdvancedMode.Checked;
   Panel3.Visible := ActAdvancedMode.Checked;
-  if TabSheet1.TabVisible then
-    PageControl1.ActivePage := TabSheet1;
 end;
 
 procedure TVisWaptGUI.ActChangePasswordExecute(Sender: TObject);
@@ -752,7 +748,7 @@ var
   Result: ISuperObject;
 begin
   hostname := GridHosts.GetColumnValue(GridHosts.FocusedNode, 'host.computer_fqdn');
-  if EditHost(hostname) <> nil then
+  if EditHost(hostname,ActAdvancedMode.Checked) <> nil then
     ActSearchHost.Execute;
 end;
 
@@ -884,7 +880,8 @@ begin
   req := url + '?' + Join('&', urlParams);
 
   hosts := WAPTServerJsonGet(req, []);
-  GridHosts.Data:=hosts;
+  GridHosts.Data := hosts;
+  GridHosts.Header.AutoFitColumns(False);
 end;
 
 procedure TVisWaptGUI.ActSearchPackageExecute(Sender: TObject);
@@ -895,6 +892,8 @@ begin
   expr := format('mywapt.search("%s".split())', [EdSearch.Text]);
   packages := DMPython.RunJSON(expr);
   GridPackages.Data := packages;
+  GridPackages.Header.AutoFitColumns(False);
+
 end;
 
 procedure TVisWaptGUI.ActUpdateExecute(Sender: TObject);
@@ -972,6 +971,8 @@ begin
     [waptpath + '\wapt-get.ini', EdSearch1.Text]);
   packages := DMPython.RunJSON(expr);
   GridPackages1.Data := packages;
+  GridPackages1.Header.AutoFitColumns(False);
+
 end;
 
 procedure TVisWaptGUI.cbSearchAllChange(Sender: TObject);
@@ -1208,11 +1209,6 @@ begin
     CopyMenu(PopupMenuPackages, MenuItem24)
   else if PageControl1.ActivePage = pgTISRepo then
     CopyMenu(PopupMenuPackagesTIS, MenuItem24);
-end;
-
-function isAdvancedMode: boolean;
-begin
-  Result := VisWaptGUI.ActAdvancedMode.Checked;
 end;
 
 end.
