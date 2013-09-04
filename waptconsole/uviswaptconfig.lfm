@@ -7,6 +7,7 @@ object VisWAPTConfig: TVisWAPTConfig
   Caption = 'Configuration locale WAPT'
   ClientHeight = 283
   ClientWidth = 507
+  Position = poMainFormCenter
   ShowHint = True
   LCLVersion = '1.1'
   object ButtonPanel1: TButtonPanel

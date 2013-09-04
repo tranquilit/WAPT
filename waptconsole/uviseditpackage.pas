@@ -42,6 +42,7 @@ type
     Label5: TLabel;
     GridDepends: TSOGrid;
     GridPackages: TSOGrid;
+    Label6: TLabel;
     MemoLog: TMemo;
     MenuItem4: TMenuItem;
     PageControl1: TPageControl;

@@ -54,6 +54,7 @@ type
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
+    Changer: TButton;
     Button7: TButton;
     Button8: TButton;
     cbSearchDMI: TCheckBox;
@@ -83,6 +84,7 @@ type
     GridPackages1: TSOGrid;
     ImageList1: TImageList;
     Label1: TLabel;
+    urlExternalRepo: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -192,6 +194,7 @@ type
     procedure butSearchPackages1Click(Sender: TObject);
     procedure cbSearchAllChange(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
+    procedure ChangerClick(Sender: TObject);
     procedure CheckBoxMajChange(Sender: TObject);
     procedure CheckBoxMajClick(Sender: TObject);
     procedure CheckBox_errorChange(Sender: TObject);
@@ -254,6 +257,11 @@ begin
   else
     DMPython.PythonEng.ExecString('logger.setLevel(logging.WARNING)');
 
+end;
+
+procedure TVisWaptGUI.ChangerClick(Sender: TObject);
+begin
+  ActWAPTLocalConfigExecute(self);
 end;
 
 procedure TVisWaptGUI.CheckBoxMajChange(Sender: TObject);
@@ -900,6 +908,7 @@ end;
 procedure TVisWaptGUI.ActUpdateWaptGetINIExecute(Sender: TObject);
 begin
   DMPython.RunJSON('mywapt.load_config()', jsonlog);
+  urlExternalRepo.Caption:='Url: '+WaptExternalRepo;
 end;
 
 procedure TVisWaptGUI.ActUpgradeExecute(Sender: TObject);
@@ -1052,6 +1061,8 @@ begin
         Free;
       end;
   end;
+
+  urlExternalRepo.Caption:='Url: '+WaptExternalRepo;
 
 end;
 

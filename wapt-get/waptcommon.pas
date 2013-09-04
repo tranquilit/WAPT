@@ -43,6 +43,7 @@ interface
   function WaptgetPath: Utf8String;
   function WaptservicePath: Utf8String;
   function WaptDBPath: Utf8String;
+  function WaptExternalRepo: Utf8String;
 
   //function http_post(url: string;Params:String): String;
 
@@ -363,6 +364,13 @@ begin
     result :=  AppendPathDelim(result)+'waptdb.sqlite'
   else
     result := ExtractFilePath(ParamStr(0))+'\db\waptdb.sqlite'
+end;
+
+function WaptExternalRepo: Utf8String;
+begin
+  Result := IniReadString(WaptIniFilename,'Global','templates_repo_url');
+  if Result = '' then
+      Result:='http://wapt.tranquil.it/wapt/';
 end;
 
 {

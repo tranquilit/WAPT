@@ -962,6 +962,14 @@ object VisEditPackage: TVisEditPackage
       Caption = 'Sauvegarder'
       TabOrder = 1
     end
+    object Label6: TLabel
+      Left = 205
+      Height = 13
+      Top = 11
+      Width = 31
+      Caption = 'Label6'
+      ParentColor = False
+    end
   end
   object SynPythonSyn1: TSynPythonSyn
     DefaultFilter = 'Fichiers Python (*.py)|*.py'

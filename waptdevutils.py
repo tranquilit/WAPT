@@ -159,7 +159,8 @@ def add_remove_option_inifile(wapt,choice,section,option,value):
 
 def updateTisRepo(wapt,search_string):
     wapt = common.Wapt(config_filename=wapt)
-    wapt.repositories[0].repo_url = wapt.config.get('global','templates_repo_url','http://wapt.tranquil.it/wapt')
+    repo = wapt.config.get('global','templates_repo_url')
+    wapt.repositories[0].repo_url = repo if repo else 'http://wapt.tranquil.it/wapt'
     wapt.dbpath = r':memory:'
     wapt.update(force=True)
     return wapt.search(search_string)
@@ -169,7 +170,8 @@ def duplicate_from_tis_repo(wapt,old_file_name,prefix):
     wapt = common.Wapt(config_filename=wapt)
     new_file_name ="%s-%s" % (prefix, old_file_name.split('-',1)[-1])
     wapt.config.set('global','default_sources_root',tempfile.mkdtemp())
-    wapt.repositories[0].repo_url = wapt.config.get('global','templates_repo_url','http://wapt.tranquil.it/wapt')
+    repo = wapt.config.get('global','templates_repo_url')
+    wapt.repositories[0].repo_url = repo if repo else 'http://wapt.tranquil.it/wapt'
 
     wapt.dbpath = r':memory:'
     wapt.update(force=True)
@@ -207,4 +209,5 @@ def login_to_waptserver(url, login, passwd,newPass=""):
 
 if __name__ == '__main__':
     #{create_wapt_setup(wapt,r'C:\tranquilit\wapt\ssl\sdeded.crt',destination='c:\wapt',default_repo_url='',company='')
+    print updateTisRepo(r'C:\tranquilit\wapt\wapt-get.ini','')
     pass

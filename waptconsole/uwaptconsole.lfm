@@ -16,9 +16,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 553
     Top = 0
     Width = 1096
-    ActivePage = pgTISRepo
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 0
     OnChange = PageControl1Change
     object pgInventory: TTabSheet
@@ -768,7 +768,7 @@ object VisWaptGUI: TVisWaptGUI
       end
     end
     object pgTISRepo: TTabSheet
-      Caption = 'Dépôt public TIS'
+      Caption = 'Dépôt Externe'
       ClientHeight = 527
       ClientWidth = 1088
       object GridPackages1: TSOGrid
@@ -895,6 +895,30 @@ object VisWaptGUI: TVisWaptGUI
           Caption = 'Dupliquer'
           OnClick = ActPackageDuplicateExecute
           TabOrder = 2
+        end
+        object urlExternalRepo: TLabel
+          AnchorSideRight.Control = Changer
+          Left = 988
+          Height = 13
+          Top = 9
+          Width = 20
+          Anchors = [akTop, akRight]
+          BorderSpacing.Right = 5
+          Caption = 'Url: '
+          ParentColor = False
+        end
+        object Changer: TButton
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideRight.Control = Panel8
+          AnchorSideRight.Side = asrBottom
+          Left = 1013
+          Height = 25
+          Top = 2
+          Width = 75
+          Anchors = [akTop, akRight]
+          Caption = 'Changer'
+          OnClick = ChangerClick
+          TabOrder = 3
         end
       end
     end
