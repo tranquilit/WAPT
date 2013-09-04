@@ -1,5 +1,4 @@
 #define Company "Tranquil IT Systems"
-#define AppName "WAPT"
 #define SrcApp AddBackslash(SourcePath) + "..\wapt-get.exe"
 #define FileVerStr GetFileVersion(SrcApp)
 #define StripBuild(str VerStr) Copy(VerStr, 1, RPos(".", VerStr)-1)
@@ -14,6 +13,12 @@
 #define output_dir "."
 
 ;#define waptserver 
+#ifdef waptserver
+#define AppName "WAPT Server"
+#else
+#define AppName "WAPT"
+#endif
+
 
 [Files]
 Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
@@ -227,6 +232,7 @@ begin
     teWaptServerUrl.Text := GetIniString('Global', 'wapt_server', '{#default_wapt_server}', ExpandConstant('{app}\wapt-get.ini'));
     rbCustomRepo.Checked := teWaptUrl.Text <> ''; 
     rbDnsRepo.Checked := teWaptUrl.Text = ''; 
+    lb1.Visible := isTaskSelected('useWaptServer');
     tewaptServerUrl.Visible := isTaskSelected('useWaptServer');
   end
 end;
@@ -257,8 +263,8 @@ begin
     SimpleStopService('waptservice',True,True);
   if ServiceExists('waptserver') then
     SimpleStopService('waptserver',True,True);
-  if ServiceExists('waptmongod') then
-    SimpleStopService('waptmongod',True,True);
+  if ServiceExists('waptmongodb') then
+    SimpleStopService('waptmongodb',True,True);
   
 
   Result := True;
