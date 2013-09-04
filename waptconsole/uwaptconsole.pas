@@ -418,8 +418,6 @@ begin
       [prefix]));
   end;}
   oldName := GridPackages1.GetColumnValue(GridPackages1.GetFirstSelected, 'package');
-  newName := oldName;
-  StrReplace(newName, 'tis-', prefix + '-');
 
   if MessageDlg('Confirmer la duplication',
     format('Etes vous sûr de vouloir dupliquer %s dans votre dépot ?', [oldName]),
@@ -435,7 +433,7 @@ begin
 
       sourceDir := DMPython.RunJSON(
         Format('waptdevutils.duplicate_from_tis_repo(r"%s","%s","%s")',
-        [waptpath + '\wapt-get.ini', oldName, newName])).AsString;
+        [waptpath + '\wapt-get.ini', oldName, prefix])).AsString;
       if sourceDir <> 'error' then
       begin
         isEncrypt := StrToBool(DMPython.RunJSON(
@@ -469,7 +467,7 @@ begin
 
 
         uploadResult := DMPython.RunJSON(
-          format('mywapt.build_upload(r"%s",r"%s",r"%s",r"%s","False","True")',
+          format('mywapt.build_upload(%s,r"%s",r"%s",r"%s","False","True")',
           [sourceDir, privateKeyPassword, waptServerUser, waptServerPassword]), jsonlog);
         if uploadResult.AsString <> '' then
         begin

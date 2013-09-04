@@ -164,18 +164,33 @@ def updateTisRepo(wapt,search_string):
     wapt.update(force=True)
     return wapt.search(search_string)
 
-def duplicate_from_tis_repo(wapt,old_file_name,new_file_name):
+def duplicate_from_tis_repo(wapt,old_file_name,prefix):
     import tempfile
     wapt = common.Wapt(config_filename=wapt)
+    new_file_name ="%s-%s" % (prefix, old_file_name.split('-',1)[-1])
     wapt.config.set('global','default_sources_root',tempfile.mkdtemp())
     wapt.repositories[0].repo_url = wapt.config.get('global','templates_repo_url','http://wapt.tranquil.it/wapt')
+
     wapt.dbpath = r':memory:'
     wapt.update(force=True)
     result = wapt.duplicate_package(old_file_name,new_file_name,build=False)
+
+    source_dir = []
+    new_depends = []
     if 'source_dir' in result:
-        return result['source_dir']
-    else:
-        return "error"
+        package =  result['package']
+        source_dir.append(result['source_dir'])
+        for depend in package.depends.split(','):
+            new_file_name ="%s-%s" % (prefix, depend.split('-',1)[-1])
+            new_depends.append(new_file_name)
+            result = wapt.duplicate_package(depend,new_file_name,build=False)
+            source_dir.append( result['source_dir'])
+
+        if new_depends:
+            package.depends = ','.join(new_depends)
+            package.save_control_to_wapt(source_dir[0])
+
+    return source_dir
 
 def login_to_waptserver(url, login, passwd,newPass=""):
     try:
