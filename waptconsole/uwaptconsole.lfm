@@ -922,7 +922,7 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
     end
-    object TabSheet1: TTabSheet
+    object pgDevelop: TTabSheet
       Caption = 'Sources'
       ClientHeight = 527
       ClientWidth = 1088

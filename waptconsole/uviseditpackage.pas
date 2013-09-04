@@ -75,6 +75,7 @@ type
     procedure EdSectionChange(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure GridDependsDragDrop(Sender: TBaseVirtualTree; Source: TObject;
       DataObject: IDataObject; Formats: TFormatArray; Shift: TShiftState;
       const Pt: TPoint; var Effect: DWORD; Mode: TDropMode);
@@ -416,7 +417,11 @@ begin
 
   GridDepends.Clear;
 
-  // Advance mode in mainWindow -> tools => advance
+end;
+
+procedure TVisEditPackage.FormShow(Sender: TObject);
+begin
+    // Advance mode in mainWindow -> tools => advance
   PanelDevlop.Visible := isAdvancedMode;
   Label5.Visible := isAdvancedMode;
   EdSection.Visible := isAdvancedMode;
@@ -424,6 +429,7 @@ begin
   EdSourceDir.Visible := isAdvancedMode;
   cbShowLog.Visible := isAdvancedMode;
   pgDevelop.TabVisible := isAdvancedMode;
+
 end;
 
 procedure TVisEditPackage.TreeLoadData(tree: TVirtualJSONInspector; jsondata: string);
