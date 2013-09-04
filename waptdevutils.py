@@ -182,11 +182,12 @@ def duplicate_from_tis_repo(wapt,old_file_name,prefix):
     if 'source_dir' in result:
         package =  result['package']
         source_dir.append(result['source_dir'])
-        for depend in package.depends.split(','):
-            new_file_name ="%s-%s" % (prefix, depend.split('-',1)[-1])
-            new_depends.append(new_file_name)
-            result = wapt.duplicate_package(depend,new_file_name,build=False)
-            source_dir.append( result['source_dir'])
+        if package.depends:
+            for depend in package.depends.split(','):
+                new_file_name ="%s-%s" % (prefix, depend.split('-',1)[-1])
+                new_depends.append(new_file_name)
+                result = wapt.duplicate_package(depend,new_file_name,build=False)
+                source_dir.append( result['source_dir'])
 
         if new_depends:
             package.depends = ','.join(new_depends)
@@ -209,5 +210,5 @@ def login_to_waptserver(url, login, passwd,newPass=""):
 
 if __name__ == '__main__':
     #{create_wapt_setup(wapt,r'C:\tranquilit\wapt\ssl\sdeded.crt',destination='c:\wapt',default_repo_url='',company='')
-    print updateTisRepo(r'C:\tranquilit\wapt\wapt-get.ini','')
+    print duplicate_from_tis_repo(r'C:\tranquilit\wapt\wapt-get.ini','tis-ms-pstools', 'test')
     pass

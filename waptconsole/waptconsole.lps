@@ -171,7 +171,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="38" Y="25"/>
-        <UsageCount Value="107"/>
+        <UsageCount Value="108"/>
         <Loaded Value="True"/>
       </Unit13>
       <Unit14>
@@ -185,8 +185,8 @@
         <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="81" Y="17"/>
-        <UsageCount Value="107"/>
+        <CursorPos X="72" Y="32"/>
+        <UsageCount Value="108"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit14>
