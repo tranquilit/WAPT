@@ -295,6 +295,15 @@ def merge_dict(d1,d2):
             result[k] = d2[k]
     return result
 
+def read_in_chunks(f, chunk_size=1024*128):
+    """Lazy function (generator) to read a file piece by piece.
+    Default chunk size: 128k."""
+    while True:
+        data = f.read(chunk_size)
+        if not data:
+            break
+        yield data
+
 def sha1_for_file(fname, block_size=2**20):
     f = open(fname,'rb')
     sha1 = hashlib.sha1()
@@ -1982,14 +1991,7 @@ class Wapt(object):
             logger.warning(u'Local DNS domain not found, skipping SRV _wapt._tcp and CNAME search ')
 
         return None
-    def read_in_chunks(file_object, chunk_size=1024):
-        """Lazy function (generator) to read a file piece by piece.
-        Default chunk size: 1k."""
-        while True:
-            data = file_object.read(chunk_size)
-            if not data:
-                break
-            yield data
+
 
     def upload_package(self,cmd_dict,wapt_server_user=None,wapt_server_passwd=None):
       if not self.upload_cmd and not wapt_server_user:
@@ -2003,10 +2005,10 @@ class Wapt(object):
           return setuphelpers.run(self.upload_cmd_host % cmd_dict)
         else:
            for file in cmd_dict['waptfile']:
-              file = file.replace('"','')
-              for afile in read_in_chunks(open(file,'rb')):
-                req = requests.post("%s/upload_host" % (self.wapt_server,),files={'file':afile},proxies=self.proxies,verify=False,auth=auth)
-                req.raise_for_status()
+				file =  file[1:-1]
+				with open(file,'rb') as afile:
+					req = requests.post("%s/upload_host" % (self.wapt_server,),files={'file':afile},proxies=self.proxies,verify=False,auth=auth)
+					req.raise_for_status()
 
            return req.content
 
@@ -2019,7 +2021,7 @@ class Wapt(object):
             # file is surrounded by quotes for shell usage
             file = file[1:-1]
             with open(file,'rb') as afile:
-                req = requests.post("%s/upload_package" % (self.wapt_server),files={'file':afile},proxies=self.proxies,verify=False,auth=auth)
+                req = requests.post("%s/upload_package/%s" % (self.wapt_server,os.path.basename(file)),data=afile,proxies=self.proxies,verify=False,auth=auth)
                 req.raise_for_status()
           return req.content
 
