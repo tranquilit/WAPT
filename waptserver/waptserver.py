@@ -18,7 +18,7 @@ import codecs
 import zipfile
 import pprint
 
-__version__ = "0.7.3"
+__version__ = "0.7.4"
 
 config = ConfigParser.RawConfigParser()
 wapt_root_dir = ''
@@ -286,17 +286,23 @@ def requires_auth(f):
         return f(*args, **kwargs)
     return decorated
 
-@app.route('/upload_package',methods=['POST'])
+@app.route('/upload_package/<string:filename>',methods=['POST'])
 @requires_auth
-def upload_package():
+def upload_package(filename=""):
     try:
         if request.method == 'POST':
-            file = request.files['file']
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(wapt_folder, filename))
-                update_packages(wapt_folder)
-                return "ok"
+            if filename and allowed_file(filename): 
+                filename = os.path.join(wapt_folder, secure_filename(filename))
+                with open(filename, 'w') as f:
+                    f.write(request.stream.read())      
+                
+                if not os.path.isfile(filename):
+                    "Error during uploading"
+                if PackageEntry().load_control_from_wapt(filename):
+                    update_packages(wapt_folder)
+                    return "ok"            
+                else:
+                    "Is not a valid wapt file"
             else:
                 return "wrong file type"
         else:
@@ -304,7 +310,9 @@ def upload_package():
     except:
         e = sys.exc_info()
         return str(e)
-
+    
+    return "ok"
+        
 @app.route('/upload_host',methods=['POST'])
 @requires_auth
 def upload_host():
