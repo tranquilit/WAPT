@@ -1982,6 +1982,14 @@ class Wapt(object):
             logger.warning(u'Local DNS domain not found, skipping SRV _wapt._tcp and CNAME search ')
 
         return None
+    def read_in_chunks(file_object, chunk_size=1024):
+        """Lazy function (generator) to read a file piece by piece.
+        Default chunk size: 1k."""
+        while True:
+            data = file_object.read(chunk_size)
+            if not data:
+                break
+            yield data
 
     def upload_package(self,cmd_dict,wapt_server_user=None,wapt_server_passwd=None):
       if not self.upload_cmd and not wapt_server_user:
@@ -1996,9 +2004,10 @@ class Wapt(object):
         else:
            for file in cmd_dict['waptfile']:
               file = file.replace('"','')
-              with open(file,'rb') as afile:
+              for afile in read_in_chunks(open(file,'rb')):
                 req = requests.post("%s/upload_host" % (self.wapt_server,),files={'file':afile},proxies=self.proxies,verify=False,auth=auth)
                 req.raise_for_status()
+
            return req.content
 
       else:
