@@ -9,7 +9,7 @@ uses
   SynMemo, LSControls, Forms, Controls, Graphics,
   Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, EditBtn, Buttons,
   process, superobject, UniqueInstance, VirtualTrees,
-  VarPyth, types, ActiveX, LMessages, LCLIntf, LCL,sogrid,vte_json,jsonparser;
+  VarPyth, types, ActiveX, LMessages, LCLIntf, LCL, sogrid, vte_json, jsonparser;
 
 type
 
@@ -40,9 +40,9 @@ type
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
+    ProgressBar: TProgressBar;
     GridDepends: TSOGrid;
     GridPackages: TSOGrid;
-    Label6: TLabel;
     MemoLog: TMemo;
     MenuItem4: TMenuItem;
     PageControl1: TPageControl;
@@ -70,8 +70,7 @@ type
     procedure ActExecCodeExecute(Sender: TObject);
     procedure ActSearchPackageExecute(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
-    procedure EdSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
-      );
+    procedure EdSearchKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
     procedure EdSectionChange(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
@@ -84,7 +83,7 @@ type
       Mode: TDropMode; var Effect: DWORD; var Accept: boolean);
   private
     FIsUpdated: boolean;
-    GridDependsUpdated:Boolean;
+    GridDependsUpdated: boolean;
     function CheckUpdated: boolean;
     procedure SetIsUpdated(AValue: boolean);
     function GetIsUpdated: boolean;
@@ -101,23 +100,26 @@ type
     procedure SetSourcePath(AValue: string);
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: string);
     property Depends: string read GetDepends write SetDepends;
+    function updateprogress(current, total: integer): boolean;
   public
     { public declarations }
     waptpath: string;
     IsHost: boolean;
     IsNewPackage: boolean;
     PackageEdited: ISuperObject;
-    isAdvancedMode:Boolean;
+    isAdvancedMode: boolean;
     procedure EditPackage;
     property SourcePath: string read FSourcePath write SetSourcePath;
     property PackageRequest: string read FPackageRequest write SetPackageRequest;
   end;
 
-function EditPackage(packagename: string;advancedMode:Boolean): ISuperObject;
-function CreatePackage(packagename: string;advancedMode:Boolean): ISuperObject;
-function EditHost(hostname: string;advancedMode:Boolean): ISuperObject;
+function EditPackage(packagename: string; advancedMode: boolean): ISuperObject;
+function CreatePackage(packagename: string; advancedMode: boolean): ISuperObject;
+function EditHost(hostname: string; advancedMode: boolean): ISuperObject;
+
 
 var
+  downloadStopped: boolean;
   VisEditPackage: TVisEditPackage;
   privateKeyPassword: string = '';
   waptServerPassword: string = '';
@@ -126,15 +128,15 @@ var
 implementation
 
 uses tisstrings, soutils, LCLType, waptcommon, dmwaptpython, jwawinuser, uvisloading,
-  uvisprivatekeyauth, strutils;
+  uvisprivatekeyauth, strutils, uwaptconsole, tiscommon;
 
 {$R *.lfm}
 
-function EditPackage(packagename: string;advancedMode:Boolean): ISuperObject;
+function EditPackage(packagename: string; advancedMode: boolean): ISuperObject;
 begin
   with TVisEditPackage.Create(nil) do
     try
-      isAdvancedMode:=advancedMode;
+      isAdvancedMode := advancedMode;
       PackageRequest := packagename;
       if ShowModal = mrOk then
         Result := PackageEdited
@@ -145,11 +147,11 @@ begin
     end;
 end;
 
-function CreatePackage(packagename: string;advancedMode:Boolean): ISuperObject;
+function CreatePackage(packagename: string; advancedMode: boolean): ISuperObject;
 begin
   with TVisEditPackage.Create(nil) do
     try
-      isAdvancedMode:=advancedMode;
+      isAdvancedMode := advancedMode;
       IsNewPackage := True;
       PackageRequest := packagename;
       EdSection.ItemIndex := 4;
@@ -162,11 +164,11 @@ begin
     end;
 end;
 
-function EditHost(hostname: string;advancedMode:Boolean): ISuperObject;
+function EditHost(hostname: string; advancedMode: boolean): ISuperObject;
 begin
   with TVisEditPackage.Create(nil) do
     try
-      isAdvancedMode:=advancedMode;
+      isAdvancedMode := advancedMode;
       IsHost := True;
       PackageRequest := hostname;
       if ShowModal = mrOk then
@@ -188,7 +190,7 @@ begin
     DMPython.PythonEng.ExecString('logger.setLevel(logging.WARNING)');
 end;
 
-procedure TVisEditPackage.EdSearchKeyDown(Sender: TObject; var Key: Word;
+procedure TVisEditPackage.EdSearchKeyDown(Sender: TObject; var Key: word;
   Shift: TShiftState);
 begin
   if Key = VK_RETURN then
@@ -296,16 +298,15 @@ procedure TVisEditPackage.ActEditSavePackageExecute(Sender: TObject);
 var
   i: integer;
   n: PVirtualNode;
-  res : ISuperObject;
+  res: ISuperObject;
 begin
   Screen.Cursor := crHourGlass;
   try
     if IsNewPackage then
     begin
       res := DMPython.RunJSON(
-        format('mywapt.make_group_template(packagename="%s",depends="%s",description="%s")',
-        [Trim(EdPackage.Text), Depends, Eddescription.Text]));
-      FSourcePath:= res.S['source_dir'];
+        format('mywapt.make_group_template(packagename="%s",depends="%s",description="%s")', [Trim(EdPackage.Text), Depends, Eddescription.Text]));
+      FSourcePath := res.S['source_dir'];
       PackageEdited := res['package'];
     end
     else
@@ -336,7 +337,8 @@ end;
 function TVisEditPackage.GetIsUpdated: boolean;
 begin
   Result := FIsUpdated or EdPackage.Modified or EdVersion.Modified or
-    EdSetupPy.Modified or EdSourceDir.Modified or Eddescription.Modified or GridDependsUpdated;
+    EdSetupPy.Modified or EdSourceDir.Modified or Eddescription.Modified or
+    GridDependsUpdated;
 end;
 
 procedure TVisEditPackage.ActEditSearchExecute(Sender: TObject);
@@ -407,11 +409,13 @@ var
 begin
   expr := format('mywapt.search("%s".split())', [EdSearch.Text]);
   packages := DMPython.RunJSON(expr);
-  GridPackages.data := packages;
+  GridPackages.Data := packages;
 end;
 
 procedure TVisEditPackage.FormCreate(Sender: TObject);
 begin
+  waptpath := ExtractFileDir(ParamStr(0));
+
   GridPackages.Clear;
   MemoLog.Clear;
 
@@ -421,7 +425,7 @@ end;
 
 procedure TVisEditPackage.FormShow(Sender: TObject);
 begin
-    // Advance mode in mainWindow -> tools => advance
+  // Advance mode in mainWindow -> tools => advance
   PanelDevlop.Visible := isAdvancedMode;
   Label5.Visible := isAdvancedMode;
   EdSection.Visible := isAdvancedMode;
@@ -455,6 +459,9 @@ end;
 procedure TVisEditPackage.SetPackageRequest(AValue: string);
 var
   res: ISuperObject;
+  n: PVirtualNode;
+  filename, filePath: string;
+  grid: TSOGrid;
 begin
   if FPackageRequest = AValue then
     Exit;
@@ -463,18 +470,35 @@ begin
     FPackageRequest := AValue;
     if not IsNewPackage then
     begin
-      with  Tvisloading.Create(Self) do
-        try
-          Chargement.Caption := 'Téléchargement en cours';
-          Application.ProcessMessages;
-          if IsHost then
-            res := DMPython.RunJSON(format('mywapt.edit_host("%s")', [FPackageRequest]))
-          else
-            res := DMPython.RunJSON(format('mywapt.edit_package("%s")',
-              [FPackageRequest]));
-        finally
-          Free;
-        end;
+      if IsHost then
+        res := DMPython.RunJSON(format('mywapt.edit_host("%s")', [FPackageRequest]))
+      else
+      begin
+        with  Tvisloading.Create(Self) do
+          try
+            ProgressBar := ProgressBar1;
+            Chargement.Caption := 'Téléchargement en cours';
+            downloadStopped := False;
+            grid := uwaptconsole.VisWaptGUI.GridPackages;
+            n := grid.GetFirstSelected();
+            if n <> nil then
+              try
+                filename := grid.GetColumnValue(n, 'filename');
+                filePath := waptpath + '\cache\' + filename;
+                if not FileExists(filePath) then
+                  Wget(GetWaptRepoURL + '/' + filename, filePath, @updateprogress);
+              except
+                ShowMessage('Téléchargement annulé')
+              end;
+
+
+            res := DMPython.RunJSON(format('mywapt.edit_package(r"%s")',
+              [filePath]));
+          finally
+            Free;
+          end;
+
+      end;
       FSourcePath := res.S['source_dir'];
       PackageEdited := res['package'];
     end;
@@ -511,7 +535,7 @@ begin
     EdVersion.Modified := False;
     EdSourceDir.Modified := False;
     EdSetupPy.Modified := False;
-    GridDependsUpdated:=False;
+    GridDependsUpdated := False;
   end;
 end;
 
@@ -529,7 +553,8 @@ begin
   begin
     ShowMessageFmt('Attention, les paquets %s ont été ignorés car introuvables',
       [dependencies.S['missing']]);
-    GridDependsUpdated:=True;
+    GridDependsUpdated := True;
+
   end;
   FIsUpdated := True;
 end;
@@ -549,6 +574,15 @@ begin
     n := GridDepends.GetNext(n);
   end;
   Result := FDepends;
+end;
+
+function TVisEditPackage.updateprogress(current, total: integer): boolean;
+begin
+
+  ProgressBar.Max := total;
+  ProgressBar.Position := current;
+  Application.ProcessMessages;
+  Result := not downloadStopped;
 end;
 
 end.

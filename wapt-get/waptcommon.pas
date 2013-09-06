@@ -44,6 +44,7 @@ interface
   function WaptservicePath: Utf8String;
   function WaptDBPath: Utf8String;
   function WaptExternalRepo: Utf8String;
+  function GetWaptRepoURL: Utf8String;
 
   //function http_post(url: string;Params:String): String;
 
@@ -331,6 +332,13 @@ function GetWaptServerURL: String;
 begin
   result := IniReadString(WaptIniFilename,'Global','wapt_server');
 end;
+
+
+function GetWaptRepoURL: Utf8String;
+begin
+  result := IniReadString(WaptIniFilename,'Global','repo_url');
+end;
+
 
 function GetWaptPrivateKey: String;
 begin

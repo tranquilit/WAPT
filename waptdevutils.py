@@ -25,6 +25,7 @@ import common
 import json
 from M2Crypto import EVP
 from setuphelpers import *
+from waptpackage import *
 #import active_directory
 import codecs
 from iniparse import RawConfigParser
@@ -165,17 +166,30 @@ def updateTisRepo(wapt,search_string):
     wapt.update(force=True)
     return wapt.search(search_string)
 
-def duplicate_from_tis_repo(wapt,old_file_name,prefix):
-    import tempfile
+def searchLastPackageTisRepo(wapt,search_strings):
+    from operator import attrgetter
+    result = []
     wapt = common.Wapt(config_filename=wapt)
-    new_file_name ="%s-%s" % (prefix, old_file_name.split('-',1)[-1])
-    wapt.config.set('global','default_sources_root',tempfile.mkdtemp())
     repo = wapt.config.get('global','templates_repo_url')
     wapt.repositories[0].repo_url = repo if repo else 'http://wapt.tranquil.it/wapt'
-
     wapt.dbpath = r':memory:'
     wapt.update(force=True)
-    result = wapt.duplicate_package(old_file_name,new_file_name,build=False)
+    for search_string in search_strings.split(','):
+        result.append(max(wapt.search(search_string),key=attrgetter('version')).filename)
+    return result
+
+
+
+
+def duplicate_from_tis_repo(wapt,file_name,depends=[]):
+    import tempfile
+    wapt = common.Wapt(config_filename=wapt)
+    prefix = wapt.config.get('global','default_package_prefix')
+    old_file_name = PackageEntry().load_control_from_wapt(file_name).package
+    new_file_name ="%s-%s" % (prefix, old_file_name.split('-',1)[-1])
+    wapt.config.set('global','default_sources_root',tempfile.mkdtemp())
+
+    result = wapt.duplicate_package(file_name,new_file_name,build=False)
 
     source_dir = []
     new_depends = []
@@ -183,11 +197,12 @@ def duplicate_from_tis_repo(wapt,old_file_name,prefix):
         package =  result['package']
         source_dir.append(result['source_dir'])
         if package.depends:
-            for depend in package.depends.split(','):
-                new_file_name ="%s-%s" % (prefix, depend.split('-',1)[-1])
+            for depend in depends:
+                old_file_name = PackageEntry().load_control_from_wapt(depend).package
+                new_file_name ="%s-%s" % (prefix, old_file_name.split('-',1)[-1])
                 new_depends.append(new_file_name)
                 result = wapt.duplicate_package(depend,new_file_name,build=False)
-                source_dir.append( result['source_dir'])
+                source_dir.append(result['source_dir'])
 
         if new_depends:
             package.depends = ','.join(new_depends)
@@ -210,5 +225,8 @@ def login_to_waptserver(url, login, passwd,newPass=""):
 
 if __name__ == '__main__':
     #{create_wapt_setup(wapt,r'C:\tranquilit\wapt\ssl\sdeded.crt',destination='c:\wapt',default_repo_url='',company='')
-    print duplicate_from_tis_repo(r'C:\tranquilit\wapt\wapt-get.ini','tis-ms-pstools', 'test')
+    #print duplicate_from_tis_repo(r'C:\tranquilit\wapt\wapt-get.ini','tis-ms-pstools', 'test')
+    mywapt = common.Wapt()
+    #print duplicate_from_tis_repo(r'c:\tranquilit\wapt\wapt-get.ini', r'c:\wapt\cache\tis-wsmanage_1.0.1-4_x86.wapt', [r'c:\wapt\cache\tis-xencenter_6.2_all.wapt', r'c:\wapt\cache\tis-putty_0.62-2_x86.wapt',r'c:\wapt\cache\tis-firefox_23.0.1-00_all.wapt'])
+    #print searchLastPTisRepo(r'c:\tranquilit\wapt\wapt-get.ini', 'tis-firefox,tis-putty')
     pass

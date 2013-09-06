@@ -30,7 +30,9 @@ interface
 uses
   interfaces,Classes, SysUtils,tisstrings,windows,jwawintype, wininet, Dialogs;
 
-Function  Wget(const fileURL, DestFileName: Utf8String): boolean;
+type TProgressCallback=function(current,total:Integer):Boolean of object;
+
+Function  Wget(const fileURL, DestFileName: Utf8String; progressCallback:TProgressCallback=Nil): boolean;
 Function  Wget_try(const fileURL: Utf8String): boolean;
 function  httpGetString(url: string): Utf8String;
 
@@ -70,6 +72,7 @@ function SortableVersion(VersionString:String):String;
 type LogLevel=(DEBUG, INFO, WARNING, ERROR, CRITICAL);
 const StrLogLevel: array[DEBUG..CRITICAL] of String = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL');
 procedure Logger(Msg:String;level:LogLevel=WARNING);
+
 
 {Const
   SECURITY_NT_AUTHORITY: TSIDIdentifierAuthority = (Value: (0, 0, 0, 0, 0, 5));
@@ -139,9 +142,9 @@ begin
   Result := UserInGroup(DOMAIN_ALIAS_RID_ADMINS);
 end;
 
-function wget(const fileURL, DestFileName: Utf8String): boolean;
+function wget(const fileURL, DestFileName: Utf8String; progressCallback:TProgressCallback=Nil):boolean;
  const
-   BufferSize = 1024;
+   BufferSize = 1024*128;
  var
    hSession, hURL: HInternet;
    Buffer: array[1..BufferSize] of Byte;
@@ -149,10 +152,11 @@ function wget(const fileURL, DestFileName: Utf8String): boolean;
    f: File;
    sAppName: Utf8string;
    Size: Integer;
+   total:DWORD;
+   totalLen:DWORD;
    dwindex: cardinal;
    dwcode : array[1..20] of char;
    dwCodeLen : DWORD;
-   dwNumber: DWORD;
    res : PChar;
 
 begin
@@ -164,24 +168,34 @@ begin
     if assigned(hURL) then
     try
       dwIndex  := 0;
-      dwCodeLen := 10;
+      dwCodeLen := SizeOf(dwcode);
+      totalLen := SizeOf(totalLen);
       HttpQueryInfo(hURL, HTTP_QUERY_STATUS_CODE, @dwcode, dwcodeLen, dwIndex);
+      HttpQueryInfo(hURL, HTTP_QUERY_CONTENT_LENGTH or HTTP_QUERY_FLAG_NUMBER, @total,totalLen, dwIndex);
       res := pchar(@dwcode);
-      dwNumber := sizeof(Buffer)-1;
       if (res ='200') or (res ='302') then
       begin
         Size:=0;
         AssignFile(f, UTF8Decode(DestFileName)) ;
-        Rewrite(f,1) ;
-        repeat
-          BufferLen:= 0;
-          if InternetReadFile(hURL, @Buffer, SizeOf(Buffer), BufferLen) then
-          begin
-            inc(Size,BufferLen);
-            BlockWrite(f, Buffer, BufferLen)
-          end;
-        until BufferLen = 0;
-        CloseFile(f) ;
+        try
+          Rewrite(f,1) ;
+          repeat
+            BufferLen:= 0;
+            if InternetReadFile(hURL, @Buffer, SizeOf(Buffer), BufferLen) then
+            begin
+              inc(Size,BufferLen);
+              BlockWrite(f, Buffer, BufferLen);
+              if Assigned(progressCallback) then
+                if not progressCallback(size,total) then
+                begin
+                  BufferLen:=0;
+                  raise Exception.Create('Download stopped by user');
+                end;
+            end;
+          until BufferLen = 0;
+        finally
+          CloseFile(f) ;
+        end;
         result := (Size>0);
       end
       else

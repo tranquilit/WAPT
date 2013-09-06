@@ -6,17 +6,17 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls,
-  ExtCtrls, StdCtrls;
+  ExtCtrls, StdCtrls,uwaptconsole;
 
 type
 
   { Tvisloading }
 
   Tvisloading = class(TForm)
+    btCancel: TButton;
     Chargement: TLabel;
     ProgressBar1: TProgressBar;
-    Timer1: TTimer;
-    procedure Timer1Timer(Sender: TObject);
+    procedure btCancelClick(Sender: TObject);
   private
     { private declarations }
   public
@@ -32,10 +32,9 @@ implementation
 
 { Tvisloading }
 
-
-procedure Tvisloading.Timer1Timer(Sender: TObject);
+procedure Tvisloading.btCancelClick(Sender: TObject);
 begin
-  ProgressBar1.Position := (ProgressBar1.Position + 1) mod ProgressBar1.Max;
+    uwaptconsole.VisWaptGUI.stopDownload(True);
 end;
 
 end.

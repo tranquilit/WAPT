@@ -10,7 +10,6 @@ object VisEditPackage: TVisEditPackage
   Constraints.MinWidth = 800
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
-  OnShow = FormShow
   Position = poDesktopCenter
   LCLVersion = '1.1'
   object PageControl1: TPageControl
@@ -195,7 +194,7 @@ object VisEditPackage: TVisEditPackage
         ResizeAnchor = akRight
       end
     end
-    object pgDevelop: TTabSheet
+    object TabSheet1: TTabSheet
       Caption = 'setup.py'
       ClientHeight = 368
       ClientWidth = 792
@@ -730,7 +729,7 @@ object VisEditPackage: TVisEditPackage
       end
     end
   end
-  object PanelDevlop: TPanel
+  object PanelEdit3: TPanel
     Left = 0
     Height = 118
     Top = 449
@@ -962,14 +961,6 @@ object VisEditPackage: TVisEditPackage
       Anchors = [akTop, akRight]
       Caption = 'Sauvegarder'
       TabOrder = 1
-    end
-    object Label6: TLabel
-      Left = 205
-      Height = 13
-      Top = 11
-      Width = 31
-      Caption = 'Label6'
-      ParentColor = False
     end
   end
   object SynPythonSyn1: TSynPythonSyn

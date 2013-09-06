@@ -273,9 +273,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 473
         Top = 54
         Width = 572
-        ActivePage = pgPackages
+        ActivePage = pgHostPackage
         Align = alRight
-        TabIndex = 0
+        TabIndex = 1
         TabOrder = 2
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -922,7 +922,7 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
     end
-    object pgDevelop: TTabSheet
+    object TabSheet1: TTabSheet
       Caption = 'Sources'
       ClientHeight = 527
       ClientWidth = 1088

@@ -3713,10 +3713,18 @@ class Wapt(object):
             Return the the directory name of the package sources"""
         # check if already downloaded ...
         p = self.is_available(packagename)
+
         if p:
             devdir = self.get_default_development_dir(p[-1].package,section=p[-1].section)
         else:
-            devdir = self.get_default_development_dir(p[-1].package)
+            if os.path.isfile(packagename):
+                devdir = tempfile.mkdtemp(prefix="wapt")
+                zip = ZipFile(packagename)
+                zip.extractall(path=devdir)
+                packagename= PackageEntry().load_control_from_wapt(packagename).package
+            else:
+                raise Exception('Wrong wapt package name')
+
         if os.path.isdir(devdir):
             if not ignore_local_sources:
                 package=PackageEntry().load_control_from_wapt(devdir)

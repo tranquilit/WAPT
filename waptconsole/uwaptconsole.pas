@@ -54,6 +54,7 @@ type
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
+    Button4: TButton;
     Changer: TButton;
     Button7: TButton;
     Button8: TButton;
@@ -67,6 +68,7 @@ type
     cbShowHostPackagesGroup: TCheckBox;
     CheckBoxMaj: TCheckBox;
     CheckBox_error: TCheckBox;
+    ProgressBar : TProgressBar;
     Edit1: TEdit;
     Edit2: TEdit;
     Edit3: TEdit;
@@ -148,7 +150,7 @@ type
     Splitter2: TSplitter;
     Splitter4: TSplitter;
     SynPythonSyn1: TSynPythonSyn;
-    pgDevelop: TTabSheet;
+    TabSheet1: TTabSheet;
     pgPrivateRepo: TTabSheet;
     pgInventory: TTabSheet;
     pgPackages: TTabSheet;
@@ -192,6 +194,8 @@ type
     procedure ActUpgradeExecute(Sender: TObject);
     procedure ActWAPTLocalConfigExecute(Sender: TObject);
     procedure butSearchPackages1Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
+    procedure Button5Click(Sender: TObject);
     procedure cbSearchAllChange(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure ChangerClick(Sender: TObject);
@@ -221,8 +225,12 @@ type
     procedure HostPagesChange(Sender: TObject);
     procedure MenuItem27Click(Sender: TObject);
     procedure PageControl1Change(Sender: TObject);
+    function  updateprogress(current,total:Integer):Boolean;
+    procedure stopDownload(bool :Boolean);
+
   private
     { private declarations }
+    downloadStopped:Boolean;
     procedure GridLoadData(grid: TSOGrid; jsondata: string);
     procedure PythonOutputSendData(Sender: TObject; const Data: ansistring);
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: string);
@@ -233,13 +241,15 @@ type
     waptpath: string;
   end;
 
+function isAdvancedMode: boolean;
+
 var
   VisWaptGUI: TVisWaptGUI;
 
 implementation
 
 uses LCLIntf, IniFiles, uvisprivatekeyauth, uvisloading, tisstrings, soutils,
-  waptcommon, uVisCreateKey, uVisCreateWaptSetup, uvisOptionIniFile,
+  waptcommon, tiscommon, uVisCreateKey, uVisCreateWaptSetup, uvisOptionIniFile,
   dmwaptpython, uviseditpackage, uvispassword, uviswaptconfig;
 
 {$R *.lfm}
@@ -349,9 +359,9 @@ begin
       begin
         softwares := WAPTServerJsonGet('client_software_list/%s',[currhost]);
         GridHostSoftwares.GetData(Node)['softwares'] := softwares;
+        GridHostSoftwares.Header.AutoFitColumns(False);
       end;
       GridHostSoftwares.data := softwares;
-      GridHostSoftwares.Header.AutoFitColumns(False);
     end
     else if HostPages.ActivePage = pgHostPackage then
     begin
@@ -467,6 +477,7 @@ begin
             end;
         end;
 
+
         ProgressBar1.Position := 50;
         Chargement.Caption := 'Upload en cours';
         Application.ProcessMessages;
@@ -493,7 +504,7 @@ end;
 
 procedure TVisWaptGUI.ActPackageGroupAddExecute(Sender: TObject);
 begin
-  CreatePackage('agroup',ActAdvancedMode.Checked);
+  CreatePackage('test');
   ActUpdate.Execute;
 
 end;
@@ -531,7 +542,7 @@ begin
   begin
     N := GridPackages.GetFirstSelected;
     Selpackage := GridPackages.GetColumnValue(N, 'package');
-    if EditPackage(Selpackage,ActAdvancedMode.Checked) <> nil then
+    if EditPackage(Selpackage) <> nil then
       ActSearchPackage.Execute;
   end;
 end;
@@ -636,8 +647,10 @@ end;
 procedure TVisWaptGUI.ActAdvancedModeExecute(Sender: TObject);
 begin
   ActAdvancedMode.Checked := not ActAdvancedMode.Checked;
-  pgDevelop.TabVisible := ActAdvancedMode.Checked;
+  TabSheet1.TabVisible := ActAdvancedMode.Checked;
   Panel3.Visible := ActAdvancedMode.Checked;
+  if TabSheet1.TabVisible then
+    PageControl1.ActivePage := TabSheet1;
 end;
 
 procedure TVisWaptGUI.ActChangePasswordExecute(Sender: TObject);
@@ -748,7 +761,7 @@ var
   Result: ISuperObject;
 begin
   hostname := GridHosts.GetColumnValue(GridHosts.FocusedNode, 'host.computer_fqdn');
-  if EditHost(hostname,ActAdvancedMode.Checked) <> nil then
+  if EditHost(hostname) <> nil then
     ActSearchHost.Execute;
 end;
 
@@ -880,8 +893,7 @@ begin
   req := url + '?' + Join('&', urlParams);
 
   hosts := WAPTServerJsonGet(req, []);
-  GridHosts.Data := hosts;
-  GridHosts.Header.AutoFitColumns(False);
+  GridHosts.Data:=hosts;
 end;
 
 procedure TVisWaptGUI.ActSearchPackageExecute(Sender: TObject);
@@ -892,8 +904,6 @@ begin
   expr := format('mywapt.search("%s".split())', [EdSearch.Text]);
   packages := DMPython.RunJSON(expr);
   GridPackages.Data := packages;
-  GridPackages.Header.AutoFitColumns(False);
-
 end;
 
 procedure TVisWaptGUI.ActUpdateExecute(Sender: TObject);
@@ -971,8 +981,30 @@ begin
     [waptpath + '\wapt-get.ini', EdSearch1.Text]);
   packages := DMPython.RunJSON(expr);
   GridPackages1.Data := packages;
-  GridPackages1.Header.AutoFitColumns(False);
+end;
 
+procedure TVisWaptGUI.Button4Click(Sender: TObject);
+begin
+   with  Tvisloading.Create(Self) do
+    try
+      ProgressBar:=ProgressBar1;
+      Chargement.Caption := 'Téléchargement en cours';
+      downloadStopped:=False;
+      try
+        Wget('http://wapt/wapt/tis-libreoffice_4.0.4-0_all.wapt','c:\tmp\lo.zip',@updateprogress);
+      Except
+        ShowMessage('Téléchargement annulé')
+      end;
+
+    finally
+      ProgressBar.Free;
+      Free;
+    end;
+end;
+
+procedure TVisWaptGUI.Button5Click(Sender: TObject);
+begin
+  downloadStopped:=True;
 end;
 
 procedure TVisWaptGUI.cbSearchAllChange(Sender: TObject);
@@ -1186,7 +1218,10 @@ procedure TVisWaptGUI.MenuItem27Click(Sender: TObject);
 begin
   ShowMessage('Tranquil IT Systems: http://www.tranquil-it-systems.fr/');
 end;
-
+procedure TVisWaptGUI.stopDownload(bool :Boolean);
+begin
+  downloadStopped:=bool;
+end;
 procedure CopyMenu(menuItemSource: TPopupMenu; menuItemTarget: TMenuItem);
 var
   i: integer;
@@ -1210,5 +1245,20 @@ begin
   else if PageControl1.ActivePage = pgTISRepo then
     CopyMenu(PopupMenuPackagesTIS, MenuItem24);
 end;
+
+function TVisWaptGUI.updateprogress(current, total: Integer): Boolean;
+begin
+
+  ProgressBar.Max:=total;
+  ProgressBar.Position:=current;
+  Application.ProcessMessages;
+  Result := not downloadStopped;
+end;
+
+function isAdvancedMode: boolean;
+begin
+  Result := VisWaptGUI.ActAdvancedMode.Checked;
+end;
+
 
 end.
