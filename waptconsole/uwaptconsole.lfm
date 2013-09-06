@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = -1136
+  Left = -1338
   Height = 695
-  Top = 77
+  Top = 572
   Width = 1096
   Caption = 'Console WAPT'
   ClientHeight = 675
@@ -624,11 +624,11 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgPrivateRepo: TTabSheet
       Caption = 'Dépôt privé'
-      ClientHeight = 527
+      ClientHeight = 524
       ClientWidth = 1088
       object GridPackages: TSOGrid
         Left = 0
-        Height = 477
+        Height = 474
         Top = 30
         Width = 1088
         Align = alClient
@@ -699,7 +699,7 @@ object VisWaptGUI: TVisWaptGUI
       object Panel5: TPanel
         Left = 0
         Height = 20
-        Top = 507
+        Top = 504
         Width = 1088
         Align = alBottom
         BevelOuter = bvNone
@@ -708,9 +708,9 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 2
         object LabHostCnt: TLabel
           Left = 4
-          Height = 13
+          Height = 15
           Top = 4
-          Width = 94
+          Width = 104
           Caption = 'Nb enregistrements'
           ParentColor = False
         end
@@ -727,7 +727,7 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 0
         object EdSearch: TEdit
           Left = 4
-          Height = 21
+          Height = 23
           Top = 2
           Width = 136
           OnKeyPress = EdSearchKeyPress
@@ -1673,11 +1673,13 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'hosts'
       Caption = 'Supprimer'
       OnExecute = ActHostsDeleteExecute
+      ShortCut = 46
     end
     object ActDeletePackage: TAction
       Caption = 'Supprimer'
       OnExecute = ActDeletePackageExecute
       OnUpdate = ActDeletePackageUpdate
+      ShortCut = 46
     end
     object ActAdvancedMode: TAction
       Caption = 'ActAdvancedMode'
