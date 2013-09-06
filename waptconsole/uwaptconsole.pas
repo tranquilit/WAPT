@@ -420,8 +420,8 @@ end;
 
 procedure TVisWaptGUI.ActPackageDuplicateExecute(Sender: TObject);
 var
-  filename, oldName, filePath, sourceDir: string;
-  uploadResult: ISuperObject;
+  filename, oldName, filePath, sourceDir, depends: string;
+  uploadResult, dependsList : ISuperObject;
   done: boolean = False;
   isEncrypt: boolean;
   Load: Tvisloading;
@@ -434,6 +434,7 @@ begin
   begin
     oldName := GridPackages1.GetColumnValue(N, 'package');
     filename := GridPackages1.GetColumnValue(N, 'filename');
+    depends := GridPackages1.GetColumnValue(N, 'depends');
     filePath := waptpath + '\cache\' + filename;
 
     if MessageDlg('Confirmer la duplication',
@@ -451,12 +452,13 @@ begin
           if not FileExists(filePath) then
             Wget(WaptExternalRepo + '/' + filename, filePath, @updateprogress);
         except
-          ShowMessage('Téléchargement annulé')
+          ShowMessage('Téléchargement annulé');
+          exit;
         end;
-
         sourceDir := DMPython.RunJSON(
           Format('waptdevutils.duplicate_from_tis_repo(r"%s",r"%s",[])',
           [waptpath + '\wapt-get.ini', filePath])).AsString;
+
         if sourceDir <> 'error' then
         begin
           isEncrypt := StrToBool(DMPython.RunJSON(
@@ -487,7 +489,6 @@ begin
 
           Chargement.Caption := 'Upload en cours';
           Application.ProcessMessages;
-
 
           uploadResult := DMPython.RunJSON(
             format('mywapt.build_upload(%s,r"%s",r"%s",r"%s","False","True")',

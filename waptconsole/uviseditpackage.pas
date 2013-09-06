@@ -491,6 +491,7 @@ begin
                   Wget(GetWaptRepoURL + '/' + filename, filePath, @updateprogress);
               except
                 ShowMessage('Téléchargement annulé')
+                exit;
               end;
 
 

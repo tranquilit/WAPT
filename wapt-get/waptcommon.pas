@@ -383,38 +383,6 @@ begin
       Result:='http://wapt.tranquil.it/wapt/';
 end;
 
-{
-idHttp,
-function http_post(url: string;Params:String): String;
-var
-  St:TMemoryStream;
-  http:TIdHTTP;
-  paramsStream:TStringStream;
-begin
-  try
-    http := Nil;
-    paramsStream := Nil;
-    http:=TIdHTTP.Create(Nil);
-    paramsStream := TStringStream.Create(Params);
-    HTTP.Request.ContentType := 'application/x-www-form-urlencoded';
-
-    //http.AllowCookies := True;
-    //http.CookieManager := session_cookies;
-
-    result := http.Post(url,paramsStream);
-  finally
-    if paramsStream<>Nil then
-      paramsStream.Free;
-    http.DisconnectNotifyPeer;
-    if http<>Nil then
-      http.Free;
-  end;
-end;
-}
-
-
-{ waptdb }
-
 constructor Twaptdb.create(dbpath:String);
 begin
   dbinuse := syncobjs.TCriticalSection.Create;
