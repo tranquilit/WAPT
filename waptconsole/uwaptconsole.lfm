@@ -1,10 +1,10 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 562
+  Left = -1136
   Height = 695
-  Top = 16
+  Top = 77
   Width = 1096
   Caption = 'Console WAPT'
-  ClientHeight = 676
+  ClientHeight = 675
   ClientWidth = 1096
   Menu = MainMenu1
   OnCreate = FormCreate
@@ -13,7 +13,7 @@ object VisWaptGUI: TVisWaptGUI
   LCLVersion = '1.1'
   object PageControl1: TPageControl
     Left = 0
-    Height = 553
+    Height = 552
     Top = 0
     Width = 1096
     ActivePage = pgInventory
@@ -23,7 +23,7 @@ object VisWaptGUI: TVisWaptGUI
     OnChange = PageControl1Change
     object pgInventory: TTabSheet
       Caption = 'Inventaire'
-      ClientHeight = 527
+      ClientHeight = 524
       ClientWidth = 1088
       object Panel10: TPanel
         Left = 0
@@ -37,7 +37,7 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 0
         object EdSearchHost: TEdit
           Left = 60
-          Height = 21
+          Height = 23
           Top = 4
           Width = 136
           OnKeyPress = EdSearchHostKeyPress
@@ -45,26 +45,26 @@ object VisWaptGUI: TVisWaptGUI
         end
         object Label5: TLabel
           Left = 4
-          Height = 13
+          Height = 15
           Top = 6
-          Width = 51
+          Width = 55
           Caption = 'Recherche'
           ParentColor = False
         end
         object CheckBoxMaj: TCheckBox
           Left = 327
-          Height = 17
+          Height = 19
           Top = 7
-          Width = 151
+          Width = 162
           Caption = 'Nécessite des mises à jours'
           OnClick = CheckBoxMajClick
           TabOrder = 1
         end
         object CheckBox_error: TCheckBox
           Left = 490
-          Height = 17
+          Height = 19
           Top = 7
-          Width = 102
+          Width = 106
           Caption = 'Avec des erreurs'
           OnClick = CheckBoxMajClick
           TabOrder = 2
@@ -79,9 +79,9 @@ object VisWaptGUI: TVisWaptGUI
         end
         object cbSearchAll: TCheckBox
           Left = 31
-          Height = 17
+          Height = 19
           Top = 30
-          Width = 42
+          Width = 45
           Caption = 'Tout'
           Checked = True
           OnChange = cbSearchAllChange
@@ -91,9 +91,9 @@ object VisWaptGUI: TVisWaptGUI
         end
         object cbSearchHost: TCheckBox
           Left = 76
-          Height = 17
+          Height = 19
           Top = 30
-          Width = 42
+          Width = 45
           Caption = 'Host'
           OnClick = CheckBoxMajClick
           State = cbGrayed
@@ -101,9 +101,9 @@ object VisWaptGUI: TVisWaptGUI
         end
         object cbSearchDMI: TCheckBox
           Left = 124
-          Height = 17
+          Height = 19
           Top = 30
-          Width = 37
+          Width = 42
           Caption = 'Dmi'
           OnClick = CheckBoxMajClick
           State = cbGrayed
@@ -111,9 +111,9 @@ object VisWaptGUI: TVisWaptGUI
         end
         object cbSearchSoftwares: TCheckBox
           Left = 164
-          Height = 17
+          Height = 19
           Top = 30
-          Width = 69
+          Width = 71
           Caption = 'Softwares'
           OnClick = CheckBoxMajClick
           State = cbGrayed
@@ -121,9 +121,9 @@ object VisWaptGUI: TVisWaptGUI
         end
         object cbSearchPackages: TCheckBox
           Left = 236
-          Height = 17
+          Height = 19
           Top = 30
-          Width = 65
+          Width = 69
           Caption = 'Packages'
           OnClick = CheckBoxMajClick
           State = cbGrayed
@@ -132,7 +132,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object GridHosts: TSOGrid
         Left = 0
-        Height = 473
+        Height = 470
         Top = 54
         Width = 511
         Align = alClient
@@ -270,7 +270,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object HostPages: TPageControl
         Left = 516
-        Height = 473
+        Height = 470
         Top = 54
         Width = 572
         ActivePage = pgHostPackage
@@ -520,11 +520,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostPackage: TTabSheet
           Caption = 'Inventaire matériel'
-          ClientHeight = 447
+          ClientHeight = 442
           ClientWidth = 564
           object GridhostAttribs: TVirtualJSONInspector
             Left = 0
-            Height = 447
+            Height = 442
             Top = 0
             Width = 564
             PropertyDefs = <>
@@ -615,7 +615,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object Splitter4: TSplitter
         Left = 511
-        Height = 473
+        Height = 470
         Top = 54
         Width = 5
         Align = alRight
@@ -1380,23 +1380,31 @@ object VisWaptGUI: TVisWaptGUI
           'mywapt = Wapt(config_filename=config_file)'
         )
         VisibleSpecialChars = [vscSpace, vscTabAtLast]
+        SelectedColor.FrameEdges = sfeAround
         SelectedColor.BackPriority = 50
         SelectedColor.ForePriority = 50
         SelectedColor.FramePriority = 50
         SelectedColor.BoldPriority = 50
         SelectedColor.ItalicPriority = 50
         SelectedColor.UnderlinePriority = 50
+        SelectedColor.StrikeOutPriority = 50
+        IncrementColor.FrameEdges = sfeAround
+        HighlightAllColor.FrameEdges = sfeAround
         BracketHighlightStyle = sbhsBoth
         BracketMatchColor.Background = clNone
         BracketMatchColor.Foreground = clNone
+        BracketMatchColor.FrameEdges = sfeAround
         BracketMatchColor.Style = [fsBold]
         FoldedCodeColor.Background = clNone
         FoldedCodeColor.Foreground = clGray
         FoldedCodeColor.FrameColor = clGray
+        FoldedCodeColor.FrameEdges = sfeAround
         MouseLinkColor.Background = clNone
         MouseLinkColor.Foreground = clBlue
+        MouseLinkColor.FrameEdges = sfeAround
         LineHighlightColor.Background = clNone
         LineHighlightColor.Foreground = clNone
+        LineHighlightColor.FrameEdges = sfeAround
         inline SynLeftGutterPartList1: TSynGutterPartList
           object SynGutterMarks1: TSynGutterMarks
             Width = 24
@@ -1407,6 +1415,7 @@ object VisWaptGUI: TVisWaptGUI
             MouseActions = <>
             MarkupInfo.Background = clBtnFace
             MarkupInfo.Foreground = clNone
+            MarkupInfo.FrameEdges = sfeAround
             DigitCount = 2
             ShowOnlyLineNumbersMultiplesOf = 1
             ZeroStart = False
@@ -1421,11 +1430,15 @@ object VisWaptGUI: TVisWaptGUI
           object SynGutterSeparator1: TSynGutterSeparator
             Width = 2
             MouseActions = <>
+            MarkupInfo.Background = clWhite
+            MarkupInfo.Foreground = clGray
+            MarkupInfo.FrameEdges = sfeAround
           end
           object SynGutterCodeFolding1: TSynGutterCodeFolding
             MouseActions = <>
             MarkupInfo.Background = clNone
             MarkupInfo.Foreground = clGray
+            MarkupInfo.FrameEdges = sfeAround
             MouseActionsExpanded = <>
             MouseActionsCollapsed = <>
           end
@@ -1472,7 +1485,7 @@ object VisWaptGUI: TVisWaptGUI
   object Panel3: TPanel
     Left = 0
     Height = 118
-    Top = 558
+    Top = 557
     Width = 1096
     Align = alBottom
     ClientHeight = 118
@@ -1539,9 +1552,9 @@ object VisWaptGUI: TVisWaptGUI
     end
     object cbShowLog: TCheckBox
       Left = 8
-      Height = 17
-      Top = 96
-      Width = 136
+      Height = 19
+      Top = 94
+      Width = 149
       Anchors = [akLeft, akBottom]
       Caption = 'Voir infos de débuggage'
       OnClick = cbShowLogClick
@@ -1552,7 +1565,7 @@ object VisWaptGUI: TVisWaptGUI
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 553
+    Top = 552
     Width = 1096
     Align = alBottom
     ResizeAnchor = akBottom

@@ -337,6 +337,8 @@ end;
 function GetWaptRepoURL: Utf8String;
 begin
   result := IniReadString(WaptIniFilename,'Global','repo_url');
+  if Result = '' then
+      Result:='http://wapt/wapt/';
 end;
 
 
