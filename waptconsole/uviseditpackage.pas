@@ -490,7 +490,7 @@ begin
                 if not FileExists(filePath) then
                   Wget(GetWaptRepoURL + '/' + filename, filePath, @updateprogress);
               except
-                ShowMessage('Téléchargement annulé')
+                ShowMessage('Téléchargement annulé');
                 exit;
               end;
 

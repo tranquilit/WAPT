@@ -420,9 +420,10 @@ end;
 
 procedure TVisWaptGUI.ActPackageDuplicateExecute(Sender: TObject);
 var
-  filename, oldName, filePath, sourceDir, depends: string;
-  uploadResult, dependsList : ISuperObject;
+  filename,filenameDepends, oldName, filePath, sourceDir, depends: string;
+  uploadResult, dependsList, dependsPath : ISuperObject;
   done: boolean = False;
+  i : Integer;
   isEncrypt: boolean;
   Load: Tvisloading;
   N: PVirtualNode;
@@ -455,9 +456,27 @@ begin
           ShowMessage('Téléchargement annulé');
           exit;
         end;
+        if depends <> '' then
+        begin
+          dependsList := DMPython.RunJSON(format('waptdevutils.searchLastPackageTisRepo(r"%s","%s")',[waptpath + '\wapt-get.ini',  depends]));
+          dependsPath := TSuperObject.Create(stArray);
+          for i:= 0  to dependsList.AsArray.Length - 1 do
+          begin
+            chargement.Caption := 'Téléchargement en cours de ' + dependsList.AsArray.S[i];
+               dependsPath.AsArray.Add( waptpath + '\cache\' + dependsList.AsArray.S[i]);
+
+               try
+                  if not FileExists(dependsPath.AsArray.S[i]) then
+                     Wget(WaptExternalRepo + '/' + dependsList.AsArray.S[i], dependsPath.AsArray.S[i], @updateprogress);
+               except
+                 ShowMessage('Téléchargement annulé');
+                 exit;
+               end;
+          end;
+        end;
         sourceDir := DMPython.RunJSON(
-          Format('waptdevutils.duplicate_from_tis_repo(r"%s",r"%s",[])',
-          [waptpath + '\wapt-get.ini', filePath])).AsString;
+          Format('waptdevutils.duplicate_from_tis_repo(r"%s",r"%s",%S)',
+          [waptpath + '\wapt-get.ini', filePath, dependsPath.AsString])).AsString;
 
         if sourceDir <> 'error' then
         begin
