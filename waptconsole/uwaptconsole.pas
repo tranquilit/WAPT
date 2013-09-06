@@ -509,6 +509,7 @@ begin
     N:= GridPackages1.GetNextSelected(N);
   end;
 
+  GridPackages1.ClearSelection;
   PageControl1.ActivePage:= pgPrivateRepo;
 
 end;
@@ -1126,9 +1127,7 @@ end;
 
 procedure TVisWaptGUI.FormShow(Sender: TObject);
 begin
-  ActSearchHost.Execute;
-  ActSearchPackage.Execute;
-  butSearchPackages1.Click;
+      PageControl1Change(Sender);
 end;
 
 procedure TVisWaptGUI.GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
@@ -1265,11 +1264,23 @@ end;
 procedure TVisWaptGUI.PageControl1Change(Sender: TObject);
 begin
   if PageControl1.ActivePage = pgInventory then
-    CopyMenu(PopupMenuHosts, MenuItem24)
+  begin
+    CopyMenu(PopupMenuHosts, MenuItem24);
+    if GridHosts.Data = Nil then
+       ActSearchHost.Execute;
+  end
   else if PageControl1.ActivePage = pgPrivateRepo then
-    CopyMenu(PopupMenuPackages, MenuItem24)
+  begin
+    CopyMenu(PopupMenuPackages, MenuItem24);
+    if GridPackages.Data = Nil then
+        ActSearchPackage.Execute;
+  end
   else if PageControl1.ActivePage = pgTISRepo then
+  begin
     CopyMenu(PopupMenuPackagesTIS, MenuItem24);
+    if GridPackages1.Data = Nil then
+         butSearchPackages1.Click;
+  end;
 end;
 
 function TVisWaptGUI.updateprogress(current, total: integer): boolean;
