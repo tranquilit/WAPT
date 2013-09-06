@@ -34,6 +34,7 @@ type
     ActDeletePackage: TAction;
     ActAdvancedMode: TAction;
     ActChangePassword: TAction;
+    ActGotoHost: TAction;
     ActWAPTLocalConfig: TAction;
     ActUpdateWaptGetINI: TAction;
     actRefresh: TAction;
@@ -171,6 +172,7 @@ type
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
     procedure ActEditHostPackageExecute(Sender: TObject);
+    procedure ActGotoHostExecute(Sender: TObject);
     procedure ActPackageEdit(Sender: TObject);
     procedure ActEditpackageUpdate(Sender: TObject);
     procedure ActEvaluateExecute(Sender: TObject);
@@ -763,6 +765,13 @@ begin
   hostname := GridHosts.GetColumnValue(GridHosts.FocusedNode, 'host.computer_fqdn');
   if EditHost(hostname) <> nil then
     ActSearchHost.Execute;
+end;
+
+procedure TVisWaptGUI.ActGotoHostExecute(Sender: TObject);
+begin
+  EdSearchHost.SetFocus;
+  EdSearchHost.SelectAll;
+
 end;
 
 procedure TVisWaptGUI.ActEvaluateExecute(Sender: TObject);

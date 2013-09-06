@@ -349,6 +349,7 @@ begin
   expr := format('mywapt.search("%s".split())', [EdSearch.Text]);
   packages := DMPython.RunJSON(expr);
   GridPackages.Data := packages;
+  GridPackages.Header.AutoFitColumns(False);
 end;
 
 procedure TVisEditPackage.ActBuildUploadExecute(Sender: TObject);
@@ -410,6 +411,7 @@ begin
   expr := format('mywapt.search("%s".split())', [EdSearch.Text]);
   packages := DMPython.RunJSON(expr);
   GridPackages.Data := packages;
+  GridPackages.Header.AutoFitColumns(False);
 end;
 
 procedure TVisEditPackage.FormCreate(Sender: TObject);
@@ -549,6 +551,7 @@ begin
   dependencies := DMPython.RunJSON(
     format('mywapt.get_package_entries("%s")', [FDepends]));
   GridDepends.Data := dependencies['packages'];
+  GridDepends.Header.AutoFitColumns(False);
   if dependencies['missing'].AsArray.Length > 0 then
   begin
     ShowMessageFmt('Attention, les paquets %s ont été ignorés car introuvables',

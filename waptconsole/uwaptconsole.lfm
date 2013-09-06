@@ -261,9 +261,9 @@ object VisWaptGUI: TVisWaptGUI
         Images = ImageList1
         PopupMenu = PopupMenuHosts
         TabOrder = 1
-        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
-        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-        TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toEditOnClick]
+        TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toUseExplorerTheme]
+        TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toSimpleDrawSelection]
         OnDblClick = ActEditHostPackageExecute
         OnFocusChanged = GridHostsFocusChanged
         OnGetImageIndexEx = GridHostsGetImageIndexEx
@@ -1700,6 +1700,11 @@ object VisWaptGUI: TVisWaptGUI
     object ActWAPTLocalConfig: TAction
       Caption = 'Configuration WAPT locale'
       OnExecute = ActWAPTLocalConfigExecute
+    end
+    object ActGotoHost: TAction
+      Caption = 'Rechercher une machine'
+      OnExecute = ActGotoHostExecute
+      ShortCut = 16454
     end
   end
   object PopupMenuPackages: TPopupMenu
