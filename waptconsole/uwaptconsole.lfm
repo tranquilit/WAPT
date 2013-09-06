@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = -1338
+  Left = -1138
   Height = 695
-  Top = 572
+  Top = 94
   Width = 1096
   Caption = 'Console WAPT'
   ClientHeight = 675
@@ -16,9 +16,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 552
     Top = 0
     Width = 1096
-    ActivePage = pgInventory
+    ActivePage = pgPrivateRepo
     Align = alClient
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     OnChange = PageControl1Change
     object pgInventory: TTabSheet
@@ -924,12 +924,12 @@ object VisWaptGUI: TVisWaptGUI
     end
     object TabSheet1: TTabSheet
       Caption = 'Sources'
-      ClientHeight = 527
+      ClientHeight = 524
       ClientWidth = 1088
       TabVisible = False
       inline testedit: TSynEdit
         Left = 0
-        Height = 493
+        Height = 490
         Top = 34
         Width = 1088
         Align = alClient
@@ -1464,7 +1464,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object EdRun: TEdit
           Left = 292
-          Height = 21
+          Height = 23
           Top = 5
           Width = 168
           OnKeyPress = EdRunKeyPress
@@ -1720,6 +1720,9 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Rechercher une machine'
       OnExecute = ActGotoHostExecute
       ShortCut = 16454
+    end
+    object Action1: TAction
+      Caption = 'Action1'
     end
   end
   object PopupMenuPackages: TPopupMenu

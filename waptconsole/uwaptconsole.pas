@@ -35,6 +35,7 @@ type
     ActAdvancedMode: TAction;
     ActChangePassword: TAction;
     ActGotoHost: TAction;
+    Action1: TAction;
     ActWAPTLocalConfig: TAction;
     ActUpdateWaptGetINI: TAction;
     actRefresh: TAction;
@@ -243,8 +244,6 @@ type
     waptpath: string;
   end;
 
-function isAdvancedMode: boolean;
-
 var
   VisWaptGUI: TVisWaptGUI;
 
@@ -420,17 +419,17 @@ end;
 
 procedure TVisWaptGUI.ActPackageDuplicateExecute(Sender: TObject);
 var
-  filename,filenameDepends, oldName, filePath, sourceDir, depends: string;
-  uploadResult, dependsList, dependsPath : ISuperObject;
+  filename, filenameDepends, oldName, filePath, sourceDir, depends: string;
+  uploadResult, dependsList, dependsPath: ISuperObject;
   done: boolean = False;
-  i : Integer;
+  i: integer;
   isEncrypt: boolean;
   Load: Tvisloading;
   N: PVirtualNode;
 
 begin
 
-  N:= GridPackages1.GetFirstSelected;
+  N := GridPackages1.GetFirstSelected;
   while N <> nil do
   begin
     oldName := GridPackages1.GetColumnValue(N, 'package');
@@ -458,20 +457,24 @@ begin
         end;
         if depends <> '' then
         begin
-          dependsList := DMPython.RunJSON(format('waptdevutils.searchLastPackageTisRepo(r"%s","%s")',[waptpath + '\wapt-get.ini',  depends]));
+          dependsList := DMPython.RunJSON(
+            format('waptdevutils.searchLastPackageTisRepo(r"%s","%s")', [waptpath +
+            '\wapt-get.ini', depends]));
           dependsPath := TSuperObject.Create(stArray);
-          for i:= 0  to dependsList.AsArray.Length - 1 do
+          for i := 0 to dependsList.AsArray.Length - 1 do
           begin
-            chargement.Caption := 'Téléchargement en cours de ' + dependsList.AsArray.S[i];
-               dependsPath.AsArray.Add( waptpath + '\cache\' + dependsList.AsArray.S[i]);
+            chargement.Caption :=
+              'Téléchargement en cours de ' + dependsList.AsArray.S[i];
+            dependsPath.AsArray.Add(waptpath + '\cache\' + dependsList.AsArray.S[i]);
 
-               try
-                  if not FileExists(dependsPath.AsArray.S[i]) then
-                     Wget(WaptExternalRepo + '/' + dependsList.AsArray.S[i], dependsPath.AsArray.S[i], @updateprogress);
-               except
-                 ShowMessage('Téléchargement annulé');
-                 exit;
-               end;
+            try
+              if not FileExists(dependsPath.AsArray.S[i]) then
+                Wget(WaptExternalRepo + '/' + dependsList.AsArray.S[i],
+                  dependsPath.AsArray.S[i], @updateprogress);
+            except
+              ShowMessage('Téléchargement annulé');
+              exit;
+            end;
           end;
         end;
         sourceDir := DMPython.RunJSON(
@@ -511,7 +514,8 @@ begin
 
           uploadResult := DMPython.RunJSON(
             format('mywapt.build_upload(%s,r"%s",r"%s",r"%s","False","True")',
-            [sourceDir, privateKeyPassword, waptServerUser, waptServerPassword]), jsonlog);
+            [sourceDir, privateKeyPassword, waptServerUser, waptServerPassword]),
+            jsonlog);
           if uploadResult.AsString <> '' then
           begin
             ShowMessage(format('%s dupliqué avec succès.', [oldName]));
@@ -526,17 +530,17 @@ begin
       finally
         Free;
       end;
-    N:= GridPackages1.GetNextSelected(N);
+    N := GridPackages1.GetNextSelected(N);
   end;
 
   GridPackages1.ClearSelection;
-  PageControl1.ActivePage:= pgPrivateRepo;
+  PageControl1.ActivePage := pgPrivateRepo;
 
 end;
 
 procedure TVisWaptGUI.ActPackageGroupAddExecute(Sender: TObject);
 begin
-  CreatePackage('test', isAdvancedMode);
+  CreatePackage('agroup',ActAdvancedMode.Checked);
   ActUpdate.Execute;
 
 end;
@@ -574,7 +578,7 @@ begin
   begin
     N := GridPackages.GetFirstSelected;
     Selpackage := GridPackages.GetColumnValue(N, 'package');
-    if EditPackage(Selpackage, isAdvancedMode) <> nil then
+    if EditPackage(Selpackage, ActAdvancedMode.Checked) <> nil then
       ActSearchPackage.Execute;
   end;
 end;
@@ -796,7 +800,7 @@ var
   Result: ISuperObject;
 begin
   hostname := GridHosts.GetColumnValue(GridHosts.FocusedNode, 'host.computer_fqdn');
-  if EditHost(hostname, isAdvancedMode) <> nil then
+  if EditHost(hostname,ActAdvancedMode.Checked) <> nil then
     ActSearchHost.Execute;
 end;
 
@@ -989,7 +993,8 @@ begin
         eddefault_sources_root.Text :=
           inifile.ReadString('global', 'default_sources_root', '');
         edprivate_key.Text := inifile.ReadString('global', 'private_key', '');
-        edtemplates_repo_url.Text := inifile.readString('global', 'templates_repo_url', '');
+        edtemplates_repo_url.Text :=
+          inifile.readString('global', 'templates_repo_url', '');
         //eddefault_sources_root.Directory := inifile.ReadString('global','default_sources_root','');
         //eddefault_sources_url.text = inifile.ReadString('global','default_sources_url','https://srvdev/sources/%(packagename)s-wapt/trunk');
 
@@ -1000,10 +1005,12 @@ begin
           inifile.WriteString('global', 'default_package_prefix',
             eddefault_package_prefix.Text);
           inifile.WriteString('global', 'wapt_server', edwapt_server.Text);
-          inifile.WriteString('global', 'default_sources_root', eddefault_sources_root.Text);
+          inifile.WriteString('global', 'default_sources_root',
+            eddefault_sources_root.Text);
           inifile.WriteString('global', 'private_key', edprivate_key.Text);
           inifile.WriteString('global', 'templates_repo_url', edtemplates_repo_url.Text);
-          inifile.WriteString('global', 'default_sources_root', eddefault_sources_root.Text);
+          inifile.WriteString('global', 'default_sources_root',
+            eddefault_sources_root.Text);
           //inifile.WriteString('global','default_sources_url',eddefault_sources_url.text);
           ActUpdateWaptGetINI.Execute;
           ActUpdate.Execute;
@@ -1147,7 +1154,7 @@ end;
 
 procedure TVisWaptGUI.FormShow(Sender: TObject);
 begin
-      PageControl1Change(Sender);
+  PageControl1Change(Sender);
 end;
 
 procedure TVisWaptGUI.GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
@@ -1286,20 +1293,20 @@ begin
   if PageControl1.ActivePage = pgInventory then
   begin
     CopyMenu(PopupMenuHosts, MenuItem24);
-    if GridHosts.Data = Nil then
-       ActSearchHost.Execute;
+    if GridHosts.Data = nil then
+      ActSearchHost.Execute;
   end
   else if PageControl1.ActivePage = pgPrivateRepo then
   begin
     CopyMenu(PopupMenuPackages, MenuItem24);
-    if GridPackages.Data = Nil then
-        ActSearchPackage.Execute;
+    if GridPackages.Data = nil then
+      ActSearchPackage.Execute;
   end
   else if PageControl1.ActivePage = pgTISRepo then
   begin
     CopyMenu(PopupMenuPackagesTIS, MenuItem24);
-    if GridPackages1.Data = Nil then
-         butSearchPackages1.Click;
+    if GridPackages1.Data = nil then
+      butSearchPackages1.Click;
   end;
 end;
 
@@ -1311,11 +1318,5 @@ begin
   Application.ProcessMessages;
   Result := not downloadStopped;
 end;
-
-function isAdvancedMode: boolean;
-begin
-  Result := VisWaptGUI.ActAdvancedMode.Checked;
-end;
-
 
 end.

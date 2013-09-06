@@ -1,7 +1,7 @@
 object VisEditPackage: TVisEditPackage
-  Left = -1565
+  Left = -1290
   Height = 600
-  Top = 283
+  Top = 188
   Width = 800
   Caption = 'Editer le paquet'
   ClientHeight = 600
@@ -10,6 +10,7 @@ object VisEditPackage: TVisEditPackage
   Constraints.MinWidth = 800
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnShow = FormShow
   Position = poDesktopCenter
   LCLVersion = '1.1'
   object PageControl1: TPageControl
@@ -194,14 +195,14 @@ object VisEditPackage: TVisEditPackage
         ResizeAnchor = akRight
       end
     end
-    object TabSheet1: TTabSheet
+    object pgDevelop: TTabSheet
       Caption = 'setup.py'
-      ClientHeight = 368
+      ClientHeight = 366
       ClientWidth = 792
       TabVisible = False
       inline EdSetupPy: TSynEdit
         Left = 0
-        Height = 334
+        Height = 332
         Top = 34
         Width = 792
         Align = alClient
@@ -742,7 +743,7 @@ object VisEditPackage: TVisEditPackage
       end
     end
   end
-  object PanelEdit3: TPanel
+  object PanelDevlop: TPanel
     Left = 0
     Height = 118
     Top = 449

@@ -435,6 +435,7 @@ begin
   EdSourceDir.Visible := isAdvancedMode;
   cbShowLog.Visible := isAdvancedMode;
   pgDevelop.TabVisible := isAdvancedMode;
+  ActEditSearch.Execute;
 
 end;
 
