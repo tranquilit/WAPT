@@ -447,7 +447,7 @@ begin
         Chargement.Caption := 'Téléchargement en cours de ' + oldName;
         ProgressBar := ProgressBar1;
         downloadStopped := False;
-
+        Application.ProcessMessages;
         try
           if not FileExists(filePath) then
             Wget(WaptExternalRepo + '/' + filename, filePath, @updateprogress);
@@ -455,12 +455,13 @@ begin
           ShowMessage('Téléchargement annulé');
           exit;
         end;
+
+        dependsPath := TSuperObject.Create(stArray);
         if depends <> '' then
         begin
           dependsList := DMPython.RunJSON(
-            format('waptdevutils.searchLastPackageTisRepo(r"%s","%s")', [waptpath +
-            '\wapt-get.ini', depends]));
-          dependsPath := TSuperObject.Create(stArray);
+            format('waptdevutils.searchLastPackageTisRepo(r"%s","%s")',
+            [waptpath + '\wapt-get.ini', depends]));
           for i := 0 to dependsList.AsArray.Length - 1 do
           begin
             chargement.Caption :=
@@ -483,6 +484,11 @@ begin
 
         if sourceDir <> 'error' then
         begin
+          if not FileExists(GetWaptPrivateKey) then
+          begin
+            ShowMessage('la clé privé n''existe pas: ' + GetWaptPrivateKey);
+            exit;
+          end;
           isEncrypt := StrToBool(DMPython.RunJSON(
             format('waptdevutils.is_encrypt_private_key(r"%s")',
             [GetWaptPrivateKey])).AsString);
@@ -540,7 +546,7 @@ end;
 
 procedure TVisWaptGUI.ActPackageGroupAddExecute(Sender: TObject);
 begin
-  CreatePackage('agroup',ActAdvancedMode.Checked);
+  CreatePackage('agroup', ActAdvancedMode.Checked);
   ActUpdate.Execute;
 
 end;
@@ -800,7 +806,7 @@ var
   Result: ISuperObject;
 begin
   hostname := GridHosts.GetColumnValue(GridHosts.FocusedNode, 'host.computer_fqdn');
-  if EditHost(hostname,ActAdvancedMode.Checked) <> nil then
+  if EditHost(hostname, ActAdvancedMode.Checked) <> nil then
     ActSearchHost.Execute;
 end;
 
@@ -974,7 +980,6 @@ end;
 procedure TVisWaptGUI.ActWAPTLocalConfigExecute(Sender: TObject);
 var
   inifile: TIniFile;
-  wapt, conf: variant;
 begin
   inifile := TIniFile.Create(WaptIniFilename);
   try
@@ -1161,7 +1166,7 @@ procedure TVisWaptGUI.GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
   var Ghosted: boolean; var ImageIndex: integer; var ImageList: TCustomImageList);
 var
-  install_status, upgrades, errors: ISuperObject;
+  install_status: ISuperObject;
 begin
   if Column = 0 then
   begin

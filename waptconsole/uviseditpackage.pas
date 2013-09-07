@@ -361,6 +361,11 @@ var
   isEncrypt: boolean;
 begin
   ActEditSavePackage.Execute;
+  if not FileExists(GetWaptPrivateKey) then
+  begin
+    ShowMessage('la clé privé n''existe pas: ' + GetWaptPrivateKey);
+    exit;
+  end;
   isEncrypt := StrToBool(DMPython.RunJSON(
     format('waptdevutils.is_encrypt_private_key(r"%s")', [GetWaptPrivateKey])).AsString);
   if (privateKeyPassword = '') and (isEncrypt) then
@@ -482,6 +487,8 @@ begin
             ProgressBar := ProgressBar1;
             Chargement.Caption := 'Téléchargement en cours';
             downloadStopped := False;
+            Application.ProcessMessages;
+
             grid := uwaptconsole.VisWaptGUI.GridPackages;
             n := grid.GetFirstSelected();
             if n <> nil then
