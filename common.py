@@ -2469,12 +2469,13 @@ class Wapt(object):
                     logger.warning('Unable to remove %s : %s' % (f,ensure_unicode(e)))
         return result
 
-    def update(self,force=False):
+    def update(self,force=False,register=True):
         """Update local database with packages definition from repositories
             returns a dict of
                 "added","removed","count","repos","upgrades","date"
             force : update even if Packages on repository has not been updated
                     since last update (based on http headers)
+			register : Send informations about packages to waptserver
         """
         previous = self.waptdb.known_packages()
         if not self.wapt_repourl:
@@ -2493,10 +2494,11 @@ class Wapt(object):
             }
 
         self.store_upgrade_status()
-        try:
-            self.update_server_status()
-        except Exception,e:
-            logger.critical('Unable to update server with current status : %s' % ensure_unicode(e))
+        if register:
+		    try:	
+			    self.update_server_status()
+		    except Exception,e:
+		        logger.critical('Unable to update server with current status : %s' % ensure_unicode(e))
         return result
 
     def check_depends(self,apackages,forceupgrade=False,force=False,assume_removed=[]):

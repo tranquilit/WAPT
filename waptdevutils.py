@@ -163,7 +163,7 @@ def updateTisRepo(wapt,search_string):
     repo = wapt.config.get('global','templates_repo_url')
     wapt.repositories[0].repo_url = repo if repo else 'http://wapt.tranquil.it/wapt'
     wapt.dbpath = r':memory:'
-    wapt.update(force=True)
+    wapt.update(register=False)
     return wapt.search(search_string)
 
 def searchLastPackageTisRepo(wapt,search_strings):
@@ -173,7 +173,7 @@ def searchLastPackageTisRepo(wapt,search_strings):
     repo = wapt.config.get('global','templates_repo_url')
     wapt.repositories[0].repo_url = repo if repo else 'http://wapt.tranquil.it/wapt'
     wapt.dbpath = r':memory:'
-    wapt.update(force=True)
+    wapt.update(register=False)
     for search_string in search_strings.split(','):
         result.append(max(wapt.search(search_string),key=attrgetter('version')).filename)
     return result
