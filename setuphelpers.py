@@ -841,7 +841,8 @@ def networking():
     for i in ifaces:
         params = netifaces.ifaddresses(i)
         if netifaces.AF_LINK in params and params[netifaces.AF_LINK][0]['addr'] and not params[netifaces.AF_LINK][0]['addr'].startswith('00:00:00'):
-            iface = {'iface':i,'mac':params[netifaces.AF_LINK][0]['addr']}
+            iface = {'iface':i,'mac':params
+            [netifaces.AF_LINK][0]['addr']}
             if netifaces.AF_INET in params:
                 iface.update(params[netifaces.AF_INET][0])
                 iface['connected'] = 'addr' in iface and iface['addr'] in local_ips
@@ -954,7 +955,14 @@ def host_info():
     info['dns_domain'] = get_domain_fromregistry()
     info['workgroup_name'] = windomainname()
     info['networking'] = networking()
-    info['connected_ips'] = socket.gethostbyname_ex(socket.gethostname())[2]
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.settimeout(1)
+        s.connect(("wapt", 0))
+        info['connected_ips'] = s.getsockname()[0]
+        s.close()
+    except:
+        info['connected_ips'] = socket.gethostbyname_ex(socket.gethostname())[2]
     info['mac'] = [ c['mac'] for c in networking() if 'mac' in c and 'addr' in c and c['addr'] in info['connected_ips']]
     info['win64'] = iswin64()
     info['description'] = registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\LanmanServer\Parameters','srvcomment')
