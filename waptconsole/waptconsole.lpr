@@ -11,7 +11,8 @@ uses
   runtimetypeinfocontrols, pl_virtualtrees, uwaptconsole,
   uVisCreateKey, tisstrings, waptcommon, tiscommon, tisinifiles, dmwaptpython,
   uVisEditPackage, uvisoptioninifile, uviscreatewaptsetup, uvispassword,
-  uvisprivatekeyauth, uvisloading, uviswaptconfig; //uvissearchpackage;
+  uvisprivatekeyauth, uvisloading, uviswaptconfig, 
+uvischangepassword; //uvissearchpackage;
 
 {$R *.res}
 

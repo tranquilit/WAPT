@@ -17,7 +17,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="3"/>
-      <BuildNr Value="1"/>
+      <BuildNr Value="2"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -89,7 +89,7 @@
         <PackageName Value="LCL"/>
       </Item18>
     </RequiredPackages>
-    <Units Count="15">
+    <Units Count="16">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -195,6 +195,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviswaptconfig"/>
       </Unit14>
+      <Unit15>
+        <Filename Value="uvischangepassword.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="visChangePassword"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uvischangepassword"/>
+      </Unit15>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

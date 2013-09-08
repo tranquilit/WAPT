@@ -251,7 +251,7 @@ implementation
 
 uses LCLIntf, IniFiles, uvisprivatekeyauth, uvisloading, tisstrings, soutils,
   waptcommon, tiscommon, uVisCreateKey, uVisCreateWaptSetup, uvisOptionIniFile,
-  dmwaptpython, uviseditpackage, uvispassword, uviswaptconfig;
+  dmwaptpython, uviseditpackage, uvispassword, uviswaptconfig, uvischangepassword;
 
 {$R *.lfm}
 
@@ -697,16 +697,19 @@ end;
 
 procedure TVisWaptGUI.ActChangePasswordExecute(Sender: TObject);
 var
-  newPass: string;
+  newPass, result: string;
 begin
-  with TvisPrivateKeyAuth.Create(self) do
+  with TvisChangePassword.Create(self)  do
     try
-      newPass := PasswordBox('Serveur WAPT', 'Nouveau mot de passe');
-      DMPython.RunJSON(
+      ShowModal;
+      newPass:= edNewPassword2.Text;
+      result := DMPython.RunJSON(
         format('waptdevutils.login_to_waptserver("%s","%s","%s","%s")',
         [GetWaptServerURL + '/login', waptServerUser, waptServerPassword,
-        newPass]));
-
+        newPass])).AsString;
+        waptServerPassword:= newPass;
+        if result = 'True' then
+           ShowMessage('Le mot de passe a été changé avec succès !');
     finally
       Free;
     end;
