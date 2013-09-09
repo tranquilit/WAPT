@@ -6,22 +6,20 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, Buttons;
+  ExtCtrls, Buttons, ButtonPanel;
 
 type
 
   { TVisPassword }
 
   TVisPassword = class(TForm)
-    BitBtn1: TBitBtn;
-    BitBtn2: TBitBtn;
+    ButtonPanel1: TButtonPanel;
     edPassword: TEdit;
     edUser: TEdit;
     edWaptServerName: TEdit;
     Label1: TLabel;
     laPassword: TLabel;
     laPassword1: TLabel;
-    Panel1: TPanel;
     procedure edPasswordKeyPress(Sender: TObject; var Key: char);
   private
     { private declarations }
@@ -40,10 +38,6 @@ implementation
 
 procedure TVisPassword.edPasswordKeyPress(Sender: TObject; var Key: char);
 begin
-  if Key=#13 then
-  begin
-     BitBtn1.Click;
-  end;
 end;
 
 end.
