@@ -22,6 +22,7 @@ type
     { private declarations }
   public
     { public declarations }
+    waptServerPassword:String;
   end;
 
 var

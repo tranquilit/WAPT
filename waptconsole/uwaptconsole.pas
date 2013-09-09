@@ -701,6 +701,7 @@ var
 begin
   with TvisChangePassword.Create(self)  do
     try
+      waptServerPassword := uviseditpackage.waptServerPassword;
       if ShowModal=mrOK then
       begin
         newPass:= edNewPassword2.Text;
