@@ -198,7 +198,7 @@
       <Unit15>
         <Filename Value="uvischangepassword.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="visChangePassword"/>
+        <ComponentName Value="VisChangePassword"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvischangepassword"/>

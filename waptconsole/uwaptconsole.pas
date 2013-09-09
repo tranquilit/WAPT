@@ -5,10 +5,10 @@ unit uwaptconsole;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, SynHighlighterPython, SynEdit,
-  vte_json, Forms,
-  Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList,
-  Menus, fpJson, jsonparser, superobject,
+  Classes, SysUtils, FileUtil, SynHighlighterPython, SynEdit, SynGutterBase,
+  SynGutterMarks, SynGutterLineNumber, SynGutterChanges, SynGutter,
+  SynGutterCodeFolding, vte_json, Forms, Controls, Graphics, Dialogs, ExtCtrls,
+  StdCtrls, ComCtrls, ActnList, Menus, fpJson, jsonparser, superobject,
   UniqueInstance, VirtualTrees, VarPyth, Windows, LMessages, ImgList, SOGrid;
 
 type
@@ -251,7 +251,7 @@ implementation
 
 uses LCLIntf, IniFiles, uvisprivatekeyauth, uvisloading, tisstrings, soutils,
   waptcommon, tiscommon, uVisCreateKey, uVisCreateWaptSetup, uvisOptionIniFile,
-  dmwaptpython, uviseditpackage, uvispassword, uviswaptconfig, uvischangepassword;
+  dmwaptpython, uviseditpackage, uvispassword, uviswaptconfig,uvischangepassword;
 
 {$R *.lfm}
 
@@ -360,9 +360,9 @@ begin
       begin
         softwares := WAPTServerJsonGet('client_software_list/%s', [currhost]);
         GridHostSoftwares.GetData(Node)['softwares'] := softwares;
-        GridHostSoftwares.Header.AutoFitColumns(False);
       end;
       GridHostSoftwares.Data := softwares;
+      GridHostSoftwares.Header.AutoFitColumns(False);
     end
     else if HostPages.ActivePage = pgHostPackage then
     begin
@@ -701,16 +701,18 @@ var
 begin
   with TvisChangePassword.Create(self)  do
     try
-      ShowModal;
-      newPass:= edNewPassword2.Text;
-      result := DMPython.RunJSON(
-        format('waptdevutils.login_to_waptserver("%s","%s","%s","%s")',
-        [GetWaptServerURL + '/login', waptServerUser, waptServerPassword,
-        newPass])).AsString;
-        waptServerPassword:= newPass;
-        if result = 'True' then
-           ShowMessage('Le mot de passe a été changé avec succès !');
-    finally
+      if ShowModal=mrOK then
+      begin
+        newPass:= edNewPassword2.Text;
+        result := DMPython.RunJSON(
+          format('waptdevutils.login_to_waptserver("%s","%s","%s","%s")',
+          [GetWaptServerURL + '/login', waptServerUser, waptServerPassword,
+          newPass])).AsString;
+          waptServerPassword:= newPass;
+          if result = 'True' then
+             ShowMessage('Le mot de passe a été changé avec succès !');
+      end;
+          finally
       Free;
     end;
 end;
