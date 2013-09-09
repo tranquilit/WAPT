@@ -40,7 +40,7 @@ if not wapt_version:
     wapt_version = '1'
 
 control_file = './builddir/DEBIAN/control'
-rsync_option = " --exclude '.svn/**' --exclude 'deb' -ap"
+rsync_option = " --exclude '.svn' --exclude 'deb' -ap"
 rsync_source = os.path.abspath('..')
 rsync_destination = './builddir/opt/wapt/'
 rsync_command = '/usr/bin/rsync %s %s %s'%(rsync_option,rsync_source,rsync_destination)

@@ -10,11 +10,11 @@ then
   fi
   if ! grep -q  waptzsync.py "$CRON_FILE"
   then
-    echo "30 21 * * * root /usr/bin/python /opt/waptrepo/waptzsync.py >> /var/log/waptzsync.log" >> "$CRON_FILE"
+    echo "30 21 * * * root /usr/bin/python /opt/wapt/waptrepo/waptzsync.py >> /var/log/waptzsync.log" >> "$CRON_FILE"
   fi
 else
   echo "PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-30 21 * * * root /usr/bin/python /opt/waptrepo/waptzsync.py >> /var/log/waptzsync.log" > "$CRON_FILE"
+30 21 * * * root /usr/bin/python /opt/wapt/waptrepo/waptzsync.py >> /var/log/waptzsync.log" > "$CRON_FILE"
 fi
 echo "copy config-waptzsync.ini in /etc/tis/"
 cp /opt/wapt/waptrepo/config-waptzsync.ini.template /etc/tis/config-waptzsync.ini
