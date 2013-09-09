@@ -221,6 +221,9 @@ type
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: boolean; var ImageIndex: integer;
       var ImageList: TCustomImageList);
+    procedure GridHostsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      RowData, CellData: ISuperObject; Column: TColumnIndex;
+      TextType: TVSTTextType; var CellText: String);
     procedure GridPackagesPaintText(Sender: TBaseVirtualTree;
       const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType);
@@ -1249,6 +1252,15 @@ begin
 
     end;
   end;
+end;
+
+procedure TVisWaptGUI.GridHostsGetText(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
+  TextType: TVSTTextType; var CellText: String);
+begin
+     if (CellData<>Nil) and (CellData.DataType = stArray) then
+     CellText:= Join(',',CellData);
+
 end;
 
 procedure TVisWaptGUI.PythonOutputSendData(Sender: TObject; const Data: ansistring);

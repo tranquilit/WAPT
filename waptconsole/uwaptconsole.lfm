@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = -1183
+  Left = 371
   Height = 695
-  Top = 48
+  Top = 178
   Width = 1096
   Caption = 'Console WAPT'
   ClientHeight = 676
@@ -16,14 +16,14 @@ object VisWaptGUI: TVisWaptGUI
     Height = 553
     Top = 0
     Width = 1096
-    ActivePage = pgPrivateRepo
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     OnChange = PageControl1Change
     object pgInventory: TTabSheet
       Caption = 'Inventaire'
-      ClientHeight = 524
+      ClientHeight = 527
       ClientWidth = 1088
       object Panel10: TPanel
         Left = 0
@@ -37,7 +37,7 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 0
         object EdSearchHost: TEdit
           Left = 60
-          Height = 23
+          Height = 21
           Top = 4
           Width = 136
           OnKeyPress = EdSearchHostKeyPress
@@ -45,26 +45,26 @@ object VisWaptGUI: TVisWaptGUI
         end
         object Label5: TLabel
           Left = 4
-          Height = 15
+          Height = 13
           Top = 6
-          Width = 55
+          Width = 51
           Caption = 'Recherche'
           ParentColor = False
         end
         object CheckBoxMaj: TCheckBox
           Left = 327
-          Height = 19
+          Height = 17
           Top = 7
-          Width = 162
+          Width = 151
           Caption = 'Nécessite des mises à jours'
           OnClick = CheckBoxMajClick
           TabOrder = 1
         end
         object CheckBox_error: TCheckBox
           Left = 490
-          Height = 19
+          Height = 17
           Top = 7
-          Width = 106
+          Width = 102
           Caption = 'Avec des erreurs'
           OnClick = CheckBoxMajClick
           TabOrder = 2
@@ -79,9 +79,9 @@ object VisWaptGUI: TVisWaptGUI
         end
         object cbSearchAll: TCheckBox
           Left = 31
-          Height = 19
+          Height = 17
           Top = 30
-          Width = 45
+          Width = 42
           Caption = 'Tout'
           Checked = True
           OnChange = cbSearchAllChange
@@ -91,9 +91,9 @@ object VisWaptGUI: TVisWaptGUI
         end
         object cbSearchHost: TCheckBox
           Left = 76
-          Height = 19
+          Height = 17
           Top = 30
-          Width = 45
+          Width = 42
           Caption = 'Host'
           OnClick = CheckBoxMajClick
           State = cbGrayed
@@ -101,9 +101,9 @@ object VisWaptGUI: TVisWaptGUI
         end
         object cbSearchDMI: TCheckBox
           Left = 124
-          Height = 19
+          Height = 17
           Top = 30
-          Width = 42
+          Width = 37
           Caption = 'Dmi'
           OnClick = CheckBoxMajClick
           State = cbGrayed
@@ -111,9 +111,9 @@ object VisWaptGUI: TVisWaptGUI
         end
         object cbSearchSoftwares: TCheckBox
           Left = 164
-          Height = 19
+          Height = 17
           Top = 30
-          Width = 71
+          Width = 69
           Caption = 'Softwares'
           OnClick = CheckBoxMajClick
           State = cbGrayed
@@ -121,9 +121,9 @@ object VisWaptGUI: TVisWaptGUI
         end
         object cbSearchPackages: TCheckBox
           Left = 236
-          Height = 19
+          Height = 17
           Top = 30
-          Width = 69
+          Width = 65
           Caption = 'Packages'
           OnClick = CheckBoxMajClick
           State = cbGrayed
@@ -132,9 +132,10 @@ object VisWaptGUI: TVisWaptGUI
       end
       object GridHosts: TSOGrid
         Left = 0
-        Height = 470
+        Height = 473
         Top = 54
         Width = 511
+        OnGetText = GridHostsGetText
         Align = alClient
         Color = clWhite
         Header.AutoSizeIndex = -1
@@ -270,7 +271,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object HostPages: TPageControl
         Left = 516
-        Height = 470
+        Height = 473
         Top = 54
         Width = 572
         ActivePage = pgPackages
@@ -281,13 +282,13 @@ object VisWaptGUI: TVisWaptGUI
         object pgPackages: TTabSheet
           AnchorSideTop.Side = asrBottom
           Caption = 'Résumé'
-          ClientHeight = 442
+          ClientHeight = 447
           ClientWidth = 564
           object GridHostPackages: TSOGrid
             AnchorSideTop.Control = Panel9
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 322
+            Height = 327
             Top = 120
             Width = 564
             Align = alBottom
@@ -365,80 +366,80 @@ object VisWaptGUI: TVisWaptGUI
             Constraints.MaxHeight = 120
             TabOrder = 1
             object Label1: TLabel
-              Left = 9
-              Height = 15
-              Top = 77
-              Width = 61
+              Left = 11
+              Height = 13
+              Top = 78
+              Width = 56
               Anchors = []
               Caption = 'Addresse ip'
               ParentBidiMode = False
               ParentColor = False
             end
             object Label3: TLabel
-              Left = 356
-              Height = 15
-              Top = 35
-              Width = 40
+              Left = 359
+              Height = 13
+              Top = 36
+              Width = 34
               Anchors = []
               Caption = 'Modèle'
               ParentBidiMode = False
               ParentColor = False
             end
             object Label4: TLabel
-              Left = 357
-              Height = 15
-              Top = 77
-              Width = 53
+              Left = 359
+              Height = 13
+              Top = 78
+              Width = 48
               Anchors = []
               Caption = 'Utilisateur'
               ParentBidiMode = False
               ParentColor = False
             end
             object Label2: TLabel
-              Left = 357
-              Height = 15
-              Top = 13
-              Width = 57
+              Left = 359
+              Height = 13
+              Top = 14
+              Width = 52
               Anchors = []
               Caption = 'Fabriquant'
               ParentBidiMode = False
               ParentColor = False
             end
             object Label6: TLabel
-              Left = 8
-              Height = 15
-              Top = 13
-              Width = 27
+              Left = 11
+              Height = 13
+              Top = 14
+              Width = 21
               Anchors = []
               Caption = 'Nom'
               ParentBidiMode = False
               ParentColor = False
             end
             object Label7: TLabel
-              Left = 6
-              Height = 15
-              Top = 57
-              Width = 119
+              Left = 11
+              Height = 13
+              Top = 58
+              Width = 108
               Anchors = []
               Caption = 'Système d''exploitation'
               ParentBidiMode = False
               ParentColor = False
             end
             object Label8: TLabel
-              Left = 7
-              Height = 15
-              Top = 35
-              Width = 60
+              Left = 11
+              Height = 13
+              Top = 36
+              Width = 53
               Anchors = []
               Caption = 'Description'
               ParentBidiMode = False
               ParentColor = False
             end
             object Label9: TLabel
-              Left = 356
-              Height = 15
-              Top = 57
-              Width = 52
+              Left = 359
+              Height = 13
+              Top = 58
+              Width = 46
               Anchors = []
               Caption = 'Mis à jour'
               ParentBidiMode = False
@@ -446,8 +447,8 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Edit1: TEdit
               Left = 127
-              Height = 23
-              Top = 9
+              Height = 21
+              Top = 10
               Width = 216
               Anchors = []
               ReadOnly = True
@@ -455,8 +456,8 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Edit2: TEdit
               Left = 127
-              Height = 23
-              Top = 31
+              Height = 21
+              Top = 32
               Width = 216
               Anchors = []
               ReadOnly = True
@@ -464,8 +465,8 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Edit3: TEdit
               Left = 127
-              Height = 23
-              Top = 53
+              Height = 21
+              Top = 54
               Width = 216
               Anchors = []
               ReadOnly = True
@@ -473,8 +474,8 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Edit4: TEdit
               Left = 127
-              Height = 23
-              Top = 75
+              Height = 21
+              Top = 76
               Width = 216
               Anchors = []
               ReadOnly = True
@@ -482,8 +483,8 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Edit5: TEdit
               Left = 419
-              Height = 23
-              Top = 9
+              Height = 21
+              Top = 10
               Width = 132
               Anchors = []
               ReadOnly = True
@@ -491,8 +492,8 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Edit6: TEdit
               Left = 419
-              Height = 23
-              Top = 31
+              Height = 21
+              Top = 32
               Width = 132
               Anchors = []
               ReadOnly = True
@@ -500,8 +501,8 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Edit7: TEdit
               Left = 419
-              Height = 23
-              Top = 53
+              Height = 21
+              Top = 54
               Width = 132
               Anchors = []
               ReadOnly = True
@@ -509,8 +510,8 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Edit8: TEdit
               Left = 419
-              Height = 23
-              Top = 75
+              Height = 21
+              Top = 76
               Width = 132
               Anchors = []
               ReadOnly = True
@@ -615,7 +616,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object Splitter4: TSplitter
         Left = 511
-        Height = 470
+        Height = 473
         Top = 54
         Width = 5
         Align = alRight
