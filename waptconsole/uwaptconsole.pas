@@ -952,6 +952,7 @@ begin
 
   hosts := WAPTServerJsonGet(req, []);
   GridHosts.Data := hosts;
+  GridHosts.Header.AutoFitColumns(False);
 end;
 
 procedure TVisWaptGUI.ActSearchPackageExecute(Sender: TObject);
@@ -962,6 +963,7 @@ begin
   expr := format('mywapt.search("%s".split())', [EdSearch.Text]);
   packages := DMPython.RunJSON(expr);
   GridPackages.Data := packages;
+  GridPackages.Header.AutoFitColumns(False);
 end;
 
 procedure TVisWaptGUI.ActUpdateExecute(Sender: TObject);
@@ -1044,6 +1046,7 @@ begin
     [waptpath + '\wapt-get.ini', EdSearch1.Text]);
   packages := DMPython.RunJSON(expr);
   GridPackages1.Data := packages;
+  GridPackages1.Header.AutoFitColumns(False);
 end;
 
 procedure TVisWaptGUI.Button4Click(Sender: TObject);
