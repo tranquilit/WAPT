@@ -1182,7 +1182,7 @@ begin
       case install_status.AsString of
         'OK': ImageIndex := 0;
         'ERROR': ImageIndex := 2;
-        'UPGRADE': ImageIndex := 1;
+        'NEED-UPGRADE': ImageIndex := 1;
       end;
     end;
   end;
