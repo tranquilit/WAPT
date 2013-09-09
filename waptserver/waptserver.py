@@ -261,8 +261,8 @@ def get_client_package_list(uuid=""):
     for p in packages['packages']:
         package = PackageEntry()
         package.load_control_from_dict(p)        
-        if [ x for x in repo_packages if package.package == x.package and package.version < x.version ]:
-            p['install_status'] = 'UPGRADE'
+        if [ x for x in repo_packages if package.package == x.package and package < x ]:
+            p['install_status'] = 'NEED-UPGRADE'
             
     return  Response(response=json.dumps(packages['packages']),
                     status=200,
