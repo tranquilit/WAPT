@@ -71,14 +71,14 @@ type
     CheckBoxMaj: TCheckBox;
     CheckBox_error: TCheckBox;
     ProgressBar: TProgressBar;
-    Edit1: TEdit;
-    Edit2: TEdit;
-    Edit3: TEdit;
-    Edit4: TEdit;
-    Edit5: TEdit;
-    Edit6: TEdit;
-    Edit7: TEdit;
-    Edit8: TEdit;
+    EdHostname: TEdit;
+    EdDescription: TEdit;
+    EdOS: TEdit;
+    EdIPAddress: TEdit;
+    EdManufacturer: TEdit;
+    EdModelName: TEdit;
+    EdUpdateDate: TEdit;
+    EdUser: TEdit;
     EdSearch1: TEdit;
     EdSearchHost: TEdit;
     EdRun: TEdit;
@@ -224,6 +224,8 @@ type
     procedure GridHostsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       RowData, CellData: ISuperObject; Column: TColumnIndex;
       TextType: TVSTTextType; var CellText: String);
+    procedure GridHostsPaintBackground(Sender: TBaseVirtualTree;
+      TargetCanvas: TCanvas; const R: TRect; var Handled: Boolean);
     procedure GridPackagesPaintText(Sender: TBaseVirtualTree;
       const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType);
@@ -336,7 +338,7 @@ begin
   Node := GridHosts.FocusedNode;
   if Node <> nil then
   begin
-    currhost := GridHosts.GetColumnValue(Node, 'uuid');
+    currhost := GridHosts.GetCellStrValue(Node, 'uuid');
     if HostPages.ActivePage = pgPackages then
     begin
       packages := GridHosts.GetData(Node)['packages'];
@@ -345,14 +347,14 @@ begin
         packages := WAPTServerJsonGet('client_package_list/%s', [currhost]);
         GridHosts.GetData(Node)['packages'] := packages;
       end;
-      Edit1.Text := GridHosts.GetColumnValue(Node, 'host.computer_name');
-      Edit2.Text := GridHosts.GetColumnValue(Node, 'host.description');
-      Edit3.Text := GridHosts.GetColumnValue(Node, 'host.windows_product_infos.version');
-      Edit4.Text := GridHosts.GetColumnValue(Node, 'host.connected_ips');
-      Edit5.Text := GridHosts.GetColumnValue(Node, 'host.system_manufacturer');
-      Edit6.Text := GridHosts.GetColumnValue(Node, 'host.system_productname');
-      Edit7.Text := GridHosts.GetColumnValue(Node, 'last_query_date');
-      Edit8.Text := GridHosts.GetColumnValue(Node, 'host.current_user');
+      EdHostname.Text := GridHosts.GetCellStrValue(Node, 'host.computer_name');
+      EdDescription.Text := GridHosts.GetCellStrValue(Node, 'host.description');
+      EdOS.Text := GridHosts.GetCellStrValue(Node, 'host.windows_product_infos.version');
+      EdIPAddress.Text :=  GridHosts.GetCellStrValue(Node, 'host.connected_ips');
+      EdManufacturer.Text := GridHosts.GetCellStrValue(Node, 'host.system_manufacturer');
+      EdModelName.Text := GridHosts.GetCellStrValue(Node, 'host.system_productname');
+      EdUpdateDate.Text := GridHosts.GetCellStrValue(Node, 'last_query_date');
+      EdUser.Text := GridHosts.GetCellStrValue(Node, 'host.current_user');
       GridHostPackages.Data := packages;
       GridHostPackages.Header.AutoFitColumns(False);
     end
@@ -397,10 +399,10 @@ begin
       try
         while N <> nil do
         begin
-          package := GridPackages.GetColumnValue(N, 'package') +
-            ' (=' + GridPackages.GetColumnValue(N, 'version') + ')';
+          package := GridPackages.GetCellStrValue(N, 'package') +
+            ' (=' + GridPackages.GetCellStrValue(N, 'version') + ')';
           Chargement.Caption :=
-            'Installation de ' + GridPackages.GetColumnValue(N, 'package') +
+            'Installation de ' + GridPackages.GetCellStrValue(N, 'package') +
             ' en cours ...';
           ProgressBar1.Position := trunc((i / selects) * 100);
           Application.ProcessMessages;
@@ -435,9 +437,9 @@ begin
   N := GridPackages1.GetFirstSelected;
   while N <> nil do
   begin
-    oldName := GridPackages1.GetColumnValue(N, 'package');
-    filename := GridPackages1.GetColumnValue(N, 'filename');
-    depends := GridPackages1.GetColumnValue(N, 'depends');
+    oldName := GridPackages1.GetCellStrValue(N, 'package');
+    filename := GridPackages1.GetCellStrValue(N, 'filename');
+    depends := GridPackages1.GetCellStrValue(N, 'depends');
     filePath := waptpath + '\cache\' + filename;
 
     if MessageDlg('Confirmer la duplication',
@@ -586,7 +588,7 @@ begin
   if GridPackages.Focused then
   begin
     N := GridPackages.GetFirstSelected;
-    Selpackage := GridPackages.GetColumnValue(N, 'package');
+    Selpackage := GridPackages.GetCellStrValue(N, 'package');
     if EditPackage(Selpackage, ActAdvancedMode.Checked) <> nil then
       ActSearchPackage.Execute;
   end;
@@ -605,7 +607,7 @@ begin
   n := grid.GetFirst;
   while n <> nil do
   begin
-    if grid.GetColumnValue(n, Fieldname) = AText then
+    if grid.GetCellStrValue(n, Fieldname) = AText then
     begin
       Result := n;
       Break;
@@ -793,7 +795,7 @@ begin
     N := GridPackages.GetFirstSelected;
     while N <> nil do
     begin
-      package := GridPackages.GetColumnValue(N, 'filename');
+      package := GridPackages.GetCellStrValue(N, 'filename');
       res := WAPTServerJsonGet('/delete_package/' + package, []);
       if not ObjectIsNull(res['error']) then
         raise Exception.Create(res.S['error']);
@@ -814,7 +816,7 @@ var
   hostname: string;
   Result: ISuperObject;
 begin
-  hostname := GridHosts.GetColumnValue(GridHosts.FocusedNode, 'host.computer_fqdn');
+  hostname := GridHosts.GetCellStrValue(GridHosts.FocusedNode, 'host.computer_fqdn');
   if EditHost(hostname, ActAdvancedMode.Checked) <> nil then
     ActSearchHost.Execute;
 end;
@@ -865,7 +867,7 @@ begin
     N := GridHosts.GetFirstSelected;
     while N <> nil do
     begin
-      host := GridHosts.GetColumnValue(N, 'uuid');
+      host := GridHosts.GetCellStrValue(N, 'uuid');
       WAPTServerJsonGet('/delete_host/' + host, []).AsJson;
       N := GridHosts.GetNextSelected(N);
     end;
@@ -894,7 +896,7 @@ begin
       try
         while N <> nil do
         begin
-          package := GridPackages.GetColumnValue(N, 'package');
+          package := GridPackages.GetCellStrValue(N, 'package');
           Chargement.Caption := 'Désinstallation de ' + package + ' en cours ...';
           ProgressBar1.Position := trunc((i / selects) * 100);
           Application.ProcessMessages;
@@ -1263,6 +1265,15 @@ begin
 
 end;
 
+procedure TVisWaptGUI.GridHostsPaintBackground(Sender: TBaseVirtualTree;
+  TargetCanvas: TCanvas; const R: TRect; var Handled: Boolean);
+begin
+
+  TargetCanvas.Brush.Color:=clBlack ;
+  TargetCanvas.FillRect(R);
+
+end;
+
 procedure TVisWaptGUI.PythonOutputSendData(Sender: TObject; const Data: ansistring);
 begin
   MemoLog.Lines.Add(Data);
@@ -1279,7 +1290,7 @@ procedure TVisWaptGUI.GridPackagesPaintText(Sender: TBaseVirtualTree;
   const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
   TextType: TVSTTextType);
 begin
-  if StrIsOneOf(GridPackages.GetColumnValue(Node, 'status'), ['I', 'U']) then
+  if StrIsOneOf(GridPackages.GetCellStrValue(Node, 'status'), ['I', 'U']) then
     TargetCanvas.Font.style := TargetCanvas.Font.style + [fsBold]
   else
     TargetCanvas.Font.style := TargetCanvas.Font.style - [fsBold];

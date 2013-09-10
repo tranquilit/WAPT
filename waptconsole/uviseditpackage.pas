@@ -252,7 +252,7 @@ begin
   n := grid.GetFirst;
   while n <> nil do
   begin
-    if grid.GetColumnValue(n, Fieldname) = AText then
+    if grid.GetCellStrValue(n, Fieldname) = AText then
     begin
       Result := n;
       Break;
@@ -274,7 +274,7 @@ begin
   sel := GridPackages.GetSortedSelection(False);
   for i := 0 to length(sel) - 1 do
   begin
-    package := GridPackages.GetColumnValue(sel[i], 'package');
+    package := GridPackages.GetCellStrValue(sel[i], 'package');
     if not StrIn(package, olddepends) then
       olddepends.AsArray.Add(package);
   end;
@@ -493,7 +493,7 @@ begin
             n := grid.GetFirstSelected();
             if n <> nil then
               try
-                filename := grid.GetColumnValue(n, 'filename');
+                filename := grid.GetCellStrValue(n, 'filename');
                 filePath := waptpath + '\cache\' + filename;
                 if not FileExists(filePath) then
                   Wget(GetWaptRepoURL + '/' + filename, filePath, @updateprogress);
@@ -580,9 +580,9 @@ begin
   while (n <> nil) do
   begin
     if FDepends <> '' then
-      FDepends := FDepends + ',' + GridDepends.GetColumnValue(n, 'package')
+      FDepends := FDepends + ',' + GridDepends.GetCellStrValue(n, 'package')
     else
-      FDepends := GridDepends.GetColumnValue(n, 'package');
+      FDepends := GridDepends.GetCellStrValue(n, 'package');
     n := GridDepends.GetNext(n);
   end;
   Result := FDepends;
