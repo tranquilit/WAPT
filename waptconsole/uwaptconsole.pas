@@ -221,9 +221,6 @@ type
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: boolean; var ImageIndex: integer;
       var ImageList: TCustomImageList);
-    procedure GridHostsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
-      RowData, CellData: ISuperObject; Column: TColumnIndex;
-      TextType: TVSTTextType; var CellText: String);
     procedure GridHostsPaintBackground(Sender: TBaseVirtualTree;
       TargetCanvas: TCanvas; const R: TRect; var Handled: Boolean);
     procedure GridPackagesPaintText(Sender: TBaseVirtualTree;
@@ -1254,15 +1251,6 @@ begin
 
     end;
   end;
-end;
-
-procedure TVisWaptGUI.GridHostsGetText(Sender: TBaseVirtualTree;
-  Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
-  TextType: TVSTTextType; var CellText: String);
-begin
-     if (CellData<>Nil) and (CellData.DataType = stArray) then
-     CellText:= Join(',',CellData);
-
 end;
 
 procedure TVisWaptGUI.GridHostsPaintBackground(Sender: TBaseVirtualTree;

@@ -135,7 +135,6 @@ object VisWaptGUI: TVisWaptGUI
         Height = 473
         Top = 54
         Width = 511
-        OnGetText = GridHostsGetText
         Align = alClient
         Color = clWhite
         Header.AutoSizeIndex = -1
@@ -269,7 +268,6 @@ object VisWaptGUI: TVisWaptGUI
         OnDblClick = ActEditHostPackageExecute
         OnFocusChanged = GridHostsFocusChanged
         OnGetImageIndexEx = GridHostsGetImageIndexEx
-        OnPaintBackground = GridHostsPaintBackground
       end
       object HostPages: TPageControl
         Left = 516
