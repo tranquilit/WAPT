@@ -222,6 +222,10 @@ begin
       CloseHandle(hPipeErrorWrite);
     end;
 
+    myWriteInputThread := Nil;
+    myReadOutputThread := Nil;
+    myReadErrorThread := Nil;
+
     myWriteInputThread := TStoWritePipeThread.Create(hPipeInputWrite, Input);
     myReadOutputThread := TStoReadPipeThread.Create(hPipeOutputRead);
     myReadErrorThread := TStoReadPipeThread.Create(hPipeErrorRead);
@@ -247,7 +251,7 @@ begin
         Raise Exception.Create(error);}
 
     finally
-      if myReadOutputThread<>Nil then  myWriteInputThread.Free;
+      if myWriteInputThread<>Nil then  myWriteInputThread.Free;
       if myReadOutputThread<>Nil then myReadOutputThread.Free;
       if myReadErrorThread<>Nil then myReadErrorThread.Free;
       CloseHandle(myProcessInfo.hThread);
