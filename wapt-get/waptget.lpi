@@ -21,7 +21,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="7"/>
-      <RevisionNr Value="4"/>
+      <RevisionNr Value="5"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -52,7 +52,7 @@
         <PackageName Value="pl_indycomp"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="20">
+    <Units Count="21">
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -60,7 +60,7 @@
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="19"/>
-        <CursorPos X="1" Y="1"/>
+        <CursorPos X="34" Y="26"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -71,8 +71,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="72" Y="19"/>
+        <TopLine Value="82"/>
+        <CursorPos X="60" Y="104"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
       </Unit1>
@@ -223,8 +223,18 @@
         <CursorPos X="69" Y="257"/>
         <UsageCount Value="10"/>
       </Unit19>
+      <Unit20>
+        <Filename Value="..\waptconsole\uwaptconsole.pas"/>
+        <UnitName Value="uwaptconsole"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="509"/>
+        <CursorPos X="12" Y="521"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit20>
     </Units>
-    <JumpHistory Count="14" HistoryIndex="13">
+    <JumpHistory Count="15" HistoryIndex="14">
       <Position1>
         <Filename Value="waptget.lpr"/>
         <Caret Line="193" Column="55" TopLine="1"/>
@@ -281,6 +291,10 @@
         <Filename Value="waptcommon.pas"/>
         <Caret Line="494" Column="1" TopLine="493"/>
       </Position14>
+      <Position15>
+        <Filename Value="..\waptconsole\uwaptconsole.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position15>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

@@ -49,7 +49,6 @@ type
     procedure ActConfigureExecute(Sender: TObject);
     procedure ActForceRegisterExecute(Sender: TObject);
     procedure ActLaunchWaptConsoleExecute(Sender: TObject);
-    procedure ActLaunchWaptConsoleUpdate(Sender: TObject);
     procedure ActLocalInfoExecute(Sender: TObject);
     procedure ActQuitExecute(Sender: TObject);
     procedure ActSessionSetupExecute(Sender: TObject);
@@ -335,11 +334,6 @@ end;
 function TDMWaptTray.WaptConsoleFileName: String;
 begin
   result:=AppendPathDelim(ExtractFileDir(ParamStr(0)))+'waptconsole.exe';
-end;
-
-procedure TDMWaptTray.ActLaunchWaptConsoleUpdate(Sender: TObject);
-begin
-  //ActLaunchWaptConsole.Enabled:=FileExists(WinapticFileName);
 end;
 
 procedure TDMWaptTray.ActLocalInfoExecute(Sender: TObject);

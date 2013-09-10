@@ -4,7 +4,7 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="45">
+    <Units Count="48">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -22,14 +22,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uwaptconsole"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1138"/>
-        <CursorPos X="22" Y="1185"/>
+        <TopLine Value="1289"/>
+        <CursorPos X="14" Y="1305"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="2">
-          <Item0 X="1" Y="464" ID="1"/>
-          <Item1 X="26" Y="702" ID="2"/>
+          <Item0 X="1" Y="472" ID="1"/>
+          <Item1 X="26" Y="710" ID="2"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -105,10 +105,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviseditpackage"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="116"/>
-        <CursorPos X="37" Y="120"/>
+        <TopLine Value="119"/>
+        <CursorPos X="30" Y="126"/>
         <UsageCount Value="215"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="uviscreatewaptsetup.pas"/>
@@ -168,7 +171,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="44" Y="12"/>
-        <UsageCount Value="171"/>
+        <UsageCount Value="174"/>
       </Unit13>
       <Unit14>
         <Filename Value="uviswaptconfig.pas"/>
@@ -180,7 +183,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="3" Y="15"/>
-        <UsageCount Value="171"/>
+        <UsageCount Value="174"/>
       </Unit14>
       <Unit15>
         <Filename Value="uvischangepassword.pas"/>
@@ -189,20 +192,17 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvischangepassword"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="12"/>
         <CursorPos X="72" Y="37"/>
-        <UsageCount Value="27"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <UsageCount Value="30"/>
       </Unit15>
       <Unit16>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <UnitName Value="superobject"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="4510"/>
-        <CursorPos X="57" Y="4526"/>
+        <TopLine Value="463"/>
+        <CursorPos X="12" Y="486"/>
         <UsageCount Value="98"/>
       </Unit16>
       <Unit17>
@@ -376,10 +376,12 @@
       <Unit39>
         <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
         <UnitName Value="sogrid"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="28"/>
-        <CursorPos X="3" Y="33"/>
-        <UsageCount Value="37"/>
+        <TopLine Value="361"/>
+        <CursorPos X="25" Y="384"/>
+        <UsageCount Value="39"/>
+        <Loaded Value="True"/>
       </Unit39>
       <Unit40>
         <Filename Value="uwaptconsole.lfm"/>
@@ -421,130 +423,157 @@
         <CursorPos X="15" Y="608"/>
         <UsageCount Value="10"/>
       </Unit44>
+      <Unit45>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <UnitName Value="soutils"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="111"/>
+        <CursorPos X="21" Y="125"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+      </Unit45>
+      <Unit46>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <UnitName Value="VirtualTrees"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="18541"/>
+        <CursorPos X="3" Y="18580"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit46>
+      <Unit47>
+        <Filename Value="C:\codetyphon\typhon\lcl\include\winapih.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="80"/>
+        <CursorPos X="10" Y="102"/>
+        <UsageCount Value="10"/>
+      </Unit47>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="uvischangepassword.pas"/>
-        <Caret Line="28" Column="18" TopLine="1"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="7819" Column="20" TopLine="7783"/>
       </Position1>
       <Position2>
-        <Filename Value="uvischangepassword.pas"/>
-        <Caret Line="58" Column="29" TopLine="35"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="7861" Column="39" TopLine="7826"/>
       </Position2>
       <Position3>
-        <Filename Value="uvischangepassword.pas"/>
-        <Caret Line="64" Column="1" TopLine="35"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="7862" Column="49" TopLine="7827"/>
       </Position3>
       <Position4>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="712" Column="1" TopLine="694"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="7864" Column="35" TopLine="7829"/>
       </Position4>
       <Position5>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="527" Column="18" TopLine="520"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="7865" Column="37" TopLine="7830"/>
       </Position5>
       <Position6>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="259" Column="23" TopLine="253"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="7866" Column="32" TopLine="7831"/>
       </Position6>
       <Position7>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="698" Column="40" TopLine="679"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="8395" Column="16" TopLine="8363"/>
       </Position7>
       <Position8>
-        <Filename Value="uvischangepassword.pas"/>
-        <Caret Line="61" Column="47" TopLine="36"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="9984" Column="17" TopLine="9949"/>
       </Position8>
       <Position9>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="711" Column="45" TopLine="694"/>
+        <Caret Line="1276" Column="19" TopLine="1254"/>
       </Position9>
       <Position10>
-        <Filename Value="uvischangepassword.pas"/>
-        <Caret Line="29" Column="5" TopLine="11"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="1283" Column="1" TopLine="1262"/>
       </Position10>
       <Position11>
-        <Filename Value="uvischangepassword.pas"/>
-        <Caret Line="40" Column="9" TopLine="16"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="1207" Column="38" TopLine="1200"/>
       </Position11>
       <Position12>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="711" Column="45" TopLine="694"/>
+        <Caret Line="221" Column="13" TopLine="199"/>
       </Position12>
       <Position13>
-        <Filename Value="uvischangepassword.pas"/>
-        <Caret Line="29" Column="3" TopLine="7"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="220" Column="14" TopLine="199"/>
       </Position13>
       <Position14>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="252" Column="64" TopLine="239"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="11795" Column="1" TopLine="11757"/>
       </Position14>
       <Position15>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="523" Column="79" TopLine="509"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position15>
       <Position16>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="3301" Column="16" TopLine="3265"/>
       </Position16>
       <Position17>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="523" Column="79" TopLine="499"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="3354" Column="77" TopLine="3320"/>
       </Position17>
       <Position18>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="709" Column="75" TopLine="684"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="3521" Column="24" TopLine="3487"/>
       </Position18>
       <Position19>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="711" Column="29" TopLine="686"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="30709" Column="49" TopLine="30681"/>
       </Position19>
       <Position20>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1124" Column="24" TopLine="1099"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position20>
       <Position21>
-        <Filename Value="uvischangepassword.pas"/>
-        <Caret Line="26" Column="32" TopLine="12"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="3334" Column="28" TopLine="3299"/>
       </Position21>
       <Position22>
-        <Filename Value="uvischangepassword.pas"/>
-        <Caret Line="57" Column="26" TopLine="12"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="30331" Column="18" TopLine="30241"/>
       </Position22>
       <Position23>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="709" Column="42" TopLine="696"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="3311" Column="15" TopLine="3290"/>
       </Position23>
       <Position24>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="9" Column="58" TopLine="1"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="3583" Column="25" TopLine="3549"/>
       </Position24>
       <Position25>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="11" Column="40" TopLine="1"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="3820" Column="25" TopLine="3786"/>
       </Position25>
       <Position26>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="9" Column="3" TopLine="1"/>
+        <Caret Line="1208" Column="32" TopLine="1201"/>
       </Position26>
       <Position27>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="211" Column="55" TopLine="306"/>
+        <Caret Line="1287" Column="24" TopLine="1285"/>
       </Position27>
       <Position28>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="928" Column="40" TopLine="881"/>
+        <Caret Line="218" Column="15" TopLine="197"/>
       </Position28>
       <Position29>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="981" Column="33" TopLine="934"/>
+        <Caret Line="1282" Column="26" TopLine="1258"/>
       </Position29>
       <Position30>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="983" Column="35" TopLine="936"/>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="373" Column="28" TopLine="392"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>
