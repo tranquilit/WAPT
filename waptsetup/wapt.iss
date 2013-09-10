@@ -93,7 +93,7 @@ UninstallDisplayName={#AppName} {#AppVerStr}
 VersionInfoVersion={#FileVerStr}
 VersionInfoTextVersion={#AppVerStr}
 AppCopyright={#Company}
-DefaultDirName="C:\{#AppName}"
+DefaultDirName="C:\wapt"
 DefaultGroupName={#AppName}
 ChangesEnvironment=True
 AppPublisher={#Company}
@@ -117,7 +117,7 @@ LicenseFile=..\COPYING.txt
 RestartIfNeededByRun=False
 SetupIconFile=..\wapt.ico
 
-SignTool=kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f
+;SignTool=kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f
 
 [Registry]
 Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"; Check: NeedsAddPath('{app}')
