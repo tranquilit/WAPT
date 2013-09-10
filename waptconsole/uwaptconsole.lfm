@@ -135,6 +135,7 @@ object VisWaptGUI: TVisWaptGUI
         Height = 473
         Top = 54
         Width = 511
+        OnGetText = GridHostsGetText
         Align = alClient
         Color = clWhite
         Header.AutoSizeIndex = -1
