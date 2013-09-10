@@ -2495,7 +2495,7 @@ class Wapt(object):
 
         self.store_upgrade_status()
         if register:
-		    try:	
+		    try:
 			    self.update_server_status()
 		    except Exception,e:
 		        logger.critical('Unable to update server with current status : %s' % ensure_unicode(e))
@@ -2965,7 +2965,7 @@ class Wapt(object):
             self.register_computer(force=force)
         else:
             inv = {'uuid': uuid}
-            inv['wapt'] = {}
+            #inv['wapt'] = {}
             inv['softwares'] = setuphelpers.installed_softwares('')
             inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
             inv['update_status'] = json.loads(self.read_param('last_update_status','{"date": "", "running_tasks": [], "errors": [], "upgrades": []}'))
