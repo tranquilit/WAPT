@@ -160,8 +160,9 @@ def status():
     return data
     #return render_template('listing.html')
 
+
 @app.route('/runstatus')
-@requires_auth
+@check_ip_source
 def get_runstatus():
     print "from runstatus"
     con = sqlite3.connect('c:\\wapt\\db\\waptdb.sqlite')
@@ -180,7 +181,7 @@ def get_runstatus():
     return Response(data, mimetype='application/json')
 
 @app.route('/checkupgrades')
-@requires_auth
+@check_ip_source
 def get_checkupgrades():
     global config_file
     con = sqlite3.connect('c:\\wapt\\db\\waptdb.sqlite')
@@ -199,7 +200,7 @@ def get_checkupgrades():
     return Response(common.jsondump(data), mimetype='application/json')
 
 @app.route('/waptupgrade')
-@requires_auth
+@check_ip_source
 def waptupgrade():
     from setuphelpers import run
     print "run waptupgrade"
@@ -207,7 +208,7 @@ def waptupgrade():
     return "200 OK"
 
 @app.route('/upgrade')
-@requires_auth
+@check_ip_source
 def upgrade():
     wapt=Wapt(config_filename=config_file)
     print "run upgrade"
@@ -215,17 +216,16 @@ def upgrade():
     return Response(common.jsondump(data), mimetype='application/json')
 
 @app.route('/update')
-@requires_auth
-@requires_auth
+@check_ip_source
 def update():
-    print "run upgrade"
+    print "run update"
     data = wapt.update()
     print data
     return Response(common.jsondump(data), mimetype='application/json')
 
 
 @app.route('/updatebg')
-@requires_auth
+@check_ip_source
 def updatebg():
     print "run upgrade"
     data = wapt.update()
@@ -254,7 +254,7 @@ def disable():
     return Response(common.jsondump(data), mimetype='application/json')
 
 @app.route('/register')
-@requires_auth
+@check_ip_source
 def register():
     print "run cleanup"
     data = wapt.register_computer()
