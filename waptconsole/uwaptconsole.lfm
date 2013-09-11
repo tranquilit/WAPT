@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 371
+  Left = 598
   Height = 695
-  Top = 178
+  Top = 105
   Width = 1096
   Caption = 'Console WAPT'
   ClientHeight = 676
@@ -452,6 +452,7 @@ object VisWaptGUI: TVisWaptGUI
               Top = 10
               Width = 216
               Anchors = []
+              Color = 15066597
               ReadOnly = True
               TabOrder = 0
             end
@@ -461,6 +462,7 @@ object VisWaptGUI: TVisWaptGUI
               Top = 32
               Width = 216
               Anchors = []
+              Color = 15066597
               ReadOnly = True
               TabOrder = 1
             end
@@ -470,6 +472,7 @@ object VisWaptGUI: TVisWaptGUI
               Top = 54
               Width = 216
               Anchors = []
+              Color = 15066597
               ReadOnly = True
               TabOrder = 2
             end
@@ -479,6 +482,7 @@ object VisWaptGUI: TVisWaptGUI
               Top = 76
               Width = 216
               Anchors = []
+              Color = 15066597
               ReadOnly = True
               TabOrder = 3
             end
@@ -488,6 +492,7 @@ object VisWaptGUI: TVisWaptGUI
               Top = 10
               Width = 132
               Anchors = []
+              Color = 15066597
               ReadOnly = True
               TabOrder = 4
             end
@@ -497,6 +502,7 @@ object VisWaptGUI: TVisWaptGUI
               Top = 32
               Width = 132
               Anchors = []
+              Color = 15066597
               ReadOnly = True
               TabOrder = 5
             end
@@ -506,6 +512,7 @@ object VisWaptGUI: TVisWaptGUI
               Top = 54
               Width = 132
               Anchors = []
+              Color = 15066597
               ReadOnly = True
               TabOrder = 6
             end
@@ -515,6 +522,7 @@ object VisWaptGUI: TVisWaptGUI
               Top = 76
               Width = 132
               Anchors = []
+              Color = 15066597
               ReadOnly = True
               TabOrder = 7
             end
