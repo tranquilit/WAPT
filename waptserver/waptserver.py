@@ -17,6 +17,8 @@ import logging
 import codecs
 import zipfile
 import pprint
+import socket
+import requests
 
 __version__ = "0.7.4"
 
@@ -59,6 +61,8 @@ mongodb_ip = "127.0.0.1"
 wapt_folder = ""
 wapt_user = ""
 wapt_password = ""
+
+waptservice_port = 8088
 
 if config.has_section('options'):
     if config.has_option('options', 'wapt_user'):
@@ -333,7 +337,45 @@ def upload_host():
         e = sys.exc_info()
         return str(e)
 
-@app.route('/login',methods=['POST'])
+
+
+@app.route('/waptupgrade_host/<string:ip>')
+def waptupgrade_host(ip):
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(1)
+        s.connect((ip,waptservice_port))
+        s.close
+        if ip and waptservice_port:
+            print "Upgrading %s..." % ip
+            r = requests.get("http://%s:%d/waptupgrade" % ( ip, waptservice_port))
+            return r.text
+        
+        else:
+            return "Le port de waptservice n'est pas défini"                
+     
+    except Exception as e:
+        return "Impossible de joindre le web service: %s" % e
+
+@app.route('/upgrade_host/<string:ip>')
+def waptupgrade_host(ip):
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(1)
+        s.connect((ip,waptservice_port))
+        s.close
+        if ip and waptservice_port:
+            print "Upgrading %s..." % ip
+            r = requests.get("http://%s:%d/upgrade" % ( ip, waptservice_port))
+            return r.text
+        
+        else:
+            return "Le port de waptservice n'est pas défini"                
+     
+    except Exception as e:
+        return "Impossible de joindre le web service: %s" % e
+
+@app.route('/login',methods=['POST'])    
 def login():
     try:
         if request.method == 'POST':
