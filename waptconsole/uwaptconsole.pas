@@ -36,6 +36,8 @@ type
     ActChangePassword: TAction;
     ActGotoHost: TAction;
     Action1: TAction;
+    ActHostWaptUpgrade: TAction;
+    ActHostUpgrade: TAction;
     ActWAPTLocalConfig: TAction;
     ActUpdateWaptGetINI: TAction;
     actRefresh: TAction;
@@ -70,6 +72,8 @@ type
     cbShowHostPackagesGroup: TCheckBox;
     CheckBoxMaj: TCheckBox;
     CheckBox_error: TCheckBox;
+    MenuItem33: TMenuItem;
+    MenuItem34: TMenuItem;
     ProgressBar: TProgressBar;
     EdHostname: TEdit;
     EdDescription: TEdit;
@@ -174,6 +178,8 @@ type
     procedure ActDeletePackageUpdate(Sender: TObject);
     procedure ActEditHostPackageExecute(Sender: TObject);
     procedure ActGotoHostExecute(Sender: TObject);
+    procedure ActHostUpgradeExecute(Sender: TObject);
+    procedure ActHostWaptUpgradeExecute(Sender: TObject);
     procedure ActPackageEdit(Sender: TObject);
     procedure ActEditpackageUpdate(Sender: TObject);
     procedure ActEvaluateExecute(Sender: TObject);
@@ -827,6 +833,45 @@ begin
   EdSearchHost.SelectAll;
 
 end;
+
+procedure TVisWaptGUI.ActHostUpgradeExecute(Sender: TObject);
+var
+ip: string;
+N: PVirtualNode;
+res : ISuperObject;
+begin
+    N := GridHosts.GetFirstSelected;
+    while N <> nil do
+    begin
+      ip := GridHosts.GetCellStrValue(N, 'host.connected_ips');
+      if ip <> '' then
+      begin
+         res := WAPTServerJsonGet('/upgrade_host/' + ip, []);
+         ShowMessage(res.AsString);
+      end;
+      N := GridHosts.GetNextSelected(N);
+    end;
+end;
+
+procedure TVisWaptGUI.ActHostWaptUpgradeExecute(Sender: TObject);
+var
+ip: string;
+N: PVirtualNode;
+res : ISuperObject;
+begin
+    N := GridHosts.GetFirstSelected;
+    while N <> nil do
+    begin
+      ip := GridHosts.GetCellStrValue(N, 'host.connected_ips');
+      if ip <> '' then
+      begin
+         res := WAPTServerJsonGet('/waptupgrade_host/' + ip, []);
+         ShowMessage(res.AsString);
+      end;
+      N := GridHosts.GetNextSelected(N);
+    end;
+end;
+
 
 procedure TVisWaptGUI.ActEvaluateExecute(Sender: TObject);
 var

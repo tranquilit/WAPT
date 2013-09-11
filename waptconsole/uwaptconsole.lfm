@@ -1,11 +1,11 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 598
+  Left = 713
   Height = 695
-  Top = 105
-  Width = 1096
+  Top = 127
+  Width = 1074
   Caption = 'Console WAPT'
   ClientHeight = 676
-  ClientWidth = 1096
+  ClientWidth = 1074
   Menu = MainMenu1
   OnCreate = FormCreate
   OnShow = FormShow
@@ -15,7 +15,7 @@ object VisWaptGUI: TVisWaptGUI
     Left = 0
     Height = 553
     Top = 0
-    Width = 1096
+    Width = 1074
     ActivePage = pgInventory
     Align = alClient
     TabIndex = 0
@@ -24,16 +24,16 @@ object VisWaptGUI: TVisWaptGUI
     object pgInventory: TTabSheet
       Caption = 'Inventaire'
       ClientHeight = 527
-      ClientWidth = 1088
+      ClientWidth = 1066
       object Panel10: TPanel
         Left = 0
         Height = 54
         Top = 0
-        Width = 1088
+        Width = 1066
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 54
-        ClientWidth = 1088
+        ClientWidth = 1066
         TabOrder = 0
         object EdSearchHost: TEdit
           Left = 60
@@ -134,7 +134,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 473
         Top = 54
-        Width = 511
+        Width = 489
         OnGetText = GridHostsGetText
         Align = alClient
         Color = clWhite
@@ -271,7 +271,7 @@ object VisWaptGUI: TVisWaptGUI
         OnGetImageIndexEx = GridHostsGetImageIndexEx
       end
       object HostPages: TPageControl
-        Left = 516
+        Left = 494
         Height = 473
         Top = 54
         Width = 572
@@ -624,7 +624,7 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
       object Splitter4: TSplitter
-        Left = 511
+        Left = 489
         Height = 473
         Top = 54
         Width = 5
@@ -1496,27 +1496,27 @@ object VisWaptGUI: TVisWaptGUI
     Left = 0
     Height = 118
     Top = 558
-    Width = 1096
+    Width = 1074
     Align = alBottom
     ClientHeight = 118
-    ClientWidth = 1096
+    ClientWidth = 1074
     TabOrder = 1
     Visible = False
     object Panel7: TPanel
       Left = 1
       Height = 116
       Top = 1
-      Width = 1094
+      Width = 1072
       Align = alClient
       Caption = 'Panel7'
       ClientHeight = 116
-      ClientWidth = 1094
+      ClientWidth = 1072
       TabOrder = 1
       object MemoLog: TMemo
         Left = 1
         Height = 114
         Top = 1
-        Width = 481
+        Width = 459
         Align = alClient
         Lines.Strings = (
           ''
@@ -1524,7 +1524,7 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 0
       end
       object jsonlog: TVirtualJSONInspector
-        Left = 487
+        Left = 465
         Height = 114
         Top = 1
         Width = 606
@@ -1552,7 +1552,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.SelectionOptions = [toExtendedFocus]
       end
       object Splitter2: TSplitter
-        Left = 482
+        Left = 460
         Height = 114
         Top = 1
         Width = 5
@@ -1576,7 +1576,7 @@ object VisWaptGUI: TVisWaptGUI
     Left = 0
     Height = 5
     Top = 553
-    Width = 1096
+    Width = 1074
     Align = alBottom
     ResizeAnchor = akBottom
   end
@@ -1734,6 +1734,16 @@ object VisWaptGUI: TVisWaptGUI
     object Action1: TAction
       Caption = 'Action1'
     end
+    object ActHostWaptUpgrade: TAction
+      Category = 'hosts'
+      Caption = 'Mettre à jour WAPT'
+      OnExecute = ActHostWaptUpgradeExecute
+    end
+    object ActHostUpgrade: TAction
+      Category = 'hosts'
+      Caption = 'Appliquer les mises à jour'
+      OnExecute = ActHostUpgradeExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
@@ -1847,6 +1857,12 @@ object VisWaptGUI: TVisWaptGUI
     top = 296
     object MenuItem18: TMenuItem
       Action = ActEditHostPackage
+    end
+    object MenuItem34: TMenuItem
+      Action = ActHostUpgrade
+    end
+    object MenuItem33: TMenuItem
+      Action = ActHostWaptUpgrade
     end
     object MenuItem20: TMenuItem
       Action = ActHostsCopy
