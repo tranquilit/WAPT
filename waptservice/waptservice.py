@@ -18,6 +18,7 @@ import sqlite3
 from flask import request, Flask,Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
 import common
 import socket
+import thread
 from urlparse import urlparse
 
 __version__ = "0.7.4"
@@ -128,6 +129,7 @@ def check_ip_source(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         auth = request.authorization
+        print wapt_ip
         if not  request.remote_addr in ['127.0.0.1', wapt_ip]:
             return authenticate()
         return f(*args, **kwargs)
@@ -205,32 +207,45 @@ def waptupgrade():
     from setuphelpers import run
     print "run waptupgrade"
     run('c:\\wapt\\wapt-get waptupgrade')
+    
     return "200 OK"
 
 @app.route('/upgrade')
 @check_ip_source
 def upgrade():
-    wapt=Wapt(config_filename=config_file)
+    
     print "run upgrade"
-    data =  wapt.upgrade()
-    return Response(common.jsondump(data), mimetype='application/json')
+    def background_upgrade(req,config_file):
+        with app.test_request_context():
+            from flask import request
+            #check if there is a upgrade already running
+            #update sqlite with status
+            request = req
+            wapt=Wapt(config_filename=config_file)
+            wapt.update()
+            wapt.upgrade()
+            wapt.update()
+    thread.start_new_thread(background_upgrade,(request,config_file))
+    return Response(common.jsondump({'result':'ok'}), mimetype='application/json')
 
 @app.route('/update')
+@app.route('/updatebg')
 @check_ip_source
 def update():
     print "run update"
-    data = wapt.update()
-    print data
-    return Response(common.jsondump(data), mimetype='application/json')
 
+    def background_upgrade(req,config_file):
+        with app.test_request_context():
+            from flask import request
+            #check if there is a upgrade already running
+            #update sqlite with status
+            request = req
+            wapt=Wapt(config_filename=config_file)
+            wapt.update()
+     
+    thread.start_new_thread(background_upgrade,(request,config_file))
+    return Response(common.jsondump({'result':'ok'}), mimetype='application/json')
 
-@app.route('/updatebg')
-@check_ip_source
-def updatebg():
-    print "run upgrade"
-    data = wapt.update()
-    print data
-    return Response('OK : Process c:\\wapt\\wapt-get.exe launched in background')
 
 @app.route('/clean')
 @requires_auth
@@ -300,14 +315,14 @@ if __name__ == "__main__":
     #ssl_a = cheroot.ssllib.ssl_builtin.BuiltinSSLAdapter("srvlts1.crt", "srvlts1.key", "ca.crt")
     #wsgi_d = cheroot.wsgi.WSGIPathInfoDispatcher({'/': app})
     #server = cheroot.wsgi.WSGIServer(('0.0.0.0', port),wsgi_app=wsgi_d,ssl_adapter=ssl_a)
-    debug=True
+    debug=False
     if debug==True:
         #TODO : recuperer le port du .ini
         app.run(host='0.0.0.0',port=8088,debug=False)
         print "exiting"
     else:
         #TODO : recuperer le port depuis le .ini
-        port = 8080
+        port = 8088
         wsgi_d = cheroot.wsgi.WSGIPathInfoDispatcher({'/': app})
         server = cheroot.wsgi.WSGIServer(('0.0.0.0', port),wsgi_app=wsgi_d)
         try:
