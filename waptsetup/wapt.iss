@@ -288,12 +288,16 @@ begin
 //    '','', 
 //    False, 
 //    False);
-  if not ShellExec('', ExpandConstant('{app}\waptservice.exe'),
-     '--install', '{app}', SW_HIDE, True, ErrorCode) then
+  if not ShellExec('', ExpandConstant('{app}\waptpython.exe'),
+     ExpandConstant('{app}\waptservice\waptservice_servicewrapper.py --startup=auto install'), '{app}', SW_HIDE, True, ErrorCode) then
   begin
     RaiseException('Error installing waptservice:'+intToStr(ErrorCode));
   end;
-   
+  if not ShellExec('', 'netsh.exe',
+     'advfirewall firewall add rule name="waptservice 8088" dir=in action=allow protocol=TCP localport=8088', '{app}', SW_HIDE, True, ErrorCode) then
+  begin
+    //RaiseException('Error installing waptservice:'+intToStr(ErrorCode));
+  end;
 end;
 
 procedure BeforeWaptServiceinstall(exe:String);
