@@ -77,7 +77,8 @@ if config.has_section('global'):
     if config.has_option('global','waptservice_password'):
         wapt_password = config.get('global', 'waptservice_password')
     else:
-        raise Exception ('No waptservice admin password set in wapt-get.ini configuration file')
+        print "WARNING : no password set, using default password"
+        wapt_password='5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8' # = password
 
     if config.has_option('global','waptservice_port'):
         waptservice_port = config.get('global','waptservice_port')
@@ -207,13 +208,13 @@ def waptupgrade():
     from setuphelpers import run
     print "run waptupgrade"
     run('c:\\wapt\\wapt-get waptupgrade')
-    
+
     return "200 OK"
 
 @app.route('/upgrade')
 @check_ip_source
 def upgrade():
-    
+
     print "run upgrade"
     def background_upgrade(req,config_file):
         with app.test_request_context():
@@ -242,7 +243,7 @@ def update():
             request = req
             wapt=Wapt(config_filename=config_file)
             wapt.update()
-     
+
     thread.start_new_thread(background_upgrade,(request,config_file))
     return Response(common.jsondump({'result':'ok'}), mimetype='application/json')
 
