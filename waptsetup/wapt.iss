@@ -299,9 +299,33 @@ begin
     SimpleStartService('waptservice',True,True); 
 end;
 
+function RunCmd(cmd:String;RaiseOnError:Boolean):String;
+var
+  ErrorCode: Integer;
+  TmpFileName, ExecStdout: string;
+begin
+  Result := 'Error';
+  TmpFileName := ExpandConstant('{tmp}') + '\runresult.txt';
+  try
+    Exec('cmd','/C '+cmd+'  > "' + TmpFileName + '"', '', SW_HIDE,
+      ewWaitUntilTerminated, ErrorCode);
+    if RaiseOnError and (ErrorCode>0) then
+       RaiseException('La commande '+cmd+' a renvoyé le code d''erreur '+intToStr(ErrorCode));
+    if LoadStringFromFile(TmpFileName, ExecStdout) then 
+      result := ExecStdOut
+    else 
+      result:='';
+  finally
+    if FileExists(TmpFileName) then
+	     DeleteFile(TmpFileName);
+  end;
+end;
+
 procedure AfterWaptServiceinstall(exe:String);
 var
   ErrorCode: Integer;
+  ExecStdout: string;
+  winver: TWindowsVersion ;
 begin
 //  SimpleCreateService(
 //   'waptservice',
@@ -311,17 +335,29 @@ begin
 //    '','', 
 //    False, 
 //    False);
-  if not ShellExec('', ExpandConstant('{app}\waptpython.exe'),
-     ExpandConstant('{app}\waptservice\waptservice_servicewrapper.py --startup=auto install'), '{app}', SW_HIDE, True, ErrorCode) then
-  begin
+  if not Exec(ExpandConstant('{app}\waptpython.exe'),
+     ExpandConstant('{app}\waptservice\waptservice_servicewrapper.py --startup=auto install'), 
+     '', 
+     SW_HIDE, 
+     ewWaitUntilTerminated, ErrorCode) then
     RaiseException('Error installing waptservice: '+intToStr(ErrorCode));
-  end;
+   
+  GetWindowsVersionEx(winver);
+  if winver.Major>=6 then 
   // for win7
-  //if not ShellExec('', 'netsh.exe',
-  //   'advfirewall firewall add rule name="waptservice 8088" dir=in action=allow protocol=TCP localport=8088', '{app}', SW_HIDE, True, ErrorCode) then
-  //begin
-  //  RaiseException('cannot open firewall port 8088 :'+intToStr(ErrorCode));
-  //end;
+  begin  
+    ExecStdOut := RunCmd('netsh advfirewall firewall show rule name="waptservice 8088"',False);
+    if pos('Ok.',ExecStdOut)<=0 then
+      if pos('Ok.',RunCmd('netsh advfirewall firewall add rule name="waptservice 8088" dir=in action=allow protocol=TCP localport=8088',True))<=0 then 
+        RaiseException('could not open firewall port 8088 for remote management');
+  end
+  else
+  begin
+    ExecStdOut := RunCmd('netsh.exe firewall show portopening',True);
+    if pos('waptservice 8088',ExecStdOut)<=0 then
+      if pos('Ok.',RunCmd('netsh.exe firewall add portopening name="waptservice 8088" port 8088 protocol=TCP',True))<=0 then
+        RaiseException('could not open firewall port 8088 for remote management')
+	end;
 end;
 
 procedure BeforeWaptServiceinstall(exe:String);
