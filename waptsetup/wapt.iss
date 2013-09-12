@@ -187,13 +187,15 @@ Filename: "{app}\waptserver\mongodb\mongod.exe"; Parameters: " --config c:\wapt\
 
 [Code]
 #include "services.iss"
+
 var
   rbCustomRepo: TNewRadioButton;
   rbDnsRepo: TNewRadioButton;
   teWaptUrl,teWaptServerUrl: TEdit;
   lb1:TLabel;
   CustomPage: TWizardPage;
-
+  
+  
   
 procedure InitializeWizard;
 begin
@@ -263,8 +265,23 @@ begin
 end;
 
 
-function InitializeSetup(): Boolean;
+function InitializeSetup():boolean;
+var
+  ResultCode: integer;
 begin
+
+  // terminate waptconsole
+  if Exec('taskkill', '/t /im "waptconsole.exe" /f', '', SW_SHOW,
+     ewWaitUntilTerminated, ResultCode) then
+  begin
+    // handle success if necessary; ResultCode contains the exit code
+  end
+  else begin
+    // handle failure if necessary; ResultCode contains the error code
+  end;
+
+  // Proceed Setup
+
   if ServiceExists('waptservice') then
     SimpleStopService('waptservice',True,True);
   if ServiceExists('waptserver') then
