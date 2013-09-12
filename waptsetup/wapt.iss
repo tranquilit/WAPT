@@ -4,9 +4,9 @@
 #define StripBuild(str VerStr) Copy(VerStr, 1, RPos(".", VerStr)-1)
 #define AppVerStr StripBuild(FileVerStr)
 
-#define default_repo_url "http://srvwapt:8080/wapt"
+#define default_repo_url "http://wapt:8080/wapt"
 
-#define default_wapt_server "http://srvwapt:8080"
+#define default_wapt_server "http://wapt:8080"
 #define default_update_period "120"
 #define default_update_maxruntime "30"
 
@@ -39,7 +39,6 @@ Source: "..\python27.dll"; DestDir: "{app}";
 Source: "..\pythoncom27.dll"; DestDir: "{app}";
 Source: "..\pythoncomloader27.dll"; DestDir: "{app}";
 Source: "..\pywintypes27.dll"; DestDir: "{app}";
-Source: "..\waptservice.exe"; DestDir: "{app}";  BeforeInstall: BeforeWaptServiceInstall('waptservice.exe'); AfterInstall: AfterWaptServiceInstall('waptservice.exe'); Tasks: installService
 Source: "..\wapt-get.ini.tmpl"; DestDir: "{app}"; 
 Source: "..\wapt-get.py"; DestDir: "{app}"; 
 Source: "..\keyfinder.py"; DestDir: "{app}"; 
@@ -64,6 +63,8 @@ Source: "..\waptpython.exe"; DestDir: "{app}";
 Source: "..\waptservice\waptservice*.py"; DestDir: "{app}\waptservice\";
 Source: "..\waptservice\waptservice.ini"; DestDir: "{app}\waptservice\";
 Source: "..\waptservice\templates"; DestDir: "{app}\waptservice\templates"; Flags: createallsubdirs recursesubdirs
+Source: "..\waptservice.exe"; DestDir: "{app}";  BeforeInstall: BeforeWaptServiceInstall('waptservice.exe'); AfterInstall: AfterWaptServiceInstall('waptservice.exe'); Tasks: installService
+
 #ifdef waptserver
 Source: "waptserver.iss"; DestDir: "{app}\waptsetup";
 Source: "..\waptserver\waptserver.ini.template"; DestDir: "{app}\waptserver"; DestName: "waptserver.ini"
@@ -72,9 +73,9 @@ Source: "..\waptserver\*.template"; DestDir: "{app}\waptserver";
 Source: "..\waptserver\templates\*"; DestDir: "{app}\waptserver\templates"; Flags: createallsubdirs recursesubdirs
 Source: "..\waptserver\scripts\*"; DestDir: "{app}\waptserver\scripts"; Flags: createallsubdirs recursesubdirs
 Source: "..\waptserver\mongodb\mongod.*"; DestDir: "{app}\waptserver\mongodb"; Flags: createallsubdirs recursesubdirs
-Source: "..\python27.dll"; DestDir: "{sys}"; Flags: sharedfile 32bit;
+; Source: "..\python27.dll"; DestDir: "{sys}"; Flags: sharedfile 32bit;
 #endif
-
+Source: "..\python27.dll"; DestDir: "{sys}"; Flags: sharedfile 32bit;
 
 [Dirs]
 #ifdef waptserver
@@ -294,7 +295,7 @@ begin
 //    False, 
 //    False);
   if not ShellExec('', ExpandConstant('{app}\waptpython.exe'),
-     'c:\wapt\waptservice\waptservice_servicewrapper.py --startup=auto install', '{app}', SW_HIDE, True, ErrorCode) then
+     ExpandConstant('{app}\waptservice\waptservice_servicewrapper.py --startup=auto install'), '{app}', SW_HIDE, True, ErrorCode) then
   begin
     RaiseException('Error installing waptservice: '+intToStr(ErrorCode));
   end;
