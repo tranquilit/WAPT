@@ -19,7 +19,7 @@ sc delete waptmongodb
 
 Installation des dépendances 
  apt-get install python python-dev mongodb build-essential python-dev python-setuptools
- easy_install flask uwsgi pymongo
+ easy_install flask uwsgi pymongo requests
  
 
 Création de l'utilisateur waptserver et des fichiers de log 
