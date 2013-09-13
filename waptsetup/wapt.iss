@@ -4,13 +4,13 @@
 #define StripBuild(str VerStr) Copy(VerStr, 1, RPos(".", VerStr)-1)
 #define AppVerStr StripBuild(FileVerStr)
 
-#define default_repo_url "http://wapt:8080/wapt"
+#define default_repo_url "http://srvlts1/wapt"
 
-#define default_wapt_server "http://wapt:8080"
+#define default_wapt_server "http://srvlts1:8080"
 #define default_update_period "120"
 #define default_update_maxruntime "30"
 
-#define output_dir "."
+#define output_dir "C:\tranquilit\wapt\waptserver\repository\wapt"
 
 ;#define waptserver 
 #ifdef waptserver
@@ -310,7 +310,7 @@ begin
     Exec('cmd','/C '+cmd+'  > "' + TmpFileName + '"', '', SW_HIDE,
       ewWaitUntilTerminated, ErrorCode);
     if RaiseOnError and (ErrorCode>0) then
-       RaiseException('La commande '+cmd+' a renvoyé le code d''erreur '+intToStr(ErrorCode));
+       RaiseException('La commande '+cmd+' a renvoyÃ© le code d''erreur '+intToStr(ErrorCode));
     if LoadStringFromFile(TmpFileName, ExecStdout) then 
       result := ExecStdOut
     else 
@@ -403,4 +403,3 @@ begin
   Result := Pos(';' + UpperCase(ExpandConstant(Param)) + ';', UpperCase(OrigPath)) = 0;
   
 end;
-
