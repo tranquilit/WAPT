@@ -9,23 +9,26 @@ from waptpackage import update_packages,PackageEntry
 from functools import wraps
 import logging
 import ConfigParser
-import  cheroot.wsgi, cheroot.ssllib.ssl_builtin
 import logging
 import codecs
 import zipfile
 import pprint
 import sqlite3
-from flask import request, Flask,Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
+from flask import request, Flask,Response, send_from_directory, send_file, session, g, redirect, url_for, abort, render_template, flash
 import common
 import socket
 import thread
 from urlparse import urlparse
+from rocket import Rocket
+import gc
 
-__version__ = "0.7.4"
+__version__ = "0.7.5"
 
 config = ConfigParser.RawConfigParser()
-wapt_root_dir = ''
+wapt_root_dir = os.path.dirname(__file__)
 
+
+"""
 if os.name=='nt':
     import _winreg
     try:
@@ -35,8 +38,7 @@ if os.name=='nt':
         wapt_root_dir = 'c:\\\\wapt\\'
 else:
     wapt_root_dir = '/opt/wapt/'
-
-import logging
+"""
 
 
 
@@ -48,6 +50,7 @@ logging.basicConfig(filename=os.path.join(log_directory,'waptservice.log'),forma
 logging.info('waptservice starting')
 
 config_file = os.path.join(wapt_root_dir,'wapt-get.ini')
+
 
 
 if os.path.exists(config_file):
@@ -94,10 +97,10 @@ logger.addHandler(hdlr)
 logger.setLevel(logging.INFO)
 
 from common import Wapt
+
 wapt=Wapt(config_filename=config_file)
 wapt_servername =  urlparse(wapt.find_wapt_server())
 wapt_ip = socket.gethostbyname(wapt_servername.hostname)
-
 
 ALLOWED_EXTENSIONS = set(['wapt'])
 
@@ -226,6 +229,9 @@ def upgrade():
             wapt.update()
             wapt.upgrade()
             wapt.update()
+            del wapt
+            gc.collect()
+
     thread.start_new_thread(background_upgrade,(request,config_file))
     return Response(common.jsondump({'result':'ok'}), mimetype='application/json')
 
@@ -240,9 +246,15 @@ def update():
             from flask import request
             #check if there is a upgrade already running
             #update sqlite with status
+            wapt = None
             request = req
-            wapt=Wapt(config_filename=config_file)
-            wapt.update()
+            try:
+                wapt=Wapt(config_filename=config_file)
+                wapt.update()
+            finally:
+                if wapt:
+                    del wapt
+                gc.collect()
 
     thread.start_new_thread(background_upgrade,(request,config_file))
     return Response(common.jsondump({'result':'ok'}), mimetype='application/json')
@@ -297,6 +309,15 @@ def remove():
     data = wapt.remove(package)
     return Response(data, mimetype='application/json')
 
+@app.route('/static/<path:filename>', methods=['GET'])
+def static(filename):
+    return send_file(open(os.path.join(wapt_root_dir,'static',filename),'rb'),as_attachment=False)
+
+@app.route('/', methods=['GET'])
+def index():
+    return render_template('layout.html')
+
+
 def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
@@ -311,11 +332,6 @@ def authenticate():
     {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
 if __name__ == "__main__":
-    # SSL Support
-    #port = 8443
-    #ssl_a = cheroot.ssllib.ssl_builtin.BuiltinSSLAdapter("srvlts1.crt", "srvlts1.key", "ca.crt")
-    #wsgi_d = cheroot.wsgi.WSGIPathInfoDispatcher({'/': app})
-    #server = cheroot.wsgi.WSGIServer(('0.0.0.0', port),wsgi_app=wsgi_d,ssl_adapter=ssl_a)
     debug=False
     if debug==True:
         #TODO : recuperer le port du .ini
@@ -324,8 +340,7 @@ if __name__ == "__main__":
     else:
         #TODO : recuperer le port depuis le .ini
         port = 8088
-        wsgi_d = cheroot.wsgi.WSGIPathInfoDispatcher({'/': app})
-        server = cheroot.wsgi.WSGIServer(('0.0.0.0', port),wsgi_app=wsgi_d)
+        server = Rocket(('0.0.0.0', port), 'wsgi', {"wsgi_app":app})
         try:
             print ("starting waptserver")
             server.start()

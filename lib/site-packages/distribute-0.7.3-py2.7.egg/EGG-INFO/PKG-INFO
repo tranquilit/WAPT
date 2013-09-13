@@ -1,0 +1,31 @@
+Metadata-Version: 1.1
+Name: distribute
+Version: 0.7.3
+Summary: distribute legacy wrapper
+Home-page: http://packages.python.org/distribute
+Author: The fellowship of the packaging
+Author-email: distutils-sig@python.org
+License: PSF or ZPL
+Description: Distribute - legacy package
+        
+        This package is a simple compatibility layer that installs Setuptools 0.7+.
+        
+Keywords: CPAN PyPI distutils eggs package management
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: Python Software Foundation License
+Classifier: License :: OSI Approved :: Zope Public License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 2.4
+Classifier: Programming Language :: Python :: 2.5
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.1
+Classifier: Programming Language :: Python :: 3.2
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: System :: Archiving :: Packaging
+Classifier: Topic :: System :: Systems Administration
+Classifier: Topic :: Utilities

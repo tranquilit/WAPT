@@ -14,13 +14,12 @@ sys.path.append("c:\wapt\lib")
 sys.path.append("c:\wapt\waptservive")
 sys.path.append("c:\wapt\lib\site-packages")
 
-import  cheroot.wsgi
-
+from rocket import Rocket
 
 class aservice(win32serviceutil.ServiceFramework):
 
-    _svc_name_ = "WAPTService"
-    _svc_display_name_ = "WAPT Service"
+    _svc_name_ = "WAPTService2"
+    _svc_display_name_ = "WAPT Service2"
     _svc_description_ = "WAPTService for configuring local machine"
 
     server = None
@@ -42,8 +41,8 @@ class aservice(win32serviceutil.ServiceFramework):
         from waptservice import app
         port = 8088
     #    ssl_a = cheroot.ssllib.ssl_builtin.BuiltinSSLAdapter(cert, cert_priv)  ...  ssl_adapter=ssl_a)
-        wsgi_d = cheroot.wsgi.WSGIPathInfoDispatcher({'/': app})
-        self.server = cheroot.wsgi.WSGIServer(('0.0.0.0', port), wsgi_app=wsgi_d)
+
+        self.server = Rocket(('0.0.0.0', port), 'wsgi', {"wsgi_app":app})
         try:
             self.server.start()
         except KeyboardInterrupt:

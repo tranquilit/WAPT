@@ -1,0 +1,4 @@
+[distutils.commands]
+build_release = release:build_release
+build_monolithic = monolithic:build_monolithic
+

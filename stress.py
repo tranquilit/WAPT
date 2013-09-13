@@ -13,13 +13,18 @@ import requests,os,threading
 def task(*args,**kwargs):
     i = 0
     while True:
-     r = requests.request('GET','http://localhost:8088/',stream=False)
-     #r = requests.request('GET','http://localhost:8088/checkupgrades',stream=False)
+     r = requests.request('GET','http://localhost:8088/update',stream=False)
      i += 1
-     print i
+     print i,r.content
 
 if __name__ == '__main__':
-    for i in range(0,20):
-        t = threading.Thread(target=task,args=[])
-        t.start()
+    try:
+        for i in range(0,20):
+            t = threading.Thread(target=task,args=[])
+            t.start()
+    except KeyboardInterrupt:
+        print ("stopping")
+        t.stop()
+
+
 
