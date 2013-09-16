@@ -18,8 +18,8 @@ from rocket import Rocket
 
 class aservice(win32serviceutil.ServiceFramework):
 
-    _svc_name_ = "WAPTService2"
-    _svc_display_name_ = "WAPT Service2"
+    _svc_name_ = "WAPTService"
+    _svc_display_name_ = "WAPT Service"
     _svc_description_ = "WAPTService for configuring local machine"
 
     server = None
