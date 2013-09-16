@@ -5,11 +5,11 @@ unit uwaptconsole;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, SynHighlighterPython, SynEdit, SynGutterBase,
-  SynGutterMarks, SynGutterLineNumber, SynGutterChanges, SynGutter,
-  SynGutterCodeFolding, vte_json, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  StdCtrls, ComCtrls, ActnList, Menus, fpJson, jsonparser, superobject,
-  UniqueInstance, VirtualTrees, VarPyth, Windows, LMessages, ImgList, SOGrid;
+  Classes, SysUtils, FileUtil, SynEdit,SynHighlighterPython,
+  vte_json, Forms, Controls, Graphics,
+  Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, jsonparser,
+  superobject, UniqueInstance, VirtualTrees, VarPyth, Windows, ImgList,
+  SOGrid;
 
 type
 
@@ -35,7 +35,6 @@ type
     ActAdvancedMode: TAction;
     ActChangePassword: TAction;
     ActGotoHost: TAction;
-    Action1: TAction;
     ActHostWaptUpgrade: TAction;
     ActHostUpgrade: TAction;
     ActWAPTLocalConfig: TAction;
@@ -162,7 +161,7 @@ type
     pgPackages: TTabSheet;
     pgSoftwares: TTabSheet;
     pgHostPackage: TTabSheet;
-    pgTISRepo: TTabSheet;
+    pgExternalRepo: TTabSheet;
     testedit: TSynEdit;
     jsonlog: TVirtualJSONInspector;
     UniqueInstance1: TUniqueInstance;
@@ -283,6 +282,7 @@ end;
 procedure TVisWaptGUI.ChangerClick(Sender: TObject);
 begin
   ActWAPTLocalConfigExecute(self);
+  urlExternalRepo.Caption := 'Url: ' + WaptExternalRepo;
 end;
 
 procedure TVisWaptGUI.CheckBoxMajChange(Sender: TObject);
@@ -402,8 +402,10 @@ begin
   begin
     N := GridPackages.GetFirstSelected;
     selects := GridPackages.SelectedCount;
+
     with  Tvisloading.Create(Self) do
       try
+        ShowModal;
         while N <> nil do
         begin
           package := GridPackages.GetCellStrValue(N, 'package') +
@@ -472,7 +474,7 @@ begin
         begin
           dependsList := DMPython.RunJSON(
             format('waptdevutils.searchLastPackageTisRepo(r"%s","%s")',
-            [waptpath + '\waptconsole.ini', depends]));
+            [AppIniFilename, depends]));
           for i := 0 to dependsList.AsArray.Length - 1 do
           begin
             chargement.Caption :=
@@ -491,7 +493,7 @@ begin
         end;
         sourceDir := DMPython.RunJSON(
           Format('waptdevutils.duplicate_from_tis_repo(r"%s",r"%s",%S)',
-          [waptpath + '\waptconsole.ini', filePath, dependsPath.AsString])).AsString;
+          [AppIniFilename, filePath, dependsPath.AsString])).AsString;
 
         if sourceDir <> 'error' then
         begin
@@ -1020,7 +1022,9 @@ procedure TVisWaptGUI.ActUpdateExecute(Sender: TObject);
 var
   res: variant;
 begin
-  res := MainModule.mywapt.update(NOARGS);
+  //test avec un variant ;)
+  res := MainModule.mywapt.update(register:=False);
+  ShowMessage(res.__getitem__('repos').__getitem__(0));
   ActSearchPackageExecute(Sender);
 end;
 
@@ -1077,6 +1081,10 @@ begin
           //inifile.WriteString('global','default_sources_url',eddefault_sources_url.text);
           ActUpdateWaptGetINI.Execute;
           ActUpdate.Execute;
+          GridPackages.Clear;
+          GridPackages1.Clear;
+          PageControl1Change(PageControl1);
+
         end;
       finally
         Free;
@@ -1093,7 +1101,7 @@ var
   packages: ISuperObject;
 begin
   expr := format('waptdevutils.updateTisRepo(r"%s","%s")',
-    [waptpath + '\waptconsole.ini', EdSearch1.Text]);
+    [AppIniFilename , EdSearch1.Text]);
   packages := DMPython.RunJSON(expr);
   GridPackages1.Data := packages;
   GridPackages1.Header.AutoFitColumns(False);
@@ -1212,7 +1220,7 @@ end;
 procedure TVisWaptGUI.FormShow(Sender: TObject);
 begin
   MemoLog.Clear;
-  DMPython.WaptConfigFileName := GetAppConfigDir(False)+ 'waptconsole.ini';
+  DMPython.WaptConfigFileName := AppIniFilename;
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
   ActUpdateWaptGetINIExecute(Self);
   Login;
@@ -1382,7 +1390,7 @@ begin
     if GridPackages.Data = nil then
       ActSearchPackage.Execute;
   end
-  else if PageControl1.ActivePage = pgTISRepo then
+  else if PageControl1.ActivePage = pgExternalRepo then
   begin
     CopyMenu(PopupMenuPackagesTIS, MenuItem24);
     if GridPackages1.Data = nil then

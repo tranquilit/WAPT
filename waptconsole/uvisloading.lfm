@@ -7,6 +7,7 @@ object visloading: Tvisloading
   Caption = 'Chargement'
   ClientHeight = 82
   ClientWidth = 418
+  FormStyle = fsStayOnTop
   Position = poMainFormCenter
   LCLVersion = '1.1'
   Visible = True

@@ -119,7 +119,6 @@ def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wa
         raise Exception(u"Innosetup n'est pas disponible (emplacement %s), veuillez l'installer" % inno_directory)
     run('"%s" /cc %s' % (inno_directory,iss_template))
     print('%s compiled successfully' % (outputfile, ))
-   # filecopyto(outputfile,destination)
     return os.path.join(destination,os.path.basename(outputfile))
 
 def diff_computer_ad_wapt(wapt):
@@ -178,9 +177,6 @@ def searchLastPackageTisRepo(wapt,search_strings):
         result.append(max(wapt.search(search_string),key=attrgetter('version')).filename)
     return result
 
-
-
-
 def duplicate_from_tis_repo(wapt,file_name,depends=[]):
     import tempfile
     wapt = common.Wapt(config_filename=wapt)
@@ -220,13 +216,6 @@ def login_to_waptserver(url, login, passwd,newPass=""):
     except Exception as e:
         return unicode(str(e.message), 'ISO-8859-1')
 
-
-
-
 if __name__ == '__main__':
-    #{create_wapt_setup(wapt,r'C:\tranquilit\wapt\ssl\sdeded.crt',destination='c:\wapt',default_repo_url='',company='')
-    #print duplicate_from_tis_repo(r'C:\tranquilit\wapt\wapt-get.ini','tis-ms-pstools', 'test')
     mywapt = common.Wapt()
-    #print duplicate_from_tis_repo(r'c:\tranquilit\wapt\wapt-get.ini', r'c:\wapt\cache\tis-wsmanage_1.0.1-4_x86.wapt', [r'c:\wapt\cache\tis-xencenter_6.2_all.wapt', r'c:\wapt\cache\tis-putty_0.62-2_x86.wapt',r'c:\wapt\cache\tis-firefox_23.0.1-00_all.wapt'])
-    #print searchLastPTisRepo(r'c:\tranquilit\wapt\wapt-get.ini', 'tis-firefox,tis-putty')
     pass

@@ -1,0 +1,79 @@
+object VisLogin: TVisLogin
+  Left = 774
+  Height = 129
+  Top = 388
+  Width = 269
+  BorderStyle = bsDialog
+  Caption = 'Authenfication WAPT'
+  ClientHeight = 129
+  ClientWidth = 269
+  Position = poScreenCenter
+  LCLVersion = '1.1'
+  object edPassword: TEdit
+    Left = 142
+    Height = 21
+    Top = 66
+    Width = 116
+    EchoMode = emPassword
+    PasswordChar = '*'
+    TabOrder = 0
+  end
+  object laPassword: TLabel
+    Left = 12
+    Height = 13
+    Top = 70
+    Width = 119
+    Caption = 'Mot de passe du serveur'
+    ParentColor = False
+  end
+  object edUser: TEdit
+    Left = 142
+    Height = 21
+    Top = 40
+    Width = 116
+    TabOrder = 1
+    Text = 'admin'
+  end
+  object laPassword1: TLabel
+    Left = 12
+    Height = 13
+    Top = 42
+    Width = 103
+    Caption = 'Utilisateur du serveur'
+    ParentColor = False
+  end
+  object Label1: TLabel
+    Left = 14
+    Height = 13
+    Top = 6
+    Width = 106
+    Caption = 'Connexion au serveur'
+    ParentColor = False
+  end
+  object edWaptServerName: TEdit
+    Left = 142
+    Height = 21
+    Top = 4
+    Width = 116
+    Enabled = False
+    TabOrder = 2
+    Text = 'edWaptServerName'
+  end
+  object ButtonPanel1: TButtonPanel
+    Left = 6
+    Height = 34
+    Top = 89
+    Width = 257
+    OKButton.Name = 'OKButton'
+    OKButton.DefaultCaption = True
+    HelpButton.Name = 'HelpButton'
+    HelpButton.DefaultCaption = True
+    CloseButton.Name = 'CloseButton'
+    CloseButton.DefaultCaption = True
+    CloseButton.Enabled = False
+    CancelButton.Name = 'CancelButton'
+    CancelButton.DefaultCaption = True
+    TabOrder = 3
+    ShowButtons = [pbOK, pbCancel]
+  end
+end

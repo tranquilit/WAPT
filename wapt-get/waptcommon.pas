@@ -39,11 +39,13 @@ interface
   Function  GetWaptLocalURL:String;
 
 
-  function WaptIniFilename: Utf8String;
+  function WaptIniFilename: Utf8String; // for local wapt install directory
+  function AppIniFilename: Utf8String;  // current applicatin parameters in user space
+
   function WaptgetPath: Utf8String;
   function WaptservicePath: Utf8String;
   function WaptDBPath: Utf8String;
-  function WaptExternalRepo: Utf8String;
+  function WaptExternalRepo(inifilename:String=''): Utf8String;
   function GetWaptRepoURL: Utf8String;
 
   //function http_post(url: string;Params:String): String;
@@ -367,6 +369,11 @@ begin
   result := ExtractFilePath(ParamStr(0))+'\wapt-get.ini';
 end;
 
+function AppIniFilename: Utf8String;
+begin
+  result := GetAppConfigDir(False)+GetApplicationName+'.ini';
+end;
+
 function WaptDBPath: Utf8String;
 begin
   Result := IniReadString(WaptIniFilename,'Global','dbdir');
@@ -376,9 +383,11 @@ begin
     result := ExtractFilePath(ParamStr(0))+'\db\waptdb.sqlite'
 end;
 
-function WaptExternalRepo: Utf8String;
+function WaptExternalRepo(inifilename:String=''): Utf8String;
 begin
-  Result := IniReadString(WaptIniFilename,'Global','templates_repo_url');
+  if inifilename='' then
+     inifilename:=AppIniFilename;
+  Result := IniReadString(inifilename,'Global','templates_repo_url');
   if Result = '' then
       Result:='http://wapt.tranquil.it/wapt/';
 end;

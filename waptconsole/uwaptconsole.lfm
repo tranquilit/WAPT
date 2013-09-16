@@ -16,9 +16,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 553
     Top = 0
     Width = 1074
-    ActivePage = pgInventory
+    ActivePage = pgExternalRepo
     Align = alClient
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 0
     OnChange = PageControl1Change
     object pgInventory: TTabSheet
@@ -777,15 +777,15 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
     end
-    object pgTISRepo: TTabSheet
+    object pgExternalRepo: TTabSheet
       Caption = 'Dépôt Externe'
       ClientHeight = 527
-      ClientWidth = 1088
+      ClientWidth = 1066
       object GridPackages1: TSOGrid
         Left = 0
         Height = 477
         Top = 30
-        Width = 1088
+        Width = 1066
         Align = alClient
         Color = clWhite
         Header.AutoSizeIndex = 0
@@ -855,11 +855,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 20
         Top = 507
-        Width = 1088
+        Width = 1066
         Align = alBottom
         BevelOuter = bvNone
         ClientHeight = 20
-        ClientWidth = 1088
+        ClientWidth = 1066
         TabOrder = 1
         object LabHostCnt1: TLabel
           Left = 4
@@ -874,11 +874,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 30
         Top = 0
-        Width = 1088
+        Width = 1066
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 1088
+        ClientWidth = 1066
         TabOrder = 2
         object EdSearch1: TEdit
           Left = 4
@@ -908,7 +908,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object urlExternalRepo: TLabel
           AnchorSideRight.Control = Changer
-          Left = 988
+          Left = 966
           Height = 13
           Top = 9
           Width = 20
@@ -921,7 +921,7 @@ object VisWaptGUI: TVisWaptGUI
           AnchorSideLeft.Side = asrBottom
           AnchorSideRight.Control = Panel8
           AnchorSideRight.Side = asrBottom
-          Left = 1013
+          Left = 991
           Height = 25
           Top = 2
           Width = 75
@@ -1730,9 +1730,6 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Rechercher une machine'
       OnExecute = ActGotoHostExecute
       ShortCut = 16454
-    end
-    object Action1: TAction
-      Caption = 'Action1'
     end
     object ActHostWaptUpgrade: TAction
       Category = 'hosts'

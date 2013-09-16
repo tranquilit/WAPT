@@ -64,7 +64,6 @@ function UserLogin(user,password,domain:String):THandle;
 function UserDomain(htoken:THandle):String;
 function OnSystemAccount: Boolean;
 
-
 function GetGroups(srvName, usrName: WideString):TDynStringArray;
 
 function SortableVersion(VersionString:String):String;
