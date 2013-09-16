@@ -57,6 +57,14 @@ Source: "..\wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.e
 Source: "..\vc_redist\*"; DestDir: "{app}\vc_redist";
 Source: "..\lib\site-packages\M2Crypto\libeay32.dll" ; DestDir: "{app}"; 
 Source: "..\lib\site-packages\M2Crypto\ssleay32.dll" ; DestDir: "{app}";
+
+Source: "..\waptpython.exe"; DestDir: "{app}";
+Source: "..\waptservice\waptservice*.py"; DestDir: "{app}\waptservice\";
+Source: "..\waptservice\waptservice.ini"; DestDir: "{app}\waptservice\";
+Source: "..\waptservice\templates"; DestDir: "{app}\waptservice\templates"; Flags: createallsubdirs recursesubdirs
+Source: "..\waptservice.exe"; DestDir: "{app}";  BeforeInstall: BeforeWaptServiceInstall('waptservice.exe'); AfterInstall: AfterWaptServiceInstall('waptservice.exe'); Tasks: installService
+
+
 #ifdef waptserver
 Source: "waptserver.iss"; DestDir: "{app}\waptsetup";
 Source: "..\waptpython.exe"; DestDir: "{app}";
