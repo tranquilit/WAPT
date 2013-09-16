@@ -3,10 +3,9 @@
 #define FileVerStr GetFileVersion(SrcApp)
 #define StripBuild(str VerStr) Copy(VerStr, 1, RPos(".", VerStr)-1)
 #define AppVerStr StripBuild(FileVerStr)
-
-#define default_repo_url "http://srvwapt:8080/wapt"
-
+#define default_repo_url "http://srvwapt/wapt"
 #define default_wapt_server "http://srvwapt:8080"
+#define default_show_wapt_server "http://srvwapt"
 #define default_update_period "120"
 #define default_update_maxruntime "30"
 
@@ -189,10 +188,8 @@ Filename: "{app}\waptserver\mongodb\mongod.exe"; Parameters: " --config c:\wapt\
 [Code]
 #include "services.iss"
 var
-  rbCustomRepo: TNewRadioButton;
-  rbDnsRepo: TNewRadioButton;
+  rbCustomUrl,rbDnsServer: TNewRadioButton;
   teWaptUrl,teWaptServerUrl: TEdit;
-  lb1:TLabel;
   CustomPage: TWizardPage;
 
   
@@ -200,46 +197,35 @@ procedure InitializeWizard;
 begin
   CustomPage := CreateCustomPage(wpSelectTasks, 'Installation options', '');
   
-  rbCustomRepo := TNewRadioButton.Create(WizardForm);
-  rbCustomRepo.Parent := CustomPage.Surface;
-  rbCustomRepo.Checked := True;
-  rbCustomRepo.Caption := 'WAPT repository';
+  rbDnsServer := TNewRadioButton.Create(WizardForm);
+  rbDnsServer.Parent := CustomPage.Surface;
+  rbDnsServer.Checked := True;
+  rbDnsServer.Width := CustomPage.SurfaceWidth;
+  rbDnsServer.Caption := 'Detect WAPT Server with DNS records';
 
-  teWaptUrl :=TEdit.Create(WizardForm);
-  teWaptUrl.Parent := CustomPage.Surface; 
-  teWaptUrl.Left :=rbCustomRepo.Left + rbCustomRepo.Width;
-  teWaptUrl.Width :=CustomPage.SurfaceWidth - rbCustomRepo.Width;
-   
-  rbDnsRepo := TNewRadioButton.Create(WizardForm);
-  rbDnsRepo.Parent := CustomPage.Surface;
-  rbDnsRepo.Top := rbCustomRepo.Top + rbCustomRepo.Height + ScaleY(15);
-  rbDnsRepo.Width := CustomPage.SurfaceWidth;
-  rbDnsRepo.Caption := 'Detect WAPT repository with DNS records';
+  rbCustomUrl := TNewRadioButton.Create(WizardForm);
+  rbCustomUrl.Parent := CustomPage.Surface; 
+  rbCustomUrl.Checked := False;
+  rbCustomUrl.Caption := 'WAPT Server';
+  rbCustomUrl.Top := rbCustomUrl.Top + rbDnsServer.Height + 3 * ScaleY(15);
 
-  lb1 := TLabel.Create(WizardForm);
-  lb1.Caption := 'Waptserver URL';
-  lb1.Parent := CustomPage.Surface; 
-  lb1.Top := rbCustomRepo.Top + rbCustomRepo.Height + 3 * ScaleY(15);
-  lb1.Left :=rbCustomRepo.Left;
-
-  teWaptServerUrl :=TEdit.Create(WizardForm);
+  teWaptServerUrl := TEdit.Create(WizardForm);;
   teWaptServerUrl.Parent := CustomPage.Surface; 
-  teWaptServerUrl.Top := lb1.Top - 4;
-  teWaptServerUrl.Left :=rbCustomRepo.Left + lb1.Width+5;
-  teWaptServerUrl.Width :=CustomPage.SurfaceWidth;
-  
+  teWaptServerUrl.Left :=rbCustomUrl.Left + rbCustomUrl.Width+5;
+  teWaptServerUrl.Width :=CustomPage.SurfaceWidth - rbCustomUrl.Width;
+  teWaptServerUrl.Top := teWaptServerUrl.Top + rbDnsServer.Height + 3 * ScaleY(15);
     
 end;
 
 procedure CurPageChanged(CurPageID: Integer);
+var
+  WaptRepo: String;
 begin
   if curPageId=customPage.Id then
   begin
-    teWaptUrl.Text := GetIniString('Global', 'repo_url', '{#default_repo_url}', ExpandConstant('{app}\wapt-get.ini'));
-    teWaptServerUrl.Text := GetIniString('Global', 'wapt_server', '{#default_wapt_server}', ExpandConstant('{app}\wapt-get.ini'));
-    rbCustomRepo.Checked := teWaptUrl.Text <> ''; 
-    rbDnsRepo.Checked := teWaptUrl.Text = ''; 
-    lb1.Visible := isTaskSelected('useWaptServer');
+    WaptRepo := GetIniString('Global', 'repo_url', '{#default_repo_url}', ExpandConstant('{app}\wapt-get.ini'));
+    teWaptServerUrl.Text := GetIniString('Global', 'wapt_server', '{#default_show_wapt_server}', ExpandConstant('{app}\wapt-get.ini'));
+    rbCustomUrl.Checked := WaptRepo <> '';
     tewaptServerUrl.Visible := isTaskSelected('useWaptServer');
   end
 end;
@@ -249,8 +235,8 @@ begin
   if WizardSilent then
     result := GetIniString('Global', 'repo_url', '',ExpandConstant('{app}\wapt-get.ini'))
   else
-    if rbCustomRepo.Checked then
-       result := teWaptUrl.Text
+    if rbCustomUrl.Checked then
+       result := teWaptServerUrl.Text
     else 
        result :='';
 end;
