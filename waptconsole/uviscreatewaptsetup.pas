@@ -62,7 +62,7 @@ begin
       ShowMessage('Veuillez rentrer l''adresse du serveur Wapt ');
       CanClose:=False;
     end;
-    if not DirectoryExists(fnWaptDirectory.Directory) then
+    if not DirectoryExists(fnWaptDirectory.Caption) then
     begin
       ShowMessage('Le répertoire pour sauvegarder waptsetup n''est pas valide: '+fnWaptDirectory.Directory);
       CanClose:=False;
