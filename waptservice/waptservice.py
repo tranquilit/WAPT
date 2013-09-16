@@ -1,9 +1,18 @@
 import time
 import sys
+import os
+
+wapt_root_dir = os.path.dirname(os.path.dirname(__file__))
+print wapt_root_dir
+sys.path.append(os.path.join(wapt_root_dir))
+sys.path.append(os.path.join(wapt_root_dir,'lib'))
+sys.path.append(os.path.join(wapt_root_dir,'waptservice'))
+sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
+
 import json
 import hashlib
 
-import os
+
 from werkzeug import secure_filename
 from waptpackage import update_packages,PackageEntry
 from functools import wraps
@@ -25,7 +34,7 @@ import gc
 __version__ = "0.7.5"
 
 config = ConfigParser.RawConfigParser()
-wapt_root_dir = os.path.dirname(__file__)
+
 
 
 """
