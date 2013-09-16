@@ -1,11 +1,11 @@
 object VisWAPTConfig: TVisWAPTConfig
   Left = 419
-  Height = 283
+  Height = 259
   Top = 371
   Width = 507
   BorderStyle = bsDialog
   Caption = 'Configuration locale WAPT'
-  ClientHeight = 283
+  ClientHeight = 259
   ClientWidth = 507
   Position = poMainFormCenter
   ShowHint = True
@@ -13,7 +13,7 @@ object VisWAPTConfig: TVisWAPTConfig
   object ButtonPanel1: TButtonPanel
     Left = 6
     Height = 34
-    Top = 243
+    Top = 219
     Width = 495
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True

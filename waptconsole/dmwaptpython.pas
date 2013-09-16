@@ -25,6 +25,7 @@ type
   public
     { public declarations }
     WAPT:Variant;
+
     property WaptConfigFileName:String read FWaptConfigFileName write SetWaptConfigFileName;
     function RunJSON(expr: UTF8String; jsonView: TVirtualJSONInspector=
       nil): ISuperObject;
@@ -57,6 +58,9 @@ begin
       st.Append('import waptdevutils');
       st.Append('logging.basicConfig(level=logging.WARNING)');
       st.Append(format('mywapt = Wapt(config_filename=r"%s")',[AValue]));
+      st.Append('mywapt.dbpath=r":memory:"');
+      st.Append('mywapt.update(register=False)');
+
       PythonEng.ExecStrings(St);
       WAPT:=MainModule.mywapt;
     finally

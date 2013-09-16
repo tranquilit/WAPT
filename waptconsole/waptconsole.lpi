@@ -17,8 +17,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="3"/>
-      <RevisionNr Value="1"/>
-      <BuildNr Value="3"/>
+      <RevisionNr Value="2"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -157,12 +156,12 @@
         <UnitName Value="uVisCreateWaptSetup"/>
       </Unit9>
       <Unit10>
-        <Filename Value="uvispassword.pas"/>
+        <Filename Value="uvislogin.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="VisPassword"/>
+        <ComponentName Value="VisLogin"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uvispassword"/>
+        <UnitName Value="uvislogin"/>
       </Unit10>
       <Unit11>
         <Filename Value="uvisprivatekeyauth.pas"/>
