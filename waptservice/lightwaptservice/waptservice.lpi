@@ -20,8 +20,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="5"/>
-      <RevisionNr Value="8"/>
-      <BuildNr Value="2"/>
+      <RevisionNr Value="9"/>
       <Language Value="040C"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Service helper" ProductVersion=""/>
     </VersionInfo>
@@ -96,8 +95,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="269"/>
-        <CursorPos X="5" Y="67"/>
+        <TopLine Value="270"/>
+        <CursorPos X="43" Y="290"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
