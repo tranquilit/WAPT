@@ -23,9 +23,8 @@
 Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
 Source: "..\lib\*"; DestDir: "{app}\lib"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.pyc,test,*.~*" 
 Source: "..\libs\*"; DestDir: "{app}\libs"; Flags: createallsubdirs recursesubdirs  ; Excludes: "*.pyc,test,*.~*" 
-Source: "..\static\*"; DestDir: "{app}\static"; Flags: createallsubdirs recursesubdirs
-Source: "..\templates\*"; DestDir: "{app}\templates"; Flags: createallsubdirs recursesubdirs
 Source: "..\ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs
+Source: "..\templates"; DestDir: "{app}\templates"; Flags: createallsubdirs recursesubdirs
 Source: "..\common.py"; DestDir: "{app}"; 
 Source: "..\waptpackage.py"; DestDir: "{app}"; 
 Source: "..\setuphelpers.py"; DestDir: "{app}"; 
@@ -58,22 +57,20 @@ Source: "..\lib\site-packages\M2Crypto\libeay32.dll" ; DestDir: "{app}";
 Source: "..\lib\site-packages\M2Crypto\ssleay32.dll" ; DestDir: "{app}";
 
 Source: "..\waptpython.exe"; DestDir: "{app}";
-Source: "..\waptservice\waptservice*.py"; DestDir: "{app}\waptservice\";
 Source: "..\waptservice\waptservice.ini"; DestDir: "{app}\waptservice\";
+Source: "..\waptservice\static\*"; DestDir: "{app}\waptservice\static"; Flags: createallsubdirs recursesubdirs
 Source: "..\waptservice\templates"; DestDir: "{app}\waptservice\templates"; Flags: createallsubdirs recursesubdirs
-Source: "..\waptservice.exe"; DestDir: "{app}";  BeforeInstall: BeforeWaptServiceInstall('waptservice.exe'); AfterInstall: AfterWaptServiceInstall('waptservice.exe'); Tasks: installService
-
+Source: "..\waptservice\waptservice*.py"; DestDir: "{app}\waptservice\";  BeforeInstall: BeforeWaptServiceInstall('waptservice.py'); AfterInstall: AfterWaptServiceInstall('waptservice.py'); Tasks: installService
+Source: "..\python27.dll"; DestDir: "{sys}"; Flags: sharedfile 32bit;
 
 #ifdef waptserver
 Source: "waptserver.iss"; DestDir: "{app}\waptsetup";
-Source: "..\waptpython.exe"; DestDir: "{app}";
 Source: "..\waptserver\waptserver.ini.template"; DestDir: "{app}\waptserver"; DestName: "waptserver.ini"
 Source: "..\waptserver\*.py"; DestDir: "{app}\waptserver";       
 Source: "..\waptserver\*.template"; DestDir: "{app}\waptserver";  
 Source: "..\waptserver\templates\*"; DestDir: "{app}\waptserver\templates"; Flags: createallsubdirs recursesubdirs
 Source: "..\waptserver\scripts\*"; DestDir: "{app}\waptserver\scripts"; Flags: createallsubdirs recursesubdirs
 Source: "..\waptserver\mongodb\mongod.*"; DestDir: "{app}\waptserver\mongodb"; Flags: createallsubdirs recursesubdirs
-Source: "..\python27.dll"; DestDir: "{sys}"; Flags: sharedfile 32bit;
 #endif
 
 
@@ -251,7 +248,22 @@ end;
 
 
 function InitializeSetup(): Boolean;
+var
+  ResultCode: integer;
 begin
+
+  // terminate waptconsole
+  if Exec('taskkill', '/t /im "waptconsole.exe" /f', '', SW_SHOW,
+     ewWaitUntilTerminated, ResultCode) then
+  begin
+    // handle success if necessary; ResultCode contains the exit code
+  end
+  else begin
+    // handle failure if necessary; ResultCode contains the error code
+  end;
+
+  // Proceed Setup
+
   if ServiceExists('waptservice') then
     SimpleStopService('waptservice',True,True);
   if ServiceExists('waptserver') then
@@ -269,9 +281,33 @@ begin
     SimpleStartService('waptservice',True,True); 
 end;
 
+function RunCmd(cmd:String;RaiseOnError:Boolean):String;
+var
+  ErrorCode: Integer;
+  TmpFileName, ExecStdout: string;
+begin
+  Result := 'Error';
+  TmpFileName := ExpandConstant('{tmp}') + '\runresult.txt';
+  try
+    Exec('cmd','/C '+cmd+'  > "' + TmpFileName + '"', '', SW_HIDE,
+      ewWaitUntilTerminated, ErrorCode);
+    if RaiseOnError and (ErrorCode>0) then
+       RaiseException('La commande '+cmd+' a renvoyé le code d''erreur '+intToStr(ErrorCode));
+    if LoadStringFromFile(TmpFileName, ExecStdout) then 
+      result := ExecStdOut
+    else 
+      result:='';
+  finally
+    if FileExists(TmpFileName) then
+	     DeleteFile(TmpFileName);
+  end;
+end;
+
 procedure AfterWaptServiceinstall(exe:String);
 var
   ErrorCode: Integer;
+  ExecStdout: string;
+  winver: TWindowsVersion ;
 begin
 //  SimpleCreateService(
 //   'waptservice',
@@ -281,13 +317,31 @@ begin
 //    '','', 
 //    False, 
 //    False);
-  if not ShellExec('', ExpandConstant('{app}\waptservice.exe'),
-     '--install', '{app}', SW_HIDE, True, ErrorCode) then
-  begin
-    RaiseException('Error installing waptservice:'+intToStr(ErrorCode));
-  end;
+  if not Exec(ExpandConstant('{app}\waptpython.exe'),
+     ExpandConstant('{app}\waptservice\waptservice_servicewrapper.py --startup=auto install'), 
+     '', 
+     SW_HIDE, 
+     ewWaitUntilTerminated, ErrorCode) then
+    RaiseException('Error installing waptservice: '+intToStr(ErrorCode));
    
+  GetWindowsVersionEx(winver);
+  if winver.Major>=6 then 
+  // for win7
+  begin  
+    ExecStdOut := RunCmd('netsh advfirewall firewall show rule name="waptservice 8088"',False);
+    if pos('Ok.',ExecStdOut)<=0 then
+      if pos('Ok.',RunCmd('netsh advfirewall firewall add rule name="waptservice 8088" dir=in action=allow protocol=TCP localport=8088',True))<=0 then 
+        RaiseException('could not open firewall port 8088 for remote management');
+  end
+  else
+  begin
+    ExecStdOut := RunCmd('netsh.exe firewall show portopening',True);
+    if pos('waptservice 8088',ExecStdOut)<=0 then
+      if pos('Ok.',RunCmd('netsh.exe firewall add portopening name="waptservice 8088" port=8088 protocol=TCP',True))<=0 then
+        RaiseException('could not open firewall port 8088 for remote management')
+	end;
 end;
+
 
 procedure BeforeWaptServiceinstall(exe:String);
 begin
