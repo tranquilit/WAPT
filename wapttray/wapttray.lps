@@ -4,7 +4,7 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="42">
+    <Units Count="43">
       <Unit0>
         <Filename Value="wapttray.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -42,20 +42,19 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="363"/>
-        <CursorPos X="1" Y="383"/>
+        <TopLine Value="66"/>
+        <CursorPos X="75" Y="93"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\waptservice\UnitRedirect.pas"/>
-        <IsPartOfProject Value="True"/>
         <UnitName Value="UnitRedirect"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="12" Y="27"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="24"/>
       </Unit4>
       <Unit5>
         <Filename Value="uwapttray.pas"/>
@@ -343,11 +342,26 @@
         <CursorPos X="13" Y="2255"/>
         <UsageCount Value="10"/>
       </Unit41>
+      <Unit42>
+        <Filename Value="..\wapt-get\UnitRedirect.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UnitRedirect"/>
+        <UsageCount Value="20"/>
+      </Unit42>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="2" HistoryIndex="1">
+      <Position1>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="368" Column="12" TopLine="360"/>
+      </Position1>
+      <Position2>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="78" Column="97" TopLine="61"/>
+      </Position2>
+    </JumpHistory>
   </ProjectSession>
   <EditorMacros Count="0"/>
 </CONFIG>

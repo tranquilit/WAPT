@@ -29,7 +29,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Forms, Interfaces,
-  uDMWAPTTray, tiscommon;
+  uDMWAPTTray, tiscommon, UnitRedirect;
 
 {$R *.res}
 
