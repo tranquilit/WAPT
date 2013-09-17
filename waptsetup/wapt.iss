@@ -162,7 +162,7 @@ Name: setupTasks; Description: "Creates windows scheduled tasks for update and u
 Name: autorunTray; Description: "Start WAPT Tray icon at logon"; Flags: unchecked
 ;Name: useTISPublic; Description: "Use Tranquil IT public repository as a secondary source"; Flags: unchecked
 #ifdef waptserver
-;Name: useWaptServer; Description: "Manage this machine from a central WAPT manage server";
+Name: useWaptServer; Description: "Manage this machine from a central WAPT manage server";
 #else
 Name: useWaptServer; Description: "Manage this machine from a central WAPT manage server";  Flags: unchecked
 #endif
