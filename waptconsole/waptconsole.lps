@@ -24,8 +24,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="471"/>
-        <CursorPos X="59" Y="491"/>
+        <TopLine Value="1073"/>
+        <CursorPos X="70" Y="1085"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="2">
           <Item0 X="26" Y="717" ID="2"/>
@@ -166,7 +166,7 @@
         <UnitName Value="uvisOptionIniFile"/>
         <WindowIndex Value="0"/>
         <TopLine Value="39"/>
-        <CursorPos X="42" Y="58"/>
+        <CursorPos X="19" Y="47"/>
         <UsageCount Value="203"/>
       </Unit13>
       <Unit14>
@@ -176,10 +176,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviswaptconfig"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="8"/>
-        <CursorPos X="12" Y="19"/>
+        <TopLine Value="5"/>
+        <CursorPos X="5" Y="21"/>
         <UsageCount Value="203"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit14>
       <Unit15>
         <Filename Value="uvischangepassword.pas"/>
@@ -520,7 +523,7 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="16" HistoryIndex="15">
+    <JumpHistory Count="19" HistoryIndex="17">
       <Position1>
         <Filename Value="uwaptconsole.pas"/>
         <Caret Line="453" Column="30" TopLine="436"/>
@@ -585,6 +588,18 @@
         <Filename Value="uwaptconsole.pas"/>
         <Caret Line="489" Column="21" TopLine="471"/>
       </Position16>
+      <Position17>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="466" Column="41" TopLine="456"/>
+      </Position17>
+      <Position18>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="1101" Column="62" TopLine="1091"/>
+      </Position18>
+      <Position19>
+        <Filename Value="uviswaptconfig.pas"/>
+        <Caret Line="21" Column="5" TopLine="5"/>
+      </Position19>
     </JumpHistory>
   </ProjectSession>
   <Debugging>

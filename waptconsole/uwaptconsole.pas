@@ -1082,7 +1082,7 @@ begin
         //conf := wapt.config;
 
         edrepo_url.Text := inifile.ReadString('global', 'repo_url', '');
-        edhttp_proxy.Text := inifile.ReadString('global', 'proxy_http', '');
+        edhttp_proxy.Text := inifile.ReadString('global', 'http_proxy', '');
         //edrepo_url.text := VarPythonAsString(conf.get('global','repo_url'));
         eddefault_package_prefix.Text :=
           inifile.ReadString('global', 'default_package_prefix', '');
