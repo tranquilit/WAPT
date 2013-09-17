@@ -1585,13 +1585,13 @@ class WaptRepo(object):
                 last_update = self.waptdb.get_param('last-%s' % self.repo_url[:59])
                 if last_update:
                     logger.debug(u'Check last-modified header for %s to avoid unecessary update' % (packages_url,))
-                    current_update = requests.head(packages_url,proxies=proxies,verify=False).headers['last-modified']
+                    current_update = requests.head(packages_url,proxies=proxies,verify=False,headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
                     if current_update == last_update:
                         logger.info(u'Index from %s has not been updated (last update %s), skipping update' % (packages_url,last_update))
                         return current_update
 
             logger.debug(u'Read remote Packages zip file %s' % packages_url)
-            packages_answer = requests.get(packages_url,proxies=proxies,verify=False)
+            packages_answer = requests.get(packages_url,proxies=proxies,verify=False,headers={'cache-control':'no-cache','pragma':'no-cache'})
             packages_answer.raise_for_status
 
             # Packages file is a zipfile with one Packages file inside
@@ -1647,12 +1647,12 @@ class WaptHostRepo(WaptRepo):
         """Update host package from repo.
             returns (host package entry,entry date on server)"""
         host_package_url = "%s/%s.wapt" % (self.repo_url,host)
-        host_package_date = requests.head(host_package_url,proxies=proxies,verify=False).headers['last-modified']
+        host_package_date = requests.head(host_package_url,proxies=proxies,verify=False,headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
         host_cachedate = 'date-%s' % (host,)
         package = None
         if host_package_date:
             if force or host_package_date <> self.waptdb.get_param(host_cachedate) or not self.waptdb.packages_matching(host):
-                host_package = requests.get(host_package_url,proxies=proxies,verify=False)
+                host_package = requests.get(host_package_url,proxies=proxies,verify=False,headers={'cache-control':'no-cache','pragma':'no-cache'})
                 host_package.raise_for_status
 
                 # Packages file is a zipfile with one Packages file inside

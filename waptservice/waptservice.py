@@ -196,12 +196,11 @@ def get_checkupgrades():
         cur = con.cursor()
         cur.execute(query)
         rows = cur.fetchone()['value']
-        data = json.dumps(rows)
     except Exception as e :
         print "error"  + str(e)
     finally:
         if con:  con.close()
-    return Response(common.jsondump(data), mimetype='application/json')
+    return Response(rows, mimetype='application/json')
 
 @app.route('/waptupgrade')
 @check_ip_source
