@@ -40,7 +40,6 @@ type
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
-    ProgressBar: TProgressBar;
     GridDepends: TSOGrid;
     GridPackages: TSOGrid;
     MemoLog: TMemo;
@@ -98,7 +97,7 @@ type
     procedure SetSourcePath(AValue: string);
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: string);
     property Depends: string read GetDepends write SetDepends;
-    function updateprogress(current, total: integer): boolean;
+    function updateprogress(receiver:TObject;current, total: integer): boolean;
   public
     { public declarations }
     waptpath: string;
@@ -117,7 +116,6 @@ function EditHost(hostname: string; advancedMode: boolean): ISuperObject;
 
 
 var
-  downloadStopped: boolean;
   VisEditPackage: TVisEditPackage;
   privateKeyPassword: string = '';
   waptServerPassword: string = '';
@@ -361,7 +359,7 @@ begin
   ActEditSavePackage.Execute;
   if not FileExists(GetWaptPrivateKey) then
   begin
-    ShowMessage('la clé privé n''existe pas: ' + GetWaptPrivateKey);
+    ShowMessage('La clé privé n''existe pas: ' + GetWaptPrivateKey);
     exit;
   end;
   isEncrypt := StrToBool(DMPython.RunJSON(
@@ -389,13 +387,14 @@ begin
   end;
   with  Tvisloading.Create(Self) do
     try
-      Chargement.Caption := 'Upload en cours';
+      ProgressTitle('Upload en cours');
       Application.ProcessMessages;
       Result := DMPython.RunJSON(format(
         'mywapt.build_upload(r"%s",r"%s",r"%s",r"%s",True)',
         [FSourcePath, privateKeyPassword, waptServerUser, waptServerPassword]), jsonlog);
 
     finally
+      Free;
     end;
   ModalResult := mrOk;
 end;
@@ -482,9 +481,7 @@ begin
       begin
         with  Tvisloading.Create(Self) do
           try
-            ProgressBar := ProgressBar1;
-            Chargement.Caption := 'Téléchargement en cours';
-            downloadStopped := False;
+            ProgressTitle('Téléchargement en cours');
             Application.ProcessMessages;
 
             grid := uwaptconsole.VisWaptGUI.GridPackages;
@@ -496,7 +493,7 @@ begin
                 if not DirectoryExists(AppLocalDir+ 'cache') then
                   mkdir(AppLocalDir+ 'cache');
                 if not FileExists(filePath) then
-                  Wget(GetWaptRepoURL + '/' + filename, filePath, @updateprogress);
+                  Wget(GetWaptRepoURL + '/' + filename, filePath, ProgressForm, @updateprogress);
               except
                 ShowMessage('Téléchargement annulé');
                 if FileExists(filePath) then
@@ -588,13 +585,16 @@ begin
   Result := FDepends;
 end;
 
-function TVisEditPackage.updateprogress(current, total: integer): boolean;
+function TVisEditPackage.updateprogress(receiver:TObject;current, total: integer): boolean;
 begin
-
-  ProgressBar.Max := total;
-  ProgressBar.Position := current;
-  Application.ProcessMessages;
-  Result := not downloadStopped;
+  if receiver<>Nil then
+  with (receiver as TVisLoading) do
+  begin
+    ProgressStep(current,total);
+    Result := not StopRequired;
+  end
+  else
+    Result := True;
 end;
 
 end.

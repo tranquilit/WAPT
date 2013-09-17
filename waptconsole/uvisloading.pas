@@ -6,35 +6,68 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls,
-  ExtCtrls, StdCtrls,uwaptconsole;
+  ExtCtrls, StdCtrls, Buttons;
 
 type
 
-  { Tvisloading }
+  { TVisLoading }
 
-  Tvisloading = class(TForm)
-    btCancel: TButton;
-    Chargement: TLabel;
-    ProgressBar1: TProgressBar;
-    procedure btCancelClick(Sender: TObject);
+  TVisLoading = class(TForm)
+    BitBtn1: TBitBtn;
+    AMessage: TLabel;
+    AProgressBar: TProgressBar;
+    procedure BitBtn1Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { private declarations }
   public
     { public declarations }
+    StopRequired : Boolean;
+    OnStop :TNotifyEvent;
+    function ProgressForm:TVisLoading;
+    procedure ProgressTitle(Title:String);
+    procedure ProgressStep(step,max:integer);
   end;
 
 var
-  visloading: Tvisloading;
+  VisLoading: TVisLoading;
 
 implementation
 
 {$R *.lfm}
 
-{ Tvisloading }
+{ TVisLoading }
 
-procedure Tvisloading.btCancelClick(Sender: TObject);
+procedure TVisLoading.BitBtn1Click(Sender: TObject);
 begin
-    uwaptconsole.VisWaptGUI.stopDownload(True);
+  StopRequired:=True;
+  if Assigned(OnStop) then
+    OnStop(Self);
+end;
+
+procedure TVisLoading.FormCreate(Sender: TObject);
+begin
+  AProgressBar.Min:=0;
+end;
+
+function TVisLoading.ProgressForm: TVisLoading;
+begin
+  result := Self;
+end;
+
+procedure TVisLoading.ProgressTitle(Title: String);
+begin
+  AMessage.Caption := Title;
+  Application.ProcessMessages;
+end;
+
+procedure TVisLoading.ProgressStep(step, max: integer);
+begin
+  if Step <= 0 then
+      StopRequired:=False;
+  AProgressBar.Max:=Max;
+  AProgressBar.position:=step;
+  Application.ProcessMessages;
 end;
 
 end.

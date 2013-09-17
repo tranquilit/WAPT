@@ -1,7 +1,7 @@
 object VisCreateWaptSetup: TVisCreateWaptSetup
-  Left = -676
+  Left = 475
   Height = 184
-  Top = 283
+  Top = 340
   Width = 535
   Caption = 'Créer le waptsetup.exe'
   ClientHeight = 184

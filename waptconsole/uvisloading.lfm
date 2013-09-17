@@ -1,17 +1,18 @@
-object visloading: Tvisloading
+object VisLoading: TVisLoading
   Left = 971
-  Height = 82
+  Height = 75
   Top = 415
-  Width = 418
+  Width = 420
   BorderStyle = bsDialog
   Caption = 'Chargement'
-  ClientHeight = 82
-  ClientWidth = 418
+  ClientHeight = 75
+  ClientWidth = 420
   FormStyle = fsStayOnTop
+  OnCreate = FormCreate
   Position = poMainFormCenter
   LCLVersion = '1.1'
   Visible = True
-  object ProgressBar1: TProgressBar
+  object AProgressBar: TProgressBar
     Left = 10
     Height = 20
     Top = 42
@@ -21,31 +22,30 @@ object visloading: Tvisloading
     BorderSpacing.Top = 10
     BorderSpacing.Right = 10
     BorderSpacing.Bottom = 20
-    Step = 1
+    Step = 0
     TabOrder = 0
   end
-  object Chargement: TLabel
+  object AMessage: TLabel
     Left = 0
-    Height = 72
+    Height = 13
     Top = 10
-    Width = 418
-    Align = alClient
+    Width = 420
+    Align = alTop
     Alignment = taCenter
-    Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Top = 10
     Caption = 'Chargement en cours...'
     ParentColor = False
+    WordWrap = True
   end
-  object btCancel: TButton
-    AnchorSideLeft.Control = ProgressBar1
-    AnchorSideLeft.Side = asrBottom
-    Left = 328
-    Height = 25
-    Top = 40
-    Width = 75
-    Anchors = [akTop]
-    Caption = 'annuler'
-    OnClick = btCancelClick
+  object BitBtn1: TBitBtn
+    Left = 316
+    Height = 30
+    Top = 37
+    Width = 92
+    DefaultCaption = True
+    Kind = bkAbort
+    ModalResult = 3
+    OnClick = BitBtn1Click
     TabOrder = 1
   end
 end

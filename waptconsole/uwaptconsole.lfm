@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 835
+  Left = 409
   Height = 695
-  Top = 168
+  Top = 146
   Width = 1074
   Caption = 'Console WAPT'
   ClientHeight = 676
@@ -262,9 +262,9 @@ object VisWaptGUI: TVisWaptGUI
         Images = ImageList1
         PopupMenu = PopupMenuHosts
         TabOrder = 1
-        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toFullRowDrag, toEditOnClick]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toFullRowDrag]
         TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toUseExplorerTheme]
-        TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect, toSimpleDrawSelection]
+        TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect, toSimpleDrawSelection]
         WantTabs = True
         OnDblClick = ActEditHostPackageExecute
         OnFocusChanged = GridHostsFocusChanged
@@ -1686,13 +1686,13 @@ object VisWaptGUI: TVisWaptGUI
       ShortCut = 46
     end
     object ActDeletePackage: TAction
-      Caption = 'Supprimer'
+      Caption = 'Supprimer du dépôt'
       OnExecute = ActDeletePackageExecute
       OnUpdate = ActDeletePackageUpdate
       ShortCut = 46
     end
     object ActAdvancedMode: TAction
-      Caption = 'ActAdvancedMode'
+      Caption = 'Mode avancé'
       OnExecute = ActAdvancedModeExecute
     end
     object ActPackageDuplicate: TAction
@@ -1700,7 +1700,7 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActPackageDuplicateExecute
     end
     object ActPackageGroupAdd: TAction
-      Caption = 'Nouveau paquet groupe'
+      Caption = 'Nouveau groupe'
       OnExecute = ActPackageGroupAddExecute
     end
     object ActChangePassword: TAction
@@ -1740,6 +1740,7 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'hosts'
       Caption = 'Appliquer les mises à jour'
       OnExecute = ActHostUpgradeExecute
+      OnUpdate = ActHostUpgradeUpdate
     end
   end
   object PopupMenuPackages: TPopupMenu
@@ -1767,10 +1768,6 @@ object VisWaptGUI: TVisWaptGUI
     object MenuItem4: TMenuItem
       Caption = 'Enlever'
     end
-  end
-  object UniqueInstance1: TUniqueInstance
-    left = 444
-    top = 172
   end
   object MainMenu1: TMainMenu
     left = 440
@@ -1832,7 +1829,6 @@ object VisWaptGUI: TVisWaptGUI
       end
       object MenuItem23: TMenuItem
         Action = ActAdvancedMode
-        Caption = 'Mode Avancé'
       end
       object MenuItem32: TMenuItem
         Caption = '-'

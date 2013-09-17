@@ -30,9 +30,9 @@ interface
 uses
   interfaces,Classes, SysUtils,tisstrings,windows,jwawintype, wininet, Dialogs;
 
-type TProgressCallback=function(current,total:Integer):Boolean of object;
+type TProgressCallback=function(Receiver:TObject;current,total:Integer):Boolean of object;
 
-Function  Wget(const fileURL, DestFileName: Utf8String; progressCallback:TProgressCallback=Nil): boolean;
+Function  Wget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil): boolean;
 Function  Wget_try(const fileURL: Utf8String): boolean;
 function  httpGetString(url: string): Utf8String;
 
@@ -141,9 +141,9 @@ begin
   Result := UserInGroup(DOMAIN_ALIAS_RID_ADMINS);
 end;
 
-function wget(const fileURL, DestFileName: Utf8String; progressCallback:TProgressCallback=Nil):boolean;
+function wget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil; progressCallback:TProgressCallback=Nil):boolean;
  const
-   BufferSize = 1024*128;
+   BufferSize = 1024*512;
  var
    hSession, hURL: HInternet;
    Buffer: array[1..BufferSize] of Byte;
@@ -175,25 +175,32 @@ begin
       if (res ='200') or (res ='302') then
       begin
         Size:=0;
-        AssignFile(f, UTF8Decode(DestFileName)) ;
         try
-          Rewrite(f,1) ;
-          repeat
-            BufferLen:= 0;
-            if InternetReadFile(hURL, @Buffer, SizeOf(Buffer), BufferLen) then
-            begin
-              inc(Size,BufferLen);
-              BlockWrite(f, Buffer, BufferLen);
-              if Assigned(progressCallback) then
-                if not progressCallback(size,total) then
-                begin
-                  BufferLen:=0;
-                  raise Exception.Create('Download stopped by user');
-                end;
-            end;
-          until BufferLen = 0;
-        finally
-          CloseFile(f) ;
+          AssignFile(f, UTF8Decode(DestFileName)) ;
+          try
+            Rewrite(f,1) ;
+            repeat
+              BufferLen:= 0;
+              if InternetReadFile(hURL, @Buffer, SizeOf(Buffer), BufferLen) then
+              begin
+                inc(Size,BufferLen);
+                BlockWrite(f, Buffer, BufferLen);
+                if Assigned(progressCallback) then
+                  if not progressCallback(CBReceiver,size,total) then
+                  begin
+                    BufferLen:=0;
+                    raise Exception.Create('Download stopped by user');
+                  end;
+              end;
+            until BufferLen = 0;
+          finally
+            CloseFile(f);
+          end;
+
+        except
+          If FileExists(DestFileName) then
+            FileUtil.DeleteFileUTF8(DestFileName);
+          raise;
         end;
         result := (Size>0);
       end
