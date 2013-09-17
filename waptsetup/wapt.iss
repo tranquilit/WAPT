@@ -24,7 +24,7 @@ Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdi
 Source: "..\lib\*"; DestDir: "{app}\lib"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.pyc,test,*.~*" 
 Source: "..\libs\*"; DestDir: "{app}\libs"; Flags: createallsubdirs recursesubdirs  ; Excludes: "*.pyc,test,*.~*" 
 Source: "..\ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs
-Source: "..\templates"; DestDir: "{app}\templates"; Flags: createallsubdirs recursesubdirs
+Source: "..\templates\*"; DestDir: "{app}\templates"; Flags: createallsubdirs recursesubdirs
 Source: "..\common.py"; DestDir: "{app}"; 
 Source: "..\waptpackage.py"; DestDir: "{app}"; 
 Source: "..\setuphelpers.py"; DestDir: "{app}"; 
