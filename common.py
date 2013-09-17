@@ -3841,7 +3841,7 @@ class Wapt(object):
             private_key=None,
             callback=pwd_callback,
             append_depends=None,
-            inc_version=True):
+            auto_inc_version=True):
         """Duplicate an existing package from repositories into targetdirectory with newname.
             Return  {'target':target_directory,'package':PackageEntry(),'source_dir':target_directory}
             unzip: unzip packages at end for modifications, don't sign, return directory name
