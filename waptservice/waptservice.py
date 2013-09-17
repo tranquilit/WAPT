@@ -2,29 +2,25 @@ import time
 import sys
 import os
 
-wapt_root_dir = os.path.dirname(os.path.dirname(__file__))
-print wapt_root_dir
+wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+#wapt_root_dir = os.path.dirname(__file__)
 sys.path.append(os.path.join(wapt_root_dir))
 sys.path.append(os.path.join(wapt_root_dir,'lib'))
 sys.path.append(os.path.join(wapt_root_dir,'waptservice'))
 sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
+print wapt_root_dir
+print sys.path
 
 import json
 import hashlib
 
-
 from werkzeug import secure_filename
-from waptpackage import update_packages,PackageEntry
 from functools import wraps
 import logging
 import ConfigParser
 import logging
-import codecs
-import zipfile
-import pprint
 import sqlite3
 from flask import request, Flask,Response, send_from_directory, send_file, session, g, redirect, url_for, abort, render_template, flash
-import common
 import socket
 import thread
 from urlparse import urlparse
@@ -60,22 +56,14 @@ logging.info('waptservice starting')
 
 config_file = os.path.join(wapt_root_dir,'wapt-get.ini')
 
-
-
 if os.path.exists(config_file):
     config.read(config_file)
 else:
     raise Exception("FATAL. Couldn't open config file : " + config_file)
 
-sys.path.append(os.path.join(wapt_root_dir))
-sys.path.append(os.path.join(wapt_root_dir,'lib'))
-sys.path.append(os.path.join(wapt_root_dir,'waptservice'))
-sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
-
 #default mongodb configuration for wapt
 mongodb_port = "38999"
 mongodb_ip = "127.0.0.1"
-
 
 wapt_user = ""
 wapt_password = ""
@@ -105,6 +93,7 @@ hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
 logger.addHandler(hdlr)
 logger.setLevel(logging.INFO)
 
+import common
 from common import Wapt
 
 wapt=Wapt(config_filename=config_file)
@@ -113,7 +102,7 @@ wapt_ip = socket.gethostbyname(wapt_servername.hostname)
 
 ALLOWED_EXTENSIONS = set(['wapt'])
 
-app = Flask(__name__,static_folder='./templates/static')
+app = Flask(__name__)
 app.config['PROPAGATE_EXCEPTIONS'] = True
 
 def requires_auth(f):
@@ -268,7 +257,6 @@ def update():
     thread.start_new_thread(background_upgrade,(request,config_file))
     return Response(common.jsondump({'result':'ok'}), mimetype='application/json')
 
-
 @app.route('/clean')
 @requires_auth
 def clean():
@@ -318,14 +306,15 @@ def remove():
     data = wapt.remove(package)
     return Response(data, mimetype='application/json')
 
+"""
 @app.route('/static/<path:filename>', methods=['GET'])
 def static(filename):
     return send_file(open(os.path.join(wapt_root_dir,'static',filename),'rb'),as_attachment=False)
+"""
 
 @app.route('/', methods=['GET'])
 def index():
     return render_template('layout.html')
-
 
 def check_auth(username, password):
     """This function is called to check if a username /

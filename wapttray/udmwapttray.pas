@@ -295,6 +295,8 @@ begin
   TCheckThread(check_thread).DMTray := Self;
   TCheckThread(check_thread).checkinterval:=checkinterval;
   check_thread.Resume;
+
+  //UniqueInstance1.Enabled:=True;
 end;
 
 procedure TDMWaptTray.DataModuleDestroy(Sender: TObject);

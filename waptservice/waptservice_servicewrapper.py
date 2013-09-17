@@ -9,11 +9,6 @@ import win32event
 import win32evtlogutil
 import os, sys, string, time
 
-
-sys.path.append("c:\wapt\lib")
-sys.path.append("c:\wapt\waptservive")
-sys.path.append("c:\wapt\lib\site-packages")
-
 from rocket import Rocket
 
 class aservice(win32serviceutil.ServiceFramework):
