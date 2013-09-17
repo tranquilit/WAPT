@@ -2842,7 +2842,7 @@ class Wapt(object):
                     result['removed'].append(package)
                 else:
                     logger.critical(u'uninstall key not registered in local DB status, unable to remove properly.')
-                    if force:
+                    if force or mydict['install_status'] == 'ERROR':
                         logger.critical(u'Forced removal of local status of package %s' % package)
                         self.waptdb.remove_install_status(package)
                         result['removed'].append(package)
@@ -4123,14 +4123,16 @@ if __name__ == '__main__':
     w = Wapt(config=cfg)
     """
 
-    w = Wapt(config_filename=r'c:\users\htouvet\appdata\local\waptconsole\waptconsole.ini')
-    print w.edit_package('tis-7zip')
+    #w = Wapt(config_filename=r'c:\users\htouvet\appdata\local\waptconsole\waptconsole.ini')
+    #print w.edit_package('tis-7zip')
+    #w.remove('tis-error')
     #print w.edit_host('htlaptop.tranquilit.local',target_directory=r'c:\tmp\ht')
 
     #force_utf8_no_bom(r'C:\tranquilit\tis-waptini-wapt\WAPT\control')
 
-    #w = Wapt(config_filename='c:/tranquilit/wapt/wapt-get.ini')
-    #w = common.Wapt(config_filename=r'c:/tranquilit/wapt/wapt-get-public.ini')
+    w = Wapt(config_filename='c:/tranquilit/wapt/wapt-get.ini')
+    #w =Wapt(config_filename=r'c:/tranquilit/wapt/wapt-get-public.ini')
+    w.remove('tis-error')
     #w.update()
     #w.install(['tis-certutils','htlaptop.tranquilit.local'],download_only=True,usecache=True)
 
@@ -4156,7 +4158,7 @@ if __name__ == '__main__':
     print w.waptdb.get_param('toto')
     print w.check_install_running(max_ttl = 1)
 
-    w.remove('tis-winscp')
+
 
     print w._('tis-base')
     print w.check_depends('tis-base',force=True,assume_removed=['tis-firefox'])
