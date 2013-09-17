@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.7.4"
+__version__ = "0.7.6"
 
 import sys
 import os
@@ -34,6 +34,7 @@ from waptpackage import PackageEntry
 from waptpackage import update_packages
 from common import ppdicttable
 from common import jsondump
+import common
 import setuphelpers
 from setuphelpers import ensure_unicode
 
@@ -103,7 +104,7 @@ action is either :
 
 """
 
-parser=OptionParser(usage=usage,version="%prog " + __version__+' setuphelpers '+setuphelpers.__version__)
+parser=OptionParser(usage=usage,version='wapt-get.py ' + __version__+' common.py '+common.__version__+' setuphelpers.py '+setuphelpers.__version__)
 parser.add_option("-c","--config", dest="config", default=os.path.join(os.path.dirname(sys.argv[0]),'wapt-get.ini') , help="Config file full path (default: %default)")
 parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
 parser.add_option("-d","--dry-run",    dest="dry_run",    default=False, action='store_true', help="Dry run (default: %default)")
@@ -587,13 +588,13 @@ def main():
                             print u"Package edited. You can build the new WAPT package by launching\n  %s -i build-package %s" % (sys.argv[0],result['target'])
 
             elif action=='edit-host':
-                if len(args)<2:
-                    print u"You must provide the host fqdn package to edit"
-                    sys.exit(1)
-                if len(args)>=3:
-                    result = mywapt.edit_host(hostname = args[1],append_depends = args[2] )
+                if len(args)==1:
+                    print u"Using current host fqdn %s" % setuphelpers.get_hostname()
+                    result = mywapt.edit_host(hostname = setuphelpers.get_hostname(),use_local_sources=True)
+                elif len(args)>=3:
+                    result = mywapt.edit_host(hostname = args[1],append_depends = args[2],use_local_sources=True)
                 else:
-                    result = mywapt.edit_host(hostname = args[1] )
+                    result = mywapt.edit_host(hostname = args[1],use_local_sources=True)
                 if options.json_output:
                     jsonresult['result'] = result
                 else:

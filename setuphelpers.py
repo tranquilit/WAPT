@@ -542,7 +542,7 @@ def get_computername():
     return socket.gethostname()
 
 def get_hostname():
-    """Return host fully qualified domain name"""
+    """Return host fully qualified domain name in lower case"""
     return socket.getfqdn().lower()
 
 def get_domain_fromregistry():
