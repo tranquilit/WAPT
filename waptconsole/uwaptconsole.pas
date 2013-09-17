@@ -1180,9 +1180,7 @@ begin
     ShowMessage('Vous n''etes pas administrateur de la machine');
     halt;
   end;}
-
   waptpath := ExtractFileDir(ParamStr(0));
-
 end;
 
 procedure TVisWaptGUI.Login;

@@ -477,7 +477,7 @@ begin
     if not IsNewPackage then
     begin
       if IsHost then
-        res := DMPython.RunJSON(format('mywapt.edit_host("%s",ignore_local_sources=True)', [FPackageRequest]))
+        res := DMPython.RunJSON(format('mywapt.edit_host("%s")', [FPackageRequest]))
       else
       begin
         with  Tvisloading.Create(Self) do
@@ -492,17 +492,17 @@ begin
             if n <> nil then
               try
                 filename := grid.GetCellStrValue(n, 'filename');
-                filePath := waptpath + '\cache\' + filename;
+                filePath := AppLocalDir+ '\cache\' + filename;
                 if not FileExists(filePath) then
                   Wget(GetWaptRepoURL + '/' + filename, filePath, @updateprogress);
               except
                 ShowMessage('Téléchargement annulé');
+                if FileExists(filePath) then
+                  DeleteFile(filePath);
                 exit;
               end;
 
-
-            res := DMPython.RunJSON(format('mywapt.edit_package(r"%s")',
-              [filePath]));
+            res := DMPython.RunJSON(format('mywapt.edit_package(r"%s")', [filePath]));
           finally
             Free;
           end;

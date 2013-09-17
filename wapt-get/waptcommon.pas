@@ -40,6 +40,7 @@ interface
   Function  GetWaptLocalURL:String;
 
 
+  function AppLocalDir: Utf8String; // returns Users/<user>/local/appdata/<application_name>
   function AppIniFilename: Utf8String; // returns Users/<user>/local/appdata/<application_name>/<application_name>.ini
   function WaptIniFilename: Utf8String; // for local wapt install directory
 
@@ -362,6 +363,11 @@ end;
 function WaptservicePath: Utf8String;
 begin
   result := ExtractFilePath(ParamStr(0))+'\waptservice.exe'
+end;
+
+function AppLocalDir: Utf8String;
+begin
+  result := GetAppConfigDir(False)+GetApplicationName;
 end;
 
 function AppIniFilename: Utf8String;

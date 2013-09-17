@@ -3745,7 +3745,7 @@ class Wapt(object):
                 zip.extractall(path=target_directory)
                 packagename = entry.package
             else:
-                raise Exception('%s is neither a package name or a package filename' % packagename)
+                raise Exception('%s is neither a package name nor a package filename' % packagename)
 
         local_dev_entry = self.is_wapt_package_development_dir(target_directory)
         if local_dev_entry:
