@@ -253,6 +253,7 @@ type
     { public declarations }
     Hosts, PackageEdited: ISuperObject;
     waptpath: string;
+    Function EditIniFile:Boolean;
   end;
 
 var
@@ -449,7 +450,10 @@ begin
     oldName := GridPackages1.GetCellStrValue(N, 'package');
     filename := GridPackages1.GetCellStrValue(N, 'filename');
     depends := GridPackages1.GetCellStrValue(N, 'depends');
-    filePath := waptpath + '\cache\' + filename;
+    filePath := AppLocalDir + 'cache\' + filename;
+    if not DirectoryExists(AppLocalDir+ 'cache') then
+      mkdir(AppLocalDir+ 'cache');
+
 
     if MessageDlg('Confirmer la duplication',
       format('Etes vous sûr de vouloir dupliquer %s dans votre dépot ?', [oldName]),
@@ -480,7 +484,9 @@ begin
           begin
             chargement.Caption :=
               'Téléchargement en cours de ' + dependsList.AsArray.S[i];
-            dependsPath.AsArray.Add(waptpath + '\cache\' + dependsList.AsArray.S[i]);
+            dependsPath.AsArray.Add(AppLocalDir + 'cache\' + dependsList.AsArray.S[i]);
+            if not DirectoryExists(AppLocalDir+ 'cache') then
+              mkdir(AppLocalDir+ 'cache');
 
             try
               if not FileExists(dependsPath.AsArray.S[i]) then
@@ -705,8 +711,6 @@ begin
   ActAdvancedMode.Checked := not ActAdvancedMode.Checked;
   TabSheet1.TabVisible := ActAdvancedMode.Checked;
   Panel3.Visible := ActAdvancedMode.Checked;
-  if TabSheet1.TabVisible then
-    PageControl1.ActivePage := TabSheet1;
 end;
 
 procedure TVisWaptGUI.ActChangePasswordExecute(Sender: TObject);
@@ -1052,9 +1056,23 @@ begin
 end;
 
 procedure TVisWaptGUI.ActWAPTLocalConfigExecute(Sender: TObject);
+begin
+  if EditIniFile then
+  begin
+    ActUpdateWaptGetINI.Execute;
+          ActUpdate.Execute;
+          GridPackages.Clear;
+          GridPackages1.Clear;
+          PageControl1Change(PageControl1);
+
+  end;
+end;
+
+Function TVisWaptGUI.EditIniFile:Boolean;
 var
   inifile: TIniFile;
 begin
+  Result:=False;
   inifile := TIniFile.Create(AppIniFilename);
   try
 
@@ -1091,12 +1109,7 @@ begin
           inifile.WriteString('global', 'default_sources_root',
             eddefault_sources_root.Text);
           //inifile.WriteString('global','default_sources_url',eddefault_sources_url.text);
-          ActUpdateWaptGetINI.Execute;
-          ActUpdate.Execute;
-          GridPackages.Clear;
-          GridPackages1.Clear;
-          PageControl1Change(PageControl1);
-
+          Result:=True;
         end;
       finally
         Free;
@@ -1106,6 +1119,7 @@ begin
     inifile.Free;
   end;
 end;
+
 
 procedure TVisWaptGUI.butSearchPackages1Click(Sender: TObject);
 var
@@ -1187,8 +1201,26 @@ procedure TVisWaptGUI.Login;
 var
   done: boolean = False;
   resp: ISuperObject;
+  localfn : String;
 
 begin
+  // Initialize user local config file with global wapt settings
+  localfn := GetAppConfigDir(False)+GetApplicationName+'.ini';
+  if not FileExists(localfn) then
+  begin
+    if not DirectoryExists(GetAppConfigDir(False)) then
+      MkDir(GetAppConfigDir(False));
+    FileUtil.CopyFile(WaptIniFilename,localfn,True);
+  end;
+
+  While (GetWaptServerURL='') do
+  begin
+      if EditIniFile then
+        ActUpdateWaptGetINI.Execute
+      else
+        Halt;
+  end;
+
   if waptServerPassword = '' then
   begin
     with TVisLogin.Create(Self) do

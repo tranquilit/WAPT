@@ -24,15 +24,15 @@ object VisEditPackage: TVisEditPackage
     TabOrder = 0
     object pgEditPackage: TTabSheet
       Caption = 'Editer les dépendances'
-      ClientHeight = 366
+      ClientHeight = 368
       ClientWidth = 792
       object Panel8: TPanel
         Left = 502
-        Height = 366
+        Height = 368
         Top = 0
         Width = 290
         Align = alRight
-        ClientHeight = 366
+        ClientHeight = 368
         ClientWidth = 290
         TabOrder = 0
         object Panel9: TPanel
@@ -47,7 +47,7 @@ object VisEditPackage: TVisEditPackage
           TabOrder = 0
           object EdSearch: TEdit
             Left = 4
-            Height = 23
+            Height = 21
             Top = 3
             Width = 136
             OnKeyDown = EdSearchKeyDown
@@ -64,7 +64,7 @@ object VisEditPackage: TVisEditPackage
         end
         object GridPackages: TSOGrid
           Left = 1
-          Height = 335
+          Height = 337
           Top = 30
           Width = 288
           Align = alClient
@@ -138,7 +138,7 @@ object VisEditPackage: TVisEditPackage
       end
       object GridDepends: TSOGrid
         Left = 0
-        Height = 366
+        Height = 368
         Top = 0
         Width = 497
         Align = alClient
@@ -188,7 +188,7 @@ object VisEditPackage: TVisEditPackage
       end
       object Splitter3: TSplitter
         Left = 497
-        Height = 366
+        Height = 368
         Top = 0
         Width = 5
         Align = alRight
@@ -830,14 +830,14 @@ object VisEditPackage: TVisEditPackage
     TabOrder = 3
     object EdPackage: TEdit
       Left = 52
-      Height = 23
+      Height = 21
       Top = 2
       Width = 252
       TabOrder = 0
     end
     object EdVersion: TEdit
       Left = 52
-      Height = 23
+      Height = 21
       Top = 24
       Width = 80
       Enabled = False
@@ -846,23 +846,23 @@ object VisEditPackage: TVisEditPackage
     end
     object Label1: TLabel
       Left = 7
-      Height = 15
+      Height = 13
       Top = 4
-      Width = 44
+      Width = 40
       Caption = 'Package'
       ParentColor = False
     end
     object Label2: TLabel
       Left = 12
-      Height = 15
+      Height = 13
       Top = 29
-      Width = 39
+      Width = 35
       Caption = 'Version'
       ParentColor = False
     end
     object Eddescription: TEdit
       Left = 372
-      Height = 23
+      Height = 21
       Top = 2
       Width = 424
       Anchors = [akTop, akLeft, akRight]
@@ -871,15 +871,15 @@ object VisEditPackage: TVisEditPackage
     end
     object Label3: TLabel
       Left = 316
-      Height = 15
+      Height = 13
       Top = 4
-      Width = 60
+      Width = 53
       Caption = 'Description'
       ParentColor = False
     end
     object EdSourceDir: TEdit
       Left = 432
-      Height = 23
+      Height = 21
       Top = 24
       Width = 220
       Anchors = [akTop, akLeft, akRight]
@@ -889,9 +889,9 @@ object VisEditPackage: TVisEditPackage
     end
     object Label4: TLabel
       Left = 344
-      Height = 15
+      Height = 13
       Top = 29
-      Width = 92
+      Width = 86
       Caption = 'Répertoire source'
       ParentColor = False
       Visible = False
@@ -906,10 +906,10 @@ object VisEditPackage: TVisEditPackage
     end
     object EdSection: TComboBox
       Left = 188
-      Height = 23
+      Height = 21
       Top = 24
       Width = 132
-      ItemHeight = 15
+      ItemHeight = 13
       ItemIndex = 0
       Items.Strings = (
         'base'
@@ -925,18 +925,18 @@ object VisEditPackage: TVisEditPackage
     end
     object Label5: TLabel
       Left = 144
-      Height = 15
+      Height = 13
       Top = 29
-      Width = 39
+      Width = 35
       Caption = 'Section'
       ParentColor = False
       Visible = False
     end
     object cbShowLog: TCheckBox
-      Left = 645
-      Height = 19
-      Top = 24
-      Width = 149
+      Left = 658
+      Height = 17
+      Top = 26
+      Width = 136
       Anchors = [akRight, akBottom]
       Caption = 'Voir infos de débuggage'
       OnClick = cbShowLogClick

@@ -492,7 +492,9 @@ begin
             if n <> nil then
               try
                 filename := grid.GetCellStrValue(n, 'filename');
-                filePath := AppLocalDir+ '\cache\' + filename;
+                filePath := AppLocalDir+ 'cache\' + filename;
+                if not DirectoryExists(AppLocalDir+ 'cache') then
+                  mkdir(AppLocalDir+ 'cache');
                 if not FileExists(filePath) then
                   Wget(GetWaptRepoURL + '/' + filename, filePath, @updateprogress);
               except

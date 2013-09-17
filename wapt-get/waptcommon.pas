@@ -357,17 +357,17 @@ end;
 
 function WaptgetPath: Utf8String;
 begin
-  result := ExtractFilePath(ParamStr(0))+'\wapt-get.exe'
+  result := ExtractFilePath(ParamStr(0))+'wapt-get.exe'
 end;
 
 function WaptservicePath: Utf8String;
 begin
-  result := ExtractFilePath(ParamStr(0))+'\waptservice.exe'
+  result := ExtractFilePath(ParamStr(0))+'waptservice.exe'
 end;
 
 function AppLocalDir: Utf8String;
 begin
-  result := GetAppConfigDir(False)+GetApplicationName;
+  result := GetAppConfigDir(False);
 end;
 
 function AppIniFilename: Utf8String;
@@ -379,7 +379,7 @@ end;
 
 function WaptIniFilename: Utf8String;
 begin
-  result := ExtractFilePath(ParamStr(0))+'\wapt-get.ini';
+  result := ExtractFilePath(ParamStr(0))+'wapt-get.ini';
 end;
 
 function WaptDBPath: Utf8String;
@@ -388,7 +388,7 @@ begin
   if Result<>'' then
     result :=  AppendPathDelim(result)+'waptdb.sqlite'
   else
-    result := ExtractFilePath(ParamStr(0))+'\db\waptdb.sqlite'
+    result := ExtractFilePath(ParamStr(0))+'db\waptdb.sqlite'
 end;
 
 function WaptExternalRepo(inifilename:String=''): Utf8String;

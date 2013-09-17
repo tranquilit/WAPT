@@ -2778,7 +2778,7 @@ class Wapt(object):
                 where package=?
                """ , (package,) )
             if not q:
-                logger.warning(u"Package %s not installed, aborting" % package)
+                logger.warning(u"Package %s not installed, removal aborted" % package)
                 return result
             # several versions installed of the same package... ?
             for mydict in q:
@@ -3751,7 +3751,7 @@ class Wapt(object):
         if local_dev_entry:
             if use_local_sources:
                 if entry>local_dev_entry:
-                    raise Exception('A newer package version (%s) is already in repository "%s", local source is %s aborting' % (entry.asrequirement(),entry.repo,local_dev_entry.asrequirement()))
+                    raise Exception('A newer package version %s is already in repository "%s", local source %s is %s aborting' % (entry.asrequirement(),entry.repo,target_directory,local_dev_entry.asrequirement()))
                 if local_dev_entry.match(packagename):
                     if append_depends:
                         if not isinstance(append_depends,list):
@@ -3810,7 +3810,7 @@ class Wapt(object):
             if local_dev_entry:
                 if use_local_sources:
                     if entry>local_dev_entry:
-                        raise Exception('A newer package version %s is already in repository "%s", local sources is %s, aborting' % (entry.asrequirement(),entry.repo,local_dev_entry.asrequirement()))
+                        raise Exception('A newer package version %s is already in repository "%s", local sources %s is %s, aborting' % (entry.asrequirement(),entry.repo,target_directory, local_dev_entry.asrequirement()))
                     if local_dev_entry.match(hostname):
                         if append_depends:
                             if not isinstance(append_depends,list):
@@ -3835,7 +3835,11 @@ class Wapt(object):
         else:
             return self.make_host_template(packagename=hostname,directoryname=target_directory,depends=append_depends)
 
-    def duplicate_package(self,packagename,newname=None,newversion='',target_directory='',
+    def duplicate_package(self,
+            packagename,
+            newname=None,
+            newversion=None,
+            target_directory=None,
             build=True,
             excludes=['.svn','.git*','*.pyc','src'],
             private_key=None,
@@ -3843,11 +3847,12 @@ class Wapt(object):
             append_depends=None,
             auto_inc_version=True):
         """Duplicate an existing package from repositories into targetdirectory with newname.
-            Return  {'target':target_directory,'package':PackageEntry(),'source_dir':target_directory}
+            Return  {'target':new package or new source directory,'package':new PackageEntry,'source_dir':new source directory}
             unzip: unzip packages at end for modifications, don't sign, return directory name
             excludes: excluded files for signing
             append_depends : comma str or list of depends to append.
-            auto_inc_version : if version is less than existing package in repo, set version to repo version+1"""
+            auto_inc_version : if version is less than existing package in repo, set version to repo version+1
+        """
 
         # suppose target directory
         if not target_directory:
