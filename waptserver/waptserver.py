@@ -20,28 +20,31 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
+import os,sys
+sys.path.insert(0, os.path.abspath('../lib'))
+sys.path.insert(0,  os.path.abspath('../lib/site-packages/'))
+sys.path.insert(0, os.path.abspath('../waptrepo'))
+
 
 from flask import request, Flask,Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
 
 import time
-import sys
 import json
 import hashlib
 import pymongo
-import os
 from pymongo import MongoClient
 from werkzeug import secure_filename
 from waptpackage import update_packages,PackageEntry
 from functools import wraps
 import logging
 import ConfigParser
-import  cheroot.wsgi, cheroot.ssllib.ssl_builtin
 import logging
 import codecs
 import zipfile
 import pprint
 import socket
 import requests
+from rocket import Rocket
 
 __version__ = "0.7.4"
 
@@ -504,8 +507,7 @@ if __name__ == "__main__":
         app.run(host='0.0.0.0',port=30880,debug=True)
     else:
         port = 8080
-        wsgi_d = cheroot.wsgi.WSGIPathInfoDispatcher({'/': app})
-        server = cheroot.wsgi.WSGIServer(('0.0.0.0', port),wsgi_app=wsgi_d)
+        server = Rocket(('0.0.0.0', port), 'wsgi', {"wsgi_app":app})
         try:
             print ("starting waptserver")
             server.start()

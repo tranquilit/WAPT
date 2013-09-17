@@ -44,6 +44,12 @@ rsync_option = "--exclude '*.svn' --exclude '*.exe' --exclude '*.dll' --exclude 
 rsync_source = os.path.abspath('..')
 rsync_destination = './builddir/opt/wapt/'
 rsync_command = '/usr/bin/rsync %s %s %s'%(rsync_option,rsync_source,rsync_destination)
+
+rsync_lib_source = '%s/'%os.path.abspath('../../lib/')
+rsync_lib_destination = './builddir/opt/wapt/lib/'
+rsync_lib_option = "--exclude '*.svn' --exclude 'deb' -ap"
+rsync_lib_command = '/usr/bin/rsync %s %s %s'%(rsync_lib_option,rsync_lib_source,rsync_lib_destination)
+
 dpkg_command = 'dpkg-deb --build builddir tis-waptserver-%s.deb'%wapt_version
 
 for filename in glob.glob("tis-waptserver*.deb"):
@@ -56,8 +62,12 @@ os.makedirs("builddir")
 os.makedirs("builddir/DEBIAN")
 os.makedirs("builddir/opt")
 os.makedirs("builddir/opt/wapt")
+os.makedirs("builddir/opt/wapt/lib")
+
 print 'copie des fichiers waptserver'
 os.system(rsync_command)
+os.system(rsync_lib_command)
+
 print 'copie des fichiers control et postinst'
 try:
     shutil.copyfile('./DEBIAN/control','./builddir/DEBIAN/control')
