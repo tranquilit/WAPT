@@ -3,9 +3,8 @@
 #define FileVerStr GetFileVersion(SrcApp)
 #define StripBuild(str VerStr) Copy(VerStr, 1, RPos(".", VerStr)-1)
 #define AppVerStr StripBuild(FileVerStr)
-#define default_repo_url "http://srvwapt/wapt"
+#define default_repo_url "http://wapt.tranquil.it"
 #define default_wapt_server "http://srvwapt:8080"
-#define default_show_wapt_server "http://srvwapt"
 #define default_update_period "120"
 #define default_update_maxruntime "30"
 
@@ -219,10 +218,15 @@ var
 begin
   if curPageId=customPage.Id then
   begin
-    WaptRepo := GetIniString('Global', 'repo_url', '{#default_repo_url}', ExpandConstant('{app}\wapt-get.ini'));
-    teWaptServerUrl.Text := GetIniString('Global', 'wapt_server', '{#default_show_wapt_server}', ExpandConstant('{app}\wapt-get.ini'));
+    WaptRepo := GetIniString('Global', 'repo_url', '{#default_wapt_server}', ExpandConstant('{app}\wapt-get.ini'));
+    if isTaskSelected('useWaptServer') then
+      teWaptServerUrl.Text := GetIniString('Global', 'wapt_server', '{#default_wapt_server}', ExpandConstant('{app}\wapt-get.ini'))
+    else
+      teWaptServerUrl.Text := GetIniString('Global', 'wapt_server', '{#default_repo_url}', ExpandConstant('{app}\wapt-get.ini'));
     rbCustomUrl.Checked := WaptRepo <> '';
-    tewaptServerUrl.Visible := isTaskSelected('useWaptServer');
+    rbDnsServer.Visible := isTaskSelected('useWaptServer');
+
+
   end
 end;
 
@@ -232,7 +236,7 @@ begin
     result := GetIniString('Global', 'repo_url', '',ExpandConstant('{app}\wapt-get.ini'))
   else
     if rbCustomUrl.Checked then
-       result := teWaptServerUrl.Text
+       result := teWaptServerUrl.Text + '/wapt'
     else 
        result :='';
 end;
