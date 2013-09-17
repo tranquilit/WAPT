@@ -30,6 +30,7 @@ interface
   const
     waptservice_port:integer = 8088;
 
+
   Function  GetMainWaptRepo:String;
   Function  GetWaptServerURL:String;
   function GetWaptPrivateKey: String;
@@ -39,8 +40,8 @@ interface
   Function  GetWaptLocalURL:String;
 
 
+  function AppIniFilename: Utf8String; // returns Users/<user>/local/appdata/<application_name>/<application_name>.ini
   function WaptIniFilename: Utf8String; // for local wapt install directory
-  function AppIniFilename: Utf8String;  // current applicatin parameters in user space
 
   function WaptgetPath: Utf8String;
   function WaptservicePath: Utf8String;
@@ -163,7 +164,7 @@ var
   strresult : String;
 begin
   if GetWaptServerURL = '' then
-    raise Exception.Create('wapt_server is not defined in your wapt-get.ini file');
+    raise Exception.Create('wapt_server is not defined in your '+AppIniFilename+' ini file');
   if StrLeft(action,1)<>'/' then
     action := '/'+action;
   if length(args)>0 then
@@ -194,7 +195,7 @@ var
   dnsserver:String;
 
 begin
-  result := IniReadString(WaptIniFilename,'Global','repo_url');
+  result := IniReadString(AppIniFilename,'Global','repo_url');
   if (Result <> '') then
     exit;
 
@@ -332,13 +333,13 @@ end;
 
 function GetWaptServerURL: String;
 begin
-  result := IniReadString(WaptIniFilename,'Global','wapt_server');
+  result := IniReadString(AppIniFilename,'Global','wapt_server');
 end;
 
 
 function GetWaptRepoURL: Utf8String;
 begin
-  result := IniReadString(WaptIniFilename,'Global','repo_url');
+  result := IniReadString(AppIniFilename,'Global','repo_url');
   if Result = '' then
       Result:='http://wapt/wapt/';
 end;
@@ -346,7 +347,7 @@ end;
 
 function GetWaptPrivateKey: String;
 begin
-  result := IniReadString(WaptIniFilename,'Global','private_key');
+  result := IniReadString(AppIniFilename,'Global','private_key');
 end;
 function GetWaptLocalURL: String;
 begin
@@ -363,20 +364,21 @@ begin
   result := ExtractFilePath(ParamStr(0))+'\waptservice.exe'
 end;
 
+function AppIniFilename: Utf8String;
+begin
+  result := GetAppConfigDir(False)+GetApplicationName+'.ini';
+  if not FileExists(Result) then
+    result := WaptIniFilename;
+end;
 
 function WaptIniFilename: Utf8String;
 begin
   result := ExtractFilePath(ParamStr(0))+'\wapt-get.ini';
 end;
 
-function AppIniFilename: Utf8String;
-begin
-  result := GetAppConfigDir(False)+GetApplicationName+'.ini';
-end;
-
 function WaptDBPath: Utf8String;
 begin
-  Result := IniReadString(WaptIniFilename,'Global','dbdir');
+  Result := IniReadString(AppIniFilename,'Global','dbdir');
   if Result<>'' then
     result :=  AppendPathDelim(result)+'waptdb.sqlite'
   else

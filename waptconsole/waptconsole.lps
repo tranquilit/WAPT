@@ -21,15 +21,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uwaptconsole"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="362"/>
-        <CursorPos X="47" Y="414"/>
+        <TopLine Value="1163"/>
+        <CursorPos X="8" Y="1182"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="2">
-          <Item0 X="26" Y="712" ID="2"/>
-          <Item1 X="48" Y="1034" ID="1"/>
+          <Item0 X="26" Y="713" ID="2"/>
+          <Item1 X="48" Y="1046" ID="1"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -38,22 +37,23 @@
         <Filename Value="..\wapt-get\tisstrings.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tisstrings"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="212"/>
-        <CursorPos X="11" Y="235"/>
+        <TopLine Value="1875"/>
+        <CursorPos X="34" Y="1888"/>
         <UsageCount Value="208"/>
+        <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="385"/>
-        <CursorPos X="3" Y="390"/>
-        <FoldState Value=" T3ob05K"/>
+        <TopLine Value="322"/>
+        <CursorPos X="27" Y="350"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="1">
-          <Item0 X="28" Y="48" ID="0"/>
+          <Item0 X="28" Y="49" ID="0"/>
         </Bookmarks>
       </Unit3>
       <Unit4>
@@ -93,10 +93,12 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="dmwaptpython"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="82"/>
-        <CursorPos X="50" Y="98"/>
+        <TopLine Value="45"/>
+        <CursorPos X="16" Y="64"/>
         <UsageCount Value="238"/>
+        <Loaded Value="True"/>
       </Unit7>
       <Unit8>
         <Filename Value="uviseditpackage.pas"/>
@@ -105,10 +107,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviseditpackage"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="119"/>
-        <CursorPos X="30" Y="126"/>
+        <TopLine Value="474"/>
+        <CursorPos X="88" Y="480"/>
         <UsageCount Value="215"/>
+        <Loaded Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="uviscreatewaptsetup.pas"/>
@@ -166,9 +171,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvisOptionIniFile"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="44" Y="12"/>
-        <UsageCount Value="193"/>
+        <TopLine Value="39"/>
+        <CursorPos X="42" Y="58"/>
+        <UsageCount Value="195"/>
       </Unit13>
       <Unit14>
         <Filename Value="uviswaptconfig.pas"/>
@@ -180,7 +185,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="8"/>
         <CursorPos X="12" Y="19"/>
-        <UsageCount Value="193"/>
+        <UsageCount Value="195"/>
       </Unit14>
       <Unit15>
         <Filename Value="uvischangepassword.pas"/>
@@ -192,15 +197,17 @@
         <WindowIndex Value="0"/>
         <TopLine Value="12"/>
         <CursorPos X="72" Y="37"/>
-        <UsageCount Value="49"/>
+        <UsageCount Value="51"/>
       </Unit15>
       <Unit16>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <UnitName Value="superobject"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="3122"/>
-        <CursorPos X="1" Y="3143"/>
+        <TopLine Value="4580"/>
+        <CursorPos X="1" Y="4596"/>
         <UsageCount Value="97"/>
+        <Loaded Value="True"/>
       </Unit16>
       <Unit17>
         <Filename Value="C:\codetyphon\lazarus\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
@@ -328,8 +335,8 @@
         <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\VarPyth.pas"/>
         <UnitName Value="VarPyth"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="92"/>
-        <CursorPos X="20" Y="109"/>
+        <TopLine Value="1904"/>
+        <CursorPos X="23" Y="1933"/>
         <UsageCount Value="11"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit33>
@@ -467,8 +474,8 @@
         <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
         <UnitName Value="PythonEngine"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="5438"/>
-        <CursorPos X="1" Y="5454"/>
+        <TopLine Value="1314"/>
+        <CursorPos X="4" Y="1332"/>
         <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit51>
@@ -513,35 +520,127 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="7" HistoryIndex="6">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1005" Column="1" TopLine="989"/>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="511" Column="1" TopLine="495"/>
       </Position1>
       <Position2>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1083" Column="1" TopLine="1052"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="4591" Column="1" TopLine="4575"/>
       </Position2>
       <Position3>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="4592" Column="1" TopLine="4575"/>
       </Position3>
       <Position4>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="263" Column="56" TopLine="235"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="4593" Column="1" TopLine="4575"/>
       </Position4>
       <Position5>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="408" Column="9" TopLine="392"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="4594" Column="1" TopLine="4575"/>
       </Position5>
       <Position6>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="407" Column="16" TopLine="392"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3113" Column="1" TopLine="3096"/>
       </Position6>
       <Position7>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="408" Column="18" TopLine="392"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3114" Column="1" TopLine="3096"/>
       </Position7>
+      <Position8>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3115" Column="1" TopLine="3096"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3120" Column="1" TopLine="3096"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="4596" Column="1" TopLine="4580"/>
+      </Position10>
+      <Position11>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="512" Column="1" TopLine="489"/>
+      </Position11>
+      <Position12>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="4524" Column="1" TopLine="4508"/>
+      </Position12>
+      <Position13>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="4525" Column="1" TopLine="4508"/>
+      </Position13>
+      <Position14>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="4526" Column="1" TopLine="4508"/>
+      </Position14>
+      <Position15>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="512" Column="15" TopLine="489"/>
+      </Position15>
+      <Position16>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="517" Column="1" TopLine="490"/>
+      </Position16>
+      <Position17>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="518" Column="1" TopLine="491"/>
+      </Position17>
+      <Position18>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="233" Column="1" TopLine="216"/>
+      </Position18>
+      <Position19>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="234" Column="1" TopLine="216"/>
+      </Position19>
+      <Position20>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="235" Column="1" TopLine="216"/>
+      </Position20>
+      <Position21>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="4591" Column="1" TopLine="4575"/>
+      </Position21>
+      <Position22>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="4592" Column="1" TopLine="4575"/>
+      </Position22>
+      <Position23>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="4593" Column="1" TopLine="4575"/>
+      </Position23>
+      <Position24>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="4594" Column="1" TopLine="4575"/>
+      </Position24>
+      <Position25>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3113" Column="1" TopLine="3096"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3114" Column="1" TopLine="3096"/>
+      </Position26>
+      <Position27>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3115" Column="1" TopLine="3096"/>
+      </Position27>
+      <Position28>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3120" Column="1" TopLine="3096"/>
+      </Position28>
+      <Position29>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="4596" Column="1" TopLine="4580"/>
+      </Position29>
+      <Position30>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="236" Column="32" TopLine="216"/>
+      </Position30>
     </JumpHistory>
   </ProjectSession>
   <Debugging>

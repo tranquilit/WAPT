@@ -82,20 +82,18 @@ type
       Shift: TShiftState; State: TDragState; const Pt: TPoint;
       Mode: TDropMode; var Effect: DWORD; var Accept: boolean);
   private
+    { private declarations }
+    FPackageRequest: string;
+    FSourcePath: string;
     FIsUpdated: boolean;
     GridDependsUpdated: boolean;
+    FDepends: string;
     function CheckUpdated: boolean;
     procedure SetIsUpdated(AValue: boolean);
     function GetIsUpdated: boolean;
-  private
-    FDepends: string;
     function GetDepends: string;
     property IsUpdated: boolean read GetIsUpdated write SetIsUpdated;
     procedure SetDepends(AValue: string);
-  private
-    FPackageRequest: string;
-    FSourcePath: string;
-    { private declarations }
     procedure SetPackageRequest(AValue: string);
     procedure SetSourcePath(AValue: string);
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: string);
@@ -479,7 +477,7 @@ begin
     if not IsNewPackage then
     begin
       if IsHost then
-        res := DMPython.RunJSON(format('mywapt.edit_host("%s")', [FPackageRequest]))
+        res := DMPython.RunJSON(format('mywapt.edit_host("%s",ignore_local_sources=True)', [FPackageRequest]))
       else
       begin
         with  Tvisloading.Create(Self) do

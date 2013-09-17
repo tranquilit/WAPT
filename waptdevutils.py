@@ -217,5 +217,4 @@ def login_to_waptserver(url, login, passwd,newPass=""):
         return unicode(str(e.message), 'ISO-8859-1')
 
 if __name__ == '__main__':
-    mywapt = common.Wapt()
     pass

@@ -262,7 +262,8 @@ implementation
 
 uses LCLIntf, IniFiles, uvisprivatekeyauth, uvisloading, tisstrings, soutils,
   waptcommon, tiscommon, uVisCreateKey, uVisCreateWaptSetup, uvisOptionIniFile,
-  dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig,uvischangepassword;
+  dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig,uvischangepassword,
+  PythonEngine;
 
 {$R *.lfm}
 
@@ -999,7 +1000,6 @@ begin
     urlParams.AsArray.Add('filter=' + filter);
   end;
 
-
   req := url + '?' + Join('&', urlParams);
 
   hosts := WAPTServerJsonGet(req, []);
@@ -1011,20 +1011,32 @@ procedure TVisWaptGUI.ActSearchPackageExecute(Sender: TObject);
 var
   expr, res: UTF8String;
   packages: ISuperObject;
+  p2:Variant;
 begin
+  //packages := VarPythonEval(Format('"%s".split()',[EdSearch.Text]));
+  //packages := MainModule.mywapt.search(VarPythonEval(Format('"%s".split()',[EdSearch.Text])));
   expr := format('mywapt.search("%s".split())', [EdSearch.Text]);
   packages := DMPython.RunJSON(expr);
+
   GridPackages.Data := packages;
   GridPackages.Header.AutoFitColumns(False);
 end;
 
 procedure TVisWaptGUI.ActUpdateExecute(Sender: TObject);
 var
-  res: variant;
+  l,res,i: variant;
 begin
   //test avec un variant ;)
   res := MainModule.mywapt.update(register:=False);
-  ShowMessage(res.__getitem__('repos').__getitem__(0));
+  { exemple d'itération
+  i := iter(res.keys(NOARGS));
+  while true do
+  try
+    l := i.next(NOARGS);
+    ShowMessage(l);
+  except
+    on EPyStopIteration do break;
+  end;}
   ActSearchPackageExecute(Sender);
 end;
 
@@ -1163,11 +1175,11 @@ end;
 
 procedure TVisWaptGUI.FormCreate(Sender: TObject);
 begin
-  if not checkReadWriteAccess(ExtractFileDir(WaptDBPath)) then
+  {if not checkReadWriteAccess(ExtractFileDir(WaptDBPath)) then
   begin
     ShowMessage('Vous n''etes pas administrateur de la machine');
     halt;
-  end;
+  end;}
 
   waptpath := ExtractFileDir(ParamStr(0));
 

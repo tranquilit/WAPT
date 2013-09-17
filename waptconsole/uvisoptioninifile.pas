@@ -53,9 +53,9 @@ end;
 procedure TVisOptionIniFile.FormCreate(Sender: TObject);
 begin
   DMPython.PythonEng.ExecString('import waptdevutils');
-  cbTestRepo.Checked:= (IniReadString(WaptIniFilename,'global','repo_url') = 'http://wapt/wapt-sid');
-  cbUpload.Checked:= (IniReadString(WaptIniFilename,'global','upload_cmd') <> '');
-  cbAfterUpload.Checked:= (IniReadString(WaptIniFilename,'global','after_upload') <> '');
+  cbTestRepo.Checked:= (IniReadString(AppIniFilename,'global','repo_url') = 'http://wapt/wapt-sid');
+  cbUpload.Checked:= (IniReadString(AppIniFilename,'global','upload_cmd') <> '');
+  cbAfterUpload.Checked:= (IniReadString(AppIniFilename,'global','after_upload') <> '');
 end;
 
 procedure TVisOptionIniFile.FormCloseQuery(Sender: TObject;

@@ -248,7 +248,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="4">
+    <Exceptions Count="5">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -261,6 +261,9 @@
       <Item4>
         <Name Value="EPyAttributeError"/>
       </Item4>
+      <Item5>
+        <Name Value="EPyStopIteration"/>
+      </Item5>
     </Exceptions>
   </Debugging>
 </CONFIG>

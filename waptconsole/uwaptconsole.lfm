@@ -16,9 +16,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 553
     Top = 0
     Width = 1074
-    ActivePage = pgExternalRepo
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 0
     OnChange = PageControl1Change
     object pgInventory: TTabSheet
@@ -635,12 +635,12 @@ object VisWaptGUI: TVisWaptGUI
     object pgPrivateRepo: TTabSheet
       Caption = 'Dépôt privé'
       ClientHeight = 527
-      ClientWidth = 1088
+      ClientWidth = 1066
       object GridPackages: TSOGrid
         Left = 0
         Height = 477
         Top = 30
-        Width = 1088
+        Width = 1066
         Align = alClient
         Color = clWhite
         Header.AutoSizeIndex = 0
@@ -710,11 +710,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 20
         Top = 507
-        Width = 1088
+        Width = 1066
         Align = alBottom
         BevelOuter = bvNone
         ClientHeight = 20
-        ClientWidth = 1088
+        ClientWidth = 1066
         TabOrder = 2
         object LabHostCnt: TLabel
           Left = 4
@@ -729,11 +729,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 30
         Top = 0
-        Width = 1088
+        Width = 1066
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 1088
+        ClientWidth = 1066
         TabOrder = 0
         object EdSearch: TEdit
           Left = 4
