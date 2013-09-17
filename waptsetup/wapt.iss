@@ -4,7 +4,7 @@
 #define StripBuild(str VerStr) Copy(VerStr, 1, RPos(".", VerStr)-1)
 #define AppVerStr StripBuild(FileVerStr)
 #define default_repo_url "http://wapt.tranquil.it"
-#define default_wapt_server "http://srvwapt:8080"
+#define default_wapt_server "http://wapt:8080"
 #define default_update_period "120"
 #define default_update_maxruntime "30"
 
@@ -162,7 +162,7 @@ Name: setupTasks; Description: "Creates windows scheduled tasks for update and u
 Name: autorunTray; Description: "Start WAPT Tray icon at logon"; Flags: unchecked
 ;Name: useTISPublic; Description: "Use Tranquil IT public repository as a secondary source"; Flags: unchecked
 #ifdef waptserver
-Name: useWaptServer; Description: "Manage this machine from a central WAPT manage server";
+;Name: useWaptServer; Description: "Manage this machine from a central WAPT manage server";
 #else
 Name: useWaptServer; Description: "Manage this machine from a central WAPT manage server";  Flags: unchecked
 #endif
