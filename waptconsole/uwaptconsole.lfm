@@ -91,41 +91,41 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 4
         end
         object cbSearchHost: TCheckBox
-          Left = 76
+          Left = 80
           Height = 17
           Top = 30
-          Width = 42
-          Caption = 'Host'
+          Width = 59
+          Caption = 'Machine'
           OnClick = CheckBoxMajClick
           State = cbGrayed
           TabOrder = 5
         end
         object cbSearchDMI: TCheckBox
-          Left = 124
+          Left = 144
           Height = 17
           Top = 30
-          Width = 37
-          Caption = 'Dmi'
+          Width = 65
+          Caption = 'Infos Dmi'
           OnClick = CheckBoxMajClick
           State = cbGrayed
           TabOrder = 6
         end
         object cbSearchSoftwares: TCheckBox
-          Left = 164
+          Left = 224
           Height = 17
           Top = 30
-          Width = 69
-          Caption = 'Softwares'
+          Width = 59
+          Caption = 'Logiciels'
           OnClick = CheckBoxMajClick
           State = cbGrayed
           TabOrder = 7
         end
         object cbSearchPackages: TCheckBox
-          Left = 236
+          Left = 300
           Height = 17
           Top = 30
-          Width = 65
-          Caption = 'Packages'
+          Width = 59
+          Caption = 'Paquets'
           OnClick = CheckBoxMajClick
           State = cbGrayed
           TabOrder = 8

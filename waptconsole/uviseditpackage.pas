@@ -84,6 +84,7 @@ type
       Mode: TDropMode; var Effect: DWORD; var Accept: boolean);
   private
     FisAdvancedMode: boolean;
+    FisTempSourcesDir: boolean;
     { private declarations }
     FPackageRequest: string;
     FSourcePath: string;
@@ -209,6 +210,8 @@ end;
 procedure TVisEditPackage.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
   CanClose := CheckUpdated;
+  if FisTempSourcesDir and DirectoryExists(FSourcePath) then
+    FileUtil.DeleteDirectory(FSourcePath,False);
 
 end;
 
@@ -412,7 +415,12 @@ begin
       Result := DMPython.RunJSON(format(
         'mywapt.build_upload(r"%s",r"%s",r"%s",r"%s",True)',
         [FSourcePath, privateKeyPassword, waptServerUser, waptServerPassword]), jsonlog);
-
+      if FisTempSourcesDir then
+      begin
+        FileUtil.DeleteDirectory(FSourcePath,False);
+        if Result.AsArray <> Nil then
+          FileUtil.DeleteFileUTF8(Result.AsArray[0].S['filename']);
+      end;
     finally
       Free;
     end;
@@ -476,12 +484,25 @@ begin
     end;
 end;
 
+function MkTempDir(prefix:String=''):String;
+var
+  i:integer;
+begin
+  if prefix='' then
+    prefix:='wapt';
+  i:=0;
+  repeat
+    inc(i);
+    result := GetTempDir(False)+prefix+FormatFloat('0000',i);
+  until not DirectoryExists(result);
+  MkDir(result);
+end;
 
 procedure TVisEditPackage.SetPackageRequest(AValue: string);
 var
   res: ISuperObject;
   n: PVirtualNode;
-  filename, filePath: string;
+  filename, filePath,target_directory: string;
   grid: TSOGrid;
 begin
   if FPackageRequest = AValue then
@@ -493,7 +514,9 @@ begin
     begin
       if IsHost then
       begin
-        res := DMPython.RunJSON(format('mywapt.edit_host("%s")', [FPackageRequest]));
+        target_directory:=MkTempDir();
+        FisTempSourcesDir:=True;
+        res := DMPython.RunJSON(format('mywapt.edit_host("%s",target_directory="%s")', [FPackageRequest,target_directory]));
         EdPackage.EditLabel.Caption:='Machine';
         Caption:='Modifier la configuration de la machine';
         pgEditPackage.Caption:='Paquets devant être présents sur la machine';
