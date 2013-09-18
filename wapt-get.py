@@ -518,7 +518,18 @@ def main():
                 if len(args)<2:
                     print u"You must provide the directory"
                     sys.exit(1)
-                print update_packages(args[1])
+                result = update_packages(args[1])
+
+
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print u"Packages filename : %s" % result['packages_filename']
+                    print u"Processed packages :\n%s" % "\n".join([ "  %s" % p for p in result['processed'] ])
+                    print u"Skipped packages :\n%s" % "\n".join([ "  %s" % p for p in result['kept'] ])
+                    if result['errors']:
+                        logger.critical(u'Unable to process some files :\n%s' %  "\n".join([ "  %s" % p for p in result['kept'] ]))
+                        sys.exit(1)
 
             elif action=='sources':
                 if len(args)<2:

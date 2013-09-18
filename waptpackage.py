@@ -397,6 +397,9 @@ def update_packages(adir):
 
     waptlist = glob.glob(os.path.join(adir,'*.wapt'))
     packages = []
+    kept = []
+    processed = []
+    errors = []
     for fname in waptlist:
         try:
             entry = PackageEntry()
@@ -404,16 +407,19 @@ def update_packages(adir):
                 entry.load_control_from_wapt(fname,calc_md5=False)
                 if entry == old_entries[os.path.basename(fname)]:
                     logger.info(u"  Keeping %s" % fname)
+                    kept.append(fname)
                     entry = old_entries[os.path.basename(fname)]
                 else:
                     logger.info(u"  Processing %s" % fname)
                     entry.load_control_from_wapt(fname)
+                    processed.append(fname)
             else:
                 logger.info(u"  Processing %s" % fname)
                 entry.load_control_from_wapt(fname)
             packages.append(entry.ascontrol(with_non_control_attributes=True))
         except Exception,e:
             logger.critical("package %s: %s" % (fname,e))
+            errors.append(fname)
 
     logger.info(u"Writing new %s" % packages_fname)
     myzipfile = zipfile.ZipFile(packages_fname, "w",compression=zipfile.ZIP_DEFLATED)
@@ -422,6 +428,7 @@ def update_packages(adir):
     myzipfile.writestr(zi,u'\n'.join(packages).encode('utf8'))
     myzipfile.close()
     logger.info(u"Finished")
+    return {'processed':processed,'kept':kept,'errors':errors,'packages_filename':packages_fname}
 
 if __name__ == '__main__':
     w = PackageEntry()
