@@ -21,6 +21,7 @@ type
     ActEditSearch: TAction;
     ActEditRemove: TAction;
     ActEditSavePackage: TAction;
+    ActAdvancedMode: TAction;
     ActSearchPackage: TAction;
     ActionList1: TActionList;
     BitBtn2: TBitBtn;
@@ -29,20 +30,19 @@ type
     Button3: TButton;
     Button5: TButton;
     cbShowLog: TCheckBox;
-    Eddescription: TEdit;
-    EdPackage: TEdit;
+    Eddescription: TLabeledEdit;
+    EdPackage: TLabeledEdit;
     EdSearch: TEdit;
     EdSection: TComboBox;
     EdSourceDir: TEdit;
-    EdVersion: TEdit;
-    Label1: TLabel;
+    EdVersion: TLabeledEdit;
     Label2: TLabel;
-    Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     GridDepends: TSOGrid;
     GridPackages: TSOGrid;
     MemoLog: TMemo;
+    MenuItem1: TMenuItem;
     MenuItem4: TMenuItem;
     PageControl1: TPageControl;
     Panel1: TPanel;
@@ -52,6 +52,7 @@ type
     Panel7: TPanel;
     Panel8: TPanel;
     Panel9: TPanel;
+    PopupMenu1: TPopupMenu;
     PopupMenuEditDepends: TPopupMenu;
     Splitter1: TSplitter;
     Splitter2: TSplitter;
@@ -61,6 +62,7 @@ type
     pgEditPackage: TTabSheet;
     EdSetupPy: TSynEdit;
     jsonlog: TVirtualJSONInspector;
+    procedure ActAdvancedModeExecute(Sender: TObject);
     procedure ActBuildUploadExecute(Sender: TObject);
     procedure ActEditRemoveExecute(Sender: TObject);
     procedure ActEditSavePackageExecute(Sender: TObject);
@@ -81,6 +83,7 @@ type
       Shift: TShiftState; State: TDragState; const Pt: TPoint;
       Mode: TDropMode; var Effect: DWORD; var Accept: boolean);
   private
+    FisAdvancedMode: boolean;
     { private declarations }
     FPackageRequest: string;
     FSourcePath: string;
@@ -88,6 +91,7 @@ type
     GridDependsUpdated: boolean;
     FDepends: string;
     function CheckUpdated: boolean;
+    procedure SetisAdvancedMode(AValue: boolean);
     procedure SetIsUpdated(AValue: boolean);
     function GetIsUpdated: boolean;
     function GetDepends: string;
@@ -104,7 +108,7 @@ type
     IsHost: boolean;
     IsNewPackage: boolean;
     PackageEdited: ISuperObject;
-    isAdvancedMode: boolean;
+    property isAdvancedMode: boolean read FisAdvancedMode write SetisAdvancedMode;
     procedure EditPackage;
     property SourcePath: string read FSourcePath write SetSourcePath;
     property PackageRequest: string read FPackageRequest write SetPackageRequest;
@@ -225,6 +229,22 @@ begin
     if (Rep = idNo) then
       Result := True;
   end;
+end;
+
+procedure TVisEditPackage.SetisAdvancedMode(AValue: boolean);
+begin
+  if FisAdvancedMode=AValue then Exit;
+  FisAdvancedMode:=AValue;
+  // Advance mode in mainWindow -> tools => advance
+  PanelDevlop.Visible := isAdvancedMode;
+  Label5.Visible := isAdvancedMode;
+  EdSection.Visible := isAdvancedMode;
+  Label4.Visible := isAdvancedMode;
+  EdSourceDir.Visible := isAdvancedMode;
+  cbShowLog.Visible := isAdvancedMode;
+  pgDevelop.TabVisible := isAdvancedMode;
+  Eddescription.Visible:=not IsHost or isAdvancedMode;
+
 end;
 
 procedure TVisEditPackage.EditPackage;
@@ -399,6 +419,11 @@ begin
   ModalResult := mrOk;
 end;
 
+procedure TVisEditPackage.ActAdvancedModeExecute(Sender: TObject);
+begin
+  isAdvancedMode:=ActAdvancedMode.Checked;
+end;
+
 procedure TVisEditPackage.ActExecCodeExecute(Sender: TObject);
 begin
   MemoLog.Clear;
@@ -429,16 +454,7 @@ end;
 
 procedure TVisEditPackage.FormShow(Sender: TObject);
 begin
-  // Advance mode in mainWindow -> tools => advance
-  PanelDevlop.Visible := isAdvancedMode;
-  Label5.Visible := isAdvancedMode;
-  EdSection.Visible := isAdvancedMode;
-  Label4.Visible := isAdvancedMode;
-  EdSourceDir.Visible := isAdvancedMode;
-  cbShowLog.Visible := isAdvancedMode;
-  pgDevelop.TabVisible := isAdvancedMode;
   ActEditSearch.Execute;
-
 end;
 
 procedure TVisEditPackage.TreeLoadData(tree: TVirtualJSONInspector; jsondata: string);
@@ -476,7 +492,13 @@ begin
     if not IsNewPackage then
     begin
       if IsHost then
-        res := DMPython.RunJSON(format('mywapt.edit_host("%s")', [FPackageRequest]))
+      begin
+        res := DMPython.RunJSON(format('mywapt.edit_host("%s")', [FPackageRequest]));
+        EdPackage.EditLabel.Caption:='Machine';
+        Caption:='Modifier la configuration de la machine';
+        pgEditPackage.Caption:='Paquets devant être présents sur la machine';
+        EdVersion.Parent := Panel4; EdVersion.Top:=5;
+      end
       else
       begin
         with  Tvisloading.Create(Self) do

@@ -179,6 +179,7 @@ type
     procedure ActHostUpgradeExecute(Sender: TObject);
     procedure ActHostUpgradeUpdate(Sender: TObject);
     procedure ActHostWaptUpgradeExecute(Sender: TObject);
+    procedure ActHostWaptUpgradeUpdate(Sender: TObject);
     procedure ActPackageEdit(Sender: TObject);
     procedure ActEditpackageUpdate(Sender: TObject);
     procedure ActEvaluateExecute(Sender: TObject);
@@ -212,12 +213,15 @@ type
     procedure EdSearch1KeyPress(Sender: TObject; var Key: char);
     procedure EdSearchHostKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: boolean; var ImageIndex: integer;
       var ImageList: TCustomImageList);
+    procedure GridHostsColumnDblClick(Sender: TBaseVirtualTree;
+      Column: TColumnIndex; Shift: TShiftState);
     procedure GridHostsFocusChanged(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex);
     procedure GridHostsGetImageIndexEx(Sender: TBaseVirtualTree;
@@ -227,8 +231,12 @@ type
     procedure GridHostsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       RowData, CellData: ISuperObject; Column: TColumnIndex;
       TextType: TVSTTextType; var CellText: String);
+    procedure GridHostsHeaderDblClick(Sender: TVTHeader;
+      HitInfo: TVTHeaderHitInfo);
     procedure GridHostsPaintBackground(Sender: TBaseVirtualTree;
       TargetCanvas: TCanvas; const R: TRect; var Handled: Boolean);
+    procedure GridPackagesColumnDblClick(Sender: TBaseVirtualTree;
+      Column: TColumnIndex; Shift: TShiftState);
     procedure GridPackagesPaintText(Sender: TBaseVirtualTree;
       const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType);
@@ -330,6 +338,11 @@ begin
     ActSearchPackage.Execute;
   end;
 
+end;
+
+procedure TVisWaptGUI.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  //Gridhosts.SaveToFile(AppLocalDir+'gridhosts.cols') ;
 end;
 
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
@@ -885,9 +898,9 @@ end;
 
 procedure TVisWaptGUI.ActHostWaptUpgradeExecute(Sender: TObject);
 var
-ip: string;
-N: PVirtualNode;
-res : ISuperObject;
+  ip: string;
+  N: PVirtualNode;
+  res : ISuperObject;
 begin
     N := GridHosts.GetFirstSelected;
     while N <> nil do
@@ -896,10 +909,19 @@ begin
       if ip <> '' then
       begin
          res := WAPTServerJsonGet('/waptupgrade_host/' + ip, []);
-         ShowMessage(res.AsString);
+         if res<>Nil then
+          ShowMessage(res.AsString)
+         else
+           ShowMessage('Erreur pour la machine '+ip);
+
       end;
       N := GridHosts.GetNextSelected(N);
     end;
+end;
+
+procedure TVisWaptGUI.ActHostWaptUpgradeUpdate(Sender: TObject);
+begin
+  ActHostWaptUpgrade.Enabled:=GridHosts.SelectedCount>0;
 end;
 
 
@@ -1268,6 +1290,10 @@ begin
   Login;
   PageControl1.ActivePage := pgInventory;
   PageControl1Change(Sender);
+
+  {if FileExists(AppLocalDir+'gridhosts.cols') then
+    GridHosts.Header.RestoreColumns; StringToFile(GridHosts.Header.ToString, ); GridHosts.Header.LoadFromStreamStre () ;}
+
 end;
 
 procedure TVisWaptGUI.GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
@@ -1289,6 +1315,21 @@ begin
     end;
   end;
 end;
+
+procedure TVisWaptGUI.GridHostsColumnDblClick(Sender: TBaseVirtualTree;
+  Column: TColumnIndex; Shift: TShiftState);
+begin
+  ActEditHostPackage.Execute;
+
+end;
+
+{
+var
+  hi : THitInfo;
+GridHosts.GetHitTestInfoAt(Mouse.CursorPos.x,Mouse.CursorPos.y,True,hi);
+if hi.HitColumn<0 then
+  ActEditHostPackage.Execute;
+}
 
 procedure TVisWaptGUI.GridHostsFocusChanged(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex);
@@ -1358,6 +1399,12 @@ begin
      CellText:=Join(',',CellData);
 end;
 
+procedure TVisWaptGUI.GridHostsHeaderDblClick(Sender: TVTHeader;
+  HitInfo: TVTHeaderHitInfo);
+begin
+  ;
+end;
+
 procedure TVisWaptGUI.GridHostsPaintBackground(Sender: TBaseVirtualTree;
   TargetCanvas: TCanvas; const R: TRect; var Handled: Boolean);
 begin
@@ -1365,6 +1412,12 @@ begin
   TargetCanvas.Brush.Color:=clBlack ;
   TargetCanvas.FillRect(R);
 
+end;
+
+procedure TVisWaptGUI.GridPackagesColumnDblClick(Sender: TBaseVirtualTree;
+  Column: TColumnIndex; Shift: TShiftState);
+begin
+  ActEditpackage.Execute;
 end;
 
 procedure TVisWaptGUI.PythonOutputSendData(Sender: TObject; const Data: ansistring);
