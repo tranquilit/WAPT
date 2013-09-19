@@ -24,7 +24,7 @@ sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
 
 
 
-__version__ = "0.7.5"
+__version__ = "0.7.6"
 
 config = ConfigParser.RawConfigParser()
 
@@ -77,13 +77,13 @@ logger.setLevel(logging.INFO)
 import common
 from common import Wapt
 
-wapt=Wapt(config_filename=config_file)
-wapt_servername =  urlparse(wapt.find_wapt_server())
-wapt_ip = socket.gethostbyname(wapt_servername.hostname)
+
+ALLOWED_EXTENSIONS = set(['wapt'])
+
 
 dbpath = 'c:\\wapt\\db\\waptdb.sqlite'
 
-ALLOWED_EXTENSIONS = set(['wapt'])
+wapt_ip = socket.gethostbyname( urlparse(Wapt(config_filename=config_file).find_wapt_server()).hostname)
 
 app = Flask(__name__)
 app.config['PROPAGATE_EXCEPTIONS'] = True
@@ -230,6 +230,7 @@ def update():
 @requires_auth
 def clean():
     print "run cleanup"
+    wapt=Wapt(config_filename=config_file)
     data = wapt.cleanup()
     return Response(common.jsondump(data), mimetype='application/json')
 
@@ -237,6 +238,7 @@ def clean():
 @requires_auth
 def enable():
     print "run cleanup"
+    wapt=Wapt(config_filename=config_file)
     data = wapt.enable_tasks()
     return Response(common.jsondump(data), mimetype='application/json')
 
@@ -244,6 +246,7 @@ def enable():
 @requires_auth
 def disable():
     print "run cleanup"
+    wapt=Wapt(config_filename=config_file)
     data = wapt.disable_tasks()
     return Response(common.jsondump(data), mimetype='application/json')
 
@@ -251,6 +254,7 @@ def disable():
 @check_ip_source
 def register():
     print "run cleanup"
+    wapt=Wapt(config_filename=config_file)
     data = wapt.register_computer()
     return Response(common.jsondump(data), mimetype='application/json')
 
@@ -260,6 +264,7 @@ def register():
 def install():
     package = request.args.get('package')
     print "run cleanup"
+    wapt=Wapt(config_filename=config_file)
     data = wapt.install(package)
     return Response(common.jsondump(data),status=200, mimetype='application/json')
 
@@ -267,11 +272,9 @@ def install():
 @app.route('/remove', methods=['GET'])
 @requires_auth
 def remove():
-    from common import Wapt
-    global config_file
-    wapt=Wapt(config_filename=config_file)
     package = request.args.get('package')
     print "run cleanup"
+    wapt=Wapt(config_filename=config_file)
     data = wapt.remove(package)
     return Response(common.jsondump(data), mimetype='application/json')
 
