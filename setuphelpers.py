@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.7.4"
+__version__ = "0.7.6"
 import os
 import sys
 import logging
@@ -78,7 +78,6 @@ my_documents= winshell.my_documents
 recent = winshell.recent
 sendto = winshell.sendto
 
-
 def ensure_dir(f):
     """Be sure the directory of f exists on disk. Make it if not"""
     d = os.path.dirname(f)
@@ -112,7 +111,7 @@ def ensure_unicode(data):
         return unicode(data, 'utf-8', 'replace')
     return unicode(data)
 
-def create_shortcut(path, target='', wDir='', icon=''):
+def create_shortcut(path, target='', arguments='', wDir='', icon=''):
     ext = path[-3:]
     if ext == 'url':
         shortcut = file(path, 'w')
@@ -120,43 +119,43 @@ def create_shortcut(path, target='', wDir='', icon=''):
         shortcut.write('URL=%s' % target)
         shortcut.close()
     else:
-        winshell.CreateShortcut(path,target,'',wDir,(icon,0),'')
+        winshell.CreateShortcut(path,target,arguments,wDir,(icon,0),'')
 
-def create_desktop_shortcut(label, target='', wDir='', icon=''):
+def create_desktop_shortcut(label, target='', arguments ='', wDir='', icon=''):
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
     sc_path = os.path.join(desktop(1),label)
     if os.path.isfile(sc_path):
         os.remove(sc_path)
-    create_shortcut(sc_path,target,wDir,icon)
+    create_shortcut(sc_path,target,arguments, wDir,icon)
     return sc_path
 
 
-def create_user_desktop_shortcut(label, target='', wDir='', icon=''):
+def create_user_desktop_shortcut(label, target='',arguments='', wDir='', icon=''):
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
     sc_path = os.path.join(desktop(0),label)
     if os.path.isfile(sc_path):
         os.remove(sc_path)
-    create_shortcut(sc_path,target,wDir,icon)
+    create_shortcut(sc_path,target,arguments,wDir,icon)
     return sc_path
 
-def create_programs_menu_shortcut(label, target='', wDir='', icon=''):
+def create_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=''):
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
     sc = os.path.join(start_menu(1),label)
     if os.path.isfile(sc):
         os.remove(sc)
-    create_shortcut(sc,target,wDir,icon)
+    create_shortcut(sc,target,arguments,wDir,icon)
     return sc
 
-def create_user_programs_menu_shortcut(label, target='', wDir='', icon=''):
+def create_user_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=''):
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
     sc = os.path.join(start_menu(0),label)
     if os.path.isfile(sc):
         os.remove(sc)
-    create_shortcut(sc,target,wDir,icon)
+    create_shortcut(sc,target,arguments,wDir,icon)
     return sc
 
 def wgets(url,proxies=None):

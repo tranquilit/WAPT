@@ -1739,6 +1739,9 @@ class Wapt(object):
         self.options = OptionParser()
         self.options.force = False
 
+        import pythoncom
+        pythoncom.CoInitialize()
+
     def load_config(self,config_filename=None):
         """Load configuration parameters from supplied inifilename
         """
