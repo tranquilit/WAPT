@@ -256,71 +256,77 @@ var
   GlobalhInet,hFile,hConnect: HINTERNET;
   localFile: File;
   buffer: array[1..1024] of byte;
-  bytesRead,dwError,port : DWORD;
+  flags,bytesRead,dwError,port : DWORD;
   pos:integer;
   dwindex,dwcodelen,dwread,dwNumber: cardinal;
   dwcode : array[1..20] of char;
   res    : pchar;
-  error: String;
+  doc,error: String;
   uri :TIdURI;
 
 begin
   result := '';
   GlobalhInet:=Nil;
+  hConnect := Nil;
   hFile:=Nil;
-
   GlobalhInet := InternetOpen('wapt',
       INTERNET_OPEN_TYPE_PRECONFIG,nil,nil,0);
   try
     uri := TIdURI.Create(url);
-
-    if (uri.Protocol='https') then
     BEGIN
       if uri.Port<>'' then
         port := StrToInt(uri.Port)
       else
-        port := INTERNET_DEFAULT_HTTPS_PORT;
+        if (uri.Protocol='https') then
+          port := INTERNET_DEFAULT_HTTPS_PORT
+        else
+          port := INTERNET_DEFAULT_HTTP_PORT;
+
       hConnect := InternetConnect(GlobalhInet, PChar(uri.Host), port, nil, nil, INTERNET_SERVICE_HTTP, 0, 0);
-        //make the request
-      hFile := HttpOpenRequest(hConnect, 'GET', PChar(uri.Path+uri.document+'?'+uri.Params ), HTTP_VERSION, '', nil, INTERNET_FLAG_SECURE or
-        INTERNET_FLAG_NO_CACHE_WRITE or INTERNET_FLAG_PRAGMA_NOCACHE or INTERNET_FLAG_RELOAD, 0);
-      //send the GET request
+      flags := INTERNET_FLAG_NO_CACHE_WRITE or INTERNET_FLAG_PRAGMA_NOCACHE or INTERNET_FLAG_RELOAD;
+      if uri.Protocol='https' then
+        flags := flags or INTERNET_FLAG_SECURE;
+      doc := uri.Path+uri.document;
+      if uri.params<>'' then
+        doc:= doc+'?'+uri.Params;
+      hFile := HttpOpenRequest(hConnect, 'GET', PChar(doc), HTTP_VERSION, nil, nil,flags , 0);
       if not HttpSendRequest(hFile, nil, 0, nil, 0) then
       begin
         ErrorCode:=GetLastError;
         if (ErrorCode = ERROR_INTERNET_INVALID_CA) then
         begin
           SetToIgnoreCerticateErrors(hFile, url);
-          HttpSendRequest(hFile, nil, 0, nil, 0);
+          if not HttpSendRequest(hFile, nil, 0, nil, 0) then
+            Raise Exception.Create('Unable to send request to '+url+' error code '+IntToStr(GetLastError));
         end;
       end;
-    end
-
-    else
-      hFile := InternetOpenURL(GlobalhInet,PChar(url),nil,0, INTERNET_FLAG_NO_CACHE_WRITE
-        or INTERNET_FLAG_PRAGMA_NOCACHE or INTERNET_FLAG_RELOAD,0);
+    end;
 
     if Assigned(hFile) then
     try
       dwIndex  := 0;
       dwCodeLen := 10;
-      HttpQueryInfo(hFile, HTTP_QUERY_STATUS_CODE, @dwcode, dwcodeLen, dwIndex);
-      res := pchar(@dwcode);
-      dwNumber := sizeof(Buffer)-1;
-      if (res ='200') or (res ='302') then
+      if HttpQueryInfo(hFile, HTTP_QUERY_STATUS_CODE, @dwcode, dwcodeLen, dwIndex) then
       begin
-        Result:='';
-        pos:=1;
-        repeat
-          FillChar(buffer,SizeOf(buffer),0);
-          InternetReadFile(hFile,@buffer,SizeOf(buffer),bytesRead);
-          SetLength(Result,Length(result)+bytesRead+1);
-          Move(Buffer,Result[pos],bytesRead);
-          inc(pos,bytesRead);
-        until bytesRead = 0;
+        res := pchar(@dwcode);
+        dwNumber := sizeof(Buffer)-1;
+        if (res ='200') or (res ='302') then
+        begin
+          Result:='';
+          pos:=1;
+          repeat
+            FillChar(buffer,SizeOf(buffer),0);
+            InternetReadFile(hFile,@buffer,SizeOf(buffer),bytesRead);
+            SetLength(Result,Length(result)+bytesRead+1);
+            Move(Buffer,Result[pos],bytesRead);
+            inc(pos,bytesRead);
+          until bytesRead = 0;
+        end
+        else
+           raise Exception.Create('Unable to download: '+URL+#13#10+'HTTP Status:'+res+#13#10+'error code '+IntToStr(GetLastError));
       end
       else
-         raise Exception.Create('Unable to download: "'+URL+'", HTTP Status:'+res);
+         raise Exception.Create('Unable to download: '+URL+#13#10+'error code '+IntToStr(GetLastError));
     finally
       if Assigned(hFile) then
         InternetCloseHandle(hFile);
@@ -330,6 +336,8 @@ begin
 
   finally
     uri.Free;
+    if Assigned(hConnect) then
+      InternetCloseHandle(hConnect);
     if Assigned(GlobalhInet) then
       InternetCloseHandle(GlobalhInet);
   end;
@@ -510,8 +518,6 @@ begin
     R.Free;
   end;
 end;
-
-//function CheckTokenMembership(TokenHandle: THandle; SidToCheck: PSID; var IsMember: BOOL): BOOL; stdcall; external advapi32;
 
 function UserInGroup(Group :DWORD) : Boolean;
 var
