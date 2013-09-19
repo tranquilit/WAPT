@@ -2012,6 +2012,7 @@ class Wapt(object):
           cmd_dict['waptfile'] = ' '.join(cmd_dict['waptfile'])
           return setuphelpers.run(self.upload_cmd_host % cmd_dict)
         else:
+           #upload par http vers un serveur WAPT  (url POST upload_host)
            for file in cmd_dict['waptfile']:
 				file =  file[1:-1]
 				with open(file,'rb') as afile:
@@ -2028,6 +2029,7 @@ class Wapt(object):
           for file in cmd_dict['waptfile']:
             # file is surrounded by quotes for shell usage
             file = file[1:-1]
+            #upload par http vers un serveur WAPT  (url POST upload_package)
             with open(file,'rb') as afile:
                 req = requests.post("%s/upload_package/%s" % (self.wapt_server,os.path.basename(file)),data=afile,proxies=self.proxies,verify=False,auth=auth)
                 req.raise_for_status()
@@ -2979,7 +2981,7 @@ class Wapt(object):
             self.register_computer(force=force)
         else:
             inv = {'uuid': uuid}
-            inv['wapt'] = {}
+            inv['wapt'] = self.wapt_status()
             inv['softwares'] = setuphelpers.installed_softwares('')
             inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
             inv['update_status'] = json.loads(self.read_param('last_update_status','{"date": "", "running_tasks": [], "errors": [], "upgrades": []}'))
