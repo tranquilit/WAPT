@@ -127,6 +127,7 @@ def get_con():
 
 @app.route('/status')
 def status():
+    rows = []
     with sqlite3.connect(dbpath) as con:
         try:
             con.row_factory=sqlite3.Row
@@ -168,7 +169,7 @@ def get_runstatus():
             data = [dict(ix) for ix in rows]
             print data
         except Exception as e:
-            print "*********** error" + str (e)
+            print "*********** error " + str (e)
     return Response(common.jsondump(data), mimetype='application/json')
 
 @app.route('/checkupgrades')
@@ -182,7 +183,7 @@ def get_checkupgrades():
             cur = con.cursor()
             cur.execute(query)
             data = json.loads(cur.fetchone()['value'])
-            print rows
+            print data
         except Exception as e :
             print "*********** error"  + str(e)
     return Response(common.jsondump(data), mimetype='application/json')
