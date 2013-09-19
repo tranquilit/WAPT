@@ -102,7 +102,7 @@ type
     procedure SetSourcePath(AValue: string);
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: string);
     property Depends: string read GetDepends write SetDepends;
-    function updateprogress(receiver:TObject;current, total: integer): boolean;
+    function updateprogress(receiver: TObject; current, total: integer): boolean;
   public
     { public declarations }
     waptpath: string;
@@ -169,8 +169,8 @@ function EditHost(hostname: string; advancedMode: boolean): ISuperObject;
 begin
   with TVisEditPackage.Create(nil) do
     try
-      isAdvancedMode := advancedMode;
       IsHost := True;
+      isAdvancedMode := advancedMode;
       PackageRequest := hostname;
       if ShowModal = mrOk then
         Result := PackageEdited
@@ -211,7 +211,7 @@ procedure TVisEditPackage.FormCloseQuery(Sender: TObject; var CanClose: boolean)
 begin
   CanClose := CheckUpdated;
   if FisTempSourcesDir and DirectoryExists(FSourcePath) then
-    FileUtil.DeleteDirectory(FSourcePath,False);
+    FileUtil.DeleteDirectory(FSourcePath, False);
 
 end;
 
@@ -236,8 +236,9 @@ end;
 
 procedure TVisEditPackage.SetisAdvancedMode(AValue: boolean);
 begin
-  if FisAdvancedMode=AValue then Exit;
-  FisAdvancedMode:=AValue;
+  if FisAdvancedMode = AValue then
+    Exit;
+  FisAdvancedMode := AValue;
   // Advance mode in mainWindow -> tools => advance
   PanelDevlop.Visible := isAdvancedMode;
   Label5.Visible := isAdvancedMode;
@@ -246,7 +247,7 @@ begin
   EdSourceDir.Visible := isAdvancedMode;
   cbShowLog.Visible := isAdvancedMode;
   pgDevelop.TabVisible := isAdvancedMode;
-  Eddescription.Visible:=not IsHost or isAdvancedMode;
+  Eddescription.Visible := not IsHost or isAdvancedMode;
 
 end;
 
@@ -417,8 +418,8 @@ begin
         [FSourcePath, privateKeyPassword, waptServerUser, waptServerPassword]), jsonlog);
       if FisTempSourcesDir then
       begin
-        FileUtil.DeleteDirectory(FSourcePath,False);
-        if Result.AsArray <> Nil then
+        FileUtil.DeleteDirectory(FSourcePath, False);
+        if Result.AsArray <> nil then
           FileUtil.DeleteFileUTF8(Result.AsArray[0].S['filename']);
       end;
     finally
@@ -429,7 +430,7 @@ end;
 
 procedure TVisEditPackage.ActAdvancedModeExecute(Sender: TObject);
 begin
-  isAdvancedMode:=ActAdvancedMode.Checked;
+  isAdvancedMode := ActAdvancedMode.Checked;
 end;
 
 procedure TVisEditPackage.ActExecCodeExecute(Sender: TObject);
@@ -484,25 +485,25 @@ begin
     end;
 end;
 
-function MkTempDir(prefix:String=''):String;
+function MkTempDir(prefix: string = ''): string;
 var
-  i:integer;
+  i: integer;
 begin
-  if prefix='' then
-    prefix:='wapt';
-  i:=0;
+  if prefix = '' then
+    prefix := 'wapt';
+  i := 0;
   repeat
-    inc(i);
-    result := GetTempDir(False)+prefix+FormatFloat('0000',i);
-  until not DirectoryExists(result);
-  MkDir(result);
+    Inc(i);
+    Result := GetTempDir(False) + prefix + FormatFloat('0000', i);
+  until not DirectoryExists(Result);
+  MkDir(Result);
 end;
 
 procedure TVisEditPackage.SetPackageRequest(AValue: string);
 var
   res: ISuperObject;
   n: PVirtualNode;
-  filename, filePath,target_directory: string;
+  filename, filePath, target_directory: string;
   grid: TSOGrid;
 begin
   if FPackageRequest = AValue then
@@ -514,13 +515,15 @@ begin
     begin
       if IsHost then
       begin
-        target_directory:=MkTempDir();
-        FisTempSourcesDir:=True;
-        res := DMPython.RunJSON(format('mywapt.edit_host("%s",target_directory="%s")', [FPackageRequest,target_directory]));
-        EdPackage.EditLabel.Caption:='Machine';
-        Caption:='Modifier la configuration de la machine';
-        pgEditPackage.Caption:='Paquets devant être présents sur la machine';
-        EdVersion.Parent := Panel4; EdVersion.Top:=5;
+        target_directory := MkTempDir();
+        FisTempSourcesDir := True;
+        res := DMPython.RunJSON(format('mywapt.edit_host("%s",target_directory="%s")',
+          [FPackageRequest, target_directory]));
+        EdPackage.EditLabel.Caption := 'Machine';
+        Caption := 'Modifier la configuration de la machine';
+        pgEditPackage.Caption := 'Paquets devant être présents sur la machine';
+        EdVersion.Parent := Panel4;
+        EdVersion.Top := 5;
       end
       else
       begin
@@ -534,11 +537,12 @@ begin
             if n <> nil then
               try
                 filename := grid.GetCellStrValue(n, 'filename');
-                filePath := AppLocalDir+ 'cache\' + filename;
-                if not DirectoryExists(AppLocalDir+ 'cache') then
-                  mkdir(AppLocalDir+ 'cache');
+                filePath := AppLocalDir + 'cache\' + filename;
+                if not DirectoryExists(AppLocalDir + 'cache') then
+                  mkdir(AppLocalDir + 'cache');
                 if not FileExists(filePath) then
-                  Wget(GetWaptRepoURL + '/' + filename, filePath, ProgressForm, @updateprogress);
+                  Wget(GetWaptRepoURL + '/' + filename, filePath,
+                    ProgressForm, @updateprogress);
               except
                 ShowMessage('Téléchargement annulé');
                 if FileExists(filePath) then
@@ -630,14 +634,15 @@ begin
   Result := FDepends;
 end;
 
-function TVisEditPackage.updateprogress(receiver:TObject;current, total: integer): boolean;
+function TVisEditPackage.updateprogress(receiver: TObject;
+  current, total: integer): boolean;
 begin
-  if receiver<>Nil then
-  with (receiver as TVisLoading) do
-  begin
-    ProgressStep(current,total);
-    Result := not StopRequired;
-  end
+  if receiver <> nil then
+    with (receiver as TVisLoading) do
+    begin
+      ProgressStep(current, total);
+      Result := not StopRequired;
+    end
   else
     Result := True;
 end;
