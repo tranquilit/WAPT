@@ -1,0 +1,43 @@
+﻿[PyScripter]
+Version=2.5.3.0
+
+[Project]
+ClassName=TProjectRootNode
+StoreRelativePaths=TRUE
+ShowFileExtensions=FALSE
+
+[Project\ChildNodes\Node0]
+ClassName=TProjectFilesNode
+
+[Project\ChildNodes\Node0\ChildNodes\Node0]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\common.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node1]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptpackage.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node2]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]waptservice.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node3]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]waptservice_servicewrapper.py
+
+[Project\ChildNodes\Node0\ChildNodes]
+Count=4
+
+[Project\ChildNodes\Node1]
+ClassName=TProjectRunConfiguationsNode
+
+[Project\ChildNodes]
+Count=2
+
+[Project\ExtraPythonPath]
+Item0=C:\tranquilit \WAPT
+Item1=C:\tranquilit \WAPT\lib
+Item2=C:\tranquilit \WAPT\lib\site-packages
+Item3=C:\tranquilit \WAPT\waptservice
+Count=4
+

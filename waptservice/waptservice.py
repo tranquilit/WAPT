@@ -1,51 +1,32 @@
 import time
 import sys
 import os
-
-wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
-#wapt_root_dir = os.path.dirname(__file__)
-sys.path.append(os.path.join(wapt_root_dir))
-sys.path.append(os.path.join(wapt_root_dir,'lib'))
-sys.path.append(os.path.join(wapt_root_dir,'waptservice'))
-sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
-print wapt_root_dir
-print sys.path
-
-import json
 import hashlib
-
 from werkzeug import secure_filename
+from urlparse import urlparse
 from functools import wraps
 import logging
 import ConfigParser
 import logging
 import sqlite3
-from flask import request, Flask,Response, send_from_directory, send_file, session, g, redirect, url_for, abort, render_template, flash
 import socket
 import thread
-from urlparse import urlparse
+import json
 from rocket import Rocket
+from flask import request, Flask,Response, send_from_directory, send_file, session, g, redirect, url_for, abort, render_template, flash
 import gc
+
+wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+sys.path.append(os.path.join(wapt_root_dir))
+sys.path.append(os.path.join(wapt_root_dir,'lib'))
+sys.path.append(os.path.join(wapt_root_dir,'waptservice'))
+sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
+
+
 
 __version__ = "0.7.5"
 
 config = ConfigParser.RawConfigParser()
-
-
-
-"""
-if os.name=='nt':
-    import _winreg
-    try:
-        key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE,"SOFTWARE\\TranquilIT\\WAPT")
-        (wapt_root_dir,atype) = _winreg.QueryValueEx(key,'install_dir')
-    except:
-        wapt_root_dir = 'c:\\\\wapt\\'
-else:
-    wapt_root_dir = '/opt/wapt/'
-"""
-
-
 
 log_directory = os.path.join(wapt_root_dir,'log')
 if not os.path.exists(log_directory):
@@ -100,6 +81,8 @@ wapt=Wapt(config_filename=config_file)
 wapt_servername =  urlparse(wapt.find_wapt_server())
 wapt_ip = socket.gethostbyname(wapt_servername.hostname)
 
+dbpath = 'c:\\wapt\\db\\waptdb.sqlite'
+
 ALLOWED_EXTENSIONS = set(['wapt'])
 
 app = Flask(__name__)
@@ -139,68 +122,70 @@ def check_ip_source(f):
     return decorated
 
 def get_con():
-    con  = None
-    con = sqlite3.connect('c:\\wapt\\db\\waptdb.sqlite')
+    con = sqlite3.connect(dbpath)
     return con
 
 @app.route('/status')
-@requires_auth
 def status():
-    con = None
-    try:
-        query = '''select s.package,s.version,s.install_date,s.install_status,"Remove" as Remove,
-                             (select max(p.version) from wapt_package p where p.package=s.package) as repo_version,explicit_by as install_par
-                             from wapt_localstatus s
-                             order by s.package'''
-        con = get_con()
-        cur = con.cursor()
-        cur.execute(query)
-        data = cur.fetchall()
-    except lite.Error, e:
-        print "Error %s:" % e.args[0]
-    finally:
-        if con:
-            con.close()
-    return data
-    #return render_template('listing.html')
+    with sqlite3.connect(dbpath) as con:
+        try:
+            con.row_factory=sqlite3.Row
+            query = '''select s.package,s.version,s.install_date,s.install_status,
+                                 (select max(p.version) from wapt_package p where p.package=s.package) as repo_version,explicit_by as install_par
+                                 from wapt_localstatus s
+                                 order by s.package'''
+            cur = con.cursor()
+            cur.execute(query)
+            rows = [ dict(x) for x in cur.fetchall() ]
+        except lite.Error, e:
+            print "*********** Error %s:" % e.args[0]
+    return Response(common.jsondump(rows), mimetype='application/json')
 
+@app.route('/list')
+def status():
+    with sqlite3.connect(dbpath) as con:
+        try:
+            con.row_factory=sqlite3.Row
+            query = '''select * from wapt_package where section<>"host" order by package,version'''
+            cur = con.cursor()
+            cur.execute(query)
+            rows = [ dict(x) for x in cur.fetchall() ]
+        except lite.Error, e:
+            print "*********** Error %s:" % e.args[0]
+    return Response(common.jsondump(rows), mimetype='application/json')
 
 @app.route('/runstatus')
 @check_ip_source
 def get_runstatus():
-    print "from runstatus"
-    con = sqlite3.connect('c:\\wapt\\db\\waptdb.sqlite')
-    con.row_factory=sqlite3.Row
-    data = ""
-    try:
-        query ="""select value,create_date from wapt_params where name='runstatus' limit 1"""
-        cur = con.cursor()
-        cur.execute(query)
-        rows = cur.fetchall()
-        data = json.dumps([dict(ix) for ix in rows])
-    except Exception as e:
-        print "error" + str (e)
-    finally:
-        if con:  con.close()
-    return Response(data, mimetype='application/json')
+    data = []
+    with sqlite3.connect(dbpath) as con:
+        con.row_factory=sqlite3.Row
+        try:
+            query ="""select value,create_date from wapt_params where name='runstatus' limit 1"""
+            cur = con.cursor()
+            cur.execute(query)
+            rows = cur.fetchall()
+            data = [dict(ix) for ix in rows]
+            print data
+        except Exception as e:
+            print "*********** error" + str (e)
+    return Response(common.jsondump(data), mimetype='application/json')
 
 @app.route('/checkupgrades')
 @check_ip_source
 def get_checkupgrades():
-    global config_file
-    con = sqlite3.connect('c:\\wapt\\db\\waptdb.sqlite')
-    con.row_factory=sqlite3.Row
-    data = ""
-    try:
-        query ="""select * from wapt_params where name="last_update_status" limit 1"""
-        cur = con.cursor()
-        cur.execute(query)
-        rows = cur.fetchone()['value']
-    except Exception as e :
-        print "error"  + str(e)
-    finally:
-        if con:  con.close()
-    return Response(rows, mimetype='application/json')
+    with sqlite3.connect(dbpath) as con:
+        con.row_factory=sqlite3.Row
+        data = ""
+        try:
+            query ="""select * from wapt_params where name="last_update_status" limit 1"""
+            cur = con.cursor()
+            cur.execute(query)
+            data = json.loads(cur.fetchone()['value'])
+            print rows
+        except Exception as e :
+            print "*********** error"  + str(e)
+    return Response(common.jsondump(data), mimetype='application/json')
 
 @app.route('/waptupgrade')
 @check_ip_source
@@ -208,28 +193,22 @@ def waptupgrade():
     from setuphelpers import run
     print "run waptupgrade"
     run('c:\\wapt\\wapt-get waptupgrade')
-
     return "200 OK"
 
 @app.route('/upgrade')
 @check_ip_source
 def upgrade():
-
     print "run upgrade"
-    def background_upgrade(req,config_file):
-        with app.test_request_context():
-            from flask import request
-            #check if there is a upgrade already running
-            #update sqlite with status
-            request = req
-            wapt=Wapt(config_filename=config_file)
-            wapt.update()
-            wapt.upgrade()
-            wapt.update()
-            del wapt
-            gc.collect()
+    def background_upgrade(config_file):
+        print "************** Launch upgrade***********************"
+        wapt=Wapt(config_filename=config_file)
+        wapt.update()
+        wapt.upgrade()
+        print "************** End upgrade *************************"
+        del wapt
+        gc.collect()
 
-    thread.start_new_thread(background_upgrade,(request,config_file))
+    thread.start_new_thread(background_upgrade,(config_file,))
     return Response(common.jsondump({'result':'ok'}), mimetype='application/json')
 
 @app.route('/update')
@@ -237,23 +216,13 @@ def upgrade():
 @check_ip_source
 def update():
     print "run update"
+    def background_update(config_file):
+        wapt=Wapt(config_filename=config_file)
+        wapt.update()
+        del wapt
+        gc.collect()
 
-    def background_upgrade(req,config_file):
-        with app.test_request_context():
-            from flask import request
-            #check if there is a upgrade already running
-            #update sqlite with status
-            wapt = None
-            request = req
-            try:
-                wapt=Wapt(config_filename=config_file)
-                wapt.update()
-            finally:
-                if wapt:
-                    del wapt
-                gc.collect()
-
-    thread.start_new_thread(background_upgrade,(request,config_file))
+    thread.start_new_thread(background_update,(config_file,))
     return Response(common.jsondump({'result':'ok'}), mimetype='application/json')
 
 @app.route('/clean')
@@ -303,7 +272,7 @@ def remove():
     package = request.args.get('package')
     print "run cleanup"
     data = wapt.remove(package)
-    return Response(data, mimetype='application/json')
+    return Response(common.jsondump(data), mimetype='application/json')
 
 """
 @app.route('/static/<path:filename>', methods=['GET'])
