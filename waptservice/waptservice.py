@@ -205,6 +205,7 @@ def upgrade():
         wapt=Wapt(config_filename=config_file)
         wapt.update()
         wapt.upgrade()
+        wapt.update_server_status()
         print "************** End upgrade *************************"
         del wapt
         gc.collect()

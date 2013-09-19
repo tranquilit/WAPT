@@ -520,7 +520,7 @@ class LogInstallOutput(object):
                 txtdb = txt+'\n'
             else:
                 txtdb = txt
-            self.waptdb.update_install_status(self.rowid,'RUNNING',txtdb if not txtdb == None else None)
+            #self.waptdb.update_install_status(self.rowid,'RUNNING',txtdb if not txtdb == None else None)
 
     def __getattrib__(self, name):
         if hasattr(self.console,'__getattrib__'):
