@@ -268,7 +268,7 @@ def main():
                     if action=='install':
                         # abort if there is already a running install in progress
                         if running_install:
-                            raise Exception('Running wapt-get in progress, please wait...')
+                            raise Exception('Running wapt progresses (%s), please wait...' % (running_install,))
                         result= {'install':[ (args[1],mywapt.install_wapt(args[1],params_dict = params_dict))]}
                 else:
                     print u"%sing WAPT packages %s" % (action,','.join(args[1:]))
@@ -277,7 +277,7 @@ def main():
                         mywapt.update()
 
                     if running_install and action=='install':
-                        raise Exception('Running wapt-get in progress, please wait...')
+                        raise Exception('Running wapt processes (%s) in progress, please wait...' % (running_install,))
                     result = mywapt.install(args[1:],force = options.force,params_dict = params_dict,
                         download_only= (action=='download'), usecache = not (action == 'download' and options.force)
                         )
@@ -374,7 +374,7 @@ def main():
                     sys.exit(1)
                 # abort if there is already a running install in progress
                 if running_install:
-                    raise Exception('Running wapt-get in progress, please wait...')
+                    raise Exception('Running wapt processes (%s) in progress, please wait...' % (running_install,))
                 removed = []
                 errors = []
                 for packagename in args[1:]:
@@ -437,7 +437,7 @@ def main():
             elif action=='update':
                 # abort if there is already a running install in progress
                 if running_install:
-                    raise Exception('Running wapt-get in progress, please wait...')
+                    raise Exception('Running wapt processes (%s) in progress, please wait...' % (running_install,))
                 print u"Update package list"
                 result = mywapt.update(force=options.force)
                 if options.json_output:
@@ -452,7 +452,7 @@ def main():
             elif action=='upgradedb':
                 # abort if there is already a running install in progress
                 if running_install:
-                    raise Exception('Running wapt-get in progress, please wait...')
+                    raise Exception('Running wapt processes (%s) in progress, please wait...' % (running_install,))
                 (old,new) = mywapt.waptdb.upgradedb(force=options.force)
                 if old == new:
                     print u"No database upgrade required, current %s, required %s" % (old,mywapt.waptdb.curr_db_version)
@@ -465,7 +465,7 @@ def main():
                     mywapt.update()
                 # abort if there is already a running install in progress
                 if running_install:
-                    raise Exception('Running wapt-get in progress, please wait...')
+                    raise Exception('Running wapt processes (%s) in progress, please wait...' % (running_install,))
                 result = mywapt.upgrade()
 
                 if options.json_output:
@@ -499,7 +499,7 @@ def main():
             elif action=='download-upgrade':
                 # abort if there is already a running install in progress
                 if running_install:
-                    raise Exception('Running wapt-get in progress, please wait...')
+                    raise Exception('Running wapt processes (%s) in progress, please wait...' % (running_install,))
                 if options.update_packages:
                     print u"Update packages list"
                     mywapt.update()

@@ -2,16 +2,17 @@
 *.dbg
 *.log
 *.ppu
+.SyncArchive
 .git
 .gitignore
+.rnd
 appwaptservice.log
 backup
 cache
 db
 lib
-trash
 tmp
-.rnd
+trash
 
 # These are the default patterns globally ignored by Subversion:
 *.o

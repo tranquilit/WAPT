@@ -46,6 +46,7 @@ import dns.resolver
 import copy
 import getpass
 import psutil
+import threading
 
 import winsys.security
 import winsys.accounts
@@ -510,6 +511,7 @@ class LogInstallOutput(object):
         self.console = console
         self.waptdb = waptdb
         self.rowid = rowid
+        self.threadid = threading.current_thread()
 
     def write(self,txt):
         txt = ensure_unicode(txt)
@@ -520,7 +522,8 @@ class LogInstallOutput(object):
                 txtdb = txt+'\n'
             else:
                 txtdb = txt
-            #self.waptdb.update_install_status(self.rowid,'RUNNING',txtdb if not txtdb == None else None)
+            if threading.current_thread == self.threadid:
+                self.waptdb.update_install_status(self.rowid,'RUNNING',txtdb if not txtdb == None else None)
 
     def __getattrib__(self, name):
         if hasattr(self.console,'__getattrib__'):
