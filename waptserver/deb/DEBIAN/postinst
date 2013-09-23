@@ -2,14 +2,16 @@
 
 
 #easy_install flask uwsgi pymongo cheroot requests
+groupadd waptserver
 useradd -d /opt/wapt/waptserver waptserver
+useradd -G waptserver waptserver
 touch  /var/log/waptserver.log
 touch  /var/run/waptserver.pid
-chown waptserver  /var/log/waptserver.log
-chown waptserver  /var/run/waptserver.pid
-chown waptserver  -R /opt/wapt/waptserver
+chown waptserver:waptserver  /var/log/waptserver.log
+chown waptserver:waptserver  /var/run/waptserver.pid
+chown waptserver:waptserver  -R /opt/wapt/waptserver
 chown waptserver:www-data -R /var/www/wapt/
-chown waptserver -R /opt/wapt/
+chown waptserver:waptserver -R /opt/wapt/
 cp /opt/wapt/waptserver/scripts/waptserver-init /etc/init.d/waptserver
 chmod +x /etc/init.d/waptserver
 
