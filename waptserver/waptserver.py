@@ -46,7 +46,7 @@ import socket
 import requests
 from rocket import Rocket
 
-__version__ = "0.7.6"
+__version__ = "0.7.7"
 
 config = ConfigParser.RawConfigParser()
 wapt_root_dir = ''
