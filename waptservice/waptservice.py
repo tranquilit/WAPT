@@ -24,7 +24,7 @@ sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
 
 
 
-__version__ = "0.7.6"
+__version__ = "0.7.7"
 
 config = ConfigParser.RawConfigParser()
 
@@ -75,7 +75,22 @@ logger.addHandler(hdlr)
 logger.setLevel(logging.INFO)
 
 import common
+import setuphelpers
 from common import Wapt
+
+
+def check_open_port():
+    import win32serviceutil
+    win_major_version = int(platform.win32_ver()[1].split('.')[0])
+    if win_major_version<6:
+        #check if firewall is running
+        if  win32serviceutil.QueryServiceStatus( 'SharedAccess', None)[1]==win32service.SERVICE_RUNNING:
+            #winXP 2003
+            setuphelpers.run_notfatal("""netsh.exe firewall add portopening name="waptservice 8088" port=8088 protocol=TCP'""")
+    else:
+        if  win32serviceutil.QueryServiceStatus( 'MpsSvc', None)[1]==win32service.SERVICE_RUNNING:
+            #win Vista and higher
+            setuphelpers.run_notfatal(""""netsh advfirewall firewall add rule name="waptservice 8088" dir=in action=allow protocol=TCP localport=8088""")
 
 
 ALLOWED_EXTENSIONS = set(['wapt'])

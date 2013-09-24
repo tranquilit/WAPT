@@ -327,22 +327,22 @@ begin
      ewWaitUntilTerminated, ErrorCode) then
     RaiseException('Error installing waptservice: '+intToStr(ErrorCode));
    
-  GetWindowsVersionEx(winver);
-  if winver.Major>=6 then 
+ // GetWindowsVersionEx(winver);
+ // if winver.Major>=6 then 
   // for win7
-  begin  
-    ExecStdOut := RunCmd('netsh advfirewall firewall show rule name="waptservice 8088"',False);
-    if pos('Ok.',ExecStdOut)<=0 then
-      if pos('Ok.',RunCmd('netsh advfirewall firewall add rule name="waptservice 8088" dir=in action=allow protocol=TCP localport=8088',True))<=0 then 
-        RaiseException('could not open firewall port 8088 for remote management');
-  end
-  else
-  begin
-    ExecStdOut := RunCmd('netsh.exe firewall show portopening',True);
-    if pos('waptservice 8088',ExecStdOut)<=0 then
-      if pos('Ok.',RunCmd('netsh.exe firewall add portopening name="waptservice 8088" port=8088 protocol=TCP',True))<=0 then
-        RaiseException('could not open firewall port 8088 for remote management')
-	end;
+ // begin  
+ //   ExecStdOut := RunCmd('netsh advfirewall firewall show rule name="waptservice 8088"',False);
+ //   if pos('Ok.',ExecStdOut)<=0 then
+  //    if pos('Ok.',RunCmd('netsh advfirewall firewall add rule name="waptservice 8088" dir=in action=allow protocol=TCP localport=8088',True))<=0 then 
+ //       RaiseException('could not open firewall port 8088 for remote management');
+//  end
+//  else
+//  begin
+//    ExecStdOut := RunCmd('netsh.exe firewall show portopening',True);
+//    if pos('waptservice 8088',ExecStdOut)<=0 then
+//      if pos('Ok.',RunCmd('netsh.exe firewall add portopening name="waptservice 8088" port=8088 protocol=TCP',True))<=0 then
+//        RaiseException('could not open firewall port 8088 for remote management')
+//	end;
 end;
 
 
