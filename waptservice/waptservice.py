@@ -81,17 +81,32 @@ from common import Wapt
 
 def check_open_port():
     import win32serviceutil
+    import platform
+    import win32service
     win_major_version = int(platform.win32_ver()[1].split('.')[0])
     if win_major_version<6:
         #check if firewall is running
+        print "Running on NT5 "
         if  win32serviceutil.QueryServiceStatus( 'SharedAccess', None)[1]==win32service.SERVICE_RUNNING:
+            print "Firewall started, checking for port openning..."
             #winXP 2003
-            setuphelpers.run_notfatal("""netsh.exe firewall add portopening name="waptservice 8088" port=8088 protocol=TCP'""")
+            if 'waptservice' not in setuphelpers.run_notfatal('netsh firewall show portopening'):
+                print "Port not opening, opening port"
+                setuphelpers.run_notfatal("""netsh.exe firewall add portopening name="waptservice 8088" port=8088 protocol=TCP""")
+            else:
+                print "port already opened, skipping firewall configuration"
     else:
-        if  win32serviceutil.QueryServiceStatus( 'MpsSvc', None)[1]==win32service.SERVICE_RUNNING:
-            #win Vista and higher
-            setuphelpers.run_notfatal(""""netsh advfirewall firewall add rule name="waptservice 8088" dir=in action=allow protocol=TCP localport=8088""")
 
+        if  win32serviceutil.QueryServiceStatus( 'MpsSvc', None)[1]==win32service.SERVICE_RUNNING:
+            print "Firewall started, checking for port openning..."
+            if 'waptservice' not in setuphelpers.run_notfatal('netsh advfirewall firewall show rule name="waptservice 8088"'):
+                print "No port opened for waptservice, opening port"
+                #win Vista and higher
+                setuphelpers.run_notfatal(""""netsh advfirewall firewall add rule name="waptservice 8088" dir=in action=allow protocol=TCP localport=8088""")
+            else:
+                print "port already opened, skipping firewall configuration"
+
+check_open_port()
 
 ALLOWED_EXTENSIONS = set(['wapt'])
 
