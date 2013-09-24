@@ -102,7 +102,7 @@ def check_open_port():
             if 'waptservice' not in setuphelpers.run_notfatal('netsh advfirewall firewall show rule name="waptservice 8088"'):
                 print "No port opened for waptservice, opening port"
                 #win Vista and higher
-                setuphelpers.run_notfatal(""""netsh advfirewall firewall add rule name="waptservice 8088" dir=in action=allow protocol=TCP localport=8088""")
+                setuphelpers.run_notfatal("""netsh advfirewall firewall add rule name="waptservice 8088" dir=in action=allow protocol=TCP localport=8088""")
             else:
                 print "port already opened, skipping firewall configuration"
 
