@@ -58,7 +58,8 @@ Source: "..\lib\site-packages\M2Crypto\ssleay32.dll" ; DestDir: "{app}";
 Source: "..\waptpython.exe"; DestDir: "{app}";
 Source: "..\waptservice\waptservice.ini"; DestDir: "{app}\waptservice\";
 Source: "..\waptservice\static\*"; DestDir: "{app}\waptservice\static"; Flags: createallsubdirs recursesubdirs
-Source: "..\waptservice\templates"; DestDir: "{app}\waptservice\templates"; Flags: createallsubdirs recursesubdirs
+Source: "..\waptservice\ssl\*"; DestDir: "{app}\waptservice\ssl"; Flags: createallsubdirs recursesubdirs
+Source: "..\waptservice\templates\*"; DestDir: "{app}\waptservice\templates"; Flags: createallsubdirs recursesubdirs
 Source: "..\waptservice\waptservice*.py"; DestDir: "{app}\waptservice\";  BeforeInstall: BeforeWaptServiceInstall('waptservice.py'); AfterInstall: AfterWaptServiceInstall('waptservice.py'); Tasks: installService
 Source: "..\python27.dll"; DestDir: "{sys}"; Flags: sharedfile 32bit;
 
