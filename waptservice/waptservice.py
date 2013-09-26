@@ -42,10 +42,6 @@ if os.path.exists(config_file):
 else:
     raise Exception("FATAL. Couldn't open config file : " + config_file)
 
-#default mongodb configuration for wapt
-mongodb_port = "38999"
-mongodb_ip = "127.0.0.1"
-
 wapt_user = ""
 wapt_password = ""
 
@@ -65,6 +61,11 @@ if config.has_section('global'):
         waptservice_port = config.get('global','waptservice_port')
     else:
         waptservice_port=8088
+
+    if config.has_option('global','dbdir'):
+        dbpath = os.path.join(config.get('global','dbdir'),'waptdb.sqlite')
+    else:
+        dbpath = os.path.join(wapt_root_dir,'db','waptdb.sqlite')
 else:
     raise Exception ("FATAL, configuration file " + config_file + " has no section [global]. Please check Waptserver documentation")
 
@@ -77,7 +78,6 @@ logger.setLevel(logging.INFO)
 import common
 import setuphelpers
 from common import Wapt
-
 
 def check_open_port():
     import win32serviceutil
@@ -110,10 +110,7 @@ check_open_port()
 
 ALLOWED_EXTENSIONS = set(['wapt'])
 
-
-dbpath = 'c:\\wapt\\db\\waptdb.sqlite'
-
-wapt_ip = socket.gethostbyname( urlparse(Wapt(config_filename=config_file).find_wapt_server()).hostname)
+waptserver_ip = socket.gethostbyname( urlparse(Wapt(config_filename=config_file).find_wapt_server()).hostname)
 
 app = Flask(__name__)
 app.config['PROPAGATE_EXCEPTIONS'] = True
@@ -144,18 +141,13 @@ def check_ip_source(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         auth = request.authorization
-        print wapt_ip
-        if not  request.remote_addr in ['127.0.0.1', wapt_ip]:
+        if not  request.remote_addr in ['127.0.0.1', waptserver_ip]:
             return authenticate()
         return f(*args, **kwargs)
-
     return decorated
 
-def get_con():
-    con = sqlite3.connect(dbpath)
-    return con
-
 @app.route('/status')
+@check_ip_source
 def status():
     rows = []
     with sqlite3.connect(dbpath) as con:
@@ -173,7 +165,8 @@ def status():
     return Response(common.jsondump(rows), mimetype='application/json')
 
 @app.route('/list')
-def status():
+@check_ip_source
+def list():
     with sqlite3.connect(dbpath) as con:
         try:
             con.row_factory=sqlite3.Row
@@ -341,7 +334,11 @@ if __name__ == "__main__":
     else:
         #TODO : recuperer le port depuis le .ini
         port = 8088
-        server = Rocket(('0.0.0.0', port), 'wsgi', {"wsgi_app":app})
+        server = Rocket(
+            [('0.0.0.0', port),
+             ('0.0.0.0', port+1, r'ssl\waptservice.pem', r'ssl\waptservice.crt')],
+             'wsgi', {"wsgi_app":app})
+
         try:
             print ("starting waptserver")
             server.start()
