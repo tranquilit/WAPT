@@ -2979,6 +2979,9 @@ class Wapt(object):
         else:
             return json.dumps(inv,indent=True)
 
+    def get_last_update_status(self):
+        return json.loads(self.read_param('last_update_status','{"date": "", "running_tasks": [], "errors": [], "upgrades": []}'))
+
     def update_server_status(self,force=False):
         """Send packages and software informations to WAPT Server, don't send dmi
         """
@@ -2990,7 +2993,7 @@ class Wapt(object):
             inv['wapt'] = self.wapt_status()
             inv['softwares'] = setuphelpers.installed_softwares('')
             inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
-            inv['update_status'] = json.loads(self.read_param('last_update_status','{"date": "", "running_tasks": [], "errors": [], "upgrades": []}'))
+            inv['update_status'] = self.get_last_update_status()
             if force:
                 inv['force']=True
 
@@ -3011,8 +3014,9 @@ class Wapt(object):
     def wapt_status(self):
         """retrun wapt version info"""
         result = {}
-        if os.path.isfile(sys.argv[0]):
-            result['wapt-exe-version'] = setuphelpers.get_file_properties(sys.argv[0])['FileVersion']
+        waptexe = os.path.join(self.wapt_base_dir,'wapt-get.exe')
+        if os.path.isfile(waptexe):
+            result['wapt-exe-version'] = setuphelpers.get_file_properties(waptexe)['FileVersion']
         waptservice =  os.path.join( os.path.dirname(sys.argv[0]),'waptservice.exe')
         if os.path.isfile(waptservice):
             result['waptservice-version'] = setuphelpers.get_file_properties(waptservice)['FileVersion']
