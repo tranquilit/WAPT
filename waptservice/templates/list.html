@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block content %}
+{% macro link(href,desc='') -%}
+	{% if desc == '' %}
+		<a href={{href}}>{{href}}</a>
+	{% else%}
+		<a href={{href}}>{{desc}}</a>
+	{%endif%}
+{%- endmacro%}
+
+<h1>Available packages</h1>
+{% set cols = ['package','version','description','filename'] %}
+<table>
+	<tr>
+		{% for c in cols %}
+			<th>
+			{{c}}
+			</th>
+		{% endfor %}
+	</tr>
+	{% for p in packages %}
+		<tr>
+		{% for c in cols %}
+		<td>
+		{%if c == 'package'%}
+		   {{ link('install?package=%s' % p[c],p[c]) }}
+		{%else%}
+		  {{p[c]}}
+		{%endif%}
+		</td>
+	{% endfor %}
+	</tr>
+{% endfor %}
+</table>
+{% endblock %}

@@ -1,4 +1,32 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2 class="title"><a href="#">WAPT Service</a></h2>
+<h1>{{ host_info['computer_fqdn'] }}</h1>'
+<h2> WAPT Status</h2>
+<ul>
+<li>wapt-get.exe version: {{wapt_info['wapt-exe-version']}}</li>
+<li>wapt-get.py version: {{wapt_info['wapt-py-version']}}</li>
+<li>Main WAPT Repository: <a href={{wapt.wapt_repourl}}>{{wapt.wapt_repourl}}</a></li>
+<li>WAPT server: {{wapt.wapt_server}}</li>
+<li>Configuration file: {{ wapt.config_filename }}</li>
+<li>Current status: {{wapt.runstatus or 'Up to date'}}</li>
+<li>Last update status: 
+<ul>
+<li>Date: {{update_status['date']}}</li>
+<li>Upgradeable packages: {{', '.join(update_status['upgrades']) or 'None'}}</li>
+<li>Errors: {{', '.join(update_status['errors']) or 'None'}}</li>
+</ul>
+</li>
+</ul>		  
+
+<h2>Computer informations</h2>
+<ul>
+<li>Machine: {{host_info['computer_name']}}</li>
+<li>Current users: {{','.join(host_info['current_user'])}}</li>
+<li>Workgroup: {{host_info['workgroup_name']}}</li>
+<li>DNS Domain: {{host_info['dns_domain']}}</li>
+<li>IP Addresses:{{host_info['connected_ips']}}</li>
+<li>System manufacturer : {{host_info['system_manufacturer']}}</li>
+<li>System product name : {{host_info['system_productname']}}</li>
+</ul>		  
+
 {% endblock %}

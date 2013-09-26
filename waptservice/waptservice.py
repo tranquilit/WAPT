@@ -14,7 +14,7 @@ import thread
 import json
 from rocket import Rocket
 from flask import request, Flask,Response, send_from_directory, send_file, session, g, redirect, url_for, abort, render_template, flash
-import gc
+from werkzeug.utils import html
 
 wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
 sys.path.append(os.path.join(wapt_root_dir))
@@ -162,7 +162,10 @@ def status():
             rows = [ dict(x) for x in cur.fetchall() ]
         except lite.Error, e:
             print "*********** Error %s:" % e.args[0]
-    return Response(common.jsondump(rows), mimetype='application/json')
+    if request.args.get('format','html')=='json':
+        return Response(common.jsondump(rows), mimetype='application/json')
+    else:
+        return render_template('status.html',packages=rows)
 
 @app.route('/list')
 @check_ip_source
@@ -176,7 +179,10 @@ def list():
             rows = [ dict(x) for x in cur.fetchall() ]
         except lite.Error, e:
             print "*********** Error %s:" % e.args[0]
-    return Response(common.jsondump(rows), mimetype='application/json')
+    if request.args.get('format','html')=='json':
+        return Response(common.jsondump(rows), mimetype='application/json')
+    else:
+        return render_template('list.html',packages=rows)
 
 @app.route('/runstatus')
 @check_ip_source
@@ -310,7 +316,17 @@ def static(filename):
 
 @app.route('/', methods=['GET'])
 def index():
-    return render_template('layout.html')
+    wapt = Wapt(config_filename=config_file)
+    host_info = setuphelpers.host_info()
+    data = dict(html=html,
+            host_info=host_info,
+            wapt=wapt,
+            wapt_info=wapt.wapt_status(),
+            update_status=wapt.get_last_update_status())
+    if request.args.get('format','html')=='json':
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('index.html',**data)
 
 def check_auth(username, password):
     """This function is called to check if a username /

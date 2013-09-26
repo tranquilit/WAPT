@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Installed packages</h1>'
+<table>
+	<tr>
+		{% for c in packages[0].keys() %}
+			<th>
+			{{c}}
+			</th>
+		{% endfor %}
+	</tr>
+	{% for p in packages %}
+		<tr>
+		{% for c in p.keys() %}
+		<td>
+		{{p[c]}}
+		</td>
+	{% endfor %}
+	</tr>
+{% endfor %}
+</table>
+{% endblock %}
