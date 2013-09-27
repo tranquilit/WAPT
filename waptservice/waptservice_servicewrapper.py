@@ -8,6 +8,7 @@ import win32con
 import win32event
 import win32evtlogutil
 import os, sys, string, time
+import logging
 
 from rocket import Rocket
 
@@ -33,7 +34,10 @@ class aservice(win32serviceutil.ServiceFramework):
         import servicemanager
         servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,servicemanager.PYS_SERVICE_STARTED,(self._svc_name_, ''))
 
-        from waptservice import app,waptservice_port
+        from waptservice import app,waptservice_port,log_directory,logger
+
+        logging.basicConfig(filename=os.path.join(log_directory,'waptservice.log'),format='%(asctime)s %(levelname)s %(message)s')
+        logger.info('waptservice starting')
 
         self.server = Rocket(('0.0.0.0', waptservice_port), 'wsgi', {"wsgi_app":app})
         try:

@@ -15,6 +15,7 @@ import json
 from rocket import Rocket
 from flask import request, Flask,Response, send_from_directory, send_file, session, g, redirect, url_for, abort, render_template, flash
 from werkzeug.utils import html
+import gc
 
 import common
 import setuphelpers
@@ -26,9 +27,7 @@ sys.path.append(os.path.join(wapt_root_dir,'lib'))
 sys.path.append(os.path.join(wapt_root_dir,'waptservice'))
 sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
 
-
-
-__version__ = "0.7.7"
+__version__ = "0.7.8"
 
 config = ConfigParser.RawConfigParser()
 
@@ -37,14 +36,8 @@ log_directory = os.path.join(wapt_root_dir,'log')
 if not os.path.exists(log_directory):
     os.mkdir(log_directory)
 
-logger = logging.getLogger('Rocket')
-hdlr = logging.StreamHandler(sys.stdout)
-hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
-logger.addHandler(hdlr)
+logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-
-#logging.basicConfig(filename=os.path.join(log_directory,'waptservice.log'),format='%(asctime)s %(message)s')
-#logging.info('waptservice starting')
 
 config_file = os.path.join(wapt_root_dir,'wapt-get.ini')
 
@@ -355,6 +348,11 @@ def authenticate():
     {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
 if __name__ == "__main__":
+    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
+    #hdlr = logging.StreamHandler(sys.stdout)
+    #hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+    #logger.addHandler(hdlr)
+
     debug=False
     if debug==True:
         app.run(host='0.0.0.0',port=waptservice_port,debug=False)
