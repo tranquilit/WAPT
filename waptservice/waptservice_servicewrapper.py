@@ -33,11 +33,9 @@ class aservice(win32serviceutil.ServiceFramework):
         import servicemanager
         servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,servicemanager.PYS_SERVICE_STARTED,(self._svc_name_, ''))
 
-        from waptservice import app
-        port = 8088
-    #    ssl_a = cheroot.ssllib.ssl_builtin.BuiltinSSLAdapter(cert, cert_priv)  ...  ssl_adapter=ssl_a)
+        from waptservice import app,waptservice_port
 
-        self.server = Rocket(('0.0.0.0', port), 'wsgi', {"wsgi_app":app})
+        self.server = Rocket(('0.0.0.0', waptservice_port), 'wsgi', {"wsgi_app":app})
         try:
             self.server.start()
         except KeyboardInterrupt:

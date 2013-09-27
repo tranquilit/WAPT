@@ -16,6 +16,10 @@ from rocket import Rocket
 from flask import request, Flask,Response, send_from_directory, send_file, session, g, redirect, url_for, abort, render_template, flash
 from werkzeug.utils import html
 
+import common
+import setuphelpers
+from common import Wapt
+
 wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
 sys.path.append(os.path.join(wapt_root_dir))
 sys.path.append(os.path.join(wapt_root_dir,'lib'))
@@ -28,12 +32,19 @@ __version__ = "0.7.7"
 
 config = ConfigParser.RawConfigParser()
 
+# log
 log_directory = os.path.join(wapt_root_dir,'log')
 if not os.path.exists(log_directory):
     os.mkdir(log_directory)
 
-logging.basicConfig(filename=os.path.join(log_directory,'waptservice.log'),format='%(asctime)s %(message)s')
-logging.info('waptservice starting')
+logger = logging.getLogger('Rocket')
+hdlr = logging.StreamHandler(sys.stdout)
+hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+logger.addHandler(hdlr)
+logger.setLevel(logging.INFO)
+
+#logging.basicConfig(filename=os.path.join(log_directory,'waptservice.log'),format='%(asctime)s %(message)s')
+#logging.info('waptservice starting')
 
 config_file = os.path.join(wapt_root_dir,'wapt-get.ini')
 
@@ -45,6 +56,15 @@ else:
 wapt_user = ""
 wapt_password = ""
 
+def setloglevel(logger,loglevel):
+    """set loglevel as string"""
+    if loglevel in ('debug','warning','info','error','critical'):
+        numeric_level = getattr(logging, loglevel.upper(), None)
+        if not isinstance(numeric_level, int):
+            raise ValueError('Invalid log level: %s' % loglevel)
+        logger.setLevel(numeric_level)
+
+# lecture configuration
 if config.has_section('global'):
     if config.has_option('global', 'wapt_user'):
         wapt_user = config.get('global', 'wapt_user')
@@ -54,11 +74,11 @@ if config.has_section('global'):
     if config.has_option('global','waptservice_password'):
         wapt_password = config.get('global', 'waptservice_password')
     else:
-        print "WARNING : no password set, using default password"
+        logger.warning("WARNING : no password set, using default password")
         wapt_password='5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8' # = password
 
     if config.has_option('global','waptservice_port'):
-        waptservice_port = config.get('global','waptservice_port')
+        waptservice_port = int(config.get('global','waptservice_port'))
     else:
         waptservice_port=8088
 
@@ -66,18 +86,15 @@ if config.has_section('global'):
         dbpath = os.path.join(config.get('global','dbdir'),'waptdb.sqlite')
     else:
         dbpath = os.path.join(wapt_root_dir,'db','waptdb.sqlite')
+
+    if config.has_option('global','loglevel'):
+        loglevel = config.get('global','loglevel')
+        setloglevel(logger,loglevel)
+    else:
+        setloglevel(logger,'warning')
+
 else:
     raise Exception ("FATAL, configuration file " + config_file + " has no section [global]. Please check Waptserver documentation")
-
-logger = logging.getLogger()
-hdlr = logging.StreamHandler(sys.stdout)
-hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
-logger.addHandler(hdlr)
-logger.setLevel(logging.INFO)
-
-import common
-import setuphelpers
-from common import Wapt
 
 def check_open_port():
     import win32serviceutil
@@ -88,27 +105,25 @@ def check_open_port():
         #check if firewall is running
         print "Running on NT5 "
         if  win32serviceutil.QueryServiceStatus( 'SharedAccess', None)[1]==win32service.SERVICE_RUNNING:
-            print "Firewall started, checking for port openning..."
+            logger.info("Firewall started, checking for port openning...")
             #winXP 2003
             if 'waptservice' not in setuphelpers.run_notfatal('netsh firewall show portopening'):
-                print "Port not opening, opening port"
+                logger.info("Port not opening, opening port")
                 setuphelpers.run_notfatal("""netsh.exe firewall add portopening name="waptservice 8088" port=8088 protocol=TCP""")
             else:
-                print "port already opened, skipping firewall configuration"
+                logger.info("port already opened, skipping firewall configuration")
     else:
 
         if  win32serviceutil.QueryServiceStatus( 'MpsSvc', None)[1]==win32service.SERVICE_RUNNING:
-            print "Firewall started, checking for port openning..."
+            logger.info("Firewall started, checking for port openning...")
             if 'waptservice' not in setuphelpers.run_notfatal('netsh advfirewall firewall show rule name="waptservice 8088"'):
-                print "No port opened for waptservice, opening port"
+                logger.info("No port opened for waptservice, opening port")
                 #win Vista and higher
                 setuphelpers.run_notfatal("""netsh advfirewall firewall add rule name="waptservice 8088" dir=in action=allow protocol=TCP localport=8088""")
             else:
-                print "port already opened, skipping firewall configuration"
+                logger.info("port already opened, skipping firewall configuration")
 
 check_open_port()
-
-ALLOWED_EXTENSIONS = set(['wapt'])
 
 waptserver_ip = socket.gethostbyname( urlparse(Wapt(config_filename=config_file).find_wapt_server()).hostname)
 
@@ -161,7 +176,7 @@ def status():
             cur.execute(query)
             rows = [ dict(x) for x in cur.fetchall() ]
         except lite.Error, e:
-            print "*********** Error %s:" % e.args[0]
+            logger.critical("*********** Error %s:" % e.args[0])
     if request.args.get('format','html')=='json':
         return Response(common.jsondump(rows), mimetype='application/json')
     else:
@@ -178,7 +193,7 @@ def list():
             cur.execute(query)
             rows = [ dict(x) for x in cur.fetchall() ]
         except lite.Error, e:
-            print "*********** Error %s:" % e.args[0]
+            logger.critical("*********** Error %s:" % e.args[0])
     if request.args.get('format','html')=='json':
         return Response(common.jsondump(rows), mimetype='application/json')
     else:
@@ -196,9 +211,8 @@ def get_runstatus():
             cur.execute(query)
             rows = cur.fetchall()
             data = [dict(ix) for ix in rows]
-            print data
         except Exception as e:
-            print "*********** error " + str (e)
+            logger.critical("*********** error " + str (e))
     return Response(common.jsondump(data), mimetype='application/json')
 
 @app.route('/checkupgrades')
@@ -212,9 +226,8 @@ def get_checkupgrades():
             cur = con.cursor()
             cur.execute(query)
             data = json.loads(cur.fetchone()['value'])
-            print data
         except Exception as e :
-            print "*********** error"  + str(e)
+            logger.critical("*********** error %s"  % (e,))
     return Response(common.jsondump(data), mimetype='application/json')
 
 @app.route('/waptupgrade')
@@ -222,7 +235,7 @@ def get_checkupgrades():
 def waptupgrade():
     from setuphelpers import run
     print "run waptupgrade"
-    run('c:\\wapt\\wapt-get waptupgrade')
+    run('"%s" %s' % (os.path.join(wapt_root_dir,'wapt-get.exe'),'waptupgrade'))
     return "200 OK"
 
 @app.route('/upgrade')
@@ -230,12 +243,12 @@ def waptupgrade():
 def upgrade():
     print "run upgrade"
     def background_upgrade(config_file):
-        print "************** Launch upgrade***********************"
+        logger.info("************** Launch upgrade***********************")
         wapt=Wapt(config_filename=config_file)
         wapt.update()
         wapt.upgrade()
         wapt.update_server_status()
-        print "************** End upgrade *************************"
+        logger.info("************** End upgrade *************************")
         del wapt
         gc.collect()
 
@@ -259,7 +272,7 @@ def update():
 @app.route('/clean')
 @requires_auth
 def clean():
-    print "run cleanup"
+    logger.info("run cleanup")
     wapt=Wapt(config_filename=config_file)
     data = wapt.cleanup()
     return Response(common.jsondump(data), mimetype='application/json')
@@ -267,7 +280,7 @@ def clean():
 @app.route('/enable')
 @requires_auth
 def enable():
-    print "run cleanup"
+    logger.info("enable tasks scheduling")
     wapt=Wapt(config_filename=config_file)
     data = wapt.enable_tasks()
     return Response(common.jsondump(data), mimetype='application/json')
@@ -275,7 +288,7 @@ def enable():
 @app.route('/disable')
 @requires_auth
 def disable():
-    print "run cleanup"
+    logger.info("disable tasks scheduling")
     wapt=Wapt(config_filename=config_file)
     data = wapt.disable_tasks()
     return Response(common.jsondump(data), mimetype='application/json')
@@ -283,7 +296,7 @@ def disable():
 @app.route('/register')
 @check_ip_source
 def register():
-    print "run cleanup"
+    logger.info("register computer")
     wapt=Wapt(config_filename=config_file)
     data = wapt.register_computer()
     return Response(common.jsondump(data), mimetype='application/json')
@@ -293,7 +306,7 @@ def register():
 @requires_auth
 def install():
     package = request.args.get('package')
-    print "run cleanup"
+    logger.info("install package %s" % package)
     wapt=Wapt(config_filename=config_file)
     data = wapt.install(package)
     return Response(common.jsondump(data),status=200, mimetype='application/json')
@@ -303,7 +316,7 @@ def install():
 @requires_auth
 def remove():
     package = request.args.get('package')
-    print "run cleanup"
+    logger.info("remove package %s" % package)
     wapt=Wapt(config_filename=config_file)
     data = wapt.remove(package)
     return Response(common.jsondump(data), mimetype='application/json')
@@ -344,21 +357,18 @@ def authenticate():
 if __name__ == "__main__":
     debug=False
     if debug==True:
-        #TODO : recuperer le port du .ini
-        app.run(host='0.0.0.0',port=8088,debug=False)
-        print "exiting"
+        app.run(host='0.0.0.0',port=waptservice_port,debug=False)
+        logger.info("exiting")
     else:
-        #TODO : recuperer le port depuis le .ini
-        port = 8088
         server = Rocket(
-            [('0.0.0.0', port),
-             ('0.0.0.0', port+1, r'ssl\waptservice.pem', r'ssl\waptservice.crt')],
+            [('0.0.0.0', waptservice_port),
+             ('0.0.0.0', waptservice_port+1, r'ssl\waptservice.pem', r'ssl\waptservice.crt')],
              'wsgi', {"wsgi_app":app})
 
         try:
-            print ("starting waptserver")
+            logger.info("starting waptserver")
             server.start()
         except KeyboardInterrupt:
-            print ("stopping waptserver")
+            logger.info("stopping waptserver")
             server.stop()
 
