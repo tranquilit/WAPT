@@ -143,11 +143,13 @@ object VisWaptGUI: TVisWaptGUI
         Header.Columns = <        
           item
             MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed, coAllowFocus]
             Position = 0
             Text = 'Status'
           end        
           item
             MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed, coAllowFocus]
             Position = 1
             Text = 'Machine'
             Width = 100
@@ -203,8 +205,14 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'host.connected_ips'
           end        
           item
-            MaxWidth = 400
             Position = 9
+            Text = 'Version WAPT'
+            Width = 20
+            PropertyName = 'wapt.wapt-exe-version'
+          end        
+          item
+            MaxWidth = 400
+            Position = 10
             Text = 'uuid'
             Width = 100
             PropertyName = 'uuid'
@@ -212,7 +220,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 10
+            Position = 11
             Text = 'md5sum'
             Width = 100
             PropertyName = 'md5sum'
@@ -220,7 +228,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 11
+            Position = 12
             Text = 'purchase_order'
             Width = 100
             PropertyName = 'purchase_order'
@@ -228,7 +236,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 12
+            Position = 13
             Text = 'purchase_date'
             Width = 100
             PropertyName = 'purchase_date'
@@ -236,7 +244,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 13
+            Position = 14
             Text = 'groups'
             Width = 100
             PropertyName = 'groups'
@@ -244,7 +252,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 14
+            Position = 15
             Text = 'attributes'
             Width = 100
             PropertyName = 'attributes'
@@ -252,7 +260,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 15
+            Position = 16
             Text = 'id'
             Width = 100
             PropertyName = 'id'

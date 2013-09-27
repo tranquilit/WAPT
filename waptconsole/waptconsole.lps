@@ -21,10 +21,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uwaptconsole"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="852"/>
-        <CursorPos X="51" Y="865"/>
+        <TopLine Value="1318"/>
+        <CursorPos X="65" Y="1331"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="2">
           <Item0 X="26" Y="728" ID="2"/>
@@ -103,7 +104,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviseditpackage"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="417"/>
@@ -557,7 +557,7 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="28" HistoryIndex="27">
+    <JumpHistory Count="29" HistoryIndex="28">
       <Position1>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <Caret Line="4525" Column="1" TopLine="4508"/>
@@ -670,6 +670,10 @@
         <Filename Value="uviseditpackage.pas"/>
         <Caret Line="422" Column="53" TopLine="403"/>
       </Position28>
+      <Position29>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="866" Column="51" TopLine="853"/>
+      </Position29>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
