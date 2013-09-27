@@ -56,7 +56,6 @@ Source: "..\lib\site-packages\M2Crypto\libeay32.dll" ; DestDir: "{app}";
 Source: "..\lib\site-packages\M2Crypto\ssleay32.dll" ; DestDir: "{app}";
 
 Source: "..\waptpython.exe"; DestDir: "{app}";
-Source: "..\waptservice\waptservice.ini"; DestDir: "{app}\waptservice\";
 Source: "..\waptservice\static\*"; DestDir: "{app}\waptservice\static"; Flags: createallsubdirs recursesubdirs
 Source: "..\waptservice\ssl\*"; DestDir: "{app}\waptservice\ssl"; Flags: createallsubdirs recursesubdirs
 Source: "..\waptservice\templates\*"; DestDir: "{app}\waptservice\templates"; Flags: createallsubdirs recursesubdirs
