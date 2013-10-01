@@ -21,32 +21,31 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.7.8"
+__version__ = "0.7.9"
 
 import sys
 import os
-import shutil
-from optparse import OptionParser
 import logging
 import datetime
-from common import WaptDB
-from waptpackage import PackageEntry
-from waptpackage import update_packages
-from common import ppdicttable
-from common import jsondump
-import common
-import setuphelpers
-from setuphelpers import ensure_unicode
-
 import locale
-
-#from setuphelpers import *
+import shutil
 import json
 import glob
 import codecs
 import getpass
 
+from optparse import OptionParser
+from waptpackage import PackageEntry
+from waptpackage import update_packages
+
+import common
+from common import ppdicttable
+from common import jsondump
+from common import WaptDB
 from common import Wapt
+
+import setuphelpers
+from setuphelpers import ensure_unicode
 
 usage="""\
 %prog -c configfile action
@@ -189,7 +188,6 @@ def wapt_sources_edit(wapt_sources_dir):
             cwd = os.path.join(setuphelpers.programfiles32,'PyScripter'))
     else:
         os.startfile(wapt_sources_dir)
-
 
 def main():
     jsonresult = {'output':[]}
@@ -841,9 +839,6 @@ def main():
             # print final result
             print jsondump(jsonresult,indent=True)
 
-
-
 if __name__ == "__main__":
     logger.debug(u'Python path %s' % sys.path)
     main()
-

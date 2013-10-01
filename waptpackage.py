@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.7.5"
+__version__ = "0.7.9"
 
 import os
 import zipfile
@@ -455,6 +455,7 @@ if __name__ == '__main__':
     assert w.match('wapttest(<= 0.1.0)')
     assert w.match('wapttest (=0.1.0)')
     assert w.match('wapttest')
+
     import tempfile
     wfn = tempfile.mktemp(suffix='.wapt')
     w.save_control_to_wapt(wfn)
