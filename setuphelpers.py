@@ -59,7 +59,7 @@ from win32com.shell import shell, shellcon
 from win32com.taskscheduler import taskscheduler
 import locale
 import types
-
+import re
 import threading
 
 from waptpackage import PackageEntry
@@ -1260,6 +1260,38 @@ def get_appath(exename):
         key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\%s' % exename)
     return reg_getvalue(key,None)
 
+class Version():
+    """Version object of form 0.0.0
+        can compare with respect to natural numbering and not alphabetical
+        ie : 0.10.2 > 0.2.5
+    """
+    def __init__(self,versionstring):
+        assert isinstance(versionstring,types.ModuleType) or isinstance(versionstring,str) or isinstance(versionstring,unicode)
+        if isinstance(versionstring,ModuleType):
+            versionstring = versionstring.__version__
+        self.members = [ v.strip() for v in versionstring.split('.')]
+    def __cmp__(self,aversion):
+        def nat_cmp(a, b):
+            a, b = a or '', b or ''
+            def convert(text):
+                if text.isdigit():
+                    return int(text)
+                else:
+                    return text.lower()
+            alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
+            return cmp(alphanum_key(a), alphanum_key(b))
+
+        assert isinstance(aversion,Version)
+        for i in range(0,min([len(self.members),len(aversion.members)])):
+            i1,i2  = self.members[i], aversion.members[i]
+            v = nat_cmp(i1,i2)
+            if v:
+                return v
+        return 0
+
+    def __repr__(self):
+        return '.'.join(self.members)
+
 class EWaptSetupException(Exception):
     pass
 
@@ -1276,19 +1308,6 @@ params = {}
 control = PackageEntry()
 
 if __name__=='__main__':
-
-    dmi =  dmidecode_dict(open('c:\\tmp\\dmi.out','r').read())
-    print host_info()['serial_nr']
-    print run_timed('dir c:',timeout=3)
-    print run_timed('notepad',timeout=10)
-    try:
-        print run_timed('wapt-get -ldebug ss',timeout=10,shell=False)
-    except subprocess.CalledProcessError,e:
-        print ensure_unicode(e.output)
-        raise
-
-
-
     sys.exit(0)
 
     print registry_readstring(HKEY_LOCAL_MACHINE,'SYSTEM/CurrentControlSet/services/Tcpip/Parameters','Hostname')

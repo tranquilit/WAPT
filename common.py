@@ -4103,43 +4103,10 @@ class Wapt(object):
                 result['missing'].append(package_name)
         return result
 
-REGEX_MODULE_VERSION = re.compile(
-                    r'^(?P<major>[0-9]+)'
-                    '(\.(?P<minor>[0-9]+))?'
-                    '(\.(?P<patch>[0-9]+))?')
-class Version():
-    """Version object of form 0.0.0
-        can compare with respect to natural numbering and not alphabetical
-        ie : 0.10.2 > 0.2.5
-    """
-    def __init__(self,versionstring):
-        assert isinstance(versionstring,ModuleType) or isinstance(versionstring,str) or isinstance(versionstring,unicode)
-        if isinstance(versionstring,ModuleType):
-            versionstring = versionstring.__version__
-        v = REGEX_MODULE_VERSION.match(versionstring)
-        if v:
-            self.keys = v.groupdict()
-        else:
-            self.keys = {'major':'0','minor':'0','patch':'0'}
 
-    def __cmp__(self,aversion):
-        def nat_cmp(a, b):
-            a, b = a or '', b or ''
-            def convert(text):
-                if text.isdigit():
-                    return int(text)
-                else:
-                    return text.lower()
-            alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
-            return cmp(alphanum_key(a), alphanum_key(b))
+# for backward compatibility
+Version = setuphelpers.Version  # obsolete
 
-        assert isinstance(aversion,Version)
-        for key in ['major', 'minor', 'patch']:
-            i1,i2  = self.keys[key], aversion.keys[key]
-            v = nat_cmp(i1,i2)
-            if v:
-                return v
-        return 0
 
 
 if __name__ == '__main__':
