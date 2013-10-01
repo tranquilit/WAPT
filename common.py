@@ -2339,7 +2339,7 @@ class Wapt(object):
 
             # get uninstallkey from setup module (string or array of strings)
             if hasattr(setup,'uninstallkey'):
-                new_uninstall_key = '%s' % (setup.uninstallkey,)
+                new_uninstall_key = setup.uninstallkey
             else:
                 new_uninstall = self.registry_uninstall_snapshot()
                 new_uninstall_key = [ k for k in new_uninstall if not k in previous_uninstall]
@@ -2351,6 +2351,12 @@ class Wapt(object):
                 uninstallstring = None
             logger.info(u'  uninstall keys : %s' % (new_uninstall_key,))
             logger.info(u'  uninstall strings : %s' % (uninstallstring,))
+
+            # register uninstall with wapt if no uninstall key provided. entry.package is used as uninstall key.
+            if not self.dry_run and not new_uninstall_key and hasattr(setup,'uninstall'):
+                logger.debug('Register uninstall key %s in Windows registry as uninstall() function is provided but no uninstallkey' % entry.package)
+                new_uninstall_key = [entry.package]
+                setuphelpers.register_uninstall(entry.package,'wapt-get uninstall %s' % entry.package,display_name=entry.description,display_version=entry.version,publisher=entry.maintainer)
 
             logger.info(u"Install script finished with status %s" % status)
             if istemporary:
@@ -3382,10 +3388,12 @@ class Wapt(object):
         try:
             previous_cwd = os.getcwd()
             if os.path.isdir(packagename):
+                entry = PackageEntry().load_control_from_wapt(packagename)
                 setup = import_setup(os.path.join(packagename,'setup.py'),'__waptsetup__')
             else:
                 logger.debug(u'Sourcing setup from DB')
-                setup = import_code(self.is_installed(packagename)['setuppy'],'__waptsetup__')
+                entry = self.is_installed(packagename)
+                setup = import_code(entry['setuppy'],'__waptsetup__')
 
             required_params = []
              # be sure some minimal functions are available in setup module at install step
@@ -3416,6 +3424,7 @@ class Wapt(object):
                     setup.params.update(params_dict)
 
                 result = setup.uninstall()
+                setuphelpers.unregister_uninstall(entry.package)
                 return result
             else:
                 raise Exception(u'No uninstall() function in setup.py for package %s' % packagename)

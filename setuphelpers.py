@@ -392,6 +392,7 @@ def run(*cmd,**args):
         timeout=600 (seconds) after that time, a TimeoutExpired is raised
         if return code of cmd is non zero, a CalledProcessError is raised
         on_write : called when a new line is printed on stdout or stderr by the subprocess
+        accept_returncodes=[0,1601]
     """
     logger.info(u'Run "%s"' % (cmd,))
     output = []
@@ -430,8 +431,17 @@ def run(*cmd,**args):
         proc.kill()
         raise TimeoutExpired(cmd,timeout,''.join(output))
     proc.returncode = _subprocess.GetExitCodeProcess(proc._handle)
-    if proc.returncode<>0:
+    if not 'accept_returncodes' in args:
+        # 1603 : souvent renvoyé quand déjà installé.
+        # 3010 : reboot required.
+        accept_returncodes = [0,1603,3010]
+    if not proc.returncode in accept_returncodes:
         raise subprocess.CalledProcessError(proc.returncode,cmd,''.join(output))
+    else:
+        if proc.returncode == 0:
+            logger.info('%s command returns code %s' % (cmd,proc.returncode))
+        else:
+            logger.warning('%s command returns code %s' % (cmd,proc.returncode))
     return ensure_unicode(''.join(output))
 
 def run_old(*cmd,**args):
@@ -821,10 +831,17 @@ def unregister_uninstall(uninstallkey,win64app=False):
         else:
             root = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"+uninstallkey
         #key = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,root)
-        _winreg.DeleteKeyEx(_winreg.HKEY_LOCAL_MACHINE,root.encode(locale.getpreferredencoding()))
+        try:
+            _winreg.DeleteKeyEx(_winreg.HKEY_LOCAL_MACHINE,root.encode(locale.getpreferredencoding()))
+        except WindowsError,e:
+            logger.warning('Unable to remove key %s, error : %s' % (ensure_unicode(root),ensure_unicode(e)))
+
     else:
         root = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"+uninstallkey
-        _winreg.DeleteKey(_winreg.HKEY_LOCAL_MACHINE,root.encode(locale.getpreferredencoding()))
+        try:
+            _winreg.DeleteKey(_winreg.HKEY_LOCAL_MACHINE,root.encode(locale.getpreferredencoding()))
+        except WindowsError,e:
+            logger.warning('Unable to remove key %s, error : %s' % (ensure_unicode(root),ensure_unicode(e)))
 
 wincomputername = win32api.GetComputerName
 windomainname = win32api.GetDomainName
