@@ -2141,9 +2141,15 @@ class Wapt(object):
                     if not '/q' in cmd.lower():
                         args.append('/q')
                 else:
+                    # separer commande et parametres pour eventuellement
+                    cmd_arg = re.match(r'([^/]*?)\s+([/-].*)',cmd)
+                    if cmd_arg:
+                        (prog,arg) = cmd_arg.groups()
+                        args = [ prog ]
+                        args.extend(shlex.split(arg,posix=False))
                     # mozilla et autre
                     # si pas de "" et des espaces et pas d'option, alors encadrer avec des quotes
-                    if not(' -' in cmd or ' /' in cmd) and ' ' in cmd:
+                    elif not(' -' in cmd or ' /' in cmd) and ' ' in cmd:
                         args = [ cmd ]
                     else:
                     #sinon splitter sur les paramètres
