@@ -25,7 +25,6 @@ class aservice(win32serviceutil.ServiceFramework):
         self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
 
     def SvcStop(self):
-
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
         win32event.SetEvent(self.hWaitStop)
         self.server.stop()
@@ -38,6 +37,7 @@ class aservice(win32serviceutil.ServiceFramework):
 
         logging.basicConfig(filename=os.path.join(log_directory,'waptservice.log'),format='%(asctime)s %(levelname)s %(message)s')
         logger.info('waptservice starting')
+
 
         self.server = Rocket(('0.0.0.0', waptservice_port), 'wsgi', {"wsgi_app":app})
         try:

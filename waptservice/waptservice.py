@@ -27,7 +27,7 @@ sys.path.append(os.path.join(wapt_root_dir,'lib'))
 sys.path.append(os.path.join(wapt_root_dir,'waptservice'))
 sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
 
-__version__ = "0.7.8"
+__version__ = "0.7.9"
 
 config = ConfigParser.RawConfigParser()
 

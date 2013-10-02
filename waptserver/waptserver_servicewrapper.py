@@ -8,14 +8,9 @@ import win32con
 import win32event
 import win32evtlogutil
 import os, sys, string, time
+import logging
 
-
-sys.path.append("c:\wapt\lib")
-sys.path.append("c:\wapt\waptserver")
-sys.path.append("c:\wapt\lib\site-packages")
-
-import  cheroot.wsgi
-
+from rocket import Rocket
 
 class aservice(win32serviceutil.ServiceFramework):
 
@@ -39,11 +34,13 @@ class aservice(win32serviceutil.ServiceFramework):
         import servicemanager
         servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,servicemanager.PYS_SERVICE_STARTED,(self._svc_name_, ''))
 
-        from waptserver import app
-        port = 8080
-    #    ssl_a = cheroot.ssllib.ssl_builtin.BuiltinSSLAdapter(cert, cert_priv)  ...  ssl_adapter=ssl_a)
-        wsgi_d = cheroot.wsgi.WSGIPathInfoDispatcher({'/': app})
-        self.server = cheroot.wsgi.WSGIServer(('0.0.0.0', port), wsgi_app=wsgi_d)
+        from waptserver import app,waptserver_port,log_directory,logger
+        hdlr = logging.FileHandler(os.path.join(log_directory,'waptserver.log'))
+        hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+        logger.addHandler(hdlr)
+        logger.info('waptserver starting')
+
+        self.server = Rocket(('0.0.0.0', waptserver_port), 'wsgi', {"wsgi_app":app})
         try:
             self.server.start()
         except KeyboardInterrupt:
