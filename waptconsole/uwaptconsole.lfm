@@ -11,7 +11,7 @@ object VisWaptGUI: TVisWaptGUI
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poScreenCenter
-  LCLVersion = '1.1'
+  LCLVersion = '1.3'
   object PageControl1: TPageControl
     Left = 0
     Height = 553
@@ -129,6 +129,22 @@ object VisWaptGUI: TVisWaptGUI
           OnClick = CheckBoxMajClick
           State = cbGrayed
           TabOrder = 8
+        end
+        object LabelComputersNumber: TLabel
+          Left = 996
+          Height = 13
+          Top = 4
+          Width = 6
+          Caption = '0'
+          ParentColor = False
+        end
+        object Label11: TLabel
+          Left = 892
+          Height = 13
+          Top = 4
+          Width = 97
+          Caption = 'Nombre de postes : '
+          ParentColor = False
         end
       end
       object GridHosts: TSOGrid
@@ -1592,6 +1608,14 @@ object VisWaptGUI: TVisWaptGUI
     Width = 1074
     Align = alBottom
     ResizeAnchor = akBottom
+  end
+  object Label10: TLabel
+    Left = 470
+    Height = 13
+    Top = 550
+    Width = 37
+    Caption = 'Label10'
+    ParentColor = False
   end
   object SynPythonSyn1: TSynPythonSyn
     DefaultFilter = 'Fichiers Python (*.py)|*.py'

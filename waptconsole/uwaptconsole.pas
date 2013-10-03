@@ -71,6 +71,9 @@ type
     cbShowHostPackagesGroup: TCheckBox;
     CheckBoxMaj: TCheckBox;
     CheckBox_error: TCheckBox;
+    Label10: TLabel;
+    Label11: TLabel;
+    LabelComputersNumber: TLabel;
     MenuItem33: TMenuItem;
     MenuItem34: TMenuItem;
     ProgressBar: TProgressBar;
@@ -1053,6 +1056,7 @@ begin
 
   hosts := WAPTServerJsonGet(req, []);
   GridHosts.Data := hosts;
+  LabelComputersNumber.Caption:=IntToStr(hosts.AsArray.Length);
   GridHosts.Header.AutoFitColumns(False);
 end;
 
