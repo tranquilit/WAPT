@@ -323,7 +323,7 @@ def upload_package(filename=""):
         if request.method == 'POST':
             if filename and allowed_file(filename):
                 filename = os.path.join(wapt_folder, secure_filename(filename))
-                with open(filename, 'w') as f:
+                with open(filename, 'wb') as f:
                     f.write(request.stream.read())
 
                 if not os.path.isfile(filename):
