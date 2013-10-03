@@ -1,16 +1,19 @@
 {% extends "layout.html" %}
 {% block content %}
+
 <h1>Installed packages</h1>'
 <table border=1 cellspacing=0 cellpadding=4 class=sample>
-{% set cols = [('install_status','Status'),('package','Package'),('version','Version'),('install_par','Installed by'),('install_date','Installed on')] %}
+{% set cols = [('install_status','Status'),('package','Package'),('version','Version'),('install_par','Installed by'),('install_date','Installed on'),] %}
 	<tr>
 		{% for c in cols %}
 			<th>
 			{{c[1]}}
 			</th>
 		{% endfor %}
+		<th>Action<th>
 	</tr>
 	{% for p in packages %}
+
 		<tr>
 		{% for c in cols %}
 		<td>
@@ -19,8 +22,12 @@
 		{%else%}
 			{{p[c[0]]}}
 		{%endif%}
+		
 		</td>
-	{% endfor %}
+		
+		{% endfor %}
+		<td><a href="remove?package={{p.package}}">Remove</a></td>
+		
 	</tr>
 {% endfor %}
 </table>

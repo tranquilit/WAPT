@@ -17,18 +17,17 @@
 			{{c}}
 			</th>
 		{% endfor %}
+		<th>Action<th>
 	</tr>
 	{% for p in packages %}
 		<tr>
 		{% for c in cols %}
 		<td>
-		{%if c == 'package'%}
-		   {{ link('install?package=%s' % p[c],p[c]) }}
-		{%else%}
 		  {{p[c]}}
-		{%endif%}
 		</td>
 	{% endfor %}
+			<td><a href="install?package={{p.package}}">Install</a></td>
+
 	</tr>
 {% endfor %}
 </table>
