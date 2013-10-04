@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+{% for package in install %}
+<h1>Install {{package[0]}}</h1>
+<ul>
+	<li>install status: {{package[1]['install_status']}}</li>
+</ul>
+{% endfor %}
+
+{% for package in skipped %}
+    <p>{{package[0]}} already installed</p>
+{% endfor %}
+
+{% for error in errors %}
+<ul>
+	<li>Erreur: {{error}}</li>
+</ul>
+{% endfor %}
+
+<input type="button" value="Retour" onclick="location.href='list'">
+{% endblock %}

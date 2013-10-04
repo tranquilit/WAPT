@@ -301,9 +301,15 @@ def install():
     package = request.args.get('package')
     logger.info("install package %s" % package)
     wapt=Wapt(config_filename=config_file)
-    data = wapt.install(package)
-    return Response(common.jsondump(data),status=200, mimetype='application/json')
+    try:
+        data = wapt.install(package)
+    except Exception as e:
+        data = {'errors':[ str(e) ]}
 
+    if request.args.get('format','html')=='json':
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('install.html',**data)
 
 @app.route('/remove', methods=['GET'])
 @requires_auth
