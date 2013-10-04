@@ -311,8 +311,14 @@ def remove():
     package = request.args.get('package')
     logger.info("remove package %s" % package)
     wapt=Wapt(config_filename=config_file)
-    data = wapt.remove(package)
-    return Response(common.jsondump(data), mimetype='application/json')
+    try:
+        data = wapt.remove(package)
+    except Exception as e:
+        data = {'removed' :[ package ], 'errors':[ str(e) ]}
+    if request.args.get('format','html')=='json':
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('remove.html',**data)
 
 """
 @app.route('/static/<path:filename>', methods=['GET'])
