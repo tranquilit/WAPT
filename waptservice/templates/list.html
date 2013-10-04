@@ -7,8 +7,25 @@
 		<a href={{href}}>{{desc}}</a>
 	{%endif%}
 {%- endmacro%}
-
+<script>
+function refresh()
+	{
+var xmlhttp;
+if (window.XMLHttpRequest)
+  {// code for IE7+, Firefox, Chrome, Opera, Safari
+  xmlhttp=new XMLHttpRequest();
+  }
+else
+  {// code for IE6, IE5
+  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+xmlhttp.open("GET","update",true);
+xmlhttp.send();
+location.reload(true);
+}
+</script>
 <h1>Available packages</h1>
+<input onclick='refresh()' type="button" name="update" value="Mise à jour les paquets disponibles" />
 {% set cols = ['package','version','description','filename'] %}
 <table border=1 cellspacing=0 cellpadding=4 class=sample>
 	<tr>
