@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Remove {{removed[0]}}</h1>'
+<ul>
+{% for error in errors %}
+    <li><strong>{{ error }}</strong></li>
+{% else %}
+    <li>Remove with success</li>
+{% endfor %}
+</ul>
+<input type="button" value="Retour" onclick="location.href='status'">
+{% endblock %}
