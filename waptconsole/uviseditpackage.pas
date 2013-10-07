@@ -517,7 +517,7 @@ begin
       begin
         target_directory := MkTempDir();
         FisTempSourcesDir := True;
-        res := DMPython.RunJSON(format('mywapt.edit_host("%s",target_directory="%s")',
+        res := DMPython.RunJSON(format('mywapt.edit_host("%s",target_directory=r"%s")',
           [FPackageRequest, target_directory]));
         EdPackage.EditLabel.Caption := 'Machine';
         Caption := 'Modifier la configuration de la machine';
