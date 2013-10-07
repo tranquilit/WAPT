@@ -517,7 +517,7 @@ begin
       begin
         target_directory := MkTempDir();
         FisTempSourcesDir := True;
-        res := DMPython.RunJSON(format('mywapt.edit_host("%s",target_directory=r"%s")',
+        res := DMPython.RunJSON(format('mywapt.edit_host("%s",target_directory=r"%s",use_cache=False,use_local_sources=False)',
           [FPackageRequest, target_directory]));
         EdPackage.EditLabel.Caption := 'Machine';
         Caption := 'Modifier la configuration de la machine';
@@ -540,7 +540,9 @@ begin
                 filePath := AppLocalDir + 'cache\' + filename;
                 if not DirectoryExists(AppLocalDir + 'cache') then
                   mkdir(AppLocalDir + 'cache');
-                if not FileExists(filePath) then
+                // la gestion du cache implique de lire la version di paquet WAPT dans le fichier control.
+                // (paquets de groupe et paquets host)
+                //if not FileExists(filePath) then
                   Wget(GetWaptRepoURL + '/' + filename, filePath,
                     ProgressForm, @updateprogress);
               except

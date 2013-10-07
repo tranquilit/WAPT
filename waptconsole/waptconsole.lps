@@ -9,7 +9,6 @@
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptconsole"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
@@ -26,8 +25,8 @@
         <UnitName Value="uwaptconsole"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="224"/>
-        <CursorPos X="13" Y="240"/>
+        <TopLine Value="606"/>
+        <CursorPos X="3" Y="613"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="2">
           <Item0 X="26" Y="728" ID="2"/>
@@ -106,12 +105,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviseditpackage"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="493"/>
-        <CursorPos X="29" Y="506"/>
+        <TopLine Value="526"/>
+        <CursorPos X="51" Y="543"/>
         <UsageCount Value="215"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="uviscreatewaptsetup.pas"/>
@@ -195,7 +196,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="12"/>
         <CursorPos X="72" Y="37"/>
-        <UsageCount Value="79"/>
+        <UsageCount Value="80"/>
       </Unit15>
       <Unit16>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
@@ -564,124 +565,124 @@
     </General>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="548" Column="38" TopLine="543"/>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position1>
       <Position2>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="852" Column="3" TopLine="846"/>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="506" Column="29" TopLine="478"/>
       </Position2>
       <Position3>
         <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="170" Column="3" TopLine="585"/>
+        <Caret Line="518" Column="15" TopLine="490"/>
       </Position3>
       <Position4>
         <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="213" Column="23" TopLine="196"/>
+        <Caret Line="520" Column="69" TopLine="492"/>
       </Position4>
       <Position5>
         <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="419" Column="27" TopLine="392"/>
+        <Caret Line="521" Column="35" TopLine="493"/>
       </Position5>
       <Position6>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="520" Column="48" TopLine="497"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="852" Column="3" TopLine="846"/>
       </Position6>
       <Position7>
-        <Filename Value="uviseditpackage.pas"/>
+        <Filename Value="uwaptconsole.pas"/>
         <Caret Line="1" Column="1" TopLine="1"/>
       </Position7>
       <Position8>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="506" Column="29" TopLine="478"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="240" Column="13" TopLine="213"/>
       </Position8>
       <Position9>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="518" Column="15" TopLine="490"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="244" Column="19" TopLine="217"/>
       </Position9>
       <Position10>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="520" Column="69" TopLine="492"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="1413" Column="9" TopLine="1385"/>
       </Position10>
       <Position11>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="1416" Column="9" TopLine="1388"/>
       </Position11>
       <Position12>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="506" Column="29" TopLine="478"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="1417" Column="9" TopLine="1389"/>
       </Position12>
       <Position13>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="518" Column="15" TopLine="490"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="1440" Column="15" TopLine="1412"/>
       </Position13>
       <Position14>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="520" Column="69" TopLine="492"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="1444" Column="38" TopLine="1416"/>
       </Position14>
       <Position15>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="521" Column="35" TopLine="493"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="1446" Column="38" TopLine="1418"/>
       </Position15>
       <Position16>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="852" Column="3" TopLine="846"/>
+        <Caret Line="1459" Column="62" TopLine="1431"/>
       </Position16>
       <Position17>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="1464" Column="17" TopLine="1436"/>
       </Position17>
       <Position18>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="240" Column="13" TopLine="213"/>
+        <Caret Line="1467" Column="42" TopLine="1439"/>
       </Position18>
       <Position19>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="244" Column="19" TopLine="217"/>
+        <Caret Line="1486" Column="19" TopLine="1458"/>
       </Position19>
       <Position20>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1413" Column="9" TopLine="1385"/>
+        <Filename Value="waptconsole.lpr"/>
+        <Caret Line="24" Column="1" TopLine="1"/>
       </Position20>
       <Position21>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1416" Column="9" TopLine="1388"/>
+        <Caret Line="240" Column="13" TopLine="224"/>
       </Position21>
       <Position22>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1417" Column="9" TopLine="1389"/>
+        <Caret Line="848" Column="34" TopLine="828"/>
       </Position22>
       <Position23>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1440" Column="15" TopLine="1412"/>
+        <Caret Line="854" Column="46" TopLine="828"/>
       </Position23>
       <Position24>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1444" Column="38" TopLine="1416"/>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="341" Column="22" TopLine="369"/>
       </Position24>
       <Position25>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1446" Column="38" TopLine="1418"/>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="115" Column="81" TopLine="98"/>
       </Position25>
       <Position26>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1459" Column="62" TopLine="1431"/>
+        <Caret Line="854" Column="46" TopLine="798"/>
       </Position26>
       <Position27>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1464" Column="17" TopLine="1436"/>
+        <Caret Line="613" Column="3" TopLine="606"/>
       </Position27>
       <Position28>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1467" Column="42" TopLine="1439"/>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="141" Column="21" TopLine="135"/>
       </Position28>
       <Position29>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1486" Column="19" TopLine="1458"/>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="157" Column="21" TopLine="135"/>
       </Position29>
       <Position30>
-        <Filename Value="waptconsole.lpr"/>
-        <Caret Line="24" Column="1" TopLine="1"/>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="174" Column="21" TopLine="146"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

@@ -3856,7 +3856,7 @@ class Wapt(object):
             elif os.path.isdir(target_directory) and os.listdir(target_directory):
                 raise Exception('directory %s is not empty, aborting.' % target_directory)
 
-            return self.duplicate_package(packagename=hostname,newname=hostname,target_directory=target_directory,build=False,append_depends = append_depends)
+            return self.duplicate_package(packagename=hostname,newname=hostname,target_directory=target_directory,build=False,append_depends = append_depends,usecache=False)
         elif os.path.isdir(target_directory) and os.listdir(target_directory):
             raise Exception('directory %s is not empty, aborting.' % target_directory)
         else:
@@ -3872,7 +3872,8 @@ class Wapt(object):
             private_key=None,
             callback=pwd_callback,
             append_depends=None,
-            auto_inc_version=True):
+            auto_inc_version=True,
+            usecache=True):
         """Duplicate an existing package from repositories into targetdirectory with newname.
             Return  {'target':new package or new source directory,'package':new PackageEntry,'source_dir':new source directory}
             unzip: unzip packages at end for modifications, don't sign, return directory name
@@ -3930,7 +3931,7 @@ class Wapt(object):
             zip = ZipFile(source_filename,allowZip64=True)
             zip.extractall(path=target_directory)
         else:
-            filenames = self.download_packages([packagename])
+            filenames = self.download_packages([packagename],usecache=usecache)
             source_filename = (filenames['downloaded'] or filenames['skipped'])[0]
             source_control = PackageEntry().load_control_from_wapt(source_filename)
             if not target_directory:
