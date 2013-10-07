@@ -22,6 +22,7 @@ type
     ActEditRemove: TAction;
     ActEditSavePackage: TAction;
     ActAdvancedMode: TAction;
+    ActAddDepends: TAction;
     ActSearchPackage: TAction;
     ActionList1: TActionList;
     BitBtn2: TBitBtn;
@@ -43,6 +44,7 @@ type
     GridPackages: TSOGrid;
     MemoLog: TMemo;
     MenuItem1: TMenuItem;
+    MenuItem2: TMenuItem;
     MenuItem4: TMenuItem;
     PageControl1: TPageControl;
     Panel1: TPanel;
@@ -53,6 +55,7 @@ type
     Panel8: TPanel;
     Panel9: TPanel;
     PopupMenu1: TPopupMenu;
+    PopupPackages: TPopupMenu;
     PopupMenuEditDepends: TPopupMenu;
     Splitter1: TSplitter;
     Splitter2: TSplitter;
@@ -62,6 +65,8 @@ type
     pgEditPackage: TTabSheet;
     EdSetupPy: TSynEdit;
     jsonlog: TVirtualJSONInspector;
+    procedure ActAddDependsExecute(Sender: TObject);
+    procedure ActAddDependsUpdate(Sender: TObject);
     procedure ActAdvancedModeExecute(Sender: TObject);
     procedure ActBuildUploadExecute(Sender: TObject);
     procedure ActEditRemoveExecute(Sender: TObject);
@@ -91,6 +96,7 @@ type
     FIsUpdated: boolean;
     GridDependsUpdated: boolean;
     FDepends: string;
+    procedure AddSelectedPackages(Sender:TObject);
     function CheckUpdated: boolean;
     procedure SetisAdvancedMode(AValue: boolean);
     procedure SetIsUpdated(AValue: boolean);
@@ -284,6 +290,11 @@ end;
 procedure TVisEditPackage.GridDependsDragDrop(Sender: TBaseVirtualTree;
   Source: TObject; DataObject: IDataObject; Formats: TFormatArray;
   Shift: TShiftState; const Pt: TPoint; var Effect: DWORD; Mode: TDropMode);
+begin
+  AddSelectedPackages(Sender);
+end;
+
+procedure TVisEditPackage.AddSelectedPackages(Sender:TObject);
 var
   i: integer;
   sel: TNodeArray;
@@ -433,6 +444,16 @@ begin
   isAdvancedMode := ActAdvancedMode.Checked;
 end;
 
+procedure TVisEditPackage.ActAddDependsUpdate(Sender: TObject);
+begin
+  ActAddDepends.Enabled:=GridPackages.SelectedCount>0;
+end;
+
+procedure TVisEditPackage.ActAddDependsExecute(Sender: TObject);
+begin
+  AddSelectedPackages(Sender);
+end;
+
 procedure TVisEditPackage.ActExecCodeExecute(Sender: TObject);
 begin
   MemoLog.Clear;
@@ -517,7 +538,7 @@ begin
       begin
         target_directory := MkTempDir();
         FisTempSourcesDir := True;
-        res := DMPython.RunJSON(format('mywapt.edit_host("%s",target_directory=r"%s",use_cache=False,use_local_sources=False)',
+        res := DMPython.RunJSON(format('mywapt.edit_host("%s",target_directory=r"%s",use_local_sources=False)',
           [FPackageRequest, target_directory]));
         EdPackage.EditLabel.Caption := 'Machine';
         Caption := 'Modifier la configuration de la machine';

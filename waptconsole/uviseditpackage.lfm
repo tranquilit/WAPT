@@ -141,11 +141,12 @@ object VisEditPackage: TVisEditPackage
           Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
           Header.SortColumn = 0
           Header.Style = hsFlatButtons
+          PopupMenu = PopupPackages
           TabOrder = 1
           TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
           TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
           TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-          TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+          TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect]
         end
       end
       object GridDepends: TSOGrid
@@ -1055,6 +1056,11 @@ object VisEditPackage: TVisEditPackage
       Caption = 'Mode avancé'
       OnExecute = ActAdvancedModeExecute
     end
+    object ActAddDepends: TAction
+      Caption = 'Ajouter aux dépendances du paquet'
+      OnExecute = ActAddDependsExecute
+      OnUpdate = ActAddDependsUpdate
+    end
   end
   object PopupMenuEditDepends: TPopupMenu
     left = 148
@@ -1069,6 +1075,13 @@ object VisEditPackage: TVisEditPackage
     object MenuItem1: TMenuItem
       Action = ActAdvancedMode
       AutoCheck = True
+    end
+  end
+  object PopupPackages: TPopupMenu
+    left = 581
+    top = 212
+    object MenuItem2: TMenuItem
+      Action = ActAddDepends
     end
   end
 end
