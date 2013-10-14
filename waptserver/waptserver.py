@@ -21,6 +21,15 @@
 #
 # -----------------------------------------------------------------------
 import os,sys
+wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+sys.path.append(os.path.join(wapt_root_dir))
+sys.path.append(os.path.join(wapt_root_dir,'lib'))
+sys.path.append(os.path.join(wapt_root_dir,'waptservice'))
+sys.path.append(os.path.join(wapt_root_dir,'waptserver'))
+sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
+sys.path.append(os.path.join(wapt_root_dir,'waptrepo'))
+
+
 from flask import request, Flask,Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
 import time
 import json
@@ -39,12 +48,6 @@ import socket
 import requests
 from rocket import Rocket
 
-wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
-sys.path.append(os.path.join(wapt_root_dir))
-sys.path.append(os.path.join(wapt_root_dir,'lib'))
-sys.path.append(os.path.join(wapt_root_dir,'waptservice'))
-sys.path.append(os.path.join(wapt_root_dir,'waptserver'))
-sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
 
 from waptpackage import update_packages,PackageEntry
 
