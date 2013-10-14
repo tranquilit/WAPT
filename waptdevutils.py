@@ -114,12 +114,21 @@ def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wa
     if not (os.path.normcase(os.path.abspath( os.path.dirname(source))) == os.path.normcase(os.path.abspath(target))):
         filecopyto(source,target)
     codecs.open(iss_template,'w',encoding='utf8').write('\n'.join(new_iss))
-    inno_directory = '%s\\Inno Setup 5\\Compil32.exe' % programfiles32
+    #inno_directory = '%s\\Inno Setup 5\\Compil32.exe' % programfiles32
+    inno_directory =  makepath(wapt.wapt_base_dir,'waptsetup','innosetup','ISCC.exe')
     if not os.path.isfile(inno_directory):
         raise Exception(u"Innosetup n'est pas disponible (emplacement %s), veuillez l'installer" % inno_directory)
-    run('"%s" /cc %s' % (inno_directory,iss_template))
+    run('"%s"  %s' % (inno_directory,iss_template))
     print('%s compiled successfully' % (outputfile, ))
     return os.path.join(destination,os.path.basename(outputfile))
+
+def upload_wapt_setup(wapt,waptsetup_path, wapt_server_user, wapt_server_passwd):
+    auth =  (wapt_server_user, wapt_server_passwd)
+    with open(waptsetup_path,'rb') as afile:
+        #req = requests.post("%s/upload_waptsetup" % wapt.wapt_server,data=afile,proxies=wapt.proxies,verify=False,auth=auth)
+        req = requests.post("%s/upload_waptsetup" % (wapt.wapt_server,),files={'file':afile},proxies=wapt.proxies,verify=False,auth=auth)
+        req.raise_for_status()
+    return req.content
 
 def diff_computer_ad_wapt(wapt):
     """Return the computer in the Active Directory but not in Wapt Serveur """

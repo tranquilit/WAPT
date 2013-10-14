@@ -9,12 +9,13 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   OnCloseQuery = FormCloseQuery
   Position = poMainFormCenter
   ShowHint = True
-  LCLVersion = '1.1'
+  LCLVersion = '1.3'
   object fnPublicCert: TFileNameEdit
     Left = 200
     Height = 21
     Top = 18
     Width = 216
+    Filter = '*.crt|*.crt'
     FilterIndex = 0
     HideDirectories = False
     ButtonWidth = 23

@@ -748,7 +748,7 @@ end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
 var
-  params, waptsetupPath: string;
+  params, waptsetupPath, result: string;
   done: boolean;
   ini: TIniFile;
 begin
@@ -767,6 +767,7 @@ begin
           if ShowModal = mrOk then
           begin
             try
+            Screen.Cursor := crHourGlass;
               DMPython.PythonEng.ExecString('import waptdevutils');
               params := '';
               params := params + format('default_public_cert=r"%s",',
@@ -777,11 +778,34 @@ begin
               params := params + format('destination=r"%s",',
                 [fnWaptDirectory.Directory]);
               params := params + format('company=r"%s",', [edOrgName.Text]);
+               with  Tvisloading.Create(Self) do
+          try
+            ProgressTitle('Création en cours');
+            Application.ProcessMessages;
+              try
               waptsetupPath :=
                 DMPython.RunJSON(format('waptdevutils.create_wapt_setup(mywapt,%s)',
                 [params]), jsonlog).AsString;
-              done := FileExists(waptsetupPath);
+              if FileExists(waptsetupPath) then
+              begin
+                ProgressStep(1,2);
+                ProgressTitle('Envoie en cours');
+                result := DMPython.RunJSON(format('waptdevutils.upload_wapt_setup(mywapt,r"%s","%s","%s")', [waptsetupPath, waptServerUser, waptServerPassword])).AsString;
+                if result = 'ok' then
+                   ShowMessage('Waptsetup envoyé avec succès')
+                else
+                    ShowMessage('Erreur lors de l''envoie de waptsetup: '+ result);
+                done := True;
+              end;
+
+              except
+                ShowMessage('Création annulé');
+              end;
+          finally
+            Free;
+          end;
               if done then
+                Screen.Cursor := crDefault;
                 ShowMessage('waptsetup.exe créé avec succès: ' + waptsetupPath);
             except
               on e: Exception do
@@ -794,7 +818,7 @@ begin
           else
             done := True;
         until done;
-
+            Screen.Cursor := crDefault;
       finally
         ini.Free;
       end;
