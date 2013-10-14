@@ -366,6 +366,23 @@ def upload_host():
         e = sys.exc_info()
         return str(e)
 
+@app.route('/upload_waptsetup',methods=['POST'])
+@requires_auth
+def upload_waptsetup():
+    logger.debug("Entering upload_waptsetup")
+    try:
+        file = request.files['file']
+        logger.info('uploading waptsetup file : %s' % file)
+        if file and "waptsetup.exe" in file.filename :
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(wapt_folder, filename))
+            return "ok"
+        else:
+            return "wrong file type"
+
+    except:
+        e = sys.exc_info()
+        return str(e)
 
 
 @app.route('/waptupgrade_host/<string:ip>')
