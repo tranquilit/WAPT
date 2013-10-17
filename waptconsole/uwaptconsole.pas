@@ -546,6 +546,7 @@ begin
 
         ProgressTitle('Upload en cours');
         Application.ProcessMessages;
+        ShowMessage(waptServerPassword);
 
         uploadResult := DMPython.RunJSON(
           format('mywapt.build_upload(%s,r"%s",r"%s",r"%s","False","True")',
@@ -737,9 +738,12 @@ begin
           format('waptdevutils.login_to_waptserver("%s","%s","%s","%s")',
           [GetWaptServerURL + '/login', waptServerUser, waptServerPassword,
           newPass])).AsString;
-          waptServerPassword:= newPass;
+
           if result = 'True' then
+          begin
+             uviseditpackage.waptServerPassword:= newPass;
              ShowMessage('Le mot de passe a été changé avec succès !');
+          end;
       end;
           finally
       Free;

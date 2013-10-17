@@ -190,6 +190,8 @@ def duplicate_from_tis_repo(wapt,file_name,depends=[]):
     import tempfile
     wapt = common.Wapt(config_filename=wapt)
     prefix = wapt.config.get('global','default_package_prefix')
+    if not prefix:
+        prefix = "tis"
     old_file_name = PackageEntry().load_control_from_wapt(file_name).package
     new_file_name ="%s-%s" % (prefix, old_file_name.split('-',1)[-1])
     wapt.config.set('global','default_sources_root',tempfile.mkdtemp())
