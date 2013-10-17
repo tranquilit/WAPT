@@ -546,7 +546,6 @@ begin
 
         ProgressTitle('Upload en cours');
         Application.ProcessMessages;
-        ShowMessage(waptServerPassword);
 
         uploadResult := DMPython.RunJSON(
           format('mywapt.build_upload(%s,r"%s",r"%s",r"%s","False","True")',
