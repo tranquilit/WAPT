@@ -282,6 +282,8 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'id'
           end>
         Header.DefaultHeight = 17
+        Header.MaxHeight = 17
+        Header.MinHeight = 17
         Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
         Header.SortColumn = 1
         Header.Style = hsFlatButtons
@@ -372,7 +374,7 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'install_date'
               end>
             Header.DefaultHeight = 17
-            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
+            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
             Header.Style = hsFlatButtons
             Images = ImageList1
             TabOrder = 0
@@ -558,11 +560,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostPackage: TTabSheet
           Caption = 'Inventaire matériel'
-          ClientHeight = 442
+          ClientHeight = 447
           ClientWidth = 564
           object GridhostAttribs: TVirtualJSONInspector
             Left = 0
-            Height = 442
+            Height = 447
             Top = 0
             Width = 564
             PropertyDefs = <>
@@ -641,7 +643,7 @@ object VisWaptGUI: TVisWaptGUI
               end>
             Header.DefaultHeight = 17
             Header.MainColumn = 1
-            Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
+            Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
             Header.Style = hsFlatButtons
             TabOrder = 0
             TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
@@ -722,7 +724,7 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'explicit_by'
           end>
         Header.DefaultHeight = 17
-        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
         Header.SortColumn = 1
         Header.Style = hsFlatButtons
         PopupMenu = PopupMenuPackages
@@ -867,7 +869,7 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'explicit_by'
           end>
         Header.DefaultHeight = 17
-        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
         Header.SortColumn = 1
         Header.Style = hsFlatButtons
         PopupMenu = PopupMenuPackagesTIS

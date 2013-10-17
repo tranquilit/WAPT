@@ -138,7 +138,7 @@ object VisEditPackage: TVisEditPackage
               PropertyName = 'explicit_by'
             end>
           Header.DefaultHeight = 17
-          Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize]
+          Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
           Header.SortColumn = 0
           Header.Style = hsFlatButtons
           PopupMenu = PopupPackages
