@@ -70,13 +70,14 @@ os.makedirs("builddir/DEBIAN")
 os.makedirs("builddir/opt")
 os.makedirs("builddir/opt/wapt")
 os.makedirs("builddir/opt/wapt/lib")
+os.makedirs("builddir/opt/wapt/waptserver")
 
 #adding version info in VERSION file
 output = subprocess.check_output('/usr/bin/svn info',shell=True)
 for line in output.split('\n'):
     if 'Revision:' in line:
         rev = 'rev%s' % line.split(':')[1].strip()
-version_file = open(os.path.join('./builddir/','VERSION'),'w')
+version_file = open(os.path.join('./builddir/opt/wapt/waptserver','VERSION'),'w')
 version_file.write(rev)
 version_file.close()
 
@@ -106,5 +107,6 @@ replaceAll(control_file,'0.0.7',wapt_version)
 
 print 'création du paquet Deb'
 os.chmod('./builddir/DEBIAN/postinst',stat.S_IRWXU| stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
+os.chmod('./builddir/DEBIAN/preinst',stat.S_IRWXU| stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
 os.system(dpkg_command)
 shutil.rmtree("builddir")
