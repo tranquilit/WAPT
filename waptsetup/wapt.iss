@@ -238,7 +238,7 @@ begin
     if rbCustomUrl.Checked then
        result := teWaptServerUrl.Text + '/wapt'
     else 
-       result :='';
+       result :='http://wapt/wapt';
 end;
 
 function GetWaptServerURL(Param: String):String;
@@ -246,7 +246,7 @@ begin
   if WizardSilent then
     result := GetIniString('Global', 'wapt_server', '',ExpandConstant('{app}\wapt-get.ini'))
   else
-    result := teWaptServerUrl.Text;
+    result := 'http://wapt:8080';
 end;
 
 
