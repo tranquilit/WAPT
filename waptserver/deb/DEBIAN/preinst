@@ -5,7 +5,7 @@ import time
 
 def check_user_exists(username):
     try:
-        getpwnam('waptserver')
+        getpwnam(username)
         return True
     except:
         return False
@@ -28,11 +28,12 @@ if check_user_exists('waptserver'):
     print "EXECUTING : %s " %cmd
     print subprocess.check_output(cmd,shell=True)
 
-if check_user_exists('wapt'):
+if not check_user_exists('wapt'):
     print "Adding user wapt"
     cmd   = "adduser --system --home /opt/wapt  --gid 33 wapt"
     print "Executing : %s " % cmd
     print subprocess.check_output(cmd,shell=True)
-
+else:
+    print "User wapt already existing, skipping user creation"
 
 
