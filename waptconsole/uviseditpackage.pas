@@ -124,6 +124,7 @@ type
 function EditPackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreatePackage(packagename: string; advancedMode: boolean): ISuperObject;
 function EditHost(hostname: string; advancedMode: boolean): ISuperObject;
+function EditHostDepends(hostname: string; newDependsStr : string): ISuperObject;
 
 
 var
@@ -187,6 +188,31 @@ begin
     end;
 end;
 
+function EditHostDepends(hostname: string; newDependsStr : string): ISuperObject;
+var
+  oldDepends, newDepends : ISuperObject;
+  i : Word;
+begin
+  with TVisEditPackage.Create(nil) do
+  try
+     IsHost := True;
+     PackageRequest := hostname;
+
+     oldDepends := Split(Depends, ',');
+     newDepends := Split(newDependsStr, ',');
+     for i := 0 to newDepends.AsArray.Length - 1 do
+     begin
+     if not StrIn(newDepends.AsArray.S[i], olddepends) then
+           olddepends.AsArray.Add(newDepends.AsArray.S[i]);
+     end;
+     Depends := Join(',', olddepends);
+
+     Result := PackageEdited;
+     ActBuildUploadExecute(nil);
+  finally
+      Free;
+  end;
+end;
 
 { TVisEditPackage }
 procedure TVisEditPackage.cbShowLogClick(Sender: TObject);
@@ -635,7 +661,6 @@ begin
     ShowMessageFmt('Attention, les paquets %s ont été ignorés car introuvables',
       [dependencies.S['missing']]);
     GridDependsUpdated := True;
-
   end;
   FIsUpdated := True;
 end;

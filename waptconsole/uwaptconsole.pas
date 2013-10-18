@@ -5,7 +5,7 @@ unit uwaptconsole;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, SynEdit,SynHighlighterPython,
+  Classes, SysUtils, FileUtil, SynEdit, SynHighlighterPython,
   vte_json, Forms, Controls, Graphics,
   Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, jsonparser,
   superobject, UniqueInstance, VirtualTrees, VarPyth, Windows, ImgList,
@@ -37,6 +37,7 @@ type
     ActGotoHost: TAction;
     ActHostWaptUpgrade: TAction;
     ActHostUpgrade: TAction;
+    ActAddToGroup: TAction;
     ActWAPTLocalConfig: TAction;
     ActUpdateWaptGetINI: TAction;
     actRefresh: TAction;
@@ -76,6 +77,7 @@ type
     LabelComputersNumber: TLabel;
     MenuItem33: TMenuItem;
     MenuItem34: TMenuItem;
+    MenuItem35: TMenuItem;
     ProgressBar: TProgressBar;
     EdHostname: TEdit;
     EdDescription: TEdit;
@@ -171,6 +173,7 @@ type
     GridHostPackages: TSOGrid;
     GridHostSoftwares: TSOGrid;
     procedure ActAddRemoveOptionIniFileExecute(Sender: TObject);
+    procedure ActAddToGroupExecute(Sender: TObject);
     procedure ActAdvancedModeExecute(Sender: TObject);
     procedure ActChangePasswordExecute(Sender: TObject);
     procedure ActCreateCertificateExecute(Sender: TObject);
@@ -233,11 +236,10 @@ type
       var ImageList: TCustomImageList);
     procedure GridHostsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       RowData, CellData: ISuperObject; Column: TColumnIndex;
-      TextType: TVSTTextType; var CellText: String);
-    procedure GridHostsHeaderDblClick(Sender: TVTHeader;
-      HitInfo: TVTHeaderHitInfo);
+      TextType: TVSTTextType; var CellText: string);
+    procedure GridHostsHeaderDblClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
     procedure GridHostsPaintBackground(Sender: TBaseVirtualTree;
-      TargetCanvas: TCanvas; const R: TRect; var Handled: Boolean);
+      TargetCanvas: TCanvas; const R: TRect; var Handled: boolean);
     procedure GridPackagesColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
     procedure GridPackagesPaintText(Sender: TBaseVirtualTree;
@@ -259,8 +261,8 @@ type
     { public declarations }
     Hosts, PackageEdited: ISuperObject;
     waptpath: string;
-    Function EditIniFile:Boolean;
-    function updateprogress(receiver:TObject;current, total: integer): boolean;
+    function EditIniFile: boolean;
+    function updateprogress(receiver: TObject; current, total: integer): boolean;
   end;
 
 var
@@ -270,7 +272,8 @@ implementation
 
 uses LCLIntf, IniFiles, uvisprivatekeyauth, uvisloading, tisstrings, soutils,
   waptcommon, tiscommon, uVisCreateKey, uVisCreateWaptSetup, uvisOptionIniFile,
-  dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig,uvischangepassword,
+  dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
+  uvisgroupchoice,
   PythonEngine;
 
 {$R *.lfm}
@@ -371,7 +374,7 @@ begin
       EdHostname.Text := GridHosts.GetCellStrValue(Node, 'host.computer_name');
       EdDescription.Text := GridHosts.GetCellStrValue(Node, 'host.description');
       EdOS.Text := GridHosts.GetCellStrValue(Node, 'host.windows_product_infos.version');
-      EdIPAddress.Text :=  GridHosts.GetCellStrValue(Node, 'host.connected_ips');
+      EdIPAddress.Text := GridHosts.GetCellStrValue(Node, 'host.connected_ips');
       EdManufacturer.Text := GridHosts.GetCellStrValue(Node, 'host.system_manufacturer');
       EdModelName.Text := GridHosts.GetCellStrValue(Node, 'host.system_productname');
       EdUpdateDate.Text := GridHosts.GetCellStrValue(Node, 'last_query_date');
@@ -418,24 +421,24 @@ begin
     selects := GridPackages.SelectedCount;
 
     with  TVisLoading.Create(Self) do
-    try
-      Self.Enabled:=False;
-      while (N <> nil) and not StopRequired do
-      begin
-        package := GridPackages.GetCellStrValue(N, 'package') +
-          ' (=' + GridPackages.GetCellStrValue(N, 'version') + ')';
-        ProgressTitle(
-          'Installation de ' + GridPackages.GetCellStrValue(N, 'package') +
-          ' en cours ...');
-        ProgressStep(trunc((i / selects) * 100),100);
-        i := i + 1;
-        DMPython.RunJSON(format('mywapt.install("%s")', [package]), jsonlog);
-        N := GridPackages.GetNextSelected(N);
+      try
+        Self.Enabled := False;
+        while (N <> nil) and not StopRequired do
+        begin
+          package := GridPackages.GetCellStrValue(N, 'package') +
+            ' (=' + GridPackages.GetCellStrValue(N, 'version') + ')';
+          ProgressTitle(
+            'Installation de ' + GridPackages.GetCellStrValue(N, 'package') +
+            ' en cours ...');
+          ProgressStep(trunc((i / selects) * 100), 100);
+          i := i + 1;
+          DMPython.RunJSON(format('mywapt.install("%s")', [package]), jsonlog);
+          N := GridPackages.GetNextSelected(N);
+        end;
+      finally
+        Self.Enabled := True;
+        Free;
       end;
-    finally
-      Self.Enabled:=True;
-      Free;
-    end;
     ActSearchPackage.Execute;
   end;
 end;
@@ -462,8 +465,8 @@ begin
     filename := GridPackages1.GetCellStrValue(N, 'filename');
     depends := GridPackages1.GetCellStrValue(N, 'depends');
     filePath := AppLocalDir + 'cache\' + filename;
-    if not DirectoryExists(AppLocalDir+ 'cache') then
-      mkdir(AppLocalDir+ 'cache');
+    if not DirectoryExists(AppLocalDir + 'cache') then
+      mkdir(AppLocalDir + 'cache');
 
 
     if MessageDlg('Confirmer la duplication',
@@ -472,100 +475,101 @@ begin
       Exit;
 
     with  Tvisloading.Create(Self) do
-    try
-      Self.Enabled:=False;
-      ProgressTitle('Téléchargement en cours de ' + oldName);
-      Application.ProcessMessages;
       try
-        if not FileExists(filePath) then
-          Wget(WaptExternalRepo + '/' + filename, filePath, ProgressForm, @updateprogress);
-      except
-        ShowMessage('Téléchargement annulé');
-        exit;
-      end;
-
-      dependsPath := TSuperObject.Create(stArray);
-      if depends <> '' then
-      begin
-        dependsList := DMPython.RunJSON(
-          format('waptdevutils.searchLastPackageTisRepo(r"%s","%s")',
-          [AppIniFilename, depends]));
-        for i := 0 to dependsList.AsArray.Length - 1 do
-        begin
-          ProgressTitle(
-            'Téléchargement en cours de ' + dependsList.AsArray.S[i]);
-          dependsPath.AsArray.Add(AppLocalDir + 'cache\' + dependsList.AsArray.S[i]);
-          if not DirectoryExists(AppLocalDir+ 'cache') then
-            mkdir(AppLocalDir+ 'cache');
-          try
-            if not FileExists(dependsPath.AsArray.S[i]) then
-              Wget(WaptExternalRepo + '/' + dependsList.AsArray.S[i],
-                dependsPath.AsArray.S[i], ProgressForm, @updateprogress);
-          except
-            ShowMessage('Téléchargement annulé');
-            exit;
-          end;
-        end;
-      end;
-      sourceDir := DMPython.RunJSON(
-        Format('waptdevutils.duplicate_from_tis_repo(r"%s",r"%s",%S)',
-        [AppIniFilename, filePath, dependsPath.AsString])).AsString;
-
-      if sourceDir <> 'error' then
-      begin
-        if not FileExists(GetWaptPrivateKey) then
-        begin
-          ShowMessage('la clé privé n''existe pas: ' + GetWaptPrivateKey);
+        Self.Enabled := False;
+        ProgressTitle('Téléchargement en cours de ' + oldName);
+        Application.ProcessMessages;
+        try
+          if not FileExists(filePath) then
+            Wget(WaptExternalRepo + '/' + filename, filePath, ProgressForm,
+              @updateprogress);
+        except
+          ShowMessage('Téléchargement annulé');
           exit;
         end;
-        isEncrypt := StrToBool(DMPython.RunJSON(
-          format('waptdevutils.is_encrypt_private_key(r"%s")',
-          [GetWaptPrivateKey])).AsString);
-        if (privateKeyPassword = '') and (isEncrypt) then
+
+        dependsPath := TSuperObject.Create(stArray);
+        if depends <> '' then
         begin
-          with TvisPrivateKeyAuth.Create(Self) do
+          dependsList := DMPython.RunJSON(
+            format('waptdevutils.searchLastPackageTisRepo(r"%s","%s")',
+            [AppIniFilename, depends]));
+          for i := 0 to dependsList.AsArray.Length - 1 do
+          begin
+            ProgressTitle(
+              'Téléchargement en cours de ' + dependsList.AsArray.S[i]);
+            dependsPath.AsArray.Add(AppLocalDir + 'cache\' + dependsList.AsArray.S[i]);
+            if not DirectoryExists(AppLocalDir + 'cache') then
+              mkdir(AppLocalDir + 'cache');
             try
-              laKeyPath.Caption := GetWaptPrivateKey;
-              repeat
-                if ShowModal = mrOk then
-                begin
-                  privateKeyPassword := edPasswordKey.Text;
-                  if StrToBool(DMPython.RunJSON(
-                    format('waptdevutils.is_match_password(r"%s","%s")',
-                    [GetWaptPrivateKey, privateKeyPassword])).AsString) then
-                    done := True;
-                end
-                else
-                  Exit;
-              until done;
-            finally
-              Free;
+              if not FileExists(dependsPath.AsArray.S[i]) then
+                Wget(WaptExternalRepo + '/' + dependsList.AsArray.S[i],
+                  dependsPath.AsArray.S[i], ProgressForm, @updateprogress);
+            except
+              ShowMessage('Téléchargement annulé');
+              exit;
             end;
+          end;
         end;
+        sourceDir := DMPython.RunJSON(
+          Format('waptdevutils.duplicate_from_tis_repo(r"%s",r"%s",%S)',
+          [AppIniFilename, filePath, dependsPath.AsString])).AsString;
 
-
-        ProgressTitle('Upload en cours');
-        Application.ProcessMessages;
-
-        uploadResult := DMPython.RunJSON(
-          format('mywapt.build_upload(%s,r"%s",r"%s",r"%s","False","True")',
-          [sourceDir, privateKeyPassword, waptServerUser, waptServerPassword]),
-          jsonlog);
-        if uploadResult.AsString <> '' then
+        if sourceDir <> 'error' then
         begin
-          ShowMessage(format('%s dupliqué avec succès.', [oldName]));
-          ActUpdate.Execute;
-        end
-        else
-          ShowMessage('Erreur lors de la duplication.');
+          if not FileExists(GetWaptPrivateKey) then
+          begin
+            ShowMessage('la clé privé n''existe pas: ' + GetWaptPrivateKey);
+            exit;
+          end;
+          isEncrypt := StrToBool(DMPython.RunJSON(
+            format('waptdevutils.is_encrypt_private_key(r"%s")',
+            [GetWaptPrivateKey])).AsString);
+          if (privateKeyPassword = '') and (isEncrypt) then
+          begin
+            with TvisPrivateKeyAuth.Create(Self) do
+              try
+                laKeyPath.Caption := GetWaptPrivateKey;
+                repeat
+                  if ShowModal = mrOk then
+                  begin
+                    privateKeyPassword := edPasswordKey.Text;
+                    if StrToBool(DMPython.RunJSON(
+                      format('waptdevutils.is_match_password(r"%s","%s")',
+                      [GetWaptPrivateKey, privateKeyPassword])).AsString) then
+                      done := True;
+                  end
+                  else
+                    Exit;
+                until done;
+              finally
+                Free;
+              end;
+          end;
 
-        ModalResult := mrOk;
 
+          ProgressTitle('Upload en cours');
+          Application.ProcessMessages;
+
+          uploadResult := DMPython.RunJSON(
+            format('mywapt.build_upload(%s,r"%s",r"%s",r"%s","False","True")',
+            [sourceDir, privateKeyPassword, waptServerUser, waptServerPassword]),
+            jsonlog);
+          if uploadResult.AsString <> '' then
+          begin
+            ShowMessage(format('%s dupliqué avec succès.', [oldName]));
+            ActUpdate.Execute;
+          end
+          else
+            ShowMessage('Erreur lors de la duplication.');
+
+          ModalResult := mrOk;
+
+        end;
+      finally
+        Self.Enabled := True;
+        Free;
       end;
-    finally
-      Self.Enabled:=True;
-      Free;
-    end;
     N := GridPackages1.GetNextSelected(N);
   end;
 
@@ -716,6 +720,50 @@ begin
     end;
 end;
 
+procedure TVisWaptGUI.ActAddToGroupExecute(Sender: TObject);
+var
+  Result: ISuperObject;
+  N: PVirtualNode;
+  i : Word;
+  listGroup : TStringList;
+  groups: String = '';
+begin
+  if GridHosts.Focused then
+  begin
+    if GridPackages.Data = nil then
+      ActSearchPackage.Execute;
+    listGroup := GridPackages.SearchStrValue('section', 'group','package');
+    if listGroup.Count = 0 then
+    begin
+      ShowMessage('Il n''y a aucuns paquets groupes');
+      listGroup.Free;
+      Exit;
+    end;
+
+    with TvisGroupChoice.Create(self) do
+      try
+        CheckGroup1.Items:=  listGroup;
+        if ShowModal = mrOk then
+        begin
+            for i := 0 to CheckGroup1.Items.Count - 1 do
+             if CheckGroup1.Checked[i] then
+                groups :=  groups + CheckGroup1.Items[i] + ','
+        end;
+      finally
+        Free;
+      end;
+    if groups = '' then
+       Exit;
+    N := GridHosts.GetFirstSelected;
+    while N <> nil do
+    begin
+      EditHostDepends(GridHosts.GetCellStrValue(N, 'host.computer_fqdn'), groups);
+      N := GridHosts.GetNextSelected(N);
+    end;
+    listGroup.Free;
+  end;
+end;
+
 procedure TVisWaptGUI.ActAdvancedModeExecute(Sender: TObject);
 begin
   ActAdvancedMode.Checked := not ActAdvancedMode.Checked;
@@ -725,33 +773,33 @@ end;
 
 procedure TVisWaptGUI.ActChangePasswordExecute(Sender: TObject);
 var
-  newPass, result: string;
+  newPass, Result: string;
 begin
-  with TvisChangePassword.Create(self)  do
+  with TvisChangePassword.Create(self) do
     try
       waptServerPassword := uviseditpackage.waptServerPassword;
-      if ShowModal=mrOK then
+      if ShowModal = mrOk then
       begin
-        newPass:= edNewPassword2.Text;
-        result := DMPython.RunJSON(
+        newPass := edNewPassword2.Text;
+        Result := DMPython.RunJSON(
           format('waptdevutils.login_to_waptserver("%s","%s","%s","%s")',
           [GetWaptServerURL + '/login', waptServerUser, waptServerPassword,
           newPass])).AsString;
 
-          if result = 'True' then
-          begin
-             uviseditpackage.waptServerPassword:= newPass;
-             ShowMessage('Le mot de passe a été changé avec succès !');
-          end;
+        if Result = 'True' then
+        begin
+          uviseditpackage.waptServerPassword := newPass;
+          ShowMessage('Le mot de passe a été changé avec succès !');
+        end;
       end;
-          finally
+    finally
       Free;
     end;
 end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
 var
-  params, waptsetupPath, result: string;
+  params, waptsetupPath, Result: string;
   done: boolean;
   ini: TIniFile;
 begin
@@ -770,7 +818,7 @@ begin
           if ShowModal = mrOk then
           begin
             try
-            Screen.Cursor := crHourGlass;
+              Screen.Cursor := crHourGlass;
               DMPython.PythonEng.ExecString('import waptdevutils');
               params := '';
               params := params + format('default_public_cert=r"%s",',
@@ -781,35 +829,37 @@ begin
               params := params + format('destination=r"%s",',
                 [fnWaptDirectory.Directory]);
               params := params + format('company=r"%s",', [edOrgName.Text]);
-               with  Tvisloading.Create(Self) do
-          try
-            ProgressTitle('Création en cours');
-            Application.ProcessMessages;
-              try
-              waptsetupPath :=
-                DMPython.RunJSON(format('waptdevutils.create_wapt_setup(mywapt,%s)',
-                [params]), jsonlog).AsString;
-              if FileExists(waptsetupPath) then
-              begin
-                ProgressStep(1,2);
-                ProgressTitle('Envoie en cours');
-                result := DMPython.RunJSON(format('waptdevutils.upload_wapt_setup(mywapt,r"%s","%s","%s")', [waptsetupPath, waptServerUser, waptServerPassword])).AsString;
-                if result = 'ok' then
-                   ShowMessage('Waptsetup envoyé avec succès')
-                else
-                    ShowMessage('Erreur lors de l''envoie de waptsetup: '+ result);
-                done := True;
-              end;
+              with  Tvisloading.Create(Self) do
+                try
+                  ProgressTitle('Création en cours');
+                  Application.ProcessMessages;
+                  try
+                    waptsetupPath :=
+                      DMPython.RunJSON(format('waptdevutils.create_wapt_setup(mywapt,%s)',
+                      [params]), jsonlog).AsString;
+                    if FileExists(waptsetupPath) then
+                    begin
+                      ProgressStep(1, 2);
+                      ProgressTitle('Envoie en cours');
+                      Result := DMPython.RunJSON(
+                        format('waptdevutils.upload_wapt_setup(mywapt,r"%s","%s","%s")',
+                        [waptsetupPath, waptServerUser, waptServerPassword])).AsString;
+                      if Result = 'ok' then
+                        ShowMessage('Waptsetup envoyé avec succès')
+                      else
+                        ShowMessage('Erreur lors de l''envoie de waptsetup: ' + Result);
+                      done := True;
+                    end;
 
-              except
-                ShowMessage('Création annulé');
-              end;
-          finally
-            Free;
-          end;
+                  except
+                    ShowMessage('Création annulé');
+                  end;
+                finally
+                  Free;
+                end;
               if done then
                 Screen.Cursor := crDefault;
-                ShowMessage('waptsetup.exe créé avec succès: ' + waptsetupPath);
+              ShowMessage('waptsetup.exe créé avec succès: ' + waptsetupPath);
             except
               on e: Exception do
               begin
@@ -821,7 +871,7 @@ begin
           else
             done := True;
         until done;
-            Screen.Cursor := crDefault;
+        Screen.Cursor := crDefault;
       finally
         ini.Free;
       end;
@@ -841,29 +891,29 @@ begin
   if MessageDlg('Confirmer la suppression',
     'Etes vous sûr de vouloir supprimer ce(s) package(s) du serveur ?',
     mtConfirmation, mbYesNoCancel, 0) = mrYes then
-  With TVisLoading.Create(Self)  do
-  try
-    ProgressTitle('Suppression des packages...');
-    N := GridPackages.GetFirstSelected;
-    i:=0;
-    while (N <> nil) and not StopRequired do
-    begin
-      inc(i);
-      package := GridPackages.GetCellStrValue(N, 'filename');
-      ProgressTitle('Suppression de '+package);
-      res := WAPTServerJsonGet('/delete_package/' + package, []);
-      if not ObjectIsNull(res['error']) then
-        raise Exception.Create(res.S['error']);
-      N := GridPackages.GetNextSelected(N);
-      ProgressStep(i,GridPackages.SelectedCount);
-    end;
-    ProgressTitle('Mise à jour de la liste des paquets');
-    ActUpdate.Execute;
-    ProgressTitle('Affichage');
-    ActSearchPackage.Execute;
-  finally
-    Free;
-  end;
+    with TVisLoading.Create(Self) do
+      try
+        ProgressTitle('Suppression des packages...');
+        N := GridPackages.GetFirstSelected;
+        i := 0;
+        while (N <> nil) and not StopRequired do
+        begin
+          Inc(i);
+          package := GridPackages.GetCellStrValue(N, 'filename');
+          ProgressTitle('Suppression de ' + package);
+          res := WAPTServerJsonGet('/delete_package/' + package, []);
+          if not ObjectIsNull(res['error']) then
+            raise Exception.Create(res.S['error']);
+          N := GridPackages.GetNextSelected(N);
+          ProgressStep(i, GridPackages.SelectedCount);
+        end;
+        ProgressTitle('Mise à jour de la liste des paquets');
+        ActUpdate.Execute;
+        ProgressTitle('Affichage');
+        ActSearchPackage.Execute;
+      finally
+        Free;
+      end;
 end;
 
 procedure TVisWaptGUI.ActDeletePackageUpdate(Sender: TObject);
@@ -890,68 +940,69 @@ end;
 
 procedure TVisWaptGUI.ActHostUpgradeExecute(Sender: TObject);
 var
-  hostname,ip: string;
+  hostname, ip: string;
   N: PVirtualNode;
-  res : ISuperObject;
-  i:integer;
+  res: ISuperObject;
+  i: integer;
 
 begin
   with TVisLoading.Create(Self) do
-  try
-    ProgressTitle('Lancement des mises à jour sur les postes');
-    ProgressStep(0,GridHosts.SelectedCount);
-    N := GridHosts.GetFirstSelected;
-    i:=0;
-    while (N <> nil) and not StopRequired do
-    begin
-      ip := GridHosts.GetCellStrValue(N, 'host.connected_ips');
-      hostname:=GridHosts.GetCellStrValue(N, 'host.computer_fqdn');;
-      if ip <> '' then
+    try
+      ProgressTitle('Lancement des mises à jour sur les postes');
+      ProgressStep(0, GridHosts.SelectedCount);
+      N := GridHosts.GetFirstSelected;
+      i := 0;
+      while (N <> nil) and not StopRequired do
       begin
-        ProgressTitle('Pour '+hostname+' (ip:'+ip+')');
-        res := WAPTServerJsonGet('/upgrade_host/' + ip, []);
-        ProgressTitle(hostname+' ok');
+        ip := GridHosts.GetCellStrValue(N, 'host.connected_ips');
+        hostname := GridHosts.GetCellStrValue(N, 'host.computer_fqdn');
+        ;
+        if ip <> '' then
+        begin
+          ProgressTitle('Pour ' + hostname + ' (ip:' + ip + ')');
+          res := WAPTServerJsonGet('/upgrade_host/' + ip, []);
+          ProgressTitle(hostname + ' ok');
+        end;
+        N := GridHosts.GetNextSelected(N);
+        Inc(i);
+        ProgressStep(i, GridHosts.SelectedCount);
       end;
-      N := GridHosts.GetNextSelected(N);
-      inc(i);
-      ProgressStep(i,GridHosts.SelectedCount);
+    finally
+      Free;
     end;
-  finally
-    Free;
-  end;
 end;
 
 procedure TVisWaptGUI.ActHostUpgradeUpdate(Sender: TObject);
 begin
-  ActHostUpgrade.Enabled:=GridHosts.SelectedCount>0;
+  ActHostUpgrade.Enabled := GridHosts.SelectedCount > 0;
 end;
 
 procedure TVisWaptGUI.ActHostWaptUpgradeExecute(Sender: TObject);
 var
   ip: string;
   N: PVirtualNode;
-  res : ISuperObject;
+  res: ISuperObject;
 begin
-    N := GridHosts.GetFirstSelected;
-    while N <> nil do
+  N := GridHosts.GetFirstSelected;
+  while N <> nil do
+  begin
+    ip := GridHosts.GetCellStrValue(N, 'host.connected_ips');
+    if ip <> '' then
     begin
-      ip := GridHosts.GetCellStrValue(N, 'host.connected_ips');
-      if ip <> '' then
-      begin
-         res := WAPTServerJsonGet('/waptupgrade_host/' + ip, []);
-         if res<>Nil then
-          ShowMessage(res.AsString)
-         else
-           ShowMessage('Erreur pour la machine '+ip);
+      res := WAPTServerJsonGet('/waptupgrade_host/' + ip, []);
+      if res <> nil then
+        ShowMessage(res.AsString)
+      else
+        ShowMessage('Erreur pour la machine ' + ip);
 
-      end;
-      N := GridHosts.GetNextSelected(N);
     end;
+    N := GridHosts.GetNextSelected(N);
+  end;
 end;
 
 procedure TVisWaptGUI.ActHostWaptUpgradeUpdate(Sender: TObject);
 begin
-  ActHostWaptUpgrade.Enabled:=GridHosts.SelectedCount>0;
+  ActHostWaptUpgrade.Enabled := GridHosts.SelectedCount > 0;
 end;
 
 
@@ -1025,7 +1076,7 @@ begin
         begin
           package := GridPackages.GetCellStrValue(N, 'package');
           ProgressTitle('Désinstallation de ' + package + ' en cours ...');
-          ProgressStep(trunc((i / selects) * 100),100);
+          ProgressStep(trunc((i / selects) * 100), 100);
           Application.ProcessMessages;
           i := i + 1;
           DMPython.RunJSON(format('mywapt.remove("%s")', [package]), jsonlog);
@@ -1083,7 +1134,7 @@ begin
 
   hosts := WAPTServerJsonGet(req, []);
   GridHosts.Data := hosts;
-  LabelComputersNumber.Caption:=IntToStr(hosts.AsArray.Length);
+  LabelComputersNumber.Caption := IntToStr(hosts.AsArray.Length);
   GridHosts.Header.AutoFitColumns(False);
 end;
 
@@ -1091,7 +1142,7 @@ procedure TVisWaptGUI.ActSearchPackageExecute(Sender: TObject);
 var
   expr, res: UTF8String;
   packages: ISuperObject;
-  p2:Variant;
+  p2: variant;
 begin
   //packages := VarPythonEval(Format('"%s".split()',[EdSearch.Text]));
   //packages := MainModule.mywapt.search(VarPythonEval(Format('"%s".split()',[EdSearch.Text])));
@@ -1104,10 +1155,10 @@ end;
 
 procedure TVisWaptGUI.ActUpdateExecute(Sender: TObject);
 var
-  l,res,i: variant;
+  l, res, i: variant;
 begin
   //test avec un variant ;)
-  res := MainModule.mywapt.update(register:=False);
+  res := MainModule.mywapt.update(Register := False);
   { exemple d'itération
   i := iter(res.keys(NOARGS));
   while true do
@@ -1136,19 +1187,19 @@ begin
   if EditIniFile then
   begin
     ActUpdateWaptGetINI.Execute;
-          ActUpdate.Execute;
-          GridPackages.Clear;
-          GridPackages1.Clear;
-          PageControl1Change(PageControl1);
+    ActUpdate.Execute;
+    GridPackages.Clear;
+    GridPackages1.Clear;
+    PageControl1Change(PageControl1);
 
   end;
 end;
 
-function TVisWaptGUI.EditIniFile: Boolean;
+function TVisWaptGUI.EditIniFile: boolean;
 var
   inifile: TIniFile;
 begin
-  Result:=False;
+  Result := False;
   inifile := TIniFile.Create(AppIniFilename);
   try
 
@@ -1185,7 +1236,7 @@ begin
           inifile.WriteString('global', 'default_sources_root',
             eddefault_sources_root.Text);
           //inifile.WriteString('global','default_sources_url',eddefault_sources_url.text);
-          Result:=True;
+          Result := True;
         end;
       finally
         Free;
@@ -1203,7 +1254,7 @@ var
   packages: ISuperObject;
 begin
   expr := format('waptdevutils.updateTisRepo(r"%s","%s")',
-    [AppIniFilename , EdSearch1.Text]);
+    [AppIniFilename, EdSearch1.Text]);
   packages := DMPython.RunJSON(expr);
   GridPackages1.Data := packages;
   GridPackages1.Header.AutoFitColumns(False);
@@ -1252,24 +1303,24 @@ procedure TVisWaptGUI.Login;
 var
   done: boolean = False;
   resp: ISuperObject;
-  localfn : String;
+  localfn: string;
 
 begin
   // Initialize user local config file with global wapt settings
-  localfn := GetAppConfigDir(False)+GetApplicationName+'.ini';
+  localfn := GetAppConfigDir(False) + GetApplicationName + '.ini';
   if not FileExists(localfn) then
   begin
     if not DirectoryExists(GetAppConfigDir(False)) then
       MkDir(GetAppConfigDir(False));
-    FileUtil.CopyFile(WaptIniFilename,localfn,True);
+    FileUtil.CopyFile(WaptIniFilename, localfn, True);
   end;
 
-  While (GetWaptServerURL='') do
+  while (GetWaptServerURL = '') do
   begin
-      if EditIniFile then
-        ActUpdateWaptGetINI.Execute
-      else
-        Halt;
+    if EditIniFile then
+      ActUpdateWaptGetINI.Execute
+    else
+      Halt;
   end;
 
   if waptServerPassword = '' then
@@ -1424,10 +1475,10 @@ end;
 
 procedure TVisWaptGUI.GridHostsGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
-  TextType: TVSTTextType; var CellText: String);
+  TextType: TVSTTextType; var CellText: string);
 begin
-  if (CellData<>Nil) and (CellData.DataType=stArray) then
-     CellText:=Join(',',CellData);
+  if (CellData <> nil) and (CellData.DataType = stArray) then
+    CellText := Join(',', CellData);
 end;
 
 procedure TVisWaptGUI.GridHostsHeaderDblClick(Sender: TVTHeader;
@@ -1437,10 +1488,10 @@ begin
 end;
 
 procedure TVisWaptGUI.GridHostsPaintBackground(Sender: TBaseVirtualTree;
-  TargetCanvas: TCanvas; const R: TRect; var Handled: Boolean);
+  TargetCanvas: TCanvas; const R: TRect; var Handled: boolean);
 begin
 
-  TargetCanvas.Brush.Color:=clBlack ;
+  TargetCanvas.Brush.Color := clBlack;
   TargetCanvas.FillRect(R);
 
 end;
@@ -1519,17 +1570,17 @@ begin
   end;
 end;
 
-function TVisWaptGUI.updateprogress(receiver: TObject; current, total: integer
-  ): boolean;
+function TVisWaptGUI.updateprogress(receiver: TObject;
+  current, total: integer): boolean;
 begin
-  if receiver<>Nil then
-  with (receiver as TVisLoading) do
-  begin
-    ProgressStep(current,total);
-    Result := not StopRequired;
-  end
+  if receiver <> nil then
+    with (receiver as TVisLoading) do
+    begin
+      ProgressStep(current, total);
+      Result := not StopRequired;
+    end
   else
-    Result :=True;
+    Result := True;
 end;
 
 end.

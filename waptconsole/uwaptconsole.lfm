@@ -1782,6 +1782,11 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActHostUpgradeExecute
       OnUpdate = ActHostUpgradeUpdate
     end
+    object ActAddToGroup: TAction
+      Category = 'hosts'
+      Caption = 'Ajouter au groupe'
+      OnExecute = ActAddToGroupExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
@@ -1890,6 +1895,9 @@ object VisWaptGUI: TVisWaptGUI
     top = 296
     object MenuItem18: TMenuItem
       Action = ActEditHostPackage
+    end
+    object MenuItem35: TMenuItem
+      Action = ActAddToGroup
     end
     object MenuItem34: TMenuItem
       Action = ActHostUpgrade

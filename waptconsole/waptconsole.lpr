@@ -11,7 +11,8 @@ uses
   runtimetypeinfocontrols, pl_virtualtrees, uwaptconsole,
   uVisCreateKey, tisstrings, waptcommon, tiscommon, tisinifiles, dmwaptpython,
   uVisEditPackage, uvisoptioninifile, uviscreatewaptsetup, uvislogin,
-  uvisprivatekeyauth, uvisloading, uviswaptconfig, uvischangepassword;
+  uvisprivatekeyauth, uvisloading, uviswaptconfig, uvischangepassword, 
+uvisgroupchoice;
 
 {$R *.res}
 
@@ -20,6 +21,7 @@ begin
   Application.Initialize;
   Application.CreateForm(TDMPython, DMPython);
   Application.CreateForm(TVisWaptGUI, VisWaptGUI);
+  Application.CreateForm(TvisGroupChoice, visGroupChoice);
   Application.Run;
 end.
 

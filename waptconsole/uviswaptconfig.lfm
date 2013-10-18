@@ -9,7 +9,7 @@ object VisWAPTConfig: TVisWAPTConfig
   ClientWidth = 507
   Position = poMainFormCenter
   ShowHint = True
-  LCLVersion = '1.1'
+  LCLVersion = '1.3'
   object ButtonPanel1: TButtonPanel
     Left = 6
     Height = 34
@@ -90,7 +90,7 @@ object VisWAPTConfig: TVisWAPTConfig
   object edprivate_key: TFileNameEdit
     Left = 279
     Height = 21
-    Hint = 'exemple c:\private\tranquilit.pem'#13#10'Chemin vers la clé privée pour signer les nouveaux paquets.'#13#10'Uniquement utilse sur les machines de développement'
+    Hint = 'exemple c:\private\tranquilit.pem'#13#10'Chemin vers la clé privée pour signer les nouveaux paquets.'#13#10'Uniquement utile sur les machines de développement'
     Top = 188
     Width = 196
     Filter = 'Fichiers PEM|*.pem|Tous les fichiers|*.*'
