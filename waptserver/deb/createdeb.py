@@ -24,13 +24,20 @@
 import os,glob,sys,stat
 import shutil
 import fileinput
+import subprocess
+import platform
 
 def replaceAll(file,searchExp,replaceExp):
     for line in fileinput.input(file, inplace=1):
         if searchExp in line:
             line = line.replace(searchExp,replaceExp)
         sys.stdout.write(line)
-    
+
+
+if platform.system()!='Linux':
+    print "this script should be used on debian linux"
+    sys.exit(1)
+
 for line in open('%s/waptserver.py'%os.path.abspath('..')):
     if '__version__' in line:
         wapt_version = line.split('=')[1].replace('"','').replace("'","").replace('\n','').replace(' ','')
@@ -64,7 +71,16 @@ os.makedirs("builddir/opt")
 os.makedirs("builddir/opt/wapt")
 os.makedirs("builddir/opt/wapt/lib")
 
-print 'copie des fichiers waptserver'
+#adding version info in VERSION file
+output = subprocess.check_output('/usr/bin/svn info',shell=True)
+for line in output.split('\n'):
+    if 'Revision:' in line:
+        rev = 'rev%s' % line.split(':')[1].strip()
+version_file = open(os.path.join('./builddir/','VERSION'),'w')
+version_file.write(rev)
+version_file.close()
+
+print 'copy waptserver files'
 os.system(rsync_command)
 os.system(rsync_lib_command)
 
@@ -76,6 +92,12 @@ except Exception as e:
     exit (0)
 try:
     shutil.copyfile('./DEBIAN/postinst','./builddir/DEBIAN/postinst')
+except Exception as e:
+    print 'erreur: \n%s'%e
+    exit(0)
+
+try:
+    shutil.copyfile('./DEBIAN/preinst','./builddir/DEBIAN/preinst')
 except Exception as e:
     print 'erreur: \n%s'%e
     exit(0)
