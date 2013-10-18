@@ -233,19 +233,12 @@ end;
 function GetRepoURL(Param: String):String;
 begin
   if WizardSilent then
-    result := GetIniString('Global', 'repo_url', '',ExpandConstant('{app}\wapt-get.ini'))
-  else
-    if rbCustomUrl.Checked then
-       result := teWaptServerUrl.Text + '/wapt'
-    else 
-       result :='http://wapt/wapt';
+    result :='http://wapt/wapt';
 end;
 
 function GetWaptServerURL(Param: String):String;
 begin
   if WizardSilent then
-    result := GetIniString('Global', 'wapt_server', '',ExpandConstant('{app}\wapt-get.ini'))
-  else
     result := 'http://wapt:8080';
 end;
 
