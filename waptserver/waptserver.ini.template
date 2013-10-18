@@ -4,6 +4,7 @@ master = true
 processes = 4
 wsgi=waptserver:app
 chdir=/opt/wapt/waptserver/
+max-requests=100
 
 [options]
 #mongodb_port=27017
