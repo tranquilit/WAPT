@@ -103,7 +103,7 @@ except Exception as e:
     print 'erreur: \n%s'%e
     exit(0)
 print 'inscription de la version dans le fichier de control'
-replaceAll(control_file,'0.0.7',wapt_version)
+replaceAll(control_file,'0.0.7',wapt_version + '-' + rev)
 
 print 'création du paquet Deb'
 os.chmod('./builddir/DEBIAN/postinst',stat.S_IRWXU| stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
