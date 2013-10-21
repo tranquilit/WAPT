@@ -208,6 +208,7 @@
         <Filename Value="uvisgroupchoice.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="visGroupChoice"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvisgroupchoice"/>
       </Unit16>

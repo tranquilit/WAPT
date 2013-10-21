@@ -722,45 +722,40 @@ end;
 
 procedure TVisWaptGUI.ActAddToGroupExecute(Sender: TObject);
 var
-  Result: ISuperObject;
+  Result,groups: ISuperObject;
   N: PVirtualNode;
   i : Word;
-  listGroup : TStringList;
-  groups: String = '';
 begin
   if GridHosts.Focused then
   begin
     if GridPackages.Data = nil then
       ActSearchPackage.Execute;
-    listGroup := GridPackages.SearchStrValue('section', 'group','package');
-    if listGroup.Count = 0 then
-    begin
-      ShowMessage('Il n''y a aucuns paquets groupes');
-      listGroup.Free;
-      Exit;
-    end;
 
     with TvisGroupChoice.Create(self) do
       try
-        CheckGroup1.Items:=  listGroup;
+        ActSearchGroupsExecute(self);
+
         if ShowModal = mrOk then
         begin
-            for i := 0 to CheckGroup1.Items.Count - 1 do
-             if CheckGroup1.Checked[i] then
-                groups :=  groups + CheckGroup1.Items[i] + ','
+          groups := TSuperObject.Create(stArray);
+           N := groupGrid.GetFirstChecked();
+           while N <> nil do
+           begin
+                groups.AsArray.Add( groupGrid.GetCellStrValue(N, 'package'));
+                N := groupGrid.GetNextChecked(N);
+           end;
         end;
       finally
         Free;
       end;
-    if groups = '' then
+    if groups = Nil then
        Exit;
     N := GridHosts.GetFirstSelected;
     while N <> nil do
     begin
-      EditHostDepends(GridHosts.GetCellStrValue(N, 'host.computer_fqdn'), groups);
+      EditHostDepends(GridHosts.GetCellStrValue(N, 'host.computer_fqdn'), Join(',',groups));
       N := GridHosts.GetNextSelected(N);
     end;
-    listGroup.Free;
   end;
 end;
 

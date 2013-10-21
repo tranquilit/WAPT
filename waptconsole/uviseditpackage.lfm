@@ -60,7 +60,7 @@ object VisEditPackage: TVisEditPackage
           object butSearchPackages1: TButton
             Left = 148
             Height = 25
-            Top = 15
+            Top = 16
             Width = 120
             Action = ActEditSearch
             TabOrder = 1
