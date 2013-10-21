@@ -1353,7 +1353,7 @@ class WaptDB(WaptBaseDB):
         else:
             return []
 
-    def packages_search(self,searchwords=[],exclude_host_repo=True):
+    def packages_search(self,searchwords=[],exclude_host_repo=True,section_filter=None):
         """Return a list of package entries matching the search words"""
         if not isinstance(searchwords,list) and not isinstance(searchwords,tuple):
             searchwords = [searchwords]
@@ -1365,6 +1365,9 @@ class WaptDB(WaptBaseDB):
             search = ["lower(description || package) like ?"] *  len(words)
         if exclude_host_repo:
             search.append('repo <> "wapt-host"')
+        if section_filter:
+            search.append('section in ( %s )' %  ",".join([ '"%s"' % x for x in  section_filter.split(',')]))
+
         result = self.query_package_entry("select * from wapt_package where %s" % " and ".join(search),words)
         result.sort()
         return result
@@ -2929,11 +2932,11 @@ class Wapt(object):
             result.append(host_package)
         return result
 
-    def search(self,searchwords=[],exclude_host_repo=True):
+    def search(self,searchwords=[],exclude_host_repo=True,section_filter=None):
         """Returns a list of packages which have the searchwords
            in their description
         """
-        available = self.waptdb.packages_search(searchwords=searchwords,exclude_host_repo=exclude_host_repo)
+        available = self.waptdb.packages_search(searchwords=searchwords,exclude_host_repo=exclude_host_repo,section_filter=section_filter)
         installed = self.waptdb.installed(include_errors=True)
         upgradable =  self.waptdb.upgradeable()
         for p in available:

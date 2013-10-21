@@ -112,6 +112,7 @@ parser.add_option("-f","--force",    dest="force",    default=False, action='sto
 parser.add_option("-p","--params", dest="params", default='{}', help="Setup params as a JSon Object (example : {'licence':'AZE-567-34','company':'TIS'}} (default: %default)")
 parser.add_option("-r","--repository", dest="wapt_url", default='', help="URL of main wapt repository (override url from ini file, example http://wapt/wapt) (default: %default)")
 parser.add_option("-i","--inc-release",    dest="increlease",    default=False, action='store_true', help="Increase release number when building package (default: %default)")
+parser.add_option("-s","--sections",    dest="section_filter",    default=None,  help="Add a filter section to search query (default: ALL)")
 parser.add_option("-j","--json",    dest="json_output",    default=False, action='store_true', help="Switch to json output for scripts purpose (default: %default)")
 parser.add_option("-e","--encoding",    dest="encoding",    default=None, help="Chararacter encoding for the output (default: no change)")
 parser.add_option("-x","--excludes",    dest="excludes",    default='.svn,.git*,*.pyc,*.dbg,src', help="Comma separated list of files or directories to exclude for build-package (default: %default)")
@@ -743,7 +744,7 @@ def main():
                 if options.update_packages:
                     print u"Update package list"
                     mywapt.update()
-                result = mywapt.search(args[1:])
+                result = mywapt.search(args[1:],section_filter=options.section_filter)
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
