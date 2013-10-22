@@ -734,7 +734,11 @@ begin
     with TvisGroupChoice.Create(self) do
       try
         ActSearchGroupsExecute(self);
-
+        if groupGrid.Data.AsArray.Length = 0 then
+        begin
+           ShowMessage('Il n''y a aucuns groupes.');
+           Exit;
+        end;
         if ShowModal = mrOk then
         begin
           groups := TSuperObject.Create(stArray);
@@ -748,7 +752,7 @@ begin
       finally
         Free;
       end;
-    if groups = Nil then
+    if (groups = Nil ) or (groups.AsArray.Length = 0) then
        Exit;
     N := GridHosts.GetFirstSelected;
     while N <> nil do

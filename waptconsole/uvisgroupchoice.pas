@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, ButtonPanel, ActnList, sogrid, superobject, dmwaptpython;
+  ExtCtrls, ButtonPanel, ActnList, sogrid, superobject, dmwaptpython, LCLType;
 
 type
 
@@ -21,6 +21,9 @@ type
     groupGrid: TSOGrid;
     Label2: TLabel;
     procedure ActSearchGroupsExecute(Sender: TObject);
+    procedure EdSearchChange(Sender: TObject);
+    procedure EdSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
+      );
   private
     { private declarations }
   public
@@ -39,12 +42,28 @@ implementation
 procedure TvisGroupChoice.ActSearchGroupsExecute(Sender: TObject);
 var
   expr, res: UTF8String;
-  groups: ISuperObject;
+  groups : ISuperObject;
+
 begin
   expr := format('mywapt.search("%s".split(),section_filter="group")', [EdSearch.Text]);
   groups := DMPython.RunJSON(expr);
   groupGrid.Data := groups;
   groupGrid.Header.AutoFitColumns(False);
+end;
+
+procedure TvisGroupChoice.EdSearchChange(Sender: TObject);
+begin
+
+end;
+
+procedure TvisGroupChoice.EdSearchKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+   if Key = VK_RETURN then
+  begin
+    EdSearch.SelectAll;
+    ActSearchGroups.Execute;
+  end;
 end;
 
 end.

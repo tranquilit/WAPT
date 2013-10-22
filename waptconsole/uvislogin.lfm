@@ -8,13 +8,14 @@ object VisLogin: TVisLogin
   ClientHeight = 129
   ClientWidth = 269
   Position = poScreenCenter
-  LCLVersion = '1.1'
+  LCLVersion = '1.3'
   object edPassword: TEdit
     Left = 142
     Height = 21
     Top = 66
     Width = 116
     EchoMode = emPassword
+    OnKeyDown = edPasswordKeyDown
     PasswordChar = '*'
     TabOrder = 0
   end

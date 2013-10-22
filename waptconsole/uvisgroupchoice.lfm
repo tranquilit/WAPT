@@ -25,6 +25,7 @@ object visGroupChoice: TvisGroupChoice
     CancelButton.Name = 'CancelButton'
     CancelButton.DefaultCaption = True
     TabOrder = 0
+    DefaultButton = pbHelp
     ShowButtons = [pbOK, pbCancel]
   end
   object groupGrid: TSOGrid
@@ -80,6 +81,7 @@ object visGroupChoice: TvisGroupChoice
     Hint = 'Taper des mots clés pour la recherche'
     Top = 16
     Width = 136
+    OnKeyDown = EdSearchKeyDown
     TabOrder = 2
   end
   object butSearchGroups: TButton
