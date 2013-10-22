@@ -47,6 +47,7 @@ Source: "..\waptconsole.exe"; DestDir: "{app}";
 Source: "..\waptdevutils.py"; DestDir: "{app}";
 Source: "..\dmidecode.exe"; DestDir: "{app}";
 Source: "..\wapt.ico"; DestDir: "{app}";
+Source: "innosetup\*"; DestDir: "{app}\waptsetup\innosetup";
 Source: "wapt.iss"; DestDir: "{app}\waptsetup";
 Source: "services.iss"; DestDir: "{app}\waptsetup";
 Source: "..\COPYING.txt"; DestDir: "{app}";
