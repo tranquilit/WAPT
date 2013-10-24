@@ -30,17 +30,16 @@ object visGroupChoice: TvisGroupChoice
   end
   object groupGrid: TSOGrid
     AnchorSideLeft.Control = Owner
-    AnchorSideLeft.Side = asrCenter
     AnchorSideTop.Control = EdSearch
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = ButtonPanel1
-    Left = -3
+    Left = 0
     Height = 119
     Top = 47
-    Width = 270
-    Anchors = [akTop, akBottom]
+    Width = 265
+    Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Top = 10
     Color = clWhite
     Constraints.MinHeight = 70
@@ -76,6 +75,7 @@ object visGroupChoice: TvisGroupChoice
     ParentColor = False
   end
   object EdSearch: TEdit
+    AnchorSideBottom.Control = groupGrid
     Left = 4
     Height = 21
     Hint = 'Taper des mots clés pour la recherche'
@@ -87,7 +87,7 @@ object visGroupChoice: TvisGroupChoice
   object butSearchGroups: TButton
     Left = 144
     Height = 25
-    Top = 13
+    Top = 14
     Width = 120
     Action = ActSearchGroups
     TabOrder = 3

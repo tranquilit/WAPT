@@ -96,7 +96,7 @@ type
     FIsUpdated: boolean;
     GridDependsUpdated: boolean;
     FDepends: string;
-    procedure AddSelectedPackages(Sender:TObject);
+    procedure AddSelectedPackages(Sender: TObject);
     function CheckUpdated: boolean;
     procedure SetisAdvancedMode(AValue: boolean);
     procedure SetIsUpdated(AValue: boolean);
@@ -113,6 +113,7 @@ type
     { public declarations }
     waptpath: string;
     IsHost: boolean;
+    isGroup: boolean;
     IsNewPackage: boolean;
     PackageEdited: ISuperObject;
     property isAdvancedMode: boolean read FisAdvancedMode write SetisAdvancedMode;
@@ -123,8 +124,10 @@ type
 
 function EditPackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreatePackage(packagename: string; advancedMode: boolean): ISuperObject;
+function CreateGroup(packagename: string; advancedMode: boolean): ISuperObject;
 function EditHost(hostname: string; advancedMode: boolean): ISuperObject;
-function EditHostDepends(hostname: string; newDependsStr : string): ISuperObject;
+function EditHostDepends(hostname: string; newDependsStr: string): ISuperObject;
+function EditGroup(group: string; advancedMode: boolean): ISuperObject;
 
 
 var
@@ -172,13 +175,18 @@ begin
     end;
 end;
 
-function EditHost(hostname: string; advancedMode: boolean): ISuperObject;
+function CreateGroup(packagename: string; advancedMode: boolean): ISuperObject;
 begin
   with TVisEditPackage.Create(nil) do
     try
-      IsHost := True;
+      Caption:='Editer le groupe';
+      EdPackage.EditLabel.Caption := 'Groupe';
+      pgEditPackage.Caption := 'Paquets devant être présents dans le groupe';
+
       isAdvancedMode := advancedMode;
-      PackageRequest := hostname;
+      IsNewPackage := True;
+      PackageRequest := packagename;
+      EdSection.ItemIndex := 4;
       if ShowModal = mrOk then
         Result := PackageEdited
       else
@@ -188,30 +196,68 @@ begin
     end;
 end;
 
-function EditHostDepends(hostname: string; newDependsStr : string): ISuperObject;
-var
-  oldDepends, newDepends : ISuperObject;
-  i : Word;
+function EditHost(hostname: string; advancedMode: boolean): ISuperObject;
 begin
   with TVisEditPackage.Create(nil) do
-  try
-     IsHost := True;
-     PackageRequest := hostname;
-
-     oldDepends := Split(Depends, ',');
-     newDepends := Split(newDependsStr, ',');
-     for i := 0 to newDepends.AsArray.Length - 1 do
-     begin
-     if not StrIn(newDepends.AsArray.S[i], olddepends) then
-           olddepends.AsArray.Add(newDepends.AsArray.S[i]);
-     end;
-     Depends := Join(',', olddepends);
-
-     Result := PackageEdited;
-     ActBuildUploadExecute(nil);
-  finally
+    try
+      IsHost := True;
+      isAdvancedMode := advancedMode;
+      PackageRequest := hostname;
+      Caption:='Editer la machine';
+      if ShowModal = mrOk then
+        Result := PackageEdited
+      else
+        Result := nil;
+    finally
       Free;
-  end;
+    end;
+end;
+
+function EditGroup(group: string; advancedMode: boolean): ISuperObject;
+begin
+  with TVisEditPackage.Create(nil) do
+    try
+      isGroup := True;
+      isAdvancedMode := advancedMode;
+      PackageRequest := group;
+
+      Caption:='Editer le groupe';
+      EdPackage.EditLabel.Caption := 'Groupe';
+      pgEditPackage.Caption := 'Paquets devant être présents dans le groupe';
+
+      if ShowModal = mrOk then
+        Result := PackageEdited
+      else
+        Result := nil;
+    finally
+      Free;
+    end;
+end;
+
+function EditHostDepends(hostname: string; newDependsStr: string): ISuperObject;
+var
+  oldDepends, newDepends: ISuperObject;
+  i: word;
+begin
+  with TVisEditPackage.Create(nil) do
+    try
+      IsHost := True;
+      PackageRequest := hostname;
+
+      oldDepends := Split(Depends, ',');
+      newDepends := Split(newDependsStr, ',');
+      for i := 0 to newDepends.AsArray.Length - 1 do
+      begin
+        if not StrIn(newDepends.AsArray.S[i], olddepends) then
+          olddepends.AsArray.Add(newDepends.AsArray.S[i]);
+      end;
+      Depends := Join(',', olddepends);
+
+      Result := PackageEdited;
+      ActBuildUploadExecute(nil);
+    finally
+      Free;
+    end;
 end;
 
 { TVisEditPackage }
@@ -320,7 +366,7 @@ begin
   AddSelectedPackages(Sender);
 end;
 
-procedure TVisEditPackage.AddSelectedPackages(Sender:TObject);
+procedure TVisEditPackage.AddSelectedPackages(Sender: TObject);
 var
   i: integer;
   sel: TNodeArray;
@@ -472,7 +518,7 @@ end;
 
 procedure TVisEditPackage.ActAddDependsUpdate(Sender: TObject);
 begin
-  ActAddDepends.Enabled:=GridPackages.SelectedCount>0;
+  ActAddDepends.Enabled := GridPackages.SelectedCount > 0;
 end;
 
 procedure TVisEditPackage.ActAddDependsExecute(Sender: TObject);
@@ -564,7 +610,8 @@ begin
       begin
         target_directory := MkTempDir();
         FisTempSourcesDir := True;
-        res := DMPython.RunJSON(format('mywapt.edit_host("%s",target_directory=r"%s",use_local_sources=False)',
+        res := DMPython.RunJSON(
+          format('mywapt.edit_host("%s",target_directory=r"%s",use_local_sources=False)',
           [FPackageRequest, target_directory]));
         EdPackage.EditLabel.Caption := 'Machine';
         Caption := 'Modifier la configuration de la machine';
@@ -578,8 +625,13 @@ begin
           try
             ProgressTitle('Téléchargement en cours');
             Application.ProcessMessages;
-
-            grid := uwaptconsole.VisWaptGUI.GridPackages;
+            if isGroup then
+            begin
+              Caption := 'Modifier la configuration du groupe';
+              grid := uwaptconsole.VisWaptGUI.GridGroups;
+            end
+            else
+              grid := uwaptconsole.VisWaptGUI.GridPackages;
             n := grid.GetFirstSelected();
             if n <> nil then
               try
@@ -590,8 +642,8 @@ begin
                 // la gestion du cache implique de lire la version di paquet WAPT dans le fichier control.
                 // (paquets de groupe et paquets host)
                 //if not FileExists(filePath) then
-                  Wget(GetWaptRepoURL + '/' + filename, filePath,
-                    ProgressForm, @updateprogress);
+                Wget(GetWaptRepoURL + '/' + filename, filePath,
+                  ProgressForm, @updateprogress);
               except
                 ShowMessage('Téléchargement annulé');
                 if FileExists(filePath) then

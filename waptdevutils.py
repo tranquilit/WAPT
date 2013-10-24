@@ -196,8 +196,8 @@ def duplicate_from_tis_repo(wapt,file_name,depends=[]):
     new_file_name ="%s-%s" % (prefix, old_file_name.split('-',1)[-1])
     wapt.config.set('global','default_sources_root',tempfile.mkdtemp())
 
-    result = wapt.duplicate_package(file_name,new_file_name,build=False)
-
+    result = wapt.duplicate_package(file_name,new_file_name,build=False,auto_inc_version=False)
+    print result
     source_dir = []
     new_depends = []
     if 'source_dir' in result:
@@ -208,7 +208,7 @@ def duplicate_from_tis_repo(wapt,file_name,depends=[]):
                 old_file_name = PackageEntry().load_control_from_wapt(depend).package
                 new_file_name ="%s-%s" % (prefix, old_file_name.split('-',1)[-1])
                 new_depends.append(new_file_name)
-                result = wapt.duplicate_package(depend,new_file_name,build=False)
+                result = wapt.duplicate_package(depend,new_file_name,build=False,auto_inc_version=False)
                 source_dir.append(result['source_dir'])
 
         if new_depends:

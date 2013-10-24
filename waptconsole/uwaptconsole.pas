@@ -38,6 +38,9 @@ type
     ActHostWaptUpgrade: TAction;
     ActHostUpgrade: TAction;
     ActAddToGroup: TAction;
+    ActEditGroup: TAction;
+    ActDeleteGroup: TAction;
+    ActSearchGroups: TAction;
     ActWAPTLocalConfig: TAction;
     ActUpdateWaptGetINI: TAction;
     actRefresh: TAction;
@@ -51,14 +54,15 @@ type
     ActRemove: TAction;
     ActSearchPackage: TAction;
     ActionList1: TActionList;
+    btAddGroup: TButton;
     butInitWapt: TButton;
     butRun: TButton;
     butSearchPackages: TButton;
-    butSearchPackages1: TButton;
+    butSearchExternalPackages: TButton;
+    butSearchGroups: TButton;
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
-    Button4: TButton;
     Changer: TButton;
     Button7: TButton;
     Button8: TButton;
@@ -72,12 +76,19 @@ type
     cbShowHostPackagesGroup: TCheckBox;
     CheckBoxMaj: TCheckBox;
     CheckBox_error: TCheckBox;
+    EdSearchGroups: TEdit;
+    GridGroups: TSOGrid;
     Label10: TLabel;
     Label11: TLabel;
     LabelComputersNumber: TLabel;
     MenuItem33: TMenuItem;
     MenuItem34: TMenuItem;
     MenuItem35: TMenuItem;
+    MenuItem36: TMenuItem;
+    MenuItem38: TMenuItem;
+    MenuItem40: TMenuItem;
+    Panel11: TPanel;
+    PopupMenuGroups: TPopupMenu;
     ProgressBar: TProgressBar;
     EdHostname: TEdit;
     EdDescription: TEdit;
@@ -93,9 +104,10 @@ type
     EdSearch: TEdit;
     GridHosts: TSOGrid;
     GridhostAttribs: TVirtualJSONInspector;
-    GridPackages1: TSOGrid;
+    GridExternalPackages: TSOGrid;
     ImageList1: TImageList;
     Label1: TLabel;
+    pgGroups: TTabSheet;
     urlExternalRepo: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -105,8 +117,6 @@ type
     Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
-    LabHostCnt: TLabel;
-    LabHostCnt1: TLabel;
     MainMenu1: TMainMenu;
     MemoLog: TMemo;
     MenuItem1: TMenuItem;
@@ -129,7 +139,6 @@ type
     MenuItem25: TMenuItem;
     MenuItem26: TMenuItem;
     MenuItem27: TMenuItem;
-    MenuItem28: TMenuItem;
     MenuItem29: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem30: TMenuItem;
@@ -147,8 +156,6 @@ type
     Panel10: TPanel;
     Panel3: TPanel;
     Panel4: TPanel;
-    Panel5: TPanel;
-    Panel6: TPanel;
     Panel7: TPanel;
     Panel8: TPanel;
     Panel9: TPanel;
@@ -178,10 +185,13 @@ type
     procedure ActChangePasswordExecute(Sender: TObject);
     procedure ActCreateCertificateExecute(Sender: TObject);
     procedure ActCreateWaptSetupExecute(Sender: TObject);
+    procedure ActDeleteGroupExecute(Sender: TObject);
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
+    procedure ActEditGroupExecute(Sender: TObject);
     procedure ActEditHostPackageExecute(Sender: TObject);
     procedure ActGotoHostExecute(Sender: TObject);
+    procedure ActSearchGroupsExecute(Sender: TObject);
     procedure ActHostUpgradeExecute(Sender: TObject);
     procedure ActHostUpgradeUpdate(Sender: TObject);
     procedure ActHostWaptUpgradeExecute(Sender: TObject);
@@ -208,7 +218,7 @@ type
     procedure ActUpdateWaptGetINIExecute(Sender: TObject);
     procedure ActUpgradeExecute(Sender: TObject);
     procedure ActWAPTLocalConfigExecute(Sender: TObject);
-    procedure butSearchPackages1Click(Sender: TObject);
+    procedure butSearchExternalPackagesClick(Sender: TObject);
     procedure cbSearchAllChange(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure ChangerClick(Sender: TObject);
@@ -222,6 +232,8 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
+      Column: TColumnIndex; Shift: TShiftState);
     procedure GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: boolean; var ImageIndex: integer;
@@ -249,6 +261,7 @@ type
     procedure HostPagesChange(Sender: TObject);
     procedure MenuItem27Click(Sender: TObject);
     procedure PageControl1Change(Sender: TObject);
+    procedure InstallPackage(Grid: TSOGrid);
 
   private
     { private declarations }
@@ -323,7 +336,7 @@ begin
   if Key = #13 then
   begin
     EdSearch1.SelectAll;
-    butSearchPackages1.Click;
+    butSearchExternalPackages.Click;
   end;
 end;
 
@@ -357,11 +370,10 @@ var
   attribs, packages, softwares: ISuperObject;
   node: PVirtualNode;
 begin
-  LabHostCnt.Caption := format('Nombre d''enregistrements : %d',
-    [GridHosts.SelectedCount]);
   Node := GridHosts.FocusedNode;
   if Node <> nil then
   begin
+
     currhost := GridHosts.GetCellStrValue(Node, 'uuid');
     if HostPages.ActivePage = pgPackages then
     begin
@@ -401,6 +413,7 @@ begin
   end
   else
   begin
+
     GridHostPackages.Clear;
     GridHostSoftwares.Clear;
     GridhostAttribs.Clear;
@@ -408,39 +421,44 @@ begin
 end;
 
 procedure TVisWaptGUI.ActInstallExecute(Sender: TObject);
+begin
+  if GridPackages.Focused then
+  begin
+    InstallPackage(GridPackages);
+    ActSearchPackage.Execute;
+  end;
+end;
+
+procedure TVisWaptGUI.InstallPackage(Grid: TSOGrid);
 var
-  expr, res: string;
   package: string;
   i: integer = 0;
   selects: integer;
   N: PVirtualNode;
 begin
-  if GridPackages.Focused then
-  begin
-    N := GridPackages.GetFirstSelected;
-    selects := GridPackages.SelectedCount;
+  N := Grid.GetFirstSelected;
+  selects := Grid.SelectedCount;
 
-    with  TVisLoading.Create(Self) do
-      try
-        Self.Enabled := False;
-        while (N <> nil) and not StopRequired do
-        begin
-          package := GridPackages.GetCellStrValue(N, 'package') +
-            ' (=' + GridPackages.GetCellStrValue(N, 'version') + ')';
-          ProgressTitle(
-            'Installation de ' + GridPackages.GetCellStrValue(N, 'package') +
-            ' en cours ...');
-          ProgressStep(trunc((i / selects) * 100), 100);
-          i := i + 1;
-          DMPython.RunJSON(format('mywapt.install("%s")', [package]), jsonlog);
-          N := GridPackages.GetNextSelected(N);
-        end;
-      finally
-        Self.Enabled := True;
-        Free;
+  with  TVisLoading.Create(Self) do
+    try
+      Self.Enabled := False;
+      while (N <> nil) and not StopRequired do
+      begin
+        package := Grid.GetCellStrValue(N, 'package') + ' (=' +
+          Grid.GetCellStrValue(N, 'version') + ')';
+        ProgressTitle(
+          'Installation de ' + Grid.GetCellStrValue(N, 'package') +
+          ' en cours ...');
+        ProgressStep(trunc((i / selects) * 100), 100);
+        i := i + 1;
+        DMPython.RunJSON(format('mywapt.install("%s")', [package]), jsonlog);
+        N := Grid.GetNextSelected(N);
       end;
-    ActSearchPackage.Execute;
-  end;
+    finally
+      Self.Enabled := True;
+      Free;
+    end;
+
 end;
 
 procedure TVisWaptGUI.ActInstallUpdate(Sender: TObject);
@@ -451,28 +469,51 @@ end;
 procedure TVisWaptGUI.ActPackageDuplicateExecute(Sender: TObject);
 var
   filename, filenameDepends, oldName, filePath, sourceDir, depends: string;
-  uploadResult, dependsList, dependsPath: ISuperObject;
+  uploadResult, dependsList, dependsPath, listPackages: ISuperObject;
   done: boolean = False;
+  multiplePackages      :boolean = False;
   i: integer;
   isEncrypt: boolean;
   N: PVirtualNode;
 
 begin
-  N := GridPackages1.GetFirstSelected;
+
+  multiplePackages := GridExternalPackages.SelectedCount > 1;
+  if multiplePackages then
+  begin
+    listPackages := TSuperObject.Create(stArray);
+       N := GridExternalPackages.GetFirstSelected;
+       while N <> nil do
+       begin
+            listPackages.AsArray.Add(GridExternalPackages.GetCellStrValue(N, 'package'));
+            N := GridExternalPackages.GetNextSelected(N);
+       end;
+
+         if MessageDlg('Confirmer la duplication', format('Etes vous sûr de vouloir dupliquer %s dans votre dépot ?', [Join(',', listPackages)]),
+         mtConfirmation, mbYesNoCancel, 0) <> mrYes then
+         Exit;
+       listPackages.Clear();
+  end;
+
+
+
+  N := GridExternalPackages.GetFirstSelected;
   while N <> nil do
   begin
-    oldName := GridPackages1.GetCellStrValue(N, 'package');
-    filename := GridPackages1.GetCellStrValue(N, 'filename');
-    depends := GridPackages1.GetCellStrValue(N, 'depends');
+    oldName := GridExternalPackages.GetCellStrValue(N, 'package');
+    filename := GridExternalPackages.GetCellStrValue(N, 'filename');
+    depends := GridExternalPackages.GetCellStrValue(N, 'depends');
     filePath := AppLocalDir + 'cache\' + filename;
     if not DirectoryExists(AppLocalDir + 'cache') then
       mkdir(AppLocalDir + 'cache');
 
-
-    if MessageDlg('Confirmer la duplication',
-      format('Etes vous sûr de vouloir dupliquer %s dans votre dépot ?', [oldName]),
+    if not multiplePackages then
+    begin
+    if MessageDlg('Confirmer la duplication', format('Etes vous sûr de vouloir dupliquer %s dans votre dépot ?', [oldName]),
       mtConfirmation, mbYesNoCancel, 0) <> mrYes then
       Exit;
+
+    end;
 
     with  Tvisloading.Create(Self) do
       try
@@ -552,12 +593,15 @@ begin
           Application.ProcessMessages;
 
           uploadResult := DMPython.RunJSON(
-            format('mywapt.build_upload(%s,r"%s",r"%s",r"%s","False","True")',
+            format('mywapt.build_upload(%s,r"%s",r"%s",r"%s",False,True)',
             [sourceDir, privateKeyPassword, waptServerUser, waptServerPassword]),
             jsonlog);
           if uploadResult.AsString <> '' then
           begin
-            ShowMessage(format('%s dupliqué avec succès.', [oldName]));
+            if not multiplePackages then
+               ShowMessage(format('%s dupliqué avec succès.', [oldName]))
+            else
+              listPackages.AsArray.Add(oldName);
             ActUpdate.Execute;
           end
           else
@@ -570,17 +614,20 @@ begin
         Self.Enabled := True;
         Free;
       end;
-    N := GridPackages1.GetNextSelected(N);
+    N := GridExternalPackages.GetNextSelected(N);
   end;
+   if multiplePackages then
+      ShowMessage(format('%s dupliqué avec succès.', [ Join(',', listPackages)])) ;
 
-  GridPackages1.ClearSelection;
+
+  GridExternalPackages.ClearSelection;
   PageControl1.ActivePage := pgPrivateRepo;
 
 end;
 
 procedure TVisWaptGUI.ActPackageGroupAddExecute(Sender: TObject);
 begin
-  CreatePackage('agroup', ActAdvancedMode.Checked);
+  CreateGroup('agroup', ActAdvancedMode.Checked);
   ActUpdate.Execute;
 
 end;
@@ -596,6 +643,7 @@ begin
   try
     ActSearchHost.Execute;
     ActSearchPackage.Execute;
+    ActSearchGroups.Execute;
 
   finally
     Screen.Cursor := crDefault;
@@ -619,7 +667,7 @@ begin
     N := GridPackages.GetFirstSelected;
     Selpackage := GridPackages.GetCellStrValue(N, 'package');
     if EditPackage(Selpackage, ActAdvancedMode.Checked) <> nil then
-      ActSearchPackage.Execute;
+      ActUpdate.Execute;
   end;
 end;
 
@@ -722,9 +770,9 @@ end;
 
 procedure TVisWaptGUI.ActAddToGroupExecute(Sender: TObject);
 var
-  Result,groups: ISuperObject;
+  Result, groups: ISuperObject;
   N: PVirtualNode;
-  i : Word;
+  i: word;
 begin
   if GridHosts.Focused then
   begin
@@ -736,28 +784,29 @@ begin
         ActSearchGroupsExecute(self);
         if groupGrid.Data.AsArray.Length = 0 then
         begin
-           ShowMessage('Il n''y a aucuns groupes.');
-           Exit;
+          ShowMessage('Il n''y a aucuns groupes.');
+          Exit;
         end;
         if ShowModal = mrOk then
         begin
           groups := TSuperObject.Create(stArray);
-           N := groupGrid.GetFirstChecked();
-           while N <> nil do
-           begin
-                groups.AsArray.Add( groupGrid.GetCellStrValue(N, 'package'));
-                N := groupGrid.GetNextChecked(N);
-           end;
+          N := groupGrid.GetFirstChecked();
+          while N <> nil do
+          begin
+            groups.AsArray.Add(groupGrid.GetCellStrValue(N, 'package'));
+            N := groupGrid.GetNextChecked(N);
+          end;
         end;
       finally
         Free;
       end;
-    if (groups = Nil ) or (groups.AsArray.Length = 0) then
-       Exit;
+    if (groups = nil) or (groups.AsArray.Length = 0) then
+      Exit;
     N := GridHosts.GetFirstSelected;
     while N <> nil do
     begin
-      EditHostDepends(GridHosts.GetCellStrValue(N, 'host.computer_fqdn'), Join(',',groups));
+      EditHostDepends(GridHosts.GetCellStrValue(N, 'host.computer_fqdn'),
+        Join(',', groups));
       N := GridHosts.GetNextSelected(N);
     end;
   end;
@@ -834,14 +883,16 @@ begin
                   Application.ProcessMessages;
                   try
                     waptsetupPath :=
-                      DMPython.RunJSON(format('waptdevutils.create_wapt_setup(mywapt,%s)',
-                      [params]), jsonlog).AsString;
+                      DMPython.RunJSON(
+                      format('waptdevutils.create_wapt_setup(mywapt,%s)', [params]),
+                      jsonlog).AsString;
                     if FileExists(waptsetupPath) then
                     begin
                       ProgressStep(1, 2);
-                      ProgressTitle('Envoie en cours');
-                      Result := DMPython.RunJSON(
-                        format('waptdevutils.upload_wapt_setup(mywapt,r"%s","%s","%s")',
+                      ProgressTitle('Dépôt sur le serveur WAPT en cours');
+                      Result :=
+                        DMPython.RunJSON(format(
+                        'waptdevutils.upload_wapt_setup(mywapt,r"%s","%s","%s")',
                         [waptsetupPath, waptServerUser, waptServerPassword])).AsString;
                       if Result = 'ok' then
                         ShowMessage('Waptsetup envoyé avec succès')
@@ -879,17 +930,59 @@ begin
     end;
 end;
 
+procedure TVisWaptGUI.ActDeleteGroupExecute(Sender: TObject);
+var
+  message: string = 'Etes vous sûr de vouloir supprimer ce groupe du serveur ?';
+  res: ISuperObject;
+  group: string;
+  i: integer;
+  N: PVirtualNode;
+begin
+  if GridGroups.SelectedCount > 1 then
+    message := 'Etes vous sûr de vouloir supprimer ces groupes du serveur ?';
+
+  if MessageDlg('Confirmer la suppression', message, mtConfirmation,
+    mbYesNoCancel, 0) = mrYes then
+
+    with TVisLoading.Create(Self) do
+      try
+        ProgressTitle('Suppression des packages...');
+        N := GridGroups.GetFirstSelected;
+        i := 0;
+        while (N <> nil) and not StopRequired do
+        begin
+          Inc(i);
+          group := GridPackages.GetCellStrValue(N, 'filename');
+          ProgressTitle('Suppression de ' + group);
+          res := WAPTServerJsonGet('/delete_package/' + group, []);
+          if not ObjectIsNull(res['error']) then
+            raise Exception.Create(res.S['error']);
+          N := GridGroups.GetNextSelected(N);
+          ProgressStep(i, GridGroups.SelectedCount);
+        end;
+        ProgressTitle('Mise à jour de la liste des groupes');
+        ActUpdate.Execute;
+        ProgressTitle('Affichage');
+        ActSearchGroups.Execute;
+      finally
+        Free;
+      end;
+end;
+
 procedure TVisWaptGUI.ActDeletePackageExecute(Sender: TObject);
 var
-  expr: string;
+  message: string = 'Etes vous sûr de vouloir supprimer ce package du serveur ?';
   res: ISuperObject;
   package: string;
   i: integer;
   N: PVirtualNode;
 begin
-  if MessageDlg('Confirmer la suppression',
-    'Etes vous sûr de vouloir supprimer ce(s) package(s) du serveur ?',
-    mtConfirmation, mbYesNoCancel, 0) = mrYes then
+  if GridPackages.SelectedCount > 1 then
+    message := 'Etes vous sûr de vouloir supprimer ces packages du serveur ?';
+
+  if MessageDlg('Confirmer la suppression', message, mtConfirmation,
+    mbYesNoCancel, 0) = mrYes then
+
     with TVisLoading.Create(Self) do
       try
         ProgressTitle('Suppression des packages...');
@@ -920,6 +1013,22 @@ begin
   ActDeletePackage.Enabled := GridPackages.SelectedCount > 0;
 end;
 
+procedure TVisWaptGUI.ActEditGroupExecute(Sender: TObject);
+var
+  expr, res, depends, dep: string;
+  Selpackage: string;
+  Result: ISuperObject;
+  N: PVirtualNode;
+begin
+  if GridGroups.Focused then
+  begin
+    N := GridGroups.GetFirstSelected;
+    Selpackage := GridGroups.GetCellStrValue(N, 'package');
+    if EditGroup(Selpackage, ActAdvancedMode.Checked) <> nil then
+      ActUpdate.Execute;
+  end;
+end;
+
 procedure TVisWaptGUI.ActEditHostPackageExecute(Sender: TObject);
 var
   hostname: string;
@@ -935,6 +1044,18 @@ begin
   EdSearchHost.SetFocus;
   EdSearchHost.SelectAll;
 
+end;
+
+procedure TVisWaptGUI.ActSearchGroupsExecute(Sender: TObject);
+var
+  expr, res: UTF8String;
+  groups: ISuperObject;
+begin
+  expr := format('mywapt.search("%s".split(),section_filter="group")',
+    [EdSearchGroups.Text]);
+  groups := DMPython.RunJSON(expr);
+  GridGroups.Data := groups;
+  GridGroups.Header.AutoFitColumns(False);
 end;
 
 procedure TVisWaptGUI.ActHostUpgradeExecute(Sender: TObject);
@@ -1003,7 +1124,6 @@ procedure TVisWaptGUI.ActHostWaptUpgradeUpdate(Sender: TObject);
 begin
   ActHostWaptUpgrade.Enabled := GridHosts.SelectedCount > 0;
 end;
-
 
 procedure TVisWaptGUI.ActEvaluateExecute(Sender: TObject);
 var
@@ -1145,7 +1265,7 @@ var
 begin
   //packages := VarPythonEval(Format('"%s".split()',[EdSearch.Text]));
   //packages := MainModule.mywapt.search(VarPythonEval(Format('"%s".split()',[EdSearch.Text])));
-  expr := format('mywapt.search("%s".split())', [EdSearch.Text]);
+  expr := format('mywapt.search("%s".split(),section_filter="base")', [EdSearch.Text]);
   packages := DMPython.RunJSON(expr);
 
   GridPackages.Data := packages;
@@ -1158,16 +1278,9 @@ var
 begin
   //test avec un variant ;)
   res := MainModule.mywapt.update(Register := False);
-  { exemple d'itération
-  i := iter(res.keys(NOARGS));
-  while true do
-  try
-    l := i.next(NOARGS);
-    ShowMessage(l);
-  except
-    on EPyStopIteration do break;
-  end;}
-  ActSearchPackageExecute(Sender);
+
+  ActSearchPackage.Execute;
+  ActSearchGroups.Execute;
 end;
 
 procedure TVisWaptGUI.ActUpdateWaptGetINIExecute(Sender: TObject);
@@ -1188,7 +1301,8 @@ begin
     ActUpdateWaptGetINI.Execute;
     ActUpdate.Execute;
     GridPackages.Clear;
-    GridPackages1.Clear;
+    GridGroups.Clear;
+    GridExternalPackages.Clear;
     PageControl1Change(PageControl1);
 
   end;
@@ -1246,8 +1360,7 @@ begin
   end;
 end;
 
-
-procedure TVisWaptGUI.butSearchPackages1Click(Sender: TObject);
+procedure TVisWaptGUI.butSearchExternalPackagesClick(Sender: TObject);
 var
   expr, res: UTF8String;
   packages: ISuperObject;
@@ -1255,8 +1368,8 @@ begin
   expr := format('waptdevutils.updateTisRepo(r"%s","%s")',
     [AppIniFilename, EdSearch1.Text]);
   packages := DMPython.RunJSON(expr);
-  GridPackages1.Data := packages;
-  GridPackages1.Header.AutoFitColumns(False);
+  GridExternalPackages.Data := packages;
+  GridExternalPackages.Header.AutoFitColumns(False);
 end;
 
 procedure TVisWaptGUI.cbSearchAllChange(Sender: TObject);
@@ -1360,8 +1473,6 @@ begin
   end;
 end;
 
-
-
 procedure TVisWaptGUI.FormShow(Sender: TObject);
 begin
   MemoLog.Clear;
@@ -1375,6 +1486,12 @@ begin
   {if FileExists(AppLocalDir+'gridhosts.cols') then
     GridHosts.Header.RestoreColumns; StringToFile(GridHosts.Header.ToString, ); GridHosts.Header.LoadFromStreamStre () ;}
 
+end;
+
+procedure TVisWaptGUI.GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
+  Column: TColumnIndex; Shift: TShiftState);
+begin
+  ActEditGroup.Execute;
 end;
 
 procedure TVisWaptGUI.GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
@@ -1403,14 +1520,6 @@ begin
   ActEditHostPackage.Execute;
 
 end;
-
-{
-var
-  hi : THitInfo;
-GridHosts.GetHitTestInfoAt(Mouse.CursorPos.x,Mouse.CursorPos.y,True,hi);
-if hi.HitColumn<0 then
-  ActEditHostPackage.Execute;
-}
 
 procedure TVisWaptGUI.GridHostsFocusChanged(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex);
@@ -1564,8 +1673,14 @@ begin
   else if PageControl1.ActivePage = pgExternalRepo then
   begin
     CopyMenu(PopupMenuPackagesTIS, MenuItem24);
-    if GridPackages1.Data = nil then
-      butSearchPackages1.Click;
+    if GridExternalPackages.Data = nil then
+      butSearchExternalPackages.Click;
+  end
+  else if PageControl1.ActivePage = pgGroups then
+  begin
+    CopyMenu(PopupMenuGroups, MenuItem24);
+    if GridGroups.Data = nil then
+      ActSearchGroups.Execute;
   end;
 end;
 
