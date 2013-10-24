@@ -404,7 +404,7 @@ def waptupgrade_host(ip):
         return "Impossible de joindre le web service: %s" % e
 
 @app.route('/upgrade_host/<string:ip>')
-def waptupgrade_host(ip):
+def upgrade_host(ip):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(1)
