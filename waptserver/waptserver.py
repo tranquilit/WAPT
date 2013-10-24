@@ -394,7 +394,7 @@ def waptupgrade_host(ip):
         s.close
         if ip and waptservice_port:
             logger.info( "Upgrading %s..." % ip)
-            r = requests.get("http://%s:%d/waptupgrade" % ( ip, waptservice_port))
+            r = requests.get("http://%s:%d/waptupgrade" % ( ip, waptservice_port),proxies=None)
             return r.text
 
         else:
@@ -412,7 +412,7 @@ def upgrade_host(ip):
         s.close
         if ip and waptservice_port:
             logger.info("Upgrading %s..." % ip)
-            r = requests.get("http://%s:%d/upgrade" % ( ip, waptservice_port))
+            r = requests.get("http://%s:%d/upgrade" % ( ip, waptservice_port),proxies=None)
             return r.text
 
         else:
