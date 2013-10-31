@@ -643,7 +643,7 @@ begin
                 // (paquets de groupe et paquets host)
                 //if not FileExists(filePath) then
                 Wget(GetWaptRepoURL + '/' + filename, filePath,
-                  ProgressForm, @updateprogress);
+                  ProgressForm, @updateprogress, WaptUseLocalConnectionProxy);
               except
                 ShowMessage('Téléchargement annulé');
                 if FileExists(filePath) then

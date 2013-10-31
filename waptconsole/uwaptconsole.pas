@@ -380,7 +380,7 @@ begin
       packages := GridHosts.GetData(Node)['packages'];
       if (packages = nil) or (packages.AsArray = nil) then
       begin
-        packages := WAPTServerJsonGet('client_package_list/%s', [currhost]);
+        packages := WAPTServerJsonGet('client_package_list/%s', [currhost], WaptUseLocalConnectionProxy);
         GridHosts.GetData(Node)['packages'] := packages;
       end;
       EdHostname.Text := GridHosts.GetCellStrValue(Node, 'host.computer_name');
@@ -399,7 +399,7 @@ begin
       softwares := GridHosts.GetData(Node)['softwares'];
       if (softwares = nil) or (softwares.AsArray = nil) then
       begin
-        softwares := WAPTServerJsonGet('client_software_list/%s', [currhost]);
+        softwares := WAPTServerJsonGet('client_software_list/%s', [currhost],WaptUseLocalConnectionProxy);
         GridHostSoftwares.GetData(Node)['softwares'] := softwares;
       end;
       GridHostSoftwares.Data := softwares;
@@ -523,7 +523,7 @@ begin
         try
           if not FileExists(filePath) then
             Wget(WaptExternalRepo + '/' + filename, filePath, ProgressForm,
-              @updateprogress);
+            @updateprogress, True);
         except
           ShowMessage('Téléchargement annulé');
           exit;
@@ -545,7 +545,7 @@ begin
             try
               if not FileExists(dependsPath.AsArray.S[i]) then
                 Wget(WaptExternalRepo + '/' + dependsList.AsArray.S[i],
-                  dependsPath.AsArray.S[i], ProgressForm, @updateprogress);
+                  dependsPath.AsArray.S[i], ProgressForm, @updateprogress, True);
             except
               ShowMessage('Téléchargement annulé');
               exit;
@@ -862,7 +862,6 @@ begin
             'waptserver\repository\wapt') then
             fnWaptDirectory.Directory :=
               IncludeTrailingPathDelimiter(waptpath) + 'waptserver\repository\wapt';
-
           if ShowModal = mrOk then
           begin
             try
@@ -875,7 +874,7 @@ begin
               params := params + format('default_wapt_server=r"%s",',
                 [edWaptServerUrl.Text]);
               params := params + format('destination=r"%s",',
-                [fnWaptDirectory.Directory]);
+                [ExcludeTrailingBackslash(fnWaptDirectory.Directory)]);
               params := params + format('company=r"%s",', [edOrgName.Text]);
               with  Tvisloading.Create(Self) do
                 try
@@ -954,7 +953,7 @@ begin
           Inc(i);
           group := GridPackages.GetCellStrValue(N, 'filename');
           ProgressTitle('Suppression de ' + group);
-          res := WAPTServerJsonGet('/delete_package/' + group, []);
+          res := WAPTServerJsonGet('/delete_package/' + group, [],WaptUseLocalConnectionProxy);
           if not ObjectIsNull(res['error']) then
             raise Exception.Create(res.S['error']);
           N := GridGroups.GetNextSelected(N);
@@ -993,7 +992,7 @@ begin
           Inc(i);
           package := GridPackages.GetCellStrValue(N, 'filename');
           ProgressTitle('Suppression de ' + package);
-          res := WAPTServerJsonGet('/delete_package/' + package, []);
+          res := WAPTServerJsonGet('/delete_package/' + package, [],WaptUseLocalConnectionProxy);
           if not ObjectIsNull(res['error']) then
             raise Exception.Create(res.S['error']);
           N := GridPackages.GetNextSelected(N);
@@ -1080,7 +1079,7 @@ begin
         if ip <> '' then
         begin
           ProgressTitle('Pour ' + hostname + ' (ip:' + ip + ')');
-          res := WAPTServerJsonGet('/upgrade_host/' + ip, []);
+          res := WAPTServerJsonGet('/upgrade_host/' + ip, [],WaptUseLocalConnectionProxy);
           ProgressTitle(hostname + ' ok');
         end;
         N := GridHosts.GetNextSelected(N);
@@ -1109,7 +1108,7 @@ begin
     ip := GridHosts.GetCellStrValue(N, 'host.connected_ips');
     if ip <> '' then
     begin
-      res := WAPTServerJsonGet('/waptupgrade_host/' + ip, []);
+      res := WAPTServerJsonGet('/waptupgrade_host/' + ip, [],WaptUseLocalConnectionProxy);
       if res <> nil then
         ShowMessage(res.AsString)
       else
@@ -1165,7 +1164,7 @@ begin
     while N <> nil do
     begin
       host := GridHosts.GetCellStrValue(N, 'uuid');
-      WAPTServerJsonGet('/delete_host/' + host, []).AsJson;
+      WAPTServerJsonGet('/delete_host/' + host, [],WaptUseLocalConnectionProxy).AsJson;
       N := GridHosts.GetNextSelected(N);
     end;
     ActSearchHost.Execute;
@@ -1251,7 +1250,7 @@ begin
 
   req := url + '?' + Join('&', urlParams);
 
-  hosts := WAPTServerJsonGet(req, []);
+  hosts := WAPTServerJsonGet(req, [], WaptUseLocalConnectionProxy);
   GridHosts.Data := hosts;
   LabelComputersNumber.Caption := IntToStr(hosts.AsArray.Length);
   GridHosts.Header.AutoFitColumns(False);
@@ -1332,6 +1331,7 @@ begin
         edprivate_key.Text := inifile.ReadString('global', 'private_key', '');
         edtemplates_repo_url.Text :=
           inifile.readString('global', 'templates_repo_url', '');
+        cbProxyLocalConnection.Checked:= ( inifile.readString('global', 'use_local_connection_proxy', '') = 'True' );
         //eddefault_sources_root.Directory := inifile.ReadString('global','default_sources_root','');
         //eddefault_sources_url.text = inifile.ReadString('global','default_sources_url','https://srvdev/sources/%(packagename)s-wapt/trunk');
 
@@ -1348,6 +1348,8 @@ begin
           inifile.WriteString('global', 'templates_repo_url', edtemplates_repo_url.Text);
           inifile.WriteString('global', 'default_sources_root',
             eddefault_sources_root.Text);
+          inifile.WriteString('global', 'use_local_connection_proxy',
+                      BoolToStr(cbProxyLocalConnection.Checked, True));
           //inifile.WriteString('global','default_sources_url',eddefault_sources_url.text);
           Result := True;
         end;

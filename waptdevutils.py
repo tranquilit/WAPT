@@ -170,6 +170,7 @@ def updateTisRepo(wapt,search_string):
     wapt = common.Wapt(config_filename=wapt)
     repo = wapt.config.get('global','templates_repo_url')
     wapt.repositories[0].repo_url = repo if repo else 'http://wapt.tranquil.it/wapt'
+    wapt.proxies =  {'http':wapt.config.get('global','http_proxy')}
     wapt.dbpath = r':memory:'
     wapt.update(register=False)
     return wapt.search(search_string)
@@ -180,6 +181,10 @@ def searchLastPackageTisRepo(wapt,search_strings):
     wapt = common.Wapt(config_filename=wapt)
     repo = wapt.config.get('global','templates_repo_url')
     wapt.repositories[0].repo_url = repo if repo else 'http://wapt.tranquil.it/wapt'
+    wapt.proxies =  {'http':wapt.config.get('global','http_proxy')}
+    print wapt.config.has_option('global', 'use_local_connection_proxy')
+    if wapt.config.get('global', 'use_local_connection_proxy'):
+        print "test"
     wapt.dbpath = r':memory:'
     wapt.update(register=False)
     for search_string in search_strings.split(','):
@@ -190,6 +195,7 @@ def duplicate_from_tis_repo(wapt,file_name,depends=[]):
     import tempfile
     wapt = common.Wapt(config_filename=wapt)
     prefix = wapt.config.get('global','default_package_prefix')
+    wapt.proxies =  {'http':wapt.config.get('global','http_proxy')}
     if not prefix:
         prefix = "tis"
     old_file_name = PackageEntry().load_control_from_wapt(file_name).package
@@ -228,4 +234,4 @@ def login_to_waptserver(url, login, passwd,newPass=""):
         return unicode(str(e.message), 'ISO-8859-1')
 
 if __name__ == '__main__':
-    pass
+    searchLastPackageTisRepo(r'C:\Users\Administrateur\AppData\Local\waptconsole\waptconsole.ini','')

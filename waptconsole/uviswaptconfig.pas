@@ -14,6 +14,7 @@ type
 
   TVisWAPTConfig = class(TForm)
     ButtonPanel1: TButtonPanel;
+    cbProxyLocalConnection: TCheckBox;
     eddefault_sources_root: TDirectoryEdit;
     edwapt_server: TLabeledEdit;
     edtemplates_repo_url: TLabeledEdit;
@@ -24,6 +25,7 @@ type
     eddefault_package_prefix: TLabeledEdit;
     edrepo_url: TLabeledEdit;
     Label3: TLabel;
+    Label4: TLabel;
   private
     { private declarations }
   public

@@ -1806,7 +1806,13 @@ class Wapt(object):
             self.after_upload = self.config.get('global','after_upload')
 
         if self.config.has_option('global','http_proxy'):
-            self.proxies = {'http':self.config.get('global','http_proxy')}
+            if self.config.has_option('global', 'use_local_connection_proxy'):
+                if self.config.get('global', 'use_local_connection_proxy') == 'True':
+                    self.proxies = {'http':self.config.get('global','http_proxy')}
+                else:
+                    self.proxies = None
+            else:
+                self.proxies = {'http':self.config.get('global','http_proxy')}
 
         if self.config.has_option('global','wapt_server'):
             self.wapt_server = self.config.get('global','wapt_server')

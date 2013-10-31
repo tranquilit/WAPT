@@ -32,9 +32,9 @@ uses
 
 type TProgressCallback=function(Receiver:TObject;current,total:Integer):Boolean of object;
 
-Function  Wget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil): boolean;
+Function  Wget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy:Boolean= False): boolean;
 Function  Wget_try(const fileURL: Utf8String): boolean;
-function  httpGetString(url: string): Utf8String;
+function httpGetString(   url: string; enableProxy:Boolean= False): Utf8String;
 
 procedure httpPostData(const UserAgent: string; const Server: string; const Resource: string; const Data: AnsiString);
 function SetToIgnoreCerticateErrors(oRequestHandle:HINTERNET; var aErrorMsg: string): Boolean;
@@ -141,7 +141,7 @@ begin
   Result := UserInGroup(DOMAIN_ALIAS_RID_ADMINS);
 end;
 
-function wget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil; progressCallback:TProgressCallback=Nil):boolean;
+Function  Wget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy:Boolean= False): boolean;
  const
    BufferSize = 1024*512;
  var
@@ -161,7 +161,11 @@ function wget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil; p
 begin
   result := false;
   sAppName := ExtractFileName(ParamStr(0)) ;
-  hSession := InternetOpenW(PWideChar(UTF8Decode(sAppName)), INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0) ;
+
+    if enableProxy then
+      hSession := InternetOpenW(PWideChar(UTF8Decode(sAppName)), INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0)
+  else
+      hSession := InternetOpenW(PWideChar(UTF8Decode(sAppName)), INTERNET_OPEN_TYPE_DIRECT, nil, nil, 0) ;
   try
     hURL := InternetOpenUrlW(hSession, PWideChar(UTF8Decode(fileURL)), nil, 0, INTERNET_FLAG_RELOAD+INTERNET_FLAG_PRAGMA_NOCACHE+INTERNET_FLAG_KEEP_CONNECTION, 0) ;
     if assigned(hURL) then
@@ -250,8 +254,7 @@ begin
   end
 end;
 
-function httpGetString(
-    url: string): Utf8String;
+function httpGetString(   url: string; enableProxy:Boolean= False): Utf8String;
 var
   GlobalhInet,hFile,hConnect: HINTERNET;
   localFile: File;
@@ -269,8 +272,10 @@ begin
   GlobalhInet:=Nil;
   hConnect := Nil;
   hFile:=Nil;
-  GlobalhInet := InternetOpen('wapt',
-      INTERNET_OPEN_TYPE_PRECONFIG,nil,nil,0);
+  if enableProxy then
+     GlobalhInet := InternetOpen('wapt',INTERNET_OPEN_TYPE_PRECONFIG,nil,nil,0)
+  else
+     GlobalhInet := InternetOpen('wapt',INTERNET_OPEN_TYPE_DIRECT,nil,nil,0);
   try
     uri := TIdURI.Create(url);
     BEGIN

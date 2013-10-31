@@ -45,12 +45,26 @@ procedure IniWriteBool(const FileName, Section, Line: string; Value: Boolean);  
 procedure IniWriteInteger(const FileName, Section, Line: string; Value: Integer);  // John C Molyneux
 procedure IniWriteString(const FileName, Section, Line, Value: string);            // John C Molyneux
 
+procedure IniDeleteKey(const FileName, Section, Line: string);
+
 // Initialization (ini) Files helper routines
 procedure IniReadStrings(IniFile: TCustomIniFile; const Section: string; Strings: TStrings);
 procedure IniWriteStrings(IniFile: TCustomIniFile; const Section: string; Strings: TStrings);
 
 
 implementation
+
+procedure IniDeleteKey(const FileName, Section, Line: string);
+var
+  Ini: TIniFile;
+begin
+  Ini := TIniFile.Create(FileName);
+  try
+    Ini.DeleteKey(Section, Line);
+  finally
+    Ini.Free;
+  end;
+end;
 
 // Initialization Files
 function IniReadBool(const FileName, Section, Line: string): Boolean;

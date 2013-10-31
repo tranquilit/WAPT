@@ -1,11 +1,11 @@
 object VisWAPTConfig: TVisWAPTConfig
   Left = 419
-  Height = 259
+  Height = 270
   Top = 371
   Width = 507
   BorderStyle = bsDialog
   Caption = 'Configuration locale WAPT'
-  ClientHeight = 259
+  ClientHeight = 270
   ClientWidth = 507
   Position = poMainFormCenter
   ShowHint = True
@@ -13,7 +13,7 @@ object VisWAPTConfig: TVisWAPTConfig
   object ButtonPanel1: TButtonPanel
     Left = 6
     Height = 34
-    Top = 219
+    Top = 230
     Width = 495
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True
@@ -31,7 +31,7 @@ object VisWAPTConfig: TVisWAPTConfig
     Left = 279
     Height = 21
     Hint = 'exemple : tis'#13#10'Préfixe à utiliser dans le nom des paquets lors de la duplication de paquets ou lors de la création initiale'
-    Top = 164
+    Top = 173
     Width = 80
     EditLabel.AnchorSideTop.Control = eddefault_package_prefix
     EditLabel.AnchorSideTop.Side = asrCenter
@@ -40,7 +40,7 @@ object VisWAPTConfig: TVisWAPTConfig
     EditLabel.AnchorSideBottom.Side = asrBottom
     EditLabel.Left = 75
     EditLabel.Height = 13
-    EditLabel.Top = 168
+    EditLabel.Top = 177
     EditLabel.Width = 201
     EditLabel.Caption = 'Préfixe pour la création de paquets WAPT'
     EditLabel.ParentColor = False
@@ -51,7 +51,7 @@ object VisWAPTConfig: TVisWAPTConfig
     Left = 279
     Height = 21
     Hint = 'Exemple : c:\waptdev'#13#10'Emplacement local pour stocker les projets de développement de paquets'
-    Top = 140
+    Top = 149
     Width = 196
     ShowHidden = False
     ButtonWidth = 23
@@ -62,7 +62,7 @@ object VisWAPTConfig: TVisWAPTConfig
   object Label1: TLabel
     Left = 15
     Height = 13
-    Top = 144
+    Top = 153
     Width = 262
     Caption = 'Répertoire de base pour le développement de paquets'
     ParentColor = False
@@ -91,7 +91,7 @@ object VisWAPTConfig: TVisWAPTConfig
     Left = 279
     Height = 21
     Hint = 'exemple c:\private\tranquilit.pem'#13#10'Chemin vers la clé privée pour signer les nouveaux paquets.'#13#10'Uniquement utile sur les machines de développement'
-    Top = 188
+    Top = 197
     Width = 196
     Filter = 'Fichiers PEM|*.pem|Tous les fichiers|*.*'
     FilterIndex = 0
@@ -104,7 +104,7 @@ object VisWAPTConfig: TVisWAPTConfig
   object Label2: TLabel
     Left = 51
     Height = 13
-    Top = 192
+    Top = 201
     Width = 225
     Caption = 'Chemin de la clé privée pour signer les paquets'
     ParentColor = False
@@ -113,7 +113,7 @@ object VisWAPTConfig: TVisWAPTConfig
     Left = 279
     Height = 21
     Hint = 'exemple : http://wapt.tranquil.it/wapt'#13#10'Sert dans la console WAPT pour la duplication de packages'
-    Top = 112
+    Top = 121
     Width = 220
     EditLabel.AnchorSideTop.Control = edtemplates_repo_url
     EditLabel.AnchorSideTop.Side = asrCenter
@@ -122,7 +122,7 @@ object VisWAPTConfig: TVisWAPTConfig
     EditLabel.AnchorSideBottom.Side = asrBottom
     EditLabel.Left = 89
     EditLabel.Height = 13
-    EditLabel.Top = 116
+    EditLabel.Top = 125
     EditLabel.Width = 187
     EditLabel.Caption = 'URL du dépôt des modèles de paquets '
     EditLabel.ParentColor = False
@@ -173,9 +173,29 @@ object VisWAPTConfig: TVisWAPTConfig
   object Label3: TLabel
     Left = 6
     Height = 13
-    Top = 92
+    Top = 101
     Width = 174
     Caption = 'Pour le développement de paquets :'
+    ParentColor = False
+  end
+  object cbProxyLocalConnection: TCheckBox
+    Left = 280
+    Height = 17
+    Hint = 'Active le proxy lors des communications avec le serveur wapt'
+    Top = 75
+    Width = 20
+    TabOrder = 8
+  end
+  object Label4: TLabel
+    AnchorSideRight.Control = cbProxyLocalConnection
+    Left = 32
+    Height = 13
+    Top = 76
+    Width = 245
+    Alignment = taRightJustify
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Right = 3
+    Caption = 'Activer le proxy pour les connexions locales'
     ParentColor = False
   end
 end

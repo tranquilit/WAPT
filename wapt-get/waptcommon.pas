@@ -49,6 +49,7 @@ interface
   function WaptDBPath: Utf8String;
   function WaptExternalRepo(inifilename:String=''): Utf8String;
   function GetWaptRepoURL: Utf8String;
+  function WaptUseLocalConnectionProxy(inifilename:String=''): Boolean;
 
   //function http_post(url: string;Params:String): String;
 
@@ -58,7 +59,7 @@ interface
   function GetDNSServer:AnsiString;
   function GetDNSDomain:AnsiString;
 
-  function WAPTServerJsonGet(action: String;args:Array of const): ISuperObject;
+  function WAPTServerJsonGet(action: String;args:Array of const; enableProxy:Boolean= False): ISuperObject;
   function WAPTLocalJsonGet(action:String):ISuperObject;
 
 Type
@@ -160,7 +161,7 @@ begin
   end;
 end;
 
-function WAPTServerJsonGet(action: String;args:Array of const): ISuperObject;
+function WAPTServerJsonGet(action: String;args:Array of const;  enableProxy:Boolean= False): ISuperObject;
 var
   strresult : String;
 begin
@@ -170,7 +171,7 @@ begin
     action := '/'+action;
   if length(args)>0 then
     action := format(action,args);
-  strresult:=httpGetString(GetWaptServerURL+action);
+  strresult:=httpGetString(GetWaptServerURL+action, enableProxy);
   Result := SO(strresult);
 end;
 
@@ -398,6 +399,13 @@ begin
   Result := IniReadString(inifilename,'Global','templates_repo_url');
   if Result = '' then
       Result:='http://wapt.tranquil.it/wapt/';
+end;
+
+function WaptUseLocalConnectionProxy(inifilename:String=''): Boolean;
+begin
+  if inifilename='' then
+     inifilename:=AppIniFilename;
+  Result := ( IniReadString(inifilename,'Global','use_local_connection_proxy') = 'True' );
 end;
 
 constructor Twaptdb.create(dbpath:String);
