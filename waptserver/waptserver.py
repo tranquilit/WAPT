@@ -285,6 +285,7 @@ def packagesFileToList(pathTofile):
         add_package(lines)
         lines = []
 
+    packages.sort()
     return packages
 
 @app.route('/client_package_list/<string:uuid>')
@@ -294,8 +295,10 @@ def get_client_package_list(uuid=""):
     for p in packages['packages']:
         package = PackageEntry()
         package.load_control_from_dict(p)
-        if [ x for x in repo_packages if package.package == x.package and package < x ]:
-            p['install_status'] = 'NEED-UPGRADE'
+        matching = [ x for x in repo_packages if package.package == x.package ]
+        if matching:
+            if package < matching[-1]:
+                p['install_status'] = 'NEED-UPGRADE'
 
     return  Response(response=json.dumps(packages['packages']),
                     status=200,
