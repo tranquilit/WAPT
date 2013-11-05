@@ -23,8 +23,8 @@ ClassName=TProjectRunConfiguationsNode
 Count=2
 
 [Project\ExtraPythonPath]
-Item0=C:\wapt_dev
-Item1=C:\wapt_dev\lib
-Item2=C:\wapt_dev\lib\site-packages
+Item0=C:\tranquilit\wapt
+Item1=C:\tranquilit\wapt\lib
+Item2=C:\tranquilit\wapt\lib\site-packages
 Count=3
 

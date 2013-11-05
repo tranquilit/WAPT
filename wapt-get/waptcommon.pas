@@ -405,7 +405,7 @@ function WaptUseLocalConnectionProxy(inifilename:String=''): Boolean;
 begin
   if inifilename='' then
      inifilename:=AppIniFilename;
-  Result := ( IniReadString(inifilename,'Global','use_local_connection_proxy') = 'True' );
+  Result := StrIsOneOf(IniReadString (inifilename,'Global','use_local_connection_proxy'),['True','true','1'] );
 end;
 
 constructor Twaptdb.create(dbpath:String);

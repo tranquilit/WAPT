@@ -32,11 +32,11 @@ uses
 
 type TProgressCallback=function(Receiver:TObject;current,total:Integer):Boolean of object;
 
-Function  Wget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy:Boolean= False): boolean;
-Function  Wget_try(const fileURL: Utf8String): boolean;
-function httpGetString(   url: string; enableProxy:Boolean= False): Utf8String;
+Function  Wget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy:Boolean=False): boolean;
+Function  Wget_try(const fileURL: Utf8String;enableProxy:Boolean=False): boolean;
 
-procedure httpPostData(const UserAgent: string; const Server: string; const Resource: string; const Data: AnsiString);
+function httpGetString(   url: string; enableProxy:Boolean= False): Utf8String;
+procedure httpPostData(const UserAgent: string; const Server: string; const Resource: string; const Data: AnsiString; enableProxy:Boolean= False);
 function SetToIgnoreCerticateErrors(oRequestHandle:HINTERNET; var aErrorMsg: string): Boolean;
 function GetWinInetError(ErrorCode:Cardinal): string;
 Procedure UnzipFile(ZipFilePath,OutputPath:Utf8String);
@@ -141,7 +141,7 @@ begin
   Result := UserInGroup(DOMAIN_ALIAS_RID_ADMINS);
 end;
 
-Function  Wget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy:Boolean= False): boolean;
+Function Wget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy:Boolean=False): boolean;
  const
    BufferSize = 1024*512;
  var
@@ -161,8 +161,7 @@ Function  Wget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;p
 begin
   result := false;
   sAppName := ExtractFileName(ParamStr(0)) ;
-
-    if enableProxy then
+  if enableProxy then
       hSession := InternetOpenW(PWideChar(UTF8Decode(sAppName)), INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0)
   else
       hSession := InternetOpenW(PWideChar(UTF8Decode(sAppName)), INTERNET_OPEN_TYPE_DIRECT, nil, nil, 0) ;
@@ -218,7 +217,7 @@ begin
   end
 end;
 
-function wget_try(const fileURL: Utf8String): boolean;
+function wget_try(const fileURL: Utf8String;enableProxy:Boolean= False): boolean;
  const
    BufferSize = 1024;
  var
@@ -235,7 +234,11 @@ function wget_try(const fileURL: Utf8String): boolean;
 begin
   result := false;
   sAppName := ExtractFileName(ParamStr(0)) ;
-  hSession := InternetOpenW(PWideChar(UTF8Decode(sAppName)), INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0) ;
+  if enableProxy then
+    hSession := InternetOpenW(PWideChar(UTF8Decode(sAppName)), INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0)
+  else
+    hSession := InternetOpenW(PWideChar(UTF8Decode(sAppName)), INTERNET_OPEN_TYPE_DIRECT, nil, nil, 0);
+
   try
     hURL := InternetOpenUrlW(hSession, PWideChar(UTF8Decode(fileURL)), nil, 0, INTERNET_FLAG_RELOAD+INTERNET_FLAG_PRAGMA_NOCACHE+INTERNET_FLAG_KEEP_CONNECTION , 0) ;
     if assigned(hURL) then
@@ -254,7 +257,9 @@ begin
   end
 end;
 
-function httpGetString(   url: string; enableProxy:Boolean= False): Utf8String;
+
+// récupère une chaine de caractères en http en utilisant l'API windows
+function httpGetString(url: string; enableProxy:Boolean= False): Utf8String;
 var
   GlobalhInet,hFile,hConnect: HINTERNET;
   localFile: File;
@@ -393,7 +398,7 @@ begin
   end;
 end;
 
-procedure httpPostData(const UserAgent: string; const Server: string; const Resource: string; const Data: AnsiString);
+procedure httpPostData(const UserAgent: string; const Server: string; const Resource: string; const Data: AnsiString; enableProxy:Boolean= False);
 var
   hInet: HINTERNET;
   hHTTP: HINTERNET;
@@ -403,7 +408,10 @@ const
   accept: packed array[0..1] of LPWSTR = (@wall, nil);
   header: string = 'Content-Type: application/x-www-form-urlencoded';
 begin
-  hInet := InternetOpen(PChar(UserAgent), INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0);
+  if enableProxy then
+     hInet := InternetOpen(PChar(UserAgent),INTERNET_OPEN_TYPE_PRECONFIG,nil,nil,0)
+  else
+     hInet := InternetOpen(PChar(UserAgent),INTERNET_OPEN_TYPE_DIRECT,nil,nil,0);
   try
     hHTTP := InternetConnect(hInet, PChar(Server), INTERNET_DEFAULT_HTTP_PORT, nil, nil, INTERNET_SERVICE_HTTP, 0, 1);
     try
@@ -622,7 +630,7 @@ begin
     mkdir(tempdir);
     Logger('Getting new file from: '+fromURL+' into '+tempfn);
     try
-      wget(fromURL,tempfn);
+      wget(fromURL,tempfn,Nil,Nil,True);
       version := GetApplicationVersion(tempfn);
       if version='' then
         raise Exception.create('no version information in downloaded file.');
@@ -712,7 +720,7 @@ begin
     mkdir(tempdir);
     Logger('Getting new file from: '+fromURL+' into '+tempfn);
     try
-      wget(fromURL,tempfn);
+      wget(fromURL,tempfn,Nil,Nil,True);
       version := GetApplicationVersion(tempfn);
       if version='' then
         raise Exception.create('no version information in downloaded file.');
@@ -721,7 +729,7 @@ begin
     except
       //trying to get a zip file instead (exe files blocked by proxy ...)
       zipfn:= AppendPathDelim(tempdir)+ChangeFileExt(SetupExename,'.zip');
-      wget(ChangeFileExt(fromURL,'.zip'),zipfn);
+      wget(ChangeFileExt(fromURL,'.zip'),zipfn,Nil,Nil,True);
       Logger('  unzipping file '+zipfn);
       UnZipper := TUnZipper.Create;
       try

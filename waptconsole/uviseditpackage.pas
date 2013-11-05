@@ -5,11 +5,11 @@ unit uviseditpackage;
 interface
 
 uses
-  Classes, SysUtils, memds, BufDataset, FileUtil, SynHighlighterPython, SynEdit,
-  SynMemo, LSControls, Forms, Controls, Graphics,
+  Classes, SysUtils, FileUtil, SynHighlighterPython, SynEdit,
+  SynMemo, Forms, Controls, Graphics,
   Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, EditBtn, Buttons,
-  process, superobject, UniqueInstance, VirtualTrees,
-  VarPyth, types, ActiveX, LMessages, LCLIntf, LCL, sogrid, vte_json, jsonparser;
+  process, superobject, VirtualTrees,
+  VarPyth, types, ActiveX, LMessages, LCLIntf, LCL, sogrid, vte_json;
 
 type
 
@@ -106,7 +106,6 @@ type
     procedure SetDepends(AValue: string);
     procedure SetPackageRequest(AValue: string);
     procedure SetSourcePath(AValue: string);
-    procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: string);
     property Depends: string read GetDepends write SetDepends;
     function updateprogress(receiver: TObject; current, total: integer): boolean;
   public
@@ -557,25 +556,6 @@ end;
 procedure TVisEditPackage.FormShow(Sender: TObject);
 begin
   ActEditSearch.Execute;
-end;
-
-procedure TVisEditPackage.TreeLoadData(tree: TVirtualJSONInspector; jsondata: string);
-var
-  jsp: TJSONParser;
-
-begin
-  tree.Clear;
-  if (jsondata <> '') then
-    try
-      tree.BeginUpdate;
-      jsp := TJSONParser.Create(jsondata);
-      if assigned(tree.RootData) then
-        tree.rootdata.Free;
-      tree.rootData := jsp.Parse;
-      jsp.Free;
-    finally
-      tree.EndUpdate;
-    end;
 end;
 
 function MkTempDir(prefix: string = ''): string;
