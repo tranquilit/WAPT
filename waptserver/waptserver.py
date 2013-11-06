@@ -46,12 +46,13 @@ import zipfile
 import pprint
 import socket
 import requests
+import pefile
 from rocket import Rocket
 
 
 from waptpackage import update_packages,PackageEntry
 
-__version__ = "0.8"
+__version__ = "0.8.1"
 
 config = ConfigParser.RawConfigParser()
 
@@ -120,6 +121,8 @@ else:
 if not wapt_folder:
     wapt_folder = os.path.join(wapt_root_dir,'waptserver','repository','wapt')
 
+waptsetup = os.path.join(wapt_folder, 'waptsetup.exe')
+
 if os.path.exists(wapt_folder)==False:
     try:
         os.makedirs(wapt_folder)
@@ -169,6 +172,19 @@ def get_host_data(uuid, filter = {}, delete_id = True):
 @app.route('/')
 def index():
     return render_template("index.html")
+
+@app.route('/info')
+def informations():
+    informations = {}
+    informations["server_version"] = __version__ 
+    if os.path.exists(waptsetup):
+        pe = pefile.PE(waptsetup)
+        informations["client_version"] =  pe.FileInfo[0].StringTable[0].entries['ProductVersion'].strip()  
+    
+    return  Response(response=json.dumps(informations),
+                    status=200,
+                    mimetype="application/json")    
+    
 
 @app.route('/wapt/')
 def wapt_listing():
@@ -378,7 +394,7 @@ def upload_waptsetup():
         logger.info('uploading waptsetup file : %s' % file)
         if file and "waptsetup.exe" in file.filename :
             filename = secure_filename(file.filename)
-            file.save(os.path.join(wapt_folder, filename))
+            file.save(waptsetup)
             return "ok"
         else:
             return "wrong file type"
