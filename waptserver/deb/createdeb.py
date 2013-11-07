@@ -39,9 +39,8 @@ if platform.system()!='Linux':
     sys.exit(1)
 
 for line in open('%s/waptserver.py'%os.path.abspath('..')):
-    if '__version__' in line:
+    if '__version__=' in line:
         wapt_version = line.split('=')[1].replace('"','').replace("'","").replace('\n','').replace(' ','')
-
 if not wapt_version:
     print 'version non trouvée dans %s/waptserver.py, la version est mise a 1 par défault.'%os.path.abspath('..')
     wapt_version = '1'
