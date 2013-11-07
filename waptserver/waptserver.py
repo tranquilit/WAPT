@@ -52,7 +52,7 @@ from rocket import Rocket
 
 from waptpackage import update_packages,PackageEntry
 
-__version__ = "0.8.1"
+__version__="0.8.1"
 
 config = ConfigParser.RawConfigParser()
 
