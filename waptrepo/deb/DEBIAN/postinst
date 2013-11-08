@@ -5,9 +5,9 @@ mkdir -p /var/www/wapt/
 mkdir -p /var/www/wapt-host
 mkdir -p /var/www/wapt-group
 mkdir -p /etc/tis
-chown waptserver:www-data -R /var/www/wapt/
-chown waptserver:www-data -R /var/www/wapt-host
-chown waptserver:www-data -R /var/www/wapt-group
+chown wapt:www-data -R /var/www/wapt/
+chown wapt:www-data -R /var/www/wapt-host
+chown wapt:www-data -R /var/www/wapt-group
 ln -s /opt/wapt/waptrepo/waptpackage.py /var/www/wapt/
 ln -s /opt/wapt/waptrepo/wapt-scanpackages.py /var/www/wapt/
 chmod +x /opt/wapt/waptrepo/waptpackage.py
