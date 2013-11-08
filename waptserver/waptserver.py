@@ -235,6 +235,7 @@ def get_host_list():
 
 @app.route('/update_host',methods=['POST'])
 def update_host():
+    print request.data
     data = json.loads(request.data)
     if data:
         return json.dumps(update_data(data))
@@ -422,6 +423,27 @@ def waptupgrade_host(ip):
     except Exception as e:
         return "Impossible de joindre le web service: %s" % e
 
+@app.route('/hosts_by_group/<string:name>')
+def get_hosts_by_group(name=""):
+    try:
+        list_hosts  =  []
+        os.chdir(wapt_folder + '-host')
+        hosts = [f for f in os.listdir('.') if os.path.isfile(f) and f.endswith('.wapt')]
+        package = PackageEntry()     
+        for h in hosts:  
+            package.load_control_from_wapt(h)
+            
+            if name in package.depends.split(','):            
+                list_hosts.append({"computer_fqdn":package.package})            
+            
+        return  Response(response=json.dumps(list_hosts),
+                                status=200,
+                                mimetype="application/json")                               
+    except:
+        e = sys.exc_info()
+        return str(e)    
+    return "Unsupported method"    
+    
 @app.route('/upgrade_host/<string:ip>')
 def upgrade_host(ip):
     try:
