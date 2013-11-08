@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Compiler Value="C:\codetyphon\fpc\bin\i386-win32\fpc.exe" Date="1130259392"/>
+  <Params Value=" -MObjFPC -Scghi -O1 -g -gl -vewnhi -FiC:\tranquilit\testmultiinstall\lib\i386-win32 -FuC:\codetyphon\typhon\components\pl_Indy\lib\i386-win32\win32 -FuC:\codetyphon\typhon\components\ideintf\units\i386-win32\win32 -FuC:\codetyphon\typhon\components\lazcontrols\lib\i386-win32\win32 -FuC:\codetyphon\typhon\lcl\units\i386-win32\win32 -FuC:\codetyphon\typhon\lcl\units\i386-win32 -FuC:\tranquilit\pltis_superobject\trunk\lib\i386-win32 -FuC:\codetyphon\typhon\components\lazutils\lib\i386-win32 -FuC:\codetyphon\typhon\packager\units\i386-win32 -FuC:\tranquilit\testmultiinstall\ -FUC:\tranquilit\testmultiinstall\lib\i386-win32\ -l -dLCL -dLCLwin32 MultiInstall.lpr"/>
+</CONFIG>
