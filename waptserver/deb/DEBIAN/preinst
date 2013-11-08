@@ -12,7 +12,7 @@ def check_user_exists(username):
 
 #check if process is running and if so stop process. Should check pid , TODO : check for real service pid status
 ps_out = subprocess.check_output('/bin/ps ax',shell=True)
-if "uwsgi" in ps_out:
+if "/usr/bin/uwsgi-core" in ps_out:
     print subprocess.check_output('/etc/init.d/waptserver stop',shell=True)
     #ugly hack, wait for process to have stopped
     time.sleep(2)

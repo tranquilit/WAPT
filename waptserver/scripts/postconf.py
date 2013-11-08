@@ -67,4 +67,4 @@ if postconf.yesno("Do you wan't to launch post configuration tool ?") == postcon
     postconf.msgbox("Postconf is finished !! \n please start wapt server with /etc/init.d/waptserver start")
 else:
     exit(0)
-os.system('chown -R waptserver:waptserver /opt/wapt/')
+os.system('chown -R wapt:www-data /opt/wapt/')

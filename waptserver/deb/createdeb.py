@@ -47,10 +47,9 @@ if not wapt_version:
 
 control_file = './builddir/DEBIAN/control'
 rsync_option = "--exclude '*.svn' --exclude '*.exe' --exclude '*.dll' --exclude 'deb' -ap"
-rsync_source = os.path.abspath('..')
+rsync_source = os.path.abspath('..') + ' ' + os.path.abspath('../../waptpackage.py')
 rsync_destination = './builddir/opt/wapt/'
 rsync_command = '/usr/bin/rsync %s %s %s'%(rsync_option,rsync_source,rsync_destination)
-
 rsync_lib_source = '%s/'%os.path.abspath('../../lib/')
 rsync_lib_destination = './builddir/opt/wapt/lib/'
 rsync_lib_option = "--exclude '*.svn' --exclude 'deb' -ap"
