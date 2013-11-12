@@ -36,7 +36,7 @@ Function  Wget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;p
 Function  Wget_try(const fileURL: Utf8String;enableProxy:Boolean=False): boolean;
 
 function httpGetString(   url: string; enableProxy:Boolean= False): Utf8String;
-procedure httpPostData(const UserAgent: string; const Server: string; const Resource: string; const Data: AnsiString; enableProxy:Boolean= False);
+procedure httpPostData(const UserAgent: string; const url: string; const Data: AnsiString; enableProxy:Boolean= False);
 function SetToIgnoreCerticateErrors(oRequestHandle:HINTERNET; var aErrorMsg: string): Boolean;
 function GetWinInetError(ErrorCode:Cardinal): string;
 Procedure UnzipFile(ZipFilePath,OutputPath:Utf8String);
