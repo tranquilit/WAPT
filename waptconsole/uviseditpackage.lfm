@@ -1,10 +1,10 @@
 object VisEditPackage: TVisEditPackage
-  Left = 484
-  Height = 600
-  Top = 115
+  Left = 972
+  Height = 623
+  Top = 117
   Width = 800
   Caption = 'Editer le paquet'
-  ClientHeight = 600
+  ClientHeight = 623
   ClientWidth = 800
   Constraints.MinHeight = 400
   Constraints.MinWidth = 800
@@ -14,10 +14,10 @@ object VisEditPackage: TVisEditPackage
   PopupMenu = PopupMenu1
   Position = poMainFormCenter
   ShowHint = True
-  LCLVersion = '1.1'
+  LCLVersion = '1.3'
   object PageControl1: TPageControl
     Left = 0
-    Height = 394
+    Height = 417
     Top = 50
     Width = 800
     ActivePage = pgEditPackage
@@ -26,16 +26,16 @@ object VisEditPackage: TVisEditPackage
     TabOrder = 0
     object pgEditPackage: TTabSheet
       Caption = 'Editer les dépendances'
-      ClientHeight = 368
+      ClientHeight = 391
       ClientWidth = 792
       object Panel8: TPanel
         Left = 502
-        Height = 368
+        Height = 391
         Top = 0
         Width = 290
         Align = alRight
         BevelOuter = bvNone
-        ClientHeight = 368
+        ClientHeight = 391
         ClientWidth = 290
         TabOrder = 0
         object Panel9: TPanel
@@ -76,7 +76,7 @@ object VisEditPackage: TVisEditPackage
         end
         object GridPackages: TSOGrid
           Left = 0
-          Height = 324
+          Height = 347
           Top = 44
           Width = 290
           Align = alClient
@@ -151,7 +151,7 @@ object VisEditPackage: TVisEditPackage
       end
       object GridDepends: TSOGrid
         Left = 0
-        Height = 368
+        Height = 391
         Top = 0
         Width = 497
         Align = alClient
@@ -201,7 +201,7 @@ object VisEditPackage: TVisEditPackage
       end
       object Splitter3: TSplitter
         Left = 497
-        Height = 368
+        Height = 391
         Top = 0
         Width = 5
         Align = alRight
@@ -210,12 +210,12 @@ object VisEditPackage: TVisEditPackage
     end
     object pgDevelop: TTabSheet
       Caption = 'setup.py'
-      ClientHeight = 368
+      ClientHeight = 391
       ClientWidth = 792
       TabVisible = False
       inline EdSetupPy: TSynEdit
         Left = 0
-        Height = 334
+        Height = 357
         Top = 34
         Width = 792
         Align = alClient
@@ -759,7 +759,7 @@ object VisEditPackage: TVisEditPackage
   object PanelDevlop: TPanel
     Left = 0
     Height = 118
-    Top = 449
+    Top = 472
     Width = 800
     Align = alBottom
     ClientHeight = 118
@@ -826,7 +826,7 @@ object VisEditPackage: TVisEditPackage
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 444
+    Top = 467
     Width = 800
     Align = alBottom
     ResizeAnchor = akBottom
@@ -972,7 +972,7 @@ object VisEditPackage: TVisEditPackage
   object Panel4: TPanel
     Left = 0
     Height = 33
-    Top = 567
+    Top = 590
     Width = 800
     Align = alBottom
     BevelOuter = bvNone

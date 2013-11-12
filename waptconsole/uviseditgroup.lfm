@@ -1,0 +1,223 @@
+object VisEditGroup: TVisEditGroup
+  Left = 596
+  Height = 600
+  Top = 120
+  Width = 800
+  Caption = 'Edition de groupe'
+  ClientHeight = 600
+  ClientWidth = 800
+  LCLVersion = '1.3'
+  object Panel4: TPanel
+    Left = 0
+    Height = 33
+    Top = 567
+    Width = 800
+    Align = alBottom
+    BevelOuter = bvNone
+    ClientHeight = 33
+    ClientWidth = 800
+    TabOrder = 0
+    object BitBtn2: TBitBtn
+      Left = 720
+      Height = 26
+      Top = 4
+      Width = 74
+      Anchors = [akTop, akRight]
+      Cancel = True
+      DefaultCaption = True
+      Kind = bkCancel
+      ModalResult = 2
+      TabOrder = 0
+    end
+    object Button5: TButton
+      Left = 603
+      Height = 25
+      Top = 4
+      Width = 112
+      Anchors = [akTop, akRight]
+      Caption = 'Sauvegarder'
+      TabOrder = 1
+    end
+  end
+  object GridDepends: TSOGrid
+    Left = 8
+    Height = 248
+    Top = 64
+    Width = 536
+    Color = clWhite
+    Header.AutoSizeIndex = -1
+    Header.Columns = <    
+      item
+        MaxWidth = 400
+        MinWidth = 100
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+        Position = 0
+        Text = 'Paquet'
+        Width = 300
+        PropertyName = 'package'
+      end    
+      item
+        MaxWidth = 100
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
+        Position = 1
+        Text = 'Version'
+        Width = 30
+        PropertyName = 'version'
+      end    
+      item
+        MaxWidth = 400
+        Position = 2
+        Text = 'Description'
+        PropertyName = 'description'
+      end    
+      item
+        MaxWidth = 400
+        Position = 3
+        Text = 'Dépendances'
+        PropertyName = 'depends'
+      end>
+    Header.DefaultHeight = 17
+    Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+    Header.Style = hsFlatButtons
+    TabOrder = 1
+    TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+    TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+    TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+    TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+  end
+  object GridHosts: TSOGrid
+    Left = 8
+    Height = 248
+    Top = 320
+    Width = 536
+    Color = clWhite
+    Header.AutoSizeIndex = -1
+    Header.Columns = <    
+      item
+        Position = 0
+        Text = 'Machine'
+        PropertyName = 'computer_fqdn'
+      end>
+    Header.DefaultHeight = 17
+    Header.MainColumn = 1
+    Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+    Header.Style = hsFlatButtons
+    TabOrder = 2
+    TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+    TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+    TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+    TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+  end
+  object EdGroup: TLabeledEdit
+    Left = 48
+    Height = 21
+    Top = 16
+    Width = 252
+    EditLabel.AnchorSideTop.Control = EdGroup
+    EditLabel.AnchorSideTop.Side = asrCenter
+    EditLabel.AnchorSideRight.Control = EdGroup
+    EditLabel.AnchorSideBottom.Control = EdGroup
+    EditLabel.AnchorSideBottom.Side = asrBottom
+    EditLabel.Left = 10
+    EditLabel.Height = 13
+    EditLabel.Top = 20
+    EditLabel.Width = 35
+    EditLabel.Caption = 'Groupe'
+    EditLabel.ParentColor = False
+    LabelPosition = lpLeft
+    TabOrder = 3
+  end
+  object Eddescription: TLabeledEdit
+    Left = 368
+    Height = 21
+    Top = 16
+    Width = 424
+    Anchors = [akTop, akLeft, akRight]
+    EditLabel.AnchorSideTop.Control = Eddescription
+    EditLabel.AnchorSideTop.Side = asrCenter
+    EditLabel.AnchorSideRight.Control = Eddescription
+    EditLabel.AnchorSideBottom.Control = Eddescription
+    EditLabel.AnchorSideBottom.Side = asrBottom
+    EditLabel.Left = 312
+    EditLabel.Height = 13
+    EditLabel.Top = 20
+    EditLabel.Width = 53
+    EditLabel.Caption = 'Description'
+    EditLabel.ParentColor = False
+    LabelPosition = lpLeft
+    TabOrder = 4
+    Text = ' '
+  end
+  object GridPackages: TSOGrid
+    Left = 560
+    Height = 472
+    Top = 96
+    Width = 224
+    Color = clWhite
+    DragMode = dmAutomatic
+    DragType = dtVCL
+    Header.AutoSizeIndex = 0
+    Header.Columns = <    
+      item
+        MaxWidth = 100
+        MinWidth = 50
+        Position = 0
+        Text = 'Section'
+        PropertyName = 'section'
+      end    
+      item
+        MaxWidth = 400
+        MinWidth = 50
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+        Position = 1
+        Text = 'Paquet'
+        Width = 200
+        PropertyName = 'package'
+      end    
+      item
+        MaxWidth = 200
+        MinWidth = 50
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+        Position = 2
+        Text = 'Status'
+        PropertyName = 'status'
+      end    
+      item
+        MaxWidth = 200
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+        Position = 3
+        Text = 'Version'
+        Width = 30
+        PropertyName = 'version'
+      end    
+      item
+        MaxWidth = 400
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+        Position = 4
+        Text = 'Description'
+        PropertyName = 'description'
+      end    
+      item
+        MaxWidth = 400
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+        Position = 5
+        Text = 'Dépendances'
+        PropertyName = 'depends'
+      end    
+      item
+        MaxWidth = 200
+        Position = 6
+        Text = 'Installé par'
+        PropertyName = 'explicit_by'
+      end>
+    Header.DefaultHeight = 17
+    Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+    Header.SortColumn = 0
+    Header.Style = hsFlatButtons
+    TabOrder = 5
+    TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+    TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+    TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+    TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect]
+  end
+end

@@ -1881,6 +1881,11 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActDeleteGroupExecute
       ShortCut = 46
     end
+    object ActDeployWapt: TAction
+      Category = 'Tools'
+      Caption = 'Déployer Wapt sur des postes'
+      OnExecute = ActDeployWaptExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
@@ -1962,6 +1967,9 @@ object VisWaptGUI: TVisWaptGUI
       end
       object MenuItem17: TMenuItem
         Action = ActCreateWaptSetup
+      end
+      object MenuItem28: TMenuItem
+        Action = ActDeployWapt
       end
       object MenuItem23: TMenuItem
         Action = ActAdvancedMode

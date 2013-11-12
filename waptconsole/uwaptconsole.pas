@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, FileUtil, SynEdit, SynHighlighterPython,
   vte_json, Forms, Controls, Graphics,
   Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, jsonparser,
-  superobject, UniqueInstance, VirtualTrees, VarPyth, Windows, ImgList,
+  superobject, UniqueInstance, VirtualTrees, VarPyth, Windows, ImgList, Buttons,
   SOGrid;
 
 type
@@ -40,6 +40,7 @@ type
     ActAddToGroup: TAction;
     ActEditGroup: TAction;
     ActDeleteGroup: TAction;
+    ActDeployWapt: TAction;
     ActSearchGroups: TAction;
     ActWAPTLocalConfig: TAction;
     ActUpdateWaptGetINI: TAction;
@@ -81,6 +82,7 @@ type
     Label10: TLabel;
     Label11: TLabel;
     LabelComputersNumber: TLabel;
+    MenuItem28: TMenuItem;
     MenuItem33: TMenuItem;
     MenuItem34: TMenuItem;
     MenuItem35: TMenuItem;
@@ -188,6 +190,7 @@ type
     procedure ActDeleteGroupExecute(Sender: TObject);
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
+    procedure ActDeployWaptExecute(Sender: TObject);
     procedure ActEditGroupExecute(Sender: TObject);
     procedure ActEditHostPackageExecute(Sender: TObject);
     procedure ActGotoHostExecute(Sender: TObject);
@@ -286,7 +289,7 @@ implementation
 uses LCLIntf, IniFiles, uvisprivatekeyauth, uvisloading, tisstrings, soutils,
   waptcommon, tiscommon, uVisCreateKey, uVisCreateWaptSetup, uvisOptionIniFile,
   dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
-  uvisgroupchoice,
+  uvisgroupchoice, uviseditgroup, uviswaptdeploy,
   PythonEngine;
 
 {$R *.lfm}
@@ -1012,6 +1015,33 @@ begin
   ActDeletePackage.Enabled := GridPackages.SelectedCount > 0;
 end;
 
+procedure TVisWaptGUI.ActDeployWaptExecute(Sender: TObject);
+var
+  i: Integer;
+  hostsList, data : ISuperObject;
+begin
+    with Tviswaptdeploy.Create(self) do
+    try
+    begin
+      if ShowModal = mrOk then
+      begin
+      data  := TSuperObject.Create;
+      data.S['auth.username'] := EdDomainUser.Text;
+      data.S['auth.password'] := EdDomainPassword.Text;
+      data.S['auth.domain'] := EdDomaine.Text;
+      // Str
+      hostsList := TSuperObject.Create(stArray);
+      for i:=0 to Memo1.Lines.Count - 1 do
+          hostsList.AsArray.Add(Memo1.Lines[i]);
+      data['computers'] := hostsList;
+      WAPTServerJsonPost('/deploy_wapt', data.AsJSon(True), WaptUseLocalConnectionProxy);
+      end;
+    end;
+    finally
+        Free;
+    end;
+end;
+
 procedure TVisWaptGUI.ActEditGroupExecute(Sender: TObject);
 var
   expr, res, depends, dep: string;
@@ -1249,7 +1279,6 @@ begin
   end;
 
   req := url + '?' + Join('&', urlParams);
-
   hosts := WAPTServerJsonGet(req, [], WaptUseLocalConnectionProxy);
   GridHosts.Data := hosts;
   LabelComputersNumber.Caption := IntToStr(hosts.AsArray.Length);
@@ -1492,8 +1521,36 @@ end;
 
 procedure TVisWaptGUI.GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
+var
+  resp : ISuperObject;
+  group : String;
+  expr, res, depends, dep: string;
+  N: PVirtualNode;
 begin
-  ActEditGroup.Execute;
+  //ActEditGroup.Execute;
+
+  if GridGroups.Focused then
+  begin
+    N := GridGroups.GetFirstSelected;
+    group := GridGroups.GetCellStrValue(N, 'package');
+
+    with TVisEditGroup.Create(self) do
+    try
+    begin
+         resp :=  WAPTServerJsonGet('/hosts_by_group/'+group, [], WaptUseLocalConnectionProxy);
+         EdGroup.Text:=group;
+         if resp <> nil then
+         begin
+            GridHosts.Data := resp;
+            GridHosts.Header.AutoFitColumns(False);
+         end;
+      if ShowModal = mrOk then
+      halt;
+    end;
+    finally
+        Free;
+    end;
+    end;
 end;
 
 procedure TVisWaptGUI.GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
@@ -1584,6 +1641,7 @@ begin
 end;
 
 procedure TVisWaptGUI.GridHostsGetText(Sender: TBaseVirtualTree;
+
   Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
   TextType: TVSTTextType; var CellText: string);
 begin

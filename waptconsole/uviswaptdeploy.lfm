@@ -1,0 +1,157 @@
+object viswaptdeploy: Tviswaptdeploy
+  Left = 999
+  Height = 566
+  Top = 186
+  Width = 438
+  Caption = 'Déployer WAPT'
+  ClientHeight = 566
+  ClientWidth = 438
+  Position = poMainFormCenter
+  LCLVersion = '1.3'
+  object Panel1: TPanel
+    Left = 8
+    Height = 122
+    Top = 104
+    Width = 424
+    Align = alCustom
+    Caption = 'Panel1'
+    ClientHeight = 122
+    ClientWidth = 424
+    TabOrder = 0
+    object EdDomaine: TLabeledEdit
+      Left = 76
+      Height = 21
+      Top = 24
+      Width = 252
+      EditLabel.AnchorSideTop.Control = EdDomaine
+      EditLabel.AnchorSideTop.Side = asrCenter
+      EditLabel.AnchorSideRight.Control = EdDomaine
+      EditLabel.AnchorSideBottom.Control = EdDomaine
+      EditLabel.AnchorSideBottom.Side = asrBottom
+      EditLabel.Left = 32
+      EditLabel.Height = 13
+      EditLabel.Top = 28
+      EditLabel.Width = 41
+      EditLabel.Caption = 'Domaine'
+      EditLabel.ParentColor = False
+      LabelPosition = lpLeft
+      TabOrder = 0
+    end
+    object Label2: TLabel
+      Left = 8
+      Height = 13
+      Top = 6
+      Width = 55
+      Caption = 'Identifiants'
+      ParentColor = False
+    end
+    object EdDomainUser: TLabeledEdit
+      Left = 76
+      Height = 21
+      Top = 48
+      Width = 252
+      EditLabel.AnchorSideTop.Control = EdDomainUser
+      EditLabel.AnchorSideTop.Side = asrCenter
+      EditLabel.AnchorSideRight.Control = EdDomainUser
+      EditLabel.AnchorSideBottom.Control = EdDomainUser
+      EditLabel.AnchorSideBottom.Side = asrBottom
+      EditLabel.Left = 25
+      EditLabel.Height = 13
+      EditLabel.Top = 52
+      EditLabel.Width = 48
+      EditLabel.Caption = 'Utilisateur'
+      EditLabel.ParentColor = False
+      LabelPosition = lpLeft
+      TabOrder = 1
+    end
+    object EdDomainPassword: TLabeledEdit
+      Left = 76
+      Height = 21
+      Top = 72
+      Width = 252
+      EchoMode = emPassword
+      EditLabel.AnchorSideTop.Control = EdDomainPassword
+      EditLabel.AnchorSideTop.Side = asrCenter
+      EditLabel.AnchorSideRight.Control = EdDomainPassword
+      EditLabel.AnchorSideBottom.Control = EdDomainPassword
+      EditLabel.AnchorSideBottom.Side = asrBottom
+      EditLabel.Left = 9
+      EditLabel.Height = 13
+      EditLabel.Top = 76
+      EditLabel.Width = 64
+      EditLabel.Caption = 'Mot de passe'
+      EditLabel.ParentColor = False
+      LabelPosition = lpLeft
+      PasswordChar = '*'
+      TabOrder = 2
+    end
+  end
+  object Panel2: TPanel
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 86
+    Top = 8
+    Width = 424
+    Align = alCustom
+    ClientHeight = 86
+    ClientWidth = 424
+    TabOrder = 1
+    object Label1: TLabel
+      Left = 8
+      Height = 26
+      Top = 16
+      Width = 396
+      Caption = 'Cette méthode permet de déployer waptsetup.exe sur tous les postes via psexec.'#13#10'Penser à vérifier que $IPC soit accessible.'
+      ParentColor = False
+    end
+  end
+  object Memo1: TMemo
+    Left = 8
+    Height = 264
+    Hint = 'Un poste par ligne'
+    Top = 256
+    Width = 424
+    TabOrder = 2
+  end
+  object Panel4: TPanel
+    Left = 0
+    Height = 33
+    Top = 533
+    Width = 438
+    Align = alBottom
+    BevelOuter = bvNone
+    ClientHeight = 33
+    ClientWidth = 438
+    TabOrder = 3
+    object BitBtn2: TBitBtn
+      Left = 358
+      Height = 26
+      Top = 4
+      Width = 74
+      Anchors = [akTop, akRight]
+      Cancel = True
+      DefaultCaption = True
+      Kind = bkCancel
+      ModalResult = 2
+      TabOrder = 0
+    end
+    object Button5: TButton
+      Left = 241
+      Height = 25
+      Top = 4
+      Width = 112
+      Anchors = [akTop, akRight]
+      Caption = 'Déployer'
+      ModalResult = 1
+      TabOrder = 1
+    end
+  end
+  object Label3: TLabel
+    Left = 12
+    Height = 13
+    Top = 241
+    Width = 234
+    Caption = 'Liste des postes sur lequel wapt va être installé :'
+    ParentColor = False
+  end
+end
