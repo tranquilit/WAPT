@@ -13,13 +13,24 @@ uses
 type
 
   { MultiInstall }
+
+  { TMultiInstall }
+
   TMultiInstall = class(TCustomApplication)
   protected
     procedure DoRun; override;
   public
+    computer_fqdn,computer_name : String;
+    uuid: string;
+    wapt_repo,wapt_server : String;
+    repo_waptsetup,local_waptsetup : String;
+    setup_options : String;
+    local_wapt_version:String;
+
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
     procedure WriteHelp; virtual;
+    procedure ParseOptions;
   end;
 
 
@@ -276,35 +287,25 @@ begin
     Result := ''
 end;
 
-function is_update(server_version:String):Boolean;
+function getlocal_wapt_version:String;
 var
   Registry: TRegistry;
-  Caption: string;
+  local_version: string;
   registry_key : String;
 begin
-  {$IFDEF WIN32}registry_key := '\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1';{$ENDIF}
-  {$IFDEF WIN64}registry_key := '\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1';{$ENDIF}
   Registry := TRegistry.Create(KEY_READ);
-  Registry.RootKey:= HKEY_LOCAL_MACHINE;
-  if Registry.OpenKeyReadOnly(registry_key) then
-  begin
-    Caption := Registry.ReadString('DisplayVersion');
-    Registry.Free;
-    if Caption = server_version then
-    begin
-     log_event('info','Wapt has nothing to upgrade');
-     Result := False;
-    end
+  try
+    result :='';
+    registry_key := '\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1';
+    Registry.RootKey:= HKEY_LOCAL_MACHINE;
+    if not Registry.OpenKeyReadOnly(registry_key) then
+      registry_key := '\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1';
+    if Registry.OpenKeyReadOnly(registry_key) then
+      result := Registry.ReadString('DisplayVersion')
     else
-    begin
-      log_event('warning','Wapt needs upgrade');
-      Result := True;
-    end;
-  end
-  else
-  begin
-      log_event('warning','No install of Wapt found');
-      Result := True;
+      Result := '';
+  finally
+    Registry.Free;
   end;
 end;
 
@@ -436,11 +437,7 @@ procedure TMultiInstall.DoRun;
 var
   ErrorMsg: String;
   wapt_version, json_wapt_version : String;
-  computer_fqdn,computer_name : String;
-  uuid: string;
-  wapt_repo,wapt_server : String;
   json_send: ISuperObject;
-  repo_waptsetup,local_waptsetup : String;
 begin
   //quick check parameters
   ErrorMsg := CheckOptions('hds:r:',['help','delete_ini','server:','repourl:']);
@@ -451,62 +448,63 @@ begin
    Exit;
   end;
 
-  // parse parameters
-  computer_fqdn := Concat(GetComputerName,'.',GetDNSDomain);
-  computer_name := GetComputerName;
-  uuid := GetUuid;
+  ParseOptions;
 
-  if HasOption('h','help') then begin
+  if HasOption('h','help') then
+  begin
     WriteHelp;
     Terminate;
     Exit;
   end;
 
- if HasOption('s','server') then
-    wapt_server := GetOptionValue('s','server')
- else
-    wapt_server := 'http://wapt:8080';
+  repo_waptsetup := wapt_repo+'/waptsetup.exe';
+  local_waptsetup := GetTempDir+'waptsetup.exe';
+  json_wapt_version:= httpGetString(wapt_server+'/info');
+  wapt_version := SO(json_wapt_version).S['client_version'];
 
- if HasOption('r','repourl') then
-    wapt_repo := GetOptionValue('r','repourl')
- else
-    wapt_repo := 'http://wapt/wapt';
+  json_send := TSuperObject.Create;
+  json_send.S['uuid']  := uuid;
+  json_send.S['wapt_client.last_check_date'] := FormatDateTime('yyyy-mm-dd hh:nn:ss',now);
 
- repo_waptsetup := wapt_repo+'/waptsetup.exe';
- local_waptsetup := GetTempDir+'waptsetup.exe';
- json_wapt_version:= httpGetString(wapt_server+'/info');
- wapt_version := SO(json_wapt_version).S['client_version'];
-
- json_send := TSuperObject.Create;
- json_send.S['host.computer_fqdn']  := computer_fqdn;
- json_send.S['host.computer_name']  := computer_name;
- json_send.S['uuid']  := uuid;
- json_send.S['update_status.running_tasks'] := 'Install Wapt client';
- json_send.S['update_status.errors'] := 'the install of wapt have failed error was:';
- httpPostData(ApplicationName,wapt_server+'/update_host',json_send.AsJSon(True));
-
-  if is_update(wapt_version) = True then
-  begin
-    log_event('info','Launch download of waptsetup.exe');
+  if local_wapt_version <> wapt_version then
+  try
+    json_send.S['wapt_client.status'] := 'UPGRADE-NEEDED';
+    httpPostData(ApplicationName,wapt_server+'/update_host',json_send.AsJSon(True));
     wget(repo_waptsetup,local_waptsetup);
-    log_event('info','Launch install of waptsetup.exe');
+    log_event('info','Launch install of waptsetup.exe, current version: '+local_wapt_version+', required version: '+wapt_version);
     try
-        if HasOption('d','delete_ini') then begin
-           delete_ini();
-        end;
-       UnitRedirect.Sto_RedirectedExecute(Concat(local_waptsetup,' ','/MERGETASKS=""useWaptServer,autorunTray"" /verysilent"'));
-       log_event('info','The install of Wapt is done');
+       if HasOption('d','delete_ini') then
+          delete_ini();
+       UnitRedirect.Sto_RedirectedExecute(local_waptsetup+' /MERGETASKS=""useWaptServer,autorunTray"" /verysilent');
+       log_event('info','WAPT install completed successfully at version '+getlocal_wapt_version);
+       json_send.S['wapt_client.error'] := '';
+       json_send.S['wapt_client.status'] := 'OK';
+       json_send.S['wapt_client.install_date'] := FormatDateTime('yyyy-mm-dd hh:nn:ss',now);
+       httpPostData(ApplicationName,wapt_server+'/update_host',json_send.AsJSon(True));
     except
       on E : Exception do
       begin
-          json_send.S['update_status.running_tasks'] := 'Install Wapt client';
-          json_send.S['update_status.errors'] := 'the install of wapt have failed error was:'#13#10 + E.ClassName+''#13#10 + E.Message;
-          httpPostData(ApplicationName,wapt_server+'/update_host',json_send.AsJSon(True));
-          log_event('error','the install of wapt have failed error was:'#13#10 + E.ClassName+''#13#10 + E.Message);
+        json_send.S['wapt_client.error'] := E.ClassName+':' + E.Message;
+        json_send.S['wapt_client.status'] := 'ERROR';
+        json_send.S['wapt_client.install_date'] := FormatDateTime('yyyy-mm-dd hh:nn:ss',now);
+        httpPostData(ApplicationName,wapt_server+'/update_host',json_send.AsJSon(True));
+        log_event('error','WAPT install failed :  error was '#13#10 + E.ClassName+''#13#10 + E.Message);
       end;
     end;
-
-  end;
+  except
+    on E : Exception do
+    begin
+        // reset host data on server...
+        json_send.S['host.computer_fqdn']  := computer_fqdn;
+        json_send.S['host.computer_name']  := computer_name;
+        json_send.S['wapt_client.error'] := E.ClassName+':' + E.Message;
+        json_send.S['wapt_client.status'] := 'ERROR';
+        httpPostData(ApplicationName,wapt_server+'/update_host',json_send.AsJSon(True));
+        log_event('error','WAPT check failed :  error was '#13#10 + E.ClassName+''#13#10 + E.Message);
+    end;
+  end
+  else
+    log_event('info','Skipped waptsetup.exe, current version: '+local_wapt_version+', required version: '+wapt_version);
 
   // stop program loop
   Terminate;
@@ -516,6 +514,16 @@ constructor TMultiInstall.Create(TheOwner: TComponent);
 begin
   inherited Create(TheOwner);
   StopOnException:=True;
+
+  computer_fqdn := LowerCase(GetComputerName)+'.'+GetDNSDomain;
+  computer_name := GetComputerName;
+  uuid := GetUuid;
+
+  wapt_server := 'http://wapt:8080';
+  wapt_repo := 'http://wapt/wapt';
+  setup_options := '/MERGETASKS=""useWaptServer,autorunTray"" /verysilent';
+
+  local_wapt_version := getlocal_wapt_version;
 end;
 
 destructor TMultiInstall.Destroy;
@@ -526,18 +534,36 @@ end;
 procedure TMultiInstall.WriteHelp;
 begin
   { add your help code here }
-  writeln('Tool for launch waptclient.exe in silent install');
+  writeln('Checks if the current WAPT client is different from wapt server info.');
+  writeln('If yes, launch waptclient.exe silently');
+  writeln;
   writeln('Usage: ');
   writeln('-h, --help               show this help');
-  writeln('-d, --delete_ini         delete wapt-get.ini during the upgrade');
-  writeln('-s, --server             specify waptserver url (default: http://wapt:8080)');
-  writeln('-r, --repourl            specify waptrepo url (default: http://wapt/wapt)');
+  writeln('-o, --options            innosetup options for waptsetup.exe (default: '+setup_options+')');
+  writeln('-d, --delete_ini         delete local wapt-get.ini file before the upgrade');
+  writeln('-s, --server             waptserver url (default: '+wapt_server+')');
+  writeln('-r, --repourl            waptrepo url (default: '+wapt_repo+')');
 
+end;
 
+procedure TMultiInstall.ParseOptions;
+begin
+  // parse parameters
+  if HasOption('s','server') then
+    wapt_server := GetOptionValue('s','server');
+
+  if HasOption('r','repourl') then
+    wapt_repo := GetOptionValue('r','repourl');
+
+  if HasOption('o','options') then
+    setup_options := GetOptionValue('o','options');
 end;
 
 var
   Application: TMultiInstall;
+
+{$R *.res}
+
 begin
   Application:=TMultiInstall.Create(nil);
   Application.Run;
