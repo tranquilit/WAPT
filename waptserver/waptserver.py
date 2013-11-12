@@ -271,10 +271,14 @@ def update_data(data):
 
 @app.route('/client_software_list/<string:uuid>')
 def get_client_software_list(uuid=""):
+
     softwares = get_host_data(uuid, filter={"softwares":1})
-    return  Response(response=json.dumps(softwares['softwares']),
+    if softwares.has_key('softwares'):
+        return  Response(response=json.dumps(softwares['softwares']),
                     status=200,
                     mimetype="application/json")
+    else:
+        return "{}"
 
 
 def packagesFileToList(pathTofile):
@@ -309,18 +313,20 @@ def packagesFileToList(pathTofile):
 def get_client_package_list(uuid=""):
     packages = get_host_data(uuid, {"packages":1})
     repo_packages = packagesFileToList(os.path.join(wapt_folder, 'Packages'))
-    for p in packages['packages']:
-        package = PackageEntry()
-        package.load_control_from_dict(p)
-        matching = [ x for x in repo_packages if package.package == x.package ]
-        if matching:
-            if package < matching[-1]:
-                p['install_status'] = 'NEED-UPGRADE'
-
-    return  Response(response=json.dumps(packages['packages']),
-                    status=200,
-                    mimetype="application/json")
-
+    if packages.has_key('packages'):
+        for p in packages['packages']:
+            package = PackageEntry()
+            package.load_control_from_dict(p)
+            matching = [ x for x in repo_packages if package.package == x.package ]
+            if matching:
+                if package < matching[-1]:
+                    p['install_status'] = 'NEED-UPGRADE'
+    
+        return  Response(response=json.dumps(packages['packages']),
+                        status=200,
+                        mimetype="application/json")
+    return "{}"
+    
 
 def requires_auth(f):
     @wraps(f)
