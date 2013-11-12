@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Compiler Value="C:\codetyphon\fpc\bin\i386-win32\fpc.exe" Date="1130259392"/>
+  <Params Value=" -MObjFPC -Scghi -O1 -g -gl -vewnhi -FiC:\Users\Administrateur\Desktop\waptautodeploy\lib\i386-win32 -FuC:\codetyphon\typhon\components\pl_Indy\source\base -FuC:\Users\Administrateur\Desktop\wapt-get -FuC:\tranquilit\pltis_superobject\trunk\lib\i386-win32 -FuC:\codetyphon\typhon\packager\units\i386-win32 -FuC:\Users\Administrateur\Desktop\waptautodeploy\ -FUC:\Users\Administrateur\Desktop\waptautodeploy\lib\i386-win32\ -l waptautodeploy.lpr"/>
+</CONFIG>
