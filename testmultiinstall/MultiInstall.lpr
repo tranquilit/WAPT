@@ -6,14 +6,13 @@ uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
-  Classes, SysUtils,ActiveX,comobj,variants,windows,superobject, CustApp, jwawintype, wininet,
-  Process,IdURI,registry,fpjson,jsonparser,eventlog,UnitRedirect ;
+  Classes, SysUtils,variants,windows, wininet,superobject,
+  CustApp,IdURI,registry,eventlog,UnitRedirect,tisstrings;
   { you can add units after this }
 
 type
 
   { MultiInstall }
-
   TMultiInstall = class(TCustomApplication)
   protected
     procedure DoRun; override;
@@ -25,35 +24,6 @@ type
 
 
 { utilities }
-function GetWMIObject(const objectName: AnsiString): IDispatch; //create the Wmi instance
-var
-  chEaten: PULong;
-  BindCtx: IBindCtx;
-  Moniker: IMoniker;
-begin
-  OleCheck(CreateBindCtx(0, bindCtx));
-  OleCheck(MkParseDisplayName(BindCtx, StringToOleStr(objectName), chEaten, Moniker));
-  OleCheck(Moniker.BindToObject(BindCtx, nil, IDispatch, Result));
-end;
-
-Function WMIBaseBoardInfo:ISUperObject;
-var
-  objWMIService : OLEVariant;
-  colItems      : OLEVariant;
-  colItem       : Variant;
-  oEnum         : IEnumvariant;
-  iValue        : PULong;
-begin;
-  result := TSuperObject.Create;
-  objWMIService := GetWMIObject('winmgmts:\\localhost\root\CIMV2');
-  colItems      := objWMIService.ExecQuery('SELECT * FROM Win32_ComputerSystemProduct','WQL',0);
-  oEnum         := IUnknown(colItems._NewEnum) as IEnumVariant;
-  while oEnum.Next(1, colItem, iValue) = 0 do
-        colItem.;
-  begin
-  end;
-end;
-
 procedure log_event(type_log:String;log_message:String);
 var
    log: TEventLog;
@@ -225,22 +195,6 @@ begin
   end;
 end;
 
-procedure launch_install(WaptSetup: UTF8String; OptionInstall: UTF8String);
- var
-   AProcess: TProcess;
-   AStringList: TStringList;
- begin
-   AProcess := TProcess.Create(nil);
-   AStringList := TStringList.Create;
-   AProcess.CommandLine := Concat(WaptSetup,' ',OptionInstall);
-   AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
-   AProcess.Execute;
-   AStringList.LoadFromStream(AProcess.Output);
-   AStringList.SaveToFile('C:\wapt\waptinstall.txt');
-   AStringList.Free;
-   AProcess.Free;
-end;
-
 function wget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil):boolean;
  const
    BufferSize = 1024*512;
@@ -336,22 +290,20 @@ begin
   begin
     Caption := Registry.ReadString('DisplayVersion');
     Registry.Free;
-    server_version:= StringReplace(server_version, #9,'',[rfReplaceAll]);
-    server_version:= StringReplace(server_version, #32,'',[rfReplaceAll]);
     if Caption = server_version then
     begin
-         log_event('info','Wapt have nothing to upgrade');
-         Result := False;
+     log_event('info','Wapt has nothing to upgrade');
+     Result := False;
     end
     else
     begin
-      log_event('warning','Wapt need upgrade');
+      log_event('warning','Wapt needs upgrade');
       Result := True;
     end;
   end
   else
   begin
-      log_event('warning','No install of Wapt');
+      log_event('warning','No install of Wapt found');
       Result := True;
   end;
 end;
@@ -392,23 +344,6 @@ begin
   end
 end;
 
-function parse_version(json_string:String):String;
-var
-  P : TJSONParser;
-  D : TJSONData;
-  lang : TJSONObject;
-begin
-  P:= TJSONParser.Create(json_string);
-  try
-      D := P.Parse;
-      lang := TJSONObject(D);
-      result := lang.Strings['client_version']
-  finally
-      lang.Free;
-      P.Destroy;
-  end;
-end;
-
 function GetDNSDomain:AnsiString;
 var
   reg:TRegistry;
@@ -429,6 +364,16 @@ begin
   end;
 end;
 
+function GetUuid:String;
+var
+  values:String;
+  keyvalue: TDynStringArray;
+begin
+    values := trim(Sto_RedirectedExecute('wmic csproduct get uuid /VALUE'));
+    keyvalue := Split(values,'=');
+    // got uuid=xxx-sss-fff
+    result := Trim(keyvalue[1]);
+end;
 
 procedure delete_ini();
 begin
@@ -441,69 +386,123 @@ end;
 
 
 
+procedure httpPostData(const UserAgent: string; const url: string; const Data: AnsiString; enableProxy:Boolean= False);
+var
+  hInet: HINTERNET;
+  hHTTP: HINTERNET;
+  hReq: HINTERNET;
+  uri:TIdURI;
+  pdata:String;
+const
+  wall : WideString = '*/*';
+  accept: packed array[0..1] of LPWSTR = (@wall, nil);
+  header: string = 'Content-Type: application/json';
+begin
+  uri := TIdUri.Create(url);
+  try
+    if enableProxy then
+       hInet := InternetOpen(PChar(UserAgent),INTERNET_OPEN_TYPE_PRECONFIG,nil,nil,0)
+    else
+       hInet := InternetOpen(PChar(UserAgent),INTERNET_OPEN_TYPE_DIRECT,nil,nil,0);
+    try
+      hHTTP := InternetConnect(hInet, PChar(uri.Host), StrtoInt(uri.Port), PCHAR(uri.Username),PCHAR(uri.Password), INTERNET_SERVICE_HTTP, 0, 1);
+      if hHTTP =Nil then
+         raise Exception.Create('Unable to connect to '+url);
+      try
+        hReq := HttpOpenRequest(hHTTP, PChar('POST'), PChar(uri.Document), nil, nil, @accept, 0, 1);
+        if hHTTP=Nil then
+           raise Exception.Create('Unable to open '+url);
+        try
+            pdata := Data;
+          if not HttpSendRequest(hReq, PChar(header), length(header), PChar(pdata), length(pdata)) then
+            raise Exception.Create('HttpOpenRequest failed. ' + SysErrorMessage(GetLastError));
+        finally
+          InternetCloseHandle(hReq);
+        end;
+      finally
+        InternetCloseHandle(hHTTP);
+      end;
+    finally
+      InternetCloseHandle(hInet);
+    end;
+  finally
+    uri.Free;
+  end;
+end;
+
 { MultiInstall }
 
 procedure TMultiInstall.DoRun;
 var
   ErrorMsg: String;
   wapt_version, json_wapt_version : String;
-  test : String;
-  wapt_url :String;
-  wapt_server : String;
-  repo_waptsetup,wapt_repo,local_waptsetup : String;
+  computer_fqdn,computer_name : String;
+  uuid: string;
+  wapt_repo,wapt_server : String;
+  json_send: ISuperObject;
+  repo_waptsetup,local_waptsetup : String;
 begin
   //quick check parameters
-  //ErrorMsg:=CheckOptions('r','remove_ini');
-  //ErrorMsg:=ErrorMsg + CheckOptions('h','help');
-  //WriteLn(ErrorMsg);
-  //ReadLn;
-  //if ErrorMsg<>'' then begin
-   //ShowException(Exception.Create(ErrorMsg));
-   //Terminate;
-   //Exit;
-  //end;
+  ErrorMsg := CheckOptions('hds:r:',['help','delete_ini','server:','repourl:']);
+  WriteLn(ErrorMsg);
+  if ErrorMsg<>'' then begin
+   ShowException(Exception.Create(ErrorMsg));
+   Terminate;
+   Exit;
+  end;
 
   // parse parameters
+  computer_fqdn := Concat(GetComputerName,'.',GetDNSDomain);
+  computer_name := GetComputerName;
+  uuid := GetUuid;
+
   if HasOption('h','help') then begin
     WriteHelp;
     Terminate;
     Exit;
   end;
 
- if HasOption('s','server') then begin
-   wapt_url := GetOptionValue('s','server');
- end
+ if HasOption('s','server') then
+    wapt_server := GetOptionValue('s','server')
  else
- begin
-     wapt_url := 'http://wapt';
- end;
- wapt_server := Concat(wapt_url+':8080');
- wapt_repo := Concat(wapt_url+'/wapt/');
- repo_waptsetup := Concat(wapt_repo+'/waptsetup.exe');
- local_waptsetup := Concat(GetTempDir,'waptsetup.exe');
+    wapt_server := 'http://wapt:8080';
 
-  { add your program here }
-  json_wapt_version := httpGetString(Concat(wapt_server,'/info'));
-  wapt_version := parse_version(json_wapt_version);
-  //writeln(GetComputerName+'.'+GetDNSDomain);
- // ReadLn;
+ if HasOption('r','repourl') then
+    wapt_repo := GetOptionValue('r','repourl')
+ else
+    wapt_repo := 'http://wapt/wapt';
+
+ repo_waptsetup := wapt_repo+'/waptsetup.exe';
+ local_waptsetup := GetTempDir+'waptsetup.exe';
+ json_wapt_version:= httpGetString(wapt_server+'/info');
+ wapt_version := SO(json_wapt_version).S['client_version'];
+
+ json_send := TSuperObject.Create;
+ json_send.S['host.computer_fqdn']  := computer_fqdn;
+ json_send.S['host.computer_name']  := computer_name;
+ json_send.S['uuid']  := uuid;
+ json_send.S['update_status.running_tasks'] := 'Install Wapt client';
+ json_send.S['update_status.errors'] := 'the install of wapt have failed error was:';
+ httpPostData(ApplicationName,wapt_server+'/update_host',json_send.AsJSon(True));
+
   if is_update(wapt_version) = True then
   begin
-    CoInitialize(nil);
-    WriteLn(WMIBaseBoardInfo.AsString);
-    //log_event('info','Launch download of waptsetup.exe');
-    //wget(repo_waptsetup,local_waptsetup);
-    //log_event('info','Launch install of waptsetup.exe');
+    log_event('info','Launch download of waptsetup.exe');
+    wget(repo_waptsetup,local_waptsetup);
+    log_event('info','Launch install of waptsetup.exe');
     try
-        if HasOption('r','remove_ini') then begin
+        if HasOption('d','delete_ini') then begin
            delete_ini();
         end;
-       //UnitRedirect.Sto_RedirectedExecute(Concat(local_waptsetup,' ','/MERGETASKS=""useWaptServer,autorunTray"" /verysilent"'));
+       UnitRedirect.Sto_RedirectedExecute(Concat(local_waptsetup,' ','/MERGETASKS=""useWaptServer,autorunTray"" /verysilent"'));
        log_event('info','The install of Wapt is done');
     except
       on E : Exception do
       begin
-          log_event('error','the instll of wapt have failed error was:'#13#10 + E.ClassName+''#13#10 + E.Message);
+          json_send.S['update_status.running_tasks'] := 'Install Wapt client';
+          json_send.S['update_status.errors'] := 'the install of wapt have failed error was:'#13#10 + E.ClassName+''#13#10 + E.Message;
+          httpPostData(ApplicationName,wapt_server+'/update_host',json_send.AsJSon(True));
+          log_event('error','the install of wapt have failed error was:'#13#10 + E.ClassName+''#13#10 + E.Message);
       end;
     end;
 
@@ -527,10 +526,13 @@ end;
 procedure TMultiInstall.WriteHelp;
 begin
   { add your help code here }
+  writeln('Tool for launch waptclient.exe in silent install');
   writeln('Usage: ');
   writeln('-h, --help               show this help');
-  writeln('-r, --remove_ini         remove wapt-get.ini during the upgrade');
-  writeln('-s, --server             specify waptserver url ');
+  writeln('-d, --delete_ini         delete wapt-get.ini during the upgrade');
+  writeln('-s, --server             specify waptserver url (default: http://wapt:8080)');
+  writeln('-r, --repourl            specify waptrepo url (default: http://wapt/wapt)');
+
 
 end;
 
@@ -538,7 +540,6 @@ var
   Application: TMultiInstall;
 begin
   Application:=TMultiInstall.Create(nil);
-  Application.Title:='MultiInstall';
   Application.Run;
   Application.Free;
 end.

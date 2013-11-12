@@ -4,7 +4,7 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="3">
+    <Units Count="8">
       <Unit0>
         <Filename Value="MultiInstall.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -12,9 +12,9 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="33"/>
-        <CursorPos X="9" Y="52"/>
-        <UsageCount Value="20"/>
+        <TopLine Value="462"/>
+        <CursorPos X="38" Y="487"/>
+        <UsageCount Value="33"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -22,146 +22,206 @@
         <UnitName Value="CustApp"/>
         <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="52"/>
-        <CursorPos X="14" Y="68"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="55"/>
+        <CursorPos X="21" Y="65"/>
+        <UsageCount Value="17"/>
         <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\osutilsh.inc"/>
-        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="17"/>
+        <CursorPos X="50" Y="36"/>
+        <UsageCount Value="15"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\..\pltis_superobject\trunk\source\superobject.pas"/>
+        <UnitName Value="superobject"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="3139"/>
+        <CursorPos X="1" Y="3169"/>
+        <UsageCount Value="17"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
+        <UnitName Value="wininet"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="391"/>
+        <CursorPos X="6" Y="409"/>
+        <UsageCount Value="11"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdURI.pas"/>
+        <UnitName Value="IdURI"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="63"/>
+        <CursorPos X="3" Y="81"/>
+        <UsageCount Value="11"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <UnitName Value="waptcommon"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="17" Y="36"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="..\..\pltis_superobject\trunk\soutils.pas"/>
+        <UnitName Value="soutils"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="202"/>
+        <CursorPos X="18" Y="16"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
-      </Unit2>
+      </Unit7>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="446" Column="1" TopLine="422"/>
+        <Filename Value="..\..\pltis_superobject\trunk\source\superobject.pas"/>
+        <Caret Line="4258" Column="1" TopLine="4238"/>
       </Position1>
       <Position2>
-        <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="447" Column="1" TopLine="422"/>
+        <Filename Value="..\..\pltis_superobject\trunk\source\superobject.pas"/>
+        <Caret Line="4259" Column="1" TopLine="4238"/>
       </Position2>
       <Position3>
         <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="448" Column="1" TopLine="422"/>
+        <Caret Line="500" Column="1" TopLine="471"/>
       </Position3>
       <Position4>
-        <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="449" Column="1" TopLine="422"/>
+        <Filename Value="..\..\pltis_superobject\trunk\source\superobject.pas"/>
+        <Caret Line="4257" Column="1" TopLine="4238"/>
       </Position4>
       <Position5>
-        <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="466" Column="1" TopLine="448"/>
+        <Filename Value="..\..\pltis_superobject\trunk\source\superobject.pas"/>
+        <Caret Line="4258" Column="1" TopLine="4238"/>
       </Position5>
       <Position6>
-        <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="467" Column="1" TopLine="448"/>
+        <Filename Value="..\..\pltis_superobject\trunk\source\superobject.pas"/>
+        <Caret Line="4259" Column="1" TopLine="4238"/>
       </Position6>
       <Position7>
         <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="445" Column="77" TopLine="438"/>
+        <Caret Line="501" Column="1" TopLine="472"/>
       </Position7>
       <Position8>
-        <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="433" Column="11" TopLine="413"/>
+        <Filename Value="..\..\pltis_superobject\trunk\source\superobject.pas"/>
+        <Caret Line="4257" Column="1" TopLine="4238"/>
       </Position8>
       <Position9>
-        <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="23" Column="24" TopLine="5"/>
+        <Filename Value="..\..\pltis_superobject\trunk\source\superobject.pas"/>
+        <Caret Line="4258" Column="1" TopLine="4238"/>
       </Position9>
       <Position10>
-        <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="433" Column="14" TopLine="403"/>
+        <Filename Value="..\..\pltis_superobject\trunk\source\superobject.pas"/>
+        <Caret Line="4259" Column="1" TopLine="4238"/>
       </Position10>
       <Position11>
         <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="449" Column="10" TopLine="431"/>
+        <Caret Line="502" Column="1" TopLine="473"/>
       </Position11>
       <Position12>
-        <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="483" Column="53" TopLine="451"/>
+        <Filename Value="..\..\pltis_superobject\trunk\source\superobject.pas"/>
+        <Caret Line="3155" Column="1" TopLine="3137"/>
       </Position12>
       <Position13>
-        <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="436" Column="7" TopLine="421"/>
+        <Filename Value="..\..\pltis_superobject\trunk\source\superobject.pas"/>
+        <Caret Line="3156" Column="1" TopLine="3137"/>
       </Position13>
       <Position14>
-        <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="424" Column="7" TopLine="403"/>
+        <Filename Value="..\..\pltis_superobject\trunk\source\superobject.pas"/>
+        <Caret Line="3157" Column="1" TopLine="3137"/>
       </Position14>
       <Position15>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\custapp.pp"/>
-        <Caret Line="68" Column="26" TopLine="52"/>
+        <Filename Value="..\..\pltis_superobject\trunk\source\superobject.pas"/>
+        <Caret Line="3158" Column="1" TopLine="3137"/>
       </Position15>
       <Position16>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\custapp.pp"/>
-        <Caret Line="65" Column="26" TopLine="52"/>
+        <Filename Value="..\..\pltis_superobject\trunk\source\superobject.pas"/>
+        <Caret Line="3163" Column="1" TopLine="3137"/>
       </Position16>
       <Position17>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\custapp.pp"/>
-        <Caret Line="66" Column="26" TopLine="52"/>
+        <Filename Value="..\..\pltis_superobject\trunk\source\superobject.pas"/>
+        <Caret Line="3164" Column="1" TopLine="3137"/>
       </Position17>
       <Position18>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\custapp.pp"/>
-        <Caret Line="67" Column="26" TopLine="52"/>
+        <Filename Value="..\..\pltis_superobject\trunk\source\superobject.pas"/>
+        <Caret Line="3167" Column="1" TopLine="3137"/>
       </Position18>
       <Position19>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\custapp.pp"/>
-        <Caret Line="68" Column="26" TopLine="52"/>
+        <Filename Value="..\..\pltis_superobject\trunk\source\superobject.pas"/>
+        <Caret Line="3169" Column="1" TopLine="3139"/>
       </Position19>
       <Position20>
         <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="424" Column="25" TopLine="421"/>
+        <Caret Line="504" Column="7" TopLine="487"/>
       </Position20>
       <Position21>
         <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="456" Column="9" TopLine="439"/>
+        <Caret Line="293" Column="13" TopLine="282"/>
       </Position21>
       <Position22>
         <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="460" Column="69" TopLine="431"/>
+        <Caret Line="376" Column="16" TopLine="358"/>
       </Position22>
       <Position23>
         <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="450" Column="6" TopLine="431"/>
+        <Caret Line="378" Column="16" TopLine="358"/>
       </Position23>
       <Position24>
         <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="424" Column="43" TopLine="421"/>
+        <Caret Line="376" Column="15" TopLine="358"/>
       </Position24>
       <Position25>
         <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="453" Column="55" TopLine="436"/>
+        <Caret Line="9" Column="59" TopLine="1"/>
       </Position25>
       <Position26>
         <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="9" Column="65" TopLine="1"/>
+        <Caret Line="71" Column="61" TopLine="53"/>
       </Position26>
       <Position27>
         <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="10" Column="67" TopLine="1"/>
+        <Caret Line="504" Column="11" TopLine="455"/>
       </Position27>
       <Position28>
         <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="9" Column="75" TopLine="1"/>
+        <Caret Line="485" Column="86" TopLine="464"/>
       </Position28>
       <Position29>
         <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="77" Column="1" TopLine="46"/>
+        <Caret Line="504" Column="136" TopLine="489"/>
       </Position29>
       <Position30>
         <Filename Value="MultiInstall.lpr"/>
-        <Caret Line="52" Column="19" TopLine="37"/>
+        <Caret Line="502" Column="79" TopLine="489"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>
+  <Debugging>
+    <BreakPoints Count="2">
+      <Item1>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="MultiInstall.lpr"/>
+        <Line Value="501"/>
+      </Item1>
+      <Item2>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="MultiInstall.lpr"/>
+        <Line Value="488"/>
+      </Item2>
+    </BreakPoints>
+  </Debugging>
   <EditorMacros Count="0"/>
 </CONFIG>
