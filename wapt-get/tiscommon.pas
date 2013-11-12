@@ -398,35 +398,47 @@ begin
   end;
 end;
 
-procedure httpPostData(const UserAgent: string; const Server: string; const Resource: string; const Data: AnsiString; enableProxy:Boolean= False);
+procedure httpPostData(const UserAgent: string; const url: string; const Data: AnsiString; enableProxy:Boolean= False);
 var
   hInet: HINTERNET;
   hHTTP: HINTERNET;
   hReq: HINTERNET;
+  uri:TIdURI;
+  pdata:String;
 const
   wall : WideString = '*/*';
   accept: packed array[0..1] of LPWSTR = (@wall, nil);
-  header: string = 'Content-Type: application/x-www-form-urlencoded';
+  header: string = 'Content-Type: application/json';
 begin
-  if enableProxy then
-     hInet := InternetOpen(PChar(UserAgent),INTERNET_OPEN_TYPE_PRECONFIG,nil,nil,0)
-  else
-     hInet := InternetOpen(PChar(UserAgent),INTERNET_OPEN_TYPE_DIRECT,nil,nil,0);
+  uri := TIdUri.Create(url);
   try
-    hHTTP := InternetConnect(hInet, PChar(Server), INTERNET_DEFAULT_HTTP_PORT, nil, nil, INTERNET_SERVICE_HTTP, 0, 1);
+    if enableProxy then
+       hInet := InternetOpen(PChar(UserAgent),INTERNET_OPEN_TYPE_PRECONFIG,nil,nil,0)
+    else
+       hInet := InternetOpen(PChar(UserAgent),INTERNET_OPEN_TYPE_DIRECT,nil,nil,0);
     try
-      hReq := HttpOpenRequest(hHTTP, PChar('POST'), PChar(Resource), nil, nil, @accept, 0, 1);
+      hHTTP := InternetConnect(hInet, PChar(uri.Host), StrtoInt(uri.Port), PCHAR(uri.Username),PCHAR(uri.Password), INTERNET_SERVICE_HTTP, 0, 1);
+      if hHTTP =Nil then
+         raise Exception.Create('Unable to connect to '+url);
       try
-        if not HttpSendRequest(hReq, PChar(header), length(header), PChar(Data), length(Data)) then
-          raise Exception.Create('HttpOpenRequest failed. ' + SysErrorMessage(GetLastError));
+        hReq := HttpOpenRequest(hHTTP, PChar('POST'), PChar(uri.Document), nil, nil, @accept, 0, 1);
+        if hHTTP=Nil then
+           raise Exception.Create('Unable to open '+url);
+        try
+            pdata := Data;
+          if not HttpSendRequest(hReq, PChar(header), length(header), PChar(pdata), length(pdata)) then
+            raise Exception.Create('HttpOpenRequest failed. ' + SysErrorMessage(GetLastError));
+        finally
+          InternetCloseHandle(hReq);
+        end;
       finally
-        InternetCloseHandle(hReq);
+        InternetCloseHandle(hHTTP);
       end;
     finally
-      InternetCloseHandle(hHTTP);
+      InternetCloseHandle(hInet);
     end;
   finally
-    InternetCloseHandle(hInet);
+    uri.Free;
   end;
 end;
 
