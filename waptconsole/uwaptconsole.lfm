@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 0
+  Left = 2
   Height = 695
-  Top = 91
+  Top = 124
   Width = 1072
   Caption = 'Console WAPT'
   ClientHeight = 676
@@ -670,7 +670,7 @@ object VisWaptGUI: TVisWaptGUI
     object pgGroups: TTabSheet
       Caption = 'Groupes'
       ClientHeight = 527
-      ClientWidth = 1066
+      ClientWidth = 1064
       object GridGroups: TSOGrid
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Side = asrBottom
@@ -678,7 +678,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 497
         Top = 30
-        Width = 1066
+        Width = 1064
         Align = alClient
         Color = clWhite
         Header.AutoSizeIndex = 0
@@ -749,11 +749,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 30
         Top = 0
-        Width = 1066
+        Width = 1064
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 1066
+        ClientWidth = 1064
         TabOrder = 1
         object butSearchGroups: TButton
           Left = 148
@@ -1724,6 +1724,7 @@ object VisWaptGUI: TVisWaptGUI
     left = 352
     top = 88
     object ActInstall: TAction
+      Category = 'Host'
       Caption = 'Installer'
       OnExecute = ActInstallExecute
       OnUpdate = ActInstallUpdate
@@ -1733,6 +1734,7 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActSearchPackageExecute
     end
     object ActRemove: TAction
+      Category = 'Host'
       Caption = 'Désinstaller le paquet'
       OnExecute = ActRemoveExecute
       OnUpdate = ActRemoveUpdate
@@ -1743,10 +1745,12 @@ object VisWaptGUI: TVisWaptGUI
       OnUpdate = ActEditpackageUpdate
     end
     object ActUpdate: TAction
+      Category = 'Host'
       Caption = 'Mise à jour des paquets disponibles'
       OnExecute = ActUpdateExecute
     end
     object ActUpgrade: TAction
+      Category = 'Host'
       Caption = 'Mise à jour du système'
       OnExecute = ActUpgradeExecute
     end
@@ -1785,6 +1789,7 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActEditHostPackageExecute
     end
     object ActRegisterHost: TAction
+      Category = 'Host'
       Caption = 'Enregistrer l''ordinateur sur le serveur Wapt'
       OnExecute = ActRegisterHostExecute
     end
@@ -1820,6 +1825,7 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActPackageDuplicateExecute
     end
     object ActPackageGroupAdd: TAction
+      Category = 'Groups'
       Caption = 'Nouveau groupe'
       OnExecute = ActPackageGroupAddExecute
     end
@@ -1873,6 +1879,7 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActSearchGroupsExecute
     end
     object ActEditGroup: TAction
+      Category = 'Groups'
       Caption = 'Editer le groupe'
       OnExecute = ActEditGroupExecute
     end

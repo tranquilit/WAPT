@@ -556,6 +556,7 @@ end;
 procedure TVisEditPackage.FormShow(Sender: TObject);
 begin
   ActEditSearch.Execute;
+  EdPackage.SetFocus;
 end;
 
 function MkTempDir(prefix: string = ''): string;

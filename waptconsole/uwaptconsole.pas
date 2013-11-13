@@ -644,6 +644,7 @@ procedure TVisWaptGUI.actRefreshExecute(Sender: TObject);
 begin
   Screen.Cursor := crHourGlass;
   try
+    ActUpdate.Execute;
     ActSearchHost.Execute;
     ActSearchPackage.Execute;
     ActSearchGroups.Execute;
@@ -1016,27 +1017,11 @@ begin
 end;
 
 procedure TVisWaptGUI.ActDeployWaptExecute(Sender: TObject);
-var
-  i: Integer;
-  hostsList, data : ISuperObject;
 begin
     with Tviswaptdeploy.Create(self) do
     try
-    begin
       if ShowModal = mrOk then
-      begin
-        data  := TSuperObject.Create;
-        data.S['auth.username'] := EdDomainUser.Text;
-        data.S['auth.password'] := EdDomainPassword.Text;
-        data.S['auth.domain'] := EdDomaine.Text;
-        // Str
-        hostsList := TSuperObject.Create(stArray);
-        for i:=0 to Memo1.Lines.Count - 1 do
-            hostsList.AsArray.Add(Memo1.Lines[i]);
-        data['computers'] := hostsList;
-        showmessage(WAPTServerJsonPost('/deploy_wapt', data, WaptUseLocalConnectionProxy).AsJSon(True));
-      end;
-    end;
+        actRefresh.Execute;
     finally
         Free;
     end;
@@ -1522,35 +1507,23 @@ end;
 procedure TVisWaptGUI.GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
 var
-  resp : ISuperObject;
-  group : String;
-  expr, res, depends, dep: string;
+  selgroup : String;
   N: PVirtualNode;
 begin
-  //ActEditGroup.Execute;
-
   if GridGroups.Focused then
   begin
     N := GridGroups.GetFirstSelected;
-    group := GridGroups.GetCellStrValue(N, 'package');
-
-    with TVisEditGroup.Create(self) do
-    try
-    begin
-         resp :=  WAPTServerJsonGet('/hosts_by_group/'+group, [], WaptUseLocalConnectionProxy);
-         EdGroup.Text:=group;
-         if resp <> nil then
-         begin
-            GridHosts.Data := resp;
-            GridHosts.Header.AutoFitColumns(False);
-         end;
-      if ShowModal = mrOk then
-      halt;
-    end;
-    finally
+    selgroup := GridGroups.GetCellStrValue(N, 'package');
+    if selgroup<>'' then
+      with TVisEditGroup.Create(self) do
+      try
+        group := selgroup;
+        if ShowModal = mrOk then
+          halt;
+      finally
         Free;
-    end;
-    end;
+      end;
+  end;
 end;
 
 procedure TVisWaptGUI.GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
