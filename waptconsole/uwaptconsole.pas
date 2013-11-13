@@ -1025,16 +1025,16 @@ begin
     begin
       if ShowModal = mrOk then
       begin
-      data  := TSuperObject.Create;
-      data.S['auth.username'] := EdDomainUser.Text;
-      data.S['auth.password'] := EdDomainPassword.Text;
-      data.S['auth.domain'] := EdDomaine.Text;
-      // Str
-      hostsList := TSuperObject.Create(stArray);
-      for i:=0 to Memo1.Lines.Count - 1 do
-          hostsList.AsArray.Add(Memo1.Lines[i]);
-      data['computers'] := hostsList;
-      WAPTServerJsonPost('/deploy_wapt', data.AsJSon(True), WaptUseLocalConnectionProxy);
+        data  := TSuperObject.Create;
+        data.S['auth.username'] := EdDomainUser.Text;
+        data.S['auth.password'] := EdDomainPassword.Text;
+        data.S['auth.domain'] := EdDomaine.Text;
+        // Str
+        hostsList := TSuperObject.Create(stArray);
+        for i:=0 to Memo1.Lines.Count - 1 do
+            hostsList.AsArray.Add(Memo1.Lines[i]);
+        data['computers'] := hostsList;
+        showmessage(WAPTServerJsonPost('/deploy_wapt', data, WaptUseLocalConnectionProxy).AsJSon(True));
       end;
     end;
     finally

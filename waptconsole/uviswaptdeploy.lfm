@@ -6,8 +6,9 @@ object viswaptdeploy: Tviswaptdeploy
   Caption = 'Déployer WAPT'
   ClientHeight = 566
   ClientWidth = 438
+  OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '1.3'
+  LCLVersion = '1.1'
   object Panel1: TPanel
     Left = 8
     Height = 122
@@ -101,7 +102,7 @@ object viswaptdeploy: Tviswaptdeploy
       Height = 26
       Top = 16
       Width = 396
-      Caption = 'Cette méthode permet de déployer waptsetup.exe sur tous les postes via psexec.'#13#10'Penser à vérifier que $IPC soit accessible.'
+      Caption = 'Cette méthode permet de déployer waptsetup.exe sur tous les postes via psexec.'#13#10'Penser à vérifier que le partage administratif IPC$ soit accessible.'
       ParentColor = False
     end
   end

@@ -1803,7 +1803,7 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'hosts'
       Caption = 'Supprimer'
       OnExecute = ActHostsDeleteExecute
-      ShortCut = 46
+      ShortCut = 16430
     end
     object ActDeletePackage: TAction
       Caption = 'Supprimer du dépôt'

@@ -36,7 +36,8 @@ Function  Wget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;p
 Function  Wget_try(const fileURL: Utf8String;enableProxy:Boolean=False): boolean;
 
 function httpGetString(   url: string; enableProxy:Boolean= False): Utf8String;
-procedure httpPostData(const UserAgent: string; const url: string; const Data: AnsiString; enableProxy:Boolean= False);
+function httpPostData(const UserAgent: string; const url: string; const Data: AnsiString; enableProxy:Boolean= False;
+   ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000):Utf8String;
 function SetToIgnoreCerticateErrors(oRequestHandle:HINTERNET; var aErrorMsg: string): Boolean;
 function GetWinInetError(ErrorCode:Cardinal): string;
 Procedure UnzipFile(ZipFilePath,OutputPath:Utf8String);
@@ -262,7 +263,6 @@ end;
 function httpGetString(url: string; enableProxy:Boolean= False): Utf8String;
 var
   GlobalhInet,hFile,hConnect: HINTERNET;
-  localFile: File;
   buffer: array[1..1024] of byte;
   flags,bytesRead,dwError,port : DWORD;
   pos:integer;
@@ -293,6 +293,8 @@ begin
           port := INTERNET_DEFAULT_HTTP_PORT;
 
       hConnect := InternetConnect(GlobalhInet, PChar(uri.Host), port, nil, nil, INTERNET_SERVICE_HTTP, 0, 0);
+      if not Assigned(hConnect) then
+        Raise Exception.Create('Unable to connect to '+url+' code : '+IntToStr(GetLastError)+' ('+GetWinInetError(GetlastError)+')');
       flags := INTERNET_FLAG_NO_CACHE_WRITE or INTERNET_FLAG_PRAGMA_NOCACHE or INTERNET_FLAG_RELOAD;
       if uri.Protocol='https' then
         flags := flags or INTERNET_FLAG_SECURE;
@@ -300,6 +302,9 @@ begin
       if uri.params<>'' then
         doc:= doc+'?'+uri.Params;
       hFile := HttpOpenRequest(hConnect, 'GET', PChar(doc), HTTP_VERSION, nil, nil,flags , 0);
+      if not Assigned(hFile) then
+        Raise Exception.Create('Unable to get doc '+url+' code : '+IntToStr(GetLastError)+' ('+GetWinInetError(GetlastError)+')');
+
       if not HttpSendRequest(hFile, nil, 0, nil, 0) then
       begin
         ErrorCode:=GetLastError;
@@ -398,13 +403,27 @@ begin
   end;
 end;
 
-procedure httpPostData(const UserAgent: string; const url: string; const Data: AnsiString; enableProxy:Boolean= False);
+function httpPostData(const UserAgent: string; const url: string; const Data: AnsiString; enableProxy:Boolean= False;
+   ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000):Utf8String;
 var
   hInet: HINTERNET;
   hHTTP: HINTERNET;
   hReq: HINTERNET;
   uri:TIdURI;
   pdata:String;
+
+  buffer: array[1..1024] of byte;
+  flags,bytesRead,dwError,port : DWORD;
+  pos:integer;
+  dwindex,dwcodelen,dwread,dwNumber: cardinal;
+  dwcode : array[1..20] of char;
+  res    : pchar;
+
+  timeout:integer;
+//  doc,error: String;
+//  uri :TIdURI;
+
+
 const
   wall : WideString = '*/*';
   accept: packed array[0..1] of LPWSTR = (@wall, nil);
@@ -417,17 +436,46 @@ begin
     else
        hInet := InternetOpen(PChar(UserAgent),INTERNET_OPEN_TYPE_DIRECT,nil,nil,0);
     try
+      InternetSetOption(hInet,INTERNET_OPTION_CONNECT_TIMEOUT,@ConnectTimeout,sizeof(integer));
+      InternetSetOption(hInet,INTERNET_OPTION_SEND_TIMEOUT,@SendTimeOut,sizeof(integer));
+      InternetSetOption(hInet,INTERNET_OPTION_RECEIVE_TIMEOUT,@ReceiveTimeOut,sizeof(integer));
+
       hHTTP := InternetConnect(hInet, PChar(uri.Host), StrtoInt(uri.Port), PCHAR(uri.Username),PCHAR(uri.Password), INTERNET_SERVICE_HTTP, 0, 1);
       if hHTTP =Nil then
-         raise Exception.Create('Unable to connect to '+url);
+          Raise Exception.Create('Unable to connect to '+url+' code : '+IntToStr(GetLastError)+' ('+UTF8Encode(GetWinInetError(GetlastError))+')');
       try
         hReq := HttpOpenRequest(hHTTP, PChar('POST'), PChar(uri.Document), nil, nil, @accept, 0, 1);
-        if hHTTP=Nil then
-           raise Exception.Create('Unable to open '+url);
+        if hReq=Nil then
+            Raise Exception.Create('Unable to POST to '+url+' code : '+IntToStr(GetLastError)+' ('+UTF8Encode(GetWinInetError(GetlastError))+')');
         try
-            pdata := Data;
+          pdata := Data;
           if not HttpSendRequest(hReq, PChar(header), length(header), PChar(pdata), length(pdata)) then
-            raise Exception.Create('HttpOpenRequest failed. ' + SysErrorMessage(GetLastError));
+             Raise Exception.Create('Unable to send data to '+url+' code : '+IntToStr(GetLastError)+' ('+UTF8Encode(GetWinInetError(GetlastError))+')');
+
+          dwIndex  := 0;
+          dwCodeLen := 10;
+          if HttpQueryInfo(hReq, HTTP_QUERY_STATUS_CODE, @dwcode, dwcodeLen, dwIndex) then
+          begin
+            res := pchar(@dwcode);
+            dwNumber := sizeof(Buffer)-1;
+            if (res ='200') or (res ='302') then
+            begin
+              Result:='';
+              pos:=1;
+              repeat
+                FillChar(buffer,SizeOf(buffer),0);
+                InternetReadFile(hReq,@buffer,SizeOf(buffer),bytesRead);
+                SetLength(Result,Length(result)+bytesRead+1);
+                Move(Buffer,Result[pos],bytesRead);
+                inc(pos,bytesRead);
+              until bytesRead = 0;
+            end
+            else
+               raise Exception.Create('Unable to get return data for '+URL+#13#10+'HTTP Status:'+res+#13#10+' code : '+IntToStr(GetLastError)+' ('+UTF8Encode(GetWinInetError(GetlastError))+')');
+          end
+          else
+              Raise Exception.Create('Unable to get http status for '+url+' code : '+IntToStr(GetLastError)+' ('+UTF8Encode(GetWinInetError(GetlastError))+')');
+
         finally
           InternetCloseHandle(hReq);
         end;

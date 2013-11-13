@@ -60,7 +60,7 @@ interface
   function GetDNSDomain:AnsiString;
 
   function WAPTServerJsonGet(action: String;args:Array of const; enableProxy:Boolean= False): ISuperObject;
-  procedure WAPTServerJsonPost(action: String;data: String; enableProxy:Boolean= False);
+  function WAPTServerJsonPost(action: String;data: ISuperObject; enableProxy:Boolean= False): ISuperObject;
   function WAPTLocalJsonGet(action:String):ISuperObject;
 
 Type
@@ -175,13 +175,17 @@ begin
   strresult:=httpGetString(GetWaptServerURL+action, enableProxy);
   Result := SO(strresult);
 end;
-procedure WAPTServerJsonPost(action: String;data: String; enableProxy:Boolean= False);
+
+function WAPTServerJsonPost(action: String;data: ISuperObject; enableProxy:Boolean= False):ISuperObject;
+var
+  res:String;
 begin
   if GetWaptServerURL = '' then
     raise Exception.Create('wapt_server is not defined in your '+AppIniFilename+' ini file');
   if StrLeft(action,1)<>'/' then
     action := '/'+action;
-  httpPostData('wapt', GetWaptServerURL+action, data, enableProxy);
+  res := httpPostData('wapt', GetWaptServerURL+action, data.AsJson, enableProxy);
+  result := SO(res);
 end;
 
 function WAPTLocalJsonGet(action: String): ISuperObject;

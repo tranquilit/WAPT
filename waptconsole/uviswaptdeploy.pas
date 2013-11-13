@@ -25,6 +25,7 @@ type
     Panel1: TPanel;
     Panel2: TPanel;
     Panel4: TPanel;
+    procedure FormCreate(Sender: TObject);
   private
     { private declarations }
   public
@@ -35,8 +36,15 @@ var
   viswaptdeploy: Tviswaptdeploy;
 
 implementation
-
+uses tiscommon;
 {$R *.lfm}
+
+{ Tviswaptdeploy }
+
+procedure Tviswaptdeploy.FormCreate(Sender: TObject);
+begin
+  EdDomaine.Text := GetDomainName;
+end;
 
 end.
 
