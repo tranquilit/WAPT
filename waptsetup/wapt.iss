@@ -13,6 +13,8 @@
 ;#define waptserver 
 #ifdef waptserver
 #define AppName "WAPT Server"
+#define default_repo_url "http://localhost:8080/wapt/"
+#define default_wapt_server "http://localhost:8080"
 #else
 #define AppName "WAPT"
 #endif
@@ -120,7 +122,7 @@ LicenseFile=..\COPYING.txt
 RestartIfNeededByRun=False
 SetupIconFile=..\wapt.ico
 
-;SignTool=kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f
+SignTool=kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f
 
 [Registry]
 Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"; Check: NeedsAddPath('{app}')
@@ -188,7 +190,7 @@ var
   teWaptUrl,teWaptServerUrl: TEdit;
   CustomPage: TWizardPage;
 
-  
+#ifndef waptserver  
 procedure InitializeWizard;
 begin
   CustomPage := CreateCustomPage(wpSelectTasks, 'Installation options', '');
@@ -230,17 +232,22 @@ begin
 
   end
 end;
+#endif
 
 function GetRepoURL(Param: String):String;
 begin
   if WizardSilent then
-    result :='http://wapt/wapt';
+    result :='http://wapt/wapt' 
+  else
+	result := '{#default_repo_url}';
 end;
 
 function GetWaptServerURL(Param: String):String;
 begin
   if WizardSilent then
-    result := 'http://wapt:8080';
+    result := 'http://wapt:8080'
+  else
+    result := '{#default_wapt_server}';
 end;
 
 
