@@ -47,12 +47,14 @@ import pprint
 import socket
 import requests
 import pefile
+import subprocess
+import tempfile
 from rocket import Rocket
 
 
 from waptpackage import update_packages,PackageEntry
 
-__version__="0.8.1"
+__version__="0.9"
 
 config = ConfigParser.RawConfigParser()
 
@@ -467,6 +469,73 @@ def upgrade_host(ip):
 
     except Exception as e:
         return "Impossible de joindre le web service: %s" % e
+
+
+def install_wapt(computer_name,authentication_file):
+    cmd = '/usr/bin/smbclient -G -E -A %s  //%s/IPC$ -c listconnect ' % (authentication_file, computer_name)
+    try:
+    	subprocess.check_output(cmd,stderr=subprocess.STDOUT,shell=True)
+    except subprocess.CalledProcessError as e:
+        if "NT_STATUS_LOGON_FAILURE" in e.output:
+	    raise Exception("Mauvais identifiants")
+	if "NT_STATUS_CONNECTION_REFUSED" in e.output:	
+	    raise Exception("Partage IPC$ non accessible")
+
+	raise Exception(u"%s" % e.output)
+	
+
+    cmd = '/usr/bin/smbclient -A "%s" //%s/c\\$ -c "put waptsetup.exe" ' % (authentication_file, computer_name)
+    print subprocess.check_output(cmd,shell=True)
+
+    cmd = '/usr/bin/winexe -A "%s"  //%s  "c:\\waptsetup.exe  /MERGETASKS=""useWaptServer,autorunTray"" /VERYSILENT"  ' % (authentication_file, computer_name)
+    print subprocess.check_output(cmd,shell=True)
+
+#    cmd = '/usr/bin/smbclient -A "%s" //%s/c\\$ -c "cd wapt ; put wapt-get.ini ; exit" ' % (authentication_file, computer_name)
+#    print subprocess.check_output(cmd,shell=True)
+
+
+    cmd = '/usr/bin/winexe -A "%s"  //%s  "c:\\wapt\\wapt-get.exe register"' % (authentication_file, computer_name)
+    print subprocess.check_output(cmd,shell=True)
+
+
+    cmd = '/usr/bin/winexe -A "%s"  //%s  "c:\\wapt\\wapt-get.exe --version"' % (authentication_file, computer_name)
+    return subprocess.check_output(cmd,shell=True)
+        
+@app.route('/deploy_wapt',methods=['POST'])
+def deploy_wapt():
+    try:
+	result = {}
+	if request.method == 'POST':
+	    d = json.loads(request.data) 
+	    if not d.has_key('auth'):  
+		raise Exception("Les informations d'authentification sont manquantes")
+	    if not d.has_key('computer_fqdn'):  
+		raise Exception(u"Il n'y a aucuns ordinateurs de renseigné")
+	    
+	    auth_file = tempfile.mkstemp("wapt")[1]
+	    try:
+		with open(auth_file, 'w') as f:
+		    f.write('username = %s\npassword = %s\ndomain = %s\n'% (
+			d['auth']['username'],
+			d['auth']['password'],
+			d['auth']['domain']))
+		    
+		os.chdir(wapt_folder)
+		
+		message = install_wapt(d['computer_fqdn'],auth_file)
+					       
+		result = { 'status' : 'OK' , 'message': message} 
+	    finally:
+		os.unlink(auth_file)
+	    
+	else:
+	    raise Exception(u"methode http non supportée")
+
+    except Exception, e:
+	result = { 'status' : 'ERROR', 'message': u"%s" % e  }
+
+	
+    return json.dumps(result)
 
 @app.route('/login',methods=['POST'])
 def login():
