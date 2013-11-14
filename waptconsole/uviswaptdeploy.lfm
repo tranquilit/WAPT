@@ -127,6 +127,14 @@ object viswaptdeploy: Tviswaptdeploy
       ModalResult = 11
       TabOrder = 0
     end
+    object Button1: TButton
+      Left = 8
+      Height = 25
+      Top = 5
+      Width = 75
+      Action = ActStop
+      TabOrder = 1
+    end
   end
   object Panel3: TPanel
     Left = 0
@@ -210,6 +218,10 @@ object viswaptdeploy: Tviswaptdeploy
     object ActDeployWapt: TAction
       Caption = 'Déployer'
       OnExecute = ActDeployWaptExecute
+    end
+    object ActStop: TAction
+      Caption = 'Stopper'
+      OnExecute = ActStopExecute
     end
   end
   object Datasource1: TDatasource

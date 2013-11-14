@@ -1,0 +1,106 @@
+object VisHostsUpgrade: TVisHostsUpgrade
+  Left = 619
+  Height = 383
+  Top = 272
+  Width = 683
+  Caption = 'Lancer la mises des postes'
+  ClientHeight = 383
+  ClientWidth = 683
+  OnCreate = FormCreate
+  LCLVersion = '1.1'
+  object ProgressGrid: TSOGrid
+    Left = 0
+    Height = 350
+    Top = 0
+    Width = 683
+    JSONdata = '""'
+    Align = alClient
+    Color = clWhite
+    Header.AutoSizeIndex = 0
+    Header.Columns = <    
+      item
+        Position = 0
+        Text = 'Machine'
+        Width = 200
+        PropertyName = 'host.computer_fqdn'
+      end    
+      item
+        Position = 1
+        Text = 'IP'
+        Width = 150
+        PropertyName = 'host.connected_ips'
+      end    
+      item
+        Position = 2
+        Text = 'Etat'
+        Width = 100
+        PropertyName = 'status'
+      end    
+      item
+        Position = 3
+        Text = 'Message'
+        Width = 200
+        PropertyName = 'message'
+      end>
+    Header.DefaultHeight = 17
+    Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+    Header.Style = hsFlatButtons
+    TabOrder = 0
+    TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+    TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toEditOnClick]
+    TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+    TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect]
+    OnMeasureItem = ProgressGridMeasureItem
+  end
+  object Panel4: TPanel
+    Left = 0
+    Height = 33
+    Top = 350
+    Width = 683
+    Align = alBottom
+    BevelOuter = bvNone
+    ClientHeight = 33
+    ClientWidth = 683
+    TabOrder = 1
+    object BitBtn2: TBitBtn
+      Left = 588
+      Height = 26
+      Top = 4
+      Width = 89
+      Anchors = [akRight, akBottom]
+      DefaultCaption = True
+      Kind = bkClose
+      ModalResult = 11
+      TabOrder = 0
+    end
+    object Button5: TButton
+      Left = 417
+      Height = 26
+      Top = 4
+      Width = 156
+      Action = ActUpgrade
+      Anchors = [akRight, akBottom]
+      TabOrder = 1
+    end
+    object Button1: TButton
+      Left = 4
+      Height = 25
+      Top = 5
+      Width = 112
+      Action = ActStop
+      TabOrder = 2
+    end
+  end
+  object ActionList1: TActionList
+    left = 240
+    top = 264
+    object ActUpgrade: TAction
+      Caption = 'Lancer les mises à jour'
+      OnExecute = ActUpgradeExecute
+    end
+    object ActStop: TAction
+      Caption = 'Stopper'
+      OnExecute = ActStopExecute
+    end
+  end
+end

@@ -300,8 +300,8 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toUseExplorerTheme]
         TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect, toSimpleDrawSelection]
         WantTabs = True
+        OnChange = GridHostsChange
         OnColumnDblClick = GridHostsColumnDblClick
-        OnFocusChanged = GridHostsFocusChanged
         OnGetImageIndexEx = GridHostsGetImageIndexEx
         OnHeaderDblClick = GridHostsHeaderDblClick
       end
@@ -886,7 +886,7 @@ object VisWaptGUI: TVisWaptGUI
           Height = 25
           Top = 2
           Width = 188
-          Action = ActUpdate
+          Action = ActPackagesUpdate
           TabOrder = 2
         end
         object Button2: TButton
@@ -894,7 +894,7 @@ object VisWaptGUI: TVisWaptGUI
           Height = 25
           Top = 2
           Width = 136
-          Action = ActUpgrade
+          Action = ActLocalhostUpgrade
           TabOrder = 3
         end
         object Button1: TButton
@@ -1723,36 +1723,38 @@ object VisWaptGUI: TVisWaptGUI
   object ActionList1: TActionList
     left = 352
     top = 88
-    object ActInstall: TAction
+    object ActLocalhostInstall: TAction
       Category = 'Host'
       Caption = 'Installer'
-      OnExecute = ActInstallExecute
-      OnUpdate = ActInstallUpdate
+      OnExecute = ActLocalhostInstallExecute
+      OnUpdate = ActLocalhostInstallUpdate
     end
     object ActSearchPackage: TAction
+      Category = 'packages'
       Caption = 'Rechercher'
       OnExecute = ActSearchPackageExecute
     end
-    object ActRemove: TAction
+    object ActLocalhostRemove: TAction
       Category = 'Host'
       Caption = 'Désinstaller le paquet'
-      OnExecute = ActRemoveExecute
-      OnUpdate = ActRemoveUpdate
+      OnExecute = ActLocalhostRemoveExecute
+      OnUpdate = ActLocalhostRemoveUpdate
     end
     object ActEditpackage: TAction
+      Category = 'packages'
       Caption = 'Editer le paquet'
       OnExecute = ActPackageEdit
       OnUpdate = ActEditpackageUpdate
     end
-    object ActUpdate: TAction
+    object ActPackagesUpdate: TAction
       Category = 'Host'
       Caption = 'Mise à jour des paquets disponibles'
-      OnExecute = ActUpdateExecute
+      OnExecute = ActPackagesUpdateExecute
     end
-    object ActUpgrade: TAction
+    object ActLocalhostUpgrade: TAction
       Category = 'Host'
       Caption = 'Mise à jour du système'
-      OnExecute = ActUpgradeExecute
+      OnExecute = ActLocalhostUpgradeExecute
     end
     object ActExecCode: TAction
       Caption = 'Exécuter le code source python'
@@ -1763,6 +1765,7 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActEvaluateExecute
     end
     object ActBuildUpload: TAction
+      Category = 'packages'
       Caption = 'Activer le paquet'
     end
     object ActCreateCertificate: TAction
@@ -1811,6 +1814,7 @@ object VisWaptGUI: TVisWaptGUI
       ShortCut = 16430
     end
     object ActDeletePackage: TAction
+      Category = 'packages'
       Caption = 'Supprimer du dépôt'
       OnExecute = ActDeletePackageExecute
       OnUpdate = ActDeletePackageUpdate
@@ -1821,6 +1825,7 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActAdvancedModeExecute
     end
     object ActPackageDuplicate: TAction
+      Category = 'packages'
       Caption = 'Dupliquer'
       OnExecute = ActPackageDuplicateExecute
     end
@@ -1898,13 +1903,13 @@ object VisWaptGUI: TVisWaptGUI
     left = 148
     top = 150
     object MenuItem1: TMenuItem
-      Action = ActInstall
+      Action = ActLocalhostInstall
     end
     object MenuItem22: TMenuItem
       Action = ActDeletePackage
     end
     object MenuItem2: TMenuItem
-      Action = ActRemove
+      Action = ActLocalhostRemove
     end
     object MenuItem3: TMenuItem
       Action = ActEditpackage

@@ -16,7 +16,7 @@ type
   { TVisWaptGUI }
 
   TVisWaptGUI = class(TForm)
-    ActInstall: TAction;
+    ActLocalhostInstall: TAction;
     ActEditpackage: TAction;
     ActExecCode: TAction;
     ActEvaluate: TAction;
@@ -50,9 +50,9 @@ type
     ActPackageDuplicate: TAction;
     ActRegisterHost: TAction;
     ActSearchHost: TAction;
-    ActUpgrade: TAction;
-    ActUpdate: TAction;
-    ActRemove: TAction;
+    ActLocalhostUpgrade: TAction;
+    ActPackagesUpdate: TAction;
+    ActLocalhostRemove: TAction;
     ActSearchPackage: TAction;
     ActionList1: TActionList;
     btAddGroup: TButton;
@@ -206,20 +206,20 @@ type
     procedure ActHostsCopyExecute(Sender: TObject);
     procedure ActHostsDeleteExecute(Sender: TObject);
     procedure actHostSelectAllExecute(Sender: TObject);
-    procedure ActInstallExecute(Sender: TObject);
-    procedure ActInstallUpdate(Sender: TObject);
+    procedure ActLocalhostInstallExecute(Sender: TObject);
+    procedure ActLocalhostInstallUpdate(Sender: TObject);
     procedure ActPackageDuplicateExecute(Sender: TObject);
     procedure ActPackageGroupAddExecute(Sender: TObject);
     procedure actQuitExecute(Sender: TObject);
     procedure actRefreshExecute(Sender: TObject);
     procedure ActRegisterHostExecute(Sender: TObject);
-    procedure ActRemoveExecute(Sender: TObject);
-    procedure ActRemoveUpdate(Sender: TObject);
+    procedure ActLocalhostRemoveExecute(Sender: TObject);
+    procedure ActLocalhostRemoveUpdate(Sender: TObject);
     procedure ActSearchHostExecute(Sender: TObject);
     procedure ActSearchPackageExecute(Sender: TObject);
-    procedure ActUpdateExecute(Sender: TObject);
+    procedure ActPackagesUpdateExecute(Sender: TObject);
     procedure ActUpdateWaptGetINIExecute(Sender: TObject);
-    procedure ActUpgradeExecute(Sender: TObject);
+    procedure ActLocalhostUpgradeExecute(Sender: TObject);
     procedure ActWAPTLocalConfigExecute(Sender: TObject);
     procedure butSearchExternalPackagesClick(Sender: TObject);
     procedure cbSearchAllChange(Sender: TObject);
@@ -241,10 +241,9 @@ type
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: boolean; var ImageIndex: integer;
       var ImageList: TCustomImageList);
+    procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridHostsColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
-    procedure GridHostsFocusChanged(Sender: TBaseVirtualTree;
-      Node: PVirtualNode; Column: TColumnIndex);
     procedure GridHostsGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: boolean; var ImageIndex: integer;
@@ -289,7 +288,7 @@ implementation
 uses LCLIntf, IniFiles, uvisprivatekeyauth, uvisloading, tisstrings, soutils,
   waptcommon, tiscommon, uVisCreateKey, uVisCreateWaptSetup, uvisOptionIniFile,
   dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
-  uvisgroupchoice, uviseditgroup, uviswaptdeploy,
+  uvisgroupchoice, uviseditgroup, uviswaptdeploy, uvishostsupgrade,
   PythonEngine;
 
 {$R *.lfm}
@@ -423,7 +422,7 @@ begin
   end;
 end;
 
-procedure TVisWaptGUI.ActInstallExecute(Sender: TObject);
+procedure TVisWaptGUI.ActLocalhostInstallExecute(Sender: TObject);
 begin
   if GridPackages.Focused then
   begin
@@ -464,9 +463,9 @@ begin
 
 end;
 
-procedure TVisWaptGUI.ActInstallUpdate(Sender: TObject);
+procedure TVisWaptGUI.ActLocalhostInstallUpdate(Sender: TObject);
 begin
-  ActInstall.Enabled := GridPackages.SelectedCount > 0;
+  ActLocalhostInstall.Enabled := GridPackages.SelectedCount > 0;
 end;
 
 procedure TVisWaptGUI.ActPackageDuplicateExecute(Sender: TObject);
@@ -605,7 +604,7 @@ begin
                ShowMessage(format('%s dupliqué avec succès.', [oldName]))
             else
               listPackages.AsArray.Add(oldName);
-            ActUpdate.Execute;
+            ActPackagesUpdate.Execute;
           end
           else
             ShowMessage('Erreur lors de la duplication.');
@@ -631,7 +630,7 @@ end;
 procedure TVisWaptGUI.ActPackageGroupAddExecute(Sender: TObject);
 begin
   CreateGroup('agroup', ActAdvancedMode.Checked);
-  ActUpdate.Execute;
+  ActPackagesUpdate.Execute;
 
 end;
 
@@ -644,7 +643,7 @@ procedure TVisWaptGUI.actRefreshExecute(Sender: TObject);
 begin
   Screen.Cursor := crHourGlass;
   try
-    ActUpdate.Execute;
+    ActPackagesUpdate.Execute;
     ActSearchHost.Execute;
     ActSearchPackage.Execute;
     ActSearchGroups.Execute;
@@ -671,7 +670,7 @@ begin
     N := GridPackages.GetFirstSelected;
     Selpackage := GridPackages.GetCellStrValue(N, 'package');
     if EditPackage(Selpackage, ActAdvancedMode.Checked) <> nil then
-      ActUpdate.Execute;
+      ActPackagesUpdate.Execute;
   end;
 end;
 
@@ -964,7 +963,7 @@ begin
           ProgressStep(i, GridGroups.SelectedCount);
         end;
         ProgressTitle('Mise à jour de la liste des groupes');
-        ActUpdate.Execute;
+        ActPackagesUpdate.Execute;
         ProgressTitle('Affichage');
         ActSearchGroups.Execute;
       finally
@@ -1003,7 +1002,7 @@ begin
           ProgressStep(i, GridPackages.SelectedCount);
         end;
         ProgressTitle('Mise à jour de la liste des paquets');
-        ActUpdate.Execute;
+        ActPackagesUpdate.Execute;
         ProgressTitle('Affichage');
         ActSearchPackage.Execute;
       finally
@@ -1039,7 +1038,7 @@ begin
     N := GridGroups.GetFirstSelected;
     Selpackage := GridGroups.GetCellStrValue(N, 'package');
     if EditGroup(Selpackage, ActAdvancedMode.Checked) <> nil then
-      ActUpdate.Execute;
+      ActPackagesUpdate.Execute;
   end;
 end;
 
@@ -1073,37 +1072,15 @@ begin
 end;
 
 procedure TVisWaptGUI.ActHostUpgradeExecute(Sender: TObject);
-var
-  hostname, ip: string;
-  N: PVirtualNode;
-  res: ISuperObject;
-  i: integer;
-
 begin
-  with TVisLoading.Create(Self) do
-    try
-      ProgressTitle('Lancement des mises à jour sur les postes');
-      ProgressStep(0, GridHosts.SelectedCount);
-      N := GridHosts.GetFirstSelected;
-      i := 0;
-      while (N <> nil) and not StopRequired do
-      begin
-        ip := GridHosts.GetCellStrValue(N, 'host.connected_ips');
-        hostname := GridHosts.GetCellStrValue(N, 'host.computer_fqdn');
-        ;
-        if ip <> '' then
-        begin
-          ProgressTitle('Pour ' + hostname + ' (ip:' + ip + ')');
-          res := WAPTServerJsonGet('/upgrade_host/' + ip, [],WaptUseLocalConnectionProxy);
-          ProgressTitle(hostname + ' ok');
-        end;
-        N := GridHosts.GetNextSelected(N);
-        Inc(i);
-        ProgressStep(i, GridHosts.SelectedCount);
-      end;
-    finally
-      Free;
-    end;
+  with TVisHostsUpgrade.Create(Self) do
+  try
+    hosts:=Gridhosts.SelectedRows;
+    if ShowModal=mrOK then
+      actRefresh.Execute;
+  finally
+    Free;
+  end;
 end;
 
 procedure TVisWaptGUI.ActHostUpgradeUpdate(Sender: TObject);
@@ -1112,25 +1089,16 @@ begin
 end;
 
 procedure TVisWaptGUI.ActHostWaptUpgradeExecute(Sender: TObject);
-var
-  ip: string;
-  N: PVirtualNode;
-  res: ISuperObject;
 begin
-  N := GridHosts.GetFirstSelected;
-  while N <> nil do
-  begin
-    ip := GridHosts.GetCellStrValue(N, 'host.connected_ips');
-    if ip <> '' then
-    begin
-      res := WAPTServerJsonGet('/waptupgrade_host/' + ip, [],WaptUseLocalConnectionProxy);
-      if res <> nil then
-        ShowMessage(res.AsString)
-      else
-        ShowMessage('Erreur pour la machine ' + ip);
-
-    end;
-    N := GridHosts.GetNextSelected(N);
+  with TVisHostsUpgrade.Create(Self) do
+  try
+    action := 'waptupgrade';
+    caption := 'Mise à jour du client WAPT sur les postes';
+    hosts:=Gridhosts.SelectedRows;
+    if ShowModal=mrOK then
+      actRefresh.Execute;
+  finally
+    Free;
   end;
 end;
 
@@ -1168,21 +1136,17 @@ end;
 
 procedure TVisWaptGUI.ActHostsDeleteExecute(Sender: TObject);
 var
-  expr, res: string;
-  host: string;
-  i: integer;
-  N: PVirtualNode;
+  sel,host : ISuperObject;
 begin
   if GridHosts.Focused then
   begin
-    N := GridHosts.GetFirstSelected;
-    while N <> nil do
+    sel := GridHosts.SelectedRows;
+    if Dialogs.MessageDlg('Confirmer','Confirmez-vous la suppression de '+intToStr(sel.AsArray.Length)+' postes de la liste ?',mtConfirmation,mbYesNoCancel,0) = mrYes then
     begin
-      host := GridHosts.GetCellStrValue(N, 'uuid');
-      WAPTServerJsonGet('/delete_host/' + host, [],WaptUseLocalConnectionProxy).AsJson;
-      N := GridHosts.GetNextSelected(N);
+      for host in sel do
+        WAPTServerJsonGet('/delete_host/' + host.S['uuid'], [],WaptUseLocalConnectionProxy);
+      ActSearchHost.Execute;
     end;
-    ActSearchHost.Execute;
   end;
 end;
 
@@ -1191,7 +1155,7 @@ begin
   TSOGrid(GridHosts).SelectAll(False);
 end;
 
-procedure TVisWaptGUI.ActRemoveExecute(Sender: TObject);
+procedure TVisWaptGUI.ActLocalhostRemoveExecute(Sender: TObject);
 var
   expr, res: string;
   package: string;
@@ -1222,9 +1186,9 @@ begin
   end;
 end;
 
-procedure TVisWaptGUI.ActRemoveUpdate(Sender: TObject);
+procedure TVisWaptGUI.ActLocalhostRemoveUpdate(Sender: TObject);
 begin
-  ActRemove.Enabled := GridPackages.SelectedCount > 0;
+  ActLocalhostRemove.Enabled := GridPackages.SelectedCount > 0;
 end;
 
 procedure TVisWaptGUI.ActSearchHostExecute(Sender: TObject);
@@ -1285,7 +1249,7 @@ begin
   GridPackages.Header.AutoFitColumns(False);
 end;
 
-procedure TVisWaptGUI.ActUpdateExecute(Sender: TObject);
+procedure TVisWaptGUI.ActPackagesUpdateExecute(Sender: TObject);
 var
   l, res, i: variant;
 begin
@@ -1302,7 +1266,7 @@ begin
   urlExternalRepo.Caption := 'Url: ' + WaptExternalRepo;
 end;
 
-procedure TVisWaptGUI.ActUpgradeExecute(Sender: TObject);
+procedure TVisWaptGUI.ActLocalhostUpgradeExecute(Sender: TObject);
 begin
   DMPython.RunJSON('mywapt.upgrade()', jsonlog);
 end;
@@ -1312,7 +1276,7 @@ begin
   if EditIniFile then
   begin
     ActUpdateWaptGetINI.Execute;
-    ActUpdate.Execute;
+    ActPackagesUpdate.Execute;
     GridPackages.Clear;
     GridGroups.Clear;
     GridExternalPackages.Clear;
@@ -1546,17 +1510,16 @@ begin
   end;
 end;
 
+procedure TVisWaptGUI.GridHostsChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+begin
+  UpdateHostPages(Sender);
+end;
+
 procedure TVisWaptGUI.GridHostsColumnDblClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
 begin
   ActEditHostPackage.Execute;
-
-end;
-
-procedure TVisWaptGUI.GridHostsFocusChanged(Sender: TBaseVirtualTree;
-  Node: PVirtualNode; Column: TColumnIndex);
-begin
-  UpdateHostPages(Sender);
 end;
 
 procedure TVisWaptGUI.GridLoadData(grid: TSOGrid; jsondata: string);
