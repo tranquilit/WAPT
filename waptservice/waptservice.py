@@ -17,15 +17,16 @@ from flask import request, Flask,Response, send_from_directory, send_file, sessi
 from werkzeug.utils import html
 import gc
 
-import common
-import setuphelpers
-from common import Wapt
 
 wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
 sys.path.append(os.path.join(wapt_root_dir))
 sys.path.append(os.path.join(wapt_root_dir,'lib'))
 sys.path.append(os.path.join(wapt_root_dir,'waptservice'))
 sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
+
+import common
+import setuphelpers
+from common import Wapt
 
 __version__ = "0.7.9"
 
@@ -118,7 +119,15 @@ def check_open_port():
 
 check_open_port()
 
-waptserver_ip = socket.gethostbyname( urlparse(Wapt(config_filename=config_file).find_wapt_server()).hostname)
+def get_authorized_callers_ip():
+    ips = ['127.0.0.1']
+    wapt = Wapt(config_filename=config_file)
+    #ips.append(socket.gethostbyname( urlparse(wapt.find_wapt_server()).hostname))
+    if wapt.wapt_server:
+        ips.append(socket.gethostbyname( urlparse(wapt.wapt_server).hostname))
+    return ips
+
+authorized_callers_ip = get_authorized_callers_ip()
 
 app = Flask(__name__)
 app.config['PROPAGATE_EXCEPTIONS'] = True
@@ -149,7 +158,7 @@ def check_ip_source(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         auth = request.authorization
-        if not  request.remote_addr in ['127.0.0.1', waptserver_ip]:
+        if not request.remote_addr in authorized_callers_ip:
             return authenticate()
         return f(*args, **kwargs)
     return decorated
@@ -228,8 +237,8 @@ def get_checkupgrades():
 def waptupgrade():
     from setuphelpers import run
     print "run waptupgrade"
-    run('"%s" %s' % (os.path.join(wapt_root_dir,'wapt-get.exe'),'waptupgrade'))
-    return "200 OK"
+    output = run('"%s" %s' % (os.path.join(wapt_root_dir,'wapt-get.exe'),'waptupgrade'))
+    return Response(common.jsondump({'result':'OK','message':output}), mimetype='application/json')
 
 @app.route('/upgrade')
 @check_ip_source
@@ -246,7 +255,7 @@ def upgrade():
         gc.collect()
 
     thread.start_new_thread(background_upgrade,(config_file,))
-    return Response(common.jsondump({'result':'ok'}), mimetype='application/json')
+    return Response(common.jsondump({'result':'OK'}), mimetype='application/json')
 
 @app.route('/update')
 @app.route('/updatebg')
@@ -260,7 +269,7 @@ def update():
         gc.collect()
 
     thread.start_new_thread(background_update,(config_file,))
-    return Response(common.jsondump({'result':'ok'}), mimetype='application/json')
+    return Response(common.jsondump({'result':'OK'}), mimetype='application/json')
 
 @app.route('/clean')
 @requires_auth

@@ -39,13 +39,37 @@ Count=6
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode
 
+[Project\ChildNodes\Node1\ChildNodes\Node0]
+ClassName=TProjectRunConfiguationNode
+Name=debug
+
+[Project\ChildNodes\Node1\ChildNodes\Node0\RunConfig]
+ScriptName=C:\tranquilit\wapt\waptservice\waptservice.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node0\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+ShortCut=0
+MessagesFormat=$[FileName] $[LineNumber]
+
+[Project\ChildNodes\Node1\ChildNodes]
+Count=1
+
 [Project\ChildNodes]
 Count=2
 
 [Project\ExtraPythonPath]
-Item0=C:\tranquilit \WAPT
-Item1=C:\tranquilit \WAPT\lib
-Item2=C:\tranquilit \WAPT\lib\site-packages
-Item3=C:\tranquilit \WAPT\waptservice
-Count=4
+Item0=C:\tranquilit \wapt
+Item1=C:\tranquilit \wapt\waptservice
+Item2=C:\tranquilit \wapt\lib\site-packages
+Count=3
 
