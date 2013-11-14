@@ -35,7 +35,8 @@ type TProgressCallback=function(Receiver:TObject;current,total:Integer):Boolean 
 Function  Wget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy:Boolean=False): boolean;
 Function  Wget_try(const fileURL: Utf8String;enableProxy:Boolean=False): boolean;
 
-function httpGetString(   url: string; enableProxy:Boolean= False): Utf8String;
+function httpGetString(url: string; enableProxy:Boolean= False;
+    ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000):Utf8String;
 function httpPostData(const UserAgent: string; const url: string; const Data: AnsiString; enableProxy:Boolean= False;
    ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000):Utf8String;
 function SetToIgnoreCerticateErrors(oRequestHandle:HINTERNET; var aErrorMsg: string): Boolean;
@@ -260,9 +261,10 @@ end;
 
 
 // récupère une chaine de caractères en http en utilisant l'API windows
-function httpGetString(url: string; enableProxy:Boolean= False): Utf8String;
+function httpGetString(url: string; enableProxy:Boolean= False;
+   ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000):Utf8String;
 var
-  GlobalhInet,hFile,hConnect: HINTERNET;
+  hInet,hFile,hConnect: HINTERNET;
   buffer: array[1..1024] of byte;
   flags,bytesRead,dwError,port : DWORD;
   pos:integer;
@@ -274,14 +276,17 @@ var
 
 begin
   result := '';
-  GlobalhInet:=Nil;
+  hInet:=Nil;
   hConnect := Nil;
   hFile:=Nil;
   if enableProxy then
-     GlobalhInet := InternetOpen('wapt',INTERNET_OPEN_TYPE_PRECONFIG,nil,nil,0)
+     hInet := InternetOpen('wapt',INTERNET_OPEN_TYPE_PRECONFIG,nil,nil,0)
   else
-     GlobalhInet := InternetOpen('wapt',INTERNET_OPEN_TYPE_DIRECT,nil,nil,0);
+     hInet := InternetOpen('wapt',INTERNET_OPEN_TYPE_DIRECT,nil,nil,0);
   try
+    InternetSetOption(hInet,INTERNET_OPTION_CONNECT_TIMEOUT,@ConnectTimeout,sizeof(integer));
+    InternetSetOption(hInet,INTERNET_OPTION_SEND_TIMEOUT,@SendTimeOut,sizeof(integer));
+    InternetSetOption(hInet,INTERNET_OPTION_RECEIVE_TIMEOUT,@ReceiveTimeOut,sizeof(integer));
     uri := TIdURI.Create(url);
     BEGIN
       if uri.Port<>'' then
@@ -292,7 +297,7 @@ begin
         else
           port := INTERNET_DEFAULT_HTTP_PORT;
 
-      hConnect := InternetConnect(GlobalhInet, PChar(uri.Host), port, nil, nil, INTERNET_SERVICE_HTTP, 0, 0);
+      hConnect := InternetConnect(hInet, PChar(uri.Host), port, nil, nil, INTERNET_SERVICE_HTTP, 0, 0);
       if not Assigned(hConnect) then
         Raise Exception.Create('Unable to connect to '+url+' code : '+IntToStr(GetLastError)+' ('+GetWinInetError(GetlastError)+')');
       flags := INTERNET_FLAG_NO_CACHE_WRITE or INTERNET_FLAG_PRAGMA_NOCACHE or INTERNET_FLAG_RELOAD;
@@ -312,7 +317,7 @@ begin
         begin
           SetToIgnoreCerticateErrors(hFile, url);
           if not HttpSendRequest(hFile, nil, 0, nil, 0) then
-            Raise Exception.Create('Unable to send request to '+url+' error code '+IntToStr(GetLastError));
+            Raise Exception.Create('Unable to send request to '+url+' code : '+IntToStr(GetLastError)+' ('+GetWinInetError(GetlastError)+')');
         end;
       end;
     end;
@@ -338,23 +343,23 @@ begin
           until bytesRead = 0;
         end
         else
-           raise Exception.Create('Unable to download: '+URL+#13#10+'HTTP Status:'+res+#13#10+'error code '+IntToStr(GetLastError));
+           raise Exception.Create('Unable to download: '+URL+' HTTP Status:'+res+#13#10+' code : '+IntToStr(GetLastError)+' ('+GetWinInetError(GetlastError)+')');
       end
       else
-         raise Exception.Create('Unable to download: '+URL+#13#10+'error code '+IntToStr(GetLastError));
+         raise Exception.Create('Unable to download: '+URL+' code : '+IntToStr(GetLastError)+' ('+GetWinInetError(GetlastError)+')');
     finally
       if Assigned(hFile) then
         InternetCloseHandle(hFile);
     end
     else
-       raise Exception.Create('Unable to download: "'+URL+'" '+GetWinInetError(GetLastError));
+       raise Exception.Create('Unable to download: "'+URL+' code : '+IntToStr(GetLastError)+' ('+GetWinInetError(GetlastError)+')');
 
   finally
     uri.Free;
     if Assigned(hConnect) then
       InternetCloseHandle(hConnect);
-    if Assigned(GlobalhInet) then
-      InternetCloseHandle(GlobalhInet);
+    if Assigned(hInet) then
+      InternetCloseHandle(hInet);
   end;
 end;
 
