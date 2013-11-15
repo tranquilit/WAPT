@@ -53,6 +53,7 @@ Source: "innosetup\*"; DestDir: "{app}\waptsetup\innosetup";
 Source: "wapt.iss"; DestDir: "{app}\waptsetup";
 Source: "services.iss"; DestDir: "{app}\waptsetup";
 Source: "..\COPYING.txt"; DestDir: "{app}";
+Source: "..\version"; DestDir: "{app}";
 Source: "..\wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.exe'); 
 Source: "..\vc_redist\*"; DestDir: "{app}\vc_redist";
 Source: "..\lib\site-packages\M2Crypto\libeay32.dll" ; DestDir: "{app}"; 
