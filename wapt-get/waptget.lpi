@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -22,6 +22,7 @@
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="8"/>
       <RevisionNr Value="2"/>
+      <BuildNr Value="1"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -60,7 +61,7 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
+        <TopLine Value="67"/>
         <CursorPos X="57" Y="20"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
