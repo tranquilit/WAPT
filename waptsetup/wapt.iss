@@ -270,7 +270,7 @@ begin
   // Proceed Setup
 
   if ServiceExists('waptservice') then
-    SimpleStopService('waptservice',True,True);
+	Exec('taskkill', '/t /im "pythonservice.exe" /f', '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
   if ServiceExists('waptserver') then
     SimpleStopService('waptserver',True,True);
   if ServiceExists('waptmongodb') then
