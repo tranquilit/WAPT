@@ -1635,7 +1635,7 @@ end;
 
 procedure TVisWaptGUI.MenuItem27Click(Sender: TObject);
 begin
-  ShowMessage('Tranquil IT Systems: http://www.tranquil-it-systems.fr/');
+  ShowMessage('Tranquil IT Systems: http://www.tranquil-it-systems.fr/'+#13#10+'Version Waptconsole:'+GetApplicationVersion+#13#10+'Version Wapt-get:'+GetApplicationVersion(WaptgetPath));
 end;
 
 procedure CopyMenu(menuItemSource: TPopupMenu; menuItemTarget: TMenuItem);
