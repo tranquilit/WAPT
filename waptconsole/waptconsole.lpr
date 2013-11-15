@@ -21,7 +21,6 @@ begin
   Application.Initialize;
   Application.CreateForm(TDMPython, DMPython);
   Application.CreateForm(TVisWaptGUI, VisWaptGUI);
-  Application.CreateForm(TVisHostsUpgrade, VisHostsUpgrade);
   Application.Run;
 end.
 

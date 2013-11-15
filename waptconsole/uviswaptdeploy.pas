@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, Buttons, ActnList, sogrid, db,superobject,soutils;
+  ExtCtrls, Buttons, ActnList, sogrid, superobject,soutils, VirtualTrees;
 
 type
 
@@ -19,7 +19,6 @@ type
     BitBtn2: TBitBtn;
     Button1: TButton;
     Button5: TButton;
-    Datasource1: TDatasource;
     EdDomaine: TLabeledEdit;
     EdDomainUser: TLabeledEdit;
     EdDomainPassword: TLabeledEdit;
@@ -35,6 +34,10 @@ type
     procedure ActDeployWaptExecute(Sender: TObject);
     procedure ActStopExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure ProgressGridInitNode(Sender: TBaseVirtualTree; ParentNode,
+      Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
+    procedure ProgressGridMeasureItem(Sender: TBaseVirtualTree;
+      TargetCanvas: TCanvas; Node: PVirtualNode; var NodeHeight: Integer);
   private
     { private declarations }
     Stopped : Boolean;
@@ -56,6 +59,22 @@ begin
   EdDomaine.Text := GetDomainName;
 end;
 
+procedure Tviswaptdeploy.ProgressGridInitNode(Sender: TBaseVirtualTree;
+  ParentNode, Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
+begin
+  InitialStates:= InitialStates+[ivsMultiline];
+end;
+
+procedure Tviswaptdeploy.ProgressGridMeasureItem(Sender: TBaseVirtualTree;
+  TargetCanvas: TCanvas; Node: PVirtualNode; var NodeHeight: Integer);
+begin
+  if Sender.MultiLine[Node] then
+    NodeHeight := ProgressGrid.ComputeNodeHeight(TargetCanvas, Node, 3);
+  if NodeHeight < ProgressGrid.DefaultNodeHeight then
+    NodeHeight:=ProgressGrid.DefaultNodeHeight;
+
+end;
+
 procedure Tviswaptdeploy.ActDeployWaptExecute(Sender: TObject);
 var
   i: Integer;
@@ -74,26 +93,29 @@ begin
   end;
 
   ProgressGrid.Data := hosts;
+  ProgressGrid.Refresh;
+
   for host in hosts do
   begin
     if Stopped  then
       Break;
     host.S['status'] := 'STARTED';
-    ProgressGrid.Refresh;
-    //Application.ProcessMessages;
+    ProgressGrid.InvalidateFordata(host);
+    Application.ProcessMessages;
     try
       res := WAPTServerJsonPost('/deploy_wapt', host, WaptUseLocalConnectionProxy);
       host['message'] := res['message'];
       host['status'] := res['status'];
+      ProgressGrid.InvalidateFordata(host);
       ProgressGrid.Refresh;
-      //Application.ProcessMessages;
+      Application.ProcessMessages;
     except
       on E:Exception do
       begin
         host.S['status'] := 'ERROR';
         host.S['message'] := e.Message;
-        ProgressGrid.Refresh;
-        //Application.ProcessMessages;
+        ProgressGrid.InvalidateFordata(host);
+        Application.ProcessMessages;
       end;
     end;
   end;

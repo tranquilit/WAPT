@@ -24,6 +24,8 @@ type
     procedure ActStopExecute(Sender: TObject);
     procedure ActUpgradeExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure ProgressGridInitNode(Sender: TBaseVirtualTree; ParentNode,
+      Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
     procedure ProgressGridMeasureItem(Sender: TBaseVirtualTree;
       TargetCanvas: TCanvas; Node: PVirtualNode; var NodeHeight: Integer);
   private
@@ -77,12 +79,12 @@ begin
       if (host['host.connected_ips']<>Nil) and  (host['host.connected_ips'].DataType=stArray) then
         for ip in host['host.connected_ips'] do
         begin
-          res := WAPTServerJsonGet('/upgrade_host/'+ ip.AsString, [],WaptUseLocalConnectionProxy);
+          res := WAPTServerJsonGet(action+'/'+ ip.AsString, [],WaptUseLocalConnectionProxy);
           if res.S['status']='OK' then
             break;
         end
       else
-        res := WAPTServerJsonGet('/upgrade_host/' + host.S['host.connected_ips'], [],WaptUseLocalConnectionProxy);
+        res := WAPTServerJsonGet(action+'/' + host.S['host.connected_ips'], [],WaptUseLocalConnectionProxy);
       host['message'] := res['message'];
       host['status'] := res['status'];
       ProgressGrid.InvalidateFordata(host);
@@ -102,6 +104,12 @@ end;
 procedure TVisHostsUpgrade.FormCreate(Sender: TObject);
 begin
   Action := 'upgrade_host';
+end;
+
+procedure TVisHostsUpgrade.ProgressGridInitNode(Sender: TBaseVirtualTree;
+  ParentNode, Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
+begin
+  InitialStates := InitialStates + [ivsMultiline];
 end;
 
 procedure TVisHostsUpgrade.ProgressGridMeasureItem(Sender: TBaseVirtualTree;

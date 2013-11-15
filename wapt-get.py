@@ -758,7 +758,7 @@ def main():
                     print u"Removed files : \n%s" % "\n".join([ "  %s" % p for p in result ])
 
             elif action=='register':
-                result = mywapt.register_computer(description=" ".join(args[1:]),force=options.force)
+                result = mywapt.register_computer(description=(" ".join(args[1:])).decode(sys.getfilesystemencoding()),force=options.force)
                 if options.json_output:
                     jsonresult['result'] = result
                 else:

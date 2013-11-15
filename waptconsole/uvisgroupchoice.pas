@@ -21,7 +21,6 @@ type
     groupGrid: TSOGrid;
     Label2: TLabel;
     procedure ActSearchGroupsExecute(Sender: TObject);
-    procedure EdSearchChange(Sender: TObject);
     procedure EdSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
       );
   private
@@ -45,21 +44,16 @@ var
   groups : ISuperObject;
 
 begin
-  expr := format('mywapt.search("%s".split(),section_filter="group")', [EdSearch.Text]);
+  expr := format('mywapt.search(r"%s".decode(''utf8'').split(),section_filter="group")', [EdSearch.Text]);
   groups := DMPython.RunJSON(expr);
   groupGrid.Data := groups;
   groupGrid.Header.AutoFitColumns(False);
 end;
 
-procedure TvisGroupChoice.EdSearchChange(Sender: TObject);
-begin
-
-end;
-
 procedure TvisGroupChoice.EdSearchKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-   if Key = VK_RETURN then
+  if Key = VK_RETURN then
   begin
     EdSearch.SelectAll;
     ActSearchGroups.Execute;

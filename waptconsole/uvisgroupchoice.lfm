@@ -1,19 +1,18 @@
 object visGroupChoice: TvisGroupChoice
-  Left = 1373
-  Height = 212
-  Top = 183
-  Width = 265
-  AutoSize = True
+  Left = 559
+  Height = 399
+  Top = 221
+  Width = 451
   Caption = 'Ajout au groupe'
-  ClientHeight = 212
-  ClientWidth = 265
+  ClientHeight = 399
+  ClientWidth = 451
   Position = poMainFormCenter
-  LCLVersion = '1.3'
+  LCLVersion = '1.1'
   object ButtonPanel1: TButtonPanel
     Left = 6
     Height = 34
-    Top = 172
-    Width = 253
+    Top = 359
+    Width = 439
     OKButton.Name = 'OKButton'
     OKButton.Caption = 'Ajouter'
     OKButton.DefaultCaption = False
@@ -36,9 +35,9 @@ object visGroupChoice: TvisGroupChoice
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = ButtonPanel1
     Left = 0
-    Height = 119
+    Height = 306
     Top = 47
-    Width = 265
+    Width = 451
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Top = 10
     Color = clWhite
@@ -93,8 +92,8 @@ object visGroupChoice: TvisGroupChoice
     TabOrder = 3
   end
   object ActionList1: TActionList
-    left = 48
-    top = 189
+    left = 256
+    top = 176
     object ActSearchGroups: TAction
       Caption = 'Rechercher'
       OnExecute = ActSearchGroupsExecute

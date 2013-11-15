@@ -3,10 +3,11 @@ object VisHostsUpgrade: TVisHostsUpgrade
   Height = 383
   Top = 272
   Width = 683
-  Caption = 'Lancer la mises des postes'
+  Caption = 'Lancer la mises à jour des postes'
   ClientHeight = 383
   ClientWidth = 683
   OnCreate = FormCreate
+  Position = poMainFormCenter
   LCLVersion = '1.1'
   object ProgressGrid: TSOGrid
     Left = 0
@@ -50,6 +51,7 @@ object VisHostsUpgrade: TVisHostsUpgrade
     TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toEditOnClick]
     TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect]
+    OnInitNode = ProgressGridInitNode
     OnMeasureItem = ProgressGridMeasureItem
   end
   object Panel4: TPanel

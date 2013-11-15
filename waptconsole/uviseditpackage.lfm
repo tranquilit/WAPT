@@ -846,6 +846,7 @@ object VisEditPackage: TVisEditPackage
       Height = 21
       Top = 2
       Width = 252
+      CharCase = ecLowerCase
       EditLabel.AnchorSideTop.Control = EdPackage
       EditLabel.AnchorSideTop.Side = asrCenter
       EditLabel.AnchorSideRight.Control = EdPackage
@@ -859,6 +860,7 @@ object VisEditPackage: TVisEditPackage
       EditLabel.ParentColor = False
       LabelPosition = lpLeft
       TabOrder = 0
+      OnKeyPress = EdPackageKeyPress
     end
     object EdVersion: TLabeledEdit
       Left = 52

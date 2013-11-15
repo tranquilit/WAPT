@@ -9,7 +9,7 @@ uses
   vte_json, Forms, Controls, Graphics,
   Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, jsonparser,
   superobject, UniqueInstance, VirtualTrees, VarPyth, Windows, ImgList, Buttons,
-  SOGrid;
+  SOGrid, ActiveX;
 
 type
 
@@ -535,7 +535,7 @@ begin
         if depends <> '' then
         begin
           dependsList := DMPython.RunJSON(
-            format('waptdevutils.searchLastPackageTisRepo(r"%s","%s")',
+            format('waptdevutils.searchLastPackageTisRepo(r"%s".decode(''utf8''),"%s")',
             [AppIniFilename, depends]));
           for i := 0 to dependsList.AsArray.Length - 1 do
           begin
@@ -712,10 +712,10 @@ begin
             params := '';
             params := params + format('orgname=r"%s",', [edOrgName.Text]);
             params := params + format('destdir=r"%s",', [DirectoryCert.Directory]);
-            params := params + format('country=r"%s",', [edCountry.Text]);
-            params := params + format('locality=r"%s",', [edLocality.Text]);
-            params := params + format('organization=r"%s",', [edOrganization.Text]);
-            params := params + format('unit=r"%s",', [edUnit.Text]);
+            params := params + format('country=r"%s".decode(''utf8''),', [edCountry.Text]);
+            params := params + format('locality=r"%s".decode(''utf8''),', [edLocality.Text]);
+            params := params + format('organization=r"%s".decode(''utf8''),', [edOrganization.Text]);
+            params := params + format('unit=r"%s".decode(''utf8''),', [edUnit.Text]);
             params := params + format('commonname=r"%s",', [edCommonName.Text]);
             params := params + format('email=r"%s",', [edEmail.Text]);
             Result := DMPython.RunJSON(
@@ -773,45 +773,39 @@ end;
 
 procedure TVisWaptGUI.ActAddToGroupExecute(Sender: TObject);
 var
-  Result, groups: ISuperObject;
-  N: PVirtualNode;
+  Result, groups, host: ISuperObject;
+  N:PVirtualNode;
   i: word;
 begin
   if GridHosts.Focused then
   begin
-    if GridPackages.Data = nil then
-      ActSearchPackage.Execute;
-
     with TvisGroupChoice.Create(self) do
-      try
-        ActSearchGroupsExecute(self);
-        if groupGrid.Data.AsArray.Length = 0 then
-        begin
-          ShowMessage('Il n''y a aucuns groupes.');
-          Exit;
-        end;
-        if ShowModal = mrOk then
-        begin
-          groups := TSuperObject.Create(stArray);
-          N := groupGrid.GetFirstChecked();
-          while N <> nil do
-          begin
-            groups.AsArray.Add(groupGrid.GetCellStrValue(N, 'package'));
-            N := groupGrid.GetNextChecked(N);
-          end;
-        end;
-      finally
-        Free;
+    try
+      ActSearchGroupsExecute(self);
+      if groupGrid.Data.AsArray.Length = 0 then
+      begin
+        ShowMessage('Il n''y a aucuns groupes.');
+        Exit;
       end;
+      if ShowModal = mrOk then
+      begin
+        groups := TSuperObject.Create(stArray);
+        N := groupGrid.GetFirstChecked();
+        while N <> nil do
+        begin
+          groups.AsArray.Add(groupGrid.GetCellStrValue(N, 'package'));
+          N := groupGrid.GetNextChecked(N);
+        end;
+      end;
+    finally
+      Free;
+    end;
     if (groups = nil) or (groups.AsArray.Length = 0) then
       Exit;
-    N := GridHosts.GetFirstSelected;
-    while N <> nil do
-    begin
-      EditHostDepends(GridHosts.GetCellStrValue(N, 'host.computer_fqdn'),
+
+    for host in GridHosts.SelectedRows do
+      EditHostDepends(host.S['host.computer_fqdn'],
         Join(',', groups));
-      N := GridHosts.GetNextSelected(N);
-    end;
   end;
 end;
 
@@ -1064,7 +1058,7 @@ var
   expr, res: UTF8String;
   groups: ISuperObject;
 begin
-  expr := format('mywapt.search("%s".split(),section_filter="group")',
+  expr := format('mywapt.search(r"%s".decode(''utf8'').split(),section_filter="group")',
     [EdSearchGroups.Text]);
   groups := DMPython.RunJSON(expr);
   GridGroups.Data := groups;
@@ -1075,6 +1069,7 @@ procedure TVisWaptGUI.ActHostUpgradeExecute(Sender: TObject);
 begin
   with TVisHostsUpgrade.Create(Self) do
   try
+    action := 'upgrade_host';
     hosts:=Gridhosts.SelectedRows;
     if ShowModal=mrOK then
       actRefresh.Execute;
@@ -1092,7 +1087,7 @@ procedure TVisWaptGUI.ActHostWaptUpgradeExecute(Sender: TObject);
 begin
   with TVisHostsUpgrade.Create(Self) do
   try
-    action := 'waptupgrade';
+    action := 'waptupgrade_host';
     caption := 'Mise à jour du client WAPT sur les postes';
     hosts:=Gridhosts.SelectedRows;
     if ShowModal=mrOK then
@@ -1242,7 +1237,7 @@ var
 begin
   //packages := VarPythonEval(Format('"%s".split()',[EdSearch.Text]));
   //packages := MainModule.mywapt.search(VarPythonEval(Format('"%s".split()',[EdSearch.Text])));
-  expr := format('mywapt.search("%s".split(),section_filter="base")', [EdSearch.Text]);
+  expr := format('mywapt.search(r"%s".decode(''utf8'').split(),section_filter="base")', [EdSearch.Text]);
   packages := DMPython.RunJSON(expr);
 
   GridPackages.Data := packages;

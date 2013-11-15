@@ -522,7 +522,7 @@ class LogInstallOutput(object):
                 txtdb = txt+'\n'
             else:
                 txtdb = txt
-            if threading.current_thread == self.threadid:
+            if threading.current_thread() == self.threadid:
                 self.waptdb.update_install_status(self.rowid,'RUNNING',txtdb if not txtdb == None else None)
 
     def __getattrib__(self, name):
@@ -2209,6 +2209,11 @@ class Wapt(object):
     def install_wapt(self,fname,params_dict={},explicit_by=None):
         """Install a single wapt package given its WAPT filename.
         return install status"""
+        install_id = None
+        old_hdlr = None
+        old_stdout = None
+        old_stderr = None
+
         logger.info(u"Register start of install %s as user %s to local DB with params %s" % (fname, setuphelpers.get_current_user(), params_dict))
         logger.info(u"Interactive user:%s, usergroups %s" % (self.user,self.usergroups))
         status = 'INIT'
@@ -2233,21 +2238,21 @@ class Wapt(object):
                 if not name in params_dict:
                     params_dict[name] = old_install_params[name]
 
-        install_id = None
-        install_id = self.waptdb.add_start_install(entry.package ,entry.version,entry.architecture,params_dict=params_dict,explicit_by=explicit_by)
-        # we setup a redirection of stdout to catch print output from install scripts
-        sys.stderr = sys.stdout = install_output = LogInstallOutput(sys.stderr,self.waptdb,install_id)
-        """
-        hdlr = logging.StreamHandler(install_output)
-        hdlr.setFormatter(logging.Formatter(u'%(asctime)s %(levelname)s %(message)s'))
-        if logger.handlers:
-            old_hdlr = logger.handlers[0]
-            logger.handlers[0] = hdlr
-        else:
-            old_hdlr = None
-            logger.addHandler(hdlr)
-        """
         try:
+            install_id = self.waptdb.add_start_install(entry.package ,entry.version,entry.architecture,params_dict=params_dict,explicit_by=explicit_by)
+            # we setup a redirection of stdout to catch print output from install scripts
+            sys.stderr = sys.stdout = install_output = LogInstallOutput(sys.stderr,self.waptdb,install_id)
+            """
+            hdlr = logging.StreamHandler(install_output)
+            hdlr.setFormatter(logging.Formatter(u'%(asctime)s %(levelname)s %(message)s'))
+            if logger.handlers:
+                old_hdlr = logger.handlers[0]
+                logger.handlers[0] = hdlr
+            else:
+                old_hdlr = None
+                logger.addHandler(hdlr)
+            """
+
             logger.info(u"Installing package " + fname)
             # case where fname is a wapt zipped file, else directory (during developement)
             istemporary = False
@@ -2983,9 +2988,8 @@ class Wapt(object):
             if decsription is provided, updates local registry with new description
         """
         if description:
-            #logger.info(u'Updating computer description to %s' % ensure_unicode(description))
-            out = setuphelpers.run(u"WMIC os set description='%s'" % description,shell=False)
-            logger.info(ensure_unicode(out))
+            out = setuphelpers.run("WMIC os set description='%s'" % description.encode(sys.getfilesystemencoding()) ,shell=False)
+            logger.info(out)
 
         inv = self.inventory()
         # store uuid for future use to avoid the use of dmidecode
@@ -3279,6 +3283,10 @@ class Wapt(object):
         """Setup the user session for a specific system wide installed package"
            Source setup.py from database or filename
         """
+        install_id = None
+        old_stdout = sys.stdout
+        old_stderr = sys.stderr
+
         logger.info("Session setup for package %s and user %s" % (packagename,self.user))
 
         oldpath = sys.path
@@ -3324,9 +3332,6 @@ class Wapt(object):
                         install_id = session_db.add_start_install(package_entry.package,package_entry.version,package_entry.architecture)
 
                         # redirect output to get print into session db log
-                        old_stdout = sys.stdout
-                        old_stderr = sys.stderr
-
                         sys.stderr = sys.stdout = install_output = LogInstallOutput(sys.stderr,session_db,install_id)
                         try:
                             setattr(setup,'run',setuphelpers.run)

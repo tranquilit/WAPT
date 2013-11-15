@@ -76,6 +76,7 @@ type
     procedure ActExecCodeExecute(Sender: TObject);
     procedure ActSearchPackageExecute(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
+    procedure EdPackageKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
     procedure EdSectionChange(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -268,6 +269,14 @@ begin
     DMPython.PythonEng.ExecString('logger.setLevel(logging.WARNING)');
 end;
 
+procedure TVisEditPackage.EdPackageKeyPress(Sender: TObject; var Key: char);
+begin
+
+  key := lowerCase(key);
+  if not (key in ['a'..'z','0'..'9','-',#8,#9]) then
+      Key:=#0;
+end;
+
 procedure TVisEditPackage.EdSearchKeyDown(Sender: TObject; var Key: word;
   Shift: TShiftState);
 begin
@@ -407,7 +416,7 @@ begin
     if IsNewPackage then
     begin
       res := DMPython.RunJSON(
-        format('mywapt.make_group_template(packagename="%s",depends="%s",description="%s")', [Trim(EdPackage.Text), Depends, Eddescription.Text]));
+        format('mywapt.make_group_template(packagename="%s",depends="%s",description=r"%s".decode(''utf8''))', [Trim(EdPackage.Text), Depends, Eddescription.Text]));
       FSourcePath := res.S['source_dir'];
       PackageEdited := res['package'];
     end
@@ -415,14 +424,14 @@ begin
     begin
       PackageEdited.S['package'] := EdPackage.Text;
       PackageEdited.S['version'] := EdVersion.Text;
-      PackageEdited.S['description'] := EdDescription.Text;
+      PackageEdited.S['description'] := UTF8Decode(EdDescription.Text);
       PackageEdited.S['section'] := EdSection.Text;
       PackageEdited.S['depends'] := Depends;
       DMPython.PythonEng.ExecString('p = PackageEntry()');
       DMPython.PythonEng.ExecString(
-        format('p.load_control_from_dict(json.loads(''%s''))', [PackageEdited.AsJson]));
+        format('p.load_control_from_dict(json.loads(r''%s''))', [PackageEdited.AsJson]));
       DMPython.PythonEng.ExecString(
-        format('p.save_control_to_wapt(r''%s'')', [EdSourceDir.Text]));
+        format('p.save_control_to_wapt(r''%s''.decode(''utf8''))', [EdSourceDir.Text]));
       EdSetupPy.Lines.SaveToFile(AppendPathDelim(FSourcePath) + 'setup.py');
     end;
     IsUpdated := False;
@@ -448,7 +457,7 @@ var
   expr: UTF8String;
   packages: ISuperObject;
 begin
-  expr := format('mywapt.search("%s".split())', [EdSearch.Text]);
+  expr := format('mywapt.search(r"%s".decode(''utf8'').split())', [EdSearch.Text]);
   packages := DMPython.RunJSON(expr);
   GridPackages.Data := packages;
   GridPackages.Header.AutoFitColumns(False);
@@ -469,7 +478,7 @@ begin
     exit;
   end;
   isEncrypt := StrToBool(DMPython.RunJSON(
-    format('waptdevutils.is_encrypt_private_key(r"%s")', [GetWaptPrivateKey])).AsString);
+    format('waptdevutils.is_encrypt_private_key(r"%s".decode(''utf8''))', [GetWaptPrivateKey])).AsString);
   if (privateKeyPassword = '') and (isEncrypt) then
   begin
     with TvisPrivateKeyAuth.Create(Self) do
@@ -496,7 +505,7 @@ begin
       ProgressTitle('Upload en cours');
       Application.ProcessMessages;
       Result := DMPython.RunJSON(format(
-        'mywapt.build_upload(r"%s",r"%s",r"%s",r"%s",True)',
+        'mywapt.build_upload(r"%s".decode(''utf8''),r"%s",r"%s",r"%s",True)',
         [FSourcePath, privateKeyPassword, waptServerUser, waptServerPassword]), jsonlog);
       if FisTempSourcesDir then
       begin
@@ -536,7 +545,7 @@ var
   expr, res: UTF8String;
   packages: ISuperObject;
 begin
-  expr := format('mywapt.search("%s".split())', [EdSearch.Text]);
+  expr := format('mywapt.search(r"%s".decode(''utf8'').split())', [EdSearch.Text]);
   packages := DMPython.RunJSON(expr);
   GridPackages.Data := packages;
   GridPackages.Header.AutoFitColumns(False);
@@ -592,7 +601,7 @@ begin
         target_directory := MkTempDir();
         FisTempSourcesDir := True;
         res := DMPython.RunJSON(
-          format('mywapt.edit_host("%s",target_directory=r"%s",use_local_sources=False)',
+          format('mywapt.edit_host("%s",target_directory=r"%s".decode(''utf8''),use_local_sources=False)',
           [FPackageRequest, target_directory]));
         EdPackage.EditLabel.Caption := 'Machine';
         Caption := 'Modifier la configuration de la machine';
