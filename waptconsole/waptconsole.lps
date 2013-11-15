@@ -9,10 +9,11 @@
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptconsole"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="1" Y="25"/>
+        <CursorPos X="24" Y="13"/>
         <UsageCount Value="208"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -27,7 +28,6 @@
         <WindowIndex Value="0"/>
         <TopLine Value="602"/>
         <CursorPos X="21" Y="629"/>
-        <FoldState Value=" T4605 T3oD0342131 T1o8035[C60ob2307]A6pP0303212 TL$424f"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="4">
           <Item0 X="4" Y="1287" ID="3"/>
@@ -241,9 +241,9 @@
         <UnitName Value="uviswaptdeploy"/>
         <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="73"/>
-        <CursorPos X="22" Y="73"/>
-        <UsageCount Value="112"/>
+        <TopLine Value="72"/>
+        <CursorPos X="14" Y="92"/>
+        <UsageCount Value="113"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit18>
@@ -258,7 +258,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="79"/>
+        <UsageCount Value="80"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit19>
@@ -321,7 +321,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="3093"/>
         <CursorPos X="17" Y="3116"/>
-        <UsageCount Value="18"/>
+        <UsageCount Value="19"/>
         <Loaded Value="True"/>
       </Unit26>
       <Unit27>
@@ -350,12 +350,11 @@
       <Unit30>
         <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
         <UnitName Value="VirtualTrees"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="31753"/>
         <CursorPos X="77" Y="31785"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit30>
       <Unit31>
@@ -394,7 +393,7 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="29" HistoryIndex="28">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="uviseditpackage.pas"/>
         <Caret Line="263" Column="25" TopLine="256"/>
@@ -511,6 +510,10 @@
         <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
         <Caret Line="29934" Column="86" TopLine="29896"/>
       </Position29>
+      <Position30>
+        <Filename Value="waptconsole.lpr"/>
+        <Caret Line="25" Column="1" TopLine="1"/>
+      </Position30>
     </JumpHistory>
   </ProjectSession>
   <Debugging>

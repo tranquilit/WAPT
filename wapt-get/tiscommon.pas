@@ -54,6 +54,8 @@ function GetApplicationName:AnsiString;
 function GetPersonalFolder:AnsiString;
 function GetAppdataFolder:AnsiString;
 
+function GetUniqueTempdir(Prefix: String): String;
+
 function Appuserinipath:AnsiString;
 function GetComputerName : AnsiString;
 function GetUserName : AnsiString;
@@ -766,6 +768,24 @@ begin
   end;
 end;
 
+function GetUniqueTempdir(Prefix: String): String;
+var
+  I: Integer;
+  Start: String;
+begin
+  Start:=GetTempDir;
+  if (Prefix='') then
+      Start:=Start+'TMP'
+  else
+    Start:=Start+Prefix;
+  I:=0;
+  repeat
+    Result:=Format('%s%.5d.tmp',[Start,I]);
+    Inc(I);
+  until not DirectoryExistsUTF8(Result);
+end;
+
+
 procedure UpdateApplication(fromURL:String;SetupExename,SetupParams,ExeName,RestartParam:Utf8String);
 var
   bat: TextFile;
@@ -777,7 +797,7 @@ begin
   Files := TStringList.Create;
   try
     Logger('Updating application...');
-    tempdir := fileutil.GetTempFilename(GetTempDir,'tis');
+    tempdir := GetUniqueTempdir('tis');
     if ExeName='' then
       ExeName :=ExtractFileName(ParamStr(0));
 

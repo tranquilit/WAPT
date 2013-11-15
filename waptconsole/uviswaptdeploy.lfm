@@ -100,10 +100,10 @@ object viswaptdeploy: Tviswaptdeploy
     TabOrder = 0
     object Label1: TLabel
       Left = 8
-      Height = 26
-      Top = 16
-      Width = 396
-      Caption = 'Cette méthode permet de déployer waptsetup.exe sur tous les postes via psexec.'#13#10'Penser à vérifier que le partage administratif IPC$ soit accessible.'
+      Height = 52
+      Top = 4
+      Width = 560
+      Caption = 'Cette méthode permet de déployer waptsetup.exe sur tous les postes via psexec.'#13#10'Penser à vérifier que le partage administratif IPC$ soit accessible.'#13#10'En particulier, sur Win XP, désactive rle partage simple de fichiers (explorer / outils / options des dossiers / affichage '#13#10'  Décocher "utiliser le partage de fichiers simple"'
       ParentColor = False
     end
   end
