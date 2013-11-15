@@ -55,7 +55,7 @@ from rocket import Rocket
 
 from waptpackage import update_packages,PackageEntry
 
-__version__="0.9"
+__version__="0.8.2"
 
 config = ConfigParser.RawConfigParser()
 
@@ -417,20 +417,29 @@ def upload_waptsetup():
 @app.route('/waptupgrade_host/<string:ip>')
 def waptupgrade_host(ip):
     try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(1)
-        s.connect((ip,waptservice_port))
-        s.close
-        if ip and waptservice_port:
-            logger.info( "Upgrading %s..." % ip)
-            r = requests.get("http://%s:%d/waptupgrade" % ( ip, waptservice_port),proxies=None)
-            return r.text
-
-        else:
-            return "Le port de waptservice n'est pas défini"
-
-    except Exception as e:
-        return "Impossible de joindre le web service: %s" % e
+        result = {} 
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(1)
+            s.connect((ip,waptservice_port))
+            s.close
+            if ip and waptservice_port:
+                logger.info( "Upgrading %s..." % ip)
+                r = requests.get("http://%s:%d/waptupgrade" % ( ip, waptservice_port),proxies=None)
+                if "OK" in r.text:
+                    result = {  'status' : 'OK', 'message': u"%s" % r.text }
+                else:
+                    result = {  'status' : 'ERROR', 'message': u"%s" % r.text }
+    
+            else:
+                raise Exception(u"Le port de waptservice n'est pas défini")
+    
+        except Exception as e:
+            raise  Exception("Impossible de joindre le web service: %s" % e)
+        
+    except Exception, e:
+            result = { 'status' : 'ERROR', 'message': u"%s" % e  }
+    return json.dumps(result)        
 
 @app.route('/hosts_by_group/<string:name>')
 def get_hosts_by_group(name=""):
@@ -456,20 +465,30 @@ def get_hosts_by_group(name=""):
 @app.route('/upgrade_host/<string:ip>')
 def upgrade_host(ip):
     try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(1)
-        s.connect((ip,waptservice_port))
-        s.close
-        if ip and waptservice_port:
-            logger.info("Upgrading %s..." % ip)
-            r = requests.get("http://%s:%d/upgrade" % ( ip, waptservice_port),proxies=None)
-            return r.text
-
-        else:
-            return "Le port de waptservice n'est pas défini"
-
-    except Exception as e:
-        return "Impossible de joindre le web service: %s" % e
+        result = {} 
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(1)
+            s.connect((ip,waptservice_port))
+            s.close
+            if ip and waptservice_port:
+                logger.info( "Upgrading %s..." % ip)
+                r = requests.get("http://%s:%d/upgrade" % ( ip, waptservice_port),proxies=None)
+                if "OK" in r.text:
+                    result = {  'status' : 'OK', 'message': u"%s" % r.text }
+                else:
+                    result = {  'status' : 'ERROR', 'message': u"%s" % r.text }
+    
+            else:
+                raise Exception(u"Le port de waptservice n'est pas défini")
+    
+        except Exception as e:
+            raise  Exception("Impossible de joindre le web service: %s" % e)
+        
+    except Exception, e:
+            result = { 'status' : 'ERROR', 'message': u"%s" % e  }
+    print result
+    return json.dumps(result)   
 
 
 def install_wapt(computer_name,authentication_file):
