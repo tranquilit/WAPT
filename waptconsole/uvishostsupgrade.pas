@@ -58,7 +58,7 @@ begin
   Stopped := False;
   for host in ProgressGrid.Data do
   begin
-    if host.S['status']<>'OK' then
+    if uppercase(host.S['status'])<>'OK' then
     begin
       host.S['status'] := '';
       host.S['message'] := '';
@@ -69,7 +69,7 @@ begin
   for host in ProgressGrid.Data do
   begin
     if Stopped then Break;
-    if host.S['status'] = 'OK' then
+    if uppercase(host.S['status']) = 'OK' then
       Continue;
 
     host.S['status'] := 'STARTED';
@@ -80,7 +80,7 @@ begin
         for ip in host['host.connected_ips'] do
         begin
           res := WAPTServerJsonGet(action+'/'+ ip.AsString, [],WaptUseLocalConnectionProxy);
-          if res.S['status']='OK' then
+          if uppercase(res.S['status']) ='OK' then
             break;
         end
       else

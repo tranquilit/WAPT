@@ -6,10 +6,9 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, SynEdit, SynHighlighterPython,
-  vte_json, Forms, Controls, Graphics,
-  Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, jsonparser,
-  superobject, UniqueInstance, VirtualTrees, VarPyth, Windows, ImgList, Buttons,
-  SOGrid, ActiveX;
+  vte_json, Forms, Controls, Graphics, Dialogs, ExtCtrls,
+  StdCtrls, ComCtrls, ActnList, Menus, jsonparser, superobject,
+  VirtualTrees, VarPyth, Windows, ImgList, Buttons, SOGrid;
 
 type
 
@@ -82,6 +81,7 @@ type
     Label10: TLabel;
     Label11: TLabel;
     LabelComputersNumber: TLabel;
+    MemoGroupeDescription: TMemo;
     MenuItem28: TMenuItem;
     MenuItem33: TMenuItem;
     MenuItem34: TMenuItem;
@@ -90,6 +90,7 @@ type
     MenuItem38: TMenuItem;
     MenuItem40: TMenuItem;
     Panel11: TPanel;
+    Panel2: TPanel;
     PopupMenuGroups: TPopupMenu;
     ProgressBar: TProgressBar;
     EdHostname: TEdit;
@@ -110,6 +111,7 @@ type
     ImageList1: TImageList;
     Label1: TLabel;
     pgGroups: TTabSheet;
+    Splitter3: TSplitter;
     urlExternalRepo: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -251,9 +253,7 @@ type
     procedure GridHostsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       RowData, CellData: ISuperObject; Column: TColumnIndex;
       TextType: TVSTTextType; var CellText: string);
-    procedure GridHostsHeaderDblClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
-    procedure GridHostsPaintBackground(Sender: TBaseVirtualTree;
-      TargetCanvas: TCanvas; const R: TRect; var Handled: boolean);
+    procedure GridPackagesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridPackagesColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
     procedure GridPackagesPaintText(Sender: TBaseVirtualTree;
@@ -285,11 +285,11 @@ var
 
 implementation
 
-uses LCLIntf, IniFiles, uvisprivatekeyauth, uvisloading, tisstrings, soutils,
+uses LCLIntf, LCLType,IniFiles, uvisprivatekeyauth, uvisloading, tisstrings, soutils,
   waptcommon, tiscommon, uVisCreateKey, uVisCreateWaptSetup, uvisOptionIniFile,
   dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
   uvisgroupchoice, uviseditgroup, uviswaptdeploy, uvishostsupgrade,
-  PythonEngine;
+  PythonEngine,Clipbrd;
 
 {$R *.lfm}
 
@@ -363,7 +363,13 @@ end;
 
 procedure TVisWaptGUI.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  //Gridhosts.SaveToFile(AppLocalDir+'gridhosts.cols') ;
+  Gridhosts.SaveSettingsToIni(Appuserinipath) ;
+  GridPackages.SaveSettingsToIni(Appuserinipath) ;
+  GridGroups.SaveSettingsToIni(Appuserinipath) ;
+  GridExternalPackages.SaveSettingsToIni(Appuserinipath) ;
+  GridHostPackages.SaveSettingsToIni(Appuserinipath) ;
+  GridHostSoftwares.SaveSettingsToIni(Appuserinipath) ;
+
 end;
 
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
@@ -394,7 +400,6 @@ begin
       EdUpdateDate.Text := GridHosts.GetCellStrValue(Node, 'last_query_date');
       EdUser.Text := GridHosts.GetCellStrValue(Node, 'host.current_user');
       GridHostPackages.Data := packages;
-      GridHostPackages.Header.AutoFitColumns(False);
     end
     else if HostPages.ActivePage = pgSoftwares then
     begin
@@ -405,7 +410,6 @@ begin
         GridHostSoftwares.GetData(Node)['softwares'] := softwares;
       end;
       GridHostSoftwares.Data := softwares;
-      GridHostSoftwares.Header.AutoFitColumns(False);
     end
     else if HostPages.ActivePage = pgHostPackage then
     begin
@@ -415,7 +419,6 @@ begin
   end
   else
   begin
-
     GridHostPackages.Clear;
     GridHostSoftwares.Clear;
     GridhostAttribs.Clear;
@@ -660,15 +663,11 @@ end;
 
 procedure TVisWaptGUI.ActPackageEdit(Sender: TObject);
 var
-  expr, res, depends, dep: string;
   Selpackage: string;
-  Result: ISuperObject;
-  N: PVirtualNode;
 begin
-  if GridPackages.Focused then
+  if GridPackages.FocusedNode<>Nil then
   begin
-    N := GridPackages.GetFirstSelected;
-    Selpackage := GridPackages.GetCellStrValue(N, 'package');
+    Selpackage := GridPackages.GetCellStrValue(GridPackages.FocusedNode, 'package');
     if EditPackage(Selpackage, ActAdvancedMode.Checked) <> nil then
       ActPackagesUpdate.Execute;
   end;
@@ -677,23 +676,6 @@ end;
 procedure TVisWaptGUI.ActEditpackageUpdate(Sender: TObject);
 begin
   ActEditpackage.Enabled := GridPackages.SelectedCount > 0;
-end;
-
-function gridFind(grid: TSOGrid; Fieldname, AText: string): PVirtualNode;
-var
-  n: PVirtualNode;
-begin
-  Result := nil;
-  n := grid.GetFirst;
-  while n <> nil do
-  begin
-    if grid.GetCellStrValue(n, Fieldname) = AText then
-    begin
-      Result := n;
-      Break;
-    end;
-    n := grid.GetNext(n);
-  end;
 end;
 
 procedure TVisWaptGUI.ActCreateCertificateExecute(Sender: TObject);
@@ -1062,7 +1044,6 @@ begin
     [EdSearchGroups.Text]);
   groups := DMPython.RunJSON(expr);
   GridGroups.Data := groups;
-  GridGroups.Header.AutoFitColumns(False);
 end;
 
 procedure TVisWaptGUI.ActHostUpgradeExecute(Sender: TObject);
@@ -1125,8 +1106,11 @@ begin
 end;
 
 procedure TVisWaptGUI.ActHostsCopyExecute(Sender: TObject);
+var
+  fmt :  TClipboardFormat;
 begin
-  GridHosts.CopyToClipBoard;
+  //GridHosts.CopyToClipBoard;
+  Clipboard.AsText:=GridHosts.ContentToUTF8(tstSelected,';');
 end;
 
 procedure TVisWaptGUI.ActHostsDeleteExecute(Sender: TObject);
@@ -1226,7 +1210,6 @@ begin
   hosts := WAPTServerJsonGet(req, [], WaptUseLocalConnectionProxy);
   GridHosts.Data := hosts;
   LabelComputersNumber.Caption := IntToStr(hosts.AsArray.Length);
-  GridHosts.Header.AutoFitColumns(False);
 end;
 
 procedure TVisWaptGUI.ActSearchPackageExecute(Sender: TObject);
@@ -1241,7 +1224,6 @@ begin
   packages := DMPython.RunJSON(expr);
 
   GridPackages.Data := packages;
-  GridPackages.Header.AutoFitColumns(False);
 end;
 
 procedure TVisWaptGUI.ActPackagesUpdateExecute(Sender: TObject);
@@ -1344,7 +1326,6 @@ begin
     [AppIniFilename, EdSearch1.Text]);
   packages := DMPython.RunJSON(expr);
   GridExternalPackages.Data := packages;
-  GridExternalPackages.Header.AutoFitColumns(False);
 end;
 
 procedure TVisWaptGUI.cbSearchAllChange(Sender: TObject);
@@ -1458,8 +1439,12 @@ begin
   PageControl1.ActivePage := pgInventory;
   PageControl1Change(Sender);
 
-  {if FileExists(AppLocalDir+'gridhosts.cols') then
-    GridHosts.Header.RestoreColumns; StringToFile(GridHosts.Header.ToString, ); GridHosts.Header.LoadFromStreamStre () ;}
+  Gridhosts.LoadSettingsFromIni(Appuserinipath);
+  GridPackages.LoadSettingsFromIni(Appuserinipath) ;
+  GridGroups.LoadSettingsFromIni(Appuserinipath) ;
+  GridExternalPackages.LoadSettingsFromIni(Appuserinipath) ;
+  GridHostPackages.LoadSettingsFromIni(Appuserinipath) ;
+  GridHostSoftwares.LoadSettingsFromIni(Appuserinipath) ;
 
 end;
 
@@ -1551,7 +1536,7 @@ procedure TVisWaptGUI.GridHostsGetImageIndexEx(Sender: TBaseVirtualTree;
 var
   update_status, upgrades, errors: ISuperObject;
 begin
-  if Column = 0 then
+  if GridHosts.Header.Columns[Column].Text='Status' then
   begin
     update_status := GridHosts.GetData(Node)['update_status'];
     if (update_status <> nil) then
@@ -1572,27 +1557,36 @@ begin
 end;
 
 procedure TVisWaptGUI.GridHostsGetText(Sender: TBaseVirtualTree;
-
   Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
   TextType: TVSTTextType; var CellText: string);
+var
+  update_status,errors,Upgrades : ISuperObject;
 begin
   if (CellData <> nil) and (CellData.DataType = stArray) then
     CellText := Join(',', CellData);
+  if GridHosts.Header.Columns[Column].Text='Status' then
+  begin
+    update_status := GridHosts.GetData(Node)['update_status'];
+    if (update_status <> nil) then
+    begin
+      errors := update_status['errors'];
+      upgrades := update_status['upgrades'];
+      if (errors <> nil) and (errors.AsArray.Length > 0) then
+        CellText:='ERROR'
+      else
+      if (upgrades <> nil) and (upgrades.AsArray.Length > 0) then
+        CellText:='TO-UPGRADE'
+      else
+        CellText:='OK';
+
+    end;
+  end;
 end;
 
-procedure TVisWaptGUI.GridHostsHeaderDblClick(Sender: TVTHeader;
-  HitInfo: TVTHeaderHitInfo);
+procedure TVisWaptGUI.GridPackagesChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
 begin
-  ;
-end;
-
-procedure TVisWaptGUI.GridHostsPaintBackground(Sender: TBaseVirtualTree;
-  TargetCanvas: TCanvas; const R: TRect; var Handled: boolean);
-begin
-
-  TargetCanvas.Brush.Color := clBlack;
-  TargetCanvas.FillRect(R);
-
+  MemoGroupeDescription.Lines.Text:= GridPackages.GetCellStrValue(Node,'description');
 end;
 
 procedure TVisWaptGUI.GridPackagesColumnDblClick(Sender: TBaseVirtualTree;

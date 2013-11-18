@@ -17,7 +17,8 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="3"/>
-      <RevisionNr Value="19"/>
+      <RevisionNr Value="20"/>
+      <BuildNr Value="1"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -33,61 +34,64 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="18">
+    <RequiredPackages Count="19">
       <Item1>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="TurboPowerIPro"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_orpheus"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item2>
       <Item3>
-        <PackageName Value="pl_fpspreadsheet"/>
+        <PackageName Value="pl_orpheus"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_virtualtrees"/>
+        <PackageName Value="pl_fpspreadsheet"/>
       </Item4>
       <Item5>
-        <PackageName Value="pl_cindy"/>
+        <PackageName Value="pl_virtualtrees"/>
       </Item5>
       <Item6>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pl_cindy"/>
       </Item6>
       <Item7>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="pltis_superobject"/>
       </Item7>
       <Item8>
-        <PackageName Value="RunTimeTypeInfoControls"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item8>
       <Item9>
-        <PackageName Value="pl_graphics32ext"/>
+        <PackageName Value="RunTimeTypeInfoControls"/>
       </Item9>
       <Item10>
-        <PackageName Value="pl_bgracontrols"/>
+        <PackageName Value="pl_graphics32ext"/>
       </Item10>
       <Item11>
-        <PackageName Value="pl_luicontrols"/>
+        <PackageName Value="pl_bgracontrols"/>
       </Item11>
       <Item12>
-        <PackageName Value="pl_glscene"/>
+        <PackageName Value="pl_luicontrols"/>
       </Item12>
       <Item13>
-        <PackageName Value="pl_virtualtreesextra"/>
+        <PackageName Value="pl_glscene"/>
       </Item13>
       <Item14>
-        <PackageName Value="pl_lazsolutions"/>
+        <PackageName Value="pl_virtualtreesextra"/>
       </Item14>
       <Item15>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pl_lazsolutions"/>
       </Item15>
       <Item16>
-        <PackageName Value="pl_indycomp"/>
+        <PackageName Value="FCL"/>
       </Item16>
       <Item17>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="pl_indycomp"/>
       </Item17>
       <Item18>
-        <PackageName Value="LCL"/>
+        <PackageName Value="SynEdit"/>
       </Item18>
+      <Item19>
+        <PackageName Value="LCL"/>
+      </Item19>
     </RequiredPackages>
     <Units Count="20">
       <Unit0>

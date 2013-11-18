@@ -201,7 +201,7 @@ object viswaptdeploy: Tviswaptdeploy
       TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
       TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toEditOnClick]
       TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-      TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect]
+      TreeOptions.SelectionOptions = [toExtendedFocus]
       OnInitNode = ProgressGridInitNode
       OnMeasureItem = ProgressGridMeasureItem
     end
