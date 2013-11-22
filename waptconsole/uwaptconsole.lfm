@@ -10,7 +10,7 @@ object VisWaptGUI: TVisWaptGUI
   OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
-  Position = poScreenCenter
+  Position = poDefault
   LCLVersion = '1.1'
   object PageControl1: TPageControl
     Left = 0
@@ -156,6 +156,7 @@ object VisWaptGUI: TVisWaptGUI
         Align = alClient
         ChangeDelay = 50
         Color = clWhite
+        DragType = dtVCL
         Header.AutoSizeIndex = -1
         Header.Columns = <        
           item
@@ -305,12 +306,14 @@ object VisWaptGUI: TVisWaptGUI
         PopupMenu = PopupMenuHosts
         TabOrder = 2
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
-        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toFullRowDrag]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toFullRowDrag]
         TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection, toUseExplorerTheme]
         TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect, toSimpleDrawSelection]
         WantTabs = True
         OnChange = GridHostsChange
         OnColumnDblClick = GridHostsColumnDblClick
+        OnDragOver = GridHostsDragOver
+        OnDragDrop = GridHostsDragDrop
         OnGetImageIndexEx = GridHostsGetImageIndexEx
       end
       object HostPages: TPageControl
@@ -392,9 +395,9 @@ object VisWaptGUI: TVisWaptGUI
             Images = ImageList1
             TabOrder = 0
             TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
-            TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+            TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
             TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
-            TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+            TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
             OnGetImageIndexEx = GridHostPackagesGetImageIndexEx
           end
           object Panel9: TPanel
@@ -584,6 +587,7 @@ object VisWaptGUI: TVisWaptGUI
             Align = alClient
             Color = clWhite
             DragMode = dmAutomatic
+            DragType = dtVCL
             Header.AutoSizeIndex = -1
             Header.Columns = <            
               item
@@ -600,9 +604,9 @@ object VisWaptGUI: TVisWaptGUI
             Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
             TabOrder = 0
             TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes]
-            TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
+            TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toEditOnClick]
             TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-            TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
+            TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
           end
         end
         object pgSoftwares: TTabSheet
@@ -662,7 +666,7 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
             TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
             TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-            TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
+            TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
           end
         end
       end
@@ -744,7 +748,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
-        TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect, toRightClickSelect]
+        TreeOptions.SelectionOptions = [toDisableDrawSelection, toFullRowSelect, toMultiSelect, toRightClickSelect]
         OnColumnDblClick = GridGroupsColumnDblClick
         OnPaintText = GridPackagesPaintText
       end
@@ -854,7 +858,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
-        TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+        TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
         OnChange = GridPackagesChange
         OnColumnDblClick = GridPackagesColumnDblClick
         OnPaintText = GridPackagesPaintText
@@ -1831,17 +1835,6 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Enregistrer l''ordinateur sur le serveur Wapt'
       OnExecute = ActRegisterHostExecute
     end
-    object actHostSelectAll: TAction
-      Category = 'hosts'
-      Caption = 'Tout Sélectionner'
-      OnExecute = actHostSelectAllExecute
-      ShortCut = 16449
-    end
-    object ActHostsCopy: TAction
-      Category = 'hosts'
-      Caption = 'Copier'
-      OnExecute = ActHostsCopyExecute
-    end
     object ActHostsDelete: TAction
       Category = 'hosts'
       Caption = 'Supprimer'
@@ -2051,14 +2044,8 @@ object VisWaptGUI: TVisWaptGUI
     object MenuItem33: TMenuItem
       Action = ActHostWaptUpgrade
     end
-    object MenuItem20: TMenuItem
-      Action = ActHostsCopy
-    end
     object MenuItem21: TMenuItem
       Action = ActHostsDelete
-    end
-    object MenuItem19: TMenuItem
-      Action = actHostSelectAll
     end
   end
   object PopupMenuPackagesTIS: TPopupMenu

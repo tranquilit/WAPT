@@ -4,17 +4,15 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="52">
+    <Units Count="60">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptconsole"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="27" Y="14"/>
         <UsageCount Value="208"/>
-        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="uwaptconsole.pas"/>
@@ -23,16 +21,15 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uwaptconsole"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1556"/>
-        <CursorPos X="39" Y="1566"/>
+        <TopLine Value="373"/>
+        <CursorPos X="39" Y="386"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="3">
-          <Item0 X="1" Y="1378" ID="4"/>
-          <Item1 X="6" Y="1645" ID="5"/>
-          <Item2 X="5" Y="1685" ID="8"/>
+          <Item0 X="1" Y="1379" ID="4"/>
+          <Item1 X="6" Y="1686" ID="5"/>
+          <Item2 X="5" Y="1726" ID="8"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -42,31 +39,29 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="tisstrings"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="114"/>
-        <CursorPos X="10" Y="220"/>
+        <TopLine Value="1827"/>
+        <CursorPos X="1" Y="1847"/>
         <UsageCount Value="208"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="25"/>
-        <CursorPos X="12" Y="44"/>
+        <TopLine Value="152"/>
+        <CursorPos X="1" Y="177"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="1">
           <Item0 X="28" Y="50" ID="0"/>
         </Bookmarks>
-        <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\wapt-get\tiscommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiscommon"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="19"/>
-        <CursorPos X="32" Y="51"/>
+        <TopLine Value="956"/>
+        <CursorPos X="1" Y="977"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="1">
           <Item0 X="20" Y="471" ID="1"/>
@@ -77,8 +72,8 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="tisinifiles"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="9"/>
-        <CursorPos X="19" Y="63"/>
+        <TopLine Value="79"/>
+        <CursorPos X="1" Y="104"/>
         <UsageCount Value="208"/>
       </Unit5>
       <Unit6>
@@ -114,7 +109,7 @@
         <UnitName Value="uviseditpackage"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
+        <CursorPos X="5" Y="7"/>
         <UsageCount Value="215"/>
       </Unit8>
       <Unit9>
@@ -221,8 +216,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviseditgroup"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="16"/>
-        <CursorPos X="19" Y="31"/>
+        <TopLine Value="15"/>
+        <CursorPos X="19" Y="34"/>
         <UsageCount Value="403"/>
       </Unit17>
       <Unit18>
@@ -235,7 +230,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="73"/>
         <CursorPos X="7" Y="74"/>
-        <UsageCount Value="135"/>
+        <UsageCount Value="153"/>
       </Unit18>
       <Unit19>
         <Filename Value="uvishostsupgrade.pas"/>
@@ -244,24 +239,22 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvishostsupgrade"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="21"/>
+        <TopLine Value="9"/>
         <CursorPos X="11" Y="89"/>
-        <UsageCount Value="102"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <UsageCount Value="120"/>
       </Unit19>
       <Unit20>
         <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
         <UnitName Value="sogrid"/>
-        <EditorIndex Value="3"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="837"/>
-        <CursorPos X="14" Y="846"/>
-        <UsageCount Value="35"/>
+        <TopLine Value="654"/>
+        <CursorPos X="24" Y="660"/>
+        <UsageCount Value="44"/>
         <Bookmarks Count="1">
-          <Item0 X="45" Y="428" ID="2"/>
+          <Item0 X="1" Y="435" ID="2"/>
         </Bookmarks>
         <Loaded Value="True"/>
       </Unit20>
@@ -271,7 +264,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="5361"/>
         <CursorPos X="1" Y="5384"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="9"/>
       </Unit21>
       <Unit22>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
@@ -279,7 +272,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="2410"/>
         <CursorPos X="12" Y="2426"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="1"/>
       </Unit22>
       <Unit23>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwawinbase.pas"/>
@@ -287,7 +280,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="2196"/>
         <CursorPos X="10" Y="2212"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="10"/>
       </Unit23>
       <Unit24>
         <Filename Value="C:\Users\htouvet\AppData\Local\Temp\7zEF71D.tmp\uThreads.pas"/>
@@ -295,7 +288,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="27" Y="22"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="10"/>
       </Unit24>
       <Unit25>
         <Filename Value="C:\Users\htouvet\AppData\Local\Temp\7zE66D1.tmp\hThreads.pas"/>
@@ -303,14 +296,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="14" Y="18"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="10"/>
       </Unit25>
       <Unit26>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <UnitName Value="superobject"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="3137"/>
-        <CursorPos X="1" Y="3169"/>
+        <TopLine Value="3123"/>
+        <CursorPos X="1" Y="3143"/>
         <UsageCount Value="19"/>
       </Unit26>
       <Unit27>
@@ -319,7 +312,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1767"/>
         <CursorPos X="14" Y="1786"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="3"/>
       </Unit27>
       <Unit28>
         <Filename Value="C:\codetyphon\typhon\lcl\controls.pp"/>
@@ -327,23 +320,23 @@
         <WindowIndex Value="0"/>
         <TopLine Value="2001"/>
         <CursorPos X="15" Y="2021"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="9"/>
       </Unit28>
       <Unit29>
         <Filename Value="C:\codetyphon\typhon\lcl\include\control.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="4764"/>
         <CursorPos X="3" Y="4769"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
       </Unit29>
       <Unit30>
         <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
         <UnitName Value="VirtualTrees"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="8640"/>
-        <CursorPos X="3" Y="8651"/>
-        <UsageCount Value="21"/>
+        <TopLine Value="13870"/>
+        <CursorPos X="7" Y="13886"/>
+        <UsageCount Value="28"/>
         <Bookmarks Count="2">
           <Item0 X="1" Y="30331" ID="1"/>
           <Item1 X="1" Y="22194" ID="3"/>
@@ -356,15 +349,15 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="138"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="3"/>
       </Unit31>
       <Unit32>
         <Filename Value="C:\codetyphon\typhon\lcl\dialogs.pp"/>
         <UnitName Value="Dialogs"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="14"/>
-        <CursorPos X="70" Y="30"/>
-        <UsageCount Value="4"/>
+        <TopLine Value="399"/>
+        <CursorPos X="14" Y="418"/>
+        <UsageCount Value="15"/>
       </Unit32>
       <Unit33>
         <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
@@ -372,7 +365,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="5420"/>
         <CursorPos X="1" Y="5438"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit33>
       <Unit34>
@@ -380,21 +373,21 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit34>
       <Unit35>
         <Filename Value="C:\codetyphon\typhon\components\turbopower_ipro\iphtml.pas"/>
         <UnitName Value="IpHtml"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="931"/>
-        <CursorPos X="1" Y="856"/>
-        <UsageCount Value="8"/>
+        <TopLine Value="18620"/>
+        <CursorPos X="14" Y="18633"/>
+        <UsageCount Value="10"/>
       </Unit35>
       <Unit36>
         <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\include\olemethods_win32.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="12" Y="11"/>
+        <CursorPos X="1" Y="11"/>
         <UsageCount Value="10"/>
       </Unit36>
       <Unit37>
@@ -403,13 +396,13 @@
         <WindowIndex Value="0"/>
         <TopLine Value="4070"/>
         <CursorPos X="12" Y="4089"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
       </Unit37>
       <Unit38>
         <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\include\vtvdragmanager_win32.inc"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="75"/>
-        <CursorPos X="1" Y="100"/>
+        <TopLine Value="379"/>
+        <CursorPos X="1" Y="398"/>
         <UsageCount Value="10"/>
       </Unit38>
       <Unit39>
@@ -417,7 +410,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="31"/>
         <CursorPos X="10" Y="50"/>
-        <UsageCount Value="15"/>
+        <UsageCount Value="13"/>
       </Unit39>
       <Unit40>
         <Filename Value="C:\codetyphon\typhon\lcl\lcltype.pp"/>
@@ -425,14 +418,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="2861"/>
         <CursorPos X="14" Y="2688"/>
-        <UsageCount Value="17"/>
+        <UsageCount Value="15"/>
       </Unit40>
       <Unit41>
         <Filename Value="C:\codetyphon\typhon\lcl\include\winapih.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="65"/>
         <CursorPos X="10" Y="84"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="7"/>
       </Unit41>
       <Unit42>
         <Filename Value="C:\codetyphon\typhon\lcl\lclintf.pas"/>
@@ -440,16 +433,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="11"/>
       </Unit42>
       <Unit43>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\objpas.inc"/>
-        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="921"/>
         <CursorPos X="11" Y="932"/>
-        <UsageCount Value="13"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="20"/>
       </Unit43>
       <Unit44>
         <Filename Value="C:\codetyphon\typhon\lcl\graphics.pp"/>
@@ -457,14 +448,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1024"/>
         <CursorPos X="3" Y="1043"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
       </Unit44>
       <Unit45>
         <Filename Value="C:\codetyphon\typhon\lcl\include\wincontrol.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="7"/>
       </Unit45>
       <Unit46>
         <Filename Value="C:\codetyphon\typhon\lcl\clipbrd.pp"/>
@@ -472,249 +463,233 @@
         <WindowIndex Value="0"/>
         <TopLine Value="159"/>
         <CursorPos X="15" Y="177"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="9"/>
       </Unit46>
       <Unit47>
         <Filename Value="C:\codetyphon\typhon\lcl\include\clipbrd.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="188"/>
         <CursorPos X="26" Y="182"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="9"/>
       </Unit47>
       <Unit48>
         <Filename Value="C:\codetyphon\typhon\lcl\menus.pp"/>
         <UnitName Value="Menus"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="393"/>
-        <CursorPos X="10" Y="412"/>
-        <UsageCount Value="11"/>
+        <TopLine Value="379"/>
+        <CursorPos X="15" Y="398"/>
+        <UsageCount Value="10"/>
       </Unit48>
       <Unit49>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\classes\classesh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="90"/>
         <CursorPos X="3" Y="109"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="10"/>
       </Unit49>
       <Unit50>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\base64.pp"/>
         <UnitName Value="base64"/>
-        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="60"/>
         <CursorPos X="22" Y="89"/>
-        <UsageCount Value="12"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="19"/>
       </Unit50>
       <Unit51>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\objpash.inc"/>
-        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="223"/>
         <CursorPos X="20" Y="242"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="18"/>
       </Unit51>
+      <Unit52>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\systemh.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1071"/>
+        <CursorPos X="11" Y="1090"/>
+        <UsageCount Value="13"/>
+      </Unit52>
+      <Unit53>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\text.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="28"/>
+        <CursorPos X="165" Y="51"/>
+        <UsageCount Value="13"/>
+      </Unit53>
+      <Unit54>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\file.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="180"/>
+        <CursorPos X="3" Y="197"/>
+        <UsageCount Value="12"/>
+      </Unit54>
+      <Unit55>
+        <Filename Value="C:\codetyphon\typhon\lcl\include\popupmenu.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="60"/>
+        <CursorPos X="3" Y="71"/>
+        <UsageCount Value="10"/>
+      </Unit55>
+      <Unit56>
+        <Filename Value="uwaptconsole.lfm"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="991"/>
+        <CursorPos X="144" Y="1017"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="LFM"/>
+      </Unit56>
+      <Unit57>
+        <Filename Value="uviseditpackage.lfm"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="121"/>
+        <CursorPos X="146" Y="147"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="LFM"/>
+      </Unit57>
+      <Unit58>
+        <Filename Value="uviseditgroup.lfm"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="195"/>
+        <CursorPos X="140" Y="221"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="LFM"/>
+      </Unit58>
+      <Unit59>
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <UnitName Value="soutils"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="46" Y="14"/>
+        <UsageCount Value="10"/>
+      </Unit59>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
-        <Caret Line="418" Column="43" TopLine="356"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="1331" Column="19" TopLine="1306"/>
       </Position1>
       <Position2>
-        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
-        <Caret Line="911" Column="32" TopLine="876"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="1403" Column="52" TopLine="1377"/>
       </Position2>
       <Position3>
-        <Filename Value="waptconsole.lpr"/>
-        <Caret Line="5" Column="19" TopLine="1"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="1523" Column="19" TopLine="1489"/>
       </Position3>
       <Position4>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="708" Column="147" TopLine="681"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="1648" Column="51" TopLine="1622"/>
       </Position4>
       <Position5>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="372" Column="1" TopLine="363"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="2120" Column="76" TopLine="2096"/>
       </Position5>
       <Position6>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1457" Column="13" TopLine="1439"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="2269" Column="86" TopLine="2257"/>
       </Position6>
       <Position7>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1503" Column="9" TopLine="1500"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="2270" Column="101" TopLine="2257"/>
       </Position7>
       <Position8>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="419" Column="1" TopLine="394"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="2273" Column="64" TopLine="2257"/>
       </Position8>
       <Position9>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="405" Column="1" TopLine="395"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="2372" Column="103" TopLine="2348"/>
       </Position9>
       <Position10>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="2373" Column="103" TopLine="2349"/>
       </Position10>
       <Position11>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="403" Column="1" TopLine="371"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="2412" Column="19" TopLine="2388"/>
       </Position11>
       <Position12>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1047" Column="1" TopLine="1015"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="2531" Column="59" TopLine="2506"/>
       </Position12>
       <Position13>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1213" Column="1" TopLine="1182"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="2532" Column="117" TopLine="2507"/>
       </Position13>
       <Position14>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1227" Column="1" TopLine="1195"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="2637" Column="21" TopLine="2613"/>
       </Position14>
       <Position15>
-        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
-        <Caret Line="919" Column="7" TopLine="883"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="2702" Column="97" TopLine="2678"/>
       </Position15>
       <Position16>
-        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
-        <Caret Line="46" Column="16" TopLine="26"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="2704" Column="47" TopLine="2680"/>
       </Position16>
       <Position17>
-        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
-        <Caret Line="99" Column="19" TopLine="69"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="2712" Column="19" TopLine="2688"/>
       </Position17>
       <Position18>
-        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
-        <Caret Line="292" Column="24" TopLine="262"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="2908" Column="73" TopLine="2884"/>
       </Position18>
       <Position19>
-        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
-        <Caret Line="328" Column="14" TopLine="296"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="2946" Column="139" TopLine="2921"/>
       </Position19>
       <Position20>
-        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
-        <Caret Line="647" Column="71" TopLine="616"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="2947" Column="123" TopLine="2922"/>
       </Position20>
       <Position21>
-        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
-        <Caret Line="863" Column="20" TopLine="837"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="3055" Column="26" TopLine="3039"/>
       </Position21>
       <Position22>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1310" Column="21" TopLine="1298"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="3459" Column="27" TopLine="3435"/>
       </Position22>
       <Position23>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1596" Column="57" TopLine="1564"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position23>
       <Position24>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="2119" Column="19" TopLine="2095"/>
       </Position24>
       <Position25>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1596" Column="57" TopLine="1564"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <Caret Line="2393" Column="30" TopLine="2379"/>
       </Position25>
       <Position26>
-        <Filename Value="uwaptconsole.pas"/>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
         <Caret Line="1" Column="1" TopLine="1"/>
       </Position26>
       <Position27>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1554" Column="41" TopLine="1533"/>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="255" Column="27" TopLine="231"/>
       </Position27>
       <Position28>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1565" Column="14" TopLine="1550"/>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="679" Column="20" TopLine="653"/>
       </Position28>
       <Position29>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1577" Column="33" TopLine="1547"/>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position29>
       <Position30>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1563" Column="34" TopLine="1548"/>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="255" Column="27" TopLine="231"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
-    <BreakPoints Count="10">
-      <Item1>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="uviseditpackage.pas"/>
-        <Line Value="418"/>
-      </Item1>
-      <Item2>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="C:\codetyphon\typhon\components\turbopower_ipro\iphtml.pas"/>
-        <Line Value="18636"/>
-      </Item2>
-      <Item3>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
-        <Line Value="30825"/>
-      </Item3>
-      <Item4>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
-        <Line Value="23912"/>
-      </Item4>
-      <Item5>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
-        <Line Value="30822"/>
-      </Item5>
-      <Item6>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\include\olemethods_win32.inc"/>
-        <Line Value="69"/>
-      </Item6>
-      <Item7>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\include\vtvdragmanager_win32.inc"/>
-        <Line Value="398"/>
-      </Item7>
-      <Item8>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\include\vtvdragmanager_win32.inc"/>
-        <Line Value="456"/>
-      </Item8>
-      <Item9>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\include\vtvdragmanager_win32.inc"/>
-        <Line Value="495"/>
-      </Item9>
-      <Item10>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\include\olemethods_win32.inc"/>
-        <Line Value="11"/>
-      </Item10>
-    </BreakPoints>
     <Watches Count="1">
       <Item1>
         <Expression Value="pchar(self.fostring)"/>

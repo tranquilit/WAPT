@@ -41,8 +41,8 @@ object VisEditGroup: TVisEditGroup
   end
   object GridDepends: TSOGrid
     Left = 8
-    Height = 248
-    Top = 64
+    Height = 260
+    Top = 76
     Width = 536
     Color = clWhite
     Header.AutoSizeIndex = -1
@@ -87,8 +87,8 @@ object VisEditGroup: TVisEditGroup
   end
   object GridHosts: TSOGrid
     Left = 8
-    Height = 248
-    Top = 320
+    Height = 236
+    Top = 360
     Width = 536
     Color = clWhite
     Header.AutoSizeIndex = -1
@@ -96,6 +96,7 @@ object VisEditGroup: TVisEditGroup
       item
         Position = 0
         Text = 'Machine'
+        Width = 250
         PropertyName = 'computer_fqdn'
       end>
     Header.DefaultHeight = 17
@@ -149,8 +150,8 @@ object VisEditGroup: TVisEditGroup
   end
   object GridPackages: TSOGrid
     Left = 556
-    Height = 472
-    Top = 64
+    Height = 456
+    Top = 80
     Width = 224
     Color = clWhite
     DragMode = dmAutomatic
@@ -194,6 +195,7 @@ object VisEditGroup: TVisEditGroup
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
         Position = 4
         Text = 'Description'
+        Width = 100
         PropertyName = 'description'
       end    
       item
@@ -201,6 +203,7 @@ object VisEditGroup: TVisEditGroup
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
         Position = 5
         Text = 'Dépendances'
+        Width = 100
         PropertyName = 'depends'
       end    
       item
@@ -218,5 +221,29 @@ object VisEditGroup: TVisEditGroup
     TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
     TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect]
+  end
+  object Label1: TLabel
+    Left = 556
+    Height = 13
+    Top = 63
+    Width = 94
+    Caption = 'Paquets disponibles'
+    ParentColor = False
+  end
+  object Label2: TLabel
+    Left = 8
+    Height = 13
+    Top = 60
+    Width = 261
+    Caption = 'Paquets devant être installés sur les postes du groupe'
+    ParentColor = False
+  end
+  object Label3: TLabel
+    Left = 8
+    Height = 13
+    Top = 344
+    Width = 142
+    Caption = 'Machines membres du groupe'
+    ParentColor = False
   end
 end

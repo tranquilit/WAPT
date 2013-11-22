@@ -20,6 +20,9 @@ type
     GridDepends: TSOGrid;
     GridHosts: TSOGrid;
     GridPackages: TSOGrid;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
     Panel4: TPanel;
   private
     FGroup: String;

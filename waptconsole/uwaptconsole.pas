@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, FileUtil, SynEdit, SynHighlighterPython,
   vte_json, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   StdCtrls, ComCtrls, ActnList, Menus, jsonparser, superobject,
-  VirtualTrees, VarPyth, Windows, ImgList, Buttons, SOGrid;
+  VirtualTrees, VarPyth, Windows, ImgList, Buttons, SOGrid, types, ActiveX;
 
 type
 
@@ -24,11 +24,9 @@ type
     ActCreateWaptSetup: TAction;
     ActEvaluateVar: TAction;
     ActEditHostPackage: TAction;
-    actHostSelectAll: TAction;
     ActAddRemoveOptionIniFile: TAction;
     ActHostSearchPackage: TAction;
     ActHostsAddPackages: TAction;
-    ActHostsCopy: TAction;
     ActHostsDelete: TAction;
     ActDeletePackage: TAction;
     ActAdvancedMode: TAction;
@@ -133,9 +131,7 @@ type
     MenuItem16: TMenuItem;
     MenuItem17: TMenuItem;
     MenuItem18: TMenuItem;
-    MenuItem19: TMenuItem;
     MenuItem2: TMenuItem;
-    MenuItem20: TMenuItem;
     MenuItem21: TMenuItem;
     MenuItem22: TMenuItem;
     MenuItem23: TMenuItem;
@@ -246,6 +242,12 @@ type
     procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridHostsColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
+    procedure GridHostsDragDrop(Sender: TBaseVirtualTree; Source: TObject;
+      DataObject: IDataObject; Formats: TFormatArray; Shift: TShiftState;
+      const Pt: TPoint; var Effect: DWORD; Mode: TDropMode);
+    procedure GridHostsDragOver(Sender: TBaseVirtualTree; Source: TObject;
+      Shift: TShiftState; State: TDragState; const Pt: TPoint; Mode: TDropMode;
+      var Effect: DWORD; var Accept: Boolean);
     procedure GridHostsGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: boolean; var ImageIndex: integer;
@@ -381,7 +383,6 @@ begin
   Node := GridHosts.FocusedNode;
   if Node <> nil then
   begin
-
     currhost := GridHosts.GetCellStrValue(Node, 'uuid');
     if HostPages.ActivePage = pgPackages then
     begin
@@ -1454,7 +1455,7 @@ var
   selgroup : String;
   N: PVirtualNode;
 begin
-  if GridGroups.Focused then
+  if GridGroups.Focused and (Shift=[ssLeft]) then
   begin
     N := GridGroups.GetFirstSelected;
     selgroup := GridGroups.GetCellStrValue(N, 'package');
@@ -1463,7 +1464,7 @@ begin
       try
         group := selgroup;
         if ShowModal = mrOk then
-          halt;
+          ActSearchGroups.Execute;
       finally
         Free;
       end;
@@ -1501,6 +1502,46 @@ procedure TVisWaptGUI.GridHostsColumnDblClick(Sender: TBaseVirtualTree;
 begin
   ActEditHostPackage.Execute;
 end;
+
+procedure TVisWaptGUI.GridHostsDragDrop(Sender: TBaseVirtualTree;
+  Source: TObject; DataObject: IDataObject; Formats: TFormatArray;
+  Shift: TShiftState; const Pt: TPoint; var Effect: DWORD; Mode: TDropMode);
+var
+  propname : String;
+  col : TSOGridColumn;
+begin
+  if (Source = GridhostAttribs) then
+  begin
+    // drop d'un nouvel attribut
+    propname := GridhostAttribs.Path(GridhostAttribs.FocusedNode,0,ttNormal,'.');
+    propname := copy(propname,1,length(propname)-1);
+    col := Gridhosts.FindColumnByPropertyName(propname);
+    if col = Nil then
+    begin
+      col :=Gridhosts.Header.Columns.Add as TSOGridColumn;
+      col.Text:=propname;
+      col.PropertyName:=propname;
+      col.Width:= 100;
+    end;
+  end;
+end;
+
+procedure TVisWaptGUI.GridHostsDragOver(Sender: TBaseVirtualTree;
+  Source: TObject; Shift: TShiftState; State: TDragState; const Pt: TPoint;
+  Mode: TDropMode; var Effect: DWORD; var Accept: Boolean);
+var
+  propname : String;
+begin
+  // dragDrop d'un attribut pour enrichir la grille des hosts
+  if (Source = GridhostAttribs) then
+  begin
+    propname := GridhostAttribs.Path(GridhostAttribs.FocusedNode,0,ttNormal,'.');
+    propname := copy(propname,1,length(propname)-1);
+
+    Accept := (GridHosts.FindColumnByPropertyName(propname)=Nil);
+  end;
+end;
+
 
 procedure TVisWaptGUI.GridLoadData(grid: TSOGrid; jsondata: string);
 begin
