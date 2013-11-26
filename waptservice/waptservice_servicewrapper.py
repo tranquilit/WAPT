@@ -30,16 +30,23 @@ class aservice(win32serviceutil.ServiceFramework):
         self.server.stop()
 
     def SvcDoRun(self):
-        import servicemanager
-        servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,servicemanager.PYS_SERVICE_STARTED,(self._svc_name_, ''))
+        from waptservice import log_directory
+        file = open(os.path.join(log_directory,'waptservice.log'), 'a')
+        try:
+            import servicemanager
+            servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,servicemanager.PYS_SERVICE_STARTED,(self._svc_name_, ''))
 
-        from waptservice import app,waptservice_port,log_directory,logger
+            from waptservice import app,waptservice_port,log_directory,logger
 
-        logging.basicConfig(filename=os.path.join(log_directory,'waptservice.log'),format='%(asctime)s %(levelname)s %(message)s')
-        logger.info('waptservice starting')
+            logging.basicConfig(filename=os.path.join(log_directory,'waptservice.log'),format='%(asctime)s %(levelname)s %(message)s')
+            logger.info('waptservice starting')
 
 
-        self.server = Rocket(('0.0.0.0', waptservice_port), 'wsgi', {"wsgi_app":app})
+            self.server = Rocket(('0.0.0.0', waptservice_port), 'wsgi', {"wsgi_app":app})
+        except Exception as e:
+            file.writelines("Exeption: %s" %e)
+        finally:
+            file.close()
         try:
             self.server.start()
         except KeyboardInterrupt:

@@ -3,7 +3,7 @@
 #define FileVerStr GetFileVersion(SrcApp)
 #define StripBuild(str VerStr) Copy(VerStr, 1, RPos(".", VerStr)-1)
 #define AppVerStr StripBuild(FileVerStr)
-#define default_repo_url "http://wapt.tranquil.it"
+#define default_repo_url "http://wapt/wapt"
 #define default_wapt_server "http://wapt:8080"
 #define default_update_period "120"
 #define default_update_maxruntime "30"
