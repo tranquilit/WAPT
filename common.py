@@ -1893,6 +1893,11 @@ class Wapt(object):
         """Stores in local db the current run status for tray display"""
         logger.info('Status : %s' % ensure_unicode(waptstatus))
         self.write_param('runstatus',waptstatus)
+        if self.wapt_server:
+            try:
+                self.update_server_status()
+            except Exception,e:
+                logger.critical('Unable to update server with current status : %s' % ensure_unicode(e))
 
 
     def find_wapt_server(self):
@@ -3005,7 +3010,9 @@ class Wapt(object):
             return json.dumps(inv,indent=True)
 
     def get_last_update_status(self):
-        return json.loads(self.read_param('last_update_status','{"date": "", "running_tasks": [], "errors": [], "upgrades": []}'))
+        status = json.loads(self.read_param('last_update_status','{"date": "", "running_tasks": [], "errors": [], "upgrades": []}'))
+        status['runstatus'] = self.read_param('runstatus','')
+        return json.loads(json.dumps(status))
 
     def update_server_status(self,force=False):
         """Send packages and software informations to WAPT Server, don't send dmi
