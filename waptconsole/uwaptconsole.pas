@@ -74,10 +74,12 @@ type
     cbShowHostPackagesGroup: TCheckBox;
     CheckBoxMaj: TCheckBox;
     CheckBox_error: TCheckBox;
+    EdRunningStatus: TEdit;
     EdSearchGroups: TEdit;
     GridGroups: TSOGrid;
     Label10: TLabel;
     Label11: TLabel;
+    Label12: TLabel;
     LabelComputersNumber: TLabel;
     MemoGroupeDescription: TMemo;
     MenuItem28: TMenuItem;
@@ -400,6 +402,7 @@ begin
       EdModelName.Text := GridHosts.GetCellStrValue(Node, 'host.system_productname');
       EdUpdateDate.Text := GridHosts.GetCellStrValue(Node, 'last_query_date');
       EdUser.Text := GridHosts.GetCellStrValue(Node, 'host.current_user');
+      EdRunningStatus.Text:=GridHosts.GetCellStrValue(node,'update_status.runstatus');
       GridHostPackages.Data := packages;
     end
     else if HostPages.ActivePage = pgSoftwares then

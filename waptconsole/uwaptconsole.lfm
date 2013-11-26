@@ -11,7 +11,7 @@ object VisWaptGUI: TVisWaptGUI
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poDefault
-  LCLVersion = '1.1'
+  LCLVersion = '1.3'
   object PageControl1: TPageControl
     Left = 0
     Height = 553
@@ -335,11 +335,12 @@ object VisWaptGUI: TVisWaptGUI
             AnchorSideTop.Control = Panel9
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 327
-            Top = 120
+            Height = 325
+            Top = 122
             Width = 564
             Align = alBottom
             Anchors = [akTop, akLeft, akRight, akBottom]
+            BorderSpacing.Top = 2
             Color = clWhite
             Header.AutoSizeIndex = 0
             Header.Columns = <            
@@ -571,6 +572,26 @@ object VisWaptGUI: TVisWaptGUI
               Color = 15066597
               ReadOnly = True
               TabOrder = 7
+            end
+            object Label12: TLabel
+              Left = 11
+              Height = 13
+              Top = 102
+              Width = 74
+              Anchors = []
+              Caption = 'Action en cours'
+              ParentBidiMode = False
+              ParentColor = False
+            end
+            object EdRunningStatus: TEdit
+              Left = 127
+              Height = 21
+              Top = 98
+              Width = 216
+              Anchors = []
+              Color = 15066597
+              ReadOnly = True
+              TabOrder = 8
             end
           end
         end
