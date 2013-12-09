@@ -388,11 +388,11 @@ begin
     currhost := GridHosts.GetCellStrValue(Node, 'uuid');
     if HostPages.ActivePage = pgPackages then
     begin
-      packages := GridHosts.GetData(Node)['packages'];
+      packages := GridHosts.GetNodeSOData(Node)['packages'];
       if (packages = nil) or (packages.AsArray = nil) then
       begin
         packages := WAPTServerJsonGet('client_package_list/%s', [currhost], WaptUseLocalConnectionProxy);
-        GridHosts.GetData(Node)['packages'] := packages;
+        GridHosts.GetNodeSOData(Node)['packages'] := packages;
       end;
       EdHostname.Text := GridHosts.GetCellStrValue(Node, 'host.computer_name');
       EdDescription.Text := GridHosts.GetCellStrValue(Node, 'host.description');
@@ -407,17 +407,17 @@ begin
     end
     else if HostPages.ActivePage = pgSoftwares then
     begin
-      softwares := GridHosts.GetData(Node)['softwares'];
+      softwares := GridHosts.GetNodeSOData(Node)['softwares'];
       if (softwares = nil) or (softwares.AsArray = nil) then
       begin
         softwares := WAPTServerJsonGet('client_software_list/%s', [currhost],WaptUseLocalConnectionProxy);
-        GridHostSoftwares.GetData(Node)['softwares'] := softwares;
+        GridHostSoftwares.GetNodeSOData(Node)['softwares'] := softwares;
       end;
       GridHostSoftwares.Data := softwares;
     end
     else if HostPages.ActivePage = pgHostPackage then
     begin
-      attribs := GridHosts.GetData(Node);
+      attribs := GridHosts.GetNodeSOData(Node);
       TreeLoadData(GridhostAttribs, attribs.AsJSon());
     end;
   end
@@ -1482,7 +1482,7 @@ var
 begin
   if Column = 0 then
   begin
-    install_status := GridHostPackages.GetData(Node)['install_status'];
+    install_status := GridHostPackages.GetCellData(Node,'install_status',Nil);
     if (install_status <> nil) then
     begin
       case install_status.AsString of
@@ -1550,7 +1550,7 @@ procedure TVisWaptGUI.GridLoadData(grid: TSOGrid; jsondata: string);
 begin
   if (jsondata <> '') then
     try
-      Grid.JSonData := jsondata;
+      Grid.Data := SO(jsondata);
     finally
     end;
 end;
@@ -1582,7 +1582,7 @@ var
 begin
   if GridHosts.Header.Columns[Column].Text='Status' then
   begin
-    update_status := GridHosts.GetData(Node)['update_status'];
+    update_status := GridHosts.GetNodeSOData(Node)['update_status'];
     if (update_status <> nil) then
     begin
       ImageList := ImageList1;
@@ -1610,7 +1610,7 @@ begin
     CellText := Join(',', CellData);
   if GridHosts.Header.Columns[Column].Text='Status' then
   begin
-    update_status := GridHosts.GetData(Node)['update_status'];
+    update_status := GridHosts.GetNodeSOData(Node)['update_status'];
     if (update_status <> nil) then
     begin
       errors := update_status['errors'];

@@ -232,7 +232,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Position = 10
             Text = 'Version WAPT'
-            Width = 20
+            Width = 80
             PropertyName = 'wapt.wapt-exe-version'
           end        
           item
@@ -283,16 +283,9 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'attributes'
           end        
           item
-            MaxWidth = 400
+            MaxWidth = 100
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 17
-            Text = 'id'
-            Width = 100
-            PropertyName = 'id'
-          end        
-          item
-            MaxWidth = 100
-            Position = 18
             Text = 'Status poste'
             PropertyName = 'update_status'
           end>
@@ -399,6 +392,7 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
             TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
             TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
+            WantTabs = True
             OnGetImageIndexEx = GridHostPackagesGetImageIndexEx
           end
           object Panel9: TPanel
@@ -688,6 +682,7 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
             TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
             TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
+            WantTabs = True
           end
         end
       end
@@ -770,6 +765,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
         TreeOptions.SelectionOptions = [toDisableDrawSelection, toFullRowSelect, toMultiSelect, toRightClickSelect]
+        WantTabs = True
         OnColumnDblClick = GridGroupsColumnDblClick
         OnPaintText = GridPackagesPaintText
       end
@@ -880,6 +876,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
         TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
+        WantTabs = True
         OnChange = GridPackagesChange
         OnColumnDblClick = GridPackagesColumnDblClick
         OnPaintText = GridPackagesPaintText
@@ -1038,6 +1035,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
         TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+        WantTabs = True
         OnDblClick = ActPackageDuplicateExecute
         OnPaintText = GridPackagesPaintText
       end
