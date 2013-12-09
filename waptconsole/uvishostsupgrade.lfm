@@ -8,13 +8,12 @@ object VisHostsUpgrade: TVisHostsUpgrade
   ClientWidth = 683
   OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '1.1'
+  LCLVersion = '1.3'
   object ProgressGrid: TSOGrid
     Left = 0
     Height = 350
     Top = 0
     Width = 683
-    JSONdata = '""'
     Align = alClient
     Color = clWhite
     Header.AutoSizeIndex = 0
@@ -50,7 +49,8 @@ object VisHostsUpgrade: TVisHostsUpgrade
     TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
     TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toEditOnClick]
     TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-    TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect]
+    TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect]
+    WantTabs = True
     OnInitNode = ProgressGridInitNode
     OnMeasureItem = ProgressGridMeasureItem
   end

@@ -4,7 +4,7 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="60">
+    <Units Count="61">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -21,16 +21,15 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uwaptconsole"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1547"/>
-        <CursorPos X="46" Y="1597"/>
+        <TopLine Value="1047"/>
+        <CursorPos X="1" Y="1059"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="3">
-          <Item0 X="1" Y="1379" ID="4"/>
-          <Item1 X="6" Y="1686" ID="5"/>
-          <Item2 X="5" Y="1726" ID="8"/>
+          <Item0 X="1" Y="1380" ID="4"/>
+          <Item1 X="6" Y="1687" ID="5"/>
+          <Item2 X="5" Y="1727" ID="8"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -85,7 +84,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisCreateKey"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="28"/>
+        <TopLine Value="32"/>
         <CursorPos X="10" Y="69"/>
         <UsageCount Value="244"/>
       </Unit6>
@@ -110,7 +109,7 @@
         <UnitName Value="uviseditpackage"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="5" Y="7"/>
+        <CursorPos X="1" Y="6"/>
         <UsageCount Value="215"/>
       </Unit8>
       <Unit9>
@@ -134,7 +133,7 @@
         <UnitName Value="uvislogin"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3"/>
-        <CursorPos X="42" Y="9"/>
+        <CursorPos X="20" Y="5"/>
         <UsageCount Value="300"/>
       </Unit10>
       <Unit11>
@@ -146,7 +145,7 @@
         <UnitName Value="uvisprivatekeyauth"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="20" Y="26"/>
+        <CursorPos X="29" Y="5"/>
         <UsageCount Value="250"/>
       </Unit11>
       <Unit12>
@@ -158,7 +157,7 @@
         <UnitName Value="uvisloading"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="1" Y="62"/>
+        <CursorPos X="12" Y="4"/>
         <UsageCount Value="216"/>
       </Unit12>
       <Unit13>
@@ -170,7 +169,7 @@
         <UnitName Value="uvisOptionIniFile"/>
         <WindowIndex Value="0"/>
         <TopLine Value="38"/>
-        <CursorPos X="89" Y="58"/>
+        <CursorPos X="24" Y="43"/>
         <UsageCount Value="203"/>
       </Unit13>
       <Unit14>
@@ -182,7 +181,7 @@
         <UnitName Value="uviswaptconfig"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="104" Y="14"/>
+        <CursorPos X="68" Y="5"/>
         <UsageCount Value="203"/>
       </Unit14>
       <Unit15>
@@ -206,7 +205,7 @@
         <UnitName Value="uvisgroupchoice"/>
         <WindowIndex Value="0"/>
         <TopLine Value="11"/>
-        <CursorPos X="8" Y="20"/>
+        <CursorPos X="8" Y="14"/>
         <UsageCount Value="206"/>
       </Unit16>
       <Unit17>
@@ -218,7 +217,7 @@
         <UnitName Value="uviseditgroup"/>
         <WindowIndex Value="0"/>
         <TopLine Value="15"/>
-        <CursorPos X="19" Y="34"/>
+        <CursorPos X="20" Y="35"/>
         <UsageCount Value="403"/>
       </Unit17>
       <Unit18>
@@ -230,8 +229,8 @@
         <UnitName Value="uviswaptdeploy"/>
         <WindowIndex Value="0"/>
         <TopLine Value="73"/>
-        <CursorPos X="7" Y="74"/>
-        <UsageCount Value="155"/>
+        <CursorPos X="21" Y="76"/>
+        <UsageCount Value="157"/>
       </Unit18>
       <Unit19>
         <Filename Value="uvishostsupgrade.pas"/>
@@ -240,18 +239,22 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvishostsupgrade"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="9"/>
-        <CursorPos X="11" Y="89"/>
-        <UsageCount Value="122"/>
+        <TopLine Value="114"/>
+        <CursorPos X="50" Y="128"/>
+        <UsageCount Value="124"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit19>
       <Unit20>
         <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
         <UnitName Value="sogrid"/>
-        <EditorIndex Value="1"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1933"/>
-        <CursorPos X="32" Y="1949"/>
+        <TopLine Value="1606"/>
+        <CursorPos X="26" Y="1626"/>
         <UsageCount Value="44"/>
         <Bookmarks Count="1">
           <Item0 X="1" Y="435" ID="2"/>
@@ -560,107 +563,103 @@
         <CursorPos X="46" Y="14"/>
         <UsageCount Value="10"/>
       </Unit59>
+      <Unit60>
+        <Filename Value="..\..\pltis_sogrid\sogrideditor.pas"/>
+        <UnitName Value="sogrideditor"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="54"/>
+        <CursorPos X="125" Y="81"/>
+        <UsageCount Value="10"/>
+      </Unit60>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="24" HistoryIndex="23">
+    <JumpHistory Count="21" HistoryIndex="20">
       <Position1>
-        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="386" Column="39" TopLine="373"/>
       </Position1>
       <Position2>
-        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
-        <Caret Line="255" Column="27" TopLine="231"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="389" Column="29" TopLine="370"/>
       </Position2>
       <Position3>
-        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
-        <Caret Line="679" Column="20" TopLine="653"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="106" Column="5" TopLine="88"/>
       </Position3>
       <Position4>
-        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="106" Column="5" TopLine="88"/>
       </Position4>
       <Position5>
-        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
-        <Caret Line="255" Column="27" TopLine="231"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="389" Column="41" TopLine="371"/>
       </Position5>
       <Position6>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="386" Column="39" TopLine="373"/>
+        <Caret Line="390" Column="19" TopLine="371"/>
       </Position6>
       <Position7>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="389" Column="29" TopLine="370"/>
+        <Caret Line="393" Column="45" TopLine="375"/>
       </Position7>
       <Position8>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="106" Column="5" TopLine="88"/>
+        <Caret Line="416" Column="27" TopLine="382"/>
       </Position8>
       <Position9>
-        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
-        <Caret Line="265" Column="3" TopLine="247"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="418" Column="41" TopLine="399"/>
       </Position9>
       <Position10>
-        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
-        <Caret Line="291" Column="21" TopLine="260"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="1482" Column="77" TopLine="1464"/>
       </Position10>
       <Position11>
-        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
-        <Caret Line="393" Column="21" TopLine="363"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="1550" Column="32" TopLine="1528"/>
       </Position11>
       <Position12>
-        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
-        <Caret Line="1353" Column="28" TopLine="1322"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="1584" Column="45" TopLine="1554"/>
       </Position12>
       <Position13>
-        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
-        <Caret Line="1805" Column="25" TopLine="1774"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="1053" Column="37" TopLine="1036"/>
       </Position13>
       <Position14>
-        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
-        <Caret Line="1807" Column="65" TopLine="1776"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="1056" Column="166" TopLine="1036"/>
       </Position14>
       <Position15>
-        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
-        <Caret Line="1808" Column="51" TopLine="1777"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="1055" Column="3" TopLine="1053"/>
       </Position15>
       <Position16>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="106" Column="5" TopLine="88"/>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="1623" Column="1" TopLine="1600"/>
       </Position16>
       <Position17>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="389" Column="41" TopLine="371"/>
+        <Caret Line="1059" Column="1" TopLine="1047"/>
       </Position17>
       <Position18>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="390" Column="19" TopLine="371"/>
+        <Filename Value="uvishostsupgrade.pas"/>
+        <Caret Line="41" Column="14" TopLine="24"/>
       </Position18>
       <Position19>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="393" Column="45" TopLine="375"/>
+        <Filename Value="uvishostsupgrade.pas"/>
+        <Caret Line="140" Column="41" TopLine="115"/>
       </Position19>
       <Position20>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="416" Column="27" TopLine="382"/>
+        <Filename Value="uvishostsupgrade.pas"/>
+        <Caret Line="139" Column="1" TopLine="114"/>
       </Position20>
       <Position21>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="418" Column="41" TopLine="399"/>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="429" Column="52" TopLine="412"/>
       </Position21>
-      <Position22>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1482" Column="77" TopLine="1464"/>
-      </Position22>
-      <Position23>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1550" Column="32" TopLine="1528"/>
-      </Position23>
-      <Position24>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1584" Column="45" TopLine="1554"/>
-      </Position24>
     </JumpHistory>
   </ProjectSession>
   <Debugging>

@@ -168,7 +168,6 @@ object viswaptdeploy: Tviswaptdeploy
       Height = 144
       Top = 251
       Width = 637
-      JSONdata = '""'
       Align = alBottom
       Color = clWhite
       Header.AutoSizeIndex = 0

@@ -1056,6 +1056,7 @@ begin
   try
     action := 'upgrade_host';
     hosts:=Gridhosts.SelectedRows;
+
     if ShowModal=mrOK then
       actRefresh.Execute;
   finally
