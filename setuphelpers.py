@@ -415,6 +415,14 @@ def run(*cmd,**args):
     if not "shell" in args:
         args['shell']=True
 
+    if not 'accept_returncodes' in args:
+        # 1603 : souvent renvoyé quand déjà installé.
+        # 3010 : reboot required.
+        valid_returncodes = [0,1603,3010]
+    else:
+        valid_returncodes = args['accept_returncodes']
+        del args['accept_returncodes']
+
     proc = psutil.Popen(*cmd, bufsize=1, stdout=PIPE, stderr=PIPE,**args)
 
     stdout_worker = RunReader(worker, proc.stdout,args.get('on_write',None))
@@ -431,11 +439,7 @@ def run(*cmd,**args):
         proc.kill()
         raise TimeoutExpired(cmd,timeout,''.join(output))
     proc.returncode = _subprocess.GetExitCodeProcess(proc._handle)
-    if not 'accept_returncodes' in args:
-        # 1603 : souvent renvoyé quand déjà installé.
-        # 3010 : reboot required.
-        accept_returncodes = [0,1603,3010]
-    if not proc.returncode in accept_returncodes:
+    if not proc.returncode in valid_returncodes:
         raise subprocess.CalledProcessError(proc.returncode,cmd,''.join(output))
     else:
         if proc.returncode == 0:
