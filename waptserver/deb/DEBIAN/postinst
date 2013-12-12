@@ -1,25 +1,33 @@
 #!/bin/bash
 
 
-#easy_install flask uwsgi pymongo cheroot requests
 touch  /var/log/waptserver.log
 touch  /var/run/waptserver.pid
 chown wapt:root /var/log/waptserver.log
 chown wapt:root  /var/run/waptserver.pid
+
 chown wapt:www-data  -R /opt/wapt/waptserver
 chown wapt:www-data -R /var/www/wapt/
+chown wapt:www-data -R /var/www/wapt-host
+chown wapt:www-data -R /var/www/wapt-group
 chown wapt:www-data -R /opt/wapt/
+
 cp /opt/wapt/waptserver/scripts/waptserver-init /etc/init.d/waptserver
 chmod +x /etc/init.d/waptserver
 
-#TODO : check if waptserver exists of make a new one
-#if [ -e /opt/wapt/waptserver/waptserver.ini ]
-#  cp 
-
 update-rc.d waptserver defaults 
-printf '\e[1;31m%-6s\e[m\n' "the installation of waptserver is finished !!"
-printf '\e[1;31m%-6s\e[m\n' "if you want to use zsync please launch /opt/wapt/waptrepo/configure_zsync.sh"
-printf '\e[1;31m%-6s\e[m\n' "for postconf please run: /usr/bin/python /opt/wapt/waptserver/scripts/postconf.py"
 
-# TODO : check if ini file exists and start if it does exists
-/etc/init.d/waptserver start
+
+if [ -f "/opt/wapt/waptserver/waptserver.ini" ] 
+then
+  if ps aux | grep -q wapt
+  then 
+    /etc/init.d/waptserver restart
+  else
+    /etc/init.d/waptserver start
+  fi
+  else
+    printf '\e[1;31m%-6s\e[m\n' "the installation of waptserver is finished !!"
+    printf '\e[1;31m%-6s\e[m\n' "if you want to use zsync please launch /opt/wapt/waptrepo/configure_zsync.sh"
+    printf '\e[1;31m%-6s\e[m\n' "for postconf please run: /usr/bin/python /opt/wapt/waptserver/scripts/postconf.py"  
+fi
