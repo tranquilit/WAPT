@@ -21,6 +21,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uwaptconsole"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="18" Y="8"/>
@@ -30,6 +31,8 @@
           <Item1 X="6" Y="1687" ID="5"/>
           <Item2 X="5" Y="1727" ID="8"/>
         </Bookmarks>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
@@ -74,14 +77,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviseditpackage"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="558"/>
-        <CursorPos X="60" Y="604"/>
+        <CursorPos X="17" Y="564"/>
         <UsageCount Value="215"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="uviscreatewaptsetup.pas"/>
@@ -245,13 +244,17 @@
       <Unit20>
         <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
         <UnitName Value="sogrid"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1606"/>
-        <CursorPos X="1" Y="1623"/>
+        <TopLine Value="2143"/>
+        <CursorPos X="17" Y="2173"/>
         <UsageCount Value="38"/>
-        <Bookmarks Count="1">
+        <Bookmarks Count="2">
           <Item0 X="1" Y="435" ID="2"/>
+          <Item1 X="29" Y="2148" ID="1"/>
         </Bookmarks>
+        <Loaded Value="True"/>
       </Unit20>
       <Unit21>
         <Filename Value="..\..\pltis_superobject\trunk\source\superobject.pas"/>
@@ -288,10 +291,12 @@
       <Unit25>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <UnitName Value="superobject"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="3123"/>
-        <CursorPos X="1" Y="3143"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="13"/>
+        <Loaded Value="True"/>
       </Unit25>
       <Unit26>
         <Filename Value="C:\codetyphon\typhon\lcl\controls.pp"/>
@@ -543,39 +548,127 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="8" HistoryIndex="7">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="14" Column="27" TopLine="67"/>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="406" Column="16" TopLine="381"/>
       </Position1>
       <Position2>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="93" Column="12" TopLine="69"/>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="408" Column="30" TopLine="383"/>
       </Position2>
       <Position3>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="299" Column="13" TopLine="274"/>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="419" Column="22" TopLine="394"/>
       </Position3>
       <Position4>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="419" Column="39" TopLine="394"/>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="420" Column="25" TopLine="395"/>
       </Position4>
       <Position5>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="510" Column="15" TopLine="470"/>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="424" Column="43" TopLine="399"/>
       </Position5>
       <Position6>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="93" Column="22" TopLine="66"/>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="438" Column="55" TopLine="413"/>
       </Position6>
       <Position7>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="299" Column="23" TopLine="252"/>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="440" Column="61" TopLine="415"/>
       </Position7>
       <Position8>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="510" Column="27" TopLine="463"/>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="441" Column="43" TopLine="416"/>
       </Position8>
+      <Position9>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="444" Column="60" TopLine="419"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="448" Column="98" TopLine="423"/>
+      </Position10>
+      <Position11>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="453" Column="23" TopLine="428"/>
+      </Position11>
+      <Position12>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="454" Column="24" TopLine="429"/>
+      </Position12>
+      <Position13>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="455" Column="52" TopLine="430"/>
+      </Position13>
+      <Position14>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="456" Column="21" TopLine="431"/>
+      </Position14>
+      <Position15>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="458" Column="25" TopLine="433"/>
+      </Position15>
+      <Position16>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="522" Column="23" TopLine="498"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="538" Column="26" TopLine="514"/>
+      </Position17>
+      <Position18>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="539" Column="17" TopLine="516"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="663" Column="18" TopLine="639"/>
+      </Position19>
+      <Position20>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="723" Column="26" TopLine="699"/>
+      </Position20>
+      <Position21>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="729" Column="20" TopLine="705"/>
+      </Position21>
+      <Position22>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="730" Column="20" TopLine="706"/>
+      </Position22>
+      <Position23>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="731" Column="20" TopLine="707"/>
+      </Position23>
+      <Position24>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="2148" Column="27" TopLine="2123"/>
+      </Position24>
+      <Position25>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="2159" Column="11" TopLine="2134"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="2160" Column="13" TopLine="2135"/>
+      </Position26>
+      <Position27>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="2164" Column="11" TopLine="2139"/>
+      </Position27>
+      <Position28>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="2371" Column="45" TopLine="2346"/>
+      </Position28>
+      <Position29>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="2430" Column="54" TopLine="2406"/>
+      </Position29>
+      <Position30>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position30>
     </JumpHistory>
   </ProjectSession>
   <EditorMacros Count="0"/>
