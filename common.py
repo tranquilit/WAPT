@@ -2065,18 +2065,15 @@ class Wapt(object):
         # kill old wapt-get
         mindate = time.time() - max_ttl*60
 
-        wapt_processes = [ p for p in setuphelpers.find_processes('wapt-get') if p.pid <> os.getpid() ]
-
-        # to keep the list of supposedly killed wapt-get processes
         killed=[]
-        for p in wapt_processes:
+        for p in psutil.process_iter():
             try:
-                if p.create_time < mindate:
+                if p.pid <> os.getpid() and (p.create_time < mindate) and p.name in ('wapt-get','wapt-get.exe'):
                     logger.debug('Killing process tree of pid %i' % p.pid)
                     setuphelpers.killtree(p.pid)
                     logger.debug('Killing pid %i' % p.pid)
                     killed.append(p.pid)
-            except psutil.NoSuchProcess,psutil.AccessDenied:
+            except (psutil.NoSuchProcess,psutil.AccessDenied):
                 pass
 
         # reset install_status

@@ -473,8 +473,11 @@ def isrunning(processname):
     """Check if a process is running, example isrunning('explorer')"""
     processname = processname.lower()
     for p in psutil.process_iter():
-        if p.name.lower() == processname or p.name.lower() == processname+'.exe':
-            return True
+        try:
+            if p.name.lower() == processname or p.name.lower() == processname+'.exe':
+                return True
+        except (psutil.AccessDenied,psutil.NoSuchProcess):
+            pass
     return False
     """
     try:
@@ -491,12 +494,15 @@ def killalltasks(exenames,include_children=True):
         exenames = [exenames]
     exenames = [exe.lower() for exe in exenames]+[exe.lower()+'.exe' for exe in exenames]
     for p in psutil.process_iter():
-        if p.name.lower() in exenames:
-            logger.debug('Kill process %i' % (p.pid,))
-            if include_children:
-                killtree(p.pid)
-            else:
-                p.kill()
+        try:
+            if p.name.lower() in exenames:
+                logger.debug('Kill process %i' % (p.pid,))
+                if include_children:
+                    killtree(p.pid)
+                else:
+                    p.kill()
+        except (psutil.AccessDenied,psutil.NoSuchProcess):
+            pass
 
     """
     for c in exenames:
@@ -517,7 +523,15 @@ def processnames_list():
 def find_processes(process_name):
     """Return list of Process having process_name"""
     process_name = process_name.lower()
-    return [p for p in psutil.get_process_list() if p.name.lower() in [process_name,process_name+'.exe'] ]
+    result = []
+    for p in psutil.process_iter():
+        try:
+            if p.name.lower() in [process_name,process_name+'.exe']:
+                result.append(p)
+        except (psutil.AccessDenied,psutil.NoSuchProcess):
+            pass
+
+    return result
 
 def messagebox(title,msg):
     win32api.MessageBox(0, msg, title, win32con.MB_ICONINFORMATION)
