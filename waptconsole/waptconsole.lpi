@@ -17,8 +17,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="3"/>
-      <RevisionNr Value="23"/>
-      <BuildNr Value="1"/>
+      <RevisionNr Value="24"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -34,66 +33,69 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="19">
+    <RequiredPackages Count="20">
       <Item1>
-        <PackageName Value="TurboPowerIPro"/>
+        <PackageName Value="pltis_utils"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="TurboPowerIPro"/>
       </Item2>
       <Item3>
-        <PackageName Value="pl_orpheus"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_fpspreadsheet"/>
+        <PackageName Value="pl_orpheus"/>
       </Item4>
       <Item5>
-        <PackageName Value="pl_virtualtrees"/>
+        <PackageName Value="pl_fpspreadsheet"/>
       </Item5>
       <Item6>
-        <PackageName Value="pl_cindy"/>
+        <PackageName Value="pl_virtualtrees"/>
       </Item6>
       <Item7>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pl_cindy"/>
       </Item7>
       <Item8>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="pltis_superobject"/>
       </Item8>
       <Item9>
-        <PackageName Value="RunTimeTypeInfoControls"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item9>
       <Item10>
-        <PackageName Value="pl_graphics32ext"/>
+        <PackageName Value="RunTimeTypeInfoControls"/>
       </Item10>
       <Item11>
-        <PackageName Value="pl_bgracontrols"/>
+        <PackageName Value="pl_graphics32ext"/>
       </Item11>
       <Item12>
-        <PackageName Value="pl_luicontrols"/>
+        <PackageName Value="pl_bgracontrols"/>
       </Item12>
       <Item13>
-        <PackageName Value="pl_glscene"/>
+        <PackageName Value="pl_luicontrols"/>
       </Item13>
       <Item14>
-        <PackageName Value="pl_virtualtreesextra"/>
+        <PackageName Value="pl_glscene"/>
       </Item14>
       <Item15>
-        <PackageName Value="pl_lazsolutions"/>
+        <PackageName Value="pl_virtualtreesextra"/>
       </Item15>
       <Item16>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pl_lazsolutions"/>
       </Item16>
       <Item17>
-        <PackageName Value="pl_indycomp"/>
+        <PackageName Value="FCL"/>
       </Item17>
       <Item18>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="pl_indycomp"/>
       </Item18>
       <Item19>
-        <PackageName Value="LCL"/>
+        <PackageName Value="SynEdit"/>
       </Item19>
+      <Item20>
+        <PackageName Value="LCL"/>
+      </Item20>
     </RequiredPackages>
-    <Units Count="20">
+    <Units Count="17">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -108,137 +110,122 @@
         <UnitName Value="uwaptconsole"/>
       </Unit1>
       <Unit2>
-        <Filename Value="..\wapt-get\tisstrings.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tisstrings"/>
-      </Unit2>
-      <Unit3>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-      </Unit3>
-      <Unit4>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tiscommon"/>
-      </Unit4>
-      <Unit5>
-        <Filename Value="..\wapt-get\tisinifiles.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tisinifiles"/>
-      </Unit5>
-      <Unit6>
+      </Unit2>
+      <Unit3>
         <Filename Value="uviscreatekey.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisCreateKey"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisCreateKey"/>
-      </Unit6>
-      <Unit7>
+      </Unit3>
+      <Unit4>
         <Filename Value="dmwaptpython.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DMPython"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="dmwaptpython"/>
-      </Unit7>
-      <Unit8>
+      </Unit4>
+      <Unit5>
         <Filename Value="uviseditpackage.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisEditPackage"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviseditpackage"/>
-      </Unit8>
-      <Unit9>
+      </Unit5>
+      <Unit6>
         <Filename Value="uviscreatewaptsetup.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisCreateWaptSetup"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisCreateWaptSetup"/>
-      </Unit9>
-      <Unit10>
+      </Unit6>
+      <Unit7>
         <Filename Value="uvislogin.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisLogin"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvislogin"/>
-      </Unit10>
-      <Unit11>
+      </Unit7>
+      <Unit8>
         <Filename Value="uvisprivatekeyauth.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="visPrivateKeyAuth"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvisprivatekeyauth"/>
-      </Unit11>
-      <Unit12>
+      </Unit8>
+      <Unit9>
         <Filename Value="uvisloading.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisLoading"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvisloading"/>
-      </Unit12>
-      <Unit13>
+      </Unit9>
+      <Unit10>
         <Filename Value="uvisoptioninifile.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisOptionIniFile"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvisOptionIniFile"/>
-      </Unit13>
-      <Unit14>
+      </Unit10>
+      <Unit11>
         <Filename Value="uviswaptconfig.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisWAPTConfig"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviswaptconfig"/>
-      </Unit14>
-      <Unit15>
+      </Unit11>
+      <Unit12>
         <Filename Value="uvischangepassword.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisChangePassword"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvischangepassword"/>
-      </Unit15>
-      <Unit16>
+      </Unit12>
+      <Unit13>
         <Filename Value="uvisgroupchoice.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="visGroupChoice"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvisgroupchoice"/>
-      </Unit16>
-      <Unit17>
+      </Unit13>
+      <Unit14>
         <Filename Value="uviseditgroup.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisEditGroup"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviseditgroup"/>
-      </Unit17>
-      <Unit18>
+      </Unit14>
+      <Unit15>
         <Filename Value="uviswaptdeploy.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="viswaptdeploy"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviswaptdeploy"/>
-      </Unit18>
-      <Unit19>
+      </Unit15>
+      <Unit16>
         <Filename Value="uvishostsupgrade.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisHostsUpgrade"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvishostsupgrade"/>
-      </Unit19>
+      </Unit16>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

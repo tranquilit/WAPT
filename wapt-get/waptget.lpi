@@ -21,8 +21,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="8"/>
-      <RevisionNr Value="3"/>
-      <BuildNr Value="2"/>
+      <RevisionNr Value="4"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -36,32 +35,36 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <CommandLineParams Value="waptupgrade"/>
         <LaunchingApplication PathPlusParams="\usr\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="4">
+    <RequiredPackages Count="5">
       <Item1>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pltis_utils"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="FCL"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_indycomp"/>
+        <PackageName Value="pltis_superobject"/>
       </Item4>
+      <Item5>
+        <PackageName Value="pl_indycomp"/>
+      </Item5>
     </RequiredPackages>
-    <Units Count="29">
+    <Units Count="36">
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="24"/>
-        <CursorPos X="47" Y="32"/>
+        <TopLine Value="120"/>
+        <CursorPos X="131" Y="138"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -69,10 +72,11 @@
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="73"/>
-        <CursorPos X="22" Y="97"/>
+        <TopLine Value="210"/>
+        <CursorPos X="70" Y="233"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
       </Unit1>
@@ -119,12 +123,10 @@
         <Filename Value="tiscommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiscommon"/>
-        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="39"/>
         <CursorPos X="46" Y="55"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\jcl\source\common\JclUnicode.pas"/>
@@ -172,9 +174,9 @@
       <Unit13>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\objpash.inc"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="172"/>
-        <CursorPos X="23" Y="192"/>
-        <UsageCount Value="56"/>
+        <TopLine Value="176"/>
+        <CursorPos X="23" Y="193"/>
+        <UsageCount Value="57"/>
       </Unit13>
       <Unit14>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\ldapsend.pas"/>
@@ -273,148 +275,84 @@
       <Unit26>
         <Filename Value="..\..\pltis_superobject\soutils.pas"/>
         <UnitName Value="soutils"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="35" Y="8"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit26>
       <Unit27>
         <Filename Value="C:\codetyphon\typhon\lcl\clipbrd.pp"/>
         <UnitName Value="Clipbrd"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="142"/>
         <CursorPos X="10" Y="160"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit27>
       <Unit28>
         <Filename Value="..\..\pltis_superobject\soclipbrd.pas"/>
         <UnitName Value="soclipbrd"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="28" Y="18"/>
+        <CursorPos X="33" Y="16"/>
         <UsageCount Value="20"/>
-        <Loaded Value="True"/>
       </Unit28>
+      <Unit29>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdDNSResolver.pas"/>
+        <UnitName Value="IdDNSResolver"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1286"/>
+        <CursorPos X="1" Y="1306"/>
+        <UsageCount Value="11"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\sysutilh.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="295"/>
+        <CursorPos X="13" Y="312"/>
+        <UsageCount Value="11"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\sysutils.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="152"/>
+        <CursorPos X="9" Y="156"/>
+        <UsageCount Value="11"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\classes\classesh.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="715"/>
+        <CursorPos X="15" Y="733"/>
+        <UsageCount Value="11"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\classes\stringl.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="972"/>
+        <CursorPos X="3" Y="978"/>
+        <UsageCount Value="11"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\objpas.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="275"/>
+        <CursorPos X="9" Y="277"/>
+        <UsageCount Value="11"/>
+      </Unit34>
+      <Unit35>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdTCPConnection.pas"/>
+        <UnitName Value="IdTCPConnection"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="494"/>
+        <CursorPos X="1" Y="511"/>
+        <UsageCount Value="10"/>
+      </Unit35>
     </Units>
-    <JumpHistory Count="28" HistoryIndex="27">
+    <JumpHistory Count="1" HistoryIndex="0">
       <Position1>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="193" Column="55" TopLine="1"/>
-      </Position1>
-      <Position2>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="217" Column="1" TopLine="191"/>
-      </Position2>
-      <Position3>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position3>
-      <Position4>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="7" Column="11" TopLine="1"/>
-      </Position4>
-      <Position5>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="52" Column="1" TopLine="39"/>
-      </Position5>
-      <Position6>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="167" Column="3" TopLine="138"/>
-      </Position6>
-      <Position7>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="199" Column="1" TopLine="187"/>
-      </Position7>
-      <Position8>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="50" Column="35" TopLine="31"/>
-      </Position8>
-      <Position9>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="50" Column="35" TopLine="31"/>
-      </Position9>
-      <Position10>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="15" Column="78" TopLine="1"/>
-      </Position10>
-      <Position11>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="91" Column="1" TopLine="84"/>
-      </Position11>
-      <Position12>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="20" Column="57" TopLine="13"/>
-      </Position12>
-      <Position13>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="27" Column="21" TopLine="19"/>
-      </Position13>
-      <Position14>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="206" Column="23" TopLine="176"/>
-      </Position14>
-      <Position15>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="36" Column="3" TopLine="18"/>
-      </Position15>
-      <Position16>
         <Filename Value="waptcommon.pas"/>
-        <Caret Line="97" Column="22" TopLine="73"/>
-      </Position16>
-      <Position17>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="4" Column="1" TopLine="1"/>
-      </Position17>
-      <Position18>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="310" Column="14" TopLine="277"/>
-      </Position18>
-      <Position19>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position19>
-      <Position20>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="28" Column="14" TopLine="1"/>
-      </Position20>
-      <Position21>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="292" Column="26" TopLine="247"/>
-      </Position21>
-      <Position22>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="59" Column="6" TopLine="37"/>
-      </Position22>
-      <Position23>
-        <Filename Value="..\..\pltis_superobject\soclipbrd.pas"/>
-        <Caret Line="16" Column="21" TopLine="11"/>
-      </Position23>
-      <Position24>
-        <Filename Value="..\..\pltis_superobject\soclipbrd.pas"/>
-        <Caret Line="7" Column="1" TopLine="1"/>
-      </Position24>
-      <Position25>
-        <Filename Value="..\..\pltis_superobject\soclipbrd.pas"/>
-        <Caret Line="6" Column="25" TopLine="1"/>
-      </Position25>
-      <Position26>
-        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <Caret Line="281" Column="1" TopLine="246"/>
-      </Position26>
-      <Position27>
-        <Filename Value="..\..\pltis_superobject\soclipbrd.pas"/>
-        <Caret Line="6" Column="26" TopLine="1"/>
-      </Position27>
-      <Position28>
-        <Filename Value="..\..\pltis_superobject\soclipbrd.pas"/>
-        <Caret Line="19" Column="1" TopLine="1"/>
-      </Position28>
+        <Caret Line="257" Column="5" TopLine="234"/>
+      </Position1>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -448,7 +386,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="6">
+    <BreakPoints Count="10">
       <Item1>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsGlobal"/>
@@ -491,6 +429,34 @@
         <Source Value="C:\codetyphon\fpcsrc\packages\fcl-registry\src\winreg.inc"/>
         <Line Value="151"/>
       </Item6>
+      <Item7>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdDNSResolver.pas"/>
+        <Line Value="1303"/>
+      </Item7>
+      <Item8>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdDNSResolver.pas"/>
+        <Line Value="814"/>
+      </Item8>
+      <Item9>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="C:\codetyphon\fpcsrc\rtl\objpas\classes\stringl.inc"/>
+        <Line Value="978"/>
+      </Item9>
+      <Item10>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdDNSResolver.pas"/>
+        <Line Value="1450"/>
+      </Item10>
     </BreakPoints>
     <Exceptions Count="3">
       <Item1>

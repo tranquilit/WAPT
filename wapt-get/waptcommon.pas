@@ -254,6 +254,7 @@ begin
     finally
       resolv.free;
     end;
+
   except
     on EIdDnsResolverError do
       Logger('SRV lookup failed',DEBUG)
