@@ -2939,7 +2939,7 @@ class Wapt(object):
         """
         result = []
         # only most up to date (first one in list)
-        result.extend([p[0] for p in self.waptdb.upgradeable().values()])
+        result.extend([p[0] for p in self.waptdb.upgradeable().values() if p])
         host_package = self.check_host_package_outdated()
         if host_package and not host_package in result:
             result.append(host_package)
