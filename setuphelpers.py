@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.4"
+__version__ = "0.8.6"
 import os
 import sys
 import logging
@@ -61,6 +61,7 @@ import locale
 import types
 import re
 import threading
+from types import ModuleType
 
 from waptpackage import PackageEntry
 from iniparse import RawConfigParser
@@ -609,7 +610,6 @@ def _environ_params(dict_or_module={}):
     params_dict['programfiles'] = programfiles()
     params_dict['domainname'] = get_domain_fromregistry()
     params_dict['computername'] = os.environ['COMPUTERNAME']
-    from types import ModuleType
     if type(dict_or_module) is ModuleType:
         for k,v in params_dict.items():
             setattr(dict_or_module,k,v)
