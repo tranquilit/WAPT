@@ -2145,41 +2145,49 @@ class Wapt(object):
                 cmd = QueryValueEx(key,'QuietUninstallString')[0]
                 return cmd
             except WindowsError:
-                cmd = QueryValueEx(key,'UninstallString')[0]
-                if 'msiexec' in cmd.lower():
-                    cmd = cmd.replace('/I','/X').replace('/i','/X')
-                    args = shlex.split(cmd,posix=False)
-                    if not '/q' in cmd.lower():
-                        args.append('/q')
-                else:
-                    # separer commande et parametres pour eventuellement
-                    cmd_arg = re.match(r'([^/]*?)\s+([/-].*)',cmd)
-                    if cmd_arg:
-                        (prog,arg) = cmd_arg.groups()
-                        args = [ prog ]
-                        args.extend(shlex.split(arg,posix=False))
-                    # mozilla et autre
-                    # si pas de "" et des espaces et pas d'option, alors encadrer avec des quotes
-                    elif not(' -' in cmd or ' /' in cmd) and ' ' in cmd:
-                        args = [ cmd ]
-                    else:
-                    #sinon splitter sur les paramètres
+                try:
+                    cmd = QueryValueEx(key,'UninstallString')[0]
+                    if 'msiexec' in cmd.lower():
+                        cmd = cmd.replace('/I','/X').replace('/i','/X')
                         args = shlex.split(cmd,posix=False)
+                        if not '/q' in cmd.lower():
+                            args.append('/q')
+                    else:
+                        # separer commande et parametres pour eventuellement
+                        cmd_arg = re.match(r'([^/]*?)\s+([/-].*)',cmd)
+                        if cmd_arg:
+                            (prog,arg) = cmd_arg.groups()
+                            args = [ prog ]
+                            args.extend(shlex.split(arg,posix=False))
+                        # mozilla et autre
+                        # si pas de "" et des espaces et pas d'option, alors encadrer avec des quotes
+                        elif not(' -' in cmd or ' /' in cmd) and ' ' in cmd:
+                            args = [ cmd ]
+                        else:
+                        #sinon splitter sur les paramètres
+                            args = shlex.split(cmd,posix=False)
 
-                    # remove double quotes if any
-                    if args[0].startswith('"') and args[0].endswith('"') and (not "/" in cmd or not "--" in cmd):
-                        args[0] = args[0][1:-1]
+                        # remove double quotes if any
+                        if args[0].startswith('"') and args[0].endswith('"') and (not "/" in cmd or not "--" in cmd):
+                            args[0] = args[0][1:-1]
 
-                    if ('spuninst' in cmd.lower()):
-                         if not ' /quiet' in cmd.lower():
-                            args.append('/quiet')
-                    elif ('uninst' in cmd.lower() or 'helper.exe' in cmd.lower()) :
-                        if not ' /s' in cmd.lower():
-                            args.append('/S')
-                    elif ('unins000' in cmd.lower()):
-                         if not ' /silent' in cmd.lower():
-                            args.append('/silent')
-                return args
+                        if ('spuninst' in cmd.lower()):
+                             if not ' /quiet' in cmd.lower():
+                                args.append('/quiet')
+                        elif ('uninst' in cmd.lower() or 'helper.exe' in cmd.lower()) :
+                            if not ' /s' in cmd.lower():
+                                args.append('/S')
+                        elif ('unins000' in cmd.lower()):
+                             if not ' /silent' in cmd.lower():
+                                args.append('/silent')
+                    return args
+                except WindowsError:
+                    is_msi = QueryValueEx(key,'WindowsInstaller')[0]
+                    if is_msi == 1:
+                        return u'msiexec /quiet /norestart /X %s' % guid
+                    else:
+                        raise
+
         try:
             return get_fromkey("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
         except:
