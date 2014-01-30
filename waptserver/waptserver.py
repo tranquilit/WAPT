@@ -1,35 +1,4 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
-# -----------------------------------------------------------------------
-#    This file is part of WAPT
-#    Copyright (C) 2013  Tranquil IT Systems http://www.tranquil.it
-#    WAPT aims to help Windows systems administrators to deploy
-#    setup and update applications on users PC.
-#
-#    WAPT is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    WAPT is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License
-#    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
-#
-# -----------------------------------------------------------------------
-import os,sys
-wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
-sys.path.append(os.path.join(wapt_root_dir))
-sys.path.append(os.path.join(wapt_root_dir,'lib'))
-sys.path.append(os.path.join(wapt_root_dir,'waptservice'))
-sys.path.append(os.path.join(wapt_root_dir,'waptserver'))
-sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
-sys.path.append(os.path.join(wapt_root_dir,'waptrepo'))
-
-
 from flask import request, Flask,Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
 import time
 import json
@@ -52,6 +21,7 @@ import subprocess
 import tempfile
 from rocket import Rocket
 
+__version__ = "0.7.5"
 
 from waptpackage import update_packages,PackageEntry
 

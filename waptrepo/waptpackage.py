@@ -21,7 +21,8 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.1"
+__version__ = "0.8.5"
+
 import os
 import zipfile
 import StringIO
@@ -282,7 +283,7 @@ class PackageEntry(object):
             codecs.open(os.path.join(fname,u'WAPT','control'),'w',encoding='utf8').write(self.ascontrol())
         else:
             if os.path.isfile(fname):
-                myzip = zipfile.ZipFile(fname,'a',allowZip64=True)
+                myzip = zipfile.ZipFile(fname,'a',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
                 try:
                     zi = myzip.getinfo(u'WAPT/control')
                     control_exist = True
@@ -396,6 +397,9 @@ def update_packages(adir):
 
     waptlist = glob.glob(os.path.join(adir,'*.wapt'))
     packages = []
+    kept = []
+    processed = []
+    errors = []
     for fname in waptlist:
         try:
             entry = PackageEntry()
@@ -403,16 +407,19 @@ def update_packages(adir):
                 entry.load_control_from_wapt(fname,calc_md5=False)
                 if entry == old_entries[os.path.basename(fname)]:
                     logger.info(u"  Keeping %s" % fname)
+                    kept.append(fname)
                     entry = old_entries[os.path.basename(fname)]
                 else:
                     logger.info(u"  Processing %s" % fname)
                     entry.load_control_from_wapt(fname)
+                    processed.append(fname)
             else:
                 logger.info(u"  Processing %s" % fname)
                 entry.load_control_from_wapt(fname)
             packages.append(entry.ascontrol(with_non_control_attributes=True))
         except Exception,e:
             logger.critical("package %s: %s" % (fname,e))
+            errors.append(fname)
 
     logger.info(u"Writing new %s" % packages_fname)
     myzipfile = zipfile.ZipFile(packages_fname, "w",compression=zipfile.ZIP_DEFLATED)
@@ -421,6 +428,7 @@ def update_packages(adir):
     myzipfile.writestr(zi,u'\n'.join(packages).encode('utf8'))
     myzipfile.close()
     logger.info(u"Finished")
+    return {'processed':processed,'kept':kept,'errors':errors,'packages_filename':packages_fname}
 
 if __name__ == '__main__':
     w = PackageEntry()
@@ -447,6 +455,7 @@ if __name__ == '__main__':
     assert w.match('wapttest(<= 0.1.0)')
     assert w.match('wapttest (=0.1.0)')
     assert w.match('wapttest')
+
     import tempfile
     wfn = tempfile.mktemp(suffix='.wapt')
     w.save_control_to_wapt(wfn)

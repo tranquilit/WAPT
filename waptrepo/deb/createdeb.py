@@ -30,8 +30,14 @@ def replaceAll(file,searchExp,replaceExp):
         if searchExp in line:
             line = line.replace(searchExp,replaceExp)
         sys.stdout.write(line)
-    
-for line in open('%s/waptpackage.py'%os.path.abspath('..')):
+
+wapt_source_dir = os.path.abspath('../..')
+print "source tree : %s" % wapt_source_dir
+
+source_dir = os.path.abspath('..')
+shutil.copyfile(os.path.join(wapt_source_dir,'waptpackage.py'),os.path.join(source_dir,'waptpackage.py'))
+
+for line in open('%s/waptpackage.py'% source_dir):
     if '__version__' in line:
         wapt_version = line.split('=')[1].replace('"','').replace("'","").replace('\n','').replace(' ','').replace('\r','')
 
@@ -41,7 +47,7 @@ if not wapt_version:
 
 control_file = './builddir/DEBIAN/control'
 rsync_option = " --exclude '.svn' --exclude 'deb' -ap"
-rsync_source = os.path.abspath('..')
+rsync_source = source_dir
 rsync_destination = './builddir/opt/wapt/'
 rsync_command = '/usr/bin/rsync %s %s %s'%(rsync_option,rsync_source,rsync_destination)
 dpkg_command = 'dpkg-deb --build builddir tis-waptrepo-%s.deb'%wapt_version
