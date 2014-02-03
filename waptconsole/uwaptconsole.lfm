@@ -1784,6 +1784,7 @@ object VisWaptGUI: TVisWaptGUI
     object ActLocalhostInstall: TAction
       Category = 'Host'
       Caption = 'Installer'
+      Enabled = False
       OnExecute = ActLocalhostInstallExecute
       OnUpdate = ActLocalhostInstallUpdate
     end
@@ -1795,6 +1796,7 @@ object VisWaptGUI: TVisWaptGUI
     object ActLocalhostRemove: TAction
       Category = 'Host'
       Caption = 'Désinstaller le paquet'
+      Enabled = False
       OnExecute = ActLocalhostRemoveExecute
       OnUpdate = ActLocalhostRemoveUpdate
     end
@@ -1812,6 +1814,7 @@ object VisWaptGUI: TVisWaptGUI
     object ActLocalhostUpgrade: TAction
       Category = 'Host'
       Caption = 'Mise à jour du système'
+      Enabled = False
       OnExecute = ActLocalhostUpgradeExecute
     end
     object ActExecCode: TAction

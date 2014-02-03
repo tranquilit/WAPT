@@ -1464,7 +1464,7 @@ var
   selgroup : String;
   N: PVirtualNode;
 begin
-  if GridGroups.Focused and (Shift=[ssLeft]) then
+  {if GridGroups.Focused and (Shift=[ssLeft]) then
   begin
     N := GridGroups.GetFirstSelected;
     selgroup := GridGroups.GetCellStrValue(N, 'package');
@@ -1477,7 +1477,8 @@ begin
       finally
         Free;
       end;
-  end;
+  end;}
+  ActEditGroup.Execute;
 end;
 
 procedure TVisWaptGUI.GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;

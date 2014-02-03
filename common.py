@@ -4123,7 +4123,7 @@ class Wapt(object):
         return a dictionnary with {'packages':[],'missing':[]}"""
         result = {'packages':[],'missing':[]}
         if isinstance(packages_names,str) or isinstance(packages_names,unicode):
-            packages_names=packages_names.split(",")
+            packages_names=[ p.strip() for p in packages_names.split(",")]
         for package_name in packages_names:
             matches = self.waptdb.packages_matching(package_name)
             if matches:
