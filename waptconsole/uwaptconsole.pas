@@ -152,7 +152,7 @@ type
     MenuItem7: TMenuItem;
     MenuItem8: TMenuItem;
     MenuItem9: TMenuItem;
-    PageControl1: TPageControl;
+    MainPages: TPageControl;
     HostPages: TPageControl;
     Panel1: TPanel;
     Panel10: TPanel;
@@ -169,7 +169,7 @@ type
     Splitter2: TSplitter;
     Splitter4: TSplitter;
     SynPythonSyn1: TSynPythonSyn;
-    TabSheet1: TTabSheet;
+    pgSources: TTabSheet;
     pgPrivateRepo: TTabSheet;
     pgInventory: TTabSheet;
     pgPackages: TTabSheet;
@@ -266,9 +266,8 @@ type
 
     procedure HostPagesChange(Sender: TObject);
     procedure MenuItem27Click(Sender: TObject);
-    procedure PageControl1Change(Sender: TObject);
+    procedure MainPagesChange(Sender: TObject);
     procedure InstallPackage(Grid: TSOGrid);
-
   private
     { private declarations }
     procedure GridLoadData(grid: TSOGrid; jsondata: string);
@@ -630,7 +629,7 @@ begin
 
 
   GridExternalPackages.ClearSelection;
-  PageControl1.ActivePage := pgPrivateRepo;
+  MainPages.ActivePage := pgPrivateRepo;
 
 end;
 
@@ -650,11 +649,17 @@ procedure TVisWaptGUI.actRefreshExecute(Sender: TObject);
 begin
   Screen.Cursor := crHourGlass;
   try
-    ActPackagesUpdate.Execute;
-    ActSearchHost.Execute;
-    ActSearchPackage.Execute;
-    ActSearchGroups.Execute;
-
+    if MainPages.ActivePage = pgInventory then
+      ActSearchHost.Execute
+    else
+    if MainPages.ActivePage = pgPackages then
+    begin
+      ActPackagesUpdate.Execute;
+      ActSearchPackage.Execute;
+    end
+    else
+    if MainPages.ActivePage = pgGroups then
+      ActSearchGroups.Execute;
   finally
     Screen.Cursor := crDefault;
   end;
@@ -798,7 +803,7 @@ end;
 procedure TVisWaptGUI.ActAdvancedModeExecute(Sender: TObject);
 begin
   ActAdvancedMode.Checked := not ActAdvancedMode.Checked;
-  TabSheet1.TabVisible := ActAdvancedMode.Checked;
+  pgSources.TabVisible := ActAdvancedMode.Checked;
   Panel3.Visible := ActAdvancedMode.Checked;
 end;
 
@@ -1262,7 +1267,7 @@ begin
     GridPackages.Clear;
     GridGroups.Clear;
     GridExternalPackages.Clear;
-    PageControl1Change(PageControl1);
+    MainPagesChange(MainPages);
 
   end;
 end;
@@ -1441,8 +1446,8 @@ begin
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
   ActUpdateWaptGetINIExecute(Self);
   Login;
-  PageControl1.ActivePage := pgInventory;
-  PageControl1Change(Sender);
+  MainPages.ActivePage := pgInventory;
+  MainPagesChange(Sender);
 
   Gridhosts.LoadSettingsFromIni(Appuserinipath);
   GridPackages.LoadSettingsFromIni(Appuserinipath) ;
@@ -1686,27 +1691,27 @@ begin
   end;
 end;
 
-procedure TVisWaptGUI.PageControl1Change(Sender: TObject);
+procedure TVisWaptGUI.MainPagesChange(Sender: TObject);
 begin
-  if PageControl1.ActivePage = pgInventory then
+  if MainPages.ActivePage = pgInventory then
   begin
     CopyMenu(PopupMenuHosts, MenuItem24);
     if GridHosts.Data = nil then
       ActSearchHost.Execute;
   end
-  else if PageControl1.ActivePage = pgPrivateRepo then
+  else if MainPages.ActivePage = pgPrivateRepo then
   begin
     CopyMenu(PopupMenuPackages, MenuItem24);
     if GridPackages.Data = nil then
       ActSearchPackage.Execute;
   end
-  else if PageControl1.ActivePage = pgExternalRepo then
+  else if MainPages.ActivePage = pgExternalRepo then
   begin
     CopyMenu(PopupMenuPackagesTIS, MenuItem24);
     if GridExternalPackages.Data = nil then
       butSearchExternalPackages.Click;
   end
-  else if PageControl1.ActivePage = pgGroups then
+  else if MainPages.ActivePage = pgGroups then
   begin
     CopyMenu(PopupMenuGroups, MenuItem24);
     if GridGroups.Data = nil then

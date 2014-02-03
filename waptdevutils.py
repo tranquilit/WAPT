@@ -30,6 +30,8 @@ from waptpackage import *
 import codecs
 from iniparse import RawConfigParser
 
+__version__ = "0.8.5"
+
 def registered_organization():
     return registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOrganization')
 
@@ -167,7 +169,7 @@ def add_remove_option_inifile(wapt,choice,section,option,value):
         wapt_get_ini.write(configfile)
 
 def updateTisRepo(wapt,search_string):
-    wapt = common.Wapt(config_filename=wapt)
+    wapt = common.Wapt(config_filename=wapt,disable_update_server_status=True)
     repo = wapt.config.get('global','templates_repo_url')
     wapt.repositories[0].repo_url = repo if repo else 'http://wapt.tranquil.it/wapt'
     wapt.proxies =  {'http':wapt.config.get('global','http_proxy')}
@@ -178,13 +180,10 @@ def updateTisRepo(wapt,search_string):
 def searchLastPackageTisRepo(wapt,search_strings):
     from operator import attrgetter
     result = []
-    wapt = common.Wapt(config_filename=wapt)
+    wapt = common.Wapt(config_filename=wapt,disable_update_server_status=True)
     repo = wapt.config.get('global','templates_repo_url')
     wapt.repositories[0].repo_url = repo if repo else 'http://wapt.tranquil.it/wapt'
     wapt.proxies =  {'http':wapt.config.get('global','http_proxy')}
-    print wapt.config.has_option('global', 'use_local_connection_proxy')
-    if wapt.config.get('global', 'use_local_connection_proxy'):
-        print "test"
     wapt.dbpath = r':memory:'
     wapt.update(register=False)
     for search_string in search_strings.split(','):
@@ -193,7 +192,7 @@ def searchLastPackageTisRepo(wapt,search_strings):
 
 def duplicate_from_tis_repo(wapt,file_name,depends=[]):
     import tempfile
-    wapt = common.Wapt(config_filename=wapt)
+    wapt = common.Wapt(config_filename=wapt,disable_update_server_status=True)
     prefix = wapt.config.get('global','default_package_prefix')
     wapt.proxies =  {'http':wapt.config.get('global','http_proxy')}
     if not prefix:

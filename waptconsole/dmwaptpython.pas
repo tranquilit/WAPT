@@ -57,7 +57,7 @@ begin
       st.Append('import os');
       st.Append('import waptdevutils');
       st.Append('logging.basicConfig(level=logging.WARNING)');
-      st.Append(format('mywapt = Wapt(config_filename=r"%s".decode(''utf8''))',[AValue]));
+      st.Append(format('mywapt = Wapt(config_filename=r"%s".decode(''utf8''),disable_update_server_status=True)',[AValue]));
       st.Append('mywapt.dbpath=r":memory:"');
       st.Append('mywapt.update(register=False)');
 

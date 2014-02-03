@@ -77,7 +77,7 @@ from setuphelpers import ensure_unicode
 
 import types
 
-__version__ = "0.8.4"
+__version__ = "0.8.5"
 
 logger = logging.getLogger()
 
@@ -1706,7 +1706,7 @@ key_passwd = None
 class Wapt(object):
     """Global WAPT engine"""
 
-    def __init__(self,config=None,config_filename=None,defaults=None):
+    def __init__(self,config=None,config_filename=None,defaults=None,disable_update_server_status=False):
         """Initialize engine with a configParser instance (inifile) and other defaults in a dictionary
             Main properties are :
         """
@@ -1723,6 +1723,8 @@ class Wapt(object):
         self.wapt_server = None
         self.language = None
         self.wapt_base_dir = os.path.dirname(__file__)
+
+        self.disable_update_server_status = disable_update_server_status
 
         self.config = config
         self.config_filename = config_filename
@@ -1893,7 +1895,7 @@ class Wapt(object):
         """Stores in local db the current run status for tray display"""
         logger.info('Status : %s' % ensure_unicode(waptstatus))
         self.write_param('runstatus',waptstatus)
-        if self.wapt_server:
+        if not self.disable_update_server_status and self.wapt_server:
             try:
                 self.update_server_status()
             except Exception,e:
@@ -2549,7 +2551,7 @@ class Wapt(object):
             }
 
         self.store_upgrade_status()
-        if register:
+        if not self.disable_update_server_status and register:
 		    try:
 			    self.update_server_status()
 		    except Exception,e:
@@ -2853,7 +2855,7 @@ class Wapt(object):
                                 logger.info('Running %s' % guid)
                                 logger.info(setuphelpers.run(guid))
                             except Exception,e:
-                                logger.info("Warning : %s" % ensure_unicode(e))
+                                logger.warning("Warning : %s" % ensure_unicode(e))
                     logger.info('Remove status record from local DB for %s' % package)
                     self.waptdb.remove_install_status(package)
                     result['removed'].append(package)
