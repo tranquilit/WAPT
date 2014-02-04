@@ -3829,7 +3829,7 @@ class Wapt(object):
                 raise Exception('%s wapt developement directory exists' % target_directory)
         if entry:
             # edit an existing package by using
-            return self.duplicate_package(packagename=entry.package,newname=entry.package,target_directory=target_directory,build=False,append_depends = append_depends)
+            return self.duplicate_package(packagename=entry.asrequirement(),newname=entry.package,target_directory=target_directory,build=False,append_depends = append_depends)
         else:
             # create a new one
             return self.duplicate_package(packagename=packagename,newname=packagename,target_directory=target_directory,build=False,append_depends = append_depends)
