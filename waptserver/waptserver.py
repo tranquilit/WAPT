@@ -179,14 +179,14 @@ def index():
 @app.route('/info')
 def informations():
     informations = {}
-    informations["server_version"] = __version__ 
+    informations["server_version"] = __version__
     if os.path.exists(waptsetup):
         pe = pefile.PE(waptsetup)
-        informations["client_version"] =  pe.FileInfo[0].StringTable[0].entries['ProductVersion'].strip()  
+        informations["client_version"] =  pe.FileInfo[0].StringTable[0].entries['ProductVersion'].strip()
 
     return  Response(response=json.dumps(informations),
                      status=200,
-                     mimetype="application/json")    
+                     mimetype="application/json")
 
 
 @app.route('/wapt/')
@@ -285,51 +285,55 @@ def get_client_software_list(uuid=""):
 
 
 def packagesFileToList(pathTofile):
-    listPackages = codecs.decode(zipfile.ZipFile(pathTofile).read(name='Packages'),'utf-8')
     packages = []
+    if os.path.isfile(pathTofile):
+        listPackages = codecs.decode(zipfile.ZipFile(pathTofile).read(name='Packages'),'utf-8')
 
-    def add_package(lines):
-        package = PackageEntry()
-        package.load_control_from_wapt(lines)
-        package.filename = package.make_package_filename()
-        packages.append(package)
+        def add_package(lines):
+            package = PackageEntry()
+            package.load_control_from_wapt(lines)
+            package.filename = package.make_package_filename()
+            packages.append(package)
 
 
-    lines = []
-    for line in listPackages.splitlines():
-        # new package
-        if line.strip()=='':
+        lines = []
+        for line in listPackages.splitlines():
+            # new package
+            if line.strip()=='':
+                add_package(lines)
+                lines = []
+                # add ettribute to current package
+            else:
+                lines.append(line)
+
+        if lines:
             add_package(lines)
             lines = []
-            # add ettribute to current package
-        else:
-            lines.append(line)
 
-    if lines:
-        add_package(lines)
-        lines = []
-
-    packages.sort()
+        packages.sort()
     return packages
 
 @app.route('/client_package_list/<string:uuid>')
 def get_client_package_list(uuid=""):
-    packages = get_host_data(uuid, {"packages":1})
-    repo_packages = packagesFileToList(os.path.join(wapt_folder, 'Packages'))
-    if packages.has_key('packages'):
-        for p in packages['packages']:
-            package = PackageEntry()
-            package.load_control_from_dict(p)
-            matching = [ x for x in repo_packages if package.package == x.package ]
-            if matching:
-                if package < matching[-1]:
-                    p['install_status'] = 'NEED-UPGRADE'
+    packages = []
+    host_packages = get_host_data(uuid, {"packages":1})
+    if host_packages:
+        packages = host_packages.get('packages',[])
+        if packages:
+            repo_packages = packagesFileToList(os.path.join(wapt_folder, 'Packages'))
+            for p in packages:
+                package = PackageEntry()
+                package.load_control_from_dict(p)
+                matching = [ x for x in repo_packages if package.package == x.package ]
+                if matching:
+                    if package < matching[-1]:
+                        p['install_status'] = 'NEED-UPGRADE'
+    else:
+        return 'No such host UUID %s in database' % uuid
 
-        return  Response(response=json.dumps(packages['packages']),
-                         status=200,
-                         mimetype="application/json")
-    return "{}"
-
+    return Response(response=json.dumps(packages),
+                     status=200,
+                     mimetype="application/json")
 
 def requires_auth(f):
     @wraps(f)
@@ -417,7 +421,7 @@ def upload_waptsetup():
 @app.route('/waptupgrade_host/<string:ip>')
 def waptupgrade_host(ip):
     try:
-        result = {} 
+        result = {}
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.settimeout(1)
@@ -430,16 +434,16 @@ def waptupgrade_host(ip):
                     result = {  'status' : 'OK', 'message': u"%s" % r.text }
                 else:
                     result = {  'status' : 'ERROR', 'message': u"%s" % r.text }
-    
+
             else:
                 raise Exception(u"Le port de waptservice n'est pas défini")
-    
+
         except Exception as e:
             raise  Exception("Impossible de joindre le web service: %s" % e)
-        
+
     except Exception, e:
             result = { 'status' : 'ERROR', 'message': u"%s" % e  }
-    return json.dumps(result)        
+    return json.dumps(result)
 
 @app.route('/hosts_by_group/<string:name>')
 def get_hosts_by_group(name=""):
@@ -447,25 +451,25 @@ def get_hosts_by_group(name=""):
         list_hosts  =  []
         os.chdir(wapt_folder + '-host')
         hosts = [f for f in os.listdir('.') if os.path.isfile(f) and f.endswith('.wapt')]
-        package = PackageEntry()     
-        for h in hosts:  
+        package = PackageEntry()
+        for h in hosts:
             package.load_control_from_wapt(h)
 
-            if name in package.depends.split(','):            
-                list_hosts.append({"computer_fqdn":package.package})            
+            if name in package.depends.split(','):
+                list_hosts.append({"computer_fqdn":package.package})
 
         return  Response(response=json.dumps(list_hosts),
                          status=200,
-                         mimetype="application/json")                               
+                         mimetype="application/json")
     except:
         e = sys.exc_info()
-        return str(e)    
-    return "Unsupported method"    
+        return str(e)
+    return "Unsupported method"
 
 @app.route('/upgrade_host/<string:ip>')
 def upgrade_host(ip):
     try:
-        result = {} 
+        result = {}
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.settimeout(1)
@@ -478,17 +482,17 @@ def upgrade_host(ip):
                     result = {  'status' : 'OK', 'message': u"%s" % r.text }
                 else:
                     result = {  'status' : 'ERROR', 'message': u"%s" % r.text }
-    
+
             else:
                 raise Exception(u"Le port de waptservice n'est pas défini")
-    
+
         except Exception as e:
             raise  Exception("Impossible de joindre le web service: %s" % e)
-        
+
     except Exception, e:
             result = { 'status' : 'ERROR', 'message': u"%s" % e  }
     print result
-    return json.dumps(result)   
+    return json.dumps(result)
 
 
 def install_wapt(computer_name,authentication_file):
@@ -498,7 +502,7 @@ def install_wapt(computer_name,authentication_file):
     except subprocess.CalledProcessError as e:
         if "NT_STATUS_LOGON_FAILURE" in e.output:
             raise Exception("Mauvais identifiants")
-        if "NT_STATUS_CONNECTION_REFUSED" in e.output:	
+        if "NT_STATUS_CONNECTION_REFUSED" in e.output:
             raise Exception("Partage IPC$ non accessible")
 
         raise Exception(u"%s" % e.output)
@@ -531,12 +535,12 @@ def deploy_wapt():
             raise Exception(u"smbclient n'est pas installé sur le serveur wapt")
         if subprocess.call('which winexe',shell=True) != 0:
             raise Exception(u"winexe n'est pas installé sur le serveur wapt")
-            
+
         if request.method == 'POST':
-            d = json.loads(request.data) 
-            if not d.has_key('auth'):  
+            d = json.loads(request.data)
+            if not d.has_key('auth'):
                 raise Exception("Les informations d'authentification sont manquantes")
-            if not d.has_key('computer_fqdn'):  
+            if not d.has_key('computer_fqdn'):
                 raise Exception(u"Il n'y a aucuns ordinateurs de renseigné")
 
             auth_file = tempfile.mkstemp("wapt")[1]
@@ -551,7 +555,7 @@ def deploy_wapt():
 
                 message = install_wapt(d['computer_fqdn'],auth_file)
 
-                result = { 'status' : 'OK' , 'message': message} 
+                result = { 'status' : 'OK' , 'message': message}
             finally:
                 os.unlink(auth_file)
 
@@ -661,8 +665,8 @@ def authenticate():
 
 if __name__ == "__main__":
     debug=False
-    if debug==True:
-        app.run(host='0.0.0.0',port=30880,debug=True)
+    if debug:
+        app.run(host='0.0.0.0',port=30880,debug=False)
     else:
         port = 8080
         server = Rocket(('0.0.0.0', port), 'wsgi', {"wsgi_app":app})
