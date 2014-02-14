@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="9"/>
+    <PathDelim Value="\"/>
+    <General>
+      <SessionStorage Value="InProjectDir"/>
+      <MainUnit Value="0"/>
+      <Title Value="waptgui"/>
+      <ResourceType Value="res"/>
+      <Icon Value="0"/>
+    </General>
+    <i18n>
+      <EnableI18N LFM="False"/>
+    </i18n>
+    <VersionInfo>
+      <UseVersionInfo Value="True"/>
+      <AutoIncrementBuild Value="True"/>
+      <MinorVersionNr Value="3"/>
+      <RevisionNr Value="26"/>
+      <StringTable ProductVersion=""/>
+    </VersionInfo>
+    <BuildModes Count="1">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="13">
+      <Item1>
+        <PackageName Value="pltis_utils"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="pltis_sogrid"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="pl_virtualtrees"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="pltis_superobject"/>
+      </Item4>
+      <Item5>
+        <PackageName Value="RunTimeTypeInfoControls"/>
+      </Item5>
+      <Item6>
+        <PackageName Value="pl_graphics32ext"/>
+      </Item6>
+      <Item7>
+        <PackageName Value="pl_luicontrols"/>
+      </Item7>
+      <Item8>
+        <PackageName Value="pl_virtualtreesextra"/>
+      </Item8>
+      <Item9>
+        <PackageName Value="pl_lazsolutions"/>
+      </Item9>
+      <Item10>
+        <PackageName Value="FCL"/>
+      </Item10>
+      <Item11>
+        <PackageName Value="pl_indycomp"/>
+      </Item11>
+      <Item12>
+        <PackageName Value="SynEdit"/>
+      </Item12>
+      <Item13>
+        <PackageName Value="LCL"/>
+      </Item13>
+    </RequiredPackages>
+    <Units Count="7">
+      <Unit0>
+        <Filename Value="waptgui.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="waptgui"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="uwaptconsole.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisWaptGUI"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uwaptconsole"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="waptcommon"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="uvislogin.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisLogin"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uvislogin"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="uvisloading.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisLoading"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uvisloading"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="uviswaptconfig.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisWAPTConfig"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uviswaptconfig"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="udmlocalwapt.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DMLocalWapt"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <UnitName Value="uDMLocalWapt"/>
+      </Unit6>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="..\waptgui"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="..\wapt-get"/>
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+    <CodeGeneration>
+      <Checks>
+        <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
+    </CodeGeneration>
+    <Linking>
+      <Debugging>
+        <UseExternalDbgSyms Value="True"/>
+      </Debugging>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+    <Other>
+      <CompilerMessages>
+        <MsgFileName Value=""/>
+      </CompilerMessages>
+      <CustomOptions Value="-dUseCThreads"/>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="6">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+      <Item4>
+        <Name Value="EPyAttributeError"/>
+      </Item4>
+      <Item5>
+        <Name Value="EPyStopIteration"/>
+      </Item5>
+      <Item6>
+        <Name Value="Exception"/>
+      </Item6>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

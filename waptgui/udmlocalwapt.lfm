@@ -1,0 +1,23 @@
+object DMLocalWapt: TDMLocalWapt
+  OldCreateOrder = False
+  Height = 292
+  HorizontalOffset = 345
+  VerticalOffset = 202
+  Width = 395
+  object LocalWapt: TSOConnection
+    ServerURL = 'http://localhost:8088'
+    Username = 'admin'
+    Password = 'password'
+    left = 120
+    top = 52
+  end
+  object SODataSource1: TSODataSource
+    Connection = LocalWapt
+    ProviderName = 'status'
+    ParamsJSON = '{"format":"json"}'
+    Root = 'content'
+    Active = False
+    left = 120
+    top = 117
+  end
+end
