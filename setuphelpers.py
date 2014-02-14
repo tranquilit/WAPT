@@ -912,33 +912,36 @@ def memory_status():
 
 def dmi_info():
     """Convert dmidecode -q output to python dict"""
-    dmiout = run('dmidecode -q',shell=False)
-    new_section = True
     result = {}
-    for l in dmiout.splitlines():
-        if not l.strip() or l.startswith('#'):
-            new_section = True
-            continue
+    try:
+        dmiout = run('dmidecode -q',shell=False)
+        new_section = True
+        for l in dmiout.splitlines():
+            if not l.strip() or l.startswith('#'):
+                new_section = True
+                continue
 
-        if not l.startswith('\t') or new_section:
-            currobject={}
-            result[l.strip().replace(' ','_')]=currobject
-            if l.startswith('\t'):
-                print l
-        else:
-            if not l.startswith('\t\t'):
-                currarray = []
-                if ':' in l:
-                    (name,value)=l.split(':',1)
-                    currobject[name.strip().replace(' ','_')]=value.strip()
-                else:
-                    print "Error in line : %s" % l
+            if not l.startswith('\t') or new_section:
+                currobject={}
+                result[l.strip().replace(' ','_')]=currobject
+                if l.startswith('\t'):
+                    print l
             else:
-                # first line of array
-                if not currarray:
-                    currobject[name.strip().replace(' ','_')]=currarray
-                currarray.append(l.strip())
-        new_section = False
+                if not l.startswith('\t\t'):
+                    currarray = []
+                    if ':' in l:
+                        (name,value)=l.split(':',1)
+                        currobject[name.strip().replace(' ','_')]=value.strip()
+                    else:
+                        print "Error in line : %s" % l
+                else:
+                    # first line of array
+                    if not currarray:
+                        currobject[name.strip().replace(' ','_')]=currarray
+                    currarray.append(l.strip())
+            new_section = False
+    except:
+        pass
     return result
 
 def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_BIOS','Win32_NetworkAdapter']):
