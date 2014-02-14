@@ -171,7 +171,7 @@ def status():
         try:
             con.row_factory=sqlite3.Row
             query = '''select s.package,s.version,s.install_date,s.install_status,
-                                 (select max(p.version) from wapt_package p where p.package=s.package) as repo_version,explicit_by as install_par
+                                 (select GROUP_CONCAT(p.version," | ") from wapt_package p where p.package=s.package) as repo_version,explicit_by as install_par
                                  from wapt_localstatus s
                                  order by s.package'''
             cur = con.cursor()
@@ -374,7 +374,7 @@ if __name__ == "__main__":
     #hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
     #logger.addHandler(hdlr)
 
-    debug=False
+    debug=True
     if debug==True:
         app.run(host='0.0.0.0',port=waptservice_port,debug=False)
         logger.info("exiting")
