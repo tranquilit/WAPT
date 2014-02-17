@@ -1734,9 +1734,9 @@ class Wapt(object):
         # get the list of certificates to use :
         self.public_certs = glob.glob(os.path.join(self.wapt_base_dir,'ssl','*.crt'))
 
-        self.packagecachedir = os.path.join(self.wapt_base_dir,'cache')
-        if not os.path.exists(self.packagecachedir):
-            os.makedirs(self.packagecachedir)
+        self.package_cache_dir = os.path.join(self.wapt_base_dir,'cache')
+        if not os.path.exists(self.package_cache_dir):
+            os.makedirs(self.package_cache_dir)
 
         # to allow/restrict installation, supplied to packages
         self.user = setuphelpers.get_current_user()
@@ -2515,7 +2515,7 @@ class Wapt(object):
         """Remove cached WAPT files from local disk"""
         result = []
         logger.info('Cleaning up WAPT cache directory')
-        cachepath = self.packagecachedir
+        cachepath = self.package_cache_dir
         for f in glob.glob(os.path.join(cachepath,'*.wapt')):
             if os.path.isfile(f):
                 logger.debug(u'Removing %s' % f)
@@ -2727,7 +2727,7 @@ class Wapt(object):
         actions['downloads'] = downloaded
         logger.debug(u'Downloaded : %s' % (downloaded,))
         def fname(packagefilename):
-            return os.path.join(self.packagecachedir,packagefilename)
+            return os.path.join(self.package_cache_dir,packagefilename)
         if not download_only:
             # switch to manual mode
             for (request,p) in skipped:
@@ -2776,7 +2776,7 @@ class Wapt(object):
         for entry in packages:
             packagefilename = entry.filename.strip('./')
             download_url = entry.repo_url+'/'+packagefilename
-            fullpackagepath = os.path.join(self.packagecachedir,packagefilename)
+            fullpackagepath = os.path.join(self.package_cache_dir,packagefilename)
             skip = False
             if os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath)>0 and usecache:
                 # check version
@@ -2800,7 +2800,7 @@ class Wapt(object):
                         self.runstatus='Downloading %s : %s' % (entry.package,stat)
 
                     self.runstatus='Downloading %s' % download_url
-                    setuphelpers.wget( download_url, self.packagecachedir,proxies=self.proxies,printhook = report)
+                    setuphelpers.wget( download_url, self.package_cache_dir,proxies=self.proxies,printhook = report)
                     downloaded.append(fullpackagepath)
                     self.runstatus=''
                 except BaseException as e:
