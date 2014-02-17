@@ -10,31 +10,62 @@ ShowFileExtensions=FALSE
 ClassName=TProjectFilesNode
 
 [Project\ChildNodes\Node0\ChildNodes\Node0]
+ClassName=TProjectFolderNode
+Name=templates
+
+[Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node0]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\common.py
+FileName=$[Project-Path]templates\index.html
+
+[Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node1]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]templates\install.html
+
+[Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node2]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]templates\layout.html
+
+[Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node3]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]templates\list.html
+
+[Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node4]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]templates\remove.html
+
+[Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node5]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]templates\status.html
+
+[Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes]
+Count=6
 
 [Project\ChildNodes\Node0\ChildNodes\Node1]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\setuphelpers.py
+FileName=C:\tranquilit\wapt\common.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node2]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptdevutils.py
+FileName=C:\tranquilit\wapt\setuphelpers.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node3]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptpackage.py
+FileName=C:\tranquilit\wapt\waptdevutils.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node4]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptservice.py
+FileName=C:\tranquilit\wapt\waptpackage.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node5]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]waptservice.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node6]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]waptservice_servicewrapper.py
 
 [Project\ChildNodes\Node0\ChildNodes]
-Count=6
+Count=7
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode
@@ -61,15 +92,38 @@ WorkingDirectory=$[ActiveScript-Dir]
 ShortCut=0
 MessagesFormat=$[FileName] $[LineNumber]
 
+[Project\ChildNodes\Node1\ChildNodes\Node1]
+ClassName=TProjectRunConfiguationNode
+Name=doctest
+
+[Project\ChildNodes\Node1\ChildNodes\Node1\RunConfig]
+ScriptName=$[ActiveDoc]
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=doctest
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node1\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+ShortCut=0
+MessagesFormat=$[FileName] $[LineNumber]
+
 [Project\ChildNodes\Node1\ChildNodes]
-Count=1
+Count=2
 
 [Project\ChildNodes]
 Count=2
 
 [Project\ExtraPythonPath]
-Item0=C:\tranquilit \wapt
-Item1=C:\tranquilit \wapt\waptservice
-Item2=C:\tranquilit \wapt\lib\site-packages
+Item0=C:\tranquilit\wapt
+Item1=C:\tranquilit\wapt\waptservice
+Item2=C:\tranquilit\wapt\lib\site-packages
 Count=3
 

@@ -241,7 +241,7 @@ def main():
         mywapt.dry_run = options.dry_run
 
         logger.debug(u'WAPT base directory : %s' % mywapt.wapt_base_dir)
-        logger.debug(u'Package cache dir : %s' %  mywapt.packagecachedir)
+        logger.debug(u'Package cache dir : %s' %  mywapt.package_cache_dir)
         logger.debug(u'WAPT DB Structure version;: %s' % mywapt.waptdb.db_version)
 
         try:

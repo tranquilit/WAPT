@@ -14,9 +14,14 @@ import thread
 import json
 from rocket import Rocket
 from flask import request, Flask,Response, send_from_directory, send_file, session, g, redirect, url_for, abort, render_template, flash
-from werkzeug.utils import html
-import gc
+import requests
+import StringIO
 
+from werkzeug.utils import html
+
+import gc
+import datetime
+import dateutil.parser
 
 wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
 sys.path.append(os.path.join(wapt_root_dir))
@@ -49,6 +54,13 @@ else:
 
 wapt_user = ""
 wapt_password = ""
+
+def format_isodate(isodate):
+    """Pretty format iso date like : 2014-01-21T17:36:15.652000
+        >>> format_isodate('2014-01-21T17:36:15.652000')
+        '21/01/2014 17:36:15'
+    """
+    return dateutil.parser.parse(isodate).strftime("%d/%m/%Y %H:%M:%S")
 
 def setloglevel(logger,loglevel):
     """set loglevel as string"""
@@ -182,7 +194,7 @@ def status():
     if request.args.get('format','html')=='json':
         return Response(common.jsondump(rows), mimetype='application/json')
     else:
-        return render_template('status.html',packages=rows)
+        return render_template('status.html',packages=rows,format_isodate=format_isodate,Version=setuphelpers.Version)
 
 @app.route('/list')
 @check_ip_source
@@ -190,16 +202,70 @@ def list():
     with sqlite3.connect(dbpath) as con:
         try:
             con.row_factory=sqlite3.Row
-            query = '''select * from wapt_package where section<>"host" order by package,version'''
+            query = '''\
+                select
+                    r.*,
+                    s.version as install_version,s.install_status,s.install_date,s.explicit_by
+                from wapt_package r
+                left join wapt_localstatus s on s.package=r.package
+                where r.section<>"host"
+                order by r.package,r.version'''
             cur = con.cursor()
             cur.execute(query)
             rows = [ dict(x) for x in cur.fetchall() ]
-        except lite.Error, e:
+        except sqlite3.Error, e:
             logger.critical("*********** Error %s:" % e.args[0])
     if request.args.get('format','html')=='json':
         return Response(common.jsondump(rows), mimetype='application/json')
     else:
-        return render_template('list.html',packages=rows)
+        return render_template('list.html',packages=rows,format_isodate=format_isodate,Version=setuphelpers.Version)
+
+@app.route('/package_icon')
+def package_icon():
+    package = request.args.get('package')
+    icon_local_cache = os.path.join(wapt_root_dir,'cache','icons')
+    #wapt=[]
+    #repo_url = wapt[0].repositories[0].repo_url
+    repo_url='http://wapt/wapt'
+    proxies = []
+
+    def get_icon(package):
+        """Get icon from local cache or remote wapt directory, returns local filename"""
+        icon_local_filename = os.path.join(icon_local_cache,package+'.png')
+        if not os.path.isfile(icon_local_filename) or os.path.getsize(icon_local_filename)<10:
+            #if not wapt:
+            #    wapt.append(Wapt(config_filename=config_file))
+
+            remote_icon_path = "{repo}/icons/{package}.png".format(repo=repo_url,package=package)
+            icon = requests.get(remote_icon_path,proxies=proxies)
+            icon.raise_for_status()
+            open(icon_local_filename,'wb').write(icon.content)
+            return StringIO.StringIO(icon.content)
+        else:
+            return open(icon_local_filename,'rb')
+
+    try:
+        icon = get_icon(package)
+    except requests.HTTPError as e:
+        icon = get_icon('unknown')
+    return send_file(icon,'image/png',as_attachment=True,attachment_filename='{}.png'.format(package))
+
+@app.route('/package_details')
+def package_details():
+    wapt=Wapt(config_filename=config_file)
+    package = request.args.get('package')
+    wapt=Wapt(config_filename=config_file)
+    try:
+        data = wapt.is_available(package)
+    except Exception as e:
+        data = {'errors':[ str(e) ]}
+
+    data = data and data[0].as_dict()
+    if request.args.get('format','html')=='json':
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('package_details.html',**data)
+
 
 @app.route('/runstatus')
 @check_ip_source
@@ -355,6 +421,20 @@ def index():
     else:
         return render_template('index.html',**data)
 
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        if request.form['username'] != 'admin' or \
+                request.form['password'] != 'secret':
+            error = 'Invalid credentials'
+        else:
+            flash('You were successfully logged in')
+            return redirect(url_for('index'))
+    return render_template('login.html', error=error)
+
+
 def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
@@ -369,6 +449,10 @@ def authenticate():
     {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
 if __name__ == "__main__":
+    if len(sys.argv)>1 and sys.argv[1] == 'doctest':
+        import doctest
+        sys.exit(doctest.testmod())
+
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
     #hdlr = logging.StreamHandler(sys.stdout)
     #hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))

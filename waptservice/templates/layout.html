@@ -4,7 +4,7 @@ Design by Free CSS Templates
 http://www.freecsstemplates.org
 Released for free under a Creative Commons Attribution 2.5 License
 
-Name       : Indication  
+Name       : Indication
 Description: A two-column, fixed-width design with dark color scheme.
 Version    : 1.0
 Released   : 20090910
@@ -16,14 +16,14 @@ Released   : 20090910
     <meta name="description" content="" />
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <title>WAPT Service status</title>
-    
+
     <!-- Styles -->
     <link rel="stylesheet" type="text/css" href="/static/styles/datatables.css">
     <link rel="stylesheet" type="text/css" href="/static/styles/style.css">
     <!-- Scripts
 	<link rel="stylesheet" type="text/css" href="/static/styles/jquery.alerts.css"> -->
-    
-    <!-- Scripts 
+
+    <!-- Scripts
     <script type=text/javascript   src="/static/js/jquery.min.js"></script>
     <script type=text/javascript   src="/static/js/jquery.dataTables.js"></script>
     <script type=text/javascript   src="/static/js/jquery.alerts.js"></script>
@@ -50,6 +50,15 @@ Released   : 20090910
         <div id="page-bgtop">
         <div id="page-bgbtm">
                 <div id="content">
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
 {% block content %}
 {% endblock %}
                 </div>

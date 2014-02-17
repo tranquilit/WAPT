@@ -393,11 +393,10 @@ def upload_host():
             return "ok"
         else:
             return "wrong file type"
-
-
     except:
         e = sys.exc_info()
         return str(e)
+    return "ok"
 
 @app.route('/upload_waptsetup',methods=['POST'])
 @requires_auth

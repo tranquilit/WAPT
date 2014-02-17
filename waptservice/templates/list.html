@@ -26,25 +26,52 @@ location.reload(true);
 </script>
 <h1>Available packages</h1>
 <input onclick='refresh()' type="button" name="update" value="Mise à jour les paquets disponibles" />
-{% set cols = ['package','version','description','filename'] %}
+{% set cols = ['package','version','description','filename','install_version','install_status','install_date'] %}
 <table border=1 cellspacing=0 cellpadding=4 class=sample>
 	<tr>
 		{% for c in cols %}
 			<th>
-			{{c}}
+			{{c or ""}}
 			</th>
 		{% endfor %}
 		<th>Action<th>
 	</tr>
 	{% for p in packages %}
-		<tr>
+        {%set package_version= "%s(=%s)" % (p.package,p.version) %}
+        {%if p.get('install_status')=='OK'%}
+            {%if Version(p['install_version']) < Version(p['version']) %}
+        		<tr class=status-upgradable>
+            {%elif Version(p['install_version']) == Version(p['version']) %}
+        		<tr class=status-installed>
+            {%else%}
+        		<tr>
+            {%endif%}
+        {%elif p.get('install_status')=='ERROR'%}
+            <tr class=status-error>
+        {%else%}
+    		<tr>
+        {%endif%}
+
 		{% for c in cols %}
 		<td>
-		  {{p[c]}}
+          {%if c=='install_date' and p[c]%}
+		  {{format_isodate(p[c])}}
+          {%elif c=='package'%}
+		  <img src="package_icon?package={{p.package}}"> {{link("package_details?package="+package_version+"&format=json",p[c])}}
+          {%else%}
+		  {{p[c] or ""}}
+          {%endif%}
 		</td>
-	{% endfor %}
-			<td><a href="install?package={{p.package}}">Install</a></td>
-
+	    {% endfor %}
+        {% if p.get('install_status') and p['install_version'] == p['version'] %}
+    			<td><a href="remove?package={{p.package}}">Remove</a></td>
+        {% elif p.get('install_status') and Version(p['install_version']) > Version(p['version']) %}
+    			<td><a href="install?package={{'%s(=%s)' % (p.package,p.version)}}">Downgrade</a></td>
+        {% elif p.get('install_status') and Version(p['install_version']) < Version(p['version']) %}
+    			<td><a href="install?package={{'%s(=%s)' % (p.package,p.version)}}">Upgrade</a></td>
+        {% else %}
+    			<td><a href="install?package={{'%s(=%s)' % (p.package,p.version)}}">Install</a></td>
+        {% endif %}
 	</tr>
 {% endfor %}
 </table>

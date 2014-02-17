@@ -3,31 +3,38 @@
 
 <h1>Installed packages</h1>'
 <table border=1 cellspacing=0 cellpadding=4 class=sample>
-{% set cols = [('install_status','Status'),('package','Package'),('version','Version'),('install_par','Installed by'),('install_date','Installed on'),] %}
+{% set cols = [('install_status','Status'),('package','Package'),('version','Version'),('install_par','Installed by'),('install_date','Installed on'),('repo_version','Version repo'),] %}
 	<tr>
 		{% for c in cols %}
-			<th>
-			{{c[1]}}
-			</th>
+			<th>{{c[1]}}</th>
 		{% endfor %}
 		<th>Action<th>
 	</tr>
 	{% for p in packages %}
+        {%if p.get('install_status')=='OK'%}
+            {%if Version(p['version']) < Version(p.get('repo_version','') or '') %}
+        		<tr class=status-upgradable>
+            {%elif Version(p['version']) == Version(p.get('repo_version','') or '') %}
+        		<tr class=status-installed>
+            {%else%}
+        		<tr>
+            {%endif%}
+        {%elif p.get('install_status')=='ERROR'%}
+            <tr class=status-error>
+        {%else%}
+    		<tr>
+        {%endif%}
 
-		<tr>
 		{% for c in cols %}
 		<td>
 		{% if c[0]=='install_date' %}
 			{{p[c[0]][0:16].replace('T',' ')}}
 		{%else%}
-			{{p[c[0]]}}
+			{{p[c[0]] or '-'}}
 		{%endif%}
-		
 		</td>
-		
 		{% endfor %}
 		<td><a href="remove?package={{p.package}}">Remove</a></td>
-		
 	</tr>
 {% endfor %}
 </table>
