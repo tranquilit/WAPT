@@ -33,7 +33,7 @@ import common
 import setuphelpers
 from common import Wapt
 
-__version__ = "0.7.9"
+__version__ = "0.8.7"
 
 config = ConfigParser.RawConfigParser()
 
@@ -182,7 +182,7 @@ def status():
     with sqlite3.connect(dbpath) as con:
         try:
             con.row_factory=sqlite3.Row
-            query = '''select s.package,s.version,s.install_date,s.install_status,
+            query = '''select s.package,s.version,s.install_date,s.install_status,s.install_output,
                                  (select GROUP_CONCAT(p.version," | ") from wapt_package p where p.package=s.package) as repo_version,explicit_by as install_par
                                  from wapt_localstatus s
                                  order by s.package'''
@@ -224,17 +224,18 @@ def list():
 def package_icon():
     package = request.args.get('package')
     icon_local_cache = os.path.join(wapt_root_dir,'cache','icons')
-    #wapt=[]
-    #repo_url = wapt[0].repositories[0].repo_url
-    repo_url='http://wapt/wapt'
-    proxies = []
+    wapt=[]
+    #repo_url='http://wapt/wapt'
+    #proxies = []
 
     def get_icon(package):
         """Get icon from local cache or remote wapt directory, returns local filename"""
         icon_local_filename = os.path.join(icon_local_cache,package+'.png')
         if not os.path.isfile(icon_local_filename) or os.path.getsize(icon_local_filename)<10:
-            #if not wapt:
-            #    wapt.append(Wapt(config_filename=config_file))
+            if not wapt:
+                wapt.append(Wapt(config_filename=config_file))
+            proxies = wapt[0].proxies
+            repo_url = wapt[0].repositories[0].repo_url
 
             remote_icon_path = "{repo}/icons/{package}.png".format(repo=repo_url,package=package)
             icon = requests.get(remote_icon_path,proxies=proxies)
@@ -246,9 +247,10 @@ def package_icon():
 
     try:
         icon = get_icon(package)
+        return send_file(icon,'image/png',as_attachment=True,attachment_filename='{}.png'.format(package),cache_timeout=43200)
     except requests.HTTPError as e:
         icon = get_icon('unknown')
-    return send_file(icon,'image/png',as_attachment=True,attachment_filename='{}.png'.format(package))
+        return send_file(icon,'image/png',as_attachment=True,attachment_filename='{}.png'.format('unknown'),cache_timeout=43200)
 
 @app.route('/package_details')
 def package_details():
@@ -260,11 +262,12 @@ def package_details():
     except Exception as e:
         data = {'errors':[ str(e) ]}
 
-    data = data and data[0].as_dict()
+    # take the newest...
+    data = data and data[-1].as_dict()
     if request.args.get('format','html')=='json':
-        return Response(common.jsondump(data), mimetype='application/json')
+        return Response(common.jsondump(dict(result=data,errors=[])), mimetype='application/json')
     else:
-        return render_template('package_details.html',**data)
+        return render_template('package_details.html',data=data)
 
 
 @app.route('/runstatus')
@@ -337,9 +340,10 @@ def update():
     thread.start_new_thread(background_update,(config_file,))
     return Response(common.jsondump({'result':'OK'}), mimetype='application/json')
 
+@app.route('/cleanup')
 @app.route('/clean')
 @requires_auth
-def clean():
+def cleanup():
     logger.info("run cleanup")
     wapt=Wapt(config_filename=config_file)
     data = wapt.cleanup()
@@ -385,6 +389,21 @@ def install():
         return Response(common.jsondump(data), mimetype='application/json')
     else:
         return render_template('install.html',**data)
+
+@app.route('/package_download', methods=['GET'])
+def package_download():
+    package = request.args.get('package')
+    logger.info("download package %s" % package)
+    wapt=Wapt(config_filename=config_file)
+    try:
+        data = wapt.install(package,download_only=True,force=True)
+    except Exception as e:
+        data = {'errors':[ str(e) ]}
+
+    if request.args.get('format','html')=='json':
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('download.html',**data)
 
 @app.route('/remove', methods=['GET'])
 @requires_auth
@@ -460,7 +479,7 @@ if __name__ == "__main__":
 
     debug=True
     if debug==True:
-        app.run(host='0.0.0.0',port=waptservice_port,debug=False)
+        app.run(host='0.0.0.0',port=waptservice_port,debug=True)
         logger.info("exiting")
     else:
         server = Rocket(

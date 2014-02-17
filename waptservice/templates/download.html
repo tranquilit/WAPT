@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>Téléchargement</h1>
+
+{% for package in downloads['downloaded'] %}
+    <p>{{package}} téléchargé</p>
+{% endfor %}
+
+{% for package in downloads['skipped'] %}
+    <p>{{package}} déjà disponible</p>
+{% endfor %}
+
+{% for error in errors %}
+<ul>
+	<li>Erreur: {{error}}</li>
+</ul>
+{% endfor %}
+
+<input type="button" value="Retour" onclick="location.href='list'">
+{% endblock %}

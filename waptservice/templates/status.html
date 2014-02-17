@@ -3,7 +3,7 @@
 
 <h1>Installed packages</h1>'
 <table border=1 cellspacing=0 cellpadding=4 class=sample>
-{% set cols = [('install_status','Status'),('package','Package'),('version','Version'),('install_par','Installed by'),('install_date','Installed on'),('repo_version','Version repo'),] %}
+{% set cols = [('install_status','Status'),('package','Package'),('version','Version'),('install_par','Installed by'),('install_date','Installed on'),('repo_version','Version repo'),('install_output','Traces')] %}
 	<tr>
 		{% for c in cols %}
 			<th>{{c[1]}}</th>
@@ -27,8 +27,10 @@
 
 		{% for c in cols %}
 		<td>
-		{% if c[0]=='install_date' %}
-			{{p[c[0]][0:16].replace('T',' ')}}
+		{%if c[0]=='install_date' %}
+			{{format_isodate(p[c[0]])}}
+		{%elif c[0]=='install_output' %}
+			{{p[c[0]].replace('\n','<br>')|safe}}
 		{%else%}
 			{{p[c[0]] or '-'}}
 		{%endif%}

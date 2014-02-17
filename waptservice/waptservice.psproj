@@ -11,61 +11,84 @@ ClassName=TProjectFilesNode
 
 [Project\ChildNodes\Node0\ChildNodes\Node0]
 ClassName=TProjectFolderNode
-Name=templates
+Name=css
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node0]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]templates\index.html
+FileName=$[Project-Path]static\styles\datatables.css
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node1]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]templates\install.html
+FileName=$[Project-Path]static\styles\jquery.alerts.css
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node2]
 ClassName=TProjectFileNode
+FileName=$[Project-Path]static\styles\style.css
+
+[Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes]
+Count=3
+
+[Project\ChildNodes\Node0\ChildNodes\Node1]
+ClassName=TProjectFolderNode
+Name=templates
+
+[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node0]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]templates\index.html
+
+[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node1]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]templates\install.html
+
+[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node2]
+ClassName=TProjectFileNode
 FileName=$[Project-Path]templates\layout.html
 
-[Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node3]
+[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node3]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]templates\list.html
 
-[Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node4]
+[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node4]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]templates\package_details.html
+
+[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node5]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]templates\remove.html
 
-[Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node5]
+[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node6]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]templates\status.html
 
-[Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes]
-Count=6
-
-[Project\ChildNodes\Node0\ChildNodes\Node1]
-ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\common.py
+[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes]
+Count=7
 
 [Project\ChildNodes\Node0\ChildNodes\Node2]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\setuphelpers.py
+FileName=C:\tranquilit\wapt\common.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node3]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptdevutils.py
+FileName=C:\tranquilit\wapt\setuphelpers.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node4]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptpackage.py
+FileName=C:\tranquilit\wapt\waptdevutils.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node5]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptservice.py
+FileName=C:\tranquilit\wapt\waptpackage.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node6]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]waptservice.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node7]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]waptservice_servicewrapper.py
 
 [Project\ChildNodes\Node0\ChildNodes]
-Count=7
+Count=8
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode
