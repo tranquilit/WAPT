@@ -40,10 +40,25 @@ p, ul, ol {
 
 ul, ol {
 }
+
 .error {
     color: red;
     font-size: 1.4em;
 }
+
+.status-error {
+    color: red;
+}
+
+.status-installed {
+    font-weight: bold;
+}
+
+.status-upgradable {
+    color: orange;
+    font-weight: bold;
+}
+
 .info {
     color: orange;
     font-size: 1.3em;
@@ -103,7 +118,7 @@ a:hover {
 	font: normal 14px Georgia, "Times New Roman", Times, serif;
 	font-style: italic;
 	color: #FFFFFF;
-} 
+}
 
 #logo a {
 	border: none;
