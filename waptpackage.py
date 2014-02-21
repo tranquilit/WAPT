@@ -349,6 +349,31 @@ sources      : %(sources)s
                 return
         raise Exception(u'no build/packaging part in version number %s' % self.version)
 
+def extract_iconpng_from_wapt(self,fname):
+    """Return the content of WAPT/icon.png if it exists, a unknown.png file content if not"""
+    iconpng = None
+    if os.path.isfile(fname):
+        myzip = zipfile.ZipFile(fname,'r',allowZip64=True)
+        try:
+            iconpng = myzip.open(u'WAPT/icon.png').read()
+        except:
+            pass
+    elif os.path.isdir(fname):
+        png_path = os.path.join(fname,'WAPT','icon.png')
+        if os.path.isfile(png_path):
+            iconpng = open(u'WAPT/icon.png','rb').read()
+
+    if not iconpng:
+        unknown_png_path = os.path.join(os.path.dirname(__file__),'icons','unknown.png')
+        if os.path.isfile(unknown_png_path):
+            iconpng = open(unknown_png_path,'rb').read()
+
+    if not iconpng:
+        raise Exception(u'no icon.png found in package name {}'.format(fname))
+
+    return iconpng
+
+
 def update_packages(adir):
     """Scan adir directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash"""
     packages_fname = os.path.join(adir,'Packages')

@@ -810,6 +810,17 @@ def main():
                 else:
                     print ppdicttable(result,(('package',20),('version',15),('install_status',10),('install_date',16),('description',80)),callback=cb)
 
+            elif action=='add-icon':
+                if len(args)<2:
+                    print u"You must provide the package to edit"
+                    sys.exit(1)
+                if len(args)>=3:
+                    result = mywapt.add_iconpng_wapt(package = args[1],iconpath = args[2] )
+                else:
+                    result = mywapt.add_iconpng_wapt(package = args[1])
+                mywapt.upload_package({'waptfile':result['filename'],'waptdir':'wapt'})
+                if options.json_output:
+                    jsonresult['result'] = result
             else:
                 print u'Unknown action %s' % action
                 sys.exit(1)
