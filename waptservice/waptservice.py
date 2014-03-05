@@ -13,6 +13,7 @@ import logging
 import sqlite3
 import socket
 import thread
+import threading
 import json
 from rocket import Rocket
 from flask import request, Flask,Response, send_from_directory, send_file, session, g, redirect, url_for, abort, render_template, flash
@@ -28,7 +29,10 @@ import gc
 import datetime
 import dateutil.parser
 
-wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+try:
+    wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+except:
+    wapt_root_dir = 'c:/tranquilit/wapt'
 
 sys.path.append(os.path.join(wapt_root_dir))
 sys.path.append(os.path.join(wapt_root_dir,'lib'))
@@ -146,7 +150,6 @@ def get_authorized_callers_ip():
     return ips
 
 authorized_callers_ip = get_authorized_callers_ip()
-
 app = Flask(__name__)
 app.config['PROPAGATE_EXCEPTIONS'] = True
 
@@ -317,33 +320,22 @@ def waptupgrade():
 @app.route('/upgrade')
 @check_ip_source
 def upgrade():
-    print "run upgrade"
-    def background_upgrade(config_file):
-        logger.info("************** Launch upgrade***********************")
-        wapt=Wapt(config_filename=config_file)
-        wapt.update()
-        wapt.upgrade()
-        wapt.update_server_status()
-        logger.info("************** End upgrade *************************")
-        del wapt
-        gc.collect()
-
-    thread.start_new_thread(background_upgrade,(config_file,))
-    return Response(common.jsondump({'result':'OK'}), mimetype='application/json')
+    data1 = installer.add_task(WaptUpdate()).as_dict()
+    data2 = installer.add_task(WaptUpgrade()).as_dict()
+    return Response(common.jsondump({'result':'OK','content':[data1,data2]}), mimetype='application/json')
 
 @app.route('/update')
 @app.route('/updatebg')
 @check_ip_source
 def update():
-    print "run update"
-    def background_update(config_file):
-        wapt=Wapt(config_filename=config_file)
-        wapt.update()
-        del wapt
-        gc.collect()
+    data = installer.add_task(WaptUpdate()).as_dict()
+    return Response(common.jsondump({'result':'OK','content':data}), mimetype='application/json')
 
-    thread.start_new_thread(background_update,(config_file,))
-    return Response(common.jsondump({'result':'OK'}), mimetype='application/json')
+@app.route('/longtask')
+@check_ip_source
+def longtask():
+    data = installer.add_task(WaptLongTask(duration=int(request.args.get('duration','60')),raise_error=int(request.args.get('raise_error',0))))
+    return Response(common.jsondump({'result':'OK','content':data.as_dict()}), mimetype='application/json')
 
 @app.route('/cleanup')
 @app.route('/clean')
@@ -374,6 +366,7 @@ def disable():
 @check_ip_source
 def register():
     logger.info("register computer")
+    installer.add_task("register computer")
     wapt=Wapt(config_filename=config_filename)
     data = wapt.register_computer()
     return Response(common.jsondump(data), mimetype='application/json')
@@ -396,6 +389,7 @@ def install():
 def package_download():
     package = request.args.get('package')
     logger.info("download package %s" % package)
+    installer.add_task("download package %s" % package)
     wapt=Wapt(config_filename=config_filename)
     try:
         data = wapt.install(package,download_only=True,force=True)
@@ -875,7 +869,7 @@ if __name__ == "__main__":
 
     debug=False
     if debug==True:
-        app.run(host='0.0.0.0',port=waptservice_port,debug=True)
+        app.run(host='0.0.0.0',port=waptservice_port,debug=False)
         logger.info("exiting")
     else:
         server = Rocket(

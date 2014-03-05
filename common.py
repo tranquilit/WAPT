@@ -364,8 +364,12 @@ def ssl_verify_content(content,signature,public_certs):
 
 
 def default_json(o):
-    if isinstance(o,PackageEntry):
+    if hasattr(o,'as_dict'):
         return o.as_dict()
+    elif hasattr(o,'as_json'):
+        return o.as_json()
+    elif isinstance(o,datetime.datetime):
+        return o.isoformat()
     else:
         return u"%s" % (ensure_unicode(o),)
 
@@ -3071,7 +3075,7 @@ class Wapt(object):
                 return json.dumps(inv,indent=True)
 
     def wapt_status(self):
-        """retrun wapt version info"""
+        """return wapt version info"""
         result = {}
         waptexe = os.path.join(self.wapt_base_dir,'wapt-get.exe')
         if os.path.isfile(waptexe):
