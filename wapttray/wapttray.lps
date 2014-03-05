@@ -1,10 +1,10 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="44">
+    <Units Count="48">
       <Unit0>
         <Filename Value="wapttray.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -75,23 +75,23 @@
         <Filename Value="..\wapt-get\soutils.pas"/>
         <UnitName Value="soutils"/>
         <UsageCount Value="190"/>
-      </Unit6>
-      <Unit7>
+      </Unit7>
+      <Unit8>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\customaction.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="241"/>
         <CursorPos X="1" Y="253"/>
         <UsageCount Value="1"/>
-      </Unit7>
-      <Unit8>
+      </Unit8>
+      <Unit9>
         <Filename Value="C:\codetyphon\lazarus\lcl\extctrls.pp"/>
         <UnitName Value="ExtCtrls"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1058"/>
         <CursorPos X="15" Y="1074"/>
         <UsageCount Value="3"/>
-      </Unit8>
-      <Unit9>
+      </Unit9>
+      <Unit10>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <UnitName Value="superobject"/>
         <EditorIndex Value="3"/>
@@ -100,69 +100,69 @@
         <CursorPos X="14" Y="548"/>
         <UsageCount Value="43"/>
         <Loaded Value="True"/>
-      </Unit9>
-      <Unit10>
+      </Unit10>
+      <Unit11>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
         <UnitName Value="wininet"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2407"/>
         <CursorPos X="12" Y="2423"/>
         <UsageCount Value="1"/>
-      </Unit10>
-      <Unit11>
+      </Unit11>
+      <Unit12>
         <Filename Value="C:\codetyphon\lazarus\lcl\lclintf.pas"/>
         <UnitName Value="LCLIntf"/>
         <WindowIndex Value="0"/>
         <TopLine Value="67"/>
         <CursorPos X="10" Y="84"/>
         <UsageCount Value="3"/>
-      </Unit11>
-      <Unit12>
+      </Unit12>
+      <Unit13>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\sysenvapis_win.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="10" Y="4"/>
         <UsageCount Value="3"/>
-      </Unit12>
-      <Unit13>
+      </Unit13>
+      <Unit14>
         <Filename Value="..\wapt-get\tisinifiles.pas"/>
         <UnitName Value="tisinifiles"/>
         <WindowIndex Value="0"/>
         <TopLine Value="68"/>
         <CursorPos X="3" Y="72"/>
         <UsageCount Value="2"/>
-      </Unit13>
-      <Unit14>
+      </Unit14>
+      <Unit15>
         <Filename Value="C:\codetyphon\lazarus\lcl\interfaces\win32\win32callback.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2405"/>
         <CursorPos X="16" Y="2408"/>
         <UsageCount Value="1"/>
-      </Unit14>
-      <Unit15>
+      </Unit15>
+      <Unit16>
         <Filename Value="..\..\pltis_superobject\soutils.pas"/>
         <UnitName Value="soutils"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="10" Y="13"/>
         <UsageCount Value="2"/>
-      </Unit15>
-      <Unit16>
+      </Unit16>
+      <Unit17>
         <Filename Value="C:\codetyphon\fpcsrc\packages\univint\src\OSUtils.pas"/>
         <UnitName Value="OSUtils"/>
         <WindowIndex Value="0"/>
         <TopLine Value="346"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="0"/>
-      </Unit16>
-      <Unit17>
+      </Unit17>
+      <Unit18>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\systemh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="399"/>
         <CursorPos X="3" Y="415"/>
         <UsageCount Value="4"/>
-      </Unit17>
-      <Unit18>
+      </Unit18>
+      <Unit19>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\ustringh.inc"/>
         <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
@@ -170,8 +170,8 @@
         <CursorPos X="10" Y="127"/>
         <UsageCount Value="41"/>
         <Loaded Value="True"/>
-      </Unit18>
-      <Unit19>
+      </Unit19>
+      <Unit20>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\ustrings.inc"/>
         <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
@@ -179,106 +179,106 @@
         <CursorPos X="5" Y="2066"/>
         <UsageCount Value="41"/>
         <Loaded Value="True"/>
-      </Unit19>
-      <Unit20>
+      </Unit20>
+      <Unit21>
         <Filename Value="C:\codetyphon\lazarus\lcl\dialogs.pp"/>
         <UnitName Value="Dialogs"/>
         <WindowIndex Value="0"/>
         <TopLine Value="21"/>
         <CursorPos X="21" Y="47"/>
         <UsageCount Value="1"/>
-      </Unit20>
-      <Unit21>
+      </Unit21>
+      <Unit22>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\containedaction.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="87"/>
         <CursorPos X="1" Y="106"/>
         <UsageCount Value="1"/>
-      </Unit21>
-      <Unit22>
+      </Unit22>
+      <Unit23>
         <Filename Value="C:\codetyphon\lazarus\lcl\include\menuitem.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="252"/>
         <CursorPos X="1" Y="267"/>
         <UsageCount Value="1"/>
-      </Unit22>
-      <Unit23>
+      </Unit23>
+      <Unit24>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\sysutilh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="184"/>
         <CursorPos X="12" Y="199"/>
         <UsageCount Value="0"/>
-      </Unit23>
-      <Unit24>
+      </Unit24>
+      <Unit25>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\osutilsh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="7"/>
         <CursorPos X="11" Y="23"/>
         <UsageCount Value="0"/>
-      </Unit24>
-      <Unit25>
+      </Unit25>
+      <Unit26>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\sysutils.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="435"/>
         <CursorPos X="27" Y="435"/>
         <UsageCount Value="0"/>
-      </Unit25>
-      <Unit26>
+      </Unit26>
+      <Unit27>
         <Filename Value="C:\codetyphon\lazarus\lcl\controls.pp"/>
         <UnitName Value="Controls"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2206"/>
         <CursorPos X="13" Y="2255"/>
         <UsageCount Value="0"/>
-      </Unit26>
-      <Unit27>
+      </Unit27>
+      <Unit28>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwawinbase.pas"/>
         <UnitName Value="JwaWinBase"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2196"/>
         <CursorPos X="10" Y="2212"/>
         <UsageCount Value="1"/>
-      </Unit27>
-      <Unit28>
+      </Unit28>
+      <Unit29>
         <Filename Value="..\..\pltis_delphizmq\zmqapi.pas"/>
         <UnitName Value="zmqapi"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="2"/>
-      </Unit28>
-      <Unit29>
+      </Unit29>
+      <Unit30>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\classes\classesh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1621"/>
         <CursorPos X="1" Y="1632"/>
         <UsageCount Value="2"/>
-      </Unit29>
-      <Unit30>
+      </Unit30>
+      <Unit31>
         <Filename Value="..\..\pltis_delphizmq\zmq.pas"/>
         <UnitName Value="zmq"/>
         <WindowIndex Value="0"/>
         <TopLine Value="383"/>
         <CursorPos X="42" Y="401"/>
         <UsageCount Value="1"/>
-      </Unit30>
-      <Unit31>
+      </Unit31>
+      <Unit32>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
         <UnitName Value="tiscommon"/>
         <WindowIndex Value="0"/>
         <TopLine Value="226"/>
         <CursorPos X="23" Y="340"/>
         <UsageCount Value="1"/>
-      </Unit31>
-      <Unit32>
+      </Unit32>
+      <Unit33>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\strutils.pp"/>
         <UnitName Value="strutils"/>
         <WindowIndex Value="0"/>
         <TopLine Value="286"/>
         <CursorPos X="53" Y="309"/>
         <UsageCount Value="12"/>
-      </Unit32>
-      <Unit33>
+      </Unit33>
+      <Unit34>
         <Filename Value="C:\codetyphon\typhon\lcl\extctrls.pp"/>
         <UnitName Value="ExtCtrls"/>
         <EditorIndex Value="2"/>
@@ -287,79 +287,79 @@
         <CursorPos X="14" Y="1099"/>
         <UsageCount Value="42"/>
         <Loaded Value="True"/>
-      </Unit33>
-      <Unit34>
+      </Unit34>
+      <Unit35>
         <Filename Value="C:\codetyphon\typhon\lcl\include\customtrayicon.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="257"/>
         <CursorPos X="14" Y="280"/>
         <UsageCount Value="4"/>
-      </Unit34>
-      <Unit35>
+      </Unit35>
+      <Unit36>
         <Filename Value="C:\codetyphon\typhon\lcl\widgetset\wsextctrls.pp"/>
         <UnitName Value="WSExtCtrls"/>
         <WindowIndex Value="0"/>
         <TopLine Value="209"/>
         <CursorPos X="3" Y="222"/>
         <UsageCount Value="4"/>
-      </Unit35>
-      <Unit36>
+      </Unit36>
+      <Unit37>
         <Filename Value="C:\codetyphon\typhon\lcl\widgetset\wsfactory.pas"/>
         <UnitName Value="WSFactory"/>
         <WindowIndex Value="0"/>
         <TopLine Value="65"/>
         <CursorPos X="10" Y="81"/>
         <UsageCount Value="4"/>
-      </Unit36>
-      <Unit37>
+      </Unit37>
+      <Unit38>
         <Filename Value="C:\codetyphon\typhon\lcl\popupnotifier.pas"/>
         <UnitName Value="PopupNotifier"/>
         <WindowIndex Value="0"/>
         <TopLine Value="425"/>
         <CursorPos X="3" Y="438"/>
         <UsageCount Value="3"/>
-      </Unit37>
-      <Unit38>
+      </Unit38>
+      <Unit39>
         <Filename Value="udmwapttray.lfm"/>
         <WindowIndex Value="0"/>
         <TopLine Value="38"/>
         <CursorPos X="1" Y="55"/>
         <UsageCount Value="4"/>
         <DefaultSyntaxHighlighter Value="LFM"/>
-      </Unit38>
-      <Unit39>
+      </Unit39>
+      <Unit40>
         <Filename Value="C:\codetyphon\typhon\components\pl_LazSolutions\source\LSControls.pas"/>
         <UnitName Value="LSControls"/>
         <WindowIndex Value="0"/>
         <TopLine Value="7713"/>
         <CursorPos X="19" Y="7740"/>
         <UsageCount Value="4"/>
-      </Unit39>
-      <Unit40>
+      </Unit40>
+      <Unit41>
         <Filename Value="C:\codetyphon\typhon\components\pl_LazSolutions\source\LSNotifierOS.pas"/>
         <UnitName Value="LSNotifierOS"/>
         <WindowIndex Value="0"/>
         <TopLine Value="287"/>
         <CursorPos X="30" Y="267"/>
         <UsageCount Value="4"/>
-      </Unit40>
-      <Unit41>
+      </Unit41>
+      <Unit42>
         <Filename Value="C:\codetyphon\typhon\components\pl_Graphics32\source\GR32_Image.pas"/>
         <UnitName Value="GR32_Image"/>
         <WindowIndex Value="0"/>
         <TopLine Value="542"/>
         <CursorPos X="14" Y="558"/>
         <UsageCount Value="3"/>
-      </Unit41>
-      <Unit42>
+      </Unit42>
+      <Unit43>
         <Filename Value="C:\codetyphon\typhon\components\pl_Graphics32\source\GR32.pas"/>
         <UnitName Value="GR32"/>
         <WindowIndex Value="0"/>
         <TopLine Value="916"/>
         <CursorPos X="3" Y="917"/>
         <UsageCount Value="3"/>
-      </Unit42>
-      <Unit43>
+      </Unit43>
+      <Unit44>
         <Filename Value="C:\codetyphon\typhon\components\pl_LazSolutions\source\LSForms.pas"/>
         <UnitName Value="LSForms"/>
         <WindowIndex Value="0"/>
@@ -398,7 +398,7 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="1" HistoryIndex="0">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="udmwapttray.pas"/>
         <Caret Line="534" Column="29" TopLine="521"/>
@@ -521,16 +521,5 @@
       </Position30>
     </JumpHistory>
   </ProjectSession>
-  <Debugging>
-    <BreakPoints Count="1">
-      <Item1>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="udmwapttray.pas"/>
-        <Line Value="173"/>
-      </Item1>
-    </BreakPoints>
-  </Debugging>
   <EditorMacros Count="0"/>
 </CONFIG>
