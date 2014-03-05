@@ -77,7 +77,7 @@ from setuphelpers import ensure_unicode
 
 import types
 
-__version__ = "0.8.7"
+__version__ = "0.8.8"
 
 logger = logging.getLogger()
 
@@ -595,6 +595,9 @@ def force_utf8_no_bom(filename):
         except:
             content = codecs.open(filename, encoding='iso8859-15').read()
             codecs.open(filename, mode='wb', encoding='utf8').write(content)
+
+class EWaptCancelled(Exception):
+    pass
 
 class WaptBaseDB(object):
     dbpath = ''
@@ -1710,6 +1713,9 @@ class Wapt(object):
         """Initialize engine with a configParser instance (inifile) and other defaults in a dictionary
             Main properties are :
         """
+        # used to signal to cancel current operations ASAP
+        self.task_is_cancelled = threading.Event()
+
         assert not config or isinstance(config,RawConfigParser)
         self._waptdb = None
         self._waptsessiondb = None
@@ -2218,6 +2224,11 @@ class Wapt(object):
         conf.set('global','md5_password',md5.md5(pwd).hexdigest())
         conf.write(open(self.config_filename,'wb'))
 
+
+    def check_cancelled(self,msg='Task cancelled'):
+        if self.task_is_cancelled.is_set():
+            raise EWaptCancelled(msg)
+
     def install_wapt(self,fname,params_dict={},explicit_by=None):
         """Install a single wapt package given its WAPT filename.
         return install status"""
@@ -2226,6 +2237,7 @@ class Wapt(object):
         old_stdout = None
         old_stderr = None
 
+        self.check_cancelled()
         logger.info(u"Register start of install %s as user %s to local DB with params %s" % (fname, setuphelpers.get_current_user(), params_dict))
         logger.info(u"Interactive user:%s, usergroups %s" % (self.user,self.usergroups))
         status = 'INIT'
@@ -2265,6 +2277,7 @@ class Wapt(object):
                 logger.addHandler(hdlr)
             """
 
+            self.check_cancelled()
             logger.info(u"Installing package " + fname)
             # case where fname is a wapt zipped file, else directory (during developement)
             istemporary = False
@@ -2280,6 +2293,7 @@ class Wapt(object):
                 raise Exception('%s is not a file nor a directory, aborting.' % fname)
 
             # chech sha1
+            self.check_cancelled()
             manifest_filename = os.path.join( packagetempdir,'WAPT','manifest.sha1')
             if os.path.isfile(manifest_filename):
                 manifest_data = open(manifest_filename,'r').read()
@@ -2307,6 +2321,7 @@ class Wapt(object):
                 if not self.allow_unsigned and istemporary:
                     raise Exception('Package %s does not contain a manifest.sha1 file, and unsigned packages install is not allowed' % fname)
 
+            self.check_cancelled()
             setup_filename = os.path.join( packagetempdir,'setup.py')
             previous_cwd = os.getcwd()
             os.chdir(os.path.dirname(setup_filename))
@@ -2774,6 +2789,9 @@ class Wapt(object):
             else:
                 raise Exception('Invalid package request %s' % p)
         for entry in packages:
+
+            self.check_cancelled()
+
             packagefilename = entry.filename.strip('./')
             download_url = entry.repo_url+'/'+packagefilename
             fullpackagepath = os.path.join(self.package_cache_dir,packagefilename)
@@ -2795,6 +2813,7 @@ class Wapt(object):
                 logger.info("  Downloading package from %s" % download_url)
                 try:
                     def report(received,total,speed):
+                        self.check_cancelled()
                         stat = u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total, speed)
                         print stat,
                         self.runstatus='Downloading %s : %s' % (entry.package,stat)
@@ -2815,6 +2834,7 @@ class Wapt(object):
         """Removes a package giving its package name, unregister from local status DB"""
         result = {'removed':[],'errors':[]}
         try:
+            self.check_cancelled()
             # development mode, remove a package by its directory
             if os.path.isfile(os.path.join(package,'WAPT','control')):
                 package = PackageEntry().load_control_from_wapt(package).package
@@ -4212,7 +4232,6 @@ class Wapt(object):
 
 # for backward compatibility
 Version = setuphelpers.Version  # obsolete
-
 
 if __name__ == '__main__':
     """

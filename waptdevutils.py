@@ -30,7 +30,7 @@ from waptpackage import *
 import codecs
 from iniparse import RawConfigParser
 
-__version__ = "0.8.7"
+__version__ = "0.8.8"
 
 def registered_organization():
     return registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOrganization')

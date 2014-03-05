@@ -42,9 +42,8 @@ default_sources_suffix=wapt
 ;   copy key :   c:\cygwin\bin\ssh localhost ssh-copy-id -i ~/.ssh/id_dsa root@srvwapt
 ;upload_cmd="c:\Program Files"\putty\pscp -v -l waptserver %(waptfile)s srvwapt:/var/www/%(waptdir)s/ 
 
-; command to run 
+; command to run (deprecated by http upload)
 ;after_upload="c:\Program Files"\putty\plink -v -l waptserver srvwapt "python /var/www/wapt/wapt-scanpackages.py /var/www/%(waptdir)s/"
-
 
 ; command to use to upload host package to your server (wapt-get upload-package or build-upload of a host package)
 ; if no command is supplied, it is assumed your wapt server is running waptserver and support /upload_host POST with a file form-encoded parameter 
@@ -65,16 +64,11 @@ default_sources_suffix=wapt
 waptupdate_task_period=30
 waptupdate_task_maxruntime=10
 
-; wapt tray poll wapt changes every 3s by default
-tray_check_interval=3
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; wapt_service configuration
 wapt_user=admin
 wapt_password=5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
 waptservice_port=8088
-
-
 
 
 [private]

@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -18,6 +18,7 @@
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="1"/>
       <RevisionNr Value="26"/>
+      <RevisionNr Value="1"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Tray Icon" ProductName="WAPT" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -33,24 +34,36 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="5">
+    <RequiredPackages Count="9">
       <Item1>
-        <PackageName Value="pl_luicontrols"/>
+        <PackageName Value="pl_graphics32"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_indycomp"/>
+        <PackageName Value="pl_lazsolutions"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_delphizmq"/>
       </Item3>
       <Item4>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pltis_utils"/>
       </Item4>
       <Item5>
-        <PackageName Value="LCL"/>
+        <PackageName Value="pl_luicontrols"/>
       </Item5>
+      <Item6>
+        <PackageName Value="pl_indycomp"/>
+      </Item6>
+      <Item7>
+        <PackageName Value="pltis_superobject"/>
+      </Item7>
+      <Item8>
+        <PackageName Value="FCL"/>
+      </Item8>
+      <Item9>
+        <PackageName Value="LCL"/>
+      </Item9>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="3">
       <Unit0>
         <Filename Value="wapttray.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -62,23 +75,13 @@
         <UnitName Value="waptcommon"/>
       </Unit1>
       <Unit2>
-        <Filename Value="..\wapt-get\tiscommon.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tiscommon"/>
-      </Unit2>
-      <Unit3>
         <Filename Value="udmwapttray.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DMWaptTray"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="uDMWAPTTray"/>
-      </Unit3>
-      <Unit4>
-        <Filename Value="..\wapt-get\UnitRedirect.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="UnitRedirect"/>
-      </Unit4>
+      </Unit2>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

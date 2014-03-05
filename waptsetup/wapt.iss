@@ -24,6 +24,7 @@ Source: "..\python27.dll"; DestDir: "{app}";
 Source: "..\pythoncom27.dll"; DestDir: "{app}";
 Source: "..\pythoncomloader27.dll"; DestDir: "{app}";
 Source: "..\pywintypes27.dll"; DestDir: "{app}";
+Source: "..\libzmq.dll"; DestDir: "{app}";
 Source: "..\wapt-get.ini.tmpl"; DestDir: "{app}"; 
 Source: "..\wapt-get.py"; DestDir: "{app}"; 
 Source: "..\keyfinder.py"; DestDir: "{app}"; 

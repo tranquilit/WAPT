@@ -1,0 +1,619 @@
+object VisWaptGUI: TVisWaptGUI
+  Left = 418
+  Height = 695
+  Top = 217
+  Width = 1072
+  Caption = 'Console WAPT'
+  ClientHeight = 676
+  ClientWidth = 1072
+  Menu = MainMenu1
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnShow = FormShow
+  Position = poDefault
+  LCLVersion = '1.3'
+  object MainPages: TPageControl
+    Left = 0
+    Height = 671
+    Top = 0
+    Width = 1072
+    ActivePage = pgPackages
+    Align = alClient
+    TabIndex = 1
+    TabOrder = 0
+    object pgInstalledPackages: TTabSheet
+      Caption = 'Paquets installés'
+      ClientHeight = 645
+      ClientWidth = 1064
+      object Panel5: TPanel
+        Left = 0
+        Height = 30
+        Top = 0
+        Width = 1064
+        Align = alTop
+        BevelOuter = bvNone
+        ClientHeight = 30
+        ClientWidth = 1064
+        TabOrder = 0
+        object EdSearch1: TEdit
+          Left = 4
+          Height = 21
+          Top = 2
+          Width = 136
+          OnKeyPress = EdSearchKeyPress
+          TabOrder = 0
+        end
+        object butSearchPackages1: TButton
+          Left = 148
+          Height = 25
+          Top = 2
+          Width = 88
+          Action = ActSearchInstalled
+          TabOrder = 1
+        end
+      end
+      object GridInstalled: TSOGrid
+        Left = 0
+        Height = 615
+        Top = 30
+        Width = 1064
+        Datasource = SOInstalled
+        Align = alClient
+        Color = clWhite
+        Header.AutoSizeIndex = -1
+        Header.Columns = <        
+          item
+            MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+            Position = 0
+            Text = 'Paquet'
+            Width = 168
+            PropertyName = 'package'
+          end        
+          item
+            MaxWidth = 200
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+            Position = 1
+            Tag = 1
+            Text = 'Version'
+            Width = 89
+            PropertyName = 'version'
+          end        
+          item
+            Position = 2
+            Tag = 3
+            Text = 'install_status'
+            Width = 73
+            PropertyName = 'install_status'
+          end        
+          item
+            Position = 3
+            Tag = 4
+            Text = 'install_par'
+            Width = 100
+            PropertyName = 'install_par'
+          end        
+          item
+            Position = 4
+            Tag = 5
+            Text = 'repo_version'
+            Width = 100
+            PropertyName = 'repo_version'
+          end        
+          item
+            Position = 5
+            Tag = 6
+            Text = 'install_date'
+            Width = 166
+            PropertyName = 'install_date'
+          end>
+        Header.DefaultHeight = 17
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+        Header.SortColumn = 0
+        Header.Style = hsFlatButtons
+        PopupMenu = PopupMenuPackages
+        TabOrder = 1
+        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize]
+        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
+        TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
+        WantTabs = True
+        OnChange = GridPackagesChange
+        OnPaintText = GridPackagesPaintText
+      end
+    end
+    object pgPackages: TTabSheet
+      Caption = 'Paquets disponibles'
+      ClientHeight = 645
+      ClientWidth = 1064
+      object GridPackages: TSOGrid
+        Left = 0
+        Height = 615
+        Top = 30
+        Width = 768
+        Datasource = SOPackages
+        Align = alClient
+        Color = clWhite
+        Header.AutoSizeIndex = 0
+        Header.Columns = <        
+          item
+            MaxWidth = 100
+            Position = 0
+            Text = 'Section'
+            PropertyName = 'section'
+          end        
+          item
+            MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+            Position = 1
+            Text = 'Paquet'
+            Width = 300
+            PropertyName = 'package'
+          end        
+          item
+            MaxWidth = 200
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+            Position = 2
+            Text = 'Status'
+            PropertyName = 'status'
+          end        
+          item
+            MaxWidth = 200
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+            Position = 3
+            Text = 'Version'
+            Width = 30
+            PropertyName = 'version'
+          end        
+          item
+            MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+            Position = 4
+            Text = 'Description'
+            PropertyName = 'description'
+          end        
+          item
+            MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+            Position = 5
+            Text = 'Dépendances'
+            PropertyName = 'depends'
+          end        
+          item
+            Position = 6
+            Text = 'Installé par'
+            PropertyName = 'explicit_by'
+          end>
+        Header.DefaultHeight = 17
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+        Header.SortColumn = 1
+        Header.Style = hsFlatButtons
+        PopupMenu = PopupMenuPackages
+        TabOrder = 1
+        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize]
+        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
+        TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
+        WantTabs = True
+        OnChange = GridPackagesChange
+        OnPaintText = GridPackagesPaintText
+      end
+      object Splitter3: TSplitter
+        Left = 768
+        Height = 615
+        Top = 30
+        Width = 6
+        Align = alRight
+        ResizeAnchor = akRight
+      end
+      object Panel4: TPanel
+        Left = 0
+        Height = 30
+        Top = 0
+        Width = 1064
+        Align = alTop
+        BevelOuter = bvNone
+        ClientHeight = 30
+        ClientWidth = 1064
+        TabOrder = 0
+        object EdSearch: TEdit
+          Left = 4
+          Height = 21
+          Top = 2
+          Width = 136
+          OnKeyPress = EdSearchKeyPress
+          TabOrder = 0
+        end
+        object butSearchPackages: TButton
+          Left = 148
+          Height = 25
+          Top = 2
+          Width = 88
+          Action = ActSearchPackage
+          TabOrder = 1
+        end
+        object Button8: TButton
+          Left = 268
+          Height = 25
+          Top = 2
+          Width = 188
+          Action = ActPackagesUpdate
+          TabOrder = 2
+        end
+        object Button2: TButton
+          Left = 460
+          Height = 25
+          Top = 2
+          Width = 136
+          Action = ActLocalhostUpgrade
+          TabOrder = 3
+        end
+        object Button1: TButton
+          Left = 604
+          Height = 25
+          Top = 2
+          Width = 224
+          Action = ActRegisterHost
+          TabOrder = 4
+        end
+      end
+      object Panel2: TPanel
+        Left = 774
+        Height = 615
+        Top = 30
+        Width = 290
+        Align = alRight
+        Alignment = taRightJustify
+        BevelOuter = bvNone
+        ClientHeight = 615
+        ClientWidth = 290
+        TabOrder = 2
+        object MemoGroupeDescription: TMemo
+          Left = 0
+          Height = 300
+          Top = 315
+          Width = 290
+          Align = alBottom
+          Lines.Strings = (
+            'MemoGroupeDescription'
+          )
+          TabOrder = 0
+        end
+        object BitBtn1: TBitBtn
+          Left = 6
+          Height = 30
+          Top = 24
+          Width = 112
+          Action = ActLocalhostInstall
+          TabOrder = 1
+        end
+      end
+    end
+  end
+  object Splitter1: TSplitter
+    Cursor = crVSplit
+    Left = 0
+    Height = 5
+    Top = 671
+    Width = 1072
+    Align = alBottom
+    ResizeAnchor = akBottom
+  end
+  object Label10: TLabel
+    Left = 470
+    Height = 13
+    Top = 550
+    Width = 37
+    Caption = 'Label10'
+    ParentColor = False
+  end
+  object ActionList1: TActionList
+    left = 296
+    top = 92
+    object ActLocalhostInstall: TAction
+      Category = 'Host'
+      Caption = 'Installer'
+      OnExecute = ActLocalhostInstallExecute
+      OnUpdate = ActLocalhostInstallUpdate
+    end
+    object ActSearchPackage: TAction
+      Category = 'packages'
+      Caption = 'Rechercher'
+      OnExecute = ActSearchPackageExecute
+    end
+    object ActLocalhostRemove: TAction
+      Category = 'Host'
+      Caption = 'Désinstaller le paquet'
+      Enabled = False
+    end
+    object ActPackagesUpdate: TAction
+      Category = 'Host'
+      Caption = 'Mise à jour des paquets disponibles'
+    end
+    object ActLocalhostUpgrade: TAction
+      Category = 'Host'
+      Caption = 'Mise à jour du système'
+      Enabled = False
+    end
+    object ActBuildUpload: TAction
+      Category = 'packages'
+      Caption = 'Activer le paquet'
+    end
+    object ActRegisterHost: TAction
+      Category = 'Host'
+      Caption = 'Enregistrer l''ordinateur sur le serveur Wapt'
+    end
+    object ActDeletePackage: TAction
+      Category = 'packages'
+      Caption = 'Supprimer du dépôt'
+      ShortCut = 46
+    end
+    object ActPackageDuplicate: TAction
+      Category = 'packages'
+      Caption = 'Dupliquer'
+    end
+    object actQuit: TAction
+      Caption = 'Quitter'
+      OnExecute = actQuitExecute
+      ShortCut = 16465
+    end
+    object actRefresh: TAction
+      Caption = 'Actualiser'
+      OnExecute = actRefreshExecute
+      ShortCut = 116
+    end
+    object ActSearchInstalled: TAction
+      Category = 'Host'
+      Caption = 'Rechercher'
+      OnExecute = ActSearchInstalledExecute
+    end
+  end
+  object PopupMenuPackages: TPopupMenu
+    left = 152
+    top = 96
+    object MenuItem1: TMenuItem
+      Action = ActLocalhostInstall
+    end
+    object MenuItem22: TMenuItem
+      Action = ActDeletePackage
+    end
+    object MenuItem2: TMenuItem
+      Action = ActLocalhostRemove
+    end
+    object MenuItem3: TMenuItem
+      Caption = 'Editer le paquet'
+    end
+  end
+  object MainMenu1: TMainMenu
+    left = 444
+    top = 88
+    object MenuItem5: TMenuItem
+      Caption = '&Fichier'
+      object MenuItem6: TMenuItem
+        Caption = 'Nouveau'
+        Visible = False
+      end
+      object MenuItem7: TMenuItem
+        Caption = '-'
+        Visible = False
+      end
+      object MenuItem8: TMenuItem
+        Caption = 'Ouvrir...'
+        Visible = False
+      end
+      object MenuItem9: TMenuItem
+        Caption = 'Réouvrir'
+        Visible = False
+      end
+      object MenuItem10: TMenuItem
+        Caption = 'Enregistrer ...'
+        Visible = False
+      end
+      object MenuItem11: TMenuItem
+        Caption = 'Enregistrer sous'
+        Visible = False
+      end
+      object MenuItem12: TMenuItem
+        Caption = '&Fermer'
+        Visible = False
+      end
+      object MenuItem13: TMenuItem
+        Caption = '-'
+        Visible = False
+      end
+      object MenuItem14: TMenuItem
+        Action = actQuit
+      end
+    end
+    object MenuItem24: TMenuItem
+      Caption = '&Edition'
+    end
+    object MenuItem15: TMenuItem
+      Caption = '&Outils'
+      object MenuItem29: TMenuItem
+        Caption = 'Changer le mot de passe'
+      end
+      object MenuItem30: TMenuItem
+        Caption = 'Recharger wapt-get.ini'
+      end
+      object MenuItem16: TMenuItem
+        Caption = 'Création de certificat auto-signé'
+      end
+      object MenuItem17: TMenuItem
+        Caption = 'Créer un Installeur Wapt personnalisé'
+      end
+      object MenuItem28: TMenuItem
+        Caption = 'Déployer Wapt sur des postes'
+      end
+      object MenuItem23: TMenuItem
+        Caption = 'Mode avancé'
+      end
+      object MenuItem32: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem31: TMenuItem
+        Caption = 'Configuration WAPT locale'
+      end
+    end
+    object MenuItem26: TMenuItem
+      Caption = '?'
+      object MenuItem27: TMenuItem
+        Caption = 'A propos'
+        OnClick = MenuItem27Click
+      end
+    end
+  end
+  object ImageList1: TImageList
+    left = 444
+    top = 172
+    Bitmap = {
+      4C69040000001000000010000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000093
+      0800FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00009D09001276
+      18CD0F5D11B7FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00009B0900107817D0BAD7
+      BDFF569E5DFF004D02B4FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0000960800107717D1B6D7B9FF529F
+      5AFF3A9941FF499351FF014501B2FFFFFF00FFFFFF0005A5140006A41400FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00009F0D000E7714D1B4DCB7FF51B25AFF069E
+      14FF0B9517FF105312DD04480B00FFFFFF0000930700348F3AED3F9244F9009F
+      0A00FFFFFF00FFFFFF000AAD1900117F19D1B3E3B7FF55C460FF15B725FF13A3
+      20FF024A05DB00460600FFFFFF0009851500448F49ECB5DDBAFFA9DAAEFF2F8F
+      35F607AB170013B5220017851ED1A5E2AAFF60D06AFF28C937FF22B02FFF034C
+      05DC00480600FFFFFF00FFFFFF00055207A45DB466FE6FD179FF9DDFA3FF98DF
+      9FFF238328F4207D25E299E5A0FF69DB74FF39D849FF31C23DFF035706DD0066
+      0800FFFFFF00FFFFFF00FFFFFF00FFFFFF00074F08BC24A130F953D75FFF88E4
+      91FF8EE596FF9FEAA5FF71E77CFF4AE759FF3FD64CFF08620BDD02991100FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00014F02BB24B130F94FE9
+      5EFF78EF84FF79F284FF58F567FF4AE756FF0D6C10DD1CBD2B00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00015404BD36BF
+      40F860FE6FFF69FF78FF58F065FF127216DD3ADA4900FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000458
+      07BB4ECB57F977EE81FF207422DC64F67200FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF000A5F0DBE1F8023CD90FF9C00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF0059F86700FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00000000000000000000000000000000000000
+      00000000000013509A010000000000000000002E7C0000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000056A4DCFD408ECDE30000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000002F61A48160C6FFFF5EC7FFFF0D3F8B5B00000000000000000000
+      000000000000000000000000000000000000000000000000000000000000002A
+      700000000007599ED8FF4AB0F8FF41B3FFFF4293D2F300000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000406CA79954ACEBFF41A8F3FF39ACFDFF4BBDFFFF13438E75000000000000
+      0000000000000000000000000000000000000000000000000000001F69000000
+      16165B9FD6FF3A98E2FF91C8F0FF80C0F2FF24A3FEFF3A8FD3FF00000000001B
+      5500000000000000000000000000000000000000000000000000000000004473
+      ABB542A1E9FF2A8FE2FFE5F3FCFFCEE7FCFF1796FAFF30B0FFFF1247908F0000
+      00000000000000000000000000000000000000000000001963000000472C54A2
+      E0FF3799E6FF218CE5FFE5F3FDFFCEE7FBFF0984F3FF007FFDFF1A82D9FF0000
+      000F001D5E0000000000000000000000000000000000000000003E76B2D1349A
+      ECFF2E98EDFF188EEFFFE3F4FEFFC5DFFBFF006EF1FF007EFCFF0891FFFF1251
+      9AA800000000000000000000000000000000001763000018624846A5ECFF2E9D
+      F3FF269DF9FF0481FBFFE2F5FFFFCFE7FFFF0076FBFF0080FEFF0288FFFF1585
+      E0FF00003424002164000000000000000000000000003076BCE82D9FF6FF1C98
+      FCFF0386FEFF068CFFFF168DF5FF118BF6FF068DFFFF0186FFFF048AFFFF0B95
+      FFFF10519DC600000000000000000000000008337D6834A5F9FF0B88FCFF0186
+      FFFF0D93FFFF0C95FFFFF8FCFEFFDEF0FEFF1099FFFF1094FFFF078DFFFF0990
+      FFFF1087E8FF00094A3F00256A00000000000E67C6FB0078F7FF0185FFFF0E94
+      FFFF22A1FFFF33ACFFFF83CFFFFF7ACBFFFF36ADFFFF25A4FFFF1196FFFF098F
+      FFFF0893FFFF0751A3DF00000000175CAA7A0072F0FF007DFDFF058DFFFF1A9D
+      FFFF33ADFFFF50BBFFFF63C5FFFF64C6FFFF53BEFFFF37B0FFFF1D9FFFFF078F
+      FFFF0389FFFF0182F3FF415D87573677B2730054B6E0045EBCDC0D69C0DB1B72
+      C2DA2C7AC3DA3A81C4DA4686C3D94786C4DA3C81C1DB2F79BEDB1E70BADC0E6C
+      C3E60565C4EA0364C7EC487AA76B000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF006A85
+      FC236984FA7D6782F9DB6580F7F3637EF5F3617CF3DB5F7AF17D5D77EF23FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF006984FA536882
+      F9E66E83EEFF92A6F4FFA0B4F8FFA0B4F8FF91A6F3FF687DE9FF5973EBE65671
+      E953FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF006883F9536681F8F48497
+      F1FFA9BDFBFF8AA3F8FF6B89F6FF6B89F6FF89A2F8FFA8BCFAFF7F92ECFF526C
+      E4F44F69E253FFFFFF00FFFFFF00FFFFFF006781F822657FF6E58397F0FFA9BD
+      FBFF6382F5FF6382F5FFFFFFFFFFFFFFFFFF617EF3FF607CF3FFA6B9F9FF7B8D
+      EAFF4A64DEE54862DB22FFFFFF00FFFFFF00637EF57E6C81ECFFA9BDFBFF6382
+      F5FF6281F5FF6280F4FFFFFFFFFFFFFFFFFF5F7AF1FF5F78F0FF5D76EFFFA5B5
+      F8FF5D70DDFF435DD77EFFFFFF00FFFFFF005F7AF1DB91A6F3FF88A1F8FF6280
+      F4FF617EF3FF607CF3FFFFFFFFFFFFFFFFFF5D76EFFF5C73EEFF5B70ECFF8293
+      F1FF8998ECFF3E58D2DBFFFFFF00FFFFFF005B76EDF6A1B6F8FF6784F4FF607C
+      F3FF5F7AF1FF5F78F0FFFFFFFFFFFFFFFFFF5B70ECFF5A6EEBFF596CEAFF5F6F
+      E9FF9BA8F1FF3A53CEF6FFFFFF00FFFFFF005771E9F6A0B3F7FF6580F2FF5F78
+      F0FF5D76EFFF5C73EEFFD3D9FAFFFFFFFFFF596CEAFF5869E8FF5767E7FF5D6C
+      E7FF99A5F1FF354FCAF6FFFFFF00FFFFFF00526DE5DB8E9FF0FF8499F4FF5C73
+      EEFF5B70ECFF5A6EEBFF909DF1FFA6AFF3FF5767E7FF5665E6FF5562E5FF7D89
+      EBFF8591E7FF314AC6DBFFFFFF00FFFFFF004E68E17E6073E0FFA4B3F7FF5A6E
+      EBFF596CEAFF5869E8FFFFFFFFFFFFFFFFFF5562E5FF5461E3FF535FE2FF9FA9
+      F2FF5061D1FF2D46C27EFFFFFF00FFFFFF004963DC224660DAE57888E6FFA3B0
+      F5FF5767E7FF5665E6FF8992EDFF8892ECFF535FE2FF525DE1FF9FA9F2FF6F7D
+      DDFF2B44C0E52942BE22FFFFFF00FFFFFF00FFFFFF00425CD5533F59D3F47584
+      E3FFA1ACF4FF7F8BECFF5C67E4FF5B66E3FF7D87EAFF9FA8F1FF6F7CDDFF2943
+      BFF42741BD53FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF003A54CF533852
+      CCE65264D4FF8490E7FF95A0EEFF959FEDFF838EE5FF4C5DCEFF2841BDE6263F
+      BB53FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00334D
+      C823314BC67D2F48C4DB2C46C2F32A44C0F32842BEDB2640BC7D243EBA23FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00E6B3
+      4D0ADAA7474BE5C58295FFFFFFFFEED7ADD3D9A64879DAA64645DBB64907FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00D8A94741D9A7
+      47DCD9A747FFDEB25FFFF3E4C6FFE6C484FFDEB25FFFDDAF58FFD9A747D7DBA6
+      4839FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00D9A64887D9A747FED9A7
+      47FFD9A747FFD9A747FFD9A747FFD9A747FFD9A747FFDAAA4DFFDFB462FFD9A7
+      47FDD9A74880FFFFFF00FFFFFF00FFFFFF00D9A64650D9A747FFD9A747FFD9A7
+      47FFD9A747FFD9A747FFD9A747FFD9A747FFD9A747FFD9A747FFDAAA4EFFE0B7
+      68FFD9A747FFDBA6464DFFFFFF00DEA64317D9A747EBD9A747FFD9A747FFDCAF
+      57FFE6C687FFE6C585FFE5C483FFE0B86AFFD9A747FFD9A747FFD9A747FFE1B9
+      6DFFD9A848FFD9A747E9DCA24616DAA7486ED9A747FFD9A747FFDEB25DFFE7C7
+      8BFFD9A747FFD9A747FFD9A747FFDEB361FFE1BA6FFFD9A747FFD9A747FFDAA9
+      4BFFE1BB70FFD9A747FFD9A74671D8A847ACD9A747FFD9A747FFE7C88DFFDCAD
+      54FFE0B86AFFDAAA4EFFD9A747FFD9A747FFE3BE78FFD9A747FFD9A747FFD9A7
+      47FFE3BE77FFD9A747FFDAA748ABD09A32B8C98D1FC5C68A1AD7DAB46EE8DCB8
+      77EBFFFFFFFFDDB76BD4D9A645F6D9A747FFE1BA6FFFDAA94BFFD9A747FFDCAF
+      57FFF0DCB6FFE1B96DFFD9A747E5C58818ECC58818FFC88D22FFD6AA5AFFD09E
+      43FFE4C792FFCB9531FFC58818F2C78D1EC4DDB870CFD29D39CED8A544F3E0B8
+      6AFFFFFFFFFFE7CC98E1C68A1CC8C58818B8C58818FFCB9430FFD4A653FFC588
+      18FFC78C1FFFCA932DFFC58818FFCD9736FFD3A551FFC58818FFC58818FDC88D
+      22F0E0BF82FFCA932EFFC58818B8C5881783C58818FFC58818FFDCB773FFC588
+      18FFC58818FFC78B1EFFCE9A3AFFC98F26FFC58818FFC58818FFC58818FFD09E
+      43FFCD9939FFC58818FFC5881783C688172DC58818F9C58818FFD09F44FFD2A2
+      4BFFC58818FFC58818FFC58818FFC58818FFC58818FFC58818FFCA912AFFDAB3
+      6BFFC58818FFC58818F9C688172DFFFFFF00C4891779C58818FFC58818FFDDB9
+      76FFF4E9D4FFDDB976FFC58818FFC58818FFC58819FFD8AE62FFD8AE62FFC588
+      19FFC58818FFC4891779FFFFFF00FFFFFF00AAAA0003C48819BBC58818FFCC96
+      32FFFAF4EAFFE9D2A8FFD7AE61FFD8AF64FFDAB26AFFC99129FFC58818FFC588
+      18FFC48819BBAAAA0003FFFFFF00FFFFFF00FFFFFF00AAAA0003C4871875C588
+      18F7C58818FFC58818FFC58818FFC58818FFC58818FFC58818FFC58818F7C487
+      1875FF800002FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00C489
+      1A27C5871880C58718B3C58818E6C58818E6C58718B3C5871880C4891A27FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00
+    }
+  end
+  object SOPackages: TSODataSource
+    Connection = DMLocalWapt.LocalWapt
+    ProviderName = 'list'
+    ParamsJSON = '{"format":"json"}'
+    Root = 'content'
+    Active = False
+    left = 172
+    top = 200
+  end
+  object SOInstalled: TSODataSource
+    Connection = DMLocalWapt.LocalWapt
+    ProviderName = 'status'
+    ParamsJSON = '{"format":"json"}'
+    Root = 'content'
+    Active = False
+    left = 176
+    top = 272
+  end
+end

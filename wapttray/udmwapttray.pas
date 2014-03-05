@@ -1,11 +1,14 @@
 unit uDMWAPTTray;
 
-{$mode objfpc}{$H+}
+// dans cet ordre impérativement
+{$mode delphiunicode}
+{$codepage UTF8}
 
 interface
 
 uses
-  Classes, SysUtils, FileUtil, ExtCtrls, Menus, ActnList, Controls,uniqueinstance;
+  Classes, SysUtils, FileUtil, ExtCtrls, Menus, ActnList, Controls,
+  uniqueinstance, zmqapi, LSControls;
 
 type
 
@@ -61,14 +64,26 @@ type
     procedure PopupMenu1Popup(Sender: TObject);
     procedure TrayIcon1DblClick(Sender: TObject);
   private
+    FtrayMode: TTrayMode;
+    function GetrayHint: String;
+    procedure SettrayHint(AValue: String);
     procedure SetTrayIcon(idx: integer);
-    function WaptConsoleFileName: String;
+    procedure SettrayMode(AValue: TTrayMode);
+    function  WaptConsoleFileName: String;
+    procedure pollerEvent( socket: TZMQSocket; event: TZMQPollEvents );
     { private declarations }
   public
     { public declarations }
     check_thread:TThread;
     checkinterval:Integer;
-    trayMode:TTrayMode;
+
+    zmq_context:TZMQContext;
+    zmq_socket :TZMQSocket;
+    poller:TZMQPoller;
+
+    property trayMode:TTrayMode read FtrayMode write SettrayMode;
+    property trayHint:String read GetrayHint write SettrayHint;
+
   end;
 
 var
@@ -78,173 +93,6 @@ implementation
 uses LCLIntf,Forms,dialogs,windows,superobject,graphics,tiscommon,waptcommon,tisinifiles,soutils,UnitRedirect;
 
 {$R *.lfm}
-type
-
-  { TCheckThread }
-
-  TCheckThread = Class(TThread)
-    public
-      new_updates,new_runstatus : String;
-      new_hint:String;
-      new_balloon:String;
-      new_traymode:TTrayMode;
-      icon_idx:integer;
-      previous_runstatus:String;
-      DMTray:TDMWaptTray;
-      previous_upgrades,upgrades,running,errors : ISuperObject;
-      checkinterval:integer;
-      force_balloon :Boolean;
-      procedure Execute; override;
-      procedure SetTrayStatus;
-      procedure ResetPreviousUpgrades;
-  end;
-
-{ TCheckThread }
-
-procedure TCheckThread.Execute;
-var
-  upgrade_status,new_runstatus_so:ISuperObject;
-begin
-  repeat
-    try
-      new_hint :='';
-      new_balloon:='';
-      icon_idx:=-1;
-
-      if previous_upgrades=Nil then
-        previous_upgrades := TSuperObject.Create(stArray);
-
-      upgrade_status := Nil;
-      running := Nil;
-      upgrades := Nil;
-      errors := Nil;
-
-      //test running tasks first
-      new_runstatus_so := WAPTLocalJsonGet('runstatus');
-      if (new_runstatus_so<>Nil) and (new_runstatus_so.AsArray.Length>0)  then
-        new_runstatus := new_runstatus_so['0'].S['value']
-      else
-        new_runstatus := 'Impossible de récupérer l''action en cours';
-      if new_runstatus<>'' then
-      begin
-        new_traymode:=tmRunning;
-        new_hint:=new_runstatus;
-      end
-      else
-      begin
-        // Then check if new upgrades are available
-        upgrade_status := WAPTLocalJsonGet('checkupgrades');
-        if upgrade_status<> nil then
-        begin
-          running := upgrade_status['running_tasks'];
-          upgrades := upgrade_status['upgrades'];
-          errors := upgrade_status['errors'];
-
-          if (running<>Nil) and (running.AsArray.Length>0) then
-          begin
-            new_traymode:=tmRunning;
-            new_hint:='Installation en cours : '+running.AsString;
-          end
-          else
-          if (upgrades<>Nil) and (upgrades.AsArray.Length>0) then
-          begin
-            new_traymode:=tmUpgrades;
-            new_hint:='Mises à jour disponibles pour : '+#13#10+soutils.join(#13#10,upgrades);
-          end
-          else
-          if (errors<>Nil) and (errors.AsArray.Length>0) then
-          begin
-            new_hint:='Erreurs : '+#13#10+ Join(#13#10,errors);
-            new_traymode:=tmErrors;
-          end
-          else
-          begin
-            new_hint:='Système à jour';
-            new_traymode:=tmOK;
-          end;
-        end
-        else
-          Raise Exception.Create('Le service local WaptService n''a pas renvoyé d''information');
-      end;
-
-      // show balloon if run_status has changed
-      if (new_runstatus<>previous_runstatus) and (new_runstatus<>'') then
-      begin
-        new_balloon:=new_runstatus;
-        previous_runstatus:=new_runstatus;
-      end
-      else
-      if (upgrades<>Nil) and (previous_upgrades<>Nil) and ((upgrades.AsJSon<>previous_upgrades.AsJSon) or force_balloon) then
-      begin
-        if upgrades.AsArray.Length>previous_upgrades.AsArray.Length then
-          new_balloon:='Mises à jour disponibles pour : '+#13#10+soutils.join(#13#10,upgrades)
-        else
-          if (running<>Nil) and (running.AsArray.Length>0) then
-            new_balloon:='Installation en cours : '+running.AsString
-          else if (errors<>Nil) and (errors.AsArray.Length>0) then
-            new_balloon:='Erreurs : '+#13#10+ Join(#13#10,errors)
-          else if upgrades.AsArray.Length=0 then
-            new_balloon:='Système à jour';
-        previous_upgrades:= upgrades;
-        force_balloon := False;
-      end;
-      Synchronize(@SetTrayStatus);
-    except
-      on e:Exception do
-      begin
-        new_hint:='Impossible d''obtenir le status de mise à jour'+#13#10+e.Message;
-        new_traymode:=tmErrors;
-        Synchronize(@SetTrayStatus);
-      end;
-    end;
-    if not Terminated then
-      Sleep(CheckInterval);
-  until Terminated;
-end;
-
-procedure TCheckThread.SetTrayStatus;
-begin
-  if new_traymode<>DMTray.trayMode  then
-  begin
-    if new_traymode = tmOK then
-      DMTray.SetTrayIcon(0)
-    else
-    if new_traymode = tmRunning then
-    begin
-      DMTray.TrayIcon1.Icons := DMTray.TrayRunning;
-      DMTray.TrayIcon1.Animate:=True;
-    end
-    else
-    if new_traymode = tmUpgrades then
-    begin
-      DMTray.TrayIcon1.Icons := DMTray.TrayUpdate;
-      DMTray.TrayIcon1.Animate:=True;
-    end
-    else
-    if new_traymode = tmErrors then
-    begin
-      DMTray.TrayIcon1.Icons := DMTray.TrayUpdate;
-      DMTray.TrayIcon1.Animate:=False;
-      DMTray.SetTrayIcon(1);
-    end;
-    DMTray.trayMode := new_traymode;
-  end;
-
-  if new_hint<>'' then
-    DMTray.TrayIcon1.Hint:=new_hint;
-
-  if new_balloon<>'' then
-  begin
-    DMTray.TrayIcon1.BalloonHint:=new_balloon;
-    DMTray.TrayIcon1.ShowBalloonHint;
-  end;
-end;
-
-procedure TCheckThread.ResetPreviousUpgrades;
-begin
-  previous_upgrades := TSuperObject.Create(stArray);
-  force_balloon:=True;
-end;
 
 { TVisWAPTTray }
 
@@ -254,55 +102,62 @@ begin
 end;
 
 procedure TDMWaptTray.ActUpdateExecute(Sender: TObject);
+var
+  res : String;
 begin
-  TCheckThread(check_thread).Synchronize(@TCheckThread(check_thread).ResetPreviousUpgrades);
-  OpenURL(GetWaptLocalURL+'/update');
-
-  TrayIcon1.BalloonHint:='Mise à jour des logiciels disponibles lancée';
-  TrayIcon1.ShowBalloonHint;
+  res := httpGetString(GetWaptLocalURL+'/update');
 end;
 
 procedure TDMWaptTray.ActUpgradeExecute(Sender: TObject);
 var
   res : String;
 begin
-  TCheckThread(check_thread).Synchronize(@TCheckThread(check_thread).ResetPreviousUpgrades);
   res := httpGetString(GetWaptLocalURL+'/upgrade');
-  if pos('ERROR',uppercase(res))<=0 then
-    TrayIcon1.BalloonHint:='Mise à jour des logiciels lancée en tâche de fond...'
-  else
-    TrayIcon1.BalloonHint:='Erreur au lancement de la mise à jour des logiciels...';
-  TrayIcon1.ShowBalloonHint;
 end;
 
 procedure TDMWaptTray.ActWaptUpgradeExecute(Sender: TObject);
 var
   res : String;
 begin
-  TCheckThread(check_thread).Synchronize(@TCheckThread(check_thread).ResetPreviousUpgrades);
   res := httpGetString(GetWaptLocalURL+'/waptupgrade');
-  TrayIcon1.BalloonHint:='Mise à jour du logiciel WAPT lancée en arrière plan...';
-  TrayIcon1.ShowBalloonHint;
 end;
 
 procedure TDMWaptTray.DataModuleCreate(Sender: TObject);
 begin
-  checkinterval:=IniReadInteger(WaptIniFilename,'Global','tray_check_interval')*1000;
-  if checkinterval=0 then
-    checkinterval:=3000;
-
-  check_thread :=  TCheckThread.Create(True);
-  TCheckThread(check_thread).DMTray := Self;
-  TCheckThread(check_thread).checkinterval:=checkinterval;
-  check_thread.Resume;
-
   //UniqueInstance1.Enabled:=True;
+
+  // create ZMQ context.
+  zmq_context := TZMQContext.Create;
+
+  zmq_socket := zmq_context.Socket( stSub );
+  zmq_socket.connect( 'tcp://127.0.0.1:5000' );
+  zmq_socket.Subscribe('TASKS');
+  zmq_socket.Subscribe('PRINT');
+  zmq_socket.Subscribe('CRITICAL');
+  zmq_socket.Subscribe('WARNING');
+  zmq_socket.Subscribe('STATUS');
+  //zmq_socket.AddAcceptFilter('INFO');
+
+  poller := TZMQPoller.Create(false,zmq_context);
+  poller.onEvent := pollerEvent;
+  poller.register( zmq_socket, [pePollIn], false );
+
 end;
 
 procedure TDMWaptTray.DataModuleDestroy(Sender: TObject);
 begin
-  TerminateThread(check_thread.Handle,0);
-  FreeAndNil(check_thread);
+  if Assigned(poller) then
+    FreeAndNil(Poller);
+  if Assigned(zmq_socket) then
+    FreeAndNil(zmq_socket);
+  if Assigned(zmq_context) then
+    FreeAndNil(zmq_context);
+
+  if Assigned(check_thread) then
+  begin
+    TerminateThread(check_thread.Handle,0);
+    FreeAndNil(check_thread);
+  end;
 end;
 
 procedure TDMWaptTray.PopupMenu1Popup(Sender: TObject);
@@ -319,23 +174,122 @@ procedure TDMWaptTray.ActForceRegisterExecute(Sender: TObject);
 var
   res : String;
 begin
-  TCheckThread(check_thread).Synchronize(@TCheckThread(check_thread).ResetPreviousUpgrades);
   res := httpGetString(GetWaptLocalURL+'/register');
-  TrayIcon1.BalloonHint:='Enregistrement de l''ordinateur lancé en arrière plan...';
-  TrayIcon1.ShowBalloonHint;
 end;
 
 procedure TDMWaptTray.ActLaunchWaptConsoleExecute(Sender: TObject);
 var
-  cmd:String;
+  cmd:WideString;
 begin
   cmd := WaptConsoleFileName;
-  ShellExecute(0,Pchar('open'),PChar(cmd),Nil,Nil,0);
+  ShellExecuteW(0,Pchar('open'),PChar(cmd),Nil,Nil,0);
 end;
 
 function TDMWaptTray.WaptConsoleFileName: String;
 begin
   result:=AppendPathDelim(ExtractFileDir(ParamStr(0)))+'waptconsole.exe';
+end;
+
+procedure TDMWaptTray.pollerEvent(socket: TZMQSocket; event: TZMQPollEvents);
+var
+  msg,msg_type,topic:String;
+  bh:String;
+  st : TStringList;
+  upgrade_status,running,upgrades,errors,taskresult : ISuperObject;
+begin
+  st := TStringList.Create;
+  try
+    zmq_socket.recv(st);
+    if st.Count>0 then
+    begin
+      msg_type := st[0];
+      st.Delete(0);
+      msg := st.Text;
+      // changement hint et balloonhint
+      if msg_type='STATUS' then
+      begin
+        upgrade_status := SO(msg);
+        running := upgrade_status['running_tasks'];
+        upgrades := upgrade_status['upgrades'];
+        errors := upgrade_status['errors'];
+        if (running<>Nil) and (running.AsArray.Length>0) then
+        begin
+          trayMode:=tmRunning;
+          trayHint:=UTF8Encode('Installation en cours : '+running.AsString);
+        end
+        else
+        if (upgrades<>Nil) and (upgrades.AsArray.Length>0) then
+        begin
+          trayMode:=tmUpgrades;
+          trayHint:=UTF8Encode('Mises à jour disponibles pour : '+#13#10+soutils.join(#13#10,upgrades));
+        end
+        else
+        if (errors<>Nil) and (errors.AsArray.Length>0) then
+        begin
+          trayHint:=UTF8Encode('Erreurs : '+#13#10+ Join(#13#10,errors));
+          trayMode:=tmErrors;
+        end
+        else
+        begin
+          trayHint:='Système à jour';
+          trayMode:=tmOK;
+        end;
+      end
+      else
+      if msg_type='PRINT' then
+      begin
+        if TrayIcon1.BalloonHint<>msg then
+        begin
+          if TrayIcon1.BalloonHint<>msg then
+          begin
+            TrayIcon1.BalloonHint := UTF8Encode(msg);
+            TrayIcon1.BalloonFlags:=bfNone;
+            TrayIcon1.ShowBalloonHint;
+          end;
+        end;
+      end
+      else
+      if msg_type='TASKS' then
+      begin
+        topic := st[0];
+        st.Delete(0);
+        msg := st.Text;
+        taskresult := SO(st.Text);
+        if topic='ERROR' then
+        begin
+          trayMode:= tmErrors;
+          TrayIcon1.BalloonHint := UTF8Encode('Erreur pour '+taskresult.S['description']);
+          TrayIcon1.BalloonFlags:=bfError;
+          TrayIcon1.ShowBalloonHint;
+        end
+        else
+        if topic='START' then
+        begin
+          trayMode:= tmRunning;
+          TrayIcon1.BalloonHint := UTF8Encode(taskresult.S['description']+' démarré');
+          TrayIcon1.BalloonFlags:=bfInfo;
+          TrayIcon1.ShowBalloonHint;
+        end
+        else
+        if topic='FINISH' then
+        begin
+          TrayIcon1.BalloonHint := UTF8Encode(taskresult.S['description']+' terminé'+#13#10+taskresult.S['summary']);
+          TrayIcon1.BalloonFlags:=bfInfo;
+          TrayIcon1.ShowBalloonHint;
+        end
+        else
+        if topic='CANCEL' then
+        begin
+          trayMode:= tmErrors;
+          TrayIcon1.BalloonHint :=UTF8Encode('Annulation de '+taskresult.S['description']);
+          TrayIcon1.BalloonFlags:=bfError;
+          TrayIcon1.ShowBalloonHint;
+        end;
+      end;
+    end;
+  finally
+    st.Free;
+  end;
 end;
 
 procedure TDMWaptTray.ActLocalInfoExecute(Sender: TObject);
@@ -345,7 +299,8 @@ end;
 
 procedure TDMWaptTray.ActQuitExecute(Sender: TObject);
 begin
-  check_thread.Terminate;
+  if Assigned(check_thread) then
+    check_thread.Terminate;
   Application.Terminate;
 end;
 
@@ -377,13 +332,33 @@ begin
   end;
 end;
 
+function TDMWaptTray.GetrayHint: String;
+begin
+  Result := UTF8Decode(TrayIcon1.Hint);
+end;
+
+procedure TDMWaptTray.SettrayHint(AValue: String);
+begin
+  if TrayIcon1.Hint<>UTF8Encode(AValue) then
+  begin
+    TrayIcon1.Hint:= UTF8Encode(AValue);
+    TrayIcon1.BalloonHint:=UTF8Encode(AValue);
+    TrayIcon1.ShowBalloonHint;
+  end;
+end;
+
+procedure TDMWaptTray.SettrayMode(AValue: TTrayMode);
+begin
+  if FtrayMode=AValue then Exit;
+  FtrayMode:=AValue;
+end;
+
 
 procedure TDMWaptTray.TrayIcon1DblClick(Sender: TObject);
 var
   res:String;
 begin
-  TCheckThread(check_thread).Synchronize(@TCheckThread(check_thread).ResetPreviousUpgrades);
-  res := httpGetString(GetWaptLocalURL+'/updatebg');
+  res := httpGetString(GetWaptLocalURL+'/update');
   if pos('ERROR',uppercase(res))<=0 then
     TrayIcon1.BalloonHint:='Vérification en cours...'
   else

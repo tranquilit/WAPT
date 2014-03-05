@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 import time
 import sys
 import os
@@ -16,6 +18,9 @@ from rocket import Rocket
 from flask import request, Flask,Response, send_from_directory, send_file, session, g, redirect, url_for, abort, render_template, flash
 import requests
 import StringIO
+import zmq
+from zmq.log.handlers import PUBHandler
+import Queue
 
 from werkzeug.utils import html
 
@@ -24,6 +29,7 @@ import datetime
 import dateutil.parser
 
 wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+
 sys.path.append(os.path.join(wapt_root_dir))
 sys.path.append(os.path.join(wapt_root_dir,'lib'))
 sys.path.append(os.path.join(wapt_root_dir,'waptservice'))
@@ -33,7 +39,7 @@ import common
 import setuphelpers
 from common import Wapt
 
-__version__ = "0.8.7"
+__version__ = "0.8.8"
 
 config = ConfigParser.RawConfigParser()
 
@@ -45,12 +51,12 @@ if not os.path.exists(log_directory):
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-config_file = os.path.join(wapt_root_dir,'wapt-get.ini')
+config_filename = os.path.join(wapt_root_dir,'wapt-get.ini')
 
-if os.path.exists(config_file):
-    config.read(config_file)
+if os.path.exists(config_filename):
+    config.read(config_filename)
 else:
-    raise Exception("FATAL. Couldn't open config file : " + config_file)
+    raise Exception("FATAL. Couldn't open config file : " + config_filename)
 
 wapt_user = ""
 wapt_password = ""
@@ -100,7 +106,7 @@ if config.has_section('global'):
         setloglevel(logger,'warning')
 
 else:
-    raise Exception ("FATAL, configuration file " + config_file + " has no section [global]. Please check Waptserver documentation")
+    raise Exception ("FATAL, configuration file " + config_filename + " has no section [global]. Please check Waptserver documentation")
 
 def check_open_port():
     import win32serviceutil
@@ -133,7 +139,7 @@ check_open_port()
 
 def get_authorized_callers_ip():
     ips = ['127.0.0.1']
-    wapt = Wapt(config_filename=config_file)
+    wapt = Wapt(config_filename=config_filename)
     #ips.append(socket.gethostbyname( urlparse(wapt.find_wapt_server()).hostname))
     if wapt.wapt_server:
         ips.append(socket.gethostbyname( urlparse(wapt.wapt_server).hostname))
@@ -233,7 +239,7 @@ def package_icon():
         icon_local_filename = os.path.join(icon_local_cache,package+'.png')
         if not os.path.isfile(icon_local_filename) or os.path.getsize(icon_local_filename)<10:
             if not wapt:
-                wapt.append(Wapt(config_filename=config_file))
+                wapt.append(Wapt(config_filename=config_filename))
             proxies = wapt[0].proxies
             repo_url = wapt[0].repositories[0].repo_url
 
@@ -254,9 +260,9 @@ def package_icon():
 
 @app.route('/package_details')
 def package_details():
-    wapt=Wapt(config_filename=config_file)
+    wapt=Wapt(config_filename=config_filename)
     package = request.args.get('package')
-    wapt=Wapt(config_filename=config_file)
+    wapt=Wapt(config_filename=config_filename)
     try:
         data = wapt.is_available(package)
     except Exception as e:
@@ -305,7 +311,6 @@ def get_checkupgrades():
 @check_ip_source
 def waptupgrade():
     from setuphelpers import run
-    print "run waptupgrade"
     output = run('"%s" %s' % (os.path.join(wapt_root_dir,'wapt-get.exe'),'waptupgrade'))
     return Response(common.jsondump({'result':'OK','message':output}), mimetype='application/json')
 
@@ -345,7 +350,7 @@ def update():
 @requires_auth
 def cleanup():
     logger.info("run cleanup")
-    wapt=Wapt(config_filename=config_file)
+    wapt=Wapt(config_filename=config_filename)
     data = wapt.cleanup()
     return Response(common.jsondump(data), mimetype='application/json')
 
@@ -353,7 +358,7 @@ def cleanup():
 @requires_auth
 def enable():
     logger.info("enable tasks scheduling")
-    wapt=Wapt(config_filename=config_file)
+    wapt=Wapt(config_filename=config_filename)
     data = wapt.enable_tasks()
     return Response(common.jsondump(data), mimetype='application/json')
 
@@ -361,7 +366,7 @@ def enable():
 @requires_auth
 def disable():
     logger.info("disable tasks scheduling")
-    wapt=Wapt(config_filename=config_file)
+    wapt=Wapt(config_filename=config_filename)
     data = wapt.disable_tasks()
     return Response(common.jsondump(data), mimetype='application/json')
 
@@ -369,22 +374,19 @@ def disable():
 @check_ip_source
 def register():
     logger.info("register computer")
-    wapt=Wapt(config_filename=config_file)
+    wapt=Wapt(config_filename=config_filename)
     data = wapt.register_computer()
     return Response(common.jsondump(data), mimetype='application/json')
 
 
 @app.route('/install', methods=['GET'])
+@app.route('/install.html', methods=['GET'])
 @requires_auth
 def install():
     package = request.args.get('package')
-    logger.info("install package %s" % package)
-    wapt=Wapt(config_filename=config_file)
-    try:
-        data = wapt.install(package)
-    except Exception as e:
-        data = {'errors':[ str(e) ]}
-
+    force = int(request.args.get('force','0'))
+    print request.url
+    data = installer.add_task(WaptPackageInstall(package,force=force)).as_dict()
     if request.args.get('format','html')=='json':
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -394,7 +396,7 @@ def install():
 def package_download():
     package = request.args.get('package')
     logger.info("download package %s" % package)
-    wapt=Wapt(config_filename=config_file)
+    wapt=Wapt(config_filename=config_filename)
     try:
         data = wapt.install(package,download_only=True,force=True)
     except Exception as e:
@@ -410,15 +412,11 @@ def package_download():
 def remove():
     package = request.args.get('package')
     logger.info("remove package %s" % package)
-    wapt=Wapt(config_filename=config_file)
-    try:
-        data = wapt.remove(package)
-    except Exception as e:
-        data = {'removed' :[ package ], 'errors':[ str(e) ]}
+    data = installer.add_task(WaptPackageRemove(package,force=int(request.args.get('force','0')))).as_dict()
     if request.args.get('format','html')=='json':
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('remove.html',**data)
+        return render_template('install.html',**data)
 
 """
 @app.route('/static/<path:filename>', methods=['GET'])
@@ -428,7 +426,7 @@ def static(filename):
 
 @app.route('/', methods=['GET'])
 def index():
-    wapt = Wapt(config_filename=config_file)
+    wapt = Wapt(config_filename=config_filename)
     host_info = setuphelpers.host_info()
     data = dict(html=html,
             host_info=host_info,
@@ -453,6 +451,23 @@ def login():
             return redirect(url_for('index'))
     return render_template('login.html', error=error)
 
+@app.route('/tasks')
+def tasks():
+    data = installer.tasks_status()
+    if request.args.get('format','html')=='json':
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('tasks.html',data=data)
+
+@app.route('/task')
+@app.route('/task.html')
+def task():
+    id = request.args['id']
+    return Response(common.jsondump(installer.tasks_status()), mimetype='application/json')
+
+@app.route('/cancel_all_tasks')
+def cancel_all_tasks():
+    return Response(common.jsondump(installer.cancel_all_tasks()), mimetype='application/json')
 
 def check_auth(username, password):
     """This function is called to check if a username /
@@ -467,17 +482,398 @@ def authenticate():
     'You have to login with proper credentials', 401,
     {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
+
+class EventsPrinter:
+    '''EventsPrinter class which serves to emulates a file object and logs
+       whatever it gets sent to a briadcast object at the INFO level.'''
+    def __init__(self,events,logs):
+        '''Grabs the specific brodcaster to use for printing.'''
+        self.events = events
+        self.logs = logs
+
+    def write(self, text):
+        '''Logs written output to listeners'''
+        if text and text <> '\n':
+            if self.events:
+                self.events.send_multipart(['PRINT',u'{}'.format(text).encode('utf8')])
+            self.logs.append(text)
+
+def eventprintinfo(func):
+    '''Wraps a method so that any calls made to print get logged instead'''
+    def pwrapper(*arg, **kwargs):
+        stdobak = sys.stdout
+        lpinstance = EventsPrinter(arg[0].wapt.events,arg[0].logs)
+        sys.stdout = lpinstance
+        try:
+            return func(*arg, **kwargs)
+        finally:
+            sys.stdout = stdobak
+    return pwrapper
+
+new_wapt_event = threading.Event()
+
+class WaptTask(object):
+    """Base object class for all wapt task : download, install, remove, upgrade..."""
+    def __init__(self):
+        self.wapt = None
+        self.priority = 100
+        self.order = 0
+        self.external_pids = []
+        self.create_date = datetime.datetime.now()
+        self.start_date = None
+        self.finish_date = None
+        self.logs = []
+        self.result = None
+        self.summary = ""
+
+    def update_status(self,status):
+        self.wapt.runstatus = status
+        msg = json.dumps(self.wapt.get_last_update_status())
+        self.wapt.events.send(msg)
+
+    def can_run(self,explain=False):
+        """Return True if all the requirements for the task are met
+        (ex. install can start if package+depencies are downloaded)"""
+        return True
+
+    def _run(self):
+        """method to override in descendant to do the catual work"""
+        pass
+
+    @eventprintinfo
+    def run(self):
+        """register start and finish time, call _run, redirect stdout and stderr to events broadcaster
+            result of task should be stored in self.result
+            human readable summary of work done should be stored in self.summary
+        """
+        self.start_date = datetime.datetime.now()
+        try:
+            if self.wapt:
+                self.wapt.task_is_cancelled.clear()
+            self._run()
+        finally:
+            self.finish_date = datetime.datetime.now()
+
+    def kill(self):
+        """if task has been started, kill the task (ex: kill the external processes"""
+        if self.external_pids:
+            for pid in self.external_pids:
+                logger.debug('Killing process with pid {}'.format(pid))
+        if self.wapt:
+            self.wapt.task_is_cancelled.set()
+
+    def run_external(self,*args,**kwargs):
+        """Run an external process, register pid in current task to be able to kill it"""
+        result = setuphelpers.run(*args,**kwargs)
+
+    def __str__(self):
+        return u"{classname} {order} created {create_date} started:{start_date} finished:{finish_date} ".format(**self.as_dict())
+
+    def as_dict(self):
+        return dict(
+            classname=self.__class__.__name__,
+            priority = self.priority,
+            order=self.order,
+            create_date = self.create_date and self.create_date.isoformat(),
+            start_date = self.start_date and self.start_date.isoformat(),
+            finish_date = self.finish_date and self.finish_date.isoformat(),
+            logs = self.logs,
+            result = self.result,
+            summary = self.summary,
+            description = u"{}".format(self),
+            )
+
+    def as_json(self):
+        return json.dumps(self.as_dict(),indent=True)
+
+    def __repr__(self):
+        return u"<{}>".format(self)
+
+    def __cmp__(self,other):
+        return cmp((self.priority,self.order),(other.priority,other.order))
+
+    def same_action(self,other):
+        return self.__class__ == other.__class__
+
+class WaptUpdate(WaptTask):
+    def __init__(self):
+        super(WaptUpdate,self).__init__()
+        self.priority = 10
+
+    def _run(self):
+        self.result = self.wapt.update()
+        """result: {
+            count: 176,
+            added: [ ],
+            repos: [
+            "http://srvwapt.tranquilit.local/wapt",
+            "http://srvwapt.tranquilit.local/wapt-host"
+            ],
+            upgrades: [ ],
+            date: "2014-02-28T19:30:35.829000",
+            removed: [ ]
+        },"""
+        s = []
+        if len(self.result['added'])>0:
+            s.append(u'{} nouveaux paquets'.format(len(self.result['added'])))
+        if len(self.result['removed'])>0:
+            s.append(u'{} paquets enlevés'.format(len(self.result['added'])))
+        s.append(u'{} paquets dans les dépôts'.format(self.result['count']))
+        s.append(u'')
+        if len(self.result['upgrades'])>0:
+            s.append(u'Paquets à mettre à jour : {}'.format(self.result['upgrades']))
+
+        self.summary = u'\n'.join(s)
+
+    def __str__(self):
+        return u"Mise à jour des paquets disponibles"
+
+class WaptUpgrade(WaptTask):
+    def __init__(self):
+        super(WaptUpgrade,self).__init__()
+
+    def _run(self):
+        self.result = self.wapt.upgrade()
+        """result: {
+            unavailable: [ ],
+            skipped: [ ],
+            errors: [ ],
+            downloads: {
+                downloaded: [ ],
+                skipped: [ ],
+                errors: [ ]
+            },
+            upgrade: [ ],
+            install: [ ],
+            additional: [ ]
+            }"""
+        self.summary = u"""\
+            Installés : {install}
+            Mis à jour : {upgrade}
+            Déjà à jour :{skipped}
+            Erreurs : {errors}""".format(**self.result)
+
+    def __str__(self):
+        return u'Mise à jour des paquets installés sur la machine'
+
+class WaptLongTask(WaptTask):
+    """Test action for debug purpose"""
+    def __init__(self,duration=60,raise_error=False):
+        super(WaptLongTask,self).__init__()
+        self.duration = duration
+        self.raise_error = raise_error
+
+    def _run(self):
+        for i in range(self.duration):
+            if self.wapt:
+                self.wapt.check_cancelled()
+            print u"Step {}".format(i)
+            time.sleep(1)
+        if self.raise_error:
+            raise Exception('raising an error for Test WaptLongTask')
+
+    def same_action(self,other):
+        return False
+
+    def __str__(self):
+        return u"Test long running task of {}s".format(self.duration)
+
+class WaptPackageInstall(WaptTask):
+    def __init__(self,packagename,force=False):
+        super(WaptPackageInstall,self).__init__()
+        self.packagename = packagename
+        self.force = force
+
+    def _run(self):
+        self.result = self.wapt.install(self.packagename,force = self.force)
+
+    def as_dict(self):
+        d = WaptTask.as_dict(self)
+        d.update(
+            dict(packagename = self.packagename)
+            )
+        return d
+
+    def __str__(self):
+        return u"Installation de {packagename} (tâche #{order})".format(classname=self.__class__.__name__,order=self.order,packagename=self.packagename)
+
+    def same_action(self,other):
+        return (self.__class__ == other.__class__) and (self.packagename == other.packagename)
+
+class WaptPackageRemove(WaptPackageInstall):
+    def __init__(self,packagename,force=False):
+        super(WaptPackageRemove,self).__init__(packagename=packagename,force=force)
+
+    def _run(self):
+        self.result = self.wapt.remove(self.packagename,force=self.force)
+
+    def __str__(self):
+        return u"Désinstallation de {packagename} (tâche #{order})".format(classname=self.__class__.__name__,order=self.order,packagename=self.packagename)
+
+class WaptTaskManager(threading.Thread):
+    def __init__(self,config_filename = 'c:/wapt/wapt-get.ini',event_queue=None):
+        threading.Thread.__init__(self)
+
+        self.status_lock = threading.Lock()
+
+        self.wapt=Wapt(config_filename=config_filename)
+
+        self.tasks = []
+
+        self.tasks_queue = Queue.PriorityQueue()
+        self.tasks_counter = 0
+
+        self.tasks_done = []
+        self.tasks_error = []
+        self.tasks_cancelled = []
+
+        self.events = event_queue
+        self.wapt.events = self.events
+
+        self.running_task = None
+        logger.debug(u'Wapt tasks management initialized with {} configuration'.format(config_filename))
+
+    def update_runstatus(self,status):
+        # update database with new runstatus
+        self.wapt.runstatus = status
+        # dispatch event to listening parties
+        msg = json.dumps(self.wapt.get_last_update_status())
+        if self.events:
+            self.wapt.events.send_multipart(["STATUS",msg])
+
+    def broadcast_tasks_status(self,topic,content):
+        """topic : ADD START FINISH CANCEL ERROR """
+        if self.events:
+            if not isinstance(content,str):
+                if isinstance(content,unicode):
+                    content = content.encode('utf8')
+                else:
+                    content = common.jsondump(content)
+            self.wapt.events.send_multipart(["TASKS",topic,content])
+
+    def add_task(self,task):
+        """Adds a new WaptTask for processing"""
+        with self.status_lock:
+            same = [ pending for pending in self.tasks_queue.queue if pending.same_action(task)]
+            # not already in pending  actions...
+            if not same:
+                self.broadcast_tasks_status('ADD',task)
+                task.wapt = self.wapt
+
+                self.tasks_counter += 1
+                task.order = self.tasks_counter
+
+                self.tasks_queue.put(task)
+                self.tasks.append(task)
+                return task
+            else:
+                return same[0]
+
+    def run(self):
+        """Queue management, event processing"""
+
+        import pythoncom
+        pythoncom.CoInitialize()
+
+        logger.debug("Wapt tasks queue started")
+        while True:
+            try:
+                self.running_task = self.tasks_queue.get(timeout=10)
+                try:
+                    self.update_runstatus('Processing {}')
+                    self.broadcast_tasks_status('START',self.running_task)
+                    try:
+                        self.running_task.run()
+                        self.tasks_done.append(self.running_task)
+                        self.broadcast_tasks_status('FINISH',self.running_task)
+                    except common.EWaptCancelled as e:
+                        if self.running_task:
+                            self.running_task.logs.append(u"{}".format(e))
+                            self.tasks_cancelled.append(self.running_task)
+                            self.broadcast_tasks_status('CANCEL',self.running_task)
+                    except Exception as e:
+                        if self.running_task:
+                            self.running_task.logs.append(u"{}".format(e))
+                            self.tasks_error.append(self.running_task)
+                            self.broadcast_tasks_status('ERROR',self.running_task)
+                        logger.critical(e)
+                finally:
+                    self.tasks_queue.task_done()
+                    self.running_task = None
+            except Queue.Empty:
+                self.update_runstatus('')
+                logger.debug(u"{} i'm still alive... but nothing to do".format(datetime.datetime.now()))
+
+    def tasks_status(self):
+        """Returns list of pending, error, done tasks, and current running one"""
+        try:
+            with self.status_lock:
+                return dict(
+                    running=self.running_task and self.running_task.as_dict(),
+                    pending=[task for task in sorted(self.tasks_queue.queue)],
+                    done = self.tasks_done[:],
+                    cancelled = self.tasks_cancelled[:],
+                    errors = self.tasks_error[:],
+                    )
+        except Exception as e:
+            return u"Error : tasks list locked : {}".format(e)
+
+    def cancel_all_tasks(self):
+        """Returns list of pending, error, done tasks, and current running one"""
+        try:
+            with self.status_lock:
+                cancelled = []
+                while not self.tasks_queue.empty():
+                     cancelled.append(self.tasks_queue.get())
+                self.tasks_cancelled.extend(cancelled)
+                if self.running_task:
+                    try:
+                        cancelled.append(self.running_task)
+                        self.tasks_error.append(self.running_task)
+                        try:
+                            self.running_task.kill()
+                        except:
+                            pass
+                    finally:
+                        self.running_task = None
+                self.broadcast_tasks_status('CANCEL',cancelled)
+                return dict(
+                    running=self.running_task and self.running_task.as_dict(),
+                    pending=[task for task in sorted(self.tasks_queue.queue)],
+                    done = self.tasks_done[:],
+                    cancelled = self.tasks_cancelled[:],
+                    errors = self.tasks_error[:],
+                    )
+        except Exception as e:
+            return u"Error : tasks list locked : {}".format(e)
+
+    def __str__(self):
+        return "\n".join(self.tasks_status())
+
 if __name__ == "__main__":
     if len(sys.argv)>1 and sys.argv[1] == 'doctest':
         import doctest
         sys.exit(doctest.testmod())
 
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
-    #hdlr = logging.StreamHandler(sys.stdout)
-    #hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
-    #logger.addHandler(hdlr)
 
-    debug=True
+    # init zeromq events broadcast
+    zmq_context = zmq.Context()
+    event_queue = zmq_context.socket(zmq.PUB)
+
+    # start event broadcasting
+    event_queue.bind("tcp://127.0.0.1:5000")
+
+    # add logger through zmq events
+    handler = PUBHandler(event_queue)
+    logger.addHandler(handler)
+
+    # starts one WaptTasksManager
+    installer = WaptTaskManager(config_filename = config_filename, event_queue=event_queue)
+    installer.daemon = True
+    installer.start()
+
+    debug=False
     if debug==True:
         app.run(host='0.0.0.0',port=waptservice_port,debug=True)
         logger.info("exiting")
