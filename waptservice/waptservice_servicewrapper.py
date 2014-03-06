@@ -12,11 +12,12 @@ import logging
 
 from rocket import Rocket
 
-class aservice(win32serviceutil.ServiceFramework):
+__version__ = "0.8.8"
 
+class aservice(win32serviceutil.ServiceFramework):
     _svc_name_ = "WAPTService"
     _svc_display_name_ = "WAPT Service"
-    _svc_description_ = "WAPTService for configuring local machine"
+    _svc_description_ = "Handles install/remove/update tasks for local packages"
 
     server = None
 
@@ -31,27 +32,19 @@ class aservice(win32serviceutil.ServiceFramework):
 
     def SvcDoRun(self):
         from waptservice import log_directory
-        file = open(os.path.join(log_directory,'waptservice.log'), 'a')
-        try:
-            import servicemanager
-            servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,servicemanager.PYS_SERVICE_STARTED,(self._svc_name_, ''))
+        import servicemanager
+        servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,servicemanager.PYS_SERVICE_STARTED,(self._svc_name_, ''))
 
-            from waptservice import app,waptservice_port,log_directory,logger
+        from waptservice import app,waptservice_port,log_directory,logger
 
-            logging.basicConfig(filename=os.path.join(log_directory,'waptservice.log'),format='%(asctime)s %(levelname)s %(message)s')
-            logger.info('waptservice starting')
+        logging.basicConfig(filename=os.path.join(log_directory,'waptservice.log'),format='%(asctime)s %(levelname)s %(message)s')
+        logger.info('waptservice starting')
 
-
-            self.server = Rocket(('0.0.0.0', waptservice_port), 'wsgi', {"wsgi_app":app})
-        except Exception as e:
-            file.writelines("Exeption: %s" %e)
-        finally:
-            file.close()
+        self.server = Rocket(('0.0.0.0', waptservice_port), 'wsgi', {"wsgi_app":app})
         try:
             self.server.start()
         except KeyboardInterrupt:
             self.server.stop()
-
 
 def ctrlHandler(ctrlType):
     return True

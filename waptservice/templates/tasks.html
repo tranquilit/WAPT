@@ -2,6 +2,17 @@
 {% block content %}
 
 <h1>Tasks manager</h1>
-{{ data | pprint}}
-
+<h3>Running: {{data['running'].description}}</h3>
+<ul>
+<li><b>Order:</b>{{data['running'].order}}</li>
+<li><b>Status:</b>{{data['running'].logs}}</li>
+</ul>
+{% for group in ['pending','done','errors'] %}
+<h3>{{group | capitalize}}:</h3>
+	<ul>
+	{% for task in data.get(group) %}
+	<li><b>{{task.order}} - <a href={{url_for('task',id=task['order'])}}>{{task.description}}:</b></a> {{task['logs']}}</li>
+	{% endfor %}
+	</ul>
+{% endfor %}
 {% endblock %}

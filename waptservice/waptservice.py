@@ -67,6 +67,9 @@ else:
 wapt_user = ""
 wapt_password = ""
 
+# maximum nb of tasks in wapt task manager
+MAX_HISTORY = 30
+
 def format_isodate(isodate):
     """Pretty format iso date like : 2014-01-21T17:36:15.652000
         >>> format_isodate('2014-01-21T17:36:15.652000')
@@ -461,8 +464,15 @@ def tasks():
 @app.route('/task')
 @app.route('/task.html')
 def task():
-    id = request.args['id']
-    return Response(common.jsondump(installer.tasks_status()), mimetype='application/json')
+    id = int(request.args['id'])
+    tasks = installer.tasks_status()
+    all_tasks = tasks['done']+tasks['pending']+tasks['errors']
+    task = [task for task in all_tasks if task['order'] == id]
+    if task:
+        task = task[0]
+    else:
+        task = {}
+    return Response(common.jsondump(task), mimetype='application/json')
 
 @app.route('/cancel_all_tasks')
 def cancel_all_tasks():
@@ -811,6 +821,14 @@ class WaptTaskManager(threading.Thread):
                 finally:
                     self.tasks_queue.task_done()
                     self.running_task = None
+                    # trim history lists
+                    if len(self.tasks_cancelled)>MAX_HISTORY:
+                        del self.tasks_cancelled[:MAX_HISTORY]
+                    if len(self.tasks_done)>MAX_HISTORY:
+                        del self.tasks_done[:MAX_HISTORY]
+                    if len(self.tasks_error)>MAX_HISTORY:
+                        del self.tasks_error[:MAX_HISTORY]
+
             except Queue.Empty:
                 self.update_runstatus('')
                 logger.debug(u"{} i'm still alive... but nothing to do".format(datetime.datetime.now()))
@@ -822,9 +840,9 @@ class WaptTaskManager(threading.Thread):
                 return dict(
                     running=self.running_task and self.running_task.as_dict(),
                     pending=[task for task in sorted(self.tasks_queue.queue)],
-                    done = self.tasks_done[:],
-                    cancelled = self.tasks_cancelled[:],
-                    errors = self.tasks_error[:],
+                    done = [task.as_dict() for task in self.tasks_done],
+                    cancelled = [ task.as_dict() for task in self.tasks_cancelled],
+                    errors = [ task.as_dict() for task in self.tasks_error],
                     )
         except Exception as e:
             return u"Error : tasks list locked : {}".format(e)
@@ -872,7 +890,7 @@ if __name__ == "__main__":
         import doctest
         sys.exit(doctest.testmod())
 
-    debug=True
+    debug=False
     if debug==True:
         app.run(host='0.0.0.0',port=waptservice_port,debug=False)
         logger.info("exiting")

@@ -1713,7 +1713,7 @@ key_passwd = None
 class Wapt(object):
     """Global WAPT engine"""
 
-    def __init__(self,config=None,config_filename=None,defaults=None,disable_update_server_status=False):
+    def __init__(self,config=None,config_filename=None,defaults=None,disable_update_server_status=True):
         """Initialize engine with a configParser instance (inifile) and other defaults in a dictionary
             Main properties are :
         """
