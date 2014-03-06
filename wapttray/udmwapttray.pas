@@ -70,17 +70,12 @@ type
     procedure SetTrayIcon(idx: integer);
     procedure SettrayMode(AValue: TTrayMode);
     function  WaptConsoleFileName: String;
-    procedure pollerEvent( socket: TZMQSocket; event: TZMQPollEvents );
+    procedure pollerEvent(message:TStringList);
     { private declarations }
   public
     { public declarations }
     check_thread:TThread;
     checkinterval:Integer;
-
-    zmq_context:TZMQContext;
-    zmq_socket :TZMQSocket;
-    poller:TZMQPoller;
-
     property trayMode:TTrayMode read FtrayMode write SettrayMode;
     property trayHint:String read GetrayHint write SettrayHint;
 
@@ -93,6 +88,88 @@ implementation
 uses LCLIntf,Forms,dialogs,windows,superobject,graphics,tiscommon,waptcommon,tisinifiles,soutils,UnitRedirect;
 
 {$R *.lfm}
+
+type
+
+  { TZMQPollThread }
+
+  TZMQPollThread = Class(TThread)
+    procedure HandleMessage;
+
+  public
+    PollTimeout:Integer;
+    zmq_context:TZMQContext;
+    zmq_socket :TZMQSocket;
+
+    DMTray:TDMWaptTray;
+    message : TStringList;
+    msg:Utf8String;
+
+    constructor Create(aDMWaptTray:TDMWaptTray);
+    destructor Destroy; override;
+    procedure Execute; override;
+end;
+
+{ TZMQPollThread }
+
+procedure TZMQPollThread.HandleMessage;
+begin
+  if Assigned(DMTray) then
+    DMTray.pollerEvent(message);
+end;
+
+constructor TZMQPollThread.Create(aDMWaptTray:TDMWaptTray);
+begin
+  inherited Create(True);
+  message := TStringList.Create;
+  DMTray := aDMWaptTray;
+  // create ZMQ context.
+  zmq_context := TZMQContext.Create;
+
+  zmq_socket := zmq_context.Socket( stSub );
+  zmq_socket.RcvHWM:= 1000001;
+  zmq_socket.connect( 'tcp://127.0.0.1:5000' );
+  zmq_socket.Subscribe('');
+  {zmq_socket.Subscribe('INFO');
+  zmq_socket.Subscribe('TASKS');
+  zmq_socket.Subscribe('PRINT');
+  zmq_socket.Subscribe('CRITICAL');
+  zmq_socket.Subscribe('WARNING');
+  zmq_socket.Subscribe('STATUS');}
+end;
+
+destructor TZMQPollThread.Destroy;
+begin
+  message.Free;
+
+  if Assigned(zmq_socket) then
+    FreeAndNil(zmq_socket);
+  if Assigned(zmq_context) then
+    FreeAndNil(zmq_context);
+
+  inherited Destroy;
+end;
+
+procedure TZMQPollThread.Execute;
+var
+  res : integer;
+  part:Utf8String;
+begin
+  while not Terminated do
+  begin
+    //zmq_socket.recv(message);
+    res := zmq_socket.recv(msg);
+    while zmq_socket.RcvMore do
+    begin
+      res := zmq_socket.recv(part);
+      msg:=msg+#13#10+part;
+    end;
+    message.Text:=msg;
+    Synchronize(HandleMessage);
+    {if not Terminated then
+      Sleep(PollTimeout);}
+  end;
+end;
 
 { TVisWAPTTray }
 
@@ -125,34 +202,12 @@ end;
 procedure TDMWaptTray.DataModuleCreate(Sender: TObject);
 begin
   //UniqueInstance1.Enabled:=True;
-
-  // create ZMQ context.
-  zmq_context := TZMQContext.Create;
-
-  zmq_socket := zmq_context.Socket( stSub );
-  zmq_socket.connect( 'tcp://127.0.0.1:5000' );
-  zmq_socket.Subscribe('TASKS');
-  zmq_socket.Subscribe('PRINT');
-  zmq_socket.Subscribe('CRITICAL');
-  zmq_socket.Subscribe('WARNING');
-  zmq_socket.Subscribe('STATUS');
-  //zmq_socket.AddAcceptFilter('INFO');
-
-  poller := TZMQPoller.Create(false,zmq_context);
-  poller.onEvent := pollerEvent;
-  poller.register( zmq_socket, [pePollIn], false );
-
+  check_thread :=TZMQPollThread.Create(Self);
+  check_thread.Start;
 end;
 
 procedure TDMWaptTray.DataModuleDestroy(Sender: TObject);
 begin
-  if Assigned(poller) then
-    FreeAndNil(Poller);
-  if Assigned(zmq_socket) then
-    FreeAndNil(zmq_socket);
-  if Assigned(zmq_context) then
-    FreeAndNil(zmq_context);
-
   if Assigned(check_thread) then
   begin
     TerminateThread(check_thread.Handle,0);
@@ -190,22 +245,26 @@ begin
   result:=AppendPathDelim(ExtractFileDir(ParamStr(0)))+'waptconsole.exe';
 end;
 
-procedure TDMWaptTray.pollerEvent(socket: TZMQSocket; event: TZMQPollEvents);
+procedure TDMWaptTray.pollerEvent(message:TStringList);
 var
   msg,msg_type,topic:String;
   bh:String;
-  st : TStringList;
   upgrade_status,running,upgrades,errors,taskresult : ISuperObject;
 begin
-  st := TStringList.Create;
   try
-    zmq_socket.recv(st);
-    if st.Count>0 then
+    if message.Count>0 then
     begin
-      msg_type := st[0];
-      st.Delete(0);
-      msg := st.Text;
+      msg_type := message[0];
+      message.Delete(0);
+      msg := message.Text;
       // changement hint et balloonhint
+      if msg_type='INFO' then
+      begin
+          TrayIcon1.BalloonHint := UTF8Encode(msg);
+          TrayIcon1.BalloonFlags:=bfInfo;
+          TrayIcon1.ShowBalloonHint;
+      end
+      else
       if msg_type='STATUS' then
       begin
         upgrade_status := SO(msg);
@@ -218,16 +277,16 @@ begin
           trayHint:=UTF8Encode('Installation en cours : '+running.AsString);
         end
         else
-        if (upgrades<>Nil) and (upgrades.AsArray.Length>0) then
-        begin
-          trayMode:=tmUpgrades;
-          trayHint:=UTF8Encode('Mises à jour disponibles pour : '+#13#10+soutils.join(#13#10,upgrades));
-        end
-        else
         if (errors<>Nil) and (errors.AsArray.Length>0) then
         begin
           trayHint:=UTF8Encode('Erreurs : '+#13#10+ Join(#13#10,errors));
           trayMode:=tmErrors;
+        end
+        else
+        if (upgrades<>Nil) and (upgrades.AsArray.Length>0) then
+        begin
+          trayMode:=tmUpgrades;
+          trayHint:=UTF8Encode('Mises à jour disponibles pour : '+#13#10+soutils.join(#13#10,upgrades));
         end
         else
         begin
@@ -251,10 +310,10 @@ begin
       else
       if msg_type='TASKS' then
       begin
-        topic := st[0];
-        st.Delete(0);
-        msg := st.Text;
-        taskresult := SO(st.Text);
+        topic := message[0];
+        message.Delete(0);
+        msg := message.Text;
+        taskresult := SO(message.Text);
         if topic='ERROR' then
         begin
           trayMode:= tmErrors;
@@ -273,6 +332,7 @@ begin
         else
         if topic='FINISH' then
         begin
+          trayMode:= tmOK;
           TrayIcon1.BalloonHint := UTF8Encode(taskresult.S['description']+' terminé'+#13#10+taskresult.S['summary']);
           TrayIcon1.BalloonFlags:=bfInfo;
           TrayIcon1.ShowBalloonHint;
@@ -288,7 +348,6 @@ begin
       end;
     end;
   finally
-    st.Free;
   end;
 end;
 
@@ -351,18 +410,46 @@ procedure TDMWaptTray.SettrayMode(AValue: TTrayMode);
 begin
   if FtrayMode=AValue then Exit;
   FtrayMode:=AValue;
+  if FTraymode = tmOK then
+    SetTrayIcon(0)
+  else
+  if FTraymode = tmRunning then
+  begin
+    TrayIcon1.Icons := TrayRunning;
+    TrayIcon1.Animate:=True;
+  end
+  else
+  if FTraymode = tmUpgrades then
+  begin
+    TrayIcon1.Icons := TrayUpdate;
+    TrayIcon1.Animate:=True;
+  end
+  else
+  if FTraymode = tmErrors then
+  begin
+    TrayIcon1.Icons := TrayUpdate;
+    TrayIcon1.Animate:=False;
+    SetTrayIcon(1);
+  end;
 end;
-
 
 procedure TDMWaptTray.TrayIcon1DblClick(Sender: TObject);
 var
   res:String;
 begin
-  res := httpGetString(GetWaptLocalURL+'/update');
-  if pos('ERROR',uppercase(res))<=0 then
-    TrayIcon1.BalloonHint:='Vérification en cours...'
-  else
-    TrayIcon1.BalloonHint:='Erreur au lancement de la vérification...';
+  try
+    res := httpGetString(GetWaptLocalURL+'/update');
+    if pos('ERROR',uppercase(res))<=0 then
+      TrayIcon1.BalloonHint:='Vérification en cours...'
+    else
+      TrayIcon1.BalloonHint:='Erreur au lancement de la vérification...';
+  except
+    on E:Exception do
+      begin
+        TrayIcon1.BalloonHint := E.Message;
+        trayMode:=tmErrors;
+      end;
+  end;
   TrayIcon1.ShowBalloonHint;
 end;
 

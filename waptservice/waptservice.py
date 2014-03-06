@@ -52,6 +52,8 @@ log_directory = os.path.join(wapt_root_dir,'log')
 if not os.path.exists(log_directory):
     os.mkdir(log_directory)
 
+logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
+
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
@@ -233,6 +235,8 @@ def list():
 def package_icon():
     package = request.args.get('package')
     icon_local_cache = os.path.join(wapt_root_dir,'cache','icons')
+    if not os.path.isdir(icon_local_cache):
+        os.makedirs(icon_local_cache)
     wapt=[]
     #repo_url='http://wapt/wapt'
     #proxies = []
@@ -446,9 +450,10 @@ def login():
     return render_template('login.html', error=error)
 
 @app.route('/tasks')
+@app.route('/tasks.json')
 def tasks():
     data = installer.tasks_status()
-    if request.args.get('format','html')=='json':
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
         return render_template('tasks.html',data=data)
@@ -519,6 +524,7 @@ class WaptTask(object):
         self.logs = []
         self.result = None
         self.summary = ""
+        self.progress = 0
 
     def update_status(self,status):
         self.wapt.runstatus = status
@@ -705,7 +711,7 @@ class WaptPackageRemove(WaptPackageInstall):
         return u"Désinstallation de {packagename} (tâche #{order})".format(classname=self.__class__.__name__,order=self.order,packagename=self.packagename)
 
 class WaptTaskManager(threading.Thread):
-    def __init__(self,config_filename = 'c:/wapt/wapt-get.ini',event_queue=None):
+    def __init__(self,config_filename = 'c:/wapt/wapt-get.ini'):
         threading.Thread.__init__(self)
 
         self.status_lock = threading.Lock()
@@ -721,11 +727,22 @@ class WaptTaskManager(threading.Thread):
         self.tasks_error = []
         self.tasks_cancelled = []
 
+        # init zeromq events broadcast
+        zmq_context = zmq.Context()
+        event_queue = zmq_context.socket(zmq.PUB)
+
+        # start event broadcasting
+        event_queue.bind("tcp://127.0.0.1:5000")
+
+        # add logger through zmq events
+        ##handler = PUBHandler(event_queue)
+        ##logger.addHandler(handler)
+
         self.events = event_queue
         self.wapt.events = self.events
 
         self.running_task = None
-        logger.debug(u'Wapt tasks management initialized with {} configuration'.format(config_filename))
+        logger.info(u'Wapt tasks management initialized with {} configuration'.format(config_filename))
 
     def update_runstatus(self,status):
         # update database with new runstatus
@@ -844,30 +861,18 @@ class WaptTaskManager(threading.Thread):
     def __str__(self):
         return "\n".join(self.tasks_status())
 
+
+# starts one WaptTasksManager
+installer = WaptTaskManager(config_filename = config_filename)
+installer.daemon = True
+installer.start()
+
 if __name__ == "__main__":
     if len(sys.argv)>1 and sys.argv[1] == 'doctest':
         import doctest
         sys.exit(doctest.testmod())
 
-    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
-
-    # init zeromq events broadcast
-    zmq_context = zmq.Context()
-    event_queue = zmq_context.socket(zmq.PUB)
-
-    # start event broadcasting
-    event_queue.bind("tcp://127.0.0.1:5000")
-
-    # add logger through zmq events
-    handler = PUBHandler(event_queue)
-    logger.addHandler(handler)
-
-    # starts one WaptTasksManager
-    installer = WaptTaskManager(config_filename = config_filename, event_queue=event_queue)
-    installer.daemon = True
-    installer.start()
-
-    debug=False
+    debug=True
     if debug==True:
         app.run(host='0.0.0.0',port=waptservice_port,debug=False)
         logger.info("exiting")
