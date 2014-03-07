@@ -7,7 +7,27 @@
 #include "wapt.iss"
 
 [Files]
+; for local waptservice
+Source: "..\libzmq.dll"; DestDir: "{app}";
+Source: "..\waptservice\win32"; DestDir: "{app}\win32\";  Flags: createallsubdirs recursesubdirs; Tasks: installService 
+Source: "..\waptservice\win64"; DestDir: "{app}\win64\";  Flags: createallsubdirs recursesubdirs; Tasks: installService
 Source: "..\waptservice\waptservice*.py"; DestDir: "{app}\waptservice\";  BeforeInstall: BeforeWaptServiceInstall('waptservice.py'); AfterInstall: AfterWaptServiceInstall('waptservice.py'); Tasks: installService
+Source: "..\waptservice\static\*"; DestDir: "{app}\waptservice\static"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
+Source: "..\waptservice\ssl\*"; DestDir: "{app}\waptservice\ssl"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
+Source: "..\waptservice\templates\*"; DestDir: "{app}\waptservice\templates"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
+; user feedback of waptservice activity
+Source: "..\wapttray.exe"; DestDir: "{app}"; 
+
+; sources of installer to rebuild a custom installer
+Source: "innosetup\*"; DestDir: "{app}\waptsetup\innosetup";
+Source: "wapt.iss"; DestDir: "{app}\waptsetup";
+Source: "services.iss"; DestDir: "{app}\waptsetup";
+Source: "wapt.ico"; DestDir: "{app}";
+
+; global management console
+Source: "..\waptconsole.exe.manifest"; DestDir: "{app}";
+Source: "..\waptconsole.exe"; DestDir: "{app}";
+Source: "..\waptdevutils.py"; DestDir: "{app}";
 
 [Setup]
 OutputBaseFilename=waptsetup
@@ -16,6 +36,7 @@ DefaultDirName="C:\wapt"
 [INI]
 Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL};
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL}
+
 [Run]
 Filename: "{app}\wapt-get.exe"; Parameters: "register"; Flags: runhidden postinstall; StatusMsg: "Register computer on the WAPT server"; Description: "Register computer on the WAPT server"
 Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait runasoriginaluser postinstall; StatusMsg: "Launch WAPT tray icon"; Description: "Launch WAPT tray icon"

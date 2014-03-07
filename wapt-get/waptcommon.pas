@@ -369,7 +369,7 @@ begin
 end;
 function GetWaptLocalURL: String;
 begin
-  result := format('http://localhost:%d',[waptservice_port]);
+  result := format('http://127.0.0.1:%d',[waptservice_port]);
 end;
 
 function WaptgetPath: Utf8String;

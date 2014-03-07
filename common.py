@@ -516,26 +516,26 @@ class LogInstallOutput(object):
         self.waptdb = waptdb
         self.rowid = rowid
         self.threadid = threading.current_thread()
+        self.lock = threading.RLock()
 
     def write(self,txt):
-        txt = ensure_unicode(txt)
-        self.console.write(txt)
-        if txt <> '\n':
-            self.output.append(txt)
-            if txt and txt[-1]<>'\n':
-                txtdb = txt+'\n'
-            else:
-                txtdb = txt
-            if threading.current_thread() == self.threadid:
-                self.waptdb.update_install_status(self.rowid,'RUNNING',txtdb if not txtdb == None else None)
+        with self.lock:
+            txt = ensure_unicode(txt)
+            self.console.write(txt)
+            if txt <> '\n':
+                self.output.append(txt)
+                if txt and txt[-1]<>'\n':
+                    txtdb = txt+'\n'
+                else:
+                    txtdb = txt
+                if threading.current_thread() == self.threadid:
+                    self.waptdb.update_install_status(self.rowid,'RUNNING',txtdb if not txtdb == None else None)
 
     def __getattrib__(self, name):
         if hasattr(self.console,'__getattrib__'):
             return self.console.__getattrib__(name)
         else:
             return self.console.__getattribute__(name)
-
-
 
 ###########
 def reg_openkey_noredir(key, sub_key, sam=KEY_READ):

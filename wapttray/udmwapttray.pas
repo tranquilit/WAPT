@@ -258,10 +258,10 @@ begin
       message.Delete(0);
       msg := message.Text;
       // changement hint et balloonhint
-      if msg_type='INFO' then
+      if (msg_type='WARNING') or (msg_type='CRITICAL') then
       begin
           TrayIcon1.BalloonHint := UTF8Encode(msg);
-          TrayIcon1.BalloonFlags:=bfInfo;
+          TrayIcon1.BalloonFlags:=bfError;
           TrayIcon1.ShowBalloonHint;
       end
       else

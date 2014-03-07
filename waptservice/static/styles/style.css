@@ -104,7 +104,7 @@ a:hover {
 
 #header {
 	width: 940px;
-	height: 148px;
+	height: 80px;
 	margin: 0 auto;
 	background: url(/static/images/wapt.png) no-repeat left 20px;
 }
@@ -127,7 +127,7 @@ a:hover {
 	float: left;
 	padding-left: 80px;
 	letter-spacing: -1px;
-	font-size: 3.8em;
+	font-size: 3em;
 }
 
 #logo p {

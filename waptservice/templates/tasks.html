@@ -2,16 +2,20 @@
 {% block content %}
 
 <h1>Tasks manager</h1>
+{%if data['running']%}
 <h3>Running: {{data['running'].description}}</h3>
 <ul>
-<li><b>Order:</b>{{data['running'].order}}</li>
-<li><b>Status:</b>{{data['running'].logs}}</li>
+{% for attrib in data['running'] %}
+<li><b>{{attrib}}:</b> {{data['running'][attrib]|beautify}}
+</li>
+{% endfor %}
 </ul>
+{%endif%}
 {% for group in ['pending','done','errors'] %}
 <h3>{{group | capitalize}}:</h3>
 	<ul>
-	{% for task in data.get(group) %}
-	<li><b>{{task.order}} - <a href={{url_for('task',id=task['order'])}}>{{task.description}}:</b></a> {{task['logs']}}</li>
+	{% for task in data.get(group) | reverse %}
+	<li><b>{{task.order}} - <a href={{url_for('task',id=task['order'])}}>{{task.description}}:</b></a> {{task.logs | beautify}}
 	{% endfor %}
 	</ul>
 {% endfor %}

@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Tâche n°{{task.order}}: {{task.description}}</h1>
+<ul>
+{% for attrib in task %}
+<li><b>{{attrib}}:</b> {{task[attrib]|beautify}}
+</li>
+{% endfor %}
+</ul>
+{% endblock %}

@@ -941,6 +941,8 @@ def dmi_info():
                     currarray.append(l.strip())
             new_section = False
     except:
+        # dmidecode fails on some BIOS.
+        # TODO : fall back to wmi for most impirtant parameters
         pass
     return result
 
