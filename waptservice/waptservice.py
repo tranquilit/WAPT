@@ -991,7 +991,7 @@ def install_service():
             setuphelpers.run('sc stop waptservice')
         setuphelpers.run('sc delete waptservice')
 
-    basedir = os.path.dirname(__file__)
+    basedir = os.path.abspath(os.path.dirname(__file__))
     if setuphelpers.iswin64():
         nssm = os.path.join(basedir,'win64','nssm.exe')
     else:
