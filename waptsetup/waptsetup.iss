@@ -9,14 +9,17 @@
 [Files]
 ; for local waptservice
 Source: "..\libzmq.dll"; DestDir: "{app}";
-Source: "..\waptservice\win32"; DestDir: "{app}\win32\";  Flags: createallsubdirs recursesubdirs; Tasks: installService 
-Source: "..\waptservice\win64"; DestDir: "{app}\win64\";  Flags: createallsubdirs recursesubdirs; Tasks: installService
+Source: "..\waptservice\win32"; DestDir: "{app}\waptservice\";  Flags: createallsubdirs recursesubdirs; Tasks: installService 
+Source: "..\waptservice\win64"; DestDir: "{app}\waptservice\";  Flags: createallsubdirs recursesubdirs; Tasks: installService
 Source: "..\waptservice\waptservice*.py"; DestDir: "{app}\waptservice\"; Tasks: installService
+Source: "..\waptservice\network_manager.py"; DestDir: "{app}\waptservice\"; Tasks: installService
 Source: "..\waptservice\static\*"; DestDir: "{app}\waptservice\static"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
 Source: "..\waptservice\ssl\*"; DestDir: "{app}\waptservice\ssl"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
 Source: "..\waptservice\templates\*"; DestDir: "{app}\waptservice\templates"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
 ; user feedback of waptservice activity
 Source: "..\wapttray.exe"; DestDir: "{app}"; 
+
+
 
 ; sources of installer to rebuild a custom installer
 Source: "innosetup\*"; DestDir: "{app}\waptsetup\innosetup";
