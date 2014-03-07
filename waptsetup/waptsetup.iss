@@ -9,8 +9,8 @@
 [Files]
 ; for local waptservice
 Source: "..\libzmq.dll"; DestDir: "{app}";
-Source: "..\waptservice\win32\*"; DestDir: "{app}\waptservice\";  Flags: createallsubdirs recursesubdirs; Tasks: installService 
-Source: "..\waptservice\win64\*"; DestDir: "{app}\waptservice\";  Flags: createallsubdirs recursesubdirs; Tasks: installService
+Source: "..\waptservice\win32\*"; DestDir: "{app}\waptservice\win32\";  Flags: createallsubdirs recursesubdirs; Tasks: installService 
+Source: "..\waptservice\win64\*"; DestDir: "{app}\waptservice\win64\";  Flags: createallsubdirs recursesubdirs; Tasks: installService
 Source: "..\waptservice\waptservice*.py"; DestDir: "{app}\waptservice\"; Tasks: installService
 Source: "..\waptservice\network_manager.py"; DestDir: "{app}\waptservice\"; Tasks: installService
 Source: "..\waptservice\static\*"; DestDir: "{app}\waptservice\static"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
