@@ -986,29 +986,28 @@ def install_service():
         'multi_sz':REG_MULTI_SZ,
     }
 
-    params = {
-        "Type":"dword:00000010",
-        "Start":"dword:00000002",
-        "ErrorControl":"dword:00000001",
-        "DisplayName":"sz:WAPT Service",
-        "ObjectName":"sz:LocalSystem",
-        "FailureActionsOnNonCrashFailures":1,
-        "Parameters\\Application":r"expand_sz:C:\tranquilit\wapt\waptpython.exe",
-        "Parameters\\AppParameters":r"expand_sz:C:\tranquilit\wapt\waptservice\waptservice.py",
-        "Parameters\\AppDirectory":r'expand_sz:C:\tranquilit\wapt',
-        "AppStdout":r"expand_sz:C:\tranquilit\wapt\log\waptservice.log",
-        "Parameters\\AppStderr":r"expand_sz:C:\tranquilit\wapt\log\waptservice.log",
-        "Parameters\\AppExit\\@":"sz:Restart",
-        }
     if setuphelpers.service_installed('waptservice'):
-        setuphelpers.run('sc stop waptservice')
+        if setuphelpers.service_is_running('waptservice'):
+            setuphelpers.run('sc stop waptservice')
         setuphelpers.run('sc delete waptservice')
 
-    setuphelpers.run('"{nssm}" install "{waptpython}" "{waptservicepy}"'.format(
-        nssm = os.path.join(),
+    basedir = os.path.dirname(__file__)
+    if setuphelpers.iswin64():
+        nssm = os.path.join(basedir,'win64','nssm.exe')
+    else:
+        nssm = os.path.join(basedir,'win32','nssm.exe')
 
+    setuphelpers.run('"{nssm}" install WAPTService "{waptpython}" "{waptservicepy}"'.format(
+        waptpython = os.path.abspath(os.path.join(basedir,'..','waptpython.exe')),
+        nssm = nssm,
+        waptservicepy = os.path.abspath(__file__),
      ))
 
+    params = {
+        "DisplayName":"sz:WAPT Service",
+        "AppStdout":r"expand_sz:{}".format(os.path.join(log_directory,'waptservice.log')),
+        "Parameters\\AppStderr":r"expand_sz:{}".format(os.path.join(log_directory,'waptservice.log')),
+        }
 
     root = setuphelpers.HKEY_LOCAL_MACHINE
     base = r'SYSTEM\CurrentControlSet\services\WAPTService'
