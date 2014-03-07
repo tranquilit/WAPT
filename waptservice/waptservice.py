@@ -710,16 +710,23 @@ class WaptUpgrade(WaptTask):
             install: [ ],
             additional: [ ]
             }"""
+        all_install = self.result['install']
+        """
+        if self.result['additional']:
+            all_install.extend(self.result['additional'])
+        """
         self.summary = u"""\
             Installés : {install}
             Mis à jour : {upgrade}
             Déjà à jour :{skipped}
-            Erreurs : {errors}""".format(
-                install = cjoin(self.result['install']+self.result['additional']),
-                upgrade = cjoin(self.result['upgrade']),
-                skipped = cjoin(self.result['skipped']),
-                errors = cjoin(self.result['errors']),
-                )
+            Erreurs : {errors}""".format(**self.result)
+        """
+            install = cjoin(all_install),
+            upgrade = cjoin(self.result['upgrade']),
+            skipped = cjoin(self.result['skipped']),
+            errors = cjoin(self.result['errors']),
+        )
+        """
 
     def __str__(self):
         return u'Mise à jour des paquets installés sur la machine'
@@ -1051,7 +1058,7 @@ if __name__ == "__main__":
         logger.info("exiting")
     else:
         server = Rocket(
-            [('127.0.0.1', waptservice_port),
+            [('0.0.0.0', waptservice_port),
              ('0.0.0.0', waptservice_port+1, r'ssl\waptservice.pem', r'ssl\waptservice.crt')],
              'wsgi', {"wsgi_app":app})
 
