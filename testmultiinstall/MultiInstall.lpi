@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -33,25 +33,23 @@
         <CommandLineParams Value="--server=http://srvlts1:8080"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="2">
+    <RequiredPackages Count="3">
       <Item1>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_utils"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_indycomp"/>
+        <PackageName Value="pltis_superobject"/>
       </Item2>
+      <Item3>
+        <PackageName Value="pl_indycomp"/>
+      </Item3>
     </RequiredPackages>
-    <Units Count="2">
+    <Units Count="1">
       <Unit0>
         <Filename Value="MultiInstall.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="MultiInstall"/>
       </Unit0>
-      <Unit1>
-        <Filename Value="..\wapt-get\tisstrings.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tisstrings"/>
-      </Unit1>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -62,7 +60,6 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\wapt-get"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>

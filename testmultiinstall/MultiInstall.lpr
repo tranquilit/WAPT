@@ -385,8 +385,6 @@ begin
      end;
 end;
 
-
-
 procedure httpPostData(const UserAgent: string; const url: string; const Data: AnsiString; enableProxy:Boolean= False);
 var
   hInet: HINTERNET;
