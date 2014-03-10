@@ -570,6 +570,9 @@ end;
 
 var
   Application: Twaptautodeploy;
+
+{$R *.res}
+
 begin
   Application:=Twaptautodeploy.Create(nil);
   Application.Title:='WAPTAutoDeploy';

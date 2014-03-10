@@ -17,6 +17,8 @@
       <EnableI18N LFM="False"/>
     </i18n>
     <VersionInfo>
+      <UseVersionInfo Value="True"/>
+      <MinorVersionNr Value="1"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -30,12 +32,15 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="1">
+    <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_utils"/>
       </Item1>
+      <Item2>
+        <PackageName Value="pltis_superobject"/>
+      </Item2>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="2">
       <Unit0>
         <Filename Value="waptautodeploy.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -46,11 +51,6 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="IdURI"/>
       </Unit1>
-      <Unit2>
-        <Filename Value="..\wapt-get\tisstrings.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tisstrings"/>
-      </Unit2>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -61,7 +61,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="C:\codetyphon\typhon\components\pl_Indy\source\base\;..\wapt-get"/>
+      <OtherUnitFiles Value="C:\codetyphon\typhon\components\pl_Indy\source\base\"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Other>
