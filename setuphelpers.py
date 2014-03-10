@@ -449,14 +449,6 @@ def run(*cmd,**args):
             logger.warning('%s command returns code %s' % (cmd,proc.returncode))
     return ensure_unicode(''.join(output))
 
-def run_old(*cmd,**args):
-    """Runs the command and wait for it termination
-    returns output, raise exc eption if exitcode is not null"""
-    print u'Run "%s"' % (cmd,)
-    if not 'shell' in args:
-        args['shell'] = True
-    return ensure_unicode(subprocess.check_output(*cmd,**args))
-
 def run_notfatal(*cmd,**args):
     """Runs the command and wait for it termination
     returns output, don't raise exception if exitcode is not null but return '' """
@@ -475,18 +467,11 @@ def isrunning(processname):
     processname = processname.lower()
     for p in psutil.process_iter():
         try:
-            if p.name.lower() == processname or p.name.lower() == processname+'.exe':
+            if p.name().lower() == processname or p.name().lower() == processname+'.exe':
                 return True
         except (psutil.AccessDenied,psutil.NoSuchProcess):
             pass
     return False
-    """
-    try:
-        return len(win32pdhutil.FindPerformanceAttributesByName( processname,bRefresh=1 ))> 0
-    except:
-        return False
-    """
-
 
 def killalltasks(exenames,include_children=True):
     """Kill the task by their exename : example killalltasks('explorer.exe') """
@@ -496,7 +481,7 @@ def killalltasks(exenames,include_children=True):
     exenames = [exe.lower() for exe in exenames]+[exe.lower()+'.exe' for exe in exenames]
     for p in psutil.process_iter():
         try:
-            if p.name.lower() in exenames:
+            if p.name().lower() in exenames:
                 logger.debug('Kill process %i' % (p.pid,))
                 if include_children:
                     killtree(p.pid)
@@ -519,7 +504,7 @@ def killtree(pid, including_parent=True):
 
 def processnames_list():
     """return all process name of running processes in lower case"""
-    return list(set([p.name.lower() for p in psutil.get_process_list()]))
+    return list(set([p.name().lower() for p in psutil.get_process_list()]))
 
 def find_processes(process_name):
     """Return list of Process having process_name"""
@@ -527,7 +512,7 @@ def find_processes(process_name):
     result = []
     for p in psutil.process_iter():
         try:
-            if p.name.lower() in [process_name,process_name+'.exe']:
+            if p.name().lower() in [process_name,process_name+'.exe']:
                 result.append(p)
         except (psutil.AccessDenied,psutil.NoSuchProcess):
             pass

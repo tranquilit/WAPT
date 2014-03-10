@@ -2080,7 +2080,7 @@ class Wapt(object):
         killed=[]
         for p in psutil.process_iter():
             try:
-                if p.pid <> os.getpid() and (p.create_time < mindate) and p.name in ('wapt-get','wapt-get.exe'):
+                if p.pid <> os.getpid() and (p.create_time() < mindate) and p.name() in ('wapt-get','wapt-get.exe'):
                     logger.debug('Killing process tree of pid %i' % p.pid)
                     setuphelpers.killtree(p.pid)
                     logger.debug('Killing pid %i' % p.pid)
@@ -2095,7 +2095,7 @@ class Wapt(object):
               where install_status in ('INIT','RUNNING')
            """ )
 
-        all_pids = psutil.get_pid_list()
+        all_pids = psutil.pids()
         reset_error = []
         result = []
         for rec in init_run_pids:
