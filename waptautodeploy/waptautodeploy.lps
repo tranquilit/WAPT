@@ -10,12 +10,10 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptautodeploy"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="65" Y="20"/>
+        <TopLine Value="410"/>
+        <CursorPos X="110" Y="438"/>
         <UsageCount Value="20"/>
-        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdURI.pas"/>
@@ -43,68 +41,7 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="15" HistoryIndex="14">
-      <Position1>
-        <Filename Value="waptautodeploy.lpr"/>
-        <Caret Line="10" Column="59" TopLine="1"/>
-      </Position1>
-      <Position2>
-        <Filename Value="waptautodeploy.lpr"/>
-        <Caret Line="9" Column="47" TopLine="1"/>
-      </Position2>
-      <Position3>
-        <Filename Value="waptautodeploy.lpr"/>
-        <Caret Line="10" Column="35" TopLine="1"/>
-      </Position3>
-      <Position4>
-        <Filename Value="waptautodeploy.lpr"/>
-        <Caret Line="12" Column="13" TopLine="1"/>
-      </Position4>
-      <Position5>
-        <Filename Value="waptautodeploy.lpr"/>
-        <Caret Line="461" Column="9" TopLine="437"/>
-      </Position5>
-      <Position6>
-        <Filename Value="waptautodeploy.lpr"/>
-        <Caret Line="30" Column="28" TopLine="14"/>
-      </Position6>
-      <Position7>
-        <Filename Value="waptautodeploy.lpr"/>
-        <Caret Line="481" Column="13" TopLine="469"/>
-      </Position7>
-      <Position8>
-        <Filename Value="waptautodeploy.lpr"/>
-        <Caret Line="492" Column="7" TopLine="469"/>
-      </Position8>
-      <Position9>
-        <Filename Value="waptautodeploy.lpr"/>
-        <Caret Line="366" Column="28" TopLine="352"/>
-      </Position9>
-      <Position10>
-        <Filename Value="waptautodeploy.lpr"/>
-        <Caret Line="518" Column="6" TopLine="492"/>
-      </Position10>
-      <Position11>
-        <Filename Value="waptautodeploy.lpr"/>
-        <Caret Line="444" Column="1" TopLine="438"/>
-      </Position11>
-      <Position12>
-        <Filename Value="waptautodeploy.lpr"/>
-        <Caret Line="518" Column="76" TopLine="545"/>
-      </Position12>
-      <Position13>
-        <Filename Value="waptautodeploy.lpr"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position13>
-      <Position14>
-        <Filename Value="waptautodeploy.lpr"/>
-        <Caret Line="10" Column="68" TopLine="1"/>
-      </Position14>
-      <Position15>
-        <Filename Value="waptautodeploy.lpr"/>
-        <Caret Line="366" Column="28" TopLine="349"/>
-      </Position15>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectSession>
   <EditorMacros Count="0"/>
 </CONFIG>

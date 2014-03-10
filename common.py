@@ -2755,17 +2755,22 @@ class Wapt(object):
                     self.waptdb.switch_to_explicit_mode(p.package,self.user)
 
             for (request,p) in to_install:
-                print u"Installing %s" % (p.package,)
-                result = self.install_wapt(fname(p.filename),
-                    params_dict = params_dict,
-                    explicit_by=self.user if request in apackages else None
-                    )
-                if result:
-                    for k in result.as_dict():
-                        p[k] = result[k]
-                if not result or result['install_status']<>'OK':
+                try:
+                    print u"Installing %s" % (p.package,)
+                    result = self.install_wapt(fname(p.filename),
+                        params_dict = params_dict,
+                        explicit_by=self.user if request in apackages else None
+                        )
+                    if result:
+                        for k in result.as_dict():
+                            p[k] = result[k]
+                    if not result or result['install_status']<>'OK':
+                        actions['errors'].append([request,p])
+                        logger.critical(u'Package %s (%s) not installed due to errors' %(request,p))
+                except Exception as e:
                     actions['errors'].append([request,p])
-                    logger.critical(u'Package %s (%s) not installed due to errors' %(request,p))
+                    logger.critical(u'Package %s (%s) not installed due to errors : %s' %(request,p,e))
+
             return actions
         else:
             logger.info(u'Download only, no install performed')
