@@ -3,8 +3,8 @@ object DMWaptTray: TDMWaptTray
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 288
-  HorizontalOffset = 521
-  VerticalOffset = 329
+  HorizontalOffset = 382
+  VerticalOffset = 218
   Width = 531
   object TrayIcon1: TTrayIcon
     BalloonHint = 'WAPT Service'
@@ -106,6 +106,18 @@ object DMWaptTray: TDMWaptTray
     object MenuItem15: TMenuItem
       Caption = '-'
     end
+    object MenuItem18: TMenuItem
+      Action = ActShowTasks
+    end
+    object MenuItem19: TMenuItem
+      Action = ActCancelRunningTask
+    end
+    object MenuItem16: TMenuItem
+      Action = ActCancelAllTasks
+    end
+    object MenuItem17: TMenuItem
+      Caption = '-'
+    end
     object MenuItem5: TMenuItem
       Action = ActQuit
     end
@@ -155,6 +167,18 @@ object DMWaptTray: TDMWaptTray
     object ActSessionSetup: TAction
       Caption = 'Configurer tous les paquets installés pour votre propre session'
       OnExecute = ActSessionSetupExecute
+    end
+    object ActCancelAllTasks: TAction
+      Caption = 'Annuler toutes les tâches en cours'
+      OnExecute = ActCancelAllTasksExecute
+    end
+    object ActShowTasks: TAction
+      Caption = 'Voir les tâches'
+      OnExecute = ActShowTasksExecute
+    end
+    object ActCancelRunningTask: TAction
+      Caption = 'Annuler la tâche en cours'
+      OnExecute = ActCancelRunningTaskExecute
     end
   end
   object TrayUpdate: TImageList

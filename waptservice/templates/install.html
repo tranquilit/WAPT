@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>Launch install of {{data.packagename}} launched as task #{{data.order}}</h2>
+<h2>Installation de {{data.packagename}} <a href="task?id={{data.order}}">tâche {{data.order}}</a></h2>
 {{data | beautify}}
 <input type="button" value="Retour" onclick="location.href='tasks'">
 {% endblock %}

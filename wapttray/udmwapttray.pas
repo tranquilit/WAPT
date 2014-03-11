@@ -18,6 +18,9 @@ type
   TDMWaptTray = class(TDataModule)
     ActConfigure: TAction;
     ActForceRegister: TAction;
+    ActCancelAllTasks: TAction;
+    ActCancelRunningTask: TAction;
+    ActShowTasks: TAction;
     ActSessionSetup: TAction;
     ActLocalInfo: TAction;
     ActWaptUpgrade: TAction;
@@ -33,6 +36,10 @@ type
     MenuItem13: TMenuItem;
     MenuItem14: TMenuItem;
     MenuItem15: TMenuItem;
+    MenuItem16: TMenuItem;
+    MenuItem17: TMenuItem;
+    MenuItem18: TMenuItem;
+    MenuItem19: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem11: TMenuItem;
     MenuItem7: TMenuItem;
@@ -49,6 +56,8 @@ type
     PopupMenu1: TPopupMenu;
     TrayIcon1: TTrayIcon;
     UniqueInstance1:TUniqueInstance;
+    procedure ActCancelAllTasksExecute(Sender: TObject);
+    procedure ActCancelRunningTaskExecute(Sender: TObject);
     procedure ActConfigureExecute(Sender: TObject);
     procedure ActForceRegisterExecute(Sender: TObject);
     procedure ActLaunchWaptConsoleExecute(Sender: TObject);
@@ -56,6 +65,7 @@ type
     procedure ActQuitExecute(Sender: TObject);
     procedure ActSessionSetupExecute(Sender: TObject);
     procedure ActShowStatusExecute(Sender: TObject);
+    procedure ActShowTasksExecute(Sender: TObject);
     procedure ActUpdateExecute(Sender: TObject);
     procedure ActUpgradeExecute(Sender: TObject);
     procedure ActWaptUpgradeExecute(Sender: TObject);
@@ -178,25 +188,30 @@ begin
   OpenURL(GetWaptLocalURL+'/status');
 end;
 
+procedure TDMWaptTray.ActShowTasksExecute(Sender: TObject);
+begin
+  OpenURL(GetWaptLocalURL+'/tasks');
+end;
+
 procedure TDMWaptTray.ActUpdateExecute(Sender: TObject);
 var
-  res : String;
+  res : ISUperObject;
 begin
-  res := httpGetString(GetWaptLocalURL+'/update');
+  res := WAPTLocalJsonGet('update.json');
 end;
 
 procedure TDMWaptTray.ActUpgradeExecute(Sender: TObject);
 var
-  res : String;
+  res : ISUperObject;
 begin
-  res := httpGetString(GetWaptLocalURL+'/upgrade');
+  res := WAPTLocalJsonGet('upgrade.json');
 end;
 
 procedure TDMWaptTray.ActWaptUpgradeExecute(Sender: TObject);
 var
-  res : String;
+  res : ISUperObject;
 begin
-  res := httpGetString(GetWaptLocalURL+'/waptupgrade');
+  res := WAPTLocalJsonGet('waptupgrade.json');
 end;
 
 procedure TDMWaptTray.DataModuleCreate(Sender: TObject);
@@ -225,11 +240,25 @@ begin
   OpenDocument(WaptIniFilename);
 end;
 
+procedure TDMWaptTray.ActCancelAllTasksExecute(Sender: TObject);
+var
+  res : ISuperObject;
+begin
+  res := WAPTLocalJsonGet('cancel_all_tasks.json');
+end;
+
+procedure TDMWaptTray.ActCancelRunningTaskExecute(Sender: TObject);
+var
+  res : ISuperObject;
+begin
+  res := WAPTLocalJsonGet('cancel_running_task.json');
+end;
+
 procedure TDMWaptTray.ActForceRegisterExecute(Sender: TObject);
 var
-  res : String;
+  res : ISuperObject;
 begin
-  res := httpGetString(GetWaptLocalURL+'/register');
+  res := WAPTLocalJsonGet('register.json');
 end;
 
 procedure TDMWaptTray.ActLaunchWaptConsoleExecute(Sender: TObject);
@@ -248,8 +277,8 @@ end;
 procedure TDMWaptTray.pollerEvent(message:TStringList);
 var
   msg,msg_type,topic:String;
-  bh:String;
-  upgrade_status,running,upgrades,errors,taskresult : ISuperObject;
+  bh,progress,runstatus:String;
+  upgrade_status,running,upgrades,errors,taskresult,task,tasks : ISuperObject;
 begin
   try
     if message.Count>0 then
@@ -268,6 +297,7 @@ begin
       if msg_type='STATUS' then
       begin
         upgrade_status := SO(msg);
+        runstatus := upgrade_status.S['runstatus'];
         running := upgrade_status['running_tasks'];
         upgrades := upgrade_status['upgrades'];
         errors := upgrade_status['errors'];
@@ -290,8 +320,16 @@ begin
         end
         else
         begin
-          trayHint:='Système à jour';
-          trayMode:=tmOK;
+          if runstatus<>'' then
+          begin
+            trayHint:=runstatus;
+            trayMode:=tmRunning;
+          end
+          else
+          begin
+            trayHint:='Système à jour';
+            trayMode:=tmOK;
+          end;
         end;
       end
       else
@@ -314,6 +352,7 @@ begin
         message.Delete(0);
         msg := message.Text;
         taskresult := SO(message.Text);
+        trayHint:=taskresult.S['runstatus'];
         if topic='ERROR' then
         begin
           trayMode:= tmErrors;
@@ -330,6 +369,14 @@ begin
           TrayIcon1.ShowBalloonHint;
         end
         else
+        if topic='PROGRESS' then
+        begin
+          trayMode:= tmRunning;
+          TrayIcon1.BalloonHint := UTF8Encode(taskresult.S['description']+#13#10+Format('%.0f%%',[taskresult.D['progress']]));
+          TrayIcon1.BalloonFlags:=bfInfo;
+          TrayIcon1.ShowBalloonHint;
+        end
+        else
         if topic='FINISH' then
         begin
           trayMode:= tmOK;
@@ -341,9 +388,25 @@ begin
         if topic='CANCEL' then
         begin
           trayMode:= tmErrors;
-          TrayIcon1.BalloonHint :=UTF8Encode('Annulation de '+taskresult.S['description']);
-          TrayIcon1.BalloonFlags:=bfError;
-          TrayIcon1.ShowBalloonHint;
+          if taskresult.DataType = stArray then
+          begin
+            if taskresult.AsArray.Length>0 then
+            begin
+              tasks := TSuperObject.Create(stArray);
+              for task in  taskresult do
+                tasks.AsArray.Add(task.S['description']);
+              msg := Join(#13#10,tasks);
+              TrayIcon1.BalloonHint :=UTF8Encode('Annulation de '+msg);
+              TrayIcon1.BalloonFlags:=bfWarning;
+              TrayIcon1.ShowBalloonHint;
+            end
+            else
+            begin
+              TrayIcon1.BalloonHint :=UTF8Encode('Pas de tâche annulée');
+              TrayIcon1.BalloonFlags:=bfInfo;
+              TrayIcon1.ShowBalloonHint;
+            end;
+          end
         end;
       end;
     end;
@@ -353,7 +416,7 @@ end;
 
 procedure TDMWaptTray.ActLocalInfoExecute(Sender: TObject);
 begin
-  ShowMessage(GetCurrentUserSid);
+  OpenURL(GetWaptLocalURL+'/inventory');
 end;
 
 procedure TDMWaptTray.ActQuitExecute(Sender: TObject);
@@ -435,11 +498,11 @@ end;
 
 procedure TDMWaptTray.TrayIcon1DblClick(Sender: TObject);
 var
-  res:String;
+  res:ISuperObject;
 begin
   try
-    res := httpGetString(GetWaptLocalURL+'/update');
-    if pos('ERROR',uppercase(res))<=0 then
+    res := WAPTLocalJsonGet('update.json');
+    if pos('ERROR',uppercase(res.AsJSon ))<=0 then
       TrayIcon1.BalloonHint:='Vérification en cours...'
     else
       TrayIcon1.BalloonHint:='Erreur au lancement de la vérification...';

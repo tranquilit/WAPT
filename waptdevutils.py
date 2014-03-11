@@ -30,7 +30,7 @@ from waptpackage import *
 import codecs
 from iniparse import RawConfigParser
 
-__version__ = "0.8.9"
+__version__ = "0.8.10"
 
 def registered_organization():
     return registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOrganization')
@@ -97,7 +97,7 @@ def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wa
     if not company:
         company = registered_organization()
     outputfile = ''
-    iss_template = makepath(wapt.wapt_base_dir,'waptsetup','waptagent.iss')
+    iss_template = makepath(wapt.wapt_base_dir,'waptsetup','waptsetup.iss')
     iss = codecs.open(iss_template,'r',encoding='utf8').read().splitlines()
     new_iss=[]
     for line in iss:
@@ -110,7 +110,7 @@ def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wa
         elif not line.startswith('SignTool'):
             new_iss.append(line)
             if line.startswith('OutputBaseFilename'):
-                outputfile = makepath(wapt.wapt_base_dir,'waptagent','%s.exe' % line.split('=')[1])
+                outputfile = makepath(wapt.wapt_base_dir,'waptsetup','%s.exe' % line.split('=')[1])
     source = os.path.normpath(default_public_cert)
     target = os.path.join(os.path.dirname(iss_template),'..','ssl')
     if not (os.path.normcase(os.path.abspath( os.path.dirname(source))) == os.path.normcase(os.path.abspath(target))):

@@ -22,8 +22,8 @@ Source: "..\wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.e
 ; sources of installer to rebuild a custom installer
 Source: "innosetup\*"; DestDir: "{app}\waptsetup\innosetup";
 Source: "wapt.iss"; DestDir: "{app}\waptsetup";
+Source: "waptsetup.iss"; DestDir: "{app}\waptsetup";
 Source: "services.iss"; DestDir: "{app}\waptsetup";
-Source: "waptagent.iss"; DestDir: "{app}\waptsetup";
 Source: "..\wapt.ico"; DestDir: "{app}";
 
 ; global management console

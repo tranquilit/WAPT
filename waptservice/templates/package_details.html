@@ -15,6 +15,7 @@
 </ul>
 <input type="button" value="Télécharger" onclick="location.href='package_download?package={{"%s(=%s)" % (data.package,data.version)}}'">
 <input type="button" value="Installer" onclick="location.href='install?package={{"%s(=%s)" % (data.package,data.version)}}'">
+<input type="button" value="Désinstaller" onclick="location.href='remove?package={{"%s" % (data.package,) }}'">
 
 <input type="button" value="Retour" onclick="location.href='list'">
 {% endblock %}
