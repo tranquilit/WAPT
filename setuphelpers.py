@@ -184,7 +184,7 @@ def wget(url,target,reporthook=None,printhook=None,proxies=None):
                 received = bcount*bsize
                 speed = (bcount * bsize - last_downloaded) /(1024*(time.time()-last_time_display))
                 if printhook:
-                    printhook(received,total,speed)
+                    printhook(received,total,speed,url)
                 else:
                     print u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total,speed ),
                 last_time_display = time.time()
@@ -214,6 +214,7 @@ def wget(url,target,reporthook=None,printhook=None,proxies=None):
         if not reporthook:
             reporthook = report
         last_time_display = time.time()
+        global last_downloaded
         last_downloaded = 0
         reporthook(0,chunk_size,total_bytes)
         cnt = 0

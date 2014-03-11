@@ -1,0 +1,6 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>{{title or 'Results'}}</h2>
+{{data | beautify }}
+{% endblock %}

@@ -105,10 +105,10 @@ def beautify(c):
         return jinja2.Markup(c.replace('\r\n','<br>').replace('\n','<br>'))
     elif isinstance(c,str):
         return jinja2.Markup(setuphelpers.ensure_unicode(c).replace('\r\n','<br>').replace('\n','<br>'))
-    elif hasattr(c,'keys') and callable(c.keys):
+    elif isinstance(c,dict) or (hasattr(c,'keys') and callable(c.keys)):
         rows = []
         try:
-            for key in keys:
+            for key in c.keys():
                 rows.append(u'<li><b>{}</b>: {}</li>'.format(beautify(key),beautify(c[key])))
             return jinja2.Markup(u'<ul>{}</ul>'.format(join(rows)))
         except:
@@ -372,33 +372,50 @@ def waptupgrade():
     return Response(common.jsondump({'result':'OK','message':output}), mimetype='application/json')
 
 @app.route('/upgrade')
+@app.route('/upgrade.json')
 @check_ip_source
 def upgrade():
     data1 = task_manager.add_task(WaptUpdate()).as_dict()
     data2 = task_manager.add_task(WaptUpgrade()).as_dict()
-    return Response(common.jsondump({'result':'OK','content':[data1,data2]}), mimetype='application/json')
+    data = {'result':'OK','content':[data1,data2]}
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('default.html',data=data,title='Upgrade')
 
 @app.route('/update')
+@app.route('/update.json')
 @app.route('/updatebg')
 @check_ip_source
 def update():
     data = task_manager.add_task(WaptUpdate()).as_dict()
-    return Response(common.jsondump({'result':'OK','content':data}), mimetype='application/json')
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('default.html',data=data,title='Update')
 
 @app.route('/longtask')
+@app.route('/longtask.json')
 @check_ip_source
 def longtask():
     data = task_manager.add_task(WaptLongTask(duration=int(request.args.get('duration','60')),raise_error=int(request.args.get('raise_error',0))))
-    return Response(common.jsondump({'result':'OK','content':data.as_dict()}), mimetype='application/json')
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('default.html',data=data,title='LongTask')
 
 @app.route('/cleanup')
+@app.route('/cleanup.json')
 @app.route('/clean')
 @requires_auth
 def cleanup():
     logger.info("run cleanup")
     wapt=Wapt(config_filename=config_filename)
     data = wapt.cleanup()
-    return Response(common.jsondump(data), mimetype='application/json')
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('default.html',data=data,title='Cleanup')
 
 @app.route('/enable')
 @requires_auth
@@ -417,13 +434,16 @@ def disable():
     return Response(common.jsondump(data), mimetype='application/json')
 
 @app.route('/register')
+@app.route('/register.json')
 @check_ip_source
 def register():
     logger.info("register computer")
-    task_manager.add_task("register computer")
-    wapt=Wapt(config_filename=config_filename)
-    data = wapt.register_computer()
-    return Response(common.jsondump(data), mimetype='application/json')
+    data = task_manager.add_task(WaptRegisterComputer()).as_dict()
+
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('register.html',data=data)
 
 
 @app.route('/install', methods=['GET'])
@@ -433,34 +453,32 @@ def install():
     package = request.args.get('package')
     force = int(request.args.get('force','0')) == 1
     data = task_manager.add_task(WaptPackageInstall(package,force=force)).as_dict()
-    if request.args.get('format','html')=='json':
+
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('install.html',**data)
+        return render_template('install.html',data=data)
 
-@app.route('/package_download', methods=['GET'])
+@app.route('/package_download')
+@app.route('/package_download.json')
 def package_download():
     package = request.args.get('package')
     logger.info("download package %s" % package)
-    task_manager.add_task("download package %s" % package)
-    wapt=Wapt(config_filename=config_filename)
-    try:
-        data = wapt.install(package,download_only=True,force=True)
-    except Exception as e:
-        data = {'errors':[ str(e) ]}
+    data = task_manager.add_task(WaptDownloadPackage(package)).as_dict()
 
-    if request.args.get('format','html')=='json':
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('download.html',**data)
+        return render_template('default.html',data=data)
 
 @app.route('/remove', methods=['GET'])
 @requires_auth
 def remove():
     package = request.args.get('package')
     logger.info("remove package %s" % package)
-    data = task_manager.add_task(WaptPackageRemove(package,force=int(request.args.get('force','0')))).as_dict()
-    if request.args.get('format','html')=='json':
+    force=int(request.args.get('force','0'))
+    data = task_manager.add_task(WaptPackageRemove(package,force = force)).as_dict()
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
         return render_template('install.html',**data)
@@ -480,7 +498,7 @@ def index():
             wapt=wapt,
             wapt_info=wapt.wapt_status(),
             update_status=wapt.get_last_update_status())
-    if request.args.get('format','html')=='json':
+    if request.args.get('format','html')=='json'  or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
         return render_template('index.html',**data)
@@ -586,11 +604,14 @@ class WaptTask(object):
         self.logs = []
         self.result = None
         self.summary = ""
-        self.progress = 0
+        # from 0 to 100%
+        self.progress = None
 
     def update_status(self,status):
         self.wapt.runstatus = status
         msg = json.dumps(self.wapt.get_last_update_status())
+        if self.progress is not None:
+            msg['progress'] = self.progress
         self.wapt.events.send(msg)
 
     def can_run(self,explain=False):
@@ -752,6 +773,27 @@ class WaptUpdateServerStatus(WaptTask):
     def __str__(self):
         return u"Informer le serveur de l'état du poste de travail"
 
+class WaptRegisterComputer(WaptTask):
+    """Send workstation status to server"""
+    def __init__(self):
+        super(WaptRegisterComputer,self).__init__()
+        self.priority = 10
+
+    def _run(self):
+        if self.wapt.wapt_server:
+            try:
+                self.result = self.wapt.register_computer()
+                self.summary = u"L'inventaire a été envoyé au serveur WAPT"
+            except Exception as e:
+                self.result = {}
+                self.summary = u"Erreur lors de l'envoi de l'inventaire vers le serveur : {}".format(e)
+        else:
+            self.result = {}
+            self.summary = u'WAPT Server is not defined'
+
+    def __str__(self):
+        return u"Informer le serveur de l'inventaire du poste de travail"
+
 class WaptLongTask(WaptTask):
     """Test action for debug purpose"""
     def __init__(self,duration=60,raise_error=False):
@@ -774,11 +816,45 @@ class WaptLongTask(WaptTask):
     def __str__(self):
         return u"Test long running task of {}s".format(self.duration)
 
+class WaptDownloadPackage(WaptTask):
+    def __init__(self,packagename,usecache=False):
+        super(WaptDownloadPackage,self).__init__()
+        self.packagename = packagename
+        self.usecache = usecache
+
+    def printhook(self,received,total,speed,url):
+        self.wapt.check_cancelled()
+        stat = u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total, speed)
+        #print stat,
+        self.runstatus='Downloading %s : %s' % (url,stat)
+        self.progress = 100.0*received/total
+
+    def _run(self):
+        self.result = self.wapt.download_packages(self.packagename,usecache=self.usecache,printhook=self.printhook)
+
+    def as_dict(self):
+        d = WaptTask.as_dict(self)
+        d.update(
+            dict(
+                packagename = self.packagename,
+                usecache = self.usecache,
+                )
+            )
+        return d
+
+    def __str__(self):
+        return u"Téléchargement de {packagename} (tâche #{order})".format(classname=self.__class__.__name__,order=self.order,packagename=self.packagename)
+
+    def same_action(self,other):
+        return (self.__class__ == other.__class__) and (self.packagename == other.packagename)
+
+
 class WaptPackageInstall(WaptTask):
     def __init__(self,packagename,force=False):
         super(WaptPackageInstall,self).__init__()
         self.packagename = packagename
         self.force = force
+        self.package = None
 
     def _run(self):
         self.result = self.wapt.install(self.packagename,force = self.force)
@@ -786,7 +862,9 @@ class WaptPackageInstall(WaptTask):
     def as_dict(self):
         d = WaptTask.as_dict(self)
         d.update(
-            dict(packagename = self.packagename)
+            dict(
+                packagename = self.packagename,
+                force = self.force)
             )
         return d
 

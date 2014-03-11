@@ -2776,10 +2776,12 @@ class Wapt(object):
             logger.info(u'Download only, no install performed')
             return actions
 
-    def download_packages(self,package_requests,usecache=True):
+    def download_packages(self,package_requests,usecache=True,printhook=None):
         """Download a list of packages (requests are of the form packagename (>version) )
            returns a dict of {"downloaded,"skipped","errors"}
         """
+        if not isinstance(package_requests,(list,tuple)):
+            package_requests = [ package_requests ]
         downloaded = []
         skipped = []
         errors = []
@@ -2798,7 +2800,6 @@ class Wapt(object):
             else:
                 raise Exception('Invalid package request %s' % p)
         for entry in packages:
-
             self.check_cancelled()
 
             packagefilename = entry.filename.strip('./')
@@ -2821,14 +2822,17 @@ class Wapt(object):
             if not skip:
                 logger.info("  Downloading package from %s" % download_url)
                 try:
-                    def report(received,total,speed):
+                    def report(received,total,speed,url):
                         self.check_cancelled()
-                        stat = u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total, speed)
+                        stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received/total, speed)
                         print stat,
                         self.runstatus='Downloading %s : %s' % (entry.package,stat)
 
+                    if not printhook:
+                        printhook = report
+
                     self.runstatus='Downloading %s' % download_url
-                    setuphelpers.wget( download_url, self.package_cache_dir,proxies=self.proxies,printhook = report)
+                    setuphelpers.wget( download_url, self.package_cache_dir,proxies=self.proxies,printhook = printhook)
                     downloaded.append(fullpackagepath)
                     self.runstatus=''
                 except BaseException as e:
