@@ -38,7 +38,7 @@
 		<td>
         {%if c[0] == 'package' %}
 		      <img class=package-icon src="package_icon?package={{p.package}}">
-              <p>{{link("package_details?package="+package_version,p[c[0]])}}
+              <p>{{link("package_details?package="+package_version,p[c[0]   ])}}
               <span class="package-version">{{p.version}}</span></p>
               <p class="package-description">{{p.description}}</p>
         {%elif c[0]=='install_date' %}
