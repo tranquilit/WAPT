@@ -772,7 +772,9 @@ class WaptUpgrade(WaptTask):
         super(WaptUpgrade,self).__init__()
 
     def _run(self):
-        cjoin = u','.join
+        def cjoin(l):
+            return u','.join([u"%s" % (p[1].asrequirement(),) for p in l])
+
         self.result = self.wapt.upgrade()
         """result: {
             unavailable: [ ],
@@ -788,22 +790,19 @@ class WaptUpgrade(WaptTask):
             additional: [ ]
             }"""
         all_install = self.result['install']
-        """
         if self.result['additional']:
             all_install.extend(self.result['additional'])
-        """
         self.summary = u"""\
             Installés : {install}
             Mis à jour : {upgrade}
             Déjà à jour :{skipped}
-            Erreurs : {errors}""".format(**self.result)
-        """
+            Erreurs : {errors}""".format(
             install = cjoin(all_install),
             upgrade = cjoin(self.result['upgrade']),
             skipped = cjoin(self.result['skipped']),
             errors = cjoin(self.result['errors']),
         )
-        """
+
 
     def __str__(self):
         return u'Mise à jour des paquets installés sur la machine'
@@ -940,7 +939,16 @@ class WaptPackageRemove(WaptPackageInstall):
         super(WaptPackageRemove,self).__init__(packagename=packagename,force=force)
 
     def _run(self):
+        def cjoin(l):
+            return u','.join([u'%s'%p for p in l])
+
         self.result = self.wapt.remove(self.packagename,force=self.force)
+        self.summary = u"""\
+            Enlevés : {removed}
+            Erreurs : {errors}""".format(
+                removed = cjoin(self.result['removed']),
+                errors = cjoin(self.result['errors']),
+                )
 
     def __str__(self):
         return u"Désinstallation de {packagename} (tâche #{order})".format(classname=self.__class__.__name__,order=self.order,packagename=self.packagename)
