@@ -55,7 +55,7 @@ from rocket import Rocket
 
 from waptpackage import update_packages,PackageEntry
 
-__version__="0.8.5"
+__version__="0.8.10"
 
 config = ConfigParser.RawConfigParser()
 
@@ -66,7 +66,6 @@ if not os.path.exists(log_directory):
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-
 config_file = os.path.join(wapt_root_dir,'waptserver','waptserver.ini')
 
 if os.path.exists(config_file):
@@ -81,7 +80,6 @@ def setloglevel(logger,loglevel):
         if not isinstance(numeric_level, int):
             raise ValueError('Invalid log level: %s' % loglevel)
         logger.setLevel(numeric_level)
-
 
 #default mongodb configuration for wapt
 mongodb_port = "38999"
@@ -118,6 +116,11 @@ if config.has_section('options'):
         wapt_folder = config.get('options', 'wapt_folder')
         if wapt_folder.endswith('/'):
             wapt_folder = wapt_folder[:-1]
+
+    if config.has_option('options', 'loglevel'):
+        loglevel = config.get('options', 'loglevel')
+        setloglevel(logger,loglevel)
+
 else:
     raise Exception ("FATAL, configuration file " + config_file + " has no section [options]. Please check Waptserver documentation")
 
@@ -143,11 +146,9 @@ if os.path.exists(wapt_folder + '-group')==False:
         raise Exception("Folder missing : %s-group" % wapt_folder )
 
 
-logger = logging.getLogger()
 hdlr = logging.StreamHandler(sys.stdout)
 hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
 logger.addHandler(hdlr)
-logger.setLevel(logging.INFO)
 
 try:
     client = MongoClient(mongodb_ip, int(mongodb_port))
@@ -191,8 +192,8 @@ def informations():
 
 @app.route('/wapt/')
 def wapt_listing():
-    return render_template('listing.html')
 
+    return render_template('listing.html',data=data)
 
 @app.route('/json/host_list',methods=['GET'])
 def get_host_list():
@@ -238,8 +239,11 @@ def get_host_list():
 
 @app.route('/update_host',methods=['POST'])
 def update_host():
+    """Update localstatus of computer, and return known registration info"""
     data = json.loads(request.data)
     if data:
+        uuid = data["uuid"]
+        logger.info('Update host %s status'%(uuid,))
         return json.dumps(update_data(data))
     else:
         raise Exception("No data retrieved")
@@ -273,7 +277,6 @@ def update_data(data):
 
 @app.route('/client_software_list/<string:uuid>')
 def get_client_software_list(uuid=""):
-
     softwares = get_host_data(uuid, filter={"softwares":1})
     if softwares.has_key('softwares'):
         return  Response(response=json.dumps(softwares['softwares']),
@@ -284,55 +287,51 @@ def get_client_software_list(uuid=""):
 
 
 def packagesFileToList(pathTofile):
+    listPackages = codecs.decode(zipfile.ZipFile(pathTofile).read(name='Packages'),'utf-8')
     packages = []
-    if os.path.isfile(pathTofile):
-        listPackages = codecs.decode(zipfile.ZipFile(pathTofile).read(name='Packages'),'utf-8')
 
-        def add_package(lines):
-            package = PackageEntry()
-            package.load_control_from_wapt(lines)
-            package.filename = package.make_package_filename()
-            packages.append(package)
+    def add_package(lines):
+        package = PackageEntry()
+        package.load_control_from_wapt(lines)
+        package.filename = package.make_package_filename()
+        packages.append(package)
 
 
-        lines = []
-        for line in listPackages.splitlines():
-            # new package
-            if line.strip()=='':
-                add_package(lines)
-                lines = []
-                # add ettribute to current package
-            else:
-                lines.append(line)
-
-        if lines:
+    lines = []
+    for line in listPackages.splitlines():
+        # new package
+        if line.strip()=='':
             add_package(lines)
             lines = []
+            # add ettribute to current package
+        else:
+            lines.append(line)
 
-        packages.sort()
+    if lines:
+        add_package(lines)
+        lines = []
+
+    packages.sort()
     return packages
 
 @app.route('/client_package_list/<string:uuid>')
 def get_client_package_list(uuid=""):
-    packages = []
-    host_packages = get_host_data(uuid, {"packages":1})
-    if host_packages:
-        packages = host_packages.get('packages',[])
-        if packages:
-            repo_packages = packagesFileToList(os.path.join(wapt_folder, 'Packages'))
-            for p in packages:
-                package = PackageEntry()
-                package.load_control_from_dict(p)
-                matching = [ x for x in repo_packages if package.package == x.package ]
-                if matching:
-                    if package < matching[-1]:
-                        p['install_status'] = 'NEED-UPGRADE'
-    else:
-        return 'No such host UUID %s in database' % uuid
+    packages = get_host_data(uuid, {"packages":1})
+    repo_packages = packagesFileToList(os.path.join(wapt_folder, 'Packages'))
+    if packages.has_key('packages'):
+        for p in packages['packages']:
+            package = PackageEntry()
+            package.load_control_from_dict(p)
+            matching = [ x for x in repo_packages if package.package == x.package ]
+            if matching:
+                if package < matching[-1]:
+                    p['install_status'] = 'NEED-UPGRADE'
 
-    return Response(response=json.dumps(packages),
-                     status=200,
-                     mimetype="application/json")
+        return  Response(response=json.dumps(packages['packages']),
+                         status=200,
+                         mimetype="application/json")
+    return "{}"
+
 
 def requires_auth(f):
     @wraps(f)
@@ -343,8 +342,7 @@ def requires_auth(f):
             logger.info('no credential given')
             return authenticate()
 
-        logging.info("authenticating : %s" % auth.username)
-
+        logging.debug("authenticating : %s" % auth.username)
         if not check_auth(auth.username, auth.password):
             return authenticate()
         logger.info("user %s authenticated" % auth.username)
@@ -392,10 +390,11 @@ def upload_host():
             return "ok"
         else:
             return "wrong file type"
+
+
     except:
         e = sys.exc_info()
         return str(e)
-    return "ok"
 
 @app.route('/upload_waptsetup',methods=['POST'])
 @requires_auth
@@ -427,11 +426,18 @@ def waptupgrade_host(ip):
             s.close
             if ip and waptservice_port:
                 logger.info( "Upgrading %s..." % ip)
-                r = requests.get("http://%s:%d/waptupgrade" % ( ip, waptservice_port),proxies=None)
-                if "OK" in r.text.upper():
-                    result = {  'status' : 'OK', 'message': u"%s" % r.text }
-                else:
-                    result = {  'status' : 'ERROR', 'message': u"%s" % r.text }
+                try:
+                    data = json.loads(requests.get("http://%s:%d/waptupgrade.json" % ( ip, waptservice_port),proxies=None))
+                    if "OK" in r.text   .upper():
+                        result = {  'status' : 'OK', 'message': u"%s" % r.text }
+                    else:
+                        result = {  'status' : 'ERROR', 'message': u"%s" % r.text }
+                except:
+                    r = requests.get("http://%s:%d/waptupgrade" % ( ip, waptservice_port),proxies=None)
+                    if "OK" in r.text.upper():
+                        result = {  'status' : 'OK', 'message': u"%s" % r.text }
+                    else:
+                        result = {  'status' : 'ERROR', 'message': u"%s" % r.text }
 
             else:
                 raise Exception(u"Le port de waptservice n'est pas défini")
@@ -657,14 +663,13 @@ def check_auth(username, password):
 def authenticate():
     """Sends a 401 response that enables basic auth"""
     return Response(
-        'Could not verify your access level for that URL.\n'
         'You have to login with proper credentials', 401,
         {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
 if __name__ == "__main__":
     debug=False
-    if debug:
-        app.run(host='0.0.0.0',port=30880,debug=False)
+    if debug==True:
+        app.run(host='0.0.0.0',port=30880,debug=True)
     else:
         port = 8080
         server = Rocket(('0.0.0.0', port), 'wsgi', {"wsgi_app":app})
