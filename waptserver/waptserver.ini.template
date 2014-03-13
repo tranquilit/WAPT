@@ -1,7 +1,7 @@
 [uwsgi]
 http-socket = 0.0.0.0:8080
 master = true
-processes = 4
+processes = 16
 wsgi=waptserver:app
 chdir=/opt/wapt/waptserver/
 max-requests=100
