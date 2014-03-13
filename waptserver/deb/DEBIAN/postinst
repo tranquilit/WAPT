@@ -12,8 +12,8 @@ chown wapt:www-data -R /var/www/wapt-host
 chown wapt:www-data -R /var/www/wapt-group
 chown wapt:www-data -R /opt/wapt/
 
-cp /opt/wapt/waptserver/scripts/waptserver-init /etc/init.d/waptserver
-chmod +x /etc/init.d/waptserver
+#cp /opt/wapt/waptserver/scripts/waptserver-init /etc/init.d/waptserver
+#chmod +x /etc/init.d/waptserver
 
 update-rc.d waptserver defaults 
 
