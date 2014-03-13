@@ -238,7 +238,6 @@ def get_host_list():
 
 @app.route('/update_host',methods=['POST'])
 def update_host():
-    print request.data
     data = json.loads(request.data)
     if data:
         return json.dumps(update_data(data))
