@@ -3802,6 +3802,8 @@ class Wapt(object):
         default_root = 'c:\\waptdev\\%(package)s-%(suffix)s'
         suffix = self.config.get('global','default_sources_suffix')
         root = self.config.get('global','default_sources_root')
+        if not root:
+            raise Exception('default_sources_root is empty')
         if section == 'host':
             if self.config.has_option('global','default_sources_root_host'):
                 root = self.config.get('global','default_sources_root_host')
