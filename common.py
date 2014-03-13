@@ -27,7 +27,6 @@ import logging
 import datetime
 import time
 import sys
-import pprint
 import zipfile
 from zipfile import ZipFile
 import tempfile
@@ -47,9 +46,7 @@ import copy
 import getpass
 import psutil
 import threading
-
-import winsys.security
-import winsys.accounts
+import email.utils
 
 from waptpackage import *
 
@@ -77,7 +74,7 @@ from setuphelpers import ensure_unicode
 
 import types
 
-__version__ = "0.8.10"
+__version__ = "0.8.11"
 
 logger = logging.getLogger()
 
@@ -86,6 +83,15 @@ def datetime2isodate(adatetime = None):
         adatetime = datetime.datetime.now()
     assert(isinstance(adatetime,datetime.datetime))
     return adatetime.isoformat()
+
+def httpdatetime2isodate(httpdate):
+    """convert a date string as returned in http headers or mail headers to isodate
+    >>> import requests
+    >>> last_modified = requests.head('http://wapt/wapt/Packages',headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
+    >>> len(httpdatetime2isodate(last_modified)) == 19
+    True
+    """
+    return datetime2isodate(datetime.datetime(*email.utils.parsedate(httpdate)[:6]))
 
 def isodate2datetime(isodatestr):
     # we remove the microseconds part as it is not working for python2.5 strptime
@@ -1462,14 +1468,14 @@ class WaptDB(WaptBaseDB):
     def update_repos_list(self,repos_list,proxies=None,force=False):
         """update the packages database with Packages files from the url repos_list"""
         try:
-            logger.info(u'Purge packages table')
-            self.db.execute('delete from wapt_package where repo_url not in (%s)' % (','.join('"%s"'% r.repo_url for r in repos_list,)))
+            logger.info(u'Remove unknown repositories from packages table and params (%s)' %(','.join('"%s"'% r.name for r in repos_list,),)  )
+            self.db.execute('delete from wapt_package where repo not in (%s)' % (','.join('"%s"'% r.name for r in repos_list,)))
             self.db.execute('delete from wapt_params where name like "last-http%%" and name not in (%s)' % (','.join('"last-%s"'% r.repo_url for r in repos_list,)))
             self.db.commit()
             for repo in repos_list:
                 logger.info(u'Getting packages from %s' % repo.repo_url)
                 try:
-                    repo.update_db(proxies=proxies,force=force)
+                    repo.update_db(waptdb=self,force=force)
                 except Exception,e:
                     logger.critical(u'Error getting Packages index from %s : %s' % (repo.repo_url,ensure_unicode(e)))
             logger.debug(u'Commit wapt_package updates')
@@ -1483,9 +1489,28 @@ class WaptDB(WaptBaseDB):
         """Given a list of packages conditions (packagename (optionalcondition))
             return a list of dependencies (packages conditions) to install
               TODO : choose available dependencies in order to reduce the number of new packages to install
+        >>> waptdb = WaptDB(':memory:')
+        >>> office = PackageEntry('office','0')
+        >>> firefox22 = PackageEntry('firefox','22')
+        >>> firefox24 = PackageEntry('firefox','24')
+        >>> thunderbird = PackageEntry('thunderbird','23')
+        >>> flash10 = PackageEntry('flash','10')
+        >>> flash12 = PackageEntry('flash','12')
+        >>> office.depends='firefox(<24),thunderbird'
+        >>> firefox22.depends='flash(>=10)'
+        >>> firefox24.depends='flash(>=12)'
+        >>> waptdb.add_package_entry(office)
+        >>> waptdb.add_package_entry(firefox22)
+        >>> waptdb.add_package_entry(firefox24)
+        >>> waptdb.add_package_entry(flash10)
+        >>> waptdb.add_package_entry(flash12)
+        >>> waptdb.add_package_entry(thunderbird)
+        >>> waptdb.build_depends('office')
+        [u'flash(>=10)', u'firefox(<24)', u'thunderbird']
         """
         if not isinstance(packages,list) and not isinstance(packages,tuple):
             packages = [packages]
+
         MAXDEPTH = 30
         # roots : list of initial packages to avoid infinite loops
         def dodepends(explored,packages,depth):
@@ -1513,7 +1538,18 @@ class WaptDB(WaptBaseDB):
         return dodepends(explored,packages,depth)
 
     def package_entry_from_db(self,package,version_min='',version_max=''):
-        """Return the most recent package entry given its packagename and minimum and maximum version"""
+        """Return the most recent package entry given its packagename and minimum and maximum version
+        >>> waptdb = WaptDB(':memory:')
+        >>> waptdb.add_package_entry(PackageEntry('dummy','1'))
+        >>> waptdb.add_package_entry(PackageEntry('dummy','2'))
+        >>> waptdb.add_package_entry(PackageEntry('dummy','3'))
+        >>> waptdb.package_entry_from_db('dummy')
+        "dummy (=3)"
+        >>> waptdb.package_entry_from_db('dummy',version_min=2)
+        "dummy (=3)"
+        >>> waptdb.package_entry_from_db('dummy',version_max=1)
+        "dummy (=1)"
+        """
         result = PackageEntry()
         filter = ""
         if version_min is None:
@@ -1539,6 +1575,14 @@ class WaptDB(WaptBaseDB):
         Le matching est fait sur le nom de champs.
             Les champs qui ne matchent pas un attribut de PackageEntry
                 sont également mis en attributs !
+        >>> waptdb = WaptDB(':memory:')
+        >>> waptdb.add_package_entry(PackageEntry('toto','0',repo='main'))
+        >>> waptdb.add_package_entry(PackageEntry('dummy','2',repo='main'))
+        >>> waptdb.add_package_entry(PackageEntry('dummy','1',repo='main'))
+        >>> waptdb.query_package_entry("select * from wapt_package where package=?",["dummy"])
+        ["dummy (=2)", "dummy (=1)"]
+        >>> waptdb.query_package_entry("select * from wapt_package where package=?",["dummy"],one=True)
+        "dummy (=2)"
         """
         result = []
         cur = self.db.execute(query, args)
@@ -1551,27 +1595,177 @@ class WaptDB(WaptBaseDB):
                 if not k in pe.all_attributes:
                     pe.calculated_attributes.append(k)
             result.append(pe)
+        if one and result:
+            result = sorted(result)[-1]
         return result
+
+    def purge_repo(self,repo_name):
+        """remove references to repo repo_name
+        >>> waptdb = WaptDB('c:/wapt/db/waptdb.sqlite')
+        >>> waptdb.purge_repo('main')
+        """
+        try:
+            self.db.execute('delete from wapt_package where repo=?',(repo_name,))
+            self.db.commit()
+        except:
+            self.db.rollback()
+            raise
 
 
 class WaptRepo(object):
-    def __init__(self,wapt,name='',url=None):
+    """Gives access to a remote http repository, with a zipped Packages pckages index
+    >>> repo = WaptRepo(name='main',url='http://wapt/wapt',timeout=4)
+    >>> delta = repo.load_packages()
+    >>> 'last-modified' in delta and 'added' in delta and 'removed' in delta
+    True
+    """
+    def __init__(self,name='',url=None,proxies=[],timeout = 2,dnsdomain=None):
+        """Initialize a repo at url "url". If
+                 url is None, the url is requested from DNS"""
         self.name = name
         if url and url[-1]=='/':
             url = url.rstrip('/')
         self._repo_url = url
-        self.wapt = wapt
+        self._cached_dns_repo_url = None
 
-    @property
-    def waptdb(self):
-        return self.wapt.waptdb
+        self.proxies=proxies
+        self.packages = []
+        self.timeout = timeout
+        if dnsdomain:
+            self.dnsdomain = dnsdomain
+        else:
+            self.dnsdomain = setuphelpers.get_domain_fromregistry()
 
     @property
     def repo_url(self):
+        """Return fixed url if any, else request DNS
+        >>> repo = WaptRepo(name='main',timeout=4)
+        >>> print repo.dnsdomain
+        tranquilit.local
+        >>> repo = WaptRepo(name='main',timeout=4)
+        >>> print repo.dnsdomain
+        tranquilit.local
+        >>> print repo.repo_url
+        http://srvwapt.tranquilit.local/wapt
+        """
+
         if self._repo_url:
             return self._repo_url
         else:
-            return self.wapt.wapt_repourl
+            if not self._cached_dns_repo_url:
+                self._cached_dns_repo_url = self.find_wapt_server()
+            return self._cached_dns_repo_url
+
+    def find_wapt_server(self):
+        """Search the nearest working main WAPT repository given the following priority
+           - URL defined in ini file
+           - first SRV record in the same network as one of the connected network interface
+           - first SRV record with the highest weight
+           - wapt CNAME in the local dns domain (https first then http)
+        >>> repo = WaptRepo(name='main',dnsdomain='tranquil.it',timeout=4,url=None)
+        >>> repo.repo_url
+        'http://wapt.tranquil.it./wapt'
+        >>> repo = WaptRepo(name='main',url='http://wapt/wapt',timeout=4)
+        >>> repo.repo_url
+        'http://wapt/wapt'
+        """
+
+        local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
+        logger.debug(u'All interfaces : %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in host_ipv4() if 'addr' in i and 'netmask' in i])
+        connected_interfaces = [ i for i in host_ipv4() if 'addr' in i and 'netmask' in i and i['addr'] in local_ips ]
+        logger.debug(u'Local connected IPs: %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in connected_interfaces])
+
+        def is_inmysubnets(ip):
+            """Return True if IP is in one of my connected subnets"""
+            for i in connected_interfaces:
+                if same_net(i['addr'],ip,i['netmask']):
+                    logger.debug(u'  %s is in same subnet as %s/%s local connected interface' % (ip,i['addr'],i['netmask']))
+                    return True
+            return False
+
+        if self.dnsdomain and self.dnsdomain <> '.':
+            # find by dns SRV _wapt._tcp
+            try:
+                resolv = dns.resolver.get_default_resolver()
+                logger.debug(u'DNS server %s' % (resolv.nameservers,))
+                logger.debug(u'Trying _wapt._tcp.%s SRV records' % self.dnsdomain)
+                answers = dns.resolver.query('_wapt._tcp.%s.' % self.dnsdomain,'SRV')
+                working_url = []
+                for a in answers:
+                    # get first numerical ipv4 from SRV name record
+                    try:
+                        wapthost = a.target.to_text()[0:-1]
+                        ip = dns.resolver.query(a.target)[0].to_text()
+                        if a.port == 80:
+                            url = 'http://%s/wapt' % (wapthost,)
+                            if tryurl(url+'/Packages'):
+                                working_url.append((a.weight,url))
+                                if is_inmysubnets(ip):
+                                    return url
+                        elif a.port == 443:
+                            url = 'https://%s/wapt' % (wapthost,)
+                            if tryurl(url+'/Packages'):
+                                working_url.append((a.weight,url))
+                                if is_inmysubnets(ip):
+                                    return url
+                        else:
+                            url = 'http://%s:%i/wapt' % (wapthost,a.port)
+                            if tryurl(url+'/Packages'):
+                                working_url.append((a.weight,url))
+                                if is_inmysubnets(ip):
+                                    return url
+                    except Exception,e:
+                        logging.debug('Unable to resolve : error %s' % (ensure_unicode(e),))
+
+                if working_url:
+                    working_url.sort()
+                    logger.debug(u'  Accessible servers : %s' % (working_url,))
+                    return working_url[-1][1]
+
+                if not answers:
+                    logger.debug(u'  No _wapt._tcp.%s SRV record found' % self.dnsdomain)
+            except dns.exception.DNSException,e:
+                logger.debug(u'  DNS resolver failed looking for _SRV records: %s' % (ensure_unicode(e),))
+
+            # find by dns CNAME
+            try:
+                logger.debug(u'Trying wapt.%s CNAME records' % self.dnsdomain)
+                answers = dns.resolver.query('wapt.%s.' % self.dnsdomain,'CNAME')
+                for a in answers:
+                    wapthost = a.target.canonicalize().to_text()[0:-1]
+                    url = 'https://%s/wapt' % (wapthost,)
+                    if tryurl(url+'/Packages'):
+                        return url
+                    url = 'http://%s/wapt' % (wapthost,)
+                    if tryurl(url+'/Packages'):
+                        return url
+                if not answers:
+                    logger.debug(u'  No wapt.%s CNAME SRV record found' % self.dnsdomain)
+
+            except dns.exception.DNSException,e:
+                logger.warning(u'  DNS resolver error : %s' % (ensure_unicode(e),))
+
+            # find by dns A
+            try:
+                wapthost = 'wapt.%s.' % self.dnsdomain
+                logger.debug(u'Trying %s A records' % wapthost)
+                answers = dns.resolver.query(wapthost,'A')
+                if answers:
+                    url = 'https://%s/wapt' % (wapthost,)
+                    if tryurl(url+'/Packages'):
+                        return url
+                    url = 'http://%s/wapt' % (wapthost,)
+                    if tryurl(url+'/Packages'):
+                        return url
+                if not answers:
+                    logger.debug(u'  No %s A record found' % wapthost)
+
+            except dns.exception.DNSException,e:
+                logger.warning(u'  DNS resolver error : %s' % (ensure_unicode(e),))
+        else:
+            logger.warning(u'Local DNS domain not found, skipping SRV _wapt._tcp and CNAME search ')
+
+        return None
 
     @repo_url.setter
     def repo_url(self,value):
@@ -1582,129 +1776,228 @@ class WaptRepo(object):
         self._repo_url = value
 
     def load_config(self,config,section=''):
+        """Load waptrepo configuration from inifile
+        """
         if section:
             self.name = section
-        self.repo_url = config.get(self.name,'repo_url')
+        if config.has_section(self.name):
+            if config.has_option(self.name,'repo_url'):
+                self.repo_url = config.get(self.name,'repo_url')
+            if config.has_option(self.name,'http_proxy'):
+                self.proxies = config.get(self.name,'http_proxy')
+            if config.has_option(self.name,'timeout'):
+                self.timeout = config.get_float(self.name,'timeout')
         return self
 
-    def update_db(self,force=False,proxies=None):
+    @property
+    def packages_url(self):
+        """return url of Packages index file"""
+        return self.repo_url + '/Packages'
+
+    def need_update(self,waptdb):
+        """Return True if index has changed on repo and local db needs an update
+        >>> repo = WaptRepo(name='main',url='http://wapt/wapt',timeout=4)
+        >>> waptdb = WaptDB('c:/wapt/db/waptdb.sqlite')
+        >>> res = repo.need_update(waptdb)
+        >>> isinstance(res,bool)
+        True
+        """
+        if not waptdb:
+            logger.debug(u'need_update : no waptdb provided, update is needed')
+            return True
+        else:
+            last_update = waptdb.get_param('last-%s' % self.repo_url[:59])
+            if last_update:
+                logger.debug(u'Check last-modified header for %s to avoid unecessary update' % (self.packages_url,))
+                current_update = self.is_available()
+                if current_update == last_update:
+                    logger.info(u'Index from %s has not been updated (last update %s), skipping update' % (self.packages_url,last_update))
+                    return False
+                else:
+                    return True
+            else:
+                return True
+
+    def is_available(self):
+        """Try to access the repo and return last modified date of repo index or None if not accessible
+        >>> repo = WaptRepo(name='main',url='http://wapt/wapt',timeout=1)
+        >>> repo.is_available() <= datetime2isodate()
+        True
+        >>> repo = WaptRepo(name='main',url='http://badwapt/wapt',timeout=1)
+        >>> repo.is_available() is None
+        True
+        """
+        logger.debug(u'Checking availability of %s' % (self.packages_url,))
+        try:
+            packages_last_modified = requests.head(
+                self.packages_url,
+                timeout=self.timeout,
+                proxies=self.proxies,
+                verify=False,
+                headers={'cache-control':'no-cache','pragma':'no-cache'}
+                ).headers['last-modified']
+            return httpdatetime2isodate(packages_last_modified)
+        except requests.RequestException as e:
+            self._cached_dns_repo_url = None
+            logger.warning('Repo packages index %s is not available : %s'%(self.packages_url,e))
+            return None
+
+    def load_packages(self):
+        """Try to load index of packages as PackageEntry list from repository
+                return {'added','removed'}
+        """
+        new_packages = []
+        logger.debug(u'Read remote Packages zip file %s' % self.packages_url)
+        packages_answer = requests.get(self.packages_url,proxies=self.proxies,timeout=self.timeout, verify=False,headers={'cache-control':'no-cache','pragma':'no-cache'})
+        packages_answer.raise_for_status
+
+        # Packages file is a zipfile with one Packages file inside
+        packages_lines = codecs.decode(ZipFile(
+              StringIO.StringIO(packages_answer.content)
+            ).read(name='Packages'),'UTF-8').splitlines()
+
+        startline = 0
+        endline = 0
+        def add(start,end):
+            if start <> end:
+                package = PackageEntry()
+                package.load_control_from_wapt(packages_lines[start:end])
+                logger.info(u"%s (%s)" % (package.package,package.version))
+                package.repo_url = self.repo_url
+                package.repo = self.name
+                new_packages.append(package)
+
+        for line in packages_lines:
+            if line.strip()=='':
+                add(startline,endline)
+                endline += 1
+                startline = endline
+            # add ettribute to current package
+            else:
+                endline += 1
+        # last one
+        add(startline,endline)
+        added = [ p for p in new_packages if not p in self.packages]
+        removed = [ p for p in self.packages if not p in new_packages]
+        self.packages = new_packages
+        return {'added':added,'removed':removed,'last-modified': httpdatetime2isodate(packages_answer.headers['last-modified'])}
+
+    def update_db(self,force=False,waptdb=None):
         """Get Packages from http repo and update local package database
-            return last-update header"""
+            return last-update header
+        >>> import common
+        >>> repo = common.WaptRepo('main','http://wapt/wapt')
+        >>> localdb = common.WaptDB('c:/wapt/db/waptdb.sqlite')
+        >>> last_update = repo.is_available()
+        >>> repo.update_db(waptdb=localdb) == last_update
+        True
+        """
         try:
             result = None
-            packages_url = self.repo_url + '/Packages'
             # Check if updated
-            if not force:
-                last_update = self.waptdb.get_param('last-%s' % self.repo_url[:59])
-                if last_update:
-                    logger.debug(u'Check last-modified header for %s to avoid unecessary update' % (packages_url,))
-                    current_update = requests.head(packages_url,proxies=proxies,verify=False,headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
-                    if current_update == last_update:
-                        logger.info(u'Index from %s has not been updated (last update %s), skipping update' % (packages_url,last_update))
-                        return current_update
-
-            logger.debug(u'Read remote Packages zip file %s' % packages_url)
-            packages_answer = requests.get(packages_url,proxies=proxies,verify=False,headers={'cache-control':'no-cache','pragma':'no-cache'})
-            packages_answer.raise_for_status
-
-            # Packages file is a zipfile with one Packages file inside
-            packageListFile = codecs.decode(ZipFile(
-                  StringIO.StringIO(packages_answer.content)
-                ).read(name='Packages'),'UTF-8').splitlines()
-
-            logger.debug(u'Purge packages table')
-            self.waptdb.db.execute('delete from wapt_package where repo_url=?',(self.repo_url,))
-            startline = 0
-            endline = 0
-            def add(start,end):
-                if start <> end:
-                    package = PackageEntry()
-                    package.load_control_from_wapt(packageListFile[start:end])
-                    logger.info(u"%s (%s)" % (package.package,package.version))
-                    package.repo_url = self.repo_url
-                    package.repo = self.name
-                    self.waptdb.add_package_entry(package)
-
-            for line in packageListFile:
-                if line.strip()=='':
-                    add(startline,endline)
-                    endline += 1
-                    startline = endline
-                # add ettribute to current package
-                else:
-                    endline += 1
-            # last one
-            add(startline,endline)
-
-            logger.debug(u'Commit wapt_package updates')
-            self.waptdb.db.commit()
-            current_update = packages_answer.headers['last-modified']
-            logger.debug(u'Storing last-modified header for repo_url %s : %s' % (self.repo_url,current_update))
-            self.waptdb.set_param('last-%s' % self.repo_url[:59],current_update)
-            return current_update
+            if force or self.need_update(waptdb):
+                logger.debug(u'Read remote Packages index file %s' % self.packages_url)
+                delta = self.load_packages()
+                waptdb.purge_repo(self.name)
+                for package in self.packages:
+                    waptdb.add_package_entry(package)
+                logger.debug(u'Commit wapt_package updates')
+                waptdb.db.commit()
+                last_modified =delta['last-modified']
+                logger.debug(u'Storing last-modified header for repo_url %s : %s' % (self.repo_url,last_modified))
+                waptdb.set_param('last-%s' % self.repo_url[:59],last_modified)
+                return last_modified
+            else:
+                return waptdb.get_param('last-%s' % self.repo_url[:59])
         except:
             logger.debug(u'rollback delete package')
-            self.waptdb.db.rollback()
+            waptdb.db.rollback()
             raise
 
 class WaptHostRepo(WaptRepo):
-    def update_db(self,force=False,proxies=None,hosts_list=[]):
+    def update_db(self,force=False,waptdb=None,hosts_list=[]):
+        """get a list of host packages from remote repo"""
         current_host = setuphelpers.get_hostname()
         if not current_host in hosts_list:
             hosts_list.append(current_host)
         result = {}
         for host in hosts_list:
-            (entry,result[host]) = self.update_host(host,force=force,proxies=proxies)
+            (entry,result[host]) = self.update_host(host,waptdb,force=force)
 
-    def update_host(self,host,force=False,proxies=None):
+    def update_host(self,host,waptdb,force=False):
         """Update host package from repo.
-            returns (host package entry,entry date on server)"""
-        host_package_url = "%s/%s.wapt" % (self.repo_url,host)
-        host_package_date = requests.head(host_package_url,proxies=proxies,verify=False,headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
-        host_cachedate = 'date-%s' % (host,)
-        package = None
-        if host_package_date:
-            if force or host_package_date <> self.waptdb.get_param(host_cachedate) or not self.waptdb.packages_matching(host):
-                host_package = requests.get(host_package_url,proxies=proxies,verify=False,headers={'cache-control':'no-cache','pragma':'no-cache'})
-                host_package.raise_for_status
+            returns (host package entry,entry date on server)
+        >>> repo = WaptHostRepo(name='wapt-host',timeout=4)
+        >>> print repo.dnsdomain
+        tranquilit.local
+        >>> print repo.repo_url
+        http://srvwapt.tranquilit.local/wapt-host
+        """
+        try:
+            host_package_url = "%s/%s.wapt" % (self.repo_url,host)
+            host_package_date = httpdatetime2isodate(requests.head(host_package_url,proxies=self.proxies,verify=False,headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified'])
+            host_cachedate = 'date-%s' % (host,)
+            package = None
+            if host_package_date:
+                if force or host_package_date <> waptdb.get_param(host_cachedate) or not waptdb.packages_matching(host):
+                    host_package = requests.get(host_package_url,proxies=self.proxies,verify=False,headers={'cache-control':'no-cache','pragma':'no-cache'})
+                    host_package.raise_for_status
 
-                # Packages file is a zipfile with one Packages file inside
-                control = codecs.decode(ZipFile(
-                      StringIO.StringIO(host_package.content)
-                    ).read(name='WAPT/control'),'UTF-8').splitlines()
+                    # Packages file is a zipfile with one Packages file inside
+                    control = codecs.decode(ZipFile(
+                          StringIO.StringIO(host_package.content)
+                        ).read(name='WAPT/control'),'UTF-8').splitlines()
 
-                logger.debug(u'Purge packages table')
-                self.waptdb.db.execute('delete from wapt_package where package=?',(host,))
+                    logger.debug(u'Purge packages table')
+                    waptdb.db.execute('delete from wapt_package where package=?',(host,))
 
-                package = PackageEntry()
-                package.load_control_from_wapt(control)
-                logger.info(u"%s (%s)" % (package.package,package.version))
-                package.repo_url = self.repo_url
-                package.repo = self.name
-                self.waptdb.add_package_entry(package)
+                    package = PackageEntry()
+                    package.load_control_from_wapt(control)
+                    logger.info(u"%s (%s)" % (package.package,package.version))
+                    package.repo_url = self.repo_url
+                    package.repo = self.name
+                    waptdb.add_package_entry(package)
 
-                logger.debug(u'Commit wapt_package updates')
-                self.waptdb.db.commit()
-                self.waptdb.set_param(host_cachedate,host_package_date)
-            else:
-                logger.debug(u'No change on host package at %s (%s)' % (host_package_url,host_package_date))
-                packages = self.waptdb.packages_matching(host)
-                if packages:
-                    package=packages[-1]
+                    logger.debug(u'Commit wapt_package updates')
+                    waptdb.db.commit()
+                    waptdb.set_param(host_cachedate,host_package_date)
                 else:
-                    package=None
+                    logger.debug(u'No change on host package at %s (%s)' % (host_package_url,host_package_date))
+                    packages = waptdb.packages_matching(host)
+                    if packages:
+                        package=packages[-1]
+                    else:
+                        package=None
 
-        else:
-            logger.debug(u'No host package available at %s' % host_package_url)
-            self.waptdb.db.execute('delete from wapt_package where package=?',(host,))
-            self.waptdb.db.commit()
-            self.waptdb.delete_param(host_cachedate)
+            else:
+                logger.debug(u'No host package available at %s' % host_package_url)
+                waptdb.db.execute('delete from wapt_package where package=?',(host,))
+                waptdb.db.commit()
+                waptdb.delete_param(host_cachedate)
 
-        return (package,host_package_date)
+            return (package,host_package_date)
+        except:
+            self._cached_dns_repo_url = None
+            raise
+
 
     @property
     def repo_url(self):
-        return self.wapt.wapt_repourl+'-host'
+        if self._repo_url:
+            return self._repo_url
+        else:
+            if not self._cached_dns_repo_url:
+                self._cached_dns_repo_url = self.find_wapt_server()+'-host'
+            return self._cached_dns_repo_url
+
+    @repo_url.setter
+    def repo_url(self,value):
+        """Wapt main repository URL"""
+        # remove / at the end
+        if value:
+            value = value.rstrip('/')
+        self._repo_url = value
+
 
 ######################"""
 key_passwd = None
@@ -1715,7 +2008,10 @@ class Wapt(object):
 
     def __init__(self,config=None,config_filename=None,defaults=None,disable_update_server_status=True):
         """Initialize engine with a configParser instance (inifile) and other defaults in a dictionary
-            Main properties are :
+        >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
+        >>> updates = wapt.update()
+        >>> 'count' in updates and 'added' in updates and 'upgrades' in updates and 'date' in updates and 'removed' in updates
+        True
         """
         # used to signal to cancel current operations ASAP
         self.task_is_cancelled = threading.Event()
@@ -1790,9 +2086,11 @@ class Wapt(object):
 
         self.config.read(self.config_filename)
 
+        """ deprecated
         self._wapt_repourl = self.config.get('global','repo_url')
         if self._wapt_repourl and self._wapt_repourl[-1] == '/':
             self._wapt_repourl = self._wapt_repourl.rstrip('/')
+        """
 
         if self.config.has_option('global','dbdir'):
             self.dbdir =  self.config.get('global','dbdir')
@@ -1840,20 +2138,18 @@ class Wapt(object):
             logger.info(u'Other repositories : %s' % (names,))
             for name in names:
                 if name:
-                    w = WaptRepo(self,name).load_config(self.config)
+                    w = WaptRepo(name=name).load_config(self.config)
                     self.repositories.append(w)
                     logger.debug(u'    %s:%s' % (w.name,w.repo_url))
         # last is main repository so it overrides the secondary repositories
-        main = WaptRepo(self,'global').load_config(self.config)
-        # override with calculated url
-        # delayed
-        #main.repo_url = self.wapt_repourl
+        main = WaptRepo(name='global').load_config(self.config)
         self.repositories.append(main)
 
         # add an automatic host repo
-        host_repo = WaptHostRepo(self,'wapt-host')
-        # override with calculated url
-        #host_repo.repo_url = main.repo_url+'-host'
+        host_repo = WaptHostRepo(name='wapt-host').load_config(self.config)
+        if main._repo_url and not host_repo._repo_url:
+            host_repo.repo_url = main.repo_url+'-host'
+
         self.repositories.append(host_repo)
 
     def write_config(self,config_filename=None):
@@ -1888,12 +2184,14 @@ class Wapt(object):
                 self._waptsessiondb.upgradedb()
         return self._waptsessiondb
 
+    """
+    deprecated
     @property
     def wapt_repourl(self):
-        """Wapt main repository URL"""
         if not self._wapt_repourl:
             self._wapt_repourl = self.find_wapt_server()
         return self._wapt_repourl
+    """
 
     @property
     def runstatus(self):
@@ -2403,12 +2701,6 @@ class Wapt(object):
             logger.info(u'  uninstall keys : %s' % (new_uninstall_key,))
             logger.info(u'  uninstall strings : %s' % (uninstallstring,))
 
-            # register uninstall with wapt if no uninstall key provided. entry.package is used as uninstall key.
-            if not self.dry_run and not new_uninstall_key and hasattr(setup,'uninstall'):
-                logger.debug('Register uninstall key %s in Windows registry as uninstall() function is provided but no uninstallkey' % entry.package)
-                new_uninstall_key = [entry.package]
-                setuphelpers.register_uninstall(entry.package,'wapt-get uninstall %s' % entry.package,display_name=entry.description,display_version=entry.version,publisher=entry.maintainer)
-
             logger.info(u"Install script finished with status %s" % status)
             if istemporary:
                 os.chdir(previous_cwd)
@@ -2473,16 +2765,20 @@ class Wapt(object):
            """ )
         return q
 
-    def store_upgrade_status(self):
+    def store_upgrade_status(self,upgrades=None):
         """Stores in DB the current pending upgrades and running installs for
           query by waptservice"""
         try:
             status={
                 "running_tasks": [ "%s : %s" % (p.asrequirement(),p.install_status) for p in self.running_tasks()],
                 "errors": [ "%s : %s" % (p.asrequirement(),p.install_status) for p in self.error_packages()],
-                "upgrades": [ "%s" % (p.asrequirement(),) for p in self.list_upgrade()],
                 "date":datetime2isodate(),
                 }
+            if upgrades is not None:
+                status["upgrades"] = upgrades
+            else:
+                status["upgrades"] = [ "%s" % (p.asrequirement(),) for p in self.list_upgrade()]
+
             logger.debug("store status in DB")
             self.write_param('last_update_status',jsondump(status))
             return status
@@ -2554,8 +2850,6 @@ class Wapt(object):
 			register : Send informations about packages to waptserver
         """
         previous = self.waptdb.known_packages()
-        if not self.wapt_repourl:
-            raise Exception('No main WAPT repository available or setup')
         # (main repo is at the end so that it will used in priority)
         self.waptdb.update_repos_list(self.repositories,proxies=self.proxies,force=force)
 
@@ -2569,7 +2863,7 @@ class Wapt(object):
             "date":datetime2isodate(),
             }
 
-        self.store_upgrade_status()
+        self.store_upgrade_status(result['upgrades'])
         if not self.disable_update_server_status and register:
 		    try:
 			    self.update_server_status()
@@ -2865,12 +3159,6 @@ class Wapt(object):
 
                 # removes recursively meta packages which are not satisfied anymore
                 additional_removes = self.check_remove(package)
-                if additional_removes:
-                    logger.info('Additional packages to remove : %s' % additional_removes)
-                    for apackage in additional_removes:
-                        res = self.remove(apackage,force=True)
-                        result['removed'].extend(res['removed'])
-                        result['errors'].extend(res['errors'])
 
                 if mydict['uninstall_string']:
                     if mydict['uninstall_string'][0] not in ['[','"',"'"]:
@@ -2889,9 +3177,6 @@ class Wapt(object):
                                 logger.info(setuphelpers.run(guid))
                             except Exception,e:
                                 logger.warning("Warning : %s" % ensure_unicode(e))
-                    logger.info('Remove status record from local DB for %s' % package)
-                    self.waptdb.remove_install_status(package)
-                    result['removed'].append(package)
 
                 elif mydict['uninstall_key']:
                     if mydict['uninstall_key'][0] not in ['[','"',"'"]:
@@ -2914,20 +3199,29 @@ class Wapt(object):
                                     logger.info(u'Launch uninstall cmd %s' % (uninstall_cmd,))
                                     print setuphelpers.run(uninstall_cmd)
                             except Exception,e:
-                                logger.critical(u"Critical error during uninstall of %s: %s" % (uninstall_cmd,ensure_unicode(e)))
+                                logger.critical(u"Critical error during uninstall cmd %s: %s" % (uninstall_cmd,ensure_unicode(e)))
                                 result['errors'].append(package)
-                    logger.info('Remove status record from local DB for %s' % package)
-                    self.waptdb.remove_install_status(package)
-                    result['removed'].append(package)
+
                 else:
-                    logger.critical(u'uninstall key not registered in local DB status, unable to remove properly.')
-                    if force or mydict['install_status'] == 'ERROR':
-                        logger.critical(u'Forced removal of local status of package %s' % package)
-                        self.waptdb.remove_install_status(package)
-                        result['removed'].append(package)
-                    else:
+                    logger.debug(u'uninstall key not registered in local DB status.')
+
+                if mydict['install_status'] <> 'ERROR':
+                    try:
+                        self.uninstall(package)
+                    except Exception as e:
+                        logger.critical('Error running uninstall script: %s'%e)
                         result['errors'].append(package)
-                        raise Exception('  uninstall key not registered in local DB status, unable to remove properly. Please remove manually')
+
+                logger.info('Remove status record from local DB for %s' % package)
+                self.waptdb.remove_install_status(package)
+                result['removed'].append(package)
+
+                if reversed(additional_removes):
+                    logger.info('Additional packages to remove : %s' % additional_removes)
+                    for apackage in additional_removes:
+                        res = self.remove(apackage,force=True)
+                        result['removed'].extend(res['removed'])
+                        result['errors'].extend(res['errors'])
 
             return result
         finally:
@@ -3449,8 +3743,7 @@ class Wapt(object):
         """Launch the uninstall script of an installed package"
            Source setup.py from database or filename
         """
-        logger.info("setup.Uninstall for package %s with params %s" % (packagename,params_dict))
-
+        logger.info("setup.uninstall for package %s with params %s" % (packagename,params_dict))
         oldpath = sys.path
         try:
             previous_cwd = os.getcwd()
@@ -3491,10 +3784,10 @@ class Wapt(object):
                     setup.params.update(params_dict)
 
                 result = setup.uninstall()
-                setuphelpers.unregister_uninstall(entry.package)
                 return result
             else:
-                raise Exception(u'No uninstall() function in setup.py for package %s' % packagename)
+                logger.debug(u'No uninstall() function in setup.py for package %s' % packagename)
+                #raise Exception(u'No uninstall() function in setup.py for package %s' % packagename)
         finally:
             if 'setup' in dir():
                 del setup
@@ -3803,7 +4096,7 @@ class Wapt(object):
         suffix = self.config.get('global','default_sources_suffix')
         root = self.config.get('global','default_sources_root')
         if not root:
-            raise Exception('default_sources_root is empty')
+            raise Exception('default_sources_root is empty or not defined')
         if section == 'host':
             if self.config.has_option('global','default_sources_root_host'):
                 root = self.config.get('global','default_sources_root_host')
@@ -3893,7 +4186,7 @@ class Wapt(object):
             target_directory = self.get_default_development_dir(hostname,section='host')
 
         # check if host package exists on repos
-        (entry,entry_date) = self.repositories[-1].update_host(hostname)
+        (entry,entry_date) = self.repositories[-1].update_host(hostname,self.waptdb)
         if entry:
             # target is already an "in-progress" package developement
             local_dev_entry = self.is_wapt_package_development_dir(target_directory)
@@ -4244,11 +4537,23 @@ class Wapt(object):
         else:
             return None
 
+    def register_windows_uninstall(self,package_entry):
+        """Add a windows registry key for custom installer"""
+        setuphelpers.register_uninstall(
+            package_entry.package,
+            'wapt-get uninstall %s' % package_entry.package,
+            display_name=package_entry.description,
+            display_version=package_entry.version,
+            publisher=package_entry.maintainer)
 
 # for backward compatibility
 Version = setuphelpers.Version  # obsolete
 
 if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
+    sys.exit(0)
+
     """
     logger.setLevel(logging.DEBUG)
     if len(logger.handlers)<1:

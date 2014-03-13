@@ -1,22 +1,16 @@
 {% extends "layout.html" %}
 {% block content %}
 
-{% macro link(href,desc='') -%}
-	{% if desc == '' %}
-		<a href={{href}}>{{href}}</a>
-	{% else%}
-		<a href={{href}}>{{desc}}</a>
-	{%endif%}
-{%- endmacro%}
+{% macro link(href,desc='') -%}{% if desc == '' %}<a href={{href}}>{{href}}</a>{%else%}<a href={{href}}>{{desc}}</a>{%endif%}{%- endmacro%}
 
 <h1>Installed packages</h1>'
 <table border=1 cellspacing=0 cellpadding=4 class=sample>
-{% set cols = [('install_status','Status'),('package','Package'),('version','Version'),('install_par','Installed by'),('install_date','Installed on'),('repo_version','Version repo'),('install_output','Traces')] %}
+{% set cols = [('install_status','Status'),('package','Package'),('install_par','Installed by'),('install_date','Installed on'),('repo_version','Version repo'),('install_output','Traces')] %}
 	<tr>
 		{% for c in cols %}
 			<th>{{c[1]}}</th>
 		{% endfor %}
-		<th>Action<th>
+		<th>Action</th>
 	</tr>
 	{% for p in packages %}
         {%set package_version= "%s(=%s)" % (p.package,p.version) %}
@@ -35,17 +29,19 @@
         {%endif%}
 
 		{% for c in cols %}
-		<td>
         {%if c[0] == 'package' %}
+              <td width=20%>
 		      <img class=package-icon src="package_icon?package={{p.package}}">
-              <p>{{link("package_details?package="+package_version,p[c[0]   ])}}
-              <span class="package-version">{{p.version}}</span></p>
-              <p class="package-description">{{p.description}}</p>
+              <p><a href="package_details?package={{package_version}}">{{p[c[0]]}}</a> <span class="package-version">{{p.version}}</span></p>
+              <p class="package-description">{{p.description or ""}}</p>
         {%elif c[0]=='install_date' %}
+              <td>
 			{{format_isodate(p[c[0]])}}
 		{%elif c[0]=='install_output' %}
+            <td width=30%>
 			{{p[c[0]].replace('\n','<br>')|safe}}
 		{%else%}
+            <td>
 			{{p[c[0]] or '-'}}
 		{%endif%}
 		</td>

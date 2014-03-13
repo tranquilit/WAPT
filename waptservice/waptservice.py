@@ -25,14 +25,14 @@ import Queue
 import jinja2
 
 from network_manager import NetworkManager
-
 from werkzeug.utils import html
 
 import gc
 import datetime
 import dateutil.parser
 
-
+import winsys.security
+import winsys.accounts
 
 try:
     wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
@@ -48,7 +48,7 @@ import common
 import setuphelpers
 from common import Wapt
 
-__version__ = "0.8.10"
+__version__ = "0.8.11"
 
 config = ConfigParser.RawConfigParser()
 
@@ -168,6 +168,7 @@ def check_open_port():
             if 'waptservice' not in setuphelpers.run_notfatal('netsh firewall show portopening'):
                 logger.info("Port not opening, opening port")
                 setuphelpers.run_notfatal("""netsh.exe firewall add portopening name="waptservice 8088" port=8088 protocol=TCP""")
+                setuphelpers.run_notfatal("""netsh.exe firewall add portopening name="waptservice 8089" port=8089 protocol=TCP""")
             else:
                 logger.info("port already opened, skipping firewall configuration")
     else:
@@ -178,6 +179,8 @@ def check_open_port():
                 logger.info("No port opened for waptservice, opening port")
                 #win Vista and higher
                 setuphelpers.run_notfatal("""netsh advfirewall firewall add rule name="waptservice 8088" dir=in action=allow protocol=TCP localport=8088""")
+            if 'waptservice' not in setuphelpers.run_notfatal('netsh advfirewall firewall show rule name="waptservice 8089"'):
+                setuphelpers.run_notfatal("""netsh advfirewall firewall add rule name="waptservice 8089" dir=in action=allow protocol=TCP localport=8089""")
             else:
                 logger.info("port already opened, skipping firewall configuration")
 
@@ -186,7 +189,6 @@ check_open_port()
 def get_authorized_callers_ip():
     ips = ['127.0.0.1']
     wapt = Wapt(config_filename=config_filename)
-    #ips.append(socket.gethostbyname( urlparse(wapt.find_wapt_server()).hostname))
     if wapt.wapt_server:
         try:
             ips.append(socket.gethostbyname( urlparse(wapt.wapt_server).hostname))
@@ -198,9 +200,7 @@ def get_authorized_callers_ip():
 authorized_callers_ip = get_authorized_callers_ip()
 app = Flask(__name__)
 app.config['PROPAGATE_EXCEPTIONS'] = True
-
 app.jinja_env.filters['beautify'] = beautify
-
 
 def requires_auth(f):
     @wraps(f)
@@ -219,7 +219,6 @@ def requires_auth(f):
             return authenticate()
 
         logging.info("user %s authenticated" % auth.username)
-
         return f(*args, **kwargs)
 
     return decorated
@@ -232,7 +231,6 @@ def check_ip_source(f):
             return authenticate()
         return f(*args, **kwargs)
     return decorated
-
 
 @app.route('/status')
 @app.route('/status.json')
@@ -290,8 +288,6 @@ def package_icon():
     if not os.path.isdir(icon_local_cache):
         os.makedirs(icon_local_cache)
     wapt=[]
-    #repo_url='http://wapt/wapt'
-    #proxies = []
 
     def get_icon(package):
         """Get icon from local cache or remote wapt directory, returns local filename"""
@@ -1101,8 +1097,9 @@ class WaptTaskManager(threading.Thread):
                             pass
                     finally:
                         self.running_task = None
-                    self.tasks_cancelled.append(cancelled)
-                    self.broadcast_tasks_status('CANCEL',[cancelled])
+                    if cancelled:
+                        self.tasks_cancelled.append(cancelled)
+                        self.broadcast_tasks_status('CANCEL',[cancelled])
                     return cancelled
                 else:
                     return None

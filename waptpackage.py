@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.10"
+__version__ = "0.8.11"
 
 import os
 import zipfile
@@ -97,10 +97,10 @@ class PackageEntry(object):
     def all_attributes(self):
         return self.required_attributes + self.optional_attributes + self.non_control_attributes + self.calculated_attributes
 
-    def __init__(self):
-        self.package=''
-        self.version=''
-        self.architecture=''
+    def __init__(self,package='',version='0',repo=''):
+        self.package=package
+        self.version=version
+        self.architecture='all'
         self.section=''
         self.priority=''
         self.maintainer=''
@@ -111,12 +111,12 @@ class PackageEntry(object):
         self.size=''
         self.md5sum=''
         self.repo_url=''
-        self.repo=''
+        self.repo=repo
         self.calculated_attributes=[]
 
     def parse_version(self):
-        """
-        Parse version to major, minor, patch, pre-release, build parts.
+        """Parse version to major, minor, patch, pre-release, build parts.
+
         """
         return parse_major_minor_patch_build(self.version)
 
@@ -455,17 +455,47 @@ def update_packages(adir):
     logger.info(u"Finished")
     return {'processed':processed,'kept':kept,'errors':errors,'packages_filename':packages_fname}
 
+class WaptLocalRepo(object):
+    def __init__(self,name='waptlocal',localpath='/var/www/wapt'):
+        self.name = name
+        localpath = localpath.rstrip(os.path.sep)
+        self.localpath = localpath
+        self.packages = []
+
+    def load_packages(self):
+        """Get Packages from local repo Packages file"""
+        # Packages file is a zipfile with one Packages file inside
+        packages_lines = codecs.open(os.path.join(self.localpath,'Packages'),encoding='UTF-8').splitlines()
+        self.packages = []
+        startline = 0
+        endline = 0
+        def add(start,end):
+            if start <> end:
+                package = PackageEntry()
+                package.load_control_from_wapt(packages_lines[start:end])
+                logger.info(u"%s (%s)" % (package.package,package.version))
+                package.repo_url = self.repo_url
+                package.repo = self.name
+                self.packages.append(package)
+
+        for line in packages_lines:
+            if line.strip()=='':
+                add(startline,endline)
+                endline += 1
+                startline = endline
+            # add ettribute to current package
+            else:
+                endline += 1
+        # last one
+        add(startline,endline)
+
 if __name__ == '__main__':
-    w = PackageEntry()
-    w.description = u'Package testé'
-    w.package = 'wapttest'
-    w.architecture = 'All'
-    w.version='0.1.0-10'
-    w.depends=''
-    w.maintainer = 'TIS'
-    print w.ascontrol()
-    w.inc_build()
-    print w.ascontrol()
+
+    import doctest
+    doctest.testmod()
+
+    sys.exit(0)
+
     w['install_date'] = '20120501'
     for a in w.all_attributes:
         print "%s: %s" % (a,w[a])
