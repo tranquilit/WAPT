@@ -25,7 +25,15 @@ import os,glob,sys,stat
 import shutil
 import fileinput
 import subprocess
-import platform
+import platform, errno
+
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc: # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else: raise
 
 def replaceAll(file,searchExp,replaceExp):
     for line in fileinput.input(file, inplace=1):
@@ -106,17 +114,21 @@ except Exception as e:
     print 'erreur: \n%s'%e
     exit(0)
 
+print "copy startup script /etc/init.d/waptserver"
 try:
+    mkdir_p('./builddir/etc/init.d/')
     shutil.copyfile('../scripts/waptserver-init','./builddir/etc/init.d/waptserver')
-    subprocess.check_output('chmod 755 ./builddir/etc/init.d/waptserver')
-    subprocess.check_output('chown root:root ./builddir/etc/init.d/waptserver')
+    subprocess.check_output('chmod 755 ./builddir/etc/init.d/waptserver',shell=True)
+    subprocess.check_output('chown root:root ./builddir/etc/init.d/waptserver',shell=True)
 except Exception as e:
     print 'erreur: \n%s'%e
     exit(0)
 
+print "copy logrotate script /etc/logrotate.d/waptserver"
 try:
+    mkdir_p('./builddir/etc/logrotate.d/')
     shutil.copyfile('../scripts/waptserver-logrotate','./builddir/etc/logrotate.d/waptserver')
-    subprocess.check_output('chown root:root /builddir/etc/logrotate.d/waptserver')
+    subprocess.check_output('chown root:root ./builddir/etc/logrotate.d/waptserver',shell=True)
 except Exception as e:
     print 'erreur: \n%s'%e
     exit(0)
