@@ -107,7 +107,7 @@ except Exception as e:
     exit(0)
 
 try:
-    shutil.copyfile('./scripts/waptserver-init','./builddir/etc/init.d/waptserver')
+    shutil.copyfile('../scripts/waptserver-init','./builddir/etc/init.d/waptserver')
     subprocess.check_output('chmod 755 ./builddir/etc/init.d/waptserver')
     subprocess.check_output('chown root:root ./builddir/etc/init.d/waptserver')
 except Exception as e:
@@ -115,7 +115,7 @@ except Exception as e:
     exit(0)
 
 try:
-    shutil.copyfile('./scripts/waptserver-logrotate','./builddir/etc/logrotate.d/waptserver')
+    shutil.copyfile('../scripts/waptserver-logrotate','./builddir/etc/logrotate.d/waptserver')
     subprocess.check_output('chown root:root /builddir/etc/logrotate.d/waptserver')
 except Exception as e:
     print 'erreur: \n%s'%e
