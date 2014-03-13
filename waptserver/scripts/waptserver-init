@@ -23,6 +23,9 @@ GROUP=www-data
 DESC=$VERSION
 OP=$1
 
+unset http_proxy
+unset https_proxy
+
 DAEMON_OPTS=""
 
 # Include uwsgi defaults if available
