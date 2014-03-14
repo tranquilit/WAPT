@@ -427,12 +427,9 @@ def waptupgrade_host(ip):
             if ip and waptservice_port:
                 logger.info( "Upgrading %s..." % ip)
                 try:
-                    data = json.loads(requests.get("http://%s:%d/waptupgrade.json" % ( ip, waptservice_port),proxies=None))
-                    if "OK" in r.text   .upper():
-                        result = {  'status' : 'OK', 'message': u"%s" % r.text }
-                    else:
-                        result = {  'status' : 'ERROR', 'message': u"%s" % r.text }
-                except:
+                    result = json.loads(requests.get("http://%s:%d/waptupgrade.json" % ( ip, waptservice_port),proxies=None).text)
+                except Exception as e:
+                    logger.warning(u'%s'%e)
                     r = requests.get("http://%s:%d/waptupgrade" % ( ip, waptservice_port),proxies=None)
                     if "OK" in r.text.upper():
                         result = {  'status' : 'OK', 'message': u"%s" % r.text }
@@ -481,11 +478,15 @@ def upgrade_host(ip):
             s.close
             if ip and waptservice_port:
                 logger.info( "Upgrading %s..." % ip)
-                r = requests.get("http://%s:%d/upgrade" % ( ip, waptservice_port),proxies=None)
-                if "OK" in r.text.upper():
-                    result = {  'status' : 'OK', 'message': u"%s" % r.text }
-                else:
-                    result = {  'status' : 'ERROR', 'message': u"%s" % r.text }
+                try:
+                    result = json.loads(requests.get("http://%s:%d/upgrade.json" % ( ip, waptservice_port),proxies=None).text)
+                except Exception as e:
+                    logger.warning(u"%s"%e)
+                    r = requests.get("http://%s:%d/upgrade" % ( ip, waptservice_port),proxies=None)
+                    if "OK" in r.text.upper():
+                        result = {  'status' : 'OK', 'message': u"%s" % r.text }
+                    else:
+                        result = {  'status' : 'ERROR', 'message': u"%s" % r.text }
 
             else:
                 raise Exception(u"Le port de waptservice n'est pas défini")
@@ -495,7 +496,6 @@ def upgrade_host(ip):
 
     except Exception, e:
             result = { 'status' : 'ERROR', 'message': u"%s" % e  }
-    print result
     return json.dumps(result)
 
 
@@ -672,6 +672,7 @@ if __name__ == "__main__":
         app.run(host='0.0.0.0',port=30880,debug=True)
     else:
         port = 8080
+        logger.setLevel(logging.DEBUG)
         server = Rocket(('0.0.0.0', port), 'wsgi', {"wsgi_app":app})
         try:
             logger.info("starting waptserver")
