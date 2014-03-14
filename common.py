@@ -1636,6 +1636,10 @@ class WaptRepo(object):
         else:
             self.dnsdomain = setuphelpers.get_domain_fromregistry()
 
+    def reset_network(self):
+        """called by wapt when network configuration has changed"""
+        self._cached_dns_repo_url = None
+
     @property
     def repo_url(self):
         """Return fixed url if any, else request DNS
@@ -1670,102 +1674,119 @@ class WaptRepo(object):
         'http://wapt/wapt'
         """
 
-        local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
-        logger.debug(u'All interfaces : %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in host_ipv4() if 'addr' in i and 'netmask' in i])
-        connected_interfaces = [ i for i in host_ipv4() if 'addr' in i and 'netmask' in i and i['addr'] in local_ips ]
-        logger.debug(u'Local connected IPs: %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in connected_interfaces])
+        try:
+            local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
+            logger.debug(u'All interfaces : %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in host_ipv4() if 'addr' in i and 'netmask' in i])
+            connected_interfaces = [ i for i in host_ipv4() if 'addr' in i and 'netmask' in i and i['addr'] in local_ips ]
+            logger.debug(u'Local connected IPs: %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in connected_interfaces])
 
-        def is_inmysubnets(ip):
-            """Return True if IP is in one of my connected subnets"""
-            for i in connected_interfaces:
-                if same_net(i['addr'],ip,i['netmask']):
-                    logger.debug(u'  %s is in same subnet as %s/%s local connected interface' % (ip,i['addr'],i['netmask']))
-                    return True
-            return False
+            def is_inmysubnets(ip):
+                """Return True if IP is in one of my connected subnets"""
+                for i in connected_interfaces:
+                    if same_net(i['addr'],ip,i['netmask']):
+                        logger.debug(u'  %s is in same subnet as %s/%s local connected interface' % (ip,i['addr'],i['netmask']))
+                        return True
+                return False
 
-        if self.dnsdomain and self.dnsdomain <> '.':
-            # find by dns SRV _wapt._tcp
-            try:
-                resolv = dns.resolver.get_default_resolver()
-                logger.debug(u'DNS server %s' % (resolv.nameservers,))
-                logger.debug(u'Trying _wapt._tcp.%s SRV records' % self.dnsdomain)
-                answers = dns.resolver.query('_wapt._tcp.%s.' % self.dnsdomain,'SRV')
-                working_url = []
-                for a in answers:
-                    # get first numerical ipv4 from SRV name record
-                    try:
-                        wapthost = a.target.to_text()[0:-1]
-                        ip = dns.resolver.query(a.target)[0].to_text()
-                        if a.port == 80:
-                            url = 'http://%s/wapt' % (wapthost,)
-                            if tryurl(url+'/Packages'):
-                                working_url.append((a.weight,url))
-                                if is_inmysubnets(ip):
-                                    return url
-                        elif a.port == 443:
-                            url = 'https://%s/wapt' % (wapthost,)
-                            if tryurl(url+'/Packages'):
-                                working_url.append((a.weight,url))
-                                if is_inmysubnets(ip):
-                                    return url
-                        else:
-                            url = 'http://%s:%i/wapt' % (wapthost,a.port)
-                            if tryurl(url+'/Packages'):
-                                working_url.append((a.weight,url))
-                                if is_inmysubnets(ip):
-                                    return url
-                    except Exception,e:
-                        logging.debug('Unable to resolve : error %s' % (ensure_unicode(e),))
+            if self.dnsdomain and self.dnsdomain <> '.':
+                # find by dns SRV _wapt._tcp
+                try:
+                    resolv = dns.resolver.get_default_resolver()
+                    resolv.timeout = self.timeout
+                    resolv.lifetime = self.timeout
+                    logger.debug(u'DNS server %s' % (resolv.nameservers,))
+                    logger.debug(u'Trying _wapt._tcp.%s SRV records' % self.dnsdomain)
+                    answers = resolv.query('_wapt._tcp.%s.' % self.dnsdomain,'SRV')
+                    working_url = []
+                    for a in answers:
+                        # get first numerical ipv4 from SRV name record
+                        try:
+                            wapthost = a.target.to_text()[0:-1]
+                            ip = resolv.query(a.target)[0].to_text()
+                            if a.port == 80:
+                                url = 'http://%s/wapt' % (wapthost,)
+                                if tryurl(url+'/Packages'):
+                                    working_url.append((a.weight,url))
+                                    if is_inmysubnets(ip):
+                                        return url
+                            elif a.port == 443:
+                                url = 'https://%s/wapt' % (wapthost,)
+                                if tryurl(url+'/Packages'):
+                                    working_url.append((a.weight,url))
+                                    if is_inmysubnets(ip):
+                                        return url
+                            else:
+                                url = 'http://%s:%i/wapt' % (wapthost,a.port)
+                                if tryurl(url+'/Packages'):
+                                    working_url.append((a.weight,url))
+                                    if is_inmysubnets(ip):
+                                        return url
+                        except Exception,e:
+                            logging.debug('Unable to resolve : error %s' % (ensure_unicode(e),))
 
-                if working_url:
-                    working_url.sort()
-                    logger.debug(u'  Accessible servers : %s' % (working_url,))
-                    return working_url[-1][1]
+                    if working_url:
+                        working_url.sort()
+                        logger.debug(u'  Accessible servers : %s' % (working_url,))
+                        return working_url[-1][1]
 
-                if not answers:
-                    logger.debug(u'  No _wapt._tcp.%s SRV record found' % self.dnsdomain)
-            except dns.exception.DNSException,e:
-                logger.debug(u'  DNS resolver failed looking for _SRV records: %s' % (ensure_unicode(e),))
+                    if not answers:
+                        logger.debug(u'  No _wapt._tcp.%s SRV record found' % self.dnsdomain)
+                except dns.exception.Timeout,e:
+                    logger.debug(u'  DNS resolver timedout _SRV records: %s' % (ensure_unicode(e),))
+                    raise
 
-            # find by dns CNAME
-            try:
-                logger.debug(u'Trying wapt.%s CNAME records' % self.dnsdomain)
-                answers = dns.resolver.query('wapt.%s.' % self.dnsdomain,'CNAME')
-                for a in answers:
-                    wapthost = a.target.canonicalize().to_text()[0:-1]
-                    url = 'https://%s/wapt' % (wapthost,)
-                    if tryurl(url+'/Packages'):
-                        return url
-                    url = 'http://%s/wapt' % (wapthost,)
-                    if tryurl(url+'/Packages'):
-                        return url
-                if not answers:
-                    logger.debug(u'  No wapt.%s CNAME SRV record found' % self.dnsdomain)
+                except dns.exception.DNSException,e:
+                    logger.debug(u'  DNS resolver failed looking for _SRV records: %s' % (ensure_unicode(e),))
 
-            except dns.exception.DNSException,e:
-                logger.warning(u'  DNS resolver error : %s' % (ensure_unicode(e),))
+                # find by dns CNAME
+                try:
+                    logger.debug(u'Trying wapt.%s CNAME records' % self.dnsdomain)
+                    answers = resolv.query('wapt.%s.' % self.dnsdomain,'CNAME')
+                    for a in answers:
+                        wapthost = a.target.canonicalize().to_text()[0:-1]
+                        url = 'https://%s/wapt' % (wapthost,)
+                        if tryurl(url+'/Packages'):
+                            return url
+                        url = 'http://%s/wapt' % (wapthost,)
+                        if tryurl(url+'/Packages'):
+                            return url
+                    if not answers:
+                        logger.debug(u'  No wapt.%s CNAME record found' % self.dnsdomain)
 
-            # find by dns A
-            try:
-                wapthost = 'wapt.%s.' % self.dnsdomain
-                logger.debug(u'Trying %s A records' % wapthost)
-                answers = dns.resolver.query(wapthost,'A')
-                if answers:
-                    url = 'https://%s/wapt' % (wapthost,)
-                    if tryurl(url+'/Packages'):
-                        return url
-                    url = 'http://%s/wapt' % (wapthost,)
-                    if tryurl(url+'/Packages'):
-                        return url
-                if not answers:
-                    logger.debug(u'  No %s A record found' % wapthost)
+                except dns.exception.Timeout,e:
+                    logger.debug(u'  DNS resolver timedout CNAME records: %s' % (ensure_unicode(e),))
+                    raise
+                except dns.exception.DNSException,e:
+                    logger.warning(u'  DNS resolver error : %s' % (ensure_unicode(e),))
 
-            except dns.exception.DNSException,e:
-                logger.warning(u'  DNS resolver error : %s' % (ensure_unicode(e),))
-        else:
-            logger.warning(u'Local DNS domain not found, skipping SRV _wapt._tcp and CNAME search ')
+                # find by dns A
+                try:
+                    wapthost = 'wapt.%s.' % self.dnsdomain
+                    logger.debug(u'Trying %s A records' % wapthost)
+                    answers = resolv.query(wapthost,'A')
+                    if answers:
+                        url = 'https://%s/wapt' % (wapthost,)
+                        if tryurl(url+'/Packages'):
+                            return url
+                        url = 'http://%s/wapt' % (wapthost,)
+                        if tryurl(url+'/Packages'):
+                            return url
+                    if not answers:
+                        logger.debug(u'  No %s A record found' % wapthost)
 
-        return None
+                except dns.exception.Timeout,e:
+                    logger.debug(u'  DNS resolver timedout A records: %s' % (ensure_unicode(e),))
+                    raise
+
+                except dns.exception.DNSException,e:
+                    logger.warning(u'  DNS resolver error : %s' % (ensure_unicode(e),))
+            else:
+                logger.warning(u'Local DNS domain not found, skipping SRV _wapt._tcp and CNAME search ')
+
+            return None
+        except dns.exception.Timeout,e:
+            logger.critical(u'DNS resolver timeout: %s' % (e,))
+            raise
 
     @repo_url.setter
     def repo_url(self,value):
@@ -2076,6 +2097,7 @@ class Wapt(object):
             'allow_unsigned':'0',
             'http_proxy':'',
             'tray_check_interval':2,
+            'service_interval':2,
             }
 
         if not self.config:
@@ -2208,127 +2230,6 @@ class Wapt(object):
                 self.update_server_status()
             except Exception,e:
                 logger.critical('Unable to update server with current status : %s' % ensure_unicode(e))
-
-
-    def find_wapt_server(self):
-        """Search the nearest working main WAPT repository given the following priority
-           - URL defined in ini file
-           - first SRV record in the same network as one of the connected network interface
-           - first SRV record with the highest weight
-           - wapt CNAME in the local dns domain (https first then http)
-        """
-        if self.config:
-            url = self.config.get('global','repo_url')
-            if url:
-                url = url.rstrip('/')
-
-                if tryurl(url+'/Packages'):
-                    return url
-                else:
-                    logger.warning(u'URL defined in ini file %s is not available' % url)
-            if not url:
-                logger.debug(u'No url defined in ini file')
-
-        local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
-        logger.debug(u'All interfaces : %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in host_ipv4() if 'addr' in i and 'netmask' in i])
-        connected_interfaces = [ i for i in host_ipv4() if 'addr' in i and 'netmask' in i and i['addr'] in local_ips ]
-        logger.debug(u'Local connected IPs: %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in connected_interfaces])
-
-        def is_inmysubnets(ip):
-            """Return True if IP is in one of my connected subnets"""
-            for i in connected_interfaces:
-                if same_net(i['addr'],ip,i['netmask']):
-                    logger.debug(u'  %s is in same subnet as %s/%s local connected interface' % (ip,i['addr'],i['netmask']))
-                    return True
-            return False
-
-        #dnsdomain = dns.resolver.get_default_resolver().domain.to_text()
-        dnsdomain = setuphelpers.get_domain_fromregistry()
-        logger.debug(u'Default DNS domain: %s' % dnsdomain)
-
-        if dnsdomain and dnsdomain <> '.':
-            # find by dns SRV _wapt._tcp
-            try:
-                resolv = dns.resolver.get_default_resolver()
-                logger.debug(u'DNS server %s' % (resolv.nameservers,))
-                logger.debug(u'Trying _wapt._tcp.%s SRV records' % dnsdomain)
-                answers = dns.resolver.query('_wapt._tcp.%s.' % dnsdomain,'SRV')
-                working_url = []
-                for a in answers:
-                    # get first numerical ipv4 from SRV name record
-                    try:
-                        wapthost = a.target.to_text()[0:-1]
-                        ip = dns.resolver.query(a.target)[0].to_text()
-                        if a.port == 80:
-                            url = 'http://%s/wapt' % (wapthost,)
-                            if tryurl(url+'/Packages'):
-                                working_url.append((a.weight,url))
-                                if is_inmysubnets(ip):
-                                    return url
-                        elif a.port == 443:
-                            url = 'https://%s/wapt' % (wapthost,)
-                            if tryurl(url+'/Packages'):
-                                working_url.append((a.weight,url))
-                                if is_inmysubnets(ip):
-                                    return url
-                        else:
-                            url = 'http://%s:%i/wapt' % (wapthost,a.port)
-                            if tryurl(url+'/Packages'):
-                                working_url.append((a.weight,url))
-                                if is_inmysubnets(ip):
-                                    return url
-                    except Exception,e:
-                        logging.debug('Unable to resolve : error %s' % (ensure_unicode(e),))
-
-                if working_url:
-                    working_url.sort()
-                    logger.debug(u'  Accessible servers : %s' % (working_url,))
-                    return working_url[-1][1]
-
-                if not answers:
-                    logger.debug(u'  No _wapt._tcp.%s SRV record found' % dnsdomain)
-            except dns.exception.DNSException,e:
-                logger.debug(u'  DNS resolver failed looking for _SRV records: %s' % (ensure_unicode(e),))
-
-            # find by dns CNAME
-            try:
-                logger.debug(u'Trying wapt.%s CNAME records' % dnsdomain)
-                answers = dns.resolver.query('wapt.%s.' % dnsdomain,'CNAME')
-                for a in answers:
-                    wapthost = a.target.canonicalize().to_text()[0:-1]
-                    url = 'https://%s/wapt' % (wapthost,)
-                    if tryurl(url+'/Packages'):
-                        return url
-                    url = 'http://%s/wapt' % (wapthost,)
-                    if tryurl(url+'/Packages'):
-                        return url
-                if not answers:
-                    logger.debug(u'  No wapt.%s CNAME SRV record found' % dnsdomain)
-
-            except dns.exception.DNSException,e:
-                logger.warning(u'  DNS resolver error : %s' % (ensure_unicode(e),))
-
-            # find by dns A
-            try:
-                wapthost = 'wapt.%s.' % dnsdomain
-                logger.debug(u'Trying %s A records' % wapthost)
-                answers = dns.resolver.query(wapthost,'A')
-                if answers:
-                    url = 'https://%s/wapt' % (wapthost,)
-                    if tryurl(url+'/Packages'):
-                        return url
-                    url = 'http://%s/wapt' % (wapthost,)
-                    if tryurl(url+'/Packages'):
-                        return url
-                if not answers:
-                    logger.debug(u'  No %s A record found' % wapthost)
-
-            except dns.exception.DNSException,e:
-                logger.warning(u'  DNS resolver error : %s' % (ensure_unicode(e),))
-        else:
-            logger.warning(u'Local DNS domain not found, skipping SRV _wapt._tcp and CNAME search ')
-
-        return None
 
 
     def upload_package(self,cmd_dict,wapt_server_user=None,wapt_server_passwd=None):
@@ -2848,6 +2749,11 @@ class Wapt(object):
             force : update even if Packages on repository has not been updated
                     since last update (based on http headers)
 			register : Send informations about packages to waptserver
+        >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
+        >>> updates = wapt.update()
+        >>> 'count' in updates and 'added' in updates and 'upgrades' in updates and 'date' in updates and 'removed' in updates
+        True
+
         """
         previous = self.waptdb.known_packages()
         # (main repo is at the end so that it will used in priority)
@@ -3357,6 +3263,7 @@ class Wapt(object):
         else:
             inv = {'uuid': uuid}
             inv['wapt'] = self.wapt_status()
+            inv['host'] = setuphelpers.host_info()
             inv['softwares'] = setuphelpers.installed_softwares('')
             inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
             inv['update_status'] = self.get_last_update_status()
@@ -4545,6 +4452,16 @@ class Wapt(object):
             display_name=package_entry.description,
             display_version=package_entry.version,
             publisher=package_entry.maintainer)
+
+    def network_reconfigure(self):
+        """Called whenever the network configuration has changed"""
+        try:
+            for repo in self.repositories:
+                repo.reset_network()
+            if not self.disable_update_server_status:
+                self.update_server_status()
+        except Exception as e:
+            logger.warning(u'Mise à jour du status sur le serveur impossible : %s'%e)
 
 # for backward compatibility
 Version = setuphelpers.Version  # obsolete

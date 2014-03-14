@@ -1,11 +1,14 @@
 """Implementation of ISesNework in Python."""
 
+# From UbuntuOne
+
 import logging
 import logging.handlers
 
 import pythoncom
 
 import time
+import ctypes
 
 from win32com.server.policy import DesignatedWrapPolicy
 from win32com.client import Dispatch
@@ -24,27 +27,27 @@ PROGID_EventSubscription = "EventSystem.EventSubscription"
 service_logger = logging.getLogger()
 
 SUBSCRIPTION_NETALIVE = ('{cd1dcbd6-a14d-4823-a0d2-8473afde360f}',
-                         'UbuntuOne Network Alive',
+                         'WaptService Network Alive',
                          'ConnectionMade')
 
 SUBSCRIPTION_NETALIVE_NOQOC = ('{a82f0e80-1305-400c-ba56-375ae04264a1}',
-                               'UbuntuOne Net Alive No Info',
+                               'WaptService Net Alive No Info',
                                'ConnectionMadeNoQOCInfo')
 
 SUBSCRIPTION_NETLOST = ('{45233130-b6c3-44fb-a6af-487c47cee611}',
-                        'UbuntuOne Network Lost',
+                        'WaptService Network Lost',
                         'ConnectionLost')
 
 SUBSCRIPTION_REACH = ('{4c6b2afa-3235-4185-8558-57a7a922ac7b}',
-                       'UbuntuOne Network Reach',
+                       'WaptService Network Reach',
                        'ConnectionMade')
 
 SUBSCRIPTION_REACH_NOQOC = ('{db62fa23-4c3e-47a3-aef2-b843016177cf}',
-                            'UbuntuOne Network Reach No Info',
+                            'WaptService Network Reach No Info',
                             'ConnectionMadeNoQOCInfo')
 
 SUBSCRIPTION_REACH_NOQOC2 = ('{d4d8097a-60c6-440d-a6da-918b619ae4b7}',
-                             'UbuntuOne Network Reach No Info 2',
+                             'WaptService Network Reach No Info 2',
                              'ConnectionMadeNoQOCInfo')
 
 SUBSCRIPTIONS = [SUBSCRIPTION_NETALIVE,
@@ -68,7 +71,7 @@ class NetworkManager(DesignatedWrapPolicy):
                         'ConnectionMadeNoQOCInfo',
                         'ConnectionLost']
     _reg_clsid_ = '{41B032DA-86B5-4907-A7F7-958E59333010}'
-    _reg_progid_ = "UbuntuOne.NetworkManager"
+    _reg_progid_ = "WaptService.NetworkManager"
 
     def __init__(self, connected_cb, disconnected_cb):
         self._wrap_(self)
@@ -119,7 +122,28 @@ class NetworkManager(DesignatedWrapPolicy):
                 service_logger.error(
                     'Error registering to event %s', current_event[1])
 
-        pythoncom.PumpMessages()
+    def poll_messages(self):
+        """Pumps all waiting messages for the current thread.
+            Returns 1 if a WM_QUIT message was received, else 0
+        """
+        return pythoncom.PumpWaitingMessages()
+
+    def run(self):
+        """Thread run
+        >>> manager = NetworkManager(connected, disconnected)
+        >>> p = Thread(target=manager.run)
+        >>> p.start()
+
+        """
+        self.register()
+        #pythoncom.PumpMessages()
+        while True:
+            print('waiting for addr change')
+            #ctypes.windll.iphlpapi.NotifyRouteChange(0, 0)
+            ctypes.windll.iphlpapi.NotifyAddrChange(0, 0)
+            print('addr changed !')
+            time.sleep(10)
+
 
 if __name__ == '__main__':
     from threading import Thread
@@ -130,9 +154,11 @@ if __name__ == '__main__':
         print 'Disconnected'
 
     manager = NetworkManager(connected, disconnected)
-    p = Thread(target=manager.register)
+    p = Thread(target=manager.run)
     p.start()
 
     while True:
-        print('sleeping')
+        print('waiting for route change')
+        ctypes.windll.iphlpapi.NotifyRouteChange(0, 0)
+        print('route changed !')
         time.sleep(1)

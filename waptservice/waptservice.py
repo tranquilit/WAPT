@@ -23,6 +23,8 @@ import zmq
 from zmq.log.handlers import PUBHandler
 import Queue
 import jinja2
+import pythoncom
+import ctypes
 
 from network_manager import NetworkManager
 from werkzeug.utils import html
@@ -227,8 +229,8 @@ def check_ip_source(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         auth = request.authorization
-        if not request.remote_addr in authorized_callers_ip:
-            return authenticate()
+        #if not request.remote_addr in authorized_callers_ip:
+        #    return authenticate()
         return f(*args, **kwargs)
     return decorated
 
@@ -657,6 +659,8 @@ class WaptTask(object):
         self.summary = ""
         # from 0 to 100%
         self.progress = None
+        self.notify_server_on_start = True
+        self.notify_server_on_finish = True
 
     def update_status(self,status):
         """Update runstatus in database and send PROGRESS event"""
@@ -734,10 +738,25 @@ class WaptTask(object):
     def same_action(self,other):
         return self.__class__ == other.__class__
 
+class WaptNetworkReconfig(WaptTask):
+    def __init__(self):
+        super(WaptNetworkReconfig,self).__init__()
+        self.priority = 0
+        self.notify_server_on_start = False
+        self.notify_server_on_finish = True
+
+    def _run(self):
+        self.wapt.network_reconfigure()
+
+    def __str__(self):
+        return u"Reconfiguration accès réseau"
+
 class WaptUpdate(WaptTask):
     def __init__(self):
         super(WaptUpdate,self).__init__()
         self.priority = 10
+        self.notify_server_on_start = False
+        self.notify_server_on_finish = True
 
     def _run(self):
         self.result = self.wapt.update()
@@ -812,6 +831,8 @@ class WaptUpdateServerStatus(WaptTask):
     def __init__(self):
         super(WaptUpdateServerStatus,self).__init__()
         self.priority = 10
+        self.notify_server_on_start = False
+        self.notify_server_on_finish = False
 
     def _run(self):
         if self.wapt.wapt_server:
@@ -833,6 +854,8 @@ class WaptRegisterComputer(WaptTask):
     def __init__(self):
         super(WaptRegisterComputer,self).__init__()
         self.priority = 10
+        self.notify_server_on_start = False
+        self.notify_server_on_finish = False
 
     def _run(self):
         if self.wapt.wapt_server:
@@ -995,6 +1018,15 @@ class WaptTaskManager(threading.Thread):
         if self.events:
             self.wapt.events.send_multipart(["STATUS",msg])
 
+    def update_server_status(self):
+        if self.wapt.wapt_server:
+            try:
+                result = self.wapt.update_server_status()
+                if result['uuid']:
+                    self.last_update_server_date = datetime.datetime.now()
+            except Exception as e:
+                logger.warning('Unable to update server status: %e'%e)
+
     def broadcast_tasks_status(self,topic,content):
         """topic : ADD START FINISH CANCEL ERROR """
         # ignorr brodcast for this..
@@ -1029,22 +1061,26 @@ class WaptTaskManager(threading.Thread):
 
     def run(self):
         """Queue management, event processing"""
-
-        import pythoncom
         pythoncom.CoInitialize()
-
+        self.start_network_monitoring()
         logger.debug("Wapt tasks queue started")
         while True:
             try:
+                # check tasks queue
                 self.running_task = self.tasks_queue.get(timeout=10)
                 try:
-                    if not isinstance(self.running_task,WaptUpdateServerStatus):
-                        self.update_runstatus(u'Processing {description}'.format(description=self.running_task) )
+                    # don't send update_run status fir udapstatus itself...
                     self.broadcast_tasks_status('START',self.running_task)
+                    if self.running_task.notify_server_on_start:
+                        self.update_runstatus(u'Processing {description}'.format(description=self.running_task) )
+                        self.update_server_status()
                     try:
                         self.running_task.run()
                         self.tasks_done.append(self.running_task)
                         self.broadcast_tasks_status('FINISH',self.running_task)
+                        if self.running_task.notify_server_on_finish:
+                            self.update_runstatus(u'Finished {description}'.format(description=self.running_task) )
+                            self.update_server_status()
 
                     except common.EWaptCancelled as e:
                         if self.running_task:
@@ -1056,12 +1092,12 @@ class WaptTaskManager(threading.Thread):
                             self.running_task.logs.append(u"{}".format(e))
                             self.tasks_error.append(self.running_task)
                             self.broadcast_tasks_status('ERROR',self.running_task.as_dict())
-                        logger.critical(e)
+                        logger.critical(u"%s"%e)
                 finally:
                     self.tasks_queue.task_done()
                     # send workstation status
-                    if not isinstance(self.running_task,WaptUpdateServerStatus) and self.wapt.wapt_server:
-                        self.add_task(WaptUpdateServerStatus())
+                    #if not isinstance(self.running_task,WaptUpdateServerStatus) and self.wapt.wapt_server:
+                    #    self.add_task(WaptUpdateServerStatus())
 
                     self.running_task = None
                     # trim history lists
@@ -1139,9 +1175,30 @@ class WaptTaskManager(threading.Thread):
         except Exception as e:
             return u"Error : tasks list locked : {}".format(e)
 
+    def start_network_monitoring(self):
+        def addr_change(wapt):
+            while True:
+                print('waiting for addr change')
+                #ctypes.windll.iphlpapi.NotifyRouteChange(0, 0)
+                ctypes.windll.iphlpapi.NotifyAddrChange(0, 0)
+                print('addr changed !')
+                wapt.add_task(WaptNetworkReconfig())
+
+        logger.debug("Wapt network address monitoring started")
+        nm = threading.Thread(target=addr_change,args=(self,))
+        nm.daemon = True
+        nm.start()
+        logger.debug("Wapt network address monitoring stopped")
+
+
     def network_up(self):
         with self.status_lock:
-            logger.info('Network is UP')
+            logger.warning('Network is UP')
+            try:
+                #self.wapt.update_server_status()
+                pass
+            except Exception as e:
+                logger.warning(u'Mise à jour du status sur le serveur impossible : %s'%e)
 
     def network_down(self):
         with self.status_lock:
@@ -1215,9 +1272,9 @@ if __name__ == "__main__":
     task_manager.daemon = True
     task_manager.start()
 
-    network_monitor = NetworkManager(connected_cb = task_manager.network_up,disconnected_cb=task_manager.network_down)
-    network_monitor_thread = threading.Thread(target=network_monitor.register)
-    network_monitor_thread.start()
+    #network_monitor = NetworkManager(connected_cb = task_manager.network_up,disconnected_cb=task_manager.network_down)
+    #network_monitor_thread = threading.Thread(target=network_monitor.run)
+    #network_monitor_thread.start()
 
     debug=False
     if debug==True:

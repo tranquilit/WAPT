@@ -87,15 +87,30 @@ def ensure_dir(f):
 
 # from opsi
 def ensure_unicode(data):
-    """Return a unicode string from data object"""
+    """Return a unicode string from data object
+    >>> ensure_unicode('éé')
+    u'\xe9\xe9'
+    >>> ensure_unicode(u'éé')
+    u'\xe9\xe9'
+    >>> ensure_unicode(Exception("test"))
+    u'test'
+    >>> ensure_unicode(Exception())
+    u'test'
+
+    """
     if type(data) is types.UnicodeType:
         return data
     if type(data) is types.StringType:
-        return unicode(data, 'utf-8', 'replace')
+        return unicode(data, 'utf8', 'replace')
     if type(data) is WindowsError:
         return u"%s : %s" % (data.args[0], data.args[1].decode(sys.getfilesystemencoding()))
     if type(data) is UnicodeDecodeError:
         return u"%s : faulty string is '%s'" % (data,data.args[1].decode(sys.getfilesystemencoding()))
+    if isinstance(data,Exception):
+        try:
+            return u"%s: %s" % (data.__class__.__name__,data)
+        except:
+            return u"%s" % (data.__class__.__name__,)
     if hasattr(data, '__unicode__'):
         try:
             return data.__unicode__()
@@ -109,7 +124,7 @@ def ensure_unicode(data):
         data = data.__repr__()
         if type(data) is types.UnicodeType:
             return data
-        return unicode(data, 'utf-8', 'replace')
+        return unicode(data, 'utf8', 'replace')
     return unicode(data)
 
 def create_shortcut(path, target='', arguments='', wDir='', icon=''):

@@ -825,7 +825,7 @@ def main():
                 print u'Unknown action %s' % action
                 sys.exit(1)
 
-        except Exception,e:
+        except Exception as e:
             print "FATAL ERROR : %s" % (ensure_unicode(e),)
             if logger.level == logging.DEBUG:
                 raise
