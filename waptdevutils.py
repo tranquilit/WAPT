@@ -29,11 +29,12 @@ from waptpackage import *
 import codecs
 from iniparse import RawConfigParser
 
-__version__ = "0.8.10"
+__version__ = "0.8.12"
 
 
 create_self_signed_key = common.create_self_signed_key
-
+is_encrypt_private_key = common.private_key_has_password
+is_match_password = common.check_key_password
 
 def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wapt_server='',destination='',company=''):
     """Build a customized waptsetup.exe with included provided certificate

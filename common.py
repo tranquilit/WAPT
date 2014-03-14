@@ -378,7 +378,7 @@ def ssl_verify_content(content,signature,public_certs):
 def registered_organization():
     return registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOrganization')
 
-def is_encrypt_private_key(key):
+def private_key_has_password(key):
     def callback(*args):
         return ""
     try:
