@@ -568,7 +568,7 @@ begin
         begin
           if not FileExists(GetWaptPrivateKey) then
           begin
-            ShowMessage('la clé privé n''existe pas: ' + GetWaptPrivateKey);
+            ShowMessage('la clé privée n''existe pas: ' + GetWaptPrivateKey);
             exit;
           end;
           isEncrypt := StrToBool(DMPython.RunJSON(
@@ -584,7 +584,7 @@ begin
                   begin
                     privateKeyPassword := edPasswordKey.Text;
                     if StrToBool(DMPython.RunJSON(
-                      format('waptdevutils.is_match_password(r"%s","%s")',
+                      format('common.check_key_password(r"%s","%s")',
                       [GetWaptPrivateKey, privateKeyPassword])).AsString) then
                       done := True;
                   end
@@ -699,7 +699,7 @@ begin
       repeat
         if ShowModal = mrOk then
           try
-            DMPython.PythonEng.ExecString('import waptdevutils');
+            DMPython.PythonEng.ExecString('import common');
             params := '';
             params := params + format('orgname=r"%s",', [edOrgName.Text]);
             params := params + format('destdir=r"%s",', [DirectoryCert.Directory]);
@@ -709,8 +709,9 @@ begin
             params := params + format('unit=r"%s".decode(''utf8''),', [edUnit.Text]);
             params := params + format('commonname=r"%s",', [edCommonName.Text]);
             params := params + format('email=r"%s",', [edEmail.Text]);
+            params := params + format('wapt_base_dir=r"%s",', [waptpath]);
             Result := DMPython.RunJSON(
-              format('waptdevutils.create_self_signed_key(mywapt,%s)',
+              format('common.create_self_signed_key(%s)',
               [params]), jsonlog);
             done := FileExists(Result.S['pem_filename']);
             if done then

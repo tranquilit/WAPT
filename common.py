@@ -346,8 +346,15 @@ def ssl_sign_content(content,private_key,callback=pwd_callback):
     return signature
 
 def ssl_verify_content(content,signature,public_certs):
-    """Check that the signature matches the content, using the provided publoc key
-        toto : check that the public key is valid....
+    u"""Check that the signature matches the content, using the provided list of public keys
+        Content, signature are String
+        public_certs is either a filename or a list of filenames
+    >>> if not os.path.isfile('c:/private/test.pem'):
+    ...     create_self_signed_key('test',organization='Tranquil IT',locality=u'St Sébastien sur Loire',commonname='wapt.tranquil.it',email='...@tranquil.it')
+    >>> my_content = 'Un test de contenu'
+    >>> my_signature = ssl_sign_content(my_content,'c:/private/test.pem')
+    >>> print ssl_verify_content(my_content,my_signature,'c:/private/test.crt')
+    C=FR, L=St Sébastien sur Loire, O=Tranquil IT, CN=wapt.tranquil.it/emailAddress=...@tranquil.it
     """
     assert isinstance(signature,str)
     assert isinstance(public_certs,str) or isinstance(public_certs,unicode) or isinstance(public_certs,list)
@@ -368,8 +375,87 @@ def ssl_verify_content(content,signature,public_certs):
             return crt.get_subject().as_text()
     raise Exception('SSL signature verification failed, either none public certificates match signature or signed content has been changed')
 
+def registered_organization():
+    return registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOrganization')
+
+def is_encrypt_private_key(key):
+    def callback(*args):
+        return ""
+    try:
+        EVP.load_key(key, callback)
+    except Exception as e:
+        if "bad password" in str(e):
+            return True
+        else:
+            print str(e)
+            return True
+    return False
+
+def check_key_password(key_filename,password=""):
+    """Check if provided password is valid to read the PEM private key
+    >>> if not os.path.isfile('c:/private/test.pem'):
+    ...     create_self_signed_key('test',organization='Tranquil IT',locality=u'St Sébastien sur Loire',commonname='wapt.tranquil.it',email='...@tranquil.it')
+    >>> check_key_password('c:/private/test.pem','')
+    True
+    >>> check_key_password('c:/private/ko.pem','')
+    False
+    """
+    def callback(*args):
+        return password
+    try:
+        from M2Crypto import EVP
+        from M2Crypto.EVP import EVPError
+        EVP.load_key(key_filename, callback)
+    except EVPError:
+        return False
+    return True
+
+def create_self_signed_key(orgname,
+        wapt_base_dir=None,
+        destdir='c:\\private',
+        country='FR',
+        locality=u'',
+        organization=u'',
+        unit='',
+        commonname='',
+        email='',
+    ):
+    u"""Creates a self signed key/certificate and returns the paths (keyfilename,crtfilename)
+        without password
+    >>> if os.path.isfile('c:/private/test.pem'):
+    ...     os.unlink('c:/private/test.pem')
+    >>> create_self_signed_key('test',organization='Tranquil IT',locality=u'St Sébastien sur Loire',commonname='wapt.tranquil.it',email='...@tranquil.it')
+    {'crt_filename': r'c:\private\test.crt', 'pem_filename': r'c:\private\test.pem'}
+    """
+    if not wapt_base_dir:
+        wapt_base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
+
+    destpem = os.path.join(destdir,'%s.pem' % orgname)
+    destcrt = os.path.join(destdir,'%s.crt' % orgname)
+    if os.path.isfile(destpem):
+        raise Exception('Destination SSL key %s already exist' % destpem)
+    if not os.path.isdir(destdir):
+        os.makedirs(destdir)
+    params = {
+        'country':country,
+        'locality':locality,
+        'organization':organization,
+        'unit':unit,
+        'commonname':commonname,
+        'email':email,
+    }
+    opensslbin = os.path.join(wapt_base_dir,'lib','site-packages','M2Crypto','openssl.exe')
+    opensslcfg = codecs.open(os.path.join(wapt_base_dir,'templates','openssl_template.cfg'),'r',encoding='utf8').read() % params
+    opensslcfg_fn = os.path.join(destdir,'openssl.cfg')
+    codecs.open(opensslcfg_fn,'w',encoding='utf8').write(opensslcfg)
+    os.environ['OPENSSL_CONF'] =  opensslcfg_fn
+    out = setuphelpers.run('%(opensslbin)s req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout %(destpem)s -out %(destcrt)s' %
+        {'opensslbin':opensslbin,'orgname':orgname,'destcrt':destcrt,'destpem':destpem})
+    return {'pem_filename':destpem,'crt_filename':destcrt}
+
 
 def default_json(o):
+    """callback to extend handling of json.dumps"""
     if hasattr(o,'as_dict'):
         return o.as_dict()
     elif hasattr(o,'as_json'):
@@ -380,6 +466,14 @@ def default_json(o):
         return u"%s" % (ensure_unicode(o),)
 
 def jsondump(o,**kwargs):
+    """Dump argument to json format, including datetime
+    and customized classes with as_dict or as_json callables
+    >>> class MyClass(object):
+    ...    def as_dict(self):
+    ...        return {'test':'a','adate2':datetime.date(2014,03,15)}
+    >>> jsondump({'adate':datetime.date(2014,03,14),'an_object':MyClass()})
+    '{"adate": "2014-03-14", "an_object": {"test": "a", "adate2": "2014-03-15"}}'
+    """
     return json.dumps(o,default=default_json,**kwargs)
 
 def create_recursive_zip_signed(zipfn, source_root, target_root = u"",excludes = [u'.svn',u'.git*',u'*.pyc',u'*.dbg',u'src']):
@@ -1657,10 +1751,10 @@ class WaptRepo(object):
             return self._repo_url
         else:
             if not self._cached_dns_repo_url:
-                self._cached_dns_repo_url = self.find_wapt_server()
+                self._cached_dns_repo_url = self.find_wapt_repo_url()
             return self._cached_dns_repo_url
 
-    def find_wapt_server(self):
+    def find_wapt_repo_url(self):
         """Search the nearest working main WAPT repository given the following priority
            - URL defined in ini file
            - first SRV record in the same network as one of the connected network interface
@@ -2008,7 +2102,7 @@ class WaptHostRepo(WaptRepo):
             return self._repo_url
         else:
             if not self._cached_dns_repo_url:
-                self._cached_dns_repo_url = self.find_wapt_server()+'-host'
+                self._cached_dns_repo_url = self.find_wapt_repo_url()+'-host'
             return self._cached_dns_repo_url
 
     @repo_url.setter
@@ -2205,15 +2299,6 @@ class Wapt(object):
                 logger.info(u'Upgrading db structure from %s to %s' % (self._waptsessiondb.db_version,self._waptsessiondb.curr_db_version))
                 self._waptsessiondb.upgradedb()
         return self._waptsessiondb
-
-    """
-    deprecated
-    @property
-    def wapt_repourl(self):
-        if not self._wapt_repourl:
-            self._wapt_repourl = self.find_wapt_server()
-        return self._wapt_repourl
-    """
 
     @property
     def runstatus(self):
@@ -4467,6 +4552,10 @@ class Wapt(object):
 Version = setuphelpers.Version  # obsolete
 
 if __name__ == '__main__':
+    import doctest
+    import sys
+    reload(sys)
+    sys.setdefaultencoding("UTF-8")
     import doctest
     doctest.testmod()
     sys.exit(0)

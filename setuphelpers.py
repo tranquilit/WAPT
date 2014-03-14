@@ -128,6 +128,9 @@ def ensure_unicode(data):
     return unicode(data)
 
 def create_shortcut(path, target='', arguments='', wDir='', icon=''):
+    """Create a windows shortcut
+    >>> create_shortcut('c:/tmp/test.lnk',target='c:\\tmp')
+    """
     ext = path[-3:]
     if ext == 'url':
         shortcut = file(path, 'w')
@@ -475,7 +478,10 @@ def run_notfatal(*cmd,**args):
         return ''
 
 def shell_launch(cmd):
-    """Launch a command (without arguments) but doesn't wait for its termination"""
+    """Launch a command (without arguments) but doesn't wait for its termination
+    >>> open('c:/tmp/test.txt','w').write('Test line')
+    >>> shell_launch('c:/tmp/test.txt')
+    """
     os.startfile(cmd)
 
 def isrunning(processname):
@@ -702,7 +708,10 @@ def registry_readstring(root,path,keyname,default=''):
         path    : string like "software\\microsoft\\windows\\currentversion"
                            or "software\\wow6432node\\microsoft\\windows\\currentversion"
         keyname : None for value of key or str for a specific value like 'CommonFilesDir'
-    the path can be either with backslash or slash"""
+        the path can be either with backslash or slash
+    >>> registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM/CurrentControlSet/services/Tcpip/Parameters','Hostname')
+    HTLAPTOPZ
+    """
     path = path.replace(u'/',u'\\')
     try:
         key = reg_openkey_noredir(root,path)
@@ -1332,10 +1341,14 @@ params = {}
 control = PackageEntry()
 
 if __name__=='__main__':
+    import doctest
+    import sys
+    reload(sys)
+    sys.setdefaultencoding("UTF-8")
+    import doctest
+    doctest.testmod()
     sys.exit(0)
 
-    print registry_readstring(HKEY_LOCAL_MACHINE,'SYSTEM/CurrentControlSet/services/Tcpip/Parameters','Hostname')
-    print registry_readstring(HKEY_LOCAL_MACHINE,'SYSTEM/CurrentControlSet/services/Tcpip/Parameters','DhcpDomain')
 
     copytree2('c:\\tmp','c:\\tmp2\\toto',onreplace=default_overwrite)
     copytree2('c:\\tmp','c:\\tmp2\\toto',onreplace=default_skip)

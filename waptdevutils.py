@@ -23,7 +23,6 @@
 
 import common
 import json
-from M2Crypto import EVP
 from setuphelpers import *
 from waptpackage import *
 #import active_directory
@@ -32,63 +31,9 @@ from iniparse import RawConfigParser
 
 __version__ = "0.8.10"
 
-def registered_organization():
-    return registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOrganization')
 
-def is_encrypt_private_key(key):
-    def callback(*args):
-        return ""
-    try:
-        EVP.load_key(key, callback)
-    except Exception as e:
-        if "bad password" in str(e):
-            return True
-        else:
-            print str(e)
-            return True
-    return False
+create_self_signed_key = common.create_self_signed_key
 
-def  is_match_password(key,password=""):
-    def callback(*args):
-        return password
-    try:
-        EVP.load_key(key, callback)
-    except Exception as e:
-            return False
-    return True
-
-def create_self_signed_key(wapt,orgname,destdir='c:\\private',
-        country='FR',
-        locality=u'',
-        organization=u'',
-        unit='',
-        commonname='',
-        email='',
-    ):
-    """Creates a self signed key/certificate and returns the paths (keyfilename,crtfilename)"""
-    destpem = os.path.join(destdir,'%s.pem' % orgname)
-    destcrt = os.path.join(destdir,'%s.crt' % orgname)
-    if os.path.isfile(destpem):
-        raise Exception('Destination SSL key %s already exist' % destpem)
-    if not os.path.isdir(destdir):
-        os.makedirs(destdir)
-    params = {
-        'country':country,
-        'locality':locality,
-        'organization':organization,
-        'unit':unit,
-        'commonname':commonname,
-        'email':email,
-    }
-    opensslbin = os.path.join(wapt.wapt_base_dir,'lib','site-packages','M2Crypto','openssl.exe')
-    opensslcfg = codecs.open(os.path.join(wapt.wapt_base_dir,'templates','openssl_template.cfg'),'r',encoding='utf8').read() % params
-    opensslcfg_fn = os.path.join(destdir,'openssl.cfg')
-    codecs.open(opensslcfg_fn,'w',encoding='utf8').write(opensslcfg)
-    os.environ['OPENSSL_CONF'] =  opensslcfg_fn
-    out = run('%(opensslbin)s req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout %(destpem)s -out %(destcrt)s' %
-        {'opensslbin':opensslbin,'orgname':orgname,'destcrt':destcrt,'destpem':destpem})
-    print out
-    return {'pem_filename':destpem,'crt_filename':destcrt}
 
 def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wapt_server='',destination='',company=''):
     """Build a customized waptsetup.exe with included provided certificate

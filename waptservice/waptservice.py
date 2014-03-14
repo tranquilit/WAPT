@@ -55,37 +55,9 @@ from common import Wapt
 
 __version__ = "0.8.11"
 
-config = ConfigParser.RawConfigParser()
-
-# log
-log_directory = os.path.join(wapt_root_dir,'log')
-if not os.path.exists(log_directory):
-    os.mkdir(log_directory)
-
-logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
-
 logger = logging.getLogger()
+logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
 logger.setLevel(logging.INFO)
-
-config_filename = os.path.join(wapt_root_dir,'wapt-get.ini')
-
-if os.path.exists(config_filename):
-    config.read(config_filename)
-else:
-    raise Exception("FATAL. Couldn't open config file : " + config_filename)
-
-wapt_user = ""
-wapt_password = ""
-
-# maximum nb of tasks in wapt task manager
-MAX_HISTORY = 30
-
-def format_isodate(isodate):
-    """Pretty format iso date like : 2014-01-21T17:36:15.652000
-        >>> format_isodate('2014-01-21T17:36:15.652000')
-        '21/01/2014 17:36:15'
-    """
-    return dateutil.parser.parse(isodate).strftime("%d/%m/%Y %H:%M:%S")
 
 def setloglevel(logger,loglevel):
     """set loglevel as string"""
@@ -94,6 +66,99 @@ def setloglevel(logger,loglevel):
         if not isinstance(numeric_level, int):
             raise ValueError('Invalid log level: %s' % loglevel)
         logger.setLevel(numeric_level)
+
+def get_authorized_callers_ip(waptserver_url):
+    """Returns list of IP allowed to request actions with check_caller decorator"""
+    ips = ['127.0.0.1']
+    if waptserver_url:
+        try:
+            ips.append(socket.gethostbyname( urlparse(waptserver_url).hostname))
+        except socket.gaierror as e:
+            # no network connection to resolve hostname
+            pass
+    return ips
+
+class WaptServiceConfig(object):
+    """Configuration parameters from wapt-get.ini file
+    >>> waptconfig = WaptServiceConfig('c:/wapt/wapt-get.ini')
+    >>> waptconfig.load()
+    """
+    def __init__(self,config_filename=None):
+        if not config_filename:
+            self.config_filename = os.path.join(wapt_root_dir,'wapt-get.ini')
+        else:
+            self.config_filename = config_filename
+        self.wapt_user = "admin"
+        self.wapt_password = None
+
+        # maximum nb of tasks in wapt task manager
+        self.MAX_HISTORY = 30
+
+        self.waptservice_port = 8088
+        self.dbpath = os.path.join(wapt_root_dir,'db','waptdb.sqlite')
+        self.loglevel = "info"
+        self.log_directory = os.path.join(wapt_root_dir,'log')
+        if not os.path.exists(self.log_directory):
+            os.mkdir(self.log_directory)
+
+        self.wapt_server = ""
+        self.authorized_callers_ip = get_authorized_callers_ip(self.wapt_server)
+
+    def load(self):
+        """Load waptservice parameters from global wapt-get.ini file"""
+        config = ConfigParser.RawConfigParser()
+        if os.path.exists(self.config_filename):
+            config.read(self.config_filename)
+        else:
+            raise Exception("FATAL. Couldn't open config file : " + self.config_filename)
+        # lecture configuration
+        if config.has_section('global'):
+            if config.has_option('global', 'wapt_user'):
+                self.wapt_user = config.get('global', 'wapt_user')
+            else:
+                self.wapt_user = 'admin'
+
+            if config.has_option('global','waptservice_password'):
+                self.wapt_password = config.get('global', 'waptservice_password')
+            else:
+                logger.warning("WARNING : no password set, using default password")
+                self.wapt_password='5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8' # = password
+
+            if config.has_option('global','waptservice_port'):
+                self.waptservice_port = int(config.get('global','waptservice_port'))
+            else:
+                self.waptservice_port=8088
+
+            if config.has_option('global','dbdir'):
+                self.dbpath = os.path.join(config.get('global','dbdir'),'waptdb.sqlite')
+            else:
+                self.dbpath = os.path.join(wapt_root_dir,'db','waptdb.sqlite')
+
+            if config.has_option('global','loglevel'):
+                self.loglevel = config.get('global','loglevel')
+                setloglevel(logger,self.loglevel)
+            else:
+                setloglevel(logger,'warning')
+
+            if config.has_option('global','wapt_server'):
+                self.wapt_server = config.get('global','wapt_server')
+            else:
+                self.wapt_server = ''
+            self.authorized_callers_ip = get_authorized_callers_ip(self.wapt_server)
+
+        else:
+            raise Exception ("FATAL, configuration file " + self.config_filename + " has no section [global]. Please check Waptserver documentation")
+
+        def __str__(self):
+            return ""
+
+def format_isodate(isodate):
+    """Pretty format iso date like : 2014-01-21T17:36:15.652000
+        >>> format_isodate('2014-01-21T17:36:15.652000')
+        '21/01/2014 17:36:15'
+    """
+    return dateutil.parser.parse(isodate).strftime("%d/%m/%Y %H:%M:%S")
+
 
 def beautify(c):
     """return pretty html"""
@@ -127,39 +192,22 @@ def beautify(c):
     else:
         return jinja2.Markup(u"<pre>{}</pre>".format(setuphelpers.ensure_unicode(c)))
 
-# lecture configuration
-if config.has_section('global'):
-    if config.has_option('global', 'wapt_user'):
-        wapt_user = config.get('global', 'wapt_user')
-    else:
-        wapt_user='admin'
+def ssl_required(fn):
+    @wraps(fn)
+    def decorated_view(*args, **kwargs):
+        if current_app.config.get("SSL"):
+            if request.is_secure:
+                return fn(*args, **kwargs)
+            else:
+                return redirect(request.url.replace("http://", "https://"))
 
-    if config.has_option('global','waptservice_password'):
-        wapt_password = config.get('global', 'waptservice_password')
-    else:
-        logger.warning("WARNING : no password set, using default password")
-        wapt_password='5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8' # = password
+        return fn(*args, **kwargs)
+    return decorated_view
 
-    if config.has_option('global','waptservice_port'):
-        waptservice_port = int(config.get('global','waptservice_port'))
-    else:
-        waptservice_port=8088
-
-    if config.has_option('global','dbdir'):
-        dbpath = os.path.join(config.get('global','dbdir'),'waptdb.sqlite')
-    else:
-        dbpath = os.path.join(wapt_root_dir,'db','waptdb.sqlite')
-
-    if config.has_option('global','loglevel'):
-        loglevel = config.get('global','loglevel')
-        setloglevel(logger,loglevel)
-    else:
-        setloglevel(logger,'warning')
-
-else:
-    raise Exception ("FATAL, configuration file " + config_filename + " has no section [global]. Please check Waptserver documentation")
-
-def check_open_port():
+def check_open_port(portnumber=8088):
+    """Configure local firewall to accept incoming request to specified tcp port
+    >>> check_open_port(8088)
+    """
     import win32serviceutil
     import platform
     import win32service
@@ -171,41 +219,35 @@ def check_open_port():
             logger.info("Firewall started, checking for port openning...")
             #winXP 2003
             if 'waptservice' not in setuphelpers.run_notfatal('netsh firewall show portopening'):
-                logger.info("Port not opening, opening port")
-                setuphelpers.run_notfatal("""netsh.exe firewall add portopening name="waptservice 8088" port=8088 protocol=TCP""")
-                setuphelpers.run_notfatal("""netsh.exe firewall add portopening name="waptservice 8089" port=8089 protocol=TCP""")
+                logger.info("Adding a firewall rule to open port %s"%portnumber)
+                setuphelpers.run_notfatal("""netsh.exe firewall add portopening name="waptservice %s" port=%s protocol=TCP"""%(portnumber,portnumber))
             else:
-                logger.info("port already opened, skipping firewall configuration")
+                logger.info("port %s already opened, skipping firewall configuration"%(portnumber,))
     else:
 
         if  win32serviceutil.QueryServiceStatus( 'MpsSvc', None)[1]==win32service.SERVICE_RUNNING:
             logger.info("Firewall started, checking for port openning...")
-            if 'waptservice' not in setuphelpers.run_notfatal('netsh advfirewall firewall show rule name="waptservice 8088"'):
-                logger.info("No port opened for waptservice, opening port")
+            if 'waptservice' not in setuphelpers.run_notfatal('netsh advfirewall firewall show rule name="waptservice %s"'%(portnumber,)):
+                logger.info("No port opened for waptservice, opening port %s"%portnumber)
                 #win Vista and higher
-                setuphelpers.run_notfatal("""netsh advfirewall firewall add rule name="waptservice 8088" dir=in action=allow protocol=TCP localport=8088""")
-            if 'waptservice' not in setuphelpers.run_notfatal('netsh advfirewall firewall show rule name="waptservice 8089"'):
-                setuphelpers.run_notfatal("""netsh advfirewall firewall add rule name="waptservice 8089" dir=in action=allow protocol=TCP localport=8089""")
+                setuphelpers.run_notfatal("""netsh advfirewall firewall add rule name="waptservice %s" dir=in action=allow protocol=TCP localport=%s"""%(portnumber,portnumber))
             else:
-                logger.info("port already opened, skipping firewall configuration")
+                logger.info("port %s already opened, skipping firewall configuration"%(portnumber,))
 
-check_open_port()
 
-def get_authorized_callers_ip():
-    ips = ['127.0.0.1']
-    wapt = Wapt(config_filename=config_filename)
-    if wapt.wapt_server:
-        try:
-            ips.append(socket.gethostbyname( urlparse(wapt.wapt_server).hostname))
-        except socket.gaierror as e:
-            # no network connection to resolve hostname
-            pass
-    return ips
+waptconfig = WaptServiceConfig()
+waptconfig.load()
 
-authorized_callers_ip = get_authorized_callers_ip()
 app = Flask(__name__)
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.jinja_env.filters['beautify'] = beautify
+app.waptconfig = waptconfig
+
+def wapt():
+    if not hasattr(g,'wapt'):
+        g.wapt = Wapt(config_filename = waptconfig.config_filename)
+    return g.wapt
+
 
 def requires_auth(f):
     @wraps(f)
@@ -232,8 +274,8 @@ def check_ip_source(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         auth = request.authorization
-        #if not request.remote_addr in authorized_callers_ip:
-        #    return authenticate()
+        if not request.remote_addr in app.waptconfig.authorized_callers_ip:
+            return authenticate()
         return f(*args, **kwargs)
     return decorated
 
@@ -242,7 +284,7 @@ def check_ip_source(f):
 @check_ip_source
 def status():
     rows = []
-    with sqlite3.connect(dbpath) as con:
+    with sqlite3.connect(app.waptconfig.dbpath) as con:
         try:
             con.row_factory=sqlite3.Row
             query = '''select s.package,s.version,s.install_date,s.install_status,s.install_output,r.description,
@@ -265,7 +307,7 @@ def status():
 @app.route('/packages.json')
 @check_ip_source
 def all_packages():
-    with sqlite3.connect(dbpath) as con:
+    with sqlite3.connect(app.waptconfig.dbpath) as con:
         try:
             con.row_factory=sqlite3.Row
             query = '''\
@@ -292,16 +334,16 @@ def package_icon():
     icon_local_cache = os.path.join(wapt_root_dir,'cache','icons')
     if not os.path.isdir(icon_local_cache):
         os.makedirs(icon_local_cache)
-    wapt=[]
+    #wapt=[]
 
     def get_icon(package):
         """Get icon from local cache or remote wapt directory, returns local filename"""
         icon_local_filename = os.path.join(icon_local_cache,package+'.png')
         if not os.path.isfile(icon_local_filename) or os.path.getsize(icon_local_filename)<10:
-            if not wapt:
-                wapt.append(Wapt(config_filename=config_filename))
-            proxies = wapt[0].proxies
-            repo_url = wapt[0].repositories[0].repo_url
+            #if not wapt:
+            #    wapt.append(Wapt(config_filename=app.waptconfig.config_filename))
+            proxies = wapt().proxies
+            repo_url = wapt().repositories[0].repo_url
 
             remote_icon_path = "{repo}/icons/{package}.png".format(repo=repo_url,package=package)
             icon = requests.get(remote_icon_path,proxies=proxies)
@@ -320,11 +362,10 @@ def package_icon():
 
 @app.route('/package_details')
 def package_details():
-    wapt=Wapt(config_filename=config_filename)
+    #wapt=Wapt(config_filename=app.waptconfig.config_filename)
     package = request.args.get('package')
-    wapt=Wapt(config_filename=config_filename)
     try:
-        data = wapt.is_available(package)
+        data = wapt().is_available(package)
     except Exception as e:
         data = {'errors':[ str(e) ]}
 
@@ -340,7 +381,7 @@ def package_details():
 @check_ip_source
 def get_runstatus():
     data = []
-    with sqlite3.connect(dbpath) as con:
+    with sqlite3.connect(app.waptconfig.dbpath) as con:
         con.row_factory=sqlite3.Row
         try:
             query ="""select value,create_date from wapt_params where name='runstatus' limit 1"""
@@ -356,7 +397,7 @@ def get_runstatus():
 @app.route('/checkupgrades.json')
 @check_ip_source
 def get_checkupgrades():
-    with sqlite3.connect(dbpath) as con:
+    with sqlite3.connect(app.waptconfig.dbpath) as con:
         con.row_factory=sqlite3.Row
         data = ""
         try:
@@ -375,6 +416,7 @@ def get_checkupgrades():
 @app.route('/waptupgrade.json')
 @check_ip_source
 def waptupgrade():
+    """Launch an external 'wapt-get waptupgrade' process to upgrade local copy of wapt client"""
     from setuphelpers import run
     output = run('"%s" %s' % (os.path.join(wapt_root_dir,'wapt-get.exe'),'waptupgrade'))
     data = {'result':'OK','message':output}
@@ -422,8 +464,8 @@ def longtask():
 @requires_auth
 def cleanup():
     logger.info("run cleanup")
-    wapt=Wapt(config_filename=config_filename)
-    data = wapt.cleanup()
+    #wapt=Wapt(config_filename=app.waptconfig.config_filename)
+    data = wapt().cleanup()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -433,10 +475,10 @@ def cleanup():
 @app.route('/install_log.json')
 def install_log():
     logger.info("show install log")
-    wapt=Wapt(config_filename=config_filename)
+    #wapt=Wapt(config_filename=app.waptconfig.config_filename)
     try:
         packagename = request.args.get('package')
-        data = wapt.last_install_log(packagename)
+        data = wapt().last_install_log(packagename)
     except Exception as e:
         data = {'result':'ERROR','message': u'{}'.format(e)}
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
@@ -448,16 +490,16 @@ def install_log():
 @requires_auth
 def enable():
     logger.info("enable tasks scheduling")
-    wapt=Wapt(config_filename=config_filename)
-    data = wapt.enable_tasks()
+    #wapt=Wapt(config_filename=app.waptconfig.config_filename)
+    data = wapt().enable_tasks()
     return Response(common.jsondump(data), mimetype='application/json')
 
 @app.route('/disable')
 @requires_auth
 def disable():
     logger.info("disable tasks scheduling")
-    wapt=Wapt(config_filename=config_filename)
-    data = wapt.disable_tasks()
+    #wapt=Wapt(config_filename=app.waptconfig.config_filename)
+    data = wapt().disable_tasks()
     return Response(common.jsondump(data), mimetype='application/json')
 
 @app.route('/register')
@@ -478,8 +520,8 @@ def register():
 @app.route('/inventory.json')
 def disable():
     logger.info("Inventory")
-    wapt=Wapt(config_filename=config_filename)
-    data = wapt.inventory()
+    #wapt=Wapt(config_filename=app.waptconfig.config_filename)
+    data = wapt().inventory()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -531,13 +573,12 @@ def static(filename):
 
 @app.route('/', methods=['GET'])
 def index():
-    wapt = Wapt(config_filename=config_filename)
     host_info = setuphelpers.host_info()
     data = dict(html=html,
             host_info=host_info,
-            wapt=wapt,
-            wapt_info=wapt.wapt_status(),
-            update_status=wapt.get_last_update_status())
+            wapt=wapt(),
+            wapt_info=wapt().wapt_status(),
+            update_status=wapt().get_last_update_status())
     if request.args.get('format','html')=='json'  or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -608,7 +649,7 @@ def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
-    return wapt_user == username and wapt_password == hashlib.sha256(password).hexdigest()
+    return app.waptconfig.wapt_user == username and app.waptconfig.wapt_password == hashlib.sha256(password).hexdigest()
 
 def authenticate():
     """Sends a 401 response that enables basic auth"""
@@ -750,6 +791,8 @@ class WaptNetworkReconfig(WaptTask):
 
     def _run(self):
         self.wapt.network_reconfigure()
+        logger.info('Reloading confg file')
+        waptconfig.load()
 
     def __str__(self):
         return u"Reconfiguration accès réseau"
@@ -1028,7 +1071,7 @@ class WaptTaskManager(threading.Thread):
                 if result['uuid']:
                     self.last_update_server_date = datetime.datetime.now()
             except Exception as e:
-                logger.warning('Unable to update server status: %e'%e)
+                logger.warning('Unable to update server status: %s' % e)
 
     def broadcast_tasks_status(self,topic,content):
         """topic : ADD START FINISH CANCEL ERROR """
@@ -1075,15 +1118,16 @@ class WaptTaskManager(threading.Thread):
                     # don't send update_run status fir udapstatus itself...
                     self.broadcast_tasks_status('START',self.running_task)
                     if self.running_task.notify_server_on_start:
-                        self.update_runstatus(u'Processing {description}'.format(description=self.running_task) )
+                        self.update_runstatus(u'En cours: {description}'.format(description=self.running_task) )
                         self.update_server_status()
                     try:
                         self.running_task.run()
-                        self.tasks_done.append(self.running_task)
-                        self.broadcast_tasks_status('FINISH',self.running_task)
-                        if self.running_task.notify_server_on_finish:
-                            self.update_runstatus(u'Finished {description}'.format(description=self.running_task) )
-                            self.update_server_status()
+                        if self.running_task:
+                            self.tasks_done.append(self.running_task)
+                            self.broadcast_tasks_status('FINISH',self.running_task)
+                            if self.running_task.notify_server_on_finish:
+                                self.update_runstatus(u'Terminé: {description}'.format(description=self.running_task) )
+                                self.update_server_status()
 
                     except common.EWaptCancelled as e:
                         if self.running_task:
@@ -1104,12 +1148,12 @@ class WaptTaskManager(threading.Thread):
 
                     self.running_task = None
                     # trim history lists
-                    if len(self.tasks_cancelled)>MAX_HISTORY:
-                        del self.tasks_cancelled[:len(self.tasks_cancelled)-MAX_HISTORY]
-                    if len(self.tasks_done)>MAX_HISTORY:
-                        del self.tasks_done[:len(self.tasks_done)-MAX_HISTORY]
-                    if len(self.tasks_error)>MAX_HISTORY:
-                        del self.tasks_error[:len(self.tasks_error)-MAX_HISTORY]
+                    if len(self.tasks_cancelled)>waptconfig.MAX_HISTORY:
+                        del self.tasks_cancelled[:len(self.tasks_cancelled)-waptconfig.MAX_HISTORY]
+                    if len(self.tasks_done)>waptconfig.MAX_HISTORY:
+                        del self.tasks_done[:len(self.tasks_done)-waptconfig.MAX_HISTORY]
+                    if len(self.tasks_error)>waptconfig.MAX_HISTORY:
+                        del self.tasks_error[:len(self.tasks_error)-waptconfig.MAX_HISTORY]
 
             except Queue.Empty:
                 self.update_runstatus('')
@@ -1211,7 +1255,15 @@ class WaptTaskManager(threading.Thread):
         return "\n".join(self.tasks_status())
 
 def install_service():
-    import setuphelpers
+    """Setup waptservice as a windows Service managed by nssm
+    >>> install_service()
+    """
+
+    # http
+    check_open_port(waptconfig.waptservice_port)
+    # https
+    check_open_port(waptconfig.waptservice_port+1)
+
     from setuphelpers import registry_set,REG_DWORD,REG_EXPAND_SZ,REG_MULTI_SZ,REG_SZ
     datatypes = {
         'dword':REG_DWORD,
@@ -1225,22 +1277,21 @@ def install_service():
             setuphelpers.run('sc stop waptservice')
         setuphelpers.run('sc delete waptservice')
 
-    basedir = os.path.abspath(os.path.dirname(__file__))
     if setuphelpers.iswin64():
-        nssm = os.path.join(basedir,'win64','nssm.exe')
+        nssm = os.path.join(wapt_root_dir,'waptservice','win64','nssm.exe')
     else:
-        nssm = os.path.join(basedir,'win32','nssm.exe')
+        nssm = os.path.join(wapt_root_dir,'waptservice','win32','nssm.exe')
 
     setuphelpers.run('"{nssm}" install WAPTService "{waptpython}" "{waptservicepy}"'.format(
-        waptpython = os.path.abspath(os.path.join(basedir,'..','waptpython.exe')),
+        waptpython = os.path.abspath(os.path.join(wapt_root_dir,'waptpython.exe')),
         nssm = nssm,
         waptservicepy = os.path.abspath(__file__),
      ))
 
     params = {
         "DisplayName":"sz:WAPT Service",
-        "AppStdout":r"expand_sz:{}".format(os.path.join(log_directory,'waptservice.log')),
-        "Parameters\\AppStderr":r"expand_sz:{}".format(os.path.join(log_directory,'waptservice.log')),
+        "AppStdout":r"expand_sz:{}".format(os.path.join(waptconfig.log_directory,'waptservice.log')),
+        "Parameters\\AppStderr":r"expand_sz:{}".format(os.path.join(waptconfig.log_directory,'waptservice.log')),
         }
 
     root = setuphelpers.HKEY_LOCAL_MACHINE
@@ -1271,7 +1322,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     # starts one WaptTasksManager
-    task_manager = WaptTaskManager(config_filename = config_filename)
+    task_manager = WaptTaskManager(config_filename = waptconfig.config_filename)
     task_manager.daemon = True
     task_manager.start()
 
@@ -1281,19 +1332,18 @@ if __name__ == "__main__":
 
     debug=False
     if debug==True:
-        app.run(host='0.0.0.0',port=waptservice_port,debug=False)
+        app.run(host='0.0.0.0',port=waptconfig.waptservice_port ,debug=False)
         logger.info("exiting")
     else:
         #logger.setLevel(logging.DEBUG)
         server = Rocket(
-            [('0.0.0.0', waptservice_port),
-             ('0.0.0.0', waptservice_port+1, r'waptservice\ssl\waptservice.pem', r'waptservice\ssl\waptservice.crt')],
+            [('0.0.0.0', waptconfig.waptservice_port),
+             ('0.0.0.0', waptconfig.waptservice_port+1, r'waptservice\ssl\waptservice.pem', r'waptservice\ssl\waptservice.crt')],
              'wsgi', {"wsgi_app":app})
 
         try:
-            logger.info("starting waptserver")
+            logger.info("starting waptservice")
             server.start()
         except KeyboardInterrupt:
-            logger.info("stopping waptserver")
+            logger.info("stopping waptservice")
             server.stop()
-
