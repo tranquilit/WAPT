@@ -46,6 +46,9 @@ sys.path.append(os.path.join(wapt_root_dir,'lib'))
 sys.path.append(os.path.join(wapt_root_dir,'waptservice'))
 sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
 
+import ssl
+from ssl import SSLError
+
 import common
 import setuphelpers
 from common import Wapt
@@ -1281,9 +1284,10 @@ if __name__ == "__main__":
         app.run(host='0.0.0.0',port=waptservice_port,debug=False)
         logger.info("exiting")
     else:
+        #logger.setLevel(logging.DEBUG)
         server = Rocket(
             [('0.0.0.0', waptservice_port),
-             ('0.0.0.0', waptservice_port+1, r'ssl\waptservice.pem', r'ssl\waptservice.crt')],
+             ('0.0.0.0', waptservice_port+1, r'waptservice\ssl\waptservice.pem', r'waptservice\ssl\waptservice.crt')],
              'wsgi', {"wsgi_app":app})
 
         try:
