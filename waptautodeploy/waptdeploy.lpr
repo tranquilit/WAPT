@@ -1,7 +1,6 @@
 program waptdeploy;
-{$mode delphi}
 
-uses classes,windows,SysUtils,wininet,UnitRedirect,URIParser;
+uses classes,windows,SysUtils,wininet,URIParser;
 
 function GetComputerName : AnsiString;
 var
@@ -106,7 +105,7 @@ begin
     result := ReadRegEntry('SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1','DisplayVersion');
   except
     try
-      result := ReadRegEntry('SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1','DisplayVersion');
+      result := ReadRegEntry('SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1','DisplayVersion');
     except
       Result := '';
     end;
@@ -335,7 +334,7 @@ begin
   end;
 end;
 
-function StrToken(var S: string; Separator: Char): string;
+function StrToken(var S: string; Separator: String): string;
 var
   I: SizeInt;
 begin
@@ -352,6 +351,102 @@ begin
   end;
 end;
 
+type
+  TAnoPipe=record
+    Input : THandle; // Handle to send data to the pipe
+    Output: THandle; // Handle to read data from the pipe
+  end;
+
+  function GetDosOutput(const CommandLine: string;
+     WorkDir: string;
+     var text: String): Boolean;
+  var
+     SA: TSecurityAttributes;
+     SI: TStartupInfo;
+     PI: TProcessInformation;
+     StdOutPipeRead, StdOutPipeWrite: THandle;
+     WasOK: Boolean;
+     Buffer: array[0..255] of Char;
+     BytesRead: Cardinal;
+     Line: String;
+  begin
+     with SA do
+     begin
+       nLength := SizeOf(SA);
+       bInheritHandle := True;
+       lpSecurityDescriptor := nil;
+     end;
+     // create pipe for standard output redirection
+     CreatePipe(StdOutPipeRead, // read handle
+                StdOutPipeWrite, // write handle
+                @SA, // security attributes
+                0 // number of bytes reserved for pipe - 0 default
+                );
+     try
+       // Make child process use StdOutPipeWrite as standard out,
+       // and make sure it does not show on screen.
+       with SI do
+       begin
+         FillChar(SI, SizeOf(SI), 0);
+         cb := SizeOf(SI);
+         dwFlags := STARTF_USESHOWWINDOW or STARTF_USESTDHANDLES;
+         wShowWindow := SW_HIDE;
+         hStdInput := GetStdHandle(STD_INPUT_HANDLE); // don't redirect stdinput
+         hStdOutput := StdOutPipeWrite;
+         hStdError := StdOutPipeWrite;
+       end;
+
+       // launch the command line compiler
+       //WorkDir := 'C:\';
+       if workdir='' then
+        workdir := GetCurrentDir;
+       result := CreateProcess(
+         nil,
+         PChar(CommandLine),
+         nil,
+         nil,
+         True,
+         0,
+         nil,
+         PChar(WorkDir),
+         SI,
+         PI);
+
+       // Now that the handle has been inherited, close write to be safe.
+       // We don't want to read or write to it accidentally.
+       CloseHandle(StdOutPipeWrite);
+       // if process could be created then handle its output
+       if result then
+         try
+           // get all output until dos app finishes
+           Line := '';
+           repeat
+             // read block of characters (might contain carriage returns and  line feeds)
+             WasOK := ReadFile(StdOutPipeRead, Buffer, 255, BytesRead, nil);
+
+             // has anything been read?
+             if BytesRead > 0 then
+             begin
+               // finish buffer to PChar
+               Buffer[BytesRead] := #0;
+               // combine the buffer with the rest of the last run
+               Line := Line + Buffer;
+             end;
+           until not WasOK or (BytesRead = 0);
+           // wait for console app to finish (should be already at this point)
+           WaitForSingleObject(PI.hProcess, INFINITE);
+         finally
+           // Close all remaining handles
+           CloseHandle(PI.hThread);
+           CloseHandle(PI.hProcess);
+         end;
+     finally
+       text := Line;
+       CloseHandle(StdOutPipeRead);
+     end;
+  end;
+
+
 function CompareVersion(v1,v2:String):integer;
 var
   tok1,tok2:String;
@@ -366,19 +461,30 @@ begin
 end;
 
 
-function ComputerUUID: String;
-var Res:String;
+function getComputerUUID: String;
+var
+  Res:String;
 begin
-  res := Sto_RedirectedExecute('wmic PATH Win32_ComputerSystemProduct GET UUID');
+ if GetDosOutput('wmic PATH Win32_ComputerSystemProduct GET UUID','',res) then
+//  if ExecAndCapture('wmic PATH Win32_ComputerSystemProduct GET UUID',res)>0 then
+  begin
   {UUID
   4C4C4544-004E-3510-8051-C7C04F325131}
+  result := Trim(StrToken(res,#13#10));
+  if result = 'UUID' then
+    result := trim(StrToken(res,#13#10))
+  else
+    result :='';
 
-
+  end
+  else
+    Result:='';
 end;
 
 var
   tmpDir,waptsetupPath,localVersion,requiredVersion,getVersion:String;
-
+  computerUUID:String;
+  res : String;
 {$R *.res}
 
 begin
@@ -387,13 +493,19 @@ begin
   requiredVersion := ParamStr(1);
   if requiredVersion='' then
   begin
-    requiredVersion := httpGetString('http://wapt/wapt/waptsetup.version');
-    if requiredVersion='' then
+    try
+      requiredVersion := httpGetString('http://wapt/wapt/waptsetup.version');
+      if requiredVersion='' then
+        requiredVersion:='0.8.0';
+    except
       requiredVersion:='0.8.0';
+    end;
   end;
   writeln('WAPT required version: '+requiredVersion);
   if (localVersion='') or (CompareVersion(localVersion,requiredVersion)<0) then
-  begin
+  try
+    computerUUID:=getComputerUUID;
+    writeln('Computer UUID: '+computerUUID);
     tmpDir := GetUniqueTempdir('wapt');
     mkdir(tmpDir);
     waptsetupPath := tmpDir+'\waptsetup.exe';
@@ -404,13 +516,20 @@ begin
     writeln('Got version: '+getVersion);
     if CompareVersion(getVersion,requiredVersion)>=0 then
     begin
-      writeln(Sto_RedirectedExecute(waptsetupPath+' /VERYSILENT'));
-      if DirectoryExists(tmpDir) then
-      begin
-        DeleteFile(waptsetupPath);
-        RemoveDirectory(pchar(tmpDir));
-      end;
+      writeln('Install ...');
+      GetDosOutput(waptsetupPath+' /VERYSILENT','',res);
+    end
+    else
+      writeln('Got a waptsetup version older than required version');
+  finally
+    writeln('Cleanup...');
+    if DirectoryExists(tmpDir) then
+    begin
+      DeleteFile(waptsetupPath);
+      RemoveDirectory(pchar(tmpDir));
     end;
-  end;
+  end
+  else
+    writeln('Nothing to do');
 end.
 

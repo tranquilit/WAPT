@@ -114,7 +114,7 @@ class WaptServiceConfig(object):
         # lecture configuration
         if config.has_section('global'):
             if config.has_option('global', 'wapt_user'):
-                self.wapt_user = config.get('global', 'wapt_user')
+                self.wapt_user = config.get('global', 'waptservice_user')
             else:
                 self.wapt_user = 'admin'
 

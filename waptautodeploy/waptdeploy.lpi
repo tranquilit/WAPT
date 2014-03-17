@@ -31,6 +31,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <CommandLineParams Value="0.9"/>
       </local>
     </RunParams>
     <Units Count="1">
@@ -62,6 +63,7 @@
     </CodeGeneration>
     <Linking>
       <Debugging>
+        <StripSymbols Value="True"/>
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
       <LinkSmart Value="True"/>
@@ -72,7 +74,7 @@
       </CompilerMessages>
       <CompilerPath Value="$(CompPath)"/>
       <ExecuteAfter>
-        <Command Value="$(ProjPath )\..\utils\upx.exe $(TargetFile)"/>
+        <Command Value="$(ProjPath)\..\utils\upx.exe $(TargetFile)"/>
       </ExecuteAfter>
     </Other>
   </CompilerOptions>
