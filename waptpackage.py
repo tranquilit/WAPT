@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.11"
+__version__ = "0.8.12"
 
 import os
 import zipfile
@@ -33,6 +33,7 @@ import codecs
 import re
 import time
 import json
+import sys
 
 logger = logging.getLogger()
 
@@ -374,86 +375,6 @@ def extract_iconpng_from_wapt(self,fname):
     return iconpng
 
 
-def update_packages(adir):
-    """Scan adir directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash"""
-    packages_fname = os.path.join(adir,'Packages')
-    previous_packages=''
-    previous_packages_mtime = 0
-    if os.path.exists(packages_fname):
-        try:
-            logger.info(u"Reading old Packages %s" % packages_fname)
-            previous_packages = codecs.decode(zipfile.ZipFile(packages_fname).read(name='Packages'),'utf-8')
-            previous_packages_mtime = os.path.getmtime(packages_fname)
-        except Exception,e:
-            logger.warning(u'error reading old Packages file. Reset... (%s)' % e)
-
-    old_entries = {}
-    # we get old list to not recompute MD5 if version has not changed
-    logger.debug(u"parsing old entries...")
-
-    # last line
-    def add_package(lines):
-        package = PackageEntry()
-        package.load_control_from_wapt(lines)
-        package.filename = package.make_package_filename()
-        old_entries[package.filename] = package
-        logger.debug(u"Package %s added" % package.filename)
-
-    try:
-        lines = []
-        for line in previous_packages.splitlines():
-            # new package
-            if line.strip()=='':
-                add_package(lines)
-                lines = []
-            # add ettribute to current package
-            else:
-                lines.append(line)
-        # last
-        if lines:
-            add_package(lines)
-            lines = []
-    except Exception,e:
-        logger.critical(u'Unable to read old entries... : %s' % e)
-        old_entries = {}
-
-    if not os.path.isdir(adir):
-        raise Exception(u'%s is not a directory' % (adir))
-
-    waptlist = glob.glob(os.path.join(adir,'*.wapt'))
-    packages = []
-    kept = []
-    processed = []
-    errors = []
-    for fname in waptlist:
-        try:
-            entry = PackageEntry()
-            if os.path.basename(fname) in old_entries:
-                entry.load_control_from_wapt(fname,calc_md5=False)
-                if entry == old_entries[os.path.basename(fname)]:
-                    logger.info(u"  Keeping %s" % fname)
-                    kept.append(fname)
-                    entry = old_entries[os.path.basename(fname)]
-                else:
-                    logger.info(u"  Processing %s" % fname)
-                    entry.load_control_from_wapt(fname)
-                    processed.append(fname)
-            else:
-                logger.info(u"  Processing %s" % fname)
-                entry.load_control_from_wapt(fname)
-            packages.append(entry.ascontrol(with_non_control_attributes=True))
-        except Exception,e:
-            logger.critical("package %s: %s" % (fname,e))
-            errors.append(fname)
-
-    logger.info(u"Writing new %s" % packages_fname)
-    myzipfile = zipfile.ZipFile(packages_fname, "w",compression=zipfile.ZIP_DEFLATED)
-    zi = zipfile.ZipInfo(u"Packages",date_time = time.localtime())
-    zi.compress_type = zipfile.ZIP_DEFLATED
-    myzipfile.writestr(zi,u'\n'.join(packages).encode('utf8'))
-    myzipfile.close()
-    logger.info(u"Finished")
-    return {'processed':processed,'kept':kept,'errors':errors,'packages_filename':packages_fname}
 
 class WaptLocalRepo(object):
     def __init__(self,name='waptlocal',localpath='/var/www/wapt'):
@@ -463,34 +384,98 @@ class WaptLocalRepo(object):
         self.packages = []
 
     def load_packages(self):
-        """Get Packages from local repo Packages file"""
+        """Get Packages from local repo Packages file
+        >>> repo = WaptLocalRepo(localpath='c:\\wapt\\cache')
+        >>> repo.load_packages()
+        >>> isinstance(repo.packages,list)
+        True
+        """
         # Packages file is a zipfile with one Packages file inside
-        packages_lines = codecs.open(os.path.join(self.localpath,'Packages'),encoding='UTF-8').splitlines()
-        self.packages = []
-        startline = 0
-        endline = 0
-        def add(start,end):
-            if start <> end:
-                package = PackageEntry()
-                package.load_control_from_wapt(packages_lines[start:end])
-                logger.info(u"%s (%s)" % (package.package,package.version))
-                package.repo_url = self.repo_url
-                package.repo = self.name
-                self.packages.append(package)
+        if os.path.isfile(os.path.join(self.localpath,'Packages')):
+            with zipfile.ZipFile(os.path.join(self.localpath,'Packages')) as packages_file:
+                packages_lines = packages_file.read(name='Packages').decode('utf8').splitlines()
+            self.packages = []
+            startline = 0
+            endline = 0
+            def add(start,end):
+                if start <> end:
+                    package = PackageEntry()
+                    package.load_control_from_wapt(packages_lines[start:end])
+                    logger.info(u"%s (%s)" % (package.package,package.version))
+                    package.repo_url = 'file:///%s'%(self.localpath.replace('\\','/'))
+                    package.repo = self.name
+                    self.packages.append(package)
 
-        for line in packages_lines:
-            if line.strip()=='':
-                add(startline,endline)
-                endline += 1
-                startline = endline
-            # add ettribute to current package
-            else:
-                endline += 1
-        # last one
-        add(startline,endline)
+            for line in packages_lines:
+                if line.strip()=='':
+                    add(startline,endline)
+                    endline += 1
+                    startline = endline
+                # add ettribute to current package
+                else:
+                    endline += 1
+            # last one
+            add(startline,endline)
+
+    def update_packages_index(self,force_all=False):
+        """Scan self.localpath directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash"""
+        packages_fname = os.path.join(self.localpath,'Packages')
+        if not self.packages:
+            self.load_packages()
+        old_entries = {}
+        for package in self.packages:
+            old_entries[os.path.basename(package.filename)] = package.ascontrol(with_non_control_attributes=True)
+
+        if not os.path.isdir(self.localpath):
+            raise Exception(u'%s is not a directory' % (self.localpath))
+
+        waptlist = glob.glob(os.path.join(self.localpath,'*.wapt'))
+        packages_lines = []
+        kept = []
+        processed = []
+        errors = []
+        for fname in waptlist:
+            try:
+                entry = PackageEntry()
+                if os.path.basename(fname) in old_entries:
+                    entry.load_control_from_wapt(fname,calc_md5=False)
+                    if not force_all and entry == old_entries[os.path.basename(fname)]:
+                        logger.info(u"  Keeping %s" % fname)
+                        kept.append(fname)
+                        entry = old_entries[os.path.basename(fname)]
+                    else:
+                        logger.info(u"  Processing %s" % fname)
+                        entry.load_control_from_wapt(fname)
+                        processed.append(fname)
+                else:
+                    logger.info(u"  Processing %s" % fname)
+                    entry.load_control_from_wapt(fname)
+                    processed.append(fname)
+                packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
+            except Exception,e:
+                print e
+                logger.critical("package %s: %s" % (fname,e))
+                errors.append(fname)
+
+        logger.info(u"Writing new %s" % packages_fname)
+        with zipfile.ZipFile(packages_fname, "w",compression=zipfile.ZIP_DEFLATED) as myzipfile:
+            zi = zipfile.ZipInfo(u"Packages",date_time = time.localtime())
+            zi.compress_type = zipfile.ZIP_DEFLATED
+            myzipfile.writestr(zi,u'\n'.join(packages_lines).encode('utf8'))
+            logger.info(u"Finished")
+        return {'processed':processed,'kept':kept,'errors':errors,'packages_filename':packages_fname}
+
+
+def update_packages(adir):
+    """Update packages index
+    >>> res = update_packages('c:\\wapt\\cache')
+    >>> res['packages_filename'] == 'c:\\wapt\\cache\\Packages'
+    True
+    """
+    repo = WaptLocalRepo(localpath=adir)
+    return repo.update_packages_index()
 
 if __name__ == '__main__':
-
     import doctest
     doctest.testmod()
 
