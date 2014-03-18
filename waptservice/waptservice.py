@@ -113,7 +113,7 @@ class WaptServiceConfig(object):
             raise Exception("FATAL. Couldn't open config file : " + self.config_filename)
         # lecture configuration
         if config.has_section('global'):
-            if config.has_option('global', 'wapt_user'):
+            if config.has_option('global', 'waptservice_user'):
                 self.wapt_user = config.get('global', 'waptservice_user')
             else:
                 self.wapt_user = 'admin'
@@ -447,6 +447,17 @@ def update():
         return Response(common.jsondump(data), mimetype='application/json')
     else:
         return render_template('default.html',data=data,title=u'Mise à jour des logiciels installés')
+
+@app.route('/update_status')
+@app.route('/update_status.json')
+@check_ip_source
+def update_status():
+    task = WaptUpdateServerStatus()
+    data = task_manager.add_task(task).as_dict()
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('default.html',data=data,title=task)
 
 @app.route('/longtask')
 @app.route('/longtask.json')

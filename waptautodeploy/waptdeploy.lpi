@@ -19,7 +19,7 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <MinorVersionNr Value="1"/>
+      <MinorVersionNr Value="2"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT auto deploy" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -34,6 +34,11 @@
         <CommandLineParams Value="0.9"/>
       </local>
     </RunParams>
+    <RequiredPackages Count="1">
+      <Item1>
+        <PackageName Value="pltis_superobject"/>
+      </Item1>
+    </RequiredPackages>
     <Units Count="1">
       <Unit0>
         <Filename Value="waptdeploy.lpr"/>

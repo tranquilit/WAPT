@@ -1,6 +1,5 @@
 program waptdeploy;
-
-uses classes,windows,SysUtils,wininet,URIParser;
+uses classes,windows,SysUtils,wininet,URIParser,superobject;
 
 function GetComputerName : AnsiString;
 var
@@ -96,7 +95,7 @@ begin
 	 end; // if dwVersionSize
 end;
 
-function getlocal_wapt_version:String;
+function LocalWaptVersion:String;
 var
   local_version: string;
 begin
@@ -247,7 +246,7 @@ function httpGetString(url: string; enableProxy:Boolean= False;
 var
   hInet,hFile,hConnect: HINTERNET;
   buffer: array[1..1024] of byte;
-  flags,bytesRead,dwError,port : DWORD;
+  flags,bytesRead,dwError : DWORD;
   pos:integer;
   dwindex,dwcodelen,dwread,dwNumber: cardinal;
   dwcode : array[1..20] of char;
@@ -270,7 +269,7 @@ begin
     InternetSetOption(hInet,INTERNET_OPTION_RECEIVE_TIMEOUT,@ReceiveTimeOut,sizeof(integer));
     uri := ParseURI(url,'http',80);
 
-    hConnect := InternetConnect(hInet, PChar(uri.Host), port, nil, nil, INTERNET_SERVICE_HTTP, 0, 0);
+    hConnect := InternetConnect(hInet, PChar(uri.Host), uri.port, nil, nil, INTERNET_SERVICE_HTTP, 0, 0);
     if not Assigned(hConnect) then
       Raise Exception.Create('Unable to connect to '+url+' code : '+IntToStr(GetLastError)+' ('+GetWinInetError(GetlastError)+')');
     flags := INTERNET_FLAG_NO_CACHE_WRITE or INTERNET_FLAG_PRAGMA_NOCACHE or INTERNET_FLAG_RELOAD;
@@ -334,6 +333,93 @@ begin
   end;
 end;
 
+function httpPostData(const UserAgent: string; const url: string; const Data: AnsiString; enableProxy:Boolean= False;
+   ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000):Utf8String;
+var
+  hInet: HINTERNET;
+  hHTTP: HINTERNET;
+  hReq: HINTERNET;
+  uri:TURI;
+  pdata:String;
+
+  buffer: array[1..1024] of byte;
+  flags,bytesRead,dwError : DWORD;
+  pos:integer;
+  dwindex,dwcodelen,dwread,dwNumber: cardinal;
+  dwcode : array[1..20] of char;
+  res    : pchar;
+
+  timeout:integer;
+//  doc,error: String;
+//  uri :TIdURI;
+
+
+const
+  wall : WideString = '*/*';
+  accept: packed array[0..1] of LPWSTR = (@wall, nil);
+  header: string = 'Content-Type: application/json';
+begin
+  uri := ParseURI(url);
+  try
+    if enableProxy then
+       hInet := InternetOpen(PChar(UserAgent),INTERNET_OPEN_TYPE_PRECONFIG,nil,nil,0)
+    else
+       hInet := InternetOpen(PChar(UserAgent),INTERNET_OPEN_TYPE_DIRECT,nil,nil,0);
+    try
+      InternetSetOption(hInet,INTERNET_OPTION_CONNECT_TIMEOUT,@ConnectTimeout,sizeof(integer));
+      InternetSetOption(hInet,INTERNET_OPTION_SEND_TIMEOUT,@SendTimeOut,sizeof(integer));
+      InternetSetOption(hInet,INTERNET_OPTION_RECEIVE_TIMEOUT,@ReceiveTimeOut,sizeof(integer));
+
+      hHTTP := InternetConnect(hInet, PChar(uri.Host), uri.Port, PCHAR(uri.Username),PCHAR(uri.Password), INTERNET_SERVICE_HTTP, 0, 1);
+      if hHTTP =Nil then
+          Raise Exception.Create('Unable to connect to '+url+' code: '+IntToStr(GetLastError)+' ('+UTF8Encode(GetWinInetError(GetlastError))+')');
+      try
+        hReq := HttpOpenRequest(hHTTP, PChar('POST'), PChar(uri.Document), nil, nil, @accept, 0, 1);
+        if hReq=Nil then
+            Raise Exception.Create('Unable to POST to: '+url+' code: '+IntToStr(GetLastError)+' ('+UTF8Encode(GetWinInetError(GetlastError))+')');
+        try
+          pdata := Data;
+          if not HttpSendRequest(hReq, PChar(header), length(header), PChar(pdata), length(pdata)) then
+             Raise Exception.Create('Unable to send data to: '+url+' code: '+IntToStr(GetLastError)+' ('+UTF8Encode(GetWinInetError(GetlastError))+')');
+
+          dwIndex  := 0;
+          dwCodeLen := 10;
+          if HttpQueryInfo(hReq, HTTP_QUERY_STATUS_CODE, @dwcode, dwcodeLen, dwIndex) then
+          begin
+            res := pchar(@dwcode);
+            dwNumber := sizeof(Buffer)-1;
+            if (res ='200') or (res ='302') then
+            begin
+              Result:='';
+              pos:=1;
+              repeat
+                FillChar(buffer,SizeOf(buffer),0);
+                InternetReadFile(hReq,@buffer,SizeOf(buffer),bytesRead);
+                SetLength(Result,Length(result)+bytesRead+1);
+                Move(Buffer,Result[pos],bytesRead);
+                inc(pos,bytesRead);
+              until bytesRead = 0;
+            end
+            else
+               raise Exception.Create('Unable to get return data for: '+URL+' HTTP Status: '+res);
+          end
+          else
+              Raise Exception.Create('Unable to get http status for: '+url+' code: '+IntToStr(GetLastError)+' ('+UTF8Encode(GetWinInetError(GetlastError))+')');
+
+        finally
+          InternetCloseHandle(hReq);
+        end;
+      finally
+        InternetCloseHandle(hHTTP);
+      end;
+    finally
+      InternetCloseHandle(hInet);
+    end;
+  finally
+  end;
+end;
+
+
 function StrToken(var S: string; Separator: String): string;
 var
   I: SizeInt;
@@ -351,11 +437,6 @@ begin
   end;
 end;
 
-type
-  TAnoPipe=record
-    Input : THandle; // Handle to send data to the pipe
-    Output: THandle; // Handle to read data from the pipe
-  end;
 
   function GetDosOutput(const CommandLine: string;
      WorkDir: string;
@@ -460,35 +541,141 @@ begin
   until (result<>0) or (tok1='') or (tok2='');
 end;
 
+function DecodeKeyValue(wmivalue:String;LowerKey:Boolean=True;ConvertArrayValue:Boolean=True):ISuperObject;
+var
+  line,key,value:String;
+  CurrObject:ISuperObject;
+  isArray:Boolean;
+begin
+  Result :=  TSuperObject.Create(stArray);
+  CurrObject := Nil;
+  repeat
+    line := trim(StrToken(wmivalue,#13#10));
+    if line<>'' then
+    begin
+      if CurrObject=Nil then
+      begin
+        CurrObject := SO;
+        Result.AsArray.Add(CurrObject);
+      end;
+      key := StrToken(line,'=');
+      value := trim(line);
+      If LowerKey then
+        key := LowerCase(Key);
+      If ConvertArrayValue then
+      begin
+        isArray:=False;
+        if (value<>'') and (value[1]='{') then
+        begin
+          value[1] := '[';
+          isArray:=True;
+        end;
+        if isArray and (value<>'') and (value[length(value)]='}') then
+          value[length(value)] := ']';
+        if isArray then
+          CurrObject[key] := SO(value)
+        else
+          CurrObject.S[key] := value;
+      end
+      else
+        CurrObject.S[key] := value;
+    end
+    else
+      CurrObject := Nil;
+  until trim(wmivalue)='';
+end;
 
-function getComputerUUID: String;
+function ComputerSystem: ISuperObject;
 var
   Res:String;
 begin
- if GetDosOutput('wmic PATH Win32_ComputerSystemProduct GET UUID','',res) then
+  if GetDosOutput('wmic PATH Win32_ComputerSystemProduct GET UUID,IdentifyingNumber,Name,Vendor /VALUE','',res) then
 //  if ExecAndCapture('wmic PATH Win32_ComputerSystemProduct GET UUID',res)>0 then
   begin
-  {UUID
-  4C4C4544-004E-3510-8051-C7C04F325131}
-  result := Trim(StrToken(res,#13#10));
-  if result = 'UUID' then
-    result := trim(StrToken(res,#13#10))
-  else
-    result :='';
-
+    Result := DecodeKeyValue(res);
+    if Result.DataType=stArray then
+      Result := Result.AsArray[0];
+    {UUID=4C4C4544-004E-3510-8051-C7C04F325131}
   end
   else
-    Result:='';
+    Result:=SO();
+end;
+
+function NetworkConfig:ISUperObject;
+var
+  res:String;
+begin
+  if GetDosOutput('wmic NICCONFIG where ipenabled=True get MACAddress, DefaultIPGateway, IPAddress, IPSubnet, DNSHostName, DNSDomain /VALUE','',res) then
+  begin
+    Result := DecodeKeyValue(res);
+    //WriteLn(Result.AsJSon(True));
+  end
+  else
+    Result := SO(stArray);
+end;
+
+function UpdateStatus:ISuperObject;
+var
+  data:String;
+begin
+  data := httpGetString('http://127.0.0.1:8088/update.json');
+  result := SO(data);
+end;
+
+function BasicRegisterComputer:ISuperObject;
+var
+  json : String;
+  data,nw,intf,computer: ISuperObject;
+
+  procedure addkey(key,value:String);
+  begin
+    json := json+Format('"%s":"%s",',[key,value]);
+  end;
+
+begin
+  data := SO;
+  computer := ComputerSystem;
+  data.S['uuid'] := computer.S['uuid'];
+  data.S['wapt.wapt-exe-version'] := LocalWaptVersion;
+  data.S['host.computer_name'] := GetComputerName;
+  data.S['host.system_productname'] := computer.S['name'];
+  data.S['host.system_manufacturer'] := computer.S['vendor'];
+  data.S['host.system_serialnr'] := computer.S['identifyingnumber'];
+  data.S['dmi.Chassis_Information.Serial_Number'] := computer.S['identifyingnumber'];
+  nw := NetworkConfig;
+  for intf in nw do
+  begin
+    if intf.AsObject.Exists('defaultipgateway') then
+    begin
+     {
+      "ipaddress": [
+       "192.168.149.201"],
+      "defaultipgateway": [
+       "192.168.149.254"],
+      "dnshostname": "wstestwapt",
+      "ipsubnet": [
+       "255.255.255.0"],
+      "macaddress": "08:00:27:72:E9:E4",
+      "dnsdomain": "tranquilit.local"
+     }
+      data.S['host.dns_domain'] := LowerCase(nw.AsArray[0].S['dnsdomain']);
+      data.S['host.connected_ips'] := nw.AsArray[0].A['ipaddress'].S[0];
+      data.S['host.mac'] := lowercase(nw.AsArray[0].S['macaddress']);
+      data.S['host.computer_fqdn'] := lowercase(nw.AsArray[0].S['dnshostname']+'.'+nw.AsArray[0].S['dnsdomain']);
+      break;
+    end;
+  end;
+  result:=SO(httpPostData('waptdeploy','http://wapt:8080/add_host',
+          data.AsJSon));
 end;
 
 var
   tmpDir,waptsetupPath,localVersion,requiredVersion,getVersion:String;
-  computerUUID:String;
   res : String;
 {$R *.res}
 
 begin
-  localVersion := getlocal_wapt_version;
+  localVersion := LocalWaptVersion;
   writeln('WAPT version: '+localVersion);
   requiredVersion := ParamStr(1);
   if requiredVersion='' then
@@ -504,8 +691,6 @@ begin
   writeln('WAPT required version: '+requiredVersion);
   if (localVersion='') or (CompareVersion(localVersion,requiredVersion)<0) then
   try
-    computerUUID:=getComputerUUID;
-    writeln('Computer UUID: '+computerUUID);
     tmpDir := GetUniqueTempdir('wapt');
     mkdir(tmpDir);
     waptsetupPath := tmpDir+'\waptsetup.exe';
@@ -517,7 +702,10 @@ begin
     if CompareVersion(getVersion,requiredVersion)>=0 then
     begin
       writeln('Install ...');
-      GetDosOutput(waptsetupPath+' /VERYSILENT','',res);
+      if GetDosOutput(waptsetupPath+' /VERYSILENT /MERGETASKS=""useWaptServer,autorunTray','',res) then
+        writeln('Install OK:'+LocalWaptVersion);
+        //writeln(RegisterComputer.AsJSon(True));
+        //writeln(UpdateStatus.AsJSon(True));
     end
     else
       writeln('Got a waptsetup version older than required version');
@@ -531,5 +719,6 @@ begin
   end
   else
     writeln('Nothing to do');
+  writeln(UpdateStatus.AsJSon(True));
 end.
 
