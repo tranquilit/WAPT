@@ -21,15 +21,18 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uwaptconsole"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="720"/>
-        <CursorPos X="40" Y="723"/>
+        <TopLine Value="377"/>
+        <CursorPos X="35" Y="399"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="3">
-          <Item0 X="1" Y="1386" ID="4"/>
-          <Item1 X="6" Y="1694" ID="5"/>
-          <Item2 X="5" Y="1734" ID="8"/>
+          <Item0 X="1" Y="1388" ID="4"/>
+          <Item1 X="6" Y="1696" ID="5"/>
+          <Item2 X="5" Y="1736" ID="8"/>
         </Bookmarks>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
@@ -50,7 +53,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisCreateKey"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="9"/>
         <CursorPos X="37" Y="59"/>
@@ -207,10 +209,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvishostsupgrade"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="13" Y="10"/>
-        <UsageCount Value="189"/>
+        <TopLine Value="78"/>
+        <CursorPos X="20" Y="92"/>
+        <UsageCount Value="190"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit16>
       <Unit17>
         <Filename Value="..\wapt-get\tisstrings.pas"/>
@@ -286,10 +292,12 @@
       <Unit25>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <UnitName Value="superobject"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="3237"/>
-        <CursorPos X="1" Y="3253"/>
+        <TopLine Value="3566"/>
+        <CursorPos X="1" Y="3584"/>
         <UsageCount Value="14"/>
+        <Loaded Value="True"/>
       </Unit25>
       <Unit26>
         <Filename Value="C:\codetyphon\typhon\lcl\controls.pp"/>
@@ -558,7 +566,128 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3523" Column="1" TopLine="3506"/>
+      </Position1>
+      <Position2>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3524" Column="1" TopLine="3506"/>
+      </Position2>
+      <Position3>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3522" Column="1" TopLine="3506"/>
+      </Position3>
+      <Position4>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3523" Column="1" TopLine="3506"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3524" Column="1" TopLine="3506"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3582" Column="1" TopLine="3566"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3583" Column="1" TopLine="3566"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3584" Column="1" TopLine="3566"/>
+      </Position8>
+      <Position9>
+        <Filename Value="uvishostsupgrade.pas"/>
+        <Caret Line="98" Column="1" TopLine="71"/>
+      </Position9>
+      <Position10>
+        <Filename Value="uvishostsupgrade.pas"/>
+        <Caret Line="79" Column="1" TopLine="71"/>
+      </Position10>
+      <Position11>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3522" Column="1" TopLine="3506"/>
+      </Position11>
+      <Position12>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3523" Column="1" TopLine="3506"/>
+      </Position12>
+      <Position13>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3524" Column="1" TopLine="3506"/>
+      </Position13>
+      <Position14>
+        <Filename Value="uvishostsupgrade.pas"/>
+        <Caret Line="86" Column="1" TopLine="71"/>
+      </Position14>
+      <Position15>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3589" Column="1" TopLine="3573"/>
+      </Position15>
+      <Position16>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3590" Column="1" TopLine="3573"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3591" Column="1" TopLine="3573"/>
+      </Position17>
+      <Position18>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3593" Column="1" TopLine="3573"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3594" Column="1" TopLine="3573"/>
+      </Position19>
+      <Position20>
+        <Filename Value="uvishostsupgrade.pas"/>
+        <Caret Line="79" Column="1" TopLine="71"/>
+      </Position20>
+      <Position21>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3522" Column="1" TopLine="3506"/>
+      </Position21>
+      <Position22>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3523" Column="1" TopLine="3506"/>
+      </Position22>
+      <Position23>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3524" Column="1" TopLine="3506"/>
+      </Position23>
+      <Position24>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3522" Column="1" TopLine="3506"/>
+      </Position24>
+      <Position25>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3523" Column="1" TopLine="3506"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3524" Column="1" TopLine="3506"/>
+      </Position26>
+      <Position27>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3582" Column="1" TopLine="3566"/>
+      </Position27>
+      <Position28>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3583" Column="1" TopLine="3566"/>
+      </Position28>
+      <Position29>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3584" Column="1" TopLine="3566"/>
+      </Position29>
+      <Position30>
+        <Filename Value="uvishostsupgrade.pas"/>
+        <Caret Line="94" Column="1" TopLine="78"/>
+      </Position30>
+    </JumpHistory>
   </ProjectSession>
   <Debugging>
     <BreakPoints Count="1">

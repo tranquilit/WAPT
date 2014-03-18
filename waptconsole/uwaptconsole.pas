@@ -389,9 +389,11 @@ begin
     begin
       packages := GridHosts.GetNodeSOData(Node)['packages'];
       if (packages = nil) or (packages.AsArray = nil) then
-      begin
+      try
         packages := WAPTServerJsonGet('client_package_list/%s', [currhost], WaptUseLocalConnectionProxy);
         GridHosts.GetNodeSOData(Node)['packages'] := packages;
+      except
+        GridHosts.GetNodeSOData(Node)['packages'] := Nil;
       end;
       EdHostname.Text := GridHosts.GetCellStrValue(Node, 'host.computer_name');
       EdDescription.Text := GridHosts.GetCellStrValue(Node, 'host.description');

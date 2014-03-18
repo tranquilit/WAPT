@@ -31,7 +31,6 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="0.9"/>
       </local>
     </RunParams>
     <RequiredPackages Count="1">
@@ -80,6 +79,7 @@
       <CompilerPath Value="$(CompPath)"/>
       <ExecuteAfter>
         <Command Value="$(ProjPath)\..\utils\upx.exe $(TargetFile)"/>
+        <CompileReasons Compile="False" Build="False" Run="False"/>
       </ExecuteAfter>
     </Other>
   </CompilerOptions>

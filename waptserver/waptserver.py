@@ -469,6 +469,7 @@ def get_hosts_by_group(name=""):
 
 @app.route('/upgrade_host/<string:ip>')
 def upgrade_host(ip):
+    """Proxy the wapt upgrade action to the client"""
     try:
         result = {}
         try:
@@ -481,6 +482,7 @@ def upgrade_host(ip):
                 try:
                     result = json.loads(requests.get("http://%s:%d/upgrade.json" % ( ip, waptservice_port),proxies=None).text)
                 except Exception as e:
+                    # try the old behaviour for wapt client < 0.8.10
                     logger.warning(u"%s"%e)
                     r = requests.get("http://%s:%d/upgrade" % ( ip, waptservice_port),proxies=None)
                     if "OK" in r.text.upper():

@@ -32,7 +32,7 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="20">
+    <RequiredPackages Count="19">
       <Item1>
         <PackageName Value="pltis_utils"/>
       </Item1>
@@ -85,14 +85,11 @@
         <PackageName Value="FCL"/>
       </Item17>
       <Item18>
-        <PackageName Value="pl_indycomp"/>
+        <PackageName Value="SynEdit"/>
       </Item18>
       <Item19>
-        <PackageName Value="SynEdit"/>
-      </Item19>
-      <Item20>
         <PackageName Value="LCL"/>
-      </Item20>
+      </Item19>
     </RequiredPackages>
     <Units Count="17">
       <Unit0>

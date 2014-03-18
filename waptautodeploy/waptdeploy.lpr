@@ -1,4 +1,6 @@
 program waptdeploy;
+{$delphiunicode}
+
 uses classes,windows,SysUtils,wininet,URIParser,superobject;
 
 function GetComputerName : AnsiString;
@@ -242,7 +244,7 @@ end;
 
 // récupère une chaine de caractères en http en utilisant l'API windows
 function httpGetString(url: string; enableProxy:Boolean= False;
-   ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000):Utf8String;
+   ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000):RawByteString;
 var
   hInet,hFile,hConnect: HINTERNET;
   buffer: array[1..1024] of byte;
@@ -308,7 +310,7 @@ begin
           repeat
             FillChar(buffer,SizeOf(buffer),0);
             InternetReadFile(hFile,@buffer,SizeOf(buffer),bytesRead);
-            SetLength(Result,Length(result)+bytesRead+1);
+            SetLength(Result,Length(result)+bytesRead);
             Move(Buffer,Result[pos],bytesRead);
             inc(pos,bytesRead);
           until bytesRead = 0;
@@ -333,8 +335,8 @@ begin
   end;
 end;
 
-function httpPostData(const UserAgent: string; const url: string; const Data: AnsiString; enableProxy:Boolean= False;
-   ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000):Utf8String;
+function httpPostData(const UserAgent: string; const url: string; const Data: RawByteString; enableProxy:Boolean= False;
+   ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000):RawByteString;
 var
   hInet: HINTERNET;
   hHTTP: HINTERNET;
@@ -395,7 +397,7 @@ begin
               repeat
                 FillChar(buffer,SizeOf(buffer),0);
                 InternetReadFile(hReq,@buffer,SizeOf(buffer),bytesRead);
-                SetLength(Result,Length(result)+bytesRead+1);
+                SetLength(Result,Length(result)+bytesRead);
                 Move(Buffer,Result[pos],bytesRead);
                 inc(pos,bytesRead);
               until bytesRead = 0;
@@ -535,7 +537,7 @@ begin
   repeat
     tok1 := StrToken(v1,'.');
     tok2 := StrToken(v2,'.');
-    result := CompareStr(tok1,tok2);
+    result := CompareText(tok1,tok2);
     if (result<>0) or (tok1='') or (tok2='') then
       break;
   until (result<>0) or (tok1='') or (tok2='');

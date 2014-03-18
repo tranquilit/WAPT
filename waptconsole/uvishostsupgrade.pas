@@ -80,13 +80,34 @@ begin
         for ip in host['host.connected_ips'] do
         begin
           res := WAPTServerJsonGet(action+'/'+ ip.AsString, [],WaptUseLocalConnectionProxy);
-          if uppercase(res.S['status']) ='OK' then
-            break;
+          // old behaviour <0.8.10
+          if res.AsObject.Exists('status') then
+          begin
+            host['message'] := res['message'];
+            host['status'] := res['status'];
+          end
+          else if (uppercase(res.S['result']) ='OK') then
+          begin
+            host['message'] := res['content'];
+            host['status'] := res['result'];
+          end;
+          if host.S['status'] ='OK' then break;
         end
       else
+      begin
         res := WAPTServerJsonGet(action+'/' + host.S['host.connected_ips'], [],WaptUseLocalConnectionProxy);
-      host['message'] := res['message'];
-      host['status'] := res['status'];
+        // old behaviour <0.8.10
+        if res.AsObject.Exists('status') then
+        begin
+          host['message'] := res['message'];
+          host['status'] := res['status'];
+        end
+        else
+        begin
+          host['message'] := res['content'];
+          host['status'] := res['result'];
+        end;
+      end;
       ProgressGrid.InvalidateFordata(host);
       Application.ProcessMessages;
     except

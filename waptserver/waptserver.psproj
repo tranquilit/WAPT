@@ -11,10 +11,14 @@ ClassName=TProjectFilesNode
 
 [Project\ChildNodes\Node0\ChildNodes\Node0]
 ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptpackage.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node1]
+ClassName=TProjectFileNode
 FileName=$[Project-Path]waptserver.py
 
 [Project\ChildNodes\Node0\ChildNodes]
-Count=1
+Count=2
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode
