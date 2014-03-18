@@ -675,33 +675,52 @@ begin
 end;
 
 var
-  tmpDir,waptsetupPath,localVersion,requiredVersion,getVersion:String;
-  res : String;
+  tmpDir,waptsetupPath,localVersion,requiredVersion,getVersion:AnsiString;
+  res : AnsiString;
+  waptdeploy,waptsetupurl:AnsiString;
 {$R *.res}
 
 begin
+  if ParamStr(1)='--help'  then
+  begin
+      Writeln('Usage : waptdeploy.exe [min_wapt_version]');
+      Writeln('  Download waptsetup.exe from WAPT repository and launch it if local version is obsolete (<0.8 or < parameter 1)');
+      Writeln('  If no argument is given, looks for http://wapt/wapt/waptdeploy.version file. This file should contain 2 lines. One for version, and another for download url');
+      Exit;
+  end;
+  waptsetupurl := 'http://wapt/wapt/waptsetup.exe';
   localVersion := LocalWaptVersion;
   writeln('WAPT version: '+localVersion);
   requiredVersion := ParamStr(1);
   if requiredVersion='' then
   begin
+    requiredVersion:='0.8.0';
     try
-      requiredVersion := httpGetString('http://wapt/wapt/waptsetup.version');
+      waptdeploy := httpGetString('http://wapt/wapt/waptdeploy.version');
+      waptdeploy := StringReplace(waptdeploy,#13#10,#10,[rfReplaceAll]);
+      requiredVersion:=trim(StrToken(waptdeploy,#10));
       if requiredVersion='' then
         requiredVersion:='0.8.0';
+      waptsetupurl :=trim(StrToken(waptdeploy,#10));
+      if waptsetupurl='' then
+          waptsetupurl := 'http://wapt/wapt/waptsetup.exe';
+      writeln('Got waptdeploy.version');
+      writeln('   required version:'+requiredVersion);
+      writeln('   download URL :'+waptsetupurl);
     except
       requiredVersion:='0.8.0';
+      waptsetupurl := 'http://wapt/wapt/waptsetup.exe';
     end;
   end;
   writeln('WAPT required version: '+requiredVersion);
-  if (localVersion='') or (CompareVersion(localVersion,requiredVersion)<0) then
+  if (localVersion='') or (CompareVersion(localVersion,requiredVersion)<0) or (requiredVersion='') then
   try
     tmpDir := GetUniqueTempdir('wapt');
     mkdir(tmpDir);
     waptsetupPath := tmpDir+'\waptsetup.exe';
     Writeln('Wapt setup path: '+waptsetupPath);
     writeln('Wget new waptsetup');
-    wget('http://wapt/wapt/waptsetup.exe',waptsetupPath);
+    wget(waptsetupurl,waptsetupPath);
     getVersion:=GetApplicationVersion(waptsetupPath);
     writeln('Got version: '+getVersion);
     if CompareVersion(getVersion,requiredVersion)>=0 then
@@ -724,6 +743,6 @@ begin
   end
   else
     writeln('Nothing to do');
-  writeln(UpdateStatus.AsJSon(True));
+  UpdateStatus;
 end.
 

@@ -11,9 +11,9 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="357"/>
-        <CursorPos X="82" Y="384"/>
-        <UsageCount Value="36"/>
+        <TopLine Value="715"/>
+        <CursorPos X="30" Y="746"/>
+        <UsageCount Value="37"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
@@ -101,7 +101,7 @@
       <Unit12>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
         <UnitName Value="tiscommon"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1070"/>
         <CursorPos X="1" Y="1094"/>
@@ -110,10 +110,12 @@
       </Unit12>
       <Unit13>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\sysstrh.inc"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="62"/>
-        <CursorPos X="10" Y="79"/>
+        <TopLine Value="10"/>
+        <CursorPos X="40" Y="27"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit13>
       <Unit14>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\sysstr.inc"/>
@@ -124,7 +126,7 @@
       </Unit14>
       <Unit15>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\systemh.inc"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="385"/>
         <CursorPos X="3" Y="401"/>
@@ -138,123 +140,123 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="317" Column="1" TopLine="307"/>
+        <Caret Line="641" Column="54" TopLine="625"/>
       </Position1>
       <Position2>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="331" Column="1" TopLine="307"/>
+        <Caret Line="642" Column="50" TopLine="625"/>
       </Position2>
       <Position3>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="688" Column="15" TopLine="676"/>
+        <Caret Line="398" Column="32" TopLine="382"/>
       </Position3>
       <Position4>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="671" Column="22" TopLine="655"/>
+        <Caret Line="399" Column="71" TopLine="383"/>
       </Position4>
       <Position5>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="641" Column="54" TopLine="625"/>
+        <Caret Line="401" Column="58" TopLine="382"/>
       </Position5>
       <Position6>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="642" Column="50" TopLine="625"/>
+        <Caret Line="170" Column="1" TopLine="138"/>
       </Position6>
       <Position7>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="398" Column="32" TopLine="382"/>
+        <Caret Line="539" Column="18" TopLine="521"/>
       </Position7>
       <Position8>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="399" Column="71" TopLine="383"/>
+        <Caret Line="329" Column="16" TopLine="311"/>
       </Position8>
       <Position9>
-        <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="401" Column="58" TopLine="382"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="120" Column="18" TopLine="90"/>
       </Position9>
       <Position10>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="170" Column="1" TopLine="138"/>
+        <Caret Line="446" Column="20" TopLine="439"/>
       </Position10>
       <Position11>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="539" Column="18" TopLine="521"/>
+        <Caret Line="131" Column="18" TopLine="109"/>
       </Position11>
       <Position12>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="329" Column="16" TopLine="311"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position12>
       <Position13>
-        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
-        <Caret Line="120" Column="18" TopLine="90"/>
+        <Filename Value="waptdeploy.lpr"/>
+        <Caret Line="27" Column="16" TopLine="1"/>
       </Position13>
       <Position14>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="446" Column="20" TopLine="439"/>
+        <Caret Line="31" Column="33" TopLine="3"/>
       </Position14>
       <Position15>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="131" Column="18" TopLine="109"/>
+        <Caret Line="61" Column="61" TopLine="54"/>
       </Position15>
       <Position16>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="64" Column="32" TopLine="60"/>
       </Position16>
       <Position17>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="27" Column="16" TopLine="1"/>
+        <Caret Line="177" Column="15" TopLine="153"/>
       </Position17>
       <Position18>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="31" Column="33" TopLine="3"/>
+        <Caret Line="173" Column="10" TopLine="159"/>
       </Position18>
       <Position19>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="61" Column="61" TopLine="54"/>
+        <Caret Line="174" Column="10" TopLine="159"/>
       </Position19>
       <Position20>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="64" Column="32" TopLine="60"/>
+        <Caret Line="185" Column="33" TopLine="159"/>
       </Position20>
       <Position21>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="177" Column="15" TopLine="153"/>
+        <Caret Line="285" Column="22" TopLine="255"/>
       </Position21>
       <Position22>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="173" Column="10" TopLine="159"/>
+        <Caret Line="305" Column="21" TopLine="277"/>
       </Position22>
       <Position23>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="174" Column="10" TopLine="159"/>
+        <Caret Line="335" Column="36" TopLine="325"/>
       </Position23>
       <Position24>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="185" Column="33" TopLine="159"/>
+        <Caret Line="370" Column="36" TopLine="340"/>
       </Position24>
       <Position25>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="285" Column="22" TopLine="255"/>
+        <Caret Line="376" Column="99" TopLine="348"/>
       </Position25>
       <Position26>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="305" Column="21" TopLine="277"/>
+        <Caret Line="379" Column="64" TopLine="352"/>
       </Position26>
       <Position27>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="335" Column="36" TopLine="325"/>
+        <Caret Line="713" Column="1" TopLine="683"/>
       </Position27>
       <Position28>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="370" Column="36" TopLine="340"/>
+        <Caret Line="693" Column="68" TopLine="676"/>
       </Position28>
       <Position29>
-        <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="376" Column="99" TopLine="348"/>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\sysstrh.inc"/>
+        <Caret Line="218" Column="10" TopLine="201"/>
       </Position29>
       <Position30>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="379" Column="64" TopLine="352"/>
+        <Caret Line="689" Column="15" TopLine="672"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>
