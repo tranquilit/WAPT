@@ -1188,7 +1188,8 @@ end;
 procedure TVisWaptGUI.ActSearchHostExecute(Sender: TObject);
 var
   req, filter: string;
-  urlParams: ISuperObject;
+  urlParams,Node: ISuperObject;
+  previous_uuid: String;
 const
   url: string = 'json/host_list';
 begin
@@ -1222,9 +1223,21 @@ begin
   end;
 
   req := url + '?' + Join('&', urlParams);
+  if GridHosts.FocusedRow<>Nil then
+    previous_uuid := GridHosts.FocusedRow.S['uuid']
+  else
+    previous_uuid:='';
   hosts := WAPTServerJsonGet(req, [], WaptUseLocalConnectionProxy);
   GridHosts.Data := hosts;
   LabelComputersNumber.Caption := IntToStr(hosts.AsArray.Length);
+  for node in GridHosts.data do
+  begin
+    if node.S['uuid'] = previous_uuid then
+    begin
+      GridHosts.FocusedRow := node;
+      Break;
+    end;
+  end;
 end;
 
 procedure TVisWaptGUI.ActSearchPackageExecute(Sender: TObject);
