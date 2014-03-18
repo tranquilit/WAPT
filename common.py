@@ -349,11 +349,11 @@ def ssl_verify_content(content,signature,public_certs):
         Content, signature are String
         public_certs is either a filename or a list of filenames
     >>> if not os.path.isfile('c:/private/test.pem'):
-    ...     create_self_signed_key('test',organization='Tranquil IT',locality=u'St Sébastien sur Loire',commonname='wapt.tranquil.it',email='...@tranquil.it')
+    ...     create_self_signed_key('test',organization='Tranquil IT',locality=u'St Sebastien sur Loire',commonname='wapt.tranquil.it',email='...@tranquil.it')
     >>> my_content = 'Un test de contenu'
     >>> my_signature = ssl_sign_content(my_content,'c:/private/test.pem')
-    >>> print ssl_verify_content(my_content,my_signature,'c:/private/test.crt')
-    C=FR, L=St Sébastien sur Loire, O=Tranquil IT, CN=wapt.tranquil.it/emailAddress=...@tranquil.it
+    >>> ssl_verify_content(my_content,my_signature,'c:/private/test.crt')
+    'C=FR, L=St Sebastien sur Loire, O=Tranquil IT, CN=wapt.tranquil.it/emailAddress=...@tranquil.it'
     """
     assert isinstance(signature,str)
     assert isinstance(public_certs,str) or isinstance(public_certs,unicode) or isinstance(public_certs,list)
@@ -393,7 +393,7 @@ def private_key_has_password(key):
 def check_key_password(key_filename,password=""):
     """Check if provided password is valid to read the PEM private key
     >>> if not os.path.isfile('c:/private/test.pem'):
-    ...     create_self_signed_key('test',organization='Tranquil IT',locality=u'St Sébastien sur Loire',commonname='wapt.tranquil.it',email='...@tranquil.it')
+    ...     create_self_signed_key('test',organization='Tranquil IT',locality=u'St Sebastien sur Loire',commonname='wapt.tranquil.it',email='...@tranquil.it')
     >>> check_key_password('c:/private/test.pem','')
     True
     >>> check_key_password('c:/private/ko.pem','')
@@ -423,8 +423,8 @@ def create_self_signed_key(orgname,
         without password
     >>> if os.path.isfile('c:/private/test.pem'):
     ...     os.unlink('c:/private/test.pem')
-    >>> create_self_signed_key('test',organization='Tranquil IT',locality=u'St Sébastien sur Loire',commonname='wapt.tranquil.it',email='...@tranquil.it')
-    {'crt_filename': r'c:\private\test.crt', 'pem_filename': r'c:\private\test.pem'}
+    >>> create_self_signed_key('test',organization='Tranquil IT',locality=u'St Sebastien sur Loire',commonname='wapt.tranquil.it',email='...@tranquil.it')
+    {'crt_filename': 'c:\\\\private\\\\test.crt', 'pem_filename': 'c:\\\\private\\\\test.pem'}
     """
     if not wapt_base_dir:
         wapt_base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
@@ -2029,6 +2029,7 @@ class WaptRepo(object):
             raise
 
 class WaptHostRepo(WaptRepo):
+    """Dummy http repository for host packages"""
     def update_db(self,force=False,waptdb=None,hosts_list=[]):
         """get a list of host packages from remote repo"""
         current_host = setuphelpers.get_hostname()
@@ -2039,51 +2040,58 @@ class WaptHostRepo(WaptRepo):
             (entry,result[host]) = self.update_host(host,waptdb,force=force)
 
     def update_host(self,host,waptdb,force=False):
-        """Update host package from repo.
-            returns (host package entry,entry date on server)
+        """Update host package from repo. returns (host package entry,entry date on server)
         >>> repo = WaptHostRepo(name='wapt-host',timeout=4)
         >>> print repo.dnsdomain
         tranquilit.local
         >>> print repo.repo_url
         http://srvwapt.tranquilit.local/wapt-host
+        >>> waptdb = WaptDB(':memory:')
+        >>> repo.update_host('test-dummy',waptdb)
+        (None, None)
         """
         try:
             host_package_url = "%s/%s.wapt" % (self.repo_url,host)
-            host_package_date = httpdatetime2isodate(requests.head(host_package_url,proxies=self.proxies,verify=False,headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified'])
             host_cachedate = 'date-%s' % (host,)
-            package = None
-            if host_package_date:
-                if force or host_package_date <> waptdb.get_param(host_cachedate) or not waptdb.packages_matching(host):
-                    host_package = requests.get(host_package_url,proxies=self.proxies,verify=False,headers={'cache-control':'no-cache','pragma':'no-cache'})
-                    host_package.raise_for_status
+            host_request = requests.head(host_package_url,proxies=self.proxies,verify=False,headers={'cache-control':'no-cache','pragma':'no-cache'})
+            try:
+                host_request.raise_for_status()
+                host_package_date = httpdatetime2isodate(host_request.headers['last-modified'])
+                package = None
+                if host_package_date:
+                    if force or host_package_date <> waptdb.get_param(host_cachedate) or not waptdb.packages_matching(host):
+                        host_package = requests.get(host_package_url,proxies=self.proxies,verify=False,headers={'cache-control':'no-cache','pragma':'no-cache'})
+                        host_package.raise_for_status
 
-                    # Packages file is a zipfile with one Packages file inside
-                    control = codecs.decode(ZipFile(
-                          StringIO.StringIO(host_package.content)
-                        ).read(name='WAPT/control'),'UTF-8').splitlines()
+                        # Packages file is a zipfile with one Packages file inside
+                        control = codecs.decode(ZipFile(
+                              StringIO.StringIO(host_package.content)
+                            ).read(name='WAPT/control'),'UTF-8').splitlines()
 
-                    logger.debug(u'Purge packages table')
-                    waptdb.db.execute('delete from wapt_package where package=?',(host,))
+                        logger.debug(u'Purge packages table')
+                        waptdb.db.execute('delete from wapt_package where package=?',(host,))
 
-                    package = PackageEntry()
-                    package.load_control_from_wapt(control)
-                    logger.info(u"%s (%s)" % (package.package,package.version))
-                    package.repo_url = self.repo_url
-                    package.repo = self.name
-                    waptdb.add_package_entry(package)
+                        package = PackageEntry()
+                        package.load_control_from_wapt(control)
+                        logger.info(u"%s (%s)" % (package.package,package.version))
+                        package.repo_url = self.repo_url
+                        package.repo = self.name
+                        waptdb.add_package_entry(package)
 
-                    logger.debug(u'Commit wapt_package updates')
-                    waptdb.db.commit()
-                    waptdb.set_param(host_cachedate,host_package_date)
-                else:
-                    logger.debug(u'No change on host package at %s (%s)' % (host_package_url,host_package_date))
-                    packages = waptdb.packages_matching(host)
-                    if packages:
-                        package=packages[-1]
+                        logger.debug(u'Commit wapt_package updates')
+                        waptdb.db.commit()
+                        waptdb.set_param(host_cachedate,host_package_date)
                     else:
-                        package=None
+                        logger.debug(u'No change on host package at %s (%s)' % (host_package_url,host_package_date))
+                        packages = waptdb.packages_matching(host)
+                        if packages:
+                            package=packages[-1]
+                        else:
+                            package=None
 
-            else:
+            except requests.HTTPError as e:
+                # no host package
+                package,host_package_date=(None,None)
                 logger.debug(u'No host package available at %s' % host_package_url)
                 waptdb.db.execute('delete from wapt_package where package=?',(host,))
                 waptdb.db.commit()
@@ -2093,7 +2101,6 @@ class WaptHostRepo(WaptRepo):
         except:
             self._cached_dns_repo_url = None
             raise
-
 
     @property
     def repo_url(self):
@@ -2329,10 +2336,10 @@ class Wapt(object):
         else:
            #upload par http vers un serveur WAPT  (url POST upload_host)
            for file in cmd_dict['waptfile']:
-				file =  file[1:-1]
-				with open(file,'rb') as afile:
-					req = requests.post("%s/upload_host" % (self.wapt_server,),files={'file':afile},proxies=self.proxies,verify=False,auth=auth)
-					req.raise_for_status()
+    			file =  file[1:-1]
+    			with open(file,'rb') as afile:
+    				req = requests.post("%s/upload_host" % (self.wapt_server,),files={'file':afile},proxies=self.proxies,verify=False,auth=auth)
+    				req.raise_for_status()
 
            return req.content
 
@@ -3063,6 +3070,12 @@ class Wapt(object):
     def download_packages(self,package_requests,usecache=True,printhook=None):
         """Download a list of packages (requests are of the form packagename (>version) )
            returns a dict of {"downloaded,"skipped","errors"}
+
+        >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
+        >>> def nullhook(*args):
+        ...     pass
+        >>> wapt.download_packages(['tis-firefox','tis-waptdev'],usecache=False,printhook=nullhook)
+        {'downloaded': [u'cache\\tis-firefox_27.0.1-0_all.wapt', u'cache\\tis-waptdev.wapt'], 'skipped': [], 'errors': []}
         """
         if not isinstance(package_requests,(list,tuple)):
             package_requests = [ package_requests ]
@@ -4101,7 +4114,16 @@ class Wapt(object):
         """Download an existing package from repositories into target_directory for modification
             if use_local_sources is True and no newer package exists on repos, updates current local edited data
               else if target_directory exists and is not empty, raise an exception
-            Return {'target':target_directory,'source_dir':target_directory,'package':package_entry}"""
+            Return {'target':target_directory,'source_dir':target_directory,'package':package_entry}
+
+        >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
+        >>> tmpdir = 'c:/tmp/dummy'
+        >>> wapt.edit_package('',target_directory=tmpdir,append_depends='tis-firefox')
+        {'target': 'c:\\\\tmp\\\\dummy', 'source_dir': 'c:\\\\tmp\\\\dummy', 'package': "dummy.tranquilit.local (=0)"}
+        >>> import shutil
+        >>> shutil.rmtree(tmpdir)
+
+        """
         # check if available in repos
         entries = self.is_available(packagename)
         if entries:
@@ -4169,9 +4191,23 @@ class Wapt(object):
             return False
 
     def edit_host(self,hostname,target_directory='',use_local_sources=True,append_depends=None):
-        """Download an host package from host repositories into target_directory for modification
-            Return the the directory name of the package sources.
-            Change """
+        """Download and extract a host package from host repositories into target_directory for modification
+                Return dict {'target': 'c:\\\\tmp\\\\dummy', 'source_dir': 'c:\\\\tmp\\\\dummy', 'package': "dummy.tranquilit.local (=0)"}
+
+           hostname          : fqdn of the host to edit
+           target_directory  : where to place the developments files. if empty, use default one from wapt-get.ini configuration
+           use_local_sources : don't raise an exception if local sources are newer or same than repo version
+           append_depends    : list or comma separated list of package requirements
+
+        >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
+        >>> tmpdir = 'c:/tmp/dummy'
+        >>> wapt.edit_host('dummy.tranquilit.local',target_directory=tmpdir,append_depends='tis-firefox')
+        {'target': 'c:\\\\tmp\\\\dummy', 'source_dir': 'c:\\\\tmp\\\\dummy', 'package': "dummy.tranquilit.local (=0)"}
+        >>> import shutil
+        >>> shutil.rmtree(tmpdir)
+        >>> host = wapt.edit_host('htlaptop.tranquilit.local',target_directory=tmpdir,append_depends='tis-firefox')
+        >>> shutil.rmtree(tmpdir)
+        """
         # target_directory is not provided, calc default one
         if not target_directory:
             target_directory = self.get_default_development_dir(hostname,section='host')
@@ -4558,83 +4594,4 @@ if __name__ == '__main__':
     import doctest
     doctest.testmod()
     sys.exit(0)
-
-    """
-    logger.setLevel(logging.DEBUG)
-    if len(logger.handlers)<1:
-        hdlr = logging.StreamHandler(sys.stdout)
-        hdlr.setFormatter(logging.Formatter(u'%(asctime)s %(levelname)s %(message)s'))
-        logger.addHandler(hdlr)
-
-    cfg = RawConfigParser()
-    cfg.read('c:\\tranquilit\\wapt\\wapt-get.ini')
-    w = Wapt(config=cfg)
-    """
-
-    #w = Wapt(config_filename=r'c:\users\htouvet\appdata\local\waptconsole\waptconsole.ini')
-    #print w.edit_package('tis-7zip')
-    #w.remove('tis-error')
-    #print w.edit_host('htlaptop.tranquilit.local',target_directory=r'c:\tmp\ht')
-
-    #force_utf8_no_bom(r'C:\tranquilit\tis-waptini-wapt\WAPT\control')
-
-    w = Wapt(config_filename='c:/tranquilit/wapt/wapt-get.ini')
-    #w =Wapt(config_filename=r'c:/tranquilit/wapt/wapt-get-public.ini')
-    w.remove('tis-error')
-    #w.update()
-    #w.install(['tis-certutils','htlaptop.tranquilit.local'],download_only=True,usecache=True)
-
-    #sdb = w.waptsessiondb()
-
-    #w.edit_host('testnuit.tranquilit.local')
-
-    #w.create_wapt_setup('C:\\test\\','c:\\private\\test2.crt')
-
-    #os.remove('c:/private/toto.pem')
-    #w.create_self_signed_key('toto',unit='essai',email='htouvet@tranquil.it',update_ini=True)
-
-    #os.remove('c:/private/toto.pem')
-    #w.create_self_signed_key('toto')
-
-    #w.edit_host('htlaptop.tranquilit.local')
-
-    #os.remove('c:/private/toto.pem')
-    #w.create_self_signed_key('toto')
-
-    sys.exit(0)
-
-    print w.waptdb.get_param('toto')
-    print w.check_install_running(max_ttl = 1)
-
-
-
-    print w._('tis-base')
-    print w.check_depends('tis-base',force=True,assume_removed=['tis-firefox'])
-
-    print w.remove('tis-wapttestsub')
-
-
-
-    #w.waptdb.db_version='00'
-    #w.waptdb.upgradedb()
-    #print w.is_installed('tis-firebird')
-    #print w.sign_package('c:\\tranquilit\\tis-wapttest-wapt')
-    #print w.sign_package('c:\\tranquilit\\tis-wapttest_0.0.0-40_all.wapt')
-    #pfn = w.build_package('c:\\tranquilit\\tis-wapttest-wapt',True)
-    #if not os.path.isfile(pfn['filename']):
-    #    raise Exception("""w.build_package('c:\\tranquilit\\tis-wapttest-wapt',True) failed""")
-    #print w.sign_package(pfn['filename'])
-    #print w.install_wapt(pfn['filename'],params_dict={'company':'TIS'})
-
-    print w.waptdb.upgradeable()
-    assert isinstance(w.waptdb,WaptDB)
-    print w.waptdb.get_param('db_version')
-    #print w.remove('tis-waptdev',force=True)
-    #print w.install(['tis-waptdev'])
-    #print w.remove('tis-firefox',force=True)
-    #print w.install('tis-firefox',force=True)
-    print w.check_depends(['tis-waptdev'],force=False)
-    print w.check_depends(['tis-waptdev'],force=True)
-    print w.update()
-    print w.list_upgrade()
 

@@ -1,6 +1,6 @@
 unit uwaptconsole;
 
-{$mode objfpc}{$H+}
+{.$mode objfpc}{$H+}
 
 interface
 
@@ -244,6 +244,8 @@ type
     procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridHostsColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
+    procedure GridHostsCompareNodes(Sender: TBaseVirtualTree; Node1,
+      Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
     procedure GridHostsDragDrop(Sender: TBaseVirtualTree; Source: TObject;
       DataObject: IDataObject; Formats: TFormatArray; Shift: TShiftState;
       const Pt: TPoint; var Effect: DWORD; Mode: TDropMode);
@@ -1516,6 +1518,47 @@ begin
   ActEditHostPackage.Execute;
 end;
 
+procedure TVisWaptGUI.GridHostsCompareNodes(Sender: TBaseVirtualTree; Node1,
+  Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
+var
+  n1, n2, d1, d2: ISuperObject;
+  propname: string;
+  compresult : TSuperCompareResult;
+begin
+  Result := 0;
+  n1 := GridHosts.GetNodeSOData(Node1);
+  n2 := GridHosts.GetNodeSOData(Node2);
+
+  if (Column >= 0) and (n1 <> nil) and (n2 <> nil) then
+  begin
+    propname := TSOGridColumn(GridHosts.Header.Columns[column]).PropertyName;
+    d1 := n1[propname];
+    d2 := n2[propname];
+    if (d1 <> nil) and (d2 <> nil) then
+    begin
+      if (pos('version',propname)>0) or (pos('connected_ips',propname)>0) then
+        Result:=CompareVersion(d1.AsString,d2.AsString)
+      else
+      if (pos('host.mac',propname)>0) then
+        Result:=CompareStr(d1.AsString,d2.AsString)
+      else
+      begin
+        CompResult := d1.Compare(d2);
+        case compresult of
+          cpLess : Result := -1;
+          cpEqu  : Result := 0;
+          cpGreat : Result := 1;
+          cpError : Result := 0;
+        end;
+      end;
+    end
+    else
+      Result := 0;
+  end
+  else
+    Result := 0;
+end;
+
 procedure TVisWaptGUI.GridHostsDragDrop(Sender: TBaseVirtualTree;
   Source: TObject; DataObject: IDataObject; Formats: TFormatArray;
   Shift: TShiftState; const Pt: TPoint; var Effect: DWORD; Mode: TDropMode);
@@ -1652,13 +1695,6 @@ end;
 procedure TVisWaptGUI.PythonOutputSendData(Sender: TObject; const Data: ansistring);
 begin
   MemoLog.Lines.Add(Data);
-end;
-
-function CompareVersion(v1, v2: string): integer;
-var
-  vtok1, vtok2: string;
-begin
-  Result := CompareText(v1, v2);
 end;
 
 procedure TVisWaptGUI.GridPackagesPaintText(Sender: TBaseVirtualTree;

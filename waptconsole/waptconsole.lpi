@@ -17,6 +17,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="4"/>
+      <RevisionNr Value="1"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -32,64 +33,34 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="19">
+    <RequiredPackages Count="9">
       <Item1>
         <PackageName Value="pltis_utils"/>
       </Item1>
       <Item2>
-        <PackageName Value="TurboPowerIPro"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="pl_virtualtrees"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_orpheus"/>
+        <PackageName Value="pltis_superobject"/>
       </Item4>
       <Item5>
-        <PackageName Value="pl_fpspreadsheet"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item5>
       <Item6>
-        <PackageName Value="pl_virtualtrees"/>
+        <PackageName Value="pl_virtualtreesextra"/>
       </Item6>
       <Item7>
-        <PackageName Value="pl_cindy"/>
+        <PackageName Value="FCL"/>
       </Item7>
       <Item8>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="SynEdit"/>
       </Item8>
       <Item9>
-        <PackageName Value="pltis_python4delphi"/>
-      </Item9>
-      <Item10>
-        <PackageName Value="RunTimeTypeInfoControls"/>
-      </Item10>
-      <Item11>
-        <PackageName Value="pl_graphics32ext"/>
-      </Item11>
-      <Item12>
-        <PackageName Value="pl_bgracontrols"/>
-      </Item12>
-      <Item13>
-        <PackageName Value="pl_luicontrols"/>
-      </Item13>
-      <Item14>
-        <PackageName Value="pl_glscene"/>
-      </Item14>
-      <Item15>
-        <PackageName Value="pl_virtualtreesextra"/>
-      </Item15>
-      <Item16>
-        <PackageName Value="pl_lazsolutions"/>
-      </Item16>
-      <Item17>
-        <PackageName Value="FCL"/>
-      </Item17>
-      <Item18>
-        <PackageName Value="SynEdit"/>
-      </Item18>
-      <Item19>
         <PackageName Value="LCL"/>
-      </Item19>
+      </Item9>
     </RequiredPackages>
     <Units Count="17">
       <Unit0>

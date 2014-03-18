@@ -8,7 +8,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, ExtCtrls, Menus, ActnList, Controls,
-  uniqueinstance, zmqapi, LSControls;
+  zmqapi, LSControls;
 
 type
 
@@ -55,7 +55,6 @@ type
     MenuItem6: TMenuItem;
     PopupMenu1: TPopupMenu;
     TrayIcon1: TTrayIcon;
-    UniqueInstance1:TUniqueInstance;
     procedure ActCancelAllTasksExecute(Sender: TObject);
     procedure ActCancelRunningTaskExecute(Sender: TObject);
     procedure ActConfigureExecute(Sender: TObject);
@@ -217,6 +216,7 @@ end;
 procedure TDMWaptTray.DataModuleCreate(Sender: TObject);
 begin
   //UniqueInstance1.Enabled:=True;
+  if lowercase(GetUserName)='system' then exit;
   check_thread :=TZMQPollThread.Create(Self);
   check_thread.Start;
 end;

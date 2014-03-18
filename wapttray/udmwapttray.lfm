@@ -419,9 +419,4 @@ object DMWaptTray: TDMWaptTray
       97E7D1AC8DC0CFA98C97C8A28500
     }
   end
-  object UniqueInstance1: TUniqueInstance
-    Identifier = 'wapttray'
-    left = 177
-    top = 147
-  end
 end

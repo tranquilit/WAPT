@@ -7,8 +7,8 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, pl_luicontrols, pl_bgracontrols, pl_graphics32ext,
-  runtimetypeinfocontrols, pl_virtualtrees, uwaptconsole, uVisCreateKey,
+  Forms,
+  pl_virtualtrees, uwaptconsole, uVisCreateKey,
   waptcommon, dmwaptpython, uVisEditPackage,
   uvisoptioninifile, uviscreatewaptsetup, uvislogin, uvisprivatekeyauth,
   uvisloading, uviswaptconfig, uvischangepassword, uviswaptdeploy, 

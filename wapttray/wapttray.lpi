@@ -16,8 +16,7 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <MinorVersionNr Value="2"/>
-      <RevisionNr Value="7"/>
+      <MinorVersionNr Value="3"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Tray Icon" ProductName="WAPT" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -33,7 +32,7 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="9">
+    <RequiredPackages Count="8">
       <Item1>
         <PackageName Value="pl_graphics32"/>
       </Item1>
@@ -50,17 +49,14 @@
         <PackageName Value="pl_luicontrols"/>
       </Item5>
       <Item6>
-        <PackageName Value="pl_indycomp"/>
+        <PackageName Value="pltis_superobject"/>
       </Item6>
       <Item7>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="FCL"/>
       </Item7>
       <Item8>
-        <PackageName Value="FCL"/>
-      </Item8>
-      <Item9>
         <PackageName Value="LCL"/>
-      </Item9>
+      </Item8>
     </RequiredPackages>
     <Units Count="3">
       <Unit0>

@@ -5,7 +5,7 @@ uses classes,windows,SysUtils,wininet,URIParser,superobject;
 
 function GetComputerName : AnsiString;
 var
-  buffer: array[0..255] of char;
+  buffer: array[0..255] of ansichar;
   size: dword;
 begin
   size := 256;
@@ -15,20 +15,20 @@ begin
     Result := ''
 end;
 
-function ReadRegEntry(strSubKey,strValueName: String): String;
+function ReadRegEntry(strSubKey,strValueName: AnsiString): AnsiString;
 var
  Key: HKey;
- subkey : PChar;
- Buffer: array[0..255] of char;
+ subkey : PAnsiChar;
+ Buffer: array[0..255] of ansichar;
  Size: cardinal;
 begin
  Result := 'ERROR';
  Size := SizeOf(Buffer);
- subkey:= PChar(strSubKey);
+ subkey:= PAnsiChar(strSubKey);
  if RegOpenKeyEx(HKEY_LOCAL_MACHINE,
     subkey, 0, KEY_READ, Key) = ERROR_SUCCESS then
  try
-    if RegQueryValueEx(Key,PChar(strValueName),nil,nil,
+    if RegQueryValueEx(Key,PAnsiChar(strValueName),nil,nil,
         @Buffer,@Size) = ERROR_SUCCESS then
       Result := Buffer;
  finally
@@ -58,10 +58,10 @@ end;
 	end; // TFixedFileInfo
 
 
-function GetApplicationVersion(Filename:Utf8String=''): Utf8String;
+function GetApplicationVersion(Filename:AnsiString=''): AnsiString;
 var
 	dwHandle, dwVersionSize : DWORD;
-	strSubBlock             : String;
+	strSubBlock             : AnsiString;
 	pTemp                   : Pointer;
 	pData                   : Pointer;
 begin
@@ -79,13 +79,13 @@ begin
 	 begin
 			GetMem( pTemp, dwVersionSize );
 			try
-				 if GetFileVersionInfo( PChar( FileName ),             // pointer to filename string
+				 if GetFileVersionInfo( PAnsiChar( FileName ),             // pointer to filename string
 																dwHandle,                      // ignored
 																dwVersionSize,                 // size of buffer
 																pTemp ) then                   // pointer to buffer to receive file-version info.
 
 						if VerQueryValue( pTemp,                           // pBlock     - address of buffer for version resource
-															PChar( strSubBlock ),            // lpSubBlock - address of value to retrieve
+															PAnsiChar( strSubBlock ),            // lpSubBlock - address of value to retrieve
 															pData,                           // lplpBuffer - address of buffer for version pointer
 															dwVersionSize ) then             // puLen      - address of version-value length buffer
 							 with PFixedFileInfo( pData )^ do
@@ -97,9 +97,9 @@ begin
 	 end; // if dwVersionSize
 end;
 
-function LocalWaptVersion:String;
+function LocalWaptVersion:AnsiString;
 var
-  local_version: string;
+  local_version: Ansistring;
 begin
  result :='';
   try
@@ -113,12 +113,12 @@ begin
   end;
 end;
 
-function GetWinInetError(ErrorCode:Cardinal): string;
+function GetWinInetError(ErrorCode:Cardinal): Ansistring;
 const
    winetdll = 'wininet.dll';
 var
   Len: Integer;
-  Buffer: PChar;
+  Buffer: PAnsiChar;
 begin
   Len := FormatMessage(
   FORMAT_MESSAGE_FROM_HMODULE or FORMAT_MESSAGE_FROM_SYSTEM or
@@ -157,7 +157,7 @@ begin
   end;
 end;
 
-function wget(const fileURL, DestFileName: Utf8String):boolean;
+function wget(const fileURL, DestFileName: String):boolean;
  const
    BufferSize = 1024*512;
  var
@@ -170,9 +170,9 @@ function wget(const fileURL, DestFileName: Utf8String):boolean;
    total:DWORD;
    totalLen:DWORD;
    dwindex: cardinal;
-   dwcode : array[1..20] of char;
+   dwcode : array[1..20] of ansichar;
    dwCodeLen : DWORD;
-   res : PChar;
+   res : PAnsiChar;
 begin
   result := false;
   sAppName := ExtractFileName(ParamStr(0)) ;
@@ -186,7 +186,7 @@ begin
       totalLen := SizeOf(totalLen);
       HttpQueryInfo(hURL, HTTP_QUERY_STATUS_CODE, @dwcode, dwcodeLen, dwIndex);
       HttpQueryInfo(hURL, HTTP_QUERY_CONTENT_LENGTH or HTTP_QUERY_FLAG_NUMBER, @total,totalLen, dwIndex);
-      res := pchar(@dwcode);
+      res := pAnsichar(@dwcode);
       if (res ='200') or (res ='302') then
       begin
         Size:=0;
@@ -225,10 +225,10 @@ begin
   end
 end;
 
-function GetUniqueTempdir(Prefix: String): String;
+function GetUniqueTempdir(Prefix: AnsiString): AnsiString;
 var
   I: Integer;
-  Start: String;
+  Start: AnsiString;
 begin
   Start:=GetTempDir;
   if (Prefix='') then
@@ -243,7 +243,7 @@ begin
 end;
 
 // récupère une chaine de caractères en http en utilisant l'API windows
-function httpGetString(url: string; enableProxy:Boolean= False;
+function httpGetString(url: Ansistring; enableProxy:Boolean= False;
    ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000):RawByteString;
 var
   hInet,hFile,hConnect: HINTERNET;
@@ -251,9 +251,9 @@ var
   flags,bytesRead,dwError : DWORD;
   pos:integer;
   dwindex,dwcodelen,dwread,dwNumber: cardinal;
-  dwcode : array[1..20] of char;
-  res    : pchar;
-  doc,error: String;
+  dwcode : array[1..20] of ansichar;
+  res    : pansichar;
+  doc,error: AnsiString;
   uri : TURI;
 
 begin
@@ -271,7 +271,7 @@ begin
     InternetSetOption(hInet,INTERNET_OPTION_RECEIVE_TIMEOUT,@ReceiveTimeOut,sizeof(integer));
     uri := ParseURI(url,'http',80);
 
-    hConnect := InternetConnect(hInet, PChar(uri.Host), uri.port, nil, nil, INTERNET_SERVICE_HTTP, 0, 0);
+    hConnect := InternetConnect(hInet, PAnsiChar(uri.Host), uri.port, nil, nil, INTERNET_SERVICE_HTTP, 0, 0);
     if not Assigned(hConnect) then
       Raise Exception.Create('Unable to connect to '+url+' code : '+IntToStr(GetLastError)+' ('+GetWinInetError(GetlastError)+')');
     flags := INTERNET_FLAG_NO_CACHE_WRITE or INTERNET_FLAG_PRAGMA_NOCACHE or INTERNET_FLAG_RELOAD;
@@ -280,7 +280,7 @@ begin
     doc := uri.Path+uri.document;
     if uri.params<>'' then
       doc:= doc+'?'+uri.Params;
-    hFile := HttpOpenRequest(hConnect, 'GET', PChar(doc), HTTP_VERSION, nil, nil,flags , 0);
+    hFile := HttpOpenRequest(hConnect, 'GET', PAnsiChar(doc), HTTP_VERSION, nil, nil,flags , 0);
     if not Assigned(hFile) then
       Raise Exception.Create('Unable to get doc '+url+' code : '+IntToStr(GetLastError)+' ('+GetWinInetError(GetlastError)+')');
 
@@ -301,7 +301,7 @@ begin
       dwCodeLen := 10;
       if HttpQueryInfo(hFile, HTTP_QUERY_STATUS_CODE, @dwcode, dwcodeLen, dwIndex) then
       begin
-        res := pchar(@dwcode);
+        res := pansichar(@dwcode);
         dwNumber := sizeof(Buffer)-1;
         if (res ='200') or (res ='302') then
         begin
@@ -335,21 +335,21 @@ begin
   end;
 end;
 
-function httpPostData(const UserAgent: string; const url: string; const Data: RawByteString; enableProxy:Boolean= False;
+function httpPostData(const UserAgent: ansistring; const url: ansistring; const Data: RawByteString; enableProxy:Boolean= False;
    ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000):RawByteString;
 var
   hInet: HINTERNET;
   hHTTP: HINTERNET;
   hReq: HINTERNET;
   uri:TURI;
-  pdata:String;
+  pdata:AnsiString;
 
   buffer: array[1..1024] of byte;
   flags,bytesRead,dwError : DWORD;
   pos:integer;
   dwindex,dwcodelen,dwread,dwNumber: cardinal;
-  dwcode : array[1..20] of char;
-  res    : pchar;
+  dwcode : array[1..20] of ansichar;
+  res    : pansichar;
 
   timeout:integer;
 //  doc,error: String;
@@ -364,31 +364,31 @@ begin
   uri := ParseURI(url);
   try
     if enableProxy then
-       hInet := InternetOpen(PChar(UserAgent),INTERNET_OPEN_TYPE_PRECONFIG,nil,nil,0)
+       hInet := InternetOpen(PAnsiChar(UserAgent),INTERNET_OPEN_TYPE_PRECONFIG,nil,nil,0)
     else
-       hInet := InternetOpen(PChar(UserAgent),INTERNET_OPEN_TYPE_DIRECT,nil,nil,0);
+         hInet := InternetOpen(PAnsiChar(UserAgent),INTERNET_OPEN_TYPE_DIRECT,nil,nil,0);
     try
       InternetSetOption(hInet,INTERNET_OPTION_CONNECT_TIMEOUT,@ConnectTimeout,sizeof(integer));
       InternetSetOption(hInet,INTERNET_OPTION_SEND_TIMEOUT,@SendTimeOut,sizeof(integer));
       InternetSetOption(hInet,INTERNET_OPTION_RECEIVE_TIMEOUT,@ReceiveTimeOut,sizeof(integer));
 
-      hHTTP := InternetConnect(hInet, PChar(uri.Host), uri.Port, PCHAR(uri.Username),PCHAR(uri.Password), INTERNET_SERVICE_HTTP, 0, 1);
+      hHTTP := InternetConnect(hInet, PAnsiChar(uri.Host), uri.Port, PAnsiCHAR(uri.Username),PAnsiCHAR(uri.Password), INTERNET_SERVICE_HTTP, 0, 1);
       if hHTTP =Nil then
           Raise Exception.Create('Unable to connect to '+url+' code: '+IntToStr(GetLastError)+' ('+UTF8Encode(GetWinInetError(GetlastError))+')');
       try
-        hReq := HttpOpenRequest(hHTTP, PChar('POST'), PChar(uri.Document), nil, nil, @accept, 0, 1);
+        hReq := HttpOpenRequest(hHTTP, PAnsiChar('POST'), PAnsiChar(uri.Document), nil, nil, @accept, 0, 1);
         if hReq=Nil then
             Raise Exception.Create('Unable to POST to: '+url+' code: '+IntToStr(GetLastError)+' ('+UTF8Encode(GetWinInetError(GetlastError))+')');
         try
           pdata := Data;
-          if not HttpSendRequest(hReq, PChar(header), length(header), PChar(pdata), length(pdata)) then
+          if not HttpSendRequest(hReq, PAnsiChar(header), length(header), PAnsiChar(pdata), length(pdata)) then
              Raise Exception.Create('Unable to send data to: '+url+' code: '+IntToStr(GetLastError)+' ('+UTF8Encode(GetWinInetError(GetlastError))+')');
 
           dwIndex  := 0;
           dwCodeLen := 10;
           if HttpQueryInfo(hReq, HTTP_QUERY_STATUS_CODE, @dwcode, dwcodeLen, dwIndex) then
           begin
-            res := pchar(@dwcode);
+            res := pansichar(@dwcode);
             dwNumber := sizeof(Buffer)-1;
             if (res ='200') or (res ='302') then
             begin
@@ -421,8 +421,7 @@ begin
   end;
 end;
 
-
-function StrToken(var S: string; Separator: String): string;
+function StrToken(var S: Ansistring; Separator: AnsiString): Ansistring;
 var
   I: SizeInt;
 begin
@@ -439,105 +438,109 @@ begin
   end;
 end;
 
-
-  function GetDosOutput(const CommandLine: string;
-     WorkDir: string;
-     var text: String): Boolean;
-  var
-     SA: TSecurityAttributes;
-     SI: TStartupInfo;
-     PI: TProcessInformation;
-     StdOutPipeRead, StdOutPipeWrite: THandle;
-     WasOK: Boolean;
-     Buffer: array[0..255] of Char;
-     BytesRead: Cardinal;
-     Line: String;
-  begin
-     with SA do
-     begin
-       nLength := SizeOf(SA);
-       bInheritHandle := True;
-       lpSecurityDescriptor := nil;
-     end;
-     // create pipe for standard output redirection
-     CreatePipe(StdOutPipeRead, // read handle
-                StdOutPipeWrite, // write handle
-                @SA, // security attributes
-                0 // number of bytes reserved for pipe - 0 default
-                );
-     try
-       // Make child process use StdOutPipeWrite as standard out,
-       // and make sure it does not show on screen.
-       with SI do
-       begin
-         FillChar(SI, SizeOf(SI), 0);
-         cb := SizeOf(SI);
-         dwFlags := STARTF_USESHOWWINDOW or STARTF_USESTDHANDLES;
-         wShowWindow := SW_HIDE;
-         hStdInput := GetStdHandle(STD_INPUT_HANDLE); // don't redirect stdinput
-         hStdOutput := StdOutPipeWrite;
-         hStdError := StdOutPipeWrite;
-       end;
-
-       // launch the command line compiler
-       //WorkDir := 'C:\';
-       if workdir='' then
-        workdir := GetCurrentDir;
-       result := CreateProcess(
-         nil,
-         PChar(CommandLine),
-         nil,
-         nil,
-         True,
-         0,
-         nil,
-         PChar(WorkDir),
-         SI,
-         PI);
-
-       // Now that the handle has been inherited, close write to be safe.
-       // We don't want to read or write to it accidentally.
-       CloseHandle(StdOutPipeWrite);
-       // if process could be created then handle its output
-       if result then
-         try
-           // get all output until dos app finishes
-           Line := '';
-           repeat
-             // read block of characters (might contain carriage returns and  line feeds)
-             WasOK := ReadFile(StdOutPipeRead, Buffer, 255, BytesRead, nil);
-
-             // has anything been read?
-             if BytesRead > 0 then
-             begin
-               // finish buffer to PChar
-               Buffer[BytesRead] := #0;
-               // combine the buffer with the rest of the last run
-               Line := Line + Buffer;
-             end;
-           until not WasOK or (BytesRead = 0);
-           // wait for console app to finish (should be already at this point)
-           WaitForSingleObject(PI.hProcess, INFINITE);
-         finally
-           // Close all remaining handles
-           CloseHandle(PI.hThread);
-           CloseHandle(PI.hProcess);
-         end;
-     finally
-       text := Line;
-       CloseHandle(StdOutPipeRead);
-     end;
-  end;
-
-
-function CompareVersion(v1,v2:String):integer;
+function GetDosOutput(const CommandLine: Ansistring;
+   WorkDir: Ansistring;
+   var text: AnsiString): Boolean;
 var
-  tok1,tok2:String;
+   SA: TSecurityAttributes;
+   SI: TStartupInfo;
+   PI: TProcessInformation;
+   StdOutPipeRead, StdOutPipeWrite: THandle;
+   WasOK: Boolean;
+   Buffer: array[0..255] of AnsiChar;
+   BytesRead: Cardinal;
+   Line: AnsiString;
+begin
+   with SA do
+   begin
+     nLength := SizeOf(SA);
+     bInheritHandle := True;
+     lpSecurityDescriptor := nil;
+   end;
+   // create pipe for standard output redirection
+   CreatePipe(StdOutPipeRead, // read handle
+              StdOutPipeWrite, // write handle
+              @SA, // security attributes
+              0 // number of bytes reserved for pipe - 0 default
+              );
+   try
+     // Make child process use StdOutPipeWrite as standard out,
+     // and make sure it does not show on screen.
+     with SI do
+     begin
+       FillChar(SI, SizeOf(SI), 0);
+       cb := SizeOf(SI);
+       dwFlags := STARTF_USESHOWWINDOW or STARTF_USESTDHANDLES;
+       wShowWindow := SW_HIDE;
+       hStdInput := GetStdHandle(STD_INPUT_HANDLE); // don't redirect stdinput
+       hStdOutput := StdOutPipeWrite;
+       hStdError := StdOutPipeWrite;
+     end;
+
+     // launch the command line compiler
+     //WorkDir := 'C:\';
+     if workdir='' then
+      workdir := GetCurrentDir;
+     result := CreateProcess(
+       nil,
+       PAnsiChar(CommandLine),
+       nil,
+       nil,
+       True,
+       0,
+       nil,
+       PAnsiChar(WorkDir),
+       SI,
+       PI);
+
+     // Now that the handle has been inherited, close write to be safe.
+     // We don't want to read or write to it accidentally.
+     CloseHandle(StdOutPipeWrite);
+     // if process could be created then handle its output
+     if result then
+       try
+         // get all output until dos app finishes
+         Line := '';
+         repeat
+           // read block of characters (might contain carriage returns and  line feeds)
+           WasOK := ReadFile(StdOutPipeRead, Buffer, 255, BytesRead, nil);
+
+           // has anything been read?
+           if BytesRead > 0 then
+           begin
+             // finish buffer to PAnsiChar
+             Buffer[BytesRead] := #0;
+             // combine the buffer with the rest of the last run
+             Line := Line + Buffer;
+           end;
+         until not WasOK or (BytesRead = 0);
+         // wait for console app to finish (should be already at this point)
+         WaitForSingleObject(PI.hProcess, INFINITE);
+       finally
+         // Close all remaining handles
+         CloseHandle(PI.hThread);
+         CloseHandle(PI.hProcess);
+       end;
+   finally
+     text := Line;
+     CloseHandle(StdOutPipeRead);
+   end;
+end;
+
+
+function CompareVersion(v1,v2:AnsiString):integer;
+var
+  tok1,tok2:AnsiString;
 begin
   repeat
     tok1 := StrToken(v1,'.');
     tok2 := StrToken(v2,'.');
-    result := CompareText(tok1,tok2);
+    if (tok1<>'') and (tok2<>'') then
+    try
+      result := StrToInt(tok1)-StrToInt(tok2);
+    except
+      result := CompareStr(tok1,tok2);
+    end;
     if (result<>0) or (tok1='') or (tok2='') then
       break;
   until (result<>0) or (tok1='') or (tok2='');
@@ -716,7 +719,7 @@ begin
     if DirectoryExists(tmpDir) then
     begin
       DeleteFile(waptsetupPath);
-      RemoveDirectory(pchar(tmpDir));
+      RemoveDirectory(pansichar(tmpDir));
     end;
   end
   else

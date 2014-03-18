@@ -305,6 +305,7 @@ object VisWaptGUI: TVisWaptGUI
         WantTabs = True
         OnChange = GridHostsChange
         OnColumnDblClick = GridHostsColumnDblClick
+        OnCompareNodes = GridHostsCompareNodes
         OnDragOver = GridHostsDragOver
         OnDragDrop = GridHostsDragDrop
         OnGetImageIndexEx = GridHostsGetImageIndexEx
