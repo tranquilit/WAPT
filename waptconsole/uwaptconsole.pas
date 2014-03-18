@@ -1462,7 +1462,7 @@ begin
   MemoLog.Clear;
   DMPython.WaptConfigFileName := AppIniFilename;
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
-  ActUpdateWaptGetINIExecute(Self);
+  //ActUpdateWaptGetINIExecute(Self);
   Login;
   MainPages.ActivePage := pgInventory;
   MainPagesChange(Sender);
@@ -1547,6 +1547,8 @@ begin
     propname := TSOGridColumn(GridHosts.Header.Columns[column]).PropertyName;
     d1 := n1[propname];
     d2 := n2[propname];
+    if d1=nil then d1:=SO('""');
+    if d2=nil then d2:=SO('""');
     if (d1 <> nil) and (d2 <> nil) then
     begin
       if (pos('version',propname)>0) or (pos('connected_ips',propname)>0) then
@@ -1561,12 +1563,12 @@ begin
           cpLess : Result := -1;
           cpEqu  : Result := 0;
           cpGreat : Result := 1;
-          cpError : Result := 0;
+          cpError :Result := strcompare(n1.S[propname],n2.S[propname]);
         end;
       end;
     end
     else
-      Result := 0;
+      Result := -1;
   end
   else
     Result := 0;

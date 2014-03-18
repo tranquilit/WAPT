@@ -17,7 +17,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="4"/>
-      <RevisionNr Value="2"/>
+      <RevisionNr Value="3"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -233,7 +233,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="6">
+    <Exceptions Count="7">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -252,6 +252,9 @@
       <Item6>
         <Name Value="Exception"/>
       </Item6>
+      <Item7>
+        <Name Value="EConvertError"/>
+      </Item7>
     </Exceptions>
   </Debugging>
 </CONFIG>
