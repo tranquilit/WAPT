@@ -424,7 +424,7 @@ class WaptLocalRepo(object):
             self.load_packages()
         old_entries = {}
         for package in self.packages:
-            old_entries[os.path.basename(package.filename)] = package.ascontrol(with_non_control_attributes=True)
+            old_entries[os.path.basename(package.filename)] = package
 
         if not os.path.isdir(self.localpath):
             raise Exception(u'%s is not a directory' % (self.localpath))
@@ -449,7 +449,6 @@ class WaptLocalRepo(object):
                         processed.append(fname)
                 else:
                     logger.info(u"  Processing %s" % fname)
-                    entry.load_control_from_wapt(fname)
                     processed.append(fname)
                 packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
             except Exception,e:
@@ -464,7 +463,6 @@ class WaptLocalRepo(object):
             myzipfile.writestr(zi,u'\n'.join(packages_lines).encode('utf8'))
             logger.info(u"Finished")
         return {'processed':processed,'kept':kept,'errors':errors,'packages_filename':packages_fname}
-
 
 def update_packages(adir):
     """Update packages index
