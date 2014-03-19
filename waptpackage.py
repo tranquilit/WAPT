@@ -466,8 +466,11 @@ class WaptLocalRepo(object):
 
 def update_packages(adir):
     """Update packages index
-    >>> res = update_packages('c:\\wapt\\cache')
-    >>> res['packages_filename'] == 'c:\\wapt\\cache\\Packages'
+    >>> if os.path.isdir('c:\\wapt\\cache'):
+    ...     res = update_packages('c:\\wapt\\cache')
+    ... else:
+    ...     res = update_packages('/var/www/wapt')
+    >>> os.path.isfile(res['packages_filename'])
     True
     """
     repo = WaptLocalRepo(localpath=adir)
