@@ -22,6 +22,7 @@
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="8"/>
       <RevisionNr Value="13"/>
+      <BuildNr Value="1"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -53,26 +54,23 @@
         <PackageName Value="pltis_superobject"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="39">
+    <Units Count="42">
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="31"/>
-        <CursorPos X="37" Y="42"/>
+        <TopLine Value="117"/>
+        <CursorPos X="42" Y="139"/>
         <UsageCount Value="222"/>
-        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="210"/>
-        <CursorPos X="43" Y="221"/>
+        <TopLine Value="832"/>
+        <CursorPos X="53" Y="836"/>
         <UsageCount Value="207"/>
       </Unit1>
       <Unit2>
@@ -234,8 +232,8 @@
         <Filename Value="C:\codetyphon\typhon\components\lazutils\fileutil.pas"/>
         <UnitName Value="FileUtil"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="190"/>
-        <CursorPos X="17" Y="222"/>
+        <TopLine Value="77"/>
+        <CursorPos X="10" Y="90"/>
         <UsageCount Value="10"/>
       </Unit21>
       <Unit22>
@@ -256,8 +254,8 @@
       <Unit24>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\osutilsh.inc"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="15"/>
-        <CursorPos X="10" Y="34"/>
+        <TopLine Value="12"/>
+        <CursorPos X="10" Y="26"/>
         <UsageCount Value="10"/>
       </Unit24>
       <Unit25>
@@ -345,67 +343,174 @@
       <Unit36>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
         <UnitName Value="tiscommon"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="422"/>
-        <CursorPos X="33" Y="432"/>
+        <TopLine Value="21"/>
+        <CursorPos X="1" Y="21"/>
         <UsageCount Value="10"/>
+        <Bookmarks Count="2">
+          <Item0 X="74" Y="472" ID="2"/>
+          <Item1 X="74" Y="314" ID="1"/>
+        </Bookmarks>
         <Loaded Value="True"/>
       </Unit36>
       <Unit37>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
         <UnitName Value="wininet"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="2382"/>
-        <CursorPos X="12" Y="2398"/>
+        <TopLine Value="7"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit37>
       <Unit38>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\uriparser.pp"/>
         <UnitName Value="URIParser"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="128"/>
-        <CursorPos X="3" Y="130"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit38>
+      <Unit39>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\win\wininc\ascdef.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="455"/>
+        <CursorPos X="10" Y="469"/>
+        <UsageCount Value="10"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\finah.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="8"/>
+        <CursorPos X="10" Y="22"/>
+        <UsageCount Value="10"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="..\wapttray\udmwapttray.pas"/>
+        <UnitName Value="uDMWAPTTray"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="260"/>
+        <CursorPos X="53" Y="274"/>
+        <UsageCount Value="10"/>
+      </Unit41>
     </Units>
-    <JumpHistory Count="8" HistoryIndex="7">
+    <JumpHistory Count="29" HistoryIndex="28">
       <Position1>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="27" Column="6" TopLine="21"/>
       </Position1>
       <Position2>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
-        <Caret Line="295" Column="34" TopLine="276"/>
+        <Caret Line="482" Column="149" TopLine="478"/>
       </Position2>
       <Position3>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
-        <Caret Line="271" Column="26" TopLine="266"/>
+        <Caret Line="495" Column="30" TopLine="491"/>
       </Position3>
       <Position4>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
-        <Caret Line="40" Column="92" TopLine="35"/>
+        <Caret Line="496" Column="69" TopLine="492"/>
       </Position4>
       <Position5>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
-        <Caret Line="295" Column="61" TopLine="280"/>
+        <Caret Line="449" Column="42" TopLine="443"/>
       </Position5>
       <Position6>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
-        <Caret Line="283" Column="1" TopLine="271"/>
+        <Caret Line="1173" Column="15" TopLine="1156"/>
       </Position6>
       <Position7>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
-        <Caret Line="432" Column="34" TopLine="411"/>
+        <Caret Line="1174" Column="15" TopLine="1157"/>
       </Position7>
       <Position8>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
-        <Caret Line="442" Column="64" TopLine="424"/>
+        <Caret Line="276" Column="8" TopLine="266"/>
       </Position8>
+      <Position9>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="317" Column="10" TopLine="301"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="319" Column="21" TopLine="303"/>
+      </Position10>
+      <Position11>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="323" Column="91" TopLine="307"/>
+      </Position11>
+      <Position12>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="399" Column="11" TopLine="382"/>
+      </Position12>
+      <Position13>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="400" Column="11" TopLine="383"/>
+      </Position13>
+      <Position14>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="404" Column="35" TopLine="387"/>
+      </Position14>
+      <Position15>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="405" Column="78" TopLine="404"/>
+      </Position15>
+      <Position16>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="320" Column="1" TopLine="303"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="479" Column="112" TopLine="462"/>
+      </Position17>
+      <Position18>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="1485" Column="50" TopLine="1475"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="1465" Column="76" TopLine="1455"/>
+      </Position19>
+      <Position20>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="1364" Column="9" TopLine="1354"/>
+      </Position20>
+      <Position21>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="1243" Column="35" TopLine="1234"/>
+      </Position21>
+      <Position22>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="1242" Column="10" TopLine="1232"/>
+      </Position22>
+      <Position23>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="1132" Column="9" TopLine="1122"/>
+      </Position23>
+      <Position24>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="1138" Column="24" TopLine="1129"/>
+      </Position24>
+      <Position25>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="1131" Column="23" TopLine="1121"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="1122" Column="9" TopLine="1112"/>
+      </Position26>
+      <Position27>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="1106" Column="63" TopLine="1096"/>
+      </Position27>
+      <Position28>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="878" Column="49" TopLine="839"/>
+      </Position28>
+      <Position29>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="1501" Column="27" TopLine="1489"/>
+      </Position29>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
