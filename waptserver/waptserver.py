@@ -430,7 +430,9 @@ def waptupgrade_host(ip):
             if ip and waptservice_port:
                 logger.info( "Upgrading %s..." % ip)
                 try:
-                    result = json.loads(requests.get("http://%s:%d/waptupgrade.json" % ( ip, waptservice_port),proxies=None).text)
+                    httpreq = requests.get("http://%s:%d/waptupgrade.json" % ( ip, waptservice_port),proxies=None)
+                    httpreq.raise_for_status()
+                    result = {'status' : 'OK', 'message': u"%s" % httpreq.text }
                 except Exception as e:
                     logger.warning(u'%s'%e)
                     r = requests.get("http://%s:%d/waptupgrade" % ( ip, waptservice_port),proxies=None)
@@ -443,11 +445,13 @@ def waptupgrade_host(ip):
                 raise Exception(u"Le port de waptservice n'est pas défini")
 
         except Exception as e:
-            raise  Exception("Impossible de joindre le web service: %s" % e)
+            raise  Exception("Impossible de joindre le waptservice: %s" % e)
 
     except Exception, e:
             result = { 'status' : 'ERROR', 'message': u"%s" % e  }
-    return json.dumps(result)
+    return  Response(response=json.dumps(result),
+                         status=200,
+                         mimetype="application/json")
 
 @app.route('/install_package')
 @app.route('/install_package.json')
