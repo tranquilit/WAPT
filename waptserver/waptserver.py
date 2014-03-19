@@ -450,6 +450,7 @@ def waptupgrade_host(ip):
     return json.dumps(result)
 
 @app.route('/install_package')
+@app.route('/install_package.json')
 @requires_auth
 def install_package():
     try:
@@ -479,6 +480,7 @@ def install_package():
 
 
 @app.route('/remove_package')
+@app.route('/remove_package.json')
 @requires_auth
 def remove_package():
     try:
@@ -492,13 +494,15 @@ def remove_package():
             s.close
             if ip and waptservice_port:
                 logger.info( "removing %s on %s ..." % (package,ip))
-                data = json.loads(requests.get("http://%s:%d/remove.json?package=%s" % ( ip, waptservice_port,package),proxies=None).text)
+                httpreq = requests.get("http://%s:%d/remove.json?package=%s" % ( ip, waptservice_port,package),proxies=None)
+                httpreq.raise_for_status()
+                data = json.loads(httpreq.text)
                 result = dict(message=data,status='OK')
             else:
                 raise Exception(u"Le port de waptservice n'est pas défini")
 
         except Exception as e:
-            raise Exception("Impossible de joindre le web service: %s" % e)
+            raise Exception("Impossible de joindre le waptservice du poste: %s" % e)
 
     except Exception, e:
             result = { 'status' : 'ERROR', 'message': u"%s" % e  }
