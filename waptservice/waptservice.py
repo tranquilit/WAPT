@@ -278,11 +278,10 @@ def requires_auth(f):
             return authenticate()
 
         logging.info("authenticating : %s" % auth.username)
-
         if not check_auth(auth.username, auth.password):
             return authenticate()
 
-        if not  request.remote_addr == '127.0.0.1':
+        if not request.remote_addr in app.waptconfig.authorized_callers_ip:
             return authenticate()
 
         logging.info("user %s authenticated" % auth.username)
@@ -298,6 +297,7 @@ def check_ip_source(f):
             return authenticate()
         return f(*args, **kwargs)
     return decorated
+
 
 @app.route('/status')
 @app.route('/status.json')
@@ -349,6 +349,7 @@ def all_packages():
         return render_template('list.html',packages=rows,format_isodate=format_isodate,Version=setuphelpers.Version)
 
 @app.route('/package_icon')
+@check_ip_source
 def package_icon():
     package = request.args.get('package')
     icon_local_cache = os.path.join(wapt_root_dir,'cache','icons')
@@ -381,6 +382,7 @@ def package_icon():
         return send_file(icon,'image/png',as_attachment=True,attachment_filename='{}.png'.format('unknown'),cache_timeout=43200)
 
 @app.route('/package_details')
+@check_ip_source
 def package_details():
     #wapt=Wapt(config_filename=app.waptconfig.config_filename)
     package = request.args.get('package')
@@ -549,6 +551,7 @@ def register():
 
 @app.route('/inventory')
 @app.route('/inventory.json')
+@check_ip_source
 def disable():
     logger.info("Inventory")
     #wapt=Wapt(config_filename=app.waptconfig.config_filename)
@@ -560,8 +563,9 @@ def disable():
 
 
 @app.route('/install', methods=['GET'])
+@app.route('/install.json', methods=['GET'])
 @app.route('/install.html', methods=['GET'])
-@requires_auth
+@check_ip_source
 def install():
     package = request.args.get('package')
     force = int(request.args.get('force','0')) == 1
@@ -584,8 +588,9 @@ def package_download():
     else:
         return render_template('default.html',data=data)
 
+@app.route('/remove.json', methods=['GET'])
 @app.route('/remove', methods=['GET'])
-@requires_auth
+@check_ip_source
 def remove():
     package = request.args.get('package')
     logger.info("remove package %s" % package)
