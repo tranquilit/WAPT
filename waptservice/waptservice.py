@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.12"
+__version__ = "0.8.13"
 
 import time
 import sys
@@ -270,6 +270,7 @@ def wapt():
 
 
 def requires_auth(f):
+    """Restrict access to localhost (authenticated) or waptserver IP"""
     @wraps(f)
     def decorated(*args, **kwargs):
         auth = request.authorization
@@ -290,6 +291,7 @@ def requires_auth(f):
     return decorated
 
 def check_ip_source(f):
+    """Restrict access to localhost or waptserver IP"""
     @wraps(f)
     def decorated(*args, **kwargs):
         auth = request.authorization
@@ -382,6 +384,7 @@ def package_icon():
         return send_file(icon,'image/png',as_attachment=True,attachment_filename='{}.png'.format('unknown'),cache_timeout=43200)
 
 @app.route('/package_details')
+@app.route('/package_details.json')
 @check_ip_source
 def package_details():
     #wapt=Wapt(config_filename=app.waptconfig.config_filename)
@@ -461,7 +464,6 @@ def upgrade():
 
 @app.route('/update')
 @app.route('/update.json')
-@app.route('/updatebg')
 @check_ip_source
 def update():
     data = task_manager.add_task(WaptUpdate()).as_dict()
@@ -494,7 +496,7 @@ def longtask():
 @app.route('/cleanup')
 @app.route('/cleanup.json')
 @app.route('/clean')
-@requires_auth
+@check_ip_source
 def cleanup():
     logger.info("run cleanup")
     #wapt=Wapt(config_filename=app.waptconfig.config_filename)
@@ -506,6 +508,7 @@ def cleanup():
 
 @app.route('/install_log')
 @app.route('/install_log.json')
+@check_ip_source
 def install_log():
     logger.info("show install log")
     #wapt=Wapt(config_filename=app.waptconfig.config_filename)
@@ -520,7 +523,7 @@ def install_log():
         return render_template('default.html',data=data,title='Traces de l''installation de {}'.format(packagename))
 
 @app.route('/enable')
-@requires_auth
+@check_ip_source
 def enable():
     logger.info("enable tasks scheduling")
     #wapt=Wapt(config_filename=app.waptconfig.config_filename)
@@ -528,7 +531,7 @@ def enable():
     return Response(common.jsondump(data), mimetype='application/json')
 
 @app.route('/disable')
-@requires_auth
+@check_ip_source
 def disable():
     logger.info("disable tasks scheduling")
     #wapt=Wapt(config_filename=app.waptconfig.config_filename)
@@ -565,7 +568,7 @@ def disable():
 @app.route('/install', methods=['GET'])
 @app.route('/install.json', methods=['GET'])
 @app.route('/install.html', methods=['GET'])
-@check_ip_source
+@requires_auth
 def install():
     package = request.args.get('package')
     force = int(request.args.get('force','0')) == 1
@@ -578,6 +581,7 @@ def install():
 
 @app.route('/package_download')
 @app.route('/package_download.json')
+@check_ip_source
 def package_download():
     package = request.args.get('package')
     logger.info("download package %s" % package)
@@ -590,7 +594,7 @@ def package_download():
 
 @app.route('/remove.json', methods=['GET'])
 @app.route('/remove', methods=['GET'])
-@check_ip_source
+@requires_auth
 def remove():
     package = request.args.get('package')
     logger.info("remove package %s" % package)
@@ -622,6 +626,7 @@ def index():
 
 
 @app.route('/login', methods=['GET', 'POST'])
+@check_ip_source
 def login():
     error = None
     if request.method == 'POST':
@@ -635,6 +640,7 @@ def login():
 
 @app.route('/tasks')
 @app.route('/tasks.json')
+@check_ip_source
 def tasks():
     data = task_manager.tasks_status()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
@@ -645,6 +651,7 @@ def tasks():
 @app.route('/task')
 @app.route('/task.json')
 @app.route('/task.html')
+@check_ip_source
 def task():
     id = int(request.args['id'])
     tasks = task_manager.tasks_status()
@@ -664,6 +671,7 @@ def task():
 @app.route('/cancel_all_tasks')
 @app.route('/cancel_all_tasks.html')
 @app.route('/cancel_all_tasks.json')
+@check_ip_source
 def cancel_all_tasks():
     data = task_manager.cancel_all_tasks()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
@@ -673,6 +681,7 @@ def cancel_all_tasks():
 
 @app.route('/cancel_running_task')
 @app.route('/cancel_running_task.json')
+@check_ip_source
 def cancel_all_tasks():
     data = task_manager.cancel_running_task()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
