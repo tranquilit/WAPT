@@ -3,8 +3,8 @@ object DMPython: TDMPython
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 189
-  HorizontalOffset = 231
-  VerticalOffset = 313
+  HorizontalOffset = 347
+  VerticalOffset = 423
   Width = 178
   object PythonEng: TPythonEngine
     AutoLoad = False

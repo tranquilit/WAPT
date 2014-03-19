@@ -22,13 +22,13 @@ type
     { private declarations }
   public
     { public declarations }
-    waptServerPassword:String;
   end;
 
 var
   VisChangePassword: TVisChangePassword;
 
 implementation
+uses waptcommon;
 
 {$R *.lfm}
 
@@ -55,7 +55,7 @@ begin
       ShowMessage('L''ancien mot de passe ne doit pas être vide');
       CanClose:=False;
     end;
-    if waptServerPassword<>EdOldPassword.Text then
+    if waptServerPassword <> EdOldPassword.Text then
     begin
       ShowMessage('L''ancien mot de passe ne correspond pas');
       CanClose:=False;

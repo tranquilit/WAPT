@@ -15,6 +15,8 @@ type
   { TVisWaptGUI }
 
   TVisWaptGUI = class(TForm)
+    ActPackageInstall: TAction;
+    ActPackageRemove: TAction;
     ActLocalhostInstall: TAction;
     ActEditpackage: TAction;
     ActExecCode: TAction;
@@ -82,6 +84,8 @@ type
     Label12: TLabel;
     LabelComputersNumber: TLabel;
     MemoGroupeDescription: TMemo;
+    MenuItem19: TMenuItem;
+    MenuItem20: TMenuItem;
     MenuItem28: TMenuItem;
     MenuItem33: TMenuItem;
     MenuItem34: TMenuItem;
@@ -91,6 +95,7 @@ type
     MenuItem40: TMenuItem;
     Panel11: TPanel;
     Panel2: TPanel;
+    PopupHostPackages: TPopupMenu;
     PopupMenuGroups: TPopupMenu;
     ProgressBar: TProgressBar;
     EdHostname: TEdit;
@@ -194,6 +199,7 @@ type
     procedure ActEditGroupExecute(Sender: TObject);
     procedure ActEditHostPackageExecute(Sender: TObject);
     procedure ActGotoHostExecute(Sender: TObject);
+    procedure ActPackageRemoveExecute(Sender: TObject);
     procedure ActSearchGroupsExecute(Sender: TObject);
     procedure ActHostUpgradeExecute(Sender: TObject);
     procedure ActHostUpgradeUpdate(Sender: TObject);
@@ -267,6 +273,7 @@ type
       TextType: TVSTTextType);
 
     procedure HostPagesChange(Sender: TObject);
+    procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem27Click(Sender: TObject);
     procedure MainPagesChange(Sender: TObject);
     procedure InstallPackage(Grid: TSOGrid);
@@ -392,7 +399,10 @@ begin
       packages := GridHosts.GetNodeSOData(Node)['packages'];
       if (packages = nil) or (packages.AsArray = nil) then
       try
-        packages := WAPTServerJsonGet('client_package_list/%s', [currhost], WaptUseLocalConnectionProxy);
+        packages := WAPTServerJsonGet('client_package_list/%s',
+          [currhost],
+          WaptUseLocalConnectionProxy,
+          waptServerUser, waptServerPassword);
         GridHosts.GetNodeSOData(Node)['packages'] := packages;
       except
         GridHosts.GetNodeSOData(Node)['packages'] := Nil;
@@ -413,7 +423,9 @@ begin
       softwares := GridHosts.GetNodeSOData(Node)['softwares'];
       if (softwares = nil) or (softwares.AsArray = nil) then
       begin
-        softwares := WAPTServerJsonGet('client_software_list/%s', [currhost],WaptUseLocalConnectionProxy);
+        softwares := WAPTServerJsonGet('client_software_list/%s', [currhost],
+            WaptUseLocalConnectionProxy,
+            waptServerUser, waptServerPassword);
         GridHostSoftwares.GetNodeSOData(Node)['softwares'] := softwares;
       end;
       GridHostSoftwares.Data := softwares;
@@ -818,7 +830,6 @@ var
 begin
   with TvisChangePassword.Create(self) do
     try
-      waptServerPassword := uviseditpackage.waptServerPassword;
       if ShowModal = mrOk then
       begin
         newPass := edNewPassword2.Text;
@@ -829,7 +840,7 @@ begin
 
         if Result = 'True' then
         begin
-          uviseditpackage.waptServerPassword := newPass;
+          waptServerPassword := newPass;
           ShowMessage('Le mot de passe a été changé avec succès !');
         end;
       end;
@@ -946,7 +957,9 @@ begin
           Inc(i);
           group := GridPackages.GetCellStrValue(N, 'filename');
           ProgressTitle('Suppression de ' + group);
-          res := WAPTServerJsonGet('/delete_package/' + group, [],WaptUseLocalConnectionProxy);
+          res := WAPTServerJsonGet('/delete_package/' + group, [],
+              WaptUseLocalConnectionProxy,
+              waptServerUser, waptServerPassword);
           if not ObjectIsNull(res['error']) then
             raise Exception.Create(res.S['error']);
           N := GridGroups.GetNextSelected(N);
@@ -985,7 +998,9 @@ begin
           Inc(i);
           package := GridPackages.GetCellStrValue(N, 'filename');
           ProgressTitle('Suppression de ' + package);
-          res := WAPTServerJsonGet('/delete_package/' + package, [],WaptUseLocalConnectionProxy);
+          res := WAPTServerJsonGet('/delete_package/' + package, [],
+              WaptUseLocalConnectionProxy,
+              waptServerUser, waptServerPassword);
           if not ObjectIsNull(res['error']) then
             raise Exception.Create(res.S['error']);
           N := GridPackages.GetNextSelected(N);
@@ -1046,6 +1061,31 @@ procedure TVisWaptGUI.ActGotoHostExecute(Sender: TObject);
 begin
   EdSearchHost.SetFocus;
   EdSearchHost.SelectAll;
+
+end;
+
+procedure TVisWaptGUI.ActPackageRemoveExecute(Sender: TObject);
+var
+  sel,package,res:ISuperObject;
+begin
+  if GridHostPackages.Focused then
+  begin
+    sel := GridHostPackages.SelectedRows;
+    if Dialogs.MessageDlg('Confirmer','Confirmez-vous la désinstallation de '+intToStr(sel.AsArray.Length)+' packages du poste '+GridHosts.FocusedRow.S['host.computer_fqdn']+' ?',mtConfirmation,mbYesNoCancel,0) = mrYes then
+    begin
+      for package in sel do
+      begin
+        res :=  WAPTServerJsonGet(
+          '/remove_package.json?host=%s&package=%s',[GridHosts.FocusedRow.S['host.connected_ips'],package.S['package']],
+          WaptUseLocalConnectionProxy,
+          waptServerUser,
+          waptServerPassword);
+        if res.S['status']<>'OK' then
+          ShowMessage(Format('Erreur pour le package %s',[package.S['package'],res.S['message']]));
+      end;
+    end;
+    UpdateHostPages(Sender);
+  end;
 
 end;
 
@@ -1138,7 +1178,9 @@ begin
     if Dialogs.MessageDlg('Confirmer','Confirmez-vous la suppression de '+intToStr(sel.AsArray.Length)+' postes de la liste ?',mtConfirmation,mbYesNoCancel,0) = mrYes then
     begin
       for host in sel do
-        WAPTServerJsonGet('/delete_host/' + host.S['uuid'], [],WaptUseLocalConnectionProxy);
+        WAPTServerJsonGet('/delete_host/' + host.S['uuid'], [],
+          WaptUseLocalConnectionProxy,
+          waptServerUser, waptServerPassword);
       ActSearchHost.Execute;
     end;
   end;
@@ -1227,7 +1269,9 @@ begin
     previous_uuid := GridHosts.FocusedRow.S['uuid']
   else
     previous_uuid:='';
-  hosts := WAPTServerJsonGet(req, [], WaptUseLocalConnectionProxy);
+  hosts := WAPTServerJsonGet(req, [],
+      WaptUseLocalConnectionProxy,
+      waptServerUser, waptServerPassword);
   GridHosts.Data := hosts;
   LabelComputersNumber.Caption := IntToStr(hosts.AsArray.Length);
   for node in GridHosts.data do
@@ -1725,6 +1769,13 @@ end;
 procedure TVisWaptGUI.HostPagesChange(Sender: TObject);
 begin
   UpdateHostPages(Sender);
+end;
+
+procedure TVisWaptGUI.MenuItem20Click(Sender: TObject);
+var
+  package:AnsiString;
+begin
+  //package:=;
 end;
 
 procedure TVisWaptGUI.MenuItem27Click(Sender: TObject);

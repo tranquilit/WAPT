@@ -8,7 +8,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, ExtCtrls, Menus, ActnList, Controls,
-  zmqapi, LSControls;
+  zmqapi, superobject;
 
 type
 
@@ -85,6 +85,7 @@ type
     { public declarations }
     check_thread:TThread;
     checkinterval:Integer;
+    current_task:ISuperObject;
     property trayMode:TTrayMode read FtrayMode write SettrayMode;
     property trayHint:String read GetrayHint write SettrayHint;
 
@@ -94,7 +95,7 @@ var
   DMWaptTray: TDMWaptTray;
 
 implementation
-uses LCLIntf,Forms,dialogs,windows,superobject,graphics,tiscommon,waptcommon,tisinifiles,soutils,UnitRedirect;
+uses LCLIntf,Forms,dialogs,windows,graphics,tiscommon,waptcommon,tisinifiles,soutils,UnitRedirect;
 
 {$R *.lfm}
 
@@ -307,6 +308,12 @@ begin
           trayHint:=UTF8Encode('Installation en cours : '+running.AsString);
         end
         else
+        if runstatus<>'' then
+        begin
+          trayHint:=runstatus;
+          trayMode:=tmRunning;
+        end
+        else
         if (errors<>Nil) and (errors.AsArray.Length>0) then
         begin
           trayHint:=UTF8Encode('Erreurs : '+#13#10+ Join(#13#10,errors));
@@ -320,16 +327,8 @@ begin
         end
         else
         begin
-          if runstatus<>'' then
-          begin
-            trayHint:=runstatus;
-            trayMode:=tmRunning;
-          end
-          else
-          begin
-            trayHint:='Système à jour';
-            trayMode:=tmOK;
-          end;
+          trayHint:='Système à jour';
+          trayMode:=tmOK;
         end;
       end
       else

@@ -132,9 +132,6 @@ function EditGroup(group: string; advancedMode: boolean): ISuperObject;
 
 var
   VisEditPackage: TVisEditPackage;
-  privateKeyPassword: string = '';
-  waptServerUser: string = 'admin';
-  waptServerPassword: string = '';
 
 implementation
 
@@ -403,6 +400,7 @@ procedure TVisEditPackage.ActEditRemoveExecute(Sender: TObject);
 begin
   GridDepends.DeleteSelectedNodes;
   Depends := Depends;
+  GridDependsUpdated := True;
 end;
 
 procedure TVisEditPackage.ActEditSavePackageExecute(Sender: TObject);

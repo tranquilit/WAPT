@@ -79,7 +79,9 @@ begin
       if (host['host.connected_ips']<>Nil) and  (host['host.connected_ips'].DataType=stArray) then
         for ip in host['host.connected_ips'] do
         begin
-          res := WAPTServerJsonGet(action+'/'+ ip.AsString, [],WaptUseLocalConnectionProxy);
+          res := WAPTServerJsonGet(action+'/'+ ip.AsString, [],
+            WaptUseLocalConnectionProxy,
+            waptServerUser, waptServerPassword);
           // old behaviour <0.8.10
           if res.AsObject.Exists('status') then
           begin
@@ -95,7 +97,9 @@ begin
         end
       else
       begin
-        res := WAPTServerJsonGet(action+'/' + host.S['host.connected_ips'], [],WaptUseLocalConnectionProxy);
+        res := WAPTServerJsonGet(action+'/' + host.S['host.connected_ips'], [],
+          WaptUseLocalConnectionProxy,
+          waptServerUser, waptServerPassword);
         // old behaviour <0.8.10
         if res.AsObject.Exists('status') then
         begin

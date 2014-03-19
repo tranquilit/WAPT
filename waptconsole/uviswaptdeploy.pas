@@ -103,7 +103,7 @@ begin
     ProgressGrid.InvalidateFordata(host);
     Application.ProcessMessages;
     try
-      res := WAPTServerJsonPost('/deploy_wapt', host, WaptUseLocalConnectionProxy);
+      res := WAPTServerJsonPost('/deploy_wapt',[],host, WaptUseLocalConnectionProxy);
       host['message'] := res['message'];
       host['status'] := res['status'];
       ProgressGrid.InvalidateFordata(host);

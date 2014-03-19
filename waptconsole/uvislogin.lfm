@@ -1,7 +1,7 @@
 object VisLogin: TVisLogin
-  Left = 518
+  Left = 777
   Height = 126
-  Top = 361
+  Top = 487
   Width = 286
   BorderStyle = bsDialog
   Caption = 'Authenfication WAPT'

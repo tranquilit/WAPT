@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 200
+  Left = 300
   Height = 695
-  Top = 203
+  Top = 274
   Width = 1072
   Caption = 'Console WAPT'
   ClientHeight = 676
@@ -381,6 +381,7 @@ object VisWaptGUI: TVisWaptGUI
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
             Header.Style = hsFlatButtons
             Images = ImageList1
+            PopupMenu = PopupHostPackages
             TabOrder = 0
             TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
             TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
@@ -1942,6 +1943,15 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Déployer Wapt sur des postes'
       OnExecute = ActDeployWaptExecute
     end
+    object ActPackageRemove: TAction
+      Category = 'Host'
+      Caption = 'Désinstaller le package'
+      OnExecute = ActPackageRemoveExecute
+    end
+    object ActPackageInstall: TAction
+      Category = 'Host'
+      Caption = 'Installer un package'
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
@@ -2207,8 +2217,8 @@ object VisWaptGUI: TVisWaptGUI
     }
   end
   object PopupMenuGroups: TPopupMenu
-    left = 304
-    top = 160
+    left = 148
+    top = 396
     object MenuItem36: TMenuItem
       Action = ActPackageGroupAdd
     end
@@ -2217,6 +2227,17 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem40: TMenuItem
       Action = ActEditGroup
+    end
+  end
+  object PopupHostPackages: TPopupMenu
+    left = 256
+    top = 396
+    object MenuItem20: TMenuItem
+      Action = ActPackageInstall
+      OnClick = MenuItem20Click
+    end
+    object MenuItem19: TMenuItem
+      Action = ActPackageRemove
     end
   end
 end

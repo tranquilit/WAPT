@@ -59,9 +59,9 @@ interface
   function GetDNSServer:AnsiString;
   function GetDNSDomain:AnsiString;
 
-  function WAPTServerJsonGet(action: String;args:Array of const; enableProxy:Boolean= False): ISuperObject;
-  function WAPTServerJsonPost(action: String;data: ISuperObject; enableProxy:Boolean= False): ISuperObject;
-  function WAPTLocalJsonGet(action:String):ISuperObject;
+  function WAPTServerJsonGet(action: String;args:Array of const; enableProxy:Boolean= False;user:AnsiString='';password:AnsiString=''): ISuperObject;
+  function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject; enableProxy:Boolean= False;user:AnsiString='';password:AnsiString=''): ISuperObject;
+  function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString=''):ISuperObject;
 
 Type
   TFormatHook = Function(Dataset:TDataset;Data,FN:Utf8String):UTF8String of object;
@@ -89,7 +89,10 @@ Type
     function QueryToHTMLtable(SQL: String; FormatHook: TFormatHook=nil): String;
   end;
 
-
+var
+  privateKeyPassword: string = '';
+  waptServerUser: string = 'admin';
+  waptServerPassword: string = '';
 
 implementation
 
@@ -162,7 +165,7 @@ begin
   end;
 end;
 
-function WAPTServerJsonGet(action: String;args:Array of const;  enableProxy:Boolean= False): ISuperObject;
+function WAPTServerJsonGet(action: String;args:Array of const; enableProxy:Boolean=False;user:AnsiString='';password:AnsiString=''): ISuperObject;
 var
   strresult : String;
 begin
@@ -172,11 +175,13 @@ begin
     action := '/'+action;
   if length(args)>0 then
     action := format(action,args);
-  strresult:=httpGetString(GetWaptServerURL+action, enableProxy);
+  strresult:=httpGetString(GetWaptServerURL+action, enableProxy,4000,60000,60000,user,password);
   Result := SO(strresult);
 end;
 
-function WAPTServerJsonPost(action: String;data: ISuperObject; enableProxy:Boolean= False):ISuperObject;
+function WAPTServerJsonPost(action: String;args:Array of const;
+    data: ISuperObject; enableProxy:Boolean= False;
+    user:AnsiString='';password:AnsiString=''):ISuperObject;
 var
   res:String;
 begin
@@ -184,17 +189,19 @@ begin
     raise Exception.Create('wapt_server is not defined in your '+AppIniFilename+' ini file');
   if StrLeft(action,1)<>'/' then
     action := '/'+action;
-  res := httpPostData('wapt', GetWaptServerURL+action, data.AsJson, enableProxy);
+  if length(args)>0 then
+    action := format(action,args);
+  res := httpPostData('wapt', GetWaptServerURL+action, data.AsJson, enableProxy,4000,60000,60000,user,password);
   result := SO(res);
 end;
 
-function WAPTLocalJsonGet(action: String): ISuperObject;
+function WAPTLocalJsonGet(action: String;user:AnsiString='';password:AnsiString=''): ISuperObject;
 var
   strresult : String;
 begin
   if StrLeft(action,1)<>'/' then
     action := '/'+action;
-  strresult:=httpGetString(GetWaptLocalURL+action);
+  strresult := httpGetString(GetWaptLocalURL+action,False,4000,60000,60000,user,password);
   Result := SO(strresult);
 end;
 
