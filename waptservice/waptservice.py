@@ -273,21 +273,20 @@ def requires_auth(f):
     """Restrict access to localhost (authenticated) or waptserver IP"""
     @wraps(f)
     def decorated(*args, **kwargs):
-        auth = request.authorization
-        if not auth:
-            logging.info('no credential given')
-            return authenticate()
+        if request.remote_addr == '127.0.0.1':
+            auth = request.authorization
+            if not auth:
+                logging.info('no credential given')
+                return authenticate()
 
-        logging.info("authenticating : %s" % auth.username)
-        if not check_auth(auth.username, auth.password):
-            return authenticate()
-
-        if not request.remote_addr in app.waptconfig.authorized_callers_ip:
-            return authenticate()
-
-        logging.info("user %s authenticated" % auth.username)
+            logging.info("authenticating : %s" % auth.username)
+            if not check_auth(auth.username, auth.password):
+                return authenticate()
+            logging.info("user %s authenticated" % auth.username)
+        else:
+            if not request.remote_addr in app.waptconfig.authorized_callers_ip:
+                return authenticate()
         return f(*args, **kwargs)
-
     return decorated
 
 def check_ip_source(f):
@@ -440,15 +439,13 @@ def get_checkupgrades():
 @app.route('/waptupgrade')
 @app.route('/waptupgrade.json')
 @check_ip_source
-def waptupgrade():
+def waptclientupgrade():
     """Launch an external 'wapt-get waptupgrade' process to upgrade local copy of wapt client"""
-    from setuphelpers import run
-    output = run('"%s" %s' % (os.path.join(wapt_root_dir,'wapt-get.exe'),'waptupgrade'))
-    data = {'result':'OK','message':output}
+    data = task_manager.add_task(WaptClientUpgrade()).as_dict()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data,title=u'Upgrade du client WAPT')
+        return render_template('default.html',data=data,title='Upgrade')
 
 @app.route('/upgrade')
 @app.route('/upgrade.json')
@@ -579,6 +576,7 @@ def install():
     else:
         return render_template('install.html',data=data)
 
+
 @app.route('/package_download')
 @app.route('/package_download.json')
 @check_ip_source
@@ -592,8 +590,8 @@ def package_download():
     else:
         return render_template('default.html',data=data)
 
-@app.route('/remove.json', methods=['GET'])
 @app.route('/remove', methods=['GET'])
+@app.route('/remove.json', methods=['GET'])
 @requires_auth
 def remove():
     package = request.args.get('package')
@@ -841,6 +839,23 @@ class WaptNetworkReconfig(WaptTask):
 
     def __str__(self):
         return u"Reconfiguration accès réseau"
+
+class WaptClientUpgrade(WaptTask):
+    def __init__(self):
+        super(WaptClientUpgrade,self).__init__()
+        self.priority = 10
+        self.notify_server_on_start = True
+        self.notify_server_on_finish = False
+
+    def _run(self):
+        """Launch an external 'wapt-get waptupgrade' process to upgrade local copy of wapt client"""
+        from setuphelpers import run
+        output = run('"%s" %s' % (os.path.join(wapt_root_dir,'wapt-get.exe'),'waptupgrade'))
+        self.result = {'result':'OK','message':output}
+
+    def __str__(self):
+        return u"Mise à jour du logiciel client Wapt"
+
 
 class WaptUpdate(WaptTask):
     def __init__(self):
