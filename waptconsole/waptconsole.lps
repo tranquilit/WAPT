@@ -22,15 +22,18 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uwaptconsole"/>
         <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="709"/>
-        <CursorPos X="44" Y="723"/>
+        <CursorPos X="11" Y="714"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="3">
           <Item0 X="1" Y="1449" ID="4"/>
           <Item1 X="6" Y="1793" ID="5"/>
           <Item2 X="5" Y="1833" ID="8"/>
         </Bookmarks>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
@@ -63,10 +66,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="dmwaptpython"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="41"/>
-        <CursorPos X="1" Y="60"/>
+        <TopLine Value="46"/>
+        <CursorPos X="39" Y="59"/>
         <UsageCount Value="238"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="uviseditpackage.pas"/>
@@ -75,10 +81,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviseditpackage"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
+        <TopLine Value="410"/>
+        <CursorPos X="152" Y="419"/>
         <UsageCount Value="215"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="uviscreatewaptsetup.pas"/>
@@ -504,7 +513,20 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="3" HistoryIndex="2">
+      <Position1>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="12" Column="53" TopLine="1"/>
+      </Position1>
+      <Position2>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="350" Column="33" TopLine="335"/>
+      </Position2>
+      <Position3>
+        <Filename Value="uviseditpackage.pas"/>
+        <Caret Line="425" Column="43" TopLine="410"/>
+      </Position3>
+    </JumpHistory>
   </ProjectSession>
   <EditorMacros Count="0"/>
 </CONFIG>

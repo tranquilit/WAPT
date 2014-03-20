@@ -54,6 +54,7 @@ begin
       st.Append('import json');
       st.Append('import os');
       st.Append('import common');
+      st.Append('import waptpackage');
       st.Append('import waptdevutils');
       st.Append('import setuphelpers');
       st.Append('from common import jsondump');

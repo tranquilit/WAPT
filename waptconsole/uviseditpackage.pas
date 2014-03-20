@@ -425,7 +425,7 @@ begin
       PackageEdited.S['description'] := UTF8Decode(EdDescription.Text);
       PackageEdited.S['section'] := EdSection.Text;
       PackageEdited.S['depends'] := Depends;
-      DMPython.PythonEng.ExecString('p = PackageEntry()');
+      DMPython.PythonEng.ExecString('p = waptpackage.PackageEntry()');
       DMPython.PythonEng.ExecString(
         format('p.load_control_from_dict(json.loads(r''%s''))', [PackageEdited.AsJson]));
       DMPython.PythonEng.ExecString(

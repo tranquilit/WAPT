@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 300
+  Left = 246
   Height = 695
-  Top = 274
+  Top = 167
   Width = 1072
   Caption = 'Console WAPT'
   ClientHeight = 676
@@ -17,9 +17,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 553
     Top = 0
     Width = 1072
-    ActivePage = pgPrivateRepo
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
