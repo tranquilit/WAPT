@@ -199,7 +199,7 @@ def wget(url,target,printhook=None,proxies=None):
     def reporthook(received,total):
         if total>1 and received>1:
             # print only every second or at end
-            if (time.time()-start_time>=1) or (received>=total):
+            if (time.time()-last_time_display>=1) or (received>=total):
                 speed = received /(1024.0 * (time.time()-start_time))
                 if printhook:
                     printhook(received,total,speed,url)
@@ -210,6 +210,9 @@ def wget(url,target,printhook=None,proxies=None):
                         print u"  -> download finished (%.0f Kb/s)" % (total/(1024.0*(time.time()+.001-start_time)))
                     else:
                         print u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total,speed ),
+                return True
+            else:
+                return False
 
     if os.path.isdir(target):
         target = os.path.join(target,'')
@@ -226,8 +229,8 @@ def wget(url,target,printhook=None,proxies=None):
     httpreq = requests.get(url,stream=True, proxies=proxies)
 
     total_bytes = int(httpreq.headers['content-length'])
-    # 100kb max, 1kb min
-    chunk_size = min([100*1024,max([total_bytes/100,1000])])
+    # 1Mb max, 1kb min
+    chunk_size = min([1024*1024,max([total_bytes/100,1000])])
 
     cnt = 0
     reporthook(last_downloaded,total_bytes)
@@ -242,7 +245,8 @@ def wget(url,target,printhook=None,proxies=None):
                 last_time_display = time.time()
                 last_downloaded += len(chunk)
                 cnt +=1
-            reporthook(last_downloaded,total_bytes)
+            if reporthook(last_downloaded,total_bytes):
+                last_time_display = time.time()
         else:
             httpreq.raise_for_status()
 
