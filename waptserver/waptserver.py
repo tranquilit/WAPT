@@ -541,6 +541,35 @@ def host_tasks():
                          status=200,
                          mimetype="application/json")
 
+@app.route('/host_taskkill')
+@app.route('/host_taskkill.json')
+@requires_auth
+def host_taskkill():
+    try:
+        result = {}
+        try:
+            ip = request.args['host']
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(1)
+            s.connect((ip,waptservice_port))
+            s.close
+            if ip and waptservice_port:
+                data = json.loads(requests.get("http://%s:%d/cancel_running_task.json" % ( ip, waptservice_port),proxies=None).text)
+                result = dict(message=data,status='OK')
+            else:
+                raise Exception(u"Le port de waptservice n'est pas défini")
+
+        except Exception as e:
+            raise Exception("Impossible de joindre le web service: %s" % e)
+
+    except Exception, e:
+            result = { 'status' : 'ERROR', 'message': u"%s" % e  }
+    return  Response(response=json.dumps(result),
+                         status=200,
+                         mimetype="application/json")
+
+
+
 @app.route('/hosts_by_group/<string:name>')
 @requires_auth
 def get_hosts_by_group(name=""):
