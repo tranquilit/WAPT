@@ -9,13 +9,10 @@
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptconsole"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="80" Y="26"/>
+        <CursorPos X="19" Y="4"/>
         <UsageCount Value="208"/>
-        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="uwaptconsole.pas"/>
@@ -24,7 +21,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uwaptconsole"/>
-        <EditorIndex Value="0"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="709"/>
         <CursorPos X="44" Y="723"/>
@@ -34,8 +31,6 @@
           <Item1 X="6" Y="1793" ID="5"/>
           <Item2 X="5" Y="1833" ID="8"/>
         </Bookmarks>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
@@ -68,12 +63,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="dmwaptpython"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="41"/>
         <CursorPos X="1" Y="60"/>
         <UsageCount Value="238"/>
-        <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="uviseditpackage.pas"/>
@@ -136,17 +129,6 @@
         <UsageCount Value="216"/>
       </Unit9>
       <Unit10>
-        <Filename Value="uvisoptioninifile.pas"/>
-        <ComponentName Value="VisOptionIniFile"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uvisOptionIniFile"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="106"/>
-        <CursorPos X="115" Y="129"/>
-        <UsageCount Value="203"/>
-      </Unit10>
-      <Unit11>
         <Filename Value="uviswaptconfig.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisWAPTConfig"/>
@@ -157,8 +139,8 @@
         <TopLine Value="1"/>
         <CursorPos X="68" Y="5"/>
         <UsageCount Value="203"/>
-      </Unit11>
-      <Unit12>
+      </Unit10>
+      <Unit11>
         <Filename Value="uvischangepassword.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisChangePassword"/>
@@ -169,8 +151,8 @@
         <TopLine Value="25"/>
         <CursorPos X="17" Y="31"/>
         <UsageCount Value="212"/>
-      </Unit12>
-      <Unit13>
+      </Unit11>
+      <Unit12>
         <Filename Value="uvisgroupchoice.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="visGroupChoice"/>
@@ -181,8 +163,8 @@
         <TopLine Value="1"/>
         <CursorPos X="82" Y="17"/>
         <UsageCount Value="206"/>
-      </Unit13>
-      <Unit14>
+      </Unit12>
+      <Unit13>
         <Filename Value="uviseditgroup.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisEditGroup"/>
@@ -193,8 +175,8 @@
         <TopLine Value="32"/>
         <CursorPos X="21" Y="41"/>
         <UsageCount Value="403"/>
-      </Unit14>
-      <Unit15>
+      </Unit13>
+      <Unit14>
         <Filename Value="uviswaptdeploy.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="viswaptdeploy"/>
@@ -205,8 +187,8 @@
         <TopLine Value="90"/>
         <CursorPos X="51" Y="107"/>
         <UsageCount Value="217"/>
-      </Unit15>
-      <Unit16>
+      </Unit14>
+      <Unit15>
         <Filename Value="uvishostsupgrade.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisHostsUpgrade"/>
@@ -216,6 +198,17 @@
         <WindowIndex Value="0"/>
         <TopLine Value="64"/>
         <CursorPos X="31" Y="82"/>
+        <UsageCount Value="203"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="uvisoptioninifile.pas"/>
+        <ComponentName Value="VisOptionIniFile"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uvisOptionIniFile"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="106"/>
+        <CursorPos X="115" Y="129"/>
         <UsageCount Value="203"/>
       </Unit16>
       <Unit17>
@@ -511,48 +504,7 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="10" HistoryIndex="9">
-      <Position1>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="480" Column="9" TopLine="467"/>
-      </Position1>
-      <Position2>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="462" Column="6" TopLine="451"/>
-      </Position2>
-      <Position3>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="479" Column="36" TopLine="467"/>
-      </Position3>
-      <Position4>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="483" Column="60" TopLine="467"/>
-      </Position4>
-      <Position5>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position5>
-      <Position6>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="316" Column="42" TopLine="292"/>
-      </Position6>
-      <Position7>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="317" Column="42" TopLine="294"/>
-      </Position7>
-      <Position8>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="315" Column="42" TopLine="294"/>
-      </Position8>
-      <Position9>
-        <Filename Value="dmwaptpython.pas"/>
-        <Caret Line="44" Column="173" TopLine="38"/>
-      </Position9>
-      <Position10>
-        <Filename Value="waptconsole.lpr"/>
-        <Caret Line="22" Column="29" TopLine="1"/>
-      </Position10>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectSession>
   <EditorMacros Count="0"/>
 </CONFIG>

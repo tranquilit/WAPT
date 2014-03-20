@@ -1,7 +1,7 @@
 program waptdeploy;
 {$delphiunicode}
 
-uses classes,windows,SysUtils,wininet,URIParser,superobject,shellapi;
+uses classes,windows,SysUtils,wininet,URIParser,superobject,shellapi,UnitRedirect;
 
 function GetComputerName : AnsiString;
 var
@@ -619,12 +619,12 @@ begin
     Result := SO(stArray);
 end;
 
-function UpdateStatus:ISuperObject;
+function UpdateStatus:AnsiString;
 var
   data:String;
 begin
   data := httpGetString('http://127.0.0.1:8088/update.json');
-  result := SO(data);
+  result := data;
 end;
 
 function BasicRegisterComputer:ISuperObject;
@@ -684,6 +684,7 @@ begin
     Res:= '';
 end;
 
+
 function RunAsAdmin(const Handle: Hwnd; aFile : Ansistring; Params: Ansistring): Boolean;
 var
   sei:  TSHELLEXECUTEINFO;
@@ -707,18 +708,28 @@ var
   waptdeploy,waptsetupurl:AnsiString;
 {$R *.res}
 
+
 begin
   if ParamStr(1)='--help'  then
   begin
       Writeln('Usage : waptdeploy.exe [min_wapt_version]');
       Writeln('  Download waptsetup.exe from WAPT repository and launch it if local version is obsolete (<0.8 or < parameter 1)');
       Writeln('  If no argument is given, looks for http://wapt/wapt/waptdeploy.version file. This file should contain 2 lines. One for version, and another for download url');
+      Writeln('  If force is given, install waptsetup.exe even if version doesn''t match');
       Exit;
   end;
   waptsetupurl := 'http://wapt/wapt/waptsetup.exe';
-  localVersion := LocalWaptVersion;
+  if ParamStr(1)='force' then
+  begin
+    localVersion := '';
+    requiredVersion :='force';
+  end
+  else
+   begin
+    localVersion := LocalWaptVersion;
+    requiredVersion := ParamStr(1);
+  end;
   writeln('WAPT version: '+localVersion);
-  requiredVersion := ParamStr(1);
   if requiredVersion='' then
   begin
     requiredVersion:='0.8.0';
@@ -740,7 +751,7 @@ begin
     end;
   end;
   writeln('WAPT required version: '+requiredVersion);
-  if (localVersion='') or (CompareVersion(localVersion,requiredVersion)<0) or (requiredVersion='') then
+  if (localVersion='') or (CompareVersion(localVersion,requiredVersion)<0) or (requiredVersion='force') then
   try
     tmpDir := GetUniqueTempdir('wapt');
     mkdir(tmpDir);
@@ -750,13 +761,13 @@ begin
     wget(waptsetupurl,waptsetupPath);
     getVersion:=GetApplicationVersion(waptsetupPath);
     writeln('Got version: '+getVersion);
-    if CompareVersion(getVersion,requiredVersion)>=0 then
+    if (requiredVersion='force') or (CompareVersion(getVersion,requiredVersion)>=0) then
     begin
       writeln('Install ...');
+
+      //writeln(Sto_RedirectedExecute(waptsetupPath+' /VERYSILENT /MERGETASKS=""useWaptServer,autorunTray','',100000,'Administrateur','','.....'));
       if GetDosOutput(waptsetupPath+' /VERYSILENT /MERGETASKS=""useWaptServer,autorunTray','',res) then
         writeln('Install OK:'+LocalWaptVersion);
-        //writeln(RegisterComputer.AsJSon(True));
-        //writeln(UpdateStatus.AsJSon(True));
     end
     else
       writeln('Got a waptsetup version older than required version');

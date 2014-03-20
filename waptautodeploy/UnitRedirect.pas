@@ -147,7 +147,7 @@ function Sto_RedirectedExecute(CmdLine: String;
   const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString=''): String;
 var
   mySecurityAttributes: SECURITY_ATTRIBUTES;
-  myStartupInfo: STARTUPINFO;
+  myStartupInfo: STARTUPINFOW;
   myProcessInfo: PROCESS_INFORMATION;
   hPipeInputRead, hPipeInputWrite: THandle;
   hPipeOutputRead, hPipeOutputWrite: THandle;
@@ -209,8 +209,7 @@ begin
       end
       else
       begin
-        writeln('create process '+cmdline);
-        if not CreateProcess(Nil,PChar(cmdline),  Nil,Nil, True, CREATE_NEW_CONSOLE,nil,nil,myStartupInfo,myProcessInfo) then
+        if not CreateProcessW(Nil,PWideChar(cmdline),  Nil,Nil, True, CREATE_NEW_CONSOLE,nil,nil,myStartupInfo,myProcessInfo) then
         {if  not CreateProcess(nil, PChar(CmdLine), nil, nil, True,
               CREATE_NEW_CONSOLE, nil, nil, myStartupInfo, myProcessInfo) then}
           RaiseLastOSError();
@@ -218,7 +217,6 @@ begin
 
 
     finally
-      writeln('finished launched process '+cmdline);
       // close the ends of the pipes, now used by the process
       CloseHandle(hPipeInputRead);
       CloseHandle(hPipeOutputWrite);
@@ -229,13 +227,11 @@ begin
     myReadOutputThread := Nil;
     myReadErrorThread := Nil;
 
-    writeln('create pipes');
     myWriteInputThread := TStoWritePipeThread.Create(hPipeInputWrite, Input);
     myReadOutputThread := TStoReadPipeThread.Create(hPipeOutputRead);
     myReadErrorThread := TStoReadPipeThread.Create(hPipeErrorRead);
     try
       // wait unitl there is no more data to receive, or the timeout is reached
-      writeln('wait pipes');
       iWaitRes := WaitForSingleObject(myProcessInfo.hProcess, Wait);
       // timeout reached ?
       if (iWaitRes = WAIT_TIMEOUT) then
@@ -245,7 +241,6 @@ begin
       end;
       // return output
       myReadOutputThread.WaitFor;
-      writeln('read content');
       Output := myReadOutputThread.Content;
       Result := output;
       myReadErrorThread.WaitFor;
@@ -257,7 +252,6 @@ begin
         Raise Exception.Create(error);}
 
     finally
-      writeln('end');
       if myWriteInputThread<>Nil then  myWriteInputThread.Free;
       if myReadOutputThread<>Nil then myReadOutputThread.Free;
       if myReadErrorThread<>Nil then myReadErrorThread.Free;
