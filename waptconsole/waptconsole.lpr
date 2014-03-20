@@ -10,7 +10,7 @@ uses
   Forms,
   pl_virtualtrees, uwaptconsole, uVisCreateKey,
   waptcommon, dmwaptpython, uVisEditPackage,
-  uvisoptioninifile, uviscreatewaptsetup, uvislogin, uvisprivatekeyauth,
+  uviscreatewaptsetup, uvislogin, uvisprivatekeyauth,
   uvisloading, uviswaptconfig, uvischangepassword, uviswaptdeploy, 
 uvishostsupgrade;
 

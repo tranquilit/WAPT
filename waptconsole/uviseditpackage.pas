@@ -472,11 +472,11 @@ begin
   ActEditSavePackage.Execute;
   if not FileExists(GetWaptPrivateKey) then
   begin
-    ShowMessage('La clé privé n''existe pas: ' + GetWaptPrivateKey);
+    ShowMessage('La clé privée n''existe pas: ' + GetWaptPrivateKey);
     exit;
   end;
   isEncrypt := StrToBool(DMPython.RunJSON(
-    format('waptdevutils.is_encrypt_private_key(r"%s".decode(''utf8''))', [GetWaptPrivateKey])).AsString);
+    format('common.private_key_has_password(r"%s".decode(''utf8''))', [GetWaptPrivateKey])).AsString);
   if (privateKeyPassword = '') and (isEncrypt) then
   begin
     with TvisPrivateKeyAuth.Create(Self) do
@@ -487,7 +487,7 @@ begin
           begin
             privateKeyPassword := edPasswordKey.Text;
             if StrToBool(DMPython.RunJSON(
-              format('waptdevutils.is_match_password(r"%s","%s")',
+              format('waptdevutils.check_key_password(r"%s","%s")',
               [GetWaptPrivateKey, privateKeyPassword])).AsString) then
               done := True;
           end

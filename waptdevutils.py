@@ -20,6 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
+__version__ = "0.8.14"
 
 import common
 import json
@@ -28,8 +29,6 @@ from waptpackage import *
 import active_directory
 import codecs
 from iniparse import RawConfigParser
-
-__version__ = "0.8.12"
 
 
 create_self_signed_key = common.create_self_signed_key

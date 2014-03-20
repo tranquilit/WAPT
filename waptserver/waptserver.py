@@ -20,6 +20,8 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
+__version__="0.8.14"
+
 import os,sys
 wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
 sys.path.append(os.path.join(wapt_root_dir))
@@ -55,7 +57,6 @@ from rocket import Rocket
 
 from waptpackage import update_packages,PackageEntry
 
-__version__="0.8.12"
 
 config = ConfigParser.RawConfigParser()
 

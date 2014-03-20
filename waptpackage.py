@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.13"
+__version__ = "0.8.14"
 
 import os
 import zipfile
@@ -318,7 +318,7 @@ sources      : %(sources)s
     def make_package_filename(self):
         """Return the standard package filename based on current attributes"""
         if not self.section in ['host','group'] and not (self.package and self.version and self.architecture):
-            raise Exception(u'Not enough information to build the package filename')
+            raise Exception(u'Not enough information to build the package filename for %s (%s)'%(self.package,self.version))
         if self.section in ['host','group']:
             return self.package+'.wapt'
         else:
@@ -449,8 +449,10 @@ class WaptLocalRepo(object):
                         processed.append(fname)
                 else:
                     logger.info(u"  Processing %s" % fname)
+                    entry.load_control_from_wapt(fname)
                     processed.append(fname)
                 packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
+                print entry.ascontrol(with_non_control_attributes=True)
             except Exception,e:
                 print e
                 logger.critical("package %s: %s" % (fname,e))

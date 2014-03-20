@@ -49,18 +49,19 @@ begin
   begin
     st := TStringList.Create;
     try
-      st.Append('from common import *');
-      st.Append('from setuphelpers import *');
       st.Append('import logging');
       st.Append('import requests');
       st.Append('import json');
       st.Append('import os');
+      st.Append('import common');
       st.Append('import waptdevutils');
+      st.Append('import setuphelpers');
+      st.Append('from common import jsondump');
+      st.Append('logger = logging.getLogger()');
       st.Append('logging.basicConfig(level=logging.WARNING)');
-      st.Append(format('mywapt = Wapt(config_filename=r"%s".decode(''utf8''),disable_update_server_status=True)',[AValue]));
+      st.Append(format('mywapt = common.Wapt(config_filename=r"%s".decode(''utf8''),disable_update_server_status=True)',[AValue]));
       st.Append('mywapt.dbpath=r":memory:"');
       st.Append('mywapt.update(register=False)');
-
       PythonEng.ExecStrings(St);
       WAPT:=MainModule.mywapt;
     finally
