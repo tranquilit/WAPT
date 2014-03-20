@@ -487,7 +487,7 @@ begin
           begin
             privateKeyPassword := edPasswordKey.Text;
             if StrToBool(DMPython.RunJSON(
-              format('waptdevutils.check_key_password(r"%s","%s")',
+              format('common.check_key_password(r"%s","%s")',
               [GetWaptPrivateKey, privateKeyPassword])).AsString) then
               done := True;
           end
