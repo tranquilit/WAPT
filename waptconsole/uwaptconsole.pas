@@ -459,6 +459,7 @@ var
   i: integer = 0;
   selects: integer;
   N: PVirtualNode;
+  res : ISuperObject;
 begin
   N := Grid.GetFirstSelected;
   selects := Grid.SelectedCount;
@@ -475,7 +476,8 @@ begin
           ' en cours ...');
         ProgressStep(trunc((i / selects) * 100), 100);
         i := i + 1;
-        DMPython.RunJSON(format('mywapt.install("%s")', [package]), jsonlog);
+         //DMPython.RunJSON(format('mywapt.install("%s")', [package]), jsonlog);
+        res := WAPTLocalJsonGet(format('install?package=%s',[package]));
         N := Grid.GetNextSelected(N);
       end;
     finally
@@ -557,7 +559,7 @@ begin
         if depends <> '' then
         begin
           dependsList := DMPython.RunJSON(
-            format('waptdevutils.searchLastPackageTisRepo(r"%s".decode(''utf8''),"%s")',
+            format('waptdevutils.get_packages_filenames(r"%s".decode(''utf8''),"%s")',
             [AppIniFilename, depends]));
           for i := 0 to dependsList.AsArray.Length - 1 do
           begin
@@ -588,7 +590,7 @@ begin
             exit;
           end;
           isEncrypt := StrToBool(DMPython.RunJSON(
-            format('waptdevutils.is_encrypt_private_key(r"%s")',
+            format('common.private_key_has_password(r"%s")',
             [GetWaptPrivateKey])).AsString);
           if (privateKeyPassword = '') and (isEncrypt) then
           begin
@@ -689,12 +691,15 @@ end;
 procedure TVisWaptGUI.ActPackageEdit(Sender: TObject);
 var
   Selpackage: string;
+  res : ISUperObject;
 begin
   if GridPackages.FocusedNode<>Nil then
   begin
-    Selpackage := GridPackages.GetCellStrValue(GridPackages.FocusedNode, 'package');
-    if EditPackage(Selpackage, ActAdvancedMode.Checked) <> nil then
-      ActPackagesUpdate.Execute;
+    Selpackage := format('%s(=%s)',[GridPackages.GetCellStrValue(GridPackages.FocusedNode, 'package'),GridPackages.GetCellStrValue(GridPackages.FocusedNode, 'version')]);
+    res := DMPython.RunJSON( format('mywapt.edit_package("%s")',[SelPackage]));
+    DMPython.RunJSON( format('waptdevutils.wapt_sources_edit(r"%s")',[res.S['target']]));
+    //if EditPackage(Selpackage, ActAdvancedMode.Checked) <> nil then
+    //  ActPackagesUpdate.Execute;
   end;
 end;
 
@@ -1394,7 +1399,7 @@ var
   expr, res: UTF8String;
   packages: ISuperObject;
 begin
-  expr := format('waptdevutils.updateTisRepo(r"%s","%s")',
+  expr := format('waptdevutils.update_tis_repo(r"%s","%s")',
     [AppIniFilename, EdSearch1.Text]);
   packages := DMPython.RunJSON(expr);
   GridExternalPackages.Data := packages;

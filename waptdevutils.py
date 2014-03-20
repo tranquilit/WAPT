@@ -25,7 +25,7 @@ import common
 import json
 from setuphelpers import *
 from waptpackage import *
-#import active_directory
+import active_directory
 import codecs
 from iniparse import RawConfigParser
 
@@ -38,8 +38,11 @@ is_match_password = common.check_key_password
 
 def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wapt_server='',destination='',company=''):
     """Build a customized waptsetup.exe with included provided certificate
-    Returns filename"""
-    print default_public_cert
+    Returns filename
+    ;>>> from common import Wapt
+    ;>>> wapt = Wapt(config_filename=r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini')
+    ;>>> create_wapt_setup(wapt,r'C:\private\ht.crt')
+    """
     if not company:
         company = registered_organization()
     outputfile = ''
@@ -79,21 +82,26 @@ def upload_wapt_setup(wapt,waptsetup_path, wapt_server_user, wapt_server_passwd)
     return req.content
 
 def diff_computer_ad_wapt(wapt):
-    """Return the computer in the Active Directory but not in Wapt Serveur """
-    computer_ad =  set([ c['dnshostname'] for c in  list(active_directory.search("objectClass='computer'"))])
-    computer_wapt = set( [ c['name'] for c in json.loads(requests.request('GET','%s/json/host_list'%wapt.wapt_server).content)])
+    """Return the computer in the Active Directory but not in Wapt Serveur
+    >>> wapt = common.Wapt(config_filename=r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
+    >>> diff_computer_ad_wapt(wapt)
+    """
+    computer_ad =  set([ c['dnshostname'].lower() for c in active_directory.search("objectClass='computer'") if c['dnshostname']])
+    computer_wapt = set( [ c['host']['computer_fqdn'].lower() for c in json.loads(requests.request('GET','%s/json/host_list'%wapt.wapt_server).text)])
     diff = list(set(computer_ad)-set(computer_wapt))
     return diff
 
-
 def diff_computer_wapt_ad(wapt):
-    """Return the computer in Wapt Serveur but not in the Active Directory"""
-    computer_ad =  set([ c['dnshostname'] for c in  list(active_directory.search("objectClass='computer'"))])
-    computer_wapt = set( [ c['name'] for c in json.loads(requests.request('GET','%s/json/host_list'%wapt.wapt_server).content)])
+    """Return the computer in Wapt Serveur but not in the Active Directory
+    >>> wapt = common.Wapt(config_filename=r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
+    >>> diff_computer_wapt_ad(wapt)
+    """
+    computer_ad =  set([ c['dnshostname'].lower() for c in active_directory.search("objectClass='computer'") if c['dnshostname']])
+    computer_wapt = set( [ c['host']['computer_fqdn'].lower() for c in json.loads(requests.request('GET','%s/json/host_list'%wapt.wapt_server).text)])
     result = list(set(computer_wapt)-set(computer_ad))
     return result
 
-def search_bad_waptseup(wapt,wapt_version):
+def search_bad_waptsetup(wapt,wapt_version):
     """Return list of computers in the Wapt Server who have not the version of Wapt specified"""
     hosts =  json.loads(requests.request('GET','%s/json/host_data'%wapt.wapt_server).content)
     result = dict()
@@ -103,19 +111,13 @@ def search_bad_waptseup(wapt,wapt_version):
             result[i['name']] = wapt[0]['version']
     return result
 
-def add_remove_option_inifile(wapt,choice,section,option,value):
-    wapt_get_ini = RawConfigParser()
-    waptini_fn = makepath(wapt.wapt_base_dir,'wapt-get.ini')
-    wapt_get_ini.read(waptini_fn)
-    if choice == True:
-        wapt_get_ini.set(section,option,value)
-    elif choice == False:
-        wapt_get_ini.remove_option(section,option)
-    with open(waptini_fn, 'w') as configfile:
-        wapt_get_ini.write(configfile)
-
-def updateTisRepo(wapt,search_string):
-    wapt = common.Wapt(config_filename=wapt,disable_update_server_status=True)
+def update_tis_repo(waptconfigfile,search_string):
+    """Get a list of entries from TIS public repository matching search_string
+    >>> firefox = update_tis_repo(r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini","tis-firefox-esr")[-1]
+    >>> isinstance(firefox,list) and firefox
+    True
+    """
+    wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
     repo = wapt.config.get('global','templates_repo_url')
     wapt.repositories[0].repo_url = repo if repo else 'http://wapt.tranquil.it/wapt'
     wapt.proxies =  {'http':wapt.config.get('global','http_proxy')}
@@ -123,22 +125,29 @@ def updateTisRepo(wapt,search_string):
     wapt.update(register=False)
     return wapt.search(search_string)
 
-def searchLastPackageTisRepo(wapt,search_strings):
-    from operator import attrgetter
+def get_packages_filenames(waptconfigfile,packages_names):
+    """Returns list of package filenames (latest version) matching comma seperated list of packages names)
+    >>> get_packages_filenames(r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini","tis-firefox-esr,tis-flash")
+    """
     result = []
-    wapt = common.Wapt(config_filename=wapt,disable_update_server_status=True)
+    wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
     repo = wapt.config.get('global','templates_repo_url')
     wapt.repositories[0].repo_url = repo if repo else 'http://wapt.tranquil.it/wapt'
     wapt.proxies =  {'http':wapt.config.get('global','http_proxy')}
     wapt.dbpath = r':memory:'
     wapt.update(register=False)
-    for search_string in search_strings.split(','):
-        result.append(max(wapt.search(search_string),key=attrgetter('version')).filename)
+    for name in packages_names.split(','):
+        entries = wapt.is_available(name)
+        if entries:
+            result.append(entries[-1].filename)
     return result
 
-def duplicate_from_tis_repo(wapt,file_name,depends=[]):
+def duplicate_from_tis_repo(waptconfigfile,file_name,depends=[]):
+    """Duplicate a package from  to supplied wapt repository
+    >>> duplicate_from_tis_repo(r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini','tis-firefox')
+    """
     import tempfile
-    wapt = common.Wapt(config_filename=wapt,disable_update_server_status=True)
+    wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
     prefix = wapt.config.get('global','default_package_prefix')
     wapt.proxies =  {'http':wapt.config.get('global','http_proxy')}
     if not prefix:
@@ -168,6 +177,19 @@ def duplicate_from_tis_repo(wapt,file_name,depends=[]):
 
     return source_dir
 
+def wapt_sources_edit(wapt_sources_dir):
+    psproj_filename = os.path.join(wapt_sources_dir,'WAPT','wapt.psproj')
+    control_filename = os.path.join(wapt_sources_dir,'WAPT','control')
+    setup_filename = os.path.join(wapt_sources_dir,'setup.py')
+    pyscripter_filename = os.path.join(programfiles32,'PyScripter','PyScripter.exe')
+    if os.path.isfile(pyscripter_filename) and os.path.isfile(psproj_filename):
+        import psutil
+        p = psutil.Popen('"%s" --newinstance --project "%s" "%s" "%s"' % (pyscripter_filename,psproj_filename,setup_filename,control_filename),
+            cwd = os.path.join(programfiles32,'PyScripter'))
+    else:
+        os.startfile(wapt_sources_dir)
+
+
 def login_to_waptserver(url, login, passwd,newPass=""):
     try:
         data = {"username":login, "password": passwd}
@@ -179,4 +201,12 @@ def login_to_waptserver(url, login, passwd,newPass=""):
         return unicode(str(e.message), 'ISO-8859-1')
 
 if __name__ == '__main__':
-    searchLastPackageTisRepo(r'C:\Users\Administrateur\AppData\Local\waptconsole\waptconsole.ini','')
+    import doctest
+    import sys
+    reload(sys)
+    sys.setdefaultencoding("UTF-8")
+    import doctest
+    doctest.testmod()
+    sys.exit(0)
+
+    #searchLastPackageTisRepo(r'C:\Users\Administrateur\AppData\Local\waptconsole\waptconsole.ini','')

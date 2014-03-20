@@ -21,8 +21,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="8"/>
-      <RevisionNr Value="13"/>
-      <BuildNr Value="1"/>
+      <RevisionNr Value="14"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -68,10 +67,13 @@
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="832"/>
-        <CursorPos X="53" Y="836"/>
+        <TopLine Value="96"/>
+        <CursorPos X="67" Y="99"/>
         <UsageCount Value="207"/>
+        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\indy\IdDNSResolver.pas"/>
@@ -343,7 +345,6 @@
       <Unit36>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
         <UnitName Value="tiscommon"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="21"/>
@@ -394,7 +395,7 @@
         <UsageCount Value="10"/>
       </Unit41>
     </Units>
-    <JumpHistory Count="29" HistoryIndex="28">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
         <Caret Line="27" Column="6" TopLine="21"/>
@@ -511,6 +512,10 @@
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
         <Caret Line="1501" Column="27" TopLine="1489"/>
       </Position29>
+      <Position30>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="836" Column="53" TopLine="812"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

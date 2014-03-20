@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.13"
+__version__ = "0.8.14"
 
 import time
 import sys
@@ -56,6 +56,8 @@ import dateutil.parser
 
 import winsys.security
 import winsys.accounts
+
+import psutil
 
 try:
     wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
@@ -103,6 +105,10 @@ class WaptServiceConfig(object):
     >>> waptconfig = WaptServiceConfig('c:/wapt/wapt-get.ini')
     >>> waptconfig.load()
     """
+
+    global_attributes = ['config_filename','wapt_user','wapt_password','MAX_HISTORY','waptservice_port',
+         'dbpath','loglevel','log_directory','wapt_server','authorized_callers_ip']
+
     def __init__(self,config_filename=None):
         if not config_filename:
             self.config_filename = os.path.join(wapt_root_dir,'wapt-get.ini')
@@ -169,8 +175,14 @@ class WaptServiceConfig(object):
         else:
             raise Exception ("FATAL, configuration file " + self.config_filename + " has no section [global]. Please check Waptserver documentation")
 
-        def __str__(self):
-            return ""
+    def as_dict(self):
+        result = {}
+        for att in self.global_attributes:
+            result[att] = getattr(self,att)
+        return result
+
+    def __str__(self):
+        return u"{}".format(self.as_dict(),)
 
 def format_isodate(isodate):
     """Pretty format iso date like : 2014-01-21T17:36:15.652000
@@ -446,6 +458,17 @@ def waptclientupgrade():
         return Response(common.jsondump(data), mimetype='application/json')
     else:
         return render_template('default.html',data=data,title='Upgrade')
+
+@app.route('/reload_config')
+@app.route('/reload_config.json')
+@check_ip_source
+def reload_config():
+    """trigger reload of wapt-get.ini file for the service"""
+    data = task_manager.add_task(WaptNetworkReconfig()).as_dict()
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('default.html',data=data,title='Recharger configuration')
 
 @app.route('/upgrade')
 @app.route('/upgrade.json')
@@ -779,6 +802,8 @@ class WaptTask(object):
         try:
             if self.wapt:
                 self.wapt.task_is_cancelled.clear()
+            # to keep track of external processes launched by Wapt.run()
+            self.wapt.pidlist = self.external_pids
             self._run()
         finally:
             self.finish_date = datetime.datetime.now()
@@ -788,12 +813,15 @@ class WaptTask(object):
         if self.external_pids:
             for pid in self.external_pids:
                 logger.debug('Killing process with pid {}'.format(pid))
+                p = psutil.Process(pid)
+                p.kill()
+            del(self.external_pids[:])
         if self.wapt:
             self.wapt.task_is_cancelled.set()
 
     def run_external(self,*args,**kwargs):
         """Run an external process, register pid in current task to be able to kill it"""
-        result = setuphelpers.run(*args,**kwargs)
+        result = setuphelpers.run(*args,pidlist=self.external_pids,**kwargs)
 
     def __str__(self):
         return u"{classname} {order} created {create_date} started:{start_date} finished:{finish_date} ".format(**self.as_dict())
@@ -811,6 +839,7 @@ class WaptTask(object):
             summary = self.summary,
             progress = self.progress,
             description = u"{}".format(self),
+            pidlist = u"{}".format(self.external_pids),
             )
 
     def as_json(self):
@@ -836,6 +865,7 @@ class WaptNetworkReconfig(WaptTask):
         self.wapt.network_reconfigure()
         logger.info('Reloading confg file')
         waptconfig.load()
+        self.result = waptconfig.as_dict()
 
     def __str__(self):
         return u"Reconfiguration accès réseau"
@@ -1046,7 +1076,7 @@ class WaptPackageInstall(WaptTask):
     def _run(self):
         self.result = self.wapt.install(self.packagename,force = self.force)
         if self.result['errors']:
-            raise Exception('Error during install of {}'.format(self.result['errors']))
+            raise Exception('Error during install of {}:{}'.format(self.packagename,self.result))
 
     def as_dict(self):
         d = WaptTask.as_dict(self)

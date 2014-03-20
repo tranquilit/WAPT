@@ -17,9 +17,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 553
     Top = 0
     Width = 1072
-    ActivePage = pgInventory
+    ActivePage = pgPrivateRepo
     Align = alClient
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -1546,6 +1546,7 @@ object VisWaptGUI: TVisWaptGUI
           'import sys'
           'import os'
           'import logging'
+          'import common'
           'from common import jsondump'
           'from common import Wapt'
           ''

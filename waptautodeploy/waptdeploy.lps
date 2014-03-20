@@ -4,16 +4,16 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="16">
+    <Units Count="18">
       <Unit0>
         <Filename Value="waptdeploy.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="480"/>
-        <CursorPos X="10" Y="481"/>
-        <UsageCount Value="37"/>
+        <TopLine Value="1"/>
+        <CursorPos X="69" Y="6"/>
+        <UsageCount Value="38"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
@@ -127,123 +127,147 @@
         <CursorPos X="3" Y="401"/>
         <UsageCount Value="10"/>
       </Unit15>
+      <Unit16>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwamsi.pas"/>
+        <UnitName Value="JwaMsi"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="659"/>
+        <CursorPos X="1" Y="659"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwawinbase.pas"/>
+        <UnitName Value="JwaWinBase"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit17>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="28" HistoryIndex="27">
+    <JumpHistory Count="29" HistoryIndex="28">
       <Position1>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="642" Column="50" TopLine="625"/>
+        <Caret Line="27" Column="16" TopLine="1"/>
       </Position1>
       <Position2>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="398" Column="32" TopLine="382"/>
+        <Caret Line="31" Column="33" TopLine="3"/>
       </Position2>
       <Position3>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="399" Column="71" TopLine="383"/>
+        <Caret Line="61" Column="61" TopLine="54"/>
       </Position3>
       <Position4>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="401" Column="58" TopLine="382"/>
+        <Caret Line="64" Column="32" TopLine="60"/>
       </Position4>
       <Position5>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="170" Column="1" TopLine="138"/>
+        <Caret Line="177" Column="15" TopLine="153"/>
       </Position5>
       <Position6>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="539" Column="18" TopLine="521"/>
+        <Caret Line="173" Column="10" TopLine="159"/>
       </Position6>
       <Position7>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="329" Column="16" TopLine="311"/>
+        <Caret Line="174" Column="10" TopLine="159"/>
       </Position7>
       <Position8>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="446" Column="20" TopLine="439"/>
+        <Caret Line="185" Column="33" TopLine="159"/>
       </Position8>
       <Position9>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="131" Column="18" TopLine="109"/>
+        <Caret Line="285" Column="22" TopLine="255"/>
       </Position9>
       <Position10>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="305" Column="21" TopLine="277"/>
       </Position10>
       <Position11>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="27" Column="16" TopLine="1"/>
+        <Caret Line="335" Column="36" TopLine="325"/>
       </Position11>
       <Position12>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="31" Column="33" TopLine="3"/>
+        <Caret Line="370" Column="36" TopLine="340"/>
       </Position12>
       <Position13>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="61" Column="61" TopLine="54"/>
+        <Caret Line="376" Column="99" TopLine="348"/>
       </Position13>
       <Position14>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="64" Column="32" TopLine="60"/>
+        <Caret Line="379" Column="64" TopLine="352"/>
       </Position14>
       <Position15>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="177" Column="15" TopLine="153"/>
+        <Caret Line="713" Column="1" TopLine="683"/>
       </Position15>
       <Position16>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="173" Column="10" TopLine="159"/>
+        <Caret Line="693" Column="68" TopLine="676"/>
       </Position16>
       <Position17>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="174" Column="10" TopLine="159"/>
+        <Caret Line="689" Column="15" TopLine="672"/>
       </Position17>
       <Position18>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="185" Column="33" TopLine="159"/>
+        <Caret Line="489" Column="43" TopLine="480"/>
       </Position18>
       <Position19>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="285" Column="22" TopLine="255"/>
+        <Caret Line="684" Column="25" TopLine="675"/>
       </Position19>
       <Position20>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="305" Column="21" TopLine="277"/>
+        <Caret Line="679" Column="15" TopLine="665"/>
       </Position20>
       <Position21>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="335" Column="36" TopLine="325"/>
+        <Caret Line="682" Column="14" TopLine="665"/>
       </Position21>
       <Position22>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="370" Column="36" TopLine="340"/>
+        <Caret Line="701" Column="13" TopLine="675"/>
       </Position22>
       <Position23>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="376" Column="99" TopLine="348"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position23>
       <Position24>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="379" Column="64" TopLine="352"/>
+        <Caret Line="701" Column="27" TopLine="678"/>
       </Position24>
       <Position25>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="713" Column="1" TopLine="683"/>
+        <Caret Line="756" Column="19" TopLine="733"/>
       </Position25>
       <Position26>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="693" Column="68" TopLine="676"/>
+        <Caret Line="447" Column="27" TopLine="382"/>
       </Position26>
       <Position27>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="689" Column="15" TopLine="672"/>
+        <Caret Line="4" Column="20" TopLine="1"/>
       </Position27>
       <Position28>
         <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="719" Column="63" TopLine="728"/>
+        <Caret Line="701" Column="26" TopLine="675"/>
       </Position28>
+      <Position29>
+        <Filename Value="waptdeploy.lpr"/>
+        <Caret Line="4" Column="71" TopLine="1"/>
+      </Position29>
     </JumpHistory>
   </ProjectSession>
   <EditorMacros Count="0"/>

@@ -17,7 +17,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="4"/>
-      <RevisionNr Value="5"/>
+      <RevisionNr Value="6"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -62,7 +62,7 @@
         <PackageName Value="LCL"/>
       </Item9>
     </RequiredPackages>
-    <Units Count="17">
+    <Units Count="16">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -138,61 +138,53 @@
         <UnitName Value="uvisloading"/>
       </Unit9>
       <Unit10>
-        <Filename Value="uvisoptioninifile.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="VisOptionIniFile"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uvisOptionIniFile"/>
-      </Unit10>
-      <Unit11>
         <Filename Value="uviswaptconfig.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisWAPTConfig"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviswaptconfig"/>
-      </Unit11>
-      <Unit12>
+      </Unit10>
+      <Unit11>
         <Filename Value="uvischangepassword.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisChangePassword"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvischangepassword"/>
-      </Unit12>
-      <Unit13>
+      </Unit11>
+      <Unit12>
         <Filename Value="uvisgroupchoice.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="visGroupChoice"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvisgroupchoice"/>
-      </Unit13>
-      <Unit14>
+      </Unit12>
+      <Unit13>
         <Filename Value="uviseditgroup.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisEditGroup"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviseditgroup"/>
-      </Unit14>
-      <Unit15>
+      </Unit13>
+      <Unit14>
         <Filename Value="uviswaptdeploy.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="viswaptdeploy"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviswaptdeploy"/>
-      </Unit15>
-      <Unit16>
+      </Unit14>
+      <Unit15>
         <Filename Value="uvishostsupgrade.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisHostsUpgrade"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvishostsupgrade"/>
-      </Unit16>
+      </Unit15>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

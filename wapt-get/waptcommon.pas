@@ -24,7 +24,7 @@ unit waptcommon;
 {$mode objfpc}{$H+}
 interface
   uses
-     Classes, SysUtils,
+     Classes, SysUtils, Windows,
      DB,sqldb,sqlite3conn,SuperObject,syncobjs;
 
   const
@@ -61,7 +61,9 @@ interface
 
   function WAPTServerJsonGet(action: String;args:Array of const; enableProxy:Boolean= False;user:AnsiString='';password:AnsiString=''): ISuperObject;
   function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject; enableProxy:Boolean= False;user:AnsiString='';password:AnsiString=''): ISuperObject;
-  function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString=''):ISuperObject;
+  function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString='';timeout:integer=1000):ISuperObject;
+
+  function RunAsAdmin(const Handle: Hwnd; aFile : Ansistring; Params: Ansistring): Boolean;
 
 Type
   TFormatHook = Function(Dataset:TDataset;Data,FN:Utf8String):UTF8String of object;
@@ -96,9 +98,27 @@ var
 
 implementation
 
-uses FileUtil,soutils,tiscommon,Windows,Variants,winsock,IdDNSResolver,IdExceptionCore,JwaIpHlpApi,JwaIpTypes,
+uses FileUtil,soutils,tiscommon,Variants,winsock,ShellApi,IdDNSResolver,IdExceptionCore,JwaIpHlpApi,JwaIpTypes,
     NetworkAdapterInfo,tisinifiles,registry,tisstrings;
 
+
+function RunAsAdmin(const Handle: Hwnd; aFile : Ansistring; Params: Ansistring): Boolean;
+var
+  sei:  TSHELLEXECUTEINFO;
+begin
+  FillChar(sei, SizeOf(sei), 0);
+  With sei do begin
+     cbSize := SizeOf(sei);
+     Wnd := Handle;
+     //fMask := SEE_MASK_FLAG_DDEWAIT or SEE_MASK_FLAG_NO_UI;
+     fMask := SEE_MASK_FLAG_DDEWAIT;
+     lpVerb := 'runAs';
+     lpFile := PAnsiChar(aFile);
+     lpParameters := PAnsiChar(Params);
+     nShow := SW_SHOWNORMAL;
+  end;
+  Result := ShellExecuteExA(@sei);
+end;
 
 Function GetDNSServers:TDynStringArray;
 var
@@ -195,13 +215,13 @@ begin
   result := SO(res);
 end;
 
-function WAPTLocalJsonGet(action: String;user:AnsiString='';password:AnsiString=''): ISuperObject;
+function WAPTLocalJsonGet(action: String;user:AnsiString='';password:AnsiString='';timeout:integer=1000): ISuperObject;
 var
   strresult : String;
 begin
   if StrLeft(action,1)<>'/' then
     action := '/'+action;
-  strresult := httpGetString(GetWaptLocalURL+action,False,4000,60000,60000,user,password);
+  strresult := httpGetString(GetWaptLocalURL+action,False,timeout,60000,60000,user,password);
   Result := SO(strresult);
 end;
 

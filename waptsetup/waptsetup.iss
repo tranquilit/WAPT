@@ -1,6 +1,6 @@
 #define waptsetup 
-#define default_repo_url "http://wapt/wapt"
-#define default_wapt_server "http://wapt:8080"
+#define default_repo_url ""
+#define default_wapt_server ""
 #define default_update_period "120"
 #define default_update_maxruntime "30"
 #define AppName "WAPT"
@@ -144,4 +144,3 @@ begin
     else
       result := teWaptServerUrl.Text;
 end;
-

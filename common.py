@@ -374,9 +374,6 @@ def ssl_verify_content(content,signature,public_certs):
             return crt.get_subject().as_text()
     raise Exception('SSL signature verification failed, either none public certificates match signature or signed content has been changed')
 
-def registered_organization():
-    return registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOrganization')
-
 def private_key_has_password(key):
     def callback(*args):
         return ""
@@ -1585,11 +1582,12 @@ class WaptDB(WaptBaseDB):
         >>> waptdb = WaptDB(':memory:')
         >>> office = PackageEntry('office','0')
         >>> firefox22 = PackageEntry('firefox','22')
+        >>> firefox22.depends = 'mymissing,flash'
         >>> firefox24 = PackageEntry('firefox','24')
         >>> thunderbird = PackageEntry('thunderbird','23')
         >>> flash10 = PackageEntry('flash','10')
         >>> flash12 = PackageEntry('flash','12')
-        >>> office.depends='firefox(<24),thunderbird'
+        >>> office.depends='firefox(<24),thunderbird,mymissing'
         >>> firefox22.depends='flash(>=10)'
         >>> firefox24.depends='flash(>=12)'
         >>> waptdb.add_package_entry(office)
@@ -1599,7 +1597,7 @@ class WaptDB(WaptBaseDB):
         >>> waptdb.add_package_entry(flash12)
         >>> waptdb.add_package_entry(thunderbird)
         >>> waptdb.build_depends('office')
-        [u'flash(>=10)', u'firefox(<24)', u'thunderbird']
+        ([u'flash(>=10)', u'firefox(<24)', u'thunderbird'], [u'mymissing'])
         """
         if not isinstance(packages,list) and not isinstance(packages,tuple):
             packages = [packages]
@@ -1616,13 +1614,19 @@ class WaptDB(WaptBaseDB):
                 if not package in explored:
                     entries = self.packages_matching(package)
                     if not entries:
-                        missing.append([package,None])
+                        missing.append(package)
                     else:
                         # get depends of the most recent matching entry
                         # TODO : use another older if this can limit the number of packages to install !
                         depends = [s.strip() for s in entries[-1].depends.split(',') if s.strip()<>'']
+                        available_depends = []
                         for d in depends:
-                            alldepends.extend(dodepends(explored,depends,depth+1,missing))
+                            if self.packages_matching(d):
+                                available_depends.append(d)
+                            else:
+                                missing.append(d)
+                        alldepends.extend(dodepends(explored,available_depends,depth+1,missing))
+                        for d in available_depends:
                             if not d in alldepends:
                                 alldepends.append(d)
                     explored.append(package)
@@ -2633,7 +2637,11 @@ class Wapt(object):
 
             # be sure some minimal functions are available in setup module at install step
             setattr(setup,'basedir',os.path.dirname(setup_filename))
-            setattr(setup,'run',setuphelpers.run)
+            # redefine run to add reference to wapt.pidlist
+            self.pidlist = []
+            def run(*arg,**args):
+                setuphelpers.run(*arg,pidlist=self.pidlist,**args)
+            setattr(setup,'run',run)
             setattr(setup,'run_notfatal',setuphelpers.run_notfatal)
             setattr(setup,'WAPT',self)
             setattr(setup,'control',entry)

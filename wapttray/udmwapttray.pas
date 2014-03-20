@@ -20,6 +20,7 @@ type
     ActForceRegister: TAction;
     ActCancelAllTasks: TAction;
     ActCancelRunningTask: TAction;
+    ActReloadConfig: TAction;
     ActShowTasks: TAction;
     ActSessionSetup: TAction;
     ActLocalInfo: TAction;
@@ -40,6 +41,8 @@ type
     MenuItem17: TMenuItem;
     MenuItem18: TMenuItem;
     MenuItem19: TMenuItem;
+    MenuItem20: TMenuItem;
+    MenuItem21: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem11: TMenuItem;
     MenuItem7: TMenuItem;
@@ -62,6 +65,7 @@ type
     procedure ActLaunchWaptConsoleExecute(Sender: TObject);
     procedure ActLocalInfoExecute(Sender: TObject);
     procedure ActQuitExecute(Sender: TObject);
+    procedure ActReloadConfigExecute(Sender: TObject);
     procedure ActSessionSetupExecute(Sender: TObject);
     procedure ActShowStatusExecute(Sender: TObject);
     procedure ActShowTasksExecute(Sender: TObject);
@@ -238,7 +242,8 @@ end;
 
 procedure TDMWaptTray.ActConfigureExecute(Sender: TObject);
 begin
-  OpenDocument(WaptIniFilename);
+  //OpenDocument(WaptIniFilename);
+  RunAsAdmin(0,'cmd.exe','/C start '+WaptIniFilename);
 end;
 
 procedure TDMWaptTray.ActCancelAllTasksExecute(Sender: TObject);
@@ -423,6 +428,14 @@ begin
   if Assigned(check_thread) then
     check_thread.Terminate;
   Application.Terminate;
+end;
+
+procedure TDMWaptTray.ActReloadConfigExecute(Sender: TObject);
+var
+  res:ISuperObject;
+begin
+  res := WAPTLocalJsonGet('reload_config.json');
+
 end;
 
 procedure TDMWaptTray.ActSessionSetupExecute(Sender: TObject);

@@ -81,6 +81,12 @@ object DMWaptTray: TDMWaptTray
       object MenuItem13: TMenuItem
         Action = ActConfigure
       end
+      object MenuItem20: TMenuItem
+        Action = ActReloadConfig
+      end
+      object MenuItem21: TMenuItem
+        Caption = '-'
+      end
       object MenuItem3: TMenuItem
         Action = ActWaptUpgrade
       end
@@ -179,6 +185,10 @@ object DMWaptTray: TDMWaptTray
     object ActCancelRunningTask: TAction
       Caption = 'Annuler la tâche en cours'
       OnExecute = ActCancelRunningTaskExecute
+    end
+    object ActReloadConfig: TAction
+      Caption = 'Recharger la configuration du service'
+      OnExecute = ActReloadConfigExecute
     end
   end
   object TrayUpdate: TImageList

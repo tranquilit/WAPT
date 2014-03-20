@@ -1,7 +1,7 @@
 program waptdeploy;
 {$delphiunicode}
 
-uses classes,windows,SysUtils,wininet,URIParser,superobject;
+uses classes,windows,SysUtils,wininet,URIParser,superobject,shellapi;
 
 function GetComputerName : AnsiString;
 var
@@ -672,6 +672,33 @@ begin
   end;
   result:=SO(httpPostData('waptdeploy','http://wapt:8080/add_host',
           data.AsJSon));
+end;
+
+function killtask(exename:AnsiString):AnsiString;
+var
+    Res :AnsiString;
+begin
+  if GetDosOutput('taskkill /F /IM '+exename+ ' /T','',res) then
+    Result := res
+  else
+    Res:= '';
+end;
+
+function RunAsAdmin(const Handle: Hwnd; aFile : Ansistring; Params: Ansistring): Boolean;
+var
+  sei:  TSHELLEXECUTEINFO;
+begin
+  FillChar(sei, SizeOf(sei), 0);
+  With sei do begin
+     cbSize := SizeOf(sei);
+     Wnd := Handle;
+     fMask := SEE_MASK_FLAG_DDEWAIT or SEE_MASK_FLAG_NO_UI;
+     lpVerb := 'runAs';
+     lpFile := PAnsiChar(aFile);
+     lpParameters := PAnsiChar(Params);
+     nShow := SW_SHOWNORMAL;
+  end;
+  Result := ShellExecuteExA(@sei);
 end;
 
 var

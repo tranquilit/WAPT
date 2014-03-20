@@ -185,28 +185,31 @@ def wgets(url,proxies=None):
     else:
         r.raise_for_status()
 
-last_time_display = 0
-last_downloaded = 0
-
-def wget(url,target,reporthook=None,printhook=None,proxies=None):
+def wget(url,target,printhook=None,proxies=None):
     """Copy the contents of a file from a given URL
     to a local file.
+    >>> def printhook(received,total,speed,url):
+    ...    print("received:%i,total:%i,speed:%i,url:%s"%(received,total,speed,url))
+    >>> wget('http://wapt.tranquil.it/wapt/tis-firefox_28.0.0-1_all.wapt','c:/tmp/test.wapt',printhook=printhook)
     """
+    start_time = time.time()
+    last_time_display = 0.0
+    last_downloaded = 0
 
-    def report(bcount,bsize,total):
-        global last_time_display
-        global last_downloaded
-        if total>1 and bsize>1:
+    def reporthook(received,total):
+        if total>1 and received>1:
             # print only every second or at end
-            if (time.time()-last_time_display>=1) or (bcount*bsize>=total) :
-                received = bcount*bsize
-                speed = (bcount * bsize - last_downloaded) /(1024*(time.time()-last_time_display))
+            if (time.time()-start_time>=1) or (received>=total):
+                speed = received /(1024.0 * (time.time()-start_time))
                 if printhook:
                     printhook(received,total,speed,url)
                 else:
-                    print u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total,speed ),
-                last_time_display = time.time()
-                last_downloaded = bcount * bsize
+                    if received == 0:
+                        print u"Downloading %s (%.1f Mb)" % (url,int(total)/1024/1024)
+                    elif received>=total:
+                        print u"  -> download finished (%.0f Kb/s)" % (total/(1024.0*(time.time()+.001-start_time)))
+                    else:
+                        print u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total,speed ),
 
     if os.path.isdir(target):
         target = os.path.join(target,'')
@@ -220,42 +223,47 @@ def wget(url,target,reporthook=None,printhook=None,proxies=None):
     if not os.path.isdir(dir):
         os.makedirs(dir)
 
-    start_time = time.time()
-    r = requests.get(url,stream=True, proxies=proxies)
+    httpreq = requests.get(url,stream=True, proxies=proxies)
 
-    total_bytes = int(r.headers['content-length'])
-    chunk_size = max([total_bytes/100,1000])
-    print u"Downloading %s (%.1f Mb)" % (url,int(total_bytes)/1024/1024)
+    total_bytes = int(httpreq.headers['content-length'])
+    # 100kb max, 1kb min
+    chunk_size = min([100*1024,max([total_bytes/100,1000])])
 
-    output_file = open(os.path.join(dir,filename),'wb')
-    try:
-        if not reporthook:
-            reporthook = report
+    cnt = 0
+    reporthook(last_downloaded,total_bytes)
+
+    with open(os.path.join(dir,filename),'wb') as output_file:
         last_time_display = time.time()
-        global last_downloaded
         last_downloaded = 0
-        reporthook(0,chunk_size,total_bytes)
-        cnt = 0
-        if r.ok:
-            for chunk in r.iter_content(chunk_size=chunk_size):
+        if httpreq.ok:
+            for chunk in httpreq.iter_content(chunk_size=chunk_size):
                 output_file.write(chunk)
-                reporthook(cnt,len(chunk),total_bytes)
+                reporthook(cnt*len(chunk),total_bytes)
+                last_time_display = time.time()
+                last_downloaded += len(chunk)
                 cnt +=1
-            reporthook(total_bytes/chunk_size,chunk_size,total_bytes)
-
+            reporthook(last_downloaded,total_bytes)
         else:
-            r.raise_for_status()
-    finally:
-        output_file.close()
+            httpreq.raise_for_status()
 
-    #(localpath,headers) = WaptURLopener(proxies=proxies).retrieve(url=url, filename=os.path.join(dir,filename),reporthook=reporthook or report,)
-    print u"  -> download finished (%.0f Kb/s)" % (total_bytes/(1024.0*(time.time()+.001-start_time)))
+    reporthook(last_downloaded,total_bytes)
     return os.path.join(dir,filename)
 
 def filecopyto(filename,target):
     """Copy file from package temporary directory to target directory
         target is either a full filename or a directory name
-        if filename is .exe or .dll, logger prints version numbers"""
+        if filename is .exe or .dll, logger prints version numbers
+    >>> if not os.path.isfile('c:/tmp/fc.test'):
+    ...     with open('c:/tmp/fc.test','wb') as f:
+    ...         f.write('test')
+    >>> if not os.path.isdir('c:/tmp/target'):
+    ...    os.mkdir('c:/tmp/target')
+    >>> if os.path.isfile('c:/tmp/target/fc.test'):
+    ...    os.unlink('c:/tmp/target/fc.test')
+    >>> filecopyto('c:/tmp/fc.test','c:/tmp/target')
+    >>> os.path.isfile('c:/tmp/target/fc.test')
+    True
+    """
     (dir,fn) = os.path.split(filename)
     if not dir:
         dir = os.getcwd()
@@ -413,6 +421,8 @@ def run(*cmd,**args):
         if return code of cmd is non zero, a CalledProcessError is raised
         on_write : called when a new line is printed on stdout or stderr by the subprocess
         accept_returncodes=[0,1601]
+
+        pidlist : list wher to append
     """
     logger.info(u'Run "%s"' % (cmd,))
     output = []
@@ -443,7 +453,16 @@ def run(*cmd,**args):
         valid_returncodes = args['accept_returncodes']
         del args['accept_returncodes']
 
+    if 'pidlist' in args and isinstance(args['pidlist'],list):
+        pidlist = args['pidlist']
+        args.pop('pidlist')
+    else:
+        pidlist = []
+
     proc = psutil.Popen(*cmd, bufsize=1, stdout=PIPE, stderr=PIPE,**args)
+    # keep track of launched pid if required by providing a pidlist argument to run
+    if not proc.pid in pidlist:
+        pidlist.append(proc.pid)
 
     stdout_worker = RunReader(worker, proc.stdout,args.get('on_write',None))
     stderr_worker = RunReader(worker, proc.stderr,args.get('on_write',None))
@@ -452,13 +471,19 @@ def run(*cmd,**args):
     stdout_worker.join(timeout)
     if stdout_worker.is_alive():
         # kill the task and all subtasks
+        if proc.pid in pidlist:
+            pidlist.remove(proc.pid)
         killtree(proc.pid)
         raise TimeoutExpired(cmd,timeout,''.join(output))
     stderr_worker.join(timeout)
     if stderr_worker.is_alive():
+        if proc.pid in pidlist:
+            pidlist.remove(proc.pid)
         proc.kill()
         raise TimeoutExpired(cmd,timeout,''.join(output))
     proc.returncode = _subprocess.GetExitCodeProcess(proc._handle)
+    if proc.pid in pidlist:
+        pidlist.remove(proc.pid)
     if not proc.returncode in valid_returncodes:
         raise subprocess.CalledProcessError(proc.returncode,cmd,''.join(output))
     else:
@@ -479,8 +504,8 @@ def run_notfatal(*cmd,**args):
 
 def shell_launch(cmd):
     """Launch a command (without arguments) but doesn't wait for its termination
-    >>> open('c:/tmp/test.txt','w').write('Test line')
-    >>> shell_launch('c:/tmp/test.txt')
+    .>>> open('c:/tmp/test.txt','w').write('Test line')
+    .>>> shell_launch('c:/tmp/test.txt')
     """
     os.startfile(cmd)
 
@@ -605,6 +630,9 @@ def get_loggedinusers():
     except:
         return [get_current_user()]
 
+def registered_organization():
+    return registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOrganization')
+
 def _environ_params(dict_or_module={}):
     """set some environment params in the supplied module or dict"""
     if type(dict_or_module) is dict:
@@ -710,7 +738,7 @@ def registry_readstring(root,path,keyname,default=''):
         keyname : None for value of key or str for a specific value like 'CommonFilesDir'
         the path can be either with backslash or slash
     >>> registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM/CurrentControlSet/services/Tcpip/Parameters','Hostname')
-    HTLAPTOPZ
+    u'HTLAPTOP'
     """
     path = path.replace(u'/',u'\\')
     try:
@@ -953,7 +981,7 @@ def dmi_info():
     except:
         # dmidecode fails on some BIOS.
         # TODO : fall back to wmi for most impirtant parameters
-        pass
+        result = wmi_info_basic()
     return result
 
 def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_BIOS','Win32_NetworkAdapter']):
@@ -988,6 +1016,28 @@ def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_B
             if prop:
                 na[-1][k] = prop.Value
     """
+    return result
+
+def wmi_info_basic():
+    """Return uuid, serial, model, vendor from WMI
+    >>> r = wmi_info_basic()
+    >>> 'System_Information' in r
+    True
+    """
+    res = run('wmic PATH Win32_ComputerSystemProduct GET UUID,IdentifyingNumber,Name,Vendor /VALUE')
+    wmiout = {}
+    for line in res.splitlines():
+        if line.strip():
+            (key,value) = line.strip().split('=')
+            wmiout[key] = value
+    result = {
+            u'System_Information':{
+                u'UUID':wmiout[u'UUID'],
+                u'Manufacturer':wmiout[u'Vendor'],
+                u'Product_Name':wmiout[u'Name'],
+                u'Serial_Number':wmiout[u'IdentifyingNumber'],
+                }
+            }
     return result
 
 def host_info():
@@ -1296,7 +1346,12 @@ def get_appath(exename):
 class Version():
     """Version object of form 0.0.0
         can compare with respect to natural numbering and not alphabetical
-        ie : 0.10.2 > 0.2.5
+    >>> Version('0.10.2') > Version('0.2.5')
+    True
+    >>> Version('0.1.2') < Version('0.2.5')
+    True
+    >>> Version('0.1.2') == Version('0.1.2')
+    True
     """
     def __init__(self,versionstring):
         assert isinstance(versionstring,types.ModuleType) or isinstance(versionstring,str) or isinstance(versionstring,unicode)
