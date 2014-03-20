@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.14"
+__version__ = "0.8.15"
 import os
 import re
 import logging
@@ -3010,7 +3010,7 @@ class Wapt(object):
                 new_apackages.append(p)
         apackages = new_apackages
 
-        actions = self.check_depends(apackages,force=force,forceupgrade=True)
+        actions = self.check_depends(apackages,force=force or download_only,forceupgrade=True)
         actions['errors']=[]
 
         skipped = actions['skipped']

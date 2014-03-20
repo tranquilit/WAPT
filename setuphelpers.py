@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.14"
+__version__ = "0.8.15"
 import os
 import sys
 import logging
@@ -241,8 +241,8 @@ def wget(url,target,printhook=None,proxies=None):
         if httpreq.ok:
             for chunk in httpreq.iter_content(chunk_size=chunk_size):
                 output_file.write(chunk)
-                reporthook(cnt*len(chunk),total_bytes)
-                last_time_display = time.time()
+                if reporthook(cnt*len(chunk),total_bytes):
+                    last_time_display = time.time()
                 last_downloaded += len(chunk)
                 cnt +=1
             if reporthook(last_downloaded,total_bytes):
