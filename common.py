@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.13"
+__version__ = "0.8.14"
 import os
 import re
 import logging
@@ -1604,9 +1604,10 @@ class WaptDB(WaptBaseDB):
         if not isinstance(packages,list) and not isinstance(packages,tuple):
             packages = [packages]
 
+
         MAXDEPTH = 30
         # roots : list of initial packages to avoid infinite loops
-        def dodepends(explored,packages,depth):
+        def dodepends(explored,packages,depth,missing):
             if depth>MAXDEPTH:
                 raise Exception.create('Max depth in build dependencies reached, aborting')
             alldepends = []
@@ -1615,20 +1616,23 @@ class WaptDB(WaptBaseDB):
                 if not package in explored:
                     entries = self.packages_matching(package)
                     if not entries:
-                        raise Exception('Package %s not available' % package)
-                    # get depends of the most recent matching entry
-                    # TODO : use another older if this can limit the number of packages to install !
-                    depends = [s.strip() for s in entries[-1].depends.split(',') if s.strip()<>'']
-                    for d in depends:
-                        alldepends.extend(dodepends(explored,depends,depth+1))
-                        if not d in alldepends:
-                            alldepends.append(d)
+                        missing.append([package,None])
+                    else:
+                        # get depends of the most recent matching entry
+                        # TODO : use another older if this can limit the number of packages to install !
+                        depends = [s.strip() for s in entries[-1].depends.split(',') if s.strip()<>'']
+                        for d in depends:
+                            alldepends.extend(dodepends(explored,depends,depth+1,missing))
+                            if not d in alldepends:
+                                alldepends.append(d)
                     explored.append(package)
             return alldepends
 
+        missing = []
         explored = []
         depth = 0
-        return dodepends(explored,packages,depth)
+        alldepends = dodepends(explored,packages,depth,missing)
+        return (alldepends,missing)
 
     def package_entry_from_db(self,package,version_min='',version_max=''):
         """Return the most recent package entry given its packagename and minimum and maximum version
@@ -2914,13 +2918,19 @@ class Wapt(object):
                     else:
                         skipped.append([request,old_matches])
                 else:
-                    unavailable.append([request,None])
+                    if [request,None] not in unavailable:
+                        unavailable.append([request,None])
 
         # get dependencies of not installed top packages
         if forceupgrade:
-            depends = self.waptdb.build_depends(apackages)
+            (depends,missing) = self.waptdb.build_depends(apackages)
         else:
-            depends = self.waptdb.build_depends([p[0] for p in packages])
+            (depends,missing) = self.waptdb.build_depends([p[0] for p in packages])
+
+        for p in missing:
+            if p not in unavailable:
+                unavailable.append(p)
+
         # search for most recent matching package to install
         for request in depends:
             # get the current installed package matching the request
