@@ -1720,7 +1720,7 @@ class WaptRepo(object):
     >>> 'last-modified' in delta and 'added' in delta and 'removed' in delta
     True
     """
-    def __init__(self,name='',url=None,proxies=[],timeout = 2,dnsdomain=None):
+    def __init__(self,name='',url=None,proxies=None,timeout = 2,dnsdomain=None):
         """Initialize a repo at url "url". If
                  url is None, the url is requested from DNS"""
         self.name = name
@@ -1906,7 +1906,7 @@ class WaptRepo(object):
             if config.has_option(self.name,'repo_url'):
                 self.repo_url = config.get(self.name,'repo_url')
             if config.has_option(self.name,'http_proxy'):
-                self.proxies = config.get(self.name,'http_proxy')
+                self.proxies = {'http':config.get(self.name,'http_proxy')}
             if config.has_option(self.name,'timeout'):
                 self.timeout = config.get_float(self.name,'timeout')
         return self
