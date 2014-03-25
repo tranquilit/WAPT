@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.15"
+__version__ = "0.8.16"
 import os
 import re
 import logging
@@ -769,6 +769,7 @@ class WaptBaseDB(object):
             self.db.rollback()
             self.upgradedb()
 
+
     @db_version.deleter
     def db_version(self):
         try:
@@ -792,6 +793,7 @@ class WaptBaseDB(object):
         except Exception,e:
             logger.critical('Unable to set param %s : %s : %s' % (name,value,ensure_unicode(e)))
             self.db.rollback()
+            raise
 
     def get_param(self,name,default=None):
         """Retrieve the value associated with name from database"""
@@ -808,6 +810,7 @@ class WaptBaseDB(object):
         except:
             logger.critical(u'Unable to delete param %s : %s' % (name,value))
             self.db.rollback()
+            raise
 
     def query(self,query, args=(), one=False):
         """
@@ -1122,7 +1125,6 @@ class WaptDB(WaptBaseDB):
 
                     insquery = "insert into %s (%s) values (%s)" % (newtablename,",".join(newcolumns),",".join("?" * len(newcolumns)))
                     for rec in old_datas[tablename]:
-                        print rec
                         logger.debug(u' %s' %[ rec[oldcolumns[i]] for i in range(0,len(oldcolumns))])
                         self.db.execute(insquery,[ rec[oldcolumns[i]] for i in range(0,len(oldcolumns))] )
 
@@ -1961,7 +1963,7 @@ class WaptRepo(object):
             return httpdatetime2isodate(packages_last_modified)
         except requests.RequestException as e:
             self._cached_dns_repo_url = None
-            logger.warning('Repo packages index %s is not available : %s'%(self.packages_url,e))
+            logger.warning(u'Repo packages index %s is not available : %s'%(self.packages_url,e))
             return None
 
     def load_packages(self):
@@ -2182,6 +2184,9 @@ class Wapt(object):
         self.options = OptionParser()
         self.options.force = False
 
+        # list of process pids launched by run command
+        self.pidlist = []
+
         import pythoncom
         pythoncom.CoInitialize()
 
@@ -2340,7 +2345,7 @@ class Wapt(object):
       if cmd_dict['waptdir'] == "wapt-host":
         if self.upload_cmd_host:
           cmd_dict['waptfile'] = ' '.join(cmd_dict['waptfile'])
-          return setuphelpers.run(self.upload_cmd_host % cmd_dict)
+          return self.run(self.upload_cmd_host % cmd_dict)
         else:
            #upload par http vers un serveur WAPT  (url POST upload_host)
            for file in cmd_dict['waptfile']:
@@ -2354,7 +2359,7 @@ class Wapt(object):
       else:
         if self.upload_cmd:
           cmd_dict['waptfile'] = ' '.join(cmd_dict['waptfile'])
-          return setuphelpers.run(self.upload_cmd % cmd_dict)
+          return self.run(self.upload_cmd % cmd_dict)
         else:
           for file in cmd_dict['waptfile']:
             # file is surrounded by quotes for shell usage
@@ -2531,6 +2536,18 @@ class Wapt(object):
         if self.task_is_cancelled.is_set():
             raise EWaptCancelled(msg)
 
+    def run(self,*arg,**args):
+        return setuphelpers.run(*arg,pidlist=self.pidlist,**args)
+
+    def run_notfatal(self,*cmd,**args):
+        """Runs the command and wait for it termination
+        returns output, don't raise exception if exitcode is not null but return '' """
+        try:
+            return self.run(*cmd,**args)
+        except Exception,e:
+            print u'Warning : %s' % e
+            return ''
+
     def install_wapt(self,fname,params_dict={},explicit_by=None):
         """Install a single wapt package given its WAPT filename.
         return install status"""
@@ -2638,11 +2655,8 @@ class Wapt(object):
             # be sure some minimal functions are available in setup module at install step
             setattr(setup,'basedir',os.path.dirname(setup_filename))
             # redefine run to add reference to wapt.pidlist
-            self.pidlist = []
-            def run(*arg,**args):
-                setuphelpers.run(*arg,pidlist=self.pidlist,**args)
-            setattr(setup,'run',run)
-            setattr(setup,'run_notfatal',setuphelpers.run_notfatal)
+            setattr(setup,'run',self.run)
+            setattr(setup,'run_notfatal',self.run_notfatal)
             setattr(setup,'WAPT',self)
             setattr(setup,'control',entry)
             setattr(setup,'language',self.language or setuphelpers.get_language() )
@@ -2815,9 +2829,9 @@ class Wapt(object):
         logger.info('checkout dir : %s'% co_dir)
         # if already checked out...
         if os.path.isdir(os.path.join(co_dir,'.svn')):
-            print setuphelpers.run(u'"%s" up "%s"' % (svncmd,co_dir))
+            print ensure_unicode(self.run(u'"%s" up "%s"' % (svncmd,co_dir)))
         else:
-            print setuphelpers.run(u'"%s" co "%s" "%s"' % (svncmd,entry.sources,co_dir))
+            print ensure_unicode(self.run(u'"%s" co "%s" "%s"' % (svncmd,entry.sources,co_dir)))
         return co_dir
 
     def last_install_log(self,packagename):
@@ -2983,6 +2997,40 @@ class Wapt(object):
                     result.append(packagename)
         return result
 
+    def check_install(self,apackages):
+        """Return a list of actions required for install of apackages list of packages
+
+        """
+        if not isinstance(apackages,list):
+            apackages = [apackages]
+
+        # ensure that apackages is a list of package requirements (strings)
+        new_apackages = []
+        for p in apackages:
+            if isinstance(p,PackageEntry):
+                new_apackages.append(p.asrequirement())
+            else:
+                new_apackages.append(p)
+        apackages = new_apackages
+
+        actions = self.check_depends(apackages,force=force or download_only,forceupgrade=True)
+        actions['errors']=[]
+
+        skipped = actions['skipped']
+        additional_install = actions['additional']
+        to_upgrade = actions['upgrade']
+        packages = actions['install']
+
+        to_install = []
+        to_install.extend(additional_install)
+        to_install.extend(to_upgrade)
+        to_install.extend(packages)
+
+        # get package entries to install to_install is a list of (request,package)
+        packages = [ p[1] for p in to_install ]
+
+
+
     def install(self,apackages,
         force=False,
         params_dict = {},
@@ -3063,6 +3111,7 @@ class Wapt(object):
                     logger.info('switch to manual mode for %s' % (request,))
                     self.waptdb.switch_to_explicit_mode(p.package,self.user)
 
+
             for (request,p) in to_install:
                 try:
                     print u"Installing %s" % (p.package,)
@@ -3073,12 +3122,13 @@ class Wapt(object):
                     if result:
                         for k in result.as_dict():
                             p[k] = result[k]
+
                     if not result or result['install_status']<>'OK':
                         actions['errors'].append([request,p])
-                        logger.critical(u'Package %s (%s) not installed due to errors' %(request,p))
+                        logger.critical(u'Package %s not installed due to errors' %(request,))
                 except Exception as e:
                     actions['errors'].append([request,p])
-                    logger.critical(u'Package %s (%s) not installed due to errors : %s' %(request,p,e))
+                    logger.critical(u'Package %s not installed due to errors : %s' %(request,ensure_unicode(e)))
 
             return actions
         else:
@@ -3195,7 +3245,7 @@ class Wapt(object):
                         if guid:
                             try:
                                 logger.info('Running %s' % guid)
-                                logger.info(setuphelpers.run(guid))
+                                logger.info(self.run(guid))
                             except Exception,e:
                                 logger.warning("Warning : %s" % ensure_unicode(e))
 
@@ -3218,7 +3268,7 @@ class Wapt(object):
                                 uninstall_cmd = self.uninstall_cmd(guid)
                                 if uninstall_cmd:
                                     logger.info(u'Launch uninstall cmd %s' % (uninstall_cmd,))
-                                    print setuphelpers.run(uninstall_cmd)
+                                    print ensure_unicode(self.run(uninstall_cmd))
                             except Exception,e:
                                 logger.critical(u"Critical error during uninstall cmd %s: %s" % (uninstall_cmd,ensure_unicode(e)))
                                 result['errors'].append(package)
@@ -3348,7 +3398,7 @@ class Wapt(object):
             if decsription is provided, updates local registry with new description
         """
         if description:
-            out = setuphelpers.run("WMIC os set description='%s'" % description.encode(sys.getfilesystemencoding()) ,shell=False)
+            out = self.run("WMIC os set description='%s'" % description.encode(sys.getfilesystemencoding()) ,shell=False)
             logger.info(out)
 
         inv = self.inventory()
@@ -3398,6 +3448,18 @@ class Wapt(object):
                 return result
             else:
                 return json.dumps(inv,indent=True)
+
+    def waptserver_available(self):
+        """Return ident of waptserver if defined and available, else False"""
+        if self.wapt_server:
+            try:
+                httpreq = requests.get('%s/ident'%(self.wapt_server),timeout=self.timeout)
+                httpreq.raise_for_code()
+                return httpreq.text
+            except Exception as e:
+                return False
+        else:
+            return False
 
     def wapt_status(self):
         """return wapt version info"""
@@ -3624,7 +3686,7 @@ class Wapt(object):
                 # add quotes for command line
                 files_list = ['"%s"' % f for f in package_group[1]]
                 cmd_dict =  {'waptfile': files_list,'waptdir':package_group[0]}
-                print self.upload_package(cmd_dict,wapt_server_user,wapt_server_passwd)
+                print ensure_unicode(self.upload_package(cmd_dict,wapt_server_user,wapt_server_passwd))
 
                 if delete_package:
                     dir=os.path.dirname(files_list[0][1:-1])
@@ -3635,7 +3697,7 @@ class Wapt(object):
                 if package_group<>hosts:
                     if self.after_upload:
                         print 'Run after upload script...'
-                        print setuphelpers.run(self.after_upload % cmd_dict)
+                        print ensure_unicode(self.run(self.after_upload % cmd_dict))
                     elif self.upload_cmd:
                         print "Don't forget to update Packages index on repository !"
 
@@ -3650,7 +3712,7 @@ class Wapt(object):
         old_stdout = sys.stdout
         old_stderr = sys.stderr
 
-        logger.info("Session setup for package %s and user %s" % (packagename,self.user))
+        logger.info(u"Session setup for package %s and user %s" % (packagename,self.user))
 
         oldpath = sys.path
 
@@ -3697,8 +3759,8 @@ class Wapt(object):
                         # redirect output to get print into session db log
                         sys.stderr = sys.stdout = install_output = LogInstallOutput(sys.stderr,session_db,install_id)
                         try:
-                            setattr(setup,'run',setuphelpers.run)
-                            setattr(setup,'run_notfatal',setuphelpers.run_notfatal)
+                            setattr(setup,'run',self.run)
+                            setattr(setup,'run_notfatal',self.run_notfatal)
                             setattr(setup,'user',self.user)
                             setattr(setup,'usergroups',self.usergroups)
                             setattr(setup,'WAPT',self)
@@ -3782,8 +3844,8 @@ class Wapt(object):
             logger.debug(u'Source import OK')
             if hasattr(setup,'uninstall'):
                 logger.info('Launch uninstall')
-                setattr(setup,'run',setuphelpers.run)
-                setattr(setup,'run_notfatal',setuphelpers.run_notfatal)
+                setattr(setup,'run',self.run)
+                setattr(setup,'run_notfatal',self.run_notfatal)
                 setattr(setup,'user',self.user)
                 setattr(setup,'usergroups',self.usergroups)
                 setattr(setup,'WAPT',self)
@@ -4596,10 +4658,10 @@ class Wapt(object):
         try:
             for repo in self.repositories:
                 repo.reset_network()
-            if not self.disable_update_server_status:
+            if not self.disable_update_server_status and self.wapt_server:
                 self.update_server_status()
         except Exception as e:
-            logger.warning(u'Mise à jour du status sur le serveur impossible : %s'%e)
+            logger.warning(u'Problème lors du changement de réseau : %s'%setuphelpers.ensure_unicode(e))
 
 # for backward compatibility
 Version = setuphelpers.Version  # obsolete

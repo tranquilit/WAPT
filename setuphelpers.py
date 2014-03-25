@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.15"
+__version__ = "0.8.16"
 import os
 import sys
 import logging
@@ -98,34 +98,37 @@ def ensure_unicode(data):
     u'test'
 
     """
-    if type(data) is types.UnicodeType:
-        return data
-    if type(data) is types.StringType:
-        return unicode(data, 'utf8', 'replace')
-    if type(data) is WindowsError:
-        return u"%s : %s" % (data.args[0], data.args[1].decode(sys.getfilesystemencoding()))
-    if type(data) is UnicodeDecodeError:
-        return u"%s : faulty string is '%s'" % (data,data.args[1].decode(sys.getfilesystemencoding()))
-    if isinstance(data,Exception):
-        try:
-            return u"%s: %s" % (data.__class__.__name__,data)
-        except:
-            return u"%s" % (data.__class__.__name__,)
-    if hasattr(data, '__unicode__'):
-        try:
-            return data.__unicode__()
-        except:
-            pass
     try:
-        return unicode(data)
-    except:
-       pass
-    if hasattr(data, '__repr__'):
-        data = data.__repr__()
         if type(data) is types.UnicodeType:
             return data
-        return unicode(data, 'utf8', 'replace')
-    return unicode(data)
+        if type(data) is types.StringType:
+            return unicode(data, 'utf8', 'replace')
+        if type(data) is WindowsError:
+            return u"%s : %s" % (data.args[0], data.args[1].decode(sys.getfilesystemencoding()))
+        if type(data) is UnicodeDecodeError:
+            return u"%s : faulty string is '%s'" % (data,repr(data.args[1]))
+        if isinstance(data,Exception):
+            try:
+                return u"%s: %s" % (data.__class__.__name__,("%s"%data).decode(sys.getfilesystemencoding()))
+            except:
+                try:
+                    return u"%s: %s" % (data.__class__.__name__,("%s"%data).decode('utf8'))
+                except:
+                    try:
+                        return u"%s: %s" % (data.__class__.__name__,u"%s"%data)
+                    except:
+                        return u"%s" % (data.__class__.__name__,)
+        if hasattr(data, '__unicode__'):
+            try:
+                return data.__unicode__()
+            except:
+                pass
+        try:
+            return unicode(data)
+        except:
+           pass
+    except:
+        return("Error in ensure_unicode / %s"%(repr(data)))
 
 def create_shortcut(path, target='', arguments='', wDir='', icon=''):
     """Create a windows shortcut
@@ -226,7 +229,7 @@ def wget(url,target,printhook=None,proxies=None):
     if not os.path.isdir(dir):
         os.makedirs(dir)
 
-    httpreq = requests.get(url,stream=True, proxies=proxies)
+    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=10)
 
     total_bytes = int(httpreq.headers['content-length'])
     # 1Mb max, 1kb min
@@ -278,21 +281,21 @@ def filecopyto(filename,target):
         if os.path.splitext(target)[1] in ('.exe','.dll'):
             ov = get_file_properties(target)['FileVersion']
             nv = get_file_properties(filename)['FileVersion']
-            logger.info('Replacing %s (%s) -> %s' % (target,ov,nv))
+            logger.info(u'Replacing %s (%s) -> %s' % (ensure_unicode(target),ov,nv))
         else:
-            logger.info('Replacing %s' % target)
+            logger.info(u'Replacing %s' % target)
     else:
         if os.path.splitext(target)[1] in ('.exe','.dll'):
             nv = get_file_properties(filename)['FileVersion']
-            logger.info('Copying %s (%s)' % (target,nv))
+            logger.info(u'Copying %s (%s)' % (ensure_unicode(target),nv))
         else:
-            logger.info('Copying %s' % (target))
+            logger.info(u'Copying %s' % (ensure_unicode(target)))
     shutil.copy(filename,target)
 
 
 # Copy of an entire tree from install temp directory to target
 def default_oncopy(msg,src,dst):
-    logger.debug(u'%s : "%s" to "%s"' % (msg,src,dst))
+    logger.debug(u'%s : "%s" to "%s"' % (ensure_unicode(msg),ensure_unicode(src),ensure_unicode(dst)))
     return True
 
 def default_skip(src,dst):
@@ -428,7 +431,7 @@ def run(*cmd,**args):
 
         pidlist : list wher to append
     """
-    logger.info(u'Run "%s"' % (cmd,))
+    logger.info(u'Run "%s"' % (ensure_unicode(cmd),))
     output = []
     def worker(pipe,on_write=None):
         while True:
@@ -477,24 +480,25 @@ def run(*cmd,**args):
         # kill the task and all subtasks
         if proc.pid in pidlist:
             pidlist.remove(proc.pid)
-        killtree(proc.pid)
+            killtree(proc.pid)
         raise TimeoutExpired(cmd,timeout,''.join(output))
     stderr_worker.join(timeout)
     if stderr_worker.is_alive():
         if proc.pid in pidlist:
             pidlist.remove(proc.pid)
-        proc.kill()
+            killtree(proc.pid)
         raise TimeoutExpired(cmd,timeout,''.join(output))
     proc.returncode = _subprocess.GetExitCodeProcess(proc._handle)
     if proc.pid in pidlist:
         pidlist.remove(proc.pid)
+        killtree(proc.pid)
     if not proc.returncode in valid_returncodes:
         raise subprocess.CalledProcessError(proc.returncode,cmd,''.join(output))
     else:
         if proc.returncode == 0:
-            logger.info('%s command returns code %s' % (cmd,proc.returncode))
+            logger.info(u'%s command returns code %s' % (ensure_unicode(cmd),proc.returncode))
         else:
-            logger.warning('%s command returns code %s' % (cmd,proc.returncode))
+            logger.warning(u'%s command returns code %s' % (ensure_unicode(cmd),proc.returncode))
     return ensure_unicode(''.join(output))
 
 def run_notfatal(*cmd,**args):
@@ -503,7 +507,7 @@ def run_notfatal(*cmd,**args):
     try:
         return run(*cmd,**args)
     except Exception,e:
-        print u'Warning : %s' % e
+        print u'Warning : %s' % ensure_unicode(e)
         return ''
 
 def shell_launch(cmd):
@@ -547,11 +551,15 @@ def killalltasks(exenames,include_children=True):
     """
 
 def killtree(pid, including_parent=True):
-    parent = psutil.Process(pid)
-    for child in parent.get_children(recursive=True):
-        child.kill()
-    if including_parent:
-        parent.kill()
+    try:
+        parent = psutil.Process(pid)
+        if parent:
+            for child in parent.get_children(recursive=True):
+                child.kill()
+            if including_parent:
+                parent.kill()
+    except psutil.NoSuchProcess as e:
+        pass
 
 def processnames_list():
     """return all process name of running processes in lower case"""
@@ -894,14 +902,14 @@ def unregister_uninstall(uninstallkey,win64app=False):
         try:
             _winreg.DeleteKeyEx(_winreg.HKEY_LOCAL_MACHINE,root.encode(locale.getpreferredencoding()))
         except WindowsError,e:
-            logger.warning('Unable to remove key %s, error : %s' % (ensure_unicode(root),ensure_unicode(e)))
+            logger.warning(u'Unable to remove key %s, error : %s' % (ensure_unicode(root),ensure_unicode(e)))
 
     else:
         root = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"+uninstallkey
         try:
             _winreg.DeleteKey(_winreg.HKEY_LOCAL_MACHINE,root.encode(locale.getpreferredencoding()))
         except WindowsError,e:
-            logger.warning('Unable to remove key %s, error : %s' % (ensure_unicode(root),ensure_unicode(e)))
+            logger.warning(u'Unable to remove key %s, error : %s' % (ensure_unicode(root),ensure_unicode(e)))
 
 wincomputername = win32api.GetComputerName
 windomainname = win32api.GetDomainName
@@ -1200,7 +1208,7 @@ def register_dll(dllpath):
     result = dll.DllRegisterServer()
     logger.info('DLL %s registered' % dllpath)
     if result:
-        raise Exception('Register DLL %s failed, code %i' % (dllpath,result))
+        raise Exception(u'Register DLL %s failed, code %i' % (dllpath,result))
 
 def unregister_dll(dllpath):
     """Unregister a COM/OLE server DLL from registry"""
@@ -1208,7 +1216,7 @@ def unregister_dll(dllpath):
     result = dll.DllUnregisterServer()
     logger.info('DLL %s unregistered' % dllpath)
     if result:
-        raise Exception('Unregister DLL %s failed, code %i' % (dllpath,result))
+        raise Exception(u'Unregister DLL %s failed, code %i' % (dllpath,result))
 
 def add_to_system_path(path):
     """Add path to the global search PATH environment variable if it is not yet"""

@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.15"
+__version__ = "0.8.16"
 
 import sys
 import os
@@ -267,8 +267,8 @@ def main():
                     if action=='install':
                         # abort if there is already a running install in progress
                         if running_install:
-                            raise Exception('Running wapt progresses (%s), please wait...' % (running_install,))
-                        result= {'install':[ (args[1],mywapt.install_wapt(args[1],params_dict = params_dict))]}
+                            raise Exception(u'Running wapt progresses (%s), please wait...' % (running_install,))
+                        result= {u'install':[ (args[1],mywapt.install_wapt(args[1],params_dict = params_dict))]}
                 else:
                     print u"%sing WAPT packages %s" % (action,','.join(args[1:]))
                     if options.update_packages:
@@ -276,7 +276,7 @@ def main():
                         mywapt.update()
 
                     if running_install and action=='install':
-                        raise Exception('Running wapt processes (%s) in progress, please wait...' % (running_install,))
+                        raise Exception(u'Running wapt processes (%s) in progress, please wait...' % (running_install,))
                     result = mywapt.install(args[1:],force = options.force,params_dict = params_dict,
                         download_only= (action=='download'), usecache = not (action == 'download' and options.force)
                         )

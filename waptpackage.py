@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.14"
+__version__ = "0.8.16"
 
 import os
 import zipfile
@@ -452,7 +452,6 @@ class WaptLocalRepo(object):
                     entry.load_control_from_wapt(fname)
                     processed.append(fname)
                 packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
-                print entry.ascontrol(with_non_control_attributes=True)
             except Exception,e:
                 print e
                 logger.critical("package %s: %s" % (fname,e))
