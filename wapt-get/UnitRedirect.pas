@@ -5,6 +5,7 @@ unit UnitRedirect;
 // and is part of the site:
 //   http://www.martinstoeckli.ch/delphi/
 //
+{$mode delphiunicode}
 
 interface
 uses Windows, Classes,JWAWinBase;
@@ -24,9 +25,9 @@ uses Windows, Classes,JWAWinBase;
   ///   result.</param>
   /// <returns>True if process could be started and did not reach the
   ///   timeout.</returns>
-  function Sto_RedirectedExecute(CmdLine: String;
-    const Input: String = '';
-    const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString=''): String;
+  function Sto_RedirectedExecute(CmdLine: WideString;
+    const Input: RawByteString = '';
+    const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString=''): RawByteString;
 
 
   const
@@ -50,12 +51,12 @@ type
   protected
     FPipe: THandle;
     FContent: TStringStream;
-    function Get_Content: String;
+    function Get_Content: RawByteString;
     procedure Execute; override;
   public
     constructor Create(const Pipe: THandle);
     destructor Destroy; override;
-    property Content: String read Get_Content;
+    property Content: RawByteString read Get_Content;
   end;
 
   TStoWritePipeThread = class(TThread)
@@ -64,7 +65,7 @@ type
     FContent: TStringStream;
     procedure Execute; override;
   public
-    constructor Create(const Pipe: THandle; const Content: String);
+    constructor Create(const Pipe: THandle; const Content: RawByteString);
     destructor Destroy; override;
   end;
 
@@ -99,7 +100,7 @@ begin
   until (iBytesRead = 0);
 end;
 
-function TStoReadPipeThread.Get_Content: String;
+function TStoReadPipeThread.Get_Content: RawByteString;
 begin
   Result := FContent.DataString;
 end;
@@ -107,7 +108,7 @@ end;
 { TStoWritePipeThread }
 
 constructor TStoWritePipeThread.Create(const Pipe: THandle;
-  const Content: String);
+  const Content: RawByteString);
 begin
   FPipe := Pipe;
   FContent := TStringStream.Create(Content);
@@ -142,12 +143,12 @@ begin
   FPipe := 0;
 end;
 
-function Sto_RedirectedExecute(CmdLine: String;
-  const Input: String = '';
-  const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString=''): String;
+function Sto_RedirectedExecute(CmdLine: WideString;
+  const Input: RawByteString = '';
+  const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString=''): RawByteString;
 var
   mySecurityAttributes: SECURITY_ATTRIBUTES;
-  myStartupInfo: STARTUPINFO;
+  myStartupInfo: STARTUPINFOW;
   myProcessInfo: PROCESS_INFORMATION;
   hPipeInputRead, hPipeInputWrite: THandle;
   hPipeOutputRead, hPipeOutputWrite: THandle;
@@ -157,8 +158,8 @@ var
   myReadErrorThread: TStoReadPipeThread;
   iWaitRes: Integer;
 
-  wcmd,wparams,woutput,winput:WideString;
-  output,error:String;
+  wparams:WideString;
+  output,error:RawByteString;
 
   exitCode:LongWord;
   ose : EOSError;
@@ -194,6 +195,7 @@ begin
       UniqueString(CmdLine);
 
       // start the process
+      wparams := CmdLine;
       if user<>'' then
       begin
         UniqueString(user);
@@ -201,16 +203,14 @@ begin
         UniqueString(domain);
         // prepare startupinfo structure
         //Result := CreateProcessWith (token, nil, PChar(CmdLine), nil, nil, false, NORMAL_PRIORITY_CLASS or CREATE_NEW_CONSOLE, nil, nil, @myStartupInfo, @myProcessInfo)
-        wcmd := 'cmd.exe';
-        wparams := CmdLine;
-        winput:=Input;
         if not CreateProcessWithLogonW(PWidechar(user),pwidechar(domain),pwidechar(password),0, Nil,PWideChar(wparams), CREATE_NEW_CONSOLE,nil,nil,@myStartupInfo, @myProcessInfo) then
           RaiseLastOSError;
       end
       else
       begin
-        if  not CreateProcess(nil, PChar(CmdLine), nil, nil, True,
-              CREATE_NEW_CONSOLE, nil, nil, myStartupInfo, myProcessInfo) then
+        if not CreateProcessW(Nil,PWideChar(wparams),  Nil,Nil, True, CREATE_NEW_CONSOLE,nil,nil,myStartupInfo,myProcessInfo) then
+        {if  not CreateProcess(nil, PChar(CmdLine), nil, nil, True,
+              CREATE_NEW_CONSOLE, nil, nil, myStartupInfo, myProcessInfo) then}
           RaiseLastOSError();
       end;
 

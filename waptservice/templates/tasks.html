@@ -15,7 +15,7 @@
 <h3>{{group | capitalize}}:</h3>
 	<ul>
 	{% for task in data.get(group) | reverse %}
-	<li><b>{{task.order}} - <a href={{url_for('task',id=task['order'])}}>{{task.description}}:</b></a> {{task.logs | beautify}}
+	<li><b>{{task.id}} - {{task.create_date}} - <a href={{url_for('task',id=task['id'])}}>{{task.description}}:</b></a> {{task.logs | beautify}}
 	{% endfor %}
 	</ul>
 {% endfor %}

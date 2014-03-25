@@ -3,8 +3,8 @@ object DMWaptTray: TDMWaptTray
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 288
-  HorizontalOffset = 382
-  VerticalOffset = 218
+  HorizontalOffset = 292
+  VerticalOffset = 209
   Width = 531
   object TrayIcon1: TTrayIcon
     BalloonHint = 'WAPT Service'
@@ -52,11 +52,13 @@ object DMWaptTray: TDMWaptTray
     Hint = 'WAPT Service'
     Visible = True
     OnDblClick = TrayIcon1DblClick
+    OnMouseDown = TrayIcon1MouseDown
     left = 108
     top = 47
   end
   object PopupMenu1: TPopupMenu
     OnPopup = PopupMenu1Popup
+    OnClose = PopupMenu1Close
     left = 172
     top = 47
     object MenuItem6: TMenuItem
@@ -124,6 +126,12 @@ object DMWaptTray: TDMWaptTray
     object MenuItem17: TMenuItem
       Caption = '-'
     end
+    object MenuItem22: TMenuItem
+      Action = ActServiceEnable
+    end
+    object MenuItem23: TMenuItem
+      Caption = '-'
+    end
     object MenuItem5: TMenuItem
       Action = ActQuit
     end
@@ -134,10 +142,12 @@ object DMWaptTray: TDMWaptTray
     object ActUpgrade: TAction
       Caption = 'Installer les mises à jour'
       OnExecute = ActUpgradeExecute
+      OnUpdate = ActUpdateUpdate
     end
     object ActUpdate: TAction
       Caption = 'Mettre à jour la liste des logiciels'
       OnExecute = ActUpdateExecute
+      OnUpdate = ActUpdateUpdate
     end
     object ActShowMain: TAction
       Caption = 'Configurer'
@@ -149,6 +159,7 @@ object DMWaptTray: TDMWaptTray
     object ActShowStatus: TAction
       Caption = 'Voir status des logiciels'
       OnExecute = ActShowStatusExecute
+      OnUpdate = ActUpdateUpdate
     end
     object ActConfigure: TAction
       Caption = 'Voir le fichier de configuration'
@@ -161,14 +172,17 @@ object DMWaptTray: TDMWaptTray
     object ActWaptUpgrade: TAction
       Caption = 'Mettre à jour le logiciel WAPT de cette machine'
       OnExecute = ActWaptUpgradeExecute
+      OnUpdate = ActUpdateUpdate
     end
     object ActLocalInfo: TAction
       Caption = 'Informations sur le poste'
       OnExecute = ActLocalInfoExecute
+      OnUpdate = ActUpdateUpdate
     end
     object ActForceRegister: TAction
       Caption = 'Enregistrer l''inventaire de l''ordinateur sur le serveur'
       OnExecute = ActForceRegisterExecute
+      OnUpdate = ActUpdateUpdate
     end
     object ActSessionSetup: TAction
       Caption = 'Configurer tous les paquets installés pour votre propre session'
@@ -177,18 +191,27 @@ object DMWaptTray: TDMWaptTray
     object ActCancelAllTasks: TAction
       Caption = 'Annuler toutes les tâches en cours'
       OnExecute = ActCancelAllTasksExecute
+      OnUpdate = ActUpdateUpdate
     end
     object ActShowTasks: TAction
       Caption = 'Voir les tâches'
       OnExecute = ActShowTasksExecute
+      OnUpdate = ActUpdateUpdate
     end
     object ActCancelRunningTask: TAction
       Caption = 'Annuler la tâche en cours'
       OnExecute = ActCancelRunningTaskExecute
+      OnUpdate = ActUpdateUpdate
     end
     object ActReloadConfig: TAction
       Caption = 'Recharger la configuration du service'
       OnExecute = ActReloadConfigExecute
+      OnUpdate = ActUpdateUpdate
+    end
+    object ActServiceEnable: TAction
+      Caption = 'Service WAPT activé'
+      OnExecute = ActServiceEnableExecute
+      OnUpdate = ActServiceEnableUpdate
     end
   end
   object TrayUpdate: TImageList
@@ -428,5 +451,11 @@ object DMWaptTray: TDMWaptTray
       0000B9886000D1AD8FD0CFA98AFDC1926CFFB3794BC4AD704200BC8C63C3D6B5
       97E7D1AC8DC0CFA98C97C8A28500
     }
+  end
+  object Timer1: TTimer
+    Interval = 5000
+    OnTimer = Timer1Timer
+    left = 172
+    top = 136
   end
 end
