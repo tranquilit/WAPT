@@ -1081,7 +1081,7 @@ begin
       for package in sel do
       begin
         res :=  WAPTServerJsonGet(
-          '/remove_package.json?host=%s&package=%s',[GridHosts.FocusedRow.S['host.connected_ips'],package.S['package']],
+          '/remove_package.json?host=%s&package=%s&uuid=%s',[GridHosts.FocusedRow.S['host.connected_ips'],package.S['package'],GridHosts.FocusedRow.S['uuid']],
           WaptUseLocalConnectionProxy,
           waptServerUser,
           waptServerPassword);
