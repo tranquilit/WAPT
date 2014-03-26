@@ -2561,8 +2561,8 @@ class Wapt(object):
         logger.info(u"Interactive user:%s, usergroups %s" % (self.user,self.usergroups))
         status = 'INIT'
         if not self.public_certs and not self.allow_unsigned:
-            raise Exception(u'No public Key provided for package signature checking, and unsigned packages install is not allowed.\
-                    If you want to allow unsigned packages, add "allow_unsigned=1" in wapt-get.ini file')
+            raise Exception(u'install_wapt %s: No public Key provided for package signature checking, and unsigned packages install is not allowed.\
+                    If you want to allow unsigned packages, add "allow_unsigned=1" in wapt-get.ini file'%(fname,))
         previous_uninstall = self.registry_uninstall_snapshot()
         entry = PackageEntry()
         entry.load_control_from_wapt(fname)
@@ -3032,10 +3032,11 @@ class Wapt(object):
 
 
     def install(self,apackages,
-        force=False,
-        params_dict = {},
-        download_only=False,
-        usecache=True):
+            force=False,
+            params_dict = {},
+            download_only=False,
+            usecache=True,
+            printhook=None):
         """Install a list of packages and its dependencies
             Returns a dictionary of (package requirement,package) with 'install','skipped','additional'
 
@@ -3045,6 +3046,18 @@ class Wapt(object):
                           as params variables and as "setup module" attributes
             download_only : don't install package, but only download them
             usecache : use the already downloaded packages if available in cache directory
+            printhook: hook for progress print
+        >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
+        >>> def nullhook(*args):
+        ...     pass
+        >>> res = wapt.install(['tis-wapttest'],usecache=False,printhook=nullhook,params_dict=dict(company='toto'))
+        ???
+        >>> isinstance(res['upgrade'],list) and isinstance(res['errors'],list) and isinstance(res['additional'],list) and isinstance(res['install'],list) and isinstance(res['unavailable'],list)
+        True
+        >>> res = wapt.remove('tis-wapttest')
+        ???
+        >>> res == {'removed': ['tis-wapttest'], 'errors': []}
+        True
         """
         if not isinstance(apackages,list):
             apackages = [apackages]
@@ -3074,7 +3087,7 @@ class Wapt(object):
         # get package entries to install to_install is a list of (request,package)
         packages = [ p[1] for p in to_install ]
 
-        downloaded = self.download_packages(packages,usecache=usecache)
+        downloaded = self.download_packages(packages,usecache=usecache,printhook=printhook)
         if downloaded.get('errors',[]):
             raise Exception(u'Error downloading some files : %s',(downloaded['errors'],))
 
@@ -3111,7 +3124,6 @@ class Wapt(object):
                     logger.info('switch to manual mode for %s' % (request,))
                     self.waptdb.switch_to_explicit_mode(p.package,self.user)
 
-
             for (request,p) in to_install:
                 try:
                     print u"Installing %s" % (p.package,)
@@ -3136,14 +3148,14 @@ class Wapt(object):
             return actions
 
     def download_packages(self,package_requests,usecache=True,printhook=None):
-        """Download a list of packages (requests are of the form packagename (>version) )
+        r"""Download a list of packages (requests are of the form packagename (>version) )
            returns a dict of {"downloaded,"skipped","errors"}
 
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
         >>> def nullhook(*args):
         ...     pass
         >>> wapt.download_packages(['tis-firefox','tis-waptdev'],usecache=False,printhook=nullhook)
-        {'downloaded': [u'cache\\tis-firefox_27.0.1-0_all.wapt', u'cache\\tis-waptdev.wapt'], 'skipped': [], 'errors': []}
+        {'downloaded': [u'cache\\tis-firefox_28.0.0-1_all.wapt', u'cache\\tis-waptdev.wapt'], 'skipped': [], 'errors': []}
         """
         if not isinstance(package_requests,(list,tuple)):
             package_requests = [ package_requests ]
@@ -3307,7 +3319,6 @@ class Wapt(object):
         """Check and return the host package if available and not installed"""
         hostresult = {}
         logger.debug(u'Check if host package "%s" is available' % (self.host_packagename(), ))
-
         host_packages = self.is_available(self.host_packagename())
         if host_packages and not self.is_installed(host_packages[-1].asrequirement()):
             return host_packages[-1]
@@ -3333,7 +3344,6 @@ class Wapt(object):
             upgrades = self.waptdb.upgradeable()
             logger.debug(u'upgrades : %s' % upgrades.keys())
             result = self.install(upgrades.keys(),force=True)
-
             self.store_upgrade_status()
 
             # merge results
@@ -3983,9 +3993,23 @@ class Wapt(object):
         props['publisher'] = publisher
         return props
 
-    def make_package_template(self,installer_path,packagename='',directoryname='',section='',description=''):
-        """Build a skeleton of WAPT package based on the properties of the supplied installer
+    def make_package_template(self,installer_path,packagename='',directoryname='',section='',description='',depends=''):
+        r"""Build a skeleton of WAPT package based on the properties of the supplied installer
            Return the path of the skeleton
+        >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
+        >>> wapt.dbdir = ':memory:'
+        >>> files = 'c:/tmp/files'
+        >>> if not os.path.isdir(files):
+        ...    os.makedirs(files)
+        >>> tmpdir = 'c:/tmp/dummy'
+        >>> devdir = wapt.make_package_template(files,packagename='mydummy',directoryname=tmpdir,depends='tis-firefox')
+        >>> os.path.isfile(os.path.join(devdir,'WAPT','control'))
+        True
+        >>> p = wapt.build_package(devdir)
+        >>> 'filename' in p and isinstance(p['files'],list) and isinstance(p['package'],PackageEntry)
+        True
+        >>> import shutil
+        >>> shutil.rmtree(tmpdir)
         """
         packagename = packagename.lower()
         if installer_path:
@@ -3997,7 +4021,7 @@ class Wapt(object):
         uninstallkey = ''
 
         if not os.path.exists(installer_path):
-            raise Exception('The parameter "%s" is not a file or a directory, it must be the path to a directory, or an .exe or .msi installer' % installer_path)
+            raise Exception('The parameter "%s" is neither a file or a directory, it must be the path to a directory, or an .exe or .msi installer' % installer_path)
         if os.path.isfile(installer_path):
             # case of an installer
             props = self.getproductprops(installer_path)
@@ -4054,6 +4078,7 @@ class Wapt(object):
             entry.priority = 'optional'
             entry.section = section or 'base'
             entry.version = props['version']+'-0'
+            entry.depends = depends
             if self.config.has_option('global','default_sources_url'):
                 entry.sources = self.config.get('global','default_sources_url') % {'packagename':packagename}
             codecs.open(control_filename,'w',encoding='utf8').write(entry.ascontrol())
@@ -4070,9 +4095,21 @@ class Wapt(object):
         return self.make_group_template(packagename=packagename,depends=depends,directoryname=directoryname,section='host')
 
     def make_group_template(self,packagename='',depends=None,directoryname='',section='group',description=''):
-        """Build a skeleton of WAPT group package
+        r"""Build a skeleton of WAPT group package
             depends : list of package dependencies.
            Return the path of the skeleton
+        >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
+        >>> tmpdir = 'c:/tmp/dummy'
+        >>> if os.path.isdir(tmpdir):
+        ...    import shutil
+        ...    shutil.rmtree(tmpdir)
+        >>> p = wapt.make_group_template(packagename='testgroupe',directoryname=tmpdir,depends='tis-firefox',description=u'Test de groupe')
+        >>> print p
+        {'target': 'c:\\tmp\\dummy', 'source_dir': 'c:\\tmp\\dummy', 'package': "testgroupe (=0)"}
+        >>> print p['package'].depends
+        tis-firefox
+        >>> import shutil
+        >>> shutil.rmtree(tmpdir)
         """
         packagename = packagename.lower()
         if directoryname:
@@ -4191,15 +4228,16 @@ class Wapt(object):
 
     def edit_package(self,packagename,target_directory='',use_local_sources=True,
             append_depends=None):
-        """Download an existing package from repositories into target_directory for modification
+        r"""Download an existing package from repositories into target_directory for modification
             if use_local_sources is True and no newer package exists on repos, updates current local edited data
               else if target_directory exists and is not empty, raise an exception
             Return {'target':target_directory,'source_dir':target_directory,'package':package_entry}
 
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
+        >>> wapt.dbdir = ':memory:'
         >>> tmpdir = 'c:/tmp/dummy'
-        >>> wapt.edit_package('',target_directory=tmpdir,append_depends='tis-firefox')
-        {'target': 'c:\\\\tmp\\\\dummy', 'source_dir': 'c:\\\\tmp\\\\dummy', 'package': "dummy.tranquilit.local (=0)"}
+        >>> wapt.edit_package('tis-wapttest',target_directory=tmpdir,append_depends='tis-firefox')
+        {'source_dir': 'c:\\tmp\\dummy', 'target': 'c:\\tmp\\dummy', 'package': "tis-wapttest (=111)"}
         >>> import shutil
         >>> shutil.rmtree(tmpdir)
 
@@ -4270,7 +4308,7 @@ class Wapt(object):
         except:
             return False
 
-    def edit_host(self,hostname,target_directory='',use_local_sources=True,append_depends=None):
+    def edit_host(self,hostname,target_directory='',use_local_sources=True,append_depends=None,printhook=None):
         """Download and extract a host package from host repositories into target_directory for modification
                 Return dict {'target': 'c:\\\\tmp\\\\dummy', 'source_dir': 'c:\\\\tmp\\\\dummy', 'package': "dummy.tranquilit.local (=0)"}
 
@@ -4286,6 +4324,7 @@ class Wapt(object):
         >>> import shutil
         >>> shutil.rmtree(tmpdir)
         >>> host = wapt.edit_host('htlaptop.tranquilit.local',target_directory=tmpdir,append_depends='tis-firefox')
+        ???
         >>> shutil.rmtree(tmpdir)
         """
         # target_directory is not provided, calc default one
@@ -4319,7 +4358,14 @@ class Wapt(object):
             elif os.path.isdir(target_directory) and os.listdir(target_directory):
                 raise Exception('directory %s is not empty, aborting.' % target_directory)
 
-            return self.duplicate_package(packagename=hostname,newname=hostname,target_directory=target_directory,build=False,append_depends = append_depends,usecache=False)
+            return self.duplicate_package(
+                    packagename=hostname,
+                    newname=hostname,
+                    target_directory=target_directory,
+                    build=False,
+                    append_depends = append_depends,
+                    usecache=False,
+                    printhook=printhook)
         elif os.path.isdir(target_directory) and os.listdir(target_directory):
             raise Exception('directory %s is not empty, aborting.' % target_directory)
         else:
@@ -4336,13 +4382,39 @@ class Wapt(object):
             callback=pwd_callback,
             append_depends=None,
             auto_inc_version=True,
-            usecache=True):
-        """Duplicate an existing package from repositories into targetdirectory with newname.
+            usecache=True,
+            printhook=None):
+        r"""Duplicate an existing package from repositories into targetdirectory with newname.
             Return  {'target':new package or new source directory,'package':new PackageEntry,'source_dir':new source directory}
             unzip: unzip packages at end for modifications, don't sign, return directory name
             excludes: excluded files for signing
             append_depends : comma str or list of depends to append.
             auto_inc_version : if version is less than existing package in repo, set version to repo version+1
+            printhook: hook for download progress
+        >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
+        >>> def nullhook(*args):
+        ...     pass
+        >>> tmpdir = 'c:/tmp/testdup-wapt'
+        >>> if os.path.isdir(tmpdir):
+        ...     import shutil
+        ...     shutil.rmtree(tmpdir)
+        >>> p = wapt.duplicate_package('tis-wapttest',
+        ...     newname='testdup',
+        ...     newversion='20.0-0',
+        ...     target_directory=tmpdir,
+        ...     build=False,
+        ...     excludes=['.svn','.git*','*.pyc','src'],
+        ...     private_key=None,
+        ...     callback=pwd_callback,
+        ...     append_depends=None,
+        ...     auto_inc_version=True,
+        ...     usecache=False,
+        ...     printhook=nullhook)
+        >>> print p
+        {'source_dir': 'c:\\tmp\\testdup-wapt', 'target': 'c:\\tmp\\testdup-wapt', 'package': "testdup (=20.0-0)"}
+        >>> if os.path.isdir(tmpdir):
+        ...     import shutil
+        ...     shutil.rmtree(tmpdir)
         """
 
         # suppose target directory
@@ -4394,7 +4466,7 @@ class Wapt(object):
             zip = ZipFile(source_filename,allowZip64=True)
             zip.extractall(path=target_directory)
         else:
-            filenames = self.download_packages([packagename],usecache=usecache)
+            filenames = self.download_packages([packagename],usecache=usecache,printhook=printhook)
             source_filename = (filenames['downloaded'] or filenames['skipped'])[0]
             source_control = PackageEntry().load_control_from_wapt(source_filename)
             if not target_directory:
@@ -4471,10 +4543,10 @@ class Wapt(object):
             packages : list of package names
             append_depends : list of dependencies packages
         """
-        pass
-        self.build_upload()
+        raise NotImplementedError()
 
     def setup_tasks(self):
+        """Setup cron job on windows for update and download-upgrade"""
         result = []
         # update and download new packages
         if setuphelpers.task_exists('wapt-update'):
@@ -4502,7 +4574,7 @@ class Wapt(object):
         return '\n'.join(result)
 
     def enable_tasks(self):
-        """Enable Wapt automatic update/upgrade scheduling"""
+        """Enable Wapt automatic update/upgrade scheduling through windows scheduler"""
         result = []
         if setuphelpers.task_exists('wapt-upgrade'):
             setuphelpers.enable_task('wapt-upgrade')
@@ -4513,7 +4585,7 @@ class Wapt(object):
         return result
 
     def disable_tasks(self):
-        """Disable Wapt automatic update/upgrade scheduling"""
+        """Disable Wapt automatic update/upgrade scheduling through windows scheduler"""
         result = []
         if setuphelpers.task_exists('wapt-upgrade'):
             setuphelpers.disable_task('wapt-upgrade')
@@ -4528,7 +4600,11 @@ class Wapt(object):
         self.waptdb.set_param(name,value)
 
     def read_param(self,name,default=None):
-        """read a param value from local db """
+        """read a param value from local db
+        >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
+        >>> wapt.read_param('db_version')
+        u'20130523'
+        """
         return self.waptdb.get_param(name,default)
 
     def delete_param(self,name):
@@ -4536,6 +4612,12 @@ class Wapt(object):
         self.waptdb.delete_param(name)
 
     def dependencies(self,packagename,expand=False):
+        """Return all dependecies of a given package
+        >>> w = Wapt(config_filename='c:/wapt/wapt-get.ini')
+        >>> dep = w.dependencies('tis-waptdev')
+        >>> isinstance(dep,list) and isinstance(dep[0],PackageEntry)
+        True
+        """
         packages = self.is_available(packagename)
         result = []
         errors = []
@@ -4672,6 +4754,7 @@ if __name__ == '__main__':
     reload(sys)
     sys.setdefaultencoding("UTF-8")
     import doctest
-    doctest.testmod()
+    doctest.ELLIPSIS_MARKER = '???'
+    doctest.testmod(optionflags=doctest.ELLIPSIS)
     sys.exit(0)
 

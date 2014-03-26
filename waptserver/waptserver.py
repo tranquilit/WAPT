@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="0.8.14"
+__version__="0.8.16"
 
 import os,sys
 wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
@@ -54,9 +54,7 @@ import subprocess
 import tempfile
 from rocket import Rocket
 
-
-from waptpackage import update_packages,PackageEntry
-
+from waptpackage import *
 
 config = ConfigParser.RawConfigParser()
 
@@ -161,7 +159,6 @@ hosts = db.hosts
 
 ALLOWED_EXTENSIONS = set(['wapt'])
 
-
 app = Flask(__name__,static_folder='./templates/static')
 #app.config['PROPAGATE_EXCEPTIONS'] = True
 
@@ -186,86 +183,61 @@ def informations():
         pe = pefile.PE(waptsetup)
         informations["client_version"] =  pe.FileInfo[0].StringTable[0].entries['ProductVersion'].strip()
 
-    return  Response(response=json.dumps(informations),
+    return Response(response=json.dumps(informations),
                      status=200,
                      mimetype="application/json")
 
 
 @app.route('/wapt/')
 def wapt_listing():
-
     return render_template('listing.html',data=data)
 
+@app.route('/hosts')
 @app.route('/json/host_list',methods=['GET'])
 def get_host_list():
-
     list_hosts = []
     data = request.args
     query = {}
     search_filter = ""
     search = ""
 
-    if "package_error" in data.keys() and data['package_error'] == "true":
-        query["packages.install_status"] = "ERROR"
-    if "need_upgrade" in data.keys() and data['need_upgrade'] == "true":
-        query["update_status.upgrades"] = {"$exists": "true", "$ne" :[]}
-    if "q" in data.keys():
-        search = data['q'].lower()
-    if "filter" in data.keys():
-        search_filter = data['filter'].split(',')
+    try:
+        if "package_error" in data.keys() and data['package_error'] == "true":
+            query["packages.install_status"] = "ERROR"
+        if "need_upgrade" in data.keys() and data['need_upgrade'] == "true":
+            query["update_status.upgrades"] = {"$exists": "true", "$ne" :[]}
+        if "q" in data.keys():
+            search = data['q'].lower()
+        if "filter" in data.keys():
+            search_filter = data['filter'].split(',')
 
-    #{"host":1,"dmi":1,"uuid":1, "wapt":1, "update_status":1,"last_query_date":1}
+        #{"host":1,"dmi":1,"uuid":1, "wapt":1, "update_status":1,"last_query_date":1}
 
-    for host in hosts.find( query):
-        host.pop("_id")
-        if search_filter:
-            for key in search_filter:
-                if host.has_key(key) and search in json.dumps(host[key]).lower():
-                    host["softwares"] = ""
-                    host["packages"] = ""
-                    list_hosts.append(host)
-                    continue
-        elif search and search in json.dumps(host).lower():
-            host["softwares"] = ""
-            host["packages"] = ""
-            list_hosts.append(host)
-        elif search == "":
-            host["softwares"] = ""
-            host["packages"] = ""
-            list_hosts.append(host)
+        for host in hosts.find( query):
+            host.pop("_id")
+            if search_filter:
+                for key in search_filter:
+                    if host.has_key(key) and search in json.dumps(host[key]).lower():
+                        host["softwares"] = ""
+                        host["packages"] = ""
+                        list_hosts.append(host)
+                        continue
+            elif search and search in json.dumps(host).lower():
+                host["softwares"] = ""
+                host["packages"] = ""
+                list_hosts.append(host)
+            elif search == "":
+                host["softwares"] = ""
+                host["packages"] = ""
+                list_hosts.append(host)
 
-    return  Response(response=json.dumps(list_hosts),
+        result = list_hosts
+    except Exception as e:
+        result = dict(status='ERROR',message='%s: %s'%('update_host',e),result=None)
+
+    return Response(response=json.dumps(result),
                      status=200,
                      mimetype="application/json")
-
-@app.route('/update_host',methods=['POST'])
-def update_host():
-    """Update localstatus of computer, and return known registration info"""
-    data = json.loads(request.data)
-    if data:
-        uuid = data["uuid"]
-        logger.info('Update host %s status'%(uuid,))
-        return json.dumps(update_data(data))
-    else:
-        raise Exception("No data retrieved")
-
-
-@app.route('/delete_host/<string:uuid>')
-def delete_host(uuid=""):
-    hosts.remove({'uuid': uuid })
-    if get_host_data(uuid):
-        return "error"
-    else:
-        return "ok"
-
-@app.route('/add_host',methods=['POST','GET'])
-def add_host():
-    print request.data
-    data = json.loads(request.data)
-    if data:
-        return json.dumps(update_data(data))
-    else:
-        raise Exception("No data retrieved")
 
 def update_data(data):
     data['last_query_date'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -274,8 +246,42 @@ def update_data(data):
         hosts.update({"_id" : host['_id'] }, {"$set": data})
     else:
         host_id = hosts.insert(data)
-
     return get_host_data(data["uuid"],filter={"uuid":1,"host":1})
+
+@app.route('/add_host',methods=['POST','GET'])
+@app.route('/update_host',methods=['POST'])
+def update_host():
+    """Update localstatus of computer, and return known registration info"""
+    try:
+        data = json.loads(request.data)
+        if data:
+            uuid = data["uuid"]
+            if uuid:
+                logger.info('Update host %s status'%(uuid,))
+                result = dict(status='OK',message="update_host: No data supplied",result=update_data(data))
+            else:
+                result = dict(status='ERROR',message="update_host: No uuid supplied")
+        else:
+            result = dict(status='ERROR',message="update_host: No data supplied")
+
+    except Exception as e:
+        result = dict(status='ERROR',message='%s: %s'%('update_host',e),result=None)
+
+    return Response(response=json.dumps(result),
+                     status=200,
+                     mimetype="application/json")
+
+@app.route('/delete_host/<string:uuid>')
+def delete_host(uuid=""):
+    try:
+        hosts.remove({'uuid': uuid })
+        data = get_host_data(uuid)
+        result = dict(status='OK',message=json.dumps(data))
+    except Exception as e:
+        result = dict(status='ERROR',message=u"%s"%e)
+    return Response(response=json.dumps(data),
+                 status=200,
+                 mimetype="application/json")
 
 
 @app.route('/client_software_list/<string:uuid>')
@@ -287,7 +293,6 @@ def get_client_software_list(uuid=""):
                          mimetype="application/json")
     else:
         return "{}"
-
 
 def packagesFileToList(pathTofile):
     listPackages = codecs.decode(zipfile.ZipFile(pathTofile).read(name='Packages'),'utf-8')
@@ -319,21 +324,26 @@ def packagesFileToList(pathTofile):
 
 @app.route('/client_package_list/<string:uuid>')
 def get_client_package_list(uuid=""):
-    packages = get_host_data(uuid, {"packages":1})
-    repo_packages = packagesFileToList(os.path.join(wapt_folder, 'Packages'))
-    if packages.has_key('packages'):
-        for p in packages['packages']:
-            package = PackageEntry()
-            package.load_control_from_dict(p)
-            matching = [ x for x in repo_packages if package.package == x.package ]
-            if matching:
-                if package < matching[-1]:
-                    p['install_status'] = 'NEED-UPGRADE'
+    try:
+        packages = get_host_data(uuid, {"packages":1})
+        if not packages:
+            raise Exception('No host with uuid %s'%uuid)
+        repo_packages = packagesFileToList(os.path.join(wapt_folder, 'Packages'))
+        if packages.has_key('packages'):
+            for p in packages['packages']:
+                package = PackageEntry()
+                package.load_control_from_dict(p)
+                matching = [ x for x in repo_packages if package.package == x.package ]
+                if matching:
+                    if package < matching[-1]:
+                        p['install_status'] = 'NEED-UPGRADE'
+        result = dict(status='OK',message='%i packages for host uuid: %s'%(len(packages['packages']),uuid),result = packages['packages'])
+    except Exception as e:
+        result = dict(status='ERROR',message='%s: %s'%('get_client_package_list',e),result=None)
 
-        return  Response(response=json.dumps(packages['packages']),
-                         status=200,
-                         mimetype="application/json")
-    return "{}"
+    return Response(response=json.dumps(result),
+                     status=200,
+                     mimetype="application/json")
 
 
 def requires_auth(f):
@@ -358,65 +368,96 @@ def upload_package(filename=""):
     try:
         if request.method == 'POST':
             if filename and allowed_file(filename):
-                filename = os.path.join(wapt_folder, secure_filename(filename))
-                with open(filename, 'wb') as f:
+                tmp_target = os.path.join(wapt_folder, secure_filename('.'+filename))
+                target = os.path.join(wapt_folder, secure_filename(filename))
+                with open(tmp_target, 'wb') as f:
                     f.write(request.stream.read())
-
-                if not os.path.isfile(filename):
-                    "Error during uploading"
-                if PackageEntry().load_control_from_wapt(filename):
-                    update_packages(wapt_folder)
-                    return "ok"
+                if not os.path.isfile(tmp_target):
+                    result = dict(status='ERROR',message='Problem during upload')
                 else:
-                    "Is not a valid wapt file"
+                    if PackageEntry().load_control_from_wapt(tmp_target):
+                        os.rename(tmp_target,target)
+                        data = update_packages(wapt_folder)
+                        result = dict(status='OK',message='%s uploaded, %i packages analysed'%(filename,len(data['processed'])),result=data)
+                    else:
+                        result = dict(status='ERROR',message='Not a valid wapt package')
+                        os.unlink(tmp_target)
             else:
-                return "wrong file type"
+                result = dict(status='ERROR',message='Wrong file type')
         else:
-            return "Unsupported method"
+            result = dict(status='ERROR',message='Unsupported method')
     except:
         e = sys.exc_info()
-        return str(e)
-
-    return "ok"
+        result = dict(status='ERROR',message='unexpected: %s'%(e,))
+    return  Response(response=json.dumps(result),
+                         status=200,
+                         mimetype="application/json")
 
 @app.route('/upload_host',methods=['POST'])
 @requires_auth
 def upload_host():
-    logger.debug("Entering upload_host")
     try:
         file = request.files['file']
-        logger.info('uploading host file : %s' % file)
-
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(wapt_folder+'-host', filename))
-            return "ok"
+        if file:
+            logger.debug('uploading host file : %s' % file)
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                tmp_target = os.path.join(wapt_folder+'-host', '.'+filename)
+                target = os.path.join(wapt_folder+'-host', filename)
+                file.save(tmp_target)
+                if os.path.isfile(tmp_target):
+                    try:
+                        # try to read attributes...
+                        entry = PackageEntry().load_control_from_wapt(tmp_target)
+                        os.rename(tmp_target,target)
+                        result = dict(status='OK',message='File %s uploaded to %s'%(file.filename,target))
+                    except:
+                        if os.path.isfile(tmp_target):
+                            os.unlink(tmp_target)
+                        raise
+                else:
+                    result = dict(status='ERROR',message='No data received')
+            else:
+                result = dict(status='ERROR',message='Wrong file type')
         else:
-            return "wrong file type"
-
-
+            result = dict(status='ERROR',message='No package file provided in request')
     except:
         e = sys.exc_info()
-        return str(e)
+        result = dict(status='ERROR',message='upload_host: %s'%(e,))
+    return  Response(response=json.dumps(result),
+                         status=200,
+                         mimetype="application/json")
 
 @app.route('/upload_waptsetup',methods=['POST'])
 @requires_auth
 def upload_waptsetup():
     logger.debug("Entering upload_waptsetup")
+    tmp_target = None
     try:
-        file = request.files['file']
-        logger.info('uploading waptsetup file : %s' % file)
-        if file and "waptsetup.exe" in file.filename :
-            filename = secure_filename(file.filename)
-            file.save(waptsetup)
-            return "ok"
+        if request.method == 'POST':
+            file = request.files['file']
+            if file and "waptsetup.exe" in file.filename :
+                filename = secure_filename(file.filename)
+                tmp_target = os.path.join(wapt_folder, secure_filename('.'+filename))
+                target = os.path.join(wapt_folder, secure_filename(filename))
+                file.save(tmp_target)
+                if not os.path.isfile(tmp_target):
+                    result = dict(status='ERROR',message='Problem during upload')
+                else:
+                    os.rename(tmp_target,target)
+                    result = dict(status='OK',message='%s uploaded'%(filename,))
+            else:
+                result = dict(status='ERROR',message='Wrong file name')
         else:
-            return "wrong file type"
-
+            result = dict(status='ERROR',message='Unsupported method')
     except:
         e = sys.exc_info()
-        return str(e)
-
+        if tmp_target and os.path.isfile(tmp_target):
+            os.unlink(tmp_target)
+        result = dict(status='ERROR',message='unexpected: %s'%(e,))
+    return  Response(response=json.dumps(result),
+                         status=200,
+                         mimetype="application/json")
 
 @app.route('/waptupgrade_host/<string:ip>')
 @requires_auth
@@ -441,15 +482,15 @@ def waptupgrade_host(ip):
                         result = {  'status' : 'OK', 'message': u"%s" % r.text }
                     else:
                         result = {  'status' : 'ERROR', 'message': u"%s" % r.text }
-
             else:
                 raise Exception(u"Le port de waptservice n'est pas défini")
 
         except Exception as e:
-            raise  Exception("Impossible de joindre le waptservice: %s" % e)
+            raise Exception("Impossible de joindre le waptservice: %s" % e)
 
     except Exception, e:
             result = { 'status' : 'ERROR', 'message': u"%s" % e  }
+
     return  Response(response=json.dumps(result),
                          status=200,
                          mimetype="application/json")
@@ -482,7 +523,6 @@ def install_package():
     return  Response(response=json.dumps(result),
                          status=200,
                          mimetype="application/json")
-
 
 @app.route('/remove_package')
 @app.route('/remove_package.json')
@@ -732,16 +772,23 @@ def allowed_file(filename):
 @app.route('/delete_package/<string:filename>')
 @requires_auth
 def delete_package(filename=""):
-    file = os.path.join(wapt_folder,filename)
-    if os.path.exists(file):
-        try:
-            os.unlink(file)
-            update_packages(wapt_folder)
-            return json.dumps({'result':'ok'})
-        except Exception,e:
-            return json.dumps({'error': "%s" % e })
-    else:
-        return json.dumps({'error': "The file %s doesn't exist in wapt folder (%s)" % (filename, wapt_folder)})
+    fullpath = os.path.join(wapt_folder,filename)
+    try:
+        if os.path.isfile(fullpath):
+            os.unlink(fullpath)
+            data = update_packages(wapt_folder)
+            if os.path.isfile("%s.zsync"%(fullpath,)):
+                os.unlink("%s.zsync"%(fullpath,))
+            result = dict(status='OK',message="Package deleted %s" % (fullpath,),result=data)
+        else:
+            result = dict(status='ERROR',message="The file %s doesn't exist in wapt folder (%s)" % (filename, wapt_folder))
+
+    except Exception, e:
+        result = { 'status' : 'ERROR', 'message': u"%s" % e  }
+
+    return  Response(response=json.dumps(result),
+                         status=200,
+                         mimetype="application/json")
 
 @app.route('/wapt/<string:input_package_name>')
 def get_wapt_package(input_package_name):

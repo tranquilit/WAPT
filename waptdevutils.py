@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.14"
+__version__ = "0.8.16"
 
 import common
 import json
@@ -36,16 +36,18 @@ is_encrypt_private_key = common.private_key_has_password
 is_match_password = common.check_key_password
 
 def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wapt_server='',destination='',company=''):
-    """Build a customized waptsetup.exe with included provided certificate
+    r"""Build a customized waptsetup.exe with included provided certificate
     Returns filename
-    ;>>> from common import Wapt
-    ;>>> wapt = Wapt(config_filename=r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini')
-    ;>>> create_wapt_setup(wapt,r'C:\private\ht.crt')
+    >>> from common import Wapt
+    >>> wapt = Wapt(config_filename=r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini')
+    >>> create_wapt_setup(wapt,r'C:\private\ht.crt',destination='c:\\tranquilit\\wapt\\waptsetup')
+    u'c:\\tranquilit\\wapt\\waptsetup\\waptsetup.exe'
     """
     if not company:
         company = registered_organization()
     outputfile = ''
     iss_template = makepath(wapt.wapt_base_dir,'waptsetup','waptsetup.iss')
+    custom_iss = makepath(wapt.wapt_base_dir,'waptsetup','custom_waptsetup.iss')
     iss = codecs.open(iss_template,'r',encoding='utf8').read().splitlines()
     new_iss=[]
     for line in iss:
@@ -55,7 +57,7 @@ def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wa
             new_iss.append('#define default_wapt_server "%s"' % (default_wapt_server))
         elif line.startswith('#define output_dir'):
             new_iss.append('#define output_dir "%s"' % (destination))
-        elif not line.startswith('SignTool'):
+        elif not line.startswith('#define signtool'):
             new_iss.append(line)
             if line.startswith('OutputBaseFilename'):
                 outputfile = makepath(wapt.wapt_base_dir,'waptsetup','%s.exe' % line.split('=')[1])
@@ -63,27 +65,32 @@ def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wa
     target = os.path.join(os.path.dirname(iss_template),'..','ssl')
     if not (os.path.normcase(os.path.abspath( os.path.dirname(source))) == os.path.normcase(os.path.abspath(target))):
         filecopyto(source,target)
-    codecs.open(iss_template,'w',encoding='utf8').write('\n'.join(new_iss))
+    codecs.open(custom_iss,'wb',encoding='utf8').write('\n'.join(new_iss))
     #inno_directory = '%s\\Inno Setup 5\\Compil32.exe' % programfiles32
     inno_directory =  makepath(wapt.wapt_base_dir,'waptsetup','innosetup','ISCC.exe')
     if not os.path.isfile(inno_directory):
         raise Exception(u"Innosetup n'est pas disponible (emplacement %s), veuillez l'installer" % inno_directory)
-    run('"%s"  %s' % (inno_directory,iss_template))
-    print('%s compiled successfully' % (outputfile, ))
-    return os.path.join(destination,os.path.basename(outputfile))
+    run('"%s"  %s' % (inno_directory,custom_iss))
+    #print('%s compiled successfully' % (outputfile, ))
+    return os.path.abspath(os.path.join(destination,os.path.basename(outputfile)))
 
 def upload_wapt_setup(wapt,waptsetup_path, wapt_server_user, wapt_server_passwd):
+    """Upload waptsetup.exe to wapt repository
+    >>> wapt = common.Wapt(config_filename="c:/users/htouvet/AppData/Local/waptconsole/waptconsole.ini")
+    >>> upload_wapt_setup(wapt,'c:/tranquilit/wapt/waptsetup/waptsetup.exe', 'admin', 'password')
+    '{"status": "OK", "message": "waptsetup.exe uploaded"}'
+    """
     auth =  (wapt_server_user, wapt_server_passwd)
     with open(waptsetup_path,'rb') as afile:
-        #req = requests.post("%s/upload_waptsetup" % wapt.wapt_server,data=afile,proxies=wapt.proxies,verify=False,auth=auth)
         req = requests.post("%s/upload_waptsetup" % (wapt.wapt_server,),files={'file':afile},proxies=wapt.proxies,verify=False,auth=auth)
         req.raise_for_status()
-    return req.content
+    return json.loads(req.content)
 
 def diff_computer_ad_wapt(wapt):
     """Return the computer in the Active Directory but not in Wapt Serveur
     >>> wapt = common.Wapt(config_filename=r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
     >>> diff_computer_ad_wapt(wapt)
+    ???
     """
     computer_ad =  set([ c['dnshostname'].lower() for c in active_directory.search("objectClass='computer'") if c['dnshostname']])
     computer_wapt = set( [ c['host']['computer_fqdn'].lower() for c in json.loads(requests.request('GET','%s/json/host_list'%wapt.wapt_server).text)])
@@ -94,6 +101,7 @@ def diff_computer_wapt_ad(wapt):
     """Return the computer in Wapt Serveur but not in the Active Directory
     >>> wapt = common.Wapt(config_filename=r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
     >>> diff_computer_wapt_ad(wapt)
+    ???
     """
     computer_ad =  set([ c['dnshostname'].lower() for c in active_directory.search("objectClass='computer'") if c['dnshostname']])
     computer_wapt = set( [ c['host']['computer_fqdn'].lower() for c in json.loads(requests.request('GET','%s/json/host_list'%wapt.wapt_server).text)])
@@ -127,6 +135,7 @@ def update_tis_repo(waptconfigfile,search_string):
 def get_packages_filenames(waptconfigfile,packages_names):
     """Returns list of package filenames (latest version) matching comma seperated list of packages names)
     >>> get_packages_filenames(r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini","tis-firefox-esr,tis-flash")
+    [u'tis-firefox-esr_24.4.0-0_all.wapt', u'tis-flash_12.0.0.77-3_all.wapt']
     """
     result = []
     wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
@@ -143,7 +152,7 @@ def get_packages_filenames(waptconfigfile,packages_names):
 
 def duplicate_from_tis_repo(waptconfigfile,file_name,depends=[]):
     """Duplicate a package from  to supplied wapt repository
-    >>> duplicate_from_tis_repo(r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini','tis-firefox')
+    ;>>> duplicate_from_tis_repo(r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini','tis-firefox')
     """
     import tempfile
     wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
@@ -205,7 +214,8 @@ if __name__ == '__main__':
     reload(sys)
     sys.setdefaultencoding("UTF-8")
     import doctest
-    doctest.testmod()
+    doctest.ELLIPSIS_MARKER = '???'
+    doctest.testmod(optionflags=doctest.ELLIPSIS)
     sys.exit(0)
 
     #searchLastPackageTisRepo(r'C:\Users\Administrateur\AppData\Local\waptconsole\waptconsole.ini','')

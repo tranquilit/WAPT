@@ -1477,7 +1477,6 @@ def install_service():
     """Setup waptservice as a windows Service managed by nssm
     >>> install_service()
     """
-
     logger.info('Open port on firewall')
     # http
     check_open_port(waptconfig.waptservice_port)
@@ -1495,7 +1494,10 @@ def install_service():
     if setuphelpers.service_installed('waptservice'):
         if setuphelpers.service_is_running('waptservice'):
             logger.info('Stop running waptservice')
-            setuphelpers.run('sc stop waptservice')
+            setuphelpers.run('net stop waptservice')
+            while setuphelpers.service_is_running('waptservice'):
+                logger.debug('Waiting for waptservice to terminate')
+                time.sleep(2)
         logger.info('Unregister existing waptservice')
         setuphelpers.run('sc delete waptservice')
 

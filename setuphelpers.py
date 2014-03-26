@@ -87,16 +87,15 @@ def ensure_dir(f):
 
 # from opsi
 def ensure_unicode(data):
-    """Return a unicode string from data object
-    >>> ensure_unicode('éé')
+    ur"""Return a unicode string from data object
+    >>> ensure_unicode(str('éé'))
     u'\xe9\xe9'
     >>> ensure_unicode(u'éé')
     u'\xe9\xe9'
     >>> ensure_unicode(Exception("test"))
-    u'test'
+    u'Exception: test'
     >>> ensure_unicode(Exception())
-    u'test'
-
+    u'Exception: '
     """
     try:
         if type(data) is types.UnicodeType:
@@ -132,7 +131,12 @@ def ensure_unicode(data):
 
 def create_shortcut(path, target='', arguments='', wDir='', icon=''):
     """Create a windows shortcut
-    >>> create_shortcut('c:/tmp/test.lnk',target='c:\\tmp')
+          path - As what file should the shortcut be created?
+          target - What command should the desktop use?
+          arguments - What arguments should be supplied to the command?
+          wdir - What folder should the command start in?
+          icon - (filename, index) What icon should be used for the shortcut?
+    >>> create_shortcut(r'c:\\tmp\\test.lnk',target='c:\\wapt\\wapt-get.exe')
     """
     ext = path[-3:]
     if ext == 'url':
@@ -189,11 +193,13 @@ def wgets(url,proxies=None):
         r.raise_for_status()
 
 def wget(url,target,printhook=None,proxies=None):
-    """Copy the contents of a file from a given URL
+    r"""Copy the contents of a file from a given URL
     to a local file.
-    >>> def printhook(received,total,speed,url):
-    ...    print("received:%i,total:%i,speed:%i,url:%s"%(received,total,speed,url))
-    >>> wget('http://wapt.tranquil.it/wapt/tis-firefox_28.0.0-1_all.wapt','c:/tmp/test.wapt',printhook=printhook)
+    >>> def nullhook(received,total,speed,url):
+    ...    pass
+    >>> respath = wget('http://wapt.tranquil.it/wapt/tis-firefox_28.0.0-1_all.wapt','c:\\tmp\\test.wapt',printhook=nullhook,proxies={'http':'proxy:3128'})
+    >>> os.stat(respath).st_size>10000
+    True
     """
     start_time = time.time()
     last_time_display = 0.0
@@ -1413,7 +1419,8 @@ if __name__=='__main__':
     reload(sys)
     sys.setdefaultencoding("UTF-8")
     import doctest
-    doctest.testmod()
+    doctest.ELLIPSIS_MARKER = '???'
+    doctest.testmod(optionflags=doctest.ELLIPSIS)
     sys.exit(0)
 
 

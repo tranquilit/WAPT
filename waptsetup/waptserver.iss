@@ -4,6 +4,9 @@
 #define default_wapt_server "http://localhost:8080"
 #define default_update_maxruntime "30"
 #define default_update_period "120"
+#define output_dir "."
+#define Company "Tranquil IT Systems"
+
 #include "wapt.iss"
 
 

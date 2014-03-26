@@ -351,7 +351,9 @@ sources      : %(sources)s
         raise Exception(u'no build/packaging part in version number %s' % self.version)
 
 def extract_iconpng_from_wapt(self,fname):
-    """Return the content of WAPT/icon.png if it exists, a unknown.png file content if not"""
+    """Return the content of WAPT/icon.png if it exists, a unknown.png file content if not
+
+    """
     iconpng = None
     if os.path.isfile(fname):
         myzip = zipfile.ZipFile(fname,'r',allowZip64=True)
@@ -434,6 +436,7 @@ class WaptLocalRepo(object):
         kept = []
         processed = []
         errors = []
+        self.packages = []
         for fname in waptlist:
             try:
                 entry = PackageEntry()
@@ -452,6 +455,7 @@ class WaptLocalRepo(object):
                     entry.load_control_from_wapt(fname)
                     processed.append(fname)
                 packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
+                self.packages.append(entry)
             except Exception,e:
                 print e
                 logger.critical("package %s: %s" % (fname,e))
@@ -468,45 +472,37 @@ class WaptLocalRepo(object):
 def update_packages(adir):
     """Update packages index
     >>> if os.path.isdir('c:\\wapt\\cache'):
-    ...     res = update_packages('c:\\wapt\\cache')
+    ...     repopath = 'c:\\wapt\\cache'
     ... else:
-    ...     res = update_packages('/var/www/wapt')
+    ...     repopath = '/var/www/wapt'
+    >>> p = PackageEntry()
+    >>> p.package = 'test'
+    >>> p.version = '10'
+    >>> new_package_fn = os.path.join(repopath,p.make_package_filename())
+    >>> if os.path.isfile(new_package_fn):
+    ...     os.unlink(new_package_fn)
+    >>> res = update_packages(repopath)
     >>> os.path.isfile(res['packages_filename'])
     True
+    >>> r = WaptLocalRepo(localpath=repopath)
+    >>> r.load_packages()
+    >>> l1 = r.packages
+    >>> p.save_control_to_wapt(os.path.join(repopath,p.make_package_filename()))
+    >>> res = r.update_packages_index()
+    >>> l2 = r.packages
+    >>> [p for p in l2 if p not in l1]
+    ["test (=10)"]
     """
     repo = WaptLocalRepo(localpath=adir)
     return repo.update_packages_index()
 
 if __name__ == '__main__':
     import doctest
-    doctest.testmod()
-
+    import sys
+    reload(sys)
+    sys.setdefaultencoding("UTF-8")
+    import doctest
+    doctest.ELLIPSIS_MARKER = '???'
+    doctest.testmod(optionflags=doctest.ELLIPSIS)
     sys.exit(0)
 
-    w['install_date'] = '20120501'
-    for a in w.all_attributes:
-        print "%s: %s" % (a,w[a])
-    assert w['install_date'] == '20120501'
-    w.install_date == '20120501'
-    w.install_date == '20120501'
-
-    assert w.match('wapttest (>= 0.1.0-2)')
-    assert w.match('wapttest (>0.1.0-9)')
-    assert w.match('wapttest (>0.0.1-10)')
-    assert w.match('wapttest(=%s)' % w.version)
-    assert w.match('wapttest(<= 0.1.0)')
-    assert w.match('wapttest (=0.1.0)')
-    assert w.match('wapttest')
-
-    import tempfile
-    wfn = tempfile.mktemp(suffix='.wapt')
-    w.save_control_to_wapt(wfn)
-    try:
-        w.save_control_to_wapt(wfn)
-        raise Exception('Should fail')
-    except:
-        pass
-    update_packages(os.path.dirname(wfn))
-    w.load_control_from_wapt(wfn)
-    print w.ascontrol(with_non_control_attributes=True)
-    os.remove(wfn)
