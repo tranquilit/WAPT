@@ -26,20 +26,9 @@ uses Windows, Classes,JWAWinBase;
   /// <returns>True if process could be started and did not reach the
   ///   timeout.</returns>
   function Sto_RedirectedExecute(CmdLine: WideString;
-    const Input: WideString = '';
-    const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString=''): WideString;
+    const Input: RawByteString = '';
+    const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString=''): RawByteString;
 
-  const
-    LOGON_WITH_PROFILE = $00000001;
-
-  function CreateProcessWithLogonW(lpUsername, lpDomain, lpPassword: PWideChar;
-    dwLogonFlags: dword; lpApplicationName, lpCommandLine: PWideChar;
-    dwCreationFlags: dword; lpEnvironment: pointer;
-    lpCurrentDirectory: PWideChar; lpStartupInfo: PStartUpInfoW;
-    lpProcessInfo: PProcessInformation): boolean; stdcall;
-    external 'advapi32.dll';          ;
-    const Input: WideString = '';
-    const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString=''): WideString;
 
   const
     LOGON_WITH_PROFILE = $00000001;
@@ -62,12 +51,12 @@ type
   protected
     FPipe: THandle;
     FContent: TStringStream;
-    function Get_Content: AnsiString;
+    function Get_Content: RawByteString;
     procedure Execute; override;
   public
     constructor Create(const Pipe: THandle);
     destructor Destroy; override;
-    property Content: AnsiString read Get_Content;
+    property Content: RawByteString read Get_Content;
   end;
 
   TStoWritePipeThread = class(TThread)
@@ -76,7 +65,7 @@ type
     FContent: TStringStream;
     procedure Execute; override;
   public
-    constructor Create(const Pipe: THandle; const Content: AnsiString);
+    constructor Create(const Pipe: THandle; const Content: RawByteString);
     destructor Destroy; override;
   end;
 
@@ -111,7 +100,7 @@ begin
   until (iBytesRead = 0);
 end;
 
-function TStoReadPipeThread.Get_Content: AnsiString;
+function TStoReadPipeThread.Get_Content: RawByteString;
 begin
   Result := FContent.DataString;
 end;
@@ -119,7 +108,7 @@ end;
 { TStoWritePipeThread }
 
 constructor TStoWritePipeThread.Create(const Pipe: THandle;
-  const Content: AnsiString);
+  const Content: RawByteString);
 begin
   FPipe := Pipe;
   FContent := TStringStream.Create(Content);
@@ -155,8 +144,8 @@ begin
 end;
 
 function Sto_RedirectedExecute(CmdLine: WideString;
-  const Input: WideString = '';
-  const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString=''): WideString;
+  const Input: RawByteString = '';
+  const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString=''): RawByteString;
 var
   mySecurityAttributes: SECURITY_ATTRIBUTES;
   myStartupInfo: STARTUPINFOW;
@@ -169,8 +158,8 @@ var
   myReadErrorThread: TStoReadPipeThread;
   iWaitRes: Integer;
 
-  wparams,woutput,winput:WideString;
-  output,error:AnsiString;
+  wparams:WideString;
+  output,error:RawByteString;
 
   exitCode:LongWord;
   ose : EOSError;
@@ -207,7 +196,6 @@ begin
 
       // start the process
       wparams := CmdLine;
-      winput := Input;
       if user<>'' then
       begin
         UniqueString(user);

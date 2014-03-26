@@ -33,10 +33,13 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="1">
+    <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_utils"/>
       </Item1>
+      <Item2>
+        <PackageName Value="pltis_superobject"/>
+      </Item2>
     </RequiredPackages>
     <Units Count="1">
       <Unit0>
@@ -79,7 +82,6 @@
       <CompilerPath Value="$(CompPath)"/>
       <ExecuteAfter>
         <Command Value="$(ProjPath)\..\utils\upx.exe $(TargetFile)"/>
-        <CompileReasons Compile="False" Build="False" Run="False"/>
       </ExecuteAfter>
     </Other>
   </CompilerOptions>
