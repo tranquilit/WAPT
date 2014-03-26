@@ -233,7 +233,7 @@ def get_host_list():
 
         result = list_hosts
     except Exception as e:
-        result = dict(status='ERROR',message='%s: %s'%('update_host',e),result=None)
+        result = dict(status='ERROR',message='%s: %s'%('hosts',e),result=None)
 
     return Response(response=json.dumps(result),
                      status=200,
@@ -267,9 +267,15 @@ def update_host():
     except Exception as e:
         result = dict(status='ERROR',message='%s: %s'%('update_host',e),result=None)
 
-    return Response(response=json.dumps(result),
-                     status=200,
-                     mimetype="application/json")
+    # backward... to fix !
+    if result['status'] == 'OK':
+        return Response(response=json.dumps(result.result),
+                         status=200,
+                         mimetype="application/json")
+    else:
+        return Response(response=json.dumps(result),
+                         status=200,
+                         mimetype="application/json")
 
 @app.route('/delete_host/<string:uuid>')
 def delete_host(uuid=""):
@@ -283,7 +289,7 @@ def delete_host(uuid=""):
                  status=200,
                  mimetype="application/json")
 
-
+# to fix !
 @app.route('/client_software_list/<string:uuid>')
 def get_client_software_list(uuid=""):
     softwares = get_host_data(uuid, filter={"softwares":1})
