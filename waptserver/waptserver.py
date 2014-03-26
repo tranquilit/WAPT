@@ -322,6 +322,30 @@ def packagesFileToList(pathTofile):
     packages.sort()
     return packages
 
+@app.route('/host_packages/<string:uuid>')
+def host_packages(uuid=""):
+    try:
+        packages = get_host_data(uuid, {"packages":1})
+        if not packages:
+            raise Exception('No host with uuid %s'%uuid)
+        repo_packages = packagesFileToList(os.path.join(wapt_folder, 'Packages'))
+        if packages.has_key('packages'):
+            for p in packages['packages']:
+                package = PackageEntry()
+                package.load_control_from_dict(p)
+                matching = [ x for x in repo_packages if package.package == x.package ]
+                if matching:
+                    if package < matching[-1]:
+                        p['install_status'] = 'NEED-UPGRADE'
+        result = dict(status='OK',message='%i packages for host uuid: %s'%(len(packages['packages']),uuid),result = packages['packages'])
+    except Exception as e:
+        result = dict(status='ERROR',message='%s: %s'%('host_packages',e),result=None)
+
+    return Response(response=json.dumps(result),
+                     status=200,
+                     mimetype="application/json")
+
+
 @app.route('/client_package_list/<string:uuid>')
 def get_client_package_list(uuid=""):
     try:
@@ -338,10 +362,13 @@ def get_client_package_list(uuid=""):
                     if package < matching[-1]:
                         p['install_status'] = 'NEED-UPGRADE'
         result = dict(status='OK',message='%i packages for host uuid: %s'%(len(packages['packages']),uuid),result = packages['packages'])
+        return Response(response=json.dumps(packages['packages']),
+                         status=200,
+                         mimetype="application/json")
     except Exception as e:
         result = dict(status='ERROR',message='%s: %s'%('get_client_package_list',e),result=None)
 
-    return Response(response=json.dumps(result),
+    return Response(response=json.dumps(packages['packages']),
                      status=200,
                      mimetype="application/json")
 
