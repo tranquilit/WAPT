@@ -269,7 +269,7 @@ def update_host():
 
     # backward... to fix !
     if result['status'] == 'OK':
-        return Response(response=json.dumps(result.result),
+        return Response(response=json.dumps(result['result']),
                          status=200,
                          mimetype="application/json")
     else:
