@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, ComCtrls, ActnList, Buttons;
+  ExtCtrls, ComCtrls, ActnList, Buttons, sogrid, superobject;
 
 type
 
@@ -22,6 +22,8 @@ type
     Label1: TLabel;
     Memo1: TMemo;
     ProgressBar1: TProgressBar;
+    GridTasks: TSOGrid;
+    SODataSource1: TSODataSource;
     Timer1: TTimer;
     procedure actSkipExecute(Sender: TObject);
     procedure ActUpgradeExecute(Sender: TObject);
@@ -31,6 +33,7 @@ type
     { private declarations }
   public
     { public declarations }
+    tasks : ISuperObject;
   end;
 
 var
@@ -38,7 +41,7 @@ var
 
 implementation
 
-uses tiscommon,waptcommon,superobject,soutils;
+uses tiscommon,waptcommon,soutils;
 {$R *.lfm}
 
 { TVisWaptExit }
@@ -48,8 +51,10 @@ var
   aso: ISuperObject;
 begin
   Timer1.Enabled := False;
-  aso := WAPTLocalJsonGet('upgrade');
+  aso := WAPTLocalJsonGet('upgrade.json');
   Memo1.Text:=aso.AsJSon();
+  tasks := aso['content'];
+  GridTasks.Data := tasks;
 end;
 
 procedure TVisWaptExit.actSkipExecute(Sender: TObject);
@@ -62,7 +67,7 @@ var
   aso: ISuperObject;
 begin
   ActUpgrade.Enabled:=false;
-  aso := WAPTLocalJsonGet('checkupgrades');
+  aso := WAPTLocalJsonGet('checkupgrades.json');
   if aso<>Nil then
   begin
     if aso['upgrades'].AsArray.Length = 0 then
@@ -76,15 +81,40 @@ begin
       Memo1.Text:= Join(#13#10, aso['upgrades']);
     end;
   end;
+  tasks := WAPTLocalJsonGet('tasks_status.json');
+  if tasks <>Nil then
+    SODataSource1.Data := tasks;
   Timer1.Enabled := True;
 end;
 
 procedure TVisWaptExit.Timer1Timer(Sender: TObject);
+var
+  aso:ISuperObject;
 begin
+  Application.ProcessMessages;
   ProgressBar1.Position := ProgressBar1.Position+1;
+  tasks := WAPTLocalJsonGet('tasks_status.json');
+  if tasks <>Nil then
+    SODataSource1.Data := tasks;
+
+  aso := WAPTLocalJsonGet('checkupgrades.json');
+  if aso<>Nil then
+  begin
+      if aso['upgrades'].AsArray.Length = 0 then
+      begin
+        Memo1.Text:='Système à jour';
+        //Close;
+      end
+      else
+      begin
+        ActUpgrade.Enabled:=True;
+        Memo1.Text:= Join(#13#10, aso['upgrades']);
+      end;
+  end;
+  {
   if ProgressBar1.Position>=ProgressBar1.Max then
     ActUpgrade.Execute;
-
+  }
 end;
 
 end.

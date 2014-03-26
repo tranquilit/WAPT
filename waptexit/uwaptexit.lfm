@@ -1,15 +1,15 @@
 object VisWaptExit: TVisWaptExit
   Left = 328
-  Height = 262
+  Height = 386
   Top = 422
-  Width = 303
+  Width = 608
   BorderStyle = bsDialog
   Caption = 'Lancement des mises à jour...'
-  ClientHeight = 262
-  ClientWidth = 303
+  ClientHeight = 386
+  ClientWidth = 608
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '1.1'
+  LCLVersion = '1.3'
   object Label1: TLabel
     Left = 12
     Height = 26
@@ -19,9 +19,9 @@ object VisWaptExit: TVisWaptExit
     ParentColor = False
   end
   object Memo1: TMemo
-    Left = 12
+    Left = 296
     Height = 101
-    Top = 96
+    Top = 8
     Width = 281
     Lines.Strings = (
       'Memo1'
@@ -39,7 +39,7 @@ object VisWaptExit: TVisWaptExit
   object BitBtn1: TBitBtn
     Left = 12
     Height = 30
-    Top = 220
+    Top = 348
     Width = 279
     Action = actSkip
     Glyph.Data = {
@@ -123,6 +123,126 @@ object VisWaptExit: TVisWaptExit
       0000000000000000000000000000000000000000000000000000
     }
     TabOrder = 3
+  end
+  object GridTasks: TSOGrid
+    Left = 12
+    Height = 240
+    Top = 100
+    Width = 548
+    Datasource = SODataSource1
+    Color = clWhite
+    DrawSelectionMode = smBlendedRectangle
+    Header.AutoSizeIndex = -1
+    Header.Columns = <    
+      item
+        Alignment = taRightJustify
+        Position = 0
+        Text = 'id'
+        Width = 40
+        PropertyName = 'id'
+      end    
+      item
+        Alignment = taRightJustify
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 1
+        Tag = 1
+        Text = 'priority'
+        Width = 46
+        PropertyName = 'priority'
+      end    
+      item
+        Alignment = taRightJustify
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 2
+        Tag = 2
+        Text = 'order'
+        Width = 41
+        PropertyName = 'order'
+      end    
+      item
+        Position = 3
+        Tag = 3
+        Text = 'description'
+        Width = 214
+        PropertyName = 'description'
+      end    
+      item
+        Position = 4
+        Tag = 4
+        Text = 'progress'
+        Width = 125
+        PropertyName = 'progress'
+      end    
+      item
+        Position = 5
+        Tag = 5
+        Text = 'start_date'
+        Width = 96
+        PropertyName = 'start_date'
+      end    
+      item
+        Position = 6
+        Tag = 6
+        Text = 'finish_date'
+        Width = 115
+        PropertyName = 'finish_date'
+      end    
+      item
+        Position = 7
+        Tag = 7
+        Text = 'summary'
+        Width = 375
+        PropertyName = 'summary'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 8
+        Tag = 8
+        Text = 'create_date'
+        Width = 100
+        PropertyName = 'create_date'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 9
+        Tag = 9
+        Text = 'classname'
+        Width = 100
+        PropertyName = 'classname'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 10
+        Tag = 10
+        Text = 'logs'
+        Width = 38
+        PropertyName = 'logs'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 11
+        Tag = 11
+        Text = 'pidlist'
+        Width = 21
+        PropertyName = 'pidlist'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 12
+        Tag = 12
+        Text = 'result'
+        Width = 10000
+        PropertyName = 'result'
+      end>
+    Header.DefaultHeight = 17
+    Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+    Header.Style = hsFlatButtons
+    TabOrder = 4
+    TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+    TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+    TreeOptions.PaintOptions = [toHideSelection, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+    TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect]
+    WantTabs = True
   end
   object Timer1: TTimer
     Enabled = False
@@ -279,5 +399,12 @@ object VisWaptExit: TVisWaptExit
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00
     }
+  end
+  object SODataSource1: TSODataSource
+    ParamsJSON = 'Nil'
+    Root = 'content'
+    Active = True
+    left = 228
+    top = 108
   end
 end

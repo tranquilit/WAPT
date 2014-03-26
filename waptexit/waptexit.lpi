@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -32,16 +32,22 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="5">
       <Item1>
-        <PackageName Value="pl_indycomp"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_utils"/>
       </Item2>
       <Item3>
-        <PackageName Value="LCL"/>
+        <PackageName Value="pltis_delphizmq"/>
       </Item3>
+      <Item4>
+        <PackageName Value="pltis_superobject"/>
+      </Item4>
+      <Item5>
+        <PackageName Value="LCL"/>
+      </Item5>
     </RequiredPackages>
     <Units Count="4">
       <Unit0>
