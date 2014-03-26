@@ -664,7 +664,7 @@ def package_download():
 
 @app.route('/remove', methods=['GET'])
 @app.route('/remove.json', methods=['GET'])
-@requires_auth
+@check_ip_source
 def remove():
     package = request.args.get('package')
     logger.info("remove package %s" % package)
