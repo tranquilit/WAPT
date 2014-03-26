@@ -5,6 +5,7 @@ unit UnitRedirect;
 // and is part of the site:
 //   http://www.martinstoeckli.ch/delphi/
 //
+{$mode delphiunicode}
 
 interface
 uses Windows, Classes,JWAWinBase;
@@ -24,10 +25,21 @@ uses Windows, Classes,JWAWinBase;
   ///   result.</param>
   /// <returns>True if process could be started and did not reach the
   ///   timeout.</returns>
-  function Sto_RedirectedExecute(CmdLine: String;
-    const Input: String = '';
-    const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString=''): String;
+  function Sto_RedirectedExecute(CmdLine: WideString;
+    const Input: WideString = '';
+    const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString=''): WideString;
 
+  const
+    LOGON_WITH_PROFILE = $00000001;
+
+  function CreateProcessWithLogonW(lpUsername, lpDomain, lpPassword: PWideChar;
+    dwLogonFlags: dword; lpApplicationName, lpCommandLine: PWideChar;
+    dwCreationFlags: dword; lpEnvironment: pointer;
+    lpCurrentDirectory: PWideChar; lpStartupInfo: PStartUpInfoW;
+    lpProcessInfo: PProcessInformation): boolean; stdcall;
+    external 'advapi32.dll';          ;
+    const Input: WideString = '';
+    const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString=''): WideString;
 
   const
     LOGON_WITH_PROFILE = $00000001;
@@ -50,12 +62,12 @@ type
   protected
     FPipe: THandle;
     FContent: TStringStream;
-    function Get_Content: String;
+    function Get_Content: AnsiString;
     procedure Execute; override;
   public
     constructor Create(const Pipe: THandle);
     destructor Destroy; override;
-    property Content: String read Get_Content;
+    property Content: AnsiString read Get_Content;
   end;
 
   TStoWritePipeThread = class(TThread)
@@ -64,7 +76,7 @@ type
     FContent: TStringStream;
     procedure Execute; override;
   public
-    constructor Create(const Pipe: THandle; const Content: String);
+    constructor Create(const Pipe: THandle; const Content: AnsiString);
     destructor Destroy; override;
   end;
 
@@ -99,7 +111,7 @@ begin
   until (iBytesRead = 0);
 end;
 
-function TStoReadPipeThread.Get_Content: String;
+function TStoReadPipeThread.Get_Content: AnsiString;
 begin
   Result := FContent.DataString;
 end;
@@ -107,7 +119,7 @@ end;
 { TStoWritePipeThread }
 
 constructor TStoWritePipeThread.Create(const Pipe: THandle;
-  const Content: String);
+  const Content: AnsiString);
 begin
   FPipe := Pipe;
   FContent := TStringStream.Create(Content);
@@ -142,9 +154,9 @@ begin
   FPipe := 0;
 end;
 
-function Sto_RedirectedExecute(CmdLine: String;
-  const Input: String = '';
-  const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString=''): String;
+function Sto_RedirectedExecute(CmdLine: WideString;
+  const Input: WideString = '';
+  const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString=''): WideString;
 var
   mySecurityAttributes: SECURITY_ATTRIBUTES;
   myStartupInfo: STARTUPINFOW;
@@ -157,8 +169,8 @@ var
   myReadErrorThread: TStoReadPipeThread;
   iWaitRes: Integer;
 
-  wcmd,wparams,woutput,winput:WideString;
-  output,error:String;
+  wparams,woutput,winput:WideString;
+  output,error:AnsiString;
 
   exitCode:LongWord;
   ose : EOSError;
@@ -194,6 +206,8 @@ begin
       UniqueString(CmdLine);
 
       // start the process
+      wparams := CmdLine;
+      winput := Input;
       if user<>'' then
       begin
         UniqueString(user);
@@ -201,15 +215,12 @@ begin
         UniqueString(domain);
         // prepare startupinfo structure
         //Result := CreateProcessWith (token, nil, PChar(CmdLine), nil, nil, false, NORMAL_PRIORITY_CLASS or CREATE_NEW_CONSOLE, nil, nil, @myStartupInfo, @myProcessInfo)
-        wcmd := 'cmd.exe';
-        wparams := CmdLine;
-        winput:=Input;
         if not CreateProcessWithLogonW(PWidechar(user),pwidechar(domain),pwidechar(password),0, Nil,PWideChar(wparams), CREATE_NEW_CONSOLE,nil,nil,@myStartupInfo, @myProcessInfo) then
           RaiseLastOSError;
       end
       else
       begin
-        if not CreateProcessW(Nil,PWideChar(cmdline),  Nil,Nil, True, CREATE_NEW_CONSOLE,nil,nil,myStartupInfo,myProcessInfo) then
+        if not CreateProcessW(Nil,PWideChar(wparams),  Nil,Nil, True, CREATE_NEW_CONSOLE,nil,nil,myStartupInfo,myProcessInfo) then
         {if  not CreateProcess(nil, PChar(CmdLine), nil, nil, True,
               CREATE_NEW_CONSOLE, nil, nil, myStartupInfo, myProcessInfo) then}
           RaiseLastOSError();

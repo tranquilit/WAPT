@@ -1,5 +1,5 @@
 program waptdeploy;
-{$delphiunicode}
+{$mode delphiunicode}
 
 uses classes,windows,SysUtils,wininet,URIParser,superobject,shellapi,UnitRedirect;
 
@@ -132,7 +132,7 @@ begin
   end;
 end;
 
-function SetToIgnoreCerticateErrors(oRequestHandle:HINTERNET; var aErrorMsg: string): Boolean;
+function SetToIgnoreCerticateErrors(oRequestHandle:HINTERNET; var aErrorMsg: Ansistring): Boolean;
 var
   vDWFlags: DWord;
   vDWFlagsLen: DWord;
@@ -157,7 +157,7 @@ begin
   end;
 end;
 
-function wget(const fileURL, DestFileName: String):boolean;
+function wget(const fileURL, DestFileName: AnsiString):boolean;
  const
    BufferSize = 1024*512;
  var
@@ -546,9 +546,9 @@ begin
   until (result<>0) or (tok1='') or (tok2='');
 end;
 
-function DecodeKeyValue(wmivalue:String;LowerKey:Boolean=True;ConvertArrayValue:Boolean=True):ISuperObject;
+function DecodeKeyValue(wmivalue:AnsiString;LowerKey:Boolean=True;ConvertArrayValue:Boolean=True):ISuperObject;
 var
-  line,key,value:String;
+  line,key,value:AnsiString;
   CurrObject:ISuperObject;
   isArray:Boolean;
 begin
@@ -592,7 +592,7 @@ end;
 
 function ComputerSystem: ISuperObject;
 var
-  Res:String;
+  Res:AnsiString;
 begin
   if GetDosOutput('wmic PATH Win32_ComputerSystemProduct GET UUID,IdentifyingNumber,Name,Vendor /VALUE','',res) then
 //  if ExecAndCapture('wmic PATH Win32_ComputerSystemProduct GET UUID',res)>0 then
@@ -608,7 +608,7 @@ end;
 
 function NetworkConfig:ISUperObject;
 var
-  res:String;
+  res:AnsiString;
 begin
   if GetDosOutput('wmic NICCONFIG where ipenabled=True get MACAddress, DefaultIPGateway, IPAddress, IPSubnet, DNSHostName, DNSDomain /VALUE','',res) then
   begin
