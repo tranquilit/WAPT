@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "0.8.17"
+__version__ = "0.8.20"
 import os
 import re
 import logging
@@ -3201,8 +3201,11 @@ class Wapt(object):
                 try:
                     def report(received,total,speed,url):
                         self.check_cancelled()
-                        stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received/total, speed)
-                        print stat,
+                        if total>1:
+                            stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received/total, speed)
+                            print stat,
+                        else:
+                            stat = ''
                         self.runstatus='Downloading %s : %s' % (entry.package,stat)
 
                     if not printhook:

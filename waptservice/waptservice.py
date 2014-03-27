@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.19"
+__version__ = "0.8.20"
 
 import time
 import sys
@@ -1155,7 +1155,7 @@ class WaptDownloadPackage(WaptTask):
 
     def printhook(self,received,total,speed,url):
         self.wapt.check_cancelled()
-        if total>0:
+        if total>1:
             stat = u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total, speed)
             self.progress = 100.0*received/total
         else:
@@ -1341,14 +1341,14 @@ class WaptTaskManager(threading.Thread):
 
                     except common.EWaptCancelled as e:
                         if self.running_task:
-                            self.running_task.logs.append(u"{}".format(ensure_unicode(e)))
+                            self.running_task.logs.append(u"{}".format(setuphelpers.ensure_unicode(e)))
                             self.running_task.summary = u"Cancelled"
                             self.tasks_cancelled.append(self.running_task)
                             self.broadcast_tasks_status('CANCEL',self.running_task.as_dict())
                     except Exception as e:
                         if self.running_task:
-                            self.running_task.logs.append(u"{}".format(ensure_unicode(e)))
-                            self.running_task.summary = u"{}".format(ensure_unicode(e))
+                            self.running_task.logs.append(u"{}".format(setuphelpers.ensure_unicode(e)))
+                            self.running_task.summary = u"{}".format(setuphelpers.ensure_unicode(e))
                             self.tasks_error.append(self.running_task)
                             self.broadcast_tasks_status('ERROR',self.running_task.as_dict())
                         logger.critical(setuphelpers.ensure_unicode(e))
