@@ -210,7 +210,7 @@ def wget(url,target,printhook=None,proxies=None):
         total = float(total)
         if total>1 and received>1:
             # print only every second or at end
-            if (time.time()-last_time_display>=1) or (received>=total):
+            if (time.time()-start_time>1) and ((time.time()-last_time_display>=1) or (received>=total)):
                 speed = received /(1024.0 * (time.time()-start_time))
                 if printhook:
                     printhook(received,total,speed,url)

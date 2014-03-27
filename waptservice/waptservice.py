@@ -1155,7 +1155,7 @@ class WaptDownloadPackage(WaptTask):
 
     def printhook(self,received,total,speed,url):
         self.wapt.check_cancelled()
-        if total>1:
+        if total>1.0:
             stat = u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total, speed)
             self.progress = 100.0*received/total
         else:

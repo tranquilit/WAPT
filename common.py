@@ -3218,7 +3218,7 @@ class Wapt(object):
                     setuphelpers.wget( download_url, self.package_cache_dir,proxies=self.proxies,printhook = printhook)
                     downloaded.append(fullpackagepath)
                     self.runstatus=''
-                except BaseException as e:
+                except Exception as e:
                     self.runstatus=''
                     if os.path.isfile(fullpackagepath):
                         os.remove(fullpackagepath)
