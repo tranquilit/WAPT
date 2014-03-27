@@ -3201,12 +3201,15 @@ class Wapt(object):
                 try:
                     def report(received,total,speed,url):
                         self.check_cancelled()
-                        if total>1:
-                            stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received/total, speed)
-                            print stat,
-                        else:
-                            stat = ''
-                        self.runstatus='Downloading %s : %s' % (entry.package,stat)
+                        try:
+                            if total>1:
+                                stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received/total, speed)
+                                print stat,
+                            else:
+                                stat = ''
+                            self.runstatus='Downloading %s : %s' % (entry.package,stat)
+                        except:
+                            self.runstatus='Downloading %s' % (entry.package,)
 
                     if not printhook:
                         printhook = report

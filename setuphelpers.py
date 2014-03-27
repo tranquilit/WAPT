@@ -215,12 +215,15 @@ def wget(url,target,printhook=None,proxies=None):
                 if printhook:
                     printhook(received,total,speed,url)
                 else:
-                    if received == 0:
-                        print u"Downloading %s (%.1f Mb)" % (url,int(total)/1024/1024)
-                    elif received>=total:
-                        print u"  -> download finished (%.0f Kb/s)" % (total /(1024.0*(time.time()+.001-start_time)))
-                    else:
-                        print u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total,speed ),
+                    try:
+                        if received == 0:
+                            print u"Downloading %s (%.1f Mb)" % (url,int(total)/1024/1024)
+                        elif received>=total:
+                            print u"  -> download finished (%.0f Kb/s)" % (total /(1024.0*(time.time()+.001-start_time)))
+                        else:
+                            print u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total,speed ),
+                    except:
+                        return False
                 return True
             else:
                 return False
