@@ -21,7 +21,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="8"/>
-      <RevisionNr Value="18"/>
+      <RevisionNr Value="19"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -61,11 +61,10 @@
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="222"/>
-        <CursorPos X="49" Y="240"/>
+        <CursorPos X="10" Y="230"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -348,9 +347,10 @@
       <Unit36>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
         <UnitName Value="tiscommon"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1116"/>
+        <TopLine Value="1157"/>
         <CursorPos X="3" Y="1148"/>
         <UsageCount Value="10"/>
         <Bookmarks Count="2">

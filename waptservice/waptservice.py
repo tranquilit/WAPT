@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.18"
+__version__ = "0.8.19"
 
 import time
 import sys
@@ -924,7 +924,7 @@ class WaptTask(object):
             start_date = self.start_date and self.start_date.isoformat(),
             finish_date = self.finish_date and self.finish_date.isoformat(),
             logs = '\n'.join(self.logs),
-            result = self.result,
+            result = common.jsondump(self.result),
             summary = self.summary,
             progress = self.progress,
             description = u"{}".format(self),

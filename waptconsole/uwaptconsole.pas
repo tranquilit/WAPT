@@ -416,6 +416,7 @@ var
   attribs, packages, softwares,tasks,tasksresult,running: ISuperObject;
   node: PVirtualNode;
 begin
+  TimerTasks.Enabled:=False;
   Node := GridHosts.FocusedNode;
   if Node <> nil then
   begin
@@ -464,7 +465,6 @@ begin
     end
     else if HostPages.ActivePage = pgTasks then
     begin
-      TimerTasks.Enabled:=False;
       try
         tasks := WAPTServerJsonGet('host_tasks?host=%s&uuid=%s', [currip,currhost],
               WaptUseLocalConnectionProxy,
