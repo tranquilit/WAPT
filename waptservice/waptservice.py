@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.16"
+__version__ = "0.8.17"
 
 import time
 import sys
@@ -894,6 +894,9 @@ class WaptTask(object):
 
     def kill(self):
         """if task has been started, kill the task (ex: kill the external processes"""
+        self.summary = u'Cancelled'
+        self.logs.append(u'Cancelled')
+
         if self.external_pids:
             for pid in self.external_pids:
                 logger.debug('Killing process with pid {}'.format(pid))
@@ -1150,8 +1153,11 @@ class WaptDownloadPackage(WaptTask):
 
     def printhook(self,received,total,speed,url):
         self.wapt.check_cancelled()
-        stat = u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total, speed)
-        self.progress = 100.0*received/total
+        if total>0:
+            stat = u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total, speed)
+            self.progress = 100.0*received/total
+        else:
+            stat = u''
         self.update_status('Downloading %s : %s' % (url,stat))
 
     def _run(self):
@@ -1333,12 +1339,14 @@ class WaptTaskManager(threading.Thread):
 
                     except common.EWaptCancelled as e:
                         if self.running_task:
-                            self.running_task.logs.append(u"{}".format(e))
+                            self.running_task.logs.append(u"{}".format(ensure_unicode(e)))
+                            self.running_task.summary = u"Cancelled"
                             self.tasks_cancelled.append(self.running_task)
                             self.broadcast_tasks_status('CANCEL',self.running_task.as_dict())
                     except Exception as e:
                         if self.running_task:
-                            self.running_task.logs.append(u"{}".format(e))
+                            self.running_task.logs.append(u"{}".format(ensure_unicode(e)))
+                            self.running_task.summary = u"{}".format(ensure_unicode(e))
                             self.tasks_error.append(self.running_task)
                             self.broadcast_tasks_status('ERROR',self.running_task.as_dict())
                         logger.critical(setuphelpers.ensure_unicode(e))

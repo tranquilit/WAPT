@@ -23,6 +23,7 @@ type
     ActEditSavePackage: TAction;
     ActAdvancedMode: TAction;
     ActAddDepends: TAction;
+    ActBUApply: TAction;
     ActSearchPackage: TAction;
     ActionList1: TActionList;
     BitBtn2: TBitBtn;
@@ -30,6 +31,7 @@ type
     butSearchPackages1: TButton;
     Button3: TButton;
     Button5: TButton;
+    butBUApply: TButton;
     cbShowLog: TCheckBox;
     Eddescription: TLabeledEdit;
     EdPackage: TLabeledEdit;
@@ -68,6 +70,7 @@ type
     procedure ActAddDependsExecute(Sender: TObject);
     procedure ActAddDependsUpdate(Sender: TObject);
     procedure ActAdvancedModeExecute(Sender: TObject);
+    procedure ActBUApplyExecute(Sender: TObject);
     procedure ActBuildUploadExecute(Sender: TObject);
     procedure ActEditRemoveExecute(Sender: TObject);
     procedure ActEditSavePackageExecute(Sender: TObject);
@@ -116,6 +119,7 @@ type
     isGroup: boolean;
     IsNewPackage: boolean;
     PackageEdited: ISuperObject;
+    ApplyUpdatesImmediately:Boolean;
     property isAdvancedMode: boolean read FisAdvancedMode write SetisAdvancedMode;
     procedure EditPackage;
     property SourcePath: string read FSourcePath write SetSourcePath;
@@ -125,7 +129,7 @@ type
 function EditPackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreatePackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreateGroup(packagename: string; advancedMode: boolean): ISuperObject;
-function EditHost(hostname: string; advancedMode: boolean): ISuperObject;
+function EditHost(hostname: ansistring; advancedMode: boolean;currentip:ansiString=''): ISuperObject;
 function EditHostDepends(hostname: string; newDependsStr: string): ISuperObject;
 function EditGroup(group: string; advancedMode: boolean): ISuperObject;
 
@@ -193,7 +197,9 @@ begin
     end;
 end;
 
-function EditHost(hostname: string; advancedMode: boolean): ISuperObject;
+function EditHost(hostname: ansistring; advancedMode: boolean;currentip:ansiString=''): ISuperObject;
+var
+  res:ISuperObject;
 begin
   with TVisEditPackage.Create(nil) do
     try
@@ -201,8 +207,21 @@ begin
       isAdvancedMode := advancedMode;
       PackageRequest := hostname;
       Caption:='Editer la machine';
+      ActBUApply.Enabled:=currentip<>'';
       if ShowModal = mrOk then
-        Result := PackageEdited
+      begin
+        Result := PackageEdited;
+        if ApplyUpdatesImmediately and (currentip<>'')  then
+        begin
+          res := WAPTServerJsonGet('upgrade_host/'+currentip, [],
+            WaptUseLocalConnectionProxy,
+            waptServerUser, waptServerPassword);
+          if (res.S['result'] = 'OK') or (res.S['status'] = 'OK') then
+            ShowMessage('Upgrade lancée')
+          else
+            ShowMessage('Impossible de lancer l''upgrade sur la machine: '+res.S['message']);
+        end;
+      end
       else
         Result := nil;
     finally
@@ -345,6 +364,7 @@ begin
   Depends := PackageEdited.S['depends'];
   EdSetupPy.Lines.LoadFromFile(AppendPathDelim(FSourcePath) + 'setup.py');
   IsUpdated := False;
+  butBUApply.Visible:=IsHost;
 end;
 
 function gridFind(grid: TSOGrid; Fieldname, AText: string): PVirtualNode;
@@ -520,6 +540,13 @@ end;
 procedure TVisEditPackage.ActAdvancedModeExecute(Sender: TObject);
 begin
   isAdvancedMode := ActAdvancedMode.Checked;
+end;
+
+procedure TVisEditPackage.ActBUApplyExecute(Sender: TObject);
+begin
+  ApplyUpdatesImmediately := True;
+  ActBuildUpload.Execute;
+  ModalResult:=mrOK;
 end;
 
 procedure TVisEditPackage.ActAddDependsUpdate(Sender: TObject);

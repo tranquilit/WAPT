@@ -586,11 +586,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostPackage: TTabSheet
           Caption = 'Inventaire matériel'
-          ClientHeight = 447
+          ClientHeight = 761
           ClientWidth = 564
           object GridhostAttribs: TVirtualJSONInspector
             Left = 0
-            Height = 447
+            Height = 761
             Top = 0
             Width = 564
             PropertyDefs = <>
@@ -621,11 +621,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgSoftwares: TTabSheet
           Caption = 'Inventaire logiciels'
-          ClientHeight = 447
+          ClientHeight = 761
           ClientWidth = 564
           object GridHostSoftwares: TSOGrid
             Left = 0
-            Height = 447
+            Height = 761
             Top = 0
             Width = 564
             Align = alClient
@@ -678,6 +678,462 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
             TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
             WantTabs = True
+          end
+        end
+        object pgTasks: TTabSheet
+          Caption = 'Tâches'
+          ClientHeight = 761
+          ClientWidth = 564
+          object HostRunningTaskLog: TMemo
+            Left = 272
+            Height = 94
+            Top = 2
+            Width = 288
+            Anchors = [akTop, akLeft, akRight]
+            Lines.Strings = (
+              'HostRunningTaskLog'
+            )
+            TabOrder = 0
+          end
+          object HostTaskRunningProgress: TProgressBar
+            Left = 4
+            Height = 20
+            Top = 42
+            Width = 264
+            TabOrder = 1
+          end
+          object HostRunningTask: TLabeledEdit
+            Left = 4
+            Height = 21
+            Top = 18
+            Width = 264
+            EditLabel.AnchorSideLeft.Control = HostRunningTask
+            EditLabel.AnchorSideRight.Control = HostRunningTask
+            EditLabel.AnchorSideRight.Side = asrBottom
+            EditLabel.AnchorSideBottom.Control = HostRunningTask
+            EditLabel.Left = 4
+            EditLabel.Height = 13
+            EditLabel.Top = 2
+            EditLabel.Width = 264
+            EditLabel.Caption = 'Tâche en cours'
+            EditLabel.ParentColor = False
+            TabOrder = 2
+            Text = 'HostRunningTask'
+          end
+          object Button4: TButton
+            Left = 4
+            Height = 25
+            Top = 70
+            Width = 156
+            Action = ActCancelRunningTask
+            TabOrder = 3
+          end
+          object PageControl1: TPageControl
+            Left = 0
+            Height = 659
+            Top = 102
+            Width = 564
+            ActivePage = TabSheet1
+            Align = alBottom
+            Anchors = [akTop, akLeft, akBottom]
+            TabIndex = 0
+            TabOrder = 4
+            object TabSheet1: TTabSheet
+              Caption = 'En attente'
+              ClientHeight = 633
+              ClientWidth = 556
+              object GridHostTasksPending: TSOGrid
+                Left = 0
+                Height = 631
+                Top = 2
+                Width = 556
+                Align = alClient
+                BorderSpacing.Top = 2
+                Color = clWhite
+                Header.AutoSizeIndex = -1
+                Header.Columns = <                
+                  item
+                    Alignment = taRightJustify
+                    Position = 0
+                    Text = 'id'
+                    Width = 39
+                    PropertyName = 'id'
+                  end                
+                  item
+                    Alignment = taRightJustify
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 1
+                    Tag = 1
+                    Text = 'priority'
+                    Width = 41
+                    PropertyName = 'priority'
+                  end                
+                  item
+                    Alignment = taRightJustify
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 2
+                    Tag = 2
+                    Text = 'order'
+                    Width = 32
+                    PropertyName = 'order'
+                  end                
+                  item
+                    Position = 3
+                    Tag = 3
+                    Text = 'description'
+                    Width = 305
+                    PropertyName = 'description'
+                  end                
+                  item
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 4
+                    Tag = 4
+                    Text = 'start_date'
+                    Width = 100
+                    PropertyName = 'start_date'
+                  end                
+                  item
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 5
+                    Tag = 5
+                    Text = 'summary'
+                    Width = 235
+                    PropertyName = 'summary'
+                  end                
+                  item
+                    Position = 6
+                    Tag = 6
+                    Text = 'create_date'
+                    Width = 100
+                    PropertyName = 'create_date'
+                  end                
+                  item
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 7
+                    Tag = 7
+                    Text = 'result'
+                    Width = 100
+                    PropertyName = 'result'
+                  end                
+                  item
+                    Alignment = taRightJustify
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 8
+                    Tag = 8
+                    Text = 'progress'
+                    Width = 40
+                    PropertyName = 'progress'
+                  end                
+                  item
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 9
+                    Tag = 9
+                    Text = 'finish_date'
+                    Width = 100
+                    PropertyName = 'finish_date'
+                  end                
+                  item
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 10
+                    Tag = 10
+                    Text = 'classname'
+                    Width = 100
+                    PropertyName = 'classname'
+                  end                
+                  item
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 11
+                    Tag = 11
+                    Text = 'logs'
+                    Width = 100
+                    PropertyName = 'logs'
+                  end                
+                  item
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 12
+                    Tag = 12
+                    Text = 'pidlist'
+                    Width = 21
+                    PropertyName = 'pidlist'
+                  end>
+                Header.DefaultHeight = 17
+                Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+                Header.SortColumn = 0
+                Header.SortDirection = sdDescending
+                Header.Style = hsFlatButtons
+                Images = ImageList1
+                TabOrder = 0
+                TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+                TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+                TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
+                TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
+                WantTabs = True
+                OnGetImageIndexEx = GridHostPackagesGetImageIndexEx
+              end
+            end
+            object TabSheet2: TTabSheet
+              Caption = 'Terminées'
+              ClientHeight = 319
+              ClientWidth = 556
+              object GridHostTasksDone: TSOGrid
+                Left = 0
+                Height = 317
+                Top = 2
+                Width = 556
+                Align = alClient
+                BorderSpacing.Top = 2
+                Color = clWhite
+                Header.AutoSizeIndex = -1
+                Header.Columns = <                
+                  item
+                    Alignment = taRightJustify
+                    Position = 0
+                    Text = 'id'
+                    Width = 39
+                    PropertyName = 'id'
+                  end                
+                  item
+                    Alignment = taRightJustify
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 1
+                    Tag = 1
+                    Text = 'priority'
+                    Width = 41
+                    PropertyName = 'priority'
+                  end                
+                  item
+                    Alignment = taRightJustify
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 2
+                    Tag = 2
+                    Text = 'order'
+                    Width = 32
+                    PropertyName = 'order'
+                  end                
+                  item
+                    Position = 3
+                    Tag = 3
+                    Text = 'description'
+                    Width = 219
+                    PropertyName = 'description'
+                  end                
+                  item
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 4
+                    Tag = 4
+                    Text = 'start_date'
+                    Width = 100
+                    PropertyName = 'start_date'
+                  end                
+                  item
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 5
+                    Tag = 5
+                    Text = 'create_date'
+                    Width = 100
+                    PropertyName = 'create_date'
+                  end                
+                  item
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 6
+                    Tag = 6
+                    Text = 'result'
+                    Width = 100
+                    PropertyName = 'result'
+                  end                
+                  item
+                    Alignment = taRightJustify
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 7
+                    Tag = 7
+                    Text = 'progress'
+                    Width = 40
+                    PropertyName = 'progress'
+                  end                
+                  item
+                    Position = 8
+                    Tag = 8
+                    Text = 'summary'
+                    Width = 230
+                    PropertyName = 'summary'
+                  end                
+                  item
+                    Position = 9
+                    Tag = 9
+                    Text = 'finish_date'
+                    Width = 100
+                    PropertyName = 'finish_date'
+                  end                
+                  item
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 10
+                    Tag = 10
+                    Text = 'classname'
+                    Width = 100
+                    PropertyName = 'classname'
+                  end                
+                  item
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 11
+                    Tag = 11
+                    Text = 'logs'
+                    Width = 100
+                    PropertyName = 'logs'
+                  end                
+                  item
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 12
+                    Tag = 12
+                    Text = 'pidlist'
+                    Width = 21
+                    PropertyName = 'pidlist'
+                  end>
+                Header.DefaultHeight = 17
+                Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+                Header.SortColumn = 0
+                Header.SortDirection = sdDescending
+                Header.Style = hsFlatButtons
+                Images = ImageList1
+                TabOrder = 0
+                TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+                TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+                TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
+                TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
+                WantTabs = True
+                OnGetImageIndexEx = GridHostPackagesGetImageIndexEx
+              end
+            end
+            object TabSheet3: TTabSheet
+              Caption = 'Erreurs'
+              ClientHeight = 319
+              ClientWidth = 556
+              object GridHostTasksErrors: TSOGrid
+                Left = 0
+                Height = 317
+                Top = 2
+                Width = 556
+                Align = alClient
+                BorderSpacing.Top = 2
+                Color = clWhite
+                Header.AutoSizeIndex = -1
+                Header.Columns = <                
+                  item
+                    Alignment = taRightJustify
+                    Position = 0
+                    Text = 'id'
+                    Width = 39
+                    PropertyName = 'id'
+                  end                
+                  item
+                    Alignment = taRightJustify
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 1
+                    Tag = 1
+                    Text = 'priority'
+                    Width = 41
+                    PropertyName = 'priority'
+                  end                
+                  item
+                    Alignment = taRightJustify
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 2
+                    Tag = 2
+                    Text = 'order'
+                    Width = 32
+                    PropertyName = 'order'
+                  end                
+                  item
+                    Position = 3
+                    Tag = 3
+                    Text = 'description'
+                    Width = 211
+                    PropertyName = 'description'
+                  end                
+                  item
+                    Position = 4
+                    Tag = 4
+                    Text = 'summary'
+                    Width = 235
+                    PropertyName = 'summary'
+                  end                
+                  item
+                    Position = 5
+                    Tag = 5
+                    Text = 'start_date'
+                    Width = 73
+                    PropertyName = 'start_date'
+                  end                
+                  item
+                    Position = 6
+                    Tag = 6
+                    Text = 'logs'
+                    Width = 100
+                    PropertyName = 'logs'
+                  end                
+                  item
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 7
+                    Tag = 7
+                    Text = 'create_date'
+                    Width = 100
+                    PropertyName = 'create_date'
+                  end                
+                  item
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 8
+                    Tag = 8
+                    Text = 'result'
+                    Width = 100
+                    PropertyName = 'result'
+                  end                
+                  item
+                    Alignment = taRightJustify
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 9
+                    Tag = 9
+                    Text = 'progress'
+                    Width = 40
+                    PropertyName = 'progress'
+                  end                
+                  item
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 10
+                    Tag = 10
+                    Text = 'finish_date'
+                    Width = 100
+                    PropertyName = 'finish_date'
+                  end                
+                  item
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 11
+                    Tag = 11
+                    Text = 'classname'
+                    Width = 100
+                    PropertyName = 'classname'
+                  end                
+                  item
+                    Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                    Position = 12
+                    Tag = 12
+                    Text = 'pidlist'
+                    Width = 21
+                    PropertyName = 'pidlist'
+                  end>
+                Header.DefaultHeight = 17
+                Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+                Header.SortColumn = 0
+                Header.SortDirection = sdDescending
+                Header.Style = hsFlatButtons
+                Images = ImageList1
+                TabOrder = 0
+                TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+                TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+                TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
+                TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
+                WantTabs = True
+                OnGetImageIndexEx = GridHostPackagesGetImageIndexEx
+              end
+            end
           end
         end
       end
@@ -1775,8 +2231,8 @@ object VisWaptGUI: TVisWaptGUI
     top = 368
   end
   object ActionList1: TActionList
-    left = 352
-    top = 88
+    left = 336
+    top = 112
     object ActLocalhostInstall: TAction
       Category = 'Host'
       Caption = 'Installer'
@@ -1953,6 +2409,23 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'Host'
       Caption = 'Installer un package'
     end
+    object ActVNC: TAction
+      Category = 'Host'
+      Caption = 'Connecter avec VNC'
+      OnExecute = ActVNCExecute
+      OnUpdate = ActVNCUpdate
+    end
+    object ActRDP: TAction
+      Category = 'Host'
+      Caption = 'Connecter avec RDP'
+      OnExecute = ActRDPExecute
+      OnUpdate = ActRDPUpdate
+    end
+    object ActCancelRunningTask: TAction
+      Category = 'Host'
+      Caption = 'Annuler tâche en cours'
+      OnExecute = ActCancelRunningTaskExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
@@ -2073,6 +2546,12 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem21: TMenuItem
       Action = ActHostsDelete
+    end
+    object MenuItem37: TMenuItem
+      Action = ActVNC
+    end
+    object MenuItem39: TMenuItem
+      Action = ActRDP
     end
   end
   object PopupMenuPackagesTIS: TPopupMenu
@@ -2240,5 +2719,10 @@ object VisWaptGUI: TVisWaptGUI
     object MenuItem19: TMenuItem
       Action = ActPackageRemove
     end
+  end
+  object TimerTasks: TTimer
+    OnTimer = TimerTasksTimer
+    left = 663
+    top = 111
   end
 end

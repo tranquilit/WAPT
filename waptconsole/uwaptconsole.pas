@@ -15,6 +15,9 @@ type
   { TVisWaptGUI }
 
   TVisWaptGUI = class(TForm)
+    ActCancelRunningTask: TAction;
+    ActRDP: TAction;
+    ActVNC: TAction;
     ActPackageInstall: TAction;
     ActPackageRemove: TAction;
     ActLocalhostInstall: TAction;
@@ -63,6 +66,7 @@ type
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
+    Button4: TButton;
     Changer: TButton;
     Button7: TButton;
     Button8: TButton;
@@ -79,10 +83,15 @@ type
     EdRunningStatus: TEdit;
     EdSearchGroups: TEdit;
     GridGroups: TSOGrid;
+    GridHostTasksPending: TSOGrid;
+    GridHostTasksDone: TSOGrid;
+    GridHostTasksErrors: TSOGrid;
     Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
     LabelComputersNumber: TLabel;
+    HostRunningTask: TLabeledEdit;
+    HostRunningTaskLog: TMemo;
     MemoGroupeDescription: TMemo;
     MenuItem19: TMenuItem;
     MenuItem20: TMenuItem;
@@ -91,8 +100,11 @@ type
     MenuItem34: TMenuItem;
     MenuItem35: TMenuItem;
     MenuItem36: TMenuItem;
+    MenuItem37: TMenuItem;
     MenuItem38: TMenuItem;
+    MenuItem39: TMenuItem;
     MenuItem40: TMenuItem;
+    PageControl1: TPageControl;
     Panel11: TPanel;
     Panel2: TPanel;
     PopupHostPackages: TPopupMenu;
@@ -116,7 +128,13 @@ type
     ImageList1: TImageList;
     Label1: TLabel;
     pgGroups: TTabSheet;
+    HostTaskRunningProgress: TProgressBar;
     Splitter3: TSplitter;
+    pgTasks: TTabSheet;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    TabSheet3: TTabSheet;
+    TimerTasks: TTimer;
     urlExternalRepo: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -189,6 +207,7 @@ type
     procedure ActAddRemoveOptionIniFileExecute(Sender: TObject);
     procedure ActAddToGroupExecute(Sender: TObject);
     procedure ActAdvancedModeExecute(Sender: TObject);
+    procedure ActCancelRunningTaskExecute(Sender: TObject);
     procedure ActChangePasswordExecute(Sender: TObject);
     procedure ActCreateCertificateExecute(Sender: TObject);
     procedure ActCreateWaptSetupExecute(Sender: TObject);
@@ -200,6 +219,8 @@ type
     procedure ActEditHostPackageExecute(Sender: TObject);
     procedure ActGotoHostExecute(Sender: TObject);
     procedure ActPackageRemoveExecute(Sender: TObject);
+    procedure ActRDPExecute(Sender: TObject);
+    procedure ActRDPUpdate(Sender: TObject);
     procedure ActSearchGroupsExecute(Sender: TObject);
     procedure ActHostUpgradeExecute(Sender: TObject);
     procedure ActHostUpgradeUpdate(Sender: TObject);
@@ -226,6 +247,8 @@ type
     procedure ActPackagesUpdateExecute(Sender: TObject);
     procedure ActUpdateWaptGetINIExecute(Sender: TObject);
     procedure ActLocalhostUpgradeExecute(Sender: TObject);
+    procedure ActVNCExecute(Sender: TObject);
+    procedure ActVNCUpdate(Sender: TObject);
     procedure ActWAPTLocalConfigExecute(Sender: TObject);
     procedure butSearchExternalPackagesClick(Sender: TObject);
     procedure cbSearchAllChange(Sender: TObject);
@@ -277,6 +300,7 @@ type
     procedure MenuItem27Click(Sender: TObject);
     procedure MainPagesChange(Sender: TObject);
     procedure InstallPackage(Grid: TSOGrid);
+    procedure TimerTasksTimer(Sender: TObject);
   private
     { private declarations }
     procedure GridLoadData(grid: TSOGrid; jsondata: string);
@@ -386,14 +410,15 @@ end;
 
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
-  currhost: string;
-  attribs, packages, softwares: ISuperObject;
+  currhost,currip: Ansistring;
+  attribs, packages, softwares,tasks,tasksresult,running: ISuperObject;
   node: PVirtualNode;
 begin
   Node := GridHosts.FocusedNode;
   if Node <> nil then
   begin
     currhost := GridHosts.GetCellStrValue(Node, 'uuid');
+    currip := GridHosts.GetCellStrValue(Node, 'host.connected_ips');
     if HostPages.ActivePage = pgPackages then
     begin
       packages := GridHosts.GetNodeSOData(Node)['packages'];
@@ -434,7 +459,51 @@ begin
     begin
       attribs := GridHosts.GetNodeSOData(Node);
       TreeLoadData(GridhostAttribs, attribs.AsJSon());
-    end;
+    end
+    else if HostPages.ActivePage = pgTasks then
+    begin
+      TimerTasks.Enabled:=False;
+      try
+        tasks := WAPTServerJsonGet('host_tasks?host=%s&uuid=%s', [currip,currhost],
+              WaptUseLocalConnectionProxy,
+              waptServerUser, waptServerPassword);
+        if tasks.S['status']='OK' then
+        begin
+          HostRunningTaskLog.Text:= tasks.AsJSon(True);
+          tasksresult := tasks['message'];
+          if tasksresult['done'] =Nil then
+            tasksresult := tasks['result'];
+          if tasksresult<>Nil then
+          begin
+            running := tasksresult['running'];
+            GridHostTasksPending.Data := tasksresult['pending'];
+            GridHostTasksDone.Data := tasksresult['done'];
+            GridHostTasksErrors.Data := tasksresult['errors'];
+            if running<>Nil then
+            begin
+              HostTaskRunningProgress.Position :=running.I['progress'];
+              HostRunningTask.Text:=running.S['description'];
+              HostRunningTaskLog.Text := running.S['logs'];
+            end
+            else
+            begin
+              HostTaskRunningProgress.Position :=0;
+              HostRunningTask.Text:='Idle';
+              HostRunningTaskLog.Clear;
+            end
+          end;
+        end
+        else
+        begin
+          HostRunningTask.Text:='... Impossible de récuperer l''action';
+          HostTaskRunningProgress.Position := 0;
+          HostRunningTaskLog.Clear;
+          GridHostTasksPending.Data := Nil;
+        end;
+      finally
+        TimerTasks.Enabled:=True;
+      end;
+    end
   end
   else
   begin
@@ -485,6 +554,12 @@ begin
       Free;
     end;
 
+end;
+
+procedure TVisWaptGUI.TimerTasksTimer(Sender: TObject);
+begin
+  if HostPages.ActivePage = pgTasks then
+    UpdateHostPages(Self);
 end;
 
 procedure TVisWaptGUI.ActLocalhostInstallUpdate(Sender: TObject);
@@ -829,6 +904,23 @@ begin
   Panel3.Visible := ActAdvancedMode.Checked;
 end;
 
+procedure TVisWaptGUI.ActCancelRunningTaskExecute(Sender: TObject);
+var
+  res : ISuperObject;
+  currip,currhost:AnsiString;
+begin
+  currhost := GridHosts.FocusedRow.S['uuid'];
+  currip := GridHosts.FocusedRow.S['host.connected_ips'];
+
+  res := WAPTServerJsonGet('host_taskkill?host=%s&uuid=%s', [currip,currhost],
+        WaptUseLocalConnectionProxy,
+        waptServerUser, waptServerPassword);
+  if res.S['status']='OK' then
+    ShowMessage('Tâche annulée')
+  else
+    ShowMessage('Impossible d''annuler: '+res.S['message']);
+end;
+
 procedure TVisWaptGUI.ActChangePasswordExecute(Sender: TObject);
 var
   newPass, Result: string;
@@ -1054,11 +1146,12 @@ end;
 
 procedure TVisWaptGUI.ActEditHostPackageExecute(Sender: TObject);
 var
-  hostname: string;
+  hostname,ip: Ansistring;
   Result: ISuperObject;
 begin
   hostname := GridHosts.GetCellStrValue(GridHosts.FocusedNode, 'host.computer_fqdn');
-  if EditHost(hostname, ActAdvancedMode.Checked) <> nil then
+ ip := GridHosts.GetCellStrValue(GridHosts.FocusedNode, 'host.connected_ips');
+  if EditHost(hostname, ActAdvancedMode.Checked,ip) <> nil then
     ActSearchHost.Execute;
 end;
 
@@ -1066,7 +1159,6 @@ procedure TVisWaptGUI.ActGotoHostExecute(Sender: TObject);
 begin
   EdSearchHost.SetFocus;
   EdSearchHost.SelectAll;
-
 end;
 
 procedure TVisWaptGUI.ActPackageRemoveExecute(Sender: TObject);
@@ -1090,6 +1182,27 @@ begin
       end;
     end;
     UpdateHostPages(Sender);
+  end;
+
+end;
+
+procedure TVisWaptGUI.ActRDPExecute(Sender: TObject);
+var
+  ip:AnsiString;
+begin
+  if (Gridhosts.FocusedRow<>Nil) and (Gridhosts.FocusedRow.S['host.connected_ips']<>'') then
+  begin
+    ip := Gridhosts.FocusedRow.S['host.connected_ips'];
+    ShellExecute(0,'',PAnsiChar('mstsc'),PAnsichar('/v:'+ip),Nil,SW_SHOW);
+  end;
+end;
+
+procedure TVisWaptGUI.ActRDPUpdate(Sender: TObject);
+begin
+  try
+    ActRDP.Enabled := (Gridhosts.FocusedRow<>Nil) and (Gridhosts.FocusedRow.S['host.connected_ips']<>'');
+  except
+    ActRDP.Enabled := False;
   end;
 
 end;
@@ -1323,6 +1436,27 @@ end;
 procedure TVisWaptGUI.ActLocalhostUpgradeExecute(Sender: TObject);
 begin
   DMPython.RunJSON('mywapt.upgrade()', jsonlog);
+end;
+
+procedure TVisWaptGUI.ActVNCExecute(Sender: TObject);
+var
+  ip:AnsiString;
+begin
+  if (Gridhosts.FocusedRow<>Nil) and (Gridhosts.FocusedRow.S['host.connected_ips']<>'') then
+  begin
+    ip := Gridhosts.FocusedRow.S['host.connected_ips'];
+    ShellExecute(0,'',PAnsiChar('C:\Program Files\TightVNC\tvnviewer.exe'),PAnsichar(ip),Nil,SW_SHOW);
+  end;
+end;
+
+procedure TVisWaptGUI.ActVNCUpdate(Sender: TObject);
+begin
+  try
+    ActVNC.Enabled := (Gridhosts.FocusedRow<>Nil) and (Gridhosts.FocusedRow.S['host.connected_ips']<>'')
+        and FileExists('C:\Program Files\TightVNC\tvnviewer.exe') ;
+  except
+    ActVNC.Enabled := False;
+  end;
 end;
 
 procedure TVisWaptGUI.ActWAPTLocalConfigExecute(Sender: TObject);

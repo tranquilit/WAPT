@@ -1005,6 +1005,16 @@ object VisEditPackage: TVisEditPackage
       Caption = 'Sauvegarder'
       TabOrder = 1
     end
+    object butBUApply: TButton
+      Left = 416
+      Height = 25
+      Top = 4
+      Width = 180
+      Action = ActBUApply
+      Anchors = [akTop, akRight]
+      TabOrder = 2
+      Visible = False
+    end
   end
   object SynPythonSyn1: TSynPythonSyn
     DefaultFilter = 'Fichiers Python (*.py)|*.py'
@@ -1064,6 +1074,10 @@ object VisEditPackage: TVisEditPackage
       Caption = 'Ajouter aux dépendances du paquet'
       OnExecute = ActAddDependsExecute
       OnUpdate = ActAddDependsUpdate
+    end
+    object ActBUApply: TAction
+      Caption = 'Sauver et appliquer sur le poste'
+      OnExecute = ActBUApplyExecute
     end
   end
   object PopupMenuEditDepends: TPopupMenu
