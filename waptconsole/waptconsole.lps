@@ -312,7 +312,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="399"/>
         <CursorPos X="14" Y="418"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit26>
       <Unit27>
         <Filename Value="C:\codetyphon\typhon\components\turbopower_ipro\iphtml.pas"/>
@@ -342,7 +342,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="2861"/>
         <CursorPos X="14" Y="2688"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit30>
       <Unit31>
         <Filename Value="C:\codetyphon\typhon\lcl\include\winapih.inc"/>

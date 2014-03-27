@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.17"
+__version__ = "0.8.18"
 
 import time
 import sys
@@ -54,6 +54,8 @@ from werkzeug.utils import html
 import gc
 import datetime
 import dateutil.parser
+
+import copy
 
 import win32security
 
@@ -913,7 +915,7 @@ class WaptTask(object):
         return u"{classname} {id} created {create_date} started:{start_date} finished:{finish_date} ".format(**self.as_dict())
 
     def as_dict(self):
-        return dict(
+        return copy.deepcopy(dict(
             id=self.id,
             classname=self.__class__.__name__,
             priority = self.priority,
@@ -921,13 +923,13 @@ class WaptTask(object):
             create_date = self.create_date and self.create_date.isoformat(),
             start_date = self.start_date and self.start_date.isoformat(),
             finish_date = self.finish_date and self.finish_date.isoformat(),
-            logs = self.logs,
+            logs = '\n'.join(self.logs),
             result = self.result,
             summary = self.summary,
             progress = self.progress,
             description = u"{}".format(self),
             pidlist = u"{}".format(self.external_pids),
-            )
+            ))
 
     def as_json(self):
         return json.dumps(self.as_dict(),indent=True)

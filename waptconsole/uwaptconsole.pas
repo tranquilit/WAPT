@@ -89,9 +89,11 @@ type
     Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
+    Label13: TLabel;
     LabelComputersNumber: TLabel;
     HostRunningTask: TLabeledEdit;
     HostRunningTaskLog: TMemo;
+    labSelected: TLabel;
     MemoGroupeDescription: TMemo;
     MenuItem19: TMenuItem;
     MenuItem20: TMenuItem;
@@ -1706,6 +1708,7 @@ procedure TVisWaptGUI.GridHostsChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
   UpdateHostPages(Sender);
+  labSelected.Caption:= IntToStr(GridHosts.SelectedCount);
 end;
 
 procedure TVisWaptGUI.GridHostsColumnDblClick(Sender: TBaseVirtualTree;

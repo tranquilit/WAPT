@@ -131,19 +131,35 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 8
         end
         object LabelComputersNumber: TLabel
-          Left = 996
+          Left = 720
           Height = 13
-          Top = 4
+          Top = 7
           Width = 6
           Caption = '0'
           ParentColor = False
         end
         object Label11: TLabel
-          Left = 892
+          Left = 616
           Height = 13
-          Top = 4
+          Top = 7
           Width = 97
           Caption = 'Nombre de postes : '
+          ParentColor = False
+        end
+        object Label13: TLabel
+          Left = 616
+          Height = 13
+          Top = 22
+          Width = 60
+          Caption = 'Sélectionnés'
+          ParentColor = False
+        end
+        object labSelected: TLabel
+          Left = 720
+          Height = 13
+          Top = 22
+          Width = 6
+          Caption = '0'
           ParentColor = False
         end
       end
@@ -682,7 +698,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgTasks: TTabSheet
           Caption = 'Tâches'
-          ClientHeight = 761
+          ClientHeight = 447
           ClientWidth = 564
           object HostRunningTaskLog: TMemo
             Left = 272
@@ -730,7 +746,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object PageControl1: TPageControl
             Left = 0
-            Height = 659
+            Height = 345
             Top = 102
             Width = 564
             ActivePage = TabSheet1
@@ -740,11 +756,11 @@ object VisWaptGUI: TVisWaptGUI
             TabOrder = 4
             object TabSheet1: TTabSheet
               Caption = 'En attente'
-              ClientHeight = 633
+              ClientHeight = 319
               ClientWidth = 556
               object GridHostTasksPending: TSOGrid
                 Left = 0
-                Height = 631
+                Height = 317
                 Top = 2
                 Width = 556
                 Align = alClient
