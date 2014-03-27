@@ -503,7 +503,7 @@ def get_checkupgrades():
 
 @app.route('/waptupgrade')
 @app.route('/waptupgrade.json')
-@requires_auth
+@check_ip_source
 def waptclientupgrade():
     """Launch an external 'wapt-get waptupgrade' process to upgrade local copy of wapt client"""
     data = task_manager.add_task(WaptClientUpgrade()).as_dict()
