@@ -346,11 +346,11 @@ end;
 
 procedure TDMWaptTray.Timer1Timer(Sender: TObject);
 begin
-  if (Now - lastServiceMessage > 1/24/3600 * 30)  then
+  {if (Now - lastServiceMessage > 1/24/3600 * 30)  then
   begin
     trayMode:=tmErrors;
     trayHint:='Service inaccessible';
-  end;
+  end;}
 end;
 
 procedure TDMWaptTray.ActConfigureExecute(Sender: TObject);
@@ -679,7 +679,10 @@ begin
   if FWaptServiceRunning=AValue then Exit;
   FWaptServiceRunning:=AValue;
   if not FWaptServiceRunning then
+  begin
     trayMode:=tmErrors;
+    trayHint:='WAPTService arrêté';
+  end;
 end;
 
 procedure TDMWaptTray.TrayIcon1DblClick(Sender: TObject);
