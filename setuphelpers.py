@@ -20,8 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-
-__version__ = "0.8.21"
+__version__ = "0.8.22"
 import os
 import sys
 import logging
@@ -972,7 +971,13 @@ def memory_status():
         raise Exception('Error in function GlobalMemoryStatusEx')
 
 def dmi_info():
-    """Convert dmidecode -q output to python dict"""
+    """Convert dmidecode -q output to python dict
+    >>> dmi = dmi_info()
+    >>> dmi['UUID']
+    >>> print dmi
+
+    """
+
     result = {}
     try:
         dmiout = run('dmidecode -q',shell=False)
@@ -1001,6 +1006,8 @@ def dmi_info():
                         currobject[name.strip().replace(' ','_')]=currarray
                     currarray.append(l.strip())
             new_section = False
+        if not 'System_Information' in result or not 'UUID' in result['System_Information']:
+           result = wmi_info_basic()
     except:
         # dmidecode fails on some BIOS.
         # TODO : fall back to wmi for most impirtant parameters
