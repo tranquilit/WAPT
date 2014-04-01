@@ -20,8 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-
-__version__ = "0.8.21"
+__version__ = "0.8.22"
 import os
 import re
 import logging
@@ -2566,7 +2565,7 @@ class Wapt(object):
         previous_uninstall = self.registry_uninstall_snapshot()
         entry = PackageEntry()
         entry.load_control_from_wapt(fname)
-        self.runstatus="Installing package %s version %s ..." % (entry.package,entry.version)
+        self.runstatus=u"Installing package %s version %s ..." % (entry.package,entry.version)
         old_stdout = sys.stdout
         old_stderr = sys.stderr
 
@@ -2609,7 +2608,7 @@ class Wapt(object):
             elif os.path.isdir(fname):
                 packagetempdir = fname
             else:
-                raise Exception('%s is not a file nor a directory, aborting.' % fname)
+                raise Exception(u'%s is not a file nor a directory, aborting.' % fname)
 
             # chech sha1
             self.check_cancelled()
@@ -2624,21 +2623,21 @@ class Wapt(object):
                         signature = open(signature_filename,'r').read().decode('base64')
                         try:
                             subject = ssl_verify_content(manifest_data,signature,self.public_certs)
-                            logger.info('Package issued by %s' % (subject,))
+                            logger.info(u'Package issued by %s' % (subject,))
                         except:
-                            raise Exception('Package file %s signature is invalid' % fname)
+                            raise Exception(u'Package file %s signature is invalid' % fname)
                     else:
                         if not self.allow_unsigned:
-                            raise Exception('No certificate provided for %s or package does not contain a signature, and unsigned packages install is not allowed' % fname)
+                            raise Exception(u'No certificate provided for %s or package does not contain a signature, and unsigned packages install is not allowed' % fname)
 
                 manifest = json.loads(manifest_data)
                 errors = self.corrupted_files_sha1(packagetempdir,manifest)
                 if errors:
-                    raise Exception('Error in package %s, files corrupted, SHA1 not matching for %s' % (fname,errors,))
+                    raise Exception(u'Error in package %s, files corrupted, SHA1 not matching for %s' % (fname,errors,))
             else:
                 # we allow unsigned in development mode where fname is a directory
                 if not self.allow_unsigned and istemporary:
-                    raise Exception('Package %s does not contain a manifest.sha1 file, and unsigned packages install is not allowed' % fname)
+                    raise Exception(u'Package %s does not contain a manifest.sha1 file, and unsigned packages install is not allowed' % fname)
 
             self.check_cancelled()
             setup_filename = os.path.join( packagetempdir,'setup.py')
@@ -2648,7 +2647,7 @@ class Wapt(object):
                 sys.path.append(os.getcwd())
 
             # import the setup module from package file
-            logger.info("  sourcing install file %s " % setup_filename )
+            logger.info(u"  sourcing install file %s " % setup_filename )
             setup = import_setup(setup_filename,'_waptsetup_')
             required_params = []
 
