@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 246
+  Left = 352
   Height = 695
-  Top = 167
+  Top = 135
   Width = 1072
   Caption = 'Console WAPT'
   ClientHeight = 676
@@ -130,22 +130,6 @@ object VisWaptGUI: TVisWaptGUI
           State = cbGrayed
           TabOrder = 8
         end
-        object LabelComputersNumber: TLabel
-          Left = 720
-          Height = 13
-          Top = 7
-          Width = 6
-          Caption = '0'
-          ParentColor = False
-        end
-        object Label11: TLabel
-          Left = 616
-          Height = 13
-          Top = 7
-          Width = 97
-          Caption = 'Nombre de postes : '
-          ParentColor = False
-        end
         object Label13: TLabel
           Left = 616
           Height = 13
@@ -158,6 +142,22 @@ object VisWaptGUI: TVisWaptGUI
           Left = 720
           Height = 13
           Top = 22
+          Width = 6
+          Caption = '0'
+          ParentColor = False
+        end
+        object Label11: TLabel
+          Left = 616
+          Height = 13
+          Top = 7
+          Width = 97
+          Caption = 'Nombre de postes : '
+          ParentColor = False
+        end
+        object LabelComputersNumber: TLabel
+          Left = 720
+          Height = 13
+          Top = 7
           Width = 6
           Caption = '0'
           ParentColor = False
@@ -308,7 +308,7 @@ object VisWaptGUI: TVisWaptGUI
         PopupMenu = PopupMenuHosts
         TabOrder = 2
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
-        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toFullRowDrag]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toFullRowDrag]
         TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection, toUseExplorerTheme]
         TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect, toSimpleDrawSelection]
         WantTabs = True
@@ -317,6 +317,7 @@ object VisWaptGUI: TVisWaptGUI
         OnCompareNodes = GridHostsCompareNodes
         OnDragOver = GridHostsDragOver
         OnDragDrop = GridHostsDragDrop
+        OnEditing = GridHostsEditing
         OnGetImageIndexEx = GridHostsGetImageIndexEx
       end
       object HostPages: TPageControl

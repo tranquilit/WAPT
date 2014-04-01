@@ -35,7 +35,10 @@ interface
   Function  GetWaptServerURL:String;
   function GetWaptPrivateKey: String;
 
-  function  GetLDAPServer(dnsdomain:String=''): String;
+  //function  GetLDAPServer(dnsdomain:String=''): String;
+
+  function DNSSRVQuery(name:AnsiString):ISuperObject;
+  function DNSCNAMEQuery(name:AnsiString):ISuperObject;
 
   Function  GetWaptLocalURL:String;
 
@@ -98,10 +101,85 @@ var
 
 implementation
 
-uses FileUtil,soutils,tiscommon,Variants,winsock,ShellApi,IdDNSResolver,IdExceptionCore,JwaIpHlpApi,JwaIpTypes,
-    NetworkAdapterInfo,tisinifiles,registry,tisstrings;
+uses FileUtil,soutils,tiscommon,Variants,winsock,ShellApi,JwaIpHlpApi,JwaIpTypes,
+    NetworkAdapterInfo,tisinifiles,registry,tisstrings, JwaWinDNS,JwaWinsock2 ;
 
 
+
+//query current dns server for SRV record and return a list of {name,priority,weight,port}
+function DNSSRVQuery(name:AnsiString):ISuperObject;
+var
+  resultname : PPWideChar;
+  ppQueryResultsSet : PDNS_RECORD;
+  retvalue: Integer;
+  res : AnsiString;
+  rec:ISuperObject;
+begin
+  Result := TSuperObject.Create(stArray);
+  ppQueryResultsSet := Nil;
+  retvalue := DnsQuery(
+    PAnsiChar(name),
+    DNS_TYPE_SRV,
+    DNS_QUERY_BYPASS_CACHE,
+    Nil,
+    @ppQueryResultsSet,
+    Nil);
+  if (retvalue=0) and (ppQueryResultsSet<>Nil) then
+  try
+    while ppQueryResultsSet<>Nil do
+    begin
+      rec:= TSuperObject.Create(stObject);
+      res := ppQueryResultsSet^.Data.SRV.pNameTarget;
+      UniqueString(res);
+      rec.S['name'] := res;
+      rec.I['port'] := ppQueryResultsSet^.Data.SRV.wPort;
+      rec.I['priority'] := ppQueryResultsSet^.Data.SRV.wPriority;
+      rec.I['weight'] := ppQueryResultsSet^.Data.SRV.wWeight;
+      Result.AsArray.Add(rec);
+      ppQueryResultsSet:= ppQueryResultsSet^.pNext;
+    end;
+    SortByFields(Result,['priority','port']);
+  finally
+    DnsRecordListFree(ppQueryResultsSet,DnsFreeRecordList);
+  end;
+end;
+
+//query current dns server for CNAME record and return a list of {name}
+function DNSCNAMEQuery(name:AnsiString):ISuperObject;
+var
+  resultname : PPWideChar;
+  ppQueryResultsSet : PDNS_RECORD;
+  retvalue: Integer;
+  res : AnsiString;
+  rec:ISuperObject;
+begin
+  Result := TSuperObject.Create(stArray);
+  ppQueryResultsSet := Nil;
+  retvalue := DnsQuery(
+    PAnsiChar(name),
+    DNS_TYPE_CNAME,
+    DNS_QUERY_BYPASS_CACHE,
+    Nil,
+    @ppQueryResultsSet,
+    Nil);
+  if (retvalue=0) and (ppQueryResultsSet<>Nil) then
+  try
+    while ppQueryResultsSet<>Nil do
+    begin
+      if ppQueryResultsSet^.Data.PTR.pNameHost<>Nil then
+      begin
+        res := ppQueryResultsSet^.Data.PTR.pNameHost;
+        UniqueString(res);
+        Result.AsArray.Add(res);
+      end;
+      ppQueryResultsSet:= ppQueryResultsSet^.pNext;
+    end;
+  finally
+    DnsRecordListFree(ppQueryResultsSet,DnsFreeRecordList);
+  end;
+end;
+
+// launch aFile with Params asking for a different user
 function RunAsAdmin(const Handle: Hwnd; aFile : Ansistring; Params: Ansistring): Boolean;
 var
   sei:  TSHELLEXECUTEINFO;
@@ -225,6 +303,7 @@ begin
   Result := SO(strresult);
 end;
 
+{
 function GetMainWaptRepo: String;
 var
   resolv : TIdDNSResolver;
@@ -292,7 +371,74 @@ begin
   if (Result='') or not  Wget_try(result) then
     result := '';
 end;
+}
 
+function GetMainWaptRepo: String;
+var
+  i:integer;
+  first : integer;
+  ais : TAdapterInfo;
+
+  dnsdomain,
+  dnsserver:AnsiString;
+
+  rec,recs : ISuperObject;
+  wapthost:AnsiString;
+
+begin
+  result := IniReadString(AppIniFilename,'Global','repo_url');
+  if (Result <> '') then
+    exit;
+  {
+  if Get_EthernetAdapterDetail(ais) then
+  begin
+    for i:=0 to length(ais)-1 do
+    with ais[i] do
+      if (sIpAddress<>'') and (sIpMask<>'') and (dwType=MIB_IF_TYPE_ETHERNET) and (dwOperStatus>=MIB_IF_OPER_STATUS_CONNECTED) then begin
+        Logger(bDescr+' '+sIpAddress+'/'+sIpMask+' mac:'+ais[i].bPhysAddr,INFO);
+    end;
+  end;
+  }
+
+  dnsdomain:=GetDNSDomain;
+
+  //dnsserver:=GetDNSServer;
+  if dnsdomain<>'' then
+  begin
+    //SRV _wapt._tcp
+    recs := DNSSRVQuery('_wapt._tcp.'+dnsdomain);
+    for rec in recs do
+    begin
+      if rec.I['port'] = 443 then
+        Result := 'https://'+rec.S['name']+'/wapt'
+      else
+        Result := 'http://'+rec.S['name']+':'+rec.S['port']+'/wapt';
+      Logger('trying '+result,INFO);
+      if Wget_try(result) then
+        Exit;
+    end;
+
+    //CNAME wapt.
+    recs := DNSCNAMEQuery('wapt'+dnsdomain);
+    for rec in recs do
+    begin
+      Result := 'http://'+rec.AsString+'/wapt';
+      Logger('trying '+result,INFO);
+      if Wget_try(result) then
+        Exit;
+    end;
+
+    //A wapt
+    Result := 'http://wapt.'+dnsdomain+'/wapt';
+      Logger('trying '+result,INFO);
+      if Wget_try(result) then
+        Exit;
+  end;
+  result :='';
+end;
+
+
+{
 function GetLDAPServer(dnsdomain:String=''): String;
 var
   resolv : TIdDNSResolver;
@@ -341,7 +487,7 @@ begin
       Raise;
   end;
 end;
-
+}
 
 function GetEthernetInfo(ConnectedOnly:Boolean):ISuperObject;
 var
@@ -451,7 +597,7 @@ begin
   Result := StrIsOneOf(IniReadString (inifilename,'Global','use_local_connection_proxy'),['True','true','1'] );
 end;
 
-constructor Twaptdb.create(dbpath:String);
+constructor TWAPTDB.create(dbpath:String);
 begin
   dbinuse := syncobjs.TCriticalSection.Create;
 
@@ -475,7 +621,7 @@ begin
 
 end;
 
-destructor Twaptdb.Destroy;
+destructor TWAPTDB.Destroy;
 begin
   try
     db.Close;

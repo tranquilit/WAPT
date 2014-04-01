@@ -30,7 +30,7 @@ uses
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, CustApp,
   { you can add units after this }
-  Windows, PythonEngine, waptcommon, tiscommon,tisstrings,superobject,zmqapi;
+  Windows, PythonEngine, waptcommon, tiscommon,tisstrings,superobject,soutils,zmqapi,simpleinternet;
 type
   { pwaptget }
 
@@ -51,12 +51,15 @@ type
     Action : String;
     check_thread:TThread;
     lock:TRTLCriticalSection;
+    tasks:ISuperObject;
+    lastMessageTime : TDateTime;
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
     procedure WriteHelp; virtual;
     property WaptDB:TWAPTDB read GetWaptDB write SetWaptDB;
     property RepoURL:String read GetRepoURL write SetRepoURL;
     procedure pollerEvent(message:TStringList);
+    function remainingtasks:ISuperObject;
   end;
 
 
@@ -79,6 +82,20 @@ type
     procedure Execute; override;
 end;
 
+//#########################
+
+
+function WAPTLocalJsonGet(action: String;user:AnsiString='';password:AnsiString='';timeout:integer=1000): ISuperObject;
+var
+  strresult : String;
+begin
+  if StrLeft(action,1)<>'/' then
+    action := '/'+action;
+  strresult := retrieve(GetWaptLocalURL+action);
+  Result := SO(strresult);
+end;
+
+
 { TZMQPollThread }
 
 procedure TZMQPollThread.HandleMessage;
@@ -97,15 +114,15 @@ begin
 
   zmq_socket := zmq_context.Socket( stSub );
   zmq_socket.RcvHWM:= 1000001;
-  Logger('Connecting to Waptservice event queue',DEBUG);
+  Logger('Connecting to Waptservice event queue...',DEBUG);
   zmq_socket.connect( 'tcp://127.0.0.1:5000' );
   zmq_socket.Subscribe('');
+  Logger('Connected to Waptservice event queue',DEBUG);
 end;
 
 destructor TZMQPollThread.Destroy;
 begin
   message.Free;
-
   Logger('Leaving Waptservice event queue',DEBUG);
   if Assigned(zmq_socket) then
     FreeAndNil(zmq_socket);
@@ -120,20 +137,32 @@ var
   res : integer;
   part:Utf8String;
 begin
-  while not Terminated do
-  begin
-    res := zmq_socket.recv(msg);
-    while zmq_socket.RcvMore do
+  try
+    while not Terminated and not  zmq_socket.context.Terminated do
     begin
-      res := zmq_socket.recv(part);
-      msg:=msg+#13#10+part;
+      res := zmq_socket.recv(msg);
+      while zmq_socket.RcvMore do
+      begin
+        res := zmq_socket.recv(part);
+        msg:=msg+#13#10+part;
+      end;
+      message.Text:=msg;
+      HandleMessage;
+      if zmq_socket.context.Terminated then
+      begin
+        Writeln( 'W: interrupt received, killing server…');
+        break;
+      end;
     end;
-    message.Text:=msg;
-    HandleMessage;
+  finally
+    writeln('Stop listening to events');
   end;
 end;
 
 { pwaptget }
+
+var
+  Application: pwaptget;
 
 procedure pwaptget.SetWaptDB(AValue: TWAPTDB);
 begin
@@ -169,8 +198,10 @@ procedure pwaptget.DoRun;
 var
   MainModule : TStringList;
   logleveloption : String;
-
-  Res:ISuperobject;
+  Res,task:ISuperobject;
+  i:integer;
+  force:Boolean;
+  packages:String;
 
   procedure SetFlag( AFlag: PInt; AValue : Boolean );
   begin
@@ -181,7 +212,21 @@ var
   end;
 
 begin
-  Action := lowercase(ParamStr(ParamCount));
+  {Action:='';
+  packages:='';
+
+  for i:=1 to ParamCount do
+  begin
+    if (Pos('-',Params[i])<>1) then
+      if (action='') then
+        Action := lowercase(Params[i])
+      else
+        if packages='' then
+          Params[i]
+        else
+          packages:=packages+','+Params[i];
+  end;}
+  Action := Params[ParamCount];
 
   // parse parameters
   if HasOption('?') or HasOption('h','--help') then
@@ -222,39 +267,148 @@ begin
     Terminate;
     Exit;
   end
-  {else
-  if (CheckOpenPort(8088,'127.0.0.1',2)) and StrIsOneOf(action,['update','upgrade','install','remove']) then
+  else
+  if (action = 'dnsdebug') then
   begin
+    WriteLn('DNS Server : '+GetDNSServer);
+    WriteLn('DNS Domain : '+GetDNSDomain);
+    repourl := GetMainWaptRepo;
+    Writeln('Main repo url: '+RepoURL);
+
+    Writeln('SRV: '+DNSSRVQuery('_wapt._tcp.'+GetDNSDomain).AsJSon(True));
+    Writeln('CNAME: '+DNSCNAMEQuery('wapt.'+GetDNSDomain).AsJSon(True));
+    Terminate;
+    Exit;
+  end
+  else
+  if not HasOption('D','direct') and StrIsOneOf(action,['update','upgrade','longtask','cancel','cancel-all','tasks']) then
+  begin
+    // launch task in waptservice, waits for its termination
     check_thread :=TZMQPollThread.Create(Self);
     check_thread.Start;
+    tasks := TSuperObject.create(stArray);
     try
+      res := Nil;
+      //test longtask
+      if action='longtask' then
+      begin
+        Logger('Call longtask URL...',DEBUG);
+        res := WAPTLocalJsonGet('longtask.json');
+        if res = Nil then
+          WriteLn('Error launching longtask: '+res.S['message'])
+        else
+          tasks.AsArray.Add(res);
+        Logger('Task '+res.S['id']+' added to queue',DEBUG);
+      end
+      else
+      if action='tasks' then
+      begin
+        res := WAPTLocalJsonGet('tasks.json');
+        if res = Nil then
+          WriteLn('Error getting task list: '+res.S['message'])
+        else
+        begin
+          if res['running'].DataType<>stNull then
+            writeln(format('Running task %d: %s, status:%s',[ res['running'].I['id'],res['running'].S['description'],res['running'].S['runstatus']]))
+          else
+            writeln('No running tasks');
+          if res['pending'].AsArray.length>0 then
+            writeln('Pending : ');
+            for task in res['pending'] do
+              writeln('  '+task.S['id']+' '+task.S['description']);
+        end;
+      end
+      else
+      if action='cancel' then
+      begin
+        res := WAPTLocalJsonGet('cancel_running_task.json');
+        if res = Nil then
+          WriteLn('Error cancelling: '+res.S['message'])
+        else
+          if res.DataType<>stNull then
+            writeln('Cancelled '+res.S['description'])
+          else
+            writeln('No running task');
+      end
+      else
+      if (action='cancel-all') or (action='cancelall') then
+      begin
+        res := WAPTLocalJsonGet('cancel_all_tasks.json');
+        if res = Nil then
+          WriteLn('Error cancelling: '+res.S['message'])
+        else
+          if res.DataType<>stNull then
+          begin
+            for task in res do
+              writeln('Cancelled '+task.S['description'])
+          end
+          else
+            writeln('No running task');
+      end
+      else
       if action='update' then
       begin
+        Logger('Call update URL...',DEBUG);
         res := WAPTLocalJsonGet('update.json');
-        if res.S['result']='OK' then
-        begin
-          WriteLn(res.AsJSon(True));
-          readln();
-        end
+        if res = Nil then
+          WriteLn('Error launching update: '+res.S['message'])
         else
-          Writeln('Can not create an update task: ':);
-        ExitProcess(0);
+          tasks.AsArray.Add(res);
+        Logger('Task '+res.S['id']+' added to queue',DEBUG);
+      end
+      else
+      if (action='install') or (action='remove') then
+      begin
+        Logger('Call '+action+'?package='+packages,DEBUG);
+        if HasOption('f','force') then
+          res := WAPTLocalJsonGet(Action+'.json?package='+packages+'&force=1')
+        else
+          res := WAPTLocalJsonGet(Action+'.json?package='+packages);
+        if res = Nil then
+          WriteLn('Error : '+res.S['message'])
+        else
+          tasks.AsArray.Add(res);
+        Logger('Task '+res.S['id']+' added to queue',DEBUG);
       end
       else if action='upgrade' then
       begin
+        Logger('Call upgrade URL...',DEBUG);
         res := WAPTLocalJsonGet('upgrade.json');
-        WriteLn(res.AsJSon(True));
-        readln();
-        ExitProcess(0);
+        if res.S['result']<>'OK' then
+          WriteLn('Error launching upgrade: '+res.S['message'])
+        else
+          for task in res['content'] do
+            tasks.AsArray.Add(task);
+            Logger('Task '+task.S['id']+' added to queue',DEBUG);
       end;
+
+      while (tasks.AsArray.Length > 0) and not (Terminated) and not check_thread.Finished do
+      try
+        //if no message from service since more that 10 min, check if remaining tasks in queue...
+        if (now-lastMessageTime>1*1/24/50) and (remainingtasks.AsArray.Length=0) then
+          raise Exception.create('Timeout waiting for events')
+        else
+        begin
+          Sleep(1000);
+          write('.');
+        end;
+      except
+        writeln('cancelled');
+        for task in tasks do
+            WAPTLocalJsonGet('cancel_task.json?id='+task.S['id']);
+        break;
+      end;
+
     finally
+      for task in tasks do
+          WAPTLocalJsonGet('cancel_task.json?id='+task.S['id']);
       if Assigned(check_thread) then
       begin
         TerminateThread(check_thread.Handle,0);
         FreeAndNil(check_thread);
       end;
     end;
-  end}
+  end
   else
   if Action = 'dumpdb' then
     writeln(WaptDB.dumpdb.AsJson(True))
@@ -295,6 +449,7 @@ begin
   inherited Create(TheOwner);
   StopOnException:=True;
   InitializeCriticalSection(lock);
+
 end;
 
 destructor pwaptget.Destroy;
@@ -315,17 +470,80 @@ begin
 end;
 
 procedure pwaptget.pollerEvent(message: TStringList);
+var
+  msg:ISuperobject;
+  status:String;
+
+  //check if task with id id is in tasks list
+  function isInTasksList(id:integer):boolean;
+  var
+    t:ISuperObject;
+  begin
+    //writeln('check '+IntToStr(id)+' in '+tasks.AsJSon());
+    result := False;
+    for t in tasks do
+      if t.I['id'] = id then
+      begin
+        result := True;
+        break;
+      end;
+  end;
+
+  //remove task with id id from tasks list
+  procedure removeTask(id:integer);
+  var
+    i:integer;
+    t:ISuperObject;
+  begin
+    for i:=0 to tasks.AsArray.Length-1 do
+      if tasks.AsArray[i].I['id'] = id then
+      begin
+        tasks.AsArray.Delete(i);
+        break;
+      end;
+  end;
+
 begin
   EnterCriticalSection(lock);
   try
-    writeln(message.Text);
+    //writeln(message.Text);
+    //display messages if event task is in my list
+
+    lastMessageTime := Now;
+
+    if message[0]='TASKS' then
+    begin
+      status := message[1];
+      msg := SO(message[2]);
+      //writeln(msg.asJson());
+      if isInTasksList(msg.I['id']) then
+      begin
+        if (status = 'START') then
+          writeln(msg.S['description']);
+        if (status = 'PROGRESS') then
+          write(format('%s : %.0f%% completed',[msg.S['runstatus'], msg.D['progress']])+#13);
+        //catch finish of task
+        if (status = 'FINISH') or (status = 'ERROR') or (status = 'CANCEL') then
+        begin
+          removeTask(msg.I['id']);
+          WriteLn(msg.S['summary'])
+        end;
+      end;
+    end
   finally
     LeaveCriticalSection(lock);
   end;
 end;
 
+function pwaptget.remainingtasks: ISuperObject;
 var
-  Application: pwaptget;
+  res:ISuperObject;
+begin
+  res := WAPTLocalJsonGet('tasks.json');
+  Result := res['pending'];
+  if res['running'] <> Nil then
+    Result.AsArray.Add(res['running']);
+end;
 
 {$R *.res}
 

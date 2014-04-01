@@ -21,7 +21,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="8"/>
-      <RevisionNr Value="21"/>
+      <RevisionNr Value="22"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -35,36 +35,40 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="upgrade"/>
+        <CommandLineParams Value="longtask"/>
         <LaunchingApplication PathPlusParams="\usr\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="5">
+    <RequiredPackages Count="6">
       <Item1>
-        <PackageName Value="pltis_delphizmq"/>
+        <PackageName Value="internettools"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pltis_delphizmq"/>
       </Item2>
       <Item3>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pltis_utils"/>
       </Item3>
       <Item4>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="FCL"/>
       </Item4>
       <Item5>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item5>
+      <Item6>
+        <PackageName Value="pltis_superobject"/>
+      </Item6>
     </RequiredPackages>
-    <Units Count="47">
+    <Units Count="55">
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="222"/>
-        <CursorPos X="10" Y="230"/>
+        <TopLine Value="259"/>
+        <CursorPos X="87" Y="283"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -72,10 +76,12 @@
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
+        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="64"/>
-        <CursorPos X="1" Y="64"/>
+        <TopLine Value="296"/>
+        <CursorPos X="1" Y="305"/>
         <UsageCount Value="207"/>
+        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\indy\IdDNSResolver.pas"/>
@@ -83,7 +89,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="507"/>
         <CursorPos X="25" Y="544"/>
-        <UsageCount Value="34"/>
+        <UsageCount Value="33"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\jcl\source\common\JclSysInfo.pas"/>
@@ -91,14 +97,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="5575"/>
         <CursorPos X="47" Y="5598"/>
-        <UsageCount Value="208"/>
+        <UsageCount Value="207"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\jcl\source\include\jcl.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="208"/>
+        <UsageCount Value="207"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\superobject\superobject.pas"/>
@@ -106,7 +112,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="3146"/>
         <CursorPos X="31" Y="3164"/>
-        <UsageCount Value="197"/>
+        <UsageCount Value="196"/>
       </Unit5>
       <Unit6>
         <Filename Value="soutils.pas"/>
@@ -114,7 +120,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="37"/>
         <CursorPos X="1" Y="44"/>
-        <UsageCount Value="198"/>
+        <UsageCount Value="197"/>
       </Unit6>
       <Unit7>
         <Filename Value="tiscommon.pas"/>
@@ -131,7 +137,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="4724"/>
         <CursorPos X="33" Y="4747"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="22"/>
       </Unit8>
       <Unit9>
         <Filename Value="tisstrings.pas"/>
@@ -157,7 +163,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="455"/>
         <CursorPos X="14" Y="449"/>
-        <UsageCount Value="28"/>
+        <UsageCount Value="27"/>
       </Unit11>
       <Unit12>
         <Filename Value="networkadapterinfo.pas"/>
@@ -173,7 +179,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="176"/>
         <CursorPos X="23" Y="193"/>
-        <UsageCount Value="57"/>
+        <UsageCount Value="56"/>
       </Unit13>
       <Unit14>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\ldapsend.pas"/>
@@ -181,7 +187,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="151"/>
         <CursorPos X="15" Y="16"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="20"/>
       </Unit14>
       <Unit15>
         <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSCommon.pas"/>
@@ -189,7 +195,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="598"/>
         <CursorPos X="1" Y="600"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit15>
       <Unit16>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwaiphlpapi.pas"/>
@@ -197,7 +203,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="327"/>
         <CursorPos X="16" Y="327"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
       </Unit16>
       <Unit17>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwaiptypes.pas"/>
@@ -205,7 +211,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="96"/>
         <CursorPos X="3" Y="115"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
       </Unit17>
       <Unit18>
         <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
@@ -213,7 +219,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit18>
       <Unit19>
@@ -222,7 +228,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="200"/>
         <CursorPos X="69" Y="257"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit19>
       <Unit20>
         <Filename Value="..\waptconsole\uwaptconsole.pas"/>
@@ -230,7 +236,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="509"/>
         <CursorPos X="12" Y="521"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="10"/>
       </Unit20>
       <Unit21>
         <Filename Value="C:\codetyphon\typhon\components\lazutils\fileutil.pas"/>
@@ -238,14 +244,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="77"/>
         <CursorPos X="10" Y="90"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit21>
       <Unit22>
         <Filename Value="C:\codetyphon\typhon\components\lazutils\fileutil.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="728"/>
         <CursorPos X="3" Y="730"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit22>
       <Unit23>
         <Filename Value="C:\codetyphon\typhon\components\lazutils\lazfileutils.pas"/>
@@ -253,29 +259,29 @@
         <WindowIndex Value="0"/>
         <TopLine Value="902"/>
         <CursorPos X="1" Y="938"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit23>
       <Unit24>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\osutilsh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="12"/>
         <CursorPos X="10" Y="26"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit24>
       <Unit25>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\osutil.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="196"/>
         <CursorPos X="3" Y="199"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit25>
       <Unit26>
         <Filename Value="..\..\pltis_superobject\soutils.pas"/>
         <UnitName Value="soutils"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="35" Y="8"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="341"/>
+        <CursorPos X="1" Y="385"/>
+        <UsageCount Value="13"/>
       </Unit26>
       <Unit27>
         <Filename Value="C:\codetyphon\typhon\lcl\clipbrd.pp"/>
@@ -283,7 +289,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="142"/>
         <CursorPos X="10" Y="160"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit27>
       <Unit28>
         <Filename Value="..\..\pltis_superobject\soclipbrd.pas"/>
@@ -291,7 +297,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="33" Y="16"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="19"/>
       </Unit28>
       <Unit29>
         <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdDNSResolver.pas"/>
@@ -299,42 +305,42 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="10"/>
       </Unit29>
       <Unit30>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\sysutilh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="295"/>
         <CursorPos X="13" Y="312"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="10"/>
       </Unit30>
       <Unit31>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\sysutils.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="152"/>
         <CursorPos X="9" Y="156"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="10"/>
       </Unit31>
       <Unit32>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\classes\classesh.inc"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="715"/>
-        <CursorPos X="15" Y="733"/>
-        <UsageCount Value="11"/>
+        <TopLine Value="694"/>
+        <CursorPos X="25" Y="707"/>
+        <UsageCount Value="10"/>
       </Unit32>
       <Unit33>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\classes\stringl.inc"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="972"/>
-        <CursorPos X="3" Y="978"/>
-        <UsageCount Value="11"/>
+        <TopLine Value="1349"/>
+        <CursorPos X="1" Y="1370"/>
+        <UsageCount Value="10"/>
       </Unit33>
       <Unit34>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\objpas.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="275"/>
         <CursorPos X="9" Y="277"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="10"/>
       </Unit34>
       <Unit35>
         <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdTCPConnection.pas"/>
@@ -342,17 +348,16 @@
         <WindowIndex Value="0"/>
         <TopLine Value="494"/>
         <CursorPos X="1" Y="511"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit35>
       <Unit36>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
         <UnitName Value="tiscommon"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1155"/>
-        <CursorPos X="79" Y="1179"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="503"/>
+        <CursorPos X="3" Y="532"/>
+        <UsageCount Value="14"/>
         <Bookmarks Count="2">
           <Item0 X="74" Y="472" ID="2"/>
           <Item1 X="74" Y="314" ID="1"/>
@@ -365,7 +370,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="7"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit37>
       <Unit38>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\uriparser.pp"/>
@@ -373,31 +378,29 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit38>
       <Unit39>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\win\wininc\ascdef.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="455"/>
         <CursorPos X="10" Y="469"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit39>
       <Unit40>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\finah.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="8"/>
         <CursorPos X="10" Y="22"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit40>
       <Unit41>
         <Filename Value="..\wapttray\udmwapttray.pas"/>
         <UnitName Value="uDMWAPTTray"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="70"/>
         <CursorPos X="1" Y="91"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="10"/>
       </Unit41>
       <Unit42>
         <Filename Value="..\waptautodeploy\UnitRedirect.pas"/>
@@ -405,165 +408,233 @@
         <WindowIndex Value="0"/>
         <TopLine Value="64"/>
         <CursorPos X="1" Y="70"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit42>
       <Unit43>
         <Filename Value="..\..\pltis_utils\tisstrings.pas"/>
         <UnitName Value="tisstrings"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="119"/>
-        <CursorPos X="20" Y="153"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="153"/>
+        <CursorPos X="47" Y="165"/>
+        <UsageCount Value="12"/>
       </Unit43>
       <Unit44>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\win\wininc\defines.inc"/>
-        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1068"/>
         <CursorPos X="6" Y="1089"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="10"/>
       </Unit44>
       <Unit45>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\custapp.pp"/>
         <UnitName Value="CustApp"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="278"/>
-        <CursorPos X="3" Y="283"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="62"/>
+        <CursorPos X="14" Y="86"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit45>
       <Unit46>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\win\wininc\redef.inc"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="6"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="9"/>
       </Unit46>
+      <Unit47>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwawindns.pas"/>
+        <UnitName Value="JwaWinDNS"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1052"/>
+        <CursorPos X="14" Y="1065"/>
+        <UsageCount Value="11"/>
+      </Unit47>
+      <Unit48>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <UnitName Value="superobject"/>
+        <EditorIndex Value="5"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="2154"/>
+        <CursorPos X="30" Y="2159"/>
+        <UsageCount Value="15"/>
+        <Loaded Value="True"/>
+      </Unit48>
+      <Unit49>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\win32\classes.pp"/>
+        <UnitName Value="Classes"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="31"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit49>
+      <Unit50>
+        <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
+        <UnitName Value="sogrid"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="2571"/>
+        <CursorPos X="30" Y="2583"/>
+        <UsageCount Value="10"/>
+      </Unit50>
+      <Unit51>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-process\src\simpleipc.pp"/>
+        <UnitName Value="simpleipc"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="160"/>
+        <CursorPos X="1" Y="162"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+      </Unit51>
+      <Unit52>
+        <Filename Value="..\..\internettools\internet\simpleinternet.pas"/>
+        <UnitName Value="simpleinternet"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="91"/>
+        <CursorPos X="11" Y="106"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit52>
+      <Unit53>
+        <Filename Value="..\..\internettools\internet\internetaccess.pas"/>
+        <UnitName Value="internetaccess"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="91"/>
+        <CursorPos X="5" Y="99"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit53>
+      <Unit54>
+        <Filename Value="..\..\internettools\system\bbjniutils.pas"/>
+        <UnitName Value="bbjniutils"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="139"/>
+        <CursorPos X="222" Y="13"/>
+        <UsageCount Value="10"/>
+      </Unit54>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="97" Column="1" TopLine="88"/>
+        <Caret Line="308" Column="1" TopLine="287"/>
       </Position1>
       <Position2>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="98" Column="1" TopLine="88"/>
+        <Caret Line="293" Column="87" TopLine="293"/>
       </Position2>
       <Position3>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="99" Column="1" TopLine="88"/>
+        <Caret Line="267" Column="35" TopLine="177"/>
       </Position3>
       <Position4>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="100" Column="1" TopLine="88"/>
+        <Caret Line="158" Column="29" TopLine="129"/>
       </Position4>
       <Position5>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="278" Column="1" TopLine="257"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position5>
       <Position6>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="279" Column="1" TopLine="257"/>
+        <Caret Line="267" Column="24" TopLine="246"/>
       </Position6>
       <Position7>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="316" Column="1" TopLine="279"/>
+        <Caret Line="268" Column="13" TopLine="229"/>
       </Position7>
       <Position8>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="298" Column="18" TopLine="204"/>
+        <Caret Line="270" Column="10" TopLine="246"/>
       </Position8>
       <Position9>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="96" Column="1" TopLine="75"/>
+        <Caret Line="271" Column="10" TopLine="247"/>
       </Position9>
       <Position10>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="225" Column="21" TopLine="70"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position10>
       <Position11>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="226" Column="33" TopLine="91"/>
+        <Caret Line="52" Column="10" TopLine="28"/>
       </Position11>
       <Position12>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="121" Column="1" TopLine="91"/>
+        <Caret Line="270" Column="10" TopLine="246"/>
       </Position12>
       <Position13>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="122" Column="1" TopLine="91"/>
+        <Caret Line="271" Column="10" TopLine="247"/>
       </Position13>
       <Position14>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="124" Column="1" TopLine="91"/>
+        <Caret Line="354" Column="74" TopLine="330"/>
       </Position14>
       <Position15>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="125" Column="1" TopLine="91"/>
+        <Caret Line="356" Column="67" TopLine="332"/>
       </Position15>
       <Position16>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="127" Column="1" TopLine="93"/>
+        <Caret Line="374" Column="24" TopLine="350"/>
       </Position16>
       <Position17>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="128" Column="5" TopLine="109"/>
+        <Caret Line="522" Column="1" TopLine="495"/>
       </Position17>
       <Position18>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="127" Column="17" TopLine="106"/>
+        <Caret Line="56" Column="17" TopLine="42"/>
       </Position18>
       <Position19>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="25" Column="36" TopLine="1"/>
+        <Caret Line="438" Column="1" TopLine="496"/>
       </Position19>
       <Position20>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="228" Column="61" TopLine="135"/>
+        <Caret Line="138" Column="43" TopLine="116"/>
       </Position20>
       <Position21>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="127" Column="5" TopLine="106"/>
+        <Caret Line="220" Column="34" TopLine="195"/>
       </Position21>
       <Position22>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="312" Column="1" TopLine="276"/>
+        <Caret Line="215" Column="13" TopLine="211"/>
       </Position22>
       <Position23>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="280" Column="3" TopLine="259"/>
+        <Caret Line="366" Column="50" TopLine="348"/>
       </Position23>
       <Position24>
-        <Filename Value="C:\codetyphon\fpcsrc\rtl\win\wininc\redef.inc"/>
-        <Caret Line="203" Column="11" TopLine="179"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="94" Column="25" TopLine="79"/>
       </Position24>
       <Position25>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="280" Column="40" TopLine="259"/>
+        <Filename Value="..\..\internettools\internet\simpleinternet.pas"/>
+        <Caret Line="268" Column="3" TopLine="263"/>
       </Position25>
       <Position26>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="33" Column="77" TopLine="4"/>
+        <Filename Value="..\..\internettools\internet\simpleinternet.pas"/>
+        <Caret Line="106" Column="11" TopLine="91"/>
       </Position26>
       <Position27>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="100" Column="50" TopLine="79"/>
+        <Caret Line="367" Column="16" TopLine="353"/>
       </Position27>
       <Position28>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="237" Column="5" TopLine="123"/>
+        <Caret Line="100" Column="24" TopLine="85"/>
       </Position28>
       <Position29>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="423" Column="1" TopLine="466"/>
       </Position29>
       <Position30>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="122" Column="196" TopLine="88"/>
+        <Caret Line="217" Column="9" TopLine="193"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>
@@ -598,7 +669,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="7">
+    <BreakPoints Count="8">
       <Item1>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsGlobal"/>
@@ -648,6 +719,13 @@
         <Source Value="C:\codetyphon\fpcsrc\rtl\objpas\classes\stringl.inc"/>
         <Line Value="978"/>
       </Item7>
+      <Item8>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\..\internettools\internet\simpleinternet.pas"/>
+        <Line Value="265"/>
+      </Item8>
     </BreakPoints>
     <Exceptions Count="3">
       <Item1>

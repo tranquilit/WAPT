@@ -1,5 +1,7 @@
 #!/usr/bin/python
 import subprocess
+import os
+
 from pwd import getpwnam
 import time
 
@@ -13,7 +15,8 @@ def check_user_exists(username):
 #check if process is running and if so stop process. Should check pid , TODO : check for real service pid status
 ps_out = subprocess.check_output('/bin/ps ax',shell=True)
 if "/usr/bin/uwsgi-core" in ps_out:
-    print subprocess.check_output('/etc/init.d/waptserver stop',shell=True)
+    if os.path.isfile('/etc/init.d/waptserver'):
+		print(subprocess.check_output('/etc/init.d/waptserver stop',shell=True))
     #ugly hack, wait for process to have stopped
     time.sleep(2)
 
@@ -22,18 +25,16 @@ if "/usr/bin/uwsgi-core" in ps_out:
 if check_user_exists('waptserver'):
     print "Waptserver user exists, renaming to wapt and changing group to www-data"
     cmd = "/usr/sbin/usermod -l wapt waptserver"
-    print"EXECUTING : %s " % cmd
-    print subprocess.check_output(cmd,shell=True)
+    print("EXECUTING : %s " % cmd)
+    print(subprocess.check_output(cmd,shell=True))
     cmd = "/usr/sbin/usermod -g 33 wapt"
     print "EXECUTING : %s " %cmd
-    print subprocess.check_output(cmd,shell=True)
+    print(subprocess.check_output(cmd,shell=True))
 
 if not check_user_exists('wapt'):
-    print "Adding user wapt"
-    cmd   = "adduser --system --home /opt/wapt  --gid 33 wapt"
+    print("Adding user wapt")
+    cmd  = "adduser --system --home /opt/wapt  --gid 33 wapt"
     print "Executing : %s " % cmd
-    print subprocess.check_output(cmd,shell=True)
+    print(subprocess.check_output(cmd,shell=True))
 else:
     print "User wapt already existing, skipping user creation"
-
-

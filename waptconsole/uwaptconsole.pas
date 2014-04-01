@@ -89,10 +89,10 @@ type
     Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
-    Label13: TLabel;
-    LabelComputersNumber: TLabel;
     HostRunningTask: TLabeledEdit;
     HostRunningTaskLog: TMemo;
+    Label13: TLabel;
+    LabelComputersNumber: TLabel;
     labSelected: TLabel;
     MemoGroupeDescription: TMemo;
     MenuItem19: TMenuItem;
@@ -283,6 +283,8 @@ type
     procedure GridHostsDragOver(Sender: TBaseVirtualTree; Source: TObject;
       Shift: TShiftState; State: TDragState; const Pt: TPoint; Mode: TDropMode;
       var Effect: DWORD; var Accept: Boolean);
+    procedure GridHostsEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; var Allowed: Boolean);
     procedure GridHostsGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: boolean; var ImageIndex: integer;
@@ -472,6 +474,9 @@ begin
         if tasks.S['status']='OK' then
         begin
           HostRunningTaskLog.Text:= tasks.AsJSon(True);
+          HostRunningTaskLog.SelStart:=length(HostRunningTask.Text)-1;
+          HostRunningTaskLog.SelLength :=1;
+
           tasksresult := tasks['message'];
           if tasksresult['done'] =Nil then
             tasksresult := tasks['result'];
@@ -497,7 +502,7 @@ begin
         end
         else
         begin
-          HostRunningTask.Text:='... Impossible de récuperer l''action';
+          HostRunningTask.Text:='... Impossible de récupérer l''action';
           HostTaskRunningProgress.Position := 0;
           HostRunningTaskLog.Clear;
           GridHostTasksPending.Data := Nil;
@@ -1799,6 +1804,11 @@ begin
   end;
 end;
 
+procedure TVisWaptGUI.GridHostsEditing(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
+begin
+  Allowed:=False;
+end;
 
 procedure TVisWaptGUI.GridLoadData(grid: TSOGrid; jsondata: string);
 begin

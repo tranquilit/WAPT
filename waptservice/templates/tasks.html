@@ -15,7 +15,11 @@
 <h3>{{group | capitalize}}:</h3>
 	<ul>
 	{% for task in data.get(group) | reverse %}
-	<li><b>{{task.id}} - {{task.create_date}} - <a href={{url_for('task',id=task['id'])}}>{{task.description}}:</b></a> {{task.logs | beautify}}
+	{% if group=='pending' %}
+	<li><b>{{task.id}} - {{task.create_date}} - <a href={{url_for('task',id=task['id'])}}>{{task.description}}:</b></a> <input type=button onclick="location.href='cancel_task?id={{task.id}}'"/> 
+	{% else %}
+	<li><b>{{task.id}} - {{task.create_date}} - <a href={{url_for('task',id=task['id'])}}>{{task.description}}:</b></a> {{task.logs | beautify}}</li>
+	{% endif %}
 	{% endfor %}
 	</ul>
 {% endfor %}
