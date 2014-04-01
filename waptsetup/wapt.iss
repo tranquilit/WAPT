@@ -35,6 +35,19 @@ Source: "..\templates\*"; DestDir: "{app}\templates"; Flags: createallsubdirs re
 Source: "..\lib\site-packages\M2Crypto\libeay32.dll" ; DestDir: "{app}"; 
 Source: "..\lib\site-packages\M2Crypto\ssleay32.dll" ; DestDir: "{app}";
 
+; for local waptservice
+Source: "..\libzmq.dll"; DestDir: "{app}";
+Source: "..\waptservice\win32\*"; DestDir: "{app}\waptservice\win32\";  Flags: createallsubdirs recursesubdirs; Tasks: installService 
+Source: "..\waptservice\win64\*"; DestDir: "{app}\waptservice\win64\";  Flags: createallsubdirs recursesubdirs; Tasks: installService
+Source: "..\waptservice\waptservice*.py"; DestDir: "{app}\waptservice\"; Tasks: installService
+Source: "..\waptservice\network_manager.py"; DestDir: "{app}\waptservice\"; Tasks: installService
+Source: "..\waptservice\static\*"; DestDir: "{app}\waptservice\static"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
+Source: "..\waptservice\ssl\*"; DestDir: "{app}\waptservice\ssl"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
+Source: "..\waptservice\templates\*"; DestDir: "{app}\waptservice\templates"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
+
+; user feedback of waptservice activity
+Source: "..\wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.exe'); 
+
 ; command line tools
 Source: "..\wapt-get.exe"; DestDir: "{app}";
 Source: "..\wapt-get.exe.manifest"; DestDir: "{app}";
@@ -99,14 +112,22 @@ Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tm
 Filename: "{app}\wapt-get.exe"; Parameters: "update"; Flags: runhidden; StatusMsg: "Updating packages list"; Description: "Update packages list from main repository"
 Filename: "{app}\wapt-get.exe"; Parameters: "setup-tasks"; Tasks: setuptasks; Flags: runhidden; StatusMsg: "Setting up daily sheduled tasks"; Description: "Set up daily sheduled tasks"
 ; rights rw for Admins and System, ro for users and authenticated users on wapt directory
-Filename: "cmd"; Parameters: "/C echo O| cacls {app} /S:""D:PAI(A;OICI;FA;;;BA)(A;OICI;FA;;;SY)(A;OICI;0x1200a9;;;BU)(A;OICI;0x1201a9;;;AU)"""; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Changing rights on wapt directory..."; Description: "Changing rights on wapt directory"
+Filename: "cmd"; Parameters: "/C echo O| cacls {app} /S:""D:PAI(A;OICI;FA;;;BA)(A;OICI;FA;;;SY)(A;OICI;0x1200a9;;;BU)(A;OICI;0x1201a9;;;AU)"""; Tasks:installService; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Changing rights on wapt directory..."; Description: "Changing rights on wapt directory"
+
+; if waptservice
+Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptservice\waptservice.py install"; Tasks:installService ; Flags: runhidden; StatusMsg: "Install waptservice"; Description: "Install WAPT Service"
+Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait runasoriginaluser postinstall; StatusMsg: "Launch WAPT tray icon"; Description: "Launch WAPT tray icon"
+
 
 [Icons]
 Name: "{commonstartup}\WAPT session setup"; Tasks: autorunSessionSetup; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
+Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\wapttray.exe"; Flags: excludefromshowinnewinstall;
 
 [Tasks]
 Name: setupTasks; Description: "Creates windows scheduled tasks for update and upgrade"; 
 Name: autorunSessionSetup; Description: "Launch WAPT session setup for all packages at logon";
+Name: installService; Description: "Install WAPT Service";
+Name: autorunTray; Description: "Start WAPT Tray icon at logon"; Flags: unchecked;
 
 [UninstallRun]
 Filename: "taskkill"; Parameters: "/t /im ""waptconsole.exe"" /f"; Flags: runhidden; StatusMsg: "Stopping waptconsole"
@@ -169,21 +190,6 @@ begin
     if FileExists(TmpFileName) then
 	     DeleteFile(TmpFileName);
   end;
-end;
-
-procedure beforeUpdateWapt();
-var
-  WinHttpReq: Variant;
-begin
-  try
-    WinHttpReq := CreateOleObject('WinHttp.WinHttpRequest.5.1');
-    WinHttpReq.Open('GET', teWaptRepoUrl.Text, false);
-    WinHttpReq.Send();
-  except
-    MsgBox('WAPT repository URL is invalid/unreachable.'#13#10' please check repo_url in "wapt-get.ini" file', mbError, MB_OK);
-  end;
-  if WinHttpReq.Status <> 200 then
-    MsgBox('WAPT repository URL is invalid/unreachable.'#13#10' please check repo_url in "wapt-get.ini" file', mbError, MB_OK);
 end;
 
 procedure killtask(name:String);

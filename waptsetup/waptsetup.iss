@@ -11,18 +11,6 @@
 #include "wapt.iss"
 
 [Files]
-; for local waptservice
-Source: "..\libzmq.dll"; DestDir: "{app}";
-Source: "..\waptservice\win32\*"; DestDir: "{app}\waptservice\win32\";  Flags: createallsubdirs recursesubdirs; Tasks: installService 
-Source: "..\waptservice\win64\*"; DestDir: "{app}\waptservice\win64\";  Flags: createallsubdirs recursesubdirs; Tasks: installService
-Source: "..\waptservice\waptservice*.py"; DestDir: "{app}\waptservice\"; Tasks: installService
-Source: "..\waptservice\network_manager.py"; DestDir: "{app}\waptservice\"; Tasks: installService
-Source: "..\waptservice\static\*"; DestDir: "{app}\waptservice\static"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
-Source: "..\waptservice\ssl\*"; DestDir: "{app}\waptservice\ssl"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
-Source: "..\waptservice\templates\*"; DestDir: "{app}\waptservice\templates"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
-; user feedback of waptservice activity
-Source: "..\wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.exe'); 
-
 ; sources of installer to rebuild a custom installer
 Source: "innosetup\*"; DestDir: "{app}\waptsetup\innosetup";
 Source: "wapt.iss"; DestDir: "{app}\waptsetup";
@@ -44,18 +32,10 @@ Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:G
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL}
 
 [Run]
-Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptservice\waptservice.py install"; Flags: runhidden; StatusMsg: "Install waptservice"; Description: "Install waptservice"
-Filename: "{app}\wapt-get.exe"; Parameters: "register"; Flags: runhidden postinstall; StatusMsg: "Register computer on the WAPT server"; Description: "Register computer on the WAPT server"
-Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait runasoriginaluser postinstall; StatusMsg: "Launch WAPT tray icon"; Description: "Launch WAPT tray icon"
+Filename: "{app}\wapt-get.exe"; Parameters: "register"; Flags: runhidden postinstall; Tasks: useWapt StatusMsg: "Register computer on the WAPT server"; Description: "Register computer on the WAPT Server"
 
-[Icons]
-Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\wapttray.exe"; Flags: excludefromshowinnewinstall;
 
-[Tasks]
-Name: autorunTray; Description: "Start WAPT Tray icon at logon"; Flags: unchecked
-Name: installService; Description: "Install WAPT Service"; 
 [Code]
-
 var
   rbStaticUrl,rbDnsServer: TNewRadioButton;
   CustomPage: TWizardPage;
@@ -127,7 +107,7 @@ end;
 function GetRepoURL(Param: String):String;
 begin
   if WizardSilent then
-    result :='http://wapt/wapt' 
+    result :='{#default_repo_url}' 
   else
     if rbDnsServer.Checked then
     begin
@@ -140,7 +120,7 @@ end;
 function GetWaptServerURL(Param: String):String;
 begin
   if WizardSilent then
-    result := 'http://wapt:8080'
+    result := '{#default_wapt_server}'
   if rbDnsServer.Checked then
     begin
       result := '';
