@@ -32,7 +32,7 @@ Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:G
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL}
 
 [Run]
-Filename: "{app}\wapt-get.exe"; Parameters: "register"; Flags: runhidden postinstall; Tasks: useWapt StatusMsg: "Register computer on the WAPT server"; Description: "Register computer on the WAPT Server"
+Filename: "{app}\wapt-get.exe"; Parameters: "register"; Flags: runhidden postinstall; StatusMsg: "Register computer on the WAPT server"; Description: "Register computer on the WAPT Server"
 
 
 [Code]
