@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.21"
+__version__ = "0.8.22"
 
 import time
 import sys
@@ -220,7 +220,6 @@ def format_isodate(isodate):
     """
     return dateutil.parser.parse(isodate).strftime("%d/%m/%Y %H:%M:%S")
 
-
 def beautify(c):
     """return pretty html"""
     join = u"".join
@@ -275,7 +274,6 @@ def check_open_port(portnumber=8088):
     win_major_version = int(platform.win32_ver()[1].split('.')[0])
     if win_major_version<6:
         #check if firewall is running
-        print "Running on NT5 "
         if win32serviceutil.QueryServiceStatus( 'SharedAccess', None)[1]==win32service.SERVICE_RUNNING:
             logger.info("Firewall started, checking for port openning...")
             #winXP 2003
@@ -801,7 +799,7 @@ def cancel_all_tasks():
 @app.route('/cancel_running_task')
 @app.route('/cancel_running_task.json')
 @check_ip_source
-def cancel_all_tasks():
+def cancel_running_tasks():
     data = task_manager.cancel_running_task()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
@@ -1281,7 +1279,7 @@ class WaptTaskManager(threading.Thread):
 
     def broadcast_tasks_status(self,topic,content):
         """topic : ADD START FINISH CANCEL ERROR """
-        # ignorr brodcast for this..
+        # ignore broadcast for this..
         if isinstance(content,WaptUpdateServerStatus):
             return
         if self.events:
@@ -1405,7 +1403,7 @@ class WaptTaskManager(threading.Thread):
                         self.running_task = None
                     if cancelled:
                         self.tasks_cancelled.append(cancelled)
-                        self.broadcast_tasks_status('CANCEL',[cancelled])
+                        self.broadcast_tasks_status('CANCEL',cancelled)
                     return cancelled
                 else:
                     return None
@@ -1430,8 +1428,9 @@ class WaptTaskManager(threading.Thread):
                             pass
                     finally:
                         self.running_task = None
-                self.tasks_cancelled.extend(cancelled)
-                self.broadcast_tasks_status('CANCEL',cancelled)
+                for task in cancelled:
+                    self.tasks_cancelled.append(task)
+                    self.broadcast_tasks_status('CANCEL',task)
                 return cancelled
 
         except Exception as e:
@@ -1517,16 +1516,18 @@ def install_service():
         nssm = os.path.join(wapt_root_dir,'waptservice','win32','nssm.exe')
 
     logger.info('Register new waptservice with nssm')
-    setuphelpers.run('"{nssm}" install WAPTService "{waptpython}" "{waptservicepy}"'.format(
+    setuphelpers.run('"{nssm}" install WAPTService "{waptpython}" ""{waptservicepy}""'.format(
         waptpython = os.path.abspath(os.path.join(wapt_root_dir,'waptpython.exe')),
         nssm = nssm,
         waptservicepy = os.path.abspath(__file__),
      ))
 
+    # fix some parameters (quotes for path with spaces...
     params = {
-        "DisplayName":"sz:WAPT Service",
-        "AppStdout":r"expand_sz:{}".format(os.path.join(waptconfig.log_directory,'waptservice.log')),
-        "Parameters\\AppStderr":r"expand_sz:{}".format(os.path.join(waptconfig.log_directory,'waptservice.log')),
+        "DisplayName" : "sz:WAPT Service",
+        "AppStdout" : r"expand_sz:{}".format(os.path.join(waptconfig.log_directory,'waptservice.log')),
+        "Parameters\\AppStderr" : r"expand_sz:{}".format(os.path.join(waptconfig.log_directory,'waptservice.log')),
+        "Parameters\\AppParameters" : r'expand_sz:"{}"'.format(os.path.abspath(__file__)),
         }
 
     root = setuphelpers.HKEY_LOCAL_MACHINE
