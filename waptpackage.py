@@ -20,8 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-
-__version__ = "0.8.21"
+__version__ = "0.8.22"
 
 import os
 import zipfile
@@ -46,7 +45,6 @@ def md5_for_file(fname, block_size=2**20):
             break
         md5.update(data)
     return md5.hexdigest()
-
 
 # From Semantic Versioning : http://semver.org/ by Tom Preston-Werner,
 # valid : 0.0-0  0.0.0-0 0.0.0.0-0

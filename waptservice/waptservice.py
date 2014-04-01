@@ -44,6 +44,7 @@ import zmq
 from zmq.log.handlers import PUBHandler
 import Queue
 import jinja2
+import traceback
 
 import pythoncom
 import ctypes
@@ -142,7 +143,12 @@ class WaptServiceConfig(object):
         # maximum nb of tasks to keep in history wapt task manager
         self.MAX_HISTORY = 30
 
+        # http localserver
         self.waptservice_port = 8088
+
+        # zeroMQ publishing socket
+        self.zmq_port = 5000
+
         self.dbpath = os.path.join(wapt_root_dir,'db','waptdb.sqlite')
         self.loglevel = "info"
         self.log_directory = os.path.join(wapt_root_dir,'log')
@@ -151,6 +157,8 @@ class WaptServiceConfig(object):
 
         self.wapt_server = ""
         self.authorized_callers_ip = get_authorized_callers_ip(self.wapt_server)
+
+        self.waptservice_poll_timeout = 10
 
     def load(self):
         """Load waptservice parameters from global wapt-get.ini file"""
@@ -176,6 +184,11 @@ class WaptServiceConfig(object):
                 self.waptservice_port = int(config.get('global','waptservice_port'))
             else:
                 self.waptservice_port=8088
+
+            if config.has_option('global','zmq_port'):
+                self.zmq_port = int(config.get('global','zmq_port'))
+            else:
+                self.zmq_port=5000
 
             if config.has_option('global','waptservice_poll_timeout'):
                 self.waptservice_poll_timeout = int(config.get('global','waptservice_poll_timeout'))
@@ -456,7 +469,7 @@ def package_details():
     try:
         data = wapt().is_available(package)
     except Exception as e:
-        data = {'errors':[ str(e) ]}
+        data = {'errors':[ setuphelpers.ensure_unicode(e) ]}
 
     # take the newest...
     data = data and data[-1].as_dict()
@@ -479,7 +492,7 @@ def get_runstatus():
             rows = cur.fetchall()
             data = [dict(ix) for ix in rows]
         except Exception as e:
-            logger.critical(u"*********** error " + ensure_unicode(e))
+            logger.critical(u"*********** error " + setuphelpers.ensure_unicode(e))
     return Response(common.jsondump(data), mimetype='application/json')
 
 @app.route('/checkupgrades')
@@ -587,7 +600,7 @@ def install_log():
         packagename = request.args.get('package')
         data = wapt().last_install_log(packagename)
     except Exception as e:
-        data = {'result':'ERROR','message': u'{}'.format(e)}
+        data = {'result':'ERROR','message': u'{}'.format(setuphelpers.ensure_unicode(e))}
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -762,7 +775,7 @@ def task_events():
     id = int(request.args['id'])
     def generate():
         try:
-            print "BEGIn EVENTS"
+            print "BEGIN EVENTS"
             # init zeromq events broadcast
             g.zmq_context = zmq.Context()
             g.event_queue = g.zmq_context.socket(zmq.SUB)
@@ -770,7 +783,7 @@ def task_events():
             g.event_queue.setsockopt(zmq.SUBSCRIBE,"")
 
             # start event broadcasting
-            g.event_queue.connect("tcp://127.0.0.1:5000")
+            g.event_queue.connect("tcp://127.0.0.1:%i"%(waptconfig.zmq_port,))
             while True:
                 data = g.event_queue.recv_multipart()
                 if not data:
@@ -778,7 +791,6 @@ def task_events():
                     writeln('timeout')
                     break
                 if data[0] == 'TASKS':
-
                     yield "<pre>%s</pre>"%data
         except Exception as e:
             yield
@@ -799,8 +811,19 @@ def cancel_all_tasks():
 @app.route('/cancel_running_task')
 @app.route('/cancel_running_task.json')
 @check_ip_source
-def cancel_running_tasks():
+def cancel_running_task():
     data = task_manager.cancel_running_task()
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('default.html',data=data)
+
+@app.route('/cancel_task')
+@app.route('/cancel_task.json')
+@check_ip_source
+def cancel_task():
+    id = int(request.args['id'])
+    data = task_manager.cancel_task(id)
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -819,8 +842,8 @@ class EventsPrinter:
         '''Logs written output to listeners'''
         if text and text <> '\n':
             if self.events:
-                self.events.send_multipart(['PRINT',u'{}'.format(setuphelpers.ensure_unicode(text)).encode('utf8')])
-            self.logs.append(repr(text))
+                self.events.send_multipart(['PRINT',(setuphelpers.ensure_unicode(text)).encode('utf8')])
+            self.logs.append(setuphelpers.ensure_unicode(text))
 
 def eventprintinfo(func):
     '''Wraps a method so that any calls made to print get logged instead'''
@@ -849,6 +872,7 @@ class WaptTask(object):
         self.finish_date = None
         self.logs = []
         self.result = None
+        self.runstatus = ""
         self.summary = ""
         # from 0 to 100%
         self.progress = 0
@@ -858,13 +882,8 @@ class WaptTask(object):
     def update_status(self,status):
         """Update runstatus in database and send PROGRESS event"""
         if self.wapt:
-            self.wapt.runstatus = status
-            msg = {}
-            msg['description'] = u'{}'.format(self)
-            msg['runstatus'] = status
-            if self.progress is not None:
-                msg['progress'] = self.progress
-            self.wapt.events.send_multipart(["TASKS",'PROGRESS',common.jsondump(msg)])
+            self.runstatus = self.wapt.runstatus = status
+            self.wapt.events.send_multipart(["TASKS",'PROGRESS',common.jsondump(self.as_dict())])
 
     def can_run(self,explain=False):
         """Return True if all the requirements for the task are met
@@ -921,10 +940,11 @@ class WaptTask(object):
             create_date = self.create_date and self.create_date.isoformat(),
             start_date = self.start_date and self.start_date.isoformat(),
             finish_date = self.finish_date and self.finish_date.isoformat(),
-            logs = '\n'.join(self.logs),
+            logs = u'\n'.join(self.logs),
             result = common.jsondump(self.result),
             summary = self.summary,
             progress = self.progress,
+            runstatus = self.runstatus,
             description = u"{}".format(self),
             pidlist = u"{}".format(self.external_pids),
             ))
@@ -950,7 +970,7 @@ class WaptNetworkReconfig(WaptTask):
 
     def _run(self):
         self.wapt.network_reconfigure()
-        logger.info('Reloading config file')
+        logger.info(u'Reloading config file')
         waptconfig.load()
         # http
         check_open_port(waptconfig.waptservice_port)
@@ -1068,7 +1088,7 @@ class WaptUpdateServerStatus(WaptTask):
                 self.summary = u'Le WAPT Server a été informé'
             except Exception as e:
                 self.result = {}
-                self.summary = u"Erreur lors de l'envoi vers le serveur : {}".format(e)
+                self.summary = u"Erreur lors de l'envoi vers le serveur : {}".format(setuphelpers.ensure_unicode(e))
         else:
             self.result = {}
             self.summary = u'WAPT Server is not defined'
@@ -1091,7 +1111,7 @@ class WaptRegisterComputer(WaptTask):
                 self.summary = u"L'inventaire a été envoyé au serveur WAPT"
             except Exception as e:
                 self.result = {}
-                self.summary = u"Erreur lors de l'envoi de l'inventaire vers le serveur : {}".format(e)
+                self.summary = u"Erreur lors de l'envoi de l'inventaire vers le serveur : {}".format(setuphelpers.ensure_unicode(e))
         else:
             self.result = {}
             self.summary = u'WAPT Server is not defined'
@@ -1113,7 +1133,7 @@ class WaptCleanup(WaptTask):
             self.summary = u"Cache local vidé"
         except Exception as e:
             self.result = {}
-            self.summary = u"Erreur lors du vidage du cache local : {}".format(e)
+            self.summary = u"Erreur lors du vidage du cache local : {}".format(setuphelpers.ensure_unicode(e))
 
     def __str__(self):
         return u"Vider le cache local de packages"
@@ -1125,6 +1145,9 @@ class WaptLongTask(WaptTask):
         super(WaptLongTask,self).__init__()
         self.duration = duration
         self.raise_error = raise_error
+        self.notify_server_on_start = False
+        self.notify_server_on_finish = False
+
 
     def _run(self):
         self.progress = 0
@@ -1233,7 +1256,6 @@ class WaptTaskManager(threading.Thread):
         self.status_lock = threading.RLock()
 
         self.wapt=Wapt(config_filename=config_filename)
-
         self.tasks = []
 
         self.tasks_queue = Queue.PriorityQueue()
@@ -1248,7 +1270,7 @@ class WaptTaskManager(threading.Thread):
         event_queue = zmq_context.socket(zmq.PUB)
 
         # start event broadcasting
-        event_queue.bind("tcp://127.0.0.1:5000")
+        event_queue.bind("tcp://127.0.0.1:{}".format(waptconfig.zmq_port))
 
         # add logger through zmq events
         handler = PUBHandler(event_queue)
@@ -1263,9 +1285,9 @@ class WaptTaskManager(threading.Thread):
     def update_runstatus(self,status):
         # update database with new runstatus
         self.wapt.runstatus = status
-        # dispatch event to listening parties
-        msg = json.dumps(self.wapt.get_last_update_status())
         if self.events:
+            # dispatch event to listening parties
+            msg = common.jsondump(self.wapt.get_last_update_status())
             self.wapt.events.send_multipart(["STATUS",msg])
 
     def update_server_status(self):
@@ -1277,19 +1299,21 @@ class WaptTaskManager(threading.Thread):
             except Exception as e:
                 logger.warning(u'Unable to update server status: %s' % setuphelpers.ensure_unicode(e))
 
-    def broadcast_tasks_status(self,topic,content):
+    def broadcast_tasks_status(self,topic,task):
         """topic : ADD START FINISH CANCEL ERROR """
         # ignore broadcast for this..
-        if isinstance(content,WaptUpdateServerStatus):
+        if isinstance(task,WaptUpdateServerStatus):
             return
         if self.events:
+            """
             if not isinstance(content,str):
                 if isinstance(content,unicode):
                     content = content.encode('utf8')
                 else:
                     content = common.jsondump(content)
-            if content:
-                self.wapt.events.send_multipart(["TASKS",topic,content])
+            """
+            if task:
+                self.wapt.events.send_multipart(["TASKS",topic,common.jsondump(task)])
 
     def add_task(self,task):
         """Adds a new WaptTask for processing"""
@@ -1342,16 +1366,19 @@ class WaptTaskManager(threading.Thread):
                             self.running_task.logs.append(u"{}".format(setuphelpers.ensure_unicode(e)))
                             self.running_task.summary = u"Cancelled"
                             self.tasks_cancelled.append(self.running_task)
-                            self.broadcast_tasks_status('CANCEL',self.running_task.as_dict())
+                            self.broadcast_tasks_status('CANCEL',self.running_task)
                     except Exception as e:
                         if self.running_task:
                             self.running_task.logs.append(u"{}".format(setuphelpers.ensure_unicode(e)))
+                            self.running_task.logs.append(traceback.format_exc())
                             self.running_task.summary = u"{}".format(setuphelpers.ensure_unicode(e))
                             self.tasks_error.append(self.running_task)
-                            self.broadcast_tasks_status('ERROR',self.running_task.as_dict())
+                            self.broadcast_tasks_status('ERROR',self.running_task)
                         logger.critical(setuphelpers.ensure_unicode(e))
-                        if logger.level==logging.DEBUG:
-                            raise
+                        try:
+                            logging.debug(traceback.format_exc())
+                        except:
+                            pass
                 finally:
                     self.tasks_queue.task_done()
                     self.update_runstatus('')
@@ -1384,7 +1411,7 @@ class WaptTaskManager(threading.Thread):
                     errors = [ task.as_dict() for task in self.tasks_error],
                     )
         except Exception as e:
-            return u"Error : tasks list locked : {}".format(e)
+            return u"Error : tasks list locked : {}".format(setuphelpers.ensure_unicode(e))
 
 
     def cancel_running_task(self):
@@ -1409,7 +1436,37 @@ class WaptTaskManager(threading.Thread):
                     return None
 
         except Exception as e:
-            return u"Error : tasks list locked : {}".format(e)
+            return u"Error : tasks list locked : {}".format(setuphelpers.ensure_unicode(e))
+
+    def cancel_task(self,id):
+        """Cancel running or pending task with supplied id.
+            return cancelled task"""
+        try:
+            with self.status_lock:
+                cancelled = None
+                if self.running_task and self.running_task.id == id:
+                    cancelled = self.running_task
+                    try:
+                        self.running_task.kill()
+                    except:
+                        pass
+                    finally:
+                        self.running_task = None
+                else:
+                    for task in self.tasks_queue.queue:
+                        if task.id == id:
+                            cancelled = task
+                            self.tasks_queue.queue.remove(task)
+                            break
+                    if cancelled:
+                        try:
+                            cancelled.kill()
+                        except:
+                            pass
+                return cancelled
+
+        except Exception as e:
+            return u"Error : tasks list locked : {}".format(setuphelpers.ensure_unicode(e))
 
     def cancel_all_tasks(self):
         """Cancel running and pending tasks. Returns list of cancelled tasks"""
@@ -1434,7 +1491,7 @@ class WaptTaskManager(threading.Thread):
                 return cancelled
 
         except Exception as e:
-            return u"Error : tasks list locked : {}".format(e)
+            return u"Error : tasks list locked : {}".format(setuphelpers.ensure_unicode(e))
 
     def start_ipaddr_monitoring(self):
         def addr_change(wapt):

@@ -20,9 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-
-__version__ = "0.8.17"
-
+__version__ = "0.8.22"
 import sys
 import os
 import logging
@@ -106,6 +104,7 @@ action is either :
 parser=OptionParser(usage=usage,version='wapt-get.py ' + __version__+' common.py '+common.__version__+' setuphelpers.py '+setuphelpers.__version__)
 parser.add_option("-c","--config", dest="config", default=os.path.join(os.path.dirname(sys.argv[0]),'wapt-get.ini') , help="Config file full path (default: %default)")
 parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
+parser.add_option("-D","--direct",    dest="direct",    default=False, action='store_true', help="Don't user http service for update/upgrade (default: %default)")
 parser.add_option("-d","--dry-run",    dest="dry_run",    default=False, action='store_true', help="Dry run (default: %default)")
 parser.add_option("-u","--update-packages",    dest="update_packages",  default=False, action='store_true', help="Update Packages first then action (default: %default)")
 parser.add_option("-f","--force",    dest="force",    default=False, action='store_true', help="Force (default: %default)")
@@ -359,7 +358,7 @@ def main():
                     for p in result:
                         print u"%-39s%-70s%-20s%-70s" % (p['key'],p['name'],p['version'],p['uninstall_string'])
 
-            elif action=='showlog':
+            elif action in ('showlog','show-log'):
                 if len(args)<2:
                     print u"You must provide at least one package name"
                     sys.exit(1)

@@ -101,9 +101,9 @@ def ensure_unicode(data):
             return data
         if type(data) is types.StringType:
             return unicode(data, 'utf8', 'replace')
-        if type(data) is WindowsError:
+        if isinstance(data,WindowsError):
             return u"%s : %s" % (data.args[0], data.args[1].decode(sys.getfilesystemencoding()))
-        if type(data) is UnicodeDecodeError:
+        if isinstance(data,(UnicodeDecodeError,UnicodeEncodeError)):
             return u"%s : faulty string is '%s'" % (data,repr(data.args[1]))
         if isinstance(data,Exception):
             try:
@@ -126,7 +126,10 @@ def ensure_unicode(data):
         except:
            pass
     except:
-        return("Error in ensure_unicode / %s"%(repr(data)))
+        if logger.level <> logging.DEBUG:
+            return("Error in ensure_unicode / %s"%(repr(data)))
+        else:
+            raise
 
 def create_shortcut(path, target='', arguments='', wDir='', icon=''):
     """Create a windows shortcut
@@ -184,7 +187,10 @@ def create_user_programs_menu_shortcut(label, target='', arguments='', wDir='', 
     return sc
 
 def wgets(url,proxies=None):
-    """Return the content of a remote resources as a String"""
+    """Return the content of a remote resources as a String
+    >>> wgets('http://wapt:8080/info')
+    {"client_version": "0.8.21", "server_version": "0.8.17"}
+    """
     r = requests.get(url,proxies=proxies)
     if r.ok:
         return r.text
@@ -1071,6 +1077,58 @@ def wmi_info_basic():
     return result
 
 def host_info():
+    """Read main workstation inforamtions, returned as a dict
+    >>> host_info()
+    ???
+    {'computer_fqdn': 'htlaptop.tranquilit.local',
+     'computer_name': 'HTLAPTOP',
+     'connected_ips': '192.168.149.225',
+     'cpu_name': u'Intel(R) Core(TM) i5-2520M CPU @ 2.50GHz',
+     'current_user': [u'htouvet'],
+     'description': u'test',
+     'dns_domain': u'tranquilit.local',
+     'mac': ['5c:26:00:00:00:00'],
+     'networking': [{'addr': '169.254.190.235',
+                     'connected': False,
+                     'iface': '{0E54325E-CD4E-4743-99D8-2BA5E2F4411D}',
+                     'mac': '68:a3:c4:a3:84:55'},
+                    {'addr': '169.254.151.43',
+                     'connected': False,
+                     'iface': '{A5F59CD2-BF7C-4E3E-A29A-095CF3118338}',
+                     'mac': '00:ff:a5:f5:9c:d2'},
+                    {'addr': '169.254.249.182',
+                     'connected': False,
+                     'iface': '{3209A865-887F-410D-8D0B-741DEF0FBA8F}',
+                     'mac': '68:a3:c4:a3:84:55'},
+                    {'addr': '192.168.149.225',
+                     'broadcast': '192.168.149.255',
+                     'connected': True,
+                     'iface': '{1FDA2648-7032-4A57-82CB-3CC19CD7BEBD}',
+                     'mac': '5c:26:00:00:00:00',
+                     'netmask': '255.255.255.0'},
+                    {'addr': '169.254.161.148',
+                     'broadcast': '169.254.255.255',
+                     'connected': True,
+                     'iface': '{B21F01C9-DE21-407B-8DC9-6C475A0E0634}',
+                     'mac': '08:00:27:00:20:10',
+                     'netmask': '255.255.0.0'}],
+     'physical_memory': 6317723648L,
+     'registered_organization': u'',
+     'registered_owner': u'',
+     'system_manufacturer': u'Dell Inc.',
+     'system_productname': u'Latitude E6520',
+     'virtual_memory': 2147352576L,
+     'win64': True,
+     'windows_product_infos': {'key_match': True,
+                               'product_id': u'',
+                               'product_key': '',
+                               'product_partnr': '',
+                               'product_source': '',
+                               'version': u'Windows 7 Professional'},
+     'windows_version': 'Windows-7-6.1.7601-SP1',
+     'workgroup_name': 'TRANQUILIT'}
+    >>>
+    """
     info = {}
     info['description'] = registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\LanmanServer\Parameters','srvcomment')
 
@@ -1111,9 +1169,22 @@ def host_info():
 
 # from http://stackoverflow.com/questions/580924/python-windows-file-version-attribute
 def get_file_properties(fname):
-    """
-    Read all properties of the given file return them as a dictionary.
-    """
+    r"""Read all properties of the given file return them as a dictionary.
+    >>> get_file_properties(r'c:\windows\explorer.exe')
+    ???
+    {'Comments': '',
+     'CompanyName': u'Microsoft Corporation',
+     'FileDescription': u'Explorateur Windows',
+     'FileVersion': u'6.1.7600.16385 (win7_rtm.090713-1255)',
+     'InternalName': u'explorer',
+     'LegalCopyright': u'\xa9 Microsoft Corporation. Tous droits r\xe9serv\xe9s.',
+     'LegalTrademarks': '',
+     'OriginalFilename': u'EXPLORER.EXE.MUI',
+     'PrivateBuild': '',
+     'ProductName': u'Syst\xe8me d\u2019exploitation Microsoft\xae Windows\xae',
+     'ProductVersion': u'6.1.7600.16385',
+     'SpecialBuild': ''}
+     """
     propNames = ('Comments', 'InternalName', 'ProductName',
         'CompanyName', 'LegalCopyright', 'ProductVersion',
         'FileDescription', 'LegalTrademarks', 'PrivateBuild',
@@ -1148,6 +1219,43 @@ def get_file_properties(fname):
 
 # from http://stackoverflow.com/questions/3157955/get-msi-product-name-version-from-command-line
 def get_msi_properties(msi_filename):
+    r"""Return a dict of msi installer properties
+    >>> get_msi_properties(r'C:\tranquilit\tis-7zip-wapt\7z920.msi')
+    {u'ALLUSERS': u'2',
+     u'ARPHELPLINK': u'http://www.7-zip.org/support.html',
+     u'ARPURLINFOABOUT': u'http://www.7-zip.org/',
+     u'ARPURLUPDATEINFO': u'http://www.7-zip.org/download.html',
+     u'DefaultUIFont': u'WixUI_Font_Normal',
+     u'ErrorDialog': u'ErrorDlg',
+     u'Manufacturer': u'Igor Pavlov',
+     u'ProductCode': u'{23170F69-40C1-2701-0920-000001000000}',
+     u'ProductLanguage': u'1033',
+     u'ProductName': u'7-Zip 9.20',
+     u'ProductVersion': u'9.20.00.0',
+     u'SecureCustomProperties': u'OLDERVERSIONBEINGUPGRADED',
+     u'UpgradeCode': u'{23170F69-40C1-2701-0000-000004000000}',
+     u'WixUI_CustomizeDlg_BackChange': u'MaintenanceTypeDlg',
+     u'WixUI_CustomizeDlg_BackCustom': u'SetupTypeDlg',
+     u'WixUI_CustomizeDlg_BackFeatureTree': u'LicenseAgreementDlg',
+     u'WixUI_CustomizeDlg_Next': u'VerifyReadyDlg',
+     u'WixUI_LicenseAgreementDlg_Back': u'WelcomeDlg',
+     u'WixUI_LicenseAgreementDlg_Next': u'CustomizeDlg',
+     u'WixUI_MaintenanceTypeDlg_Back': u'MaintenanceWelcomeDlg',
+     u'WixUI_MaintenanceTypeDlg_Change': u'CustomizeDlg',
+     u'WixUI_MaintenanceTypeDlg_Remove': u'VerifyRemoveDlg',
+     u'WixUI_MaintenanceTypeDlg_Repair': u'VerifyRepairDlg',
+     u'WixUI_MaintenanceWelcomeDlg_Next': u'MaintenanceTypeDlg',
+     u'WixUI_Mode': u'FeatureTree',
+     u'WixUI_VerifyReadyDlg_BackChange': u'CustomizeDlg',
+     u'WixUI_VerifyReadyDlg_BackComplete': u'SetupTypeDlg',
+     u'WixUI_VerifyReadyDlg_BackCustom': u'CustomizeDlg',
+     u'WixUI_VerifyReadyDlg_BackFeatureTree': u'CustomizeDlg',
+     u'WixUI_VerifyReadyDlg_BackRepair': u'MaintenanceTypeDlg',
+     u'WixUI_VerifyReadyDlg_BackTypical': u'SetupTypeDlg',
+     u'WixUI_VerifyRemoveDlg_Back': u'MaintenanceTypeDlg',
+     u'WixUI_VerifyRepairDlg_Back': u'MaintenanceTypeDlg',
+     u'WixUI_WelcomeDlg_Next': u'LicenseAgreementDlg'}
+    """
     db = msilib.OpenDatabase(msi_filename, msilib.MSIDBOPEN_READONLY)
     view = db.OpenView ("SELECT * FROM Property")
     view.Execute(None)
@@ -1188,7 +1296,8 @@ def service_installed(service_name):
             raise
 
 def service_start(service_name):
-    """Start a service by its service name"""
+    """Start a service by its service name
+    """
     logger.debug('Starting service %s' % service_name)
     win32serviceutil.StartService(service_name)
     return win32serviceutil.WaitForServiceStatus(service_name, win32service.SERVICE_RUNNING, waitSecs=4)
@@ -1200,7 +1309,10 @@ def service_stop(service_name):
     return win32serviceutil.WaitForServiceStatus(service_name, win32service.SERVICE_STOPPED, waitSecs=4)
 
 def service_is_running(service_name):
-    """Return True if the service is running"""
+    """Return True if the service is running
+    >>> service_is_running('waptservice')
+    True
+    """
     return win32serviceutil.QueryServiceStatus(service_name)[1] == win32service.SERVICE_RUNNING
 
 def user_appdata():
@@ -1211,13 +1323,18 @@ def mkdirs(path):
     if not os.path.isdir(path):
         os.makedirs(path)
 
-
 def user_desktop():
-    """return path to current logged in user desktop"""
+    r"""return path to current logged in user desktop
+    >>> user_desktop()
+    u'C:\\Users\\htouvet\\Desktop'
+    """
     return unicode(desktop(0))
 
 def common_desktop():
-    """return path to public desktop (visible by all users)"""
+    """return path to public desktop (visible by all users)
+    >>> common_desktop()
+    u'C:\\Users\\Public\\Desktop'
+    """
     return unicode(desktop(1))
 
 def register_dll(dllpath):
@@ -1350,8 +1467,9 @@ def create_daily_task(name,cmd,parameters, max_runtime=10, repeat_minutes=None, 
 
 
 def get_current_user():
-    """
-    Get the login name for the current user.
+    r"""Get the login name for the current user.
+    >>> get_current_user()
+    u'htouvet'
     """
     import ctypes
     MAX_PATH = 260                  # according to a recent WinDef.h
@@ -1366,12 +1484,18 @@ def get_language():
     return locale.getdefaultlocale()[0].split('_')[0]
 
 def get_appath(exename):
-    """Get the registered application location from registry given its executable name"""
+    """Get the registered application location from registry given its executable name
+    >>> get_apppath('firefox.exe')
+    u'C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe'
+    >>> get_appath('wapt-get.exe')
+    u'C:\\wapt\\wapt-get.exe'
+    """
     if iswin64():
         key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\App Paths\%s' % exename)
     else:
         key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\%s' % exename)
     return reg_getvalue(key,None)
+
 
 class Version():
     """Version object of form 0.0.0

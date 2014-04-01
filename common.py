@@ -616,11 +616,14 @@ class LogInstallOutput(object):
     def write(self,txt):
         with self.lock:
             txt = ensure_unicode(txt)
-            self.console.write(txt)
+            try:
+                self.console.write(txt)
+            except:
+                self.console.write(repr(txt))
             if txt <> '\n':
                 self.output.append(txt)
-                if txt and txt[-1]<>'\n':
-                    txtdb = txt+'\n'
+                if txt and txt[-1]<>u'\n':
+                    txtdb = txt+u'\n'
                 else:
                     txtdb = txt
                 if threading.current_thread() == self.threadid:
@@ -2671,10 +2674,10 @@ class Wapt(object):
             for p in required_params:
                 if not p in params_dict:
                     if not is_system_user():
-                        params_dict[p] = raw_input("%s: " % p)
+                        params_dict[p] = raw_input(u"%s: " % p)
                     else:
-                        raise Exception('Required parameters %s is not supplied' % p)
-            logger.info('Install parameters : %s' % (params_dict,))
+                        raise Exception(u'Required parameters %s is not supplied' % p)
+            logger.info(u'Install parameters : %s' % (params_dict,))
 
             # set params dictionary
             if not hasattr(setup,'params'):
@@ -2740,11 +2743,7 @@ class Wapt(object):
         except Exception,e:
             if install_id:
                 try:
-                    try:
-                        uerror = repr(e).decode(locale.getpreferredencoding())
-                    except:
-                        uerror = ensure_unicode(e)
-                    self.waptdb.update_install_status(install_id,'ERROR',uerror)
+                    self.waptdb.update_install_status(install_id,'ERROR',ensure_unicode(e))
                 except Exception,e2:
                     logger.critical(ensure_unicode(e2))
             else:
@@ -3140,6 +3139,8 @@ class Wapt(object):
                 except Exception as e:
                     actions['errors'].append([request,p])
                     logger.critical(u'Package %s not installed due to errors : %s' %(request,ensure_unicode(e)))
+                    if logger.level == logging.DEBUG:
+                        raise
 
             return actions
         else:
