@@ -25,7 +25,7 @@
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="462"/>
-        <CursorPos X="14" Y="468"/>
+        <CursorPos X="38" Y="464"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="4">
           <Item0 X="1" Y="1588" ID="4"/>
@@ -67,13 +67,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="dmwaptpython"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="14"/>
         <CursorPos X="14" Y="30"/>
         <UsageCount Value="238"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="uviseditpackage.pas"/>

@@ -105,6 +105,7 @@ type
 
     lastServiceMessage:TDateTime;
     popupvisible:Boolean;
+    notify_user:Boolean;
     lastButton:TMouseButton;
 
     current_task:ISuperObject;
@@ -216,8 +217,9 @@ begin
   zmq_socket := zmq_context.Socket( stSub );
   zmq_socket.RcvHWM:= 10000;
   zmq_socket.SndHWM:= 10000;
-  zmq_socket.connect( 'tcp://127.0.0.1:5000' );
-  zmq_socket.Subscribe('');
+  zmq_socket.connect( 'tcp://127.0.0.1:'+inttostr(zmq_port));
+  zmq_socket.Subscribe('TASKS');
+  //zmq_socket.Subscribe('');
   {zmq_socket.Subscribe('INFO');
   zmq_socket.Subscribe('TASKS');
   zmq_socket.Subscribe('PRINT');
@@ -310,6 +312,8 @@ begin
   check_waptservice := TCheckWaptservice.Create(Self);
   check_waptservice.Start;
 
+  notify_user := True;
+
 end;
 
 procedure TDMWaptTray.DataModuleDestroy(Sender: TObject);
@@ -393,6 +397,7 @@ var
   msg,msg_type,topic:String;
   bh,progress,runstatus:String;
   upgrade_status,running,upgrades,errors,taskresult,task,tasks : ISuperObject;
+  task_notify_user:Boolean;
 begin
   try
     WaptServiceRunning:=True;
@@ -407,7 +412,7 @@ begin
       begin
           TrayIcon1.BalloonHint := UTF8Encode(msg);
           TrayIcon1.BalloonFlags:=bfError;
-          if not popupvisible then
+          if not popupvisible and notify_user then
             TrayIcon1.ShowBalloonHint;
       end
       else
@@ -443,7 +448,7 @@ begin
         end
         else
         begin
-          trayHint:='Système à jour';
+          trayHint:='';
           trayMode:=tmOK;
         end;
       end
@@ -456,7 +461,7 @@ begin
           begin
             TrayIcon1.BalloonHint := UTF8Encode(msg);
             TrayIcon1.BalloonFlags:=bfNone;
-            if not popupvisible then
+            if not popupvisible and notify_user then
               TrayIcon1.ShowBalloonHint;
           end;
         end;
@@ -469,13 +474,18 @@ begin
         msg := message.Text;
         taskresult := SO(message.Text);
         trayHint:=taskresult.S['runstatus'];
+        if taskresult.B['notify_user'] then
+           task_notify_user:=True
+        else
+          task_notify_user:=False;
+
         if topic='ERROR' then
         begin
           trayMode:= tmErrors;
           current_task := Nil;
           TrayIcon1.BalloonHint := UTF8Encode('Erreur pour '+taskresult.S['description']);
           TrayIcon1.BalloonFlags:=bfError;
-          if not popupvisible then
+          if not popupvisible and task_notify_user then
             TrayIcon1.ShowBalloonHint;
         end
         else
@@ -485,7 +495,7 @@ begin
           TrayIcon1.BalloonHint := UTF8Encode(taskresult.S['description']+' démarré');
           TrayIcon1.BalloonFlags:=bfInfo;
           current_task := taskresult;
-          if not popupvisible then
+          if not popupvisible and task_notify_user then
             TrayIcon1.ShowBalloonHint;
         end
         else
@@ -494,7 +504,7 @@ begin
           trayMode:= tmRunning;
           TrayIcon1.BalloonHint := UTF8Encode(taskresult.S['description']+#13#10+Format('%.0f%%',[taskresult.D['progress']]));
           TrayIcon1.BalloonFlags:=bfInfo;
-          if not popupvisible then
+          if not popupvisible and task_notify_user then
             TrayIcon1.ShowBalloonHint;
           current_task := taskresult;
         end
@@ -504,7 +514,7 @@ begin
           trayMode:= tmOK;
           TrayIcon1.BalloonHint := UTF8Encode(taskresult.S['description']+' terminé'+#13#10+taskresult.S['summary']);
           TrayIcon1.BalloonFlags:=bfInfo;
-          if not popupvisible then
+          if not popupvisible and task_notify_user then
             TrayIcon1.ShowBalloonHint;
           current_task := Nil;
         end
@@ -514,26 +524,19 @@ begin
           trayMode:= tmErrors;
           current_task := Nil;
 
-          if taskresult.DataType = stArray then
+          if taskresult.DataType = stObject then
           begin
-            if taskresult.AsArray.Length>0 then
-            begin
-              tasks := TSuperObject.Create(stArray);
-              for task in  taskresult do
-                tasks.AsArray.Add(task.S['description']);
-              msg := Join(#13#10,tasks);
-              TrayIcon1.BalloonHint :=UTF8Encode('Annulation de '+msg);
-              TrayIcon1.BalloonFlags:=bfWarning;
-              if not popupvisible then
+             TrayIcon1.BalloonHint :=UTF8Encode('Annulation de '+UTF8Encode(taskresult.S['description']));
+             TrayIcon1.BalloonFlags:=bfWarning;
+             if not popupvisible and task_notify_user  then
                 TrayIcon1.ShowBalloonHint;
-            end
-            else
-            begin
-              TrayIcon1.BalloonHint :=UTF8Encode('Pas de tâche annulée');
-              TrayIcon1.BalloonFlags:=bfInfo;
-              if not popupvisible then
-                TrayIcon1.ShowBalloonHint;
-            end;
+          end
+          else
+          begin
+            TrayIcon1.BalloonHint :=UTF8Encode('Pas de tâche annulée');
+            TrayIcon1.BalloonFlags:=bfInfo;
+            if not popupvisible and task_notify_user  then
+              TrayIcon1.ShowBalloonHint;
           end
         end;
       end;
@@ -636,7 +639,7 @@ begin
   begin
     TrayIcon1.Hint:= UTF8Encode(AValue);
     TrayIcon1.BalloonHint:=UTF8Encode(AValue);
-    if not popupvisible then
+    if not popupvisible and (AValue<>'') and notify_user then
       TrayIcon1.ShowBalloonHint;
   end;
 end;
