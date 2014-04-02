@@ -878,12 +878,15 @@ class WaptTask(object):
         self.progress = 0
         self.notify_server_on_start = True
         self.notify_server_on_finish = True
+        self.notify_user = True
 
     def update_status(self,status):
         """Update runstatus in database and send PROGRESS event"""
         if self.wapt:
-            self.runstatus = self.wapt.runstatus = status
-            self.wapt.events.send_multipart(["TASKS",'PROGRESS',common.jsondump(self.as_dict())])
+            self.runstatus = status
+            self.wapt.runstatus = status
+            if self.notify_user:
+                self.wapt.events.send_multipart(["TASKS",'PROGRESS',common.jsondump(self.as_dict())])
 
     def can_run(self,explain=False):
         """Return True if all the requirements for the task are met
@@ -1300,18 +1303,12 @@ class WaptTaskManager(threading.Thread):
                 logger.warning(u'Unable to update server status: %s' % setuphelpers.ensure_unicode(e))
 
     def broadcast_tasks_status(self,topic,task):
-        """topic : ADD START FINISH CANCEL ERROR """
+        """topic : ADD START FINISH CANCEL ERROR
+        """
         # ignore broadcast for this..
         if isinstance(task,WaptUpdateServerStatus):
             return
-        if self.events:
-            """
-            if not isinstance(content,str):
-                if isinstance(content,unicode):
-                    content = content.encode('utf8')
-                else:
-                    content = common.jsondump(content)
-            """
+        if self.events and task and task.notify_user:
             if task:
                 self.wapt.events.send_multipart(["TASKS",topic,common.jsondump(task)])
 
