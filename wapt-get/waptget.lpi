@@ -21,8 +21,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="8"/>
-      <RevisionNr Value="23"/>
-      <BuildNr Value="1"/>
+      <RevisionNr Value="24"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -69,7 +68,7 @@
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="259"/>
-        <CursorPos X="45" Y="277"/>
+        <CursorPos X="31" Y="260"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -77,12 +76,10 @@
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="296"/>
         <CursorPos X="1" Y="305"/>
         <UsageCount Value="207"/>
-        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\indy\IdDNSResolver.pas"/>
@@ -354,16 +351,14 @@
       <Unit36>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
         <UnitName Value="tiscommon"/>
-        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="503"/>
-        <CursorPos X="3" Y="532"/>
+        <TopLine Value="1400"/>
+        <CursorPos X="38" Y="1417"/>
         <UsageCount Value="14"/>
         <Bookmarks Count="2">
           <Item0 X="74" Y="472" ID="2"/>
           <Item1 X="74" Y="314" ID="1"/>
         </Bookmarks>
-        <Loaded Value="True"/>
       </Unit36>
       <Unit37>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
@@ -429,12 +424,10 @@
       <Unit45>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\custapp.pp"/>
         <UnitName Value="CustApp"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="62"/>
         <CursorPos X="14" Y="86"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit45>
       <Unit46>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\win\wininc\redef.inc"/>
@@ -454,12 +447,10 @@
       <Unit48>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <UnitName Value="superobject"/>
-        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2154"/>
         <CursorPos X="30" Y="2159"/>
         <UsageCount Value="15"/>
-        <Loaded Value="True"/>
       </Unit48>
       <Unit49>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\win32\classes.pp"/>
@@ -480,32 +471,26 @@
       <Unit51>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-process\src\simpleipc.pp"/>
         <UnitName Value="simpleipc"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="160"/>
         <CursorPos X="1" Y="162"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
       </Unit51>
       <Unit52>
         <Filename Value="..\..\internettools\internet\simpleinternet.pas"/>
         <UnitName Value="simpleinternet"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="91"/>
         <CursorPos X="11" Y="106"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit52>
       <Unit53>
         <Filename Value="..\..\internettools\internet\internetaccess.pas"/>
         <UnitName Value="internetaccess"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="91"/>
         <CursorPos X="5" Y="99"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit53>
       <Unit54>
         <Filename Value="..\..\internettools\system\bbjniutils.pas"/>
@@ -516,7 +501,7 @@
         <UsageCount Value="10"/>
       </Unit54>
     </Units>
-    <JumpHistory Count="28" HistoryIndex="27">
+    <JumpHistory Count="26" HistoryIndex="25">
       <Position1>
         <Filename Value="waptget.lpr"/>
         <Caret Line="308" Column="1" TopLine="287"/>
@@ -610,25 +595,17 @@
         <Caret Line="94" Column="25" TopLine="79"/>
       </Position23>
       <Position24>
-        <Filename Value="..\..\internettools\internet\simpleinternet.pas"/>
-        <Caret Line="268" Column="3" TopLine="263"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="367" Column="16" TopLine="353"/>
       </Position24>
       <Position25>
-        <Filename Value="..\..\internettools\internet\simpleinternet.pas"/>
-        <Caret Line="106" Column="11" TopLine="91"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="100" Column="24" TopLine="85"/>
       </Position25>
       <Position26>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="367" Column="16" TopLine="353"/>
-      </Position26>
-      <Position27>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="100" Column="24" TopLine="85"/>
-      </Position27>
-      <Position28>
-        <Filename Value="waptget.lpr"/>
         <Caret Line="217" Column="9" TopLine="193"/>
-      </Position28>
+      </Position26>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

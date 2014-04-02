@@ -182,16 +182,9 @@ begin
   While not Terminated do
   begin
     try
-      if CheckOpenPort(waptservice_port,'127.0.0.1',500) then
-      begin
+      //if CheckOpenPort(waptservice_port,'127.0.0.1',500) then
         tasks := WAPTLocalJsonGet('tasks_status.json','','',200);
         WaptServiceRunning:=True;
-      end
-      else
-      begin
-        WaptServiceRunning:=False;
-        tasks := Nil;
-      end;
     except
       on HTTPException do
       begin
