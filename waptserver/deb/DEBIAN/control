@@ -3,6 +3,6 @@ Version: 0.0.7
 Section: base
 Priority: optional
 Architecture: all
-Depends: python, mongodb, python-dialog, tis-waptrepo, python-iniparse,uwsgi-plugin-http,uwsgi-plugin-python,winexe,smbclient
+Depends: python, mongodb, python-dialog, python-pymongo, python-iniparse, python-flask, tis-waptrepo, python-m2crypto, python-requests, python-imaging, python-dateutil, python-dns, uwsgi, uwsgi-plugin-http,uwsgi-plugin-python,winexe,smbclient
 Maintainer: TIS <technique@tranquil-it-systems.fr>
 Description: WAPT Server for linux

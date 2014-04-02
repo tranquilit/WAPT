@@ -51,7 +51,6 @@ wapt_source_dir = os.path.abspath('../..')
 print "source tree : %s" % wapt_source_dir
 
 source_dir = os.path.abspath('..')
-shutil.copyfile(os.path.join(wapt_source_dir,'waptpackage.py'),os.path.join(source_dir,'waptpackage.py'))
 
 for line in open('%s/waptpackage.py'% source_dir):
     if '__version__' in line:
@@ -63,13 +62,14 @@ if not wapt_version:
 
 control_file = './builddir/DEBIAN/control'
 rsync_option = "--exclude '*.svn' --exclude 'mongodb' --exclude '*.exe' --exclude '*.dll' --exclude 'deb' -ap"
-rsync_source = os.path.abspath('..') + ' ' + os.path.abspath('../../waptpackage.py')
+rsync_source =  source_dir+ ' ' + os.path.abspath(wapt_source_dir+'/waptpackage.py')
 rsync_destination = './builddir/opt/wapt/'
 rsync_command = '/usr/bin/rsync %s %s %s'%(rsync_option,rsync_source,rsync_destination)
-rsync_lib_source = '%s/'%os.path.abspath('../../lib/')
-rsync_lib_destination = './builddir/opt/wapt/lib/'
-rsync_lib_option = "--exclude '*.svn' --exclude 'deb' -ap"
-rsync_lib_command = '/usr/bin/rsync %s %s %s'%(rsync_lib_option,rsync_lib_source,rsync_lib_destination)
+
+#rsync_lib_source = '%s/'%os.path.abspath('../../lib/')
+#rsync_lib_destination = './builddir/opt/wapt/lib/'
+#rsync_lib_option = "--exclude '*.svn' --exclude 'deb' -ap"
+#rsync_lib_command = '/usr/bin/rsync %s %s %s'%(rsync_lib_option,rsync_lib_source,rsync_lib_destination)
 
 for filename in glob.glob("tis-waptserver*.deb"):
     print "destruction de %s"%filename
@@ -96,7 +96,7 @@ version_file.close()
 
 print 'copy waptserver files'
 os.system(rsync_command)
-os.system(rsync_lib_command)
+#os.system(rsync_lib_command)
 
 print 'copie des fichiers control et postinst'
 try:
