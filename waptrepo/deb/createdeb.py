@@ -25,6 +25,7 @@ import os,glob,sys,stat
 import shutil
 import fileinput
 import platform, errno
+import subprocess
 
 def replaceAll(file,searchExp,replaceExp):
     for line in fileinput.input(file, inplace=1):
