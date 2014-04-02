@@ -2,6 +2,7 @@
 
 easy_install rocket
 easy_install pymongo
+easy_install pefile
 
 touch  /var/log/waptserver.log
 touch  /var/run/waptserver.pid

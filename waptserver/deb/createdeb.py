@@ -62,14 +62,6 @@ if not wapt_version:
 
 control_file = './builddir/DEBIAN/control'
 rsync_option = "--exclude '*.svn' --exclude 'mongodb' --exclude '*.exe' --exclude '*.dll' --exclude 'deb' -ap"
-rsync_source =  source_dir+' '+ os.path.abspath(wapt_source_dir+'/waptpackage.py'+' '+ os.path.abspath(wapt_source_dir+'/lib/site-packages/pefile.py'))
-rsync_destination = './builddir/opt/wapt/'
-rsync_command = '/usr/bin/rsync %s %s %s'%(rsync_option,rsync_source,rsync_destination)
-
-#rsync_lib_source = '%s/'%os.path.abspath('../../lib/')
-#rsync_lib_destination = './builddir/opt/wapt/lib/'
-#rsync_lib_option = "--exclude '*.svn' --exclude 'deb' -ap"
-#rsync_lib_command = '/usr/bin/rsync %s %s %s'%(rsync_lib_option,rsync_lib_source,rsync_lib_destination)
 
 for filename in glob.glob("tis-waptserver*.deb"):
     print "destruction de %s"%filename
@@ -95,8 +87,12 @@ version_file.write(rev)
 version_file.close()
 
 print 'copy waptserver files'
+
+rsync_source =  source_dir
+rsync_destination = './builddir/opt/wapt/'
+rsync_command = '/usr/bin/rsync %s %s %s'%(rsync_option,rsync_source,rsync_destination)
 os.system(rsync_command)
-#os.system(rsync_lib_command)
+os.system('/usr/bin/rsync %s %s %s'%(rsync_option,wapt_source_dir+'/waptpackage.py','./builddir/opt/wapt/waptserver/'))
 
 print 'copie des fichiers control et postinst'
 try:
@@ -137,7 +133,6 @@ except Exception as e:
 
 print 'inscription de la version dans le fichier de control'
 replaceAll(control_file,'0.0.7',wapt_version + '-' + rev)
-
 
 os.chmod('./builddir/DEBIAN/postinst',stat.S_IRWXU| stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
 os.chmod('./builddir/DEBIAN/preinst',stat.S_IRWXU| stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
