@@ -53,7 +53,6 @@ rsync_option = " --exclude '.svn' --exclude 'deb' -ap"
 rsync_source = source_dir
 rsync_destination = './builddir/opt/wapt/'
 rsync_command = '/usr/bin/rsync %s %s %s'%(rsync_option,rsync_source,rsync_destination)
-dpkg_command = 'dpkg-deb --build builddir tis-waptrepo-%s.deb'%wapt_version
 
 for filename in glob.glob("tis-waptrepo*.deb"):
     print "destruction de %s"%filename
@@ -65,6 +64,7 @@ os.makedirs("builddir")
 os.makedirs("builddir/DEBIAN")
 os.makedirs("builddir/opt")
 os.makedirs("builddir/opt/wapt")
+os.makedirs("builddir/opt/wapt/waptrepo/")
 
 #adding version info in VERSION file
 rev=''
@@ -94,5 +94,6 @@ replaceAll(control_file,'0.0.7',wapt_version + '-' + rev)
 
 print 'création du paquet Deb'
 os.chmod('./builddir/DEBIAN/postinst',stat.S_IRWXU| stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
+dpkg_command = 'dpkg-deb --build builddir tis-waptrepo-%s-%s.deb'% (wapt_version ,rev)
 os.system(dpkg_command)
 shutil.rmtree("builddir")
