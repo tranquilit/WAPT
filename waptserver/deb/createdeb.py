@@ -62,7 +62,7 @@ if not wapt_version:
 
 control_file = './builddir/DEBIAN/control'
 rsync_option = "--exclude '*.svn' --exclude 'mongodb' --exclude '*.exe' --exclude '*.dll' --exclude 'deb' -ap"
-rsync_source =  source_dir+ ' ' + os.path.abspath(wapt_source_dir+'/waptpackage.py')
+rsync_source =  source_dir+' '+ os.path.abspath(wapt_source_dir+'/waptpackage.py'+' '+ os.path.abspath(wapt_source_dir+'/lib/site-packages/pefile.py'))
 rsync_destination = './builddir/opt/wapt/'
 rsync_command = '/usr/bin/rsync %s %s %s'%(rsync_option,rsync_source,rsync_destination)
 

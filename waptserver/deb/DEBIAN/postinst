@@ -1,4 +1,7 @@
 #!/bin/bash
+
+easy_install rocket
+
 touch  /var/log/waptserver.log
 touch  /var/run/waptserver.pid
 chown wapt:root /var/log/waptserver.log
