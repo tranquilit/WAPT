@@ -1,6 +1,7 @@
 #!/bin/bash
 
 easy_install rocket
+easy_install pymongo
 
 touch  /var/log/waptserver.log
 touch  /var/run/waptserver.pid
