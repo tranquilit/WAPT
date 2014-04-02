@@ -19,7 +19,7 @@ Source: "..\pywintypes27.dll"; DestDir: "{app}";
 Source: "..\sqlite3.dll"; DestDir: "{app}"; 
 
 ; additional python modules
-Source: "..\lib\*"; DestDir: "{app}\lib"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.pyc,test,*.~*"
+Source: "..\lib\*"; DestDir: "{app}\lib"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.pyc,test,*.~*,pymongo,*.chm,testsuite,Demos,test,HTML"
 
 ; wapt sources
 Source: "..\common.py"; DestDir: "{app}"; 
