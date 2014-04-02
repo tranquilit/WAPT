@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.22"
+__version__ = "0.8.23"
 
 import time
 import sys
@@ -543,7 +543,10 @@ def waptclientupgrade():
 @check_ip_source
 def reload_config():
     """trigger reload of wapt-get.ini file for the service"""
-    data = task_manager.add_task(WaptNetworkReconfig()).as_dict()
+    notify_user = request.args.get('notify_user',None)
+    if notify_user is not None:
+        notify_user=int(notify_user)
+    data = task_manager.add_task(WaptNetworkReconfig(),notify_user=notify_user).as_dict()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -554,8 +557,11 @@ def reload_config():
 @app.route('/upgrade.json')
 @check_ip_source
 def upgrade():
-    data1 = task_manager.add_task(WaptUpdate()).as_dict()
-    data2 = task_manager.add_task(WaptUpgrade()).as_dict()
+    notify_user = request.args.get('notify_user',None)
+    if notify_user is not None:
+        notify_user=int(notify_user)
+    data1 = task_manager.add_task(WaptUpdate(),notify_user=notify_user).as_dict()
+    data2 = task_manager.add_task(WaptUpgrade(),notify_user=notify_user).as_dict()
     data = {'result':'OK','content':[data1,data2]}
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
@@ -567,7 +573,10 @@ def upgrade():
 @app.route('/update.json')
 @check_ip_source
 def update():
-    data = task_manager.add_task(WaptUpdate()).as_dict()
+    notify_user = request.args.get('notify_user',None)
+    if notify_user is not None:
+        notify_user=int(notify_user)
+    data = task_manager.add_task(WaptUpdate(),notify_user=notify_user).as_dict()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -590,7 +599,14 @@ def update_status():
 @app.route('/longtask.json')
 @check_ip_source
 def longtask():
-    data = task_manager.add_task(WaptLongTask(duration=int(request.args.get('duration','60')),raise_error=int(request.args.get('raise_error',0))))
+    notify_user = request.args.get('notify_user',None)
+    if notify_user is not None:
+        notify_user=int(notify_user)
+    data = task_manager.add_task(
+        WaptLongTask(
+            duration=int(request.args.get('duration','60')),
+            raise_error=int(request.args.get('raise_error',0))),
+        notify_user=notify_user)
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -710,12 +726,9 @@ def remove():
     else:
         return render_template('install.html',data=data)
 
-"""
-@app.route('/static/<path:filename>', methods=['GET'])
-def static(filename):
-    return send_file(open(os.path.join(wapt_root_dir,'static',filename),'rb'),as_attachment=False)
-"""
-
+@app.route('/favicon.ico', methods=['GET'])
+def wapticon():
+    return send_from_directory(app.static_folder+'/images','wapt.png',mimetype='image/png')
 
 @app.route('/', methods=['GET'])
 def index():
@@ -982,6 +995,7 @@ class WaptTask(object):
             runstatus = self.runstatus,
             description = u"{}".format(self),
             pidlist = u"{}".format(self.external_pids),
+            notify_user = self.notify_user,
             ))
 
     def as_json(self):
@@ -1352,22 +1366,23 @@ class WaptTaskManager(threading.Thread):
             if task:
                 self.wapt.events.send_multipart(["TASKS",topic,common.jsondump(task)])
 
-    def add_task(self,task):
+    def add_task(self,task,notify_user=None):
         """Adds a new WaptTask for processing"""
         with self.status_lock:
             same = [ pending for pending in self.tasks_queue.queue if pending.same_action(task)]
             # not already in pending  actions...
             if not same:
-                self.broadcast_tasks_status('ADD',task)
                 task.wapt = self.wapt
 
                 self.tasks_counter += 1
                 task.id = self.tasks_counter
                 # default order is task id
                 task.order = self.tasks_counter
-
+                if notify_user is not None:
+                    task.notify_user = notify_user
                 self.tasks_queue.put(task)
                 self.tasks.append(task)
+                self.broadcast_tasks_status('ADD',task)
                 return task
             else:
                 return same[0]
