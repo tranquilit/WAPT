@@ -24,7 +24,7 @@
 import os,glob,sys,stat
 import shutil
 import fileinput
-
+import platform, errno
 
 def replaceAll(file,searchExp,replaceExp):
     for line in fileinput.input(file, inplace=1):
@@ -43,8 +43,8 @@ for line in open('%s/waptpackage.py'% source_dir):
         wapt_version = line.split('=')[1].replace('"','').replace("'","").replace('\n','').replace(' ','').replace('\r','')
 
 if not wapt_version:
-    print 'version non trouvée dans %s/waptpackage.py, la version est mise a 1 par défault.'%os.path.abspath('..')
-    wapt_version = '1'
+    print 'version non trouvée dans %s/waptpackage.py, la version est mise a 0.0.0 par défault.'%os.path.abspath('..')
+    wapt_version = '0.0.0'
 
 control_file = './builddir/DEBIAN/control'
 rsync_option = " --exclude '.svn' --exclude 'deb' -ap"
@@ -63,6 +63,17 @@ os.makedirs("builddir")
 os.makedirs("builddir/DEBIAN")
 os.makedirs("builddir/opt")
 os.makedirs("builddir/opt/wapt")
+
+#adding version info in VERSION file
+rev=''
+output = subprocess.check_output('/usr/bin/svn info',shell=True)
+for line in output.split('\n'):
+    if 'Revision:' in line:
+        rev = 'rev%s' % line.split(':')[1].strip()
+version_file = open(os.path.join('./builddir/opt/wapt/waptrepo','VERSION'),'w')
+version_file.write(rev)
+version_file.close()
+
 print 'copie des fichiers waptrepo'
 os.system(rsync_command)
 print 'copie des fichiers control et postinst'
@@ -77,7 +88,7 @@ except Exception as e:
     print 'erreur: \n%s'%e
     exit(0)
 print 'inscription de la version dans le fichier de control'
-replaceAll(control_file,'0.0.7',wapt_version)
+replaceAll(control_file,'0.0.7',wapt_version + '-' + rev)
 
 print 'création du paquet Deb'
 os.chmod('./builddir/DEBIAN/postinst',stat.S_IRWXU| stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
