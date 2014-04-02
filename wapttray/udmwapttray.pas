@@ -182,7 +182,7 @@ begin
   While not Terminated do
   begin
     try
-      if CheckOpenPort(waptservice_port,'127.0.0.1',100) then
+      if CheckOpenPort(waptservice_port,'127.0.0.1',500) then
       begin
         tasks := WAPTLocalJsonGet('tasks_status.json','','',200);
         WaptServiceRunning:=True;
@@ -221,7 +221,8 @@ begin
   zmq_context := TZMQContext.Create;
 
   zmq_socket := zmq_context.Socket( stSub );
-  zmq_socket.RcvHWM:= 1000001;
+  zmq_socket.RcvHWM:= 10000;
+  zmq_socket.SndHWM:= 10000;
   zmq_socket.connect( 'tcp://127.0.0.1:5000' );
   zmq_socket.Subscribe('');
   {zmq_socket.Subscribe('INFO');

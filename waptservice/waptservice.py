@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.23"
+__version__ = "0.8.24"
 
 import time
 import sys
@@ -1325,6 +1325,7 @@ class WaptTaskManager(threading.Thread):
         # init zeromq events broadcast
         zmq_context = zmq.Context()
         event_queue = zmq_context.socket(zmq.PUB)
+        event_queue.hwm = 10000;
 
         # start event broadcasting
         event_queue.bind("tcp://127.0.0.1:{}".format(waptconfig.zmq_port))
