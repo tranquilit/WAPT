@@ -9,5 +9,3 @@ wapt = common.Wapt(config_filename='c://wapt//wapt-get.ini')
 for h in hosts:
     fn = wapt.makehosttemplate(h['name'],'tis-base')
     wapt.build_upload(fn)
-
-

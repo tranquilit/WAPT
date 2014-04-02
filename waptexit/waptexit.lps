@@ -4,12 +4,12 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="6">
+    <Units Count="7">
       <Unit0>
         <Filename Value="waptexit.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptexit"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="25"/>
       </Unit0>
       <Unit1>
         <Filename Value="uwaptexit.pas"/>
@@ -21,9 +21,9 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="76"/>
-        <CursorPos X="73" Y="87"/>
-        <UsageCount Value="24"/>
+        <TopLine Value="88"/>
+        <CursorPos X="1" Y="103"/>
+        <UsageCount Value="25"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -31,18 +31,18 @@
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="27"/>
-        <CursorPos X="25" Y="56"/>
-        <UsageCount Value="24"/>
+        <TopLine Value="387"/>
+        <CursorPos X="1" Y="400"/>
+        <UsageCount Value="25"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\wapt-get\tisstrings.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tisstrings"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="25"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\wapt-get\tiscommon.pas"/>
@@ -63,130 +63,140 @@
         <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="LFM"/>
       </Unit5>
+      <Unit6>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <UnitName Value="tiscommon"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="31"/>
+        <CursorPos X="58" Y="43"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit6>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="55" Column="1" TopLine="24"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="301" Column="1" TopLine="285"/>
       </Position1>
       <Position2>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="33" Column="97" TopLine="23"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="302" Column="1" TopLine="285"/>
       </Position2>
       <Position3>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="35" Column="97" TopLine="25"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="303" Column="1" TopLine="294"/>
       </Position3>
       <Position4>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="37" Column="97" TopLine="27"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="305" Column="1" TopLine="294"/>
       </Position4>
       <Position5>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="67" Column="3" TopLine="36"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="308" Column="1" TopLine="294"/>
       </Position5>
       <Position6>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="68" Column="3" TopLine="37"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="309" Column="1" TopLine="294"/>
       </Position6>
       <Position7>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="69" Column="3" TopLine="38"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="312" Column="1" TopLine="294"/>
       </Position7>
       <Position8>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="68" Column="3" TopLine="37"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="314" Column="1" TopLine="306"/>
       </Position8>
       <Position9>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="75" Column="3" TopLine="42"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="316" Column="1" TopLine="306"/>
       </Position9>
       <Position10>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="47" Column="20" TopLine="37"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="319" Column="1" TopLine="306"/>
       </Position10>
       <Position11>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="61" Column="23" TopLine="39"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="320" Column="1" TopLine="306"/>
       </Position11>
       <Position12>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="60" Column="23" TopLine="38"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="322" Column="1" TopLine="306"/>
       </Position12>
       <Position13>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="67" Column="23" TopLine="40"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="323" Column="1" TopLine="312"/>
       </Position13>
       <Position14>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="39" Column="28" TopLine="24"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="325" Column="1" TopLine="312"/>
       </Position14>
       <Position15>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="67" Column="49" TopLine="47"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="326" Column="1" TopLine="312"/>
       </Position15>
       <Position16>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="62" Column="67" TopLine="47"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="328" Column="1" TopLine="312"/>
       </Position16>
       <Position17>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="63" Column="67" TopLine="48"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="329" Column="1" TopLine="312"/>
       </Position17>
       <Position18>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="64" Column="67" TopLine="49"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="332" Column="1" TopLine="321"/>
       </Position18>
       <Position19>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="65" Column="67" TopLine="50"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="334" Column="1" TopLine="321"/>
       </Position19>
       <Position20>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="64" Column="67" TopLine="49"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="335" Column="1" TopLine="321"/>
       </Position20>
       <Position21>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="63" Column="67" TopLine="48"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="343" Column="1" TopLine="323"/>
       </Position21>
       <Position22>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="48" Column="71" TopLine="44"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="344" Column="1" TopLine="324"/>
       </Position22>
       <Position23>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="31" Column="54" TopLine="22"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="345" Column="1" TopLine="325"/>
       </Position23>
       <Position24>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="65" Column="36" TopLine="51"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="346" Column="1" TopLine="332"/>
       </Position24>
       <Position25>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="55" Column="3" TopLine="20"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="347" Column="1" TopLine="332"/>
       </Position25>
       <Position26>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="56" Column="26" TopLine="26"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="349" Column="1" TopLine="332"/>
       </Position26>
       <Position27>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="35" Column="25" TopLine="14"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="350" Column="12" TopLine="332"/>
       </Position27>
       <Position28>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="90" Column="3" TopLine="65"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="364" Column="1" TopLine="352"/>
       </Position28>
       <Position29>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="95" Column="17" TopLine="73"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="277" Column="80" TopLine="275"/>
       </Position29>
       <Position30>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="55" Column="2" TopLine="40"/>
+        <Caret Line="83" Column="50" TopLine="68"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

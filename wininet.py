@@ -29,6 +29,7 @@ import threading
 
 sleepTime = 0
 
+
 class WinInet:
 
     def __init__(self, callback = None):
@@ -64,7 +65,6 @@ class WinInet:
 
         self.lock.release()
 
-
     def doUrlStatus(self, url, host, headers={}, user=0, password=0,port=80):
         wininet = windll.wininet
         flags = DWORD()
@@ -91,7 +91,6 @@ class WinInet:
             self.stop()
             return 0
 
-
         #print hConnect
 
         #gDbg.log('Opening Request...')
@@ -106,7 +105,6 @@ class WinInet:
             self.stop()
             return 0
 
-
         HTTP_ADDREQ_FLAG_ADD_IF_NEW  = 0x10000000
         HTTP_ADDREQ_FLAG_COALESCE_WITH_COMMA     =  0x40000000
         HTTP_ADDREQ_FLAG_COALESCE_WITH_SEMICOLON =  0x01000000
@@ -120,7 +118,6 @@ class WinInet:
                 #gErr.log("couldn't add header: %d - %s" %(code, FormatError(code)))
                 self.stop()
                 return retVal
-
 
         gDbg.log('Sending Request...')
         res = wininet.HttpSendRequestA(self.hRequest, 0,0,0,0)
@@ -154,7 +151,6 @@ class WinInet:
         self.stop()
 
         return status
-
 
     # Returns status and data
     def doUrlGet(self, url, host, headers={}, user=0, password=0, port=80):
@@ -191,7 +187,6 @@ class WinInet:
             self.stop()
             return retVal
 
-
         #print hConnect
 
         #gDbg.log('Opening Request...')
@@ -207,7 +202,6 @@ class WinInet:
             return retVal
 
         #print hRequest
-
 
         #gDbg.log('Sending Request...')
         res = wininet.HttpSendRequestA(self.hRequest, 0,0,0,0)
@@ -253,7 +247,6 @@ class WinInet:
         self.stop()
         return (status, data)
 
-
     # Returns status and data
     def doUrlPost(self, url, host, postData, headers = {}, user=0, password=0):
         wininet = windll.wininet
@@ -289,7 +282,6 @@ class WinInet:
             self.stop()
             return retVal
 
-
         #print hConnect
 
         gDbg.log('Opening Request...')
@@ -307,7 +299,6 @@ class WinInet:
 
         #print hRequest
 
-
         HTTP_ADDREQ_FLAG_ADD_IF_NEW  = 0x10000000
         HTTP_ADDREQ_FLAG_COALESCE_WITH_COMMA     =  0x40000000
         HTTP_ADDREQ_FLAG_COALESCE_WITH_SEMICOLON =  0x01000000
@@ -321,7 +312,6 @@ class WinInet:
                 gErr.log("couldn't add header: %d - %s" %(code, FormatError(code)))
                 self.stop()
                 return retVal
-
 
         gDbg.log('Sending Request...')
         res = wininet.HttpSendRequestA(self.hRequest, 0,0,postData,len(postData))
@@ -366,9 +356,6 @@ class WinInet:
 
         self.stop()
         return (status, data)
-
-
-
 
 if __name__ == '__main__':
     inet = WinInet()

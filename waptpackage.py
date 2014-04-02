@@ -36,6 +36,7 @@ import sys
 
 logger = logging.getLogger()
 
+
 def md5_for_file(fname, block_size=2**20):
     f = open(fname,'rb')
     md5 = hashlib.md5()
@@ -57,6 +58,7 @@ REGEX_PACKAGE_VERSION = re.compile(r'^(?P<major>[0-9]+)'
 # tis-exodus (>2.3.4-10)
 REGEX_PACKAGE_CONDITION = re.compile(r'(?P<package>[^\s()]+)\s*(\((?P<operator>[<=>]+)\s*(?P<version>\S+)\))?')
 
+
 def parse_major_minor_patch_build(version):
     """
     Parse version to major, minor, patch, pre-release, build parts.
@@ -66,6 +68,7 @@ def parse_major_minor_patch_build(version):
         raise ValueError(u'%s is not valid SemVer string' % version)
 
     verinfo = match.groupdict()
+
     def int_or_none(name):
         if name in verinfo and verinfo[name] <> None :
             return int(verinfo[name])
@@ -77,6 +80,7 @@ def parse_major_minor_patch_build(version):
     verinfo['subpatch'] = int_or_none('subpatch')
 
     return verinfo
+
 
 def make_version(major_minor_patch_build):
     p1 = u'.'.join( [ "%s" % major_minor_patch_build[p] for p in ('major','minor','patch','subpatch') if major_minor_patch_build[p]<>None])
@@ -138,6 +142,7 @@ class PackageEntry(object):
     def __cmp__(self,entry_or_version):
         def nat_cmp(a, b):
             a, b = a or '', b or ''
+
             def convert(text):
                 if text.isdigit():
                     return int(text)
@@ -348,6 +353,7 @@ sources      : %(sources)s
                 return
         raise Exception(u'no build/packaging part in version number %s' % self.version)
 
+
 def extract_iconpng_from_wapt(self,fname):
     """Return the content of WAPT/icon.png if it exists, a unknown.png file content if not
 
@@ -375,7 +381,6 @@ def extract_iconpng_from_wapt(self,fname):
     return iconpng
 
 
-
 class WaptLocalRepo(object):
     def __init__(self,name='waptlocal',localpath='/var/www/wapt'):
         self.name = name
@@ -397,6 +402,7 @@ class WaptLocalRepo(object):
             self.packages = []
             startline = 0
             endline = 0
+
             def add(start,end):
                 if start <> end:
                     package = PackageEntry()
@@ -467,6 +473,7 @@ class WaptLocalRepo(object):
             logger.info(u"Finished")
         return {'processed':processed,'kept':kept,'errors':errors,'packages_filename':packages_fname}
 
+
 def update_packages(adir):
     """Update packages index
     >>> if os.path.isdir('c:\\wapt\\cache'):
@@ -503,4 +510,3 @@ if __name__ == '__main__':
     doctest.ELLIPSIS_MARKER = '???'
     doctest.testmod(optionflags=doctest.ELLIPSIS)
     sys.exit(0)
-

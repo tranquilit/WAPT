@@ -76,11 +76,13 @@ import types
 
 logger = logging.getLogger()
 
+
 def datetime2isodate(adatetime = None):
     if not adatetime:
         adatetime = datetime.datetime.now()
     assert(isinstance(adatetime,datetime.datetime))
     return adatetime.isoformat()
+
 
 def httpdatetime2isodate(httpdate):
     """convert a date string as returned in http headers or mail headers to isodate
@@ -91,12 +93,15 @@ def httpdatetime2isodate(httpdate):
     """
     return datetime2isodate(datetime.datetime(*email.utils.parsedate(httpdate)[:6]))
 
+
 def isodate2datetime(isodatestr):
     # we remove the microseconds part as it is not working for python2.5 strptime
     return datetime.datetime.strptime(isodatestr.split('.')[0] , "%Y-%m-%dT%H:%M:%S")
 
+
 def time2display(adatetime):
     return adatetime.strftime("%Y-%m-%d %H:%M")
+
 
 def hours_minutes(hours):
     if hours is None:
@@ -104,13 +109,16 @@ def hours_minutes(hours):
     else:
         return "%02i:%02i" % ( int(hours) , int((hours - int(hours)) * 60.0))
 
+
 def fileisodate(filename):
     return datetime.datetime.fromtimestamp(os.stat(filename).st_mtime).isoformat()
+
 
 def dateof(adatetime):
     return adatetime.replace(hour=0,minute=0,second=0,microsecond=0)
 
 ArchitecturesList = ('all','x86','x64')
+
 
 #####################################
 # http://code.activestate.com/recipes/498181-add-thousands-separator-commas-to-formatted-number/
@@ -173,6 +181,7 @@ def convert_bytes(bytes):
 
 # adapted from opsi
 
+
 ## {{{ http://code.activestate.com/recipes/81189/ (r2)
 def pptable(cursor, data=None, rowlens=0, callback=None):
     """
@@ -196,8 +205,8 @@ def pptable(cursor, data=None, rowlens=0, callback=None):
     for dd in d:    # iterate over description
         l = dd[1]
         if not l:
-            l = 12             # or default arg ...
-        l = max(l, len(dd[0])) # handle long names
+            l = 12              # or default arg ...
+        l = max(l, len(dd[0]))  # handle long names
         names.append(dd[0])
         lengths.append(l)
     for col in range(len(lengths)):
@@ -216,6 +225,7 @@ def pptable(cursor, data=None, rowlens=0, callback=None):
         result.append(format % tuple(row_cb))
     return u"\n".join(result)
 ## end of http://code.activestate.com/recipes/81189/ }}}
+
 
 def ppdicttable(alist, columns = [], callback=None):
     """
@@ -251,6 +261,7 @@ def ppdicttable(alist, columns = [], callback=None):
         result.append(format % tuple(row_cb))
     return u"\n".join(result)
 ## end of http://code.activestate.com/recipes/81189/ }}}
+
 
 def html_table(cur,callback=None):
     """
@@ -300,6 +311,7 @@ def merge_dict(d1,d2):
             result[k] = d2[k]
     return result
 
+
 def read_in_chunks(f, chunk_size=1024*128):
     """Lazy function (generator) to read a file piece by piece.
     Default chunk size: 128k."""
@@ -308,6 +320,7 @@ def read_in_chunks(f, chunk_size=1024*128):
         if not data:
             break
         yield data
+
 
 def sha1_for_file(fname, block_size=2**20):
     f = open(fname,'rb')
@@ -319,19 +332,23 @@ def sha1_for_file(fname, block_size=2**20):
         sha1.update(data)
     return sha1.hexdigest()
 
+
 def sha1_for_data(data):
     assert(isinstance(data,str))
     sha1 = hashlib.sha1()
     sha1.update(data)
     return sha1.hexdigest()
 
+
 def sha512_for_data(data):
     return hashlib.sha512(data).hexdigest()
+
 
 def pwd_callback(*args):
     """Default password callback for opening private keys"""
     import getpass
     return getpass.getpass('Private key password :').encode('ascii')
+
 
 def ssl_sign_content(content,private_key,callback=pwd_callback):
     """ Sign content with the private_key, return the signature"""
@@ -342,6 +359,7 @@ def ssl_sign_content(content,private_key,callback=pwd_callback):
     key.sign_update(content)
     signature = key.sign_final()
     return signature
+
 
 def ssl_verify_content(content,signature,public_certs):
     u"""Check that the signature matches the content, using the provided list of public keys
@@ -373,6 +391,7 @@ def ssl_verify_content(content,signature,public_certs):
             return crt.get_subject().as_text()
     raise Exception('SSL signature verification failed, either none public certificates match signature or signed content has been changed')
 
+
 def private_key_has_password(key):
     def callback(*args):
         return ""
@@ -385,6 +404,7 @@ def private_key_has_password(key):
             print str(e)
             return True
     return False
+
 
 def check_key_password(key_filename,password=""):
     """Check if provided password is valid to read the PEM private key
@@ -404,6 +424,7 @@ def check_key_password(key_filename,password=""):
     except EVPError:
         return False
     return True
+
 
 def create_self_signed_key(orgname,
         wapt_base_dir=None,
@@ -460,6 +481,7 @@ def default_json(o):
     else:
         return u"%s" % (ensure_unicode(o),)
 
+
 def jsondump(o,**kwargs):
     """Dump argument to json format, including datetime
     and customized classes with as_dict or as_json callables
@@ -470,6 +492,7 @@ def jsondump(o,**kwargs):
     '{"adate": "2014-03-14", "an_object": {"test": "a", "adate2": "2014-03-15"}}'
     """
     return json.dumps(o,default=default_json,**kwargs)
+
 
 def create_recursive_zip_signed(zipfn, source_root, target_root = u"",excludes = [u'.svn',u'.git*',u'*.pyc',u'*.dbg',u'src']):
     """Create a zip file with filename zipf from source_root directory with target_root as new root.
@@ -514,6 +537,7 @@ def create_recursive_zip_signed(zipfn, source_root, target_root = u"",excludes =
         zipf.writestr(os.path.join(target_root,'WAPT/manifest.sha1'), manifest_data)
         zipf.close()
     return result
+
 
 def get_manifest_data(source_root, target_root=u'', excludes = [u'.svn',u'.git*',u'*.pyc',u'*.dbg',u'src']):
     """Return a list of [filenames,sha1 hash] from files from source_root directory with target_root as new root.
@@ -577,6 +601,7 @@ def import_setup(setupfilename,modulename=''):
     py_mod = imp.load_source(modulename, setupfilename)
     return py_mod
 
+
 def remove_encoding_declaration(source):
     headers = source.split('\n',3)
     result = []
@@ -588,6 +613,7 @@ def remove_encoding_declaration(source):
 
 def is_system_user():
     return setuphelpers.get_current_user() == 'system'
+
 
 def adjust_privileges():
     flags = ntsecuritycon.TOKEN_ADJUST_PRIVILEGES | ntsecuritycon.TOKEN_QUERY
@@ -601,6 +627,7 @@ def adjust_privileges():
         ]
 
     return win32security.AdjustTokenPrivileges(htoken, 0, privileges)
+
 
 ###########################"
 class LogInstallOutput(object):
@@ -635,6 +662,7 @@ class LogInstallOutput(object):
         else:
             return self.console.__getattribute__(name)
 
+
 ###########
 def reg_openkey_noredir(key, sub_key, sam=KEY_READ):
     try:
@@ -646,14 +674,17 @@ def reg_openkey_noredir(key, sub_key, sam=KEY_READ):
         if e.errno == 2:
             raise WindowsError(e.errno,'The key %s can not be opened' % sub_key)
 
+
 ##################
 def ipv4_to_int(ipaddr):
     (a,b,c,d) = ipaddr.split('.')
     return (int(a) << 24) + (int(b) << 16) + (int(c) << 8) + int(d)
 
+
 def same_net(ip1,ip2,netmask):
     """Given 2 ipv4 address and mask, return True if in same subnet"""
     return (ipv4_to_int(ip1) & ipv4_to_int(netmask)) == (ipv4_to_int(ip2) & ipv4_to_int(netmask))
+
 
 def host_ipv4():
     """return a list of (iface,mac,{addr,broadcast,netmask})"""
@@ -683,6 +714,7 @@ def tryurl(url,proxies=None):
         logger.debug(u'  Not available : %s' % ensure_unicode(e))
         return False
 
+
 def force_utf8_no_bom(filename):
     BUFSIZE = 4096
     BOMLEN = len(codecs.BOM_UTF8)
@@ -698,8 +730,10 @@ def force_utf8_no_bom(filename):
             content = codecs.open(filename, encoding='iso8859-15').read()
             codecs.open(filename, mode='wb', encoding='utf8').write(content)
 
+
 class EWaptCancelled(Exception):
     pass
+
 
 class WaptBaseDB(object):
     dbpath = ''
@@ -771,7 +805,6 @@ class WaptBaseDB(object):
             self.db.rollback()
             self.upgradedb()
 
-
     @db_version.deleter
     def db_version(self):
         try:
@@ -782,7 +815,6 @@ class WaptBaseDB(object):
             logger.critical(u'Unable to delete version, upgrading')
             self.db.rollback()
             self.upgradedb()
-
 
     def initdb(self):
         pass
@@ -822,6 +854,7 @@ class WaptBaseDB(object):
         rv = [dict((cur.description[idx][0], value)
                    for idx, value in enumerate(row)) for row in cur.fetchall()]
         return (rv[0] if rv else None) if one else rv
+
 
 class WaptSessionDB(WaptBaseDB):
     def __init__(self,username=''):
@@ -1233,7 +1266,6 @@ class WaptDB(WaptBaseDB):
           create index if not exists idx_task_package_name on wapt_task(package_name);
           """)
 
-
         self.db.execute("""
         create table if not exists wapt_sessionsetup (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -1319,7 +1351,6 @@ class WaptDB(WaptBaseDB):
                          sources=package_entry.sources,
                          repo_url=package_entry.repo_url,
                          repo=package_entry.repo)
-
 
     def add_start_install(self,package,version,architecture,params_dict={},explicit_by=None):
         """Register the start of installation in local db
@@ -1413,7 +1444,6 @@ class WaptDB(WaptBaseDB):
         finally:
             self.db.commit()
         return cur.lastrowid
-
 
     def store_setuppy(self,rowid,setuppy=None,install_params={}):
         """Update status of package installation on localdb"""
@@ -1578,7 +1608,6 @@ class WaptDB(WaptBaseDB):
             self.db.rollback()
             raise
 
-
     def build_depends(self,packages):
         """Given a list of packages conditions (packagename (optionalcondition))
             return a list of dependencies (packages conditions) to install
@@ -1606,9 +1635,9 @@ class WaptDB(WaptBaseDB):
         if not isinstance(packages,list) and not isinstance(packages,tuple):
             packages = [packages]
 
-
         MAXDEPTH = 30
         # roots : list of initial packages to avoid infinite loops
+
         def dodepends(explored,packages,depth,missing):
             if depth>MAXDEPTH:
                 raise Exception.create('Max depth in build dependencies reached, aborting')
@@ -1661,7 +1690,6 @@ class WaptDB(WaptBaseDB):
             version_min=""
         if version_max is None:
             version_max=""
-
 
         if not version_min and not version_max:
             entries = self.query("""select * from wapt_package where package = ? order by version desc limit 1""",(package,))
@@ -1984,6 +2012,7 @@ class WaptRepo(object):
 
         startline = 0
         endline = 0
+
         def add(start,end):
             if start <> end:
                 package = PackageEntry()
@@ -2039,6 +2068,7 @@ class WaptRepo(object):
             logger.debug(u'rollback delete package')
             waptdb.db.rollback()
             raise
+
 
 class WaptHostRepo(WaptRepo):
     """Dummy http repository for host packages"""
@@ -2337,7 +2367,6 @@ class Wapt(object):
             except Exception,e:
                 logger.critical('Unable to update server with current status : %s' % ensure_unicode(e))
 
-
     def upload_package(self,cmd_dict,wapt_server_user=None,wapt_server_passwd=None):
       if not self.upload_cmd and not wapt_server_user:
         wapt_server_user = raw_input('WAPT Server user :')
@@ -2350,13 +2379,13 @@ class Wapt(object):
           return self.run(self.upload_cmd_host % cmd_dict)
         else:
            #upload par http vers un serveur WAPT  (url POST upload_host)
-           for file in cmd_dict['waptfile']:
-    			file =  file[1:-1]
-    			with open(file,'rb') as afile:
-    				req = requests.post("%s/upload_host" % (self.wapt_server,),files={'file':afile},proxies=self.proxies,verify=False,auth=auth)
-    				req.raise_for_status()
+            for file in cmd_dict['waptfile']:
+                file = file[1:-1]
+                with open(file,'rb') as afile:
+                    req = requests.post("%s/upload_host" % (self.wapt_server,),files={'file':afile},proxies=self.proxies,verify=False,auth=auth)
+                    req.raise_for_status()
 
-           return req.content
+            return req.content
 
       else:
         if self.upload_cmd:
@@ -2532,7 +2561,6 @@ class Wapt(object):
         conf.read(self.config_filename)
         conf.set('global','md5_password',md5.md5(pwd).hexdigest())
         conf.write(open(self.config_filename,'wb'))
-
 
     def check_cancelled(self,msg='Task cancelled'):
         if self.task_is_cancelled.is_set():
@@ -2863,7 +2891,7 @@ class Wapt(object):
                 "added","removed","count","repos","upgrades","date"
             force : update even if Packages on repository has not been updated
                     since last update (based on http headers)
-			register : Send informations about packages to waptserver
+            register : Send informations about packages to waptserver
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
         >>> updates = wapt.update()
         >>> 'count' in updates and 'added' in updates and 'upgrades' in updates and 'date' in updates and 'removed' in updates
@@ -2886,10 +2914,10 @@ class Wapt(object):
 
         self.store_upgrade_status(result['upgrades'])
         if not self.disable_update_server_status and register:
-		    try:
-			    self.update_server_status()
-		    except Exception,e:
-		        logger.critical('Unable to update server with current status : %s' % ensure_unicode(e))
+            try:
+                self.update_server_status()
+            except Exception,e:
+                logger.critical('Unable to update server with current status : %s' % ensure_unicode(e))
         return result
 
     def check_depends(self,apackages,forceupgrade=False,force=False,assume_removed=[]):
@@ -3027,8 +3055,6 @@ class Wapt(object):
         # get package entries to install to_install is a list of (request,package)
         packages = [ p[1] for p in to_install ]
 
-
-
     def install(self,apackages,
             force=False,
             params_dict = {},
@@ -3113,6 +3139,7 @@ class Wapt(object):
 
         actions['downloads'] = downloaded
         logger.debug(u'Downloaded : %s' % (downloaded,))
+
         def fname(packagefilename):
             return os.path.join(self.package_cache_dir,packagefilename)
         if not download_only:
@@ -3491,7 +3518,6 @@ class Wapt(object):
         result['common-version'] = __version__
         return result
 
-
     def inventory(self):
         """Return software inventory of the computer as a dictionary"""
         inv = {}
@@ -3717,7 +3743,6 @@ class Wapt(object):
                     elif self.upload_cmd:
                         print "Don't forget to update Packages index on repository !"
 
-
         return result
 
     def session_setup(self,packagename,force=False):
@@ -3740,9 +3765,8 @@ class Wapt(object):
         if not package_entry:
             raise Exception('Package %s is not installed' % packagename)
 
-
         # initialize a session db for the user
-        session_db =  WaptSessionDB(self.user) # WaptSessionDB()
+        session_db =  WaptSessionDB(self.user)  # WaptSessionDB()
         with session_db:
             if force or os.path.isdir(packagename) or not session_db.is_installed(package_entry.package,package_entry.version):
                 try:
@@ -3896,7 +3920,6 @@ class Wapt(object):
             sys.path = oldpath
             logger.debug(u'  Change current directory to %s' % previous_cwd)
             os.chdir(previous_cwd)
-
 
     def checkinstalled(self):
         """Source setup.py and launch checkinstalled"""
@@ -4198,7 +4221,6 @@ class Wapt(object):
         result['source_dir'] = directoryname
         result['target'] = directoryname
         return result
-
 
     def is_installed(self,packagename):
         """Checks if a package is installed.
@@ -4763,4 +4785,3 @@ if __name__ == '__main__':
     doctest.ELLIPSIS_MARKER = '???'
     doctest.testmod(optionflags=doctest.ELLIPSIS)
     sys.exit(0)
-

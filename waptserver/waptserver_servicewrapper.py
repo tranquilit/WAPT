@@ -12,6 +12,7 @@ import logging
 
 from rocket import Rocket
 
+
 class aservice(win32serviceutil.ServiceFramework):
 
     _svc_name_ = "WAPTServer"
@@ -53,4 +54,3 @@ def ctrlHandler(ctrlType):
 if __name__ == '__main__':
     win32api.SetConsoleCtrlHandler(ctrlHandler, True)
     win32serviceutil.HandleCommandLine(aservice)
-

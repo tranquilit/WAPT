@@ -127,7 +127,7 @@ class Process:
         win32gui.EnumWindows(self.__close__, 0)
         if self.wait(gracePeriod) != win32event.WAIT_OBJECT_0:
             win32process.TerminateProcess(self.hProcess, 0)
-            win32api.Sleep(100) # wait for resources to be released
+            win32api.Sleep(100)  # wait for resources to be released
 
     def __close__(self, hwnd, dummy):
         """

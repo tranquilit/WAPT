@@ -35,6 +35,7 @@ create_self_signed_key = common.create_self_signed_key
 is_encrypt_private_key = common.private_key_has_password
 is_match_password = common.check_key_password
 
+
 def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wapt_server='',destination='',company=''):
     r"""Build a customized waptsetup.exe with included provided certificate
     Returns filename
@@ -74,6 +75,7 @@ def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wa
     #print('%s compiled successfully' % (outputfile, ))
     return os.path.abspath(os.path.join(destination,os.path.basename(outputfile)))
 
+
 def upload_wapt_setup(wapt,waptsetup_path, wapt_server_user, wapt_server_passwd):
     """Upload waptsetup.exe to wapt repository
     >>> wapt = common.Wapt(config_filename="c:/users/htouvet/AppData/Local/waptconsole/waptconsole.ini")
@@ -86,6 +88,7 @@ def upload_wapt_setup(wapt,waptsetup_path, wapt_server_user, wapt_server_passwd)
         req.raise_for_status()
     return json.loads(req.content)
 
+
 def diff_computer_ad_wapt(wapt):
     """Return the computer in the Active Directory but not in Wapt Serveur
     >>> wapt = common.Wapt(config_filename=r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
@@ -96,6 +99,7 @@ def diff_computer_ad_wapt(wapt):
     computer_wapt = set( [ c['host']['computer_fqdn'].lower() for c in json.loads(requests.request('GET','%s/json/host_list'%wapt.wapt_server).text)])
     diff = list(set(computer_ad)-set(computer_wapt))
     return diff
+
 
 def diff_computer_wapt_ad(wapt):
     """Return the computer in Wapt Serveur but not in the Active Directory
@@ -108,6 +112,7 @@ def diff_computer_wapt_ad(wapt):
     result = list(set(computer_wapt)-set(computer_ad))
     return result
 
+
 def search_bad_waptsetup(wapt,wapt_version):
     """Return list of computers in the Wapt Server who have not the version of Wapt specified"""
     hosts =  json.loads(requests.request('GET','%s/json/host_data'%wapt.wapt_server).content)
@@ -117,6 +122,7 @@ def search_bad_waptsetup(wapt,wapt_version):
         if wapt[0]['version'] != wapt_version:
             result[i['name']] = wapt[0]['version']
     return result
+
 
 def update_tis_repo(waptconfigfile,search_string):
     """Get a list of entries from TIS public repository matching search_string
@@ -131,6 +137,7 @@ def update_tis_repo(waptconfigfile,search_string):
     wapt.dbpath = r':memory:'
     wapt.update(register=False)
     return wapt.search(search_string)
+
 
 def get_packages_filenames(waptconfigfile,packages_names):
     """Returns list of package filenames (latest version) matching comma seperated list of packages names)
@@ -149,6 +156,7 @@ def get_packages_filenames(waptconfigfile,packages_names):
         if entries:
             result.append(entries[-1].filename)
     return result
+
 
 def duplicate_from_tis_repo(waptconfigfile,file_name,depends=[]):
     """Duplicate a package from  to supplied wapt repository
@@ -184,6 +192,7 @@ def duplicate_from_tis_repo(waptconfigfile,file_name,depends=[]):
             package.save_control_to_wapt(source_dir[0])
 
     return source_dir
+
 
 def wapt_sources_edit(wapt_sources_dir):
     psproj_filename = os.path.join(wapt_sources_dir,'WAPT','wapt.psproj')

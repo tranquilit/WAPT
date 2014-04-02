@@ -141,6 +141,7 @@ if len(logger.handlers)<1:
     hdlr.setFormatter(logging.Formatter(u'%(asctime)s %(levelname)s %(message)s'))
     logger.addHandler(hdlr)
 
+
 def setloglevel(loglevel):
     """set loglevel as string"""
     if loglevel in ('debug','warning','info','error','critical'):
@@ -158,6 +159,7 @@ logger.debug(u'Default encoding : %s ' % sys.getdefaultencoding())
 logger.debug(u'Setting encoding for stdout and stderr to %s ' % encoding)
 
 key_passwd = None
+
 
 class JsonOutput(object):
     """file like to print output to json"""
@@ -177,6 +179,7 @@ class JsonOutput(object):
         else:
             return self.console.__getattribute__(name)
 
+
 def wapt_sources_edit(wapt_sources_dir):
     psproj_filename = os.path.join(wapt_sources_dir,'WAPT','wapt.psproj')
     control_filename = os.path.join(wapt_sources_dir,'WAPT','control')
@@ -188,6 +191,7 @@ def wapt_sources_edit(wapt_sources_dir):
             cwd = os.path.join(setuphelpers.programfiles32,'PyScripter'))
     else:
         os.startfile(wapt_sources_dir)
+
 
 def main():
     jsonresult = {'output':[]}
@@ -210,7 +214,6 @@ def main():
             logger.error(u"Error : could not find file : " + config_file + ", please check the path")
 
         logger.debug(u'Config file: %s' % config_file)
-
 
         mywapt = Wapt(config_filename=config_file)
         if options.wapt_url:
@@ -297,7 +300,6 @@ def main():
                         mywapt.update_server_status()
                     except Exception,e:
                         logger.critical('Unable to update server with current status : %s' % ensure_unicode(e))
-
 
             elif action=='download':
                 if len(args)<2:
@@ -518,7 +520,6 @@ def main():
                     sys.exit(1)
                 result = update_packages(args[1])
 
-
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
@@ -682,7 +683,6 @@ def main():
                             files_list = ['"%s"' % f for f in package_group[1]]
                             cmd_dict =  {'waptfile': files_list,'waptdir':package_group[0]}
                             print mywapt.upload_package(cmd_dict)
-
 
                             if package_group<>hosts:
                                 if mywapt.after_upload:

@@ -64,26 +64,40 @@ end;
 
 procedure TVisWaptExit.FormShow(Sender: TObject);
 var
-  aso: ISuperObject;
+  aso,upgrades,running,pending: ISuperObject;
 begin
+  aso := Nil;
+  upgrades := Nil;
+  tasks := Nil;
+  running := Nil;
+  pending := Nil;
+
   ActUpgrade.Enabled:=false;
-  aso := WAPTLocalJsonGet('checkupgrades.json');
+
+  //Check if pending upgrades
+  aso := WAPTLocalJsonGet('checkupgrades.json','','',10);
   if aso<>Nil then
+    upgrades := aso['upgrades'];
+
+  //check if running tasks.
+  tasks := WAPTLocalJsonGet('tasks.json','','',10);
+  if tasks<>Nil then
   begin
-    if aso['upgrades'].AsArray.Length = 0 then
-    begin
-      Memo1.Text:='Système à jour';
-      //Close;
-    end
-    else
-    begin
-      ActUpgrade.Enabled:=True;
-      Memo1.Text:= Join(#13#10, aso['upgrades']);
-    end;
+    running := tasks['running'];
+    pending := tasks['pending'];
   end;
-  tasks := WAPTLocalJsonGet('tasks_status.json');
-  if tasks <>Nil then
-    SODataSource1.Data := tasks;
+
+  if (upgrades.AsArray.Length = 0) and  (running=Nil) and (pending.AsArray.Length = 0) then
+  begin
+   //Système à jour
+    Memo1.Text:='Système à jour';
+    Application.terminate;
+  end
+  else
+  begin
+    ActUpgrade.Enabled:=True;
+    Memo1.Text:= Join(#13#10, aso['upgrades']);
+  end;
   Timer1.Enabled := True;
 end;
 

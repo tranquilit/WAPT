@@ -27,7 +27,7 @@ import re
 import urllib
 import tempfile
 import shutil
-import sys 
+import sys
 import logging
 import ConfigParser
 from optparse import OptionParser
@@ -61,19 +61,17 @@ section = config.sections()[0]
 if config.has_option(section, 'main_repo'):
     main_repo = config.get(section, 'main_repo')
 else:
-    main_repo = "http://srvinstallation.tranquil.it/wapt/" 
-    
+    main_repo = "http://srvinstallation.tranquil.it/wapt/"
+
 if config.has_option(section, 'wapt_dir'):
     wapt_dir = config.get(section, 'wapt_dir')
 else:
     wapt_dir = "/var/www/wapt/"
-    
+
 if config.has_option(section, 'donwload_new_packages'):
     donwload_new_packages = config.get(section, 'donwload_new_packages')
 else:
-    donwload_new_packages = "yes" 
-    
-
+    donwload_new_packages = "yes"
 
 os.chdir(wapt_dir)
 os.system('cd '+wapt_dir)
@@ -96,6 +94,7 @@ def match_version(package1, package2):
     if package1 > package2:
         packagesToUpgrade.append(package1)
 
+
 def packagesFileToList(pathTofile):
     listPackages = codecs.decode(zipfile.ZipFile(pathTofile).read(name='Packages'),'utf-8')
     packages = []
@@ -105,7 +104,6 @@ def packagesFileToList(pathTofile):
         package.load_control_from_wapt(lines)
         package.filename = package.make_package_filename()
         packages.append(package)
-
 
     lines = []
     for line in listPackages.splitlines():
@@ -124,7 +122,6 @@ def packagesFileToList(pathTofile):
     return packages
 
 
-
 def downloadRepoPackages(mainRepo):
     tempDir  =  tempfile.mkdtemp()
     packagesTemp = tempDir+"/Packages"
@@ -132,7 +129,7 @@ def downloadRepoPackages(mainRepo):
     packages =  packagesFileToList(packagesTemp)
     if os.path.exists(tempDir):
         shutil.rmtree(tempDir)
-    return packages 
+    return packages
 
 
 def downloadPackages(packages):
@@ -140,21 +137,19 @@ def downloadPackages(packages):
         print "Downloading : %s version => %s" % ( package.package, package.version )
         os.system("/usr/bin/zsync  %s.zsync -o %s" % (main_repo+package.filename, wapt_dir+package.filename))
 
-
-
 repoPackages = downloadRepoPackages(main_repo)
-localPackages = packagesFileToList(wapt_dir+'Packages') 
+localPackages = packagesFileToList(wapt_dir+'Packages')
 
 for repoPackage in repoPackages:
     if not repoPackage.section != "host":
         continue
-        
+
     matchPackage = [ package for package in localPackages if repoPackage.package == package.package ]
 
     if len(matchPackage) == 1:
         if repoPackage > matchPackage[0]:
             packagesToUpgrade.append(repoPackage)
-    elif len(matchPackage) > 1: 
+    elif len(matchPackage) > 1:
         if not [ x for x in matchPackage if repoPackage.version in x.version ]:
             packagesToUpgrade.append(repoPackage)
     elif donwload_new_packages.lower() in [ "yes", "oui", "y", "o" ]:
@@ -168,13 +163,12 @@ if packagesToUpgrade:
 
 if newPackages:
     downloadPackages(newPackages)
-    
+
 if not (packagesToUpgrade or newPackages):
     print "The system is already up to date"
 
 if packagesToUpgrade or newPackages:
     os.system('cd '+wapt_dir+'&& python wapt-scanpackages.py .')
-    
-    
+
 
 os.system('chmod 664 %s*'%wapt_dir)

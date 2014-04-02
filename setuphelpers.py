@@ -78,11 +78,13 @@ my_documents= winshell.my_documents
 recent = winshell.recent
 sendto = winshell.sendto
 
+
 def ensure_dir(f):
     """Be sure the directory of f exists on disk. Make it if not"""
     d = os.path.dirname(f)
     if not os.path.isdir(d):
         os.makedirs(d)
+
 
 # from opsi
 def ensure_unicode(data):
@@ -131,6 +133,7 @@ def ensure_unicode(data):
         else:
             raise
 
+
 def create_shortcut(path, target='', arguments='', wDir='', icon=''):
     """Create a windows shortcut
           path - As what file should the shortcut be created?
@@ -148,6 +151,7 @@ def create_shortcut(path, target='', arguments='', wDir='', icon=''):
         shortcut.close()
     else:
         winshell.CreateShortcut(path,target,arguments,wDir,(icon,0),'')
+
 
 def create_desktop_shortcut(label, target='', arguments ='', wDir='', icon=''):
     if not (label.endswith('.lnk') or label.endswith('.url')):
@@ -168,6 +172,7 @@ def create_user_desktop_shortcut(label, target='',arguments='', wDir='', icon=''
     create_shortcut(sc_path,target,arguments,wDir,icon)
     return sc_path
 
+
 def create_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=''):
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
@@ -177,6 +182,7 @@ def create_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=
     create_shortcut(sc,target,arguments,wDir,icon)
     return sc
 
+
 def create_user_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=''):
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
@@ -185,6 +191,7 @@ def create_user_programs_menu_shortcut(label, target='', arguments='', wDir='', 
         os.remove(sc)
     create_shortcut(sc,target,arguments,wDir,icon)
     return sc
+
 
 def wgets(url,proxies=None):
     """Return the content of a remote resources as a String
@@ -196,6 +203,7 @@ def wgets(url,proxies=None):
         return r.text
     else:
         r.raise_for_status()
+
 
 def wget(url,target,printhook=None,proxies=None):
     r"""Copy the contents of a file from a given URL
@@ -272,6 +280,7 @@ def wget(url,target,printhook=None,proxies=None):
     reporthook(last_downloaded,total_bytes)
     return os.path.join(dir,filename)
 
+
 def filecopyto(filename,target):
     """Copy file from package temporary directory to target directory
         target is either a full filename or a directory name
@@ -314,11 +323,14 @@ def default_oncopy(msg,src,dst):
     logger.debug(u'%s : "%s" to "%s"' % (ensure_unicode(msg),ensure_unicode(src),ensure_unicode(dst)))
     return True
 
+
 def default_skip(src,dst):
     return False
 
+
 def default_overwrite(src,dst):
     return True
+
 
 def default_overwrite_older(src,dst):
     if os.stat(src).st_mtime <= os.stat(dst).st_mtime:
@@ -327,6 +339,7 @@ def default_overwrite_older(src,dst):
     else:
         logger.debug(u'Overwriting file on target is older than source: "%s"' % (dst,))
         return True
+
 
 def register_ext(appname,fileext,shellopen,icon=None,otherverbs=[]):
     """Associates a file extension with an application, and command to open it"""
@@ -348,6 +361,7 @@ def register_ext(appname,fileext,shellopen,icon=None,otherverbs=[]):
         for (verb,cmd) in otherverbs:
             setvalue(HKEY_CLASSES_ROOT,makepath(filetype,"shell",verb),'')
             setvalue(HKEY_CLASSES_ROOT,makepath(filetype,"shell",verb,"command"),cmd)
+
 
 def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy):
     """Copy src directory to dst directory. dst is created if it doesn't exists
@@ -408,7 +422,6 @@ def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy
         raise shutil.Error(errors)
 
 
-
 class RunReader(threading.Thread):
     # helper thread to read output of run command
     def __init__(self, callable, *args, **kwargs):
@@ -424,6 +437,7 @@ class RunReader(threading.Thread):
         except Exception, e:
             print e
 
+
 class TimeoutExpired(Exception):
     """This exception is raised when the timeout expires while waiting for a
     child process.
@@ -437,6 +451,7 @@ class TimeoutExpired(Exception):
         return ("Command '%s' timed out after %s seconds with output '%s'" %
                 (self.cmd, self.timeout, self.output))
 
+
 def run(*cmd,**args):
     """Run the command cmd and return the output and error text
         shell=True is assumed
@@ -449,6 +464,7 @@ def run(*cmd,**args):
     """
     logger.info(u'Run "%s"' % (ensure_unicode(cmd),))
     output = []
+
     def worker(pipe,on_write=None):
         while True:
             line = pipe.readline()
@@ -517,6 +533,7 @@ def run(*cmd,**args):
             logger.warning(u'%s command returns code %s' % (ensure_unicode(cmd),proc.returncode))
     return ensure_unicode(''.join(output))
 
+
 def run_notfatal(*cmd,**args):
     """Runs the command and wait for it termination
     returns output, don't raise exception if exitcode is not null but return '' """
@@ -526,12 +543,14 @@ def run_notfatal(*cmd,**args):
         print u'Warning : %s' % ensure_unicode(e)
         return ''
 
+
 def shell_launch(cmd):
     """Launch a command (without arguments) but doesn't wait for its termination
     .>>> open('c:/tmp/test.txt','w').write('Test line')
     .>>> shell_launch('c:/tmp/test.txt')
     """
     os.startfile(cmd)
+
 
 def isrunning(processname):
     """Check if a process is running, example isrunning('explorer')"""
@@ -543,6 +562,7 @@ def isrunning(processname):
         except (psutil.AccessDenied,psutil.NoSuchProcess):
             pass
     return False
+
 
 def killalltasks(exenames,include_children=True):
     """Kill the task by their exename : example killalltasks('explorer.exe') """
@@ -566,6 +586,7 @@ def killalltasks(exenames,include_children=True):
       run(u'taskkill /t /im "%s" /f /FI "STATUS eq RUNNING"' % c)
     """
 
+
 def killtree(pid, including_parent=True):
     try:
         parent = psutil.Process(pid)
@@ -577,9 +598,11 @@ def killtree(pid, including_parent=True):
     except psutil.NoSuchProcess as e:
         pass
 
+
 def processnames_list():
     """return all process name of running processes in lower case"""
     return list(set([p.name().lower() for p in psutil.get_process_list()]))
+
 
 def find_processes(process_name):
     """Return list of Process having process_name"""
@@ -594,11 +617,14 @@ def find_processes(process_name):
 
     return result
 
+
 def messagebox(title,msg):
     win32api.MessageBox(0, msg, title, win32con.MB_ICONINFORMATION)
 
+
 def showmessage(msg):
     win32api.MessageBox(0, msg, 'Information', win32con.MB_ICONINFORMATION)
+
 
 def programfiles64():
     """Return 64 bits program folder"""
@@ -606,6 +632,7 @@ def programfiles64():
         return os.environ['PROGRAMW6432']
     else:
         return os.environ['PROGRAMFILES']
+
 
 def programfiles():
     """Return native program directory, ie C:\Program Files for both 64 and 32 bits"""
@@ -615,6 +642,7 @@ def programfiles():
     else:
         return os.environ['PROGRAMFILES']
 
+
 def programfiles32():
     """Return 32bits applications folder."""
     if 'PROGRAMW6432' in os.environ and 'PROGRAMFILES(X86)' in os.environ:
@@ -622,16 +650,20 @@ def programfiles32():
     else:
         return os.environ['PROGRAMFILES']
 
+
 def iswin64():
     return 'PROGRAMW6432' in os.environ
+
 
 def get_computername():
     """Return host name (without domain part)"""
     return socket.gethostname()
 
+
 def get_hostname():
     """Return host fully qualified domain name in lower case"""
     return socket.getfqdn().lower()
+
 
 def get_domain_fromregistry():
     """Return main DNS domain of the computer"""
@@ -647,6 +679,7 @@ def get_domain_fromregistry():
             domain = None
     return domain
 
+
 def get_loggedinusers():
     result = []
     try:
@@ -658,8 +691,10 @@ def get_loggedinusers():
     except:
         return [get_current_user()]
 
+
 def registered_organization():
     return registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOrganization')
+
 
 def _environ_params(dict_or_module={}):
     """set some environment params in the supplied module or dict"""
@@ -693,6 +728,7 @@ REG_MULTI_SZ = _winreg.REG_MULTI_SZ
 REG_DWORD = _winreg.REG_DWORD
 REG_EXPAND_SZ = _winreg.REG_EXPAND_SZ
 
+
 def reg_openkey_noredir(key, sub_key, sam=_winreg.KEY_READ,create_if_missing=False):
     """Open the registry key\subkey with access rights sam
         Returns a key handle for reg_getvalue and reg_set_value
@@ -715,6 +751,7 @@ def reg_openkey_noredir(key, sub_key, sam=_winreg.KEY_READ,create_if_missing=Fal
                     return _winreg.CreateKeyEx(key,sub_key,0,sam | _winreg.KEY_READ | _winreg.KEY_WRITE )
             else:
                 raise WindowsError(e.errno,'The key %s can not be opened' % sub_key)
+
 
 def reg_getvalue(key,name,default=None):
     """Return the value of specified name inside 'key' folder
@@ -745,6 +782,7 @@ def reg_setvalue(key,name,value,type=_winreg.REG_SZ ):
     """
     return _winreg.SetValueEx(key,name,0,type,value)
 
+
 def registry_setstring(root,path,keyname,value,type=_winreg.REG_SZ):
     """Set the value of a string key in registry
         root    : HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER ...
@@ -757,6 +795,7 @@ def registry_setstring(root,path,keyname,value,type=_winreg.REG_SZ):
     key = reg_openkey_noredir(root,path,sam=KEY_WRITE,create_if_missing=True)
     result = reg_setvalue(key,keyname,value,type=type)
     return result
+
 
 def registry_readstring(root,path,keyname,default=''):
     """Return a string from registry
@@ -775,6 +814,7 @@ def registry_readstring(root,path,keyname,default=''):
         return result
     except:
         return default
+
 
 def registry_set(root,path,keyname,value,type=None):
     """Set the value of a key in registry, tajing in account calue type
@@ -796,11 +836,13 @@ def registry_set(root,path,keyname,value,type=None):
     result = reg_setvalue(key,keyname,value,type=type)
     return result
 
+
 def inifile_hasoption(inifilename,section,key):
     """Read a string parameter from inifile"""
     inifile = RawConfigParser()
     inifile.read(inifilename)
     return inifile.has_section(section) and inifile.has_option(section,key)
+
 
 def inifile_readstring(inifilename,section,key,default=None):
     """Read a string parameter from inifile"""
@@ -811,6 +853,7 @@ def inifile_readstring(inifilename,section,key,default=None):
     else:
         return default
 
+
 def inifile_writestring(inifilename,section,key,value):
     """Write a string parameter to inifile"""
     inifile = RawConfigParser()
@@ -819,6 +862,7 @@ def inifile_writestring(inifilename,section,key,value):
         inifile.add_section(section)
     inifile.set(section,key,value)
     inifile.write(open(inifilename,'w'))
+
 
 def installed_softwares(keywords=''):
     """return list of installed software from registry (both 32bit and 64bit"""
@@ -867,13 +911,16 @@ def installed_softwares(keywords=''):
         result.extend(list_fromkey("Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall"))
     return result
 
+
 def currentdate():
     import time
     return time.strftime('%Y%m%d')
 
+
 def currentdatetime():
     import time
     return time.strftime('%Y%m%d-%H%M%S')
+
 
 def register_uninstall(uninstallkey,uninstallstring,win64app=False,
         quiet_uninstall_string='',
@@ -905,6 +952,7 @@ def register_uninstall(uninstallkey,uninstallstring,win64app=False,
     if publisher:
         reg_setvalue(appkey,'Publisher',publisher)
 
+
 def unregister_uninstall(uninstallkey,win64app=False):
     """Remove uninstall method from registry"""
     if not uninstallkey:
@@ -929,6 +977,7 @@ def unregister_uninstall(uninstallkey,win64app=False):
 
 wincomputername = win32api.GetComputerName
 windomainname = win32api.GetDomainName
+
 
 def networking():
     """return a list of (iface,mac,{addr,broadcast,netmask})"""
@@ -976,6 +1025,7 @@ def memory_status():
     else:
         raise Exception('Error in function GlobalMemoryStatusEx')
 
+
 def dmi_info():
     """Convert dmidecode -q output to python dict
     >>> dmi = dmi_info()
@@ -1020,6 +1070,7 @@ def dmi_info():
         result = wmi_info_basic()
     return result
 
+
 def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_BIOS','Win32_NetworkAdapter']):
     """Get WMI machine informations as dictionaries"""
     result = {}
@@ -1042,8 +1093,6 @@ def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_B
                 if prop:
                     result[key][k] = prop.Value
 
-
-
     """na = result['Win32_NetworkAdapter'] = []
     for cs in wm.Win32_NetworkAdapter():
         na.append({})
@@ -1053,6 +1102,7 @@ def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_B
                 na[-1][k] = prop.Value
     """
     return result
+
 
 def wmi_info_basic():
     """Return uuid, serial, model, vendor from WMI
@@ -1075,6 +1125,7 @@ def wmi_info_basic():
                 }
             }
     return result
+
 
 def host_info():
     """Read main workstation inforamtions, returned as a dict
@@ -1167,6 +1218,7 @@ def host_info():
     info['current_user'] = get_loggedinusers()
     return info
 
+
 # from http://stackoverflow.com/questions/580924/python-windows-file-version-attribute
 def get_file_properties(fname):
     r"""Read all properties of the given file return them as a dictionary.
@@ -1216,6 +1268,7 @@ def get_file_properties(fname):
         logger.warning(u"%s" % ensure_unicode(e))
 
     return props
+
 
 # from http://stackoverflow.com/questions/3157955/get-msi-product-name-version-from-command-line
 def get_msi_properties(msi_filename):
@@ -1284,6 +1337,7 @@ remove_file=os.unlink
 remove_tree=shutil.rmtree
 makepath = os.path.join
 
+
 def service_installed(service_name):
     """Return True if the service is installed"""
     try:
@@ -1295,6 +1349,7 @@ def service_installed(service_name):
          else:
             raise
 
+
 def service_start(service_name):
     """Start a service by its service name
     """
@@ -1302,11 +1357,13 @@ def service_start(service_name):
     win32serviceutil.StartService(service_name)
     return win32serviceutil.WaitForServiceStatus(service_name, win32service.SERVICE_RUNNING, waitSecs=4)
 
+
 def service_stop(service_name):
     logger.debug('Stopping service %s' % service_name)
     win32serviceutil.StopService(service_name)
     win32api.Sleep(2000)
     return win32serviceutil.WaitForServiceStatus(service_name, win32service.SERVICE_STOPPED, waitSecs=4)
+
 
 def service_is_running(service_name):
     """Return True if the service is running
@@ -1315,8 +1372,10 @@ def service_is_running(service_name):
     """
     return win32serviceutil.QueryServiceStatus(service_name)[1] == win32service.SERVICE_RUNNING
 
+
 def user_appdata():
     return ensure_unicode((winshell.get_path(shellcon.CSIDL_APPDATA)))
+
 
 def mkdirs(path):
     """Create directory path if it doesn't exists yet"""
@@ -1330,12 +1389,14 @@ def user_desktop():
     """
     return unicode(desktop(0))
 
+
 def common_desktop():
     """return path to public desktop (visible by all users)
     >>> common_desktop()
     u'C:\\Users\\Public\\Desktop'
     """
     return unicode(desktop(1))
+
 
 def register_dll(dllpath):
     """Register a COM/OLE server DLL in registry (similar to regsvr32)"""
@@ -1345,6 +1406,7 @@ def register_dll(dllpath):
     if result:
         raise Exception(u'Register DLL %s failed, code %i' % (dllpath,result))
 
+
 def unregister_dll(dllpath):
     """Unregister a COM/OLE server DLL from registry"""
     dll = ctypes.windll[dllpath]
@@ -1352,6 +1414,7 @@ def unregister_dll(dllpath):
     logger.info('DLL %s unregistered' % dllpath)
     if result:
         raise Exception(u'Unregister DLL %s failed, code %i' % (dllpath,result))
+
 
 def add_to_system_path(path):
     """Add path to the global search PATH environment variable if it is not yet"""
@@ -1362,6 +1425,7 @@ def add_to_system_path(path):
         reg_setvalue(key,'Path',';'.join(system_path),type=REG_EXPAND_SZ)
         win32api.SendMessage(win32con.HWND_BROADCAST,win32con.WM_SETTINGCHANGE,0,'Environment')
     return system_path
+
 
 def get_task(name):
     """Return an instance of PyITask given its name (without .job)"""
@@ -1374,9 +1438,11 @@ def get_task(name):
     task = ts.Activate(name)
     return task
 
+
 def run_task(name):
     """Launch immediately the Windows Scheduled task"""
     get_task(name).Run()
+
 
 def task_exists(name):
     """Return true if a sheduled task names 'name.job' is defined"""
@@ -1384,6 +1450,7 @@ def task_exists(name):
                                     pythoncom.CLSCTX_INPROC_SERVER,
                                     taskscheduler.IID_ITaskScheduler)
     return '%s.job' % name in ts.Enum()
+
 
 def delete_task(name):
     """removes a Windows scheduled task"""
@@ -1393,6 +1460,7 @@ def delete_task(name):
     if '%s.job' % name not in ts.Enum():
         raise KeyError("%s doesn't exists" % name)
     ts.Delete(name)
+
 
 def disable_task(name):
     """Disable a Windows scheduled task"""
@@ -1405,6 +1473,7 @@ def disable_task(name):
     return task
     """
 
+
 def enable_task(name):
     """Enable a Windows scheduled task"""
     return run('schtasks /Change /TN "%s" /ENABLE' % name)
@@ -1416,6 +1485,7 @@ def enable_task(name):
     pf.Save(None,1)
     return task
     """
+
 
 def create_daily_task(name,cmd,parameters, max_runtime=10, repeat_minutes=None, start_hour=None, start_minute=None):
     """creates a Windows scheduled daily task
@@ -1474,14 +1544,16 @@ def get_current_user():
     import ctypes
     MAX_PATH = 260                  # according to a recent WinDef.h
     name = ctypes.create_unicode_buffer(MAX_PATH)
-    namelen = ctypes.c_int(len(name)) # len in chars, NOT bytes
+    namelen = ctypes.c_int(len(name))  # len in chars, NOT bytes
     if not ctypes.windll.advapi32.GetUserNameW(name, ctypes.byref(namelen)):
         raise ctypes.WinError()
     return ensure_unicode(name.value)
 
+
 def get_language():
     """Get the default locale like fr, en, pl etc..  etc"""
     return locale.getdefaultlocale()[0].split('_')[0]
+
 
 def get_appath(exename):
     """Get the registered application location from registry given its executable name
@@ -1507,14 +1579,17 @@ class Version():
     >>> Version('0.1.2') == Version('0.1.2')
     True
     """
+
     def __init__(self,versionstring):
         assert isinstance(versionstring,types.ModuleType) or isinstance(versionstring,str) or isinstance(versionstring,unicode)
         if isinstance(versionstring,ModuleType):
             versionstring = versionstring.__version__
         self.members = [ v.strip() for v in versionstring.split('.')]
+
     def __cmp__(self,aversion):
         def nat_cmp(a, b):
             a, b = a or '', b or ''
+
             def convert(text):
                 if text.isdigit():
                     return int(text)
@@ -1534,10 +1609,12 @@ class Version():
     def __repr__(self):
         return '.'.join(self.members)
 
+
 class EWaptSetupException(Exception):
     pass
 
 CalledProcessError = subprocess.CalledProcessError
+
 
 def error(reason):
     """Raise a WAPT fatal error"""
@@ -1558,7 +1635,6 @@ if __name__=='__main__':
     doctest.ELLIPSIS_MARKER = '???'
     doctest.testmod(optionflags=doctest.ELLIPSIS)
     sys.exit(0)
-
 
     copytree2('c:\\tmp','c:\\tmp2\\toto',onreplace=default_overwrite)
     copytree2('c:\\tmp','c:\\tmp2\\toto',onreplace=default_skip)

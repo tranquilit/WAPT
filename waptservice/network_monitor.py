@@ -20,7 +20,6 @@ PROGID_EventSubscription = "EventSystem.EventSubscription"
 # the event.
 
 
-
 service_logger = logging.getLogger()
 
 SUBSCRIPTION_NETALIVE = ('{cd1dcbd6-a14d-4823-a0d2-8473afde360f}',
@@ -59,6 +58,7 @@ SENSGUID_PUBLISHER = "{5fee1bd6-5b9b-11d1-8dd2-00aa004abd5e}"
 
 # uuid of the implemented com interface
 IID_ISesNetwork = '{d597bab1-5b9f-11d1-8dd2-00aa004abd5e}'
+
 
 class NetworkManager(DesignatedWrapPolicy):
     """Implement ISesNetwork to know about the network status."""
@@ -123,6 +123,7 @@ class NetworkManager(DesignatedWrapPolicy):
 
 if __name__ == '__main__':
     from threading import Thread
+
     def connected():
         print 'Connected'
 

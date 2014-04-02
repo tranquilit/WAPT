@@ -51,6 +51,7 @@ REG_MULTI_SZ = _winreg.REG_MULTI_SZ
 REG_DWORD = _winreg.REG_DWORD
 REG_EXPAND_SZ = _winreg.REG_EXPAND_SZ
 
+
 def reg_openkey_noredir(key, sub_key, sam=_winreg.KEY_READ,create_if_missing=False):
     """Open the registry key\subkey with access rights sam
         Returns a key handle for reg_getvalue and reg_set_value
@@ -74,6 +75,7 @@ def reg_openkey_noredir(key, sub_key, sam=_winreg.KEY_READ,create_if_missing=Fal
             else:
                 raise WindowsError(e.errno,'The key %s can not be opened' % sub_key)
 
+
 def reg_getvalue(key,name,default=None):
     """Return the value of specified name inside 'key' folder
          key  : handle of registry key as returned by reg_openkey_noredir()
@@ -89,6 +91,7 @@ def reg_getvalue(key,name,default=None):
             return default
         else:
             raise
+
 
 def registry_readstring(root,path,keyname,default=''):
     """Return a string from registry
@@ -106,19 +109,22 @@ def registry_readstring(root,path,keyname,default=''):
         return default
 
 
-
 def isWinXP():
   # Returns true if the operating system is Windows XP
   return platform.win32_ver()[0] == 'XP'
 
+
 def isWinNT4():
   return platform.win32_ver()[0] == 'NT4'
+
 
 def isWin2k():
   return platform.win32_ver()[0] == '2000'
 
+
 def isWin7():
   return platform.win32_ver()[0] == '7'
+
 
 def isValidWinProdID(sProdID):
     #Represents the stripped list of bad Product ID's.
@@ -144,6 +150,7 @@ def isValidWinProdID(sProdID):
         return False
     return True
 
+
 def WinVersion():
     windows = registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','ProductName','')
     if windows:
@@ -153,19 +160,21 @@ def WinVersion():
 #b24chrs = (string.digits + string.ascii_uppercase)[:24]
 generic_b24chrs = '0123456789ABCDEFGHIJKLMN'
 
-code_len = 25 # encoded key length (user-readable key)
-bin_len = 15 # binary key length
-regkey_idx = 52 # start of key in DPID for 2003, 2007
-regkey_idx_2010 = 0x328 # start in DPID for 2010
+code_len = 25  # encoded key length (user-readable key)
+bin_len = 15  # binary key length
+regkey_idx = 52  # start of key in DPID for 2003, 2007
+regkey_idx_2010 = 0x328  # start in DPID for 2010
 
 b24chrs = 'BCDFGHJKMPQRTVWXY2346789'
 reg_root = r'Software\Microsoft\Office'
+
 
 def chunks(l, n):
     """ Yield successive n-sized chunks from l.
     """
     for i in xrange(0, len(l), n):
         yield l[i:i+n]
+
 
 def b24encode(input, outlen=None, chrmap=None):
 
@@ -210,6 +219,7 @@ def b24encode(input, outlen=None, chrmap=None):
     dec.reverse()
     return ''.join(dec)
 
+
 def b24decode(input, chrmap=None):
 
     # Use default character mapping [0-9A-N] if none provided
@@ -236,6 +246,7 @@ def b24decode(input, chrmap=None):
         encnum = encnum // 256
 
     return ''.join([chr(i) for i in enc])
+
 
 def msoKeyDecode(regkey, ID=False):
     '''Decodes a registry key value, by extracting product key
@@ -271,6 +282,7 @@ def msoKeyDecode(regkey, ID=False):
 
     return '-'.join(list(chunks(deckey,5)))
 
+
 def GetMSDPID3(sHivePath):
     """return dict (sProdID, sMSKey)"""
 
@@ -290,7 +302,7 @@ def GetMSDPID3(sHivePath):
     if reg_getvalue(key,'DigitalProductID',None):
         (HexBuf,rtype) = _winreg.QueryValueEx(key,'DigitalProductID')
         iBinarySize = len(HexBuf)
-        if iBinarySize >= 67: #Incomplete data  but still might be enough
+        if iBinarySize >= 67:  # Incomplete data but might still be enough
             sProdID = 'Not found'
             sProdID = reg_getvalue(key,'ProductID')
             sText = ''
@@ -332,6 +344,7 @@ def GetMSDPID3(sHivePath):
             result['product_key'] = 'Some CD Key data is missing!';
     return result
 
+
 def windows_product_infos():
     infos = GetMSDPID3(r'SOFTWARE\Microsoft\Windows NT\CurrentVersion')
     infos['version'] = WinVersion()
@@ -339,4 +352,3 @@ def windows_product_infos():
 
 if __name__=='__main__':
     print windows_product_infos()
-

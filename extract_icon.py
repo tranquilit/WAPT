@@ -10,6 +10,7 @@ import os
 import tempfile
 import shutil
 
+
 def extract_icon(exefilename):
     """Get the first resource icon from win32 exefilename and returns it a s PNG bytes array"""
     ico_x = win32api.GetSystemMetrics(win32con.SM_CXICON)

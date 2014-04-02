@@ -1,5 +1,6 @@
 import _winreg
 
+
 def DecodeKey(rpk):
     rpkOffset = 52
     i = 28
@@ -27,6 +28,7 @@ def DecodeKey(rpk):
 
     return szProductKey
 
+
 def GetKeyFromRegLoc(key, value="DigitalProductID"):
     key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE,key,0,_winreg.KEY_READ| _winreg.KEY_WOW64_64KEY)
 
@@ -38,8 +40,10 @@ def GetKeyFromRegLoc(key, value="DigitalProductID"):
 def GetIEKey():
     return GetKeyFromRegLoc("SOFTWARE\Microsoft\Internet Explorer\Registration")
 
+
 def GetXPKey():
     return GetKeyFromRegLoc("SOFTWARE\Microsoft\Windows\CurrentVersion")
+
 
 def GetWPAKey():
     return GetKeyFromRegLoc("SYSTEM\WPA\Key-4F3B2RFXKC9C637882MBM")

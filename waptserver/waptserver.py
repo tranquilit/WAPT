@@ -76,6 +76,7 @@ if os.path.exists(config_file):
 else:
     raise Exception("FATAL. Couldn't open config file : " + config_file)
 
+
 def setloglevel(logger,loglevel):
     """set loglevel as string"""
     if loglevel in ('debug','warning','info','error','critical'):
@@ -166,6 +167,7 @@ ALLOWED_EXTENSIONS = set(['wapt'])
 app = Flask(__name__,static_folder='./templates/static')
 #app.config['PROPAGATE_EXCEPTIONS'] = True
 
+
 def get_host_data(uuid, filter = {}, delete_id = True):
     if filter:
         data = hosts.find_one({ "uuid": uuid}, filter)
@@ -175,9 +177,11 @@ def get_host_data(uuid, filter = {}, delete_id = True):
         data.pop("_id")
     return data
 
+
 @app.route('/')
 def index():
     return render_template("index.html")
+
 
 @app.route('/info')
 def informations():
@@ -195,6 +199,7 @@ def informations():
 @app.route('/wapt/')
 def wapt_listing():
     return render_template('listing.html',data=data)
+
 
 @app.route('/hosts')
 @app.route('/json/host_list',methods=['GET'])
@@ -243,6 +248,7 @@ def get_host_list():
                      status=200,
                      mimetype="application/json")
 
+
 def update_data(data):
     data['last_query_date'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     host = get_host_data(data["uuid"],delete_id=False)
@@ -251,6 +257,7 @@ def update_data(data):
     else:
         host_id = hosts.insert(data)
     return get_host_data(data["uuid"],filter={"uuid":1,"host":1})
+
 
 @app.route('/add_host',methods=['POST','GET'])
 @app.route('/update_host',methods=['POST'])
@@ -281,6 +288,7 @@ def update_host():
                          status=200,
                          mimetype="application/json")
 
+
 @app.route('/delete_host/<string:uuid>')
 def delete_host(uuid=""):
     try:
@@ -293,6 +301,7 @@ def delete_host(uuid=""):
                  status=200,
                  mimetype="application/json")
 
+
 # to fix !
 @app.route('/client_software_list/<string:uuid>')
 def get_client_software_list(uuid=""):
@@ -304,6 +313,7 @@ def get_client_software_list(uuid=""):
     else:
         return "{}"
 
+
 def packagesFileToList(pathTofile):
     listPackages = codecs.decode(zipfile.ZipFile(pathTofile).read(name='Packages'),'utf-8')
     packages = []
@@ -313,7 +323,6 @@ def packagesFileToList(pathTofile):
         package.load_control_from_wapt(lines)
         package.filename = package.make_package_filename()
         packages.append(package)
-
 
     lines = []
     for line in listPackages.splitlines():
@@ -331,6 +340,7 @@ def packagesFileToList(pathTofile):
 
     packages.sort()
     return packages
+
 
 @app.route('/host_packages/<string:uuid>')
 def host_packages(uuid=""):
@@ -399,6 +409,7 @@ def requires_auth(f):
         return f(*args, **kwargs)
     return decorated
 
+
 @app.route('/upload_package/<string:filename>',methods=['POST'])
 @requires_auth
 def upload_package(filename=""):
@@ -429,6 +440,7 @@ def upload_package(filename=""):
     return  Response(response=json.dumps(result),
                          status=200,
                          mimetype="application/json")
+
 
 @app.route('/upload_host',methods=['POST'])
 @requires_auth
@@ -465,6 +477,7 @@ def upload_host():
                          status=200,
                          mimetype="application/json")
 
+
 @app.route('/upload_waptsetup',methods=['POST'])
 @requires_auth
 def upload_waptsetup():
@@ -495,6 +508,7 @@ def upload_waptsetup():
     return  Response(response=json.dumps(result),
                          status=200,
                          mimetype="application/json")
+
 
 @app.route('/waptupgrade_host/<string:ip>')
 @requires_auth
@@ -532,6 +546,7 @@ def waptupgrade_host(ip):
                          status=200,
                          mimetype="application/json")
 
+
 @app.route('/install_package')
 @app.route('/install_package.json')
 @requires_auth
@@ -560,6 +575,7 @@ def install_package():
     return  Response(response=json.dumps(result),
                          status=200,
                          mimetype="application/json")
+
 
 @app.route('/remove_package')
 @app.route('/remove_package.json')
@@ -592,6 +608,7 @@ def remove_package():
                          status=200,
                          mimetype="application/json")
 
+
 @app.route('/host_tasks')
 @app.route('/host_tasks.json')
 @requires_auth
@@ -618,6 +635,7 @@ def host_tasks():
     return  Response(response=json.dumps(result),
                          status=200,
                          mimetype="application/json")
+
 
 @app.route('/host_taskkill')
 @app.route('/host_taskkill.json')
@@ -647,7 +665,6 @@ def host_taskkill():
                          mimetype="application/json")
 
 
-
 @app.route('/hosts_by_group/<string:name>')
 @requires_auth
 def get_hosts_by_group(name=""):
@@ -668,6 +685,7 @@ def get_hosts_by_group(name=""):
         e = sys.exc_info()
         return str(e)
     return "Unsupported method"
+
 
 @app.route('/upgrade_host/<string:ip>')
 @requires_auth
@@ -705,6 +723,7 @@ def upgrade_host(ip):
                          status=200,
                          mimetype="application/json")
 
+
 def install_wapt(computer_name,authentication_file):
     cmd = '/usr/bin/smbclient -G -E -A %s  //%s/IPC$ -c listconnect ' % (authentication_file, computer_name)
     try:
@@ -717,7 +736,6 @@ def install_wapt(computer_name,authentication_file):
 
         raise Exception(u"%s" % e.output)
 
-
     cmd = '/usr/bin/smbclient -A "%s" //%s/c\\$ -c "put waptsetup.exe" ' % (authentication_file, computer_name)
     print subprocess.check_output(cmd,shell=True)
 
@@ -727,13 +745,12 @@ def install_wapt(computer_name,authentication_file):
 #    cmd = '/usr/bin/smbclient -A "%s" //%s/c\\$ -c "cd wapt ; put wapt-get.ini ; exit" ' % (authentication_file, computer_name)
 #    print subprocess.check_output(cmd,shell=True)
 
-
     cmd = '/usr/bin/winexe -A "%s"  //%s  "c:\\wapt\\wapt-get.exe register"' % (authentication_file, computer_name)
     print subprocess.check_output(cmd,shell=True)
 
-
     cmd = '/usr/bin/winexe -A "%s"  //%s  "c:\\wapt\\wapt-get.exe --version"' % (authentication_file, computer_name)
     return subprocess.check_output(cmd,shell=True)
+
 
 @app.route('/deploy_wapt',methods=['POST'])
 @requires_auth
@@ -802,9 +819,11 @@ def login():
         e = sys.exc_info()
         return str(e)
 
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
 
 @app.route('/delete_package/<string:filename>')
 @requires_auth
@@ -827,6 +846,7 @@ def delete_package(filename=""):
                          status=200,
                          mimetype="application/json")
 
+
 @app.route('/wapt/<string:input_package_name>')
 def get_wapt_package(input_package_name):
     logger.info( "get wapt package : "+ input_package_name)
@@ -839,6 +859,7 @@ def get_wapt_package(input_package_name):
         logger.info('adding content-length')
     logger.info(pprint.pformat(r.headers))
     return r
+
 
 @app.route('/wapt-host/<string:input_package_name>')
 def get_host_package(input_package_name):
@@ -858,6 +879,7 @@ def get_host_package(input_package_name):
     logger.info(pprint.pformat(r.headers))
     return r
 
+
 @app.route('/wapt-group/<string:input_package_name>')
 def get_group_package(input_package_name):
     global wapt_folder
@@ -871,11 +893,13 @@ def get_group_package(input_package_name):
         r.headers.add_header('content-length', os.path.getsize(os.path.join(group_folder + '-group',package_name)))
     return r
 
+
 def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
     return wapt_user == username and wapt_password == hashlib.sha512(password).hexdigest()
+
 
 def authenticate():
     """Sends a 401 response that enables basic auth"""
