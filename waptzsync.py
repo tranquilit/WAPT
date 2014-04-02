@@ -20,6 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
+__version__ = "0.8.23"
 import os
 import zipfile
 import codecs
@@ -48,10 +49,8 @@ if options.c:
 else:
     config_file = '/etc/tis/config-waptzsync.ini'
 
-
 if not os.path.exists(config_file):
     raise Exception("No config file found")
-
 
 config = ConfigParser.ConfigParser()
 config.read(config_file)
@@ -89,11 +88,9 @@ packagesToUpgrade = []
 newPackages = []
 multipleVersionPackages = []
 
-
 def match_version(package1, package2):
     if package1 > package2:
         packagesToUpgrade.append(package1)
-
 
 def packagesFileToList(pathTofile):
     listPackages = codecs.decode(zipfile.ZipFile(pathTofile).read(name='Packages'),'utf-8')

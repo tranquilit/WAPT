@@ -37,6 +37,7 @@ print "source tree : %s" % wapt_source_dir
 
 source_dir = os.path.abspath('..')
 shutil.copyfile(os.path.join(wapt_source_dir,'waptpackage.py'),os.path.join(source_dir,'waptpackage.py'))
+shutil.copyfile(os.path.join(wapt_source_dir,'waptzsync.py'),os.path.join(source_dir,'waptzsync.py'))
 
 for line in open('%s/waptpackage.py'% source_dir):
     if '__version__' in line:
