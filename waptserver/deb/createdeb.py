@@ -92,7 +92,7 @@ rsync_source =  source_dir
 rsync_destination = './builddir/opt/wapt/'
 rsync_command = '/usr/bin/rsync %s %s %s'%(rsync_option,rsync_source,rsync_destination)
 os.system(rsync_command)
-os.system('/usr/bin/rsync %s %s %s'%(rsync_option,wapt_source_dir+'/waptpackage.py','./builddir/opt/wapt/waptserver/'))
+os.system('/usr/bin/rsync %s %s %s'%(rsync_option,wapt_source_dir+'/waptpackage.py','./builddir/opt/wapt/'))
 
 print 'copie des fichiers control et postinst'
 try:

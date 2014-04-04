@@ -20,17 +20,14 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="0.8.17"
+__version__="0.8.24"
 
 import os,sys
 wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
 sys.path.append(os.path.join(wapt_root_dir))
 sys.path.append(os.path.join(wapt_root_dir,'lib'))
-sys.path.append(os.path.join(wapt_root_dir,'waptservice'))
-sys.path.append(os.path.join(wapt_root_dir,'waptserver'))
 sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
-sys.path.append(os.path.join(wapt_root_dir,'waptrepo'))
-
+sys.path.append(os.path.join(wapt_root_dir,'waptserver'))
 
 from flask import request, Flask,Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
 import time
@@ -49,7 +46,6 @@ import platform
 import pprint
 import socket
 import requests
-import pefile
 import subprocess
 import tempfile
 from rocket import Rocket
@@ -57,8 +53,8 @@ from rocket import Rocket
 import thread
 import threading
 
-
 from waptpackage import *
+import pefile
 
 config = ConfigParser.RawConfigParser()
 
