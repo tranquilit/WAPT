@@ -34,6 +34,6 @@ then
   fi
 else
     printf '\e[1;31m%-6s\e[m\n' "the installation of waptserver is finished !!"
-    printf '\e[1;31m%-6s\e[m\n' "if you want to use zsync please launch /opt/wapt/waptrepo/configure_zsync.sh"
+    #printf '\e[1;31m%-6s\e[m\n' "if you want to use zsync please launch /opt/wapt/waptrepo/configure_zsync.sh"
     printf '\e[1;31m%-6s\e[m\n' "for postconf please run: /usr/bin/python /opt/wapt/waptserver/scripts/postconf.py"
 fi
