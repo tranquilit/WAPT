@@ -349,7 +349,7 @@ begin
       if action='update' then
       begin
         Logger('Call update URL...',DEBUG);
-        res := WAPTLocalJsonGet('update.json');
+        res := WAPTLocalJsonGet('update.json?notify_user=0');
         if res = Nil then
           WriteLn('Error launching update: '+res.S['message'])
         else
@@ -361,9 +361,9 @@ begin
       begin
         Logger('Call '+action+'?package='+packages,DEBUG);
         if HasOption('f','force') then
-          res := WAPTLocalJsonGet(Action+'.json?package='+packages+'&force=1')
+          res := WAPTLocalJsonGet(Action+'.json?package='+packages+'&force=1&notify_user=0')
         else
-          res := WAPTLocalJsonGet(Action+'.json?package='+packages);
+          res := WAPTLocalJsonGet(Action+'.json?package='+packages+'&notify_user=0');
         if res = Nil then
           WriteLn('Error : '+res.S['message'])
         else
@@ -373,7 +373,7 @@ begin
       else if action='upgrade' then
       begin
         Logger('Call upgrade URL...',DEBUG);
-        res := WAPTLocalJsonGet('upgrade.json');
+        res := WAPTLocalJsonGet('upgrade.json?notify_user=0');
         if res.S['result']<>'OK' then
           WriteLn('Error launching upgrade: '+res.S['message'])
         else

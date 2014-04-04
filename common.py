@@ -2150,7 +2150,11 @@ class WaptHostRepo(WaptRepo):
             return self._repo_url
         else:
             if not self._cached_dns_repo_url:
-                self._cached_dns_repo_url = self.find_wapt_repo_url()+'-host'
+                main = self.find_wapt_repo_url()
+                if main:
+                    self._cached_dns_repo_url = +'-host'
+                else:
+                    self._cached_dns_repo_url = None
             return self._cached_dns_repo_url
 
     @repo_url.setter
