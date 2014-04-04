@@ -42,7 +42,7 @@ def replaceAll(file,searchExp,replaceExp):
         sys.stdout.write(line)
 
 def rsync(src,dst):
-    rsync_option = " --exclude '.svn' --exclude 'deb' --exclude '.git' --exclude '.gitignore' -aP"
+    rsync_option = " --exclude '*.pyc' --exclude '.svn' --exclude 'deb' --exclude '.git' --exclude '.gitignore' -aP"
     rsync_source = src
     rsync_destination = dst
     rsync_command = '/usr/bin/rsync %s "%s" "%s"'%(rsync_option,rsync_source,rsync_destination)
@@ -84,6 +84,7 @@ os.makedirs("builddir/DEBIAN")
 os.makedirs("builddir/opt")
 os.makedirs("builddir/opt/wapt")
 os.makedirs("builddir/opt/wapt/lib")
+os.makedirs("builddir/opt/wapt/lib/site-packages")
 os.makedirs("builddir/opt/wapt/waptserver")
 
 #adding version info in VERSION file
@@ -99,8 +100,8 @@ version_file.close()
 
 print 'copy waptserver files'
 rsync(source_dir,'./builddir/opt/wapt/')
-for lib in ('pefile.py','rocket','pymongo'):
-    rsync(makepath(source_dir,'lib','site-packages',lib),'./builddir/opt/wapt/lib/site-packages/')
+for lib in ('pefile.py','rocket','pymongo','bson'):
+    rsync(makepath(wapt_source_dir,'lib','site-packages',lib),'./builddir/opt/wapt/lib/site-packages/')
 
 print 'copie des fichiers control et postinst'
 copyfile('./DEBIAN/control','./builddir/DEBIAN/control')
