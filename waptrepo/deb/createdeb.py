@@ -33,14 +33,23 @@ def replaceAll(file,searchExp,replaceExp):
             line = line.replace(searchExp,replaceExp)
         sys.stdout.write(line)
 
+def rsync(src,dst):
+    rsync_option = " --exclude '.svn' --exclude 'deb' --exclude '.git' --exclude '.gitignore' -aP"
+    rsync_source = src
+    rsync_destination = dst
+    rsync_command = '/usr/bin/rsync %s "%s" "%s"'%(rsync_option,rsync_source,rsync_destination)
+    os.system(rsync_command)
+    
+makepath = os.path.join
+from shutil import copyfile
+
+# wapt
 wapt_source_dir = os.path.abspath('../..')
-print "source tree : %s" % wapt_source_dir
 
+# waptrepo
 source_dir = os.path.abspath('..')
-shutil.copyfile(os.path.join(wapt_source_dir,'waptpackage.py'),os.path.join(source_dir,'waptpackage.py'))
-shutil.copyfile(os.path.join(wapt_source_dir,'waptzsync.py'),os.path.join(source_dir,'waptzsync.py'))
 
-for line in open('%s/waptpackage.py'% source_dir):
+for line in open('%s/waptpackage.py'% wapt_source_dir):
     if '__version__' in line:
         wapt_version = line.split('=')[1].replace('"','').replace("'","").replace('\n','').replace(' ','').replace('\r','')
 
@@ -49,17 +58,15 @@ if not wapt_version:
     wapt_version = '0.0.0'
 
 control_file = './builddir/DEBIAN/control'
-rsync_option = " --exclude '.svn' --exclude 'deb' -ap"
-rsync_source = source_dir
-rsync_destination = './builddir/opt/wapt/'
-rsync_command = '/usr/bin/rsync %s %s %s'%(rsync_option,rsync_source,rsync_destination)
 
+# remove old debs
 for filename in glob.glob("tis-waptrepo*.deb"):
     print "destruction de %s"%filename
     os.remove(filename)
 if os.path.exists("builddir"):
     shutil.rmtree("builddir")
-print 'création de l\'arborescence'
+
+print u'création de l\'arborescence'
 os.makedirs("builddir")
 os.makedirs("builddir/DEBIAN")
 os.makedirs("builddir/opt")
@@ -77,23 +84,20 @@ version_file.write(rev)
 version_file.close()
 
 print 'copie des fichiers waptrepo'
-os.system(rsync_command)
+rsync(source_dir,'./builddir/opt/wapt/')
+copyfile(makepath(wapt_source_dir,'waptpackage.py'),'./builddir/opt/wapt/waptpackage.py')
+copyfile(makepath(wapt_source_dir,'wapt-scanpackages.py'),'./builddir/opt/wapt/wapt-scanpackages.py')
+
 print 'copie des fichiers control et postinst'
-try:
-    shutil.copyfile('./DEBIAN/control','./builddir/DEBIAN/control')
-except Exception as e:
-    print 'erreur: \n%s'%e
-    exit (0)
-try:
-    shutil.copyfile('./DEBIAN/postinst','./builddir/DEBIAN/postinst')
-except Exception as e:
-    print 'erreur: \n%s'%e
-    exit(0)
-print 'inscription de la version dans le fichier de control'
+copyfile('./DEBIAN/control','./builddir/DEBIAN/control')
+copyfile('./DEBIAN/postinst','./builddir/DEBIAN/postinst')
+
+print u'inscription de la version dans le fichier de control'
 replaceAll(control_file,'0.0.7',wapt_version + '-' + rev)
 
-print 'création du paquet Deb'
+print u'création du paquet Deb'
 os.chmod('./builddir/DEBIAN/postinst',stat.S_IRWXU| stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
 dpkg_command = 'dpkg-deb --build builddir tis-waptrepo-%s-%s.deb'% (wapt_version ,rev)
 os.system(dpkg_command)
 shutil.rmtree("builddir")
+
