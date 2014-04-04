@@ -13,6 +13,6 @@ ln -s /opt/wapt/waptrepo/wapt-scanpackages.py /var/www/wapt/
 chmod +x /opt/wapt/waptrepo/waptpackage.py
 chmod +x /opt/wapt/waptrepo/wapt-scanpackages.py
 /usr/bin/python /var/www/wapt/wapt-scanpackages.py /var/www/wapt/
-chmod +x /opt/wapt/waptrepo/configure_zsync.sh
-printf '\e[1;31m%-6s\e[m\n' "the installation of waptrepo is finished !!"
-printf '\e[1;31m%-6s\e[m\n' "if you want to use zsync please launch /opt/wapt/waptrepo/configure_zsync.sh"
+#chmod +x /opt/wapt/waptrepo/configure_zsync.sh
+#printf '\e[1;31m%-6s\e[m\n' "the installation of waptrepo is finished !!"
+#printf '\e[1;31m%-6s\e[m\n' "if you want to use zsync please launch /opt/wapt/waptrepo/configure_zsync.sh"
