@@ -13,6 +13,7 @@ chmod g+ws /var/www/wapt/
 chmod g+ws /var/www/wapt-host/
 chmod g+ws /var/www/wapt-group/
 
-chmod +x /opt/wapt/waptrepo/waptpackage.py
-chmod +x /opt/wapt/waptrepo/wapt-scanpackages.py
+chmod +x /opt/wapt/waptpackage.py
+chmod +x /opt/wapt/wapt-scanpackages.py
 /usr/bin/python /opt/wapt/wapt-scanpackages.py /var/www/wapt/
+
