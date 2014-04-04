@@ -20,9 +20,10 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.23"
+__version__ = "0.8.24"
 import os
 import sys
+import platform
 
 from optparse import OptionParser
 import logging
@@ -56,7 +57,9 @@ def main():
         print "%s does not exists " % wapt_path
         sys.exit(1)
 
-    update_packages(wapt_path)
+    res = update_packages(wapt_path)
+    if res and platform.system() == 'Linux':
+        os.system('chown wapt:www-data "%s"'%res['packages_filename'])
 
 if __name__ == "__main__":
     main()

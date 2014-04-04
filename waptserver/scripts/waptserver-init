@@ -47,16 +47,12 @@ do_pid_check()
 
 do_start()
 {
-#    for config in $ENABLED_CONFIGS; do
-        local PIDFILE=$RUN/$NAME.pid
-        if do_pid_check $PIDFILE; then
-            /usr/bin/uwsgi-core -d $LOGFILE --pidfile $PIDFILE --ini $CONFIG_FILE --uid $OWNER --gid $GROUP --plugin http,python
-        
-#            sudo -u $OWNER -i $VERSION $config $DAEMON_OPTS --pidfile $PIDFILE
-        else
-            echo "Already running!"
-        fi
-#    done
+	local PIDFILE=$RUN/$NAME.pid
+	if do_pid_check $PIDFILE; then
+		/usr/bin/uwsgi-core -d $LOGFILE --pidfile $PIDFILE --ini $CONFIG_FILE --uid $OWNER --gid $GROUP --plugin http,python
+    else
+		echo "Already running!"
+	fi
 }
 
 send_sig()
