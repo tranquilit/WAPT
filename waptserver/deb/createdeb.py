@@ -27,7 +27,6 @@ import fileinput
 import subprocess
 import platform, errno
 
-
 def mkdir_p(path):
     try:
         os.makedirs(path)
@@ -36,38 +35,49 @@ def mkdir_p(path):
             pass
         else: raise
 
-
 def replaceAll(file,searchExp,replaceExp):
     for line in fileinput.input(file, inplace=1):
         if searchExp in line:
             line = line.replace(searchExp,replaceExp)
         sys.stdout.write(line)
 
+def rsync(src,dst):
+    rsync_option = " --exclude '.svn' --exclude 'deb' --exclude '.git' --exclude '.gitignore' -aP"
+    rsync_source = src
+    rsync_destination = dst
+    rsync_command = '/usr/bin/rsync %s "%s" "%s"'%(rsync_option,rsync_source,rsync_destination)
+    os.system(rsync_command)
+
+makepath = os.path.join
+from shutil import copyfile
+
+# wapt
+wapt_source_dir = os.path.abspath('../..')
+
+# waptrepo
+source_dir = os.path.abspath('..')
+
 if platform.system()!='Linux':
     print "this script should be used on debian linux"
     sys.exit(1)
 
-wapt_source_dir = os.path.abspath('../..')
-print "source tree : %s" % wapt_source_dir
-
-source_dir = os.path.abspath('..')
-
-for line in open('%s/waptpackage.py'% source_dir):
+for line in open('%s/waptserver.py'% source_dir):
     if '__version__' in line:
         wapt_version = line.split('=')[1].replace('"','').replace("'","").replace('\n','').replace(' ','').replace('\r','')
 
 if not wapt_version:
-    print 'version non trouvée dans %s/waptpackage.py, la version est mise a 1 par défault.'%os.path.abspath('..')
-    wapt_version = '1'
+    print 'version non trouvée dans %s/waptserver.py, la version est mise a 0.0.0 par défault.'%os.path.abspath('..')
+    wapt_version = '0.0.0'
 
 control_file = './builddir/DEBIAN/control'
-rsync_option = "--exclude '*.svn' --exclude 'mongodb' --exclude '*.exe' --exclude '*.dll' --exclude 'deb' -ap"
 
 for filename in glob.glob("tis-waptserver*.deb"):
     print "destruction de %s"%filename
     os.remove(filename)
+
 if os.path.exists("builddir"):
     shutil.rmtree("builddir")
+
 print 'création de l\'arborescence'
 os.makedirs("builddir")
 os.makedirs("builddir/DEBIAN")
@@ -82,40 +92,23 @@ output = subprocess.check_output('/usr/bin/svn info',shell=True)
 for line in output.split('\n'):
     if 'Revision:' in line:
         rev = 'rev%s' % line.split(':')[1].strip()
+
 version_file = open(os.path.join('./builddir/opt/wapt/waptserver','VERSION'),'w')
 version_file.write(rev)
 version_file.close()
 
 print 'copy waptserver files'
-
-rsync_source =  source_dir
-rsync_destination = './builddir/opt/wapt/'
-rsync_command = '/usr/bin/rsync %s %s %s'%(rsync_option,rsync_source,rsync_destination)
-os.system(rsync_command)
-os.system('/usr/bin/rsync %s %s %s'%(rsync_option,wapt_source_dir+'/waptpackage.py','./builddir/opt/wapt/'))
+rsync(source_dir,'./builddir/opt/wapt/')
 
 print 'copie des fichiers control et postinst'
-try:
-    shutil.copyfile('./DEBIAN/control','./builddir/DEBIAN/control')
-except Exception as e:
-    print 'erreur: \n%s'%e
-    exit (0)
-try:
-    shutil.copyfile('./DEBIAN/postinst','./builddir/DEBIAN/postinst')
-except Exception as e:
-    print 'erreur: \n%s'%e
-    exit(0)
-
-try:
-    shutil.copyfile('./DEBIAN/preinst','./builddir/DEBIAN/preinst')
-except Exception as e:
-    print 'erreur: \n%s'%e
-    exit(0)
+copyfile('./DEBIAN/control','./builddir/DEBIAN/control')
+copyfile('./DEBIAN/postinst','./builddir/DEBIAN/postinst')
+copyfile('./DEBIAN/preinst','./builddir/DEBIAN/preinst')
 
 print "copy startup script /etc/init.d/waptserver"
 try:
     mkdir_p('./builddir/etc/init.d/')
-    shutil.copyfile('../scripts/waptserver-init','./builddir/etc/init.d/waptserver')
+    copyfile('../scripts/waptserver-init','./builddir/etc/init.d/waptserver')
     subprocess.check_output('chmod 755 ./builddir/etc/init.d/waptserver',shell=True)
     subprocess.check_output('chown root:root ./builddir/etc/init.d/waptserver',shell=True)
 except Exception as e:
