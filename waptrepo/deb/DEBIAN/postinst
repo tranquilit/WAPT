@@ -1,18 +1,18 @@
 #!/bin/bash
-
-echo "Creating wapt root diretory" 
+echo "Creating wapt root diretory"
 mkdir -p /var/www/wapt/
 mkdir -p /var/www/wapt-host
 mkdir -p /var/www/wapt-group
 mkdir -p /etc/tis
+
 chown wapt:www-data -R /var/www/wapt/
 chown wapt:www-data -R /var/www/wapt-host
 chown wapt:www-data -R /var/www/wapt-group
-ln -s /opt/wapt/waptrepo/waptpackage.py /var/www/wapt/
-ln -s /opt/wapt/waptrepo/wapt-scanpackages.py /var/www/wapt/
+
+chmod g+ws /var/www/wapt/
+chmod g+ws /var/www/wapt-host/
+chmod g+ws /var/www/wapt-group/
+
 chmod +x /opt/wapt/waptrepo/waptpackage.py
 chmod +x /opt/wapt/waptrepo/wapt-scanpackages.py
-/usr/bin/python /var/www/wapt/wapt-scanpackages.py /var/www/wapt/
-#chmod +x /opt/wapt/waptrepo/configure_zsync.sh
-#printf '\e[1;31m%-6s\e[m\n' "the installation of waptrepo is finished !!"
-#printf '\e[1;31m%-6s\e[m\n' "if you want to use zsync please launch /opt/wapt/waptrepo/configure_zsync.sh"
+/usr/bin/python /opt/wapt/wapt-scanpackages.py /var/www/wapt/

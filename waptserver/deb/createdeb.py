@@ -99,6 +99,8 @@ version_file.close()
 
 print 'copy waptserver files'
 rsync(source_dir,'./builddir/opt/wapt/')
+for lib in ('pefile.py','rocket','pymongo'):
+    rsync(makepath(source_dir,'lib','site-packages',lib),'./builddir/opt/wapt/lib/site-packages/')
 
 print 'copie des fichiers control et postinst'
 copyfile('./DEBIAN/control','./builddir/DEBIAN/control')
