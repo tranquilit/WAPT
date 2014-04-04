@@ -708,17 +708,21 @@ var
   waptdeploy,waptsetupurl:AnsiString;
 {$R *.res}
 
+const
+  defaultwapt:AnsiString='wapt';
+  minversion:AnsiString='0.8.24';
+
 
 begin
   if ParamStr(1)='--help'  then
   begin
       Writeln('Usage : waptdeploy.exe [min_wapt_version]');
-      Writeln('  Download waptsetup.exe from WAPT repository and launch it if local version is obsolete (<0.8 or < parameter 1)');
-      Writeln('  If no argument is given, looks for http://wapt/wapt/waptdeploy.version file. This file should contain 2 lines. One for version, and another for download url');
+      Writeln('  Download waptsetup.exe from WAPT repository and launch it if local version is obsolete (<'+minversion+' or < parameter 1)');
+      Writeln('  If no argument is given, looks for http://'+defaultwapt+'/waptdeploy.version file. This file should contain 2 lines. One for version, and another for download url');
       Writeln('  If force is given, install waptsetup.exe even if version doesn''t match');
       Exit;
   end;
-  waptsetupurl := 'http://wapt/wapt/waptsetup.exe';
+  waptsetupurl := 'http://'defaultwapt+'/wapt/waptsetup.exe';
   if ParamStr(1)='force' then
   begin
     localVersion := '';
@@ -732,13 +736,13 @@ begin
   writeln('WAPT version: '+localVersion);
   if requiredVersion='' then
   begin
-    requiredVersion:='0.8.0';
+    requiredVersion:=minversion;
     try
-      waptdeploy := httpGetString('http://wapt/wapt/waptdeploy.version');
+      waptdeploy := httpGetString('http://'+defaultwapt+'/wapt/waptdeploy.version');
       waptdeploy := StringReplace(waptdeploy,#13#10,#10,[rfReplaceAll]);
       requiredVersion:=trim(StrToken(waptdeploy,#10));
       if requiredVersion='' then
-        requiredVersion:='0.8.0';
+        requiredVersion:=minversion;
       waptsetupurl :=trim(StrToken(waptdeploy,#10));
       if waptsetupurl='' then
           waptsetupurl := 'http://wapt/wapt/waptsetup.exe';
@@ -746,7 +750,7 @@ begin
       writeln('   required version:'+requiredVersion);
       writeln('   download URL :'+waptsetupurl);
     except
-      requiredVersion:='0.8.0';
+      requiredVersion:='0.8.24';
       waptsetupurl := 'http://wapt/wapt/waptsetup.exe';
     end;
   end;
@@ -766,7 +770,7 @@ begin
       writeln('Install ...');
 
       //writeln(Sto_RedirectedExecute(waptsetupPath+' /VERYSILENT /MERGETASKS=""useWaptServer,autorunTray','',100000,'Administrateur','','.....'));
-      if GetDosOutput(waptsetupPath+' /VERYSILENT /MERGETASKS=""useWaptServer,autorunTray','',res) then
+      if GetDosOutput(waptsetupPath+' /VERYSILENT /MERGETASKS=""useWaptServer""','',res) then
         writeln('Install OK:'+LocalWaptVersion);
     end
     else
