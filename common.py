@@ -47,6 +47,7 @@ import getpass
 import psutil
 import threading
 import email.utils
+import traceback
 
 from waptpackage import *
 
@@ -595,12 +596,15 @@ def import_code(code,name,add_to_sys_modules=0):
 
 def import_setup(setupfilename,modulename=''):
     """Import setupfilename as modulename, return the module object"""
-    mod_name,file_ext = os.path.splitext(os.path.split(setupfilename)[-1])
-    if not modulename:
-        modulename=mod_name
-    py_mod = imp.load_source(modulename, setupfilename)
-    return py_mod
-
+    try:
+        mod_name,file_ext = os.path.splitext(os.path.split(setupfilename)[-1])
+        if not modulename:
+            modulename=mod_name
+        py_mod = imp.load_source(modulename, setupfilename)
+        return py_mod
+    except Exception as e:
+        logger.critical('Error importing %s : %s'%(setupfilename,traceback.format_tb(sys.last_traceback)))
+        raise
 
 def remove_encoding_declaration(source):
     headers = source.split('\n',3)
@@ -3623,14 +3627,22 @@ class Wapt(object):
             # a check of version collision is operated automatically
             if hasattr(setup,'update_control'):
                 logger.info('Update control informations with update_control function from setup.py file')
+                logger.info('Update control informations with update_control function from setup.py file')
+                setattr(setup,'run',self.run)
+                setattr(setup,'run_notfatal',self.run_notfatal)
+                setattr(setup,'user',self.user)
+                setattr(setup,'usergroups',self.usergroups)
+                setattr(setup,'WAPT',self)
+                setattr(setup,'language',self.language or setuphelpers.get_language() )
                 setup.update_control(entry)
 
-                logger.debug('Check existing versions and increment it')
-                older_packages = self.is_available(entry.package)
-                if older_packages and entry<=older_packages[-1]:
-                    entry.version = older_packages[-1].version
-                    entry.inc_build()
-                    logger.warning('Older package with same name exists, incrementing packaging version to %s' % (entry.version,))
+                if inc_package_release:
+                    logger.debug('Check existing versions and increment it')
+                    older_packages = self.is_available(entry.package)
+                    if (older_packages and entry<=older_packages[-1]):
+                        entry.version = older_packages[-1].version
+                        entry.inc_build()
+                        logger.warning('Older package with same name exists, incrementing packaging version to %s' % (entry.version,))
 
                 # save control file
                 entry.save_control_to_wapt(directoryname)
@@ -3644,16 +3656,9 @@ class Wapt(object):
 
             if inc_package_release:
                 entry.inc_build()
-                """
-                current_release = entry.version.split('-')[-1]
-                new_release = "%02i" % (int(current_release) + 1,)
-                new_version = "-".join(entry.version.split('-')[0:-1]+[new_release])
-                logger.info('Increasing version of package from %s to %s' % (entry.version,new_version))
-                entry.version = new_version
-                """
                 entry.save_control_to_wapt(directoryname)
 
-            package_filename =  entry.make_package_filename()
+            package_filename = entry.make_package_filename()
             logger.debug(u'Control data : \n%s' % entry.ascontrol())
             result_filename = os.path.abspath(os.path.join( directoryname,'..',package_filename))
 

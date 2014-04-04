@@ -1191,7 +1191,6 @@ class WaptCleanup(WaptTask):
     def __str__(self):
         return u"Vider le cache local de packages"
 
-
 class WaptLongTask(WaptTask):
     """Test action for debug purpose"""
     def __init__(self,duration=60,raise_error=False):
@@ -1632,9 +1631,15 @@ def install_service():
         waptservicepy = os.path.abspath(__file__),
      ))
 
+    #logger.info('Delayed startup')
+    #setuphelpers.run('"{nssm}" set WAPTService Start SERVICE_DELAYED_START'.format(
+    #    nssm = nssm))
+
     # fix some parameters (quotes for path with spaces...
     params = {
-        "DisplayName" : "sz:WAPT Service",
+        "Description": "sz:Local helper managing WAPT install/remove/update/upgrade",
+        "DelayedAutostart": 1,
+        "DisplayName" : "sz:WAPTService",
         "AppStdout" : r"expand_sz:{}".format(os.path.join(waptconfig.log_directory,'waptservice.log')),
         "Parameters\\AppStderr" : r"expand_sz:{}".format(os.path.join(waptconfig.log_directory,'waptservice.log')),
         "Parameters\\AppParameters" : r'expand_sz:"{}"'.format(os.path.abspath(__file__)),
