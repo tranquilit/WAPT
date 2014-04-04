@@ -3,7 +3,7 @@ Version: 0.0.7
 Section: base
 Priority: optional
 Architecture: all
-Depends: python, apache2, zsync
+Depends: python, apache2
 Maintainer: Tranquil-IT-Systems <admin@tranquil-it-systems.fr>
 Description: serveur depot wapt local
 Homepage: http://www.tranquil-it-systems.fr
