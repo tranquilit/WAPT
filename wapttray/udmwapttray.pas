@@ -88,9 +88,11 @@ type
     procedure TrayIcon1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
   private
+    Ftasks: ISuperObject;
     FtrayMode: TTrayMode;
     FWaptServiceRunning: Boolean;
     function GetrayHint: WideString;
+    procedure Settasks(AValue: ISuperObject);
     procedure SettrayHint(AValue: WideString);
     procedure SetTrayIcon(idx: integer);
     procedure SettrayMode(AValue: TTrayMode);
@@ -109,8 +111,9 @@ type
     lastButton:TMouseButton;
 
     current_task:ISuperObject;
-    tasks:ISuperObject;
 
+
+    property tasks:ISuperObject read Ftasks write Settasks;
     property WaptServiceRunning:Boolean read FWaptServiceRunning write SetWaptServiceRunning;
     property trayMode:TTrayMode read FtrayMode write SettrayMode;
     property trayHint:WideString read GetrayHint write SettrayHint;
@@ -218,8 +221,8 @@ begin
   zmq_socket.RcvHWM:= 10000;
   zmq_socket.SndHWM:= 10000;
   zmq_socket.connect( 'tcp://127.0.0.1:'+inttostr(zmq_port));
-  zmq_socket.Subscribe('TASKS');
-  //zmq_socket.Subscribe('');
+  //zmq_socket.Subscribe('TASKS');
+  zmq_socket.Subscribe('');
   {zmq_socket.Subscribe('INFO');
   zmq_socket.Subscribe('TASKS');
   zmq_socket.Subscribe('PRINT');
@@ -631,6 +634,12 @@ end;
 function TDMWaptTray.GetrayHint: WideString;
 begin
   Result := UTF8Decode(TrayIcon1.Hint);
+end;
+
+procedure TDMWaptTray.Settasks(AValue: ISuperObject);
+begin
+  if Ftasks=AValue then Exit;
+  Ftasks:=AValue;
 end;
 
 procedure TDMWaptTray.SettrayHint(AValue: WideString);
