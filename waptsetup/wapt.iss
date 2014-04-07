@@ -115,7 +115,7 @@ Filename: "{app}\wapt-get.exe"; Parameters: "setup-tasks"; Tasks: setuptasks; Fl
 Filename: "cmd"; Parameters: "/C echo O| cacls {app} /S:""D:PAI(A;OICI;FA;;;BA)(A;OICI;FA;;;SY)(A;OICI;0x1200a9;;;BU)(A;OICI;0x1201a9;;;AU)"""; Tasks:installService; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Changing rights on wapt directory..."; Description: "Changing rights on wapt directory"
 
 ; if waptservice
-Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptservice\waptservice.py install"; Tasks:installService ; Flags: runhidden; StatusMsg: "Install waptservice"; Description: "Install WAPT Service"
+Filename: "{app}\waptpython.exe"; Parameters: """{app}\waptservice\waptservice.py"" install"; Tasks:installService ; Flags: runhidden; StatusMsg: "Install waptservice"; Description: "Install WAPT Service"
 Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait runasoriginaluser postinstall; StatusMsg: "Launch WAPT tray icon"; Description: "Launch WAPT tray icon"
 
 
