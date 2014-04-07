@@ -308,7 +308,7 @@ type
   private
     { private declarations }
     procedure GridLoadData(grid: TSOGrid; jsondata: string);
-    procedure Login;
+    function Login:Boolean;
     procedure PythonOutputSendData(Sender: TObject; const Data: ansistring);
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: string);
     procedure UpdateHostPages(Sender: TObject);
@@ -666,26 +666,26 @@ begin
 
         if sourceDir <> 'error' then
         begin
-          if not FileExists(GetWaptPrivateKey) then
+          if not FileExists(GetWaptPrivateKeyPath) then
           begin
-            ShowMessage('la clé privée n''existe pas: ' + GetWaptPrivateKey);
+            ShowMessage('la clé privée n''existe pas: ' + GetWaptPrivateKeyPath);
             exit;
           end;
           isEncrypt := StrToBool(DMPython.RunJSON(
             format('common.private_key_has_password(r"%s")',
-            [GetWaptPrivateKey])).AsString);
+            [GetWaptPrivateKeyPath])).AsString);
           if (privateKeyPassword = '') and (isEncrypt) then
           begin
             with TvisPrivateKeyAuth.Create(Self) do
               try
-                laKeyPath.Caption := GetWaptPrivateKey;
+                laKeyPath.Caption := GetWaptPrivateKeyPath;
                 repeat
                   if ShowModal = mrOk then
                   begin
                     privateKeyPassword := edPasswordKey.Text;
                     if StrToBool(DMPython.RunJSON(
                       format('common.check_key_password(r"%s","%s")',
-                      [GetWaptPrivateKey, privateKeyPassword])).AsString) then
+                      [GetWaptPrivateKeyPath, privateKeyPassword])).AsString) then
                       done := True;
                   end
                   else
@@ -1157,7 +1157,7 @@ var
   Result: ISuperObject;
 begin
   hostname := GridHosts.GetCellStrValue(GridHosts.FocusedNode, 'host.computer_fqdn');
- ip := GridHosts.GetCellStrValue(GridHosts.FocusedNode, 'host.connected_ips');
+  ip := GridHosts.GetCellStrValue(GridHosts.FocusedNode, 'host.connected_ips');
   if EditHost(hostname, ActAdvancedMode.Checked,ip) <> nil then
     ActSearchHost.Execute;
 end;
@@ -1577,21 +1577,16 @@ end;
 
 procedure TVisWaptGUI.FormCreate(Sender: TObject);
 begin
-  {if not checkReadWriteAccess(ExtractFileDir(WaptDBPath)) then
-  begin
-    ShowMessage('Vous n''etes pas administrateur de la machine');
-    halt;
-  end;}
   waptpath := ExtractFileDir(ParamStr(0));
 end;
 
-procedure TVisWaptGUI.Login;
+function TVisWaptGUI.Login:Boolean;
 var
-  done: boolean = False;
   resp: ISuperObject;
   localfn: string;
 
 begin
+  Result := False;
   // Initialize user local config file with global wapt settings
   localfn := GetAppConfigDir(False) + GetApplicationName + '.ini';
   if not FileExists(localfn) then
@@ -1609,41 +1604,48 @@ begin
       Halt;
   end;
 
-  if waptServerPassword = '' then
+  while not Result do
   begin
     with TVisLogin.Create(Self) do
-      try
-        edWaptServerName.Text := GetWaptServerURL;
-        repeat
-          if ShowModal = mrOk then
+    try
+      edWaptServerName.Text := GetWaptServerURL;
+      if ShowModal = mrOk then
+      begin
+        waptServerPassword := edPassword.Text;
+        waptServerUser := edUser.Text;
+        try
+          resp := DMPython.RunJSON(
+            format('waptdevutils.login_to_waptserver("%s","%s","%s")',
+            [GetWaptServerURL + '/login', waptServerUser, waptServerPassword]));
+        except
+          on E: Exception do
           begin
-            waptServerPassword := edPassword.Text;
-            waptServerUser := edUser.Text;
-            try
-              resp := DMPython.RunJSON(
-                format('waptdevutils.login_to_waptserver("%s","%s","%s")',
-                [GetWaptServerURL + '/login', waptServerUser, waptServerPassword]));
-            except
-              on E: Exception do
-              begin
-                ShowMessage('Erreur: ' + UTF8Encode(E.Message));
-                halt;
-              end;
-            end;
-            try
-              done := StrToBool(resp.AsString);
-              if not done then
-                ShowMessage('Mauvais mot de passe');
-            except
-              ShowMessage(UTF8Encode(resp.AsString));
-            end;
-          end
-          else
-            halt;
-        until done;
-      finally
-        Free;
+            ShowMessage('Erreur: ' + UTF8Encode(E.Message));
+            Result := False;
+          end;
+        end;
+        try
+          Result := StrToBool(resp.AsString);
+          if not Result then
+            ShowMessage('Mauvais mot de passe');
+        except
+          ShowMessage(UTF8Encode(resp.AsString));
+          Result := False;
+        end;
+      end
+      else
+      begin
+        Result := False;
+        Exit;
       end;
+    finally
+      if not Result then
+      begin
+        waptServerUser := '';
+        waptServerPassword := '';
+      end;
+      Free;
+    end;
   end;
 end;
 
@@ -1653,7 +1655,9 @@ begin
   DMPython.WaptConfigFileName := AppIniFilename;
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
   //ActUpdateWaptGetINIExecute(Self);
-  Login;
+  if not Login then
+    Halt;
+
   MainPages.ActivePage := pgInventory;
   MainPagesChange(Sender);
 

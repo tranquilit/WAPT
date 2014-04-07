@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.24"
+__version__ = "0.8.25"
 
 import time
 import sys
@@ -163,11 +163,15 @@ class WaptServiceConfig(object):
 
         self.waptservice_poll_timeout = 10
 
+        self.config_filedate = None
+
+
     def load(self):
         """Load waptservice parameters from global wapt-get.ini file"""
         config = ConfigParser.RawConfigParser()
         if os.path.exists(self.config_filename):
             config.read(self.config_filename)
+            self.config_filedate = os.stat(self.config_filename).st_mtime
         else:
             raise Exception("FATAL. Couldn't open config file : " + self.config_filename)
         # lecture configuration
@@ -218,6 +222,19 @@ class WaptServiceConfig(object):
 
         else:
             raise Exception ("FATAL, configuration file " + self.config_filename + " has no section [global]. Please check Waptserver documentation")
+
+    def reload_if_updated(self):
+        """Check if config file has been updated,
+        Return None if config has not changed or date of new config file if reloaded"""
+        if os.path.exists(self.config_filename):
+            new_config_filedate = os.stat(self.config_filename).st_mtime
+            if new_config_filedate<>self.config_filedate:
+                self.load()
+                return new_config_filedate
+            else:
+                return None
+        else:
+            return None
 
     def as_dict(self):
         result = {}
@@ -294,7 +311,7 @@ def check_open_port(portnumber=8088):
         #check if firewall is running
         if win32serviceutil.QueryServiceStatus( 'SharedAccess', None)[1]==win32service.SERVICE_RUNNING:
             logger.info("Firewall started, checking for port openning...")
-            #winXP 2003
+            #WinXP 2003
             if 'waptservice' not in setuphelpers.run_notfatal('netsh firewall show portopening'):
                 logger.info("Adding a firewall rule to open port %s"%portnumber)
                 setuphelpers.run_notfatal("""netsh.exe firewall add portopening name="waptservice %s" port=%s protocol=TCP"""%(portnumber,portnumber))
@@ -323,8 +340,8 @@ app.waptconfig = waptconfig
 def wapt():
     if not hasattr(g,'wapt'):
         g.wapt = Wapt(config_filename = waptconfig.config_filename)
+    g.wapt.reload_config_if_updated()
     return g.wapt
-
 
 def requires_auth(f):
     """Restrict access to localhost (authenticated) or waptserver IP"""
@@ -1018,8 +1035,9 @@ class WaptNetworkReconfig(WaptTask):
         self.notify_server_on_finish = True
 
     def _run(self):
-        self.wapt.network_reconfigure()
         logger.info(u'Reloading config file')
+        self.wapt.load_config(waptconfig.config_filename)
+        self.wapt.network_reconfigure()
         waptconfig.load()
         # http
         check_open_port(waptconfig.waptservice_port)
@@ -1385,6 +1403,17 @@ class WaptTaskManager(threading.Thread):
             else:
                 return same[0]
 
+    def check_configuration(self):
+        """heck wapt configuration, reload ini file if changed"""
+        try:
+            logger.debug("Checking if config file has changed")
+            if waptconfig.reload_if_updated():
+                logger.info("Wapt config file has changed, reloading")
+                self.wapt.reload_config_if_updated()
+
+        except:
+            pass
+
     def run(self):
         """Queue management, event processing"""
         pythoncom.CoInitialize()
@@ -1394,6 +1423,10 @@ class WaptTaskManager(threading.Thread):
         logger.debug("Wapt tasks queue started")
         while True:
             try:
+                # check wapt configuration, reload ini file if changed
+                # reload wapt config
+                self.check_configuration()
+
                 # check tasks queue
                 self.running_task = self.tasks_queue.get(timeout=waptconfig.waptservice_poll_timeout)
                 try:

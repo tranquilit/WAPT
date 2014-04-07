@@ -211,7 +211,7 @@ begin
       if ShowModal = mrOk then
       begin
         Result := PackageEdited;
-        if ApplyUpdatesImmediately and (currentip<>'')  then
+        if (result<>Nil) and ApplyUpdatesImmediately and (currentip<>'')  then
         begin
           res := WAPTServerJsonGet('upgrade_host/'+currentip, [],
             WaptUseLocalConnectionProxy,
@@ -270,7 +270,8 @@ begin
       Depends := Join(',', olddepends);
 
       Result := PackageEdited;
-      ActBuildUploadExecute(nil);
+      if Result<>Nil then
+        ActBuildUploadExecute(nil);
     finally
       Free;
     end;
@@ -486,42 +487,47 @@ var
   expr, res: string;
   package: string;
   Result: ISuperObject;
-  done: boolean = False;
-  isEncrypt: boolean;
+  passwordOK,passwordProtected: boolean;
 begin
+  Result := Nil;
+
   ActEditSavePackage.Execute;
-  if not FileExists(GetWaptPrivateKey) then
+  if not FileExists(GetWaptPrivateKeyPath) then
   begin
-    ShowMessage('La clé privée n''existe pas: ' + GetWaptPrivateKey);
+    ShowMessage('La clé privée n''existe pas: ' + GetWaptPrivateKeyPath);
     exit;
   end;
-  isEncrypt := StrToBool(DMPython.RunJSON(
-    format('common.private_key_has_password(r"%s".decode(''utf8''))', [GetWaptPrivateKey])).AsString);
-  if (privateKeyPassword = '') and (isEncrypt) then
+
+  passwordProtected := StrToBool(DMPython.RunJSON(
+    format('common.private_key_has_password(r"%s".decode(''utf8''))', [GetWaptPrivateKeyPath])).AsString);
+
+  if (passwordProtected) then
   begin
-    with TvisPrivateKeyAuth.Create(Self) do
+    passwordOK:=False;
+    while not passwordOk do
+    begin
+      PasswordOk := StrToBool(DMPython.RunJSON(
+        format('common.check_key_password(r"%s","%s")',
+        [GetWaptPrivateKeyPath, privateKeyPassword])).AsString);
+      if not passwordOK then
+      with TvisPrivateKeyAuth.Create(Self) do
       try
-        laKeyPath.Caption := GetWaptPrivateKey;
-        repeat
-          if ShowModal = mrOk then
-          begin
-            privateKeyPassword := edPasswordKey.Text;
-            if StrToBool(DMPython.RunJSON(
-              format('common.check_key_password(r"%s","%s")',
-              [GetWaptPrivateKey, privateKeyPassword])).AsString) then
-              done := True;
-          end
-          else
-            Exit;
-        until done;
+        laKeyPath.Caption := GetWaptPrivateKeyPath;
+        if ShowModal = mrOk then
+          privateKeyPassword := edPasswordKey.Text
+        else
+          Exit;
       finally
         Free;
       end;
+    end;
   end;
-  with  Tvisloading.Create(Self) do
+
+  with Tvisloading.Create(Self) do
+  try
+    ProgressTitle('Upload en cours');
+    Application.ProcessMessages;
     try
-      ProgressTitle('Upload en cours');
-      Application.ProcessMessages;
       Result := DMPython.RunJSON(format(
         'mywapt.build_upload(r"%s".decode(''utf8''),r"%s",r"%s",r"%s",True)',
         [FSourcePath, privateKeyPassword, waptServerUser, waptServerPassword]), jsonlog);
@@ -531,10 +537,21 @@ begin
         if Result.AsArray <> nil then
           FileUtil.DeleteFileUTF8(Result.AsArray[0].S['filename']);
       end;
-    finally
-      Free;
+    except
+      on E:Exception do
+      begin
+        ShowMessage('Problème lors de la création du paquet: '+E.Message);
+        Result := Nil;
+        ModalResult:=mrNone;
+        Abort;
+      end;
     end;
-  ModalResult := mrOk;
+  finally
+    Free;
+  end;
+
+  if (Result<>Nil) and (Result.AsArray <> nil) and (Result.AsArray[0]['filename']<>Nil) then
+    ModalResult := mrOk
 end;
 
 procedure TVisEditPackage.ActAdvancedModeExecute(Sender: TObject);

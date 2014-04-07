@@ -34,7 +34,7 @@ interface
 
   Function  GetMainWaptRepo:String;
   Function  GetWaptServerURL:String;
-  function GetWaptPrivateKey: String;
+  function GetWaptPrivateKeyPath: String;
 
   //function  GetLDAPServer(dnsdomain:String=''): String;
 
@@ -537,7 +537,7 @@ begin
 end;
 
 
-function GetWaptPrivateKey: String;
+function GetWaptPrivateKeyPath: String;
 begin
   result := IniReadString(AppIniFilename,'Global','private_key');
 end;

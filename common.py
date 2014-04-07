@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.24"
+__version__ = "0.8.25"
 import os
 import re
 import logging
@@ -2219,6 +2219,7 @@ class Wapt(object):
         self.user = setuphelpers.get_current_user()
         self.usergroups = None
 
+        self.config_filedate = None
         self.load_config(config_filename = self.config_filename)
 
         self.options = OptionParser()
@@ -2226,6 +2227,7 @@ class Wapt(object):
 
         # list of process pids launched by run command
         self.pidlist = []
+
 
         import pythoncom
         pythoncom.CoInitialize()
@@ -2260,6 +2262,11 @@ class Wapt(object):
             self.config_filename = config_filename
 
         self.config.read(self.config_filename)
+        # keep the timestamp of last read config file to reload it if it is changed
+        if os.path.isfile(self.config_filename):
+            self.config_filedate = os.stat(self.config_filename).st_mtime
+        else:
+            self.config_filedate = None
 
         """ deprecated
         self._wapt_repourl = self.config.get('global','repo_url')
@@ -2338,6 +2345,24 @@ class Wapt(object):
         if self.config.has_option('global','repositories') and repositories_names <> '':
             self.config.set('global','repositories',repositories_names)
         self.config.write(open(self.config_filename,'wb'))
+        self.config_filedate = os.stat(self.config_filename).st_mtime
+
+    def reload_config_if_updated(self):
+        """Check if config file has been updated,
+        Return None if config has not changed or date of new config file if reloaded
+        >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
+        >>> wapt.reload_config_if_updated()
+
+        """
+        if os.path.exists(self.config_filename):
+            new_config_filedate = os.stat(self.config_filename).st_mtime
+            if new_config_filedate<>self.config_filedate:
+                self.load_config()
+                return new_config_filedate
+            else:
+                return None
+        else:
+            return None
 
     @property
     def waptdb(self):
