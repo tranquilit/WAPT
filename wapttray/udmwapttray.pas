@@ -357,7 +357,7 @@ end;
 procedure TDMWaptTray.ActConfigureExecute(Sender: TObject);
 begin
   //OpenDocument(WaptIniFilename);
-  RunAsAdmin(0,'cmd.exe','/C start '+WaptIniFilename);
+  RunAsAdmin(0,'cmd.exe','/C start "'+WaptIniFilename+'"');
 end;
 
 procedure TDMWaptTray.ActCancelAllTasksExecute(Sender: TObject);
