@@ -22,6 +22,12 @@ Source: "..\wapt.ico"; DestDir: "{app}";
 OutputBaseFilename=waptstarter
 DefaultDirName={pf}\wapt
 
+[Tasks]
+Name: use_hostpackages; Description: "Use automatic host management based on hostname packages"; Flags: unchecked;
+
 [INI]
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {#default_repo_url};
+Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1"; Tasks: use_hostpackages;
+Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "0"; Tasks: not use_hostpackages;
+
 

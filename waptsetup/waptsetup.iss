@@ -34,7 +34,7 @@ Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1
 Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "0"; Tasks: not use_hostpackages;
 
 [Tasks]
-Name: use_hostpackages; Description: "Use automatic host management based on hostname packages";
+Name: use_hostpackages; Description: "Use automatic host management based on hostname packages"; Flags: checked;
 
 [Run]
 Filename: "{app}\wapt-get.exe"; Parameters: "register"; Flags: runhidden postinstall; StatusMsg: "Register computer on the WAPT server"; Description: "Register computer on the WAPT Server"
