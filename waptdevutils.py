@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.24"
+__version__ = "0.8.26"
 
 import common
 import json
@@ -86,7 +86,8 @@ def upload_wapt_setup(wapt,waptsetup_path, wapt_server_user, wapt_server_passwd)
     with open(waptsetup_path,'rb') as afile:
         req = requests.post("%s/upload_waptsetup" % (wapt.wapt_server,),files={'file':afile},proxies=wapt.proxies,verify=False,auth=auth)
         req.raise_for_status()
-    return json.loads(req.content)
+        res = json.loads(req.content)
+    return res
 
 
 def diff_computer_ad_wapt(wapt):

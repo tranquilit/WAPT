@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.25"
+__version__ = "0.8.26"
 import os
 import re
 import logging
@@ -2228,6 +2228,10 @@ class Wapt(object):
         # list of process pids launched by run command
         self.pidlist = []
 
+        # True if we want to use automatic host package based on host fqdn
+        #   privacy problem as there is a request to wapt repo to get
+        #   host package update at each update/upgrade
+        self.use_hostpackages = True
 
         import pythoncom
         pythoncom.CoInitialize()
@@ -2253,6 +2257,7 @@ class Wapt(object):
             'http_proxy':'',
             'tray_check_interval':2,
             'service_interval':2,
+            'use_hostpackages':'1',
             }
 
         if not self.config:
@@ -2288,6 +2293,9 @@ class Wapt(object):
         if self.config.has_option('global','allow_unsigned'):
             self.allow_unsigned = self.config.getboolean('global','allow_unsigned')
 
+        if self.config.has_option('global','use_hostpackages'):
+            self.use_hostpackages = self.config.getboolean('global','use_hostpackages')
+
         if self.config.has_option('global','upload_cmd'):
             self.upload_cmd = self.config.get('global','upload_cmd')
 
@@ -2312,6 +2320,9 @@ class Wapt(object):
         if self.config.has_option('global','language'):
             self.language = self.config.get('global','language')
 
+        # get the list of certificates to use :
+        self.public_certs = glob.glob(os.path.join(self.wapt_base_dir,'ssl','*.crt'))
+
         # Get the configuration of all repositories (url, ...)
         self.repositories = []
         # secondary
@@ -2328,11 +2339,12 @@ class Wapt(object):
         self.repositories.append(main)
 
         # add an automatic host repo
-        host_repo = WaptHostRepo(name='wapt-host').load_config(self.config)
-        if main._repo_url and not host_repo._repo_url:
-            host_repo.repo_url = main.repo_url+'-host'
+        if self.use_hostpackages:
+            host_repo = WaptHostRepo(name='wapt-host').load_config(self.config)
+            if main._repo_url and not host_repo._repo_url:
+                host_repo.repo_url = main.repo_url+'-host'
 
-        self.repositories.append(host_repo)
+            self.repositories.append(host_repo)
 
     def write_config(self,config_filename=None):
         """Update configuration parameters to supplied inifilename
@@ -2409,21 +2421,22 @@ class Wapt(object):
       if cmd_dict['waptdir'] == "wapt-host":
         if self.upload_cmd_host:
           cmd_dict['waptfile'] = ' '.join(cmd_dict['waptfile'])
-          return self.run(self.upload_cmd_host % cmd_dict)
+          return dict(status='OK',message=self.run(self.upload_cmd_host % cmd_dict))
         else:
            #upload par http vers un serveur WAPT  (url POST upload_host)
             for file in cmd_dict['waptfile']:
                 file = file[1:-1]
                 with open(file,'rb') as afile:
                     req = requests.post("%s/upload_host" % (self.wapt_server,),files={'file':afile},proxies=self.proxies,verify=False,auth=auth)
-                    req.raise_for_status()
-
-            return req.content
+                    res = json.loads(req.content)
+                    if res['status'] != 'OK':
+                        raise Exception(u'Unable to upload package: %s'%ensure_unicode(res['message']))
+            return res
 
       else:
         if self.upload_cmd:
-          cmd_dict['waptfile'] = ' '.join(cmd_dict['waptfile'])
-          return self.run(self.upload_cmd % cmd_dict)
+            cmd_dict['waptfile'] = ' '.join(cmd_dict['waptfile'])
+            return dict(status='OK',message=ensure_unicode(self.run(self.upload_cmd % cmd_dict)))
         else:
           for file in cmd_dict['waptfile']:
             # file is surrounded by quotes for shell usage
@@ -2432,7 +2445,10 @@ class Wapt(object):
             with open(file,'rb') as afile:
                 req = requests.post("%s/upload_package/%s" % (self.wapt_server,os.path.basename(file)),data=afile,proxies=self.proxies,verify=False,auth=auth)
                 req.raise_for_status()
-          return req.content
+                res = json.loads(req.content)
+                if res['status'] != 'OK':
+                    raise Exception(u'Unable to upload package: %s'%ensure_unicode(res['message']))
+          return res
 
     def check_install_running(self,max_ttl=60):
         """ Check if an install is in progress, return list of pids of install in progress
@@ -3400,12 +3416,13 @@ class Wapt(object):
         """
         self.runstatus='Upgrade system'
         try:
-            host_package = self.check_host_package_outdated()
-            if host_package:
-                logger.info('Host package %s is available and not installed, installing host package...' % (host_package.package,) )
-                hostresult = self.install(host_package,force=True)
-            else:
-                hostresult = []
+            if self.use_hostpackages:
+                host_package = self.check_host_package_outdated()
+                if host_package:
+                    logger.info('Host package %s is available and not installed, installing host package...' % (host_package.package,) )
+                    hostresult = self.install(host_package,force=True)
+                else:
+                    hostresult = []
 
             upgrades = self.waptdb.upgradeable()
             logger.debug(u'upgrades : %s' % upgrades.keys())
@@ -3424,9 +3441,10 @@ class Wapt(object):
         result = []
         # only most up to date (first one in list)
         result.extend([p[0] for p in self.waptdb.upgradeable().values() if p])
-        host_package = self.check_host_package_outdated()
-        if host_package and not host_package in result:
-            result.append(host_package)
+        if self.use_hostpackages:
+            host_package = self.check_host_package_outdated()
+            if host_package and not host_package in result:
+                result.append(host_package)
         return result
 
     def search(self,searchwords=[],exclude_host_repo=True,section_filter=None):
@@ -4386,7 +4404,8 @@ class Wapt(object):
         >>> import shutil
         >>> shutil.rmtree(tmpdir)
         >>> host = wapt.edit_host('htlaptop.tranquilit.local',target_directory=tmpdir,append_depends='tis-firefox')
-        ???
+        >>> 'package' in host
+        True
         >>> shutil.rmtree(tmpdir)
         """
         # target_directory is not provided, calc default one

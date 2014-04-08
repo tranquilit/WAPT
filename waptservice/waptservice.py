@@ -19,48 +19,11 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.25"
+__version__ = "0.8.26"
 
 import time
 import sys
 import os
-import hashlib
-from werkzeug import secure_filename
-from urlparse import urlparse
-from functools import wraps
-import logging
-import ConfigParser
-import logging
-import sqlite3
-import socket
-import thread
-import threading
-import json
-from rocket import Rocket
-from flask import request, Flask,Response, send_from_directory, send_file, session, g, redirect, url_for, abort, render_template, flash, stream_with_context
-import requests
-import StringIO
-import zmq
-from zmq.log.handlers import PUBHandler
-import Queue
-import jinja2
-import traceback
-
-import pythoncom
-import ctypes
-
-from network_manager import NetworkManager
-from werkzeug.utils import html
-
-import gc
-import datetime
-import dateutil.parser
-
-import copy
-
-import win32security
-
-import psutil
 
 try:
     wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
@@ -69,17 +32,55 @@ except:
 
 sys.path.append(os.path.join(wapt_root_dir))
 sys.path.append(os.path.join(wapt_root_dir,'lib'))
-sys.path.append(os.path.join(wapt_root_dir,'waptservice'))
 sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
+
+import ConfigParser
+from optparse import OptionParser
+
+import hashlib
+import socket
+import requests
+
+from rocket import Rocket
+
+# flask
+from flask import request, Flask,Response, send_from_directory, send_file, session, g, redirect, url_for, abort, render_template, flash, stream_with_context
+import jinja2
+from werkzeug import secure_filename
+from werkzeug.utils import html
+
+from urlparse import urlparse
+from functools import wraps
+
+import logging
+import sqlite3
+
+import json
+import StringIO
+
+import thread
+import threading
+import zmq
+from zmq.log.handlers import PUBHandler
+import Queue
+import traceback
+
+import datetime
+import copy
 
 import ssl
 from ssl import SSLError
 
-import common
-import setuphelpers
-from common import Wapt
+import pythoncom
+import ctypes
+import win32security
+import psutil
 
-from optparse import OptionParser
+# wapt specific stuff
+import common
+from common import Wapt
+import setuphelpers
+
 usage="""\
 %prog -c configfile [action]
 
@@ -229,6 +230,7 @@ class WaptServiceConfig(object):
         if os.path.exists(self.config_filename):
             new_config_filedate = os.stat(self.config_filename).st_mtime
             if new_config_filedate<>self.config_filedate:
+                logger.info('Reloading configuration')
                 self.load()
                 return new_config_filedate
             else:
@@ -251,7 +253,8 @@ def format_isodate(isodate):
         >>> format_isodate('2014-01-21T17:36:15.652000')
         '21/01/2014 17:36:15'
     """
-    return dateutil.parser.parse(isodate).strftime("%d/%m/%Y %H:%M:%S")
+    return isodate.replace('T',' ')[0:20]
+    #dateutil.parser.parse(isodate).strftime("%d/%m/%Y %H:%M:%S")
 
 def beautify(c):
     """return pretty html"""
@@ -456,6 +459,9 @@ def all_packages():
 @app.route('/package_icon')
 @check_ip_source
 def package_icon():
+    """Return png icon for the required 'package' parameter
+        get it from local cache if or from package's remote repositiory
+    """
     package = request.args.get('package')
     icon_local_cache = os.path.join(wapt_root_dir,'cache','icons')
     if not os.path.isdir(icon_local_cache):
@@ -466,9 +472,7 @@ def package_icon():
         """Get icon from local cache or remote wapt directory, returns local filename"""
         icon_local_filename = os.path.join(icon_local_cache,package+'.png')
         if not os.path.isfile(icon_local_filename) or os.path.getsize(icon_local_filename)<10:
-            #if not wapt:
-            #    wapt.append(Wapt(config_filename=app.waptconfig.config_filename))
-            proxies = wapt().proxies
+            proxies = wapt().repositories[0].proxies
             repo_url = wapt().repositories[0].repo_url
 
             remote_icon_path = "{repo}/icons/{package}.png".format(repo=repo_url,package=package)
@@ -485,7 +489,6 @@ def package_icon():
     except requests.HTTPError as e:
         icon = get_icon('unknown')
         return send_file(icon,'image/png',as_attachment=True,attachment_filename='{}.png'.format('unknown'),cache_timeout=43200)
-
 
 @app.route('/package_details')
 @app.route('/package_details.json')

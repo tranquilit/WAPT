@@ -7,7 +7,7 @@
 ; local python interpreter
 Source: "..\waptpython.exe"; DestDir: "{app}";
 Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
-Source: "..\libs\*"; DestDir: "{app}\libs"; Flags: createallsubdirs recursesubdirs  ; Excludes: "*.pyc,test,*.~*" 
+Source: "..\libs\*"; DestDir: "{app}\libs"; Flags: createallsubdirs recursesubdirs  ; Excludes: "*.pyc,test,*.~*,pydoc_data,tests,demos,testsuite,doc,samples,pil" 
 Source: "..\Microsoft.VC90.CRT.manifest"; DestDir: "{app}";
 Source: "..\msvcm90.dll"; DestDir: "{app}";
 Source: "..\msvcp90.dll"; DestDir: "{app}";
@@ -16,7 +16,7 @@ Source: "..\python27.dll"; DestDir: "{app}";
 Source: "..\pythoncom27.dll"; DestDir: "{app}";
 Source: "..\pythoncomloader27.dll"; DestDir: "{app}";
 Source: "..\pywintypes27.dll"; DestDir: "{app}";
-Source: "..\sqlite3.dll"; DestDir: "{app}"; 
+;Source: "..\sqlite3.dll"; DestDir: "{app}"; 
 
 ; additional python modules
 Source: "..\lib\*"; DestDir: "{app}\lib"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.pyc,test,*.~*,pymongo,*.chm,testsuite,Demos,test,HTML"

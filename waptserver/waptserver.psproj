@@ -11,14 +11,26 @@ ClassName=TProjectFilesNode
 
 [Project\ChildNodes\Node0\ChildNodes\Node0]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptpackage.py
+FileName=C:\tranquilit\wapt\common.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node1]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\setuphelpers.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node2]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptpackage.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node3]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\wapt-scanpackages.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node4]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]waptserver.py
 
 [Project\ChildNodes\Node0\ChildNodes]
-Count=2
+Count=5
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode

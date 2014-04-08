@@ -20,14 +20,17 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="0.8.24"
+__version__="0.8.26"
 
 import os,sys
-wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
-sys.path.insert(0,os.path.join(wapt_root_dir))
-sys.path.insert(0,os.path.join(wapt_root_dir,'lib'))
-sys.path.insert(0,os.path.join(wapt_root_dir,'lib','site-packages'))
-sys.path.insert(0,os.path.join(wapt_root_dir,'waptserver'))
+try:
+    wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+except:
+    wapt_root_dir = 'c:/tranquilit/wapt'
+
+sys.path.append(os.path.join(wapt_root_dir))
+sys.path.append(os.path.join(wapt_root_dir,'lib'))
+sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
 
 from flask import request, Flask,Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
 import time
@@ -56,22 +59,27 @@ import threading
 from waptpackage import *
 import pefile
 
-config = ConfigParser.RawConfigParser()
+from optparse import OptionParser
+usage="""\
+%prog -c configfile [action]
 
-# log
-log_directory = os.path.join(wapt_root_dir,'log')
-if not os.path.exists(log_directory):
-    os.mkdir(log_directory)
+WAPTServer daemon.
 
+action is either :
+  <nothing> : run service in foreground
+  install   : install as a Windows service managed by nssm
+
+"""
+
+parser=OptionParser(usage=usage,version='waptserver.py ' + __version__)
+parser.add_option("-c","--config", dest="configfile", default=os.path.join(wapt_root_dir,'waptserver','waptserver.ini'), help="Config file full path (default: %default)")
+parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
+
+(options,args)=parser.parse_args()
+
+# setup logging
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-config_file = os.path.join(wapt_root_dir,'waptserver','waptserver.ini')
-
-if os.path.exists(config_file):
-    config.read(config_file)
-else:
-    raise Exception("FATAL. Couldn't open config file : " + config_file)
-
+logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
 
 def setloglevel(logger,loglevel):
     """set loglevel as string"""
@@ -80,6 +88,29 @@ def setloglevel(logger,loglevel):
         if not isinstance(numeric_level, int):
             raise ValueError('Invalid log level: %s' % loglevel)
         logger.setLevel(numeric_level)
+
+# force loglevel
+if options.loglevel is not None:
+    setloglevel(logger,options.loglevel)
+
+log_directory = os.path.join(wapt_root_dir,'log')
+if not os.path.exists(log_directory):
+    os.mkdir(log_directory)
+
+hdlr = logging.StreamHandler(sys.stdout)
+hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+logger.addHandler(hdlr)
+
+hdlr = logging.FileHandler(os.path.join(log_directory,'waptserver.log'))
+hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+logger.addHandler(hdlr)
+
+# read configuration from waptserver.ini
+config = ConfigParser.RawConfigParser()
+if os.path.exists(options.configfile):
+    config.read(options.configfile)
+else:
+    raise Exception("FATAL. Couldn't open config file : " + options.configfile)
 
 #default mongodb configuration for wapt
 mongodb_port = "38999"
@@ -117,7 +148,7 @@ if config.has_section('options'):
         if wapt_folder.endswith('/'):
             wapt_folder = wapt_folder[:-1]
 
-    if config.has_option('options', 'loglevel'):
+    if options.loglevel is None and config.has_option('options', 'loglevel'):
         loglevel = config.get('options', 'loglevel')
         setloglevel(logger,loglevel)
 
@@ -129,6 +160,7 @@ if not wapt_folder:
 
 waptsetup = os.path.join(wapt_folder, 'waptsetup.exe')
 
+# Setup initial directories
 if os.path.exists(wapt_folder)==False:
     try:
         os.makedirs(wapt_folder)
@@ -145,30 +177,40 @@ if os.path.exists(wapt_folder + '-group')==False:
     except:
         raise Exception("Folder missing : %s-group" % wapt_folder )
 
-
-hdlr = logging.StreamHandler(sys.stdout)
-hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
-logger.addHandler(hdlr)
-
-try:
-    client = MongoClient(mongodb_ip, int(mongodb_port))
-except:
-    raise Exception("Could not connect do mongodb database")
-
-db = client.wapt
-hosts = db.hosts
-
 ALLOWED_EXTENSIONS = set(['wapt'])
 
 app = Flask(__name__,static_folder='./templates/static')
-#app.config['PROPAGATE_EXCEPTIONS'] = True
 
+def hosts():
+    """Opens a new database connection if there is none yet for the
+    current application context.
+    """
+    if not hasattr(g, 'client'):
+        try:
+            logger.debug('Connecting to mongo db %s:%s'%(mongodb_ip, int(mongodb_port)))
+            g.client = MongoClient(mongodb_ip, int(mongodb_port))
+            g.db = g.client.wapt
+            g.hosts = g.db.hosts
+            g.hosts.ensure_index('uuid',unique=True)
+            g.hosts.ensure_index('computer_name',unique=False)
+        except Exception as e:
+            raise Exception(u"Could not connect do mongodb database: %s"%(repr(e),))
+    return g.hosts
+
+@app.teardown_appcontext
+def close_db(error):
+    """Closes the database again at the end of the request."""
+    if hasattr(g, 'client'):
+        logger.debug('Disconnected from mongodb')
+        del g.hosts
+        del g.db
+        del g.client
 
 def get_host_data(uuid, filter = {}, delete_id = True):
     if filter:
-        data = hosts.find_one({ "uuid": uuid}, filter)
+        data = hosts().find_one({ "uuid": uuid}, filter)
     else:
-        data = hosts.find_one({ "uuid": uuid})
+        data = hosts().find_one({ "uuid": uuid})
     if data and delete_id:
         data.pop("_id")
     return data
@@ -205,7 +247,6 @@ def get_host_list():
     query = {}
     search_filter = ""
     search = ""
-
     try:
         if "package_error" in data.keys() and data['package_error'] == "true":
             query["packages.install_status"] = "ERROR"
@@ -218,7 +259,7 @@ def get_host_list():
 
         #{"host":1,"dmi":1,"uuid":1, "wapt":1, "update_status":1,"last_query_date":1}
 
-        for host in hosts.find( query):
+        for host in hosts().find( query):
             host.pop("_id")
             if search_filter:
                 for key in search_filter:
@@ -249,9 +290,9 @@ def update_data(data):
     data['last_query_date'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     host = get_host_data(data["uuid"],delete_id=False)
     if host:
-        hosts.update({"_id" : host['_id'] }, {"$set": data})
+        hosts().update({"_id" : host['_id'] }, {"$set": data})
     else:
-        host_id = hosts.insert(data)
+        host_id = hosts().insert(data)
     return get_host_data(data["uuid"],filter={"uuid":1,"host":1})
 
 
@@ -288,7 +329,7 @@ def update_host():
 @app.route('/delete_host/<string:uuid>')
 def delete_host(uuid=""):
     try:
-        hosts.remove({'uuid': uuid })
+        hosts().remove({'uuid': uuid })
         data = get_host_data(uuid)
         result = dict(status='OK',message=json.dumps(data))
     except Exception as e:
@@ -420,6 +461,8 @@ def upload_package(filename=""):
                     result = dict(status='ERROR',message='Problem during upload')
                 else:
                     if PackageEntry().load_control_from_wapt(tmp_target):
+                        if os.path.isfile(target):
+                            os.unlink(target)
                         os.rename(tmp_target,target)
                         data = update_packages(wapt_folder)
                         result = dict(status='OK',message='%s uploaded, %i packages analysed'%(filename,len(data['processed'])),result=data)
@@ -454,6 +497,8 @@ def upload_host():
                     try:
                         # try to read attributes...
                         entry = PackageEntry().load_control_from_wapt(tmp_target)
+                        if os.path.isfile(target):
+                            os.unlink(target)
                         os.rename(tmp_target,target)
                         result = dict(status='OK',message='File %s uploaded to %s'%(file.filename,target))
                     except:
@@ -924,13 +969,82 @@ class CheckHostsWaptService(threading.Thread):
         pass
 
 
+def install_windows_service():
+    """Setup waptserver as a windows Service managed by nssm
+    >>> install_windows_service()
+    """
+    import setuphelpers
+    from setuphelpers import registry_set,REG_DWORD,REG_EXPAND_SZ,REG_MULTI_SZ,REG_SZ
+    datatypes = {
+        'dword':REG_DWORD,
+        'sz':REG_SZ,
+        'expand_sz':REG_EXPAND_SZ,
+        'multi_sz':REG_MULTI_SZ,
+    }
+
+    if setuphelpers.service_installed('waptserver'):
+        if setuphelpers.service_is_running('waptserver'):
+            logger.info('Stop running waptserver')
+            setuphelpers.run('net stop waptserver')
+            while setuphelpers.service_is_running('waptserver'):
+                logger.debug('Waiting for waptserver to terminate')
+                time.sleep(2)
+        logger.info('Unregister existing waptserver')
+        setuphelpers.run('sc delete waptserver')
+
+    if setuphelpers.iswin64():
+        nssm = os.path.join(wapt_root_dir,'waptservice','win64','nssm.exe')
+    else:
+        nssm = os.path.join(wapt_root_dir,'waptservice','win32','nssm.exe')
+
+    logger.info('Register new waptserver with nssm')
+    setuphelpers.run('"{nssm}" install WAPTServer "{waptpython}" ""{waptserverpy}""'.format(
+        waptpython = os.path.abspath(os.path.join(wapt_root_dir,'waptpython.exe')),
+        nssm = nssm,
+        waptserverpy = os.path.abspath(__file__),
+     ))
+
+    # fix some parameters (quotes for path with spaces...
+    params = {
+        "Description": "sz:Wapt test server",
+        "DelayedAutostart": 1,
+        "DisplayName" : "sz:WAPTServer",
+        "AppStdout" : r"expand_sz:{}".format(os.path.join(log_directory,'waptserver.log')),
+        "Parameters\\AppStderr" : r"expand_sz:{}".format(os.path.join(log_directory,'waptserver.log')),
+        "Parameters\\AppParameters" : r'expand_sz:"{}"'.format(os.path.abspath(__file__)),
+        }
+
+    root = setuphelpers.HKEY_LOCAL_MACHINE
+    base = r'SYSTEM\CurrentControlSet\services\WAPTServer'
+    for key in params:
+        if isinstance(params[key],int):
+            (valuetype,value) = ('dword',params[key])
+        elif ':' in params[key]:
+            (valuetype,value) = params[key].split(':',1)
+            if valuetype == 'dword':
+                value = int(value)
+        else:
+            (valuetype,value) = ('sz',params[key])
+        fullpath = base+'\\'+key
+        (path,keyname) = fullpath.rsplit('\\',1)
+        if keyname == '@' or keyname =='':
+            keyname = None
+        registry_set(root,path,keyname,value,type = datatypes[valuetype])
+
 if __name__ == "__main__":
+    if len(sys.argv)>1 and sys.argv[1] == 'doctest':
+        import doctest
+        sys.exit(doctest.testmod())
+
+    if len(sys.argv)>1 and sys.argv[1] == 'install':
+        install_windows_service()
+        sys.exit(0)
+
     debug=False
     if debug==True:
         app.run(host='0.0.0.0',port=30880,debug=True)
     else:
         port = 8080
-        logger.setLevel(logging.DEBUG)
         server = Rocket(('0.0.0.0', port), 'wsgi', {"wsgi_app":app})
         try:
             logger.info("starting waptserver")

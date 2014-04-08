@@ -20,16 +20,12 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.24"
+__version__ = "0.8.26"
 import os
 import sys
 import logging
 import tempfile
 import shutil
-
-# use backported subprocess from python 3.2
-#import subprocess32 as subprocess
-#from subprocess32 import Popen, PIPE
 
 import _subprocess
 import subprocess
@@ -154,6 +150,13 @@ def create_shortcut(path, target='', arguments='', wDir='', icon=''):
 
 
 def create_desktop_shortcut(label, target='', arguments ='', wDir='', icon=''):
+    """Create a desktop shortcut link for all users
+        label  : Name of the shorcut (.lnk extension is appended if not provided)
+        target : path to application
+        arguments : argument to pass to application
+        wDir : working directory
+        icon : path to ico file
+    """
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
     sc_path = os.path.join(desktop(1),label)
@@ -164,6 +167,13 @@ def create_desktop_shortcut(label, target='', arguments ='', wDir='', icon=''):
 
 
 def create_user_desktop_shortcut(label, target='',arguments='', wDir='', icon=''):
+    """Create a desktop shortcut link for current user
+        label  : Name of the shorcut (.lnk extension is appended if not provided)
+        target : path to application
+        arguments : argument to pass to application
+        wDir : working directory
+        icon : path to ico file
+    """
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
     sc_path = os.path.join(desktop(0),label)
@@ -174,6 +184,13 @@ def create_user_desktop_shortcut(label, target='',arguments='', wDir='', icon=''
 
 
 def create_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=''):
+    """Create a program menu shortcut link for all users
+        label  : Name of the shorcut (.lnk extension is appended if not provided)
+        target : path to application
+        arguments : argument to pass to application
+        wDir : working directory
+        icon : path to ico file
+    """
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
     sc = os.path.join(start_menu(1),label)
@@ -194,9 +211,10 @@ def create_user_programs_menu_shortcut(label, target='', arguments='', wDir='', 
 
 
 def wgets(url,proxies=None):
-    """Return the content of a remote resources as a String
-    >>> wgets('http://wapt:8080/info')
-    u'{"client_version": "0.8.24", "server_version": "0.8.17"}'
+    """Return the content of a remote resource as a String
+    >>> data = wgets('http://wapt:8080/info')
+    >>> "client_version" in data and "server_version" in data
+    True
     """
     r = requests.get(url,proxies=proxies)
     if r.ok:
@@ -1029,9 +1047,10 @@ def memory_status():
 def dmi_info():
     """Convert dmidecode -q output to python dict
     >>> dmi = dmi_info()
-    >>> dmi['UUID']
-    >>> print dmi
-
+    >>> 'UUID' in dmi['System_Information']
+    True
+    >>> 'Product_Name' in dmi['System_Information']
+    True
     """
 
     result = {}
@@ -1301,7 +1320,7 @@ def user_desktop():
 
 
 def common_desktop():
-    """return path to public desktop (visible by all users)
+    r"""return path to public desktop (visible by all users)
     >>> common_desktop()
     u'C:\\Users\\Public\\Desktop'
     """
@@ -1467,7 +1486,7 @@ def get_language():
 
 def get_appath(exename):
     r"""Get the registered application location from registry given its executable name
-    >>> get_apppath('firefox.exe')
+    >>> get_appath('firefox.exe')
     u'C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe'
     >>> get_appath('wapt-get.exe')
     u'C:\\wapt\\wapt-get.exe'

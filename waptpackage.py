@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.24"
+__version__ = "0.8.26"
 
 import os
 import zipfile
@@ -93,7 +93,7 @@ def make_version(major_minor_patch_build):
 class PackageEntry(object):
     """Package attributes coming from either control files in WAPT package or local DB"""
     required_attributes = ['package','version','architecture',]
-    optional_attributes = ['section','priority','maintainer','description','depends','sources',]
+    optional_attributes = ['section','priority','maintainer','description','depends','sources','icon','installed_size']
     non_control_attributes = ['filename','size','repo_url','md5sum','repo',]
 
     @property
@@ -115,6 +115,8 @@ class PackageEntry(object):
         self.md5sum=''
         self.repo_url=''
         self.repo=repo
+        self.installed_size=''
+        self.icon=''
         self.calculated_attributes=[]
 
     def parse_version(self):
@@ -312,6 +314,7 @@ maintainer   : %(maintainer)s
 description  : %(description)s
 depends      : %(depends)s
 sources      : %(sources)s
+icon         : %(icon)s
 """  % self.__dict__
         if with_non_control_attributes:
             for att in self.non_control_attributes:
@@ -426,7 +429,7 @@ class WaptLocalRepo(object):
     def update_packages_index(self,force_all=False):
         """Scan self.localpath directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash"""
         packages_fname = os.path.join(self.localpath,'Packages')
-        if not self.packages:
+        if not force_all and not self.packages:
             self.load_packages()
         old_entries = {}
         for package in self.packages:
