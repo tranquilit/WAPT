@@ -24,11 +24,11 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
             waptserver_ini.set('options','mongodb_ip','127.0.0.1')
         elif tag == "2":
             (code,mongodb_ip) = postconf.inputbox("IP address of the mongodb server:")
-            if code<>postconf.DIALOG_OK:
+            if code != postconf.DIALOG_OK:
                 exit(1)
             else:
                 waptserver_ini.set('options','mongodb_ip',mongodb_ip)
-        elif code<>postconf.DIALOG_OK:
+        elif code != postconf.DIALOG_OK:
             exit(1)
 
     code, tag = postconf.menu("Mongodb server port: ",
@@ -39,15 +39,15 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
             waptserver_ini.set('options','mongodb_port','27017')
         elif tag == "2":
             (code,mongodb_port) = postconf.inputbox("mongodb server port: ")
-            if code<>postconf.DIALOG_OK:
+            if code != postconf.DIALOG_OK:
                 exit(1)
             else:
                 waptserver_ini.set('options','mongodb_port',mongodb_port)
-        elif code<>postconf.DIALOG_OK:
+        elif code != postconf.DIALOG_OK:
             exit(0)
 
     (code,wapt_password) = postconf.passwordbox("wapt server password:  ")
-    if code<>postconf.DIALOG_OK:
+    if code != postconf.DIALOG_OK:
         exit(0)
     else:
         password = hashlib.sha512(wapt_password).hexdigest()

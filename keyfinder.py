@@ -307,7 +307,7 @@ def GetMSDPID3(sHivePath):
             sProdID = reg_getvalue(key,'ProductID')
             sText = ''
             for i in range(5,31):
-                if HexBuf[i] <> '\x00':
+                if HexBuf[i] != '\x00':
                     sText += HexBuf[i]
             #Compare Product ID's
             if sText == sProdID:
@@ -319,7 +319,7 @@ def GetMSDPID3(sHivePath):
             # Edition ID
             sText = '';
             for i in range(33,45):
-                if HexBuf[i] <> "\x00":
+                if HexBuf[i] != "\x00":
                     sText = sText + HexBuf[i]
             result['product_partnr'] = sText
 
@@ -337,7 +337,7 @@ def GetMSDPID3(sHivePath):
                 elif dwChannel==3:
                     result['product_source'] = 'Installed from ''Volume'' media.'
 
-            result['product_key'] = msoKeyDecode( HexBuf,wMajor<>3)
+            result['product_key'] = msoKeyDecode( HexBuf,wMajor != 3)
         elif iBinarySize == 0:
             result['product_key'] = 'The CD Key data is empty!'
         else:

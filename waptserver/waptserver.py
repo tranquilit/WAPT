@@ -222,7 +222,7 @@ def get_host_list():
             host.pop("_id")
             if search_filter:
                 for key in search_filter:
-                    if host.has_key(key) and search in json.dumps(host[key]).lower():
+                    if key in host and search in json.dumps(host[key]).lower():
                         host["softwares"] = ""
                         host["packages"] = ""
                         list_hosts.append(host)
@@ -302,7 +302,7 @@ def delete_host(uuid=""):
 @app.route('/client_software_list/<string:uuid>')
 def get_client_software_list(uuid=""):
     softwares = get_host_data(uuid, filter={"softwares":1})
-    if softwares.has_key('softwares'):
+    if 'softwares' in softwares:
         return  Response(response=json.dumps(softwares['softwares']),
                          status=200,
                          mimetype="application/json")
@@ -345,7 +345,7 @@ def host_packages(uuid=""):
         if not packages:
             raise Exception('No host with uuid %s'%uuid)
         repo_packages = packagesFileToList(os.path.join(wapt_folder, 'Packages'))
-        if packages.has_key('packages'):
+        if 'packages' in packages:
             for p in packages['packages']:
                 package = PackageEntry()
                 package.load_control_from_dict(p)
@@ -369,7 +369,7 @@ def get_client_package_list(uuid=""):
         if not packages:
             raise Exception('No host with uuid %s'%uuid)
         repo_packages = packagesFileToList(os.path.join(wapt_folder, 'Packages'))
-        if packages.has_key('packages'):
+        if 'packages' in packages:
             for p in packages['packages']:
                 package = PackageEntry()
                 package.load_control_from_dict(p)
@@ -762,9 +762,9 @@ def deploy_wapt():
 
         if request.method == 'POST':
             d = json.loads(request.data)
-            if not d.has_key('auth'):
+            if 'auth' not in d:
                 raise Exception("Les informations d'authentification sont manquantes")
-            if not d.has_key('computer_fqdn'):
+            if 'computer_fqdn' not in d:
                 raise Exception(u"Il n'y a aucuns ordinateurs de renseigné")
 
             auth_file = tempfile.mkstemp("wapt")[1]

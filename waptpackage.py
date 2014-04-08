@@ -70,7 +70,7 @@ def parse_major_minor_patch_build(version):
     verinfo = match.groupdict()
 
     def int_or_none(name):
-        if name in verinfo and verinfo[name] <> None :
+        if name in verinfo and verinfo[name] != None :
             return int(verinfo[name])
         else:
             return None
@@ -83,8 +83,8 @@ def parse_major_minor_patch_build(version):
 
 
 def make_version(major_minor_patch_build):
-    p1 = u'.'.join( [ "%s" % major_minor_patch_build[p] for p in ('major','minor','patch','subpatch') if major_minor_patch_build[p]<>None])
-    if major_minor_patch_build['packaging']<>None:
+    p1 = u'.'.join( [ "%s" % major_minor_patch_build[p] for p in ('major','minor','patch','subpatch') if major_minor_patch_build[p] != None])
+    if major_minor_patch_build['packaging'] != None:
         return '-'.join([p1,major_minor_patch_build['packaging']])
     else:
         return p1
@@ -189,7 +189,7 @@ class PackageEntry(object):
     def match(self, match_expr):
         """Return True if package entry match a package string like 'tis-package (>=1.0.1-00)"""
         pcv = REGEX_PACKAGE_CONDITION.match(match_expr).groupdict()
-        if pcv['package'] <> self.package:
+        if pcv['package'] != self.package:
             return False
         else:
             if 'operator' in pcv and pcv['operator']:
@@ -347,7 +347,7 @@ sources      : %(sources)s
         """Increment build number (last part of version)"""
         version_parts = self.parse_version()
         for part in ('packaging','subpatch','patch','minor','major'):
-            if part in version_parts and version_parts[part] <> None :
+            if part in version_parts and version_parts[part] != None :
                 version_parts[part] = "%i" % (int(version_parts[part])+1,)
                 self.version = make_version(version_parts)
                 return
@@ -404,7 +404,7 @@ class WaptLocalRepo(object):
             endline = 0
 
             def add(start,end):
-                if start <> end:
+                if start != end:
                     package = PackageEntry()
                     package.load_control_from_wapt(packages_lines[start:end])
                     logger.info(u"%s (%s)" % (package.package,package.version))

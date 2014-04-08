@@ -900,7 +900,7 @@ class EventsPrinter:
 
     def write(self, text):
         '''Logs written output to listeners'''
-        if text and text <> '\n':
+        if text and text != '\n':
             if self.events:
                 self.events.send_multipart(['PRINT',(setuphelpers.ensure_unicode(text)).encode('utf8')])
             self.logs.append(setuphelpers.ensure_unicode(text))

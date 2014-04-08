@@ -169,7 +169,7 @@ class JsonOutput(object):
 
     def write(self,txt):
         txt = ensure_unicode(txt)
-        if txt <> '\n':
+        if txt != '\n':
             logger.info(txt)
             self.output.append(txt)
 
@@ -287,7 +287,7 @@ def main():
                     jsonresult['result'] = result
                 else:
                     print u"\nResults :"
-                    if action<>'download':
+                    if action != 'download':
                         for k in ('install','additional','upgrade','skipped','errors'):
                             if result.get(k,[]):
                                 print u"\n=== %s packages ===\n%s" % (k,'\n'.join( ["  %-30s | %s (%s)" % (s[0],s[1].package,s[1].version) for s in  result[k]]),)
@@ -684,7 +684,7 @@ def main():
                             cmd_dict =  {'waptfile': files_list,'waptdir':package_group[0]}
                             print mywapt.upload_package(cmd_dict)
 
-                            if package_group<>hosts:
+                            if package_group != hosts:
                                 if mywapt.after_upload:
                                     print 'Run after upload script...'
                                     print setuphelpers.run(mywapt.after_upload % cmd_dict)
@@ -734,7 +734,7 @@ def main():
                         cmd_dict =  {'waptfile': files_list,'waptdir':package_group[0]}
 
                         print mywapt.upload_package(cmd_dict)
-                        if package_group<>hosts:
+                        if package_group != hosts:
                             if mywapt.after_upload:
                                 print 'Run after upload script...'
                                 print setuphelpers.run(mywapt.after_upload % cmd_dict)

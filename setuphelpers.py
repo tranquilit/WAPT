@@ -128,7 +128,7 @@ def ensure_unicode(data):
         except:
            pass
     except:
-        if logger.level <> logging.DEBUG:
+        if logger.level != logging.DEBUG:
             return("Error in ensure_unicode / %s"%(repr(data)))
         else:
             raise
@@ -347,7 +347,7 @@ def register_ext(appname,fileext,shellopen,icon=None,otherverbs=[]):
         rootpath = os.path.dirname(path)
         name = os.path.basename(path)
         k = reg_openkey_noredir(key,path,sam=KEY_READ | KEY_WRITE,create_if_missing=True)
-        if value<>None:
+        if value != None:
             reg_setvalue(k,'',value)
     filetype = appname+fileext
     setvalue(HKEY_CLASSES_ROOT,fileext,filetype)
@@ -1568,10 +1568,10 @@ if __name__=='__main__':
     assert not service_is_running('waptservice')
     service_start('waptservice')
     assert not service_installed('wapt')
-    assert get_computername() <> ''
+    assert get_computername() != ''
     #print getloggedinusers()
-    #assert get_domainname() <> ''
-    assert get_msi_properties(glob.glob('C:\\Windows\\Installer\\*.msi')[0])['Manufacturer'] <> ''
-    assert installed_softwares('offi')[0]['uninstall_string'] <> ''
-    assert get_file_properties('c:\\wapt\\waptservice.exe')['FileVersion'] <>''
-    assert get_file_properties('c:\\wapt\\wapt-get.exe')['FileVersion'] <> ''
+    #assert get_domainname() != ''
+    assert get_msi_properties(glob.glob('C:\\Windows\\Installer\\*.msi')[0])['Manufacturer'] != ''
+    assert installed_softwares('offi')[0]['uninstall_string'] != ''
+    assert get_file_properties('c:\\wapt\\waptservice.exe')['FileVersion'] != ''
+    assert get_file_properties('c:\\wapt\\wapt-get.exe')['FileVersion'] != ''
