@@ -27,14 +27,15 @@ Source: "..\waptdevutils.py"; DestDir: "{app}";
 OutputBaseFilename=waptsetup
 DefaultDirName="C:\wapt"
 
+[Tasks]
+Name: use_hostpackages; Description: "Use automatic host management based on hostname packages"; Flags: checked;
+
 [INI]
 Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL};
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL}
 Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1"; Tasks: use_hostpackages;
 Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "0"; Tasks: not use_hostpackages;
 
-[Tasks]
-Name: use_hostpackages; Description: "Use automatic host management based on hostname packages"; Flags: checked;
 
 [Run]
 Filename: "{app}\wapt-get.exe"; Parameters: "register"; Flags: runhidden postinstall; StatusMsg: "Register computer on the WAPT server"; Description: "Register computer on the WAPT Server"
