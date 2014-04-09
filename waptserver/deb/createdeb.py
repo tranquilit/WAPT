@@ -100,7 +100,7 @@ version_file.close()
 
 print 'copy waptserver files'
 rsync(source_dir,'./builddir/opt/wapt/')
-for lib in ('pefile.py','rocket','pymongo','bson'):
+for lib in ('pefile.py','rocket','pymongo','bson','flask','werkzeug','jinja2'):
     rsync(makepath(wapt_source_dir,'lib','site-packages',lib),'./builddir/opt/wapt/lib/site-packages/')
 
 print 'copie des fichiers control et postinst'
