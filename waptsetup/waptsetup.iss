@@ -28,7 +28,7 @@ OutputBaseFilename=waptsetup
 DefaultDirName="C:\wapt"
 
 [Tasks]
-Name: use_hostpackages; Description: "Use automatic host management based on hostname packages"; Flags: checked;
+Name: use_hostpackages; Description: "Use automatic host management based on hostname packages";
 
 [INI]
 Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL};
