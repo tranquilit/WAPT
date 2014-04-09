@@ -127,8 +127,8 @@ def search_bad_waptsetup(wapt,wapt_version):
 
 def update_tis_repo(waptconfigfile,search_string):
     """Get a list of entries from TIS public repository matching search_string
-    >>> firefox = update_tis_repo(r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini","tis-firefox-esr")[-1]
-    >>> isinstance(firefox,list) and firefox
+    >>> firefox = update_tis_repo(r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini","tis-firefox-esr")
+    >>> isinstance(firefox,list) and firefox[-1].package == 'tis-firefox-esr'
     True
     """
     wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)

@@ -51,6 +51,8 @@ import socket
 import requests
 import subprocess
 import tempfile
+import traceback
+
 from rocket import Rocket
 
 import thread
@@ -451,9 +453,10 @@ def requires_auth(f):
 @requires_auth
 def upload_package(filename=""):
     try:
+        tmp_target = ''
         if request.method == 'POST':
             if filename and allowed_file(filename):
-                tmp_target = os.path.join(wapt_folder, secure_filename('.'+filename))
+                tmp_target = os.path.join(wapt_folder, secure_filename(filename+'.tmp'))
                 target = os.path.join(wapt_folder, secure_filename(filename))
                 with open(tmp_target, 'wb') as f:
                     f.write(request.stream.read())
@@ -474,7 +477,11 @@ def upload_package(filename=""):
         else:
             result = dict(status='ERROR',message='Unsupported method')
     except:
+        # remove temporary
+        if os.path.isfile(tmp_target):
+            os.unlink(tmp_target)
         e = sys.exc_info()
+        logger.critical(repr(traceback.format_exc()))
         result = dict(status='ERROR',message='unexpected: %s'%(e,))
     return  Response(response=json.dumps(result),
                          status=200,
@@ -490,7 +497,7 @@ def upload_host():
             logger.debug('uploading host file : %s' % file)
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                tmp_target = os.path.join(wapt_folder+'-host', '.'+filename)
+                tmp_target = os.path.join(wapt_folder+'-host', filename+'.tmp')
                 target = os.path.join(wapt_folder+'-host', filename)
                 file.save(tmp_target)
                 if os.path.isfile(tmp_target):
@@ -512,7 +519,11 @@ def upload_host():
         else:
             result = dict(status='ERROR',message='No package file provided in request')
     except:
+        # remove temporary
+        if os.path.isfile(tmp_target):
+            os.unlink(tmp_target)
         e = sys.exc_info()
+        logger.critical(repr(traceback.format_exc()))
         result = dict(status='ERROR',message='upload_host: %s'%(e,))
     return  Response(response=json.dumps(result),
                          status=200,

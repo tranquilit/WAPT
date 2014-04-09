@@ -65,6 +65,9 @@ import win32api
 import ntsecuritycon
 import win32security
 
+from M2Crypto import EVP, X509
+from M2Crypto.EVP import EVPError
+
 from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,QueryInfoKey,KEY_READ,KEY_WOW64_32KEY,KEY_WOW64_64KEY
 
 import struct
@@ -354,7 +357,6 @@ def pwd_callback(*args):
 def ssl_sign_content(content,private_key,callback=pwd_callback):
     """ Sign content with the private_key, return the signature"""
     assert os.path.isfile(private_key)
-    from M2Crypto import EVP
     key = EVP.load_key(private_key,callback=callback)
     key.sign_init()
     key.sign_update(content)
@@ -367,7 +369,7 @@ def ssl_verify_content(content,signature,public_certs):
         Content, signature are String
         public_certs is either a filename or a list of filenames
     >>> if not os.path.isfile('c:/private/test.pem'):
-    ...     create_self_signed_key('test',organization='Tranquil IT',locality=u'St Sebastien sur Loire',commonname='wapt.tranquil.it',email='...@tranquil.it')
+    ...     key = create_self_signed_key('test',organization='Tranquil IT',locality=u'St Sebastien sur Loire',commonname='wapt.tranquil.it',email='...@tranquil.it')
     >>> my_content = 'Un test de contenu'
     >>> my_signature = ssl_sign_content(my_content,'c:/private/test.pem')
     >>> ssl_verify_content(my_content,my_signature,'c:/private/test.crt')
@@ -380,7 +382,6 @@ def ssl_verify_content(content,signature,public_certs):
     for fn in public_certs:
         if not os.path.isfile(fn):
             raise Exception('Public certificate %s not found' % fn)
-    from M2Crypto import EVP, X509
     for public_cert in public_certs:
         crt = X509.load_cert(public_cert)
         rsa = crt.get_pubkey().get_rsa()
@@ -394,6 +395,12 @@ def ssl_verify_content(content,signature,public_certs):
 
 
 def private_key_has_password(key):
+    r"""Return True if key can not be loaded without password
+    >>> private_key_has_password(r'c:/tranquilit/wapt/tests/ssl/test.pem')
+    False
+    >>> private_key_has_password(r'c:/tmp/ko.pem')
+    True
+    """
     def callback(*args):
         return ""
     try:
@@ -419,8 +426,6 @@ def check_key_password(key_filename,password=""):
     def callback(*args):
         return password
     try:
-        from M2Crypto import EVP
-        from M2Crypto.EVP import EVPError
         EVP.load_key(key_filename, callback)
     except EVPError:
         return False
@@ -437,12 +442,12 @@ def create_self_signed_key(orgname,
         commonname='',
         email='',
     ):
-    u"""Creates a self signed key/certificate and returns the paths (keyfilename,crtfilename)
-        without password
+    ur"""Creates a self signed key/certificate without password
+    return a dict {'crt_filename': 'c:\\private\\test.crt', 'pem_filename': 'c:\\private\\test.pem'}
     >>> if os.path.isfile('c:/private/test.pem'):
     ...     os.unlink('c:/private/test.pem')
     >>> create_self_signed_key('test',organization='Tranquil IT',locality=u'St Sebastien sur Loire',commonname='wapt.tranquil.it',email='...@tranquil.it')
-    {'crt_filename': 'c:\\\\private\\\\test.crt', 'pem_filename': 'c:\\\\private\\\\test.pem'}
+    {'crt_filename': 'c:\\private\\test.crt', 'pem_filename': 'c:\\private\\test.pem'}
     """
     if not wapt_base_dir:
         wapt_base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
