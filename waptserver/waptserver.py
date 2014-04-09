@@ -28,9 +28,9 @@ try:
 except:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
-sys.path.append(os.path.join(wapt_root_dir))
-sys.path.append(os.path.join(wapt_root_dir,'lib'))
-sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
+sys.path.insert(0,os.path.join(wapt_root_dir))
+sys.path.insert(0,os.path.join(wapt_root_dir,'lib'))
+sys.path.insert(0,os.path.join(wapt_root_dir,'lib','site-packages'))
 
 from flask import request, Flask,Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
 import time
