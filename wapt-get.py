@@ -566,7 +566,7 @@ def main():
                 if len(args)<3:
                     print u"You must provide the source package and the new name"
                     sys.exit(1)
-                result = mywapt.duplicate_package(*args[1:5],build=True,private_key=options.private_key)
+                result = mywapt.duplicate_package(*args[1:5],build=False)
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
@@ -574,7 +574,7 @@ def main():
                         print u"Package duplicated. You can build the new WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result['source_dir'])
                         if mywapt.upload_cmd or mywapt.wapt_server:
                             print u"You can build and upload the new WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result['source_dir'])
-                        wapt_sources_edit(result)
+                        wapt_sources_edit(result['source_dir'])
                     else:
                         print u"Package duplicated. You can upload the new WAPT package to repository by launching\n  %s upload-package %s" % (sys.argv[0],result['target'])
                         print u"You can rebuild and upload the new WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result['source_dir'])

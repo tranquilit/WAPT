@@ -16,6 +16,7 @@ type
 
   TVisWaptGUI = class(TForm)
     ActCancelRunningTask: TAction;
+    ActRemoveFromGroup: TAction;
     ActRDP: TAction;
     ActVNC: TAction;
     ActPackageInstall: TAction;
@@ -106,6 +107,7 @@ type
     MenuItem38: TMenuItem;
     MenuItem39: TMenuItem;
     MenuItem40: TMenuItem;
+    MenuItem41: TMenuItem;
     PageControl1: TPageControl;
     Panel11: TPanel;
     Panel2: TPanel;
@@ -223,6 +225,7 @@ type
     procedure ActPackageRemoveExecute(Sender: TObject);
     procedure ActRDPExecute(Sender: TObject);
     procedure ActRDPUpdate(Sender: TObject);
+    procedure ActRemoveFromGroupExecute(Sender: TObject);
     procedure ActSearchGroupsExecute(Sender: TObject);
     procedure ActHostUpgradeExecute(Sender: TObject);
     procedure ActHostUpgradeUpdate(Sender: TObject);
@@ -1212,6 +1215,49 @@ begin
     ActRDP.Enabled := False;
   end;
 
+end;
+
+procedure TVisWaptGUI.ActRemoveFromGroupExecute(Sender: TObject);
+var
+  Result, groups, host: ISuperObject;
+  N:PVirtualNode;
+  i: word;
+begin
+  if GridHosts.Focused then
+  begin
+    with TvisGroupChoice.Create(self) do
+    try
+      ActSearchGroupsExecute(self);
+      if groupGrid.Data.AsArray.Length = 0 then
+      begin
+        ShowMessage('Il n''y a aucuns groupes.');
+        Exit;
+      end;
+      if ShowModal = mrOk then
+      begin
+        groups := TSuperObject.Create(stArray);
+        N := groupGrid.GetFirstChecked();
+        while N <> nil do
+        begin
+          groups.AsArray.Add(groupGrid.GetCellStrValue(N, 'package'));
+          N := groupGrid.GetNextChecked(N);
+        end;
+      end;
+    finally
+      Free;
+    end;
+    if (groups = nil) or (groups.AsArray.Length = 0) then
+      Exit;
+
+    for host in GridHosts.SelectedRows do
+    begin
+      res := DMPython.RunJSON(
+          format('common. (r"%s".decode(''utf8''))',
+            [GetWaptPrivateKeyPath])).AsString);
+      EditHostDepends(host.S['host.computer_fqdn'],
+        Join(',', groups));
+    end;
+  end;
 end;
 
 procedure TVisWaptGUI.ActSearchGroupsExecute(Sender: TObject);

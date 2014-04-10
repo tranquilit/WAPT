@@ -107,7 +107,7 @@ Filename: {app}\wapt-get.ini; Section: global; Key: waptupdate_task_period; Stri
 Filename: {app}\wapt-get.ini; Section: global; Key: waptupdate_task_maxruntime; String: {#default_update_maxruntime}; Flags: createkeyifdoesntexist
 
 [Run]
-Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "Updating MS VC++ libraries for OpenSSL..."; Description: "Update MS VC++ libraries"
+Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "Updating MS VC++ libraries for OpenSSL..."; Description: "Update MS VC++ libraries"; Tasks: installredist2008
 ;Filename: "{app}\wapt-get.exe"; Parameters: "upgradedb"; Flags: runhidden; StatusMsg: "Upgrading local sqlite database structure"; Description: "Upgrade packages list"
 Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runhidden; StatusMsg: "Updating packages list"; Description: "Update packages list from main repository"
 Filename: "{app}\wapt-get.exe"; Parameters: "setup-tasks"; Tasks: setuptasks; Flags: runhidden; StatusMsg: "Setting up daily sheduled tasks"; Description: "Set up daily sheduled tasks"
@@ -128,6 +128,7 @@ Name: setupTasks; Description: "Creates windows scheduled tasks for update and u
 Name: autorunSessionSetup; Description: "Launch WAPT session setup for all packages at logon";
 Name: installService; Description: "Install WAPT Service";
 Name: autorunTray; Description: "Start WAPT Tray icon at logon"; Flags: unchecked;
+Name: installredist2008; Description: "Install VC++ 2008 redistributables";
 
 [UninstallRun]
 Filename: "taskkill"; Parameters: "/t /im ""waptconsole.exe"" /f"; Flags: runhidden; StatusMsg: "Stopping waptconsole"

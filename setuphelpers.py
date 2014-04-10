@@ -746,6 +746,9 @@ REG_MULTI_SZ = _winreg.REG_MULTI_SZ
 REG_DWORD = _winreg.REG_DWORD
 REG_EXPAND_SZ = _winreg.REG_EXPAND_SZ
 
+def reg_closekey(hkey):
+    """Close a registry key opened with reg_openkey_noredir"""
+    _winreg.CloseKey(hkey)
 
 def reg_openkey_noredir(key, sub_key, sam=_winreg.KEY_READ,create_if_missing=False):
     """Open the registry key\subkey with access rights sam
@@ -757,9 +760,10 @@ def reg_openkey_noredir(key, sub_key, sam=_winreg.KEY_READ,create_if_missing=Fal
     """
     try:
         if platform.machine() == 'AMD64':
-            return _winreg.OpenKey(key,sub_key,0, sam | _winreg.KEY_WOW64_64KEY)
+            result = _winreg.OpenKey(key,sub_key,0, sam | _winreg.KEY_WOW64_64KEY)
         else:
-            return _winreg.OpenKey(key,sub_key,0,sam)
+            result = _winreg.OpenKey(key,sub_key,0,sam)
+        return result
     except WindowsError,e:
         if e.errno == 2:
             if create_if_missing:
@@ -1347,13 +1351,28 @@ def unregister_dll(dllpath):
 
 def add_to_system_path(path):
     """Add path to the global search PATH environment variable if it is not yet"""
-    key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment',sam=KEY_READ | KEY_WRITE)
-    system_path = reg_getvalue(key,'Path').lower().split(';')
-    if not path.lower() in system_path:
-        system_path.append(path)
-        reg_setvalue(key,'Path',';'.join(system_path),type=REG_EXPAND_SZ)
-        win32api.SendMessage(win32con.HWND_BROADCAST,win32con.WM_SETTINGCHANGE,0,'Environment')
+    with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment',sam=KEY_READ | KEY_WRITE) as key:
+        system_path = reg_getvalue(key,'Path').lower().split(';')
+        if not path.lower() in system_path:
+            system_path.append(path)
+            reg_setvalue(key,'Path',';'.join(system_path),type=REG_EXPAND_SZ)
+            win32api.SendMessage(win32con.HWND_BROADCAST,win32con.WM_SETTINGCHANGE,0,'Environment')
     return system_path
+
+
+def set_environ_variable(name,value,type=REG_EXPAND_SZ):
+    r"""Add or update a system wide persistent environment variable
+    >>> set_environ_variable('WAPT_HOME','c:\\wapt')
+    >>> import os
+    >>> os.environ['WAPT_HOME']
+    'c:\\wapt'
+    """
+    with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment',
+            sam=KEY_READ | KEY_WRITE) as key:
+        reg_setvalue(key,name,value,type=type)
+    # force to get new environ variable, as it is not reloaded immediately.
+    os.environ[name] = value
+    win32api.SendMessage(win32con.HWND_BROADCAST,win32con.WM_SETTINGCHANGE,0,'Environment')
 
 
 def get_task(name):

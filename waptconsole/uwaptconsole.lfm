@@ -2443,6 +2443,11 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Annuler tâche en cours'
       OnExecute = ActCancelRunningTaskExecute
     end
+    object ActRemoveFromGroup: TAction
+      Category = 'hosts'
+      Caption = 'Enlever du groupe ou un package'
+      OnExecute = ActRemoveFromGroupExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
@@ -2554,6 +2559,9 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem35: TMenuItem
       Action = ActAddToGroup
+    end
+    object MenuItem41: TMenuItem
+      Action = ActRemoveFromGroup
     end
     object MenuItem34: TMenuItem
       Action = ActHostUpgrade

@@ -218,6 +218,18 @@ def login_to_waptserver(url, login, passwd,newPass=""):
     except Exception as e:
         return unicode(str(e.message), 'ISO-8859-1')
 
+def add_packages_to_hosts(waptconfigfile,hosts_list,packages_list,key_password=None):
+    wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
+    if not isinstance(hosts_list,list):
+        hosts_list = [hosts_list]
+    if not isinstance(packages_list,list):
+        hosts_list = [packages_list]
+    for host in hosts_list:
+        target = tempfile.mkdtemp('wapt')
+        package = wapt.edit_host(host,target_directory = target,use_local_sources=False,append_depends = packages_list)
+
+
+
 if __name__ == '__main__':
     import doctest
     import sys

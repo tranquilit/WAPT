@@ -15,23 +15,23 @@ Name=wapt
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node0]
 ClassName=TProjectFileNode
-FileName=C:\WAPT\common.py
+FileName=%(wapt_base_dir)s\common.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node1]
 ClassName=TProjectFileNode
-FileName=C:\WAPT\setuphelpers.py
+FileName=%(wapt_base_dir)s\setuphelpers.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node2]
 ClassName=TProjectFileNode
-FileName=C:\WAPT\wapt-get.py
+FileName=%(wapt_base_dir)s\wapt-get.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node3]
 ClassName=TProjectFileNode
-FileName=C:\WAPT\wapt-get.ini
+FileName=%(wapt_base_dir)s\wapt-get.ini
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node4]
 ClassName=TProjectFileNode
-FileName=C:\WAPT\waptpackage.py
+FileName=%(wapt_base_dir)s\waptpackage.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes]
 Count=5
@@ -55,7 +55,7 @@ ClassName=TProjectRunConfiguationNode
 Name=install
 
 [Project\ChildNodes\Node1\ChildNodes\Node0\RunConfig]
-ScriptName=C:\wapt\wapt-get.py
+ScriptName=%(wapt_base_dir)s\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug install $[ActiveDoc-Dir]
@@ -78,7 +78,7 @@ ClassName=TProjectRunConfiguationNode
 Name=remove
 
 [Project\ChildNodes\Node1\ChildNodes\Node1\RunConfig]
-ScriptName=C:\wapt\wapt-get.py
+ScriptName=%(wapt_base_dir)s\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug remove $[ActiveDoc-Dir]
@@ -101,7 +101,7 @@ ClassName=TProjectRunConfiguationNode
 Name=session-setup
 
 [Project\ChildNodes\Node1\ChildNodes\Node2\RunConfig]
-ScriptName=C:\WAPT\wapt-get.py
+ScriptName=%(wapt_base_dir)s\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug session-setup $[ActiveDoc-Dir]
@@ -124,7 +124,7 @@ ClassName=TProjectRunConfiguationNode
 Name=update
 
 [Project\ChildNodes\Node1\ChildNodes\Node3\RunConfig]
-ScriptName=C:\WAPT\wapt-get.py
+ScriptName=%(wapt_base_dir)s\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug update
@@ -147,7 +147,7 @@ ClassName=TProjectRunConfiguationNode
 Name=upgrade
 
 [Project\ChildNodes\Node1\ChildNodes\Node4\RunConfig]
-ScriptName=C:\WAPT\wapt-get.py
+ScriptName=%(wapt_base_dir)s\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-f -ldebug upgrade
@@ -170,7 +170,7 @@ ClassName=TProjectRunConfiguationNode
 Name=-i build-upload 
 
 [Project\ChildNodes\Node1\ChildNodes\Node5\RunConfig]
-ScriptName=C:\WAPT\wapt-get.py
+ScriptName=%(wapt_base_dir)s\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug -i build-upload $[ActiveDoc-Dir]
@@ -193,7 +193,7 @@ ClassName=TProjectRunConfiguationNode
 Name=svn update
 
 [Project\ChildNodes\Node1\ChildNodes\Node6\RunConfig]
-ScriptName=C:\WAPT\wapt-get.py
+ScriptName=%(wapt_base_dir)s\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug sources $[ActiveDoc-Dir]
@@ -218,7 +218,7 @@ Count=7
 Count=2
 
 [Project\ExtraPythonPath]
-Item0=C:\wapt
-Item1=C:\wapt\lib\site-packages
+Item0=%(wapt_base_dir)s
+Item1=%(wapt_base_dir)s\lib\site-packages
 Count=2
 

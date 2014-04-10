@@ -93,7 +93,7 @@ def make_version(major_minor_patch_build):
 class PackageEntry(object):
     """Package attributes coming from either control files in WAPT package or local DB"""
     required_attributes = ['package','version','architecture',]
-    optional_attributes = ['section','priority','maintainer','description','depends','sources','icon','installed_size']
+    optional_attributes = ['section','priority','maintainer','description','depends','conflicts','sources','installed_size']
     non_control_attributes = ['filename','size','repo_url','md5sum','repo',]
 
     @property
@@ -109,6 +109,7 @@ class PackageEntry(object):
         self.maintainer=''
         self.description=''
         self.depends=''
+        self.conflicts=''
         self.sources=''
         self.filename=''
         self.size=''
@@ -116,7 +117,6 @@ class PackageEntry(object):
         self.repo_url=''
         self.repo=repo
         self.installed_size=''
-        self.icon=''
         self.calculated_attributes=[]
 
     def parse_version(self):
@@ -313,8 +313,8 @@ priority     : %(priority)s
 maintainer   : %(maintainer)s
 description  : %(description)s
 depends      : %(depends)s
+conflicts    : %(conflicts)s
 sources      : %(sources)s
-icon         : %(icon)s
 """  % self.__dict__
         if with_non_control_attributes:
             for att in self.non_control_attributes:
