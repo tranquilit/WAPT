@@ -1252,9 +1252,9 @@ begin
     for host in GridHosts.SelectedRows do
     begin
       res := DMPython.RunJSON(
-          format('common. (r"%s".decode(''utf8''))',
+          format('common.duplicate_package(  r"%s".decode(''utf8''))',
             [GetWaptPrivateKeyPath])).AsString);
-      EditHostDepends(host.S['host.computer_fqdn'],
+        EditHostDepends(host.S['host.computer_fqdn'],
         Join(',', groups));
     end;
   end;

@@ -29,7 +29,7 @@ from waptpackage import *
 import active_directory
 import codecs
 from iniparse import RawConfigParser
-
+import getpass
 
 create_self_signed_key = common.create_self_signed_key
 is_encrypt_private_key = common.private_key_has_password
@@ -218,17 +218,32 @@ def login_to_waptserver(url, login, passwd,newPass=""):
     except Exception as e:
         return unicode(str(e.message), 'ISO-8859-1')
 
-def add_packages_to_hosts(waptconfigfile,hosts_list,packages_list,key_password=None):
+def edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None):
+    """Add or remove packages from host packages
+    >>> edit_hosts_depends('c:/wapt/wapt-get.ini','htlaptop.tranquilit.local','toto','tis-7zip','admin','password')
+    """
+    if not wapt_server_user:
+        wapt_server_user = raw_input('WAPT Server user :')
+    if not wapt_server_passwd:
+        wapt_server_passwd = getpass.getpass('WAPT Server password :').encode('ascii')
+
     wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
     if not isinstance(hosts_list,list):
         hosts_list = [hosts_list]
-    if not isinstance(packages_list,list):
-        hosts_list = [packages_list]
+    if not isinstance(appends,list):
+        appends = [s.strip() for s in appends.split(',')]
+    if not isinstance(removes,list):
+        removes = [s.strip() for s in removes.split(',')]
+    result = []
     for host in hosts_list:
-        target = tempfile.mkdtemp('wapt')
-        package = wapt.edit_host(host,target_directory = target,use_local_sources=False,append_depends = packages_list)
-
-
+        target_dir = tempfile.mkdtemp('wapt')
+        package = wapt.duplicate_package(host,
+            target_directory = target_dir,build=True,
+            append_depends = appends,
+            remove_depends = removes,)
+        res = wapt.http_upload_package(package['target'],wapt_server_user=wapt_server_user, wapt_server_passwd=wapt_server_passwd)
+        result.append(res)
+    return result
 
 if __name__ == '__main__':
     import doctest

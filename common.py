@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.26"
+__version__ = "0.8.27"
 import os
 import re
 import logging
@@ -608,7 +608,7 @@ def import_setup(setupfilename,modulename=''):
         py_mod = imp.load_source(modulename, setupfilename)
         return py_mod
     except Exception as e:
-        logger.critical('Error importing %s : %s'%(setupfilename,traceback.format_tb(sys.last_traceback)))
+        logger.critical(u'Error importing %s : %s'%(setupfilename,traceback.format_tb(sys.last_traceback)))
         raise
 
 def remove_encoding_declaration(source):
@@ -834,7 +834,7 @@ class WaptBaseDB(object):
             self.db.execute('insert or replace into wapt_params(name,value,create_date) values (?,?,?)',(name,value,datetime2isodate()))
             self.db.commit()
         except Exception,e:
-            logger.critical('Unable to set param %s : %s : %s' % (name,value,ensure_unicode(e)))
+            logger.critical(u'Unable to set param %s : %s : %s' % (name,value,ensure_unicode(e)))
             self.db.rollback()
             raise
 
@@ -982,6 +982,15 @@ class WaptSessionDB(WaptBaseDB):
         """Remove status of package installation from localdb"""
         try:
             cur = self.db.execute("""delete from wapt_sessionsetup where package=?""" ,(package,))
+        finally:
+            self.db.commit()
+        return cur.lastrowid
+
+    def remove_obsolete_install_status(self,installed_packages):
+        """Remove local user status of packages no more installed"""
+        try:
+            cur = self.db.execute("""delete from wapt_sessionsetup where package not in (%s)"""%\
+                ','.join('?' for i in installed_packages), installed_packages)
         finally:
             self.db.commit()
         return cur.lastrowid
@@ -2208,7 +2217,6 @@ class Wapt(object):
 
         self.dry_run = False
         self.private_key = ''
-        self.allow_unsigned = False
         self.upload_cmd = None
         self.upload_cmd_host = self.upload_cmd
         self.after_upload = None
@@ -2275,7 +2283,6 @@ class Wapt(object):
             'upload_cmd':'',
             'upload_cmd_host':'',
             'after_upload':'',
-            'allow_unsigned':'0',
             'http_proxy':'',
             'tray_check_interval':2,
             'service_interval':2,
@@ -2311,9 +2318,6 @@ class Wapt(object):
 
         if self.config.has_option('global','private_key'):
             self.private_key = self.config.get('global','private_key')
-
-        if self.config.has_option('global','allow_unsigned'):
-            self.allow_unsigned = self.config.getboolean('global','allow_unsigned')
 
         if self.config.has_option('global','use_hostpackages'):
             self.use_hostpackages = self.config.getboolean('global','use_hostpackages')
@@ -2427,14 +2431,36 @@ class Wapt(object):
     def runstatus(self,waptstatus):
         """Stores in local db the current run status for tray display"""
         if self._runstatus is None or self._runstatus != waptstatus:
-            logger.info('Status : %s' % ensure_unicode(waptstatus))
+            logger.info(u'Status : %s' % ensure_unicode(waptstatus))
             self.write_param('runstatus',waptstatus)
             self._runstatus = waptstatus
             if not self.disable_update_server_status and self.wapt_server:
                 try:
                     self.update_server_status()
                 except Exception,e:
-                    logger.critical('Unable to update server with current status : %s' % ensure_unicode(e))
+                    logger.critical(u'Unable to update server with current status : %s' % ensure_unicode(e))
+
+
+    def http_upload_package(self,package_filename,wapt_server_user=None,wapt_server_passwd=None):
+        if not os.path.isfile(package_filename):
+            raise Exception('No package file to upload')
+        if not wapt_server_user:
+            wapt_server_user = raw_input('WAPT Server user :')
+        if not wapt_server_passwd:
+            wapt_server_passwd = getpass.getpass('WAPT Server password :').encode('ascii')
+
+        auth =  (wapt_server_user, wapt_server_passwd)
+        pe = PackageEntry().load_control_from_wapt(package_filename)
+        with open(package_filename,'rb') as afile:
+            if pe.section == 'host':
+                req = requests.post("%s/upload_host" % (self.wapt_server,),files={'file':afile},proxies=self.proxies,verify=False,auth=auth)
+            else:
+                req = requests.post("%s/upload_package/%s" % (self.wapt_server,os.path.basename(package_filename)),data=afile,proxies=self.proxies,verify=False,auth=auth)
+            req.raise_for_status()
+            res = json.loads(req.content)
+            return res
+        if res['status'] != 'OK':
+            raise Exception(u'Unable to upload package: %s'%ensure_unicode(res['message']))
 
     def upload_package(self,cmd_dict,wapt_server_user=None,wapt_server_passwd=None):
         if not self.upload_cmd and not wapt_server_user:
@@ -2452,10 +2478,11 @@ class Wapt(object):
                     file = file[1:-1]
                     with open(file,'rb') as afile:
                         req = requests.post("%s/upload_host" % (self.wapt_server,),files={'file':afile},proxies=self.proxies,verify=False,auth=auth)
+                        req.raise_for_status()
                         res = json.loads(req.content)
                     if res['status'] != 'OK':
                         raise Exception(u'Unable to upload package: %s'%ensure_unicode(res['message']))
-            return res
+                return res
 
         else:
             if self.upload_cmd:
@@ -2480,7 +2507,7 @@ class Wapt(object):
             max_ttl is maximum age of wapt-get in minutes
         """
 
-        logger.debug('Checking if old install in progress')
+        logger.debug(u'Checking if old install in progress')
         # kill old wapt-get
         mindate = time.time() - max_ttl*60
 
@@ -2488,15 +2515,15 @@ class Wapt(object):
         for p in psutil.process_iter():
             try:
                 if p.pid != os.getpid() and (p.create_time() < mindate) and p.name() in ('wapt-get','wapt-get.exe'):
-                    logger.debug('Killing process tree of pid %i' % p.pid)
+                    logger.debug(u'Killing process tree of pid %i' % p.pid)
                     setuphelpers.killtree(p.pid)
-                    logger.debug('Killing pid %i' % p.pid)
+                    logger.debug(u'Killing pid %i' % p.pid)
                     killed.append(p.pid)
             except (psutil.NoSuchProcess,psutil.AccessDenied):
                 pass
 
         # reset install_status
-        logger.debug('reset stalled install_status in database')
+        logger.debug(u'reset stalled install_status in database')
         init_run_pids = self.waptdb.query("""\
            select process_id from wapt_localstatus
               where install_status in ('INIT','RUNNING')
@@ -2663,9 +2690,8 @@ class Wapt(object):
         logger.info(u"Register start of install %s as user %s to local DB with params %s" % (fname, setuphelpers.get_current_user(), params_dict))
         logger.info(u"Interactive user:%s, usergroups %s" % (self.user,self.usergroups))
         status = 'INIT'
-        if not self.public_certs and not self.allow_unsigned:
-            raise Exception(u'install_wapt %s: No public Key provided for package signature checking, and unsigned packages install is not allowed.\
-                    If you want to allow unsigned packages, add "allow_unsigned=1" in wapt-get.ini file'%(fname,))
+        if not self.public_certs:
+            raise Exception(u'install_wapt %s: No public Key provided for package signature checking.'%(fname,))
         previous_uninstall = self.registry_uninstall_snapshot()
         entry = PackageEntry()
         entry.load_control_from_wapt(fname)
@@ -2722,17 +2748,15 @@ class Wapt(object):
                 # check signature of manifest
                 signature_filename = os.path.join( packagetempdir,'WAPT','signature')
                 # if public key provided, and signature in wapt file, check it
-                if not self.allow_unsigned:
-                    if self.public_certs and os.path.isfile(signature_filename):
-                        signature = open(signature_filename,'r').read().decode('base64')
-                        try:
-                            subject = ssl_verify_content(manifest_data,signature,self.public_certs)
-                            logger.info(u'Package issued by %s' % (subject,))
-                        except:
-                            raise Exception(u'Package file %s signature is invalid' % fname)
-                    else:
-                        if not self.allow_unsigned:
-                            raise Exception(u'No certificate provided for %s or package does not contain a signature, and unsigned packages install is not allowed' % fname)
+                if self.public_certs and os.path.isfile(signature_filename):
+                    signature = open(signature_filename,'r').read().decode('base64')
+                    try:
+                        subject = ssl_verify_content(manifest_data,signature,self.public_certs)
+                        logger.info(u'Package issued by %s' % (subject,))
+                    except:
+                        raise Exception(u'Package file %s signature is invalid' % fname)
+                else:
+                    raise Exception(u'No certificate provided for %s or package does not contain a signature' % fname)
 
                 manifest = json.loads(manifest_data)
                 errors = self.corrupted_files_sha1(packagetempdir,manifest)
@@ -2793,7 +2817,7 @@ class Wapt(object):
 
             if not self.dry_run:
                 try:
-                    logger.info("  executing install script")
+                    logger.info(u"  executing install script")
                     exitstatus = setup.install()
                 except Exception,e:
                     logger.critical(u'Fatal error in install script: %s' % ensure_unicode(e))
@@ -2896,11 +2920,11 @@ class Wapt(object):
             else:
                 status["upgrades"] = [ "%s" % (p.asrequirement(),) for p in self.list_upgrade()]
 
-            logger.debug("store status in DB")
+            logger.debug(u"store status in DB")
             self.write_param('last_update_status',jsondump(status))
             return status
         except Exception,e:
-            logger.critical('Unable to store status of update in DB : %s'% ensure_unicode(e))
+            logger.critical(u'Unable to store status of update in DB : %s'% ensure_unicode(e))
 
     def get_sources(self,package):
         """Download sources of package (if referenced in package as a https svn)
@@ -2919,13 +2943,13 @@ class Wapt(object):
             svncmd = os.path.join(os.environ['PROGRAMFILES'],'TortoiseSVN','bin','svn.exe')
         logger.debug(u'svn command : %s'% svncmd)
         if not os.path.isfile(svncmd):
-            raise Exception('svn.exe command not available, please install TortoiseSVN with commandline tools')
+            raise Exception(u'svn.exe command not available, please install TortoiseSVN with commandline tools')
 
         # checkout directory
         co_dir = self.get_default_development_dir(entry.package, section = entry.section)
 
-        logger.info('sources : %s'% entry.sources)
-        logger.info('checkout dir : %s'% co_dir)
+        logger.info(u'sources : %s'% entry.sources)
+        logger.info(u'checkout dir : %s'% co_dir)
         # if already checked out...
         if os.path.isdir(os.path.join(co_dir,'.svn')):
             print ensure_unicode(self.run(u'"%s" up "%s"' % (svncmd,co_dir)))
@@ -2949,7 +2973,7 @@ class Wapt(object):
         >>> res = wapt.cleanup(True)
         """
         result = []
-        logger.info('Cleaning up WAPT cache directory')
+        logger.info(u'Cleaning up WAPT cache directory')
         cachepath = self.package_cache_dir
         for f in glob.glob(os.path.join(cachepath,'*.wapt')):
             if os.path.isfile(f):
@@ -2964,7 +2988,7 @@ class Wapt(object):
                         os.remove(f)
                         result.append(f)
                     except Exception,e:
-                        logger.warning('Unable to remove %s : %s' % (f,ensure_unicode(e)))
+                        logger.warning(u'Unable to remove %s : %s' % (f,ensure_unicode(e)))
         return result
 
     def update(self,force=False,register=True):
@@ -2999,7 +3023,7 @@ class Wapt(object):
             try:
                 self.update_server_status()
             except Exception,e:
-                logger.critical('Unable to update server with current status : %s' % ensure_unicode(e))
+                logger.critical(u'Unable to update server with current status : %s' % ensure_unicode(e))
         return result
 
     def check_depends(self,apackages,forceupgrade=False,force=False,assume_removed=[]):
@@ -3206,9 +3230,9 @@ class Wapt(object):
                 signature = waptfile.open(u'WAPT/signature').read().decode('base64')
                 try:
                     subject = ssl_verify_content(manifest_content,signature,self.public_certs)
-                    logger.info('Package issued by %s' % (subject,))
+                    logger.info(u'Package issued by %s' % (subject,))
                 except:
-                    raise Exception('Package file %s signature is invalid' % fname)
+                    raise Exception(u'Package file %s signature is invalid' % fname)
 
                 for (fn,sha1) in manifest:
                     if fn == 'WAPT\\control':
@@ -3227,7 +3251,7 @@ class Wapt(object):
             # switch to manual mode
             for (request,p) in skipped:
                 if request in apackages and not p.explicit_by:
-                    logger.info('switch to manual mode for %s' % (request,))
+                    logger.info(u'switch to manual mode for %s' % (request,))
                     self.waptdb.switch_to_explicit_mode(p.package,self.user)
 
             for (request,p) in to_install:
@@ -3298,14 +3322,14 @@ class Wapt(object):
                     cached.load_control_from_wapt(fullpackagepath,calc_md5=False)
                     if entry == cached:
                         skipped.append(fullpackagepath)
-                        logger.info("  Use cached package file from " + fullpackagepath)
+                        logger.info(u"  Use cached package file from " + fullpackagepath)
                         skip = True
                 except Exception,e:
                     # error : reload
-                    logger.debug('Cache file %s is corrupted, reloading it' % fullpackagepath )
+                    logger.debug(u'Cache file %s is corrupted, reloading it' % fullpackagepath )
 
             if not skip:
-                logger.info("  Downloading package from %s" % download_url)
+                logger.info(u"  Downloading package from %s" % download_url)
                 try:
                     def report(received,total,speed,url):
                         self.check_cancelled()
@@ -3370,10 +3394,10 @@ class Wapt(object):
                     for guid in guids:
                         if guid:
                             try:
-                                logger.info('Running %s' % guid)
+                                logger.info(u'Running %s' % guid)
                                 logger.info(self.run(guid))
                             except Exception,e:
-                                logger.warning("Warning : %s" % ensure_unicode(e))
+                                logger.warning(u"Warning : %s" % ensure_unicode(e))
 
                 elif mydict['uninstall_key']:
                     if mydict['uninstall_key'][0] not in ['[','"',"'"]:
@@ -3406,15 +3430,15 @@ class Wapt(object):
                     try:
                         self.uninstall(package)
                     except Exception as e:
-                        logger.critical('Error running uninstall script: %s'%e)
+                        logger.critical(u'Error running uninstall script: %s'%e)
                         result['errors'].append(package)
 
-                logger.info('Remove status record from local DB for %s' % package)
+                logger.info(u'Remove status record from local DB for %s' % package)
                 self.waptdb.remove_install_status(package)
                 result['removed'].append(package)
 
                 if reversed(additional_removes):
-                    logger.info('Additional packages to remove : %s' % additional_removes)
+                    logger.info(u'Additional packages to remove : %s' % additional_removes)
                     for apackage in additional_removes:
                         res = self.remove(apackage,force=True)
                         result['removed'].extend(res['removed'])
@@ -3431,7 +3455,6 @@ class Wapt(object):
 
     def check_host_package_outdated(self):
         """Check and return the host package if available and not installed"""
-        hostresult = {}
         logger.debug(u'Check if host package "%s" is available' % (self.host_packagename(), ))
         host_packages = self.is_available(self.host_packagename())
         if host_packages and not self.is_installed(host_packages[-1].asrequirement()):
@@ -3451,10 +3474,13 @@ class Wapt(object):
             if self.use_hostpackages:
                 host_package = self.check_host_package_outdated()
                 if host_package:
-                    logger.info('Host package %s is available and not installed, installing host package...' % (host_package.package,) )
+                    logger.info(u'Host package %s is available and not installed, installing host package...' % (host_package.package,) )
                     hostresult = self.install(host_package,force=True)
                 else:
-                    hostresult = []
+                    hostresult = {}
+            else:
+                hostresult = {}
+
 
             upgrades = self.waptdb.upgradeable()
             logger.debug(u'upgrades : %s' % upgrades.keys())
@@ -3566,7 +3592,7 @@ class Wapt(object):
                 try:
                     req.raise_for_status()
                 except Exception,e:
-                    logger.warning('Unable to update server status : %s' % ensure_unicode(e))
+                    logger.warning(u'Unable to update server status : %s' % ensure_unicode(e))
                 result = json.loads(req.content)
                 # force register if computer has not been registered or hostname has changed
                 if not result or not 'host' in result or result['host']['computer_fqdn'] != setuphelpers.get_hostname():
@@ -3693,7 +3719,7 @@ class Wapt(object):
             force_utf8_no_bom(control_filename)
 
             entry = PackageEntry()
-            logger.info('Load control informations from control file')
+            logger.info(u'Load control informations from control file')
             entry.load_control_from_wapt(directoryname)
 
             # optionally, setup.py can update some attributes of control files using
@@ -3701,8 +3727,7 @@ class Wapt(object):
             # this can help automates version maintenance
             # a check of version collision is operated automatically
             if hasattr(setup,'update_control'):
-                logger.info('Update control informations with update_control function from setup.py file')
-                logger.info('Update control informations with update_control function from setup.py file')
+                logger.info(u'Update control informations with update_control function from setup.py file')
                 setattr(setup,'run',self.run)
                 setattr(setup,'run_notfatal',self.run_notfatal)
                 setattr(setup,'user',self.user)
@@ -3712,12 +3737,12 @@ class Wapt(object):
                 setup.update_control(entry)
 
                 if inc_package_release:
-                    logger.debug('Check existing versions and increment it')
+                    logger.debug(u'Check existing versions and increment it')
                     older_packages = self.is_available(entry.package)
                     if (older_packages and entry<=older_packages[-1]):
                         entry.version = older_packages[-1].version
                         entry.inc_build()
-                        logger.warning('Older package with same name exists, incrementing packaging version to %s' % (entry.version,))
+                        logger.warning(u'Older package with same name exists, incrementing packaging version to %s' % (entry.version,))
 
                 # save control file
                 entry.save_control_to_wapt(directoryname)
@@ -3727,7 +3752,7 @@ class Wapt(object):
 
             # check architecture
             if not entry.architecture in ArchitecturesList:
-                raise Exception('Architecture should one of %s' % (ArchitecturesList,))
+                raise Exception(u'Architecture should one of %s' % (ArchitecturesList,))
 
             if inc_package_release:
                 entry.inc_build()
@@ -3833,6 +3858,7 @@ class Wapt(object):
         """Remove all current user session_setup informations for removed packages
         """
         installed = self.installed(False)
+        self.waptsessiondb.remove_obsolete_install_status(installed.keys())
 
     def session_setup(self,packagename,force=False):
         """Setup the user session for a specific system wide installed package"
@@ -3881,7 +3907,7 @@ class Wapt(object):
 
                      # be sure some minimal functions are available in setup module at install step
                     if setup and hasattr(setup,'session_setup'):
-                        logger.info('Launch session_setup')
+                        logger.info(u'Launch session_setup')
                         # initialize a session record for this package
                         install_id = session_db.add_start_install(package_entry.package,package_entry.version,package_entry.architecture)
 
@@ -3903,7 +3929,7 @@ class Wapt(object):
                             try:
                                 params_dict=json.loads(self.waptdb.query("select install_params from wapt_localstatus where package=?",[package_entry.package,])[0]['install_params'])
                             except:
-                                logger.warning('Unable to get installation parameters from wapt database for package %s' % package_entry.package)
+                                logger.warning(u'Unable to get installation parameters from wapt database for package %s' % package_entry.package)
                                 params_dict={}
 
                             # set params dictionary
@@ -3956,7 +3982,7 @@ class Wapt(object):
         """Launch the uninstall script of an installed package"
            Source setup.py from database or filename
         """
-        logger.info("setup.uninstall for package %s with params %s" % (packagename,params_dict))
+        logger.info(u"setup.uninstall for package %s with params %s" % (packagename,params_dict))
         oldpath = sys.path
         try:
             previous_cwd = os.getcwd()
@@ -4026,10 +4052,10 @@ class Wapt(object):
              # be sure some minimal functions are available in setup module at install step
             logger.debug(u'Source import OK')
             if hasattr(setup,'checkinstalled'):
-                logger.info('Use control informations from setup.py file')
+                logger.info(u'Use control informations from setup.py file')
                 result = setup.checkinstalled()
             else:
-                logger.info('No checkinstalled function in setup.pyfile')
+                logger.info(u'No checkinstalled function in setup.pyfile')
                 result = False
         finally:
             if 'setup' in dir():
@@ -4179,7 +4205,7 @@ class Wapt(object):
         if not os.path.isfile(setuppy_filename):
             codecs.open(setuppy_filename,'w',encoding='utf8').write(template)
         else:
-            logger.info('setup.py file already exists, skip create')
+            logger.info(u'setup.py file already exists, skip create')
         logger.debug(u'Copy installer %s to target' % installer)
         if os.path.isfile(installer_path):
             shutil.copyfile(installer_path,os.path.join(directoryname,installer))
@@ -4208,7 +4234,7 @@ class Wapt(object):
                 entry.sources = self.config.get('global','default_sources_url') % {'packagename':packagename}
             codecs.open(control_filename,'w',encoding='utf8').write(entry.ascontrol())
         else:
-            logger.info('control file already exists, skip create')
+            logger.info(u'control file already exists, skip create')
 
         self.add_pyscripter_project(directoryname)
         return directoryname
@@ -4255,7 +4281,7 @@ class Wapt(object):
         if not os.path.isfile(setuppy_filename):
             codecs.open(setuppy_filename,'w',encoding='utf8').write(template)
         else:
-            logger.info('setup.py file already exists, skip create')
+            logger.info(u'setup.py file already exists, skip create')
 
         control_filename = os.path.join(directoryname,'WAPT','control')
         entry = PackageEntry()
@@ -4472,54 +4498,57 @@ class Wapt(object):
             target_directory = self.get_default_development_dir(hostname,section='host')
 
         # check if host package exists on repos
-        (entry,entry_date) = self.repositories[-1].update_host(hostname,self.waptdb)
-        if entry:
-            # target is already an "in-progress" package developement
-            local_dev_entry = self.is_wapt_package_development_dir(target_directory)
-            if local_dev_entry:
-                if use_local_sources:
-                    if entry>local_dev_entry:
-                        raise Exception('A newer package version %s is already in repository "%s", local sources %s is %s, aborting' % (entry.asrequirement(),entry.repo,target_directory, local_dev_entry.asrequirement()))
-                    if local_dev_entry.match(hostname):
-                        prev_depends = local_dev_entry.depends.split(',')
-                        if append_depends:
-                            if not isinstance(append_depends,list):
-                                append_depends = [s.strip() for s in append_depends.split(',')]
-                            for d in append_depends:
-                                if not d in prev_depends:
-                                    prev_depends.append(d)
+        if isinstance(self.repositories[-1],WaptHostRepo):
+            (entry,entry_date) = self.repositories[-1].update_host(hostname,self.waptdb)
+            if entry:
+                # target is already an "in-progress" package developement
+                local_dev_entry = self.is_wapt_package_development_dir(target_directory)
+                if local_dev_entry:
+                    if use_local_sources:
+                        if entry>local_dev_entry:
+                            raise Exception('A newer package version %s is already in repository "%s", local sources %s is %s, aborting' % (entry.asrequirement(),entry.repo,target_directory, local_dev_entry.asrequirement()))
+                        if local_dev_entry.match(hostname):
+                            prev_depends = local_dev_entry.depends.split(',')
+                            if append_depends:
+                                if not isinstance(append_depends,list):
+                                    append_depends = [s.strip() for s in append_depends.split(',')]
+                                for d in append_depends:
+                                    if not d in prev_depends:
+                                        prev_depends.append(d)
 
-                        if remove_depends:
-                            if not isinstance(remove_depends,list):
-                                remove_depends = [s.strip() for s in remove_depends.split(',')]
-                            for d in remove_depends:
-                                if d in prev_depends:
-                                    prev_depends.remove(d)
+                            if remove_depends:
+                                if not isinstance(remove_depends,list):
+                                    remove_depends = [s.strip() for s in remove_depends.split(',')]
+                                for d in remove_depends:
+                                    if d in prev_depends:
+                                        prev_depends.remove(d)
 
-                        local_dev_entry.depends = ','.join(prev_depends)
-                        local_dev_entry.save_control_to_wapt(target_directory)
-                        self.add_pyscripter_project(target_directory)
-                        return {'target':target_directory,'source_dir':target_directory,'package':local_dev_entry}
+                            local_dev_entry.depends = ','.join(prev_depends)
+                            local_dev_entry.save_control_to_wapt(target_directory)
+                            self.add_pyscripter_project(target_directory)
+                            return {'target':target_directory,'source_dir':target_directory,'package':local_dev_entry}
+                        else:
+                            raise Exception('Local target %s directory is the sources of a different package %s than expected %s' % (target_directory,local_dev_entry.package,hostname))
                     else:
-                        raise Exception('Local target %s directory is the sources of a different package %s than expected %s' % (target_directory,local_dev_entry.package,hostname))
-                else:
-                    raise Exception('directory %s is already a package development directory, aborting.' % target_directory)
+                        raise Exception('directory %s is already a package development directory, aborting.' % target_directory)
+                elif os.path.isdir(target_directory) and os.listdir(target_directory):
+                    raise Exception('directory %s is not empty, aborting.' % target_directory)
+
+                return self.duplicate_package(
+                        packagename=hostname,
+                        newname=hostname,
+                        target_directory=target_directory,
+                        build=False,
+                        append_depends = append_depends,
+                        remove_depends = remove_depends,
+                        usecache=False,
+                        printhook=printhook)
             elif os.path.isdir(target_directory) and os.listdir(target_directory):
                 raise Exception('directory %s is not empty, aborting.' % target_directory)
-
-            return self.duplicate_package(
-                    packagename=hostname,
-                    newname=hostname,
-                    target_directory=target_directory,
-                    build=False,
-                    append_depends = append_depends,
-                    remove_depends = remove_depends,
-                    usecache=False,
-                    printhook=printhook)
-        elif os.path.isdir(target_directory) and os.listdir(target_directory):
-            raise Exception('directory %s is not empty, aborting.' % target_directory)
+            else:
+                return self.make_host_template(packagename=hostname,directoryname=target_directory,depends=append_depends)
         else:
-            return self.make_host_template(packagename=hostname,directoryname=target_directory,depends=append_depends)
+            raise Exception('No Wapthost repository defined')
 
     def forget_packages(self,packages_list):
         """Remove install status for packages from local database
@@ -4621,9 +4650,9 @@ class Wapt(object):
             source_control = PackageEntry().load_control_from_wapt(packagename)
             if not newname:
                 newname = source_control.package
-            if not target_directory:
+            if target_directory == '':
                 target_directory = self.get_default_development_dir(newname,section=source_control.section)
-            if not target_directory:
+            if target_directory is None:
                 target_directory = tempfile.mkdtemp('wapt')
             # check if we will not overwrite newer package or different package
             check_target_directory(target_directory,source_control)
@@ -4641,7 +4670,7 @@ class Wapt(object):
                 target_directory = tempfile.mkdtemp('wapt')
             # check if we will not overwrite newer package or different package
             check_target_directory(target_directory,source_control)
-            logger.info('  unzipping %s to directory %s' % (source_filename,target_directory))
+            logger.info(u'  unzipping %s to directory %s' % (source_filename,target_directory))
             zip.extractall(path=target_directory)
         else:
             source_package = self.is_available(packagename)
@@ -4662,7 +4691,7 @@ class Wapt(object):
                 target_directory = tempfile.mkdtemp('wapt')
             # check if we will not overwrite newer package or different package
             check_target_directory(target_directory,source_control)
-            logger.info('  unzipping %s to directory %s' % (source_filename,target_directory))
+            logger.info(u'  unzipping %s to directory %s' % (source_filename,target_directory))
             zip = ZipFile(source_filename,allowZip64=True)
             zip.extractall(path=target_directory)
 
@@ -4725,7 +4754,7 @@ class Wapt(object):
             # sign package
             if private_key:
                 self.sign_package(target_filename,excludes=excludes,private_key=private_key,callback=callback)
-                logger.debug('Package signed')
+                logger.debug(u'Package signed')
             else:
                 logger.warning(u'No private key provided, package is not signed !')
             result['target'] = target_filename
@@ -4875,7 +4904,7 @@ class Wapt(object):
             with zipfile.ZipFile(fname,'r',allowZip64=True) as myzip:
                 try:
                     icon_info = myzip.getinfo(u'WAPT/icon.png')
-                    logger.warning('Already an icon in package {}, keeping it'.format(package))
+                    logger.warning(u'Already an icon in package {}, keeping it'.format(package))
                     has_icon = True
                 except KeyError:
                     has_icon = False
@@ -4891,7 +4920,7 @@ class Wapt(object):
                         iconpath = os.path.join(self.wapt_base_dir,u'cache',u'{}.png'.format(result['package'].package))
                         if not os.path.isfile(iconpath):
                             # try to find an icon in the first exe file we find...
-                            logger.info('No suitable icon in cache, trying exe')
+                            logger.info(u'No suitable icon in cache, trying exe')
                             try:
                                 from extract_icon import extract_icon
                             except ImportError as e:
@@ -4901,7 +4930,7 @@ class Wapt(object):
                                 try:
                                     icon = extract_icon(exefile)
                                     if len(icon)>10:
-                                        logger.info('Using icon from {}'.format(exefile))
+                                        logger.info(u'Using icon from {}'.format(exefile))
                                         with open(target_icon_path,'wb') as png:
                                             png.write(icon)
                                             has_icon = True
@@ -4935,10 +4964,10 @@ class Wapt(object):
 
                     if not signature:
                         raise Exception('Unable to sign package {}'.format(package))
-                    logger.info('Package {} successfully built'.format(build['filename']))
+                    logger.info(u'Package {} successfully built'.format(build['filename']))
                     return build
                 else:
-                    logger.warning('There is already an icon in package {}, keeping it'.format(package))
+                    logger.warning(u'There is already an icon in package {}, keeping it'.format(package))
                     return None
             finally:
                 shutil.rmtree(tempdir,ignore_errors=True)

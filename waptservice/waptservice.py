@@ -185,7 +185,7 @@ class WaptServiceConfig(object):
             if config.has_option('global','waptservice_password'):
                 self.wapt_password = config.get('global', 'waptservice_password')
             else:
-                logger.warning("WARNING : no password set, using default password")
+                logger.warning(u"WARNING : no password set, using default password")
                 self.wapt_password='5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8'  # = password
 
             if config.has_option('global','waptservice_port'):
@@ -230,7 +230,7 @@ class WaptServiceConfig(object):
         if os.path.exists(self.config_filename):
             new_config_filedate = os.stat(self.config_filename).st_mtime
             if new_config_filedate<>self.config_filedate:
-                logger.info('Reloading configuration')
+                logger.info(u'Reloading configuration')
                 self.load()
                 return new_config_filedate
             else:
@@ -313,22 +313,22 @@ def check_open_port(portnumber=8088):
     if win_major_version<6:
         #check if firewall is running
         if win32serviceutil.QueryServiceStatus( 'SharedAccess', None)[1]==win32service.SERVICE_RUNNING:
-            logger.info("Firewall started, checking for port openning...")
+            logger.info(u"Firewall started, checking for port openning...")
             #WinXP 2003
             if 'waptservice' not in setuphelpers.run_notfatal('netsh firewall show portopening'):
-                logger.info("Adding a firewall rule to open port %s"%portnumber)
+                logger.info(u"Adding a firewall rule to open port %s"%portnumber)
                 setuphelpers.run_notfatal("""netsh.exe firewall add portopening name="waptservice %s" port=%s protocol=TCP"""%(portnumber,portnumber))
             else:
-                logger.info("port %s already opened, skipping firewall configuration"%(portnumber,))
+                logger.info(u"port %s already opened, skipping firewall configuration"%(portnumber,))
     else:
         if win32serviceutil.QueryServiceStatus( 'MpsSvc', None)[1]==win32service.SERVICE_RUNNING:
-            logger.info("Firewall started, checking for port openning...")
+            logger.info(u"Firewall started, checking for port openning...")
             if 'waptservice' not in setuphelpers.run_notfatal('netsh advfirewall firewall show rule name="waptservice %s"'%(portnumber,)):
-                logger.info("No port opened for waptservice, opening port %s"%portnumber)
+                logger.info(u"No port opened for waptservice, opening port %s"%portnumber)
                 #win Vista and higher
                 setuphelpers.run_notfatal("""netsh advfirewall firewall add rule name="waptservice %s" dir=in action=allow protocol=TCP localport=%s remoteip=%s,LocalSubnet """%(portnumber,portnumber,','.join(waptconfig.authorized_callers_ip)))
             else:
-                logger.info("port %s already opened, skipping firewall configuration"%(portnumber,))
+                logger.info(u"port %s already opened, skipping firewall configuration"%(portnumber,))
 
 
 waptconfig = WaptServiceConfig()
@@ -399,7 +399,7 @@ def check_ip_source(f):
     def decorated(*args, **kwargs):
         auth = request.authorization
         if not request.remote_addr in app.waptconfig.authorized_callers_ip:
-            logger.debug('caller src address {} is not in authorized list {}'.format(request.remote_addr,app.waptconfig.authorized_callers_ip))
+            logger.debug(u'caller src address {} is not in authorized list {}'.format(request.remote_addr,app.waptconfig.authorized_callers_ip))
             return authenticate()
         return f(*args, **kwargs)
     return decorated
@@ -449,7 +449,7 @@ def all_packages():
             cur.execute(query)
             rows = [ dict(x) for x in cur.fetchall() ]
         except sqlite3.Error, e:
-            logger.critical("*********** Error %s:" % e.args[0])
+            logger.critical(u"*********** Error %s:" % e.args[0])
     if request.args.get('format','html')=='json' or request.url.endswith('.json'):
         return Response(common.jsondump(rows), mimetype='application/json')
     else:
@@ -539,7 +539,7 @@ def get_checkupgrades():
             cur.execute(query)
             data = json.loads(cur.fetchone()['value'])
         except Exception as e :
-            logger.critical("*********** error %s"  % (setuphelpers.ensure_unicode(e)))
+            logger.critical(u"*********** error %s"  % (setuphelpers.ensure_unicode(e)))
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -650,7 +650,7 @@ def cleanup():
 @app.route('/install_log.json')
 @requires_auth
 def install_log():
-    logger.info("show install log")
+    logger.info(u"show install log")
     try:
         packagename = request.args.get('package')
         data = wapt().last_install_log(packagename)
@@ -665,7 +665,7 @@ def install_log():
 @app.route('/enable')
 @requires_auth
 def enable():
-    logger.info("enable tasks scheduling")
+    logger.info(u"enable tasks scheduling")
     data = wapt().enable_tasks()
     return Response(common.jsondump(data), mimetype='application/json')
 
@@ -673,7 +673,7 @@ def enable():
 @app.route('/disable')
 @requires_auth
 def disable():
-    logger.info("disable tasks scheduling")
+    logger.info(u"disable tasks scheduling")
     data = wapt().disable_tasks()
     return Response(common.jsondump(data), mimetype='application/json')
 
@@ -682,7 +682,7 @@ def disable():
 @app.route('/register.json')
 @check_ip_source
 def register():
-    logger.info("register computer")
+    logger.info(u"register computer")
     data = task_manager.add_task(WaptRegisterComputer()).as_dict()
 
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
@@ -695,7 +695,7 @@ def register():
 @app.route('/inventory.json')
 @requires_auth
 def inventory():
-    logger.info("Inventory")
+    logger.info(u"Inventory")
     #wapt=Wapt(config_filename=app.waptconfig.config_filename)
     data = wapt().inventory()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
@@ -724,7 +724,7 @@ def install():
 @requires_auth
 def package_download():
     package = request.args.get('package')
-    logger.info("download package %s" % package)
+    logger.info(u"download package %s" % package)
     data = task_manager.add_task(WaptDownloadPackage(package)).as_dict()
 
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
@@ -738,7 +738,7 @@ def package_download():
 @check_ip_source
 def remove():
     package = request.args.get('package')
-    logger.info("remove package %s" % package)
+    logger.info(u"remove package %s" % package)
     force=int(request.args.get('force','0'))
     data = task_manager.add_task(WaptPackageRemove(package,force = force)).as_dict()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
@@ -985,7 +985,7 @@ class WaptTask(object):
 
         if self.external_pids:
             for pid in self.external_pids:
-                logger.debug('Killing process with pid {}'.format(pid))
+                logger.debug(u'Killing process with pid {}'.format(pid))
                 setuphelpers.killtree(pid)
             del(self.external_pids[:])
         if self.wapt:
@@ -1409,9 +1409,9 @@ class WaptTaskManager(threading.Thread):
     def check_configuration(self):
         """heck wapt configuration, reload ini file if changed"""
         try:
-            logger.debug("Checking if config file has changed")
+            logger.debug(u"Checking if config file has changed")
             if waptconfig.reload_if_updated():
-                logger.info("Wapt config file has changed, reloading")
+                logger.info(u"Wapt config file has changed, reloading")
                 self.wapt.reload_config_if_updated()
 
         except:
@@ -1423,7 +1423,7 @@ class WaptTaskManager(threading.Thread):
 
         self.start_network_monitoring()
 
-        logger.debug("Wapt tasks queue started")
+        logger.debug(u"Wapt tasks queue started")
         while True:
             try:
                 # check wapt configuration, reload ini file if changed
@@ -1589,11 +1589,11 @@ class WaptTaskManager(threading.Thread):
                 print('addr changed !')
                 wapt.add_task(WaptNetworkReconfig())
 
-        logger.debug("Wapt network address monitoring started")
+        logger.debug(u"Wapt network address monitoring started")
         nm = threading.Thread(target=addr_change,args=(self,))
         nm.daemon = True
         nm.start()
-        logger.debug("Wapt network address monitoring stopped")
+        logger.debug(u"Wapt network address monitoring stopped")
 
     def start_network_monitoring(self):
         def connected_change(taskman):
@@ -1604,15 +1604,15 @@ class WaptTaskManager(threading.Thread):
                 print('connected status changed !')
                 taskman.add_task(WaptNetworkReconfig())
 
-        logger.debug("Wapt connection monitor started")
+        logger.debug(u"Wapt connection monitor started")
         nm = threading.Thread(target=connected_change,args=(self,))
         nm.daemon = True
         nm.start()
-        logger.debug("Wapt connection monitor stopped")
+        logger.debug(u"Wapt connection monitor stopped")
 
     def network_up(self):
         with self.status_lock:
-            logger.warning('Network is UP')
+            logger.warning(u'Network is UP')
             try:
                 #self.wapt.update_server_status()
                 pass
@@ -1621,7 +1621,7 @@ class WaptTaskManager(threading.Thread):
 
     def network_down(self):
         with self.status_lock:
-            logger.warning('Network is DOWN')
+            logger.warning(u'Network is DOWN')
 
     def __str__(self):
         return "\n".join(self.tasks_status())
@@ -1631,7 +1631,7 @@ def install_service():
     """Setup waptservice as a windows Service managed by nssm
     >>> install_service()
     """
-    logger.info('Open port on firewall')
+    logger.info(u'Open port on firewall')
     # http
     check_open_port(waptconfig.waptservice_port)
     # https
@@ -1647,12 +1647,12 @@ def install_service():
 
     if setuphelpers.service_installed('waptservice'):
         if setuphelpers.service_is_running('waptservice'):
-            logger.info('Stop running waptservice')
+            logger.info(u'Stop running waptservice')
             setuphelpers.run('net stop waptservice')
             while setuphelpers.service_is_running('waptservice'):
-                logger.debug('Waiting for waptservice to terminate')
+                logger.debug(u'Waiting for waptservice to terminate')
                 time.sleep(2)
-        logger.info('Unregister existing waptservice')
+        logger.info(u'Unregister existing waptservice')
         setuphelpers.run('sc delete waptservice')
 
     if setuphelpers.iswin64():
@@ -1660,7 +1660,7 @@ def install_service():
     else:
         nssm = os.path.join(wapt_root_dir,'waptservice','win32','nssm.exe')
 
-    logger.info('Register new waptservice with nssm')
+    logger.info(u'Register new waptservice with nssm')
     setuphelpers.run('"{nssm}" install WAPTService "{waptpython}" ""{waptservicepy}""'.format(
         waptpython = os.path.abspath(os.path.join(wapt_root_dir,'waptpython.exe')),
         nssm = nssm,
@@ -1698,7 +1698,7 @@ def install_service():
             keyname = None
         registry_set(root,path,keyname,value,type = datatypes[valuetype])
 
-    logger.info('Allow authenticated users to start/stop waptservice')
+    logger.info(u'Allow authenticated users to start/stop waptservice')
     setuphelpers.run('sc sdset waptservice D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)(A;;CCLCSWRPWPDTLOCRRC;;;S-1-5-11)S:(AU;FA;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;WD)');
 
 if __name__ == "__main__":
@@ -1723,8 +1723,8 @@ if __name__ == "__main__":
                         os.path.join(wapt_root_dir,r'waptservice','ssl','waptservice.crt'))],
          'wsgi', {"wsgi_app":app})
     try:
-        logger.info("starting waptservice")
+        logger.info(u"starting waptservice")
         server.start()
     except KeyboardInterrupt:
-        logger.info("stopping waptservice")
+        logger.info(u"stopping waptservice")
         server.stop()
