@@ -17,9 +17,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 553
     Top = 0
     Width = 1072
-    ActivePage = pgInventory
+    ActivePage = pgExternalRepo
     Align = alClient
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -603,11 +603,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostPackage: TTabSheet
           Caption = 'Inventaire matériel'
-          ClientHeight = 761
+          ClientHeight = 447
           ClientWidth = 564
-          object GridhostAttribs: TVirtualJSONInspector
+          object GridhostInventory: TVirtualJSONInspector
             Left = 0
-            Height = 761
+            Height = 447
             Top = 0
             Width = 564
             PropertyDefs = <>

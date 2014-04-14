@@ -8,7 +8,7 @@ object visPrivateKeyAuth: TvisPrivateKeyAuth
   ClientHeight = 115
   ClientWidth = 311
   Position = poScreenCenter
-  LCLVersion = '1.1'
+  LCLVersion = '1.3'
   object edPasswordKey: TEdit
     Left = 178
     Height = 21

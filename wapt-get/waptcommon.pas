@@ -95,17 +95,14 @@ Type
     function QueryToHTMLtable(SQL: String; FormatHook: TFormatHook=nil): String;
   end;
 
-var
-  privateKeyPassword: string = '';
-  waptServerUser: string = 'admin';
-  waptServerPassword: string = '';
+const
+  WaptServerUser: AnsiString ='admin';
+  WaptServerPassword: Ansistring ='';
 
 implementation
 
-uses FileUtil,soutils,tiscommon,Variants,winsock,ShellApi,JwaIpHlpApi,JwaIpTypes,
-    NetworkAdapterInfo,tisinifiles,registry,tisstrings, JwaWinDNS,JwaWinsock2 ;
-
-
+uses FileUtil, soutils, tiscommon, Variants, winsock, ShellApi, JwaIpHlpApi,
+  JwaIpTypes, NetworkAdapterInfo, tisinifiles, registry, tisstrings, JwaWinDNS, JwaWinsock2 ;
 
 //query current dns server for SRV record and return a list of {name,priority,weight,port}
 function DNSSRVQuery(name:AnsiString):ISuperObject;
@@ -198,6 +195,7 @@ begin
   end;
   Result := ShellExecuteExA(@sei);
 end;
+
 
 Function GetDNSServers:TDynStringArray;
 var

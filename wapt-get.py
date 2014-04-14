@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.23"
+__version__ = "0.8.27"
 import sys
 import os
 import logging
@@ -750,7 +750,7 @@ def main():
                     print ppdicttable(result,(('status',10),('package',30),('version',10),('description',80),('repo',10)))
 
             elif action in ('clean','cleanup'):
-                result = mywapt.cleanup()
+                result = mywapt.cleanup(obsolete_only=not options.force)
                 if options.json_output:
                     jsonresult['result'] = result
                 else:

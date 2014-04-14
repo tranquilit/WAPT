@@ -218,7 +218,7 @@ def login_to_waptserver(url, login, passwd,newPass=""):
     except Exception as e:
         return unicode(str(e.message), 'ISO-8859-1')
 
-def edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None):
+def edit_hosts_depends(waptconfigfile,hosts_list,appends=[],removes=[],key_password=None,wapt_server_user=None,wapt_server_passwd=None):
     """Add or remove packages from host packages
     >>> edit_hosts_depends('c:/wapt/wapt-get.ini','htlaptop.tranquilit.local','toto','tis-7zip','admin','password')
     """
@@ -229,7 +229,7 @@ def edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=No
 
     wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
     if not isinstance(hosts_list,list):
-        hosts_list = [hosts_list]
+        hosts_list = [s.strip() for s in hosts_list.split(',')]
     if not isinstance(appends,list):
         appends = [s.strip() for s in appends.split(',')]
     if not isinstance(removes,list):

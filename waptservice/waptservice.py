@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.26"
+__version__ = "0.8.27"
 
 import time
 import sys
@@ -639,11 +639,12 @@ def longtask():
 @check_ip_source
 def cleanup():
     task = WaptCleanup()
-    data = task_manager.add_task(task).as_dict()
+    task.force = int(request.args.get('force','0')) == 1
+    data = task_manager.add_task(task)
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data,title='Cleanup')
+        return render_template('default.html',data=data.as_dict(),title='Cleanup')
 
 
 @app.route('/install_log')
@@ -1200,10 +1201,11 @@ class WaptCleanup(WaptTask):
         self.priority = 1000
         self.notify_server_on_start = False
         self.notify_server_on_finish = False
+        self.force = False
 
     def _run(self):
         try:
-            self.result = self.wapt.cleanup()
+            self.result = self.wapt.cleanup(obsolete_only=not self.force)
             self.summary = u"Cache local vidé"
         except Exception as e:
             self.result = {}

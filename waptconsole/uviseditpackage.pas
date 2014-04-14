@@ -487,43 +487,18 @@ var
   expr, res: string;
   package: string;
   Result: ISuperObject;
-  passwordOK,passwordProtected: boolean;
 begin
   Result := Nil;
 
   ActEditSavePackage.Execute;
+
   if not FileExists(GetWaptPrivateKeyPath) then
   begin
     ShowMessage('La clé privée n''existe pas: ' + GetWaptPrivateKeyPath);
     exit;
   end;
 
-  passwordProtected := StrToBool(DMPython.RunJSON(
-    format('common.private_key_has_password(r"%s".decode(''utf8''))', [GetWaptPrivateKeyPath])).AsString);
-
-  if (passwordProtected) then
-  begin
-    passwordOK:=False;
-    while not passwordOk do
-    begin
-      PasswordOk := StrToBool(DMPython.RunJSON(
-        format('common.check_key_password(r"%s","%s")',
-        [GetWaptPrivateKeyPath, privateKeyPassword])).AsString);
-      if not passwordOK then
-      with TvisPrivateKeyAuth.Create(Self) do
-      try
-        laKeyPath.Caption := GetWaptPrivateKeyPath;
-        if ShowModal = mrOk then
-          privateKeyPassword := edPasswordKey.Text
-        else
-          Exit;
-      finally
-        Free;
-      end;
-    end;
-  end;
-
-  with Tvisloading.Create(Self) do
+  with TVisLoading.Create(Self) do
   try
     ProgressTitle('Upload en cours');
     Application.ProcessMessages;
@@ -653,7 +628,7 @@ begin
       end
       else
       begin
-        with  Tvisloading.Create(Self) do
+        with  TVisLoading.Create(Self) do
           try
             ProgressTitle('Téléchargement en cours');
             Application.ProcessMessages;

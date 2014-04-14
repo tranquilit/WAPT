@@ -33,7 +33,7 @@ type
     { private declarations }
   public
     { public declarations }
-    tasks,running,pending : ISuperObject;
+    upgrades,tasks,running,pending : ISuperObject;
   end;
 
 var
@@ -50,11 +50,11 @@ procedure TVisWaptExit.ActUpgradeExecute(Sender: TObject);
 var
   aso: ISuperObject;
 begin
-  Timer1.Enabled := False;
   aso := WAPTLocalJsonGet('upgrade.json');
   Memo1.Text:=aso.AsJSon();
   tasks := aso['content'];
   GridTasks.Data := tasks;
+  upgrades := Nil;
 end;
 
 procedure TVisWaptExit.actSkipExecute(Sender: TObject);
@@ -64,7 +64,7 @@ end;
 
 procedure TVisWaptExit.FormShow(Sender: TObject);
 var
-  aso,upgrades: ISuperObject;
+  aso: ISuperObject;
 begin
   aso := Nil;
   upgrades := Nil;
@@ -111,8 +111,6 @@ var
 begin
   timer1.Enabled:=False;
   try
-    Application.ProcessMessages;
-    ProgressBar1.Position := ProgressBar1.Position+1;
     aso := WAPTLocalJsonGet('tasks.json');
     if aso <> Nil then
     begin
@@ -125,16 +123,29 @@ begin
       pending := Nil;
     end;
 
-    if (running=Nil) and (pending=Nil) and (Tasks=Nil) then
+    if ((running=Nil) or (Running.datatype=stNull)) and (pending=Nil) and (Tasks=Nil) and (upgrades=Nil) then
       Application.terminate;
 
     if ProgressBar1.Position>=ProgressBar1.Max then
+    begin
       ActUpgrade.Execute;
+      ProgressBar1.Position := 0;
+    end
+    else
+      ProgressBar1.Position := ProgressBar1.Position+1;
 
-    if tasks<>Nil then
-      ProgressBar1.Position:=0;
+    if (upgrades = Nil) and ((running<>Nil) or (pending<>Nil))  then
+    begin
+      if running.DataType<>stNull then
+      begin
+        ProgressBar1.Position:=running.I['progress'];
+        Memo1.Lines.Text:=running.S['description']+#13#10+running.S['runstatus'];
+      end;
+      GridTasks.Data:=pending;
+    end;
   finally
-    Timer1.Enabled:=tasks=Nil;
+    Timer1.Enabled:=True;
+    Application.ProcessMessages;
   end;
 end;
 

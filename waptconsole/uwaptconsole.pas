@@ -127,7 +127,7 @@ type
     EdRun: TEdit;
     EdSearch: TEdit;
     GridHosts: TSOGrid;
-    GridhostAttribs: TVirtualJSONInspector;
+    GridhostInventory: TVirtualJSONInspector;
     GridExternalPackages: TSOGrid;
     ImageList1: TImageList;
     Label1: TLabel;
@@ -418,56 +418,52 @@ end;
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
   currhost,currip: Ansistring;
-  attribs, packages, softwares,tasks,tasksresult,running: ISuperObject;
-  node: PVirtualNode;
+  RowSO,attribs, packages, softwares,tasks,tasksresult,running: ISuperObject;
 begin
   TimerTasks.Enabled:=False;
-  Node := GridHosts.FocusedNode;
-  if Node <> nil then
+  RowSO := Gridhosts.FocusedRow;
+  if (RowSO <> nil) then
   begin
-    currhost := GridHosts.GetCellStrValue(Node, 'uuid');
-    currip := GridHosts.GetCellStrValue(Node, 'host.connected_ips');
+    currhost := RowSO.S['uuid'];
+    currip := RowSO.S['host.connected_ips'];
     if HostPages.ActivePage = pgPackages then
     begin
-      packages := GridHosts.GetNodeSOData(Node)['packages'];
+      packages := RowSO['packages'];
       if (packages = nil) or (packages.AsArray = nil) then
       try
         packages := WAPTServerJsonGet('client_package_list/%s',
           [currhost],
           WaptUseLocalConnectionProxy,
           waptServerUser, waptServerPassword);
-        GridHosts.GetNodeSOData(Node)['packages'] := packages;
+        RowSO['packages'] := packages;
       except
-        GridHosts.GetNodeSOData(Node)['packages'] := Nil;
+        RowSO['packages'] := Nil;
       end;
-      EdHostname.Text := GridHosts.GetCellStrValue(Node, 'host.computer_name');
-      EdDescription.Text := GridHosts.GetCellStrValue(Node, 'host.description');
-      EdOS.Text := GridHosts.GetCellStrValue(Node, 'host.windows_product_infos.version');
-      EdIPAddress.Text := GridHosts.GetCellStrValue(Node, 'host.connected_ips');
-      EdManufacturer.Text := GridHosts.GetCellStrValue(Node, 'host.system_manufacturer');
-      EdModelName.Text := GridHosts.GetCellStrValue(Node, 'host.system_productname');
-      EdUpdateDate.Text := GridHosts.GetCellStrValue(Node, 'last_query_date');
-      EdUser.Text := GridHosts.GetCellStrValue(Node, 'host.current_user');
-      EdRunningStatus.Text:=GridHosts.GetCellStrValue(node,'update_status.runstatus');
+      EdHostname.Text := RowSO.S['host.computer_name'];
+      EdDescription.Text := RowSO.S['host.description'];
+      EdOS.Text := RowSO.S['host.windows_product_infos.version'];
+      EdIPAddress.Text := RowSO.S['host.connected_ips'];
+      EdManufacturer.Text := RowSO.S['host.system_manufacturer'];
+      EdModelName.Text := RowSO.S['host.system_productname'];
+      EdUpdateDate.Text := RowSO.S['last_query_date'];
+      EdUser.Text := RowSO.S['host.current_user'];
+      EdRunningStatus.Text:=RowSO.S['update_status.runstatus'];
       GridHostPackages.Data := packages;
     end
     else if HostPages.ActivePage = pgSoftwares then
     begin
-      softwares := GridHosts.GetNodeSOData(Node)['softwares'];
+      softwares := RowSO['softwares'];
       if (softwares = nil) or (softwares.AsArray = nil) then
       begin
         softwares := WAPTServerJsonGet('client_software_list/%s', [currhost],
             WaptUseLocalConnectionProxy,
             waptServerUser, waptServerPassword);
-        GridHostSoftwares.GetNodeSOData(Node)['softwares'] := softwares;
+        RowSO['softwares'] := softwares;
       end;
       GridHostSoftwares.Data := softwares;
     end
     else if HostPages.ActivePage = pgHostPackage then
-    begin
-      attribs := GridHosts.GetNodeSOData(Node);
-      TreeLoadData(GridhostAttribs, attribs.AsJSon());
-    end
+      TreeLoadData(GridhostInventory, RowSO.AsJSon())
     else if HostPages.ActivePage = pgTasks then
     begin
       try
@@ -477,8 +473,12 @@ begin
         if tasks.S['status']='OK' then
         begin
           HostRunningTaskLog.Text:= tasks.AsJSon(True);
-          HostRunningTaskLog.SelStart:=length(HostRunningTask.Text)-1;
-          HostRunningTaskLog.SelLength :=1;
+          with HostRunningTaskLog do
+          begin
+            selstart := GetTextLen; // MUCH more efficient then Length(text)!
+            SelLength:=0;
+            Perform( EM_SCROLLCARET, 0, 0 );
+          end;
 
           tasksresult := tasks['message'];
           if tasksresult['done'] =Nil then
@@ -519,7 +519,7 @@ begin
   begin
     GridHostPackages.Clear;
     GridHostSoftwares.Clear;
-    GridhostAttribs.Clear;
+    GridhostInventory.Clear;
   end;
 end;
 
@@ -579,55 +579,30 @@ end;
 
 procedure TVisWaptGUI.ActPackageDuplicateExecute(Sender: TObject);
 var
-  filename, filenameDepends, oldName, filePath, sourceDir, depends: string;
-  uploadResult, dependsList, dependsPath, listPackages: ISuperObject;
+  filename, filenameDepend, oldName, filePath, sourceDir, depends: string;
+  package,uploadResult, depend, dependsList, dependsPath, listPackages: ISuperObject;
   done: boolean = False;
-  multiplePackages      :boolean = False;
-  i: integer;
-  isEncrypt: boolean;
-  N: PVirtualNode;
 
 begin
+  listPackages := TSuperObject.create(stArray);
+  for package in GridExternalPackages.SelectedRows do
+    listPackages.AsArray.Add(package.S['package']+'(='+package.S['version']+')');
+  if MessageDlg('Confirmer la duplication', format('Etes vous sûr de vouloir dupliquer %s dans votre dépot ?', [Join(',', listPackages)]),
+        mtConfirmation, mbYesNoCancel, 0) <> mrYes then
+    Exit;
 
-  multiplePackages := GridExternalPackages.SelectedCount > 1;
-  if multiplePackages then
+  for package in GridExternalPackages.SelectedRows do
   begin
-    listPackages := TSuperObject.Create(stArray);
-       N := GridExternalPackages.GetFirstSelected;
-       while N <> nil do
-       begin
-            listPackages.AsArray.Add(GridExternalPackages.GetCellStrValue(N, 'package'));
-            N := GridExternalPackages.GetNextSelected(N);
-       end;
-
-         if MessageDlg('Confirmer la duplication', format('Etes vous sûr de vouloir dupliquer %s dans votre dépot ?', [Join(',', listPackages)]),
-         mtConfirmation, mbYesNoCancel, 0) <> mrYes then
-         Exit;
-       listPackages.Clear();
-  end;
-
-
-
-  N := GridExternalPackages.GetFirstSelected;
-  while N <> nil do
-  begin
-    oldName := GridExternalPackages.GetCellStrValue(N, 'package');
-    filename := GridExternalPackages.GetCellStrValue(N, 'filename');
-    depends := GridExternalPackages.GetCellStrValue(N, 'depends');
+    oldName := package.S['package']+'(='+package.S['version']+')';
+    filename := package.S['filename'];
+    depends := package.S['depends'];
     filePath := AppLocalDir + 'cache\' + filename;
     if not DirectoryExists(AppLocalDir + 'cache') then
       mkdir(AppLocalDir + 'cache');
 
-    if not multiplePackages then
-    begin
-    if MessageDlg('Confirmer la duplication', format('Etes vous sûr de vouloir dupliquer %s dans votre dépot ?', [oldName]),
-      mtConfirmation, mbYesNoCancel, 0) <> mrYes then
-      Exit;
-
-    end;
-
-    with  Tvisloading.Create(Self) do
+    with  TVisLoading.Create(Self) do
       try
+        //Téléchargement du paquet
         Self.Enabled := False;
         ProgressTitle('Téléchargement en cours de ' + oldName);
         Application.ProcessMessages;
@@ -640,29 +615,34 @@ begin
           exit;
         end;
 
-        dependsPath := TSuperObject.Create(stArray);
         if depends <> '' then
         begin
-          dependsList := DMPython.RunJSON(
-            format('waptdevutils.get_packages_filenames(r"%s".decode(''utf8''),"%s")',
-            [AppIniFilename, depends]));
-          for i := 0 to dependsList.AsArray.Length - 1 do
+          //Téléchargement des dépendances du paquet
+          dependsPath := TSuperObject.Create(stArray);
           begin
-            ProgressTitle(
-              'Téléchargement en cours de ' + dependsList.AsArray.S[i]);
-            dependsPath.AsArray.Add(AppLocalDir + 'cache\' + dependsList.AsArray.S[i]);
-            if not DirectoryExists(AppLocalDir + 'cache') then
-              mkdir(AppLocalDir + 'cache');
-            try
-              if not FileExists(dependsPath.AsArray.S[i]) then
-                Wget(WaptExternalRepo + '/' + dependsList.AsArray.S[i],
-                  dependsPath.AsArray.S[i], ProgressForm, @updateprogress, True);
-            except
-              ShowMessage('Téléchargement annulé');
-              exit;
+            // liste des noms de fichiers correspondant à la liste des dépendances
+            dependsList := DMPython.RunJSON(
+              format('waptdevutils.get_packages_filenames(r"%s".decode(''utf8''),"%s")',
+                [AppIniFilename, depends]));
+            for depend in dependsList do
+            begin
+              ProgressTitle(
+                'Téléchargement en cours de ' + depend.AsString);
+              filenameDepend := AppLocalDir + 'cache\' + depend.AsString;
+              dependsPath.AsArray.Add(filenameDepend);
+              try
+                if not FileExists(dependsPath.AsArray.S[i]) then
+                  Wget(WaptExternalRepo + '/' + depend.AsString,
+                    dependsPath.AsArray.S[i], ProgressForm, @updateprogress, True);
+              except
+                ShowMessage('Téléchargement annulé');
+                exit;
+              end;
             end;
           end;
         end;
+
+        //Duplication des dépendances
         sourceDir := DMPython.RunJSON(
           Format('waptdevutils.duplicate_from_tis_repo(r"%s",r"%s",%S)',
           [AppIniFilename, filePath, dependsPath.AsString])).AsString;
@@ -674,31 +654,6 @@ begin
             ShowMessage('la clé privée n''existe pas: ' + GetWaptPrivateKeyPath);
             exit;
           end;
-          isEncrypt := StrToBool(DMPython.RunJSON(
-            format('common.private_key_has_password(r"%s")',
-            [GetWaptPrivateKeyPath])).AsString);
-          if (privateKeyPassword = '') and (isEncrypt) then
-          begin
-            with TvisPrivateKeyAuth.Create(Self) do
-              try
-                laKeyPath.Caption := GetWaptPrivateKeyPath;
-                repeat
-                  if ShowModal = mrOk then
-                  begin
-                    privateKeyPassword := edPasswordKey.Text;
-                    if StrToBool(DMPython.RunJSON(
-                      format('common.check_key_password(r"%s","%s")',
-                      [GetWaptPrivateKeyPath, privateKeyPassword])).AsString) then
-                      done := True;
-                  end
-                  else
-                    Exit;
-                until done;
-              finally
-                Free;
-              end;
-          end;
-
 
           ProgressTitle('Upload en cours');
           Application.ProcessMessages;
@@ -719,28 +674,20 @@ begin
             ShowMessage('Erreur lors de la duplication.');
 
           ModalResult := mrOk;
-
         end;
       finally
         Self.Enabled := True;
         Free;
       end;
-    N := GridExternalPackages.GetNextSelected(N);
   end;
-   if multiplePackages then
-      ShowMessage(format('%s dupliqué avec succès.', [ Join(',', listPackages)])) ;
-
-
-  GridExternalPackages.ClearSelection;
+  ShowMessage(format('%s dupliqué(s) avec succès.', [ Join(',', listPackages)])) ;
   MainPages.ActivePage := pgPrivateRepo;
-
 end;
 
 procedure TVisWaptGUI.ActPackageGroupAddExecute(Sender: TObject);
 begin
   CreateGroup('agroup', ActAdvancedMode.Checked);
   ActPackagesUpdate.Execute;
-
 end;
 
 procedure TVisWaptGUI.actQuitExecute(Sender: TObject);
@@ -988,7 +935,7 @@ begin
               params := params + format('destination=r"%s",',
                 [ExcludeTrailingBackslash(fnWaptDirectory.Directory)]);
               params := params + format('company=r"%s",', [edOrgName.Text]);
-              with  Tvisloading.Create(Self) do
+              with  TVisLoading.Create(Self) do
                 try
                   ProgressTitle('Création en cours');
                   Application.ProcessMessages;
@@ -1219,9 +1166,10 @@ end;
 
 procedure TVisWaptGUI.ActRemoveFromGroupExecute(Sender: TObject);
 var
-  Result, groups, host: ISuperObject;
+  Res, packages, host: ISuperObject;
   N:PVirtualNode;
   i: word;
+  PackagesList, args: AnsiString;
 begin
   if GridHosts.Focused then
   begin
@@ -1235,27 +1183,36 @@ begin
       end;
       if ShowModal = mrOk then
       begin
-        groups := TSuperObject.Create(stArray);
+        packages := TSuperObject.Create(stArray);
         N := groupGrid.GetFirstChecked();
         while N <> nil do
         begin
-          groups.AsArray.Add(groupGrid.GetCellStrValue(N, 'package'));
+          packages.AsArray.Add(groupGrid.GetCellStrValue(N, 'package'));
           N := groupGrid.GetNextChecked(N);
         end;
       end;
     finally
       Free;
     end;
-    if (groups = nil) or (groups.AsArray.Length = 0) then
+    if (packages = nil) or (packages.AsArray.Length = 0) then
       Exit;
+
+    PackagesList := Join(',',packages);
 
     for host in GridHosts.SelectedRows do
     begin
-      res := DMPython.RunJSON(
-          format('common.duplicate_package(  r"%s".decode(''utf8''))',
-            [GetWaptPrivateKeyPath])).AsString);
-        EditHostDepends(host.S['host.computer_fqdn'],
-        Join(',', groups));
+      //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
+      args := '';
+      args := args + format('waptconfigfile = r"%s".decode(''utf8''),',[WaptIniFilename]);
+      args := args + format('hosts_list = r"%s".decode(''utf8''),',[host.S['host.computer_fqdn']]);
+      args := args + format('appends = [],',[]);
+      args := args + format('removes = r"%s".decode(''utf8''),',[PackagesList]);
+      args := args + format('key_password = r"%s".decode(''utf8''),',[privateKeyPassword]);
+      args := args + format('wapt_server_user = r"%s".decode(''utf8''),',[waptServerUser]);
+      args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',[waptServerPassword]);
+      res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)',[args]));
+      if res.S['status'] = 'OK' then
+        host.A['update_status.upgradess'].Add(host.S['host.computer_fqdn']);
     end;
   end;
 end;
@@ -1374,7 +1331,7 @@ begin
   begin
     N := GridPackages.GetFirstSelected;
     selects := GridPackages.SelectedCount;
-    with  Tvisloading.Create(Self) do
+    with  TVisLoading.Create(Self) do
       try
         while (N <> nil) and not StopRequired do
         begin
@@ -1822,10 +1779,10 @@ var
   propname : String;
   col : TSOGridColumn;
 begin
-  if (Source = GridhostAttribs) then
+  if (Source = GridhostInventory) then
   begin
     // drop d'un nouvel attribut
-    propname := GridhostAttribs.Path(GridhostAttribs.FocusedNode,0,ttNormal,'.');
+    propname := GridhostInventory.Path(GridhostInventory.FocusedNode,0,ttNormal,'.');
     propname := copy(propname,1,length(propname)-1);
     col := Gridhosts.FindColumnByPropertyName(propname);
     if col = Nil then
@@ -1845,9 +1802,9 @@ var
   propname : String;
 begin
   // dragDrop d'un attribut pour enrichir la grille des hosts
-  if (Source = GridhostAttribs) then
+  if (Source = GridhostInventory) then
   begin
-    propname := GridhostAttribs.Path(GridhostAttribs.FocusedNode,0,ttNormal,'.');
+    propname := GridhostInventory.Path(GridhostInventory.FocusedNode,0,ttNormal,'.');
     propname := copy(propname,1,length(propname)-1);
 
     Accept := (GridHosts.FindColumnByPropertyName(propname)=Nil);
@@ -1892,24 +1849,27 @@ procedure TVisWaptGUI.GridHostsGetImageIndexEx(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
   var Ghosted: boolean; var ImageIndex: integer; var ImageList: TCustomImageList);
 var
-  update_status, upgrades, errors: ISuperObject;
+  RowSO, update_status, upgrades, errors: ISuperObject;
 begin
   if GridHosts.Header.Columns[Column].Text='Status' then
   begin
-    update_status := GridHosts.GetNodeSOData(Node)['update_status'];
-    if (update_status <> nil) then
+    RowSO :=GridHosts.GetNodeSOData(Node);
+    if RowSO<>Nil then
     begin
-      ImageList := ImageList1;
-      errors := update_status['errors'];
-      upgrades := update_status['upgrades'];
-      if (errors <> nil) and (errors.AsArray.Length > 0) then
-        ImageIndex := 2
-      else
-      if (upgrades <> nil) and (upgrades.AsArray.Length > 0) then
-        ImageIndex := 1
-      else
-        ImageIndex := 0;
-
+      update_status := RowSO['update_status'];
+      if (update_status <> nil) then
+      begin
+        ImageList := ImageList1;
+        errors := update_status['errors'];
+        upgrades := update_status['upgrades'];
+        if (errors <> nil) and (errors.AsArray.Length > 0) then
+          ImageIndex := 2
+        else
+        if (upgrades <> nil) and (upgrades.AsArray.Length > 0) then
+          ImageIndex := 1
+        else
+          ImageIndex := 0;
+      end;
     end;
   end;
 end;
@@ -1918,25 +1878,35 @@ procedure TVisWaptGUI.GridHostsGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
   TextType: TVSTTextType; var CellText: string);
 var
-  update_status,errors,Upgrades : ISuperObject;
+  RowSO,update_status,errors,Upgrades : ISuperObject;
 begin
-  if (CellData <> nil) and (CellData.DataType = stArray) then
-    CellText := Join(',', CellData);
-  if GridHosts.Header.Columns[Column].Text='Status' then
+  if Node=Nil then
+    CellText := ''
+  else
   begin
-    update_status := GridHosts.GetNodeSOData(Node)['update_status'];
-    if (update_status <> nil) then
+    if (CellData <> nil) and (CellData.DataType = stArray) then
+      CellText := Join(',', CellData);
+    if GridHosts.Header.Columns[Column].Text='Status' then
     begin
-      errors := update_status['errors'];
-      upgrades := update_status['upgrades'];
-      if (errors <> nil) and (errors.AsArray.Length > 0) then
-        CellText:='ERROR'
+      RowSO := GridHosts.GetNodeSOData(Node);
+      if RowSO<>Nil then
+      begin
+        update_status := RowSO['update_status'];
+        if (update_status <> nil) then
+        begin
+          errors := update_status['errors'];
+          upgrades := update_status['upgrades'];
+          if (errors <> nil) and (errors.AsArray.Length > 0) then
+            CellText:='ERROR'
+          else
+          if (upgrades <> nil) and (upgrades.AsArray.Length > 0) then
+            CellText:='TO-UPGRADE'
+          else
+            CellText:='OK';
+        end;
+      end
       else
-      if (upgrades <> nil) and (upgrades.AsArray.Length > 0) then
-        CellText:='TO-UPGRADE'
-      else
-        CellText:='OK';
-
+        CellText:='';
     end;
   end;
 end;

@@ -2764,7 +2764,7 @@ class Wapt(object):
                     raise Exception(u'Error in package %s, files corrupted, SHA1 not matching for %s' % (fname,errors,))
             else:
                 # we allow unsigned in development mode where fname is a directory
-                if not self.allow_unsigned and istemporary:
+                if istemporary:
                     raise Exception(u'Package %s does not contain a manifest.sha1 file, and unsigned packages install is not allowed' % fname)
 
             self.check_cancelled()
@@ -2969,6 +2969,7 @@ class Wapt(object):
 
     def cleanup(self,obsolete_only=False):
         """Remove cached WAPT files from local disk
+        obsolete_only : If True, remove packages which are either no more available, or installed at a equal or newer version
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
         >>> res = wapt.cleanup(True)
         """
@@ -2981,7 +2982,7 @@ class Wapt(object):
                 if obsolete_only:
                     pe = PackageEntry().load_control_from_wapt(f)
                     pe_installed = self.is_installed(pe.package)
-                    can_remove = not pe_installed or pe <= pe_installed
+                    can_remove = (pe_installed and pe <= pe_installed) or not self.is_available(pe.asrequirement())
                 if can_remove:
                     logger.debug(u'Removing %s' % f)
                     try:
@@ -3221,26 +3222,25 @@ class Wapt(object):
             raise Exception(u'Error downloading some files : %s',(downloaded['errors'],))
 
         # check downloaded packages signatures and merge control data in local database
-        if not self.allow_unsigned:
-            for fname in downloaded['downloaded'] + downloaded['skipped']:
-                waptfile = zipfile.ZipFile(fname,'r',allowZip64=True)
-                control = waptfile.open(u'WAPT/control').read().decode('utf8')
-                manifest_content = waptfile.open(u'WAPT/manifest.sha1').read()
-                manifest = json.loads(manifest_content)
-                signature = waptfile.open(u'WAPT/signature').read().decode('base64')
-                try:
-                    subject = ssl_verify_content(manifest_content,signature,self.public_certs)
-                    logger.info(u'Package issued by %s' % (subject,))
-                except:
-                    raise Exception(u'Package file %s signature is invalid' % fname)
+        for fname in downloaded['downloaded'] + downloaded['skipped']:
+            waptfile = zipfile.ZipFile(fname,'r',allowZip64=True)
+            control = waptfile.open(u'WAPT/control').read().decode('utf8')
+            manifest_content = waptfile.open(u'WAPT/manifest.sha1').read()
+            manifest = json.loads(manifest_content)
+            signature = waptfile.open(u'WAPT/signature').read().decode('base64')
+            try:
+                subject = ssl_verify_content(manifest_content,signature,self.public_certs)
+                logger.info(u'Package issued by %s' % (subject,))
+            except:
+                raise Exception(u'Package file %s signature is invalid' % fname)
 
-                for (fn,sha1) in manifest:
-                    if fn == 'WAPT\\control':
-                        if sha1 != sha1_for_data(control.encode('utf8')):
-                            raise Exception("WAPT/control file of %s is corrupted, sha1 digests don't match" % fname)
-                        break
-                # Merge updated control data
-                # TODO
+            for (fn,sha1) in manifest:
+                if fn == 'WAPT\\control':
+                    if sha1 != sha1_for_data(control.encode('utf8')):
+                        raise Exception("WAPT/control file of %s is corrupted, sha1 digests don't match" % fname)
+                    break
+            # Merge updated control data
+            # TODO
 
         actions['downloads'] = downloaded
         logger.debug(u'Downloaded : %s' % (downloaded,))
@@ -4671,6 +4671,7 @@ class Wapt(object):
             # check if we will not overwrite newer package or different package
             check_target_directory(target_directory,source_control)
             logger.info(u'  unzipping %s to directory %s' % (source_filename,target_directory))
+            zip = ZipFile(source_filename,allowZip64=True)
             zip.extractall(path=target_directory)
         else:
             source_package = self.is_available(packagename)
