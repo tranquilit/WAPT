@@ -33,7 +33,7 @@ type
     { private declarations }
   public
     { public declarations }
-    tasks : ISuperObject;
+    tasks,running,pending : ISuperObject;
   end;
 
 var
@@ -64,7 +64,7 @@ end;
 
 procedure TVisWaptExit.FormShow(Sender: TObject);
 var
-  aso,upgrades,running,pending: ISuperObject;
+  aso,upgrades: ISuperObject;
 begin
   aso := Nil;
   upgrades := Nil;
@@ -77,17 +77,20 @@ begin
   //Check if pending upgrades
   aso := WAPTLocalJsonGet('checkupgrades.json','','',10);
   if aso<>Nil then
-    upgrades := aso['upgrades'];
+    upgrades := aso['upgrades']
+  else
+    upgrades := Nil;
 
-  //check if running tasks.
-  tasks := WAPTLocalJsonGet('tasks.json','','',10);
-  if tasks<>Nil then
+  //check if running or pending tasks.
+  aso := WAPTLocalJsonGet('tasks.json','','',10);
+  if aso<>Nil then
   begin
-    running := tasks['running'];
-    pending := tasks['pending'];
+    running := aso['running'];
+    pending := aso['pending'];
   end;
 
-  if (upgrades.AsArray.Length = 0) and  (running=Nil) and (pending.AsArray.Length = 0) then
+  //check if upgrades
+  if ((upgrades =Nil) or (upgrades.AsArray.Length = 0)) and  ((running=Nil) or (running.DataType=stNull))  and ((pending = Nil) or (pending.AsArray.Length = 0)) then
   begin
    //Système à jour
     Memo1.Text:='Système à jour';
@@ -104,31 +107,35 @@ end;
 procedure TVisWaptExit.Timer1Timer(Sender: TObject);
 var
   aso:ISuperObject;
-begin
-  Application.ProcessMessages;
-  ProgressBar1.Position := ProgressBar1.Position+1;
-  tasks := WAPTLocalJsonGet('tasks_status.json');
-  if tasks <>Nil then
-    SODataSource1.Data := tasks;
 
-  aso := WAPTLocalJsonGet('checkupgrades.json');
-  if aso<>Nil then
-  begin
-      if aso['upgrades'].AsArray.Length = 0 then
-      begin
-        Memo1.Text:='Système à jour';
-        //Close;
-      end
-      else
-      begin
-        ActUpgrade.Enabled:=True;
-        Memo1.Text:= Join(#13#10, aso['upgrades']);
-      end;
+begin
+  timer1.Enabled:=False;
+  try
+    Application.ProcessMessages;
+    ProgressBar1.Position := ProgressBar1.Position+1;
+    aso := WAPTLocalJsonGet('tasks.json');
+    if aso <> Nil then
+    begin
+      running := aso['running'];
+      pending := aso['pending'];
+    end
+    else
+    begin
+      running := Nil;
+      pending := Nil;
+    end;
+
+    if (running=Nil) and (pending=Nil) and (Tasks=Nil) then
+      Application.terminate;
+
+    if ProgressBar1.Position>=ProgressBar1.Max then
+      ActUpgrade.Execute;
+
+    if tasks<>Nil then
+      ProgressBar1.Position:=0;
+  finally
+    Timer1.Enabled:=tasks=Nil;
   end;
-  {
-  if ProgressBar1.Position>=ProgressBar1.Max then
-    ActUpgrade.Execute;
-  }
 end;
 
 end.
