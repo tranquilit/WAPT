@@ -99,7 +99,7 @@ begin
   else
   begin
     ActUpgrade.Enabled:=True;
-    Memo1.Text:= Join(#13#10, aso['upgrades']);
+    Memo1.Text:= Join(#13#10, upgrades);
   end;
   Timer1.Enabled := True;
 end;

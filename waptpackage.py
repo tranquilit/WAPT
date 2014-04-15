@@ -94,7 +94,7 @@ class PackageEntry(object):
     """Package attributes coming from either control files in WAPT package or local DB"""
     required_attributes = ['package','version','architecture',]
     optional_attributes = ['section','priority','maintainer','description','depends','conflicts','sources','installed_size']
-    non_control_attributes = ['filename','size','repo_url','md5sum','repo',]
+    non_control_attributes = ['localpath','filename','size','repo_url','md5sum','repo',]
 
     @property
     def all_attributes(self):
@@ -116,6 +116,7 @@ class PackageEntry(object):
         self.md5sum=''
         self.repo_url=''
         self.repo=repo
+        self.localpath=''
         self.installed_size=''
         self.calculated_attributes=[]
 
@@ -274,10 +275,15 @@ class PackageEntry(object):
                 self.md5sum = ''
             self.size = os.path.getsize(fname)
             self.filename = os.path.basename(fname)
+            self.localpath = os.path.dirname(os.path.abspath(fname))
         else:
             self.filename = self.make_package_filename()
-
+            self.localpath = ''
         return self
+
+    def wapt_fullpath(self):
+        """return full local path of wapt package if built"""
+        return os.path.join(self.localpath,self.filename)
 
     def save_control_to_wapt(self,fname):
         """Save package attributes to the control file (utf8 encoded)
@@ -295,6 +301,8 @@ class PackageEntry(object):
                     control_exist = True
                 except:
                     control_exist = False
+                    self.filename = os.path.basename(fname)
+                    self.localpath = os.path.dirname(os.path.abspath(fname))
                 if control_exist:
                     myzip.close()
                     raise Exception(u'control file already exist in WAPT file %s' % fname)

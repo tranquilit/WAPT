@@ -2232,9 +2232,6 @@ class Wapt(object):
         if not self.config_filename:
             self.config_filename = os.path.join(self.wapt_base_dir,'wapt-get.ini')
 
-        # get the list of certificates to use :
-        self.public_certs = glob.glob(os.path.join(self.wapt_base_dir,'ssl','*.crt'))
-
         self.package_cache_dir = os.path.join(self.wapt_base_dir,'cache')
         if not os.path.exists(self.package_cache_dir):
             os.makedirs(self.package_cache_dir)
@@ -2251,11 +2248,6 @@ class Wapt(object):
 
         # list of process pids launched by run command
         self.pidlist = []
-
-        # True if we want to use automatic host package based on host fqdn
-        #   privacy problem as there is a request to wapt repo to get
-        #   host package update at each update/upgrade
-        self.use_hostpackages = True
 
         import pythoncom
         pythoncom.CoInitialize()
@@ -2312,6 +2304,7 @@ class Wapt(object):
             self.dbdir =  self.config.get('global','dbdir')
         else:
             self.dbdir = os.path.join(self.wapt_base_dir,'db')
+
         if not os.path.exists(self.dbdir):
             os.makedirs(self.dbdir)
         self.dbpath = os.path.join(self.dbdir,'waptdb.sqlite')
@@ -2319,6 +2312,16 @@ class Wapt(object):
         if self.config.has_option('global','private_key'):
             self.private_key = self.config.get('global','private_key')
 
+        if self.config.has_option('global','public_certs_dir'):
+            self.public_certs_dir = self.config.get('global','public_certs_dir')
+        else:
+            self.public_certs_dir = os.path.join(self.wapt_base_dir,'ssl')
+        # get the list of certificates to use :
+        self.public_certs = glob.glob(os.path.join(self.public_certs_dir,'*.crt'))
+
+        # True if we want to use automatic host package based on host fqdn
+        #   privacy problem as there is a request to wapt repo to get
+        #   host package update at each update/upgrade
         if self.config.has_option('global','use_hostpackages'):
             self.use_hostpackages = self.config.getboolean('global','use_hostpackages')
 
@@ -2345,9 +2348,6 @@ class Wapt(object):
 
         if self.config.has_option('global','language'):
             self.language = self.config.get('global','language')
-
-        # get the list of certificates to use :
-        self.public_certs = glob.glob(os.path.join(self.wapt_base_dir,'ssl','*.crt'))
 
         # Get the configuration of all repositories (url, ...)
         self.repositories = []
@@ -2441,8 +2441,19 @@ class Wapt(object):
                     logger.critical(u'Unable to update server with current status : %s' % ensure_unicode(e))
 
 
-    def http_upload_package(self,package_filename,wapt_server_user=None,wapt_server_passwd=None):
-        if not os.path.isfile(package_filename):
+    def http_upload_package(self,package,wapt_server_user=None,wapt_server_passwd=None):
+        """Upload a package or host package to the waptserver.
+                package : either the filename of a wapt package, or a PackageEntry
+                wapt_server_user   :
+                wapt_server_passwd :
+            >>> from common import *
+            >>> wapt = Wapt(config_filename = r'C:\tranquilit\wapt\tests\wapt-get.ini')
+            >>> d = wapt.duplicate_package('test-wapttest','toto')
+            >>> print d
+            {'target': u'c:\\users\\htouvet\\appdata\\local\\temp\\toto.wapt', 'package': "toto (=117)"}
+            >>> wapt.http_upload_package(d['package'])
+            """
+        if not (isinstance(package,(str,unicode)) and os.path.isfile(package)) and not isinstance(package,PackageEntry):
             raise Exception('No package file to upload')
         if not wapt_server_user:
             wapt_server_user = raw_input('WAPT Server user :')
@@ -2450,11 +2461,17 @@ class Wapt(object):
             wapt_server_passwd = getpass.getpass('WAPT Server password :').encode('ascii')
 
         auth =  (wapt_server_user, wapt_server_passwd)
-        pe = PackageEntry().load_control_from_wapt(package_filename)
+        if not isinstance(package,PackageEntry):
+            pe = PackageEntry().load_control_from_wapt(package)
+            package_filename = package
+        else:
+            pe = package
+            package_filename = pe.wapt_fullpath()
         with open(package_filename,'rb') as afile:
             if pe.section == 'host':
                 req = requests.post("%s/upload_host" % (self.wapt_server,),files={'file':afile},proxies=self.proxies,verify=False,auth=auth)
             else:
+                print package_filename,auth
                 req = requests.post("%s/upload_package/%s" % (self.wapt_server,os.path.basename(package_filename)),data=afile,proxies=self.proxies,verify=False,auth=auth)
             req.raise_for_status()
             res = json.loads(req.content)
@@ -3073,8 +3090,8 @@ class Wapt(object):
                     else:
                         skipped.append([request,old_matches])
                 else:
-                    if [request,None] not in unavailable:
-                        unavailable.append([request,None])
+                    if request not in unavailable:
+                        unavailable.append(request)
 
         # get dependencies of not installed top packages
         if forceupgrade:
@@ -3676,7 +3693,7 @@ class Wapt(object):
 
     def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git*','*.pyc','src']):
         """Build the WAPT package from a directory
-            return a dict {'filename':waptfilename,'files':[list of files]}
+            return a dict {'filename':waptfilename,'files':[list of files],'package':PackageEntry}
         """
         if not isinstance(directoryname,unicode):
             directoryname = unicode(directoryname)
@@ -3761,6 +3778,7 @@ class Wapt(object):
             package_filename = entry.make_package_filename()
             logger.debug(u'Control data : \n%s' % entry.ascontrol())
             result_filename = os.path.abspath(os.path.join( directoryname,'..',package_filename))
+            entry.localpath = os.path.dirname(result_filename)
 
             allfiles = create_recursive_zip_signed(
                 zipfn = result_filename,
@@ -3777,13 +3795,13 @@ class Wapt(object):
             logger.debug(u'  Change current directory to %s' % previous_cwd)
             os.chdir(previous_cwd)
 
-    def build_upload(self,sources_directories,private_key_passwd=None,wapt_server_user=None,wapt_server_passwd=None,inc_package_release=False,delete_package=False):
+    def build_upload(self,sources_directories,private_key_passwd=None,wapt_server_user=None,wapt_server_passwd=None,inc_package_release=False):
         """Build a list of packages and upload the resulting packages to the main repository.
            if section of package is group or host, user specific wapt-host or wapt-group
         """
         if not isinstance(sources_directories,list):
             sources_directories = [sources_directories]
-        result = []
+        buildresults = []
         for source_dir in [os.path.abspath(p) for p in sources_directories]:
             if os.path.isdir(source_dir):
                 print('Building  %s' % source_dir)
@@ -3793,7 +3811,7 @@ class Wapt(object):
                     buildresult = self.build_package(source_dir,inc_package_release=True)
                 package_fn = buildresult['filename']
                 if package_fn:
-                    result.append(buildresult)
+                    buildresults.append(buildresult)
                     print('...done. Package filename %s' % (package_fn,))
 
                     def pwd_callback(*args):
@@ -3822,36 +3840,12 @@ class Wapt(object):
             else:
                 logger.critical(u'Directory %s not found' % source_dir)
 
+        result = []
         print 'Uploading files...'
-        # groups by www target : wapt or wapt-host
-        hosts = ('wapt-host',[])
-        others = ('wapt',[])
-        # split by destination
-        for p in result:
-            if p['package'].section == 'host':
-                hosts[1].append(p['filename'])
-            else:
-                others[1].append(p['filename'])
-        for package_group in (hosts,others):
-            if package_group[1]:
-                # add quotes for command line
-                files_list = ['"%s"' % f for f in package_group[1]]
-                cmd_dict =  {'waptfile': files_list,'waptdir':package_group[0]}
-                print ensure_unicode(self.upload_package(cmd_dict,wapt_server_user,wapt_server_passwd))
-
-                if delete_package:
-                    dir=os.path.dirname(files_list[0][1:-1])
-                    if os.path.isdir(dir):
-                        logger.debug(u'Deleting directory %s' % dir )
-                        shutil.rmtree(dir)
-
-                if package_group != hosts:
-                    if self.after_upload:
-                        print 'Run after upload script...'
-                        print ensure_unicode(self.run(self.after_upload % cmd_dict))
-                    elif self.upload_cmd:
-                        print "Don't forget to update Packages index on repository !"
-
+        for buildresult in buildresults:
+            upload_res = self.http_upload_package(buildresult['package'],wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
+            if upload_res['status'] == 'OK':
+                result.append(buildresult)
         return result
 
     def cleanup_session_setup(self):
@@ -4239,10 +4233,10 @@ class Wapt(object):
         self.add_pyscripter_project(directoryname)
         return directoryname
 
-    def make_host_template(self,packagename='',depends=None,directoryname=''):
+    def make_host_template(self,packagename='',depends=None,directoryname=None):
         return self.make_group_template(packagename=packagename,depends=depends,directoryname=directoryname,section='host')
 
-    def make_group_template(self,packagename='',depends=None,directoryname='',section='group',description=''):
+    def make_group_template(self,packagename='',depends=None,directoryname=None,section='group',description=''):
         r"""Build a skeleton of WAPT group package
             depends : list of package dependencies.
            Return the path of the skeleton
@@ -4270,6 +4264,9 @@ class Wapt(object):
 
         if not directoryname:
             directoryname = self.get_default_development_dir(packagename,section=section)
+
+        if not directoryname:
+            directoryname = tempfile.mkdtemp('wapt')
 
         if not os.path.isdir(os.path.join(directoryname,'WAPT')):
             os.makedirs(os.path.join(directoryname,'WAPT'))
@@ -4664,9 +4661,9 @@ class Wapt(object):
             source_control = PackageEntry().load_control_from_wapt(source_filename)
             if not newname:
                 newname = source_control.package
-            if not target_directory:
+            if target_directory == '':
                 target_directory = self.get_default_development_dir(newname,section=source_control.section)
-            if not target_directory:
+            if target_directory is None:
                 target_directory = tempfile.mkdtemp('wapt')
             # check if we will not overwrite newer package or different package
             check_target_directory(target_directory,source_control)
@@ -4686,9 +4683,9 @@ class Wapt(object):
             source_control = PackageEntry().load_control_from_wapt(source_filename)
             if not newname:
                 newname = source_control.package
-            if not target_directory:
+            if target_directory == '':
                 target_directory = self.get_default_development_dir(newname,section=source_control.section)
-            if not target_directory:
+            if target_directory is None:
                 target_directory = tempfile.mkdtemp('wapt')
             # check if we will not overwrite newer package or different package
             check_target_directory(target_directory,source_control)
@@ -4698,7 +4695,7 @@ class Wapt(object):
 
         # duplicate package informations
         dest_control = PackageEntry()
-        for a in source_control.all_attributes:
+        for a in source_control.required_attributes + source_control.optional_attributes:
             dest_control[a] = source_control[a]
 
         # add / remove dependencies from copy
@@ -4748,24 +4745,25 @@ class Wapt(object):
 
         # build package
         if build:
-            target_filename = self.build_package(target_directory,inc_package_release=False,excludes=excludes)['filename']
+            build_res = self.build_package(target_directory,inc_package_release=False,excludes=excludes)
+            result['target'] = build_res['filename']
+            result['package'] = build_res['package']
             #get default private_key if not provided
             if not private_key:
                 private_key = self.private_key
             # sign package
             if private_key:
-                self.sign_package(target_filename,excludes=excludes,private_key=private_key,callback=callback)
+                self.sign_package(build_res['filename'],excludes=excludes,private_key=private_key,callback=callback)
                 logger.debug(u'Package signed')
             else:
                 logger.warning(u'No private key provided, package is not signed !')
-            result['target'] = target_filename
             # cleanup
             if os.path.isdir(target_directory):
                 shutil.rmtree(target_directory)
         else:
             result['source_dir'] = target_directory
             result['target'] = target_directory
-        result['package'] = dest_control
+            result['package'] = dest_control
         return result
 
     def check_waptupgrades(self):

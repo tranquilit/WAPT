@@ -288,9 +288,12 @@ def main():
                 else:
                     print u"\nResults :"
                     if action != 'download':
+                        if result['unavailable']:
+                            print(u'Critical : ')
+                            print(u' === Unavailable packages ===\n%s'% '\n'.join( ["  %-30s" % s for s in  result['unavailable']]) )
                         for k in ('install','additional','upgrade','skipped','errors'):
                             if result.get(k,[]):
-                                print u"\n=== %s packages ===\n%s" % (k,'\n'.join( ["  %-30s | %s (%s)" % (s[0],s[1].package,s[1].version) for s in  result[k]]),)
+                                print(u"\n === %s packages ===\n%s" % (k,'\n'.join( ["  %-30s | %s (%s)" % (s[0],s[1].package,s[1].version) for s in  result[k]]),))
                     else:
                         for k in ('downloaded','skipped','errors'):
                             if result.get('downloads', {'downloaded':[],'skipped':[],'errors':[]} )[k]:
@@ -682,7 +685,8 @@ def main():
                             # add quotes for command line
                             files_list = ['"%s"' % f for f in package_group[1]]
                             cmd_dict =  {'waptfile': files_list,'waptdir':package_group[0]}
-                            print mywapt.upload_package(cmd_dict)
+                            res = mywapt.upload_package(cmd_dict)
+                            print('Status : %s, %s'%(res['status'],res['message']))
 
                             if package_group != hosts:
                                 if mywapt.after_upload:

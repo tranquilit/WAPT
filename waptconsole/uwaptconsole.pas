@@ -579,109 +579,81 @@ end;
 
 procedure TVisWaptGUI.ActPackageDuplicateExecute(Sender: TObject);
 var
-  filename, filenameDepend, oldName, filePath, sourceDir, depends: string;
-  package,uploadResult, depend, dependsList, dependsPath, listPackages: ISuperObject;
-  done: boolean = False;
+  target,sourceDir: string;
+  package,uploadResult, FileName, FileNames, listPackages,Sources: ISuperObject;
 
 begin
+  if not FileExists(GetWaptPrivateKeyPath) then
+  begin
+    ShowMessage('la clé privée n''existe pas: ' + GetWaptPrivateKeyPath);
+    exit;
+  end;
+
   listPackages := TSuperObject.create(stArray);
   for package in GridExternalPackages.SelectedRows do
     listPackages.AsArray.Add(package.S['package']+'(='+package.S['version']+')');
-  if MessageDlg('Confirmer la duplication', format('Etes vous sûr de vouloir dupliquer %s dans votre dépot ?', [Join(',', listPackages)]),
+  //calcule liste de tous les fichiers wapt nécessaires y compris les dépendances
+  FileNames := DMPython.RunJSON(format('waptdevutils.get_packages_filenames(r"%s".decode(''utf8''),"%s")',
+        [AppIniFilename,Join(',',listPackages)]));
+
+  if MessageDlg('Confirmer la duplication', format('Etes vous sûr de vouloir dupliquer'#13#10'%s'#13#10' dans votre dépot ?', [Join(',', FileNames)]),
         mtConfirmation, mbYesNoCancel, 0) <> mrYes then
     Exit;
 
-  for package in GridExternalPackages.SelectedRows do
-  begin
-    oldName := package.S['package']+'(='+package.S['version']+')';
-    filename := package.S['filename'];
-    depends := package.S['depends'];
-    filePath := AppLocalDir + 'cache\' + filename;
-    if not DirectoryExists(AppLocalDir + 'cache') then
-      mkdir(AppLocalDir + 'cache');
+  if not DirectoryExists(AppLocalDir + 'cache') then
+    mkdir(AppLocalDir + 'cache');
 
-    with  TVisLoading.Create(Self) do
+
+  with  TVisLoading.Create(Self) do
+  try
+    //Téléchargement en batchs
+    for Filename in FileNames do
+    begin
+      Application.ProcessMessages;
+      ProgressTitle(
+        'Téléchargement en cours de ' + Filename.AsString);
+      target := AppLocalDir + 'cache\' + Filename.AsString;
       try
-        //Téléchargement du paquet
-        Self.Enabled := False;
-        ProgressTitle('Téléchargement en cours de ' + oldName);
-        Application.ProcessMessages;
-        try
-          if not FileExists(filePath) then
-            Wget(WaptExternalRepo + '/' + filename, filePath, ProgressForm,
-            @updateprogress, True);
-        except
-          ShowMessage('Téléchargement annulé');
-          exit;
-        end;
-
-        if depends <> '' then
-        begin
-          //Téléchargement des dépendances du paquet
-          dependsPath := TSuperObject.Create(stArray);
-          begin
-            // liste des noms de fichiers correspondant à la liste des dépendances
-            dependsList := DMPython.RunJSON(
-              format('waptdevutils.get_packages_filenames(r"%s".decode(''utf8''),"%s")',
-                [AppIniFilename, depends]));
-            for depend in dependsList do
-            begin
-              ProgressTitle(
-                'Téléchargement en cours de ' + depend.AsString);
-              filenameDepend := AppLocalDir + 'cache\' + depend.AsString;
-              dependsPath.AsArray.Add(filenameDepend);
-              try
-                if not FileExists(dependsPath.AsArray.S[i]) then
-                  Wget(WaptExternalRepo + '/' + depend.AsString,
-                    dependsPath.AsArray.S[i], ProgressForm, @updateprogress, True);
-              except
-                ShowMessage('Téléchargement annulé');
-                exit;
-              end;
-            end;
-          end;
-        end;
-
-        //Duplication des dépendances
-        sourceDir := DMPython.RunJSON(
-          Format('waptdevutils.duplicate_from_tis_repo(r"%s",r"%s",%S)',
-          [AppIniFilename, filePath, dependsPath.AsString])).AsString;
-
-        if sourceDir <> 'error' then
-        begin
-          if not FileExists(GetWaptPrivateKeyPath) then
-          begin
-            ShowMessage('la clé privée n''existe pas: ' + GetWaptPrivateKeyPath);
-            exit;
-          end;
-
-          ProgressTitle('Upload en cours');
-          Application.ProcessMessages;
-
-          uploadResult := DMPython.RunJSON(
-            format('mywapt.build_upload(%s,r"%s",r"%s",r"%s",False,True)',
-            [sourceDir, privateKeyPassword, waptServerUser, waptServerPassword]),
-            jsonlog);
-          if uploadResult.AsString <> '' then
-          begin
-            if not multiplePackages then
-               ShowMessage(format('%s dupliqué avec succès.', [oldName]))
-            else
-              listPackages.AsArray.Add(oldName);
-            ActPackagesUpdate.Execute;
-          end
-          else
-            ShowMessage('Erreur lors de la duplication.');
-
-          ModalResult := mrOk;
-        end;
-      finally
-        Self.Enabled := True;
-        Free;
+        if not FileExists(target) then
+          Wget(WaptExternalRepo + '/' + FileName.AsString,
+            target, ProgressForm, @updateprogress, True);
+      except
+        ShowMessage('Téléchargement annulé');
+        exit;
       end;
+    end;
+
+    Sources := TSuperObject.Create(stArray) ;
+    for Filename in FileNames do
+    begin
+      ProgressTitle('Duplication de '+FileName.AsString);
+      Application.ProcessMessages;
+      sourceDir := DMPython.RunJSON(
+        Format('waptdevutils.duplicate_from_external_repo(r"%s",r"%s")',
+        [AppIniFilename,AppLocalDir + 'cache\' + Filename.AsString])).AsString;
+      sources.AsArray.Add('r"'+sourceDir+'"');
+    end;
+
+    ProgressTitle('Upload en cours de '+IntToStr(Sources.AsArray.Length)+' paquets');
+    Application.ProcessMessages;
+
+    uploadResult := DMPython.RunJSON(
+      format('mywapt.build_upload([%s],private_key_passwd=r"%s",wapt_server_user=r"%s",wapt_server_passwd=r"%s",inc_package_release=False)',
+      [Join(',',sources) , privateKeyPassword, waptServerUser, waptServerPassword]),
+      jsonlog);
+    if (uploadResult <> Nil) and (uploadResult.AsArray.length=Sources.AsArray.Length) then
+    begin
+      ActPackagesUpdate.Execute;
+      ShowMessage(format('%s dupliqué(s) avec succès.', [ Join(',', listPackages)])) ;
+      MainPages.ActivePage := pgPrivateRepo;
+      ModalResult := mrOk;
+    end
+    else
+      ShowMessage('Erreur lors de la duplication.');
+  finally
+    Free;
   end;
-  ShowMessage(format('%s dupliqué(s) avec succès.', [ Join(',', listPackages)])) ;
-  MainPages.ActivePage := pgPrivateRepo;
+
 end;
 
 procedure TVisWaptGUI.ActPackageGroupAddExecute(Sender: TObject);

@@ -223,10 +223,10 @@ def wgets(url,proxies=None):
         r.raise_for_status()
 
 
-def wget(url,target,printhook=None,proxies=None):
+def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_timeout=None):
     r"""Copy the contents of a file from a given URL
     to a local file.
-    >>> respath = wget('http://wapt.tranquil.it/wapt/tis-firefox_28.0.0-1_all.wapt','c:\\tmp\\test.wapt',proxies={'http':'proxy:3128'})
+    >>> respath = wget('http://wapt.tranquil.it/wapt/tis-firefox_28.0.0-1_all.wapt','c:\\tmp\\test.wapt',proxies={'http':'http://proxy:3128'})
     ???
     >>> os.stat(respath).st_size>10000
     True
@@ -271,11 +271,11 @@ def wget(url,target,printhook=None,proxies=None):
     if not os.path.isdir(dir):
         os.makedirs(dir)
 
-    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=10)
+    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout)
 
     total_bytes = int(httpreq.headers['content-length'])
     # 1Mb max, 1kb min
-    chunk_size = min([1024*1024,max([total_bytes/100,1000])])
+    chunk_size = min([1024*1024,max([total_bytes/100,2048])])
 
     cnt = 0
     reporthook(last_downloaded,total_bytes)
@@ -286,6 +286,8 @@ def wget(url,target,printhook=None,proxies=None):
         if httpreq.ok:
             for chunk in httpreq.iter_content(chunk_size=chunk_size):
                 output_file.write(chunk)
+                if download_timeout is not None and (time.time()-start_time>download_timeout):
+                    raise requests.Timeout(r'Download of %s takes more than the requested %ss'%(url,download_timeout))
                 if reporthook(cnt*len(chunk),total_bytes):
                     last_time_display = time.time()
                 last_downloaded += len(chunk)
@@ -295,7 +297,6 @@ def wget(url,target,printhook=None,proxies=None):
         else:
             httpreq.raise_for_status()
 
-    reporthook(last_downloaded,total_bytes)
     return os.path.join(dir,filename)
 
 
