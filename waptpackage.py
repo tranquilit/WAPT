@@ -393,7 +393,7 @@ def extract_iconpng_from_wapt(self,fname):
 
 
 class WaptLocalRepo(object):
-    def __init__(self,name='waptlocal',localpath='/var/www/wapt'):
+    def __init__(self,localpath='/var/www/wapt',name='waptlocal'):
         self.name = name
         localpath = localpath.rstrip(os.path.sep)
         self.localpath = localpath

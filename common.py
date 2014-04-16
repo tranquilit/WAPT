@@ -2471,7 +2471,6 @@ class Wapt(object):
             if pe.section == 'host':
                 req = requests.post("%s/upload_host" % (self.wapt_server,),files={'file':afile},proxies=self.proxies,verify=False,auth=auth)
             else:
-                print package_filename,auth
                 req = requests.post("%s/upload_package/%s" % (self.wapt_server,os.path.basename(package_filename)),data=afile,proxies=self.proxies,verify=False,auth=auth)
             req.raise_for_status()
             res = json.loads(req.content)
@@ -3236,7 +3235,9 @@ class Wapt(object):
 
         downloaded = self.download_packages(packages,usecache=usecache,printhook=printhook)
         if downloaded.get('errors',[]):
-            raise Exception(u'Error downloading some files : %s',(downloaded['errors'],))
+            logger.critical(u'Error downloading some files : %s'%(downloaded['errors'],))
+            for request in downloaded.get('errors',[]):
+                actions['errors'].append([request,None])
 
         # check downloaded packages signatures and merge control data in local database
         for fname in downloaded['downloaded'] + downloaded['skipped']:
@@ -3318,7 +3319,8 @@ class Wapt(object):
                 if mp:
                     packages.append(mp[-1])
                 else:
-                    raise Exception('Unavailable package %s' % (p,))
+                    errors.append((p,u'Unavailable package %s' % (p,)))
+                    logger.critical(u'Unavailable package %s' % (p,))
             elif isinstance(p,PackageEntry):
                 packages.append(p)
             elif isinstance(p,list) or isinstance(p,tuple):
@@ -3826,12 +3828,12 @@ class Wapt(object):
                         return key_passwd
 
                     if self.private_key:
-                        print('Signing %s' % package_fn)
+                        logger.info('Signing %s' % package_fn)
                         if private_key_passwd is None:
                             signature = self.sign_package(package_fn,callback=pwd_callback2)
                         else:
                             signature = self.sign_package(package_fn,callback=pwd_callback)
-                        print u"Package %s signed : signature :\n%s" % (package_fn,signature)
+                        logger.debug(u"Package %s signed : signature :\n%s" % (package_fn,signature))
                     else:
                         logger.warning(u'No private key provided, package %s is unsigned !' % package_fn)
 
@@ -3841,7 +3843,7 @@ class Wapt(object):
                 logger.critical(u'Directory %s not found' % source_dir)
 
         result = []
-        print 'Uploading files...'
+        logger.info(u'Uploading files...')
         for buildresult in buildresults:
             upload_res = self.http_upload_package(buildresult['package'],wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
             if upload_res['status'] == 'OK':
@@ -4349,7 +4351,13 @@ class Wapt(object):
 
     def is_available(self,packagename):
         """Checks if a package (with optional version condition) is available.
-            Return package entry or None"""
+            Return package entry or None
+        >>> from waptpackage import WaptLocalRepo
+        >>> repo = WaptLocalRepo(r'c:\tranquilit\wapt\tests\packages')
+        >>> repo.update_packages_index()
+        >>> wapt = Wapt()
+        >>> wapt.add_repo()
+        """
         return self.waptdb.packages_matching(packagename)
 
     def get_default_development_dir(self,packagecond,section='base'):

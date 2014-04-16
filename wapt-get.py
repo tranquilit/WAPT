@@ -288,9 +288,6 @@ def main():
                 else:
                     print u"\nResults :"
                     if action != 'download':
-                        if result['unavailable']:
-                            print(u'Critical : ')
-                            print(u' === Unavailable packages ===\n%s'% '\n'.join( ["  %-30s" % s for s in  result['unavailable']]) )
                         for k in ('install','additional','upgrade','skipped','errors'):
                             if result.get(k,[]):
                                 print(u"\n === %s packages ===\n%s" % (k,'\n'.join( ["  %-30s | %s (%s)" % (s[0],s[1].package,s[1].version) for s in  result[k]]),))
@@ -298,6 +295,9 @@ def main():
                         for k in ('downloaded','skipped','errors'):
                             if result.get('downloads', {'downloaded':[],'skipped':[],'errors':[]} )[k]:
                                 print u"\n=== %s packages ===\n%s" % (k,'\n'.join(["  %s" % (s,) for s in result['downloads'][k]]),)
+                    if result['unavailable']:
+                        print(u'Critical : ')
+                        print(u' === Unavailable packages ===\n%s'% '\n'.join( ["  %-30s" % s for s in  result['unavailable']]) )
                 if mywapt.wapt_server:
                     try:
                         mywapt.update_server_status()

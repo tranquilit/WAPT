@@ -169,12 +169,13 @@ def get_packages_filenames(waptconfigfile,packages_names):
 
 
 def duplicate_from_external_repo(waptconfigfile,package_filename):
-    """Duplicate a downloaded package to match prefix defined in waptconfigfile
+    r"""Duplicate a downloaded package to match prefix defined in waptconfigfile
        renames all dependencies
       returns source directory
+    >>> from common import Wapt
     >>> wapt = Wapt(config_filename = r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini')
-    >>> sources = duplicate_from_external_repo(wapt.config_filename,r'C:\tranquilit\wapt\tests\tis-wapttest.wapt')
-    >>> res = wapt.build_upload(sources,wapt_server_user='admin',wapt_server_passwd='password',delete_package=True)
+    >>> sources = duplicate_from_external_repo(wapt.config_filename,r'C:\tranquilit\wapt\tests\packages\tis-wapttest.wapt')
+    >>> res = wapt.build_upload(sources,wapt_server_user='admin',wapt_server_passwd='password')
     >>> res[0]['package'].depends
     u'test-wapttestsub,test-7zip'
     """
@@ -210,6 +211,7 @@ def duplicate_from_external_repo(waptconfigfile,package_filename):
     return result
 
 def wapt_sources_edit(wapt_sources_dir):
+    """Launch pyscripter if installed, else explorer on supplied wapt sources dir"""
     psproj_filename = os.path.join(wapt_sources_dir,'WAPT','wapt.psproj')
     control_filename = os.path.join(wapt_sources_dir,'WAPT','control')
     setup_filename = os.path.join(wapt_sources_dir,'setup.py')

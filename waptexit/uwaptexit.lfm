@@ -1,7 +1,7 @@
 object VisWaptExit: TVisWaptExit
-  Left = 328
+  Left = 493
   Height = 386
-  Top = 422
+  Top = 444
   Width = 586
   BorderStyle = bsDialog
   Caption = 'Lancement des mises à jour...'
