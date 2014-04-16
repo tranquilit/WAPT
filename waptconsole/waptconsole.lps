@@ -21,16 +21,17 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uwaptconsole"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="577"/>
-        <CursorPos X="111" Y="602"/>
+        <TopLine Value="1189"/>
+        <CursorPos X="1" Y="1201"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="4">
-          <Item0 X="1" Y="1555" ID="4"/>
-          <Item1 X="6" Y="1926" ID="5"/>
-          <Item2 X="5" Y="1966" ID="8"/>
-          <Item3 X="1" Y="1123" ID="1"/>
+          <Item0 X="1" Y="1566" ID="4"/>
+          <Item1 X="6" Y="1934" ID="5"/>
+          <Item2 X="5" Y="1974" ID="8"/>
+          <Item3 X="1" Y="1137" ID="1"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -39,7 +40,6 @@
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="87"/>
         <CursorPos X="38" Y="90"/>
@@ -47,7 +47,6 @@
         <Bookmarks Count="1">
           <Item0 X="28" Y="50" ID="0"/>
         </Bookmarks>
-        <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="uviscreatekey.pas"/>
@@ -68,12 +67,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="dmwaptpython"/>
-        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="4"/>
-        <CursorPos X="21" Y="30"/>
+        <TopLine Value="82"/>
+        <CursorPos X="24" Y="101"/>
         <UsageCount Value="238"/>
-        <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="uviseditpackage.pas"/>
@@ -82,12 +79,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviseditpackage"/>
-        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="420"/>
-        <CursorPos X="1" Y="435"/>
+        <TopLine Value="602"/>
+        <CursorPos X="18" Y="605"/>
         <UsageCount Value="215"/>
-        <Loaded Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="uviscreatewaptsetup.pas"/>
@@ -120,13 +115,12 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvisprivatekeyauth"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="45"/>
-        <CursorPos X="33" Y="58"/>
+        <TopLine Value="38"/>
+        <CursorPos X="3" Y="38"/>
         <UsageCount Value="250"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="uvisloading.pas"/>
@@ -135,12 +129,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvisloading"/>
-        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="3" Y="15"/>
         <UsageCount Value="216"/>
-        <Loaded Value="True"/>
       </Unit9>
       <Unit10>
         <Filename Value="uviswaptconfig.pas"/>
@@ -173,10 +165,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvisgroupchoice"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="82" Y="17"/>
         <UsageCount Value="206"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit12>
       <Unit13>
         <Filename Value="uviseditgroup.pas"/>
@@ -290,12 +285,10 @@
       <Unit24>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <UnitName Value="superobject"/>
-        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="2099"/>
-        <CursorPos X="8" Y="2110"/>
-        <UsageCount Value="15"/>
-        <Loaded Value="True"/>
+        <TopLine Value="2090"/>
+        <CursorPos X="1" Y="2112"/>
+        <UsageCount Value="16"/>
       </Unit24>
       <Unit25>
         <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
@@ -419,12 +412,10 @@
       <Unit40>
         <Filename Value="..\..\pltis_superobject\soutils.pas"/>
         <UnitName Value="soutils"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="111"/>
         <CursorPos X="1" Y="117"/>
-        <UsageCount Value="29"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="30"/>
       </Unit40>
       <Unit41>
         <Filename Value="..\..\pltis_sogrid\sogrideditor.pas"/>
@@ -453,13 +444,10 @@
       <Unit44>
         <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
         <UnitName Value="PythonEngine"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="5425"/>
-        <CursorPos X="1" Y="5439"/>
-        <UsageCount Value="13"/>
-        <Loaded Value="True"/>
+        <CursorPos X="41" Y="5441"/>
+        <UsageCount Value="14"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit44>
       <Unit45>
@@ -488,12 +476,10 @@
       <Unit48>
         <Filename Value="C:\codetyphon\typhon\lcl\forms.pp"/>
         <UnitName Value="Forms"/>
-        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="734"/>
         <CursorPos X="14" Y="748"/>
-        <UsageCount Value="14"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="15"/>
       </Unit48>
       <Unit49>
         <Filename Value="C:\codetyphon\typhon\lcl\include\customform.inc"/>
@@ -504,12 +490,10 @@
       </Unit49>
       <Unit50>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\sysutilh.inc"/>
-        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="98"/>
         <CursorPos X="19" Y="112"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="11"/>
       </Unit50>
     </Units>
     <General>
@@ -517,124 +501,124 @@
     </General>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="uvisprivatekeyauth.pas"/>
-        <Caret Line="75" Column="1" TopLine="59"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="1081" Column="50" TopLine="1066"/>
       </Position1>
       <Position2>
-        <Filename Value="uvisprivatekeyauth.pas"/>
-        <Caret Line="76" Column="1" TopLine="59"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="1082" Column="44" TopLine="1066"/>
       </Position2>
       <Position3>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="642" Column="1" TopLine="627"/>
+        <Caret Line="1140" Column="1" TopLine="1131"/>
       </Position3>
       <Position4>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="639" Column="1" TopLine="627"/>
+        <Caret Line="296" Column="7" TopLine="282"/>
       </Position4>
       <Position5>
-        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="5439" Column="1" TopLine="5425"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="292" Column="27" TopLine="278"/>
       </Position5>
       <Position6>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="640" Column="63" TopLine="627"/>
+        <Caret Line="296" Column="7" TopLine="282"/>
       </Position6>
       <Position7>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="636" Column="118" TopLine="606"/>
+        <Caret Line="300" Column="29" TopLine="286"/>
       </Position7>
       <Position8>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="756" Column="48" TopLine="728"/>
+        <Caret Line="284" Column="32" TopLine="270"/>
       </Position8>
       <Position9>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="766" Column="24" TopLine="741"/>
+        <Caret Line="1390" Column="7" TopLine="1376"/>
       </Position9>
       <Position10>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="804" Column="18" TopLine="780"/>
+        <Caret Line="1392" Column="1" TopLine="1377"/>
       </Position10>
       <Position11>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="848" Column="14" TopLine="824"/>
+        <Caret Line="1403" Column="3" TopLine="1388"/>
       </Position11>
       <Position12>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="850" Column="14" TopLine="826"/>
+        <Caret Line="1402" Column="1" TopLine="1388"/>
       </Position12>
       <Position13>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="870" Column="20" TopLine="846"/>
+        <Caret Line="1403" Column="11" TopLine="1388"/>
       </Position13>
       <Position14>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="928" Column="32" TopLine="904"/>
+        <Caret Line="1427" Column="20" TopLine="1412"/>
       </Position14>
       <Position15>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="932" Column="32" TopLine="908"/>
+        <Caret Line="1513" Column="7" TopLine="1498"/>
       </Position15>
       <Position16>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="940" Column="26" TopLine="916"/>
+        <Caret Line="1601" Column="44" TopLine="1586"/>
       </Position16>
       <Position17>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="945" Column="26" TopLine="921"/>
+        <Caret Line="1649" Column="1" TopLine="1638"/>
       </Position17>
       <Position18>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1110" Column="20" TopLine="1086"/>
+        <Caret Line="1658" Column="32" TopLine="1634"/>
       </Position18>
       <Position19>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1153" Column="18" TopLine="1129"/>
+        <Caret Line="1403" Column="3" TopLine="1388"/>
       </Position19>
       <Position20>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1598" Column="22" TopLine="1574"/>
+        <Caret Line="1429" Column="20" TopLine="1414"/>
       </Position20>
       <Position21>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1605" Column="22" TopLine="1581"/>
+        <Caret Line="1603" Column="44" TopLine="1588"/>
       </Position21>
       <Position22>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1607" Column="20" TopLine="1583"/>
+        <Caret Line="1297" Column="16" TopLine="1282"/>
       </Position22>
       <Position23>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1927" Column="12" TopLine="1903"/>
+        <Caret Line="1282" Column="59" TopLine="1266"/>
       </Position23>
       <Position24>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="588" Column="14" TopLine="573"/>
+        <Caret Line="1266" Column="1" TopLine="1250"/>
       </Position24>
       <Position25>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="620" Column="18" TopLine="596"/>
+        <Caret Line="1246" Column="6" TopLine="1230"/>
       </Position25>
       <Position26>
         <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="602" Column="111" TopLine="577"/>
+        <Caret Line="1245" Column="3" TopLine="1230"/>
       </Position26>
       <Position27>
-        <Filename Value="uviseditpackage.pas"/>
-        <Caret Line="435" Column="1" TopLine="420"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="1243" Column="4" TopLine="1229"/>
       </Position27>
       <Position28>
-        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="5442" Column="36" TopLine="5425"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="1195" Column="9" TopLine="1180"/>
       </Position28>
       <Position29>
-        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\sysutilh.inc"/>
-        <Caret Line="112" Column="19" TopLine="98"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="1191" Column="1" TopLine="1171"/>
       </Position29>
       <Position30>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="90" Column="38" TopLine="87"/>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="840" Column="1" TopLine="817"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

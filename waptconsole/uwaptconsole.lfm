@@ -2,10 +2,10 @@ object VisWaptGUI: TVisWaptGUI
   Left = 352
   Height = 695
   Top = 135
-  Width = 1072
+  Width = 1037
   Caption = 'Console WAPT'
   ClientHeight = 676
-  ClientWidth = 1072
+  ClientWidth = 1037
   Menu = MainMenu1
   OnClose = FormClose
   OnCreate = FormCreate
@@ -16,25 +16,25 @@ object VisWaptGUI: TVisWaptGUI
     Left = 0
     Height = 553
     Top = 0
-    Width = 1072
-    ActivePage = pgExternalRepo
+    Width = 1037
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 3
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
       Caption = 'Inventaire'
       ClientHeight = 527
-      ClientWidth = 1064
+      ClientWidth = 1029
       object Panel10: TPanel
         Left = 0
         Height = 54
         Top = 0
-        Width = 1064
+        Width = 1029
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 54
-        ClientWidth = 1064
+        ClientWidth = 1029
         TabOrder = 1
         object EdSearchHost: TEdit
           Left = 60
@@ -167,7 +167,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 473
         Top = 54
-        Width = 487
+        Width = 452
         OnGetText = GridHostsGetText
         Align = alClient
         ChangeDelay = 50
@@ -321,7 +321,7 @@ object VisWaptGUI: TVisWaptGUI
         OnGetImageIndexEx = GridHostsGetImageIndexEx
       end
       object HostPages: TPageControl
-        Left = 492
+        Left = 457
         Height = 473
         Top = 54
         Width = 572
@@ -424,7 +424,7 @@ object VisWaptGUI: TVisWaptGUI
               Height = 13
               Top = 78
               Width = 56
-              Anchors = []
+              Anchors = [akLeft]
               Caption = 'Addresse ip'
               ParentBidiMode = False
               ParentColor = False
@@ -434,7 +434,7 @@ object VisWaptGUI: TVisWaptGUI
               Height = 13
               Top = 36
               Width = 34
-              Anchors = []
+              Anchors = [akRight]
               Caption = 'Modèle'
               ParentBidiMode = False
               ParentColor = False
@@ -444,7 +444,7 @@ object VisWaptGUI: TVisWaptGUI
               Height = 13
               Top = 78
               Width = 48
-              Anchors = []
+              Anchors = [akRight]
               Caption = 'Utilisateur'
               ParentBidiMode = False
               ParentColor = False
@@ -454,7 +454,7 @@ object VisWaptGUI: TVisWaptGUI
               Height = 13
               Top = 14
               Width = 52
-              Anchors = []
+              Anchors = [akRight]
               Caption = 'Fabriquant'
               ParentBidiMode = False
               ParentColor = False
@@ -464,7 +464,7 @@ object VisWaptGUI: TVisWaptGUI
               Height = 13
               Top = 14
               Width = 21
-              Anchors = []
+              Anchors = [akLeft]
               Caption = 'Nom'
               ParentBidiMode = False
               ParentColor = False
@@ -474,7 +474,7 @@ object VisWaptGUI: TVisWaptGUI
               Height = 13
               Top = 58
               Width = 108
-              Anchors = []
+              Anchors = [akLeft]
               Caption = 'Système d''exploitation'
               ParentBidiMode = False
               ParentColor = False
@@ -484,7 +484,7 @@ object VisWaptGUI: TVisWaptGUI
               Height = 13
               Top = 36
               Width = 53
-              Anchors = []
+              Anchors = [akLeft]
               Caption = 'Description'
               ParentBidiMode = False
               ParentColor = False
@@ -494,7 +494,7 @@ object VisWaptGUI: TVisWaptGUI
               Height = 13
               Top = 58
               Width = 46
-              Anchors = []
+              Anchors = [akRight]
               Caption = 'Mis à jour'
               ParentBidiMode = False
               ParentColor = False
@@ -504,7 +504,7 @@ object VisWaptGUI: TVisWaptGUI
               Height = 21
               Top = 10
               Width = 216
-              Anchors = []
+              Anchors = [akLeft, akRight]
               Color = 15066597
               ReadOnly = True
               TabOrder = 0
@@ -514,7 +514,7 @@ object VisWaptGUI: TVisWaptGUI
               Height = 21
               Top = 32
               Width = 216
-              Anchors = []
+              Anchors = [akLeft, akRight]
               Color = 15066597
               ReadOnly = True
               TabOrder = 1
@@ -524,7 +524,7 @@ object VisWaptGUI: TVisWaptGUI
               Height = 21
               Top = 54
               Width = 216
-              Anchors = []
+              Anchors = [akLeft, akRight]
               Color = 15066597
               ReadOnly = True
               TabOrder = 2
@@ -534,7 +534,7 @@ object VisWaptGUI: TVisWaptGUI
               Height = 21
               Top = 76
               Width = 216
-              Anchors = []
+              Anchors = [akLeft, akRight]
               Color = 15066597
               ReadOnly = True
               TabOrder = 3
@@ -544,7 +544,7 @@ object VisWaptGUI: TVisWaptGUI
               Height = 21
               Top = 10
               Width = 132
-              Anchors = []
+              Anchors = [akRight]
               Color = 15066597
               ReadOnly = True
               TabOrder = 4
@@ -554,7 +554,7 @@ object VisWaptGUI: TVisWaptGUI
               Height = 21
               Top = 32
               Width = 132
-              Anchors = []
+              Anchors = [akRight]
               Color = 15066597
               ReadOnly = True
               TabOrder = 5
@@ -564,7 +564,7 @@ object VisWaptGUI: TVisWaptGUI
               Height = 21
               Top = 54
               Width = 132
-              Anchors = []
+              Anchors = [akRight]
               Color = 15066597
               ReadOnly = True
               TabOrder = 6
@@ -574,7 +574,7 @@ object VisWaptGUI: TVisWaptGUI
               Height = 21
               Top = 76
               Width = 132
-              Anchors = []
+              Anchors = [akRight]
               Color = 15066597
               ReadOnly = True
               TabOrder = 7
@@ -584,7 +584,7 @@ object VisWaptGUI: TVisWaptGUI
               Height = 13
               Top = 102
               Width = 74
-              Anchors = []
+              Anchors = [akLeft]
               Caption = 'Action en cours'
               ParentBidiMode = False
               ParentColor = False
@@ -594,7 +594,7 @@ object VisWaptGUI: TVisWaptGUI
               Height = 21
               Top = 98
               Width = 216
-              Anchors = []
+              Anchors = [akLeft, akRight]
               Color = 15066597
               ReadOnly = True
               TabOrder = 8
@@ -1155,7 +1155,7 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
       object Splitter4: TSplitter
-        Left = 487
+        Left = 452
         Height = 473
         Top = 54
         Width = 5
@@ -2134,28 +2134,28 @@ object VisWaptGUI: TVisWaptGUI
     Left = 0
     Height = 118
     Top = 558
-    Width = 1072
+    Width = 1037
     Align = alBottom
     ClientHeight = 118
-    ClientWidth = 1072
+    ClientWidth = 1037
     TabOrder = 1
     Visible = False
     object Panel7: TPanel
       Left = 1
       Height = 116
       Top = 1
-      Width = 1070
+      Width = 1035
       Align = alClient
       BevelOuter = bvNone
       Caption = 'Panel7'
       ClientHeight = 116
-      ClientWidth = 1070
+      ClientWidth = 1035
       TabOrder = 1
       object MemoLog: TMemo
         Left = 0
         Height = 116
         Top = 0
-        Width = 459
+        Width = 424
         Align = alClient
         Lines.Strings = (
           ''
@@ -2163,7 +2163,7 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 0
       end
       object jsonlog: TVirtualJSONInspector
-        Left = 464
+        Left = 429
         Height = 116
         Top = 0
         Width = 606
@@ -2191,7 +2191,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.SelectionOptions = [toExtendedFocus]
       end
       object Splitter2: TSplitter
-        Left = 459
+        Left = 424
         Height = 116
         Top = 0
         Width = 5
@@ -2215,7 +2215,7 @@ object VisWaptGUI: TVisWaptGUI
     Left = 0
     Height = 5
     Top = 553
-    Width = 1072
+    Width = 1037
     Align = alBottom
     ResizeAnchor = akBottom
   end

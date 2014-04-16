@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.26"
+__version__ = "0.8.27"
 
 import common
 import json
@@ -251,15 +251,29 @@ def edit_hosts_depends(waptconfigfile,hosts_list,appends=[],removes=[],key_passw
     if not isinstance(removes,list):
         removes = [s.strip() for s in removes.split(',')]
     result = []
-    for host in hosts_list:
-        target_dir = tempfile.mkdtemp('wapt')
-        package = wapt.duplicate_package(host,
-            target_directory = target_dir,build=True,
-            append_depends = appends,
-            remove_depends = removes,)
-        res = wapt.http_upload_package(package['target'],wapt_server_user=wapt_server_user, wapt_server_passwd=wapt_server_passwd)
-        result.append(res)
-    return result
+    sources = []
+    build_res = []
+    try:
+        for host in hosts_list:
+            logger.debug(u'Edit host %s : +%s -%s'%(host,appends,removes))
+            target_dir = tempfile.mkdtemp('wapt')
+            edit_res = wapt.edit_host(host,
+                use_local_sources = False,
+                target_directory = target_dir,
+                append_depends = appends,
+                remove_depends = removes,)
+            sources.append(edit_res)
+        logger.debug(u'Build upload %s'%[r['source_dir'] for r in sources])
+        build_res = wapt.build_upload([r['source_dir'] for r in sources],private_key_passwd = key_password,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
+    finally:
+        logger.debug('Cleanup')
+        for s in sources:
+            if os.path.isdir(s['source_dir']):
+                shutil.rmtree(s['source_dir'])
+        for s in build_res:
+            if os.path.isfile(s['filename']):
+                os.unlink(s['filename'])
+    return build_res
 
 if __name__ == '__main__':
     import doctest

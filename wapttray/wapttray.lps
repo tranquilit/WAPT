@@ -9,10 +9,13 @@
         <Filename Value="wapttray.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="wapttray"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="13"/>
-        <CursorPos X="47" Y="26"/>
+        <CursorPos X="41" Y="34"/>
         <UsageCount Value="201"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
@@ -30,7 +33,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="uDMWAPTTray"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="357"/>
         <CursorPos X="54" Y="367"/>
@@ -413,7 +415,12 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="1" HistoryIndex="0">
+      <Position1>
+        <Filename Value="wapttray.lpr"/>
+        <Caret Line="26" Column="47" TopLine="13"/>
+      </Position1>
+    </JumpHistory>
   </ProjectSession>
   <Debugging>
     <Watches Count="1">

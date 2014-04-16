@@ -3,18 +3,18 @@ object visGroupChoice: TvisGroupChoice
   Height = 399
   Top = 221
   Width = 451
-  Caption = 'Ajout au groupe'
+  Caption = 'Choix de groupes'
   ClientHeight = 399
   ClientWidth = 451
   Position = poMainFormCenter
-  LCLVersion = '1.1'
+  LCLVersion = '1.3'
   object ButtonPanel1: TButtonPanel
     Left = 6
     Height = 34
     Top = 359
     Width = 439
     OKButton.Name = 'OKButton'
-    OKButton.Caption = 'Ajouter'
+    OKButton.Caption = 'OK'
     OKButton.DefaultCaption = False
     HelpButton.Name = 'HelpButton'
     HelpButton.DefaultCaption = True
@@ -42,10 +42,9 @@ object visGroupChoice: TvisGroupChoice
     BorderSpacing.Top = 10
     Color = clWhite
     Constraints.MinHeight = 70
-    Header.AutoSizeIndex = 0
+    Header.AutoSizeIndex = -1
     Header.Columns = <    
       item
-        CheckBox = True
         Position = 0
         Text = 'Groupe'
         Width = 216
@@ -54,6 +53,7 @@ object visGroupChoice: TvisGroupChoice
       item
         Position = 1
         Text = 'Dépendances'
+        Width = 179
         PropertyName = 'depends'
       end>
     Header.DefaultHeight = 17
@@ -64,6 +64,7 @@ object visGroupChoice: TvisGroupChoice
     TreeOptions.MiscOptions = [toAcceptOLEDrop, toCheckSupport, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
     TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toFullRowSelect]
+    WantTabs = True
   end
   object Label2: TLabel
     Left = 2

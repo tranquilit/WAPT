@@ -3152,7 +3152,6 @@ class Wapt(object):
         """
         if not isinstance(apackages,list):
             apackages = [apackages]
-
         # ensure that apackages is a list of package requirements (strings)
         new_apackages = []
         for p in apackages:
@@ -3161,22 +3160,8 @@ class Wapt(object):
             else:
                 new_apackages.append(p)
         apackages = new_apackages
-
-        actions = self.check_depends(apackages,force=force or download_only,forceupgrade=True)
-        actions['errors']=[]
-
-        skipped = actions['skipped']
-        additional_install = actions['additional']
-        to_upgrade = actions['upgrade']
-        packages = actions['install']
-
-        to_install = []
-        to_install.extend(additional_install)
-        to_install.extend(to_upgrade)
-        to_install.extend(packages)
-
-        # get package entries to install to_install is a list of (request,package)
-        packages = [ p[1] for p in to_install ]
+        actions = self.check_depends(apackages,force=True,forceupgrade=True)
+        return  actions
 
     def install(self,apackages,
             force=False,
@@ -3806,7 +3791,7 @@ class Wapt(object):
         buildresults = []
         for source_dir in [os.path.abspath(p) for p in sources_directories]:
             if os.path.isdir(source_dir):
-                print('Building  %s' % source_dir)
+                logger.info(u'Building  %s' % source_dir)
                 if inc_package_release==False:
                     buildresult = self.build_package(source_dir)
                 else:
@@ -3814,7 +3799,7 @@ class Wapt(object):
                 package_fn = buildresult['filename']
                 if package_fn:
                     buildresults.append(buildresult)
-                    print('...done. Package filename %s' % (package_fn,))
+                    logger.info(u'...done. Package filename %s' % (package_fn,))
 
                     def pwd_callback(*args):
                         """Default password callback for opening private keys"""

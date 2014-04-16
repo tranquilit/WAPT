@@ -317,7 +317,7 @@ type
     procedure UpdateHostPages(Sender: TObject);
   public
     { public declarations }
-    Hosts, PackageEdited: ISuperObject;
+    PackageEdited: ISuperObject;
     waptpath: string;
     function EditIniFile: boolean;
     function updateprogress(receiver: TObject; current, total: integer): boolean;
@@ -790,14 +790,15 @@ end;
 
 procedure TVisWaptGUI.ActAddToGroupExecute(Sender: TObject);
 var
-  Result, groups, host: ISuperObject;
+  Res, packages, host, hosts: ISuperObject;
   N:PVirtualNode;
-  i: word;
+  PackagesList, args: AnsiString;
 begin
   if GridHosts.Focused then
   begin
     with TvisGroupChoice.Create(self) do
     try
+      Caption:='Choix des groupes à ajouter aux postes sélectionnés';
       ActSearchGroupsExecute(self);
       if groupGrid.Data.AsArray.Length = 0 then
       begin
@@ -806,23 +807,36 @@ begin
       end;
       if ShowModal = mrOk then
       begin
-        groups := TSuperObject.Create(stArray);
+        packages := TSuperObject.Create(stArray);
         N := groupGrid.GetFirstChecked();
         while N <> nil do
         begin
-          groups.AsArray.Add(groupGrid.GetCellStrValue(N, 'package'));
+          packages.AsArray.Add(groupGrid.GetCellStrValue(N, 'package'));
           N := groupGrid.GetNextChecked(N);
         end;
       end;
     finally
       Free;
     end;
-    if (groups = nil) or (groups.AsArray.Length = 0) then
+    if (packages = nil) or (packages.AsArray.Length = 0) then
       Exit;
 
+    Hosts := TSuperObject.Create(stArray);
     for host in GridHosts.SelectedRows do
-      EditHostDepends(host.S['host.computer_fqdn'],
-        Join(',', groups));
+      hosts.AsArray.Add(host.S['host.computer_fqdn']);
+
+    //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
+    args := '';
+    args := args + format('waptconfigfile = r"%s".decode(''utf8''),',[AppIniFilename]);
+    args := args + format('hosts_list = r"%s".decode(''utf8''),',[Join(',',hosts)]);
+    args := args + format('appends = r"%s".decode(''utf8''),',[Join(',',packages)]);
+    args := args + format('removes = [],',[]);
+    if privateKeyPassword<>'' then
+      args := args + format('key_password = "%s".decode(''utf8''),',[privateKeyPassword]);
+    args := args + format('wapt_server_user = r"%s".decode(''utf8''),',[waptServerUser]);
+    args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',[waptServerPassword]);
+    res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)',[args]));
+    ShowMessage(IntToStr(res.AsArray.Length)+' postes modifiés');
   end;
 end;
 
@@ -1138,15 +1152,15 @@ end;
 
 procedure TVisWaptGUI.ActRemoveFromGroupExecute(Sender: TObject);
 var
-  Res, packages, host: ISuperObject;
+  Res, packages, host, hosts: ISuperObject;
   N:PVirtualNode;
-  i: word;
   PackagesList, args: AnsiString;
 begin
   if GridHosts.Focused then
   begin
     with TvisGroupChoice.Create(self) do
     try
+      Caption:='Choix des groupes à enlever des postes sélectionnés';
       ActSearchGroupsExecute(self);
       if groupGrid.Data.AsArray.Length = 0 then
       begin
@@ -1169,29 +1183,29 @@ begin
     if (packages = nil) or (packages.AsArray.Length = 0) then
       Exit;
 
-    PackagesList := Join(',',packages);
-
+    Hosts := TSuperObject.Create(stArray);
     for host in GridHosts.SelectedRows do
-    begin
-      //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
-      args := '';
-      args := args + format('waptconfigfile = r"%s".decode(''utf8''),',[WaptIniFilename]);
-      args := args + format('hosts_list = r"%s".decode(''utf8''),',[host.S['host.computer_fqdn']]);
-      args := args + format('appends = [],',[]);
-      args := args + format('removes = r"%s".decode(''utf8''),',[PackagesList]);
-      args := args + format('key_password = r"%s".decode(''utf8''),',[privateKeyPassword]);
-      args := args + format('wapt_server_user = r"%s".decode(''utf8''),',[waptServerUser]);
-      args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',[waptServerPassword]);
-      res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)',[args]));
-      if res.S['status'] = 'OK' then
-        host.A['update_status.upgradess'].Add(host.S['host.computer_fqdn']);
-    end;
+      hosts.AsArray.Add(host.S['host.computer_fqdn']);
+
+    //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
+    args := '';
+    args := args + format('waptconfigfile = r"%s".decode(''utf8''),',[AppIniFilename]);
+    args := args + format('hosts_list = r"%s".decode(''utf8''),',[Join(',',hosts)]);
+    args := args + format('appends = [],',[]);
+    args := args + format('removes = r"%s".decode(''utf8''),',[Join(',',packages)]);
+    if privateKeyPassword<>'' then
+      args := args + format('key_password = "%s".decode(''utf8''),',[privateKeyPassword]);
+    args := args + format('wapt_server_user = r"%s".decode(''utf8''),',[waptServerUser]);
+    args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',[waptServerPassword]);
+    res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)',[args]));
+    ShowMessage(IntToStr(res.AsArray.Length)+' postes modifiés');
+
   end;
 end;
 
 procedure TVisWaptGUI.ActSearchGroupsExecute(Sender: TObject);
 var
-  expr, res: UTF8String;
+  expr: UTF8String;
   groups: ISuperObject;
 begin
   expr := format('mywapt.search(r"%s".decode(''utf8'').split(),section_filter="group")',
@@ -1240,7 +1254,6 @@ end;
 
 procedure TVisWaptGUI.ActEvaluateExecute(Sender: TObject);
 var
-  res: string;
   o, sob: ISuperObject;
 begin
   MemoLog.Clear;
@@ -1293,8 +1306,7 @@ end;
 
 procedure TVisWaptGUI.ActLocalhostRemoveExecute(Sender: TObject);
 var
-  expr, res: string;
-  package: string;
+  package: Ansistring;
   i: integer = 0;
   selects: integer;
   N: PVirtualNode;
@@ -1330,7 +1342,7 @@ end;
 procedure TVisWaptGUI.ActSearchHostExecute(Sender: TObject);
 var
   req, filter: string;
-  urlParams,Node: ISuperObject;
+  urlParams,Node,Hosts: ISuperObject;
   previous_uuid: String;
 const
   url: string = 'json/host_list';
@@ -1386,9 +1398,8 @@ end;
 
 procedure TVisWaptGUI.ActSearchPackageExecute(Sender: TObject);
 var
-  expr, res: UTF8String;
+  expr: UTF8String;
   packages: ISuperObject;
-  p2: variant;
 begin
   //packages := VarPythonEval(Format('"%s".split()',[EdSearch.Text]));
   //packages := MainModule.mywapt.search(VarPythonEval(Format('"%s".split()',[EdSearch.Text])));
@@ -1400,7 +1411,7 @@ end;
 
 procedure TVisWaptGUI.ActPackagesUpdateExecute(Sender: TObject);
 var
-  l, res, i: variant;
+  res:Variant;
 begin
   //test avec un variant ;)
   res := MainModule.mywapt.update(Register := False);
@@ -1512,7 +1523,7 @@ end;
 
 procedure TVisWaptGUI.butSearchExternalPackagesClick(Sender: TObject);
 var
-  expr, res: UTF8String;
+  expr: UTF8String;
   packages: ISuperObject;
 begin
   expr := format('waptdevutils.update_tis_repo(r"%s","%s")',
@@ -1647,9 +1658,6 @@ end;
 
 procedure TVisWaptGUI.GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
-var
-  selgroup : String;
-  N: PVirtualNode;
 begin
   {if GridGroups.Focused and (Shift=[ssLeft]) then
   begin
