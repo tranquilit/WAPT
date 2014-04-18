@@ -93,9 +93,15 @@ LicenseFile=..\COPYING.txt
 RestartIfNeededByRun=False
 SetupIconFile=..\wapt.ico
 
+
+
 #ifdef signtool
 SignTool={#signtool}
 #endif
+
+[Languages]
+;Name: "en"; MessagesFile: "compiler:Default.isl"
+Name:fr;MessagesFile: "compiler:Languages\French.isl"
 
 [Registry]
 Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"; Check: NeedsAddPath('{app}')
@@ -118,16 +124,12 @@ Filename: "cmd"; Parameters: "/C echo O| cacls {app} /S:""D:PAI(A;OICI;FA;;;BA)(
 Filename: "{app}\waptpython.exe"; Parameters: """{app}\waptservice\waptservice.py"" install"; Tasks:installService ; Flags: runhidden; StatusMsg: "Install waptservice"; Description: "Install WAPT Service"
 Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait runasoriginaluser skipifsilent postinstall; StatusMsg: "Launch WAPT tray icon"; Description: "Launch WAPT tray icon"
 
-
 [Icons]
-Name: "{commonstartup}\WAPT session setup"; Tasks: autorunSessionSetup; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
 Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\wapttray.exe"; Flags: excludefromshowinnewinstall;
-
 [Tasks]
-Name: setupTasks; Description: "Creates windows scheduled tasks for update and upgrade"; 
-Name: autorunSessionSetup; Description: "Launch WAPT session setup for all packages at logon";
-Name: installService; Description: "Install WAPT Service";
-Name: autorunTray; Description: "Start WAPT Tray icon at logon"; Flags: unchecked;
+Name: setupTasks; Description: "Créer des tâches planifiées pour la mise à jour des paquets"; 
+Name: installService; Description: "Installer Wapt en tant que service";
+Name: autorunTray; Description: "Démarrer le WAPT Tray lors de la connexion"; Flags: unchecked;
 Name: installredist2008; Description: "Install VC++ 2008 redistributables";
 
 [UninstallRun]
