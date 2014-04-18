@@ -7,10 +7,9 @@ object VisLoading: TVisLoading
   Caption = 'Chargement'
   ClientHeight = 75
   ClientWidth = 420
-  FormStyle = fsStayOnTop
   OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '1.1'
+  LCLVersion = '1.3'
   Visible = True
   object AProgressBar: TProgressBar
     Left = 10

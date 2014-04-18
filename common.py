@@ -4228,6 +4228,8 @@ class Wapt(object):
 
         codecs.open(control_filename,'w',encoding='utf8').write(entry.ascontrol())
 
+        self.add_pyscripter_project(directoryname)
+
         result = {}
         result['package'] = entry
         result['source_dir'] = directoryname

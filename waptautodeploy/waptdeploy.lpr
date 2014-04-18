@@ -722,7 +722,7 @@ begin
       Writeln('  If force is given, install waptsetup.exe even if version doesn''t match');
       Exit;
   end;
-  waptsetupurl := 'http://'defaultwapt+'/wapt/waptsetup.exe';
+  waptsetupurl := 'http://'+defaultwapt+'/wapt/waptsetup.exe';
   if ParamStr(1)='force' then
   begin
     localVersion := '';

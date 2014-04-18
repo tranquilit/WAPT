@@ -52,7 +52,7 @@ begin
       format('common.private_key_has_password(r"%s")',
       [GetWaptPrivateKeyPath])).AsString);
     if KeyIsProtected then
-      while StrToBool(DMPython.RunJSON(format('common.check_key_password(r"%s","%s")',[GetWaptPrivateKeyPath, CachedPrivateKeyPassword])).AsString) do
+      while not StrToBool(DMPython.RunJSON(format('common.check_key_password(r"%s","%s")',[GetWaptPrivateKeyPath, CachedPrivateKeyPassword])).AsString) do
       begin
         with TvisPrivateKeyAuth.Create(Application.MainForm) do
         try
