@@ -3,7 +3,7 @@
 #define default_wapt_server ""
 #define default_update_period "120"
 #define default_update_maxruntime "30"
-#define AppName "WAPTStarter"
+#define AppName "WaptStarter"
 #define output_dir "."
 #define Company "Tranquil IT Systems"
 #define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
@@ -22,12 +22,15 @@ Source: "..\wapt.ico"; DestDir: "{app}";
 OutputBaseFilename=waptstarter
 DefaultDirName={pf}\wapt
 
-[Tasks]
-Name: use_hostpackages; Description: "Use automatic host management based on hostname packages"; Flags: unchecked;
+
+;[Tasks]
+;Name: use_hostpackages; Description: "Use automatic host management based on hostname packages"; Flags: unchecked;
 
 [INI]
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {#default_repo_url};
-Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1"; Tasks: use_hostpackages;
-Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "0"; Tasks: not use_hostpackages;
+;Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1"; Tasks: use_hostpackages;
+;Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "0"; Tasks: not use_hostpackages;
 
-
+[Icons]
+Name: "{commonprograms}\WaptStarter"; IconFilename: "{app}\wapt.ico"; Filename: "http://localhost:8088";
+Name: "{commondesktop}\WaptStarter"; IconFilename: "{app}\wapt.ico"; Filename: "http://localhost:8088";
