@@ -877,10 +877,13 @@ class WaptBaseDB(object):
                 return (old_structure_version,old_structure_version)
 
             logger.info(u'Upgrade database schema')
-            # we will backup old data in a file so that we can rollback
-            backupfn = os.path.join(os.path.dirname(self.dbpath),time.strftime('%Y%m%d-%H%M%S')+'.sqlite')
-            logger.debug(u' copy old data to %s' % backupfn)
-            shutil.copy(self.dbpath,backupfn)
+            if self.dbpath != ':memory:':
+                # we will backup old data in a file so that we can rollback
+                backupfn = tempfile.mktemp('.sqlite')
+                logger.debug(u' copy old data to %s' % backupfn)
+                shutil.copy(self.dbpath,backupfn)
+            else:
+                backupfn = None
 
             # we will backup old data in dictionaries to convert them to new structure
             logger.debug(u' backup data in memory')
@@ -1839,7 +1842,7 @@ class WaptRepo(object):
             if config.has_option(self.name,'http_proxy'):
                 self.proxies = {'http':config.get(self.name,'http_proxy')}
             if config.has_option(self.name,'timeout'):
-                self.timeout = config.get_float(self.name,'timeout')
+                self.timeout = config.getfloat(self.name,'timeout')
         return self
 
     @property
@@ -1892,7 +1895,7 @@ class WaptRepo(object):
             return httpdatetime2isodate(packages_last_modified)
         except requests.RequestException as e:
             self._cached_dns_repo_url = None
-            logger.warning(u'Repo packages index %s is not available : %s'%(self.packages_url,e))
+            logger.warning(u'Repo packages index %s is not available : %s'%(self.packages_url,ensure_unicode(e)))
             return None
 
     def load_packages(self):
@@ -2001,7 +2004,7 @@ class WaptHostRepo(WaptRepo):
                 package = None
                 if host_package_date:
                     if force or host_package_date != waptdb.get_param(host_cachedate) or not waptdb.packages_matching(host):
-                        host_package = requests.get(host_package_url,proxies=self.proxies,verify=False,headers={'cache-control':'no-cache','pragma':'no-cache'})
+                        host_package = requests.get(host_package_url,proxies=self.proxies,verify=False,timeout=self.timeout,headers={'cache-control':'no-cache','pragma':'no-cache'})
                         host_package.raise_for_status
 
                         # Packages file is a zipfile with one Packages file inside
@@ -2066,6 +2069,10 @@ class WaptHostRepo(WaptRepo):
 
 
 ######################"""
+
+
+
+
 key_passwd = None
 
 
@@ -2086,6 +2093,7 @@ class Wapt(object):
         assert not config or isinstance(config,RawConfigParser)
         self._waptdb = None
         self._waptsessiondb = None
+        self._dbpath = None
         # cached runstatus to avoid setting in db if not changed.
         self._runstatus = None
 
@@ -2132,6 +2140,34 @@ class Wapt(object):
             result[att] = getattr(self,att)
         return result
 
+    @property
+    def dbdir(self):
+        if self._waptdb:
+            if self._dbpath != ':memory:':
+                return os.path.dirname(self._dbpath)
+            else:
+                return None
+        else:
+            return None
+
+    @property
+    def dbpath(self):
+        if self._waptdb:
+            return self._waptdb.dbpath
+        elif self._dbpath:
+            return self._dbpath
+        else:
+            return None
+
+    @dbpath.setter
+    def dbpath(self,value):
+        # check if not changed
+        if self._waptdb and self._waptdb.dbpath == value:
+            exit
+        # updated : reset db
+        self._waptdb = None
+        self._dbpath = value
+
     def load_config(self,config_filename=None):
         """Load configuration parameters from supplied inifilename
         """
@@ -2153,6 +2189,8 @@ class Wapt(object):
             'tray_check_interval':2,
             'service_interval':2,
             'use_hostpackages':'1',
+            'timeout':1.0,
+            'wapt_server_timeout':1.0,
             }
 
         if not self.config:
@@ -2168,20 +2206,10 @@ class Wapt(object):
         else:
             self.config_filedate = None
 
-        """ deprecated
-        self._wapt_repourl = self.config.get('global','repo_url')
-        if self._wapt_repourl and self._wapt_repourl[-1] == '/':
-            self._wapt_repourl = self._wapt_repourl.rstrip('/')
-        """
-
-        if self.config.has_option('global','dbdir'):
-            self.dbdir =  self.config.get('global','dbdir')
+        if self.config.has_option('global','dbpath'):
+            self.dbpath =  self.config.get('global','dbpath')
         else:
-            self.dbdir = os.path.join(self.wapt_base_dir,'db')
-
-        if not os.path.exists(self.dbdir):
-            os.makedirs(self.dbdir)
-        self.dbpath = os.path.join(self.dbdir,'waptdb.sqlite')
+            self.dbpath = os.path.join(self.wapt_base_dir,'db','waptdb.sqlite')
 
         if self.config.has_option('global','private_key'):
             self.private_key = self.config.get('global','private_key')
@@ -2222,6 +2250,11 @@ class Wapt(object):
 
         if self.config.has_option('global','language'):
             self.language = self.config.get('global','language')
+
+        if self.config.has_option('global','wapt_server_timeout'):
+            self.wapt_server_timeout = self.config.getfloat('global','wapt_server_timeout')
+        else:
+            self.wapt_server_timeout = 1.0
 
         # Get the configuration of all repositories (url, ...)
         self.repositories = []
@@ -2316,12 +2349,13 @@ class Wapt(object):
 
 
     def http_upload_package(self,package,wapt_server_user=None,wapt_server_passwd=None):
-        """Upload a package or host package to the waptserver.
+        r"""Upload a package or host package to the waptserver.
                 package : either the filename of a wapt package, or a PackageEntry
                 wapt_server_user   :
                 wapt_server_passwd :
             >>> from common import *
             >>> wapt = Wapt(config_filename = r'C:\tranquilit\wapt\tests\wapt-get.ini')
+            >>> r = wapt.update()
             >>> d = wapt.duplicate_package('test-wapttest','toto')
             >>> print d
             {'target': u'c:\\users\\htouvet\\appdata\\local\\temp\\toto.wapt', 'package': "toto (=117)"}
@@ -2549,7 +2583,7 @@ class Wapt(object):
         import md5
         conf = RawConfigParser()
         conf.read(self.config_filename)
-        conf.set('global','md5_password',md5.md5(pwd).hexdigest())
+        conf.set('global','waptservice_password',md5.md5(pwd).hexdigest())
         conf.write(open(self.config_filename,'wb'))
 
     def check_cancelled(self,msg='Task cancelled'):
@@ -3057,6 +3091,7 @@ class Wapt(object):
         >>> def nullhook(*args):
         ...     pass
         >>> res = wapt.install(['tis-wapttest'],usecache=False,printhook=nullhook,params_dict=dict(company='toto'))
+        ???
         >>> isinstance(res['upgrade'],list) and isinstance(res['errors'],list) and isinstance(res['additional'],list) and isinstance(res['install'],list) and isinstance(res['unavailable'],list)
         True
         >>> res = wapt.remove('tis-wapttest')
@@ -3466,7 +3501,7 @@ class Wapt(object):
                 inv['force']=True
 
             if self.wapt_server:
-                req = requests.post("%s/update_host" % (self.wapt_server,),json.dumps(inv),proxies=self.proxies,verify=False)
+                req = requests.post("%s/update_host" % (self.wapt_server,),data=json.dumps(inv),timeout=self.wapt_server_timeout,proxies=self.proxies,verify=False)
                 try:
                     req.raise_for_status()
                 except Exception,e:
@@ -3483,7 +3518,7 @@ class Wapt(object):
         """Return ident of waptserver if defined and available, else False"""
         if self.wapt_server:
             try:
-                httpreq = requests.get('%s/ident'%(self.wapt_server),timeout=self.timeout)
+                httpreq = requests.get('%s/ident'%(self.wapt_server),timeout=self.wapt_server_timeout)
                 httpreq.raise_for_code()
                 return httpreq.text
             except Exception as e:
@@ -3996,7 +4031,7 @@ class Wapt(object):
         r"""Build a skeleton of WAPT package based on the properties of the supplied installer
            Return the path of the skeleton
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
-        >>> wapt.dbdir = ':memory:'
+        >>> wapt.dbpath = ':memory:'
         >>> files = 'c:/tmp/files'
         >>> if not os.path.isdir(files):
         ...    os.makedirs(files)
@@ -4209,13 +4244,11 @@ class Wapt(object):
         return self.waptdb.installed(include_errors=include_errors)
 
     def is_available(self,packagename):
-        """Checks if a package (with optional version condition) is available.
+        r"""Checks if a package (with optional version condition) is available.
             Return package entry or None
         >>> from waptpackage import WaptLocalRepo
         >>> repo = WaptLocalRepo(r'c:\tranquilit\wapt\tests\packages')
-        >>> repo.update_packages_index()
-        >>> wapt = Wapt()
-        >>> wapt.add_repo()
+        >>> res = repo.update_packages_index()
         """
         return self.waptdb.packages_matching(packagename)
 
@@ -4256,7 +4289,7 @@ class Wapt(object):
             Return {'target':target_directory,'source_dir':target_directory,'package':package_entry}
 
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
-        >>> wapt.dbdir = ':memory:'
+        >>> wapt.dbpath = ':memory:'
         >>> tmpdir = tempfile.mkdtemp('wapt')
         >>> res = wapt.edit_package('tis-wapttest',target_directory=tmpdir,append_depends='tis-firefox',remove_depends='tis-7zip')
         >>> res['target'] == tmpdir and res['package'].package == 'tis-wapttest' and 'tis-firefox' in res['package'].depends
@@ -4460,7 +4493,7 @@ class Wapt(object):
                 usecache         : If True, allow to use cached package in local repo instead of downloading it.
                 printhook: hook for download progress
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
-        >>> wapt.dbdir = ':memory:'
+        >>> wapt.dbpath = ':memory:'
         >>> def nullhook(*args):
         ...     pass
         >>> tmpdir = 'c:/tmp/testdup-wapt'

@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.27"
+__version__ = "0.8.28"
 
 import time
 import sys
@@ -203,10 +203,17 @@ class WaptServiceConfig(object):
             else:
                 self.waptservice_poll_timeout = 10
 
-            if config.has_option('global','dbdir'):
-                self.dbpath = os.path.join(config.get('global','dbdir'),'waptdb.sqlite')
+            if self.config.has_option('global','dbpath'):
+                self.dbpath =  self.config.get('global','dbpath')
             else:
-                self.dbpath = os.path.join(wapt_root_dir,'db','waptdb.sqlite')
+                self.dbpath = os.path.join(self.wapt_base_dir,'db','waptdb.sqlite')
+
+            if self.dbpath != ':memory:':
+                self.dbdir = os.path.dirname(self.dbpath)
+                if not os.path.isdir(self.dbdir):
+                    os.makedirs(self.dbdir)
+            else:
+                self.dbdir = None
 
             if config.has_option('global','loglevel') and options.loglevel is None:
                 self.loglevel = config.get('global','loglevel')
@@ -476,7 +483,7 @@ def package_icon():
             repo_url = wapt().repositories[0].repo_url
 
             remote_icon_path = "{repo}/icons/{package}.png".format(repo=repo_url,package=package)
-            icon = requests.get(remote_icon_path,proxies=proxies)
+            icon = requests.get(remote_icon_path,proxies=proxies,timeout=wapt().timeout)
             icon.raise_for_status()
             open(icon_local_filename,'wb').write(icon.content)
             return StringIO.StringIO(icon.content)
@@ -1128,19 +1135,24 @@ class WaptUpgrade(WaptTask):
             install: [ ],
             additional: [ ]
             }"""
-        all_install = self.result['install']
-        if self.result['additional']:
+        all_install = self.result.get('install',[])
+        if self.result.get('additional',[]):
             all_install.extend(self.result['additional'])
-        self.summary = u"""\
-            Installés : {install}
-            Mis à jour : {upgrade}
-            Déjà à jour :{skipped}
-            Erreurs : {errors}""".format(
-            install = cjoin(all_install),
-            upgrade = cjoin(self.result['upgrade']),
-            skipped = cjoin(self.result['skipped']),
-            errors = cjoin(self.result['errors']),
-        )
+        install = cjoin(all_install)
+        upgrade = cjoin(self.result.get('upgrade',[]))
+        #skipped = cjoin(self.result['skipped'])
+        errors = cjoin(self.result.get('errors',[]))
+        unavailable = cjoin(self.result.get('unavailable',[]))
+        s = []
+        if install:
+            s.append(u'Installés : {}'.format(install))
+        if upgrade:
+            s.append(u'Mis à jour : {}'.format(upgrade))
+        if errors:
+            s.append(u'Erreurs : {}'.format(errors))
+        if unavailable:
+            s.append(u'Non disponibles : {}'.format(unavailable))
+        self.summary = u"\n".join(s)
 
     def __str__(self):
         return u'Mise à jour des paquets installés sur la machine'
@@ -1204,9 +1216,11 @@ class WaptCleanup(WaptTask):
         self.force = False
 
     def _run(self):
+        def cjoin(l):
+            return u','.join([u'%s'%p for p in l])
         try:
             self.result = self.wapt.cleanup(obsolete_only=not self.force)
-            self.summary = u"Cache local vidé"
+            self.summary = u"Paquets effacés : {}".format(cjoin(self.result))
         except Exception as e:
             self.result = {}
             self.summary = u"Erreur lors du vidage du cache local : {}".format(setuphelpers.ensure_unicode(e))
@@ -1287,7 +1301,27 @@ class WaptPackageInstall(WaptTask):
         self.package = None
 
     def _run(self):
+        def cjoin(l):
+            return u','.join([u"%s" % (p[1].asrequirement(),) for p in l])
         self.result = self.wapt.install(self.packagename,force = self.force)
+        all_install = self.result.get('install',[])
+        if self.result.get('additional',[]):
+            all_install.extend(self.result['additional'])
+        install = cjoin(all_install)
+        upgrade = cjoin(self.result.get('upgrade',[]))
+        #skipped = cjoin(self.result['skipped'])
+        errors = cjoin(self.result.get('errors',[]))
+        unavailable = cjoin(self.result.get('unavailable',[]))
+        s = []
+        if install:
+            s.append(u'Installés : {}'.format(install))
+        if upgrade:
+            s.append(u'Mis à jour : {}'.format(upgrade))
+        if errors:
+            s.append(u'Erreurs : {}'.format(errors))
+        if unavailable:
+            s.append(u'Non disponibles : {}'.format(unavailable))
+        self.summary = u"\n".join(s)
         if self.result['errors']:
             raise Exception('Error during install of {}:{}'.format(self.packagename,self.result))
 
@@ -1316,12 +1350,12 @@ class WaptPackageRemove(WaptPackageInstall):
             return u','.join([u'%s'%p for p in l])
 
         self.result = self.wapt.remove(self.packagename,force=self.force)
-        self.summary = u"""\
-            Enlevés : {removed}
-            Erreurs : {errors}""".format(
-                removed = cjoin(self.result['removed']),
-                errors = cjoin(self.result['errors']),
-                )
+        s = []
+        if self.result['removed']:
+            s.append(u'Enlevés : {}'.format(cjoin(self.result['removed'])))
+        if self.result['errors']:
+            s.append(u'Erreurs : {}'.format(cjoin(self.result['errors'])))
+        self.summary = u"\n".join(s)
 
     def __str__(self):
         return u"Désinstallation de {packagename} (tâche #{id})".format(classname=self.__class__.__name__,id=self.id,packagename=self.packagename)
@@ -1446,7 +1480,7 @@ class WaptTaskManager(threading.Thread):
                             self.tasks_done.append(self.running_task)
                             self.broadcast_tasks_status('FINISH',self.running_task)
                             if self.running_task.notify_server_on_finish:
-                                self.update_runstatus(u'Terminé: {description}'.format(description=self.running_task) )
+                                self.update_runstatus(u'Terminé: {description}\n{summary}'.format(description=self.running_task,summary=self.running_task.summary) )
                                 self.update_server_status()
 
                     except common.EWaptCancelled as e:

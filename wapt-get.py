@@ -295,7 +295,7 @@ def main():
                         for k in ('downloaded','skipped','errors'):
                             if result.get('downloads', {'downloaded':[],'skipped':[],'errors':[]} )[k]:
                                 print u"\n=== %s packages ===\n%s" % (k,'\n'.join(["  %s" % (s,) for s in result['downloads'][k]]),)
-                    if result['unavailable']:
+                    if result.get('unavailable',[]):
                         print(u'Critical : ')
                         print(u' === Unavailable packages ===\n%s'% '\n'.join( ["  %-30s" % s for s in  result['unavailable']]) )
                 if mywapt.wapt_server:
