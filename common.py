@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.27"
+__version__ = "0.8.28"
 import os
 import re
 import logging
@@ -769,8 +769,8 @@ class WaptBaseDB(object):
             self.db.commit()
         else:
             self.db=sqlite3.connect(self.dbpath,detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
-            # be sure to upgrade
-            assume(self.db_version)==(self.curr_db_version)
+            if self.curr_db_version != self.db_version:
+                self.upgradedb()
 
     def __enter__(self):
         return self
@@ -799,7 +799,7 @@ class WaptBaseDB(object):
                 self.db.rollback()
                 # pre-params version
                 self.upgradedb()
-                self.db.execute('insert into wapt_params(name,value,create_date) values (?,?,?)',('db_version',self.curr_db_version,datetime2isodate()))
+                self.db.execute('insert or replace into wapt_params(name,value,create_date) values (?,?,?)',('db_version',self.curr_db_version,datetime2isodate()))
                 self.db.commit()
                 self._db_version = self.curr_db_version
         return self._db_version
@@ -807,8 +807,7 @@ class WaptBaseDB(object):
     @db_version.setter
     def db_version(self,value):
         try:
-            self.db.execute('insert or ignore into wapt_params(name,value,create_date) values (?,?,?)',('db_version',value,datetime2isodate()))
-            self.db.execute('update wapt_params set value=?,create_date=? where name=?',(value,datetime2isodate(),'db_version'))
+            self.db.execute('insert or replace into wapt_params(name,value,create_date) values (?,?,?)',('db_version',value,datetime2isodate()))
             self.db.commit()
             self._db_version = value
         except:
@@ -867,6 +866,63 @@ class WaptBaseDB(object):
         return (rv[0] if rv else None) if one else rv
 
 
+    def upgradedb(self,force=False):
+        """Update local database structure to current version if rules are described in db_upgrades"""
+        try:
+            backupfn = ''
+            # use cached value to avoid infinite loop
+            old_structure_version = self._db_version
+            if old_structure_version >= self.curr_db_version and not force:
+                logger.critical(u'upgrade db aborted : current structure version %s is newer or equal to requested structure version %s' % (old_structure_version,self.curr_db_version))
+                return (old_structure_version,old_structure_version)
+
+            logger.info(u'Upgrade database schema')
+            # we will backup old data in a file so that we can rollback
+            backupfn = os.path.join(os.path.dirname(self.dbpath),time.strftime('%Y%m%d-%H%M%S')+'.sqlite')
+            logger.debug(u' copy old data to %s' % backupfn)
+            shutil.copy(self.dbpath,backupfn)
+
+            # we will backup old data in dictionaries to convert them to new structure
+            logger.debug(u' backup data in memory')
+            old_datas = {}
+            tables = [ c[0] for c in self.db.execute('SELECT name FROM sqlite_master WHERE type = "table" and name like "wapt_%"').fetchall()]
+            for tablename in tables:
+                old_datas[tablename] = self.query('select * from %s' % tablename)
+                logger.debug(u' %s table : %i records' % (tablename,len(old_datas[tablename])))
+
+            logger.debug(u' drop tables')
+            for tablename in tables:
+                self.db.execute('drop table if exists %s' % tablename)
+
+            # create new empty structure
+            logger.debug(u' recreates new tables ')
+            new_structure_version = self.initdb()
+
+            # append old data in new tables
+            logger.debug(u' fill with old data')
+            for tablename in tables:
+                if old_datas[tablename]:
+                    logger.debug(u' process table %s' % tablename)
+                    allnewcolumns = [ c[0] for c in self.db.execute('select * from %s limit 0' % tablename).description]
+                    # take only old columns which match a new column in new structure
+                    oldcolumns = [ k for k in old_datas[tablename][0] if k in allnewcolumns ]
+
+                    insquery = "insert into %s (%s) values (%s)" % (tablename,",".join(oldcolumns),",".join("?" * len(oldcolumns)))
+                    for rec in old_datas[tablename]:
+                        logger.debug(u' %s' %[ rec[oldcolumns[i]] for i in range(0,len(oldcolumns))])
+                        self.db.execute(insquery,[ rec[oldcolumns[i]] for i in range(0,len(oldcolumns))] )
+
+            # be sure to put back new version in table as db upgrade has put the old value in table
+            self.db_version = new_structure_version
+            self.db.commit()
+            return (old_structure_version,new_structure_version)
+        except Exception,e:
+            self.db.rollback()
+            if backupfn:
+                logger.critical(u"UpgradeDB ERROR : %s, copy back backup database %s" % (e,backupfn))
+                shutil.copy(backupfn,self.dbpath)
+            raise
+
 class WaptSessionDB(WaptBaseDB):
     def __init__(self,username=''):
         if not username:
@@ -874,10 +930,6 @@ class WaptSessionDB(WaptBaseDB):
         self.username = username
         self.dbpath = os.path.join(setuphelpers.application_data(),'wapt','waptsession.sqlite')
         super(WaptSessionDB,self).__init__(self.dbpath)
-
-    def upgradedb(self,force=False):
-        """Update local database structure to current version if rules are described in db_upgrades"""
-        self.db_version = curr_db_version
 
     def initdb(self):
         """Initialize current sqlite db with empty table and return structure version"""
@@ -1007,191 +1059,11 @@ class WaptSessionDB(WaptBaseDB):
 
 PackageKey = namedtuple('package',('packagename','version'))
 
-# tables : (oldversion:newversion) : old_table_name:[newtablename,{dict of changed field names}]
-db_upgrades = {
- ('0000','20130327'):{
-        'wapt_localstatus':['wapt_localstatus',{
-            'Package':'package',
-            'Version':'version',
-            'Architecture':'architecture',
-            'InstallDate':'install_date',
-            'InstallStatus':'install_status',
-            'InstallOutput':'install_output',
-            'InstallParams':'install_params',
-            'UninstallString':'uninstall_string',
-            'UninstallKey':'uninstall_key',
-            }],
-        'wapt_repo':['wapt_package',{
-            'Package':'package',
-            'Version':'version',
-            'Architecture':'architecture',
-            'Section':'section',
-            'Priority':'priority',
-            'Maintainer':'maintainer',
-            'Description':'description',
-            'Filename':'filename',
-            'Size':'size',
-            'MD5sum':'md5sum',
-            'Depends':'depends',
-            'Sources':'sources',
-            }],
-        },
- ('0000','20130408'):{
-        'wapt_localstatus':['wapt_localstatus',{
-            'Package':'package',
-            'Version':'version',
-            'Architecture':'architecture',
-            'InstallDate':'install_date',
-            'InstallStatus':'install_status',
-            'InstallOutput':'install_output',
-            'InstallParams':'install_params',
-            'UninstallString':'uninstall_string',
-            'UninstallKey':'uninstall_key',
-            }],
-        'wapt_repo':['wapt_package',{
-            'Package':'package',
-            'Version':'version',
-            'Architecture':'architecture',
-            'Section':'section',
-            'Priority':'priority',
-            'Maintainer':'maintainer',
-            'Description':'description',
-            'Filename':'filename',
-            'Size':'size',
-            'MD5sum':'md5sum',
-            'Depends':'depends',
-            'Sources':'sources',
-            }],
-        },
- ('0000','20130410'):{
-        'wapt_localstatus':['wapt_localstatus',{
-            'Package':'package',
-            'Version':'version',
-            'Architecture':'architecture',
-            'InstallDate':'install_date',
-            'InstallStatus':'install_status',
-            'InstallOutput':'install_output',
-            'InstallParams':'install_params',
-            'UninstallString':'uninstall_string',
-            'UninstallKey':'uninstall_key',
-            }],
-        'wapt_repo':['wapt_package',{
-            'Package':'package',
-            'Version':'version',
-            'Architecture':'architecture',
-            'Section':'section',
-            'Priority':'priority',
-            'Maintainer':'maintainer',
-            'Description':'description',
-            'Filename':'filename',
-            'Size':'size',
-            'MD5sum':'md5sum',
-            'Depends':'depends',
-            'Sources':'sources',
-            }],
-        },
- ('0000','20130423'):{
-        'wapt_localstatus':['wapt_localstatus',{
-            'Package':'package',
-            'Version':'version',
-            'Architecture':'architecture',
-            'InstallDate':'install_date',
-            'InstallStatus':'install_status',
-            'InstallOutput':'install_output',
-            'InstallParams':'install_params',
-            'UninstallString':'uninstall_string',
-            'UninstallKey':'uninstall_key',
-            }],
-        'wapt_repo':['wapt_package',{
-            'Package':'package',
-            'Version':'version',
-            'Architecture':'architecture',
-            'Section':'section',
-            'Priority':'priority',
-            'Maintainer':'maintainer',
-            'Description':'description',
-            'Filename':'filename',
-            'Size':'size',
-            'MD5sum':'md5sum',
-            'Depends':'depends',
-            'Sources':'sources',
-            }],
-        },
-    }
-
-
 class WaptDB(WaptBaseDB):
     """Class to manage SQLite database with local installation status"""
     dbpath = ''
     db = None
-
     curr_db_version = '20140410'
-
-    def upgradedb(self,force=False):
-        """Update local database structure to current version if rules are described in db_upgrades"""
-        try:
-            backupfn = ''
-            # use cached value to avoid infinite loop
-            old_structure_version = self._db_version
-            if old_structure_version >= self.curr_db_version and not force:
-                logger.critical(u'upgrade db aborted : current structure version %s is newer or equal to requested structure version %s' % (old_structure_version,self.curr_db_version))
-                return (old_structure_version,old_structure_version)
-
-            logger.info(u'Upgrade database schema')
-            # we will backup old data in a file so that we can rollback
-            backupfn = os.path.join(os.path.dirname(self.dbpath),time.strftime('%Y%m%d-%H%M%S')+'.sqlite')
-            logger.debug(u' copy old data to %s' % backupfn)
-            shutil.copy(self.dbpath,backupfn)
-
-            # we will backup old data in dictionaries to convert them to new structure
-            logger.debug(u' backup data in memory')
-            old_datas = {}
-            tables = [ c[0] for c in self.db.execute('SELECT name FROM sqlite_master WHERE type = "table" and name like "wapt_%"').fetchall()]
-            for tablename in tables:
-                old_datas[tablename] = self.query('select * from %s' % tablename)
-                logger.debug(u' %s table : %i records' % (tablename,len(old_datas[tablename])))
-
-            logger.debug(u' drop tables')
-            for tablename in tables:
-                self.db.execute('drop table if exists %s' % tablename)
-
-            # create new empty structure
-            logger.debug(u' recreates new tables ')
-            new_structure_version = self.initdb()
-
-            # append old data in new tables
-            logger.debug(u' fill with old data')
-            for tablename in tables:
-                if old_datas[tablename]:
-                    logger.debug(u' process table %s' % tablename)
-                    # get rules from db_upgrades dict
-                    if new_structure_version>old_structure_version and (old_structure_version,new_structure_version) in db_upgrades:
-                        (newtablename,newfieldnames) = db_upgrades[(old_structure_version,new_structure_version)].get(tablename,[tablename,{}])
-                    else:
-                        (newtablename,newfieldnames) = (tablename,{})
-
-                    allnewcolumns = [ c[0] for c in self.db.execute('select * from %s limit 0' % newtablename).description]
-                    # take only old columns which match a new column in new structure
-                    oldcolumns = [ k for k in old_datas[tablename][0].keys() if newfieldnames.get(k,k) in allnewcolumns ]
-                    logger.debug(u' old columns %s' % (oldcolumns,))
-                    newcolumns = [ newfieldnames.get(k,k) for k in oldcolumns ]
-                    logger.debug(u' new columns %s' % (newcolumns,))
-
-                    insquery = "insert into %s (%s) values (%s)" % (newtablename,",".join(newcolumns),",".join("?" * len(newcolumns)))
-                    for rec in old_datas[tablename]:
-                        logger.debug(u' %s' %[ rec[oldcolumns[i]] for i in range(0,len(oldcolumns))])
-                        self.db.execute(insquery,[ rec[oldcolumns[i]] for i in range(0,len(oldcolumns))] )
-
-            # be sure to put back new version in table as db upgrade has put the old value in table
-            self.db_version = new_structure_version
-            self.db.commit()
-            return (old_structure_version,new_structure_version)
-        except Exception,e:
-            self.db.rollback()
-            if backupfn:
-                logger.critical(u"UpgradeDB ERROR : %s, copy back backup database %s" % (e,backupfn))
-                shutil.copy(backupfn,self.dbpath)
-            raise
 
     def initdb(self):
         """Initialize current sqlite db with empty table and return structure version"""
