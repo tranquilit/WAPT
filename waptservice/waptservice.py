@@ -206,7 +206,7 @@ class WaptServiceConfig(object):
             if config.has_option('global','dbpath'):
                 self.dbpath =  config.get('global','dbpath')
             else:
-                self.dbpath = os.path.join(self.wapt_base_dir,'db','waptdb.sqlite')
+                self.dbpath = os.path.join(wapt_root_dir,'db','waptdb.sqlite')
 
             if self.dbpath != ':memory:':
                 self.dbdir = os.path.dirname(self.dbpath)
