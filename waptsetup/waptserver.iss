@@ -52,7 +52,8 @@ DefaultDirName="C:\wapt"
 
 [INI]
 Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL};
-Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL}
+Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL};
+Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1";
 
 [RUN]
 Filename: "{app}\waptserver\mongodb\mongod.exe"; Parameters: " --config c:\wapt\waptserver\mongodb\mongod.cfg --install"; StatusMsg: "Registering mongodb service..."; Description: "Set up MongoDB Service"
@@ -63,7 +64,11 @@ Filename: "{app}\wapt-get.exe"; Parameters: "update-packages ""{app}\waptserver\
 Filename: "{app}\wapt-get.exe"; Parameters: "register"; Flags: runhidden postinstall; StatusMsg: "Register computer on the WAPT server"; Description: "Register computer on the WAPT server"
 
 [Icons]
+Name: "{commonstartup}\WAPT session setup"; Tasks: autorunSessionSetup; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
 Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\wapttray.exe"; Flags: excludefromshowinnewinstall;
+
+[Tasks]
+Name: autorunSessionSetup; Description: "Launch WAPT session setup for all packages at logon";
 
 [UninstallRun]
 Filename: "net"; Parameters: "stop waptserver"; Flags: runhidden; StatusMsg: "Stop waptserver"
