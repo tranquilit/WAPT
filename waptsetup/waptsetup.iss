@@ -28,18 +28,22 @@ OutputBaseFilename=waptsetup
 DefaultDirName="C:\wapt"
 
 [Tasks]
-Name: use_hostpackages; Description: "Use automatic host management based on hostname packages";
+;Name: use_hostpackages; Description: "Use automatic host management based on hostname packages";
+Name: autorunSessionSetup; Description: "Launch WAPT session setup for all packages at logon";
 
 [INI]
 Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL};
-Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL}
-Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1"; Tasks: use_hostpackages;
-Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "0"; Tasks: not use_hostpackages;
+Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL};
+Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1";
+;Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1"; Tasks: use_hostpackages;
+;Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "0"; Tasks: not use_hostpackages;
 
 
 [Run]
 Filename: "{app}\wapt-get.exe"; Parameters: "register"; Flags: runhidden postinstall; StatusMsg: "Register computer on the WAPT server"; Description: "Register computer on the WAPT Server"
 
+[Icons]
+Name: "{commonstartup}\WAPT session setup"; Tasks: autorunSessionSetup; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
 
 [Code]
 var
