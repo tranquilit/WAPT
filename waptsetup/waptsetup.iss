@@ -29,7 +29,7 @@ DefaultDirName="C:\wapt"
 
 [Tasks]
 ;Name: use_hostpackages; Description: "Use automatic host management based on hostname packages";
-Name: autorunSessionSetup; Description: "Launch WAPT session setup for all packages at logon";
+Name: autorunSessionSetup; Description: "Lancer WAPT session setup à l'ouverture de session";
 
 [INI]
 Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL};
