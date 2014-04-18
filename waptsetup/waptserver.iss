@@ -68,7 +68,7 @@ Name: "{commonstartup}\WAPT session setup"; Tasks: autorunSessionSetup; Filename
 Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\wapttray.exe"; Flags: excludefromshowinnewinstall;
 
 [Tasks]
-Name: autorunSessionSetup; Description: "Launch WAPT session setup for all packages at logon";
+Name: autorunSessionSetup; Description: "Lancer WAPT session setup à l'ouverture de session";
 
 [UninstallRun]
 Filename: "net"; Parameters: "stop waptserver"; Flags: runhidden; StatusMsg: "Stop waptserver"
