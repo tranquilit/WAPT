@@ -67,6 +67,7 @@ type
     procedure ActConfigureExecute(Sender: TObject);
     procedure ActForceRegisterExecute(Sender: TObject);
     procedure ActLaunchWaptConsoleExecute(Sender: TObject);
+    procedure ActLaunchWaptConsoleUpdate(Sender: TObject);
     procedure ActLocalInfoExecute(Sender: TObject);
     procedure ActQuitExecute(Sender: TObject);
     procedure ActReloadConfigExecute(Sender: TObject);
@@ -389,6 +390,11 @@ begin
   ShellExecuteW(0,Pchar('open'),PChar(cmd),Nil,Nil,0);
 end;
 
+procedure TDMWaptTray.ActLaunchWaptConsoleUpdate(Sender: TObject);
+begin
+  ActLaunchWaptConsole.Visible:=FileExists(AppendPathDelim(ExtractFileDir(ParamStr(0)))+'waptconsole.exe');
+end;
+
 function TDMWaptTray.WaptConsoleFileName: String;
 begin
   result:=AppendPathDelim(ExtractFileDir(ParamStr(0)))+'waptconsole.exe';
@@ -648,8 +654,8 @@ begin
   begin
     TrayIcon1.Hint:= UTF8Encode(AValue);
     TrayIcon1.BalloonHint:=UTF8Encode(AValue);
-    if not popupvisible and (AValue<>'') and notify_user then
-      TrayIcon1.ShowBalloonHint;
+    {if not popupvisible and (AValue<>'') and notify_user then
+      TrayIcon1.ShowBalloonHint;}
   end;
 end;
 

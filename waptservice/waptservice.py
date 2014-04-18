@@ -163,6 +163,8 @@ class WaptServiceConfig(object):
         self.authorized_callers_ip = get_authorized_callers_ip(self.wapt_server)
 
         self.waptservice_poll_timeout = 10
+        self.waptupdate_task_period = None
+        self.waptupgrade_task_period = None
 
         self.config_filedate = None
 
@@ -202,6 +204,16 @@ class WaptServiceConfig(object):
                 self.waptservice_poll_timeout = int(config.get('global','waptservice_poll_timeout'))
             else:
                 self.waptservice_poll_timeout = 10
+
+            if config.has_option('global','waptupgrade_task_period'):
+                self.waptupgrade_task_period = int(config.get('global','waptupgrade_task_period'))
+            else:
+                self.waptupgrade_task_period = None
+
+            if config.has_option('global','waptupdate_task_period'):
+                self.waptupdate_task_period = int(config.get('global','waptupdate_task_period'))
+            else:
+                self.waptupdate_task_period = None
 
             if config.has_option('global','dbpath'):
                 self.dbpath =  config.get('global','dbpath')
@@ -935,7 +947,7 @@ new_wapt_event = threading.Event()
 
 class WaptTask(object):
     """Base object class for all wapt task : download, install, remove, upgrade..."""
-    def __init__(self):
+    def __init__(self,**args):
         self.id = -1
         self.wapt = None
         self.priority = 100
@@ -953,6 +965,8 @@ class WaptTask(object):
         self.notify_server_on_start = True
         self.notify_server_on_finish = True
         self.notify_user = True
+        for k in args:
+            setattr(self,k,args[k])
 
     def update_status(self,status):
         """Update runstatus in database and send PROGRESS event"""
@@ -1040,14 +1054,16 @@ class WaptTask(object):
 
 
 class WaptNetworkReconfig(WaptTask):
-    def __init__(self):
+    def __init__(self,**args):
         super(WaptNetworkReconfig,self).__init__()
         self.priority = 0
         self.notify_server_on_start = False
-        self.notify_server_on_finish = True
+        self.notify_server_on_finish = False
+        for k in args:
+            setattr(self,k,args[k])
 
     def _run(self):
-        logger.info(u'Reloading config file')
+        logger.debug(u'Reloading config file')
         self.wapt.load_config(waptconfig.config_filename)
         self.wapt.network_reconfigure()
         waptconfig.load()
@@ -1062,11 +1078,13 @@ class WaptNetworkReconfig(WaptTask):
 
 
 class WaptClientUpgrade(WaptTask):
-    def __init__(self):
+    def __init__(self,**args):
         super(WaptClientUpgrade,self).__init__()
         self.priority = 10
         self.notify_server_on_start = True
         self.notify_server_on_finish = False
+        for k in args:
+            setattr(self,k,args[k])
 
     def _run(self):
         """Launch an external 'wapt-get waptupgrade' process to upgrade local copy of wapt client"""
@@ -1079,11 +1097,13 @@ class WaptClientUpgrade(WaptTask):
 
 
 class WaptUpdate(WaptTask):
-    def __init__(self):
+    def __init__(self,**args):
         super(WaptUpdate,self).__init__()
         self.priority = 10
         self.notify_server_on_start = False
         self.notify_server_on_finish = True
+        for k in args:
+            setattr(self,k,args[k])
 
     def _run(self):
         self.result = self.wapt.update()
@@ -1115,9 +1135,6 @@ class WaptUpdate(WaptTask):
 
 
 class WaptUpgrade(WaptTask):
-    def __init__(self):
-        super(WaptUpgrade,self).__init__()
-
     def _run(self):
         def cjoin(l):
             return u','.join([u"%s" % (p[1].asrequirement(),) for p in l])
@@ -1143,7 +1160,7 @@ class WaptUpgrade(WaptTask):
         upgrade = cjoin(self.result.get('upgrade',[]))
         #skipped = cjoin(self.result['skipped'])
         errors = cjoin(self.result.get('errors',[]))
-        unavailable = cjoin(self.result.get('unavailable',[]))
+        unavailable = u','.join(self.result.get('unavailable',[]))
         s = []
         if install:
             s.append(u'Installés : {}'.format(install))
@@ -1161,11 +1178,13 @@ class WaptUpgrade(WaptTask):
 
 class WaptUpdateServerStatus(WaptTask):
     """Send workstation status to server"""
-    def __init__(self):
+    def __init__(self,**args):
         super(WaptUpdateServerStatus,self).__init__()
         self.priority = 10
         self.notify_server_on_start = False
         self.notify_server_on_finish = False
+        for k in args:
+            setattr(self,k,args[k])
 
     def _run(self):
         if self.wapt.wapt_server:
@@ -1185,11 +1204,13 @@ class WaptUpdateServerStatus(WaptTask):
 
 class WaptRegisterComputer(WaptTask):
     """Send workstation status to server"""
-    def __init__(self):
-        super(WaptRegisterComputer,self).__init__()
+    def __init__(self,**args):
+        super(WaptRegisterComputer,self).__init__(**args)
         self.priority = 10
         self.notify_server_on_start = False
         self.notify_server_on_finish = False
+        for k in args:
+            setattr(self,k,args[k])
 
     def _run(self):
         if self.wapt.wapt_server:
@@ -1209,12 +1230,14 @@ class WaptRegisterComputer(WaptTask):
 
 class WaptCleanup(WaptTask):
     """Cleanup local packages cache"""
-    def __init__(self):
+    def __init__(self,**args):
         super(WaptCleanup,self).__init__()
         self.priority = 1000
         self.notify_server_on_start = False
         self.notify_server_on_finish = False
         self.force = False
+        for k in args:
+            setattr(self,k,args[k])
 
     def _run(self):
         def cjoin(l):
@@ -1231,12 +1254,14 @@ class WaptCleanup(WaptTask):
 
 class WaptLongTask(WaptTask):
     """Test action for debug purpose"""
-    def __init__(self,duration=60,raise_error=False):
+    def __init__(self,**args):
         super(WaptLongTask,self).__init__()
         self.duration = duration
         self.raise_error = raise_error
         self.notify_server_on_start = False
         self.notify_server_on_finish = False
+        for k in args:
+            setattr(self,k,args[k])
 
 
     def _run(self):
@@ -1312,7 +1337,7 @@ class WaptPackageInstall(WaptTask):
         upgrade = cjoin(self.result.get('upgrade',[]))
         #skipped = cjoin(self.result['skipped'])
         errors = cjoin(self.result.get('errors',[]))
-        unavailable = cjoin(self.result.get('unavailable',[]))
+        unavailable = u','.join(self.result.get('unavailable',[]))
         s = []
         if install:
             s.append(u'Installés : {}'.format(install))
@@ -1396,6 +1421,9 @@ class WaptTaskManager(threading.Thread):
         self.running_task = None
         logger.info(u'Wapt tasks management initialized with {} configuration'.format(config_filename))
 
+        self.last_upgrade = None
+        self.last_update = None
+
     def update_runstatus(self,status):
         # update database with new runstatus
         self.wapt.runstatus = status
@@ -1411,7 +1439,7 @@ class WaptTaskManager(threading.Thread):
                 if result['uuid']:
                     self.last_update_server_date = datetime.datetime.now()
             except Exception as e:
-                logger.warning(u'Unable to update server status: %s' % setuphelpers.ensure_unicode(e))
+                logger.debug(u'Unable to update server status: %s' % setuphelpers.ensure_unicode(e))
 
     def broadcast_tasks_status(self,topic,task):
         """topic : ADD START FINISH CANCEL ERROR
@@ -1426,6 +1454,13 @@ class WaptTaskManager(threading.Thread):
         """Adds a new WaptTask for processing"""
         with self.status_lock:
             same = [ pending for pending in self.tasks_queue.queue if pending.same_action(task)]
+
+            # keep track of last update/upgrade add date to avoid relaunching
+            if isinstance(task,WaptUpdate):
+                self.last_update = time.time()
+            if isinstance(task,WaptUpgrade):
+                self.last_upgrade = time.time()
+
             # not already in pending  actions...
             if not same:
                 task.wapt = self.wapt
@@ -1454,11 +1489,22 @@ class WaptTaskManager(threading.Thread):
         except:
             pass
 
+    def check_scheduled_tasks(self):
+        """Add update/upgrade tasks if elapsed time since last update/upgrade is over"""
+        logger.debug(u'Check scheduled tasks')
+        if waptconfig.waptupgrade_task_period is not None:
+            if self.last_upgrade is None or (time.time()-self.last_upgrade)/60>waptconfig.waptupgrade_task_period:
+                self.add_task(WaptUpgrade())
+        if waptconfig.waptupdate_task_period is not None:
+            if self.last_update is None or (time.time()-self.last_update)/60>waptconfig.waptupdate_task_period:
+                self.add_task(WaptUpdate(notify_user=False))
+
     def run(self):
         """Queue management, event processing"""
         pythoncom.CoInitialize()
 
         self.start_network_monitoring()
+        self.start_ipaddr_monitoring()
 
         logger.debug(u"Wapt tasks queue started")
         while True:
@@ -1501,13 +1547,10 @@ class WaptTaskManager(threading.Thread):
                         try:
                             logging.debug(traceback.format_exc())
                         except:
-                            pass
+                            print "Traceback error"
                 finally:
                     self.tasks_queue.task_done()
                     self.update_runstatus('')
-                    # send workstation status
-                    #if not isinstance(self.running_task,WaptUpdateServerStatus) and self.wapt.wapt_server:
-                    #    self.add_task(WaptUpdateServerStatus())
 
                     self.running_task = None
                     # trim history lists
@@ -1520,6 +1563,7 @@ class WaptTaskManager(threading.Thread):
 
             except Queue.Empty:
                 self.update_runstatus('')
+                self.check_scheduled_tasks()
                 logger.debug(u"{} i'm still alive... but nothing to do".format(datetime.datetime.now()))
 
     def tasks_status(self):
@@ -1620,10 +1664,7 @@ class WaptTaskManager(threading.Thread):
     def start_ipaddr_monitoring(self):
         def addr_change(wapt):
             while True:
-                print('waiting for addr change')
-                #ctypes.windll.iphlpapi.NotifyRouteChange(0, 0)
                 ctypes.windll.iphlpapi.NotifyAddrChange(0, 0)
-                print('addr changed !')
                 wapt.add_task(WaptNetworkReconfig())
 
         logger.debug(u"Wapt network address monitoring started")
@@ -1635,10 +1676,7 @@ class WaptTaskManager(threading.Thread):
     def start_network_monitoring(self):
         def connected_change(taskman):
             while True:
-                print('waiting for connection change')
-                #ctypes.windll.iphlpapi.NotifyRouteChange(0, 0)
                 ctypes.windll.iphlpapi.NotifyRouteChange(0, 0)
-                print('connected status changed !')
                 taskman.add_task(WaptNetworkReconfig())
 
         logger.debug(u"Wapt connection monitor started")
