@@ -481,9 +481,10 @@ def package_icon():
         if not os.path.isfile(icon_local_filename) or os.path.getsize(icon_local_filename)<10:
             proxies = wapt().repositories[0].proxies
             repo_url = wapt().repositories[0].repo_url
+            timeout = wapt().repositories[0].timeout
 
             remote_icon_path = "{repo}/icons/{package}.png".format(repo=repo_url,package=package)
-            icon = requests.get(remote_icon_path,proxies=proxies,timeout=wapt().timeout)
+            icon = requests.get(remote_icon_path,proxies=proxies,timeout=timeout)
             icon.raise_for_status()
             open(icon_local_filename,'wb').write(icon.content)
             return StringIO.StringIO(icon.content)
