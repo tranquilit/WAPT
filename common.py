@@ -769,6 +769,8 @@ class WaptBaseDB(object):
             self.db.commit()
         else:
             self.db=sqlite3.connect(self.dbpath,detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+            # be sure to upgrade
+            assume(self.db_version)==(self.curr_db_version)
 
     def __enter__(self):
         return self
@@ -791,15 +793,15 @@ class WaptBaseDB(object):
                 if val:
                     self._db_version = val[0]
                 else:
-                    self._db_version = self.curr_db_version
+                    raise Exception('Unknown DB Version')
             except Exception,e:
                 logger.critical(u'Unable to get DB version (%s), upgrading' % ensure_unicode(e))
                 self.db.rollback()
                 # pre-params version
-                self._db_version = self.curr_db_version
                 self.upgradedb()
                 self.db.execute('insert into wapt_params(name,value,create_date) values (?,?,?)',('db_version',self.curr_db_version,datetime2isodate()))
                 self.db.commit()
+                self._db_version = self.curr_db_version
         return self._db_version
 
     @db_version.setter
