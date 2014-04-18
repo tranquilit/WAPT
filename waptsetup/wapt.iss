@@ -129,7 +129,7 @@ Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\w
 [Tasks]
 Name: setupTasks; Description: "Créer des tâches planifiées pour la mise à jour des paquets"; 
 Name: installService; Description: "Installer Wapt en tant que service";
-Name: autorunTray; Description: "Démarrer le WAPT Tray lors de la connexion"; Flags: unchecked;
+Name: autorunTray; Description: "Démarrer le WAPT Tray lors de l'ouverture de session"; Flags: unchecked;
 Name: installredist2008; Description: "Install VC++ 2008 redistributables";
 
 [UninstallRun]
