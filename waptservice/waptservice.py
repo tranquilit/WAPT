@@ -203,8 +203,8 @@ class WaptServiceConfig(object):
             else:
                 self.waptservice_poll_timeout = 10
 
-            if self.config.has_option('global','dbpath'):
-                self.dbpath =  self.config.get('global','dbpath')
+            if config.has_option('global','dbpath'):
+                self.dbpath =  config.get('global','dbpath')
             else:
                 self.dbpath = os.path.join(self.wapt_base_dir,'db','waptdb.sqlite')
 
