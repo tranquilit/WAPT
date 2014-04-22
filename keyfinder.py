@@ -32,6 +32,8 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
+__version__ = "0.8.29"
+
 import platform,sys,os
 import math
 import _winreg

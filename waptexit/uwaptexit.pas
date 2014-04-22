@@ -13,18 +13,23 @@ type
   { TVisWaptExit }
 
   TVisWaptExit = class(TForm)
+    ActShowDetails: TAction;
+    ActionList1: TActionList;
     actSkip: TAction;
     ActUpgrade: TAction;
-    ActionList1: TActionList;
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
+    CheckBox1: TCheckBox;
+    GridTasks: TSOGrid;
+    Image1: TImage;
     ImageList1: TImageList;
     Label1: TLabel;
     Memo1: TMemo;
-    ProgressBar1: TProgressBar;
-    GridTasks: TSOGrid;
+    panHaut: TPanel;
+    panBas: TPanel;
     SODataSource1: TSODataSource;
     Timer1: TTimer;
+    procedure ActShowDetailsExecute(Sender: TObject);
     procedure actSkipExecute(Sender: TObject);
     procedure ActUpgradeExecute(Sender: TObject);
     procedure ActUpgradeUpdate(Sender: TObject);
@@ -32,10 +37,13 @@ type
     procedure FormShow(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   private
+    FCountDown: Integer;
+    procedure SetCountDown(AValue: Integer);
     { private declarations }
   public
     { public declarations }
     upgrades,tasks,running,pending : ISuperObject;
+    property CountDown:Integer read FCountDown write SetCountDown;
   end;
 
 var
@@ -70,7 +78,7 @@ begin
     tasks := aso['content'];
     GridTasks.Data := tasks;
     upgrades := Nil;
-    ProgressBar1.Position := 0;
+    CountDown := 0;
   finally
     Timer1.Enabled := True;
   end;
@@ -93,10 +101,17 @@ begin
   Close;
 end;
 
+procedure TVisWaptExit.ActShowDetailsExecute(Sender: TObject);
+begin
+  panBas.Visible:=ActShowDetails.Checked;
+end;
+
 procedure TVisWaptExit.FormShow(Sender: TObject);
 var
   aso: ISuperObject;
 begin
+  ActShowDetails.Checked:=False;
+
   aso := Nil;
   upgrades := Nil;
   tasks := Nil;
@@ -129,6 +144,7 @@ begin
     ActUpgrade.Enabled:=True;
     Memo1.Text:= Join(#13#10, upgrades);
   end;
+  CountDown:=10;
   Timer1.Enabled := True;
 end;
 
@@ -162,7 +178,7 @@ begin
     begin
       if (running<>Nil) and (running.DataType<>stNull) then
       begin
-        ProgressBar1.Position:=running.I['progress'];
+        //ProgressBar1.Position:=running.I['progress'];
         Memo1.Lines.Text:=running.S['description']+#13#10+running.S['runstatus'];
       end;
       GridTasks.Data:=pending;
@@ -175,19 +191,33 @@ begin
     //upgrades are pending, launch upgrades after timeout expired or manual action
     if (upgrades<>Nil) then
     begin
-      if ProgressBar1.Position>=ProgressBar1.Max then
+      if CountDown<=0 then
       begin
         ActUpgrade.Execute;
-        ProgressBar1.Position := 0;
+        //ProgressBar1.Position := 0;
       end
       else
-        ProgressBar1.Position := ProgressBar1.Position+1;
+        //ProgressBar1.Position := ProgressBar1.Position+1;
+        CountDown:=CountDown-1;
     end;
 
   finally
     Timer1.Enabled:=True;
     Application.ProcessMessages;
   end;
+end;
+
+procedure TVisWaptExit.SetCountDown(AValue: Integer);
+begin
+  if FCountDown=AValue then Exit;
+  FCountDown := AValue;
+  if CountDown>0 then
+  begin
+    ActUpgrade.Caption:='Mise à jour des logiciels dans '+IntToStr(CountDown)+' sec...';
+    FCountDown:=AValue;
+  end
+  else
+    ActUpgrade.Caption:='Lancer la mise à jour des logiciels';
 end;
 
 end.

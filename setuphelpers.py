@@ -20,12 +20,13 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.28"
+__version__ = "0.8.29"
 import os
 import sys
 import logging
 import tempfile
 import shutil
+import shlex
 
 import _subprocess
 import subprocess
@@ -58,6 +59,9 @@ import re
 import threading
 from types import ModuleType
 
+import codecs
+import winsys.shell
+
 from waptpackage import PackageEntry
 from iniparse import RawConfigParser
 import keyfinder
@@ -73,6 +77,7 @@ startup = winshell.startup
 my_documents= winshell.my_documents
 recent = winshell.recent
 sendto = winshell.sendto
+
 
 
 def ensure_dir(f):
@@ -361,7 +366,13 @@ def default_overwrite_older(src,dst):
 
 
 def register_ext(appname,fileext,shellopen,icon=None,otherverbs=[]):
-    """Associates a file extension with an application, and command to open it"""
+    """Associates a file extension with an application, and command to open it
+    >>> register_ext('WAPT.Package','.wapt',icon=r'c:\wapt\wapt.ico',r'"7zfm.exe" "%1"',otherverbs=[
+    ...     ('install',r'"c:\wapt\wapt-get.exe" install "%1"'),
+    ...     ('edit',r'"c:\wapt\wapt-get.exe" edit "%1"'),
+    ...     ])
+    >>>
+    """
     def setvalue(key,path,value):
         rootpath = os.path.dirname(path)
         name = os.path.basename(path)
@@ -887,8 +898,310 @@ def inifile_writestring(inifilename,section,key,value):
     inifile.write(open(inifilename,'w'))
 
 
+class disable_file_system_redirection:
+    """disable wow3264 redirection
+    >>> with disable_file_system_redirection():
+    ...    os.system(system32())
+    """
+    if iswin64():
+        _disable = ctypes.windll.kernel32.Wow64DisableWow64FsRedirection
+        _revert = ctypes.windll.kernel32.Wow64RevertWow64FsRedirection
+    else:
+        _disable = None
+        _revert = None
+
+    def __enter__(self):
+        if self._disable:
+            self.old_value = ctypes.c_long()
+            self.success = self._disable(ctypes.byref(self.old_value))
+    def __exit__(self, type, value, traceback):
+        if self._revert and self.success:
+            self._revert(self.old_value)
+
+def system32():
+    return winsys.shell.get_path(shellcon.CSIDL_SYSTEM)
+
+def set_file_visible(path):
+    FILE_ATTRIBUTE_HIDDEN = 0x02
+    old_att = ctypes.windll.kernel32.GetFileAttributesW(unicode(path))
+    ret = ctypes.windll.kernel32.SetFileAttributesW(unicode(path),old_att  & ~FILE_ATTRIBUTE_HIDDEN)
+    if not ret:
+        raise ctypes.WinError()
+
+def set_file_hidden(path):
+    FILE_ATTRIBUTE_HIDDEN = 0x02
+    old_att = ctypes.windll.kernel32.GetFileAttributesW(unicode(path))
+    ret = ctypes.windll.kernel32.SetFileAttributesW(unicode(path),old_att | FILE_ATTRIBUTE_HIDDEN)
+    if not ret:
+        raise ctypes.WinError()
+
+def replace_at_next_reboot(tmp_filename,target_filename):
+    """Create a key in HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager
+        with content :
+            PendingFileRenameOperations
+                Data type : REG_MULTI_SZ Value
+                data: \??\c:\temp\win32k.sys !\??\c:\winnt\system32\win32k.s
+    """
+    if not tmp_filename:
+        tmp_filename=target_filename+'.pending'
+    with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'System\CurrentControlSet\Control\Session Manager',sam=KEY_WRITE|KEY_READ) as key:
+        pending = reg_getvalue(key,'PendingFileRenameOperations',default=[])
+        tmp = '\??\{}'.format(tmp_filename)
+        target = '!\??\{}'.format(target_filename)
+        if not tmp in pending:
+            pending.extend ([tmp,target])
+            reg_setvalue(key,'PendingFileRenameOperations',pending,type=REG_MULTI_SZ)
+
+def delete_at_next_reboot(target_filename):
+    """Create a key in HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager
+        with content :
+            PendingFileRenameOperations
+                Data type : REG_MULTI_SZ Value
+                data: [\??\path,\0]
+    """
+    with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'System\CurrentControlSet\Control\Session Manager',sam=KEY_WRITE|KEY_READ) as key:
+        pending = reg_getvalue(key,'PendingFileRenameOperations',default=[])
+        target = '\??\{}'.format(target_filename)
+        if not target in pending:
+            pending.extend ([target,'\0'])
+            reg_setvalue(key,'PendingFileRenameOperations',pending,type=REG_MULTI_SZ)
+
+
+def add_shutdown_script(cmd,parameters):
+    """ Adds a local shutdown script as a local GPO
+    >>> add_shutdown_script(r'c:\wapt\wapt-get.exe','update')
+    """
+    gp_path = makepath(system32(),'GroupPolicy')
+    gptini_path = makepath(gp_path,'gpt.ini')
+    scriptsini_path = makepath(gp_path,'Machine','Scripts','scripts.ini')
+
+    # manage GPT.INI file
+    with disable_file_system_redirection():
+        ensure_dir(scriptsini_path)
+        gptini = RawConfigParser()
+        if os.path.isfile(gptini_path):
+            gptini.readfp(codecs.open(gptini_path,mode='r',encoding='utf8'))
+        if not gptini.has_section('General'):
+            gptini.add_section('General')
+        # set or extend extensionnames
+        if not gptini.has_option('General','gPCMachineExtensionNames'):
+            gptini.set('General','gPCMachineExtensionNames','[{42B5FAAE-6536-11D2-AE5A-0000F87571E3}{40B6664F-4972-11D1-A7CA-0000F87571E3}]')
+        else:
+            ext = gptini.get('General','gPCMachineExtensionNames')[1:-1].replace('}{','},{').split(',')
+            if not '{42B5FAAE-6536-11D2-AE5A-0000F87571E3}' in ext:
+                ext.append('{42B5FAAE-6536-11D2-AE5A-0000F87571E3}')
+            if not '{40B6664F-4972-11D1-A7CA-0000F87571E3}' in ext:
+                ext.append('{40B6664F-4972-11D1-A7CA-0000F87571E3}')
+            gptini.set('General','gPCMachineExtensionNames','[%s]'%(''.join(ext)))
+        # increment version
+        if gptini.has_option('General','Version'):
+            version = gptini.getint('General','Version')
+            version += 1
+        else:
+            version = 1
+        gptini.set('General','Version',version)
+
+        # update shutdown/Scripts.ini
+        scriptsini = RawConfigParser()
+        if os.path.isfile(scriptsini_path):
+            scriptsini.readfp(codecs.open(scriptsini_path,mode='r',encoding='utf16'))
+        if not scriptsini.has_section('Shutdown'):
+            scriptsini.add_section('Shutdown')
+
+        # check if cmd already exist in shutdown scripts
+        cmd_index = -1
+        param_index = -1
+        script_index = None
+        i = -1
+        for (key,value) in scriptsini.items('Shutdown'):
+            # keys are lowercase in iniparser !
+            if key.endswith('cmdline'):
+                i = int(key.split('cmdline')[0])
+                if value.lower() == cmd.lower():
+                    cmd_index = i
+            if key.endswith('parameters'):
+                i = int(key.split('parameters')[0])
+                if value.lower() == parameters.lower():
+                    param_index = i
+            # cmd and params are matching... => script already exists
+            if cmd_index>=0 and param_index>=0 and cmd_index == param_index:
+                script_index = cmd_index
+                break
+        if script_index is None:
+            script_index = i+1
+            scriptsini.set('Shutdown','%iCmdLine'%(script_index,),cmd)
+            scriptsini.set('Shutdown','%iParameters'%(script_index,),parameters)
+            if not os.path.isdir(os.path.dirname(scriptsini_path)):
+                os.makedirs(os.path.dirname(scriptsini_path))
+            if os.path.isfile(scriptsini_path):
+                set_visible(scriptsini_path)
+            try:
+                with codecs.open(scriptsini_path,'w',encoding='utf16') as f:
+                    f.write(str(scriptsini.data).replace('\n','\r\n'))
+            finally:
+                set_hidden(scriptsini_path)
+
+            if not os.path.isdir(os.path.dirname(gptini_path)):
+                os.makedirs(os.path.dirname(gptini_path))
+            with codecs.open(gptini_path,'w',encoding='utf8') as f:
+                f.write(str(gptini.data).replace('\n','\r\n'))
+            run('GPUPDATE /Target:Computer /Force /Wait:30')
+            return script_index
+        else:
+            return None
+
+def remove_shutdown_script(cmd,parameters):
+    """ Removes a local shutdown GPO script
+    >>> remove_shutdown_script(r'c:\wapt\wapt-get.exe','update')
+    """
+    gp_path = makepath(system32(),'GroupPolicy')
+    gptini_path = makepath(gp_path,'gpt.ini')
+    scriptsini_path = makepath(gp_path,'Machine','Scripts','scripts.ini')
+
+    # manage GPT.INI file
+    with disable_file_system_redirection():
+        ensure_dir(scriptsini_path)
+        gptini = RawConfigParser()
+        if os.path.isfile(gptini_path):
+            gptini.readfp(codecs.open(gptini_path,mode='r',encoding='utf8'))
+        if not gptini.has_section('General'):
+            gptini.add_section('General')
+        # set or extend extensionnames
+        if not gptini.has_option('General','gPCMachineExtensionNames'):
+            gptini.set('General','gPCMachineExtensionNames','[{42B5FAAE-6536-11D2-AE5A-0000F87571E3}{40B6664F-4972-11D1-A7CA-0000F87571E3}]')
+        else:
+            ext = gptini.get('General','gPCMachineExtensionNames')[1:-1].replace('}{','},{').split(',')
+            if not '{42B5FAAE-6536-11D2-AE5A-0000F87571E3}' in ext:
+                ext.append('{42B5FAAE-6536-11D2-AE5A-0000F87571E3}')
+            if not '{40B6664F-4972-11D1-A7CA-0000F87571E3}' in ext:
+                ext.append('{40B6664F-4972-11D1-A7CA-0000F87571E3}')
+            gptini.set('General','gPCMachineExtensionNames','[%s]'%(''.join(ext)))
+        # increment version
+        if gptini.has_option('General','Version'):
+            version = gptini.getint('General','Version')
+            version += 1
+        else:
+            version = 1
+        gptini.set('General','Version',version)
+
+        # update shutdown/Scripts.ini
+        scriptsini = RawConfigParser()
+        if os.path.isfile(scriptsini_path):
+            scriptsini.readfp(codecs.open(scriptsini_path,mode='r',encoding='utf16'))
+        if not scriptsini.has_section('Shutdown'):
+            scriptsini.add_section('Shutdown')
+
+        # check if cmd already exist in shutdown scripts
+        cmd_index = -1
+        param_index = -1
+        script_index = None
+        i = -1
+        for (key,value) in scriptsini.items('Shutdown'):
+            # keys are lowercase in iniparser !
+            if key.endswith('cmdline'):
+                i = int(key.split('cmdline')[0])
+                if value.lower() == cmd.lower():
+                    cmd_index = i
+            if key.endswith('parameters'):
+                i = int(key.split('parameters')[0])
+                if value.lower() == parameters.lower():
+                    param_index = i
+            # cmd and params are matching... => script already exists
+            if script_index is None and cmd_index>=0 and param_index>=0 and cmd_index == param_index:
+                script_index = cmd_index
+            else:
+                pass #todo rewrite index
+
+        if script_index is not None:
+            scriptsini.remove_option('Shutdown','%iCmdLine'%(script_index,))
+            scriptsini.remove_option('Shutdown','%iParameters'%(script_index,))
+            if not os.path.isdir(os.path.dirname(scriptsini_path)):
+                os.makedirs(os.path.dirname(scriptsini_path))
+            if os.path.isfile(scriptsini_path):
+                set_visible(scriptsini_path)
+            try:
+                with codecs.open(scriptsini_path,'w',encoding='utf16') as f:
+                    f.write(str(scriptsini.data).replace('\n','\r\n'))
+            finally:
+                set_hidden(scriptsini_path)
+
+            if not os.path.isdir(os.path.dirname(gptini_path)):
+                os.makedirs(os.path.dirname(gptini_path))
+            with codecs.open(gptini_path,'w',encoding='utf8') as f:
+                f.write(str(gptini.data).replace('\n','\r\n'))
+            run('GPUPDATE /Target:Computer /Force /Wait:30')
+            return script_index
+        else:
+            return None
+
+def uninstall_cmd(guid):
+    """return the (quiet) command stored in registry to uninstall a software given its registry key"""
+    def get_fromkey(uninstall):
+        key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,guid))
+        try:
+            cmd = _winreg.QueryValueEx(key,'QuietUninstallString')[0]
+            return cmd
+        except WindowsError:
+            try:
+                cmd = _winreg.QueryValueEx(key,'UninstallString')[0]
+                if 'msiexec' in cmd.lower():
+                    cmd = cmd.replace('/I','/X').replace('/i','/X')
+                    args = shlex.split(cmd,posix=False)
+                    if not '/q' in cmd.lower():
+                        args.append('/q')
+                else:
+                    # separer commande et parametres pour eventuellement
+                    cmd_arg = re.match(r'([^/]*?)\s+([/-].*)',cmd)
+                    if cmd_arg:
+                        (prog,arg) = cmd_arg.groups()
+                        args = [ prog ]
+                        args.extend(shlex.split(arg,posix=False))
+                    # mozilla et autre
+                    # si pas de "" et des espaces et pas d'option, alors encadrer avec des quotes
+                    elif not(' -' in cmd or ' /' in cmd) and ' ' in cmd:
+                        args = [ cmd ]
+                    else:
+                    #sinon splitter sur les paramètres
+                        args = shlex.split(cmd,posix=False)
+
+                    # remove double quotes if any
+                    if args[0].startswith('"') and args[0].endswith('"') and (not "/" in cmd or not "--" in cmd):
+                        args[0] = args[0][1:-1]
+
+                    if ('spuninst' in cmd.lower()):
+                         if not ' /quiet' in cmd.lower():
+                            args.append('/quiet')
+                    elif ('uninst' in cmd.lower() or 'helper.exe' in cmd.lower()) :
+                        if not ' /s' in cmd.lower():
+                            args.append('/S')
+                    elif ('unins000' in cmd.lower()):
+                         if not ' /silent' in cmd.lower():
+                            args.append('/silent')
+                return args
+            except WindowsError:
+                is_msi = _winreg.QueryValueEx(key,'WindowsInstaller')[0]
+                if is_msi == 1:
+                    return u'msiexec /quiet /norestart /X %s' % guid
+                else:
+                    raise
+
+    try:
+        return get_fromkey("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
+    except:
+        if platform.machine() == 'AMD64':
+            return get_fromkey("Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
+        else:
+            raise
+
+
 def installed_softwares(keywords=''):
-    """return list of installed software from registry (both 32bit and 64bit"""
+    """return list of installed software from registry (both 32bit and 64bit
+    >>> softs = installed_softwares('libre office')
+    >>> if softs:
+    ...     for soft in softs:
+    ...         print uninstall_cmd(soft['key'])
+    ???
+    """
     def check_words(target,words):
         mywords = target.lower()
         result = not words or mywords
@@ -1363,9 +1676,9 @@ def add_to_system_path(path):
 
 def set_environ_variable(name,value,type=REG_EXPAND_SZ):
     r"""Add or update a system wide persistent environment variable
-    >>> set_environ_variable('WAPT_HOME','c:\\wapt')
-    >>> import os
-    >>> os.environ['WAPT_HOME']
+    .>>> set_environ_variable('WAPT_HOME','c:\\wapt')
+    .>>> import os
+    .>>> os.environ['WAPT_HOME']
     'c:\\wapt'
     """
     with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment',
@@ -1576,6 +1889,8 @@ params = {}
 control = PackageEntry()
 
 if __name__=='__main__':
+
+
     import doctest
     import sys
     reload(sys)

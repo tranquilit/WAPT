@@ -4,12 +4,12 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="13">
+    <Units Count="17">
       <Unit0>
         <Filename Value="waptexit.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptexit"/>
-        <UsageCount Value="83"/>
+        <UsageCount Value="84"/>
       </Unit0>
       <Unit1>
         <Filename Value="uwaptexit.pas"/>
@@ -21,9 +21,9 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="35"/>
-        <CursorPos X="36" Y="42"/>
-        <UsageCount Value="83"/>
+        <TopLine Value="107"/>
+        <CursorPos X="30" Y="116"/>
+        <UsageCount Value="84"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -31,18 +31,18 @@
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="12"/>
         <WindowIndex Value="0"/>
         <TopLine Value="73"/>
         <CursorPos X="28" Y="68"/>
-        <UsageCount Value="83"/>
+        <UsageCount Value="84"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\wapt-get\tisstrings.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tisstrings"/>
-        <UsageCount Value="83"/>
+        <UsageCount Value="84"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\wapt-get\tiscommon.pas"/>
@@ -66,7 +66,7 @@
       <Unit6>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
         <UnitName Value="tiscommon"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="11"/>
         <WindowIndex Value="0"/>
         <TopLine Value="31"/>
         <CursorPos X="58" Y="43"/>
@@ -76,7 +76,7 @@
       <Unit7>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <UnitName Value="superobject"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="204"/>
         <CursorPos X="77" Y="298"/>
@@ -86,7 +86,7 @@
       <Unit8>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\typinfo.pp"/>
         <UnitName Value="typinfo"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -96,7 +96,7 @@
       <Unit9>
         <Filename Value="..\..\pltis_superobject\source\supertypes.pas"/>
         <UnitName Value="supertypes"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="5" Y="1"/>
@@ -106,7 +106,7 @@
       <Unit10>
         <Filename Value="C:\codetyphon\typhon\lcl\actnlist.pas"/>
         <UnitName Value="ActnList"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="218"/>
         <CursorPos X="14" Y="233"/>
@@ -116,7 +116,7 @@
       <Unit11>
         <Filename Value="C:\codetyphon\typhon\lcl\extctrls.pp"/>
         <UnitName Value="ExtCtrls"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="162"/>
         <CursorPos X="14" Y="177"/>
@@ -126,149 +126,176 @@
       <Unit12>
         <Filename Value="C:\codetyphon\typhon\lcl\customtimer.pas"/>
         <UnitName Value="CustomTimer"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="14"/>
-        <CursorPos X="3" Y="36"/>
+        <TopLine Value="1"/>
+        <CursorPos X="64" Y="16"/>
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit12>
+      <Unit13>
+        <Filename Value="..\..\internettools\internet\w32internetaccess.pas"/>
+        <UnitName Value="w32internetaccess"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="379"/>
+        <CursorPos X="88" Y="387"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\classes\action.inc"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="C:\codetyphon\typhon\lcl\include\containedaction.inc"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="C:\codetyphon\typhon\lcl\include\customaction.inc"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit16>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="28" HistoryIndex="27">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="36" Column="13" TopLine="22"/>
+        <Caret Line="169" Column="11" TopLine="154"/>
       </Position1>
       <Position2>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="58" Column="11" TopLine="33"/>
+        <Caret Line="192" Column="21" TopLine="168"/>
       </Position2>
       <Position3>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="70" Column="11" TopLine="61"/>
+        <Caret Line="31" Column="1" TopLine="31"/>
       </Position3>
       <Position4>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="77" Column="30" TopLine="61"/>
+        <Caret Line="136" Column="16" TopLine="112"/>
       </Position4>
       <Position5>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="78" Column="41" TopLine="61"/>
+        <Caret Line="187" Column="13" TopLine="181"/>
       </Position5>
       <Position6>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="80" Column="30" TopLine="61"/>
+        <Caret Line="202" Column="24" TopLine="180"/>
       </Position6>
       <Position7>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="82" Column="13" TopLine="61"/>
+        <Caret Line="72" Column="1" TopLine="57"/>
       </Position7>
       <Position8>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="58" Column="15" TopLine="45"/>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\classes\action.inc"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position8>
       <Position9>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="135" Column="21" TopLine="111"/>
+        <Filename Value="C:\codetyphon\typhon\lcl\include\containedaction.inc"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position9>
       <Position10>
-        <Filename Value="uwaptexit.pas"/>
-        <Caret Line="59" Column="21" TopLine="44"/>
+        <Filename Value="C:\codetyphon\typhon\lcl\include\customaction.inc"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position10>
       <Position11>
-        <Filename Value="C:\codetyphon\typhon\lcl\extctrls.pp"/>
-        <Caret Line="177" Column="14" TopLine="162"/>
+        <Filename Value="C:\codetyphon\typhon\lcl\customtimer.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position11>
       <Position12>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="56" Column="8" TopLine="45"/>
+        <Caret Line="66" Column="41" TopLine="57"/>
       </Position12>
       <Position13>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="65" Column="21" TopLine="50"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position13>
       <Position14>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="58" Column="3" TopLine="50"/>
+        <Caret Line="18" Column="15" TopLine="1"/>
       </Position14>
       <Position15>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="116" Column="9" TopLine="105"/>
+        <Caret Line="30" Column="25" TopLine="6"/>
       </Position15>
       <Position16>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="31" Column="25" TopLine="7"/>
       </Position16>
       <Position17>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="27" Column="11" TopLine="3"/>
+        <Caret Line="68" Column="34" TopLine="42"/>
       </Position17>
       <Position18>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="32" Column="21" TopLine="8"/>
+        <Caret Line="83" Column="34" TopLine="68"/>
       </Position18>
       <Position19>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="60" Column="9" TopLine="36"/>
+        <Caret Line="85" Column="13" TopLine="68"/>
       </Position19>
       <Position20>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="109" Column="9" TopLine="85"/>
+        <Caret Line="110" Column="13" TopLine="105"/>
       </Position20>
       <Position21>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="112" Column="30" TopLine="97"/>
+        <Caret Line="133" Column="15" TopLine="118"/>
       </Position21>
       <Position22>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="116" Column="9" TopLine="103"/>
+        <Caret Line="185" Column="28" TopLine="170"/>
       </Position22>
       <Position23>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="157" Column="16" TopLine="138"/>
+        <Caret Line="76" Column="53" TopLine="57"/>
       </Position23>
       <Position24>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="56" Column="40" TopLine="42"/>
+        <Caret Line="75" Column="53" TopLine="56"/>
       </Position24>
       <Position25>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="60" Column="1" TopLine="45"/>
+        <Caret Line="76" Column="53" TopLine="57"/>
       </Position25>
       <Position26>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="123" Column="1" TopLine="111"/>
+        <Caret Line="77" Column="53" TopLine="58"/>
       </Position26>
       <Position27>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="135" Column="22" TopLine="121"/>
+        <Caret Line="79" Column="53" TopLine="60"/>
       </Position27>
       <Position28>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="77" Column="5" TopLine="59"/>
+        <Caret Line="113" Column="34" TopLine="103"/>
       </Position28>
+      <Position29>
+        <Filename Value="uwaptexit.pas"/>
+        <Caret Line="122" Column="48" TopLine="108"/>
+      </Position29>
+      <Position30>
+        <Filename Value="uwaptexit.pas"/>
+        <Caret Line="61" Column="103" TopLine="43"/>
+      </Position30>
     </JumpHistory>
   </ProjectSession>
-  <Debugging>
-    <BreakPoints Count="2">
-      <Item1>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="uwaptexit.pas"/>
-        <Line Value="68"/>
-      </Item1>
-      <Item2>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="uwaptexit.pas"/>
-        <Line Value="172"/>
-      </Item2>
-    </BreakPoints>
-  </Debugging>
   <EditorMacros Count="0"/>
 </CONFIG>

@@ -21,7 +21,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="8"/>
-      <RevisionNr Value="28"/>
+      <RevisionNr Value="29"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -463,12 +463,10 @@
       <Unit50>
         <Filename Value="..\..\internettools\internet\simpleinternet.pas"/>
         <UnitName Value="simpleinternet"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="45"/>
         <CursorPos X="47" Y="62"/>
         <UsageCount Value="35"/>
-        <Loaded Value="True"/>
       </Unit50>
       <Unit51>
         <Filename Value="..\..\internettools\internet\internetaccess.pas"/>

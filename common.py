@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.28"
+__version__ = "0.8.29"
 import os
 import re
 import logging
@@ -608,7 +608,7 @@ def import_setup(setupfilename,modulename=''):
         py_mod = imp.load_source(modulename, setupfilename)
         return py_mod
     except Exception as e:
-        logger.critical(u'Error importing %s : %s'%(setupfilename,traceback.format_tb(sys.last_traceback)))
+        logger.critical(u'Error importing %s : %s'%(setupfilename,traceback.format_exc()))
         raise
 
 def remove_encoding_declaration(source):
@@ -2509,62 +2509,7 @@ class Wapt(object):
 
     def uninstall_cmd(self,guid):
         """return the (quiet) command stored in registry to uninstall a software given its registry key"""
-        def get_fromkey(uninstall):
-            key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,guid))
-            try:
-                cmd = QueryValueEx(key,'QuietUninstallString')[0]
-                return cmd
-            except WindowsError:
-                try:
-                    cmd = QueryValueEx(key,'UninstallString')[0]
-                    if 'msiexec' in cmd.lower():
-                        cmd = cmd.replace('/I','/X').replace('/i','/X')
-                        args = shlex.split(cmd,posix=False)
-                        if not '/q' in cmd.lower():
-                            args.append('/q')
-                    else:
-                        # separer commande et parametres pour eventuellement
-                        cmd_arg = re.match(r'([^/]*?)\s+([/-].*)',cmd)
-                        if cmd_arg:
-                            (prog,arg) = cmd_arg.groups()
-                            args = [ prog ]
-                            args.extend(shlex.split(arg,posix=False))
-                        # mozilla et autre
-                        # si pas de "" et des espaces et pas d'option, alors encadrer avec des quotes
-                        elif not(' -' in cmd or ' /' in cmd) and ' ' in cmd:
-                            args = [ cmd ]
-                        else:
-                        #sinon splitter sur les paramètres
-                            args = shlex.split(cmd,posix=False)
-
-                        # remove double quotes if any
-                        if args[0].startswith('"') and args[0].endswith('"') and (not "/" in cmd or not "--" in cmd):
-                            args[0] = args[0][1:-1]
-
-                        if ('spuninst' in cmd.lower()):
-                             if not ' /quiet' in cmd.lower():
-                                args.append('/quiet')
-                        elif ('uninst' in cmd.lower() or 'helper.exe' in cmd.lower()) :
-                            if not ' /s' in cmd.lower():
-                                args.append('/S')
-                        elif ('unins000' in cmd.lower()):
-                             if not ' /silent' in cmd.lower():
-                                args.append('/silent')
-                    return args
-                except WindowsError:
-                    is_msi = QueryValueEx(key,'WindowsInstaller')[0]
-                    if is_msi == 1:
-                        return u'msiexec /quiet /norestart /X %s' % guid
-                    else:
-                        raise
-
-        try:
-            return get_fromkey("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
-        except:
-            if platform.machine() == 'AMD64':
-                return get_fromkey("Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
-            else:
-                raise
+        return setuphelpers.uninstall_cmd(guid)
 
     def corrupted_files_sha1(self,rootdir,manifest):
         """check hexdigest sha1 for the files in manifest
@@ -2653,6 +2598,7 @@ class Wapt(object):
             logger.info(u"Installing package " + fname)
             # case where fname is a wapt zipped file, else directory (during developement)
             istemporary = False
+
             if os.path.isfile(fname):
                 packagetempdir = tempfile.mkdtemp(prefix="wapt")
                 logger.info(u'  unzipping %s to temporary %s' % (fname,packagetempdir))
@@ -2664,127 +2610,130 @@ class Wapt(object):
             else:
                 raise Exception(u'%s is not a file nor a directory, aborting.' % fname)
 
-            # chech sha1
-            self.check_cancelled()
-            manifest_filename = os.path.join( packagetempdir,'WAPT','manifest.sha1')
-            if os.path.isfile(manifest_filename):
-                manifest_data = open(manifest_filename,'r').read()
-                # check signature of manifest
-                signature_filename = os.path.join( packagetempdir,'WAPT','signature')
-                # if public key provided, and signature in wapt file, check it
-                if self.public_certs and os.path.isfile(signature_filename):
-                    signature = open(signature_filename,'r').read().decode('base64')
-                    try:
-                        subject = ssl_verify_content(manifest_data,signature,self.public_certs)
-                        logger.info(u'Package issued by %s' % (subject,))
-                    except:
-                        raise Exception(u'Package file %s signature is invalid' % fname)
-                else:
-                    raise Exception(u'No certificate provided for %s or package does not contain a signature' % fname)
-
-                manifest = json.loads(manifest_data)
-                errors = self.corrupted_files_sha1(packagetempdir,manifest)
-                if errors:
-                    raise Exception(u'Error in package %s, files corrupted, SHA1 not matching for %s' % (fname,errors,))
-            else:
-                # we allow unsigned in development mode where fname is a directory
-                if istemporary:
-                    raise Exception(u'Package %s does not contain a manifest.sha1 file, and unsigned packages install is not allowed' % fname)
-
-            self.check_cancelled()
-            setup_filename = os.path.join( packagetempdir,'setup.py')
-            previous_cwd = os.getcwd()
-            os.chdir(os.path.dirname(setup_filename))
-            if not os.getcwd() in sys.path:
-                sys.path.append(os.getcwd())
-
-            # import the setup module from package file
-            logger.info(u"  sourcing install file %s " % setup_filename )
-            setup = import_setup(setup_filename,'_waptsetup_')
-            required_params = []
-
-            # be sure some minimal functions are available in setup module at install step
-            setattr(setup,'basedir',os.path.dirname(setup_filename))
-            # redefine run to add reference to wapt.pidlist
-            setattr(setup,'run',self.run)
-            setattr(setup,'run_notfatal',self.run_notfatal)
-            setattr(setup,'WAPT',self)
-            setattr(setup,'control',entry)
-            setattr(setup,'language',self.language or setuphelpers.get_language() )
-
-            setattr(setup,'user',self.user)
-            setattr(setup,'usergroups',self.usergroups)
-
-            # get definitions of required parameters from setup module
-            if hasattr(setup,'required_params'):
-                required_params = setup.required_params
-
-            # get value of required parameters if not already supplied
-            for p in required_params:
-                if not p in params_dict:
-                    if not is_system_user():
-                        params_dict[p] = raw_input(u"%s: " % p)
+            try:
+                # chech sha1
+                self.check_cancelled()
+                manifest_filename = os.path.join( packagetempdir,'WAPT','manifest.sha1')
+                if os.path.isfile(manifest_filename):
+                    manifest_data = open(manifest_filename,'r').read()
+                    # check signature of manifest
+                    signature_filename = os.path.join( packagetempdir,'WAPT','signature')
+                    # if public key provided, and signature in wapt file, check it
+                    if self.public_certs and os.path.isfile(signature_filename):
+                        signature = open(signature_filename,'r').read().decode('base64')
+                        try:
+                            subject = ssl_verify_content(manifest_data,signature,self.public_certs)
+                            logger.info(u'Package issued by %s' % (subject,))
+                        except:
+                            raise Exception(u'Package file %s signature is invalid' % fname)
                     else:
-                        raise Exception(u'Required parameters %s is not supplied' % p)
-            logger.info(u'Install parameters : %s' % (params_dict,))
+                        raise Exception(u'No certificate provided for %s or package does not contain a signature' % fname)
 
-            # set params dictionary
-            if not hasattr(setup,'params'):
-                # create a params variable for the setup module
-                setattr(setup,'params',params_dict)
-            else:
-                # update the already created params with additional params from command line
-                setup.params.update(params_dict)
-
-            # store source of install and params in DB for future use (upgrade, session_setup, uninstall)
-            self.waptdb.store_setuppy(install_id, setuppy = codecs.open(setup_filename,'r',encoding='utf-8').read(),install_params=params_dict)
-
-            if not self.dry_run:
-                try:
-                    logger.info(u"  executing install script")
-                    exitstatus = setup.install()
-                except Exception,e:
-                    logger.critical(u'Fatal error in install script: %s' % ensure_unicode(e))
-                    raise
-            else:
-                logger.warning(u'Dry run, not actually running setup.install()')
-                exitstatus = None
-
-            if exitstatus is None or exitstatus == 0:
-                status = 'OK'
-            else:
-                status = 'ERROR'
-
-            # get uninstallkey from setup module (string or array of strings)
-            if hasattr(setup,'uninstallkey'):
-                new_uninstall_key = setup.uninstallkey
-            else:
-                new_uninstall = self.registry_uninstall_snapshot()
-                new_uninstall_key = [ k for k in new_uninstall if not k in previous_uninstall]
-
-            # get uninstallstring from setup module (string or array of strings)
-            if hasattr(setup,'uninstallstring'):
-                uninstallstring = setup.uninstallstring
-            else:
-                uninstallstring = None
-            logger.info(u'  uninstall keys : %s' % (new_uninstall_key,))
-            logger.info(u'  uninstall strings : %s' % (uninstallstring,))
-
-            logger.info(u"Install script finished with status %s" % status)
-            if istemporary:
-                os.chdir(previous_cwd)
-                logger.debug(u"Cleaning package tmp dir")
-                # trying 3 times to remove
-                cnt = 3
-                while cnt>0:
-                    try:
-                        shutil.rmtree(packagetempdir)
-                        break
-                    except:
-                        cnt -= 1
-                        time.sleep(2)
+                    manifest = json.loads(manifest_data)
+                    errors = self.corrupted_files_sha1(packagetempdir,manifest)
+                    if errors:
+                        raise Exception(u'Error in package %s, files corrupted, SHA1 not matching for %s' % (fname,errors,))
                 else:
-                    logger.warning(u"Unable to clean tmp dir")
+                    # we allow unsigned in development mode where fname is a directory
+                    if istemporary:
+                        raise Exception(u'Package %s does not contain a manifest.sha1 file, and unsigned packages install is not allowed' % fname)
+
+                self.check_cancelled()
+                setup_filename = os.path.join( packagetempdir,'setup.py')
+                previous_cwd = os.getcwd()
+                os.chdir(os.path.dirname(setup_filename))
+                if not os.getcwd() in sys.path:
+                    sys.path.append(os.getcwd())
+
+                # import the setup module from package file
+                logger.info(u"  sourcing install file %s " % setup_filename )
+                setup = import_setup(setup_filename,'_waptsetup_')
+                required_params = []
+
+                # be sure some minimal functions are available in setup module at install step
+                setattr(setup,'basedir',os.path.dirname(setup_filename))
+                # redefine run to add reference to wapt.pidlist
+                setattr(setup,'run',self.run)
+                setattr(setup,'run_notfatal',self.run_notfatal)
+                setattr(setup,'WAPT',self)
+                setattr(setup,'control',entry)
+                setattr(setup,'language',self.language or setuphelpers.get_language() )
+
+                setattr(setup,'user',self.user)
+                setattr(setup,'usergroups',self.usergroups)
+
+                # get definitions of required parameters from setup module
+                if hasattr(setup,'required_params'):
+                    required_params = setup.required_params
+
+                # get value of required parameters if not already supplied
+                for p in required_params:
+                    if not p in params_dict:
+                        if not is_system_user():
+                            params_dict[p] = raw_input(u"%s: " % p)
+                        else:
+                            raise Exception(u'Required parameters %s is not supplied' % p)
+                logger.info(u'Install parameters : %s' % (params_dict,))
+
+                # set params dictionary
+                if not hasattr(setup,'params'):
+                    # create a params variable for the setup module
+                    setattr(setup,'params',params_dict)
+                else:
+                    # update the already created params with additional params from command line
+                    setup.params.update(params_dict)
+
+                # store source of install and params in DB for future use (upgrade, session_setup, uninstall)
+                self.waptdb.store_setuppy(install_id, setuppy = codecs.open(setup_filename,'r',encoding='utf-8').read(),install_params=params_dict)
+
+                if not self.dry_run:
+                    try:
+                        logger.info(u"  executing install script")
+                        exitstatus = setup.install()
+                    except Exception,e:
+                        logger.critical(u'Fatal error in install script: %s:%s' % (ensure_unicode(e),traceback.format_exc()))
+                        raise
+                else:
+                    logger.warning(u'Dry run, not actually running setup.install()')
+                    exitstatus = None
+
+                if exitstatus is None or exitstatus == 0:
+                    status = 'OK'
+                else:
+                    status = 'ERROR'
+
+                # get uninstallkey from setup module (string or array of strings)
+                if hasattr(setup,'uninstallkey'):
+                    new_uninstall_key = setup.uninstallkey
+                else:
+                    new_uninstall = self.registry_uninstall_snapshot()
+                    new_uninstall_key = [ k for k in new_uninstall if not k in previous_uninstall]
+
+                # get uninstallstring from setup module (string or array of strings)
+                if hasattr(setup,'uninstallstring'):
+                    uninstallstring = setup.uninstallstring
+                else:
+                    uninstallstring = None
+                logger.info(u'  uninstall keys : %s' % (new_uninstall_key,))
+                logger.info(u'  uninstall strings : %s' % (uninstallstring,))
+
+                logger.info(u"Install script finished with status %s" % status)
+
+            finally:
+                if istemporary:
+                    os.chdir(previous_cwd)
+                    logger.debug(u"Cleaning package tmp dir")
+                    # trying 3 times to remove
+                    cnt = 3
+                    while cnt>0:
+                        try:
+                            shutil.rmtree(packagetempdir)
+                            break
+                        except:
+                            cnt -= 1
+                            time.sleep(2)
+                    else:
+                        logger.warning(u"Unable to clean tmp dir")
 
             self.waptdb.update_install_status(install_id,status,'',str(new_uninstall_key) if new_uninstall_key else '',str(uninstallstring) if uninstallstring else '')
             return self.waptdb.install_status(install_id)
@@ -3712,7 +3661,10 @@ class Wapt(object):
 
                     def pwd_callback(*args):
                         """Default password callback for opening private keys"""
-                        return private_key_passwd
+                        if not isinstance(private_key_passwd,str):
+                            return private_key_passwd.encode('ascii')
+                        else:
+                            return private_key_passwd
 
                     def pwd_callback2(*args):
                         """Default password callback for opening private keys"""

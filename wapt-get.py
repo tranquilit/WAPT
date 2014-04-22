@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.27"
+__version__ = "0.8.29"
 import sys
 import os
 import logging
@@ -422,6 +422,9 @@ def main():
                         print "Done"
                     except Exception,e:
                         logger.critical(ensure_unicode(e))
+                if args[1] == 'ALL':
+                    logger.debug('cleanup session db, removed not installed package entries')
+                    mywapt.cleanup_session_setup()
                 if options.json_output:
                     jsonresult['result'] = result
 

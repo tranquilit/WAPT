@@ -594,7 +594,7 @@ begin
     listPackages.AsArray.Add(package.S['package']+'(='+package.S['version']+')');
   //calcule liste de tous les fichiers wapt nécessaires y compris les dépendances
   FileNames := DMPython.RunJSON(format('waptdevutils.get_packages_filenames(r"%s".decode(''utf8''),"%s")',
-        [WaptExternalRepo,Join(',',listPackages)]));
+        [AppIniFilename,Join(',',listPackages)]));
 
   if MessageDlg('Confirmer la duplication', format('Etes vous sûr de vouloir dupliquer'#13#10'%s'#13#10' dans votre dépot ?', [Join(',', FileNames)]),
         mtConfirmation, mbYesNoCancel, 0) <> mrYes then
