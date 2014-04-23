@@ -127,9 +127,9 @@ Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait r
 [Icons]
 Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\wapttray.exe"; Flags: excludefromshowinnewinstall;
 [Tasks]
-Name: setupTasks; Description: "CrÈer des t‚ches planifiÈes pour la mise ‡ jour des paquets"; 
+Name: setupTasks; Description: "Cr√©er des t√¢ches planifi√©es pour la mise √† jour des paquets"; 
 Name: installService; Description: "Installer Wapt en tant que service";
-Name: autorunTray; Description: "DÈmarrer le WAPT Tray lors de l'ouverture de session"; Flags: unchecked;
+Name: autorunTray; Description: "D√©marrer le WAPT Tray lors de l'ouverture de session"; Flags: unchecked;
 Name: installredist2008; Description: "Install VC++ 2008 redistributables";
 
 [UninstallRun]
@@ -184,7 +184,7 @@ begin
     Exec('cmd','/C '+cmd+'  > "' + TmpFileName + '"', '', SW_HIDE,
       ewWaitUntilTerminated, ErrorCode);
     if RaiseOnError and (ErrorCode>0) then
-       RaiseException('La commande '+cmd+' a renvoy√© le code d''erreur '+intToStr(ErrorCode));
+       RaiseException('La commande '+cmd+' a renvoy√É¬© le code d''erreur '+intToStr(ErrorCode));
     if LoadStringFromFile(TmpFileName, ExecStdout) then 
       result := ExecStdOut
     else 
