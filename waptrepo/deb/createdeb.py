@@ -21,11 +21,14 @@
 #
 # -----------------------------------------------------------------------
 
-import os,glob,sys,stat
-import shutil
 import fileinput
-import platform, errno
+import glob
+import os
+import shutil
+import stat
 import subprocess
+import sys
+
 
 def replaceAll(file,searchExp,replaceExp):
     for line in fileinput.input(file, inplace=1):
@@ -33,13 +36,21 @@ def replaceAll(file,searchExp,replaceExp):
             line = line.replace(searchExp,replaceExp)
         sys.stdout.write(line)
 
+
 def rsync(src,dst):
-    rsync_option = " --exclude '.svn' --exclude 'deb' --exclude '.git' --exclude '.gitignore' -aP"
+    rsync_option = ' '.join([
+        "--exclude '.svn'",
+        "--exclude 'deb'",
+        "--exclude '.git'",
+        "--exclude '.gitignore'",
+        "-aP",
+    ])
     rsync_source = src
     rsync_destination = dst
-    rsync_command = '/usr/bin/rsync %s "%s" "%s"'%(rsync_option,rsync_source,rsync_destination)
+    rsync_command = '/usr/bin/rsync %s "%s" "%s"' % (
+        rsync_option,rsync_source,rsync_destination)
     os.system(rsync_command)
-    
+
 makepath = os.path.join
 from shutil import copyfile
 
@@ -49,19 +60,19 @@ wapt_source_dir = os.path.abspath('../..')
 # waptrepo
 source_dir = os.path.abspath('..')
 
-for line in open('%s/waptpackage.py'% wapt_source_dir):
+for line in open('%s/waptpackage.py' % wapt_source_dir):
     if '__version__' in line:
         wapt_version = line.split('=')[1].replace('"','').replace("'","").replace('\n','').replace(' ','').replace('\r','')
 
 if not wapt_version:
-    print 'version non trouvée dans %s/waptpackage.py, la version est mise a 0.0.0 par défault.'%os.path.abspath('..')
+    print 'version non trouvée dans %s/waptpackage.py, la version est mise a 0.0.0 par défault.' % os.path.abspath('..')
     wapt_version = '0.0.0'
 
 control_file = './builddir/DEBIAN/control'
 
 # remove old debs
 for filename in glob.glob("tis-waptrepo*.deb"):
-    print "destruction de %s"%filename
+    print "destruction de %s" % filename
     os.remove(filename)
 if os.path.exists("builddir"):
     shutil.rmtree("builddir")
@@ -73,8 +84,8 @@ os.makedirs("builddir/opt")
 os.makedirs("builddir/opt/wapt")
 os.makedirs("builddir/opt/wapt/waptrepo/")
 
-#adding version info in VERSION file
-rev=''
+# adding version info in VERSION file
+rev = ''
 output = subprocess.check_output('/usr/bin/svn info',shell=True)
 for line in output.split('\n'):
     if 'Revision:' in line:
@@ -85,8 +96,10 @@ version_file.close()
 
 print 'copie des fichiers waptrepo'
 rsync(source_dir,'./builddir/opt/wapt/')
-copyfile(makepath(wapt_source_dir,'waptpackage.py'),'./builddir/opt/wapt/waptpackage.py')
-copyfile(makepath(wapt_source_dir,'wapt-scanpackages.py'),'./builddir/opt/wapt/wapt-scanpackages.py')
+copyfile(makepath(wapt_source_dir,'waptpackage.py'),
+         './builddir/opt/wapt/waptpackage.py')
+copyfile(makepath(wapt_source_dir,'wapt-scanpackages.py'),
+         './builddir/opt/wapt/wapt-scanpackages.py')
 
 print 'copie des fichiers control et postinst'
 copyfile('./DEBIAN/control','./builddir/DEBIAN/control')
@@ -96,8 +109,12 @@ print u'inscription de la version dans le fichier de control'
 replaceAll(control_file,'0.0.7',wapt_version + '-' + rev)
 
 print u'création du paquet Deb'
-os.chmod('./builddir/DEBIAN/postinst',stat.S_IRWXU| stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
-dpkg_command = 'dpkg-deb --build builddir tis-waptrepo-%s-%s.deb'% (wapt_version ,rev)
+os.chmod('./builddir/DEBIAN/postinst',
+         stat.S_IRWXU
+         | stat.S_IXGRP | stat.S_IRGRP
+         | stat.S_IROTH | stat.S_IXOTH
+         )
+dpkg_command = 'dpkg-deb --build builddir tis-waptrepo-%s-%s.deb' % (
+               wapt_version, rev)
 os.system(dpkg_command)
 shutil.rmtree("builddir")
-
