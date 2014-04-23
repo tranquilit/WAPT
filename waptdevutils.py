@@ -133,6 +133,7 @@ def update_tis_repo(waptconfigfile,search_string):
     True
     """
     wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
+    wapt.use_hostpackages = False
     repo = wapt.config.get('global','templates_repo_url')
     wapt.repositories[0].repo_url = repo if repo else 'http://wapt.tranquil.it/wapt'
     wapt.proxies =  {'http':wapt.config.get('global','http_proxy')}
@@ -149,6 +150,7 @@ def get_packages_filenames(waptconfigfile,packages_names):
     """
     result = []
     wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
+    wapt.use_hostpackages = False
     # force to use alternate templates repo
     repo = wapt.config.get('global','templates_repo_url')
     wapt.repositories[0].repo_url = repo if repo else 'http://wapt.tranquil.it/wapt'
@@ -182,7 +184,7 @@ def duplicate_from_external_repo(waptconfigfile,package_filename):
     wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
     wapt.use_hostpackages = False
 
-    prefix = wapt.config.get('global','default_package_prefix','tis')
+    prefix = wapt.config.get('global','default_package_prefix','test')
 
     def rename_package(oldname,prefix):
         sp = oldname.split('-',1)
@@ -194,7 +196,7 @@ def duplicate_from_external_repo(waptconfigfile,package_filename):
     oldname = PackageEntry().load_control_from_wapt(package_filename).package
     newname = rename_package(oldname,prefix)
 
-    res = wapt.duplicate_package(oldname,newname,build=False,auto_inc_version=True)
+    res = wapt.duplicate_package(package_filename,newname,build=False,auto_inc_version=True)
     result = res['source_dir']
 
     # renames dependencies
