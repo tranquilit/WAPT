@@ -12,7 +12,7 @@
 
 [Files]
 ; sources of installer to rebuild a custom installer
-Source: "innosetup\*"; DestDir: "{app}\waptsetup\innosetup" Flags: createallsubdirs recursesubdirs;
+Source: "innosetup\*"; DestDir: "{app}\waptsetup\innosetup"; Flags: createallsubdirs recursesubdirs;
 Source: "wapt.iss"; DestDir: "{app}\waptsetup";
 Source: "waptsetup.iss"; DestDir: "{app}\waptsetup";
 Source: "services.iss"; DestDir: "{app}\waptsetup";
