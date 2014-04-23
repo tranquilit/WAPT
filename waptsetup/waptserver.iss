@@ -161,7 +161,7 @@ end;
 function GetWaptServerURL(Param: String):String;
 begin
   if WizardSilent then
-    result := '{#default_wapt_server}'
+    result := '{#default_wapt_server}';
   if rbDnsServer.Checked then
     begin
       result := '';
