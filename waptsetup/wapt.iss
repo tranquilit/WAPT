@@ -173,10 +173,10 @@ begin
     SimpleStartService('waptservice',True,True); 
 end;
 
-function RunCmd(cmd:String;RaiseOnError:Boolean):String;
+function RunCmd(cmd:AnsiString;RaiseOnError:Boolean):AnsiString;
 var
   ErrorCode: Integer;
-  TmpFileName, ExecStdout: string;
+  TmpFileName, ExecStdout: Ansistring;
 begin
   Result := 'Error';
   TmpFileName := ExpandConstant('{tmp}') + '\runresult.txt';
@@ -184,7 +184,7 @@ begin
     Exec('cmd','/C '+cmd+'  > "' + TmpFileName + '"', '', SW_HIDE,
       ewWaitUntilTerminated, ErrorCode);
     if RaiseOnError and (ErrorCode>0) then
-       RaiseException('La commande '+cmd+' a renvoyÃ© le code d''erreur '+intToStr(ErrorCode));
+       RaiseException('La commande '+cmd+' a renvoy� le code d''erreur '+intToStr(ErrorCode));
     if LoadStringFromFile(TmpFileName, ExecStdout) then 
       result := ExecStdOut
     else 
@@ -202,7 +202,7 @@ begin
   shellexec('','taskkill','/t /im "'+name+'" /f','',sw_Hide,ewWaitUntilTerminated,Errorcode);
 end;
 
-function NeedsAddPath(Param: string): boolean;
+function NeedsAddPath(Param: String): boolean;
 var
   OrigPath: string;
 begin

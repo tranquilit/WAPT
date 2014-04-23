@@ -181,8 +181,8 @@ const
 
 
 function OpenSCManager(
-  lpMachineName: string; 
-  lpDatabaseName: string; 
+  lpMachineName: Ansistring; 
+  lpDatabaseName: Ansistring; 
   dwDesiredAccess: Longword): Longword;
   external 'OpenSCManagerA@advapi32.dll stdcall';
 
@@ -192,7 +192,7 @@ function OpenSCManager(
 
 function OpenService(
   hSCManager: Longword; 
-  lpServiceName: string; 
+  lpServiceName: Ansistring; 
   dwDesiredAccess: Longword): Longword;
   external 'OpenServiceA@advapi32.dll stdcall';
 
@@ -212,18 +212,18 @@ function ControlService(
   external 'ControlService@advapi32.dll stdcall';
 
 function CreateService(hSCManager: Longword;
-  lpServiceName: string;
-  lpDisplayName: string;
+  lpServiceName: Ansistring;
+  lpDisplayName: Ansistring;
   dwDesiredAccess: Longword;
   dwServiceType: Longword;
   dwStartType: Longword;
   dwErrorControl: Longword;
-  lpBinaryPathName: string;
-  lpLoadOrderGroup: string;
+  lpBinaryPathName: Ansistring;
+  lpLoadOrderGroup: Ansistring;
   lpdwTagId: Longword;
-  lpDependencies: string;
-  lpServiceStartName: string;
-  lpPassword: string): Longword;
+  lpDependencies: Ansistring;
+  lpServiceStartName: Ansistring;
+  lpPassword: Ansistring): Longword;
   external 'CreateServiceA@advapi32.dll stdcall';
 
 function DeleteService(hService: Longword): Longword;
@@ -253,9 +253,9 @@ function UnlockServiceDatabase(ScLock: Longword): Longword;
 function SimpleCreateService(
   AServiceName,
   ADisplayName, 
-  AFileName: string;
+  AFileName: Ansistring;
   AStartType: Longword;
-  AUser, APassword: string; 
+  AUser, APassword: Ansistring; 
   Interactive: Boolean; 
   IgnoreExisting: Boolean): Boolean;
 var
@@ -330,7 +330,7 @@ begin
   until Result;
 end;
 
-procedure SimpleStopService(AService: string; Wait, IgnoreStopped: Boolean);
+procedure SimpleStopService(AService: Ansistring; Wait, IgnoreStopped: Boolean);
 var
   ServiceStatus: _SERVICE_STATUS;
   SCMHandle: Longword;
@@ -372,7 +372,7 @@ begin
   end;
 end;
 
-procedure SimpleStartService(AService: string; Wait, IgnoreStarted: Boolean);
+procedure SimpleStartService(AService: Ansistring; Wait, IgnoreStarted: Boolean);
 var
   SCMHandle: Longword;
   ServiceHandle: Longword;
@@ -415,7 +415,7 @@ begin
   end;
 end;
 
-procedure SimpleDeleteService(AService: string);
+procedure SimpleDeleteService(AService: Ansistring);
 var
   SCMHandle: Longword;
   ServiceHandle: Longword;
@@ -447,7 +447,7 @@ begin
   end;
 end;
 
-procedure SimpleSetServiceStartup(AService: string; AStartupType: Longword);
+procedure SimpleSetServiceStartup(AService: Ansistring; AStartupType: Longword);
 var
   SCMHandle: Longword;
   ServiceHandle: Longword;
@@ -480,7 +480,7 @@ begin
   end;
 end;
 
-function ServiceExists(AService: string): Boolean;
+function ServiceExists(AService: Ansistring): Boolean;
 var
   SCMHandle: Longword;
   ServiceHandle: Longword;
@@ -518,7 +518,7 @@ begin
   end;
 end;
 
-function SimpleQueryService(AService: string): Longword;
+function SimpleQueryService(AService: Ansistring): Longword;
 var
   ServiceStatus: _SERVICE_STATUS;
   SCMHandle: Longword;
