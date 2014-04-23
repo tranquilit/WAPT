@@ -199,7 +199,7 @@ function OpenService(
 function StartService(
   hService: Longword;
   dwNumServiceArgs: Longword; 
-  lpServiceArgVectors: PChar): Longword;
+  lpServiceArgVectors: PAnsiChar): Longword;
   external 'StartServiceA@advapi32.dll stdcall';
 
 function CloseServiceHandle(hSCObject: Longword): Longword;
@@ -234,13 +234,13 @@ function ChangeServiceConfig(
   dwServiceType: Longword;
   dwStartType: Longword;
   dwErrorControl: Longword;
-  lpBinaryPathName: PChar;
-  lpLoadOrderGroup: PChar;
+  lpBinaryPathName: PAnsiChar;
+  lpLoadOrderGroup: PAnsiChar;
   lpdwTagId: Longword;
-  lpDependencies: PChar;
-  lpServiceStartName: PChar;
-  lpPassword: PChar;
-  lpDisplayName: PChar): Longword;
+  lpDependencies: PAnsiChar;
+  lpServiceStartName: PAnsiChar;
+  lpPassword: PAnsiChar;
+  lpDisplayName: PAnsiChar): Longword;
   external 'ChangeServiceConfigA@advapi32.dll stdcall';
 
 function LockServiceDatabase(hSCManager: Longword): Longword;
