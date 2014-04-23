@@ -15,7 +15,7 @@
 	{% for p in packages %}
         {%set package_version= "%s(=%s)" % (p.package,p.version) %}
         {%if p.get('install_status')=='OK'%}
-            {%if Version(p['version']) < Version(p.get('repo_version','') or '') %}
+            {%if Version(p['version']) < Version((p.get('repo_version','') or '').split('|')[0]) %}
         		<tr class=status-upgradable>
             {%elif Version(p['version']) == Version(p.get('repo_version','') or '') %}
         		<tr class=status-installed>

@@ -38,7 +38,7 @@ location.reload(true);
 	{% for p in packages %}
         {%set package_version= "%s(=%s)" % (p.package,p.version) %}
         {%if p.get('install_status')=='OK'%}
-            {%if Version(p['install_version']) < Version(p['version']) %}
+            {%if Version(p['install_version']) < Version(p['version'].split('|')[0]) %}
         		<tr class=status-upgradable>
             {%elif Version(p['install_version']) == Version(p['version']) %}
         		<tr class=status-installed>
