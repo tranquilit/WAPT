@@ -1,4 +1,4 @@
-#define waptsetup 
+﻿#define waptsetup 
 #define default_repo_url "http://wapt.tranquil.it/wapt"
 #define default_wapt_server ""
 #define default_update_period "120"

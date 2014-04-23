@@ -1,4 +1,4 @@
-#define waptsetup 
+﻿#define waptsetup 
 #define default_repo_url ""
 #define default_wapt_server ""
 #define default_update_period "120"
@@ -40,7 +40,7 @@ Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1
 
 
 [Run]
-Filename: "{app}\wapt-get.exe"; Parameters: "register"; Flags: runhidden postinstall; StatusMsg: "Register computer on the WAPT server"; Description: "Register computer on the WAPT Server"
+Filename: "{app}\wapt-get.exe"; Parameters: "register"; Flags: runhidden postinstall; StatusMsg: "Register computer on the WAPT server"; Description: "Enregistre l'ordinateur sur le serveur WAPT"
 
 [Icons]
 Name: "{commonstartup}\WAPT session setup"; Tasks: autorunSessionSetup; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
@@ -130,7 +130,7 @@ end;
 function GetWaptServerURL(Param: String):String;
 begin
   if WizardSilent then
-    result := '{#default_wapt_server}'
+    result := '{#default_wapt_server}';
   if rbDnsServer.Checked then
     begin
       result := '';
