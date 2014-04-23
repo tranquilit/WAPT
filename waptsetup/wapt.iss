@@ -113,30 +113,30 @@ Filename: {app}\wapt-get.ini; Section: global; Key: waptupdate_task_period; Stri
 Filename: {app}\wapt-get.ini; Section: global; Key: waptupdate_task_maxruntime; String: {#default_update_maxruntime}; Flags: createkeyifdoesntexist
 
 [Run]
-Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "Updating MS VC++ libraries for OpenSSL..."; Description: "Update MS VC++ libraries"; Tasks: installredist2008
+Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "Mise à jour des librairies MS VC++ pour openssl"; Description: "Mise à jour des librairies MS VC++"; Tasks: installredist2008
 ;Filename: "{app}\wapt-get.exe"; Parameters: "upgradedb"; Flags: runhidden; StatusMsg: "Upgrading local sqlite database structure"; Description: "Upgrade packages list"
-Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runhidden; StatusMsg: "Updating packages list"; Description: "Update packages list from main repository"
-Filename: "{app}\wapt-get.exe"; Parameters: "setup-tasks"; Tasks: setuptasks; Flags: runhidden; StatusMsg: "Setting up daily sheduled tasks"; Description: "Set up daily sheduled tasks"
+Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runhidden; StatusMsg: "Mise à jour des paquets disponibles sur le dépôt principal"; Description: "Mise à jour des paquets disponibles sur le dépôt principal"
+Filename: "{app}\wapt-get.exe"; Parameters: "setup-tasks"; Tasks: setuptasks; Flags: runhidden; StatusMsg: "Configuration des tâches planifiées"; Description: "Configuration des tâches planifiées"
 ; rights rw for Admins and System, ro for users and authenticated users on wapt directory
-Filename: "cmd"; Parameters: "/C echo O| cacls {app} /S:""D:PAI(A;OICI;FA;;;BA)(A;OICI;FA;;;SY)(A;OICI;0x1200a9;;;BU)(A;OICI;0x1201a9;;;AU)"""; Tasks:installService; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Changing rights on wapt directory..."; Description: "Changing rights on wapt directory"
+Filename: "cmd"; Parameters: "/C echo O| cacls {app} /S:""D:PAI(A;OICI;FA;;;BA)(A;OICI;FA;;;SY)(A;OICI;0x1200a9;;;BU)(A;OICI;0x1201a9;;;AU)"""; Tasks:installService; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Mise en place des droits sur le répertoire wapt..."; Description: "Mise en place des droits sur le répertoire wapt"
 
 ; if waptservice
-Filename: "{app}\waptpython.exe"; Parameters: """{app}\waptservice\waptservice.py"" install"; Tasks:installService ; Flags: runhidden; StatusMsg: "Install waptservice"; Description: "Install WAPT Service"
-Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait runasoriginaluser skipifsilent postinstall; StatusMsg: "Launch WAPT tray icon"; Description: "Launch WAPT tray icon"
+Filename: "{app}\waptpython.exe"; Parameters: """{app}\waptservice\waptservice.py"" install"; Tasks:installService ; Flags: runhidden; StatusMsg: "Installation du service WAPT"; Description: "Installation du service WAPT"
+Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait runasoriginaluser skipifsilent postinstall; StatusMsg: "Lancement de l'icône de notification"; Description: "Lancement de l'icône de notification"
 
 [Icons]
 Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\wapttray.exe"; Flags: excludefromshowinnewinstall;
 [Tasks]
-Name: setupTasks; Description: "Créer des tâches planifiées pour la mise à jour des paquets"; 
-Name: installService; Description: "Installer Wapt en tant que service";
-Name: autorunTray; Description: "Démarrer le WAPT Tray lors de l'ouverture de session"; Flags: unchecked;
-Name: installredist2008; Description: "Install VC++ 2008 redistributables";
+Name: setupTasks; Description: "Créer des tâches planifiées pour la mise à jour des paquets"; Flags: unchecked;
+Name: installService; Description: "Installer le service WAPT";
+Name: autorunTray; Description: "Lancer l'icône de notification lors de l'ouverture de session"; Flags: unchecked;
+Name: installredist2008; Description: "Installer les redistribables VC++ 2008 (pour openssl)";
 
 [UninstallRun]
-Filename: "taskkill"; Parameters: "/t /im ""waptconsole.exe"" /f"; Flags: runhidden; StatusMsg: "Stopping waptconsole"
-Filename: "taskkill"; Parameters: "/t /im ""wapttray.exe"" /f"; Flags: runhidden; StatusMsg: "Stopping wapt tray"
-Filename: "net"; Parameters: "stop waptservice"; Flags: runhidden; StatusMsg: "Stop waptservice"
-Filename: "sc"; Parameters: "delete waptservice"; Flags: runhidden; StatusMsg: "Uninstall waptservice"
+Filename: "taskkill"; Parameters: "/t /im ""waptconsole.exe"" /f"; Flags: runhidden; StatusMsg: "Arrêt de waptconsole"
+Filename: "taskkill"; Parameters: "/t /im ""wapttray.exe"" /f"; Flags: runhidden; StatusMsg: "Arrêt de l'icône de notification"
+Filename: "net"; Parameters: "stop waptservice"; Flags: runhidden; StatusMsg: "Arrêt du service WAPT"
+Filename: "sc"; Parameters: "delete waptservice"; Flags: runhidden; StatusMsg: "Désinstallation du service WAPT"
 
 [Code]
 #include "services.iss"
