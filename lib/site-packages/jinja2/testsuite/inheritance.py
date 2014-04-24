@@ -12,7 +12,7 @@ import unittest
 
 from jinja2.testsuite import JinjaTestCase
 
-from jinja2 import Environment, DictLoader
+from jinja2 import Environment, DictLoader, TemplateError
 
 
 LAYOUTTEMPLATE = '''\
@@ -53,13 +53,27 @@ WORKINGTEMPLATE = '''\
 {% endblock %}
 '''
 
+DOUBLEEXTENDS = '''\
+{% extends "layout" %}
+{% extends "layout" %}
+{% block block1 %}
+  {% if false %}
+    {% block block2 %}
+      this should workd
+    {% endblock %}
+  {% endif %}
+{% endblock %}
+'''
+
+
 env = Environment(loader=DictLoader({
     'layout':       LAYOUTTEMPLATE,
     'level1':       LEVEL1TEMPLATE,
     'level2':       LEVEL2TEMPLATE,
     'level3':       LEVEL3TEMPLATE,
     'level4':       LEVEL4TEMPLATE,
-    'working':      WORKINGTEMPLATE
+    'working':      WORKINGTEMPLATE,
+    'doublee':      DOUBLEEXTENDS,
 }), trim_blocks=True)
 
 
@@ -148,7 +162,7 @@ class InheritanceTestCase(JinjaTestCase):
         }))
         t = env.from_string('{% extends "master.html" %}{% block item %}'
                             '{{ item }}{% endblock %}')
-        assert t.render(seq=range(5)) == '[0][1][2][3][4]'
+        assert t.render(seq=list(range(5))) == '[0][1][2][3][4]'
 
     def test_super_in_scoped_block(self):
         env = Environment(loader=DictLoader({
@@ -157,7 +171,7 @@ class InheritanceTestCase(JinjaTestCase):
         }))
         t = env.from_string('{% extends "master.html" %}{% block item %}'
                             '{{ super() }}|{{ item * 2 }}{% endblock %}')
-        assert t.render(seq=range(5)) == '[0|0][1|2][2|4][3|6][4|8]'
+        assert t.render(seq=list(range(5))) == '[0|0][1|2][2|4][3|6][4|8]'
 
     def test_scoped_block_after_inheritance(self):
         env = Environment(loader=DictLoader({
@@ -218,6 +232,15 @@ class BugFixTestCase(JinjaTestCase):
         {% block content %}&nbsp;{% endblock %}
         '''
         })).get_template("test.html").render().split() == [u'outer_box', u'my_macro']
+
+    def test_double_extends(self):
+        """Ensures that a template with more than 1 {% extends ... %} usage
+        raises a ``TemplateError``.
+        """
+        try:
+            tmpl = env.get_template('doublee')
+        except Exception as e:
+            assert isinstance(e, TemplateError)
 
 
 def suite():

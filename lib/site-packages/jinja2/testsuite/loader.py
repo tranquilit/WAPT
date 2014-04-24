@@ -19,6 +19,7 @@ from jinja2.testsuite import JinjaTestCase, dict_loader, \
      choice_loader, prefix_loader
 
 from jinja2 import Environment, loaders
+from jinja2._compat import PYPY, PY2
 from jinja2.loaders import split_template_path
 from jinja2.exceptions import TemplateNotFound
 
@@ -92,6 +93,13 @@ class LoaderTestCase(JinjaTestCase):
         assert 'one' in env.cache
         assert 'two' not in env.cache
         assert 'three' in env.cache
+
+    def test_dict_loader_cache_invalidates(self):
+        mapping = {'foo': "one"}
+        env = Environment(loader=loaders.DictLoader(mapping))
+        assert env.get_template('foo').render() == "one"
+        mapping['foo'] = "two"
+        assert env.get_template('foo').render() == "two"
 
     def test_split_template_path(self):
         assert split_template_path('foo/bar') == ['foo', 'bar']
@@ -174,13 +182,41 @@ class ModuleLoaderTestCase(JinjaTestCase):
 
         assert name not in sys.modules
 
-    def test_byte_compilation(self):
-        log = self.compile_down(py_compile=True)
-        assert 'Byte-compiled "a/test.html"' in log
+    # This test only makes sense on non-pypy python 2
+    if PY2 and not PYPY:
+        def test_byte_compilation(self):
+            log = self.compile_down(py_compile=True)
+            assert 'Byte-compiled "a/test.html"' in log
+            tmpl1 = self.mod_env.get_template('a/test.html')
+            mod = self.mod_env.loader.module. \
+                tmpl_3c4ddf650c1a73df961a6d3d2ce2752f1b8fd490
+            assert mod.__file__.endswith('.pyc')
+
+    def test_choice_loader(self):
+        log = self.compile_down()
+
+        self.mod_env.loader = loaders.ChoiceLoader([
+            self.mod_env.loader,
+            loaders.DictLoader({'DICT_SOURCE': 'DICT_TEMPLATE'})
+        ])
+
         tmpl1 = self.mod_env.get_template('a/test.html')
-        mod = self.mod_env.loader.module. \
-            tmpl_3c4ddf650c1a73df961a6d3d2ce2752f1b8fd490
-        assert mod.__file__.endswith('.pyc')
+        self.assert_equal(tmpl1.render(), 'BAR')
+        tmpl2 = self.mod_env.get_template('DICT_SOURCE')
+        self.assert_equal(tmpl2.render(), 'DICT_TEMPLATE')
+
+    def test_prefix_loader(self):
+        log = self.compile_down()
+
+        self.mod_env.loader = loaders.PrefixLoader({
+            'MOD':      self.mod_env.loader,
+            'DICT':     loaders.DictLoader({'test.html': 'DICT_TEMPLATE'})
+        })
+
+        tmpl1 = self.mod_env.get_template('MOD/a/test.html')
+        self.assert_equal(tmpl1.render(), 'BAR')
+        tmpl2 = self.mod_env.get_template('DICT/test.html')
+        self.assert_equal(tmpl2.render(), 'DICT_TEMPLATE')
 
 
 def suite():

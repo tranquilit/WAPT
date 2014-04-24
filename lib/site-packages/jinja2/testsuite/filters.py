@@ -12,11 +12,16 @@ import unittest
 from jinja2.testsuite import JinjaTestCase
 
 from jinja2 import Markup, Environment
+from jinja2._compat import text_type, implements_to_string
 
 env = Environment()
 
 
 class FilterTestCase(JinjaTestCase):
+
+    def test_filter_calling(self):
+        rv = env.call_filter('sum', [1, 2, 3])
+        self.assert_equal(rv, 6)
 
     def test_capitalize(self):
         tmpl = env.from_string('{{ "foo bar"|capitalize }}')
@@ -47,14 +52,14 @@ class FilterTestCase(JinjaTestCase):
     def test_batch(self):
         tmpl = env.from_string("{{ foo|batch(3)|list }}|"
                                "{{ foo|batch(3, 'X')|list }}")
-        out = tmpl.render(foo=range(10))
+        out = tmpl.render(foo=list(range(10)))
         assert out == ("[[0, 1, 2], [3, 4, 5], [6, 7, 8], [9]]|"
                        "[[0, 1, 2], [3, 4, 5], [6, 7, 8], [9, 'X', 'X']]")
 
     def test_slice(self):
         tmpl = env.from_string('{{ foo|slice(3)|list }}|'
                                '{{ foo|slice(3, "X")|list }}')
-        out = tmpl.render(foo=range(10))
+        out = tmpl.render(foo=list(range(10)))
         assert out == ("[[0, 1, 2, 3], [4, 5, 6], [7, 8, 9]]|"
                        "[[0, 1, 2, 3], [4, 5, 6, 'X'], [7, 8, 9, 'X']]")
 
@@ -84,14 +89,32 @@ class FilterTestCase(JinjaTestCase):
             '{{ 1000000000000|filesizeformat(true) }}'
         )
         out = tmpl.render()
-        assert out == (
-            '100 Bytes|0.0 kB|0.0 MB|0.0 GB|0.0 TB|100 Bytes|'
-            '1000 Bytes|1.0 KiB|0.9 MiB|0.9 GiB'
+        self.assert_equal(out, (
+            '100 Bytes|1.0 kB|1.0 MB|1.0 GB|1.0 TB|100 Bytes|'
+            '1000 Bytes|976.6 KiB|953.7 MiB|931.3 GiB'
+        ))
+
+    def test_filesizeformat_issue59(self):
+        tmpl = env.from_string(
+            '{{ 300|filesizeformat }}|'
+            '{{ 3000|filesizeformat }}|'
+            '{{ 3000000|filesizeformat }}|'
+            '{{ 3000000000|filesizeformat }}|'
+            '{{ 3000000000000|filesizeformat }}|'
+            '{{ 300|filesizeformat(true) }}|'
+            '{{ 3000|filesizeformat(true) }}|'
+            '{{ 3000000|filesizeformat(true) }}'
         )
+        out = tmpl.render()
+        self.assert_equal(out, (
+            '300 Bytes|3.0 kB|3.0 MB|3.0 GB|3.0 TB|300 Bytes|'
+            '2.9 KiB|2.9 MiB'
+        ))
+
 
     def test_first(self):
         tmpl = env.from_string('{{ foo|first }}')
-        out = tmpl.render(foo=range(10))
+        out = tmpl.render(foo=list(range(10)))
         assert out == '0'
 
     def test_float(self):
@@ -137,7 +160,7 @@ class FilterTestCase(JinjaTestCase):
 
     def test_last(self):
         tmpl = env.from_string('''{{ foo|last }}''')
-        out = tmpl.render(foo=range(10))
+        out = tmpl.render(foo=list(range(10)))
         assert out == '9'
 
     def test_length(self):
@@ -153,12 +176,12 @@ class FilterTestCase(JinjaTestCase):
     def test_pprint(self):
         from pprint import pformat
         tmpl = env.from_string('''{{ data|pprint }}''')
-        data = range(1000)
+        data = list(range(1000))
         assert tmpl.render(data=data) == pformat(data)
 
     def test_random(self):
         tmpl = env.from_string('''{{ seq|random }}''')
-        seq = range(100)
+        seq = list(range(100))
         for _ in range(10):
             assert int(tmpl.render(seq=seq)) in seq
 
@@ -170,11 +193,23 @@ class FilterTestCase(JinjaTestCase):
     def test_string(self):
         x = [1, 2, 3, 4, 5]
         tmpl = env.from_string('''{{ obj|string }}''')
-        assert tmpl.render(obj=x) == unicode(x)
+        assert tmpl.render(obj=x) == text_type(x)
 
     def test_title(self):
         tmpl = env.from_string('''{{ "foo bar"|title }}''')
         assert tmpl.render() == "Foo Bar"
+        tmpl = env.from_string('''{{ "foo's bar"|title }}''')
+        assert tmpl.render() == "Foo's Bar"
+        tmpl = env.from_string('''{{ "foo   bar"|title }}''')
+        assert tmpl.render() == "Foo   Bar"
+        tmpl = env.from_string('''{{ "f bar f"|title }}''')
+        assert tmpl.render() == "F Bar F"
+        tmpl = env.from_string('''{{ "foo-bar"|title }}''')
+        assert tmpl.render() == "Foo-Bar"
+        tmpl = env.from_string('''{{ "foo\tbar"|title }}''')
+        assert tmpl.render() == "Foo\tBar"
+        tmpl = env.from_string('''{{ "FOO\tBAR"|title }}''')
+        assert tmpl.render() == "Foo\tBar"
 
     def test_truncate(self):
         tmpl = env.from_string(
@@ -227,6 +262,14 @@ class FilterTestCase(JinjaTestCase):
             {'real': {'value': 18}},
         ]) == '42'
 
+    def test_sum_attributes_tuple(self):
+        tmpl = env.from_string('''{{ values.items()|sum('1') }}''')
+        assert tmpl.render(values={
+            'foo': 23,
+            'bar': 1,
+            'baz': 18,
+        }) == '42'
+
     def test_abs(self):
         tmpl = env.from_string('''{{ -1|abs }}|{{ 1|abs }}''')
         assert tmpl.render() == '1|1', tmpl.render()
@@ -265,11 +308,12 @@ class FilterTestCase(JinjaTestCase):
         assert tmpl.render() == "['Bar', 'blah', 'foo']"
 
     def test_sort4(self):
+        @implements_to_string
         class Magic(object):
             def __init__(self, value):
                 self.value = value
-            def __unicode__(self):
-                return unicode(self.value)
+            def __str__(self):
+                return text_type(self.value)
         tmpl = env.from_string('''{{ items|sort(attribute='value')|join }}''')
         assert tmpl.render(items=map(Magic, [3, 2, 4, 1])) == '1234'
 
@@ -348,6 +392,121 @@ class FilterTestCase(JinjaTestCase):
         assert tmpl.render() == '<div>foo</div>'
         tmpl = env.from_string('{{ "<div>foo</div>" }}')
         assert tmpl.render() == '&lt;div&gt;foo&lt;/div&gt;'
+
+    def test_urlencode(self):
+        env = Environment(autoescape=True)
+        tmpl = env.from_string('{{ "Hello, world!"|urlencode }}')
+        assert tmpl.render() == 'Hello%2C%20world%21'
+        tmpl = env.from_string('{{ o|urlencode }}')
+        assert tmpl.render(o=u"Hello, world\u203d") == "Hello%2C%20world%E2%80%BD"
+        assert tmpl.render(o=(("f", 1),)) == "f=1"
+        assert tmpl.render(o=(('f', 1), ("z", 2))) == "f=1&amp;z=2"
+        assert tmpl.render(o=((u"\u203d", 1),)) == "%E2%80%BD=1"
+        assert tmpl.render(o={u"\u203d": 1}) == "%E2%80%BD=1"
+        assert tmpl.render(o={0: 1}) == "0=1"
+
+    def test_simple_map(self):
+        env = Environment()
+        tmpl = env.from_string('{{ ["1", "2", "3"]|map("int")|sum }}')
+        self.assertEqual(tmpl.render(), '6')
+
+    def test_attribute_map(self):
+        class User(object):
+            def __init__(self, name):
+                self.name = name
+        env = Environment()
+        users = [
+            User('john'),
+            User('jane'),
+            User('mike'),
+        ]
+        tmpl = env.from_string('{{ users|map(attribute="name")|join("|") }}')
+        self.assertEqual(tmpl.render(users=users), 'john|jane|mike')
+
+    def test_empty_map(self):
+        env = Environment()
+        tmpl = env.from_string('{{ none|map("upper")|list }}')
+        self.assertEqual(tmpl.render(), '[]')
+
+    def test_simple_select(self):
+        env = Environment()
+        tmpl = env.from_string('{{ [1, 2, 3, 4, 5]|select("odd")|join("|") }}')
+        self.assertEqual(tmpl.render(), '1|3|5')
+
+    def test_bool_select(self):
+        env = Environment()
+        tmpl = env.from_string('{{ [none, false, 0, 1, 2, 3, 4, 5]|select|join("|") }}')
+        self.assertEqual(tmpl.render(), '1|2|3|4|5')
+
+    def test_simple_reject(self):
+        env = Environment()
+        tmpl = env.from_string('{{ [1, 2, 3, 4, 5]|reject("odd")|join("|") }}')
+        self.assertEqual(tmpl.render(), '2|4')
+
+    def test_bool_reject(self):
+        env = Environment()
+        tmpl = env.from_string('{{ [none, false, 0, 1, 2, 3, 4, 5]|reject|join("|") }}')
+        self.assertEqual(tmpl.render(), 'None|False|0')
+
+    def test_simple_select_attr(self):
+        class User(object):
+            def __init__(self, name, is_active):
+                self.name = name
+                self.is_active = is_active
+        env = Environment()
+        users = [
+            User('john', True),
+            User('jane', True),
+            User('mike', False),
+        ]
+        tmpl = env.from_string('{{ users|selectattr("is_active")|'
+            'map(attribute="name")|join("|") }}')
+        self.assertEqual(tmpl.render(users=users), 'john|jane')
+
+    def test_simple_reject_attr(self):
+        class User(object):
+            def __init__(self, name, is_active):
+                self.name = name
+                self.is_active = is_active
+        env = Environment()
+        users = [
+            User('john', True),
+            User('jane', True),
+            User('mike', False),
+        ]
+        tmpl = env.from_string('{{ users|rejectattr("is_active")|'
+            'map(attribute="name")|join("|") }}')
+        self.assertEqual(tmpl.render(users=users), 'mike')
+
+    def test_func_select_attr(self):
+        class User(object):
+            def __init__(self, id, name):
+                self.id = id
+                self.name = name
+        env = Environment()
+        users = [
+            User(1, 'john'),
+            User(2, 'jane'),
+            User(3, 'mike'),
+        ]
+        tmpl = env.from_string('{{ users|selectattr("id", "odd")|'
+            'map(attribute="name")|join("|") }}')
+        self.assertEqual(tmpl.render(users=users), 'john|mike')
+
+    def test_func_reject_attr(self):
+        class User(object):
+            def __init__(self, id, name):
+                self.id = id
+                self.name = name
+        env = Environment()
+        users = [
+            User(1, 'john'),
+            User(2, 'jane'),
+            User(3, 'mike'),
+        ]
+        tmpl = env.from_string('{{ users|rejectattr("id", "odd")|'
+            'map(attribute="name")|join("|") }}')
+        self.assertEqual(tmpl.render(users=users), 'jane')
 
 
 def suite():

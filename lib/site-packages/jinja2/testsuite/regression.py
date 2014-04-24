@@ -14,6 +14,7 @@ from jinja2.testsuite import JinjaTestCase
 
 from jinja2 import Template, Environment, DictLoader, TemplateSyntaxError, \
      TemplateNotFound, PrefixLoader
+from jinja2._compat import text_type
 
 env = Environment()
 
@@ -118,7 +119,7 @@ class BugTestCase(JinjaTestCase):
 
         ''')
 
-        assert tmpl.render().split() == map(unicode, range(1, 11)) * 5
+        assert tmpl.render().split() == [text_type(x) for x in range(1, 11)] * 5
 
     def test_weird_inline_comment(self):
         env = Environment(line_statement_prefix='%')
@@ -236,16 +237,39 @@ class BugTestCase(JinjaTestCase):
         {% endfor %}
         """)
 
+    def test_else_loop_bug(self):
+        t = Template('''
+            {% for x in y %}
+                {{ loop.index0 }}
+            {% else %}
+                {% for i in range(3) %}{{ i }}{% endfor %}
+            {% endfor %}
+        ''')
+        self.assertEqual(t.render(y=[]).strip(), '012')
+
     def test_correct_prefix_loader_name(self):
         env = Environment(loader=PrefixLoader({
             'foo':  DictLoader({})
         }))
         try:
             env.get_template('foo/bar.html')
-        except TemplateNotFound, e:
+        except TemplateNotFound as e:
             assert e.name == 'foo/bar.html'
         else:
             assert False, 'expected error here'
+
+    def test_contextfunction_callable_classes(self):
+        from jinja2.utils import contextfunction
+        class CallableClass(object):
+            @contextfunction
+            def __call__(self, ctx):
+                return ctx.resolve('hello')
+
+        tpl = Template("""{{ callableclass() }}""")
+        output = tpl.render(callableclass = CallableClass(), hello = 'TEST')
+        expected = 'TEST'
+
+        self.assert_equal(output, expected)
 
 
 def suite():

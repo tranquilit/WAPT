@@ -22,7 +22,7 @@ class ForLoopTestCase(JinjaTestCase):
 
     def test_simple(self):
         tmpl = env.from_string('{% for item in seq %}{{ item }}{% endfor %}')
-        assert tmpl.render(seq=range(10)) == '0123456789'
+        assert tmpl.render(seq=list(range(10))) == '0123456789'
 
     def test_else(self):
         tmpl = env.from_string('{% for item in seq %}XXX{% else %}...{% endfor %}')
@@ -55,12 +55,12 @@ class ForLoopTestCase(JinjaTestCase):
         tmpl = env.from_string('''{% for item in seq %}{{
             loop.cycle('<1>', '<2>') }}{% endfor %}{%
             for item in seq %}{{ loop.cycle(*through) }}{% endfor %}''')
-        output = tmpl.render(seq=range(4), through=('<1>', '<2>'))
+        output = tmpl.render(seq=list(range(4)), through=('<1>', '<2>'))
         assert output == '<1><2>' * 4
 
     def test_scope(self):
         tmpl = env.from_string('{% for item in seq %}{% endfor %}{{ item }}')
-        output = tmpl.render(seq=range(10))
+        output = tmpl.render(seq=list(range(10)))
         assert not output
 
     def test_varlen(self):
@@ -84,6 +84,26 @@ class ForLoopTestCase(JinjaTestCase):
             dict(a=2, b=[dict(a=1), dict(a=2)]),
             dict(a=3, b=[dict(a='a')])
         ]) == '[1<[1][2]>][2<[1][2]>][3<[a]>]'
+
+    def test_recursive_depth0(self):
+        tmpl = env.from_string('''{% for item in seq recursive -%}
+            [{{ loop.depth0 }}:{{ item.a }}{% if item.b %}<{{ loop(item.b) }}>{% endif %}]
+        {%- endfor %}''')
+        self.assertEqual(tmpl.render(seq=[
+            dict(a=1, b=[dict(a=1), dict(a=2)]),
+            dict(a=2, b=[dict(a=1), dict(a=2)]),
+            dict(a=3, b=[dict(a='a')])
+        ]), '[0:1<[1:1][1:2]>][0:2<[1:1][1:2]>][0:3<[1:a]>]')
+
+    def test_recursive_depth(self):
+        tmpl = env.from_string('''{% for item in seq recursive -%}
+            [{{ loop.depth }}:{{ item.a }}{% if item.b %}<{{ loop(item.b) }}>{% endif %}]
+        {%- endfor %}''')
+        self.assertEqual(tmpl.render(seq=[
+            dict(a=1, b=[dict(a=1), dict(a=2)]),
+            dict(a=2, b=[dict(a=1), dict(a=2)]),
+            dict(a=3, b=[dict(a='a')])
+        ]), '[1:1<[2:1][2:2]>][1:2<[2:1][2:2]>][1:3<[2:a]>]')
 
     def test_looploop(self):
         tmpl = env.from_string('''{% for row in table %}
