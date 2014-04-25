@@ -31,21 +31,22 @@ location.reload(true);
 {% set cols = ['package','install_version','install_status','install_date'] %}
 <table border=1 cellspacing=0 cellpadding=4 class=sample>
 	<tr>
-		{% for c in cols %}
-			<th>{{c or "###"}}</th>
-		{% endfor %}
-		<th>Action</th>
+    	{% for c in cols %}
+    		<th>{{c or "###"}}</th>
+    	{% endfor %}
+    	<th>Action</th>
+    </tr>
 	{% for p in packages %}
-        {%set package_version= "%s(=%s)" % (p.package,p.version) %}
-        {%if p.get('install_status')=='OK'%}
-            {%if Version(p['install_version']) < Version(p['version'].split('|')[0]) %}
+        {%set package_version = p.asrequirement() %}
+        {%if p.install_status == 'OK'%}
+            {%if p.install_version < p.version %}
         		<tr class=status-upgradable>
-            {%elif Version(p['install_version']) == Version(p['version']) %}
+            {%elif p.install_version == p.version %}
         		<tr class=status-installed>
             {%else%}
         		<tr>
             {%endif%}
-        {%elif p.get('install_status')=='ERROR'%}
+        {%elif p.install_status == 'ERROR' %}
             <tr class=status-error>
         {%else%}
     		<tr>
@@ -53,28 +54,28 @@ location.reload(true);
 
 		{% for c in cols %}
 		<td>
-          {%if c=='install_date' and p[c]%}
-		  {{format_isodate(p[c])}}
+          {%if c=='install_date' and p[c] %}
+		      {{format_isodate(p[c])}}
           {%elif c=='package'%}
 		      <img class=package-icon src="package_icon?package={{p.package}}">
               <p>{{link("package_details?package="+package_version,p[c])}}
               <span class="package-version">{{p.version}}</span></p>
               <p class="package-description">{{p.description}}</p>
           {%else%}
-		  <span class={{'package-'+c}}>{{p[c] or ""}}</span>
+		      <span class={{'package-'+c}}>{{p[c] or ""}}</span>
           {%endif%}
 		</td>
 	    {% endfor %}
-        {% if p.get('install_status') and p['install_version'] == p['version'] %}
+        {% if p.install_status and p.install_version == p.version %}
     			<td><a class="package-remove" href="remove?package={{p.package}}">Remove</a></td>
-        {% elif p.get('install_status') and Version(p['install_version']) > Version(p['version']) %}
+        {% elif p.install_status and p.install_version > p.version %}
     			<td><a class="package-downgrade" href="install?package={{'%s(=%s)' % (p.package,p.version)}}">Downgrade</a></td>
-        {% elif p.get('install_status') and Version(p['install_version']) < Version(p['version']) %}
+        {% elif p.install_status and p.install_version < p.version %}
     			<td><a class="package-upgrade" href="install?package={{'%s(=%s)' % (p.package,p.version)}}">Upgrade</a></td>
         {% else %}
     			<td><a class="package-install"  href="install?package={{'%s(=%s)' % (p.package,p.version)}}">Install</a></td>
         {% endif %}
 	</tr>
-{% endfor %}
+    {% endfor %}
 </table>
 {% endblock %}

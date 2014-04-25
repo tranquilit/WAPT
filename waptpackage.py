@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.29"
+__version__ = "0.8.30"
 
 import os
 import zipfile
@@ -133,6 +133,13 @@ class PackageEntry(object):
         else:
             raise Exception(u'No such attribute : %s' % name)
 
+    def get(self,name,default=None):
+        name = name.lower()
+        if hasattr(self,name):
+            return getattr(self,name)
+        else:
+            return default
+
     def __setitem__(self,name,value):
         name = name.lower()
         if not name in self.all_attributes:
@@ -227,10 +234,19 @@ class PackageEntry(object):
 
         return cmp_res in possibilities
 
+    def match_search(self,search):
+        """Return True if entry contains the words in search in correct order and at word boundaries"""
+        if not search:
+            return True
+        else:
+            result = re.match(r'\b{}'.format(search.replace(' ',r'.*\b')),self.description,re.IGNORECASE)
+
     def load_control_from_dict(self,adict):
         for k in adict:
-            if hasattr(self,k):
-                setattr(self,k,adict[k])
+            setattr(self,k,adict[k])
+            if not k in self.all_attributes:
+                self.calculated_attributes.append(k)
+        return self
 
     def load_control_from_wapt(self,fname,calc_md5=True):
         """Load package attributes from the control file (utf8 encoded) included in WAPT zipfile fname
@@ -340,6 +356,10 @@ sources      : %(sources)s
 
     def asrequirement(self):
         return "%s (=%s)" % (self.package,self.version)
+
+    property
+    def download_url(self):
+        return self.repo_url+'/'+filename.strip('./')
 
     def as_dict(self):
         result ={}

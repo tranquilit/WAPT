@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.29"
+__version__ = "0.8.30"
 import os
 import re
 import logging
@@ -79,7 +79,6 @@ from setuphelpers import ensure_unicode
 import types
 
 logger = logging.getLogger()
-
 
 def datetime2isodate(adatetime = None):
     if not adatetime:
@@ -364,6 +363,20 @@ def ssl_sign_content(content,private_key,callback=pwd_callback):
     return signature
 
 
+def ssl_cert_organisation(public_cert):
+    if not os.path.isfile(public_cert):
+        raise Exception('Public certificate %s not found' % public_cert)
+    crt = X509.load_cert(public_cert)
+    return crt.get_subject().O
+
+
+def ssl_cert_cn(public_cert):
+    if not os.path.isfile(public_cert):
+        raise Exception('Public certificate %s not found' % public_cert)
+    crt = X509.load_cert(public_cert)
+    return crt.get_subject().CN
+
+
 def ssl_verify_content(content,signature,public_certs):
     u"""Check that the signature matches the content, using the provided list of public keys
         Content, signature are String
@@ -471,8 +484,9 @@ def create_self_signed_key(orgname,
     opensslcfg_fn = os.path.join(destdir,'openssl.cfg')
     codecs.open(opensslcfg_fn,'w',encoding='utf8').write(opensslcfg)
     os.environ['OPENSSL_CONF'] =  opensslcfg_fn
-    out = setuphelpers.run('%(opensslbin)s req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout %(destpem)s -out %(destcrt)s' %
+    out = setuphelpers.run(u'%(opensslbin)s req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout "%(destpem)s" -out "%(destcrt)s"' %
         {'opensslbin':opensslbin,'orgname':orgname,'destcrt':destcrt,'destpem':destpem})
+    os.unlink(opensslcfg_fn)
     return {'pem_filename':destpem,'crt_filename':destcrt}
 
 
@@ -710,10 +724,10 @@ def host_ipv4():
     return res
 
 
-def tryurl(url,proxies=None):
+def tryurl(url,proxies=None,timeout=0.3):
     try:
         logger.debug(u'  trying %s' % url)
-        headers = requests.head(url,proxies=proxies)
+        headers = requests.head(url,proxies=proxies,timeout=timeout)
         if headers.ok:
             logger.debug(u'  OK')
             return True
@@ -1333,7 +1347,10 @@ class WaptDB(WaptBaseDB):
         return cur.lastrowid
 
     def switch_to_explicit_mode(self,package,user_id):
-        """Set package install mode to manual so that package is not removed when meta packages don't require it anymore"""
+        """Set package install mode to manual
+            so that package is not removed
+            when meta packages don't require it anymore
+        """
         try:
             cur = self.db.execute("""\
                   update wapt_localstatus
@@ -1379,7 +1396,10 @@ class WaptDB(WaptBaseDB):
         return [PackageKey(*e) for e in q.fetchall()]
 
     def packages_matching(self,package_cond):
-        """Return an ordered list of available packages which match the condition"""
+        """Return an ordered list of available packages entries which match
+            the condition "packagename[([=<>]version)]?"
+            version ascending
+        """
         pcv_match = REGEX_PACKAGE_CONDITION.match(package_cond)
         if pcv_match:
             pcv = pcv_match.groupdict()
@@ -1492,8 +1512,19 @@ class WaptDB(WaptBaseDB):
         return result
 
     def update_repos_list(self,repos_list,proxies=None,force=False):
-        """update the packages database with Packages files from the url repos_list"""
+        """update the packages database with Packages files from the url repos_list
+            removes obsolete records for repositories which are no more referenced
+            repos_list : list of all the repositories objects referenced by the system
+                          as returned by Wapt.repositories
+            force : update repository even if date of packages index is same as
+                    last retrieved date
+        return a dictionary of update_db results for each repository name
+            which has been accessed.
+        >>> wapt = Wapt(config_filename = 'c:/tranquilit/wapt/tests/wapt-get.ini' )
+        >>> res = wapt.waptdb.update_repos_list(wapt.repositories)
+        """
         try:
+            result = {}
             logger.info(u'Remove unknown repositories from packages table and params (%s)' %(','.join('"%s"'% r.name for r in repos_list,),)  )
             self.db.execute('delete from wapt_package where repo not in (%s)' % (','.join('"%s"'% r.name for r in repos_list,)))
             self.db.execute('delete from wapt_params where name like "last-http%%" and name not in (%s)' % (','.join('"last-%s"'% r.repo_url for r in repos_list,)))
@@ -1501,7 +1532,7 @@ class WaptDB(WaptBaseDB):
             for repo in repos_list:
                 logger.info(u'Getting packages from %s' % repo.repo_url)
                 try:
-                    repo.update_db(waptdb=self,force=force)
+                    result[repo.name] = repo.update_db(waptdb=self,force=force)
                 except Exception,e:
                     logger.critical(u'Error getting Packages index from %s : %s' % (repo.repo_url,ensure_unicode(e)))
             logger.debug(u'Commit wapt_package updates')
@@ -1509,6 +1540,7 @@ class WaptDB(WaptBaseDB):
             logger.debug(u'rollback delete table')
             self.db.rollback()
             raise
+        return result
 
     def build_depends(self,packages):
         """Given a list of packages conditions (packagename (optionalcondition))
@@ -1740,19 +1772,19 @@ class WaptRepo(object):
                             ip = resolv.query(a.target)[0].to_text()
                             if a.port == 80:
                                 url = 'http://%s/wapt' % (wapthost,)
-                                if tryurl(url+'/Packages'):
+                                if tryurl(url+'/Packages',timeout=self.timeout):
                                     working_url.append((a.weight,url))
                                     if is_inmysubnets(ip):
                                         return url
                             elif a.port == 443:
-                                url = 'https://%s/wapt' % (wapthost,)
-                                if tryurl(url+'/Packages'):
+                                url = 'https://%s/wapt' % (wapthost)
+                                if tryurl(url+'/Packages',timeout=self.timeout):
                                     working_url.append((a.weight,url))
                                     if is_inmysubnets(ip):
                                         return url
                             else:
                                 url = 'http://%s:%i/wapt' % (wapthost,a.port)
-                                if tryurl(url+'/Packages'):
+                                if tryurl(url+'/Packages',timeout=self.timeout):
                                     working_url.append((a.weight,url))
                                     if is_inmysubnets(ip):
                                         return url
@@ -1780,10 +1812,10 @@ class WaptRepo(object):
                     for a in answers:
                         wapthost = a.target.canonicalize().to_text()[0:-1]
                         url = 'https://%s/wapt' % (wapthost,)
-                        if tryurl(url+'/Packages'):
+                        if tryurl(url+'/Packages',timeout=self.timeout):
                             return url
                         url = 'http://%s/wapt' % (wapthost,)
-                        if tryurl(url+'/Packages'):
+                        if tryurl(url+'/Packages',timeout=self.timeout):
                             return url
                     if not answers:
                         logger.debug(u'  No wapt.%s CNAME record found' % self.dnsdomain)
@@ -1801,10 +1833,10 @@ class WaptRepo(object):
                     answers = resolv.query(wapthost,'A')
                     if answers:
                         url = 'https://%s/wapt' % (wapthost,)
-                        if tryurl(url+'/Packages'):
+                        if tryurl(url+'/Packages',timeout=self.timeout):
                             return url
                         url = 'http://%s/wapt' % (wapthost,)
-                        if tryurl(url+'/Packages'):
+                        if tryurl(url+'/Packages',timeout=self.timeout):
                             return url
                     if not answers:
                         logger.debug(u'  No %s A record found' % wapthost)
@@ -1980,11 +2012,16 @@ class WaptHostRepo(WaptRepo):
         if not current_host in hosts_list:
             hosts_list.append(current_host)
         result = {}
+        self.packages = []
         for host in hosts_list:
             (entry,result[host]) = self.update_host(host,waptdb,force=force)
+            if not entry in self.packages:
+                self.packages.append(entry)
 
     def update_host(self,host,waptdb,force=False):
-        """Update host package from repo. returns (host package entry,entry date on server)
+        """Update host package from repo.
+           Stores last-http-date in database/
+            returns (host package entry,entry date on server)
         >>> repo = WaptHostRepo(name='wapt-host',timeout=4)
         >>> print repo.dnsdomain
         tranquilit.local
@@ -1997,7 +2034,7 @@ class WaptHostRepo(WaptRepo):
         try:
             host_package_url = "%s/%s.wapt" % (self.repo_url,host)
             host_cachedate = 'date-%s' % (host,)
-            host_request = requests.head(host_package_url,proxies=self.proxies,verify=False,headers={'cache-control':'no-cache','pragma':'no-cache'})
+            host_request = requests.head(host_package_url,proxies=self.proxies,verify=False,timeout=self.timeout,headers={'cache-control':'no-cache','pragma':'no-cache'})
             try:
                 host_request.raise_for_status()
                 host_package_date = httpdatetime2isodate(host_request.headers['last-modified'])
@@ -2105,7 +2142,11 @@ class Wapt(object):
         self.proxies = None
         self.wapt_server = None
         self.language = None
-        self.wapt_base_dir = os.path.dirname(__file__)
+
+        try:
+            self.wapt_base_dir = os.path.dirname(__file__)
+        except NameError:
+            self.wapt_base_dir = os.getcwd()
 
         self.disable_update_server_status = disable_update_server_status
 
@@ -2348,6 +2389,57 @@ class Wapt(object):
                     logger.critical(u'Unable to update server with current status : %s' % ensure_unicode(e))
 
 
+
+    @property
+    def host_uuid(self):
+        value = self.read_param('uuid')
+        if not value:
+            logger.info('Unknown UUID : reading host UUID from wmi informations')
+            inv = setuphelpers.wmi_info_basic()
+            value = inv['System_Information']['UUID']
+            self.write_param('uuid',value)
+        return value
+
+
+    @host_uuid.setter
+    def host_uuid(self,value):
+        self.write_param('uuid',value)
+
+
+    @host_uuid.deleter
+    def host_uuid(self):
+        self.delete_param('uuid')
+
+    def host_keys(self,force=False):
+        """Creates a set of private/public keys to identify the host on the waptserver
+            keys are created in the same directory as DB
+        """
+        destdir = self.dbdir
+        if not os.path.isdir(destdir):
+            raise Exception(u'host_keys: directory %s does not exist'%destdir)
+
+        hostname = setuphelpers.get_hostname()
+        destpem = os.path.join(destdir,'%s.pem' % hostname)
+        destcrt = os.path.join(destdir,'%s.crt' % hostname)
+        if os.path.isfile(destcrt):
+            cn = ssl_cert_cn(destcrt)
+        else:
+            cn = None
+        # check if host
+        if not cn or cn != self.host_uuid or force:
+            if os.path.isfile(destpem):
+                os.unlink(destpem)
+            if os.path.isfile(destcrt):
+                os.unlink(destcrt)
+            create_self_signed_key(
+                hostname,
+                destdir = destdir,
+                organization = setuphelpers.registered_organization,
+                commonname = self.host_uuid,
+                )
+        return {'pem_filename':destpem,'crt_filename':destcrt}
+
+
     def http_upload_package(self,package,wapt_server_user=None,wapt_server_passwd=None):
         r"""Upload a package or host package to the waptserver.
                 package : either the filename of a wapt package, or a PackageEntry
@@ -2356,10 +2448,10 @@ class Wapt(object):
             >>> from common import *
             >>> wapt = Wapt(config_filename = r'C:\tranquilit\wapt\tests\wapt-get.ini')
             >>> r = wapt.update()
-            >>> d = wapt.duplicate_package('test-wapttest','toto')
+            >>> d = wapt.duplicate_package('tis-wapttest','toto')
             >>> print d
             {'target': u'c:\\users\\htouvet\\appdata\\local\\temp\\toto.wapt', 'package': "toto (=117)"}
-            >>> wapt.http_upload_package(d['package'])
+            .>>> wapt.http_upload_package(d['package'])
             """
         if not (isinstance(package,(str,unicode)) and os.path.isfile(package)) and not isinstance(package,PackageEntry):
             raise Exception('No package file to upload')
@@ -2788,16 +2880,18 @@ class Wapt(object):
                 "errors": [ "%s : %s" % (p.asrequirement(),p.install_status) for p in self.error_packages()],
                 "date":datetime2isodate(),
                 }
-            if upgrades is not None:
-                status["upgrades"] = upgrades
-            else:
-                status["upgrades"] = [ "%s" % (p.asrequirement(),) for p in self.list_upgrade()]
+            if upgrades is None:
+                upgrades = self.list_upgrade()
 
+            status["upgrades"] = upgrades['upgrade']+upgrades['install']+upgrades['additional']
+            status["pending"] = upgrades
             logger.debug(u"store status in DB")
             self.write_param('last_update_status',jsondump(status))
             return status
         except Exception,e:
             logger.critical(u'Unable to store status of update in DB : %s'% ensure_unicode(e))
+            if logger.level == logging.DEBUG:
+                raise
 
     def get_sources(self,package):
         """Download sources of package (if referenced in package as a https svn)
@@ -2844,6 +2938,7 @@ class Wapt(object):
         """Remove cached WAPT files from local disk
         obsolete_only : If True, remove packages which are either no more available, or installed at a equal or newer version
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
+        >>> l = wapt.download_packages(wapt.check_downloads())
         >>> res = wapt.cleanup(True)
         """
         result = []
@@ -2853,9 +2948,20 @@ class Wapt(object):
             if os.path.isfile(f):
                 can_remove = True
                 if obsolete_only:
+                    # check if cached package could be installed at next ugrade
+                    upgrade_actions = self.list_upgrade()
+                    futures =   upgrade_actions['install']+\
+                                upgrade_actions['upgrade']+\
+                                upgrade_actions['additional']
+                    def in_futures(pe):
+                        for p in futures:
+                            if pe.match(p):
+                                return True
+                        return False
+
                     pe = PackageEntry().load_control_from_wapt(f)
                     pe_installed = self.is_installed(pe.package)
-                    can_remove = (pe_installed and pe <= pe_installed) or not self.is_available(pe.asrequirement())
+                    can_remove = not in_futures(pe) and ((pe_installed and pe <= pe_installed) or not self.is_available(pe.asrequirement()))
                 if can_remove:
                     logger.debug(u'Removing %s' % f)
                     try:
@@ -2888,7 +2994,7 @@ class Wapt(object):
             "removed": [ p for p in previous if not p in current],
             "count" : len(current),
             "repos" : [r.repo_url for r in self.repositories],
-            "upgrades": [ "%s" % (p.asrequirement(),) for p in self.list_upgrade()],
+            "upgrades": self.list_upgrade(),
             "date":datetime2isodate(),
             }
 
@@ -2898,6 +3004,8 @@ class Wapt(object):
                 self.update_server_status()
             except Exception,e:
                 logger.critical(u'Unable to update server with current status : %s' % ensure_unicode(e))
+                if logger.level == logging.DEBUG:
+                    raise
         return result
 
     def check_depends(self,apackages,forceupgrade=False,force=False,assume_removed=[]):
@@ -2909,8 +3017,13 @@ class Wapt(object):
             assume_removed: list of packagename which are assumed to be absent even if they are installed to check the
                             consequences of removal of packages, implies force=True
         """
-        if not isinstance(apackages,list):
-            apackages = [apackages]
+        if apackages is None:
+            apackages = []
+        # for csv string list of dependencies
+        if isinstance(apackages,(str,unicode)):
+            apackages = [ p.strip() for p in apackages.split(',')]
+        # check if all members are strings packages requirements "package_name(=version)"
+        apackages = [isinstance(p,PackageEntry) and p.asrequirement() or p for p in apackages]
 
         if not isinstance(assume_removed,list):
             assume_removed = [assume_removed]
@@ -3036,11 +3149,10 @@ class Wapt(object):
             download_only : don't install package, but only download them
             usecache : use the already downloaded packages if available in cache directory
             printhook: hook for progress print
-        >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
+        >>> wapt = Wapt(config_filename='c:/tranquilit/wapt/tests/wapt-get.ini')
         >>> def nullhook(*args):
         ...     pass
         >>> res = wapt.install(['tis-wapttest'],usecache=False,printhook=nullhook,params_dict=dict(company='toto'))
-        ???
         >>> isinstance(res['upgrade'],list) and isinstance(res['errors'],list) and isinstance(res['additional'],list) and isinstance(res['install'],list) and isinstance(res['unavailable'],list)
         True
         >>> res = wapt.remove('tis-wapttest')
@@ -3355,16 +3467,30 @@ class Wapt(object):
             self.runstatus=''
 
     def list_upgrade(self):
-        """Returns a list of packages which can be upgraded
+        """Returns a list of packages requirement which can be upgraded
            Package,Current Version,Available version
         """
-        result = []
+        result = dict(
+            install=[],
+            upgrade=[],
+            additional=[],
+            remove=[])
         # only most up to date (first one in list)
-        result.extend([p[0] for p in self.waptdb.upgradeable().values() if p])
+        result['upgrade'].extend([p[0].asrequirement() for p in self.waptdb.upgradeable().values() if p])
         if self.use_hostpackages:
             host_package = self.check_host_package_outdated()
-            if host_package and not host_package in result:
-                result.append(host_package)
+            if host_package:
+                host_package_req = host_package.asrequirement()
+                if not host_package_req in result:
+                    result['install'].append(host_package_req)
+
+        # get additional packages to install/upgrade based on new upgrades
+        depends = self.check_depends(result['install']+result['upgrade']+result['additional'])
+        for l in ('install','additional','upgrade'):
+            for (r,candidate) in depends[l]:
+                req = candidate.asrequirement()
+                if not req in result['install']+result['upgrade']+result['additional']:
+                    result[l].append(req)
         return result
 
     def search(self,searchwords=[],exclude_host_repo=True,section_filter=None):
@@ -3398,29 +3524,61 @@ class Wapt(object):
         """
         return self.waptdb.installed_search(searchwords=searchwords,)
 
+    def check_downloads(self,packages=None):
+        """Return list of available package entries not yet in cache
+            to match supplied packages requirements
+        """
+        result = []
+        if packages is None:
+            actions = self.list_upgrade()
+            packages = actions['install']+actions['additional']+actions['upgrade']
+        else:
+            if isinstance(packages,(str,unicode)):
+                packages = [ p.strip() for p in packages.split(',')]
+
+        for p in packages:
+            entries = self.is_available(p)
+            if entries:
+                # download most recent
+                entry = entries[-1]
+                fullpackagepath = os.path.join(self.package_cache_dir,entry.filename)
+                if os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath)>0:
+                    # check version
+                    try:
+                        cached = PackageEntry()
+                        cached.load_control_from_wapt(fullpackagepath,calc_md5=False)
+                        if entry != cached:
+                            result.append(entry)
+                    except Exception as e:
+                        logger.warning('Unable to get version of cached package %s: %s'%(fullpackagepath,ensure_unicode(e),))
+                        result.append(entry)
+                else:
+                    result.append(entry)
+        return result
+
     def download_upgrades(self):
         """Download packages that can be upgraded"""
         self.runstatus='Download upgrades'
         try:
-            to_download = self.list_upgrade()
-            return self.install(to_download,download_only=True)
+            to_download = self.check_downloads()
+            return self.download_packages(to_download)
         finally:
             self.runstatus=''
 
-    def register_computer(self,description=None,force=False):
+    def register_computer(self,description=None):
         """Send computer informations to WAPT Server
-            if decsription is provided, updates local registry with new description
+            if description is provided, updates local registry with new description
+        >>> wapt = Wapt()
+        >>> s = wapt.register_computer()
+        >>>
+
         """
         if description:
             out = self.run("WMIC os set description='%s'" % description.encode(sys.getfilesystemencoding()) ,shell=False)
             logger.info(out)
 
         inv = self.inventory()
-        # store uuid for future use to avoid the use of dmidecode
-        if not self.read_param('uuid') or self.read_param('uuid') != inv['uuid']:
-            self.write_param('uuid',inv['uuid'])
-        if force:
-            inv['force']=True
+        inv['uuid'] = self.host_uuid
         if self.wapt_server:
             req = requests.post("%s/add_host" % (self.wapt_server,),json.dumps(inv),proxies=self.proxies,verify=False)
             req.raise_for_status()
@@ -3433,35 +3591,32 @@ class Wapt(object):
         status['runstatus'] = self.read_param('runstatus','')
         return json.loads(json.dumps(status))
 
-    def update_server_status(self,force=False):
+    def update_server_status(self):
         """Send packages and software informations to WAPT Server, don't send dmi
+        >>> wapt = Wapt()
+        >>> s = wapt.update_server_status()
+        >>>
         """
-        uuid = self.read_param('uuid')
-        if not uuid:
-            self.register_computer(force=force)
-        else:
-            inv = {'uuid': uuid}
-            inv['wapt'] = self.wapt_status()
-            inv['host'] = setuphelpers.host_info()
-            inv['softwares'] = setuphelpers.installed_softwares('')
-            inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
-            inv['update_status'] = self.get_last_update_status()
-            if force:
-                inv['force']=True
+        inv = {'uuid': self.host_uuid}
+        inv['wapt'] = self.wapt_status()
+        inv['host'] = setuphelpers.host_info()
+        inv['softwares'] = setuphelpers.installed_softwares('')
+        inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
+        inv['update_status'] = self.get_last_update_status()
 
-            if self.wapt_server:
-                req = requests.post("%s/update_host" % (self.wapt_server,),data=json.dumps(inv),timeout=self.wapt_server_timeout,proxies=self.proxies,verify=False)
-                try:
-                    req.raise_for_status()
-                except Exception,e:
-                    logger.warning(u'Unable to update server status : %s' % ensure_unicode(e))
-                result = json.loads(req.content)
-                # force register if computer has not been registered or hostname has changed
-                if not result or not 'host' in result or result['host']['computer_fqdn'] != setuphelpers.get_hostname():
-                    self.register_computer()
-                return result
-            else:
-                return json.dumps(inv,indent=True)
+        if self.wapt_server:
+            req = requests.post("%s/update_host" % (self.wapt_server,),data=json.dumps(inv),timeout=self.wapt_server_timeout,proxies=self.proxies,verify=False)
+            try:
+                req.raise_for_status()
+            except Exception,e:
+                logger.warning(u'Unable to update server status : %s' % ensure_unicode(e))
+            result = json.loads(req.content)
+            # force register if computer has not been registered or hostname has changed
+            if not result or not 'host' in result or result['host']['computer_fqdn'] != setuphelpers.get_hostname():
+                self.register_computer()
+            return result
+        else:
+            return json.dumps(inv,indent=True)
 
     def waptserver_available(self):
         """Return ident of waptserver if defined and available, else False"""
@@ -3497,10 +3652,6 @@ class Wapt(object):
         inv['wapt'] = self.wapt_status()
         inv['softwares'] = setuphelpers.installed_softwares('')
         inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
-        try:
-            inv['uuid'] = inv['dmi']['System_Information']['UUID']
-        except:
-            inv['uuid'] = inv['host']['computer_fqdn']
         return inv
 
     def get_repo(self,name):
@@ -4198,11 +4349,13 @@ class Wapt(object):
         return self.waptdb.installed(include_errors=include_errors)
 
     def is_available(self,packagename):
-        r"""Checks if a package (with optional version condition) is available.
-            Return package entry or None
-        >>> from waptpackage import WaptLocalRepo
-        >>> repo = WaptLocalRepo(r'c:\tranquilit\wapt\tests\packages')
-        >>> res = repo.update_packages_index()
+        r"""Check if a package (with optional version condition) is available
+            in repositories.
+            Return list of matching package entries or empty list
+        >>> wapt = Wapt(config_filename='c:/tranquilit/wapt/tests/wapt-get.ini')
+        >>> l = wapt.is_available('tis-wapttest')
+        >>> l and isinstance(l[0],PackageEntry)
+        True
         """
         return self.waptdb.packages_matching(packagename)
 
@@ -4242,8 +4395,9 @@ class Wapt(object):
               else if target_directory exists and is not empty, raise an exception
             Return {'target':target_directory,'source_dir':target_directory,'package':package_entry}
 
-        >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
+        >>> wapt = Wapt(config_filename='c:/tranquilit/wapt/tests/wapt-get.ini')
         >>> wapt.dbpath = ':memory:'
+        >>> r= wapt.update()
         >>> tmpdir = tempfile.mkdtemp('wapt')
         >>> res = wapt.edit_package('tis-wapttest',target_directory=tmpdir,append_depends='tis-firefox',remove_depends='tis-7zip')
         >>> res['target'] == tmpdir and res['package'].package == 'tis-wapttest' and 'tis-firefox' in res['package'].depends
@@ -4446,8 +4600,9 @@ class Wapt(object):
                 auto_inc_version : if version is less than existing package in repo, set version to repo version+1
                 usecache         : If True, allow to use cached package in local repo instead of downloading it.
                 printhook: hook for download progress
-        >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
+        >>> wapt = Wapt(config_filename='c:/tranquilit/wapt/tests/wapt-get.ini')
         >>> wapt.dbpath = ':memory:'
+        >>> r= wapt.update()
         >>> def nullhook(*args):
         ...     pass
         >>> tmpdir = 'c:/tmp/testdup-wapt'
@@ -4479,7 +4634,7 @@ class Wapt(object):
         ...    remove_depends=['tis-wapttestsub'],
         ...    )
         >>> print repr(p['package'])
-        "tis-wapttest (=111)"
+        "tis-wapttest (=118)"
         """
         if target_directory:
              target_directory = os.path.abspath(target_directory)
@@ -4846,10 +5001,29 @@ class Wapt(object):
         except Exception as e:
             logger.warning(u'Problème lors du changement de réseau : %s'%setuphelpers.ensure_unicode(e))
 
+    def add_upgrade_shutdown_policy(self):
+        """Add a local shitdown policy to upgrade system"""
+        waptexit_path = setuphelpers.makepath(self.wapt_base_dir,'waptexit.exe')
+        if not os.path.isfile(waptexit_path):
+            raise Exception('Can not find %s'%waptexit_path)
+        return setuphelpers.add_shutdown_script(waptexit_path,'')
+
+    def remove_upgrade_shutdown_policy(self):
+        """Add a local shitdown policy to upgrade system"""
+        waptexit_path = setuphelpers.makepath(self.wapt_base_dir,'waptexit.exe')
+        if not os.path.isfile(waptexit_path):
+            raise Exception('Can not find %s'%waptexit_path)
+        return setuphelpers.remove_shutdown_script(waptexit_path,'')
+
 # for backward compatibility
 Version = setuphelpers.Version  # obsolete
 
 if __name__ == '__main__':
+    wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
+    l = wapt.download_packages(wapt.check_downloads())
+    res = wapt.cleanup(False)
+
+
     import doctest
     import sys
     reload(sys)

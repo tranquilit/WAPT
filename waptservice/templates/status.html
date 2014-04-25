@@ -13,16 +13,16 @@
 		<th>Action</th>
 	</tr>
 	{% for p in packages %}
-        {%set package_version= "%s(=%s)" % (p.package,p.version) %}
+        {%set package_version= p.asrequirement() %}
         {%if p.get('install_status')=='OK'%}
-            {%if Version(p['version']) < Version((p.get('repo_version','') or '').split('|')[0]) %}
+            {%if p.version < p.repo_version %}
         		<tr class=status-upgradable>
-            {%elif Version(p['version']) == Version(p.get('repo_version','') or '') %}
+            {%elif p.version == p.repo_version %}
         		<tr class=status-installed>
             {%else%}
         		<tr>
             {%endif%}
-        {%elif p.get('install_status')=='ERROR'%}
+        {%elif p.install_status =='ERROR'%}
             <tr class=status-error>
         {%else%}
     		<tr>

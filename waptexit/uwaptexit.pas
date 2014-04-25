@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, ComCtrls, ActnList, Buttons, sogrid, superobject;
+  ExtCtrls, ComCtrls, ActnList, Buttons, superobject;
 
 type
 
@@ -20,14 +20,12 @@ type
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     CheckBox1: TCheckBox;
-    GridTasks: TSOGrid;
     Image1: TImage;
     ImageList1: TImageList;
     Label1: TLabel;
     Memo1: TMemo;
     panHaut: TPanel;
     panBas: TPanel;
-    SODataSource1: TSODataSource;
     Timer1: TTimer;
     procedure ActShowDetailsExecute(Sender: TObject);
     procedure actSkipExecute(Sender: TObject);
@@ -51,11 +49,12 @@ var
 
 implementation
 
-uses tiscommon,waptcommon,soutils,simpleinternet,tisstrings;
+uses soutils,IdHTTP;
 {$R *.lfm}
 
 { TVisWaptExit }
 
+{
 function WAPTLocalJsonGet(action: String;user:AnsiString='';password:AnsiString='';timeout:integer=1000): ISuperObject;
 var
   strresult : String;
@@ -64,6 +63,34 @@ begin
     action := '/'+action;
   strresult := retrieve(GetWaptLocalURL+action);
   Result := SO(strresult);
+end;
+}
+
+const
+  waptservice_port:integer = 8088;
+  zmq_port:integer = 5000;
+
+function GetWaptLocalURL: String;
+begin
+  result := format('http://127.0.0.1:%d',[waptservice_port]);
+end;
+
+
+function WAPTLocalJsonGet(action: String;user:AnsiString='';password:AnsiString='';timeout:integer=1000): ISuperObject;
+var
+  strresult : String;
+  http:TIdHTTP;
+begin
+  http := TIdHTTP.Create;
+  try
+    http.ConnectTimeout:=100;
+    if copy(action,length(action),1)<>'/' then
+      action := '/'+action;
+    strresult := http.Get(GetWaptLocalURL+action);
+    Result := SO(strresult);
+  finally
+    http.Free;
+  end;
 end;
 
 
@@ -76,9 +103,11 @@ begin
     aso := WAPTLocalJsonGet('upgrade.json');
     Memo1.Text:=aso.AsJSon();
     tasks := aso['content'];
-    GridTasks.Data := tasks;
+    //GridTasks.Data := tasks;
     upgrades := Nil;
     CountDown := 0;
+    ActUpgrade.Caption:='Mise à jour des logiciels en cours';
+    actSkip.Caption:='Stopper la mise à jour';
   finally
     Timer1.Enabled := True;
   end;
@@ -121,31 +150,36 @@ begin
   ActUpgrade.Enabled:=false;
 
   //Check if pending upgrades
-  aso := WAPTLocalJsonGet('checkupgrades.json','','',10);
-  if aso<>Nil then
-    upgrades := aso['upgrades']
-  else
-    upgrades := Nil;
+  try
+    aso := WAPTLocalJsonGet('checkupgrades.json','','',10);
+    if aso<>Nil then
+      upgrades := aso['upgrades']
+    else
+      upgrades := Nil;
 
-  //check if running or pending tasks.
-  aso := WAPTLocalJsonGet('tasks.json','','',10);
-  if aso<>Nil then
-  begin
-    running := aso['running'];
-    pending := aso['pending'];
-  end;
+    //check if running or pending tasks.
+    aso := WAPTLocalJsonGet('tasks.json','','',10);
+    if aso<>Nil then
+    begin
+      running := aso['running'];
+      pending := aso['pending'];
+    end;
 
-  //check if upgrades
-  if ((upgrades=Nil) or (upgrades.AsArray.Length = 0)) and  ((running=Nil) or (running.DataType=stNull))  and ((pending = Nil) or (pending.AsArray.Length = 0)) then
-   //Système à jour
-    Application.terminate
-  else
-  begin
-    ActUpgrade.Enabled:=True;
-    Memo1.Text:= Join(#13#10, upgrades);
+    //check if upgrades
+    if ((upgrades=Nil) or (upgrades.AsArray.Length = 0)) and  ((running=Nil) or (running.DataType=stNull))  and ((pending = Nil) or (pending.AsArray.Length = 0)) then
+     //Système à jour
+      Application.terminate
+    else
+    begin
+      ActUpgrade.Enabled:=True;
+      Memo1.Text:= Join(#13#10, upgrades);
+    end;
+    CountDown:=10;
+    Timer1.Enabled := True;
+
+  except
+    application.Terminate;
   end;
-  CountDown:=10;
-  Timer1.Enabled := True;
 end;
 
 procedure TVisWaptExit.Timer1Timer(Sender: TObject);
@@ -181,7 +215,7 @@ begin
         //ProgressBar1.Position:=running.I['progress'];
         Memo1.Lines.Text:=running.S['description']+#13#10+running.S['runstatus'];
       end;
-      GridTasks.Data:=pending;
+      //GridTasks.Data:=pending;
     end;
 
     //No tasks and no upgrades

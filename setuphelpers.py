@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.29"
+__version__ = "0.8.30"
 import os
 import sys
 import logging
@@ -1034,12 +1034,12 @@ def add_shutdown_script(cmd,parameters):
             if not os.path.isdir(os.path.dirname(scriptsini_path)):
                 os.makedirs(os.path.dirname(scriptsini_path))
             if os.path.isfile(scriptsini_path):
-                set_visible(scriptsini_path)
+                set_file_visible(scriptsini_path)
             try:
                 with codecs.open(scriptsini_path,'w',encoding='utf16') as f:
                     f.write(str(scriptsini.data).replace('\n','\r\n'))
             finally:
-                set_hidden(scriptsini_path)
+                set_file_hidden(scriptsini_path)
 
             if not os.path.isdir(os.path.dirname(gptini_path)):
                 os.makedirs(os.path.dirname(gptini_path))
@@ -1118,12 +1118,12 @@ def remove_shutdown_script(cmd,parameters):
             if not os.path.isdir(os.path.dirname(scriptsini_path)):
                 os.makedirs(os.path.dirname(scriptsini_path))
             if os.path.isfile(scriptsini_path):
-                set_visible(scriptsini_path)
+                set_file_visible(scriptsini_path)
             try:
                 with codecs.open(scriptsini_path,'w',encoding='utf16') as f:
                     f.write(str(scriptsini.data).replace('\n','\r\n'))
             finally:
-                set_hidden(scriptsini_path)
+                set_file_hidden(scriptsini_path)
 
             if not os.path.isdir(os.path.dirname(gptini_path)):
                 os.makedirs(os.path.dirname(gptini_path))
@@ -1843,6 +1843,8 @@ class Version():
     """
 
     def __init__(self,versionstring):
+        if versionstring is None:
+            versionstring = ''
         assert isinstance(versionstring,types.ModuleType) or isinstance(versionstring,str) or isinstance(versionstring,unicode)
         if isinstance(versionstring,ModuleType):
             versionstring = versionstring.__version__
@@ -1850,14 +1852,18 @@ class Version():
 
     def __cmp__(self,aversion):
         def nat_cmp(a, b):
-            a, b = a or '', b or ''
+            a = a or ''
+            b = b or ''
 
             def convert(text):
                 if text.isdigit():
                     return int(text)
                 else:
                     return text.lower()
-            alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
+
+            def alphanum_key(key):
+                return [convert(c) for c in re.split('([0-9]+)', key)]
+
             return cmp(alphanum_key(a), alphanum_key(b))
 
         assert isinstance(aversion,Version)

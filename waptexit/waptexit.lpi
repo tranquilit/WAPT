@@ -17,7 +17,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="1"/>
-      <RevisionNr Value="4"/>
+      <RevisionNr Value="5"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -35,10 +35,10 @@
     </RunParams>
     <RequiredPackages Count="5">
       <Item1>
-        <PackageName Value="internettools"/>
+        <PackageName Value="pl_indycomp"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="internettools"/>
       </Item2>
       <Item3>
         <PackageName Value="pltis_utils"/>
@@ -80,7 +80,7 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\..\tis-waptexit-wapt\waptexit"/>
+      <Filename Value="..\waptexit"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
@@ -89,9 +89,15 @@
     </SearchPaths>
     <CodeGeneration>
       <SmartLinkUnit Value="True"/>
+      <Optimizations>
+        <OptimizationLevel Value="0"/>
+      </Optimizations>
+      <SmallerCode Value="True"/>
     </CodeGeneration>
     <Linking>
       <Debugging>
+        <GenerateDebugInfo Value="False"/>
+        <StripSymbols Value="True"/>
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
       <LinkSmart Value="True"/>

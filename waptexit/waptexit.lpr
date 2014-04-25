@@ -3,12 +3,12 @@ program waptexit;
 {$mode objfpc}{$H+}
 
 uses
+  //heaptrc,
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, uwaptexit, waptcommon, tisstrings
-  { you can add units after this };
+  Forms, uwaptexit, pl_indycomp;
 
 {$R *.res}
 

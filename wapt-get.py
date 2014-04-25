@@ -69,6 +69,10 @@ action is either :
   enable-tasks
   disable-tasks
 
+  add-upgrade-shutdown    : add a local shutdown policy to launch upgrade
+                            of packages at windows shutdown (via waptexit.exe)
+  remove-upgrade-shutdown : remove shutdown policy
+
   register [description] : Add the computer to the WAPT server database,
                                      change the description of the computer.
   inventory         : get json encoded list of host data, installed packages and softwares as supplied to server with register
@@ -270,14 +274,14 @@ def main():
             else:
                 running_install = []
 
-            if action == 'install' or action == 'download':
+            if action == 'install':
                 if len(args) < 2:
                     print u"You must provide at least one package name"
                     sys.exit(1)
 
                 if os.path.isdir(args[1]) or os.path.isfile(args[1]):
-                    print u"Installing WAPT file %s" % args[1]
                     if action == 'install':
+                        print u"Installing WAPT file %s" % args[1]
                         # abort if there is already a running install in progress
                         if running_install:
                             raise Exception(u'Running wapt progresses (%s), please wait...' % (running_install,))
@@ -327,8 +331,10 @@ def main():
                 if options.update_packages:
                     print u"Update package list"
                     mywapt.update()
-                print u"Downloading packages %s" % (','.join(args[1:]),)
-                result = mywapt.download_packages(args[1:], usecache=not options.force)
+                packages = args[1:]
+                depends = mywapt.check_downloads(packages)
+                print u"Downloading packages %s" % (','.join([p.asrequirement() for p in depends]),)
+                result = mywapt.download_packages(depends, usecache=not options.force)
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
@@ -517,12 +523,12 @@ def main():
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
-                    print ppdicttable([p for p in result], [('package',20),('version',10)])
+                    for l in ('install','additional','upgrade'):
+                        if result[l]:
+                            print u"\n=== %s packages ===\n%s" % (l,'\n'.join( ["  %-30s " % (p) for p in  result[l]]),)
 
             elif action == 'download-upgrade':
                 # abort if there is already a running install in progress
-                if running_install:
-                    raise Exception('Running wapt processes (%s) in progress, please wait...' % (running_install,))
                 if options.update_packages:
                     print u"Update packages list"
                     mywapt.update()
@@ -530,11 +536,11 @@ def main():
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
-                    print u"Downloaded packages : \n%s" % "\n".join(["  %s" % p for p in result['downloads']['downloaded']])
-                    print u"Skipped packages : \n%s" % "\n".join(["  %s" % p for p in result['downloads']['skipped']])
-
+                    for l in ('downloaded','skipped','errors'):
+                        if result[l]:
+                            print u"\n=== %s packages ===\n%s" % (l,'\n'.join( ["  %-30s " % (p) for p in  result[l]]),)
                     if result['errors']:
-                        logger.critical(u'Unable to download some files : %s' % (result['downloads']['errors'],))
+                        logger.critical(u'Unable to download some files : %s' % (result['errors'],))
                         sys.exit(1)
 
             elif action == 'update-packages':
@@ -834,6 +840,20 @@ def main():
 
             elif action == 'setup-tasks':
                 result = mywapt.setup_tasks()
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print result
+
+            elif action == 'add-upgrade-shutdown':
+                result = mywapt.add_upgrade_shutdown_policy()
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print result
+
+            elif action == 'remove-upgrade-shutdown':
+                result = mywapt.remove_upgrade_shutdown_policy()
                 if options.json_output:
                     jsonresult['result'] = result
                 else:

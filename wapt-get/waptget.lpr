@@ -281,7 +281,8 @@ begin
     Exit;
   end
   else
-  if not HasOption('D','direct') and StrIsOneOf(action,['update','upgrade','longtask','cancel','cancel-all','tasks']) then
+  if not HasOption('D','direct') and StrIsOneOf(action,['update','upgrade','longtask','cancel','cancel-all','tasks'])
+    and CheckOpenPort(waptservice_port,'127.0.0.1',100) then
   begin
     // launch task in waptservice, waits for its termination
     check_thread :=TZMQPollThread.Create(Self);

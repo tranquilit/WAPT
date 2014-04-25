@@ -5,18 +5,19 @@
 <ul>
 <li>wapt-get.exe version: {{wapt_info['wapt-exe-version']}}</li>
 <li>wapt-get.py version: {{wapt_info['wapt-py-version']}}</li>
+<li>Host UUID: {{wapt.host_uuid}}</li>
 <li>Main WAPT Repository: <a href={{wapt.wapt_repourl}}>{{wapt.wapt_repourl}}</a></li>
 <li>WAPT server: {{wapt.wapt_server}}</li>
 <li>Configuration file: {{ wapt.config_filename }}</li>
 <li>Current status: {{wapt.runstatus or 'Up to date'}}</li>
-<li>Last update status: 
+<li>Last update status:
 <ul>
 <li>Date: {{update_status['date']}}</li>
 <li>Upgradeable packages: {{', '.join(update_status['upgrades']) or 'None'}}</li>
 <li>Errors: {{', '.join(update_status['errors']) or 'None'}}</li>
 </ul>
 </li>
-</ul>		  
+</ul>
 
 <h2>Computer informations</h2>
 <ul>
@@ -27,6 +28,6 @@
 <li>IP Addresses:{{host_info['connected_ips']}}</li>
 <li>System manufacturer : {{host_info['system_manufacturer']}}</li>
 <li>System product name : {{host_info['system_productname']}}</li>
-</ul>		  
+</ul>
 
 {% endblock %}

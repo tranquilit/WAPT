@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.29"
+__version__ = "0.8.30"
 
 import time
 import sys
@@ -80,6 +80,8 @@ import psutil
 import common
 from common import Wapt
 import setuphelpers
+from setuphelpers import Version
+from waptpackage import PackageEntry
 
 usage="""\
 %prog -c configfile [action]
@@ -126,6 +128,37 @@ def get_authorized_callers_ip(waptserver_url):
             pass
     return ips
 
+
+class WaptEvents(object):
+    """Central list of last events so that consumer can get list
+        of latest events using http long poll requests"""
+
+    def __init__(self,max_history=300):
+        self.last = -1
+        self.max_history = max_history
+        self.get_lock = threading.RLock()
+        self.events = []
+
+
+    def get_missed(self,last_read=None):
+        """returns events since last_read"""
+        with self.get_lock:
+            if last_read is None:
+                return self.events[:]
+            else:
+                first = self.last-len(self.events)+1
+                if last_read <= first:
+                    return self.events[:]
+                else:
+                    return self.events[last_read-first:]
+
+    def put(self, item):
+        with self.get_lock:
+            self.events.append(item)
+            # keep track of a global position for consumers
+            self.last +=1
+            if len(self.events) > self.max_history:
+                del self.events[:len(self.events) - self.max_history]
 
 class WaptServiceConfig(object):
     """Configuration parameters from wapt-get.ini file
@@ -432,14 +465,31 @@ def status():
     with sqlite3.connect(app.waptconfig.dbpath) as con:
         try:
             con.row_factory=sqlite3.Row
-            query = '''select s.package,s.version,s.install_date,s.install_status,s.install_output,r.description,
-                                 (select GROUP_CONCAT(p.version," | ") from wapt_package p where p.package=s.package) as repo_version,explicit_by as install_par
+            query = '''select s.package,s.version,s.install_date,
+                                 s.install_status,s.install_output,r.description,
+                                 (select GROUP_CONCAT(p.version,"|") from wapt_package p where p.package=s.package) as repo_versions,
+                                 explicit_by as install_par
                                  from wapt_localstatus s
                                  left join wapt_package r on r.package=s.package and r.version=s.version
                                  order by s.package'''
             cur = con.cursor()
             cur.execute(query)
-            rows = [ dict(x) for x in cur.fetchall() ]
+            rows = []
+            for row in cur.fetchall():
+                pe = PackageEntry()
+                rec_dict = dict((cur.description[idx][0], value) for idx, value in enumerate(row))
+                for k in rec_dict:
+                    setattr(pe,k,rec_dict[k])
+                    # add joined field to calculated attributes list
+                    if not k in pe.all_attributes:
+                        pe.calculated_attributes.append(k)
+                # hack to enable proper version comparison in templates
+                pe.version = Version(pe.version)
+                # calc most up to date repo version
+                pe.repo_version = max(Version(v) for v in pe.get('repo_versions','').split('|'))
+                rows.append(pe)
+
+            #rows = [ waptpackage.PackageEntry().load_control_from_dict(dict(x)) for x in cur.fetchall() ]
         except sqlite3.Error, e:
             logger.critical(u"*********** Error %s:" % e.args[0])
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
@@ -466,7 +516,17 @@ def all_packages():
                 order by r.package,r.version'''
             cur = con.cursor()
             cur.execute(query)
-            rows = [ dict(x) for x in cur.fetchall() ]
+            rows = []
+
+            search = request.args.get('q','')
+            for row in cur.fetchall():
+                pe = PackageEntry().load_control_from_dict(
+                    dict((cur.description[idx][0], value) for idx, value in enumerate(row)))
+                # hack to enable proper version comparison in templates
+                pe.install_version = Version(pe.install_version)
+                pe.version = Version(pe.version)
+                if not search or pe.match_search(search):
+                    rows.append(pe)
         except sqlite3.Error, e:
             logger.critical(u"*********** Error %s:" % e.args[0])
     if request.args.get('format','html')=='json' or request.url.endswith('.json'):
@@ -847,37 +907,6 @@ def task():
         return Response(common.jsondump(task), mimetype='application/json')
     else:
         return render_template('task.html',task=task)
-
-
-@app.route('/task_events')
-@app.route('/task_events.json')
-@check_ip_source
-def task_events():
-    id = int(request.args['id'])
-
-    def generate():
-        try:
-            print "BEGIN EVENTS"
-            # init zeromq events broadcast
-            g.zmq_context = zmq.Context()
-            g.event_queue = g.zmq_context.socket(zmq.SUB)
-            g.event_queue.RCVTIMEO = 5000
-            g.event_queue.setsockopt(zmq.SUBSCRIBE,"")
-
-            # start event broadcasting
-            g.event_queue.connect("tcp://127.0.0.1:%i"%(waptconfig.zmq_port,))
-            while True:
-                data = g.event_queue.recv_multipart()
-                if not data:
-                    yield "<pre>TIMEOUT</pre>"
-                    writeln('timeout')
-                    break
-                if data[0] == 'TASKS':
-                    yield "<pre>%s</pre>"%data
-        except Exception as e:
-            yield
-
-    return Response(stream_with_context(generate()), mimetype='text/html')
 
 
 @app.route('/cancel_all_tasks')
@@ -1568,98 +1597,83 @@ class WaptTaskManager(threading.Thread):
 
     def tasks_status(self):
         """Returns list of pending, error, done tasks, and current running one"""
-        try:
-            with self.status_lock:
-                return dict(
-                    running=self.running_task and self.running_task.as_dict(),
-                    pending=[task.as_dict() for task in sorted(self.tasks_queue.queue)],
-                    done = [task.as_dict() for task in self.tasks_done],
-                    cancelled = [ task.as_dict() for task in self.tasks_cancelled],
-                    errors = [ task.as_dict() for task in self.tasks_error],
-                    )
-        except Exception as e:
-            return u"Error : tasks list locked : {}".format(setuphelpers.ensure_unicode(e))
+        with self.status_lock:
+            return dict(
+                running=self.running_task and self.running_task.as_dict(),
+                pending=[task.as_dict() for task in sorted(self.tasks_queue.queue)],
+                done = [task.as_dict() for task in self.tasks_done],
+                cancelled = [ task.as_dict() for task in self.tasks_cancelled],
+                errors = [ task.as_dict() for task in self.tasks_error],
+                )
 
     def cancel_running_task(self):
         """Cancel running task. Returns cancelled task"""
-        try:
-            with self.status_lock:
-                if self.running_task:
-                    try:
-                        cancelled = self.running_task
-                        self.tasks_error.append(self.running_task)
-                        try:
-                            self.running_task.kill()
-                        except:
-                            pass
-                    finally:
-                        self.running_task = None
-                    if cancelled:
-                        self.tasks_cancelled.append(cancelled)
-                        self.broadcast_tasks_status('CANCEL',cancelled)
-                    return cancelled
-                else:
-                    return None
-
-        except Exception as e:
-            return u"Error : tasks list locked : {}".format(setuphelpers.ensure_unicode(e))
-
-    def cancel_task(self,id):
-        """Cancel running or pending task with supplied id.
-            return cancelled task"""
-        try:
-            with self.status_lock:
-                cancelled = None
-                if self.running_task and self.running_task.id == id:
+        with self.status_lock:
+            if self.running_task:
+                try:
                     cancelled = self.running_task
+                    self.tasks_error.append(self.running_task)
                     try:
                         self.running_task.kill()
                     except:
                         pass
-                    finally:
-                        self.running_task = None
-                else:
-                    for task in self.tasks_queue.queue:
-                        if task.id == id:
-                            cancelled = task
-                            self.tasks_queue.queue.remove(task)
-                            break
-                    if cancelled:
-                        try:
-                            cancelled.kill()
-                        except:
-                            pass
+                finally:
+                    self.running_task = None
                 if cancelled:
+                    self.tasks_cancelled.append(cancelled)
                     self.broadcast_tasks_status('CANCEL',cancelled)
-            return cancelled
+                return cancelled
+            else:
+                return None
 
-        except Exception as e:
-            return u"Error : tasks list locked : {}".format(setuphelpers.ensure_unicode(e))
+    def cancel_task(self,id):
+        """Cancel running or pending task with supplied id.
+            return cancelled task"""
+        with self.status_lock:
+            cancelled = None
+            if self.running_task and self.running_task.id == id:
+                cancelled = self.running_task
+                try:
+                    self.running_task.kill()
+                except:
+                    pass
+                finally:
+                    self.running_task = None
+            else:
+                for task in self.tasks_queue.queue:
+                    if task.id == id:
+                        cancelled = task
+                        self.tasks_queue.queue.remove(task)
+                        break
+                if cancelled:
+                    try:
+                        cancelled.kill()
+                    except:
+                        pass
+            if cancelled:
+                self.broadcast_tasks_status('CANCEL',cancelled)
+            return cancelled
 
     def cancel_all_tasks(self):
         """Cancel running and pending tasks. Returns list of cancelled tasks"""
-        try:
-            with self.status_lock:
-                cancelled = []
-                while not self.tasks_queue.empty():
-                     cancelled.append(self.tasks_queue.get())
-                if self.running_task:
+        with self.status_lock:
+            cancelled = []
+            while not self.tasks_queue.empty():
+                 cancelled.append(self.tasks_queue.get())
+            if self.running_task:
+                try:
+                    cancelled.append(self.running_task)
+                    self.tasks_error.append(self.running_task)
                     try:
-                        cancelled.append(self.running_task)
-                        self.tasks_error.append(self.running_task)
-                        try:
-                            self.running_task.kill()
-                        except:
-                            pass
-                    finally:
-                        self.running_task = None
-                for task in cancelled:
-                    self.tasks_cancelled.append(task)
-                    self.broadcast_tasks_status('CANCEL',task)
-                return cancelled
-
-        except Exception as e:
-            return u"Error : tasks list locked : {}".format(setuphelpers.ensure_unicode(e))
+                        self.running_task.kill()
+                    except:
+                        pass
+                finally:
+                    self.running_task = None
+            for task in cancelled:
+                self.tasks_cancelled.append(task)
+                self.broadcast_tasks_status('CANCEL',task)
+            return cancelled
 
     def start_ipaddr_monitoring(self):
         def addr_change(wapt):
