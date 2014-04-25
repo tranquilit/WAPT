@@ -52,6 +52,7 @@ Source: "..\wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.e
 Source: "..\wapt-get.exe"; DestDir: "{app}";
 Source: "..\wapt-get.exe.manifest"; DestDir: "{app}";
 Source: "..\dmidecode.exe"; DestDir: "{app}";
+Source: "..\waptexit.exe"; DestDir: "{app}";
 
 ; local package cache
 Source: "..\cache\icons\unknown.png"; DestDir: "{app}\cache\icons";
@@ -117,6 +118,7 @@ Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tm
 ;Filename: "{app}\wapt-get.exe"; Parameters: "upgradedb"; Flags: runhidden; StatusMsg: "Upgrading local sqlite database structure"; Description: "Upgrade packages list"
 Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runhidden; StatusMsg: "Mise à jour des paquets disponibles sur le dépôt principal"; Description: "Mise à jour des paquets disponibles sur le dépôt principal"
 Filename: "{app}\wapt-get.exe"; Parameters: "setup-tasks"; Tasks: setuptasks; Flags: runhidden; StatusMsg: "Configuration des tâches planifiées"; Description: "Configuration des tâches planifiées"
+Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoUpgradePolicy; Flags: runhidden; StatusMsg: "Mise à jour des paquets à l'extinction du poste"; Description: "Mise à jour des paquets à l'extinction du poste"
 ; rights rw for Admins and System, ro for users and authenticated users on wapt directory
 Filename: "cmd"; Parameters: "/C echo O| cacls {app} /S:""D:PAI(A;OICI;FA;;;BA)(A;OICI;FA;;;SY)(A;OICI;0x1200a9;;;BU)(A;OICI;0x1201a9;;;AU)"""; Tasks:installService; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Mise en place des droits sur le répertoire wapt..."; Description: "Mise en place des droits sur le répertoire wapt"
 
@@ -131,6 +133,7 @@ Name: setupTasks; Description: "Créer des tâches planifiées pour la mise à j
 Name: installService; Description: "Installer le service WAPT";
 Name: autorunTray; Description: "Lancer l'icône de notification lors de l'ouverture de session"; Flags: unchecked;
 Name: installredist2008; Description: "Installer les redistribables VC++ 2008 (pour openssl)";
+Name: autoUpgradePolicy; Description: "Proposer la mise à jour des paquets à l'extinction du poste";
 
 [UninstallRun]
 Filename: "taskkill"; Parameters: "/t /im ""waptconsole.exe"" /f"; Flags: runhidden; StatusMsg: "Arrêt de waptconsole"
