@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="0.8.26"
+__version__="0.8.29"
 
 import os,sys
 try:
@@ -60,6 +60,8 @@ import threading
 
 from waptpackage import *
 import pefile
+
+import itsdangerous
 
 from optparse import OptionParser
 usage="""\
@@ -182,6 +184,7 @@ if os.path.exists(wapt_folder + '-group')==False:
 ALLOWED_EXTENSIONS = set(['wapt'])
 
 app = Flask(__name__,static_folder='./templates/static')
+app.secret_key = config.get('options','secret_key')
 
 def hosts():
     """Opens a new database connection if there is none yet for the
@@ -298,7 +301,7 @@ def update_data(data):
     return get_host_data(data["uuid"],filter={"uuid":1,"host":1})
 
 
-@app.route('/add_host',methods=['POST','GET'])
+@app.route('/add_host',methods=['POST'])
 @app.route('/update_host',methods=['POST'])
 def update_host():
     """Update localstatus of computer, and return known registration info"""
@@ -351,7 +354,6 @@ def get_client_software_list(uuid=""):
                          mimetype="application/json")
     else:
         return "{}"
-
 
 def packagesFileToList(pathTofile):
     listPackages = codecs.decode(zipfile.ZipFile(pathTofile).read(name='Packages'),'utf-8')
@@ -448,6 +450,18 @@ def requires_auth(f):
         return f(*args, **kwargs)
     return decorated
 
+def check_auth(username, password):
+    """This function is called to check if a username /
+    password combination is valid.
+    """
+    return wapt_user == username and wapt_password == hashlib.sha512(password).hexdigest()
+
+def authenticate():
+    """Sends a 401 response that enables basic auth"""
+    return Response(
+        'You have to login with proper credentials', 401,
+        {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
 
 @app.route('/upload_package/<string:filename>',methods=['POST'])
 @requires_auth
@@ -457,13 +471,13 @@ def upload_package(filename=""):
         if request.method == 'POST':
             if filename and allowed_file(filename):
                 tmp_target = os.path.join(wapt_folder, secure_filename(filename+'.tmp'))
-                target = os.path.join(wapt_folder, secure_filename(filename))
                 with open(tmp_target, 'wb') as f:
                     f.write(request.stream.read())
                 if not os.path.isfile(tmp_target):
                     result = dict(status='ERROR',message='Problem during upload')
                 else:
                     if PackageEntry().load_control_from_wapt(tmp_target):
+                        target = os.path.join(wapt_folder, secure_filename(filename))
                         if os.path.isfile(target):
                             os.unlink(target)
                         os.rename(tmp_target,target)
@@ -497,8 +511,9 @@ def upload_host():
             logger.debug('uploading host file : %s' % file)
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                tmp_target = os.path.join(wapt_folder+'-host', filename+'.tmp')
-                target = os.path.join(wapt_folder+'-host', filename)
+                wapt_host_folder = os.path.join(wapt_folder+'-host')
+                tmp_target = os.path.join(wapt_host_folder, filename+'.tmp')
+                target = os.path.join(wapt_host_folder, filename)
                 file.save(tmp_target)
                 if os.path.isfile(tmp_target):
                     try:
@@ -507,6 +522,7 @@ def upload_host():
                         if os.path.isfile(target):
                             os.unlink(target)
                         os.rename(tmp_target,target)
+                        data = update_packages(wapt_host_folder)
                         result = dict(status='OK',message='File %s uploaded to %s'%(file.filename,target))
                     except:
                         if os.path.isfile(tmp_target):
@@ -850,32 +866,43 @@ def deploy_wapt():
                          mimetype="application/json")
 
 
-@app.route('/login',methods=['POST'])
+@app.route('/login',methods=['GET','POST'])
 def login():
     try:
-        if request.method == 'POST':
-            d= json.loads(request.data)
-            if "username" in d and "password" in d:
-                if check_auth(d["username"], d["password"]):
-                    if "newPass" in d:
-                        global wapt_password
-                        wapt_password = hashlib.sha512(d["newPass"]).hexdigest()
-                        config.set('options', 'wapt_password', wapt_password)
-                        with open(os.path.join(wapt_root_dir,'waptserver','waptserver.ini'), 'wb') as configfile:
-                            config.write(configfile)
-                    return "True"
-            return "False"
+        resp = Response(status=401,mimetype="application/json")
+        data = request.args
+        if "username" in data and "password" in data:
+            if check_auth(data["username"], data["password"]):
+                if "newPass" in data:
+                    global wapt_password
+                    wapt_password = hashlib.sha512(data["newPass"]).hexdigest()
+                    config.set('options', 'wapt_password', wapt_password)
+                    with open(os.path.join(wapt_root_dir,'waptserver','waptserver.ini'), 'wb') as configfile:
+                        config.write(configfile)
+                signer = itsdangerous.TimedJSONWebSignatureSerializer(app.secret_key)
+                params = dict(
+                    username=data["username"],
+                    remote_addr=request.remote_addr)
+                content = dict(status='OK',message='Login successful',result=dict(
+                    auth_token=signer.dumps(params),
+                    username=data["username"],
+                    remote_addr=request.remote_addr))
+                resp.status_code=200
+                resp.set_cookie('auth_token',signer.dumps(params))
+            else:
+                content = dict(status='ERROR',message='Bad credentials')
         else:
-            return "Unsupported method"
+            content= dict(status='ERROR',message='Bad request')
     except:
-        e = sys.exc_info()
-        return str(e)
-
+        e = traceback.format_exc()
+        resp.status_code = 500
+        content = dict(status='ERROR',message='Server error : %s'%(e,))
+    resp.response.append(json.dumps(content))
+    return resp
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
-
 
 @app.route('/delete_package/<string:filename>')
 @requires_auth
@@ -915,6 +942,7 @@ def get_wapt_package(input_package_name):
 
 @app.route('/wapt-host/<string:input_package_name>')
 def get_host_package(input_package_name):
+    """Returns a host package (in case there is no apache static files server)"""
     global wapt_folder
     #TODO straighten this -host stuff
     host_folder = wapt_folder + '-host'
@@ -934,6 +962,7 @@ def get_host_package(input_package_name):
 
 @app.route('/wapt-group/<string:input_package_name>')
 def get_group_package(input_package_name):
+    """Returns a group package (in case there is no apache static files server)"""
     global wapt_folder
     #TODO straighten this -group stuff
     group_folder = wapt_folder + '-group'
@@ -944,20 +973,6 @@ def get_group_package(input_package_name):
     if 'content-length' not in r.headers:
         r.headers.add_header('content-length', os.path.getsize(os.path.join(group_folder + '-group',package_name)))
     return r
-
-
-def check_auth(username, password):
-    """This function is called to check if a username /
-    password combination is valid.
-    """
-    return wapt_user == username and wapt_password == hashlib.sha512(password).hexdigest()
-
-
-def authenticate():
-    """Sends a 401 response that enables basic auth"""
-    return Response(
-        'You have to login with proper credentials', 401,
-        {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
 
 class CheckHostsWaptService(threading.Thread):
@@ -1042,6 +1057,7 @@ def install_windows_service():
             keyname = None
         registry_set(root,path,keyname,value,type = datatypes[valuetype])
 
+
 if __name__ == "__main__":
     if len(sys.argv)>1 and sys.argv[1] == 'doctest':
         import doctest
@@ -1051,9 +1067,9 @@ if __name__ == "__main__":
         install_windows_service()
         sys.exit(0)
 
-    debug=False
-    if debug==True:
-        app.run(host='0.0.0.0',port=30880,debug=True)
+    debug=True
+    if debug:
+        app.run(host='0.0.0.0',port=30880,debug=False)
     else:
         port = 8080
         server = Rocket(('0.0.0.0', port), 'wsgi', {"wsgi_app":app})
