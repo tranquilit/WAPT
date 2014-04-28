@@ -2648,7 +2648,7 @@ class Wapt(object):
         old_stderr = None
 
         self.check_cancelled()
-        logger.info(u"Register start of install %s as user %s to local DB with params %s" % (fname, setuphelpers.get_current_user(), params_dict))
+        logger.info(u"Register start of install %s as user %s to local DB with params %s" % (ensure_unicode(fname), setuphelpers.get_current_user(), params_dict))
         logger.info(u"Interactive user:%s, usergroups %s" % (self.user,self.usergroups))
         status = 'INIT'
         if not self.public_certs:
@@ -2687,20 +2687,20 @@ class Wapt(object):
             """
 
             self.check_cancelled()
-            logger.info(u"Installing package " + fname)
+            logger.info(u"Installing package %s"%(ensure_unicode(fname),))
             # case where fname is a wapt zipped file, else directory (during developement)
             istemporary = False
 
             if os.path.isfile(fname):
                 packagetempdir = tempfile.mkdtemp(prefix="wapt")
-                logger.info(u'  unzipping %s to temporary %s' % (fname,packagetempdir))
+                logger.info(u'  unzipping %s to temporary %s' % (ensure_unicode(fname),ensure_unicode(packagetempdir)))
                 zip = ZipFile(fname)
                 zip.extractall(path=packagetempdir)
                 istemporary = True
             elif os.path.isdir(fname):
                 packagetempdir = fname
             else:
-                raise Exception(u'%s is not a file nor a directory, aborting.' % fname)
+                raise Exception(u'%s is not a file nor a directory, aborting.' % ensure_unicode(fname))
 
             try:
                 # chech sha1
@@ -2738,7 +2738,7 @@ class Wapt(object):
                     sys.path.append(os.getcwd())
 
                 # import the setup module from package file
-                logger.info(u"  sourcing install file %s " % setup_filename )
+                logger.info(u"  sourcing install file %s " % ensure_unicode(setup_filename) )
                 setup = import_setup(setup_filename,'_waptsetup_')
                 required_params = []
 
@@ -3205,12 +3205,12 @@ class Wapt(object):
                 subject = ssl_verify_content(manifest_content,signature,self.public_certs)
                 logger.info(u'Package issued by %s' % (subject,))
             except:
-                raise Exception(u'Package file %s signature is invalid' % fname)
+                raise Exception(u'Package file %s signature is invalid' % ensure_unicode(fname))
 
             for (fn,sha1) in manifest:
                 if fn == 'WAPT\\control':
                     if sha1 != sha1_for_data(control.encode('utf8')):
-                        raise Exception("WAPT/control file of %s is corrupted, sha1 digests don't match" % fname)
+                        raise Exception("WAPT/control file of %s is corrupted, sha1 digests don't match" % ensure_unicode(fname))
                     break
             # Merge updated control data
             # TODO

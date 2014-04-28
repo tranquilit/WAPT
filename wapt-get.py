@@ -281,7 +281,7 @@ def main():
 
                 if os.path.isdir(args[1]) or os.path.isfile(args[1]):
                     if action == 'install':
-                        print u"Installing WAPT file %s" % args[1]
+                        print u"Installing WAPT file %s" % ensure_unicode(args[1])
                         # abort if there is already a running install in progress
                         if running_install:
                             raise Exception(u'Running wapt progresses (%s), please wait...' % (running_install,))
@@ -310,7 +310,7 @@ def main():
                     if action != 'download':
                         for k in ('install','additional','upgrade','skipped','errors'):
                             if result.get(k,[]):
-                                print(u"\n === %s packages ===\n%s" % (k,'\n'.join(["  %-30s | %s (%s)" % (s[0],s[1].package,s[1].version) for s in result[k]]),))
+                                print(u"\n === %s packages ===\n%s" % (k,'\n'.join(["  %-30s | %s (%s)" % (ensure_unicode(s[0]),s[1].package,s[1].version) for s in result[k]]),))
                     else:
                         for k in ('downloaded','skipped','errors'):
                             if result.get('downloads', {'downloaded':[],'skipped':[],'errors':[]})[k]:
