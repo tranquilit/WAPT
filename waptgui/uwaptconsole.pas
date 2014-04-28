@@ -42,9 +42,12 @@ type
     GridInstalled: TSOGrid;
     Label10: TLabel;
     MemoGroupeDescription: TMemo;
+    MenuItem18: TMenuItem;
     MenuItem28: TMenuItem;
+    MenuItem4: TMenuItem;
     Panel2: TPanel;
     Panel5: TPanel;
+    PopupMenuHost: TPopupMenu;
     ProgressBar: TProgressBar;
     EdSearch: TEdit;
     ImageList1: TImageList;
@@ -85,9 +88,12 @@ type
     GridPackages: TSOGrid;
     pgInstalledPackages: TTabSheet;
     procedure ActLocalhostInstallExecute(Sender: TObject);
-    procedure ActLocalhostInstallUpdate(Sender: TObject);
+    procedure ActLocalhostRemoveExecute(Sender: TObject);
+    procedure ActLocalhostUpgradeExecute(Sender: TObject);
+    procedure ActPackagesUpdateExecute(Sender: TObject);
     procedure actQuitExecute(Sender: TObject);
     procedure actRefreshExecute(Sender: TObject);
+    procedure ActRegisterHostExecute(Sender: TObject);
     procedure ActSearchInstalledExecute(Sender: TObject);
     procedure ActSearchPackageExecute(Sender: TObject);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
@@ -141,16 +147,59 @@ end;
 
 procedure TVisWaptGUI.ActLocalhostInstallExecute(Sender: TObject);
 var
-  args:ISuperObject;
+  r,args,res:ISuperObject;
+  g:TSOGrid;
+
 begin
   args := SO;
-  args.S['package'] := GridPackages.FocusedRow.S['package'];
-  DMLocalWapt.LocalWapt.CallServerMethod('GET',['install'],args);
+  if GridInstalled.Focused then
+    g := GridInstalled
+  else if GridPackages.Focused then
+    g := GridPackages
+  else
+    exit;
+  for r in g.SelectedRows do
+  begin
+    args.S['package'] := r.S['package']+'(='+r.S['version']+')';
+    if g = GridInstalled then
+      args.S['force'] := '1';
+    res := SO(DMLocalWapt.LocalWapt.CallServerMethod('GET',['install.json'],args));
+  end;
 end;
 
-procedure TVisWaptGUI.ActLocalhostInstallUpdate(Sender: TObject);
+procedure TVisWaptGUI.ActLocalhostRemoveExecute(Sender: TObject);
+var
+  r,args,res:ISuperObject;
+  g:TSOGrid;
 begin
-  ActLocalhostInstall.Enabled := (GridPackages.FocusedRow<>Nil);
+  args := SO;
+  if GridInstalled.Focused then
+    g := GridInstalled
+  else if GridPackages.Focused then
+    g := GridPackages
+  else
+    exit;
+  for r in g.SelectedRows do
+  begin
+    args.S['package'] := r.S['package'];
+   res := SO(DMLocalWapt.LocalWapt.CallServerMethod('GET',['remove.json'],args));
+  end;
+end;
+
+procedure TVisWaptGUI.ActLocalhostUpgradeExecute(Sender: TObject);
+var
+  res,args: ISuperObject;
+begin
+  args := SO();
+  res := SO(DMLocalWapt.LocalWapt.CallServerMethod('GET',['upgrade.json'],args));
+end;
+
+procedure TVisWaptGUI.ActPackagesUpdateExecute(Sender: TObject);
+var
+  res,args: ISuperObject;
+begin
+  args := SO();
+  res := SO(DMLocalWapt.LocalWapt.CallServerMethod('GET',['update.json'],args));
 end;
 
 procedure TVisWaptGUI.actRefreshExecute(Sender: TObject);
@@ -165,6 +214,14 @@ begin
   finally
     Screen.Cursor := crDefault;
   end;
+end;
+
+procedure TVisWaptGUI.ActRegisterHostExecute(Sender: TObject);
+var
+  res,args: ISuperObject;
+begin
+  args := SO();
+  res := SO(DMLocalWapt.LocalWapt.CallServerMethod('GET',['register.json'],args));
 end;
 
 procedure TVisWaptGUI.ActSearchInstalledExecute(Sender: TObject);
@@ -283,20 +340,6 @@ end;
 procedure TVisWaptGUI.MenuItem27Click(Sender: TObject);
 begin
   ShowMessage('Tranquil IT Systems: http://www.tranquil-it-systems.fr/'+#13#10+'Version Waptconsole:'+GetApplicationVersion+#13#10+'Version Wapt-get:'+GetApplicationVersion(WaptgetPath));
-end;
-
-procedure CopyMenu(menuItemSource: TPopupMenu; menuItemTarget: TMenuItem);
-var
-  i: integer;
-  mi: TMenuItem;
-begin
-  menuItemTarget.Clear;
-  for i := 0 to menuItemSource.Items.Count - 1 do
-  begin
-    mi := TMenuItem.Create(menuItemTarget);
-    mi.Action := menuItemSource.Items[i].Action;
-    menuItemTarget.Add(mi);
-  end;
 end;
 
 

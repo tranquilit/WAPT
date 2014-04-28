@@ -132,11 +132,11 @@ FileName=C:\tranquilit\wapt\setuphelpers.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node5]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-get.ini
+FileName=C:\tranquilit\wapt\wapt-get.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node6]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-get.py
+FileName=C:\tranquilit\wapt\wapt-get.ini
 
 [Project\ChildNodes\Node0\ChildNodes\Node7]
 ClassName=TProjectFileNode
@@ -184,7 +184,7 @@ ScriptName=C:\tranquilit\wapt\wapt-get.py
 Description=wapt-get update
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug -f update
+Parameters=-ldebug -D -f update
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -392,7 +392,7 @@ Name=cleanup
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=cleanup
+Parameters=-ldebug cleanup
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -763,14 +763,14 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node25]
 ClassName=TProjectRunConfiguationNode
-Name=make-template virtualbox
+Name=upgradedb
 
 [Project\ChildNodes\Node1\ChildNodes\Node25\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=make-template VirtualBox-4.2.10-84105-Win.exe tis-virtualbox
-WorkingDir=C:\Users\htouvet\Downloads
+Parameters=upgradedb
+WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
 AppendToFile=FALSE
@@ -786,13 +786,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node26]
 ClassName=TProjectRunConfiguationNode
-Name=sources virtualbox
+Name=install pdfcreator
 
 [Project\ChildNodes\Node1\ChildNodes\Node26\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=sources tis-virtualbox
+Parameters=-f install tis-pdfcreator
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -809,13 +809,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node27]
 ClassName=TProjectRunConfiguationNode
-Name=install tis-exodus
+Name=session-setup current
 
 [Project\ChildNodes\Node1\ChildNodes\Node27\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug --force install tis-exodus
+Parameters=-f -ldebug session-setup $[ActiveDoc-Dir]
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -832,13 +832,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node28]
 ClassName=TProjectRunConfiguationNode
-Name=upgradedb
+Name=build-package wapttest
 
 [Project\ChildNodes\Node1\ChildNodes\Node28\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=upgradedb
+Parameters=-i build-package c:\tranquilit\tis-wapttest-wapt
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -855,13 +855,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node29]
 ClassName=TProjectRunConfiguationNode
-Name=install pdfcreator
+Name=uninstall tis-sqliteadmin
 
 [Project\ChildNodes\Node1\ChildNodes\Node29\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-f install tis-pdfcreator
+Parameters=uninstall tis-sqliteadmin
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -878,13 +878,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node30]
 ClassName=TProjectRunConfiguationNode
-Name=session-setup current
+Name=remove tis-sqliteadmin
 
 [Project\ChildNodes\Node1\ChildNodes\Node30\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-f -ldebug session-setup $[ActiveDoc-Dir]
+Parameters=remove tis-sqliteadmin
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -901,13 +901,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node31]
 ClassName=TProjectRunConfiguationNode
-Name=build-package wapttest
+Name=install tis-xencenter
 
 [Project\ChildNodes\Node1\ChildNodes\Node31\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-i build-package c:\tranquilit\tis-wapttest-wapt
+Parameters=-f install tis-xencenter
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -924,13 +924,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node32]
 ClassName=TProjectRunConfiguationNode
-Name=uninstall tis-sqliteadmin
+Name=make-host-template
 
 [Project\ChildNodes\Node1\ChildNodes\Node32\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=uninstall tis-sqliteadmin
+Parameters=make-host-template test2.tranquilit.local tis-base
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -947,13 +947,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node33]
 ClassName=TProjectRunConfiguationNode
-Name=remove tis-sqliteadmin
+Name=remove tis-vc2008redist
 
 [Project\ChildNodes\Node1\ChildNodes\Node33\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=remove tis-sqliteadmin
+Parameters=-ldebug remove tis-vc2008redist
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -970,13 +970,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node34]
 ClassName=TProjectRunConfiguationNode
-Name=install tis-xencenter
+Name=duplicate tis-wapttest tis-wapttest2
 
 [Project\ChildNodes\Node1\ChildNodes\Node34\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-f install tis-xencenter
+Parameters=duplicate tis-wapttest tis-wapttest2
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -993,13 +993,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node35]
 ClassName=TProjectRunConfiguationNode
-Name=make-host-template
+Name=duplicate htlaptop
 
 [Project\ChildNodes\Node1\ChildNodes\Node35\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=make-host-template test2.tranquilit.local tis-base
+Parameters=duplicate htlaptop.tranquilit.local
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1016,13 +1016,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node36]
 ClassName=TProjectRunConfiguationNode
-Name=remove tis-vc2008redist
+Name=duplicate tis-firefox
 
 [Project\ChildNodes\Node1\ChildNodes\Node36\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug remove tis-vc2008redist
+Parameters=duplicate tis-firefox testff 20.0.1-55
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1039,13 +1039,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node37]
 ClassName=TProjectRunConfiguationNode
-Name=duplicate tis-wapttest tis-wapttest2
+Name=remove firefox
 
 [Project\ChildNodes\Node1\ChildNodes\Node37\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=duplicate tis-wapttest tis-wapttest2
+Parameters=remove tis-firefox
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1062,13 +1062,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node38]
 ClassName=TProjectRunConfiguationNode
-Name=duplicate htlaptop
+Name=uninstall tis-cygwin
 
 [Project\ChildNodes\Node1\ChildNodes\Node38\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=duplicate htlaptop.tranquilit.local
+Parameters=-e cp850 uninstall $[ActiveDoc-Dir]
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1085,13 +1085,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node39]
 ClassName=TProjectRunConfiguationNode
-Name=duplicate tis-firefox
+Name=registercomputer
 
 [Project\ChildNodes\Node1\ChildNodes\Node39\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=duplicate tis-firefox testff 20.0.1-55
+Parameters=register
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1108,13 +1108,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node40]
 ClassName=TProjectRunConfiguationNode
-Name=remove firefox
+Name=install tis-base
 
 [Project\ChildNodes\Node1\ChildNodes\Node40\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=remove tis-firefox
+Parameters=install tis-base
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1131,13 +1131,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node41]
 ClassName=TProjectRunConfiguationNode
-Name=uninstall tis-cygwin
+Name=update json
 
 [Project\ChildNodes\Node1\ChildNodes\Node41\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-e cp850 uninstall $[ActiveDoc-Dir]
+Parameters=-j update
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1154,13 +1154,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node42]
 ClassName=TProjectRunConfiguationNode
-Name=registercomputer
+Name=update-status
 
 [Project\ChildNodes\Node1\ChildNodes\Node42\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=register
+Parameters=-ldebug update-status
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1177,13 +1177,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node43]
 ClassName=TProjectRunConfiguationNode
-Name=install tis-base
+Name=build-upload htlaptop
 
 [Project\ChildNodes\Node1\ChildNodes\Node43\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=install tis-base
+Parameters=-l debug build-upload c:\tranquilit\htlaptop.tranquilit.local-wapt
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1200,13 +1200,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node44]
 ClassName=TProjectRunConfiguationNode
-Name=update json
+Name=install
 
 [Project\ChildNodes\Node1\ChildNodes\Node44\RunConfig]
-ScriptName=C:\tranquilit\wapt\wapt-get.py
+ScriptName=C:\WAPT\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-j update
+Parameters=install C:\tranquilit\tis-opera-wapt
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1223,13 +1223,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node45]
 ClassName=TProjectRunConfiguationNode
-Name=update-status
+Name=edit tis-base
 
 [Project\ChildNodes\Node1\ChildNodes\Node45\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug update-status
+Parameters=-ldebug edit tis-base
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1246,13 +1246,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node46]
 ClassName=TProjectRunConfiguationNode
-Name=build-upload htlaptop
+Name=duplicate tis-xpconfig
 
 [Project\ChildNodes\Node1\ChildNodes\Node46\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-l debug build-upload c:\tranquilit\htlaptop.tranquilit.local-wapt
+Parameters=duplicate tis-xp-config
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1269,13 +1269,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node47]
 ClassName=TProjectRunConfiguationNode
-Name=install
+Name=make-template directory
 
 [Project\ChildNodes\Node1\ChildNodes\Node47\RunConfig]
-ScriptName=C:\WAPT\wapt-get.py
+ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=install C:\tranquilit\tis-opera-wapt
+Parameters=make-template C:\tmp\cert_utils
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1292,13 +1292,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node48]
 ClassName=TProjectRunConfiguationNode
-Name=edit tis-base
+Name=edit adminpak
 
 [Project\ChildNodes\Node1\ChildNodes\Node48\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug edit tis-base
+Parameters=-ldebug edit tis-adminpak2003
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1315,13 +1315,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node49]
 ClassName=TProjectRunConfiguationNode
-Name=duplicate tis-xpconfig
+Name=download htlaptop.tranquilit.local
 
 [Project\ChildNodes\Node1\ChildNodes\Node49\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=duplicate tis-xp-config
+Parameters=download htlaptop.tranquilit.local
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1338,13 +1338,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node50]
 ClassName=TProjectRunConfiguationNode
-Name=make-template directory
+Name=edit-host +pac
 
 [Project\ChildNodes\Node1\ChildNodes\Node50\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=make-template C:\tmp\cert_utils
+Parameters=edit-host htlaptop.tranquilit.local
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1361,13 +1361,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node51]
 ClassName=TProjectRunConfiguationNode
-Name=edit adminpak
+Name=build-upload- current
 
 [Project\ChildNodes\Node1\ChildNodes\Node51\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug edit tis-adminpak2003
+Parameters=-ldebug build-upload $[ActiveDoc-Dir]
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1384,13 +1384,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node52]
 ClassName=TProjectRunConfiguationNode
-Name=download htlaptop.tranquilit.local
+Name=upload libre
 
 [Project\ChildNodes\Node1\ChildNodes\Node52\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=download htlaptop.tranquilit.local
+Parameters=upload-package "c:\tranquilit\tis-libreoffice_4.0.4-0_all.wapt"
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1407,13 +1407,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node53]
 ClassName=TProjectRunConfiguationNode
-Name=edit-host +pac
+Name=install tis-gow
 
 [Project\ChildNodes\Node1\ChildNodes\Node53\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=edit-host htlaptop.tranquilit.local
+Parameters=install c:\waptdev\tis-gow-wapt
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1430,13 +1430,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node54]
 ClassName=TProjectRunConfiguationNode
-Name=build-upload- current
+Name=uninstall libreoffice
 
 [Project\ChildNodes\Node1\ChildNodes\Node54\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug build-upload $[ActiveDoc-Dir]
+Parameters=remove tis-libreoffice
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1453,13 +1453,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node55]
 ClassName=TProjectRunConfiguationNode
-Name=upload libre
+Name=edit "tis-vlc(=2.0.8-1)"
 
 [Project\ChildNodes\Node1\ChildNodes\Node55\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=upload-package "c:\tranquilit\tis-libreoffice_4.0.4-0_all.wapt"
+Parameters=edit "tis-vlc(=2.0.8-1)"
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1476,13 +1476,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node56]
 ClassName=TProjectRunConfiguationNode
-Name=install tis-gow
+Name=add-icon tis-vlc
 
 [Project\ChildNodes\Node1\ChildNodes\Node56\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=install c:\waptdev\tis-gow-wapt
+Parameters=add-icon tis-vlc
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1499,13 +1499,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node57]
 ClassName=TProjectRunConfiguationNode
-Name=uninstall libreoffice
+Name=install tis-waptcertutils
 
 [Project\ChildNodes\Node1\ChildNodes\Node57\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=remove tis-libreoffice
+Parameters=-ldebug install c:\tranquilit\tis-certutils-wapt
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1520,77 +1520,8 @@ WorkingDirectory=$[ActiveScript-Dir]
 ShortCut=0
 MessagesFormat=$[FileName] $[LineNumber]
 
-[Project\ChildNodes\Node1\ChildNodes\Node58]
-ClassName=TProjectRunConfiguationNode
-Name=edit "tis-vlc(=2.0.8-1)"
-
-[Project\ChildNodes\Node1\ChildNodes\Node58\RunConfig]
-ScriptName=C:\tranquilit\wapt\wapt-get.py
-EngineType=peRemote
-ReinitializeBeforeRun=TRUE
-Parameters=edit "tis-vlc(=2.0.8-1)"
-WorkingDir=$[ActiveScript-Dir]
-WriteOutputToFile=FALSE
-OutputFileName=$[ActiveScript-NoExt].log
-AppendToFile=FALSE
-
-[Project\ChildNodes\Node1\ChildNodes\Node58\RunConfig\ExternalRun]
-Caption=External Run
-Description=Run script using an external Python Interpreter
-ApplicationName=$[PythonExe-Short]
-Parameters=$[ActiveScript-Short]
-WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
-
-[Project\ChildNodes\Node1\ChildNodes\Node59]
-ClassName=TProjectRunConfiguationNode
-Name=add-icon tis-vlc
-
-[Project\ChildNodes\Node1\ChildNodes\Node59\RunConfig]
-ScriptName=C:\tranquilit\wapt\wapt-get.py
-EngineType=peRemote
-ReinitializeBeforeRun=TRUE
-Parameters=add-icon tis-vlc
-WorkingDir=$[ActiveScript-Dir]
-WriteOutputToFile=FALSE
-OutputFileName=$[ActiveScript-NoExt].log
-AppendToFile=FALSE
-
-[Project\ChildNodes\Node1\ChildNodes\Node59\RunConfig\ExternalRun]
-Caption=External Run
-Description=Run script using an external Python Interpreter
-ApplicationName=$[PythonExe-Short]
-Parameters=$[ActiveScript-Short]
-WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
-
-[Project\ChildNodes\Node1\ChildNodes\Node60]
-ClassName=TProjectRunConfiguationNode
-Name=install tis-waptcertutils
-
-[Project\ChildNodes\Node1\ChildNodes\Node60\RunConfig]
-ScriptName=C:\tranquilit\wapt\wapt-get.py
-EngineType=peRemote
-ReinitializeBeforeRun=TRUE
-Parameters=-ldebug install c:\tranquilit\tis-certutils-wapt
-WorkingDir=$[ActiveScript-Dir]
-WriteOutputToFile=FALSE
-OutputFileName=$[ActiveScript-NoExt].log
-AppendToFile=FALSE
-
-[Project\ChildNodes\Node1\ChildNodes\Node60\RunConfig\ExternalRun]
-Caption=External Run
-Description=Run script using an external Python Interpreter
-ApplicationName=$[PythonExe-Short]
-Parameters=$[ActiveScript-Short]
-WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
-
 [Project\ChildNodes\Node1\ChildNodes]
-Count=61
+Count=58
 
 [Project\ChildNodes]
 Count=2

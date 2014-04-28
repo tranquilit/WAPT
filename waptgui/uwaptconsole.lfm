@@ -111,7 +111,7 @@ object VisWaptGUI: TVisWaptGUI
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
         Header.SortColumn = 0
         Header.Style = hsFlatButtons
-        PopupMenu = PopupMenuPackages
+        PopupMenu = PopupMenuHost
         TabOrder = 1
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize]
@@ -314,7 +314,6 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'Host'
       Caption = 'Installer'
       OnExecute = ActLocalhostInstallExecute
-      OnUpdate = ActLocalhostInstallUpdate
     end
     object ActSearchPackage: TAction
       Category = 'packages'
@@ -324,16 +323,17 @@ object VisWaptGUI: TVisWaptGUI
     object ActLocalhostRemove: TAction
       Category = 'Host'
       Caption = 'Désinstaller le paquet'
-      Enabled = False
+      OnExecute = ActLocalhostRemoveExecute
     end
     object ActPackagesUpdate: TAction
       Category = 'Host'
       Caption = 'Mise à jour des paquets disponibles'
+      OnExecute = ActPackagesUpdateExecute
     end
     object ActLocalhostUpgrade: TAction
       Category = 'Host'
       Caption = 'Mise à jour du système'
-      Enabled = False
+      OnExecute = ActLocalhostUpgradeExecute
     end
     object ActBuildUpload: TAction
       Category = 'packages'
@@ -342,6 +342,7 @@ object VisWaptGUI: TVisWaptGUI
     object ActRegisterHost: TAction
       Category = 'Host'
       Caption = 'Enregistrer l''ordinateur sur le serveur Wapt'
+      OnExecute = ActRegisterHostExecute
     end
     object ActDeletePackage: TAction
       Category = 'packages'
@@ -613,7 +614,17 @@ object VisWaptGUI: TVisWaptGUI
     ParamsJSON = '{"format":"json"}'
     Root = 'content'
     Active = False
-    left = 176
+    left = 172
     top = 272
+  end
+  object PopupMenuHost: TPopupMenu
+    left = 152
+    top = 404
+    object MenuItem4: TMenuItem
+      Action = ActLocalhostInstall
+    end
+    object MenuItem18: TMenuItem
+      Action = ActLocalhostRemove
+    end
   end
 end

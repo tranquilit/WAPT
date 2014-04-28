@@ -68,7 +68,10 @@ import win32security
 from M2Crypto import EVP, X509
 from M2Crypto.EVP import EVPError
 
-from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,QueryInfoKey,KEY_READ,KEY_WOW64_32KEY,KEY_WOW64_64KEY
+from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,\
+    EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,\
+    QueryInfoKey,DeleteValue,DeleteKey,\
+    KEY_READ,KEY_WOW64_32KEY,KEY_WOW64_64KEY,KEY_ALL_ACCESS
 
 import struct
 
@@ -5006,6 +5009,7 @@ class Wapt(object):
         waptexit_path = setuphelpers.makepath(self.wapt_base_dir,'waptexit.exe')
         if not os.path.isfile(waptexit_path):
             raise Exception('Can not find %s'%waptexit_path)
+        setuphelpers.shutdown_scripts_ui_visible(state=True)
         return setuphelpers.add_shutdown_script(waptexit_path,'')
 
     def remove_upgrade_shutdown_policy(self):
@@ -5014,6 +5018,8 @@ class Wapt(object):
         if not os.path.isfile(waptexit_path):
             raise Exception('Can not find %s'%waptexit_path)
         return setuphelpers.remove_shutdown_script(waptexit_path,'')
+
+
 
 # for backward compatibility
 Version = setuphelpers.Version  # obsolete

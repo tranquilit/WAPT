@@ -752,6 +752,7 @@ HKEY_CURRENT_CONFIG = _winreg.HKEY_CURRENT_CONFIG
 
 KEY_WRITE = _winreg.KEY_WRITE
 KEY_READ = _winreg.KEY_READ
+KEY_ALL_ACCESS = _winreg.KEY_ALL_ACCESS
 
 REG_SZ = _winreg.REG_SZ
 REG_MULTI_SZ = _winreg.REG_MULTI_SZ
@@ -816,6 +817,13 @@ def reg_setvalue(key,name,value,type=_winreg.REG_SZ ):
     """
     return _winreg.SetValueEx(key,name,0,type,value)
 
+def reg_delvalue(key,name):
+    """Remove the value of specified name inside 'key' folder
+         key  : handle of registry key as returned by reg_openkey_noredir()
+         name : value name
+    """
+    return _winreg.DeleteKey(key,name)
+
 
 def registry_setstring(root,path,keyname,value,type=_winreg.REG_SZ):
     """Set the value of a string key in registry
@@ -868,6 +876,23 @@ def registry_set(root,path,keyname,value,type=None):
         else:
             type = REG_SZ
     result = reg_setvalue(key,keyname,value,type=type)
+    return result
+
+def registry_delete(root,path,valuename):
+    """Delete the valuename inside specified registry path
+        root    : HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER ...
+        path    : string like "software\\microsoft\\windows\\currentversion"
+                           or "software\\wow6432node\\microsoft\\windows\\currentversion"
+        valuename : None for value of key or str for a specific value like 'CommonFilesDir'
+    the path can be either with backslash or slash
+    """
+    result = False
+    path = path.replace(u'/',u'\\')
+    try:
+        key = reg_openkey_noredir(root,path,sam=KEY_WRITE)
+        result = _winreg.DeleteValue(key,valuename)
+    except WindowsError as e:
+        logger.warning('registry_delete:%s'%ensure_unicode(e))
     return result
 
 
@@ -1133,6 +1158,24 @@ def remove_shutdown_script(cmd,parameters):
             return script_index
         else:
             return None
+
+
+def shutdown_scripts_ui_visible(state=True):
+    """Enable or disable the GUI for windows shutdown scripts
+    >>> wapt = Wapt()
+    >>> wapt.shutdown_scripts_ui_visible(None)
+    >>> wapt.shutdown_scripts_ui_visible(False)
+    >>> wapt.shutdown_scripts_ui_visible(True)
+    """
+    key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,\
+        r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',sam=KEY_ALL_ACCESS)
+    if state is None:
+        DeleteValue(key,'HideShutdownScripts')
+    elif state:
+        reg_setvalue(key,'HideShutdownScripts',0,REG_DWORD)
+    elif not state:
+        reg_setvalue(key,'HideShutdownScripts',1,REG_DWORD)
+
 
 def uninstall_cmd(guid):
     """return the (quiet) command stored in registry to uninstall a software given its registry key"""

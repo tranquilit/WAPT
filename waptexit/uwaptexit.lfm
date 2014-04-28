@@ -9,9 +9,11 @@ object VisWaptExit: TVisWaptExit
   Caption = 'Lancement des mises à jour...'
   ClientHeight = 353
   ClientWidth = 558
+  DefaultMonitor = dmDesktop
+  FormStyle = fsSystemStayOnTop
   OnCloseQuery = FormCloseQuery
   OnShow = FormShow
-  Position = poDesktopCenter
+  Position = poScreenCenter
   LCLVersion = '1.3'
   object panHaut: TPanel
     Left = 0

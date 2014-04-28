@@ -49,7 +49,7 @@ var
 
 implementation
 
-uses soutils,IdHTTP;
+uses soutils,IdHTTP,IdExceptionCore;
 {$R *.lfm}
 
 { TVisWaptExit }
@@ -83,11 +83,16 @@ var
 begin
   http := TIdHTTP.Create;
   try
-    http.ConnectTimeout:=100;
-    if copy(action,length(action),1)<>'/' then
-      action := '/'+action;
-    strresult := http.Get(GetWaptLocalURL+action);
-    Result := SO(strresult);
+    try
+      http.ConnectTimeout:=100;
+      if copy(action,length(action),1)<>'/' then
+        action := '/'+action;
+      strresult := http.Get(GetWaptLocalURL+action);
+      Result := SO(strresult);
+
+    except
+      on E:EIdReadTimeout do Result := Nil;
+    end;
   finally
     http.Free;
   end;
