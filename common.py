@@ -3119,20 +3119,25 @@ class Wapt(object):
                     result.append(packagename)
         return result
 
-    def check_install(self,apackages):
+    def check_install(self,apackages=None):
         """Return a list of actions required for install of apackages list of packages
-
+            if apackages is None, check for all pending updates
         """
-        if not isinstance(apackages,list):
-            apackages = [apackages]
-        # ensure that apackages is a list of package requirements (strings)
-        new_apackages = []
-        for p in apackages:
-            if isinstance(p,PackageEntry):
-                new_apackages.append(p.asrequirement())
-            else:
-                new_apackages.append(p)
-        apackages = new_apackages
+        result = []
+        if apackages is None:
+            actions = self.list_upgrade()
+            apackages = actions['install']+actions['additional']+actions['upgrade']
+        elif isinstance(apackages,(str,unicode)):
+            apackages = [ p.strip() for p in apackages.split(',')]
+        elif isinstance(apackages,list):
+            # ensure that apackages is a list of package requirements (strings)
+            new_apackages = []
+            for p in apackages:
+                if isinstance(p,PackageEntry):
+                    new_apackages.append(p.asrequirement())
+                else:
+                    new_apackages.append(p)
+            apackages = new_apackages
         actions = self.check_depends(apackages,force=True,forceupgrade=True)
         return  actions
 
@@ -3527,19 +3532,27 @@ class Wapt(object):
         """
         return self.waptdb.installed_search(searchwords=searchwords,)
 
-    def check_downloads(self,packages=None):
+    def check_downloads(self,apackages=None):
         """Return list of available package entries not yet in cache
             to match supplied packages requirements
         """
         result = []
-        if packages is None:
+        if apackages is None:
             actions = self.list_upgrade()
-            packages = actions['install']+actions['additional']+actions['upgrade']
-        else:
-            if isinstance(packages,(str,unicode)):
-                packages = [ p.strip() for p in packages.split(',')]
+            apackages = actions['install']+actions['additional']+actions['upgrade']
+        elif isinstance(apackages,(str,unicode)):
+            apackages = [ p.strip() for p in apackages.split(',')]
+        elif isinstance(apackages,list):
+            # ensure that apackages is a list of package requirements (strings)
+            new_apackages = []
+            for p in apackages:
+                if isinstance(p,PackageEntry):
+                    new_apackages.append(p.asrequirement())
+                else:
+                    new_apackages.append(p)
+            apackages = new_apackages
 
-        for p in packages:
+        for p in apackages:
             entries = self.is_available(p)
             if entries:
                 # download most recent

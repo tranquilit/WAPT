@@ -643,9 +643,8 @@ def waptclientupgrade():
 @check_ip_source
 def reload_config():
     """trigger reload of wapt-get.ini file for the service"""
-    notify_user = request.args.get('notify_user',None)
-    if notify_user is not None:
-        notify_user=int(notify_user)
+    force = int(request.args.get('force','0')) == 1
+    notify_user = int(request.args.get('notify_user','0')) == 1
     data = task_manager.add_task(WaptNetworkReconfig(),notify_user=notify_user).as_dict()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
@@ -653,10 +652,49 @@ def reload_config():
         return render_template('default.html',data=data,title='Recharger configuration')
 
 
+
 @app.route('/upgrade')
 @app.route('/upgrade.json')
 @check_ip_source
 def upgrade():
+    force = int(request.args.get('force','0')) != 0
+    notify_user = int(request.args.get('notify_user','1')) != 0
+    all_tasks = []
+    wapt().update()
+    actions = wapt().list_upgrade()
+    to_install = actions['upgrade']+actions['additional']+actions['install']
+    for req in to_install:
+        all_tasks.append(task_manager.add_task(WaptPackageInstall(req,force=force),notify_user=notify_user).as_dict())
+    all_tasks.append(task_manager.add_task(WaptUpgrade(),notify_user=notify_user).as_dict())
+    data = {'result':'OK','content':all_tasks}
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('default.html',data=data,title='Upgrade')
+
+
+@app.route('/download_upgrades')
+@app.route('/download_upgrades.json')
+@check_ip_source
+def download_upgrades():
+    force = int(request.args.get('force','0')) != 0
+    notify_user = int(request.args.get('notify_user','0')) != 0
+    all_tasks = []
+    wapt().update()
+    reqs = wapt().check_downloads()
+    for req in reqs:
+        all_tasks.append(task_manager.add_task(WaptDownloadPackage(req.asrequirement(),usecache=not force),notify_user=notify_user).as_dict())
+    data = {'result':'OK','content':all_tasks}
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('default.html',data=data,title='Download upgrades')
+
+
+@app.route('/upgrade2')
+@app.route('/upgrade2.json')
+@check_ip_source
+def upgrade2():
     notify_user = request.args.get('notify_user',None)
     if notify_user is not None:
         notify_user=int(notify_user)
@@ -673,10 +711,10 @@ def upgrade():
 @app.route('/update.json')
 @check_ip_source
 def update():
-    notify_user = request.args.get('notify_user',None)
-    if notify_user is not None:
-        notify_user=int(notify_user)
-    data = task_manager.add_task(WaptUpdate(),notify_user=notify_user).as_dict()
+    task = WaptUpdate()
+    task.force = int(request.args.get('force','0')) != 0
+    task.notify_user = int(request.args.get('notify_user','1')) != 0
+    data = task_manager.add_task(task).as_dict()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -720,7 +758,8 @@ def longtask():
 def cleanup():
     task = WaptCleanup()
     task.force = int(request.args.get('force','0')) == 1
-    data = task_manager.add_task(task)
+    notify_user = int(request.args.get('notify_user','0')) == 1
+    data = task_manager.add_task(task,notify_user=notify_user)
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -764,7 +803,8 @@ def disable():
 @check_ip_source
 def register():
     logger.info(u"register computer")
-    data = task_manager.add_task(WaptRegisterComputer()).as_dict()
+    notify_user = int(request.args.get('notify_user','0')) == 1
+    data = task_manager.add_task(WaptRegisterComputer(),notify_user=notify_user).as_dict()
 
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
@@ -792,7 +832,8 @@ def inventory():
 def install():
     package = request.args.get('package')
     force = int(request.args.get('force','0')) == 1
-    data = task_manager.add_task(WaptPackageInstall(package,force=force)).as_dict()
+    notify_user = int(request.args.get('notify_user','0')) == 1
+    data = task_manager.add_task(WaptPackageInstall(package,force=force),notify_user=notify_user).as_dict()
 
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
@@ -806,7 +847,8 @@ def install():
 def package_download():
     package = request.args.get('package')
     logger.info(u"download package %s" % package)
-    data = task_manager.add_task(WaptDownloadPackage(package)).as_dict()
+    notify_user = int(request.args.get('notify_user','0')) == 1
+    data = task_manager.add_task(WaptDownloadPackage(package),notify_user=notify_user).as_dict()
 
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
@@ -820,8 +862,9 @@ def package_download():
 def remove():
     package = request.args.get('package')
     logger.info(u"remove package %s" % package)
-    force=int(request.args.get('force','0'))
-    data = task_manager.add_task(WaptPackageRemove(package,force = force)).as_dict()
+    force=int(request.args.get('force','0')) == 1
+    notify_user = int(request.args.get('notify_user','0')) == 1
+    data = task_manager.add_task(WaptPackageRemove(package,force = force),notify_user=notify_user).as_dict()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -1164,6 +1207,14 @@ class WaptUpdate(WaptTask):
 
 
 class WaptUpgrade(WaptTask):
+    def __init__(self,**args):
+        super(WaptUpgrade,self).__init__()
+        self.priority = 10
+        self.notify_server_on_start = False
+        self.notify_server_on_finish = True
+        for k in args:
+            setattr(self,k,args[k])
+
     def _run(self):
         def cjoin(l):
             return u','.join([u"%s" % (p[1].asrequirement(),) for p in l])
@@ -1523,9 +1574,18 @@ class WaptTaskManager(threading.Thread):
         logger.debug(u'Check scheduled tasks')
         if waptconfig.waptupgrade_task_period is not None:
             if self.last_upgrade is None or (time.time()-self.last_upgrade)/60>waptconfig.waptupgrade_task_period:
+                actions = self.wapt.list_upgrade()
+                to_install = actions['upgrade']+actions['additional']+actions['install']
+                for req in to_install:
+                    self.add_task(WaptPackageInstall(req),notify_user=True)
                 self.add_task(WaptUpgrade())
+
         if waptconfig.waptupdate_task_period is not None:
             if self.last_update is None or (time.time()-self.last_update)/60>waptconfig.waptupdate_task_period:
+                self.wapt.update()
+                reqs = self.wapt.check_downloads()
+                for req in reqs:
+                    self.add_task(WaptDownloadPackage(req.asrequirement()),notify_user=True)
                 self.add_task(WaptUpdate(notify_user=False))
 
     def run(self):

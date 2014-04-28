@@ -212,7 +212,7 @@ object VisWaptExit: TVisWaptExit
     Visible = False
     object Memo1: TMemo
       Left = 0
-      Height = 37
+      Height = 129
       Top = 0
       Width = 558
       Align = alTop
