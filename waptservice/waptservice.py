@@ -1352,8 +1352,8 @@ class WaptLongTask(WaptTask):
     """Test action for debug purpose"""
     def __init__(self,**args):
         super(WaptLongTask,self).__init__()
-        self.duration = duration
-        self.raise_error = raise_error
+        self.duration = 60
+        self.raise_error = False
         self.notify_server_on_start = False
         self.notify_server_on_finish = False
         for k in args:
@@ -1381,7 +1381,7 @@ class WaptLongTask(WaptTask):
 
 
 class WaptDownloadPackage(WaptTask):
-    def __init__(self,packagename,usecache=False):
+    def __init__(self,packagename,usecache=True):
         super(WaptDownloadPackage,self).__init__()
         self.packagename = packagename
         self.usecache = usecache
@@ -1550,6 +1550,8 @@ class WaptTaskManager(threading.Thread):
         """Adds a new WaptTask for processing"""
         with self.status_lock:
             same = [ pending for pending in self.tasks_queue.queue if pending.same_action(task)]
+            if self.running_task and self.running_task.same_action(task):
+                same.append(self.running_task)
 
             # keep track of last update/upgrade add date to avoid relaunching
             if isinstance(task,WaptUpdate):

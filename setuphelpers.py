@@ -1553,7 +1553,7 @@ def host_info():
     info['windows_version'] =  platform.platform()
     info['windows_product_infos'] =  win_info
 
-    info['cpu_name'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\CentralProcessor\0','ProcessorNameString','')
+    info['cpu_name'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\CentralProcessor\0','ProcessorNameString','').strip()
 
     info['physical_memory'] = memory_status().ullTotalPhys
     info['virtual_memory'] = memory_status().ullTotalVirtual
