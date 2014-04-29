@@ -84,7 +84,7 @@ begin
   http := TIdHTTP.Create;
   try
     try
-      http.ConnectTimeout:=100;
+      http.ConnectTimeout:=1000;
       if copy(action,length(action),1)<>'/' then
         action := '/'+action;
       strresult := http.Get(GetWaptLocalURL+action);

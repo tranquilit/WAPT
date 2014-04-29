@@ -22,10 +22,13 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uwaptexit"/>
         <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="108" Y="62"/>
+        <TopLine Value="43"/>
+        <CursorPos X="62" Y="89"/>
         <UsageCount Value="86"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
@@ -190,7 +193,28 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="5" HistoryIndex="4">
+      <Position1>
+        <Filename Value="uwaptexit.pas"/>
+        <Caret Line="159" Column="20" TopLine="155"/>
+      </Position1>
+      <Position2>
+        <Filename Value="uwaptexit.pas"/>
+        <Caret Line="79" Column="26" TopLine="73"/>
+      </Position2>
+      <Position3>
+        <Filename Value="uwaptexit.pas"/>
+        <Caret Line="108" Column="28" TopLine="84"/>
+      </Position3>
+      <Position4>
+        <Filename Value="uwaptexit.pas"/>
+        <Caret Line="130" Column="21" TopLine="106"/>
+      </Position4>
+      <Position5>
+        <Filename Value="uwaptexit.pas"/>
+        <Caret Line="159" Column="20" TopLine="148"/>
+      </Position5>
+    </JumpHistory>
   </ProjectSession>
   <EditorMacros Count="0"/>
 </CONFIG>
