@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.30"
+__version__ = "0.8.31"
 import os
 import re
 import logging
@@ -1528,7 +1528,7 @@ class WaptDB(WaptBaseDB):
         """
         try:
             result = {}
-            logger.info(u'Remove unknown repositories from packages table and params (%s)' %(','.join('"%s"'% r.name for r in repos_list,),)  )
+            logger.debug(u'Remove unknown repositories from packages table and params (%s)' %(','.join('"%s"'% r.name for r in repos_list,),)  )
             self.db.execute('delete from wapt_package where repo not in (%s)' % (','.join('"%s"'% r.name for r in repos_list,)))
             self.db.execute('delete from wapt_params where name like "last-http%%" and name not in (%s)' % (','.join('"last-%s"'% r.repo_url for r in repos_list,)))
             self.db.commit()
@@ -2454,7 +2454,7 @@ class Wapt(object):
             >>> d = wapt.duplicate_package('tis-wapttest','toto')
             >>> print d
             {'target': u'c:\\users\\htouvet\\appdata\\local\\temp\\toto.wapt', 'package': "toto (=117)"}
-            .>>> wapt.http_upload_package(d['package'])
+            >>> wapt.http_upload_package(d['package'],wapt_server_user='admin',wapt_server_passwd='password')
             """
         if not (isinstance(package,(str,unicode)) and os.path.isfile(package)) and not isinstance(package,PackageEntry):
             raise Exception('No package file to upload')
@@ -3119,9 +3119,14 @@ class Wapt(object):
                     result.append(packagename)
         return result
 
-    def check_install(self,apackages=None):
+    def check_install(self,apackages=None,force=True,forceupgrade=True):
         """Return a list of actions required for install of apackages list of packages
             if apackages is None, check for all pending updates
+           apackages : list of packages or None to check pending install/upgrades
+           force : if True, already installed package listed in apackages
+                   will be considred to be reinstalled
+           forceupgrade : if True, all dependencies are upgraded to latest version,
+                          even if current version comply with depends requirements
         """
         result = []
         if apackages is None:
@@ -3138,7 +3143,7 @@ class Wapt(object):
                 else:
                     new_apackages.append(p)
             apackages = new_apackages
-        actions = self.check_depends(apackages,force=True,forceupgrade=True)
+        actions = self.check_depends(apackages,force=force,forceupgrade=forceupgrade)
         return  actions
 
     def install(self,apackages,
@@ -3164,7 +3169,6 @@ class Wapt(object):
         >>> isinstance(res['upgrade'],list) and isinstance(res['errors'],list) and isinstance(res['additional'],list) and isinstance(res['install'],list) and isinstance(res['unavailable'],list)
         True
         >>> res = wapt.remove('tis-wapttest')
-        ???
         >>> res == {'removed': ['tis-wapttest'], 'errors': []}
         True
         """

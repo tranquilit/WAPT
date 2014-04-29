@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.30"
+__version__ = "0.8.31"
 
 import time
 import sys
@@ -130,7 +130,7 @@ def get_authorized_callers_ip(waptserver_url):
 
 
 class WaptEvents(object):
-    """Central list of last events so that consumer can get list
+    """Thread safe central list of last events so that consumer can get list
         of latest events using http long poll requests"""
 
     def __init__(self,max_history=300):
@@ -323,6 +323,8 @@ def beautify(c):
         return jinja2.Markup(c.replace('\r\n','<br>').replace('\n','<br>'))
     elif isinstance(c,str):
         return jinja2.Markup(setuphelpers.ensure_unicode(c).replace('\r\n','<br>').replace('\n','<br>'))
+    elif isinstance(c,PackageEntry):
+        return jinja2.Markup('<a href="%s">%s</a>'%(url_for('package_details',package=c.asrequirement()),c.asrequirement()))
     elif isinstance(c,dict) or (hasattr(c,'keys') and callable(c.keys)):
         rows = []
         try:
@@ -1131,6 +1133,7 @@ class WaptNetworkReconfig(WaptTask):
         self.priority = 0
         self.notify_server_on_start = False
         self.notify_server_on_finish = False
+        self.notify_user = False
         for k in args:
             setattr(self,k,args[k])
 
@@ -1186,20 +1189,21 @@ class WaptUpdate(WaptTask):
             "http://srvwapt.tranquilit.local/wapt",
             "http://srvwapt.tranquilit.local/wapt-host"
             ],
-            upgrades: [ ],
+            upgrades: ['install': 'additional': 'upgrade': ],
             date: "2014-02-28T19:30:35.829000",
             removed: [ ]
         },"""
         s = []
         if len(self.result['added'])>0:
-            s.append(u'{} nouveaux paquets'.format(len(self.result['added'])))
+            s.append(u'{} nouveau()x paquet(s)'.format(len(self.result['added'])))
         if len(self.result['removed'])>0:
-            s.append(u'{} paquets enlevés'.format(len(self.result['added'])))
+            s.append(u'{} paquet(s) enlevé(s)'.format(len(self.result['removed'])))
         s.append(u'{} paquets dans les dépôts'.format(self.result['count']))
-        s.append(u'')
-        if len(self.result['upgrades'])>0:
-            s.append(u'Paquets à mettre à jour : {}'.format(self.result['upgrades']))
-
+        all_install =  self.result['upgrades']['install']+\
+                        self.result['upgrades']['additional']+\
+                        self.result['upgrades']['upgrade']
+        if len(all_install)>0:
+            s.append(u'Paquets à mettre à jour : {}'.format(all_install))
         self.summary = u'\n'.join(s)
 
     def __str__(self):

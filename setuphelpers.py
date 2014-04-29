@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.30"
+__version__ = "0.8.31"
 import os
 import sys
 import logging
@@ -367,9 +367,13 @@ def default_overwrite_older(src,dst):
 
 def register_ext(appname,fileext,shellopen,icon=None,otherverbs=[]):
     """Associates a file extension with an application, and command to open it
-    >>> register_ext('WAPT.Package','.wapt',icon=r'c:\wapt\wapt.ico',r'"7zfm.exe" "%1"',otherverbs=[
-    ...     ('install',r'"c:\wapt\wapt-get.exe" install "%1"'),
-    ...     ('edit',r'"c:\wapt\wapt-get.exe" edit "%1"'),
+    >>> register_ext(
+    ...     appname='WAPT.Package',
+    ...     fileext='.wapt',
+    ...     icon=r'c:\wapt\wapt.ico',
+    ...     shellopen=r'"7zfm.exe" "%1"',otherverbs=[
+    ...        ('install',r'"c:\wapt\wapt-get.exe" install "%1"'),
+    ...        ('edit',r'"c:\wapt\wapt-get.exe" edit "%1"'),
     ...     ])
     >>>
     """
@@ -925,8 +929,8 @@ def inifile_writestring(inifilename,section,key,value):
 
 class disable_file_system_redirection:
     """disable wow3264 redirection
-    >>> with disable_file_system_redirection():
-    ...    os.system(system32())
+    .>>> with disable_file_system_redirection():
+    ....
     """
     if iswin64():
         _disable = ctypes.windll.kernel32.Wow64DisableWow64FsRedirection
@@ -947,6 +951,7 @@ def system32():
     return winsys.shell.get_path(shellcon.CSIDL_SYSTEM)
 
 def set_file_visible(path):
+    """unset the hidden attribute of path"""
     FILE_ATTRIBUTE_HIDDEN = 0x02
     old_att = ctypes.windll.kernel32.GetFileAttributesW(unicode(path))
     ret = ctypes.windll.kernel32.SetFileAttributesW(unicode(path),old_att  & ~FILE_ATTRIBUTE_HIDDEN)
@@ -954,6 +959,7 @@ def set_file_visible(path):
         raise ctypes.WinError()
 
 def set_file_hidden(path):
+    """set the hidden attribute of path"""
     FILE_ATTRIBUTE_HIDDEN = 0x02
     old_att = ctypes.windll.kernel32.GetFileAttributesW(unicode(path))
     ret = ctypes.windll.kernel32.SetFileAttributesW(unicode(path),old_att | FILE_ATTRIBUTE_HIDDEN)
@@ -994,7 +1000,7 @@ def delete_at_next_reboot(target_filename):
 
 def add_shutdown_script(cmd,parameters):
     """ Adds a local shutdown script as a local GPO
-    >>> add_shutdown_script(r'c:\wapt\wapt-get.exe','update')
+    >>> index = add_shutdown_script(r'c:\wapt\wapt-get.exe','update')
     """
     gp_path = makepath(system32(),'GroupPolicy')
     gptini_path = makepath(gp_path,'gpt.ini')
@@ -1077,7 +1083,7 @@ def add_shutdown_script(cmd,parameters):
 
 def remove_shutdown_script(cmd,parameters):
     """ Removes a local shutdown GPO script
-    >>> remove_shutdown_script(r'c:\wapt\wapt-get.exe','update')
+    >>> index = remove_shutdown_script(r'c:\wapt\wapt-get.exe','update')
     """
     gp_path = makepath(system32(),'GroupPolicy')
     gptini_path = makepath(gp_path,'gpt.ini')
@@ -1162,15 +1168,14 @@ def remove_shutdown_script(cmd,parameters):
 
 def shutdown_scripts_ui_visible(state=True):
     """Enable or disable the GUI for windows shutdown scripts
-    >>> wapt = Wapt()
-    >>> wapt.shutdown_scripts_ui_visible(None)
-    >>> wapt.shutdown_scripts_ui_visible(False)
-    >>> wapt.shutdown_scripts_ui_visible(True)
+    >>> shutdown_scripts_ui_visible(None)
+    >>> shutdown_scripts_ui_visible(False)
+    >>> shutdown_scripts_ui_visible(True)
     """
     key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,\
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',sam=KEY_ALL_ACCESS)
     if state is None:
-        DeleteValue(key,'HideShutdownScripts')
+        _winreg.DeleteValue(key,'HideShutdownScripts')
     elif state:
         reg_setvalue(key,'HideShutdownScripts',0,REG_DWORD)
     elif not state:
@@ -1178,7 +1183,12 @@ def shutdown_scripts_ui_visible(state=True):
 
 
 def uninstall_cmd(guid):
-    """return the (quiet) command stored in registry to uninstall a software given its registry key"""
+    r"""return the (quiet) command stored in registry to uninstall a software given its registry key
+    >>> old_softs = installed_softwares('notepad++')
+    >>> for soft in old_softs:
+    ...     print uninstall_cmd(soft['key'])
+    [u'C:\\Program Files (x86)\\Notepad++\\uninstall.exe', '/S']
+    """
     def get_fromkey(uninstall):
         key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,guid))
         try:
@@ -1657,8 +1667,7 @@ def service_stop(service_name):
 
 def service_is_running(service_name):
     """Return True if the service is running
-    >>> service_is_running('waptservice')
-    True
+    >>> state = service_is_running('waptservice')
     """
     return win32serviceutil.QueryServiceStatus(service_name)[1] == win32service.SERVICE_RUNNING
 
