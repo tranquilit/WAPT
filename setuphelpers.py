@@ -1883,6 +1883,79 @@ def get_appath(exename):
     return reg_getvalue(key,None)
 
 
+def getsilentflags(self,installer_path):
+    """Detect the type of installer and returns silent silent install flags"""
+    (product_name,ext) = os.path.splitext(installer_path)
+    ext = ext.lower()
+    if ext=='.exe':
+        silentflag = '/VERYSILENT'
+        props = get_file_properties(installer_path)
+        if props.get('InternalName','').lower() == 'sfxcab.exe':
+            silentflag = '/quiet'
+        elif props.get('InternalName','').lower() == '7zs.sfx':
+            silentflag = '/s'
+        elif props.get('InternalName','').lower() == 'setup launcher':
+            silentflag = '/s'
+        elif props.get('InternalName','').lower() == 'wextract':
+            silentflag = '/Q'
+        else:
+            content = open(installer_path,'rb').read(600000)
+            if 'Inno.Setup' in content:
+                silentflag = '/VERYSILENT'
+            elif 'Quiet installer' in content:
+                silentflag = '-q'
+            elif 'nsis.sf.net' in content or 'Nullsoft.NSIS' in content:
+                silentflag = '/S'
+
+    elif ext=='.msi':
+        silentflag = '/q /norestart'
+    elif ext=='.msu':
+        silentflag = '/quiet /norestart'
+    else:
+        silentflag = ''
+    return silentflag
+
+
+def getproductprops(self,installer_path):
+    """returns a dict {'product','description','version','publisher'}"""
+    (product_name,ext) = os.path.splitext(installer_path.lower())
+    product_name = os.path.basename(product_name)
+    product_desc = product_name
+    version ='0.0.0'
+    publisher =''
+
+    if ext=='.exe':
+        props = get_file_properties(installer_path)
+        product_name = props['ProductName'] or product_desc
+    elif ext=='.msi':
+        props = get_msi_properties(installer_path)
+        product_name = props['ProductName'] or props['FileDescription'] or product_desc
+    else:
+        props = {}
+
+    if 'Manufacturer' in props and props['Manufacturer']:
+        publisher = props['Manufacturer']
+    elif 'CompanyName' in props and props['CompanyName']:
+        publisher = props['CompanyName']
+
+    if publisher:
+        product_desc = "%s (%s)" % (product_name,publisher)
+    else:
+        product_desc = "%s" % (product_name,)
+
+    if 'FileVersion' in props and props['FileVersion']:
+        version = props['FileVersion']
+    elif 'ProductVersion' in props and props['ProductVersion']:
+        version = props['ProductVersion']
+
+    props['product'] = product_name
+    props['description'] = product_desc
+    props['version'] = version
+    props['publisher'] = publisher
+    return props
+
+
+
 class Version():
     """Version object of form 0.0.0
         can compare with respect to natural numbering and not alphabetical

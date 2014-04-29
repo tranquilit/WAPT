@@ -2650,7 +2650,7 @@ class Wapt(object):
         old_stdout = None
         old_stderr = None
 
-        self.check_cancelled()
+        self.check_cancelled(u'Install of %s cancelled before starting up'%ensure_unicode(fname))
         logger.info(u"Register start of install %s as user %s to local DB with params %s" % (ensure_unicode(fname), setuphelpers.get_current_user(), params_dict))
         logger.info(u"Interactive user:%s, usergroups %s" % (self.user,self.usergroups))
         status = 'INIT'
@@ -3101,7 +3101,7 @@ class Wapt(object):
                 else:
                     unavailable.append([request,None])
         result =  {'additional':additional_install,'upgrade':to_upgrade,'install':packages,'skipped':skipped,'unavailable':unavailable}
-        return {'additional':additional_install,'upgrade':to_upgrade,'install':packages,'skipped':skipped,'unavailable':unavailable}
+        return result
 
     def check_remove(self,apackages):
         """return a list of additional package to remove if apackages are removed"""
@@ -4049,107 +4049,6 @@ class Wapt(object):
             logger.debug(u'  Change current directory to %s' % previous_cwd)
             os.chdir(previous_cwd)
 
-    def checkinstalled(self):
-        """Source setup.py and launch checkinstalled"""
-        result = False
-        oldpath = sys.path
-        try:
-            previous_cwd = os.getcwd()
-            logger.debug(u'  Change current directory to %s' % directoryname)
-            os.chdir(directoryname)
-            if not os.getcwd() in sys.path:
-                sys.path = [os.getcwd()] + sys.path
-                logger.debug(u'new sys.path %s' % sys.path)
-            logger.debug(u'Sourcing %s' % os.path.join(directoryname,'setup.py'))
-            setup = import_setup(os.path.join(directoryname,'setup.py'),'_waptsetup_')
-             # be sure some minimal functions are available in setup module at install step
-            logger.debug(u'Source import OK')
-            if hasattr(setup,'checkinstalled'):
-                logger.info(u'Use control informations from setup.py file')
-                result = setup.checkinstalled()
-            else:
-                logger.info(u'No checkinstalled function in setup.pyfile')
-                result = False
-        finally:
-            if 'setup' in dir():
-                del setup
-            else:
-                logger.critical(u'Unable to read setup.py file')
-            sys.path = oldpath
-            logger.debug(u'  Change current directory to %s' % previous_cwd)
-            os.chdir(previous_cwd)
-            return result
-
-    def getsilentflags(self,installer_path):
-        """Detect the type of installer and returns silent silent install flags"""
-        (product_name,ext) = os.path.splitext(installer_path)
-        ext = ext.lower()
-        if ext=='.exe':
-            silentflag = '/VERYSILENT'
-            props = setuphelpers.get_file_properties(installer_path)
-            if props.get('InternalName','').lower() == 'sfxcab.exe':
-                silentflag = '/quiet'
-            elif props.get('InternalName','').lower() == '7zs.sfx':
-                silentflag = '/s'
-            elif props.get('InternalName','').lower() == 'setup launcher':
-                silentflag = '/s'
-            elif props.get('InternalName','').lower() == 'wextract':
-                silentflag = '/Q'
-            else:
-                content = open(installer_path,'rb').read(600000)
-                if 'Inno.Setup' in content:
-                    silentflag = '/VERYSILENT'
-                elif 'Quiet installer' in content:
-                    silentflag = '-q'
-                elif 'nsis.sf.net' in content or 'Nullsoft.NSIS' in content:
-                    silentflag = '/S'
-
-        elif ext=='.msi':
-            silentflag = '/q /norestart'
-        elif ext=='.msu':
-            silentflag = '/quiet /norestart'
-        else:
-            silentflag = ''
-        return silentflag
-
-    def getproductprops(self,installer_path):
-        """returns a dict {'product','description','version','publisher'}"""
-        (product_name,ext) = os.path.splitext(installer_path.lower())
-        product_name = os.path.basename(product_name)
-        product_desc = product_name
-        version ='0.0.0'
-        publisher =''
-
-        if ext=='.exe':
-            props = setuphelpers.get_file_properties(installer_path)
-            product_name = props['ProductName'] or product_desc
-        elif ext=='.msi':
-            props = setuphelpers.get_msi_properties(installer_path)
-            product_name = props['ProductName'] or props['FileDescription'] or product_desc
-        else:
-            props = {}
-
-        if 'Manufacturer' in props and props['Manufacturer']:
-            publisher = props['Manufacturer']
-        elif 'CompanyName' in props and props['CompanyName']:
-            publisher = props['CompanyName']
-
-        if publisher:
-            product_desc = "%s (%s)" % (product_name,publisher)
-        else:
-            product_desc = "%s" % (product_name,)
-
-        if 'FileVersion' in props and props['FileVersion']:
-            version = props['FileVersion']
-        elif 'ProductVersion' in props and props['ProductVersion']:
-            version = props['ProductVersion']
-
-        props['product'] = product_name
-        props['description'] = product_desc
-        props['version'] = version
-        props['publisher'] = publisher
-        return props
-
     def make_package_template(self,installer_path,packagename='',directoryname='',section='',description='',depends=''):
         r"""Build a skeleton of WAPT package based on the properties of the supplied installer
            Return the path of the skeleton
@@ -4181,8 +4080,8 @@ class Wapt(object):
             raise Exception('The parameter "%s" is neither a file or a directory, it must be the path to a directory, or an .exe or .msi installer' % installer_path)
         if os.path.isfile(installer_path):
             # case of an installer
-            props = self.getproductprops(installer_path)
-            silentflags = self.getsilentflags(installer_path)
+            props = setuphelpers.getproductprops(installer_path)
+            silentflags = setuphelpers.getsilentflags(installer_path)
             # for MSI, uninstallkey is in properties
             if 'ProductCode' in props:
                 uninstallkey = '"%s"' % props['ProductCode']
