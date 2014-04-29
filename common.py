@@ -3345,7 +3345,10 @@ class Wapt(object):
         return {"downloaded":downloaded,"skipped":skipped,"errors":errors}
 
     def remove(self,package,force=False):
-        """Removes a package giving its package name, unregister from local status DB"""
+        """Removes a package giving its package name, unregister from local status DB
+            package : package to remove
+            force : unregister package from local status database, even if uninstall has failed
+        """
         result = {'removed':[],'errors':[]}
         try:
             self.check_cancelled()
@@ -3358,7 +3361,7 @@ class Wapt(object):
                 where package=?
                """ , (package,) )
             if not q:
-                logger.warning(u"Package %s not installed, removal aborted" % package)
+                logger.debug(u"Package %s not installed, removal aborted" % package)
                 return result
             # several versions installed of the same package... ?
             for mydict in q:
@@ -3408,6 +3411,8 @@ class Wapt(object):
                             except Exception,e:
                                 logger.critical(u"Critical error during uninstall cmd %s: %s" % (uninstall_cmd,ensure_unicode(e)))
                                 result['errors'].append(package)
+                                if not force:
+                                    raise
 
                 else:
                     logger.debug(u'uninstall key not registered in local DB status.')

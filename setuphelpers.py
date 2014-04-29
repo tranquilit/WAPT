@@ -60,7 +60,6 @@ import threading
 from types import ModuleType
 
 import codecs
-import winsys.shell
 
 from waptpackage import PackageEntry
 from iniparse import RawConfigParser
@@ -948,7 +947,7 @@ class disable_file_system_redirection:
             self._revert(self.old_value)
 
 def system32():
-    return winsys.shell.get_path(shellcon.CSIDL_SYSTEM)
+    return win32api.GetSystemDirectory()
 
 def set_file_visible(path):
     """unset the hidden attribute of path"""
