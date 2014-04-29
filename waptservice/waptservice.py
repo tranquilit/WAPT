@@ -1202,8 +1202,14 @@ class WaptUpdate(WaptTask):
         all_install =  self.result['upgrades']['install']+\
                         self.result['upgrades']['additional']+\
                         self.result['upgrades']['upgrade']
-        if len(all_install)>0:
-            s.append(u'Paquets à mettre à jour : {}'.format(all_install))
+        installs = u','.join(all_install)
+        errors = u','.join([p.asrequirement() for p in  self.wapt.error_packages()])
+        if installs:
+            s.append(u'Paquets à mettre à jour : {}'.format(installs))
+        if errors:
+            s.append(u'Paquets en erreur : {}'.format(errors))
+        if not installs and not errors:
+            s.append(u'Système à jour')
         self.summary = u'\n'.join(s)
 
     def __str__(self):
@@ -1213,7 +1219,7 @@ class WaptUpdate(WaptTask):
 class WaptUpgrade(WaptTask):
     def __init__(self,**args):
         super(WaptUpgrade,self).__init__()
-        self.priority = 10
+        #self.priority = 10
         self.notify_server_on_start = False
         self.notify_server_on_finish = True
         for k in args:
@@ -1223,7 +1229,10 @@ class WaptUpgrade(WaptTask):
         def cjoin(l):
             return u','.join([u"%s" % (p[1].asrequirement(),) for p in l])
 
-        self.result = self.wapt.upgrade()
+        # TODO : create parent/child tasks
+        # currently, only a place holder for report
+        self.result = self.wapt.check_install(force=True,forceupgrade=True)
+        #self.result = self.wapt.upgrade()
         """result: {
             unavailable: [ ],
             skipped: [ ],
@@ -1243,7 +1252,7 @@ class WaptUpgrade(WaptTask):
         install = cjoin(all_install)
         upgrade = cjoin(self.result.get('upgrade',[]))
         #skipped = cjoin(self.result['skipped'])
-        errors = cjoin(self.result.get('errors',[]))
+        errors = ','.join([p.asrequirement() for p in  self.wapt.error_packages()])
         unavailable = u','.join(self.result.get('unavailable',[]))
         s = []
         if install:
@@ -1254,6 +1263,9 @@ class WaptUpgrade(WaptTask):
             s.append(u'Erreurs : {}'.format(errors))
         if unavailable:
             s.append(u'Non disponibles : {}'.format(unavailable))
+        if not errors and not unavailable and not install and not upgrade:
+            s.append(u'Système à jour, %i'%(len(self.result['skipped'])))
+
         self.summary = u"\n".join(s)
 
     def __str__(self):
