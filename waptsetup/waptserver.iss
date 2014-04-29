@@ -2,7 +2,6 @@
 #define AppName "WAPT Server"
 #define default_repo_url "http://localhost:8080/wapt/"
 #define default_wapt_server "http://localhost:8080"
-#define default_update_maxruntime "30"
 #define default_update_period "120"
 #define output_dir "."
 #define Company "Tranquil IT Systems"

@@ -2,7 +2,6 @@
 #define default_repo_url ""
 #define default_wapt_server ""
 #define default_update_period "120"
-#define default_update_maxruntime "30"
 #define AppName "WAPT"
 #define output_dir "."
 #define Company "Tranquil IT Systems"
