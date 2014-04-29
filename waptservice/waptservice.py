@@ -1841,7 +1841,6 @@ def install_service():
     # fix some parameters (quotes for path with spaces...
     params = {
         "Description": "sz:Local helper managing WAPT install/remove/update/upgrade",
-        "DelayedAutostart": 1,
         "DisplayName" : "sz:WAPTService",
         "AppStdout" : r"expand_sz:{}".format(os.path.join(waptconfig.log_directory,'waptservice.log')),
         "Parameters\\AppStderr" : r"expand_sz:{}".format(os.path.join(waptconfig.log_directory,'waptservice.log')),
