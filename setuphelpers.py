@@ -1026,7 +1026,10 @@ def add_shutdown_script(cmd,parameters):
         # increment version
         if gptini.has_option('General','Version'):
             version = gptini.getint('General','Version')
-            version += 1
+            user_version = version & 0xffff0000
+            computer_version = version & 0x0000ffff
+            computer_version += 1
+            version = computer_version | user_version
         else:
             version = 1
         gptini.set('General','Version',version)
