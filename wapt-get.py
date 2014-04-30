@@ -819,7 +819,7 @@ def main():
             elif action == 'register':
                 result = mywapt.register_computer(
                     description=(" ".join(args[1:])).decode(sys.getfilesystemencoding()),
-                    force=options.force)
+                    )
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
