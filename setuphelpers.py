@@ -997,6 +997,13 @@ def delete_at_next_reboot(target_filename):
             reg_setvalue(key,'PendingFileRenameOperations',pending,type=REG_MULTI_SZ)
 
 
+def ini2winstr(ini):
+    """Returns a unicode string from an iniparse.RawConfigParser with windows crlf"""
+    items = []
+    for sub in [ (u"%s"%l).strip() for l in ini.data._data.contents]:
+        items.extend(sub.splitlines())
+    return u'\r\n'.join(items)
+
 def add_shutdown_script(cmd,parameters):
     """ Adds a local shutdown script as a local GPO
     >>> index = add_shutdown_script(r'c:\wapt\wapt-get.exe','update')
@@ -1070,14 +1077,14 @@ def add_shutdown_script(cmd,parameters):
                 set_file_visible(scriptsini_path)
             try:
                 with codecs.open(scriptsini_path,'w',encoding='utf16') as f:
-                    f.write(unicode(scriptsini.data))
+                    f.write(ini2winstr(scriptsini))
             finally:
                 set_file_hidden(scriptsini_path)
 
             if not os.path.isdir(os.path.dirname(gptini_path)):
                 os.makedirs(os.path.dirname(gptini_path))
             with codecs.open(gptini_path,'w',encoding='utf8') as f:
-                f.write(unicode(gptini.data))
+                f.write(ini2winstr(gptini))
             run('GPUPDATE /Target:Computer /Force /Wait:30')
             return script_index
         else:
@@ -1154,14 +1161,14 @@ def remove_shutdown_script(cmd,parameters):
                 set_file_visible(scriptsini_path)
             try:
                 with codecs.open(scriptsini_path,'w',encoding='utf16') as f:
-                    f.write(unicode(scriptsini.data))
+                    f.write(ini2winstr(scriptsini))
             finally:
                 set_file_hidden(scriptsini_path)
 
             if not os.path.isdir(os.path.dirname(gptini_path)):
                 os.makedirs(os.path.dirname(gptini_path))
             with codecs.open(gptini_path,'w',encoding='utf8') as f:
-                f.write(unicode(gptini.data))
+                f.write(ini2winstr(gptini))
             run('GPUPDATE /Target:Computer /Force /Wait:30')
             return script_index
         else:
@@ -2022,7 +2029,6 @@ params = {}
 control = PackageEntry()
 
 if __name__=='__main__':
-
 
     import doctest
     import sys
