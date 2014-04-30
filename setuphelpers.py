@@ -1882,7 +1882,7 @@ def get_appath(exename):
     return reg_getvalue(key,None)
 
 
-def getsilentflags(self,installer_path):
+def getsilentflags(installer_path):
     """Detect the type of installer and returns silent silent install flags"""
     (product_name,ext) = os.path.splitext(installer_path)
     ext = ext.lower()
@@ -1915,7 +1915,7 @@ def getsilentflags(self,installer_path):
     return silentflag
 
 
-def getproductprops(self,installer_path):
+def getproductprops(installer_path):
     """returns a dict {'product','description','version','publisher'}"""
     (product_name,ext) = os.path.splitext(installer_path.lower())
     product_name = os.path.basename(product_name)
