@@ -1597,6 +1597,7 @@ class WaptTaskManager(threading.Thread):
                 for req in to_install:
                     self.add_task(WaptPackageInstall(req),notify_user=True)
                 self.add_task(WaptUpgrade())
+                self.add_task(WaptCleanup(notifyuser=False)
 
         if waptconfig.waptupdate_task_period is not None:
             if self.last_update is None or (time.time()-self.last_update)/60>waptconfig.waptupdate_task_period:
