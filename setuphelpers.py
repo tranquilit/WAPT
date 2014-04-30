@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.31"
+__version__ = "0.8.32"
 import os
 import sys
 import logging
@@ -1070,14 +1070,14 @@ def add_shutdown_script(cmd,parameters):
                 set_file_visible(scriptsini_path)
             try:
                 with codecs.open(scriptsini_path,'w',encoding='utf16') as f:
-                    f.write(str(scriptsini.data))
+                    f.write(unicode(scriptsini.data))
             finally:
                 set_file_hidden(scriptsini_path)
 
             if not os.path.isdir(os.path.dirname(gptini_path)):
                 os.makedirs(os.path.dirname(gptini_path))
             with codecs.open(gptini_path,'w',encoding='utf8') as f:
-                f.write(str(gptini.data))
+                f.write(unicode(gptini.data))
             run('GPUPDATE /Target:Computer /Force /Wait:30')
             return script_index
         else:
@@ -1154,14 +1154,14 @@ def remove_shutdown_script(cmd,parameters):
                 set_file_visible(scriptsini_path)
             try:
                 with codecs.open(scriptsini_path,'w',encoding='utf16') as f:
-                    f.write(str(scriptsini.data))
+                    f.write(unicode(scriptsini.data))
             finally:
                 set_file_hidden(scriptsini_path)
 
             if not os.path.isdir(os.path.dirname(gptini_path)):
                 os.makedirs(os.path.dirname(gptini_path))
             with codecs.open(gptini_path,'w',encoding='utf8') as f:
-                f.write(str(gptini.data))
+                f.write(unicode(gptini.data))
             run('GPUPDATE /Target:Computer /Force /Wait:30')
             return script_index
         else:
