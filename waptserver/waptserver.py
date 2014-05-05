@@ -184,7 +184,7 @@ if os.path.exists(wapt_folder + '-group')==False:
 ALLOWED_EXTENSIONS = set(['wapt'])
 
 app = Flask(__name__,static_folder='./templates/static')
-app.secret_key = config.get('options','secret_key')
+#app.secret_key = config.get('options','secret_key')
 
 def hosts():
     """Opens a new database connection if there is none yet for the
