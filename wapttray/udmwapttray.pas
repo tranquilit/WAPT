@@ -125,7 +125,7 @@ var
   DMWaptTray: TDMWaptTray;
 
 implementation
-uses LCLIntf,Forms,dialogs,windows,graphics,tiscommon,waptcommon,tisinifiles,soutils,UnitRedirect;
+uses LCLIntf,Forms,dialogs,windows,graphics,tiscommon,waptcommon,tisinifiles,soutils,UnitRedirect,tisstrings;
 
 {$R *.lfm}
 
@@ -342,6 +342,9 @@ end;
 procedure TDMWaptTray.PopupMenu1Popup(Sender: TObject);
 begin
   MenuWaptVersion.Caption:=GetApplicationVersion(WaptgetPath);
+  if FileExists(ExtractFilePath(ParamStr(0))+'version') then
+    MenuWaptVersion.Caption:=MenuWaptVersion.Caption+' rev '+FileToString(ExtractFilePath(ParamStr(0))+'version');
+
   // to avoid message popups when popup menu is displayed
   PopupVisible := True;
 end;
