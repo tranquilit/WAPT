@@ -1080,13 +1080,13 @@ class WaptTask(object):
         self.summary = u'Cancelled'
         self.logs.append(u'Cancelled')
 
+        if self.wapt:
+            self.wapt.task_is_cancelled.set()
         if self.external_pids:
             for pid in self.external_pids:
                 logger.debug(u'Killing process with pid {}'.format(pid))
                 setuphelpers.killtree(pid)
             del(self.external_pids[:])
-        if self.wapt:
-            self.wapt.task_is_cancelled.set()
 
     def run_external(self,*args,**kwargs):
         """Run an external process, register pid in current task to be able to kill it"""

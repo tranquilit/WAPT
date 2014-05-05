@@ -655,6 +655,19 @@ def adjust_privileges():
     return win32security.AdjustTokenPrivileges(htoken, 0, privileges)
 
 
+def ensure_list(csv_or_list,ignore_empty_args=True):
+    """if argument is not a list, return a list from a csv string"""
+    if csv_or_list is None:
+        return []
+    elif not isinstance(csv_or_list,list):
+        if ignore_empty_args:
+            return [s.strip() for s in csv_or_list.split(',') if s.strip() != '']
+        else:
+            return [s.strip() for s in csv_or_list.split(',')]
+    else:
+        return csv_or_list
+
+
 ###########################"
 class LogInstallOutput(object):
     """file like to log print output to db installstatus"""
@@ -1428,7 +1441,8 @@ class WaptDB(WaptBaseDB):
         if exclude_host_repo:
             search.append('repo <> "wapt-host"')
         if section_filter:
-            search.append('section in ( %s )' %  ",".join([ '"%s"' % x for x in  section_filter.split(',')]))
+            section_filter = ensure_list(section_filter)
+            search.append('section in ( %s )' %  ",".join(['"%s"' % x for x in  section_filter]))
 
         result = self.query_package_entry("select * from wapt_package where %s" % " and ".join(search),words)
         result.sort()
@@ -1588,7 +1602,7 @@ class WaptDB(WaptBaseDB):
                     else:
                         # get depends of the most recent matching entry
                         # TODO : use another older if this can limit the number of packages to install !
-                        depends = [s.strip() for s in entries[-1].depends.split(',') if s.strip() != '']
+                        depends =  ensure_list(entries[-1].depends)
                         available_depends = []
                         for d in depends:
                             if self.packages_matching(d):
@@ -2304,7 +2318,7 @@ class Wapt(object):
         self.repositories = []
         # secondary
         if self.config.has_option('global','repositories'):
-            names = [n.strip() for n in self.config.get('global','repositories').split(',')]
+            names = ensure_list(self.config.get('global','repositories'))
             logger.info(u'Other repositories : %s' % (names,))
             for name in names:
                 if name:
@@ -2899,14 +2913,18 @@ class Wapt(object):
     def get_sources(self,package):
         """Download sources of package (if referenced in package as a https svn)
            in the current directory"""
-        entry = self.waptdb.packages_matching(package)[-1]
+        entries = self.waptdb.packages_matching(package)
+        if entries:
+            entry = [-1]
+        else:
+            raise Exception('Package %s is not available'%package)
 
         if not entry.sources:
             if self.config.has_option('global','default_sources_url'):
                 entry.sources = self.config.get('global','default_sources_url') % {'packagename':package}
 
         if not entry.sources:
-            raise Exception('No sources defined in package control file')
+            raise Exception('No sources defined in package control file and no default_sources_url in config file')
         if "PROGRAMW6432" in os.environ:
             svncmd = os.path.join(os.environ['PROGRAMW6432'],'TortoiseSVN','bin','svn.exe')
         else:
@@ -3013,7 +3031,7 @@ class Wapt(object):
 
     def check_depends(self,apackages,forceupgrade=False,force=False,assume_removed=[]):
         """Given a list of packagename or requirement "name (=version)",
-                return a dictionnary of {'additional' 'upgrade' 'install' 'skipped' 'unavailable'} of
+                return a dictionnary of {'additional' 'upgrade' 'install' 'skipped' 'unavailable','remove'} of
                     [packagerequest,matching PackageEntry]
             forceupgrade : check if the current installed packages is the latest available
             force : install the latest version even if the package is already there and match the requirement
@@ -3023,8 +3041,8 @@ class Wapt(object):
         if apackages is None:
             apackages = []
         # for csv string list of dependencies
-        if isinstance(apackages,(str,unicode)):
-            apackages = [ p.strip() for p in apackages.split(',')]
+        apackages = ensure_list(apackages)
+
         # check if all members are strings packages requirements "package_name(=version)"
         apackages = [isinstance(p,PackageEntry) and p.asrequirement() or p for p in apackages]
 
@@ -3037,6 +3055,7 @@ class Wapt(object):
         unavailable = []
         additional_install = []
         to_upgrade = []
+        to_remove = []
         packages = []
 
         # search for most recent matching package to install
@@ -3053,17 +3072,18 @@ class Wapt(object):
 
             # current installed matches
             if not force and old_matches and not forceupgrade:
-                skipped.append([request,old_matches])
+                skipped.append((request,old_matches))
             else:
                 new_availables = self.waptdb.packages_matching(request)
                 if new_availables:
                     if force or not old_matches or (forceupgrade and old_matches < new_availables[-1]):
-                        packages.append([request,new_availables[-1]])
+                        if not (request,new_availables[-1]) in packages:
+                            packages.append((request,new_availables[-1]))
                     else:
-                        skipped.append([request,old_matches])
+                        skipped.append((request,old_matches))
                 else:
-                    if request not in unavailable:
-                        unavailable.append(request)
+                    if (request,None) not in unavailable:
+                        unavailable.append((request,None))
 
         # get dependencies of not installed top packages
         if forceupgrade:
@@ -3072,8 +3092,8 @@ class Wapt(object):
             (depends,missing) = self.waptdb.build_depends([p[0] for p in packages])
 
         for p in missing:
-            if p not in unavailable:
-                unavailable.append(p)
+            if (p,None) not in unavailable:
+                unavailable.append((p,None))
 
         # search for most recent matching package to install
         for request in depends:
@@ -3089,18 +3109,28 @@ class Wapt(object):
 
             # current installed matches
             if not force and old_matches:
-                skipped.append([request,old_matches])
+                skipped.append((request,old_matches))
             else:
                 # check if installable or upgradable ?
                 new_availables = self.waptdb.packages_matching(request)
                 if new_availables:
                     if not old_matches or (forceupgrade and old_matches < new_availables[-1]):
-                        additional_install.append([request,new_availables[-1]])
+                        additional_install.append((request,new_availables[-1]))
                     else:
-                        skipped.append([request,old_matches])
+                        skipped.append((request,old_matches))
                 else:
-                    unavailable.append([request,None])
-        result =  {'additional':additional_install,'upgrade':to_upgrade,'install':packages,'skipped':skipped,'unavailable':unavailable}
+                    unavailable.append((request,None))
+
+        # check new conflicts which should force removal
+        all_new = additional_install+to_upgrade+packages
+        for (request,pe) in all_new:
+            conflicts = ensure_list(pe.conflicts)
+            for conflict in conflicts:
+                installed_conflict = self.waptdb.installed_matching(conflict)
+                if installed_conflict and not ((conflict,installed_conflict)) in to_remove:
+                    to_remove.append((conflict,installed_conflict))
+
+        result =  {'additional':additional_install,'upgrade':to_upgrade,'install':packages,'skipped':skipped,'unavailable':unavailable,'remove':to_remove}
         return result
 
     def check_remove(self,apackages):
@@ -3133,7 +3163,7 @@ class Wapt(object):
             actions = self.list_upgrade()
             apackages = actions['install']+actions['additional']+actions['upgrade']
         elif isinstance(apackages,(str,unicode)):
-            apackages = [ p.strip() for p in apackages.split(',')]
+            apackages = ensure_list(apackages)
         elif isinstance(apackages,list):
             # ensure that apackages is a list of package requirements (strings)
             new_apackages = []
@@ -3153,6 +3183,7 @@ class Wapt(object):
             usecache=True,
             printhook=None):
         """Install a list of packages and its dependencies
+                removes first packages which are in conflicts package attribute
             Returns a dictionary of (package requirement,package) with 'install','skipped','additional'
 
             apackages : list of packages requirements "packagename(=version)" or list of PackageEntry.
@@ -3191,6 +3222,12 @@ class Wapt(object):
         additional_install = actions['additional']
         to_upgrade = actions['upgrade']
         packages = actions['install']
+
+        # removal from conflicts
+        to_remove = actions['remove']
+        for (request,pe) in to_remove:
+            res = self.remove(request)
+            actions['errors'].extend(res['errors'])
 
         to_install = []
         to_install.extend(additional_install)
@@ -3346,7 +3383,8 @@ class Wapt(object):
 
     def remove(self,package,force=False):
         """Removes a package giving its package name, unregister from local status DB
-            package : package to remove
+            package : package to remove (package name,
+                        package requirement, package entry or development directory)
             force : unregister package from local status database, even if uninstall has failed
         """
         result = {'removed':[],'errors':[]}
@@ -3355,14 +3393,20 @@ class Wapt(object):
             # development mode, remove a package by its directory
             if os.path.isfile(os.path.join(package,'WAPT','control')):
                 package = PackageEntry().load_control_from_wapt(package).package
+            elif isinstance(package,PackageEntry):
+                package = package.package
+            else:
+                pe = self.is_installed(package)
+                package = pe.package
 
             q = self.waptdb.query("""\
                select * from wapt_localstatus
                 where package=?
-               """ , (package,) )
+               """ , (package,))
             if not q:
                 logger.debug(u"Package %s not installed, removal aborted" % package)
                 return result
+
             # several versions installed of the same package... ?
             for mydict in q:
                 self.runstatus="Removing package %s version %s from computer..." % (mydict['package'],mydict['version'])
@@ -3498,7 +3542,7 @@ class Wapt(object):
             host_package = self.check_host_package_outdated()
             if host_package:
                 host_package_req = host_package.asrequirement()
-                if not host_package_req in result:
+                if not host_package_req in result['install']+result['upgrade']+result['additional']:
                     result['install'].append(host_package_req)
 
         # get additional packages to install/upgrade based on new upgrades
@@ -3508,6 +3552,7 @@ class Wapt(object):
                 req = candidate.asrequirement()
                 if not req in result['install']+result['upgrade']+result['additional']:
                     result[l].append(req)
+        result['remove'] = [p[1].asrequirement() for p in depends['remove']]
         return result
 
     def search(self,searchwords=[],exclude_host_repo=True,section_filter=None):
@@ -3550,7 +3595,7 @@ class Wapt(object):
             actions = self.list_upgrade()
             apackages = actions['install']+actions['additional']+actions['upgrade']
         elif isinstance(apackages,(str,unicode)):
-            apackages = [ p.strip() for p in apackages.split(',')]
+            apackages = ensure_list(apackages)
         elif isinstance(apackages,list):
             # ensure that apackages is a list of package requirements (strings)
             new_apackages = []
@@ -3579,6 +3624,8 @@ class Wapt(object):
                         result.append(entry)
                 else:
                     result.append(entry)
+            else:
+                logger.debug('check_downloads : Package %s is not available'%p)
         return result
 
     def download_upgrades(self):
@@ -4237,18 +4284,16 @@ class Wapt(object):
         # check if depends should be appended to existing depends
         if (isinstance(depends,str) or isinstance(depends,unicode)) and depends.startswith('+'):
             append_depends = True
-            depends = depends[1:]
-            current = entry.depends.split(',')
-            for d in depends.split(','):
+            depends = ensure_list(depends[1:])
+            current = ensure_list(entry.depends)
+            for d in depends:
                 if not d in current:
                     current.append(d)
             depends = current
         else:
             append_depends = False
 
-        if depends and not isinstance(depends,list):
-            depends = [s.strip() for s in depends.split(',')]
-
+        depends = ensure_list(depends)
         if depends:
             # use supplied list of packages
             entry.depends = ','.join([u'%s' % p for p in depends if p and p != packagename ])
@@ -4312,8 +4357,14 @@ class Wapt(object):
             proj_template = codecs.open(os.path.join(self.wapt_base_dir,'templates','wapt.psproj'),encoding='utf8').read()%datas
             codecs.open(psproj_filename,'w',encoding='utf8').write(proj_template)
 
-    def edit_package(self,packagename,target_directory='',use_local_sources=True,
-            append_depends=None,remove_depends=None):
+    def edit_package(self,packagename,
+            target_directory='',
+            use_local_sources=True,
+            append_depends=None,
+            remove_depends=None,
+            append_conflicts=None,
+            remove_conflicts=None,
+            ):
         r"""Download an existing package from repositories into target_directory for modification
             if use_local_sources is True and no newer package exists on repos, updates current local edited data
               else if target_directory exists and is not empty, raise an exception
@@ -4349,29 +4400,40 @@ class Wapt(object):
             else:
                 raise Exception('%s is neither a package name nor a package filename' % packagename)
 
+        append_depends = ensure_list(append_depends)
+        remove_depends = ensure_list(remove_depends)
+        append_conflicts = ensure_list(append_conflicts)
+        remove_conflicts = ensure_list(remove_conflicts)
+
         local_dev_entry = self.is_wapt_package_development_dir(target_directory)
         if local_dev_entry:
             if use_local_sources:
-                if entry>local_dev_entry:
+                if entry > local_dev_entry:
                     raise Exception('A newer package version %s is already in repository "%s", local source %s is %s aborting' % (entry.asrequirement(),entry.repo,target_directory,local_dev_entry.asrequirement()))
                 if local_dev_entry.match(packagename):
-                    if append_depends or remove_depends:
-                        prev_depends = local_dev_entry.depends.split(',')
-                        if append_depends:
-                            if not isinstance(append_depends,list):
-                                append_depends = [s.strip() for s in append_depends.split(',')]
-                            for d in append_depends:
-                                if not d in prev_depends:
-                                    prev_depends.append(d)
+                    if append_depends or remove_depends or append_conflicts or remove_conflicts:
+                        prev_depends = ensure_list(local_dev_entry.depends)
+                        for d in append_depends:
+                            if not d in prev_depends:
+                                prev_depends.append(d)
 
-                        if remove_depends:
-                            if not isinstance(remove_depends,list):
-                                remove_depends = [s.strip() for s in remove_depends.split(',')]
-                            for d in remove_depends:
-                                if d in prev_depends:
-                                    prev_depends.remove(d)
+                        for d in remove_depends:
+                            if d in prev_depends:
+                                prev_depends.remove(d)
+
+                        prev_conflicts = ensure_list(local_dev_entry.conflicts)
+                        for d in append_conflicts:
+                            if not d in prev_conflicts:
+                                prev_conflicts.append(d)
+
+                        if remove_conflicts:
+                            for d in remove_conflicts:
+                                if d in prev_conflicts:
+                                    prev_conflicts.remove(d)
+
 
                         local_dev_entry.depends = ','.join(prev_depends)
+                        local_dev_entry.conflicts = ','.join(prev_conflicts)
                         local_dev_entry.save_control_to_wapt(target_directory)
 
                     self.add_pyscripter_project(target_directory)
@@ -4382,10 +4444,26 @@ class Wapt(object):
                 raise Exception('%s wapt developement directory exists' % target_directory)
         if entry:
             # edit an existing package by using
-            return self.duplicate_package(packagename=entry.asrequirement(),newname=entry.package,target_directory=target_directory,build=False,append_depends = append_depends)
+            return self.duplicate_package(packagename=entry.asrequirement(),
+                newname=entry.package,
+                target_directory=target_directory,
+                build=False,
+                append_depends = append_depends,
+                remove_depends = remove_depends,
+                append_conflicts = append_conflicts,
+                remove_conflicts = remove_conflicts,
+                )
         else:
             # create a new one
-            return self.duplicate_package(packagename=packagename,newname=packagename,target_directory=target_directory,build=False,append_depends = append_depends)
+            return self.duplicate_package(packagename=packagename,
+                newname=packagename,
+                target_directory=target_directory,
+                build=False,
+                append_depends = append_depends,
+                remove_depends = remove_depends,
+                append_conflicts = append_conflicts,
+                remove_conflicts = remove_conflicts,
+                )
 
     def is_wapt_package_development_dir(self,directory):
         """Return PackageEntry if directory is a wapt developement directory (a WAPT/control file exists) or False"""
@@ -4402,7 +4480,12 @@ class Wapt(object):
         except:
             return False
 
-    def edit_host(self,hostname,target_directory='',use_local_sources=True,append_depends=None,remove_depends=None,printhook=None):
+    def edit_host(self,hostname,target_directory='',use_local_sources=True,
+            append_depends=None,
+            remove_depends=None,
+            append_conflicts=None,
+            remove_conflicts=None,
+            printhook=None):
         """Download and extract a host package from host repositories into target_directory for modification
                 Return dict {'target': 'c:\\\\tmp\\\\dummy', 'source_dir': 'c:\\\\tmp\\\\dummy', 'package': "dummy.tranquilit.local (=0)"}
 
@@ -4426,33 +4509,44 @@ class Wapt(object):
         if not target_directory:
             target_directory = self.get_default_development_dir(hostname,section='host')
 
+        append_depends = ensure_list(append_depends)
+        remove_depends = ensure_list(remove_depends)
+        append_conflicts = ensure_list(append_conflicts)
+        remove_conflicts = ensure_list(remove_conflicts)
+
         # check if host package exists on repos
-        if isinstance(self.repositories[-1],WaptHostRepo):
+        if self.repositories and isinstance(self.repositories[-1],WaptHostRepo):
             (entry,entry_date) = self.repositories[-1].update_host(hostname,self.waptdb)
             if entry:
                 # target is already an "in-progress" package developement
                 local_dev_entry = self.is_wapt_package_development_dir(target_directory)
                 if local_dev_entry:
+                    # use the current local development
                     if use_local_sources:
                         if entry>local_dev_entry:
                             raise Exception('A newer package version %s is already in repository "%s", local sources %s is %s, aborting' % (entry.asrequirement(),entry.repo,target_directory, local_dev_entry.asrequirement()))
                         if local_dev_entry.match(hostname):
-                            prev_depends = local_dev_entry.depends.split(',')
-                            if append_depends:
-                                if not isinstance(append_depends,list):
-                                    append_depends = [s.strip() for s in append_depends.split(',')]
-                                for d in append_depends:
-                                    if not d in prev_depends:
-                                        prev_depends.append(d)
-
-                            if remove_depends:
-                                if not isinstance(remove_depends,list):
-                                    remove_depends = [s.strip() for s in remove_depends.split(',')]
-                                for d in remove_depends:
-                                    if d in prev_depends:
-                                        prev_depends.remove(d)
-
+                            # update depends list
+                            prev_depends = ensure_list(local_dev_entry.depends)
+                            for d in append_depends:
+                                if not d in prev_depends:
+                                    prev_depends.append(d)
+                            for d in remove_depends:
+                                if d in prev_depends:
+                                    prev_depends.remove(d)
                             local_dev_entry.depends = ','.join(prev_depends)
+
+                            # update conflicts list
+                            prev_conflicts = ensure_list(local_dev_entry.conflicts)
+                            for d in append_conflicts:
+                                if not d in prev_conflicts:
+                                    prev_conflicts.append(d)
+                            if remove_conflicts:
+                                for d in remove_conflicts:
+                                    if d in prev_conflicts:
+                                        prev_conflicts.remove(d)
+                            local_dev_entry.conflicts = ','.join(prev_conflicts)
+
                             local_dev_entry.save_control_to_wapt(target_directory)
                             self.add_pyscripter_project(target_directory)
                             return {'target':target_directory,'source_dir':target_directory,'package':local_dev_entry}
@@ -4462,7 +4556,7 @@ class Wapt(object):
                         raise Exception('directory %s is already a package development directory, aborting.' % target_directory)
                 elif os.path.isdir(target_directory) and os.listdir(target_directory):
                     raise Exception('directory %s is not empty, aborting.' % target_directory)
-
+                # create a new version of the existing package in repository
                 return self.duplicate_package(
                         packagename=hostname,
                         newname=hostname,
@@ -4470,11 +4564,14 @@ class Wapt(object):
                         build=False,
                         append_depends = append_depends,
                         remove_depends = remove_depends,
+                        append_conflicts = append_conflicts,
+                        remove_conflicts = remove_conflicts,
                         usecache=False,
                         printhook=printhook)
             elif os.path.isdir(target_directory) and os.listdir(target_directory):
                 raise Exception('directory %s is not empty, aborting.' % target_directory)
             else:
+                # create new host package from template
                 return self.make_host_template(packagename=hostname,directoryname=target_directory,depends=append_depends)
         else:
             raise Exception('No Wapthost repository defined')
@@ -4493,8 +4590,7 @@ class Wapt(object):
         >>> print wapt.is_installed('tis-test')
         None
         """
-        if not isinstance(packages_list,list):
-            packages_list = [ p.strip() for p in packages_list.split(',') ]
+        packages_list = ensure_list(packages_list)
         for package in packages_list:
             self.waptdb.remove_install_status(package)
 
@@ -4509,6 +4605,8 @@ class Wapt(object):
             callback=pwd_callback,
             append_depends=None,
             remove_depends=None,
+            append_conflicts=None,
+            remove_conflicts=None,
             auto_inc_version=True,
             usecache=True,
             printhook=None):
@@ -4568,6 +4666,11 @@ class Wapt(object):
 
         # default empty result
         result = {}
+
+        append_depends = ensure_list(append_depends)
+        remove_depends = ensure_list(remove_depends)
+        append_conflicts = ensure_list(append_conflicts)
+        remove_conflicts = ensure_list(remove_conflicts)
 
         def check_target_directory(target_directory,source_control):
             if os.path.isdir(target_directory) and os.listdir(target_directory):
@@ -4632,22 +4735,25 @@ class Wapt(object):
             dest_control[a] = source_control[a]
 
         # add / remove dependencies from copy
-        if append_depends or remove_depends:
-            prev_depends = dest_control.depends.split(',')
-            if append_depends:
-                if not isinstance(append_depends,list):
-                    append_depends = [s.strip() for s in append_depends.split(',')]
-                prev_depends = dest_control.depends.split(',')
-                for d in append_depends:
-                    if not d in prev_depends:
-                        prev_depends.append(d)
-            if remove_depends:
-                if not isinstance(remove_depends,list):
-                    remove_depends = [s.strip() for s in remove_depends.split(',')]
-                for d in remove_depends:
-                    if d in prev_depends:
-                        prev_depends.remove(d)
-            dest_control.depends = ','.join(prev_depends)
+        prev_depends = ensure_list(dest_control.depends)
+        for d in append_depends:
+            if not d in prev_depends:
+                prev_depends.append(d)
+        for d in remove_depends:
+            if d in prev_depends:
+                prev_depends.remove(d)
+        dest_control.depends = ','.join(prev_depends)
+
+        # add / remove conflicts from copy
+        prev_conflicts = ensure_list(dest_control.conflicts)
+        for d in append_conflicts:
+            if not d in prev_conflicts:
+                prev_conflicts.append(d)
+
+        for d in remove_conflicts:
+            if d in prev_conflicts:
+                prev_conflicts.remove(d)
+        dest_control.conflicts = ','.join(prev_conflicts)
 
         # change package name
         dest_control.package = newname
@@ -4792,7 +4898,8 @@ class Wapt(object):
         result = []
         errors = []
         if packages:
-            for dep in packages[-1].depends.split(','):
+            depends = ensure_list(packages[-1].depends)
+            for dep in depends:
                 subpackages = self.is_available(dep)
                 if subpackages:
                     if expand:
@@ -4946,9 +5053,8 @@ class Wapt(object):
 Version = setuphelpers.Version  # obsolete
 
 if __name__ == '__main__':
-    wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
-    l = wapt.download_packages(wapt.check_downloads())
-    res = wapt.cleanup(False)
+    wapt = Wapt()
+    l = wapt.upgrade()
 
 
     import doctest

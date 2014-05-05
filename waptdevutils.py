@@ -158,7 +158,8 @@ def get_packages_filenames(waptconfigfile,packages_names):
     wapt.dbpath = r':memory:'
     # be sure to be up to date
     wapt.update(register=False)
-    for name in packages_names.split(','):
+    packages_names = common.ensure_list(packages_names)
+    for name in packages_names:
         entries = wapt.is_available(name)
         if entries:
             pe = entries[-1]
@@ -236,7 +237,13 @@ def login_to_waptserver(url, login, passwd,newPass=""):
     except Exception as e:
         return unicode(str(e.message), 'ISO-8859-1')
 
-def edit_hosts_depends(waptconfigfile,hosts_list,appends=[],removes=[],key_password=None,wapt_server_user=None,wapt_server_passwd=None):
+def edit_hosts_depends(waptconfigfile,hosts_list,
+        depends_append=[],
+        depends_remove=[],
+        conflicts_append=[],
+        conflicts_remove=[],
+        key_password=None,
+        wapt_server_user=None,wapt_server_passwd=None):
     """Add or remove packages from host packages
     >>> edit_hosts_depends('c:/wapt/wapt-get.ini','htlaptop.tranquilit.local','toto','tis-7zip','admin','password')
     """
@@ -246,12 +253,12 @@ def edit_hosts_depends(waptconfigfile,hosts_list,appends=[],removes=[],key_passw
         wapt_server_passwd = getpass.getpass('WAPT Server password :').encode('ascii')
 
     wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
-    if not isinstance(hosts_list,list):
-        hosts_list = [s.strip() for s in hosts_list.split(',')]
-    if not isinstance(appends,list):
-        appends = [s.strip() for s in appends.split(',')]
-    if not isinstance(removes,list):
-        removes = [s.strip() for s in removes.split(',')]
+    hosts_list = ensure_list(hosts_list)
+    depends_append = ensure_list(depends_append)
+    depends_remove = ensure_list(depends_remove)
+    conflicts_append = ensure_list(conflicts_append)
+    conflicts_remove = ensure_list(conflicts_remove)
+
     result = []
     sources = []
     build_res = []
@@ -262,8 +269,11 @@ def edit_hosts_depends(waptconfigfile,hosts_list,appends=[],removes=[],key_passw
             edit_res = wapt.edit_host(host,
                 use_local_sources = False,
                 target_directory = target_dir,
-                append_depends = appends,
-                remove_depends = removes,)
+                append_depends = append_depends,
+                remove_depends = remove_depends,
+                append_conflicts = append_conflicts,
+                remove_conflicts = remove_conflicts,
+                )
             sources.append(edit_res)
         logger.debug(u'Build upload %s'%[r['source_dir'] for r in sources])
         build_res = wapt.build_upload([r['source_dir'] for r in sources],private_key_passwd = key_password,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
