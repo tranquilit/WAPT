@@ -2915,7 +2915,7 @@ class Wapt(object):
            in the current directory"""
         entries = self.waptdb.packages_matching(package)
         if entries:
-            entry = [-1]
+            entry = entries[-1]
         else:
             raise Exception('Package %s is not available'%package)
 
