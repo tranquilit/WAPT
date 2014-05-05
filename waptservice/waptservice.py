@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.32"
+__version__ = "0.8.33"
 
 import time
 import sys
@@ -1264,7 +1264,7 @@ class WaptUpgrade(WaptTask):
         if unavailable:
             s.append(u'Non disponibles : {}'.format(unavailable))
         if not errors and not unavailable and not install and not upgrade:
-            s.append(u'Système à jour, %i'%(len(self.result['skipped'])))
+            s.append(u'Système à jour')
 
         self.summary = u"\n".join(s)
 
@@ -1331,6 +1331,7 @@ class WaptCleanup(WaptTask):
         self.priority = 1000
         self.notify_server_on_start = False
         self.notify_server_on_finish = False
+        self.notify_user = False
         self.force = False
         for k in args:
             setattr(self,k,args[k])
@@ -1596,7 +1597,7 @@ class WaptTaskManager(threading.Thread):
                 to_install = actions['upgrade']+actions['additional']+actions['install']
                 for req in to_install:
                     self.add_task(WaptPackageInstall(req),notify_user=True)
-                self.add_task(WaptUpgrade())
+                self.add_task(WaptUpgrade(notifyuser=False))
                 self.add_task(WaptCleanup(notifyuser=False))
 
         if waptconfig.waptupdate_task_period is not None:

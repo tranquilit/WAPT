@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="0.8.29"
+__version__="0.8.33"
 
 import os,sys
 try:
@@ -866,39 +866,26 @@ def deploy_wapt():
                          mimetype="application/json")
 
 
-@app.route('/login',methods=['GET','POST'])
+@app.route('/login',methods=['POST'])
 def login():
     try:
-        resp = Response(status=401,mimetype="application/json")
-        data = request.args
-        if "username" in data and "password" in data:
-            if check_auth(data["username"], data["password"]):
-                if "newPass" in data:
-                    global wapt_password
-                    wapt_password = hashlib.sha512(data["newPass"]).hexdigest()
-                    config.set('options', 'wapt_password', wapt_password)
-                    with open(os.path.join(wapt_root_dir,'waptserver','waptserver.ini'), 'wb') as configfile:
-                        config.write(configfile)
-                signer = itsdangerous.TimedJSONWebSignatureSerializer(app.secret_key)
-                params = dict(
-                    username=data["username"],
-                    remote_addr=request.remote_addr)
-                content = dict(status='OK',message='Login successful',result=dict(
-                    auth_token=signer.dumps(params),
-                    username=data["username"],
-                    remote_addr=request.remote_addr))
-                resp.status_code=200
-                resp.set_cookie('auth_token',signer.dumps(params))
-            else:
-                content = dict(status='ERROR',message='Bad credentials')
+        if request.method == 'POST':
+            d= json.loads(request.data)
+            if "username" in d and "password" in d:
+                if check_auth(d["username"], d["password"]):
+                    if "newPass" in d:
+                        global wapt_password
+                        wapt_password = hashlib.sha512(d["newPass"]).hexdigest()
+                        config.set('options', 'wapt_password', wapt_password)
+                        with open(os.path.join(wapt_root_dir,'waptserver','waptserver.ini'), 'wb') as configfile:
+                            config.write(configfile)
+                    return "True"
+            return "False"
         else:
-            content= dict(status='ERROR',message='Bad request')
+            return "Unsupported method"
     except:
-        e = traceback.format_exc()
-        resp.status_code = 500
-        content = dict(status='ERROR',message='Server error : %s'%(e,))
-    resp.response.append(json.dumps(content))
-    return resp
+        e = sys.exc_info()
+        return str(e)
 
 def allowed_file(filename):
     return '.' in filename and \

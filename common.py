@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.32"
+__version__ = "0.8.33"
 import os
 import re
 import logging
@@ -3227,10 +3227,13 @@ class Wapt(object):
         to_remove = actions['remove']
         for (request,pe) in to_remove:
             logger.info('Removing conflicting package %s'%request)
-            res = self.remove(request)
-            actions['errors'].extend(res['errors'])
-            if res['errors']:
-                logger.warning(u'Error removing %s:%s'%(request,ensure_unicode(res['errors'])))
+            try:
+                res = self.remove(request,force=True)
+                actions['errors'].extend(res['errors'])
+                if res['errors']:
+                    logger.warning(u'Error removing %s:%s'%(request,ensure_unicode(res['errors'])))
+            except Exception as e:
+                logger.critical(u'Error removing %s:%s'%(request,ensure_unicode(e)))
 
         to_install = []
         to_install.extend(additional_install)
@@ -3400,7 +3403,8 @@ class Wapt(object):
                 package = package.package
             else:
                 pe = self.is_installed(package)
-                package = pe.package
+                if pe:
+                    package = pe.package
 
             q = self.waptdb.query("""\
                select * from wapt_localstatus
@@ -3697,7 +3701,7 @@ class Wapt(object):
         """Return ident of waptserver if defined and available, else False"""
         if self.wapt_server:
             try:
-                httpreq = requests.get('%s/ident'%(self.wapt_server),timeout=self.wapt_server_timeout)
+                httpreq = requests.get('%s'%(self.wapt_server),timeout=self.wapt_server_timeout)
                 httpreq.raise_for_code()
                 return httpreq.text
             except Exception as e:
