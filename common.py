@@ -3226,8 +3226,11 @@ class Wapt(object):
         # removal from conflicts
         to_remove = actions['remove']
         for (request,pe) in to_remove:
+            logger.info('Removing conflicting package %s'%request)
             res = self.remove(request)
             actions['errors'].extend(res['errors'])
+            if res['errors']:
+                logger.warning(u'Error removing %s:%s'%(request,ensure_unicode(res['errors'])))
 
         to_install = []
         to_install.extend(additional_install)
