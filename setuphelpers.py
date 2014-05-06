@@ -1042,7 +1042,11 @@ def add_shutdown_script(cmd,parameters):
         # update shutdown/Scripts.ini
         scriptsini = RawConfigParser()
         if os.path.isfile(scriptsini_path):
-            scriptsini.readfp(codecs.open(scriptsini_path,mode='r',encoding='utf16'))
+            try:
+                scriptsini.readfp(codecs.open(scriptsini_path,mode='r',encoding='utf16'))
+            except UnicodeError:
+                # bug http://roundup.tranquil.it/wapt/issue233
+                scriptsini.readfp(codecs.open(scriptsini_path,mode='r',encoding='utf8'))
         if not scriptsini.has_section('Shutdown'):
             scriptsini.add_section('Shutdown')
 
@@ -1125,7 +1129,11 @@ def remove_shutdown_script(cmd,parameters):
         # update shutdown/Scripts.ini
         scriptsini = RawConfigParser()
         if os.path.isfile(scriptsini_path):
-            scriptsini.readfp(codecs.open(scriptsini_path,mode='r',encoding='utf16'))
+            try:
+                scriptsini.readfp(codecs.open(scriptsini_path,mode='r',encoding='utf16'))
+            except UnicodeError:
+                # bug http://roundup.tranquil.it/wapt/issue233
+                scriptsini.readfp(codecs.open(scriptsini_path,mode='r',encoding='utf8'))
         if not scriptsini.has_section('Shutdown'):
             scriptsini.add_section('Shutdown')
 
