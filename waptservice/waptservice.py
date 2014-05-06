@@ -872,6 +872,20 @@ def remove():
     else:
         return render_template('install.html',data=data)
 
+
+@app.route('/forget', methods=['GET'])
+@app.route('/forget.json', methods=['GET'])
+@check_ip_source
+def forget():
+    package = request.args.get('package')
+    logger.info(u"Forget package %s" % package)
+    notify_user = int(request.args.get('notify_user','0')) == 1
+    data = task_manager.add_task(WaptPackageForget(package),notify_user=notify_user).as_dict()
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('install.html',data=data)
+
 @app.route('/favicon.ico', methods=['GET'])
 def wapticon():
     return send_from_directory(app.static_folder+'/images','wapt.png',mimetype='image/png')
@@ -1482,6 +1496,21 @@ class WaptPackageRemove(WaptPackageInstall):
 
     def __str__(self):
         return u"Désinstallation de {packagename} (tâche #{id})".format(classname=self.__class__.__name__,id=self.id,packagename=self.packagename)
+
+
+class WaptPackageForget(WaptTask):
+    def __init__(self,packagename):
+        super(WaptPackageForget,self).__init__(packagename=packagename)
+
+    def _run(self):
+        self.result = self.wapt.forget_packages(self.packagename)
+        if self.result:
+            self.summary = u"Paquets retirés de la base : %s" % (u"\n".join(self.result),)
+        else:
+            self.summary = u"Aucun paquet retiré de la base"
+
+    def __str__(self):
+        return u"Oublier {packagename} (tâche #{id})".format(classname=self.__class__.__name__,id=self.id,packagename=self.packagename)
 
 
 class WaptTaskManager(threading.Thread):

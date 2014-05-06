@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="0.8.33"
+__version__="0.8.34"
 
 import os,sys
 try:
@@ -675,6 +675,39 @@ def remove_package():
     return  Response(response=json.dumps(result),
                          status=200,
                          mimetype="application/json")
+
+
+@app.route('/forget_packages')
+@app.route('/forget_packages.json')
+@requires_auth
+def forget_packages():
+    try:
+        result = {}
+        try:
+            package = request.args['package']
+            ip = request.args['host']
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(1)
+            s.connect((ip,waptservice_port))
+            s.close
+            if ip and waptservice_port:
+                logger.info( "Forgetting %s on %s ..." % (package,ip))
+                httpreq = requests.get("http://%s:%d/forget.json?package=%s" % ( ip, waptservice_port,package),proxies=None)
+                httpreq.raise_for_status()
+                data = json.loads(httpreq.text)
+                result = dict(message=data,status='OK')
+            else:
+                raise Exception(u"Le port de waptservice n'est pas défini")
+
+        except Exception as e:
+            raise Exception("Impossible de joindre le waptservice du poste: %s" % e)
+
+    except Exception, e:
+            result = { 'status' : 'ERROR', 'message': u"%s" % e  }
+    return  Response(response=json.dumps(result),
+                         status=200,
+                         mimetype="application/json")
+
 
 
 @app.route('/host_tasks')

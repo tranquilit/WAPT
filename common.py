@@ -1066,12 +1066,15 @@ class WaptSessionDB(WaptBaseDB):
         return cur.lastrowid
 
     def remove_install_status(self,package):
-        """Remove status of package installation from localdb"""
+        """Remove status of package installation from localdb
+        >>> wapt = Wapt()
+        >>> wapt.forget_packages('tis-7zip')
+        """
         try:
             cur = self.db.execute("""delete from wapt_sessionsetup where package=?""" ,(package,))
         finally:
             self.db.commit()
-        return cur.lastrowid
+        return cur.rowcount
 
     def remove_obsolete_install_status(self,installed_packages):
         """Remove local user status of packages no more installed"""
@@ -1080,7 +1083,7 @@ class WaptSessionDB(WaptBaseDB):
                 ','.join('?' for i in installed_packages), installed_packages)
         finally:
             self.db.commit()
-        return cur.lastrowid
+        return cur.rowcount
 
     def is_installed(self,package,version):
         p = self.query('select * from  wapt_sessionsetup where package=? and version=? and install_status="OK"',(package,version))
@@ -1402,7 +1405,7 @@ class WaptDB(WaptBaseDB):
             cur = self.db.execute("""delete from wapt_localstatus where package=?""" ,(package,))
         finally:
             self.db.commit()
-        return cur.lastrowid
+        return cur.rowcount
 
     def known_packages(self):
         """return a list of all (package,version)"""
@@ -4598,9 +4601,13 @@ class Wapt(object):
         >>> print wapt.is_installed('tis-test')
         None
         """
+        result = []
         packages_list = ensure_list(packages_list)
         for package in packages_list:
-            self.waptdb.remove_install_status(package)
+            rowid = self.waptdb.remove_install_status(package)
+            if rowid:
+                result.append(package)
+        return result
 
     def duplicate_package(self,
             packagename,
@@ -5062,7 +5069,7 @@ Version = setuphelpers.Version  # obsolete
 
 if __name__ == '__main__':
     wapt = Wapt()
-    l = wapt.upgrade()
+    l = wapt.forget_packages('tis-7zip')
 
 
     import doctest
