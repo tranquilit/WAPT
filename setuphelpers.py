@@ -1024,12 +1024,10 @@ def add_shutdown_script(cmd,parameters):
         if not gptini.has_option('General','gPCMachineExtensionNames'):
             gptini.set('General','gPCMachineExtensionNames','[{42B5FAAE-6536-11D2-AE5A-0000F87571E3}{40B6664F-4972-11D1-A7CA-0000F87571E3}]')
         else:
-            ext = gptini.get('General','gPCMachineExtensionNames').strip()[1:-1].replace('}{','},{').replace('][','').split(',')
-            if not '{42B5FAAE-6536-11D2-AE5A-0000F87571E3}' in ext:
-                ext.append('{42B5FAAE-6536-11D2-AE5A-0000F87571E3}')
-            if not '{40B6664F-4972-11D1-A7CA-0000F87571E3}' in ext:
-                ext.append('{40B6664F-4972-11D1-A7CA-0000F87571E3}')
-            gptini.set('General','gPCMachineExtensionNames','[%s]'%(''.join(ext)))
+            ext = gptini.get('General','gPCMachineExtensionNames').strip().replace('][','],[').split(',')
+            if not '[{42B5FAAE-6536-11D2-AE5A-0000F87571E3}{40B6664F-4972-11D1-A7CA-0000F87571E3}]' in ext:
+                ext.append('[{42B5FAAE-6536-11D2-AE5A-0000F87571E3}{40B6664F-4972-11D1-A7CA-0000F87571E3}]')
+            gptini.set('General','gPCMachineExtensionNames',''.join(ext))
         # increment version
         if gptini.has_option('General','Version'):
             version = gptini.getint('General','Version')
