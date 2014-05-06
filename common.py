@@ -2965,21 +2965,22 @@ class Wapt(object):
         result = []
         logger.info(u'Cleaning up WAPT cache directory')
         cachepath = self.package_cache_dir
+
+        upgrade_actions = self.list_upgrade()
+        futures =   upgrade_actions['install']+\
+                    upgrade_actions['upgrade']+\
+                    upgrade_actions['additional']
+        def in_futures(pe):
+            for p in futures:
+                if pe.match(p):
+                    return True
+            return False
+
         for f in glob.glob(os.path.join(cachepath,'*.wapt')):
             if os.path.isfile(f):
                 can_remove = True
                 if obsolete_only:
                     # check if cached package could be installed at next ugrade
-                    upgrade_actions = self.list_upgrade()
-                    futures =   upgrade_actions['install']+\
-                                upgrade_actions['upgrade']+\
-                                upgrade_actions['additional']
-                    def in_futures(pe):
-                        for p in futures:
-                            if pe.match(p):
-                                return True
-                        return False
-
                     pe = PackageEntry().load_control_from_wapt(f)
                     pe_installed = self.is_installed(pe.package)
                     can_remove = not in_futures(pe) and ((pe_installed and pe <= pe_installed) or not self.is_available(pe.asrequirement()))

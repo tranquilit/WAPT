@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.33"
+__version__ = "0.8.34"
 import os
 import sys
 import logging
@@ -1024,7 +1024,7 @@ def add_shutdown_script(cmd,parameters):
         if not gptini.has_option('General','gPCMachineExtensionNames'):
             gptini.set('General','gPCMachineExtensionNames','[{42B5FAAE-6536-11D2-AE5A-0000F87571E3}{40B6664F-4972-11D1-A7CA-0000F87571E3}]')
         else:
-            ext = gptini.get('General','gPCMachineExtensionNames')[1:-1].replace('}{','},{').split(',')
+            ext = gptini.get('General','gPCMachineExtensionNames').strip()[1:-1].replace('}{','},{').replace('][','').split(',')
             if not '{42B5FAAE-6536-11D2-AE5A-0000F87571E3}' in ext:
                 ext.append('{42B5FAAE-6536-11D2-AE5A-0000F87571E3}')
             if not '{40B6664F-4972-11D1-A7CA-0000F87571E3}' in ext:
@@ -1108,13 +1108,13 @@ def remove_shutdown_script(cmd,parameters):
             gptini.add_section('General')
         # set or extend extensionnames
         if not gptini.has_option('General','gPCMachineExtensionNames'):
-            gptini.set('General','gPCMachineExtensionNames','[{42B5FAAE-6536-11D2-AE5A-0000F87571E3}{40B6664F-4972-11D1-A7CA-0000F87571E3}]')
+            gptini.set('General','gPCMachineExtensionNames',r'[{42B5FAAE-6536-11D2-AE5A-0000F87571E3}{40B6664F-4972-11D1-A7CA-0000F87571E3}]')
         else:
-            ext = gptini.get('General','gPCMachineExtensionNames')[1:-1].replace('}{','},{').split(',')
-            if not '{42B5FAAE-6536-11D2-AE5A-0000F87571E3}' in ext:
-                ext.append('{42B5FAAE-6536-11D2-AE5A-0000F87571E3}')
-            if not '{40B6664F-4972-11D1-A7CA-0000F87571E3}' in ext:
-                ext.append('{40B6664F-4972-11D1-A7CA-0000F87571E3}')
+            ext = gptini.get('General','gPCMachineExtensionNames').strip()[1:-1].replace('}{','},{').replace('][','').split(',')
+            if not r'{42B5FAAE-6536-11D2-AE5A-0000F87571E3}' in ext:
+                ext.append(r'{42B5FAAE-6536-11D2-AE5A-0000F87571E3}')
+            if not r'{40B6664F-4972-11D1-A7CA-0000F87571E3}' in ext:
+                ext.append(r'{40B6664F-4972-11D1-A7CA-0000F87571E3}')
             gptini.set('General','gPCMachineExtensionNames','[%s]'%(''.join(ext)))
         # increment version
         if gptini.has_option('General','Version'):
@@ -1132,29 +1132,35 @@ def remove_shutdown_script(cmd,parameters):
             scriptsini.add_section('Shutdown')
 
         # check if cmd already exist in shutdown scripts
-        cmd_index = -1
-        param_index = -1
+        last_cmd_index = None
+        last_param_index = None
         script_index = None
-        i = -1
+
+        scripts = []
         for (key,value) in scriptsini.items('Shutdown'):
             # keys are lowercase in iniparser !
             if key.endswith('cmdline'):
-                i = int(key.split('cmdline')[0])
-                if value.lower() == cmd.lower():
-                    cmd_index = i
+                last_cmd_index = int(key.split('cmdline')[0])
+                last_cmd = value
             if key.endswith('parameters'):
-                i = int(key.split('parameters')[0])
-                if value.lower() == parameters.lower():
-                    param_index = i
-            # cmd and params are matching... => script already exists
-            if script_index is None and cmd_index>=0 and param_index>=0 and cmd_index == param_index:
-                script_index = cmd_index
-            else:
-                pass #todo rewrite index
+                last_param_index = int(key.split('parameters')[0])
+                last_param = value
+            if last_cmd_index>=0 and last_param_index>=0 and last_cmd_index == last_param_index:
+                if last_cmd.lower() == cmd.lower() and last_param.lower() == parameters.lower():
+                    script_index = last_cmd_index
+                else:
+                    scripts.append((last_cmd,last_param))
 
         if script_index is not None:
-            scriptsini.remove_option('Shutdown','%iCmdLine'%(script_index,))
-            scriptsini.remove_option('Shutdown','%iParameters'%(script_index,))
+            # reorder remaining scripts
+            scriptsini.remove_section('Shutdown')
+            scriptsini.add_section('Shutdown')
+            i = 0
+            for (c,p) in scripts:
+                scriptsini.set('Shutdown','%iCmdLine'%(i,),c)
+                scriptsini.set('Shutdown','%iParameters'%(i,),p)
+                i += 1
+
             if not os.path.isdir(os.path.dirname(scriptsini_path)):
                 os.makedirs(os.path.dirname(scriptsini_path))
             if os.path.isfile(scriptsini_path):
