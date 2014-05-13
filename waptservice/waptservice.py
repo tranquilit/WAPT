@@ -488,10 +488,10 @@ def status():
                 # hack to enable proper version comparison in templates
                 pe.version = Version(pe.version)
                 # calc most up to date repo version
-                if pe.get('repo_versions',''):
+                if pe.get('repo_versions',None) is not None:
                     pe.repo_version = max(Version(v) for v in pe.get('repo_versions','').split('|'))
                 else:
-                    pe.repo_version = ''
+                    pe.repo_version = None
                 rows.append(pe)
 
             #rows = [ waptpackage.PackageEntry().load_control_from_dict(dict(x)) for x in cur.fetchall() ]
