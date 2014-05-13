@@ -16,6 +16,7 @@ type
 
   TVisWaptGUI = class(TForm)
     ActCancelRunningTask: TAction;
+    ActForgetPackages: TAction;
     ActRemoveFromGroup: TAction;
     ActRDP: TAction;
     ActVNC: TAction;
@@ -108,6 +109,7 @@ type
     MenuItem39: TMenuItem;
     MenuItem40: TMenuItem;
     MenuItem41: TMenuItem;
+    MenuItem42: TMenuItem;
     PageControl1: TPageControl;
     Panel11: TPanel;
     Panel2: TPanel;
@@ -221,6 +223,7 @@ type
     procedure ActDeployWaptExecute(Sender: TObject);
     procedure ActEditGroupExecute(Sender: TObject);
     procedure ActEditHostPackageExecute(Sender: TObject);
+    procedure ActForgetPackagesExecute(Sender: TObject);
     procedure ActGotoHostExecute(Sender: TObject);
     procedure ActPackageRemoveExecute(Sender: TObject);
     procedure ActRDPExecute(Sender: TObject);
@@ -1098,6 +1101,30 @@ begin
   ip := GridHosts.GetCellStrValue(GridHosts.FocusedNode, 'host.connected_ips');
   if EditHost(hostname, ActAdvancedMode.Checked,ip) <> nil then
     ActSearchHost.Execute;
+end;
+
+procedure TVisWaptGUI.ActForgetPackagesExecute(Sender: TObject);
+var
+  sel,package,res:ISuperObject;
+begin
+  if GridHostPackages.Focused then
+  begin
+    sel := GridHostPackages.SelectedRows;
+    if Dialogs.MessageDlg('Confirmer','Confirmez-vous l''oubli de '+intToStr(sel.AsArray.Length)+' packages du poste '+GridHosts.FocusedRow.S['host.computer_fqdn']+' ?',mtConfirmation,mbYesNoCancel,0) = mrYes then
+    begin
+      for package in sel do
+      begin
+        res :=  WAPTServerJsonGet(
+          '/forget_packages.json?host=%s&package=%s&uuid=%s',[GridHosts.FocusedRow.S['host.connected_ips'],package.S['package'],GridHosts.FocusedRow.S['uuid']],
+          WaptUseLocalConnectionProxy,
+          waptServerUser,
+          waptServerPassword);
+        if res.S['status']<>'OK' then
+          ShowMessage(Format('Erreur pour le package %s',[package.S['package'],res.S['message']]));
+      end;
+    end;
+    UpdateHostPages(Sender);
+  end;
 end;
 
 procedure TVisWaptGUI.ActGotoHostExecute(Sender: TObject);

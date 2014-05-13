@@ -2448,6 +2448,11 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Enlever du groupe ou un package'
       OnExecute = ActRemoveFromGroupExecute
     end
+    object ActForgetPackages: TAction
+      Category = 'Host'
+      Caption = 'Oublier les paquets'
+      OnExecute = ActForgetPackagesExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
@@ -2743,6 +2748,9 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem19: TMenuItem
       Action = ActPackageRemove
+    end
+    object MenuItem42: TMenuItem
+      Action = ActForgetPackages
     end
   end
   object TimerTasks: TTimer
