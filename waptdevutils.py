@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.34"
+__version__ = "0.8.35"
 
 import common
 import json
@@ -238,10 +238,10 @@ def login_to_waptserver(url, login, passwd,newPass=""):
         return unicode(str(e.message), 'ISO-8859-1')
 
 def edit_hosts_depends(waptconfigfile,hosts_list,
-        depends_append=[],
-        depends_remove=[],
-        conflicts_append=[],
-        conflicts_remove=[],
+        append_depends=[],
+        remove_depends=[],
+        append_conflicts=[],
+        remove_conflicts=[],
         key_password=None,
         wapt_server_user=None,wapt_server_passwd=None):
     """Add or remove packages from host packages
@@ -253,18 +253,21 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
         wapt_server_passwd = getpass.getpass('WAPT Server password :').encode('ascii')
 
     wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
-    hosts_list = ensure_list(hosts_list)
-    depends_append = ensure_list(depends_append)
-    depends_remove = ensure_list(depends_remove)
-    conflicts_append = ensure_list(conflicts_append)
-    conflicts_remove = ensure_list(conflicts_remove)
+    hosts_list = common.ensure_list(hosts_list)
+    append_depends = common.ensure_list(append_depends)
+    remove_depends = common.ensure_list(remove_depends)
+    append_conflicts = common.ensure_list(append_conflicts)
+    remove_conflicts = common.ensure_list(remove_conflicts)
 
     result = []
     sources = []
     build_res = []
     try:
         for host in hosts_list:
-            logger.debug(u'Edit host %s : +%s -%s'%(host,appends,removes))
+            logger.debug(u'Edit host %s : +%s -%s'%(
+                host,
+                append_depends,
+                remove_depends))
             target_dir = tempfile.mkdtemp('wapt')
             edit_res = wapt.edit_host(host,
                 use_local_sources = False,

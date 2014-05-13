@@ -829,8 +829,10 @@ begin
     args := '';
     args := args + format('waptconfigfile = r"%s".decode(''utf8''),',[AppIniFilename]);
     args := args + format('hosts_list = r"%s".decode(''utf8''),',[Join(',',hosts)]);
-    args := args + format('appends = r"%s".decode(''utf8''),',[Join(',',packages)]);
-    args := args + format('removes = [],',[]);
+    args := args + format('append_depends = r"%s".decode(''utf8''),',[Join(',',packages)]);
+    args := args + format('remove_depends = "",',[]);
+    args := args + format('append_conflicts = "",',[]);
+    args := args + format('remove_conflicts = "",',[]);
     if privateKeyPassword<>'' then
       args := args + format('key_password = "%s".decode(''utf8''),',[privateKeyPassword]);
     args := args + format('wapt_server_user = r"%s".decode(''utf8''),',[waptServerUser]);
@@ -1191,15 +1193,14 @@ begin
     args := '';
     args := args + format('waptconfigfile = r"%s".decode(''utf8''),',[AppIniFilename]);
     args := args + format('hosts_list = r"%s".decode(''utf8''),',[Join(',',hosts)]);
-    args := args + format('appends = [],',[]);
-    args := args + format('removes = r"%s".decode(''utf8''),',[Join(',',packages)]);
+    args := args + format('append_depends = [],',[]);
+    args := args + format('remove_depends = r"%s".decode(''utf8''),',[Join(',',packages)]);
     if privateKeyPassword<>'' then
       args := args + format('key_password = "%s".decode(''utf8''),',[privateKeyPassword]);
     args := args + format('wapt_server_user = r"%s".decode(''utf8''),',[waptServerUser]);
     args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',[waptServerPassword]);
     res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)',[args]));
     ShowMessage(IntToStr(res.AsArray.Length)+' postes modifiés');
-
   end;
 end;
 
