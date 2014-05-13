@@ -1004,6 +1004,9 @@ def ini2winstr(ini):
         items.extend(sub.splitlines())
     return u'\r\n'.join(items)
 
+def _lower(s):
+    return s.lower()
+
 def add_shutdown_script(cmd,parameters):
     """ Adds a local shutdown script as a local GPO
     >>> index = add_shutdown_script(r'c:\wapt\wapt-get.exe','update')
@@ -1016,6 +1019,8 @@ def add_shutdown_script(cmd,parameters):
     with disable_file_system_redirection():
         ensure_dir(scriptsini_path)
         gptini = RawConfigParser()
+        # be sure to have section names case unsensitive
+        gptini.data._sectionxform = _lower
         if os.path.isfile(gptini_path):
             gptini.readfp(codecs.open(gptini_path,mode='r',encoding='utf8'))
         if not gptini.has_section('General'):
@@ -1025,6 +1030,25 @@ def add_shutdown_script(cmd,parameters):
             gptini.set('General','gPCMachineExtensionNames','[{42B5FAAE-6536-11D2-AE5A-0000F87571E3}{40B6664F-4972-11D1-A7CA-0000F87571E3}]')
         else:
             ext = gptini.get('General','gPCMachineExtensionNames').strip().replace('][','],[').split(',')
+            # fix malformed array : should be a list of pairs [{i1}{i2}][{j1}{j2}][{k1}{k2}]
+            if ext:
+                # calc a new list of pairs
+                newext = []
+                bad = False
+                for e in ext:
+                    e = e.strip('[]')
+                    guids = e.replace('}{','},{').split(',')
+                    if len(guids)>2:
+                        bad = True
+                        i = 0
+                        while i < len(guids):
+                            newext.append('[%s%s]'%(guids[i],guids[i+1]))
+                            i+=2
+                    else:
+                        newext.append(e)
+                if bad:
+                    ext = newext
+
             if not '[{42B5FAAE-6536-11D2-AE5A-0000F87571E3}{40B6664F-4972-11D1-A7CA-0000F87571E3}]' in ext:
                 ext.append('[{42B5FAAE-6536-11D2-AE5A-0000F87571E3}{40B6664F-4972-11D1-A7CA-0000F87571E3}]')
             gptini.set('General','gPCMachineExtensionNames',''.join(ext))
@@ -1083,10 +1107,12 @@ def add_shutdown_script(cmd,parameters):
             finally:
                 set_file_hidden(scriptsini_path)
 
+        if script_index is None or bad:
             if not os.path.isdir(os.path.dirname(gptini_path)):
                 os.makedirs(os.path.dirname(gptini_path))
             with codecs.open(gptini_path,'w',encoding='utf8') as f:
                 f.write(ini2winstr(gptini))
+        if script_index is None:
             run('GPUPDATE /Target:Computer /Force /Wait:30')
             return script_index
         else:
@@ -1104,20 +1130,14 @@ def remove_shutdown_script(cmd,parameters):
     with disable_file_system_redirection():
         ensure_dir(scriptsini_path)
         gptini = RawConfigParser()
+        # be sure to have section names case unsensitive
+        gptini.data._sectionxform = _lower
+
         if os.path.isfile(gptini_path):
             gptini.readfp(codecs.open(gptini_path,mode='r',encoding='utf8'))
         if not gptini.has_section('General'):
             gptini.add_section('General')
-        # set or extend extensionnames
-        if not gptini.has_option('General','gPCMachineExtensionNames'):
-            gptini.set('General','gPCMachineExtensionNames',r'[{42B5FAAE-6536-11D2-AE5A-0000F87571E3}{40B6664F-4972-11D1-A7CA-0000F87571E3}]')
-        else:
-            ext = gptini.get('General','gPCMachineExtensionNames').strip()[1:-1].replace('}{','},{').replace('][','').split(',')
-            if not r'{42B5FAAE-6536-11D2-AE5A-0000F87571E3}' in ext:
-                ext.append(r'{42B5FAAE-6536-11D2-AE5A-0000F87571E3}')
-            if not r'{40B6664F-4972-11D1-A7CA-0000F87571E3}' in ext:
-                ext.append(r'{40B6664F-4972-11D1-A7CA-0000F87571E3}')
-            gptini.set('General','gPCMachineExtensionNames','[%s]'%(''.join(ext)))
+
         # increment version
         if gptini.has_option('General','Version'):
             version = gptini.getint('General','Version')
@@ -2041,7 +2061,8 @@ params = {}
 control = PackageEntry()
 
 if __name__=='__main__':
-
+    #add_shutdown_script('titi','toto')
+    #remove_shutdown_script('titi','toto')
     import doctest
     import sys
     reload(sys)
