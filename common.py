@@ -3127,12 +3127,25 @@ class Wapt(object):
 
         # check new conflicts which should force removal
         all_new = additional_install+to_upgrade+packages
+
+        def remove_matching(package,req_pe_list):
+            todel = []
+            for req,pe in req_pe_list:
+                if pe.match(package):
+                    todel.append((req,pe))
+            for e in todel:
+                req_pe_list.remove(e)
+
         for (request,pe) in all_new:
             conflicts = ensure_list(pe.conflicts)
             for conflict in conflicts:
                 installed_conflict = self.waptdb.installed_matching(conflict)
                 if installed_conflict and not ((conflict,installed_conflict)) in to_remove:
                     to_remove.append((conflict,installed_conflict))
+                remove_matching(conflict,to_upgrade)
+                remove_matching(conflict,additional_install)
+                remove_matching(conflict,skipped)
+
 
         result =  {'additional':additional_install,'upgrade':to_upgrade,'install':packages,'skipped':skipped,'unavailable':unavailable,'remove':to_remove}
         return result
