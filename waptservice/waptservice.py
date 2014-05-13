@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.34"
+__version__ = "0.8.35"
 
 import time
 import sys
@@ -488,7 +488,10 @@ def status():
                 # hack to enable proper version comparison in templates
                 pe.version = Version(pe.version)
                 # calc most up to date repo version
-                pe.repo_version = max(Version(v) for v in pe.get('repo_versions','').split('|'))
+                if pe.get('repo_versions',''):
+                    pe.repo_version = max(Version(v) for v in pe.get('repo_versions','').split('|'))
+                else:
+                    pe.repo_version = ''
                 rows.append(pe)
 
             #rows = [ waptpackage.PackageEntry().load_control_from_dict(dict(x)) for x in cur.fetchall() ]

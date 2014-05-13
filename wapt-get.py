@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.33"
+__version__ = "0.8.35"
 import codecs
 import getpass
 import glob
@@ -542,6 +542,16 @@ def main():
                     if result['errors']:
                         logger.critical(u'Unable to download some files : %s' % (result['errors'],))
                         sys.exit(1)
+
+            elif action == 'forget':
+                if len(args) < 2:
+                    print u"You must provide the package names to forget"
+                    sys.exit(1)
+                result = mywapt.forget_packages(args[1:])
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print u"\n=== Packages removed from status ===\n%s" % ('\n'.join( ["  %-30s " % (p) for p in  result]),)
 
             elif action == 'update-packages':
                 if len(args) < 2:
