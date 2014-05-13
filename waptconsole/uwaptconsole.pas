@@ -512,6 +512,8 @@ begin
           HostTaskRunningProgress.Position := 0;
           HostRunningTaskLog.Clear;
           GridHostTasksPending.Data := Nil;
+          GridHostTasksDone.Data := Nil;
+          GridHostTasksErrors.Data := Nil;
         end;
       finally
         TimerTasks.Enabled:=True;
@@ -1120,7 +1122,7 @@ begin
           waptServerUser,
           waptServerPassword);
         if res.S['status']<>'OK' then
-          ShowMessage(Format('Erreur pour le package %s',[package.S['package'],res.S['message']]));
+          ShowMessage(Format('Erreur pour le package %s: %s',[package.S['package'],res.S['message']]));
       end;
     end;
     UpdateHostPages(Sender);
@@ -1150,7 +1152,7 @@ begin
           waptServerUser,
           waptServerPassword);
         if res.S['status']<>'OK' then
-          ShowMessage(Format('Erreur pour le package %s',[package.S['package'],res.S['message']]));
+          ShowMessage(Format('Erreur pour le package %s: %s',[package.S['package'],res.S['message']]));
       end;
     end;
     UpdateHostPages(Sender);
