@@ -15,7 +15,7 @@
 	{% for p in packages %}
         {%set package_version= p.asrequirement() %}
         {%if p.get('install_status')=='OK'%}
-            {%if p.repo_version  %}
+            {%if not p.repo_version %}
         		<tr class=status-unavailable>
             {%elif p.version < p.repo_version %}
         		<tr class=status-upgradable>
