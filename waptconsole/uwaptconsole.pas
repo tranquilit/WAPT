@@ -69,6 +69,7 @@ type
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
+    Button5: TButton;
     Changer: TButton;
     Button7: TButton;
     Button8: TButton;
@@ -82,20 +83,24 @@ type
     cbShowHostPackagesGroup: TCheckBox;
     CheckBoxMaj: TCheckBox;
     CheckBox_error: TCheckBox;
+    EdSoftwaresFilter: TEdit;
     EdRunningStatus: TEdit;
     EdSearchGroups: TEdit;
     GridGroups: TSOGrid;
     GridHostTasksPending: TSOGrid;
     GridHostTasksDone: TSOGrid;
     GridHostTasksErrors: TSOGrid;
+    HostRunningTaskLog: TMemo;
     Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
     HostRunningTask: TLabeledEdit;
-    HostRunningTaskLog: TMemo;
     Label13: TLabel;
+    Label14: TLabel;
     LabelComputersNumber: TLabel;
     labSelected: TLabel;
+    MemoTaskLog: TMemo;
+    MemoInstallOutput: TMemo;
     MemoGroupeDescription: TMemo;
     MenuItem19: TMenuItem;
     MenuItem20: TMenuItem;
@@ -112,7 +117,10 @@ type
     MenuItem42: TMenuItem;
     PageControl1: TPageControl;
     Panel11: TPanel;
+    Panel12: TPanel;
     Panel2: TPanel;
+    Panel5: TPanel;
+    Panel6: TPanel;
     PopupHostPackages: TPopupMenu;
     PopupMenuGroups: TPopupMenu;
     ProgressBar: TProgressBar;
@@ -135,8 +143,10 @@ type
     Label1: TLabel;
     pgGroups: TTabSheet;
     HostTaskRunningProgress: TProgressBar;
+    SODataSource1: TSODataSource;
     Splitter3: TSplitter;
     pgTasks: TTabSheet;
+    Splitter5: TSplitter;
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
@@ -274,6 +284,8 @@ type
     procedure FormShow(Sender: TObject);
     procedure GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
+    procedure GridHostPackagesChange(Sender: TBaseVirtualTree;
+      Node: PVirtualNode);
     procedure GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: boolean; var ImageIndex: integer;
@@ -298,6 +310,8 @@ type
     procedure GridHostsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       RowData, CellData: ISuperObject; Column: TColumnIndex;
       TextType: TVSTTextType; var CellText: string);
+    procedure GridHostTasksPendingChange(Sender: TBaseVirtualTree;
+      Node: PVirtualNode);
     procedure GridPackagesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridPackagesColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
@@ -475,35 +489,40 @@ begin
               waptServerUser, waptServerPassword);
         if tasks.S['status']='OK' then
         begin
-          HostRunningTaskLog.Text:= tasks.AsJSon(True);
-          with HostRunningTaskLog do
-          begin
-            selstart := GetTextLen; // MUCH more efficient then Length(text)!
-            SelLength:=0;
-            Perform( EM_SCROLLCARET, 0, 0 );
-          end;
-
           tasksresult := tasks['message'];
           if tasksresult['done'] =Nil then
             tasksresult := tasks['result'];
           if tasksresult<>Nil then
           begin
             running := tasksresult['running'];
-            GridHostTasksPending.Data := tasksresult['pending'];
-            GridHostTasksDone.Data := tasksresult['done'];
-            GridHostTasksErrors.Data := tasksresult['errors'];
+            if not GridHostTasksPending.Focused then
+              GridHostTasksPending.Data := tasksresult['pending'];
+            if not GridHostTasksDone.Focused then
+              GridHostTasksDone.Data := tasksresult['done'];
+            if not GridHostTasksErrors.Focused then
+              GridHostTasksErrors.Data := tasksresult['errors'];
             if running<>Nil then
             begin
               HostTaskRunningProgress.Position :=running.I['progress'];
               HostRunningTask.Text:=running.S['description'];
-              HostRunningTaskLog.Text := running.S['logs'];
+              if not HostRunningTaskLog.Focused then
+                HostRunningTaskLog.Text := running.S['logs'];
             end
             else
             begin
               HostTaskRunningProgress.Position :=0;
               HostRunningTask.Text:='Idle';
-              HostRunningTaskLog.Clear;
-            end
+              if not HostRunningTaskLog.Focused then
+                HostRunningTaskLog.Clear;
+            end;
+
+            with HostRunningTaskLog do
+            begin
+              selstart := GetTextLen; // MUCH more efficient then Length(text)!
+              SelLength:=0;
+              ScrollBy(0,65535);
+            end;
+
           end;
         end
         else
@@ -1706,6 +1725,21 @@ begin
   ActEditGroup.Execute;
 end;
 
+procedure TVisWaptGUI.GridHostPackagesChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+begin
+  if (GridHostPackages.FocusedRow<>Nil) then
+  begin
+    MemoInstallOutput.Text:=GridHostPackages.FocusedRow.S['install_output'];
+    MemoInstallOutput.CaretPos := Point(1,65535);
+    MemoInstallOutput.SelStart := 65535;
+    MemoInstallOutput.SelLength:=0;
+    MemoInstallOutput.ScrollBy(0,65535);
+  end
+  else
+    MemoInstallOutput.Clear;
+end;
+
 procedure TVisWaptGUI.GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
   var Ghosted: boolean; var ImageIndex: integer; var ImageList: TCustomImageList);
@@ -1919,6 +1953,19 @@ begin
         CellText:='';
     end;
   end;
+end;
+
+procedure TVisWaptGUI.GridHostTasksPendingChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+begin
+  if (Sender as TSOGrid).FocusedRow<>Nil then
+  begin
+    MemoTaskLog.Text := (Sender as TSOGrid).FocusedRow.S['logs'];
+    MemoTaskLog.SelStart:=65535;
+    MemoTaskLog.ScrollBy(0,65535);
+  end
+  else
+    MemoTaskLog.Clear;
 end;
 
 procedure TVisWaptGUI.GridPackagesChange(Sender: TBaseVirtualTree;
