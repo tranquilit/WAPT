@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="0.8.34"
+__version__="0.8.35"
 
 import os,sys
 try:
@@ -248,39 +248,40 @@ def wapt_listing():
 @app.route('/json/host_list',methods=['GET'])
 def get_host_list():
     list_hosts = []
-    data = request.args
+    params = request.args
     query = {}
     search_filter = ""
     search = ""
     try:
-        if "package_error" in data.keys() and data['package_error'] == "true":
+        if "package_error" in params.keys() and params['package_error'] == "true":
             query["packages.install_status"] = "ERROR"
-        if "need_upgrade" in data.keys() and data['need_upgrade'] == "true":
+        if "need_upgrade" in params.keys() and params['need_upgrade'] == "true":
             query["update_status.upgrades"] = {"$exists": "true", "$ne" :[]}
-        if "q" in data.keys():
-            search = data['q'].lower()
-        if "filter" in data.keys():
-            search_filter = data['filter'].split(',')
+        if "q" in params.keys():
+            search = params['q'].lower()
+        if "filter" in params.keys():
+            search_filter = params['filter'].split(',')
+
+        filters = []
 
         #{"host":1,"dmi":1,"uuid":1, "wapt":1, "update_status":1,"last_query_date":1}
+        if search:
+            if not search_filter or 'host' in search_filter:
+                filters.append({'host.computer_fqdn':re.compile(search, re.IGNORECASE)})
+            if not search_filter or 'softwares' in search_filter:
+                filters.append({'softwares.name':re.compile(search, re.IGNORECASE)})
+            if not search_filter or 'packages' in search_filter:
+                filters.append({'packages.package':re.compile(search, re.IGNORECASE)})
 
-        for host in hosts().find( query):
+        if filters:
+            if len(filters)>1:
+                query['$or'] = filters
+            else:
+                query = filters[0]
+
+        for host in hosts().find(query,fields={'softwares':0,'packages':0}):
             host.pop("_id")
-            if search_filter:
-                for key in search_filter:
-                    if key in host and search in json.dumps(host[key]).lower():
-                        host["softwares"] = ""
-                        host["packages"] = ""
-                        list_hosts.append(host)
-                        continue
-            elif search and search in json.dumps(host).lower():
-                host["softwares"] = ""
-                host["packages"] = ""
-                list_hosts.append(host)
-            elif search == "":
-                host["softwares"] = ""
-                host["packages"] = ""
-                list_hosts.append(host)
+            list_hosts.append(host)
 
         result = list_hosts
     except Exception as e:
@@ -1087,7 +1088,7 @@ if __name__ == "__main__":
         install_windows_service()
         sys.exit(0)
 
-    debug=True
+    debug=False
     if debug:
         app.run(host='0.0.0.0',port=30880,debug=False)
     else:
