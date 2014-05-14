@@ -1288,7 +1288,7 @@ def uninstall_cmd(guid):
             raise
 
 
-def installed_softwares(keywords=''):
+def installed_softwares(keywords='',uninstallkey=None):
     """return list of installed software from registry (both 32bit and 64bit
     >>> softs = installed_softwares('libre office')
     >>> if softs:
@@ -1323,11 +1323,20 @@ def installed_softwares(keywords=''):
                 install_location = reg_getvalue(appkey,'InstallLocation','')
                 uninstallstring = reg_getvalue(appkey,'UninstallString','')
                 publisher = reg_getvalue(appkey,'Publisher','')
-                if display_name and check_words(subkey+' '+display_name+' '+publisher,mykeywords):
+                if reg_getvalue(appkey,'ParentKeyName','') == 'OperatingSystem' or reg_getvalue(appkey,'SystemComponent',0) == 1:
+                    system_component = 1
+                else:
+                    system_component = 0
+                if (uninstallkey is None and display_name and check_words(subkey+' '+display_name+' '+publisher,mykeywords)) or\
+                        (uninstallkey is not None and (subkey == uninstallkey)):
                     result.append({'key':subkey,
-                        'name':display_name,'version':display_version,
-                        'install_date':install_date,'install_location':install_location,
-                        'uninstall_string':uninstallstring,'publisher':publisher,})
+                        'name':display_name,
+                        'version':display_version,
+                        'install_date':install_date,
+                        'install_location':install_location,
+                        'uninstall_string':uninstallstring,
+                        'publisher':publisher,
+                        'system_component':system_component,})
                 i += 1
             except WindowsError,e:
                 # WindowsError: [Errno 259] No more data is available
