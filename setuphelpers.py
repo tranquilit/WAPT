@@ -1029,6 +1029,7 @@ def add_shutdown_script(cmd,parameters):
         # set or extend extensionnames
         if not gptini.has_option('General','gPCMachineExtensionNames'):
             gptini.set('General','gPCMachineExtensionNames','[{42B5FAAE-6536-11D2-AE5A-0000F87571E3}{40B6664F-4972-11D1-A7CA-0000F87571E3}]')
+            update_gpt = True
         else:
             ext = gptini.get('General','gPCMachineExtensionNames').strip().replace('][','],[').split(',')
             # fix malformed array : should be a list of pairs [{i1}{i2}][{j1}{j2}][{k1}{k2}]
