@@ -1014,7 +1014,7 @@ def add_shutdown_script(cmd,parameters):
     gp_path = makepath(system32(),'GroupPolicy')
     gptini_path = makepath(gp_path,'gpt.ini')
     scriptsini_path = makepath(gp_path,'Machine','Scripts','scripts.ini')
-    bad = False
+    update_gpt = False
 
     # manage GPT.INI file
     with disable_file_system_redirection():
@@ -1035,6 +1035,7 @@ def add_shutdown_script(cmd,parameters):
             if ext:
                 # calc a new list of pairs
                 newext = []
+                bad = False
                 for e in ext:
                     e = e.strip('[]')
                     guids = e.replace('}{','},{').split(',')
@@ -1048,9 +1049,11 @@ def add_shutdown_script(cmd,parameters):
                         newext.append(e)
                 if bad:
                     ext = newext
+                    update_gpt = True
 
             if not '[{42B5FAAE-6536-11D2-AE5A-0000F87571E3}{40B6664F-4972-11D1-A7CA-0000F87571E3}]' in ext:
                 ext.append('[{42B5FAAE-6536-11D2-AE5A-0000F87571E3}{40B6664F-4972-11D1-A7CA-0000F87571E3}]')
+                update_gpt = True
             gptini.set('General','gPCMachineExtensionNames',''.join(ext))
         # increment version
         if gptini.has_option('General','Version'):
@@ -1094,6 +1097,7 @@ def add_shutdown_script(cmd,parameters):
                 script_index = cmd_index
                 break
         if script_index is None:
+            update_gpt = True
             script_index = i+1
             scriptsini.set('Shutdown','%iCmdLine'%(script_index,),cmd)
             scriptsini.set('Shutdown','%iParameters'%(script_index,),parameters)
@@ -1107,12 +1111,11 @@ def add_shutdown_script(cmd,parameters):
             finally:
                 set_file_hidden(scriptsini_path)
 
-        if script_index is None or bad:
+        if update_gpt:
             if not os.path.isdir(os.path.dirname(gptini_path)):
                 os.makedirs(os.path.dirname(gptini_path))
             with codecs.open(gptini_path,'w',encoding='utf8') as f:
                 f.write(ini2winstr(gptini))
-        if script_index is not None:
             run('GPUPDATE /Target:Computer /Force /Wait:30')
             return script_index
         else:

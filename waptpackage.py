@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.35"
+__version__ = "0.8.36"
 
 import os
 import zipfile
@@ -428,8 +428,11 @@ class WaptLocalRepo(object):
         """
         # Packages file is a zipfile with one Packages file inside
         if os.path.isfile(os.path.join(self.localpath,'Packages')):
-            with zipfile.ZipFile(os.path.join(self.localpath,'Packages')) as packages_file:
+            packages_file = zipfile.ZipFile(os.path.join(self.localpath,'Packages'))
+            try:
                 packages_lines = packages_file.read(name='Packages').decode('utf8').splitlines()
+            finally:
+                packages_file.close()
             self.packages = []
             startline = 0
             endline = 0
@@ -497,11 +500,14 @@ class WaptLocalRepo(object):
                 errors.append(fname)
 
         logger.info(u"Writing new %s" % packages_fname)
-        with zipfile.ZipFile(packages_fname, "w",compression=zipfile.ZIP_DEFLATED) as myzipfile:
+        myzipfile = zipfile.ZipFile(packages_fname, "w",compression=zipfile.ZIP_DEFLATED)
+        try:
             zi = zipfile.ZipInfo(u"Packages",date_time = time.localtime())
             zi.compress_type = zipfile.ZIP_DEFLATED
             myzipfile.writestr(zi,u'\n'.join(packages_lines).encode('utf8'))
             logger.info(u"Finished")
+        finally:
+            myzipfile.close()
         return {'processed':processed,'kept':kept,'errors':errors,'packages_filename':packages_fname}
 
 
