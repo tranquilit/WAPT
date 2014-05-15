@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.35"
+__version__ = "0.8.36"
 import os
 import sys
 import logging
@@ -1014,6 +1014,7 @@ def add_shutdown_script(cmd,parameters):
     gp_path = makepath(system32(),'GroupPolicy')
     gptini_path = makepath(gp_path,'gpt.ini')
     scriptsini_path = makepath(gp_path,'Machine','Scripts','scripts.ini')
+    bad = False
 
     # manage GPT.INI file
     with disable_file_system_redirection():
@@ -1034,7 +1035,6 @@ def add_shutdown_script(cmd,parameters):
             if ext:
                 # calc a new list of pairs
                 newext = []
-                bad = False
                 for e in ext:
                     e = e.strip('[]')
                     guids = e.replace('}{','},{').split(',')
@@ -1112,7 +1112,7 @@ def add_shutdown_script(cmd,parameters):
                 os.makedirs(os.path.dirname(gptini_path))
             with codecs.open(gptini_path,'w',encoding='utf8') as f:
                 f.write(ini2winstr(gptini))
-        if script_index is None:
+        if script_index is not None:
             run('GPUPDATE /Target:Computer /Force /Wait:30')
             return script_index
         else:
