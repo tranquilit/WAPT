@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.35"
+__version__ = "0.8.36"
 import os
 import re
 import logging
@@ -1697,6 +1697,128 @@ class WaptDB(WaptBaseDB):
         except:
             self.db.rollback()
             raise
+
+class WaptServer(object):
+    """Manage connection to waptserver"""
+
+    def __init__(self,url=None,proxies=None,timeout = 2,dnsdomain=None):
+        if url and url[-1]=='/':
+            url = url.rstrip('/')
+        self._server_url = url
+        self._cached_dns_server_url = None
+
+        self.proxies=proxies
+        self.timeout = timeout
+        if dnsdomain:
+            self.dnsdomain = dnsdomain
+        else:
+            self.dnsdomain = setuphelpers.get_domain_fromregistry()
+
+
+    def reset_network(self):
+        """called by wapt when network configuration has changed"""
+        self._cached_dns_server_url = None
+
+    @property
+    def server_url(self):
+        """Return fixed url if any, else request DNS
+        >>> server = WaptServer(timeout=4)
+        >>> print server.dnsdomain
+        tranquilit.local
+        >>> server = WaptServer(timeout=4)
+        >>> print server.dnsdomain
+        tranquilit.local
+        >>> print server.server_url
+        http://srvwapt.tranquilit.local:8080
+        """
+
+        if self._server_url:
+            return self._server_url
+        else:
+            if not self._cached_dns_server_url:
+                self._cached_dns_server_url = self.find_wapt_server_url()
+            return self._cached_dns_server_url
+
+    def find_wapt_server_url(self):
+        """Search the WAPT server with dns SRV query
+        >>> server = WaptServer(dnsdomain='tranquil.it',timeout=4,url=None)
+        >>> server.server_url
+        'http://wapt.tranquil.it./wapt'
+        >>> server = WaptServer(url='http://srvwapt:8080',timeout=4)
+        >>> server.server_url
+        'http://srvwapt:8080'
+        """
+
+        try:
+            if self.dnsdomain and self.dnsdomain != '.':
+                # find by dns SRV _wapt._tcp
+                try:
+                    resolv = dns.resolver.get_default_resolver()
+                    resolv.timeout = self.timeout
+                    resolv.lifetime = self.timeout
+                    logger.debug(u'DNS server %s' % (resolv.nameservers,))
+                    logger.debug(u'Trying _waptserver._tcp.%s SRV records' % self.dnsdomain)
+                    answers = resolv.query('_waptserver._tcp.%s.' % self.dnsdomain,'SRV')
+                    working_url = []
+                    for a in answers:
+                        # get first numerical ipv4 from SRV name record
+                        try:
+                            wapthost = a.target.to_text()[0:-1]
+                            ip = resolv.query(a.target)[0].to_text()
+                            if a.port == 443:
+                                url = 'https://%s' % (wapthost)
+                                if tryurl(url,timeout=self.timeout):
+                                    working_url.append((a.weight,url))
+                            else:
+                                url = 'http://%s:%i' % (wapthost,a.port)
+                                if tryurl(url,timeout=self.timeout):
+                                    working_url.append((a.weight,url))
+                        except Exception,e:
+                            logging.debug('Unable to resolve : error %s' % (ensure_unicode(e),))
+
+                    if working_url:
+                        working_url.sort()
+                        logger.debug(u'  Accessible servers : %s' % (working_url,))
+                        return working_url[-1][1]
+
+                    if not answers:
+                        logger.debug(u'  No _waptserver._tcp.%s SRV record found' % self.dnsdomain)
+                except dns.exception.Timeout,e:
+                    logger.debug(u'  DNS resolver timedout _SRV records: %s' % (ensure_unicode(e),))
+                    raise
+
+                except dns.exception.DNSException,e:
+                    logger.debug(u'  DNS resolver failed looking for _SRV records: %s' % (ensure_unicode(e),))
+
+            else:
+                logger.warning(u'Local DNS domain not found, skipping SRV _wapt._tcp and CNAME search ')
+
+            return None
+        except dns.exception.Timeout,e:
+            logger.critical(u'DNS resolver timeout: %s' % (e,))
+            raise
+
+    @server_url.setter
+    def server_url(self,value):
+        """Wapt main repository URL"""
+        # remove / at the end
+        if value:
+            value = value.rstrip('/')
+        self._server_url = value
+
+    def load_config(self,config,section='global'):
+        """Load waptserver configuration from inifile
+        """
+        if not section:
+            section = 'global'
+        if config.has_section(section):
+            if config.has_option(section,'wapt_server'):
+                self.server_url = config.get(section,'wapt_server')
+            if config.has_option(section,'http_proxy'):
+                self.proxies = {'http':config.get(section,'http_proxy')}
+            if config.has_option(section,'timeout'):
+                self.timeout = config.getfloat(section,'timeout')
+        return self
 
 
 class WaptRepo(object):
