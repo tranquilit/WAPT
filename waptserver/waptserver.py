@@ -268,6 +268,11 @@ def get_host_list():
         if search:
             if not search_filter or 'host' in search_filter:
                 filters.append({'host.computer_fqdn':re.compile(search, re.IGNORECASE)})
+                filters.append({'host.current_user':re.compile(search, re.IGNORECASE)})
+                filters.append({'host.description':re.compile(search, re.IGNORECASE)})
+                filters.append({'host.connected_ips':re.compile(search, re.IGNORECASE)})
+                filters.append({'host.mac':re.compile(search, re.IGNORECASE)})
+                filters.append({'dmi.Chassis_Information.Serial_Number':re.compile(search, re.IGNORECASE)})
             if not search_filter or 'softwares' in search_filter:
                 filters.append({'softwares.name':re.compile(search, re.IGNORECASE)})
             if not search_filter or 'packages' in search_filter:
