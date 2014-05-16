@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="0.8.36"
+__version__="0.8.37"
 
 import os,sys
 try:
@@ -273,6 +273,8 @@ def get_host_list():
                 filters.append({'host.connected_ips':re.compile(search, re.IGNORECASE)})
                 filters.append({'host.mac':re.compile(search, re.IGNORECASE)})
                 filters.append({'dmi.Chassis_Information.Serial_Number':re.compile(search, re.IGNORECASE)})
+            if not search_filter or 'dmi' in search_filter:
+                filters.append({'dmi':re.compile(search, re.IGNORECASE)})
             if not search_filter or 'softwares' in search_filter:
                 filters.append({'softwares.name':re.compile(search, re.IGNORECASE)})
             if not search_filter or 'packages' in search_filter:

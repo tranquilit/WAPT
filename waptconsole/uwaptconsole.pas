@@ -283,6 +283,13 @@ type
     procedure FormShow(Sender: TObject);
     procedure GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
+    procedure GridGroupsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      RowData, CellData: ISuperObject; Column: TColumnIndex;
+      TextType: TVSTTextType; var CellText: string);
+    procedure GridGroupsInitNode(Sender: TBaseVirtualTree; ParentNode,
+      Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
+    procedure GridGroupsMeasureItem(Sender: TBaseVirtualTree;
+      TargetCanvas: TCanvas; Node: PVirtualNode; var NodeHeight: Integer);
     procedure GridHostPackagesChange(Sender: TBaseVirtualTree;
       Node: PVirtualNode);
     procedure GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
@@ -309,6 +316,8 @@ type
     procedure GridHostsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       RowData, CellData: ISuperObject; Column: TColumnIndex;
       TextType: TVSTTextType; var CellText: string);
+    procedure GridHostsHeaderDblClick(Sender: TVTHeader;
+      HitInfo: TVTHeaderHitInfo);
     procedure GridHostTasksPendingChange(Sender: TBaseVirtualTree;
       Node: PVirtualNode);
     procedure GridPackagesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
@@ -1724,6 +1733,43 @@ begin
   ActEditGroup.Execute;
 end;
 
+procedure TVisWaptGUI.GridGroupsGetText(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
+  TextType: TVSTTextType; var CellText: string);
+begin
+
+  if ((Sender as TSOGrid).Header.Columns[Column] as TSOGridColumn).PropertyName = 'depends' then
+    StrReplace(CellText,',',#13#10,[rfReplaceAll]);
+end;
+
+procedure TVisWaptGUI.GridGroupsInitNode(Sender: TBaseVirtualTree; ParentNode,
+  Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
+begin
+  InitialStates:= InitialStates+[ivsMultiline];
+
+end;
+
+procedure TVisWaptGUI.GridGroupsMeasureItem(Sender: TBaseVirtualTree;
+  TargetCanvas: TCanvas; Node: PVirtualNode; var NodeHeight: Integer);
+var
+  i,maxheight,cellheight:integer;
+begin
+  maxheight := (Sender as TSOGrid).DefaultNodeHeight;
+  if Sender.MultiLine[Node] then
+  begin
+    for i:=0 to (Sender as TSOGrid).Header.Columns.Count-1 do
+    begin
+      if (coVisible in (Sender as TSOGrid).Header.Columns[i].Options) then
+      begin
+        CellHeight := (Sender as TSOGrid).ComputeNodeHeight(TargetCanvas, Node, i);
+        if cellheight>maxheight then
+          maxheight:=cellheight;
+      end;
+    end;
+  end;
+  NodeHeight:=maxheight;
+end;
+
 procedure TVisWaptGUI.GridHostPackagesChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
@@ -1768,7 +1814,11 @@ end;
 
 procedure TVisWaptGUI.GridHostsColumnDblClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
+var
+  hi:THitInfo;
 begin
+  //Sender.GetHitTestInfoAt(Mouse.x,Mouse.y,False,hi);
+
   ActEditHostPackage.Execute;
 end;
 
@@ -1952,6 +2002,12 @@ begin
         CellText:='';
     end;
   end;
+end;
+
+procedure TVisWaptGUI.GridHostsHeaderDblClick(Sender: TVTHeader;
+  HitInfo: TVTHeaderHitInfo);
+begin
+  exit;
 end;
 
 procedure TVisWaptGUI.GridHostTasksPendingChange(Sender: TBaseVirtualTree;

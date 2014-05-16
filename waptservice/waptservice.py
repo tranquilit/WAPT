@@ -119,7 +119,7 @@ if options.loglevel is not None:
 
 def get_authorized_callers_ip(waptserver_url):
     """Returns list of IP allowed to request actions with check_caller decorator"""
-    ips = ['127.0.0.1']
+    ips = []
     if waptserver_url:
         try:
             ips.append(socket.gethostbyname( urlparse(waptserver_url).hostname))
@@ -166,7 +166,7 @@ class WaptServiceConfig(object):
     >>> waptconfig.load()
     """
 
-    global_attributes = ['config_filename','wapt_user','wapt_password','MAX_HISTORY','waptservice_port',
+    global_attributes = ['config_filename','waptservice_user','waptservice_password','MAX_HISTORY','waptservice_port',
          'dbpath','loglevel','log_directory','wapt_server','authorized_callers_ip']
 
     def __init__(self,config_filename=None):
@@ -174,8 +174,8 @@ class WaptServiceConfig(object):
             self.config_filename = os.path.join(wapt_root_dir,'wapt-get.ini')
         else:
             self.config_filename = config_filename
-        self.wapt_user = "admin"
-        self.wapt_password = None
+        self.waptservice_user = "admin"
+        self.waptservice_password = None
 
         # maximum nb of tasks to keep in history wapt task manager
         self.MAX_HISTORY = 30
@@ -213,15 +213,15 @@ class WaptServiceConfig(object):
         # lecture configuration
         if config.has_section('global'):
             if config.has_option('global', 'waptservice_user'):
-                self.wapt_user = config.get('global', 'waptservice_user')
+                self.waptservice_user = config.get('global', 'waptservice_user')
             else:
-                self.wapt_user = 'admin'
+                self.waptservice_user = 'admin'
 
             if config.has_option('global','waptservice_password'):
-                self.wapt_password = config.get('global', 'waptservice_password')
+                self.waptservice_password = config.get('global', 'waptservice_password')
             else:
-                logger.warning(u"WARNING : no password set, using default password")
-                self.wapt_password='5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8'  # = password
+                logger.info(u"WARNING : no password set, using default password")
+                self.waptservice_password=''  # = password
 
             if config.has_option('global','waptservice_port'):
                 self.waptservice_port = int(config.get('global','waptservice_port'))
@@ -402,12 +402,19 @@ def wapt():
 
 
 
+def forbidden():
+    """Sends a 403 response that enables basic auth"""
+    return Response(
+        'Restricted access.\n',
+         403)
+
+
 def authenticate():
     """Sends a 401 response that enables basic auth"""
     return Response(
-    'Could not verify your access level for that URL.\n'
-    'You have to login with proper credentials', 401,
-    {'WWW-Authenticate': 'Basic realm="Login Required"'})
+        'Could not verify your access level for that URL.\n'
+        'You have to login with proper credentials', 401,
+        {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
 
 def check_auth(username, password):
@@ -423,10 +430,10 @@ def check_auth(username, password):
         win32security.LOGON32_LOGON_NETWORK,
         win32security.LOGON32_PROVIDER_DEFAULT
         )
-        return hUser is not None
+        return hUser
     except win32security.error:
-        if app.waptconfig.wapt_password:
-            return app.waptconfig.wapt_user == username and app.waptconfig.wapt_password == hashlib.sha256(password).hexdigest()
+        if app.waptconfig.waptservice_password:
+            return app.waptconfig.waptservice_user == username and app.waptconfig.waptservice_password == hashlib.sha256(password).hexdigest()
     else:
         return False
 
@@ -435,7 +442,10 @@ def allow_waptserver_or_local_auth(f):
     """Restrict access to localhost authenticated or waptserver IP"""
     @wraps(f)
     def decorated(*args, **kwargs):
-        if not request.remote_addr in app.waptconfig.authorized_callers_ip:
+        if request.remote_addr in app.waptconfig.authorized_callers_ip:
+            return f(*args, **kwargs)
+        elif request.remote_addr == '127.0.0.1':
+            auth = request.authorization
             if not auth:
                 logging.info('no credential given')
                 return authenticate()
@@ -444,6 +454,8 @@ def allow_waptserver_or_local_auth(f):
             if not check_auth(auth.username, auth.password):
                 return authenticate()
             logging.info("user %s authenticated" % auth.username)
+        else:
+            return forbidden()
         return f(*args, **kwargs)
     return decorated
 
@@ -451,11 +463,20 @@ def allow_waptserver_or_local_unauth(f):
     """Restrict access to localhost unauthenticated or waptserver IP"""
     @wraps(f)
     def decorated(*args, **kwargs):
-        auth = request.authorization
         if not request.remote_addr in (app.waptconfig.authorized_callers_ip + ['127.0.0.1']):
             logger.debug(u'caller src address {} is not in authorized list {}'.format(request.remote_addr,app.waptconfig.authorized_callers_ip))
-            return authenticate()
+            return forbidden()
         return f(*args, **kwargs)
+    return decorated
+
+def allow_local(f):
+    """Restrict access to localhost authenticated or waptserver IP"""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if request.remote_addr in ['127.0.0.1']:
+            return f(*args, **kwargs)
+        else:
+            return forbidden()
     return decorated
 
 def allow_local_auth(f):
@@ -472,12 +493,14 @@ def allow_local_auth(f):
             if not check_auth(auth.username, auth.password):
                 return authenticate()
             logging.info("user %s authenticated" % auth.username)
+        else:
+            return forbidden()
         return f(*args, **kwargs)
     return decorated
 
 @app.route('/status')
 @app.route('/status.json')
-@allow_waptserver_or_local_unauth
+@allow_local
 def status():
     rows = []
     with sqlite3.connect(app.waptconfig.dbpath) as con:
@@ -522,7 +545,7 @@ def status():
 @app.route('/list')
 @app.route('/packages')
 @app.route('/packages.json')
-@allow_waptserver_or_local_unauth
+@allow_local
 def all_packages():
     with sqlite3.connect(app.waptconfig.dbpath) as con:
         try:
@@ -557,7 +580,7 @@ def all_packages():
 
 
 @app.route('/package_icon')
-@allow_waptserver_or_local_unauth
+@allow_local
 def package_icon():
     """Return png icon for the required 'package' parameter
         get it from local cache if or from package's remote repositiory
@@ -593,7 +616,7 @@ def package_icon():
 
 @app.route('/package_details')
 @app.route('/package_details.json')
-@allow_waptserver_or_local_unauth
+@allow_local
 def package_details():
     #wapt=Wapt(config_filename=app.waptconfig.config_filename)
     package = request.args.get('package')
@@ -804,7 +827,7 @@ def install_log():
 
 
 @app.route('/enable')
-@allow_waptserver_or_local_auth
+@allow_local_auth
 def enable():
     logger.info(u"enable tasks scheduling")
     data = wapt().enable_tasks()
@@ -812,7 +835,7 @@ def enable():
 
 
 @app.route('/disable')
-@allow_waptserver_or_local_auth
+@allow_local_auth
 def disable():
     logger.info(u"disable tasks scheduling")
     data = wapt().disable_tasks()
@@ -821,7 +844,7 @@ def disable():
 
 @app.route('/register')
 @app.route('/register.json')
-@allow_waptserver_or_local_auth
+@allow_local_auth
 def register():
     logger.info(u"register computer")
     notify_user = int(request.args.get('notify_user','0')) == 1
@@ -910,7 +933,7 @@ def wapticon():
     return send_from_directory(app.static_folder+'/images','wapt.png',mimetype='image/png')
 
 @app.route('/', methods=['GET'])
-@allow_waptserver_or_local_unauth
+@allow_local
 def index():
     host_info = setuphelpers.host_info()
     data = dict(html=html,
@@ -925,7 +948,7 @@ def index():
 
 
 @app.route('/login', methods=['GET', 'POST'])
-@allow_waptserver_or_local_unauth
+@allow_local
 def login():
     error = None
     if request.method == 'POST':
@@ -1940,6 +1963,10 @@ if __name__ == "__main__":
                         os.path.join(wapt_root_dir,r'waptservice','ssl','waptservice.crt'))],
          'wsgi', {"wsgi_app":app})
     try:
+        # http
+        check_open_port(waptconfig.waptservice_port)
+        # https
+        check_open_port(waptconfig.waptservice_port+1)
         logger.info(u"starting waptservice")
         server.start()
     except KeyboardInterrupt:

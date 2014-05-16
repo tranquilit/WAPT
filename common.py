@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.36"
+__version__ = "0.8.37"
 import os
 import re
 import logging
@@ -2757,12 +2757,24 @@ class Wapt(object):
                 errors.append(filename)
         return errors
 
-    def set_local_password(self,pwd):
-        """Set password for waptservice in ini file as a MD5 hex hash"""
+    def set_local_password(self,user='admin',pwd='password'):
+        """Set admin/password local auth for waptservice in ini file as a MD5 hex hash"""
         import md5
         conf = RawConfigParser()
         conf.read(self.config_filename)
+        conf.set('global','waptservice_user',user)
         conf.set('global','waptservice_password',md5.md5(pwd).hexdigest())
+        conf.write(open(self.config_filename,'wb'))
+
+    def reset_local_password(self):
+        """Remove the local waptservice auth from ini file"""
+        import md5
+        conf = RawConfigParser()
+        conf.read(self.config_filename)
+        if conf.has_option('global','waptservice_user'):
+            conf.remove_option('global','waptservice_user')
+        if conf.has_option('global','waptservice_password'):
+            conf.remove_option('global','waptservice_password')
         conf.write(open(self.config_filename,'wb'))
 
     def check_cancelled(self,msg='Task cancelled'):
@@ -2845,6 +2857,7 @@ class Wapt(object):
                 raise Exception(u'%s is not a file nor a directory, aborting.' % ensure_unicode(fname))
 
             try:
+                previous_cwd = os.getcwd()
                 # chech sha1
                 self.check_cancelled()
                 manifest_filename = os.path.join( packagetempdir,'WAPT','manifest.sha1')
@@ -2874,7 +2887,6 @@ class Wapt(object):
 
                 self.check_cancelled()
                 setup_filename = os.path.join( packagetempdir,'setup.py')
-                previous_cwd = os.getcwd()
                 os.chdir(os.path.dirname(setup_filename))
                 if not os.getcwd() in sys.path:
                     sys.path.append(os.getcwd())

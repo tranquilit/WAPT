@@ -10,27 +10,38 @@ ShowFileExtensions=FALSE
 ClassName=TProjectFilesNode
 
 [Project\ChildNodes\Node0\ChildNodes\Node0]
+ClassName=TProjectFolderNode
+Name=config
+
+[Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node0]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\common.py
+FileName=$[Project-Path]waptserver.ini
+
+[Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes]
+Count=1
 
 [Project\ChildNodes\Node0\ChildNodes\Node1]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\setuphelpers.py
+FileName=C:\tranquilit\wapt\common.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node2]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptpackage.py
+FileName=C:\tranquilit\wapt\setuphelpers.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node3]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-scanpackages.py
+FileName=C:\tranquilit\wapt\waptpackage.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node4]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\wapt-scanpackages.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node5]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]waptserver.py
 
 [Project\ChildNodes\Node0\ChildNodes]
-Count=5
+Count=6
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode

@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.36"
+__version__ = "0.8.37"
 import codecs
 import getpass
 import glob
@@ -834,6 +834,23 @@ def main():
                     jsonresult['result'] = result
                 else:
                     print u"%s" % result
+
+            elif action == 'setlocalpassword':
+                if len(args)>=2:
+                    pwd = ' '.join(args[1:])
+                else:
+                    pwd1 = getpass.getpass('Local password: ')
+                    pwd = getpass.getpass('Confirm password: ')
+                    if pwd1 != pwd:
+                        print('ERROR: Passwords not matching')
+                        sys.exit(1)
+                result = mywapt.set_local_password(
+                    user='admin',
+                    pwd=pwd.decode(sys.getfilesystemencoding()))
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print u"Local auth password set successfully"
 
             elif action == 'update-status':
                 result = mywapt.update_server_status(force=options.force)

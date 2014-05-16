@@ -301,7 +301,7 @@ object VisWaptGUI: TVisWaptGUI
         Header.DefaultHeight = 17
         Header.MaxHeight = 17
         Header.MinHeight = 17
-        Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
         Header.SortColumn = 1
         Header.Style = hsFlatButtons
         Images = ImageList1
@@ -319,6 +319,7 @@ object VisWaptGUI: TVisWaptGUI
         OnDragDrop = GridHostsDragDrop
         OnEditing = GridHostsEditing
         OnGetImageIndexEx = GridHostsGetImageIndexEx
+        OnHeaderDblClick = GridHostsHeaderDblClick
       end
       object HostPages: TPageControl
         Left = 303
@@ -722,9 +723,6 @@ object VisWaptGUI: TVisWaptGUI
               Top = 0
               Width = 564
               Align = alClient
-              Lines.Strings = (
-                'MemoInstallOutput'
-              )
               ScrollBars = ssAutoBoth
               TabOrder = 0
             end
@@ -880,7 +878,6 @@ object VisWaptGUI: TVisWaptGUI
             EditLabel.Caption = 'Tâche en cours'
             EditLabel.ParentColor = False
             TabOrder = 1
-            Text = 'HostRunningTask'
           end
           object Button4: TButton
             Left = 4
@@ -889,18 +886,6 @@ object VisWaptGUI: TVisWaptGUI
             Width = 156
             Action = ActCancelRunningTask
             TabOrder = 2
-          end
-          object HostRunningTaskLog: TMemo
-            Left = 272
-            Height = 118
-            Top = 2
-            Width = 288
-            Anchors = [akTop, akLeft, akRight]
-            Lines.Strings = (
-              'HostRunningTaskLog'
-            )
-            ScrollBars = ssAutoBoth
-            TabOrder = 4
           end
           object Splitter5: TSplitter
             Cursor = crVSplit
@@ -1338,12 +1323,18 @@ object VisWaptGUI: TVisWaptGUI
               Top = 0
               Width = 564
               Align = alClient
-              Lines.Strings = (
-                'Memo1'
-              )
               ScrollBars = ssAutoBoth
               TabOrder = 0
             end
+          end
+          object HostRunningTaskLog: TMemo
+            Left = 272
+            Height = 118
+            Top = 2
+            Width = 288
+            Anchors = [akTop, akLeft, akRight]
+            ScrollBars = ssAutoBoth
+            TabOrder = 4
           end
         end
       end
@@ -1358,16 +1349,17 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgGroups: TTabSheet
       Caption = 'Groupes'
-      ClientHeight = 527
-      ClientWidth = 1029
+      ClientHeight = 450
+      ClientWidth = 875
       object GridGroups: TSOGrid
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Side = asrBottom
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 497
+        Height = 420
         Top = 30
-        Width = 1029
+        Width = 875
+        OnGetText = GridGroupsGetText
         Align = alClient
         Color = clWhite
         Header.AutoSizeIndex = 0
@@ -1417,6 +1409,7 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'explicit_by'
           end>
         Header.DefaultHeight = 17
+        Header.MainColumn = 1
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
         Header.SortColumn = 1
         Header.Style = hsFlatButtons
@@ -1429,16 +1422,18 @@ object VisWaptGUI: TVisWaptGUI
         WantTabs = True
         OnColumnDblClick = GridGroupsColumnDblClick
         OnPaintText = GridPackagesPaintText
+        OnInitNode = GridGroupsInitNode
+        OnMeasureItem = GridGroupsMeasureItem
       end
       object Panel11: TPanel
         Left = 0
         Height = 30
         Top = 0
-        Width = 1029
+        Width = 875
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 1029
+        ClientWidth = 875
         TabOrder = 1
         object butSearchGroups: TButton
           Left = 148
@@ -1475,6 +1470,7 @@ object VisWaptGUI: TVisWaptGUI
         Height = 420
         Top = 30
         Width = 579
+        OnGetText = GridGroupsGetText
         Align = alClient
         Color = clWhite
         Header.AutoSizeIndex = 0
@@ -1541,6 +1537,8 @@ object VisWaptGUI: TVisWaptGUI
         OnChange = GridPackagesChange
         OnColumnDblClick = GridPackagesColumnDblClick
         OnPaintText = GridPackagesPaintText
+        OnInitNode = GridGroupsInitNode
+        OnMeasureItem = GridGroupsMeasureItem
       end
       object Splitter3: TSplitter
         Left = 579
@@ -1627,13 +1625,14 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgExternalRepo: TTabSheet
       Caption = 'Dépôt Externe'
-      ClientHeight = 527
-      ClientWidth = 1064
+      ClientHeight = 450
+      ClientWidth = 875
       object GridExternalPackages: TSOGrid
         Left = 0
-        Height = 497
+        Height = 420
         Top = 30
-        Width = 1064
+        Width = 875
+        OnGetText = GridGroupsGetText
         Align = alClient
         Color = clWhite
         Header.AutoSizeIndex = 0
@@ -1699,16 +1698,18 @@ object VisWaptGUI: TVisWaptGUI
         WantTabs = True
         OnDblClick = ActPackageDuplicateExecute
         OnPaintText = GridPackagesPaintText
+        OnInitNode = GridGroupsInitNode
+        OnMeasureItem = GridGroupsMeasureItem
       end
       object Panel8: TPanel
         Left = 0
         Height = 30
         Top = 0
-        Width = 1064
+        Width = 875
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 1064
+        ClientWidth = 875
         TabOrder = 1
         object EdSearch1: TEdit
           Left = 4
@@ -1738,7 +1739,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object urlExternalRepo: TLabel
           AnchorSideRight.Control = Changer
-          Left = 964
+          Left = 775
           Height = 13
           Top = 9
           Width = 20
@@ -1751,7 +1752,7 @@ object VisWaptGUI: TVisWaptGUI
           AnchorSideLeft.Side = asrBottom
           AnchorSideRight.Control = Panel8
           AnchorSideRight.Side = asrBottom
-          Left = 989
+          Left = 800
           Height = 25
           Top = 2
           Width = 75
@@ -1764,14 +1765,14 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgSources: TTabSheet
       Caption = 'Sources'
-      ClientHeight = 527
-      ClientWidth = 1064
+      ClientHeight = 450
+      ClientWidth = 875
       TabVisible = False
       inline testedit: TSynEdit
         Left = 0
-        Height = 493
+        Height = 416
         Top = 34
-        Width = 1064
+        Width = 875
         Align = alClient
         Font.Height = -13
         Font.Name = 'Courier New'
@@ -2289,11 +2290,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 34
         Top = 0
-        Width = 1064
+        Width = 875
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 34
-        ClientWidth = 1064
+        ClientWidth = 875
         TabOrder = 1
         object butInitWapt: TButton
           Left = 4
