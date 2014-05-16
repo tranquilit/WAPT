@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.36"
+__version__ = "0.8.37"
 
 import os
 import zipfile
@@ -385,7 +385,7 @@ sources      : %(sources)s
         raise Exception(u'no build/packaging part in version number %s' % self.version)
 
 
-def extract_iconpng_from_wapt(self,fname):
+def extract_iconpng_from_wapt(fname):
     """Return the content of WAPT/icon.png if it exists, a unknown.png file content if not
 
     """
@@ -460,6 +460,10 @@ class WaptLocalRepo(object):
     def update_packages_index(self,force_all=False):
         """Scan self.localpath directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash"""
         packages_fname = os.path.join(self.localpath,'Packages')
+        icons_path = os.path.join(self.localpath,'icons')
+        if not os.path.isdir(icons_path):
+            os.makedirs(icons_path)
+
         if not force_all and not self.packages:
             self.load_packages()
         old_entries = {}
@@ -494,6 +498,15 @@ class WaptLocalRepo(object):
                     processed.append(fname)
                 packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
                 self.packages.append(entry)
+                # looks for an icon in wapt package
+                icon_fn = os.path.join(icons_path,"%s.png"%entry.package)
+                if force_all or not os.path.isfile(icon_fn):
+                    try:
+                        icon = extract_iconpng_from_wapt(fname)
+                        open(icon_fn,'wb').write(icon)
+                    except Exception as e:
+                        logger.critical(r"Unable to extract icon for %s:%s"%(fname,e))
+
             except Exception,e:
                 print e
                 logger.critical("package %s: %s" % (fname,e))
