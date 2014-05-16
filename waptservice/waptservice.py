@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.36"
+__version__ = "0.8.37"
 
 import time
 import sys
@@ -174,7 +174,7 @@ class WaptServiceConfig(object):
             self.config_filename = os.path.join(wapt_root_dir,'wapt-get.ini')
         else:
             self.config_filename = config_filename
-        self.waptservice_user = "admin"
+        self.waptservice_user = None
         self.waptservice_password = None
 
         # maximum nb of tasks to keep in history wapt task manager
@@ -215,13 +215,13 @@ class WaptServiceConfig(object):
             if config.has_option('global', 'waptservice_user'):
                 self.waptservice_user = config.get('global', 'waptservice_user')
             else:
-                self.waptservice_user = 'admin'
+                self.waptservice_user = None
 
             if config.has_option('global','waptservice_password'):
                 self.waptservice_password = config.get('global', 'waptservice_password')
             else:
                 logger.info(u"WARNING : no password set, using default password")
-                self.waptservice_password=''  # = password
+                self.waptservice_password=None  # = password
 
             if config.has_option('global','waptservice_port'):
                 self.waptservice_port = int(config.get('global','waptservice_port'))
@@ -947,20 +947,6 @@ def index():
         return render_template('index.html',**data)
 
 
-@app.route('/login', methods=['GET', 'POST'])
-@allow_local
-def login():
-    error = None
-    if request.method == 'POST':
-        if request.form['username'] != 'admin' or \
-                request.form['password'] != 'secret':
-            error = 'Invalid credentials'
-        else:
-            flash('You were successfully logged in')
-            return redirect(url_for('index'))
-    return render_template('login.html', error=error)
-
-
 @app.route('/tasks')
 @app.route('/tasks.json')
 @allow_waptserver_or_local_unauth
@@ -1491,7 +1477,7 @@ class WaptPackageInstall(WaptTask):
         upgrade = cjoin(self.result.get('upgrade',[]))
         #skipped = cjoin(self.result['skipped'])
         errors = cjoin(self.result.get('errors',[]))
-        unavailable = u','.join(self.result.get('unavailable',[]))
+        unavailable = cjoin(self.result.get('unavailable',[]))
         s = []
         if install:
             s.append(u'Installés : {}'.format(install))
@@ -1556,6 +1542,12 @@ class WaptPackageForget(WaptTask):
         return u"Oublier {packagename} (tâche #{id})".format(classname=self.__class__.__name__,id=self.id,packagename=self.packagename)
 
 
+def firewall_running():
+    if setuphelpers.service_installed('MpsSvc'):
+        return setuphelpers.service_is_running('MpsSvc')
+    else:
+        return setuphelpers.service_installed('sharedaccess') and setuphelpers.isrunning('sharedaccess')
+
 class WaptTaskManager(threading.Thread):
     def __init__(self,config_filename = 'c:/wapt/wapt-get.ini'):
         threading.Thread.__init__(self)
@@ -1592,6 +1584,8 @@ class WaptTaskManager(threading.Thread):
 
         self.last_upgrade = None
         self.last_update = None
+
+        self.firewall_running = firewall_running()
 
     def update_runstatus(self,status):
         # update database with new runstatus
@@ -1650,7 +1644,7 @@ class WaptTaskManager(threading.Thread):
                 return same[0]
 
     def check_configuration(self):
-        """heck wapt configuration, reload ini file if changed"""
+        """Check wapt configuration, reload ini file if changed"""
         try:
             logger.debug(u"Checking if config file has changed")
             if waptconfig.reload_if_updated():
@@ -1680,6 +1674,14 @@ class WaptTaskManager(threading.Thread):
                     self.add_task(WaptDownloadPackage(req.asrequirement()),notify_user=True)
                 self.add_task(WaptUpdate(notify_user=False))
 
+    def check_firewall(self):
+        if not self.firewall_running:
+            if firewall_running():
+                self.firewall_running = True
+                self.add_task(WaptNetworkReconfig())
+            else:
+                self.firewall_running = False
+
     def run(self):
         """Queue management, event processing"""
         pythoncom.CoInitialize()
@@ -1693,6 +1695,7 @@ class WaptTaskManager(threading.Thread):
                 # check wapt configuration, reload ini file if changed
                 # reload wapt config
                 self.check_configuration()
+                self.check_firewall()
 
                 # check tasks queue
                 self.running_task = self.tasks_queue.get(timeout=waptconfig.waptservice_poll_timeout)
@@ -1963,11 +1966,11 @@ if __name__ == "__main__":
                         os.path.join(wapt_root_dir,r'waptservice','ssl','waptservice.crt'))],
          'wsgi', {"wsgi_app":app})
     try:
+        logger.info(u"starting waptservice")
         # http
         check_open_port(waptconfig.waptservice_port)
         # https
         check_open_port(waptconfig.waptservice_port+1)
-        logger.info(u"starting waptservice")
         server.start()
     except KeyboardInterrupt:
         logger.info(u"stopping waptservice")
