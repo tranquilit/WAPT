@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.35"
+__version__ = "0.8.36"
 
 import time
 import sys
@@ -400,22 +400,14 @@ def wapt():
     g.wapt.reload_config_if_updated()
     return g.wapt
 
-def requires_auth(f):
-    """Restrict access to localhost (authenticated) or waptserver IP"""
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        if request.remote_addr in app.waptconfig.authorized_callers_ip:
-            auth = request.authorization
-            if not auth:
-                logging.info('no credential given')
-                return authenticate()
 
-            logging.info("authenticating : %s" % auth.username)
-            if not check_auth(auth.username, auth.password):
-                return authenticate()
-            logging.info("user %s authenticated" % auth.username)
-        return f(*args, **kwargs)
-    return decorated
+
+def authenticate():
+    """Sends a 401 response that enables basic auth"""
+    return Response(
+    'Could not verify your access level for that URL.\n'
+    'You have to login with proper credentials', 401,
+    {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
 
 def check_auth(username, password):
@@ -439,29 +431,53 @@ def check_auth(username, password):
         return False
 
 
-def authenticate():
-    """Sends a 401 response that enables basic auth"""
-    return Response(
-    'Could not verify your access level for that URL.\n'
-    'You have to login with proper credentials', 401,
-    {'WWW-Authenticate': 'Basic realm="Login Required"'})
+def allow_waptserver_or_local_auth(f):
+    """Restrict access to localhost authenticated or waptserver IP"""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not request.remote_addr in app.waptconfig.authorized_callers_ip:
+            if not auth:
+                logging.info('no credential given')
+                return authenticate()
 
+            logging.info("authenticating : %s" % auth.username)
+            if not check_auth(auth.username, auth.password):
+                return authenticate()
+            logging.info("user %s authenticated" % auth.username)
+        return f(*args, **kwargs)
+    return decorated
 
-def check_ip_source(f):
-    """Restrict access to localhost or waptserver IP"""
+def allow_waptserver_or_local_unauth(f):
+    """Restrict access to localhost unauthenticated or waptserver IP"""
     @wraps(f)
     def decorated(*args, **kwargs):
         auth = request.authorization
-        if not request.remote_addr in app.waptconfig.authorized_callers_ip:
+        if not request.remote_addr in (app.waptconfig.authorized_callers_ip + ['127.0.0.1']):
             logger.debug(u'caller src address {} is not in authorized list {}'.format(request.remote_addr,app.waptconfig.authorized_callers_ip))
             return authenticate()
         return f(*args, **kwargs)
     return decorated
 
+def allow_local_auth(f):
+    """Restrict access to localhost authenticated or waptserver IP"""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if request.remote_addr in ['127.0.0.1']:
+            auth = request.authorization
+            if not auth:
+                logging.info('no credential given')
+                return authenticate()
+
+            logging.info("authenticating : %s" % auth.username)
+            if not check_auth(auth.username, auth.password):
+                return authenticate()
+            logging.info("user %s authenticated" % auth.username)
+        return f(*args, **kwargs)
+    return decorated
 
 @app.route('/status')
 @app.route('/status.json')
-@check_ip_source
+@allow_waptserver_or_local_unauth
 def status():
     rows = []
     with sqlite3.connect(app.waptconfig.dbpath) as con:
@@ -506,7 +522,7 @@ def status():
 @app.route('/list')
 @app.route('/packages')
 @app.route('/packages.json')
-@check_ip_source
+@allow_waptserver_or_local_unauth
 def all_packages():
     with sqlite3.connect(app.waptconfig.dbpath) as con:
         try:
@@ -541,7 +557,7 @@ def all_packages():
 
 
 @app.route('/package_icon')
-@check_ip_source
+@allow_waptserver_or_local_unauth
 def package_icon():
     """Return png icon for the required 'package' parameter
         get it from local cache if or from package's remote repositiory
@@ -577,7 +593,7 @@ def package_icon():
 
 @app.route('/package_details')
 @app.route('/package_details.json')
-@check_ip_source
+@allow_waptserver_or_local_unauth
 def package_details():
     #wapt=Wapt(config_filename=app.waptconfig.config_filename)
     package = request.args.get('package')
@@ -595,7 +611,7 @@ def package_details():
 
 
 @app.route('/runstatus')
-@check_ip_source
+@allow_waptserver_or_local_unauth
 def get_runstatus():
     data = []
     with sqlite3.connect(app.waptconfig.dbpath) as con:
@@ -613,7 +629,7 @@ def get_runstatus():
 
 @app.route('/checkupgrades')
 @app.route('/checkupgrades.json')
-@check_ip_source
+@allow_waptserver_or_local_unauth
 def get_checkupgrades():
     with sqlite3.connect(app.waptconfig.dbpath) as con:
         con.row_factory=sqlite3.Row
@@ -633,7 +649,7 @@ def get_checkupgrades():
 
 @app.route('/waptupgrade')
 @app.route('/waptupgrade.json')
-@check_ip_source
+@allow_waptserver_or_local_unauth
 def waptclientupgrade():
     """Launch an external 'wapt-get waptupgrade' process to upgrade local copy of wapt client"""
     data = task_manager.add_task(WaptClientUpgrade()).as_dict()
@@ -645,7 +661,7 @@ def waptclientupgrade():
 
 @app.route('/reload_config')
 @app.route('/reload_config.json')
-@check_ip_source
+@allow_waptserver_or_local_unauth
 def reload_config():
     """trigger reload of wapt-get.ini file for the service"""
     force = int(request.args.get('force','0')) == 1
@@ -660,7 +676,7 @@ def reload_config():
 
 @app.route('/upgrade')
 @app.route('/upgrade.json')
-@check_ip_source
+@allow_waptserver_or_local_unauth
 def upgrade():
     force = int(request.args.get('force','0')) != 0
     notify_user = int(request.args.get('notify_user','1')) != 0
@@ -680,7 +696,7 @@ def upgrade():
 
 @app.route('/download_upgrades')
 @app.route('/download_upgrades.json')
-@check_ip_source
+@allow_waptserver_or_local_unauth
 def download_upgrades():
     force = int(request.args.get('force','0')) != 0
     notify_user = int(request.args.get('notify_user','0')) != 0
@@ -698,7 +714,7 @@ def download_upgrades():
 
 @app.route('/upgrade2')
 @app.route('/upgrade2.json')
-@check_ip_source
+@allow_waptserver_or_local_unauth
 def upgrade2():
     notify_user = request.args.get('notify_user',None)
     if notify_user is not None:
@@ -714,7 +730,7 @@ def upgrade2():
 
 @app.route('/update')
 @app.route('/update.json')
-@check_ip_source
+@allow_waptserver_or_local_unauth
 def update():
     task = WaptUpdate()
     task.force = int(request.args.get('force','0')) != 0
@@ -728,7 +744,7 @@ def update():
 
 @app.route('/update_status')
 @app.route('/update_status.json')
-@check_ip_source
+@allow_waptserver_or_local_unauth
 def update_status():
     task = WaptUpdateServerStatus()
     data = task_manager.add_task(task).as_dict()
@@ -740,7 +756,7 @@ def update_status():
 
 @app.route('/longtask')
 @app.route('/longtask.json')
-@check_ip_source
+@allow_waptserver_or_local_unauth
 def longtask():
     notify_user = request.args.get('notify_user',None)
     if notify_user is not None:
@@ -759,7 +775,7 @@ def longtask():
 @app.route('/cleanup')
 @app.route('/cleanup.json')
 @app.route('/clean')
-@check_ip_source
+@allow_waptserver_or_local_unauth
 def cleanup():
     task = WaptCleanup()
     task.force = int(request.args.get('force','0')) == 1
@@ -773,7 +789,7 @@ def cleanup():
 
 @app.route('/install_log')
 @app.route('/install_log.json')
-@requires_auth
+@allow_waptserver_or_local_auth
 def install_log():
     logger.info(u"show install log")
     try:
@@ -788,7 +804,7 @@ def install_log():
 
 
 @app.route('/enable')
-@requires_auth
+@allow_waptserver_or_local_auth
 def enable():
     logger.info(u"enable tasks scheduling")
     data = wapt().enable_tasks()
@@ -796,7 +812,7 @@ def enable():
 
 
 @app.route('/disable')
-@requires_auth
+@allow_waptserver_or_local_auth
 def disable():
     logger.info(u"disable tasks scheduling")
     data = wapt().disable_tasks()
@@ -805,7 +821,7 @@ def disable():
 
 @app.route('/register')
 @app.route('/register.json')
-@check_ip_source
+@allow_waptserver_or_local_auth
 def register():
     logger.info(u"register computer")
     notify_user = int(request.args.get('notify_user','0')) == 1
@@ -819,7 +835,7 @@ def register():
 
 @app.route('/inventory')
 @app.route('/inventory.json')
-@requires_auth
+@allow_waptserver_or_local_auth
 def inventory():
     logger.info(u"Inventory")
     #wapt=Wapt(config_filename=app.waptconfig.config_filename)
@@ -833,7 +849,7 @@ def inventory():
 @app.route('/install', methods=['GET'])
 @app.route('/install.json', methods=['GET'])
 @app.route('/install.html', methods=['GET'])
-@requires_auth
+@allow_waptserver_or_local_auth
 def install():
     package = request.args.get('package')
     force = int(request.args.get('force','0')) == 1
@@ -848,7 +864,7 @@ def install():
 
 @app.route('/package_download')
 @app.route('/package_download.json')
-@requires_auth
+@allow_waptserver_or_local_auth
 def package_download():
     package = request.args.get('package')
     logger.info(u"download package %s" % package)
@@ -863,7 +879,7 @@ def package_download():
 
 @app.route('/remove', methods=['GET'])
 @app.route('/remove.json', methods=['GET'])
-@check_ip_source
+@allow_waptserver_or_local_auth
 def remove():
     package = request.args.get('package')
     logger.info(u"remove package %s" % package)
@@ -878,7 +894,7 @@ def remove():
 
 @app.route('/forget', methods=['GET'])
 @app.route('/forget.json', methods=['GET'])
-@check_ip_source
+@allow_waptserver_or_local_auth
 def forget():
     package = request.args.get('package')
     logger.info(u"Forget package %s" % package)
@@ -894,6 +910,7 @@ def wapticon():
     return send_from_directory(app.static_folder+'/images','wapt.png',mimetype='image/png')
 
 @app.route('/', methods=['GET'])
+@allow_waptserver_or_local_unauth
 def index():
     host_info = setuphelpers.host_info()
     data = dict(html=html,
@@ -908,7 +925,7 @@ def index():
 
 
 @app.route('/login', methods=['GET', 'POST'])
-@check_ip_source
+@allow_waptserver_or_local_unauth
 def login():
     error = None
     if request.method == 'POST':
@@ -923,7 +940,7 @@ def login():
 
 @app.route('/tasks')
 @app.route('/tasks.json')
-@check_ip_source
+@allow_waptserver_or_local_unauth
 def tasks():
     data = task_manager.tasks_status()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
@@ -934,7 +951,7 @@ def tasks():
 
 @app.route('/tasks_status')
 @app.route('/tasks_status.json')
-@check_ip_source
+@allow_waptserver_or_local_unauth
 def tasks_status():
     all = task_manager.tasks_status()
     data = []
@@ -953,7 +970,7 @@ def tasks_status():
 @app.route('/task')
 @app.route('/task.json')
 @app.route('/task.html')
-@check_ip_source
+@allow_waptserver_or_local_unauth
 def task():
     id = int(request.args['id'])
     tasks = task_manager.tasks_status()
@@ -974,7 +991,7 @@ def task():
 @app.route('/cancel_all_tasks')
 @app.route('/cancel_all_tasks.html')
 @app.route('/cancel_all_tasks.json')
-@check_ip_source
+@allow_waptserver_or_local_unauth
 def cancel_all_tasks():
     data = task_manager.cancel_all_tasks()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
@@ -985,7 +1002,7 @@ def cancel_all_tasks():
 
 @app.route('/cancel_running_task')
 @app.route('/cancel_running_task.json')
-@check_ip_source
+@allow_waptserver_or_local_unauth
 def cancel_running_task():
     data = task_manager.cancel_running_task()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
@@ -995,7 +1012,7 @@ def cancel_running_task():
 
 @app.route('/cancel_task')
 @app.route('/cancel_task.json')
-@check_ip_source
+@allow_waptserver_or_local_unauth
 def cancel_task():
     id = int(request.args['id'])
     data = task_manager.cancel_task(id)
