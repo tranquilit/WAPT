@@ -433,6 +433,7 @@ def check_auth(username, password):
         return hUser
     except win32security.error:
         if app.waptconfig.waptservice_password:
+            logger.debug('auth using wapt local account')
             return app.waptconfig.waptservice_user == username and app.waptconfig.waptservice_password == hashlib.sha256(password).hexdigest()
     else:
         return False

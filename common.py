@@ -2763,7 +2763,7 @@ class Wapt(object):
         conf = RawConfigParser()
         conf.read(self.config_filename)
         conf.set('global','waptservice_user',user)
-        conf.set('global','waptservice_password',md5.md5(pwd).hexdigest())
+        conf.set('global','waptservice_password',hashlib.sha256(pwd).hexdigest())
         conf.write(open(self.config_filename,'wb'))
 
     def reset_local_password(self):
