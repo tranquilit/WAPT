@@ -2249,9 +2249,6 @@ class WaptHostRepo(WaptRepo):
 
 ######################"""
 
-
-
-
 key_passwd = None
 
 
@@ -2529,8 +2526,6 @@ class Wapt(object):
                     self.update_server_status()
                 except Exception,e:
                     logger.critical(u'Unable to update server with current status : %s' % ensure_unicode(e))
-
-
 
     @property
     def host_uuid(self):

@@ -317,7 +317,7 @@ def main():
                                 print u"\n=== %s packages ===\n%s" % (k,'\n'.join(["  %s" % (s,) for s in result['downloads'][k]]),)
                     if result.get('unavailable',[]):
                         print(u'Critical : ')
-                        print(u' === Unavailable packages ===\n%s' % '\n'.join(["  %-30s" % s for s in  result['unavailable']]))
+                        print(u' === Unavailable packages ===\n%s' % '\n'.join(["  %-30s" % s[0] for s in  result['unavailable']]))
                 if mywapt.wapt_server:
                     try:
                         mywapt.update_server_status()

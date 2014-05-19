@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.37"
+__version__ = "0.8.38"
 
 import time
 import sys
@@ -138,6 +138,7 @@ class WaptEvents(object):
         self.max_history = max_history
         self.get_lock = threading.RLock()
         self.events = []
+        self.subscribers = []
 
 
     def get_missed(self,last_read=None):
@@ -155,6 +156,7 @@ class WaptEvents(object):
     def put(self, item):
         with self.get_lock:
             self.events.append(item)
+            item.subscribers = self.subscribers
             # keep track of a global position for consumers
             self.last +=1
             if len(self.events) > self.max_history:
@@ -459,6 +461,7 @@ def allow_waptserver_or_local_auth(f):
             return forbidden()
         return f(*args, **kwargs)
     return decorated
+
 
 def allow_waptserver_or_local_unauth(f):
     """Restrict access to localhost unauthenticated or waptserver IP"""
@@ -1469,7 +1472,7 @@ class WaptPackageInstall(WaptTask):
 
     def _run(self):
         def cjoin(l):
-            return u','.join([u"%s" % (p[1].asrequirement(),) for p in l])
+            return u','.join([u"%s" % (p[1].asrequirement() if p[1] else p[0],) for p in l])
         self.result = self.wapt.install(self.packagename,force = self.force)
         all_install = self.result.get('install',[])
         if self.result.get('additional',[]):

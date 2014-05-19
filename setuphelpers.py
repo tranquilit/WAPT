@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.37"
+__version__ = "0.8.38"
 import os
 import sys
 import logging
@@ -820,13 +820,21 @@ def reg_setvalue(key,name,value,type=_winreg.REG_SZ ):
     """
     return _winreg.SetValueEx(key,name,0,type,value)
 
+
 def reg_delvalue(key,name):
     """Remove the value of specified name inside 'key' folder
          key  : handle of registry key as returned by reg_openkey_noredir()
          name : value name
     """
-    return _winreg.DeleteKey(key,name)
-
+    try:
+        _winreg.DeleteValue(key,name)
+        return True
+    except WindowsError,e:
+        # WindowsError: [Errno 2] : file does not exist
+        if e.winerror == 2:
+            return False
+        else:
+            raise
 
 def registry_setstring(root,path,keyname,value,type=_winreg.REG_SZ):
     """Set the value of a string key in registry
@@ -1793,6 +1801,19 @@ def set_environ_variable(name,value,type=REG_EXPAND_SZ):
     # force to get new environ variable, as it is not reloaded immediately.
     os.environ[name] = value
     win32api.SendMessage(win32con.HWND_BROADCAST,win32con.WM_SETTINGCHANGE,0,'Environment')
+
+
+def unset_environ_variable(name):
+    r"""Remove a system wide persistent environment variable if it exist. Fails silently if it doesn't exist
+    """
+    with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment',
+            sam=KEY_READ | KEY_WRITE) as key:
+        result = reg_delvalue(key,name)
+    # force to get new environ variable, as it is not reloaded immediately.
+    if name in os.environ:
+        del(os.environ[name])
+        win32api.SendMessage(win32con.HWND_BROADCAST,win32con.WM_SETTINGCHANGE,0,'Environment')
+    return result
 
 
 def get_task(name):
