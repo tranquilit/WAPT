@@ -128,6 +128,21 @@ def get_authorized_callers_ip(waptserver_url):
             pass
     return ips
 
+class WaptEvent(object):
+    """Store single event with list of subscribers"""
+    DEFAULT_TTL = 20 * 60
+
+    def __init__(self,topic,subject,data=None,runstatus = ''):
+        self.topic = topic
+        self.subject = subject
+        self.data = copy.deepcopy(data)
+        self.runstatus = runstatus
+
+        self.id = None
+        self.ttl = DEFAULT_TTL
+        self.date = time.time()
+        # list of ids of subscribers which have not yet retrieved the event
+        self.subscribers = []
 
 class WaptEvents(object):
     """Thread safe central list of last events so that consumer can get list
@@ -156,11 +171,24 @@ class WaptEvents(object):
     def put(self, item):
         with self.get_lock:
             self.events.append(item)
-            item.subscribers = self.subscribers
+            item.subscribers.extend(self.subscribers)
             # keep track of a global position for consumers
             self.last +=1
+            item.id = self.last
             if len(self.events) > self.max_history:
                 del self.events[:len(self.events) - self.max_history]
+
+    def add_event(self,topic,subject,data=None,runstatus = ''):
+        item = WaptEvent(topic,subject,data,runstatus)
+        self.put(item)
+
+    def cleanup(self):
+        """Remove events with age>ttl"""
+        with self.get_lock:
+            for item in reversed(self.events):
+                if item.date+item.ttl > time.time():
+                    self.events.remove(item)
+
 
 class WaptServiceConfig(object):
     """Configuration parameters from wapt-get.ini file
@@ -896,7 +924,8 @@ def package_download():
     package = request.args.get('package')
     logger.info(u"download package %s" % package)
     notify_user = int(request.args.get('notify_user','0')) == 1
-    data = task_manager.add_task(WaptDownloadPackage(package),notify_user=notify_user).as_dict()
+    usecache = int(request.args.get('usecache','1')) == 1
+    data = task_manager.add_task(WaptDownloadPackage(package,usecache=usecache),notify_user=notify_user).as_dict()
 
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
@@ -1433,18 +1462,30 @@ class WaptDownloadPackage(WaptTask):
         super(WaptDownloadPackage,self).__init__()
         self.packagename = packagename
         self.usecache = usecache
+        self.size = 0
 
     def printhook(self,received,total,speed,url):
         self.wapt.check_cancelled()
         if total>1.0:
             stat = u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total, speed)
             self.progress = 100.0*received/total
+            if not self.size:
+                self.size = total
         else:
             stat = u''
         self.update_status('Downloading %s : %s' % (url,stat))
 
     def _run(self):
+        start = time.time()
         self.result = self.wapt.download_packages(self.packagename,usecache=self.usecache,printhook=self.printhook)
+        end = time.time()
+        if self.result['errors']:
+            self.summary = u"Erreur au téléchargement de {packagename}: {error}".format(packagename=self.packagename,error=self.result['errors'][0][1])
+        else:
+            if end-start> 0.01:
+                self.summary = u"Téléchargement de {packagename} terminé. {speed} kB/s".format(packagename=self.packagename,speed=self.size/1024/(end-start))
+            else:
+                self.summary = u"Téléchargement de {packagename} terminé.".format(packagename=self.packagename)
 
     def as_dict(self):
         d = WaptTask.as_dict(self)
