@@ -375,10 +375,11 @@ sources      : %(sources)s
         #return self.ascontrol(with_non_control_attributes=True).encode('utf8')
 
     def inc_build(self):
-        """Increment build number (last part of version)"""
+        """Increment last number part of version"""
         version_parts = self.parse_version()
         for part in ('packaging','subpatch','patch','minor','major'):
-            if part in version_parts and version_parts[part] != None :
+            if part in version_parts and version_parts[part] != None and\
+                (isinstance(version_parts[part],int) or version_parts[part].isdigit()):
                 version_parts[part] = "%i" % (int(version_parts[part])+1,)
                 self.version = make_version(version_parts)
                 return
