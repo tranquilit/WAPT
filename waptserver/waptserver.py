@@ -956,15 +956,22 @@ def delete_package(filename=""):
 
 @app.route('/wapt/<string:input_package_name>')
 def get_wapt_package(input_package_name):
-    logger.info( "get wapt package : "+ input_package_name)
     global wapt_folder
     package_name = secure_filename(input_package_name)
     r =  send_from_directory(wapt_folder, package_name)
-    logger.info("checking if content-length is there or not")
     if 'content-length' not in r.headers:
         r.headers.add_header('content-length', int(os.path.getsize(os.path.join(wapt_folder,package_name))))
-        logger.info('adding content-length')
-    logger.info(pprint.pformat(r.headers))
+    return r
+
+@app.route('/wapt/icons/<string:iconfilename>')
+def serve_icons(iconfilename):
+    """Serves a png icon file from /wapt/icons/ test waptserver"""
+    global wapt_folder
+    iconfilename = secure_filename(iconfilename)
+    icons_folder = os.path.join(wapt_folder,'icons')
+    r =  send_from_directory(icons_folder,iconfilename)
+    if 'content-length' not in r.headers:
+        r.headers.add_header('content-length', int(os.path.getsize(os.path.join(icons_folder,iconfilename))))
     return r
 
 
@@ -974,17 +981,10 @@ def get_host_package(input_package_name):
     global wapt_folder
     #TODO straighten this -host stuff
     host_folder = wapt_folder + '-host'
-    logger.info( "get host package : " + input_package_name)
     package_name = secure_filename(input_package_name)
     r =  send_from_directory(host_folder, package_name)
-    # on line content-length is not added to the header.
-    logger.info(pprint.pformat(r.headers))
-
-    logger.info("checking if content-length is there or not")
     if 'Content-Length' not in r.headers:
         r.headers.add_header('Content-Length', int(os.path.getsize(os.path.join(host_folder,package_name))))
-        logger.info('content-length added')
-    logger.info(pprint.pformat(r.headers))
     return r
 
 
@@ -994,7 +994,6 @@ def get_group_package(input_package_name):
     global wapt_folder
     #TODO straighten this -group stuff
     group_folder = wapt_folder + '-group'
-    logger.info( "get group package : " + input_package_name)
     package_name = secure_filename(input_package_name)
     r =  send_from_directory(group_folder, package_name)
     # on line content-length is not added to the header.
