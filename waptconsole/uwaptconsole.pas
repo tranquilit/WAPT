@@ -612,7 +612,7 @@ end;
 procedure TVisWaptGUI.ActPackageDuplicateExecute(Sender: TObject);
 var
   target,sourceDir: string;
-  package,uploadResult, FileName, FileNames, listPackages,Sources: ISuperObject;
+  package,uploadResult, FileName, FileNames, listPackages,Sources,aDir: ISuperObject;
 
 begin
   if not FileExists(GetWaptPrivateKeyPath) then
@@ -638,6 +638,7 @@ begin
 
   with  TVisLoading.Create(Self) do
   try
+    Sources := TSuperObject.Create(stArray) ;
     //Téléchargement en batchs
     for Filename in FileNames do
     begin
@@ -655,7 +656,6 @@ begin
       end;
     end;
 
-    Sources := TSuperObject.Create(stArray) ;
     for Filename in FileNames do
     begin
       ProgressTitle('Duplication de '+FileName.AsString);
@@ -683,6 +683,8 @@ begin
     else
       ShowMessage('Erreur lors de la duplication.');
   finally
+    for aDir in Sources do
+      DeleteDirectory(copy(aDir.AsString,3,length(aDir.AsString)-3),False);
     Free;
   end;
 
