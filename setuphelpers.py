@@ -685,6 +685,8 @@ def programfiles32():
 
 
 def iswin64():
+    # could be
+    # return platform.machine()=='AMD64'
     return 'PROGRAMW6432' in os.environ
 
 
@@ -1255,6 +1257,9 @@ def uninstall_cmd(guid):
                     args = shlex.split(cmd,posix=False)
                     if not '/q' in cmd.lower():
                         args.append('/q')
+                    if not '/norestart' in cmd.lower():
+                        args.append('/norestart')
+
                 else:
                     # separer commande et parametres pour eventuellement
                     cmd_arg = re.match(r'([^/]*?)\s+([/-].*)',cmd)
