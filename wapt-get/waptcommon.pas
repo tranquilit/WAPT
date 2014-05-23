@@ -298,7 +298,18 @@ var
 begin
   if StrLeft(action,1)<>'/' then
     action := '/'+action;
-  strresult := httpGetString(GetWaptLocalURL+action,False,timeout,60000,60000,user,password);
+  try
+    strresult := httpGetString(GetWaptLocalURL+action,False,timeout,60000,60000,user,password);
+  except
+    {on E:HTTPException do
+      if E.HTTPStatus=401 then
+        with TLoginEvent do;
+        begin
+
+        end
+        else}
+          raise;
+  end;
   Result := SO(strresult);
 end;
 
@@ -562,8 +573,6 @@ end;
 function AppIniFilename: Utf8String;
 begin
   result := GetAppConfigDir(False)+GetApplicationName+'.ini';
-  if not FileExists(Result) then
-    result := WaptIniFilename;
 end;
 
 function WaptIniFilename: Utf8String;

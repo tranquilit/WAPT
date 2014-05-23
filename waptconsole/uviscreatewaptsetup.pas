@@ -52,16 +52,6 @@ begin
       showMessage('Veuillez rentrer le chemin vers la clé publique');
       CanClose:=False;
     end;
-    if (edRepoUrl.Text = '') then
-    begin
-      ShowMessage('Veuillez rentrer l''adresse du dépot Wapt ');
-      CanClose:=False;
-    end;
-    if (edWaptServerUrl.Text = '') then
-    begin
-      ShowMessage('Veuillez rentrer l''adresse du serveur Wapt ');
-      CanClose:=False;
-    end;
     if not DirectoryExists(fnWaptDirectory.Caption) then
     begin
       ShowMessage('Le répertoire pour sauvegarder waptsetup n''est pas valide: '+fnWaptDirectory.Directory);

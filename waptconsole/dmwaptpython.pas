@@ -36,7 +36,7 @@ var
   DMPython: TDMPython;
 
 implementation
-
+uses waptcommon;
 {$R *.lfm}
 
 procedure TDMPython.SetWaptConfigFileName(AValue: String);
@@ -47,6 +47,8 @@ begin
   FWaptConfigFileName:=AValue;
   if AValue<>'' then
   begin
+    if not FileExists(AValue) then
+      CopyFile(WaptIniFilename,AValue);
     st := TStringList.Create;
     try
       st.Append('import logging');
