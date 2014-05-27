@@ -396,7 +396,7 @@ def register_ext(appname,fileext,shellopen,icon=None,otherverbs=[]):
             setvalue(HKEY_CLASSES_ROOT,makepath(filetype,"shell",verb,"command"),cmd)
 
 
-def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy):
+def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy,enable_replace_at_reboot=True):
     """Copy src directory to dst directory. dst is created if it doesn't exists
         src can be relative to installation temporary dir
         oncopy is called for each file copy. if False is returned, copy is skipped
@@ -429,13 +429,22 @@ def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy
                 if oncopy('directory',srcname,dstname):
                     copytree2(srcname, dstname, ignore = ignore,onreplace=onreplace,oncopy=oncopy)
             else:
-                if os.path.isfile(dstname):
-                    if onreplace(srcname,dstname) and oncopy('overwrites',srcname,dstname):
-                        os.unlink(dstname)
-                        shutil.copy2(srcname, dstname)
-                else:
-                    if oncopy('copy',srcname,dstname):
-                        shutil.copy2(srcname, dstname)
+                try:
+                    if os.path.isfile(dstname):
+                        if onreplace(srcname,dstname) and oncopy('overwrites',srcname,dstname):
+                            os.unlink(dstname)
+                            shutil.copy2(srcname, dstname)
+                    else:
+                        if oncopy('copy',srcname,dstname):
+                            shutil.copy2(srcname, dstname)
+                except OSError as e:
+                    # file is locked...
+                    if enable_replace_at_reboot and e.errno == 5:
+                        filecopyto(srcname,dstname+'.pending')
+                        replace_at_next_reboot(tmp_filename=dstname+'.pending',target_filename=dstname)
+                    else:
+                        raise
+
         except (IOError, os.error), why:
             logger.critical(u'Error copying from "%s" to "%s" : %s' % (ensure_unicode(src),ensure_unicode(dst),ensure_unicode(why)))
             errors.append((srcname, dstname, str(why)))
