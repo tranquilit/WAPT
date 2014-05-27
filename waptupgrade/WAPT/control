@@ -1,0 +1,13 @@
+package      : tis-waptupgrade
+version      : 0.8.25.0-0
+architecture : all
+section      : base
+priority     : optional
+maintainer   : Hubert TOUVET
+description  : Upgrades main Wapt client files
+ wapt-get.exe, wapt-get.py, common.py, waptpackage.py, setuphelpers.py
+ wapttray.exe
+ waptservice files
+ waptdevutils.py
+depends      : 
+sources      : https://srvdev/sources/tis-waptupgrade-wapt/trunk
