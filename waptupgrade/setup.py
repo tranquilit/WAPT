@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from setuphelpers import *
+import os
 
 # registry key(s) where WAPT will find how to remove the application(s)
 uninstallkey = []
 
-def update_sources(checkout_dir):
+def update_sources():
     files = [
          'common.py',
          'setuphelpers.py',
@@ -31,6 +32,8 @@ def update_sources(checkout_dir):
                     result.append(name)
         return result
 
+    checkout_dir = os.path.abspath(os.path.join(os.getcwd(),'..'))
+
     # cleanup patchs dir
     shutil.rmtree(os.path.join(checkout_dir,'waptupgrade','patchs'))
     os.makedirs(os.path.join(checkout_dir,'waptupgrade','patchs'))
@@ -49,7 +52,7 @@ def update_sources(checkout_dir):
 
 def update_control(entry):
     """Update package control file before build-upload"""
-    update_sources(os.getcwd())
+    update_sources()
     waptget = get_file_properties(r'patchs\wapt-get.exe')
     entry.version = waptget['FileVersion']+'-0'
 
