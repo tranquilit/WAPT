@@ -4000,9 +4000,9 @@ class Wapt(object):
                 entry.inc_build()
                 entry.save_control_to_wapt(directoryname)
 
-            package_filename = entry.make_package_filename()
+            entry.filename = entry.make_package_filename()
             logger.debug(u'Control data : \n%s' % entry.ascontrol())
-            result_filename = os.path.abspath(os.path.join( directoryname,'..',package_filename))
+            result_filename = os.path.abspath(os.path.join( directoryname,'..',entry.filename))
             entry.localpath = os.path.dirname(result_filename)
 
             allfiles = create_recursive_zip_signed(
