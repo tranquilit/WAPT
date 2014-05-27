@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.37"
+__version__ = "0.8.38"
 
 import os
 import zipfile
@@ -359,7 +359,7 @@ sources      : %(sources)s
 
     property
     def download_url(self):
-        return self.repo_url+'/'+filename.strip('./')
+        return self.repo_url+'/'+self.filename.strip('./')
 
     def as_dict(self):
         result ={}
