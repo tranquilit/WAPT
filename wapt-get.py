@@ -605,7 +605,7 @@ def main():
                 if len(args) < 3:
                     print u"You must provide the source package and the new name"
                     sys.exit(1)
-                result = mywapt.duplicate_package(*args[1:5],build=False)
+                result = mywapt.duplicate_package(*args[1:4],target_directory='',build=False)
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
