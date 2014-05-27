@@ -437,9 +437,9 @@ def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy
                     else:
                         if oncopy('copy',srcname,dstname):
                             shutil.copy2(srcname, dstname)
-                except IOError as e:
+                except (IOError, os.error) as e:
                     # file is locked...
-                    if enable_replace_at_reboot and e.errno == 5:
+                    if enable_replace_at_reboot and e.errno in (5,13):
                         filecopyto(srcname,dstname+'.pending')
                         replace_at_next_reboot(tmp_filename=dstname+'.pending',target_filename=dstname)
                     else:
