@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.37"
+__version__ = "0.8.38"
 import os
 import re
 import logging
@@ -2311,6 +2311,9 @@ class Wapt(object):
         # list of process pids launched by run command
         self.pidlist = []
 
+        # events handler
+        self.events = None
+
         import pythoncom
         pythoncom.CoInitialize()
 
@@ -3284,7 +3287,7 @@ class Wapt(object):
         if not isinstance(apackages,list):
             apackages = [apackages]
         result = []
-        installed = [ p.package for p in self.installed().values() if p.package not in apackages ]
+        installed = [ p.asrequirement() for p in self.installed().values() if p.asrequirement() not in apackages ]
         for packagename in installed:
             # test for each installed package if the removal would imply a reinstall
             test = self.check_depends(packagename,assume_removed=apackages)
@@ -3904,6 +3907,7 @@ class Wapt(object):
             manifest = json.dumps(manifest_data,indent=True)
             open(os.path.join(zip_or_directoryname,'WAPT','manifest.sha1'),'w').write(manifest)
 
+        logger.info('Signing package manifest %s using private key %s'%(zip_or_directoryname,private_key))
         signature = ssl_sign_content(manifest,private_key=private_key,callback=callback)
         if os.path.isfile(zip_or_directoryname):
             waptzip.writestr('WAPT/signature',signature.encode('base64'),compress_type=zipfile.ZIP_STORED)
@@ -4023,6 +4027,10 @@ class Wapt(object):
         if not isinstance(sources_directories,list):
             sources_directories = [sources_directories]
         buildresults = []
+
+        if not self.private_key or not os.path.isfile(self.private_key):
+            raise Exception('Unable to build %s, private key %s not provided or not present'%(sources_directories,self.private_key))
+
         for source_dir in [os.path.abspath(p) for p in sources_directories]:
             if os.path.isdir(source_dir):
                 logger.info(u'Building  %s' % source_dir)
@@ -4821,6 +4829,13 @@ class Wapt(object):
         if newname:
             newname = newname.lower()
 
+        if not private_key:
+            private_key = self.private_key
+
+        if build:
+            if not private_key or not os.path.isfile(private_key) :
+                raise Exception('Would be unable to build %s after duplication, private key %s not provided or not present'%(packagename,private_key))
+
         # default empty result
         result = {}
 
@@ -4944,9 +4959,6 @@ class Wapt(object):
             build_res = self.build_package(target_directory,inc_package_release=False,excludes=excludes)
             result['target'] = build_res['filename']
             result['package'] = build_res['package']
-            #get default private_key if not provided
-            if not private_key:
-                private_key = self.private_key
             # sign package
             if private_key:
                 self.sign_package(build_res['filename'],excludes=excludes,private_key=private_key,callback=callback)
