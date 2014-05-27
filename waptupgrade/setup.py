@@ -57,7 +57,7 @@ def update_control(entry):
     """Update package control file before build-upload"""
     update_sources()
     waptget = get_file_properties(r'patchs\wapt-get.exe')
-    rev = open('version').read().strip()
+    rev = open('../version').read().strip()
     entry.version = '%s-%s' % (waptget['FileVersion'],rev)
 
 def oncopy(msg,src,dst):
