@@ -41,14 +41,7 @@ def update_sources():
         fn = os.path.join(checkout_dir,f)
         target_fn = os.path.join(checkout_dir,'waptupgrade','patchs',f)
         if os.path.isfile(fn):
-            try:
-                filecopyto(fn,target_fn)
-            except OSError as e:
-                # file is locked...
-                if e.errno == 5:
-                    filecopyto(fn,target_fn+'.pending')
-                    replace_at_next_reboot(tmp_filename=target_fn+'.pending',target_filename=target_fn)
-
+            filecopyto(fn,target_fn)
         elif os.path.isdir(fn):
             copytree2(
                 src=fn,
@@ -68,7 +61,9 @@ def oncopy(msg,src,dst):
     return True
 
 def update_registry_version(version):
-    with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1') as waptis:
+    import _winreg
+    with _winreg.CreateKeyEx(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1',\
+            0, _winreg.KEY_READ| _winreg.KEY_WRITE ) as waptis:
         reg_setvalue(waptis,"DisplayName","WAPT %s" % version)
         reg_setvalue(waptis,"DisplayVersion","WAPT %s" % version)
         reg_setvalue(waptis,"InstallDate",currentdate())
