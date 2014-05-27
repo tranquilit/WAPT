@@ -41,7 +41,14 @@ def update_sources():
         fn = os.path.join(checkout_dir,f)
         target_fn = os.path.join(checkout_dir,'waptupgrade','patchs',f)
         if os.path.isfile(fn):
-            filecopyto(fn,target_fn)
+            try:
+                filecopyto(fn,target_fn)
+            except OSError as e:
+                # file is locked...
+                if e.errno == 5:
+                    filecopyto(fn,target_fn+'.pending')
+                    replace_at_next_reboot(tmp_filename=target_fn+'.pending',target_filename=target_fn)
+
         elif os.path.isdir(fn):
             copytree2(
                 src=fn,
