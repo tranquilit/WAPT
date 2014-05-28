@@ -36,29 +36,34 @@ def update_sources():
         return result
 
     checkout_dir = os.path.abspath(os.path.join(os.getcwd(),'..'))
-
-    # cleanup patchs dir
-    shutil.rmtree(os.path.join(checkout_dir,'waptupgrade','patchs'))
-    os.makedirs(os.path.join(checkout_dir,'waptupgrade','patchs'))
-    for f in files:
-        fn = os.path.join(checkout_dir,f)
-        target_fn = os.path.join(checkout_dir,'waptupgrade','patchs',f)
-        if os.path.isfile(fn):
-            filecopyto(fn,target_fn)
-        elif os.path.isdir(fn):
-            copytree2(
-                src=fn,
-                dst=target_fn,
-                onreplace = default_overwrite,
-                ignore=ignore)
-
+    if os.path.isfile(os.path.join(checkout_dir,'version')):
+        # cleanup patchs dir
+        shutil.rmtree(os.path.join(checkout_dir,'waptupgrade','patchs'))
+        os.makedirs(os.path.join(checkout_dir,'waptupgrade','patchs'))
+        for f in files:
+            fn = os.path.join(checkout_dir,f)
+            target_fn = os.path.join(checkout_dir,'waptupgrade','patchs',f)
+            if os.path.isfile(fn):
+                filecopyto(fn,target_fn)
+            elif os.path.isdir(fn):
+                copytree2(
+                    src=fn,
+                    dst=target_fn,
+                    onreplace = default_overwrite,
+                    ignore=ignore)
+        return True
+    else:
+        print(u'Unable to update sources of wapt from %s, skipping update_sources'%checkout_dir)
+        return False
 
 def update_control(entry):
     """Update package control file before build-upload"""
-    update_sources()
-    waptget = get_file_properties(r'patchs\wapt-get.exe')
-    rev = open('../version').read().strip()
-    entry.version = '%s-%s' % (waptget['FileVersion'],rev)
+    if update_sources():
+        waptget = get_file_properties(r'patchs\wapt-get.exe')
+        rev = open('../version').read().strip()
+        entry.version = '%s-%s' % (waptget['FileVersion'],rev)
+    else:
+        print(u'Keeping current control data %s (%s)'%(control.package,control.version))
 
 def oncopy(msg,src,dst):
     print(u'%s : "%s" to "%s"' % (ensure_unicode(msg),ensure_unicode(src),ensure_unicode(dst)))
