@@ -74,19 +74,23 @@ def update_registry_version(version):
 
 def install():
     # if you want to modify the keys depending on environment (win32/win64... params..)
-    print('Mise a jour partielle du client Wapt')
+    print(u'Partial upgrade of WAPT  client')
     killalltasks('wapttray.exe')
     copytree2('patchs',WAPT.wapt_base_dir, onreplace = default_overwrite,oncopy=oncopy)
-    update_registry_version(control.version.split('-')[0])
+    update_registry_version(control.version)
     # restart of service can not be done by service...
     if service_installed('waptservice') and service_is_running('waptservice'):
-        tmp_bat = tempfile.NamedTemporaryFile(prefix='waptrestart',suffix='.cmd',mode='wt',delete=False)
-        tmp_bat.write('ping -n 2 127.0.0.1 >nul')
-        tmp_bat.write('net stop waptservice')
-        tmp_bat.write('net start waptservice')
-        tmp_bat.write('del "%s"'%tmp_bat.name)
-        tmp_bat.close()
-        shell_launch(tmp_bat.name)
+        import requests,json
+        try:
+            res = json.loads(requests.request.get('http://127.0.0.1:8088/waptservicerestart.json').read())
+        except:
+            tmp_bat = tempfile.NamedTemporaryFile(prefix='waptrestart',suffix='.cmd',mode='wt',delete=False)
+            tmp_bat.write('ping -n 2 127.0.0.1 >nul\n')
+            tmp_bat.write('net stop waptservice\n')
+            tmp_bat.write('net start waptservice\n')
+            tmp_bat.write('del "%s"\n'%tmp_bat.name)
+            tmp_bat.close()
+            shell_launch(tmp_bat.name)
 
-    print('Upgrade done')
+    print(u'Upgrade done')
 
