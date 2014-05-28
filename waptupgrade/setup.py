@@ -82,7 +82,7 @@ def install():
     if service_installed('waptservice') and service_is_running('waptservice'):
         import requests,json
         try:
-            res = json.loads(requests.request.get('http://127.0.0.1:8088/waptservicerestart.json').read())
+            res = json.loads(requests.get('http://127.0.0.1:8088/waptservicerestart.json').text)
         except:
             tmp_bat = tempfile.NamedTemporaryFile(prefix='waptrestart',suffix='.cmd',mode='wt',delete=False)
             tmp_bat.write('ping -n 2 127.0.0.1 >nul\n')
