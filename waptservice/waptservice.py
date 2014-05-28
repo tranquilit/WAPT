@@ -76,6 +76,8 @@ import ctypes
 import win32security
 import psutil
 
+import tempfile
+
 # wapt specific stuff
 import common
 from common import Wapt
@@ -714,6 +716,18 @@ def waptclientupgrade():
         return render_template('default.html',data=data,title='Upgrade')
 
 
+@app.route('/waptservicerestart')
+@app.route('/waptservicerestart.json')
+@allow_waptserver_or_local_unauth
+def waptservicerestart():
+    """Restart local waptservice using a spawned batch file"""
+    data = task_manager.add_task(WaptServiceRestart()).as_dict()
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('default.html',data=data,title='Upgrade')
+
+
 @app.route('/reload_config')
 @app.route('/reload_config.json')
 @allow_waptserver_or_local_unauth
@@ -1245,6 +1259,32 @@ class WaptClientUpgrade(WaptTask):
 
     def __str__(self):
         return u"Mise à jour du logiciel client Wapt"
+
+
+class WaptServiceRestart(WaptTask):
+    def __init__(self,**args):
+        super(WaptClientUpgrade,self).__init__()
+        self.priority = 10000
+        self.notify_server_on_start = False
+        self.notify_server_on_finish = False
+        self.notify_user = False
+        for k in args:
+            setattr(self,k,args[k])
+
+    def _run(self):
+        """Launch an external 'wapt-get waptupgrade' process to upgrade local copy of wapt client"""
+        tmp_bat = tempfile.NamedTemporaryFile(prefix='waptrestart',suffix='.cmd',mode='wt',delete=False)
+        tmp_bat.write('ping -n 4 127.0.0.1 >nul')
+        tmp_bat.write('net stop waptservice')
+        tmp_bat.write('net start waptservice')
+        tmp_bat.write('del "%s"'%tmp_bat.name)
+        tmp_bat.close()
+        os.startfile(tmp_bat.name)
+        output = 'WaptService restarted using batch file %s'%tmp_bat.name
+        self.result = {'result':'OK','message':output}
+
+    def __str__(self):
+        return u"Redémarrage du service local Wapt"
 
 
 class WaptUpdate(WaptTask):
