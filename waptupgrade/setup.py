@@ -72,11 +72,24 @@ def update_registry_version(version):
         reg_setvalue(waptis,"DisplayVersion","WAPT %s" % version)
         reg_setvalue(waptis,"InstallDate",currentdate())
 
+def check_exe_version(src,dst):
+    if os.path.splitext(dst)[1] in ('.exe','.dll'):
+        try:
+            ov = get_file_properties(dst)['FileVersion']
+            nv = get_file_properties(src)['FileVersion']
+            return Version(ov)<Version(nv)
+        except:
+            return True
+    else:
+        return True
+
 def install():
     # if you want to modify the keys depending on environment (win32/win64... params..)
     print(u'Partial upgrade of WAPT  client')
     killalltasks('wapttray.exe')
-    copytree2('patchs',WAPT.wapt_base_dir, onreplace = default_overwrite,oncopy=oncopy)
+    copytree2('patchs',WAPT.wapt_base_dir,
+        onreplace = check_exe_version,
+        oncopy = oncopy)
     update_registry_version(control.version)
     # restart of service can not be done by service...
     if service_installed('waptservice') and service_is_running('waptservice'):
