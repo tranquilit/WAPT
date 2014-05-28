@@ -1262,8 +1262,9 @@ class WaptClientUpgrade(WaptTask):
 
 
 class WaptServiceRestart(WaptTask):
+    """A task to restart the waptservice using a spawned cmd process"""
     def __init__(self,**args):
-        super(WaptClientUpgrade,self).__init__()
+        super(WaptServiceRestart,self).__init__()
         self.priority = 10000
         self.notify_server_on_start = False
         self.notify_server_on_finish = False
@@ -1274,10 +1275,10 @@ class WaptServiceRestart(WaptTask):
     def _run(self):
         """Launch an external 'wapt-get waptupgrade' process to upgrade local copy of wapt client"""
         tmp_bat = tempfile.NamedTemporaryFile(prefix='waptrestart',suffix='.cmd',mode='wt',delete=False)
-        tmp_bat.write('ping -n 4 127.0.0.1 >nul')
-        tmp_bat.write('net stop waptservice')
-        tmp_bat.write('net start waptservice')
-        tmp_bat.write('del "%s"'%tmp_bat.name)
+        tmp_bat.write('ping -n 2 127.0.0.1 >nul\n')
+        tmp_bat.write('net stop waptservice\n')
+        tmp_bat.write('net start waptservice\n')
+        tmp_bat.write('del "%s"\n'%tmp_bat.name)
         tmp_bat.close()
         os.startfile(tmp_bat.name)
         output = 'WaptService restarted using batch file %s'%tmp_bat.name
