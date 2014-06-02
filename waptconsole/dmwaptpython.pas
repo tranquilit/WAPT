@@ -47,6 +47,8 @@ begin
   FWaptConfigFileName:=AValue;
   if AValue<>'' then
   begin
+    if not DirectoryExists(ExtractFileDir(AValue)) then
+      mkdir(ExtractFileDir(AValue));
     if not FileExists(AValue) then
       CopyFile(WaptIniFilename,AValue);
     st := TStringList.Create;
