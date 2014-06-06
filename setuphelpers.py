@@ -148,6 +148,8 @@ def create_shortcut(path, target='', arguments='', wDir='', icon=''):
         shortcut = file(path, 'w')
         shortcut.write('[InternetShortcut]\n')
         shortcut.write('URL=%s' % target)
+        shortcut.write('IconFile="%s"' % icon)
+        shortcut.write('IconIndex=0')
         shortcut.close()
     else:
         winshell.CreateShortcut(path,target,arguments,wDir,(icon,0),'')
