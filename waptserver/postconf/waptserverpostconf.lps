@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="17">
+      <Unit0>
+        <Filename Value="waptserverpostconf.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="waptserverpostconf"/>
+        <UsageCount Value="28"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="uvisserverpostconf.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uVisServerPostconf"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="236"/>
+        <CursorPos X="64" Y="247"/>
+        <UsageCount Value="28"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="C:\codetyphon\typhon\components\pl_LuiControls\source\luicontrols\wizardcontrols.pas"/>
+        <UnitName Value="WizardControls"/>
+        <EditorIndex Value="6"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="61"/>
+        <CursorPos X="3" Y="90"/>
+        <UsageCount Value="14"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\fgl.pp"/>
+        <UnitName Value="fgl"/>
+        <EditorIndex Value="9"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="182"/>
+        <CursorPos X="32" Y="183"/>
+        <UsageCount Value="14"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="C:\codetyphon\typhon\components\pl_LuiControls\source\luicontrols\virtualpages.pas"/>
+        <UnitName Value="VirtualPages"/>
+        <EditorIndex Value="7"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="132"/>
+        <CursorPos X="3" Y="45"/>
+        <UsageCount Value="14"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\..\waptconsole\uvisprivatekeyauth.pas"/>
+        <ComponentName Value="visPrivateKeyAuth"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uvisprivatekeyauth"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="9"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\..\waptconsole\uviscreatekey.pas"/>
+        <ComponentName Value="VisCreateKey"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uVisCreateKey"/>
+        <EditorIndex Value="8"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="39" Y="16"/>
+        <UsageCount Value="14"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="..\..\wapt-get\UnitRedirect.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UnitRedirect"/>
+        <UsageCount Value="27"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="..\..\wapt-get\waptcommon.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="waptcommon"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="893"/>
+        <CursorPos X="16" Y="917"/>
+        <UsageCount Value="27"/>
+        <Loaded Value="True"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="..\..\wapt-get\networkadapterinfo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="NetworkAdapterInfo"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="177"/>
+        <CursorPos X="7" Y="201"/>
+        <UsageCount Value="27"/>
+        <Loaded Value="True"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="..\..\..\pltis_utils\tiscommon.pas"/>
+        <UnitName Value="tiscommon"/>
+        <EditorIndex Value="5"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="69"/>
+        <CursorPos X="1" Y="141"/>
+        <UsageCount Value="13"/>
+        <Loaded Value="True"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="..\..\..\pltis_utils\tisinifiles.pas"/>
+        <UnitName Value="tisinifiles"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="28"/>
+        <CursorPos X="10" Y="43"/>
+        <UsageCount Value="13"/>
+        <Loaded Value="True"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\sysutilh.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="250"/>
+        <CursorPos X="12" Y="265"/>
+        <UsageCount Value="12"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\sysstrh.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="12"/>
+        <CursorPos X="40" Y="27"/>
+        <UsageCount Value="12"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="..\..\..\pltis_utils\tisstrings.pas"/>
+        <UnitName Value="tisstrings"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="2330"/>
+        <CursorPos X="3" Y="2341"/>
+        <UsageCount Value="12"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="..\..\..\pltis_superobject\source\superobject.pas"/>
+        <UnitName Value="superobject"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="2116"/>
+        <CursorPos X="1" Y="2135"/>
+        <UsageCount Value="10"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwawindns.pas"/>
+        <UnitName Value="JwaWinDNS"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="84"/>
+        <CursorPos X="14" Y="99"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit16>
+    </Units>
+    <General>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="uvisserverpostconf.pas"/>
+        <Caret Line="246" Column="45" TopLine="237"/>
+      </Position1>
+      <Position2>
+        <Filename Value="uvisserverpostconf.pas"/>
+        <Caret Line="247" Column="45" TopLine="238"/>
+      </Position2>
+      <Position3>
+        <Filename Value="uvisserverpostconf.pas"/>
+        <Caret Line="248" Column="45" TopLine="239"/>
+      </Position3>
+      <Position4>
+        <Filename Value="uvisserverpostconf.pas"/>
+        <Caret Line="255" Column="45" TopLine="246"/>
+      </Position4>
+      <Position5>
+        <Filename Value="uvisserverpostconf.pas"/>
+        <Caret Line="174" Column="15" TopLine="172"/>
+      </Position5>
+      <Position6>
+        <Filename Value="uvisserverpostconf.pas"/>
+        <Caret Line="90" Column="68" TopLine="70"/>
+      </Position6>
+      <Position7>
+        <Filename Value="uvisserverpostconf.pas"/>
+        <Caret Line="178" Column="27" TopLine="163"/>
+      </Position7>
+      <Position8>
+        <Filename Value="uvisserverpostconf.pas"/>
+        <Caret Line="188" Column="41" TopLine="163"/>
+      </Position8>
+      <Position9>
+        <Filename Value="uvisserverpostconf.pas"/>
+        <Caret Line="196" Column="31" TopLine="167"/>
+      </Position9>
+      <Position10>
+        <Filename Value="uvisserverpostconf.pas"/>
+        <Caret Line="195" Column="31" TopLine="166"/>
+      </Position10>
+      <Position11>
+        <Filename Value="uvisserverpostconf.pas"/>
+        <Caret Line="194" Column="31" TopLine="165"/>
+      </Position11>
+      <Position12>
+        <Filename Value="uvisserverpostconf.pas"/>
+        <Caret Line="192" Column="1" TopLine="166"/>
+      </Position12>
+      <Position13>
+        <Filename Value="..\..\wapt-get\waptcommon.pas"/>
+        <Caret Line="50" Column="12" TopLine="35"/>
+      </Position13>
+      <Position14>
+        <Filename Value="..\..\wapt-get\waptcommon.pas"/>
+        <Caret Line="54" Column="23" TopLine="35"/>
+      </Position14>
+      <Position15>
+        <Filename Value="..\..\wapt-get\waptcommon.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position15>
+      <Position16>
+        <Filename Value="..\..\wapt-get\waptcommon.pas"/>
+        <Caret Line="31" Column="16" TopLine="7"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\..\wapt-get\waptcommon.pas"/>
+        <Caret Line="54" Column="23" TopLine="30"/>
+      </Position17>
+      <Position18>
+        <Filename Value="..\..\wapt-get\waptcommon.pas"/>
+        <Caret Line="293" Column="63" TopLine="269"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\..\wapt-get\waptcommon.pas"/>
+        <Caret Line="392" Column="55" TopLine="368"/>
+      </Position19>
+      <Position20>
+        <Filename Value="..\..\wapt-get\waptcommon.pas"/>
+        <Caret Line="515" Column="55" TopLine="491"/>
+      </Position20>
+      <Position21>
+        <Filename Value="..\..\wapt-get\waptcommon.pas"/>
+        <Caret Line="596" Column="54" TopLine="572"/>
+      </Position21>
+      <Position22>
+        <Filename Value="..\..\wapt-get\waptcommon.pas"/>
+        <Caret Line="609" Column="21" TopLine="585"/>
+      </Position22>
+      <Position23>
+        <Filename Value="..\..\wapt-get\waptcommon.pas"/>
+        <Caret Line="611" Column="54" TopLine="587"/>
+      </Position23>
+      <Position24>
+        <Filename Value="..\..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="65" Column="22" TopLine="51"/>
+      </Position24>
+      <Position25>
+        <Filename Value="..\..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="99" Column="11" TopLine="75"/>
+      </Position26>
+      <Position27>
+        <Filename Value="..\..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="101" Column="34" TopLine="77"/>
+      </Position27>
+      <Position28>
+        <Filename Value="..\..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="117" Column="34" TopLine="93"/>
+      </Position28>
+      <Position29>
+        <Filename Value="uvisserverpostconf.pas"/>
+        <Caret Line="244" Column="28" TopLine="236"/>
+      </Position29>
+      <Position30>
+        <Filename Value="uvisserverpostconf.pas"/>
+        <Caret Line="107" Column="118" TopLine="79"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectSession>
+  <EditorMacros Count="0"/>
+</CONFIG>

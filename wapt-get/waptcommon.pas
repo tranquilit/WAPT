@@ -38,6 +38,7 @@ interface
 
   //function  GetLDAPServer(dnsdomain:String=''): String;
 
+  function DNSAQuery(name:AnsiString):ISuperObject;
   function DNSSRVQuery(name:AnsiString):ISuperObject;
   function DNSCNAMEQuery(name:AnsiString):ISuperObject;
 
@@ -48,7 +49,8 @@ interface
   function AppIniFilename: Utf8String; // returns Users/<user>/local/appdata/<application_name>/<application_name>.ini
   function WaptIniFilename: Utf8String; // for local wapt install directory
 
-  function WaptgetPath: Utf8String;
+  function WaptBaseDir: Utf8String; // c:\wapt
+  function WaptgetPath: Utf8String; // c:\wapt\wapt-get.exe
   function WaptservicePath: Utf8String;
   function WaptDBPath: Utf8String;
   function WaptExternalRepo(inifilename:String=''): Utf8String;
@@ -103,6 +105,45 @@ implementation
 
 uses FileUtil, soutils, tiscommon, Variants, winsock, ShellApi, JwaIpHlpApi,
   JwaIpTypes, NetworkAdapterInfo, tisinifiles, registry, tisstrings, JwaWinDNS, JwaWinsock2 ;
+
+function IPV42String(ipv4:LongWord):String;
+begin
+  Result :=  format('%D.%D.%D.%D',[ipv4  and $FF, (ipv4  shr 8) and $FF,  (ipv4  shr 16) and $FF, (ipv4  shr 24) and $FF]);
+end;
+
+function DNSAQuery(name: AnsiString): ISuperObject;
+var
+  resultname : PPWideChar;
+  ppQueryResultsSet : PDNS_RECORD;
+  retvalue: Integer;
+  res : AnsiString;
+  rec:ISuperObject;
+begin
+  Result := TSuperObject.Create(stArray);
+  ppQueryResultsSet := Nil;
+  retvalue := DnsQuery(
+    PAnsiChar(name),
+    DNS_TYPE_A,
+    DNS_QUERY_BYPASS_CACHE,
+    Nil,
+    @ppQueryResultsSet,
+    Nil);
+  if (retvalue=0) and (ppQueryResultsSet<>Nil) then
+  try
+    while ppQueryResultsSet<>Nil do
+    begin
+      if ppQueryResultsSet^.Data.A.IpAddress<>0 then
+      begin
+        res := IPV42String(ppQueryResultsSet^.Data.A.IpAddress);
+        UniqueString(res);
+        Result.AsArray.Add(res);
+      end;
+      ppQueryResultsSet:= ppQueryResultsSet^.pNext;
+    end;
+  finally
+    DnsRecordListFree(ppQueryResultsSet,DnsFreeRecordList);
+  end;
+end;
 
 //query current dns server for SRV record and return a list of {name,priority,weight,port}
 function DNSSRVQuery(name:AnsiString):ISuperObject;
@@ -553,6 +594,11 @@ end;
 function GetWaptLocalURL: String;
 begin
   result := format('http://127.0.0.1:%d',[waptservice_port]);
+end;
+
+function WaptBaseDir: Utf8String;
+begin
+  result := ExtractFilePath(ParamStr(0));
 end;
 
 function WaptgetPath: Utf8String;

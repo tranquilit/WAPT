@@ -129,7 +129,7 @@ Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\w
 [Tasks]
 Name: installService; Description: "Installer le service WAPT";
 Name: autorunTray; Description: "Lancer l'icône de notification lors de l'ouverture de session"; Flags: unchecked;
-Name: installredist2008; Description: "Installer les redistribables VC++ 2008 (pour openssl)";
+Name: installredist2008; Description: "Installer les redistribuables VC++ 2008 (pour openssl)";
 Name: autoUpgradePolicy; Description: "Proposer la mise à jour des paquets à l'extinction du poste";
 
 [UninstallRun]
