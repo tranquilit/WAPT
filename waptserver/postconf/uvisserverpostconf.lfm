@@ -1,4 +1,4 @@
-object Form1: TForm1
+object VisWAPTServerPostConf: TVisWAPTServerPostConf
   Left = 372
   Height = 339
   Top = 210
@@ -8,8 +8,9 @@ object Form1: TForm1
   ClientWidth = 537
   OnCreate = FormCreate
   OnShow = FormShow
+  ShowHint = True
   LCLVersion = '1.3'
-  object PageControl1: TPageControl
+  object PagesControl: TPageControl
     Left = 0
     Height = 309
     Top = 0
@@ -18,7 +19,7 @@ object Form1: TForm1
     Align = alClient
     TabIndex = 0
     TabOrder = 0
-    OnChange = PageControl1Change
+    OnChange = PagesControlChange
     object pgParameters: TTabSheet
       Caption = 'Paramètres'
       ClientHeight = 283
@@ -419,6 +420,66 @@ object Form1: TForm1
         TabOrder = 10
       end
     end
+    object pgDevparam: TTabSheet
+      Caption = 'Développement'
+      ClientHeight = 283
+      ClientWidth = 529
+      object EdTemplatesRepoURL: TLabeledEdit
+        Left = 8
+        Height = 21
+        Hint = 'URL vers le dépoôt d''où dupliquer des paquets comme base de départ'
+        Top = 22
+        Width = 300
+        EditLabel.AnchorSideLeft.Control = EdTemplatesRepoURL
+        EditLabel.AnchorSideRight.Control = EdTemplatesRepoURL
+        EditLabel.AnchorSideRight.Side = asrBottom
+        EditLabel.AnchorSideBottom.Control = EdTemplatesRepoURL
+        EditLabel.Left = 8
+        EditLabel.Height = 13
+        EditLabel.Top = 6
+        EditLabel.Width = 300
+        EditLabel.Caption = 'URL du dépôt de modèles de paquets '
+        EditLabel.ParentColor = False
+        TabOrder = 0
+        Text = 'http://wapt.tranquil.it/wapt'
+      end
+      object EdDefaultPrefix: TLabeledEdit
+        Left = 8
+        Height = 21
+        Top = 66
+        Width = 300
+        EditLabel.AnchorSideLeft.Control = EdDefaultPrefix
+        EditLabel.AnchorSideRight.Control = EdDefaultPrefix
+        EditLabel.AnchorSideRight.Side = asrBottom
+        EditLabel.AnchorSideBottom.Control = EdDefaultPrefix
+        EditLabel.Left = 8
+        EditLabel.Height = 13
+        EditLabel.Top = 50
+        EditLabel.Width = 300
+        EditLabel.Caption = 'Préfixe par défaut pour les nouveaux paquets'
+        EditLabel.ParentColor = False
+        TabOrder = 1
+        Text = 'test'
+      end
+      object EdSourcesRoot: TLabeledEdit
+        Left = 8
+        Height = 21
+        Top = 110
+        Width = 300
+        EditLabel.AnchorSideLeft.Control = EdSourcesRoot
+        EditLabel.AnchorSideRight.Control = EdSourcesRoot
+        EditLabel.AnchorSideRight.Side = asrBottom
+        EditLabel.AnchorSideBottom.Control = EdSourcesRoot
+        EditLabel.Left = 8
+        EditLabel.Height = 13
+        EditLabel.Top = 94
+        EditLabel.Width = 300
+        EditLabel.Caption = 'Répertoire de base pour le dév de nouveaux paquets'
+        EditLabel.ParentColor = False
+        TabOrder = 2
+        Text = 'c:\waptdev'
+      end
+    end
     object pgFinish: TTabSheet
       Caption = 'Fin'
       ClientHeight = 283
@@ -496,7 +557,7 @@ object Form1: TForm1
     ClientHeight = 30
     ClientWidth = 537
     TabOrder = 1
-    object BitBtn1: TBitBtn
+    object ButPrevious: TBitBtn
       Left = 280
       Height = 26
       Top = 3
@@ -540,7 +601,7 @@ object Form1: TForm1
       }
       TabOrder = 0
     end
-    object BitBtn2: TBitBtn
+    object ButNext: TBitBtn
       Left = 364
       Height = 26
       Top = 3
@@ -585,14 +646,49 @@ object Form1: TForm1
       TabOrder = 1
     end
     object BitBtn3: TBitBtn
-      Left = 460
-      Height = 26
-      Top = 3
-      Width = 75
-      Cancel = True
-      DefaultCaption = True
-      Kind = bkCancel
-      ModalResult = 11
+      Left = 444
+      Height = 25
+      Top = 4
+      Width = 91
+      Caption = 'Abandonner'
+      Glyph.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00334DC823314BC67D2F48C4DB2C46C2F32A44C0F32842
+        BEDB2640BC7D243EBA23FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF003A54CF533852CCE65264D4FF8490E7FF95A0EEFF959FEDFF838E
+        E5FF4C5DCEFF2841BDE6263FBB53FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00425CD5533F59D3F47584E3FFA1ACF4FF7F8BECFF5C67E4FF5B66E3FF7D87
+        EAFF9FA8F1FF6F7CDDFF2943BFF42741BD53FFFFFF00FFFFFF00FFFFFF004963
+        DC224660DAE57888E6FFA3B0F5FF5767E7FF5665E6FF8992EDFF8892ECFF535F
+        E2FF525DE1FF9FA9F2FF6F7DDDFF2B44C0E52942BE22FFFFFF00FFFFFF004E68
+        E17E6073E0FFA4B3F7FF5A6EEBFF596CEAFF5869E8FFFFFFFFFFFFFFFFFF5562
+        E5FF5461E3FF535FE2FF9FA9F2FF5061D1FF2D46C27EFFFFFF00FFFFFF00526D
+        E5DB8E9FF0FF8499F4FF5C73EEFF5B70ECFF5A6EEBFF909DF1FFA6AFF3FF5767
+        E7FF5665E6FF5562E5FF7D89EBFF8591E7FF314AC6DBFFFFFF00FFFFFF005771
+        E9F6A0B3F7FF6580F2FF5F78F0FF5D76EFFF5C73EEFFD3D9FAFFFFFFFFFF596C
+        EAFF5869E8FF5767E7FF5D6CE7FF99A5F1FF354FCAF6FFFFFF00FFFFFF005B76
+        EDF6A1B6F8FF6784F4FF607CF3FF5F7AF1FF5F78F0FFFFFFFFFFFFFFFFFF5B70
+        ECFF5A6EEBFF596CEAFF5F6FE9FF9BA8F1FF3A53CEF6FFFFFF00FFFFFF005F7A
+        F1DB91A6F3FF88A1F8FF6280F4FF617EF3FF607CF3FFFFFFFFFFFFFFFFFF5D76
+        EFFF5C73EEFF5B70ECFF8293F1FF8998ECFF3E58D2DBFFFFFF00FFFFFF00637E
+        F57E6C81ECFFA9BDFBFF6382F5FF6281F5FF6280F4FFFFFFFFFFFFFFFFFF5F7A
+        F1FF5F78F0FF5D76EFFFA5B5F8FF5D70DDFF435DD77EFFFFFF00FFFFFF006781
+        F822657FF6E58397F0FFA9BDFBFF6382F5FF6382F5FFFFFFFFFFFFFFFFFF617E
+        F3FF607CF3FFA6B9F9FF7B8DEAFF4A64DEE54862DB22FFFFFF00FFFFFF00FFFF
+        FF006883F9536681F8F48497F1FFA9BDFBFF8AA3F8FF6B89F6FF6B89F6FF89A2
+        F8FFA8BCFAFF7F92ECFF526CE4F44F69E253FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF006984FA536882F9E66E83EEFF92A6F4FFA0B4F8FFA0B4F8FF91A6
+        F3FF687DE9FF5973EBE65671E953FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF006A85FC236984FA7D6782F9DB6580F7F3637EF5F3617C
+        F3DB5F7AF17D5D77EF23FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
+      }
+      ModalResult = 3
+      OnClick = BitBtn3Click
       TabOrder = 2
     end
   end

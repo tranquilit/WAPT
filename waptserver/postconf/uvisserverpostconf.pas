@@ -5,14 +5,15 @@ unit uVisServerPostconf;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, WizardControls, Forms, Controls, Graphics,
-  Dialogs, ComCtrls, StdCtrls, ExtCtrls, maskedit, Buttons, ActnList, EditBtn;
+  Classes, SysUtils, FileUtil, Forms, Controls,
+  Graphics, Dialogs, ComCtrls, StdCtrls, ExtCtrls, Buttons, ActnList,
+  EditBtn;
 
 type
 
-  { TForm1 }
+  { TVisWAPTServerPostConf }
 
-  TForm1 = class(TForm)
+  TVisWAPTServerPostConf = class(TForm)
     ActCheckDNS: TAction;
     ActCreateKey: TAction;
     ActCancel: TAction;
@@ -21,8 +22,8 @@ type
     ActNext: TAction;
     actPrevious: TAction;
     ActionList1: TActionList;
-    BitBtn1: TBitBtn;
-    BitBtn2: TBitBtn;
+    ButPrevious: TBitBtn;
+    ButNext: TBitBtn;
     BitBtn3: TBitBtn;
     BitBtn4: TBitBtn;
     BitBtn5: TBitBtn;
@@ -31,6 +32,7 @@ type
     DirectoryCert: TDirectoryEdit;
     edCommonName: TEdit;
     edCountry: TEdit;
+    EdSourcesRoot: TLabeledEdit;
     edEmail: TEdit;
     EdPwd1: TEdit;
     EdPrivateKeyFN: TEdit;
@@ -54,13 +56,16 @@ type
     Label9: TLabel;
     EdWaptServerIP: TLabeledEdit;
     EdWaptInifile: TMemo;
-    PageControl1: TPageControl;
+    EdTemplatesRepoURL: TLabeledEdit;
+    EdDefaultPrefix: TLabeledEdit;
+    PagesControl: TPageControl;
     Panel1: TPanel;
     pgParameters: TTabSheet;
     pgPassword: TTabSheet;
     Shape1: TShape;
     StaticText1: TStaticText;
     pgFinish: TTabSheet;
+    pgDevparam: TTabSheet;
     TabSheet3: TTabSheet;
     procedure ActCheckDNSExecute(Sender: TObject);
     procedure ActCreateKeyExecute(Sender: TObject);
@@ -72,10 +77,11 @@ type
     procedure actPreviousExecute(Sender: TObject);
     procedure actPreviousUpdate(Sender: TObject);
     procedure actWriteConfStartServeExecute(Sender: TObject);
+    procedure BitBtn3Click(Sender: TObject);
     procedure EdOrgNameExit(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure PageControl1Change(Sender: TObject);
+    procedure PagesControlChange(Sender: TObject);
   private
     { private declarations }
   public
@@ -83,13 +89,13 @@ type
   end;
 
 var
-  Form1: TForm1;
+  VisWAPTServerPostConf: TVisWAPTServerPostConf;
 
 implementation
 uses Windows,WaptCommon,tisinifiles,superobject,tiscommon,tisstrings,IniFiles;
 {$R *.lfm}
 
-{ TForm1 }
+{ TVisWAPTServerPostConf }
 
 // qad %(key)s python format
 function pyformat(template:String;params:ISuperobject):String;
@@ -157,23 +163,29 @@ begin
 end;
 
 
-procedure TForm1.FormCreate(Sender: TObject);
+procedure TVisWAPTServerPostConf.FormCreate(Sender: TObject);
 begin
-  PageControl1.ShowTabs:=False;
-  PageControl1.ActivePageIndex:=0;
+  PagesControl.ShowTabs:=False;
+  PagesControl.ActivePageIndex:=0;
 end;
 
-procedure TForm1.FormShow(Sender: TObject);
+procedure TVisWAPTServerPostConf.FormShow(Sender: TObject);
 begin
   EdWAPTServerName.Text:='srvwapt.'+GetDNSDomain;
+  if IniHasKey(WaptIniFilename,'global','default_package_prefix') then
+    EdDefaultPrefix.Text:=IniReadString(WaptIniFilename,'global','default_package_prefix');
+  if IniHasKey(WaptIniFilename,'global','default_sources_root') then
+    EdSourcesRoot.Text:=IniReadString(WaptIniFilename,'global','default_sources_root');
+  if IniHasKey(WaptIniFilename,'global','templates_repo_url') then
+    EdTemplatesRepoURL.Text:=IniReadString(WaptIniFilename,'global','templates_repo_url');
 end;
 
-procedure TForm1.PageControl1Change(Sender: TObject);
+procedure TVisWAPTServerPostConf.PagesControlChange(Sender: TObject);
 var
   ini:TMemIniFile;
 
 begin
-  if PageControl1.ActivePage = pgFinish then
+  if PagesControl.ActivePage = pgFinish then
   try
     ini := TMemIniFile.Create(WaptIniFilename);
     ini.WriteString('global','repo_url',edWAPTRepoURL.Text);
@@ -190,7 +202,7 @@ begin
   end;
 end;
 
-procedure TForm1.ActManualUpdate(Sender: TObject);
+procedure TVisWAPTServerPostConf.ActManualUpdate(Sender: TObject);
 begin
   if not ActManual.Checked then
   begin
@@ -206,64 +218,84 @@ begin
   end;
 end;
 
-procedure TForm1.ActNextExecute(Sender: TObject);
+procedure TVisWAPTServerPostConf.ActNextExecute(Sender: TObject);
 begin
-  PageControl1.ActivePageIndex := PageControl1.ActivePageIndex + 1;
+  PagesControl.ActivePageIndex := PagesControl.ActivePageIndex + 1;
 end;
 
-procedure TForm1.ActNextUpdate(Sender: TObject);
+procedure TVisWAPTServerPostConf.ActNextUpdate(Sender: TObject);
 begin
-  if PageControl1.ActivePage = pgParameters then
+  if PagesControl.ActivePage = pgParameters then
     ActNext.Enabled := EdWaptServerIP.Text<>''
-  else if PageControl1.ActivePage = pgPassword then
+  else if PagesControl.ActivePage = pgPassword then
     ActNext.Enabled := (EdPwd1.Text<>'') and (EdPwd1.Text = EdPwd2.Text)
-  else if PageControl1.ActivePage = pgPassword then
+  else if PagesControl.ActivePage = pgPassword then
     ActNext.Enabled := (EdPwd1.Text<>'') and (EdPwd1.Text = EdPwd2.Text)
   else
-    ActNext.Enabled := PageControl1.ActivePageIndex<PageControl1.PageCount-1;
+    ActNext.Enabled := PagesControl.ActivePageIndex<PagesControl.PageCount-1;
 end;
 
-procedure TForm1.actPreviousExecute(Sender: TObject);
+procedure TVisWAPTServerPostConf.actPreviousExecute(Sender: TObject);
 begin
-  PageControl1.ActivePageIndex := PageControl1.ActivePageIndex - 1;
+  PagesControl.ActivePageIndex := PagesControl.ActivePageIndex - 1;
 end;
 
-procedure TForm1.actPreviousUpdate(Sender: TObject);
+procedure TVisWAPTServerPostConf.actPreviousUpdate(Sender: TObject);
 begin
-  actPrevious.Enabled:=PageControl1.ActivePageIndex>0;
+  actPrevious.Enabled:=PagesControl.ActivePageIndex>0;
 end;
 
-procedure TForm1.actWriteConfStartServeExecute(Sender: TObject);
+procedure TVisWAPTServerPostConf.actWriteConfStartServeExecute(Sender: TObject);
 var
   ini:TMemIniFile;
+  status:Integer;
 begin
   try
     ini := TMemIniFile.Create(WaptIniFilename);
     ini.SetStrings(EdWaptInifile.Lines);
     ini.UpdateFile;
-    StopServiceByName('', 'waptserver');
-    if not StartServiceByName('','waptserver') then
+    RunTask('net stop waptserver',Status);
+    RunTask('net start waptserver',Status);
+    if status<>0 then
       ShowMessage('Impossible de démarrer le service waptserver');
-    StopServiceByName('', 'waptservice');
+    RunTask('net stop waptservice',Status);
+    RunTask('net start waptservice',Status);
+    if status<>0 then
+      ShowMessage('Impossible de démarrer le service waptservice');
+
+{    if GetServiceStatusByName('','waptserver') = ssRunning then
+      StopServiceByName('', 'waptserver');
+    if GetServiceStatusByName('','waptserver') = ssStopped then
+      if not StartServiceByName('','waptserver') then
+        ShowMessage('Impossible de démarrer le service waptserver');
+    if GetServiceStatusByName('','waptservice') = ssRunning then
+      StopServiceByName('', 'waptservice');
     if not StartServiceByName('','waptservice') then
       ShowMessage('Impossible de démarrer le service waptservice');
+}
   finally
     ini.Free;
   end;
 end;
 
-procedure TForm1.ActManualExecute(Sender: TObject);
+procedure TVisWAPTServerPostConf.BitBtn3Click(Sender: TObject);
+begin
+  if MessageDlg('Confirmer','Voulez-vous vraiment annuler la post-configuration du serveur WAPT ?',mtConfirmation,mbYesNoCancel,0) = mrYes then
+    Close;
+end;
+
+procedure TVisWAPTServerPostConf.ActManualExecute(Sender: TObject);
 begin
   ActManual.Checked := not ActManual.Checked;
 end;
 
-procedure TForm1.ActCreateKeyExecute(Sender: TObject);
+procedure TVisWAPTServerPostConf.ActCreateKeyExecute(Sender: TObject);
 begin
   EdPrivateKeyFN.Text := CreateSelfSignedCert( EdOrgName.Text,WaptBaseDir,DirectoryCert.Text,
     edCountry.Text,edLocality.Text,edOrganization.Text,edUnit.Text,edCommonName.Text,edEmail.Text);
 end;
 
-procedure TForm1.ActCheckDNSExecute(Sender: TObject);
+procedure TVisWAPTServerPostConf.ActCheckDNSExecute(Sender: TObject);
 var
   cnames,ips : ISuperObject;
 begin
@@ -281,7 +313,7 @@ begin
 
 end;
 
-procedure TForm1.ActCreateKeyUpdate(Sender: TObject);
+procedure TVisWAPTServerPostConf.ActCreateKeyUpdate(Sender: TObject);
 var
    TargetKeyFN:String;
 begin
@@ -301,7 +333,7 @@ begin
       result := Result+st[i];
 end;
 
-procedure TForm1.EdOrgNameExit(Sender: TObject);
+procedure TVisWAPTServerPostConf.EdOrgNameExit(Sender: TObject);
 begin
   EdOrgName.Text:= MakeIdent(EdOrgName.Text);
 end;

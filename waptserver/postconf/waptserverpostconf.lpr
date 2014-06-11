@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, pl_luicontrols, uVisServerPostconf, UnitRedirect, waptcommon,
+  Forms, uVisServerPostconf, UnitRedirect, waptcommon,
   networkadapterinfo
   { you can add units after this };
 
@@ -16,7 +16,7 @@ uses
 begin
   RequireDerivedFormResource := True;
   Application.Initialize;
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TVisWAPTServerPostConf, VisWAPTServerPostConf);
   Application.Run;
 end.
 
