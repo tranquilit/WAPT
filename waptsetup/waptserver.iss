@@ -11,8 +11,8 @@
 
 
 [Files]
-; sources of installer to rebuild a custom installer
-Source: "innosetup\*"; DestDir: "{app}\waptsetup\innosetup";
+; sources of installer to rebuild a custom installer (ignoreversion because issc has no version)
+Source: "innosetup\*"; DestDir: "{app}\waptsetup\innosetup"; Flags: createallsubdirs recursesubdirs ignoreversion;
 Source: "wapt.iss"; DestDir: "{app}\waptsetup";
 Source: "waptsetup.iss"; DestDir: "{app}\waptsetup";
 Source: "services.iss"; DestDir: "{app}\waptsetup";
