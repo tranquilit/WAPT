@@ -8,7 +8,7 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, uVisServerPostconf, UnitRedirect, waptcommon,
-  networkadapterinfo
+  networkadapterinfo, uvisloading
   { you can add units after this };
 
 {$R *.res}

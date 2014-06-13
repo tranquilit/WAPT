@@ -28,6 +28,7 @@ type
     BitBtn4: TBitBtn;
     BitBtn5: TBitBtn;
     BitBtn6: TBitBtn;
+    Button1: TButton;
     cbManualURL: TCheckBox;
     DirectoryCert: TDirectoryEdit;
     edCommonName: TEdit;
@@ -92,7 +93,7 @@ var
   VisWAPTServerPostConf: TVisWAPTServerPostConf;
 
 implementation
-uses Windows,WaptCommon,tisinifiles,superobject,tiscommon,tisstrings,IniFiles;
+uses Windows,WaptCommon,tisinifiles,superobject,tiscommon,tisstrings,IniFiles,UnitRedirect,uvisLoading;
 {$R *.lfm}
 
 { TVisWAPTServerPostConf }
@@ -248,38 +249,36 @@ end;
 procedure TVisWAPTServerPostConf.actWriteConfStartServeExecute(Sender: TObject);
 var
   ini:TMemIniFile;
-  status:Integer;
 
   function runwapt(cmd:String):String;
-  var
-    status:Integer;
   begin
     StrReplace(cmd,'{app}',WaptBaseDir,[rfReplaceAll]);
-    result := RunTask(cmd,status);
-    if Status<>0 then
-      ShowMessage('Erreur dans l''exécution de '+cmd);
+    result := Sto_RedirectedExecute(cmd);
   end;
 
 begin
+  with TVisLoading.Create(Self) do
   try
     ini := TMemIniFile.Create(WaptIniFilename);
     ini.SetStrings(EdWaptInifile.Lines);
     ini.UpdateFile;
 
-    runwapt('{app}wapt-get.exe update-packages "{app}\waptserver\repository\wapt"');
+    ProgressTitle('Mise à jour index des packages');
+    runwapt('{app}\wapt-get.exe update-packages "{app}\waptserver\repository\wapt"');
 
-    RunTask('net stop waptserver',Status);
-    RunTask('net start waptserver',Status);
+    ProgressTitle('Redémarrage waptserver');
+    Sto_RedirectedExecute('net stop waptserver');
+    Sto_RedirectedExecute('net start waptserver');
 
-    if status<>0 then
-      ShowMessage('Impossible de démarrer le service waptserver');
-    RunTask('net stop waptservice',Status);
-    RunTask('net start waptservice',Status);
-    if status<>0 then
-      ShowMessage('Impossible de démarrer le service waptservice');
+    ProgressTitle('Redémarrage waptservice');
+    Sto_RedirectedExecute('net stop waptservice');
+    Sto_RedirectedExecute('net start waptservice');
 
-    runwapt('{app}wapt-get.exe -D update');
-    runwapt('{app}wapt-get.exe register');
+    ProgressTitle('Mise à jour paquets locaux');
+    runwapt('{app}\wapt-get.exe -D update');
+
+    ProgressTitle('Enregistrement machine sur serveur');
+    runwapt('{app}\wapt-get.exe register');
 
 {    if GetServiceStatusByName('','waptserver') = ssRunning then
       StopServiceByName('', 'waptserver');
@@ -293,6 +292,7 @@ begin
 }
   finally
     ini.Free;
+    Free;
   end;
 end;
 
