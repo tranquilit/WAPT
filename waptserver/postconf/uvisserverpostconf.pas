@@ -93,7 +93,8 @@ var
   VisWAPTServerPostConf: TVisWAPTServerPostConf;
 
 implementation
-uses Windows,WaptCommon,tisinifiles,superobject,tiscommon,tisstrings,IniFiles,UnitRedirect,uvisLoading;
+uses Windows,WaptCommon,tisinifiles,superobject,
+    tiscommon,tisstrings,IniFiles,UnitRedirect,uvisLoading,sha1;
 {$R *.lfm}
 
 { TVisWAPTServerPostConf }
@@ -266,13 +267,18 @@ begin
     ProgressTitle('Mise à jour index des packages');
     runwapt('{app}\wapt-get.exe update-packages "{app}\waptserver\repository\wapt"');
 
+    ProgressTitle('Mise en place mot de passe server');
+    IniWriteString(WaptBaseDir+'\waptserver\waptserver.ini' ,'Options','wapt_password',sha1.SHA1Print(sha1.SHA1String(EdPwd1.Text)));
+
     ProgressTitle('Redémarrage waptserver');
-    Sto_RedirectedExecute('net stop waptserver');
-    Sto_RedirectedExecute('net start waptserver');
+    if GetServiceStatusByName('','WAPTServer') = ssRunning then
+      Sto_RedirectedExecute('cmd /C net stop waptserver');
+    Sto_RedirectedExecute('cmd /C net start waptserver');
 
     ProgressTitle('Redémarrage waptservice');
-    Sto_RedirectedExecute('net stop waptservice');
-    Sto_RedirectedExecute('net start waptservice');
+    if GetServiceStatusByName('','WAPTService') = ssRunning then
+      Sto_RedirectedExecute('cmd /C net stop waptservice');
+    Sto_RedirectedExecute('cmd /C net start waptservice');
 
     ProgressTitle('Mise à jour paquets locaux');
     runwapt('{app}\wapt-get.exe -D update');
@@ -290,6 +296,7 @@ begin
     if not StartServiceByName('','waptservice') then
       ShowMessage('Impossible de démarrer le service waptservice');
 }
+    ExitProcess(0);
   finally
     ini.Free;
     Free;

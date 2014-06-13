@@ -83,7 +83,7 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
         if code != postconf.DIALOG_OK:
             exit(0)
         else:
-            password = hashlib.sha512(wapt_password).hexdigest()
+            password = hashlib.sha1(wapt_password).hexdigest()
             waptserver_ini.set('options','wapt_password',password)
         if wapt_password != '':
             break

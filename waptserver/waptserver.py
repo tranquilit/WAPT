@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="0.8.37"
+__version__="0.8.38"
 
 import os,sys
 try:
@@ -462,7 +462,11 @@ def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
-    return wapt_user == username and wapt_password == hashlib.sha512(password).hexdigest()
+    return
+        wapt_user == username and (
+            (wapt_password == hashlib.sha1(password).hexdigest()) or
+            (wapt_password == hashlib.sha512(password).hexdigest()))
+
 
 def authenticate():
     """Sends a 401 response that enables basic auth"""
@@ -916,7 +920,7 @@ def login():
                 if check_auth(d["username"], d["password"]):
                     if "newPass" in d:
                         global wapt_password
-                        wapt_password = hashlib.sha512(d["newPass"]).hexdigest()
+                        wapt_password = hashlib.sha1(d["newPass"]).hexdigest()
                         config.set('options', 'wapt_password', wapt_password)
                         with open(os.path.join(wapt_root_dir,'waptserver','waptserver.ini'), 'wb') as configfile:
                             config.write(configfile)

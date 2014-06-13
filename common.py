@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.38"
+__version__ = "0.8.39"
 import os
 import re
 import logging
@@ -344,10 +344,6 @@ def sha1_for_data(data):
     sha1 = hashlib.sha1()
     sha1.update(data)
     return sha1.hexdigest()
-
-
-def sha512_for_data(data):
-    return hashlib.sha512(data).hexdigest()
 
 
 def pwd_callback(*args):
