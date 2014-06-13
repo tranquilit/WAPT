@@ -1,9 +1,19 @@
-import dialog
+import os,sys
+try:
+    wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+except:
+    wapt_root_dir = 'c:/tranquilit/wapt'
+
+sys.path.insert(0,os.path.join(wapt_root_dir))
+sys.path.insert(0,os.path.join(wapt_root_dir,'lib'))
+sys.path.insert(0,os.path.join(wapt_root_dir,'lib','site-packages'))
+
 from iniparse import RawConfigParser
 import shutil
 import fileinput
-import os,glob,sys
+import glob
 import hashlib
+import dialog
 
 postconf = dialog.Dialog(dialog="dialog")
 
