@@ -266,7 +266,7 @@ begin
     ini.SetStrings(EdWaptInifile.Lines);
     ini.UpdateFile;
 
-    runwapt('"{app}\wapt-get.exe" update-packages "{app}\waptserver\repository\wapt"');
+    runwapt('{app}wapt-get.exe update-packages "{app}\waptserver\repository\wapt"');
 
     RunTask('net stop waptserver',Status);
     RunTask('net start waptserver',Status);
@@ -278,8 +278,8 @@ begin
     if status<>0 then
       ShowMessage('Impossible de démarrer le service waptservice');
 
-    runwapt('"{app}\wapt-get.exe" -D update"');
-    runwapt('"{app}\wapt-get.exe" register');
+    runwapt('{app}wapt-get.exe -D update');
+    runwapt('{app}wapt-get.exe register');
 
 {    if GetServiceStatusByName('','waptserver') = ssRunning then
       StopServiceByName('', 'waptserver');
