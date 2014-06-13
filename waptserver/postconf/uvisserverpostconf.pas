@@ -66,7 +66,7 @@ type
     StaticText1: TStaticText;
     pgFinish: TTabSheet;
     pgDevparam: TTabSheet;
-    TabSheet3: TTabSheet;
+    pgPrivateKey: TTabSheet;
     procedure ActCheckDNSExecute(Sender: TObject);
     procedure ActCreateKeyExecute(Sender: TObject);
     procedure ActCreateKeyUpdate(Sender: TObject);
@@ -171,7 +171,7 @@ end;
 
 procedure TVisWAPTServerPostConf.FormShow(Sender: TObject);
 begin
-  EdWAPTServerName.Text:='srvwapt.'+GetDNSDomain;
+  EdWAPTServerName.Text:=LowerCase(GetComputerName)+'.'+GetDNSDomain;
   if IniHasKey(WaptIniFilename,'global','default_package_prefix') then
     EdDefaultPrefix.Text:=IniReadString(WaptIniFilename,'global','default_package_prefix');
   if IniHasKey(WaptIniFilename,'global','default_sources_root') then
@@ -191,9 +191,9 @@ begin
     ini.WriteString('global','repo_url',edWAPTRepoURL.Text);
     ini.WriteString('global','wapt_server',edWAPTServerURL.Text);
     ini.WriteString('global','private_key',EdPrivateKeyFN.Text);
-    ini.WriteString('global','templates_repo_url','http://wapt.tranquil.it/wapt');
-    ini.WriteString('global','default_sources_root','c:\waptdev');
-    ini.WriteString('global','default_package_prefix','test');
+    ini.WriteString('global','templates_repo_url',EdTemplatesRepoURL.Text);
+    ini.WriteString('global','default_sources_root',EdSourcesRoot.Text);
+    ini.WriteString('global','default_package_prefix',EdDefaultPrefix.Text);
     ini.WriteString('global','loglevel','warning');
     EdWaptInifile.Lines.Clear;
     ini.GetStrings(EdWaptInifile.Lines);
@@ -229,8 +229,8 @@ begin
     ActNext.Enabled := EdWaptServerIP.Text<>''
   else if PagesControl.ActivePage = pgPassword then
     ActNext.Enabled := (EdPwd1.Text<>'') and (EdPwd1.Text = EdPwd2.Text)
-  else if PagesControl.ActivePage = pgPassword then
-    ActNext.Enabled := (EdPwd1.Text<>'') and (EdPwd1.Text = EdPwd2.Text)
+  else if PagesControl.ActivePage = pgPrivateKey then
+    ActNext.Enabled := (EdPrivateKeyFN.Text<>'') and FileExists(EdPrivateKeyFN.Text)
   else
     ActNext.Enabled := PagesControl.ActivePageIndex<PagesControl.PageCount-1;
 end;
@@ -249,19 +249,37 @@ procedure TVisWAPTServerPostConf.actWriteConfStartServeExecute(Sender: TObject);
 var
   ini:TMemIniFile;
   status:Integer;
+
+  function runwapt(cmd:String):String;
+  var
+    status:Integer;
+  begin
+    StrReplace(cmd,'{app}',WaptBaseDir,[rfReplaceAll]);
+    result := RunTask(cmd,status);
+    if Status<>0 then
+      ShowMessage('Erreur dans l''exécution de '+cmd);
+  end;
+
 begin
   try
     ini := TMemIniFile.Create(WaptIniFilename);
     ini.SetStrings(EdWaptInifile.Lines);
     ini.UpdateFile;
+
+    runwapt('"{app}\wapt-get.exe" update-packages "{app}\waptserver\repository\wapt"');
+
     RunTask('net stop waptserver',Status);
     RunTask('net start waptserver',Status);
+
     if status<>0 then
       ShowMessage('Impossible de démarrer le service waptserver');
     RunTask('net stop waptservice',Status);
     RunTask('net start waptservice',Status);
     if status<>0 then
       ShowMessage('Impossible de démarrer le service waptservice');
+
+    runwapt('"{app}\wapt-get.exe" -D update"');
+    runwapt('"{app}\wapt-get.exe" register');
 
 {    if GetServiceStatusByName('','waptserver') = ssRunning then
       StopServiceByName('', 'waptserver');

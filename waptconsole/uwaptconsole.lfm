@@ -186,14 +186,14 @@ object VisWaptGUI: TVisWaptGUI
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed, coAllowFocus]
             Position = 1
             Text = 'Machine'
-            Width = 100
+            Width = 112
             PropertyName = 'host.computer_fqdn'
           end        
           item
             MaxWidth = 400
             Position = 2
             Text = 'Description'
-            Width = 100
+            Width = 124
             PropertyName = 'host.description'
           end        
           item
@@ -246,6 +246,7 @@ object VisWaptGUI: TVisWaptGUI
           end        
           item
             MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 10
             Text = 'uuid'
             Width = 100
@@ -362,11 +363,11 @@ object VisWaptGUI: TVisWaptGUI
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
                 Position = 2
                 Text = 'Nom paquet'
-                Width = 300
+                Width = 171
                 PropertyName = 'package'
               end            
               item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
                 Position = 3
                 Text = 'Status'
                 PropertyName = 'install_status'
@@ -375,17 +376,18 @@ object VisWaptGUI: TVisWaptGUI
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
                 Position = 4
                 Text = 'Version'
-                Width = 30
+                Width = 62
                 PropertyName = 'version'
               end            
               item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
                 Position = 5
                 Text = 'Description'
+                Width = 129
                 PropertyName = 'description'
               end            
               item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
                 Position = 6
                 Text = 'Dependances'
                 PropertyName = 'depends'
@@ -393,6 +395,7 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Position = 7
                 Text = 'Date installation'
+                Width = 93
                 PropertyName = 'install_date'
               end            
               item
@@ -1349,37 +1352,38 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgGroups: TTabSheet
       Caption = 'Groupes'
-      ClientHeight = 450
-      ClientWidth = 875
+      ClientHeight = 841
+      ClientWidth = 1912
       object GridGroups: TSOGrid
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Side = asrBottom
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 420
+        Height = 811
         Top = 30
-        Width = 875
+        Width = 1912
         OnGetText = GridGroupsGetText
         Align = alClient
         Color = clWhite
-        Header.AutoSizeIndex = 0
+        Header.AutoSizeIndex = -1
         Header.Columns = <        
           item
             MaxWidth = 100
             Position = 0
             Text = 'Section'
-            Width = 100
+            Width = 79
             PropertyName = 'section'
           end        
           item
             MaxWidth = 400
             Position = 1
             Text = 'Paquet'
-            Width = 300
+            Width = 182
             PropertyName = 'package'
           end        
           item
             MaxWidth = 200
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 2
             Text = 'Status'
             PropertyName = 'status'
@@ -1388,28 +1392,30 @@ object VisWaptGUI: TVisWaptGUI
             MaxWidth = 200
             Position = 3
             Text = 'Version'
-            Width = 30
+            Width = 126
             PropertyName = 'version'
           end        
           item
             MaxWidth = 400
             Position = 4
             Text = 'Description'
+            Width = 310
             PropertyName = 'description'
           end        
           item
             MaxWidth = 400
             Position = 5
             Text = 'Dépendances'
+            Width = 249
             PropertyName = 'depends'
           end        
           item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 6
             Text = 'Installé par'
             PropertyName = 'explicit_by'
           end>
         Header.DefaultHeight = 17
-        Header.MainColumn = 1
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
         Header.SortColumn = 1
         Header.Style = hsFlatButtons
@@ -1429,11 +1435,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 30
         Top = 0
-        Width = 875
+        Width = 1912
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 875
+        ClientWidth = 1912
         TabOrder = 1
         object butSearchGroups: TButton
           Left = 148
@@ -1463,17 +1469,17 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgPrivateRepo: TTabSheet
       Caption = 'Dépôt privé'
-      ClientHeight = 450
-      ClientWidth = 875
+      ClientHeight = 841
+      ClientWidth = 1912
       object GridPackages: TSOGrid
         Left = 0
-        Height = 420
+        Height = 811
         Top = 30
-        Width = 579
+        Width = 1616
         OnGetText = GridGroupsGetText
         Align = alClient
         Color = clWhite
-        Header.AutoSizeIndex = 0
+        Header.AutoSizeIndex = -1
         Header.Columns = <        
           item
             MaxWidth = 100
@@ -1486,12 +1492,12 @@ object VisWaptGUI: TVisWaptGUI
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
             Position = 1
             Text = 'Paquet'
-            Width = 300
+            Width = 180
             PropertyName = 'package'
           end        
           item
             MaxWidth = 200
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
             Position = 2
             Text = 'Status'
             PropertyName = 'status'
@@ -1501,7 +1507,7 @@ object VisWaptGUI: TVisWaptGUI
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
             Position = 3
             Text = 'Version'
-            Width = 30
+            Width = 94
             PropertyName = 'version'
           end        
           item
@@ -1509,6 +1515,7 @@ object VisWaptGUI: TVisWaptGUI
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
             Position = 4
             Text = 'Description'
+            Width = 333
             PropertyName = 'description'
           end        
           item
@@ -1516,9 +1523,11 @@ object VisWaptGUI: TVisWaptGUI
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
             Position = 5
             Text = 'Dépendances'
+            Width = 345
             PropertyName = 'depends'
           end        
           item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 6
             Text = 'Installé par'
             PropertyName = 'explicit_by'
@@ -1541,8 +1550,8 @@ object VisWaptGUI: TVisWaptGUI
         OnMeasureItem = GridGroupsMeasureItem
       end
       object Splitter3: TSplitter
-        Left = 579
-        Height = 420
+        Left = 1616
+        Height = 811
         Top = 30
         Width = 6
         Align = alRight
@@ -1552,11 +1561,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 30
         Top = 0
-        Width = 875
+        Width = 1912
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 875
+        ClientWidth = 1912
         TabOrder = 0
         object EdSearch: TEdit
           Left = 4
@@ -1600,20 +1609,20 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
       object Panel2: TPanel
-        Left = 585
-        Height = 420
+        Left = 1622
+        Height = 811
         Top = 30
         Width = 290
         Align = alRight
         Alignment = taRightJustify
         BevelOuter = bvNone
-        ClientHeight = 420
+        ClientHeight = 811
         ClientWidth = 290
         TabOrder = 2
         object MemoGroupeDescription: TMemo
           Left = 0
           Height = 300
-          Top = 120
+          Top = 511
           Width = 290
           Align = alBottom
           Lines.Strings = (
@@ -1625,17 +1634,17 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgExternalRepo: TTabSheet
       Caption = 'Dépôt Externe'
-      ClientHeight = 450
-      ClientWidth = 875
+      ClientHeight = 841
+      ClientWidth = 1912
       object GridExternalPackages: TSOGrid
         Left = 0
-        Height = 420
+        Height = 811
         Top = 30
-        Width = 875
+        Width = 1912
         OnGetText = GridGroupsGetText
         Align = alClient
         Color = clWhite
-        Header.AutoSizeIndex = 0
+        Header.AutoSizeIndex = -1
         Header.Columns = <        
           item
             MaxWidth = 100
@@ -1648,12 +1657,12 @@ object VisWaptGUI: TVisWaptGUI
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
             Position = 1
             Text = 'Paquet'
-            Width = 300
+            Width = 292
             PropertyName = 'package'
           end        
           item
             MaxWidth = 200
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
             Position = 2
             Text = 'Status'
             PropertyName = 'status'
@@ -1663,7 +1672,7 @@ object VisWaptGUI: TVisWaptGUI
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
             Position = 3
             Text = 'Version'
-            Width = 30
+            Width = 97
             PropertyName = 'version'
           end        
           item
@@ -1671,6 +1680,7 @@ object VisWaptGUI: TVisWaptGUI
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
             Position = 4
             Text = 'Description'
+            Width = 216
             PropertyName = 'description'
           end        
           item
@@ -1678,9 +1688,11 @@ object VisWaptGUI: TVisWaptGUI
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
             Position = 5
             Text = 'Dépendances'
+            Width = 242
             PropertyName = 'depends'
           end        
           item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 6
             Text = 'Installé par'
             PropertyName = 'explicit_by'
@@ -1705,11 +1717,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 30
         Top = 0
-        Width = 875
+        Width = 1912
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 875
+        ClientWidth = 1912
         TabOrder = 1
         object EdSearch1: TEdit
           Left = 4
@@ -1739,7 +1751,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object urlExternalRepo: TLabel
           AnchorSideRight.Control = Changer
-          Left = 775
+          Left = 1812
           Height = 13
           Top = 9
           Width = 20
@@ -1752,7 +1764,7 @@ object VisWaptGUI: TVisWaptGUI
           AnchorSideLeft.Side = asrBottom
           AnchorSideRight.Control = Panel8
           AnchorSideRight.Side = asrBottom
-          Left = 800
+          Left = 1837
           Height = 25
           Top = 2
           Width = 75
@@ -1765,14 +1777,14 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgSources: TTabSheet
       Caption = 'Sources'
-      ClientHeight = 450
-      ClientWidth = 875
+      ClientHeight = 841
+      ClientWidth = 1912
       TabVisible = False
       inline testedit: TSynEdit
         Left = 0
-        Height = 416
+        Height = 807
         Top = 34
-        Width = 875
+        Width = 1912
         Align = alClient
         Font.Height = -13
         Font.Name = 'Courier New'
@@ -2290,11 +2302,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 34
         Top = 0
-        Width = 875
+        Width = 1912
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 34
-        ClientWidth = 875
+        ClientWidth = 1912
         TabOrder = 1
         object butInitWapt: TButton
           Left = 4

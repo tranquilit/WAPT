@@ -15,9 +15,9 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     Height = 309
     Top = 0
     Width = 537
-    ActivePage = pgParameters
+    ActivePage = pgPrivateKey
     Align = alClient
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 0
     OnChange = PagesControlChange
     object pgParameters: TTabSheet
@@ -143,6 +143,8 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         EditLabel.Width = 140
         EditLabel.Caption = 'IP du serveur WAPT'
         EditLabel.ParentColor = False
+        ParentColor = True
+        ReadOnly = True
         TabOrder = 5
       end
     end
@@ -174,7 +176,6 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         EchoMode = emPassword
         PasswordChar = '*'
         TabOrder = 0
-        Text = 'EdPwd1'
       end
       object EdPwd2: TEdit
         Left = 176
@@ -184,10 +185,9 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         EchoMode = emPassword
         PasswordChar = '*'
         TabOrder = 1
-        Text = 'EdPwd2'
       end
     end
-    object TabSheet3: TTabSheet
+    object pgPrivateKey: TTabSheet
       Caption = 'Création clé privée'
       ClientHeight = 283
       ClientWidth = 529
