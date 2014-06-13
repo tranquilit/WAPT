@@ -267,17 +267,30 @@ begin
     ProgressTitle('Mise à jour index des packages');
     runwapt('{app}\wapt-get.exe update-packages "{app}\waptserver\repository\wapt"');
 
+    ProgressTitle('Copie du certificat');
+    Fileutil.CopyFile(ChangeFileExt(EdPrivateKeyFN.Text,'.crt'),WaptBaseDir+'\ssl\'+ChangeFileExt(ExtractFileNameOnly(EdPrivateKeyFN.Text),'.crt'),True);
+    if FileExists(WaptBaseDir+'\ssl\tranquilit.crt') then
+      FileUtil.DeleteFileUTF8(WaptBaseDir+'\ssl\tranquilit.crt');
+    runwapt('{app}\wapt-get.exe update-packages "{app}\waptserver\repository\wapt"');
+
+
     ProgressTitle('Mise en place mot de passe server');
     IniWriteString(WaptBaseDir+'\waptserver\waptserver.ini' ,'Options','wapt_password',sha1.SHA1Print(sha1.SHA1String(EdPwd1.Text)));
 
     ProgressTitle('Redémarrage waptserver');
-    if GetServiceStatusByName('','WAPTServer') = ssRunning then
-      Sto_RedirectedExecute('cmd /C net stop waptserver');
+    try
+      if GetServiceStatusByName('','WAPTServer') = ssRunning then
+        Sto_RedirectedExecute('cmd /C net stop waptserver');
+    except
+    end;
     Sto_RedirectedExecute('cmd /C net start waptserver');
 
     ProgressTitle('Redémarrage waptservice');
-    if GetServiceStatusByName('','WAPTService') = ssRunning then
-      Sto_RedirectedExecute('cmd /C net stop waptservice');
+    try
+      if GetServiceStatusByName('','WAPTService') = ssRunning then
+        Sto_RedirectedExecute('cmd /C net stop waptservice');
+    except
+    end;
     Sto_RedirectedExecute('cmd /C net start waptservice');
 
     ProgressTitle('Mise à jour paquets locaux');
