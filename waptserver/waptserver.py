@@ -462,8 +462,7 @@ def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
-    return
-        wapt_user == username and (
+    return wapt_user == username and (\
             (wapt_password == hashlib.sha1(password).hexdigest()) or\
             (wapt_password == hashlib.sha512(password).hexdigest()))
 
