@@ -22,7 +22,7 @@
 # -----------------------------------------------------------------------
 import os,sys
 try:
-    wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+    wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'../..'))
 except:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
