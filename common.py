@@ -2529,11 +2529,14 @@ class Wapt(object):
     @property
     def host_uuid(self):
         value = self.read_param('uuid')
-        if not value:
-            logger.info('Unknown UUID : reading host UUID from wmi informations')
+        registered_hostname = self.read_param('hostname')
+        current_hostname = setuphelpers.get_hostname()
+        if not value or registered_hostname != current_hostname:
+            logger.info('Unknown UUID or hostname has changed: reading host UUID from wmi informations')
             inv = setuphelpers.wmi_info_basic()
             value = inv['System_Information']['UUID']
             self.write_param('uuid',value)
+            self.write_param('hostname',current_hostname)
         return value
 
 
@@ -3801,6 +3804,7 @@ class Wapt(object):
             out = self.run("WMIC os set description='%s'" % description.encode(sys.getfilesystemencoding()) ,shell=False)
             logger.info(out)
 
+        self.delete_param('uuid')
         inv = self.inventory()
         inv['uuid'] = self.host_uuid
         if self.wapt_server:
