@@ -40,6 +40,8 @@ Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1
 
 [Run]
 Filename: "{app}\wapt-get.exe"; Parameters: "register"; Flags: runhidden postinstall; StatusMsg: "Enregistre l'ordinateur sur le serveur WAPT"; Description: "Enregistre l'ordinateur sur le serveur WAPT"
+Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runhidden; StatusMsg: "Mise à jour des paquets disponibles sur le dépôt principal"; Description: "Mise à jour des paquets disponibles sur le dépôt principal"
+Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoUpgradePolicy; Flags: runhidden; StatusMsg: "Mise à jour des paquets à l'extinction du poste"; Description: "Mise à jour des paquets à l'extinction du poste"
 
 [Icons]
 Name: "{commonstartup}\WAPT session setup"; Tasks: autorunSessionSetup; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;

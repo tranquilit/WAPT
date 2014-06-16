@@ -34,3 +34,7 @@ Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "0
 [Icons]
 Name: "{commonprograms}\WaptStarter"; IconFilename: "{app}\wapt.ico"; Filename: "http://localhost:8088";
 Name: "{commondesktop}\WaptStarter"; IconFilename: "{app}\wapt.ico"; Filename: "http://localhost:8088";
+
+[Run]
+Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runhidden; StatusMsg: "Mise à jour des paquets disponibles sur le dépôt principal"; Description: "Mise à jour des paquets disponibles sur le dépôt principal"
+Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoUpgradePolicy; Flags: runhidden; StatusMsg: "Mise à jour des paquets à l'extinction du poste"; Description: "Mise à jour des paquets à l'extinction du poste"

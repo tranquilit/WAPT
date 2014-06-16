@@ -58,13 +58,14 @@ DefaultDirName="C:\wapt"
 Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1";
 
 [RUN]
+Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoUpgradePolicy; Flags: runhidden; StatusMsg: "Mise à jour des paquets à l'extinction du poste"; Description: "Mise à jour des paquets à l'extinction du poste"
 Filename: "{app}\waptserver\mongodb\mongod.exe"; Parameters: " --config c:\wapt\waptserver\mongodb\mongod.cfg --install"; StatusMsg: "Registering mongodb service..."; Description: "Set up MongoDB Service"
 Filename: "{app}\waptpython.exe"; Parameters: """{app}\waptserver\waptserver.py"" install"; StatusMsg: "Registering WaptServer Service"    ; Description: "Setup WaptServer Service"
 Filename: "net"; Parameters: "start waptmongodb"; StatusMsg: "Starting WaptMongodb service"
 ;Filename: "net"; Parameters: "start waptserver"; StatusMsg: "Starting waptserver service"
 ;Filename: "{app}\wapt-get.exe"; Parameters: "update-packages ""{app}\waptserver\repository\wapt"""; StatusMsg: "Updating server Packages index";
 ;Filename: "{app}\wapt-get.exe"; Parameters: "register"; Flags: runhidden postinstall; StatusMsg: "Register computer on the WAPT server"; Description: "Register computer on the WAPT server"
-Filename: "{app}\waptserverpostconf.exe"; Flags: postinstall; StatusMsg: "Lancement de la post-configuration du serveur";
+Filename: "{app}\waptserverpostconf.exe"; Flags: postinstall; StatusMsg: "Lancement de la post-configuration du serveur"; Description: "Lancement de la post-configuration du serveur"
 
 [Icons]
 Name: "{commonstartup}\WAPT session setup"; Tasks: autorunSessionSetup; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
