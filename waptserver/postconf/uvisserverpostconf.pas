@@ -78,6 +78,7 @@ type
     procedure actPreviousUpdate(Sender: TObject);
     procedure actWriteConfStartServeExecute(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
     procedure EdOrgNameExit(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -321,6 +322,11 @@ begin
     Close;
 end;
 
+procedure TVisWAPTServerPostConf.Button1Click(Sender: TObject);
+begin
+  showmessage(runwapt('{app}\wapt-get.exe register'));
+end;
+
 procedure TVisWAPTServerPostConf.ActManualExecute(Sender: TObject);
 begin
   ActManual.Checked := not ActManual.Checked;
@@ -344,7 +350,9 @@ begin
     ips := DNSAQuery(EdWAPTServerName.Text);
 
   if (ips<>Nil) and (ips.AsArray.Length>0) then
+  begin
     EdWaptServerIP.text := ips.AsArray[0].AsString
+  end
   else
     EdWaptServerIP.text := '';
 
