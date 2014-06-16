@@ -1578,7 +1578,7 @@ def wmi_info_basic():
     >>> 'System_Information' in r
     True
     """
-    res = run('wmic PATH Win32_ComputerSystemProduct GET UUID,IdentifyingNumber,Name,Vendor /VALUE')
+    res = run('echo "" | wmic PATH Win32_ComputerSystemProduct GET UUID,IdentifyingNumber,Name,Vendor /VALUE')
     wmiout = {}
     for line in res.splitlines():
         if line.strip():

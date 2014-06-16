@@ -113,6 +113,8 @@ type
 
     current_task:ISuperObject;
 
+    procedure EnableZMQ;
+    procedure DisableZMQ;
 
     property tasks:ISuperObject read Ftasks write Settasks;
     property WaptServiceRunning:Boolean read FWaptServiceRunning write SetWaptServiceRunning;
@@ -183,13 +185,20 @@ end;
 procedure TCheckWaptservice.Execute;
 var
   newStatus:Boolean;
+  runstatus:String;
 begin
   While not Terminated do
   begin
     try
-      //if CheckOpenPort(waptservice_port,'127.0.0.1',500) then
+      tasks := WAPTLocalJsonGet('tasks_status.json','','',200);
+      WaptServiceRunning:=True;
+
+      //Fallback in case we don't use ZeroMQ
+      if Assigned(DMTray) and not Assigned(DMTray.check_thread) then
+      begin
         tasks := WAPTLocalJsonGet('tasks_status.json','','',200);
-        WaptServiceRunning:=True;
+        DMTray.pollerEvent(message);
+      end;
     except
       on HTTPException do
       begin
@@ -310,9 +319,6 @@ begin
 
   //UniqueInstance1.Enabled:=True;
   if lowercase(GetUserName)='system' then exit;
-  check_thread :=TZMQPollThread.Create(Self);
-  check_thread.Start;
-
   check_waptservice := TCheckWaptservice.Create(Self);
   check_waptservice.Start;
 
@@ -320,13 +326,28 @@ begin
 
 end;
 
-procedure TDMWaptTray.DataModuleDestroy(Sender: TObject);
+procedure TDMWaptTray.EnableZMQ;
+begin
+  if not Assigned(check_thread) then
+  begin
+    check_thread :=TZMQPollThread.Create(Self);
+    check_thread.Start;
+  end;
+end;
+
+procedure TDMWaptTray.DisableZMQ;
 begin
   if Assigned(check_thread) then
   begin
     TerminateThread(check_thread.Handle,0);
     FreeAndNil(check_thread);
   end;
+end;
+
+
+procedure TDMWaptTray.DataModuleDestroy(Sender: TObject);
+begin
+  DisableZMQ;
   if Assigned(check_waptservice) then
   begin
     TerminateThread(check_waptservice.Handle,0);

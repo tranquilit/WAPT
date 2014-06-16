@@ -3801,7 +3801,7 @@ class Wapt(object):
 
         """
         if description:
-            out = self.run("WMIC os set description='%s'" % description.encode(sys.getfilesystemencoding()) ,shell=False)
+            out = self.run("echo "" | WMIC os set description='%s'" % description.encode(sys.getfilesystemencoding()) ,shell=False)
             logger.info(out)
 
         self.delete_param('uuid')
