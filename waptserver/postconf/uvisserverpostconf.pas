@@ -28,7 +28,6 @@ type
     BitBtn4: TBitBtn;
     BitBtn5: TBitBtn;
     BitBtn6: TBitBtn;
-    Button1: TButton;
     cbManualURL: TCheckBox;
     DirectoryCert: TDirectoryEdit;
     edCommonName: TEdit;
@@ -247,16 +246,16 @@ begin
   actPrevious.Enabled:=PagesControl.ActivePageIndex>0;
 end;
 
+function runwapt(cmd:String):String;
+begin
+  StrReplace(cmd,'{app}',WaptBaseDir,[rfReplaceAll]);
+  result := Sto_RedirectedExecute(cmd);
+end;
+
+
 procedure TVisWAPTServerPostConf.actWriteConfStartServeExecute(Sender: TObject);
 var
   ini:TMemIniFile;
-
-  function runwapt(cmd:String):String;
-  begin
-    StrReplace(cmd,'{app}',WaptBaseDir,[rfReplaceAll]);
-    result := Sto_RedirectedExecute(cmd);
-  end;
-
 begin
   with TVisLoading.Create(Self) do
   try
@@ -267,10 +266,10 @@ begin
     ProgressTitle('Mise à jour index des packages');
     runwapt('{app}\wapt-get.exe update-packages "{app}\waptserver\repository\wapt"');
 
-    ProgressTitle('Copie du certificat');
-    Fileutil.CopyFile(ChangeFileExt(EdPrivateKeyFN.Text,'.crt'),WaptBaseDir+'\ssl\'+ChangeFileExt(ExtractFileNameOnly(EdPrivateKeyFN.Text),'.crt'),True);
+    ProgressTitle('Suppression certificat TIS et copie du nouveau certificat');
     if FileExists(WaptBaseDir+'\ssl\tranquilit.crt') then
       FileUtil.DeleteFileUTF8(WaptBaseDir+'\ssl\tranquilit.crt');
+    Fileutil.CopyFile(ChangeFileExt(EdPrivateKeyFN.Text,'.crt'),WaptBaseDir+'\ssl\'+ChangeFileExt(ExtractFileNameOnly(EdPrivateKeyFN.Text),'.crt'),True);
     runwapt('{app}\wapt-get.exe update-packages "{app}\waptserver\repository\wapt"');
 
 
@@ -293,11 +292,11 @@ begin
     end;
     Sto_RedirectedExecute('cmd /C net start waptservice');
 
+    ProgressTitle('Enregistrement machine sur serveur');
+    runwapt('{app}\wapt-get.exe -D register');
+
     ProgressTitle('Mise à jour paquets locaux');
     runwapt('{app}\wapt-get.exe -D update');
-
-    ProgressTitle('Enregistrement machine sur serveur');
-    runwapt('{app}\wapt-get.exe register');
 
 {    if GetServiceStatusByName('','waptserver') = ssRunning then
       StopServiceByName('', 'waptserver');
