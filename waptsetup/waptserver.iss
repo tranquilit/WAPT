@@ -65,7 +65,7 @@ Filename: "net"; Parameters: "start waptmongodb"; StatusMsg: "Starting WaptMongo
 ;Filename: "net"; Parameters: "start waptserver"; StatusMsg: "Starting waptserver service"
 ;Filename: "{app}\wapt-get.exe"; Parameters: "update-packages ""{app}\waptserver\repository\wapt"""; StatusMsg: "Updating server Packages index";
 ;Filename: "{app}\wapt-get.exe"; Parameters: "register"; Flags: runhidden postinstall; StatusMsg: "Register computer on the WAPT server"; Description: "Register computer on the WAPT server"
-Filename: "{app}\waptserverpostconf.exe"; Flags: nowait postinstall skipifsilent StatusMsg: "Lancement de la post-configuration du serveur"; Description: "Lancement de la post-configuration du serveur"
+Filename: "{app}\waptserverpostconf.exe"; Flags: nowait postinstall skipifsilent; StatusMsg: "Lancement de la post-configuration du serveur"; Description: "Lancement de la post-configuration du serveur"
 
 [Icons]
 Name: "{commonstartup}\WAPT session setup"; Tasks: autorunSessionSetup; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
