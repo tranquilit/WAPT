@@ -247,8 +247,6 @@ begin
       if not GetExitCodeProcess(myProcessInfo.hProcess, exitCode) or (exitCode>0) then
         RaiseLastOSError(exitCode);
 
-      {if error<>'' then
-        Raise Exception.Create(error);}
 
     finally
       if myWriteInputThread<>Nil then  myWriteInputThread.Free;

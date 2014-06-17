@@ -18,11 +18,13 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     Height = 315
     Top = 0
     Width = 434
-    ActivePage = pgParameters
+    ActivePage = pgStartServices
     Align = alClient
-    TabIndex = 0
+    MultiLine = True
+    TabIndex = 4
     TabOrder = 0
     OnChange = PagesControlChange
+    Options = [nboMultiLine]
     object pgParameters: TTabSheet
       Caption = 'Paramètres'
       ClientHeight = 289
@@ -616,8 +618,8 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Visible = False
       end
     end
-    object pgFinish: TTabSheet
-      Caption = 'Fin'
+    object pgStartServices: TTabSheet
+      Caption = 'Start'
       ClientHeight = 289
       ClientWidth = 426
       object EdWaptInifile: TMemo
@@ -703,15 +705,65 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         TabOrder = 2
         Visible = False
       end
-      object cbLaunchWaptConsoleOnExit: TCheckBox
-        Left = 9
+      object CBOpenFirewall: TCheckBox
+        Left = 8
         Height = 17
-        Top = 239
+        Top = 234
+        Width = 394
+        Caption = 'Ouvrir les ports de firewall 80 et 8080 pour l''accès aux  paquets et l''inventaire'
+        Checked = True
+        State = cbChecked
+        TabOrder = 3
+      end
+    end
+    object pgFinish: TTabSheet
+      Caption = 'Fin'
+      ClientHeight = 289
+      ClientWidth = 426
+      object cbLaunchWaptConsoleOnExit: TCheckBox
+        Left = 4
+        Height = 17
+        Top = 262
         Width = 285
         Caption = 'Lancer la console WAPT après le démarrage du serveur'
         Checked = True
         State = cbChecked
-        TabOrder = 3
+        TabOrder = 0
+      end
+      object Memo6: TMemo
+        Left = 16
+        Height = 90
+        Top = 166
+        Width = 360
+        Lines.Strings = (
+          '<html>'
+          '<head>'
+          '<meta http-equiv="Content-Type" content="text/html; charset=UTF-'
+          '8">'
+          '</head>'
+          '<body>'
+          'Félicitations, votre serveur WAPT est désormais fonctionnel. Il vous '
+          'reste à'
+          'lancer votre console WAPT et créer votre installeur client WAPT avec '
+          'votre'
+          'certificat et le déployer par GPO.<br>'
+          'Pour créer l''installeur personnalisé, vous pouvez consulter la '
+          'documentation <a'
+          'href="http://dev.tranquil.it/scenari/guide_admin/co/generation_waptse'
+          'tup_personnalise_waptconsole.html">Génération'
+          'depuis la console WAPT</a>'
+          '<br>'
+          'Pour déployer le client WAPT sur les postes de votre réseau, consulter '
+          'la'
+          'documentation <a'
+          'href="http://dev.tranquil.it/index.php/WAPT_-_D'
+          '%C3%A9ploiement_de_WAPT_par_GPO"/>Déploiement'
+          'de WAPT par GPO</a>'
+          '</body>'
+          '</html>'
+        )
+        TabOrder = 1
+        Visible = False
       end
     end
   end
@@ -726,7 +778,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     ClientWidth = 680
     TabOrder = 1
     object ButPrevious: TBitBtn
-      Left = 416
+      Left = 396
       Height = 26
       Top = 3
       Width = 75
@@ -770,7 +822,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       TabOrder = 0
     end
     object ButNext: TBitBtn
-      Left = 500
+      Left = 480
       Height = 26
       Top = 3
       Width = 75
@@ -883,8 +935,8 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     PrintScale = 1
   end
   object ActionList1: TActionList
-    left = 28
-    top = 240
+    left = 296
+    top = 184
     object actPrevious: TAction
       Caption = 'Précédent'
       OnExecute = actPreviousExecute

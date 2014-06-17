@@ -28,8 +28,9 @@ type
     BitBtn4: TBitBtn;
     BitBtn5: TBitBtn;
     BitBtn6: TBitBtn;
-    cbManualURL: TCheckBox;
     cbLaunchWaptConsoleOnExit: TCheckBox;
+    cbManualURL: TCheckBox;
+    CBOpenFirewall: TCheckBox;
     DirectoryCert: TDirectoryEdit;
     edCommonName: TEdit;
     edCountry: TEdit;
@@ -65,15 +66,17 @@ type
     Memo3: TMemo;
     Memo4: TMemo;
     Memo5: TMemo;
+    Memo6: TMemo;
     PagesControl: TPageControl;
     Panel1: TPanel;
     pgParameters: TTabSheet;
     pgPassword: TTabSheet;
     Shape1: TShape;
     StaticText1: TStaticText;
-    pgFinish: TTabSheet;
+    pgStartServices: TTabSheet;
     pgDevparam: TTabSheet;
     pgPrivateKey: TTabSheet;
+    pgFinish: TTabSheet;
     procedure ActCheckDNSExecute(Sender: TObject);
     procedure ActCreateKeyExecute(Sender: TObject);
     procedure ActCreateKeyUpdate(Sender: TObject);
@@ -85,6 +88,7 @@ type
     procedure actPreviousUpdate(Sender: TObject);
     procedure actWriteConfStartServeExecute(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
     procedure EdOrgNameExit(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -92,6 +96,7 @@ type
       var Handled: boolean);
     procedure PagesControlChange(Sender: TObject);
   private
+    procedure OpenFirewall;
     { private declarations }
   public
     { public declarations }
@@ -204,7 +209,7 @@ var
 
 begin
   HTMLViewer1.LoadStrings(TMemo(FindComponent('Memo'+IntToStr(PagesControl.ActivePageIndex+1))).Lines);
-  if PagesControl.ActivePage = pgFinish then
+  if PagesControl.ActivePage = pgStartServices then
   try
     ini := TMemIniFile.Create(WaptIniFilename);
     ini.WriteString('global','repo_url',edWAPTRepoURL.Text);
@@ -219,6 +224,25 @@ begin
   finally
     ini.Free;
   end;
+  if PagesControl.ActivePage = pgFinish then
+  begin
+    HTMLViewer1.Parent := pgFinish;
+    HTMLViewer1.Align:=alClient;
+  end;
+end;
+
+procedure TVisWAPTServerPostConf.OpenFirewall;
+var
+   output : String;
+begin
+  if GetServiceStatusByName('','SharedAccess') = ssRunning then
+  begin
+    output := Sto_RedirectedExecute('netsh firewall show portopening');
+    if pos('waptserver',output)<=0 then
+      Sto_RedirectedExecute(format('netsh.exe firewall add portopening name="waptserver %d" port=%d protocol=TCP',[waptserver_port,waptserver_port]))
+  end
+  else if GetServiceStatusByName('','MpsSvc') = ssRunning then
+    output := Sto_RedirectedExecute(format('netsh advfirewall firewall show rule name="waptserver %d" || netsh advfirewall firewall add rule name="waptserver %d" dir=in localport=%d protocol=TCP action=allow',[waptserver_port,waptserver_port,waptserver_port]));
 end;
 
 procedure TVisWAPTServerPostConf.ActManualUpdate(Sender: TObject);
@@ -239,7 +263,14 @@ end;
 
 procedure TVisWAPTServerPostConf.ActNextExecute(Sender: TObject);
 begin
-  PagesControl.ActivePageIndex := PagesControl.ActivePageIndex + 1;
+  if PagesControl.ActivePage<>pgFinish then
+    PagesControl.ActivePageIndex := PagesControl.ActivePageIndex + 1
+  else
+  begin
+    if cbLaunchWaptConsoleOnExit.Checked then
+      OpenDocument(WaptBaseDir+'waptconsole.exe');
+    ExitProcess(0);
+  end;
 end;
 
 procedure TVisWAPTServerPostConf.ActNextUpdate(Sender: TObject);
@@ -250,8 +281,14 @@ begin
     ActNext.Enabled := (EdPwd1.Text<>'') and (EdPwd1.Text = EdPwd2.Text)
   else if PagesControl.ActivePage = pgPrivateKey then
     ActNext.Enabled := (EdPrivateKeyFN.Text<>'') and FileExists(EdPrivateKeyFN.Text)
+  else if PagesControl.ActivePage = pgStartServices then
+    ActNext.Enabled := GetServiceStatusByName('','waptserver') = ssRunning
   else
-    ActNext.Enabled := PagesControl.ActivePageIndex<PagesControl.PageCount-1;
+    ActNext.Enabled := PagesControl.ActivePageIndex<=PagesControl.PageCount-1;
+  if PagesControl.ActivePageIndex=PagesControl.PageCount-1 then
+    ActNext.Caption:='Fin'
+  else
+    ActNext.Caption:='Suivant';
 end;
 
 procedure TVisWAPTServerPostConf.actPreviousExecute(Sender: TObject);
@@ -261,7 +298,7 @@ end;
 
 procedure TVisWAPTServerPostConf.actPreviousUpdate(Sender: TObject);
 begin
-  actPrevious.Enabled:=PagesControl.ActivePageIndex>0;
+  actPrevious.Enabled:=(PagesControl.ActivePageIndex>0) and (PagesControl.ActivePageIndex<PagesControl.PageCount-1);
 end;
 
 function runwapt(cmd:String):String;
@@ -294,6 +331,9 @@ begin
     ProgressTitle('Mise en place mot de passe server');
     IniWriteString(WaptBaseDir+'\waptserver\waptserver.ini' ,'Options','wapt_password',sha1.SHA1Print(sha1.SHA1String(EdPwd1.Text)));
 
+    ProgressTitle('Ouverture firewall pour WaptServer');
+    OpenFirewall;
+
     ProgressTitle('Redémarrage waptserver');
     try
       if GetServiceStatusByName('','WAPTServer') = ssRunning then
@@ -316,19 +356,8 @@ begin
     ProgressTitle('Mise à jour paquets locaux');
     runwapt('{app}\wapt-get.exe -D update');
 
-{    if GetServiceStatusByName('','waptserver') = ssRunning then
-      StopServiceByName('', 'waptserver');
-    if GetServiceStatusByName('','waptserver') = ssStopped then
-      if not StartServiceByName('','waptserver') then
-        ShowMessage('Impossible de démarrer le service waptserver');
-    if GetServiceStatusByName('','waptservice') = ssRunning then
-      StopServiceByName('', 'waptservice');
-    if not StartServiceByName('','waptservice') then
-      ShowMessage('Impossible de démarrer le service waptservice');
-}
-    if cbLaunchWaptConsoleOnExit.Checked then
-      OpenDocument(WaptBaseDir+'waptconsole.exe');
-    ExitProcess(0);
+    ActNext.Execute;
+
   finally
     ini.Free;
     Free;
@@ -339,6 +368,12 @@ procedure TVisWAPTServerPostConf.BitBtn3Click(Sender: TObject);
 begin
   if MessageDlg('Confirmer','Voulez-vous vraiment annuler la post-configuration du serveur WAPT ?',mtConfirmation,mbYesNoCancel,0) = mrYes then
     Close;
+end;
+
+procedure TVisWAPTServerPostConf.Button1Click(Sender: TObject);
+begin
+  showmessage(Sto_RedirectedExecute('netsh firewall show portopening'));
+  showmessage(Sto_RedirectedExecute(format('netsh.exe firewall add portopening name="waptserver %d" port=%d protocol=TCP',[waptserver_port,waptserver_port])));
 end;
 
 procedure TVisWAPTServerPostConf.ActManualExecute(Sender: TObject);
