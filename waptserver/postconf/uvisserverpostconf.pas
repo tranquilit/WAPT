@@ -69,6 +69,8 @@ type
     Memo6: TMemo;
     PagesControl: TPageControl;
     Panel1: TPanel;
+    Panel2: TPanel;
+    panFinish: TPanel;
     pgParameters: TTabSheet;
     pgPassword: TTabSheet;
     Shape1: TShape;
@@ -196,6 +198,11 @@ begin
     EdSourcesRoot.Text:=IniReadString(WaptIniFilename,'global','default_sources_root');
   if IniHasKey(WaptIniFilename,'global','templates_repo_url') then
     EdTemplatesRepoURL.Text:=IniReadString(WaptIniFilename,'global','templates_repo_url');
+  if IniHasKey(WaptIniFilename,'global','private_key') then
+  begin
+    EdPrivateKeyFN.Text:=IniReadString(WaptIniFilename,'global','private_key');
+    EdOrgName.Text := ChangeFileExt(ExtractFileName(EdPrivateKeyFN.Text),'');
+  end;
   PagesControlChange(Self);
 end;
 
@@ -229,7 +236,7 @@ begin
   end;
   if PagesControl.ActivePage = pgFinish then
   begin
-    HTMLViewer1.Parent := pgFinish;
+    HTMLViewer1.Parent := panFinish;
     HTMLViewer1.Align:=alClient;
   end;
 end;
@@ -246,7 +253,11 @@ begin
   end
   else if GetServiceStatusByName('','MpsSvc') = ssRunning then
   begin
-    output := Sto_RedirectedExecute(format('netsh advfirewall firewall show rule name="waptserver %d"',[waptserver_port]));
+    output:='';
+    try
+      output := Sto_RedirectedExecute(format('netsh advfirewall firewall show rule name="waptserver %d"',[waptserver_port]));
+    except
+    end;
     if pos('waptserver',output)<=0 then
       output := Sto_RedirectedExecute(format('netsh advfirewall firewall add rule name="waptserver %d" dir=in localport=%d protocol=TCP action=allow',[waptserver_port,waptserver_port]));
   end;
