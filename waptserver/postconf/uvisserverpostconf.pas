@@ -371,7 +371,10 @@ begin
   begin
     if Dialogs.MessageDlg('DNS non valide','Le nom DNS fourni n''est pas valide, voulez-vous utiliser l''adresse IP à la place ?',
         mtConfirmation,mbYesNoCancel,0) = mrYes then
-      EdWAPTServerName.Text := GetLocalIP
+    begin
+      EdWAPTServerName.Text := GetLocalIP;
+      EdWaptServerIP.Text:= GetLocalIP;
+    end
     else
       EdWaptServerIP.text := '';
   end;

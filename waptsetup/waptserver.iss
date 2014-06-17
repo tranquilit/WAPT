@@ -70,6 +70,8 @@ Filename: "{app}\waptserverpostconf.exe"; Flags: nowait postinstall skipifsilent
 [Icons]
 Name: "{commonstartup}\WAPT session setup"; Tasks: autorunSessionSetup; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
 Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\wapttray.exe"; Flags: excludefromshowinnewinstall;
+Name: "{group}\Console WAPT"; Filename: "{app}\waptconsole.exe"; WorkingDir: "{app}"
+Name: "{group}\Logiciels installés avec WAPT"; Filename: "http://localhost:8088/status"
 
 [Tasks]
 Name: autorunSessionSetup; Description: "Lancer WAPT session setup à l'ouverture de session";

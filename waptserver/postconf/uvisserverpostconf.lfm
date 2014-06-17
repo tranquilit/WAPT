@@ -47,10 +47,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Text = 'srvwapt.mondomaine.local'
       end
       object BitBtn4: TBitBtn
-        Left = 168
+        Left = 164
         Height = 25
         Top = 18
-        Width = 120
+        Width = 124
         Action = ActCheckDNS
         Glyph.Data = {
           36040000424D3604000000000000360000002800000010000000100000000100
@@ -682,7 +682,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         TabOrder = 1
       end
       object Memo5: TMemo
-        Left = 12
+        Left = 8
         Height = 90
         Top = 86
         Width = 396
@@ -693,7 +693,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           '</head>'
           '<body>'
           'Le serveur est prêt à être démarré.<br>'
-          'Les paramètres vont être copié dans le fichier wapt-get.ini<br>'
+          'Les paramètres vont être copiés dans le fichier wapt-get.ini<br>'
           'Si le firewall de votre serveur est actif, ne pas oublier d''ouvrir le port 8080 pour '
           'que les clients WAPT puissent enregistrer leur inventaire et récupérer leurs '
           'paquets<br>'
