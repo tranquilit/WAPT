@@ -5,9 +5,9 @@ unit uVisServerPostconf;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls,
-  Graphics, Dialogs, ComCtrls, StdCtrls, ExtCtrls, Buttons, ActnList,
-  EditBtn;
+  Classes, SysUtils, FileUtil, IpHtml, Ipfilebroker, RichView, vsVisualSynapse,
+  RLRichText, Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, ExtCtrls,
+  Buttons, ActnList, EditBtn, htmlview, Readhtml;
 
 type
 
@@ -41,6 +41,7 @@ type
     EdOrgName: TEdit;
     EdPwd2: TEdit;
     edUnit: TEdit;
+    HTMLViewer1: THTMLViewer;
     Label1: TLabel;
     Label10: TLabel;
     Label12: TLabel;
@@ -58,6 +59,7 @@ type
     EdWaptInifile: TMemo;
     EdTemplatesRepoURL: TLabeledEdit;
     EdDefaultPrefix: TLabeledEdit;
+    Memo1: TMemo;
     PagesControl: TPageControl;
     Panel1: TPanel;
     pgParameters: TTabSheet;
@@ -82,6 +84,7 @@ type
     procedure EdOrgNameExit(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure HTMLViewer1Link(Sender: TObject; const Rel, Rev, Href: string);
     procedure PagesControlChange(Sender: TObject);
   private
     { private declarations }
@@ -93,7 +96,7 @@ var
   VisWAPTServerPostConf: TVisWAPTServerPostConf;
 
 implementation
-uses Windows,WaptCommon,tisinifiles,superobject,
+uses LCLIntf, Windows,WaptCommon,tisinifiles,superobject,
     tiscommon,tisstrings,IniFiles,UnitRedirect,uvisLoading,sha1;
 {$R *.lfm}
 
@@ -180,6 +183,13 @@ begin
     EdSourcesRoot.Text:=IniReadString(WaptIniFilename,'global','default_sources_root');
   if IniHasKey(WaptIniFilename,'global','templates_repo_url') then
     EdTemplatesRepoURL.Text:=IniReadString(WaptIniFilename,'global','templates_repo_url');
+  PagesControlChange(Self);
+end;
+
+procedure TVisWAPTServerPostConf.HTMLViewer1Link(Sender: TObject; const Rel,
+  Rev, Href: string);
+begin
+  OpenURL(Href);
 end;
 
 procedure TVisWAPTServerPostConf.PagesControlChange(Sender: TObject);
@@ -187,6 +197,7 @@ var
   ini:TMemIniFile;
 
 begin
+  HTMLViewer1.LoadStrings(Memo1.Lines);
   if PagesControl.ActivePage = pgFinish then
   try
     ini := TMemIniFile.Create(WaptIniFilename);
@@ -354,7 +365,13 @@ begin
     EdWaptServerIP.text := ips.AsArray[0].AsString
   end
   else
-    EdWaptServerIP.text := '';
+  begin
+    if Dialogs.MessageDlg('DNS non valide','Le nom DNS fourni n''est pas valide, voulez-vous utiliser l''adresse IP à la place ?',
+        mtConfirmation,mbYesNoCancel,0) = mrYes then
+      EdWAPTServerName.Text := GetLocalIP
+    else
+      EdWaptServerIP.text := '';
+  end;
 
 end;
 

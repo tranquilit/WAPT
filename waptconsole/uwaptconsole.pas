@@ -937,12 +937,12 @@ begin
       ini := TIniFile.Create(AppIniFilename);
       try
         repeat
+          fnPublicCert.Text:=ChangeFileExt(ini.ReadString('global', 'private_key', ''),'.crt');
+          if not FileExists(fnPublicCert.Text) then
+            fnPublicCert.Clear;
           edWaptServerUrl.Text := ini.ReadString('global', 'wapt_server', '');
           edRepoUrl.Text := ini.ReadString('global', 'repo_url', '');
-          if DirectoryExists(IncludeTrailingPathDelimiter(waptpath) +
-            'waptserver\repository\wapt') then
-            fnWaptDirectory.Directory :=
-              IncludeTrailingPathDelimiter(waptpath) + 'waptserver\repository\wapt';
+          fnWaptDirectory.Directory := GetTempDir(False);
           if ShowModal = mrOk then
           begin
             try

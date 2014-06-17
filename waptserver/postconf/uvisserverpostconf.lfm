@@ -2,10 +2,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
   Left = 372
   Height = 339
   Top = 210
-  Width = 537
+  Width = 675
   Caption = 'Configuration du serveur WAPT pour Windows'
   ClientHeight = 339
-  ClientWidth = 537
+  ClientWidth = 675
   OnCreate = FormCreate
   OnShow = FormShow
   ShowHint = True
@@ -14,7 +14,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     Left = 0
     Height = 309
     Top = 0
-    Width = 537
+    Width = 429
     ActivePage = pgParameters
     Align = alClient
     TabIndex = 0
@@ -23,12 +23,13 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     object pgParameters: TTabSheet
       Caption = 'Paramètres'
       ClientHeight = 283
-      ClientWidth = 529
+      ClientWidth = 421
       object EdWAPTServerName: TLabeledEdit
         Left = 4
         Height = 21
+        Hint = 'Les clients WAPT vont faire appel au serveur Wapt. Pour joindre le serveur WAPT,'#13#10'il est préférable d''utiliser un nom DNS, mais celui-ci doit être correctement'#13#10'configuré dans l''environnement DNS de votre réseau. Pour le nom du serveur wapt,'#13#10'il est conseillé d''utiliser le nom srvwapt.mondomain.local en champ de type A et'#13#10'créer un alias wapt.mondomain.local en champ de type CNAME pointant vers srvwapt.'#13#10#13#10'Si vous avez quelques doutes sur vos DNS, ou que vous mettez en place juste un'#13#10'environnement de test, vous pouvez renseigner directement d''adresse IP du serveur.'#13#10#13#10'Pour plus d''information :'#13#10'http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html'
         Top = 22
-        Width = 204
+        Width = 156
         EditLabel.AnchorSideLeft.Control = EdWAPTServerName
         EditLabel.AnchorSideRight.Control = EdWAPTServerName
         EditLabel.AnchorSideRight.Side = asrBottom
@@ -36,17 +37,17 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         EditLabel.Left = 4
         EditLabel.Height = 13
         EditLabel.Top = 6
-        EditLabel.Width = 204
+        EditLabel.Width = 156
         EditLabel.Caption = 'Nom DNS du serveur WAPT'
         EditLabel.ParentColor = False
         TabOrder = 0
         Text = 'srvwapt.mondomaine.local'
       end
       object BitBtn4: TBitBtn
-        Left = 216
+        Left = 168
         Height = 25
         Top = 18
-        Width = 132
+        Width = 120
         Action = ActCheckDNS
         Glyph.Data = {
           36040000424D3604000000000000360000002800000010000000100000000100
@@ -129,29 +130,61 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         TabOrder = 4
       end
       object EdWaptServerIP: TLabeledEdit
-        Left = 364
+        Left = 292
         Height = 21
         Top = 22
-        Width = 140
+        Width = 128
         EditLabel.AnchorSideLeft.Control = EdWaptServerIP
         EditLabel.AnchorSideRight.Control = EdWaptServerIP
         EditLabel.AnchorSideRight.Side = asrBottom
         EditLabel.AnchorSideBottom.Control = EdWaptServerIP
-        EditLabel.Left = 364
+        EditLabel.Left = 292
         EditLabel.Height = 13
         EditLabel.Top = 6
-        EditLabel.Width = 140
+        EditLabel.Width = 128
         EditLabel.Caption = 'IP du serveur WAPT'
         EditLabel.ParentColor = False
         ParentColor = True
         ReadOnly = True
         TabOrder = 5
       end
+      object Memo1: TMemo
+        Left = 24
+        Height = 90
+        Top = 166
+        Width = 372
+        Lines.Strings = (
+          '<html>'
+          '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'
+          '<body>'
+          'Les clients <b>WAPT</b> vont faire appel au serveur Wapt<br>'
+          'Pour joindre le serveur WAPT,'
+          'il est préférable d''utiliser un nom DNS, mais celui-ci doit être correctement'
+          'configuré dans l''environnement DNS de votre réseau.<br>'
+          'Pour le nom du serveur wapt, il est conseillé d''utiliser le nom '
+          'srvwapt.mondomain.local en champ de type A et'
+          'créer un alias wapt.mondomain.local en champ de type CNAME pointant '
+          'vers srvwapt.<br>'
+          'Si vous avez quelques doutes sur vos DNS, ou que vous mettez en place '
+          'juste un'
+          'environnement de test, vous pouvez renseigner directement d''adresse IP '
+          'du serveur.'
+          ''
+          'Pour plus d''information :'
+          '<a '
+          'href="http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configur'
+          'ation_champDNS.html">Configuration d''une infrastructure WAPT</a>'
+          '</body>'
+          '</html>'
+        )
+        TabOrder = 6
+        Visible = False
+      end
     end
     object pgPassword: TTabSheet
       Caption = 'Mot de passe'
       ClientHeight = 283
-      ClientWidth = 529
+      ClientWidth = 421
       object Label1: TLabel
         Left = 6
         Height = 13
@@ -171,6 +204,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object EdPwd1: TEdit
         Left = 176
         Height = 21
+        Hint = 'Ce mot de passe sera utilisé pour se connecter au serveur WAPT depuis la console'#13#10'WAPT. Pour plus d''information, :'#13#10'http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html'
         Top = 22
         Width = 104
         EchoMode = emPassword
@@ -190,7 +224,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     object pgPrivateKey: TTabSheet
       Caption = 'Création clé privée'
       ClientHeight = 283
-      ClientWidth = 529
+      ClientWidth = 421
       object Label9: TLabel
         Left = 12
         Height = 13
@@ -352,7 +386,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
       object Shape1: TShape
         AnchorSideRight.Side = asrBottom
-        Left = 9
+        Left = -35
         Height = 2
         Top = 71
         Width = 413
@@ -423,7 +457,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     object pgDevparam: TTabSheet
       Caption = 'Développement'
       ClientHeight = 283
-      ClientWidth = 529
+      ClientWidth = 421
       object EdTemplatesRepoURL: TLabeledEdit
         Left = 8
         Height = 21
@@ -483,7 +517,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     object pgFinish: TTabSheet
       Caption = 'Fin'
       ClientHeight = 283
-      ClientWidth = 529
+      ClientWidth = 421
       object EdWaptInifile: TMemo
         Left = 4
         Height = 185
@@ -551,11 +585,11 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     Left = 0
     Height = 30
     Top = 309
-    Width = 537
+    Width = 675
     Align = alBottom
     BevelOuter = bvNone
     ClientHeight = 30
-    ClientWidth = 537
+    ClientWidth = 675
     TabOrder = 1
     object ButPrevious: TBitBtn
       Left = 280
@@ -691,6 +725,29 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       OnClick = BitBtn3Click
       TabOrder = 2
     end
+  end
+  object HTMLViewer1: THTMLViewer
+    Left = 429
+    Height = 309
+    Top = 0
+    Width = 246
+    TabOrder = 2
+    Align = alRight
+    DefBackground = clWhite
+    BorderStyle = htFocused
+    HistoryMaxCount = 0
+    DefFontName = 'Arial'
+    DefPreFontName = 'Courier New'
+    DefFontSize = 8
+    NoSelect = False
+    CharSet = DEFAULT_CHARSET
+    PrintMarginLeft = 2
+    PrintMarginRight = 2
+    PrintMarginTop = 2
+    PrintMarginBottom = 2
+    PrintScale = 1
+    htOptions = [htPrintTableBackground, htPrintMonochromeBlack, htShowVScroll]
+    OnLink = HTMLViewer1Link
   end
   object ActionList1: TActionList
     left = 28
