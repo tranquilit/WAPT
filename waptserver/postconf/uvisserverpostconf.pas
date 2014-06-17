@@ -186,6 +186,9 @@ end;
 
 procedure TVisWAPTServerPostConf.FormShow(Sender: TObject);
 begin
+  if GetServiceStatusByName('','WAPTServer') = ssRunning then
+    Sto_RedirectedExecute('cmd /C net stop waptserver');
+
   EdWAPTServerName.Text:=LowerCase(GetComputerName)+'.'+GetDNSDomain;
   if IniHasKey(WaptIniFilename,'global','default_package_prefix') then
     EdDefaultPrefix.Text:=IniReadString(WaptIniFilename,'global','default_package_prefix');
@@ -242,7 +245,11 @@ begin
       Sto_RedirectedExecute(format('netsh.exe firewall add portopening name="waptserver %d" port=%d protocol=TCP',[waptserver_port,waptserver_port]))
   end
   else if GetServiceStatusByName('','MpsSvc') = ssRunning then
-    output := Sto_RedirectedExecute(format('netsh advfirewall firewall show rule name="waptserver %d" || netsh advfirewall firewall add rule name="waptserver %d" dir=in localport=%d protocol=TCP action=allow',[waptserver_port,waptserver_port,waptserver_port]));
+  begin
+    output := Sto_RedirectedExecute(format('netsh advfirewall firewall show rule name="waptserver %d"',[waptserver_port]));
+    if pos('waptserver',output)<=0 then
+      output := Sto_RedirectedExecute(format('netsh advfirewall firewall add rule name="waptserver %d" dir=in localport=%d protocol=TCP action=allow',[waptserver_port,waptserver_port]));
+  end;
 end;
 
 procedure TVisWAPTServerPostConf.ActManualUpdate(Sender: TObject);
@@ -319,9 +326,11 @@ begin
     ini.UpdateFile;
 
     ProgressTitle('Mise à jour index des packages');
+    ProgressStep(1,8);
     runwapt('{app}\wapt-get.exe update-packages "{app}\waptserver\repository\wapt"');
 
     ProgressTitle('Suppression certificat TIS et copie du nouveau certificat');
+    ProgressStep(2,8);
     if FileExists(WaptBaseDir+'\ssl\tranquilit.crt') then
       FileUtil.DeleteFileUTF8(WaptBaseDir+'\ssl\tranquilit.crt');
     Fileutil.CopyFile(ChangeFileExt(EdPrivateKeyFN.Text,'.crt'),WaptBaseDir+'\ssl\'+ChangeFileExt(ExtractFileNameOnly(EdPrivateKeyFN.Text),'.crt'),True);
@@ -329,12 +338,15 @@ begin
 
 
     ProgressTitle('Mise en place mot de passe server');
+    ProgressStep(3,8);
     IniWriteString(WaptBaseDir+'\waptserver\waptserver.ini' ,'Options','wapt_password',sha1.SHA1Print(sha1.SHA1String(EdPwd1.Text)));
 
     ProgressTitle('Ouverture firewall pour WaptServer');
+    ProgressStep(4,8);
     OpenFirewall;
 
     ProgressTitle('Redémarrage waptserver');
+    ProgressStep(5,8);
     try
       if GetServiceStatusByName('','WAPTServer') = ssRunning then
         Sto_RedirectedExecute('cmd /C net stop waptserver');
@@ -343,6 +355,7 @@ begin
     Sto_RedirectedExecute('cmd /C net start waptserver');
 
     ProgressTitle('Redémarrage waptservice');
+    ProgressStep(6,8);
     try
       if GetServiceStatusByName('','WAPTService') = ssRunning then
         Sto_RedirectedExecute('cmd /C net stop waptservice');
@@ -351,9 +364,11 @@ begin
     Sto_RedirectedExecute('cmd /C net start waptservice');
 
     ProgressTitle('Enregistrement machine sur serveur');
+    ProgressStep(7,8);
     runwapt('{app}\wapt-get.exe -D register');
 
     ProgressTitle('Mise à jour paquets locaux');
+    ProgressStep(8,8);
     runwapt('{app}\wapt-get.exe -D update');
 
     ActNext.Execute;
