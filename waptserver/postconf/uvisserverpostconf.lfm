@@ -1,20 +1,23 @@
 object VisWAPTServerPostConf: TVisWAPTServerPostConf
   Left = 372
-  Height = 339
+  Height = 345
   Top = 210
-  Width = 675
+  Width = 680
   Caption = 'Configuration du serveur WAPT pour Windows'
-  ClientHeight = 339
-  ClientWidth = 675
+  ClientHeight = 345
+  ClientWidth = 680
+  Constraints.MinHeight = 345
+  Constraints.MinWidth = 680
   OnCreate = FormCreate
   OnShow = FormShow
+  Position = poDefaultPosOnly
   ShowHint = True
   LCLVersion = '1.3'
   object PagesControl: TPageControl
     Left = 0
-    Height = 309
+    Height = 315
     Top = 0
-    Width = 429
+    Width = 434
     ActivePage = pgParameters
     Align = alClient
     TabIndex = 0
@@ -22,8 +25,8 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     OnChange = PagesControlChange
     object pgParameters: TTabSheet
       Caption = 'Paramètres'
-      ClientHeight = 283
-      ClientWidth = 421
+      ClientHeight = 289
+      ClientWidth = 426
       object EdWAPTServerName: TLabeledEdit
         Left = 4
         Height = 21
@@ -149,14 +152,17 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         TabOrder = 5
       end
       object Memo1: TMemo
-        Left = 24
+        Left = 16
         Height = 90
-        Top = 166
+        Top = 174
         Width = 372
         Lines.Strings = (
           '<html>'
+          '<head>'
           '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'
+          '</head>'
           '<body>'
+          '<a href="#page1"></a>'
           'Les clients <b>WAPT</b> vont faire appel au serveur Wapt<br>'
           'Pour joindre le serveur WAPT,'
           'il est préférable d''utiliser un nom DNS, mais celui-ci doit être correctement'
@@ -174,6 +180,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           '<a '
           'href="http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configur'
           'ation_champDNS.html">Configuration d''une infrastructure WAPT</a>'
+          ''
           '</body>'
           '</html>'
         )
@@ -183,8 +190,8 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object pgPassword: TTabSheet
       Caption = 'Mot de passe'
-      ClientHeight = 283
-      ClientWidth = 421
+      ClientHeight = 289
+      ClientWidth = 426
       object Label1: TLabel
         Left = 6
         Height = 13
@@ -220,11 +227,31 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         PasswordChar = '*'
         TabOrder = 1
       end
+      object Memo2: TMemo
+        Left = 16
+        Height = 90
+        Top = 174
+        Width = 372
+        Lines.Strings = (
+          '<html>'
+          '<head>'
+          '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'
+          '</head>'
+          '<body>'
+          'Ce mot de passe sera utilisé pour se connecter au serveur WAPT depuis la '
+          'console'
+          'WAPT.'
+          '</body>'
+          '</html>'
+        )
+        TabOrder = 2
+        Visible = False
+      end
     end
     object pgPrivateKey: TTabSheet
       Caption = 'Création clé privée'
-      ClientHeight = 283
-      ClientWidth = 421
+      ClientHeight = 289
+      ClientWidth = 426
       object Label9: TLabel
         Left = 12
         Height = 13
@@ -386,7 +413,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
       object Shape1: TShape
         AnchorSideRight.Side = asrBottom
-        Left = -35
+        Left = -33
         Height = 2
         Top = 71
         Width = 413
@@ -453,11 +480,44 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Width = 248
         TabOrder = 10
       end
+      object Memo3: TMemo
+        Left = 20
+        Height = 40
+        Top = 62
+        Width = 381
+        Lines.Strings = (
+          '<html>'
+          '<head>'
+          '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'
+          '</head>'
+          '<body>'
+          'Un couple clé privée (.pem), clé publique (.crt) va être créé pour permettre '
+          'la signature des paquets.<br>'
+          'Seuls les paquets signés avec votre clé privée pourront être installés sur les '
+          'clients.<br>'
+          'La <b>clé privée (.pem)</b> ne doit en aucun cas être communiquée à des '
+          'tiers.<br>'
+          'Le <b>certificat public (.crt)</b> peut lui être librement diffusé. Il sera '
+          'implantés sur les postes clients par l''installeur personnalisé.<br>'
+          '<br>'
+          '<i>Nota: Cette création de clé privée est à effectuer une seule fois pour '
+          'chaque organisation.</i>'
+          '<br>'
+          'Pour plus d''information :'
+          '<a '
+          'href="http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_w'
+          'apt.html">Génération certificat auto-signé</a>'
+          '</body>'
+          '</html>'
+        )
+        TabOrder = 11
+        Visible = False
+      end
     end
     object pgDevparam: TTabSheet
       Caption = 'Développement'
-      ClientHeight = 283
-      ClientWidth = 421
+      ClientHeight = 289
+      ClientWidth = 426
       object EdTemplatesRepoURL: TLabeledEdit
         Left = 8
         Height = 21
@@ -513,11 +573,53 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         TabOrder = 2
         Text = 'c:\waptdev'
       end
+      object Memo4: TMemo
+        Left = 16
+        Height = 90
+        Top = 174
+        Width = 372
+        Lines.Strings = (
+          '<html>'
+          '<head>'
+          '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'
+          '</head>'
+          '<body>'
+          ''
+          '<b>Tranquil IT Systems</b> fournit un ensemble de paquets WAPT sur le '
+          'site'
+          'http://wapt.tranquil.it <br>'
+          'Ainsi vous pouvez rapidement prendre en main votre'
+          'nouvelle infrastructure WAPT en récupérant des paquets tout faits et les'
+          'installer directement sur votre réseau.<br>'
+          ''
+          'Quand vous récupérez un paquet ou que vous en créer un, il sera préfixé '
+          'avec'
+          'votre trigramme ou quadrigramme pour permettre d''identifier sa '
+          'provenance.<br>'
+          'Remplacer "test" par un trigramme explicite pour votre structure (ex: tis '
+          'pour'
+          'Tranquil IT Systems)<br>'
+          ''
+          'Le répertoire de développement est l''endroit où seront stockées les '
+          'informations'
+          'de votre paquet en développement. <br>'
+          ''
+          'Pour plus d''information :'
+          '<a '
+          'href="http://dev.tranquil.it/scenari/guide_admin/co/configuration_waptco'
+          'nsole.html">Configuration de la console WAPT</a>'
+          ''
+          '</body>'
+          '</html>'
+        )
+        TabOrder = 3
+        Visible = False
+      end
     end
     object pgFinish: TTabSheet
       Caption = 'Fin'
-      ClientHeight = 283
-      ClientWidth = 421
+      ClientHeight = 289
+      ClientWidth = 426
       object EdWaptInifile: TMemo
         Left = 4
         Height = 185
@@ -579,20 +681,52 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         }
         TabOrder = 1
       end
+      object Memo5: TMemo
+        Left = 12
+        Height = 90
+        Top = 86
+        Width = 396
+        Lines.Strings = (
+          '<html>'
+          '<head>'
+          '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'
+          '</head>'
+          '<body>'
+          'Le serveur est prêt à être démarré.<br>'
+          'Les paramètres vont être copié dans le fichier wapt-get.ini<br>'
+          'Si le firewall de votre serveur est actif, ne pas oublier d''ouvrir le port 8080 pour '
+          'que les clients WAPT puissent enregistrer leur inventaire et récupérer leurs '
+          'paquets<br>'
+          '</body>'
+          '</html>'
+        )
+        TabOrder = 2
+        Visible = False
+      end
+      object CheckBox1: TCheckBox
+        Left = 9
+        Height = 17
+        Top = 239
+        Width = 285
+        Action = actLaunchWaptConsoleOnExit
+        Checked = True
+        State = cbChecked
+        TabOrder = 3
+      end
     end
   end
   object Panel1: TPanel
     Left = 0
     Height = 30
-    Top = 309
-    Width = 675
+    Top = 315
+    Width = 680
     Align = alBottom
     BevelOuter = bvNone
     ClientHeight = 30
-    ClientWidth = 675
+    ClientWidth = 680
     TabOrder = 1
     object ButPrevious: TBitBtn
-      Left = 280
+      Left = 416
       Height = 26
       Top = 3
       Width = 75
@@ -636,7 +770,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       TabOrder = 0
     end
     object ButNext: TBitBtn
-      Left = 364
+      Left = 500
       Height = 26
       Top = 3
       Width = 75
@@ -680,7 +814,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       TabOrder = 1
     end
     object BitBtn3: TBitBtn
-      Left = 444
+      Left = 580
       Height = 25
       Top = 4
       Width = 91
@@ -727,10 +861,11 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
   end
   object HTMLViewer1: THTMLViewer
-    Left = 429
-    Height = 309
+    Left = 434
+    Height = 315
     Top = 0
     Width = 246
+    OnHotSpotClick = HTMLViewer1HotSpotClick
     TabOrder = 2
     Align = alRight
     DefBackground = clWhite
@@ -740,14 +875,20 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     DefPreFontName = 'Courier New'
     DefFontSize = 8
     NoSelect = False
-    CharSet = DEFAULT_CHARSET
+    CharSet = 4
     PrintMarginLeft = 2
     PrintMarginRight = 2
     PrintMarginTop = 2
     PrintMarginBottom = 2
     PrintScale = 1
-    htOptions = [htPrintTableBackground, htPrintMonochromeBlack, htShowVScroll]
-    OnLink = HTMLViewer1Link
+  end
+  object Button1: TButton
+    Left = 24
+    Height = 25
+    Top = 6
+    Width = 75
+    Caption = 'Button1'
+    TabOrder = 3
   end
   object ActionList1: TActionList
     left = 28
@@ -782,6 +923,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     object actWriteConfStartServe: TAction
       Caption = 'Démarrer le serveur avec ces paramètres'
       OnExecute = actWriteConfStartServeExecute
+    end
+    object actLaunchWaptConsoleOnExit: TAction
+      Caption = 'Lancer la console WAPT après le démarrage du serveur'
+      Checked = True
     end
   end
 end

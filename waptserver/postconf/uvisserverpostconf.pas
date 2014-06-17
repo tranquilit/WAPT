@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, IpHtml, Ipfilebroker, RichView, vsVisualSynapse,
   RLRichText, Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, ExtCtrls,
-  Buttons, ActnList, EditBtn, htmlview, Readhtml;
+  Buttons, ActnList, EditBtn, htmlview, Readhtml, Htmlsubs;
 
 type
 
@@ -17,6 +17,7 @@ type
     ActCheckDNS: TAction;
     ActCreateKey: TAction;
     ActCancel: TAction;
+    actLaunchWaptConsoleOnExit: TAction;
     actWriteConfStartServe: TAction;
     ActManual: TAction;
     ActNext: TAction;
@@ -28,7 +29,9 @@ type
     BitBtn4: TBitBtn;
     BitBtn5: TBitBtn;
     BitBtn6: TBitBtn;
+    Button1: TButton;
     cbManualURL: TCheckBox;
+    CheckBox1: TCheckBox;
     DirectoryCert: TDirectoryEdit;
     edCommonName: TEdit;
     edCountry: TEdit;
@@ -60,6 +63,10 @@ type
     EdTemplatesRepoURL: TLabeledEdit;
     EdDefaultPrefix: TLabeledEdit;
     Memo1: TMemo;
+    Memo2: TMemo;
+    Memo3: TMemo;
+    Memo4: TMemo;
+    Memo5: TMemo;
     PagesControl: TPageControl;
     Panel1: TPanel;
     pgParameters: TTabSheet;
@@ -80,11 +87,11 @@ type
     procedure actPreviousUpdate(Sender: TObject);
     procedure actWriteConfStartServeExecute(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
     procedure EdOrgNameExit(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure HTMLViewer1Link(Sender: TObject; const Rel, Rev, Href: string);
+    procedure HTMLViewer1HotSpotClick(Sender: TObject; const SRC: string;
+      var Handled: boolean);
     procedure PagesControlChange(Sender: TObject);
   private
     { private declarations }
@@ -186,10 +193,11 @@ begin
   PagesControlChange(Self);
 end;
 
-procedure TVisWAPTServerPostConf.HTMLViewer1Link(Sender: TObject; const Rel,
-  Rev, Href: string);
+procedure TVisWAPTServerPostConf.HTMLViewer1HotSpotClick(Sender: TObject;
+  const SRC: string; var Handled: boolean);
 begin
-  OpenURL(Href);
+  OpenURL(SRC);
+  Handled:=True;
 end;
 
 procedure TVisWAPTServerPostConf.PagesControlChange(Sender: TObject);
@@ -197,7 +205,7 @@ var
   ini:TMemIniFile;
 
 begin
-  HTMLViewer1.LoadStrings(Memo1.Lines);
+  HTMLViewer1.LoadStrings(TMemo(FindComponent('Memo'+IntToStr(PagesControl.ActivePageIndex+1))).Lines);
   if PagesControl.ActivePage = pgFinish then
   try
     ini := TMemIniFile.Create(WaptIniFilename);
@@ -320,6 +328,8 @@ begin
     if not StartServiceByName('','waptservice') then
       ShowMessage('Impossible de démarrer le service waptservice');
 }
+    if actLaunchWaptConsoleOnExit.Checked then
+      OpenDocument(WaptBaseDir+'waptconsole.exe');
     ExitProcess(0);
   finally
     ini.Free;
@@ -331,11 +341,6 @@ procedure TVisWAPTServerPostConf.BitBtn3Click(Sender: TObject);
 begin
   if MessageDlg('Confirmer','Voulez-vous vraiment annuler la post-configuration du serveur WAPT ?',mtConfirmation,mbYesNoCancel,0) = mrYes then
     Close;
-end;
-
-procedure TVisWAPTServerPostConf.Button1Click(Sender: TObject);
-begin
-  showmessage(runwapt('{app}\wapt-get.exe register'));
 end;
 
 procedure TVisWAPTServerPostConf.ActManualExecute(Sender: TObject);
