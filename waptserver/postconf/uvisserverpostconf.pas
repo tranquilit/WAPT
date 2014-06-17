@@ -17,7 +17,6 @@ type
     ActCheckDNS: TAction;
     ActCreateKey: TAction;
     ActCancel: TAction;
-    actLaunchWaptConsoleOnExit: TAction;
     actWriteConfStartServe: TAction;
     ActManual: TAction;
     ActNext: TAction;
@@ -29,9 +28,8 @@ type
     BitBtn4: TBitBtn;
     BitBtn5: TBitBtn;
     BitBtn6: TBitBtn;
-    Button1: TButton;
     cbManualURL: TCheckBox;
-    CheckBox1: TCheckBox;
+    cbLaunchWaptConsoleOnExit: TCheckBox;
     DirectoryCert: TDirectoryEdit;
     edCommonName: TEdit;
     edCountry: TEdit;
@@ -328,7 +326,7 @@ begin
     if not StartServiceByName('','waptservice') then
       ShowMessage('Impossible de démarrer le service waptservice');
 }
-    if actLaunchWaptConsoleOnExit.Checked then
+    if cbLaunchWaptConsoleOnExit.Checked then
       OpenDocument(WaptBaseDir+'waptconsole.exe');
     ExitProcess(0);
   finally

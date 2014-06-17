@@ -703,12 +703,12 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         TabOrder = 2
         Visible = False
       end
-      object CheckBox1: TCheckBox
+      object cbLaunchWaptConsoleOnExit: TCheckBox
         Left = 9
         Height = 17
         Top = 239
         Width = 285
-        Action = actLaunchWaptConsoleOnExit
+        Caption = 'Lancer la console WAPT après le démarrage du serveur'
         Checked = True
         State = cbChecked
         TabOrder = 3
@@ -882,14 +882,6 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     PrintMarginBottom = 2
     PrintScale = 1
   end
-  object Button1: TButton
-    Left = 24
-    Height = 25
-    Top = 6
-    Width = 75
-    Caption = 'Button1'
-    TabOrder = 3
-  end
   object ActionList1: TActionList
     left = 28
     top = 240
@@ -923,10 +915,6 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     object actWriteConfStartServe: TAction
       Caption = 'Démarrer le serveur avec ces paramètres'
       OnExecute = actWriteConfStartServeExecute
-    end
-    object actLaunchWaptConsoleOnExit: TAction
-      Caption = 'Lancer la console WAPT après le démarrage du serveur'
-      Checked = True
     end
   end
 end

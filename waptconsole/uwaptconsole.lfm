@@ -17,9 +17,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 476
     Top = 0
     Width = 883
-    ActivePage = pgInventory
+    ActivePage = pgPrivateRepo
     Align = alClient
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -1352,16 +1352,16 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgGroups: TTabSheet
       Caption = 'Groupes'
-      ClientHeight = 841
-      ClientWidth = 1912
+      ClientHeight = 450
+      ClientWidth = 875
       object GridGroups: TSOGrid
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Side = asrBottom
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 811
+        Height = 420
         Top = 30
-        Width = 1912
+        Width = 875
         OnGetText = GridGroupsGetText
         Align = alClient
         Color = clWhite
@@ -1435,11 +1435,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 30
         Top = 0
-        Width = 1912
+        Width = 875
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 1912
+        ClientWidth = 875
         TabOrder = 1
         object butSearchGroups: TButton
           Left = 148
@@ -1469,13 +1469,13 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgPrivateRepo: TTabSheet
       Caption = 'Dépôt privé'
-      ClientHeight = 841
-      ClientWidth = 1912
+      ClientHeight = 450
+      ClientWidth = 875
       object GridPackages: TSOGrid
         Left = 0
-        Height = 811
+        Height = 420
         Top = 30
-        Width = 1616
+        Width = 579
         OnGetText = GridGroupsGetText
         Align = alClient
         Color = clWhite
@@ -1550,8 +1550,8 @@ object VisWaptGUI: TVisWaptGUI
         OnMeasureItem = GridGroupsMeasureItem
       end
       object Splitter3: TSplitter
-        Left = 1616
-        Height = 811
+        Left = 579
+        Height = 420
         Top = 30
         Width = 6
         Align = alRight
@@ -1561,11 +1561,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 30
         Top = 0
-        Width = 1912
+        Width = 875
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 1912
+        ClientWidth = 875
         TabOrder = 0
         object EdSearch: TEdit
           Left = 4
@@ -1609,20 +1609,20 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
       object Panel2: TPanel
-        Left = 1622
-        Height = 811
+        Left = 585
+        Height = 420
         Top = 30
         Width = 290
         Align = alRight
         Alignment = taRightJustify
         BevelOuter = bvNone
-        ClientHeight = 811
+        ClientHeight = 420
         ClientWidth = 290
         TabOrder = 2
         object MemoGroupeDescription: TMemo
           Left = 0
           Height = 300
-          Top = 511
+          Top = 120
           Width = 290
           Align = alBottom
           Lines.Strings = (

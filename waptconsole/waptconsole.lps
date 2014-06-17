@@ -24,14 +24,14 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="953"/>
-        <CursorPos X="49" Y="955"/>
+        <TopLine Value="1397"/>
+        <CursorPos X="39" Y="1400"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="4">
-          <Item0 X="1" Y="1624" ID="4"/>
-          <Item1 X="6" Y="2067" ID="5"/>
-          <Item2 X="5" Y="2107" ID="8"/>
-          <Item3 X="1" Y="1195" ID="1"/>
+          <Item0 X="1" Y="1626" ID="4"/>
+          <Item1 X="6" Y="2069" ID="5"/>
+          <Item2 X="5" Y="2109" ID="8"/>
+          <Item3 X="1" Y="1196" ID="1"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -73,6 +73,7 @@
         <CursorPos X="37" Y="81"/>
         <UsageCount Value="238"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="uviseditpackage.pas"/>
@@ -504,7 +505,7 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="23" HistoryIndex="22">
+    <JumpHistory Count="25" HistoryIndex="24">
       <Position1>
         <Filename Value="uwaptconsole.pas"/>
         <Caret Line="1700" Column="34" TopLine="1685"/>
@@ -597,6 +598,14 @@
         <Filename Value="uwaptconsole.pas"/>
         <Caret Line="1707" Column="51" TopLine="1685"/>
       </Position23>
+      <Position24>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="955" Column="49" TopLine="953"/>
+      </Position24>
+      <Position25>
+        <Filename Value="uwaptconsole.pas"/>
+        <Caret Line="611" Column="39" TopLine="606"/>
+      </Position25>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
@@ -606,7 +615,7 @@
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="uwaptconsole.pas"/>
-        <Line Value="2012"/>
+        <Line Value="2014"/>
       </Item1>
     </BreakPoints>
   </Debugging>

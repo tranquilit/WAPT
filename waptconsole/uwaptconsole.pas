@@ -606,7 +606,8 @@ end;
 
 procedure TVisWaptGUI.ActLocalhostInstallUpdate(Sender: TObject);
 begin
-  ActLocalhostInstall.Enabled := GridPackages.SelectedCount > 0;
+  //ActLocalhostInstall.Enabled := GridPackages.SelectedCount > 0;
+  ActLocalhostInstall.Enabled := False;
 end;
 
 procedure TVisWaptGUI.ActPackageDuplicateExecute(Sender: TObject);
@@ -1395,7 +1396,8 @@ end;
 
 procedure TVisWaptGUI.ActLocalhostRemoveUpdate(Sender: TObject);
 begin
-  ActLocalhostRemove.Enabled := GridPackages.SelectedCount > 0;
+  //ActLocalhostRemove.Enabled := GridPackages.SelectedCount > 0;
+  ActLocalhostRemove.Enabled := False;
 end;
 
 procedure TVisWaptGUI.ActSearchHostExecute(Sender: TObject);
