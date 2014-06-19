@@ -783,36 +783,39 @@ object VisWaptGUI: TVisWaptGUI
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
                 Position = 0
                 Text = 'Editeur'
+                Width = 100
                 PropertyName = 'publisher'
               end            
               item
                 Position = 1
                 Text = 'Logiciel'
+                Width = 100
                 PropertyName = 'name'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
                 Position = 2
                 Text = 'Version'
-                Width = 30
+                Width = 80
                 PropertyName = 'version'
               end            
               item
                 Position = 3
                 Text = 'Date d''install'
+                Width = 80
                 PropertyName = 'install_date'
               end            
               item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
                 Position = 4
                 Text = 'Numéro de licence'
                 PropertyName = 'serial_nr'
               end            
               item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
                 Position = 5
                 Text = 'Répertoire d''installation'
-                Width = 330
+                Width = 200
                 PropertyName = 'install_location'
               end>
             Header.DefaultHeight = 17

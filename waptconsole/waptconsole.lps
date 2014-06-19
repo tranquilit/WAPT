@@ -25,7 +25,7 @@
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1474"/>
-        <CursorPos X="1" Y="1491"/>
+        <CursorPos X="68" Y="1494"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="4">
           <Item0 X="1" Y="1675" ID="4"/>
@@ -67,13 +67,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="dmwaptpython"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="52"/>
         <CursorPos X="37" Y="81"/>
         <UsageCount Value="238"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="uviseditpackage.pas"/>
@@ -94,13 +91,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisCreateWaptSetup"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="21"/>
         <CursorPos X="14" Y="23"/>
         <UsageCount Value="225"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit6>
       <Unit7>
         <Filename Value="uvislogin.pas"/>
@@ -169,13 +163,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvisgroupchoice"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="35"/>
         <CursorPos X="61" Y="55"/>
         <UsageCount Value="206"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit12>
       <Unit13>
         <Filename Value="uviseditgroup.pas"/>
@@ -268,7 +259,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="2196"/>
         <CursorPos X="10" Y="2212"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit21>
       <Unit22>
         <Filename Value="C:\Users\htouvet\AppData\Local\Temp\7zEF71D.tmp\uThreads.pas"/>
@@ -276,7 +267,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="27" Y="22"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit22>
       <Unit23>
         <Filename Value="C:\Users\htouvet\AppData\Local\Temp\7zE66D1.tmp\hThreads.pas"/>
@@ -284,7 +275,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="14" Y="18"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit23>
       <Unit24>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
@@ -319,21 +310,21 @@
         <WindowIndex Value="0"/>
         <TopLine Value="18620"/>
         <CursorPos X="14" Y="18633"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit27>
       <Unit28>
         <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\include\olemethods_win32.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="11"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit28>
       <Unit29>
         <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\include\vtvdragmanager_win32.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="379"/>
         <CursorPos X="1" Y="398"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit29>
       <Unit30>
         <Filename Value="C:\codetyphon\typhon\lcl\lcltype.pp"/>
@@ -349,14 +340,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="379"/>
         <CursorPos X="15" Y="398"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit31>
       <Unit32>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\classes\classesh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="90"/>
         <CursorPos X="3" Y="109"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit32>
       <Unit33>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\objpash.inc"/>
@@ -370,7 +361,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="60"/>
         <CursorPos X="3" Y="71"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit34>
       <Unit35>
         <Filename Value="uwaptconsole.lfm"/>
@@ -385,7 +376,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="195"/>
         <CursorPos X="140" Y="221"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="LFM"/>
       </Unit36>
       <Unit37>
@@ -402,7 +393,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="54"/>
         <CursorPos X="125" Y="81"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit38>
       <Unit39>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
@@ -507,138 +498,32 @@
       <Unit52>
         <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
         <UnitName Value="RegExpr"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="856"/>
         <CursorPos X="57" Y="883"/>
         <UsageCount Value="18"/>
-        <Loaded Value="True"/>
       </Unit52>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="4" HistoryIndex="3">
       <Position1>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="2970" Column="19" TopLine="2943"/>
-      </Position1>
-      <Position2>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="3344" Column="19" TopLine="3317"/>
-      </Position2>
-      <Position3>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="4002" Column="14" TopLine="3974"/>
-      </Position3>
-      <Position4>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="4067" Column="45" TopLine="4040"/>
-      </Position4>
-      <Position5>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="35" Column="1" TopLine="35"/>
-      </Position5>
-      <Position6>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="156" Column="71" TopLine="128"/>
-      </Position6>
-      <Position7>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="157" Column="71" TopLine="129"/>
-      </Position7>
-      <Position8>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="158" Column="71" TopLine="130"/>
-      </Position8>
-      <Position9>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="159" Column="71" TopLine="131"/>
-      </Position9>
-      <Position10>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="160" Column="71" TopLine="132"/>
-      </Position10>
-      <Position11>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="195" Column="18" TopLine="167"/>
-      </Position11>
-      <Position12>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="277" Column="38" TopLine="251"/>
-      </Position12>
-      <Position13>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="278" Column="61" TopLine="252"/>
-      </Position13>
-      <Position14>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="279" Column="42" TopLine="253"/>
-      </Position14>
-      <Position15>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="303" Column="25" TopLine="277"/>
-      </Position15>
-      <Position16>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="304" Column="54" TopLine="278"/>
-      </Position16>
-      <Position17>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="305" Column="20" TopLine="279"/>
-      </Position17>
-      <Position18>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="306" Column="65" TopLine="280"/>
-      </Position18>
-      <Position19>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="308" Column="46" TopLine="282"/>
-      </Position19>
-      <Position20>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="310" Column="25" TopLine="284"/>
-      </Position20>
-      <Position21>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="311" Column="26" TopLine="285"/>
-      </Position21>
-      <Position22>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="409" Column="79" TopLine="382"/>
-      </Position22>
-      <Position23>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="412" Column="25" TopLine="383"/>
-      </Position23>
-      <Position24>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position24>
-      <Position25>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="307" Column="38" TopLine="281"/>
-      </Position25>
-      <Position26>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
-        <Caret Line="412" Column="25" TopLine="384"/>
-      </Position26>
-      <Position27>
         <Filename Value="uwaptconsole.pas"/>
         <Caret Line="503" Column="17" TopLine="487"/>
-      </Position27>
-      <Position28>
+      </Position1>
+      <Position2>
         <Filename Value="uwaptconsole.pas"/>
         <Caret Line="443" Column="1" TopLine="421"/>
-      </Position28>
-      <Position29>
+      </Position2>
+      <Position3>
         <Filename Value="uwaptconsole.pas"/>
         <Caret Line="1491" Column="5" TopLine="1474"/>
-      </Position29>
-      <Position30>
+      </Position3>
+      <Position4>
         <Filename Value="uwaptconsole.pas"/>
         <Caret Line="1500" Column="9" TopLine="1474"/>
-      </Position30>
+      </Position4>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
