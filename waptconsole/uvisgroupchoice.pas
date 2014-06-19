@@ -13,16 +13,22 @@ type
   { TvisGroupChoice }
 
   TvisGroupChoice = class(TForm)
-    ActSearchGroups: TAction;
+    ActSearch: TAction;
     ActionList1: TActionList;
     butSearchGroups: TButton;
     ButtonPanel1: TButtonPanel;
+    cbBase: TCheckBox;
+    cbGroup: TCheckBox;
+    cbrestricted: TCheckBox;
     EdSearch: TEdit;
     groupGrid: TSOGrid;
     Label2: TLabel;
-    procedure ActSearchGroupsExecute(Sender: TObject);
+    Panel1: TPanel;
+    procedure ActSearchExecute(Sender: TObject);
+    procedure cbBaseClick(Sender: TObject);
     procedure EdSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
       );
+    procedure FormShow(Sender: TObject);
   private
     { private declarations }
   public
@@ -38,16 +44,28 @@ implementation
 
 { TvisGroupChoice }
 
-procedure TvisGroupChoice.ActSearchGroupsExecute(Sender: TObject);
+procedure TvisGroupChoice.ActSearchExecute(Sender: TObject);
 var
-  expr, res: UTF8String;
+  expr, res, sections: UTF8String;
   groups : ISuperObject;
-
 begin
-  expr := format('mywapt.search(r"%s".decode(''utf8'').split(),section_filter="group")', [EdSearch.Text]);
+  sections := '';
+  if cbGroup.Checked then
+    sections := sections+',group';
+  if cbBase.Checked then
+    sections := sections+',base';
+  if cbrestricted.Checked then
+    sections := sections+',restricted';
+  sections := copy(sections,2,255);
+  expr := format('mywapt.search(r"%s".decode(''utf8'').split(),section_filter="%s")', [EdSearch.Text,sections]);
   groups := DMPython.RunJSON(expr);
   groupGrid.Data := groups;
-  groupGrid.Header.AutoFitColumns(False);
+  //groupGrid.Header.AutoFitColumns(False);
+end;
+
+procedure TvisGroupChoice.cbBaseClick(Sender: TObject);
+begin
+  ActSearch.Execute;
 end;
 
 procedure TvisGroupChoice.EdSearchKeyDown(Sender: TObject; var Key: Word;
@@ -56,8 +74,13 @@ begin
   if Key = VK_RETURN then
   begin
     EdSearch.SelectAll;
-    ActSearchGroups.Execute;
+    ActSearch.Execute;
   end;
+end;
+
+procedure TvisGroupChoice.FormShow(Sender: TObject);
+begin
+  ActSearch.Execute;
 end;
 
 end.

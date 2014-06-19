@@ -836,12 +836,12 @@ object VisWaptGUI: TVisWaptGUI
             ClientHeight = 30
             ClientWidth = 564
             TabOrder = 1
-            Visible = False
             object EdSoftwaresFilter: TEdit
               Left = 41
               Height = 21
               Top = 2
               Width = 164
+              OnChange = EdSoftwaresFilterChange
               TabOrder = 0
             end
             object Label14: TLabel
@@ -851,6 +851,17 @@ object VisWaptGUI: TVisWaptGUI
               Width = 34
               Caption = 'Filtre : '
               ParentColor = False
+            end
+            object cbMaskSystemComponents: TCheckBox
+              Left = 221
+              Height = 17
+              Top = 4
+              Width = 185
+              Caption = 'Masquer les composants systèmes'
+              Checked = True
+              OnClick = cbMaskSystemComponentsClick
+              State = cbChecked
+              TabOrder = 1
             end
           end
         end
@@ -2651,13 +2662,21 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActRemoveFromGroup: TAction
       Category = 'hosts'
-      Caption = 'Enlever du groupe ou un package'
+      Caption = 'Enlever le groupe ou un package'
       OnExecute = ActRemoveFromGroupExecute
     end
     object ActForgetPackages: TAction
       Category = 'Host'
       Caption = 'Oublier les paquets'
       OnExecute = ActForgetPackagesExecute
+    end
+    object ActAddConflicts: TAction
+      Category = 'hosts'
+      Caption = 'Ajouter des paquets à désinstaller'
+    end
+    object ActSearchSoftwares: TAction
+      Category = 'Host'
+      Caption = 'ActSearchSoftwares'
     end
   end
   object PopupMenuPackages: TPopupMenu

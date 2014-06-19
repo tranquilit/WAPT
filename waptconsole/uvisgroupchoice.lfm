@@ -1,18 +1,20 @@
 object visGroupChoice: TvisGroupChoice
-  Left = 559
-  Height = 399
-  Top = 221
-  Width = 451
-  Caption = 'Choix de groupes'
-  ClientHeight = 399
-  ClientWidth = 451
+  Left = 437
+  Height = 549
+  Top = 285
+  Width = 705
+  Caption = 'Choix de paquets'
+  ClientHeight = 549
+  ClientWidth = 705
+  OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '1.3'
   object ButtonPanel1: TButtonPanel
-    Left = 6
+    Left = 3
     Height = 34
-    Top = 359
-    Width = 439
+    Top = 512
+    Width = 699
+    BorderSpacing.Around = 3
     OKButton.Name = 'OKButton'
     OKButton.Caption = 'OK'
     OKButton.DefaultCaption = False
@@ -28,36 +30,173 @@ object visGroupChoice: TvisGroupChoice
     ShowButtons = [pbOK, pbCancel]
   end
   object groupGrid: TSOGrid
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = EdSearch
-    AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = ButtonPanel1
     Left = 0
-    Height = 306
-    Top = 47
-    Width = 451
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    BorderSpacing.Top = 10
+    Height = 459
+    Top = 50
+    Width = 705
+    Align = alClient
     Color = clWhite
-    Constraints.MinHeight = 70
     Header.AutoSizeIndex = -1
     Header.Columns = <    
       item
         Position = 0
-        Text = 'Groupe'
-        Width = 216
+        Text = 'Paquet'
+        Width = 127
         PropertyName = 'package'
       end    
       item
         Position = 1
+        Tag = 1
+        Text = 'Description'
+        Width = 241
+        PropertyName = 'description'
+      end    
+      item
+        Position = 2
+        Tag = 2
         Text = 'Dépendances'
         Width = 179
         PropertyName = 'depends'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 3
+        Tag = 3
+        Text = 'priority'
+        Width = 69
+        PropertyName = 'priority'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 4
+        Tag = 4
+        Text = 'sources'
+        Width = 146
+        PropertyName = 'sources'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 5
+        Tag = 5
+        Text = 'md5sum'
+        Width = 100
+        PropertyName = 'md5sum'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 6
+        Tag = 6
+        Text = 'status'
+        Width = 100
+        PropertyName = 'status'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 7
+        Tag = 7
+        Text = 'filename'
+        Width = 100
+        PropertyName = 'filename'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 8
+        Tag = 8
+        Text = 'section'
+        Width = 100
+        PropertyName = 'section'
+      end    
+      item
+        Position = 9
+        Tag = 9
+        Text = 'Version'
+        Width = 66
+        PropertyName = 'version'
+      end    
+      item
+        Position = 10
+        Tag = 10
+        Text = 'Auteur'
+        Width = 100
+        PropertyName = 'maintainer'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 11
+        Tag = 11
+        Text = 'conflicts'
+        Width = 100
+        PropertyName = 'conflicts'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 12
+        Tag = 12
+        Text = 'installed_size'
+        Width = 100
+        PropertyName = 'installed_size'
+      end    
+      item
+        Alignment = taRightJustify
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 13
+        Tag = 13
+        Text = 'id'
+        Width = 100
+        PropertyName = 'id'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 14
+        Tag = 14
+        Text = 'repo_url'
+        Width = 100
+        PropertyName = 'repo_url'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 15
+        Tag = 15
+        Text = 'installed'
+        Width = 100
+        PropertyName = 'installed'
+      end    
+      item
+        Alignment = taRightJustify
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 16
+        Tag = 16
+        Text = 'size'
+        Width = 100
+        PropertyName = 'size'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 17
+        Tag = 17
+        Text = 'repo'
+        Width = 100
+        PropertyName = 'repo'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 18
+        Tag = 18
+        Text = 'localpath'
+        Width = 100
+        PropertyName = 'localpath'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 19
+        Tag = 19
+        Text = 'architecture'
+        Width = 23
+        PropertyName = 'architecture'
       end>
     Header.DefaultHeight = 17
     Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+    Header.SortColumn = 0
     Header.Style = hsFlatButtons
     TabOrder = 1
     TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
@@ -66,38 +205,78 @@ object visGroupChoice: TvisGroupChoice
     TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toFullRowSelect]
     WantTabs = True
   end
-  object Label2: TLabel
-    Left = 2
-    Height = 13
+  object Panel1: TPanel
+    Left = 0
+    Height = 50
     Top = 0
-    Width = 105
-    Caption = 'Groupes disponibles : '
-    ParentColor = False
-  end
-  object EdSearch: TEdit
-    AnchorSideBottom.Control = groupGrid
-    Left = 4
-    Height = 21
-    Hint = 'Taper des mots clés pour la recherche'
-    Top = 16
-    Width = 136
-    OnKeyDown = EdSearchKeyDown
+    Width = 705
+    Align = alTop
+    BevelOuter = bvNone
+    ClientHeight = 50
+    ClientWidth = 705
     TabOrder = 2
-  end
-  object butSearchGroups: TButton
-    Left = 144
-    Height = 25
-    Top = 14
-    Width = 120
-    Action = ActSearchGroups
-    TabOrder = 3
+    object Label2: TLabel
+      Left = 4
+      Height = 13
+      Top = 4
+      Width = 104
+      Caption = 'Paquets disponibles : '
+      ParentColor = False
+    end
+    object EdSearch: TEdit
+      AnchorSideBottom.Control = groupGrid
+      Left = 6
+      Height = 21
+      Hint = 'Taper des mots clés pour la recherche'
+      Top = 20
+      Width = 136
+      OnKeyDown = EdSearchKeyDown
+      TabOrder = 0
+    end
+    object butSearchGroups: TButton
+      Left = 146
+      Height = 25
+      Top = 18
+      Width = 84
+      Action = ActSearch
+      TabOrder = 1
+    end
+    object cbGroup: TCheckBox
+      Left = 246
+      Height = 17
+      Top = 24
+      Width = 60
+      Caption = 'Groupes'
+      Checked = True
+      OnClick = cbBaseClick
+      State = cbChecked
+      TabOrder = 2
+    end
+    object cbBase: TCheckBox
+      Left = 246
+      Height = 17
+      Top = 8
+      Width = 59
+      Caption = 'Logiciels'
+      OnClick = cbBaseClick
+      TabOrder = 3
+    end
+    object cbrestricted: TCheckBox
+      Left = 326
+      Height = 17
+      Top = 8
+      Width = 123
+      Caption = 'Installation restreinte'
+      OnClick = cbBaseClick
+      TabOrder = 4
+    end
   end
   object ActionList1: TActionList
     left = 256
     top = 176
-    object ActSearchGroups: TAction
+    object ActSearch: TAction
       Caption = 'Rechercher'
-      OnExecute = ActSearchGroupsExecute
+      OnExecute = ActSearchExecute
     end
   end
 end

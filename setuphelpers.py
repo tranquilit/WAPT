@@ -1513,7 +1513,14 @@ def dmi_info():
 
             if not l.startswith('\t') or new_section:
                 currobject={}
-                result[l.strip().replace(' ','_')]=currobject
+                key = l.strip().replace(' ','_')
+                # already here... so add as array...
+                if (key in result):
+                    if not isinstance(result[key],list):
+                        result[key] = [result[key]]
+                    result[key].append(currobject)
+                else:
+                    result[key]  = currobject
                 if l.startswith('\t'):
                     print l
             else:
@@ -1612,6 +1619,18 @@ def host_info():
     info['computer_fqdn'] =  get_hostname()
     info['dns_domain'] = get_domain_fromregistry()
     info['workgroup_name'] = windomainname()
+
+    try:
+        import win32security
+        domain_data = win32security.DsGetDcName()
+        info['domain_name'] = domain_data.get('DomainName',None)
+        info['domain_controller'] = domain_data.get('DomainControllerName',None)
+        info['domain_controller_address'] = domain_data.get('DomainControllerAddress',None)
+    except:
+        info['domain_name'] = registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\History','NetworkName',None)
+        info['domain_controller'] = registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\History','DCName',None)
+        info['domain_controller_address'] = None
+
     info['networking'] = networking()
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

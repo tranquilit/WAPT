@@ -8,7 +8,8 @@ uses
   Classes, SysUtils, FileUtil, SynEdit, SynHighlighterPython,
   vte_json, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   StdCtrls, ComCtrls, ActnList, Menus, jsonparser, superobject,
-  VirtualTrees, VarPyth, Windows, ImgList, Buttons, SOGrid, types, ActiveX;
+  VirtualTrees, VarPyth, Windows, ImgList, Buttons, SOGrid, types,
+  ActiveX;
 
 type
 
@@ -17,6 +18,8 @@ type
   TVisWaptGUI = class(TForm)
     ActCancelRunningTask: TAction;
     ActForgetPackages: TAction;
+    ActAddConflicts: TAction;
+    ActSearchSoftwares: TAction;
     ActRemoveFromGroup: TAction;
     ActRDP: TAction;
     ActVNC: TAction;
@@ -80,6 +83,7 @@ type
     cbSearchAll: TCheckBox;
     cbShowHostPackagesSoft: TCheckBox;
     cbShowHostPackagesGroup: TCheckBox;
+    cbMaskSystemComponents: TCheckBox;
     CheckBoxMaj: TCheckBox;
     CheckBox_error: TCheckBox;
     EdSoftwaresFilter: TEdit;
@@ -268,6 +272,7 @@ type
     procedure ActVNCUpdate(Sender: TObject);
     procedure ActWAPTLocalConfigExecute(Sender: TObject);
     procedure butSearchExternalPackagesClick(Sender: TObject);
+    procedure cbMaskSystemComponentsClick(Sender: TObject);
     procedure cbSearchAllChange(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure ChangerClick(Sender: TObject);
@@ -278,6 +283,7 @@ type
     procedure EdSearch1KeyPress(Sender: TObject; var Key: char);
     procedure EdSearchHostKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
+    procedure EdSoftwaresFilterChange(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -334,6 +340,7 @@ type
     procedure InstallPackage(Grid: TSOGrid);
     procedure TimerTasksTimer(Sender: TObject);
   private
+    function FilterSoftwares(softs: ISuperObject): ISuperObject;
     { private declarations }
     procedure GridLoadData(grid: TSOGrid; jsondata: string);
     function Login:Boolean;
@@ -357,7 +364,7 @@ uses LCLIntf, LCLType,IniFiles, uvisprivatekeyauth, uvisloading, tisstrings, sou
   waptcommon, tiscommon, uVisCreateKey, uVisCreateWaptSetup, uvisOptionIniFile,
   dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
   uvisgroupchoice, uviseditgroup, uviswaptdeploy, uvishostsupgrade,
-  PythonEngine,Clipbrd;
+  PythonEngine,Clipbrd,RegExpr;
 
 {$R *.lfm}
 
@@ -429,6 +436,13 @@ begin
 
 end;
 
+procedure TVisWaptGUI.EdSoftwaresFilterChange(Sender: TObject);
+begin
+  if (Gridhosts.FocusedRow<>Nil) then
+    GridHostSoftwares.Data := FilterSoftwares(Gridhosts.FocusedRow['softwares']);
+
+end;
+
 procedure TVisWaptGUI.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   Gridhosts.SaveSettingsToIni(Appuserinipath) ;
@@ -438,6 +452,39 @@ begin
   GridHostPackages.SaveSettingsToIni(Appuserinipath) ;
   GridHostSoftwares.SaveSettingsToIni(Appuserinipath) ;
 
+end;
+
+function TVisWaptGUI.FilterSoftwares(softs:ISuperObject):ISuperObject;
+var
+  soft:ISuperObject;
+  accept:Boolean;
+  reg:String;
+begin
+  if (EdSoftwaresFilter.Text = '') and not cbMaskSystemComponents.Checked then
+    Result := softs
+  else
+  begin
+    Result := TSuperObject.Create(stArray);
+    if softs = Nil then Exit;
+    for soft in softs do
+    begin
+      Accept := True;
+      accept:=accept and (not cbMaskSystemComponents.Checked or (soft.I['system_component']<>1));
+      if EdSoftwaresFilter.text='' then
+        reg:='.*'
+      else
+        reg := EdSoftwaresFilter.Text;
+      reg := '(?i)'+reg;
+
+      accept := accept and (ExecRegExpr(reg,soft.S['name']) or ExecRegExpr(reg,soft.S['key']));
+      {accept:= accept and ((EdSoftwaresFilter.Text='') or
+                      (pos(LowerCase(EdSoftwaresFilter.Text),LowerCase(soft.S['name']))>0) or
+                      (pos(LowerCase(EdSoftwaresFilter.Text),LowerCase(soft.S['key']))>0));
+      }
+      if accept then
+        Result.AsArray.Add(soft);
+    end;
+  end;
 end;
 
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
@@ -485,7 +532,7 @@ begin
             waptServerUser, waptServerPassword);
         RowSO['softwares'] := softwares;
       end;
-      GridHostSoftwares.Data := softwares;
+      GridHostSoftwares.Data := FilterSoftwares(softwares);
     end
     else if HostPages.ActivePage = pgHostPackage then
       TreeLoadData(GridhostInventory, RowSO.AsJSon())
@@ -833,13 +880,7 @@ begin
   begin
     with TvisGroupChoice.Create(self) do
     try
-      Caption:='Choix des groupes à ajouter aux postes sélectionnés';
-      ActSearchGroupsExecute(self);
-      if groupGrid.Data.AsArray.Length = 0 then
-      begin
-        ShowMessage('Il n''y a aucuns groupes.');
-        Exit;
-      end;
+      Caption:='Choix des paquets à ajouter en dépendance aux postes sélectionnés';
       if ShowModal = mrOk then
       begin
         packages := TSuperObject.Create(stArray);
@@ -1446,13 +1487,16 @@ begin
       WaptUseLocalConnectionProxy,
       waptServerUser, waptServerPassword);
   GridHosts.Data := hosts;
-  LabelComputersNumber.Caption := IntToStr(hosts.AsArray.Length);
-  for node in GridHosts.data do
+  if (hosts<>Nil) and (hosts.AsArray<>Nil) then
   begin
-    if node.S['uuid'] = previous_uuid then
+    LabelComputersNumber.Caption := IntToStr(hosts.AsArray.Length);
+    for node in GridHosts.data do
     begin
-      GridHosts.FocusedRow := node;
-      Break;
+      if node.S['uuid'] = previous_uuid then
+      begin
+        GridHosts.FocusedRow := node;
+        Break;
+      end;
     end;
   end;
 end;
@@ -1591,6 +1635,11 @@ begin
     [AppIniFilename, EdSearch1.Text]);
   packages := DMPython.RunJSON(expr);
   GridExternalPackages.Data := packages;
+end;
+
+procedure TVisWaptGUI.cbMaskSystemComponentsClick(Sender: TObject);
+begin
+  GridHostSoftwares.Data := FilterSoftwares(Gridhosts.FocusedRow['softwares']);
 end;
 
 procedure TVisWaptGUI.cbSearchAllChange(Sender: TObject);
