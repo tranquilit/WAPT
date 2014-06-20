@@ -59,6 +59,8 @@ def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wa
             new_iss.append('#define default_wapt_server "%s"' % (default_wapt_server))
         elif line.startswith('#define output_dir'):
             new_iss.append('#define output_dir "%s"' % (destination))
+        elif line.startswith('WizardImageFile='):
+            pass
         elif not line.startswith('#define signtool'):
             new_iss.append(line)
             if line.startswith('OutputBaseFilename'):
