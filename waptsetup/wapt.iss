@@ -93,7 +93,7 @@ MinVersion=0,5.0sp4
 LicenseFile=..\COPYING.txt
 RestartIfNeededByRun=False
 SetupIconFile=..\wapt.ico
-WizardImageFile=..\tranquilit.bmp
+
 
 
 #ifdef signtool

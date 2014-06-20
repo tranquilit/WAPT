@@ -51,6 +51,7 @@ Name: "{app}\waptserver\mongodb\log"
 [Setup]
 OutputBaseFilename=waptserversetup
 DefaultDirName="C:\wapt"
+WizardImageFile=..\tranquilit.bmp
 
 [INI]
 ;Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL};

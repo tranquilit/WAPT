@@ -14,7 +14,6 @@
 Source: "innosetup\*"; DestDir: "{app}\waptsetup\innosetup"; Flags: createallsubdirs recursesubdirs ignoreversion;
 Source: "wapt.iss"; DestDir: "{app}\waptsetup";
 Source: "waptsetup.iss"; DestDir: "{app}\waptsetup";
-Source: "..\tranquilit.bmp"; DestDir: "{app}";
 Source: "services.iss"; DestDir: "{app}\waptsetup";
 Source: "..\wapt.ico"; DestDir: "{app}";
 
@@ -26,6 +25,7 @@ Source: "..\waptdevutils.py"; DestDir: "{app}";
 [Setup]
 OutputBaseFilename=waptsetup
 DefaultDirName="C:\wapt"
+WizardImageFile=..\tranquilit.bmp
 
 [Tasks]
 ;Name: use_hostpackages; Description: "Use automatic host management based on hostname packages";

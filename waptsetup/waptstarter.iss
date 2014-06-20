@@ -20,6 +20,7 @@ Source: "..\wapt.ico"; DestDir: "{app}";
 [Setup]
 OutputBaseFilename=waptstarter
 DefaultDirName={pf}\wapt
+WizardImageFile=..\tranquilit.bmp
 
 
 ;[Tasks]
