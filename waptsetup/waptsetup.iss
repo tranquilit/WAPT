@@ -14,6 +14,7 @@
 Source: "innosetup\*"; DestDir: "{app}\waptsetup\innosetup"; Flags: createallsubdirs recursesubdirs ignoreversion;
 Source: "wapt.iss"; DestDir: "{app}\waptsetup";
 Source: "waptsetup.iss"; DestDir: "{app}\waptsetup";
+Source: "..\tranquilit.bmp"; DestDir: "{app}";
 Source: "services.iss"; DestDir: "{app}\waptsetup";
 Source: "..\wapt.ico"; DestDir: "{app}";
 
