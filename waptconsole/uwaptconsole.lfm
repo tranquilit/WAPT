@@ -327,9 +327,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 396
         Top = 54
         Width = 572
-        ActivePage = pgPackages
+        ActivePage = pgHostPackage
         Align = alRight
-        TabIndex = 0
+        TabIndex = 1
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -2548,7 +2548,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActHostsDelete: TAction
       Category = 'hosts'
-      Caption = 'Supprimer'
+      Caption = 'Supprimer de l''inventaire'
       OnExecute = ActHostsDeleteExecute
       ShortCut = 16430
     end
@@ -2613,10 +2613,10 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActHostUpgradeExecute
       OnUpdate = ActHostUpgradeUpdate
     end
-    object ActAddToGroup: TAction
+    object ActAddPackageGroup: TAction
       Category = 'hosts'
-      Caption = 'Ajouter au groupe'
-      OnExecute = ActAddToGroupExecute
+      Caption = 'Ajouter un paquet ou un groupe de paquets'
+      OnExecute = ActAddPackageGroupExecute
     end
     object ActSearchGroups: TAction
       Caption = 'Rechercher'
@@ -2663,10 +2663,10 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Annuler tâche en cours'
       OnExecute = ActCancelRunningTaskExecute
     end
-    object ActRemoveFromGroup: TAction
+    object ActRemoveDepends: TAction
       Category = 'hosts'
-      Caption = 'Enlever le groupe ou un package'
-      OnExecute = ActRemoveFromGroupExecute
+      Caption = 'Enlever des dépendances à des groupes ou des paquets'
+      OnExecute = ActRemoveDependsExecute
     end
     object ActForgetPackages: TAction
       Category = 'Host'
@@ -2675,11 +2675,17 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActAddConflicts: TAction
       Category = 'hosts'
-      Caption = 'Ajouter des paquets à désinstaller'
+      Caption = 'Interdire des paquets (force désinstallation)'
+      OnExecute = ActAddConflictsExecute
     end
     object ActSearchSoftwares: TAction
       Category = 'Host'
       Caption = 'ActSearchSoftwares'
+    end
+    object ActRemoveConflicts: TAction
+      Category = 'hosts'
+      Caption = 'Autoriser des paquets '
+      OnExecute = ActRemoveConflictsExecute
     end
   end
   object PopupMenuPackages: TPopupMenu
@@ -2790,11 +2796,26 @@ object VisWaptGUI: TVisWaptGUI
     object MenuItem18: TMenuItem
       Action = ActEditHostPackage
     end
+    object MenuItem43: TMenuItem
+      Caption = '-'
+    end
     object MenuItem35: TMenuItem
-      Action = ActAddToGroup
+      Action = ActAddPackageGroup
     end
     object MenuItem41: TMenuItem
-      Action = ActRemoveFromGroup
+      Action = ActRemoveDepends
+    end
+    object MenuItem44: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem46: TMenuItem
+      Action = ActAddConflicts
+    end
+    object MenuItem45: TMenuItem
+      Action = ActRemoveConflicts
+    end
+    object MenuItem47: TMenuItem
+      Caption = '-'
     end
     object MenuItem34: TMenuItem
       Action = ActHostUpgrade

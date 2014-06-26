@@ -19,7 +19,7 @@ object VisEditPackage: TVisEditPackage
     Left = 0
     Height = 417
     Top = 50
-    Width = 800
+    Width = 510
     ActivePage = pgEditPackage
     Align = alClient
     TabIndex = 0
@@ -27,129 +27,7 @@ object VisEditPackage: TVisEditPackage
     object pgEditPackage: TTabSheet
       Caption = 'Editer les dépendances'
       ClientHeight = 391
-      ClientWidth = 792
-      object Panel8: TPanel
-        Left = 502
-        Height = 391
-        Top = 0
-        Width = 290
-        Align = alRight
-        BevelOuter = bvNone
-        ClientHeight = 391
-        ClientWidth = 290
-        TabOrder = 0
-        object Panel9: TPanel
-          Left = 0
-          Height = 44
-          Top = 0
-          Width = 290
-          Align = alTop
-          BevelOuter = bvNone
-          ClientHeight = 44
-          ClientWidth = 290
-          TabOrder = 0
-          object EdSearch: TEdit
-            Left = 4
-            Height = 21
-            Hint = 'Taper des mots clés pour la recherche'
-            Top = 16
-            Width = 136
-            OnKeyDown = EdSearchKeyDown
-            TabOrder = 0
-          end
-          object butSearchPackages1: TButton
-            Left = 148
-            Height = 25
-            Top = 16
-            Width = 120
-            Action = ActEditSearch
-            TabOrder = 1
-          end
-          object Label2: TLabel
-            Left = 2
-            Height = 13
-            Top = 0
-            Width = 143
-            Caption = 'Paquets logiciels disponibles : '
-            ParentColor = False
-          end
-        end
-        object GridPackages: TSOGrid
-          Left = 0
-          Height = 347
-          Top = 44
-          Width = 290
-          Align = alClient
-          Color = clWhite
-          DragMode = dmAutomatic
-          DragType = dtVCL
-          Header.AutoSizeIndex = 0
-          Header.Columns = <          
-            item
-              MaxWidth = 100
-              MinWidth = 50
-              Position = 0
-              Text = 'Section'
-              PropertyName = 'section'
-            end          
-            item
-              MaxWidth = 400
-              MinWidth = 50
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-              Position = 1
-              Text = 'Paquet'
-              Width = 200
-              PropertyName = 'package'
-            end          
-            item
-              MaxWidth = 200
-              MinWidth = 50
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-              Position = 2
-              Text = 'Status'
-              PropertyName = 'status'
-            end          
-            item
-              MaxWidth = 200
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-              Position = 3
-              Text = 'Version'
-              Width = 30
-              PropertyName = 'version'
-            end          
-            item
-              MaxWidth = 400
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-              Position = 4
-              Text = 'Description'
-              PropertyName = 'description'
-            end          
-            item
-              MaxWidth = 400
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-              Position = 5
-              Text = 'Dépendances'
-              PropertyName = 'depends'
-            end          
-            item
-              MaxWidth = 200
-              Position = 6
-              Text = 'Installé par'
-              PropertyName = 'explicit_by'
-            end>
-          Header.DefaultHeight = 17
-          Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-          Header.SortColumn = 0
-          Header.Style = hsFlatButtons
-          PopupMenu = PopupPackages
-          TabOrder = 1
-          TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
-          TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
-          TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-          TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect]
-          WantTabs = True
-        end
-      end
+      ClientWidth = 502
       object GridDepends: TSOGrid
         Left = 0
         Height = 391
@@ -192,7 +70,7 @@ object VisEditPackage: TVisEditPackage
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
         Header.Style = hsFlatButtons
         PopupMenu = PopupMenuEditDepends
-        TabOrder = 1
+        TabOrder = 0
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
@@ -210,16 +88,72 @@ object VisEditPackage: TVisEditPackage
         ResizeAnchor = akRight
       end
     end
+    object pgConflicts: TTabSheet
+      Caption = 'Paquets interdits'
+      ClientHeight = 391
+      ClientWidth = 502
+      object GridConflicts: TSOGrid
+        Left = 0
+        Height = 391
+        Top = 0
+        Width = 502
+        Align = alClient
+        Color = clWhite
+        Header.AutoSizeIndex = -1
+        Header.Columns = <        
+          item
+            MaxWidth = 400
+            MinWidth = 100
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+            Position = 0
+            Text = 'Paquet'
+            Width = 300
+            PropertyName = 'package'
+          end        
+          item
+            MaxWidth = 100
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
+            Position = 1
+            Text = 'Version'
+            Width = 30
+            PropertyName = 'version'
+          end        
+          item
+            MaxWidth = 400
+            Position = 2
+            Text = 'Description'
+            PropertyName = 'description'
+          end        
+          item
+            MaxWidth = 400
+            Position = 3
+            Text = 'Dépendances'
+            PropertyName = 'depends'
+          end>
+        Header.DefaultHeight = 17
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+        Header.Style = hsFlatButtons
+        PopupMenu = PopupMenuEditConflicts
+        TabOrder = 0
+        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+        TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+        WantTabs = True
+        OnDragOver = GridDependsDragOver
+        OnDragDrop = GridConflictsDragDrop
+      end
+    end
     object pgDevelop: TTabSheet
       Caption = 'setup.py'
       ClientHeight = 391
-      ClientWidth = 792
+      ClientWidth = 502
       TabVisible = False
       inline EdSetupPy: TSynEdit
         Left = 0
         Height = 357
         Top = 34
-        Width = 792
+        Width = 502
         Align = alClient
         Font.Height = -13
         Font.Name = 'Courier New'
@@ -741,11 +675,11 @@ object VisEditPackage: TVisEditPackage
         Left = 0
         Height = 34
         Top = 0
-        Width = 792
+        Width = 502
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 34
-        ClientWidth = 792
+        ClientWidth = 502
         TabOrder = 1
         object butInitWapt: TButton
           Left = 0
@@ -1016,6 +950,128 @@ object VisEditPackage: TVisEditPackage
       Visible = False
     end
   end
+  object Panel8: TPanel
+    Left = 510
+    Height = 417
+    Top = 50
+    Width = 290
+    Align = alRight
+    BevelOuter = bvNone
+    ClientHeight = 417
+    ClientWidth = 290
+    TabOrder = 5
+    object Panel9: TPanel
+      Left = 0
+      Height = 44
+      Top = 0
+      Width = 290
+      Align = alTop
+      BevelOuter = bvNone
+      ClientHeight = 44
+      ClientWidth = 290
+      TabOrder = 0
+      object EdSearch: TEdit
+        Left = 4
+        Height = 21
+        Hint = 'Taper des mots clés pour la recherche'
+        Top = 16
+        Width = 136
+        OnKeyDown = EdSearchKeyDown
+        TabOrder = 0
+      end
+      object butSearchPackages1: TButton
+        Left = 148
+        Height = 25
+        Top = 16
+        Width = 120
+        Action = ActEditSearch
+        TabOrder = 1
+      end
+      object Label2: TLabel
+        Left = 2
+        Height = 13
+        Top = 0
+        Width = 143
+        Caption = 'Paquets logiciels disponibles : '
+        ParentColor = False
+      end
+    end
+    object GridPackages: TSOGrid
+      Left = 0
+      Height = 373
+      Top = 44
+      Width = 290
+      Align = alClient
+      Color = clWhite
+      DragMode = dmAutomatic
+      DragType = dtVCL
+      Header.AutoSizeIndex = 0
+      Header.Columns = <      
+        item
+          MaxWidth = 100
+          MinWidth = 50
+          Position = 0
+          Text = 'Section'
+          PropertyName = 'section'
+        end      
+        item
+          MaxWidth = 400
+          MinWidth = 50
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+          Position = 1
+          Text = 'Paquet'
+          Width = 200
+          PropertyName = 'package'
+        end      
+        item
+          MaxWidth = 200
+          MinWidth = 50
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+          Position = 2
+          Text = 'Status'
+          PropertyName = 'status'
+        end      
+        item
+          MaxWidth = 200
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+          Position = 3
+          Text = 'Version'
+          Width = 30
+          PropertyName = 'version'
+        end      
+        item
+          MaxWidth = 400
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+          Position = 4
+          Text = 'Description'
+          PropertyName = 'description'
+        end      
+        item
+          MaxWidth = 400
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+          Position = 5
+          Text = 'Dépendances'
+          PropertyName = 'depends'
+        end      
+        item
+          MaxWidth = 200
+          Position = 6
+          Text = 'Installé par'
+          PropertyName = 'explicit_by'
+        end>
+      Header.DefaultHeight = 17
+      Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+      Header.SortColumn = 0
+      Header.Style = hsFlatButtons
+      PopupMenu = PopupPackages
+      TabOrder = 1
+      TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+      TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+      TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+      TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect]
+      WantTabs = True
+    end
+  end
   object SynPythonSyn1: TSynPythonSyn
     DefaultFilter = 'Fichiers Python (*.py)|*.py'
     Enabled = False
@@ -1055,9 +1111,10 @@ object VisEditPackage: TVisEditPackage
       Caption = 'Rechercher'
       OnExecute = ActEditSearchExecute
     end
-    object ActEditRemove: TAction
+    object ActEditRemoveDepends: TAction
       Caption = 'Enlever'
-      OnExecute = ActEditRemoveExecute
+      OnExecute = ActEditRemoveDependsExecute
+      OnUpdate = ActEditRemoveDependsUpdate
     end
     object ActEditSavePackage: TAction
       Caption = 'Sauver'
@@ -1079,12 +1136,22 @@ object VisEditPackage: TVisEditPackage
       Caption = 'Sauver et appliquer sur le poste'
       OnExecute = ActBUApplyExecute
     end
+    object ActEditRemoveConflicts: TAction
+      Caption = 'Enlever l''interdiction/conflit de paquet'
+      OnExecute = ActEditRemoveConflictsExecute
+      OnUpdate = ActEditRemoveConflictsUpdate
+    end
+    object ActAddConflicts: TAction
+      Caption = 'ActAddConflicts'
+      OnExecute = ActAddConflictsExecute
+      OnUpdate = ActAddConflictsUpdate
+    end
   end
   object PopupMenuEditDepends: TPopupMenu
     left = 148
     top = 220
     object MenuItem4: TMenuItem
-      Action = ActEditRemove
+      Action = ActEditRemoveDepends
     end
   end
   object PopupMenu1: TPopupMenu
@@ -1100,6 +1167,13 @@ object VisEditPackage: TVisEditPackage
     top = 212
     object MenuItem2: TMenuItem
       Action = ActAddDepends
+    end
+  end
+  object PopupMenuEditConflicts: TPopupMenu
+    left = 312
+    top = 232
+    object MenuItem5: TMenuItem
+      Action = ActEditRemoveConflicts
     end
   end
 end

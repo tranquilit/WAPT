@@ -19,8 +19,9 @@ type
     ActCancelRunningTask: TAction;
     ActForgetPackages: TAction;
     ActAddConflicts: TAction;
+    ActRemoveConflicts: TAction;
     ActSearchSoftwares: TAction;
-    ActRemoveFromGroup: TAction;
+    ActRemoveDepends: TAction;
     ActRDP: TAction;
     ActVNC: TAction;
     ActPackageInstall: TAction;
@@ -44,7 +45,7 @@ type
     ActGotoHost: TAction;
     ActHostWaptUpgrade: TAction;
     ActHostUpgrade: TAction;
-    ActAddToGroup: TAction;
+    ActAddPackageGroup: TAction;
     ActEditGroup: TAction;
     ActDeleteGroup: TAction;
     ActDeployWapt: TAction;
@@ -118,6 +119,11 @@ type
     MenuItem40: TMenuItem;
     MenuItem41: TMenuItem;
     MenuItem42: TMenuItem;
+    MenuItem43: TMenuItem;
+    MenuItem44: TMenuItem;
+    MenuItem45: TMenuItem;
+    MenuItem46: TMenuItem;
+    MenuItem47: TMenuItem;
     PageControl1: TPageControl;
     Panel11: TPanel;
     Panel12: TPanel;
@@ -223,8 +229,9 @@ type
     GridPackages: TSOGrid;
     GridHostPackages: TSOGrid;
     GridHostSoftwares: TSOGrid;
+    procedure ActAddConflictsExecute(Sender: TObject);
     procedure ActAddRemoveOptionIniFileExecute(Sender: TObject);
-    procedure ActAddToGroupExecute(Sender: TObject);
+    procedure ActAddPackageGroupExecute(Sender: TObject);
     procedure ActAdvancedModeExecute(Sender: TObject);
     procedure ActCancelRunningTaskExecute(Sender: TObject);
     procedure ActChangePasswordExecute(Sender: TObject);
@@ -241,7 +248,8 @@ type
     procedure ActPackageRemoveExecute(Sender: TObject);
     procedure ActRDPExecute(Sender: TObject);
     procedure ActRDPUpdate(Sender: TObject);
-    procedure ActRemoveFromGroupExecute(Sender: TObject);
+    procedure ActRemoveConflictsExecute(Sender: TObject);
+    procedure ActRemoveDependsExecute(Sender: TObject);
     procedure ActSearchGroupsExecute(Sender: TObject);
     procedure ActHostUpgradeExecute(Sender: TObject);
     procedure ActHostUpgradeUpdate(Sender: TObject);
@@ -870,7 +878,55 @@ begin
     end;
 end;
 
-procedure TVisWaptGUI.ActAddToGroupExecute(Sender: TObject);
+procedure TVisWaptGUI.ActAddConflictsExecute(Sender: TObject);
+var
+  Res, packages, host, hosts: ISuperObject;
+  N:PVirtualNode;
+  PackagesList, args: AnsiString;
+begin
+  if GridHosts.Focused then
+  begin
+    with TvisGroupChoice.Create(self) do
+    try
+      Caption:='Choix des paquets à forcer à désintaller sur les postes sélectionnés';
+      if ShowModal = mrOk then
+      begin
+        packages := TSuperObject.Create(stArray);
+        N := groupGrid.GetFirstChecked();
+        while N <> nil do
+        begin
+          packages.AsArray.Add(groupGrid.GetCellStrValue(N, 'package'));
+          N := groupGrid.GetNextChecked(N);
+        end;
+      end;
+    finally
+      Free;
+    end;
+    if (packages = nil) or (packages.AsArray.Length = 0) then
+      Exit;
+
+    Hosts := TSuperObject.Create(stArray);
+    for host in GridHosts.SelectedRows do
+      hosts.AsArray.Add(host.S['host.computer_fqdn']);
+
+    //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
+    args := '';
+    args := args + format('waptconfigfile = r"%s".decode(''utf8''),',[AppIniFilename]);
+    args := args + format('hosts_list = r"%s".decode(''utf8''),',[Join(',',hosts)]);
+    args := args + format('append_depends = "",',[]);
+    args := args + format('remove_depends = "",',[]);
+    args := args + format('append_conflicts = r"%s".decode(''utf8''),',[Join(',',packages)]);
+    args := args + format('remove_conflicts = "",',[]);
+    if privateKeyPassword<>'' then
+      args := args + format('key_password = "%s".decode(''utf8''),',[privateKeyPassword]);
+    args := args + format('wapt_server_user = r"%s".decode(''utf8''),',[waptServerUser]);
+    args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',[waptServerPassword]);
+    res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)',[args]));
+    ShowMessage(IntToStr(res.AsArray.Length)+' postes modifiés');
+  end;
+end;
+
+procedure TVisWaptGUI.ActAddPackageGroupExecute(Sender: TObject);
 var
   Res, packages, host, hosts: ISuperObject;
   N:PVirtualNode;
@@ -1252,7 +1308,55 @@ begin
 
 end;
 
-procedure TVisWaptGUI.ActRemoveFromGroupExecute(Sender: TObject);
+procedure TVisWaptGUI.ActRemoveConflictsExecute(Sender: TObject);
+var
+  Res, packages, host, hosts: ISuperObject;
+  N:PVirtualNode;
+  PackagesList, args: AnsiString;
+begin
+  if GridHosts.Focused then
+  begin
+    with TvisGroupChoice.Create(self) do
+    try
+      Caption:='Choix des paquets à réautoriser sur les postes sélectionnés';
+      if ShowModal = mrOk then
+      begin
+        packages := TSuperObject.Create(stArray);
+        N := groupGrid.GetFirstChecked();
+        while N <> nil do
+        begin
+          packages.AsArray.Add(groupGrid.GetCellStrValue(N, 'package'));
+          N := groupGrid.GetNextChecked(N);
+        end;
+      end;
+    finally
+      Free;
+    end;
+    if (packages = nil) or (packages.AsArray.Length = 0) then
+      Exit;
+
+    Hosts := TSuperObject.Create(stArray);
+    for host in GridHosts.SelectedRows do
+      hosts.AsArray.Add(host.S['host.computer_fqdn']);
+
+    //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
+    args := '';
+    args := args + format('waptconfigfile = r"%s".decode(''utf8''),',[AppIniFilename]);
+    args := args + format('hosts_list = r"%s".decode(''utf8''),',[Join(',',hosts)]);
+    args := args + format('append_depends = "",',[]);
+    args := args + format('remove_depends = "",',[]);
+    args := args + format('append_conflicts = "",',[]);
+    args := args + format('remove_conflicts = r"%s".decode(''utf8''),',[Join(',',packages)]);
+    if privateKeyPassword<>'' then
+      args := args + format('key_password = "%s".decode(''utf8''),',[privateKeyPassword]);
+    args := args + format('wapt_server_user = r"%s".decode(''utf8''),',[waptServerUser]);
+    args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',[waptServerPassword]);
+    res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)',[args]));
+    ShowMessage(IntToStr(res.AsArray.Length)+' postes modifiés');
+  end;
+end;
+
+procedure TVisWaptGUI.ActRemoveDependsExecute(Sender: TObject);
 var
   Res, packages, host, hosts: ISuperObject;
   N:PVirtualNode;
@@ -1263,7 +1367,7 @@ begin
     with TvisGroupChoice.Create(self) do
     try
       Caption:='Choix des groupes à enlever des postes sélectionnés';
-      ActSearchGroupsExecute(self);
+      ActSearchExecute(self);
       if groupGrid.Data.AsArray.Length = 0 then
       begin
         ShowMessage('Il n''y a aucuns groupes.');
