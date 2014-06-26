@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.39"
+__version__ = "0.8.40"
 import os
 import sys
 import logging
@@ -34,9 +34,13 @@ from subprocess import Popen, PIPE
 import psutil
 
 import win32api
+import win32net
+import win32netcon
+import win32security
+import ntsecuritycon
+
 import win32con
 import win32pdhutil
-import win32net
 import msilib
 import win32service
 import win32serviceutil
@@ -45,6 +49,7 @@ import ctypes
 
 import requests
 import time
+import datetime
 import socket
 
 import _winreg
@@ -76,7 +81,6 @@ startup = winshell.startup
 my_documents= winshell.my_documents
 recent = winshell.recent
 sendto = winshell.sendto
-
 
 
 def ensure_dir(f):
@@ -627,7 +631,7 @@ def killalltasks(exenames,include_children=True):
 
     """
     for c in exenames:
-      run(u'taskkill /t /im "%s" /f /FI "STATUS eq RUNNING"' % c)
+      run(u'taskkill /t /im "%s" /f' % c)
     """
 
 
@@ -1601,6 +1605,13 @@ def wmi_info_basic():
             }
     return result
 
+def critical_system_pending_updates():
+    """Return list of not installed critical updates"""
+    import win32com.client
+    updateSession = win32com.client.Dispatch("Microsoft.Update.Session")
+    updateSearcher = updateSession.CreateupdateSearcher()
+    searchResult = updateSearcher.Search("IsInstalled=0 and Type='Software'")
+    return [ update.Title for update in searchResult.Updates if update.MsrcSeverity == 'Critical']
 
 def host_info():
     """Read main workstation inforamtions, returned as a dict
@@ -1649,6 +1660,7 @@ def host_info():
     win_info = keyfinder.windows_product_infos()
     info['windows_version'] =  platform.platform()
     info['windows_product_infos'] =  win_info
+    info['installation_date'] = datetime.datetime.fromtimestamp(int(registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','InstallDate','0'))).isoformat()
 
     info['cpu_name'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\CentralProcessor\0','ProcessorNameString','').strip()
 
@@ -1721,6 +1733,60 @@ def get_msi_properties(msi_filename):
         except:
             break
     return result
+
+# local user / groups management (from winsys examples)
+def create_user (user, password,full_name=None,comment=None):
+  user_info = dict (
+    name = user,
+    password = password,
+    priv = win32netcon.USER_PRIV_USER,
+    home_dir = None,
+    comment = comment,
+    full_name = full_name,
+    flags = win32netcon.UF_SCRIPT,
+    script_path = None,
+    password_expired = 1
+  )
+  win32net.NetUserAdd (None, 1, user_info)
+
+def create_group (group):
+  group_info = dict (
+    name = group
+  )
+  win32net.NetLocalGroupAdd (None, 0, group_info)
+
+def add_user_to_group (user, group):
+  user_group_info = dict (
+    domainandname = user
+  )
+  win32net.NetLocalGroupAddMembers (None, group, 3, [user_group_info])
+
+def remove_user_from_group (user, group):
+  win32net.NetLocalGroupDelMembers (None, group, [user])
+
+def delete_user (user):
+  try:
+    win32net.NetUserDel (None, user)
+  except win32net.error as error:
+    errno, errctx, errmsg = error.args
+    if errno != 2221: raise
+
+def delete_group (group):
+  try:
+    win32net.NetLocalGroupDel (None, group)
+  except win32net.error as error:
+    errno, errctx, errmsg = error.args
+    if errno != 2220: raise
+
+def local_users():
+    return [u['name'] for u in win32net.NetUserEnum(None,2)[0]]
+
+def local_groups():
+    return [g['name'] for g in win32net.NetLocalGroupEnum(None,0)[0]]
+
+def local_admins():
+    """List local users who are local administrators"""
+    return [g['name'] for g  in win32net.NetUserEnum(None,2)[0] if g['priv'] == win32netcon.USER_PRIV_ADMIN ]
 
 # some const
 programfiles = programfiles()
