@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.8.39"
+__version__ = "0.8.40"
 import os
 import re
 import logging
@@ -2075,7 +2075,7 @@ class WaptRepo(object):
         new_packages = []
         logger.debug(u'Read remote Packages zip file %s' % self.packages_url)
         packages_answer = requests.get(self.packages_url,proxies=self.proxies,timeout=self.timeout, verify=False,headers={'cache-control':'no-cache','pragma':'no-cache'})
-        packages_answer.raise_for_status
+        packages_answer.raise_for_status()
 
         # Packages file is a zipfile with one Packages file inside
         packages_lines = codecs.decode(ZipFile(
@@ -2180,7 +2180,7 @@ class WaptHostRepo(WaptRepo):
                 if host_package_date:
                     if force or host_package_date != waptdb.get_param(host_cachedate) or not waptdb.packages_matching(host):
                         host_package = requests.get(host_package_url,proxies=self.proxies,verify=False,timeout=self.timeout,headers={'cache-control':'no-cache','pragma':'no-cache'})
-                        host_package.raise_for_status
+                        host_package.raise_for_status()
 
                         # Packages file is a zipfile with one Packages file inside
                         control = codecs.decode(ZipFile(
