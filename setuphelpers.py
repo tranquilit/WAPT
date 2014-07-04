@@ -1788,6 +1788,29 @@ def local_admins():
     """List local users who are local administrators"""
     return [g['name'] for g  in win32net.NetUserEnum(None,2)[0] if g['priv'] == win32netcon.USER_PRIV_ADMIN ]
 
+
+def adjust_current_privileges(priv, enable = 1):
+    # Get the process token.
+    htoken = win32security.OpenProcessToken(win32api.GetCurrentProcess(), win32con.TOKEN_ALL_ACCESS)
+    # Get the ID for the system shutdown privilege.
+    id = win32security.LookupPrivilegeValue(None, priv)
+    # Now obtain the privilege for this process.
+    # Create a list of the privileges to be added.
+    if enable:
+        new_privileges = [(id, win32con.SE_PRIVILEGE_ENABLED)]
+    else:
+        new_privileges = [(id, 0)]
+    # and make the adjustment.
+    win32security.AdjustTokenPrivileges(htoken, False, new_privileges)
+
+def reboot_machine(message="Machine Rebooting", timeout=30, force=0, reboot=1):
+    adjust_current_privileges(win32con.SE_SHUTDOWN_NAME)
+    try:
+        win32api.InitiateSystemShutdown(None, message, timeout, force, reboot)
+    finally:
+        # Now we remove the privilege we just added.
+        adjust_current_privileges(win32con.SE_SHUTDOWN_NAME, 0)
+
 # some const
 programfiles = programfiles()
 programfiles32 = programfiles32()
