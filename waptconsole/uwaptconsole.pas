@@ -152,7 +152,6 @@ type
     Label1: TLabel;
     pgGroups: TTabSheet;
     HostTaskRunningProgress: TProgressBar;
-    SODataSource1: TSODataSource;
     Splitter3: TSplitter;
     pgTasks: TTabSheet;
     Splitter5: TSplitter;

@@ -298,6 +298,24 @@ object VisWaptGUI: TVisWaptGUI
             Position = 16
             Text = 'Status poste'
             PropertyName = 'update_status'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 17
+            Text = 'Controleur Domaine'
+            PropertyName = 'host.domain_controller'
+          end        
+          item
+            Position = 18
+            Text = 'Domaine'
+            Width = 80
+            PropertyName = 'host.domain_name'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 19
+            Text = 'Adresse controleur domaine'
+            PropertyName = 'host.domain_controller_address'
           end>
         Header.DefaultHeight = 17
         Header.MaxHeight = 17
@@ -327,9 +345,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 396
         Top = 54
         Width = 572
-        ActivePage = pgHostPackage
+        ActivePage = pgPackages
         Align = alRight
-        TabIndex = 1
+        TabIndex = 0
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -759,11 +777,12 @@ object VisWaptGUI: TVisWaptGUI
               end>
             Header.DefaultHeight = 17
             Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
+            Header.Style = hsFlatButtons
             TabOrder = 0
-            TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes]
+            TreeOptions.AutoOptions = [toAutoScrollOnExpand, toAutoSort, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes]
             TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toEditOnClick]
             TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-            TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
+            TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toFullRowSelect, toMultiSelect]
           end
         end
         object pgSoftwares: TTabSheet
@@ -783,26 +802,26 @@ object VisWaptGUI: TVisWaptGUI
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
                 Position = 0
                 Text = 'Editeur'
-                Width = 100
+                Width = 108
                 PropertyName = 'publisher'
               end            
               item
                 Position = 1
                 Text = 'Logiciel'
-                Width = 100
+                Width = 128
                 PropertyName = 'name'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
                 Position = 2
                 Text = 'Version'
-                Width = 80
+                Width = 88
                 PropertyName = 'version'
               end            
               item
                 Position = 3
                 Text = 'Date d''install'
-                Width = 80
+                Width = 85
                 PropertyName = 'install_date'
               end            
               item
@@ -817,10 +836,29 @@ object VisWaptGUI: TVisWaptGUI
                 Text = 'Répertoire d''installation'
                 Width = 200
                 PropertyName = 'install_location'
+              end            
+              item
+                Position = 6
+                Text = 'Clé désinstall'
+                Width = 100
+                PropertyName = 'key'
+              end            
+              item
+                Position = 7
+                Text = 'Commande désinstall'
+                Width = 100
+                PropertyName = 'uninstall_string'
+              end            
+              item
+                Alignment = taRightJustify
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 8
+                Text = 'Composant système'
+                Width = 19
+                PropertyName = 'system_component'
               end>
             Header.DefaultHeight = 17
-            Header.MainColumn = 1
-            Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
             Header.Style = hsFlatButtons
             TabOrder = 0
             TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
@@ -3006,12 +3044,5 @@ object VisWaptGUI: TVisWaptGUI
     OnTimer = TimerTasksTimer
     left = 663
     top = 111
-  end
-  object SODataSource1: TSODataSource
-    ParamsJSON = 'Nil'
-    Root = 'content'
-    Active = False
-    left = 440
-    top = 224
   end
 end
