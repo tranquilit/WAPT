@@ -1833,7 +1833,10 @@ class WaptTaskManager(threading.Thread):
 
             except Queue.Empty:
                 self.update_runstatus('')
-                self.check_scheduled_tasks()
+                try:
+                    self.check_scheduled_tasks()
+                except Exception as e:
+                    logger.warning(u'Error checking scheduled tasks : %s' % e)
                 logger.debug(u"{} i'm still alive... but nothing to do".format(datetime.datetime.now()))
 
     def tasks_status(self):
