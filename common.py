@@ -1550,7 +1550,7 @@ class WaptDB(WaptBaseDB):
                 try:
                     result[repo.name] = repo.update_db(waptdb=self,force=force)
                 except Exception,e:
-                    logger.critical(u'Error getting Packages index from %s : %s' % (repo.repo_url,ensure_unicode(e)))
+                    logger.debug(u'Error getting Packages index from %s : %s' % (repo.repo_url,ensure_unicode(e)))
             logger.debug(u'Commit wapt_package updates')
         except:
             logger.debug(u'rollback delete table')
@@ -1760,7 +1760,6 @@ class WaptServer(object):
                         # get first numerical ipv4 from SRV name record
                         try:
                             wapthost = a.target.to_text()[0:-1]
-                            ip = resolv.query(a.target)[0].to_text()
                             if a.port == 443:
                                 url = 'https://%s' % (wapthost)
                                 if tryurl(url,timeout=self.timeout):
@@ -1791,7 +1790,7 @@ class WaptServer(object):
 
             return None
         except dns.exception.Timeout,e:
-            logger.critical(u'DNS resolver timeout: %s' % (e,))
+            logger.debug(u'WaptServer.find_wapt_server_url: DNS resolver timeout: %s' % (e,))
             raise
 
     @server_url.setter
@@ -1815,6 +1814,18 @@ class WaptServer(object):
             if config.has_option(section,'timeout'):
                 self.timeout = config.getfloat(section,'timeout')
         return self
+
+    def get(self,action):
+        """ """
+        req = requests.get("%s/%s" % (self.server_url,action),proxies=self.proxies,verify=False)
+        req.raise_for_status()
+        return json.loads(req.content)
+
+    def post(self,action,data):
+        """ """
+        req = requests.post("%s/%s" % (self.server_url,action),data,proxies=self.proxies,verify=False)
+        req.raise_for_status()
+        return json.loads(req.content)
 
 
 class WaptRepo(object):
@@ -1990,7 +2001,7 @@ class WaptRepo(object):
 
             return None
         except dns.exception.Timeout,e:
-            logger.critical(u'DNS resolver timeout: %s' % (e,))
+            logger.debug(u'Waptrepo.find_wapt_repo_url: DNS resolver timeout: %s' % (e,))
             raise
 
     @repo_url.setter
@@ -2065,7 +2076,7 @@ class WaptRepo(object):
             return httpdatetime2isodate(packages_last_modified)
         except requests.RequestException as e:
             self._cached_dns_repo_url = None
-            logger.warning(u'Repo packages index %s is not available : %s'%(self.packages_url,ensure_unicode(e)))
+            logger.debug(u'Repo packages index %s is not available : %s'%(self.packages_url,ensure_unicode(e)))
             return None
 
     def load_packages(self):
@@ -2524,7 +2535,8 @@ class Wapt(object):
                 try:
                     self.update_server_status()
                 except Exception,e:
-                    logger.critical(u'Unable to update server with current status : %s' % ensure_unicode(e))
+                    logger.warning(u'Unable to contact server to register current status')
+                    logger.debug(u'Unable to update server with current status : %s' % ensure_unicode(e))
 
     @property
     def host_uuid(self):
@@ -3158,8 +3170,9 @@ class Wapt(object):
         if not self.disable_update_server_status and register:
             try:
                 self.update_server_status()
-            except Exception,e:
-                logger.critical(u'Unable to update server with current status : %s' % ensure_unicode(e))
+            except Exception as e:
+                logger.warning(u'Unable to contact server to register current packages status')
+                logger.debug(u'Unable to update server with current status : %s' % ensure_unicode(e))
                 if logger.level == logging.DEBUG:
                     raise
         return result

@@ -252,7 +252,7 @@ class WaptServiceConfig(object):
             if config.has_option('global','waptservice_password'):
                 self.waptservice_password = config.get('global', 'waptservice_password')
             else:
-                logger.info(u"WARNING : no password set, using default password")
+                logger.info(u"No password set for local waptservice, using local computer security")
                 self.waptservice_password=None  # = password
 
             if config.has_option('global','waptservice_port'):
@@ -1745,20 +1745,26 @@ class WaptTaskManager(threading.Thread):
         logger.debug(u'Check scheduled tasks')
         if waptconfig.waptupgrade_task_period is not None:
             if self.last_upgrade is None or (time.time()-self.last_upgrade)/60>waptconfig.waptupgrade_task_period:
-                actions = self.wapt.list_upgrade()
-                to_install = actions['upgrade']+actions['additional']+actions['install']
-                for req in to_install:
-                    self.add_task(WaptPackageInstall(req),notify_user=True)
-                self.add_task(WaptUpgrade(notifyuser=False))
+                try:
+                    actions = self.wapt.list_upgrade()
+                    to_install = actions['upgrade']+actions['additional']+actions['install']
+                    for req in to_install:
+                        self.add_task(WaptPackageInstall(req),notify_user=True)
+                    self.add_task(WaptUpgrade(notifyuser=False))
+                except Exception as e:
+                    logger.debug(u'Error for upgrade in check_scheduled_tasks: %s'%e)
                 self.add_task(WaptCleanup(notifyuser=False))
 
         if waptconfig.waptupdate_task_period is not None:
             if self.last_update is None or (time.time()-self.last_update)/60>waptconfig.waptupdate_task_period:
-                self.wapt.update()
-                reqs = self.wapt.check_downloads()
-                for req in reqs:
-                    self.add_task(WaptDownloadPackage(req.asrequirement()),notify_user=True)
-                self.add_task(WaptUpdate(notify_user=False))
+                try:
+                    self.wapt.update()
+                    reqs = self.wapt.check_downloads()
+                    for req in reqs:
+                        self.add_task(WaptDownloadPackage(req.asrequirement()),notify_user=True)
+                    self.add_task(WaptUpdate(notify_user=False))
+                except Exception as e:
+                    logger.debug(u'Error for update in check_scheduled_tasks: %s'%e)
 
     def check_firewall(self):
         if not self.firewall_running:
@@ -1815,7 +1821,7 @@ class WaptTaskManager(threading.Thread):
                             self.broadcast_tasks_status('ERROR',self.running_task)
                         logger.critical(setuphelpers.ensure_unicode(e))
                         try:
-                            logging.debug(traceback.format_exc())
+                            logger.debug(traceback.format_exc())
                         except:
                             print "Traceback error"
                 finally:
@@ -1836,7 +1842,7 @@ class WaptTaskManager(threading.Thread):
                 try:
                     self.check_scheduled_tasks()
                 except Exception as e:
-                    logger.warning(u'Error checking scheduled tasks : %s' % e)
+                    logger.warning(u'Error checking scheduled tasks : %s' % traceback.format_exc())
                 logger.debug(u"{} i'm still alive... but nothing to do".format(datetime.datetime.now()))
 
     def tasks_status(self):
