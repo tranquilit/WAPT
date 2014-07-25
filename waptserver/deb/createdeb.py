@@ -42,7 +42,7 @@ def replaceAll(file,searchExp,replaceExp):
         sys.stdout.write(line)
 
 def rsync(src,dst):
-    rsync_option = " --exclude '*.pyc' --exclude '.svn' --exclude 'deb' --exclude '.git' --exclude '.gitignore' -aP"
+    rsync_option = " --exclude '*.pyc' --exclude '.svn' --exclude 'apache-win32' --exclude 'deb' --exclude '.git' --exclude '.gitignore' -aP"
     rsync_source = src
     rsync_destination = dst
     rsync_command = '/usr/bin/rsync %s "%s" "%s"'%(rsync_option,rsync_source,rsync_destination)
