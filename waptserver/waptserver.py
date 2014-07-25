@@ -1025,9 +1025,14 @@ class CheckHostsWaptService(threading.Thread):
         pass
 
 
-def install_windows_service():
-    """Setup waptserver as a windows Service managed by nssm
-    >>> install_windows_service()
+def install_windows_nssm_service(service_name,service_binary,service_parameters,service_logfile,service_dependencies=None):
+    """Setup a program as a windows Service managed by nssm
+    >>> install_windows_nssm_service("WAPTServer",
+        os.path.abspath(os.path.join(wapt_root_dir,'waptpython.exe')),
+        os.path.abspath(__file__),
+        os.path.join(log_directory,'nssm_waptserver.log'),
+        service_logfile,
+        'WAPTMongodb WAPTApache')
     """
     import setuphelpers
     from setuphelpers import registry_set,REG_DWORD,REG_EXPAND_SZ,REG_MULTI_SZ,REG_SZ
@@ -1038,40 +1043,45 @@ def install_windows_service():
         'multi_sz':REG_MULTI_SZ,
     }
 
-    if setuphelpers.service_installed('waptserver'):
-        if setuphelpers.service_is_running('waptserver'):
-            logger.info('Stop running waptserver')
-            setuphelpers.run('net stop waptserver')
-            while setuphelpers.service_is_running('waptserver'):
-                logger.debug('Waiting for waptserver to terminate')
+    if setuphelpers.service_installed(service_name):
+        if setuphelpers.service_is_running(service_name):
+            logger.info('Stop running "%s"' % service_name )
+            setuphelpers.run('net stop "%s" /yes' % service_name)
+            while setuphelpers.service_is_running(service_name):
+                logger.debug('Waiting for "%s" to terminate' % service_name)
                 time.sleep(2)
-        logger.info('Unregister existing waptserver')
-        setuphelpers.run('sc delete waptserver')
+        logger.info('Unregister existing "%s"'% service_name)
+        setuphelpers.run('sc delete "%s"' % service_name)
 
     if setuphelpers.iswin64():
         nssm = os.path.join(wapt_root_dir,'waptservice','win64','nssm.exe')
     else:
         nssm = os.path.join(wapt_root_dir,'waptservice','win32','nssm.exe')
 
-    logger.info('Register new waptserver with nssm')
-    setuphelpers.run('"{nssm}" install WAPTServer "{waptpython}" ""{waptserverpy}""'.format(
-        waptpython = os.path.abspath(os.path.join(wapt_root_dir,'waptpython.exe')),
+    logger.info('Register service "%s" with nssm' % service_name)
+    cmd = '"{nssm}" install "{service_name}" "{service_binary}" {service_parameters}'.format(
         nssm = nssm,
-        waptserverpy = os.path.abspath(__file__),
-     ))
+        service_name = service_name,
+        service_binary=service_binary,
+        service_parameters=service_parameters
+     )
+    logger.info("running command : %s" % cmd)
+    setuphelpers.run(cmd)
 
     # fix some parameters (quotes for path with spaces...
     params = {
-        "Description": "sz:Wapt test server",
+        "Description": "sz:%s" % service_name,
         "DelayedAutostart": 1,
-        "DisplayName" : "sz:WAPTServer",
-        "AppStdout" : r"expand_sz:{}".format(os.path.join(log_directory,'waptserver.log')),
-        "Parameters\\AppStderr" : r"expand_sz:{}".format(os.path.join(log_directory,'waptserver.log')),
-        "Parameters\\AppParameters" : r'expand_sz:"{}"'.format(os.path.abspath(__file__)),
+        "DisplayName" : "sz:%s" % service_name,
+        "AppStdout" : r"expand_sz:{}".format(service_logfile),
+        "Parameters\\AppStderr" : r"expand_sz:{}".format(service_logfile),
+        "Parameters\\AppParameters" : r'expand_sz:{}'.format(service_parameters),
         }
 
+
+
     root = setuphelpers.HKEY_LOCAL_MACHINE
-    base = r'SYSTEM\CurrentControlSet\services\WAPTServer'
+    base = r'SYSTEM\CurrentControlSet\services\%s' % service_name
     for key in params:
         if isinstance(params[key],int):
             (valuetype,value) = ('dword',params[key])
@@ -1087,6 +1097,45 @@ def install_windows_service():
             keyname = None
         registry_set(root,path,keyname,value,type = datatypes[valuetype])
 
+    if service_dependencies !=None:
+        logger.info('Register dependencies for service "%s" with nssm : %s ' % (service_name,service_dependencies))
+        cmd = '"{nssm}" set "{service_name}" DependOnService {service_dependencies}'.format(
+                nssm = nssm,
+                service_name = service_name,
+                service_dependencies = service_dependencies
+        )
+        logger.info("running command : %s" % cmd)
+        setuphelpers.run(cmd)
+
+        #fullpath = base+'\\' + 'DependOnService'
+        #(path,keyname) = fullpath.rsplit('\\',1)
+        #registry_set(root,path,keyname,service_dependencies,REG_MULTI_SZ)
+
+
+def install_windows_service():
+    """Setup waptserver, waptmongodb et waptapache as a windows Service managed by nssm
+    >>> install_windows_service()
+    """
+
+    # register mongodb server
+    service_binary =os.path.abspath(os.path.join(wapt_root_dir,'waptserver','mongodb','mongod.exe'))
+    service_parameters = " --config %s " % os.path.join(wapt_root_dir,'waptserver','mongodb','mongod.cfg')
+    service_logfile = os.path.join(log_directory,'nssm_waptmongodb.log')
+    install_windows_nssm_service("WAPTMongodb",service_binary,service_parameters,service_logfile)
+
+
+    # register apache frontd
+    service_binary =os.path.abspath(os.path.join(wapt_root_dir,'waptserver','apache-win32','bin','httpd.exe'))
+    service_parameters = ""
+    service_logfile = os.path.join(log_directory,'nssm_apache.log')
+    install_windows_nssm_service("WAPTApache",service_binary,service_parameters,service_logfile)
+
+# register waptserver
+    service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptpython.exe'))
+    service_parameters = os.path.abspath(__file__)
+    service_logfile = os.path.join(log_directory,'nssm_waptserver.log')
+    service_dependencies = 'WAPTMongodb WAPTApache'
+    install_windows_nssm_service("WAPTServer",service_binary,service_parameters,service_logfile,service_dependencies)
 
 if __name__ == "__main__":
     if len(sys.argv)>1 and sys.argv[1] == 'doctest':

@@ -5,7 +5,7 @@
 #define default_update_period "120"
 #define output_dir "."
 #define Company "Tranquil IT Systems"
-#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
+;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
 #include "wapt.iss"
 
@@ -37,6 +37,7 @@ Source: "..\waptserver\*.template"; DestDir: "{app}\waptserver";
 Source: "..\waptserver\templates\*"; DestDir: "{app}\waptserver\templates"; Flags: createallsubdirs recursesubdirs
 Source: "..\waptserver\scripts\*"; DestDir: "{app}\waptserver\scripts"; Flags: createallsubdirs recursesubdirs
 Source: "..\waptserver\mongodb\mongod.*"; DestDir: "{app}\waptserver\mongodb"; Flags: createallsubdirs recursesubdirs
+Source: "..\waptserver\apache-win32\*"; DestDir: "{app}\waptserver\apache-win32"; Flags: createallsubdirs recursesubdirs
 
 [Dirs]
 Name: "{app}\waptserver\repository"
@@ -60,12 +61,8 @@ Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1
 
 [RUN]
 Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoUpgradePolicy; Flags: runhidden; StatusMsg: "Mise à jour des paquets à l'extinction du poste"; Description: "Mise à jour des paquets à l'extinction du poste"
-Filename: "{app}\waptserver\mongodb\mongod.exe"; Parameters: " --config c:\wapt\waptserver\mongodb\mongod.cfg --install"; StatusMsg: "Registering mongodb service..."; Description: "Set up MongoDB Service"
 Filename: "{app}\waptpython.exe"; Parameters: """{app}\waptserver\waptserver.py"" install"; StatusMsg: "Registering WaptServer Service"    ; Description: "Setup WaptServer Service"
 Filename: "net"; Parameters: "start waptmongodb"; StatusMsg: "Starting WaptMongodb service"
-;Filename: "net"; Parameters: "start waptserver"; StatusMsg: "Starting waptserver service"
-;Filename: "{app}\wapt-get.exe"; Parameters: "update-packages ""{app}\waptserver\repository\wapt"""; StatusMsg: "Updating server Packages index";
-;Filename: "{app}\wapt-get.exe"; Parameters: "register"; Flags: runhidden postinstall; StatusMsg: "Register computer on the WAPT server"; Description: "Register computer on the WAPT server"
 Filename: "{app}\waptserverpostconf.exe"; Flags: nowait postinstall skipifsilent; StatusMsg: "Lancement de la post-configuration du serveur"; Description: "Lancement de la post-configuration du serveur"
 
 [Icons]
@@ -78,7 +75,9 @@ Name: "{group}\Logiciels installés avec WAPT"; Filename: "http://localhost:8088/
 Name: autorunSessionSetup; Description: "Lancer WAPT session setup à l'ouverture de session";
 
 [UninstallRun]
-Filename: "net"; Parameters: "stop waptserver"; Flags: runhidden; StatusMsg: "Stop waptserver"
-Filename: "sc"; Parameters: "delete waptserver"; Flags: runhidden; StatusMsg: "Unregister waptserver"
-Filename: "net"; Parameters: "stop waptmongodb"; Flags: runhidden; StatusMsg: "Stop wapt mongodb"
-Filename: "sc"; Parameters: "delete waptmongob"; Flags: runhidden; StatusMsg: "Unregister waptmongodb"
+Filename: "net"; Parameters: "stop waptmongodb /yes"; Flags: runhidden; StatusMsg: "Stop WAPTMongodb"
+Filename: "sc"; Parameters: "delete waptmongob"; Flags: runhidden; StatusMsg: "Unregister WAPTMongodb"
+Filename: "net"; Parameters: "stop waptapache /yes"; Flags: runhidden; StatusMsg: "Stop WAPTApache"
+Filename: "sc"; Parameters: "delete waptapache"; Flags: runhidden; StatusMsg: "Unregister WAPTApache"
+Filename: "net"; Parameters: "stop waptserver"; Flags: runhidden; StatusMsg: "Stop WAPTServer"
+Filename: "sc"; Parameters: "delete waptserver"; Flags: runhidden; StatusMsg: "Unregister WAPTServer"
