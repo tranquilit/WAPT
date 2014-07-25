@@ -158,10 +158,13 @@ begin
   // Proceed Setup
   if ServiceExists('waptservice') then
     SimpleStopService('waptservice',True,True);
-  if ServiceExists('waptserver') then
-    SimpleStopService('waptserver',True,True);
+  if ServiceExists('waptapache') then
+    SimpleStopService('waptapache',True,True);	
   if ServiceExists('waptmongodb') then
     SimpleStopService('waptmongodb',True,True);
+  if ServiceExists('waptserver') then
+    SimpleStopService('waptserver',True,True);
+  
   Result := True;
 end;
 
