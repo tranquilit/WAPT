@@ -62,7 +62,6 @@ Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1
 [RUN]
 Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoUpgradePolicy; Flags: runhidden; StatusMsg: "Mise à jour des paquets à l'extinction du poste"; Description: "Mise à jour des paquets à l'extinction du poste"
 Filename: "{app}\waptpython.exe"; Parameters: """{app}\waptserver\waptserver.py"" install"; StatusMsg: "Registering WaptServer Service"    ; Description: "Setup WaptServer Service"
-Filename: "net"; Parameters: "start waptmongodb"; StatusMsg: "Starting WaptMongodb service"
 Filename: "{app}\waptserverpostconf.exe"; Flags: nowait postinstall skipifsilent; StatusMsg: "Lancement de la post-configuration du serveur"; Description: "Lancement de la post-configuration du serveur"
 
 [Icons]
