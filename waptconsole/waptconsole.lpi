@@ -17,7 +17,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="4"/>
-      <RevisionNr Value="32"/>
+      <RevisionNr Value="33"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -189,6 +189,7 @@
         <Filename Value="uvisapropos.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisApropos"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisAPropos"/>
       </Unit16>

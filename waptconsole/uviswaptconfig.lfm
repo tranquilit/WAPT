@@ -7,6 +7,11 @@ object VisWAPTConfig: TVisWAPTConfig
   Caption = 'Configuration locale WAPT'
   ClientHeight = 270
   ClientWidth = 507
+  Font.CharSet = ANSI_CHARSET
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Pitch = fpVariable
+  Font.Quality = fqDraft
   Position = poMainFormCenter
   ShowHint = True
   LCLVersion = '1.3'

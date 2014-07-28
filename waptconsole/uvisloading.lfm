@@ -2,11 +2,16 @@ object VisLoading: TVisLoading
   Left = 971
   Height = 75
   Top = 415
-  Width = 420
+  Width = 412
   BorderStyle = bsDialog
   Caption = 'Chargement'
   ClientHeight = 75
-  ClientWidth = 420
+  ClientWidth = 412
+  Font.CharSet = ANSI_CHARSET
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Pitch = fpVariable
+  Font.Quality = fqDraft
   OnCreate = FormCreate
   Position = poMainFormCenter
   LCLVersion = '1.3'
@@ -28,7 +33,7 @@ object VisLoading: TVisLoading
     Left = 0
     Height = 13
     Top = 10
-    Width = 420
+    Width = 412
     Align = alTop
     Alignment = taCenter
     BorderSpacing.Top = 10

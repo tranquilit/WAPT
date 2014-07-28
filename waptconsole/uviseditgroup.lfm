@@ -1,24 +1,29 @@
 object VisEditGroup: TVisEditGroup
   Left = 596
-  Height = 600
+  Height = 610
   Top = 120
-  Width = 800
+  Width = 786
   Caption = 'Edition de groupe'
-  ClientHeight = 600
-  ClientWidth = 800
-  LCLVersion = '1.1'
+  ClientHeight = 610
+  ClientWidth = 786
+  Font.CharSet = ANSI_CHARSET
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Pitch = fpVariable
+  Font.Quality = fqDraft
+  LCLVersion = '1.3'
   object Panel4: TPanel
     Left = 0
     Height = 33
-    Top = 567
-    Width = 800
+    Top = 577
+    Width = 786
     Align = alBottom
     BevelOuter = bvNone
     ClientHeight = 33
-    ClientWidth = 800
+    ClientWidth = 786
     TabOrder = 0
     object BitBtn2: TBitBtn
-      Left = 720
+      Left = 706
       Height = 26
       Top = 4
       Width = 74
@@ -30,7 +35,7 @@ object VisEditGroup: TVisEditGroup
       TabOrder = 0
     end
     object Button5: TButton
-      Left = 603
+      Left = 589
       Height = 25
       Top = 4
       Width = 112
@@ -41,8 +46,8 @@ object VisEditGroup: TVisEditGroup
   end
   object GridDepends: TSOGrid
     Left = 8
-    Height = 260
-    Top = 76
+    Height = 284
+    Top = 52
     Width = 536
     Color = clWhite
     Header.AutoSizeIndex = -1
@@ -84,10 +89,11 @@ object VisEditGroup: TVisEditGroup
     TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
     TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+    WantTabs = True
   end
   object GridHosts: TSOGrid
     Left = 8
-    Height = 236
+    Height = 200
     Top = 360
     Width = 536
     Color = clWhite
@@ -107,12 +113,13 @@ object VisEditGroup: TVisEditGroup
     TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
     TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
+    WantTabs = True
   end
   object EdGroup: TLabeledEdit
     Left = 48
     Height = 21
-    Top = 16
-    Width = 252
+    Top = 4
+    Width = 250
     EditLabel.AnchorSideTop.Control = EdGroup
     EditLabel.AnchorSideTop.Side = asrCenter
     EditLabel.AnchorSideRight.Control = EdGroup
@@ -120,7 +127,7 @@ object VisEditGroup: TVisEditGroup
     EditLabel.AnchorSideBottom.Side = asrBottom
     EditLabel.Left = 10
     EditLabel.Height = 13
-    EditLabel.Top = 20
+    EditLabel.Top = 8
     EditLabel.Width = 35
     EditLabel.Caption = 'Groupe'
     EditLabel.ParentColor = False
@@ -128,19 +135,19 @@ object VisEditGroup: TVisEditGroup
     TabOrder = 3
   end
   object Eddescription: TLabeledEdit
-    Left = 368
+    Left = 366
     Height = 21
-    Top = 16
-    Width = 424
+    Top = 4
+    Width = 408
     Anchors = [akTop, akLeft, akRight]
     EditLabel.AnchorSideTop.Control = Eddescription
     EditLabel.AnchorSideTop.Side = asrCenter
     EditLabel.AnchorSideRight.Control = Eddescription
     EditLabel.AnchorSideBottom.Control = Eddescription
     EditLabel.AnchorSideBottom.Side = asrBottom
-    EditLabel.Left = 312
+    EditLabel.Left = 310
     EditLabel.Height = 13
-    EditLabel.Top = 20
+    EditLabel.Top = 8
     EditLabel.Width = 53
     EditLabel.Caption = 'Description'
     EditLabel.ParentColor = False
@@ -150,8 +157,8 @@ object VisEditGroup: TVisEditGroup
   end
   object GridPackages: TSOGrid
     Left = 556
-    Height = 456
-    Top = 80
+    Height = 491
+    Top = 69
     Width = 224
     Color = clWhite
     DragMode = dmAutomatic
@@ -221,11 +228,12 @@ object VisEditGroup: TVisEditGroup
     TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
     TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect]
+    WantTabs = True
   end
   object Label1: TLabel
     Left = 556
     Height = 13
-    Top = 63
+    Top = 52
     Width = 94
     Caption = 'Paquets disponibles'
     ParentColor = False
@@ -233,7 +241,7 @@ object VisEditGroup: TVisEditGroup
   object Label2: TLabel
     Left = 8
     Height = 13
-    Top = 60
+    Top = 32
     Width = 261
     Caption = 'Paquets devant être installés sur les postes du groupe'
     ParentColor = False

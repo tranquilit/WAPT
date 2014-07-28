@@ -26,14 +26,16 @@ type
     ActBUApply: TAction;
     ActEditRemoveConflicts: TAction;
     ActAddConflicts: TAction;
+    ActionsImages: TImageList;
     ActSearchPackage: TAction;
     ActionList1: TActionList;
-    BitBtn2: TBitBtn;
-    butInitWapt: TButton;
-    butSearchPackages1: TButton;
-    Button3: TButton;
-    Button5: TButton;
-    butBUApply: TButton;
+    ButAddPackages: TBitBtn;
+    ButCancel: TBitBtn;
+    butInitWapt: TBitBtn;
+    butSearchPackages1: TBitBtn;
+    Button3: TBitBtn;
+    ButSave: TBitBtn;
+    butBUApply: TBitBtn;
     cbShowLog: TCheckBox;
     Eddescription: TLabeledEdit;
     EdPackage: TLabeledEdit;
@@ -49,12 +51,13 @@ type
     GridDepends: TSOGrid;
     MemoLog: TMemo;
     MenuItem1: TMenuItem;
-    MenuItem2: TMenuItem;
+    MenuAddPackages: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
     PageControl1: TPageControl;
     Panel1: TPanel;
     Panel2: TPanel;
+    Panel3: TPanel;
     Panel8: TPanel;
     Panel9: TPanel;
     PanelDevlop: TPanel;
@@ -69,7 +72,7 @@ type
     Splitter3: TSplitter;
     SynPythonSyn1: TSynPythonSyn;
     pgDevelop: TTabSheet;
-    pgEditPackage: TTabSheet;
+    pgDepends: TTabSheet;
     EdSetupPy: TSynEdit;
     jsonlog: TVirtualJSONInspector;
     pgConflicts: TTabSheet;
@@ -105,6 +108,7 @@ type
     procedure GridDependsDragOver(Sender: TBaseVirtualTree; Source: TObject;
       Shift: TShiftState; State: TDragState; const Pt: TPoint;
       Mode: TDropMode; var Effect: DWORD; var Accept: boolean);
+    procedure PageControl1Change(Sender: TObject);
   private
     FisAdvancedMode: boolean;
     FisTempSourcesDir: boolean;
@@ -202,7 +206,7 @@ begin
     try
       Caption:='Editer le groupe';
       EdPackage.EditLabel.Caption := 'Groupe';
-      pgEditPackage.Caption := 'Paquets devant être présents dans le groupe';
+      pgDepends.Caption := 'Paquets devant être présents dans le groupe';
 
       isAdvancedMode := advancedMode;
       IsNewPackage := True;
@@ -259,7 +263,7 @@ begin
 
       Caption:='Editer le groupe';
       EdPackage.EditLabel.Caption := 'Groupe';
-      pgEditPackage.Caption := 'Paquets devant être présents dans le groupe';
+      pgDepends.Caption := 'Paquets devant être présents dans le groupe';
 
       if ShowModal = mrOk then
         Result := PackageEdited
@@ -438,6 +442,20 @@ begin
   Accept := Source = GridPackages;
 end;
 
+procedure TVisEditPackage.PageControl1Change(Sender: TObject);
+begin
+  if PageControl1.ActivePage = pgDepends then
+  begin
+    ButAddPackages.Action := ActAddDepends;
+    MenuAddPackages.Action := ActAddDepends;
+  end
+  else
+  begin
+    ButAddPackages.Action := ActAddConflicts;
+    MenuAddPackages.Action := ActAddConflicts;
+  end;
+end;
+
 procedure TVisEditPackage.ActEditRemoveDependsExecute(Sender: TObject);
 begin
   GridDepends.DeleteSelectedNodes;
@@ -592,7 +610,7 @@ end;
 
 procedure TVisEditPackage.ActAddConflictsUpdate(Sender: TObject);
 begin
-    ActAddConflicts.Enabled := GridPackages.SelectedCount > 0;
+  ActAddConflicts.Enabled := GridPackages.SelectedCount > 0;
 end;
 
 procedure TVisEditPackage.ActAddConflictsExecute(Sender: TObject);
@@ -698,7 +716,7 @@ begin
           [FPackageRequest, target_directory]));
         EdPackage.EditLabel.Caption := 'Machine';
         Caption := 'Modifier la configuration de la machine';
-        pgEditPackage.Caption := 'Paquets devant être présents sur la machine';
+        pgDepends.Caption := 'Paquets devant être présents sur la machine';
         EdVersion.Parent := Panel4;
         EdVersion.Top := 5;
       end

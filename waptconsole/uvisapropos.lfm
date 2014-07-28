@@ -7,6 +7,11 @@ object VisApropos: TVisApropos
   Caption = 'A propos de WAPTConsole'
   ClientHeight = 325
   ClientWidth = 376
+  Font.CharSet = ANSI_CHARSET
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Pitch = fpVariable
+  Font.Quality = fqDraft
   OnCreate = FormCreate
   LCLVersion = '1.3'
   object Image1: TImage

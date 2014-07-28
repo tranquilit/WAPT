@@ -2,61 +2,66 @@ object VisLogin: TVisLogin
   Left = 777
   Height = 126
   Top = 487
-  Width = 286
+  Width = 322
   BorderStyle = bsDialog
   Caption = 'Authenfication WAPT'
   ClientHeight = 126
-  ClientWidth = 286
+  ClientWidth = 322
+  Font.CharSet = ANSI_CHARSET
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Pitch = fpVariable
+  Font.Quality = fqDraft
   Position = poScreenCenter
   ShowHint = True
   LCLVersion = '1.3'
   object edPassword: TEdit
-    Left = 142
+    Left = 134
     Height = 21
     Top = 59
-    Width = 116
+    Width = 124
     EchoMode = emPassword
     OnKeyDown = edPasswordKeyDown
     PasswordChar = '*'
     TabOrder = 0
   end
   object laPassword: TLabel
-    Left = 12
+    Left = 6
     Height = 13
-    Top = 63
+    Top = 64
     Width = 119
     Caption = 'Mot de passe du serveur'
     ParentColor = False
   end
   object edUser: TEdit
-    Left = 142
+    Left = 134
     Height = 21
     Top = 33
-    Width = 116
+    Width = 124
     TabOrder = 1
     Text = 'admin'
   end
   object laPassword1: TLabel
-    Left = 12
+    Left = 6
     Height = 13
-    Top = 35
+    Top = 37
     Width = 103
     Caption = 'Utilisateur du serveur'
     ParentColor = False
   end
   object Label1: TLabel
-    Left = 14
+    Left = 6
     Height = 13
-    Top = 6
+    Top = 8
     Width = 106
     Caption = 'Connexion au serveur'
     ParentColor = False
   end
   object edWaptServerName: TEdit
-    Left = 142
+    Left = 134
     Height = 21
     Top = 4
-    Width = 116
+    Width = 154
     Enabled = False
     TabOrder = 2
     Text = 'edWaptServerName'
@@ -65,7 +70,7 @@ object VisLogin: TVisLogin
     Left = 6
     Height = 34
     Top = 86
-    Width = 274
+    Width = 310
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True
     HelpButton.Name = 'HelpButton'
@@ -79,7 +84,7 @@ object VisLogin: TVisLogin
     ShowButtons = [pbOK, pbCancel]
   end
   object BitBtn1: TBitBtn
-    Left = 260
+    Left = 292
     Height = 26
     Hint = 'Configuration de la console wapt'
     Top = 0

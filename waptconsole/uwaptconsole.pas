@@ -5,11 +5,10 @@ unit uwaptconsole;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, SynEdit, SynHighlighterPython,
-  vte_json, Forms, Controls, Graphics, Dialogs, ExtCtrls,
+  Classes, SysUtils, Windows, ActiveX, Types, Forms, Controls, Graphics, Dialogs, Buttons, FileUtil,
+  SynEdit, SynHighlighterPython,  vte_json, ExtCtrls,
   StdCtrls, ComCtrls, ActnList, Menus, jsonparser, superobject,
-  VirtualTrees, VarPyth, Windows, ImgList, Buttons, SOGrid, types,
-  ActiveX;
+  VirtualTrees, VarPyth, ImgList, SOGrid  ;
 
 type
 
@@ -20,6 +19,7 @@ type
     ActForgetPackages: TAction;
     ActAddConflicts: TAction;
     ActHelp: TAction;
+    ActSearchExternalPackage: TAction;
     ActRemoveConflicts: TAction;
     ActSearchSoftwares: TAction;
     ActRemoveDepends: TAction;
@@ -64,19 +64,19 @@ type
     ActLocalhostRemove: TAction;
     ActSearchPackage: TAction;
     ActionList1: TActionList;
-    btAddGroup: TButton;
-    butInitWapt: TButton;
-    butRun: TButton;
-    butSearchPackages: TButton;
-    butSearchExternalPackages: TButton;
-    butSearchGroups: TButton;
-    Button1: TButton;
-    Button2: TButton;
-    Button3: TButton;
-    Button4: TButton;
-    Changer: TButton;
-    Button7: TButton;
-    Button8: TButton;
+    btAddGroup: TBitBtn;
+    butInitWapt: TBitBtn;
+    butRun: TBitBtn;
+    butSearchPackages: TBitBtn;
+    butSearchExternalPackages: TBitBtn;
+    butSearchGroups: TBitBtn;
+    ButHostRegister: TBitBtn;
+    ButHostUpgrade: TBitBtn;
+    ButPackageDuplicate: TBitBtn;
+    ButCancelHostTask: TBitBtn;
+    ButExtRepoChange: TBitBtn;
+    ButHostSearch: TBitBtn;
+    ButPackagesUpdate: TBitBtn;
     cbSearchDMI: TCheckBox;
     cbSearchHost: TCheckBox;
     cbSearchPackages: TCheckBox;
@@ -96,6 +96,7 @@ type
     GridHostTasksDone: TSOGrid;
     GridHostTasksErrors: TSOGrid;
     HostRunningTaskLog: TMemo;
+    ActionsImages: TImageList;
     Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
@@ -252,6 +253,7 @@ type
     procedure ActRDPUpdate(Sender: TObject);
     procedure ActRemoveConflictsExecute(Sender: TObject);
     procedure ActRemoveDependsExecute(Sender: TObject);
+    procedure ActSearchExternalPackageExecute(Sender: TObject);
     procedure ActSearchGroupsExecute(Sender: TObject);
     procedure ActHostUpgradeExecute(Sender: TObject);
     procedure ActHostUpgradeUpdate(Sender: TObject);
@@ -281,11 +283,10 @@ type
     procedure ActVNCExecute(Sender: TObject);
     procedure ActVNCUpdate(Sender: TObject);
     procedure ActWAPTLocalConfigExecute(Sender: TObject);
-    procedure butSearchExternalPackagesClick(Sender: TObject);
     procedure cbMaskSystemComponentsClick(Sender: TObject);
     procedure cbSearchAllChange(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
-    procedure ChangerClick(Sender: TObject);
+    procedure ButExtRepoChangeClick(Sender: TObject);
     procedure CheckBoxMajChange(Sender: TObject);
     procedure CheckBoxMajClick(Sender: TObject);
     procedure CheckBox_errorChange(Sender: TObject);
@@ -391,7 +392,7 @@ begin
 
 end;
 
-procedure TVisWaptGUI.ChangerClick(Sender: TObject);
+procedure TVisWaptGUI.ButExtRepoChangeClick(Sender: TObject);
 begin
   ActWAPTLocalConfigExecute(self);
   urlExternalRepo.Caption := 'Url: ' + WaptExternalRepo;
@@ -730,7 +731,7 @@ begin
       sources.AsArray.Add('r"'+sourceDir+'"');
     end;
 
-    ProgressTitle('Upload en cours de '+IntToStr(Sources.AsArray.Length)+' paquets');
+    ProgressTitle('Dépôt sur le serveur WAPT en cours pour '+IntToStr(Sources.AsArray.Length)+' paquets');
     Application.ProcessMessages;
 
     uploadResult := DMPython.RunJSON(
@@ -987,6 +988,7 @@ begin
   ActAdvancedMode.Checked := not ActAdvancedMode.Checked;
   pgSources.TabVisible := ActAdvancedMode.Checked;
   Panel3.Visible := ActAdvancedMode.Checked;
+  ActRegisterHost.Visible:=ActAdvancedMode.Checked;
 end;
 
 procedure TVisWaptGUI.ActCancelRunningTaskExecute(Sender: TObject);
@@ -1081,11 +1083,11 @@ begin
                       [waptsetupPath, waptServerUser, waptServerPassword]));
                     if SORes.S['status'] = 'OK' then
                     begin
-                      ShowMessage('Waptsetup envoyé avec succès');
+                      ShowMessage('Waptsetup déposé avec succès');
                       done := True;
                     end
                     else
-                      ShowMessage('Erreur lors de l''envoi de waptsetup: ' + SORes.S['message']);
+                      ShowMessage('Erreur lors du dépôt de waptsetup: ' + SORes.S['message']);
                   end;
                 finally
                   Free;
@@ -1117,21 +1119,21 @@ end;
 
 procedure TVisWaptGUI.ActDeleteGroupExecute(Sender: TObject);
 var
-  message: string = 'Etes vous sûr de vouloir supprimer ce groupe du serveur ?';
+  message: string = 'Etes vous sûr de vouloir supprimer ce paquet du serveur ?';
   res: ISuperObject;
   group: string;
   i: integer;
   N: PVirtualNode;
 begin
   if GridGroups.SelectedCount > 1 then
-    message := 'Etes vous sûr de vouloir supprimer ces groupes du serveur ?';
+    message := 'Etes vous sûr de vouloir supprimer ces paquets du serveur ?';
 
   if MessageDlg('Confirmer la suppression', message, mtConfirmation,
     mbYesNoCancel, 0) = mrYes then
 
     with TVisLoading.Create(Self) do
       try
-        ProgressTitle('Suppression des packages...');
+        ProgressTitle('Suppression des paquets...');
         N := GridGroups.GetFirstSelected;
         i := 0;
         while (N <> nil) and not StopRequired do
@@ -1147,7 +1149,7 @@ begin
           N := GridGroups.GetNextSelected(N);
           ProgressStep(i, GridGroups.SelectedCount);
         end;
-        ProgressTitle('Mise à jour de la liste des groupes');
+        ProgressTitle('Mise à jour de la liste des paquets');
         ActPackagesUpdate.Execute;
         ProgressTitle('Affichage');
         ActSearchGroups.Execute;
@@ -1419,6 +1421,17 @@ begin
     res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)',[args]));
     ShowMessage(IntToStr(res.AsArray.Length)+' postes modifiés');
   end;
+end;
+
+procedure TVisWaptGUI.ActSearchExternalPackageExecute(Sender: TObject);
+var
+  expr: UTF8String;
+  packages: ISuperObject;
+begin
+  expr := format('waptdevutils.update_tis_repo(r"%s","%s")',
+    [AppIniFilename, EdSearch1.Text]);
+  packages := DMPython.RunJSON(expr);
+  GridExternalPackages.Data := packages;
 end;
 
 procedure TVisWaptGUI.ActSearchGroupsExecute(Sender: TObject);
@@ -1741,17 +1754,6 @@ begin
   finally
     inifile.Free;
   end;
-end;
-
-procedure TVisWaptGUI.butSearchExternalPackagesClick(Sender: TObject);
-var
-  expr: UTF8String;
-  packages: ISuperObject;
-begin
-  expr := format('waptdevutils.update_tis_repo(r"%s","%s")',
-    [AppIniFilename, EdSearch1.Text]);
-  packages := DMPython.RunJSON(expr);
-  GridExternalPackages.Data := packages;
 end;
 
 procedure TVisWaptGUI.cbMaskSystemComponentsClick(Sender: TObject);

@@ -6,6 +6,11 @@ object VisHostsUpgrade: TVisHostsUpgrade
   Caption = 'Lancer la mises à jour des postes'
   ClientHeight = 383
   ClientWidth = 683
+  Font.CharSet = ANSI_CHARSET
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Pitch = fpVariable
+  Font.Quality = fqDraft
   OnCreate = FormCreate
   Position = poMainFormCenter
   LCLVersion = '1.3'

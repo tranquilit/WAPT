@@ -1,18 +1,23 @@
 object visPrivateKeyAuth: TvisPrivateKeyAuth
   Left = 291
-  Height = 115
+  Height = 100
   Top = 264
   Width = 311
   BorderStyle = bsDialog
   Caption = 'Authentification Clé privée'
-  ClientHeight = 115
+  ClientHeight = 100
   ClientWidth = 311
+  Font.CharSet = ANSI_CHARSET
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Pitch = fpVariable
+  Font.Quality = fqDraft
   Position = poScreenCenter
   LCLVersion = '1.3'
   object edPasswordKey: TEdit
-    Left = 178
+    Left = 180
     Height = 21
-    Top = 50
+    Top = 38
     Width = 116
     EchoMode = emPassword
     OnKeyPress = edPasswordKeyKeyPress
@@ -22,7 +27,7 @@ object visPrivateKeyAuth: TvisPrivateKeyAuth
   object Panel1: TPanel
     Left = 0
     Height = 30
-    Top = 85
+    Top = 70
     Width = 311
     Align = alBottom
     BevelOuter = bvNone
@@ -53,25 +58,25 @@ object visPrivateKeyAuth: TvisPrivateKeyAuth
     end
   end
   object laPassword: TLabel
-    Left = 16
+    Left = 18
     Height = 13
-    Top = 53
+    Top = 41
     Width = 137
     Caption = 'Mot de passe de la clé privé:'
     ParentColor = False
   end
   object Label1: TLabel
-    Left = 14
+    Left = 16
     Height = 13
-    Top = 28
+    Top = 16
     Width = 22
     Caption = 'Clé: '
     ParentColor = False
   end
   object laKeyPath: TLabel
-    Left = 38
+    Left = 40
     Height = 13
-    Top = 28
+    Top = 16
     Width = 48
     Caption = 'laKeyPath'
     ParentColor = False

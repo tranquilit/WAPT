@@ -6,6 +6,11 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   Caption = 'Créer le waptsetup.exe'
   ClientHeight = 184
   ClientWidth = 535
+  Font.CharSet = ANSI_CHARSET
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Pitch = fpVariable
+  Font.Quality = fqDraft
   OnCloseQuery = FormCloseQuery
   Position = poMainFormCenter
   ShowHint = True

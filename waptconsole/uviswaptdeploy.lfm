@@ -8,10 +8,15 @@ object viswaptdeploy: Tviswaptdeploy
   ClientWidth = 639
   Constraints.MinHeight = 418
   Constraints.MinWidth = 427
+  Font.CharSet = ANSI_CHARSET
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Pitch = fpVariable
+  Font.Quality = fqDraft
   OnCreate = FormCreate
   Position = poMainFormCenter
   ShowHint = True
-  LCLVersion = '1.1'
+  LCLVersion = '1.3'
   object Panel1: TPanel
     Left = 0
     Height = 122
@@ -201,6 +206,7 @@ object viswaptdeploy: Tviswaptdeploy
       TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toEditOnClick]
       TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
       TreeOptions.SelectionOptions = [toExtendedFocus]
+      WantTabs = True
       OnInitNode = ProgressGridInitNode
       OnMeasureItem = ProgressGridMeasureItem
     end
