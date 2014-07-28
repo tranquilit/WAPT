@@ -2725,6 +2725,11 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Autoriser des paquets '
       OnExecute = ActRemoveConflictsExecute
     end
+    object ActHelp: TAction
+      Caption = 'Obtenir de l''aide sur internet'
+      OnExecute = ActHelpExecute
+      ShortCut = 112
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
@@ -2822,6 +2827,9 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem26: TMenuItem
       Caption = '?'
+      object MenuItem48: TMenuItem
+        Action = ActHelp
+      end
       object MenuItem27: TMenuItem
         Caption = 'A propos'
         OnClick = MenuItem27Click

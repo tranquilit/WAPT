@@ -19,6 +19,7 @@ type
     ActCancelRunningTask: TAction;
     ActForgetPackages: TAction;
     ActAddConflicts: TAction;
+    ActHelp: TAction;
     ActRemoveConflicts: TAction;
     ActSearchSoftwares: TAction;
     ActRemoveDepends: TAction;
@@ -124,6 +125,7 @@ type
     MenuItem45: TMenuItem;
     MenuItem46: TMenuItem;
     MenuItem47: TMenuItem;
+    MenuItem48: TMenuItem;
     PageControl1: TPageControl;
     Panel11: TPanel;
     Panel12: TPanel;
@@ -244,6 +246,7 @@ type
     procedure ActEditHostPackageExecute(Sender: TObject);
     procedure ActForgetPackagesExecute(Sender: TObject);
     procedure ActGotoHostExecute(Sender: TObject);
+    procedure ActHelpExecute(Sender: TObject);
     procedure ActPackageRemoveExecute(Sender: TObject);
     procedure ActRDPExecute(Sender: TObject);
     procedure ActRDPUpdate(Sender: TObject);
@@ -342,9 +345,9 @@ type
 
     procedure HostPagesChange(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
-    procedure MenuItem27Click(Sender: TObject);
     procedure MainPagesChange(Sender: TObject);
     procedure InstallPackage(Grid: TSOGrid);
+    procedure MenuItem27Click(Sender: TObject);
     procedure TimerTasksTimer(Sender: TObject);
   private
     function FilterSoftwares(softs: ISuperObject): ISuperObject;
@@ -370,7 +373,7 @@ implementation
 uses LCLIntf, LCLType,IniFiles, uvisprivatekeyauth, uvisloading, tisstrings, soutils,
   waptcommon, tiscommon, uVisCreateKey, uVisCreateWaptSetup, uvisOptionIniFile,
   dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
-  uvisgroupchoice, uviseditgroup, uviswaptdeploy, uvishostsupgrade,
+  uvisgroupchoice, uviseditgroup, uviswaptdeploy, uvishostsupgrade, uVisAPropos,
   PythonEngine,Clipbrd,RegExpr;
 
 {$R *.lfm}
@@ -650,6 +653,12 @@ begin
       Free;
     end;
 
+end;
+
+procedure TVisWaptGUI.MenuItem27Click(Sender: TObject);
+begin
+  With TVisApropos.Create(Self) do
+    ShowModal;
 end;
 
 procedure TVisWaptGUI.TimerTasksTimer(Sender: TObject);
@@ -1259,6 +1268,11 @@ procedure TVisWaptGUI.ActGotoHostExecute(Sender: TObject);
 begin
   EdSearchHost.SetFocus;
   EdSearchHost.SelectAll;
+end;
+
+procedure TVisWaptGUI.ActHelpExecute(Sender: TObject);
+begin
+  OpenDocument('http://dev.tranquil.it/index.php/WAPT_-_apt-get_pour_Windows');
 end;
 
 procedure TVisWaptGUI.ActPackageRemoveExecute(Sender: TObject);
@@ -2216,11 +2230,6 @@ var
   package:AnsiString;
 begin
   //package:=;
-end;
-
-procedure TVisWaptGUI.MenuItem27Click(Sender: TObject);
-begin
-  ShowMessage('Tranquil IT Systems: http://www.tranquil-it-systems.fr/'+#13#10+'Version Waptconsole:'+GetApplicationVersion+#13#10+'Version Wapt-get:'+GetApplicationVersion(WaptgetPath));
 end;
 
 procedure CopyMenu(menuItemSource: TPopupMenu; menuItemTarget: TMenuItem);
