@@ -19,13 +19,13 @@ type
     ActForgetPackages: TAction;
     ActAddConflicts: TAction;
     ActHelp: TAction;
-    ActSearchExternalPackage: TAction;
+    ActImportFromRepo: TAction;
+    ActImportFromFile: TAction;
     ActRemoveConflicts: TAction;
     ActSearchSoftwares: TAction;
     ActRemoveDepends: TAction;
     ActRDP: TAction;
     ActVNC: TAction;
-    ActPackageInstall: TAction;
     ActPackageRemove: TAction;
     ActLocalhostInstall: TAction;
     ActEditpackage: TAction;
@@ -55,26 +55,22 @@ type
     ActUpdateWaptGetINI: TAction;
     actRefresh: TAction;
     actQuit: TAction;
-    ActPackageGroupAdd: TAction;
+    ActAddGroup: TAction;
     ActPackageDuplicate: TAction;
-    ActRegisterHost: TAction;
     ActSearchHost: TAction;
     ActLocalhostUpgrade: TAction;
     ActPackagesUpdate: TAction;
     ActLocalhostRemove: TAction;
     ActSearchPackage: TAction;
     ActionList1: TActionList;
+    BitBtn1: TBitBtn;
+    BitBtn2: TBitBtn;
     btAddGroup: TBitBtn;
     butInitWapt: TBitBtn;
     butRun: TBitBtn;
     butSearchPackages: TBitBtn;
-    butSearchExternalPackages: TBitBtn;
     butSearchGroups: TBitBtn;
-    ButHostRegister: TBitBtn;
-    ButHostUpgrade: TBitBtn;
-    ButPackageDuplicate: TBitBtn;
     ButCancelHostTask: TBitBtn;
-    ButExtRepoChange: TBitBtn;
     ButHostSearch: TBitBtn;
     ButPackagesUpdate: TBitBtn;
     cbSearchDMI: TCheckBox;
@@ -110,6 +106,7 @@ type
     MemoGroupeDescription: TMemo;
     MenuItem19: TMenuItem;
     MenuItem20: TMenuItem;
+    MenuItem25: TMenuItem;
     MenuItem28: TMenuItem;
     MenuItem33: TMenuItem;
     MenuItem34: TMenuItem;
@@ -127,6 +124,7 @@ type
     MenuItem46: TMenuItem;
     MenuItem47: TMenuItem;
     MenuItem48: TMenuItem;
+    OpenDialogWapt: TOpenDialog;
     PageControl1: TPageControl;
     Panel11: TPanel;
     Panel12: TPanel;
@@ -144,13 +142,11 @@ type
     EdModelName: TEdit;
     EdUpdateDate: TEdit;
     EdUser: TEdit;
-    EdSearch1: TEdit;
     EdSearchHost: TEdit;
     EdRun: TEdit;
     EdSearch: TEdit;
     GridHosts: TSOGrid;
     GridhostInventory: TVirtualJSONInspector;
-    GridExternalPackages: TSOGrid;
     ImageList1: TImageList;
     Label1: TLabel;
     pgGroups: TTabSheet;
@@ -162,7 +158,6 @@ type
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
     TimerTasks: TTimer;
-    urlExternalRepo: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -188,7 +183,6 @@ type
     MenuItem22: TMenuItem;
     MenuItem23: TMenuItem;
     MenuItem24: TMenuItem;
-    MenuItem25: TMenuItem;
     MenuItem26: TMenuItem;
     MenuItem27: TMenuItem;
     MenuItem29: TMenuItem;
@@ -206,15 +200,13 @@ type
     HostPages: TPageControl;
     Panel1: TPanel;
     Panel10: TPanel;
-    Panel3: TPanel;
+    PanDebug: TPanel;
     Panel4: TPanel;
     Panel7: TPanel;
-    Panel8: TPanel;
     Panel9: TPanel;
     PopupMenuHosts: TPopupMenu;
     PopupMenuPackages: TPopupMenu;
     PopupMenuEditDepends: TPopupMenu;
-    PopupMenuPackagesTIS: TPopupMenu;
     Splitter1: TSplitter;
     Splitter2: TSplitter;
     Splitter4: TSplitter;
@@ -225,7 +217,6 @@ type
     pgPackages: TTabSheet;
     pgSoftwares: TTabSheet;
     pgHostPackage: TTabSheet;
-    pgExternalRepo: TTabSheet;
     testedit: TSynEdit;
     jsonlog: TVirtualJSONInspector;
     GridPackages: TSOGrid;
@@ -248,12 +239,13 @@ type
     procedure ActForgetPackagesExecute(Sender: TObject);
     procedure ActGotoHostExecute(Sender: TObject);
     procedure ActHelpExecute(Sender: TObject);
+    procedure ActImportFromFileExecute(Sender: TObject);
+    procedure ActImportFromRepoExecute(Sender: TObject);
     procedure ActPackageRemoveExecute(Sender: TObject);
     procedure ActRDPExecute(Sender: TObject);
     procedure ActRDPUpdate(Sender: TObject);
     procedure ActRemoveConflictsExecute(Sender: TObject);
     procedure ActRemoveDependsExecute(Sender: TObject);
-    procedure ActSearchExternalPackageExecute(Sender: TObject);
     procedure ActSearchGroupsExecute(Sender: TObject);
     procedure ActHostUpgradeExecute(Sender: TObject);
     procedure ActHostUpgradeUpdate(Sender: TObject);
@@ -268,30 +260,25 @@ type
     procedure actHostSelectAllExecute(Sender: TObject);
     procedure ActLocalhostInstallExecute(Sender: TObject);
     procedure ActLocalhostInstallUpdate(Sender: TObject);
-    procedure ActPackageDuplicateExecute(Sender: TObject);
-    procedure ActPackageGroupAddExecute(Sender: TObject);
+    procedure ActAddGroupExecute(Sender: TObject);
     procedure actQuitExecute(Sender: TObject);
     procedure actRefreshExecute(Sender: TObject);
-    procedure ActRegisterHostExecute(Sender: TObject);
     procedure ActLocalhostRemoveExecute(Sender: TObject);
     procedure ActLocalhostRemoveUpdate(Sender: TObject);
     procedure ActSearchHostExecute(Sender: TObject);
     procedure ActSearchPackageExecute(Sender: TObject);
     procedure ActPackagesUpdateExecute(Sender: TObject);
     procedure ActUpdateWaptGetINIExecute(Sender: TObject);
-    procedure ActLocalhostUpgradeExecute(Sender: TObject);
     procedure ActVNCExecute(Sender: TObject);
     procedure ActVNCUpdate(Sender: TObject);
     procedure ActWAPTLocalConfigExecute(Sender: TObject);
     procedure cbMaskSystemComponentsClick(Sender: TObject);
     procedure cbSearchAllChange(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
-    procedure ButExtRepoChangeClick(Sender: TObject);
     procedure CheckBoxMajChange(Sender: TObject);
     procedure CheckBoxMajClick(Sender: TObject);
     procedure CheckBox_errorChange(Sender: TObject);
     procedure EdRunKeyPress(Sender: TObject; var Key: char);
-    procedure EdSearch1KeyPress(Sender: TObject; var Key: char);
     procedure EdSearchHostKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure EdSoftwaresFilterChange(Sender: TObject);
@@ -371,11 +358,12 @@ var
 
 implementation
 
-uses LCLIntf, LCLType,IniFiles, uvisprivatekeyauth, uvisloading, tisstrings, soutils,
-  waptcommon, tiscommon, uVisCreateKey, uVisCreateWaptSetup, uvisOptionIniFile,
-  dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
-  uvisgroupchoice, uviseditgroup, uviswaptdeploy, uvishostsupgrade, uVisAPropos,
-  PythonEngine,Clipbrd,RegExpr;
+uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, uvisloading, tisstrings,
+  soutils, waptcommon, tiscommon, uVisCreateKey, uVisCreateWaptSetup,
+  uvisOptionIniFile, dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig,
+  uvischangepassword, uvisgroupchoice, uviseditgroup, uviswaptdeploy,
+  uvishostsupgrade, uVisAPropos, uVisImportPackage, PythonEngine, Clipbrd,
+  RegExpr;
 
 {$R *.lfm}
 
@@ -390,12 +378,6 @@ begin
   else
     DMPython.PythonEng.ExecString('logger.setLevel(logging.WARNING)');
 
-end;
-
-procedure TVisWaptGUI.ButExtRepoChangeClick(Sender: TObject);
-begin
-  ActWAPTLocalConfigExecute(self);
-  urlExternalRepo.Caption := 'Url: ' + WaptExternalRepo;
 end;
 
 procedure TVisWaptGUI.CheckBoxMajChange(Sender: TObject);
@@ -417,15 +399,6 @@ procedure TVisWaptGUI.EdRunKeyPress(Sender: TObject; var Key: char);
 begin
   if Key = #13 then
     ActEvaluate.Execute;
-end;
-
-procedure TVisWaptGUI.EdSearch1KeyPress(Sender: TObject; var Key: char);
-begin
-  if Key = #13 then
-  begin
-    EdSearch1.SelectAll;
-    butSearchExternalPackages.Click;
-  end;
 end;
 
 procedure TVisWaptGUI.EdSearchHostKeyPress(Sender: TObject; var Key: char);
@@ -459,7 +432,6 @@ begin
   Gridhosts.SaveSettingsToIni(Appuserinipath) ;
   GridPackages.SaveSettingsToIni(Appuserinipath) ;
   GridGroups.SaveSettingsToIni(Appuserinipath) ;
-  GridExternalPackages.SaveSettingsToIni(Appuserinipath) ;
   GridHostPackages.SaveSettingsToIni(Appuserinipath) ;
   GridHostSoftwares.SaveSettingsToIni(Appuserinipath) ;
 
@@ -674,88 +646,8 @@ begin
   ActLocalhostInstall.Enabled := False;
 end;
 
-procedure TVisWaptGUI.ActPackageDuplicateExecute(Sender: TObject);
-var
-  target,sourceDir: string;
-  package,uploadResult, FileName, FileNames, listPackages,Sources,aDir: ISuperObject;
 
-begin
-  if not FileExists(GetWaptPrivateKeyPath) then
-  begin
-    ShowMessage('la clé privée n''existe pas: ' + GetWaptPrivateKeyPath);
-    exit;
-  end;
-
-  listPackages := TSuperObject.create(stArray);
-  for package in GridExternalPackages.SelectedRows do
-    listPackages.AsArray.Add(package.S['package']+'(='+package.S['version']+')');
-  //calcule liste de tous les fichiers wapt nécessaires y compris les dépendances
-  FileNames := DMPython.RunJSON(format('waptdevutils.get_packages_filenames(r"%s".decode(''utf8''),"%s")',
-        [AppIniFilename,Join(',',listPackages)]));
-
-  if MessageDlg('Confirmer la duplication', format('Etes vous sûr de vouloir dupliquer'#13#10'%s'#13#10' dans votre dépot ?', [Join(',', FileNames)]),
-        mtConfirmation, mbYesNoCancel, 0) <> mrYes then
-    Exit;
-
-  if not DirectoryExists(AppLocalDir + 'cache') then
-    mkdir(AppLocalDir + 'cache');
-
-
-  with  TVisLoading.Create(Self) do
-  try
-    Sources := TSuperObject.Create(stArray) ;
-    //Téléchargement en batchs
-    for Filename in FileNames do
-    begin
-      Application.ProcessMessages;
-      ProgressTitle(
-        'Téléchargement en cours de ' + Filename.AsString);
-      target := AppLocalDir + 'cache\' + Filename.AsString;
-      try
-        if not FileExists(target) then
-          Wget(WaptExternalRepo + '/' + FileName.AsString,
-            target, ProgressForm, @updateprogress, True);
-      except
-        ShowMessage('Téléchargement annulé');
-        exit;
-      end;
-    end;
-
-    for Filename in FileNames do
-    begin
-      ProgressTitle('Duplication de '+FileName.AsString);
-      Application.ProcessMessages;
-      sourceDir := DMPython.RunJSON(
-        Format('waptdevutils.duplicate_from_external_repo(r"%s",r"%s")',
-        [AppIniFilename,AppLocalDir + 'cache\' + Filename.AsString])).AsString;
-      sources.AsArray.Add('r"'+sourceDir+'"');
-    end;
-
-    ProgressTitle('Dépôt sur le serveur WAPT en cours pour '+IntToStr(Sources.AsArray.Length)+' paquets');
-    Application.ProcessMessages;
-
-    uploadResult := DMPython.RunJSON(
-      format('mywapt.build_upload([%s],private_key_passwd=r"%s",wapt_server_user=r"%s",wapt_server_passwd=r"%s",inc_package_release=False)',
-      [Join(',',sources) , privateKeyPassword, waptServerUser, waptServerPassword]),
-      jsonlog);
-    if (uploadResult <> Nil) and (uploadResult.AsArray.length=Sources.AsArray.Length) then
-    begin
-      ActPackagesUpdate.Execute;
-      ShowMessage(format('%s dupliqué(s) avec succès.', [ Join(',', listPackages)])) ;
-      MainPages.ActivePage := pgPrivateRepo;
-      ModalResult := mrOk;
-    end
-    else
-      ShowMessage('Erreur lors de la duplication.');
-  finally
-    for aDir in Sources do
-      DeleteDirectory(copy(aDir.AsString,3,length(aDir.AsString)-3),False);
-    Free;
-  end;
-
-end;
-
-procedure TVisWaptGUI.ActPackageGroupAddExecute(Sender: TObject);
+procedure TVisWaptGUI.ActAddGroupExecute(Sender: TObject);
 begin
   CreateGroup('agroup', ActAdvancedMode.Checked);
   ActPackagesUpdate.Execute;
@@ -784,11 +676,6 @@ begin
   finally
     Screen.Cursor := crDefault;
   end;
-end;
-
-procedure TVisWaptGUI.ActRegisterHostExecute(Sender: TObject);
-begin
-  DMPython.RunJSON('mywapt.register_computer()', jsonlog);
 end;
 
 procedure TVisWaptGUI.ActPackageEdit(Sender: TObject);
@@ -987,8 +874,7 @@ procedure TVisWaptGUI.ActAdvancedModeExecute(Sender: TObject);
 begin
   ActAdvancedMode.Checked := not ActAdvancedMode.Checked;
   pgSources.TabVisible := ActAdvancedMode.Checked;
-  Panel3.Visible := ActAdvancedMode.Checked;
-  ActRegisterHost.Visible:=ActAdvancedMode.Checked;
+  PanDebug.Visible := ActAdvancedMode.Checked;
 end;
 
 procedure TVisWaptGUI.ActCancelRunningTaskExecute(Sender: TObject);
@@ -1277,6 +1163,73 @@ begin
   OpenDocument('http://dev.tranquil.it/index.php/WAPT_-_apt-get_pour_Windows');
 end;
 
+procedure TVisWaptGUI.ActImportFromFileExecute(Sender: TObject);
+var
+  i:integer;
+  target,sourceDir: string;
+  package,uploadResult, listPackages,Sources,aDir: ISuperObject;
+
+begin
+  if not FileExists(GetWaptPrivateKeyPath) then
+  begin
+    ShowMessage('la clé privée n''existe pas: ' + GetWaptPrivateKeyPath);
+    exit;
+  end;
+
+  if OpenDialogWapt.Execute then
+  begin
+    if MessageDlg('Confirmer l''import', format('Etes vous sûr de vouloir importer'#13#10'%s'#13#10' dans votre dépôt ?', [OpenDialogWapt.Files.Text]),
+          mtConfirmation, mbYesNoCancel, 0) <> mrYes then
+      Exit;
+
+    with  TVisLoading.Create(Self) do
+    try
+      Sources := TSuperObject.Create(stArray) ;
+      for i :=0 to OpenDialogWapt.Files.Count-1 do
+      begin
+        ProgressTitle('import de '+OpenDialogWapt.Files[i]);
+        ProgressStep(i,OpenDialogWapt.Files.Count-1);
+        Application.ProcessMessages;
+        sourceDir := DMPython.RunJSON(
+          Format('waptdevutils.duplicate_from_external_repo(r"%s",r"%s")',
+          [AppIniFilename,OpenDialogWapt.Files[i]])).AsString;
+        sources.AsArray.Add('r"'+sourceDir+'"');
+      end;
+
+      ProgressTitle('Dépôt sur le serveur WAPT en cours pour '+IntToStr(Sources.AsArray.Length)+' paquets');
+      Application.ProcessMessages;
+
+      uploadResult := DMPython.RunJSON(
+        format('mywapt.build_upload([%s],private_key_passwd=r"%s",wapt_server_user=r"%s",wapt_server_passwd=r"%s",inc_package_release=False)',
+        [Join(',',sources) , privateKeyPassword, waptServerUser, waptServerPassword]),
+        VisWaptGUI.jsonlog);
+      if (uploadResult <> Nil) and (uploadResult.AsArray.length=Sources.AsArray.Length) then
+      begin
+        ShowMessage(format('%s importé(s) avec succès.', [ Join(',', Sources)])) ;
+        ModalResult := mrOk;
+        ActPackagesUpdate.Execute;
+        ActSearchPackage.Execute;
+      end
+      else
+        ShowMessage('Erreur lors de l''import.');
+    finally
+      Free;
+    end;
+  end;
+end;
+
+procedure TVisWaptGUI.ActImportFromRepoExecute(Sender: TObject);
+begin
+    With TVisImportPackage.Create(Self) do
+    begin
+      if ShowModal = mrOK then
+      begin
+        ActPackagesUpdate.Execute;
+        ActSearchPackage.Execute;
+      end;
+    end;
+end;
+
 procedure TVisWaptGUI.ActPackageRemoveExecute(Sender: TObject);
 var
   sel,package,res:ISuperObject;
@@ -1421,17 +1374,6 @@ begin
     res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)',[args]));
     ShowMessage(IntToStr(res.AsArray.Length)+' postes modifiés');
   end;
-end;
-
-procedure TVisWaptGUI.ActSearchExternalPackageExecute(Sender: TObject);
-var
-  expr: UTF8String;
-  packages: ISuperObject;
-begin
-  expr := format('waptdevutils.update_tis_repo(r"%s","%s")',
-    [AppIniFilename, EdSearch1.Text]);
-  packages := DMPython.RunJSON(expr);
-  GridExternalPackages.Data := packages;
 end;
 
 procedure TVisWaptGUI.ActSearchGroupsExecute(Sender: TObject);
@@ -1658,12 +1600,6 @@ end;
 procedure TVisWaptGUI.ActUpdateWaptGetINIExecute(Sender: TObject);
 begin
   DMPython.RunJSON('mywapt.load_config()', jsonlog);
-  urlExternalRepo.Caption := 'Url: ' + WaptExternalRepo;
-end;
-
-procedure TVisWaptGUI.ActLocalhostUpgradeExecute(Sender: TObject);
-begin
-  DMPython.RunJSON('mywapt.upgrade()', jsonlog);
 end;
 
 procedure TVisWaptGUI.ActVNCExecute(Sender: TObject);
@@ -1695,9 +1631,7 @@ begin
     ActPackagesUpdate.Execute;
     GridPackages.Clear;
     GridGroups.Clear;
-    GridExternalPackages.Clear;
     MainPagesChange(MainPages);
-
   end;
 end;
 
@@ -1708,12 +1642,8 @@ begin
   Result := False;
   inifile := TIniFile.Create(AppIniFilename);
   try
-
     with TVisWAPTConfig.Create(self) do
       try
-        //wapt := VarPyth.VarPythonEval('mywapt') ;
-        //conf := wapt.config;
-
         edrepo_url.Text := inifile.ReadString('global', 'repo_url', '');
         edhttp_proxy.Text := inifile.ReadString('global', 'http_proxy', '');
         //edrepo_url.text := VarPythonAsString(conf.get('global','repo_url'));
@@ -1879,7 +1809,6 @@ begin
   Gridhosts.LoadSettingsFromIni(Appuserinipath);
   GridPackages.LoadSettingsFromIni(Appuserinipath) ;
   GridGroups.LoadSettingsFromIni(Appuserinipath) ;
-  GridExternalPackages.LoadSettingsFromIni(Appuserinipath) ;
   GridHostPackages.LoadSettingsFromIni(Appuserinipath) ;
   GridHostSoftwares.LoadSettingsFromIni(Appuserinipath) ;
 
@@ -2261,12 +2190,6 @@ begin
     CopyMenu(PopupMenuPackages, MenuItem24);
     if GridPackages.Data = nil then
       ActSearchPackage.Execute;
-  end
-  else if MainPages.ActivePage = pgExternalRepo then
-  begin
-    CopyMenu(PopupMenuPackagesTIS, MenuItem24);
-    if GridExternalPackages.Data = nil then
-      butSearchExternalPackages.Click;
   end
   else if MainPages.ActivePage = pgGroups then
   begin

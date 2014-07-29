@@ -12,7 +12,7 @@ uses
   waptcommon, dmwaptpython, uVisEditPackage,
   uviscreatewaptsetup, uvislogin, uvisprivatekeyauth,
   uvisloading, uviswaptconfig, uvischangepassword, uviswaptdeploy, 
-uvishostsupgrade, uVisAPropos;
+uvishostsupgrade, uVisAPropos, uVisImportPackage;
 
 {$R *.res}
 
@@ -22,6 +22,7 @@ begin
   Application.CreateForm(TDMPython, DMPython);
   Application.CreateForm(TVisWaptGUI, VisWaptGUI);
   Application.CreateForm(TVisApropos, VisApropos);
+  Application.CreateForm(TVisImportPackage, VisImportPackage);
   Application.Run;
 end.
 

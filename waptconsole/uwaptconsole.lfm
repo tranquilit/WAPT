@@ -1,11 +1,13 @@
 object VisWaptGUI: TVisWaptGUI
   Left = 352
-  Height = 618
+  Height = 600
   Top = 135
-  Width = 883
+  Width = 800
   Caption = 'Console WAPT'
-  ClientHeight = 599
-  ClientWidth = 883
+  ClientHeight = 581
+  ClientWidth = 800
+  Constraints.MinHeight = 600
+  Constraints.MinWidth = 800
   Font.CharSet = ANSI_CHARSET
   Font.Height = -11
   Font.Name = 'Tahoma'
@@ -19,27 +21,27 @@ object VisWaptGUI: TVisWaptGUI
   LCLVersion = '1.3'
   object MainPages: TPageControl
     Left = 0
-    Height = 476
+    Height = 458
     Top = 0
-    Width = 883
-    ActivePage = pgPrivateRepo
+    Width = 800
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
       Caption = 'Inventaire'
-      ClientHeight = 450
-      ClientWidth = 875
+      ClientHeight = 432
+      ClientWidth = 792
       object Panel10: TPanel
         Left = 0
         Height = 54
         Top = 0
-        Width = 875
+        Width = 792
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 54
-        ClientWidth = 875
+        ClientWidth = 792
         TabOrder = 1
         object EdSearchHost: TEdit
           Left = 60
@@ -206,9 +208,9 @@ object VisWaptGUI: TVisWaptGUI
       end
       object GridHosts: TSOGrid
         Left = 0
-        Height = 396
+        Height = 378
         Top = 54
-        Width = 298
+        Width = 215
         OnGetText = GridHostsGetText
         Align = alClient
         ChangeDelay = 50
@@ -382,8 +384,8 @@ object VisWaptGUI: TVisWaptGUI
         OnHeaderDblClick = GridHostsHeaderDblClick
       end
       object HostPages: TPageControl
-        Left = 303
-        Height = 396
+        Left = 220
+        Height = 378
         Top = 54
         Width = 572
         ActivePage = pgPackages
@@ -394,13 +396,13 @@ object VisWaptGUI: TVisWaptGUI
         object pgPackages: TTabSheet
           AnchorSideTop.Side = asrBottom
           Caption = 'Résumé'
-          ClientHeight = 370
+          ClientHeight = 352
           ClientWidth = 564
           object GridHostPackages: TSOGrid
             AnchorSideTop.Control = Panel9
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 158
+            Height = 140
             Top = 122
             Width = 564
             Align = alBottom
@@ -772,7 +774,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel5: TPanel
             Left = 0
             Height = 90
-            Top = 280
+            Top = 262
             Width = 564
             Align = alBottom
             BevelOuter = bvNone
@@ -1471,8 +1473,8 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
       object Splitter4: TSplitter
-        Left = 298
-        Height = 396
+        Left = 215
+        Height = 378
         Top = 54
         Width = 5
         Align = alRight
@@ -1481,16 +1483,16 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgGroups: TTabSheet
       Caption = 'Groupes'
-      ClientHeight = 450
-      ClientWidth = 875
+      ClientHeight = 432
+      ClientWidth = 792
       object GridGroups: TSOGrid
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Side = asrBottom
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 420
+        Height = 402
         Top = 30
-        Width = 875
+        Width = 792
         OnGetText = GridGroupsGetText
         Align = alClient
         Color = clWhite
@@ -1564,11 +1566,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 30
         Top = 0
-        Width = 875
+        Width = 792
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 875
+        ClientWidth = 792
         TabOrder = 1
         object butSearchGroups: TBitBtn
           Left = 148
@@ -1619,7 +1621,6 @@ object VisWaptGUI: TVisWaptGUI
           Height = 21
           Top = 4
           Width = 136
-          OnKeyPress = EdSearch1KeyPress
           TabOrder = 1
         end
         object btAddGroup: TBitBtn
@@ -1627,7 +1628,7 @@ object VisWaptGUI: TVisWaptGUI
           Height = 25
           Top = 2
           Width = 116
-          Action = ActPackageGroupAdd
+          Action = ActAddGroup
           Glyph.Data = {
             36040000424D3604000000000000360000002800000010000000100000000100
             2000000000000004000064000000640000000000000000000000000000000000
@@ -1670,13 +1671,13 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgPrivateRepo: TTabSheet
       Caption = 'Dépôt privé'
-      ClientHeight = 450
-      ClientWidth = 875
+      ClientHeight = 432
+      ClientWidth = 792
       object GridPackages: TSOGrid
         Left = 0
-        Height = 420
+        Height = 402
         Top = 30
-        Width = 579
+        Width = 496
         OnGetText = GridGroupsGetText
         Align = alClient
         Color = clWhite
@@ -1751,8 +1752,8 @@ object VisWaptGUI: TVisWaptGUI
         OnMeasureItem = GridGroupsMeasureItem
       end
       object Splitter3: TSplitter
-        Left = 579
-        Height = 420
+        Left = 496
+        Height = 402
         Top = 30
         Width = 6
         Align = alRight
@@ -1762,11 +1763,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 30
         Top = 0
-        Width = 875
+        Width = 792
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 875
+        ClientWidth = 792
         TabOrder = 0
         object EdSearch: TEdit
           Left = 4
@@ -1821,7 +1822,7 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 1
         end
         object ButPackagesUpdate: TBitBtn
-          Left = 256
+          Left = 252
           Height = 25
           Top = 2
           Width = 200
@@ -1864,265 +1865,12 @@ object VisWaptGUI: TVisWaptGUI
           }
           TabOrder = 2
         end
-        object ButHostUpgrade: TBitBtn
-          Left = 460
+        object BitBtn1: TBitBtn
+          Left = 456
           Height = 25
           Top = 2
-          Width = 152
-          Action = ActLocalhostUpgrade
-          Glyph.Data = {
-            36040000424D3604000000000000360000002800000010000000100000000100
-            2000000000000004000064000000640000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            00000000000000000000000000000000000000000000000000005D615F00595D
-            5BB0616562AC666A68AE5C5655B15C514EB5594E4BB8574C48BB534B49BD5458
-            56BA565A58B7575C59B55B5F5DB2595F5DAF535755B45A5E5C004D535000B1B5
-            B4FFB9BBBBFF9A9999FFADC2C1FF8BC7CCFF86C2C7FF83C1C6FF90B7B9FF9190
-            8DFF8C908EFF8C908FFF898D8BFF8E9491FF959B98FF5B605E0000000000BABF
-            BDCE5E5E5EFF000000FF26ADB6FF65D8E3FF6FDCE8FE80E0EAFE5EC4CCFE0246
-            48FE1A1410FF161410FF000000FF494C4BFFABB2AFD02F36380000000000E6E8
-            E400818582B234888BF376F4FFDB129AA7E514A3B0FF63E4F1FEC7FCFFFF43EB
-            FCFF02767FF4080000A300000095797E7D9ADFE8E40000000000969B9900827A
-            7885639899B552BCBEF2799391DB87726DE57A7F7AFF0EAAB9FE27E2F6FF48E6
-            F6FF62E0EAF469A4A2A3A19F9C94878C8A9E797E7D8A989D9B00656B6900C1C1
-            C0FFB5CECCFF8BAAA9FFE8E3E3FFE8EAEAFFFFF7F5FE4FBAC5FE1CDCEFFF2AE0
-            F3FE50E3F0FF44ACB2FFDEDFDFFFE3E5E5FFC4C7C6FF6067640060666300C8CB
-            C9FFB7BEBCFFB5BDBCFECED3D1FFD1D5D3FEE9DBD9FF3EB0BCFE13DBF0FF20DC
-            F0FE6AEFFCFF3ABCCAFECED1D2FEE2E4E4FFCDCFCEFF5C63600059605E00CED1
-            CFFF0D293AFF0F2837FE072738FF022336FE14B9C8FF3BBDCBFE4BE4F5FF10DA
-            F0FE5EEBF8FF4ECCDAFE18CDDEFF075365FED5CDCCFF565D5B00575F5D00CED1
-            D0FF102A38FF354347FE264453FF1C4259FE148098FF85F7FFFE3FE6F8FF04D8
-            F0FE0FDAF1FF42F3FFFE2DB3C5FF062C42FED4D3D1FF555C5A00585F5D00CDD0
-            D0FF102A3AFF35454CFE294857FF254D64FE1F4767FF117B95FE56E7F3FF0EDC
-            F3FE2AE5F8FF1BA6B9FE1D4664FF0C2D42FED3D4D2FF555D5B00585F5D00CBCE
-            CEFF18313EFF565D5EFE495D67FF476271FE45687CFF425F77FE24879BFF5AEE
-            FBFE22AFC1FF33566EFE406072FF123144FED1D2D1FF565D5B00585F5E00C8CC
-            CCFF243945FF827A71FE737573FF6F7879FE6A777CFF65757DFE606672FF368C
-            98FE4E626EFF4E5F68FE525E62FF173140FFCFD2D2FF565D5B0058605E00D1D3
-            D2FF163343FE283D49FF253B47FF233A47FF203947FF1E3846FF1B3746FF1F30
-            3FFF183342FF17313FFF18303DFF143041FED6D8D7FF565D5B006B716E00ACAF
-            AEFFD0D2D1FFC7CBCBFFC8CBCBFFC8CCCCFFC9CCCCFFCACDCCFFCBCDCDFFCBCE
-            CDFFCCCFCEFFCDD0CFFFCDD0D0FFD5D7D6FFB1B5B3FF676D6B00000000006A70
-            6E00585F5E00585F5E00585F5D00585F5D00585F5D00575F5D00575E5C00575E
-            5C00575E5C00575E5C00565E5C00575E5B00686E6C0000000000
-          }
-          TabOrder = 3
-        end
-        object ButHostRegister: TBitBtn
-          Left = 624
-          Height = 25
-          Top = 2
-          Width = 224
-          Action = ActRegisterHost
-          Glyph.Data = {
-            36040000424D3604000000000000360000002800000010000000100000000100
-            2000000000000004000064000000640000000000000000000000B06F4000AB66
-            3CB7A45D38FA9E543400FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00BA7C4AB7BF87
-            5CFFB97E56FFA7623AFA9F5735009B51320095492F008F432B007F7B79007979
-            79D2747474FF707070FF6B6B6BFF676767FF636363FF606060D7C4885AFAC692
-            68FFCDA280FFC59670FFB67B53FFAB6A46FFA35E3DFF9C5235FF955947FFC4C0
-            BFFFD9D4D3FFD4CFCEFFD3CECDFFD3CECDFFE8E5E5FF646464FFCD956A00C68C
-            60FAD1A683FFCC9F7BFFCB9E7BFFC79974FFC3926CFFBE8D65FFA86945FFAE88
-            7BFFBDB5B3FFB9B1B0FFB9B1AEFFB7AFAEFFD3CECDFF686868FFFFFFFF00CE98
-            7000D0A17CFFD7AE8FFFC9976FFFC38F66FFBD885CFFC08C64FFBC8861FF8453
-            3EFFBAB1B0FFBBB4B2FFBAB2B1FFB9B1AFFFD4CFCEFF6D6D6DFFFFFFFF00D7A5
-            7F00D7A682FFDCB699FFD0A17DFFCB9A73FFCFA482FFC79974FF896C58FF8787
-            87FF787675FFBDB6B4FFBBB4B3FFBBB3B1FFD4D0CFFF737373FFFFFFFF00E0AE
-            8C00DDAE8CFFE2BEA4FFD8AB89FFD9B394FFCF9F7AFFA47A5BFF939393FFA9A9
-            A9FF656464FFBDB7B5FF3BA142FF379437FFD6D1D0FF787878FFFFFFFF00E6B8
-            9800E3B493FFE8C6ADFFE3C0A6FFDBB08FFFB58F74FFD7C9BFFF989898FF7574
-            74FFC0BAB9FFC1BAB9FFA0C8A4FF50A956FFD7D3D1FF7E7E7EFFFFFFFF00ECC0
-            A100E7BB9CDAE8C0A3FFE5BFA3FFB59D8BFFAEAEAEFFA6A6A6FFD9D8D8FFC5BE
-            BDFFC4BEBCFFC3BCBBFFC1BBB9FFC0B9B8FFD7D3D3FF848484FFFFFFFF00FFFF
-            FF00EDC3A500EABE9FAFCEAF9AF8B7B7B7FFBCBCBCFFACACACFFDDDCDCFFC7C1
-            C0FF929191FF8F8F8FFF8D8D8DFF8A8A8AFFD9D5D4FF8B8B8BFFFFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00ECC0A100AEAEAEFFB9B9B9FFE1E1E1FFDDDDDDFFC8C3
-            C2FFC8C2C1FFC6C1BFFFC5BFBEFFC3BDBBFFDAD6D5FF919191FFFFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00CBCBCBFFE9E9E9FFE9E9E9FFE2E1E1FFCBC6
-            C4FF989797FF969595FF949393FF929191FFDBD7D6FF989898FFFFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00CFCFCF00CBCBCBE4DFDFDFFFEAEAEAFFCFCA
-            C9FFCBC6C5FFCAC4C3FFC8C3C1FFC7C1C1FFDCD9D8FF9E9E9EFFFFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00D0D0D000CCCCCCABDCDCDCFFE6E3
-            E3FFE1DEDCFFDFDCDCFFDFDCDBFFDEDBDBFFEEECECFFA5A5A5FFFFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00CDCDCD9FC9C9
-            C9FBC4C4C4FFC0C0C0FFBBBBBBFFB6B6B6FFB0B0B0FFABABABA7FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
-          }
-          TabOrder = 4
-        end
-      end
-      object Panel2: TPanel
-        Left = 585
-        Height = 420
-        Top = 30
-        Width = 290
-        Align = alRight
-        Alignment = taRightJustify
-        BevelOuter = bvNone
-        ClientHeight = 420
-        ClientWidth = 290
-        TabOrder = 2
-        object MemoGroupeDescription: TMemo
-          Left = 0
-          Height = 300
-          Top = 120
-          Width = 290
-          Align = alBottom
-          TabOrder = 0
-        end
-      end
-    end
-    object pgExternalRepo: TTabSheet
-      Caption = 'Dépôt Externe'
-      ClientHeight = 450
-      ClientWidth = 875
-      object GridExternalPackages: TSOGrid
-        Left = 0
-        Height = 420
-        Top = 30
-        Width = 875
-        OnGetText = GridGroupsGetText
-        Align = alClient
-        Color = clWhite
-        Header.AutoSizeIndex = -1
-        Header.Columns = <        
-          item
-            MaxWidth = 100
-            Position = 0
-            Text = 'Section'
-            PropertyName = 'section'
-          end        
-          item
-            MaxWidth = 400
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-            Position = 1
-            Text = 'Paquet'
-            Width = 292
-            PropertyName = 'package'
-          end        
-          item
-            MaxWidth = 200
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
-            Position = 2
-            Text = 'Status'
-            PropertyName = 'status'
-          end        
-          item
-            MaxWidth = 200
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-            Position = 3
-            Text = 'Version'
-            Width = 97
-            PropertyName = 'version'
-          end        
-          item
-            MaxWidth = 400
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-            Position = 4
-            Text = 'Description'
-            Width = 216
-            PropertyName = 'description'
-          end        
-          item
-            MaxWidth = 400
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-            Position = 5
-            Text = 'Dépendances'
-            Width = 242
-            PropertyName = 'depends'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 6
-            Text = 'Installé par'
-            PropertyName = 'explicit_by'
-          end>
-        Header.DefaultHeight = 17
-        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-        Header.SortColumn = 1
-        Header.Style = hsFlatButtons
-        PopupMenu = PopupMenuPackagesTIS
-        TabOrder = 0
-        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
-        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
-        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
-        TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
-        WantTabs = True
-        OnDblClick = ActPackageDuplicateExecute
-        OnPaintText = GridPackagesPaintText
-        OnInitNode = GridGroupsInitNode
-        OnMeasureItem = GridGroupsMeasureItem
-      end
-      object Panel8: TPanel
-        Left = 0
-        Height = 30
-        Top = 0
-        Width = 875
-        Align = alTop
-        BevelOuter = bvNone
-        ClientHeight = 30
-        ClientWidth = 875
-        TabOrder = 1
-        object EdSearch1: TEdit
-          Left = 4
-          Height = 21
-          Top = 2
-          Width = 136
-          OnKeyPress = EdSearch1KeyPress
-          TabOrder = 0
-        end
-        object butSearchExternalPackages: TBitBtn
-          Left = 148
-          Height = 25
-          Top = 2
-          Width = 88
-          Action = ActSearchExternalPackage
-          Glyph.Data = {
-            36040000424D3604000000000000360000002800000010000000100000000100
-            2000000000000004000064000000640000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            0000000000000000000000000000000000000000000000000000000000000000
-            000000000000000000003E3E3E007D7D7D007777770007070700000000000000
-            0000000000000000000044444400AAAAAA00CCCCCC00C9C9C9009F9F9F003A3A
-            3A0000000000303030007C7C7CADC2C2C2FDB4B4B4D458585800000000000000
-            000000000000000000005F5F5F00C9C9C900E5E5E500E3E3E300C0C0C0005353
-            53003E3E3E007F7F7FC2A0A0A0FFB1B1B1FFA4A4A4C454545400000000000000
-            00008D8D8D00262525007A7A7A00939495009596970079797A001A1A1A005A5A
-            5A00888888D0A2A2A2FF979797FF7A7A7AC258585800A7A7A700000000009595
-            950086868600B2B3B300CACACAD0D3CFCCF1D4D0CCF4CCCBCADFA9AAABA49A9A
-            9AD8A2A2A2FF939393FD757575AE505050006F6F6F0027272700909090008080
-            8000BCBCBD97D6CFC9FACFB49EE4C7A180BCC69F7EB4CCAE95D4D6CAC1FAD4D4
-            D4FF9D9D9DF771717197474747005F5F5F000000000000000000EAEAEA00B0B1
-            B200D4CDC6F7C6A07FCCC6926382CD9B6B00CE9C6D00C9956500C2956FACD8CA
-            BEFAAEAFAFCB555555006B6B6B0000000000000000000000000075767700C5C5
-            C4BACCB099ECCD9E739EDAB49180D9B38F00D2A47900CF9F7100CC996A00C6A1
-            81CDCCC8C5EF979899009D9D9D0000000000000000000000000094969800C8C4
-            C0DCC8A282D9E5CAB1B9EDDBCBB4EFDFD0A2EAD6C284D6AD8700D09F7100C495
-            6BB2CFC4BBFDADAFB000C6C7C70089898900000000000000000096989A00C7C1
-            BDDDCAA686DBECD8C6CEF2E4D7CEF3E7DBC6F2E5D9BEE8D0BBA6D2A4798EC595
-            6AB8D0C4BAFCB0B2B300CDCDCD008989890000000000000000007D7F8000C5C3
-            C1BECAAB91EAE9D3BFD6F5ECE2E3F5ECE3DEF3E7DCD5EEDDCDCCD9B18DAEC59A
-            75D1D1CBC6F5A6A7A800ACACAC008A8A8A000000000000000000FFFFFF00B7B8
-            B900D0C2B6F6D1AF92DDF2E5D9E4F8EFE8EAF4E8DDE1ECD8C6D4CEA47FC8D0BA
-            A7F4C6C6C7BD8484840092929200000000000000000000000000999999008B8C
-            8D00C4C4C3A2D0C0B3F8CEAF94E8D9BCA3DED8BA9FDACDA98ADDCFB9A7F6CECC
-            CADCA5A5A600C9CACA007B7B7B0000000000000000000000000000000000ACAD
-            AE0095969600BFBFC080CDC8C4D8CFC2B8F0CFC1B6F2D0C8C3E8C5C5C5AEA4A5
-            A600000000007171710000000000000000000000000000000000000000000000
-            000074757500646465009EA0A100B0B3B500B2B4B600A5A7A8007E7E7F00C5C6
-            C8001D1D1D000000000000000000000000000000000000000000
-          }
-          TabOrder = 1
-        end
-        object ButPackageDuplicate: TBitBtn
-          Left = 248
-          Height = 25
-          Top = 2
-          Width = 103
-          Action = ActPackageDuplicate
+          Width = 167
+          Action = ActImportFromRepo
           Glyph.Data = {
             36040000424D3604000000000000360000002800000010000000100000000100
             2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
@@ -2159,45 +1907,84 @@ object VisWaptGUI: TVisWaptGUI
             B100B0B0B000A9A9A900ADAAAC0094A79600418E4A007BA47F0073AE78003CB2
             4B0096A79A00ABA7AB00A9A9A900A9A9A900ADADAD00B1B1B100
           }
-          OnClick = ActPackageDuplicateExecute
-          TabOrder = 2
+          TabOrder = 3
         end
-        object urlExternalRepo: TLabel
-          AnchorSideRight.Control = ButExtRepoChange
-          Left = 775
-          Height = 13
-          Top = 9
-          Width = 20
-          Anchors = [akTop, akRight]
-          BorderSpacing.Right = 5
-          Caption = 'Url: '
-          ParentColor = False
-        end
-        object ButExtRepoChange: TBitBtn
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideRight.Control = Panel8
-          AnchorSideRight.Side = asrBottom
-          Left = 800
+        object BitBtn2: TBitBtn
+          Left = 628
           Height = 25
           Top = 2
-          Width = 75
-          Anchors = [akTop, akRight]
-          Caption = 'Changer'
-          OnClick = ButExtRepoChangeClick
-          TabOrder = 3
+          Width = 159
+          Action = ActImportFromFile
+          Glyph.Data = {
+            36040000424D3604000000000000360000002800000010000000100000000100
+            2000000000000004000064000000640000000000000000000000858A8800858A
+            88FF858A88FF858A88FF858A88FF858A88FF858A88FF858A88FF858A88FF858A
+            88FF858A88FF858A88FF858A88FF858A88FF858A88FF858A8800858A88FFEDEF
+            EFFFEDEFEFFFEDEFEFFFEDEFEEFFEDEFEFFFECEFEFFFECEFEEFF21A460FF85C9
+            A6FFEDEEEEFFEDEFEFFFEDEFEEFFEDEFEEFFECEEEEFF858A88FF858A88FFEFF0
+            F0FFEFF0F0FFEEF1F1FFEEF0F0FFEEF1F0FFEEF0F0FFEEF0F0FF069A4EFF069A
+            4EFFA3D4BBFFEFF0F0FFEEF0F0FFEEF0F0FFEEF0EFFF858A88FF858A88FFF0F2
+            F1FFF0F2F1FFF0F2F1FF8FCDADFF27A565FF069A4EFF069A4EFF069A4EFF499E
+            73FF069A4EFF77C49DFFEFF1F1FFEFF1F1FFEFF1F1FF858A88FF858A88FFF2F3
+            F3FF8BCCABFF119E55FF069A4EFF0CC869FF16D273FF4BE295FF78E2ACFF4BE2
+            95FF499E73FF069A4EFF72C29AFFF1F3F2FFF0F2F2FF858A88FF858A88FFC4E2
+            D3FF069A4EFF30855AFF4BE295FF4BE295FF34E28AFF16D273FF0CC869FF0CC8
+            69FF4BE295FF499E73FF069A4EFF51B682FFF2F3F4FF858A88FF858A88FF25A6
+            64FF30855AFF4BE295FF16D273FF0CC869FF0CC869FF0CC869FF0CC869FF0CC8
+            69FF0CC869FF4BE295FF499E73FF069A4EFF74C49BFF858A88FF858A88FF069A
+            4EFF4BE295FF34E28AFF16D273FF34E28AFF78E2ACFF78E2ACFF78E2ACFF0CC8
+            69FF4BE295FF499E73FF069A4EFF60BD8DFFF5F6F6FF858A88FF858A88FF069A
+            4EFF78E2ACFF34E28AFF78E2ACFF499E73FF069A4EFF069A4EFF069A4EFF4BE2
+            95FF30855AFF069A4EFF61BD8EFFF7F7F8FFF6F8F7FF858A88FF858A88FF0F9D
+            54FF4BE295FF78E2ACFF30855AFF069A4EFF44B27AFFF9FAF9FF069A4EFF3085
+            5AFF069A4EFF7BC8A1FFF8F9F9FFF8F9F9FFF8F9F9FF858A88FF858A88FF29A8
+            67FF30855AFF78E2ACFF069A4EFF8DCFAEFFFAFAFBFFFAFBFBFF069A4EFF069A
+            4EFFB3DEC8FFFAFBFBFFFAFAFAFFFAFAFAFFFAFAFAFF858A88FF858A88FF77C7
+            9EFF069A4EFF4BE295FF069A4EFF8ED0AEFFFCFCFBFFFBFCFCFF22A562FFF3F6
+            F9FFFCFCFCFFFBFBFBFFFBFCFBFFFBFBFCFFFBFCFCFF858A88FF858A88FFFDFD
+            FDFF39AE72FF069A4EFF30855AFF069A4EFF77C79EFFFDFDFDFFFDFDFDFFFDFD
+            FDFFFDFDFDFFFDFDFDFFFDFDFDFFFCFDFDFFFDFDFDFF858A88FF858A88FFFFFE
+            FFFFFBFCFDFF55BA86FF069A4EFF069A4EFF069A4EFF71C59BFFF3F6F9FFFAFB
+            FCFFFEFEFFFFFEFFFEFFFEFFFEFFFFFFFEFFFEFEFEFF858A88FF858A88FFFFFF
+            FFFFFFFFFFFFFFFFFFFFEBF1F7FF65C092FF39AE72FF39AE72FF6FC498FFF5F8
+            FBFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF858A88FF858A8800858A
+            88FF858A88FF858A88FF858A88FF858A88FF858A88FF858A88FF858A88FF858A
+            88FF858A88FF858A88FF858A88FF858A88FF858A88FF878C8A00
+          }
+          TabOrder = 4
+        end
+      end
+      object Panel2: TPanel
+        Left = 502
+        Height = 402
+        Top = 30
+        Width = 290
+        Align = alRight
+        Alignment = taRightJustify
+        BevelOuter = bvNone
+        ClientHeight = 402
+        ClientWidth = 290
+        TabOrder = 2
+        object MemoGroupeDescription: TMemo
+          Left = 0
+          Height = 300
+          Top = 102
+          Width = 290
+          Align = alBottom
+          TabOrder = 0
         end
       end
     end
     object pgSources: TTabSheet
       Caption = 'Sources'
-      ClientHeight = 450
-      ClientWidth = 875
+      ClientHeight = 432
+      ClientWidth = 792
       TabVisible = False
       inline testedit: TSynEdit
         Left = 0
-        Height = 416
+        Height = 398
         Top = 34
-        Width = 875
+        Width = 792
         Align = alClient
         Font.Height = -13
         Font.Name = 'Courier New'
@@ -2715,11 +2502,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 34
         Top = 0
-        Width = 875
+        Width = 792
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 34
-        ClientWidth = 875
+        ClientWidth = 792
         TabOrder = 1
         object butInitWapt: TBitBtn
           Left = 4
@@ -2749,32 +2536,32 @@ object VisWaptGUI: TVisWaptGUI
       end
     end
   end
-  object Panel3: TPanel
+  object PanDebug: TPanel
     Left = 0
     Height = 118
-    Top = 481
-    Width = 883
+    Top = 463
+    Width = 800
     Align = alBottom
     ClientHeight = 118
-    ClientWidth = 883
+    ClientWidth = 800
     TabOrder = 1
     Visible = False
     object Panel7: TPanel
       Left = 1
       Height = 116
       Top = 1
-      Width = 881
+      Width = 798
       Align = alClient
       BevelOuter = bvNone
       Caption = 'Panel7'
       ClientHeight = 116
-      ClientWidth = 881
+      ClientWidth = 798
       TabOrder = 1
       object MemoLog: TMemo
         Left = 0
         Height = 116
         Top = 0
-        Width = 270
+        Width = 187
         Align = alClient
         Lines.Strings = (
           ''
@@ -2782,7 +2569,7 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 0
       end
       object jsonlog: TVirtualJSONInspector
-        Left = 275
+        Left = 192
         Height = 116
         Top = 0
         Width = 606
@@ -2810,7 +2597,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.SelectionOptions = [toExtendedFocus]
       end
       object Splitter2: TSplitter
-        Left = 270
+        Left = 187
         Height = 116
         Top = 0
         Width = 5
@@ -2833,8 +2620,8 @@ object VisWaptGUI: TVisWaptGUI
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 476
-    Width = 883
+    Top = 458
+    Width = 800
     Align = alBottom
     ResizeAnchor = akBottom
   end
@@ -2899,18 +2686,11 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActPackageEdit
       OnUpdate = ActEditpackageUpdate
     end
-    object ActPackagesUpdate: TAction
-      Category = 'Host'
-      Caption = 'Mise à jour des paquets disponibles'
-      ImageIndex = 25
-      OnExecute = ActPackagesUpdateExecute
-    end
     object ActLocalhostUpgrade: TAction
       Category = 'Host'
       Caption = 'Mise à jour du système'
       Enabled = False
       ImageIndex = 29
-      OnExecute = ActLocalhostUpgradeExecute
     end
     object ActExecCode: TAction
       Caption = 'Exécuter le code source python'
@@ -2951,12 +2731,11 @@ object VisWaptGUI: TVisWaptGUI
       ImageIndex = 10
       OnExecute = ActEditHostPackageExecute
     end
-    object ActRegisterHost: TAction
+    object ActPackagesUpdate: TAction
       Category = 'Host'
-      Caption = 'Enregistrer l''ordinateur sur le serveur Wapt'
-      ImageIndex = 26
-      OnExecute = ActRegisterHostExecute
-      Visible = False
+      Caption = 'Mise à jour des paquets disponibles'
+      ImageIndex = 25
+      OnExecute = ActPackagesUpdateExecute
     end
     object ActHostsDelete: TAction
       Category = 'hosts'
@@ -2981,13 +2760,12 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'packages'
       Caption = 'Dupliquer'
       ImageIndex = 17
-      OnExecute = ActPackageDuplicateExecute
     end
-    object ActPackageGroupAdd: TAction
+    object ActAddGroup: TAction
       Category = 'Groups'
       Caption = 'Nouveau groupe'
       ImageIndex = 11
-      OnExecute = ActPackageGroupAddExecute
+      OnExecute = ActAddGroupExecute
     end
     object ActChangePassword: TAction
       Category = 'Tools'
@@ -3021,24 +2799,26 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActHostWaptUpgrade: TAction
       Category = 'hosts'
-      Caption = 'Mettre à jour WAPT'
+      Caption = 'Mettre à jour le client WAPT'
+      Hint = 'Lance waptsetup.exe en mode silencieux depuis <url-depot>/waptsetup.exe'
       OnExecute = ActHostWaptUpgradeExecute
       OnUpdate = ActHostWaptUpgradeUpdate
     end
     object ActHostUpgrade: TAction
       Category = 'hosts'
       Caption = 'Appliquer les mises à jour'
-      ImageIndex = 4
+      ImageIndex = 29
       OnExecute = ActHostUpgradeExecute
       OnUpdate = ActHostUpgradeUpdate
     end
     object ActAddPackageGroup: TAction
       Category = 'hosts'
       Caption = 'Ajouter un paquet ou un groupe de paquets'
-      ImageIndex = 5
+      ImageIndex = 11
       OnExecute = ActAddPackageGroupExecute
     end
     object ActSearchGroups: TAction
+      Category = 'Groups'
       Caption = 'Rechercher'
       ImageIndex = 28
       OnExecute = ActSearchGroupsExecute
@@ -3050,6 +2830,7 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActEditGroupExecute
     end
     object ActDeleteGroup: TAction
+      Category = 'Groups'
       Caption = 'Supprimer le groupe'
       ImageIndex = 6
       OnExecute = ActDeleteGroupExecute
@@ -3063,12 +2844,9 @@ object VisWaptGUI: TVisWaptGUI
     object ActPackageRemove: TAction
       Category = 'Host'
       Caption = 'Désinstaller le paquet'
+      Hint = 'Force la désinstallation à distance d''un paquet'
       ImageIndex = 31
       OnExecute = ActPackageRemoveExecute
-    end
-    object ActPackageInstall: TAction
-      Category = 'Host'
-      Caption = 'Installer un paquet'
     end
     object ActVNC: TAction
       Category = 'Host'
@@ -3116,6 +2894,7 @@ object VisWaptGUI: TVisWaptGUI
     object ActRemoveConflicts: TAction
       Category = 'hosts'
       Caption = 'Autoriser des paquets '
+      ImageIndex = 12
       OnExecute = ActRemoveConflictsExecute
     end
     object ActHelp: TAction
@@ -3124,10 +2903,17 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActHelpExecute
       ShortCut = 112
     end
-    object ActSearchExternalPackage: TAction
-      Caption = 'Rechercher'
-      ImageIndex = 28
-      OnExecute = ActSearchExternalPackageExecute
+    object ActImportFromRepo: TAction
+      Category = 'packages'
+      Caption = 'Importer depuis un dépôt'
+      ImageIndex = 17
+      OnExecute = ActImportFromRepoExecute
+    end
+    object ActImportFromFile: TAction
+      Category = 'packages'
+      Caption = 'Importer depuis un fichier'
+      ImageIndex = 19
+      OnExecute = ActImportFromFileExecute
     end
   end
   object PopupMenuPackages: TPopupMenu
@@ -3388,47 +3174,14 @@ object VisWaptGUI: TVisWaptGUI
         C9FBC4C4C4FFC0C0C0FFBBBBBBFFB6B6B6FFB0B0B0FFABABABA7
       }
     end
+    object MenuItem34: TMenuItem
+      Action = ActHostUpgrade
+    end
     object MenuItem43: TMenuItem
       Caption = '-'
     end
     object MenuItem35: TMenuItem
       Action = ActAddPackageGroup
-      Bitmap.Data = {
-        36040000424D3604000000000000360000002800000010000000100000000100
-        2000000000000004000064000000640000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000100FF005F15FF007F27FF007E27FF0051
-        10FF000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000200FF27A956FF40DB8EFF40DB8DFF2393
-        46FF000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000200FF0FC161FF1CF090FF1CEF90FF0EA4
-        4CFF000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000200FF00BC53FF00E677FF00E677FF009F
-        40FF000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000200FF02B54BFF06DE6CFF07DE6DFF0399
-        3BFF000000000000000000000000000000000000000000000000000A01FF0053
-        11FF005917FF005C19FF005D1AFF005D1AFF16BF56FF2DDB78FF2ADA76FF10AE
-        47FF005D1AFF005E1AFF005C19FF005A16FF005210FF000700FF001A03FF0FAA
-        45FF11B855FF11BF5CFF11C35FFF10C35FFF2ACF6AFF3BD675FF38D574FF23CB
-        66FF0EC25EFF0EC25DFF0EBD59FF0DB650FF09A63CFF001301FF011902FF59C2
-        67FF69CF7DFF67D280FF65D483FF61D583FF4CD276FF49D275FF46D173FF50D3
-        79FF56D27BFF54CF75FF52CB6EFF4FC665FF34B345FF001201FF001701FF52BA
-        5BFF6BCA78FF69CC7BFF67CD7DFF65CF7EFF5BCF78FF57CF76FF54CE74FF59CE
-        75FF5BCB75FF59C96FFF57C56AFF55C163FF36AC3FFF001101FF000200FF031F
-        05FF052208FF052208FF052208FF052309FF32A445FF65CD79FF62CC76FF298F
-        39FF052308FF052308FF052308FF052307FF021E04FF000100FF000000000000
-        0000000000000000000000000000000100FF379B42FF73CC7DFF70CC7AFF2C83
-        35FF000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000100FF3D9842FF80CD83FF7ECC80FF3281
-        36FF000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000100FF449947FF8ED18EFF8CD08BFF3781
-        3BFF000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000100FF317236FF65A168FF63A067FF2860
-        2DFF000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000
-      }
     end
     object MenuItem41: TMenuItem
       Action = ActRemoveDepends
@@ -3474,87 +3227,12 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem46: TMenuItem
       Action = ActAddConflicts
-      Bitmap.Data = {
-        36040000424D3604000000000000360000002800000010000000100000000100
-        2000000000000004000064000000640000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        000000000000000000000E5613000F5714002270310025783981257739812270
-        3200115816001159160000000000000000000000000000000000000000000000
-        00000000000000000000176220001B63230026914EF3169A4FFF15994FFF2591
-        4EF61D6626001B66260000000000000000000000000000000000000000000000
-        000000000000000000001B6927001E6928001F9D52F507A74FFF07A64EFF1E9B
-        51F7206A2A001E6B2A0000000000000000000000000000000000000000001058
-        15000F5613001A6424001E6928002370300020A958F908B656FF08B455FF20A6
-        57FA2470300020692A001C6425000F5613001057150000000000000000002772
-        3400226B2C003E9B5FF32BA45CF721AB5AF916BE60FE09C45CFF09C15BFF16B9
-        5DFE20A556F91E9A50F7278D4CF31E682900236E300000000000000000002F7B
-        3F00287134004DAE74FC41BF7AFF2EC471FF1DCB6AFF13D268FF0DCC62FF0ABE
-        5AFF08B154FF07A24CFF1C954EFC226D2F002876390000000000000000002F7B
-        3F002871340050B077FC4DC382FF47CB82FF40D381FF37D87FFF2DD277FF25C5
-        6CFF1EB763FF19A959FF269956FC236E300029763A0000000000000000002772
-        3500226B2C004BA068F34EB075F64BB776F94ACB82FE3FCF7FFF39CC7AFF3BC2
-        76FE37AC67F931A15EF7329154F41F682900246F310000000000000000001058
-        15000F5613001E662600226B2C002571310049B574F943C67EFF3CC378FF3FB0
-        6DFA2570310021692A001D6425000F5613001057150000000000000000000000
-        000000000000000000001D6A28001F6929004AAC70F547BD7CFF40B976FF40A7
-        69F7216A2B00216C2C0000000000000000000000000000000000000000000000
-        00000000000000000000186221001B6323004AA069F34EB078FF48AD74FF439D
-        64F61E6627001D67270000000000000000000000000000000000000000000000
-        000000000000000000000F5613000F5614002A733700327D4381317C42812973
-        3700115816001159170000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000
-      }
     end
     object MenuItem45: TMenuItem
       Action = ActRemoveConflicts
     end
     object MenuItem47: TMenuItem
       Caption = '-'
-    end
-    object MenuItem34: TMenuItem
-      Action = ActHostUpgrade
-      Bitmap.Data = {
-        36040000424D3604000000000000360000002800000010000000100000000100
-        2000000000000004000064000000640000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        00000000000000000000000201FF000100FF0000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000200FF020B03FF010A02FF010702FF000301FF00000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000002
-        00FF041807FF011803FF021504FF020F04FF010702FF000301FF000100FF0000
-        0000000000000000000000000000000000000000000000000000000000000418
-        06FF022C03FF012703FF022105FF031A05FF030E05FF010602FF000300FF0000
-        000000000000000100FF00000000000000000000000000000000000400FF073E
-        0CFF003F00FF003801FF023104FF07290EFF010803FF00000000000000000000
-        0000010301FF000400FF000100FF000000000000000000000000011502FF085D
-        0DFF005500FF004B00FF06450CFF031706FF0000000000000000000000000000
-        0000000100FF000300FF00000000000000000000000000000000062A0AFF0678
-        09FF026E02FF016201FF095710FF000401FF0000000000000000000000000000
-        000000000000000100FF000100FF00000000000000000000000007340CFF1697
-        18FF108C10FF067E06FF0C6E13FF010501FF00000000000000000C2414FF34C5
-        58FF32BD52FF29B144FF27B040FF1EAD37FF24B13EFF0C3215FF032605FF28B1
-        2EFF22B123FF19A71AFF0B9710FF07330DFF000000000000000000000000145F
-        24FF2EC250FF2FC44DFF39C650FF37C44AFF35C647FF145125FF010901FF2BA0
-        33FF33C438FF34C339FF13B915FF139C1CFF08300EFF010602FF010602FF0C36
-        15FF25AF3DFF21C03AFF3FC954FF41C952FF45CB56FF165528FF000000001357
-        1AFF47CA50FF44CB4DFF45CB4DFF24C026FF0AA70EFF099110FF0F9919FF15B1
-        22FF1ABD2AFF43CB55FF4DCF5EFF4CCE5CFF51D060FF165629FF00000000010D
-        02FF329F3FFF57D467FF55D465FF56D466FF4AD056FF32C73AFF32C63AFF41CD
-        4DFF56D467FF58D56BFF5BD66DFF60D772FF5ED76FFF17552AFF000000000000
-        0000041C07FF3CAF4EFF6BDF81FF67DF7FFF67DF7FFF67DF7FFF67DF7FFF67DF
-        7FFF67DF7FFF6CDF83FF4BBC66FF24793CFF6CDD84FF17552CFF000000000000
-        000000000000020F04FF21792FFF5CD576FF7DE798FF86EBA3FF88ECA4FF81E8
-        9CFF66D983FF2B7F41FF041208FF000000002D603CFF2B4333FF000000000000
-        0000000000000000000000000000020D04FF1A4422FF416B4AFF4A6F53FF244A
-        2DFF040F07FF0000000000000000000000000000000000000000
-      }
     end
     object MenuItem33: TMenuItem
       Action = ActHostWaptUpgrade
@@ -3597,6 +3275,9 @@ object VisWaptGUI: TVisWaptGUI
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00CDCDCD9FC9C9
         C9FBC4C4C4FFC0C0C0FFBBBBBBFFB6B6B6FFB0B0B0FFABABABA7
       }
+    end
+    object MenuItem25: TMenuItem
+      Caption = '-'
     end
     object MenuItem37: TMenuItem
       Action = ActVNC
@@ -3674,50 +3355,6 @@ object VisWaptGUI: TVisWaptGUI
         B5FFB4B8B8FFB6BBBCFFC5CFD1FFB3B7B8FFF0FBFFFFF0FBFFFFE0E9ECFFCED4
         D6FFCED4D6FFCED4D6FFCDD4D6FFCDD3D5FFCDD3D5FFCAD2D4FFCAD2D3FFC9D1
         D3FFC8D1D2FFC7D0D1FFC6CFD1FFCED5D7FFF0FBFFFFF0FBFFFF
-      }
-    end
-  end
-  object PopupMenuPackagesTIS: TPopupMenu
-    Images = ActionsImages
-    left = 148
-    top = 150
-    object MenuItem25: TMenuItem
-      Action = ActPackageDuplicate
-      Bitmap.Data = {
-        36040000424D3604000000000000360000002800000010000000100000000100
-        2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
-        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00398341000A71190005640C002A73
-        2E00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00B6B7B7DFB6B6B6E8B7B7B7E6B5B7B6E62B7232AD094A0DEB05460CEE2161
-        27B1B4B5B4E6B6B7B7E6B6B7B7E6B6B6B6E7B6B7B7E7B1B1B100FFFFFF00FFFF
-        FF00B7B8B8F3F4EFF4FFCED6CFFF417E46FF034206FF004A00FF006904FF0672
-        10FF3A7A40FFCFD2CFFFF5F0F4FFF0F0F0FFBEBEBEFFACACAC00FFFFFF00FFFF
-        FF00B9B9BAF1D8E9DAFF3B7A40FF0A4E0FFF087210FF03940EFF02A40FFF05AC
-        11FF099515FF3B8140FFD3DAD3FFFFFFFFFFC0C0C0FFABABAB00FFFFFF00FFFF
-        FF00739477BE306E35FF206424FF329538FF2DB339FF29BA37FF19BB28FF23C3
-        33FF24D133FF18B424FF28742DFFBECFBEFFC0C1C1FFB0AFB000FFFFFF002682
-        2E002D7534D95A925DFF6DB670FF56C25DFF58CB61FF56D160FF31D040FF38DE
-        48FF48E756FF55F863FF41D94EFF3E8A43FF96AE97FF9A9D9A00237A2C00FFFF
-        FF002C7735FF82DA86FF82DA86FF82DA86FF80DC85FF75E27DFF41E851FF5AF4
-        6AFF80E489FF82DA86FF82DA86FF82DA86FF16641FFF0C330F0017601B00FFFF
-        FF00162A17DF4D7D50FF4D7651FF7BAB7FFFACF2B0FF8AF091FF53FD63FF99F4
-        A3FF809F81FF629A66FF66A26BFF59AA5EFF597D5CFF102B1000FFFFFF00FFFF
-        FF00B2B2B3F1FFFFFFFFFEF7FDFF528452FFB9FABBFF9BFAA1FF73FF81FFB9F4
-        C2FF759A75FFFFFBFFFFFFFFFFFFFFFFFFFFC2C1C3FF4A604A00FFFFFF00FFFF
-        FF00B9B9BAF1FCFCFCFFEBECEBFF3C8A3EFFB8F6BBFFA3FCA8FF84FF90FFC2F4
-        C9FF6D966EFFF8F8F8FFFDFDFDFFFFFFFFFFBFC0C0FFB3B1B300A2ACA300B8B4
-        B700B7B8B8F1FCFCFCFFECEFEDFF2E9832FFB1F1B3FFA4F8A8FF76FF83FFB3F3
-        BBFF709671FFFAF9F9FFFEFEFEFFFFFFFFFFBFC0C0FFABABAB00B5B3B500AFAF
-        AF00B8B8B8F1FDFDFDFFF0F1F0FF35B53CFFA7ECA9FF98EF9EFF5CFC6CFF98F4
-        A2FF779877FFFDFBFBFFFFFFFFFFFFFFFFFFBFC0C0FFABABAB00B1B1B100AFAF
-        AF00B7B8B8F1FDFDFDFFF3F4F3FF41C147FF98E49CFF80E187FF49EE58FF8BF5
-        95FF81A081FFFCFCFCFFFDFDFDFFFFFFFFFFBFC0C0FFABABAB00B1B1B100AFAF
-        AF00B8B8B8F1FFFFFFFFFFFFFFFF6ED576FF8CD892FF5FD267FF36DC45FF81EC
-        8CFF9CB79CFFFFFFFFFFFFFFFFFFFFFFFFFFC0C1C1FFABABAB00B1B1B100B0B0
-        B000B7B7B7F1BFC0C0FFBFC0C0FFA8CEACFF9BCBA0FF7FC584FF71C879FF95D2
-        9CFFB0BFB0FFBEBFBFFFBEBFBFFFBFC0C0FFBBBCBCFFAEAEAE00B1B1B100B1B1
-        B100B0B0B000A9A9A900ADAAAC0094A79600418E4A007BA47F0073AE78003CB2
-        4B0096A79A00ABA7AB00A9A9A900A9A9A900ADADAD00B1B1B100
       }
     end
   end
@@ -3858,10 +3495,10 @@ object VisWaptGUI: TVisWaptGUI
   end
   object PopupMenuGroups: TPopupMenu
     Images = ActionsImages
-    left = 148
-    top = 396
+    left = 144
+    top = 360
     object MenuItem36: TMenuItem
-      Action = ActPackageGroupAdd
+      Action = ActAddGroup
       Bitmap.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
         2000000000000004000064000000640000000000000000000000000000000000
@@ -3980,10 +3617,10 @@ object VisWaptGUI: TVisWaptGUI
   end
   object PopupHostPackages: TPopupMenu
     Images = ActionsImages
-    left = 256
-    top = 396
+    left = 144
+    top = 424
     object MenuItem20: TMenuItem
-      Action = ActPackageInstall
+      Caption = 'Installer un paquet'
       OnClick = MenuItem20Click
     end
     object MenuItem19: TMenuItem
@@ -5228,5 +4865,13 @@ object VisWaptGUI: TVisWaptGUI
       0000000000000000000000000000000000000000000000000000271304C02612
       04C3000000000000000000000000
     }
+  end
+  object OpenDialogWapt: TOpenDialog
+    Title = 'Sélectionner un fichier WAPT'
+    DefaultExt = '.wapt'
+    Filter = 'Paquets WAPT|*.wapt|Tous les fichiers|*.*'
+    Options = [ofAllowMultiSelect, ofFileMustExist, ofEnableSizing, ofViewDetail]
+    left = 448
+    top = 208
   end
 end

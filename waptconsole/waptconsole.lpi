@@ -62,7 +62,7 @@
         <PackageName Value="LCL"/>
       </Item9>
     </RequiredPackages>
-    <Units Count="17">
+    <Units Count="18">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -193,6 +193,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisAPropos"/>
       </Unit16>
+      <Unit17>
+        <Filename Value="uvisimportpackage.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisImportPackage"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uVisImportPackage"/>
+      </Unit17>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
