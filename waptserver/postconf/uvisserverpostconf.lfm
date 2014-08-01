@@ -8,6 +8,11 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
   ClientWidth = 680
   Constraints.MinHeight = 345
   Constraints.MinWidth = 680
+  Font.CharSet = ANSI_CHARSET
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Pitch = fpVariable
+  Font.Quality = fqDraft
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poDefaultPosOnly
@@ -21,13 +26,13 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     ActivePage = pgFinish
     Align = alClient
     MultiLine = True
-    TabIndex = 5
+    TabIndex = 6
     TabOrder = 0
     OnChange = PagesControlChange
     Options = [nboMultiLine]
     object pgParameters: TTabSheet
       Caption = 'Paramètres'
-      ClientHeight = 289
+      ClientHeight = 271
       ClientWidth = 426
       object EdWAPTServerName: TLabeledEdit
         Left = 4
@@ -52,7 +57,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Left = 164
         Height = 25
         Top = 18
-        Width = 124
+        Width = 128
         Action = ActCheckDNS
         Glyph.Data = {
           36040000424D3604000000000000360000002800000010000000100000000100
@@ -135,7 +140,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         TabOrder = 4
       end
       object EdWaptServerIP: TLabeledEdit
-        Left = 292
+        Left = 296
         Height = 21
         Top = 22
         Width = 128
@@ -143,7 +148,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         EditLabel.AnchorSideRight.Control = EdWaptServerIP
         EditLabel.AnchorSideRight.Side = asrBottom
         EditLabel.AnchorSideBottom.Control = EdWaptServerIP
-        EditLabel.Left = 292
+        EditLabel.Left = 296
         EditLabel.Height = 13
         EditLabel.Top = 6
         EditLabel.Width = 128
@@ -189,10 +194,19 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         TabOrder = 6
         Visible = False
       end
+      object Button1: TButton
+        Left = 300
+        Height = 25
+        Top = 60
+        Width = 75
+        Caption = 'Button1'
+        OnClick = Button1Click
+        TabOrder = 7
+      end
     end
     object pgPassword: TTabSheet
       Caption = 'Mot de passe'
-      ClientHeight = 289
+      ClientHeight = 271
       ClientWidth = 426
       object Label1: TLabel
         Left = 6
@@ -252,7 +266,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object pgPrivateKey: TTabSheet
       Caption = 'Création clé privée'
-      ClientHeight = 289
+      ClientHeight = 271
       ClientWidth = 426
       object Label9: TLabel
         Left = 12
@@ -271,13 +285,13 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         ParentColor = False
         ParentFont = False
       end
-      object EdOrgName: TEdit
+      object EdKeyName: TEdit
         Left = 176
         Height = 21
         Hint = 'exemple: tranquilit'
         Top = 40
         Width = 176
-        OnExit = EdOrgNameExit
+        OnExit = EdKeyNameExit
         TabOrder = 0
       end
       object Label10: TLabel
@@ -518,7 +532,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object pgDevparam: TTabSheet
       Caption = 'Développement'
-      ClientHeight = 289
+      ClientHeight = 271
       ClientWidth = 426
       object EdTemplatesRepoURL: TLabeledEdit
         Left = 8
@@ -620,7 +634,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object pgStartServices: TTabSheet
       Caption = 'Start'
-      ClientHeight = 289
+      ClientHeight = 271
       ClientWidth = 426
       object EdWaptInifile: TMemo
         Left = 4
@@ -716,55 +730,241 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         TabOrder = 3
       end
     end
-    object pgFinish: TTabSheet
-      Caption = 'Fin'
-      ClientHeight = 289
+    object pgCreateWaptSetup: TTabSheet
+      Caption = 'Créer l''installeur pour les postes clients'
+      ClientHeight = 271
       ClientWidth = 426
-      object Memo6: TMemo
+      object BitBtn1: TBitBtn
         Left = 16
+        Height = 30
+        Top = 176
+        Width = 231
+        Action = ActBuildWaptsetup
+        Glyph.Data = {
+          C6070000424DC607000000000000360000002800000016000000160000000100
+          2000000000009007000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000000000006656345F6A5A346A0000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000E0201001A0C023C352916FF42371DFF1208014E000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000000000000000000031170700381E
+          01030F0400F9BD946FFECEA27DFE060000FF2511050E24110500000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000000000000291203BB7B5A3EFEE6B2
+          8EFFEBB794FF8A694AFE1A0A00CF000000000000000000000000000000000000
+          000000000000000000000000000000000000000000007171718BA3A3A3E3A3A3
+          A3E26C6C6D81000000003C1D08604C2D15FFC69068FFCF9A76FFD19D79FFCC95
+          6EFF4E321CFF3218067A00000000000000000000000000000000000000000000
+          00110000000E00000000000000009D9D9DCCD7D7D7FED7D7D7FE969797C14616
+          0011391B06FF8C5B37FEA9714CFFB67F58FFB8805AFFAE7651FF976441FF341A
+          08FF371A062A391B0A00000000000000000000000024A7A7A7EBA2A2A2E20000
+          004D747474ABC8C8C8FDD4D4D4FFD6D6D6FFC9CCCEFB2A0C00ED633E24FE8A60
+          41FF9D7253FFA87E5EFFAA7F61FFA2795AFF8C6143FF6E4A32FE2F1200EE0000
+          0000000000000000000CA4A4A4EBCDCDCDFECFCFCFFFDCDCDCFFD6D6D6FFD4D4
+          D4FED4D4D4FFD4D4D5FFAF9B8EFF8E6345FF8B6E54FF8B6E54FF916E51FF9974
+          55FF997456FF946F51FF8A694FFF87684DFFAC866BFF95654578000000000000
+          0005BBBBBBE1C2C2C2FEC4C4C4FFCACACAFFD2D2D1FFD8D8D8FFD5D5D5FFD8D8
+          D8FFCBB6A9FFA25D2EFF91420CFFA04F18FF9D836AFF9D8063FF9D8064FF9D84
+          6AFFA14F1AFE944B1AFFA7673EFFB17B563C00000000000000001A1A1A45C8C8
+          C8FFC4C4C4FFC1C7C5FFADBBB4FFBCBABAFFBDBCBCFFC3C2C3FFD4D5D5FFDDE3
+          E5FFEBF6FDFF6E2E03FFBCA78AFFB79E81FFB79E81FFBDA78BFF6F350EFF0000
+          0000000000000000000000000000000000007B7B7BABC8C8C8FFCDCDCDFFCBCA
+          CAFFCBC9C9FF6B7F7BFF297F63FF2A8063FF637D76FFD2D0D0FFD2D8DCFF883D
+          09FFD8C6A9FFD2BB9EFFD2BB9EFFD8C6AAFF8A4414FF00000000000000000000
+          00006666668B7F7F7FD1BCBCBCFECACACAFFD2D2D2FFC9C9C9FF8D9B98FF12AD
+          7CFF27B873FF29B66BFF19B57CFF768C86FFCDD3D9FFAC4F11FFF2E6C7FFEDDA
+          BAFFEDDABAFFF3E5C7FFAC561CFF000000000000000000000000989898D1C6C6
+          C6FECACACAFFCFCFCFFFD1D1D1FFD6D2D4FF499884FF1EC28AFF22C27CFF23C2
+          7AFF20C285FF3A977DFFC6CBD0FFD56F2CFFFFFFEBFFFFFBE1FFFFFBE1FFFFFF
+          EAFFD57C41FF000000000000000000000000A0A0A0D1CACACAFFCFCFCFFFD3D3
+          D3FFD1D1D1FFD7D4D5FF54A28EFF38CFA0FF5BDEB6FF5EDFB6FF3CD1A1FF49A8
+          8CFFC4C3C6FFECD0BDFFE36F23FFE26B1CFFE16B1DFFE57328FFFDDCC6DD0000
+          00000000000000000000ACACAC7FC6C6C6C5CECECEFCD8D8D8FFD3D3D3FFD3D3
+          D3FFB1BEBBFF68C4ABFF9BEDD6FFA0F0DAFF73D1B8FFABBDBAFFCDCCCDFFC1C5
+          C7FFCBD4DAFFCCD6DBFAC5D0D7C4A3B3BE7900000000F4CDB200000000000000
+          000000000000000000009E9E9EB1DDDDDDFFDBDBDBFFD1D1D1FFE0DFDFFFC3CC
+          CAFFA0C6BCFFA0C8BEFFBFCAC8FFDBDADAFFCDD0CFFFD0D2D1FFCECECDFF9696
+          96A3000000000000000005050500000000000000000000000000000000000000
+          00001C1C1C4EE6E6E6FFE2E2E2FFDEDEDEFFD9D9D9FFE0DFE0FFE3E1E1FFE2DF
+          E0FFDEDCDDFFD0D4D3FFD5DBD8FFDFDEDFFFD6D6D6FF05050541000000000000
+          000000000000000000000000000000000000000000000000000CB0B0B0EAE8E8
+          E8FEEAEAEAFFECECECFFE4E4E4FFD6D6D6FFD2D2D2FFCFD2D1FFD0D6D3FFDFE3
+          E1FFE8E8E8FFE6E6E6FFE2E2E2FEA6A6A6E50000000800000000000000000000
+          000000000000000000000000000000000005D1D1D1E6EFEFEFFEEFEFEFFEF6F6
+          F6FFF0F0F0FFF0F0F0FFF1F1F1FFF2F1F2FFF0F0F0FFF0F0F0FFF5F5F5FFECEC
+          ECFEEBEBEBFED3D3D3E400000001000000000000000000000000000000000000
+          0000000000000000000000000014D6D6D6E6D5D5D5DE42424239C6C6C6A0ECEC
+          ECFEF5F5F5FFF5F5F5FFEBEBEBFDC1C1C19B5656563BE1E1E1E6E2E2E2E51D1D
+          1D11FFFFFF000000000000000000000000000000000000000000000000000000
+          0000FFFFFF000000000400000002FFFFFF0000000000B6B6B6CEFBFBFBFFFBFB
+          FBFFACACACC300000000000000000000000400000002FFFFFF00000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000ADADAD81DBDBDBCCDBDBDBCCACACAC760000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000
+        }
+        TabOrder = 0
+      end
+      object fnPublicCert: TFileNameEdit
+        Left = 200
+        Height = 21
+        Top = 18
+        Width = 192
+        Filter = '*.crt|*.crt'
+        FilterIndex = 0
+        HideDirectories = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        MaxLength = 0
+        TabOrder = 1
+      end
+      object Label4: TLabel
+        Left = 8
+        Height = 13
+        Hint = 'certificat que vous venez de créer (clé.crt)'
+        Top = 20
+        Width = 77
+        Caption = 'Clé publique : '
+        Font.Style = [fsBold]
+        ParentColor = False
+        ParentFont = False
+      end
+      object edRepoUrl: TEdit
+        Left = 200
+        Height = 21
+        Hint = 'exemple : http://wapt.tranquilit.local/wapt'
+        Top = 73
+        Width = 192
+        TabOrder = 2
+      end
+      object Label5: TLabel
+        Left = 8
+        Height = 13
+        Hint = 'Addresse de votre dépôt wapt (http://wapt/wapt)'
+        Top = 76
+        Width = 186
+        Caption = 'Adresse du dépot Wapt principal:'
+        Font.Style = [fsBold]
+        ParentColor = False
+        ParentFont = False
+      end
+      object edOrgName: TEdit
+        Left = 200
+        Height = 21
+        Hint = 'Exemple : Tranquil IT Systems'
+        Top = 127
+        Width = 192
+        ParentColor = True
+        TabOrder = 3
+      end
+      object Label6: TLabel
+        Left = 8
+        Height = 13
+        Hint = 'Nom de votre société'
+        Top = 127
+        Width = 65
+        Caption = 'Organisation:'
+        ParentColor = False
+      end
+      object Label7: TLabel
+        Left = 8
+        Height = 13
+        Hint = 'Dossier dans lequel waptsetup.exe sera enregistrer'
+        Top = 48
+        Width = 194
+        Caption = 'Enregistrer waptsetup.exe sous...  '
+        Font.Style = [fsBold]
+        ParentColor = False
+        ParentFont = False
+      end
+      object fnWaptDirectory: TDirectoryEdit
+        Left = 200
+        Height = 21
+        Top = 45
+        Width = 192
+        ShowHidden = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        MaxLength = 0
+        TabOrder = 4
+      end
+      object edWaptServerUrl1: TEdit
+        Left = 200
+        Height = 21
+        Hint = 'exemple : http://wapt:8080'
+        Top = 101
+        Width = 192
+        ParentColor = True
+        TabOrder = 5
+      end
+      object Label8: TLabel
+        Left = 8
+        Height = 13
+        Hint = 'Addresse de votre serveur wapt (http://wapt:8080)'
+        Top = 104
+        Width = 152
+        Caption = 'Adresse du serveur WAPT :'
+        Font.Style = [fsBold]
+        ParentColor = False
+        ParentFont = False
+      end
+      object Memo6: TMemo
+        Left = 220
         Height = 90
-        Top = 166
-        Width = 360
+        Top = 168
+        Width = 192
         Lines.Strings = (
           '<html>'
           '<head>'
-          '<meta http-equiv="Content-Type" content="text/html; charset=UTF-'
+          '<meta http-equiv="Content-Type" '
+          'content="text/html; charset=UTF-'
           '8">'
           '</head>'
           '<body>'
-          'Félicitations, votre serveur WAPT est désormais fonctionnel. Il vous '
-          'reste à'
-          'lancer votre console WAPT et créer votre installeur client WAPT avec '
-          'votre'
-          'certificat et le déployer par GPO.<br>'
-          'Pour créer l''installeur personnalisé, vous pouvez consulter la '
+          'Vous pouvez créer un installeur client '
+          'WAPT avec '
+          'votre certificat et le déployer par '
+          'GPO.<br>'
+          'Vous pouvez consulter la '
           'documentation <a'
-          'href="http://dev.tranquil.it/scenari/guide_admin/co/generation_waptse'
-          'tup_personnalise_waptconsole.html">Génération'
+          'href="http://dev.tranquil.it/scenari/g'
+          'uide_admin/co/generation_waptse'
+          'tup_personnalise_waptconsole.html"'
+          '>Génération'
           'depuis la console WAPT</a>'
           '<br>'
-          'Pour déployer le client WAPT sur les postes de votre réseau, consulter '
+          'Pour déployer le client WAPT sur les '
+          'postes de votre réseau, consulter '
           'la'
           'documentation <a'
-          'href="http://dev.tranquil.it/index.php/WAPT_-_D'
-          '%C3%A9ploiement_de_WAPT_par_GPO"/>Déploiement'
+          'href="http://dev.tranquil.it/index.ph'
+          'p/WAPT_-_D'
+          '%C3%A9ploiement_de_WAPT_par_'
+          'GPO"/>Déploiement'
           'de WAPT par GPO</a>'
           '</body>'
           '</html>'
         )
-        TabOrder = 0
+        TabOrder = 6
         Visible = False
       end
+    end
+    object pgFinish: TTabSheet
+      Caption = 'Fin'
+      ClientHeight = 271
+      ClientWidth = 426
       object Panel2: TPanel
         Left = 0
         Height = 23
-        Top = 266
+        Top = 248
         Width = 426
         Align = alBottom
         BevelOuter = bvNone
         ClientHeight = 23
         ClientWidth = 426
-        TabOrder = 1
+        TabOrder = 0
         object cbLaunchWaptConsoleOnExit: TCheckBox
           Left = 4
           Height = 17
@@ -778,12 +978,45 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
       object panFinish: TPanel
         Left = 0
-        Height = 266
+        Height = 248
         Top = 0
         Width = 426
         Align = alClient
         BevelOuter = bvNone
-        TabOrder = 2
+        ClientHeight = 248
+        ClientWidth = 426
+        TabOrder = 1
+        object Memo7: TMemo
+          Left = 16
+          Height = 90
+          Top = 158
+          Width = 360
+          Lines.Strings = (
+            '<html>'
+            '<head>'
+            '<meta http-equiv="Content-Type" content="text/html; charset=UTF-'
+            '8">'
+            '</head>'
+            '<body>'
+            'Félicitations, votre serveur WAPT est désormais fonctionnel.<br>'
+            'Vous pouvez consulter la '
+            'documentation <a'
+            'href="http://dev.tranquil.it/scenari/guide_admin/co/generation_waptse'
+            'tup_personnalise_waptconsole.html">Génération'
+            'depuis la console WAPT</a>'
+            '<br>'
+            'Pour déployer le client WAPT sur les postes de votre réseau, consulter '
+            'la'
+            'documentation <a'
+            'href="http://dev.tranquil.it/index.php/WAPT_-_D'
+            '%C3%A9ploiement_de_WAPT_par_GPO"/>Déploiement'
+            'de WAPT par GPO</a>'
+            '</body>'
+            '</html>'
+          )
+          TabOrder = 0
+          Visible = False
+        end
       end
     end
   end
@@ -931,6 +1164,13 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       OnClick = BitBtn3Click
       TabOrder = 2
     end
+    object ProgressBar1: TProgressBar
+      Left = 4
+      Height = 20
+      Top = 4
+      Width = 293
+      TabOrder = 3
+    end
   end
   object HTMLViewer1: THTMLViewer
     Left = 434
@@ -955,8 +1195,8 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     PrintScale = 1
   end
   object ActionList1: TActionList
-    left = 296
-    top = 184
+    left = 336
+    top = 216
     object actPrevious: TAction
       Caption = 'Précédent'
       OnExecute = actPreviousExecute
@@ -987,6 +1227,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     object actWriteConfStartServe: TAction
       Caption = 'Démarrer le serveur avec ces paramètres'
       OnExecute = actWriteConfStartServeExecute
+    end
+    object ActBuildWaptsetup: TAction
+      Caption = 'Créer un installeur personnalisé'
+      OnExecute = ActBuildWaptsetupExecute
     end
   end
 end
