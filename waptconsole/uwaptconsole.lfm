@@ -22,7 +22,7 @@ object VisWaptGUI: TVisWaptGUI
   LCLVersion = '1.3'
   object MainPages: TPageControl
     Left = 0
-    Height = 458
+    Height = 438
     Top = 0
     Width = 800
     ActivePage = pgInventory
@@ -32,7 +32,7 @@ object VisWaptGUI: TVisWaptGUI
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
       Caption = 'Inventaire'
-      ClientHeight = 432
+      ClientHeight = 412
       ClientWidth = 792
       object Panel10: TPanel
         Left = 0
@@ -209,7 +209,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object GridHosts: TSOGrid
         Left = 0
-        Height = 378
+        Height = 358
         Top = 54
         Width = 215
         OnGetText = GridHostsGetText
@@ -386,7 +386,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object HostPages: TPageControl
         Left = 220
-        Height = 378
+        Height = 358
         Top = 54
         Width = 572
         ActivePage = pgPackages
@@ -397,13 +397,13 @@ object VisWaptGUI: TVisWaptGUI
         object pgPackages: TTabSheet
           AnchorSideTop.Side = asrBottom
           Caption = 'Résumé'
-          ClientHeight = 352
+          ClientHeight = 332
           ClientWidth = 564
           object GridHostPackages: TSOGrid
             AnchorSideTop.Control = Panel9
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 140
+            Height = 120
             Top = 122
             Width = 564
             Align = alBottom
@@ -775,7 +775,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel5: TPanel
             Left = 0
             Height = 90
-            Top = 262
+            Top = 242
             Width = 564
             Align = alBottom
             BevelOuter = bvNone
@@ -1475,7 +1475,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object Splitter4: TSplitter
         Left = 215
-        Height = 378
+        Height = 358
         Top = 54
         Width = 5
         Align = alRight
@@ -2540,7 +2540,7 @@ object VisWaptGUI: TVisWaptGUI
   object PanDebug: TPanel
     Left = 0
     Height = 118
-    Top = 463
+    Top = 443
     Width = 800
     Align = alBottom
     ClientHeight = 118
@@ -2607,9 +2607,9 @@ object VisWaptGUI: TVisWaptGUI
       end
     end
     object cbShowLog: TCheckBox
-      Left = 8
+      Left = 4
       Height = 17
-      Top = 96
+      Top = 73
       Width = 136
       Anchors = [akLeft, akBottom]
       Caption = 'Voir infos de débuggage'
@@ -2621,7 +2621,7 @@ object VisWaptGUI: TVisWaptGUI
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 458
+    Top = 438
     Width = 800
     Align = alBottom
     ResizeAnchor = akBottom
@@ -2633,6 +2633,24 @@ object VisWaptGUI: TVisWaptGUI
     Width = 37
     Caption = 'Label10'
     ParentColor = False
+  end
+  object plStatusBar1: TplStatusBar
+    Left = 0
+    Height = 20
+    Top = 561
+    Width = 800
+    Panels = <    
+      item
+        Width = 50
+      end>
+    SimplePanel = False
+    object ProgressBar1: TProgressBar
+      Left = 0
+      Height = 20
+      Top = 0
+      Width = 204
+      TabOrder = 0
+    end
   end
   object SynPythonSyn1: TSynPythonSyn
     DefaultFilter = 'Fichiers Python (*.py)|*.py'
@@ -2712,10 +2730,10 @@ object VisWaptGUI: TVisWaptGUI
       ImageIndex = 24
       OnExecute = ActCreateCertificateExecute
     end
-    object ActCreateWaptSetup: TAction
+    object ActCreateWaptSetupPy: TAction
       Category = 'Tools'
-      Caption = 'Créer un Installeur Wapt personnalisé'
-      OnExecute = ActCreateWaptSetupExecute
+      Caption = 'Créer un Installeur Wapt personnalisé (py)'
+      OnExecute = ActCreateWaptSetupPyExecute
     end
     object ActEvaluateVar: TAction
       Caption = 'Evaluer Variant'
@@ -2916,6 +2934,12 @@ object VisWaptGUI: TVisWaptGUI
       ImageIndex = 19
       OnExecute = ActImportFromFileExecute
     end
+    object ActCreateWaptSetup: TAction
+      Category = 'Tools'
+      Caption = 'Créer un Installeur Wapt personnalisé'
+      ImageIndex = 35
+      OnExecute = ActCreateWaptSetupExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
@@ -2943,8 +2967,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object MainMenu1: TMainMenu
     Images = ActionsImages
-    left = 252
-    top = 156
+    left = 44
+    top = 144
     object MenuItem5: TMenuItem
       Caption = '&Fichier'
       object MenuItem6: TMenuItem
@@ -3069,7 +3093,7 @@ object VisWaptGUI: TVisWaptGUI
           0000870000008700000088000000B9431CCC8F360AC817020000
         }
       end
-      object MenuItem17: TMenuItem
+      object MenuItem49: TMenuItem
         Action = ActCreateWaptSetup
       end
       object MenuItem28: TMenuItem

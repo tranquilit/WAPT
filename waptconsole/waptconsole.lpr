@@ -8,7 +8,7 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms,
-  pl_virtualtrees, uwaptconsole, uVisCreateKey,
+  pl_virtualtrees, pl_excontrols, uwaptconsole, uVisCreateKey,
   waptcommon, dmwaptpython, uVisEditPackage,
   uviscreatewaptsetup, uvislogin, uvisprivatekeyauth,
   uvisloading, uviswaptconfig, uvischangepassword, uviswaptdeploy, 

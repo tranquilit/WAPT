@@ -6,9 +6,9 @@ interface
 
 uses
   Classes, SysUtils, Windows, ActiveX, Types, Forms, Controls, Graphics, Dialogs, Buttons, FileUtil,
-  SynEdit, SynHighlighterPython,  vte_json, ExtCtrls,
+  SynEdit, SynHighlighterPython, TplStatusBarUnit,  vte_json, ExtCtrls,
   StdCtrls, ComCtrls, ActnList, Menus, jsonparser, superobject,
-  VirtualTrees, VarPyth, ImgList, SOGrid  ;
+  VirtualTrees, VarPyth, ImgList, SOGrid, uvisloading,IdComponent  ;
 
 type
 
@@ -21,6 +21,7 @@ type
     ActHelp: TAction;
     ActImportFromRepo: TAction;
     ActImportFromFile: TAction;
+    ActCreateWaptSetup: TAction;
     ActRemoveConflicts: TAction;
     ActSearchSoftwares: TAction;
     ActRemoveDepends: TAction;
@@ -33,7 +34,7 @@ type
     ActEvaluate: TAction;
     ActBuildUpload: TAction;
     ActCreateCertificate: TAction;
-    ActCreateWaptSetup: TAction;
+    ActCreateWaptSetupPy: TAction;
     ActEvaluateVar: TAction;
     ActEditHostPackage: TAction;
     ActAddRemoveOptionIniFile: TAction;
@@ -124,6 +125,7 @@ type
     MenuItem46: TMenuItem;
     MenuItem47: TMenuItem;
     MenuItem48: TMenuItem;
+    MenuItem49: TMenuItem;
     OpenDialogWapt: TOpenDialog;
     PageControl1: TPageControl;
     Panel11: TPanel;
@@ -131,6 +133,7 @@ type
     Panel2: TPanel;
     Panel5: TPanel;
     Panel6: TPanel;
+    plStatusBar1: TplStatusBar;
     PopupHostPackages: TPopupMenu;
     PopupMenuGroups: TPopupMenu;
     ProgressBar: TProgressBar;
@@ -151,6 +154,7 @@ type
     Label1: TLabel;
     pgGroups: TTabSheet;
     HostTaskRunningProgress: TProgressBar;
+    ProgressBar1: TProgressBar;
     Splitter3: TSplitter;
     pgTasks: TTabSheet;
     Splitter5: TSplitter;
@@ -176,7 +180,6 @@ type
     MenuItem14: TMenuItem;
     MenuItem15: TMenuItem;
     MenuItem16: TMenuItem;
-    MenuItem17: TMenuItem;
     MenuItem18: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem21: TMenuItem;
@@ -230,6 +233,7 @@ type
     procedure ActChangePasswordExecute(Sender: TObject);
     procedure ActCreateCertificateExecute(Sender: TObject);
     procedure ActCreateWaptSetupExecute(Sender: TObject);
+    procedure ActCreateWaptSetupPyExecute(Sender: TObject);
     procedure ActDeleteGroupExecute(Sender: TObject);
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
@@ -338,9 +342,13 @@ type
     procedure MenuItem27Click(Sender: TObject);
     procedure TimerTasksTimer(Sender: TObject);
   private
+    CurrentVisLoading:TVisLoading;
+    procedure DoProgress(ASender: TObject);
     function FilterSoftwares(softs: ISuperObject): ISuperObject;
     { private declarations }
     procedure GridLoadData(grid: TSOGrid; jsondata: string);
+    procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode;
+      AWorkCount: Int64);
     function Login:Boolean;
     procedure PythonOutputSendData(Sender: TObject; const Data: ansistring);
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: string);
@@ -358,17 +366,47 @@ var
 
 implementation
 
-uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, uvisloading, tisstrings,
+uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth,tisstrings,
   soutils, waptcommon, tiscommon, uVisCreateKey, uVisCreateWaptSetup,
   uvisOptionIniFile, dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig,
   uvischangepassword, uvisgroupchoice, uviseditgroup, uviswaptdeploy,
   uvishostsupgrade, uVisAPropos, uVisImportPackage, PythonEngine, Clipbrd,
-  RegExpr;
+  RegExpr,Regex,UnitRedirect;
 
 {$R *.lfm}
 
 { TVisWaptGUI }
 
+
+procedure TVisWaptGUI.DoProgress(ASender: TObject);
+begin
+  if CurrentVisLoading<>Nil then
+    CurrentVisLoading.DoProgress(ASender)
+  else
+  begin
+    if ProgressBar1.Position>=ProgressBar1.Max then
+      ProgressBar1.Position:=0
+    else
+      ProgressBar1.Position := ProgressBar1.Position+1;
+    Application.ProcessMessages;
+  end;
+end;
+
+
+procedure TVisWaptGUI.IdHTTPWork(ASender: TObject;
+  AWorkMode: TWorkMode; AWorkCount: Int64);
+begin
+  if CurrentVisLoading<>Nil then
+    CurrentVisLoading.DoProgress(ASender)
+  else
+  begin
+    if ProgressBar1.Position>=ProgressBar1.Max then
+      ProgressBar1.Position:=0
+    else
+      ProgressBar1.Position := ProgressBar1.Position+1;
+    Application.ProcessMessages;
+  end;
+end;
 
 procedure TVisWaptGUI.cbShowLogClick(Sender: TObject);
 begin
@@ -760,6 +798,64 @@ begin
     end;
 end;
 
+procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
+var
+  params : ISuperObject;
+  waptsetupPath,
+  fnPublicCert: string;
+  ini: TIniFile;
+  SORes:ISuperObject;
+begin
+  with TVisCreateWaptSetup.Create(self) do
+  try
+    ini := TIniFile.Create(AppIniFilename);
+    fnPublicCert.Text:=ChangeFileExt(ini.ReadString('global', 'private_key', ''),'.crt');
+    if not FileExists(fnPublicCert.Text) then
+      fnPublicCert.Clear;
+    edWaptServerUrl.Text := ini.ReadString('global', 'wapt_server', '');
+    edRepoUrl.Text := ini.ReadString('global', 'repo_url', '');
+    fnWaptDirectory.Directory := GetTempDir(False);
+    if ShowModal = mrOk then
+    begin
+      CurrentVisLoading := TVisLoading.Create(Self);
+      with CurrentVisLoading do
+      try
+        ExceptionOnStop:=True;
+        Screen.Cursor := crHourGlass;
+        ProgressTitle('Création en cours');
+        Start;
+        Application.ProcessMessages;
+        waptsetupPath := CreateWaptSetup(fnPublicCert.FileName, edRepoUrl.Text, GetWaptServerURL ,fnWaptDirectory.Directory,edOrgName.Text,@DoProgress);
+        Finish;
+        if FileExists(waptsetupPath) then
+        try
+          Start;
+          ProgressTitle('Dépôt sur le serveur WAPT en cours');
+          SORes := WAPTServerJsonMultipartFilePost(GetWaptServerURL,'upload_waptsetup',[],'file',waptsetupPath,False,WaptServerUser,WaptServerPassword,@IdHTTPWork);
+          Finish;
+          if SORes.S['status'] = 'OK' then
+            ShowMessage('waptsetup.exe créé et déposé avec succès: ' + waptsetupPath)
+          else
+            ShowMessage('Erreur lors du dépôt de waptsetup: ' + SORes.S['message']);
+        except
+          on e: Exception do
+          begin
+            ShowMessage('Erreur à la création du waptsetup.exe: ' + e.Message);
+            Finish;
+          end;
+        end;
+      finally
+        Finish;
+        Screen.Cursor := crDefault;
+        FreeAndNil(CurrentVisLoading);
+      end;
+    end;
+  finally
+    ini.free;
+    Free;
+  end;
+end;
+
 procedure TVisWaptGUI.ActAddRemoveOptionIniFileExecute(Sender: TObject);
 begin
   with TVisOptionIniFile.Create(self) do
@@ -919,7 +1015,7 @@ begin
     end;
 end;
 
-procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
+procedure TVisWaptGUI.ActCreateWaptSetupPyExecute(Sender: TObject);
 var
   params, waptsetupPath: string;
   done: boolean;
