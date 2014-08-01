@@ -27,7 +27,7 @@ uses Windows, Classes,JWAWinBase;
   ///   timeout.</returns>
   function Sto_RedirectedExecute(CmdLine: WideString;
     const Input: RawByteString = '';
-    const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString=''): RawByteString;
+    const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString='';onpoll:TNotifyEvent=Nil): RawByteString;
 
 
   const
@@ -145,7 +145,7 @@ end;
 
 function Sto_RedirectedExecute(CmdLine: WideString;
   const Input: RawByteString = '';
-  const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString=''): RawByteString;
+  const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString='';onpoll:TNotifyEvent=Nil): RawByteString;
 var
   mySecurityAttributes: SECURITY_ATTRIBUTES;
   myStartupInfo: STARTUPINFOW;
@@ -163,6 +163,11 @@ var
 
   exitCode:LongWord;
   ose : EOSError;
+
+  start_ms:DWORD;
+
+const
+  pollwait:DWORD = 500;
 
 begin
   try
@@ -230,10 +235,15 @@ begin
     myReadOutputThread := TStoReadPipeThread.Create(hPipeOutputRead);
     myReadErrorThread := TStoReadPipeThread.Create(hPipeErrorRead);
     try
-      // wait unitl there is no more data to receive, or the timeout is reached
-      iWaitRes := WaitForSingleObject(myProcessInfo.hProcess, Wait);
-      // timeout reached ?
-      if (iWaitRes = WAIT_TIMEOUT) then
+      start_ms := GetTickCount;
+      repeat
+        // wait unitl there is no more data to receive, or the timeout is reached
+        iWaitRes := WaitForSingleObject(myProcessInfo.hProcess, pollwait);
+        if Assigned(onpoll) then
+          onpoll(Nil);
+        // timeout reached ?
+      until ((GetTickCount-start_ms > Wait) and  (iWaitRes = WAIT_TIMEOUT)) or (iWaitRes <> WAIT_TIMEOUT);
+      if (GetTickCount-start_ms > Wait) then
       begin
         TerminateProcess(myProcessInfo.hProcess, UINT(ERROR_CANCELLED));
         raise Exception.Create('Timeout running '+CmdLine);
