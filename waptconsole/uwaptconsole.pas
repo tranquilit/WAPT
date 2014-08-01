@@ -808,10 +808,10 @@ begin
     //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
     args := '';
     args := args + format('waptconfigfile = r"%s".decode(''utf8''),',[AppIniFilename]);
-    args := args + format('hosts_list = r"%s".decode(''utf8''),',[Join(',',hosts)]);
+    args := args + format('hosts_list = r"%s".decode(''utf8''),',[soutils.Join(',',hosts)]);
     args := args + format('append_depends = "",',[]);
     args := args + format('remove_depends = "",',[]);
-    args := args + format('append_conflicts = r"%s".decode(''utf8''),',[Join(',',packages)]);
+    args := args + format('append_conflicts = r"%s".decode(''utf8''),',[soutils.Join(',',packages)]);
     args := args + format('remove_conflicts = "",',[]);
     if privateKeyPassword<>'' then
       args := args + format('key_password = "%s".decode(''utf8''),',[privateKeyPassword]);
@@ -856,8 +856,8 @@ begin
     //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
     args := '';
     args := args + format('waptconfigfile = r"%s".decode(''utf8''),',[AppIniFilename]);
-    args := args + format('hosts_list = r"%s".decode(''utf8''),',[Join(',',hosts)]);
-    args := args + format('append_depends = r"%s".decode(''utf8''),',[Join(',',packages)]);
+    args := args + format('hosts_list = r"%s".decode(''utf8''),',[soutils.Join(',',hosts)]);
+    args := args + format('append_depends = r"%s".decode(''utf8''),',[soutils.Join(',',packages)]);
     args := args + format('remove_depends = "",',[]);
     args := args + format('append_conflicts = "",',[]);
     args := args + format('remove_conflicts = "",',[]);
@@ -1201,11 +1201,11 @@ begin
 
       uploadResult := DMPython.RunJSON(
         format('mywapt.build_upload([%s],private_key_passwd=r"%s",wapt_server_user=r"%s",wapt_server_passwd=r"%s",inc_package_release=False)',
-        [Join(',',sources) , privateKeyPassword, waptServerUser, waptServerPassword]),
+        [soutils.Join(',',sources) , privateKeyPassword, waptServerUser, waptServerPassword]),
         VisWaptGUI.jsonlog);
       if (uploadResult <> Nil) and (uploadResult.AsArray.length=Sources.AsArray.Length) then
       begin
-        ShowMessage(format('%s importé(s) avec succès.', [ Join(',', Sources)])) ;
+        ShowMessage(format('%s importé(s) avec succès.', [ soutils.Join(',', Sources)])) ;
         ModalResult := mrOk;
         ActPackagesUpdate.Execute;
         ActSearchPackage.Execute;
@@ -1310,11 +1310,11 @@ begin
     //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
     args := '';
     args := args + format('waptconfigfile = r"%s".decode(''utf8''),',[AppIniFilename]);
-    args := args + format('hosts_list = r"%s".decode(''utf8''),',[Join(',',hosts)]);
+    args := args + format('hosts_list = r"%s".decode(''utf8''),',[soutils.Join(',',hosts)]);
     args := args + format('append_depends = "",',[]);
     args := args + format('remove_depends = "",',[]);
     args := args + format('append_conflicts = "",',[]);
-    args := args + format('remove_conflicts = r"%s".decode(''utf8''),',[Join(',',packages)]);
+    args := args + format('remove_conflicts = r"%s".decode(''utf8''),',[soutils.Join(',',packages)]);
     if privateKeyPassword<>'' then
       args := args + format('key_password = "%s".decode(''utf8''),',[privateKeyPassword]);
     args := args + format('wapt_server_user = r"%s".decode(''utf8''),',[waptServerUser]);
@@ -1364,9 +1364,9 @@ begin
     //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
     args := '';
     args := args + format('waptconfigfile = r"%s".decode(''utf8''),',[AppIniFilename]);
-    args := args + format('hosts_list = r"%s".decode(''utf8''),',[Join(',',hosts)]);
+    args := args + format('hosts_list = r"%s".decode(''utf8''),',[soutils.Join(',',hosts)]);
     args := args + format('append_depends = [],',[]);
-    args := args + format('remove_depends = r"%s".decode(''utf8''),',[Join(',',packages)]);
+    args := args + format('remove_depends = r"%s".decode(''utf8''),',[soutils.Join(',',packages)]);
     if privateKeyPassword<>'' then
       args := args + format('key_password = "%s".decode(''utf8''),',[privateKeyPassword]);
     args := args + format('wapt_server_user = r"%s".decode(''utf8''),',[waptServerUser]);
@@ -1550,7 +1550,7 @@ begin
     urlParams.AsArray.Add('filter=' + filter);
   end;
 
-  req := url + '?' + Join('&', urlParams);
+  req := url + '?' + soutils.Join('&', urlParams);
   if GridHosts.FocusedRow<>Nil then
     previous_uuid := GridHosts.FocusedRow.S['uuid']
   else
@@ -2079,7 +2079,7 @@ begin
   else
   begin
     if (CellData <> nil) and (CellData.DataType = stArray) then
-      CellText := Join(',', CellData);
+      CellText := soutils.Join(',', CellData);
     if GridHosts.Header.Columns[Column].Text='Status' then
     begin
       RowSO := GridHosts.GetNodeSOData(Node);

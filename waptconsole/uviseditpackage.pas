@@ -291,7 +291,7 @@ begin
         if not StrIn(newDepends.AsArray.S[i], olddepends) then
           olddepends.AsArray.Add(newDepends.AsArray.S[i]);
       end;
-      Depends := Join(',', olddepends);
+      Depends := soutils.Join(',', olddepends);
 
       Result := PackageEdited;
       if Result<>Nil then
@@ -432,7 +432,7 @@ begin
     if not StrIn(package, olddepends) then
       olddepends.AsArray.Add(package);
   end;
-  Depends := Join(',', olddepends);
+  Depends := soutils.Join(',', olddepends);
 end;
 
 procedure TVisEditPackage.GridDependsDragOver(Sender: TBaseVirtualTree;
@@ -675,7 +675,7 @@ begin
     if not StrIn(package, oldConflicts) then
       oldConflicts.AsArray.Add(package);
   end;
-  Conflicts := Join(',', oldConflicts);
+  Conflicts := soutils.Join(',', oldConflicts);
 end;
 
 
