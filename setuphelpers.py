@@ -1854,6 +1854,11 @@ def service_is_running(service_name):
     """
     return win32serviceutil.QueryServiceStatus(service_name)[1] == win32service.SERVICE_RUNNING
 
+def service_is_stopped(service_name):
+    """Return True if the service is running
+    >>> state = service_is_running('waptservice')
+    """
+    return win32serviceutil.QueryServiceStatus(service_name)[1] == win32service.SERVICE_STOPPED
 
 def user_appdata():
     return ensure_unicode((winshell.get_path(shellcon.CSIDL_APPDATA)))
