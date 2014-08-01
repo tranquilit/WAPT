@@ -1044,10 +1044,10 @@ def install_windows_nssm_service(service_name,service_binary,service_parameters,
     }
 
     if setuphelpers.service_installed(service_name):
-        if setuphelpers.service_is_running(service_name):
+        if not setuphelpers.service_is_stopped(service_name):
             logger.info('Stop running "%s"' % service_name )
             setuphelpers.run('net stop "%s" /yes' % service_name)
-            while setuphelpers.service_is_running(service_name):
+            while not setuphelpers.service_is_stopped(service_name):
                 logger.debug('Waiting for "%s" to terminate' % service_name)
                 time.sleep(2)
         logger.info('Unregister existing "%s"'% service_name)
