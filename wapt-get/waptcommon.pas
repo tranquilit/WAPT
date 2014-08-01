@@ -25,7 +25,7 @@ unit waptcommon;
 interface
   uses
      Classes, SysUtils, Windows,
-     DB,sqldb,sqlite3conn,SuperObject,syncobjs;
+     DB,sqldb,sqlite3conn,SuperObject,syncobjs,IdComponent;
 
   const
     waptservice_port:integer = 8088;
@@ -72,6 +72,24 @@ interface
 
   function RunAsAdmin(const Handle: Hwnd; aFile : Ansistring; Params: Ansistring): Boolean;
 
+  function CreateSelfSignedCert(orgname,
+          wapt_base_dir,
+          destdir,
+          country,
+          locality,
+          organization,
+          orgunit,
+          commonname,
+          email:String
+      ):String;
+
+  function WAPTServerJsonMultipartFilePost(waptserver,action: String;args:Array of const;
+      FileArg,FileName:String; enableProxy:Boolean= False;
+      user:AnsiString='';password:AnsiString='';OnHTTPWork:TWorkEvent=Nil):ISuperObject;
+
+  function CreateWaptSetup(default_public_cert:String='';default_repo_url:String='';
+            default_wapt_server:String='';destination:String='';company:String='';OnProgress:TNotifyEvent = Nil):String;
+
 Type
   TFormatHook = Function(Dataset:TDataset;Data,FN:Utf8String):UTF8String of object;
 
@@ -105,7 +123,8 @@ const
 implementation
 
 uses FileUtil, soutils, tiscommon, Variants, winsock, ShellApi, JwaIpHlpApi,
-  JwaIpTypes, NetworkAdapterInfo, tisinifiles, registry, tisstrings, JwaWinDNS, JwaWinsock2 ;
+  JwaIpTypes, NetworkAdapterInfo, tisinifiles, registry, tisstrings, JwaWinDNS, JwaWinsock2,
+  IdHttp,IdMultipartFormData,IdException,Dialogs,Regex,UnitRedirect;
 
 function IPV42String(ipv4:LongWord):String;
 begin
@@ -1076,6 +1095,142 @@ begin
   end;
   result := so;
 end;
+
+// qad %(key)s python format
+function pyformat(template:String;params:ISuperobject):String;
+var
+  key,value:ISuperObject;
+begin
+  Result := template;
+  for key in params.AsObject.GetNames do
+    Result := StringReplace(Result,'%('+key.AsString+')s',params.S[key.AsString],[rfReplaceAll]);
+end;
+
+function WAPTServerJsonMultipartFilePost(waptserver,action: String;args:Array of const;
+    FileArg,FileName:String; enableProxy:Boolean= False;
+    user:AnsiString='';password:AnsiString='';OnHTTPWork:TWorkEvent=Nil):ISuperObject;
+var
+  res:String;
+  http:TIdHTTP;
+  St:TIdMultiPartFormDataStream;
+begin
+  if StrLeft(action,1)<>'/' then
+    action := '/'+action;
+  if length(args)>0 then
+    action := format(action,args);
+  HTTP := TIdHTTP.Create;
+  St := TIdMultiPartFormDataStream.Create;
+  try
+    http.Request.BasicAuthentication:=True;
+    http.Request.Username:=user;
+    http.Request.Password:=password;
+    http.OnWork:=OnHTTPWork;
+
+    St.AddFile(FileArg,FileName);
+    try
+      res := HTTP.Post(waptserver+action,St);
+    except
+      on E:EIdException do ShowMessage(E.Message);
+    end;
+    result := SO(res);
+  finally
+    st.Free;
+    HTTP.Free;
+  end;
+end;
+
+function CreateSelfSignedCert(orgname,
+        wapt_base_dir,
+        destdir,
+        country,
+        locality,
+        organization,
+        orgunit,
+        commonname,
+        email:String
+    ):String;
+var
+  opensslbin,opensslcfg,opensslcfg_fn,destpem,destcrt : String;
+  params : ISuperObject;
+begin
+    destpem := AppendPathDelim(destdir)+orgname+'.pem';
+    destcrt := AppendPathDelim(destdir)+orgname+'.crt';
+    if not DirectoryExists(destdir) then
+        mkdir(destdir);
+    params := TSuperObject.Create;
+    params.S['country'] := country;
+    params.S['locality'] :=locality;
+    params.S['organization'] := organization;
+    params.S['unit'] := orgunit;
+    params.S['commonname'] := commonname;
+    params.S['email'] := email;
+
+    opensslbin :=  AppendPathDelim(wapt_base_dir)+'lib\site-packages\M2Crypto\openssl.exe';
+    opensslcfg :=  pyformat(FileToString(AppendPathDelim(wapt_base_dir) + 'templates\openssl_template.cfg'),params);
+    opensslcfg_fn := AppendPathDelim(destdir)+'openssl.cfg';
+    StringToFile(opensslcfg_fn,opensslcfg);
+    try
+      SetEnvironmentVariable(PAnsiChar('OPENSSL_CONF'),PAnsiChar(opensslcfg_fn));
+      if ExecuteProcess(opensslbin,'req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout "'+destpem+'" -out "'+destcrt+'"',[]) <> 0 then
+        result :=''
+      else
+        result := destpem;
+    finally
+      SysUtils.DeleteFile(opensslcfg_fn);
+    end;
+end;
+
+function CreateWaptSetup(default_public_cert:String='';default_repo_url:String='';
+          default_wapt_server:String='';destination:String='';company:String='';OnProgress:TNotifyEvent = Nil):String;
+var
+  OutputFile,iss_template,custom_iss,source,target : String;
+  iss,new_iss,line : ISuperObject;
+  wapt_base_dir,inno_fn: String;
+  re : TRegexEngine;
+  exitstatus:integer;
+
+  function startswith(st:ISuperObject;subst:String):Boolean;
+  begin
+    result := (st <>Nil) and (st.DataType = stString) and (pos(subst,trim(st.AsString))=1)
+  end;
+
+begin
+    wapt_base_dir:= WaptBaseDir;
+    OutputFile := '';
+    iss_template := makepath([wapt_base_dir,'waptsetup','waptsetup.iss']);
+    custom_iss := makepath([wapt_base_dir,'waptsetup','custom_waptsetup.iss']);
+    iss := SplitLines(FileToString(iss_template));
+    new_iss := TSuperObject.Create(stArray);
+    for line in iss do
+    begin
+        if startswith(line,'#define default_repo_url') then
+            new_iss.AsArray.Add(format('#define default_repo_url "%s"',[default_repo_url]))
+        else if startswith(line,'#define default_wapt_server') then
+            new_iss.AsArray.Add(format('#define default_wapt_server "%s"',[default_wapt_server]))
+        else if startswith(line,'#define output_dir') then
+            new_iss.AsArray.Add(format('#define output_dir "%s"' ,[destination]))
+        else if startswith(line,'WizardImageFile=') then
+
+        else if not startswith(line,'#define signtool') then
+            new_iss.AsArray.Add(line);
+
+        if startswith(line,'OutputBaseFilename') then
+            outputfile := makepath([wapt_base_dir,'waptsetup',format('%s.exe',[StrSplit(line.AsString,'=')[1]])]);
+    end;
+    source := default_public_cert;
+    target := makepath([ExtractFileDir(iss_template),'..','ssl',ExtractFileName(source)]);
+    if not FileUtil.CopyFile(source,target,True) then
+      raise Exception.CreateFmt('Copie du certificat de %s vers %s impossible',[source,target]);
+    StringToFile(custom_iss,SOUtils.Join(#13#10,new_iss));
+
+    inno_fn :=  makepath([wapt_base_dir,'waptsetup','innosetup','ISCC.exe']);
+    if not FileExists(inno_fn) then
+        raise Exception.CreateFmt('Innosetup n''est pas disponible (emplacement %s), veuillez l''installer',[inno_fn]);
+    Sto_RedirectedExecute(format('"%s"  %s',[inno_fn,custom_iss]),'',3600000,'','','',OnProgress);
+    Result := makepath([destination,ExtractFileName(outputfile)]);
+end;
+
+
 
 initialization
 //  if not Succeeded(CoInitializeEx(nil, COINIT_MULTITHREADED)) then;
