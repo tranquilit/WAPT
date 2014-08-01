@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.9.0"
+__version__ = "0.9.1"
 import os
 import sys
 import logging
@@ -127,10 +127,7 @@ def ensure_unicode(data):
                 return data.__unicode__()
             except:
                 pass
-        try:
-            return unicode(data)
-        except:
-           pass
+        return unicode(data)
     except:
         if logger.level != logging.DEBUG:
             return("Error in ensure_unicode / %s"%(repr(data)))
