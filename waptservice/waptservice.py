@@ -1985,10 +1985,10 @@ def install_service():
     }
 
     if setuphelpers.service_installed('waptservice'):
-        if setuphelpers.service_is_running('waptservice'):
+        if not setuphelpers.service_is_stopped('waptservice'):
             logger.info(u'Stop running waptservice')
             setuphelpers.run('net stop waptservice')
-            while setuphelpers.service_is_running('waptservice'):
+            while not setuphelpers.service_is_stopped('waptservice'):
                 logger.debug(u'Waiting for waptservice to terminate')
                 time.sleep(2)
         logger.info(u'Unregister existing waptservice')
