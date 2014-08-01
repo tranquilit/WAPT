@@ -82,6 +82,7 @@ procedure TVisImportPackage.FormShow(Sender: TObject);
 begin
   GridExternalPackages.LoadSettingsFromIni(Appuserinipath) ;
   urlExternalRepo.Caption:=  WaptExternalRepo;
+  ActSearchExternalPackage.Execute;
 end;
 
 procedure TVisImportPackage.ActWAPTLocalConfigExecute(Sender: TObject);
