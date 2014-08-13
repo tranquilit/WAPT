@@ -93,4 +93,10 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
         waptserver_ini.write(inifile)
         subprocess.check_output("/bin/chmod 640 /opt/wapt/waptserver/waptserver.ini",shell=True) 
         subprocess.check_output("/bin/chown wapt /opt/wapt/waptserver/waptserver.ini",shell=True)
-    postconf.msgbox("postconf script completed !! \n Please start wapt server with /etc/init.d/waptserver start")
+
+    final_msg = [
+        'postconf script completed!',
+        'Please start wapt server with /etc/init.d/waptserver start'
+    ]
+    max_width = len(max(final_msg, key=len))
+    postconf.msgbox('\n'.join(final_msg), width = max_width + 4)
