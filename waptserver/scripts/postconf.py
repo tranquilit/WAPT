@@ -85,12 +85,12 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
         wapt_password_check = ''
 
         while wapt_password == '':
-            (code,wapt_password) = postconf.passwordbox("Please enter the wapt server password:  ")
+            (code,wapt_password) = postconf.passwordbox("Please enter the wapt server password:  ", insecure=True)
             if code != postconf.DIALOG_OK:
                 exit(0)
 
         while wapt_password_check == '':
-            (code,wapt_password_check) = postconf.passwordbox("Please enter the wapt server password again:  ")
+            (code,wapt_password_check) = postconf.passwordbox("Please enter the wapt server password again:  ", insecure=True)
             if code != postconf.DIALOG_OK:
                 exit(0)
 
