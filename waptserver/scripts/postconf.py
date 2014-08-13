@@ -79,15 +79,29 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
         elif code != postconf.DIALOG_OK:
             exit(0)
 
-    while 1:
-        (code,wapt_password) = postconf.passwordbox("wapt server password:  ")
-        if code != postconf.DIALOG_OK:
-            exit(0)
+    wapt_password_ok = False
+    while not wapt_password_ok:
+        wapt_password = ''
+        wapt_password_check = ''
+
+        while wapt_password == '':
+            (code,wapt_password) = postconf.passwordbox("Please enter the wapt server password:  ")
+            if code != postconf.DIALOG_OK:
+                exit(0)
+
+        while wapt_password_check == '':
+            (code,wapt_password_check) = postconf.passwordbox("Please enter the wapt server password again:  ")
+            if code != postconf.DIALOG_OK:
+                exit(0)
+
+        if wapt_password != wapt_password_check:
+            postconf.msgbox('Password mismatch!')
         else:
-            password = hashlib.sha1(wapt_password).hexdigest()
-            waptserver_ini.set('options','wapt_password',password)
-        if wapt_password != '':
-            break
+            wapt_password_ok = True
+
+    password = hashlib.sha1(wapt_password).hexdigest()
+    waptserver_ini.set('options','wapt_password',password)
+
 
     with open('/opt/wapt/waptserver/waptserver.ini','w') as inifile:
         waptserver_ini.write(inifile)
