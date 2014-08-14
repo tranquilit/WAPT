@@ -29,7 +29,7 @@ interface
 
   const
     waptservice_port:integer = 8088;
-    waptserver_port:integer = 8080;
+    waptserver_port:integer = 80;
     zmq_port:integer = 5000;
 
 
@@ -1183,7 +1183,7 @@ end;
 function CreateWaptSetup(default_public_cert:String='';default_repo_url:String='';
           default_wapt_server:String='';destination:String='';company:String='';OnProgress:TNotifyEvent = Nil):String;
 var
-  OutputFile,iss_template,custom_iss,source,target : String;
+  OutputFile,iss_template,custom_iss,source,target,outputname,junk : String;
   iss,new_iss,line : ISuperObject;
   wapt_base_dir,inno_fn: String;
   re : TRegexEngine;
@@ -1197,8 +1197,8 @@ var
 begin
     wapt_base_dir:= WaptBaseDir;
     OutputFile := '';
-    iss_template := makepath([wapt_base_dir,'waptsetup','waptsetup.iss']);
-    custom_iss := makepath([wapt_base_dir,'waptsetup','custom_waptsetup.iss']);
+    iss_template := wapt_base_dir + '\waptsetup' + '\waptsetup.iss';
+    custom_iss := wapt_base_dir + '\' + 'waptsetup' + '\' + 'custom_waptsetup.iss';
     iss := SplitLines(FileToString(iss_template));
     new_iss := TSuperObject.Create(stArray);
     for line in iss do
@@ -1215,19 +1215,20 @@ begin
             new_iss.AsArray.Add(line);
 
         if startswith(line,'OutputBaseFilename') then
-            outputfile := makepath([wapt_base_dir,'waptsetup',format('%s.exe',[StrSplit(line.AsString,'=')[1]])]);
+            StrSplit(line.AsString,'=',outputname,junk);
+            outputfile := wapt_base_dir + '\' + 'waptsetup' + '\' + outputname + '.exe';
     end;
     source := default_public_cert;
-    target := makepath([ExtractFileDir(iss_template),'..','ssl',ExtractFileName(source)]);
+    target := ExtractFileDir(iss_template) + '..' + 'ssl' + ExtractFileName(source);
     if not FileUtil.CopyFile(source,target,True) then
       raise Exception.CreateFmt('Copie du certificat de %s vers %s impossible',[source,target]);
     StringToFile(custom_iss,SOUtils.Join(#13#10,new_iss));
 
-    inno_fn :=  makepath([wapt_base_dir,'waptsetup','innosetup','ISCC.exe']);
+    inno_fn :=  wapt_base_dir + '\waptsetup' + '\innosetup' + '\ISCC.exe';
     if not FileExists(inno_fn) then
         raise Exception.CreateFmt('Innosetup n''est pas disponible (emplacement %s), veuillez l''installer',[inno_fn]);
     Sto_RedirectedExecute(format('"%s"  %s',[inno_fn,custom_iss]),'',3600000,'','','',OnProgress);
-    Result := makepath([destination,ExtractFileName(outputfile)]);
+    Result := destination + '\' + ExtractFileName(outputfile);
 end;
 
 
