@@ -74,9 +74,9 @@ Name: "{group}\Logiciels installés avec WAPT"; Filename: "http://localhost:8088/
 Name: autorunSessionSetup; Description: "Lancer WAPT session setup à l'ouverture de session";
 
 [UninstallRun]
+Filename: "net"; Parameters: "stop waptserver"; Flags: runhidden; StatusMsg: "Stop WAPTServer"
+Filename: "sc"; Parameters: "delete waptserver"; Flags: runhidden; StatusMsg: "Unregister WAPTServer"
 Filename: "net"; Parameters: "stop waptmongodb /yes"; Flags: runhidden; StatusMsg: "Stop WAPTMongodb"
 Filename: "sc"; Parameters: "delete waptmongob"; Flags: runhidden; StatusMsg: "Unregister WAPTMongodb"
 Filename: "net"; Parameters: "stop waptapache /yes"; Flags: runhidden; StatusMsg: "Stop WAPTApache"
 Filename: "sc"; Parameters: "delete waptapache"; Flags: runhidden; StatusMsg: "Unregister WAPTApache"
-Filename: "net"; Parameters: "stop waptserver"; Flags: runhidden; StatusMsg: "Stop WAPTServer"
-Filename: "sc"; Parameters: "delete waptserver"; Flags: runhidden; StatusMsg: "Unregister WAPTServer"
