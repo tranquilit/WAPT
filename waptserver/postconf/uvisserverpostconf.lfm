@@ -23,10 +23,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     Height = 315
     Top = 0
     Width = 434
-    ActivePage = pgFinish
+    ActivePage = pgParameters
     Align = alClient
     MultiLine = True
-    TabIndex = 6
+    TabIndex = 0
     TabOrder = 0
     OnChange = PagesControlChange
     Options = [nboMultiLine]
@@ -99,7 +99,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
       object cbManualURL: TCheckBox
         Left = 4
-        Height = 17
+        Height = 19
         Top = 54
         Width = 168
         Action = ActManual
@@ -967,7 +967,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         TabOrder = 0
         object cbLaunchWaptConsoleOnExit: TCheckBox
           Left = 4
-          Height = 17
+          Height = 19
           Top = 4
           Width = 285
           Caption = 'Lancer la console WAPT après le démarrage du serveur'
