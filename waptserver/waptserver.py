@@ -1111,6 +1111,23 @@ def install_windows_nssm_service(service_name,service_binary,service_parameters,
         #(path,keyname) = fullpath.rsplit('\\',1)
         #registry_set(root,path,keyname,service_dependencies,REG_MULTI_SZ)
 
+def make_apache_config(wapt_rootdir, wapt_folder):
+    import jinja2
+    import os
+    ap_conf_dir = wapt_rootdir + '/apache-win32/conf/'
+    ap_file_name = 'httpd.conf'
+    ap_conf_file = ap_confdir + ap_file_name
+    if wapt_folder.endswith('\\') or wapt_folder.endswith('/'):
+        wapt_folder = wapt_folder[:-1]
+    wapt_docroot = os.path.split(wapt_folder)
+    jinja_env = jinja2.Environment(FileSystemLoader(searchpath=ap_conf_dir))
+    template = jinja_env.get_template(ap_file_name + '.j2')
+    template_variables = {'wapt_repository_path': wapt_docroot, 'wapt_fqdn': 'wapt.tranquil.it'}
+    config_string = template.render(template_variables)
+    dst_file = file(ap_conf_file + '.tmp', 'wt')
+    dst_file.write(config_string)
+    dst_file.close()
+    os.rename(ap_conf_file + '.tmp', ap_conf_file)
 
 def install_windows_service():
     """Setup waptserver, waptmongodb et waptapache as a windows Service managed by nssm
@@ -1123,8 +1140,10 @@ def install_windows_service():
     service_logfile = os.path.join(log_directory,'nssm_waptmongodb.log')
     install_windows_nssm_service("WAPTMongodb",service_binary,service_parameters,service_logfile)
 
+    # XXX
+    make_httpd_config(wapt_root_dir, wapt_folder)
 
-    # register apache frontd
+    # register apache frontend
     service_binary =os.path.abspath(os.path.join(wapt_root_dir,'waptserver','apache-win32','bin','httpd.exe'))
     service_parameters = ""
     service_logfile = os.path.join(log_directory,'nssm_apache.log')
