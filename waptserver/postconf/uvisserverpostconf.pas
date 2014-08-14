@@ -272,8 +272,8 @@ begin
   begin
     edWAPTRepoURL.Enabled := False;
     edWAPTServerURL.Enabled := False;
-    edWAPTRepoURL.Text := Format('http://%s:8080/wapt',[EdWAPTServerName.Text]);
-    edWAPTServerURL.Text := Format('http://%s:8080',[EdWAPTServerName.Text]);
+    edWAPTRepoURL.Text := Format('http://%s/wapt',[EdWAPTServerName.Text]);
+    edWAPTServerURL.Text := Format('http://%s',[EdWAPTServerName.Text]);
   end
   else
   begin

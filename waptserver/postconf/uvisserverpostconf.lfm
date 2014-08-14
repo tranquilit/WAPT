@@ -202,6 +202,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Caption = 'Button1'
         OnClick = Button1Click
         TabOrder = 7
+        Visible = False
       end
     end
     object pgPassword: TTabSheet
