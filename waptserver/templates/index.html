@@ -3,11 +3,10 @@
   <meta charset="UTF-8">
   <title>WAPT SERVER Web Console</title>
   <link rel="stylesheet" type="text/css" media="all" href="./static/wp-content/themes/tranquilit/style.css">
-  <meta name="description" content="Une gamme de services pour vous accompagner dans la gestion de votre infrastructure : infogérance de systèmes, support N3, conseils spécialisés">
+  <meta name="description" content="Serveur WAPT">
   <link rel="alternate" type="application/rss+xml" title="Tranquil IT Systems » Flux" href="./static/feed/">
   <link rel="alternate" type="application/rss+xml" title="Tranquil IT Systems » Flux des commentaires" href="./static/comments/feed/">
-  <link rel="stylesheet" id="wpgform-css-css" href="./static/wp-content/plugins/wpgform/css/wpgform.css?ver=3.5.2" type="text/css" media="all">
-  <script type="text/javascript" src="./static/wp-includes/js/jquery/jquery.js?ver=1.8.3"></script>
+  <script type="text/javascript" src="./static/jquery.js"></script>
   <link rel="canonical" href="./static/">
   <style type="text/css">
 sup {
@@ -39,74 +38,25 @@ sub {
 /* because formatting .numbers should consider your current font settings, we will not style it here */
   </style>
 
-  <style type="text/css" media="all">
-/* <![CDATA[ */
-@import url("./static/wp-content/plugins/wp-table-reloaded/css/plugin.css?ver=1.9.4");
-@import url("./static/wp-content/plugins/wp-table-reloaded/css/datatables.css?ver=1.9.4");
-.wp-table-reloaded .odd td {
-    background-color: #FAFAFA;
-    padding-left: 10px;
-    padding-top: 15px;
-    padding-right: 5px;
-    padding-bottom: 10px;
-    border: 1px solid #FFFFFF;
-}
 
-.wp-table-reloaded th {
-    background-color: #FAFAFA;
-    padding-left: 10px;
-    padding-top: 15px;
-    padding-right: 5px;
-    padding-bottom: 10px;
-    border: 1px solid #FFFFFF;
-    color: #3D3D3D !important;
-}
-/* ]]> */
-  </style>
 
   <style type="text/css" id="custom-background-css">
 body.custom-background { background-color: #f1f1f1; }
   </style><!-- Include the Nivo Slider CSS file -->
-
-  <link rel="stylesheet" href="./static/wp-content/themes/tranquilit/css/nivo-slider.css" type="text/css" media="screen">
-
-<!-- Include the Nivo Slider JS file -->
-
-  <script src="./static/wp-content/themes/tranquilit/js/jquery.nivo.slider.pack.js" type="text/javascript"></script>
-
-  <script type="text/javascript">
-jQuery(window).load(function() {
-	jQuery('#slider').nivoSlider({
-		effect:'fade',
-		slices:15,
-		animSpeed:800,
-		pauseTime:6000,
-		directionNav:true, //Next and Prev
-		directionNavHide:true, //Only show on hover
-		controlNav:true
-	});
+ 
+  
+<script src="./static/jquery.zrssfeed.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+$(document).ready(function () {
+	$('#actualites').rssfeed('http://www.tranquil-it-systems.fr/cat/news/news-wapt/feed/');
 });
-  </script>
+</script>
 
-  <script type="text/javascript">
-jQuery(document).ready(
-	function()
-	{
-		jQuery("#news").newsTicker();
-	}
-);
-  </script>
+
+
 <!--[if lt IE 8]><link rel="stylesheet" href="./static/wp-content/themes/tranquilit/css/ie.css" type="text/css" media="screen, projection"/><![endif]-->
 
-  <style type="text/css" scoped="">
-        @import url('./static/wp-content/plugins/ml-slider/assets/metaslider/public.css?ver=2.1.6');
-        @import url('./static/wp-content/plugins/ml-slider/assets/sliders/flexslider/flexslider.css?ver=2.1.6');
-    </style>
-
-  <style type="text/css" scoped="">
-        @import url('./static/wp-content/plugins/ml-slider/assets/metaslider/public.css?ver=2.1.6');
-        @import url('./static/wp-content/plugins/ml-slider/assets/sliders/flexslider/flexslider.css?ver=2.1.6');
-    </style>
+  
 </head><body class="home page page-id-567 page-template page-template-page-home-php custom-background">
 <!--[if lte IE 7]>
 
@@ -130,9 +80,9 @@ jQuery(document).ready(
 <div class="skip-link screen-reader-text"><a href="#content" title="Aller au contenu">Aller au contenu</a></div>
 <div class="menu-header">
 <ul id="menu-main" class="menu">
-  <li id="menu-item-2912" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-567 current_page_item menu-item-2912"><a href="./static/">Accueil</a></li>
-  <li id="menu-item-3070" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3070"><a href="http://wapt/wapt/">Dépôts WAPT</a></li>
-  <li id="menu-item-310" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-310"><a href="http://wapt.tranquil.it/wapt/">Dépôts TIS</a></li>
+  <li id="menu-item-2912" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-567 current_page_item menu-item-2912"><a href="#">Accueil</a></li>
+  <li id="menu-item-3070" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3070"><a href="http://wapt/wapt/">Dépôt privé</a></li>
+  <li id="menu-item-310" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-310"><a href="http://wapt.tranquil.it/">Dépôts TIS</a></li>
   <li id="menu-item-311" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-311"><a href="http://dev.tranquil.it/index.php/WAPT">Wiki WAPT</a></li>
   <li id="menu-item-2443" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2443"><a href="http://lists.tranquil.it/pipermail/wapt/">Mailing list</a></li>
 </ul>
@@ -156,12 +106,12 @@ jQuery(document).ready(
     <tr>
       <td bgcolor="#f6f6f6">
       <ul>
-        <li><a href="/wapt/waptsetup.exe">WaptSetup</a></li>
-        <li><a href="/wapt/waptconsole.exe">WAPTConsole</a><br>
-        </li>
-        <li><a href="/wapt/tranquilit.crt">Certificats</a></li>
+		<br>
+        <li><a href="/wapt/waptsetup.exe"><strong>Agent WAPT</strong></a></li>
+        <br>
+        <li><a href="/ssl/">Certificats</a></li>
         <li><a href="/wapt/">Dépôt privé</a></li>
-        <li><a href="http://wapt.tranquil.it/wapt/">Dépôt TIS</a><br>
+        <li><a href="http://wapt.tranquil.it/">Dépôt TIS</a><br>
         </li>
       </ul>
       </td>
@@ -180,7 +130,7 @@ jQuery(document).ready(
         <li><a href="http://dev.tranquil.it/index.php/WAPT_-_apt-get_pour_Windows">WIki
 WAPT&nbsp;</a></li>
         <li><a title="Support niveau 3" href="http://lists.tranquil.it/listinfo/wapt">Archives mailing list</a></li>
-        <li><a href="http://roundup.tranquil.it/wapt/"><span style="text-decoration: underline;">Bugzilla</span></a><br>
+        <li><a href="http://roundup.tranquil.it/wapt/"><span style="text-decoration: underline;">Gestionnaire de bugs (roundup)</span></a><br>
         </li>
       </ul>
       </td>
@@ -208,56 +158,23 @@ WAPT</a><br>
 </div>
 <div class="span-6">
 <a class="toc-anchor" name="notre-societe"></a>
-<h2 style="text-align: center;"><a href="./static/societe/">WAPTSERVER<br>
-</a></h2>
-<p>Bienvenue sur l'interface WEB de WAPTServer. Le serveur WAPT est
-administré principalement à travers la console WAPT, que l'on peut
-installer avec l'utilitaire <span style="font-weight: bold;">wapt-get </span>ou
-le télécharger à travers ce lien : <a href="./wapt/waptconsole.exe">waptconsole.exe</a></p>
-<p>L'installation d'une infrastructure WAPT se fait en <span style="font-weight: bold;">quatre</span><strong> étapes</strong> :</p>
-<ul>
-  <li><strong>Installation du serveur WAPT</strong> : si vous voyez
-cette page, c'est que c'est déjà fait ;</li>
-  <li><span style="font-weight: bold;">Créer un certificat auto signé,
-ou bien récupérer un certificat existant</span>
-: le certificatat permettra de signer les paquets, et ainsi garantir
-que seul les paquets validé par la DSI seront bien installé ;<br>
-    <strong></strong></li>
-  <li><strong>Créer un installeur waptsetup.exe personalisé</strong> :
-c'est un installeur qui prendra en compte les spécificité&nbsp; sur
-mesure ou la fourniture de conseils nécessitant une maîtrise technique
-profonde et étendue des organes du SI pour les structures de plus
-grande taille;</li>
-  <li><span style="font-weight: bold;">Déployer l'installeur
-waptsetup.exe sur le parc Windows</span> : le déploiement peut se à
-l'aide d'une GPO<br>
-  </li>
-</ul>
-<table>
-  <tbody>
-    <tr>
-      <td valign="top" width="200"> <a class="toc-anchor" name="nos-valeurs"></a>
-      <h3>Nombres de postes<br>
-      </h3>
-      <ul>
-        <li>Lorem ipsum</li>
-      </ul>
-      <br>
-      </td>
-      <td valign="top" width="80"><br>
-      </td>
-      <td valign="top" width="200"> <a class="toc-anchor" name="notre-equipe"></a>
-      <h3>Nombres de paquets<br>
-      </h3>
-      <ul>
-        <li>Lorem ipsum<br>
-        </li>
-      </ul>
-      <br>
-      </td>
-    </tr>
-  </tbody>
-</table>
+<h2>Serveur WAPT</h2>
+<p>L'administration du serveur WAPT se fait à travers la console WAPT qui s'installe sur un poste Windows.
+Lors de l'installation du serveur WAPT sous Windows, la console est installée par défaut et peut être trouvé 
+dans le menu démarré. 
+</p>
+<p>
+Lors de l'installation du serveur WAPT sous Linux, il faut ensuite installer le client WAPT sur une machine
+d'administration et lancer la commande depuis le menu démarrer/tout les programmes.
+</p>
+<p>Pour intégrer un nouveau poste au serveur WAPT à la main, télécharger l'<a href="/wapt/waptsetup.exe">agent WAPT</a> dans le menu
+à droite. La configuration de l'agent a été effectué par le serveur et les paramètres par défaut sont les bons. Une fois le client WAPT 
+installé, vous le retrouver dans votre console.
+</p>
+<p>Pour plus d'information, n'hésitez pas à vous reporter à la documentation sur le site <a href="http://dev.tranquil.it/">dev.tranquil.it</a> ou sur la 
+mailing liste.
+</p>
+
 </div>
 </div>
 <br>
@@ -266,166 +183,14 @@ l'aide d'une GPO<br>
 <ul class="xoxo">
   <li id="news" class="widget-container widget_recent_entries">
     <h2 class="widget-title">Actualités</h2>
-    <ul>
-    </ul>
+	<div id="actualites"></div>
   </li>
 </ul>
 <h3><br>
 </h3>
 <br>
-<div style="margin: 0pt auto; max-width: 150px;" class="metaslider metaslider-flex metaslider-3646 ml-slider">
-<div id="metaslider_container_3646">
-<div id="metaslider_3646" class="flexslider">
-<ul class="slides">
-  <li style="display: none;"> <a href="./static/references/collectivites-institutions/cci-du-maine-et-loire/" target="_blank"> <img src="./static/wp-content/uploads/2013/06/slider-logo-CCI-49.jpg" alt="" height="101" width="150"> </a> <br>
-    <br>
-    <br>
-    <br>
-  <br>
-</li>
-  <li style="display: none;"> <a href="./static/references/grands-comptes/areva-stmi/" target="_blank">
-    <img src="./static/wp-content/uploads/2013/06/slider-logo_A_STMI.jpg" alt="" height="101" width="150"> </a> <br>
-    <br>
-    <br>
-    <br>
-  <br>
-</li>
-  <li style="display: none;"> <a href="./static/references/collectivites-institutions/mairie-de-machecoul-44/" target="_blank"> <img src="./static/wp-content/uploads/2013/06/slider-logo-machecoul.jpg" alt="" height="101" width="150"> </a> <br>
-    <br>
-    <br>
-    <br>
-  <br>
-</li>
-  <li style="display: none;"> <a href="./static/mairie-de-enghien-les-bains/" target="_blank"> <img src="./static/wp-content/uploads/2013/06/slider-logo_enghien.jpg" alt="" height="101" width="150"> </a> <br>
-    <br>
-    <br>
-    <br>
-  <br>
-</li>
-  <li style="display: none;"> <a href="./static/references/tpe/" target="_blank"> <img src="./static/wp-content/uploads/2013/06/slider-logo-ouestfm.gif" alt="" height="101" width="150"> </a> <br>
-    <br>
-    <br>
-    <br>
-  <br>
-</li>
-  <li style="display: none;"> <a href="./static/references/collectivites-institutions/mairie-de-challans/" target="_blank"> <img src="./static/wp-content/uploads/2013/06/slider-logo_challans.jpeg" alt="" height="101" width="150"> </a> <br>
-    <br>
-    <br>
-    <br>
-  <br>
-</li>
-  <li style="display: none;"> <a href="./static/references/collectivites-institutions/direction-regionale-des-affaires-culturelles-des-pays-de-la-loire-drac/" target="_blank"> <img src="./static/wp-content/uploads/2013/06/slider-logo_DRAC44.jpg" alt="" height="101" width="150"> </a> <br>
-    <br>
-    <br>
-    <br>
-  <br>
-</li>
-  <li style="display: none;"> <a href="./static/references/tpe/" target="_blank"> <img src="./static/wp-content/uploads/2013/06/slider-logo_lucet.jpeg" alt="" height="101" width="150"> </a> <br>
-    <br>
-    <br>
-    <br>
-  <br>
-</li>
-  <li style="display: none;"> <a href="./static/references/etablissements-denseignement/institut-de-philosophie-comparee-ipc/" target="_blank"> <img src="./static/wp-content/uploads/2013/06/slider-logo_ipc-148x100.jpeg" alt="" height="101" width="150"> </a> <br>
-    <br>
-    <br>
-    <br>
-  <br>
-</li>
-  <li style="display: none;"> <a href="./static/le-phare/" target="_blank"> <img src="./static/wp-content/uploads/2013/07/slider-logo_lephare.png" alt="" height="101" width="150"> </a> <br>
-    <br>
-    <br>
-    <br>
-  <br>
-</li>
-  <li style="display: none;"> <a href="./static/references/pme/shapers-france-dpt-85/" target="_blank">
-    <img src="./static/wp-content/uploads/2013/06/slider-logo_shapers.png" alt="" height="101" width="150"> </a> <br>
-    <br>
-    <br>
-    <br>
-  <br>
-</li>
-  <li style="display: none;"> <a href="./static/references/pme/convenant-sa/" target="_blank"> <img src="./static/wp-content/uploads/2013/07/slider-logo-convenant.png" alt="" height="101" width="150"> </a> <br>
-    <br>
-    <br>
-    <br>
-  <br>
-</li>
-  <li style="display: none;"> <a href="./static/references/tpe/" target="_blank"> <img src="./static/wp-content/uploads/2013/06/slider-logo-mabo.png" alt="" height="101" width="150"> </a> <br>
-    <br>
-    <br>
-    <br>
-  <br>
-</li>
-  <li style="display: none;"> <a href="./static/references/pme/le-comptoir-des-lustres/" target="_blank">
-    <img src="./static/wp-content/uploads/2013/06/slider-logo-CDL.gif" alt="" height="101" width="150"> </a> <br>
-    <br>
-    <br>
-    <br>
-  <br>
-</li>
-  <li style="display: none;"> <a href="./static/references/collectivites-institutions/mairie-de-varades-44/" target="_blank"> <img src="./static/wp-content/uploads/2013/06/slider-logo_varades.png" alt="" height="101" width="150"> </a> <br>
-    <br>
-    <br>
-    <br>
-  <br>
-</li>
-  <li style="display: none;"> <a href="./static/references/tpe/" target="_blank"> <img src="./static/wp-content/uploads/2013/07/slider-logo_lost-in-france.png" alt="" height="101" width="150"> </a> <br>
-    <br>
-    <br>
-    <br>
-  <br>
-</li>
-  <li style="display: none;"> <a href="./static/references/collectivites-institutions/mairie-de-bauge-en-anjou/" target="_blank"> <img src="./static/wp-content/uploads/2013/06/slider-logo_nouvelle_ville_bauge.jpg" alt="" height="101" width="150"> </a> <br>
-    <br>
-    <br>
-    <br>
-  <br>
-</li>
-  <li style="display: none;"> <a href="./static/references/collectivites-institutions/communaute-de-communes-du-canton-de-montrevault-dpt-49/" target="_blank"> <img src="./static/wp-content/uploads/2013/07/slider-logo_montrevault-communaute.png" alt="" height="101" width="150"> </a> <br>
-    <br>
-    <br>
-    <br>
-  <br>
-</li>
-  <li style="display: none;"> <a href="./static/mairie-du-cellier-44/" target="_blank"> <img src="./static/wp-content/uploads/2013/06/slider-logo_Cellier.jpg" alt="" height="101" width="150"> </a> <br>
-    <br>
-    <br>
-    <br>
-  <br>
-</li>
-  <li style="display: none;"> <a href="./static/references/etablissements-denseignement/" target="_blank"> <img src="./static/wp-content/uploads/2013/06/slider-logo-CR_PdL.jpg" alt="" height="101" width="150"> </a> <br>
-    <br>
-    <br>
-    <br>
-  <br>
-</li>
-</ul>
+
 </div>
-</div>
-<script type="text/javascript">
-        var metaslider_3646 = function($) {
-            $('#metaslider_3646').flexslider({
-                slideshowSpeed:6000,
-                animation:"slide",
-                controlNav:false,
-                directionNav:true,
-                pauseOnHover:true,
-                direction:"horizontal",
-                reverse:false,
-                animationSpeed:600,
-                prevText:"<",
-                nextText:">",
-                easing:"linear",
-                slideshow:true,
-                useCSS:false
-            });
-        };
-        var timer_metaslider_3646 = function() {
-            var slider = !window.jQuery ? window.setTimeout(timer_metaslider_3646, 100) : !jQuery.isReady ? window.setTimeout(timer_metaslider_3646, 100) : metaslider_3646(window.jQuery);
-        };
-        timer_metaslider_3646();
-    </script></div>
 </div>
 </div>
 <br>
@@ -434,21 +199,14 @@ l'aide d'une GPO<br>
 <div role="complementary" class="clear span-12">
 <div id="footer2">
 <div class="menu-footer1-container">
-<ul id="menu-footer1" class="clearfix">
-  <li id="menu-item-3069" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3069"><a href="./static/les-produits-tranquil-systems/">Lorem ipsum</a>
-    <ul class="sub-menu">
-      <li id="menu-item-3076" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3076">lorem
-ipsum</li>
-    </ul>
-  </li>
-</ul>
+
 </div>
 </div>
 </div>
 <br>
 <div id="site-info" class="clear span-12 last append-bottom">
 <div class="span-3">
-<div style="padding-left: 1.5em;">© 2010-2013 <a href="./static/" title="Tranquil IT Systems" rel="home"> Tranquil IT Systems</a></div>
+<div style="padding-left: 1.5em;">© 2010-2014 <a href="./static/" title="Tranquil IT Systems" rel="home"> Tranquil IT Systems</a></div>
 </div>
 </div>
 </div>
@@ -467,10 +225,5 @@ function tocToggle(toc, box) {
 	});
 }
 </script>
-<script type="text/javascript" src="./static/jquery.validate.min.js?ver=3.5.2"></script>
-<script type="text/javascript" src="./static/wp-content/plugins/wpgform/js/jquery.columnizer.js?ver=3.5.2"></script>
-<script type="text/javascript" src="./static/wp-content/plugins/contact-form-7/includes/js/jquery.form.min.js?ver=3.36.0-2013.06.16"></script>
-<script type="text/javascript" src="./static/wp-content/plugins/contact-form-7/includes/js/scripts.js?ver=3.4.2"></script>
-<script type="text/javascript" src="./static/wp-content/plugins/ml-slider/assets/sliders/flexslider/jquery.flexslider-min.js?ver=2.1.6"></script>
-<script type="text/javascript" src="./static/wp-content/plugins/ml-slider/assets/easing/jQuery.easing.min.js?ver=2.1.6"></script>
+
 </body></html>
