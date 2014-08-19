@@ -124,7 +124,7 @@ parser.add_option("-k","--private-key", dest="private_key",    default='', help=
 parser.add_option("-w","--private-key-passwd", dest="private_key_passwd", default='', help="Path to the password of the private key. (default: %default)")
 parser.add_option("-U","--user", dest="user", default=None, help="Interactive user (default: no change)")
 parser.add_option("-g","--usergroups", dest="usergroups", default='[]', help="Groups of the final user as a JSon array for checking install permission (default: %default)")
-parser.add_option("-t","--maxttl", type='int',  dest="max_ttl", default=60, help="Max run time of wapt-get process before being killed by subsequent wapt-get (default: %default)")
+parser.add_option("-t","--maxttl", type='int',  dest="max_ttl", default=60, help="Max run time in minutes of wapt-get process before being killed by subsequent wapt-get (default: %default minutes)")
 parser.add_option("-L","--language",    dest="language",    default=setuphelpers.get_language(), help="Override language for install (example : fr) (default: %default)")
 
 (options,args) = parser.parse_args()
