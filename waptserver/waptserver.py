@@ -921,7 +921,7 @@ def login():
                 if check_auth(d["username"], d["password"]):
                     if "newPass" in d:
                         global wapt_password
-                        wapt_password = hashlib.sha1(d["newPass"]).hexdigest()
+                        wapt_password = sha512_crypt.encrypt(d["newPass"], rounds=100000)
                         config.set('options', 'wapt_password', wapt_password)
                         with open(os.path.join(wapt_root_dir,'waptserver','waptserver.ini'), 'wb') as configfile:
                             config.write(configfile)
