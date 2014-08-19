@@ -36,6 +36,7 @@ from flask import request, Flask,Response, send_from_directory, session, g, redi
 import time
 import json
 import hashlib
+from passlib.hash import sha512_crypt
 import pymongo
 from pymongo import MongoClient
 from werkzeug import secure_filename
@@ -464,7 +465,8 @@ def check_auth(username, password):
     """
     return wapt_user == username and (\
             (wapt_password == hashlib.sha1(password).hexdigest()) or\
-            (wapt_password == hashlib.sha512(password).hexdigest()))
+            (wapt_password == hashlib.sha512(password).hexdigest()) or \
+            (sha512_crypt.identify(wapt_password) and sha512_crypt.verify(password, wapt_password)))
 
 
 def authenticate():
