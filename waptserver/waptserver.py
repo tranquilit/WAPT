@@ -464,7 +464,7 @@ def check_auth(username, password):
     password combination is valid.
     """
 
-    def any(l):
+    def any_(l):
         """Check if any element in the list is true, in constant time.
         """
         ret = False
@@ -481,7 +481,7 @@ def check_auth(username, password):
     pass_sha1_ok = wapt_password == hashlib.sha1(password).hexdigest()
     pass_sha512_ok = wapt_password == hashlib.sha512(password).hexdigest()
 
-    if is_sha512_crypt == sha512_crypt.identify(wapt_password):
+    if sha512_crypt.identify(wapt_password):
         ret = sha512_crypt.verify(password, wapt_password)
         pass_sha512_crypt_ok = ret
     else:
@@ -489,7 +489,7 @@ def check_auth(username, password):
         ret = sha512_crypt.verify(password, '$6$rounds=100000$UyHraKoqY8Wm27eT$wsaNea6wq1ZHPeiJljLQRpuSHD3BaxPU9c8yacw5dy0z8TshCIMUjaVFCU93Lm2lJFMVIOwVIXozsw5kenxzh/')
         pass_sha512_crypt_ok = False
 
-    return any(pass_sha1_ok, pass_sha512_ok, pass_sha512_crypt_ok) and user_ok
+    return any_([pass_sha1_ok, pass_sha512_ok, pass_sha512_crypt_ok]) and user_ok
 
 
 def authenticate():
