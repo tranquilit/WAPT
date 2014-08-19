@@ -463,10 +463,33 @@ def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
-    return wapt_user == username and (\
-            (wapt_password == hashlib.sha1(password).hexdigest()) or\
-            (wapt_password == hashlib.sha512(password).hexdigest()) or \
-            (sha512_crypt.identify(wapt_password) and sha512_crypt.verify(password, wapt_password)))
+
+    def any(l):
+        """Check if any element in the list is true, in constant time.
+        """
+        ret = False
+        for e in l:
+            if e:
+                ret = True
+        return ret
+
+    user_ok = False
+    pass_sha1_ok = pass_sha512_ok = pass_sha512_crypt_ok = False
+
+    user_ok = wapt_user == username
+
+    pass_sha1_ok = wapt_password == hashlib.sha1(password).hexdigest()
+    pass_sha512_ok = wapt_password == hashlib.sha512(password).hexdigest()
+
+    if is_sha512_crypt = sha512_crypt.identify(wapt_password):
+        ret = sha512_crypt.verify(password, wapt_password)
+        pass_sha512_crypt_ok = ret
+    else:
+        #                                    sha512_crypt.encrypt('TIS', rounds=1000000)
+        ret = sha512_crypt.verify(password, '$6$rounds=100000$UyHraKoqY8Wm27eT$wsaNea6wq1ZHPeiJljLQRpuSHD3BaxPU9c8yacw5dy0z8TshCIMUjaVFCU93Lm2lJFMVIOwVIXozsw5kenxzh/')
+        pass_sha512_crypt_ok = False
+
+    return any(pass_sha1_ok, pass_sha512_ok, pass_sha512_crypt_ok) and user_ok
 
 
 def authenticate():
