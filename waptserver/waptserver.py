@@ -481,7 +481,7 @@ def check_auth(username, password):
     pass_sha1_ok = wapt_password == hashlib.sha1(password).hexdigest()
     pass_sha512_ok = wapt_password == hashlib.sha512(password).hexdigest()
 
-    if is_sha512_crypt = sha512_crypt.identify(wapt_password):
+    if is_sha512_crypt == sha512_crypt.identify(wapt_password):
         ret = sha512_crypt.verify(password, wapt_password)
         pass_sha512_crypt_ok = ret
     else:
