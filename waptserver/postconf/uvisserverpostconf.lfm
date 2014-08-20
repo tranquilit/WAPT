@@ -1,7 +1,7 @@
 object VisWAPTServerPostConf: TVisWAPTServerPostConf
-  Left = 372
+  Left = 391
   Height = 345
-  Top = 210
+  Top = 30
   Width = 680
   Caption = 'Configuration du serveur WAPT pour Windows'
   ClientHeight = 345
@@ -101,7 +101,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Left = 4
         Height = 19
         Top = 54
-        Width = 168
+        Width = 170
         Action = ActManual
         TabOrder = 2
       end
@@ -711,9 +711,6 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           '<body>'
           'Le serveur est prêt à être démarré.<br>'
           'Les paramètres vont être copiés dans le fichier wapt-get.ini<br>'
-          'Si le firewall de votre serveur est actif, ne pas oublier d''ouvrir le port 8080 pour '
-          'que les clients WAPT puissent enregistrer leur inventaire et récupérer leurs '
-          'paquets<br>'
           '</body>'
           '</html>'
         )
