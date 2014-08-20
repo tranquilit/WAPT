@@ -328,10 +328,18 @@ begin
   result := Sto_RedirectedExecute(cmd);
 end;
 
+//function GetSHA512Crypt(password:String):String;
+//var cmd:String;
+//begin
+//  cmd := '{app}\waptpython.exe {app}\waptserver\waptgenpass.py'; 
+//  StrReplace(cmd,'{app}',WaptBaseDir,[rfReplaceAll]);
+//  Result := Sto_RedirectedExecute(cmd, password);
+//end;
 
 procedure TVisWAPTServerPostConf.actWriteConfStartServeExecute(Sender: TObject);
 var
   ini:TMemIniFile;
+  //derived_pass:String;
 begin
   CurrentVisLoading := TVisLoading.Create(Self);
   with CurrentVisLoading do
@@ -354,7 +362,10 @@ begin
 
     ProgressTitle('Mise en place mot de passe du serveur');
     ProgressStep(3,8);
-    IniWriteString(WaptBaseDir+'\waptserver\waptserver.ini' ,'options','wapt_password',sha1.SHA1Print(sha1.SHA1String(EdPwd1.Text)));
+	IniWriteString(WaptBaseDir+'\waptserver\waptserver.ini' ,'options','wapt_password',sha1.SHA1Print(sha1.SHA1String(EdPwd1.Text)));
+	//derived_pass := GenSHA512Crypt(EdPwd1.Text)
+	//if derived_pass = '' then derived_pass := sha1.SHA1Print(sha1.SHA1String(EdPwd1.Text))
+    //IniWriteString(WaptBaseDir+'\waptserver\waptserver.ini' ,'options','wapt_password',derived_pass);
 
     if CBOpenFirewall.Checked then
     begin
