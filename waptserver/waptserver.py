@@ -946,6 +946,8 @@ def login():
                         global wapt_password
                         wapt_password = sha512_crypt.encrypt(d["newPass"], rounds=100000)
                         config.set('options', 'wapt_password', wapt_password)
+                        # XXX Et si l'administrateur a entre temps modifié
+                        # la configuration ?
                         with open(os.path.join(wapt_root_dir,'waptserver','waptserver.ini'), 'wb') as configfile:
                             config.write(configfile)
                         # Graceful reload pour prendre en compte le nouveau mot
