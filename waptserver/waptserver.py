@@ -948,6 +948,14 @@ def login():
                         config.set('options', 'wapt_password', wapt_password)
                         with open(os.path.join(wapt_root_dir,'waptserver','waptserver.ini'), 'wb') as configfile:
                             config.write(configfile)
+                        # Graceful reload pour prendre en compte le nouveau mot
+                        # mot de passe dans tous les workers uwsgi
+                        if os.name == "posix":
+                            try:
+                                import uwsgi
+                                uwsgi.reload()
+                            except ImportError:
+                                pass
                     return "True"
             return "False"
         else:
