@@ -935,6 +935,13 @@ def deploy_wapt():
                          mimetype="application/json")
 
 
+def rewrite_password(cfg_file, password):
+    config = ConfigParser.RawConfigParser()
+    config.read(cfg_file)
+    config.set('options', 'wapt_password', password)
+    with open(cfg_file, 'wb') as cfg:
+        config.write(cfg)
+
 @app.route('/login',methods=['POST'])
 def login():
     try:
@@ -945,11 +952,7 @@ def login():
                     if "newPass" in d:
                         global wapt_password
                         wapt_password = sha512_crypt.encrypt(d["newPass"], rounds=100000)
-                        config.set('options', 'wapt_password', wapt_password)
-                        # XXX Et si l'administrateur a entre temps modifié
-                        # la configuration ?
-                        with open(os.path.join(wapt_root_dir,'waptserver','waptserver.ini'), 'wb') as configfile:
-                            config.write(configfile)
+                        rewrite_password(options.configfile, wapt_password)
                         # Graceful reload pour prendre en compte le nouveau mot
                         # mot de passe dans tous les workers uwsgi
                         if os.name == "posix":
