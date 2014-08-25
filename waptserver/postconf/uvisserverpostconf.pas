@@ -319,7 +319,7 @@ end;
 
 procedure TVisWAPTServerPostConf.actPreviousUpdate(Sender: TObject);
 begin
-  actPrevious.Enabled:=(PagesControl.ActivePageIndex>0) and (PagesControl.ActivePageIndex<PagesControl.PageCount-1);
+  actPrevious.Enabled:=(PagesControl.ActivePageIndex>0) and (PagesControl.ActivePageIndex<=PagesControl.PageCount-1);
 end;
 
 function runwapt(cmd:String):String;
