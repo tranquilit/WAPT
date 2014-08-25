@@ -1,7 +1,7 @@
 object VisWAPTServerPostConf: TVisWAPTServerPostConf
-  Left = 391
+  Left = 413
   Height = 345
-  Top = 30
+  Top = 195
   Width = 680
   Caption = 'Configuration du serveur WAPT pour Windows'
   ClientHeight = 345
@@ -101,7 +101,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Left = 4
         Height = 19
         Top = 54
-        Width = 170
+        Width = 168
         Action = ActManual
         TabOrder = 2
       end
@@ -921,10 +921,17 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           '8">'
           '</head>'
           '<body>'
-          'Vous pouvez créer un installeur client '
-          'WAPT avec '
-          'votre certificat et le déployer par '
-          'GPO.<br>'
+          'L''installeur personnalisé (waptsetup.exe) sert à incorporer votre'
+          ' certificat dans l''agent WAPT.'
+          'L''agent WAPT doit être installé sur chaque poste que vous souhaitez'
+          ' administrer.'
+          'Pour l''installer, plusieurs méthodes sont possibles&nbsp;:'
+          '<ul>'
+          '<li> depuis une clé USB </li>'
+          '<li> depuis l''adresse http://nom-du-serveur-wapt/wapt/waptsetup.exe </li>'
+          '<li> <a href="http://dev.tranquil.it/index.php/WAPT_-_Déploiement_de_WAPT_par_GPO">déploiement de WAPT par GPO</a> </li>'
+          '</ul>'
+          '<br>'
           'Vous pouvez consulter la '
           'documentation <a'
           'href="http://dev.tranquil.it/scenari/g'
@@ -932,16 +939,6 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           'tup_personnalise_waptconsole.html"'
           '>Génération'
           'depuis la console WAPT</a>'
-          '<br>'
-          'Pour déployer le client WAPT sur les '
-          'postes de votre réseau, consulter '
-          'la'
-          'documentation <a'
-          'href="http://dev.tranquil.it/index.ph'
-          'p/WAPT_-_D'
-          '%C3%A9ploiement_de_WAPT_par_'
-          'GPO"/>Déploiement'
-          'de WAPT par GPO</a>'
           '</body>'
           '</html>'
         )
