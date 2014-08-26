@@ -483,7 +483,7 @@ def check_auth(username, password):
 
     if sha512_crypt.identify(wapt_password):
         pass_sha512_crypt_ok  = sha512_crypt.verify(password, wapt_password)
-    else if bcrypt.identify(wapt_password):
+    elif bcrypt.identify(wapt_password):
         pass_bcrypt_crypt_ok = bcrypt.verify(password, wapt_password)
 
     #                                    sha512_crypt.encrypt('TIS', rounds=1000000)
