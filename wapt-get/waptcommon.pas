@@ -1220,8 +1220,9 @@ begin
     end;
     source := default_public_cert;
     target := ExtractFileDir(iss_template) + '..' + 'ssl' + ExtractFileName(source);
-    if not FileUtil.CopyFile(source,target,True) then
-      raise Exception.CreateFmt('Copie du certificat de %s vers %s impossible',[source,target]);
+    if not FileExists(target) then
+      if not FileUtil.CopyFile(source,target,True) then
+        raise Exception.CreateFmt('Copie du certificat de %s vers %s impossible',[source,target]);
     StringToFile(custom_iss,SOUtils.Join(#13#10,new_iss));
 
     inno_fn :=  wapt_base_dir + '\waptsetup' + '\innosetup' + '\ISCC.exe';
