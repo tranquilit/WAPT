@@ -99,7 +99,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
       object cbManualURL: TCheckBox
         Left = 4
-        Height = 19
+        Height = 17
         Top = 54
         Width = 168
         Action = ActManual
@@ -920,15 +920,26 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           '8">'
           '</head>'
           '<body>'
-          'L''installeur personnalisé (waptsetup.exe) sert à incorporer votre'
+          'L''installeur personnalisé '
+          '(waptsetup.exe) sert à incorporer '
+          'votre'
           ' certificat dans l''agent WAPT.'
-          'L''agent WAPT doit être installé sur chaque poste que vous souhaitez'
+          'L''agent WAPT doit être installé sur '
+          'chaque poste que vous souhaitez'
           ' administrer.'
-          'Pour l''installer, plusieurs méthodes sont possibles&nbsp;:'
+          'Pour l''installer, plusieurs méthodes '
+          'sont possibles&nbsp;:'
           '<ul>'
           '<li> depuis une clé USB </li>'
-          '<li> depuis l''adresse http://nom-du-serveur-wapt/wapt/waptsetup.exe </li>'
-          '<li> <a href="http://dev.tranquil.it/index.php/WAPT_-_Déploiement_de_WAPT_par_GPO">déploiement de WAPT par GPO</a> </li>'
+          '<li> depuis l''adresse http://nom-du-'
+          'serveur-wapt/wapt/waptsetup.exe '
+          '</li>'
+          '<li> <a '
+          'href="http://dev.tranquil.it/index.ph'
+          'p/WAPT_-'
+          '_Déploiement_de_WAPT_par_GPO">'
+          'déploiement de WAPT par GPO</a> '
+          '</li>'
           '</ul>'
           '<br>'
           'Vous pouvez consulter la '
