@@ -4,12 +4,12 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="16">
+    <Units Count="18">
       <Unit0>
         <Filename Value="waptserverpostconf.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptserverpostconf"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="36"/>
       </Unit0>
       <Unit1>
         <Filename Value="uvisserverpostconf.pas"/>
@@ -18,11 +18,12 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisServerPostconf"/>
-        <EditorIndex Value="4"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="349"/>
-        <CursorPos X="142" Y="369"/>
-        <UsageCount Value="23"/>
+        <TopLine Value="249"/>
+        <CursorPos X="102" Y="374"/>
+        <UsageCount Value="36"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -33,19 +34,19 @@
         <WindowIndex Value="0"/>
         <TopLine Value="246"/>
         <CursorPos X="1" Y="258"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="36"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="36"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\..\wapt-get\networkadapterinfo.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="NetworkAdapterInfo"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="36"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\..\waptconsole\uvisloading.pas"/>
@@ -54,12 +55,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvisloading"/>
-        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="17"/>
         <CursorPos X="3" Y="17"/>
-        <UsageCount Value="23"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="36"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\..\..\thtmlport\package\htmlview.pas"/>
@@ -67,7 +66,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit6>
       <Unit7>
@@ -76,15 +75,16 @@
         <WindowIndex Value="0"/>
         <TopLine Value="220"/>
         <CursorPos X="14" Y="233"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\..\..\cryptobboxvcl\Packages\cryptobboxWin.pas"/>
         <UnitName Value="cryptobboxWin"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="7"/>
-        <CursorPos X="30" Y="21"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="1"/>
+        <CursorPos X="60" Y="22"/>
+        <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\..\..\cryptobboxvcl\Sources\SBPKCS12.pas"/>
@@ -92,7 +92,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="364"/>
         <CursorPos X="21" Y="378"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
       </Unit9>
       <Unit10>
         <Filename Value="..\..\..\cryptobboxvcl\Sources\SBSHA2.pas"/>
@@ -100,7 +100,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="193"/>
         <CursorPos X="106" Y="18"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
       </Unit10>
       <Unit11>
         <Filename Value="..\..\..\cryptobboxvcl\Sources\SBCryptoProvWin32.pas"/>
@@ -108,128 +108,62 @@
         <WindowIndex Value="0"/>
         <TopLine Value="391"/>
         <CursorPos X="88" Y="14"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
       </Unit11>
       <Unit12>
         <Filename Value="..\..\..\cryptobboxvcl\Sources\SBBCrypt.pas"/>
         <UnitName Value="SBBCrypt"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="23"/>
-        <CursorPos X="20" Y="35"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <TopLine Value="204"/>
+        <CursorPos X="52" Y="221"/>
+        <UsageCount Value="9"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit12>
       <Unit13>
         <Filename Value="..\..\..\cryptobboxvcl\Sources\SBEncoding.pas"/>
         <UnitName Value="SBEncoding"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="16"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="9"/>
       </Unit13>
       <Unit14>
         <Filename Value="..\..\..\cryptobboxvcl\Sources\SBBlowfish.pas"/>
         <UnitName Value="SBBlowfish"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="710"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="9"/>
       </Unit14>
       <Unit15>
         <Filename Value="..\..\..\cryptobboxvcl\Sources\SBTypes.pas"/>
         <UnitName Value="SBTypes"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="28"/>
-        <CursorPos X="3" Y="41"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <TopLine Value="63"/>
+        <CursorPos X="3" Y="76"/>
+        <UsageCount Value="9"/>
       </Unit15>
+      <Unit16>
+        <Filename Value="..\..\..\cryptobboxvcl\Sources\SBStrUtils.pas"/>
+        <UnitName Value="SBStrUtils"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="437"/>
+        <CursorPos X="10" Y="406"/>
+        <UsageCount Value="9"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="..\..\..\cryptobboxvcl\Sources\SBWinCrypt.pas"/>
+        <UnitName Value="SBWinCrypt"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="2243"/>
+        <CursorPos X="114" Y="17"/>
+        <UsageCount Value="9"/>
+      </Unit17>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="18" HistoryIndex="17">
-      <Position1>
-        <Filename Value="uvisserverpostconf.pas"/>
-        <Caret Line="334" Column="57" TopLine="312"/>
-      </Position1>
-      <Position2>
-        <Filename Value="uvisserverpostconf.pas"/>
-        <Caret Line="133" Column="67" TopLine="121"/>
-      </Position2>
-      <Position3>
-        <Filename Value="uvisserverpostconf.pas"/>
-        <Caret Line="128" Column="52" TopLine="120"/>
-      </Position3>
-      <Position4>
-        <Filename Value="uvisserverpostconf.pas"/>
-        <Caret Line="133" Column="59" TopLine="120"/>
-      </Position4>
-      <Position5>
-        <Filename Value="uvisserverpostconf.pas"/>
-        <Caret Line="369" Column="125" TopLine="357"/>
-      </Position5>
-      <Position6>
-        <Filename Value="uvisserverpostconf.pas"/>
-        <Caret Line="385" Column="20" TopLine="372"/>
-      </Position6>
-      <Position7>
-        <Filename Value="uvisserverpostconf.pas"/>
-        <Caret Line="388" Column="29" TopLine="351"/>
-      </Position7>
-      <Position8>
-        <Filename Value="uvisserverpostconf.pas"/>
-        <Caret Line="11" Column="15" TopLine="1"/>
-      </Position8>
-      <Position9>
-        <Filename Value="uvisserverpostconf.pas"/>
-        <Caret Line="384" Column="20" TopLine="341"/>
-      </Position9>
-      <Position10>
-        <Filename Value="uvisserverpostconf.pas"/>
-        <Caret Line="121" Column="5" TopLine="103"/>
-      </Position10>
-      <Position11>
-        <Filename Value="uvisserverpostconf.pas"/>
-        <Caret Line="372" Column="10" TopLine="363"/>
-      </Position11>
-      <Position12>
-        <Filename Value="..\..\..\cryptobboxvcl\Sources\SBBCrypt.pas"/>
-        <Caret Line="28" Column="31" TopLine="6"/>
-      </Position12>
-      <Position13>
-        <Filename Value="..\..\..\cryptobboxvcl\Sources\SBBCrypt.pas"/>
-        <Caret Line="206" Column="3" TopLine="201"/>
-      </Position13>
-      <Position14>
-        <Filename Value="..\..\..\cryptobboxvcl\Sources\SBBCrypt.pas"/>
-        <Caret Line="94" Column="3" TopLine="97"/>
-      </Position14>
-      <Position15>
-        <Filename Value="..\..\..\cryptobboxvcl\Sources\SBBCrypt.pas"/>
-        <Caret Line="21" Column="3" TopLine="8"/>
-      </Position15>
-      <Position16>
-        <Filename Value="..\..\..\cryptobboxvcl\Sources\SBBCrypt.pas"/>
-        <Caret Line="38" Column="72" TopLine="26"/>
-      </Position16>
-      <Position17>
-        <Filename Value="uvisserverpostconf.pas"/>
-        <Caret Line="369" Column="142" TopLine="349"/>
-      </Position17>
-      <Position18>
-        <Filename Value="..\..\..\cryptobboxvcl\Sources\SBBCrypt.pas"/>
-        <Caret Line="35" Column="20" TopLine="23"/>
-      </Position18>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectSession>
   <EditorMacros Count="0"/>
 </CONFIG>
