@@ -36,7 +36,7 @@ from flask import request, Flask,Response, send_from_directory, session, g, redi
 import time
 import json
 import hashlib
-from passlib.hash import sha512_crypt
+from passlib.hash import sha512_crypt,bcrypt
 import pymongo
 from pymongo import MongoClient
 from werkzeug import secure_filename
@@ -474,7 +474,7 @@ def check_auth(username, password):
         return ret
 
     user_ok = False
-    pass_sha1_ok = pass_sha512_ok = pass_sha512_crypt_ok = False
+    pass_sha1_ok = pass_sha512_ok = pass_sha512_crypt_ok = pass_bcrypt_crypt_ok = False
 
     user_ok = wapt_user == username
 
@@ -482,14 +482,15 @@ def check_auth(username, password):
     pass_sha512_ok = wapt_password == hashlib.sha512(password).hexdigest()
 
     if sha512_crypt.identify(wapt_password):
-        ret = sha512_crypt.verify(password, wapt_password)
-        pass_sha512_crypt_ok = ret
-    else:
-        #                                    sha512_crypt.encrypt('TIS', rounds=1000000)
-        ret = sha512_crypt.verify(password, '$6$rounds=100000$UyHraKoqY8Wm27eT$wsaNea6wq1ZHPeiJljLQRpuSHD3BaxPU9c8yacw5dy0z8TshCIMUjaVFCU93Lm2lJFMVIOwVIXozsw5kenxzh/')
-        pass_sha512_crypt_ok = False
+        pass_sha512_crypt_ok  = sha512_crypt.verify(password, wapt_password)
+    else if bcrypt.identify(wapt_password):
+        pass_bcrypt_crypt_ok = bcrypt.verify(password, wapt_password)
 
-    return any_([pass_sha1_ok, pass_sha512_ok, pass_sha512_crypt_ok]) and user_ok
+    #                                    sha512_crypt.encrypt('TIS', rounds=1000000)
+    #ret = sha512_crypt.verify(password, '$6$rounds=100000$UyHraKoqY8Wm27eT$wsaNea6wq1ZHPeiJljLQRpuSHD3BaxPU9c8yacw5dy0z8TshCIMUjaVFCU93Lm2lJFMVIOwVIXozsw5kenxzh/')
+    #pass_sha512_crypt_ok = False
+
+    return any_([pass_sha1_ok, pass_sha512_ok, pass_sha512_crypt_ok, pass_bcrypt_crypt_ok]) and user_ok
 
 
 def authenticate():
