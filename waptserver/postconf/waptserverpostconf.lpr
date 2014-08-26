@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, pl_richview, pl_fortesreport, pl_synapsevs,
+  Forms, pl_richview,
   uVisServerPostconf, UnitRedirect, waptcommon, networkadapterinfo, uvisloading
   { you can add units after this };
 

@@ -5,8 +5,8 @@ unit uVisServerPostconf;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, IpHtml, Ipfilebroker, RichView, vsVisualSynapse,
-  RLRichText, Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, ExtCtrls,
+  Classes, SysUtils, FileUtil, RichView,
+  Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, ExtCtrls,
   Buttons, ActnList, EditBtn, htmlview, Readhtml, Htmlsubs, IdHTTP,
   IdComponent,uvisLoading;
 
@@ -130,7 +130,7 @@ var
 
 implementation
 uses LCLIntf, Windows,WaptCommon,tisinifiles,superobject,tisutils,soutils,
-    tiscommon,tisstrings,IniFiles,UnitRedirect,sha1,Regex;
+    tiscommon,tisstrings,IniFiles,UnitRedirect,sha1,Regex,cHash;
 {$R *.lfm}
 
 { TVisWAPTServerPostConf }
@@ -362,10 +362,12 @@ begin
 
     ProgressTitle('Mise en place mot de passe du serveur');
     ProgressStep(3,8);
-	IniWriteString(WaptBaseDir+'\waptserver\waptserver.ini' ,'options','wapt_password',sha1.SHA1Print(sha1.SHA1String(EdPwd1.Text)));
+    IniWriteString(WaptBaseDir+'\waptserver\waptserver.ini' ,'Options','wapt_password',cHash.SHA512DigestAsString(cHash.CalcSHA512(EdPwd1.Text)));
 	//derived_pass := GenSHA512Crypt(EdPwd1.Text)
 	//if derived_pass = '' then derived_pass := sha1.SHA1Print(sha1.SHA1String(EdPwd1.Text))
     //IniWriteString(WaptBaseDir+'\waptserver\waptserver.ini' ,'options','wapt_password',derived_pass);
+
+    //IniWriteString(WaptBaseDir+'\waptserver\waptserver.ini' ,'Options','wapt_password',sha1.SHA1Print(sha1.SHA1String(EdPwd1.Text)));
 
     if CBOpenFirewall.Checked then
     begin
