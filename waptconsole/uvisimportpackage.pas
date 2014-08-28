@@ -60,7 +60,7 @@ uses uwaptconsole,tiscommon,soutils,waptcommon,
 procedure TVisImportPackage.ButExtRepoChangeClick(Sender: TObject);
 begin
   ActWAPTLocalConfigExecute(self);
-  urlExternalRepo.Caption := 'Url: ' + WaptExternalRepo;
+  urlExternalRepo.Caption := 'Url: ' + WaptTemplatesRepo;
 end;
 
 procedure TVisImportPackage.EdSearch1KeyPress(Sender: TObject; var Key: char);
@@ -81,7 +81,7 @@ end;
 procedure TVisImportPackage.FormShow(Sender: TObject);
 begin
   GridExternalPackages.LoadSettingsFromIni(Appuserinipath) ;
-  urlExternalRepo.Caption:=  WaptExternalRepo;
+  urlExternalRepo.Caption:=  WaptTemplatesRepo;
   ActSearchExternalPackage.Execute;
 end;
 
@@ -141,8 +141,8 @@ begin
       target := AppLocalDir + 'cache\' + Filename.AsString;
       try
         if not FileExists(target) then
-          Wget(WaptExternalRepo + '/' + FileName.AsString,
-            target, ProgressForm, @updateprogress, True);
+          Wget(WaptTemplatesRepo + '/' + FileName.AsString,
+            target, ProgressForm, @updateprogress, UseProxyForTemplates);
       except
         ShowMessage('Téléchargement annulé');
         exit;

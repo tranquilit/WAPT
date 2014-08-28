@@ -53,7 +53,7 @@ type
     ActDeployWapt: TAction;
     ActSearchGroups: TAction;
     ActWAPTLocalConfig: TAction;
-    ActUpdateWaptGetINI: TAction;
+    ActReloadConfig: TAction;
     actRefresh: TAction;
     actQuit: TAction;
     ActAddGroup: TAction;
@@ -272,7 +272,7 @@ type
     procedure ActSearchHostExecute(Sender: TObject);
     procedure ActSearchPackageExecute(Sender: TObject);
     procedure ActPackagesUpdateExecute(Sender: TObject);
-    procedure ActUpdateWaptGetINIExecute(Sender: TObject);
+    procedure ActReloadConfigExecute(Sender: TObject);
     procedure ActVNCExecute(Sender: TObject);
     procedure ActVNCUpdate(Sender: TObject);
     procedure ActWAPTLocalConfigExecute(Sender: TObject);
@@ -357,6 +357,11 @@ type
     { public declarations }
     PackageEdited: ISuperObject;
     waptpath: string;
+
+    MainRepoUrl,
+    WAPTServer,
+    TemplatesRepoUrl:String;
+
     function EditIniFile: boolean;
     function updateprogress(receiver: TObject; current, total: integer): boolean;
   end;
@@ -526,7 +531,7 @@ begin
       try
         packages := WAPTServerJsonGet('client_package_list/%s',
           [currhost],
-          WaptUseLocalConnectionProxy,
+          UseProxyForServer,
           waptServerUser, waptServerPassword);
         RowSO['packages'] := packages;
       except
@@ -549,7 +554,7 @@ begin
       if (softwares = nil) or (softwares.AsArray = nil) then
       begin
         softwares := WAPTServerJsonGet('client_software_list/%s', [currhost],
-            WaptUseLocalConnectionProxy,
+            UseProxyForServer,
             waptServerUser, waptServerPassword);
         RowSO['softwares'] := softwares;
       end;
@@ -561,7 +566,7 @@ begin
     begin
       try
         tasks := WAPTServerJsonGet('host_tasks?host=%s&uuid=%s', [currip,currhost],
-              WaptUseLocalConnectionProxy,
+              UseProxyForServer,
               waptServerUser, waptServerPassword);
         if tasks.S['status']='OK' then
         begin
@@ -780,7 +785,7 @@ begin
                   Free;
                 end;
 
-              ActUpdateWaptGetINIExecute(self);
+              ActReloadConfigExecute(self);
             end;
 
           except
@@ -982,7 +987,7 @@ begin
   currip := GridHosts.FocusedRow.S['host.connected_ips'];
 
   res := WAPTServerJsonGet('host_taskkill?host=%s&uuid=%s', [currip,currhost],
-        WaptUseLocalConnectionProxy,
+        UseProxyForServer,
         waptServerUser, waptServerPassword);
   if res.S['status']='OK' then
     ShowMessage('Tâche annulée')
@@ -1124,7 +1129,7 @@ begin
           group := GridPackages.GetCellStrValue(N, 'filename');
           ProgressTitle('Suppression de ' + group);
           res := WAPTServerJsonGet('/delete_package/' + group, [],
-              WaptUseLocalConnectionProxy,
+              UseProxyForServer,
               waptServerUser, waptServerPassword);
           if not ObjectIsNull(res['error']) then
             raise Exception.Create(res.S['error']);
@@ -1165,7 +1170,7 @@ begin
           package := GridPackages.GetCellStrValue(N, 'filename');
           ProgressTitle('Suppression de ' + package);
           res := WAPTServerJsonGet('/delete_package/' + package, [],
-              WaptUseLocalConnectionProxy,
+              UseProxyForServer,
               waptServerUser, waptServerPassword);
           if not ObjectIsNull(res['error']) then
             raise Exception.Create(res.S['error']);
@@ -1237,7 +1242,7 @@ begin
       begin
         res :=  WAPTServerJsonGet(
           '/forget_packages.json?host=%s&package=%s&uuid=%s',[GridHosts.FocusedRow.S['host.connected_ips'],package.S['package'],GridHosts.FocusedRow.S['uuid']],
-          WaptUseLocalConnectionProxy,
+          UseProxyForServer,
           waptServerUser,
           waptServerPassword);
         if res.S['status']<>'OK' then
@@ -1339,7 +1344,7 @@ begin
       begin
         res :=  WAPTServerJsonGet(
           '/remove_package.json?host=%s&package=%s&uuid=%s',[GridHosts.FocusedRow.S['host.connected_ips'],package.S['package'],GridHosts.FocusedRow.S['uuid']],
-          WaptUseLocalConnectionProxy,
+          UseProxyForServer,
           waptServerUser,
           waptServerPassword);
         if res.S['status']<>'OK' then
@@ -1561,7 +1566,7 @@ begin
     begin
       for host in sel do
         WAPTServerJsonGet('/delete_host/' + host.S['uuid'], [],
-          WaptUseLocalConnectionProxy,
+          UseProxyForServer,
           waptServerUser, waptServerPassword);
       ActSearchHost.Execute;
     end;
@@ -1652,7 +1657,7 @@ begin
   else
     previous_uuid:='';
   hosts := WAPTServerJsonGet(req, [],
-      WaptUseLocalConnectionProxy,
+      UseProxyForServer,
       waptServerUser, waptServerPassword);
   GridHosts.Data := hosts;
   if (hosts<>Nil) and (hosts.AsArray<>Nil) then
@@ -1693,9 +1698,23 @@ begin
   ActSearchGroups.Execute;
 end;
 
-procedure TVisWaptGUI.ActUpdateWaptGetINIExecute(Sender: TObject);
+procedure TVisWaptGUI.ActReloadConfigExecute(Sender: TObject);
+var
+  inifile: TIniFile;
 begin
-  DMPython.RunJSON('mywapt.load_config()', jsonlog);
+  inifile := TIniFile.Create(AppIniFilename);
+  try
+    DMPython.RunJSON('mywapt.load_config()', jsonlog);
+    HttpProxy := inifile.ReadString('global', 'http_proxy', '');
+    UseProxyForRepo := inifile.readBool('global', 'use_http_proxy_for_repo',HttpProxy <> '');
+    UseProxyForServer := inifile.readBool('global', 'use_http_proxy_for_server', HttpProxy <> '');
+    UseProxyForTemplates := inifile.ReadBool('global', 'use_http_proxy_for_templates', HttpProxy <> '' );
+    MainRepoUrl := GetMainWaptRepo;
+    WAPTServer := GetWaptServerURL;
+    TemplatesRepoUrl:= WaptTemplatesRepo;
+  finally
+    inifile.Free;
+  end;
 end;
 
 procedure TVisWaptGUI.ActVNCExecute(Sender: TObject);
@@ -1723,7 +1742,7 @@ procedure TVisWaptGUI.ActWAPTLocalConfigExecute(Sender: TObject);
 begin
   if EditIniFile then
   begin
-    ActUpdateWaptGetINI.Execute;
+    ActReloadConfig.Execute;
     ActPackagesUpdate.Execute;
     GridPackages.Clear;
     GridGroups.Clear;
@@ -1751,7 +1770,9 @@ begin
         edprivate_key.Text := inifile.ReadString('global', 'private_key', '');
         edtemplates_repo_url.Text :=
           inifile.readString('global', 'templates_repo_url', '');
-        cbProxyLocalConnection.Checked:= ( inifile.readString('global', 'use_local_connection_proxy', '') = 'True' );
+        cbUseProxyForTemplate.Checked := inifile.ReadBool('global', 'use_http_proxy_for_templates', edhttp_proxy.Text <> '' );
+        cbUseProxyForServer.Checked := inifile.ReadBool('global', 'use_http_proxy_for_server', edhttp_proxy.Text <> '');
+        cbUseProxyForRepo.Checked := inifile.ReadBool('global', 'use_http_proxy_for_repo', edhttp_proxy.Text <> '');
         //eddefault_sources_root.Directory := inifile.ReadString('global','default_sources_root','');
         //eddefault_sources_url.text = inifile.ReadString('global','default_sources_url','https://srvdev/sources/%(packagename)s-wapt/trunk');
 
@@ -1766,10 +1787,11 @@ begin
             eddefault_sources_root.Text);
           inifile.WriteString('global', 'private_key', edprivate_key.Text);
           inifile.WriteString('global', 'templates_repo_url', edtemplates_repo_url.Text);
+          inifile.WriteBool('global', 'use_http_proxy_for_templates', cbUseProxyForTemplate.Checked);
+          inifile.WriteBool('global', 'use_http_proxy_for_server', cbUseProxyForServer.Checked);
+          inifile.WriteBool('global', 'use_http_proxy_for_repo', cbUseProxyForRepo.Checked);
           inifile.WriteString('global', 'default_sources_root',
             eddefault_sources_root.Text);
-          inifile.WriteString('global', 'use_local_connection_proxy',
-                      BoolToStr(cbProxyLocalConnection.Checked, True));
           //inifile.WriteString('global','default_sources_url',eddefault_sources_url.text);
           Result := True;
         end;
@@ -1840,7 +1862,7 @@ begin
   while (GetWaptServerURL = '') do
   begin
     if EditIniFile then
-      ActUpdateWaptGetINI.Execute
+      ActReloadConfig.Execute
     else
       Halt;
   end;

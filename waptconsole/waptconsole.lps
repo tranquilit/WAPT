@@ -4,7 +4,7 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="57">
+    <Units Count="56">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -22,34 +22,29 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uwaptconsole"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="798"/>
-        <CursorPos X="50" Y="809"/>
+        <TopLine Value="1775"/>
+        <CursorPos X="26" Y="1693"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="5">
-          <Item0 X="1" Y="1821" ID="4"/>
-          <Item1 X="1" Y="2261" ID="5"/>
-          <Item2 X="5" Y="2292" ID="8"/>
-          <Item3 X="9" Y="1025" ID="1"/>
-          <Item4 X="3" Y="824" ID="2"/>
+          <Item0 X="1" Y="1843" ID="4"/>
+          <Item1 X="1" Y="2283" ID="5"/>
+          <Item2 X="5" Y="2314" ID="8"/>
+          <Item3 X="9" Y="1030" ID="1"/>
+          <Item4 X="3" Y="829" ID="2"/>
         </Bookmarks>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="109"/>
-        <CursorPos X="3" Y="121"/>
+        <TopLine Value="18"/>
+        <CursorPos X="84" Y="34"/>
         <UsageCount Value="208"/>
         <Bookmarks Count="1">
           <Item0 X="28" Y="50" ID="0"/>
         </Bookmarks>
-        <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="uviscreatekey.pas"/>
@@ -82,12 +77,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviseditpackage"/>
-        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="667"/>
-        <CursorPos X="24" Y="678"/>
+        <TopLine Value="732"/>
+        <CursorPos X="58" Y="747"/>
         <UsageCount Value="215"/>
-        <Loaded Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="uviscreatewaptsetup.pas"/>
@@ -96,13 +89,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisCreateWaptSetup"/>
-        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3"/>
         <CursorPos X="3" Y="15"/>
         <UsageCount Value="225"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit6>
       <Unit7>
         <Filename Value="uvislogin.pas"/>
@@ -112,8 +102,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvislogin"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="25"/>
-        <CursorPos X="5" Y="53"/>
+        <TopLine Value="33"/>
+        <CursorPos X="19" Y="53"/>
         <UsageCount Value="300"/>
       </Unit7>
       <Unit8>
@@ -135,13 +125,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvisloading"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="65"/>
         <CursorPos X="12" Y="72"/>
         <UsageCount Value="216"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit9>
       <Unit10>
         <Filename Value="uviswaptconfig.pas"/>
@@ -151,8 +138,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviswaptconfig"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="3"/>
-        <CursorPos X="32" Y="19"/>
+        <TopLine Value="9"/>
+        <CursorPos X="108" Y="22"/>
         <UsageCount Value="203"/>
       </Unit10>
       <Unit11>
@@ -187,8 +174,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviseditgroup"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="5"/>
-        <CursorPos X="3" Y="18"/>
+        <TopLine Value="34"/>
+        <CursorPos X="22" Y="51"/>
         <UsageCount Value="403"/>
       </Unit13>
       <Unit14>
@@ -199,8 +186,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviswaptdeploy"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="61"/>
-        <CursorPos X="1" Y="66"/>
+        <TopLine Value="94"/>
+        <CursorPos X="74" Y="106"/>
         <UsageCount Value="217"/>
       </Unit14>
       <Unit15>
@@ -211,8 +198,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvishostsupgrade"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="140"/>
-        <CursorPos X="1" Y="144"/>
+        <TopLine Value="89"/>
+        <CursorPos X="28" Y="101"/>
         <UsageCount Value="203"/>
       </Unit15>
       <Unit16>
@@ -225,7 +212,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="22"/>
         <CursorPos X="87" Y="34"/>
-        <UsageCount Value="74"/>
+        <UsageCount Value="90"/>
       </Unit16>
       <Unit17>
         <Filename Value="uvisimportpackage.pas"/>
@@ -234,12 +221,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisImportPackage"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="65"/>
-        <CursorPos X="42" Y="78"/>
-        <UsageCount Value="67"/>
-        <Loaded Value="True"/>
+        <TopLine Value="71"/>
+        <CursorPos X="61" Y="91"/>
+        <UsageCount Value="83"/>
       </Unit17>
       <Unit18>
         <Filename Value="uvisoptioninifile.pas"/>
@@ -250,7 +235,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="106"/>
         <CursorPos X="115" Y="129"/>
-        <UsageCount Value="178"/>
+        <UsageCount Value="177"/>
       </Unit18>
       <Unit19>
         <Filename Value="..\wapt-get\tisstrings.pas"/>
@@ -258,7 +243,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1827"/>
         <CursorPos X="1" Y="1847"/>
-        <UsageCount Value="171"/>
+        <UsageCount Value="170"/>
       </Unit19>
       <Unit20>
         <Filename Value="..\wapt-get\tiscommon.pas"/>
@@ -266,7 +251,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="956"/>
         <CursorPos X="1" Y="977"/>
-        <UsageCount Value="171"/>
+        <UsageCount Value="170"/>
         <Bookmarks Count="1">
           <Item0 X="20" Y="471" ID="1"/>
         </Bookmarks>
@@ -277,17 +262,15 @@
         <WindowIndex Value="0"/>
         <TopLine Value="79"/>
         <CursorPos X="1" Y="104"/>
-        <UsageCount Value="171"/>
+        <UsageCount Value="170"/>
       </Unit21>
       <Unit22>
         <Filename Value="..\..\pltis_sogrid\source\sogrid.pas"/>
         <UnitName Value="sogrid"/>
-        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1061"/>
         <CursorPos X="18" Y="1073"/>
-        <UsageCount Value="48"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="47"/>
       </Unit22>
       <Unit23>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwawinbase.pas"/>
@@ -295,7 +278,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="2196"/>
         <CursorPos X="10" Y="2212"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit23>
       <Unit24>
         <Filename Value="C:\Users\htouvet\AppData\Local\Temp\7zEF71D.tmp\uThreads.pas"/>
@@ -303,7 +286,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="27" Y="22"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit24>
       <Unit25>
         <Filename Value="C:\Users\htouvet\AppData\Local\Temp\7zE66D1.tmp\hThreads.pas"/>
@@ -311,7 +294,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="14" Y="18"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit25>
       <Unit26>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
@@ -319,7 +302,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="3582"/>
         <CursorPos X="1" Y="3594"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="22"/>
       </Unit26>
       <Unit27>
         <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
@@ -327,7 +310,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="30266"/>
         <CursorPos X="41" Y="30282"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="1"/>
         <Bookmarks Count="1">
           <Item0 X="1" Y="22194" ID="3"/>
         </Bookmarks>
@@ -338,21 +321,21 @@
         <WindowIndex Value="0"/>
         <TopLine Value="18620"/>
         <CursorPos X="14" Y="18633"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit28>
       <Unit29>
         <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\include\olemethods_win32.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="11"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit29>
       <Unit30>
         <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\include\vtvdragmanager_win32.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="379"/>
         <CursorPos X="1" Y="398"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit30>
       <Unit31>
         <Filename Value="C:\codetyphon\typhon\lcl\menus.pp"/>
@@ -360,189 +343,155 @@
         <WindowIndex Value="0"/>
         <TopLine Value="379"/>
         <CursorPos X="15" Y="398"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit31>
       <Unit32>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\classes\classesh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="90"/>
         <CursorPos X="3" Y="109"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit32>
       <Unit33>
-        <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\objpash.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="223"/>
-        <CursorPos X="20" Y="242"/>
-        <UsageCount Value="1"/>
-      </Unit33>
-      <Unit34>
         <Filename Value="C:\codetyphon\typhon\lcl\include\popupmenu.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="60"/>
         <CursorPos X="3" Y="71"/>
-        <UsageCount Value="3"/>
-      </Unit34>
-      <Unit35>
+        <UsageCount Value="2"/>
+      </Unit33>
+      <Unit34>
         <Filename Value="uwaptconsole.lfm"/>
         <WindowIndex Value="0"/>
         <TopLine Value="181"/>
         <CursorPos X="10" Y="167"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
         <DefaultSyntaxHighlighter Value="LFM"/>
-      </Unit35>
-      <Unit36>
+      </Unit34>
+      <Unit35>
         <Filename Value="uviseditgroup.lfm"/>
         <WindowIndex Value="0"/>
         <TopLine Value="195"/>
         <CursorPos X="140" Y="221"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
         <DefaultSyntaxHighlighter Value="LFM"/>
-      </Unit36>
-      <Unit37>
+      </Unit35>
+      <Unit36>
         <Filename Value="..\..\pltis_superobject\soutils.pas"/>
         <UnitName Value="soutils"/>
-        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="10" Y="12"/>
-        <UsageCount Value="14"/>
-        <Loaded Value="True"/>
-      </Unit37>
-      <Unit38>
+        <UsageCount Value="13"/>
+      </Unit36>
+      <Unit37>
         <Filename Value="..\..\pltis_sogrid\sogrideditor.pas"/>
         <UnitName Value="sogrideditor"/>
         <WindowIndex Value="0"/>
         <TopLine Value="54"/>
         <CursorPos X="125" Y="81"/>
-        <UsageCount Value="3"/>
-      </Unit38>
-      <Unit39>
+        <UsageCount Value="2"/>
+      </Unit37>
+      <Unit38>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
         <UnitName Value="tiscommon"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1139"/>
-        <CursorPos X="1" Y="1142"/>
-        <UsageCount Value="52"/>
-        <Loaded Value="True"/>
-      </Unit39>
-      <Unit40>
+        <TopLine Value="28"/>
+        <CursorPos X="11" Y="40"/>
+        <UsageCount Value="51"/>
+      </Unit38>
+      <Unit39>
         <Filename Value="..\..\pltis_utils\tisstrings.pas"/>
         <UnitName Value="tisstrings"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="176"/>
-        <CursorPos X="11" Y="191"/>
-        <UsageCount Value="12"/>
-      </Unit40>
-      <Unit41>
+        <TopLine Value="2158"/>
+        <CursorPos X="1" Y="2171"/>
+        <UsageCount Value="11"/>
+      </Unit39>
+      <Unit40>
         <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
         <UnitName Value="PythonEngine"/>
         <WindowIndex Value="0"/>
         <TopLine Value="5425"/>
         <CursorPos X="1" Y="5439"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="8"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit41>
-      <Unit42>
+      </Unit40>
+      <Unit41>
         <Filename Value="C:\codetyphon\typhon\lcl\stdctrls.pp"/>
         <UnitName Value="StdCtrls"/>
         <WindowIndex Value="0"/>
         <TopLine Value="752"/>
         <CursorPos X="14" Y="768"/>
-        <UsageCount Value="10"/>
-      </Unit42>
-      <Unit43>
+        <UsageCount Value="9"/>
+      </Unit41>
+      <Unit42>
         <Filename Value="C:\codetyphon\typhon\lcl\forms.pp"/>
         <UnitName Value="Forms"/>
         <WindowIndex Value="0"/>
         <TopLine Value="641"/>
         <CursorPos X="14" Y="662"/>
-        <UsageCount Value="16"/>
-      </Unit43>
-      <Unit44>
+        <UsageCount Value="15"/>
+      </Unit42>
+      <Unit43>
         <Filename Value="C:\codetyphon\typhon\lcl\include\customform.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2849"/>
         <CursorPos X="3" Y="2877"/>
-        <UsageCount Value="4"/>
-      </Unit44>
-      <Unit45>
+        <UsageCount Value="3"/>
+      </Unit43>
+      <Unit44>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\sysutilh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="98"/>
         <CursorPos X="19" Y="112"/>
-        <UsageCount Value="5"/>
-      </Unit45>
-      <Unit46>
+        <UsageCount Value="4"/>
+      </Unit44>
+      <Unit45>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\sysstrh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="12"/>
         <CursorPos X="40" Y="27"/>
-        <UsageCount Value="2"/>
-      </Unit46>
-      <Unit47>
-        <Filename Value="C:\codetyphon\typhon\components\lazutils\fileutil.pas"/>
-        <UnitName Value="FileUtil"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="63"/>
-        <CursorPos X="10" Y="77"/>
         <UsageCount Value="1"/>
-      </Unit47>
-      <Unit48>
-        <Filename Value="C:\codetyphon\typhon\components\lazutils\fileutil.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="416"/>
-        <CursorPos X="3" Y="428"/>
-        <UsageCount Value="1"/>
-      </Unit48>
-      <Unit49>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-db\src\base\db.pas"/>
-        <UnitName Value="db"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1867"/>
-        <CursorPos X="3" Y="1882"/>
-        <UsageCount Value="1"/>
-      </Unit49>
-      <Unit50>
+      </Unit45>
+      <Unit46>
         <Filename Value="C:\codetyphon\fpcsrc\packages\regexpr\src\regexpr.pas"/>
         <UnitName Value="RegExpr"/>
         <WindowIndex Value="0"/>
         <TopLine Value="856"/>
         <CursorPos X="57" Y="883"/>
-        <UsageCount Value="11"/>
-      </Unit50>
-      <Unit51>
+        <UsageCount Value="10"/>
+      </Unit46>
+      <Unit47>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\win\wininc\struct.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="204"/>
         <CursorPos X="6" Y="217"/>
-        <UsageCount Value="5"/>
-      </Unit51>
-      <Unit52>
+        <UsageCount Value="4"/>
+      </Unit47>
+      <Unit48>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\systemh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="402"/>
         <CursorPos X="3" Y="416"/>
-        <UsageCount Value="5"/>
-      </Unit52>
-      <Unit53>
+        <UsageCount Value="4"/>
+      </Unit48>
+      <Unit49>
         <Filename Value="uviseditpackage.lfm"/>
         <WindowIndex Value="0"/>
         <TopLine Value="63"/>
         <CursorPos X="36" Y="76"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
         <DefaultSyntaxHighlighter Value="LFM"/>
-      </Unit53>
-      <Unit54>
+      </Unit49>
+      <Unit50>
         <Filename Value="C:\codetyphon\typhon\lcl\buttons.pp"/>
         <UnitName Value="Buttons"/>
         <WindowIndex Value="0"/>
         <TopLine Value="178"/>
         <CursorPos X="3" Y="191"/>
-        <UsageCount Value="5"/>
-      </Unit54>
-      <Unit55>
+        <UsageCount Value="4"/>
+      </Unit50>
+      <Unit51>
         <Filename Value="..\waptserver\postconf\uvisserverpostconf.pas"/>
         <ComponentName Value="VisWAPTServerPostConf"/>
         <HasResources Value="True"/>
@@ -551,144 +500,45 @@
         <WindowIndex Value="0"/>
         <TopLine Value="557"/>
         <CursorPos X="17" Y="562"/>
-        <UsageCount Value="10"/>
-      </Unit55>
-      <Unit56>
+        <UsageCount Value="9"/>
+      </Unit51>
+      <Unit52>
         <Filename Value="..\..\pltis_utils\tisutils.pas"/>
         <UnitName Value="tisutils"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="127"/>
-        <CursorPos X="41" Y="140"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-      </Unit56>
+        <CursorPos X="64" Y="140"/>
+        <UsageCount Value="9"/>
+      </Unit52>
+      <Unit53>
+        <Filename Value="..\..\pltis_utils\tisdatetime.pas"/>
+        <UnitName Value="tisdatetime"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="33" Y="9"/>
+        <UsageCount Value="9"/>
+      </Unit53>
+      <Unit54>
+        <Filename Value="C:\codetyphon\typhon\lcl\extctrls.pp"/>
+        <UnitName Value="ExtCtrls"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="877"/>
+        <CursorPos X="39" Y="893"/>
+        <UsageCount Value="9"/>
+      </Unit54>
+      <Unit55>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\inifiles.pp"/>
+        <UnitName Value="IniFiles"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="206"/>
+        <CursorPos X="10" Y="219"/>
+        <UsageCount Value="15"/>
+      </Unit55>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="30" HistoryIndex="29">
-      <Position1>
-        <Filename Value="uvisimportpackage.pas"/>
-        <Caret Line="78" Column="42" TopLine="65"/>
-      </Position1>
-      <Position2>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1908" Column="41" TopLine="1891"/>
-      </Position2>
-      <Position3>
-        <Filename Value="..\..\pltis_utils\tisutils.pas"/>
-        <Caret Line="15" Column="10" TopLine="2"/>
-      </Position3>
-      <Position4>
-        <Filename Value="uvisimportpackage.pas"/>
-        <Caret Line="83" Column="44" TopLine="65"/>
-      </Position4>
-      <Position5>
-        <Filename Value="uvisimportpackage.pas"/>
-        <Caret Line="78" Column="42" TopLine="65"/>
-      </Position5>
-      <Position6>
-        <Filename Value="uvisimportpackage.pas"/>
-        <Caret Line="83" Column="44" TopLine="65"/>
-      </Position6>
-      <Position7>
-        <Filename Value="..\..\pltis_utils\tisutils.pas"/>
-        <Caret Line="127" Column="10" TopLine="114"/>
-      </Position7>
-      <Position8>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1903" Column="46" TopLine="1891"/>
-      </Position8>
-      <Position9>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1907" Column="40" TopLine="1891"/>
-      </Position9>
-      <Position10>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1905" Column="36" TopLine="1891"/>
-      </Position10>
-      <Position11>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1904" Column="33" TopLine="1891"/>
-      </Position11>
-      <Position12>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="471" Column="40" TopLine="416"/>
-      </Position12>
-      <Position13>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position13>
-      <Position14>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="360" Column="60" TopLine="351"/>
-      </Position14>
-      <Position15>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="468" Column="63" TopLine="450"/>
-      </Position15>
-      <Position16>
-        <Filename Value="..\..\pltis_utils\tisutils.pas"/>
-        <Caret Line="15" Column="10" TopLine="32"/>
-      </Position16>
-      <Position17>
-        <Filename Value="..\..\pltis_utils\tisutils.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position17>
-      <Position18>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="460" Column="49" TopLine="429"/>
-      </Position18>
-      <Position19>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="809" Column="7" TopLine="806"/>
-      </Position19>
-      <Position20>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="1027" Column="1" TopLine="1011"/>
-      </Position20>
-      <Position21>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="813" Column="41" TopLine="800"/>
-      </Position21>
-      <Position22>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="816" Column="32" TopLine="800"/>
-      </Position22>
-      <Position23>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="817" Column="26" TopLine="800"/>
-      </Position23>
-      <Position24>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="830" Column="13" TopLine="810"/>
-      </Position24>
-      <Position25>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="836" Column="15" TopLine="816"/>
-      </Position25>
-      <Position26>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="845" Column="17" TopLine="825"/>
-      </Position26>
-      <Position27>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="849" Column="13" TopLine="829"/>
-      </Position27>
-      <Position28>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="855" Column="14" TopLine="827"/>
-      </Position28>
-      <Position29>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="810" Column="50" TopLine="799"/>
-      </Position29>
-      <Position30>
-        <Filename Value="uwaptconsole.pas"/>
-        <Caret Line="809" Column="50" TopLine="798"/>
-      </Position30>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectSession>
   <Debugging>
     <BreakPoints Count="1">
@@ -697,7 +547,7 @@
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="uwaptconsole.pas"/>
-        <Line Value="2208"/>
+        <Line Value="2230"/>
       </Item1>
     </BreakPoints>
   </Debugging>

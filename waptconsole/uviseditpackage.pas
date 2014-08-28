@@ -238,7 +238,7 @@ begin
         if (result<>Nil) and ApplyUpdatesImmediately and (currentip<>'')  then
         begin
           res := WAPTServerJsonGet('upgrade_host/'+currentip, [],
-            WaptUseLocalConnectionProxy,
+            UseProxyForServer,
             waptServerUser, waptServerPassword);
           if (res.S['result'] = 'OK') or (res.S['status'] = 'OK') then
             ShowMessage('Upgrade lancée')
@@ -744,7 +744,7 @@ begin
                 // (paquets de groupe et paquets host)
                 //if not FileExists(filePath) then
                 Wget(GetWaptRepoURL + '/' + filename, filePath,
-                  ProgressForm, @updateprogress, WaptUseLocalConnectionProxy);
+                  ProgressForm, @updateprogress, UseProxyForRepo);
               except
                 ShowMessage('Téléchargement annulé');
                 if FileExists(filePath) then

@@ -1,11 +1,11 @@
 object VisWAPTConfig: TVisWAPTConfig
   Left = 419
-  Height = 270
+  Height = 340
   Top = 371
   Width = 507
   BorderStyle = bsDialog
   Caption = 'Configuration locale WAPT'
-  ClientHeight = 270
+  ClientHeight = 340
   ClientWidth = 507
   Font.CharSet = ANSI_CHARSET
   Font.Height = -11
@@ -18,7 +18,7 @@ object VisWAPTConfig: TVisWAPTConfig
   object ButtonPanel1: TButtonPanel
     Left = 6
     Height = 34
-    Top = 230
+    Top = 300
     Width = 495
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True
@@ -36,7 +36,7 @@ object VisWAPTConfig: TVisWAPTConfig
     Left = 279
     Height = 21
     Hint = 'exemple : tis'#13#10'Préfixe à utiliser dans le nom des paquets lors de la duplication de paquets ou lors de la création initiale'
-    Top = 173
+    Top = 124
     Width = 80
     EditLabel.AnchorSideTop.Control = eddefault_package_prefix
     EditLabel.AnchorSideTop.Side = asrCenter
@@ -45,7 +45,7 @@ object VisWAPTConfig: TVisWAPTConfig
     EditLabel.AnchorSideBottom.Side = asrBottom
     EditLabel.Left = 75
     EditLabel.Height = 13
-    EditLabel.Top = 177
+    EditLabel.Top = 128
     EditLabel.Width = 201
     EditLabel.Caption = 'Préfixe pour la création de paquets WAPT'
     EditLabel.ParentColor = False
@@ -56,7 +56,7 @@ object VisWAPTConfig: TVisWAPTConfig
     Left = 279
     Height = 21
     Hint = 'Exemple : c:\waptdev'#13#10'Emplacement local pour stocker les projets de développement de paquets'
-    Top = 149
+    Top = 100
     Width = 196
     ShowHidden = False
     ButtonWidth = 23
@@ -67,7 +67,7 @@ object VisWAPTConfig: TVisWAPTConfig
   object Label1: TLabel
     Left = 15
     Height = 13
-    Top = 153
+    Top = 104
     Width = 262
     Caption = 'Répertoire de base pour le développement de paquets'
     ParentColor = False
@@ -96,7 +96,7 @@ object VisWAPTConfig: TVisWAPTConfig
     Left = 279
     Height = 21
     Hint = 'exemple c:\private\tranquilit.pem'#13#10'Chemin vers la clé privée pour signer les nouveaux paquets.'#13#10'Uniquement utile sur les machines de développement'
-    Top = 197
+    Top = 148
     Width = 196
     Filter = 'Fichiers PEM|*.pem|Tous les fichiers|*.*'
     FilterIndex = 0
@@ -109,7 +109,7 @@ object VisWAPTConfig: TVisWAPTConfig
   object Label2: TLabel
     Left = 51
     Height = 13
-    Top = 201
+    Top = 152
     Width = 225
     Caption = 'Chemin de la clé privée pour signer les paquets'
     ParentColor = False
@@ -118,7 +118,7 @@ object VisWAPTConfig: TVisWAPTConfig
     Left = 279
     Height = 21
     Hint = 'exemple : http://wapt.tranquil.it/wapt'#13#10'Sert dans la console WAPT pour la duplication de packages'
-    Top = 121
+    Top = 72
     Width = 220
     EditLabel.AnchorSideTop.Control = edtemplates_repo_url
     EditLabel.AnchorSideTop.Side = asrCenter
@@ -127,7 +127,7 @@ object VisWAPTConfig: TVisWAPTConfig
     EditLabel.AnchorSideBottom.Side = asrBottom
     EditLabel.Left = 89
     EditLabel.Height = 13
-    EditLabel.Top = 125
+    EditLabel.Top = 76
     EditLabel.Width = 187
     EditLabel.Caption = 'URL du dépôt des modèles de paquets '
     EditLabel.ParentColor = False
@@ -159,7 +159,7 @@ object VisWAPTConfig: TVisWAPTConfig
     Left = 280
     Height = 21
     Hint = 'exemple : http://proxy.tranquilit.local:3128'#13#10'renseigner uniquement si un proxy est nécessaire.'
-    Top = 52
+    Top = 216
     Width = 220
     EditLabel.AnchorSideTop.Control = edhttp_proxy
     EditLabel.AnchorSideTop.Side = asrCenter
@@ -168,7 +168,7 @@ object VisWAPTConfig: TVisWAPTConfig
     EditLabel.AnchorSideBottom.Side = asrBottom
     EditLabel.Left = 59
     EditLabel.Height = 13
-    EditLabel.Top = 56
+    EditLabel.Top = 220
     EditLabel.Width = 218
     EditLabel.Caption = 'Proxy http à utiliser (seulement si nécessaire)'
     EditLabel.ParentColor = False
@@ -178,29 +178,83 @@ object VisWAPTConfig: TVisWAPTConfig
   object Label3: TLabel
     Left = 6
     Height = 13
-    Top = 101
+    Top = 52
     Width = 174
     Caption = 'Pour le développement de paquets :'
     ParentColor = False
   end
-  object cbProxyLocalConnection: TCheckBox
-    Left = 280
+  object cbUseProxyForRepo: TCheckBox
+    Left = 281
     Height = 17
     Hint = 'Active le proxy lors des communications avec le serveur wapt'
-    Top = 75
+    Top = 239
     Width = 20
+    Checked = True
+    State = cbChecked
     TabOrder = 8
   end
   object Label4: TLabel
-    AnchorSideRight.Control = cbProxyLocalConnection
-    Left = 32
+    AnchorSideRight.Control = cbUseProxyForRepo
+    Left = -17
     Height = 13
-    Top = 76
-    Width = 245
+    Top = 240
+    Width = 295
     Alignment = taRightJustify
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Right = 3
-    Caption = 'Activer le proxy pour les connexions locales'
+    Caption = 'Activer le proxy pour l''accès au dépôt principal'
+    ParentColor = False
+  end
+  object Label5: TLabel
+    AnchorSideRight.Control = cbUseProxyForServer
+    Left = -17
+    Height = 13
+    Top = 257
+    Width = 295
+    Alignment = taRightJustify
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Right = 3
+    Caption = 'Activer le proxy pour l''accès au serveur WAPT'
+    ParentColor = False
+  end
+  object cbUseProxyForServer: TCheckBox
+    Left = 281
+    Height = 17
+    Hint = 'Active le proxy lors des communications avec le serveur wapt'
+    Top = 256
+    Width = 20
+    Checked = True
+    State = cbChecked
+    TabOrder = 9
+  end
+  object Label6: TLabel
+    AnchorSideRight.Control = cbUseProxyForTemplate
+    Left = 4
+    Height = 13
+    Top = 273
+    Width = 274
+    Alignment = taRightJustify
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Right = 3
+    Caption = 'Activer le proxy pour l''accès au dépôt des modèles'
+    ParentColor = False
+  end
+  object cbUseProxyForTemplate: TCheckBox
+    Left = 281
+    Height = 17
+    Hint = 'Active le proxy lors des communications avec le serveur wapt'
+    Top = 272
+    Width = 20
+    Checked = True
+    State = cbChecked
+    TabOrder = 10
+  end
+  object Label7: TLabel
+    Left = 8
+    Height = 13
+    Top = 196
+    Width = 51
+    Caption = 'Proxy http'
     ParentColor = False
   end
 end

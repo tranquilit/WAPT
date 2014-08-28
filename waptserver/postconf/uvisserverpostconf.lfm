@@ -972,7 +972,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         TabOrder = 0
         object cbLaunchWaptConsoleOnExit: TCheckBox
           Left = 4
-          Height = 19
+          Height = 17
           Top = 4
           Width = 285
           Caption = 'Lancer la console WAPT après le démarrage du serveur'

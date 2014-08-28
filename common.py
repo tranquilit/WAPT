@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.9.0"
+__version__ = "0.9.1"
 import os
 import re
 import logging
@@ -1810,7 +1810,9 @@ class WaptServer(object):
             if config.has_option(section,'wapt_server'):
                 self.server_url = config.get(section,'wapt_server')
             if config.has_option(section,'http_proxy'):
-                self.proxies = {'http':config.get(section,'http_proxy')}
+                if (config.has_option(section,'use_http_proxy_for_server') and config.getboolean(section,'use_http_proxy_for_server'))\
+                        or not config.has_option(section,'use_http_proxy_for_server'):
+                    self.proxies = {'http':config.get(section,'http_proxy')}
             if config.has_option(section,'timeout'):
                 self.timeout = config.getfloat(section,'timeout')
         return self
@@ -1829,7 +1831,7 @@ class WaptServer(object):
 
 
 class WaptRepo(object):
-    """Gives access to a remote http repository, with a zipped Packages pckages index
+    """Gives access to a remote http repository, with a zipped Packages packages index
     >>> repo = WaptRepo(name='main',url='http://wapt/wapt',timeout=4)
     >>> delta = repo.load_packages()
     >>> 'last-modified' in delta and 'added' in delta and 'removed' in delta
@@ -2020,8 +2022,9 @@ class WaptRepo(object):
         if config.has_section(self.name):
             if config.has_option(self.name,'repo_url'):
                 self.repo_url = config.get(self.name,'repo_url')
-            if config.has_option(self.name,'http_proxy'):
-                self.proxies = {'http':config.get(self.name,'http_proxy')}
+            if not config.has_option(self.name,'use_http_proxy_for_repo') or config.getboolean(self.name,'use_http_proxy_for_repo'):
+                if config.has_option(self.name,'http_proxy'):
+                    self.proxies = {'http':config.get(self.name,'http_proxy')}
             if config.has_option(self.name,'timeout'):
                 self.timeout = config.getfloat(self.name,'timeout')
         return self
@@ -2289,6 +2292,10 @@ class Wapt(object):
         self.wapt_server = None
         self.language = None
 
+        self.use_http_proxy_for_repo = True
+        self.use_http_proxy_for_server = True
+        self.use_http_proxy_for_templates = True
+
         try:
             self.wapt_base_dir = os.path.dirname(__file__)
         except NameError:
@@ -2376,6 +2383,9 @@ class Wapt(object):
             'upload_cmd_host':'',
             'after_upload':'',
             'http_proxy':'',
+            'use_http_proxy_for_repo':'1',
+            'use_http_proxy_for_server':'1',
+            'use_http_proxy_for_templates':'1',
             'tray_check_interval':2,
             'service_interval':2,
             'use_hostpackages':'1',
@@ -2426,14 +2436,14 @@ class Wapt(object):
         if self.config.has_option('global','after_upload'):
             self.after_upload = self.config.get('global','after_upload')
 
-        if self.config.has_option('global','http_proxy'):
-            if self.config.has_option('global', 'use_local_connection_proxy'):
-                if self.config.get('global', 'use_local_connection_proxy') == 'True':
-                    self.proxies = {'http':self.config.get('global','http_proxy')}
-                else:
-                    self.proxies = None
-            else:
-                self.proxies = {'http':self.config.get('global','http_proxy')}
+        self.use_http_proxy_for_repo = self.config.getboolean('global','use_http_proxy_for_repo')
+        self.use_http_proxy_for_server = self.config.getboolean('global','use_http_proxy_for_server')
+        self.use_http_proxy_for_templates = self.config.getboolean('global','use_http_proxy_for_templates')
+
+        if self.config.has_option('global','http_proxy') and self.use_http_proxy_for_repo:
+            self.proxies = {'http':self.config.get('global','http_proxy')}
+        else:
+            self.proxies = None
 
         if self.config.has_option('global','wapt_server'):
             self.wapt_server = self.config.get('global','wapt_server')
@@ -2620,9 +2630,9 @@ class Wapt(object):
             package_filename = pe.wapt_fullpath()
         with open(package_filename,'rb') as afile:
             if pe.section == 'host':
-                req = requests.post("%s/upload_host" % (self.wapt_server,),files={'file':afile},proxies=self.proxies,verify=False,auth=auth)
+                req = requests.post("%s/upload_host" % (self.wapt_server,),files={'file':afile},proxies=(self.use_http_proxy_for_server and self.proxies or None),verify=False,auth=auth)
             else:
-                req = requests.post("%s/upload_package/%s" % (self.wapt_server,os.path.basename(package_filename)),data=afile,proxies=self.proxies,verify=False,auth=auth)
+                req = requests.post("%s/upload_package/%s" % (self.wapt_server,os.path.basename(package_filename)),data=afile,proxies=(self.use_http_proxy_for_server and self.proxies or None),verify=False,auth=auth)
             req.raise_for_status()
             res = json.loads(req.content)
             return res
@@ -2644,7 +2654,7 @@ class Wapt(object):
                 for file in cmd_dict['waptfile']:
                     file = file[1:-1]
                     with open(file,'rb') as afile:
-                        req = requests.post("%s/upload_host" % (self.wapt_server,),files={'file':afile},proxies=self.proxies,verify=False,auth=auth)
+                        req = requests.post("%s/upload_host" % (self.wapt_server,),files={'file':afile},proxies=(self.use_http_proxy_for_server and self.proxies or None),verify=False,auth=auth)
                         req.raise_for_status()
                         res = json.loads(req.content)
                     if res['status'] != 'OK':
@@ -2661,7 +2671,7 @@ class Wapt(object):
                     file = file[1:-1]
                     #upload par http vers un serveur WAPT  (url POST upload_package)
                     with open(file,'rb') as afile:
-                        req = requests.post("%s/upload_package/%s" % (self.wapt_server,os.path.basename(file)),data=afile,proxies=self.proxies,verify=False,auth=auth)
+                        req = requests.post("%s/upload_package/%s" % (self.wapt_server,os.path.basename(file)),data=afile,proxies=(self.use_http_proxy_for_server and self.proxies or None),verify=False,auth=auth)
                         req.raise_for_status()
                         res = json.loads(req.content)
                         if res['status'] != 'OK':
@@ -3821,7 +3831,7 @@ class Wapt(object):
         inv = self.inventory()
         inv['uuid'] = self.host_uuid
         if self.wapt_server:
-            req = requests.post("%s/add_host" % (self.wapt_server,),json.dumps(inv),proxies=self.proxies,verify=False)
+            req = requests.post("%s/add_host" % (self.wapt_server,),json.dumps(inv),proxies=(self.use_http_proxy_for_server and self.proxies or None),verify=False)
             req.raise_for_status()
             return req.content
         else:
@@ -3846,7 +3856,7 @@ class Wapt(object):
         inv['update_status'] = self.get_last_update_status()
 
         if self.wapt_server:
-            req = requests.post("%s/update_host" % (self.wapt_server,),data=json.dumps(inv),timeout=self.wapt_server_timeout,proxies=self.proxies,verify=False)
+            req = requests.post("%s/update_host" % (self.wapt_server,),data=json.dumps(inv),timeout=self.wapt_server_timeout,proxies=(self.use_http_proxy_for_server and self.proxies or None),verify=False)
             try:
                 req.raise_for_status()
             except Exception,e:
@@ -3863,7 +3873,7 @@ class Wapt(object):
         """Return ident of waptserver if defined and available, else False"""
         if self.wapt_server:
             try:
-                httpreq = requests.get('%s'%(self.wapt_server),timeout=self.wapt_server_timeout)
+                httpreq = requests.get('%s'%(self.wapt_server),timeout=self.wapt_server_timeout,proxies=(self.use_http_proxy_for_server and self.proxies or None))
                 httpreq.raise_for_code()
                 return httpreq.text
             except Exception as e:

@@ -4,12 +4,12 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="18">
+    <Units Count="19">
       <Unit0>
         <Filename Value="waptserverpostconf.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptserverpostconf"/>
-        <UsageCount Value="36"/>
+        <UsageCount Value="37"/>
       </Unit0>
       <Unit1>
         <Filename Value="uvisserverpostconf.pas"/>
@@ -19,34 +19,34 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisServerPostconf"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="249"/>
-        <CursorPos X="102" Y="374"/>
-        <UsageCount Value="36"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <TopLine Value="232"/>
+        <CursorPos X="33" Y="213"/>
+        <UsageCount Value="37"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\wapt-get\UnitRedirect.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitRedirect"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="246"/>
+        <TopLine Value="231"/>
         <CursorPos X="1" Y="258"/>
-        <UsageCount Value="36"/>
+        <UsageCount Value="37"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <UsageCount Value="36"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="616"/>
+        <CursorPos X="1" Y="621"/>
+        <UsageCount Value="37"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\..\wapt-get\networkadapterinfo.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="NetworkAdapterInfo"/>
-        <UsageCount Value="36"/>
+        <UsageCount Value="37"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\..\waptconsole\uvisloading.pas"/>
@@ -58,7 +58,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="17"/>
         <CursorPos X="3" Y="17"/>
-        <UsageCount Value="36"/>
+        <UsageCount Value="37"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\..\..\thtmlport\package\htmlview.pas"/>
@@ -159,6 +159,14 @@
         <CursorPos X="114" Y="17"/>
         <UsageCount Value="9"/>
       </Unit17>
+      <Unit18>
+        <Filename Value="..\..\..\pltis_utils\tisstrings.pas"/>
+        <UnitName Value="tisstrings"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1444"/>
+        <CursorPos X="1" Y="1484"/>
+        <UsageCount Value="10"/>
+      </Unit18>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>

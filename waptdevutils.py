@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.9.0"
+__version__ = "0.9.1"
 
 import common
 import json
@@ -138,7 +138,7 @@ def update_tis_repo(waptconfigfile,search_string):
     wapt.use_hostpackages = False
     repo = wapt.config.get('global','templates_repo_url')
     wapt.repositories[0].repo_url = repo if repo else 'http://wapt.tranquil.it/wapt'
-    wapt.proxies =  {'http':wapt.config.get('global','http_proxy')}
+    wapt.proxies =  wapt.use_http_proxy_for_templates and {'http':wapt.config.get('global','http_proxy')} or None
     wapt.dbpath = r':memory:'
     wapt.update(register=False)
     return wapt.search(search_string)
@@ -156,7 +156,10 @@ def get_packages_filenames(waptconfigfile,packages_names):
     # force to use alternate templates repo
     repo = wapt.config.get('global','templates_repo_url')
     wapt.repositories[0].repo_url = repo if repo else 'http://wapt.tranquil.it/wapt'
-    wapt.proxies =  {'http':wapt.config.get('global','http_proxy')}
+    if wapt.use_http_proxy_for_templates:
+        wapt.proxies =  {'http':wapt.config.get('global','http_proxy')}
+    else:
+        wapt.proxies = None
     wapt.dbpath = r':memory:'
     # be sure to be up to date
     wapt.update(register=False)

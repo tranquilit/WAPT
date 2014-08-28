@@ -54,9 +54,8 @@ interface
   function WaptgetPath: Utf8String; // c:\wapt\wapt-get.exe
   function WaptservicePath: Utf8String;
   function WaptDBPath: Utf8String;
-  function WaptExternalRepo(inifilename:String=''): Utf8String;
+  function WaptTemplatesRepo(inifilename:String=''): Utf8String;
   function GetWaptRepoURL: Utf8String;
-  function WaptUseLocalConnectionProxy(inifilename:String=''): Boolean;
 
   //function http_post(url: string;Params:String): String;
 
@@ -119,6 +118,10 @@ Type
 const
   WaptServerUser: AnsiString ='admin';
   WaptServerPassword: Ansistring ='';
+  HttpProxy:AnsiString = '';
+  UseProxyForRepo: Boolean = False;
+  UseProxyForServer: Boolean = False;
+  UseProxyForTemplates: Boolean = False;
 
 implementation
 
@@ -485,7 +488,7 @@ begin
       else
         Result := 'http://'+rec.S['name']+':'+rec.S['port']+'/wapt';
       Logger('trying '+result,INFO);
-      if Wget_try(result) then
+      if Wget_try(result,UseProxyForRepo) then
         Exit;
     end;
 
@@ -495,14 +498,14 @@ begin
     begin
       Result := 'http://'+rec.AsString+'/wapt';
       Logger('trying '+result,INFO);
-      if Wget_try(result) then
+      if Wget_try(result,UseProxyForRepo) then
         Exit;
     end;
 
     //A wapt
     Result := 'http://wapt.'+dnsdomain+'/wapt';
       Logger('trying '+result,INFO);
-      if Wget_try(result) then
+      if Wget_try(result,UseProxyForRepo) then
         Exit;
   end;
   result :='';
@@ -655,7 +658,8 @@ begin
     result := ExtractFilePath(ParamStr(0))+'db\waptdb.sqlite'
 end;
 
-function WaptExternalRepo(inifilename:String=''): Utf8String;
+
+function WaptTemplatesRepo(inifilename:String=''): Utf8String;
 begin
   if inifilename='' then
      inifilename:=AppIniFilename;
@@ -663,6 +667,8 @@ begin
   if Result = '' then
       Result:='http://wapt.tranquil.it/wapt/';
 end;
+
+
 
 function WaptUseLocalConnectionProxy(inifilename:String=''): Boolean;
 begin

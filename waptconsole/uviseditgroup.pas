@@ -48,7 +48,7 @@ begin
   if FGroup=AValue then Exit;
   FGroup:=AValue;
   members :=  WAPTServerJsonGet('/hosts_by_group/'+Fgroup, [],
-    WaptUseLocalConnectionProxy,
+    UseProxyForServer,
     waptServerUser, waptServerPassword);
   EdGroup.Text:=Fgroup;
   GridHosts.Data := members;

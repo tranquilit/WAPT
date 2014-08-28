@@ -80,7 +80,7 @@ begin
         for ip in host['host.connected_ips'] do
         begin
           res := WAPTServerJsonGet(action+'/'+ ip.AsString, [],
-            WaptUseLocalConnectionProxy,
+            UseProxyForServer,
             waptServerUser, waptServerPassword);
           // old behaviour <0.8.10
           if res.AsObject.Exists('status') then
@@ -98,7 +98,7 @@ begin
       else
       begin
         res := WAPTServerJsonGet(action+'/' + host.S['host.connected_ips'], [],
-          WaptUseLocalConnectionProxy,
+          UseProxyForServer,
           waptServerUser, waptServerPassword);
         // old behaviour <0.8.10
         if res.AsObject.Exists('status') then

@@ -14,8 +14,11 @@ type
 
   TVisWAPTConfig = class(TForm)
     ButtonPanel1: TButtonPanel;
-    cbProxyLocalConnection: TCheckBox;
+    cbUseProxyForRepo: TCheckBox;
+    cbUseProxyForServer: TCheckBox;
+    cbUseProxyForTemplate: TCheckBox;
     eddefault_sources_root: TDirectoryEdit;
+    edhttp_proxy_templates: TLabeledEdit;
     edwapt_server: TLabeledEdit;
     edtemplates_repo_url: TLabeledEdit;
     edprivate_key: TFileNameEdit;
@@ -26,6 +29,9 @@ type
     edrepo_url: TLabeledEdit;
     Label3: TLabel;
     Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
   private
     { private declarations }
   public
