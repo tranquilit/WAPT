@@ -19,10 +19,13 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisServerPostconf"/>
         <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="232"/>
-        <CursorPos X="33" Y="213"/>
+        <TopLine Value="403"/>
+        <CursorPos X="93" Y="416"/>
         <UsageCount Value="37"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\wapt-get\UnitRedirect.pas"/>
@@ -171,7 +174,12 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="1" HistoryIndex="0">
+      <Position1>
+        <Filename Value="uvisserverpostconf.pas"/>
+        <Caret Line="255" Column="18" TopLine="312"/>
+      </Position1>
+    </JumpHistory>
   </ProjectSession>
   <EditorMacros Count="0"/>
 </CONFIG>

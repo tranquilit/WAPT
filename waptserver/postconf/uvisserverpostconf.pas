@@ -359,7 +359,6 @@ begin
     if FileExists(WaptBaseDir+'\ssl\tranquilit.crt') then
       FileUtil.DeleteFileUTF8(WaptBaseDir+'\ssl\tranquilit.crt');
     Fileutil.CopyFile(ChangeFileExt(EdPrivateKeyFN.Text,'.crt'),WaptBaseDir+'\ssl\'+ChangeFileExt(ExtractFileNameOnly(EdPrivateKeyFN.Text),'.crt'),True);
-    runwapt('{app}\wapt-get.exe update-packages "{app}\waptserver\repository\wapt"');
 
     ProgressTitle('Mise en place mot de passe du serveur');
     ProgressStep(3,8);
