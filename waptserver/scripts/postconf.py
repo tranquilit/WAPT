@@ -47,8 +47,13 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
 
     waptserver_ini.read('/opt/wapt/waptserver/waptserver.ini')
 
-    if os.path.isdir('/var/www/wapt'):
-        waptserver_ini.set('options','wapt_folder','/var/www/wapt')
+    # no trailing slash
+    wapt_folder = '/var/www/wapt'
+    if os.path.isdir(wapt_folder):
+        waptserver_ini.set('options','wapt_folder',wapt_folder)
+    else:
+        # keep in sync with waptserver.py
+        wapt_folder = os.path.join(wapt_root_dir,'waptserver','repository','wapt')
 
     code, tag = postconf.menu("Mongodb server location",
                               choices=[("1", "localhost (default)"),

@@ -160,6 +160,7 @@ if config.has_section('options'):
 else:
     raise Exception ("FATAL, configuration file " + options.configfile + " has no section [options]. Please check Waptserver documentation")
 
+# XXX keep in sync with scripts/postconf.py
 if not wapt_folder:
     wapt_folder = os.path.join(wapt_root_dir,'waptserver','repository','wapt')
 
