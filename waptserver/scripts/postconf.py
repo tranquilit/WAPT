@@ -110,9 +110,9 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
 
 
     with open('/opt/wapt/waptserver/waptserver.ini','w') as inifile:
-        waptserver_ini.write(inifile)
         subprocess.check_output("/bin/chmod 640 /opt/wapt/waptserver/waptserver.ini",shell=True) 
         subprocess.check_output("/bin/chown wapt /opt/wapt/waptserver/waptserver.ini",shell=True)
+        waptserver_ini.write(inifile)
 
     final_msg = [
         'postconf script completed!',
