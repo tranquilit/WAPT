@@ -64,6 +64,7 @@ action is either :
   download-upgrade  : download available upgradable packages
   search [keywords] : search installable packages whose description contains keywords
   clean             : remove all WAPT cached files from local drive
+  upgradedb         : manually upgrade the schema used by the WAPT database. If the database file can't be found, it will be recreated.
 
   setup-tasks       : creates Windows daily scheduled tasks for update/download-upgrade/upgrade
   enable-tasks
