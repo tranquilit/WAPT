@@ -89,7 +89,7 @@ os.makedirs("builddir/opt/wapt/waptserver")
 
 #adding version info in VERSION file
 rev=''
-output = subprocess.check_output('/usr/bin/svn info',shell=True)
+output = subprocess.check_output('env LC_ALL=C /usr/bin/svn info',shell=True)
 for line in output.split('\n'):
     if 'Revision:' in line:
         rev = 'rev%s' % line.split(':')[1].strip()
