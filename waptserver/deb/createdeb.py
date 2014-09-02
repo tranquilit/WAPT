@@ -127,6 +127,16 @@ except Exception as e:
     print 'erreur: \n%s'%e
     exit(0)
 
+print "copying apache-related goo"
+try:
+    apache_dir = './builddir/opt/wapt/waptserver/apache/'
+    mkdir_p(apache_dir + '/ssl')
+    subprocess.check_output(['chmod', '0700', apache_dir + '/ssl'])
+    copyfile('../apache-win32/conf/httpd.conf.j2', apache_dir + 'httpd.conf.j2')
+except Exception as e:
+    print 'erreur: \n%s'%e
+    exit(0)
+
 print 'inscription de la version dans le fichier de control'
 replaceAll(control_file,'0.0.7',wapt_version + '-' + rev)
 
