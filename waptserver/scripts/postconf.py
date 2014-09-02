@@ -38,8 +38,58 @@ import hashlib
 from passlib.hash import sha512_crypt
 import dialog
 import subprocess
+import jinja2
+import socket
 
 postconf = dialog.Dialog(dialog="dialog")
+
+def make_httpd_config(wapt_folder, waptserver_root_dir):
+    if wapt_folder.endswith('\\') or wapt_folder.endswith('/'):
+        wapt_folder = wapt_folder[:-1]
+
+    apache_dir = os.path.join(waptserver_root_dir, 'apache')
+    wapt_ssl_key_file = os.path.join(apache_dir,'ssl','key.pem')
+    wapt_ssl_cert_file = os.path.join(apache_dir,'ssl','cert.pem')
+
+    # write the apache configuration fragment
+    jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(apache_dir))
+    template = jinja_env.get_template('httpd.conf.j2')
+
+    template_vars = {
+        'wapt_repository_path': os.path.dirname(wapt_folder),
+        'apache_root_folder': '/not/used',
+        'windows': False,
+        'ssl': True,
+        'wapt_ssl_key_file': wapt_ssl_key_file,
+        'wapt_ssl_cert_file': wapt_ssl_cert_file,
+        }
+
+    config_string = template.render(template_vars)
+    dst_file = file('/etc/apache2/sites-available/wapt', 'wt')
+    dst_file.write(config_string)
+    dst_file.close()
+
+    # create keys for https:// access
+    if not os.path.exists(wapt_ssl_key_file) or \
+            not os.path.exists(wapt_ssl_cert_file):
+        fqdn = socket.getfqdn()
+        if not fqdn:
+            fqdn = 'wapt'
+        if '.' not in fqdn:
+            fqdn += '.local'
+        void = subprocess.check_output([
+                'openssl',
+                'req',
+                '-new',                # create a request
+                '-x509',               # no, actually, create a self-signed certificate!
+                '-newkey', 'rsa:2048', # and the key that goes along, RSA, 2048 bits
+                '-nodes',              # don't put a passphrase on the key
+                '-days', '3650',       # the cert is valid for ten years
+                '-out', wapt_ssl_cert_file,
+                '-keyout', wapt_ssl_key_file,
+                # fill in the minimum amount of information needed; to be revisited
+                '-subj', '/C=/ST=/L=/O=/CN=' + fqdn + '/'
+                ], stderr=subprocess.STDOUT)
 
 if postconf.yesno("Do you want to launch post configuration tool ?") == postconf.DIALOG_OK:
     shutil.copyfile('/opt/wapt/waptserver/waptserver.ini.template','/opt/wapt/waptserver/waptserver.ini')
@@ -115,8 +165,36 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
         waptserver_ini.write(inifile)
 
     final_msg = [
-        'postconf script completed!',
-        'Please start wapt server with /etc/init.d/waptserver start'
+        'Postconfiguration completed!',
+        'Please start wapt server with:',
+        '',
+        '/etc/init.d/waptserver start'
     ]
+
+    reply = postconf.yesno("Do you want to configure apache?")
+    if reply == postconf.DIALOG_OK:
+        try:
+            make_httpd_config(wapt_folder, '/opt/wapt/waptserver')
+            final_msg += [
+                '',
+                'Apache has been configured, please start it with:',
+                '',
+                'a2dissite default-ssl',
+                'a2dissite default',
+                'a2enmod proxy',
+                'a2enmod ssl',
+                '/etc/init.d/apache2 restart'
+                ]
+        except CalledProcessError as cpe:
+            final_msg += [
+                'Error while trying to configure Apache!',
+                'errno = ' + str(cpe.code) + ', output: ' + cpe.output
+                ]
+        except Exception as e:
+            final_msg += [
+            'Error while tryting to configure Apache!',
+            e.message
+            ]
+
     max_width = len(max(final_msg, key=len))
-    postconf.msgbox('\n'.join(final_msg), width = max_width + 4)
+    postconf.msgbox('\n'.join(final_msg), height = len(final_msg), width = max_width + 4)

@@ -1161,7 +1161,14 @@ def make_httpd_config(wapt_root_dir, wapt_folder):
         wapt_folder = wapt_folder[:-1]
     jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(ap_conf_dir))
     template = jinja_env.get_template(ap_file_name + '.j2')
-    template_variables = {'wapt_repository_path': os.path.dirname(wapt_folder),'apache_root_folder':os.path.dirname(ap_conf_dir)}
+    template_variables = {
+        'wapt_repository_path': os.path.dirname(wapt_folder),
+        'apache_root_folder':os.path.dirname(ap_conf_dir),
+        'windows': True,
+        'ssl': False,
+        'wapt_ssl_key_file': '',
+        'wapt_ssl_cert_file': ''
+        }
     config_string = template.render(template_variables)
     dst_file = file(ap_conf_file, 'wt')
     dst_file.write(config_string)
