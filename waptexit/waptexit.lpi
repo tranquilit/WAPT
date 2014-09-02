@@ -16,9 +16,9 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <MinorVersionNr Value="1"/>
-      <RevisionNr Value="9"/>
-      <StringTable ProductVersion=""/>
+      <MinorVersionNr Value="2"/>
+      <Language Value="040C"/>
+      <StringTable CompanyName="Tranquil IT Systems" FileDescription="check and launch packages upgrades at Windows Shutdown" InternalName="waptexit" LegalCopyright="Tranquil IT Systems" OriginalFilename="waptexit.exe" ProductName="WAPT" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
