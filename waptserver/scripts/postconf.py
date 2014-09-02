@@ -165,26 +165,21 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
         waptserver_ini.write(inifile)
 
     final_msg = [
-        'Postconfiguration completed!',
-        'Please start wapt server with:',
-        '',
-        '/etc/init.d/waptserver start'
-    ]
+        'Postconfiguration completed.',
+        ]
 
     reply = postconf.yesno("Do you want to configure apache?")
     if reply == postconf.DIALOG_OK:
         try:
             make_httpd_config(wapt_folder, '/opt/wapt/waptserver')
-            final_msg += [
-                '',
-                'Apache has been configured, please start it with:',
-                '',
-                'a2dissite default-ssl',
-                'a2dissite default',
-                'a2enmod proxy',
-                'a2enmod ssl',
-                '/etc/init.d/apache2 restart'
-                ]
+            void = subprocess.check_output(['/etc/init.d/waptserver', 'start'], stderr=subprocess.STDOUT)
+            void = subprocess.check_output(['a2dissite', 'default'], stderr=subprocess.STDOUT)
+            void = subprocess.check_output(['a2dissite', 'default-ssl'], stderr=subprocess.STDOUT)
+            void = subprocess.check_output(['a2enmod', 'ssl'], stderr=subprocess.STDOUT)
+            void = subprocess.check_output(['a2enmod', 'proxy'], stderr=subprocess.STDOUT)
+            void = subprocess.check_output(['a2enmod', 'proxy_http'], stderr=subprocess.STDOUT)
+            void = subprocess.check_output(['a2ensite', 'wapt'], stderr=subprocess.STDOUT)
+            void = subprocess.check_output(['/etc/init.d/apache2', 'graceful'], stderr=subprocess.STDOUT)
         except CalledProcessError as cpe:
             final_msg += [
                 'Error while trying to configure Apache!',
@@ -196,5 +191,6 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
             e.message
             ]
 
-    max_width = len(max(final_msg, key=len))
-    postconf.msgbox('\n'.join(final_msg), height = len(final_msg), width = max_width + 4)
+    width = max(10, len(max(final_msg, key=len)))
+    height = max(5, len(final_msg))
+    postconf.msgbox('\n'.join(final_msg), height = height, width = width + 4)
