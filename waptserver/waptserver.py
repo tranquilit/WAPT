@@ -1196,7 +1196,7 @@ def make_httpd_config(wapt_root_dir, wapt_folder):
         'wapt_repository_path': os.path.dirname(wapt_folder),
         'apache_root_folder':os.path.dirname(ap_conf_dir),
         'windows': True,
-        'ssl': False,
+        'ssl': True,
         'wapt_ssl_key_file': os.path.join(ap_ssl_dir,'key.pem'),
         'wapt_ssl_cert_file': os.path.join(ap_ssl_dir,'cert.pem')
         }
