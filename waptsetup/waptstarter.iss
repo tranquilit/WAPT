@@ -39,3 +39,16 @@ Name: "{commondesktop}\WaptStarter"; IconFilename: "{app}\wapt.ico"; Filename: "
 [Run]
 Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runhidden; StatusMsg: "Mise à jour des paquets disponibles sur le dépôt principal"; Description: "Mise à jour des paquets disponibles sur le dépôt principal"
 Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoUpgradePolicy; Flags: runhidden; StatusMsg: "Mise à jour des paquets à l'extinction du poste"; Description: "Mise à jour des paquets à l'extinction du poste"
+
+
+[Code]
+procedure DeinitializeUninstall();
+var
+    installdir: String;
+begin
+    installdir := ExpandConstant('{app}');
+    if DirExists(installdir) and 
+       (MsgBox('Des fichiers restent présents dans votre répertoire ' + installdir + ', souhaitez-vous le supprimer ainsi que tous les fichiers qu''il contient ?',
+               mbConfirmation, MB_YESNO) = IDYES) then
+        Deltree(installdir, True, True, True);
+end;

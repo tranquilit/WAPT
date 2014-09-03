@@ -140,3 +140,14 @@ begin
     else
       result := teWaptServerUrl.Text;
 end;
+
+procedure DeinitializeUninstall();
+var
+    installdir: String;
+begin
+    installdir := ExpandConstant('{app}');
+    if DirExists(installdir) and 
+       (MsgBox('Des fichiers restent présents dans votre répertoire ' + installdir + ', souhaitez-vous le supprimer ainsi que tous les fichiers qu''il contient ?',
+               mbConfirmation, MB_YESNO) = IDYES) then
+        Deltree(installdir, True, True, True);
+end;
