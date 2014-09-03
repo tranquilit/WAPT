@@ -1160,8 +1160,35 @@ def make_httpd_config(wapt_root_dir, wapt_folder):
     ap_conf_dir = os.path.join(wapt_root_dir,'waptserver','apache-win32','conf')
     ap_file_name = 'httpd.conf'
     ap_conf_file = os.path.join(ap_conf_dir ,ap_file_name)
-    ap_ssl_dir = os.path.join(wapt_root_dir,'waptserver','apache-win32','conf')
+    ap_ssl_dir = os.path.join(wapt_root_dir,'waptserver','apache-win32','ssl')
 
+    # generate ssl keys
+    openssl = os.path.join(wapt_root_dir,'waptserver','apache-win32','bin','openssl.exe')
+    openssl_config = os.path.join(wapt_root_dir,'waptserver','apache-win32','conf','openssl.cnf')
+    fqdn = None
+    try:
+        import socket
+        fqdn = socket.getfqdn()
+    except:
+        pass
+    if not fqdn:
+        fqdn = 'wapt'
+    if '.' not in fqdn:
+        fqdn += '.local'
+    void = subprocess.check_output([
+            openssl,
+            'req',
+            '-new',
+            '-x509',
+            '-newkey', 'rsa:2048',
+            '-nodes',
+            '-days', '3650',
+            '-out', os.path.join(ap_ssl_dir,'cert.pem'),
+            '-keyout', os.path.join(ap_ssl_dir,'key.pem'),
+            '-config', openssl_config,
+            '-subj', '/C=/ST=/L=/O=/CN=' + fqdn + '/'
+            ], stderr=subprocess.STDOUT)
+            
     # write config file
     jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(ap_conf_dir))
     template = jinja_env.get_template(ap_file_name + '.j2')
