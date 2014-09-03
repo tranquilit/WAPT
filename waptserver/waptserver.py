@@ -1153,7 +1153,7 @@ def install_windows_nssm_service(service_name,service_binary,service_parameters,
 
 def make_httpd_config(wapt_root_dir, wapt_folder):
     import jinja2
-    import os
+
     ap_conf_dir = os.path.join(wapt_root_dir,'waptserver','apache-win32','conf')
     ap_file_name = 'httpd.conf'
     ap_conf_file = os.path.join(ap_conf_dir ,ap_file_name)
@@ -1177,7 +1177,7 @@ def make_httpd_config(wapt_root_dir, wapt_folder):
 
 def make_mongod_config(wapt_root_dir):
     import jinja2
-    import os
+
     conf_dir = os.path.join(wapt_root_dir,'waptserver','mongodb')
     file_name = 'mongod.cfg'
     conf_file = os.path.join(conf_dir ,file_name)
