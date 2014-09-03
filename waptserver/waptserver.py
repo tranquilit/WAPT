@@ -1154,11 +1154,15 @@ def install_windows_nssm_service(service_name,service_binary,service_parameters,
 def make_httpd_config(wapt_root_dir, wapt_folder):
     import jinja2
 
+    if wapt_folder.endswith('\\') or wapt_folder.endswith('/'):
+        wapt_folder = wapt_folder[:-1]
+
     ap_conf_dir = os.path.join(wapt_root_dir,'waptserver','apache-win32','conf')
     ap_file_name = 'httpd.conf'
     ap_conf_file = os.path.join(ap_conf_dir ,ap_file_name)
-    if wapt_folder.endswith('\\') or wapt_folder.endswith('/'):
-        wapt_folder = wapt_folder[:-1]
+    ap_ssl_dir = os.path.join(wapt_root_dir,'waptserver','apache-win32','conf')
+
+    # write config file
     jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(ap_conf_dir))
     template = jinja_env.get_template(ap_file_name + '.j2')
     template_variables = {
@@ -1166,8 +1170,8 @@ def make_httpd_config(wapt_root_dir, wapt_folder):
         'apache_root_folder':os.path.dirname(ap_conf_dir),
         'windows': True,
         'ssl': False,
-        'wapt_ssl_key_file': '',
-        'wapt_ssl_cert_file': ''
+        'wapt_ssl_key_file': os.path.join(ap_ssl_dir,'key.pem'),
+        'wapt_ssl_cert_file': os.path.join(ap_ssl_dir,'cert.pem')
         }
     config_string = template.render(template_variables)
     dst_file = file(ap_conf_file, 'wt')
