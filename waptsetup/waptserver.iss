@@ -47,7 +47,7 @@ Name: "{app}\waptserver\repository\wapt-host"
 Name: "{app}\waptserver\repository\wapt-group"
 Name: "{app}\waptserver\mongodb\data"
 Name: "{app}\waptserver\mongodb\log"
-
+Name: "{app}\waptserver\apache-win32\ssl"
 
 [Setup]
 OutputBaseFilename=waptserversetup
