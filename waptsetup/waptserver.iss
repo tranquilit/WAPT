@@ -80,3 +80,15 @@ Filename: "net"; Parameters: "stop waptmongodb /yes"; Flags: runhidden; StatusMs
 Filename: "sc"; Parameters: "delete waptmongob"; Flags: runhidden; StatusMsg: "Unregister WAPTMongodb"
 Filename: "net"; Parameters: "stop waptapache /yes"; Flags: runhidden; StatusMsg: "Stop WAPTApache"
 Filename: "sc"; Parameters: "delete waptapache"; Flags: runhidden; StatusMsg: "Unregister WAPTApache"
+
+[Code]
+procedure DeinitializeUninstall();
+var
+    installdir: String;
+begin
+    installdir := ExpandConstant('{app}');
+    if DirExists(installdir) and 
+       (MsgBox('Des fichiers restent présents dans votre répertoire ' + installdir + ', souhaitez-vous le supprimer ainsi que tous les fichiers qu''il contient ?',
+               mbConfirmation, MB_YESNO) = IDYES) then
+        Deltree(installdir, True, True, True);
+end;
