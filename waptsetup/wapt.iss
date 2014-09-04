@@ -292,3 +292,17 @@ begin
   // Note : on ne tient pas compte des versions plus anciennes de VC++ 2008
   Result := not VCVersionInstalled(VC_2008_SP1_MFC_SEC_UPD_REDIST_X86);
 end;
+
+// Usable even in the Uninstall section, contrary to WizardSilent
+function runningSilently(): Boolean;
+var
+    i: Cardinal;
+begin
+    result := False; 
+    for i := 1 to ParamCount do
+    begin
+        if ((CompareText(ParamStr(i), '/silent') = 0) or
+            (CompareText(ParamStr(i), '/verysilent') = 0)) then
+            result := True;
+    end;
+end;

@@ -87,7 +87,7 @@ var
     installdir: String;
 begin
     installdir := ExpandConstant('{app}');
-    if DirExists(installdir) and 
+    if DirExists(installdir) and not runningSilently() and
        (MsgBox('Des fichiers restent présents dans votre répertoire ' + installdir + ', souhaitez-vous le supprimer ainsi que tous les fichiers qu''il contient ?',
                mbConfirmation, MB_YESNO) = IDYES) then
         Deltree(installdir, True, True, True);
