@@ -68,6 +68,9 @@ import win32security
 from M2Crypto import EVP, X509
 from M2Crypto.EVP import EVPError
 
+from urlparse import urlparse
+from requests_kerberos_sspi import HTTPKerberosAuth,OPTIONAL
+
 from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,\
     EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,\
     QueryInfoKey,DeleteValue,DeleteKey,\
@@ -736,10 +739,10 @@ def host_ipv4():
     return res
 
 
-def tryurl(url,proxies=None,timeout=0.3):
+def tryurl(url,proxies=None,timeout=0.3,auth=None):
     try:
         logger.debug(u'  trying %s' % url)
-        headers = requests.head(url,proxies=proxies,timeout=timeout)
+        headers = requests.head(url,proxies=proxies,timeout=timeout,auth=auth)
         if headers.ok:
             logger.debug(u'  OK')
             return True
@@ -1710,6 +1713,13 @@ class WaptServer(object):
         else:
             self.dnsdomain = setuphelpers.get_domain_fromregistry()
 
+    def auth(self):
+        scheme = urlparse(self.server_url).scheme
+        if scheme == 'https':
+            return HTTPKerberosAuth(mutual_authentication=OPTIONAL)
+            # TODO : simple auth if kerberos is not available...
+        else:
+            return None
 
     def reset_network(self):
         """called by wapt when network configuration has changed"""
@@ -1762,11 +1772,11 @@ class WaptServer(object):
                             wapthost = a.target.to_text()[0:-1]
                             if a.port == 443:
                                 url = 'https://%s' % (wapthost)
-                                if tryurl(url,timeout=self.timeout):
+                                if tryurl(url,timeout=self.timeout,auth=self.auth()):
                                     working_url.append((a.weight,url))
                             else:
                                 url = 'http://%s:%i' % (wapthost,a.port)
-                                if tryurl(url,timeout=self.timeout):
+                                if tryurl(url,timeout=self.timeout,auth=self.auth()):
                                     working_url.append((a.weight,url))
                         except Exception,e:
                             logging.debug('Unable to resolve : error %s' % (ensure_unicode(e),))
@@ -1819,15 +1829,23 @@ class WaptServer(object):
 
     def get(self,action):
         """ """
-        req = requests.get("%s/%s" % (self.server_url,action),proxies=self.proxies,verify=False)
+        req = requests.get("%s/%s" % (self.server_url,action),proxies=self.proxies,verify=False,timeout=self.timeout,auth=self.auth())
         req.raise_for_status()
         return json.loads(req.content)
 
     def post(self,action,data):
         """ """
-        req = requests.post("%s/%s" % (self.server_url,action),data,proxies=self.proxies,verify=False)
+        req = requests.post("%s/%s" % (self.server_url,action),data,proxies=self.proxies,verify=False,timeout=self.timeout,auth=self.auth())
         req.raise_for_status()
         return json.loads(req.content)
+
+    def available(self):
+        try:
+            req = requests.head("%s" % (self.server_url),proxies=self.proxies,verify=False,timeout=self.timeout,auth=self.auth())
+            req.raise_for_status()
+            return True
+        except:
+            return False
 
 
 class WaptRepo(object):
@@ -2316,6 +2334,7 @@ class Wapt(object):
         self.user = setuphelpers.get_current_user()
         self.usergroups = None
 
+        self.waptserver = None
         self.config_filedate = None
         self.load_config(config_filename = self.config_filename)
 
@@ -2447,6 +2466,9 @@ class Wapt(object):
 
         if self.config.has_option('global','wapt_server'):
             self.wapt_server = self.config.get('global','wapt_server')
+            self.waptserver = WaptServer().load_config(self.config)
+        else:
+            self.waptserver = None
 
         if self.config.has_option('global','language'):
             self.language = self.config.get('global','language')
@@ -2541,7 +2563,7 @@ class Wapt(object):
             logger.info(u'Status : %s' % ensure_unicode(waptstatus))
             self.write_param('runstatus',waptstatus)
             self._runstatus = waptstatus
-            if not self.disable_update_server_status and self.wapt_server:
+            if not self.disable_update_server_status and self.waptserver and self.waptserver.available():
                 try:
                     self.update_server_status()
                 except Exception,e:
@@ -2617,11 +2639,13 @@ class Wapt(object):
         if not (isinstance(package,(str,unicode)) and os.path.isfile(package)) and not isinstance(package,PackageEntry):
             raise Exception('No package file to upload')
         if not wapt_server_user:
-            wapt_server_user = raw_input('WAPT Server user :')
-        if not wapt_server_passwd:
-            wapt_server_passwd = getpass.getpass('WAPT Server password :').encode('ascii')
-
-        auth =  (wapt_server_user, wapt_server_passwd)
+            if self.waptserver.auth():
+                auth = self.waptserver.auth()
+            else:
+                wapt_server_user = raw_input('WAPT Server user :')
+                if not wapt_server_passwd:
+                    wapt_server_passwd = getpass.getpass('WAPT Server password :').encode('ascii')
+                auth =  (wapt_server_user, wapt_server_passwd)
         if not isinstance(package,PackageEntry):
             pe = PackageEntry().load_control_from_wapt(package)
             package_filename = package
@@ -3830,10 +3854,8 @@ class Wapt(object):
         self.delete_param('uuid')
         inv = self.inventory()
         inv['uuid'] = self.host_uuid
-        if self.wapt_server:
-            req = requests.post("%s/add_host" % (self.wapt_server,),json.dumps(inv),proxies=(self.use_http_proxy_for_server and self.proxies or None),verify=False)
-            req.raise_for_status()
-            return req.content
+        if self.waptserver:
+            return self.waptserver.post('add_host',data = json.dumps(inv))
         else:
             return json.dumps(inv,indent=True)
 
@@ -3855,13 +3877,12 @@ class Wapt(object):
         inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
         inv['update_status'] = self.get_last_update_status()
 
-        if self.wapt_server:
-            req = requests.post("%s/update_host" % (self.wapt_server,),data=json.dumps(inv),timeout=self.wapt_server_timeout,proxies=(self.use_http_proxy_for_server and self.proxies or None),verify=False)
+        if self.waptserver:
             try:
-                req.raise_for_status()
+                result = self.waptserver.post('update_host',data=json.dumps(inv))
             except Exception,e:
+                result = None
                 logger.warning(u'Unable to update server status : %s' % ensure_unicode(e))
-            result = json.loads(req.content)
             # force register if computer has not been registered or hostname has changed
             if not result or not 'host' in result or result['host']['computer_fqdn'] != setuphelpers.get_hostname():
                 self.register_computer()
@@ -3871,15 +3892,7 @@ class Wapt(object):
 
     def waptserver_available(self):
         """Return ident of waptserver if defined and available, else False"""
-        if self.wapt_server:
-            try:
-                httpreq = requests.get('%s'%(self.wapt_server),timeout=self.wapt_server_timeout,proxies=(self.use_http_proxy_for_server and self.proxies or None))
-                httpreq.raise_for_code()
-                return httpreq.text
-            except Exception as e:
-                return False
-        else:
-            return False
+        return self.waptserver.available()
 
     def wapt_status(self):
         """return wapt version info"""
@@ -5219,7 +5232,7 @@ class Wapt(object):
         try:
             for repo in self.repositories:
                 repo.reset_network()
-            if not self.disable_update_server_status and self.wapt_server:
+            if not self.disable_update_server_status and self.waptserver:
                 self.update_server_status()
         except Exception as e:
             logger.warning(u'Problème lors du changement de réseau : %s'%setuphelpers.ensure_unicode(e))
