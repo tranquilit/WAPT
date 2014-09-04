@@ -2307,7 +2307,6 @@ class Wapt(object):
         self.upload_cmd_host = self.upload_cmd
         self.after_upload = None
         self.proxies = None
-        self.wapt_server = None
         self.language = None
 
         self.use_http_proxy_for_repo = True
@@ -2465,18 +2464,12 @@ class Wapt(object):
             self.proxies = None
 
         if self.config.has_option('global','wapt_server'):
-            self.wapt_server = self.config.get('global','wapt_server')
             self.waptserver = WaptServer().load_config(self.config)
         else:
             self.waptserver = None
 
         if self.config.has_option('global','language'):
             self.language = self.config.get('global','language')
-
-        if self.config.has_option('global','wapt_server_timeout'):
-            self.wapt_server_timeout = self.config.getfloat('global','wapt_server_timeout')
-        else:
-            self.wapt_server_timeout = 1.0
 
         # Get the configuration of all repositories (url, ...)
         self.repositories = []
@@ -2654,11 +2647,10 @@ class Wapt(object):
             package_filename = pe.wapt_fullpath()
         with open(package_filename,'rb') as afile:
             if pe.section == 'host':
-                req = requests.post("%s/upload_host" % (self.wapt_server,),files={'file':afile},proxies=(self.use_http_proxy_for_server and self.proxies or None),verify=False,auth=auth)
+                #res = self.waptserver.post('upload_host',files={'file':afile},auth=auth)
+                res = self.waptserver.post('upload_host',data=afile,auth=auth)
             else:
-                req = requests.post("%s/upload_package/%s" % (self.wapt_server,os.path.basename(package_filename)),data=afile,proxies=(self.use_http_proxy_for_server and self.proxies or None),verify=False,auth=auth)
-            req.raise_for_status()
-            res = json.loads(req.content)
+                res = self.waptserver.post('upload_package',data=afile,auth=auth)
             return res
         if res['status'] != 'OK':
             raise Exception(u'Unable to upload package: %s'%ensure_unicode(res['message']))
@@ -2678,9 +2670,7 @@ class Wapt(object):
                 for file in cmd_dict['waptfile']:
                     file = file[1:-1]
                     with open(file,'rb') as afile:
-                        req = requests.post("%s/upload_host" % (self.wapt_server,),files={'file':afile},proxies=(self.use_http_proxy_for_server and self.proxies or None),verify=False,auth=auth)
-                        req.raise_for_status()
-                        res = json.loads(req.content)
+                        res = self.waptserver.post('upload_host',files={'file':afile},auth=auth)
                     if res['status'] != 'OK':
                         raise Exception(u'Unable to upload package: %s'%ensure_unicode(res['message']))
                 return res
@@ -2695,7 +2685,7 @@ class Wapt(object):
                     file = file[1:-1]
                     #upload par http vers un serveur WAPT  (url POST upload_package)
                     with open(file,'rb') as afile:
-                        req = requests.post("%s/upload_package/%s" % (self.wapt_server,os.path.basename(file)),data=afile,proxies=(self.use_http_proxy_for_server and self.proxies or None),verify=False,auth=auth)
+                        req = requests.post("%s/upload_package/%s" % (self.waptserver.server_url,os.path.basename(file)),data=afile,proxies=self.waptserver.proxies,verify=False,auth=auth)
                         req.raise_for_status()
                         res = json.loads(req.content)
                         if res['status'] != 'OK':

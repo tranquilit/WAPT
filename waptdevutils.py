@@ -87,7 +87,7 @@ def upload_wapt_setup(wapt,waptsetup_path, wapt_server_user, wapt_server_passwd)
     """
     auth =  (wapt_server_user, wapt_server_passwd)
     with open(waptsetup_path,'rb') as afile:
-        req = requests.post("%s/upload_waptsetup" % (wapt.wapt_server,),files={'file':afile},proxies=wapt.proxies,verify=False,auth=auth)
+        req = requests.post("%s/upload_waptsetup" % (wapt.waptserver.server_url,),files={'file':afile},proxies=wapt.waptserver.proxies,verify=False,auth=auth)
         req.raise_for_status()
         res = json.loads(req.content)
     return res
@@ -100,7 +100,7 @@ def diff_computer_ad_wapt(wapt):
     ???
     """
     computer_ad =  set([ c['dnshostname'].lower() for c in active_directory.search("objectClass='computer'") if c['dnshostname']])
-    computer_wapt = set( [ c['host']['computer_fqdn'].lower() for c in json.loads(requests.request('GET','%s/json/host_list'%wapt.wapt_server).text)])
+    computer_wapt = set( [ c['host']['computer_fqdn'].lower() for c in json.loads(requests.request('GET','%s/json/host_list'%wapt.waptserver.server_url).text)])
     diff = list(set(computer_ad)-set(computer_wapt))
     return diff
 
@@ -112,14 +112,14 @@ def diff_computer_wapt_ad(wapt):
     ???
     """
     computer_ad =  set([ c['dnshostname'].lower() for c in active_directory.search("objectClass='computer'") if c['dnshostname']])
-    computer_wapt = set( [ c['host']['computer_fqdn'].lower() for c in json.loads(requests.request('GET','%s/json/host_list'%wapt.wapt_server).text)])
+    computer_wapt = set( [ c['host']['computer_fqdn'].lower() for c in json.loads(requests.request('GET','%s/json/host_list'%wapt.waptserver.server_url).text)])
     result = list(set(computer_wapt)-set(computer_ad))
     return result
 
 
 def search_bad_waptsetup(wapt,wapt_version):
     """Return list of computers in the Wapt Server who have not the version of Wapt specified"""
-    hosts =  json.loads(requests.request('GET','%s/json/host_data'%wapt.wapt_server).content)
+    hosts =  wapt.waptserver.get('hosts')
     result = dict()
     for i in hosts:
         wapt = [w for w in  i['softwares'] if w['key'] == 'WAPT_is1' ]
