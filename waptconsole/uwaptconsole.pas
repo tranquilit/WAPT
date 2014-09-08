@@ -839,13 +839,13 @@ begin
           SORes := WAPTServerJsonMultipartFilePost(GetWaptServerURL,'upload_waptsetup',[],'file',waptsetupPath,False,WaptServerUser,WaptServerPassword,@IdHTTPWork);
           Finish;
           if SORes.S['status'] = 'OK' then
-            ShowMessage('waptagent.exe créé et déposé avec succès: ' + waptsetupPath)
+            ShowMessage('waptsetup.exe créé et déposé avec succès: ' + waptsetupPath)
           else
-            ShowMessage('Erreur lors du dépôt de waptagent: ' + SORes.S['message']);
+            ShowMessage('Erreur lors du dépôt de waptsetup: ' + SORes.S['message']);
         except
           on e: Exception do
           begin
-            ShowMessage('Erreur à la création du waptagent.exe: ' + e.Message);
+            ShowMessage('Erreur à la création du waptsetup.exe: ' + e.Message);
             Finish;
           end;
         end;
@@ -1070,11 +1070,11 @@ begin
                       [waptsetupPath, waptServerUser, waptServerPassword]));
                     if SORes.S['status'] = 'OK' then
                     begin
-                      ShowMessage('Waptagent déposé avec succès');
+                      ShowMessage('Waptsetup déposé avec succès');
                       done := True;
                     end
                     else
-                      ShowMessage('Erreur lors du dépôt de waptagent: ' + SORes.S['message']);
+                      ShowMessage('Erreur lors du dépôt de waptsetup: ' + SORes.S['message']);
                   end;
                 finally
                   Free;
@@ -1082,12 +1082,12 @@ begin
               if done then
               begin
                 Screen.Cursor := crDefault;
-                ShowMessage('waptagent.exe créé avec succès: ' + waptsetupPath);
+                ShowMessage('waptsetup.exe créé avec succès: ' + waptsetupPath);
               end;
             except
               on e: Exception do
               begin
-                ShowMessage('Erreur à la création du waptagent.exe: ' + e.Message);
+                ShowMessage('Erreur à la création du waptsetup.exe: ' + e.Message);
                 done := False;
               end;
             end;

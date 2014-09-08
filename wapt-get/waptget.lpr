@@ -233,7 +233,7 @@ begin
   begin
     writeln(' -r --repo : URL of dependencies libs');
     writeln(' waptupgrade : upgrade wapt-get.exe and database');
-    writeln(' waptagent : install/reinstall dependencies (python libs)');
+    writeln(' waptsetup : install/reinstall dependencies (python libs)');
   end;
 
   if HasOption('r','repo') then
@@ -263,7 +263,7 @@ begin
     if RepoURL='' then
       RepoURL:=GetMainWaptRepo;
     Writeln('WAPT-GET Upgrade using repository at '+RepoURL);
-    UpdateApplication(RepoURL+'/waptagent.exe','waptagent.exe','/VERYSILENT','wapt-get.exe','');
+    UpdateApplication(RepoURL+'/waptsetup.exe','waptsetup.exe','/VERYSILENT','wapt-get.exe','');
     Terminate;
     Exit;
   end

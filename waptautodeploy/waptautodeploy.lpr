@@ -464,9 +464,9 @@ begin
   end;
 
   { add your program here }
-  repo_waptsetup := wapt_repo+'/waptagent.exe';
+  repo_waptsetup := wapt_repo+'/waptsetup.exe';
   local_waptsetup_dir := GetTempDir+'\'+(RandomWord(33, 54, Random(12), 2));
-  local_waptsetup := local_waptsetup_dir  +'\'+'waptagent.exe';
+  local_waptsetup := local_waptsetup_dir  +'\'+'waptsetup.exe';
   json_wapt_version:= httpGetString(wapt_server+'\info');
   wapt_version := SO(json_wapt_version).S['client_version'];
   json_send := TSuperObject.Create;
@@ -478,7 +478,7 @@ begin
     httpPostData(ApplicationName,wapt_server+'/update_host',json_send.AsJSon(True));
     CreateDir(local_waptsetup_dir);
     wget(repo_waptsetup,local_waptsetup);
-    log_event('info','Launch install of waptagent.exe, current version: '+local_wapt_version+', required version: '+wapt_version);
+    log_event('info','Launch install of waptsetup.exe, current version: '+local_wapt_version+', required version: '+wapt_version);
     try
        if HasOption('d','delete_ini') then
           delete_ini();
@@ -513,7 +513,7 @@ begin
     end;
   end
   else
-    log_event('info','Skipped waptagent.exe, current version: '+local_wapt_version+', required version: '+wapt_version);
+    log_event('info','Skipped waptsetup.exe, current version: '+local_wapt_version+', required version: '+wapt_version);
 
   // stop program loop
   Terminate;
@@ -561,7 +561,7 @@ begin
   writeln;
   writeln('Usage: ');
   writeln('-h, --help               show this help');
-  writeln('-o, --options            innosetup options for waptagent.exe (default: '+setup_options+')');
+  writeln('-o, --options            innosetup options for waptsetup.exe (default: '+setup_options+')');
   writeln('-d, --delete_ini         delete local wapt-get.ini file before the upgrade');
   writeln('-s, --server             waptserver url (default: '+wapt_server+')');
   writeln('-r, --repourl            waptrepo url (default: '+wapt_repo+')');

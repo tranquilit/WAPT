@@ -3,7 +3,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   Height = 184
   Top = 340
   Width = 535
-  Caption = 'Créer le waptagent.exe'
+  Caption = 'Créer le waptsetup.exe'
   ClientHeight = 184
   ClientWidth = 535
   Font.CharSet = ANSI_CHARSET
@@ -113,10 +113,10 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object Label4: TLabel
     Left = 8
     Height = 13
-    Hint = 'Dossier dans lequel waptagent.exe sera enregistré'
+    Hint = 'Dossier dans lequel waptsetup.exe sera enregistrer'
     Top = 48
     Width = 194
-    Caption = 'Enregistrer waptagent.exe sous...  '
+    Caption = 'Enregistrer waptsetup.exe sous...  '
     Font.Style = [fsBold]
     ParentColor = False
     ParentFont = False

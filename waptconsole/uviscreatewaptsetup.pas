@@ -54,7 +54,7 @@ begin
     end;
     if not DirectoryExists(fnWaptDirectory.Caption) then
     begin
-      ShowMessage('Le répertoire pour sauvegarder waptagent n''est pas valide: '+fnWaptDirectory.Directory);
+      ShowMessage('Le répertoire pour sauvegarder waptsetup n''est pas valide: '+fnWaptDirectory.Directory);
       CanClose:=False;
     end
   end;
