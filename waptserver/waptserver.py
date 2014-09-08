@@ -484,12 +484,12 @@ def check_auth(username, password):
 
     if sha512_crypt.identify(wapt_password):
         pass_sha512_crypt_ok  = sha512_crypt.verify(password, wapt_password)
-    elif bcrypt.identify(wapt_password):
-        pass_bcrypt_crypt_ok = bcrypt.verify(password, wapt_password)
-
-    #                                    sha512_crypt.encrypt('TIS', rounds=1000000)
-    #ret = sha512_crypt.verify(password, '$6$rounds=100000$UyHraKoqY8Wm27eT$wsaNea6wq1ZHPeiJljLQRpuSHD3BaxPU9c8yacw5dy0z8TshCIMUjaVFCU93Lm2lJFMVIOwVIXozsw5kenxzh/')
-    #pass_sha512_crypt_ok = False
+    else:
+        try:
+            if bcrypt.identify(wapt_password):
+                pass_bcrypt_crypt_ok = bcrypt.verify(password, wapt_password)
+        except Exception:
+            pass
 
     return any_([pass_sha1_ok, pass_sha512_ok, pass_sha512_crypt_ok, pass_bcrypt_crypt_ok]) and user_ok
 
@@ -953,7 +953,7 @@ def login():
                 if check_auth(d["username"], d["password"]):
                     if "newPass" in d:
                         global wapt_password
-                        wapt_password = sha512_crypt.encrypt(d["newPass"], rounds=100000)
+                        wapt_password = hashlib.sha1(d["newPass"]).hexdigest()
                         rewrite_password(options.configfile, wapt_password)
                         # Graceful reload pour prendre en compte le nouveau mot
                         # mot de passe dans tous les workers uwsgi

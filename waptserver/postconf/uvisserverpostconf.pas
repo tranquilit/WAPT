@@ -130,7 +130,7 @@ var
 
 implementation
 uses LCLIntf, Windows,WaptCommon,tisinifiles,superobject,tisutils,soutils,
-    tiscommon,tisstrings,IniFiles,UnitRedirect,sha1,Regex,SBBCrypt;
+    tiscommon,tisstrings,IniFiles,UnitRedirect,sha1,Regex;
 {$R *.lfm}
 
 { TVisWAPTServerPostConf }
@@ -339,8 +339,6 @@ end;
 procedure TVisWAPTServerPostConf.actWriteConfStartServeExecute(Sender: TObject);
 var
   ini:TMemIniFile;
-  crypt : TElBCrypt;
-  //derived_pass:String;
 begin
   CurrentVisLoading := TVisLoading.Create(Self);
   with CurrentVisLoading do
@@ -362,19 +360,8 @@ begin
 
     ProgressTitle('Mise en place mot de passe du serveur');
     ProgressStep(3,8);
-    //IniWriteString(WaptBaseDir+'\waptserver\waptserver.ini' ,'Options','wapt_password',cHash.SHA512DigestAsString(cHash.CalcSHA512(EdPwd1.Text)));
-    crypt := TElBCrypt.Create;
-    try
-      IniWriteString(WaptBaseDir+'\waptserver\waptserver.ini' ,'Options','wapt_password',crypt.EncryptPassword(EdPwd1.Text,crypt.GenerateSalt,10));
-    finally
-      crypt.free;
-    end;
 
-    //derived_pass := GenSHA512Crypt(EdPwd1.Text)
-	//if derived_pass = '' then derived_pass := sha1.SHA1Print(sha1.SHA1String(EdPwd1.Text))
-    //IniWriteString(WaptBaseDir+'\waptserver\waptserver.ini' ,'options','wapt_password',derived_pass);
-
-    //IniWriteString(WaptBaseDir+'\waptserver\waptserver.ini' ,'Options','wapt_password',sha1.SHA1Print(sha1.SHA1String(EdPwd1.Text)));
+    IniWriteString(WaptBaseDir+'\waptserver\waptserver.ini' ,'Options','wapt_password',sha1.SHA1Print(sha1.SHA1String(EdPwd1.Text)));
 
     if CBOpenFirewall.Checked then
     begin

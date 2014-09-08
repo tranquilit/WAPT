@@ -35,7 +35,6 @@ import shutil
 import fileinput
 import glob
 import hashlib
-from passlib.hash import sha512_crypt
 import dialog
 import subprocess
 import jinja2
@@ -155,8 +154,8 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
         else:
             wapt_password_ok = True
 
-    password = sha512_crypt.encrypt(wapt_password, rounds=100000)
-    waptserver_ini.set('options','wapt_password',password)
+    password = hashlib.sha1(wapt_password).hexdigest()
+    waptserver_ini.set('options','wapt_password',password) 
 
 
     with open('/opt/wapt/waptserver/waptserver.ini','w') as inifile:
