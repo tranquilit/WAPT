@@ -23,7 +23,7 @@ Source: "..\waptconsole.exe"; DestDir: "{app}";
 Source: "..\waptdevutils.py"; DestDir: "{app}";
 
 [Setup]
-OutputBaseFilename=waptsetup
+OutputBaseFilename=waptagent
 DefaultDirName="C:\wapt"
 WizardImageFile=..\tranquilit.bmp
 

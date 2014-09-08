@@ -868,10 +868,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object Label7: TLabel
         Left = 8
         Height = 13
-        Hint = 'Dossier dans lequel waptsetup.exe sera enregistrer'
+        Hint = 'Dossier dans lequel waptagent.exe sera enregistré'
         Top = 48
         Width = 194
-        Caption = 'Enregistrer waptsetup.exe sous...  '
+        Caption = 'Enregistrer waptagent.exe sous...  '
         Font.Style = [fsBold]
         ParentColor = False
         ParentFont = False
@@ -921,7 +921,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           '</head>'
           '<body>'
           'L''installeur personnalisé '
-          '(waptsetup.exe) sert à incorporer '
+          '(waptagent.exe) sert à incorporer '
           'votre'
           ' certificat dans l''agent WAPT.'
           'L''agent WAPT doit être installé sur '
@@ -932,7 +932,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           '<ul>'
           '<li> depuis une clé USB </li>'
           '<li> depuis l''adresse http://nom-du-'
-          'serveur-wapt/wapt/waptsetup.exe '
+          'serveur-wapt/wapt/waptagent.exe '
           '</li>'
           '<li> <a '
           'href="http://dev.tranquil.it/index.ph'

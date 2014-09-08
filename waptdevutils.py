@@ -38,12 +38,12 @@ import tempfile
 
 
 def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wapt_server='',destination='',company=''):
-    r"""Build a customized waptsetup.exe with included provided certificate
+    r"""Build a customized waptagent.exe with included provided certificate
     Returns filename
     >>> from common import Wapt
     >>> wapt = Wapt(config_filename=r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini')
     >>> create_wapt_setup(wapt,r'C:\private\ht.crt',destination='c:\\tranquilit\\wapt\\waptsetup')
-    u'c:\\tranquilit\\wapt\\waptsetup\\waptsetup.exe'
+    u'c:\\tranquilit\\wapt\\waptsetup\\waptagent.exe'
     """
     if not company:
         company = registered_organization()
@@ -80,10 +80,10 @@ def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wa
 
 
 def upload_wapt_setup(wapt,waptsetup_path, wapt_server_user, wapt_server_passwd):
-    """Upload waptsetup.exe to wapt repository
+    """Upload waptagent.exe to wapt repository
     >>> wapt = common.Wapt(config_filename="c:/users/htouvet/AppData/Local/waptconsole/waptconsole.ini")
-    >>> upload_wapt_setup(wapt,'c:/tranquilit/wapt/waptsetup/waptsetup.exe', 'admin', 'password')
-    '{"status": "OK", "message": "waptsetup.exe uploaded"}'
+    >>> upload_wapt_setup(wapt,'c:/tranquilit/wapt/waptsetup/waptagent.exe', 'admin', 'password')
+    '{"status": "OK", "message": "waptagent.exe uploaded"}'
     """
     auth =  (wapt_server_user, wapt_server_passwd)
     with open(waptsetup_path,'rb') as afile:

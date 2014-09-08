@@ -1235,7 +1235,7 @@ begin
     if not FileExists(inno_fn) then
         raise Exception.CreateFmt('Innosetup n''est pas disponible (emplacement %s), veuillez l''installer',[inno_fn]);
     Sto_RedirectedExecute(format('"%s"  %s',[inno_fn,custom_iss]),'',3600000,'','','',OnProgress);
-    Result := destination + '\waptsetup.exe';
+    Result := destination + '\waptagent.exe';
 end;
 
 

@@ -164,7 +164,7 @@ else:
 if not wapt_folder:
     wapt_folder = os.path.join(wapt_root_dir,'waptserver','repository','wapt')
 
-waptsetup = os.path.join(wapt_folder, 'waptsetup.exe')
+waptsetup = os.path.join(wapt_folder, 'waptagent.exe')
 
 # Setup initial directories
 if os.path.exists(wapt_folder)==False:
@@ -592,7 +592,7 @@ def upload_waptsetup():
     try:
         if request.method == 'POST':
             file = request.files['file']
-            if file and "waptsetup.exe" in file.filename :
+            if file and "waptagent.exe" in file.filename :
                 filename = secure_filename(file.filename)
                 tmp_target = os.path.join(wapt_folder, secure_filename('.'+filename))
                 target = os.path.join(wapt_folder, secure_filename(filename))
@@ -875,10 +875,10 @@ def install_wapt(computer_name,authentication_file):
 
         raise Exception(u"%s" % e.output)
 
-    cmd = '/usr/bin/smbclient -A "%s" //%s/c\\$ -c "put waptsetup.exe" ' % (authentication_file, computer_name)
+    cmd = '/usr/bin/smbclient -A "%s" //%s/c\\$ -c "put waptagent.exe" ' % (authentication_file, computer_name)
     print subprocess.check_output(cmd,shell=True)
 
-    cmd = '/usr/bin/winexe -A "%s"  //%s  "c:\\waptsetup.exe  /MERGETASKS=""useWaptServer,autorunTray"" /VERYSILENT"  ' % (authentication_file, computer_name)
+    cmd = '/usr/bin/winexe -A "%s"  //%s  "c:\\waptagent.exe  /MERGETASKS=""useWaptServer,autorunTray"" /VERYSILENT"  ' % (authentication_file, computer_name)
     print subprocess.check_output(cmd,shell=True)
 
 #    cmd = '/usr/bin/smbclient -A "%s" //%s/c\\$ -c "cd wapt ; put wapt-get.ini ; exit" ' % (authentication_file, computer_name)

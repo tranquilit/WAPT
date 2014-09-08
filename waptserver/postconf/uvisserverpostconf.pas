@@ -413,12 +413,12 @@ var
   ini: TIniFile;
   SORes:ISuperObject;
 begin
-  waptsetupPath := 'C:\Users\htouvet\AppData\Local\Temp\waptsetup.exe';
+  waptsetupPath := 'C:\Users\htouvet\AppData\Local\Temp\waptagent.exe';
   SORes := WAPTServerJsonMultipartFilePost(edWAPTServerURL.text,'upload_waptsetup',[],'file',waptsetupPath,False,'admin','fakepassword',@IdHTTPWork);
   if SORes.S['status'] = 'OK' then
     ShowMessage('Waptsetup déposé avec succès')
   else
-    ShowMessage('Erreur lors du dépôt de waptsetup: ' + SORes.S['message']);
+    ShowMessage('Erreur lors du dépôt de waptagent: ' + SORes.S['message']);
 end;
 
 procedure TVisWAPTServerPostConf.ActManualExecute(Sender: TObject);
@@ -486,13 +486,13 @@ begin
       SORes := WAPTServerJsonMultipartFilePost(edWAPTServerURL1.Text,'upload_waptsetup',[],'file',waptsetupPath,False,'admin',EdPwd1.Text,@IdHTTPWork);
       Finish;
       if SORes.S['status'] = 'OK' then
-        ShowMessage('waptsetup.exe créé et déposé avec succès: ' + waptsetupPath)
+        ShowMessage('waptagent.exe créé et déposé avec succès: ' + waptsetupPath)
       else
-        ShowMessage('Erreur lors du dépôt de waptsetup: ' + SORes.S['message']);
+        ShowMessage('Erreur lors du dépôt de waptagent: ' + SORes.S['message']);
     except
       on e: Exception do
       begin
-        ShowMessage('Erreur à la création du waptsetup.exe: ' + e.Message);
+        ShowMessage('Erreur à la création du waptagent.exe: ' + e.Message);
         Finish;
       end;
     end;
