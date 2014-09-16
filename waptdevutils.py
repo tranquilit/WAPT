@@ -128,8 +128,8 @@ def search_bad_waptsetup(wapt,wapt_version):
     return result
 
 
-def update_tis_repo(waptconfigfile,search_string):
-    """Get a list of entries from TIS public repository matching search_string
+def update_external_repo(waptconfigfile,search_string):
+    """Get a list of entries from external templates public repository matching search_string
     >>> firefox = update_tis_repo(r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini","tis-firefox-esr")
     >>> isinstance(firefox,list) and firefox[-1].package == 'tis-firefox-esr'
     True
@@ -138,7 +138,10 @@ def update_tis_repo(waptconfigfile,search_string):
     wapt.use_hostpackages = False
     repo = wapt.config.get('global','templates_repo_url')
     wapt.repositories[0].repo_url = repo if repo else 'http://wapt.tranquil.it/wapt'
-    wapt.proxies =  wapt.use_http_proxy_for_templates and {'http':wapt.config.get('global','http_proxy')} or None
+    if wapt.use_http_proxy_for_templates:
+        wapt.repositories[0].proxies = wapt.proxies
+    else:
+        wapt.proxies = None
     wapt.dbpath = r':memory:'
     wapt.update(register=False)
     return wapt.search(search_string)
@@ -299,6 +302,9 @@ if __name__ == '__main__':
     import doctest
     import sys
     reload(sys)
+    update_external_repo(r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini','')
+    sys.exit(0)
+
     sys.setdefaultencoding("UTF-8")
     import doctest
     doctest.ELLIPSIS_MARKER = '???'

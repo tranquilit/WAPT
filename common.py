@@ -1803,11 +1803,11 @@ class WaptServer(object):
                             wapthost = a.target.to_text()[0:-1]
                             if a.port == 443:
                                 url = 'https://%s' % (wapthost)
-                                if tryurl(url,timeout=self.timeout,auth=self.auth()):
+                                if tryurl(url,timeout=self.timeout,auth=self.auth(),proxies=self.proxies):
                                     working_url.append((a.weight,url))
                             else:
                                 url = 'http://%s:%i' % (wapthost,a.port)
-                                if tryurl(url,timeout=self.timeout,auth=self.auth()):
+                                if tryurl(url,timeout=self.timeout,auth=self.auth(),proxies=self.proxies):
                                     working_url.append((a.weight,url))
                         except Exception,e:
                             logging.debug('Unable to resolve : error %s' % (ensure_unicode(e),))
@@ -1972,19 +1972,19 @@ class WaptRepo(object):
                             ip = resolv.query(a.target)[0].to_text()
                             if a.port == 80:
                                 url = 'http://%s/wapt' % (wapthost,)
-                                if tryurl(url+'/Packages',timeout=self.timeout):
+                                if tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies):
                                     working_url.append((a.weight,url))
                                     if is_inmysubnets(ip):
                                         return url
                             elif a.port == 443:
                                 url = 'https://%s/wapt' % (wapthost)
-                                if tryurl(url+'/Packages',timeout=self.timeout):
+                                if tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies):
                                     working_url.append((a.weight,url))
                                     if is_inmysubnets(ip):
                                         return url
                             else:
                                 url = 'http://%s:%i/wapt' % (wapthost,a.port)
-                                if tryurl(url+'/Packages',timeout=self.timeout):
+                                if tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies):
                                     working_url.append((a.weight,url))
                                     if is_inmysubnets(ip):
                                         return url
@@ -2012,10 +2012,10 @@ class WaptRepo(object):
                     for a in answers:
                         wapthost = a.target.canonicalize().to_text()[0:-1]
                         url = 'https://%s/wapt' % (wapthost,)
-                        if tryurl(url+'/Packages',timeout=self.timeout):
+                        if tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies):
                             return url
                         url = 'http://%s/wapt' % (wapthost,)
-                        if tryurl(url+'/Packages',timeout=self.timeout):
+                        if tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies):
                             return url
                     if not answers:
                         logger.debug(u'  No wapt.%s CNAME record found' % self.dnsdomain)
@@ -2033,10 +2033,10 @@ class WaptRepo(object):
                     answers = resolv.query(wapthost,'A')
                     if answers:
                         url = 'https://%s/wapt' % (wapthost,)
-                        if tryurl(url+'/Packages',timeout=self.timeout):
+                        if tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies):
                             return url
                         url = 'http://%s/wapt' % (wapthost,)
-                        if tryurl(url+'/Packages',timeout=self.timeout):
+                        if tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies):
                             return url
                     if not answers:
                         logger.debug(u'  No %s A record found' % wapthost)
@@ -2489,7 +2489,7 @@ class Wapt(object):
         self.use_http_proxy_for_server = self.config.getboolean('global','use_http_proxy_for_server')
         self.use_http_proxy_for_templates = self.config.getboolean('global','use_http_proxy_for_templates')
 
-        if self.config.has_option('global','http_proxy') and self.use_http_proxy_for_repo:
+        if self.config.has_option('global','http_proxy'):
             self.proxies = {'http':self.config.get('global','http_proxy')}
         else:
             self.proxies = None
