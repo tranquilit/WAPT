@@ -1845,9 +1845,8 @@ end;
 
 function TVisWaptGUI.Login:Boolean;
 var
-  resp: ISuperObject;
+  cred,resp: ISuperObject;
   localfn: string;
-
 begin
   Result := False;
   // Initialize user local config file with global wapt settings
@@ -1876,10 +1875,15 @@ begin
       begin
         waptServerPassword := edPassword.Text;
         waptServerUser := edUser.Text;
+        cred := SO();
+        cred.S['username'] := waptServerUser;
+        cred.S['password'] := WaptServerPassword;
+
         try
-          resp := DMPython.RunJSON(
+          resp := WAPTServerJsonPost('login',[],cred,False);
+          {resp := DMPython.RunJSON(
             format('waptdevutils.login_to_waptserver("%s","%s","%s")',
-            [GetWaptServerURL + '/login', waptServerUser, waptServerPassword]));
+            [GetWaptServerURL + '/login', waptServerUser, waptServerPassword]));}
         except
           on E: Exception do
           begin
