@@ -854,7 +854,7 @@ def main():
                     print u"Local auth password set successfully"
 
             elif action == 'update-status':
-                result = mywapt.update_server_status(force=options.force)
+                result = mywapt.update_server_status()
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
