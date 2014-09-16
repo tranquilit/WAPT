@@ -3134,6 +3134,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object MenuItem28: TMenuItem
         Action = ActDeployWapt
+        Visible = False
       end
       object MenuItem23: TMenuItem
         Action = ActAdvancedMode
