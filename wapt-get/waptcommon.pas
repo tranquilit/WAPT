@@ -365,87 +365,11 @@ begin
   try
     strresult := httpGetString(GetWaptLocalURL+action,False,timeout,60000,60000,user,password);
   except
-    {on E:HTTPException do
-      if E.HTTPStatus=401 then
-        with TLoginEvent do;
-        begin
-
-        end
-        else}
-          raise;
+    raise;
   end;
   Result := SO(strresult);
 end;
 
-{
-function GetMainWaptRepo: String;
-var
-  resolv : TIdDNSResolver;
-  rec : TResultRecord;
-  i:integer;
-  first : integer;
-  ais : TAdapterInfo;
-
-  dnsdomain,
-  dnsserver:String;
-
-begin
-  result := IniReadString(AppIniFilename,'Global','repo_url');
-  if (Result <> '') then
-    exit;
-
-  if Get_EthernetAdapterDetail(ais) then
-  begin
-    for i:=0 to length(ais)-1 do
-    with ais[i] do
-      if (sIpAddress<>'') and (sIpMask<>'') and (dwType=MIB_IF_TYPE_ETHERNET) and (dwOperStatus>=MIB_IF_OPER_STATUS_CONNECTED) then begin
-        Logger(bDescr+' '+sIpAddress+'/'+sIpMask+' mac:'+ais[i].bPhysAddr,INFO);
-    end;
-  end;
-
-  dnsdomain:=GetDNSDomain;
-  dnsserver:=GetDNSServer;
-
-  if (dnsserver<>'') and (dnsdomain<>'') then
-  try
-    resolv := TIdDNSResolver.Create(Nil);
-    try
-      resolv.Host:=dnsserver;
-      resolv.ClearInternalQuery;
-      resolv.QueryType := [TQueryRecordTypes.qtService];
-      resolv.WaitingTime:=400;
-      resolv.Resolve('_wapt._tcp.'+dnsdomain+'.');
-      first:=MaxInt;
-      for i := 0 to resolv.QueryResult.count - 1 do
-      begin
-        rec := resolv.QueryResult.Items[i];
-        if rec is TSRVRecord then
-        with (rec as TSRVRecord) do begin
-           if Priority<first then
-           begin
-             first := Priority;
-             if Port=443 then
-                Result := 'https://'+Target+':'+IntToStr(Port)+'/wapt'
-             else
-                Result := 'http://'+Target+':'+IntToStr(Port)+'/wapt';
-           end;
-        end;
-      end;
-    finally
-      resolv.free;
-    end;
-
-  except
-    on EIdDnsResolverError do
-      Logger('SRV lookup failed',DEBUG)
-    else
-      Raise;
-  end;
-  Logger('trying '+result,INFO);
-  if (Result='') or not  Wget_try(result) then
-    result := '';
-end;
-}
 
 function GetMainWaptRepo: String;
 var
