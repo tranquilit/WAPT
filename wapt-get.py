@@ -319,7 +319,7 @@ def main():
                     if result.get('unavailable',[]):
                         print(u'Critical : ')
                         print(u' === Unavailable packages ===\n%s' % '\n'.join(["  %-30s" % s[0] for s in  result['unavailable']]))
-                if mywapt.wapt_server:
+                if mywapt.waptserver:
                     try:
                         mywapt.update_server_status()
                     except Exception,e:
@@ -423,7 +423,7 @@ def main():
                     if errors:
                         print u"=== Error removing packages ===\n%s" % u"\n".join([u"  %s" % p for p in errors])
 
-                if mywapt.wapt_server:
+                if mywapt.waptserver:
                     try:
                         mywapt.update_server_status()
                     except Exception,e:
@@ -507,7 +507,7 @@ def main():
                         for k in ('install','additional','upgrade','skipped','errors'):
                             if result[k]:
                                 print u"\n=== %s packages ===\n%s" % (k,'\n'.join( ["  %-30s | %s (%s)" % (s[0],s[1].package,s[1].version) for s in  result[k]]),)
-                if mywapt.wapt_server:
+                if mywapt.waptserver:
                     try:
                         mywapt.update_server_status()
                     except Exception,e:
@@ -585,7 +585,7 @@ def main():
                     jsonresult['result'] = result
                 else:
                     print u"Template created. You can build the WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result)
-                    if mywapt.upload_cmd or mywapt.wapt_server:
+                    if mywapt.upload_cmd or mywapt.waptserver:
                         print u"You can build and upload the WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result)
                     wapt_sources_edit(result)
 
@@ -598,7 +598,7 @@ def main():
                     jsonresult['result'] = result
                 else:
                     print u"Template created. You can build the WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result['source_dir'])
-                    if mywapt.upload_cmd or mywapt.wapt_server:
+                    if mywapt.upload_cmd or mywapt.waptserver:
                         print u"You can build and upload the WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result['source_dir'])
                     wapt_sources_edit(result['source_dir'])
 
@@ -612,7 +612,7 @@ def main():
                 else:
                     if os.path.isdir(result['target']):
                         print u"Package duplicated. You can build the new WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result['source_dir'])
-                        if mywapt.upload_cmd or mywapt.wapt_server:
+                        if mywapt.upload_cmd or mywapt.waptserver:
                             print u"You can build and upload the new WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result['source_dir'])
                         wapt_sources_edit(result['source_dir'])
                     else:
@@ -633,7 +633,7 @@ def main():
                 else:
                     if os.path.isdir(result['target']):
                         wapt_sources_edit(result['target'])
-                        if mywapt.upload_cmd or mywapt.wapt_server:
+                        if mywapt.upload_cmd or mywapt.waptserver:
                             print u"Package edited. You can build and upload the new WAPT package by launching\n  %s -i build-upload %s" % (sys.argv[0],result['target'])
                         else:
                             print u"Package edited. You can build the new WAPT package by launching\n  %s -i build-package %s" % (sys.argv[0],result['target'])
@@ -655,7 +655,7 @@ def main():
                 else:
                     if os.path.isdir(result['target']):
                         wapt_sources_edit(result['target'])
-                        if mywapt.upload_cmd or mywapt.wapt_server:
+                        if mywapt.upload_cmd or mywapt.waptserver:
                             print u"Package edited. You can build and upload the new WAPT package by launching\n  %s -i build-upload %s" % (sys.argv[0],result['target'])
                         else:
                             print u"Package edited. You can build the new WAPT package by launching\n  %s -i build-package %s" % (sys.argv[0],result['target'])
