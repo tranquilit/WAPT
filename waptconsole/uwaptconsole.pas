@@ -1880,24 +1880,21 @@ begin
         cred.S['password'] := WaptServerPassword;
 
         try
-          resp := WAPTServerJsonPost('login',[],cred,False);
-          {resp := DMPython.RunJSON(
-            format('waptdevutils.login_to_waptserver("%s","%s","%s")',
-            [GetWaptServerURL + '/login', waptServerUser, waptServerPassword]));}
+          resp := WAPTServerJsonPost('login',[],cred,UseProxyForServer,waptServerUser,WaptServerPassword);
+          try
+            Result := StrToBool(resp.AsString);
+            if not Result then
+              ShowMessage('Mauvais mot de passe');
+          except
+            ShowMessage(UTF8Encode(resp.AsString));
+            Result := False;
+          end;
         except
           on E: Exception do
           begin
             ShowMessage('Erreur: ' + UTF8Encode(E.Message));
             Result := False;
           end;
-        end;
-        try
-          Result := StrToBool(resp.AsString);
-          if not Result then
-            ShowMessage('Mauvais mot de passe');
-        except
-          ShowMessage(UTF8Encode(resp.AsString));
-          Result := False;
         end;
       end
       else

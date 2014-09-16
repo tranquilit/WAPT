@@ -96,7 +96,7 @@ var
   expr: UTF8String;
   packages: ISuperObject;
 begin
-  expr := format('waptdevutils.update_tis_repo(r"%s","%s")',
+  expr := format('waptdevutils.update_external_repo(r"%s","%s")',
     [AppIniFilename, EdSearch1.Text]);
   packages := DMPython.RunJSON(expr);
   GridExternalPackages.Data := packages;

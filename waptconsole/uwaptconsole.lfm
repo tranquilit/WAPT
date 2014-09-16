@@ -25,9 +25,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 438
     Top = 0
     Width = 800
-    ActivePage = pgInventory
+    ActivePage = pgPrivateRepo
     Align = alClient
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -1672,11 +1672,11 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgPrivateRepo: TTabSheet
       Caption = 'Dépôt privé'
-      ClientHeight = 432
+      ClientHeight = 412
       ClientWidth = 792
       object GridPackages: TSOGrid
         Left = 0
-        Height = 402
+        Height = 382
         Top = 30
         Width = 496
         OnGetText = GridGroupsGetText
@@ -1754,7 +1754,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object Splitter3: TSplitter
         Left = 496
-        Height = 402
+        Height = 382
         Top = 30
         Width = 6
         Align = alRight
@@ -1957,19 +1957,19 @@ object VisWaptGUI: TVisWaptGUI
       end
       object Panel2: TPanel
         Left = 502
-        Height = 402
+        Height = 382
         Top = 30
         Width = 290
         Align = alRight
         Alignment = taRightJustify
         BevelOuter = bvNone
-        ClientHeight = 402
+        ClientHeight = 382
         ClientWidth = 290
         TabOrder = 2
         object MemoGroupeDescription: TMemo
           Left = 0
           Height = 300
-          Top = 102
+          Top = 82
           Width = 290
           Align = alBottom
           TabOrder = 0
@@ -1978,12 +1978,12 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgSources: TTabSheet
       Caption = 'Sources'
-      ClientHeight = 432
+      ClientHeight = 412
       ClientWidth = 792
       TabVisible = False
       inline testedit: TSynEdit
         Left = 0
-        Height = 398
+        Height = 378
         Top = 34
         Width = 792
         Align = alClient
