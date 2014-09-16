@@ -1862,15 +1862,15 @@ class WaptServer(object):
                 self.timeout = config.getfloat(section,'timeout')
         return self
 
-    def get(self,action,auth=None):
+    def get(self,action,auth=None,timeout=None):
         """ """
-        req = requests.get("%s/%s" % (self.server_url,action),proxies=self.proxies,verify=False,timeout=self.timeout,auth=auth or self.auth())
+        req = requests.get("%s/%s" % (self.server_url,action),proxies=self.proxies,verify=False,timeout=timeout or self.timeout,auth=auth or self.auth())
         req.raise_for_status()
         return json.loads(req.content)
 
-    def post(self,action,data,auth=None):
+    def post(self,action,data,auth=None,timeout=None):
         """ """
-        req = requests.post("%s/%s" % (self.server_url,action),data,proxies=self.proxies,verify=False,timeout=self.timeout,auth=auth or self.auth())
+        req = requests.post("%s/%s" % (self.server_url,action),data,proxies=self.proxies,verify=False,timeout=timeout or self.timeout,auth=auth or self.auth())
         req.raise_for_status()
         return json.loads(req.content)
 
@@ -2683,9 +2683,9 @@ class Wapt(object):
         with open(package_filename,'rb') as afile:
             if pe.section == 'host':
                 #res = self.waptserver.post('upload_host',files={'file':afile},auth=auth)
-                res = self.waptserver.post('upload_host',data=afile,auth=auth)
+                res = self.waptserver.post('upload_host',data=afile,auth=auth,timeout=300)
             else:
-                res = self.waptserver.post('upload_package/%s'%os.path.basename(package_filename),data=afile,auth=auth)
+                res = self.waptserver.post('upload_package/%s'%os.path.basename(package_filename),data=afile,auth=auth,timeout=300)
             return res
         if res['status'] != 'OK':
             raise Exception(u'Unable to upload package: %s'%ensure_unicode(res['message']))
@@ -2705,7 +2705,7 @@ class Wapt(object):
                 for file in cmd_dict['waptfile']:
                     file = file[1:-1]
                     with open(file,'rb') as afile:
-                        res = self.waptserver.post('upload_host',files={'file':afile},auth=auth)
+                        res = self.waptserver.post('upload_host',files={'file':afile},auth=auth,timeout=300)
                     if res['status'] != 'OK':
                         raise Exception(u'Unable to upload package: %s'%ensure_unicode(res['message']))
                 return res
