@@ -65,7 +65,7 @@ import win32api
 import ntsecuritycon
 import win32security
 
-from M2Crypto import EVP, X509
+from M2Crypto import EVP, X509, SSL
 from M2Crypto.EVP import EVPError
 
 from urlparse import urlparse
@@ -1697,6 +1697,21 @@ class WaptDB(WaptBaseDB):
             self.db.rollback()
             raise
 
+def get_server_certificate(url):
+    """Retrieve certificate for further checks"""
+    url = urlparse(url)
+    if url.scheme == 'https':
+        context = SSL.Context();
+        context.set_allow_unknown_ca(True)
+        context.set_verify(SSL.verify_none, True)
+        conn = SSL.Connection(context)
+        # try a connection to get server certificate
+        conn.connect((url.hostname, url.port or 443))
+        cert_chain = conn.get_peer_cert_chain()
+        return [c.as_text() for c in cert_chain]
+    else:
+        return None
+
 class WaptServer(object):
     """Manage connection to waptserver"""
 
@@ -1720,6 +1735,22 @@ class WaptServer(object):
             # TODO : simple auth if kerberos is not available...
         else:
             return None
+
+    def update_server_certificate(self):
+        """Initial registering of server, retrieve certificate for further checks"""
+        url = urlparse(self.server_url)
+        if url.scheme == 'https':
+            context = SSL.Context();
+            context.set_allow_unknown_ca(True)
+            context.set_verify(SSL.verify_none, True)
+            conn = SSL.Connection(context)
+            # try a connection to get server certificate
+            conn.connect((url.hostname, url.port or 443))
+            cert_chain = conn.get_peer_cert_chain()
+            for c in cert_chain:
+                if c.common_name == self.server_url:
+                    open('c:/tmp/%s.pem'%url.hostname,'wb').write(c.as_pem())
+
 
     def reset_network(self):
         """called by wapt when network configuration has changed"""
