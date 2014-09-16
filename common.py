@@ -2685,7 +2685,7 @@ class Wapt(object):
                 #res = self.waptserver.post('upload_host',files={'file':afile},auth=auth)
                 res = self.waptserver.post('upload_host',data=afile,auth=auth)
             else:
-                res = self.waptserver.post('upload_package',data=afile,auth=auth)
+                res = self.waptserver.post('upload_package/%s'%os.path.basename(package_filename),data=afile,auth=auth)
             return res
         if res['status'] != 'OK':
             raise Exception(u'Unable to upload package: %s'%ensure_unicode(res['message']))
