@@ -69,7 +69,11 @@ from M2Crypto import EVP, X509, SSL
 from M2Crypto.EVP import EVPError
 
 from urlparse import urlparse
-from requests_kerberos_sspi import HTTPKerberosAuth,OPTIONAL
+try:
+    from requests_kerberos_sspi import HTTPKerberosAuth,OPTIONAL
+    has_kerberos = True
+except:
+    has_kerberos = False
 
 from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,\
     EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,\
@@ -1730,7 +1734,7 @@ class WaptServer(object):
 
     def auth(self):
         scheme = urlparse(self.server_url).scheme
-        if scheme == 'https':
+        if scheme == 'https' and has_kerberos:
             return HTTPKerberosAuth(mutual_authentication=OPTIONAL)
             # TODO : simple auth if kerberos is not available...
         else:
