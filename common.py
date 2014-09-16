@@ -1862,15 +1862,15 @@ class WaptServer(object):
                 self.timeout = config.getfloat(section,'timeout')
         return self
 
-    def get(self,action):
+    def get(self,action,auth=None):
         """ """
-        req = requests.get("%s/%s" % (self.server_url,action),proxies=self.proxies,verify=False,timeout=self.timeout,auth=self.auth())
+        req = requests.get("%s/%s" % (self.server_url,action),proxies=self.proxies,verify=False,timeout=self.timeout,auth=auth or self.auth())
         req.raise_for_status()
         return json.loads(req.content)
 
-    def post(self,action,data):
+    def post(self,action,data,auth=None):
         """ """
-        req = requests.post("%s/%s" % (self.server_url,action),data,proxies=self.proxies,verify=False,timeout=self.timeout,auth=self.auth())
+        req = requests.post("%s/%s" % (self.server_url,action),data,proxies=self.proxies,verify=False,timeout=self.timeout,auth=auth or self.auth())
         req.raise_for_status()
         return json.loads(req.content)
 
