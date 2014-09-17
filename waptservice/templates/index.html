@@ -7,7 +7,8 @@
 <li>wapt-get.py version: {{wapt_info['wapt-py-version']}}</li>
 <li>Host UUID: {{wapt.host_uuid}}</li>
 <li>Main WAPT Repository: <a href={{wapt.wapt_repourl}}>{{wapt.wapt_repourl}}</a></li>
-<li>WAPT server: {{wapt.waptserver}}</li>
+<li>WAPT server: {{wapt.waptserver.server_url}}</li>
+<li>Proxies: {{wapt.proxies}}</li>
 <li>Configuration file: {{ wapt.config_filename }}</li>
 <li>Current status: {{wapt.runstatus or 'Up to date'}}</li>
 <li>Last update status:
