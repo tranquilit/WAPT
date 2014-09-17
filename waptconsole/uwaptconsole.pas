@@ -1858,6 +1858,8 @@ begin
     FileUtil.CopyFile(WaptIniFilename, localfn, True);
   end;
 
+  ActReloadConfig.Execute;
+
   while (GetWaptServerURL = '') do
   begin
     if EditIniFile then
