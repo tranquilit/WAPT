@@ -44,7 +44,7 @@ uses Windows, Classes,JWAWinBase;
 
 implementation
 
-uses sysutils;
+uses sysutils,sysconst;
 
 type
   TStoReadPipeThread = class(TThread)
@@ -195,7 +195,6 @@ begin
       myStartupInfo.hStdOutput := hPipeOutputWrite;
       myStartupInfo.hStdError := hPipeErrorWrite;
 
-
       // since Delphi calls CreateProcessW, literal strings cannot be used anymore
       UniqueString(CmdLine);
 
@@ -206,19 +205,14 @@ begin
         UniqueString(user);
         UniqueString(password);
         UniqueString(domain);
-        // prepare startupinfo structure
-        //Result := CreateProcessWith (token, nil, PChar(CmdLine), nil, nil, false, NORMAL_PRIORITY_CLASS or CREATE_NEW_CONSOLE, nil, nil, @myStartupInfo, @myProcessInfo)
         if not CreateProcessWithLogonW(PWidechar(user),pwidechar(domain),pwidechar(password),0, Nil,PWideChar(wparams), CREATE_NEW_CONSOLE,nil,nil,@myStartupInfo, @myProcessInfo) then
           RaiseLastOSError;
       end
       else
       begin
         if not CreateProcessW(Nil,PWideChar(wparams),  Nil,Nil, True, CREATE_NEW_CONSOLE,nil,nil,myStartupInfo,myProcessInfo) then
-        {if  not CreateProcess(nil, PChar(CmdLine), nil, nil, True,
-              CREATE_NEW_CONSOLE, nil, nil, myStartupInfo, myProcessInfo) then}
           RaiseLastOSError();
       end;
-
 
     finally
       // close the ends of the pipes, now used by the process
@@ -254,10 +248,9 @@ begin
       Result := output;
       myReadErrorThread.WaitFor;
       Error := myReadErrorThread.Content;
+      exitCode :=0;
       if not GetExitCodeProcess(myProcessInfo.hProcess, exitCode) or (exitCode>0) then
-        RaiseLastOSError(exitCode);
-
-
+        raise EOSError.CreateFmt(SOSError, [exitCode, SysErrorMessage(exitCode)+' : '+Error])
     finally
       if myWriteInputThread<>Nil then  myWriteInputThread.Free;
       if myReadOutputThread<>Nil then myReadOutputThread.Free;
