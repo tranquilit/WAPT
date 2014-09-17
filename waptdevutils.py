@@ -302,9 +302,6 @@ if __name__ == '__main__':
     import doctest
     import sys
     reload(sys)
-    update_external_repo(r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini','')
-    sys.exit(0)
-
     sys.setdefaultencoding("UTF-8")
     import doctest
     doctest.ELLIPSIS_MARKER = '???'
