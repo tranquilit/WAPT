@@ -25,6 +25,10 @@ def update_sources():
          'waptconsole.exe',
          'waptconsole.exe.manifest',
          'waptservice',
+         r'lib\site-packages\requests_kerberos_sspi',
+         r'lib\site-packages\lib\site-packages\flask_kerberos_sspi.py',
+         r'lib\site-packages\kerberos_sspi.py',
+         r'lib\site-packages\wapt.pth',
     ]
 
     def ignore(src,names):
@@ -88,27 +92,93 @@ def check_exe_version(src,dst):
     else:
         return True
 
+
+def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy,enable_replace_at_reboot=True,onerror=None):
+    """Copy src directory to dst directory. dst is created if it doesn't exists
+        src can be relative to installation temporary dir
+        oncopy is called for each file copy. if False is returned, copy is skipped
+        onreplace is called when a file will be overwritten.
+    """
+    logger.debug('Copy tree from "%s" to "%s"' % (ensure_unicode(src),ensure_unicode(dst)))
+    # path relative to temp directory...
+    tempdir = os.getcwd()
+    if not os.path.isdir(src) and os.path.isdir(os.path.join(tempdir,src)):
+        src = os.path.join(tempdir,src)
+
+    names = os.listdir(src)
+    if callable(ignore) and ignore is not None:
+        ignored_names = ignore(src, names)
+    else:
+        ignored_names = set()
+
+    if not os.path.isdir(dst):
+        if oncopy('create directory',src,dst):
+            os.makedirs(dst)
+    errors = []
+    skipped = []
+    for name in names:
+        if name in ignored_names:
+            continue
+        srcname = os.path.join(src, name)
+        dstname = os.path.join(dst, name)
+        try:
+            if os.path.isdir(srcname):
+                if oncopy('directory',srcname,dstname):
+                    copytree2(srcname, dstname, ignore = ignore,onreplace=onreplace,oncopy=oncopy)
+            else:
+                try:
+                    if os.path.isfile(dstname):
+                        if onreplace(srcname,dstname) and oncopy('overwrites',srcname,dstname):
+                            os.unlink(dstname)
+                            shutil.copy2(srcname, dstname)
+                    else:
+                        if oncopy('copy',srcname,dstname):
+                            shutil.copy2(srcname, dstname)
+                except (IOError, os.error) as e:
+                    if onerror is not None and callable(onerror):
+                        onerror(srcname,dstname,e)
+
+        except (IOError, os.error), why:
+            logger.critical(u'Error copying from "%s" to "%s" : %s' % (ensure_unicode(src),ensure_unicode(dst),ensure_unicode(why)))
+            errors.append((srcname, dstname, str(why)))
+        # catch the Error from the recursive copytree so that we can
+        # continue with other files
+        except shutil.Error, err:
+            #errors.extend(err.args[0])
+            errors.append(err)
+    try:
+        shutil.copystat(src, dst)
+    except WindowsError:
+        # can't copy file access times on Windows
+        pass
+    except OSError, why:
+        errors.extend((src, dst, str(why)))
+    if errors:
+        raise shutil.Error(errors)
+
+
 def install():
     # if you want to modify the keys depending on environment (win32/win64... params..)
     print(u'Partial upgrade of WAPT  client')
     killalltasks('wapttray.exe')
+    killalltasks('waptconsole.exe')
     copytree2('patchs',WAPT.wapt_base_dir,
         onreplace = check_exe_version,
         oncopy = oncopy)
     update_registry_version(control.version)
     # restart of service can not be done by service...
     if service_installed('waptservice') and service_is_running('waptservice'):
-        import requests,json
-        try:
-            res = json.loads(requests.get('http://127.0.0.1:8088/waptservicerestart.json').text)
-        except:
-            tmp_bat = tempfile.NamedTemporaryFile(prefix='waptrestart',suffix='.cmd',mode='wt',delete=False)
-            tmp_bat.write('ping -n 2 127.0.0.1 >nul\n')
-            tmp_bat.write('net stop waptservice\n')
-            tmp_bat.write('net start waptservice\n')
-            tmp_bat.write('del "%s"\n'%tmp_bat.name)
-            tmp_bat.close()
-            shell_launch(tmp_bat.name)
+        #import requests,json
+        #try:
+        #    res = json.loads(requests.get('http://127.0.0.1:8088/waptservicerestart.json').text)
+        #except:
+        tmp_bat = tempfile.NamedTemporaryFile(prefix='waptrestart',suffix='.cmd',mode='wt',delete=False)
+        tmp_bat.write('ping -n 2 127.0.0.1 >nul\n')
+        tmp_bat.write('net stop waptservice\n')
+        tmp_bat.write('net start waptservice\n')
+        tmp_bat.write('del "%s"\n'%tmp_bat.name)
+        tmp_bat.close()
+        shell_launch(tmp_bat.name)
 
     print(u'Upgrade done')
 
