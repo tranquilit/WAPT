@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.9.1"
+__version__ = "0.9.2"
 import os
 import re
 import logging
@@ -1733,12 +1733,16 @@ class WaptServer(object):
             self.dnsdomain = setuphelpers.get_domain_fromregistry()
 
     def auth(self):
-        scheme = urlparse(self.server_url).scheme
-        if scheme == 'https' and has_kerberos:
-            return HTTPKerberosAuth(mutual_authentication=OPTIONAL)
-            # TODO : simple auth if kerberos is not available...
+        if self._server_url:
+            scheme = urlparse(self._server_url).scheme
+            if scheme == 'https' and has_kerberos:
+                return HTTPKerberosAuth(mutual_authentication=OPTIONAL)
+                # TODO : simple auth if kerberos is not available...
+            else:
+                return None
         else:
             return None
+
 
     def update_server_certificate(self):
         """Initial registering of server, retrieve certificate for further checks"""
@@ -1772,8 +1776,7 @@ class WaptServer(object):
         >>> print server.server_url
         http://srvwapt.tranquilit.local:8080
         """
-
-        if self._server_url:
+        if self._server_url is not None:
             return self._server_url
         else:
             if not self._cached_dns_server_url:
@@ -1853,7 +1856,15 @@ class WaptServer(object):
             section = 'global'
         if config.has_section(section):
             if config.has_option(section,'wapt_server'):
-                self.server_url = config.get(section,'wapt_server')
+                # if defined but empty, look in dns srv
+                url = config.get(section,'wapt_server')
+                if url:
+                    self._server_url = url
+                else:
+                    self._server_url = None
+            else:
+                # no server at all
+                self._server_url = ''
             if config.has_option(section,'http_proxy'):
                 if (config.has_option(section,'use_http_proxy_for_server') and config.getboolean(section,'use_http_proxy_for_server'))\
                         or not config.has_option(section,'use_http_proxy_for_server'):
@@ -1864,22 +1875,35 @@ class WaptServer(object):
 
     def get(self,action,auth=None,timeout=None):
         """ """
-        req = requests.get("%s/%s" % (self.server_url,action),proxies=self.proxies,verify=False,timeout=timeout or self.timeout,auth=auth or self.auth())
-        req.raise_for_status()
-        return json.loads(req.content)
+        surl = self.server_url
+        if surl:
+            req = requests.get("%s/%s" % (surl,action),proxies=self.proxies,verify=False,timeout=timeout or self.timeout,auth=auth or self.auth())
+            req.raise_for_status()
+            return json.loads(req.content)
+        else:
+            raise Exception('Wapt server url not defined or not found in DNS')
 
     def post(self,action,data=None,files=None,auth=None,timeout=None):
         """ """
-        req = requests.post("%s/%s" % (self.server_url,action),data=data,files=files,proxies=self.proxies,verify=False,timeout=timeout or self.timeout,auth=auth or self.auth())
-        req.raise_for_status()
-        return json.loads(req.content)
+        surl = self.server_url
+        if surl:
+            req = requests.post("%s/%s" % (surl,action),data=data,files=files,proxies=self.proxies,verify=False,timeout=timeout or self.timeout,auth=auth or self.auth())
+            req.raise_for_status()
+            return json.loads(req.content)
+        else:
+            raise Exception('Wapt server url not defined or not found in DNS')
 
     def available(self):
         try:
-            req = requests.head("%s" % (self.server_url),proxies=self.proxies,verify=False,timeout=self.timeout,auth=self.auth())
-            req.raise_for_status()
-            return True
-        except:
+            if self.server_url:
+                req = requests.head("%s" % (self.server_url),proxies=self.proxies,verify=False,timeout=self.timeout,auth=self.auth())
+                req.raise_for_status()
+                return True
+            else:
+                logger.debug('Wapt server is unavailable because no URL is defined')
+                return False
+        except Exception as e:
+            logger.debug('Wapt server %s unavailable because %s'%(self._server_url,e))
             return False
 
 
@@ -2317,7 +2341,7 @@ key_passwd = None
 
 class Wapt(object):
     """Global WAPT engine"""
-    global_attributes = ['wapt_base_dir','wapt_server','config_filename','proxies','repositories','private_key','public_certs','package_cache_dir','dbpath']
+    global_attributes = ['wapt_base_dir','waptserver','config_filename','proxies','repositories','private_key','public_certs','package_cache_dir','dbpath']
 
     def __init__(self,config=None,config_filename=None,defaults=None,disable_update_server_status=True):
         """Initialize engine with a configParser instance (inifile) and other defaults in a dictionary
@@ -2591,7 +2615,7 @@ class Wapt(object):
             logger.info(u'Status : %s' % ensure_unicode(waptstatus))
             self.write_param('runstatus',waptstatus)
             self._runstatus = waptstatus
-            if not self.disable_update_server_status and self.waptserver and self.waptserver.available():
+            if not self.disable_update_server_status and self.waptserver_available():
                 try:
                     self.update_server_status()
                 except Exception,e:
@@ -3907,9 +3931,10 @@ class Wapt(object):
         inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
         inv['update_status'] = self.get_last_update_status()
 
-        if self.waptserver:
+        if self.waptserver_available():
             try:
                 result = self.waptserver.post('update_host',data=json.dumps(inv))
+                logger.info(u'Status on server %s updated properly'%self.waptserver.server_url)
             except Exception,e:
                 result = None
                 logger.warning(u'Unable to update server status : %s' % ensure_unicode(e))
@@ -3922,7 +3947,7 @@ class Wapt(object):
 
     def waptserver_available(self):
         """Return ident of waptserver if defined and available, else False"""
-        return self.waptserver.available()
+        return self.waptserver and self.waptserver.available()
 
     def wapt_status(self):
         """return wapt version info"""
@@ -5262,7 +5287,7 @@ class Wapt(object):
         try:
             for repo in self.repositories:
                 repo.reset_network()
-            if not self.disable_update_server_status and self.waptserver:
+            if not self.disable_update_server_status and self.waptserver_available():
                 self.update_server_status()
         except Exception as e:
             logger.warning(u'Problème lors du changement de réseau : %s'%setuphelpers.ensure_unicode(e))
@@ -5288,9 +5313,10 @@ class Wapt(object):
 Version = setuphelpers.Version  # obsolete
 
 if __name__ == '__main__':
-    wapt = Wapt()
-    l = wapt.forget_packages('tis-7zip')
-
+    wapt = Wapt(config_filename=r'C:\tranquilit\wapt\wapt-get.ini')
+    srv = WaptServer().load_config(wapt.config)
+    print srv.server_url
+    sys.exit(1)
 
     import doctest
     import sys

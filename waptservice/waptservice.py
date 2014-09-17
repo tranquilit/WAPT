@@ -122,12 +122,12 @@ if options.loglevel is not None:
 def get_authorized_callers_ip(waptserver_url=None):
     """Returns list of IP allowed to request actions with check_caller decorator"""
     ips = []
-    if waptserver_url:
+    if waptserver_url != '':
         try:
             ips.append(socket.gethostbyname( urlparse(waptserver_url).hostname))
         except socket.gaierror as e:
             # no network connection to resolve hostname
-            pass
+            logger.debug('Unable to resolve authorized caller for %s : %s'%(waptserver_url,e))
     return ips
 
 class WaptEvent(object):
@@ -199,7 +199,7 @@ class WaptServiceConfig(object):
     """
 
     global_attributes = ['config_filename','waptservice_user','waptservice_password','MAX_HISTORY','waptservice_port',
-         'dbpath','loglevel','log_directory','wapt_server','authorized_callers_ip']
+         'dbpath','loglevel','log_directory','waptserver','authorized_callers_ip']
 
     def __init__(self,config_filename=None):
         if not config_filename:
@@ -225,7 +225,7 @@ class WaptServiceConfig(object):
             os.mkdir(self.log_directory)
 
         self.waptserver = None
-        self.authorized_callers_ip = get_authorized_callers_ip()
+        self.authorized_callers_ip = []
 
         self.waptservice_poll_timeout = 10
         self.waptupdate_task_period = None
@@ -301,9 +301,9 @@ class WaptServiceConfig(object):
 
             if config.has_option('global','wapt_server'):
                 self.waptserver = common.WaptServer().load_config(config)
+                self.authorized_callers_ip = get_authorized_callers_ip(self.waptserver.server_url)
             else:
                 self.waptserver = None
-            self.authorized_callers_ip = get_authorized_callers_ip(self.waptserver and self.waptserver.server_url or None)
 
         else:
             raise Exception ("FATAL, configuration file " + self.config_filename + " has no section [global]. Please check Waptserver documentation")
@@ -1400,7 +1400,7 @@ class WaptUpdateServerStatus(WaptTask):
             setattr(self,k,args[k])
 
     def _run(self):
-        if self.wapt.waptserver:
+        if self.wapt.waptserver_available():
             try:
                 self.result = self.wapt.update_server_status()
                 self.summary = u'Le WAPT Server a été informé'
@@ -1426,7 +1426,7 @@ class WaptRegisterComputer(WaptTask):
             setattr(self,k,args[k])
 
     def _run(self):
-        if self.wapt.waptserver:
+        if self.wapt.waptserver_available():
             try:
                 self.result = self.wapt.register_computer()
                 self.summary = u"L'inventaire a été envoyé au serveur WAPT"
@@ -1682,7 +1682,7 @@ class WaptTaskManager(threading.Thread):
             self.wapt.events.send_multipart(["STATUS",msg])
 
     def update_server_status(self):
-        if self.wapt.waptserver:
+        if self.wapt.waptserver_available():
             try:
                 result = self.wapt.update_server_status()
                 if result['uuid']:
