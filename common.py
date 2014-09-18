@@ -3625,7 +3625,11 @@ class Wapt(object):
                         printhook = report
 
                     self.runstatus='Downloading %s' % download_url
-                    setuphelpers.wget( download_url, self.package_cache_dir,proxies=self.proxies,printhook = printhook)
+                    if self.use_http_proxy_for_repo:
+                        curr_proxies = self.proxies
+                    else:
+                        curr_proxies = None
+                    setuphelpers.wget( download_url, self.package_cache_dir,proxies=curr_proxies,printhook = printhook)
                     downloaded.append(fullpackagepath)
                     self.runstatus=''
                 except Exception as e:
