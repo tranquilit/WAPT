@@ -1744,8 +1744,8 @@ class WaptServer(object):
             return None
 
 
-    def update_server_certificate(self):
-        """Initial registering of server, retrieve certificate for further checks"""
+    def get_server_certificate(self):
+        """Retrieve certificate of https server for further checks"""
         url = urlparse(self.server_url)
         if url.scheme == 'https':
             context = SSL.Context();
@@ -1756,8 +1756,9 @@ class WaptServer(object):
             conn.connect((url.hostname, url.port or 443))
             cert_chain = conn.get_peer_cert_chain()
             for c in cert_chain:
-                if c.common_name == self.server_url:
-                    open('c:/tmp/%s.pem'%url.hostname,'wb').write(c.as_pem())
+                if c.get_subject().as_text().split('=')[1] == url.hostname:
+                    return c.as_pem()
+        return None
 
 
     def reset_network(self):
@@ -5319,7 +5320,10 @@ Version = setuphelpers.Version  # obsolete
 if __name__ == '__main__':
     wapt = Wapt(config_filename=r'C:\tranquilit\wapt\wapt-get.ini')
     srv = WaptServer().load_config(wapt.config)
+    srv.server_url='https://srvwapt.tranquilit.local'
     print srv.server_url
+    crt =  srv.get_server_certificate()
+    print srv.get('hosts')
     sys.exit(1)
 
     import doctest
