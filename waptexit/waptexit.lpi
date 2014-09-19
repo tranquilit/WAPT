@@ -17,7 +17,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="2"/>
-      <RevisionNr Value="3"/>
+      <RevisionNr Value="5"/>
       <Language Value="040C"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="check and launch packages upgrades at Windows Shutdown" InternalName="waptexit" LegalCopyright="Tranquil IT Systems" OriginalFilename="waptexit.exe" ProductName="WAPT" ProductVersion=""/>
     </VersionInfo>
@@ -34,19 +34,22 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="4">
+    <RequiredPackages Count="5">
       <Item1>
         <PackageName Value="pl_indycomp"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="internettools"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_utils"/>
       </Item3>
       <Item4>
-        <PackageName Value="LCL"/>
+        <PackageName Value="pltis_superobject"/>
       </Item4>
+      <Item5>
+        <PackageName Value="LCL"/>
+      </Item5>
     </RequiredPackages>
     <Units Count="4">
       <Unit0>
@@ -94,7 +97,6 @@
     </CodeGeneration>
     <Linking>
       <Debugging>
-        <GenerateDebugInfo Value="False"/>
         <StripSymbols Value="True"/>
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
