@@ -29,11 +29,9 @@ type
     Timer1: TTimer;
     procedure ActShowDetailsExecute(Sender: TObject);
     procedure actSkipExecute(Sender: TObject);
-    procedure actSkipUpdate(Sender: TObject);
     procedure ActUpgradeExecute(Sender: TObject);
     procedure ActUpgradeUpdate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
-    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   private
@@ -51,7 +49,7 @@ var
 
 implementation
 
-uses soutils,IdHTTP,IdExceptionCore,IniFiles;
+uses soutils,IdHTTP,IdExceptionCore;
 {$R *.lfm}
 
 { TVisWaptExit }
@@ -71,16 +69,10 @@ end;
 const
   waptservice_port:integer = 8088;
   zmq_port:integer = 5000;
-  allow_cancel_upgrade:Boolean = True;
 
 function GetWaptLocalURL: String;
 begin
   result := format('http://127.0.0.1:%d',[waptservice_port]);
-end;
-
-function WaptIniFilename: Utf8String;
-begin
-  result := ExtractFilePath(ParamStr(0))+'wapt-get.ini';
 end;
 
 
@@ -92,7 +84,7 @@ begin
   http := TIdHTTP.Create;
   try
     try
-      http.ConnectTimeout:=timeout;
+      http.ConnectTimeout:=1000;
       if copy(action,length(action),1)<>'/' then
         action := '/'+action;
       strresult := http.Get(GetWaptLocalURL+action);
@@ -133,48 +125,14 @@ end;
 
 procedure TVisWaptExit.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
-  if  Not allow_cancel_upgrade and
-       ( ((upgrades<>Nil) and (upgrades.AsArray.Length>0)) or
-         ((running<>Nil) and (running.dataType<>stNull)) or
-         ((pending<>Nil) and (pending.AsArray.Length>0))
-       ) then
-  begin
-      CanClose:=False;
-      Exit;
-  end;
-
   if ((running<>Nil) and (running.dataType<>stNull)) or
       ((pending<>Nil) and (pending.AsArray.Length>0))  then
-
-    if allow_cancel_upgrade then
-      WAPTLocalJsonGet('cancel_all_tasks.json')
-    else
-      Canclose := False
-end;
-
-procedure TVisWaptExit.FormCreate(Sender: TObject);
-var
-  ini:TIniFile;
-begin
-  //Load config
-  ini := TIniFile.Create(WaptIniFilename);
-  try
-    waptservice_port := ini.ReadInteger('global','waptservice_port',waptservice_port);
-    zmq_port := ini.ReadInteger('global','zmq_port',zmq_port);
-    allow_cancel_upgrade := ini.ReadBool('global','allow_cancel_upgrade',allow_cancel_upgrade);
-  finally
-    ini.Free;
-  end;
+    WAPTLocalJsonGet('cancel_all_tasks.json');
 end;
 
 procedure TVisWaptExit.actSkipExecute(Sender: TObject);
 begin
   Close;
-end;
-
-procedure TVisWaptExit.actSkipUpdate(Sender: TObject);
-begin
-  actSkip.Enabled:=allow_cancel_upgrade;
 end;
 
 procedure TVisWaptExit.ActShowDetailsExecute(Sender: TObject);
