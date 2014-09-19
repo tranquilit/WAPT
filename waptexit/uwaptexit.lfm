@@ -12,6 +12,7 @@ object VisWaptExit: TVisWaptExit
   DefaultMonitor = dmDesktop
   FormStyle = fsSystemStayOnTop
   OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
   OnShow = FormShow
   Position = poScreenCenter
   LCLVersion = '1.3'
@@ -377,6 +378,7 @@ object VisWaptExit: TVisWaptExit
       Caption = 'Ne pas faire les mises à jour maintenant'
       ImageIndex = 3
       OnExecute = actSkipExecute
+      OnUpdate = actSkipUpdate
     end
     object ActShowDetails: TAction
       AutoCheck = True
