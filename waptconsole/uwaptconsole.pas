@@ -1292,7 +1292,7 @@ begin
         ProgressStep(i,OpenDialogWapt.Files.Count-1);
         Application.ProcessMessages;
         sourceDir := DMPython.RunJSON(
-          Format('waptdevutils.duplicate_from_external_repo(r"%s",r"%s")',
+          Format('waptdevutils.duplicate_from_external_repo(r"%s",(r"%s").decode("utf8"))',
           [AppIniFilename,OpenDialogWapt.Files[i]])).AsString;
         sources.AsArray.Add('r"'+sourceDir+'"');
       end;
