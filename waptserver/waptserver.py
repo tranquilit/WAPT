@@ -1228,8 +1228,12 @@ def install_windows_service():
     # register mongodb server
     make_mongod_config(wapt_root_dir)
 
-    service_binary =os.path.abspath(os.path.join(wapt_root_dir,'waptserver','mongodb','mongod.exe'))
-    service_parameters = " --config %s " % os.path.join(wapt_root_dir,'waptserver','mongodb','mongod.cfg')
+    service_binary =os.path.abspath(os.path.join(wapt_root_dir,'waptpython.exe'))
+    service_parameters = "%s %s %s" % (
+        os.path.join(wapt_root_dir,'waptserver','mongodb','mongod.py'),
+        os.path.join(wapt_root_dir,'waptserver','mongodb','mongod.exe'),
+        os.path.join(wapt_root_dir,'waptserver','mongodb','mongod.cfg')
+    )
     service_logfile = os.path.join(log_directory,'nssm_waptmongodb.log')
     install_windows_nssm_service("WAPTMongodb",service_binary,service_parameters,service_logfile)
 
