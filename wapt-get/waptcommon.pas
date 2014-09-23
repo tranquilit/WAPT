@@ -127,7 +127,7 @@ implementation
 
 uses FileUtil, soutils, tiscommon, Variants, winsock, ShellApi, JwaIpHlpApi,
   JwaIpTypes, NetworkAdapterInfo, tisinifiles, registry, tisstrings, JwaWinDNS, JwaWinsock2,
-  IdHttp,IdMultipartFormData,IdException,Dialogs,Regex,UnitRedirect;
+  IdHttp,IdMultipartFormData,IdExceptionCore,IdException,Dialogs,Regex,UnitRedirect;
 
 function IPV42String(ipv4:LongWord):String;
 begin
@@ -356,6 +356,7 @@ begin
   result := SO(res);
 end;
 
+{
 function WAPTLocalJsonGet(action: String;user:AnsiString='';password:AnsiString='';timeout:integer=1000): ISuperObject;
 var
   strresult : String;
@@ -368,6 +369,36 @@ begin
     raise;
   end;
   Result := SO(strresult);
+end;
+}
+
+function WAPTLocalJsonGet(action: String;user:AnsiString='';password:AnsiString='';timeout:integer=1000): ISuperObject;
+var
+  strresult : String;
+  http:TIdHTTP;
+begin
+  http := TIdHTTP.Create;
+  try
+    try
+      http.ConnectTimeout:=timeout;
+      if user <>'' then
+      begin
+        http.Request.BasicAuthentication:=True;
+        http.Request.Username:=user;
+        http.Request.Password:=password;
+      end;
+
+      if copy(action,length(action),1)<>'/' then
+        action := '/'+action;
+      strresult := http.Get(GetWaptLocalURL+action);
+      Result := SO(strresult);
+
+    except
+      on E:EIdReadTimeout do Result := Nil;
+    end;
+  finally
+    http.Free;
+  end;
 end;
 
 

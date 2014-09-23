@@ -93,6 +93,13 @@ begin
   try
     try
       http.ConnectTimeout:=timeout;
+      if user <>'' then
+      begin
+        http.Request.BasicAuthentication:=True;
+        http.Request.Username:=user;
+        http.Request.Password:=password;
+      end;
+
       if copy(action,length(action),1)<>'/' then
         action := '/'+action;
       strresult := http.Get(GetWaptLocalURL+action);

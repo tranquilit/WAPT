@@ -30,7 +30,7 @@ uses
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, CustApp,
   { you can add units after this }
-  Windows, PythonEngine, waptcommon, tiscommon,tisstrings,superobject,soutils,zmqapi,simpleinternet;
+  Windows, PythonEngine, waptcommon, tiscommon,tisstrings,superobject,soutils,zmqapi,simpleinternet,getopts;
 type
   { pwaptget }
 
@@ -84,7 +84,7 @@ end;
 
 //#########################
 
-
+{
 function WAPTLocalJsonGet(action: String;user:AnsiString='';password:AnsiString='';timeout:integer=1000): ISuperObject;
 var
   strresult : String;
@@ -94,7 +94,7 @@ begin
   strresult := retrieve(GetWaptLocalURL+action);
   Result := SO(strresult);
 end;
-
+}
 
 { TZMQPollThread }
 
@@ -233,7 +233,6 @@ begin
   begin
     writeln(' -r --repo : URL of dependencies libs');
     writeln(' waptupgrade : upgrade wapt-get.exe and database');
-    writeln(' waptsetup : install/reinstall dependencies (python libs)');
   end;
 
   if HasOption('r','repo') then
