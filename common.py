@@ -2456,7 +2456,7 @@ class Wapt(object):
 
     @use_hostpackages.setter
     def use_hostpackages(self,value):
-        if value and not self._use_hostpackages:
+        if value and not self._use_hostpackages == True:
             self.add_hosts_repo()
         elif not value and self._use_hostpackages:
             if self.repositories and isinstance(self.repositories[-1],WaptHostRepo):
@@ -2563,6 +2563,7 @@ class Wapt(object):
         # True if we want to use automatic host package based on host fqdn
         #   privacy problem as there is a request to wapt repo to get
         #   host package update at each update/upgrade
+        self._use_hostpackages = None
         if self.config.has_option('global','use_hostpackages'):
             self.use_hostpackages = self.config.getboolean('global','use_hostpackages')
 
