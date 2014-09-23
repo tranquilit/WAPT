@@ -169,18 +169,19 @@ def install():
     update_registry_version(control.version)
     # restart of service can not be done by service...
     if service_installed('waptservice') and service_is_running('waptservice'):
-        #import requests,json
-        #try:
-        #    res = json.loads(requests.get('http://127.0.0.1:8088/waptservicerestart.json').text)
-        #except:
-        tmp_bat = tempfile.NamedTemporaryFile(prefix='waptrestart',suffix='.cmd',mode='wt',delete=False)
-        tmp_bat.write('ping -n 10 127.0.0.1 >nul\n')
-        tmp_bat.write('net stop waptservice\n')
-        tmp_bat.write('ping -n 5 127.0.0.1 >nul\n')
-        tmp_bat.write('net start waptservice\n')
-        tmp_bat.write('del "%s"\n'%tmp_bat.name)
-        tmp_bat.close()
-        shell_launch(tmp_bat.name)
+        import requests,json
+        try:
+            res = json.loads(requests.get('http://127.0.0.1:8088/waptservicerestart.json').text)
+
+        except:
+            tmp_bat = tempfile.NamedTemporaryFile(prefix='waptrestart',suffix='.cmd',mode='wt',delee=False)
+            tmp_bat.write('ping -n 10 127.0.0.1 >nul\n')
+            tmp_bat.write('net stop waptservice\n')
+            tmp_bat.write('ping -n 5 127.0.0.1 >nul\n')
+            tmp_bat.write('net start waptservice\n')
+            tmp_bat.write('del "%s"\n'%tmp_bat.name)
+            tmp_bat.close()
+            shell_launch(tmp_bat.name)
 
     print(u'Upgrade done')
 
