@@ -478,9 +478,9 @@ def check_auth(logon_name, password):
         win32security.LOGON32_LOGON_NETWORK,
         win32security.LOGON32_PROVIDER_DEFAULT
         )
-        if common.test_member_of(hUser,'domain admins')==True:
+        if common.test_member_of(hUser,'domain admins'):
             return hUser
-        if common.test_member_of(hUser,'waptselfservice')==True:
+        if common.test_member_of(hUser,'waptselfservice'):
             return hUser
 
         return hUser
