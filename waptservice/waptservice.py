@@ -1409,7 +1409,7 @@ class WaptUpdateServerStatus(WaptTask):
                 self.summary = u"Erreur lors de l'envoi vers le serveur : {}".format(setuphelpers.ensure_unicode(e))
         else:
             self.result = {}
-            self.summary = u'WAPT Server is not defined'
+            self.summary = u'WAPT Server is not available'
 
     def __str__(self):
         return u"Informer le serveur de l'état du poste de travail"
@@ -1435,7 +1435,7 @@ class WaptRegisterComputer(WaptTask):
                 self.summary = u"Erreur lors de l'envoi de l'inventaire vers le serveur : {}".format(setuphelpers.ensure_unicode(e))
         else:
             self.result = {}
-            self.summary = u'WAPT Server is not defined'
+            self.summary = u'WAPT Server is not avalable'
 
     def __str__(self):
         return u"Informer le serveur de l'inventaire du poste de travail"

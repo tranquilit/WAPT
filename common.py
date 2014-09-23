@@ -2215,17 +2215,21 @@ class WaptRepo(object):
             result = None
             # Check if updated
             if force or self.need_update(waptdb):
-                logger.debug(u'Read remote Packages index file %s' % self.packages_url)
-                delta = self.load_packages()
-                waptdb.purge_repo(self.name)
-                for package in self.packages:
-                    waptdb.add_package_entry(package)
-                logger.debug(u'Commit wapt_package updates')
-                waptdb.db.commit()
-                last_modified =delta['last-modified']
-                logger.debug(u'Storing last-modified header for repo_url %s : %s' % (self.repo_url,last_modified))
-                waptdb.set_param('last-%s' % self.repo_url[:59],last_modified)
-                return last_modified
+                try:
+                    logger.debug(u'Read remote Packages index file %s' % self.packages_url)
+                    delta = self.load_packages()
+                    waptdb.purge_repo(self.name)
+                    for package in self.packages:
+                        waptdb.add_package_entry(package)
+                    logger.debug(u'Commit wapt_package updates')
+                    waptdb.db.commit()
+                    last_modified =delta['last-modified']
+                    logger.debug(u'Storing last-modified header for repo_url %s : %s' % (self.repo_url,last_modified))
+                    waptdb.set_param('last-%s' % self.repo_url[:59],last_modified)
+                    return last_modified
+                except Exception as e:
+                    logger.warning('Unable to update repository status of %s, error %s'%(self._repo_url,e))
+                    raise
             else:
                 return waptdb.get_param('last-%s' % self.repo_url[:59])
         except:
@@ -2303,7 +2307,7 @@ class WaptHostRepo(WaptRepo):
             except requests.HTTPError as e:
                 # no host package
                 package,host_package_date=(None,None)
-                logger.debug(u'No host package available at %s' % host_package_url)
+                logger.warning(u'No host package available at %s' % host_package_url)
                 waptdb.db.execute('delete from wapt_package where package=?',(host,))
                 waptdb.db.commit()
                 waptdb.delete_param(host_cachedate)
@@ -2361,6 +2365,8 @@ class Wapt(object):
         # cached runstatus to avoid setting in db if not changed.
         self._runstatus = None
         self._use_hostpackages = None
+
+        self.repositories = []
 
         self.dry_run = False
         self.private_key = ''
@@ -2513,12 +2519,6 @@ class Wapt(object):
         # get the list of certificates to use :
         self.public_certs = glob.glob(os.path.join(self.public_certs_dir,'*.crt'))
 
-        # True if we want to use automatic host package based on host fqdn
-        #   privacy problem as there is a request to wapt repo to get
-        #   host package update at each update/upgrade
-        if self.config.has_option('global','use_hostpackages'):
-            self.use_hostpackages = self.config.getboolean('global','use_hostpackages')
-
         if self.config.has_option('global','upload_cmd'):
             self.upload_cmd = self.config.get('global','upload_cmd')
 
@@ -2560,9 +2560,12 @@ class Wapt(object):
         main = WaptRepo(name='global').load_config(self.config)
         self.repositories.append(main)
 
-        # add an automatic host repo
-        if self.use_hostpackages:
-            self.add_hosts_repo()
+        # True if we want to use automatic host package based on host fqdn
+        #   privacy problem as there is a request to wapt repo to get
+        #   host package update at each update/upgrade
+        if self.config.has_option('global','use_hostpackages'):
+            self.use_hostpackages = self.config.getboolean('global','use_hostpackages')
+
 
     def write_config(self,config_filename=None):
         """Update configuration parameters to supplied inifilename
@@ -2588,7 +2591,7 @@ class Wapt(object):
                 host_repo.repo_url = main.repo_url+'-host'
             self.repositories.append(host_repo)
         else:
-            raise Exception('host-repo : No main repository defined URL, unable to derive hosts repo URL. Either define an explicit host repository or define first a main repository')
+            raise Exception('host-repo : No main repository URL, unable to derive hosts URL from repo URL. Either define an explicit host repository or define first a main repository')
 
     def reload_config_if_updated(self):
         """Check if config file has been updated,
@@ -3971,6 +3974,7 @@ class Wapt(object):
                 self.register_computer()
             return result
         else:
+            logger.warning('WAPT Server is not available to store current host status')
             return json.dumps(inv,indent=True)
 
     def waptserver_available(self):
