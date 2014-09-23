@@ -66,6 +66,7 @@ begin
       st.Append('logging.basicConfig(level=logging.WARNING)');
       st.Append(format('mywapt = common.Wapt(config_filename=r"%s".decode(''utf8''),disable_update_server_status=True)',[AValue]));
       st.Append('mywapt.dbpath=r":memory:"');
+      st.Append('mywapt.use_hostpackages = True');
       st.Append('mywapt.update(register=False)');
       PythonEng.ExecStrings(St);
       WAPT:=MainModule.mywapt;

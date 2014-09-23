@@ -27,6 +27,7 @@ type
     StopRequired : Boolean;
     OnStop :TNotifyEvent;
     ExceptionOnStop:Boolean;
+    constructor Create(TheOwner: TComponent); override;
     function ProgressForm:TVisLoading;
     procedure ProgressTitle(Title:String);
     procedure ProgressStep(step,max:integer);
@@ -57,6 +58,13 @@ end;
 procedure TVisLoading.FormCreate(Sender: TObject);
 begin
   AProgressBar.Min:=0;
+  BringToFront;
+end;
+
+constructor TVisLoading.Create(TheOwner: TComponent);
+begin
+  inherited Create(TheOwner);
+  Parent := TheOwner as TWinControl;
 end;
 
 function TVisLoading.ProgressForm: TVisLoading;

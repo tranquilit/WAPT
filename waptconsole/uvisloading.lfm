@@ -12,7 +12,6 @@ object VisLoading: TVisLoading
   Font.Name = 'Tahoma'
   Font.Pitch = fpVariable
   Font.Quality = fqDraft
-  FormStyle = fsStayOnTop
   OnCreate = FormCreate
   Position = poMainFormCenter
   LCLVersion = '1.3'

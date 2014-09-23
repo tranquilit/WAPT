@@ -2360,6 +2360,7 @@ class Wapt(object):
         self._dbpath = None
         # cached runstatus to avoid setting in db if not changed.
         self._runstatus = None
+        self._use_hostpackages = None
 
         self.dry_run = False
         self.private_key = ''
@@ -2442,6 +2443,19 @@ class Wapt(object):
         # updated : reset db
         self._waptdb = None
         self._dbpath = value
+
+    @property
+    def use_hostpackages(self):
+        return self._use_hostpackages
+
+    @use_hostpackages.setter
+    def use_hostpackages(self,value):
+        if value and not self._use_hostpackages:
+            self.add_hosts_repo()
+        elif not value and self._use_hostpackages:
+            if self.repositories and isinstance(self.repositories[-1],WaptHostRepo):
+                del self.repositories[-1]
+        self._use_hostpackages = value
 
     def load_config(self,config_filename=None):
         """Load configuration parameters from supplied inifilename
@@ -2548,11 +2562,7 @@ class Wapt(object):
 
         # add an automatic host repo
         if self.use_hostpackages:
-            host_repo = WaptHostRepo(name='wapt-host').load_config(self.config)
-            if main._repo_url and not host_repo._repo_url:
-                host_repo.repo_url = main.repo_url+'-host'
-
-            self.repositories.append(host_repo)
+            self.add_hosts_repo()
 
     def write_config(self,config_filename=None):
         """Update configuration parameters to supplied inifilename
@@ -2566,6 +2576,19 @@ class Wapt(object):
             self.config.set('global','repositories',repositories_names)
         self.config.write(open(self.config_filename,'wb'))
         self.config_filedate = os.stat(self.config_filename).st_mtime
+
+    def add_hosts_repo(self):
+        """Add an automatic host repository, remove existing WaptHostRepo last one before"""
+        if self.repositories and isinstance(self.repositories[-1],WaptHostRepo):
+            del self.repositories[-1]
+        host_repo = WaptHostRepo(name='wapt-host').load_config(self.config)
+        if self.repositories:
+            main = self.repositories[-1]
+            if main._repo_url and not host_repo._repo_url:
+                host_repo.repo_url = main.repo_url+'-host'
+            self.repositories.append(host_repo)
+        else:
+            raise Exception('host-repo : No main repository defined URL, unable to derive hosts repo URL. Either define an explicit host repository or define first a main repository')
 
     def reload_config_if_updated(self):
         """Check if config file has been updated,
