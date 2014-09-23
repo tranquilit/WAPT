@@ -4793,11 +4793,12 @@ class Wapt(object):
         if not target_directory:
             target_directory = self.get_default_development_dir(hostname,section='host')
 
+        self.use_hostpackages = True
+
         append_depends = ensure_list(append_depends)
         remove_depends = ensure_list(remove_depends)
         append_conflicts = ensure_list(append_conflicts)
         remove_conflicts = ensure_list(remove_conflicts)
-
         # check if host package exists on repos
         if self.repositories and isinstance(self.repositories[-1],WaptHostRepo):
             (entry,entry_date) = self.repositories[-1].update_host(hostname,self.waptdb)

@@ -261,6 +261,7 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
         wapt_server_passwd = getpass.getpass('WAPT Server password :').encode('ascii')
 
     wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
+    wapt.use_hostpackages = True
     hosts_list = common.ensure_list(hosts_list)
     append_depends = common.ensure_list(append_depends)
     remove_depends = common.ensure_list(remove_depends)
