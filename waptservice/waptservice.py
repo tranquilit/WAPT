@@ -1298,6 +1298,7 @@ class WaptUpdate(WaptTask):
             setattr(self,k,args[k])
 
     def _run(self):
+        self.wapt.check_install_running()
         self.result = self.wapt.update()
         """result: {
             count: 176,
