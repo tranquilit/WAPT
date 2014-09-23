@@ -462,6 +462,11 @@ def check_auth(username, password):
         win32security.LOGON32_LOGON_NETWORK,
         win32security.LOGON32_PROVIDER_DEFAULT
         )
+        if test_member_of(hUser,'domain admins')==True:
+            return hUser
+        if test_member_of(hUser,'waptselfservice')==True:
+            return hUser
+
         return hUser
     except win32security.error:
         if app.waptconfig.waptservice_password:

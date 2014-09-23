@@ -5340,6 +5340,68 @@ class Wapt(object):
         return setuphelpers.remove_shutdown_script(waptexit_path,'')
 
 
+def lookup_user_group_from_rid(TargetComputer, Rid):
+    """ return username or group name from RID (with localization if applicable)
+        from https://mail.python.org/pipermail/python-win32/2006-May/004655.html
+        TargetComputer : should be a DC
+        rid : integer number (512 for domain admins, 513 for domain users, etc.)
+    >>> lookup_user_group_from_rid('srvads', DOMAIN_GROUP_RID_ADMINS)
+    u'Domain Admins'
+
+    """
+    # get the account domain Sid on the target machine
+    # note: if you were looking up multiple sids based on the same
+    # account domain, only need to call this once.
+    umi2 = NetUserModalsGet(TargetComputer, 2)
+    domain_sid = umi2['domain_id']
+
+    SubAuthorityCount = domain_sid.GetSubAuthorityCount()
+
+    # create and init new sid with acct domain Sid + acct Rid
+    sid = pywintypes.SID()
+    sid.Initialize(domain_sid.GetSidIdentifierAuthority(),
+                   SubAuthorityCount+1)
+
+    # copy existing subauthorities from account domain Sid into
+    # new Sid
+    for i in range(SubAuthorityCount):
+        sid.SetSubAuthority(i, domain_sid.GetSubAuthority(i))
+
+    # append Rid to new Sid
+    sid.SetSubAuthority(SubAuthorityCount, Rid)
+
+    name, domain, typ = LookupAccountSid(TargetComputer, sid)
+    return name
+
+
+def get_domain_admins_group_name():
+    r""" return localized version of domain admin group (ie "domain admins" or
+                 "administrateurs du domaine" with RID -512)
+    >>> get_domain_admins_group_name()
+    u'Domain Admins'
+    """
+    targetComputer = win32net.NetGetAnyDCName ()
+    name = lookup_user_group_from_rid(targetComputer, DOMAIN_GROUP_RID_ADMINS)
+    return name
+
+def test_member_of(huser,group_name):
+    """ check if a user is a member of a group
+    huser : handle pywin32
+    group_name : group as a string
+    >>> from win32security import LogonUser
+    >>> hUser = win32security.LogonUser ('technique','tranquilit','xxxxxxx',win32security.LOGON32_LOGON_NETWORK,win32security.LOGON32_PROVIDER_DEFAULT        )
+    >>> test_member_of(hUser,'domain admins')
+    False
+    """
+    try:
+        sid, system, type = win32security.LookupAccountName(None,group_name)
+
+    except:
+        print '"%s" is not a valid group name'%GROUP_NAME
+        return False
+    return win32security.CheckTokenMembership(huser, sid)
+
+
 
 # for backward compatibility
 Version = setuphelpers.Version  # obsolete
