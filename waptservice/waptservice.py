@@ -449,11 +449,27 @@ def authenticate():
         {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
 
-def check_auth(username, password):
+def check_auth(logon_name, password):
     """This function is called to check if a username /
     password combination is valid.
     """
+    if len(logon_name) ==0 or len(password)==0:
+        return False
     domain = ''
+    if logon_name.count('\\') > 1 or logon_name.count('@') > 1  or (logon_name.count('\\') == 1 and logon_name.count('@')==1)  :
+        print "malformed logon credential : %s "% logon_name
+        return False
+
+    if '\\' in logon_name:
+        domain = logon_name.split('\\')[0]
+        username = logon_name.split('\\')[1]
+    elif '@' in logon_name:
+        username = logon_name.split('@')[0]
+        domain = logon_name.split('@')[1]
+    else:
+        username = logon_name
+    print "authentification for %s\\%s " % (domain,username)
+
     try:
         hUser = win32security.LogonUser (
             username,
@@ -462,9 +478,9 @@ def check_auth(username, password):
         win32security.LOGON32_LOGON_NETWORK,
         win32security.LOGON32_PROVIDER_DEFAULT
         )
-        if test_member_of(hUser,'domain admins')==True:
+        if common.test_member_of(hUser,'domain admins')==True:
             return hUser
-        if test_member_of(hUser,'waptselfservice')==True:
+        if common.test_member_of(hUser,'waptselfservice')==True:
             return hUser
 
         return hUser
