@@ -1,0 +1,24 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Long Polling</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  		<script src="{{ url_for("static", filename="lpoll.js") }}"></script>
+		<style>
+			#updated { background-color: yellow; width: 1.1in; float: right;
+			           margin-left: auto; margin-right: auto; }
+		</style>
+	</head>
+	<body>
+		<div id='controls'>
+			Format: <select id="format">
+				<option value="one">just 1</option>
+				<option value="best" selected="selected">the very best!</option>
+				<option value="other">enh...something else</option>
+			</select><br/>
+		</div>
+		<div id='updated'>UPDATED</div>
+		<div id='value'></div>
+		<div id='contents'></div>
+	</body>
+</html>
+
