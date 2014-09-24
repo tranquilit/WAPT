@@ -43,7 +43,9 @@ def update_sources():
     checkout_dir = os.path.abspath(os.path.join(os.getcwd(),'..'))
     if os.path.isfile(os.path.join(checkout_dir,'version')):
         # cleanup patchs dir
-        shutil.rmtree(os.path.join(checkout_dir,'waptupgrade','patchs'))
+        if os.path.exists(os.path.join(checkout_dir,'waptupgrade','patchs')):
+            shutil.rmtree(os.path.join(checkout_dir,'waptupgrade','patchs'))
+
         os.makedirs(os.path.join(checkout_dir,'waptupgrade','patchs'))
         for f in files:
             fn = os.path.join(checkout_dir,f)
