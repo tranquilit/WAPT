@@ -2232,7 +2232,7 @@ class WaptRepo(object):
                     waptdb.set_param('last-%s' % self.repo_url[:59],last_modified)
                     return last_modified
                 except Exception as e:
-                    logger.warning('Unable to update repository status of %s, error %s'%(self._repo_url,e))
+                    logger.info(u'Unable to update repository status of %s, error %s'%(self._repo_url,e))
                     raise
             else:
                 return waptdb.get_param('last-%s' % self.repo_url[:59])
@@ -2311,7 +2311,7 @@ class WaptHostRepo(WaptRepo):
             except requests.HTTPError as e:
                 # no host package
                 package,host_package_date=(None,None)
-                logger.warning(u'No host package available at %s' % host_package_url)
+                logger.info(u'No host package available at %s' % host_package_url)
                 waptdb.db.execute('delete from wapt_package where package=?',(host,))
                 waptdb.db.commit()
                 waptdb.delete_param(host_cachedate)
@@ -3291,7 +3291,7 @@ class Wapt(object):
             try:
                 self.update_server_status()
             except Exception as e:
-                logger.warning(u'Unable to contact server to register current packages status')
+                logger.info(u'Unable to contact server to register current packages status')
                 logger.debug(u'Unable to update server with current status : %s' % ensure_unicode(e))
                 if logger.level == logging.DEBUG:
                     raise
