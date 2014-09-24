@@ -1817,9 +1817,22 @@ programfiles64 = programfiles64()
 isfile=os.path.isfile
 isdir=os.path.isdir
 remove_file=os.unlink
-remove_tree=shutil.rmtree
-makepath = os.path.join
 
+def remove_tree(*args, **kwargs):
+    """Convenience function to delete a directory tree, with any error
+    ignored by default.  Pass ignore_errors=False to access possible
+    errors.
+    """
+    if 'ignore_errors' not in kwargs:
+        kwargs['ignore_errors'] = True
+    return shutil.rmtree(*args, **kwargs)
+
+def makepath(a, *p):
+    """Create a path given the components passed, but with saner defaults
+    than os.path.join.
+    """
+    p = [e.lstrip(os.path.sep) for e in p]
+    return os.path.join(a, *p)
 
 def service_installed(service_name):
     """Return True if the service is installed"""
