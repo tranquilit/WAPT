@@ -145,7 +145,7 @@ function GetWaptRepoURL: Utf8String;
 begin
   result := IniReadString(WaptIniFilename,'Global','repo_url');
   if Result = '' then
-      Result:='http://wapt/wapt';
+      Result:='https://wapt/wapt';
   if result[length(result)] = '/' then
     result := copy(result,1,length(result)-1);
 end;
@@ -272,8 +272,8 @@ begin
   begin
     edWAPTRepoURL.Enabled := False;
     edWAPTServerURL.Enabled := False;
-    edWAPTRepoURL.Text := Format('http://%s/wapt',[EdWAPTServerName.Text]);
-    edWAPTServerURL.Text := Format('http://%s',[EdWAPTServerName.Text]);
+    edWAPTRepoURL.Text := Format('https://%s/wapt',[EdWAPTServerName.Text]);
+    edWAPTServerURL.Text := Format('https://%s',[EdWAPTServerName.Text]);
   end
   else
   begin
