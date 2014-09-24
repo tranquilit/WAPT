@@ -64,6 +64,10 @@ import shutil
 import win32api
 import ntsecuritycon
 import win32security
+import win32net
+import pywintypes
+from ntsecuritycon import SECURITY_NT_AUTHORITY,SECURITY_BUILTIN_DOMAIN_RID
+from ntsecuritycon import DOMAIN_GROUP_RID_ADMINS,DOMAIN_GROUP_RID_USERS
 
 from M2Crypto import EVP, X509, SSL
 from M2Crypto.EVP import EVPError
@@ -5341,38 +5345,41 @@ class Wapt(object):
             raise Exception('Can not find %s'%waptexit_path)
         return setuphelpers.remove_shutdown_script(waptexit_path,'')
 
+def sid_from_rid(domain_controller, rid):
+    """Return SID structure based on supplied domain controller's domain and supplied rid
+    rid can be for example DOMAIN_GROUP_RID_ADMINS, DOMAIN_GROUP_RID_USERS
+    """
+    umi2 = win32net.NetUserModalsGet(domain_controller, 2)
+    domain_sid = umi2['domain_id']
 
-def lookup_user_group_from_rid(TargetComputer, Rid):
+    sub_authority_count = domain_sid.GetSubAuthorityCount()
+
+    # create and init new sid with acct domain Sid + acct rid
+    sid = pywintypes.SID()
+    sid.Initialize(domain_sid.GetSidIdentifierAuthority(),
+                   sub_authority_count+1)
+
+    # copy existing subauthorities from account domain Sid into
+    # new Sid
+    for i in range(sub_authority_count):
+        sid.SetSubAuthority(i, domain_sid.GetSubAuthority(i))
+
+    # append Rid to new Sid
+    sid.SetSubAuthority(sub_authority_count, rid)
+    return sid
+
+
+def lookup_name_from_rid(domain_controller, rid):
     """ return username or group name from RID (with localization if applicable)
         from https://mail.python.org/pipermail/python-win32/2006-May/004655.html
-        TargetComputer : should be a DC
+        domain_controller : should be a DC
         rid : integer number (512 for domain admins, 513 for domain users, etc.)
     >>> lookup_user_group_from_rid('srvads', DOMAIN_GROUP_RID_ADMINS)
     u'Domain Admins'
 
     """
-    # get the account domain Sid on the target machine
-    # note: if you were looking up multiple sids based on the same
-    # account domain, only need to call this once.
-    umi2 = NetUserModalsGet(TargetComputer, 2)
-    domain_sid = umi2['domain_id']
-
-    SubAuthorityCount = domain_sid.GetSubAuthorityCount()
-
-    # create and init new sid with acct domain Sid + acct Rid
-    sid = pywintypes.SID()
-    sid.Initialize(domain_sid.GetSidIdentifierAuthority(),
-                   SubAuthorityCount+1)
-
-    # copy existing subauthorities from account domain Sid into
-    # new Sid
-    for i in range(SubAuthorityCount):
-        sid.SetSubAuthority(i, domain_sid.GetSubAuthority(i))
-
-    # append Rid to new Sid
-    sid.SetSubAuthority(SubAuthorityCount, Rid)
-
-    name, domain, typ = LookupAccountSid(TargetComputer, sid)
+    sid = sid_from_rid(domain_controller,rid)
+    name, domain, typ = win32security.LookupAccountSid(domain_controller, sid)
     return name
 
 
@@ -5382,28 +5389,48 @@ def get_domain_admins_group_name():
     >>> get_domain_admins_group_name()
     u'Domain Admins'
     """
-    targetComputer = win32net.NetGetAnyDCName ()
-    name = lookup_user_group_from_rid(targetComputer, DOMAIN_GROUP_RID_ADMINS)
+    target_computer = win32net.NetGetAnyDCName ()
+    name = lookup_name_from_rid(target_computer, DOMAIN_GROUP_RID_ADMINS)
     return name
 
-def test_member_of(huser,group_name):
+def is_member_of(huser,group_name):
     """ check if a user is a member of a group
     huser : handle pywin32
     group_name : group as a string
     >>> from win32security import LogonUser
-    >>> hUser = win32security.LogonUser ('technique','tranquilit','xxxxxxx',win32security.LOGON32_LOGON_NETWORK,win32security.LOGON32_PROVIDER_DEFAULT        )
+    >>> hUser = win32security.LogonUser ('technique','tranquilit','xxxxxxx',win32security.LOGON32_LOGON_NETWORK,win32security.LOGON32_PROVIDER_DEFAULT)
     >>> test_member_of(hUser,'domain admins')
     False
     """
     try:
         sid, system, type = win32security.LookupAccountName(None,group_name)
-
     except:
-        print '"%s" is not a valid group name'%GROUP_NAME
+        logger.debug('"%s" is not a valid group name'%group_name)
         return False
     return win32security.CheckTokenMembership(huser, sid)
 
 
+def check_user_membership(user_name,password,domain_name,group_name):
+    """ check if a user is a member of a group
+    user_name: user as a string
+    password: as a string
+    domain_name : as a string. If empty, check local then domain
+    group_name : group as a string
+    >>> from win32security import LogonUser
+    >>> hUser = win32security.LogonUser ('technique','tranquilit','xxxxxxx',win32security.LOGON32_LOGON_NETWORK,win32security.LOGON32_PROVIDER_DEFAULT)
+    >>> test_member_of(hUser,'domain admins')
+    False
+    """
+    try:
+        sid, system, type = win32security.LookupAccountName(None,group_name)
+    except pywintypes.error as e:
+        if e.args[0] == 1332:
+            logger.warning('"%s" is not a valid group name'%group_name)
+            return False
+        else:
+            raise
+    huser = win32security.LogonUser(user_name,domain_name,password,win32security.LOGON32_LOGON_NETWORK,win32security.LOGON32_PROVIDER_DEFAULT)
+    return win32security.CheckTokenMembership(huser, sid)
 
 # for backward compatibility
 Version = setuphelpers.Version  # obsolete
