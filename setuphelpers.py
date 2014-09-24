@@ -223,7 +223,7 @@ def wgets(url,proxies=None):
     >>> "client_version" in data and "server_version" in data
     True
     """
-    r = requests.get(url,proxies=proxies)
+    r = requests.get(url,proxies=proxies,verify=False)
     if r.ok:
         return r.text
     else:
@@ -278,7 +278,7 @@ def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_time
     if not os.path.isdir(dir):
         os.makedirs(dir)
 
-    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout)
+    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout,verify=False)
 
     total_bytes = int(httpreq.headers['content-length'])
     # 1Mb max, 1kb min

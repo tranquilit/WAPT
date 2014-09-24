@@ -457,7 +457,7 @@ def check_auth(logon_name, password):
         return False
     domain = ''
     if logon_name.count('\\') > 1 or logon_name.count('@') > 1  or (logon_name.count('\\') == 1 and logon_name.count('@')==1)  :
-        print "malformed logon credential : %s "% logon_name
+        logger.debug("malformed logon credential : %s "% logon_name)
         return False
 
     if '\\' in logon_name:
@@ -468,22 +468,18 @@ def check_auth(logon_name, password):
         domain = logon_name.split('@')[1]
     else:
         username = logon_name
-    print "authentification for %s\\%s " % (domain,username)
+    logger.debug("authentification for %s\\%s " % (domain,username))
 
     try:
-        hUser = win32security.LogonUser (
+        huser = win32security.LogonUser (
             username,
             domain,
             password,
         win32security.LOGON32_LOGON_NETWORK,
         win32security.LOGON32_PROVIDER_DEFAULT
         )
-        if common.test_member_of(hUser,'domain admins'):
-            return hUser
-        if common.test_member_of(hUser,'waptselfservice'):
-            return hUser
-
-        return hUser
+        return common.check_is_member_of(huser,'domain admins') or
+            common.check_is_member_of(huser,'waptselfservice'):
     except win32security.error:
         if app.waptconfig.waptservice_password:
             logger.debug('auth using wapt local account')

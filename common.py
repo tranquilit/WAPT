@@ -750,7 +750,7 @@ def host_ipv4():
 def tryurl(url,proxies=None,timeout=0.3,auth=None):
     try:
         logger.debug(u'  trying %s' % url)
-        headers = requests.head(url,proxies=proxies,timeout=timeout,auth=auth)
+        headers = requests.head(url,proxies=proxies,timeout=timeout,auth=auth,verify=False)
         if headers.ok:
             logger.debug(u'  OK')
             return True
@@ -5393,7 +5393,7 @@ def get_domain_admins_group_name():
     name = lookup_name_from_rid(target_computer, DOMAIN_GROUP_RID_ADMINS)
     return name
 
-def is_member_of(huser,group_name):
+def check_is_member_of(huser,group_name):
     """ check if a user is a member of a group
     huser : handle pywin32
     group_name : group as a string
