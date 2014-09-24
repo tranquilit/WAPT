@@ -553,6 +553,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         EditLabel.ParentColor = False
         TabOrder = 0
         Text = 'http://wapt.tranquil.it/wapt'
+		Visible = False
       end
       object EdDefaultPrefix: TLabeledEdit
         Left = 8
@@ -589,6 +590,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         EditLabel.ParentColor = False
         TabOrder = 2
         Text = 'c:\waptdev'
+		Visible = False
       end
       object Memo4: TMemo
         Left = 16
