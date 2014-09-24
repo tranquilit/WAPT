@@ -116,7 +116,7 @@ try:
     subprocess.check_output('chown root:root ./builddir/etc/init.d/waptserver',shell=True)
 except Exception as e:
     print 'erreur: \n%s'%e
-    exit(0)
+    exit(1)
 
 print "copy logrotate script /etc/logrotate.d/waptserver"
 try:
@@ -125,7 +125,7 @@ try:
     subprocess.check_output('chown root:root ./builddir/etc/logrotate.d/waptserver',shell=True)
 except Exception as e:
     print 'erreur: \n%s'%e
-    exit(0)
+    exit(1)
 
 print "copying apache-related goo"
 try:
@@ -135,7 +135,7 @@ try:
     copyfile('../apache-win32/conf/httpd.conf.j2', apache_dir + 'httpd.conf.j2')
 except Exception as e:
     print 'erreur: \n%s'%e
-    exit(0)
+    exit(1)
 
 print 'inscription de la version dans le fichier de control'
 replaceAll(control_file,'0.0.7',wapt_version + '-' + rev)
