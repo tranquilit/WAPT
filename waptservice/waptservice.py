@@ -478,8 +478,7 @@ def check_auth(logon_name, password):
         win32security.LOGON32_LOGON_NETWORK,
         win32security.LOGON32_PROVIDER_DEFAULT
         )
-        return common.check_is_member_of(huser,'domain admins') or
-            common.check_is_member_of(huser,'waptselfservice'):
+        return common.check_is_member_of(huser,'domain admins') or common.check_is_member_of(huser,'waptselfservice')
     except win32security.error:
         if app.waptconfig.waptservice_password:
             logger.debug('auth using wapt local account')
