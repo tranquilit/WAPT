@@ -834,7 +834,8 @@ def main():
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
-                    print u"%s" % result
+                    logger.debug(u"Registering host info against server: %s", result)
+                    print u"Host correctly registered against server."
 
             elif action == 'setlocalpassword':
                 if len(args)>=2:
@@ -858,7 +859,8 @@ def main():
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
-                    print u"%s" % result
+                    logger.debug(u"Inventory sent to server: %s", result)
+                    print u"Inventory correctly sent to server."
 
             elif action == 'inventory':
                 if options.json_output:
