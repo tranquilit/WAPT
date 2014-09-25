@@ -127,7 +127,7 @@ implementation
 
 uses FileUtil, soutils, tiscommon, Variants, winsock, ShellApi, JwaIpHlpApi,
   JwaIpTypes, NetworkAdapterInfo, tisinifiles, registry, tisstrings, JwaWinDNS, JwaWinsock2,
-  IdHttp,IdMultipartFormData,IdExceptionCore,IdException,Dialogs,Regex,UnitRedirect;
+  IdHttp,IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,Dialogs,Regex,UnitRedirect;
 
 function IPV42String(ipv4:LongWord):String;
 begin
@@ -1073,6 +1073,8 @@ function WAPTServerJsonMultipartFilePost(waptserver,action: String;args:Array of
 var
   res:String;
   http:TIdHTTP;
+  ssl: boolean;
+  ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
   St:TIdMultiPartFormDataStream;
 begin
   if StrLeft(action,1)<>'/' then
@@ -1080,6 +1082,12 @@ begin
   if length(args)>0 then
     action := format(action,args);
   HTTP := TIdHTTP.Create;
+  ssl := copy(waptserver, 1, length('https://')) = 'https://';
+  if (ssl) then
+  begin
+    ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+	HTTP.IOHandler := ssl_handler;
+  end;
   St := TIdMultiPartFormDataStream.Create;
   try
     http.Request.BasicAuthentication:=True;
@@ -1097,6 +1105,8 @@ begin
   finally
     st.Free;
     HTTP.Free;
+    if (ssl) then
+	  ssl_handler.Free;
   end;
 end;
 
