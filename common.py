@@ -1723,7 +1723,7 @@ def get_server_certificate(url):
 class WaptServer(object):
     """Manage connection to waptserver"""
 
-    def __init__(self,url=None,proxies=None,timeout = 2,dnsdomain=None):
+    def __init__(self,url=None,proxies={'http':None,'https':None},timeout = 2,dnsdomain=None):
         if url and url[-1]=='/':
             url = url.rstrip('/')
         self._server_url = url
@@ -1731,6 +1731,8 @@ class WaptServer(object):
 
         self.proxies=proxies
         self.timeout = timeout
+        self.use_kerberos = False
+
         if dnsdomain:
             self.dnsdomain = dnsdomain
         else:
@@ -1739,7 +1741,7 @@ class WaptServer(object):
     def auth(self):
         if self._server_url:
             scheme = urlparse(self._server_url).scheme
-            if scheme == 'https' and has_kerberos:
+            if scheme == 'https' and has_kerberos and self.use_kerberos:
                 return HTTPKerberosAuth(mutual_authentication=OPTIONAL)
                 # TODO : simple auth if kerberos is not available...
             else:
@@ -1870,10 +1872,18 @@ class WaptServer(object):
             else:
                 # no server at all
                 self._server_url = ''
-            if config.has_option(section,'http_proxy'):
-                if (config.has_option(section,'use_http_proxy_for_server') and config.getboolean(section,'use_http_proxy_for_server'))\
-                        or not config.has_option(section,'use_http_proxy_for_server'):
-                    self.proxies = {'http':config.get(section,'http_proxy')}
+
+            self.use_kerberos = config.has_option(section,'use_kerberos') and \
+                            config.getboolean(section,'use_kerberos')
+
+            if config.has_option(section,'use_http_proxy_for_server') and config.getboolean(section,'use_http_proxy_for_server'):
+                if config.has_option(section,'http_proxy'):
+                    self.proxies = {'http':config.get(section,'http_proxy'),'https':config.get(section,'http_proxy')}
+                else:
+                    self.proxies = None
+            else:
+                self.proxies = {'http':None,'https':None}
+
             if config.has_option(section,'timeout'):
                 self.timeout = config.getfloat(section,'timeout')
         return self
@@ -1919,7 +1929,7 @@ class WaptRepo(object):
     >>> 'last-modified' in delta and 'added' in delta and 'removed' in delta
     True
     """
-    def __init__(self,name='',url=None,proxies=None,timeout = 2,dnsdomain=None):
+    def __init__(self,name='',url=None,proxies={'http':None,'https':None},timeout = 2,dnsdomain=None):
         """Initialize a repo at url "url". If
                  url is None, the url is requested from DNS"""
         self.name = name
@@ -2104,9 +2114,18 @@ class WaptRepo(object):
         if config.has_section(self.name):
             if config.has_option(self.name,'repo_url'):
                 self.repo_url = config.get(self.name,'repo_url')
-            if not config.has_option(self.name,'use_http_proxy_for_repo') or config.getboolean(self.name,'use_http_proxy_for_repo'):
+
+            if config.has_option(self.name,'use_http_proxy_for_repo') and config.getboolean(self.name,'use_http_proxy_for_repo'):
                 if config.has_option(self.name,'http_proxy'):
-                    self.proxies = {'http':config.get(self.name,'http_proxy')}
+                    # force a specific proxy from wapt conf
+                    self.proxies = {'http':config.get(self.name,'http_proxy'),'https':config.get(self.name,'http_proxy')}
+                else:
+                    # use default windows proxy ?
+                    self.proxies = None
+            else:
+                # force to not use proxy, even if one is defined in windows
+                self.proxies = {'http':None,'https':None}
+
             if config.has_option(self.name,'timeout'):
                 self.timeout = config.getfloat(self.name,'timeout')
         return self
@@ -2380,9 +2399,9 @@ class Wapt(object):
         self.proxies = None
         self.language = None
 
-        self.use_http_proxy_for_repo = True
-        self.use_http_proxy_for_server = True
-        self.use_http_proxy_for_templates = True
+        self.use_http_proxy_for_repo = False
+        self.use_http_proxy_for_server = False
+        self.use_http_proxy_for_templates = False
 
         try:
             self.wapt_base_dir = os.path.dirname(__file__)
@@ -2485,9 +2504,9 @@ class Wapt(object):
             'upload_cmd_host':'',
             'after_upload':'',
             'http_proxy':'',
-            'use_http_proxy_for_repo':'1',
-            'use_http_proxy_for_server':'1',
-            'use_http_proxy_for_templates':'1',
+            'use_http_proxy_for_repo':'0',
+            'use_http_proxy_for_server':'0',
+            'use_http_proxy_for_templates':'0',
             'tray_check_interval':2,
             'service_interval':2,
             'use_hostpackages':'1',
@@ -2537,7 +2556,7 @@ class Wapt(object):
         self.use_http_proxy_for_templates = self.config.getboolean('global','use_http_proxy_for_templates')
 
         if self.config.has_option('global','http_proxy'):
-            self.proxies = {'http':self.config.get('global','http_proxy')}
+            self.proxies = {'http':self.config.get('global','http_proxy'),'https':self.config.get('global','http_proxy')}
         else:
             self.proxies = None
 
@@ -3660,7 +3679,7 @@ class Wapt(object):
                     if self.use_http_proxy_for_repo:
                         curr_proxies = self.proxies
                     else:
-                        curr_proxies = None
+                        curr_proxies = {'http':None,'https':None}
                     setuphelpers.wget( download_url, self.package_cache_dir,proxies=curr_proxies,printhook = printhook)
                     downloaded.append(fullpackagepath)
                     self.runstatus=''
