@@ -51,13 +51,13 @@ usage = """\
 WAPT install system.
 
 action is either :
-  install [packages]: install one or several packages by name, directory or wapt file
-  update : update package database
-  upgrade : upgrade installed packages, install host package if not installed.
-  remove [packages] : remove installed packages
+  install <package> : install one or several packages by name, directory or wapt file
+  update            : update package database
+  upgrade           : upgrade installed packages, install host package if not installed.
+  remove <package>  : remove installed packages
 
-  download [packages]: force download one or several packages
-  show [packages]: show attributes of one or more packages
+  download <package>: force download one or several packages
+  show <package>    : show attributes of one or more packages
 
   list [keywords]   : list installed packages containing keywords
   list-upgrade      : list upgradable packages
