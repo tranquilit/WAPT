@@ -31,31 +31,28 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="8">
+    <RequiredPackages Count="7">
       <Item1>
-        <PackageName Value="cryptobboxWin"/>
+        <PackageName Value="HtmlComp"/>
       </Item1>
       <Item2>
-        <PackageName Value="HtmlComp"/>
+        <PackageName Value="pl_richview"/>
       </Item2>
       <Item3>
-        <PackageName Value="pl_richview"/>
+        <PackageName Value="pl_rx"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_rx"/>
+        <PackageName Value="pltis_utils"/>
       </Item4>
       <Item5>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pltis_superobject"/>
       </Item5>
       <Item6>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pl_luicontrols"/>
       </Item6>
       <Item7>
-        <PackageName Value="pl_luicontrols"/>
-      </Item7>
-      <Item8>
         <PackageName Value="LCL"/>
-      </Item8>
+      </Item7>
     </RequiredPackages>
     <Units Count="6">
       <Unit0>

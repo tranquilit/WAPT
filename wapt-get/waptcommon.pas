@@ -30,6 +30,7 @@ interface
   const
     waptservice_port:integer = 8088;
     waptserver_port:integer = 80;
+    waptserver_ssl_port:integer = 443;
     zmq_port:integer = 5000;
 
 

@@ -23,10 +23,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     Height = 315
     Top = 0
     Width = 434
-    ActivePage = pgParameters
+    ActivePage = pgStartServices
     Align = alClient
     MultiLine = True
-    TabIndex = 0
+    TabIndex = 4
     TabOrder = 0
     OnChange = PagesControlChange
     Options = [nboMultiLine]
@@ -710,10 +710,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
       object CBOpenFirewall: TCheckBox
         Left = 8
-        Height = 17
+        Height = 19
         Top = 234
-        Width = 394
-        Caption = 'Ouvrir les ports de firewall 80 et 8080 pour l''accès aux  paquets et l''inventaire'
+        Width = 388
+        Caption = 'Ouvrir les ports de firewall 80 et 443 pour l''accès aux  paquets et l''inventaire'
         Checked = True
         State = cbChecked
         TabOrder = 3
