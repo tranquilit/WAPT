@@ -481,7 +481,7 @@ def check_auth(logon_name, password):
         #check if user is domain admins ou member of waptselfservice admin
         try:
             domain_admins_group_name = common.get_domain_admins_group_name()
-            if common.check_is_member_of(huser,domain_admins_group_name:
+            if common.check_is_member_of(huser,domain_admins_group_name):
                 return True
             if common.check_is_member_of(huser,'waptselfservice'):
                 return True
@@ -1299,6 +1299,11 @@ class WaptServiceRestart(WaptTask):
         for k in args:
             setattr(self,k,args[k])
 
+    def add_at_cmd(self,cmd,delay=1):
+        import datetime
+        at_time = (datetime.datetime.now() + datetime.timedelta(minutes=delay)).strftime('%H:%M:%S')
+        logger.info(setuphelpers.run('at %s "%s"'%(at_time,cmd)))
+
     def _run(self):
         """Launch an external 'wapt-get waptupgrade' process to upgrade local copy of wapt client"""
         tmp_bat = tempfile.NamedTemporaryFile(prefix='waptrestart',suffix='.cmd',mode='wt',delete=False)
@@ -1307,7 +1312,7 @@ class WaptServiceRestart(WaptTask):
         tmp_bat.write('net start waptservice\n')
         tmp_bat.write('del "%s"\n'%tmp_bat.name)
         tmp_bat.close()
-        os.startfile(tmp_bat.name)
+        self.add_at_cmd(tmp_bat.name)
         output = 'WaptService restarted using batch file %s'%tmp_bat.name
         self.result = {'result':'OK','message':output}
 
