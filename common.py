@@ -2106,28 +2106,32 @@ class WaptRepo(object):
             value = value.rstrip('/')
         self._repo_url = value
 
-    def load_config(self,config,section=''):
-        """Load waptrepo configuration from inifile
+    def load_config(self,config,section=None):
+        """Load waptrepo configuration from inifile section.
+                Use name of repo as section name if section is not provided.
+                Use 'global' if no section named section in ini file
         """
-        if section:
-            self.name = section
-        if config.has_section(self.name):
-            if config.has_option(self.name,'repo_url'):
-                self.repo_url = config.get(self.name,'repo_url')
+        if not section:
+             section = self.name
+        if not config.has_section(section):
+            section = 'global'
 
-            if config.has_option(self.name,'use_http_proxy_for_repo') and config.getboolean(self.name,'use_http_proxy_for_repo'):
-                if config.has_option(self.name,'http_proxy'):
-                    # force a specific proxy from wapt conf
-                    self.proxies = {'http':config.get(self.name,'http_proxy'),'https':config.get(self.name,'http_proxy')}
-                else:
-                    # use default windows proxy ?
-                    self.proxies = None
+        if config.has_option(section,'repo_url'):
+            self.repo_url = config.get(section,'repo_url')
+
+        if config.has_option(section,'use_http_proxy_for_repo') and config.getboolean(section,'use_http_proxy_for_repo'):
+            if config.has_option(section,'http_proxy'):
+                # force a specific proxy from wapt conf
+                self.proxies = {'http':config.get(section,'http_proxy'),'https':config.get(section,'http_proxy')}
             else:
-                # force to not use proxy, even if one is defined in windows
-                self.proxies = {'http':None,'https':None}
+                # use default windows proxy ?
+                self.proxies = None
+        else:
+            # force to not use proxy, even if one is defined in windows
+            self.proxies = {'http':None,'https':None}
 
-            if config.has_option(self.name,'timeout'):
-                self.timeout = config.getfloat(self.name,'timeout')
+        if config.has_option(section,'timeout'):
+            self.timeout = config.getfloat(section,'timeout')
         return self
 
     @property
@@ -2361,6 +2365,34 @@ class WaptHostRepo(WaptRepo):
             value = value.rstrip('/')
         self._repo_url = value
 
+    def load_config(self,config,section=None):
+        """Load waptrepo configuration from inifile section.
+                Use name of repo as section name if section is not provided.
+                Use 'global' if no section named section in ini file
+        """
+        if not section:
+             section = self.name
+
+        if not config.has_section(section):
+            section = 'global'
+        else:
+            if config.has_option(section,'repo_url'):
+                self.repo_url = config.get(section,'repo_url')
+
+        if config.has_option(section,'use_http_proxy_for_repo') and config.getboolean(section,'use_http_proxy_for_repo'):
+            if config.has_option(section,'http_proxy'):
+                # force a specific proxy from wapt conf
+                self.proxies = {'http':config.get(section,'http_proxy'),'https':config.get(section,'http_proxy')}
+            else:
+                # use default windows proxy ?
+                self.proxies = None
+        else:
+            # force to not use proxy, even if one is defined in windows
+            self.proxies = {'http':None,'https':None}
+
+        if config.has_option(section,'timeout'):
+            self.timeout = config.getfloat(section,'timeout')
+        return self
 
 ######################"""
 
