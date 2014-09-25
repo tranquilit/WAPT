@@ -5389,9 +5389,13 @@ def get_domain_admins_group_name():
     >>> get_domain_admins_group_name()
     u'Domain Admins'
     """
-    target_computer = win32net.NetGetAnyDCName ()
-    name = lookup_name_from_rid(target_computer, DOMAIN_GROUP_RID_ADMINS)
-    return name
+    try:
+        target_computer = win32net.NetGetAnyDCName ()
+        name = lookup_name_from_rid(target_computer, DOMAIN_GROUP_RID_ADMINS)
+        return name
+    except Exception as e:
+        logger.debug('Error getting Domain Admins group name : %s'%e)
+        return 'Domain Admins'
 
 def check_is_member_of(huser,group_name):
     """ check if a user is a member of a group
