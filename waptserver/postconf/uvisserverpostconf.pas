@@ -31,7 +31,6 @@ type
     BitBtn4: TBitBtn;
     BitBtn5: TBitBtn;
     BitBtn6: TBitBtn;
-    Button1: TButton;
     cbLaunchWaptConsoleOnExit: TCheckBox;
     cbManualURL: TCheckBox;
     CBOpenFirewall: TCheckBox;
@@ -108,7 +107,6 @@ type
     procedure actPreviousUpdate(Sender: TObject);
     procedure actWriteConfStartServeExecute(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
     procedure EdKeyNameExit(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -403,22 +401,6 @@ procedure TVisWAPTServerPostConf.BitBtn3Click(Sender: TObject);
 begin
   if MessageDlg('Confirmer','Voulez-vous vraiment annuler la post-configuration du serveur WAPT ?',mtConfirmation,mbYesNoCancel,0) = mrYes then
     Close;
-end;
-
-procedure TVisWAPTServerPostConf.Button1Click(Sender: TObject);
-var
-  params : ISuperObject;
-  waptsetupPath: string;
-  done: boolean;
-  ini: TIniFile;
-  SORes:ISuperObject;
-begin
-  waptsetupPath := 'C:\Users\htouvet\AppData\Local\Temp\waptagent.exe';
-  SORes := WAPTServerJsonMultipartFilePost(edWAPTServerURL.text,'upload_waptsetup',[],'file',waptsetupPath,False,'admin','fakepassword',@IdHTTPWork);
-  if SORes.S['status'] = 'OK' then
-    ShowMessage('Waptsetup déposé avec succès')
-  else
-    ShowMessage('Erreur lors du dépôt de waptsetup: ' + SORes.S['message']);
 end;
 
 procedure TVisWAPTServerPostConf.ActManualExecute(Sender: TObject);

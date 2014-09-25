@@ -99,9 +99,9 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
       object cbManualURL: TCheckBox
         Left = 4
-        Height = 19
+        Height = 17
         Top = 54
-        Width = 170
+        Width = 168
         Action = ActManual
         TabOrder = 2
       end
@@ -192,16 +192,6 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           '</html>'
         )
         TabOrder = 6
-        Visible = False
-      end
-      object Button1: TButton
-        Left = 300
-        Height = 25
-        Top = 60
-        Width = 75
-        Caption = 'Button1'
-        OnClick = Button1Click
-        TabOrder = 7
         Visible = False
       end
     end
