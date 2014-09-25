@@ -478,7 +478,9 @@ def check_auth(logon_name, password):
         win32security.LOGON32_LOGON_NETWORK,
         win32security.LOGON32_PROVIDER_DEFAULT
         )
-        return common.check_is_member_of(huser,'domain admins') or common.check_is_member_of(huser,'waptselfservice')
+        return common.check_is_member_of(huser,common.get_domain_admins_group_name()) or \
+            common.check_is_member_of(huser,'waptselfservice') or \
+            username.lower() in map(unicode.lower,setuphelpers.local_admins())
     except win32security.error:
         if app.waptconfig.waptservice_password:
             logger.debug('auth using wapt local account')
@@ -650,7 +652,7 @@ def package_icon():
             timeout = wapt().repositories[0].timeout
 
             remote_icon_path = "{repo}/icons/{package}.png".format(repo=repo_url,package=package)
-            icon = requests.get(remote_icon_path,proxies=proxies,timeout=timeout)
+            icon = requests.get(remote_icon_path,proxies=proxies,timeout=timeout,verify=False)
             icon.raise_for_status()
             open(icon_local_filename,'wb').write(icon.content)
             return StringIO.StringIO(icon.content)
