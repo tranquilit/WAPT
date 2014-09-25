@@ -481,14 +481,14 @@ def check_auth(logon_name, password):
         #check if user is domain admins ou member of waptselfservice admin
         try:
             domain_admins_group_name = common.get_domain_admins_group_name()
-            if common.check_is_member_of(huser,domain_admins_group_name)==True:
+            if common.check_is_member_of(huser,domain_admins_group_name:
                 return True
-            if common.check_is_member_of(huser,'waptselfservice')==True:
+            if common.check_is_member_of(huser,'waptselfservice'):
                 return True
         except:
             pass
         local_admins_group_name = common.get_local_admins_group_name()
-        if common.check_is_member_of(huser,local_admins_group_name)==True:
+        if common.check_is_member_of(huser,local_admins_group_name):
             return True
 
     except win32security.error:

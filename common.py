@@ -5399,8 +5399,6 @@ def get_domain_admins_group_name():
 
 def get_local_admins_group_name():
     sid = win32security.GetBinarySid('S-1-5-32-544')
-    import win32api
-    computer_name = win32api.GetComputerName()
     name, domain, typ = win32security.LookupAccountSid(setuphelpers.wincomputername(), sid)
     return name
 
