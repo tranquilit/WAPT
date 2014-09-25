@@ -478,16 +478,25 @@ def check_auth(logon_name, password):
         win32security.LOGON32_LOGON_NETWORK,
         win32security.LOGON32_PROVIDER_DEFAULT
         )
-        return common.check_is_member_of(huser,common.get_domain_admins_group_name()) or \
-            common.check_is_member_of(huser,'waptselfservice') or \
-            username.lower() in map(unicode.lower,setuphelpers.local_admins())
+        #check if user is domain admins ou member of waptselfservice admin
+        try:
+            domain_admins_group_name = common.get_domain_admins_group_name()
+            if common.check_is_member_of(huser,domain_admins_group_name)==True:
+                return True
+            if common.check_is_member_of(huser,'waptselfservice')==True:
+                return True
+        except:
+            pass
+        local_admins_group_name = common.get_local_admins_group_name()
+        if common.check_is_member_of(huser,local_admins_group_name)==True:
+            return True
+
     except win32security.error:
         if app.waptconfig.waptservice_password:
             logger.debug('auth using wapt local account')
             return app.waptconfig.waptservice_user == username and app.waptconfig.waptservice_password == hashlib.sha256(password).hexdigest()
     else:
         return False
-
 
 def allow_waptserver_or_local_auth(f):
     """Restrict access to localhost authenticated or waptserver IP"""
