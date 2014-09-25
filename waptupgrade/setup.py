@@ -159,6 +159,11 @@ def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy
     if errors:
         raise shutil.Error(errors)
 
+def add_at_cmd(self,cmd,delay=1):
+    import datetime
+    at_time = (datetime.datetime.now() + datetime.timedelta(minutes=delay)).strftime('%H:%M:%S')
+    print(setuphelpers.run('at %s "%s"'%(at_time,cmd)))
+
 
 def install():
     # if you want to modify the keys depending on environment (win32/win64... params..)
@@ -174,16 +179,12 @@ def install():
         import requests,json
         try:
             res = json.loads(requests.get('http://127.0.0.1:8088/waptservicerestart.json').text)
-
         except:
             tmp_bat = tempfile.NamedTemporaryFile(prefix='waptrestart',suffix='.cmd',mode='wt',delee=False)
-            tmp_bat.write('ping -n 10 127.0.0.1 >nul\n')
             tmp_bat.write('net stop waptservice\n')
-            tmp_bat.write('ping -n 5 127.0.0.1 >nul\n')
             tmp_bat.write('net start waptservice\n')
             tmp_bat.write('del "%s"\n'%tmp_bat.name)
             tmp_bat.close()
-            shell_launch(tmp_bat.name)
-
+            add_at_cmd(tmp_bat.name)
     print(u'Upgrade done')
 
