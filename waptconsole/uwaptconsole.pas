@@ -1749,11 +1749,11 @@ begin
     DMPython.PythonEng.ExecString('mywapt.use_waptpackages = True');
     HttpProxy := inifile.ReadString('global', 'http_proxy', '');
     UseProxyForRepo := inifile.readBool('global',
-      'use_http_proxy_for_repo', HttpProxy <> '');
+      'use_http_proxy_for_repo', False);
     UseProxyForServer := inifile.readBool('global', 'use_http_proxy_for_server',
-      HttpProxy <> '');
+      False);
     UseProxyForTemplates := inifile.ReadBool('global',
-      'use_http_proxy_for_templates', HttpProxy <> '');
+      'use_http_proxy_for_templates', False);
     MainRepoUrl := GetMainWaptRepo;
     WAPTServer := GetWaptServerURL;
     TemplatesRepoUrl := WaptTemplatesRepo;
