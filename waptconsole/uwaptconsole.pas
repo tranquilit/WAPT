@@ -1743,6 +1743,7 @@ procedure TVisWaptGUI.ActReloadConfigExecute(Sender: TObject);
 var
   inifile: TIniFile;
 begin
+  CacheWaptServerUrl := 'None';
   inifile := TIniFile.Create(AppIniFilename);
   try
     DMPython.RunJSON('mywapt.load_config()', jsonlog);

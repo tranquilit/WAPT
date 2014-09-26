@@ -117,6 +117,7 @@ Type
   end;
 
 const
+  CacheWaptServerUrl: AnsiString = 'None';
   WaptServerUser: AnsiString ='admin';
   WaptServerPassword: Ansistring ='';
   HttpProxy:AnsiString = '';
@@ -504,9 +505,18 @@ var
   wapthost:AnsiString;
 
 begin
+  if CacheWaptServerUrl<>'None' then
+  begin
+    Result := CacheWaptServerUrl;
+    Exit;
+  end;
+
   result := IniReadString(AppIniFilename,'Global','wapt_server');
   if (Result <> '') then
+  begin
+    CacheWaptServerUrl := Result;
     exit;
+  end;
 
   dnsdomain:=GetDNSDomain;
   //dnsserver:=GetDNSServer;
@@ -522,10 +532,14 @@ begin
         Result := 'http://'+rec.S['name']+':'+rec.S['port'];
       Logger('trying '+result,INFO);
       if Wget_try(result,UseProxyForServer) then
-        Exit;
+      begin
+        CacheWaptServerUrl := Result;
+        exit;
+      end;
     end;
   end;
   result :='';
+  CacheWaptServerUrl := 'None';
 end;
 
 {
