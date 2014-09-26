@@ -156,7 +156,7 @@ begin
   try
     while ppQueryResultsSet<>Nil do
     begin
-      if ppQueryResultsSet^.Data.A.IpAddress<>0 then
+      if (ppQueryResultsSet^.wType=DNS_TYPE_A) and (ppQueryResultsSet^.Data.A.IpAddress<>0) then
       begin
         res := IPV42String(ppQueryResultsSet^.Data.A.IpAddress);
         UniqueString(res);
@@ -192,13 +192,16 @@ begin
     while ppQueryResultsSet<>Nil do
     begin
       rec:= TSuperObject.Create(stObject);
-      res := ppQueryResultsSet^.Data.SRV.pNameTarget;
-      UniqueString(res);
-      rec.S['name'] := res;
-      rec.I['port'] := ppQueryResultsSet^.Data.SRV.wPort;
-      rec.I['priority'] := ppQueryResultsSet^.Data.SRV.wPriority;
-      rec.I['weight'] := ppQueryResultsSet^.Data.SRV.wWeight;
-      Result.AsArray.Add(rec);
+      if ppQueryResultsSet^.wType=DNS_TYPE_SRV then
+      begin
+        res := ppQueryResultsSet^.Data.SRV.pNameTarget;
+        UniqueString(res);
+        rec.S['name'] := res;
+        rec.I['port'] := ppQueryResultsSet^.Data.SRV.wPort;
+        rec.I['priority'] := ppQueryResultsSet^.Data.SRV.wPriority;
+        rec.I['weight'] := ppQueryResultsSet^.Data.SRV.wWeight;
+        Result.AsArray.Add(rec);
+      end;
       ppQueryResultsSet:= ppQueryResultsSet^.pNext;
     end;
     SortByFields(Result,['priority','port']);
@@ -229,7 +232,7 @@ begin
   try
     while ppQueryResultsSet<>Nil do
     begin
-      if ppQueryResultsSet^.Data.PTR.pNameHost<>Nil then
+      if (ppQueryResultsSet^.wType=DNS_TYPE_CNAME) and (ppQueryResultsSet^.Data.PTR.pNameHost<>Nil) then
       begin
         res := ppQueryResultsSet^.Data.PTR.pNameHost;
         UniqueString(res);
