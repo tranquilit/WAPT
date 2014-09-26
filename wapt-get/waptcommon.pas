@@ -467,58 +467,6 @@ begin
   result :='';
 end;
 
-
-{
-function GetLDAPServer(dnsdomain:String=''): String;
-var
-  resolv : TIdDNSResolver;
-  rec : TResultRecord;
-  i:integer;
-  highest : integer;
-  ais : TAdapterInfo;
-
-  dnsserver:String;
-
-begin
-  if dnsdomain='' then
-    dnsdomain:=GetDNSDomain;
-
-  dnsserver:=GetDNSServer;
-
-  if (dnsserver<>'') and (dnsdomain<>'') then
-  try
-    resolv := TIdDNSResolver.Create(Nil);
-    try
-      resolv.Host:=dnsserver;
-      resolv.ClearInternalQuery;
-      resolv.QueryType := [TQueryRecordTypes.qtService];
-      resolv.WaitingTime:=400;
-      resolv.Resolve('_ldap._tcp.'+dnsdomain+'.');
-      highest:=-1;
-      for i := 0 to resolv.QueryResult.count - 1 do
-      begin
-        rec := resolv.QueryResult.Items[i];
-        if rec is TSRVRecord then
-        with (rec as TSRVRecord) do begin
-           if Priority>highest then
-           begin
-             Highest := Priority;
-             Result := Target+':'+IntToStr(Port);
-           end;
-        end;
-      end;
-    finally
-      resolv.free;
-    end;
-  except
-    on EIdDnsResolverError do
-      Logger('SRV lookup failed',DEBUG)
-    else
-      Raise;
-  end;
-end;
-}
-
 function GetEthernetInfo(ConnectedOnly:Boolean):ISuperObject;
 var
   i:integer;
