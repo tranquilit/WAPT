@@ -419,16 +419,6 @@ begin
   result := IniReadString(AppIniFilename,'Global','repo_url');
   if (Result <> '') then
     exit;
-  {
-  if Get_EthernetAdapterDetail(ais) then
-  begin
-    for i:=0 to length(ais)-1 do
-    with ais[i] do
-      if (sIpAddress<>'') and (sIpMask<>'') and (dwType=MIB_IF_TYPE_ETHERNET) and (dwOperStatus>=MIB_IF_OPER_STATUS_CONNECTED) then begin
-        Logger(bDescr+' '+sIpAddress+'/'+sIpMask+' mac:'+ais[i].bPhysAddr,INFO);
-    end;
-  end;
-  }
 
   dnsdomain:=GetDNSDomain;
 
