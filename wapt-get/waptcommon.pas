@@ -492,10 +492,48 @@ begin
 end;
 
 function GetWaptServerURL: String;
+var
+  i:integer;
+  first : integer;
+  ais : TAdapterInfo;
+
+  dnsdomain,
+  dnsserver:AnsiString;
+
+  rec,recs : ISuperObject;
+  wapthost:AnsiString;
+
+begin
+  result := IniReadString(AppIniFilename,'Global','wapt_server');
+  if (Result <> '') then
+    exit;
+
+  dnsdomain:=GetDNSDomain;
+  //dnsserver:=GetDNSServer;
+  if dnsdomain<>'' then
+  begin
+    //SRV _wapt._tcp
+    recs := DNSSRVQuery('_waptserver._tcp.'+dnsdomain);
+    for rec in recs do
+    begin
+      if rec.I['port'] = 443 then
+        Result := 'https://'+rec.S['name']
+      else
+        Result := 'http://'+rec.S['name']+':'+rec.S['port'];
+      Logger('trying '+result,INFO);
+      if Wget_try(result,UseProxyForServer) then
+        Exit;
+    end;
+  end;
+  result :='';
+end;
+
+{
+function GetWaptServerURL: String;
 begin
   result := IniReadString(AppIniFilename,'Global','wapt_server');
 end;
-
+}
 
 function GetWaptRepoURL: Utf8String;
 begin
