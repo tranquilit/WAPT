@@ -1,0 +1,8 @@
+Package: tis-waptsetup
+Version: 0.0.7
+Section: base
+Priority: optional
+Architecture: all
+Depends: tis-waptrepo
+Maintainer: TIS <technique@tranquil-it-systems.fr>
+Description: WAPT setup executable for Windows
