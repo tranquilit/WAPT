@@ -27,7 +27,6 @@ type
     StopRequired : Boolean;
     OnStop :TNotifyEvent;
     ExceptionOnStop:Boolean;
-    constructor Create(TheOwner: TComponent); override;
     function ProgressForm:TVisLoading;
     procedure ProgressTitle(Title:String);
     procedure ProgressStep(step,max:integer);
@@ -58,13 +57,6 @@ end;
 procedure TVisLoading.FormCreate(Sender: TObject);
 begin
   AProgressBar.Min:=0;
-  BringToFront;
-end;
-
-constructor TVisLoading.Create(TheOwner: TComponent);
-begin
-  inherited Create(TheOwner);
-  Parent := TheOwner as TWinControl;
 end;
 
 function TVisLoading.ProgressForm: TVisLoading;
@@ -76,6 +68,7 @@ procedure TVisLoading.ProgressTitle(Title: String);
 begin
   AMessage.Caption := Title;
   Application.ProcessMessages;
+  ShowOnTop;
 end;
 
 procedure TVisLoading.ProgressStep(step, max: integer);
@@ -84,6 +77,7 @@ begin
       StopRequired:=False;
   AProgressBar.Max:=Max;
   AProgressBar.position:=step;
+  ShowOnTop;
   Application.ProcessMessages;
 end;
 
@@ -91,6 +85,7 @@ procedure TVisLoading.Start(Max: Integer);
 begin
   AProgressBar.position:=0;
   AProgressBar.Max:=Max;
+  ShowOnTop;
   Application.ProcessMessages;
 
 end;
@@ -98,6 +93,7 @@ end;
 procedure TVisLoading.Finish;
 begin
   AProgressBar.position:=AProgressBar.Max;
+  ShowOnTop;
   Application.ProcessMessages;
 end;
 
@@ -107,6 +103,7 @@ begin
       AProgressBar.position := AProgressBar.Min
   else
     AProgressBar.position := AProgressBar.position+1;
+  ShowOnTop;
   Application.ProcessMessages;
 end;
 

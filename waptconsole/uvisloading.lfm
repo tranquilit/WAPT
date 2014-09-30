@@ -13,7 +13,7 @@ object VisLoading: TVisLoading
   Font.Pitch = fpVariable
   Font.Quality = fqDraft
   OnCreate = FormCreate
-  Position = poOwnerFormCenter
+  Position = poMainFormCenter
   LCLVersion = '1.3'
   Visible = True
   object AProgressBar: TProgressBar
