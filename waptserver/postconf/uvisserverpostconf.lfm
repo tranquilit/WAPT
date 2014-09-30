@@ -923,7 +923,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           'sont possibles&nbsp;:'
           '<ul>'
           '<li> depuis une clé USB </li>'
-          '<li> depuis l''adresse http://nom-du-'
+          '<li> depuis l''adresse https://nom-du-'
           'serveur-wapt/wapt/waptsetup.exe '
           '</li>'
           '<li> <a '
