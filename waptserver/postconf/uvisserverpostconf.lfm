@@ -831,7 +831,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object Label5: TLabel
         Left = 8
         Height = 13
-        Hint = 'Addresse de votre dépôt wapt (http://wapt/wapt)'
+        Hint = 'Addresse de votre dépôt wapt (https://wapt/wapt)'
         Top = 76
         Width = 186
         Caption = 'Adresse du dépot Wapt principal:'
@@ -882,7 +882,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object edWaptServerUrl1: TEdit
         Left = 200
         Height = 21
-        Hint = 'exemple : http://wapt:8080'
+        Hint = 'exemple : https://wapt'
         Top = 101
         Width = 192
         ParentColor = True
@@ -891,7 +891,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object Label8: TLabel
         Left = 8
         Height = 13
-        Hint = 'Addresse de votre serveur wapt (http://wapt:8080)'
+        Hint = 'Addresse de votre serveur wapt (https://wapt)'
         Top = 104
         Width = 152
         Caption = 'Adresse du serveur WAPT :'
