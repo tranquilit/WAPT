@@ -5009,6 +5009,11 @@ class Wapt(object):
         if newname:
             newname = newname.lower()
 
+        while newname.endswith('.wapt'):
+            dot_wapt = newname.rfind('.wapt')
+            newname = newname[0:dot_wapt]
+            logger.warning("Target ends with '.wapt', stripping.  New name: %s", newname)
+
         if not private_key:
             private_key = self.private_key
 
