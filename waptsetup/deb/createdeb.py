@@ -166,7 +166,7 @@ shutil.copytree('./debian/', BDIR + 'DEBIAN/', ignore=ignore_svn)
 mkdir_p(BDIR + 'var/www/wapt/')
 shutil.copy(EXE, BDIR + 'var/www/wapt/')
 
-output = 'tis-waptsetup-%s-%s.deb' % (version, revision)
+output = 'tis-waptsetup-%s-rev%s.deb' % (version, revision)
 dpkg_command = ['dpkg-deb', '--build', BDIR, output]
 run(dpkg_command)
 
