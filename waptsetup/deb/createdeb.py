@@ -55,6 +55,8 @@ run = subprocess.check_output
 
 BDIR = './builddir/'
 EXE = 'waptsetup.exe'
+SRV = 'srvinstallation.tranquil.it'
+BASEPATH = '/wapt/nightly/'
 
 class MyHTMLParser(HTMLParser.HTMLParser):
 
@@ -74,8 +76,17 @@ if platform.system() != 'Linux':
     print "this script should be used on debian linux"
     sys.exit(1)
 
-conn = httplib.HTTPConnection('srvinstallation.tranquil.it', '80')
-conn.request('GET', '/wapt/nightly/')
+try:
+    shutil.rmtree(BDIR)
+except Exception:
+    pass
+try:
+    os.unlink(EXE)
+except Exception:
+    pass
+
+conn = httplib.HTTPConnection(SRV, '80')
+conn.request('GET', BASEPATH)
 response = conn.getresponse()
 if response.status != 200:
     sys.exit(1)
@@ -99,13 +110,10 @@ for cur_exe in parser.wapt_waptsetup_exes:
 if latest_exe is None:
     sys.exit(1)
 
-print latest_exe
-
-conn.request('GET', '/wapt/nightly/' + latest_exe)
+conn.request('GET', BASEPATH + latest_exe)
 response = conn.getresponse()
 if response.status != 200:
     sys.exit(1)
-
 
 out = file(EXE, 'wb')
 while True:
@@ -118,13 +126,13 @@ out.close()
 pe = pefile.PE(EXE)
 version = pe.FileInfo[0].StringTable[0].entries['ProductVersion'].strip()
 
-mkdir_p(BDIR + 'DEBIAN')
-run(['cp', '-R', 'debian/.', BDIR + 'DEBIAN'])
-mkdir_p(BDIR + 'var/www/wapt/waptsetup/')
-run(['cp', EXE, BDIR + 'var/www/wapt/waptsetup/'])
+ignore_svn = lambda dir, files: ".svn"
+shutil.copytree('./debian/', BDIR + 'DEBIAN/', ignore=ignore_svn)
+mkdir_p(BDIR + 'var/www/wapt/')
+shutil.copy(EXE, BDIR + 'var/www/wapt/')
 
-print 'création du paquet Deb'
-dpkg_command = 'dpkg-deb --build %s tis-waptsetup-%s-%s.deb' % (BDIR, version, revision)
-os.system(dpkg_command)
+output = 'tis-waptsetup-%s-%s.deb' % (version, revision)
+dpkg_command = ['dpkg-deb', '--build', BDIR, output]
+run(dpkg_command)
 shutil.rmtree(BDIR)
 os.unlink(EXE)
