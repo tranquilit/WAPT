@@ -56,7 +56,7 @@ makepath = os.path.join
 run = subprocess.check_output
 
 BDIR = './builddir/'
-EXE = 'waptsetup.exe'
+EXE = 'waptsetup-tis.exe'
 SRV = 'srvinstallation.tranquil.it'
 BASEPATH = '/wapt/nightly/'
 
@@ -160,13 +160,16 @@ pe = pefile.PE(EXE)
 version = pe.FileInfo[0].StringTable[0].entries['ProductVersion'].strip()
 logger.debug('%s version: %s', EXE, version)
 
+full_version = version + '-rev' + revision
+
 logger.info('Creating .deb')
 ignore_svn = lambda dir, files: ".svn"
 shutil.copytree('./debian/', BDIR + 'DEBIAN/', ignore=ignore_svn)
+replaceAll(BDIR + 'DEBIAN/control', '0.0.7', full_version)
 mkdir_p(BDIR + 'var/www/wapt/')
 shutil.copy(EXE, BDIR + 'var/www/wapt/')
 
-output = 'tis-waptsetup-%s-rev%s.deb' % (version, revision)
+output = 'tis-waptsetup-%s.deb' % (full_version)
 dpkg_command = ['dpkg-deb', '--build', BDIR, output]
 run(dpkg_command)
 
