@@ -22,10 +22,12 @@
 # -----------------------------------------------------------------------
 
 import HTMLParser
+import argparse
 import errno
 import fileinput
 import glob
 import httplib
+import logging
 import os
 import pefile
 import platform
@@ -71,30 +73,55 @@ class MyHTMLParser(HTMLParser.HTMLParser):
             if attr == 'href' and value.startswith('waptsetup_'):
                 self.wapt_waptsetup_exes.append(value)
 
+def setloglevel(logger,loglevel):
+    """set loglevel as string"""
+    if loglevel in ('debug','warning','info','error','critical'):
+        numeric_level = getattr(logging, loglevel.upper(), None)
+        if not isinstance(numeric_level, int):
+            raise ValueError('Invalid log level: %s' % loglevel)
+        logger.setLevel(numeric_level)
+
+
+parser = argparse.ArgumentParser(u'Crée un paquet .deb contenant le dernier waptsetup.exe publié')
+parser.add_argument('-l', '--loglevel', help='Change log level (error, warning, info, debug...)')
+options = parser.parse_args()
+
+logger = logging.getLogger()
+logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
+if options.loglevel is not None:
+    setloglevel(logger,options.loglevel)
+
 
 if platform.system() != 'Linux':
-    print "this script should be used on debian linux"
+    logger.error("this script should be used on debian linux")
     sys.exit(1)
 
 try:
     shutil.rmtree(BDIR)
-except Exception:
+except Exception as e:
+    logger.info('Error while deleting %s: %s', BDIR, e)
     pass
 try:
     os.unlink(EXE)
-except Exception:
+except Exception as e:
+    logger.info('Error while unlinking %s: %s', EXE, e)
     pass
 
+logger.info('Fetching executable')
+logger.debug('Connecting to server %s', SRV)
 conn = httplib.HTTPConnection(SRV, '80')
 conn.request('GET', BASEPATH)
 response = conn.getresponse()
 if response.status != 200:
+    logger.error('Unexpected response from server (%s)', response.status)
     sys.exit(1)
 
+logger.debug('Parsing response from server')
 parser = MyHTMLParser()
 parser.feed(response.read())
 parser.close()
 
+logger.debug('Filtering results')
 regexp = re.compile('waptsetup_rev([0-9]+)\.exe')
 revision = 0
 latest_exe = None
@@ -108,11 +135,14 @@ for cur_exe in parser.wapt_waptsetup_exes:
             latest_exe = cur_exe
 
 if latest_exe is None:
+    logger.error('No matching files on server')
     sys.exit(1)
 
+logger.debug('Starting download of %s', BASEPATH + latest_exe)
 conn.request('GET', BASEPATH + latest_exe)
 response = conn.getresponse()
 if response.status != 200:
+    logger.error('Unexpected response from server (%s)', response.status)
     sys.exit(1)
 
 out = file(EXE, 'wb')
@@ -123,9 +153,14 @@ while True:
     out.write(buffer)
 out.close()
 
+logger.info('Correctly fetched %s', EXE)
+
+logger.debug('Getting version from executable')
 pe = pefile.PE(EXE)
 version = pe.FileInfo[0].StringTable[0].entries['ProductVersion'].strip()
+logger.debug('%s version: %s', EXE, version)
 
+logger.info('Creating .deb')
 ignore_svn = lambda dir, files: ".svn"
 shutil.copytree('./debian/', BDIR + 'DEBIAN/', ignore=ignore_svn)
 mkdir_p(BDIR + 'var/www/wapt/')
@@ -134,5 +169,8 @@ shutil.copy(EXE, BDIR + 'var/www/wapt/')
 output = 'tis-waptsetup-%s-%s.deb' % (version, revision)
 dpkg_command = ['dpkg-deb', '--build', BDIR, output]
 run(dpkg_command)
+
+logger.info('All done')
+
 shutil.rmtree(BDIR)
 os.unlink(EXE)
