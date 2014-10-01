@@ -144,6 +144,7 @@ os.chmod('./builddir/DEBIAN/postinst',stat.S_IRWXU| stat.S_IXGRP | stat.S_IRGRP 
 os.chmod('./builddir/DEBIAN/preinst',stat.S_IRWXU| stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
 
 print 'création du paquet Deb'
-dpkg_command = 'dpkg-deb --build builddir tis-waptserver-%s-%s.deb'% (wapt_version ,rev)
+dpkg_command = 'dpkg-deb --build builddir tis-waptserver-%s-rev%s.deb'% (wapt_version ,rev)
 os.system(dpkg_command)
 shutil.rmtree("builddir")
+
