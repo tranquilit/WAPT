@@ -142,7 +142,7 @@ def update_external_repo(waptconfigfile,search_string):
     if wapt.use_http_proxy_for_templates:
         wapt.repositories[0].proxies = wapt.proxies
     else:
-        wapt.proxies = None
+        wapt.proxies = {'http':None,'https':None}
     wapt.update(register=False)
     return wapt.search(search_string)
 
@@ -161,9 +161,9 @@ def get_packages_filenames(waptconfigfile,packages_names):
     repo = wapt.config.get('global','templates_repo_url')
     wapt.repositories[0].repo_url = repo if repo else 'http://wapt.tranquil.it/wapt'
     if wapt.use_http_proxy_for_templates:
-        wapt.proxies =  {'http':wapt.config.get('global','http_proxy')}
+        wapt.repositories[0].proxies =  {'http':wapt.config.get('global','http_proxy'),'https':wapt.config.get('global','http_proxy')}
     else:
-        wapt.proxies = None
+        wapt.repositories[0].wapt.proxies = {'http':None,'https':None}
     # be sure to be up to date
     wapt.update(register=False)
     packages_names = common.ensure_list(packages_names)
@@ -302,6 +302,10 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
     return build_res
 
 if __name__ == '__main__':
+    mywapt = common.Wapt(config_filename=r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini')
+    get_packages_filenames(mywapt.config_filename,'tis-7zip')
+    sys.exit(0)
+
     import doctest
     import sys
     reload(sys)
