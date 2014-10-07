@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.9.3"
+__version__ = "0.9.4"
 import os
 import re
 import logging
@@ -782,14 +782,23 @@ class EWaptCancelled(Exception):
 
 
 class WaptBaseDB(object):
-    dbpath = ''
+    _dbpath = ''
     db = None
     curr_db_version = '20130523'
 
     def __init__(self,dbpath):
         self._db_version = None
         self.dbpath = dbpath
-        self.connect()
+
+    @property
+    def dbpath(self):
+        return self._dbpath
+
+    @dbpath.setter
+    def dbpath(self,value):
+        if not self._dbpath or (self._dbpath and self._dbpath != value):
+            self._dbpath = value
+            self.connect()
 
     def connect(self):
         if not self.dbpath == ':memory:' and not os.path.isfile(self.dbpath):
@@ -1104,10 +1113,6 @@ PackageKey = namedtuple('package',('packagename','version'))
 
 class WaptDB(WaptBaseDB):
     """Class to manage SQLite database with local installation status"""
-    dbpath = ''
-    db = None
-    curr_db_version = '20140410'
-
     def initdb(self):
         """Initialize current sqlite db with empty table and return structure version"""
         assert(isinstance(self.db,sqlite3.Connection))
@@ -5502,6 +5507,10 @@ Version = setuphelpers.Version  # obsolete
 
 if __name__ == '__main__':
     wapt = Wapt(config_filename=r'C:\tranquilit\wapt\wapt-get.ini')
+    wapt.update()
+    sys.exit(1)
+
+
     srv = WaptServer().load_config(wapt.config)
     srv.server_url='https://srvwapt.tranquilit.local'
     print srv.server_url

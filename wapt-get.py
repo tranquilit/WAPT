@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.9.3"
+__version__ = "0.9.4"
 import codecs
 import getpass
 import glob

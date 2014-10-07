@@ -1747,7 +1747,8 @@ begin
   inifile := TIniFile.Create(AppIniFilename);
   try
     DMPython.RunJSON('mywapt.load_config()', jsonlog);
-    DMPython.PythonEng.ExecString('mywapt.use_waptpackages = True');
+    DMPython.PythonEng.ExecString('mywapt.use_hostpackages = False');
+    DMPython.PythonEng.ExecString('mywapt.waptdb.dbpath = ":memory:"');
     HttpProxy := inifile.ReadString('global', 'http_proxy', '');
     UseProxyForRepo := inifile.readBool('global',
       'use_http_proxy_for_repo', False);

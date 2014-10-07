@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.9.3"
+__version__ = "0.9.4"
 
 import common
 import json
@@ -135,6 +135,7 @@ def update_external_repo(waptconfigfile,search_string):
     True
     """
     wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
+    wapt.dbpath = r':memory:'
     wapt.use_hostpackages = False
     repo = wapt.config.get('global','templates_repo_url')
     wapt.repositories[0].repo_url = repo if repo else 'http://wapt.tranquil.it/wapt'
@@ -142,7 +143,6 @@ def update_external_repo(waptconfigfile,search_string):
         wapt.repositories[0].proxies = wapt.proxies
     else:
         wapt.proxies = None
-    wapt.dbpath = r':memory:'
     wapt.update(register=False)
     return wapt.search(search_string)
 
@@ -155,6 +155,7 @@ def get_packages_filenames(waptconfigfile,packages_names):
     """
     result = []
     wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
+    wapt.dbpath = r':memory:'
     wapt.use_hostpackages = False
     # force to use alternate templates repo
     repo = wapt.config.get('global','templates_repo_url')
@@ -163,7 +164,6 @@ def get_packages_filenames(waptconfigfile,packages_names):
         wapt.proxies =  {'http':wapt.config.get('global','http_proxy')}
     else:
         wapt.proxies = None
-    wapt.dbpath = r':memory:'
     # be sure to be up to date
     wapt.update(register=False)
     packages_names = common.ensure_list(packages_names)
@@ -191,6 +191,7 @@ def duplicate_from_external_repo(waptconfigfile,package_filename):
     u'test-wapttestsub,test-7zip'
     """
     wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
+    wapt.dbpath = r':memory:'
     wapt.use_hostpackages = False
 
     prefix = wapt.config.get('global','default_package_prefix','test')
@@ -261,6 +262,7 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
         wapt_server_passwd = getpass.getpass('WAPT Server password :').encode('ascii')
 
     wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
+    wapt.dbpath = r':memory:'
     wapt.use_hostpackages = True
     hosts_list = common.ensure_list(hosts_list)
     append_depends = common.ensure_list(append_depends)
