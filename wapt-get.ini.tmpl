@@ -1,18 +1,16 @@
 [global]
 repo_url=
 dbdir = c:\wapt\db
-allow_unsigned=0
 
-; http_proxy=http://user:pwd@host:port
-;http_proxy=http://srvproxy.tranquilit.local:3128
-
-;repositories=private,tranquilit
 
 ; loglevel : debug info warning critical
 ;loglevel=warning
 
 ; for package development
 ;private_key=c:\tmp\ko.pem
+
+; for waptsetup ksign build
+;private_key_p12=c:\tmp\ko.p12
 
 ; default sources location (
 default_sources_url=
@@ -55,21 +53,37 @@ default_sources_suffix=wapt
 ;   /update_host
 ;   /upload_package
 ;   /upload_host
+; if not present : no waptserver, if empty : use DNS SRV record _waptserver._tcp.mondomaine.local
 ;wapt_server=http://wapt.tranquil.it/waptserver
 
-; for windows task scheduling
+; for windows task scheduling wapt-get 
 ;waptupgrade_task_period=360
 ;waptupgrade_task_maxruntime=360
 
-waptupdate_task_period=30
-waptupdate_task_maxruntime=10
+;waptupdate_task_period=30
+;waptupdate_task_maxruntime=10
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; wapt_service configuration
-wapt_user=admin
-wapt_password=5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
-waptservice_port=8088
+; wapt_service configuration. Use windows security by default
+;wapt_user=admin
+;wapt_password=5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+;waptservice_port=8088
 
+;;;;;;;;;
+; waptexit
+; Enable disable button to cancel upgrade at computer shutdown (waptexit.exe)
+;allow_cancel_upgrade=1
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Proxy enable : 1 / disable : 0
+;http_proxy=http://user:pwd@host_fqdn:port
+;use_http_proxy_for_repo=0
+;use_http_proxy_for_server=0
+;use_http_proxy_for_templates=0
+
+;repositories=private,tranquilit
 
 [private]
 repo_url=http://wapt/wapt

@@ -1759,6 +1759,7 @@ begin
     MainRepoUrl := GetMainWaptRepo;
     WAPTServer := GetWaptServerURL;
     TemplatesRepoUrl := WaptTemplatesRepo;
+    DMPython.PythonEng.ExecString('mywapt.update(register=False)');
   finally
     inifile.Free;
   end;

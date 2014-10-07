@@ -784,7 +784,7 @@ class EWaptCancelled(Exception):
 class WaptBaseDB(object):
     _dbpath = ''
     db = None
-    curr_db_version = '20130523'
+    curr_db_version = None
 
     def __init__(self,dbpath):
         self._db_version = None
@@ -1113,6 +1113,9 @@ PackageKey = namedtuple('package',('packagename','version'))
 
 class WaptDB(WaptBaseDB):
     """Class to manage SQLite database with local installation status"""
+
+    curr_db_version = '20140410'
+
     def initdb(self):
         """Initialize current sqlite db with empty table and return structure version"""
         assert(isinstance(self.db,sqlite3.Connection))

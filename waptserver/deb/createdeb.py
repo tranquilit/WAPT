@@ -147,4 +147,3 @@ print 'création du paquet Deb'
 dpkg_command = 'dpkg-deb --build builddir tis-waptserver-%s-%s.deb'% (wapt_version ,rev)
 os.system(dpkg_command)
 shutil.rmtree("builddir")
-
