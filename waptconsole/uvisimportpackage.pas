@@ -141,7 +141,7 @@ begin
       target := AppLocalDir + 'cache\' + Filename.AsString;
       try
         if not FileExists(target) then
-          Wget(WaptTemplatesRepo + '/' + FileName.AsString,
+          IdWget(WaptTemplatesRepo + '/' + FileName.AsString,
             target, ProgressForm, @updateprogress, UseProxyForTemplates);
       except
         ShowMessage('Téléchargement annulé');

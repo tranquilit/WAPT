@@ -25,14 +25,7 @@ unit waptcommon;
 interface
   uses
      Classes, SysUtils, Windows,
-     DB,sqldb,sqlite3conn,SuperObject,syncobjs,IdComponent;
-
-  const
-    waptservice_port:integer = 8088;
-    waptserver_port:integer = 80;
-    waptserver_ssl_port:integer = 443;
-    zmq_port:integer = 5000;
-
+     DB,sqldb,sqlite3conn,SuperObject,syncobjs,IdComponent,tiscommon;
 
   Function  GetMainWaptRepo:String;
   Function  GetWaptServerURL:String;
@@ -69,6 +62,14 @@ interface
   function WAPTServerJsonGet(action: String;args:Array of const; enableProxy:Boolean= False;user:AnsiString='';password:AnsiString=''): ISuperObject;
   function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject; enableProxy:Boolean= False;user:AnsiString='';password:AnsiString=''): ISuperObject;
   function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString='';timeout:integer=1000):ISuperObject;
+
+  Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy:Boolean=False): boolean;
+  Function IdWget_Try(const fileURL: Utf8String;enableProxy:Boolean=False): boolean;
+  function IdHttpGetString(url: ansistring; enableProxy:Boolean= False;
+      ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString=''):RawByteString;
+  function IdHttpPostData(const UserAgent: ansistring; const url: Ansistring; const Data: RawByteString; enableProxy:Boolean= False;
+     ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString=''):RawByteString;
+
 
   function RunAsAdmin(const Handle: Hwnd; aFile : Ansistring; Params: Ansistring): Boolean;
 
@@ -117,6 +118,11 @@ Type
   end;
 
 const
+  waptservice_port:integer = 8088;
+  waptserver_port:integer = 80;
+  waptserver_ssl_port:integer = 443;
+  zmq_port:integer = 5000;
+
   CacheWaptServerUrl: AnsiString = 'None';
   WaptServerUser: AnsiString ='admin';
   WaptServerPassword: Ansistring ='';
@@ -127,9 +133,9 @@ const
 
 implementation
 
-uses FileUtil, soutils, tiscommon, Variants, winsock, ShellApi, JwaIpHlpApi,
+uses FileUtil, soutils, Variants, winsock, ShellApi, JwaIpHlpApi,
   JwaIpTypes, NetworkAdapterInfo, tisinifiles, registry, tisstrings, JwaWinDNS, JwaWinsock2,
-  IdHttp,IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,Dialogs,Regex,UnitRedirect;
+  IdHttp,IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,Dialogs,Regex,UnitRedirect, IdURI;
 
 function IPV42String(ipv4:LongWord):String;
 begin
@@ -331,6 +337,199 @@ begin
   end;
 end;
 
+procedure IdConfigureProxy(http:TIdHTTP;ProxyUrl:String);
+var
+  url : TIdURI;
+begin
+  url := TIdURI.Create(ProxyUrl);
+  try
+    if ProxyUrl<>'' then
+    begin
+      http.ProxyParams.BasicAuthentication:=url.Username<>'';
+      http.ProxyParams.ProxyUsername:=url.Username;
+      http.ProxyParams.ProxyPassword:=url.Password;
+      http.ProxyParams.ProxyServer:=url.Host;
+      http.ProxyParams.ProxyPort:=StrToInt(url.Port);
+    end
+    else
+    begin
+      http.ProxyParams.BasicAuthentication:=False;
+      http.ProxyParams.ProxyUsername:='';
+      http.ProxyParams.ProxyPassword:='';
+      http.ProxyParams.ProxyServer:='';
+    end;
+  finally
+    url.Free;
+  end;
+end;
+
+type
+  TIdProgressProxy=Class(TComponent)
+  public
+    status:String;
+    current,total:Integer;
+    CBReceiver:TObject;
+    progressCallback:TProgressCallback;
+    procedure OnWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
+    procedure OnWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
+  end;
+
+procedure  TIdProgressProxy.OnWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
+begin
+  total := AWorkCountMax;
+  current := 0;
+  with (ASender as TIdHTTP) do
+  begin
+    if Assigned(progressCallback) then
+      if not progressCallback(CBReceiver,current,total) then
+        raise HTTPException.Create('Download stopped by user',0);
+  end;
+end;
+
+procedure TIdProgressProxy.OnWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
+begin
+  current := AWorkCount;
+  with (ASender as TIdHTTP) do
+  begin
+    if Assigned(progressCallback) then
+      if not progressCallback(CBReceiver,current,total) then
+        raise HTTPException.Create('Download stopped by user',0);
+  end;
+end;
+
+Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy:Boolean=False): boolean;
+var
+  http:TIdHTTP;
+  OutputFile:TFileStream;
+  progress : TIdProgressProxy;
+
+begin
+  http := TIdHTTP.Create;
+  OutputFile :=TFileStream.Create(DestFileName,fmCreate);
+  progress :=  TIdProgressProxy.Create(Nil);
+  progress.progressCallback:=progressCallback;
+  progress.CBReceiver:=CBReceiver;
+  try
+    try
+      //http.ConnectTimeout := ConnectTimeout;
+      if enableProxy then
+        IdConfigureProxy(http,HttpProxy);
+      if Assigned(progressCallback) then
+      begin
+        http.OnWorkBegin:=@progress.OnWorkBegin;
+        http.OnWork:=@progress.OnWork;
+      end;
+
+      http.Get(fileURL,OutputFile);
+      Result := True
+    except
+      on E:EIdReadTimeout do
+      begin
+        Result := False;
+        FreeAndNil(OutputFile);
+        if FileExists(DestFileName) then
+          DeleteFileUTF8(DestFileName);
+      end;
+    end;
+  finally
+    FreeAndNil(progress);
+    if Assigned(OutputFile) then
+      FreeAndNil(OutputFile);
+    http.Free;
+  end;
+end;
+
+Function IdWget_Try(const fileURL: Utf8String; enableProxy:Boolean=False): boolean;
+var
+  http:TIdHTTP;
+begin
+  http := TIdHTTP.Create;
+  try
+    try
+      http.ConnectTimeout := 1000;
+      if enableProxy then
+        IdConfigureProxy(http,HttpProxy);
+      http.Head(fileURL);
+      Result := True
+    except
+      on E:EIdReadTimeout do
+      begin
+        Result := False;
+      end;
+    end;
+  finally
+    http.Free;
+  end;
+end;
+
+
+function IdHttpGetString(url: ansistring; enableProxy:Boolean= False;
+    ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString=''):RawByteString;
+var
+  http:TIdHTTP;
+begin
+  http := TIdHTTP.Create;
+  try
+    try
+      http.ConnectTimeout:=ConnectTimeout;
+      if user <>'' then
+      begin
+        http.Request.BasicAuthentication:=True;
+        http.Request.Username:=user;
+        http.Request.Password:=password;
+      end;
+
+      if enableProxy then
+        IdConfigureProxy(http,HttpProxy);
+
+      Result := http.Get(url);
+
+    except
+      on E:EIdReadTimeout do Result := '';
+    end;
+  finally
+    http.Free;
+  end;
+end;
+
+function IdHttpPostData(const UserAgent: ansistring; const url: Ansistring; const Data: RawByteString; enableProxy:Boolean= False;
+   ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString=''):RawByteString;
+var
+  http:TIdHTTP;
+  DataStream:TStringStream;
+  progress : TIdProgressProxy;
+
+begin
+  http := TIdHTTP.Create;
+  DataStream :=TStringStream.Create(Data);
+  {progress :=  TIdProgressProxy.Create(Nil);
+  progress.progressCallback:=progressCallback;
+  progress.CBReceiver:=CBReceiver;}
+  try
+    try
+      http.ConnectTimeout := ConnectTimeout;
+      if enableProxy then
+        IdConfigureProxy(http,HttpProxy);
+      {if Assigned(progressCallback) then
+      begin
+        http.OnWorkBegin:=@progress.OnWorkBegin;
+        http.OnWork:=@progress.OnWork;
+      end;}
+
+      Result := http.Post(url,DataStream);
+    except
+      on E:EIdReadTimeout do
+        Result := '';
+    end;
+  finally
+    //FreeAndNil(progress);
+    if Assigned(DataStream) then
+      FreeAndNil(DataStream);
+    http.Free;
+  end;
+end;
+
+
 function WAPTServerJsonGet(action: String;args:Array of const; enableProxy:Boolean=False;user:AnsiString='';password:AnsiString=''): ISuperObject;
 var
   strresult : String;
@@ -341,7 +540,7 @@ begin
     action := '/'+action;
   if length(args)>0 then
     action := format(action,args);
-  strresult:=httpGetString(GetWaptServerURL+action, enableProxy,4000,60000,60000,user,password);
+  strresult:=IdhttpGetString(GetWaptServerURL+action, enableProxy,4000,60000,60000,user,password);
   Result := SO(strresult);
 end;
 
@@ -357,25 +556,9 @@ begin
     action := '/'+action;
   if length(args)>0 then
     action := format(action,args);
-  res := httpPostData('wapt', GetWaptServerURL+action, data.AsJson, enableProxy,4000,60000,60000,user,password);
+  res := IdhttpPostData('wapt', GetWaptServerURL+action, data.AsJson, enableProxy,4000,60000,60000,user,password);
   result := SO(res);
 end;
-
-{
-function WAPTLocalJsonGet(action: String;user:AnsiString='';password:AnsiString='';timeout:integer=1000): ISuperObject;
-var
-  strresult : String;
-begin
-  if StrLeft(action,1)<>'/' then
-    action := '/'+action;
-  try
-    strresult := httpGetString(GetWaptLocalURL+action,False,timeout,60000,60000,user,password);
-  except
-    raise;
-  end;
-  Result := SO(strresult);
-end;
-}
 
 function WAPTLocalJsonGet(action: String;user:AnsiString='';password:AnsiString='';timeout:integer=1000): ISuperObject;
 var
@@ -438,7 +621,7 @@ begin
       else
         Result := 'http://'+rec.S['name']+':'+rec.S['port']+'/wapt';
       Logger('trying '+result,INFO);
-      if Wget_try(result,UseProxyForRepo) then
+      if IdWget_try(result,UseProxyForRepo) then
         Exit;
     end;
 
@@ -448,14 +631,14 @@ begin
     begin
       Result := 'http://'+rec.AsString+'/wapt';
       Logger('trying '+result,INFO);
-      if Wget_try(result,UseProxyForRepo) then
+      if IdWget_try(result,UseProxyForRepo) then
         Exit;
     end;
 
     //A wapt
     Result := 'http://wapt.'+dnsdomain+'/wapt';
       Logger('trying '+result,INFO);
-      if Wget_try(result,UseProxyForRepo) then
+      if IdWget_try(result,UseProxyForRepo) then
         Exit;
   end;
   result :='';
@@ -531,7 +714,7 @@ begin
       else
         Result := 'http://'+rec.S['name']+':'+rec.S['port'];
       Logger('trying '+result,INFO);
-      if Wget_try(result,UseProxyForServer) then
+      if IdWget_try(result,UseProxyForServer) then
       begin
         CacheWaptServerUrl := Result;
         exit;
