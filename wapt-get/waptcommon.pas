@@ -402,9 +402,21 @@ var
   http:TIdHTTP;
   OutputFile:TFileStream;
   progress : TIdProgressProxy;
+  ssl: boolean;
+  ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
 
 begin
   http := TIdHTTP.Create;
+
+  ssl := copy(fileURL, 1, length('https://')) = 'https://';
+  if (ssl) then
+  begin
+    ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
+	  HTTP.IOHandler := ssl_handler;
+  end
+  else
+    ssl_handler := Nil;
+
   OutputFile :=TFileStream.Create(DestFileName,fmCreate);
   progress :=  TIdProgressProxy.Create(Nil);
   progress.progressCallback:=progressCallback;
@@ -436,14 +448,30 @@ begin
     if Assigned(OutputFile) then
       FreeAndNil(OutputFile);
     http.Free;
+    if Assigned(ssl_handler) then
+      FreeAndNil(ssl_handler);
   end;
 end;
 
 Function IdWget_Try(const fileURL: Utf8String; enableProxy:Boolean=False): boolean;
 var
   http:TIdHTTP;
+  ssl: boolean;
+  ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
+
 begin
   http := TIdHTTP.Create;
+
+  ssl := copy(fileUrl, 1, length('https://')) = 'https://';
+  if (ssl) then
+  begin
+    ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
+	  HTTP.IOHandler := ssl_handler;
+  end
+  else
+    ssl_handler := Nil;
+
+
   try
     try
       http.ConnectTimeout := 1000;
@@ -459,6 +487,8 @@ begin
     end;
   finally
     http.Free;
+    if Assigned(ssl_handler) then
+      FreeAndNil(ssl_handler);
   end;
 end;
 
@@ -467,8 +497,20 @@ function IdHttpGetString(url: ansistring; enableProxy:Boolean= False;
     ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString=''):RawByteString;
 var
   http:TIdHTTP;
+  ssl: boolean;
+  ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
 begin
   http := TIdHTTP.Create;
+
+  ssl := copy(url, 1, length('https://')) = 'https://';
+  if (ssl) then
+  begin
+    ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
+	  HTTP.IOHandler := ssl_handler;
+  end
+  else
+    ssl_handler := Nil;
+
   try
     try
       http.ConnectTimeout:=ConnectTimeout;
@@ -489,6 +531,8 @@ begin
     end;
   finally
     http.Free;
+    if Assigned(ssl_handler) then
+      FreeAndNil(ssl_handler);
   end;
 end;
 
@@ -498,9 +542,21 @@ var
   http:TIdHTTP;
   DataStream:TStringStream;
   progress : TIdProgressProxy;
+  ssl: boolean;
+  ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
 
 begin
   http := TIdHTTP.Create;
+
+  ssl := copy(url, 1, length('https://')) = 'https://';
+  if (ssl) then
+  begin
+    ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
+	  HTTP.IOHandler := ssl_handler;
+  end
+  else
+    ssl_handler := Nil;
+
   DataStream :=TStringStream.Create(Data);
   {progress :=  TIdProgressProxy.Create(Nil);
   progress.progressCallback:=progressCallback;
@@ -526,6 +582,8 @@ begin
     if Assigned(DataStream) then
       FreeAndNil(DataStream);
     http.Free;
+    if Assigned(ssl_handler) then
+      FreeAndNil(ssl_handler);
   end;
 end;
 
@@ -1263,8 +1321,11 @@ begin
   if (ssl) then
   begin
     ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
-	HTTP.IOHandler := ssl_handler;
-  end;
+	  HTTP.IOHandler := ssl_handler;
+  end
+  else
+    ssl_handler := Nil;
+
   St := TIdMultiPartFormDataStream.Create;
   try
     http.Request.BasicAuthentication:=True;
@@ -1282,8 +1343,8 @@ begin
   finally
     st.Free;
     HTTP.Free;
-    if (ssl) then
-	  ssl_handler.Free;
+    if assigned(ssl_handler) then
+	    ssl_handler.Free;
   end;
 end;
 
