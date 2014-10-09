@@ -13,6 +13,7 @@ db
 lib
 tmp
 trash
+version
 wapt-get.ini
 
 # These are the default patterns globally ignored by Subversion:
