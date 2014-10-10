@@ -682,7 +682,7 @@ end;
 
 procedure TVisWaptGUI.TimerTasksTimer(Sender: TObject);
 begin
-  if HostPages.ActivePage = pgTasks then
+  if (HostPages.ActivePage = pgTasks) and (MainPages.ActivePage=pgInventory) then
     UpdateHostPages(Self);
 end;
 
