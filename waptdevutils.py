@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.9.4"
+__version__ = "0.9.5"
 
 import common
 import json
@@ -163,7 +163,7 @@ def get_packages_filenames(waptconfigfile,packages_names):
     if wapt.use_http_proxy_for_templates:
         wapt.repositories[0].proxies =  {'http':wapt.config.get('global','http_proxy'),'https':wapt.config.get('global','http_proxy')}
     else:
-        wapt.repositories[0].wapt.proxies = {'http':None,'https':None}
+        wapt.repositories[0].proxies = {'http':None,'https':None}
     # be sure to be up to date
     wapt.update(register=False)
     packages_names = common.ensure_list(packages_names)
