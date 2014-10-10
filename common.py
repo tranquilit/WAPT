@@ -747,7 +747,7 @@ def host_ipv4():
     return res
 
 
-def tryurl(url,proxies=None,timeout=0.3,auth=None):
+def tryurl(url,proxies=None,timeout=2,auth=None):
     try:
         logger.debug(u'  trying %s' % url)
         headers = requests.head(url,proxies=proxies,timeout=timeout,auth=auth,verify=False)
@@ -2550,8 +2550,8 @@ class Wapt(object):
             'tray_check_interval':2,
             'service_interval':2,
             'use_hostpackages':'1',
-            'timeout':1.0,
-            'wapt_server_timeout':1.0,
+            'timeout':2.0,
+            'wapt_server_timeout':2.0,
             }
 
         if not self.config:
