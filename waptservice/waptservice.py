@@ -994,9 +994,10 @@ def remove():
 @allow_waptserver_or_local_auth
 def forget():
     package = request.args.get('package')
-    logger.info(u"Forget package %s" % package)
+    packages = package.split(',')
+    logger.info(u"Forget package(s) %s" % packages)
     notify_user = int(request.args.get('notify_user','0')) == 1
-    data = task_manager.add_task(WaptPackageForget(package),notify_user=notify_user).as_dict()
+    data = task_manager.add_task(WaptPackageForget(packages),notify_user=notify_user).as_dict()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -1647,18 +1648,18 @@ class WaptPackageRemove(WaptPackageInstall):
 
 
 class WaptPackageForget(WaptTask):
-    def __init__(self,packagename):
-        super(WaptPackageForget,self).__init__(packagename=packagename)
+    def __init__(self,packagenames):
+        super(WaptPackageForget,self).__init__(packagenames=packagenames)
 
     def _run(self):
-        self.result = self.wapt.forget_packages(self.packagename)
+        self.result = self.wapt.forget_packages(self.packagenames)
         if self.result:
             self.summary = u"Paquets retirés de la base : %s" % (u"\n".join(self.result),)
         else:
             self.summary = u"Aucun paquet retiré de la base"
 
     def __str__(self):
-        return u"Oublier {packagename} (tâche #{id})".format(classname=self.__class__.__name__,id=self.id,packagename=self.packagename)
+        return u"Oublier {packagenames} (tâche #{id})".format(classname=self.__class__.__name__,id=self.id,packagenames=self.packagenames)
 
 
 def firewall_running():

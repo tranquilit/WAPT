@@ -1248,7 +1248,7 @@ end;
 
 procedure TVisWaptGUI.ActForgetPackagesExecute(Sender: TObject);
 var
-  sel, package, res: ISuperObject;
+  sel, package, res, packages : ISuperObject;
 begin
   if GridHostPackages.Focused then
   begin
@@ -1258,17 +1258,17 @@ begin
       GridHosts.FocusedRow.S['host.computer_fqdn'] + ' ?', mtConfirmation, mbYesNoCancel, 0) =
       mrYes then
     begin
+      packages := TSuperObject.Create(stArray);
       for package in sel do
-      begin
-        res := WAPTServerJsonGet(
-          '/forget_packages.json?host=%s&package=%s&uuid=%s',
-          [GridHosts.FocusedRow.S['host.connected_ips'], package.S['package'],
-          GridHosts.FocusedRow.S['uuid']], UseProxyForServer,
-          waptServerUser, waptServerPassword);
-        if res.S['status'] <> 'OK' then
-          ShowMessage(Format('Erreur pour le package %s: %s',
-            [package.S['package'], res.S['message']]));
-      end;
+        packages.AsArray.Add(package.S['package']);
+      res := WAPTServerJsonGet(
+        '/forget_packages.json?host=%s&package=%s&uuid=%s',
+        [GridHosts.FocusedRow.S['host.connected_ips'], Join(',',packages),
+        GridHosts.FocusedRow.S['uuid']], UseProxyForServer,
+        waptServerUser, waptServerPassword);
+      if res.S['status'] <> 'OK' then
+        ShowMessage(Format('Erreur pour le package %s: %s',
+          [package.S['package'], res.S['message']]));
     end;
     UpdateHostPages(Sender);
   end;
