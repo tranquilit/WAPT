@@ -629,7 +629,8 @@ def import_setup(setupfilename,modulename=''):
         mod_name,file_ext = os.path.splitext(os.path.split(setupfilename)[-1])
         if not modulename:
             modulename=mod_name
-        py_mod = imp.load_source(modulename, setupfilename)
+        #py_mod = imp.load_source(modulename, setupfilename)
+        py_mod = import_code(codecs.open(setupfilename,'r').read(), modulename)
         return py_mod
     except Exception as e:
         logger.critical(u'Error importing %s : %s'%(setupfilename,traceback.format_exc()))
@@ -3081,7 +3082,7 @@ class Wapt(object):
 
                 # import the setup module from package file
                 logger.info(u"  sourcing install file %s " % ensure_unicode(setup_filename) )
-                setup = import_setup(setup_filename,'_waptsetup_')
+                setup = import_setup(setup_filename,'__waptsetup__')
                 required_params = []
 
                 # be sure some minimal functions are available in setup module at install step
@@ -3184,6 +3185,8 @@ class Wapt(object):
         finally:
             if 'setup' in dir():
                 del setup
+                if '__waptsetup__' in sys.modules:
+                    del sys.modules['__waptsetup__']
             """
             if old_hdlr:
                 logger.handlers[0] = old_hdlr
@@ -4125,7 +4128,7 @@ class Wapt(object):
                 sys.path = [os.getcwd()] + sys.path
                 logger.debug(u'new sys.path %s' % sys.path)
             logger.debug(u'Sourcing %s' % os.path.join(directoryname,'setup.py'))
-            setup = import_setup(os.path.join(directoryname,'setup.py'),'_waptsetup_')
+            setup = import_setup(os.path.join(directoryname,'setup.py'),'__waptsetup__')
              # be sure some minimal functions are available in setup module at install step
             logger.debug(u'Source import OK')
 
@@ -4201,6 +4204,8 @@ class Wapt(object):
         finally:
             if 'setup' in dir():
                 del setup
+                if '__waptsetup__' in sys.modules:
+                    del sys.modules['__waptsetup__']
             else:
                 logger.critical(u'Unable to read setup.py file')
             sys.path = oldpath
@@ -4383,6 +4388,8 @@ class Wapt(object):
                     # cleanup
                     if 'setup' in dir():
                         del setup
+                        if '__waptsetup__' in sys.modules:
+                            del sys.modules['__waptsetup__']
                     else:
                         logger.critical(u'Unable to read setup.py file.')
                     sys.path = oldpath
@@ -4443,6 +4450,8 @@ class Wapt(object):
         finally:
             if 'setup' in dir():
                 del setup
+                if '__waptsetup__' in sys.modules:
+                    del sys.modules['__waptsetup__']
             else:
                 logger.critical(u'Unable to read setup.py file')
             sys.path = oldpath
