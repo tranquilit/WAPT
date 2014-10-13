@@ -977,6 +977,8 @@ class WaptBaseDB(object):
             raise
 
 class WaptSessionDB(WaptBaseDB):
+    curr_db_version = '20140410'
+
     def __init__(self,username=''):
         super(WaptSessionDB,self).__init__(None)
         if not username:
