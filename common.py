@@ -784,6 +784,7 @@ class EWaptCancelled(Exception):
 
 class WaptBaseDB(object):
     _dbpath = ''
+    _db_version = None
     db = None
     curr_db_version = None
 
@@ -802,6 +803,8 @@ class WaptBaseDB(object):
             self.connect()
 
     def connect(self):
+        if not self.dbpath:
+            return
         if not self.dbpath == ':memory:' and not os.path.isfile(self.dbpath):
             dirname = os.path.dirname(self.dbpath)
             if os.path.isdir (dirname)==False:
@@ -975,11 +978,11 @@ class WaptBaseDB(object):
 
 class WaptSessionDB(WaptBaseDB):
     def __init__(self,username=''):
+        super(WaptSessionDB,self).__init__(None)
         if not username:
             username = setuphelpers.get_current_user()
         self.username = username
         self.dbpath = os.path.join(setuphelpers.application_data(),'wapt','waptsession.sqlite')
-        super(WaptSessionDB,self).__init__(self.dbpath)
 
     def initdb(self):
         """Initialize current sqlite db with empty table and return structure version"""
