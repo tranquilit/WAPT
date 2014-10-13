@@ -22,6 +22,7 @@
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="9"/>
       <RevisionNr Value="5"/>
+      <BuildNr Value="1"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -64,6 +65,7 @@
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
@@ -75,13 +77,10 @@
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="53"/>
         <CursorPos X="68" Y="64"/>
         <UsageCount Value="207"/>
-        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\indy\IdDNSResolver.pas"/>
@@ -262,12 +261,10 @@
       <Unit24>
         <Filename Value="..\..\pltis_superobject\soutils.pas"/>
         <UnitName Value="soutils"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="32"/>
         <CursorPos X="15" Y="39"/>
         <UsageCount Value="13"/>
-        <Loaded Value="True"/>
       </Unit24>
       <Unit25>
         <Filename Value="C:\codetyphon\typhon\lcl\clipbrd.pp"/>
@@ -339,7 +336,6 @@
       <Unit34>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
         <UnitName Value="tiscommon"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="858"/>
         <CursorPos X="1" Y="879"/>
@@ -348,7 +344,6 @@
           <Item0 X="74" Y="472" ID="2"/>
           <Item1 X="74" Y="314" ID="1"/>
         </Bookmarks>
-        <Loaded Value="True"/>
       </Unit34>
       <Unit35>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-base\src\wininet.pp"/>
@@ -437,12 +432,10 @@
       <Unit46>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <UnitName Value="superobject"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2100"/>
         <CursorPos X="1" Y="2117"/>
         <UsageCount Value="13"/>
-        <Loaded Value="True"/>
       </Unit46>
       <Unit47>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\win32\classes.pp"/>
@@ -509,7 +502,7 @@
         <UsageCount Value="8"/>
       </Unit54>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="7" HistoryIndex="6">
       <Position1>
         <Filename Value="waptget.lpr"/>
         <Caret Line="264" Column="1" TopLine="250"/>
@@ -535,101 +528,9 @@
         <Caret Line="189" Column="1" TopLine="170"/>
       </Position6>
       <Position7>
-        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
-        <Caret Line="866" Column="1" TopLine="851"/>
-      </Position7>
-      <Position8>
-        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
-        <Caret Line="867" Column="1" TopLine="851"/>
-      </Position8>
-      <Position9>
-        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
-        <Caret Line="868" Column="1" TopLine="851"/>
-      </Position9>
-      <Position10>
-        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
-        <Caret Line="869" Column="1" TopLine="851"/>
-      </Position10>
-      <Position11>
-        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
-        <Caret Line="870" Column="1" TopLine="851"/>
-      </Position11>
-      <Position12>
-        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
-        <Caret Line="871" Column="1" TopLine="851"/>
-      </Position12>
-      <Position13>
-        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
-        <Caret Line="875" Column="1" TopLine="851"/>
-      </Position13>
-      <Position14>
-        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
-        <Caret Line="876" Column="1" TopLine="858"/>
-      </Position14>
-      <Position15>
-        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
-        <Caret Line="877" Column="1" TopLine="858"/>
-      </Position15>
-      <Position16>
-        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
-        <Caret Line="878" Column="17" TopLine="858"/>
-      </Position16>
-      <Position17>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="474" Column="1" TopLine="435"/>
-      </Position17>
-      <Position18>
         <Filename Value="waptget.lpr"/>
         <Caret Line="189" Column="1" TopLine="170"/>
-      </Position18>
-      <Position19>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="387" Column="21" TopLine="305"/>
-      </Position19>
-      <Position20>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="38" Column="13" TopLine="23"/>
-      </Position20>
-      <Position21>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="337" Column="6" TopLine="322"/>
-      </Position21>
-      <Position22>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="38" Column="13" TopLine="23"/>
-      </Position22>
-      <Position23>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="337" Column="6" TopLine="322"/>
-      </Position23>
-      <Position24>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="525" Column="34" TopLine="503"/>
-      </Position24>
-      <Position25>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="466" Column="12" TopLine="451"/>
-      </Position25>
-      <Position26>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="68" Column="14" TopLine="53"/>
-      </Position26>
-      <Position27>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="466" Column="12" TopLine="451"/>
-      </Position27>
-      <Position28>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="543" Column="16" TopLine="528"/>
-      </Position28>
-      <Position29>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="466" Column="12" TopLine="451"/>
-      </Position29>
-      <Position30>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="69" Column="77" TopLine="53"/>
-      </Position30>
+      </Position7>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
