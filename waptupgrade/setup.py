@@ -180,7 +180,7 @@ def install():
         try:
             res = json.loads(requests.get('http://127.0.0.1:8088/waptservicerestart.json').text)
         except:
-            tmp_bat = tempfile.NamedTemporaryFile(prefix='waptrestart',suffix='.cmd',mode='wt',delee=False)
+            tmp_bat = tempfile.NamedTemporaryFile(prefix='waptrestart',suffix='.cmd',mode='wt',delete=False)
             tmp_bat.write('net stop waptservice\n')
             tmp_bat.write('net start waptservice\n')
             tmp_bat.write('del "%s"\n'%tmp_bat.name)
