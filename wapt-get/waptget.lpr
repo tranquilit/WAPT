@@ -30,7 +30,8 @@ uses
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, CustApp,
   { you can add units after this }
-  Windows, PythonEngine, waptcommon, tiscommon,tisstrings,superobject,soutils,zmqapi,simpleinternet,getopts;
+  Windows, PythonEngine, waptcommon, tiscommon, superobject,
+  soutils, zmqapi;
 type
   { pwaptget }
 

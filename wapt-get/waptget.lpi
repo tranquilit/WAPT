@@ -22,7 +22,7 @@
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="9"/>
       <RevisionNr Value="5"/>
-      <BuildNr Value="1"/>
+      <BuildNr Value="2"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -36,13 +36,11 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="waptupgrade"/>
-        <LaunchingApplication PathPlusParams="\usr\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
     <RequiredPackages Count="6">
       <Item1>
-        <PackageName Value="internettools"/>
+        <PackageName Value="pl_indycomp"/>
       </Item1>
       <Item2>
         <PackageName Value="pltis_delphizmq"/>
@@ -60,7 +58,7 @@
         <PackageName Value="pltis_superobject"/>
       </Item6>
     </RequiredPackages>
-    <Units Count="55">
+    <Units Count="58">
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -68,8 +66,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="36" Y="19"/>
+        <TopLine Value="32"/>
+        <CursorPos X="3" Y="34"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -78,8 +76,8 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="53"/>
-        <CursorPos X="68" Y="64"/>
+        <TopLine Value="13"/>
+        <CursorPos X="48" Y="28"/>
         <UsageCount Value="207"/>
       </Unit1>
       <Unit2>
@@ -496,13 +494,41 @@
       <Unit54>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\getopts.pp"/>
         <UnitName Value="getopts"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="187"/>
-        <CursorPos X="1" Y="204"/>
-        <UsageCount Value="8"/>
+        <TopLine Value="73"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit54>
+      <Unit55>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\pl_indycomp.pas"/>
+        <UnitName Value="pl_indycomp"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="12" Y="22"/>
+        <UsageCount Value="10"/>
+      </Unit55>
+      <Unit56>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdHTTP.pas"/>
+        <UnitName Value="IdHTTP"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="2504"/>
+        <CursorPos X="64" Y="2525"/>
+        <UsageCount Value="10"/>
+      </Unit56>
+      <Unit57>
+        <Filename Value="..\..\pltis_delphizmq\zmqapi.pas"/>
+        <UnitName Value="zmqapi"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="61"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit57>
     </Units>
-    <JumpHistory Count="7" HistoryIndex="6">
+    <JumpHistory Count="16" HistoryIndex="15">
       <Position1>
         <Filename Value="waptget.lpr"/>
         <Caret Line="264" Column="1" TopLine="250"/>
@@ -531,6 +557,42 @@
         <Filename Value="waptget.lpr"/>
         <Caret Line="189" Column="1" TopLine="170"/>
       </Position7>
+      <Position8>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="31" Column="55" TopLine="19"/>
+      </Position8>
+      <Position9>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="235" Column="33" TopLine="143"/>
+      </Position9>
+      <Position10>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="1" Column="1" TopLine="16"/>
+      </Position10>
+      <Position11>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="33" Column="38" TopLine="16"/>
+      </Position11>
+      <Position12>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="543" Column="10" TopLine="528"/>
+      </Position12>
+      <Position13>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="527" Column="10" TopLine="499"/>
+      </Position13>
+      <Position14>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="33" Column="26" TopLine="25"/>
+      </Position14>
+      <Position15>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="34" Column="18" TopLine="25"/>
+      </Position15>
+      <Position16>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="33" Column="49" TopLine="26"/>
+      </Position16>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -543,15 +605,18 @@
       <IncludeFiles Value="$(ProjOutDir)"/>
       <UnitOutputDirectory Value="lib"/>
     </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <SyntaxMode Value="Delphi"/>
+      </SyntaxOptions>
+    </Parsing>
     <CodeGeneration>
-      <Checks>
-        <RangeChecks Value="True"/>
-        <OverflowChecks Value="True"/>
-      </Checks>
+      <SmartLinkUnit Value="True"/>
+      <RelocatableUnit Value="True"/>
+      <SmallerCode Value="True"/>
     </CodeGeneration>
     <Linking>
       <Debugging>
-        <StripSymbols Value="True"/>
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
       <LinkSmart Value="True"/>

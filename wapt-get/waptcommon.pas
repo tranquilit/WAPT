@@ -25,7 +25,7 @@ unit waptcommon;
 interface
   uses
      Classes, SysUtils, Windows,
-     DB,sqldb,sqlite3conn,SuperObject,syncobjs,IdComponent,tiscommon;
+     DB,sqldb,sqlite3conn,SuperObject,syncobjs,IdComponent,tiscommon,tishttp;
 
   Function  GetMainWaptRepo:String;
   Function  GetWaptServerURL:String;
@@ -382,7 +382,7 @@ begin
   begin
     if Assigned(progressCallback) then
       if not progressCallback(CBReceiver,current,total) then
-        raise HTTPException.Create('Download stopped by user',0);
+        raise EHTTPException.Create('Download stopped by user',0);
   end;
 end;
 
@@ -393,7 +393,7 @@ begin
   begin
     if Assigned(progressCallback) then
       if not progressCallback(CBReceiver,current,total) then
-        raise HTTPException.Create('Download stopped by user',0);
+        raise EHTTPException.Create('Download stopped by user',0);
   end;
 end;
 

@@ -17,7 +17,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="2"/>
-      <RevisionNr Value="20"/>
+      <RevisionNr Value="21"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -31,28 +31,31 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="7">
+    <RequiredPackages Count="8">
       <Item1>
-        <PackageName Value="HtmlComp"/>
+        <PackageName Value="pl_indycomp"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_richview"/>
+        <PackageName Value="HtmlComp"/>
       </Item2>
       <Item3>
-        <PackageName Value="pl_rx"/>
+        <PackageName Value="pl_richview"/>
       </Item3>
       <Item4>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pl_rx"/>
       </Item4>
       <Item5>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_utils"/>
       </Item5>
       <Item6>
-        <PackageName Value="pl_luicontrols"/>
+        <PackageName Value="pltis_superobject"/>
       </Item6>
       <Item7>
-        <PackageName Value="LCL"/>
+        <PackageName Value="pl_luicontrols"/>
       </Item7>
+      <Item8>
+        <PackageName Value="LCL"/>
+      </Item8>
     </RequiredPackages>
     <Units Count="6">
       <Unit0>

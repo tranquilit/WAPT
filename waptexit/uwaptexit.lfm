@@ -1,14 +1,14 @@
 object VisWaptExit: TVisWaptExit
   Left = 493
-  Height = 353
+  Height = 266
   Top = 444
-  Width = 558
+  Width = 402
   Anchors = [akTop, akRight]
   AutoSize = True
   BorderStyle = bsDialog
   Caption = 'Lancement des mises à jour...'
-  ClientHeight = 353
-  ClientWidth = 558
+  ClientHeight = 266
+  ClientWidth = 402
   DefaultMonitor = dmDesktop
   FormStyle = fsSystemStayOnTop
   OnCloseQuery = FormCloseQuery
@@ -20,11 +20,11 @@ object VisWaptExit: TVisWaptExit
     Left = 0
     Height = 135
     Top = 0
-    Width = 558
+    Width = 402
     Align = alTop
     BevelOuter = bvNone
     ClientHeight = 135
-    ClientWidth = 558
+    ClientWidth = 402
     Constraints.MinWidth = 395
     TabOrder = 0
     object Label1: TLabel
@@ -132,7 +132,7 @@ object VisWaptExit: TVisWaptExit
       TabOrder = 2
     end
     object Image1: TImage
-      Left = 516
+      Left = 360
       Height = 44
       Top = 4
       Width = 36
@@ -203,11 +203,11 @@ object VisWaptExit: TVisWaptExit
     Left = 0
     Height = 218
     Top = 135
-    Width = 558
+    Width = 402
     Align = alClient
     BevelOuter = bvNone
     ClientHeight = 218
-    ClientWidth = 558
+    ClientWidth = 402
     Constraints.MinHeight = 218
     TabOrder = 1
     Visible = False
@@ -215,7 +215,7 @@ object VisWaptExit: TVisWaptExit
       Left = 0
       Height = 129
       Top = 0
-      Width = 558
+      Width = 402
       Align = alTop
       Lines.Strings = (
         'Memo1'

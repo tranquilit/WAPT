@@ -51,22 +51,10 @@ var
 
 implementation
 
-uses soutils,IdHTTP,IdExceptionCore,IniFiles;
+uses soutils,IniFiles,waptcommon;
 {$R *.lfm}
 
 { TVisWaptExit }
-
-{
-function WAPTLocalJsonGet(action: String;user:AnsiString='';password:AnsiString='';timeout:integer=1000): ISuperObject;
-var
-  strresult : String;
-begin
-  if StrLeft(action,1)<>'/' then
-    action := '/'+action;
-  strresult := retrieve(GetWaptLocalURL+action);
-  Result := SO(strresult);
-end;
-}
 
 const
   waptservice_port:integer = 8088;
@@ -82,37 +70,6 @@ function WaptIniFilename: Utf8String;
 begin
   result := ExtractFilePath(ParamStr(0))+'wapt-get.ini';
 end;
-
-
-function WAPTLocalJsonGet(action: String;user:AnsiString='';password:AnsiString='';timeout:integer=1000): ISuperObject;
-var
-  strresult : String;
-  http:TIdHTTP;
-begin
-  http := TIdHTTP.Create;
-  try
-    try
-      http.ConnectTimeout:=timeout;
-      if user <>'' then
-      begin
-        http.Request.BasicAuthentication:=True;
-        http.Request.Username:=user;
-        http.Request.Password:=password;
-      end;
-
-      if copy(action,length(action),1)<>'/' then
-        action := '/'+action;
-      strresult := http.Get(GetWaptLocalURL+action);
-      Result := SO(strresult);
-
-    except
-      on E:EIdReadTimeout do Result := Nil;
-    end;
-  finally
-    http.Free;
-  end;
-end;
-
 
 procedure TVisWaptExit.ActUpgradeExecute(Sender: TObject);
 var
