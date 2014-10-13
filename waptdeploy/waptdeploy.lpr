@@ -1,7 +1,8 @@
 program waptdeploy;
 {$mode delphiunicode}
 
-uses classes,windows,SysUtils,wininet,URIParser,superobject,shellapi,UnitRedirect;
+uses classes, windows, SysUtils, wininet, URIParser, superobject, shellapi,
+  tishttp;
 
 function GetComputerName : AnsiString;
 var
@@ -157,73 +158,6 @@ begin
   end;
 end;
 
-function wget(const fileURL, DestFileName: AnsiString):boolean;
- const
-   BufferSize = 1024*512;
- var
-   hSession, hURL: HInternet;
-   Buffer: array[1..BufferSize] of Byte;
-   BufferLen: DWORD;
-   f: File;
-   sAppName: Utf8string;
-   Size: Integer;
-   total:DWORD;
-   totalLen:DWORD;
-   dwindex: cardinal;
-   dwcode : array[1..20] of ansichar;
-   dwCodeLen : DWORD;
-   res : PAnsiChar;
-begin
-  result := false;
-  sAppName := ExtractFileName(ParamStr(0)) ;
-  hSession := InternetOpenW(PWideChar(UTF8Decode(sAppName)), INTERNET_OPEN_TYPE_DIRECT, nil, nil, 0) ;
-  try
-    hURL := InternetOpenUrlW(hSession, PWideChar(UTF8Decode(fileURL)), nil, 0, INTERNET_FLAG_RELOAD+INTERNET_FLAG_PRAGMA_NOCACHE+INTERNET_FLAG_KEEP_CONNECTION, 0) ;
-    if assigned(hURL) then
-    try
-      dwIndex  := 0;
-      dwCodeLen := SizeOf(dwcode);
-      totalLen := SizeOf(totalLen);
-      HttpQueryInfo(hURL, HTTP_QUERY_STATUS_CODE, @dwcode, dwcodeLen, dwIndex);
-      HttpQueryInfo(hURL, HTTP_QUERY_CONTENT_LENGTH or HTTP_QUERY_FLAG_NUMBER, @total,totalLen, dwIndex);
-      res := pAnsichar(@dwcode);
-      if (res ='200') or (res ='302') then
-      begin
-        Size:=0;
-        try
-          AssignFile(f, UTF8Decode(DestFileName)) ;
-          try
-            Rewrite(f,1) ;
-            repeat
-              BufferLen:= 0;
-              if InternetReadFile(hURL, @Buffer, SizeOf(Buffer), BufferLen) then
-              begin
-                inc(Size,BufferLen);
-                BlockWrite(f, Buffer, BufferLen);
-              end;
-            until BufferLen = 0;
-          finally
-            CloseFile(f);
-          end;
-
-        except
-          If FileExists(DestFileName) then
-            SysUtils.DeleteFile(DestFileName);
-          raise;
-        end;
-        result := (Size>0);
-      end
-      else
-        raise Exception.Create('Unable to download: "'+fileURL+'", HTTP Status:'+res);
-    finally
-      InternetCloseHandle(hURL)
-    end
-    else
-      raise Exception.Create('Unable to reach: "'+fileURL+'"');
-  finally
-    InternetCloseHandle(hSession)
-  end
-end;
 
 function GetUniqueTempdir(Prefix: AnsiString): AnsiString;
 var
@@ -242,184 +176,6 @@ begin
   until not DirectoryExists(Result);
 end;
 
-// récupère une chaine de caractères en http en utilisant l'API windows
-function httpGetString(url: Ansistring; enableProxy:Boolean= False;
-   ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000):RawByteString;
-var
-  hInet,hFile,hConnect: HINTERNET;
-  buffer: array[1..1024] of byte;
-  flags,bytesRead,dwError : DWORD;
-  pos:integer;
-  dwindex,dwcodelen,dwread,dwNumber: cardinal;
-  dwcode : array[1..20] of ansichar;
-  res    : pansichar;
-  doc,error: AnsiString;
-  uri : TURI;
-
-begin
-  result := '';
-  hInet:=Nil;
-  hConnect := Nil;
-  hFile:=Nil;
-  if enableProxy then
-     hInet := InternetOpen('wapt',INTERNET_OPEN_TYPE_PRECONFIG,nil,nil,0)
-  else
-     hInet := InternetOpen('wapt',INTERNET_OPEN_TYPE_DIRECT,nil,nil,0);
-  try
-    InternetSetOption(hInet,INTERNET_OPTION_CONNECT_TIMEOUT,@ConnectTimeout,sizeof(integer));
-    InternetSetOption(hInet,INTERNET_OPTION_SEND_TIMEOUT,@SendTimeOut,sizeof(integer));
-    InternetSetOption(hInet,INTERNET_OPTION_RECEIVE_TIMEOUT,@ReceiveTimeOut,sizeof(integer));
-    uri := ParseURI(url,'http',80);
-
-    hConnect := InternetConnect(hInet, PAnsiChar(uri.Host), uri.port, nil, nil, INTERNET_SERVICE_HTTP, 0, 0);
-    if not Assigned(hConnect) then
-      Raise Exception.Create('Unable to connect to '+url+' code : '+IntToStr(GetLastError)+' ('+GetWinInetError(GetlastError)+')');
-    flags := INTERNET_FLAG_NO_CACHE_WRITE or INTERNET_FLAG_PRAGMA_NOCACHE or INTERNET_FLAG_RELOAD;
-    if uri.Protocol='https' then
-      flags := flags or INTERNET_FLAG_SECURE;
-    doc := uri.Path+uri.document;
-    if uri.params<>'' then
-      doc:= doc+'?'+uri.Params;
-    hFile := HttpOpenRequest(hConnect, 'GET', PAnsiChar(doc), HTTP_VERSION, nil, nil,flags , 0);
-    if not Assigned(hFile) then
-      Raise Exception.Create('Unable to get doc '+url+' code : '+IntToStr(GetLastError)+' ('+GetWinInetError(GetlastError)+')');
-
-    if not HttpSendRequest(hFile, nil, 0, nil, 0) then
-    begin
-      ErrorCode:=GetLastError;
-      if (ErrorCode = ERROR_INTERNET_INVALID_CA) then
-      begin
-        SetToIgnoreCerticateErrors(hFile, url);
-        if not HttpSendRequest(hFile, nil, 0, nil, 0) then
-          Raise Exception.Create('Unable to send request to '+url+' code : '+IntToStr(GetLastError)+' ('+GetWinInetError(GetlastError)+')');
-      end;
-    end;
-
-    if Assigned(hFile) then
-    try
-      dwIndex  := 0;
-      dwCodeLen := 10;
-      if HttpQueryInfo(hFile, HTTP_QUERY_STATUS_CODE, @dwcode, dwcodeLen, dwIndex) then
-      begin
-        res := pansichar(@dwcode);
-        dwNumber := sizeof(Buffer)-1;
-        if (res ='200') or (res ='302') then
-        begin
-          Result:='';
-          pos:=1;
-          repeat
-            FillChar(buffer,SizeOf(buffer),0);
-            InternetReadFile(hFile,@buffer,SizeOf(buffer),bytesRead);
-            SetLength(Result,Length(result)+bytesRead);
-            Move(Buffer,Result[pos],bytesRead);
-            inc(pos,bytesRead);
-          until bytesRead = 0;
-        end
-        else
-           raise Exception.Create('Unable to download: '+URL+' HTTP Status: '+res);
-      end
-      else
-         raise Exception.Create('Unable to download: '+URL+' code : '+IntToStr(GetLastError)+' ('+GetWinInetError(GetlastError)+')');
-    finally
-      if Assigned(hFile) then
-        InternetCloseHandle(hFile);
-    end
-    else
-       raise Exception.Create('Unable to download: "'+URL+' code : '+IntToStr(GetLastError)+' ('+GetWinInetError(GetlastError)+')');
-
-  finally
-    if Assigned(hConnect) then
-      InternetCloseHandle(hConnect);
-    if Assigned(hInet) then
-      InternetCloseHandle(hInet);
-  end;
-end;
-
-function httpPostData(const UserAgent: ansistring; const url: ansistring; const Data: RawByteString; enableProxy:Boolean= False;
-   ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000):RawByteString;
-var
-  hInet: HINTERNET;
-  hHTTP: HINTERNET;
-  hReq: HINTERNET;
-  uri:TURI;
-  pdata:AnsiString;
-
-  buffer: array[1..1024] of byte;
-  flags,bytesRead,dwError : DWORD;
-  pos:integer;
-  dwindex,dwcodelen,dwread,dwNumber: cardinal;
-  dwcode : array[1..20] of ansichar;
-  res    : pansichar;
-
-  timeout:integer;
-//  doc,error: String;
-//  uri :TIdURI;
-
-
-const
-  wall : WideString = '*/*';
-  accept: packed array[0..1] of LPWSTR = (@wall, nil);
-  header: string = 'Content-Type: application/json';
-begin
-  uri := ParseURI(url);
-  try
-    if enableProxy then
-       hInet := InternetOpen(PAnsiChar(UserAgent),INTERNET_OPEN_TYPE_PRECONFIG,nil,nil,0)
-    else
-         hInet := InternetOpen(PAnsiChar(UserAgent),INTERNET_OPEN_TYPE_DIRECT,nil,nil,0);
-    try
-      InternetSetOption(hInet,INTERNET_OPTION_CONNECT_TIMEOUT,@ConnectTimeout,sizeof(integer));
-      InternetSetOption(hInet,INTERNET_OPTION_SEND_TIMEOUT,@SendTimeOut,sizeof(integer));
-      InternetSetOption(hInet,INTERNET_OPTION_RECEIVE_TIMEOUT,@ReceiveTimeOut,sizeof(integer));
-
-      hHTTP := InternetConnect(hInet, PAnsiChar(uri.Host), uri.Port, PAnsiCHAR(uri.Username),PAnsiCHAR(uri.Password), INTERNET_SERVICE_HTTP, 0, 1);
-      if hHTTP =Nil then
-          Raise Exception.Create('Unable to connect to '+url+' code: '+IntToStr(GetLastError)+' ('+UTF8Encode(GetWinInetError(GetlastError))+')');
-      try
-        hReq := HttpOpenRequest(hHTTP, PAnsiChar('POST'), PAnsiChar(uri.Document), nil, nil, @accept, 0, 1);
-        if hReq=Nil then
-            Raise Exception.Create('Unable to POST to: '+url+' code: '+IntToStr(GetLastError)+' ('+UTF8Encode(GetWinInetError(GetlastError))+')');
-        try
-          pdata := Data;
-          if not HttpSendRequest(hReq, PAnsiChar(header), length(header), PAnsiChar(pdata), length(pdata)) then
-             Raise Exception.Create('Unable to send data to: '+url+' code: '+IntToStr(GetLastError)+' ('+UTF8Encode(GetWinInetError(GetlastError))+')');
-
-          dwIndex  := 0;
-          dwCodeLen := 10;
-          if HttpQueryInfo(hReq, HTTP_QUERY_STATUS_CODE, @dwcode, dwcodeLen, dwIndex) then
-          begin
-            res := pansichar(@dwcode);
-            dwNumber := sizeof(Buffer)-1;
-            if (res ='200') or (res ='302') then
-            begin
-              Result:='';
-              pos:=1;
-              repeat
-                FillChar(buffer,SizeOf(buffer),0);
-                InternetReadFile(hReq,@buffer,SizeOf(buffer),bytesRead);
-                SetLength(Result,Length(result)+bytesRead);
-                Move(Buffer,Result[pos],bytesRead);
-                inc(pos,bytesRead);
-              until bytesRead = 0;
-            end
-            else
-               raise Exception.Create('Unable to get return data for: '+URL+' HTTP Status: '+res);
-          end
-          else
-              Raise Exception.Create('Unable to get http status for: '+url+' code: '+IntToStr(GetLastError)+' ('+UTF8Encode(GetWinInetError(GetlastError))+')');
-
-        finally
-          InternetCloseHandle(hReq);
-        end;
-      finally
-        InternetCloseHandle(hHTTP);
-      end;
-    finally
-      InternetCloseHandle(hInet);
-    end;
-  finally
-  end;
-end;
 
 function StrToken(var S: Ansistring; Separator: AnsiString): Ansistring;
 var
@@ -710,7 +466,7 @@ var
 
 const
   defaultwapt:AnsiString='wapt';
-  minversion:AnsiString='0.8.24';
+  minversion:AnsiString='0.9.5.1';
 
 
 begin
@@ -734,7 +490,7 @@ begin
     requiredVersion := ParamStr(1);
   end;
   writeln('WAPT version: '+localVersion);
-  if requiredVersion='' then
+  if (requiredVersion='') or (requiredVersion='force') then
   begin
     requiredVersion:=minversion;
     try
@@ -750,7 +506,7 @@ begin
       writeln('   required version:'+requiredVersion);
       writeln('   download URL :'+waptsetupurl);
     except
-      requiredVersion:='0.8.24';
+      requiredVersion:=minversion;
       waptsetupurl := 'http://wapt/wapt/waptsetup.exe';
     end;
   end;
@@ -761,7 +517,7 @@ begin
     mkdir(tmpDir);
     waptsetupPath := tmpDir+'\waptsetup.exe';
     Writeln('Wapt setup path: '+waptsetupPath);
-    writeln('Wget new waptsetup');
+    writeln('Wget new waptsetup '+ waptsetupurl);
     wget(waptsetupurl,waptsetupPath);
     getVersion:=GetApplicationVersion(waptsetupPath);
     writeln('Got version: '+getVersion);
