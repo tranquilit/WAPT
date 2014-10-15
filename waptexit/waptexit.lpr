@@ -8,7 +8,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, uwaptexit;
+  Forms, pl_indy, uwaptexit;
 
 {$R *.res}
 

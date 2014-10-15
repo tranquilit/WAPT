@@ -33,7 +33,7 @@
     </RunParams>
     <RequiredPackages Count="8">
       <Item1>
-        <PackageName Value="pl_indycomp"/>
+        <PackageName Value="pl_indy"/>
       </Item1>
       <Item2>
         <PackageName Value="HtmlComp"/>

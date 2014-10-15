@@ -9,12 +9,10 @@
         <Filename Value="waptdeploy.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="42"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
@@ -229,28 +227,7 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="5" HistoryIndex="4">
-      <Position1>
-        <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="5" Column="12" TopLine="1"/>
-      </Position1>
-      <Position2>
-        <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="382" Column="11" TopLine="367"/>
-      </Position2>
-      <Position3>
-        <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="5" Column="7" TopLine="1"/>
-      </Position3>
-      <Position4>
-        <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="5" Column="7" TopLine="1"/>
-      </Position4>
-      <Position5>
-        <Filename Value="waptdeploy.lpr"/>
-        <Caret Line="400" Column="1" TopLine="374"/>
-      </Position5>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectSession>
   <EditorMacros Count="0"/>
 </CONFIG>
