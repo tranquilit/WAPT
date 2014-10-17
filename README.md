@@ -72,9 +72,9 @@ Construire WAPT avec CodeTyphon 4.8
 
 CodeTyphon est un Lazarus accompagné (entre autres) de nombreuses librairies, ce qui facilite la mise en place d'un IDE riche.
 
-* Télécharger codetyphon 4.8 
+* Télécharger codetyphon 4.8 (copie ici : http://wapt.tranquil.it/wapt/mirror/CodeTyphonIns48.zip)
 * Dézipper vers c:\
-* **Vérifier que cygwin n'est pas dans votre PATH global**. Si oui, retirer le au moins temporairement pour la compilation initiale de Codetyphon.
+* **Vérifier que cygwin et git ne sont pas dans votre PATH global**. Si oui, retirer les au moins temporairement pour la compilation initiale de Codetyphon. Il y a des conflits avec sh ou make entre codetyphon et ces outils.
 * Lancer c:\CodeTyphonIns\install.bat
 * Choisir l'option 0
 * Lancer Codetyphon Center
@@ -147,5 +147,5 @@ ou en ligne de commande :
 
 Les paramètres généraux des installeurs sont définis par des #define en tête de fichier.
 
-Si vous ne signez pas les installeur, vous pouvez commenter les lignes #define signtool ..
+Si vous ne signez pas les installeurs, vous pouvez commenter les lignes #define signtool ..
 

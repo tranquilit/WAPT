@@ -629,8 +629,10 @@ def import_setup(setupfilename,modulename=''):
         mod_name,file_ext = os.path.splitext(os.path.split(setupfilename)[-1])
         if not modulename:
             modulename=mod_name
-        #py_mod = imp.load_source(modulename, setupfilename)
-        py_mod = import_code(codecs.open(setupfilename,'r').read(), modulename)
+        # can debug but keep module in memory
+        py_mod = imp.load_source(modulename, setupfilename)
+        # can not debug but memory iis not cumbered with setup.py modules
+        #py_mod = import_code(codecs.open(setupfilename,'r').read(), modulename)
         return py_mod
     except Exception as e:
         logger.critical(u'Error importing %s : %s'%(setupfilename,traceback.format_exc()))
