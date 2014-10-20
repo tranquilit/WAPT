@@ -1,15 +1,18 @@
 #!/bin/bash
 echo "Creating wapt root diretory"
 mkdir -p /var/www/wapt/
+mkdir -p /var/www/waptdev/
 mkdir -p /var/www/wapt-host
 mkdir -p /var/www/wapt-group
 mkdir -p /etc/tis
 
 chown wapt:www-data -R /var/www/wapt/
+chown wapt:www-data -R /var/www/waptdev/
 chown wapt:www-data -R /var/www/wapt-host
 chown wapt:www-data -R /var/www/wapt-group
 
 chmod g+ws /var/www/wapt/
+chmod g+ws /var/www/waptdev/
 chmod g+ws /var/www/wapt-host/
 chmod g+ws /var/www/wapt-group/
 
