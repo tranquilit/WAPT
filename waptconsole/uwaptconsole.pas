@@ -1951,7 +1951,7 @@ begin
           waptServerUser := edUser.Text;
           cred := SO();
           cred.S['username'] := waptServerUser;
-          cred.S['password'] := WaptServerPassword;
+          cred.S['password'] := UTF8Decode(WaptServerPassword);
 
           try
             resp := WAPTServerJsonPost('login', [], cred, UseProxyForServer,
