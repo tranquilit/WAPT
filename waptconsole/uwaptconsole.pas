@@ -231,6 +231,7 @@ type
     procedure ActAddPackageGroupExecute(Sender: TObject);
     procedure ActAdvancedModeExecute(Sender: TObject);
     procedure ActCancelRunningTaskExecute(Sender: TObject);
+    procedure ActCancelRunningTaskUpdate(Sender: TObject);
     procedure ActChangePasswordExecute(Sender: TObject);
     procedure ActCreateCertificateExecute(Sender: TObject);
     procedure ActCreateWaptSetupExecute(Sender: TObject);
@@ -582,6 +583,9 @@ begin
               GridHostTasksErrors.Data := tasksresult['errors'];
             if running <> nil then
             begin
+              if running['description'] <> Nil then
+                 ActCancelRunningTask.Enabled:=True;
+
               HostTaskRunningProgress.Position := running.I['progress'];
               HostRunningTask.Text := running.S['description'];
               if not HostRunningTaskLog.Focused then
@@ -589,6 +593,7 @@ begin
             end
             else
             begin
+              ActCancelRunningTask.Enabled:=False;
               HostTaskRunningProgress.Position := 0;
               HostRunningTask.Text := 'Idle';
               if not HostRunningTaskLog.Focused then
@@ -1010,6 +1015,10 @@ begin
     ShowMessage('Tâche annulée')
   else
     ShowMessage('Impossible d''annuler: ' + res.S['message']);
+end;
+
+procedure TVisWaptGUI.ActCancelRunningTaskUpdate(Sender: TObject);
+begin
 end;
 
 procedure TVisWaptGUI.ActChangePasswordExecute(Sender: TObject);

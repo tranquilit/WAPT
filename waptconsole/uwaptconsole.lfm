@@ -389,9 +389,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 358
         Top = 54
         Width = 572
-        ActivePage = pgPackages
+        ActivePage = pgSoftwares
         Align = alRight
-        TabIndex = 0
+        TabIndex = 2
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -831,11 +831,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgSoftwares: TTabSheet
           Caption = 'Inventaire logiciels'
-          ClientHeight = 370
+          ClientHeight = 332
           ClientWidth = 564
           object GridHostSoftwares: TSOGrid
             Left = 0
-            Height = 340
+            Height = 302
             Top = 30
             Width = 564
             Align = alClient
@@ -952,7 +952,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgTasks: TTabSheet
           Caption = 'Tâches'
-          ClientHeight = 370
+          ClientHeight = 332
           ClientWidth = 564
           object HostTaskRunningProgress: TProgressBar
             Left = 4
@@ -1026,14 +1026,14 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 5
-            Top = 315
+            Top = 277
             Width = 564
             Align = alBottom
             ResizeAnchor = akBottom
           end
           object PageControl1: TPageControl
             Left = 0
-            Height = 213
+            Height = 175
             Top = 102
             Width = 564
             ActivePage = TabSheet1
@@ -1043,11 +1043,11 @@ object VisWaptGUI: TVisWaptGUI
             TabOrder = 3
             object TabSheet1: TTabSheet
               Caption = 'En attente'
-              ClientHeight = 187
+              ClientHeight = 149
               ClientWidth = 556
               object GridHostTasksPending: TSOGrid
                 Left = 0
-                Height = 185
+                Height = 147
                 Top = 2
                 Width = 556
                 Align = alClient
@@ -1444,7 +1444,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel6: TPanel
             Left = 0
             Height = 50
-            Top = 320
+            Top = 282
             Width = 564
             Align = alBottom
             BevelOuter = bvNone
@@ -1484,14 +1484,14 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgGroups: TTabSheet
       Caption = 'Groupes'
-      ClientHeight = 432
+      ClientHeight = 412
       ClientWidth = 792
       object GridGroups: TSOGrid
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Side = asrBottom
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 402
+        Height = 382
         Top = 30
         Width = 792
         OnGetText = GridGroupsGetText
@@ -2421,6 +2421,7 @@ object VisWaptGUI: TVisWaptGUI
             ShortCut = 57379
           end>
         MouseActions = <>
+        MouseTextActions = <>
         MouseSelActions = <>
         Lines.Strings = (
           'import sys'
@@ -2884,8 +2885,10 @@ object VisWaptGUI: TVisWaptGUI
     object ActCancelRunningTask: TAction
       Category = 'Host'
       Caption = 'Annuler tâche en cours'
+      Enabled = False
       ImageIndex = 31
       OnExecute = ActCancelRunningTaskExecute
+      OnUpdate = ActCancelRunningTaskUpdate
     end
     object ActRemoveDepends: TAction
       Category = 'hosts'
