@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="0.9.0"
+__version__="0.9.6"
 
 import os,sys
 try:
@@ -479,8 +479,8 @@ def check_auth(username, password):
 
     user_ok = wapt_user == username
 
-    pass_sha1_ok = wapt_password == hashlib.sha1(password).hexdigest()
-    pass_sha512_ok = wapt_password == hashlib.sha512(password).hexdigest()
+    pass_sha1_ok = wapt_password == hashlib.sha1(password.encode('utf8')).hexdigest()
+    pass_sha512_ok = wapt_password == hashlib.sha512(password.encode('utf8')).hexdigest()
 
     if sha512_crypt.identify(wapt_password):
         pass_sha512_crypt_ok  = sha512_crypt.verify(password, wapt_password)
@@ -953,7 +953,7 @@ def login():
                 if check_auth(d["username"], d["password"]):
                     if "newPass" in d:
                         global wapt_password
-                        wapt_password = hashlib.sha1(d["newPass"]).hexdigest()
+                        wapt_password = hashlib.sha1(d["newPass"].encode('utf8')).hexdigest()
                         rewrite_password(options.configfile, wapt_password)
                         # Graceful reload pour prendre en compte le nouveau mot
                         # mot de passe dans tous les workers uwsgi
@@ -1188,7 +1188,7 @@ def make_httpd_config(wapt_root_dir, wapt_folder):
             '-config', openssl_config,
             '-subj', '/C=/ST=/L=/O=/CN=' + fqdn + '/'
             ], stderr=subprocess.STDOUT)
-            
+
     # write config file
     jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(ap_conf_dir))
     template = jinja_env.get_template(ap_file_name + '.j2')
@@ -1261,7 +1261,7 @@ if __name__ == "__main__":
         install_windows_service()
         sys.exit(0)
 
-    debug=False
+    debug=True
     if debug:
         app.run(host='0.0.0.0',port=30880,debug=False)
     else:
