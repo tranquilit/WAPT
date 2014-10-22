@@ -44,10 +44,11 @@ def replaceAll(file,searchExp,replaceExp):
 def rsync(src,dst,excludes=[]):
     rsync_option = " --exclude '*.pyc' --exclude '.svn' --exclude 'apache-win32' --exclude 'deb' --exclude '.git' --exclude '.gitignore' -aP"
     if excludes:
-        rsync_option = rsync_option + ' '.join("--exclude '%s'" % x for x in excludes)
+        rsync_option = rsync_option + ' '.join(" --exclude '%s'" % x for x in excludes)
     rsync_source = src
     rsync_destination = dst
     rsync_command = '/usr/bin/rsync %s "%s" "%s"'%(rsync_option,rsync_source,rsync_destination)
+    print rsync_command
     os.system(rsync_command)
 
 makepath = os.path.join
@@ -101,7 +102,7 @@ version_file.write(rev)
 version_file.close()
 
 print 'copy waptserver files'
-rsync(source_dir,'./builddir/opt/wapt/',excludes=['**/waptserver/postconf','mongod.exe'])
+rsync(source_dir,'./builddir/opt/wapt/',excludes=['postconf','mongod.exe'])
 for lib in ('requests','iniparse','dns','pefile.py','rocket','pymongo','bson','flask','werkzeug','jinja2','itsdangerous.py','markupsafe', 'dialog.py'):
     rsync(makepath(wapt_source_dir,'lib','site-packages',lib),'./builddir/opt/wapt/lib/site-packages/')
 
