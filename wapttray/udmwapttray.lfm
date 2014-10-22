@@ -183,7 +183,7 @@ object DMWaptTray: TDMWaptTray
     object ActForceRegister: TAction
       Caption = 'Enregistrer l''inventaire de l''ordinateur sur le serveur'
       OnExecute = ActForceRegisterExecute
-      OnUpdate = ActUpdateUpdate
+      OnUpdate = ActForceRegisterUpdate
     end
     object ActSessionSetup: TAction
       Caption = 'Configurer tous les paquets installés pour votre propre session'

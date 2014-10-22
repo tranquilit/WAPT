@@ -28,7 +28,7 @@ uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
-  Forms, Interfaces,
+  Forms,Interfaces,
   uDMWAPTTray;
 
 {$R *.res}

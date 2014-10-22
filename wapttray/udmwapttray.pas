@@ -66,6 +66,7 @@ type
     procedure ActCancelRunningTaskExecute(Sender: TObject);
     procedure ActConfigureExecute(Sender: TObject);
     procedure ActForceRegisterExecute(Sender: TObject);
+    procedure ActForceRegisterUpdate(Sender: TObject);
     procedure ActLaunchWaptConsoleExecute(Sender: TObject);
     procedure ActLaunchWaptConsoleUpdate(Sender: TObject);
     procedure ActLocalInfoExecute(Sender: TObject);
@@ -125,7 +126,8 @@ var
   DMWaptTray: TDMWaptTray;
 
 implementation
-uses LCLIntf,Forms,dialogs,windows,graphics,tiscommon,waptcommon,tisinifiles,soutils,UnitRedirect,tisstrings;
+uses LCLIntf,Forms,dialogs,windows,graphics,tiscommon,
+    waptcommon,tisinifiles,soutils,UnitRedirect,tisstrings,tishttp;
 
 {$R *.lfm}
 
@@ -191,7 +193,7 @@ begin
         tasks := WAPTLocalJsonGet('tasks_status.json','','',200);
         WaptServiceRunning:=True;
     except
-      on HTTPException do
+      on EHTTPException do
       begin
         WaptServiceRunning:=False;
         tasks := Nil;
@@ -318,6 +320,8 @@ begin
 
   notify_user := True;
 
+  ActForceRegister.Visible := waptcommon.GetWaptServerURL <>'';
+
 end;
 
 procedure TDMWaptTray.DataModuleDestroy(Sender: TObject);
@@ -383,6 +387,12 @@ var
   res : ISuperObject;
 begin
   res := WAPTLocalJsonGet('register.json');
+end;
+
+procedure TDMWaptTray.ActForceRegisterUpdate(Sender: TObject);
+begin
+  ActForceRegister.Visible := waptcommon.GetWaptServerURL <>'';
+  (Sender as TAction).Enabled := WaptServiceRunning;
 end;
 
 procedure TDMWaptTray.ActLaunchWaptConsoleExecute(Sender: TObject);

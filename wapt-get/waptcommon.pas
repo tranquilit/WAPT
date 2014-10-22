@@ -752,12 +752,23 @@ begin
     Exit;
   end;
 
-  result := IniReadString(AppIniFilename,'Global','wapt_server');
-  if (Result <> '') then
+  if IniHasKey(AppIniFilename,'Global','wapt_server') then
   begin
-    CacheWaptServerUrl := Result;
-    exit;
+    result := IniReadString(AppIniFilename,'Global','wapt_server');
+    if (Result <> '') then
+    begin
+      CacheWaptServerUrl := Result;
+      exit;
+    end;
+  end
+  else
+  begin
+    // No waptserver at all
+    CacheWaptServerUrl := '';
+    result :='';
+    Exit;
   end;
+
 
   dnsdomain:=GetDNSDomain;
   //dnsserver:=GetDNSServer;

@@ -17,7 +17,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="8"/>
-      <RevisionNr Value="34"/>
+      <RevisionNr Value="35"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Tray Icon" ProductName="WAPT" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -33,22 +33,25 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="5">
+    <RequiredPackages Count="6">
       <Item1>
-        <PackageName Value="pltis_delphizmq"/>
+        <PackageName Value="pl_indy"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pltis_delphizmq"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_utils"/>
       </Item3>
       <Item4>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pltis_superobject"/>
       </Item4>
       <Item5>
-        <PackageName Value="LCL"/>
+        <PackageName Value="FCL"/>
       </Item5>
+      <Item6>
+        <PackageName Value="LCL"/>
+      </Item6>
     </RequiredPackages>
     <Units Count="3">
       <Unit0>
