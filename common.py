@@ -3698,14 +3698,18 @@ class Wapt(object):
                 # check version
                 try:
                     cached = PackageEntry()
-                    cached.load_control_from_wapt(fullpackagepath,calc_md5=False)
+                    cached.load_control_from_wapt(fullpackagepath,calc_md5=True)
                     if entry == cached:
-                        skipped.append(fullpackagepath)
-                        logger.info(u"  Use cached package file from " + fullpackagepath)
-                        skip = True
+                        if entry.md5sum == cached.md5sum:
+                            skipped.append(fullpackagepath)
+                            logger.info(u"  Use cached package file from " + fullpackagepath)
+                            skip = True
+                        else:
+                            logger.critical(u"Cached file MD5 doesn't match MD5 found in packages index. Discarding cached file")
+                            os.remove(fullpackagepath)
                 except Exception,e:
                     # error : reload
-                    logger.debug(u'Cache file %s is corrupted, reloading it' % fullpackagepath )
+                    logger.debug(u'Cache file %s is corrupted, reloading it. Error : %s' % (fullpackagepath,e) )
 
             if not skip:
                 logger.info(u"  Downloading package from %s" % download_url)
