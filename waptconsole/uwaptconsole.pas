@@ -1768,7 +1768,8 @@ begin
     MainRepoUrl := GetMainWaptRepo;
     WAPTServer := GetWaptServerURL;
     TemplatesRepoUrl := WaptTemplatesRepo;
-    DMPython.PythonEng.ExecString('mywapt.update(register=False)');
+    //Lazy loading
+    //DMPython.PythonEng.ExecString('mywapt.update(register=False)');
   finally
     inifile.Free;
   end;
@@ -1810,6 +1811,7 @@ begin
     GridhostInventory.Clear;
     GridHostPackages.Clear;
     GridHostSoftwares.Clear;
+    DMPython.WAPT.update(register:=False);
     MainPagesChange(MainPages);
   end;
 end;
@@ -1993,7 +1995,9 @@ begin
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
   //ActUpdateWaptGetINIExecute(Self);
   if not Login then
-    Halt;
+     Halt
+  else
+     ActPackagesUpdate.Execute;
 
   MainPages.ActivePage := pgInventory;
   MainPagesChange(Sender);

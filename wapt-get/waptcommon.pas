@@ -594,7 +594,7 @@ var
 begin
   if GetWaptServerURL = '' then
     raise Exception.Create('wapt_server is not defined in your '+AppIniFilename+' ini file');
-  if StrLeft(action,1)<>'/' then
+  if (StrLeft(action,1)<>'/') and (StrRight(GetWaptServerURL,1)<>'/') then
     action := '/'+action;
   if length(args)>0 then
     action := format(action,args);
@@ -610,7 +610,7 @@ var
 begin
   if GetWaptServerURL = '' then
     raise Exception.Create('wapt_server is not defined in your '+AppIniFilename+' ini file');
-  if StrLeft(action,1)<>'/' then
+  if (StrLeft(action,1)<>'/') and (StrRight(GetWaptServerURL,1)<>'/') then
     action := '/'+action;
   if length(args)>0 then
     action := format(action,args);

@@ -88,7 +88,10 @@ end;
 procedure TVisImportPackage.ActWAPTLocalConfigExecute(Sender: TObject);
 begin
   if (VisWaptGUI<>Nil) and  VisWaptGUI.EditIniFile then
+  begin
     GridExternalPackages.Clear;
+    ActSearchExternalPackage.Execute;
+  end;
 end;
 
 procedure TVisImportPackage.ActSearchExternalPackageExecute(Sender: TObject);
