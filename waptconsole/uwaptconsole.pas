@@ -79,11 +79,11 @@ type
     cbSearchHost: TCheckBox;
     cbSearchPackages: TCheckBox;
     cbSearchSoftwares: TCheckBox;
-    cbShowLog: TCheckBox;
     cbSearchAll: TCheckBox;
     cbShowHostPackagesSoft: TCheckBox;
     cbShowHostPackagesGroup: TCheckBox;
     cbMaskSystemComponents: TCheckBox;
+    cbShowLog: TCheckBox;
     CheckBoxMaj: TCheckBox;
     CheckBox_error: TCheckBox;
     EdSoftwaresFilter: TEdit;
@@ -132,6 +132,7 @@ type
     Panel11: TPanel;
     Panel12: TPanel;
     Panel2: TPanel;
+    Panel3: TPanel;
     Panel5: TPanel;
     Panel6: TPanel;
     plStatusBar1: TplStatusBar;
@@ -291,6 +292,7 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormShowHint(Sender: TObject; HintInfo: PHintInfo);
     procedure GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
     procedure GridGroupsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
@@ -373,7 +375,7 @@ uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, tisstrings,
   uvisOptionIniFile, dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig,
   uvischangepassword, uvisgroupchoice, uviseditgroup, uviswaptdeploy,
   uvishostsupgrade, uVisAPropos, uVisImportPackage, PythonEngine, Clipbrd,
-  RegExpr, Regex, UnitRedirect;
+  RegExpr, Regex, UnitRedirect,tisinifiles;
 
 {$R *.lfm}
 
@@ -700,8 +702,13 @@ end;
 
 procedure TVisWaptGUI.ActAddGroupExecute(Sender: TObject);
 begin
-  CreateGroup('agroup', ActAdvancedMode.Checked);
-  ActPackagesUpdate.Execute;
+  if IniReadString(AppIniFilename,'Global','default_sources_root')<>'' then
+  begin
+    CreateGroup('agroup', ActAdvancedMode.Checked);
+    ActPackagesUpdate.Execute;
+  end
+  else
+    ShowMessage('Veullez définir un répertoire de développement pour pouvoir éditer un paquet groupe');
 end;
 
 procedure TVisWaptGUI.actQuitExecute(Sender: TObject);
@@ -736,14 +743,19 @@ var
 begin
   if GridPackages.FocusedNode <> nil then
   begin
-    Selpackage := format('%s(=%s)', [GridPackages.GetCellStrValue(
-      GridPackages.FocusedNode, 'package'), GridPackages.GetCellStrValue(
-      GridPackages.FocusedNode, 'version')]);
-    res := DMPython.RunJSON(format('mywapt.edit_package("%s")', [SelPackage]));
-    DMPython.RunJSON(format('waptdevutils.wapt_sources_edit(r"%s")', [res.S['target']]));
-    //if EditPackage(Selpackage, ActAdvancedMode.Checked) <> nil then
-    //  ActPackagesUpdate.Execute;
-  end;
+    if IniReadString(AppIniFilename,'Global','default_sources_root')<>'' then
+    begin
+      Selpackage := format('%s(=%s)', [GridPackages.GetCellStrValue(
+        GridPackages.FocusedNode, 'package'), GridPackages.GetCellStrValue(
+        GridPackages.FocusedNode, 'version')]);
+      res := DMPython.RunJSON(format('mywapt.edit_package("%s")', [SelPackage]));
+      DMPython.RunJSON(format('waptdevutils.wapt_sources_edit(r"%s")', [res.S['target']]));
+      //if EditPackage(Selpackage, ActAdvancedMode.Checked) <> nil then
+      //  ActPackagesUpdate.Execute;
+    end
+    else
+      ShowMessage('Veullez définir un répertoire de développement pour pouvoir éditer le paquet');
+  end
 end;
 
 procedure TVisWaptGUI.ActEditpackageUpdate(Sender: TObject);
@@ -2008,6 +2020,10 @@ begin
   GridHostPackages.LoadSettingsFromIni(Appuserinipath);
   GridHostSoftwares.LoadSettingsFromIni(Appuserinipath);
 
+end;
+
+procedure TVisWaptGUI.FormShowHint(Sender: TObject; HintInfo: PHintInfo);
+begin
 end;
 
 procedure TVisWaptGUI.GridGroupsColumnDblClick(Sender: TBaseVirtualTree;

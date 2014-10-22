@@ -191,6 +191,8 @@ begin
       IsNewPackage := True;
       PackageRequest := packagename;
       EdSection.ItemIndex := 4;
+      EdVersion.Enabled:=advancedMode;
+      EdVersion.ReadOnly:=not advancedMode;
       if ShowModal = mrOk then
         Result := PackageEdited
       else
@@ -212,6 +214,9 @@ begin
       IsNewPackage := True;
       PackageRequest := packagename;
       EdSection.ItemIndex := 4;
+      ActBUApply.Visible:=False;
+      EdVersion.Enabled:=advancedMode;
+      EdVersion.ReadOnly:=not advancedMode;
       if ShowModal = mrOk then
         Result := PackageEdited
       else
@@ -231,6 +236,8 @@ begin
       isAdvancedMode := advancedMode;
       PackageRequest := hostname;
       Caption:='Editer la machine';
+      EdVersion.Enabled:=advancedMode;
+      EdVersion.ReadOnly:=not advancedMode;
       ActBUApply.Enabled:=currentip<>'';
       if ShowModal = mrOk then
       begin
@@ -260,6 +267,8 @@ begin
       isGroup := True;
       isAdvancedMode := advancedMode;
       PackageRequest := group;
+      EdVersion.Enabled:=advancedMode;
+      EdVersion.ReadOnly:=not advancedMode;
 
       Caption:='Editer le groupe';
       EdPackage.EditLabel.Caption := 'Groupe';
@@ -417,22 +426,39 @@ begin
   AddDepends(Sender);
 end;
 
+procedure RemoveString(List:ISuperObject;St:string);
+var
+  i:Integer;
+  it:ISuperObject;
+begin
+  if List <>Nil then
+    for i :=0 to List.AsArray.Length-1 do
+    begin
+      it := List.AsArray[i];
+      if (it.DataType=stString) and (it.AsString=St) then
+      begin
+        List.AsArray.Delete(i);
+        Exit;
+      end;
+    end;
+end;
+
 procedure TVisEditPackage.AddDepends(Sender: TObject);
 var
-  i: integer;
-  sel: TNodeArray;
-  olddepends: ISuperObject;
+  row,olddepends,oldconflicts: ISuperObject;
   package: string;
 begin
   olddepends := Split(Depends, ',');
-  sel := GridPackages.GetSortedSelection(False);
-  for i := 0 to length(sel) - 1 do
+  oldconflicts := Split(Conflicts, ',');
+  for row in GridPackages.SelectedRows do
   begin
-    package := GridPackages.GetCellStrValue(sel[i], 'package');
+    package := row.S['package'];
     if not StrIn(package, olddepends) then
       olddepends.AsArray.Add(package);
+    RemoveString(oldconflicts,package);
   end;
   Depends := soutils.Join(',', olddepends);
+  Conflicts := soutils.Join(',', oldconflicts);
 end;
 
 procedure TVisEditPackage.GridDependsDragOver(Sender: TBaseVirtualTree;
@@ -662,20 +688,20 @@ end;
 
 procedure TVisEditPackage.AddConflicts(Sender: TObject);
 var
-  i: integer;
-  sel: TNodeArray;
-  oldconflicts: ISuperObject;
+  row,olddepends,oldconflicts: ISuperObject;
   package: string;
 begin
+  olddepends := Split(Depends, ',');
   oldconflicts := Split(Conflicts, ',');
-  sel := GridPackages.GetSortedSelection(False);
-  for i := 0 to length(sel) - 1 do
+  for row in GridPackages.SelectedRows do
   begin
-    package := GridPackages.GetCellStrValue(sel[i], 'package');
-    if not StrIn(package, oldConflicts) then
-      oldConflicts.AsArray.Add(package);
+    package := row.S['package'];
+    if not StrIn(package, oldconflicts) then
+      oldconflicts.AsArray.Add(package);
+    RemoveString(olddepends,package);
   end;
-  Conflicts := soutils.Join(',', oldConflicts);
+  Depends := soutils.Join(',', olddepends);
+  Conflicts := soutils.Join(',', oldconflicts);
 end;
 
 
@@ -803,19 +829,22 @@ procedure TVisEditPackage.SetDepends(AValue: string);
 var
   dependencies: ISuperObject;
 begin
-  if AValue = '' then
-    Exit;
   FDepends := AValue;
-  dependencies := DMPython.RunJSON(
-    format('mywapt.get_package_entries("%s")', [FDepends]));
-  GridDepends.Data := dependencies['packages'];
-  GridDepends.Header.AutoFitColumns(False);
-  if dependencies['missing'].AsArray.Length > 0 then
+  if FDepends<>'' then
   begin
-    ShowMessageFmt('Attention, les paquets %s ont été ignorés car introuvables',
-      [dependencies.S['missing']]);
-    GridDependsUpdated := True;
-  end;
+    dependencies := DMPython.RunJSON(
+      format('mywapt.get_package_entries("%s")', [FDepends]));
+    GridDepends.Data := dependencies['packages'];
+    GridDepends.Header.AutoFitColumns(False);
+    if dependencies['missing'].AsArray.Length > 0 then
+    begin
+      ShowMessageFmt('Attention, les paquets %s ont été ignorés car introuvables',
+        [dependencies.S['missing']]);
+      GridDependsUpdated := True;
+    end;
+  end
+  else
+    GridDepends.Data := Nil;
   FIsUpdated := True;
 end;
 
@@ -823,19 +852,22 @@ procedure TVisEditPackage.SetConflicts(AValue: string);
 var
   aconflicts: ISuperObject;
 begin
-  if AValue = '' then
-    Exit;
   FConflicts := AValue;
-  aconflicts := DMPython.RunJSON(
-    format('mywapt.get_package_entries("%s")', [FConflicts]));
-  GridConflicts.Data := aconflicts['packages'];
-  GridConflicts.Header.AutoFitColumns(False);
-  if aconflicts['missing'].AsArray.Length > 0 then
+  if FConflicts<>'' then
   begin
-    ShowMessageFmt('Attention, les paquets %s ont été ignorés des paquets interdits car introuvables',
-      [aconflicts.S['missing']]);
-    GridConflictsUpdated := True;
-  end;
+    aconflicts := DMPython.RunJSON(
+      format('mywapt.get_package_entries("%s")', [FConflicts]));
+    GridConflicts.Data := aconflicts['packages'];
+    GridConflicts.Header.AutoFitColumns(False);
+    if aconflicts['missing'].AsArray.Length > 0 then
+    begin
+      ShowMessageFmt('Attention, les paquets %s ont été ignorés des paquets interdits car introuvables',
+        [aconflicts.S['missing']]);
+      GridConflictsUpdated := True;
+    end
+  end
+  else
+    GridConflicts.Data := Nil;
   FIsUpdated := True;
 end;
 

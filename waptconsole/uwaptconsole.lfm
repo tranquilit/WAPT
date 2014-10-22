@@ -17,6 +17,7 @@ object VisWaptGUI: TVisWaptGUI
   OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
+  OnShowHint = FormShowHint
   Position = poDefault
   ShowHint = True
   LCLVersion = '1.3'
@@ -389,9 +390,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 358
         Top = 54
         Width = 572
-        ActivePage = pgSoftwares
+        ActivePage = pgPackages
         Align = alRight
-        TabIndex = 2
+        TabIndex = 0
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -2558,10 +2559,10 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Panel7'
       ClientHeight = 116
       ClientWidth = 798
-      TabOrder = 1
+      TabOrder = 0
       object MemoLog: TMemo
         Left = 0
-        Height = 116
+        Height = 100
         Top = 0
         Width = 187
         Align = alClient
@@ -2572,7 +2573,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object jsonlog: TVirtualJSONInspector
         Left = 192
-        Height = 116
+        Height = 100
         Top = 0
         Width = 606
         PropertyDefs = <>
@@ -2600,22 +2601,33 @@ object VisWaptGUI: TVisWaptGUI
       end
       object Splitter2: TSplitter
         Left = 187
-        Height = 116
+        Height = 100
         Top = 0
         Width = 5
         Align = alRight
         ResizeAnchor = akRight
       end
-    end
-    object cbShowLog: TCheckBox
-      Left = 4
-      Height = 17
-      Top = 73
-      Width = 136
-      Anchors = [akLeft, akBottom]
-      Caption = 'Voir infos de débuggage'
-      OnClick = cbShowLogClick
-      TabOrder = 0
+      object Panel3: TPanel
+        Left = 0
+        Height = 16
+        Top = 100
+        Width = 798
+        Align = alBottom
+        BevelOuter = bvNone
+        ClientHeight = 16
+        ClientWidth = 798
+        TabOrder = 3
+        object cbShowLog: TCheckBox
+          Left = 6
+          Height = 17
+          Top = 0
+          Width = 136
+          Anchors = [akRight, akBottom]
+          Caption = 'Voir infos de débuggage'
+          OnClick = cbShowLogClick
+          TabOrder = 0
+        end
+      end
     end
   end
   object Splitter1: TSplitter
@@ -2642,14 +2654,15 @@ object VisWaptGUI: TVisWaptGUI
     Width = 800
     Panels = <    
       item
-        Width = 50
+        Width = 200
       end>
     SimplePanel = False
     object ProgressBar1: TProgressBar
-      Left = 0
-      Height = 20
-      Top = 0
-      Width = 204
+      Left = 512
+      Height = 16
+      Top = 3
+      Width = 264
+      Anchors = [akTop, akRight]
       TabOrder = 0
     end
   end
