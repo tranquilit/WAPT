@@ -828,14 +828,18 @@ def main():
                     print u"Removed files : \n%s" % "\n".join(["  %s" % p for p in result])
 
             elif action == 'register':
-                result = mywapt.register_computer(
-                    description=(" ".join(args[1:])).decode(sys.getfilesystemencoding()),
-                    )
-                if options.json_output:
-                    jsonresult['result'] = result
+                if mywapt.waptserver:
+                    result = mywapt.register_computer(
+                        description=(" ".join(args[1:])).decode(sys.getfilesystemencoding()),
+                        )
+                    if options.json_output:
+                        jsonresult['result'] = result
+                    else:
+                        logger.debug(u"Registering host info against server: %s", result)
+                        print u"Host correctly registered against server %s." % (mywapt.waptserver.server_url,)
                 else:
-                    logger.debug(u"Registering host info against server: %s", result)
-                    print u"Host correctly registered against server."
+                    print u"No waptserver defined. Register unavailable"
+                    sys.exit(1)
 
             elif action == 'setlocalpassword':
                 if len(args)>=2:
@@ -855,12 +859,15 @@ def main():
                     print u"Local auth password set successfully"
 
             elif action == 'update-status':
-                result = mywapt.update_server_status()
-                if options.json_output:
-                    jsonresult['result'] = result
+                if mywapt.waptserver:
+                    result = mywapt.update_server_status()
+                    if options.json_output:
+                        jsonresult['result'] = result
+                    else:
+                        logger.debug(u"Inventory sent to server: %s", result)
+                        print u"Inventory correctly sent to server %s." % (mywapt.waptserver.server_url,)
                 else:
-                    logger.debug(u"Inventory sent to server: %s", result)
-                    print u"Inventory correctly sent to server."
+                    print u"No waptserver defined. Update of status unavailable"
 
             elif action == 'inventory':
                 if options.json_output:

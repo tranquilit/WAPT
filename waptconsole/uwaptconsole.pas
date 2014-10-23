@@ -2005,7 +2005,6 @@ begin
   MemoLog.Clear;
   DMPython.WaptConfigFileName := AppIniFilename;
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
-  //ActUpdateWaptGetINIExecute(Self);
   if not Login then
      Halt
   else
@@ -2029,20 +2028,6 @@ end;
 procedure TVisWaptGUI.GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
 begin
-  {if GridGroups.Focused and (Shift=[ssLeft]) then
-  begin
-    N := GridGroups.GetFirstSelected;
-    selgroup := GridGroups.GetCellStrValue(N, 'package');
-    if selgroup<>'' then
-      with TVisEditGroup.Create(self) do
-      try
-        group := selgroup;
-        if ShowModal = mrOk then
-          ActSearchGroups.Execute;
-      finally
-        Free;
-      end;
-  end;}
   ActEditGroup.Execute;
 end;
 
@@ -2050,7 +2035,6 @@ procedure TVisWaptGUI.GridGroupsGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
   TextType: TVSTTextType; var CellText: string);
 begin
-
   if ((Sender as TSOGrid).Header.Columns[Column] as TSOGridColumn).PropertyName =
     'depends' then
     StrReplace(CellText, ',', #13#10, [rfReplaceAll]);
@@ -2060,7 +2044,6 @@ procedure TVisWaptGUI.GridGroupsInitNode(Sender: TBaseVirtualTree;
   ParentNode, Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
 begin
   InitialStates := InitialStates + [ivsMultiline];
-
 end;
 
 procedure TVisWaptGUI.GridGroupsMeasureItem(Sender: TBaseVirtualTree;

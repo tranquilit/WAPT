@@ -17,7 +17,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="2"/>
-      <RevisionNr Value="21"/>
+      <RevisionNr Value="22"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">

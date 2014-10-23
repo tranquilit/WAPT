@@ -2542,7 +2542,6 @@ class Wapt(object):
             'repo_url':'',
             'templates_repo_url':'',
             'private_key':'',
-            'wapt_server':'',
             'loglevel':'warning',
             'default_package_prefix':'tis',
             'default_sources_suffix':'wapt',
@@ -5530,7 +5529,7 @@ Version = setuphelpers.Version  # obsolete
 
 if __name__ == '__main__':
     wapt = Wapt(config_filename=r'C:\tranquilit\wapt\wapt-get.ini')
-    wapt.update()
+    wapt.register_computer()
     sys.exit(1)
 
 

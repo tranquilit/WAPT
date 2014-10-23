@@ -407,6 +407,7 @@ var
 
 begin
   http := TIdHTTP.Create;
+  http.HandleRedirects:=True;
 
   ssl := copy(fileURL, 1, length('https://')) = 'https://';
   if (ssl) then
@@ -461,6 +462,7 @@ var
 
 begin
   http := TIdHTTP.Create;
+  http.HandleRedirects:=True;
 
   ssl := copy(fileUrl, 1, length('https://')) = 'https://';
   if (ssl) then
@@ -501,6 +503,7 @@ var
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
 begin
   http := TIdHTTP.Create;
+  http.HandleRedirects:=True;
 
   ssl := copy(url, 1, length('https://')) = 'https://';
   if (ssl) then
@@ -547,6 +550,7 @@ var
 
 begin
   http := TIdHTTP.Create;
+  http.HandleRedirects:=True;
 
   ssl := copy(url, 1, length('https://')) = 'https://';
   if (ssl) then
