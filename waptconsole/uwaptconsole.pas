@@ -855,7 +855,7 @@ begin
             Start;
             Application.ProcessMessages;
             waptsetupPath := CreateWaptSetup(fnPublicCert.FileName,
-              edRepoUrl.Text, GetWaptServerURL, fnWaptDirectory.Directory, edOrgName.Text, @DoProgress);
+              edRepoUrl.Text, GetWaptServerURL, fnWaptDirectory.Directory, edOrgName.Text, @DoProgress, 'waptagent');
             Finish;
             if FileExists(waptsetupPath) then
               try

@@ -467,7 +467,7 @@ begin
     ProgressTitle('Création en cours');
     Start;
     Application.ProcessMessages;
-    waptsetupPath := CreateWaptSetup(fnPublicCert.FileName, edRepoUrl.Text, edWaptServerUrl1.Text,fnWaptDirectory.Directory,edOrganization.Text,@DoProgress);
+    waptsetupPath := CreateWaptSetup(fnPublicCert.FileName, edRepoUrl.Text, edWaptServerUrl1.Text,fnWaptDirectory.Directory,edOrganization.Text,@DoProgress, 'waptagent');
     Finish;
     if FileExists(waptsetupPath) then
     try
