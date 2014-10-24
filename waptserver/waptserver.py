@@ -592,7 +592,7 @@ def upload_waptsetup():
     try:
         if request.method == 'POST':
             file = request.files['file']
-            if file and "waptsetup.exe" in file.filename :
+            if file and ("waptsetup.exe" in file.filename or "waptagent.exe" in file.filename):
                 filename = secure_filename(file.filename)
                 tmp_target = os.path.join(wapt_folder, secure_filename('.'+filename))
                 target = os.path.join(wapt_folder, secure_filename(filename))
