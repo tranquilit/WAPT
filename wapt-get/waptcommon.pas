@@ -89,7 +89,7 @@ interface
       user:AnsiString='';password:AnsiString='';OnHTTPWork:TWorkEvent=Nil):ISuperObject;
 
   function CreateWaptSetup(default_public_cert:String='';default_repo_url:String='';
-            default_wapt_server:String='';destination:String='';company:String='';OnProgress:TNotifyEvent = Nil):String;
+            default_wapt_server:String='';destination:String='';company:String='';OnProgress:TNotifyEvent = Nil;OverrideBaseName:String=''):String;
 
 Type
   TFormatHook = Function(Dataset:TDataset;Data,FN:Utf8String):UTF8String of object;
@@ -1405,7 +1405,7 @@ begin
 end;
 
 function CreateWaptSetup(default_public_cert:String='';default_repo_url:String='';
-          default_wapt_server:String='';destination:String='';company:String='';OnProgress:TNotifyEvent = Nil):String;
+          default_wapt_server:String='';destination:String='';company:String='';OnProgress:TNotifyEvent = Nil;OverrideBaseName:String=''):String;
 var
   OutputFile,iss_template,custom_iss,source,target,outputname,junk : String;
   iss,new_iss,line : ISuperObject;
@@ -1435,13 +1435,21 @@ begin
             new_iss.AsArray.Add(format('#define output_dir "%s"' ,[destination]))
         else if startswith(line,'WizardImageFile=') then
 
+        else if startswith(line,'OutputBaseFilename') then
+            begin
+                if length(OverrideBaseName) <> 0 then
+                    outputname := OverrideBaseName
+                else
+                    StrSplit(line.AsString,'=',outputname,junk)
+                ;
+                outputfile := wapt_base_dir + '\' + 'waptsetup' + '\' + outputname + '.exe';
+                new_iss.AsArray.Add(format('OutputBaseFilename=%s' ,[outputname]));
+            end
         else if not startswith(line,'#define signtool') then
-            new_iss.AsArray.Add(line);
-
-        if startswith(line,'OutputBaseFilename') then
-            StrSplit(line.AsString,'=',outputname,junk);
-            outputfile := wapt_base_dir + '\' + 'waptsetup' + '\' + outputname + '.exe';
+            new_iss.AsArray.Add(line)
+        ;
     end;
+
     source := default_public_cert;
     target := ExtractFileDir(iss_template) + '..' + 'ssl' + ExtractFileName(source);
     if not FileExists(target) then
@@ -1453,7 +1461,7 @@ begin
     if not FileExists(inno_fn) then
         raise Exception.CreateFmt('Innosetup n''est pas disponible (emplacement %s), veuillez l''installer',[inno_fn]);
     Sto_RedirectedExecute(format('"%s"  %s',[inno_fn,custom_iss]),'',3600000,'','','',OnProgress);
-    Result := destination + '\waptsetup.exe';
+    Result := destination + '\' + outputname + '.exe';
 end;
 
 
