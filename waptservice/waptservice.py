@@ -19,11 +19,12 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.9.5"
+__version__ = "0.9.6"
 
 import time
 import sys
 import os
+import types
 
 try:
     wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
@@ -453,50 +454,53 @@ def check_auth(logon_name, password):
     """This function is called to check if a username /
     password combination is valid.
     """
-    if len(logon_name) ==0 or len(password)==0:
-        return False
-    domain = ''
-    if logon_name.count('\\') > 1 or logon_name.count('@') > 1  or (logon_name.count('\\') == 1 and logon_name.count('@')==1)  :
-        logger.debug("malformed logon credential : %s "% logon_name)
-        return False
+    if app.waptconfig.waptservice_password != 'NOPASSWORD':
+        if len(logon_name) ==0 or len(password)==0:
+            return False
+        domain = ''
+        if logon_name.count('\\') > 1 or logon_name.count('@') > 1  or (logon_name.count('\\') == 1 and logon_name.count('@')==1)  :
+            logger.debug("malformed logon credential : %s "% logon_name)
+            return False
 
-    if '\\' in logon_name:
-        domain = logon_name.split('\\')[0]
-        username = logon_name.split('\\')[1]
-    elif '@' in logon_name:
-        username = logon_name.split('@')[0]
-        domain = logon_name.split('@')[1]
-    else:
-        username = logon_name
-    logger.debug("authentification for %s\\%s " % (domain,username))
+        if '\\' in logon_name:
+            domain = logon_name.split('\\')[0]
+            username = logon_name.split('\\')[1]
+        elif '@' in logon_name:
+            username = logon_name.split('@')[0]
+            domain = logon_name.split('@')[1]
+        else:
+            username = logon_name
+        logger.debug("authentification for %s\\%s " % (domain,username))
 
-    try:
-        huser = win32security.LogonUser (
-            username,
-            domain,
-            password,
-        win32security.LOGON32_LOGON_NETWORK,
-        win32security.LOGON32_PROVIDER_DEFAULT
-        )
-        #check if user is domain admins ou member of waptselfservice admin
         try:
-            domain_admins_group_name = common.get_domain_admins_group_name()
-            if common.check_is_member_of(huser,domain_admins_group_name):
+            huser = win32security.LogonUser (
+                username,
+                domain,
+                password,
+            win32security.LOGON32_LOGON_NETWORK,
+            win32security.LOGON32_PROVIDER_DEFAULT
+            )
+            #check if user is domain admins ou member of waptselfservice admin
+            try:
+                domain_admins_group_name = common.get_domain_admins_group_name()
+                if common.check_is_member_of(huser,domain_admins_group_name):
+                    return True
+                if common.check_is_member_of(huser,'waptselfservice'):
+                    return True
+            except:
+                pass
+            local_admins_group_name = common.get_local_admins_group_name()
+            if common.check_is_member_of(huser,local_admins_group_name):
                 return True
-            if common.check_is_member_of(huser,'waptselfservice'):
-                return True
-        except:
-            pass
-        local_admins_group_name = common.get_local_admins_group_name()
-        if common.check_is_member_of(huser,local_admins_group_name):
-            return True
 
-    except win32security.error:
-        if app.waptconfig.waptservice_password:
-            logger.debug('auth using wapt local account')
-            return app.waptconfig.waptservice_user == username and app.waptconfig.waptservice_password == hashlib.sha256(password).hexdigest()
+        except win32security.error:
+            if app.waptconfig.waptservice_password:
+                logger.debug('auth using wapt local account')
+                return app.waptconfig.waptservice_user == username and app.waptconfig.waptservice_password == hashlib.sha256(password).hexdigest()
+        else:
+            return False
     else:
-        return False
+        return True
 
 def allow_waptserver_or_local_auth(f):
     """Restrict access to localhost authenticated or waptserver IP"""
@@ -709,6 +713,12 @@ def get_runstatus():
         except Exception as e:
             logger.critical(u"*********** error " + setuphelpers.ensure_unicode(e))
     return Response(common.jsondump(data), mimetype='application/json')
+
+@app.route('/check_ssl')
+@allow_waptserver_or_local_unauth
+def check_ssk():
+    data = common.jsondump(request.input_stream._sock.getpeercert(binary_form=False))
+    return Response(data, mimetype='application/json')
 
 
 @app.route('/checkupgrades')
@@ -2087,20 +2097,45 @@ if __name__ == "__main__":
     task_manager.daemon = True
     task_manager.start()
 
-    #logger.setLevel(logging.DEBUG)
-    server = Rocket(
-        [('0.0.0.0', waptconfig.waptservice_port),
-         ('0.0.0.0', waptconfig.waptservice_port+1,
-                        os.path.join(wapt_root_dir,r'waptservice','ssl','waptservice.pem'),
-                        os.path.join(wapt_root_dir,r'waptservice','ssl','waptservice.crt'))],
-         'wsgi', {"wsgi_app":app})
-    try:
-        logger.info(u"starting waptservice")
-        # http
-        check_open_port(waptconfig.waptservice_port)
-        # https
-        check_open_port(waptconfig.waptservice_port+1)
-        server.start()
-    except KeyboardInterrupt:
-        logger.info(u"stopping waptservice")
-        server.stop()
+    debug=False
+    if debug:
+        app.run(host='0.0.0.0',port=30888,debug=False)
+    else:
+        #logger.setLevel(logging.DEBUG)
+
+        # hack to authenticate clients using client ssl certificates
+        import rocket.listener
+        # copy from rocket/listener.py
+        def wrap_socket(self, sock):
+            try:
+                sock = ssl.wrap_socket(sock,
+                                       keyfile = self.interface[2],
+                                       certfile = self.interface[3],
+                                       server_side = True,
+                                       ssl_version = ssl.PROTOCOL_SSLv23,
+                                       ca_certs = r'c:\tmp\caserver.pem',
+                                       cert_reqs = ssl.CERT_REQUIRED )
+            except SSLError:
+                pass
+
+            return sock
+
+        #rocket.listener.Listener.wrap_socket = wrap_socket
+
+        server = Rocket(
+            [('0.0.0.0', waptconfig.waptservice_port),
+             ('0.0.0.0', waptconfig.waptservice_port+1,
+                            os.path.join(wapt_root_dir,r'waptservice','ssl','waptservice.pem'),
+                            os.path.join(wapt_root_dir,r'waptservice','ssl','waptservice.crt'))],
+             'wsgi', {"wsgi_app":app})
+
+        try:
+            logger.info(u"starting waptservice")
+            # http
+            check_open_port(waptconfig.waptservice_port)
+            # https
+            check_open_port(waptconfig.waptservice_port+1)
+            server.start()
+        except KeyboardInterrupt:
+            logger.info(u"stopping waptservice")
+            server.stop()
