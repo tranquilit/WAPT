@@ -507,7 +507,7 @@ begin
       writeln('   download URL :'+waptsetupurl);
     except
       requiredVersion:=minversion;
-      waptsetupurl := 'http://wapt/wapt/waptagent.exe';
+      waptsetupurl := 'http://'+defaultwapt+'/wapt/waptagent.exe';
     end;
   end;
   writeln('WAPT required version: '+requiredVersion);
