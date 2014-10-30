@@ -1423,7 +1423,7 @@ def register_uninstall(uninstallkey,uninstallstring,win64app=False,
 
 def register_windows_uninstall(package_entry):
     """Add a windows registry key for custom installer"""
-    setuphelpers.register_uninstall(
+    register_uninstall(
         package_entry.package,
         'wapt-get uninstall %s' % package_entry.package,
         display_name=package_entry.description,
