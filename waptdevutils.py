@@ -302,10 +302,6 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
     return build_res
 
 if __name__ == '__main__':
-    mywapt = common.Wapt(config_filename=r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini')
-    get_packages_filenames(mywapt.config_filename,'tis-7zip')
-    sys.exit(0)
-
     import doctest
     import sys
     reload(sys)
@@ -314,5 +310,3 @@ if __name__ == '__main__':
     doctest.ELLIPSIS_MARKER = '???'
     doctest.testmod(optionflags=doctest.ELLIPSIS)
     sys.exit(0)
-
-    #searchLastPackageTisRepo(r'C:\Users\Administrateur\AppData\Local\waptconsole\waptconsole.ini','')

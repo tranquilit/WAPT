@@ -3193,12 +3193,6 @@ class Wapt(object):
                 del setup
                 if '__waptsetup__' in sys.modules:
                     del sys.modules['__waptsetup__']
-            """
-            if old_hdlr:
-                logger.handlers[0] = old_hdlr
-            else:
-                logger.removeHandler(hdlr)
-            """
             sys.stdout = old_stdout
             sys.stderr = old_stderr
             sys.path = oldpath
@@ -4216,8 +4210,6 @@ class Wapt(object):
                 del setup
                 if '__waptsetup__' in sys.modules:
                     del sys.modules['__waptsetup__']
-            else:
-                logger.critical(u'Unable to read setup.py file')
             sys.path = oldpath
             logger.debug(u'  Change current directory to %s' % previous_cwd)
             os.chdir(previous_cwd)
@@ -4346,6 +4338,7 @@ class Wapt(object):
                             setattr(setup,'run_notfatal',self.run_notfatal)
                             setattr(setup,'user',self.user)
                             setattr(setup,'usergroups',self.usergroups)
+                            setattr(setup,'control',package_entry)
                             setattr(setup,'WAPT',self)
                             setattr(setup,'language',self.language or setuphelpers.get_language() )
 
@@ -4400,8 +4393,6 @@ class Wapt(object):
                         del setup
                         if '__waptsetup__' in sys.modules:
                             del sys.modules['__waptsetup__']
-                    else:
-                        logger.critical(u'Unable to read setup.py file.')
                     sys.path = oldpath
                     logger.debug(u'  Change current directory to %s.' % previous_cwd)
                     os.chdir(previous_cwd)
@@ -4433,6 +4424,7 @@ class Wapt(object):
                 setattr(setup,'run_notfatal',self.run_notfatal)
                 setattr(setup,'user',self.user)
                 setattr(setup,'usergroups',self.usergroups)
+                setattr(setup,'control',entry)
                 setattr(setup,'WAPT',self)
                 setattr(setup,'language',self.language or setuphelpers.get_language() )
 
@@ -4462,8 +4454,7 @@ class Wapt(object):
                 del setup
                 if '__waptsetup__' in sys.modules:
                     del sys.modules['__waptsetup__']
-            else:
-                logger.critical(u'Unable to read setup.py file')
+
             sys.path = oldpath
             logger.debug(u'  Change current directory to %s' % previous_cwd)
             os.chdir(previous_cwd)

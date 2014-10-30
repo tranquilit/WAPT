@@ -220,7 +220,7 @@ def create_user_programs_menu_shortcut(label, target='', arguments='', wDir='', 
 def wgets(url,proxies=None):
     """Return the content of a remote resource as a String
     >>> data = wgets('http://wapt:8080/info')
-    >>> "client_version" in data and "server_version" in data
+    >>> "server_version" in data and "server_version" in data
     True
     """
     r = requests.get(url,proxies=proxies,verify=False)
@@ -2234,8 +2234,6 @@ params = {}
 control = PackageEntry()
 
 if __name__=='__main__':
-    #add_shutdown_script('titi','toto')
-    #remove_shutdown_script('titi','toto')
     import doctest
     import sys
     reload(sys)
