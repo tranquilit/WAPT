@@ -473,12 +473,12 @@ begin
   if ParamStr(1)='--help'  then
   begin
       Writeln('Usage : waptdeploy.exe [min_wapt_version]');
-      Writeln('  Download waptsetup.exe from WAPT repository and launch it if local version is obsolete (<'+minversion+' or < parameter 1)');
+      Writeln('  Download waptagent.exe from WAPT repository and launch it if local version is obsolete (<'+minversion+' or < parameter 1)');
       Writeln('  If no argument is given, looks for http://'+defaultwapt+'/waptdeploy.version file. This file should contain 2 lines. One for version, and another for download url');
-      Writeln('  If force is given, install waptsetup.exe even if version doesn''t match');
+      Writeln('  If force is given, install waptagent.exe even if version doesn''t match');
       Exit;
   end;
-  waptsetupurl := 'http://'+defaultwapt+'/wapt/waptsetup.exe';
+  waptsetupurl := 'http://'+defaultwapt+'/wapt/waptagent.exe';
   if ParamStr(1)='force' then
   begin
     localVersion := '';
@@ -501,13 +501,13 @@ begin
         requiredVersion:=minversion;
       waptsetupurl :=trim(StrToken(waptdeploy,#10));
       if waptsetupurl='' then
-          waptsetupurl := 'http://wapt/wapt/waptsetup.exe';
+          waptsetupurl := 'http://wapt/wapt/waptagent.exe';
       writeln('Got waptdeploy.version');
       writeln('   required version:'+requiredVersion);
       writeln('   download URL :'+waptsetupurl);
     except
       requiredVersion:=minversion;
-      waptsetupurl := 'http://wapt/wapt/waptsetup.exe';
+      waptsetupurl := 'http://wapt/wapt/waptagent.exe';
     end;
   end;
   writeln('WAPT required version: '+requiredVersion);
@@ -515,9 +515,9 @@ begin
   try
     tmpDir := GetUniqueTempdir('wapt');
     mkdir(tmpDir);
-    waptsetupPath := tmpDir+'\waptsetup.exe';
-    Writeln('Wapt setup path: '+waptsetupPath);
-    writeln('Wget new waptsetup '+ waptsetupurl);
+    waptsetupPath := tmpDir+'\waptagent.exe';
+    Writeln('Wapt agentp path: '+waptsetupPath);
+    writeln('Wget new waptagent '+ waptsetupurl);
     wget(waptsetupurl,waptsetupPath);
     getVersion:=GetApplicationVersion(waptsetupPath);
     writeln('Got version: '+getVersion);
