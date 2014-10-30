@@ -220,7 +220,7 @@ def create_user_programs_menu_shortcut(label, target='', arguments='', wDir='', 
 def wgets(url,proxies=None):
     """Return the content of a remote resource as a String
     >>> data = wgets('http://wapt:8080/info')
-    >>> "server_version" in data and "server_version" in data
+    >>> "client_version" in data and "server_version" in data
     True
     """
     r = requests.get(url,proxies=proxies,verify=False)
@@ -1421,6 +1421,16 @@ def register_uninstall(uninstallkey,uninstallstring,win64app=False,
         reg_setvalue(appkey,'Publisher',publisher)
 
 
+def register_windows_uninstall(package_entry):
+    """Add a windows registry key for custom installer"""
+    setuphelpers.register_uninstall(
+        package_entry.package,
+        'wapt-get uninstall %s' % package_entry.package,
+        display_name=package_entry.description,
+        display_version=package_entry.version,
+        publisher=package_entry.maintainer)
+
+
 def unregister_uninstall(uninstallkey,win64app=False):
     """Remove uninstall method from registry"""
     if not uninstallkey:
@@ -2234,6 +2244,8 @@ params = {}
 control = PackageEntry()
 
 if __name__=='__main__':
+    #add_shutdown_script('titi','toto')
+    #remove_shutdown_script('titi','toto')
     import doctest
     import sys
     reload(sys)
