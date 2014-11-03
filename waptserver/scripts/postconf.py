@@ -190,6 +190,6 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
             e.message
             ]
 
-    width = max(10, len(max(final_msg, key=len)))
-    height = max(5, len(final_msg))
-    postconf.msgbox('\n'.join(final_msg), height = height, width = width + 4)
+    width = 4 + max(10, len(max(final_msg, key=len)))
+    height = 2 + max(5, len(final_msg))
+    postconf.msgbox('\n'.join(final_msg), height=height, width=width)
