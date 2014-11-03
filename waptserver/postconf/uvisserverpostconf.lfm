@@ -860,7 +860,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object Label7: TLabel
         Left = 8
         Height = 13
-        Hint = 'Dossier dans lequel waptsetup.exe sera enregistrer'
+        Hint = 'Dossier dans lequel waptsetup.exe sera enregistré'
         Top = 48
         Width = 194
         Caption = 'Enregistrer waptsetup.exe sous...  '
