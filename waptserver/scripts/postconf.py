@@ -42,7 +42,7 @@ import socket
 
 postconf = dialog.Dialog(dialog="dialog")
 
-def make_httpd_config(wapt_folder, waptserver_root_dir):
+def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn):
     if wapt_folder.endswith('\\') or wapt_folder.endswith('/'):
         wapt_folder = wapt_folder[:-1]
 
@@ -71,11 +71,6 @@ def make_httpd_config(wapt_folder, waptserver_root_dir):
     # create keys for https:// access
     if not os.path.exists(wapt_ssl_key_file) or \
             not os.path.exists(wapt_ssl_cert_file):
-        fqdn = socket.getfqdn()
-        if not fqdn:
-            fqdn = 'wapt'
-        if '.' not in fqdn:
-            fqdn += '.local'
         void = subprocess.check_output([
                 'openssl',
                 'req',
@@ -170,7 +165,20 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
     reply = postconf.yesno("Do you want to configure apache?")
     if reply == postconf.DIALOG_OK:
         try:
-            make_httpd_config(wapt_folder, '/opt/wapt/waptserver')
+
+            fqdn = socket.getfqdn()
+            if not fqdn:
+                fqdn = 'wapt'
+            if '.' not in fqdn:
+                fqdn += '.local'
+            msg = 'FQDN for the WAPT server (eg. wapt.acme.com)'
+            (code, reply) = postconf.inputbox(text=msg, width=len(msg)+4, init=fqdn)
+            if code != postconf.DIALOG_OK:
+                exit(1)
+            else:
+                fqdn = reply
+
+            make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn)
             void = subprocess.check_output(['/etc/init.d/waptserver', 'start'], stderr=subprocess.STDOUT)
             void = subprocess.check_output(['a2dissite', 'default'], stderr=subprocess.STDOUT)
             void = subprocess.check_output(['a2dissite', 'default-ssl'], stderr=subprocess.STDOUT)
@@ -179,6 +187,9 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
             void = subprocess.check_output(['a2enmod', 'proxy_http'], stderr=subprocess.STDOUT)
             void = subprocess.check_output(['a2ensite', 'wapt'], stderr=subprocess.STDOUT)
             void = subprocess.check_output(['/etc/init.d/apache2', 'graceful'], stderr=subprocess.STDOUT)
+
+            final_msg.append('Please connect to https://' + fqdn + '/ to access the server.')
+
         except CalledProcessError as cpe:
             final_msg += [
                 'Error while trying to configure Apache!',
