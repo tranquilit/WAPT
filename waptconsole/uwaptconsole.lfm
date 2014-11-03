@@ -2833,7 +2833,7 @@ object VisWaptGUI: TVisWaptGUI
     object ActHostWaptUpgrade: TAction
       Category = 'hosts'
       Caption = 'Mettre à jour le client WAPT'
-      Hint = 'Lance waptsetup.exe en mode silencieux depuis <url-depot>/waptsetup.exe'
+      Hint = 'Lance agent.exe en mode silencieux depuis <url-depot>/waptagent.exe'
       OnExecute = ActHostWaptUpgradeExecute
       OnUpdate = ActHostWaptUpgradeUpdate
     end
