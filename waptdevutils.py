@@ -38,7 +38,7 @@ import tempfile
 
 
 def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wapt_server='',destination='',company=''):
-    r"""Build a customized waptsetup with included provided certificate
+    r"""Build a customized waptsetup with provided certificate included.
     Returns filename
     >>> from common import Wapt
     >>> wapt = Wapt(config_filename=r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini')
