@@ -3,7 +3,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   Height = 184
   Top = 340
   Width = 535
-  Caption = 'Créer l'agent WAPT'
+  Caption = 'Créer l''agent WAPT'
   ClientHeight = 184
   ClientWidth = 535
   Font.CharSet = ANSI_CHARSET
