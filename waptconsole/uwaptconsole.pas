@@ -1109,11 +1109,11 @@ begin
                       [waptsetupPath, waptServerUser, waptServerPassword]));
                     if SORes.S['status'] = 'OK' then
                     begin
-                      ShowMessage('Waptsetup déposé avec succès');
+                      ShowMessage('Waptagent déposé avec succès');
                       done := True;
                     end
                     else
-                      ShowMessage('Erreur lors du dépôt de waptsetup: ' +
+                      ShowMessage('Erreur lors du dépôt de waptagent: ' +
                         SORes.S['message']);
                   end;
                 finally
