@@ -516,7 +516,7 @@ begin
     tmpDir := GetUniqueTempdir('wapt');
     mkdir(tmpDir);
     waptsetupPath := tmpDir+'\waptagent.exe';
-    Writeln('Wapt agentp path: '+waptsetupPath);
+    Writeln('Wapt agent path: '+waptsetupPath);
     writeln('Wget new waptagent '+ waptsetupurl);
     wget(waptsetupurl,waptsetupPath);
     getVersion:=GetApplicationVersion(waptsetupPath);
