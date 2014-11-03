@@ -866,13 +866,13 @@ begin
                   WaptServerUser, WaptServerPassword, @IdHTTPWork);
                 Finish;
                 if SORes.S['status'] = 'OK' then
-                  ShowMessage('waptagent.exe créé et déposé avec succès: ' + waptsetupPath)
+                  ShowMessage('Agent WAPT créé et déposé avec succès : ' + waptsetupPath)
                 else
-                  ShowMessage('Erreur lors du dépôt de waptagent: ' + SORes.S['message']);
+                  ShowMessage('Erreur lors du dépôt de l''agent WAPT : ' + SORes.S['message']);
               except
                 on e: Exception do
                 begin
-                  ShowMessage('Erreur à la création du waptagent.exe: ' + e.Message);
+                  ShowMessage('Erreur à la création de l''agent WAPT : ' + e.Message);
                   Finish;
                 end;
               end;
