@@ -159,7 +159,7 @@ def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy
     if errors:
         raise shutil.Error(errors)
 
-def add_at_cmd(self,cmd,delay=1):
+def add_at_cmd(cmd,delay=1):
     import datetime
     at_time = (datetime.datetime.now() + datetime.timedelta(minutes=delay)).strftime('%H:%M:%S')
     print(setuphelpers.run('at %s "%s"'%(at_time,cmd)))
