@@ -29,6 +29,7 @@ WizardImageFile=..\tranquilit.bmp
 [INI]
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {#default_repo_url};
 Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "0"
+Filename: {app}\wapt-get.ini; Section: global; Key: waptservice_password; String: "NOPASSWORD"
 ;Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1"; Tasks: use_hostpackages;
 ;Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "0"; Tasks: not use_hostpackages;
 
@@ -47,7 +48,7 @@ var
     installdir: String;
 begin
     installdir := ExpandConstant('{app}');
-    if DirExists(installdir) and 
+    if DirExists(installdir) and not runningSilently() and 
        (MsgBox('Des fichiers restent présents dans votre répertoire ' + installdir + ', souhaitez-vous le supprimer ainsi que tous les fichiers qu''il contient ?',
                mbConfirmation, MB_YESNO) = IDYES) then
         Deltree(installdir, True, True, True);
