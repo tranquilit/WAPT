@@ -64,6 +64,11 @@ if platform.system()!='Linux':
     print >> sys.stderr, "this script should be used on debian linux"
     sys.exit(1)
 
+new_umask = 022
+old_umask = os.umask(new_umask)
+if new_umask != old_umask:
+    print >> sys.stderr, 'umask fixed (previous %03o, current %03o)' % (old_umask, new_umask)
+
 for line in open('%s/waptserver.py'% source_dir):
     if line.strip().startswith('__version__'):
         wapt_version = line.split('=')[1].strip().replace('"','').replace("'","")
