@@ -48,7 +48,7 @@ def rsync(src,dst,excludes=[]):
     rsync_source = src
     rsync_destination = dst
     rsync_command = '/usr/bin/rsync %s "%s" "%s"'%(rsync_option,rsync_source,rsync_destination)
-    print rsync_command
+    print >> sys.stderr, rsync_command
     os.system(rsync_command)
 
 makepath = os.path.join
@@ -61,7 +61,7 @@ wapt_source_dir = os.path.abspath('../..')
 source_dir = os.path.abspath('..')
 
 if platform.system()!='Linux':
-    print "this script should be used on debian linux"
+    print >> sys.stderr, "this script should be used on debian linux"
     sys.exit(1)
 
 for line in open('%s/waptserver.py'% source_dir):
@@ -69,19 +69,19 @@ for line in open('%s/waptserver.py'% source_dir):
         wapt_version = line.split('=')[1].strip().replace('"','').replace("'","")
 
 if not wapt_version:
-    print 'version non trouvée dans %s/waptserver.py, la version est mise a 0.0.0 par défault.'%os.path.abspath('..')
-    wapt_version = '0.0.0'
+    print >> sys.stderr, u'version not found in %s/waptserver.py' % os.path.abspath('..')
+    sys.exit(1)
 
 control_file = './builddir/DEBIAN/control'
 
 for filename in glob.glob("tis-waptserver*.deb"):
-    print "destruction de %s"%filename
+    print >> sys.stderr, "Removing %s"%filename
     os.remove(filename)
 
 if os.path.exists("builddir"):
     shutil.rmtree("builddir")
 
-print 'création de l\'arborescence'
+print >> sys.stderr, 'creating the package tree'
 os.makedirs("builddir")
 os.makedirs("builddir/DEBIAN")
 os.makedirs("builddir/opt")
@@ -90,52 +90,52 @@ os.makedirs("builddir/opt/wapt/lib")
 os.makedirs("builddir/opt/wapt/lib/site-packages")
 os.makedirs("builddir/opt/wapt/waptserver")
 
-print 'copy waptserver files'
+print >> sys.stderr, 'copying the waptserver files'
 rsync(source_dir,'./builddir/opt/wapt/',excludes=['postconf','mongod.exe'])
 for lib in ('requests','iniparse','dns','pefile.py','rocket','pymongo','bson','flask','werkzeug','jinja2','itsdangerous.py','markupsafe', 'dialog.py'):
     rsync(makepath(wapt_source_dir,'lib','site-packages',lib),'./builddir/opt/wapt/lib/site-packages/')
 
-print 'copie des fichiers control et postinst'
+print >> sys.stderr, 'copying control and postinst package metadata'
 copyfile('./DEBIAN/control','./builddir/DEBIAN/control')
 copyfile('./DEBIAN/postinst','./builddir/DEBIAN/postinst')
 copyfile('./DEBIAN/preinst','./builddir/DEBIAN/preinst')
 
-print "copy startup script /etc/init.d/waptserver"
+print >> sys.stderr, "copying the startup script /etc/init.d/waptserver"
 try:
     mkdir_p('./builddir/etc/init.d/')
     copyfile('../scripts/waptserver-init','./builddir/etc/init.d/waptserver')
     subprocess.check_output('chmod 755 ./builddir/etc/init.d/waptserver',shell=True)
     subprocess.check_output('chown root:root ./builddir/etc/init.d/waptserver',shell=True)
 except Exception as e:
-    print 'erreur: \n%s'%e
+    print >> sys.stderr, 'error: \n%s'%e
     exit(1)
 
-print "copy logrotate script /etc/logrotate.d/waptserver"
+print >> sys.stderr, "copying logrotate script /etc/logrotate.d/waptserver"
 try:
     mkdir_p('./builddir/etc/logrotate.d/')
     shutil.copyfile('../scripts/waptserver-logrotate','./builddir/etc/logrotate.d/waptserver')
     subprocess.check_output('chown root:root ./builddir/etc/logrotate.d/waptserver',shell=True)
 except Exception as e:
-    print 'erreur: \n%s'%e
+    print >> sys.stderr, 'error: \n%s'%e
     exit(1)
 
-print "copying apache-related goo"
+print >> sys.stderr, "copying apache-related goo"
 try:
     apache_dir = './builddir/opt/wapt/waptserver/apache/'
     mkdir_p(apache_dir + '/ssl')
     subprocess.check_output(['chmod', '0700', apache_dir + '/ssl'])
     copyfile('../apache-win32/conf/httpd.conf.j2', apache_dir + 'httpd.conf.j2')
 except Exception as e:
-    print 'erreur: \n%s'%e
+    print >> sys.stderr, 'error: \n%s'%e
     exit(1)
 
-print 'inscription de la version dans le fichier de control'
+print >> sys.stderr, 'replacing the revision in the control file'
 replaceAll(control_file,'0.0.7',wapt_version)
 
 os.chmod('./builddir/DEBIAN/postinst',stat.S_IRWXU| stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
 os.chmod('./builddir/DEBIAN/preinst',stat.S_IRWXU| stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
 
-print 'création du paquet Deb'
+print >> sys.stderr, 'creating the Debian package'
 dpkg_command = 'dpkg-deb --build builddir tis-waptserver-%s.deb'% (wapt_version, )
 ret = os.system(dpkg_command)
 shutil.rmtree("builddir")
