@@ -138,5 +138,7 @@ os.chmod('./builddir/DEBIAN/preinst',stat.S_IRWXU| stat.S_IXGRP | stat.S_IRGRP |
 print >> sys.stderr, 'creating the Debian package'
 dpkg_command = 'dpkg-deb --build builddir tis-waptserver-%s.deb'% (wapt_version, )
 ret = os.system(dpkg_command)
-shutil.rmtree("builddir")
-sys.exit(ret >> 8)
+status = ret >> 8
+if status == 0:
+    shutil.rmtree("builddir")
+sys.exit(status)
