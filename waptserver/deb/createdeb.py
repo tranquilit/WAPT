@@ -90,17 +90,6 @@ os.makedirs("builddir/opt/wapt/lib")
 os.makedirs("builddir/opt/wapt/lib/site-packages")
 os.makedirs("builddir/opt/wapt/waptserver")
 
-#adding version info in VERSION file
-rev=''
-output = subprocess.check_output('env LC_ALL=C /usr/bin/svn info',shell=True)
-for line in output.split('\n'):
-    if 'Revision:' in line:
-        rev = 'rev%s' % line.split(':')[1].strip()
-
-version_file = open(os.path.join('./builddir/opt/wapt/waptserver','VERSION'),'w')
-version_file.write(rev)
-version_file.close()
-
 print 'copy waptserver files'
 rsync(source_dir,'./builddir/opt/wapt/',excludes=['postconf','mongod.exe'])
 for lib in ('requests','iniparse','dns','pefile.py','rocket','pymongo','bson','flask','werkzeug','jinja2','itsdangerous.py','markupsafe', 'dialog.py'):
@@ -141,12 +130,13 @@ except Exception as e:
     exit(1)
 
 print 'inscription de la version dans le fichier de control'
-replaceAll(control_file,'0.0.7',wapt_version + '-' + rev)
+replaceAll(control_file,'0.0.7',wapt_version)
 
 os.chmod('./builddir/DEBIAN/postinst',stat.S_IRWXU| stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
 os.chmod('./builddir/DEBIAN/preinst',stat.S_IRWXU| stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
 
 print 'création du paquet Deb'
-dpkg_command = 'dpkg-deb --build builddir tis-waptserver-%s-%s.deb'% (wapt_version ,rev)
-os.system(dpkg_command)
+dpkg_command = 'dpkg-deb --build builddir tis-waptserver-%s.deb'% (wapt_version, )
+ret = os.system(dpkg_command)
 shutil.rmtree("builddir")
+sys.exit(ret >> 8)
