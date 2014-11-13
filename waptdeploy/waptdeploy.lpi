@@ -19,8 +19,8 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <MinorVersionNr Value="3"/>
-      <RevisionNr Value="4"/>
+      <MinorVersionNr Value="9"/>
+      <RevisionNr Value="7"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT auto deploy" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
