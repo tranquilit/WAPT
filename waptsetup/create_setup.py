@@ -156,6 +156,8 @@ ksign = """%(ksigntool_path)s /f %(private_key)s /p %(key_password)s $p""" % {
 
 print ksign
 
+rev = open(os.path.join(checkout_dir,'version'),'r').read().strip()
+
 ###CHECKOUT
 print "checkout du projet"
 if not os.path.isdir(os.path.dirname(checkout_dir)):
