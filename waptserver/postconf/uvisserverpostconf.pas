@@ -350,6 +350,17 @@ begin
   with CurrentVisLoading do
   try
     ExceptionOnStop:=True;
+    if GetServiceStatusByName('','WAPTService') in [ssRunning,ssPaused,ssPausePending,ssStartPending]  then
+    begin
+      ProgressTitle('Arrêt de waptservice');
+      Sto_RedirectedExecute('cmd /C net stop waptservice');
+    end;
+    if GetServiceStatusByName('','WAPTServer') in [ssRunning,ssPaused,ssPausePending,ssStartPending] then
+    begin
+      ProgressTitle('Arrêt de waptserver');
+      Sto_RedirectedExecute('cmd /C net stop waptserver');
+    end;
+
     ini := TMemIniFile.Create(WaptIniFilename);
     ini.SetStrings(EdWaptInifile.Lines);
     ini.UpdateFile;
@@ -378,15 +389,10 @@ begin
 
     ProgressTitle('Redémarrage service waptserver');
     ProgressStep(5,8);
-    if GetServiceStatusByName('','WAPTServer') in [ssRunning,ssPaused,ssPausePending,ssStartPending] then
-      Sto_RedirectedExecute('cmd /C net stop waptserver');
-    ProgressStep(5,8);
     Sto_RedirectedExecute('cmd /C net start waptserver');
 
     ProgressTitle('Redémarrage waptservice');
     ProgressStep(6,8);
-    if GetServiceStatusByName('','WAPTService') in [ssRunning,ssPaused,ssPausePending,ssStartPending]  then
-      Sto_RedirectedExecute('cmd /C net stop waptservice');
     Sto_RedirectedExecute('cmd /C net start waptservice');
 
     ProgressTitle('Enregistrement machine sur serveur');
