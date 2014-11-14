@@ -345,6 +345,7 @@ end;
 procedure TVisWAPTServerPostConf.actWriteConfStartServeExecute(Sender: TObject);
 var
   ini:TMemIniFile;
+  retry:integer;
 begin
   CurrentVisLoading := TVisLoading.Create(Self);
   with CurrentVisLoading do
@@ -397,7 +398,16 @@ begin
 
     ProgressTitle('Enregistrement machine sur serveur');
     ProgressStep(7,8);
-    runwapt('{app}\wapt-get.exe -D register');
+
+    retry := 0;
+    while retry<4 do
+    try
+      runwapt('{app}\wapt-get.exe -D register');
+      break;
+    except
+      Sleep(2000);
+      inc(retry);
+    end;
 
     ProgressTitle('Mise à jour paquets locaux');
     ProgressStep(8,8);
