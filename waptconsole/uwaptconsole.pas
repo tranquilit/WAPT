@@ -1034,27 +1034,38 @@ end;
 
 procedure TVisWaptGUI.ActChangePasswordExecute(Sender: TObject);
 var
-  newPass, Result: string;
+  cred,resp:ISuperObject;
 begin
   with TvisChangePassword.Create(self) do
-    try
-      if ShowModal = mrOk then
-      begin
-        newPass := edNewPassword2.Text;
-        Result := DMPython.RunJSON(
-          format('waptdevutils.login_to_waptserver("%s","%s","%s","%s")',
-          [GetWaptServerURL + '/login', waptServerUser, waptServerPassword,
-          newPass])).AsString;
-
-        if Result = 'True' then
-        begin
-          waptServerPassword := newPass;
-          ShowMessage('Le mot de passe a été changé avec succès !');
+  try
+    if ShowModal = mrOk then
+    begin
+      cred := SO();
+      cred.S['username'] := waptServerUser;
+      cred.S['password'] := UTF8Decode(WaptServerPassword);
+      cred.S['newPass'] := UTF8Decode(EdNewPassword1.Text);
+      try
+        resp := WAPTServerJsonPost('login', [], cred, UseProxyForServer,
+          waptServerUser, WaptServerPassword);
+        try
+          if not StrToBool(resp.AsString) then
+            ShowMessage('Mauvais mot de passe')
+          else
+          begin
+            waptServerPassword := EdNewPassword1.Text;
+            ShowMessage('Le mot de passe a été changé avec succès !');
+          end;
+        except
+          ShowMessage(UTF8Encode(resp.AsString));
         end;
+      except
+        on E: Exception do
+          ShowMessage('Erreur: ' + UTF8Encode(E.Message));
       end;
-    finally
-      Free;
     end;
+  finally
+    Free;
+  end;
 end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupPyExecute(Sender: TObject);

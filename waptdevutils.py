@@ -236,12 +236,12 @@ def wapt_sources_edit(wapt_sources_dir):
         os.startfile(wapt_sources_dir)
 
 
-def login_to_waptserver(url, login, passwd,newPass=""):
+def login_to_waptserver(url, login, passwd,newPass="",auth=None):
     try:
         data = {"username":login, "password": passwd}
         if newPass:
             data['newPass'] = newPass
-        resp = requests.post(url, json.dumps(data))
+        resp = requests.post(url, json.dumps(data),verify=False,auth=auth)
         return resp.text
     except Exception as e:
         return unicode(str(e.message), 'ISO-8859-1')
