@@ -2789,11 +2789,6 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Mode avancé'
       OnExecute = ActAdvancedModeExecute
     end
-    object ActPackageDuplicate: TAction
-      Category = 'packages'
-      Caption = 'Dupliquer'
-      ImageIndex = 17
-    end
     object ActAddGroup: TAction
       Category = 'Groups'
       Caption = 'Nouveau groupe'

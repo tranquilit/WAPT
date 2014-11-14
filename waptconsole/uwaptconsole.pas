@@ -58,7 +58,6 @@ type
     actRefresh: TAction;
     actQuit: TAction;
     ActAddGroup: TAction;
-    ActPackageDuplicate: TAction;
     ActSearchHost: TAction;
     ActLocalhostUpgrade: TAction;
     ActPackagesUpdate: TAction;
