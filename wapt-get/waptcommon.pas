@@ -443,6 +443,14 @@ begin
         if FileExists(DestFileName) then
           DeleteFileUTF8(DestFileName);
       end;
+      on E:Exception do
+      begin
+        Result := False;
+        FreeAndNil(OutputFile);
+        if FileExists(DestFileName) then
+          DeleteFileUTF8(DestFileName);
+        raise;
+      end;
     end;
   finally
     FreeAndNil(progress);

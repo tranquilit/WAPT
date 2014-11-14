@@ -148,6 +148,8 @@ begin
             target, ProgressForm, @updateprogress, UseProxyForTemplates);
       except
         ShowMessage('Téléchargement annulé');
+        if FileExists(target) then
+          DeleteFileUTF8(Target);
         exit;
       end;
     end;
