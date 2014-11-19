@@ -21,6 +21,7 @@
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="9"/>
       <RevisionNr Value="7"/>
+      <BuildNr Value="2"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT auto deploy" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">

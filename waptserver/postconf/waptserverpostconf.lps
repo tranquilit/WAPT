@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="6">
+      <Unit0>
+        <Filename Value="waptserverpostconf.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="waptserverpostconf"/>
+        <UsageCount Value="20"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="uvisserverpostconf.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisWAPTServerPostConf"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uVisServerPostconf"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\..\wapt-get\UnitRedirect.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UnitRedirect"/>
+        <UsageCount Value="20"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\..\wapt-get\waptcommon.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="waptcommon"/>
+        <UsageCount Value="20"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\..\wapt-get\networkadapterinfo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="NetworkAdapterInfo"/>
+        <UsageCount Value="20"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\..\waptconsole\uvisloading.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisLoading"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uvisloading"/>
+        <UsageCount Value="20"/>
+      </Unit5>
+    </Units>
+    <General>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
+  </ProjectSession>
+  <EditorMacros Count="0"/>
+</CONFIG>
