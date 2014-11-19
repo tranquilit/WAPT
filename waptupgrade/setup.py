@@ -162,7 +162,7 @@ def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy
 def add_at_cmd(cmd,delay=1):
     import datetime
     at_time = (datetime.datetime.now() + datetime.timedelta(minutes=delay)).strftime('%H:%M:%S')
-    print(setuphelpers.run('at %s "%s"'%(at_time,cmd)))
+    print(run('at %s "%s"'%(at_time,cmd)))
 
 
 def install():
