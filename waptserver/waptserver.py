@@ -47,7 +47,6 @@ import logging
 import codecs
 import zipfile
 import platform
-import pprint
 import socket
 import requests
 import subprocess
