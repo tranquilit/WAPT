@@ -5,7 +5,7 @@
 #define default_update_period "120"
 #define output_dir "."
 #define Company "Tranquil IT Systems"
-#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
+;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
 #include "wapt.iss"
 
