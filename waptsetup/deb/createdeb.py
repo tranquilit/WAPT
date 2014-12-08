@@ -186,5 +186,6 @@ shutil.copy(EXE, BDIR + 'var/www/wapt/')
 output = 'tis-waptsetup-%s.deb' % (full_version)
 dpkg_command = ['dpkg-deb', '--build', BDIR, output]
 run(dpkg_command)
+os.link(output, 'tis-waptsetup.deb')
 
 logger.info('All done')
