@@ -178,6 +178,7 @@ else:
 
 logger.info('Creating .deb')
 shutil.copytree('./debian/', BDIR + 'DEBIAN/')
+os.chmod(BDIR + 'DEBIAN/', 0755)
 replaceAll(BDIR + 'DEBIAN/control', '0.0.7', full_version)
 mkdir_p(BDIR + 'var/www/wapt/')
 shutil.copy(EXE, BDIR + 'var/www/wapt/')
