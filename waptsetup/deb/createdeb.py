@@ -156,12 +156,6 @@ if platform.system() != 'Linux':
     logger.error("this script should be used on debian linux")
     sys.exit(1)
 
-try:
-    shutil.rmtree(BDIR)
-except Exception as e:
-    logger.info('Error while deleting %s: %s', BDIR, e)
-    pass
-
 if options.server is not None:
     if not options.download:
         logger.error('-s is only meaningful with -d')
@@ -193,6 +187,3 @@ dpkg_command = ['dpkg-deb', '--build', BDIR, output]
 run(dpkg_command)
 
 logger.info('All done')
-
-shutil.rmtree(BDIR)
-os.unlink(EXE)
