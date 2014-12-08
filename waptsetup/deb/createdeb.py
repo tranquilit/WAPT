@@ -163,8 +163,7 @@ logger.debug('%s version: %s', EXE, version)
 full_version = version + '-rev' + revision
 
 logger.info('Creating .deb')
-ignore_svn = lambda dir, files: ".svn"
-shutil.copytree('./debian/', BDIR + 'DEBIAN/', ignore=ignore_svn)
+shutil.copytree('./debian/', BDIR + 'DEBIAN/')
 replaceAll(BDIR + 'DEBIAN/control', '0.0.7', full_version)
 mkdir_p(BDIR + 'var/www/wapt/')
 shutil.copy(EXE, BDIR + 'var/www/wapt/')
