@@ -73,6 +73,65 @@ class MyHTMLParser(HTMLParser.HTMLParser):
             if attr == 'href' and value.startswith('waptsetup_'):
                 self.wapt_waptsetup_exes.append(value)
 
+def fetch_from_server():
+
+    try:
+        os.unlink(EXE)
+    except Exception as e:
+        logger.info('Error while unlinking %s: %s', EXE, e)
+        pass
+
+    logger.info('Fetching executable')
+
+    logger.debug('Connecting to server %s', SRV)
+    conn = httplib.HTTPConnection(SRV, '80')
+    conn.request('GET', BASEPATH)
+    response = conn.getresponse()
+    if response.status != 200:
+        logger.error('Unexpected response from server (%s)', response.status)
+        sys.exit(1)
+
+    logger.debug('Parsing response from server')
+    parser = MyHTMLParser()
+    parser.feed(response.read())
+    parser.close()
+
+    logger.debug('Filtering results')
+    regexp = re.compile('waptsetup_rev([0-9]+)\.exe')
+    revision = 0
+    latest_exe = None
+
+    for cur_exe in parser.wapt_waptsetup_exes:
+        match = regexp.search(cur_exe)
+        if match:
+            cur_rev = match.group(1)
+            if cur_rev > revision:
+                revision = cur_rev
+                latest_exe = cur_exe
+
+    if latest_exe is None:
+        logger.error('No matching files on server')
+        sys.exit(1)
+
+    logger.debug('Starting download of %s', BASEPATH + latest_exe)
+    conn.request('GET', BASEPATH + latest_exe)
+    response = conn.getresponse()
+    if response.status != 200:
+        logger.error('Unexpected response from server (%s)', response.status)
+        sys.exit(1)
+
+    out = file(EXE, 'wb')
+    while True:
+        buffer = response.read(2**15)
+        if len(buffer) == 0:
+            break
+        out.write(buffer)
+    out.close()
+
+    logger.info('Correctly fetched %s', EXE)
+    return revision
+
+
 def setloglevel(logger,loglevel):
     """set loglevel as string"""
     if loglevel in ('debug','warning','info','error','critical'):
@@ -83,14 +142,15 @@ def setloglevel(logger,loglevel):
 
 
 parser = argparse.ArgumentParser(u'Crée un paquet .deb contenant le dernier waptsetup.exe publié')
+parser.add_argument('-d', '--download', action='store_true', help='Download latest exe from an server')
 parser.add_argument('-l', '--loglevel', help='Change log level (error, warning, info, debug...)')
+parser.add_argument('-s', '--server', help='http server from which the exe will be retrieved (only meaningful with -d)')
 options = parser.parse_args()
 
 logger = logging.getLogger()
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
 if options.loglevel is not None:
     setloglevel(logger,options.loglevel)
-
 
 if platform.system() != 'Linux':
     logger.error("this script should be used on debian linux")
@@ -101,66 +161,26 @@ try:
 except Exception as e:
     logger.info('Error while deleting %s: %s', BDIR, e)
     pass
-try:
-    os.unlink(EXE)
-except Exception as e:
-    logger.info('Error while unlinking %s: %s', EXE, e)
-    pass
 
-logger.info('Fetching executable')
-logger.debug('Connecting to server %s', SRV)
-conn = httplib.HTTPConnection(SRV, '80')
-conn.request('GET', BASEPATH)
-response = conn.getresponse()
-if response.status != 200:
-    logger.error('Unexpected response from server (%s)', response.status)
-    sys.exit(1)
+if options.server is not None:
+    if not options.download:
+        logger.error('-s is only meaningful with -d')
+        sys.exit(1)
+    SRV = options.server
 
-logger.debug('Parsing response from server')
-parser = MyHTMLParser()
-parser.feed(response.read())
-parser.close()
-
-logger.debug('Filtering results')
-regexp = re.compile('waptsetup_rev([0-9]+)\.exe')
 revision = 0
-latest_exe = None
-
-for cur_exe in parser.wapt_waptsetup_exes:
-    match = regexp.search(cur_exe)
-    if match:
-        cur_rev = match.group(1)
-        if cur_rev > revision:
-            revision = cur_rev
-            latest_exe = cur_exe
-
-if latest_exe is None:
-    logger.error('No matching files on server')
-    sys.exit(1)
-
-logger.debug('Starting download of %s', BASEPATH + latest_exe)
-conn.request('GET', BASEPATH + latest_exe)
-response = conn.getresponse()
-if response.status != 200:
-    logger.error('Unexpected response from server (%s)', response.status)
-    sys.exit(1)
-
-out = file(EXE, 'wb')
-while True:
-    buffer = response.read(2**15)
-    if len(buffer) == 0:
-        break
-    out.write(buffer)
-out.close()
-
-logger.info('Correctly fetched %s', EXE)
+if options.download:
+    revision = fetch_from_server()
 
 logger.debug('Getting version from executable')
 pe = pefile.PE(EXE)
 version = pe.FileInfo[0].StringTable[0].entries['ProductVersion'].strip()
 logger.debug('%s version: %s', EXE, version)
 
-full_version = version + '-rev' + revision
+if revision != 0:
+    full_version = version + '-rev' + revision
+else:
+    full_version = version
 
 logger.info('Creating .deb')
 shutil.copytree('./debian/', BDIR + 'DEBIAN/')
