@@ -4,5 +4,6 @@ Section: base
 Priority: optional
 Architecture: all
 Depends: python, mongodb, dialog, tis-waptrepo, python-m2crypto, python-passlib, uwsgi, uwsgi-plugin-http, uwsgi-plugin-python
+Recommends: tis-waptsetup
 Maintainer: TIS <technique@tranquil-it-systems.fr>
 Description: WAPT Server for linux
