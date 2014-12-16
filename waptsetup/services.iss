@@ -526,24 +526,15 @@ var
   Error: Integer;
 begin
   Result := 0;
-  try
-    SCMHandle := OpenSCManager('', '', SC_MANAGER_ALL_ACCESS);
-    if SCMHandle = 0 then
-      RaiseException('OpenSCManager@SimpleQueryService: ' + AService + ' ' + 
-        SysErrorMessage(DLLGetLastError));
+  SCMHandle := OpenSCManager('', '', SC_MANAGER_ALL_ACCESS);
+  if SCMHandle <> 0 then
+  begin
     try
       ServiceHandle := OpenService(SCMHandle, AService, SERVICE_ALL_ACCESS);
-      if ServiceHandle = 0 then
-        RaiseException('OpenService@SimpleQueryService: ' + AService + ' ' + 
-          SysErrorMessage(DLLGetLastError));
+      if ServiceHandle <> 0 then
       try
-        if ControlService(ServiceHandle, SERVICE_CONTROL_INTERROGATE, ServiceStatus) = 0 then
-        begin
-          Error := DLLGetLastError;
-          RaiseException('ControlService@SimpleQueryService: ' + AService + ' ' + 
-            SysErrorMessage(Error));
-        end;
-        Result := ServiceStatus.dwCurrentState;
+        if ControlService(ServiceHandle, SERVICE_CONTROL_INTERROGATE, ServiceStatus) <> 0 then
+          Result := ServiceStatus.dwCurrentState;
       finally
         if ServiceHandle <> 0 then
           CloseServiceHandle(ServiceHandle);
@@ -552,7 +543,5 @@ begin
       if SCMHandle <> 0 then
         CloseServiceHandle(SCMHandle);
     end;
-  except
-    ShowExceptionMessage;
   end;
 end;
