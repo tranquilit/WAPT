@@ -151,7 +151,19 @@ var
 function InitializeSetup(): Boolean;
 var
   ResultCode: integer;
+  ServiceStatus: LongWord;
 begin
+
+#ifdef waptserver
+  try
+    ServiceStatus := SimpleQueryService('W3SVC');
+  except
+    ServiceStatus := 0;
+  end;
+  if ServiceStatus = SERVICE_RUNNING then
+    RaiseException('IIS a été détecté sur cette machine et entrera en conflit avec WAPT, installation interrompue.');
+#endif
+
   // terminate waptconsole
   if Exec('taskkill', '/t /im "waptconsole.exe" /f', '', SW_SHOW,
      ewWaitUntilTerminated, ResultCode) then
