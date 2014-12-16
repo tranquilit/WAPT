@@ -1803,7 +1803,10 @@ class WaptServer(object):
             return self._server_url
         else:
             if not self._cached_dns_server_url:
-                self._cached_dns_server_url = self.find_wapt_server_url()
+                try:
+                    self._cached_dns_server_url = self.find_wapt_server_url()
+                except dns.exception.Timeout:
+                    logger.debug('DNS server is not available to get waptserver URL')
             return self._cached_dns_server_url
 
     def find_wapt_server_url(self):

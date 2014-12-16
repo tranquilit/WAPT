@@ -123,7 +123,7 @@ if options.loglevel is not None:
 def get_authorized_callers_ip(waptserver_url=None):
     """Returns list of IP allowed to request actions with check_caller decorator"""
     ips = []
-    if waptserver_url != '':
+    if waptserver_url:
         try:
             ips.append(socket.gethostbyname( urlparse(waptserver_url).hostname))
         except socket.gaierror as e:
@@ -2097,7 +2097,7 @@ if __name__ == "__main__":
     task_manager.daemon = True
     task_manager.start()
 
-    debug=False
+    debug=True
     if debug:
         app.run(host='0.0.0.0',port=30888,debug=False)
     else:
