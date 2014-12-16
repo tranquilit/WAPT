@@ -2097,7 +2097,7 @@ if __name__ == "__main__":
     task_manager.daemon = True
     task_manager.start()
 
-    debug=True
+    debug=False
     if debug:
         app.run(host='0.0.0.0',port=30888,debug=False)
     else:
