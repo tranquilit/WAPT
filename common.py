@@ -5514,7 +5514,6 @@ Version = setuphelpers.Version  # obsolete
 
 if __name__ == '__main__':
     wapt = Wapt(config_filename=r'C:\tranquilit\wapt\wapt-get.ini')
-    wapt.register_computer()
     sys.exit(1)
 
 
