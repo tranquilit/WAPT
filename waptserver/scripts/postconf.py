@@ -56,7 +56,13 @@ if "check_output" not in dir( subprocess ): # duck punch it in!
         return output
     subprocess.check_output = f
 
-postconf = dialog.Dialog(dialog="dialog")
+
+# XXX on CentOS 6.5 the first call would fail because of compat mismatch between
+# dialog(1) and our recent dialog.py
+try:
+    postconf = dialog.Dialog(dialog="dialog")
+except dialog.UnableToRetrieveBackendVersion:
+    postconf = dialog.Dialog(dialog="dialog", use_stdout=True)
 
 def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn):
     if wapt_folder.endswith('\\') or wapt_folder.endswith('/'):
