@@ -40,6 +40,22 @@ import subprocess
 import jinja2
 import socket
 
+# for python < 2.7
+if "check_output" not in dir( subprocess ): # duck punch it in!
+    def f(*popenargs, **kwargs):
+        if 'stdout' in kwargs:
+            raise ValueError('stdout argument not allowed, it will be overridden.')
+        process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
+        output, unused_err = process.communicate()
+        retcode = process.poll()
+        if retcode:
+            cmd = kwargs.get("args")
+            if cmd is None:
+                cmd = popenargs[0]
+            raise subprocess.CalledProcessError(retcode, cmd)
+        return output
+    subprocess.check_output = f
+
 postconf = dialog.Dialog(dialog="dialog")
 
 def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn):
@@ -190,7 +206,7 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
 
             final_msg.append('Please connect to https://' + fqdn + '/ to access the server.')
 
-        except CalledProcessError as cpe:
+        except subprocess.CalledProcessError as cpe:
             final_msg += [
                 'Error while trying to configure Apache!',
                 'errno = ' + str(cpe.code) + ', output: ' + cpe.output
