@@ -212,9 +212,10 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
                 'errno = ' + str(cpe.code) + ', output: ' + cpe.output
                 ]
         except Exception as e:
+            import traceback
             final_msg += [
-            'Error while tryting to configure Apache!',
-            e.message
+            'Error while trying to configure Apache!',
+            traceback.format_exc()
             ]
 
     width = 4 + max(10, len(max(final_msg, key=len)))
