@@ -40,7 +40,29 @@ import subprocess
 import jinja2
 import socket
 
-postconf = dialog.Dialog(dialog="dialog")
+# for python < 2.7
+if "check_output" not in dir( subprocess ): # duck punch it in!
+    def f(*popenargs, **kwargs):
+        if 'stdout' in kwargs:
+            raise ValueError('stdout argument not allowed, it will be overridden.')
+        process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
+        output, unused_err = process.communicate()
+        retcode = process.poll()
+        if retcode:
+            cmd = kwargs.get("args")
+            if cmd is None:
+                cmd = popenargs[0]
+            raise subprocess.CalledProcessError(retcode, cmd)
+        return output
+    subprocess.check_output = f
+
+
+# XXX on CentOS 6.5 the first call would fail because of compat mismatch between
+# dialog(1) and our recent dialog.py
+try:
+    postconf = dialog.Dialog(dialog="dialog")
+except dialog.UnableToRetrieveBackendVersion:
+    postconf = dialog.Dialog(dialog="dialog", use_stdout=True)
 
 def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn):
     if wapt_folder.endswith('\\') or wapt_folder.endswith('/'):
@@ -190,15 +212,16 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
 
             final_msg.append('Please connect to https://' + fqdn + '/ to access the server.')
 
-        except CalledProcessError as cpe:
+        except subprocess.CalledProcessError as cpe:
             final_msg += [
                 'Error while trying to configure Apache!',
                 'errno = ' + str(cpe.code) + ', output: ' + cpe.output
                 ]
         except Exception as e:
+            import traceback
             final_msg += [
-            'Error while tryting to configure Apache!',
-            e.message
+            'Error while trying to configure Apache!',
+            traceback.format_exc()
             ]
 
     width = 4 + max(10, len(max(final_msg, key=len)))
