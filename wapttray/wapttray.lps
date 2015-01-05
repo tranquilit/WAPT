@@ -11,8 +11,8 @@
         <UnitName Value="wapttray"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="17"/>
-        <CursorPos X="9" Y="31"/>
+        <TopLine Value="12"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -20,11 +20,10 @@
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="736"/>
-        <CursorPos X="60" Y="755"/>
+        <TopLine Value="608"/>
+        <CursorPos X="26" Y="633"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
       </Unit1>
@@ -35,10 +34,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="uDMWAPTTray"/>
-        <EditorIndex Value="3"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="304"/>
-        <CursorPos X="1" Y="325"/>
+        <TopLine Value="538"/>
+        <CursorPos X="55" Y="555"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -101,7 +101,7 @@
       <Unit10>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <UnitName Value="superobject"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3580"/>
         <CursorPos X="1" Y="3594"/>
@@ -208,7 +208,7 @@
       <Unit24>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
         <UnitName Value="tiscommon"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="802"/>
         <CursorPos X="33" Y="817"/>
@@ -335,7 +335,7 @@
       <Unit40>
         <Filename Value="..\..\pltis_utils\tisstrings.pas"/>
         <UnitName Value="tisstrings"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="215"/>
         <CursorPos X="22" Y="239"/>
@@ -422,148 +422,140 @@
       <Unit51>
         <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdStack.pas"/>
         <UnitName Value="IdStack"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit51>
       <Unit52>
         <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdStackWindows.pas"/>
         <UnitName Value="IdStackWindows"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit52>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="29" HistoryIndex="28">
       <Position1>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="632" Column="42" TopLine="620"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="193" Column="14" TopLine="185"/>
       </Position1>
       <Position2>
-        <Filename Value="wapttray.lpr"/>
-        <Caret Line="31" Column="9" TopLine="17"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position2>
       <Position3>
-        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdStack.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="375" Column="45" TopLine="350"/>
       </Position3>
       <Position4>
-        <Filename Value="wapttray.lpr"/>
-        <Caret Line="31" Column="9" TopLine="17"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="376" Column="45" TopLine="350"/>
       </Position4>
       <Position5>
         <Filename Value="udmwapttray.pas"/>
-        <Caret Line="127" Column="52" TopLine="118"/>
+        <Caret Line="421" Column="63" TopLine="396"/>
       </Position5>
       <Position6>
         <Filename Value="udmwapttray.pas"/>
-        <Caret Line="392" Column="3" TopLine="372"/>
+        <Caret Line="445" Column="49" TopLine="421"/>
       </Position6>
       <Position7>
         <Filename Value="udmwapttray.pas"/>
-        <Caret Line="323" Column="21" TopLine="309"/>
+        <Caret Line="492" Column="25" TopLine="468"/>
       </Position7>
       <Position8>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="749" Column="3" TopLine="736"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="658" Column="31" TopLine="633"/>
       </Position8>
       <Position9>
         <Filename Value="udmwapttray.pas"/>
-        <Caret Line="323" Column="1" TopLine="309"/>
+        <Caret Line="661" Column="9" TopLine="636"/>
       </Position9>
       <Position10>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="749" Column="1" TopLine="736"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="93" Column="11" TopLine="79"/>
       </Position10>
       <Position11>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="755" Column="1" TopLine="743"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="118" Column="44" TopLine="94"/>
       </Position11>
       <Position12>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="756" Column="1" TopLine="743"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="660" Column="12" TopLine="635"/>
       </Position12>
       <Position13>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="762" Column="22" TopLine="743"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="694" Column="9" TopLine="663"/>
       </Position13>
       <Position14>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="320" Column="10" TopLine="307"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="121" Column="67" TopLine="99"/>
       </Position14>
       <Position15>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="632" Column="20" TopLine="627"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="361" Column="13" TopLine="336"/>
       </Position15>
       <Position16>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="782" Column="9" TopLine="759"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="487" Column="16" TopLine="461"/>
       </Position16>
       <Position17>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="755" Column="13" TopLine="743"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="546" Column="23" TopLine="550"/>
       </Position17>
       <Position18>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="766" Column="28" TopLine="749"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position18>
       <Position19>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="749" Column="1" TopLine="744"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="115" Column="17" TopLine="91"/>
       </Position19>
       <Position20>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="755" Column="1" TopLine="744"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="515" Column="23" TopLine="491"/>
       </Position20>
       <Position21>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="767" Column="1" TopLine="747"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="534" Column="23" TopLine="510"/>
       </Position21>
       <Position22>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="769" Column="10" TopLine="766"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="546" Column="23" TopLine="522"/>
       </Position22>
       <Position23>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="749" Column="1" TopLine="736"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="556" Column="23" TopLine="532"/>
       </Position23>
       <Position24>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="755" Column="1" TopLine="736"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="562" Column="23" TopLine="538"/>
       </Position24>
       <Position25>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="767" Column="1" TopLine="755"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="115" Column="17" TopLine="101"/>
       </Position25>
       <Position26>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="768" Column="1" TopLine="755"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="515" Column="23" TopLine="491"/>
       </Position26>
       <Position27>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="769" Column="1" TopLine="755"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="534" Column="23" TopLine="510"/>
       </Position27>
       <Position28>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="795" Column="1" TopLine="783"/>
+        <Filename Value="udmwapttray.pas"/>
+        <Caret Line="546" Column="23" TopLine="522"/>
       </Position28>
       <Position29>
         <Filename Value="udmwapttray.pas"/>
-        <Caret Line="325" Column="1" TopLine="304"/>
+        <Caret Line="556" Column="23" TopLine="532"/>
       </Position29>
-      <Position30>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <Caret Line="639" Column="1" TopLine="627"/>
-      </Position30>
     </JumpHistory>
   </ProjectSession>
   <Debugging>

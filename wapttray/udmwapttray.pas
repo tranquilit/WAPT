@@ -495,17 +495,28 @@ begin
         message.Delete(0);
         msg := message.Text;
         taskresult := SO(message.Text);
-        trayHint:=taskresult.S['runstatus'];
-        if taskresult.B['notify_user'] then
-           task_notify_user:=True
+        if taskresult<>Nil then
+        begin
+          trayHint:=taskresult.S['runstatus'];
+          if taskresult.B['notify_user'] then
+             task_notify_user:=True
+          else
+            task_notify_user:=False;
+        end
         else
+        begin
           task_notify_user:=False;
+          trayHint := '';
+        end;
 
         if topic='ERROR' then
         begin
           trayMode:= tmErrors;
           current_task := Nil;
-          TrayIcon1.BalloonHint := UTF8Encode('Erreur pour '+taskresult.S['description']);
+          if taskresult<>Nil then
+            TrayIcon1.BalloonHint := UTF8Encode('Erreur pour '+taskresult.S['description'])
+          else
+            TrayIcon1.BalloonHint := 'Erreur';
           TrayIcon1.BalloonFlags:=bfError;
           if not popupvisible and task_notify_user then
             TrayIcon1.ShowBalloonHint;
@@ -514,7 +525,11 @@ begin
         if topic='START' then
         begin
           trayMode:= tmRunning;
-          TrayIcon1.BalloonHint := UTF8Encode(taskresult.S['description']+' démarré');
+          if taskresult<>Nil then
+            TrayIcon1.BalloonHint := UTF8Encode(taskresult.S['description']+' démarré')
+          else
+            TrayIcon1.BalloonHint := '';
+
           TrayIcon1.BalloonFlags:=bfInfo;
           current_task := taskresult;
           if not popupvisible and task_notify_user then
@@ -717,7 +732,7 @@ begin
   if lastButton=mbLeft then
   try
     res := WAPTLocalJsonGet('update.json');
-    if pos('ERROR',uppercase(res.AsJSon ))<=0 then
+    if (res<>Nil) and  (pos('ERROR',uppercase(res.AsJSon ))<=0) then
       TrayIcon1.BalloonHint:='Vérification en cours...'
     else
       TrayIcon1.BalloonHint:='Erreur au lancement de la vérification...';
