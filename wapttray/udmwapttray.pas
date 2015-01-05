@@ -127,7 +127,7 @@ var
 
 implementation
 uses LCLIntf,Forms,dialogs,windows,graphics,tiscommon,
-    waptcommon,tisinifiles,soutils,UnitRedirect,tisstrings,tishttp;
+    waptcommon,tisinifiles,soutils,UnitRedirect,tisstrings,tishttp,IdException;
 
 {$R *.lfm}
 
@@ -193,7 +193,7 @@ begin
         tasks := WAPTLocalJsonGet('tasks_status.json','','',200);
         WaptServiceRunning:=True;
     except
-      on EHTTPException do
+      on E:EIdException do
       begin
         WaptServiceRunning:=False;
         tasks := Nil;
@@ -283,7 +283,12 @@ procedure TDMWaptTray.ActUpdateExecute(Sender: TObject);
 var
   res : ISUperObject;
 begin
-  res := WAPTLocalJsonGet('update.json');
+  try
+    res := WAPTLocalJsonGet('update.json');
+  except
+    on E:EIdException do
+      WaptServiceRunning:=False;
+  end;
 end;
 
 procedure TDMWaptTray.ActUpdateUpdate(Sender: TObject);
@@ -296,14 +301,24 @@ procedure TDMWaptTray.ActUpgradeExecute(Sender: TObject);
 var
   res : ISUperObject;
 begin
-  res := WAPTLocalJsonGet('upgrade.json');
+  try
+    res := WAPTLocalJsonGet('upgrade.json');
+  except
+    on E:EIdException do
+      WaptServiceRunning:=False;
+  end;
 end;
 
 procedure TDMWaptTray.ActWaptUpgradeExecute(Sender: TObject);
 var
   res : ISuperObject;
 begin
-  res := WAPTLocalJsonGet('waptupgrade.json');
+  try
+    res := WAPTLocalJsonGet('waptupgrade.json');
+  except
+    on E:EIdException do
+      WaptServiceRunning:=False;
+  end;
 end;
 
 procedure TDMWaptTray.DataModuleCreate(Sender: TObject);
@@ -372,21 +387,36 @@ procedure TDMWaptTray.ActCancelAllTasksExecute(Sender: TObject);
 var
   res : ISuperObject;
 begin
-  res := WAPTLocalJsonGet('cancel_all_tasks.json');
+  try
+    res := WAPTLocalJsonGet('cancel_all_tasks.json');
+  except
+    on E:EIdException do
+      WaptServiceRunning:=False;
+  end;
 end;
 
 procedure TDMWaptTray.ActCancelRunningTaskExecute(Sender: TObject);
 var
   res : ISuperObject;
 begin
-  res := WAPTLocalJsonGet('cancel_running_task.json');
+  try
+    res := WAPTLocalJsonGet('cancel_running_task.json');
+  except
+    on E:EIdException do
+      WaptServiceRunning:=False;
+  end;
 end;
 
 procedure TDMWaptTray.ActForceRegisterExecute(Sender: TObject);
 var
   res : ISuperObject;
 begin
-  res := WAPTLocalJsonGet('register.json');
+  try
+    res := WAPTLocalJsonGet('register.json');
+  except
+    on E:EIdException do
+      WaptServiceRunning:=False;
+  end;
 end;
 
 procedure TDMWaptTray.ActForceRegisterUpdate(Sender: TObject);
@@ -598,7 +628,12 @@ procedure TDMWaptTray.ActReloadConfigExecute(Sender: TObject);
 var
   res:ISuperObject;
 begin
-  res := WAPTLocalJsonGet('reload_config.json');
+  try
+    res := WAPTLocalJsonGet('reload_config.json');
+  except
+    on E:EIdException do
+      WaptServiceRunning:=False;
+  end;
 end;
 
 procedure TDMWaptTray.ActServiceEnableExecute(Sender: TObject);

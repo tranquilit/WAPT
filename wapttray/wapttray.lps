@@ -4,7 +4,7 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="53">
+    <Units Count="55">
       <Unit0>
         <Filename Value="wapttray.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -20,10 +20,10 @@
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="608"/>
-        <CursorPos X="26" Y="633"/>
+        <TopLine Value="413"/>
+        <CursorPos X="14" Y="427"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
       </Unit1>
@@ -37,8 +37,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="538"/>
-        <CursorPos X="55" Y="555"/>
+        <TopLine Value="609"/>
+        <CursorPos X="22" Y="634"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -101,11 +101,11 @@
       <Unit10>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <UnitName Value="superobject"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3580"/>
         <CursorPos X="1" Y="3594"/>
-        <UsageCount Value="56"/>
+        <UsageCount Value="57"/>
         <Loaded Value="True"/>
       </Unit10>
       <Unit11>
@@ -208,11 +208,11 @@
       <Unit24>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
         <UnitName Value="tiscommon"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="802"/>
         <CursorPos X="33" Y="817"/>
-        <UsageCount Value="19"/>
+        <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit24>
       <Unit25>
@@ -335,11 +335,11 @@
       <Unit40>
         <Filename Value="..\..\pltis_utils\tisstrings.pas"/>
         <UnitName Value="tisstrings"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="215"/>
         <CursorPos X="22" Y="239"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit40>
       <Unit41>
@@ -422,10 +422,12 @@
       <Unit51>
         <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdStack.pas"/>
         <UnitName Value="IdStack"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
+        <TopLine Value="757"/>
+        <CursorPos X="46" Y="767"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit51>
       <Unit52>
         <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdStackWindows.pas"/>
@@ -435,152 +437,186 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
       </Unit52>
+      <Unit53>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdException.pas"/>
+        <UnitName Value="IdException"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="85"/>
+        <CursorPos X="25" Y="105"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit53>
+      <Unit54>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdIOHandlerStack.pas"/>
+        <UnitName Value="IdIOHandlerStack"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="266"/>
+        <CursorPos X="1" Y="280"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit54>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <JumpHistory Count="29" HistoryIndex="28">
       <Position1>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="193" Column="14" TopLine="185"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdStack.pas"/>
+        <Caret Line="746" Column="1" TopLine="732"/>
       </Position1>
       <Position2>
         <Filename Value="udmwapttray.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="266" Column="24" TopLine="241"/>
       </Position2>
       <Position3>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="375" Column="45" TopLine="350"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdStack.pas"/>
+        <Caret Line="746" Column="1" TopLine="732"/>
       </Position3>
       <Position4>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="376" Column="45" TopLine="350"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdException.pas"/>
+        <Caret Line="109" Column="42" TopLine="85"/>
       </Position4>
       <Position5>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="421" Column="63" TopLine="396"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdStack.pas"/>
+        <Caret Line="778" Column="188" TopLine="756"/>
       </Position5>
       <Position6>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="445" Column="49" TopLine="421"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdStack.pas"/>
+        <Caret Line="746" Column="1" TopLine="732"/>
       </Position6>
       <Position7>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="492" Column="25" TopLine="468"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdException.pas"/>
+        <Caret Line="112" Column="1" TopLine="85"/>
       </Position7>
       <Position8>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="658" Column="31" TopLine="633"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdIOHandlerStack.pas"/>
+        <Caret Line="280" Column="1" TopLine="267"/>
       </Position8>
       <Position9>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="661" Column="9" TopLine="636"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdIOHandlerStack.pas"/>
+        <Caret Line="347" Column="1" TopLine="332"/>
       </Position9>
       <Position10>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="93" Column="11" TopLine="79"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdIOHandlerStack.pas"/>
+        <Caret Line="280" Column="1" TopLine="266"/>
       </Position10>
       <Position11>
         <Filename Value="udmwapttray.pas"/>
-        <Caret Line="118" Column="44" TopLine="94"/>
+        <Caret Line="266" Column="24" TopLine="241"/>
       </Position11>
       <Position12>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="660" Column="12" TopLine="635"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdException.pas"/>
+        <Caret Line="112" Column="1" TopLine="85"/>
       </Position12>
       <Position13>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="694" Column="9" TopLine="663"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdStack.pas"/>
+        <Caret Line="746" Column="1" TopLine="732"/>
       </Position13>
       <Position14>
         <Filename Value="udmwapttray.pas"/>
-        <Caret Line="121" Column="67" TopLine="99"/>
+        <Caret Line="199" Column="16" TopLine="175"/>
       </Position14>
       <Position15>
         <Filename Value="udmwapttray.pas"/>
-        <Caret Line="361" Column="13" TopLine="336"/>
+        <Caret Line="145" Column="28" TopLine="269"/>
       </Position15>
       <Position16>
         <Filename Value="udmwapttray.pas"/>
-        <Caret Line="487" Column="16" TopLine="461"/>
+        <Caret Line="676" Column="4" TopLine="646"/>
       </Position16>
       <Position17>
         <Filename Value="udmwapttray.pas"/>
-        <Caret Line="546" Column="23" TopLine="550"/>
+        <Caret Line="119" Column="14" TopLine="105"/>
       </Position17>
       <Position18>
         <Filename Value="udmwapttray.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="770" Column="51" TopLine="751"/>
       </Position18>
       <Position19>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="115" Column="17" TopLine="91"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdStack.pas"/>
+        <Caret Line="746" Column="1" TopLine="732"/>
       </Position19>
       <Position20>
-        <Filename Value="udmwapttray.pas"/>
-        <Caret Line="515" Column="23" TopLine="491"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdException.pas"/>
+        <Caret Line="106" Column="36" TopLine="85"/>
       </Position20>
       <Position21>
         <Filename Value="udmwapttray.pas"/>
-        <Caret Line="534" Column="23" TopLine="510"/>
+        <Caret Line="770" Column="51" TopLine="736"/>
       </Position21>
       <Position22>
         <Filename Value="udmwapttray.pas"/>
-        <Caret Line="546" Column="23" TopLine="522"/>
+        <Caret Line="196" Column="22" TopLine="181"/>
       </Position22>
       <Position23>
         <Filename Value="udmwapttray.pas"/>
-        <Caret Line="556" Column="23" TopLine="532"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position23>
       <Position24>
         <Filename Value="udmwapttray.pas"/>
-        <Caret Line="562" Column="23" TopLine="538"/>
+        <Caret Line="289" Column="22" TopLine="264"/>
       </Position24>
       <Position25>
         <Filename Value="udmwapttray.pas"/>
-        <Caret Line="115" Column="17" TopLine="101"/>
+        <Caret Line="307" Column="22" TopLine="282"/>
       </Position25>
       <Position26>
         <Filename Value="udmwapttray.pas"/>
-        <Caret Line="515" Column="23" TopLine="491"/>
+        <Caret Line="319" Column="22" TopLine="294"/>
       </Position26>
       <Position27>
         <Filename Value="udmwapttray.pas"/>
-        <Caret Line="534" Column="23" TopLine="510"/>
+        <Caret Line="393" Column="22" TopLine="368"/>
       </Position27>
       <Position28>
         <Filename Value="udmwapttray.pas"/>
-        <Caret Line="546" Column="23" TopLine="522"/>
+        <Caret Line="405" Column="22" TopLine="380"/>
       </Position28>
       <Position29>
         <Filename Value="udmwapttray.pas"/>
-        <Caret Line="556" Column="23" TopLine="532"/>
+        <Caret Line="417" Column="22" TopLine="392"/>
       </Position29>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
-    <BreakPoints Count="3">
+    <BreakPoints Count="5">
       <Item1>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="udmwapttray.pas"/>
-        <Line Value="487"/>
+        <Line Value="517"/>
       </Item1>
       <Item2>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="udmwapttray.pas"/>
-        <Line Value="438"/>
+        <Line Value="468"/>
       </Item2>
       <Item3>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="udmwapttray.pas"/>
-        <Line Value="396"/>
+        <Line Value="426"/>
       </Item3>
+      <Item4>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="udmwapttray.pas"/>
+        <Line Value="199"/>
+      </Item4>
+      <Item5>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="udmwapttray.pas"/>
+        <Line Value="287"/>
+      </Item5>
     </BreakPoints>
     <Watches Count="1">
       <Item1>
