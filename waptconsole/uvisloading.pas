@@ -39,7 +39,7 @@ var
   VisLoading: TVisLoading;
 
 implementation
-
+uses uWaptRes;
 {$R *.lfm}
 
 { TVisLoading }
@@ -50,7 +50,7 @@ begin
   if Assigned(OnStop) then
     OnStop(Self);
   if ExceptionOnStop then
-    Raise EStopRequest.CreateFmt('Opération %s stoppée par l''utilisateur',[AMessage.Caption]);
+    Raise EStopRequest.CreateFmt(rsCanceledByUser,[AMessage.Caption]);
 
 end;
 

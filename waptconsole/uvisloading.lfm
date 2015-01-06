@@ -37,7 +37,7 @@ object VisLoading: TVisLoading
     Align = alTop
     Alignment = taCenter
     BorderSpacing.Top = 10
-    Caption = 'Chargement en cours...'
+    Caption = 'Loading...'
     ParentColor = False
     WordWrap = True
   end
@@ -46,7 +46,7 @@ object VisLoading: TVisLoading
     Height = 30
     Top = 37
     Width = 92
-    DefaultCaption = True
+    Caption = 'Abort'
     Kind = bkAbort
     ModalResult = 3
     OnClick = BitBtn1Click
