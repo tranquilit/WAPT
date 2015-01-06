@@ -1148,28 +1148,28 @@ end;
 
 procedure TVisWaptGUI.ActDeleteGroupExecute(Sender: TObject);
 var
-  message: string = 'Etes vous sûr de vouloir supprimer ce paquet du serveur ?';
+  message: string = rsConfirmRmOnePackage;
   res: ISuperObject;
   group: string;
   i: integer;
   N: PVirtualNode;
 begin
   if GridGroups.SelectedCount > 1 then
-    message := 'Etes vous sûr de vouloir supprimer ces paquets du serveur ?';
+    message := rsConfirmRmMultiplePackages;
 
-  if MessageDlg('Confirmer la suppression', message, mtConfirmation,
+  if MessageDlg(rsConfirmRmPackageCaption, message, mtConfirmation,
     mbYesNoCancel, 0) = mrYes then
 
     with TVisLoading.Create(Self) do
       try
-        ProgressTitle('Suppression des paquets...');
+        ProgressTitle(rsDeletionInProgress);
         N := GridGroups.GetFirstSelected;
         i := 0;
         while (N <> nil) and not StopRequired do
         begin
           Inc(i);
           group := GridPackages.GetCellStrValue(N, 'filename');
-          ProgressTitle('Suppression de ' + group);
+          ProgressTitle(format(rsDeletingElement, [group]));
           res := WAPTServerJsonGet('/delete_package/' + group, [],
             UseProxyForServer, waptServerUser, waptServerPassword);
           if not ObjectIsNull(res['error']) then
@@ -1177,9 +1177,9 @@ begin
           N := GridGroups.GetNextSelected(N);
           ProgressStep(i, GridGroups.SelectedCount);
         end;
-        ProgressTitle('Mise à jour de la liste des paquets');
+        ProgressTitle(rsUpdatingPackageList);
         ActPackagesUpdate.Execute;
-        ProgressTitle('Affichage');
+        ProgressTitle(rsDisplaying);
         ActSearchGroups.Execute;
       finally
         Free;
@@ -1188,28 +1188,28 @@ end;
 
 procedure TVisWaptGUI.ActDeletePackageExecute(Sender: TObject);
 var
-  message: string = 'Etes vous sûr de vouloir supprimer ce package du serveur ?';
+  message: string = rsConfirmRmMultiplePackages;
   res: ISuperObject;
   package: string;
   i: integer;
   N: PVirtualNode;
 begin
   if GridPackages.SelectedCount > 1 then
-    message := 'Etes vous sûr de vouloir supprimer ces packages du serveur ?';
+    message := rsConfirmRmMultiplePackages;
 
-  if MessageDlg('Confirmer la suppression', message, mtConfirmation,
+  if MessageDlg(rsConfirmDeletion, message, mtConfirmation,
     mbYesNoCancel, 0) = mrYes then
 
     with TVisLoading.Create(Self) do
       try
-        ProgressTitle('Suppression des packages...');
+        ProgressTitle(rsDeletionInProgress);
         N := GridPackages.GetFirstSelected;
         i := 0;
         while (N <> nil) and not StopRequired do
         begin
           Inc(i);
           package := GridPackages.GetCellStrValue(N, 'filename');
-          ProgressTitle('Suppression de ' + package);
+          ProgressTitle(format(rsDeletingElement, [package]));
           res := WAPTServerJsonGet('/delete_package/' + package, [],
             UseProxyForServer, waptServerUser, waptServerPassword);
           if not ObjectIsNull(res['error']) then
@@ -1217,9 +1217,9 @@ begin
           N := GridPackages.GetNextSelected(N);
           ProgressStep(i, GridPackages.SelectedCount);
         end;
-        ProgressTitle('Mise à jour de la liste des paquets');
+        ProgressTitle(rsUpdatingPackageList);
         ActPackagesUpdate.Execute;
-        ProgressTitle('Affichage');
+        ProgressTitle(rsDisplaying);
         ActSearchPackage.Execute;
       finally
         Free;
@@ -1276,10 +1276,12 @@ begin
   if GridHostPackages.Focused then
   begin
     sel := GridHostPackages.SelectedRows;
-    if Dialogs.MessageDlg('Confirmer', 'Confirmez-vous l''oubli de ' +
-      IntToStr(sel.AsArray.Length) + ' packages du poste ' +
-      GridHosts.FocusedRow.S['host.computer_fqdn'] + ' ?', mtConfirmation, mbYesNoCancel, 0) =
-      mrYes then
+    if Dialogs.MessageDlg(
+       rsConfirmCaption,
+       format(rsConfirmHostForgetsPackages, [IntToStr(sel.AsArray.Length), GridHosts.FocusedRow.S['host.computer_fqdn']]),
+       mtConfirmation,
+       mbYesNoCancel,
+       0) = mrYes then
     begin
       packages := TSuperObject.Create(stArray);
       for package in sel do
@@ -1290,7 +1292,7 @@ begin
         GridHosts.FocusedRow.S['uuid']], UseProxyForServer,
         waptServerUser, waptServerPassword);
       if res.S['status'] <> 'OK' then
-        ShowMessage(Format('Erreur pour le package %s: %s',
+        ShowMessage(Format(rsForgetPackageError,
           [package.S['package'], res.S['message']]));
     end;
     UpdateHostPages(Sender);
@@ -1317,14 +1319,14 @@ var
 begin
   if not FileExists(GetWaptPrivateKeyPath) then
   begin
-    ShowMessage('la clé privée n''existe pas: ' + GetWaptPrivateKeyPath);
+    ShowMessageFmt(rsPrivateKeyDoesntExist, [GetWaptPrivateKeyPath]);
     exit;
   end;
 
   if OpenDialogWapt.Execute then
   begin
-    if MessageDlg('Confirmer l''import',
-      format('Etes vous sûr de vouloir importer'#13#10'%s'#13#10' dans votre dépôt ?',
+    if MessageDlg(rsConfirmImportCaption,
+      format(rsConfirmImport,
       [OpenDialogWapt.Files.Text]), mtConfirmation, mbYesNoCancel, 0) <> mrYes then
       Exit;
 
@@ -1333,7 +1335,7 @@ begin
         Sources := TSuperObject.Create(stArray);
         for i := 0 to OpenDialogWapt.Files.Count - 1 do
         begin
-          ProgressTitle('import de ' + OpenDialogWapt.Files[i]);
+          ProgressTitle(format(rsImportingFile, [OpenDialogWapt.Files[i]]));
           ProgressStep(i, OpenDialogWapt.Files.Count - 1);
           Application.ProcessMessages;
           sourceDir := DMPython.RunJSON(
@@ -1341,8 +1343,7 @@ begin
           sources.AsArray.Add('r"' + sourceDir + '"');
         end;
 
-        ProgressTitle('Dépôt sur le serveur WAPT en cours pour ' + IntToStr(
-          Sources.AsArray.Length) + ' paquets');
+        ProgressTitle(format(rsUploadingPackagesToWaptSrv, [IntToStr(Sources.AsArray.Length)]));
         Application.ProcessMessages;
 
         uploadResult := DMPython.RunJSON(
@@ -1353,14 +1354,14 @@ begin
         if (uploadResult <> nil) and
           (uploadResult.AsArray.length = Sources.AsArray.Length) then
         begin
-          ShowMessage(format('%s importé(s) avec succès.',
+          ShowMessage(format(rsSuccessfullyImported,
             [soutils.Join(',', Sources)]));
           ModalResult := mrOk;
           ActPackagesUpdate.Execute;
           ActSearchPackage.Execute;
         end
         else
-          ShowMessage('Erreur lors de l''import.');
+          ShowMessage(rsFailedImport);
       finally
         Free;
       end;
@@ -1386,10 +1387,11 @@ begin
   if GridHostPackages.Focused then
   begin
     sel := GridHostPackages.SelectedRows;
-    if Dialogs.MessageDlg('Confirmer', 'Confirmez-vous la désinstallation de ' +
-      IntToStr(sel.AsArray.Length) + ' packages du poste ' +
-      GridHosts.FocusedRow.S['host.computer_fqdn'] + ' ?', mtConfirmation, mbYesNoCancel, 0) =
-      mrYes then
+    if Dialogs.MessageDlg(rsConfirmCaption,
+    format(rsConfirmRmPackagesFromHost, [IntToStr(sel.AsArray.Length), GridHosts.FocusedRow.S['host.computer_fqdn']]),
+    mtConfirmation,
+    mbYesNoCancel,
+    0) = mrYes then
     begin
       for package in sel do
       begin
@@ -1399,8 +1401,8 @@ begin
           GridHosts.FocusedRow.S['uuid']], UseProxyForServer,
           waptServerUser, waptServerPassword);
         if res.S['status'] <> 'OK' then
-          ShowMessage(Format('Erreur pour le package %s: %s',
-            [package.S['package'], res.S['message']]));
+          ShowMessageFmt(rsPackageRemoveError,
+            [package.S['package'], res.S['message']]);
       end;
     end;
     UpdateHostPages(Sender);
@@ -1441,7 +1443,6 @@ begin
   begin
     with TvisGroupChoice.Create(self) do
       try
-        Caption := 'Choix des paquets à réautoriser sur les postes sélectionnés';
         if ShowModal = mrOk then
         begin
           packages := TSuperObject.Create(stArray);
@@ -1493,11 +1494,11 @@ begin
   begin
     with TvisGroupChoice.Create(self) do
       try
-        Caption := 'Choix des groupes à enlever des postes sélectionnés';
+        Caption := rsRmGroupFromHosts;
         ActSearchExecute(self);
         if groupGrid.Data.AsArray.Length = 0 then
         begin
-          ShowMessage('Il n''y a aucuns groupes.');
+          ShowMessage(rsNoGroup);
           Exit;
         end;
         if ShowModal = mrOk then
@@ -1535,7 +1536,7 @@ begin
     args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
       [waptServerPassword]);
     res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)', [args]));
-    ShowMessage(IntToStr(res.AsArray.Length) + ' postes modifiés');
+    ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
   end;
 end;
 
@@ -1574,7 +1575,7 @@ begin
   with TVisHostsUpgrade.Create(Self) do
     try
       action := 'waptupgrade_host';
-      Caption := 'Mise à jour du client WAPT sur les postes';
+      Caption := rsWaptClientUpdateOnHosts;
       hosts := Gridhosts.SelectedRows;
       if ShowModal = mrOk then
         actRefresh.Execute;
@@ -1624,9 +1625,11 @@ begin
   if GridHosts.Focused then
   begin
     sel := GridHosts.SelectedRows;
-    if Dialogs.MessageDlg('Confirmer', 'Confirmez-vous la suppression de ' +
-      IntToStr(sel.AsArray.Length) + ' postes de la liste ?', mtConfirmation, mbYesNoCancel, 0) =
-      mrYes then
+    if Dialogs.MessageDlg(rsConfirmCaption,
+    format(rsConfirmRmHostsFromList, [IntToStr(sel.AsArray.Length)]),
+    mtConfirmation,
+    mbYesNoCancel,
+    0) = mrYes then
     begin
       for host in sel do
         WAPTServerJsonGet('/delete_host/' + host.S['uuid'], [],
@@ -1658,7 +1661,7 @@ begin
         while (N <> nil) and not StopRequired do
         begin
           package := GridPackages.GetCellStrValue(N, 'package');
-          ProgressTitle('Désinstallation de ' + package + ' en cours ...');
+          ProgressTitle(format(rsUninstallingPackage, [package]));
           ProgressStep(trunc((i / selects) * 100), 100);
           Application.ProcessMessages;
           i := i + 1;
@@ -1973,7 +1976,7 @@ begin
             try
               Result := StrToBool(resp.AsString);
               if not Result then
-                ShowMessage('Mauvais mot de passe');
+                ShowMessage(rsIncorrectPassword);
             except
               ShowMessage(UTF8Encode(resp.AsString));
               Result := False;
@@ -1981,7 +1984,7 @@ begin
           except
             on E: Exception do
             begin
-              ShowMessage('Erreur: ' + UTF8Encode(E.Message));
+              ShowMessageFmt(rsPasswordChangeError, [UTF8Encode(E.Message)]);
               Result := False;
             end;
           end;
