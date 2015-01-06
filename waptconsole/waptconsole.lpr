@@ -9,7 +9,7 @@ uses
   Interfaces, // this includes the LCL widgetset
   Forms,
   pl_virtualtrees, pl_excontrols, uwaptconsole, uVisCreateKey,
-  waptcommon, dmwaptpython, uVisEditPackage,
+  waptcommon, uwaptres, dmwaptpython, uVisEditPackage,
   uviscreatewaptsetup, uvislogin, uvisprivatekeyauth,
   uvisloading, uviswaptconfig, uvischangepassword, uviswaptdeploy, 
   uvishostsupgrade, uVisAPropos, uVisImportPackage;

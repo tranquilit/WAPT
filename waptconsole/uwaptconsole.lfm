@@ -1,10 +1,10 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 352
+  Left = 2538
   Height = 600
-  Top = 135
+  Top = 0
   Width = 800
   Caption = 'Console WAPT'
-  ClientHeight = 581
+  ClientHeight = 580
   ClientWidth = 800
   Constraints.MinHeight = 600
   Constraints.MinWidth = 800
@@ -17,13 +17,12 @@ object VisWaptGUI: TVisWaptGUI
   OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
-  OnShowHint = FormShowHint
   Position = poDefault
   ShowHint = True
   LCLVersion = '1.3'
   object MainPages: TPageControl
     Left = 0
-    Height = 438
+    Height = 434
     Top = 0
     Width = 800
     ActivePage = pgInventory
@@ -33,7 +32,7 @@ object VisWaptGUI: TVisWaptGUI
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
       Caption = 'Inventaire'
-      ClientHeight = 412
+      ClientHeight = 408
       ClientWidth = 792
       object Panel10: TPanel
         Left = 0
@@ -63,7 +62,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object CheckBoxMaj: TCheckBox
           Left = 338
-          Height = 17
+          Height = 19
           Top = 7
           Width = 151
           Caption = 'Nécessite des mises à jours'
@@ -72,7 +71,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object CheckBox_error: TCheckBox
           Left = 501
-          Height = 17
+          Height = 19
           Top = 7
           Width = 102
           Caption = 'Avec des erreurs'
@@ -125,7 +124,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object cbSearchAll: TCheckBox
           Left = 31
-          Height = 17
+          Height = 19
           Top = 30
           Width = 42
           Caption = 'Tout'
@@ -137,7 +136,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object cbSearchHost: TCheckBox
           Left = 80
-          Height = 17
+          Height = 19
           Top = 30
           Width = 59
           Caption = 'Machine'
@@ -147,7 +146,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object cbSearchDMI: TCheckBox
           Left = 144
-          Height = 17
+          Height = 19
           Top = 30
           Width = 99
           Caption = 'Infos Matérielles'
@@ -157,7 +156,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object cbSearchSoftwares: TCheckBox
           Left = 247
-          Height = 17
+          Height = 19
           Top = 30
           Width = 59
           Caption = 'Logiciels'
@@ -167,7 +166,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object cbSearchPackages: TCheckBox
           Left = 314
-          Height = 17
+          Height = 19
           Top = 30
           Width = 59
           Caption = 'Paquets'
@@ -210,7 +209,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object GridHosts: TSOGrid
         Left = 0
-        Height = 358
+        Height = 354
         Top = 54
         Width = 215
         OnGetText = GridHostsGetText
@@ -387,7 +386,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object HostPages: TPageControl
         Left = 220
-        Height = 358
+        Height = 354
         Top = 54
         Width = 572
         ActivePage = pgPackages
@@ -398,13 +397,13 @@ object VisWaptGUI: TVisWaptGUI
         object pgPackages: TTabSheet
           AnchorSideTop.Side = asrBottom
           Caption = 'Résumé'
-          ClientHeight = 332
+          ClientHeight = 328
           ClientWidth = 564
           object GridHostPackages: TSOGrid
             AnchorSideTop.Control = Panel9
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 120
+            Height = 116
             Top = 122
             Width = 564
             Align = alBottom
@@ -776,7 +775,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel5: TPanel
             Left = 0
             Height = 90
-            Top = 242
+            Top = 238
             Width = 564
             Align = alBottom
             BevelOuter = bvNone
@@ -1476,7 +1475,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object Splitter4: TSplitter
         Left = 215
-        Height = 358
+        Height = 354
         Top = 54
         Width = 5
         Align = alRight
@@ -2542,7 +2541,7 @@ object VisWaptGUI: TVisWaptGUI
   object PanDebug: TPanel
     Left = 0
     Height = 118
-    Top = 443
+    Top = 439
     Width = 800
     Align = alBottom
     ClientHeight = 118
@@ -2619,8 +2618,8 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 3
         object cbShowLog: TCheckBox
           Left = 6
-          Height = 17
-          Top = 0
+          Height = 19
+          Top = -2
           Width = 136
           Anchors = [akRight, akBottom]
           Caption = 'Voir infos de débuggage'
@@ -2634,7 +2633,7 @@ object VisWaptGUI: TVisWaptGUI
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 438
+    Top = 434
     Width = 800
     Align = alBottom
     ResizeAnchor = akBottom
@@ -2649,8 +2648,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object plStatusBar1: TplStatusBar
     Left = 0
-    Height = 20
-    Top = 561
+    Height = 23
+    Top = 557
     Width = 800
     Panels = <    
       item
@@ -2896,7 +2895,6 @@ object VisWaptGUI: TVisWaptGUI
       Enabled = False
       ImageIndex = 31
       OnExecute = ActCancelRunningTaskExecute
-      OnUpdate = ActCancelRunningTaskUpdate
     end
     object ActRemoveDepends: TAction
       Category = 'hosts'

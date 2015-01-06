@@ -231,7 +231,6 @@ type
     procedure ActAddPackageGroupExecute(Sender: TObject);
     procedure ActAdvancedModeExecute(Sender: TObject);
     procedure ActCancelRunningTaskExecute(Sender: TObject);
-    procedure ActCancelRunningTaskUpdate(Sender: TObject);
     procedure ActChangePasswordExecute(Sender: TObject);
     procedure ActCreateCertificateExecute(Sender: TObject);
     procedure ActCreateWaptSetupExecute(Sender: TObject);
@@ -291,7 +290,6 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure FormShowHint(Sender: TObject; HintInfo: PHintInfo);
     procedure GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
     procedure GridGroupsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
@@ -374,7 +372,7 @@ uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, tisstrings,
   uvisOptionIniFile, dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig,
   uvischangepassword, uvisgroupchoice, uviseditgroup, uviswaptdeploy,
   uvishostsupgrade, uVisAPropos, uVisImportPackage, PythonEngine, Clipbrd,
-  RegExpr, Regex, UnitRedirect,tisinifiles;
+  RegExpr, Regex, UnitRedirect,tisinifiles, uWaptRes;
 
 {$R *.lfm}
 
@@ -612,7 +610,7 @@ begin
         end
         else
         begin
-          HostRunningTask.Text := '... Impossible de récupérer l''action';
+          HostRunningTask.Text := rsFatalError;
           HostTaskRunningProgress.Position := 0;
           HostRunningTaskLog.Clear;
           GridHostTasksPending.Data := nil;
@@ -664,9 +662,8 @@ begin
       begin
         package := Grid.GetCellStrValue(N, 'package') + ' (=' +
           Grid.GetCellStrValue(N, 'version') + ')';
-        ProgressTitle(
-          'Installation de ' + Grid.GetCellStrValue(N, 'package') +
-          ' en cours ...');
+        ProgressTitle(format(
+          rsInstalling, [Grid.GetCellStrValue(N, 'package')]));
         ProgressStep(trunc((i / selects) * 100), 100);
         i := i + 1;
         //DMPython.RunJSON(format('mywapt.install("%s")', [package]), jsonlog);
@@ -707,7 +704,7 @@ begin
     ActPackagesUpdate.Execute;
   end
   else
-    ShowMessage('Veullez définir un répertoire de développement pour pouvoir éditer un paquet groupe');
+    ShowMessage(rsDefineWaptdevPath);
 end;
 
 procedure TVisWaptGUI.actQuitExecute(Sender: TObject);
@@ -753,7 +750,7 @@ begin
       //  ActPackagesUpdate.Execute;
     end
     else
-      ShowMessage('Veullez définir un répertoire de développement pour pouvoir éditer le paquet');
+      ShowMessage(rsDefineWaptdevPath);
   end
 end;
 
@@ -794,13 +791,13 @@ begin
             done := FileExists(Result.S['pem_filename']);
             if done then
             begin
-              ShowMessageFmt('La clé %s a été créée avec succès',
+              ShowMessageFmt(rsPublicKeyGenSuccess,
                 [Result.S['pem_filename']]);
               certFile := Result.S['pem_filename'];
               StrReplace(certFile, '.pem', '.crt');
               if not CopyFile(PChar(certFile),
                 PChar(waptpath + '\ssl\' + ExtractFileName(certFile)), True) then
-                ShowMessage('Erreur lors de la copie de la clé publique');
+                ShowMessage(rsPublicKeyGenFailure);
 
               with TINIFile.Create(AppIniFilename) do
                 try
@@ -815,7 +812,7 @@ begin
           except
             on e: Exception do
             begin
-              ShowMessage('Erreur à la création de la clé : ' + e.Message);
+              ShowMessage(format(rsPublicKeyGenError, [e.Message]));
               done := False;
             end;
           end
@@ -850,7 +847,7 @@ begin
           try
             ExceptionOnStop := True;
             Screen.Cursor := crHourGlass;
-            ProgressTitle('Création en cours');
+            ProgressTitle(rsCreationInProgress);
             Start;
             Application.ProcessMessages;
             waptsetupPath := CreateWaptSetup(fnPublicCert.FileName,
@@ -859,19 +856,19 @@ begin
             if FileExists(waptsetupPath) then
               try
                 Start;
-                ProgressTitle('Dépôt sur le serveur WAPT en cours');
+                ProgressTitle(rsProgressTitle);
                 SORes := WAPTServerJsonMultipartFilePost(
                   GetWaptServerURL, 'upload_waptsetup', [], 'file', waptsetupPath, False,
                   WaptServerUser, WaptServerPassword, @IdHTTPWork);
                 Finish;
                 if SORes.S['status'] = 'OK' then
-                  ShowMessage('Agent WAPT créé et déposé avec succès : ' + waptsetupPath)
+                  ShowMessage(format(rsWaptSetupUploadSuccess, [waptsetupPath]))
                 else
-                  ShowMessage('Erreur lors du dépôt de l''agent WAPT : ' + SORes.S['message']);
+                  ShowMessage(format(rsWaptUploadError, [SORes.S['message']]));
               except
                 on e: Exception do
                 begin
-                  ShowMessage('Erreur à la création de l''agent WAPT : ' + e.Message);
+                  ShowMessage(format(rsWaptSetupError, [e.Message]));
                   Finish;
                 end;
               end;
@@ -911,7 +908,7 @@ begin
   begin
     with TvisGroupChoice.Create(self) do
       try
-        Caption := 'Choix des paquets à forcer à désintaller sur les postes sélectionnés';
+        Caption := rsForcedUninstallPackages;
         if ShowModal = mrOk then
         begin
           packages := TSuperObject.Create(stArray);
@@ -949,7 +946,7 @@ begin
     args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
       [waptServerPassword]);
     res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)', [args]));
-    ShowMessage(IntToStr(res.AsArray.Length) + ' postes modifiés');
+    ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
   end;
 end;
 
@@ -963,7 +960,7 @@ begin
   begin
     with TvisGroupChoice.Create(self) do
       try
-        Caption := 'Choix des paquets à ajouter en dépendance aux postes sélectionnés';
+        Caption := rsDependencies;
         if ShowModal = mrOk then
         begin
           packages := TSuperObject.Create(stArray);
@@ -1001,7 +998,7 @@ begin
     args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
       [waptServerPassword]);
     res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)', [args]));
-    ShowMessage(IntToStr(res.AsArray.Length) + ' postes modifiés');
+    ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
   end;
 end;
 
@@ -1023,13 +1020,9 @@ begin
   res := WAPTServerJsonGet('host_taskkill?host=%s&uuid=%s', [currip, currhost],
     UseProxyForServer, waptServerUser, waptServerPassword);
   if res.S['status'] = 'OK' then
-    ShowMessage('Tâche annulée')
+    ShowMessage(rsTaskCancelled)
   else
-    ShowMessage('Impossible d''annuler: ' + res.S['message']);
-end;
-
-procedure TVisWaptGUI.ActCancelRunningTaskUpdate(Sender: TObject);
-begin
+    ShowMessageFmt(rsFailedToCancel, [res.S['message']]);
 end;
 
 procedure TVisWaptGUI.ActChangePasswordExecute(Sender: TObject);
@@ -1049,18 +1042,18 @@ begin
           waptServerUser, WaptServerPassword);
         try
           if not StrToBool(resp.AsString) then
-            ShowMessage('Mauvais mot de passe')
+            ShowMessage(rsIncorrectPassword)
           else
           begin
             waptServerPassword := EdNewPassword1.Text;
-            ShowMessage('Le mot de passe a été changé avec succès !');
+            ShowMessage(rsPasswordChangeSuccess);
           end;
         except
           ShowMessage(UTF8Encode(resp.AsString));
         end;
       except
         on E: Exception do
-          ShowMessage('Erreur: ' + UTF8Encode(E.Message));
+          ShowMessageFmt(rsPasswordChangeError, [UTF8Encode(E.Message)]);
       end;
     end;
   finally
@@ -1103,7 +1096,7 @@ begin
               params := params + format('company=r"%s",', [edOrgName.Text]);
               with  TVisLoading.Create(Self) do
                 try
-                  ProgressTitle('Création en cours');
+                  ProgressTitle(rsProgressTitle);
                   Application.ProcessMessages;
                   waptsetupPath :=
                     DMPython.RunJSON(
@@ -1119,12 +1112,11 @@ begin
                       [waptsetupPath, waptServerUser, waptServerPassword]));
                     if SORes.S['status'] = 'OK' then
                     begin
-                      ShowMessage('Waptagent déposé avec succès');
+                      ShowMessage(rsWaptAgentUploadSuccess);
                       done := True;
                     end
                     else
-                      ShowMessage('Erreur lors du dépôt de waptagent: ' +
-                        SORes.S['message']);
+                      ShowMessageFmt(rsWaptAgentUploadError, [SORes.S['message']]);
                   end;
                 finally
                   Free;
@@ -1132,12 +1124,12 @@ begin
               if done then
               begin
                 Screen.Cursor := crDefault;
-                ShowMessage('waptagent.exe créé avec succès: ' + waptsetupPath);
+                ShowMessageFmt(rsWaptAgentSetupSuccess, [waptsetupPath]);
               end;
             except
               on e: Exception do
               begin
-                ShowMessage('Erreur à la création du waptagent.exe: ' + e.Message);
+                ShowMessageFmt(rsWaptAgentSetupError, [e.Message]);
                 done := False;
               end;
             end;
@@ -2029,10 +2021,6 @@ begin
   GridHostPackages.LoadSettingsFromIni(Appuserinipath);
   GridHostSoftwares.LoadSettingsFromIni(Appuserinipath);
 
-end;
-
-procedure TVisWaptGUI.FormShowHint(Sender: TObject; HintInfo: PHintInfo);
-begin
 end;
 
 procedure TVisWaptGUI.GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
