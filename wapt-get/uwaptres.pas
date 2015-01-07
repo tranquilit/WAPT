@@ -117,6 +117,9 @@ resourcestring
   rsEmptyOldPwError = 'L''ancien mot de passe ne doit pas être vide';
   rsIncorrectOldPwError = 'L''ancien mot de passe ne correspond pas';
 
+  { Messages dans uVisApropos }
+  rsVersion = 'Version Waptconsole: %s'#13#10'Version Wapt-get: %s';
+
 implementation
 
 end.

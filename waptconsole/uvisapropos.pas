@@ -29,14 +29,14 @@ var
   VisApropos: TVisApropos;
 
 implementation
-uses tiscommon,waptcommon,LCLIntf;
+uses tiscommon,waptcommon,LCLIntf, uWaptRes;
 {$R *.lfm}
 
 { TVisApropos }
 
 procedure TVisApropos.FormCreate(Sender: TObject);
 begin
-  LabInfos.Caption := 'Version Waptconsole:'+GetApplicationVersion+#13#10+'Version Wapt-get:'+GetApplicationVersion(WaptgetPath);
+  LabInfos.Caption := format(rsVersion, [GetApplicationVersion, GetApplicationVersion(WaptgetPath)]);
 
 end;
 
