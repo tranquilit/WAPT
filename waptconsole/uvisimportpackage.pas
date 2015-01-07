@@ -51,7 +51,7 @@ var
 implementation
 
 uses uwaptconsole,tiscommon,soutils,waptcommon,
-    dmwaptpython,superobject,uvisloading,uvisprivatekeyauth;
+    dmwaptpython,superobject,uvisloading,uvisprivatekeyauth, uWaptRes;
 
 {$R *.lfm}
 
@@ -60,7 +60,7 @@ uses uwaptconsole,tiscommon,soutils,waptcommon,
 procedure TVisImportPackage.ButExtRepoChangeClick(Sender: TObject);
 begin
   ActWAPTLocalConfigExecute(self);
-  urlExternalRepo.Caption := 'Url: ' + WaptTemplatesRepo;
+  urlExternalRepo.Caption := format(rsUrl, [WaptTemplatesRepo]);
 end;
 
 procedure TVisImportPackage.EdSearch1KeyPress(Sender: TObject; var Key: char);
@@ -113,7 +113,7 @@ var
 begin
   if not FileExists(GetWaptPrivateKeyPath) then
   begin
-    ShowMessage('la clé privée n''existe pas: ' + GetWaptPrivateKeyPath);
+    ShowMessageFmt(rsPrivateKeyDoesntExist, [GetWaptPrivateKeyPath]);
     exit;
   end;
 
@@ -124,7 +124,7 @@ begin
   FileNames := DMPython.RunJSON(format('waptdevutils.get_packages_filenames(r"%s".decode(''utf8''),"%s")',
         [AppIniFilename,Join(',',listPackages)]));
 
-  if MessageDlg('Confirmer la duplication', format('Etes vous sûr de vouloir dupliquer'#13#10'%s'#13#10' dans votre dépôt ?', [Join(',', FileNames)]),
+  if MessageDlg(rsPackageDuplicateConfirmCaption, format(rsPackageDuplicateConfirm, [Join(',', FileNames)]),
         mtConfirmation, mbYesNoCancel, 0) <> mrYes then
     Exit;
 
@@ -140,14 +140,14 @@ begin
     begin
       Application.ProcessMessages;
       ProgressTitle(
-        'Téléchargement en cours de ' + Filename.AsString);
+        format(rsDownloadingPackage, [Filename.AsString]));
       target := AppLocalDir + 'cache\' + Filename.AsString;
       try
         if not FileExists(target) then
           IdWget(WaptTemplatesRepo + '/' + FileName.AsString,
             target, ProgressForm, @updateprogress, UseProxyForTemplates);
       except
-        ShowMessage('Téléchargement annulé');
+        ShowMessage(rsDlCanceled);
         if FileExists(target) then
           DeleteFileUTF8(Target);
         exit;
@@ -156,7 +156,7 @@ begin
 
     for Filename in FileNames do
     begin
-      ProgressTitle('Duplication de '+FileName.AsString);
+      ProgressTitle(format(rsDuplicating, [FileName.AsString]));
       Application.ProcessMessages;
       sourceDir := DMPython.RunJSON(
         Format('waptdevutils.duplicate_from_external_repo(r"%s",r"%s")',
@@ -164,7 +164,7 @@ begin
       sources.AsArray.Add('r"'+sourceDir+'"');
     end;
 
-    ProgressTitle('Dépôt sur le serveur WAPT en cours pour '+IntToStr(Sources.AsArray.Length)+' paquets');
+    ProgressTitle(format(rsUploadingPackagesToWaptSrv, [IntToStr(Sources.AsArray.Length)]));
     Application.ProcessMessages;
 
     uploadResult := DMPython.RunJSON(
@@ -173,11 +173,11 @@ begin
       VisWaptGUI.jsonlog);
     if (uploadResult <> Nil) and (uploadResult.AsArray.length=Sources.AsArray.Length) then
     begin
-      ShowMessage(format('%s dupliqué(s) avec succès.', [ Join(',', listPackages)])) ;
+      ShowMessage(format(rsDuplicateSuccess, [ Join(',', listPackages)])) ;
       ModalResult := mrOk;
     end
     else
-      ShowMessage('Erreur lors de la duplication.');
+      ShowMessage(rsDuplicateFailure);
   finally
     for aDir in Sources do
       DeleteDirectory(copy(aDir.AsString,3,length(aDir.AsString)-3),False);

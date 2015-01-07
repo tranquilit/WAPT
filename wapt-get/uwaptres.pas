@@ -53,7 +53,7 @@ resourcestring
   rsConfirmHostForgetsPackages = 'Confirmez-vous l''oubli de %s packages du poste %s ?'; // Possible issue with multiple formatting parameters
   rsForgetPackageError = 'Erreur pour le package %s: %s';
 
-  rsPrivateKeyDoesntExist = 'La clé privée n''existe pas : s';
+  rsPrivateKeyDoesntExist = 'La clé privée n''existe pas : %s';
 
   rsConfirmImportCaption = 'Confirmer l''import';
   rsConfirmImport = 'Etes vous sûr de vouloir importer'#13#10'%s'#13#10' dans votre dépôt ?';
@@ -119,6 +119,17 @@ resourcestring
 
   { Messages dans uVisApropos }
   rsVersion = 'Version Waptconsole: %s'#13#10'Version Wapt-get: %s';
+
+  { Messages dans uVisApropos }
+  rsUrl = 'Url : %s';
+  rsPackageDuplicateConfirmCaption = 'Confirmer la duplication';
+  rsPackageDuplicateConfirm = 'Etes vous sûr de vouloir dupliquer'#13#10'%s'#13#10' dans votre dépôt ?';
+  rsDownloadingPackage = 'Téléchargement en cours de %s';
+  rsDuplicating = 'Duplication de %s';
+  rsDuplicateSuccess = '%s dupliqué(s) avec succès.';
+  rsDuplicateFailure = 'Erreur lors de la duplication.';
+
+
 
 implementation
 
