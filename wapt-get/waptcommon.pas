@@ -135,7 +135,7 @@ implementation
 
 uses FileUtil, soutils, Variants, winsock, ShellApi, JwaIpHlpApi,
   JwaIpTypes, NetworkAdapterInfo, tisinifiles, registry, tisstrings, JwaWinDNS, JwaWinsock2,
-  IdHttp,IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,Dialogs,Regex,UnitRedirect, IdURI;
+  IdHttp,IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,Dialogs,Regex,UnitRedirect, IdURI, uwaptres;
 
 function IPV42String(ipv4:LongWord):String;
 begin
@@ -393,7 +393,7 @@ begin
   begin
     if Assigned(progressCallback) then
       if not progressCallback(CBReceiver,current,total) then
-        raise EHTTPException.Create('Download stopped by user',0);
+        raise EHTTPException.Create(rsDlStoppedByUser,0);
   end;
 end;
 
@@ -605,7 +605,7 @@ var
   strresult : String;
 begin
   if GetWaptServerURL = '' then
-    raise Exception.Create('wapt_server is not defined in your '+AppIniFilename+' ini file');
+    raise Exception.CreateFmt(rsUndefWaptSrvInIni, [AppIniFilename]);
   if (StrLeft(action,1)<>'/') and (StrRight(GetWaptServerURL,1)<>'/') then
     action := '/'+action;
   if length(args)>0 then
@@ -621,7 +621,7 @@ var
   res:String;
 begin
   if GetWaptServerURL = '' then
-    raise Exception.Create('wapt_server is not defined in your '+AppIniFilename+' ini file');
+    raise Exception.CreateFmt(rsUndefWaptSrvInIni, [AppIniFilename]);
   if (StrLeft(action,1)<>'/') and (StrRight(GetWaptServerURL,1)<>'/') then
     action := '/'+action;
   if length(args)>0 then
@@ -1467,7 +1467,7 @@ begin
 
     inno_fn :=  wapt_base_dir + '\waptsetup' + '\innosetup' + '\ISCC.exe';
     if not FileExists(inno_fn) then
-        raise Exception.CreateFmt('Innosetup n''est pas disponible (emplacement %s), veuillez l''installer',[inno_fn]);
+        raise Exception.CreateFmt(rsInnoSetupUnavailable, [inno_fn]);
     Sto_RedirectedExecute(format('"%s"  %s',[inno_fn,custom_iss]),'',3600000,'','','',OnProgress);
     Result := destination + '\' + outputname + '.exe';
 end;

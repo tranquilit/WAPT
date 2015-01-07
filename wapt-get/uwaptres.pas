@@ -77,6 +77,14 @@ resourcestring
 
   rsCanceledByUser = 'Task %s has been canceled by user';
 
+  // Message dans wapt-get/waptcommon.pas
+  rsInnoSetupUnavailable = 'Innosetup n''est pas disponible (emplacement %s), veuillez l''installer';
+  rsUndefWaptSrvInIni = 'wapt_server is not defined in your %s ini file';
+  rsDlStoppedByUser = 'Download stopped by user';
+
+  // Message dans
+
+
 implementation
 
 end.
