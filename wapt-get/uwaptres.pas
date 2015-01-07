@@ -82,7 +82,9 @@ resourcestring
   rsUndefWaptSrvInIni = 'wapt_server is not defined in your %s ini file';
   rsDlStoppedByUser = 'Download stopped by user';
 
-  // Message dans
+  // Message dans uVisCreateKey
+  rsInputKeyName = 'Veuillez rentrer un nom de clé';
+  rsKeyAlreadyExists = 'La clé %s existe déjà, choisir un autre nom de clé';
 
 
 implementation

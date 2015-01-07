@@ -48,6 +48,9 @@ var
 implementation
 {$R *.lfm}
 
+uses
+  uWaptRes;
+
 { TVisCreateKey }
 
 procedure TVisCreateKey.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -57,13 +60,13 @@ begin
   pemfn:=DirectoryCert.Directory+'\'+EdOrgName.Text+'.pem';
   if (ModalResult=mrOk) and (EdOrgName.Text = '') then
      begin
-          showMessage('Veuillez rentrer un nom de clé');
+          showMessage(rsInputKeyName);
           CanClose:=False;
       end
   else
       if (ModalResult=mrOk) and FileExists(pemfn) then
       begin
-           ShowMessage(format('La clé %s existe déjà, choisir un autre nom de clé',[pemfn]));
+           ShowMessageFmt(rsKeyAlreadyExists,[pemfn]);
            CanClose:=False;
       end
       else
