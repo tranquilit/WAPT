@@ -27,8 +27,6 @@ import fileinput
 import subprocess
 import platform, errno
 
-exit(1)
-
 def mkdir_p(path):
     try:
         os.makedirs(path)

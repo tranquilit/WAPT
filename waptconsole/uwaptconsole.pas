@@ -11,8 +11,6 @@ uses
   StdCtrls, ComCtrls, ActnList, Menus, jsonparser, superobject,
   VirtualTrees, VarPyth, ImgList, SOGrid, uvisloading, IdComponent;
 
-This is a syntax error.
-
 type
 
   { TVisWaptGUI }
