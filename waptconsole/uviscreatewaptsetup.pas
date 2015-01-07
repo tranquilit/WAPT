@@ -41,6 +41,9 @@ implementation
 
 {$R *.lfm}
 
+uses
+  uWaptRes;
+
 { TVisCreateWaptSetup }
 procedure TVisCreateWaptSetup.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
@@ -49,12 +52,12 @@ begin
   begin
     if fnPublicCert.FileName='' then
     begin
-      showMessage('Veuillez rentrer le chemin vers la clé publique');
+      showMessage(rsInputPubKeyPath);
       CanClose:=False;
     end;
     if not DirectoryExists(fnWaptDirectory.Caption) then
     begin
-      ShowMessage('Le répertoire pour sauvegarder waptsetup n''est pas valide: '+fnWaptDirectory.Directory);
+      ShowMessageFmt(rsInvalidWaptSetupDir, [fnWaptDirectory.Directory]);
       CanClose:=False;
     end
   end;
