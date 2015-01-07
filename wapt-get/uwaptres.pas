@@ -105,10 +105,17 @@ resourcestring
   rsGroupConfigEditCaption = 'Modifier la configuration du groupe';
   rsDlCanceled = 'Téléchargement annulé';
   rsIgnoredPackages = 'Attention, les paquets %s ont été ignorés car introuvables';
-  rsIgnoredConflictingPackages = 'Attention, les paquets %s ont été ignorés des paquets interdits car introuvables';
+  rsIgnoredConfictingPackages = 'Attention, les paquets %s ont été ignorés des paquets interdits car introuvables';
 
+  { Messages dans uVisEditPackage.pas }
+  rsInputPubKeyPath = 'Veuillez rentrer le chemin vers la clé publique';
+  rsInvalidWaptSetupDir = 'Le répertoire pour sauvegarder waptsetup n''est pas valide: ';
 
-
+  { Messages dans uVisChangePassword.pas }
+  rsDiffPwError = 'Les mots de passe sont différents';
+  rsEmptyNewPwError = 'Le nouveau mot de passe ne doit pas être vide';
+  rsEmptyOldPwError = 'L''ancien mot de passe ne doit pas être vide';
+  rsIncorrectOldPwError = 'L''ancien mot de passe ne correspond pas';
 
 implementation
 

@@ -28,7 +28,7 @@ var
   VisChangePassword: TVisChangePassword;
 
 implementation
-uses waptcommon;
+uses waptcommon, uWaptRes;
 
 {$R *.lfm}
 
@@ -42,22 +42,22 @@ begin
   begin
     if (EdNewPassword1.Text<>EdNewPassword2.text) then
     begin
-       ShowMessage('Les mots de passe sont différents');
+       ShowMessage(rsDiffPwError);
        CanClose:=False;
     end;
     if (EdNewPassword1.Text='') then
     begin
-      ShowMessage('Le nouveau mot de passe ne doit pas être vide');
+      ShowMessage(rsEmptyNewPwError);
       CanClose:=False;
     end;
     if (EdOldPassword.Text='' )then
     begin
-      ShowMessage('L''ancien mot de passe ne doit pas être vide');
+      ShowMessage(rsEmptyOldPwError);
       CanClose:=False;
     end;
     if waptServerPassword <> EdOldPassword.Text then
     begin
-      ShowMessage('L''ancien mot de passe ne correspond pas');
+      ShowMessage(rsIncorrectOldPwError);
       CanClose:=False;
     end;
   end;
