@@ -9,7 +9,7 @@ uses
 
 resourcestring
 
-  // Messages dans uwaptconsole.pas
+  { Messages dans uwaptconsole.pas }
   rsFatalError = '... Impossible de récupérer l''action.';
   rsInstalling = 'Installing %s...';
   rsDefineWaptdevPath = 'Veuillez définir un répertoire de développement pour pouvoir éditer un paquet groupe.';
@@ -77,14 +77,37 @@ resourcestring
 
   rsCanceledByUser = 'Task %s has been canceled by user';
 
-  // Message dans wapt-get/waptcommon.pas
+  { Messages dans wapt-get/waptcommon.pas }
   rsInnoSetupUnavailable = 'Innosetup n''est pas disponible (emplacement %s), veuillez l''installer';
   rsUndefWaptSrvInIni = 'wapt_server is not defined in your %s ini file';
   rsDlStoppedByUser = 'Download stopped by user';
 
-  // Message dans uVisCreateKey
+  { Messages dans uVisCreateKey }
   rsInputKeyName = 'Veuillez rentrer un nom de clé';
   rsKeyAlreadyExists = 'La clé %s existe déjà, choisir un autre nom de clé';
+
+  { Messages dans uVisEditPackage.pas }
+  rsEditGroup = 'Editer le groupe';
+  rsEdPackage = 'Groupe';
+  rsPackagesNeededCaption = 'Paquets devant être présents dans le groupe';
+
+  rsEditHostCaption = 'Editer la machine';
+  rsUpgradingHost = 'Upgrade lancée';
+  rsUpgradeHostError = 'Impossible de lancer l''upgrade sur la machine: ';
+
+  rsSaveMods = 'Sauvegarder les modifications ?';
+  rsUploading = 'Upload en cours';
+  rsPackageCreationError = 'Problème lors de la création du paquet: %s';
+  rsHostConfigEditCaption = 'Modifier la configuration de la machine';
+  rsPackagesNeededOnHostCaption = 'Paquets devant être présents sur la machine';
+
+  rsDownloading = 'Téléchargement en cours';
+  rsGroupConfigEditCaption = 'Modifier la configuration du groupe';
+  rsDlCanceled = 'Téléchargement annulé';
+  rsIgnoredPackages = 'Attention, les paquets %s ont été ignorés car introuvables';
+  rsIgnoredConflictingPackages = 'Attention, les paquets %s ont été ignorés des paquets interdits car introuvables';
+
+
 
 
 implementation

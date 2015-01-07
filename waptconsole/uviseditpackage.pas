@@ -164,7 +164,7 @@ var
 implementation
 
 uses tisstrings, soutils, LCLType, waptcommon, dmwaptpython, jwawinuser, uvisloading,
-  uvisprivatekeyauth, strutils, uwaptconsole, tiscommon;
+  uvisprivatekeyauth, strutils, uwaptconsole, tiscommon, uWaptRes;
 
 {$R *.lfm}
 
@@ -206,9 +206,9 @@ function CreateGroup(packagename: string; advancedMode: boolean): ISuperObject;
 begin
   with TVisEditPackage.Create(nil) do
     try
-      Caption:='Editer le groupe';
-      EdPackage.EditLabel.Caption := 'Groupe';
-      pgDepends.Caption := 'Paquets devant être présents dans le groupe';
+      Caption:= rsEditGroup;
+      EdPackage.EditLabel.Caption := rsEdPackage;
+      pgDepends.Caption := rsPackagesNeededCaption;
 
       isAdvancedMode := advancedMode;
       IsNewPackage := True;
@@ -235,7 +235,7 @@ begin
       IsHost := True;
       isAdvancedMode := advancedMode;
       PackageRequest := hostname;
-      Caption:='Editer la machine';
+      Caption:= rsEditHostCaption;
       EdVersion.Enabled:=advancedMode;
       EdVersion.ReadOnly:=not advancedMode;
       ActBUApply.Enabled:=currentip<>'';
@@ -248,9 +248,9 @@ begin
             UseProxyForServer,
             waptServerUser, waptServerPassword);
           if (res.S['result'] = 'OK') or (res.S['status'] = 'OK') then
-            ShowMessage('Upgrade lancée')
+            ShowMessage(rsUpgradingHost)
           else
-            ShowMessage('Impossible de lancer l''upgrade sur la machine: '+res.S['message']);
+            ShowMessageFmt(rsUpgradeHostError, [res.S['message']]);
         end;
       end
       else
@@ -270,9 +270,9 @@ begin
       EdVersion.Enabled:=advancedMode;
       EdVersion.ReadOnly:=not advancedMode;
 
-      Caption:='Editer le groupe';
-      EdPackage.EditLabel.Caption := 'Groupe';
-      pgDepends.Caption := 'Paquets devant être présents dans le groupe';
+      Caption:=rsEditGroup;
+      EdPackage.EditLabel.Caption := rsEdPackage;
+      pgDepends.Caption := rsPackagesNeededCaption;
 
       if ShowModal = mrOk then
         Result := PackageEdited
@@ -359,8 +359,8 @@ begin
   Result := not IsUpdated;
   if not Result then
   begin
-    msg := 'Sauvegarder les modifications ?';
-    Rep := Application.MessageBox(PChar(msg), 'Confirmer', MB_APPLMODAL +
+    msg := rsSaveMods;
+    Rep := Application.MessageBox(PChar(msg), PChar(rsConfirmCaption), MB_APPLMODAL +
       MB_ICONQUESTION + MB_YESNOCANCEL);
     if (Rep = idYes) then
       Result := ActEditSavePackage.Execute
@@ -565,13 +565,13 @@ begin
 
   if not FileExists(GetWaptPrivateKeyPath) then
   begin
-    ShowMessage('La clé privée n''existe pas: ' + GetWaptPrivateKeyPath);
+    ShowMessageFmt(rsPrivateKeyDoesntExist, [GetWaptPrivateKeyPath]);
     exit;
   end;
 
   with TVisLoading.Create(Self) do
   try
-    ProgressTitle('Upload en cours');
+    ProgressTitle(rsUploading);
     Application.ProcessMessages;
     try
       Result := DMPython.RunJSON(format(
@@ -586,7 +586,7 @@ begin
     except
       on E:Exception do
       begin
-        ShowMessage('Problème lors de la création du paquet: '+E.Message);
+        ShowMessageFmt(rsPackageCreationError, [E.Message]);
         Result := Nil;
         ModalResult:=mrNone;
         Abort;
@@ -741,8 +741,8 @@ begin
           format('mywapt.edit_host("%s",target_directory=r"%s".decode(''utf8''),use_local_sources=False)',
           [FPackageRequest, target_directory]));
         EdPackage.EditLabel.Caption := 'Machine';
-        Caption := 'Modifier la configuration de la machine';
-        pgDepends.Caption := 'Paquets devant être présents sur la machine';
+        Caption := rsHostConfigEditCaption;
+        pgDepends.Caption := rsPackagesNeededOnHostCaption;
         EdVersion.Parent := Panel4;
         EdVersion.Top := 5;
       end
@@ -754,7 +754,7 @@ begin
             Application.ProcessMessages;
             if isGroup then
             begin
-              Caption := 'Modifier la configuration du groupe';
+              Caption := rsGroupConfigEditCaption;
               grid := uwaptconsole.VisWaptGUI.GridGroups;
             end
             else
@@ -772,7 +772,7 @@ begin
                 IdWget(GetWaptRepoURL + '/' + filename, filePath,
                   ProgressForm, @updateprogress, UseProxyForRepo);
               except
-                ShowMessage('Téléchargement annulé');
+                ShowMessage(rsDlCanceled);
                 if FileExists(filePath) then
                   DeleteFile(filePath);
                 exit;
@@ -838,7 +838,7 @@ begin
     GridDepends.Header.AutoFitColumns(False);
     if dependencies['missing'].AsArray.Length > 0 then
     begin
-      ShowMessageFmt('Attention, les paquets %s ont été ignorés car introuvables',
+      ShowMessageFmt(rsIgnoredPackages,
         [dependencies.S['missing']]);
       GridDependsUpdated := True;
     end;
@@ -861,7 +861,7 @@ begin
     GridConflicts.Header.AutoFitColumns(False);
     if aconflicts['missing'].AsArray.Length > 0 then
     begin
-      ShowMessageFmt('Attention, les paquets %s ont été ignorés des paquets interdits car introuvables',
+      ShowMessageFmt(rsIgnoredConfictingPackages,
         [aconflicts.S['missing']]);
       GridConflictsUpdated := True;
     end
