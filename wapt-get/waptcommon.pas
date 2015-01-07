@@ -25,7 +25,7 @@ unit waptcommon;
 interface
   uses
      Classes, SysUtils, Windows,
-     DB,sqldb,sqlite3conn,SuperObject,syncobjs,IdComponent,tiscommon,tishttp;
+     DB,sqldb,sqlite3conn,SuperObject,syncobjs,IdComponent,tiscommon,tishttp, DefaultTranslator;
 
   Function  GetMainWaptRepo:String;
   Function  GetWaptServerURL:String;
@@ -1462,7 +1462,7 @@ begin
     target := ExtractFileDir(iss_template) + '..' + 'ssl' + ExtractFileName(source);
     if not FileExists(target) then
       if not FileUtil.CopyFile(source,target,True) then
-        raise Exception.CreateFmt('Copie du certificat de %s vers %s impossible',[source,target]);
+        raise Exception.CreateFmt(rsCertificateCopyFailure,[source,target]);
     StringToFile(custom_iss,SOUtils.Join(#13#10,new_iss));
 
     inno_fn :=  wapt_base_dir + '\waptsetup' + '\innosetup' + '\ISCC.exe';

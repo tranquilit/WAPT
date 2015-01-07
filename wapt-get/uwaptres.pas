@@ -5,7 +5,7 @@ unit uWaptRes;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils, DefaultTranslator;
 
 resourcestring
 
@@ -81,6 +81,7 @@ resourcestring
   rsInnoSetupUnavailable = 'Innosetup is unavailable (path : %s), please install it.';
   rsUndefWaptSrvInIni = 'wapt_server is not defined in your %s ini file';
   rsDlStoppedByUser = 'Download stopped by user';
+  rsCertificateCopyFailure = 'Copie du certificat de %s vers %s impossible';
 
   { Messages dans uVisCreateKey }
   rsInputKeyName = 'Please input a key name'; // 'Veuillez rentrer un nom de clé'; // TODO

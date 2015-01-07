@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, ButtonPanel, ActnList, sogrid, superobject, dmwaptpython, LCLType;
+  ExtCtrls, ButtonPanel, ActnList, sogrid, superobject, dmwaptpython, LCLType, DefaultTranslator;
 
 type
 

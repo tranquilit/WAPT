@@ -5,7 +5,8 @@ unit dmwaptpython;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, PythonEngine, PythonGUIInputOutput,VarPyth,vte_json,superobject,fpjson,jsonparser;
+  Classes, SysUtils, FileUtil, PythonEngine, PythonGUIInputOutput, VarPyth,
+  vte_json, superobject, fpjson, jsonparser, DefaultTranslator;
 
 type
 

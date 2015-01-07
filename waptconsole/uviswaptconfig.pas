@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms,
-  Controls, Graphics, Dialogs, ButtonPanel, StdCtrls, ExtCtrls,EditBtn;
+  Controls, Graphics, Dialogs, ButtonPanel,
+  StdCtrls, ExtCtrls,EditBtn, DefaultTranslator;
 
 type
 

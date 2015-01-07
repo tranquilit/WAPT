@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ActnList, ButtonPanel, ExtCtrls, Buttons, sogrid,superobject,soutils, VirtualTrees;
+  ActnList, ButtonPanel, ExtCtrls, Buttons, sogrid,superobject,soutils, VirtualTrees, DefaultTranslator;
 
 type
 
