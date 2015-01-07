@@ -12,7 +12,7 @@ resourcestring
   { Messages dans uwaptconsole.pas }
   rsFatalError = 'Failed to recover action.'; // '... Impossible de récupérer l''action.';
   rsInstalling = 'Installing %s...';
-  rsDefineWaptdevPath = 'Please choose a development directory to edit group package.'; //'Veuillez définir un répertoire de développement pour pouvoir éditer un paquet groupe.'
+  rsDefineWaptdevPath = 'Please choose a development directory before editing group package.'; //'Veuillez définir un répertoire de développement pour pouvoir éditer un paquet groupe.'
 
   rsPublicKeyGenSuccess = 'Key %s successfully created.';
   rsPublicKeyGenFailure = 'Failed to generate public key.';
@@ -20,9 +20,9 @@ resourcestring
 
   rsCreationInProgress = 'Creating...'; //'Création en cours'
   rsProgressTitle = 'Uploading to WAPT server...';
-  rsWaptSetupUploadSuccess = 'WAPT agent successfully created and uploaded.'; // 'Agent WAPT créé et déposé avec succès : %s';
-  rsWaptUploadError = 'Error while uploading agent'; // 'Erreur lors du dépôt de l''agent WAPT : %s';
-  rsWaptSetupError = 'Error while creating agent'; // 'Erreur à la création de l''agent WAPT : %s';
+  rsWaptSetupUploadSuccess = 'WAPT agent successfully created and uploaded : %s'; // 'Agent WAPT créé et déposé avec succès : %s';
+  rsWaptUploadError = 'Error while uploading agent : %s'; // 'Erreur lors du dépôt de l''agent WAPT : %s';
+  rsWaptSetupError = 'Error while creating agent : %s'; // 'Erreur à la création de l''agent WAPT : %s';
 
   rsForcedUninstallPackages = 'Mark packages for forced uninstall'; // 'Choix des paquets à forcer à désintaller sur les postes sélectionnés'; TODO
   rsDependencies = 'Mark packages for adding as dependencies for selected hosts'; // 'Choix des paquets à ajouter en dépendance aux postes sélectionnés';
@@ -30,7 +30,7 @@ resourcestring
   rsTaskCancelled = 'Task canceled.';
   rsFailedToCancel = 'Could not cancel : %s.';
 
-  rsIncorrectPassword = 'Password incorrect.';
+  rsIncorrectPassword = 'Incorrect password.';
   rsPasswordChangeSuccess = 'Password successfully updated !';
   rsPasswordChangeError = 'Error : %s';
 
@@ -71,7 +71,7 @@ resourcestring
 
   rsWaptClientUpdateOnHosts = 'Updating WAPT client on hosts'; //'Mise à jour du client WAPT sur les postes';
 
-  rsConfirmRmHostsFromList = 'Are you sure you want to remove %s hsots from the list ?';
+  rsConfirmRmHostsFromList = 'Are you sure you want to remove %s hosts from the list ?';
 
   rsUninstallingPackage = 'Uninstalling %s...';
 
@@ -81,7 +81,7 @@ resourcestring
   rsInnoSetupUnavailable = 'Innosetup is unavailable (path : %s), please install it.';
   rsUndefWaptSrvInIni = 'wapt_server is not defined in your %s ini file';
   rsDlStoppedByUser = 'Download stopped by user';
-  rsCertificateCopyFailure = 'Copie du certificat de %s vers %s impossible';
+  rsCertificateCopyFailure = 'Couldn''t copy certificate %s to %s.';
 
   { Messages dans uVisCreateKey }
   rsInputKeyName = 'Please input a key name'; // 'Veuillez rentrer un nom de clé'; // TODO
@@ -93,8 +93,8 @@ resourcestring
   rsPackagesNeededCaption = 'Packages needed in group';
 
   rsEditHostCaption = 'Edit host';
-  rsUpgradingHost = 'Upgrading';
-  rsUpgradeHostError = 'Failed to upgrade host : ';
+  rsUpgradingHost = 'Upgrade triggered on the remote host.'; // Mise à jour lancée
+  rsUpgradeHostError = 'Failed to trigger upgrade : %s';
 
   rsSaveMods = 'Save changes ?';
   rsUploading = 'Uploading';
