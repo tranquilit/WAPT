@@ -3,7 +3,7 @@ object visGroupChoice: TvisGroupChoice
   Height = 549
   Top = 285
   Width = 705
-  Caption = 'Choix de paquets'
+  Caption = 'Package selection'
   ClientHeight = 549
   ClientWidth = 705
   Font.CharSet = ANSI_CHARSET
@@ -45,7 +45,7 @@ object visGroupChoice: TvisGroupChoice
     Header.Columns = <    
       item
         Position = 0
-        Text = 'Paquet'
+        Text = 'Package'
         Width = 127
         PropertyName = 'package'
       end    
@@ -59,7 +59,7 @@ object visGroupChoice: TvisGroupChoice
       item
         Position = 2
         Tag = 2
-        Text = 'Dépendances'
+        Text = 'Dependencies'
         Width = 179
         PropertyName = 'depends'
       end    
@@ -121,7 +121,7 @@ object visGroupChoice: TvisGroupChoice
       item
         Position = 10
         Tag = 10
-        Text = 'Auteur'
+        Text = 'Author'
         Width = 100
         PropertyName = 'maintainer'
       end    
@@ -225,14 +225,14 @@ object visGroupChoice: TvisGroupChoice
       Height = 13
       Top = 4
       Width = 104
-      Caption = 'Paquets disponibles : '
+      Caption = 'Available packages : '
       ParentColor = False
     end
     object EdSearch: TEdit
       AnchorSideBottom.Control = groupGrid
       Left = 6
       Height = 21
-      Hint = 'Taper des mots clés pour la recherche'
+      Hint = 'Use keywords to narrow your search.'
       Top = 20
       Width = 136
       OnKeyDown = EdSearchKeyDown
@@ -251,7 +251,7 @@ object visGroupChoice: TvisGroupChoice
       Height = 17
       Top = 24
       Width = 60
-      Caption = 'Groupes'
+      Caption = 'Package bundles'
       Checked = True
       OnClick = cbBaseClick
       State = cbChecked
@@ -262,7 +262,7 @@ object visGroupChoice: TvisGroupChoice
       Height = 17
       Top = 8
       Width = 59
-      Caption = 'Logiciels'
+      Caption = 'Software'
       OnClick = cbBaseClick
       TabOrder = 3
     end
@@ -280,7 +280,7 @@ object visGroupChoice: TvisGroupChoice
     left = 256
     top = 176
     object ActSearch: TAction
-      Caption = 'Rechercher'
+      Caption = 'Search'
       OnExecute = ActSearchExecute
     end
   end

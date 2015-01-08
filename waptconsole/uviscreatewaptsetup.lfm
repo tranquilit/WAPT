@@ -3,7 +3,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   Height = 184
   Top = 340
   Width = 535
-  Caption = 'Créer l''agent WAPT'
+  Caption = 'Create WAPT agent'
   ClientHeight = 184
   ClientWidth = 535
   Font.CharSet = ANSI_CHARSET
@@ -31,10 +31,10 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object Label1: TLabel
     Left = 8
     Height = 13
-    Hint = 'certificat que vous venez de créer (clé.crt)'
+    Hint = 'The certificate you just created (.crt key).'
     Top = 20
     Width = 77
-    Caption = 'Clé publique : '
+    Caption = 'Public key : '
     Font.Style = [fsBold]
     ParentColor = False
     ParentFont = False
@@ -42,7 +42,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object edRepoUrl: TEdit
     Left = 200
     Height = 21
-    Hint = 'exemple : http://wapt.tranquilit.local/wapt'
+    Hint = 'E.g. : http://wapt.tranquilit.local/wapt.'
     Top = 73
     Width = 216
     TabOrder = 2
@@ -50,10 +50,10 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object Label2: TLabel
     Left = 8
     Height = 13
-    Hint = 'Addresse de votre dépôt wapt (http://wapt/wapt)'
+    Hint = 'Your WAPT repository address (http://wapt/wapt).'
     Top = 76
     Width = 186
-    Caption = 'Adresse du dépot Wapt principal:'
+    Caption = 'Main WAPT repository address :'
     Font.Style = [fsBold]
     ParentColor = False
     ParentFont = False
@@ -61,7 +61,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object edOrgName: TEdit
     Left = 200
     Height = 21
-    Hint = 'Exemple : Tranquil IT Systems'
+    Hint = 'E.g. : Tranquil IT Systems.'
     Top = 127
     Width = 216
     TabOrder = 4
@@ -69,10 +69,10 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object Label3: TLabel
     Left = 8
     Height = 13
-    Hint = 'Nom de votre société'
+    Hint = 'Your company name.'
     Top = 127
     Width = 65
-    Caption = 'Organisation:'
+    Caption = 'Organisation :'
     ParentColor = False
   end
   object Panel1: TPanel
@@ -113,10 +113,10 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object Label4: TLabel
     Left = 8
     Height = 13
-    Hint = 'Dossier dans lequel waptagent.exe sera enregistré'
+    Hint = 'Where waptagent.exe will be saved.'
     Top = 48
     Width = 194
-    Caption = 'Enregistrer waptagent.exe sous...  '
+    Caption = 'Save waptagent.exe as...  '
     Font.Style = [fsBold]
     ParentColor = False
     ParentFont = False
@@ -135,7 +135,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object edWaptServerUrl: TEdit
     Left = 200
     Height = 21
-    Hint = 'exemple : http://wapt:8080'
+    Hint = 'E.g. : http://wapt:8080.'
     Top = 101
     Width = 216
     TabOrder = 3
@@ -143,10 +143,10 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object Label5: TLabel
     Left = 8
     Height = 13
-    Hint = 'Addresse de votre serveur wapt (http://wapt:8080)'
+    Hint = 'Your WAPT server address (http://wapt:8080).'
     Top = 104
     Width = 152
-    Caption = 'Adresse du serveur WAPT :'
+    Caption = 'WAPT server address :'
     Font.Style = [fsBold]
     ParentColor = False
     ParentFont = False

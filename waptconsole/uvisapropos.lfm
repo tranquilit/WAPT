@@ -6480,7 +6480,7 @@ object VisApropos: TVisApropos
     Top = 296
     Width = 75
     Cancel = True
-    Caption = 'Fermer'
+    Caption = 'Close'
     Default = True
     ModalResult = 1
     OnClick = Button1Click

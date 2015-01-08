@@ -4,7 +4,7 @@ object visPrivateKeyAuth: TvisPrivateKeyAuth
   Top = 264
   Width = 311
   BorderStyle = bsDialog
-  Caption = 'Authentification Clé privée'
+  Caption = 'Private key authentication'
   ClientHeight = 100
   ClientWidth = 311
   Font.CharSet = ANSI_CHARSET
@@ -62,7 +62,7 @@ object visPrivateKeyAuth: TvisPrivateKeyAuth
     Height = 13
     Top = 41
     Width = 137
-    Caption = 'Mot de passe de la clé privé:'
+    Caption = 'Private key password :'
     ParentColor = False
   end
   object Label1: TLabel
@@ -70,7 +70,7 @@ object visPrivateKeyAuth: TvisPrivateKeyAuth
     Height = 13
     Top = 16
     Width = 22
-    Caption = 'Clé: '
+    Caption = 'Key : '
     ParentColor = False
   end
   object laKeyPath: TLabel

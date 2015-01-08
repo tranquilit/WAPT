@@ -3,7 +3,7 @@ object VisEditGroup: TVisEditGroup
   Height = 610
   Top = 120
   Width = 786
-  Caption = 'Edition de groupe'
+  Caption = 'Group edition'
   ClientHeight = 610
   ClientWidth = 786
   Font.CharSet = ANSI_CHARSET
@@ -40,7 +40,7 @@ object VisEditGroup: TVisEditGroup
       Top = 4
       Width = 112
       Anchors = [akTop, akRight]
-      Caption = 'Sauvegarder'
+      Caption = 'Save'
       TabOrder = 1
     end
   end
@@ -57,7 +57,7 @@ object VisEditGroup: TVisEditGroup
         MinWidth = 100
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
         Position = 0
-        Text = 'Paquet'
+        Text = 'Package'
         Width = 300
         PropertyName = 'package'
       end    
@@ -78,7 +78,7 @@ object VisEditGroup: TVisEditGroup
       item
         MaxWidth = 400
         Position = 3
-        Text = 'Dépendances'
+        Text = 'Dependencies'
         PropertyName = 'depends'
       end>
     Header.DefaultHeight = 17
@@ -101,7 +101,7 @@ object VisEditGroup: TVisEditGroup
     Header.Columns = <    
       item
         Position = 0
-        Text = 'Machine'
+        Text = 'Host'
         Width = 250
         PropertyName = 'computer_fqdn'
       end>
@@ -129,7 +129,7 @@ object VisEditGroup: TVisEditGroup
     EditLabel.Height = 13
     EditLabel.Top = 8
     EditLabel.Width = 35
-    EditLabel.Caption = 'Groupe'
+    EditLabel.Caption = 'Group'
     EditLabel.ParentColor = False
     LabelPosition = lpLeft
     TabOrder = 3
@@ -177,7 +177,7 @@ object VisEditGroup: TVisEditGroup
         MinWidth = 50
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
         Position = 1
-        Text = 'Paquet'
+        Text = 'Package'
         Width = 200
         PropertyName = 'package'
       end    
@@ -209,14 +209,14 @@ object VisEditGroup: TVisEditGroup
         MaxWidth = 400
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
         Position = 5
-        Text = 'Dépendances'
+        Text = 'Dependencies'
         Width = 100
         PropertyName = 'depends'
       end    
       item
         MaxWidth = 200
         Position = 6
-        Text = 'Installé par'
+        Text = 'Installed by'
         PropertyName = 'explicit_by'
       end>
     Header.DefaultHeight = 17
@@ -235,7 +235,7 @@ object VisEditGroup: TVisEditGroup
     Height = 13
     Top = 52
     Width = 94
-    Caption = 'Paquets disponibles'
+    Caption = 'Available packages'
     ParentColor = False
   end
   object Label2: TLabel
@@ -243,7 +243,7 @@ object VisEditGroup: TVisEditGroup
     Height = 13
     Top = 32
     Width = 261
-    Caption = 'Paquets devant être installés sur les postes du groupe'
+    Caption = 'Packages to be installed on group hosts'
     ParentColor = False
   end
   object Label3: TLabel
@@ -251,7 +251,7 @@ object VisEditGroup: TVisEditGroup
     Height = 13
     Top = 344
     Width = 142
-    Caption = 'Machines membres du groupe'
+    Caption = 'Hosts in this group'
     ParentColor = False
   end
 end

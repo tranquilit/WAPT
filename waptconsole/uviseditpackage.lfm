@@ -3,7 +3,7 @@ object VisEditPackage: TVisEditPackage
   Height = 623
   Top = 135
   Width = 800
-  Caption = 'Editer le paquet'
+  Caption = 'Edit package'
   ClientHeight = 623
   ClientWidth = 800
   Constraints.MinHeight = 400
@@ -31,7 +31,7 @@ object VisEditPackage: TVisEditPackage
     TabOrder = 0
     OnChange = PageControl1Change
     object pgDepends: TTabSheet
-      Caption = 'Editer les dépendances'
+      Caption = 'Edit dependencies'
       ClientHeight = 391
       ClientWidth = 502
       object GridDepends: TSOGrid
@@ -49,7 +49,7 @@ object VisEditPackage: TVisEditPackage
             MinWidth = 100
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
             Position = 0
-            Text = 'Paquet'
+            Text = 'Package'
             Width = 300
             PropertyName = 'package'
           end        
@@ -70,7 +70,7 @@ object VisEditPackage: TVisEditPackage
           item
             MaxWidth = 400
             Position = 3
-            Text = 'Dépendances'
+            Text = 'Dependencies'
             PropertyName = 'depends'
           end>
         Header.DefaultHeight = 17
@@ -96,7 +96,7 @@ object VisEditPackage: TVisEditPackage
       end
     end
     object pgConflicts: TTabSheet
-      Caption = 'Paquets interdits'
+      Caption = 'Blocked package'
       ClientHeight = 391
       ClientWidth = 502
       object GridConflicts: TSOGrid
@@ -113,7 +113,7 @@ object VisEditPackage: TVisEditPackage
             MinWidth = 100
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
             Position = 0
-            Text = 'Paquet'
+            Text = 'Package'
             Width = 300
             PropertyName = 'package'
           end        
@@ -134,7 +134,7 @@ object VisEditPackage: TVisEditPackage
           item
             MaxWidth = 400
             Position = 3
-            Text = 'Dépendances'
+            Text = 'Dependencies'
             PropertyName = 'depends'
           end>
         Header.DefaultHeight = 17
@@ -797,11 +797,11 @@ object VisEditPackage: TVisEditPackage
       EditLabel.AnchorSideRight.Control = EdPackage
       EditLabel.AnchorSideBottom.Control = EdPackage
       EditLabel.AnchorSideBottom.Side = asrBottom
-      EditLabel.Left = 15
+      EditLabel.Left = 9
       EditLabel.Height = 13
       EditLabel.Top = 6
-      EditLabel.Width = 34
-      EditLabel.Caption = 'Paquet'
+      EditLabel.Width = 40
+      EditLabel.Caption = 'Package'
       EditLabel.ParentColor = False
       LabelPosition = lpLeft
       TabOrder = 0
@@ -863,8 +863,8 @@ object VisEditPackage: TVisEditPackage
       Left = 344
       Height = 13
       Top = 29
-      Width = 86
-      Caption = 'Répertoire source'
+      Width = 79
+      Caption = 'Source directory'
       ParentColor = False
       Visible = False
     end
@@ -905,12 +905,12 @@ object VisEditPackage: TVisEditPackage
       Visible = False
     end
     object cbShowLog: TCheckBox
-      Left = 658
-      Height = 17
-      Top = 26
-      Width = 136
+      Left = 719
+      Height = 19
+      Top = 24
+      Width = 75
       Anchors = [akRight, akBottom]
-      Caption = 'Voir infos de débuggage'
+      Caption = 'View debug'
       OnClick = cbShowLogClick
       TabOrder = 6
       Visible = False
@@ -945,7 +945,7 @@ object VisEditPackage: TVisEditPackage
       Width = 112
       Action = ActBuildUpload
       Anchors = [akTop, akRight]
-      Caption = 'Sauvegarder'
+      Caption = 'Save'
       TabOrder = 1
     end
     object butBUApply: TBitBtn
@@ -1017,7 +1017,7 @@ object VisEditPackage: TVisEditPackage
       object EdSearch: TEdit
         Left = 4
         Height = 21
-        Hint = 'Taper des mots clés pour la recherche'
+        Hint = 'Use keywords to narrow search.'
         Top = 17
         Width = 136
         OnKeyDown = EdSearchKeyDown
@@ -1072,7 +1072,7 @@ object VisEditPackage: TVisEditPackage
         Height = 13
         Top = 0
         Width = 143
-        Caption = 'Paquets logiciels disponibles : '
+        Caption = 'Available packages : '
         ParentColor = False
       end
     end
@@ -1100,7 +1100,7 @@ object VisEditPackage: TVisEditPackage
           MinWidth = 50
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
           Position = 1
-          Text = 'Paquet'
+          Text = 'package'
           Width = 200
           PropertyName = 'package'
         end      
@@ -1131,13 +1131,13 @@ object VisEditPackage: TVisEditPackage
           MaxWidth = 400
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
           Position = 5
-          Text = 'Dépendances'
+          Text = 'Dependencies'
           PropertyName = 'depends'
         end      
         item
           MaxWidth = 200
           Position = 6
-          Text = 'Installé par'
+          Text = 'Installed by'
           PropertyName = 'explicit_by'
         end>
       Header.DefaultHeight = 17
@@ -1233,48 +1233,48 @@ object VisEditPackage: TVisEditPackage
     left = 148
     top = 148
     object ActSearchPackage: TAction
-      Caption = 'Rechercher'
+      Caption = 'Search'
       ImageIndex = 28
       OnExecute = ActSearchPackageExecute
     end
     object ActExecCode: TAction
-      Caption = 'Exécuter le code source python'
+      Caption = 'Execute Python source'
       OnExecute = ActExecCodeExecute
     end
     object ActBuildUpload: TAction
-      Caption = 'Activer le paquet'
+      Caption = 'Activate package'
       OnExecute = ActBuildUploadExecute
     end
     object ActEditSearch: TAction
-      Caption = 'Rechercher'
+      Caption = 'Seearch'
       ImageIndex = 28
       OnExecute = ActEditSearchExecute
     end
     object ActEditRemoveDepends: TAction
-      Caption = 'Enlever'
+      Caption = 'Remove'
       ImageIndex = 12
       OnExecute = ActEditRemoveDependsExecute
       OnUpdate = ActEditRemoveDependsUpdate
     end
     object ActEditSavePackage: TAction
-      Caption = 'Sauver'
+      Caption = 'Save'
       OnExecute = ActEditSavePackageExecute
       OnUpdate = ActEditSavePackageUpdate
       ShortCut = 16467
     end
     object ActAdvancedMode: TAction
       AutoCheck = True
-      Caption = 'Mode avancé'
+      Caption = 'Advanced mode'
       OnExecute = ActAdvancedModeExecute
     end
     object ActAddDepends: TAction
-      Caption = 'Ajouter aux dépendances du paquet'
+      Caption = 'Add dependencies to package'
       ImageIndex = 11
       OnExecute = ActAddDependsExecute
       OnUpdate = ActAddDependsUpdate
     end
     object ActBUApply: TAction
-      Caption = 'Sauver et appliquer sur le poste'
+      Caption = 'Save and apply to host'
       ImageIndex = 34
       OnExecute = ActBUApplyExecute
     end
@@ -1285,7 +1285,7 @@ object VisEditPackage: TVisEditPackage
       OnUpdate = ActEditRemoveConflictsUpdate
     end
     object ActAddConflicts: TAction
-      Caption = 'Ajouter aux paquets interdits'
+      Caption = 'Add to blocked packages'
       ImageIndex = 11
       OnExecute = ActAddConflictsExecute
       OnUpdate = ActAddConflictsUpdate

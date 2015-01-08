@@ -4,7 +4,7 @@ object VisCreateKey: TVisCreateKey
   Top = 553
   Width = 432
   BorderStyle = bsDialog
-  Caption = 'Créer une clé privée et un certificat autosigné'
+  Caption = 'Generate private key and self-signed certificate'
   ClientHeight = 280
   ClientWidth = 432
   Font.CharSet = ANSI_CHARSET
@@ -63,10 +63,10 @@ object VisCreateKey: TVisCreateKey
     object Label9: TLabel
       Left = 12
       Height = 13
-      Hint = 'Ne pas mettre de caractères spéciaux, ex:tranquilit'
+      Hint = 'E.g. ''tranquilit''. Please don''t use any special characters.'
       Top = 40
       Width = 77
-      Caption = 'Nom de la clé:'
+      Caption = 'Key name :'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clBlack
       Font.Height = -11
@@ -80,7 +80,7 @@ object VisCreateKey: TVisCreateKey
     object EdOrgName: TEdit
       Left = 176
       Height = 21
-      Hint = 'exemple: tranquilit'
+      Hint = 'e.g. : tranquilit'
       Top = 40
       Width = 176
       TabOrder = 0
@@ -88,10 +88,10 @@ object VisCreateKey: TVisCreateKey
     object Label10: TLabel
       Left = 12
       Height = 13
-      Hint = 'Code pays du site principal'
+      Hint = 'Main site country code'
       Top = 102
       Width = 116
-      Caption = 'Pays ( 2 lettres ex: FR):'
+      Caption = 'Country (2 chars. E.g. : FR):'
       ParentColor = False
       ParentShowHint = False
       ShowHint = True
@@ -101,13 +101,13 @@ object VisCreateKey: TVisCreateKey
       Height = 13
       Top = 126
       Width = 22
-      Caption = 'Ville:'
+      Caption = 'City :'
       ParentColor = False
     end
     object Label13: TLabel
       Left = 12
       Height = 13
-      Hint = 'Nom de votre entreprise'
+      Hint = 'Your company name'
       Top = 150
       Width = 65
       Caption = 'Organisation:'
@@ -116,37 +116,37 @@ object VisCreateKey: TVisCreateKey
     object Label14: TLabel
       Left = 12
       Height = 13
-      Hint = 'exemple: DSI'
+      Hint = 'E.g. : IT department.'
       Top = 174
       Width = 39
-      Caption = 'Service:'
+      Caption = 'Service :'
       ParentColor = False
     end
     object Label15: TLabel
       Left = 12
       Height = 13
-      Hint = 'Nom du serveur wapt, ex: srvwapt.tranquilit.local'
+      Hint = 'WAPT server name. E.g. : srvwapt.tranquilit.local'
       Top = 198
       Width = 111
-      Caption = 'Nom FQDN du serveur:'
+      Caption = 'Server FQDN :'
       ParentColor = False
     end
     object Label16: TLabel
       Left = 12
       Height = 13
-      Hint = 'adresse email du service technique'
+      Hint = 'Technical department e-mail address.'
       Top = 222
       Width = 76
-      Caption = 'Adresse EMAIL:'
+      Caption = 'E-mail address :'
       ParentColor = False
     end
     object Label1: TLabel
       Left = 12
       Height = 13
-      Hint = 'répertoire où sera stockée la clé privée, ce répertoire doit être sécurisé'
+      Hint = 'Where to save the private key. This directory must be secure.'
       Top = 16
       Width = 148
-      Caption = 'Répertoire de destination:'
+      Caption = 'Target directory:'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clBlack
       Font.Height = -11
@@ -169,7 +169,7 @@ object VisCreateKey: TVisCreateKey
     object edLocality: TEdit
       Left = 176
       Height = 21
-      Hint = 'exemple: Nantes'
+      Hint = 'E.g. : Nantes'
       Top = 126
       Width = 176
       TabOrder = 2
@@ -177,7 +177,7 @@ object VisCreateKey: TVisCreateKey
     object edOrganization: TEdit
       Left = 176
       Height = 21
-      Hint = 'exemple: Tranquil It Systems'
+      Hint = 'E.g. : Tranquil It Systems'
       Top = 150
       Width = 176
       TabOrder = 3
@@ -185,7 +185,7 @@ object VisCreateKey: TVisCreateKey
     object edUnit: TEdit
       Left = 176
       Height = 21
-      Hint = 'exemple: Informatique'
+      Hint = 'E.g. : IT'
       Top = 174
       Width = 176
       TabOrder = 4
@@ -193,7 +193,7 @@ object VisCreateKey: TVisCreateKey
     object edCommonName: TEdit
       Left = 176
       Height = 21
-      Hint = 'exemple: srvwapt.tranquilit.local'
+      Hint = 'E.g. : srvwapt.tranquilit.local'
       Top = 198
       Width = 176
       TabOrder = 5
@@ -201,7 +201,7 @@ object VisCreateKey: TVisCreateKey
     object edEmail: TEdit
       Left = 176
       Height = 21
-      Hint = 'exemple: technique@tranquil-it-systems.fr'
+      Hint = 'E.g. : technique@tranquil-it-systems.fr'
       Top = 222
       Width = 176
       TabOrder = 6
@@ -233,7 +233,7 @@ object VisCreateKey: TVisCreateKey
       Top = 78
       Width = 203
       AutoSize = True
-      Caption = 'Informations complémentaires facultatives'
+      Caption = 'Optional information'
       TabOrder = 8
     end
   end
