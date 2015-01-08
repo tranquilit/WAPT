@@ -108,7 +108,7 @@ object viswaptdeploy: Tviswaptdeploy
       Height = 52
       Top = 4
       Width = 560
-      Caption = 'Cette méthode permet de déployer waptagent.exe sur tous les postes via psexec.'#13#10'Penser à vérifier que le partage administratif IPC$ soit accessible.'#13#10'En particulier, sur Win XP, désactive rle partage simple de fichiers (explorer / outils / options des dossiers / affichage '#13#10'  Décocher "utiliser le partage de fichiers simple"'
+      Caption = 'This method lets you deploy waptagent.exe onto all hosts via psexec.'#13#10'Make sure IPC$ administrative share can be accessed.'#13#10'On Win XP specifically, the Simple File Sharing feature should be disabled (explorer / tools / Folder options / View '#13#10' Uncheck "Use simple file sharing").'
       ParentColor = False
     end
   end
@@ -156,13 +156,13 @@ object viswaptdeploy: Tviswaptdeploy
       Height = 13
       Top = 7
       Width = 234
-      Caption = 'Liste des postes sur lequel wapt va être installé :'
+      Caption = 'List of hosts on which WAPT will be installed :'
       ParentColor = False
     end
     object Memo1: TMemo
       Left = 0
       Height = 186
-      Hint = 'Un poste par ligne'
+      Hint = 'One host per row.'
       Top = 30
       Width = 696
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -179,13 +179,13 @@ object viswaptdeploy: Tviswaptdeploy
       Header.Columns = <      
         item
           Position = 0
-          Text = 'Machine'
+          Text = 'Host'
           Width = 200
           PropertyName = 'computer_fqdn'
         end      
         item
           Position = 1
-          Text = 'Etat'
+          Text = 'Status'
           Width = 100
           PropertyName = 'status'
         end      
@@ -224,11 +224,11 @@ object viswaptdeploy: Tviswaptdeploy
     left = 348
     top = 92
     object ActDeployWapt: TAction
-      Caption = 'Déployer'
+      Caption = 'Deploy'
       OnExecute = ActDeployWaptExecute
     end
     object ActStop: TAction
-      Caption = 'Stopper'
+      Caption = 'Stop'
       OnExecute = ActStopExecute
     end
   end

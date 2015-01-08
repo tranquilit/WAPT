@@ -30,7 +30,7 @@ object VisLogin: TVisLogin
     Height = 13
     Top = 64
     Width = 81
-    Caption = 'Server password'
+    Caption = 'Server password :'
     ParentColor = False
   end
   object edUser: TEdit
@@ -46,7 +46,7 @@ object VisLogin: TVisLogin
     Height = 13
     Top = 37
     Width = 56
-    Caption = 'Server user'
+    Caption = 'Server user :'
     ParentColor = False
   end
   object Label1: TLabel
@@ -54,7 +54,7 @@ object VisLogin: TVisLogin
     Height = 13
     Top = 8
     Width = 87
-    Caption = 'Server connection'
+    Caption = 'Connect to server :'
     ParentColor = False
   end
   object edWaptServerName: TEdit

@@ -1483,7 +1483,7 @@ object VisWaptGUI: TVisWaptGUI
       end
     end
     object pgGroups: TTabSheet
-      Caption = 'Groups'
+      Caption = 'Bundles'
       ClientHeight = 412
       ClientWidth = 792
       object GridGroups: TSOGrid
@@ -2789,8 +2789,8 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActAdvancedModeExecute
     end
     object ActAddGroup: TAction
-      Category = 'Groups'
-      Caption = 'New group'
+      Category = 'Bundles'
+      Caption = 'New bundle'
       ImageIndex = 11
       OnExecute = ActAddGroupExecute
     end
@@ -2840,25 +2840,25 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActAddPackageGroup: TAction
       Category = 'hosts'
-      Caption = 'Add package or group'
+      Caption = 'Add package or bundle'
       ImageIndex = 11
       OnExecute = ActAddPackageGroupExecute
     end
     object ActSearchGroups: TAction
-      Category = 'Groups'
+      Category = 'Bundles'
       Caption = 'Search'
       ImageIndex = 28
       OnExecute = ActSearchGroupsExecute
     end
     object ActEditGroup: TAction
-      Category = 'Groups'
-      Caption = 'Edit group'
+      Category = 'Bundles'
+      Caption = 'Edit bundle'
       ImageIndex = 10
       OnExecute = ActEditGroupExecute
     end
     object ActDeleteGroup: TAction
-      Category = 'Groups'
-      Caption = 'Delete group'
+      Category = 'Bundles'
+      Caption = 'Delete bundle'
       ImageIndex = 6
       OnExecute = ActDeleteGroupExecute
       ShortCut = 46
@@ -2898,7 +2898,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActRemoveDepends: TAction
       Category = 'hosts'
-      Caption = 'Remove dependencies from packages/groups'
+      Caption = 'Remove dependencies from packages/bundles'
       ImageIndex = 12
       OnExecute = ActRemoveDependsExecute
     end
