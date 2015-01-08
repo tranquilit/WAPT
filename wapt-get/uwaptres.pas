@@ -10,7 +10,7 @@ uses
 resourcestring
 
   { Messages dans uwaptconsole.pas }
-  rsFatalError = 'Failed to recover task.'; // '... Impossible de récupérer l''action.';
+  rsFatalError = 'Failed to retrieve task.'; // '... Impossible de récupérer l''action.';
   rsInstalling = 'Installing %s...';
   rsDefineWaptdevPath = 'Please select a directory on your package development host before editing a package bundle.'; //'Veuillez définir un répertoire de développement pour pouvoir éditer un paquet groupe.'
 
@@ -24,8 +24,8 @@ resourcestring
   rsWaptUploadError = 'Error while uploading WAPT agent to the repository : %s';
   rsWaptSetupError = 'Error while creating agent : %s';
 
-  rsForcedUninstallPackages = 'Select packages to force-remove from the hosts'; // 'Choix des paquets à forcer à désintaller sur les postes sélectionnés'; TODO
-  rsDependencies = 'Select packages to add to the hosts as dependencies'; // 'Choix des paquets à ajouter en dépendance aux postes sélectionnés';
+  rsForcedUninstallPackages = 'Selection of packages to force-remove from the hosts'; // 'Choix des paquets à forcer à désintaller sur les postes sélectionnés'; TODO
+  rsDependencies = 'Selection of packages to add to the hosts as dependencies'; // 'Choix des paquets à ajouter en dépendance aux postes sélectionnés';
   rsNbModifiedHosts = '%s hosts affected.';
   rsTaskCancelled = 'Task canceled.';
   rsFailedToCancel = 'Could not cancel : %s.';
@@ -65,8 +65,8 @@ resourcestring
   rsConfirmRmPackagesFromHost = 'Are you sure you want to remove %s package(s) from the selected host(s) %s ?';
   rsPackageRemoveError = 'Error while removing package %s: %s';
 
-  rsReallowPackagesOnHost = 'Select package(s) to remove from conflict list'; // 'Choix des paquets à réautoriser sur les postes sélectionnés';
-  rsRmBundleFromHosts = 'Select package bundles for removing from the selected hosts';
+  rsReallowPackagesOnHost = 'Selection of package(s) to remove from conflict list'; // 'Choix des paquets à réautoriser sur les postes sélectionnés';
+  rsRmBundleFromHosts = 'Selection of package bundles for removing from the selected hosts';
   rsNoBundle = 'There is no package bundle.'; // 'Il n''y a aucun groupe.'; TODO : pas assez explicite ?
 
   rsWaptClientUpdateOnHosts = 'Updating WAPT client on the hosts';
