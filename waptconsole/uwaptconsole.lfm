@@ -3,7 +3,7 @@ object VisWaptGUI: TVisWaptGUI
   Height = 600
   Top = 0
   Width = 800
-  Caption = 'Console WAPT'
+  Caption = 'WAPT console'
   ClientHeight = 580
   ClientWidth = 800
   Constraints.MinHeight = 600
@@ -31,7 +31,7 @@ object VisWaptGUI: TVisWaptGUI
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
-      Caption = 'Inventaire'
+      Caption = 'Inventory'
       ClientHeight = 408
       ClientWidth = 792
       object Panel10: TPanel
@@ -56,16 +56,16 @@ object VisWaptGUI: TVisWaptGUI
           Left = 4
           Height = 13
           Top = 6
-          Width = 51
-          Caption = 'Recherche'
+          Width = 33
+          Caption = 'Search'
           ParentColor = False
         end
         object CheckBoxMaj: TCheckBox
           Left = 338
           Height = 19
           Top = 7
-          Width = 151
-          Caption = 'Nécessite des mises à jours'
+          Width = 95
+          Caption = 'Needs updating'
           OnClick = CheckBoxMajClick
           TabOrder = 2
         end
@@ -73,8 +73,8 @@ object VisWaptGUI: TVisWaptGUI
           Left = 501
           Height = 19
           Top = 7
-          Width = 102
-          Caption = 'Avec des erreurs'
+          Width = 70
+          Caption = 'Has errors'
           OnClick = CheckBoxMajClick
           TabOrder = 3
         end
@@ -126,8 +126,8 @@ object VisWaptGUI: TVisWaptGUI
           Left = 31
           Height = 19
           Top = 30
-          Width = 42
-          Caption = 'Tout'
+          Width = 31
+          Caption = 'All'
           Checked = True
           OnChange = cbSearchAllChange
           OnClick = CheckBoxMajClick
@@ -138,8 +138,8 @@ object VisWaptGUI: TVisWaptGUI
           Left = 80
           Height = 19
           Top = 30
-          Width = 59
-          Caption = 'Machine'
+          Width = 42
+          Caption = 'Host'
           OnClick = CheckBoxMajClick
           State = cbGrayed
           TabOrder = 5
@@ -148,8 +148,8 @@ object VisWaptGUI: TVisWaptGUI
           Left = 144
           Height = 19
           Top = 30
-          Width = 99
-          Caption = 'Infos Matérielles'
+          Width = 67
+          Caption = 'Hardware'
           OnClick = CheckBoxMajClick
           State = cbGrayed
           TabOrder = 6
@@ -158,8 +158,8 @@ object VisWaptGUI: TVisWaptGUI
           Left = 247
           Height = 19
           Top = 30
-          Width = 59
-          Caption = 'Logiciels'
+          Width = 64
+          Caption = 'Software'
           OnClick = CheckBoxMajClick
           State = cbGrayed
           TabOrder = 7
@@ -168,8 +168,8 @@ object VisWaptGUI: TVisWaptGUI
           Left = 314
           Height = 19
           Top = 30
-          Width = 59
-          Caption = 'Paquets'
+          Width = 65
+          Caption = 'Packages'
           OnClick = CheckBoxMajClick
           State = cbGrayed
           TabOrder = 8
@@ -178,8 +178,8 @@ object VisWaptGUI: TVisWaptGUI
           Left = 627
           Height = 13
           Top = 22
-          Width = 60
-          Caption = 'Sélectionnés'
+          Width = 41
+          Caption = 'Selected'
           ParentColor = False
         end
         object labSelected: TLabel
@@ -194,8 +194,8 @@ object VisWaptGUI: TVisWaptGUI
           Left = 627
           Height = 13
           Top = 7
-          Width = 97
-          Caption = 'Nombre de postes : '
+          Width = 89
+          Caption = 'Number of hosts : '
           ParentColor = False
         end
         object LabelComputersNumber: TLabel
@@ -229,7 +229,7 @@ object VisWaptGUI: TVisWaptGUI
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed, coAllowFocus]
             Position = 1
-            Text = 'Machine'
+            Text = 'Host'
             Width = 112
             PropertyName = 'host.computer_fqdn'
           end        
@@ -243,48 +243,48 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Position = 3
-            Text = 'Fabricant'
+            Text = 'Manufacturer'
             Width = 100
             PropertyName = 'host.system_manufacturer'
           end        
           item
             MaxWidth = 400
             Position = 4
-            Text = 'Modèle'
+            Text = 'Model'
             Width = 100
             PropertyName = 'host.system_productname'
           end        
           item
             MaxWidth = 400
             Position = 5
-            Text = 'Numéro de série'
+            Text = 'Serial number'
             Width = 100
             PropertyName = 'dmi.Chassis_Information.Serial_Number'
           end        
           item
             MaxWidth = 400
             Position = 6
-            Text = 'Dernière MAJ'
+            Text = 'Last update'
             Width = 100
             PropertyName = 'last_query_date'
           end        
           item
             MaxWidth = 400
             Position = 7
-            Text = 'Adresses Mac'
+            Text = 'MAC address'
             Width = 100
             PropertyName = 'host.mac'
           end        
           item
             MaxWidth = 400
             Position = 8
-            Text = 'Adresses Ips'
+            Text = 'IP addresses'
             Width = 100
             PropertyName = 'host.connected_ips'
           end        
           item
             Position = 9
-            Text = 'Version WAPT'
+            Text = 'WAPT version'
             Width = 80
             PropertyName = 'wapt.wapt-exe-version'
           end        
@@ -340,13 +340,13 @@ object VisWaptGUI: TVisWaptGUI
             MaxWidth = 100
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 16
-            Text = 'Status poste'
+            Text = 'Host status'
             PropertyName = 'update_status'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 17
-            Text = 'Controleur Domaine'
+            Text = 'Domain controller'
             PropertyName = 'host.domain_controller'
           end        
           item
@@ -358,7 +358,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 19
-            Text = 'Adresse controleur domaine'
+            Text = 'Domain controller address'
             PropertyName = 'host.domain_controller_address'
           end>
         Header.DefaultHeight = 17
@@ -396,7 +396,7 @@ object VisWaptGUI: TVisWaptGUI
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
           AnchorSideTop.Side = asrBottom
-          Caption = 'Résumé'
+          Caption = 'Overview'
           ClientHeight = 328
           ClientWidth = 564
           object GridHostPackages: TSOGrid
@@ -424,7 +424,7 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
                 Position = 2
-                Text = 'Nom paquet'
+                Text = 'Package name'
                 Width = 171
                 PropertyName = 'package'
               end            
@@ -451,12 +451,12 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
                 Position = 6
-                Text = 'Dependances'
+                Text = 'Dependencies'
                 PropertyName = 'depends'
               end            
               item
                 Position = 7
-                Text = 'Date installation'
+                Text = 'Install date'
                 Width = 93
                 PropertyName = 'install_date'
               end            
@@ -476,7 +476,7 @@ object VisWaptGUI: TVisWaptGUI
               end            
               item
                 Position = 10
-                Text = 'Installé par'
+                Text = 'Installed by'
                 Width = 100
                 PropertyName = 'explicit_by'
               end            
@@ -490,14 +490,14 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
                 Position = 12
-                Text = 'Nom fichier'
+                Text = 'File name'
                 Width = 100
                 PropertyName = 'filename'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
                 Position = 13
-                Text = 'Paramètres'
+                Text = 'Parameters'
                 Width = 100
                 PropertyName = 'install_params'
               end            
@@ -525,14 +525,14 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
                 Position = 17
-                Text = 'Taille installée'
+                Text = 'Size after install'
                 Width = 100
                 PropertyName = 'installed_size'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
                 Position = 18
-                Text = 'URL dépôt'
+                Text = 'URL of repository'
                 Width = 100
                 PropertyName = 'repo_url'
               end            
@@ -540,14 +540,14 @@ object VisWaptGUI: TVisWaptGUI
                 Alignment = taRightJustify
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
                 Position = 19
-                Text = 'Taille'
+                Text = 'Size'
                 Width = 100
                 PropertyName = 'size'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
                 Position = 20
-                Text = 'Nom dépôt'
+                Text = 'Name of repository'
                 Width = 100
                 PropertyName = 'repo'
               end            
@@ -595,39 +595,39 @@ object VisWaptGUI: TVisWaptGUI
               Left = 11
               Height = 13
               Top = 78
-              Width = 56
+              Width = 51
               Anchors = [akLeft]
-              Caption = 'Addresse ip'
+              Caption = 'IP address'
               ParentBidiMode = False
               ParentColor = False
             end
             object Label3: TLabel
-              Left = 359
+              Left = 365
               Height = 13
               Top = 36
-              Width = 34
+              Width = 28
               Anchors = [akRight]
-              Caption = 'Modèle'
+              Caption = 'Model'
               ParentBidiMode = False
               ParentColor = False
             end
             object Label4: TLabel
-              Left = 359
+              Left = 385
               Height = 13
               Top = 78
-              Width = 48
+              Width = 22
               Anchors = [akRight]
-              Caption = 'Utilisateur'
+              Caption = 'User'
               ParentBidiMode = False
               ParentColor = False
             end
             object Label2: TLabel
-              Left = 359
+              Left = 346
               Height = 13
               Top = 14
-              Width = 52
+              Width = 65
               Anchors = [akRight]
-              Caption = 'Fabriquant'
+              Caption = 'Manufacturer'
               ParentBidiMode = False
               ParentColor = False
             end
@@ -635,9 +635,9 @@ object VisWaptGUI: TVisWaptGUI
               Left = 11
               Height = 13
               Top = 14
-              Width = 21
+              Width = 27
               Anchors = [akLeft]
-              Caption = 'Nom'
+              Caption = 'Name'
               ParentBidiMode = False
               ParentColor = False
             end
@@ -645,9 +645,9 @@ object VisWaptGUI: TVisWaptGUI
               Left = 11
               Height = 13
               Top = 58
-              Width = 108
+              Width = 85
               Anchors = [akLeft]
-              Caption = 'Système d''exploitation'
+              Caption = 'Operating system'
               ParentBidiMode = False
               ParentColor = False
             end
@@ -662,12 +662,12 @@ object VisWaptGUI: TVisWaptGUI
               ParentColor = False
             end
             object Label9: TLabel
-              Left = 359
+              Left = 364
               Height = 13
               Top = 58
-              Width = 46
+              Width = 41
               Anchors = [akRight]
-              Caption = 'Mis à jour'
+              Caption = 'Updated'
               ParentBidiMode = False
               ParentColor = False
             end
@@ -755,9 +755,9 @@ object VisWaptGUI: TVisWaptGUI
               Left = 11
               Height = 13
               Top = 102
-              Width = 74
+              Width = 60
               Anchors = [akLeft]
-              Caption = 'Action en cours'
+              Caption = 'Current task'
               ParentBidiMode = False
               ParentColor = False
             end
@@ -794,7 +794,7 @@ object VisWaptGUI: TVisWaptGUI
           end
         end
         object pgHostPackage: TTabSheet
-          Caption = 'Inventaire matériel'
+          Caption = 'Hardware inventory'
           ClientHeight = 370
           ClientWidth = 564
           object GridhostInventory: TVirtualJSONInspector
@@ -811,12 +811,12 @@ object VisWaptGUI: TVisWaptGUI
             Header.Columns = <            
               item
                 Position = 0
-                Text = 'Propriété'
+                Text = 'Property'
                 Width = 150
               end            
               item
                 Position = 1
-                Text = 'Valeur'
+                Text = 'Value'
                 Width = 410
               end>
             Header.DefaultHeight = 17
@@ -830,7 +830,7 @@ object VisWaptGUI: TVisWaptGUI
           end
         end
         object pgSoftwares: TTabSheet
-          Caption = 'Inventaire logiciels'
+          Caption = 'Software inventory'
           ClientHeight = 332
           ClientWidth = 564
           object GridHostSoftwares: TSOGrid
@@ -845,13 +845,13 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
                 Position = 0
-                Text = 'Editeur'
+                Text = 'Publisher'
                 Width = 108
                 PropertyName = 'publisher'
               end            
               item
                 Position = 1
-                Text = 'Logiciel'
+                Text = 'Software name'
                 Width = 128
                 PropertyName = 'name'
               end            
@@ -864,32 +864,32 @@ object VisWaptGUI: TVisWaptGUI
               end            
               item
                 Position = 3
-                Text = 'Date d''install'
+                Text = 'Install date'
                 Width = 85
                 PropertyName = 'install_date'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
                 Position = 4
-                Text = 'Numéro de licence'
+                Text = 'Serial number'
                 PropertyName = 'serial_nr'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
                 Position = 5
-                Text = 'Répertoire d''installation'
+                Text = 'Install location'
                 Width = 200
                 PropertyName = 'install_location'
               end            
               item
                 Position = 6
-                Text = 'Clé désinstall'
+                Text = 'Uninstall key'
                 Width = 100
                 PropertyName = 'key'
               end            
               item
                 Position = 7
-                Text = 'Commande désinstall'
+                Text = 'Uninstall string'
                 Width = 100
                 PropertyName = 'uninstall_string'
               end            
@@ -897,7 +897,7 @@ object VisWaptGUI: TVisWaptGUI
                 Alignment = taRightJustify
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
                 Position = 8
-                Text = 'Composant système'
+                Text = 'System component'
                 Width = 19
                 PropertyName = 'system_component'
               end>
@@ -934,7 +934,7 @@ object VisWaptGUI: TVisWaptGUI
               Height = 13
               Top = 6
               Width = 34
-              Caption = 'Filtre : '
+              Caption = 'Filter : '
               ParentColor = False
             end
             object cbMaskSystemComponents: TCheckBox
@@ -942,7 +942,7 @@ object VisWaptGUI: TVisWaptGUI
               Height = 17
               Top = 4
               Width = 185
-              Caption = 'Masquer les composants systèmes'
+              Caption = 'Hide system components'
               Checked = True
               OnClick = cbMaskSystemComponentsClick
               State = cbChecked
@@ -951,7 +951,7 @@ object VisWaptGUI: TVisWaptGUI
           end
         end
         object pgTasks: TTabSheet
-          Caption = 'Tâches'
+          Caption = 'Tasks'
           ClientHeight = 332
           ClientWidth = 564
           object HostTaskRunningProgress: TProgressBar
@@ -974,7 +974,7 @@ object VisWaptGUI: TVisWaptGUI
             EditLabel.Height = 13
             EditLabel.Top = 2
             EditLabel.Width = 264
-            EditLabel.Caption = 'Tâche en cours'
+            EditLabel.Caption = 'Current task'
             EditLabel.ParentColor = False
             TabOrder = 1
           end
@@ -1042,7 +1042,7 @@ object VisWaptGUI: TVisWaptGUI
             TabIndex = 0
             TabOrder = 3
             object TabSheet1: TTabSheet
-              Caption = 'En attente'
+              Caption = 'Waiting'
               ClientHeight = 149
               ClientWidth = 556
               object GridHostTasksPending: TSOGrid
@@ -1176,7 +1176,7 @@ object VisWaptGUI: TVisWaptGUI
               end
             end
             object TabSheet2: TTabSheet
-              Caption = 'Terminées'
+              Caption = 'Done'
               ClientHeight = 187
               ClientWidth = 556
               object GridHostTasksDone: TSOGrid
@@ -1309,7 +1309,7 @@ object VisWaptGUI: TVisWaptGUI
               end
             end
             object TabSheet3: TTabSheet
-              Caption = 'Erreurs'
+              Caption = 'Errors'
               ClientHeight = 187
               ClientWidth = 556
               object GridHostTasksErrors: TSOGrid
@@ -1483,7 +1483,7 @@ object VisWaptGUI: TVisWaptGUI
       end
     end
     object pgGroups: TTabSheet
-      Caption = 'Groupes'
+      Caption = 'Groups'
       ClientHeight = 412
       ClientWidth = 792
       object GridGroups: TSOGrid
@@ -1509,7 +1509,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Position = 1
-            Text = 'Paquet'
+            Text = 'Package'
             Width = 182
             PropertyName = 'package'
           end        
@@ -1537,14 +1537,14 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Position = 5
-            Text = 'Dépendances'
+            Text = 'Dependencies'
             Width = 249
             PropertyName = 'depends'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 6
-            Text = 'Installé par'
+            Text = 'Installed by'
             PropertyName = 'explicit_by'
           end>
         Header.DefaultHeight = 17
@@ -1671,7 +1671,7 @@ object VisWaptGUI: TVisWaptGUI
       end
     end
     object pgPrivateRepo: TTabSheet
-      Caption = 'Dépôt privé'
+      Caption = 'Private repository'
       ClientHeight = 412
       ClientWidth = 792
       object GridPackages: TSOGrid
@@ -1694,7 +1694,7 @@ object VisWaptGUI: TVisWaptGUI
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
             Position = 1
-            Text = 'Paquet'
+            Text = 'Package'
             Width = 180
             PropertyName = 'package'
           end        
@@ -1725,14 +1725,14 @@ object VisWaptGUI: TVisWaptGUI
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
             Position = 5
-            Text = 'Dépendances'
+            Text = 'Dependencies'
             Width = 345
             PropertyName = 'depends'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 6
-            Text = 'Installé par'
+            Text = 'Installed by'
             PropertyName = 'explicit_by'
           end>
         Header.DefaultHeight = 17
@@ -2617,12 +2617,12 @@ object VisWaptGUI: TVisWaptGUI
         ClientWidth = 798
         TabOrder = 3
         object cbShowLog: TCheckBox
-          Left = 6
+          Left = 63
           Height = 19
           Top = -2
-          Width = 136
+          Width = 79
           Anchors = [akRight, akBottom]
-          Caption = 'Voir infos de débuggage'
+          Caption = 'Show debug'
           OnClick = cbShowLogClick
           TabOrder = 0
         end
@@ -2691,7 +2691,7 @@ object VisWaptGUI: TVisWaptGUI
     top = 120
     object ActLocalhostInstall: TAction
       Category = 'Host'
-      Caption = 'Installer'
+      Caption = 'Install'
       Enabled = False
       ImageIndex = 21
       OnExecute = ActLocalhostInstallExecute
@@ -2699,13 +2699,13 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActSearchPackage: TAction
       Category = 'packages'
-      Caption = 'Rechercher'
+      Caption = 'Search'
       ImageIndex = 28
       OnExecute = ActSearchPackageExecute
     end
     object ActLocalhostRemove: TAction
       Category = 'Host'
-      Caption = 'Désinstaller le paquet'
+      Caption = 'Uninstall package'
       Enabled = False
       ImageIndex = 6
       OnExecute = ActLocalhostRemoveExecute
@@ -2713,39 +2713,39 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActEditpackage: TAction
       Category = 'packages'
-      Caption = 'Editer le paquet'
+      Caption = 'Edit package'
       ImageIndex = 18
       OnExecute = ActPackageEdit
       OnUpdate = ActEditpackageUpdate
     end
     object ActLocalhostUpgrade: TAction
       Category = 'Host'
-      Caption = 'Mise à jour du système'
+      Caption = 'System update'
       Enabled = False
       ImageIndex = 29
     end
     object ActExecCode: TAction
-      Caption = 'Exécuter le code source python'
+      Caption = 'Execute python source'
       OnExecute = ActExecCodeExecute
     end
     object ActEvaluate: TAction
-      Caption = 'Evaluer'
+      Caption = 'Evaluate'
       OnExecute = ActEvaluateExecute
     end
     object ActBuildUpload: TAction
       Category = 'packages'
-      Caption = 'Activer le paquet'
+      Caption = 'Activate package'
       ImageIndex = 35
     end
     object ActCreateCertificate: TAction
       Category = 'Tools'
-      Caption = 'Création de certificat auto-signé'
+      Caption = 'Generate self-signed certificate'
       ImageIndex = 24
       OnExecute = ActCreateCertificateExecute
     end
     object ActCreateWaptSetupPy: TAction
       Category = 'Tools'
-      Caption = 'Créer un Installeur Wapt personnalisé (py)'
+      Caption = 'Create custom WAPT installer (py)'
       OnExecute = ActCreateWaptSetupPyExecute
     end
     object ActEvaluateVar: TAction
@@ -2753,199 +2753,199 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActSearchHost: TAction
       Category = 'hosts'
-      Caption = 'Rechercher machine'
+      Caption = 'Search for host'
       ImageIndex = 26
       OnExecute = ActSearchHostExecute
     end
     object ActEditHostPackage: TAction
       Category = 'hosts'
-      Caption = 'Modifier la configuration du poste'
+      Caption = 'Edit host configuration'
       ImageIndex = 10
       OnExecute = ActEditHostPackageExecute
     end
     object ActPackagesUpdate: TAction
       Category = 'Host'
-      Caption = 'Mise à jour des paquets disponibles'
+      Caption = 'Update available packages'
       ImageIndex = 25
       OnExecute = ActPackagesUpdateExecute
     end
     object ActHostsDelete: TAction
       Category = 'hosts'
-      Caption = 'Supprimer de l''inventaire'
+      Caption = 'Remove from inventory'
       ImageIndex = 9
       OnExecute = ActHostsDeleteExecute
       ShortCut = 16430
     end
     object ActDeletePackage: TAction
       Category = 'packages'
-      Caption = 'Supprimer du dépôt'
+      Caption = 'Remove from repository'
       ImageIndex = 2
       OnExecute = ActDeletePackageExecute
       OnUpdate = ActDeletePackageUpdate
       ShortCut = 46
     end
     object ActAdvancedMode: TAction
-      Caption = 'Mode avancé'
+      Caption = 'Advanced mode'
       OnExecute = ActAdvancedModeExecute
     end
     object ActAddGroup: TAction
       Category = 'Groups'
-      Caption = 'Nouveau groupe'
+      Caption = 'New group'
       ImageIndex = 11
       OnExecute = ActAddGroupExecute
     end
     object ActChangePassword: TAction
       Category = 'Tools'
-      Caption = 'Changer le mot de passe'
+      Caption = 'Update password'
       OnExecute = ActChangePasswordExecute
     end
     object actQuit: TAction
-      Caption = 'Quitter'
+      Caption = 'Quit'
       ImageIndex = 0
       OnExecute = actQuitExecute
       ShortCut = 16465
     end
     object actRefresh: TAction
-      Caption = 'Actualiser'
+      Caption = 'Refresh'
       ImageIndex = 25
       OnExecute = actRefreshExecute
       ShortCut = 116
     end
     object ActReloadConfig: TAction
-      Caption = 'Recharger wapt-get.ini'
+      Caption = 'Reload wapt-get.ini'
       OnExecute = ActReloadConfigExecute
     end
     object ActWAPTLocalConfig: TAction
-      Caption = 'Configuration WAPT locale'
+      Caption = 'Local WAPT configuration'
       OnExecute = ActWAPTLocalConfigExecute
     end
     object ActGotoHost: TAction
-      Caption = 'Rechercher une machine'
+      Caption = 'Search for host'
       OnExecute = ActGotoHostExecute
       ShortCut = 16454
     end
     object ActHostWaptUpgrade: TAction
       Category = 'hosts'
-      Caption = 'Mettre à jour le client WAPT'
-      Hint = 'Lance agent.exe en mode silencieux depuis <url-depot>/waptagent.exe'
+      Caption = 'Update WAPT client'
+      Hint = 'Run agent.exe in silent mode from <url-depot>/waptagent.exe'
       OnExecute = ActHostWaptUpgradeExecute
       OnUpdate = ActHostWaptUpgradeUpdate
     end
     object ActHostUpgrade: TAction
       Category = 'hosts'
-      Caption = 'Appliquer les mises à jour'
+      Caption = 'Apply updates'
       ImageIndex = 29
       OnExecute = ActHostUpgradeExecute
       OnUpdate = ActHostUpgradeUpdate
     end
     object ActAddPackageGroup: TAction
       Category = 'hosts'
-      Caption = 'Ajouter un paquet ou un groupe de paquets'
+      Caption = 'Add package or group'
       ImageIndex = 11
       OnExecute = ActAddPackageGroupExecute
     end
     object ActSearchGroups: TAction
       Category = 'Groups'
-      Caption = 'Rechercher'
+      Caption = 'Search'
       ImageIndex = 28
       OnExecute = ActSearchGroupsExecute
     end
     object ActEditGroup: TAction
       Category = 'Groups'
-      Caption = 'Editer le groupe'
+      Caption = 'Edit group'
       ImageIndex = 10
       OnExecute = ActEditGroupExecute
     end
     object ActDeleteGroup: TAction
       Category = 'Groups'
-      Caption = 'Supprimer le groupe'
+      Caption = 'Delete group'
       ImageIndex = 6
       OnExecute = ActDeleteGroupExecute
       ShortCut = 46
     end
     object ActDeployWapt: TAction
       Category = 'Tools'
-      Caption = 'Déployer Wapt sur des postes'
+      Caption = 'Deploy WAPT onto hosts'
       OnExecute = ActDeployWaptExecute
     end
     object ActPackageRemove: TAction
       Category = 'Host'
-      Caption = 'Désinstaller le paquet'
-      Hint = 'Force la désinstallation à distance d''un paquet'
+      Caption = 'Uninstall package'
+      Hint = 'Forces remote uninstall of package'
       ImageIndex = 31
       OnExecute = ActPackageRemoveExecute
     end
     object ActVNC: TAction
       Category = 'Host'
-      Caption = 'Connecter avec VNC'
+      Caption = 'Connect via VNC'
       ImageIndex = 32
       OnExecute = ActVNCExecute
       OnUpdate = ActVNCUpdate
     end
     object ActRDP: TAction
       Category = 'Host'
-      Caption = 'Connecter avec RDP'
+      Caption = 'Connect via RDP'
       ImageIndex = 33
       OnExecute = ActRDPExecute
       OnUpdate = ActRDPUpdate
     end
     object ActCancelRunningTask: TAction
       Category = 'Host'
-      Caption = 'Annuler tâche en cours'
+      Caption = 'Cancel current task'
       Enabled = False
       ImageIndex = 31
       OnExecute = ActCancelRunningTaskExecute
     end
     object ActRemoveDepends: TAction
       Category = 'hosts'
-      Caption = 'Enlever des dépendances à des groupes ou des paquets'
+      Caption = 'Remove dependencies from packages/groups'
       ImageIndex = 12
       OnExecute = ActRemoveDependsExecute
     end
     object ActForgetPackages: TAction
       Category = 'Host'
-      Caption = 'Oublier les paquets'
+      Caption = 'Forget packages'
       ImageIndex = 34
       OnExecute = ActForgetPackagesExecute
     end
     object ActAddConflicts: TAction
       Category = 'hosts'
-      Caption = 'Interdire des paquets (force désinstallation)'
+      Caption = 'Block packages (causes forced uninstall)'
       ImageIndex = 11
       OnExecute = ActAddConflictsExecute
     end
     object ActSearchSoftwares: TAction
       Category = 'Host'
-      Caption = 'ActSearchSoftwares'
+      Caption = 'ActSearchSoftware'
       ImageIndex = 28
     end
     object ActRemoveConflicts: TAction
       Category = 'hosts'
-      Caption = 'Autoriser des paquets '
+      Caption = 'Allow packages '
       ImageIndex = 12
       OnExecute = ActRemoveConflictsExecute
     end
     object ActHelp: TAction
-      Caption = 'Obtenir de l''aide sur internet'
+      Caption = 'Online help'
       ImageIndex = 30
       OnExecute = ActHelpExecute
       ShortCut = 112
     end
     object ActImportFromRepo: TAction
       Category = 'packages'
-      Caption = 'Importer depuis un dépôt'
+      Caption = 'Import from repository'
       ImageIndex = 17
       OnExecute = ActImportFromRepoExecute
     end
     object ActImportFromFile: TAction
       Category = 'packages'
-      Caption = 'Importer depuis un fichier'
+      Caption = 'Import from file'
       ImageIndex = 19
       OnExecute = ActImportFromFileExecute
     end
     object ActCreateWaptSetup: TAction
       Category = 'Tools'
-      Caption = 'Créer un Installeur Wapt personnalisé'
+      Caption = 'Create custom WAPT installer'
       ImageIndex = 35
       OnExecute = ActCreateWaptSetupExecute
     end
@@ -2971,7 +2971,7 @@ object VisWaptGUI: TVisWaptGUI
     left = 144
     top = 224
     object MenuItem4: TMenuItem
-      Caption = 'Enlever'
+      Caption = 'Remove'
     end
   end
   object MainMenu1: TMainMenu
@@ -2979,9 +2979,9 @@ object VisWaptGUI: TVisWaptGUI
     left = 44
     top = 144
     object MenuItem5: TMenuItem
-      Caption = '&Fichier'
+      Caption = '&File'
       object MenuItem6: TMenuItem
-        Caption = 'Nouveau'
+        Caption = 'New'
         Visible = False
       end
       object MenuItem7: TMenuItem
@@ -2989,23 +2989,23 @@ object VisWaptGUI: TVisWaptGUI
         Visible = False
       end
       object MenuItem8: TMenuItem
-        Caption = 'Ouvrir...'
+        Caption = 'Open...'
         Visible = False
       end
       object MenuItem9: TMenuItem
-        Caption = 'Réouvrir'
+        Caption = 'Reopen'
         Visible = False
       end
       object MenuItem10: TMenuItem
-        Caption = 'Enregistrer ...'
+        Caption = 'Save ...'
         Visible = False
       end
       object MenuItem11: TMenuItem
-        Caption = 'Enregistrer sous'
+        Caption = 'Save as'
         Visible = False
       end
       object MenuItem12: TMenuItem
-        Caption = '&Fermer'
+        Caption = '&Close'
         Visible = False
       end
       object MenuItem13: TMenuItem
@@ -3053,10 +3053,10 @@ object VisWaptGUI: TVisWaptGUI
       end
     end
     object MenuItem24: TMenuItem
-      Caption = '&Edition'
+      Caption = '&Edit'
     end
     object MenuItem15: TMenuItem
-      Caption = '&Outils'
+      Caption = '&Tools'
       object MenuItem29: TMenuItem
         Action = ActChangePassword
       end
@@ -3197,7 +3197,7 @@ object VisWaptGUI: TVisWaptGUI
         }
       end
       object MenuItem27: TMenuItem
-        Caption = 'A propos'
+        Caption = 'About'
         OnClick = MenuItem27Click
       end
     end
@@ -3835,7 +3835,7 @@ object VisWaptGUI: TVisWaptGUI
     left = 144
     top = 424
     object MenuItem20: TMenuItem
-      Caption = 'Installer un paquet'
+      Caption = 'Install package'
       OnClick = MenuItem20Click
     end
     object MenuItem19: TMenuItem
@@ -5082,7 +5082,7 @@ object VisWaptGUI: TVisWaptGUI
     }
   end
   object OpenDialogWapt: TOpenDialog
-    Title = 'Sélectionner un fichier WAPT'
+    Title = 'Select WAPT file'
     DefaultExt = '.wapt'
     Filter = 'Paquets WAPT|*.wapt|Tous les fichiers|*.*'
     Options = [ofAllowMultiSelect, ofFileMustExist, ofEnableSizing, ofViewDetail]
