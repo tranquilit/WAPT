@@ -1494,11 +1494,11 @@ begin
   begin
     with TvisGroupChoice.Create(self) do
       try
-        Caption := rsRmGroupFromHosts;
+        Caption := rsRmBundleFromHosts;
         ActSearchExecute(self);
         if groupGrid.Data.AsArray.Length = 0 then
         begin
-          ShowMessage(rsNoGroup);
+          ShowMessage(rsNoBundle);
           Exit;
         end;
         if ShowModal = mrOk then

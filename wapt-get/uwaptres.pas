@@ -10,7 +10,7 @@ uses
 resourcestring
 
   { Messages dans uwaptconsole.pas }
-  rsFatalError = 'Failed to recover action.'; // '... Impossible de récupérer l''action.';
+  rsFatalError = 'Failed to recover task.'; // '... Impossible de récupérer l''action.';
   rsInstalling = 'Installing %s...';
   rsDefineWaptdevPath = 'Please select a directory on your package development host before editing a package bundle.'; //'Veuillez définir un répertoire de développement pour pouvoir éditer un paquet groupe.'
 
@@ -20,9 +20,9 @@ resourcestring
 
   rsCreationInProgress = 'Creating...'; //'Création en cours'
   rsProgressTitle = 'Uploading to WAPT server...';
-  rsWaptSetupUploadSuccess = 'WAPT agent successfully created and uploaded to the repository : %s'; // 'Agent WAPT créé et déposé avec succès : %s';
-  rsWaptUploadError = 'Error while uploading agent to the repository : %s'; // 'Erreur lors du dépôt de l''agent WAPT : %s';
-  rsWaptSetupError = 'Error while creating agent : %s'; // 'Erreur à la création de l''agent WAPT : %s';
+  rsWaptSetupUploadSuccess = 'WAPT agent successfully created and uploaded to the repository : %s';
+  rsWaptUploadError = 'Error while uploading WAPT agent to the repository : %s';
+  rsWaptSetupError = 'Error while creating agent : %s';
 
   rsForcedUninstallPackages = 'Select packages to force-remove from the hosts'; // 'Choix des paquets à forcer à désintaller sur les postes sélectionnés'; TODO
   rsDependencies = 'Select packages to add to the hosts as dependencies'; // 'Choix des paquets à ajouter en dépendance aux postes sélectionnés';
@@ -40,7 +40,7 @@ resourcestring
   rsWaptAgentSetupError = 'Error while creating waptagent.exe: %s';
 
   rsConfirmRmOnePackage = 'Are you sure you want to remove this package from the server ?';
-  rsConfirmRmMultiplePackages = 'Are you sure you want to remove the selected packages from the server ?'; // Maybe consider merging the last two into a single formatted str.
+  rsConfirmRmMultiplePackages = 'Are you sure you want to remove the selected packages from the server ?';
   rsConfirmRmPackageCaption = 'Confirm removal';
   rsDeletionInProgress = 'Removing packages...';
   rsDeletingElement = 'Removing %s';
@@ -50,7 +50,7 @@ resourcestring
 
   rsConfirmCaption = 'Confirm';
 
-  rsConfirmHostForgetsPackages = 'Are you sure you want to forget %s packages from host %s ?'; // Possible issue with multiple formatting parameters
+  rsConfirmHostForgetsPackages = 'Are you sure you want to forget %s packages from host %s ?';
   rsForgetPackageError = 'Error while forgetting package %s: %s';
 
   rsPrivateKeyDoesntExist = 'Private key doesn''t exist : %s';
@@ -66,10 +66,10 @@ resourcestring
   rsPackageRemoveError = 'Error while removing package %s: %s';
 
   rsReallowPackagesOnHost = 'Select package(s) to remove from conflict list'; // 'Choix des paquets à réautoriser sur les postes sélectionnés';
-  rsRmGroupFromHosts = 'Select groups for removing from selected hosts'; // 'Choix des groupes à enlever des postes sélectionnés';
-  rsNoGroup = 'There is no group.'; // 'Il n''y a aucun groupe.'; TODO : pas assez explicite ?
+  rsRmBundleFromHosts = 'Select package bundles for removing from the selected hosts';
+  rsNoBundle = 'There is no package bundle.'; // 'Il n''y a aucun groupe.'; TODO : pas assez explicite ?
 
-  rsWaptClientUpdateOnHosts = 'Updating WAPT client on hosts'; //'Mise à jour du client WAPT sur les postes';
+  rsWaptClientUpdateOnHosts = 'Updating WAPT client on the hosts';
 
   rsConfirmRmHostsFromList = 'Are you sure you want to remove %s hosts from the list ?';
 
@@ -88,9 +88,9 @@ resourcestring
   rsKeyAlreadyExists = 'Key %s already exists, please pick another name.';
 
   { Messages dans uVisEditPackage.pas }
-  rsEditGroup = 'Edit group';
-  rsEdPackage = 'Group';
-  rsPackagesNeededCaption = 'Packages needed in package bundle'; // TODO refactoring
+  rsEditBundle = 'Edit package bundle.';
+  rsEdPackage = 'Package bundle';
+  rsPackagesNeededCaption = 'Packages needed in package bundle';
 
   rsEditHostCaption = 'Edit host';
   rsUpgradingHost = 'Upgrade triggered on the remote host.'; // Mise à jour lancée
@@ -103,7 +103,7 @@ resourcestring
   rsPackagesNeededOnHostCaption = 'Packages needed on host';
 
   rsDownloading = 'Downloading';
-  rsGroupConfigEditCaption = 'Edit package bundle configuration';
+  rsBundleConfigEditCaption = 'Edit package bundle configuration';
   rsDlCanceled = 'Download canceled.';
   rsIgnoredPackages = 'Warning : couldn''t find package(s) %s ; ignoring them.';
   rsIgnoredConfictingPackages = 'Warning : couldn''t find package(s) %s ; conflicting package(s) have been ignored.'; // TODO

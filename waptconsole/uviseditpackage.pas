@@ -206,7 +206,7 @@ function CreateGroup(packagename: string; advancedMode: boolean): ISuperObject;
 begin
   with TVisEditPackage.Create(nil) do
     try
-      Caption:= rsEditGroup;
+      Caption:= rsEditBundle;
       EdPackage.EditLabel.Caption := rsEdPackage;
       pgDepends.Caption := rsPackagesNeededCaption;
 
@@ -270,7 +270,7 @@ begin
       EdVersion.Enabled:=advancedMode;
       EdVersion.ReadOnly:=not advancedMode;
 
-      Caption:=rsEditGroup;
+      Caption:=rsEditBundle;
       EdPackage.EditLabel.Caption := rsEdPackage;
       pgDepends.Caption := rsPackagesNeededCaption;
 
@@ -754,7 +754,7 @@ begin
             Application.ProcessMessages;
             if isGroup then
             begin
-              Caption := rsGroupConfigEditCaption;
+              Caption := rsBundleConfigEditCaption;
               grid := uwaptconsole.VisWaptGUI.GridGroups;
             end
             else
