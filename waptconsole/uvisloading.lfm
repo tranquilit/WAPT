@@ -1,10 +1,10 @@
 object VisLoading: TVisLoading
-  Left = 971
+  Left = 949
   Height = 75
-  Top = 415
+  Top = 418
   Width = 412
   BorderStyle = bsDialog
-  Caption = 'Chargement'
+  Caption = 'Loading'
   ClientHeight = 75
   ClientWidth = 412
   Font.CharSet = ANSI_CHARSET

@@ -1,10 +1,10 @@
 object VisLogin: TVisLogin
-  Left = 777
+  Left = 784
   Height = 126
-  Top = 487
+  Top = 479
   Width = 322
   BorderStyle = bsDialog
-  Caption = 'Authenfication WAPT'
+  Caption = 'WAPT authentication'
   ClientHeight = 126
   ClientWidth = 322
   Font.CharSet = ANSI_CHARSET
@@ -29,8 +29,8 @@ object VisLogin: TVisLogin
     Left = 6
     Height = 13
     Top = 64
-    Width = 119
-    Caption = 'Mot de passe du serveur'
+    Width = 81
+    Caption = 'Server password'
     ParentColor = False
   end
   object edUser: TEdit
@@ -45,16 +45,16 @@ object VisLogin: TVisLogin
     Left = 6
     Height = 13
     Top = 37
-    Width = 103
-    Caption = 'Utilisateur du serveur'
+    Width = 56
+    Caption = 'Server user'
     ParentColor = False
   end
   object Label1: TLabel
     Left = 6
     Height = 13
     Top = 8
-    Width = 106
-    Caption = 'Connexion au serveur'
+    Width = 87
+    Caption = 'Server connection'
     ParentColor = False
   end
   object edWaptServerName: TEdit
@@ -86,7 +86,7 @@ object VisLogin: TVisLogin
   object BitBtn1: TBitBtn
     Left = 292
     Height = 26
-    Hint = 'Configuration de la console wapt'
+    Hint = 'Configure WAPT console'
     Top = 0
     Width = 26
     DefaultCaption = True

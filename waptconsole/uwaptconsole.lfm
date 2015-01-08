@@ -1042,7 +1042,7 @@ object VisWaptGUI: TVisWaptGUI
             TabIndex = 0
             TabOrder = 3
             object TabSheet1: TTabSheet
-              Caption = 'Waiting'
+              Caption = 'Pending'
               ClientHeight = 149
               ClientWidth = 556
               object GridHostTasksPending: TSOGrid

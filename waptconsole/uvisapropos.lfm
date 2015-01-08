@@ -1,11 +1,11 @@
 object VisApropos: TVisApropos
-  Left = 516
-  Height = 325
-  Top = 215
+  Left = 427
+  Height = 324
+  Top = 239
   Width = 376
   BorderStyle = bsDialog
-  Caption = 'A propos de WAPTConsole'
-  ClientHeight = 325
+  Caption = 'About WAPTConsole'
+  ClientHeight = 324
   ClientWidth = 376
   Font.CharSet = ANSI_CHARSET
   Font.Height = -11
