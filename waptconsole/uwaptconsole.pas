@@ -1020,7 +1020,7 @@ begin
   res := WAPTServerJsonGet('host_taskkill?host=%s&uuid=%s', [currip, currhost],
     UseProxyForServer, waptServerUser, waptServerPassword);
   if res.S['status'] = 'OK' then
-    ShowMessage(rsTaskCancelled)
+    ShowMessage(rsTaskCanceled)
   else
     ShowMessageFmt(rsFailedToCancel, [res.S['message']]);
 end;
@@ -1105,7 +1105,7 @@ begin
                   if FileExists(waptsetupPath) then
                   begin
                     ProgressStep(1, 2);
-                    ProgressTitle('Dépôt sur le serveur WAPT en cours');
+                    ProgressTitle(rsProgressTitle);
                     SORes :=
                       DMPython.RunJSON(format(
                       'waptdevutils.upload_wapt_setup(mywapt,r"%s","%s","%s")',
