@@ -3,7 +3,7 @@ object DMWaptTray: TDMWaptTray
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 288
-  HorizontalOffset = 2426
+  HorizontalOffset = 1331
   VerticalOffset = 367
   Width = 531
   object TrayIcon1: TTrayIcon
