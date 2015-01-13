@@ -3,8 +3,8 @@ object DMWaptTray: TDMWaptTray
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 288
-  HorizontalOffset = 292
-  VerticalOffset = 209
+  HorizontalOffset = 2426
+  VerticalOffset = 367
   Width = 531
   object TrayIcon1: TTrayIcon
     BalloonHint = 'WAPT Service'
@@ -140,77 +140,77 @@ object DMWaptTray: TDMWaptTray
     left = 236
     top = 47
     object ActUpgrade: TAction
-      Caption = 'Installer les mises à jour'
+      Caption = 'Install updates'
       OnExecute = ActUpgradeExecute
       OnUpdate = ActUpdateUpdate
     end
     object ActUpdate: TAction
-      Caption = 'Mettre à jour la liste des logiciels'
+      Caption = 'Update software inventory'
       OnExecute = ActUpdateExecute
       OnUpdate = ActUpdateUpdate
     end
     object ActShowMain: TAction
-      Caption = 'Configurer'
+      Caption = 'Configure'
     end
     object ActQuit: TAction
-      Caption = 'Quitter'
+      Caption = 'Quit'
       OnExecute = ActQuitExecute
     end
     object ActShowStatus: TAction
-      Caption = 'Voir status des logiciels'
+      Caption = 'View software status'
       OnExecute = ActShowStatusExecute
       OnUpdate = ActUpdateUpdate
     end
     object ActConfigure: TAction
-      Caption = 'Voir le fichier de configuration'
+      Caption = 'View configuration file'
       OnExecute = ActConfigureExecute
     end
     object ActLaunchWaptConsole: TAction
-      Caption = 'Lancer la console WAPT'
+      Caption = 'Run WAPT Console'
       OnExecute = ActLaunchWaptConsoleExecute
       OnUpdate = ActLaunchWaptConsoleUpdate
     end
     object ActWaptUpgrade: TAction
-      Caption = 'Mettre à jour le logiciel WAPT de cette machine'
+      Caption = 'Update WAPT software on this host'
       OnExecute = ActWaptUpgradeExecute
       OnUpdate = ActUpdateUpdate
     end
     object ActLocalInfo: TAction
-      Caption = 'Informations sur le poste'
+      Caption = 'About this host'
       OnExecute = ActLocalInfoExecute
       OnUpdate = ActUpdateUpdate
     end
     object ActForceRegister: TAction
-      Caption = 'Enregistrer l''inventaire de l''ordinateur sur le serveur'
+      Caption = 'Save this host''s inventory to the server'
       OnExecute = ActForceRegisterExecute
       OnUpdate = ActForceRegisterUpdate
     end
     object ActSessionSetup: TAction
-      Caption = 'Configurer tous les paquets installés pour votre propre session'
+      Caption = 'Configure all installed packages for your own session'
       OnExecute = ActSessionSetupExecute
     end
     object ActCancelAllTasks: TAction
-      Caption = 'Annuler toutes les tâches en cours'
+      Caption = 'Cancel all current tasks'
       OnExecute = ActCancelAllTasksExecute
       OnUpdate = ActUpdateUpdate
     end
     object ActShowTasks: TAction
-      Caption = 'Voir les tâches'
+      Caption = 'View tasks'
       OnExecute = ActShowTasksExecute
       OnUpdate = ActUpdateUpdate
     end
     object ActCancelRunningTask: TAction
-      Caption = 'Annuler la tâche en cours'
+      Caption = 'Cancel current task'
       OnExecute = ActCancelRunningTaskExecute
       OnUpdate = ActUpdateUpdate
     end
     object ActReloadConfig: TAction
-      Caption = 'Recharger la configuration du service'
+      Caption = 'Reload service configuration'
       OnExecute = ActReloadConfigExecute
       OnUpdate = ActUpdateUpdate
     end
     object ActServiceEnable: TAction
-      Caption = 'Service WAPT activé'
+      Caption = 'Wapt service running'
       OnExecute = ActServiceEnableExecute
       OnUpdate = ActServiceEnableUpdate
     end

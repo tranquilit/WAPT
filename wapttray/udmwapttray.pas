@@ -127,7 +127,8 @@ var
 
 implementation
 uses LCLIntf,Forms,dialogs,windows,graphics,tiscommon,
-    waptcommon,tisinifiles,soutils,UnitRedirect,tisstrings,tishttp,IdException;
+    waptcommon,tisinifiles,soutils,UnitRedirect,tisstrings,tishttp,IdException,
+    uWaptRes;
 
 {$R *.lfm}
 
@@ -478,7 +479,7 @@ begin
         if (running<>Nil) and (running.AsArray.Length>0) then
         begin
           trayMode:=tmRunning;
-          trayHint:=UTF8Encode('Installation en cours : '+running.AsString);
+          trayHint:=UTF8Encode(format(rsInstalling, [running.AsString]));
         end
         else
         if runstatus<>'' then
@@ -496,7 +497,7 @@ begin
         if (upgrades<>Nil) and (upgrades.AsArray.Length>0) then
         begin
           trayMode:=tmUpgrades;
-          trayHint:=UTF8Encode('Mises à jour disponibles pour : '+#13#10+soutils.join(#13#10,upgrades));
+          trayHint:=UTF8Encode(format(rsUpdatesAvailableFor,[soutils.join(#13#10,upgrades)]));
         end
         else
         begin
@@ -544,9 +545,9 @@ begin
           trayMode:= tmErrors;
           current_task := Nil;
           if taskresult<>Nil then
-            TrayIcon1.BalloonHint := UTF8Encode('Erreur pour '+taskresult.S['description'])
+            TrayIcon1.BalloonHint := UTF8Encode(format(rsErrorFor, [taskresult.S['description']]))
           else
-            TrayIcon1.BalloonHint := 'Erreur';
+            TrayIcon1.BalloonHint := rsError;
           TrayIcon1.BalloonFlags:=bfError;
           if not popupvisible and task_notify_user then
             TrayIcon1.ShowBalloonHint;
@@ -556,7 +557,7 @@ begin
         begin
           trayMode:= tmRunning;
           if taskresult<>Nil then
-            TrayIcon1.BalloonHint := UTF8Encode(taskresult.S['description']+' démarré')
+            TrayIcon1.BalloonHint := UTF8Encode(format(rsTaskStarted, [taskresult.S['description']]))
           else
             TrayIcon1.BalloonHint := '';
 
@@ -579,7 +580,7 @@ begin
         if topic='FINISH' then
         begin
           trayMode:= tmOK;
-          TrayIcon1.BalloonHint := UTF8Encode(taskresult.S['description']+' terminé'+#13#10+taskresult.S['summary']);
+          TrayIcon1.BalloonHint := UTF8Encode(format(rsTaskDone, [taskresult.S['description'], taskresult.S['summary']]));
           TrayIcon1.BalloonFlags:=bfInfo;
           if not popupvisible and task_notify_user then
             TrayIcon1.ShowBalloonHint;
@@ -593,14 +594,14 @@ begin
 
           if taskresult.DataType = stObject then
           begin
-             TrayIcon1.BalloonHint :=UTF8Encode('Annulation de '+UTF8Encode(taskresult.S['description']));
+             TrayIcon1.BalloonHint :=UTF8Encode(format(rsCanceling, [UTF8Encode(taskresult.S['description'])]));
              TrayIcon1.BalloonFlags:=bfWarning;
              if not popupvisible and task_notify_user  then
                 TrayIcon1.ShowBalloonHint;
           end
           else
           begin
-            TrayIcon1.BalloonHint :=UTF8Encode('Pas de tâche annulée');
+            TrayIcon1.BalloonHint :=UTF8Encode(rsNoTaskCanceled);
             TrayIcon1.BalloonFlags:=bfInfo;
             if not popupvisible and task_notify_user  then
               TrayIcon1.ShowBalloonHint;
@@ -679,9 +680,9 @@ var
 begin
   try
     res := Sto_RedirectedExecute( WaptgetPath+' session-setup ALL','',120*1000);
-    ShowMessage('Configuration des paquets pour la session utilisateur effectuée')
+    ShowMessage(rsPackageConfigDone)
   except
-    MessageDlg('Erreur','Erreur lors de la configuration des paquets pour la session utilisateur',mtError,[mbOK],0);
+    MessageDlg(rsError,rsPackageConfigError,mtError,[mbOK],0);
   end
 end;
 
@@ -756,7 +757,7 @@ begin
   if not FWaptServiceRunning then
   begin
     trayMode:=tmErrors;
-    trayHint:='WAPTService arrêté';
+    trayHint:=rsWaptServiceTerminated;
   end;
 end;
 
@@ -768,9 +769,9 @@ begin
   try
     res := WAPTLocalJsonGet('update.json');
     if (res<>Nil) and  (pos('ERROR',uppercase(res.AsJSon ))<=0) then
-      TrayIcon1.BalloonHint:='Vérification en cours...'
+      TrayIcon1.BalloonHint:=rsChecking
     else
-      TrayIcon1.BalloonHint:='Erreur au lancement de la vérification...';
+      TrayIcon1.BalloonHint:=rsErrorWhileChecking;
     TrayIcon1.ShowBalloonHint;
   except
     on E:Exception do

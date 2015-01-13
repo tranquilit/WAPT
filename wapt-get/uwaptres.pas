@@ -9,6 +9,7 @@ uses
 
 resourcestring
 
+  { --- MESSAGES DANS LA CONSOLE WAPT --- }
   { Messages dans uwaptconsole.pas }
   rsFatalError = 'Failed to retrieve task.'; // '... Impossible de récupérer l''action.';
   rsInstalling = 'Installing %s...';
@@ -131,6 +132,19 @@ resourcestring
   rsDuplicateFailure = 'Error while duplicating the package(s).';
 
 
+  { --- MESSAGES DANS LE TRAY WAPT --- }
+  rsUpdatesAvailableFor = 'Available updates for : '#13#10;
+  rsErrorFor = 'Error for %s';
+  rsError = 'Error';
+  rsTaskStarted = '%s started';
+  rsTaskDone = '%s done'#13#10'%s';
+  rsCanceling = 'Canceling %s';
+  rsNoTaskCanceled = 'No task canceled';
+  rsPackageConfigDone = 'Done configuring packages for the current user session';
+  rsPackageConfigError = 'Error while configuring packages for the current user session';
+  rsWaptServiceTerminated = 'WAPTService terminated';
+  rsChecking = 'Checking...';
+  rsErrorWhileChecking = 'Error while checking...';
 
 implementation
 
