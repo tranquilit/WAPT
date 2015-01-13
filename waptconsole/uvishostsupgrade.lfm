@@ -3,7 +3,7 @@ object VisHostsUpgrade: TVisHostsUpgrade
   Height = 383
   Top = 272
   Width = 683
-  Caption = 'Lancer la mises à jour des postes'
+  Caption = 'Launch update on hosts'
   ClientHeight = 383
   ClientWidth = 683
   Font.CharSet = ANSI_CHARSET
@@ -25,7 +25,7 @@ object VisHostsUpgrade: TVisHostsUpgrade
     Header.Columns = <    
       item
         Position = 0
-        Text = 'Machine'
+        Text = 'Host'
         Width = 200
         PropertyName = 'host.computer_fqdn'
       end    
@@ -37,7 +37,7 @@ object VisHostsUpgrade: TVisHostsUpgrade
       end    
       item
         Position = 2
-        Text = 'Etat'
+        Text = 'Status'
         Width = 100
         PropertyName = 'status'
       end    
@@ -102,11 +102,11 @@ object VisHostsUpgrade: TVisHostsUpgrade
     left = 240
     top = 264
     object ActUpgrade: TAction
-      Caption = 'Lancer les mises à jour'
+      Caption = 'Launch update'
       OnExecute = ActUpgradeExecute
     end
     object ActStop: TAction
-      Caption = 'Stopper'
+      Caption = 'Terminate'
       OnExecute = ActStopExecute
     end
   end

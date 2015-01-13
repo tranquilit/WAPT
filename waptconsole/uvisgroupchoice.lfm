@@ -271,7 +271,7 @@ object visGroupChoice: TvisGroupChoice
       Height = 17
       Top = 8
       Width = 123
-      Caption = 'Installation restreinte'
+      Caption = 'Restricted install'
       OnClick = cbBaseClick
       TabOrder = 4
     end

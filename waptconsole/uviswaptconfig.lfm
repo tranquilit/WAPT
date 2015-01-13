@@ -4,7 +4,7 @@ object VisWAPTConfig: TVisWAPTConfig
   Top = 371
   Width = 507
   BorderStyle = bsDialog
-  Caption = 'Configuration locale WAPT'
+  Caption = 'Locale WAPT configuration'
   ClientHeight = 340
   ClientWidth = 507
   Font.CharSet = ANSI_CHARSET
@@ -35,7 +35,7 @@ object VisWAPTConfig: TVisWAPTConfig
   object eddefault_package_prefix: TLabeledEdit
     Left = 279
     Height = 21
-    Hint = 'exemple : tis'#13#10'Préfixe à utiliser dans le nom des paquets lors de la duplication de paquets ou lors de la création initiale'
+    Hint = 'E.g. : tis'#13#10'Which prefix to use when naming created or duplicated packages'
     Top = 124
     Width = 80
     EditLabel.AnchorSideTop.Control = eddefault_package_prefix
@@ -47,7 +47,7 @@ object VisWAPTConfig: TVisWAPTConfig
     EditLabel.Height = 13
     EditLabel.Top = 128
     EditLabel.Width = 201
-    EditLabel.Caption = 'Préfixe pour la création de paquets WAPT'
+    EditLabel.Caption = 'Prefix for naming created WAPT packages'
     EditLabel.ParentColor = False
     LabelPosition = lpLeft
     TabOrder = 5
@@ -55,7 +55,7 @@ object VisWAPTConfig: TVisWAPTConfig
   object eddefault_sources_root: TDirectoryEdit
     Left = 279
     Height = 21
-    Hint = 'Exemple : c:\waptdev'#13#10'Emplacement local pour stocker les projets de développement de paquets'
+    Hint = 'E.g. : c:\waptdev'#13#10'Local directory for saving package development projects'
     Top = 100
     Width = 196
     ShowHidden = False
@@ -69,13 +69,13 @@ object VisWAPTConfig: TVisWAPTConfig
     Height = 13
     Top = 104
     Width = 262
-    Caption = 'Répertoire de base pour le développement de paquets'
+    Caption = 'Base directory for package development'
     ParentColor = False
   end
   object edrepo_url: TLabeledEdit
     Left = 280
     Height = 21
-    Hint = 'exemple : http://wapt.tranquilit.local/wapt'#13#10'laisser vide pour utiliser une recherche DNS automatique'
+    Hint = 'E.g. : http://wapt.tranquilit.local/wapt'#13#10'Leave empty for auto DNS discovery'
     Top = 4
     Width = 220
     EditLabel.AnchorSideTop.Control = edrepo_url
@@ -87,7 +87,7 @@ object VisWAPTConfig: TVisWAPTConfig
     EditLabel.Height = 13
     EditLabel.Top = 8
     EditLabel.Width = 107
-    EditLabel.Caption = 'URL du dépôt principal'
+    EditLabel.Caption = 'URL to the main repository'
     EditLabel.ParentColor = False
     LabelPosition = lpLeft
     TabOrder = 0
@@ -95,7 +95,7 @@ object VisWAPTConfig: TVisWAPTConfig
   object edprivate_key: TFileNameEdit
     Left = 279
     Height = 21
-    Hint = 'exemple c:\private\tranquilit.pem'#13#10'Chemin vers la clé privée pour signer les nouveaux paquets.'#13#10'Uniquement utile sur les machines de développement'
+    Hint = 'E.g. : c:\private\tranquilit.pem'#13#10'Path to private key for signing new packages.'#13#10'Only suitable for development hosts.'
     Top = 148
     Width = 196
     Filter = 'Fichiers PEM|*.pem|Tous les fichiers|*.*'
@@ -111,13 +111,13 @@ object VisWAPTConfig: TVisWAPTConfig
     Height = 13
     Top = 152
     Width = 225
-    Caption = 'Chemin de la clé privée pour signer les paquets'
+    Caption = 'Path to private key for signing packages'
     ParentColor = False
   end
   object edtemplates_repo_url: TLabeledEdit
     Left = 279
     Height = 21
-    Hint = 'exemple : http://wapt.tranquil.it/wapt'#13#10'Sert dans la console WAPT pour la duplication de packages'
+    Hint = 'E.g. : http://wapt.tranquil.it/wapt'#13#10'Used by WAPT console for duplicating packages.'
     Top = 72
     Width = 220
     EditLabel.AnchorSideTop.Control = edtemplates_repo_url
@@ -129,7 +129,7 @@ object VisWAPTConfig: TVisWAPTConfig
     EditLabel.Height = 13
     EditLabel.Top = 76
     EditLabel.Width = 187
-    EditLabel.Caption = 'URL du dépôt des modèles de paquets '
+    EditLabel.Caption = 'URL to the package model repository '
     EditLabel.ParentColor = False
     LabelPosition = lpLeft
     TabOrder = 3
@@ -138,7 +138,7 @@ object VisWAPTConfig: TVisWAPTConfig
   object edwapt_server: TLabeledEdit
     Left = 280
     Height = 21
-    Hint = 'exemple : http://srvwapt.tranquilit.local:8080'#13#10'laisser vide pour ne pas utiliser un serveur central d''administration'
+    Hint = 'E.g. : http://srvwapt.tranquilit.local:8080'#13#10'Leave empty if you don''t want a central management server.'
     Top = 28
     Width = 220
     EditLabel.AnchorSideTop.Control = edwapt_server
@@ -158,7 +158,7 @@ object VisWAPTConfig: TVisWAPTConfig
   object edhttp_proxy: TLabeledEdit
     Left = 280
     Height = 21
-    Hint = 'exemple : http://proxy.tranquilit.local:3128'#13#10'renseigner uniquement si un proxy est nécessaire.'
+    Hint = 'E.g. : http://proxy.tranquilit.local:3128'#13#10'Only required if a proxy is needed.'
     Top = 216
     Width = 220
     EditLabel.AnchorSideTop.Control = edhttp_proxy
@@ -170,7 +170,7 @@ object VisWAPTConfig: TVisWAPTConfig
     EditLabel.Height = 13
     EditLabel.Top = 220
     EditLabel.Width = 218
-    EditLabel.Caption = 'Proxy http à utiliser (seulement si nécessaire)'
+    EditLabel.Caption = 'http proxy to use (if needed)'
     EditLabel.ParentColor = False
     LabelPosition = lpLeft
     TabOrder = 2
@@ -180,13 +180,13 @@ object VisWAPTConfig: TVisWAPTConfig
     Height = 13
     Top = 52
     Width = 174
-    Caption = 'Pour le développement de paquets :'
+    Caption = 'For package development :'
     ParentColor = False
   end
   object cbUseProxyForRepo: TCheckBox
     Left = 281
     Height = 17
-    Hint = 'Active le proxy lors des communications avec le serveur wapt'
+    Hint = 'Activates proxy during transactions with the WAPT server.'
     Top = 239
     Width = 20
     Checked = True
@@ -202,7 +202,7 @@ object VisWAPTConfig: TVisWAPTConfig
     Alignment = taRightJustify
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Right = 3
-    Caption = 'Activer le proxy pour l''accès au dépôt principal'
+    Caption = 'Activates proxy when accessing the main repository'
     ParentColor = False
   end
   object Label5: TLabel
@@ -214,13 +214,13 @@ object VisWAPTConfig: TVisWAPTConfig
     Alignment = taRightJustify
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Right = 3
-    Caption = 'Activer le proxy pour l''accès au serveur WAPT'
+    Caption = 'Activate proxy when accessing the WAPT server'
     ParentColor = False
   end
   object cbUseProxyForServer: TCheckBox
     Left = 281
     Height = 17
-    Hint = 'Active le proxy lors des communications avec le serveur wapt'
+    Hint = 'Activates proxy during transactions with the WAPT server.'
     Top = 256
     Width = 20
     Checked = True
@@ -236,13 +236,13 @@ object VisWAPTConfig: TVisWAPTConfig
     Alignment = taRightJustify
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Right = 3
-    Caption = 'Activer le proxy pour l''accès au dépôt des modèles'
+    Caption = 'Axctivate proxy when accessing the model repository'
     ParentColor = False
   end
   object cbUseProxyForTemplate: TCheckBox
     Left = 281
     Height = 17
-    Hint = 'Active le proxy lors des communications avec le serveur wapt'
+    Hint = 'Activates proxy during transactions with the WAPT server.'
     Top = 272
     Width = 20
     Checked = True
@@ -254,7 +254,7 @@ object VisWAPTConfig: TVisWAPTConfig
     Height = 13
     Top = 196
     Width = 51
-    Caption = 'Proxy http'
+    Caption = 'http proxy'
     ParentColor = False
   end
 end

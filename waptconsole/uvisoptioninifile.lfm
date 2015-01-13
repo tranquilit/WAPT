@@ -3,7 +3,7 @@ object VisOptionIniFile: TVisOptionIniFile
   Height = 290
   Top = 160
   Width = 385
-  Caption = 'Ajouter ou supprimer des options dans wapt-get.ini'
+  Caption = 'Add/remove options in wapt-get.ini'
   ClientHeight = 290
   ClientWidth = 385
   OnCloseQuery = FormCloseQuery
@@ -49,7 +49,7 @@ object VisOptionIniFile: TVisOptionIniFile
     Height = 17
     Top = 16
     Width = 86
-    Caption = 'Dépot de test'
+    Caption = 'Test repository'
     OnChange = cbTestRepoChange
     TabOrder = 1
   end
@@ -58,7 +58,7 @@ object VisOptionIniFile: TVisOptionIniFile
     Height = 17
     Top = 48
     Width = 143
-    Caption = 'Préfix des paquets Wapt:'
+    Caption = 'Prefix for WAPT packages :'
     TabOrder = 2
   end
   object cbPrivateKey: TCheckBox
@@ -66,7 +66,7 @@ object VisOptionIniFile: TVisOptionIniFile
     Height = 17
     Top = 76
     Width = 66
-    Caption = 'Clé Privé:'
+    Caption = 'Private key :'
     TabOrder = 3
   end
   object FileNameEdit1: TFileNameEdit
@@ -93,7 +93,7 @@ object VisOptionIniFile: TVisOptionIniFile
     Height = 17
     Top = 108
     Width = 156
-    Caption = 'Configurer l''envoi de paquet'
+    Caption = 'Configure package sending'
     TabOrder = 6
   end
   object cbAfterUpload: TCheckBox
@@ -101,7 +101,7 @@ object VisOptionIniFile: TVisOptionIniFile
     Height = 17
     Top = 136
     Width = 266
-    Caption = 'scanner automatique le serveur Wapt après upload'
+    Caption = 'Auto-scan WAPT server after upload'
     TabOrder = 7
   end
 end
