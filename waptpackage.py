@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "0.9.7"
+__version__ = "0.9.8"
 
 import os
 import zipfile
@@ -419,6 +419,7 @@ class WaptLocalRepo(object):
         localpath = localpath.rstrip(os.path.sep)
         self.localpath = localpath
         self.packages = []
+        self.index = {}
 
     def load_packages(self):
         """Get Packages from local repo Packages file
@@ -434,7 +435,9 @@ class WaptLocalRepo(object):
                 packages_lines = packages_file.read(name='Packages').decode('utf8').splitlines()
             finally:
                 packages_file.close()
-            self.packages = []
+            del(self.packages[:])
+            self.index.clear()
+
             startline = 0
             endline = 0
 
@@ -446,6 +449,9 @@ class WaptLocalRepo(object):
                     package.repo_url = 'file:///%s'%(self.localpath.replace('\\','/'))
                     package.repo = self.name
                     self.packages.append(package)
+                    # index last version
+                    if not package.package in self.index or self.index[package.package] < package:
+                        self.index[package.package] = package
 
             for line in packages_lines:
                 if line.strip()=='':
@@ -479,7 +485,9 @@ class WaptLocalRepo(object):
         kept = []
         processed = []
         errors = []
-        self.packages = []
+        del(self.packages[:])
+        self.index.clear()
+
         for fname in waptlist:
             try:
                 entry = PackageEntry()
@@ -499,6 +507,10 @@ class WaptLocalRepo(object):
                     processed.append(fname)
                 packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
                 self.packages.append(entry)
+                # index last version
+                if not package.package in self.index or self.index[package.package] < package:
+                    self.index[package.package] = package
+
                 # looks for an icon in wapt package
                 icon_fn = os.path.join(icons_path,"%s.png"%entry.package)
                 if force_all or not os.path.isfile(icon_fn):

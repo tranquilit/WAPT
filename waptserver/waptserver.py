@@ -287,8 +287,14 @@ def get_host_list():
             else:
                 query = filters[0]
 
+        hosts_packages_repo = WaptLocalRepo(wapt_folder+'-host')
+        hosts_packages_repo.load_packages()
+
         for host in hosts().find(query,fields={'softwares':0,'packages':0}):
             host.pop("_id")
+            host_package = hosts_packages_repo.index.get(host['host']['computer_fqdn'],None)
+            if host_package:
+                host['depends'] = host_package.depends.split(',')
             list_hosts.append(host)
 
         result = list_hosts
@@ -1260,7 +1266,7 @@ if __name__ == "__main__":
         install_windows_service()
         sys.exit(0)
 
-    debug=False
+    debug=True
     if debug:
         app.run(host='0.0.0.0',port=30880,debug=False)
     else:
