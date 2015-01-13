@@ -1,0 +1,526 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: tdmwapttray.actcancelalltasks.caption
+msgid "Cancel all current tasks"
+msgstr ""
+
+#: tdmwapttray.actcancelrunningtask.caption
+msgid "Cancel current task"
+msgstr ""
+
+#: tdmwapttray.actconfigure.caption
+msgid "View configuration file"
+msgstr ""
+
+#: tdmwapttray.actforceregister.caption
+msgid "Save this host's inventory to the server"
+msgstr ""
+
+#: tdmwapttray.actlaunchwaptconsole.caption
+msgid "Run WAPT Console"
+msgstr ""
+
+#: tdmwapttray.actlocalinfo.caption
+msgid "About this host"
+msgstr ""
+
+#: tdmwapttray.actquit.caption
+msgid "Quit"
+msgstr ""
+
+#: tdmwapttray.actreloadconfig.caption
+msgid "Reload service configuration"
+msgstr ""
+
+#: tdmwapttray.actserviceenable.caption
+msgid "Wapt service running"
+msgstr ""
+
+#: tdmwapttray.actsessionsetup.caption
+msgid "Configure all installed packages for your own session"
+msgstr ""
+
+#: tdmwapttray.actshowmain.caption
+msgid "Configure"
+msgstr ""
+
+#: tdmwapttray.actshowstatus.caption
+msgid "View software status"
+msgstr ""
+
+#: tdmwapttray.actshowtasks.caption
+msgid "View tasks"
+msgstr ""
+
+#: tdmwapttray.actupdate.caption
+msgid "Update software inventory"
+msgstr ""
+
+#: tdmwapttray.actupgrade.caption
+msgid "Install updates"
+msgstr ""
+
+#: tdmwapttray.actwaptupgrade.caption
+msgid "Update WAPT software on this host"
+msgstr ""
+
+#: tdmwapttray.menuitem10.caption
+msgid "Configuration"
+msgstr ""
+
+#: tdmwapttray.menuitem11.caption
+msgctxt "TDMWAPTTRAY.MENUITEM11.CAPTION"
+msgid "-"
+msgstr ""
+
+#: tdmwapttray.menuitem15.caption
+msgctxt "TDMWAPTTRAY.MENUITEM15.CAPTION"
+msgid "-"
+msgstr ""
+
+#: tdmwapttray.menuitem17.caption
+msgctxt "TDMWAPTTRAY.MENUITEM17.CAPTION"
+msgid "-"
+msgstr ""
+
+#: tdmwapttray.menuitem21.caption
+msgctxt "TDMWAPTTRAY.MENUITEM21.CAPTION"
+msgid "-"
+msgstr ""
+
+#: tdmwapttray.menuitem23.caption
+msgctxt "TDMWAPTTRAY.MENUITEM23.CAPTION"
+msgid "-"
+msgstr ""
+
+#: tdmwapttray.menuitem7.caption
+msgctxt "tdmwapttray.menuitem7.caption"
+msgid "-"
+msgstr ""
+
+#: tdmwapttray.menuitem8.caption
+msgctxt "TDMWAPTTRAY.MENUITEM8.CAPTION"
+msgid "-"
+msgstr ""
+
+#: tdmwapttray.menuwaptversion.caption
+msgid "Version"
+msgstr ""
+
+#: tviswapttray.caption
+msgid "WAPT Software Manager"
+msgstr ""
+
+#: tviswapttray.pgstatus.caption
+msgid "Status"
+msgstr ""
+
+#: tviswapttray.tabsheet2.caption
+msgid "TabSheet2"
+msgstr ""
+
+#: uwaptres.rsbundleconfigeditcaption
+msgid "Edit package bundle configuration"
+msgstr ""
+
+#: uwaptres.rscanceledbyuser
+msgid "Task %s has been canceled by the user"
+msgstr ""
+
+#: uwaptres.rscanceling
+msgid "Canceling %s"
+msgstr ""
+
+#: uwaptres.rscertificatecopyfailure
+msgid "Couldn't copy certificate %s to %s."
+msgstr ""
+
+#: uwaptres.rschecking
+msgid "Checking..."
+msgstr ""
+
+#: uwaptres.rsconfirmcaption
+msgid "Confirm"
+msgstr ""
+
+#: uwaptres.rsconfirmdeletion
+msgctxt "uwaptres.rsconfirmdeletion"
+msgid "Confirm removal"
+msgstr ""
+
+#: uwaptres.rsconfirmhostforgetspackages
+msgid "Are you sure you want to forget %s packages from host %s ?"
+msgstr ""
+
+#: uwaptres.rsconfirmimport
+msgid ""
+"Are you sure you want to import\n"
+"%s\n"
+" to your repository ?\n"
+msgstr ""
+
+#: uwaptres.rsconfirmimportcaption
+msgid "Confirm import"
+msgstr ""
+
+#: uwaptres.rsconfirmrmhostsfromlist
+msgid "Are you sure you want to remove %s hosts from the list ?"
+msgstr ""
+
+#: uwaptres.rsconfirmrmmultiplepackages
+msgid "Are you sure you want to remove the selected packages from the server ?"
+msgstr ""
+
+#: uwaptres.rsconfirmrmonepackage
+msgid "Are you sure you want to remove this package from the server ?"
+msgstr ""
+
+#: uwaptres.rsconfirmrmpackagecaption
+msgctxt "uwaptres.rsconfirmrmpackagecaption"
+msgid "Confirm removal"
+msgstr ""
+
+#: uwaptres.rsconfirmrmpackagesfromhost
+msgid "Are you sure you want to remove %s package(s) from the selected host(s) %s ?"
+msgstr ""
+
+#: uwaptres.rscreationinprogress
+msgid "Creation in progress."
+msgstr ""
+
+#: uwaptres.rsdefinewaptdevpath
+msgid "Please select a directory on your package development host before editing a package bundle."
+msgstr ""
+
+#: uwaptres.rsdeletingelement
+msgid "Removing %s"
+msgstr ""
+
+#: uwaptres.rsdeletioninprogress
+msgid "Removing packages..."
+msgstr ""
+
+#: uwaptres.rsdependencies
+msgid "Selection of packages to add to the hosts as dependencies"
+msgstr ""
+
+#: uwaptres.rsdiffpwerror
+msgid "Passwords do not match."
+msgstr ""
+
+#: uwaptres.rsdisplaying
+msgid "Displaying"
+msgstr ""
+
+#: uwaptres.rsdlcanceled
+msgid "Download canceled."
+msgstr ""
+
+#: uwaptres.rsdlstoppedbyuser
+msgid "Download stopped by the user"
+msgstr ""
+
+#: uwaptres.rsdownloading
+msgid "Downloading"
+msgstr ""
+
+#: uwaptres.rsdownloadingpackage
+msgid "Package(s) %s is being downloaded."
+msgstr ""
+
+#: uwaptres.rsduplicatefailure
+msgid "Error while duplicating the package(s)."
+msgstr ""
+
+#: uwaptres.rsduplicatesuccess
+msgid "Package(s) %s successfully duplicated."
+msgstr ""
+
+#: uwaptres.rsduplicating
+msgid "Package(s) %s is being duplicated."
+msgstr ""
+
+#: uwaptres.rseditbundle
+msgid "Edit package bundle."
+msgstr ""
+
+#: uwaptres.rsedithostcaption
+msgid "Edit host"
+msgstr ""
+
+#: uwaptres.rsedpackage
+msgid "Package bundle"
+msgstr ""
+
+#: uwaptres.rsemptynewpwerror
+msgid "New password must not be empty."
+msgstr ""
+
+#: uwaptres.rsemptyoldpwerror
+msgid "Old password must not be empty."
+msgstr ""
+
+#: uwaptres.rserror
+msgid "Error"
+msgstr ""
+
+#: uwaptres.rserrorfor
+msgid "Error for %s"
+msgstr ""
+
+#: uwaptres.rserrorwhilechecking
+msgid "Error while checking..."
+msgstr ""
+
+#: uwaptres.rsfailedimport
+msgid "Error during import."
+msgstr ""
+
+#: uwaptres.rsfailedtocancel
+msgid "Could not cancel : %s."
+msgstr ""
+
+#: uwaptres.rsfatalerror
+msgid "Failed to retrieve task."
+msgstr ""
+
+#: uwaptres.rsforceduninstallpackages
+msgid "Selection of packages to force-remove from the hosts"
+msgstr ""
+
+#: uwaptres.rsforgetpackageerror
+msgid "Error while forgetting package %s: %s"
+msgstr ""
+
+#: uwaptres.rshostconfigeditcaption
+msgid "Edit host configuration"
+msgstr ""
+
+#: uwaptres.rsignoredconfictingpackages
+msgid "Warning : couldn't find package(s) %s ; conflicting package(s) have been ignored."
+msgstr ""
+
+#: uwaptres.rsignoredpackages
+msgid "Warning : couldn't find package(s) %s ; ignoring them."
+msgstr ""
+
+#: uwaptres.rsimportingfile
+msgid "Importing %s"
+msgstr ""
+
+#: uwaptres.rsincorrectoldpwerror
+msgid "Old password is incorrect."
+msgstr ""
+
+#: uwaptres.rsincorrectpassword
+msgid "Incorrect password."
+msgstr ""
+
+#: uwaptres.rsinnosetupunavailable
+msgid "Innosetup is unavailable (path : %s), please install it first."
+msgstr ""
+
+#: uwaptres.rsinputkeyname
+msgid "Please input a key name"
+msgstr ""
+
+#: uwaptres.rsinputpubkeypath
+msgid "Please input path to public key"
+msgstr ""
+
+#: uwaptres.rsinstalling
+msgid "Installing %s..."
+msgstr ""
+
+#: uwaptres.rsinvalidwaptsetupdir
+msgid "WAPTsetup directory is not valid : %s"
+msgstr ""
+
+#: uwaptres.rskeyalreadyexists
+msgid "Key %s already exists, please pick another name."
+msgstr ""
+
+#: uwaptres.rsnbmodifiedhosts
+msgid "%s hosts affected."
+msgstr ""
+
+#: uwaptres.rsnobundle
+msgid "There is no package bundle."
+msgstr ""
+
+#: uwaptres.rsnotaskcanceled
+msgid "No task canceled"
+msgstr ""
+
+#: uwaptres.rspackageconfigdone
+msgid "Done configuring packages for the current user session"
+msgstr ""
+
+#: uwaptres.rspackageconfigerror
+msgid "Error while configuring packages for the current user session"
+msgstr ""
+
+#: uwaptres.rspackagecreationerror
+msgid "Error while creating package : %s"
+msgstr ""
+
+#: uwaptres.rspackageduplicateconfirm
+msgid ""
+"Are you sure you want to duplicate the package(s)\n"
+"%s\n"
+" into your repository ?\n"
+msgstr ""
+
+#: uwaptres.rspackageduplicateconfirmcaption
+msgid "Confirm duplication of package"
+msgstr ""
+
+#: uwaptres.rspackageremoveerror
+msgid "Error while removing package %s: %s"
+msgstr ""
+
+#: uwaptres.rspackagesneededcaption
+msgid "Packages needed in package bundle"
+msgstr ""
+
+#: uwaptres.rspackagesneededonhostcaption
+msgid "Packages needed on host"
+msgstr ""
+
+#: uwaptres.rspasswordchangeerror
+msgid "Error : %s"
+msgstr ""
+
+#: uwaptres.rspasswordchangesuccess
+msgid "Password successfully updated !"
+msgstr ""
+
+#: uwaptres.rsprivatekeydoesntexist
+msgid "Private key doesn't exist : %s"
+msgstr ""
+
+#: uwaptres.rsprogresstitle
+msgid "Started uploading to WAPT server..."
+msgstr ""
+
+#: uwaptres.rspublickeygenerror
+msgid "Error during key generation : %s"
+msgstr ""
+
+#: uwaptres.rspublickeygenfailure
+msgid "The generation of the public key has failed."
+msgstr ""
+
+#: uwaptres.rspublickeygensuccess
+msgid "Key %s has been successfully created."
+msgstr ""
+
+#: uwaptres.rsreallowpackagesonhost
+msgid "Selection of package(s) to remove from conflict list"
+msgstr ""
+
+#: uwaptres.rsrmbundlefromhosts
+msgid "Selection of package bundles for removing from the selected hosts"
+msgstr ""
+
+#: uwaptres.rssavemods
+msgid "Save changes ?"
+msgstr ""
+
+#: uwaptres.rssuccessfullyimported
+msgid "%s successfully imported."
+msgstr ""
+
+#: uwaptres.rstaskcanceled
+msgid "Task canceled."
+msgstr ""
+
+#: uwaptres.rstaskdone
+msgid ""
+"%s done\n"
+"%s\n"
+msgstr ""
+
+#: uwaptres.rstaskstarted
+msgid "%s started"
+msgstr ""
+
+#: uwaptres.rsundefwaptsrvinini
+msgid "wapt_server is not defined in your %s ini file"
+msgstr ""
+
+#: uwaptres.rsuninstallingpackage
+msgid "Uninstalling %s..."
+msgstr ""
+
+#: uwaptres.rsupdatesavailablefor
+msgid "Available updates for : "
+msgstr ""
+
+#: uwaptres.rsupdatingpackagelist
+msgid "Updating package list"
+msgstr ""
+
+#: uwaptres.rsupgradehosterror
+msgid "Failed to trigger upgrade : %s"
+msgstr ""
+
+#: uwaptres.rsupgradinghost
+msgid "Upgrade triggered on the remote host."
+msgstr ""
+
+#: uwaptres.rsuploading
+msgid "Uploading"
+msgstr ""
+
+#: uwaptres.rsuploadingpackagestowaptsrv
+msgid "Uploading %s packages to WAPT server..."
+msgstr ""
+
+#: uwaptres.rsurl
+msgid "Url : %s"
+msgstr ""
+
+#: uwaptres.rsversion
+msgid ""
+"Waptconsole version : %s\n"
+"Wapt-get version: %s\n"
+msgstr ""
+
+#: uwaptres.rswaptagentsetuperror
+msgid "Error while creating waptagent.exe: %s"
+msgstr ""
+
+#: uwaptres.rswaptagentsetupsuccess
+msgid "waptagent.exe successfully created : %s"
+msgstr ""
+
+#: uwaptres.rswaptagentuploaderror
+msgid "Error while uploading WAPT agent : %s"
+msgstr ""
+
+#: uwaptres.rswaptagentuploadsuccess
+msgid "Successfully uploaded WAPT agent !"
+msgstr ""
+
+#: uwaptres.rswaptclientupdateonhosts
+msgid "Updating WAPT client on the hosts"
+msgstr ""
+
+#: uwaptres.rswaptserviceterminated
+msgid "WAPTService terminated"
+msgstr ""
+
+#: uwaptres.rswaptsetuperror
+msgid "Error while creating agent : %s"
+msgstr ""
+
+#: uwaptres.rswaptsetupuploadsuccess
+msgid "WAPT agent successfully created and uploaded to the repository : %s"
+msgstr ""
+
+#: uwaptres.rswaptuploaderror
+msgid "Error while uploading WAPT agent to the repository : %s"
+msgstr ""
+
