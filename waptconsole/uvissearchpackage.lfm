@@ -3,7 +3,7 @@ object VisSearchPackage: TVisSearchPackage
   Height = 600
   Top = 135
   Width = 800
-  Caption = 'Sélectionner des paquets'
+  Caption = 'Select packages'
   ClientHeight = 600
   ClientWidth = 800
   Constraints.MinHeight = 600
@@ -159,7 +159,7 @@ object VisSearchPackage: TVisSearchPackage
         Height = 17
         Top = 3
         Width = 117
-        Caption = 'Paquets de Groupes'
+        Caption = 'Bundle packages'
         TabOrder = 2
       end
       object cbShowLog: TCheckBox
@@ -168,7 +168,7 @@ object VisSearchPackage: TVisSearchPackage
         Top = 3
         Width = 136
         Anchors = [akRight, akBottom]
-        Caption = 'Voir infos de débuggage'
+        Caption = 'View debug'
         TabOrder = 3
       end
     end
@@ -195,7 +195,7 @@ object VisSearchPackage: TVisSearchPackage
           MinWidth = 50
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
           Position = 1
-          Text = 'Paquet'
+          Text = 'Package'
           Width = 200
           PropertyName = 'package'
         end      
@@ -226,13 +226,13 @@ object VisSearchPackage: TVisSearchPackage
           MaxWidth = 400
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
           Position = 5
-          Text = 'Dépendances'
+          Text = 'Dependencies'
           PropertyName = 'depends'
         end      
         item
           MaxWidth = 200
           Position = 6
-          Text = 'Installé par'
+          Text = 'Installed by'
           PropertyName = 'explicit_by'
         end>
       Header.DefaultHeight = 17
@@ -252,27 +252,27 @@ object VisSearchPackage: TVisSearchPackage
     left = 148
     top = 148
     object ActSearchPackage: TAction
-      Caption = 'Rechercher'
+      Caption = 'Search'
       OnExecute = ActSearchPackageExecute
     end
     object ActExecCode: TAction
-      Caption = 'Exécuter le code source python'
+      Caption = 'Run Python source'
       OnExecute = ActExecCodeExecute
     end
     object ActBuildUpload: TAction
-      Caption = 'Activer le paquet'
+      Caption = 'Activate package'
       OnExecute = ActBuildUploadExecute
     end
     object ActEditSearch: TAction
-      Caption = 'Rechercher'
+      Caption = 'Search'
       OnExecute = ActEditSearchExecute
     end
     object ActEditRemove: TAction
-      Caption = 'Enlever'
+      Caption = 'Remove'
       OnExecute = ActEditRemoveExecute
     end
     object ActEditSavePackage: TAction
-      Caption = 'Sauver'
+      Caption = 'Save'
       OnExecute = ActEditSavePackageExecute
       OnUpdate = ActEditSavePackageUpdate
       ShortCut = 16467

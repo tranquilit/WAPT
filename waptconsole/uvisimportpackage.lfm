@@ -3,7 +3,7 @@ object VisImportPackage: TVisImportPackage
   Height = 571
   Top = 261
   Width = 844
-  Caption = 'Importer des paquets'
+  Caption = 'Import packages'
   ClientHeight = 571
   ClientWidth = 844
   OnClose = FormClose
@@ -96,7 +96,7 @@ object VisImportPackage: TVisImportPackage
         MaxWidth = 400
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
         Position = 1
-        Text = 'Paquet'
+        Text = 'Package'
         Width = 292
         PropertyName = 'package'
       end    
@@ -127,14 +127,14 @@ object VisImportPackage: TVisImportPackage
         MaxWidth = 400
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
         Position = 5
-        Text = 'Dépendances'
+        Text = 'Dependencies'
         Width = 242
         PropertyName = 'depends'
       end    
       item
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
         Position = 6
-        Text = 'Installé par'
+        Text = 'Installed by'
         PropertyName = 'explicit_by'
       end>
     Header.DefaultHeight = 17
@@ -221,7 +221,7 @@ object VisImportPackage: TVisImportPackage
       Top = 2
       Width = 75
       Anchors = [akTop, akRight]
-      Caption = 'Changer'
+      Caption = 'Modify'
       OnClick = ButExtRepoChangeClick
       TabOrder = 2
     end
@@ -243,21 +243,21 @@ object VisImportPackage: TVisImportPackage
     top = 76
     object ActPackageDuplicate: TAction
       Category = 'packages'
-      Caption = 'Importer...'
+      Caption = 'Import...'
       ImageIndex = 17
       OnExecute = ActPackageDuplicateExecute
     end
     object actRefresh: TAction
-      Caption = 'Actualiser'
+      Caption = 'Refresh'
       ImageIndex = 25
       ShortCut = 116
     end
     object ActWAPTLocalConfig: TAction
-      Caption = 'Configuration WAPT locale'
+      Caption = 'Local WAPT configuration'
       OnExecute = ActWAPTLocalConfigExecute
     end
     object ActSearchExternalPackage: TAction
-      Caption = 'Rechercher'
+      Caption = 'Search'
       ImageIndex = 28
       OnExecute = ActSearchExternalPackageExecute
     end

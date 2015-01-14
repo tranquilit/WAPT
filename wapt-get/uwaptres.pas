@@ -9,6 +9,7 @@ uses
 
 resourcestring
 
+  { --- MESSAGES DANS LA CONSOLE WAPT --- }
   { Messages dans uwaptconsole.pas }
   rsFatalError = 'Failed to retrieve task.'; // '... Impossible de récupérer l''action.';
   rsInstalling = 'Installing %s...';
@@ -18,8 +19,8 @@ resourcestring
   rsPublicKeyGenFailure = 'The generation of the public key has failed.';
   rsPublicKeyGenError = 'Error during key generation : %s';
 
-  rsCreationInProgress = 'Creating...'; //'Création en cours'
-  rsProgressTitle = 'Uploading to WAPT server...';
+  rsCreationInProgress = 'Creation in progress.'; //'Création en cours'
+  rsProgressTitle = 'Started uploading to WAPT server...';
   rsWaptSetupUploadSuccess = 'WAPT agent successfully created and uploaded to the repository : %s';
   rsWaptUploadError = 'Error while uploading WAPT agent to the repository : %s';
   rsWaptSetupError = 'Error while creating agent : %s';
@@ -27,7 +28,7 @@ resourcestring
   rsForcedUninstallPackages = 'Selection of packages to force-remove from the hosts'; // 'Choix des paquets à forcer à désintaller sur les postes sélectionnés'; TODO
   rsDependencies = 'Selection of packages to add to the hosts as dependencies'; // 'Choix des paquets à ajouter en dépendance aux postes sélectionnés';
   rsNbModifiedHosts = '%s hosts affected.';
-  rsTaskCancelled = 'Task canceled.';
+  rsTaskCanceled = 'Task canceled.';
   rsFailedToCancel = 'Could not cancel : %s.';
 
   rsIncorrectPassword = 'Incorrect password.';
@@ -131,6 +132,19 @@ resourcestring
   rsDuplicateFailure = 'Error while duplicating the package(s).';
 
 
+  { --- MESSAGES DANS LE TRAY WAPT --- }
+  rsUpdatesAvailableFor = 'Available updates for : '#13#10;
+  rsErrorFor = 'Error for %s';
+  rsError = 'Error';
+  rsTaskStarted = '%s started';
+  rsTaskDone = '%s done'#13#10'%s';
+  rsCanceling = 'Canceling %s';
+  rsNoTaskCanceled = 'No task canceled';
+  rsPackageConfigDone = 'Done configuring packages for the current user session';
+  rsPackageConfigError = 'Error while configuring packages for the current user session';
+  rsWaptServiceTerminated = 'WAPTService terminated';
+  rsChecking = 'Checking...';
+  rsErrorWhileChecking = 'Error while checking...';
 
 implementation
 

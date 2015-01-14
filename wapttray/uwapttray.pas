@@ -5,7 +5,7 @@ unit uwapttray;
 interface
 
 uses
-  Forms, ComCtrls;
+  Forms, ComCtrls, DefaultTranslator;
 
 type
 

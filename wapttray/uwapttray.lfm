@@ -1,9 +1,9 @@
 object VisWAPTTray: TVisWAPTTray
-  Left = 459
+  Left = 470
   Height = 449
   Top = 374
   Width = 553
-  Caption = 'Gestion logiciels WAPT'
+  Caption = 'WAPT Software Manager'
   ClientHeight = 449
   ClientWidth = 553
   Icon.Data = {
@@ -114,7 +114,7 @@ object VisWAPTTray: TVisWAPTTray
     0000000000000000000000000000000000000000000000000000000000000000
     000000000000
   }
-  LCLVersion = '1.1'
+  LCLVersion = '1.3'
   Visible = True
   WindowState = wsMinimized
   object pages: TPageControl

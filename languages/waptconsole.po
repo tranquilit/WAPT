@@ -1,0 +1,866 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: tvisapropos.button1.caption
+msgid "Fermer"
+msgstr ""
+
+#: tvisapropos.caption
+msgid "About WAPTConsole"
+msgstr ""
+
+#: tvisapropos.labinfos.caption
+msgid "LabInfos"
+msgstr ""
+
+#: tvisloading.amessage.caption
+msgid "Loading..."
+msgstr ""
+
+#: tvisloading.bitbtn1.caption
+msgid "Abort"
+msgstr ""
+
+#: tvisloading.caption
+msgid "Loading"
+msgstr ""
+
+#: tvislogin.bitbtn1.hint
+msgid "Configure WAPT console"
+msgstr ""
+
+#: tvislogin.caption
+msgid "WAPT authentication"
+msgstr ""
+
+#: tvislogin.eduser.text
+msgid "admin"
+msgstr ""
+
+#: tvislogin.edwaptservername.text
+msgid "edWaptServerName"
+msgstr ""
+
+#: tvislogin.label1.caption
+msgid "Server connection"
+msgstr ""
+
+#: tvislogin.lapassword.caption
+msgid "Server password"
+msgstr ""
+
+#: tvislogin.lapassword1.caption
+msgid "Server user"
+msgstr ""
+
+#: tviswaptgui.actaddconflicts.caption
+msgid "Block packages (causes forced uninstall)"
+msgstr ""
+
+#: tviswaptgui.actaddgroup.caption
+msgid "New bundle"
+msgstr ""
+
+#: tviswaptgui.actaddpackagegroup.caption
+msgid "Add package or bundle"
+msgstr ""
+
+#: tviswaptgui.actadvancedmode.caption
+msgid "Advanced mode"
+msgstr ""
+
+#: tviswaptgui.actbuildupload.caption
+msgid "Activate package"
+msgstr ""
+
+#: tviswaptgui.actcancelrunningtask.caption
+msgid "Cancel current task"
+msgstr ""
+
+#: tviswaptgui.actchangepassword.caption
+msgid "Update password"
+msgstr ""
+
+#: tviswaptgui.actcreatecertificate.caption
+msgid "Generate self-signed certificate"
+msgstr ""
+
+#: tviswaptgui.actcreatewaptsetup.caption
+msgid "Create custom WAPT installer"
+msgstr ""
+
+#: tviswaptgui.actcreatewaptsetuppy.caption
+msgid "Create custom WAPT installer (py)"
+msgstr ""
+
+#: tviswaptgui.actdeletegroup.caption
+msgid "Delete bundle"
+msgstr ""
+
+#: tviswaptgui.actdeletepackage.caption
+msgid "Remove from repository"
+msgstr ""
+
+#: tviswaptgui.actdeploywapt.caption
+msgid "Deploy WAPT onto hosts"
+msgstr ""
+
+#: tviswaptgui.acteditgroup.caption
+msgid "Edit bundle"
+msgstr ""
+
+#: tviswaptgui.actedithostpackage.caption
+msgctxt "TVISWAPTGUI.ACTEDITHOSTPACKAGE.CAPTION"
+msgid "Edit host configuration"
+msgstr ""
+
+#: tviswaptgui.acteditpackage.caption
+msgid "Edit package"
+msgstr ""
+
+#: tviswaptgui.actevaluate.caption
+msgid "Evaluate"
+msgstr ""
+
+#: tviswaptgui.actevaluatevar.caption
+msgid "Evaluer Variant"
+msgstr ""
+
+#: tviswaptgui.actexeccode.caption
+msgid "Execute python source"
+msgstr ""
+
+#: tviswaptgui.actforgetpackages.caption
+msgid "Forget packages"
+msgstr ""
+
+#: tviswaptgui.actgotohost.caption
+msgctxt "TVISWAPTGUI.ACTGOTOHOST.CAPTION"
+msgid "Search for host"
+msgstr ""
+
+#: tviswaptgui.acthelp.caption
+msgid "Online help"
+msgstr ""
+
+#: tviswaptgui.acthostsdelete.caption
+msgid "Remove from inventory"
+msgstr ""
+
+#: tviswaptgui.acthostupgrade.caption
+msgid "Apply updates"
+msgstr ""
+
+#: tviswaptgui.acthostwaptupgrade.caption
+msgid "Update WAPT client"
+msgstr ""
+
+#: tviswaptgui.acthostwaptupgrade.hint
+msgid "Run agent.exe in silent mode from <url-depot>/waptagent.exe"
+msgstr ""
+
+#: tviswaptgui.actimportfromfile.caption
+msgid "Import from file"
+msgstr ""
+
+#: tviswaptgui.actimportfromrepo.caption
+msgid "Import from repository"
+msgstr ""
+
+#: tviswaptgui.actlocalhostinstall.caption
+msgid "Install"
+msgstr ""
+
+#: tviswaptgui.actlocalhostremove.caption
+msgctxt "tviswaptgui.actlocalhostremove.caption"
+msgid "Uninstall package"
+msgstr ""
+
+#: tviswaptgui.actlocalhostupgrade.caption
+msgid "System update"
+msgstr ""
+
+#: tviswaptgui.actpackageremove.caption
+msgctxt "TVISWAPTGUI.ACTPACKAGEREMOVE.CAPTION"
+msgid "Uninstall package"
+msgstr ""
+
+#: tviswaptgui.actpackageremove.hint
+msgid "Forces remote uninstall of package"
+msgstr ""
+
+#: tviswaptgui.actpackagesupdate.caption
+msgid "Update available packages"
+msgstr ""
+
+#: tviswaptgui.actquit.caption
+msgid "Quit"
+msgstr ""
+
+#: tviswaptgui.actrdp.caption
+msgid "Connect via RDP"
+msgstr ""
+
+#: tviswaptgui.actrefresh.caption
+msgid "Refresh"
+msgstr ""
+
+#: tviswaptgui.actreloadconfig.caption
+msgid "Reload wapt-get.ini"
+msgstr ""
+
+#: tviswaptgui.actremoveconflicts.caption
+msgid "Allow packages "
+msgstr ""
+
+#: tviswaptgui.actremovedepends.caption
+msgid "Remove dependencies from packages/bundles"
+msgstr ""
+
+#: tviswaptgui.actsearchgroups.caption
+msgctxt "TVISWAPTGUI.ACTSEARCHGROUPS.CAPTION"
+msgid "Search"
+msgstr ""
+
+#: tviswaptgui.actsearchhost.caption
+msgctxt "tviswaptgui.actsearchhost.caption"
+msgid "Search for host"
+msgstr ""
+
+#: tviswaptgui.actsearchpackage.caption
+msgctxt "TVISWAPTGUI.ACTSEARCHPACKAGE.CAPTION"
+msgid "Search"
+msgstr ""
+
+#: tviswaptgui.actsearchsoftwares.caption
+msgid "ActSearchSoftware"
+msgstr ""
+
+#: tviswaptgui.actvnc.caption
+msgid "Connect via VNC"
+msgstr ""
+
+#: tviswaptgui.actwaptlocalconfig.caption
+msgid "Local WAPT configuration"
+msgstr ""
+
+#: tviswaptgui.caption
+msgid "WAPT console"
+msgstr ""
+
+#: tviswaptgui.cbmasksystemcomponents.caption
+msgid "Hide system components"
+msgstr ""
+
+#: tviswaptgui.cbsearchall.caption
+msgid "All"
+msgstr ""
+
+#: tviswaptgui.cbsearchdmi.caption
+msgid "Hardware"
+msgstr ""
+
+#: tviswaptgui.cbsearchhost.caption
+msgid "Host"
+msgstr ""
+
+#: tviswaptgui.cbsearchpackages.caption
+msgid "Packages"
+msgstr ""
+
+#: tviswaptgui.cbsearchsoftwares.caption
+msgid "Software"
+msgstr ""
+
+#: tviswaptgui.cbshowlog.caption
+msgid "Show debug"
+msgstr ""
+
+#: tviswaptgui.checkboxmaj.caption
+msgid "Needs updating"
+msgstr ""
+
+#: tviswaptgui.checkbox_error.caption
+msgid "Has errors"
+msgstr ""
+
+#: tviswaptgui.edrun.text
+msgid "mywapt.update()"
+msgstr ""
+
+#: tviswaptgui.hostrunningtask.editlabel.caption
+msgctxt "TVISWAPTGUI.HOSTRUNNINGTASK.EDITLABEL.CAPTION"
+msgid "Current task"
+msgstr ""
+
+#: tviswaptgui.label1.caption
+msgid "IP address"
+msgstr ""
+
+#: tviswaptgui.label10.caption
+msgid "Label10"
+msgstr ""
+
+#: tviswaptgui.label11.caption
+msgid "Number of hosts : "
+msgstr ""
+
+#: tviswaptgui.label12.caption
+msgctxt "tviswaptgui.label12.caption"
+msgid "Current task"
+msgstr ""
+
+#: tviswaptgui.label13.caption
+msgid "Selected"
+msgstr ""
+
+#: tviswaptgui.label14.caption
+msgid "Filter : "
+msgstr ""
+
+#: tviswaptgui.label2.caption
+msgid "Manufacturer"
+msgstr ""
+
+#: tviswaptgui.label3.caption
+msgid "Model"
+msgstr ""
+
+#: tviswaptgui.label4.caption
+msgid "User"
+msgstr ""
+
+#: tviswaptgui.label5.caption
+msgctxt "tviswaptgui.label5.caption"
+msgid "Search"
+msgstr ""
+
+#: tviswaptgui.label6.caption
+msgid "Name"
+msgstr ""
+
+#: tviswaptgui.label7.caption
+msgid "Operating system"
+msgstr ""
+
+#: tviswaptgui.label8.caption
+msgid "Description"
+msgstr ""
+
+#: tviswaptgui.label9.caption
+msgid "Updated"
+msgstr ""
+
+#: tviswaptgui.labelcomputersnumber.caption
+msgctxt "TVISWAPTGUI.LABELCOMPUTERSNUMBER.CAPTION"
+msgid "0"
+msgstr ""
+
+#: tviswaptgui.labselected.caption
+msgctxt "tviswaptgui.labselected.caption"
+msgid "0"
+msgstr ""
+
+#: tviswaptgui.menuitem10.caption
+msgid "Save ..."
+msgstr ""
+
+#: tviswaptgui.menuitem11.caption
+msgid "Save as"
+msgstr ""
+
+#: tviswaptgui.menuitem12.caption
+msgid "&Close"
+msgstr ""
+
+#: tviswaptgui.menuitem13.caption
+msgctxt "TVISWAPTGUI.MENUITEM13.CAPTION"
+msgid "-"
+msgstr ""
+
+#: tviswaptgui.menuitem15.caption
+msgid "&Tools"
+msgstr ""
+
+#: tviswaptgui.menuitem20.caption
+msgid "Install package"
+msgstr ""
+
+#: tviswaptgui.menuitem24.caption
+msgid "&Edit"
+msgstr ""
+
+#: tviswaptgui.menuitem25.caption
+msgctxt "TVISWAPTGUI.MENUITEM25.CAPTION"
+msgid "-"
+msgstr ""
+
+#: tviswaptgui.menuitem26.caption
+msgid "?"
+msgstr ""
+
+#: tviswaptgui.menuitem27.caption
+msgid "About"
+msgstr ""
+
+#: tviswaptgui.menuitem32.caption
+msgctxt "TVISWAPTGUI.MENUITEM32.CAPTION"
+msgid "-"
+msgstr ""
+
+#: tviswaptgui.menuitem4.caption
+msgid "Remove"
+msgstr ""
+
+#: tviswaptgui.menuitem43.caption
+msgctxt "TVISWAPTGUI.MENUITEM43.CAPTION"
+msgid "-"
+msgstr ""
+
+#: tviswaptgui.menuitem44.caption
+msgctxt "TVISWAPTGUI.MENUITEM44.CAPTION"
+msgid "-"
+msgstr ""
+
+#: tviswaptgui.menuitem47.caption
+msgctxt "TVISWAPTGUI.MENUITEM47.CAPTION"
+msgid "-"
+msgstr ""
+
+#: tviswaptgui.menuitem5.caption
+msgid "&File"
+msgstr ""
+
+#: tviswaptgui.menuitem6.caption
+msgid "New"
+msgstr ""
+
+#: tviswaptgui.menuitem7.caption
+msgctxt "tviswaptgui.menuitem7.caption"
+msgid "-"
+msgstr ""
+
+#: tviswaptgui.menuitem8.caption
+msgid "Open..."
+msgstr ""
+
+#: tviswaptgui.menuitem9.caption
+msgid "Reopen"
+msgstr ""
+
+#: tviswaptgui.opendialogwapt.title
+msgid "Select WAPT file"
+msgstr ""
+
+#: tviswaptgui.panel6.caption
+msgid "Panel6"
+msgstr ""
+
+#: tviswaptgui.panel7.caption
+msgid "Panel7"
+msgstr ""
+
+#: tviswaptgui.pggroups.caption
+msgid "Bundles"
+msgstr ""
+
+#: tviswaptgui.pghostpackage.caption
+msgid "Hardware inventory"
+msgstr ""
+
+#: tviswaptgui.pginventory.caption
+msgid "Inventory"
+msgstr ""
+
+#: tviswaptgui.pgpackages.caption
+msgid "Overview"
+msgstr ""
+
+#: tviswaptgui.pgprivaterepo.caption
+msgid "Private repository"
+msgstr ""
+
+#: tviswaptgui.pgsoftwares.caption
+msgid "Software inventory"
+msgstr ""
+
+#: tviswaptgui.pgsources.caption
+msgid "Sources"
+msgstr ""
+
+#: tviswaptgui.pgtasks.caption
+msgid "Tasks"
+msgstr ""
+
+#: tviswaptgui.tabsheet1.caption
+msgid "Pending"
+msgstr ""
+
+#: tviswaptgui.tabsheet2.caption
+msgid "Done"
+msgstr ""
+
+#: tviswaptgui.tabsheet3.caption
+msgid "Errors"
+msgstr ""
+
+#: uwaptres.rsbundleconfigeditcaption
+msgctxt "uwaptres.rsbundleconfigeditcaption"
+msgid "Edit package bundle configuration"
+msgstr ""
+
+#: uwaptres.rscanceledbyuser
+msgid "Task %s has been canceled by the user"
+msgstr ""
+
+#: uwaptres.rscertificatecopyfailure
+msgid "Couldn't copy certificate %s to %s."
+msgstr ""
+
+#: uwaptres.rsconfirmcaption
+msgid "Confirm"
+msgstr ""
+
+#: uwaptres.rsconfirmdeletion
+msgctxt "uwaptres.rsconfirmdeletion"
+msgid "Confirm removal"
+msgstr ""
+
+#: uwaptres.rsconfirmhostforgetspackages
+msgid "Are you sure you want to forget %s packages from host %s ?"
+msgstr ""
+
+#: uwaptres.rsconfirmimport
+msgid ""
+"Are you sure you want to import\n"
+"%s\n"
+" to your repository ?\n"
+msgstr ""
+
+#: uwaptres.rsconfirmimportcaption
+msgid "Confirm import"
+msgstr ""
+
+#: uwaptres.rsconfirmrmhostsfromlist
+msgid "Are you sure you want to remove %s hosts from the list ?"
+msgstr ""
+
+#: uwaptres.rsconfirmrmmultiplepackages
+msgid "Are you sure you want to remove the selected packages from the server ?"
+msgstr ""
+
+#: uwaptres.rsconfirmrmonepackage
+msgid "Are you sure you want to remove this package from the server ?"
+msgstr ""
+
+#: uwaptres.rsconfirmrmpackagecaption
+msgctxt "uwaptres.rsconfirmrmpackagecaption"
+msgid "Confirm removal"
+msgstr ""
+
+#: uwaptres.rsconfirmrmpackagesfromhost
+msgid "Are you sure you want to remove %s package(s) from the selected host(s) %s ?"
+msgstr ""
+
+#: uwaptres.rscreationinprogress
+msgid "Creation in progress."
+msgstr ""
+
+#: uwaptres.rsdefinewaptdevpath
+msgid "Please select a directory on your package development host before editing a package bundle."
+msgstr ""
+
+#: uwaptres.rsdeletingelement
+msgid "Removing %s"
+msgstr ""
+
+#: uwaptres.rsdeletioninprogress
+msgid "Removing packages..."
+msgstr ""
+
+#: uwaptres.rsdependencies
+msgid "Selection of packages to add to the hosts as dependencies"
+msgstr ""
+
+#: uwaptres.rsdiffpwerror
+msgid "Passwords do not match."
+msgstr ""
+
+#: uwaptres.rsdisplaying
+msgid "Displaying"
+msgstr ""
+
+#: uwaptres.rsdlcanceled
+msgid "Download canceled."
+msgstr ""
+
+#: uwaptres.rsdlstoppedbyuser
+msgid "Download stopped by the user"
+msgstr ""
+
+#: uwaptres.rsdownloading
+msgid "Downloading"
+msgstr ""
+
+#: uwaptres.rsdownloadingpackage
+msgid "Package(s) %s is being downloaded."
+msgstr ""
+
+#: uwaptres.rsduplicatefailure
+msgid "Error while duplicating the package(s)."
+msgstr ""
+
+#: uwaptres.rsduplicatesuccess
+msgid "Package(s) %s successfully duplicated."
+msgstr ""
+
+#: uwaptres.rsduplicating
+msgid "Package(s) %s is being duplicated."
+msgstr ""
+
+#: uwaptres.rseditbundle
+msgctxt "uwaptres.rseditbundle"
+msgid "Edit package bundle."
+msgstr ""
+
+#: uwaptres.rsedithostcaption
+msgid "Edit host"
+msgstr ""
+
+#: uwaptres.rsedpackage
+msgid "Package bundle"
+msgstr ""
+
+#: uwaptres.rsemptynewpwerror
+msgid "New password must not be empty."
+msgstr ""
+
+#: uwaptres.rsemptyoldpwerror
+msgid "Old password must not be empty."
+msgstr ""
+
+#: uwaptres.rsfailedimport
+msgid "Error during import."
+msgstr ""
+
+#: uwaptres.rsfailedtocancel
+msgid "Could not cancel : %s."
+msgstr ""
+
+#: uwaptres.rsfatalerror
+msgid "Failed to retrieve task."
+msgstr ""
+
+#: uwaptres.rsforceduninstallpackages
+msgid "Selection of packages to force-remove from the hosts"
+msgstr ""
+
+#: uwaptres.rsforgetpackageerror
+msgid "Error while forgetting package %s: %s"
+msgstr ""
+
+#: uwaptres.rshostconfigeditcaption
+msgctxt "uwaptres.rshostconfigeditcaption"
+msgid "Edit host configuration"
+msgstr ""
+
+#: uwaptres.rsignoredconfictingpackages
+msgid "Warning : couldn't find package(s) %s ; conflicting package(s) have been ignored."
+msgstr ""
+
+#: uwaptres.rsignoredpackages
+msgid "Warning : couldn't find package(s) %s ; ignoring them."
+msgstr ""
+
+#: uwaptres.rsimportingfile
+msgid "Importing %s"
+msgstr ""
+
+#: uwaptres.rsincorrectoldpwerror
+msgid "Old password is incorrect."
+msgstr ""
+
+#: uwaptres.rsincorrectpassword
+msgid "Incorrect password."
+msgstr ""
+
+#: uwaptres.rsinnosetupunavailable
+msgid "Innosetup is unavailable (path : %s), please install it first."
+msgstr ""
+
+#: uwaptres.rsinputkeyname
+msgid "Please input a key name"
+msgstr ""
+
+#: uwaptres.rsinputpubkeypath
+msgid "Please input path to public key"
+msgstr ""
+
+#: uwaptres.rsinstalling
+msgid "Installing %s..."
+msgstr ""
+
+#: uwaptres.rsinvalidwaptsetupdir
+msgid "WAPTsetup directory is not valid : %s"
+msgstr ""
+
+#: uwaptres.rskeyalreadyexists
+msgid "Key %s already exists, please pick another name."
+msgstr ""
+
+#: uwaptres.rsnbmodifiedhosts
+msgid "%s hosts affected."
+msgstr ""
+
+#: uwaptres.rsnobundle
+msgctxt "uwaptres.rsnobundle"
+msgid "There is no package bundle."
+msgstr ""
+
+#: uwaptres.rspackagecreationerror
+msgid "Error while creating package : %s"
+msgstr ""
+
+#: uwaptres.rspackageduplicateconfirm
+msgid ""
+"Are you sure you want to duplicate the package(s)\n"
+"%s\n"
+" into your repository ?\n"
+msgstr ""
+
+#: uwaptres.rspackageduplicateconfirmcaption
+msgid "Confirm duplication of package"
+msgstr ""
+
+#: uwaptres.rspackageremoveerror
+msgid "Error while removing package %s: %s"
+msgstr ""
+
+#: uwaptres.rspackagesneededcaption
+msgid "Packages needed in package bundle"
+msgstr ""
+
+#: uwaptres.rspackagesneededonhostcaption
+msgid "Packages needed on host"
+msgstr ""
+
+#: uwaptres.rspasswordchangeerror
+msgid "Error : %s"
+msgstr ""
+
+#: uwaptres.rspasswordchangesuccess
+msgid "Password successfully updated !"
+msgstr ""
+
+#: uwaptres.rsprivatekeydoesntexist
+msgid "Private key doesn't exist : %s"
+msgstr ""
+
+#: uwaptres.rsprogresstitle
+msgid "Started uploading to WAPT server..."
+msgstr ""
+
+#: uwaptres.rspublickeygenerror
+msgid "Error during key generation : %s"
+msgstr ""
+
+#: uwaptres.rspublickeygenfailure
+msgid "The generation of the public key has failed."
+msgstr ""
+
+#: uwaptres.rspublickeygensuccess
+msgid "Key %s has been successfully created."
+msgstr ""
+
+#: uwaptres.rsreallowpackagesonhost
+msgid "Selection of package(s) to remove from conflict list"
+msgstr ""
+
+#: uwaptres.rsrmbundlefromhosts
+msgctxt "uwaptres.rsrmbundlefromhosts"
+msgid "Selection of package bundles for removing from the selected hosts"
+msgstr ""
+
+#: uwaptres.rssavemods
+msgid "Save changes ?"
+msgstr ""
+
+#: uwaptres.rssuccessfullyimported
+msgid "%s successfully imported."
+msgstr ""
+
+#: uwaptres.rstaskcanceled
+msgctxt "uwaptres.rstaskcanceled"
+msgid "Task canceled."
+msgstr ""
+
+#: uwaptres.rsundefwaptsrvinini
+msgid "wapt_server is not defined in your %s ini file"
+msgstr ""
+
+#: uwaptres.rsuninstallingpackage
+msgid "Uninstalling %s..."
+msgstr ""
+
+#: uwaptres.rsupdatingpackagelist
+msgid "Updating package list"
+msgstr ""
+
+#: uwaptres.rsupgradehosterror
+msgid "Failed to trigger upgrade : %s"
+msgstr ""
+
+#: uwaptres.rsupgradinghost
+msgid "Upgrade triggered on the remote host."
+msgstr ""
+
+#: uwaptres.rsuploading
+msgid "Uploading"
+msgstr ""
+
+#: uwaptres.rsuploadingpackagestowaptsrv
+msgid "Uploading %s packages to WAPT server..."
+msgstr ""
+
+#: uwaptres.rsurl
+msgid "Url : %s"
+msgstr ""
+
+#: uwaptres.rsversion
+msgid ""
+"Waptconsole version : %s\n"
+"Wapt-get version: %s\n"
+msgstr ""
+
+#: uwaptres.rswaptagentsetuperror
+msgid "Error while creating waptagent.exe: %s"
+msgstr ""
+
+#: uwaptres.rswaptagentsetupsuccess
+msgid "waptagent.exe successfully created : %s"
+msgstr ""
+
+#: uwaptres.rswaptagentuploaderror
+msgid "Error while uploading WAPT agent : %s"
+msgstr ""
+
+#: uwaptres.rswaptagentuploadsuccess
+msgid "Successfully uploaded WAPT agent !"
+msgstr ""
+
+#: uwaptres.rswaptclientupdateonhosts
+msgid "Updating WAPT client on the hosts"
+msgstr ""
+
+#: uwaptres.rswaptsetuperror
+msgid "Error while creating agent : %s"
+msgstr ""
+
+#: uwaptres.rswaptsetupuploadsuccess
+msgid "WAPT agent successfully created and uploaded to the repository : %s"
+msgstr ""
+
+#: uwaptres.rswaptuploaderror
+msgid "Error while uploading WAPT agent to the repository : %s"
+msgstr ""
+
