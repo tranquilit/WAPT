@@ -148,10 +148,33 @@ Filename: "sc"; Parameters: "delete waptservice"; Flags: runhidden; StatusMsg: "
 var
   teWaptRepoUrl:TEdit;
 
+function RunCmd(cmd:AnsiString;RaiseOnError:Boolean):AnsiString;
+var
+  ErrorCode: Integer;
+  TmpFileName, ExecStdout: Ansistring;
+begin
+  Result := 'Error';
+  TmpFileName := ExpandConstant('{tmp}') + '\runresult.txt';
+  try
+    Exec('cmd','/C '+cmd+'  > "' + TmpFileName + '"', '', SW_HIDE,
+      ewWaitUntilTerminated, ErrorCode);
+    if RaiseOnError and (ErrorCode>0) then
+       RaiseException('La commande '+cmd+' a renvoy le code d''erreur '+intToStr(ErrorCode));
+    if LoadStringFromFile(TmpFileName, ExecStdout) then 
+      result := ExecStdOut
+    else 
+      result:='';
+  finally
+    if FileExists(TmpFileName) then
+	     DeleteFile(TmpFileName);
+  end;
+end;
+
 function InitializeSetup(): Boolean;
 var
-  ResultCode: integer;
+  ResultCode: Integer;
   ServiceStatus: LongWord;
+  NetstatOutput, ConflictingService: AnsiString;
 begin
 
 #ifdef waptserver
@@ -175,14 +198,26 @@ begin
   end;
 
   // Proceed Setup
-  if ServiceExists('waptservice') then
-    SimpleStopService('waptservice',True,True);
-  if ServiceExists('waptserver') then
-    SimpleStopService('waptserver',True,True);
-  if ServiceExists('waptapache') then
-    SimpleStopService('waptapache',True,True);	
-  if ServiceExists('waptmongodb') then
-    SimpleStopService('waptmongodb',True,True);
+  Exec('net', 'stop waptservice', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  
+#ifdef waptserver
+  Exec('net', 'stop waptserver', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Exec('net', 'stop waptapache', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Exec('net', 'stop waptmongodb', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  
+  ConflictingService := '';
+
+  NetstatOutput := RunCmd('netstat -a -n -p tcp', True);
+  if Pos('0.0.0.0:8080 ', NetstatOutput) > 0 then
+    ConflictingService := '8080'
+  else if Pos('0.0.0.0:443 ', NetstatOutput) > 0 then
+    ConflictingService := '443'
+  else if Pos('0.0.0.0:80 ', NetstatOutput) > 0 then
+    ConflictingService := '80'
+  ;
+  if ConflictingService <> '' then
+    RaiseException('Un processus ecoute sur le port '+ConflictingService+' de cette machine, et entrera en conflit avec WAPT. Installation interrompue.');
+#endif
   
   Result := True;
 end;
@@ -191,28 +226,6 @@ procedure DeinitializeSetup();
 begin
   if ServiceExists('waptservice') then
     SimpleStartService('waptservice',True,True); 
-end;
-
-function RunCmd(cmd:AnsiString;RaiseOnError:Boolean):AnsiString;
-var
-  ErrorCode: Integer;
-  TmpFileName, ExecStdout: Ansistring;
-begin
-  Result := 'Error';
-  TmpFileName := ExpandConstant('{tmp}') + '\runresult.txt';
-  try
-    Exec('cmd','/C '+cmd+'  > "' + TmpFileName + '"', '', SW_HIDE,
-      ewWaitUntilTerminated, ErrorCode);
-    if RaiseOnError and (ErrorCode>0) then
-       RaiseException('La commande '+cmd+' a renvoy le code d''erreur '+intToStr(ErrorCode));
-    if LoadStringFromFile(TmpFileName, ExecStdout) then 
-      result := ExecStdOut
-    else 
-      result:='';
-  finally
-    if FileExists(TmpFileName) then
-	     DeleteFile(TmpFileName);
-  end;
 end;
 
 procedure killtask(name:String);
