@@ -165,7 +165,7 @@ begin
 #endif
 
   // terminate waptconsole
-  if Exec('taskkill', '/t /im "waptconsole.exe" /f', '', SW_SHOW,
+  if Exec('taskkill', '/t /im "waptconsole.exe" /f', '', SW_HIDE,
      ewWaitUntilTerminated, ResultCode) then
   begin
     // handle success if necessary; ResultCode contains the exit code
