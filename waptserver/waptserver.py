@@ -1266,7 +1266,7 @@ if __name__ == "__main__":
         install_windows_service()
         sys.exit(0)
 
-    debug=True
+    debug=False
     if debug:
         app.run(host='0.0.0.0',port=30880,debug=False)
     else:
