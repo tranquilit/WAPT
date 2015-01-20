@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, FileUtil, RichView,
   Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, ExtCtrls,
   Buttons, ActnList, EditBtn, htmlview, Readhtml, Htmlsubs, IdHTTP,
-  IdComponent,uvisLoading;
+  IdComponent,uvisLoading, DefaultTranslator;
 
 type
 
@@ -128,7 +128,7 @@ var
 
 implementation
 uses LCLIntf, Windows,WaptCommon,tisinifiles,superobject,tisutils,soutils,
-    tiscommon,tisstrings,IniFiles,UnitRedirect,sha1,Regex;
+    tiscommon,tisstrings,IniFiles,UnitRedirect,sha1,Regex, uWaptRes;
 {$R *.lfm}
 
 { TVisWAPTServerPostConf }
@@ -313,9 +313,9 @@ begin
   else
     ActNext.Enabled := PagesControl.ActivePageIndex<=PagesControl.PageCount-1;
   if PagesControl.ActivePageIndex=PagesControl.PageCount-1 then
-    ActNext.Caption:='Fin'
+    ActNext.Caption:='Done'
   else
-    ActNext.Caption:='Suivant';
+    ActNext.Caption:='Next';
 end;
 
 procedure TVisWAPTServerPostConf.actPreviousExecute(Sender: TObject);
@@ -353,12 +353,12 @@ begin
     ExceptionOnStop:=True;
     if GetServiceStatusByName('','WAPTService') in [ssRunning,ssPaused,ssPausePending,ssStartPending]  then
     begin
-      ProgressTitle('Arrêt de waptservice');
+      ProgressTitle(rsWaptServiceStopping);
       Sto_RedirectedExecute('cmd /C net stop waptservice');
     end;
     if GetServiceStatusByName('','WAPTServer') in [ssRunning,ssPaused,ssPausePending,ssStartPending] then
     begin
-      ProgressTitle('Arrêt de waptserver');
+      ProgressTitle(rsWaptServiceStopping);
       Sto_RedirectedExecute('cmd /C net stop waptserver');
     end;
 
@@ -366,37 +366,37 @@ begin
     ini.SetStrings(EdWaptInifile.Lines);
     ini.UpdateFile;
 
-    ProgressTitle('Mise à jour index des packages');
+    ProgressTitle(rsUpdatingPackageIndex);
     ProgressStep(1,8);
     runwapt('{app}\wapt-get.exe update-packages "{app}\waptserver\repository\wapt"');
 
-    ProgressTitle('Suppression certificat TIS et copie du nouveau certificat');
+    ProgressTitle(rsReplacingTIScertificate);
     ProgressStep(2,8);
     if FileExists(WaptBaseDir+'\ssl\tranquilit.crt') then
       FileUtil.DeleteFileUTF8(WaptBaseDir+'\ssl\tranquilit.crt');
     Fileutil.CopyFile(ChangeFileExt(EdPrivateKeyFN.Text,'.crt'),WaptBaseDir+'\ssl\'+ChangeFileExt(ExtractFileNameOnly(EdPrivateKeyFN.Text),'.crt'),True);
 
-    ProgressTitle('Mise en place mot de passe du serveur');
+    ProgressTitle(rsSettingServerPassword);
     ProgressStep(3,8);
 
     IniWriteString(WaptBaseDir+'\waptserver\waptserver.ini' ,'Options','wapt_password',sha1.SHA1Print(sha1.SHA1String(EdPwd1.Text)));
 
     if CBOpenFirewall.Checked then
     begin
-      ProgressTitle('Ouverture firewall pour WaptServer');
+      ProgressTitle(rsOpeningFirewall);
       ProgressStep(4,8);
       OpenFirewall;
     end;
 
-    ProgressTitle('Redémarrage service waptserver');
+    ProgressTitle(rsRestartingWaptServer);
     ProgressStep(5,8);
     Sto_RedirectedExecute('cmd /C net start waptserver');
 
-    ProgressTitle('Redémarrage waptservice');
+    ProgressTitle(rsRestartingWaptService);
     ProgressStep(6,8);
     Sto_RedirectedExecute('cmd /C net start waptservice');
 
-    ProgressTitle('Enregistrement machine sur serveur');
+    ProgressTitle(rsRegisteringHostOnServer);
     ProgressStep(7,8);
 
     retry := 0;
@@ -409,7 +409,7 @@ begin
       inc(retry);
     end;
 
-    ProgressTitle('Mise à jour paquets locaux');
+    ProgressTitle(rsUpdatingLocalPackages);
     ProgressStep(8,8);
     runwapt('{app}\wapt-get.exe -D update');
 
@@ -423,7 +423,7 @@ end;
 
 procedure TVisWAPTServerPostConf.BitBtn3Click(Sender: TObject);
 begin
-  if MessageDlg('Confirmer','Voulez-vous vraiment annuler la post-configuration du serveur WAPT ?',mtConfirmation,mbYesNoCancel,0) = mrYes then
+  if MessageDlg(rsConfirm,rsConfirmCancelPostConfig,mtConfirmation,mbYesNoCancel,0) = mrYes then
     Close;
 end;
 
@@ -455,7 +455,7 @@ begin
   end
   else
   begin
-    if Dialogs.MessageDlg('DNS non valide','Le nom DNS fourni n''est pas valide, voulez-vous utiliser l''adresse IP à la place ?',
+    if Dialogs.MessageDlg(rsInvalidDNS,rsInvalidDNSfallback,
         mtConfirmation,mbYesNoCancel,0) = mrYes then
     begin
       EdWAPTServerName.Text := GetLocalIP;
@@ -480,7 +480,7 @@ begin
   try
     ExceptionOnStop:=True;
     Screen.Cursor := crHourGlass;
-    ProgressTitle('Création en cours');
+    ProgressTitle(rsCreationInProgress);
     Start;
     Application.ProcessMessages;
     waptsetupPath := CreateWaptSetup(fnPublicCert.FileName, edRepoUrl.Text, edWaptServerUrl1.Text,fnWaptDirectory.Directory,edOrganization.Text,@DoProgress, 'waptagent');
@@ -488,17 +488,17 @@ begin
     if FileExists(waptsetupPath) then
     try
       Start;
-      ProgressTitle('Dépôt sur le serveur WAPT en cours');
+      ProgressTitle(rsProgressTitle);
       SORes := WAPTServerJsonMultipartFilePost(edWAPTServerURL1.Text,'upload_waptsetup',[],'file',waptsetupPath,False,'admin',EdPwd1.Text,@IdHTTPWork);
       Finish;
       if SORes.S['status'] = 'OK' then
-        ShowMessage('Agent WAPT créé et déposé avec succès : ' + waptsetupPath)
+        ShowMessageFmt(rsWaptSetupUploadSuccess, [waptsetupPath])
       else
-        ShowMessage('Erreur lors du dépôt de l''agent WAPT : ' + SORes.S['message']);
+        ShowMessageFmt(rsWaptUploadError, [SORes.S['message']]);
     except
       on e: Exception do
       begin
-        ShowMessage('Erreur à la création de l''agent WAPT : ' + e.Message);
+        ShowMessageFmt(rsWaptSetupError, [e.Message]);
         Finish;
       end;
     end;
