@@ -85,6 +85,9 @@ from common import Wapt
 import setuphelpers
 from setuphelpers import Version
 from waptpackage import PackageEntry
+from flask.ext.babel import gettext
+from flask.ext.babel import Babel
+
 
 usage="""\
 %prog -c configfile [action]
@@ -426,6 +429,7 @@ app.config['PROPAGATE_EXCEPTIONS'] = True
 app.jinja_env.filters['beautify'] = beautify
 app.waptconfig = waptconfig
 
+babel = Babel(app)
 
 def wapt():
     if not hasattr(g,'wapt'):
@@ -1025,7 +1029,7 @@ def index():
             host_info=host_info,
             wapt=wapt(),
             wapt_info=wapt().wapt_status(),
-            update_status=wapt().get_last_update_status())
+            update_status=wapt().get_last_update_status(),)
     if request.args.get('format','html')=='json'  or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -1699,6 +1703,7 @@ class WaptTaskManager(threading.Thread):
         event_queue = zmq_context.socket(zmq.PUB)
         event_queue.hwm = 10000;
 
+        logger.debug('Starting ZMQ on port %i' % waptconfig.zmq_port)
         # start event broadcasting
         event_queue.bind("tcp://127.0.0.1:{}".format(waptconfig.zmq_port))
 
@@ -2097,9 +2102,9 @@ if __name__ == "__main__":
     task_manager.daemon = True
     task_manager.start()
 
-    debug=False
+    debug=True
     if debug:
-        app.run(host='0.0.0.0',port=30888,debug=False)
+        app.run(host='0.0.0.0',port=30888,debug=True)
     else:
         #logger.setLevel(logging.DEBUG)
 
