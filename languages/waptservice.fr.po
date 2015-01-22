@@ -1,0 +1,742 @@
+# Translations template for PROJECT.
+# Copyright (C) 2015 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
+# mcadorel-adm <ss>, 2015.
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2015-01-22 17:04+0100\n"
+"PO-Revision-Date: 2015-01-22 17:28+0200\n"
+"Last-Translator: mcadorel-adm <ss>\n"
+"Language-Team: moi\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Virtaal 0.7.1\n"
+"Generated-By: Babel 1.3\n"
+
+#: lib/argparse.py:292
+msgid "usage: "
+msgstr ""
+
+#: lib/argparse.py:800
+msgid ".__call__() not defined"
+msgstr ""
+
+#: lib/argparse.py:1084
+#, python-format
+msgid "unknown parser %r (choices: %s)"
+msgstr ""
+
+#: lib/argparse.py:1125
+#, python-format
+msgid "argument \"-\" with mode %r"
+msgstr ""
+
+#: lib/argparse.py:1132
+#, python-format
+msgid "can't open '%s': %s"
+msgstr ""
+
+#: lib/argparse.py:1336
+#, python-format
+msgid "cannot merge actions - two groups are named %r"
+msgstr ""
+
+#: lib/argparse.py:1374
+msgid "'required' is an invalid argument for positionals"
+msgstr ""
+
+#: lib/argparse.py:1394
+#, python-format
+msgid "invalid option string %r: must start with a character %r"
+msgstr ""
+
+#: lib/argparse.py:1415
+#, python-format
+msgid "dest= is required for options like %r"
+msgstr ""
+
+#: lib/argparse.py:1432
+#, python-format
+msgid "invalid conflict_resolution value: %r"
+msgstr ""
+
+#: lib/argparse.py:1450
+#, python-format
+msgid "conflicting option string(s): %s"
+msgstr ""
+
+#: lib/argparse.py:1514
+msgid "mutually exclusive arguments must be optional"
+msgstr ""
+
+#: lib/argparse.py:1584
+msgid "positional arguments"
+msgstr ""
+
+#: lib/argparse.py:1585
+msgid "optional arguments"
+msgstr ""
+
+#: lib/argparse.py:1600 lib/optparse.py:1250
+msgid "show this help message and exit"
+msgstr ""
+
+#: lib/argparse.py:1606 lib/optparse.py:1255
+msgid "show program's version number and exit"
+msgstr ""
+
+#: lib/argparse.py:1638
+msgid "cannot have multiple subparser arguments"
+msgstr ""
+
+#: lib/argparse.py:1690
+#, python-format
+msgid "unrecognized arguments: %s"
+msgstr ""
+
+#: lib/argparse.py:1787
+#, python-format
+msgid "not allowed with argument %s"
+msgstr ""
+
+#: lib/argparse.py:1833 lib/argparse.py:1847
+#, python-format
+msgid "ignored explicit argument %r"
+msgstr ""
+
+#: lib/argparse.py:1937
+msgid "too few arguments"
+msgstr ""
+
+#: lib/argparse.py:1944
+#, python-format
+msgid "argument %s is required"
+msgstr ""
+
+#: lib/argparse.py:1958
+#, python-format
+msgid "one of the arguments %s is required"
+msgstr ""
+
+#: lib/argparse.py:2004
+msgid "expected one argument"
+msgstr ""
+
+#: lib/argparse.py:2005
+msgid "expected at most one argument"
+msgstr ""
+
+#: lib/argparse.py:2006
+msgid "expected at least one argument"
+msgstr ""
+
+#: lib/argparse.py:2008
+#, python-format
+msgid "expected %s argument(s)"
+msgstr ""
+
+#: lib/argparse.py:2065
+#, python-format
+msgid "ambiguous option: %s could match %s"
+msgstr ""
+
+#: lib/argparse.py:2127
+#, python-format
+msgid "unexpected option string: %s"
+msgstr ""
+
+#: lib/argparse.py:2228
+#, python-format
+msgid "%r is not callable"
+msgstr ""
+
+#: lib/argparse.py:2244
+#, python-format
+msgid "invalid %s value: %r"
+msgstr ""
+
+#: lib/argparse.py:2254
+#, python-format
+msgid "invalid choice: %r (choose from %s)"
+msgstr ""
+
+#: lib/argparse.py:2347
+#, python-format
+msgid "%s: error: %s\n"
+msgstr ""
+
+#: lib/optparse.py:140
+#, python-format
+msgid "no such option: %s"
+msgstr ""
+
+#: lib/optparse.py:151
+#, python-format
+msgid "ambiguous option: %s (%s?)"
+msgstr ""
+
+#: lib/optparse.py:374
+#, python-format
+msgid "Usage: %s\n"
+msgstr ""
+
+#: lib/optparse.py:393
+msgid "Usage"
+msgstr ""
+
+#: lib/optparse.py:418
+msgid "integer"
+msgstr ""
+
+#: lib/optparse.py:419
+msgid "long integer"
+msgstr ""
+
+#: lib/optparse.py:420
+msgid "floating-point"
+msgstr ""
+
+#: lib/optparse.py:421
+msgid "complex"
+msgstr ""
+
+#: lib/optparse.py:429
+#, python-format
+msgid "option %s: invalid %s value: %r"
+msgstr ""
+
+#: lib/optparse.py:437
+#, python-format
+msgid "option %s: invalid choice: %r (choose from %s)"
+msgstr ""
+
+#: lib/optparse.py:1278
+msgid "%prog [options]"
+msgstr ""
+
+#: lib/optparse.py:1498 lib/optparse.py:1537
+#, python-format
+msgid "%s option requires an argument"
+msgstr ""
+
+#: lib/optparse.py:1500 lib/optparse.py:1539
+#, python-format
+msgid "%s option requires %d arguments"
+msgstr ""
+
+#: lib/optparse.py:1509
+#, python-format
+msgid "%s option does not take a value"
+msgstr ""
+
+#: lib/optparse.py:1626
+msgid "Options"
+msgstr ""
+
+#: lib/site-packages/passlib/ext/django/utils.py:194
+msgid "algorithm"
+msgstr ""
+
+#: waptservice/waptservice.py:124
+msgid "Invalid log level: {}"
+msgstr ""
+
+#: waptservice/waptservice.py:254
+msgid "FATAL. Couldn't open config file : {}"
+msgstr "Irrécupérable. Impossible d'ouvrir le fichier : {}"
+
+#: waptservice/waptservice.py:319
+msgid ""
+"FATAL, configuration file {} has no section [global]. Please check "
+"Waptserver documentation"
+msgstr ""
+"Irrécupérable. Le fichier de configuration {} n'a pas de section [global]. "
+"Veuillez vous référer à la documentation de WAPTserver."
+
+#: waptservice/waptservice.py:751
+msgid "Update status"
+msgstr "Statut des mises à jour"
+
+#: waptservice/waptservice.py:789
+msgid "Reload configuration"
+msgstr "Recharger la configuration"
+
+#: waptservice/waptservice.py:828
+msgid "Download upgrades"
+msgstr "Télécharger les mises à jour"
+
+#: waptservice/waptservice.py:858
+msgid "Installed software update"
+msgstr "Mises à jour des logiciels installés"
+
+#: waptservice/waptservice.py:888
+msgid "LongTask"
+msgstr ""
+
+#: waptservice/waptservice.py:903
+msgid "Cleanup"
+msgstr ""
+
+#: waptservice/waptservice.py:919
+msgid "Trace of the installation of {}"
+msgstr "Traces de l'installation de {}"
+
+#: waptservice/waptservice.py:949
+msgid "Saving host to the WAPT server"
+msgstr "Enregistrement de la machine sur le serveur WAPT."
+
+#: waptservice/waptservice.py:962
+msgid "Inventory of the host"
+msgstr "Inventaire de la machine"
+
+#: waptservice/waptservice.py:1234
+msgid ""
+"{classname} {id} created {create_date} started:{start_date} "
+"finished:{finish_date} "
+msgstr ""
+"{classname} {id} créé le {create_date} commencé le : {start_date} terminé le "
+":{finish_date} "
+
+#: waptservice/waptservice.py:1290
+msgid "Reconfiguring network access"
+msgstr "Reconfiguration de l'accès au réseau"
+
+#: waptservice/waptservice.py:1337
+#, python-format
+msgid "WaptService restarted using batch file %s"
+msgstr "WAPTservice relancé avec le fichier batch %s"
+
+#: waptservice/waptservice.py:1341
+msgid "Restarting local WAPT service"
+msgstr "Redémarrage du service WAPT local"
+
+#: waptservice/waptservice.py:1369
+msgid "{} new package(s)"
+msgstr "{} nouveau(x) paquet(s)"
+
+#: waptservice/waptservice.py:1371
+msgid "{} removed package(s)"
+msgstr "{} paquet(s) retiré(s)"
+
+#: waptservice/waptservice.py:1372
+msgid "{} package(s) in the repository"
+msgstr "{} paquet(s) dans le dépôt"
+
+#: waptservice/waptservice.py:1379
+msgid "Packages to be updated : {}"
+msgstr "Paquets à mettre à jour : {}"
+
+#: waptservice/waptservice.py:1381
+msgid "Packages with errors : {}"
+msgstr "Paquets avec des erreurs : {}"
+
+#: waptservice/waptservice.py:1383 waptservice/waptservice.py:1438
+msgid "System up-to-date"
+msgstr "Le système est à jour"
+
+#: waptservice/waptservice.py:1387
+msgid "Updating available packages"
+msgstr "Mise à jour de la liste des paquets disponibles"
+
+#: waptservice/waptservice.py:1430 waptservice/waptservice.py:1623
+msgid "Installed : {}"
+msgstr "Installé(s) : {}"
+
+#: waptservice/waptservice.py:1432 waptservice/waptservice.py:1625
+msgid "Updated : {}"
+msgstr "Mis à jour : {}"
+
+#: waptservice/waptservice.py:1434 waptservice/waptservice.py:1627
+#: waptservice/waptservice.py:1663
+msgid "Errors : {}"
+msgstr "Erreurs : {}"
+
+#: waptservice/waptservice.py:1436 waptservice/waptservice.py:1629
+msgid "Unavailable : {}"
+msgstr "Indisponible(s) : {}"
+
+#: waptservice/waptservice.py:1443
+msgid "Update packages installed on host"
+msgstr "Mettre à jour les paquets installés sur la machine"
+
+#: waptservice/waptservice.py:1460
+msgid "WAPT Server has been notified"
+msgstr "Le serveur WAPT a été informé"
+
+#: waptservice/waptservice.py:1463
+msgid "Error while sending to the server : {}"
+msgstr "Erreur lors de l'envoi au serveur : {}"
+
+#: waptservice/waptservice.py:1466
+msgid "WAPT Server is not available"
+msgstr "Le serveur WAPT n'est pas disponible"
+
+#: waptservice/waptservice.py:1469
+msgid "Update server with this host's status"
+msgstr "Informer le serveur du statut de cette machine"
+
+#: waptservice/waptservice.py:1486
+msgid "Inventory has been sent to the WAPT server"
+msgstr "L'inventaire a été envoyé au serveur WAPT"
+
+#: waptservice/waptservice.py:1489
+msgid "Error while sending inventory to the server : {}"
+msgstr "Erreur lors de l'envoi de l'inventaire au serveur : {}"
+
+#: waptservice/waptservice.py:1492
+msgid "WAPT Server is not avalable"
+msgstr "Le serveur WAPT n'est pas disponible"
+
+#: waptservice/waptservice.py:1515
+msgid "Packages erased : {}"
+msgstr "Paquets effacés : {}"
+
+#: waptservice/waptservice.py:1518
+msgid "Error while clearing local cache : {}"
+msgstr "Erreur lors du vidage de cache local : {}"
+
+#: waptservice/waptservice.py:1521
+msgid "Clear local package cache"
+msgstr "Vider le cache local de paquets"
+
+#: waptservice/waptservice.py:1546
+msgid "raising an error for Test WaptLongTask"
+msgstr "remontée d'une erreur pour le test de WaptLongTask"
+
+#: waptservice/waptservice.py:1552
+msgid "Test long running task of {}s"
+msgstr ""
+
+#: waptservice/waptservice.py:1578
+msgid "Error while downloading {packagename}: {error}"
+msgstr "Erreur lors du téléchargement de {packagename}: {error}"
+
+#: waptservice/waptservice.py:1581
+msgid "Done downloading {packagename}. {speed} kB/s"
+msgstr "Téléchargement de {packagename} terminé. {speed} kB/s"
+
+#: waptservice/waptservice.py:1583
+msgid "Done downloading {packagename}."
+msgstr "Téléchargement de {packagename} terminé."
+
+#: waptservice/waptservice.py:1596
+msgid "Download of {packagename} (tâche #{id})"
+msgstr "Téléchargement de {packagename} (tâche #{id})"
+
+#: waptservice/waptservice.py:1632
+msgid "Error during install of {}:{}"
+msgstr "Erreur lors de l'installation de {} : {}"
+
+#: waptservice/waptservice.py:1644
+msgid "Installation of {packagename} (task #{id})"
+msgstr "Installation de {packagename} (task #{id})"
+
+#: waptservice/waptservice.py:1661
+msgid "Removed : {}"
+msgstr "Retiré(s) : {}"
+
+#: waptservice/waptservice.py:1667
+msgid "Uninstall of {packagename} (task #{id})"
+msgstr "Désinstallation de {packagename} (task #{id})"
+
+#: waptservice/waptservice.py:1677
+#, python-format
+msgid "Packages removed from database : %s"
+msgstr "Paquets retirés de la base : %s"
+
+#: waptservice/waptservice.py:1679
+msgid "No package removed from database."
+msgstr "Aucun paquet retiré de la base."
+
+#: waptservice/waptservice.py:1682
+msgid "Forget {packagenames} (task #{id})"
+msgstr "Oubli de {packagenames} (task #{id})"
+
+#: waptservice/waptservice.py:1853
+msgid "Running: {description}"
+msgstr "En cours : {description}"
+
+#: waptservice/waptservice.py:1861
+msgid ""
+"Done: {description}\n"
+"{summary}"
+msgstr ""
+"Terminé : {description}\n"
+"{summary}"
+
+#: waptservice/waptservice.py:1867
+msgid "Canceled"
+msgstr "Annulé"
+
+#: waptservice/templates/download.html:4
+msgid "Downloads"
+msgstr "Téléchargements"
+
+#: waptservice/templates/download.html:7
+msgid "{0} downloaded"
+msgstr "{0} téléchargé"
+
+#: waptservice/templates/download.html:11
+msgid "{0} already available"
+msgstr "{0} déjà disponible"
+
+#: waptservice/templates/download.html:16
+msgid "Error: {0}"
+msgstr "Erreur : {0}"
+
+#: waptservice/templates/download.html:20
+#: waptservice/templates/package_details.html:20
+msgid "Back"
+msgstr "Retour"
+
+#: waptservice/templates/index.html:4
+msgid "WAPT Status"
+msgstr "Statut WAPT"
+
+#: waptservice/templates/index.html:6
+msgid "wapt-get.exe version: {0}"
+msgstr "Version de wapt-get.exe: {0}"
+
+#: waptservice/templates/index.html:7
+msgid "wapt-get.py version: {0}"
+msgstr "Version de wapt-get.py: {0}"
+
+#: waptservice/templates/index.html:8
+msgid "Host UUID: {0}"
+msgstr "UUID de la machine : {0}"
+
+#: waptservice/templates/index.html:9
+msgid "Main WAPT Repository: <a href={0}>{0}</a>"
+msgstr "Dépôt WAPT principal : <a href={0}>{0}</a>"
+
+#: waptservice/templates/index.html:10
+msgid "WAPT server: {0}"
+msgstr "Serveur WAPT : {0}"
+
+#: waptservice/templates/index.html:11
+msgid "Proxies: {0}"
+msgstr "Proxies : {0}"
+
+#: waptservice/templates/index.html:12
+msgid "Configuration file: {0}"
+msgstr "Fichier de configuration : {0}"
+
+#: waptservice/templates/index.html:13
+msgid "Current status: {0}"
+msgstr "Statut actuel : {0}"
+
+#: waptservice/templates/index.html:14
+msgid "Last update status:"
+msgstr "Statut de la dernière mise à jour :"
+
+#: waptservice/templates/index.html:16
+msgid "Date: {0}"
+msgstr "Date : {0}"
+
+#: waptservice/templates/index.html:17
+msgid "Upgradeable packages: {0}"
+msgstr "Paquets avec mise à jour disponible : {0}"
+
+#: waptservice/templates/index.html:18
+msgid "Errors: {0}"
+msgstr "Erreurs: {0}"
+
+#: waptservice/templates/index.html:23
+msgid "Computer information"
+msgstr "Informations de l'ordinateur"
+
+#: waptservice/templates/index.html:25
+msgid "Machine: {0}"
+msgstr "Machine : {0}"
+
+#: waptservice/templates/index.html:26
+msgid "Current users: {0}"
+msgstr "Utilisateurs actuels : {0}"
+
+#: waptservice/templates/index.html:27
+msgid "Workgroup: {0}"
+msgstr "Groupe de travail : {0}"
+
+#: waptservice/templates/index.html:28
+msgid "DNS Domain: {0}"
+msgstr "Domaine DNS : {0}"
+
+#: waptservice/templates/index.html:29
+msgid "IP Addresses: {0}"
+msgstr "Adresses IP : {0}"
+
+#: waptservice/templates/index.html:30
+msgid "System manufacturer : {0}"
+msgstr "Constructeur du système : {0}"
+
+#: waptservice/templates/index.html:31
+msgid "System product name : {0}"
+msgstr "Nom de produit du système : {0}"
+
+#: waptservice/templates/layout.html:19
+msgid "WAPT Service status"
+msgstr "Statut du service WAPT"
+
+#: waptservice/templates/layout.html:37
+msgid "WAPT Service"
+msgstr "Service WAPT"
+
+#: waptservice/templates/layout.html:38
+msgid "design by TIS"
+msgstr ""
+
+#: waptservice/templates/layout.html:44
+msgid "WAPT"
+msgstr ""
+
+#: waptservice/templates/layout.html:45 waptservice/templates/status.html:6
+msgid "Installed packages"
+msgstr "Paquets installés"
+
+#: waptservice/templates/layout.html:46
+msgid "List of packages"
+msgstr "Liste des paquets"
+
+#: waptservice/templates/layout.html:47
+msgid "Tasks"
+msgstr "Tâches"
+
+#: waptservice/templates/layout.html:75
+msgid ""
+"Copyright (c) 2012 Tranquil IT Systems. All rights reserved. Design by <a"
+" href=\"http://www.tranquil-it-systems.fr/\">TIS</a>."
+msgstr ""
+"Copyright (c) 2012 Tranquil IT Systems. Tous droits réservés. Design by <a "
+"href=\"http://www.tranquil-it-systems.fr/\">TIS</a>."
+
+#: waptservice/templates/list.html:27
+msgid "Available packages"
+msgstr "Paquets disponibles"
+
+#: waptservice/templates/list.html:28
+msgid "Update available packages"
+msgstr "Mettre à jour la liste des paquets disponibles"
+
+#: waptservice/templates/list.html:29
+msgid "Clear package cache"
+msgstr "Vider le cache de paquets"
+
+#: waptservice/templates/list.html:30
+msgid "Upgrade system"
+msgstr "Upgrader le système"
+
+#: waptservice/templates/list.html:31
+#: waptservice/templates/package_details.html:5
+msgid "package"
+msgstr "paquet"
+
+#: waptservice/templates/list.html:31
+msgid "install_version"
+msgstr ""
+
+#: waptservice/templates/list.html:31
+msgid "install_status"
+msgstr ""
+
+#: waptservice/templates/list.html:31
+msgid "install_date"
+msgstr ""
+
+#: waptservice/templates/list.html:37 waptservice/templates/status.html:13
+msgid "Action"
+msgstr "Action"
+
+#: waptservice/templates/list.html:70 waptservice/templates/status.html:51
+msgid "Remove"
+msgstr "Supprimer"
+
+#: waptservice/templates/list.html:72
+msgid "Downgrade"
+msgstr "Downgrade"
+
+#: waptservice/templates/list.html:74
+msgid "Upgrade"
+msgstr "Upgrade"
+
+#: waptservice/templates/list.html:76
+#: waptservice/templates/package_details.html:17
+msgid "Install"
+msgstr "Installer"
+
+#: waptservice/templates/package_details.html:5
+msgid "version"
+msgstr ""
+
+#: waptservice/templates/package_details.html:5
+msgid "description"
+msgstr ""
+
+#: waptservice/templates/package_details.html:5
+msgid "maintainer"
+msgstr ""
+
+#: waptservice/templates/package_details.html:16
+msgid "Download"
+msgstr "Téléchargement"
+
+#: waptservice/templates/package_details.html:18
+msgid "Uninstall"
+msgstr "Désinstaller"
+
+#: waptservice/templates/status.html:8
+msgid "Status"
+msgstr "Statut"
+
+#: waptservice/templates/status.html:8
+msgid "Package"
+msgstr "Paquet"
+
+#: waptservice/templates/status.html:8
+msgid "Installed by"
+msgstr "Installé par"
+
+#: waptservice/templates/status.html:8
+msgid "Installed on"
+msgstr "Installé sur"
+
+#: waptservice/templates/status.html:8
+msgid "Version repo"
+msgstr "Version du dépôt"
+
+#: waptservice/templates/status.html:8
+msgid "Traces"
+msgstr "Traces"
+
+#: waptservice/templates/task.html:3
+msgid "Task n.{0} : {1}"
+msgstr "Tâche n°{0} : {1}"
+
+#: waptservice/templates/tasks.html:4
+msgid "Tasks manager"
+msgstr "Gestionnaire de tâches"
+
+#: waptservice/templates/tasks.html:6
+msgid "Running: {0}"
+msgstr "En cours : {0}"
+
+#: waptservice/templates/tasks.html:14
+msgid "pending"
+msgstr "en attente"
+
+#: waptservice/templates/tasks.html:14
+msgid "done"
+msgstr "terminé"
+
+#: waptservice/templates/tasks.html:14
+msgid "errors"
+msgstr "erreurs"
+
+#: waptservice/templates/tasks.html:19
+msgid "Cancel"
+msgstr "Annuler"
