@@ -1,21 +1,21 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<h1>Téléchargement</h1>
+<h1>{{ _("Téléchargement") }}</h1>
 
 {% for package in downloads['downloaded'] %}
-    <p>{{package}} téléchargé</p>
+    <p>{{ _("{0} téléchargé").format(package) }}</p>
 {% endfor %}
 
 {% for package in downloads['skipped'] %}
-    <p>{{package}} déjà disponible</p>
+    <p>{{ _("{0} déjà disponible").format(package) }}</p>
 {% endfor %}
 
 {% for error in errors %}
 <ul>
-	<li>Erreur: {{error}}</li>
+	<li>{{ _("Erreur: {0}").format(error) }}</li>
 </ul>
 {% endfor %}
 
-<input type="button" value="Retour" onclick="location.href='list'">
+<input type="button" value={{ _("Retour") }} onclick="location.href='list'">
 {% endblock %}

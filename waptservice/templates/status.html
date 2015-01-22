@@ -5,12 +5,12 @@
 
 <h1>Installed packages</h1>'
 <table border=1 cellspacing=0 cellpadding=4 class=sample>
-{% set cols = [('install_status','Status'),('package','Package'),('install_par','Installed by'),('install_date','Installed on'),('repo_version','Version repo'),('install_output','Traces')] %}
+{% set cols = [('install_status',_('Status')),('package',_('Package')),('install_par',_('Installed by')),('install_date',_('Installed on')),('repo_version',_('Version repo')),('install_output',_('Traces'))] %}
 	<tr>
 		{% for c in cols %}
 			<th>{{c[1]}}</th>
 		{% endfor %}
-		<th>Action</th>
+		<th>{{ _("Action") }}</th>
 	</tr>
 	{% for p in packages %}
         {%set package_version= p.asrequirement() %}
@@ -48,7 +48,7 @@
 		{%endif%}
 		</td>
 		{% endfor %}
-		<td><a href="remove?package={{p.package}}">Remove</a></td>
+		<td><a href="remove?package={{p.package}}">{{ _("Remove") }}</a></td>
 	</tr>
 {% endfor %}
 </table>

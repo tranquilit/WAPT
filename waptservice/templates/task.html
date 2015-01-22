@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1>Tâche n°{{task.id}}: {{task.description}}</h1>
+<h1>{{ _("Tâche n°{0} : {1}").format(task.id, task.description) }}</h1>
 <ul>
 {% for attrib in task %}
 <li><b>{{attrib}}:</b> {{task[attrib]|beautify}}

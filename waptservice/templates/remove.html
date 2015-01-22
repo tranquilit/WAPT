@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>Désinstallation de {{data.packagename}} lancée <a href="task?id={{data.order}}"> tâche {{data.order}}</a></h2>
+<h2>{{ _('Désinstallation de {0} lancée <a href="task?id={1}"> tâche {1}</a>').format(data.packagename, data.order)</h2>
 {{data | beautify}}
 <input type="button" value="Retour" onclick="location.href='tasks'">
 {% endblock %}
