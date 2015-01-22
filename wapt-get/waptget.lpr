@@ -30,7 +30,7 @@ uses
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, CustApp,
   { you can add units after this }
-  Windows, PythonEngine, waptcommon, tiscommon, superobject,
+  Windows, PythonEngine, waptcommon, uwaptres, tiscommon, superobject,
   soutils, zmqapi, pl_indy;
 type
   { pwaptget }
@@ -151,12 +151,12 @@ begin
       HandleMessage;
       if zmq_socket.context.Terminated then
       begin
-        Writeln( 'W: interrupt received, killing server…');
+        Writeln(rsWinterruptReceived);
         break;
       end;
     end;
   finally
-    writeln('Stop listening to events');
+    writeln(rsStopListening);
   end;
 end;
 
@@ -232,8 +232,8 @@ begin
   // parse parameters
   if HasOption('?') or HasOption('h','--help') then
   begin
-    writeln(' -r --repo : URL of dependencies libs');
-    writeln(' waptupgrade : upgrade wapt-get.exe and database');
+    writeln(rsOptRepo);
+    writeln(rsWaptUpgrade);
   end;
 
   if HasOption('r','repo') then
@@ -256,13 +256,13 @@ begin
   end;
 
   if HasOption('v','version') then
-    writeln('Win32 Exe wrapper: '+ApplicationName+' '+GetApplicationVersion);
+    writeln(format(rsWin32exeWrapper, [ApplicationName, GetApplicationVersion]));
 
   if (action = 'waptupgrade') then
   begin
     if RepoURL='' then
       RepoURL:=GetMainWaptRepo;
-    Writeln('WAPT-GET Upgrade using repository at '+RepoURL);
+    Writeln(format(rsWaptGetUpgrade, [RepoURL]));
     UpdateApplication(RepoURL+'/waptagent.exe','waptagent.exe','/VERYSILENT','wapt-get.exe','');
     Terminate;
     Exit;
@@ -270,13 +270,13 @@ begin
   else
   if (action = 'dnsdebug') then
   begin
-    WriteLn('DNS Server : '+GetDNSServer);
-    WriteLn('DNS Domain : '+GetDNSDomain);
+    WriteLn(format(rsDNSserver, [GetDNSServer]));
+    WriteLn(format(rsDNSdomain, [GetDNSDomain]));
     repourl := GetMainWaptRepo;
-    Writeln('Main repo url: '+RepoURL);
+    Writeln(format(rsMainRepoURL, [RepoURL]));
 
-    Writeln('SRV: '+DNSSRVQuery('_wapt._tcp.'+GetDNSDomain).AsJSon(True));
-    Writeln('CNAME: '+DNSCNAMEQuery('wapt.'+GetDNSDomain).AsJSon(True));
+    Writeln(format(rsSRV, [DNSSRVQuery('_wapt._tcp.'+GetDNSDomain).AsJSon(True)]));
+    Writeln(format(rsCNAME, [DNSCNAMEQuery('wapt.'+GetDNSDomain).AsJSon(True)]));
     Terminate;
     Exit;
   end
@@ -296,7 +296,7 @@ begin
         Logger('Call longtask URL...',DEBUG);
         res := WAPTLocalJsonGet('longtask.json');
         if res = Nil then
-          WriteLn('Error launching longtask: '+res.S['message'])
+          WriteLn(format(rsLongtaskError, [res.S['message']]))
         else
           tasks.AsArray.Add(res);
         Logger('Task '+res.S['id']+' added to queue',DEBUG);
@@ -306,15 +306,15 @@ begin
       begin
         res := WAPTLocalJsonGet('tasks.json');
         if res = Nil then
-          WriteLn('Error getting task list: '+res.S['message'])
+          WriteLn(format(rsTaskListError, [res.S['message']]))
         else
         begin
           if res['running'].DataType<>stNull then
-            writeln(format('Running task %d: %s, status:%s',[ res['running'].I['id'],res['running'].S['description'],res['running'].S['runstatus']]))
+            writeln(format(rsRunningTask,[ res['running'].I['id'],res['running'].S['description'],res['running'].S['runstatus']]))
           else
-            writeln('No running tasks');
+            writeln(rsNoRunningTask);
           if res['pending'].AsArray.length>0 then
-            writeln('Pending : ');
+            writeln(rsPending);
             for task in res['pending'] do
               writeln('  '+task.S['id']+' '+task.S['description']);
         end;
@@ -324,27 +324,27 @@ begin
       begin
         res := WAPTLocalJsonGet('cancel_running_task.json');
         if res = Nil then
-          WriteLn('Error cancelling: '+res.S['message'])
+          WriteLn(format(rsErrorCanceling, [res.S['message']]))
         else
           if res.DataType<>stNull then
-            writeln('Cancelled '+res.S['description'])
+            writeln(format(rsCanceledTask, [res.S['description']]))
           else
-            writeln('No running task');
+            writeln(rsNoRunningTask);
       end
       else
       if (action='cancel-all') or (action='cancelall') then
       begin
         res := WAPTLocalJsonGet('cancel_all_tasks.json');
         if res = Nil then
-          WriteLn('Error cancelling: '+res.S['message'])
+          WriteLn(format(rsErrorCanceling, [res.S['message']]))
         else
           if res.DataType<>stNull then
           begin
             for task in res do
-              writeln('Cancelled '+task.S['description'])
+              writeln(format(rsCanceledTask, [task.S['description']]))
           end
           else
-            writeln('No running task');
+            writeln(rsNoRunningTask);
       end
       else
       if action='update' then
@@ -352,7 +352,7 @@ begin
         Logger('Call update URL...',DEBUG);
         res := WAPTLocalJsonGet('update.json?notify_user=0');
         if res = Nil then
-          WriteLn('Error launching update: '+res.S['message'])
+          WriteLn(format(rsErrorLaunchingUpdate, [res.S['message']]))
         else
           tasks.AsArray.Add(res);
         Logger('Task '+res.S['id']+' added to queue',DEBUG);
@@ -366,7 +366,7 @@ begin
         else
           res := WAPTLocalJsonGet(Action+'.json?package='+packages+'&notify_user=0');
         if res = Nil then
-          WriteLn('Error : '+res.S['message'])
+          WriteLn(format(rsErrorWithMessage, [res.S['message']]))
         else
           tasks.AsArray.Add(res);
         Logger('Task '+res.S['id']+' added to queue',DEBUG);
@@ -376,7 +376,7 @@ begin
         Logger('Call upgrade URL...',DEBUG);
         res := WAPTLocalJsonGet('upgrade.json?notify_user=0');
         if res.S['result']<>'OK' then
-          WriteLn('Error launching upgrade: '+res.S['message'])
+          WriteLn(format(rsErrorLaunchingUpgrade, [res.S['message']]))
         else
           for task in res['content'] do
             tasks.AsArray.Add(task);
@@ -394,7 +394,7 @@ begin
           write('.');
         end;
       except
-        writeln('cancelled');
+        writeln(rsCanceled);
         for task in tasks do
             WAPTLocalJsonGet('cancel_task.json?id='+task.S['id']);
         break;
@@ -466,8 +466,8 @@ end;
 procedure pwaptget.WriteHelp;
 begin
   { add your help code here }
-  writeln('Usage: ',ExeName,' -h');
-  writeln('  install on c:\wapt : --setup -s');
+  writeln(format(rsUsage, [ExeName]));
+  writeln(rsInstallOn);
 end;
 
 procedure pwaptget.pollerEvent(message: TStringList);
@@ -522,7 +522,7 @@ begin
         if (status = 'START') then
           writeln(msg.S['description']);
         if (status = 'PROGRESS') then
-          write(format('%s : %.0f%% completed',[msg.S['runstatus'], msg.D['progress']])+#13);
+          write(format(rsCompletionProgress,[msg.S['runstatus'], msg.D['progress']])+#13);
         //catch finish of task
         if (status = 'FINISH') or (status = 'ERROR') or (status = 'CANCEL') then
         begin
