@@ -121,7 +121,7 @@ def setloglevel(logger,loglevel):
     if loglevel in ('debug','warning','info','error','critical'):
         numeric_level = getattr(logging, loglevel.upper(), None)
         if not isinstance(numeric_level, int):
-            raise ValueError('Invalid log level: %s' % loglevel)
+            raise ValueError(_('Invalid log level: {}').format(loglevel))
         logger.setLevel(numeric_level)
 
 # force loglevel
@@ -251,7 +251,7 @@ class WaptServiceConfig(object):
             config.read(self.config_filename)
             self.config_filedate = os.stat(self.config_filename).st_mtime
         else:
-            raise Exception("FATAL. Couldn't open config file : " + self.config_filename)
+            raise Exception(_("FATAL. Couldn't open config file : {}").format(self.config_filename))
         # lecture configuration
         if config.has_section('global'):
             if config.has_option('global', 'waptservice_user'):
@@ -316,7 +316,7 @@ class WaptServiceConfig(object):
                 self.waptserver = None
 
         else:
-            raise Exception ("FATAL, configuration file " + self.config_filename + " has no section [global]. Please check Waptserver documentation")
+            raise Exception (_("FATAL, configuration file {} has no section [global]. Please check Waptserver documentation").format(self.config_filename))
 
     def reload_if_updated(self):
         """Check if config file has been updated,
@@ -1543,7 +1543,7 @@ class WaptLongTask(WaptTask):
             #print "test {:.0f}%".format(self.progress)
             time.sleep(1)
         if self.raise_error:
-            raise Exception('raising an error for Test WaptLongTask')
+            raise Exception(_('raising an error for Test WaptLongTask'))
 
     def same_action(self,other):
         return False
@@ -1629,7 +1629,7 @@ class WaptPackageInstall(WaptTask):
             s.append(_(u'Non disponibles : {}').format(unavailable))
         self.summary = u"\n".join(s)
         if self.result['errors']:
-            raise Exception('Error during install of {}:{}'.format(self.packagename,self.result))
+            raise Exception(_('Error during install of {}:{}').format(self.packagename,self.result))
 
     def as_dict(self):
         d = WaptTask.as_dict(self)
@@ -2110,7 +2110,7 @@ if __name__ == "__main__":
 
     debug=True
     if debug:
-        app.run(host='0.0.0.0',port=30888,debug=False)
+        app.run(host='0.0.0.0',port=30888,debug=True)
     else:
         #logger.setLevel(logging.DEBUG)
 
