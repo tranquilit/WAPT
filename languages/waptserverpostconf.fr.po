@@ -1,0 +1,775 @@
+msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
+msgstr ""
+"PO-Revision-Date: 2015-01-20 10:54+0200\n"
+"Last-Translator: mcadorel-adm <ss>\n"
+"Language-Team: moi\n"
+"Language: fr\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Virtaal 0.7.1\n"
+
+msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
+msgstr ""
+
+#: tvisloading.amessage.caption
+msgid "Loading..."
+msgstr "Chargement en cours..."
+
+#: tvisloading.bitbtn1.caption
+msgid "Abort"
+msgstr "Interrompre"
+
+#: tvisloading.caption
+msgid "Loading"
+msgstr "Chargement en cours"
+
+#: tviswaptserverpostconf.actbuildwaptsetup.caption
+msgid "Create custom installer"
+msgstr "Créer un installeur personnalisé"
+
+#: tviswaptserverpostconf.actcancel.caption
+msgctxt "tviswaptserverpostconf.actcancel.caption"
+msgid "Cancel"
+msgstr "Annuler"
+
+#: tviswaptserverpostconf.actcheckdns.caption
+msgid "Check DNS name"
+msgstr "Tester le nom DNS"
+
+#: tviswaptserverpostconf.actcreatekey.caption
+msgid "Generate keypair"
+msgstr "Créer la paire de clés"
+
+#: tviswaptserverpostconf.actmanual.caption
+msgid "Input URL manually"
+msgstr "Spécifier manuellement les URL"
+
+#: tviswaptserverpostconf.actnext.caption
+msgid "Next"
+msgstr "Suivant"
+
+#: tviswaptserverpostconf.actprevious.caption
+msgid "Previous"
+msgstr "Précédent"
+
+#: tviswaptserverpostconf.actwriteconfstartserve.caption
+msgid "Start WAPT server with this configuration"
+msgstr "Démarrer le serveur WAPT avec ces paramètres"
+
+#: tviswaptserverpostconf.bitbtn3.caption
+msgctxt "tviswaptserverpostconf.bitbtn3.caption"
+msgid "Cancel"
+msgstr "Annuler"
+
+#: tviswaptserverpostconf.caption
+msgid "Configuration of WAPT server for Windows"
+msgstr "Configuration du serveur WAPT pour Windows"
+
+#: tviswaptserverpostconf.cblaunchwaptconsoleonexit.caption
+msgid "Run WAPT console after setup"
+msgstr "Lancer la console WAPT après l'installation"
+
+#: tviswaptserverpostconf.cbopenfirewall.caption
+msgid "Open firewall ports 80 and 443 to allow access for packages and inventory"
+msgstr "Ouvrir les ports firewall 80 et 443 pour permettre l'accès aux paquets et à l'inventaire"
+
+#: tviswaptserverpostconf.edcommonname.hint
+msgid "E.g. : srvwapt.tranquilit.local"
+msgstr "Exemple : srvwapt.tranquilit.local"
+
+#: tviswaptserverpostconf.edcountry.text
+msgid "FR"
+msgstr ""
+
+#: tviswaptserverpostconf.eddefaultprefix.editlabel.caption
+msgid "Default prefix to use on new packages"
+msgstr "Préfixe par défaut à utiliser pour les nouveaux paquets"
+
+#: tviswaptserverpostconf.eddefaultprefix.text
+msgid "test"
+msgstr ""
+
+#: tviswaptserverpostconf.edemail.hint
+msgid "E.g. : technique@tranquil-it-systems.fr"
+msgstr "Exemple : technique@tranquil-it-systems.fr"
+
+#: tviswaptserverpostconf.edkeyname.hint
+msgid "E.g. : tranquilit"
+msgstr "Exemple : tranquilit"
+
+#: tviswaptserverpostconf.edlocality.hint
+msgid "E.g. : Nantes"
+msgstr "Exemple : Nantes"
+
+#: tviswaptserverpostconf.edorganization.hint
+msgid "E.g. : Tranquil It Systems"
+msgstr "Exemple : Tranquil IT Systems"
+
+#: tviswaptserverpostconf.edorgname.hint
+msgid "E.g. : Tranquil IT Systems"
+msgstr "Exemple : Tranquil IT Systems"
+
+#: tviswaptserverpostconf.edpwd1.hint
+msgid "This is the password used to connect to the WAPT server via the WAPT console."
+msgstr "C'est le mot de passe qui sera utilisé pour se connecter au serveur WAPT par la console WAPT."
+
+#: tviswaptserverpostconf.edrepourl.hint
+msgid "E.g. : http://wapt.tranquilit.local/wapt"
+msgstr "Par exemple : http://wapt.tranquilit.local/wapt"
+
+#: tviswaptserverpostconf.edsourcesroot.editlabel.caption
+msgid "Base directory for package development"
+msgstr "Répertoire de base pour le développement de paquets"
+
+#: tviswaptserverpostconf.edsourcesroot.text
+msgid "c:\\waptdev"
+msgstr ""
+
+#: tviswaptserverpostconf.edtemplatesrepourl.editlabel.caption
+msgid "URL to the package model repository"
+msgstr "URL du dépôt de modèles principal"
+
+#: tviswaptserverpostconf.edtemplatesrepourl.hint
+msgid "URL to the the public repository whence base packages should be duplicated."
+msgstr "URL du dépôt public pour la duplication des paquets de base."
+
+#: tviswaptserverpostconf.edtemplatesrepourl.text
+msgid "http://wapt.tranquil.it/wapt"
+msgstr ""
+
+#: tviswaptserverpostconf.edunit.hint
+msgid "E.g. : IT"
+msgstr "Exemple : numérique"
+
+#: tviswaptserverpostconf.edwaptrepourl.editlabel.caption
+msgid "URL of the WAPT package repository"
+msgstr "URL du dépôt de paquets WAPT"
+
+#: tviswaptserverpostconf.edwaptserverip.editlabel.caption
+msgid "IP of the WAPT server"
+msgstr "Adresse IP du serveur WAPT"
+
+#: tviswaptserverpostconf.edwaptservername.editlabel.caption
+msgid "DNS name of the WAPT server"
+msgstr "Nom DNS du serveur WAPT"
+
+#: tviswaptserverpostconf.edwaptservername.hint
+msgid "WAPT clients make requests to the server. In order to connect to the WAPT server,"
+msgstr ""
+
+#: tviswaptserverpostconf.edwaptservername.text
+msgid "srvwapt.mondomaine.local"
+msgstr ""
+
+#: tviswaptserverpostconf.edwaptserverurl.editlabel.caption
+msgid "URL of the WAPT server"
+msgstr "URL du serveur WAPT"
+
+#: tviswaptserverpostconf.edwaptserverurl1.hint
+msgid "E.g. : https://wapt"
+msgstr "Par exemple : http://wapt."
+
+#: tviswaptserverpostconf.label1.caption
+msgid "WAPT server password"
+msgstr "Mot de passe serveur WAPT"
+
+#: tviswaptserverpostconf.label10.caption
+msgid "Country (2 chars. E.g. : FR):"
+msgstr "Pays (2 caractères, par ex. : FR)"
+
+#: tviswaptserverpostconf.label10.hint
+msgid "Main site country code"
+msgstr "Code pays du site principal"
+
+#: tviswaptserverpostconf.label12.caption
+msgid "City :"
+msgstr "Ville :"
+
+#: tviswaptserverpostconf.label13.caption
+msgctxt "tviswaptserverpostconf.label13.caption"
+msgid "Organisation:"
+msgstr "Organisation :"
+
+#: tviswaptserverpostconf.label13.hint
+msgctxt "tviswaptserverpostconf.label13.hint"
+msgid "Your company name"
+msgstr "Nom de votre entreprise :"
+
+#: tviswaptserverpostconf.label14.caption
+msgid "Service:"
+msgstr "Service :"
+
+#: tviswaptserverpostconf.label14.hint
+msgid "E.g. : IT department."
+msgstr "E.g. : DSI"
+
+#: tviswaptserverpostconf.label15.caption
+msgid "Server FQDN :"
+msgstr "FQDN du serveur :"
+
+#: tviswaptserverpostconf.label15.hint
+msgid "WAPT server name. E.g. : srvwapt.tranquilit.local"
+msgstr "Nom du serveur WAPT. Par exemple : srvwapt.tranquilit.local"
+
+#: tviswaptserverpostconf.label16.caption
+msgid "E-mail address :"
+msgstr "Adresse électronique :"
+
+#: tviswaptserverpostconf.label16.hint
+msgid "Technical department e-mail address."
+msgstr "Adresse électronique du service technique."
+
+#: tviswaptserverpostconf.label2.caption
+msgid "Confirm password"
+msgstr "Confirmer le mot de passe"
+
+#: tviswaptserverpostconf.label3.caption
+msgid "Target directory:"
+msgstr "Répertoire de destination :"
+
+#: tviswaptserverpostconf.label3.hint
+msgid "Where to save the private key. This directory must be secure."
+msgstr "Emplacement de la clé privée. Ce répertoire doit être sécurisé."
+
+#: tviswaptserverpostconf.label4.caption
+msgid "Public key : "
+msgstr "Clé publique :"
+
+#: tviswaptserverpostconf.label4.hint
+msgid "The certificate you just created (.crt key)."
+msgstr "Le certificat que vous venez de créer (clé .crt)"
+
+#: tviswaptserverpostconf.label5.caption
+msgid "Address of the main WAPT repository :"
+msgstr ""
+
+#: tviswaptserverpostconf.label5.hint
+msgid "Address of your WAPT repository (https://wapt/wapt)"
+msgstr "Adresse de votre dépôt WAPT (https://wapt/wapt)"
+
+#: tviswaptserverpostconf.label6.caption
+msgctxt "tviswaptserverpostconf.label6.caption"
+msgid "Organisation:"
+msgstr "Organisation :"
+
+#: tviswaptserverpostconf.label6.hint
+msgctxt "tviswaptserverpostconf.label6.hint"
+msgid "Your company name"
+msgstr "Nom de votre entreprise :"
+
+#: tviswaptserverpostconf.label7.caption
+msgid "Save waptagent.exe as...  "
+msgstr "Enregistrer waptagent.exe sous..."
+
+#: tviswaptserverpostconf.label7.hint
+msgid "Where waptagent.exe will be saved."
+msgstr "Emplacement où waptagent.exe sera enregistré."
+
+#: tviswaptserverpostconf.label8.caption
+#, fuzzy
+msgid "Adressof the WAPT server :"
+msgstr "Adresse du serveur WAPT :"
+
+#: tviswaptserverpostconf.label8.hint
+msgid "Address of your WAPT server (https://wapt)."
+msgstr "Adresse de votre serveur WAPT (https://wapt)."
+
+#: tviswaptserverpostconf.label9.caption
+msgid "Key name :"
+msgstr "Nom de la clé :"
+
+#: tviswaptserverpostconf.label9.hint
+msgid "Please don't use any special characters (e.g.:tranquilit)"
+msgstr "Ne pas utiliser de caractères spéciaux (e.g.:tranquilit)"
+
+#: tviswaptserverpostconf.pgcreatewaptsetup.caption
+msgid "Create installer for client hosts"
+msgstr "Créer un installeur pour les machines clientes"
+
+#: tviswaptserverpostconf.pgdevparam.caption
+msgid "Development"
+msgstr "Développement"
+
+#: tviswaptserverpostconf.pgfinish.caption
+msgid "Fin"
+msgstr ""
+
+#: tviswaptserverpostconf.pgparameters.caption
+msgid "Parameters"
+msgstr "Paramètres"
+
+#: tviswaptserverpostconf.pgpassword.caption
+msgid "Password"
+msgstr "Mot de passe"
+
+#: tviswaptserverpostconf.pgprivatekey.caption
+msgid "Private Key generation"
+msgstr "Génération de la clé privée"
+
+#: tviswaptserverpostconf.pgstartservices.caption
+msgid "Start"
+msgstr "Démarrer"
+
+#: tviswaptserverpostconf.statictext1.caption
+msgid "Optional information"
+msgstr "Informations facultatives"
+
+#: uwaptres.rsbundleconfigeditcaption
+msgid "Edit package bundle configuration"
+msgstr ""
+
+#: uwaptres.rscanceledbyuser
+msgid "Task %s has been canceled by the user"
+msgstr ""
+
+#: uwaptres.rscanceling
+msgid "Canceling %s"
+msgstr ""
+
+#: uwaptres.rscertificatecopyfailure
+msgid "Couldn't copy certificate %s to %s."
+msgstr ""
+
+#: uwaptres.rschecking
+msgid "Checking..."
+msgstr ""
+
+#: uwaptres.rsconfirm
+msgctxt "uwaptres.rsconfirm"
+msgid "Confirm"
+msgstr ""
+
+#: uwaptres.rsconfirmcancelpostconfig
+msgid "Are you sure you want to cancel configuring WAPT server ?"
+msgstr ""
+
+#: uwaptres.rsconfirmcaption
+msgctxt "uwaptres.rsconfirmcaption"
+msgid "Confirm"
+msgstr ""
+
+#: uwaptres.rsconfirmdeletion
+msgctxt "uwaptres.rsconfirmdeletion"
+msgid "Confirm removal"
+msgstr ""
+
+#: uwaptres.rsconfirmhostforgetspackages
+msgid "Are you sure you want to forget %s packages from host %s ?"
+msgstr ""
+
+#: uwaptres.rsconfirmimport
+msgid ""
+"Are you sure you want to import\n"
+"%s\n"
+" to your repository ?\n"
+msgstr ""
+
+#: uwaptres.rsconfirmimportcaption
+msgid "Confirm import"
+msgstr ""
+
+#: uwaptres.rsconfirmrmhostsfromlist
+msgid "Are you sure you want to remove %s hosts from the list ?"
+msgstr ""
+
+#: uwaptres.rsconfirmrmmultiplepackages
+msgid "Are you sure you want to remove the selected packages from the server ?"
+msgstr ""
+
+#: uwaptres.rsconfirmrmonepackage
+msgid "Are you sure you want to remove this package from the server ?"
+msgstr ""
+
+#: uwaptres.rsconfirmrmpackagecaption
+msgctxt "uwaptres.rsconfirmrmpackagecaption"
+msgid "Confirm removal"
+msgstr ""
+
+#: uwaptres.rsconfirmrmpackagesfromhost
+msgid "Are you sure you want to remove %s package(s) from the selected host(s) %s ?"
+msgstr ""
+
+#: uwaptres.rscreationinprogress
+msgid "Creation in progress."
+msgstr ""
+
+#: uwaptres.rsdefinewaptdevpath
+msgid "Please select a directory on your package development host before editing a package bundle."
+msgstr ""
+
+#: uwaptres.rsdeletingelement
+msgid "Removing %s"
+msgstr ""
+
+#: uwaptres.rsdeletioninprogress
+msgid "Removing packages..."
+msgstr ""
+
+#: uwaptres.rsdependencies
+msgid "Selection of packages to add to the hosts as dependencies"
+msgstr ""
+
+#: uwaptres.rsdiffpwerror
+msgid "Passwords do not match."
+msgstr ""
+
+#: uwaptres.rsdisplaying
+msgid "Displaying"
+msgstr ""
+
+#: uwaptres.rsdlcanceled
+msgid "Download canceled."
+msgstr ""
+
+#: uwaptres.rsdlstoppedbyuser
+msgid "Download stopped by the user"
+msgstr ""
+
+#: uwaptres.rsdownloading
+msgid "Downloading"
+msgstr ""
+
+#: uwaptres.rsdownloadingpackage
+msgid "Package(s) %s is being downloaded."
+msgstr ""
+
+#: uwaptres.rsduplicatefailure
+msgid "Error while duplicating the package(s)."
+msgstr ""
+
+#: uwaptres.rsduplicatesuccess
+msgid "Package(s) %s successfully duplicated."
+msgstr ""
+
+#: uwaptres.rsduplicating
+msgid "Package(s) %s is being duplicated."
+msgstr ""
+
+#: uwaptres.rseditbundle
+msgid "Edit package bundle."
+msgstr ""
+
+#: uwaptres.rsedithostcaption
+msgid "Edit host"
+msgstr ""
+
+#: uwaptres.rsedpackage
+msgid "Package bundle"
+msgstr ""
+
+#: uwaptres.rsemptynewpwerror
+msgid "New password must not be empty."
+msgstr ""
+
+#: uwaptres.rsemptyoldpwerror
+msgid "Old password must not be empty."
+msgstr ""
+
+#: uwaptres.rserror
+msgid "Error"
+msgstr ""
+
+#: uwaptres.rserrorfor
+msgid "Error for %s"
+msgstr ""
+
+#: uwaptres.rserrorwhilechecking
+msgid "Error while checking..."
+msgstr ""
+
+#: uwaptres.rsfailedimport
+msgid "Error during import."
+msgstr ""
+
+#: uwaptres.rsfailedtocancel
+msgid "Could not cancel : %s."
+msgstr ""
+
+#: uwaptres.rsfatalerror
+msgid "Failed to retrieve task."
+msgstr ""
+
+#: uwaptres.rsforceduninstallpackages
+msgid "Selection of packages to force-remove from the hosts"
+msgstr ""
+
+#: uwaptres.rsforgetpackageerror
+msgid "Error while forgetting package %s: %s"
+msgstr ""
+
+#: uwaptres.rshostconfigeditcaption
+msgid "Edit host configuration"
+msgstr ""
+
+#: uwaptres.rsignoredconfictingpackages
+msgid "Warning : couldn't find package(s) %s ; conflicting package(s) have been ignored."
+msgstr ""
+
+#: uwaptres.rsignoredpackages
+msgid "Warning : couldn't find package(s) %s ; ignoring them."
+msgstr ""
+
+#: uwaptres.rsimportingfile
+msgid "Importing %s"
+msgstr ""
+
+#: uwaptres.rsincorrectoldpwerror
+msgid "Old password is incorrect."
+msgstr ""
+
+#: uwaptres.rsincorrectpassword
+msgid "Incorrect password."
+msgstr ""
+
+#: uwaptres.rsinnosetupunavailable
+msgid "Innosetup is unavailable (path : %s), please install it first."
+msgstr ""
+
+#: uwaptres.rsinputkeyname
+msgid "Please input a key name."
+msgstr ""
+
+#: uwaptres.rsinputpubkeypath
+msgid "Please input path to public key"
+msgstr ""
+
+#: uwaptres.rsinstalling
+msgid "Installing %s..."
+msgstr ""
+
+#: uwaptres.rsinvaliddns
+msgid "Invalid DNS"
+msgstr ""
+
+#: uwaptres.rsinvaliddnsfallback
+msgid "This DNS name is not valid, would you like to use the IP address instead ?"
+msgstr ""
+
+#: uwaptres.rsinvalidwaptsetupdir
+msgid "WAPTsetup directory is not valid : %s"
+msgstr ""
+
+#: uwaptres.rskeyalreadyexists
+msgid "Key %s already exists, please pick another name."
+msgstr ""
+
+#: uwaptres.rsnbmodifiedhosts
+msgid "%s hosts affected."
+msgstr ""
+
+#: uwaptres.rsnobundle
+msgid "There is no package bundle."
+msgstr ""
+
+#: uwaptres.rsnotaskcanceled
+msgid "No task canceled"
+msgstr ""
+
+#: uwaptres.rsopeningfirewall
+msgid "Opening firewall for WaptServer"
+msgstr ""
+
+#: uwaptres.rspackageconfigdone
+msgid "Done configuring packages for the current user session"
+msgstr ""
+
+#: uwaptres.rspackageconfigerror
+msgid "Error while configuring packages for the current user session"
+msgstr ""
+
+#: uwaptres.rspackagecreationerror
+msgid "Error while creating package : %s"
+msgstr ""
+
+#: uwaptres.rspackageduplicateconfirm
+msgid ""
+"Are you sure you want to duplicate the package(s)\n"
+"%s\n"
+" into your repository ?\n"
+msgstr ""
+
+#: uwaptres.rspackageduplicateconfirmcaption
+msgid "Confirm duplication of package"
+msgstr ""
+
+#: uwaptres.rspackageremoveerror
+msgid "Error while removing package %s: %s"
+msgstr ""
+
+#: uwaptres.rspackagesneededcaption
+msgid "Packages needed in package bundle"
+msgstr ""
+
+#: uwaptres.rspackagesneededonhostcaption
+msgid "Packages needed on host"
+msgstr ""
+
+#: uwaptres.rspasswordchangeerror
+msgid "Error : %s"
+msgstr ""
+
+#: uwaptres.rspasswordchangesuccess
+msgid "Password successfully updated !"
+msgstr ""
+
+#: uwaptres.rsprivatekeydoesntexist
+msgid "Private key doesn't exist : %s"
+msgstr ""
+
+#: uwaptres.rsprogresstitle
+msgid "Started uploading to WAPT server..."
+msgstr ""
+
+#: uwaptres.rspublickeygenerror
+msgid "Error during key generation : %s"
+msgstr ""
+
+#: uwaptres.rspublickeygenfailure
+msgid "The generation of the public key has failed."
+msgstr ""
+
+#: uwaptres.rspublickeygensuccess
+msgid "Key %s has been successfully created."
+msgstr ""
+
+#: uwaptres.rsreallowpackagesonhost
+msgid "Selection of package(s) to remove from conflict list"
+msgstr ""
+
+#: uwaptres.rsregisteringhostonserver
+msgid "Registering host on server"
+msgstr ""
+
+#: uwaptres.rsreplacingtiscertificate
+msgid "Deleting TIS certificate and copying new certificate"
+msgstr ""
+
+#: uwaptres.rsrestartingwaptserver
+msgid "RedÃ©marrage service waptserver"
+msgstr ""
+
+#: uwaptres.rsrestartingwaptservice
+msgid "RedÃ©marrage waptservice"
+msgstr ""
+
+#: uwaptres.rsrmbundlefromhosts
+msgid "Selection of package bundles for removing from the selected hosts"
+msgstr ""
+
+#: uwaptres.rssavemods
+msgid "Save changes ?"
+msgstr ""
+
+#: uwaptres.rssettingserverpassword
+msgid "Setting up server password"
+msgstr ""
+
+#: uwaptres.rssuccessfullyimported
+msgid "%s successfully imported."
+msgstr ""
+
+#: uwaptres.rstaskcanceled
+msgid "Task canceled."
+msgstr ""
+
+#: uwaptres.rstaskdone
+msgid ""
+"%s done\n"
+"%s\n"
+msgstr ""
+
+#: uwaptres.rstaskstarted
+msgid "%s started"
+msgstr ""
+
+#: uwaptres.rsundefwaptsrvinini
+msgid "wapt_server is not defined in your %s ini file"
+msgstr ""
+
+#: uwaptres.rsuninstallingpackage
+msgid "Uninstalling %s..."
+msgstr ""
+
+#: uwaptres.rsupdatesavailablefor
+msgid "Available updates for : "
+msgstr ""
+
+#: uwaptres.rsupdatinglocalpackages
+msgid "Updating local packages"
+msgstr ""
+
+#: uwaptres.rsupdatingpackageindex
+msgid "Updating package index"
+msgstr ""
+
+#: uwaptres.rsupdatingpackagelist
+msgid "Updating package list"
+msgstr ""
+
+#: uwaptres.rsupgradehosterror
+msgid "Failed to trigger upgrade : %s"
+msgstr ""
+
+#: uwaptres.rsupgradinghost
+msgid "Upgrade triggered on the remote host."
+msgstr ""
+
+#: uwaptres.rsuploading
+msgid "Uploading"
+msgstr ""
+
+#: uwaptres.rsuploadingpackagestowaptsrv
+msgid "Uploading %s packages to WAPT server..."
+msgstr ""
+
+#: uwaptres.rsurl
+msgid "Url : %s"
+msgstr ""
+
+#: uwaptres.rsversion
+msgid ""
+"Waptconsole version : %s\n"
+"Wapt-get version: %s\n"
+msgstr ""
+
+#: uwaptres.rswaptagentsetuperror
+msgid "Error while creating waptagent.exe: %s"
+msgstr ""
+
+#: uwaptres.rswaptagentsetupsuccess
+msgid "waptagent.exe successfully created : %s"
+msgstr ""
+
+#: uwaptres.rswaptagentuploaderror
+msgid "Error while uploading WAPT agent : %s"
+msgstr ""
+
+#: uwaptres.rswaptagentuploadsuccess
+msgid "Successfully uploaded WAPT agent !"
+msgstr ""
+
+#: uwaptres.rswaptclientupdateonhosts
+msgid "Updating WAPT client on the hosts"
+msgstr ""
+
+#: uwaptres.rswaptservicestopping
+msgid "Waptservice stopping"
+msgstr ""
+
+#: uwaptres.rswaptserviceterminated
+msgid "WAPTService terminated"
+msgstr ""
+
+#: uwaptres.rswaptsetuperror
+msgid "Error while creating agent : %s"
+msgstr ""
+
+#: uwaptres.rswaptsetupuploadsuccess
+msgid "WAPT agent successfully created and uploaded to the repository : %s"
+msgstr ""
+
+#: uwaptres.rswaptuploaderror
+msgid "Error while uploading WAPT agent to the repository : %s"
+msgstr ""
+
