@@ -13,9 +13,9 @@
     </ul>
 {%endif%}
 </ul>
-<input type="button" value={{ _("Télécharger") }} onclick="location.href='package_download?package={{"%s(=%s)" % (data.package,data.version)}}'">
-<input type="button" value={{ _("Installer") }} onclick="location.href='install?package={{"%s(=%s)" % (data.package,data.version)}}'">
-<input type="button" value={{ _("Désinstaller") }} onclick="location.href='remove?package={{"%s" % (data.package,) }}'">
+<input type="button" value={{ _("Download") }} onclick="location.href='package_download?package={{"%s(=%s)" % (data.package,data.version)}}'">
+<input type="button" value={{ _("Install") }} onclick="location.href='install?package={{"%s(=%s)" % (data.package,data.version)}}'">
+<input type="button" value={{ _("Uninstall") }} onclick="location.href='remove?package={{"%s" % (data.package,) }}'">
 
-<input type="button" value={{ _("Retour") }} onclick="location.href='list'">
+<input type="button" value={{ _("Back") }} onclick="location.href='list'">
 {% endblock %}

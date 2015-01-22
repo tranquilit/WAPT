@@ -3,7 +3,7 @@
 
 {% macro link(href,desc='') -%}{% if desc == '' %}<a href={{href}}>{{href}}</a>{%else%}<a href={{href}}>{{desc}}</a>{%endif%}{%- endmacro%}
 
-<h1>Installed packages</h1>'
+<h1>{{ _("Installed packages") }}</h1>'
 <table border=1 cellspacing=0 cellpadding=4 class=sample>
 {% set cols = [('install_status',_('Status')),('package',_('Package')),('install_par',_('Installed by')),('install_date',_('Installed on')),('repo_version',_('Version repo')),('install_output',_('Traces'))] %}
 	<tr>

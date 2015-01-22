@@ -1,19 +1,19 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<h1>{{ _("Téléchargement") }}</h1>
+<h1>{{ _("Downloads") }}</h1>
 
 {% for package in downloads['downloaded'] %}
-    <p>{{ _("{0} téléchargé").format(package) }}</p>
+    <p>{{ _("{0} downloaded").format(package) }}</p>
 {% endfor %}
 
 {% for package in downloads['skipped'] %}
-    <p>{{ _("{0} déjà disponible").format(package) }}</p>
+    <p>{{ _("{0} already available").format(package) }}</p>
 {% endfor %}
 
 {% for error in errors %}
 <ul>
-	<li>{{ _("Erreur: {0}").format(error) }}</li>
+	<li>{{ _("Error: {0}").format(error) }}</li>
 </ul>
 {% endfor %}
 
