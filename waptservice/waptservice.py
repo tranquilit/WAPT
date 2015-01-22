@@ -748,7 +748,7 @@ def get_checkupgrades():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data,title=_(u'Status des mises à jour'))
+        return render_template('default.html',data=data,title=_(u'Update status'))
 
 
 @app.route('/waptupgrade')
@@ -786,7 +786,7 @@ def reload_config():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data,title=_('Recharger configuration'))
+        return render_template('default.html',data=data,title=_('Reload configuration'))
 
 
 
@@ -855,7 +855,7 @@ def update():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data,title=_(u'Mise à jour des logiciels installés'))
+        return render_template('default.html',data=data,title=_(u'Installed software update'))
 
 
 @app.route('/update_status')

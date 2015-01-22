@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-01-22 16:51+0100\n"
+"POT-Creation-Date: 2015-01-22 17:04+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -256,11 +256,11 @@ msgid ""
 msgstr ""
 
 #: waptservice/waptservice.py:751
-msgid "Status des mises à jour"
+msgid "Update status"
 msgstr ""
 
 #: waptservice/waptservice.py:789
-msgid "Recharger configuration"
+msgid "Reload configuration"
 msgstr ""
 
 #: waptservice/waptservice.py:828
@@ -268,7 +268,7 @@ msgid "Download upgrades"
 msgstr ""
 
 #: waptservice/waptservice.py:858
-msgid "Mise à jour des logiciels installés"
+msgid "Installed software update"
 msgstr ""
 
 #: waptservice/waptservice.py:888
@@ -483,7 +483,8 @@ msgid "Error: {0}"
 msgstr ""
 
 #: waptservice/templates/download.html:20
-msgid "Retour"
+#: waptservice/templates/package_details.html:20
+msgid "Back"
 msgstr ""
 
 #: waptservice/templates/index.html:4
@@ -676,10 +677,6 @@ msgstr ""
 
 #: waptservice/templates/package_details.html:18
 msgid "Uninstall"
-msgstr ""
-
-#: waptservice/templates/package_details.html:20
-msgid "Back"
 msgstr ""
 
 #: waptservice/templates/status.html:8
