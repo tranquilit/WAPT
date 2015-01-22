@@ -916,7 +916,7 @@ def install_log():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data,title=_('Traces de l''installation de {}').format(packagename))
+        return render_template('default.html',data=data,title=_('Trace of the installation of {}').format(packagename))
 
 
 @app.route('/enable')
@@ -946,7 +946,7 @@ def register():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data,title=_('Enregistrement du poste de travail sur le serveur WAPT'))
+        return render_template('default.html',data=data,title=_('Saving host to the WAPT server'))
 
 
 @app.route('/inventory')
@@ -959,7 +959,7 @@ def inventory():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data,title=_('Inventaire du poste de travail'))
+        return render_template('default.html',data=data,title=_('Inventory of the host'))
 
 
 @app.route('/install', methods=['GET'])
@@ -1128,7 +1128,7 @@ def cancel_task():
 
 class EventsPrinter:
     '''EventsPrinter class which serves to emulates a file object and logs
-       whatever it gets sent to a briadcast object at the INFO level.'''
+       whatever it gets sent to a broadcast object at the INFO level.'''
     def __init__(self,events,logs):
         '''Grabs the specific brodcaster to use for printing.'''
         self.events = events
@@ -1215,8 +1215,8 @@ class WaptTask(object):
 
     def kill(self):
         """if task has been started, kill the task (ex: kill the external processes"""
-        self.summary = u'Cancelled'
-        self.logs.append(u'Cancelled')
+        self.summary = u'Canceled'
+        self.logs.append(u'Canceled')
 
         if self.wapt:
             self.wapt.task_is_cancelled.set()
@@ -1287,7 +1287,7 @@ class WaptNetworkReconfig(WaptTask):
         self.result = waptconfig.as_dict()
 
     def __str__(self):
-        return _(u"Reconfiguration accès réseau")
+        return _(u"Reconfiguring network access")
 
 
 class WaptClientUpgrade(WaptTask):
@@ -1306,7 +1306,7 @@ class WaptClientUpgrade(WaptTask):
         self.result = {'result':'OK','message':output}
 
     def __str__(self):
-        return u"Mise à jour du logiciel client Wapt"
+        return u"Upgrading WAPT client"
 
 
 class WaptServiceRestart(WaptTask):
@@ -1338,7 +1338,7 @@ class WaptServiceRestart(WaptTask):
         self.result = {'result':'OK','message':output}
 
     def __str__(self):
-        return _(u"Redémarrage du service local Wapt")
+        return _(u"Restarting local WAPT service")
 
 
 class WaptUpdate(WaptTask):
@@ -1366,25 +1366,25 @@ class WaptUpdate(WaptTask):
         },"""
         s = []
         if len(self.result['added'])>0:
-            s.append(_(u'{} nouveau()x paquet(s)').format(len(self.result['added'])))
+            s.append(_(u'{} new package(s)').format(len(self.result['added'])))
         if len(self.result['removed'])>0:
-            s.append(_(u'{} paquet(s) enlevé(s)').format(len(self.result['removed'])))
-        s.append(_(u'{} paquets dans les dépôts').format(self.result['count']))
+            s.append(_(u'{} removed package(s)').format(len(self.result['removed'])))
+        s.append(_(u'{} package(s) in the repository').format(self.result['count']))
         all_install =  self.result['upgrades']['install']+\
                         self.result['upgrades']['additional']+\
                         self.result['upgrades']['upgrade']
         installs = u','.join(all_install)
         errors = u','.join([p.asrequirement() for p in  self.wapt.error_packages()])
         if installs:
-            s.append(_(u'Paquets à mettre à jour : {}').format(installs))
+            s.append(_(u'Packages to be updated : {}').format(installs))
         if errors:
-            s.append(_(u'Paquets en erreur : {}').format(errors))
+            s.append(_(u'Packages with errors : {}').format(errors))
         if not installs and not errors:
-            s.append(_(u'Système à jour'))
+            s.append(_(u'System up-to-date'))
         self.summary = u'\n'.join(s)
 
     def __str__(self):
-        return _(u"Mise à jour des paquets disponibles")
+        return _(u"Updating available packages")
 
 
 class WaptUpgrade(WaptTask):
@@ -1427,20 +1427,20 @@ class WaptUpgrade(WaptTask):
         unavailable = u','.join(self.result.get('unavailable',[]))
         s = []
         if install:
-            s.append(_(u'Installés : {}').format(install))
+            s.append(_(u'Installed : {}').format(install))
         if upgrade:
-            s.append(_(u'Mis à jour : {}').format(upgrade))
+            s.append(_(u'Updated : {}').format(upgrade))
         if errors:
-            s.append(_(u'Erreurs : {}').format(errors))
+            s.append(_(u'Errors : {}').format(errors))
         if unavailable:
-            s.append(_(u'Non disponibles : {}').format(unavailable))
+            s.append(_(u'Unavailable : {}').format(unavailable))
         if not errors and not unavailable and not install and not upgrade:
-            s.append(_(u'Système à jour'))
+            s.append(_(u'System up-to-date'))
 
         self.summary = u"\n".join(s)
 
     def __str__(self):
-        return _(u'Mise à jour des paquets installés sur la machine')
+        return _(u'Update packages installed on host')
 
 
 class WaptUpdateServerStatus(WaptTask):
@@ -1457,16 +1457,16 @@ class WaptUpdateServerStatus(WaptTask):
         if self.wapt.waptserver_available():
             try:
                 self.result = self.wapt.update_server_status()
-                self.summary = _(u'Le WAPT Server a été informé')
+                self.summary = _(u'WAPT Server has been notified')
             except Exception as e:
                 self.result = {}
-                self.summary = _(u"Erreur lors de l'envoi vers le serveur : {}").format(setuphelpers.ensure_unicode(e))
+                self.summary = _(u"Error while sending to the server : {}").format(setuphelpers.ensure_unicode(e))
         else:
             self.result = {}
             self.summary = _(u'WAPT Server is not available')
 
     def __str__(self):
-        return _(u"Informer le serveur de l'état du poste de travail")
+        return _(u"Update server with this host's status")
 
 
 class WaptRegisterComputer(WaptTask):
@@ -1483,16 +1483,16 @@ class WaptRegisterComputer(WaptTask):
         if self.wapt.waptserver_available():
             try:
                 self.result = self.wapt.register_computer()
-                self.summary = _(u"L'inventaire a été envoyé au serveur WAPT")
+                self.summary = _(u"Inventory has been sent to the WAPT server")
             except Exception as e:
                 self.result = {}
-                self.summary = _(u"Erreur lors de l'envoi de l'inventaire vers le serveur : {}").format(setuphelpers.ensure_unicode(e))
+                self.summary = _(u"Error while sending inventory to the server : {}").format(setuphelpers.ensure_unicode(e))
         else:
             self.result = {}
             self.summary = _(u'WAPT Server is not avalable')
 
     def __str__(self):
-        return u"Informer le serveur de l'inventaire du poste de travail"
+        return u"Update server with this host's inventory"
 
 
 class WaptCleanup(WaptTask):
@@ -1512,13 +1512,13 @@ class WaptCleanup(WaptTask):
             return u','.join([u'%s'%p for p in l])
         try:
             self.result = self.wapt.cleanup(obsolete_only=not self.force)
-            self.summary = _(u"Paquets effacés : {}").format(cjoin(self.result))
+            self.summary = _(u"Packages erased : {}").format(cjoin(self.result))
         except Exception as e:
             self.result = {}
-            self.summary = _(u"Erreur lors du vidage du cache local : {}").format(setuphelpers.ensure_unicode(e))
+            self.summary = _(u"Error while clearing local cache : {}").format(setuphelpers.ensure_unicode(e))
 
     def __str__(self):
-        return _(u"Vider le cache local de packages")
+        return _(u"Clear local package cache")
 
 class WaptLongTask(WaptTask):
     """Test action for debug purpose"""
@@ -1575,12 +1575,12 @@ class WaptDownloadPackage(WaptTask):
         self.result = self.wapt.download_packages(self.packagename,usecache=self.usecache,printhook=self.printhook)
         end = time.time()
         if self.result['errors']:
-            self.summary = _(u"Erreur au téléchargement de {packagename}: {error}").format(packagename=self.packagename,error=self.result['errors'][0][1])
+            self.summary = _(u"Error while downloading {packagename}: {error}").format(packagename=self.packagename,error=self.result['errors'][0][1])
         else:
             if end-start> 0.01:
-                self.summary = _(u"Téléchargement de {packagename} terminé. {speed} kB/s").format(packagename=self.packagename,speed=self.size/1024/(end-start))
+                self.summary = _(u"Done downloading {packagename}. {speed} kB/s").format(packagename=self.packagename,speed=self.size/1024/(end-start))
             else:
-                self.summary = _(u"Téléchargement de {packagename} terminé.").format(packagename=self.packagename)
+                self.summary = _(u"Done downloading {packagename}.").format(packagename=self.packagename)
 
     def as_dict(self):
         d = WaptTask.as_dict(self)
@@ -1593,7 +1593,7 @@ class WaptDownloadPackage(WaptTask):
         return d
 
     def __str__(self):
-        return _(u"Téléchargement de {packagename} (tâche #{id})").format(classname=self.__class__.__name__,id=self.id,packagename=self.packagename)
+        return _(u"Download of {packagename} (tâche #{id})").format(classname=self.__class__.__name__,id=self.id,packagename=self.packagename)
 
     def same_action(self,other):
         return (self.__class__ == other.__class__) and (self.packagename == other.packagename)
@@ -1620,13 +1620,13 @@ class WaptPackageInstall(WaptTask):
         unavailable = cjoin(self.result.get('unavailable',[]))
         s = []
         if install:
-            s.append(_(u'Installés : {}').format(install))
+            s.append(_(u'Installed : {}').format(install))
         if upgrade:
-            s.append(_(u'Mis à jour : {}').format(upgrade))
+            s.append(_(u'Updated : {}').format(upgrade))
         if errors:
-            s.append(_(u'Erreurs : {}').format(errors))
+            s.append(_(u'Errors : {}').format(errors))
         if unavailable:
-            s.append(_(u'Non disponibles : {}').format(unavailable))
+            s.append(_(u'Unavailable : {}').format(unavailable))
         self.summary = u"\n".join(s)
         if self.result['errors']:
             raise Exception(_('Error during install of {}:{}').format(self.packagename,self.result))
@@ -1641,7 +1641,7 @@ class WaptPackageInstall(WaptTask):
         return d
 
     def __str__(self):
-        return _(u"Installation de {packagename} (tâche #{id})").format(classname=self.__class__.__name__,id=self.id,packagename=self.packagename)
+        return _(u"Installation of {packagename} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagename=self.packagename)
 
     def same_action(self,other):
         return (self.__class__ == other.__class__) and (self.packagename == other.packagename)
@@ -1658,13 +1658,13 @@ class WaptPackageRemove(WaptPackageInstall):
         self.result = self.wapt.remove(self.packagename,force=self.force)
         s = []
         if self.result['removed']:
-            s.append(_(u'Enlevés : {}').format(cjoin(self.result['removed'])))
+            s.append(_(u'Removed : {}').format(cjoin(self.result['removed'])))
         if self.result['errors']:
-            s.append(_(u'Erreurs : {}').format(cjoin(self.result['errors'])))
+            s.append(_(u'Errors : {}').format(cjoin(self.result['errors'])))
         self.summary = u"\n".join(s)
 
     def __str__(self):
-        return _(u"Désinstallation de {packagename} (tâche #{id})").format(classname=self.__class__.__name__,id=self.id,packagename=self.packagename)
+        return _(u"Uninstall of {packagename} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagename=self.packagename)
 
 
 class WaptPackageForget(WaptTask):
@@ -1674,12 +1674,12 @@ class WaptPackageForget(WaptTask):
     def _run(self):
         self.result = self.wapt.forget_packages(self.packagenames)
         if self.result:
-            self.summary = _(u"Paquets retirés de la base : %s") % (u"\n".join(self.result),)
+            self.summary = _(u"Packages removed from database : %s") % (u"\n".join(self.result),)
         else:
-            self.summary = _(u"Aucun paquet retiré de la base")
+            self.summary = _(u"No package removed from database.")
 
     def __str__(self):
-        return _(u"Oublier {packagenames} (tâche #{id})").format(classname=self.__class__.__name__,id=self.id,packagenames=self.packagenames)
+        return _(u"Forget {packagenames} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagenames=self.packagenames)
 
 
 def firewall_running():
@@ -1850,7 +1850,7 @@ class WaptTaskManager(threading.Thread):
                     # don't send update_run status fir udapstatus itself...
                     self.broadcast_tasks_status('START',self.running_task)
                     if self.running_task.notify_server_on_start:
-                        self.update_runstatus(_(u'En cours: {description}').format(description=self.running_task) )
+                        self.update_runstatus(_(u'Running: {description}').format(description=self.running_task) )
                         self.update_server_status()
                     try:
                         self.running_task.run()
@@ -1858,13 +1858,13 @@ class WaptTaskManager(threading.Thread):
                             self.tasks_done.append(self.running_task)
                             self.broadcast_tasks_status('FINISH',self.running_task)
                             if self.running_task.notify_server_on_finish:
-                                self.update_runstatus(_(u'Terminé: {description}\n{summary}').format(description=self.running_task,summary=self.running_task.summary) )
+                                self.update_runstatus(_(u'Done: {description}\n{summary}').format(description=self.running_task,summary=self.running_task.summary) )
                                 self.update_server_status()
 
                     except common.EWaptCancelled as e:
                         if self.running_task:
                             self.running_task.logs.append(u"{}".format(setuphelpers.ensure_unicode(e)))
-                            self.running_task.summary = _(u"Cancelled")
+                            self.running_task.summary = _(u"Canceled")
                             self.tasks_cancelled.append(self.running_task)
                             self.broadcast_tasks_status('CANCEL',self.running_task)
                     except Exception as e:
@@ -2011,7 +2011,7 @@ class WaptTaskManager(threading.Thread):
                 #self.wapt.update_server_status()
                 pass
             except Exception as e:
-                logger.warning(u'Mise à jour du status sur le serveur impossible : %s'% setuphelpers.ensure_unicode(e))
+                logger.warning(u'Couldn\'t update status on server : %s'% setuphelpers.ensure_unicode(e))
 
     def network_down(self):
         with self.status_lock:
