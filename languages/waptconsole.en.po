@@ -1,8 +1,23 @@
 msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-01-22 17:34+0200\n"
+"PO-Revision-Date: 2015-01-22 17:34+0200\n"
+"Last-Translator: mcadorel-adm <ss>\n"
+"Language-Team: moi\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Virtaal 0.7.1\n"
+
+msgid " Uncheck \"Use simple file sharing\")."
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: tvisapropos.button1.caption
-msgid "Fermer"
+msgid "Close"
 msgstr ""
 
 #: tvisapropos.caption
@@ -11,6 +26,420 @@ msgstr ""
 
 #: tvisapropos.labinfos.caption
 msgid "LabInfos"
+msgstr ""
+
+#: tvischangepassword.caption
+msgid "WAPT server password"
+msgstr ""
+
+#: tvischangepassword.ednewpassword1.editlabel.caption
+msgid "New password :"
+msgstr ""
+
+#: tvischangepassword.ednewpassword2.editlabel.caption
+msgid "Retype password :"
+msgstr ""
+
+#: tvischangepassword.edoldpassword.editlabel.caption
+msgid "Old password :"
+msgstr ""
+
+#: tviscreatekey.caption
+msgid "Generate private key and self-signed certificate"
+msgstr ""
+
+#: tviscreatekey.edcommonname.hint
+msgid "E.g. : srvwapt.tranquilit.local"
+msgstr ""
+
+#: tviscreatekey.edcountry.text
+msgid "FR"
+msgstr ""
+
+#: tviscreatekey.edemail.hint
+msgid "E.g. : technique@tranquil-it-systems.fr"
+msgstr ""
+
+#: tviscreatekey.edlocality.hint
+msgid "E.g. : Nantes"
+msgstr ""
+
+#: tviscreatekey.edorganization.hint
+msgid "E.g. : Tranquil It Systems"
+msgstr ""
+
+#: tviscreatekey.edorgname.hint
+msgid "e.g. : tranquilit"
+msgstr ""
+
+#: tviscreatekey.edunit.hint
+msgid "E.g. : IT"
+msgstr ""
+
+#: tviscreatekey.label1.caption
+msgid "Target directory:"
+msgstr ""
+
+#: tviscreatekey.label1.hint
+msgid "Where to save the private key. This directory must be secure."
+msgstr ""
+
+#: tviscreatekey.label10.caption
+msgid "Country (2 chars. E.g. : FR):"
+msgstr ""
+
+#: tviscreatekey.label10.hint
+msgid "Main site country code"
+msgstr ""
+
+#: tviscreatekey.label12.caption
+msgid "City :"
+msgstr ""
+
+#: tviscreatekey.label13.caption
+msgid "Organisation:"
+msgstr ""
+
+#: tviscreatekey.label13.hint
+msgid "Your company name"
+msgstr ""
+
+#: tviscreatekey.label14.caption
+msgid "Service :"
+msgstr ""
+
+#: tviscreatekey.label14.hint
+msgid "E.g. : IT department."
+msgstr ""
+
+#: tviscreatekey.label15.caption
+msgid "Server FQDN :"
+msgstr ""
+
+#: tviscreatekey.label15.hint
+msgid "WAPT server name. E.g. : srvwapt.tranquilit.local"
+msgstr ""
+
+#: tviscreatekey.label16.caption
+msgid "E-mail address :"
+msgstr ""
+
+#: tviscreatekey.label16.hint
+msgid "Technical department e-mail address."
+msgstr ""
+
+#: tviscreatekey.label9.caption
+msgid "Key name :"
+msgstr ""
+
+#: tviscreatekey.label9.hint
+msgid "E.g. 'tranquilit'. Please don't use any special characters."
+msgstr ""
+
+#: tviscreatekey.statictext1.caption
+msgid "Optional information"
+msgstr ""
+
+#: tviscreatewaptsetup.caption
+msgid "Create WAPT agent"
+msgstr ""
+
+#: tviscreatewaptsetup.edorgname.hint
+msgid "E.g. : Tranquil IT Systems."
+msgstr ""
+
+#: tviscreatewaptsetup.edrepourl.hint
+msgid "E.g. : http://wapt.tranquilit.local/wapt."
+msgstr ""
+
+#: tviscreatewaptsetup.edwaptserverurl.hint
+msgid "E.g. : http://wapt:8080."
+msgstr ""
+
+#: tviscreatewaptsetup.label1.caption
+msgid "Public key : "
+msgstr ""
+
+#: tviscreatewaptsetup.label1.hint
+msgid "The certificate you just created (.crt key)."
+msgstr ""
+
+#: tviscreatewaptsetup.label2.caption
+msgid "Main WAPT repository address :"
+msgstr ""
+
+#: tviscreatewaptsetup.label2.hint
+msgid "Your WAPT repository address (http://wapt/wapt)."
+msgstr ""
+
+#: tviscreatewaptsetup.label3.caption
+msgid "Organisation :"
+msgstr ""
+
+#: tviscreatewaptsetup.label3.hint
+msgid "Your company name."
+msgstr ""
+
+#: tviscreatewaptsetup.label4.caption
+msgid "Save waptagent.exe as...  "
+msgstr ""
+
+#: tviscreatewaptsetup.label4.hint
+msgid "Where waptagent.exe will be saved."
+msgstr ""
+
+#: tviscreatewaptsetup.label5.caption
+msgid "WAPT server address :"
+msgstr ""
+
+#: tviscreatewaptsetup.label5.hint
+msgid "Your WAPT server address (http://wapt:8080)."
+msgstr ""
+
+#: tviseditgroup.button5.caption
+msgctxt "tviseditgroup.button5.caption"
+msgid "Save"
+msgstr ""
+
+#: tviseditgroup.caption
+msgid "Group edition"
+msgstr ""
+
+#: tviseditgroup.eddescription.editlabel.caption
+msgctxt "tviseditgroup.eddescription.editlabel.caption"
+msgid "Description"
+msgstr ""
+
+#: tviseditgroup.eddescription.text
+msgctxt "tviseditgroup.eddescription.text"
+msgid " "
+msgstr ""
+
+#: tviseditgroup.edgroup.editlabel.caption
+msgid "Group"
+msgstr ""
+
+#: tviseditgroup.label1.caption
+msgid "Available packages"
+msgstr ""
+
+#: tviseditgroup.label2.caption
+msgid "Packages to be installed on group hosts"
+msgstr ""
+
+#: tviseditgroup.label3.caption
+msgid "Hosts in this group"
+msgstr ""
+
+#: tviseditpackage.actaddconflicts.caption
+msgid "Add to blocked packages"
+msgstr ""
+
+#: tviseditpackage.actadddepends.caption
+msgid "Add dependencies to package"
+msgstr ""
+
+#: tviseditpackage.actadvancedmode.caption
+msgctxt "tviseditpackage.actadvancedmode.caption"
+msgid "Advanced mode"
+msgstr ""
+
+#: tviseditpackage.actbuapply.caption
+msgid "Save and apply to host"
+msgstr ""
+
+#: tviseditpackage.actbuildupload.caption
+msgctxt "tviseditpackage.actbuildupload.caption"
+msgid "Activate package"
+msgstr ""
+
+#: tviseditpackage.acteditremoveconflicts.caption
+msgid "Unblock package"
+msgstr ""
+
+#: tviseditpackage.acteditremovedepends.caption
+msgctxt "tviseditpackage.acteditremovedepends.caption"
+msgid "Remove"
+msgstr ""
+
+#: tviseditpackage.acteditsavepackage.caption
+msgctxt "tviseditpackage.acteditsavepackage.caption"
+msgid "Save"
+msgstr ""
+
+#: tviseditpackage.acteditsearch.caption
+msgid "Search"
+msgstr ""
+
+#: tviseditpackage.actexeccode.caption
+msgid "Execute Python source"
+msgstr ""
+
+#: tviseditpackage.actsearchpackage.caption
+msgctxt "tviseditpackage.actsearchpackage.caption"
+msgid "Search"
+msgstr ""
+
+#: tviseditpackage.butsave.caption
+msgctxt "tviseditpackage.butsave.caption"
+msgid "Save"
+msgstr ""
+
+#: tviseditpackage.button3.caption
+msgid "Button3"
+msgstr ""
+
+#: tviseditpackage.caption
+msgctxt "tviseditpackage.caption"
+msgid "Edit package"
+msgstr ""
+
+#: tviseditpackage.cbshowlog.caption
+msgid "Show debug"
+msgstr ""
+
+#: tviseditpackage.eddescription.editlabel.caption
+msgctxt "tviseditpackage.eddescription.editlabel.caption"
+msgid "Description"
+msgstr ""
+
+#: tviseditpackage.eddescription.text
+msgctxt "tviseditpackage.eddescription.text"
+msgid " "
+msgstr ""
+
+#: tviseditpackage.edpackage.editlabel.caption
+msgid "Package"
+msgstr ""
+
+#: tviseditpackage.edsearch.hint
+msgid "Use keywords to narrow search."
+msgstr ""
+
+#: tviseditpackage.edsection.text
+msgid "base"
+msgstr ""
+
+#: tviseditpackage.edsourcedir.text
+msgctxt "tviseditpackage.edsourcedir.text"
+msgid " "
+msgstr ""
+
+#: tviseditpackage.edversion.editlabel.caption
+msgid "Version"
+msgstr ""
+
+#: tviseditpackage.edversion.text
+msgctxt "tviseditpackage.edversion.text"
+msgid " "
+msgstr ""
+
+#: tviseditpackage.label2.caption
+msgctxt "tviseditpackage.label2.caption"
+msgid "Available packages : "
+msgstr ""
+
+#: tviseditpackage.label4.caption
+msgid "Source directory"
+msgstr ""
+
+#: tviseditpackage.label5.caption
+msgid "Section"
+msgstr ""
+
+#: tviseditpackage.panel7.caption
+msgctxt "tviseditpackage.panel7.caption"
+msgid "Panel7"
+msgstr ""
+
+#: tviseditpackage.pgconflicts.caption
+msgid "Blocked package"
+msgstr ""
+
+#: tviseditpackage.pgdepends.caption
+msgid "Edit dependencies"
+msgstr ""
+
+#: tviseditpackage.pgdevelop.caption
+msgid "setup.py"
+msgstr ""
+
+#: tvisgroupchoice.actsearch.caption
+msgctxt "tvisgroupchoice.actsearch.caption"
+msgid "Search"
+msgstr ""
+
+#: tvisgroupchoice.buttonpanel1.okbutton.caption
+msgid "OK"
+msgstr ""
+
+#: tvisgroupchoice.caption
+msgid "Package selection"
+msgstr ""
+
+#: tvisgroupchoice.cbbase.caption
+msgctxt "tvisgroupchoice.cbbase.caption"
+msgid "Software"
+msgstr ""
+
+#: tvisgroupchoice.cbgroup.caption
+msgid "Package bundles"
+msgstr ""
+
+#: tvisgroupchoice.cbrestricted.caption
+msgid "Restricted install"
+msgstr ""
+
+#: tvisgroupchoice.edsearch.hint
+msgid "Use keywords to narrow your search."
+msgstr ""
+
+#: tvisgroupchoice.label2.caption
+msgctxt "tvisgroupchoice.label2.caption"
+msgid "Available packages : "
+msgstr ""
+
+#: tvishostsupgrade.actstop.caption
+msgid "Terminate"
+msgstr ""
+
+#: tvishostsupgrade.actupgrade.caption
+msgid "Launch update"
+msgstr ""
+
+#: tvishostsupgrade.caption
+msgid "Launch update on hosts"
+msgstr ""
+
+#: tvisimportpackage.actpackageduplicate.caption
+msgid "Import..."
+msgstr ""
+
+#: tvisimportpackage.actrefresh.caption
+msgctxt "tvisimportpackage.actrefresh.caption"
+msgid "Refresh"
+msgstr ""
+
+#: tvisimportpackage.actsearchexternalpackage.caption
+msgctxt "tvisimportpackage.actsearchexternalpackage.caption"
+msgid "Search"
+msgstr ""
+
+#: tvisimportpackage.actwaptlocalconfig.caption
+msgctxt "tvisimportpackage.actwaptlocalconfig.caption"
+msgid "Local WAPT configuration"
+msgstr ""
+
+#: tvisimportpackage.butextrepochange.caption
+msgid "Modify"
+msgstr ""
+
+#: tvisimportpackage.caption
+msgid "Import packages"
+msgstr ""
+
+#: tvisimportpackage.urlexternalrepo.caption
+msgid "Url: "
 msgstr ""
 
 #: tvisloading.amessage.caption
@@ -31,7 +460,7 @@ msgstr ""
 
 #: tvislogin.caption
 msgid "WAPT authentication"
-msgstr "Ah que coucou"
+msgstr ""
 
 #: tvislogin.eduser.text
 msgid "admin"
@@ -53,6 +482,161 @@ msgstr ""
 msgid "Server user"
 msgstr ""
 
+#: tvisprivatekeyauth.caption
+msgid "Private key authentication"
+msgstr ""
+
+#: tvisprivatekeyauth.label1.caption
+msgid "Key : "
+msgstr ""
+
+#: tvisprivatekeyauth.lakeypath.caption
+msgid "laKeyPath"
+msgstr ""
+
+#: tvisprivatekeyauth.lapassword.caption
+msgid "Private key password :"
+msgstr ""
+
+#: tviswaptconfig.caption
+msgid "Locale WAPT configuration"
+msgstr ""
+
+#: tviswaptconfig.cbuseproxyforrepo.hint
+msgctxt "tviswaptconfig.cbuseproxyforrepo.hint"
+msgid "Activates proxy during transactions with the WAPT server."
+msgstr ""
+
+#: tviswaptconfig.cbuseproxyforserver.hint
+msgctxt "tviswaptconfig.cbuseproxyforserver.hint"
+msgid "Activates proxy during transactions with the WAPT server."
+msgstr ""
+
+#: tviswaptconfig.cbuseproxyfortemplate.hint
+msgctxt "tviswaptconfig.cbuseproxyfortemplate.hint"
+msgid "Activates proxy during transactions with the WAPT server."
+msgstr ""
+
+#: tviswaptconfig.eddefault_package_prefix.editlabel.caption
+msgid "Prefix for naming created WAPT packages"
+msgstr ""
+
+#: tviswaptconfig.eddefault_package_prefix.hint
+msgid "E.g. : tis"
+msgstr ""
+
+#: tviswaptconfig.eddefault_sources_root.hint
+msgid "E.g. : c:\\waptdev"
+msgstr ""
+
+#: tviswaptconfig.edhttp_proxy.editlabel.caption
+msgid "http proxy to use (if needed)"
+msgstr ""
+
+#: tviswaptconfig.edhttp_proxy.hint
+msgid "E.g. : http://proxy.tranquilit.local:3128"
+msgstr ""
+
+#: tviswaptconfig.edprivate_key.hint
+msgid "E.g. : c:\\private\\tranquilit.pem"
+msgstr ""
+
+#: tviswaptconfig.edrepo_url.editlabel.caption
+msgid "URL to the main repository"
+msgstr ""
+
+#: tviswaptconfig.edrepo_url.hint
+msgid "E.g. : http://wapt.tranquilit.local/wapt"
+msgstr ""
+
+#: tviswaptconfig.edtemplates_repo_url.editlabel.caption
+msgid "URL to the package model repository "
+msgstr ""
+
+#: tviswaptconfig.edtemplates_repo_url.hint
+msgid "E.g. : http://wapt.tranquil.it/wapt"
+msgstr ""
+
+#: tviswaptconfig.edtemplates_repo_url.text
+msgid "http://wapt.tranquil.it/wapt"
+msgstr ""
+
+#: tviswaptconfig.edwapt_server.editlabel.caption
+msgid "URL du serveur WAPT"
+msgstr ""
+
+#: tviswaptconfig.edwapt_server.hint
+msgid "E.g. : http://srvwapt.tranquilit.local:8080"
+msgstr ""
+
+#: tviswaptconfig.label1.caption
+msgid "Base directory for package development"
+msgstr ""
+
+#: tviswaptconfig.label2.caption
+msgid "Path to private key for signing packages"
+msgstr ""
+
+#: tviswaptconfig.label3.caption
+msgid "For package development :"
+msgstr ""
+
+#: tviswaptconfig.label4.caption
+msgid "Activates proxy when accessing the main repository"
+msgstr ""
+
+#: tviswaptconfig.label5.caption
+msgid "Activate proxy when accessing the WAPT server"
+msgstr ""
+
+#: tviswaptconfig.label6.caption
+msgid "Axctivate proxy when accessing the model repository"
+msgstr ""
+
+#: tviswaptconfig.label7.caption
+msgid "http proxy"
+msgstr ""
+
+#: tviswaptdeploy.actdeploywapt.caption
+msgid "Deploy"
+msgstr ""
+
+#: tviswaptdeploy.actstop.caption
+msgid "Stop"
+msgstr ""
+
+#: tviswaptdeploy.caption
+msgid "Déployer WAPT"
+msgstr ""
+
+#: tviswaptdeploy.eddomaine.editlabel.caption
+msgid "Domaine"
+msgstr ""
+
+#: tviswaptdeploy.eddomainpassword.editlabel.caption
+msgid "Mot de passe"
+msgstr ""
+
+#: tviswaptdeploy.eddomainuser.editlabel.caption
+msgid "Utilisateur"
+msgstr ""
+
+#: tviswaptdeploy.label1.caption
+msgid "This method lets you deploy waptagent.exe onto all hosts via psexec."
+msgstr ""
+
+#: tviswaptdeploy.label2.caption
+msgid "Identifiants"
+msgstr ""
+
+#: tviswaptdeploy.label3.caption
+msgid "List of hosts on which WAPT will be installed :"
+msgstr ""
+
+#: tviswaptdeploy.memo1.hint
+msgid "One host per row."
+msgstr ""
+
 #: tviswaptgui.actaddconflicts.caption
 msgid "Block packages (causes forced uninstall)"
 msgstr ""
@@ -66,10 +650,12 @@ msgid "Add package or bundle"
 msgstr ""
 
 #: tviswaptgui.actadvancedmode.caption
+msgctxt "tviswaptgui.actadvancedmode.caption"
 msgid "Advanced mode"
 msgstr ""
 
 #: tviswaptgui.actbuildupload.caption
+msgctxt "tviswaptgui.actbuildupload.caption"
 msgid "Activate package"
 msgstr ""
 
@@ -115,6 +701,7 @@ msgid "Edit host configuration"
 msgstr ""
 
 #: tviswaptgui.acteditpackage.caption
+msgctxt "tviswaptgui.acteditpackage.caption"
 msgid "Edit package"
 msgstr ""
 
@@ -202,6 +789,7 @@ msgid "Connect via RDP"
 msgstr ""
 
 #: tviswaptgui.actrefresh.caption
+msgctxt "tviswaptgui.actrefresh.caption"
 msgid "Refresh"
 msgstr ""
 
@@ -241,6 +829,7 @@ msgid "Connect via VNC"
 msgstr ""
 
 #: tviswaptgui.actwaptlocalconfig.caption
+msgctxt "tviswaptgui.actwaptlocalconfig.caption"
 msgid "Local WAPT configuration"
 msgstr ""
 
@@ -269,6 +858,7 @@ msgid "Packages"
 msgstr ""
 
 #: tviswaptgui.cbsearchsoftwares.caption
+msgctxt "tviswaptgui.cbsearchsoftwares.caption"
 msgid "Software"
 msgstr ""
 
@@ -344,6 +934,7 @@ msgid "Operating system"
 msgstr ""
 
 #: tviswaptgui.label8.caption
+msgctxt "tviswaptgui.label8.caption"
 msgid "Description"
 msgstr ""
 
@@ -409,6 +1000,7 @@ msgid "-"
 msgstr ""
 
 #: tviswaptgui.menuitem4.caption
+msgctxt "tviswaptgui.menuitem4.caption"
 msgid "Remove"
 msgstr ""
 
@@ -457,6 +1049,7 @@ msgid "Panel6"
 msgstr ""
 
 #: tviswaptgui.panel7.caption
+msgctxt "tviswaptgui.panel7.caption"
 msgid "Panel7"
 msgstr ""
 
@@ -513,8 +1106,16 @@ msgstr ""
 msgid "Task %s has been canceled by the user"
 msgstr ""
 
+#: uwaptres.rscanceling
+msgid "Canceling %s"
+msgstr ""
+
 #: uwaptres.rscertificatecopyfailure
 msgid "Couldn't copy certificate %s to %s."
+msgstr ""
+
+#: uwaptres.rschecking
+msgid "Checking..."
 msgstr ""
 
 #: uwaptres.rsconfirmcaption
@@ -639,6 +1240,18 @@ msgstr ""
 msgid "Old password must not be empty."
 msgstr ""
 
+#: uwaptres.rserror
+msgid "Error"
+msgstr ""
+
+#: uwaptres.rserrorfor
+msgid "Error for %s"
+msgstr ""
+
+#: uwaptres.rserrorwhilechecking
+msgid "Error while checking..."
+msgstr ""
+
 #: uwaptres.rsfailedimport
 msgid "Error during import."
 msgstr ""
@@ -689,7 +1302,7 @@ msgid "Innosetup is unavailable (path : %s), please install it first."
 msgstr ""
 
 #: uwaptres.rsinputkeyname
-msgid "Please input a key name"
+msgid "Please input a key name."
 msgstr ""
 
 #: uwaptres.rsinputpubkeypath
@@ -715,6 +1328,18 @@ msgstr ""
 #: uwaptres.rsnobundle
 msgctxt "uwaptres.rsnobundle"
 msgid "There is no package bundle."
+msgstr ""
+
+#: uwaptres.rsnotaskcanceled
+msgid "No task canceled"
+msgstr ""
+
+#: uwaptres.rspackageconfigdone
+msgid "Done configuring packages for the current user session"
+msgstr ""
+
+#: uwaptres.rspackageconfigerror
+msgid "Error while configuring packages for the current user session"
 msgstr ""
 
 #: uwaptres.rspackagecreationerror
@@ -794,12 +1419,26 @@ msgctxt "uwaptres.rstaskcanceled"
 msgid "Task canceled."
 msgstr ""
 
+#: uwaptres.rstaskdone
+msgid ""
+"%s done\n"
+"%s\n"
+msgstr ""
+
+#: uwaptres.rstaskstarted
+msgid "%s started"
+msgstr ""
+
 #: uwaptres.rsundefwaptsrvinini
 msgid "wapt_server is not defined in your %s ini file"
 msgstr ""
 
 #: uwaptres.rsuninstallingpackage
 msgid "Uninstalling %s..."
+msgstr ""
+
+#: uwaptres.rsupdatesavailablefor
+msgid "Available updates for : "
 msgstr ""
 
 #: uwaptres.rsupdatingpackagelist
@@ -852,6 +1491,10 @@ msgstr ""
 msgid "Updating WAPT client on the hosts"
 msgstr ""
 
+#: uwaptres.rswaptserviceterminated
+msgid "WAPTService terminated"
+msgstr ""
+
 #: uwaptres.rswaptsetuperror
 msgid "Error while creating agent : %s"
 msgstr ""
@@ -863,4 +1506,3 @@ msgstr ""
 #: uwaptres.rswaptuploaderror
 msgid "Error while uploading WAPT agent to the repository : %s"
 msgstr ""
-

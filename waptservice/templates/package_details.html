@@ -2,7 +2,7 @@
 {% block content %}
 <h1><img class=package-icon src="package_icon?package={{data.package}}"> {{data.package}} {{data.version}}</h1>'
 <ul>
-{% for attrib in ['package','version','description','maintainer'] %}
+{% for attrib in [_('package'),_('version'),_('description'),_('maintainer')] %}
     <li><strong>{{ attrib }}</strong> : {{data[attrib]}}</li>
 {% endfor %}
 {%if data.depends %}
@@ -13,9 +13,9 @@
     </ul>
 {%endif%}
 </ul>
-<input type="button" value="Télécharger" onclick="location.href='package_download?package={{"%s(=%s)" % (data.package,data.version)}}'">
-<input type="button" value="Installer" onclick="location.href='install?package={{"%s(=%s)" % (data.package,data.version)}}'">
-<input type="button" value="Désinstaller" onclick="location.href='remove?package={{"%s" % (data.package,) }}'">
+<input type="button" value={{ _("Download") }} onclick="location.href='package_download?package={{"%s(=%s)" % (data.package,data.version)}}'">
+<input type="button" value={{ _("Install") }} onclick="location.href='install?package={{"%s(=%s)" % (data.package,data.version)}}'">
+<input type="button" value={{ _("Uninstall") }} onclick="location.href='remove?package={{"%s" % (data.package,) }}'">
 
-<input type="button" value="Retour" onclick="location.href='list'">
+<input type="button" value={{ _("Back") }} onclick="location.href='list'">
 {% endblock %}

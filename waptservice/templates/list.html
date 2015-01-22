@@ -24,17 +24,17 @@ xmlhttp.send();
 location.reload(true);
 }
 </script>
-<h1>Available packages</h1>
-<input onclick='refresh()' type="button" name="update" value="Mise à jour les paquets disponibles" />
-<input onclick="location.href='cleanup'" type="button" name="cleanup" value="Nettoyer le cache de paquets" />
-<input onclick="location.href='upgrade'" type="button" name="upgrade" value="Mettre à jour le système" />
-{% set cols = ['package','install_version','install_status','install_date'] %}
+<h1>{{ _("Available packages") }}</h1>
+<input onclick='refresh()' type="button" name="update" value={{ _('Update available packages') }}/>
+<input onclick="location.href='cleanup'" type="button" name="cleanup" value={{ _('Clear package cache') }}/>
+<input onclick="location.href='upgrade'" type="button" name="upgrade" value={{ _ ('Upgrade system') }}/>
+{% set cols = [_('package'),_('install_version'),_('install_status'),_('install_date')] %}
 <table border=1 cellspacing=0 cellpadding=4 class=sample>
 	<tr>
     	{% for c in cols %}
     		<th>{{c or "###"}}</th>
     	{% endfor %}
-    	<th>Action</th>
+    	<th>{{ _("Action") }}</th>
     </tr>
 	{% for p in packages %}
         {%set package_version = p.asrequirement() %}
@@ -67,13 +67,13 @@ location.reload(true);
 		</td>
 	    {% endfor %}
         {% if p.install_status and p.install_version == p.version %}
-    			<td><a class="package-remove" href="remove?package={{p.package}}">Remove</a></td>
+    			<td><a class="package-remove" href="remove?package={{p.package}}">{{ _("Remove") }}</a></td>
         {% elif p.install_status and p.install_version > p.version %}
-    			<td><a class="package-downgrade" href="install?package={{'%s(=%s)' % (p.package,p.version)}}">Downgrade</a></td>
+    			<td><a class="package-downgrade" href="install?package={{'%s(=%s)' % (p.package,p.version)}}">{{ _("Downgrade") }}</a></td>
         {% elif p.install_status and p.install_version < p.version %}
-    			<td><a class="package-upgrade" href="install?package={{'%s(=%s)' % (p.package,p.version)}}">Upgrade</a></td>
+    			<td><a class="package-upgrade" href="install?package={{'%s(=%s)' % (p.package,p.version)}}">{{ _("Upgrade") }}</a></td>
         {% else %}
-    			<td><a class="package-install"  href="install?package={{'%s(=%s)' % (p.package,p.version)}}">Install</a></td>
+    			<td><a class="package-install"  href="install?package={{'%s(=%s)' % (p.package,p.version)}}">{{ _("Install") }}</a></td>
         {% endif %}
 	</tr>
     {% endfor %}

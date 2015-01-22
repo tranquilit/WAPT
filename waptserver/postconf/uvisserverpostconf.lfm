@@ -1,9 +1,9 @@
 object VisWAPTServerPostConf: TVisWAPTServerPostConf
-  Left = 413
+  Left = 424
   Height = 345
-  Top = 195
+  Top = 200
   Width = 680
-  Caption = 'Configuration du serveur WAPT pour Windows'
+  Caption = 'Configuration of WAPT server for Windows'
   ClientHeight = 345
   ClientWidth = 680
   Constraints.MinHeight = 345
@@ -31,13 +31,13 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     OnChange = PagesControlChange
     Options = [nboMultiLine]
     object pgParameters: TTabSheet
-      Caption = 'Paramètres'
+      Caption = 'Parameters'
       ClientHeight = 271
       ClientWidth = 426
       object EdWAPTServerName: TLabeledEdit
         Left = 4
         Height = 21
-        Hint = 'Les clients WAPT vont faire appel au serveur Wapt. Pour joindre le serveur WAPT,'#13#10'il est préférable d''utiliser un nom DNS, mais celui-ci doit être correctement'#13#10'configuré dans l''environnement DNS de votre réseau. Pour le nom du serveur wapt,'#13#10'il est conseillé d''utiliser le nom srvwapt.mondomain.local en champ de type A et'#13#10'créer un alias wapt.mondomain.local en champ de type CNAME pointant vers srvwapt.'#13#10#13#10'Si vous avez quelques doutes sur vos DNS, ou que vous mettez en place juste un'#13#10'environnement de test, vous pouvez renseigner directement d''adresse IP du serveur.'#13#10#13#10'Pour plus d''information :'#13#10'http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html'
+        Hint = 'WAPT clients make requests to the server. In order to connect to the WAPT server,'#13#10'it is advisable that a DNS name be used, as long as it has been correctly'#13#10'configured in your network''s DNS environment. We suggest naming your WAPT server'#13#10'''srvwapt.mydomain.local'' (A record type), then binding an alias'#13#10'(CNAME record type, e.g. ''wapt.mondomain.local'') to srvwapt.'#13#10'In case you don''t trust your DNS, or you are just setting up a testing environment,'#13#10'you can fall back to the server IP address. For further information :'#13#10'''http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html'''
         Top = 22
         Width = 156
         EditLabel.AnchorSideLeft.Control = EdWAPTServerName
@@ -48,7 +48,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         EditLabel.Height = 13
         EditLabel.Top = 6
         EditLabel.Width = 156
-        EditLabel.Caption = 'Nom DNS du serveur WAPT'
+        EditLabel.Caption = 'DNS name of the WAPT server'
         EditLabel.ParentColor = False
         TabOrder = 0
         Text = 'srvwapt.mondomaine.local'
@@ -118,7 +118,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         EditLabel.Height = 13
         EditLabel.Top = 74
         EditLabel.Width = 314
-        EditLabel.Caption = 'URL du dépôt de paquets WAPT'
+        EditLabel.Caption = 'URL of the WAPT package repository'
         EditLabel.ParentColor = False
         TabOrder = 3
       end
@@ -135,7 +135,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         EditLabel.Height = 13
         EditLabel.Top = 118
         EditLabel.Width = 313
-        EditLabel.Caption = 'URL du serveur WAPT'
+        EditLabel.Caption = 'URL of the WAPT server'
         EditLabel.ParentColor = False
         TabOrder = 4
       end
@@ -152,7 +152,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         EditLabel.Height = 13
         EditLabel.Top = 6
         EditLabel.Width = 128
-        EditLabel.Caption = 'IP du serveur WAPT'
+        EditLabel.Caption = 'IP of the WAPT server'
         EditLabel.ParentColor = False
         ParentColor = True
         ReadOnly = True
@@ -170,23 +170,20 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           '</head>'
           '<body>'
           '<a href="#page1"></a>'
-          'Les clients <b>WAPT</b> vont faire appel au serveur Wapt<br>'
-          'Pour joindre le serveur WAPT,'
-          'il est préférable d''utiliser un nom DNS, mais celui-ci doit être correctement'
-          'configuré dans l''environnement DNS de votre réseau.<br>'
-          'Pour le nom du serveur wapt, il est conseillé d''utiliser le nom '
-          'srvwapt.mondomain.local en champ de type A et'
-          'créer un alias wapt.mondomain.local en champ de type CNAME pointant '
-          'vers srvwapt.<br>'
-          'Si vous avez quelques doutes sur vos DNS, ou que vous mettez en place '
-          'juste un'
-          'environnement de test, vous pouvez renseigner directement d''adresse IP '
-          'du serveur.'
+          '<b>WAPT</b> clients make requests to the server.<br>'
+          'In order to connect to the WAPT server,'
+          'it is advisable that a DNS name be used, as long as it has been correctly'
+          'configured in your network''s DNS environment.<br>'
+          'We suggest naming your WAPT server ''srvwapt.mydomain.local'''
+          '(A record type), then binding an alias (CNAME record type, e.g.'
+          '''wapt.mydomain.local'') to srvwapt.<br>'
+          'In case you don''t trust your DNS, or you are just setting up a'
+          'testing environment, you can fall back to the server IP address.'
           ''
-          'Pour plus d''information :'
+          'For further information :'
           '<a '
           'href="http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configur'
-          'ation_champDNS.html">Configuration d''une infrastructure WAPT</a>'
+          'ation_champDNS.html">Configuring a WAPT infrastructure</a>.'
           ''
           '</body>'
           '</html>'
@@ -196,7 +193,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
     end
     object pgPassword: TTabSheet
-      Caption = 'Mot de passe'
+      Caption = 'Password'
       ClientHeight = 271
       ClientWidth = 426
       object Label1: TLabel
@@ -204,7 +201,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Height = 13
         Top = 25
         Width = 151
-        Caption = 'Mot de passe du serveur WAPT'
+        Caption = 'WAPT server password'
         ParentColor = False
       end
       object Label2: TLabel
@@ -212,13 +209,13 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Height = 13
         Top = 58
         Width = 125
-        Caption = 'Confirmer le mot de passe'
+        Caption = 'Confirm password'
         ParentColor = False
       end
       object EdPwd1: TEdit
         Left = 176
         Height = 21
-        Hint = 'Ce mot de passe sera utilisé pour se connecter au serveur WAPT depuis la console'#13#10'WAPT. Pour plus d''information, :'#13#10'http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html'
+        Hint = 'This is the password used to connect to the WAPT server via the WAPT console.'#13#10'For further information :'#13#10'http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html'
         Top = 22
         Width = 104
         EchoMode = emPassword
@@ -245,9 +242,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'
           '</head>'
           '<body>'
-          'Ce mot de passe sera utilisé pour se connecter au serveur WAPT depuis la '
-          'console'
-          'WAPT.'
+          'This is the password used to connect to the WAPT server via the WAPT '
+          'console.<br /> '
+          'For further information :<br /> '
+          '<a href=''http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html''>Generating a WAPT certificate</a>. '
           '</body>'
           '</html>'
         )
@@ -256,16 +254,16 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
     end
     object pgPrivateKey: TTabSheet
-      Caption = 'Création clé privée'
+      Caption = 'Private Key generation'
       ClientHeight = 271
       ClientWidth = 426
       object Label9: TLabel
         Left = 12
         Height = 13
-        Hint = 'Ne pas mettre de caractères spéciaux, ex:tranquilit'
+        Hint = 'Please don''t use any special characters (e.g.:tranquilit)'
         Top = 40
         Width = 77
-        Caption = 'Nom de la clé:'
+        Caption = 'Key name :'
         Font.CharSet = ANSI_CHARSET
         Font.Color = clBlack
         Font.Height = -11
@@ -279,7 +277,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object EdKeyName: TEdit
         Left = 176
         Height = 21
-        Hint = 'exemple: tranquilit'
+        Hint = 'E.g. : tranquilit'
         Top = 40
         Width = 176
         OnExit = EdKeyNameExit
@@ -288,10 +286,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object Label10: TLabel
         Left = 12
         Height = 13
-        Hint = 'Code pays du site principal'
+        Hint = 'Main site country code'
         Top = 102
         Width = 116
-        Caption = 'Pays ( 2 lettres ex: FR):'
+        Caption = 'Country (2 chars. E.g. : FR):'
         ParentColor = False
         ParentShowHint = False
         ShowHint = True
@@ -301,13 +299,13 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Height = 13
         Top = 126
         Width = 22
-        Caption = 'Ville:'
+        Caption = 'City :'
         ParentColor = False
       end
       object Label13: TLabel
         Left = 12
         Height = 13
-        Hint = 'Nom de votre entreprise'
+        Hint = 'Your company name'
         Top = 150
         Width = 65
         Caption = 'Organisation:'
@@ -316,7 +314,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object Label14: TLabel
         Left = 12
         Height = 13
-        Hint = 'exemple: DSI'
+        Hint = 'E.g. : IT department.'
         Top = 174
         Width = 39
         Caption = 'Service:'
@@ -325,28 +323,28 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object Label15: TLabel
         Left = 12
         Height = 13
-        Hint = 'Nom du serveur wapt, ex: srvwapt.tranquilit.local'
+        Hint = 'WAPT server name. E.g. : srvwapt.tranquilit.local'
         Top = 198
         Width = 111
-        Caption = 'Nom FQDN du serveur:'
+        Caption = 'Server FQDN :'
         ParentColor = False
       end
       object Label16: TLabel
         Left = 12
         Height = 13
-        Hint = 'adresse email du service technique'
+        Hint = 'Technical department e-mail address.'
         Top = 222
         Width = 76
-        Caption = 'Adresse EMAIL:'
+        Caption = 'E-mail address :'
         ParentColor = False
       end
       object Label3: TLabel
         Left = 12
         Height = 13
-        Hint = 'répertoire où sera stockée la clé privée, ce répertoire doit être sécurisé'
+        Hint = 'Where to save the private key. This directory must be secure.'
         Top = 16
         Width = 148
-        Caption = 'Répertoire de destination:'
+        Caption = 'Target directory:'
         Font.CharSet = ANSI_CHARSET
         Font.Color = clBlack
         Font.Height = -11
@@ -369,7 +367,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object edLocality: TEdit
         Left = 176
         Height = 21
-        Hint = 'exemple: Nantes'
+        Hint = 'E.g. : Nantes'
         Top = 126
         Width = 176
         TabOrder = 2
@@ -377,7 +375,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object edOrganization: TEdit
         Left = 176
         Height = 21
-        Hint = 'exemple: Tranquil It Systems'
+        Hint = 'E.g. : Tranquil It Systems'
         Top = 150
         Width = 176
         TabOrder = 3
@@ -385,7 +383,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object edUnit: TEdit
         Left = 176
         Height = 21
-        Hint = 'exemple: Informatique'
+        Hint = 'E.g. : IT'
         Top = 174
         Width = 176
         TabOrder = 4
@@ -393,7 +391,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object edCommonName: TEdit
         Left = 176
         Height = 21
-        Hint = 'exemple: srvwapt.tranquilit.local'
+        Hint = 'E.g. : srvwapt.tranquilit.local'
         Top = 198
         Width = 176
         TabOrder = 5
@@ -401,7 +399,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object edEmail: TEdit
         Left = 176
         Height = 21
-        Hint = 'exemple: technique@tranquil-it-systems.fr'
+        Hint = 'E.g. : technique@tranquil-it-systems.fr'
         Top = 222
         Width = 176
         TabOrder = 6
@@ -433,7 +431,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Top = 78
         Width = 203
         AutoSize = True
-        Caption = 'Informations complémentaires facultatives'
+        Caption = 'Optional information'
         TabOrder = 8
       end
       object BitBtn5: TBitBtn
@@ -498,22 +496,21 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'
           '</head>'
           '<body>'
-          'Un couple clé privée (.pem), clé publique (.crt) va être créé pour permettre '
-          'la signature des paquets.<br>'
-          'Seuls les paquets signés avec votre clé privée pourront être installés sur les '
-          'clients.<br>'
-          'La <b>clé privée (.pem)</b> ne doit en aucun cas être communiquée à des '
-          'tiers.<br>'
-          'Le <b>certificat public (.crt)</b> peut lui être librement diffusé. Il sera '
-          'implantés sur les postes clients par l''installeur personnalisé.<br>'
+          'A private (.pem) - public (.crt) keypair will be generated '
+          'to allow for package authentication.<br>'
+          'Only packages signed with your private key may be installed onto '
+          'agents.<br>'
+          'The <b>private key (.pem)</b> must not be disclosed to a third party '
+          'under any circumstances.<br>'
+          'The <b>public certificate (.crt)</b> may however be disclosed. It will '
+          'be deployed onto client hosts via the custom installer.<br>'
           '<br>'
-          '<i>Nota: Cette création de clé privée est à effectuer une seule fois pour '
-          'chaque organisation.</i>'
+          '<i>NB. : the private key must be generated only once per organisation.</i>'
           '<br>'
-          'Pour plus d''information :'
+          'For further information :'
           '<a '
           'href="http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_w'
-          'apt.html">Génération certificat auto-signé</a>'
+          'apt.html">Generating a self-signed certificate</a>. '
           '</body>'
           '</html>'
         )
@@ -522,13 +519,13 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
     end
     object pgDevparam: TTabSheet
-      Caption = 'Développement'
+      Caption = 'Development'
       ClientHeight = 271
       ClientWidth = 426
       object EdTemplatesRepoURL: TLabeledEdit
         Left = 8
         Height = 21
-        Hint = 'URL vers le dépoôt d''où dupliquer des paquets comme base de départ'
+        Hint = 'URL to the the public repository whence base packages should be duplicated.'
         Top = 22
         Width = 300
         EditLabel.AnchorSideLeft.Control = EdTemplatesRepoURL
@@ -539,7 +536,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         EditLabel.Height = 13
         EditLabel.Top = 6
         EditLabel.Width = 300
-        EditLabel.Caption = 'URL du dépôt de modèles de paquets '
+        EditLabel.Caption = 'URL to the package model repository'
         EditLabel.ParentColor = False
         TabOrder = 0
         Text = 'http://wapt.tranquil.it/wapt'
@@ -558,7 +555,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         EditLabel.Height = 13
         EditLabel.Top = 50
         EditLabel.Width = 300
-        EditLabel.Caption = 'Préfixe par défaut pour les nouveaux paquets'
+        EditLabel.Caption = 'Default prefix to use on new packages'
         EditLabel.ParentColor = False
         TabOrder = 1
         Text = 'test'
@@ -576,7 +573,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         EditLabel.Height = 13
         EditLabel.Top = 94
         EditLabel.Width = 300
-        EditLabel.Caption = 'Répertoire de base pour le dév de nouveaux paquets'
+        EditLabel.Caption = 'Base directory for package development'
         EditLabel.ParentColor = False
         TabOrder = 2
         Text = 'c:\waptdev'
@@ -594,28 +591,27 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           '</head>'
           '<body>'
           ''
-          '<b>Tranquil IT Systems</b> fournit un ensemble de paquets WAPT sur le '
-          'site <a href="http://wapt.tranquil.it">wapt.tranquil.it</a> <br>'
-          'Ainsi vous pouvez rapidement prendre en main votre'
-          'nouvelle infrastructure WAPT en récupérant des paquets tout faits et les'
-          'installer directement sur votre réseau.<br>'
+          '<b>Tranquil IT Systems</b> provides an array of WAPT packages '
+          'at <a href="http://wapt.tranquil.it">wapt.tranquil.it</a> <br>'
+          'For a quick start with your new WAPT installation, download ready-made'
+          'packages and deploy them onto your network .<br>'
           ''
-          'Quand vous récupérez un paquet ou que vous en créer un, il sera préfixé '
-          'avec'
-          'votre trigramme ou quadrigramme pour permettre d''identifier sa '
+          'When you pull or create a package, its name will be prefixed '
+          'with'
+          'your trigram/quadrigram to mark its '
           'provenance.<br>'
-          'Remplacer "test" par un trigramme explicite pour votre structure (ex: tis '
-          'pour'
-          'Tranquil IT Systems)<br>'
+          'Replace "test" with a trigram meaningful to your organisation (ex: tis '
+          'standing for'
+          'Tranquil IT Systems).<br>'
           ''
-          'Le répertoire de développement est l''endroit où seront stockées les '
-          'informations'
-          'de votre paquet en développement. <br>'
+          'The development directory is where '
+          'information'
+          'about your package in development will be stored. <br>'
           ''
-          'Pour plus d''information :'
+          'For further information :'
           '<a '
           'href="http://dev.tranquil.it/scenari/guide_admin/co/configuration_waptco'
-          'nsole.html">Configuration de la console WAPT</a>'
+          'nsole.html">Configuring the WAPT console</a>. '
           ''
           '</body>'
           '</html>'
@@ -700,8 +696,8 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'
           '</head>'
           '<body>'
-          'Le serveur est prêt à être démarré.<br>'
-          'Les paramètres vont être copiés dans le fichier wapt-get.ini<br>'
+          'The server is ready to start.<br>'
+          'Parameters will be copied into wapt-get.ini<br>'
           '</body>'
           '</html>'
         )
@@ -710,17 +706,17 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
       object CBOpenFirewall: TCheckBox
         Left = 8
-        Height = 17
+        Height = 19
         Top = 234
-        Width = 388
-        Caption = 'Ouvrir les ports de firewall 80 et 443 pour l''accès aux  paquets et l''inventaire'
+        Width = 378
+        Caption = 'Open firewall ports 80 and 443 to allow access for packages and inventory'
         Checked = True
         State = cbChecked
         TabOrder = 3
       end
     end
     object pgCreateWaptSetup: TTabSheet
-      Caption = 'Créer l''installeur pour les postes clients'
+      Caption = 'Create installer for client hosts'
       ClientHeight = 271
       ClientWidth = 426
       object BitBtn1: TBitBtn
@@ -812,10 +808,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object Label4: TLabel
         Left = 8
         Height = 13
-        Hint = 'certificat que vous venez de créer (clé.crt)'
+        Hint = 'The certificate you just created (.crt key).'
         Top = 20
         Width = 77
-        Caption = 'Clé publique : '
+        Caption = 'Public key : '
         Font.Style = [fsBold]
         ParentColor = False
         ParentFont = False
@@ -823,7 +819,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object edRepoUrl: TEdit
         Left = 200
         Height = 21
-        Hint = 'exemple : http://wapt.tranquilit.local/wapt'
+        Hint = 'E.g. : http://wapt.tranquilit.local/wapt'
         Top = 73
         Width = 192
         TabOrder = 2
@@ -831,10 +827,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object Label5: TLabel
         Left = 8
         Height = 13
-        Hint = 'Addresse de votre dépôt wapt (https://wapt/wapt)'
+        Hint = 'Address of your WAPT repository (https://wapt/wapt)'
         Top = 76
         Width = 186
-        Caption = 'Adresse du dépot Wapt principal:'
+        Caption = 'Address of the main WAPT repository :'
         Font.Style = [fsBold]
         ParentColor = False
         ParentFont = False
@@ -842,7 +838,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object edOrgName: TEdit
         Left = 200
         Height = 21
-        Hint = 'Exemple : Tranquil IT Systems'
+        Hint = 'E.g. : Tranquil IT Systems'
         Top = 127
         Width = 192
         ParentColor = True
@@ -851,7 +847,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object Label6: TLabel
         Left = 8
         Height = 13
-        Hint = 'Nom de votre société'
+        Hint = 'Your company name'
         Top = 127
         Width = 65
         Caption = 'Organisation:'
@@ -860,10 +856,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object Label7: TLabel
         Left = 8
         Height = 13
-        Hint = 'Dossier dans lequel waptagent.exe sera enregistré'
+        Hint = 'Where waptagent.exe will be saved.'
         Top = 48
         Width = 194
-        Caption = 'Enregistrer waptagent.exe sous...  '
+        Caption = 'Save waptagent.exe as...  '
         Font.Style = [fsBold]
         ParentColor = False
         ParentFont = False
@@ -882,7 +878,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object edWaptServerUrl1: TEdit
         Left = 200
         Height = 21
-        Hint = 'exemple : https://wapt'
+        Hint = 'E.g. : https://wapt'
         Top = 101
         Width = 192
         ParentColor = True
@@ -891,10 +887,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object Label8: TLabel
         Left = 8
         Height = 13
-        Hint = 'Addresse de votre serveur wapt (https://wapt)'
+        Hint = 'Address of your WAPT server (https://wapt).'
         Top = 104
         Width = 152
-        Caption = 'Adresse du serveur WAPT :'
+        Caption = 'Adressof the WAPT server :'
         Font.Style = [fsBold]
         ParentColor = False
         ParentFont = False
@@ -912,35 +908,35 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           '8">'
           '</head>'
           '<body>'
-          'L''installeur personnalisé '
-          '(waptagent.exe) sert à incorporer '
-          'votre'
-          ' certificat dans l''agent WAPT.'
-          'L''agent WAPT doit être installé sur '
-          'chaque poste que vous souhaitez'
-          ' administrer.'
-          'Pour l''installer, plusieurs méthodes '
-          'sont possibles&nbsp;:'
+          'The custom installer '
+          '(waptagent.exe) is for integrating '
+          'your'
+          ' certificate into the WAPT agent.'
+          'The WAPT agent must be installed on '
+          'every host you wish to '
+          'manage.'
+          'To set it up, you can use one of '
+          'several methods &nbsp;:'
           '<ul>'
-          '<li> depuis une clé USB </li>'
-          '<li> depuis l''adresse https://nom-du-'
+          '<li> from a USB stick </li>'
+          '<li> from https://nom-du-'
           'serveur-wapt/wapt/waptagent.exe '
           '</li>'
           '<li> <a '
           'href="http://dev.tranquil.it/index.ph'
           'p/WAPT_-'
           '_Déploiement_de_WAPT_par_GPO">'
-          'déploiement de WAPT par GPO</a> '
+          'Deploying WAPT via GPO</a> '
           '</li>'
           '</ul>'
           '<br>'
-          'Vous pouvez consulter la '
-          'documentation <a'
+          'Check the documentation '
+          'at <a'
           'href="http://dev.tranquil.it/scenari/g'
           'uide_admin/co/generation_waptse'
           'tup_personnalise_waptconsole.html"'
-          '>Génération'
-          'depuis la console WAPT</a>'
+          '>Generating '
+          'from the WAPT console</a>'
           '</body>'
           '</html>'
         )
@@ -967,7 +963,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           Height = 17
           Top = 4
           Width = 285
-          Caption = 'Lancer la console WAPT après le démarrage du serveur'
+          Caption = 'Run WAPT console after setup'
           Checked = True
           State = cbChecked
           TabOrder = 0
@@ -995,19 +991,19 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
             '8">'
             '</head>'
             '<body>'
-            'Félicitations, votre serveur WAPT est désormais fonctionnel.<br>'
-            'Vous pouvez consulter la '
-            'documentation <a'
+            'Well done, your WAPT server is now operational..<br>'
+            'Check the documentation '
+            'at <a'
             'href="http://dev.tranquil.it/scenari/guide_admin/co/generation_waptse'
-            'tup_personnalise_waptconsole.html">Génération'
-            'depuis la console WAPT</a>'
+            'tup_personnalise_waptconsole.html">Generating'
+            'from the WAPT console</a>'
             '<br>'
-            'Pour déployer le client WAPT sur les postes de votre réseau, consulter '
-            'la'
+            'To deploy the WAPT agent onto your network, check '
+            'the'
             'documentation <a'
             'href="http://dev.tranquil.it/index.php/WAPT_-_D'
-            '%C3%A9ploiement_de_WAPT_par_GPO"/>Déploiement'
-            'de WAPT par GPO</a>'
+            '%C3%A9ploiement_de_WAPT_par_GPO"/>Deploying WAPT via '
+            'GPO</a>'
             '</body>'
             '</html>'
           )
@@ -1120,7 +1116,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       Height = 25
       Top = 4
       Width = 91
-      Caption = 'Abandonner'
+      Caption = 'Cancel'
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
         2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
@@ -1195,38 +1191,38 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     left = 336
     top = 216
     object actPrevious: TAction
-      Caption = 'Précédent'
+      Caption = 'Previous'
       OnExecute = actPreviousExecute
       OnUpdate = actPreviousUpdate
     end
     object ActNext: TAction
-      Caption = 'Suivant'
+      Caption = 'Next'
       OnExecute = ActNextExecute
       OnUpdate = ActNextUpdate
     end
     object ActCheckDNS: TAction
-      Caption = 'Vérifier le nom DNS'
+      Caption = 'Check DNS name'
       OnExecute = ActCheckDNSExecute
     end
     object ActManual: TAction
-      Caption = 'Spécifier les URL manuellement'
+      Caption = 'Input URL manually'
       OnExecute = ActManualExecute
       OnUpdate = ActManualUpdate
     end
     object ActCreateKey: TAction
-      Caption = 'Créer la paire de clés'
+      Caption = 'Generate keypair'
       OnExecute = ActCreateKeyExecute
       OnUpdate = ActCreateKeyUpdate
     end
     object ActCancel: TAction
-      Caption = 'Annuler'
+      Caption = 'Cancel'
     end
     object actWriteConfStartServe: TAction
-      Caption = 'Démarrer le serveur avec ces paramètres'
+      Caption = 'Start WAPT server with this configuration'
       OnExecute = actWriteConfStartServeExecute
     end
     object ActBuildWaptsetup: TAction
-      Caption = 'Créer un installeur personnalisé'
+      Caption = 'Create custom installer'
       OnExecute = ActBuildWaptsetupExecute
     end
   end

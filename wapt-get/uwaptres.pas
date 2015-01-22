@@ -20,7 +20,7 @@ resourcestring
   rsPublicKeyGenError = 'Error during key generation : %s';
 
   rsCreationInProgress = 'Creation in progress.'; //'Création en cours'
-  rsProgressTitle = 'Started uploading to WAPT server...';
+  rsProgressTitle = 'Started uploading to WAPT server...';  // TODO more meaningful var name
   rsWaptSetupUploadSuccess = 'WAPT agent successfully created and uploaded to the repository : %s';
   rsWaptUploadError = 'Error while uploading WAPT agent to the repository : %s';
   rsWaptSetupError = 'Error while creating agent : %s';
@@ -85,7 +85,7 @@ resourcestring
   rsCertificateCopyFailure = 'Couldn''t copy certificate %s to %s.';
 
   { Messages dans uVisCreateKey }
-  rsInputKeyName = 'Please input a key name'; // 'Veuillez rentrer un nom de clé'; // TODO
+  rsInputKeyName = 'Please input a key name.'; // 'Veuillez rentrer un nom de clé'; // TODO
   rsKeyAlreadyExists = 'Key %s already exists, please pick another name.';
 
   { Messages dans uVisEditPackage.pas }
@@ -145,6 +145,50 @@ resourcestring
   rsWaptServiceTerminated = 'WAPTService terminated';
   rsChecking = 'Checking...';
   rsErrorWhileChecking = 'Error while checking...';
+
+
+  { --- MESSAGES DANS WAPTSERVER - PostConf --- }
+  rsWaptServiceStopping = 'Waptservice stopping';
+  rsUpdatingPackageIndex = 'Updating package index';
+  rsReplacingTIScertificate = 'Deleting TIS certificate and copying new certificate';
+  rsSettingServerPassword = 'Setting up server password';
+  rsOpeningFirewall = 'Opening firewall for WaptServer';
+  rsRestartingWaptServer = 'Redémarrage service waptserver';
+  rsRestartingWaptService = 'Redémarrage waptservice';
+  rsRegisteringHostOnServer = 'Registering host on server';
+  rsUpdatingLocalPackages = 'Updating local packages';
+  rsConfirm = 'Confirm';
+  rsConfirmCancelPostConfig = 'Are you sure you want to cancel configuring WAPT server ?';
+  rsInvalidDNS = 'Invalid DNS';
+  rsInvalidDNSfallback = 'This DNS name is not valid, would you like to use the IP address instead ?';
+
+
+  { --- MESSAGES DANS WAPTGET --- }
+  rsWinterruptReceived = 'W: interrupt received, killing server…';
+  rsStopListening = 'Stop listening to events';
+  rsOptRepo = ' -r --repo : URL of dependencies libs';
+  rsWaptUpgrade = ' waptupgrade : upgrade wapt-get.exe and database';
+  rsWin32exeWrapper = 'Win32 Exe wrapper: %s %s';
+  rsWaptGetUpgrade = 'WAPT-GET Upgrade using repository at %s';
+  rsDNSserver = 'DNS Server : %s';
+  rsDNSdomain = 'DNS Domain : %s';
+  rsMainRepoURL = 'Main repo url: %s';
+  rsSRV = 'SRV: %s';
+  rsCNAME = 'CNAME: %s';
+  rsLongtaskError = 'Error launching longtask: %s';
+  rsTaskListError = 'Error getting task list: %s';
+  rsRunningTask = 'Running task %d: %s, status:%s';
+  rsNoRunningTask = 'No running tasks';
+  rsPending = 'Pending : ';
+  rsErrorCanceling = 'Error cancelling: %s';
+  rsCanceledTask = 'Cancelled %s';
+  rsErrorLaunchingUpdate = 'Error launching update: %s';
+  rsErrorWithMessage = 'Error : %s';
+  rsErrorLaunchingUpgrade = 'Error launching upgrade: %s';
+  rsCanceled = 'canceled';
+  rsUsage = 'Usage: %s -h';
+  rsInstallOn = '  install on c:\wapt : --setup -s';
+  rsCompletionProgress = '%s : %.0f%% completed';
 
 implementation
 

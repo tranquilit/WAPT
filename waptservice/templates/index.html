@@ -1,34 +1,34 @@
 {% extends "layout.html" %}
 {% block content %}
 <h1>{{ host_info['computer_fqdn'] }}</h1>'
-<h2> WAPT Status</h2>
+<h2> {{ _("WAPT Status") }}</h2>
 <ul>
-<li>wapt-get.exe version: {{wapt_info['wapt-exe-version']}}</li>
-<li>wapt-get.py version: {{wapt_info['wapt-py-version']}}</li>
-<li>Host UUID: {{wapt.host_uuid}}</li>
-<li>Main WAPT Repository: <a href={{wapt.wapt_repourl}}>{{wapt.wapt_repourl}}</a></li>
-<li>WAPT server: {{wapt.waptserver.server_url}}</li>
-<li>Proxies: {{wapt.proxies}}</li>
-<li>Configuration file: {{ wapt.config_filename }}</li>
-<li>Current status: {{wapt.runstatus or 'Up to date'}}</li>
-<li>Last update status:
+<li>{{ _("wapt-get.exe version: {0}").format(wapt_info['wapt-exe-version']) }}</li>
+<li>{{ _("wapt-get.py version: {0}").format(wapt_info['wapt-py-version']) }}</li>
+<li>{{ _("Host UUID: {0}").format(wapt.host_uuid) }}</li>
+<li>{{ _("Main WAPT Repository: <a href={0}>{0}</a>").format(wapt.wapt_repourl) }}</li>
+<li>{{ _("WAPT server: {0}").format(wapt.waptserver.server_url) }}</li>
+<li>{{ _("Proxies: {0}").format(wapt.proxies) }}</li>
+<li>{{ _("Configuration file: {0}").format(wapt.config_filename) }}</li>
+<li>{{ _("Current status: {0}").format(wapt.runstatus or 'Up to date') }}</li>
+<li>{{ _("Last update status:") }}
 <ul>
-<li>Date: {{update_status['date']}}</li>
-<li>Upgradeable packages: {{', '.join(update_status['upgrades']) or 'None'}}</li>
-<li>Errors: {{', '.join(update_status['errors']) or 'None'}}</li>
+<li>{{ _("Date: {0}").format(update_status['date']) }}</li>
+<li>{{ _("Upgradeable packages: {0}").format(', '.join(update_status['upgrades']) or 'None') }}</li>
+<li>{{ _("Errors: {0}").format(', '.join(update_status['errors']) or 'None') }}</li>
 </ul>
 </li>
 </ul>
 
-<h2>Computer informations</h2>
+<h2>{{ _("Computer information") }}</h2>
 <ul>
-<li>Machine: {{host_info['computer_name']}}</li>
-<li>Current users: {{','.join(host_info['current_user'])}}</li>
-<li>Workgroup: {{host_info['workgroup_name']}}</li>
-<li>DNS Domain: {{host_info['dns_domain']}}</li>
-<li>IP Addresses:{{host_info['connected_ips']}}</li>
-<li>System manufacturer : {{host_info['system_manufacturer']}}</li>
-<li>System product name : {{host_info['system_productname']}}</li>
+<li>{{ _("Machine: {0}").format(host_info['computer_name']) }}</li>
+<li>{{ _("Current users: {0}").format(','.join(host_info['current_user'])) }}</li>
+<li>{{ _("Workgroup: {0}").format(host_info['workgroup_name']) }}</li>
+<li>{{ _("DNS Domain: {0}").format(host_info['dns_domain']) }}</li>
+<li>{{ _("IP Addresses: {0}").format(host_info['connected_ips']) }}</li>
+<li>{{ _("System manufacturer : {0}").format(host_info['system_manufacturer']) }}</li>
+<li>{{ _("System product name : {0}").format(host_info['system_productname']) }}</li>
 </ul>
 
 {% endblock %}

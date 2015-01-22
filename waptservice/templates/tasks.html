@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<h1>Tasks manager</h1>
+<h1>{{ _("Tasks manager") }}</h1>
 {%if data['running']%}
-<h3>Running: {{data['running'].description}}</h3>
+<h3>{{ _("Running: {0}").format(data['running'].description) }}</h3>
 <ul>
 {% for attrib in data['running'] %}
 <li><b>{{attrib}}:</b> {{data['running'][attrib]|beautify}}
@@ -11,12 +11,12 @@
 {% endfor %}
 </ul>
 {%endif%}
-{% for group in ['pending','done','errors'] %}
+{% for group in [_('pending'),_('done'),_('errors')] %}
 <h3>{{group | capitalize}}:</h3>
 	<ul>
 	{% for task in data.get(group) | reverse %}
 	{% if group=='pending' %}
-	<li><b>{{task.id}} - {{task.create_date}} - <a href={{url_for('task',id=task['id'])}}>{{task.description}}:</b></a> <input value="Annuler" type=button onclick="location.href='cancel_task?id={{task.id}}'"/> 
+	<li><b>{{task.id}} - {{task.create_date}} - <a href={{url_for('task',id=task['id'])}}>{{task.description}}:</b></a> <input value={{ _("Cancel") }} type=button onclick="location.href='cancel_task?id={{task.id}}'"/> 
 	{% else %}
 	<li><b>{{task.id}} - {{task.create_date}} - <a href={{url_for('task',id=task['id'])}}>{{task.description}}:</b></a> {{task.logs | beautify}}</li>
 	{% endif %}
