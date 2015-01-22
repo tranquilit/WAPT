@@ -42,7 +42,7 @@ var
 
 begin
   PODirectory:='C:\codetyphon\typhon\lcl\languages\';
-  Lang:='fr';
+  Lang:='en';
   FallbackLang:='en';
   //LCLGetLanguageIDs(Lang,FallbackLang); // in unit LCLProc
 

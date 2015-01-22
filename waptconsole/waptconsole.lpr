@@ -21,17 +21,23 @@ uses
 procedure TranslateLCL;
 var
   PODirectory, Lang, FallbackLang: String;
-  res: TTranslateUnitResult;
+  //poFile :TPOFile;
+
 begin
   PODirectory:='C:\codetyphon\typhon\lcl\languages\';
-  Lang:='fr';
+  Lang:='en';
   FallbackLang:='en';
   //LCLGetLanguageIDs(Lang,FallbackLang); // in unit LCLProc
-  res := Translations.TranslateUnitResourceStrings('LCLStrConsts',
-                      PODirectory+'lclstrconsts.%s.po',Lang,FallbackLang);
-  res := Translations.TranslateUnitResourceStrings('uWaptRes', 'C:\tranquilit\wapt\waptconsole.%s.po',Lang,FallbackLang);
 
   // ... add here a TranslateUnitResourceStrings call for every po file ...
+  Translations.TranslateUnitResourceStrings(
+      'LCLStrConsts',
+      PODirectory+'lclstrconsts.%s.po',Lang,
+      FallbackLang);
+  Translations.TranslateUnitResourceStrings(
+      'uWaptRes',
+      'C:\tranquilit\wapt\languages\waptconsole.%s.po',Lang,FallbackLang);
+
 end;
 
 begin
