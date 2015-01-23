@@ -574,6 +574,19 @@ def allow_local_auth(f):
         return f(*args, **kwargs)
     return decorated
 
+
+@babel.localeselector
+def get_locale():
+    return request.accept_languages.best_match(['en', 'fr'])
+
+@babel.timezoneselector
+def get_timezone():
+    user = getattr(g, 'user', None)
+    if user is not None:
+        return user.timezone
+
+
+
 @app.route('/status')
 @app.route('/status.json')
 @allow_local
