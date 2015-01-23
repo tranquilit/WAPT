@@ -12,7 +12,8 @@
       <Icon Value="0"/>
     </General>
     <i18n>
-      <EnableI18N LFM="False"/>
+      <EnableI18N Value="True"/>
+      <OutDir Value="..\..\languages"/>
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
@@ -57,7 +58,7 @@
         <PackageName Value="LCL"/>
       </Item8>
     </RequiredPackages>
-    <Units Count="6">
+    <Units Count="7">
       <Unit0>
         <Filename Value="waptserverpostconf.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -94,6 +95,11 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvisloading"/>
       </Unit5>
+      <Unit6>
+        <Filename Value="..\..\wapt-get\uwaptres.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uWaptRes"/>
+      </Unit6>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

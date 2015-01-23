@@ -1,8 +1,5 @@
-msgid ""
-msgstr "Content-Type: text/plain; charset=UTF-8"
-
 msgid " Uncheck \"Use simple file sharing\")."
-msgstr ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: tvisapropos.button1.caption
 msgid "Close"
@@ -242,7 +239,7 @@ msgid "Activate package"
 msgstr ""
 
 #: tviseditpackage.acteditremoveconflicts.caption
-msgid "Enlever l'interdiction/conflit de paquet"
+msgid "Unblock package"
 msgstr ""
 
 #: tviseditpackage.acteditremovedepends.caption
@@ -256,7 +253,7 @@ msgid "Save"
 msgstr ""
 
 #: tviseditpackage.acteditsearch.caption
-msgid "Seearch"
+msgid "Search"
 msgstr ""
 
 #: tviseditpackage.actexeccode.caption
@@ -283,7 +280,7 @@ msgid "Edit package"
 msgstr ""
 
 #: tviseditpackage.cbshowlog.caption
-msgid "View debug"
+msgid "Show debug"
 msgstr ""
 
 #: tviseditpackage.eddescription.editlabel.caption
@@ -1290,7 +1287,7 @@ msgid "Innosetup is unavailable (path : %s), please install it first."
 msgstr ""
 
 #: uwaptres.rsinputkeyname
-msgid "Please input a key name"
+msgid "Please input a key name."
 msgstr ""
 
 #: uwaptres.rsinputpubkeypath

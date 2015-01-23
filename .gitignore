@@ -10,11 +10,11 @@ appwaptservice.log
 backup
 cache
 db
-lib
 tmp
 trash
 version
 wapt-get.ini
+*.lrt
 
 # These are the default patterns globally ignored by Subversion:
 *.o

@@ -15,7 +15,8 @@
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
-      <EnableI18N LFM="False"/>
+      <EnableI18N Value="True" LFM="False"/>
+      <OutDir Value="..\languages"/>
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
@@ -58,16 +59,16 @@
         <PackageName Value="pltis_superobject"/>
       </Item6>
     </RequiredPackages>
-    <Units Count="62">
+    <Units Count="63">
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="53"/>
-        <CursorPos X="58" Y="48"/>
+        <TopLine Value="486"/>
+        <CursorPos X="159" Y="514"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -339,7 +340,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="543"/>
         <CursorPos X="30" Y="550"/>
-        <UsageCount Value="18"/>
+        <UsageCount Value="19"/>
         <Bookmarks Count="2">
           <Item0 X="74" Y="472" ID="2"/>
           <Item1 X="74" Y="314" ID="1"/>
@@ -529,11 +530,11 @@
       <Unit58>
         <Filename Value="..\..\pltis_utils\tisutils.pas"/>
         <UnitName Value="tisutils"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="55"/>
         <CursorPos X="1" Y="66"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit58>
       <Unit59>
@@ -547,12 +548,10 @@
       <Unit60>
         <Filename Value="..\..\virtualtreeview\VirtualTrees.pas"/>
         <UnitName Value="VirtualTrees"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="131"/>
         <CursorPos X="26" Y="134"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit60>
       <Unit61>
@@ -562,87 +561,143 @@
         <WindowIndex Value="0"/>
         <TopLine Value="121"/>
         <CursorPos X="1" Y="121"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit61>
+      <Unit62>
+        <Filename Value="uwaptres.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uWaptRes"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="157"/>
+        <CursorPos X="39" Y="175"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit62>
     </Units>
-    <JumpHistory Count="19" HistoryIndex="18">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="264" Column="1" TopLine="250"/>
+        <Caret Line="527" Column="10" TopLine="499"/>
       </Position1>
       <Position2>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="265" Column="1" TopLine="250"/>
+        <Caret Line="33" Column="26" TopLine="25"/>
       </Position2>
       <Position3>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="185" Column="1" TopLine="170"/>
+        <Caret Line="34" Column="18" TopLine="25"/>
       </Position3>
       <Position4>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="186" Column="1" TopLine="170"/>
+        <Caret Line="33" Column="49" TopLine="26"/>
       </Position4>
       <Position5>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="188" Column="1" TopLine="170"/>
+        <Filename Value="..\..\pltis_utils\tisutils.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position5>
       <Position6>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="189" Column="1" TopLine="170"/>
+        <Filename Value="..\..\pltis_utils\tisutils.pas"/>
+        <Caret Line="43" Column="45" TopLine="22"/>
       </Position6>
       <Position7>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="189" Column="1" TopLine="170"/>
+        <Filename Value="..\..\pltis_utils\tisutils.pas"/>
+        <Caret Line="24" Column="1" TopLine="12"/>
       </Position7>
       <Position8>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="31" Column="55" TopLine="19"/>
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <Caret Line="879" Column="1" TopLine="861"/>
       </Position8>
       <Position9>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="235" Column="33" TopLine="143"/>
+        <Caret Line="259" Column="36" TopLine="231"/>
       </Position9>
       <Position10>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="33" Column="38" TopLine="16"/>
+        <Caret Line="278" Column="19" TopLine="264"/>
       </Position10>
       <Position11>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="543" Column="10" TopLine="528"/>
+        <Caret Line="299" Column="67" TopLine="279"/>
       </Position11>
       <Position12>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="527" Column="10" TopLine="499"/>
+        <Caret Line="274" Column="14" TopLine="257"/>
       </Position12>
       <Position13>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="33" Column="26" TopLine="25"/>
+        <Caret Line="339" Column="55" TopLine="314"/>
       </Position13>
       <Position14>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="34" Column="18" TopLine="25"/>
+        <Caret Line="347" Column="36" TopLine="327"/>
       </Position14>
       <Position15>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="33" Column="49" TopLine="26"/>
+        <Caret Line="344" Column="31" TopLine="326"/>
       </Position15>
       <Position16>
-        <Filename Value="..\..\pltis_utils\tisutils.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="345" Column="37" TopLine="326"/>
       </Position16>
       <Position17>
-        <Filename Value="..\..\pltis_utils\tisutils.pas"/>
-        <Caret Line="43" Column="45" TopLine="22"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="343" Column="61" TopLine="327"/>
       </Position17>
       <Position18>
-        <Filename Value="..\..\pltis_utils\tisutils.pas"/>
-        <Caret Line="24" Column="1" TopLine="12"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="259" Column="20" TopLine="241"/>
       </Position18>
       <Position19>
-        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
-        <Caret Line="879" Column="1" TopLine="861"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="265" Column="20" TopLine="241"/>
       </Position19>
+      <Position20>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="355" Column="30" TopLine="336"/>
+      </Position20>
+      <Position21>
+        <Filename Value="uwaptres.pas"/>
+        <Caret Line="9" Column="30" TopLine="1"/>
+      </Position21>
+      <Position22>
+        <Filename Value="uwaptres.pas"/>
+        <Caret Line="137" Column="10" TopLine="107"/>
+      </Position22>
+      <Position23>
+        <Filename Value="uwaptres.pas"/>
+        <Caret Line="138" Column="10" TopLine="108"/>
+      </Position23>
+      <Position24>
+        <Filename Value="uwaptres.pas"/>
+        <Caret Line="147" Column="10" TopLine="117"/>
+      </Position24>
+      <Position25>
+        <Filename Value="uwaptres.pas"/>
+        <Caret Line="187" Column="3" TopLine="153"/>
+      </Position25>
+      <Position26>
+        <Filename Value="uwaptres.pas"/>
+        <Caret Line="186" Column="25" TopLine="157"/>
+      </Position26>
+      <Position27>
+        <Filename Value="uwaptres.pas"/>
+        <Caret Line="190" Column="1" TopLine="157"/>
+      </Position27>
+      <Position28>
+        <Filename Value="uwaptres.pas"/>
+        <Caret Line="187" Column="57" TopLine="157"/>
+      </Position28>
+      <Position29>
+        <Filename Value="uwaptres.pas"/>
+        <Caret Line="79" Column="13" TopLine="61"/>
+      </Position29>
+      <Position30>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="469" Column="19" TopLine="446"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

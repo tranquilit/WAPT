@@ -25,9 +25,9 @@ location.reload(true);
 }
 </script>
 <h1>{{ _("Available packages") }}</h1>
-<input onclick='refresh()' type="button" name="update" value={{ _('Update available packages') }}/>
-<input onclick="location.href='cleanup'" type="button" name="cleanup" value={{ _('Clear package cache') }}/>
-<input onclick="location.href='upgrade'" type="button" name="upgrade" value={{ _ ('Upgrade system') }}/>
+<input onclick='refresh()' type="button" name="update" value="{{ _('Update available packages') }}"/>
+<input onclick="location.href='cleanup'" type="button" name="cleanup" value="{{ _('Clear package cache') }}"/>
+<input onclick="location.href='upgrade'" type="button" name="upgrade" value="{{ _ ('Upgrade system') }}"/>
 {% set cols = [_('package'),_('install_version'),_('install_status'),_('install_date')] %}
 <table border=1 cellspacing=0 cellpadding=4 class=sample>
 	<tr>

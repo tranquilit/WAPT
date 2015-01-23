@@ -1,7 +1,7 @@
 object VisWAPTServerPostConf: TVisWAPTServerPostConf
-  Left = 424
+  Left = 413
   Height = 345
-  Top = 200
+  Top = 207
   Width = 680
   Caption = 'Configuration of WAPT server for Windows'
   ClientHeight = 345
@@ -245,7 +245,9 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           'This is the password used to connect to the WAPT server via the WAPT '
           'console.<br /> '
           'For further information :<br /> '
-          '<a href=''http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html''>Generating a WAPT certificate</a>. '
+          '<a '
+          'href=''http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_'
+          'wapt.html''>Generating a WAPT certificate</a>. '
           '</body>'
           '</html>'
         )
