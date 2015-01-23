@@ -17,7 +17,7 @@ wapt-get.ini
 *.lrt
 waptdeployapf/
 waptexit/lib
-waptserver/postconf/lib	
+waptserver/postconf/lib
 
 # These are the default patterns globally ignored by Subversion:
 *.o
