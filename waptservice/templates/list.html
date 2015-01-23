@@ -28,10 +28,11 @@ location.reload(true);
 <input onclick='refresh()' type="button" name="update" value="{{ _('Update available packages') }}"/>
 <input onclick="location.href='cleanup'" type="button" name="cleanup" value="{{ _('Clear package cache') }}"/>
 <input onclick="location.href='upgrade'" type="button" name="upgrade" value="{{ _ ('Upgrade system') }}"/>
-{% set cols = [_('package'),_('install_version'),_('install_status'),_('install_date')] %}
+{% set cols = ['package','install_version','install_status','install_date'] %}
+{% set cols_header = [_('package'),_('install_version'),_('install_status'),_('install_date')] %}
 <table border=1 cellspacing=0 cellpadding=4 class=sample>
 	<tr>
-    	{% for c in cols %}
+    	{% for c in cols_header %}
     		<th>{{c or "###"}}</th>
     	{% endfor %}
     	<th>{{ _("Action") }}</th>
