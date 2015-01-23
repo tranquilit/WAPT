@@ -109,6 +109,7 @@ action is either :
 parser=OptionParser(usage=usage,version='waptservice.py ' + __version__+' common.py '+common.__version__+' setuphelpers.py '+setuphelpers.__version__)
 parser.add_option("-c","--config", dest="config", default=os.path.join(os.path.dirname(sys.argv[0]),'wapt-get.ini') , help="Config file full path (default: %default)")
 parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
+parser.add_option("-d","--devel", dest="devel", default=False,action='store_true', help="Enable debug mode (for development only)")
 
 (options,args)=parser.parse_args()
 
@@ -2095,6 +2096,8 @@ def install_service():
     setuphelpers.run('sc sdset waptservice D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)(A;;CCLCSWRPWPDTLOCRRC;;;S-1-5-11)S:(AU;FA;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;WD)');
 
 if __name__ == "__main__":
+
+
     if len(sys.argv)>1 and sys.argv[1] == 'doctest':
         import doctest
         sys.exit(doctest.testmod())
@@ -2108,8 +2111,7 @@ if __name__ == "__main__":
     task_manager.daemon = True
     task_manager.start()
 
-    debug=True
-    if debug:
+    if options.devel == True:
         app.run(host='0.0.0.0',port=30888,debug=True)
     else:
         #logger.setLevel(logging.DEBUG)
