@@ -41,11 +41,15 @@ begin
 end;
 
 begin
-  TranslateLCL;
+  //TranslateLCL;
+
   RequireDerivedFormResource := True;
   Application.Initialize;
   Application.CreateForm(TDMPython, DMPython);
+  DMPython.WaptConfigFileName := AppIniFilename;
   Application.CreateForm(TVisWaptGUI, VisWaptGUI);
+  if not VisWaptGUI.Login then
+     Halt;
   Application.Run;
 end.
 

@@ -15,6 +15,11 @@ trash
 version
 wapt-get.ini
 *.lrt
+wapt-get.exe
+waptconsole.exe
+waptdeploy.exe
+waptexit/lib/
+waptserver/postconf/lib/
 
 # These are the default patterns globally ignored by Subversion:
 *.o

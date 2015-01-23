@@ -9,7 +9,7 @@ uses
   Dialogs, Buttons, FileUtil,
   SynEdit, SynHighlighterPython, TplStatusBarUnit, vte_json, ExtCtrls,
   StdCtrls, ComCtrls, ActnList, Menus, jsonparser, superobject,
-  VirtualTrees, VarPyth, ImgList, SOGrid, uvisloading, IdComponent, DefaultTranslator;
+  VirtualTrees, VarPyth, ImgList, SOGrid, uvisloading, IdComponent, DefaultTranslator,GetText;
 
 type
 
@@ -23,6 +23,8 @@ type
     ActImportFromRepo: TAction;
     ActImportFromFile: TAction;
     ActCreateWaptSetup: TAction;
+    ActFrench: TAction;
+    ActEnglish: TAction;
     ActRemoveConflicts: TAction;
     ActSearchSoftwares: TAction;
     ActRemoveDepends: TAction;
@@ -100,11 +102,13 @@ type
     HostRunningTask: TLabeledEdit;
     Label13: TLabel;
     Label14: TLabel;
+    Label15: TLabel;
     LabelComputersNumber: TLabel;
     labSelected: TLabel;
     MemoTaskLog: TMemo;
     MemoInstallOutput: TMemo;
     MemoGroupeDescription: TMemo;
+    MenuItem17: TMenuItem;
     MenuItem19: TMenuItem;
     MenuItem20: TMenuItem;
     MenuItem25: TMenuItem;
@@ -126,6 +130,8 @@ type
     MenuItem47: TMenuItem;
     MenuItem48: TMenuItem;
     MenuItem49: TMenuItem;
+    MenuItem50: TMenuItem;
+    MenuItem51: TMenuItem;
     OpenDialogWapt: TOpenDialog;
     PageControl1: TPageControl;
     Panel11: TPanel;
@@ -241,7 +247,11 @@ type
     procedure ActDeployWaptExecute(Sender: TObject);
     procedure ActEditGroupExecute(Sender: TObject);
     procedure ActEditHostPackageExecute(Sender: TObject);
+    procedure ActEnglishExecute(Sender: TObject);
+    procedure ActEnglishUpdate(Sender: TObject);
     procedure ActForgetPackagesExecute(Sender: TObject);
+    procedure ActFrenchExecute(Sender: TObject);
+    procedure ActFrenchUpdate(Sender: TObject);
     procedure ActGotoHostExecute(Sender: TObject);
     procedure ActHelpExecute(Sender: TObject);
     procedure ActImportFromFileExecute(Sender: TObject);
@@ -342,13 +352,14 @@ type
     procedure TimerTasksTimer(Sender: TObject);
   private
     CurrentVisLoading: TVisLoading;
+    FLanguage: String;
     procedure DoProgress(ASender: TObject);
     function FilterSoftwares(softs: ISuperObject): ISuperObject;
     { private declarations }
     procedure GridLoadData(grid: TSOGrid; jsondata: string);
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
-    function Login: boolean;
     procedure PythonOutputSendData(Sender: TObject; const Data: ansistring);
+    procedure SetLanguage(AValue: String);
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: string);
     procedure UpdateHostPages(Sender: TObject);
   public
@@ -358,8 +369,10 @@ type
 
     MainRepoUrl, WAPTServer, TemplatesRepoUrl: string;
 
+    function Login: boolean;
     function EditIniFile: boolean;
     function updateprogress(receiver: TObject; current, total: integer): boolean;
+    property Language:String read FLanguage write SetLanguage;
   end;
 
 var
@@ -1269,6 +1282,16 @@ begin
     ActSearchHost.Execute;
 end;
 
+procedure TVisWaptGUI.ActEnglishExecute(Sender: TObject);
+begin
+  Language:='en';
+end;
+
+procedure TVisWaptGUI.ActEnglishUpdate(Sender: TObject);
+begin
+  ActEnglish.Checked := Language='en';
+end;
+
 procedure TVisWaptGUI.ActForgetPackagesExecute(Sender: TObject);
 var
   sel, package, res, packages : ISuperObject;
@@ -1297,6 +1320,16 @@ begin
     end;
     UpdateHostPages(Sender);
   end;
+end;
+
+procedure TVisWaptGUI.ActFrenchExecute(Sender: TObject);
+begin
+  Language := 'fr';
+end;
+
+procedure TVisWaptGUI.ActFrenchUpdate(Sender: TObject);
+begin
+  ActFrench.Checked := Language='fr';
 end;
 
 procedure TVisWaptGUI.ActGotoHostExecute(Sender: TObject);
@@ -1768,6 +1801,7 @@ end;
 procedure TVisWaptGUI.ActReloadConfigExecute(Sender: TObject);
 var
   inifile: TIniFile;
+  newlang,lang,fblang:String;
 begin
   CacheWaptServerUrl := 'None';
   inifile := TIniFile.Create(AppIniFilename);
@@ -1785,6 +1819,9 @@ begin
     MainRepoUrl := GetMainWaptRepo;
     WAPTServer := GetWaptServerURL;
     TemplatesRepoUrl := WaptTemplatesRepo;
+    GetLanguageIDs(Lang,fblang);
+    Language := inifile.readString('global',
+      'language',fblang);
     //Lazy loading
     //DMPython.PythonEng.ExecString('mywapt.update(register=False)');
   finally
@@ -1930,6 +1967,7 @@ end;
 procedure TVisWaptGUI.FormCreate(Sender: TObject);
 begin
   waptpath := ExtractFileDir(ParamStr(0));
+  DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
 end;
 
 function TVisWaptGUI.Login: boolean;
@@ -2006,14 +2044,11 @@ begin
 end;
 
 procedure TVisWaptGUI.FormShow(Sender: TObject);
+var
+  lang,fallback_lang:String;
 begin
   MemoLog.Clear;
-  DMPython.WaptConfigFileName := AppIniFilename;
-  DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
-  if not Login then
-     Halt
-  else
-     ActPackagesUpdate.Execute;
+  ActPackagesUpdate.Execute;
 
   MainPages.ActivePage := pgInventory;
   MainPagesChange(Sender);
@@ -2023,7 +2058,8 @@ begin
   GridGroups.LoadSettingsFromIni(Appuserinipath);
   GridHostPackages.LoadSettingsFromIni(Appuserinipath);
   GridHostSoftwares.LoadSettingsFromIni(Appuserinipath);
-
+  GetLanguageIDs(Lang,fallback_lang);
+  Label15.Caption:=Lang+ ' / ' +fallback_lang;
 end;
 
 procedure TVisWaptGUI.GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
@@ -2336,6 +2372,23 @@ end;
 procedure TVisWaptGUI.PythonOutputSendData(Sender: TObject; const Data: ansistring);
 begin
   MemoLog.Lines.Add(Data);
+end;
+
+procedure TVisWaptGUI.SetLanguage(AValue: String);
+begin
+  if FLanguage=AValue then Exit;
+  FLanguage:=AValue;
+  SetDefaultLang(FLanguage);
+  if FLanguage='fr' then
+    GetLocaleFormatSettings($1252, DefaultFormatSettings)
+  else
+    GetLocaleFormatSettings($409, DefaultFormatSettings);
+
+  if (FLanguage<>'') and Visible then
+  begin
+    Hide;
+    Show;
+  end;
 end;
 
 procedure TVisWaptGUI.GridPackagesPaintText(Sender: TBaseVirtualTree;

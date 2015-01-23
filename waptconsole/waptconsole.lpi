@@ -34,6 +34,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <CommandLineParams Value="--lang en"/>
       </local>
     </RunParams>
     <RequiredPackages Count="10">
