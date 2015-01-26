@@ -1,6 +1,5 @@
 {% extends "layout.html" %}
 {% block content %}
-
 <h1>{{ _("Tasks manager") }}</h1>
 {%if data['running']%}
 <h3>{{ _("Running: {0}").format(data['running'].description) }}</h3>
@@ -11,12 +10,12 @@
 {% endfor %}
 </ul>
 {%endif%}
-{% for group in [_('pending'),_('done'),_('errors')] %}
-<h3>{{group | capitalize}}:</h3>
+{% for group in ['pending','done','errors'] %}
+<h3>{{_(group) | capitalize}}:</h3>
 	<ul>
 	{% for task in data.get(group) | reverse %}
 	{% if group=='pending' %}
-	<li><b>{{task.id}} - {{task.create_date}} - <a href={{url_for('task',id=task['id'])}}>{{task.description}}:</b></a> <input value={{ _("Cancel") }} type=button onclick="location.href='cancel_task?id={{task.id}}'"/> 
+	<li><b>{{task.id}} - {{task.create_date}} - <a href={{url_for('task',id=task['id'])}}>{{task.description}}:</b></a> <input value={{ _("Cancel") }} type=button onclick="location.href='cancel_task?id={{task.id}}'"/>
 	{% else %}
 	<li><b>{{task.id}} - {{task.create_date}} - <a href={{url_for('task',id=task['id'])}}>{{task.description}}:</b></a> {{task.logs | beautify}}</li>
 	{% endif %}
