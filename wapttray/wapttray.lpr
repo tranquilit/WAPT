@@ -35,30 +35,7 @@ uses
 
 {$R *.res}
 
-procedure TranslateLCL;
-var
-  PODirectory, Lang, FallbackLang: String;
-  //poFile :TPOFile;
-
 begin
-  PODirectory:='C:\codetyphon\typhon\lcl\languages\';
-  Lang:='en';
-  FallbackLang:='en';
-  //LCLGetLanguageIDs(Lang,FallbackLang); // in unit LCLProc
-
-  // ... add here a TranslateUnitResourceStrings call for every po file ...
-  Translations.TranslateUnitResourceStrings(
-      'LCLStrConsts',
-      PODirectory+'lclstrconsts.%s.po',Lang,
-      FallbackLang);
-  Translations.TranslateUnitResourceStrings(
-      'uWaptRes',
-      'C:\tranquilit\wapt\languages\wapttray.%s.po',Lang,FallbackLang);
-
-end;
-
-begin
-  TranslateLCL;
   RequireDerivedFormResource := True;
   Application.Initialize;
   Application.CreateForm(TDMWaptTray, DMWaptTray);
