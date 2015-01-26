@@ -14,7 +14,7 @@ uses
   waptcommon, uwaptres, dmwaptpython, uVisEditPackage,
   uviscreatewaptsetup, uvislogin, uvisprivatekeyauth,
   uvisloading, uviswaptconfig, uvischangepassword, uviswaptdeploy, 
-  uvishostsupgrade, uVisAPropos, uVisImportPackage;
+  uvishostsupgrade, uVisAPropos, uVisImportPackage,IniFiles,tiscommon;
 
 {$R *.res}
 
@@ -45,6 +45,7 @@ begin
 
   RequireDerivedFormResource := True;
   Application.Initialize;
+
   Application.CreateForm(TDMPython, DMPython);
   DMPython.WaptConfigFileName := AppIniFilename;
   Application.CreateForm(TVisWaptGUI, VisWaptGUI);

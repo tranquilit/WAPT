@@ -359,7 +359,6 @@ type
     procedure GridLoadData(grid: TSOGrid; jsondata: string);
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
     procedure PythonOutputSendData(Sender: TObject; const Data: ansistring);
-    procedure SetLanguage(AValue: String);
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: string);
     procedure UpdateHostPages(Sender: TObject);
   public
@@ -369,10 +368,11 @@ type
 
     MainRepoUrl, WAPTServer, TemplatesRepoUrl: string;
 
+    constructor Create(TheOwner: TComponent); override;
+
     function Login: boolean;
     function EditIniFile: boolean;
     function updateprogress(receiver: TObject; current, total: integer): boolean;
-    property Language:String read FLanguage write SetLanguage;
   end;
 
 var
@@ -480,12 +480,20 @@ begin
 end;
 
 procedure TVisWaptGUI.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+var
+  ini : TIniFile;
 begin
   Gridhosts.SaveSettingsToIni(Appuserinipath);
   GridPackages.SaveSettingsToIni(Appuserinipath);
   GridGroups.SaveSettingsToIni(Appuserinipath);
   GridHostPackages.SaveSettingsToIni(Appuserinipath);
   GridHostSoftwares.SaveSettingsToIni(Appuserinipath);
+  ini := TIniFile.Create(AppIniFilename);
+  try
+    ini.WriteString('Global','language',DMPython.Language);
+  finally
+    ini.Free;
+  end;
 
 end;
 
@@ -646,6 +654,15 @@ begin
     GridHostTasksDone.Data := nil;
     GridHostTasksErrors.Data := nil;
   end;
+end;
+
+constructor TVisWaptGUI.Create(TheOwner: TComponent);
+var
+  l,fbl:String;
+begin
+  inherited Create(TheOwner);
+  //GetLanguageIDs(l,fbl);
+  //FLanguage:=fbl;
 end;
 
 procedure TVisWaptGUI.ActLocalhostInstallExecute(Sender: TObject);
@@ -1284,12 +1301,12 @@ end;
 
 procedure TVisWaptGUI.ActEnglishExecute(Sender: TObject);
 begin
-  Language:='en';
+  DMPython.Language:='en';
 end;
 
 procedure TVisWaptGUI.ActEnglishUpdate(Sender: TObject);
 begin
-  ActEnglish.Checked := Language='en';
+  ActEnglish.Checked := DMPython.Language='en';
 end;
 
 procedure TVisWaptGUI.ActForgetPackagesExecute(Sender: TObject);
@@ -1324,12 +1341,12 @@ end;
 
 procedure TVisWaptGUI.ActFrenchExecute(Sender: TObject);
 begin
-  Language := 'fr';
+  DMPython.Language := 'fr';
 end;
 
 procedure TVisWaptGUI.ActFrenchUpdate(Sender: TObject);
 begin
-  ActFrench.Checked := Language='fr';
+  ActFrench.Checked := DMPython.Language='fr';
 end;
 
 procedure TVisWaptGUI.ActGotoHostExecute(Sender: TObject);
@@ -1820,7 +1837,7 @@ begin
     WAPTServer := GetWaptServerURL;
     TemplatesRepoUrl := WaptTemplatesRepo;
     GetLanguageIDs(Lang,fblang);
-    Language := inifile.readString('global',
+    DMPython.Language := inifile.readString('global',
       'language',fblang);
     //Lazy loading
     //DMPython.PythonEng.ExecString('mywapt.update(register=False)');
@@ -2374,22 +2391,6 @@ begin
   MemoLog.Lines.Add(Data);
 end;
 
-procedure TVisWaptGUI.SetLanguage(AValue: String);
-begin
-  if FLanguage=AValue then Exit;
-  FLanguage:=AValue;
-  SetDefaultLang(FLanguage);
-  if FLanguage='fr' then
-    GetLocaleFormatSettings($1252, DefaultFormatSettings)
-  else
-    GetLocaleFormatSettings($409, DefaultFormatSettings);
-
-  if (FLanguage<>'') and Visible then
-  begin
-    Hide;
-    Show;
-  end;
-end;
 
 procedure TVisWaptGUI.GridPackagesPaintText(Sender: TBaseVirtualTree;
   const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;

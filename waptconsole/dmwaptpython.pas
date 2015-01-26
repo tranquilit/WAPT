@@ -18,10 +18,13 @@ type
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
   private
+    FLanguage: String;
     jsondata:TJSONData;
     FWaptConfigFileName: String;
     procedure LoadJson(data: UTF8String);
     procedure SetWaptConfigFileName(AValue: String);
+    procedure SetLanguage(AValue: String);
+
     { private declarations }
   public
     { public declarations }
@@ -31,18 +34,20 @@ type
     function RunJSON(expr: UTF8String; jsonView: TVirtualJSONInspector=
       nil): ISuperObject;
 
+    property Language:String read FLanguage write SetLanguage;
   end;
 
 var
   DMPython: TDMPython;
 
 implementation
-uses waptcommon;
+uses waptcommon,inifiles;
 {$R *.lfm}
 
 procedure TDMPython.SetWaptConfigFileName(AValue: String);
 var
   St:TStringList;
+  ini : TInifile;
 begin
   if FWaptConfigFileName=AValue then Exit;
   FWaptConfigFileName:=AValue;
@@ -75,9 +80,29 @@ begin
       st.free;
     end;
   end;
+
+  ini := TIniFile.Create(AppIniFilename);
+  try
+    Language := ini.ReadString('global','language','');
+  finally
+    ini.Free;
+  end;
+end;
+
+procedure TDMPython.SetLanguage(AValue: String);
+begin
+  if FLanguage=AValue then Exit;
+  FLanguage:=AValue;
+  SetDefaultLang(FLanguage);
+  if FLanguage='fr' then
+    GetLocaleFormatSettings($1252, DefaultFormatSettings)
+  else
+    GetLocaleFormatSettings($409, DefaultFormatSettings);
+
 end;
 
 procedure TDMPython.DataModuleCreate(Sender: TObject);
+
 begin
   with PythonEng do
   begin
