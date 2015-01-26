@@ -60,8 +60,16 @@ FileName=$[Project-Path]templates\remove.html
 ClassName=TProjectFileNode
 FileName=$[Project-Path]templates\status.html
 
+[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node7]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]templates\task.html
+
+[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node8]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]templates\tasks.html
+
 [Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes]
-Count=7
+Count=9
 
 [Project\ChildNodes\Node0\ChildNodes\Node2]
 ClassName=TProjectFileNode
