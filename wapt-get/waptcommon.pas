@@ -131,11 +131,15 @@ const
   UseProxyForServer: Boolean = False;
   UseProxyForTemplates: Boolean = False;
 
+  Language:String = '';
+  FallBackLanguage:String = '';
+
 implementation
 
 uses FileUtil, soutils, Variants, winsock, ShellApi, JwaIpHlpApi,
   JwaIpTypes, NetworkAdapterInfo, tisinifiles, registry, tisstrings, JwaWinDNS, JwaWinsock2,
-  IdHttp,IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,Dialogs,Regex,UnitRedirect, IdURI, uwaptres;
+  IdHttp,IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,Dialogs,Regex,UnitRedirect, IdURI,
+  uwaptres,gettext;
 
 function IPV42String(ipv4:LongWord):String;
 begin
@@ -397,7 +401,8 @@ begin
   end;
 end;
 
-Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy:Boolean=False): boolean;
+function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver: TObject;
+  progressCallback: TProgressCallback; enableProxy: Boolean): boolean;
 var
   http:TIdHTTP;
   OutputFile:TFileStream;
@@ -408,6 +413,7 @@ var
 begin
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
+  http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
 
   ssl := copy(fileURL, 1, length('https://')) = 'https://';
   if (ssl) then
@@ -462,7 +468,7 @@ begin
   end;
 end;
 
-Function IdWget_Try(const fileURL: Utf8String; enableProxy:Boolean=False): boolean;
+function IdWget_Try(const fileURL: Utf8String; enableProxy: Boolean): boolean;
 var
   http:TIdHTTP;
   ssl: boolean;
@@ -471,6 +477,7 @@ var
 begin
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
+  http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
 
   ssl := copy(fileUrl, 1, length('https://')) = 'https://';
   if (ssl) then
@@ -512,6 +519,7 @@ var
 begin
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
+  http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
 
   ssl := copy(url, 1, length('https://')) = 'https://';
   if (ssl) then
@@ -559,6 +567,7 @@ var
 begin
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
+  http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
 
   ssl := copy(url, 1, length('https://')) = 'https://';
   if (ssl) then
@@ -568,6 +577,7 @@ begin
   end
   else
     ssl_handler := Nil;
+
 
   DataStream :=TStringStream.Create(Data);
   {progress :=  TIdProgressProxy.Create(Nil);
@@ -600,7 +610,8 @@ begin
 end;
 
 
-function WAPTServerJsonGet(action: String;args:Array of const; enableProxy:Boolean=False;user:AnsiString='';password:AnsiString=''): ISuperObject;
+function WAPTServerJsonGet(action: String; args: array of const;
+  enableProxy: Boolean; user: AnsiString; password: AnsiString): ISuperObject;
 var
   strresult : String;
 begin
@@ -614,9 +625,9 @@ begin
   Result := SO(strresult);
 end;
 
-function WAPTServerJsonPost(action: String;args:Array of const;
-    data: ISuperObject; enableProxy:Boolean= False;
-    user:AnsiString='';password:AnsiString=''):ISuperObject;
+function WAPTServerJsonPost(action: String; args: array of const;
+  data: ISuperObject; enableProxy: Boolean; user: AnsiString;
+  password: AnsiString): ISuperObject;
 var
   res:String;
 begin
@@ -630,7 +641,8 @@ begin
   result := SO(res);
 end;
 
-function WAPTLocalJsonGet(action: String;user:AnsiString='';password:AnsiString='';timeout:integer=1000): ISuperObject;
+function WAPTLocalJsonGet(action: String; user: AnsiString;
+  password: AnsiString; timeout: integer): ISuperObject;
 var
   strresult : String;
   http:TIdHTTP;
@@ -638,6 +650,7 @@ begin
   http := TIdHTTP.Create;
   try
     try
+      http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
       http.ConnectTimeout:=timeout;
       if user <>'' then
       begin
@@ -648,6 +661,8 @@ begin
 
       if copy(action,length(action),1)<>'/' then
         action := '/'+action;
+
+
       strresult := http.Get(GetWaptLocalURL+action);
       Result := SO(strresult);
 
@@ -1280,7 +1295,7 @@ begin
   end;
 end;
 
-function LocalSysinfo: ISUperObject;
+function LocalSysinfo: ISuperObject;
 var
       so:ISuperObject;
       //CPUInfo:TCpuInfo;
@@ -1325,9 +1340,9 @@ begin
     Result := StringReplace(Result,'%('+key.AsString+')s',params.S[key.AsString],[rfReplaceAll]);
 end;
 
-function WAPTServerJsonMultipartFilePost(waptserver,action: String;args:Array of const;
-    FileArg,FileName:String; enableProxy:Boolean= False;
-    user:AnsiString='';password:AnsiString='';OnHTTPWork:TWorkEvent=Nil):ISuperObject;
+function WAPTServerJsonMultipartFilePost(waptserver, action: String;
+  args: array of const; FileArg, FileName: String; enableProxy: Boolean;
+  user: AnsiString; password: AnsiString; OnHTTPWork: TWorkEvent): ISuperObject;
 var
   res:String;
   http:TIdHTTP;
@@ -1339,12 +1354,14 @@ begin
     action := '/'+action;
   if length(args)>0 then
     action := format(action,args);
-  HTTP := TIdHTTP.Create;
+  http := TIdHTTP.Create;
+  http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
+
   ssl := copy(waptserver, 1, length('https://')) = 'https://';
   if (ssl) then
   begin
     ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
-	  HTTP.IOHandler := ssl_handler;
+	  http.IOHandler := ssl_handler;
   end
   else
     ssl_handler := Nil;
@@ -1477,6 +1494,9 @@ end;
 initialization
 //  if not Succeeded(CoInitializeEx(nil, COINIT_MULTITHREADED)) then;
     //Raise Exception.Create('Unable to initialize ActiveX layer');
+   if Language ='' then
+      GetLanguageIDs(Language,FallBackLanguage);
+
 
 finalization
 //  CoUninitialize();
