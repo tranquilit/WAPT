@@ -640,7 +640,20 @@ def upload_waptsetup():
                 else:
                     os.rename(tmp_target,target)
                     result = dict(status='OK',message='%s uploaded'%(filename,))
-                if os.path.exists(
+
+                # Compat with older clients: provide a waptsetup.exe -> waptagent.exe alias
+                if os.path.exists(waptsetup):
+                    try:
+                        os.rename(waptsetup, waptsetup + '.old')
+                        os.unlink(waptsetup.exe)
+                    except:
+                        pass
+                try:
+                    os.symlink(waptagent, waptsetup)
+                except:
+                    import shutil
+                    shutil.copyfile(waptagent, waptsetup)
+
             else:
                 result = dict(status='ERROR',message='Wrong file name (version conflict?)')
         else:
