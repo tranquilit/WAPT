@@ -20,8 +20,9 @@ waptconsole.exe
 waptdeploy.exe
 waptexit/lib/
 waptserver/postconf/lib/
-Wapttray.exe
-waptpostconf.exe
+wapttray.exe
+waptexit.exe
+waptserverpostconf.exe
 # These are the default patterns globally ignored by Subversion:
 *.o
 *.lo
