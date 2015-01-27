@@ -15,6 +15,7 @@ trash
 version
 wapt-get.ini
 *.lrt
+*.res
 waptdeployapf/
 waptexit/lib
 waptserver/postconf/lib
