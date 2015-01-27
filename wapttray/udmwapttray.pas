@@ -479,29 +479,29 @@ begin
         if (running<>Nil) and (running.AsArray.Length>0) then
         begin
           trayMode:=tmRunning;
-          trayHint:=UTF8Encode(format(rsInstalling, [running.AsString]));
+          trayHint:=UTF8Encode(format(utf8Decode(rsInstalling), [running.AsString]));
         end
         else
         if runstatus<>'' then
         begin
-          trayHint:=runstatus;
+          trayHint:=UTF8Encode(runstatus);
           trayMode:=tmRunning;
         end
         else
         if (errors<>Nil) and (errors.AsArray.Length>0) then
         begin
-          trayHint:=format(rsErrorFor,[Join(#13#10,errors)]);
+          trayHint:= utf8Encode(format(utf8Decode(rsErrorFor),[Join(#13#10,errors)]));
           trayMode:=tmErrors;
         end
         else
         if (upgrades<>Nil) and (upgrades.AsArray.Length>0) then
         begin
           trayMode:=tmUpgrades;
-          trayHint:=format(rsUpdatesAvailableFor,[soutils.join(#13#10'-',upgrades)]);
+          trayHint:= utf8Encode(format(utf8Decode(rsUpdatesAvailableFor),[soutils.join(#13#10'-',upgrades)]));
         end
         else
         begin
-          trayHint:='';
+          trayHint:=utf8Encode(format(utf8Decode(rsUpdatesAvailableFor),[soutils.join(#13#10'-',upgrades)]));;
           trayMode:=tmOK;
         end;
       end
@@ -528,7 +528,7 @@ begin
         taskresult := SO(message.Text);
         if taskresult<>Nil then
         begin
-          trayHint:=taskresult.S['runstatus'];
+          trayHint:= utf8Encode(taskresult.S['runstatus']);
           if taskresult.B['notify_user'] then
              task_notify_user:=True
           else
@@ -545,7 +545,7 @@ begin
           trayMode:= tmErrors;
           current_task := Nil;
           if taskresult<>Nil then
-            TrayIcon1.BalloonHint := format(rsErrorFor, [taskresult.S['description']])
+            TrayIcon1.BalloonHint := utf8Encode(format(utf8Decode(rsErrorFor), [taskresult.S['description']]))
           else
             TrayIcon1.BalloonHint := rsError;
           TrayIcon1.BalloonFlags:=bfError;
@@ -557,7 +557,7 @@ begin
         begin
           trayMode:= tmRunning;
           if taskresult<>Nil then
-            TrayIcon1.BalloonHint := format(rsTaskStarted, [taskresult.S['description']])
+            TrayIcon1.BalloonHint :=  utf8Encode(format(utf8Decode(rsTaskStarted), [taskresult.S['description']]))
           else
             TrayIcon1.BalloonHint := '';
 
@@ -570,7 +570,7 @@ begin
         if topic='PROGRESS' then
         begin
           trayMode:= tmRunning;
-          TrayIcon1.BalloonHint := taskresult.S['description']+#13#10+Format('%.0f%%',[taskresult.D['progress']]);
+          TrayIcon1.BalloonHint :=  utf8Encode(taskresult.S['description']+#13#10+Format('%.0f%%',[taskresult.D['progress']]));
           TrayIcon1.BalloonFlags:=bfInfo;
           if not popupvisible and task_notify_user then
             TrayIcon1.ShowBalloonHint;
@@ -580,7 +580,7 @@ begin
         if topic='FINISH' then
         begin
           trayMode:= tmOK;
-          TrayIcon1.BalloonHint := format(rsTaskDone, [taskresult.S['description'], taskresult.S['summary']]);
+          TrayIcon1.BalloonHint := utf8Encode(format(utf8Decode(rsTaskDone), [taskresult.S['description'], taskresult.S['summary']]));
           TrayIcon1.BalloonFlags:=bfInfo;
           if not popupvisible and task_notify_user then
             TrayIcon1.ShowBalloonHint;
@@ -594,14 +594,14 @@ begin
 
           if taskresult.DataType = stObject then
           begin
-             TrayIcon1.BalloonHint :=format(rsCanceling, [taskresult.S['description']]);
+             TrayIcon1.BalloonHint := utf8Encode(format(rsCanceling, [taskresult.S['description']]));
              TrayIcon1.BalloonFlags:=bfWarning;
              if not popupvisible and task_notify_user  then
                 TrayIcon1.ShowBalloonHint;
           end
           else
           begin
-            TrayIcon1.BalloonHint :=rsNoTaskCanceled;
+            TrayIcon1.BalloonHint := utf8Encode(rsNoTaskCanceled);
             TrayIcon1.BalloonFlags:=bfInfo;
             if not popupvisible and task_notify_user  then
               TrayIcon1.ShowBalloonHint;
@@ -714,10 +714,10 @@ end;
 
 procedure TDMWaptTray.SettrayHint(AValue: WideString);
 begin
-  if TrayIcon1.Hint<>UTF8Encode(AValue) then
+  if TrayIcon1.Hint<>AValue then
   begin
-    TrayIcon1.Hint:= UTF8Encode(AValue);
-    TrayIcon1.BalloonHint:=UTF8Encode(AValue);
+    TrayIcon1.Hint:= AValue;
+    TrayIcon1.BalloonHint:=AValue;
     {if not popupvisible and (AValue<>'') and notify_user then
       TrayIcon1.ShowBalloonHint;}
   end;
