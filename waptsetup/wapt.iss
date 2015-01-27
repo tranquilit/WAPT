@@ -214,7 +214,7 @@ begin
   NetstatOutput := RunCmd('netstat -a -n -p tcp', True);
    if Pos('0.0.0.0:8080 ', NetstatOutput) > 0 then
     ConflictingService := '8080'
-  if Pos('0.0.0.0:8088 ', NetstatOutput) > 0 then
+  else if Pos('0.0.0.0:8088 ', NetstatOutput) > 0 then
     ConflictingService := '8088'
   else if Pos('0.0.0.0:443 ', NetstatOutput) > 0 then
     ConflictingService := '443'
