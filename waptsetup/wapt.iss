@@ -46,13 +46,16 @@ Source: "..\waptservice\ssl\*"; DestDir: "{app}\waptservice\ssl"; Flags: createa
 Source: "..\waptservice\templates\*"; DestDir: "{app}\waptservice\templates"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
 
 ; user feedback of waptservice activity
-Source: "..\wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.exe'); 
+Source: "..\wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.exe'); Flags: ignoreversion 
 
 ; command line tools
-Source: "..\wapt-get.exe"; DestDir: "{app}";
+Source: "..\wapt-get.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\wapt-get.exe.manifest"; DestDir: "{app}";
-Source: "..\dmidecode.exe"; DestDir: "{app}";
-Source: "..\waptexit.exe"; DestDir: "{app}";
+Source: "..\dmidecode.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\waptexit.exe"; DestDir: "{app}"; Flags: ignoreversion
+
+; translations
+Source: "..\languages\*"; DestDir: "{app}\languages\"; Flags: createallsubdirs recursesubdirs;
 
 ; local package cache
 Source: "..\cache\icons\unknown.png"; DestDir: "{app}\cache\icons";

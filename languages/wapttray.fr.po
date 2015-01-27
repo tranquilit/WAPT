@@ -1,5 +1,3 @@
-# mcadorel-adm <ss>, 2015.
-# mcadorel-adm <ss>, 2015.
 msgid ""
 msgstr ""
 "PO-Revision-Date: 2015-01-13 12:27+0200\n"
@@ -134,9 +132,17 @@ msgstr ""
 msgid "Edit package bundle configuration"
 msgstr "Editer la configuration d'un groupe de paquets"
 
+#: uwaptres.rscanceled
+msgid "canceled"
+msgstr ""
+
 #: uwaptres.rscanceledbyuser
 msgid "Task %s has been canceled by the user"
 msgstr "La tâche %s a été annulée par l'utilisateur"
+
+#: uwaptres.rscanceledtask
+msgid "Cancelled %s"
+msgstr ""
 
 #: uwaptres.rscanceling
 msgid "Canceling %s"
@@ -150,7 +156,25 @@ msgstr "Echec de la copie du certificat %s vers %s."
 msgid "Checking..."
 msgstr "Vérification en cours..."
 
+#: uwaptres.rscname
+msgid "CNAME: %s"
+msgstr ""
+
+#: uwaptres.rscompletionprogress
+msgid "%s : %.0f%% completed"
+msgstr ""
+
+#: uwaptres.rsconfirm
+msgctxt "uwaptres.rsconfirm"
+msgid "Confirm"
+msgstr "Confirmer"
+
+#: uwaptres.rsconfirmcancelpostconfig
+msgid "Are you sure you want to cancel configuring WAPT server ?"
+msgstr ""
+
 #: uwaptres.rsconfirmcaption
+msgctxt "uwaptres.rsconfirmcaption"
 msgid "Confirm"
 msgstr "Confirmer"
 
@@ -166,6 +190,21 @@ msgstr "Êtes-vous sûr de vouloir oublier %s paquets de la machine %s ?"
 #: uwaptres.rsconfirmimport
 #, fuzzy
 #| msgid ""
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 #| "Are you sure you want to import\n"
 #| "%s\n"
 #| " to your repository ?\n"
@@ -242,6 +281,14 @@ msgstr "Téléchargement annulé."
 msgid "Download stopped by the user"
 msgstr "Téléchargement interrompu par l'utilisateur."
 
+#: uwaptres.rsdnsdomain
+msgid "DNS Domain : %s"
+msgstr ""
+
+#: uwaptres.rsdnsserver
+msgid "DNS Server : %s"
+msgstr ""
+
 #: uwaptres.rsdownloading
 msgid "Downloading"
 msgstr "Téléchargement en cours"
@@ -286,13 +333,30 @@ msgstr "L'ancien mot de passe ne doit pas être vide."
 msgid "Error"
 msgstr "Erreur"
 
+#: uwaptres.rserrorcanceling
+msgid "Error cancelling: %s"
+msgstr ""
+
 #: uwaptres.rserrorfor
 msgid "Error for %s"
 msgstr "Erreur pour %s"
 
+#: uwaptres.rserrorlaunchingupdate
+msgid "Error launching update: %s"
+msgstr ""
+
+#: uwaptres.rserrorlaunchingupgrade
+msgid "Error launching upgrade: %s"
+msgstr ""
+
 #: uwaptres.rserrorwhilechecking
 msgid "Error while checking..."
 msgstr "Erreur lors de la vérification..."
+
+#: uwaptres.rserrorwithmessage
+msgctxt "uwaptres.rserrorwithmessage"
+msgid "Error : %s"
+msgstr "Erreur : %s"
 
 #: uwaptres.rsfailedimport
 msgid "Error during import."
@@ -344,7 +408,9 @@ msgid "Innosetup is unavailable (path : %s), please install it first."
 msgstr "Innosetup n'est pas disponible (emplacement : %s), veuillez l'installer en premier lieu."
 
 #: uwaptres.rsinputkeyname
-msgid "Please input a key name"
+#, fuzzy
+#| msgid "Please input a key name"
+msgid "Please input a key name."
 msgstr "Veuillez spécifier le nom de la clé"
 
 #: uwaptres.rsinputpubkeypath
@@ -355,6 +421,18 @@ msgstr "Veuillez spécifier l'emplacement de la clé publique"
 msgid "Installing %s..."
 msgstr "Installation de %s..."
 
+#: uwaptres.rsinstallon
+msgid "  install on c:\\wapt : --setup -s"
+msgstr ""
+
+#: uwaptres.rsinvaliddns
+msgid "Invalid DNS"
+msgstr ""
+
+#: uwaptres.rsinvaliddnsfallback
+msgid "This DNS name is not valid, would you like to use the IP address instead ?"
+msgstr ""
+
 #: uwaptres.rsinvalidwaptsetupdir
 msgid "WAPTsetup directory is not valid : %s"
 msgstr "Le répertoire de WAPTsetup n'est pas valide : %s"
@@ -362,6 +440,14 @@ msgstr "Le répertoire de WAPTsetup n'est pas valide : %s"
 #: uwaptres.rskeyalreadyexists
 msgid "Key %s already exists, please pick another name."
 msgstr "La clé %s existe déjà, merci de choisir un nom différent."
+
+#: uwaptres.rslongtaskerror
+msgid "Error launching longtask: %s"
+msgstr ""
+
+#: uwaptres.rsmainrepourl
+msgid "Main repo url: %s"
+msgstr ""
 
 #: uwaptres.rsnbmodifiedhosts
 msgid "%s hosts affected."
@@ -371,9 +457,21 @@ msgstr "%s machines "
 msgid "There is no package bundle."
 msgstr "Il n'y a pas de groupe de paquets."
 
+#: uwaptres.rsnorunningtask
+msgid "No running tasks"
+msgstr ""
+
 #: uwaptres.rsnotaskcanceled
 msgid "No task canceled"
 msgstr "Aucune tâche annulée"
+
+#: uwaptres.rsopeningfirewall
+msgid "Opening firewall for WaptServer"
+msgstr ""
+
+#: uwaptres.rsoptrepo
+msgid " -r --repo : URL of dependencies libs"
+msgstr ""
 
 #: uwaptres.rspackageconfigdone
 msgid "Done configuring packages for the current user session"
@@ -390,6 +488,21 @@ msgstr "Erreur lors de la création du paquet : %s"
 #: uwaptres.rspackageduplicateconfirm
 #, fuzzy
 #| msgid ""
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
 #| " into your repository ?\n"
@@ -422,12 +535,17 @@ msgid "Packages needed on host"
 msgstr "Paquets nécessaires sur la machine"
 
 #: uwaptres.rspasswordchangeerror
+msgctxt "uwaptres.rspasswordchangeerror"
 msgid "Error : %s"
 msgstr "Erreur : %s"
 
 #: uwaptres.rspasswordchangesuccess
 msgid "Password successfully updated !"
 msgstr "Le mot de passe a bien été changé !"
+
+#: uwaptres.rspending
+msgid "Pending : "
+msgstr ""
 
 #: uwaptres.rsprivatekeydoesntexist
 msgid "Private key doesn't exist : %s"
@@ -453,13 +571,49 @@ msgstr "La clé %s a bien été créée."
 msgid "Selection of package(s) to remove from conflict list"
 msgstr "Choix du/des paquet(s) à supprimer de la liste de conflit"
 
+#: uwaptres.rsregisteringhostonserver
+msgid "Registering host on server"
+msgstr ""
+
+#: uwaptres.rsreplacingtiscertificate
+msgid "Deleting TIS certificate and copying new certificate"
+msgstr ""
+
+#: uwaptres.rsrestartingwaptserver
+msgid "Restarting waptserver"
+msgstr ""
+
+#: uwaptres.rsrestartingwaptservice
+msgid "Restarting waptservice"
+msgstr ""
+
+#: uwaptres.rsretryregisteringhostonserver
+msgid "%D retry on registering host on server"
+msgstr ""
+
 #: uwaptres.rsrmbundlefromhosts
 msgid "Selection of package bundles for removing from the selected hosts"
 msgstr "Choix des groupes de paquets à supprimer des machines sélectionnées"
 
+#: uwaptres.rsrunningtask
+msgid "Running task %d: %s, status:%s"
+msgstr ""
+
 #: uwaptres.rssavemods
 msgid "Save changes ?"
 msgstr "Enregistrer les modifications ?"
+
+#: uwaptres.rssettingserverpassword
+msgid "Setting up server password"
+msgstr ""
+
+#: uwaptres.rssrv
+msgid "SRV: %s"
+msgstr ""
+
+#: uwaptres.rsstoplistening
+msgid "Stop listening to events"
+msgstr ""
 
 #: uwaptres.rssuccessfullyimported
 msgid "%s successfully imported."
@@ -476,12 +630,26 @@ msgstr "Tâche annulée."
 #| "%s\n"
 #| "%s done\n"
 #| "%s\n"
+#| "%s done\n"
+#| "%s\n"
+#| "%s done\n"
+#| "%s\n"
+#| "%s done\n"
+#| "%s\n"
+#| "%s done\n"
+#| "%s\n"
+#| "%s done\n"
+#| "%s\n"
 msgid ""
 "%s done\n"
 "%s\n"
 msgstr ""
 "%s terminé\n"
 "%s\n"
+
+#: uwaptres.rstasklisterror
+msgid "Error getting task list: %s"
+msgstr ""
 
 #: uwaptres.rstaskstarted
 msgid "%s started"
@@ -497,9 +665,21 @@ msgstr "Désinstallation de %s..."
 
 #: uwaptres.rsupdatesavailablefor
 #, fuzzy
-#| msgid "Available updates for : "
-msgid "Available updates for : "
+#| msgid ""
+#| "Available updates for :\n"
+#| "%s\n"
+msgid ""
+"Available updates for :\n"
+"-%s\n"
 msgstr "Mises à jour disponibles pour :"
+
+#: uwaptres.rsupdatinglocalpackages
+msgid "Updating local packages"
+msgstr ""
+
+#: uwaptres.rsupdatingpackageindex
+msgid "Updating package index"
+msgstr ""
 
 #: uwaptres.rsupdatingpackagelist
 msgid "Updating package list"
@@ -525,9 +705,23 @@ msgstr "Chargement de %s paquet(s) vers le serveur WAPT..."
 msgid "Url : %s"
 msgstr "URL : %s"
 
+#: uwaptres.rsusage
+msgid "Usage: %s -h"
+msgstr ""
+
 #: uwaptres.rsversion
 #, fuzzy
 #| msgid ""
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
 #| "Waptconsole version : %s\n"
 #| "Wapt-get version: %s\n"
 #| "Waptconsole version : %s\n"
@@ -559,6 +753,14 @@ msgstr "L'agent WAPT a bien été chargé !"
 msgid "Updating WAPT client on the hosts"
 msgstr "Mise à jour du client WAPT sur les machines"
 
+#: uwaptres.rswaptgetupgrade
+msgid "WAPT-GET Upgrade using repository at %s"
+msgstr ""
+
+#: uwaptres.rswaptservicestopping
+msgid "Waptservice stopping"
+msgstr ""
+
 #: uwaptres.rswaptserviceterminated
 msgid "WAPTService terminated"
 msgstr "WAPTService arrêté"
@@ -571,6 +773,19 @@ msgstr "Erreur lors de la création de l'agent : %s"
 msgid "WAPT agent successfully created and uploaded to the repository : %s"
 msgstr "L'agent WAPT a bien été créé et chargé dans le dépôt : %s"
 
+#: uwaptres.rswaptupgrade
+msgid " waptupgrade : upgrade wapt-get.exe and database"
+msgstr ""
+
 #: uwaptres.rswaptuploaderror
 msgid "Error while uploading WAPT agent to the repository : %s"
 msgstr "Erreur lors du chargement de l'agent WAPT vers le dépôt : %s"
+
+#: uwaptres.rswin32exewrapper
+msgid "Win32 Exe wrapper: %s %s"
+msgstr ""
+
+#: uwaptres.rswinterruptreceived
+msgid "W: interrupt received, killing serverâ¦"
+msgstr ""
+

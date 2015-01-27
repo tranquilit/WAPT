@@ -4,7 +4,6 @@ import os
 import _winreg
 import tempfile
 
-
 # registry key(s) where WAPT will find how to remove the application(s)
 uninstallkey = []
 
@@ -26,6 +25,11 @@ def update_sources():
          'waptconsole.exe',
          'waptconsole.exe.manifest',
          'waptservice',
+         'languages',
+         r'lib\site-packages\babel',
+         r'lib\site-packages\flask_babel',
+         r'lib\site-packages\pytz',
+         r'lib\site-packages\speaklater',
          r'lib\site-packages\requests_kerberos_sspi',
          r'lib\site-packages\lib\site-packages\flask_kerberos_sspi.py',
          r'lib\site-packages\kerberos_sspi.py',

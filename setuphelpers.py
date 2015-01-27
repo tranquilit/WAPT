@@ -163,9 +163,14 @@ def create_desktop_shortcut(label, target='', arguments ='', wDir='', icon=''):
         arguments : argument to pass to application
         wDir : working directory
         icon : path to ico file
+    >>> create_desktop_shortcut(r'WAPT Console Management',target='c:\\wapt\\waptconsole.exe')
+    >>> create_desktop_shortcut(r'WAPT local status',target='http://localhost:8088/')
     """
     if not (label.endswith('.lnk') or label.endswith('.url')):
-        label += '.lnk'
+        if target.startswith('http://') or target.startswith('https://'):
+            label += '.url'
+        else:
+            label += '.lnk'
     sc_path = os.path.join(desktop(1),label)
     if os.path.isfile(sc_path):
         os.remove(sc_path)
@@ -182,7 +187,10 @@ def create_user_desktop_shortcut(label, target='',arguments='', wDir='', icon=''
         icon : path to ico file
     """
     if not (label.endswith('.lnk') or label.endswith('.url')):
-        label += '.lnk'
+        if target.startswith('http://') or target.startswith('https://'):
+            label += '.url'
+        else:
+            label += '.lnk'
     sc_path = os.path.join(desktop(0),label)
     if os.path.isfile(sc_path):
         os.remove(sc_path)

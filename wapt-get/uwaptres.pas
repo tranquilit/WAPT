@@ -133,7 +133,7 @@ resourcestring
 
 
   { --- MESSAGES DANS LE TRAY WAPT --- }
-  rsUpdatesAvailableFor = 'Available updates for : '#13#10;
+  rsUpdatesAvailableFor = 'Available updates for :'#13#10'-%s';
   rsErrorFor = 'Error for %s';
   rsError = 'Error';
   rsTaskStarted = '%s started';
@@ -153,9 +153,10 @@ resourcestring
   rsReplacingTIScertificate = 'Deleting TIS certificate and copying new certificate';
   rsSettingServerPassword = 'Setting up server password';
   rsOpeningFirewall = 'Opening firewall for WaptServer';
-  rsRestartingWaptServer = 'Redémarrage service waptserver';
-  rsRestartingWaptService = 'Redémarrage waptservice';
+  rsRestartingWaptServer = 'Restarting waptserver';
+  rsRestartingWaptService = 'Restarting waptservice';
   rsRegisteringHostOnServer = 'Registering host on server';
+  rsRetryRegisteringHostOnServer = '%D retry on registering host on server';
   rsUpdatingLocalPackages = 'Updating local packages';
   rsConfirm = 'Confirm';
   rsConfirmCancelPostConfig = 'Are you sure you want to cancel configuring WAPT server ?';
