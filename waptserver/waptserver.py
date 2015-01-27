@@ -136,6 +136,9 @@ if config.has_section('options'):
     if config.has_option('options', 'waptserver_port'):
         waptserver_port = config.get('options', 'waptserver_port')
 
+    if config.has_option('options', 'waptservice_port'):
+        waptservice_port = config.get('options', 'waptservice_port')
+
     if config.has_option('options', 'wapt_password'):
         wapt_password = config.get('options', 'wapt_password')
     else:
