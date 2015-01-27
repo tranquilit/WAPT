@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, ComCtrls, ActnList, Buttons, superobject;
+  ExtCtrls, ComCtrls, ActnList, Buttons, superobject, uWaptRes, DefaultTranslator;
 
 type
 
@@ -83,8 +83,8 @@ begin
     //GridTasks.Data := tasks;
     upgrades := Nil;
     CountDown := 0;
-    ActUpgrade.Caption:='Mise à jour des logiciels en cours';
-    actSkip.Caption:='Stopper la mise à jour';
+    ActUpgrade.Caption:=rsUpdatingSoftware;
+    actSkip.Caption:=rsInterruptUpdate;
   finally
     Timer1.Enabled := True;
   end;
@@ -258,11 +258,11 @@ begin
   FCountDown := AValue;
   if CountDown>0 then
   begin
-    ActUpgrade.Caption:='Mise à jour des logiciels dans '+IntToStr(CountDown)+' sec...';
+    ActUpgrade.Caption:=Format(rsSoftwareUpdateIn,[IntToStr(CountDown)]);
     FCountDown:=AValue;
   end
   else
-    ActUpgrade.Caption:='Lancer la mise à jour des logiciels';
+    ActUpgrade.Caption:=rsLaunchSoftwareUpdate;
 end;
 
 end.
