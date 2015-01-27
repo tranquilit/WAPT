@@ -346,6 +346,7 @@ procedure TVisWAPTServerPostConf.actWriteConfStartServeExecute(Sender: TObject);
 var
   ini:TMemIniFile;
   retry:integer;
+  res:String;
 begin
   CurrentVisLoading := TVisLoading.Create(Self);
   with CurrentVisLoading do
@@ -400,11 +401,14 @@ begin
     ProgressStep(7,8);
 
     retry := 0;
+    ProgressTitle(rsRegisteringHostOnServer);
     while retry<4 do
     try
-      runwapt('{app}\wapt-get.exe -D register');
+      res := runwapt('{app}\wapt-get.exe -ldebug -D register');
       break;
     except
+      ProgressTitle(Format(rsRetryRegisteringHostOnServer+' (error : '+res+')',[retry]));
+      Showmessage(res);
       Sleep(2000);
       inc(retry);
     end;
