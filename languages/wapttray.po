@@ -517,15 +517,15 @@ msgid "Deleting TIS certificate and copying new certificate"
 msgstr ""
 
 #: uwaptres.rsrestartingwaptserver
-msgid "RedÃ©marrage service waptserver"
+msgid "Restarting waptserver"
 msgstr ""
 
 #: uwaptres.rsrestartingwaptservice
-msgid "RedÃ©marrage waptservice"
+msgid "Restarting waptservice"
 msgstr ""
 
 #: uwaptres.rsretryregisteringhostonserver
-msgid "Retry %D registering host on server"
+msgid "%D retry on registering host on server"
 msgstr ""
 
 #: uwaptres.rsrmbundlefromhosts
@@ -583,7 +583,9 @@ msgid "Uninstalling %s..."
 msgstr ""
 
 #: uwaptres.rsupdatesavailablefor
-msgid "Available updates for : "
+msgid ""
+"Available updates for :\n"
+"-%s\n"
 msgstr ""
 
 #: uwaptres.rsupdatinglocalpackages

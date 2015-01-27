@@ -490,14 +490,14 @@ begin
         else
         if (errors<>Nil) and (errors.AsArray.Length>0) then
         begin
-          trayHint:=UTF8Encode('Erreurs : '+#13#10+ Join(#13#10,errors));
+          trayHint:=UTF8Encode(format(rsErrorFor,[Join(#13#10,errors)]));
           trayMode:=tmErrors;
         end
         else
         if (upgrades<>Nil) and (upgrades.AsArray.Length>0) then
         begin
           trayMode:=tmUpgrades;
-          trayHint:=UTF8Encode(format(rsUpdatesAvailableFor,[soutils.join(#13#10,upgrades)]));
+          trayHint:=UTF8Encode(format(rsUpdatesAvailableFor,[soutils.join(#13#10'-',upgrades)]));
         end
         else
         begin
