@@ -27,6 +27,7 @@ waptserver/postconf/lib/
 wapttray.exe
 waptserverpostconf.exe
 waptupgrade/patchs/
+*.wapt
 # These are the default patterns globally ignored by Subversion:
 *.o
 *.lo
