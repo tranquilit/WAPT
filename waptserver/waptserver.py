@@ -175,6 +175,7 @@ else:
 if not wapt_folder:
     wapt_folder = os.path.join(wapt_root_dir,'waptserver','repository','wapt')
 
+waptagent = os.path.join(wapt_folder, 'waptagent.exe')
 waptsetup = os.path.join(wapt_folder, 'waptsetup.exe')
 
 # Setup initial directories
@@ -263,8 +264,8 @@ def index():
 def informations():
     informations = {}
     informations["server_version"] = __version__
-    if os.path.exists(waptsetup):
-        pe = pefile.PE(waptsetup)
+    if os.path.exists(waptagent):
+        pe = pefile.PE(waptagent)
         informations["client_version"] =  pe.FileInfo[0].StringTable[0].entries['ProductVersion'].strip()
 
     return Response(response=json.dumps(informations),
