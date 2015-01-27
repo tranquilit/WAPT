@@ -86,6 +86,8 @@ import setuphelpers
 from setuphelpers import Version
 from waptpackage import PackageEntry
 
+from gettext import gettext
+
 # i18n
 from flask.ext.babel import Babel
 try:
@@ -433,6 +435,7 @@ waptconfig.load()
 
 app = Flask(__name__)
 app.config['PROPAGATE_EXCEPTIONS'] = True
+app.config['SECRET_KEY'] = 'hsdfsdhsdk15215'
 app.jinja_env.filters['beautify'] = beautify
 app.waptconfig = waptconfig
 
@@ -575,9 +578,17 @@ def allow_local_auth(f):
     return decorated
 
 
+
 @babel.localeselector
 def get_locale():
-    return request.accept_languages.best_match(['en', 'fr'])
+     browser_lang = request.accept_languages.best_match(['en', 'fr'])
+     user_lang = session.get('lang',browser_lang)
+     return user_lang
+
+@app.route('/lang/<language>')
+def lang(language=None):
+     session['lang'] = language
+     return redirect('/')
 
 @babel.timezoneselector
 def get_timezone():
@@ -1170,6 +1181,11 @@ def eventprintinfo(func):
 
 new_wapt_event = threading.Event()
 
+def get_translations(locale):
+    dirname = os.path.join(app.root_path, 'translations')
+    translations = support.Translations.load(dirname, [get_locale()])
+    ctx.babel_translations = translations
+
 
 class WaptTask(object):
     """Base object class for all wapt task : download, install, remove, upgrade..."""
@@ -1193,6 +1209,7 @@ class WaptTask(object):
         self.notify_user = True
         for k in args:
             setattr(self,k,args[k])
+        self.lang = None
 
     def update_status(self,status):
         """Update runstatus in database and send PROGRESS event"""
@@ -2124,8 +2141,8 @@ if __name__ == "__main__":
     task_manager.daemon = True
     task_manager.start()
 
-    if options.devel == True:
-        app.run(host='0.0.0.0',port=30888,debug=True)
+    if options.devel:
+        app.run(host='0.0.0.0',port=30888,debug=False)
     else:
         #logger.setLevel(logging.DEBUG)
 
