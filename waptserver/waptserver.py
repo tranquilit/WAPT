@@ -63,6 +63,15 @@ import pefile
 
 import itsdangerous
 
+# i18n
+from flask.ext.babel import Babel
+try:
+    from flask.ext.babel import gettext
+except ImportError:
+    gettext = (lambda s:s)
+_ = gettext
+
+
 from optparse import OptionParser
 usage="""\
 %prog -c configfile [action]
@@ -187,6 +196,8 @@ ALLOWED_EXTENSIONS = set(['wapt'])
 app = Flask(__name__,static_folder='./templates/static')
 #app.secret_key = config.get('options','secret_key')
 
+babel = Babel(app)
+
 def hosts():
     """Opens a new database connection if there is none yet for the
     current application context.
@@ -220,6 +231,24 @@ def get_host_data(uuid, filter = {}, delete_id = True):
     if data and delete_id:
         data.pop("_id")
     return data
+
+
+@babel.localeselector
+def get_locale():
+     browser_lang = request.accept_languages.best_match(['en', 'fr'])
+     user_lang = session.get('lang',browser_lang)
+     return user_lang
+
+@app.route('/lang/<language>')
+def lang(language=None):
+     session['lang'] = language
+     return redirect('/')
+
+@babel.timezoneselector
+def get_timezone():
+    user = getattr(g, 'user', None)
+    if user is not None:
+        return user.timezone
 
 
 @app.route('/')
