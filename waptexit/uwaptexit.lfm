@@ -6,7 +6,7 @@ object VisWaptExit: TVisWaptExit
   Anchors = [akTop, akRight]
   AutoSize = True
   BorderStyle = bsDialog
-  Caption = 'Lancement des mises à jour...'
+  Caption = 'Launching updates...'
   ClientHeight = 266
   ClientWidth = 402
   DefaultMonitor = dmDesktop
@@ -32,7 +32,7 @@ object VisWaptExit: TVisWaptExit
       Height = 26
       Top = 8
       Width = 234
-      Caption = 'Des installations ou mises à jour sont en attente.'#13#10'Voulez-vous les appliquer maintenant ?'
+      Caption = 'There are installs or updates pending.'#13#10'Do you wish to apply them now ?'
       ParentColor = False
     end
     object BitBtn1: TBitBtn
@@ -369,20 +369,20 @@ object VisWaptExit: TVisWaptExit
     left = 292
     top = 32
     object ActUpgrade: TAction
-      Caption = 'Installation/Mise à jour des paquets'
+      Caption = 'Install/update packages'
       ImageIndex = 1
       OnExecute = ActUpgradeExecute
       OnUpdate = ActUpgradeUpdate
     end
     object actSkip: TAction
-      Caption = 'Ne pas faire les mises à jour maintenant'
+      Caption = 'Not now'
       ImageIndex = 3
       OnExecute = actSkipExecute
       OnUpdate = actSkipUpdate
     end
     object ActShowDetails: TAction
       AutoCheck = True
-      Caption = 'Voir les détails'
+      Caption = 'Show details'
       OnExecute = ActShowDetailsExecute
     end
   end

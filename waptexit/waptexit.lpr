@@ -7,8 +7,9 @@ uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
+  Translations, LCLProc,
   Interfaces, // this includes the LCL widgetset
-  Forms, pl_indy, uwaptexit;
+  Forms, pl_indy, uwaptexit, uwaptres;
 
 {$R *.res}
 
