@@ -904,7 +904,8 @@ class WaptBaseDB(object):
             self.db.execute('delete from wapt_params where name=?',(name,))
             self.db.commit()
         except:
-            logger.critical(u'Unable to delete param %s : %s' % (name,))
+
+            logger.critical(u'Unable to delete param %s' % (name,))
             self.db.rollback()
             raise
 
