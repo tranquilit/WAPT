@@ -25,6 +25,7 @@ def update_sources():
          'waptconsole.exe',
          'waptconsole.exe.manifest',
          'waptservice',
+         'languages',
          r'lib\site-packages\babel',
          r'lib\site-packages\flask_babel',
          r'lib\site-packages\pytz',
