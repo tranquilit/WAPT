@@ -1,5 +1,5 @@
-# mcadorel-adm <ss>, 2015.
-# mcadorel-adm <ss>, 2015.
+ mcadorel-adm <ss>, 2015.
+ mcadorel-adm <ss>, 2015.
 msgid ""
 msgstr ""
 "PO-Revision-Date: 2015-01-22 10:13+0200\n"
@@ -71,6 +71,11 @@ msgid "Are you sure you want to forget %s packages from host %s ?"
 msgstr "Êtes-vous sûr de vouloir oublier %s paquets de la machine %s ?"
 
 #: uwaptres.rsconfirmimport
+#, fuzzy
+#| msgid ""
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 msgid ""
 "Are you sure you want to import\n"
 "%s\n"
@@ -78,7 +83,7 @@ msgid ""
 msgstr ""
 "Êtes-vous sûr de vouloir importer\n"
 "%s\n"
-" dans votre dépôt ?"
+" dans votre dépôt ?\n"
 
 #: uwaptres.rsconfirmimportcaption
 msgid "Confirm import"
@@ -90,8 +95,7 @@ msgstr "Êtes-vous sûr de vouloir supprimer %s machines de la liste ?"
 
 #: uwaptres.rsconfirmrmmultiplepackages
 msgid "Are you sure you want to remove the selected packages from the server ?"
-msgstr ""
-"Êtes-vous sûr(e) de vouloir supprimer les paquets sélectionnés du serveur ?"
+msgstr "Êtes-vous sûr(e) de vouloir supprimer les paquets sélectionnés du serveur ?"
 
 #: uwaptres.rsconfirmrmonepackage
 msgid "Are you sure you want to remove this package from the server ?"
@@ -104,9 +108,7 @@ msgstr "Confirmer la suppression"
 
 #: uwaptres.rsconfirmrmpackagesfromhost
 msgid "Are you sure you want to remove %s package(s) from the selected host(s) %s ?"
-msgstr ""
-"Êtes-vous sûr de vouloir supprimer %s paquet(s) de la/des machine(s) "
-"sélectionnée(s) ?"
+msgstr "Êtes-vous sûr de vouloir supprimer %s paquet(s) de la/des machine(s) sélectionnée(s) ?"
 
 #: uwaptres.rscreationinprogress
 msgid "Creation in progress."
@@ -114,9 +116,7 @@ msgstr "Création en cours."
 
 #: uwaptres.rsdefinewaptdevpath
 msgid "Please select a directory on your package development host before editing a package bundle."
-msgstr ""
-"Veuillez spécifier un répertoire sur votre machine de développement de "
-"paquets pour pouvoir éditer un groupe de paquets."
+msgstr "Veuillez spécifier un répertoire sur votre machine de développement de paquets pour pouvoir éditer un groupe de paquets."
 
 #: uwaptres.rsdeletingelement
 msgid "Removing %s"
@@ -237,8 +237,7 @@ msgstr "Impossible de récupérer l'action."
 
 #: uwaptres.rsforceduninstallpackages
 msgid "Selection of packages to force-remove from the hosts"
-msgstr ""
-"Choix des paquets pour lesquels forcer la désinstallation sur les machines"
+msgstr "Choix des paquets pour lesquels forcer la désinstallation sur les machines"
 
 #: uwaptres.rsforgetpackageerror
 msgid "Error while forgetting package %s: %s"
@@ -250,9 +249,7 @@ msgstr "Editer la configuration d'une machine"
 
 #: uwaptres.rsignoredconfictingpackages
 msgid "Warning : couldn't find package(s) %s ; conflicting package(s) have been ignored."
-msgstr ""
-"Attention, le(s) paquet(s) %s n'ont pu être trouvés ; les paquets en conflit "
-"ont été ignorés."
+msgstr "Attention, le(s) paquet(s) %s n'ont pu être trouvés ; les paquets en conflit ont été ignorés."
 
 #: uwaptres.rsignoredpackages
 msgid "Warning : couldn't find package(s) %s ; ignoring them."
@@ -272,9 +269,7 @@ msgstr "Le mot de passe est incorrect."
 
 #: uwaptres.rsinnosetupunavailable
 msgid "Innosetup is unavailable (path : %s), please install it first."
-msgstr ""
-"Innosetup n'est pas disponible (emplacement : %s), veuillez l'installer en "
-"premier lieu."
+msgstr "Innosetup n'est pas disponible (emplacement : %s), veuillez l'installer en premier lieu."
 
 #: uwaptres.rsinputkeyname
 msgid "Please input a key name."
@@ -298,9 +293,7 @@ msgstr "DNS invalide"
 
 #: uwaptres.rsinvaliddnsfallback
 msgid "This DNS name is not valid, would you like to use the IP address instead ?"
-msgstr ""
-"Ce nom DNS n'est pas valide, souhaitez-vous utiliser l'adresse IP à la place "
-"?"
+msgstr "Ce nom DNS n'est pas valide, souhaitez-vous utiliser l'adresse IP à la place ?"
 
 #: uwaptres.rsinvalidwaptsetupdir
 msgid "WAPTsetup directory is not valid : %s"
@@ -356,6 +349,11 @@ msgid "Error while creating package : %s"
 msgstr "Erreur lors de la création du paquet : %s"
 
 #: uwaptres.rspackageduplicateconfirm
+#, fuzzy
+#| msgid ""
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
 "%s\n"
@@ -363,7 +361,7 @@ msgid ""
 msgstr ""
 "Etes-vous sûr de vouloir dupliquer le(s) paquet(s)\n"
 "%s\n"
-" dans votre répertoire ?"
+" dans votre répertoire ?\n"
 
 #: uwaptres.rspackageduplicateconfirmcaption
 msgid "Confirm duplication of package"
@@ -436,6 +434,10 @@ msgstr "Redémarrage service waptserver"
 msgid "RedÃ©marrage waptservice"
 msgstr "Redémarrage service"
 
+#: uwaptres.rsretryregisteringhostonserver
+msgid "Retry %D registering host on server"
+msgstr ""
+
 #: uwaptres.rsrmbundlefromhosts
 msgid "Selection of package bundles for removing from the selected hosts"
 msgstr "Choix des groupes de paquets à supprimer des machines sélectionnées"
@@ -469,6 +471,10 @@ msgid "Task canceled."
 msgstr "Tâche annulée."
 
 #: uwaptres.rstaskdone
+#, fuzzy
+#| msgid ""
+#| "%s done\n"
+#| "%s\n"
 msgid ""
 "%s done\n"
 "%s\n"
@@ -493,6 +499,8 @@ msgid "Uninstalling %s..."
 msgstr "Désinstallation de %s..."
 
 #: uwaptres.rsupdatesavailablefor
+#, fuzzy
+#| msgid "Available updates for : "
 msgid "Available updates for : "
 msgstr "Mises à jour disponibles pour :"
 
@@ -533,6 +541,10 @@ msgid "Usage: %s -h"
 msgstr "Usage : %s -h"
 
 #: uwaptres.rsversion
+#, fuzzy
+#| msgid ""
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
 msgid ""
 "Waptconsole version : %s\n"
 "Wapt-get version: %s\n"
@@ -596,3 +608,4 @@ msgstr "Wrapper Win32.exe : %s %s"
 #, fuzzy
 msgid "W: interrupt received, killing serverâ¦"
 msgstr "W: Interception de l'interruption, arrêt du serveur"
+

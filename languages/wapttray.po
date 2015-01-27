@@ -124,8 +124,16 @@ msgstr ""
 msgid "Edit package bundle configuration"
 msgstr ""
 
+#: uwaptres.rscanceled
+msgid "canceled"
+msgstr ""
+
 #: uwaptres.rscanceledbyuser
 msgid "Task %s has been canceled by the user"
+msgstr ""
+
+#: uwaptres.rscanceledtask
+msgid "Cancelled %s"
 msgstr ""
 
 #: uwaptres.rscanceling
@@ -140,7 +148,25 @@ msgstr ""
 msgid "Checking..."
 msgstr ""
 
+#: uwaptres.rscname
+msgid "CNAME: %s"
+msgstr ""
+
+#: uwaptres.rscompletionprogress
+msgid "%s : %.0f%% completed"
+msgstr ""
+
+#: uwaptres.rsconfirm
+msgctxt "uwaptres.rsconfirm"
+msgid "Confirm"
+msgstr ""
+
+#: uwaptres.rsconfirmcancelpostconfig
+msgid "Are you sure you want to cancel configuring WAPT server ?"
+msgstr ""
+
 #: uwaptres.rsconfirmcaption
+msgctxt "uwaptres.rsconfirmcaption"
 msgid "Confirm"
 msgstr ""
 
@@ -221,6 +247,14 @@ msgstr ""
 msgid "Download stopped by the user"
 msgstr ""
 
+#: uwaptres.rsdnsdomain
+msgid "DNS Domain : %s"
+msgstr ""
+
+#: uwaptres.rsdnsserver
+msgid "DNS Server : %s"
+msgstr ""
+
 #: uwaptres.rsdownloading
 msgid "Downloading"
 msgstr ""
@@ -265,12 +299,29 @@ msgstr ""
 msgid "Error"
 msgstr ""
 
+#: uwaptres.rserrorcanceling
+msgid "Error cancelling: %s"
+msgstr ""
+
 #: uwaptres.rserrorfor
 msgid "Error for %s"
 msgstr ""
 
+#: uwaptres.rserrorlaunchingupdate
+msgid "Error launching update: %s"
+msgstr ""
+
+#: uwaptres.rserrorlaunchingupgrade
+msgid "Error launching upgrade: %s"
+msgstr ""
+
 #: uwaptres.rserrorwhilechecking
 msgid "Error while checking..."
+msgstr ""
+
+#: uwaptres.rserrorwithmessage
+msgctxt "uwaptres.rserrorwithmessage"
+msgid "Error : %s"
 msgstr ""
 
 #: uwaptres.rsfailedimport
@@ -322,7 +373,7 @@ msgid "Innosetup is unavailable (path : %s), please install it first."
 msgstr ""
 
 #: uwaptres.rsinputkeyname
-msgid "Please input a key name"
+msgid "Please input a key name."
 msgstr ""
 
 #: uwaptres.rsinputpubkeypath
@@ -333,12 +384,32 @@ msgstr ""
 msgid "Installing %s..."
 msgstr ""
 
+#: uwaptres.rsinstallon
+msgid "  install on c:\\wapt : --setup -s"
+msgstr ""
+
+#: uwaptres.rsinvaliddns
+msgid "Invalid DNS"
+msgstr ""
+
+#: uwaptres.rsinvaliddnsfallback
+msgid "This DNS name is not valid, would you like to use the IP address instead ?"
+msgstr ""
+
 #: uwaptres.rsinvalidwaptsetupdir
 msgid "WAPTsetup directory is not valid : %s"
 msgstr ""
 
 #: uwaptres.rskeyalreadyexists
 msgid "Key %s already exists, please pick another name."
+msgstr ""
+
+#: uwaptres.rslongtaskerror
+msgid "Error launching longtask: %s"
+msgstr ""
+
+#: uwaptres.rsmainrepourl
+msgid "Main repo url: %s"
 msgstr ""
 
 #: uwaptres.rsnbmodifiedhosts
@@ -349,8 +420,20 @@ msgstr ""
 msgid "There is no package bundle."
 msgstr ""
 
+#: uwaptres.rsnorunningtask
+msgid "No running tasks"
+msgstr ""
+
 #: uwaptres.rsnotaskcanceled
 msgid "No task canceled"
+msgstr ""
+
+#: uwaptres.rsopeningfirewall
+msgid "Opening firewall for WaptServer"
+msgstr ""
+
+#: uwaptres.rsoptrepo
+msgid " -r --repo : URL of dependencies libs"
 msgstr ""
 
 #: uwaptres.rspackageconfigdone
@@ -389,11 +472,16 @@ msgid "Packages needed on host"
 msgstr ""
 
 #: uwaptres.rspasswordchangeerror
+msgctxt "uwaptres.rspasswordchangeerror"
 msgid "Error : %s"
 msgstr ""
 
 #: uwaptres.rspasswordchangesuccess
 msgid "Password successfully updated !"
+msgstr ""
+
+#: uwaptres.rspending
+msgid "Pending : "
 msgstr ""
 
 #: uwaptres.rsprivatekeydoesntexist
@@ -420,12 +508,48 @@ msgstr ""
 msgid "Selection of package(s) to remove from conflict list"
 msgstr ""
 
+#: uwaptres.rsregisteringhostonserver
+msgid "Registering host on server"
+msgstr ""
+
+#: uwaptres.rsreplacingtiscertificate
+msgid "Deleting TIS certificate and copying new certificate"
+msgstr ""
+
+#: uwaptres.rsrestartingwaptserver
+msgid "RedÃ©marrage service waptserver"
+msgstr ""
+
+#: uwaptres.rsrestartingwaptservice
+msgid "RedÃ©marrage waptservice"
+msgstr ""
+
+#: uwaptres.rsretryregisteringhostonserver
+msgid "Retry %D registering host on server"
+msgstr ""
+
 #: uwaptres.rsrmbundlefromhosts
 msgid "Selection of package bundles for removing from the selected hosts"
 msgstr ""
 
+#: uwaptres.rsrunningtask
+msgid "Running task %d: %s, status:%s"
+msgstr ""
+
 #: uwaptres.rssavemods
 msgid "Save changes ?"
+msgstr ""
+
+#: uwaptres.rssettingserverpassword
+msgid "Setting up server password"
+msgstr ""
+
+#: uwaptres.rssrv
+msgid "SRV: %s"
+msgstr ""
+
+#: uwaptres.rsstoplistening
+msgid "Stop listening to events"
 msgstr ""
 
 #: uwaptres.rssuccessfullyimported
@@ -442,6 +566,10 @@ msgid ""
 "%s\n"
 msgstr ""
 
+#: uwaptres.rstasklisterror
+msgid "Error getting task list: %s"
+msgstr ""
+
 #: uwaptres.rstaskstarted
 msgid "%s started"
 msgstr ""
@@ -456,6 +584,14 @@ msgstr ""
 
 #: uwaptres.rsupdatesavailablefor
 msgid "Available updates for : "
+msgstr ""
+
+#: uwaptres.rsupdatinglocalpackages
+msgid "Updating local packages"
+msgstr ""
+
+#: uwaptres.rsupdatingpackageindex
+msgid "Updating package index"
 msgstr ""
 
 #: uwaptres.rsupdatingpackagelist
@@ -480,6 +616,10 @@ msgstr ""
 
 #: uwaptres.rsurl
 msgid "Url : %s"
+msgstr ""
+
+#: uwaptres.rsusage
+msgid "Usage: %s -h"
 msgstr ""
 
 #: uwaptres.rsversion
@@ -508,6 +648,14 @@ msgstr ""
 msgid "Updating WAPT client on the hosts"
 msgstr ""
 
+#: uwaptres.rswaptgetupgrade
+msgid "WAPT-GET Upgrade using repository at %s"
+msgstr ""
+
+#: uwaptres.rswaptservicestopping
+msgid "Waptservice stopping"
+msgstr ""
+
 #: uwaptres.rswaptserviceterminated
 msgid "WAPTService terminated"
 msgstr ""
@@ -520,7 +668,19 @@ msgstr ""
 msgid "WAPT agent successfully created and uploaded to the repository : %s"
 msgstr ""
 
+#: uwaptres.rswaptupgrade
+msgid " waptupgrade : upgrade wapt-get.exe and database"
+msgstr ""
+
 #: uwaptres.rswaptuploaderror
 msgid "Error while uploading WAPT agent to the repository : %s"
+msgstr ""
+
+#: uwaptres.rswin32exewrapper
+msgid "Win32 Exe wrapper: %s %s"
+msgstr ""
+
+#: uwaptres.rswinterruptreceived
+msgid "W: interrupt received, killing serverâ¦"
 msgstr ""
 

@@ -405,6 +405,10 @@ msgstr ""
 msgid "RedÃ©marrage waptservice"
 msgstr ""
 
+#: uwaptres.rsretryregisteringhostonserver
+msgid "Retry %D registering host on server"
+msgstr ""
+
 #: uwaptres.rsrmbundlefromhosts
 msgid "Selection of package bundles for removing from the selected hosts"
 msgstr ""
