@@ -19,7 +19,7 @@ Source: "..\wapt.ico"; DestDir: "{app}";
 
 ; global management console
 Source: "..\waptconsole.exe.manifest"; DestDir: "{app}";
-Source: "..\waptconsole.exe"; DestDir: "{app}";
+Source: "..\waptconsole.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\waptdevutils.py"; DestDir: "{app}";
 
 [Setup]
