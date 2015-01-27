@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="0.9.7"
+__version__="0.9.8"
 
 import os,sys
 try:
@@ -144,6 +144,9 @@ if config.has_section('options'):
 
     if config.has_option('options', 'waptserver_port'):
         waptserver_port = config.get('options', 'waptserver_port')
+
+    if config.has_option('options', 'waptservice_port'):
+        waptservice_port = config.get('options', 'waptservice_port')
 
     if config.has_option('options', 'wapt_password'):
         wapt_password = config.get('options', 'wapt_password')
