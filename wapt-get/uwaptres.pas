@@ -156,6 +156,7 @@ resourcestring
   rsRestartingWaptServer = 'Redémarrage service waptserver';
   rsRestartingWaptService = 'Redémarrage waptservice';
   rsRegisteringHostOnServer = 'Registering host on server';
+  rsRetryRegisteringHostOnServer = 'Retry %D registering host on server';
   rsUpdatingLocalPackages = 'Updating local packages';
   rsConfirm = 'Confirm';
   rsConfirmCancelPostConfig = 'Are you sure you want to cancel configuring WAPT server ?';
