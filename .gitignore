@@ -21,6 +21,7 @@ waptserver/postconf/lib
 wapt-get.exe
 waptconsole.exe
 waptdeploy.exe
+waptexit.exe
 waptexit/lib/
 waptserver/postconf/lib/
 wapttray.exe
