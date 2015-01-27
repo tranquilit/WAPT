@@ -35,3 +35,4 @@ waptserver/postconf/lib
 .#*
 .*.swp
 .DS_store
+*.lrt
