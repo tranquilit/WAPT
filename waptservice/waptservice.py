@@ -1270,7 +1270,7 @@ class WaptTask(object):
         result = setuphelpers.run(*args,pidlist=self.external_pids,**kwargs)
 
     def __unicode__(self):
-        return _(u"{classname} {id} created {create_date} started:{start_date} finished:{finish_date} ").format(**self.as_dict())
+        return __(u"{classname} {id} created {create_date} started:{start_date} finished:{finish_date} ").format(**self.as_dict())
 
     def as_dict(self):
         return copy.deepcopy(dict(
@@ -1326,7 +1326,7 @@ class WaptNetworkReconfig(WaptTask):
         self.result = waptconfig.as_dict()
 
     def __unicode__(self):
-        return _(u"Reconfiguring network access")
+        return __(u"Reconfiguring network access")
 
 
 class WaptClientUpgrade(WaptTask):
@@ -1377,7 +1377,7 @@ class WaptServiceRestart(WaptTask):
         self.result = {'result':'OK','message':output}
 
     def __unicode__(self):
-        return _(u"Restarting local WAPT service")
+        return __(u"Restarting local WAPT service")
 
 
 class WaptUpdate(WaptTask):
@@ -1466,20 +1466,20 @@ class WaptUpgrade(WaptTask):
         unavailable = u','.join(self.result.get('unavailable',[]))
         s = []
         if install:
-            s.append(_(u'Installed : {}').format(install))
+            s.append(__(u'Installed : {}').format(install))
         if upgrade:
-            s.append(_(u'Updated : {}').format(upgrade))
+            s.append(__(u'Updated : {}').format(upgrade))
         if errors:
-            s.append(_(u'Errors : {}').format(errors))
+            s.append(__(u'Errors : {}').format(errors))
         if unavailable:
-            s.append(_(u'Unavailable : {}').format(unavailable))
+            s.append(__(u'Unavailable : {}').format(unavailable))
         if not errors and not unavailable and not install and not upgrade:
-            s.append(_(u'System up-to-date'))
+            s.append(__(u'System up-to-date'))
 
         self.summary = u"\n".join(s)
 
     def __unicode__(self):
-        return _(u'Update packages installed on host')
+        return __(u'Update packages installed on host')
 
 
 class WaptUpdateServerStatus(WaptTask):
@@ -1496,16 +1496,16 @@ class WaptUpdateServerStatus(WaptTask):
         if self.wapt.waptserver_available():
             try:
                 self.result = self.wapt.update_server_status()
-                self.summary = _(u'WAPT Server has been notified')
+                self.summary = __(u'WAPT Server has been notified')
             except Exception as e:
                 self.result = {}
-                self.summary = _(u"Error while sending to the server : {}").format(setuphelpers.ensure_unicode(e))
+                self.summary = __(u"Error while sending to the server : {}").format(setuphelpers.ensure_unicode(e))
         else:
             self.result = {}
-            self.summary = _(u'WAPT Server is not available')
+            self.summary = __(u'WAPT Server is not available')
 
     def __unicode__(self):
-        return _(u"Update server with this host's status")
+        return __(u"Update server with this host's status")
 
 
 class WaptRegisterComputer(WaptTask):
@@ -1522,16 +1522,16 @@ class WaptRegisterComputer(WaptTask):
         if self.wapt.waptserver_available():
             try:
                 self.result = self.wapt.register_computer()
-                self.summary = _(u"Inventory has been sent to the WAPT server")
+                self.summary = __(u"Inventory has been sent to the WAPT server")
             except Exception as e:
                 self.result = {}
-                self.summary = _(u"Error while sending inventory to the server : {}").format(setuphelpers.ensure_unicode(e))
+                self.summary = __(u"Error while sending inventory to the server : {}").format(setuphelpers.ensure_unicode(e))
         else:
             self.result = {}
-            self.summary = _(u'WAPT Server is not avalable')
+            self.summary = __(u'WAPT Server is not avalable')
 
     def __unicode__(self):
-        return u"Update server with this host's inventory"
+        return __(u"Update server with this host's inventory")
 
 
 class WaptCleanup(WaptTask):
@@ -1551,13 +1551,13 @@ class WaptCleanup(WaptTask):
             return u','.join([u'%s'%p for p in l])
         try:
             self.result = self.wapt.cleanup(obsolete_only=not self.force)
-            self.summary = _(u"Packages erased : {}").format(cjoin(self.result))
+            self.summary = __(u"Packages erased : {}").format(cjoin(self.result))
         except Exception as e:
             self.result = {}
-            self.summary = _(u"Error while clearing local cache : {}").format(setuphelpers.ensure_unicode(e))
+            self.summary = __(u"Error while clearing local cache : {}").format(setuphelpers.ensure_unicode(e))
 
     def __unicode__(self):
-        return _(u"Clear local package cache")
+        return __(u"Clear local package cache")
 
 class WaptLongTask(WaptTask):
     """Test action for debug purpose"""
@@ -1582,13 +1582,13 @@ class WaptLongTask(WaptTask):
             #print "test {:.0f}%".format(self.progress)
             time.sleep(1)
         if self.raise_error:
-            raise Exception(_('raising an error for Test WaptLongTask'))
+            raise Exception(__('raising an error for Test WaptLongTask'))
 
     def same_action(self,other):
         return False
 
     def __unicode__(self):
-        return _(u"Test long running task of {}s").format(self.duration)
+        return __(u"Test long running task of {}s").format(self.duration)
 
 
 class WaptDownloadPackage(WaptTask):
@@ -1607,19 +1607,19 @@ class WaptDownloadPackage(WaptTask):
                 self.size = total
         else:
             stat = u''
-        self.update_status('Downloading %s : %s' % (url,stat))
+        self.update_status(__(u'Downloading %s : %s' % (url,stat)))
 
     def _run(self):
         start = time.time()
         self.result = self.wapt.download_packages(self.packagename,usecache=self.usecache,printhook=self.printhook)
         end = time.time()
         if self.result['errors']:
-            self.summary = _(u"Error while downloading {packagename}: {error}").format(packagename=self.packagename,error=self.result['errors'][0][1])
+            self.summary = __(u"Error while downloading {packagename}: {error}").format(packagename=self.packagename,error=self.result['errors'][0][1])
         else:
             if end-start> 0.01:
-                self.summary = _(u"Done downloading {packagename}. {speed} kB/s").format(packagename=self.packagename,speed=self.size/1024/(end-start))
+                self.summary = __(u"Done downloading {packagename}. {speed} kB/s").format(packagename=self.packagename,speed=self.size/1024/(end-start))
             else:
-                self.summary = _(u"Done downloading {packagename}.").format(packagename=self.packagename)
+                self.summary = __(u"Done downloading {packagename}.").format(packagename=self.packagename)
 
     def as_dict(self):
         d = WaptTask.as_dict(self)
@@ -1632,7 +1632,7 @@ class WaptDownloadPackage(WaptTask):
         return d
 
     def __unicode__(self):
-        return _(u"Download of {packagename} (tâche #{id})").format(classname=self.__class__.__name__,id=self.id,packagename=self.packagename)
+        return __(u"Download of {packagename} (tâche #{id})").format(classname=self.__class__.__name__,id=self.id,packagename=self.packagename)
 
     def same_action(self,other):
         return (self.__class__ == other.__class__) and (self.packagename == other.packagename)
@@ -1659,16 +1659,16 @@ class WaptPackageInstall(WaptTask):
         unavailable = cjoin(self.result.get('unavailable',[]))
         s = []
         if install:
-            s.append(_(u'Installed : {}').format(install))
+            s.append(__(u'Installed : {}').format(install))
         if upgrade:
-            s.append(_(u'Updated : {}').format(upgrade))
+            s.append(__(u'Updated : {}').format(upgrade))
         if errors:
-            s.append(_(u'Errors : {}').format(errors))
+            s.append(__(u'Errors : {}').format(errors))
         if unavailable:
-            s.append(_(u'Unavailable : {}').format(unavailable))
+            s.append(__(u'Unavailable : {}').format(unavailable))
         self.summary = u"\n".join(s)
         if self.result['errors']:
-            raise Exception(_('Error during install of {}:{}').format(self.packagename,self.result))
+            raise Exception(__('Error during install of {}:{}').format(self.packagename,self.result))
 
     def as_dict(self):
         d = WaptTask.as_dict(self)
@@ -1680,7 +1680,7 @@ class WaptPackageInstall(WaptTask):
         return d
 
     def __unicode__(self):
-        return _(u"Installation of {packagename} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagename=self.packagename)
+        return __(u"Installation of {packagename} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagename=self.packagename)
 
     def same_action(self,other):
         return (self.__class__ == other.__class__) and (self.packagename == other.packagename)
@@ -1697,13 +1697,13 @@ class WaptPackageRemove(WaptPackageInstall):
         self.result = self.wapt.remove(self.packagename,force=self.force)
         s = []
         if self.result['removed']:
-            s.append(_(u'Removed : {}').format(cjoin(self.result['removed'])))
+            s.append(__(u'Removed : {}').format(cjoin(self.result['removed'])))
         if self.result['errors']:
-            s.append(_(u'Errors : {}').format(cjoin(self.result['errors'])))
+            s.append(__(u'Errors : {}').format(cjoin(self.result['errors'])))
         self.summary = u"\n".join(s)
 
     def __unicode__(self):
-        return _(u"Uninstall of {packagename} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagename=self.packagename)
+        return __(u"Uninstall of {packagename} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagename=self.packagename)
 
 
 class WaptPackageForget(WaptTask):
@@ -1713,12 +1713,12 @@ class WaptPackageForget(WaptTask):
     def _run(self):
         self.result = self.wapt.forget_packages(self.packagenames)
         if self.result:
-            self.summary = _(u"Packages removed from database : %s") % (u"\n".join(self.result),)
+            self.summary = __(u"Packages removed from database : %s") % (u"\n".join(self.result),)
         else:
-            self.summary = _(u"No package removed from database.")
+            self.summary = __(u"No package removed from database.")
 
     def __unicode__(self):
-        return _(u"Forget {packagenames} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagenames=self.packagenames)
+        return __(u"Forget {packagenames} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagenames=self.packagenames)
 
 
 def firewall_running():
@@ -1913,7 +1913,7 @@ class WaptTaskManager(threading.Thread):
                     except common.EWaptCancelled as e:
                         if self.running_task:
                             self.running_task.logs.append(u"{}".format(setuphelpers.ensure_unicode(e)))
-                            self.running_task.summary = _(u"Canceled")
+                            self.running_task.summary = __(u"Canceled")
                             self.tasks_cancelled.append(self.running_task)
                             self.broadcast_tasks_status(str('CANCEL'),self.running_task)
                     except Exception as e:
