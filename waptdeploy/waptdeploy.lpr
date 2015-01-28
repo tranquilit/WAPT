@@ -1,7 +1,7 @@
 program waptdeploy;
 {$mode delphiunicode}
 
-uses classes, windows, SysUtils, wininet, URIParser, superobject, shellapi,
+uses classes, windows, SysUtils, wininet, URIParser, superobject , shellapi,
   tishttp, uwaptdeployres;
 
 function GetComputerName : AnsiString;
@@ -142,18 +142,18 @@ begin
   try
     vDWFlagsLen := SizeOf(vDWFlags);
     if not InternetQueryOption(oRequestHandle, INTERNET_OPTION_SECURITY_FLAGS, @vDWFlags, vDWFlagsLen) then begin
-      aErrorMsg := 'Internal error in SetToIgnoreCerticateErrors when trying to get wininet flags.' + GetWininetError(GetLastError);
+      aErrorMsg := Format(rsWininetGetFlagsError, [GetWininetError(GetLastError)]);
       Exit;
     end;
     vDWFlags := vDWFlags or SECURITY_FLAG_IGNORE_UNKNOWN_CA or SECURITY_FLAG_IGNORE_CERT_DATE_INVALID or SECURITY_FLAG_IGNORE_CERT_CN_INVALID or SECURITY_FLAG_IGNORE_REVOCATION;
     if not InternetSetOption(oRequestHandle, INTERNET_OPTION_SECURITY_FLAGS, @vDWFlags, vDWFlagsLen) then begin
-      aErrorMsg := 'Internal error in SetToIgnoreCerticateErrors when trying to set wininet INTERNET_OPTION_SECURITY_FLAGS flag .' + GetWininetError(GetLastError);
+      aErrorMsg := Format(rsWininetSetFlagsError, [GetWininetError(GetLastError)]);
       Exit;
     end;
     Result := True;
   except
     on E: Exception do begin
-      aErrorMsg := 'Unknown error in SetToIgnoreCerticateErrors.' + E.Message;
+      aErrorMsg := Format(rsUnknownError, [E.Message]);
     end;
   end;
 end;
@@ -472,10 +472,10 @@ const
 begin
   if ParamStr(1)='--help'  then
   begin
-      Writeln('Usage : waptdeploy.exe [min_wapt_version]');
-      Writeln('  Download waptagent.exe from WAPT repository and launch it if local version is obsolete (<'+minversion+' or < parameter 1)');
-      Writeln('  If no argument is given, looks for http://'+defaultwapt+'/waptdeploy.version file. This file should contain 2 lines. One for version, and another for download url');
-      Writeln('  If force is given, install waptagent.exe even if version doesn''t match');
+      Writeln(rsUsage1);
+      Writeln(Format(rsUsage2, [minversion]));
+      Writeln(Format(rsUsage3, [defaultwapt]));
+      Writeln(rsUsage4);
       Exit;
   end;
   waptsetupurl := 'http://'+defaultwapt+'/wapt/waptagent.exe';
@@ -523,16 +523,16 @@ begin
     writeln('Got version: '+getVersion);
     if (requiredVersion='force') or (CompareVersion(getVersion,requiredVersion)>=0) then
     begin
-      writeln('Install ...');
+      writeln(rsInstall);
 
       //writeln(Sto_RedirectedExecute(waptsetupPath+' /VERYSILENT /MERGETASKS=""useWaptServer,autorunTray','',100000,'Administrateur','','.....'));
       if GetDosOutput(waptsetupPath+' /VERYSILENT /MERGETASKS=""useWaptServer""','',res) then
-        writeln('Install OK:'+LocalWaptVersion);
+        writeln(Format(rsInstallOK, [LocalWaptVersion]));
     end
     else
-      writeln('Got a waptsetup version older than required version');
+      writeln(rsVersionError);
   finally
-    writeln('Cleanup...');
+    writeln(rsCleanup);
     if DirectoryExists(tmpDir) then
     begin
       DeleteFile(waptsetupPath);
@@ -540,7 +540,7 @@ begin
     end;
   end
   else
-    writeln('Nothing to do');
+    writeln(rsNothingToDo);
   UpdateStatus;
 end.
 

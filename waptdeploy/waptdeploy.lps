@@ -4,16 +4,16 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="28">
+    <Units Count="29">
       <Unit0>
         <Filename Value="waptdeploy.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="518"/>
-        <CursorPos X="38" Y="504"/>
-        <UsageCount Value="42"/>
+        <TopLine Value="1"/>
+        <CursorPos X="18" Y="4"/>
+        <UsageCount Value="43"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
@@ -225,11 +225,51 @@
         <CursorPos X="16" Y="47"/>
         <UsageCount Value="10"/>
       </Unit27>
+      <Unit28>
+        <Filename Value="uwaptdeployres.pas"/>
+        <UnitName Value="uWaptDeployRes"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="164" Y="21"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit28>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="7" HistoryIndex="6">
+      <Position1>
+        <Filename Value="uwaptdeployres.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position1>
+      <Position2>
+        <Filename Value="uwaptdeployres.pas"/>
+        <Caret Line="14" Column="1" TopLine="1"/>
+      </Position2>
+      <Position3>
+        <Filename Value="waptdeploy.lpr"/>
+        <Caret Line="145" Column="27" TopLine="130"/>
+      </Position3>
+      <Position4>
+        <Filename Value="waptdeploy.lpr"/>
+        <Caret Line="150" Column="27" TopLine="130"/>
+      </Position4>
+      <Position5>
+        <Filename Value="waptdeploy.lpr"/>
+        <Caret Line="530" Column="35" TopLine="516"/>
+      </Position5>
+      <Position6>
+        <Filename Value="waptdeploy.lpr"/>
+        <Caret Line="531" Column="30" TopLine="507"/>
+      </Position6>
+      <Position7>
+        <Filename Value="waptdeploy.lpr"/>
+        <Caret Line="4" Column="6" TopLine="1"/>
+      </Position7>
+    </JumpHistory>
   </ProjectSession>
   <EditorMacros Count="0"/>
 </CONFIG>
