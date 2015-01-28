@@ -295,7 +295,7 @@
       <Unit37>
         <Filename Value="uwaptconsoleres.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="uWaptRes"/>
+        <UnitName Value="uWaptConsoleRes"/>
       </Unit37>
     </Units>
   </ProjectOptions>

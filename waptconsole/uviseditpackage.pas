@@ -9,7 +9,8 @@ uses
   SynMemo, Forms, Controls, Graphics,
   Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, EditBtn, Buttons,
   process, superobject, VirtualTrees,
-  VarPyth, types, ActiveX, LMessages, LCLIntf, LCL, sogrid, vte_json, DefaultTranslator;
+  VarPyth, types, ActiveX, LMessages, LCLIntf, LCL, sogrid, vte_json, DefaultTranslator,
+  uWaptConsoleRes;
 
 type
 

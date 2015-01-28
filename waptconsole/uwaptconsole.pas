@@ -9,7 +9,8 @@ uses
   Dialogs, Buttons, FileUtil,
   SynEdit, SynHighlighterPython, TplStatusBarUnit, vte_json, ExtCtrls,
   StdCtrls, ComCtrls, ActnList, Menus, jsonparser, superobject,
-  VirtualTrees, VarPyth, ImgList, SOGrid, uvisloading, IdComponent, DefaultTranslator,GetText;
+  VirtualTrees, VarPyth, ImgList, SOGrid, uvisloading, IdComponent, DefaultTranslator,GetText,
+  uWaptConsoleRes;
 
 type
 
