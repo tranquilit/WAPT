@@ -99,7 +99,7 @@ def setloglevel(logger,loglevel):
     if loglevel in ('debug','warning','info','error','critical'):
         numeric_level = getattr(logging, loglevel.upper(), None)
         if not isinstance(numeric_level, int):
-            raise ValueError('Invalid log level: %s' % loglevel)
+            raise ValueError(_('Invalid log level: {}'.format(loglevel)))
         logger.setLevel(numeric_level)
 
 # force loglevel
@@ -123,7 +123,7 @@ config = ConfigParser.RawConfigParser()
 if os.path.exists(options.configfile):
     config.read(options.configfile)
 else:
-    raise Exception("FATAL. Couldn't open config file : " + options.configfile)
+    raise Exception(_("FATAL. Couldn't open config file : {}".format(options.configfile)))
 
 #default mongodb configuration for wapt
 mongodb_port = "38999"
@@ -151,7 +151,7 @@ if config.has_section('options'):
     if config.has_option('options', 'wapt_password'):
         wapt_password = config.get('options', 'wapt_password')
     else:
-        raise Exception ('No waptserver admin password set in wapt-get.ini configuration file')
+        raise Exception (_('No waptserver admin password set in wapt-get.ini configuration file'))
 
     if config.has_option('options', 'mongodb_port'):
         mongodb_port = config.get('options', 'mongodb_port')
@@ -169,7 +169,7 @@ if config.has_section('options'):
         setloglevel(logger,loglevel)
 
 else:
-    raise Exception ("FATAL, configuration file " + options.configfile + " has no section [options]. Please check Waptserver documentation")
+    raise Exception (_("FATAL, configuration file {} has no section [options]. Please check Waptserver documentation").format(options.configfile))
 
 # XXX keep in sync with scripts/postconf.py
 if not wapt_folder:
@@ -183,17 +183,17 @@ if os.path.exists(wapt_folder)==False:
     try:
         os.makedirs(wapt_folder)
     except:
-        raise Exception("Folder missing : %s" % wapt_folder)
+        raise Exception(_("Folder missing : {}").format(wapt_folder))
 if os.path.exists(wapt_folder + '-host')==False:
     try:
         os.makedirs(wapt_folder + '-host')
     except:
-        raise Exception("Folder missing : %s-host" % wapt_folder )
+        raise Exception(_("Folder missing : {}-host").format(wapt_folder))
 if os.path.exists(wapt_folder + '-group')==False:
     try:
         os.makedirs(wapt_folder + '-group')
     except:
-        raise Exception("Folder missing : %s-group" % wapt_folder )
+        raise Exception(_("Folder missing : {}-group").format(wapt_folder))
 
 ALLOWED_EXTENSIONS = set(['wapt'])
 
@@ -215,7 +215,7 @@ def hosts():
             g.hosts.ensure_index('uuid',unique=True)
             g.hosts.ensure_index('computer_name',unique=False)
         except Exception as e:
-            raise Exception(u"Could not connect do mongodb database: %s"%(repr(e),))
+            raise Exception(_("Could not connect do mongodb database: {}").format((repr(e),)))
     return g.hosts
 
 @app.teardown_appcontext
@@ -436,7 +436,7 @@ def host_packages(uuid=""):
     try:
         packages = get_host_data(uuid, {"packages":1})
         if not packages:
-            raise Exception('No host with uuid %s'%uuid)
+            raise Exception(_('No host with uuid {}').format(uuid))
         repo_packages = packagesFileToList(os.path.join(wapt_folder, 'Packages'))
         if 'packages' in packages:
             for p in packages['packages']:
@@ -460,7 +460,7 @@ def get_client_package_list(uuid=""):
     try:
         packages = get_host_data(uuid, {"packages":1})
         if not packages:
-            raise Exception('No host with uuid %s'%uuid)
+            raise Exception(_('No host with uuid {}').formatat(uuid))
         repo_packages = packagesFileToList(os.path.join(wapt_folder, 'Packages'))
         if 'packages' in packages:
             for p in packages['packages']:
@@ -535,7 +535,7 @@ def check_auth(username, password):
 def authenticate():
     """Sends a 401 response that enables basic auth"""
     return Response(
-        'You have to login with proper credentials', 401,
+        _('You have to login with proper credentials'), 401,
         {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
 
@@ -550,7 +550,7 @@ def upload_package(filename=""):
                 with open(tmp_target, 'wb') as f:
                     f.write(request.stream.read())
                 if not os.path.isfile(tmp_target):
-                    result = dict(status='ERROR',message='Problem during upload')
+                    result = dict(status='ERROR',message=_('Problem during upload'))
                 else:
                     if PackageEntry().load_control_from_wapt(tmp_target):
                         target = os.path.join(wapt_folder, secure_filename(filename))
@@ -560,19 +560,19 @@ def upload_package(filename=""):
                         data = update_packages(wapt_folder)
                         result = dict(status='OK',message='%s uploaded, %i packages analysed'%(filename,len(data['processed'])),result=data)
                     else:
-                        result = dict(status='ERROR',message='Not a valid wapt package')
+                        result = dict(status='ERROR',message=_('Not a valid wapt package'))
                         os.unlink(tmp_target)
             else:
-                result = dict(status='ERROR',message='Wrong file type')
+                result = dict(status='ERROR',message=_('Wrong file type'))
         else:
-            result = dict(status='ERROR',message='Unsupported method')
+            result = dict(status='ERROR',message=_('Unsupported method'))
     except:
         # remove temporary
         if os.path.isfile(tmp_target):
             os.unlink(tmp_target)
         e = sys.exc_info()
         logger.critical(repr(traceback.format_exc()))
-        result = dict(status='ERROR',message='unexpected: %s'%(e,))
+        result = dict(status='ERROR',message=_('unexpected: {}').format((e,)))
     return  Response(response=json.dumps(result),
                          status=200,
                          mimetype="application/json")
@@ -599,17 +599,17 @@ def upload_host():
                             os.unlink(target)
                         os.rename(tmp_target,target)
                         data = update_packages(wapt_host_folder)
-                        result = dict(status='OK',message='File %s uploaded to %s'%(file.filename,target))
+                        result = dict(status='OK',message=_('File %s uploaded to {}').format((file.filename,target)))
                     except:
                         if os.path.isfile(tmp_target):
                             os.unlink(tmp_target)
                         raise
                 else:
-                    result = dict(status='ERROR',message='No data received')
+                    result = dict(status='ERROR',message=_('No data received'))
             else:
-                result = dict(status='ERROR',message='Wrong file type')
+                result = dict(status='ERROR',message=_('Wrong file type'))
         else:
-            result = dict(status='ERROR',message='No package file provided in request')
+            result = dict(status='ERROR',message=_('No package file provided in request'))
     except:
         # remove temporary
         if os.path.isfile(tmp_target):
@@ -636,10 +636,10 @@ def upload_waptsetup():
                 target = os.path.join(wapt_folder, secure_filename(filename))
                 file.save(tmp_target)
                 if not os.path.isfile(tmp_target):
-                    result = dict(status='ERROR',message='Problem during upload')
+                    result = dict(status='ERROR',message=_('Problem during upload'))
                 else:
                     os.rename(tmp_target,target)
-                    result = dict(status='OK',message='%s uploaded'%(filename,))
+                    result = dict(status='OK',message=_('{} uploaded').format((filename,)))
 
                 # Compat with older clients: provide a waptsetup.exe -> waptagent.exe alias
                 if os.path.exists(waptsetup):
@@ -659,14 +659,14 @@ def upload_waptsetup():
                     shutil.copyfile(waptagent, waptsetup)
 
             else:
-                result = dict(status='ERROR',message='Wrong file name (version conflict?)')
+                result = dict(status='ERROR',message=_('Wrong file name (version conflict?)'))
         else:
-            result = dict(status='ERROR',message='Unsupported method')
+            result = dict(status='ERROR',message=_('Unsupported method'))
     except:
         e = sys.exc_info()
         if tmp_target and os.path.isfile(tmp_target):
             os.unlink(tmp_target)
-        result = dict(status='ERROR',message='unexpected: %s'%(e,))
+        result = dict(status='ERROR',message=_('unexpected: {}').format((e,)))
     return  Response(response=json.dumps(result),
                          status=200,
                          mimetype="application/json")
@@ -696,10 +696,10 @@ def waptupgrade_host(ip):
                     else:
                         result = {  'status' : 'ERROR', 'message': u"%s" % r.text }
             else:
-                raise Exception(u"Le port de waptservice n'est pas défini")
+                raise Exception(_("Le port de waptservice n'est pas défini"))
 
         except Exception as e:
-            raise Exception("Impossible de joindre le waptservice: %s" % e)
+            raise Exception(_("Impossible de joindre le waptservice: {}").format(e))
 
     except Exception, e:
             result = { 'status' : 'ERROR', 'message': u"%s" % e  }
@@ -727,10 +727,10 @@ def install_package():
                 data = json.loads(requests.get("http://%s:%d/install.json?package=%s" % ( ip, waptservice_port,package),proxies=None).text)
                 result = dict(message=data,status='OK')
             else:
-                raise Exception(u"Le port de waptservice n'est pas défini")
+                raise Exception(_("Le port de waptservice n'est pas défini"))
 
         except Exception as e:
-            raise Exception("Impossible de joindre le web service: %s" % e)
+            raise Exception(_("Impossible de joindre le web service: {}").format(e))
 
     except Exception, e:
             result = { 'status' : 'ERROR', 'message': u"%s" % e  }
@@ -759,10 +759,10 @@ def remove_package():
                 data = json.loads(httpreq.text)
                 result = dict(message=data,status='OK')
             else:
-                raise Exception(u"Le port de waptservice n'est pas défini")
+                raise Exception(_("Le port de waptservice n'est pas défini"))
 
         except Exception as e:
-            raise Exception("Impossible de joindre le waptservice du poste: %s" % e)
+            raise Exception(_("Impossible de joindre le waptservice du poste: {}").format(e))
 
     except Exception, e:
             result = { 'status' : 'ERROR', 'message': u"%s" % e  }
@@ -791,10 +791,10 @@ def forget_packages():
                 data = json.loads(httpreq.text)
                 result = dict(message=data,status='OK')
             else:
-                raise Exception(u"Le port de waptservice n'est pas défini")
+                raise Exception(_("Le port de waptservice n'est pas défini"))
 
         except Exception as e:
-            raise Exception("Impossible de joindre le waptservice du poste: %s" % e)
+            raise Exception(_("Impossible de joindre le waptservice du poste: {}").format(e))
 
     except Exception, e:
             result = { 'status' : 'ERROR', 'message': u"%s" % e  }
@@ -820,10 +820,10 @@ def host_tasks():
                 data = json.loads(requests.get("http://%s:%d/tasks.json" % ( ip, waptservice_port),proxies=None).text)
                 result = dict(message=data,status='OK')
             else:
-                raise Exception(u"Le port de waptservice n'est pas défini")
+                raise Exception(_("Le port de waptservice n'est pas défini"))
 
         except Exception as e:
-            raise Exception("Impossible de joindre le web service: %s" % e)
+            raise Exception(_("Impossible de joindre le web service: {}").format(e))
 
     except Exception, e:
             result = { 'status' : 'ERROR', 'message': u"%s" % e  }
@@ -848,10 +848,10 @@ def host_taskkill():
                 data = json.loads(requests.get("http://%s:%d/cancel_running_task.json" % ( ip, waptservice_port),proxies=None).text)
                 result = dict(message=data,status='OK')
             else:
-                raise Exception(u"Le port de waptservice n'est pas défini")
+                raise Exception(_("Le port de waptservice n'est pas défini"))
 
         except Exception as e:
-            raise Exception("Impossible de joindre le web service: %s" % e)
+            raise Exception(_("Impossible de joindre le web service: {}").format(e))
 
     except Exception, e:
             result = { 'status' : 'ERROR', 'message': u"%s" % e  }
@@ -907,10 +907,10 @@ def upgrade_host(ip):
                         result = {  'status' : 'ERROR', 'message': u"%s" % r.text }
 
             else:
-                raise Exception(u"Le port de waptservice n'est pas défini")
+                raise Exception(_("Le port de waptservice n'est pas défini"))
 
         except Exception as e:
-            raise  Exception("Impossible de joindre le web service: %s" % e)
+            raise  Exception(_("Impossible de joindre le web service: {}").format(e))
 
     except Exception, e:
             result = { 'status' : 'ERROR', 'message': u"%s" % e  }
@@ -925,9 +925,9 @@ def install_wapt(computer_name,authentication_file):
         subprocess.check_output(cmd,stderr=subprocess.STDOUT,shell=True)
     except subprocess.CalledProcessError as e:
         if "NT_STATUS_LOGON_FAILURE" in e.output:
-            raise Exception("Mauvais identifiants")
+            raise Exception(_("Mauvais identifiants"))
         if "NT_STATUS_CONNECTION_REFUSED" in e.output:
-            raise Exception("Partage IPC$ non accessible")
+            raise Exception(_("Partage IPC$ non accessible"))
 
         raise Exception(u"%s" % e.output)
 
@@ -953,18 +953,18 @@ def deploy_wapt():
     try:
         result = {}
         if platform.system() != 'Linux':
-            raise Exception(u'Le serveur wapt doit être executé sous Linux')
+            raise Exception(_('Le serveur wapt doit être executé sous Linux'))
         if subprocess.call('which smbclient',shell=True) != 0:
-            raise Exception(u"smbclient n'est pas installé sur le serveur wapt")
+            raise Exception(_("smbclient n'est pas installé sur le serveur wapt"))
         if subprocess.call('which winexe',shell=True) != 0:
-            raise Exception(u"winexe n'est pas installé sur le serveur wapt")
+            raise Exception(_("winexe n'est pas installé sur le serveur wapt"))
 
         if request.method == 'POST':
             d = json.loads(request.data)
             if 'auth' not in d:
-                raise Exception("Les informations d'authentification sont manquantes")
+                raise Exception(_("Les informations d'authentification sont manquantes"))
             if 'computer_fqdn' not in d:
-                raise Exception(u"Il n'y a aucuns ordinateurs de renseigné")
+                raise Exception(_("Il n'y a aucuns ordinateurs de renseigné"))
 
             auth_file = tempfile.mkstemp("wapt")[1]
             try:
@@ -983,7 +983,7 @@ def deploy_wapt():
                 os.unlink(auth_file)
 
         else:
-            raise Exception(u"methode http non supportée")
+            raise Exception(_("methode http non supportée"))
 
     except Exception, e:
         result = { 'status' : 'ERROR', 'message': u"%s" % e  }
