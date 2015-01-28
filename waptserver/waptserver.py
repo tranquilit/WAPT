@@ -645,7 +645,10 @@ def upload_waptsetup():
                 if os.path.exists(waptsetup):
                     try:
                         os.rename(waptsetup, waptsetup + '.old')
-                        os.unlink(waptsetup.exe)
+                    except:
+                        pass
+                    try:
+                        os.unlink(waptsetup)
                     except:
                         pass
                 try:
