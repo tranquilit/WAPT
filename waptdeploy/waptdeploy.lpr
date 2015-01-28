@@ -2,7 +2,7 @@ program waptdeploy;
 {$mode delphiunicode}
 
 uses classes, windows, SysUtils, wininet, URIParser, superobject, shellapi,
-  tishttp;
+  tishttp, uwaptdeployres;
 
 function GetComputerName : AnsiString;
 var
