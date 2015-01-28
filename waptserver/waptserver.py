@@ -643,10 +643,11 @@ def upload_waptsetup():
 
                 # Compat with older clients: provide a waptsetup.exe -> waptagent.exe alias
                 if os.path.exists(waptsetup):
-                    try:
-                        os.rename(waptsetup, waptsetup + '.old')
-                    except:
-                        pass
+                    if not os.path.exists(waptsetup + '.old'):
+                        try:
+                            os.rename(waptsetup, waptsetup + '.old')
+                        except:
+                            pass
                     try:
                         os.unlink(waptsetup)
                     except:
