@@ -22,6 +22,7 @@ resourcestring
   rsWaptServiceTerminated = 'WAPTService terminated';
   rsChecking = 'Checking...';
   rsErrorWhileChecking = 'Error while checking...';
+  rsInstalling = 'Installation en cours';
 
 implementation
 
