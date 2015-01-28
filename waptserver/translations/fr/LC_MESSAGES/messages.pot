@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-01-28 14:20+0100\n"
+"POT-Creation-Date: 2015-01-28 16:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -145,7 +145,138 @@ msgstr ""
 msgid "Unsupported HTTP method."
 msgstr ""
 
+#: templates/index.html:4
+msgid "WAPT SERVER Web Console"
+msgstr ""
+
+#: templates/index.html:73 templates/index.html:150 templates/index.html:207
+msgid "Tranquil IT Systems"
+msgstr ""
+
+#: templates/index.html:75
+msgid "WAPT - Apt-get for Windows"
+msgstr ""
+
+#: templates/index.html:77
+msgid "Contact us or have us call back"
+msgstr ""
+
+#: templates/index.html:81
+msgid "To contents"
+msgstr ""
+
+#: templates/index.html:84
+msgid "Home"
+msgstr ""
+
+#: templates/index.html:85 templates/index.html:116
+msgid "Private repository"
+msgstr ""
+
+#: templates/index.html:86
+msgid "TIS repositories"
+msgstr ""
+
+#: templates/index.html:87
+msgid "WAPT Wiki"
+msgstr ""
+
+#: templates/index.html:88
+msgid "Mailing list"
+msgstr ""
+
+#: templates/index.html:104
+msgid "WAPTServer"
+msgstr ""
+
 #: templates/index.html:111
-msgid "WAPT Agent (for deployment on user desktop)"
+msgid "WAPT Agent (for deploying onto user desktop)"
+msgstr ""
+
+#: templates/index.html:112
+msgid "WAPTSetup (for installing on management machine)"
+msgstr ""
+
+#: templates/index.html:113
+msgid "WAPTDeploy (for setting up deployment GPO)"
+msgstr ""
+
+#: templates/index.html:115
+msgid "Certificates"
+msgstr ""
+
+#: templates/index.html:117
+msgid "TIS repository"
+msgstr ""
+
+#: templates/index.html:127
+msgid "Help"
+msgstr ""
+
+#: templates/index.html:133
+msgid "WAPT Wiki&nbsp;"
+msgstr ""
+
+#: templates/index.html:134
+msgid "mailing list archive"
+msgstr ""
+
+#: templates/index.html:135
+msgid "Issue tracker (roundup)"
+msgstr ""
+
+#: templates/index.html:145
+msgid "Services"
+msgstr ""
+
+#: templates/index.html:150
+msgid "Our solutions"
+msgstr ""
+
+#: templates/index.html:151
+msgid "WAPT providers"
+msgstr ""
+
+#: templates/index.html:161
+msgid "WAPT server"
+msgstr ""
+
+#: templates/index.html:162
+msgid ""
+"\n"
+"WAPT server is managed through a WAPT console installed on a Windows "
+"system.\n"
+"When installing the WAPT server on Windows, the console is installed by "
+"default and can be found under the start menu.\n"
+msgstr ""
+
+#: templates/index.html:168
+msgid ""
+"\n"
+"When installing the server on Linux, the <a href=\"/wapt/waptsetup-"
+"tis.exe\">WAPT client</a> should be installed on an\n"
+"administration machine, then run from 'Start/All programs'.\n"
+msgstr ""
+
+#: templates/index.html:173
+msgid ""
+"\n"
+"To manually add a new host to the WAPT server, download the<a "
+"href=\"/wapt/waptagent.exe\">WAPT agent</a> from the menu\n"
+"to the right. The agent has been properly configured by the server so the"
+" default parameters should work. Once the WAPT client\n"
+"has been installed, you can find it in your console.\n"
+msgstr ""
+
+#: templates/index.html:179
+msgid ""
+"\n"
+"For further information, be sure to check the documentation at <a "
+"href=\"http://dev.tranquil.it/\">dev.tranquil.it</a> or on\n"
+"mailing-list.\n"
+msgstr ""
+
+#: templates/index.html:192
+msgid "What's new"
 msgstr ""
 

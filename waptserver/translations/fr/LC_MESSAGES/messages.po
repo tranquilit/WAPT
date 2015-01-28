@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-01-28 14:20+0100\n"
-"PO-Revision-Date: 2015-01-28 14:25+0200\n"
+"POT-Creation-Date: 2015-01-28 16:27+0100\n"
+"PO-Revision-Date: 2015-01-28 16:27+0200\n"
 "Last-Translator: mcadorel-adm <ss>\n"
 "Language-Team: moi\n"
 "Language: fr\n"
@@ -32,8 +32,8 @@ msgstr "Irrécupérable. Impossible d'ouvrir le fichier : {}."
 #, fuzzy
 msgid "No waptserver admin password set in wapt-get.ini configuration file."
 msgstr ""
-"Aucun mot de passe administrateur défini dans le fichier de configuration "
-"wapt-get.ini."
+"Aucun mot de passe administrateur défini dans le fichier de configuration"
+" wapt-get.ini."
 
 #: waptserver.py:172
 msgid ""
@@ -93,7 +93,7 @@ msgid "unexpected: {}"
 msgstr "inattendu : {}"
 
 #: waptserver.py:602
-#, fuzzy, python-format
+#, fuzzy
 msgid "File {} uploaded to {}"
 msgstr "Le fichier {} a été uploadé vers {}."
 
@@ -161,12 +161,175 @@ msgstr "Il n'y a aucun ordinateur renseigné."
 msgid "Unsupported HTTP method."
 msgstr "Méthode http non supportée."
 
+#: templates/index.html:4
+msgid "WAPT SERVER Web Console"
+msgstr "Console Web du serveur WAPT"
+
+#: templates/index.html:73 templates/index.html:150 templates/index.html:207
+msgid "Tranquil IT Systems"
+msgstr ""
+
+#: templates/index.html:75
+msgid "WAPT - Apt-get for Windows"
+msgstr "WAPT - Apt-get pour Windows"
+
+#: templates/index.html:77
+msgid "Contact us or have us call back"
+msgstr "Contactez-nous ou faites-vous rappeler"
+
+#: templates/index.html:81
+msgid "To contents"
+msgstr "Aller au contenu"
+
+#: templates/index.html:84
+msgid "Home"
+msgstr "Accueil"
+
+#: templates/index.html:85 templates/index.html:116
+msgid "Private repository"
+msgstr "Dépôt privé"
+
+#: templates/index.html:86
+msgid "TIS repositories"
+msgstr "Dépôts TIS"
+
+#: templates/index.html:87
+msgid "WAPT Wiki"
+msgstr "Wiki WAPT"
+
+#: templates/index.html:88
+msgid "Mailing list"
+msgstr "Mailing list"
+
+#: templates/index.html:104
+msgid "WAPTServer"
+msgstr ""
+
 #: templates/index.html:111
-msgid "WAPT Agent (for deployment on user desktop)"
+msgid "WAPT Agent (for deploying onto user desktop)"
 msgstr "Agent WAPT (pour le deploiement sur les postes utilisateurs)"
+
+#: templates/index.html:112
+msgid "WAPTSetup (for installing on management machine)"
+msgstr "WAPTsetup (pour installer sur une machine d'administration)"
+
+#: templates/index.html:113
+msgid "WAPTDeploy (for setting up deployment GPO)"
+msgstr "WAPTDeploy (pour mettre en place le déploiement GPO)"
+
+#: templates/index.html:115
+msgid "Certificates"
+msgstr "Certificats"
+
+#: templates/index.html:117
+msgid "TIS repository"
+msgstr "Dépôt TIS"
+
+#: templates/index.html:127
+msgid "Help"
+msgstr "Aide"
+
+#: templates/index.html:133
+msgid "WAPT Wiki&nbsp;"
+msgstr "Wiki WAPT&nbsp;"
+
+#: templates/index.html:134
+msgid "mailing list archive"
+msgstr "Archive de la mailing list"
+
+#: templates/index.html:135
+msgid "Issue tracker (roundup)"
+msgstr "Gestionnaire de bugs (roundup)"
+
+#: templates/index.html:145
+msgid "Services"
+msgstr "Service :"
+
+#: templates/index.html:150
+msgid "Our solutions"
+msgstr "Nos solutions"
+
+#: templates/index.html:151
+msgid "WAPT providers"
+msgstr "Prestataires WAPT"
+
+#: templates/index.html:161
+msgid "WAPT server"
+msgstr "Serveur WAPT"
+
+#: templates/index.html:162
+msgid ""
+"\n"
+"WAPT server is managed through a WAPT console installed on a Windows "
+"system.\n"
+"When installing the WAPT server on Windows, the console is installed by "
+"default and can be found under the start menu.\n"
+msgstr ""
+"\n"
+"L'administration du serveur WAPT se fait à travers la console WAPT qui "
+"s'installe sur un poste Windows.\n"
+"Lors de l'installation du serveur WAPT sous Windows, la console est "
+"installée par défaut et peut être trouvé\n"
+"dans le menu 'Démarrer'."
+
+#: templates/index.html:168
+msgid ""
+"\n"
+"When installing the server on Linux, the <a href=\"/wapt/waptsetup-"
+"tis.exe\">WAPT client</a> should be installed on an\n"
+"administration machine, then run from 'Start/All programs'.\n"
+msgstr ""
+"\n"
+"Lors de l'installation du serveur WAPT sous Linux, il faut ensuite "
+"installer le <a href=\\\"/wapt/waptsetup-tis.exe\\\">client WAPT</a> sur "
+"une machine\n"
+"d'administration et lancer la commande depuis le menu 'Démarrer/Tous les "
+"programmes'."
+
+#: templates/index.html:173
+msgid ""
+"\n"
+"To manually add a new host to the WAPT server, download the<a "
+"href=\"/wapt/waptagent.exe\">WAPT agent</a> from the menu\n"
+"to the right. The agent has been properly configured by the server so the"
+" default parameters should work. Once the WAPT client\n"
+"has been installed, you can find it in your console.\n"
+msgstr ""
+"\n"
+"Pour intégrer un nouveau poste au serveur WAPT à la main, télécharger "
+"l'<a href=\\\"/wapt/waptagent.exe\\\">agent WAPT</a> dans le menu\n"
+"à droite. La configuration de l'agent a été effectuée par le serveur et "
+"les paramètres par défaut sont les bons. Une fois le client WAPT\n"
+"installé, vous le retrouverez dans votre console."
+
+#: templates/index.html:179
+msgid ""
+"\n"
+"For further information, be sure to check the documentation at <a "
+"href=\"http://dev.tranquil.it/\">dev.tranquil.it</a> or on\n"
+"mailing-list.\n"
+msgstr ""
+"\n"
+"Pour plus d'information, n'hésitez pas à vous reporter à la documentation"
+" sur le site <a href=\\\"http://dev.tranquil.it/\\\">dev.tranquil.it</a> "
+"ou sur la\n"
+"mailing-list."
+
+#: templates/index.html:192
+msgid "What's new"
+msgstr "Actualités"
 
 #~ msgid "Couldn't connect to web service : {}"
 #~ msgstr ""
 
 #~ msgid "Couldn't connect to the host's WAPT service : {}"
+#~ msgstr ""
+
+#~ msgid "Contactez-nous ou faites-vous rappeler"
+#~ msgstr ""
+
+#~ msgid "Nos solutions"
+#~ msgstr ""
+
+#~ msgid "Aller au contenu"
 #~ msgstr ""
