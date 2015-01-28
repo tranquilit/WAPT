@@ -69,13 +69,14 @@ if len(sys.argv) > 2:
     sys.exit(1)
 
 deb_revision = None
-try:
-  deb_revision = int(sys.argv[1])
-  if deb_revision <= 0:
-      raise Exception()
-except:
-    print >> sys.stderr, "wrong parameter `%s' (should be a positive integer)" % (sys.argv[1],)
-    sys.exit(1)
+if len(sys.argv) >= 2:
+    try:
+        deb_revision = int(sys.argv[1])
+        if deb_revision <= 0:
+            raise Exception()
+    except:
+        print >> sys.stderr, "wrong parameter `%s' (should be a positive integer)" % (sys.argv[1],)
+        sys.exit(1)
 
 new_umask = 022
 old_umask = os.umask(new_umask)
