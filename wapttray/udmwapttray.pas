@@ -501,7 +501,7 @@ begin
         end
         else
         begin
-          trayHint:=utf8Encode(format(utf8Decode(rsUpdatesAvailableFor),[soutils.join(#13#10'-',upgrades)]));;
+          trayHint:='';
           trayMode:=tmOK;
         end;
       end
