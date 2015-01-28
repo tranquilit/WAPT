@@ -1,123 +1,24 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
-#: tdmwapttray.actcancelalltasks.caption
-msgid "Cancel all current tasks"
+#: uwaptexitres.rserrorwininetflags
+msgid "Internal error in SetToIgnoreCerticateErrors when trying to get wininet flags. %s"
 msgstr ""
 
-#: tdmwapttray.actcancelrunningtask.caption
-msgid "Cancel current task"
+#: uwaptexitres.rsinterruptupdate
+msgid "Interrupt software update"
 msgstr ""
 
-#: tdmwapttray.actconfigure.caption
-msgid "View configuration file"
+#: uwaptexitres.rslaunchsoftwareupdate
+msgid "Launch software update"
 msgstr ""
 
-#: tdmwapttray.actforceregister.caption
-msgid "Save this host's inventory to the server"
+#: uwaptexitres.rssoftwareupdatein
+msgid "Updating software in %s sec..."
 msgstr ""
 
-#: tdmwapttray.actlaunchwaptconsole.caption
-msgid "Run WAPT Console"
-msgstr ""
-
-#: tdmwapttray.actlocalinfo.caption
-msgid "About this host"
-msgstr ""
-
-#: tdmwapttray.actquit.caption
-msgid "Quit"
-msgstr ""
-
-#: tdmwapttray.actreloadconfig.caption
-msgid "Reload service configuration"
-msgstr ""
-
-#: tdmwapttray.actserviceenable.caption
-msgid "Wapt service running"
-msgstr ""
-
-#: tdmwapttray.actsessionsetup.caption
-msgid "Configure all installed packages for your own session"
-msgstr ""
-
-#: tdmwapttray.actshowmain.caption
-msgid "Configure"
-msgstr ""
-
-#: tdmwapttray.actshowstatus.caption
-msgid "View software status"
-msgstr ""
-
-#: tdmwapttray.actshowtasks.caption
-msgid "View tasks"
-msgstr ""
-
-#: tdmwapttray.actupdate.caption
-msgid "Update software inventory"
-msgstr ""
-
-#: tdmwapttray.actupgrade.caption
-msgid "Install updates"
-msgstr ""
-
-#: tdmwapttray.actwaptupgrade.caption
-msgid "Update WAPT software on this host"
-msgstr ""
-
-#: tdmwapttray.menuitem10.caption
-msgid "Configuration"
-msgstr ""
-
-#: tdmwapttray.menuitem11.caption
-msgctxt "TDMWAPTTRAY.MENUITEM11.CAPTION"
-msgid "-"
-msgstr ""
-
-#: tdmwapttray.menuitem15.caption
-msgctxt "TDMWAPTTRAY.MENUITEM15.CAPTION"
-msgid "-"
-msgstr ""
-
-#: tdmwapttray.menuitem17.caption
-msgctxt "TDMWAPTTRAY.MENUITEM17.CAPTION"
-msgid "-"
-msgstr ""
-
-#: tdmwapttray.menuitem21.caption
-msgctxt "TDMWAPTTRAY.MENUITEM21.CAPTION"
-msgid "-"
-msgstr ""
-
-#: tdmwapttray.menuitem23.caption
-msgctxt "TDMWAPTTRAY.MENUITEM23.CAPTION"
-msgid "-"
-msgstr ""
-
-#: tdmwapttray.menuitem7.caption
-msgctxt "tdmwapttray.menuitem7.caption"
-msgid "-"
-msgstr ""
-
-#: tdmwapttray.menuitem8.caption
-msgctxt "TDMWAPTTRAY.MENUITEM8.CAPTION"
-msgid "-"
-msgstr ""
-
-#: tdmwapttray.menuwaptversion.caption
-msgid "Version"
-msgstr ""
-
-#: tviswapttray.caption
-msgid "WAPT Software Manager"
-msgstr ""
-
-#: tviswapttray.pgstatus.caption
-msgid "Status"
-msgstr ""
-
-#: tviswapttray.tabsheet2.caption
-msgid "TabSheet2"
+#: uwaptexitres.rsupdatingsoftware
+msgid "Updating software"
 msgstr ""
 
 #: uwaptres.rsbundleconfigeditcaption
@@ -137,7 +38,6 @@ msgid "Cancelled %s"
 msgstr ""
 
 #: uwaptres.rscanceling
-msgctxt "uwaptres.rscanceling"
 msgid "Canceling %s"
 msgstr ""
 
@@ -146,7 +46,6 @@ msgid "Couldn't copy certificate %s to %s."
 msgstr ""
 
 #: uwaptres.rschecking
-msgctxt "uwaptres.rschecking"
 msgid "Checking..."
 msgstr ""
 
@@ -298,7 +197,6 @@ msgid "Old password must not be empty."
 msgstr ""
 
 #: uwaptres.rserror
-msgctxt "uwaptres.rserror"
 msgid "Error"
 msgstr ""
 
@@ -307,7 +205,6 @@ msgid "Error cancelling: %s"
 msgstr ""
 
 #: uwaptres.rserrorfor
-msgctxt "uwaptres.rserrorfor"
 msgid "Error for %s"
 msgstr ""
 
@@ -320,7 +217,6 @@ msgid "Error launching upgrade: %s"
 msgstr ""
 
 #: uwaptres.rserrorwhilechecking
-msgctxt "uwaptres.rserrorwhilechecking"
 msgid "Error while checking..."
 msgstr ""
 
@@ -393,6 +289,10 @@ msgstr ""
 msgid "  install on c:\\wapt : --setup -s"
 msgstr ""
 
+#: uwaptres.rsinterruptupdate
+msgid "Stopper la mise Ã  jour"
+msgstr ""
+
 #: uwaptres.rsinvaliddns
 msgid "Invalid DNS"
 msgstr ""
@@ -407,6 +307,10 @@ msgstr ""
 
 #: uwaptres.rskeyalreadyexists
 msgid "Key %s already exists, please pick another name."
+msgstr ""
+
+#: uwaptres.rslaunchsoftwareupdate
+msgid "Lancer la mise Ã  jour des logiciels"
 msgstr ""
 
 #: uwaptres.rslongtaskerror
@@ -430,7 +334,6 @@ msgid "No running tasks"
 msgstr ""
 
 #: uwaptres.rsnotaskcanceled
-msgctxt "uwaptres.rsnotaskcanceled"
 msgid "No task canceled"
 msgstr ""
 
@@ -443,12 +346,10 @@ msgid " -r --repo : URL of dependencies libs"
 msgstr ""
 
 #: uwaptres.rspackageconfigdone
-msgctxt "uwaptres.rspackageconfigdone"
 msgid "Done configuring packages for the current user session"
 msgstr ""
 
 #: uwaptres.rspackageconfigerror
-msgctxt "uwaptres.rspackageconfigerror"
 msgid "Error while configuring packages for the current user session"
 msgstr ""
 
@@ -525,15 +426,11 @@ msgid "Deleting TIS certificate and copying new certificate"
 msgstr ""
 
 #: uwaptres.rsrestartingwaptserver
-msgid "Restarting waptserver"
+msgid "RedÃ©marrage service waptserver"
 msgstr ""
 
 #: uwaptres.rsrestartingwaptservice
-msgid "Restarting waptservice"
-msgstr ""
-
-#: uwaptres.rsretryregisteringhostonserver
-msgid "%D retry on registering host on server"
+msgid "RedÃ©marrage waptservice"
 msgstr ""
 
 #: uwaptres.rsrmbundlefromhosts
@@ -550,6 +447,10 @@ msgstr ""
 
 #: uwaptres.rssettingserverpassword
 msgid "Setting up server password"
+msgstr ""
+
+#: uwaptres.rssoftwareupdatein
+msgid "Mise Ã  jour des logiciels dans %s sec..."
 msgstr ""
 
 #: uwaptres.rssrv
@@ -579,7 +480,6 @@ msgid "Error getting task list: %s"
 msgstr ""
 
 #: uwaptres.rstaskstarted
-msgctxt "uwaptres.rstaskstarted"
 msgid "%s started"
 msgstr ""
 
@@ -592,9 +492,7 @@ msgid "Uninstalling %s..."
 msgstr ""
 
 #: uwaptres.rsupdatesavailablefor
-msgid ""
-"Available updates for :\n"
-"-%s\n"
+msgid "Available updates for : "
 msgstr ""
 
 #: uwaptres.rsupdatinglocalpackages
@@ -607,6 +505,10 @@ msgstr ""
 
 #: uwaptres.rsupdatingpackagelist
 msgid "Updating package list"
+msgstr ""
+
+#: uwaptres.rsupdatingsoftware
+msgid "Mise Ã  jour des logiciels en cours"
 msgstr ""
 
 #: uwaptres.rsupgradehosterror
@@ -668,7 +570,6 @@ msgid "Waptservice stopping"
 msgstr ""
 
 #: uwaptres.rswaptserviceterminated
-msgctxt "uwaptres.rswaptserviceterminated"
 msgid "WAPTService terminated"
 msgstr ""
 
@@ -694,71 +595,5 @@ msgstr ""
 
 #: uwaptres.rswinterruptreceived
 msgid "W: interrupt received, killing serverâ¦"
-msgstr ""
-
-#: uwapttrayres.rscanceling
-msgctxt "uwapttrayres.rscanceling"
-msgid "Canceling %s"
-msgstr ""
-
-#: uwapttrayres.rschecking
-msgctxt "uwapttrayres.rschecking"
-msgid "Checking..."
-msgstr ""
-
-#: uwapttrayres.rserror
-msgctxt "uwapttrayres.rserror"
-msgid "Error"
-msgstr ""
-
-#: uwapttrayres.rserrorfor
-msgctxt "uwapttrayres.rserrorfor"
-msgid "Error for %s"
-msgstr ""
-
-#: uwapttrayres.rserrorwhilechecking
-msgctxt "uwapttrayres.rserrorwhilechecking"
-msgid "Error while checking..."
-msgstr ""
-
-#: uwapttrayres.rsinstalling
-msgid "Installation en cours"
-msgstr ""
-
-#: uwapttrayres.rsnotaskcanceled
-msgctxt "uwapttrayres.rsnotaskcanceled"
-msgid "No task canceled"
-msgstr ""
-
-#: uwapttrayres.rspackageconfigdone
-msgctxt "uwapttrayres.rspackageconfigdone"
-msgid "Done configuring packages for the current user session"
-msgstr ""
-
-#: uwapttrayres.rspackageconfigerror
-msgctxt "uwapttrayres.rspackageconfigerror"
-msgid "Error while configuring packages for the current user session"
-msgstr ""
-
-#: uwapttrayres.rstaskdone
-msgid ""
-"%s done\n"
-"%s\n"
-msgstr ""
-
-#: uwapttrayres.rstaskstarted
-msgctxt "uwapttrayres.rstaskstarted"
-msgid "%s started"
-msgstr ""
-
-#: uwapttrayres.rsupdatesavailablefor
-msgid ""
-"Available updates for :\n"
-"-%s\n"
-msgstr ""
-
-#: uwapttrayres.rswaptserviceterminated
-msgctxt "uwapttrayres.rswaptserviceterminated"
-msgid "WAPTService terminated"
 msgstr ""
 

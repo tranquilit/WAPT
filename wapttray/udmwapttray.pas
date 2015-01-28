@@ -8,7 +8,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, ExtCtrls, Menus, ActnList, Controls,
-  zmqapi, superobject, DefaultTranslator;
+  zmqapi, superobject, DefaultTranslator, uWaptTrayRes;
 
 type
 

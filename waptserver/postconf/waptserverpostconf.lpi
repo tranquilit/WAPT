@@ -58,7 +58,7 @@
         <PackageName Value="LCL"/>
       </Item8>
     </RequiredPackages>
-    <Units Count="7">
+    <Units Count="8">
       <Unit0>
         <Filename Value="waptserverpostconf.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -100,6 +100,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="uWaptRes"/>
       </Unit6>
+      <Unit7>
+        <Filename Value="uwaptserverres.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uwaptserverres"/>
+      </Unit7>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

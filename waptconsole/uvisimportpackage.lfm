@@ -27,7 +27,7 @@ object VisImportPackage: TVisImportPackage
       Width = 75
       Anchors = [akTop, akRight]
       Cancel = True
-      DefaultCaption = True
+      Caption = 'Cancel'
       Kind = bkCancel
       ModalResult = 2
       TabOrder = 0

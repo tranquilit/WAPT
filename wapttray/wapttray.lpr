@@ -29,7 +29,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Forms,Interfaces,
-  uDMWAPTTray, uwapttray, uwaptres,
+  uDMWAPTTray, uwapttray, uwapttrayres,
   DefaultTranslator,
   Translations;
 

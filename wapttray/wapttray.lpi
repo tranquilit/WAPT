@@ -74,25 +74,25 @@
         <UnitName Value="uDMWAPTTray"/>
       </Unit2>
       <Unit3>
-        <Filename Value="..\wapt-get\uwaptres.pas"/>
+        <Filename Value="udmwapttray.lfm"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="uWaptRes"/>
       </Unit3>
       <Unit4>
-        <Filename Value="udmwapttray.lfm"/>
+        <Filename Value="uwapttray.lfm"/>
         <IsPartOfProject Value="True"/>
       </Unit4>
       <Unit5>
-        <Filename Value="uwapttray.lfm"/>
-        <IsPartOfProject Value="True"/>
-      </Unit5>
-      <Unit6>
         <Filename Value="uwapttray.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisWAPTTray"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uwapttray"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="uwapttrayres.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uWaptTrayRes"/>
       </Unit6>
     </Units>
   </ProjectOptions>

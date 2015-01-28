@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, FileUtil, RichView,
   Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, ExtCtrls,
   Buttons, ActnList, EditBtn, htmlview, Readhtml, Htmlsubs, IdHTTP,
-  IdComponent,uvisLoading, DefaultTranslator;
+  IdComponent,uvisLoading, DefaultTranslator, uWaptServerRes;
 
 type
 

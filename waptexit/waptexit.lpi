@@ -12,12 +12,14 @@
       <Icon Value="0"/>
     </General>
     <i18n>
-      <EnableI18N LFM="False"/>
+      <EnableI18N Value="True"/>
+      <OutDir Value="..\languages"/>
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="9"/>
       <RevisionNr Value="8"/>
+      <BuildNr Value="1"/>
       <Language Value="040C"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="check and launch packages upgrades at Windows Shutdown" InternalName="waptexit" LegalCopyright="Tranquil IT Systems" OriginalFilename="waptexit.exe" ProductName="WAPT" ProductVersion=""/>
     </VersionInfo>
@@ -48,7 +50,7 @@
         <PackageName Value="LCL"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="4">
+    <Units Count="5">
       <Unit0>
         <Filename Value="waptexit.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -72,6 +74,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="tisstrings"/>
       </Unit3>
+      <Unit4>
+        <Filename Value="uwaptexitres.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uWaptExitRes"/>
+      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

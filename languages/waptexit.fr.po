@@ -1,7 +1,7 @@
  mcadorel-adm <ss>, 2015.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2015-01-28 11:32+0200\n"
+"PO-Revision-Date: 2015-01-28 11:55+0200\n"
 "Last-Translator: mcadorel-adm <ss>\n"
 "Language-Team: moi\n"
 "Language: fr\n"
@@ -10,123 +10,24 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
 
-#: tdmwapttray.actcancelalltasks.caption
-msgid "Cancel all current tasks"
-msgstr "Annuler toutes les tâches en cours"
-
-#: tdmwapttray.actcancelrunningtask.caption
-msgid "Cancel current task"
-msgstr "Annuler la tâche en cours"
-
-#: tdmwapttray.actconfigure.caption
-msgid "View configuration file"
-msgstr "Afficher le fichier de configuration"
-
-#: tdmwapttray.actforceregister.caption
-msgid "Save this host's inventory to the server"
-msgstr "Sauvegarder l'inventaire de cette machine sur le serveur"
-
-#: tdmwapttray.actlaunchwaptconsole.caption
-msgid "Run WAPT Console"
-msgstr "Lancer la console WAPT"
-
-#: tdmwapttray.actlocalinfo.caption
-msgid "About this host"
-msgstr "Informations de la machine"
-
-#: tdmwapttray.actquit.caption
-msgid "Quit"
-msgstr "Quitter"
-
-#: tdmwapttray.actreloadconfig.caption
-msgid "Reload service configuration"
-msgstr "Recharger la configuration du service"
-
-#: tdmwapttray.actserviceenable.caption
-msgid "Wapt service running"
-msgstr "Service WAPT lancé"
-
-#: tdmwapttray.actsessionsetup.caption
-msgid "Configure all installed packages for your own session"
-msgstr "Configurer tous les paquets installés pour votre session"
-
-#: tdmwapttray.actshowmain.caption
-msgid "Configure"
-msgstr "Configurer"
-
-#: tdmwapttray.actshowstatus.caption
-msgid "View software status"
-msgstr "Afficher le statut des logiciels"
-
-#: tdmwapttray.actshowtasks.caption
-msgid "View tasks"
-msgstr "Afficher les tâches"
-
-#: tdmwapttray.actupdate.caption
-msgid "Update software inventory"
-msgstr "Mettre à jour l'inventaire des logiciels"
-
-#: tdmwapttray.actupgrade.caption
-msgid "Install updates"
-msgstr "Installer les mises à jour"
-
-#: tdmwapttray.actwaptupgrade.caption
-msgid "Update WAPT software on this host"
-msgstr "Mettre à jour le logiciel WAPT sur cet hôte"
-
-#: tdmwapttray.menuitem10.caption
-msgid "Configuration"
-msgstr "Configuration"
-
-#: tdmwapttray.menuitem11.caption
-msgctxt "tdmwapttray.menuitem11.caption"
-msgid "-"
+#: uwaptexitres.rserrorwininetflags
+msgid "Internal error in SetToIgnoreCerticateErrors when trying to get wininet flags. %s"
 msgstr ""
 
-#: tdmwapttray.menuitem15.caption
-msgctxt "tdmwapttray.menuitem15.caption"
-msgid "-"
+#: uwaptexitres.rsinterruptupdate
+msgid "Interrupt software update"
 msgstr ""
 
-#: tdmwapttray.menuitem17.caption
-msgctxt "tdmwapttray.menuitem17.caption"
-msgid "-"
+#: uwaptexitres.rslaunchsoftwareupdate
+msgid "Launch software update"
 msgstr ""
 
-#: tdmwapttray.menuitem21.caption
-msgctxt "tdmwapttray.menuitem21.caption"
-msgid "-"
+#: uwaptexitres.rssoftwareupdatein
+msgid "Updating software in %s sec..."
 msgstr ""
 
-#: tdmwapttray.menuitem23.caption
-msgctxt "tdmwapttray.menuitem23.caption"
-msgid "-"
-msgstr ""
-
-#: tdmwapttray.menuitem7.caption
-msgctxt "tdmwapttray.menuitem7.caption"
-msgid "-"
-msgstr ""
-
-#: tdmwapttray.menuitem8.caption
-msgctxt "tdmwapttray.menuitem8.caption"
-msgid "-"
-msgstr ""
-
-#: tdmwapttray.menuwaptversion.caption
-msgid "Version"
-msgstr "Version"
-
-#: tviswapttray.caption
-msgid "WAPT Software Manager"
-msgstr "Gestion des logiciels WAPT"
-
-#: tviswapttray.pgstatus.caption
-msgid "Status"
-msgstr "Statut"
-
-#: tviswapttray.tabsheet2.caption
-msgid "TabSheet2"
+#: uwaptexitres.rsupdatingsoftware
+msgid "Updating software"
 msgstr ""
 
 #: uwaptres.rsbundleconfigeditcaption
@@ -146,7 +47,6 @@ msgid "Cancelled %s"
 msgstr "%s annulé"
 
 #: uwaptres.rscanceling
-msgctxt "uwaptres.rscanceling"
 msgid "Canceling %s"
 msgstr "Annulation de %s"
 
@@ -155,17 +55,16 @@ msgid "Couldn't copy certificate %s to %s."
 msgstr "Echec de la copie du certificat %s vers %s."
 
 #: uwaptres.rschecking
-msgctxt "uwaptres.rschecking"
 msgid "Checking..."
 msgstr "Vérification en cours..."
 
 #: uwaptres.rscname
 msgid "CNAME: %s"
-msgstr ""
+msgstr "CNAME : %s"
 
 #: uwaptres.rscompletionprogress
 msgid "%s : %.0f%% completed"
-msgstr ""
+msgstr "%s : %.0f%% terminé"
 
 #: uwaptres.rsconfirm
 msgctxt "uwaptres.rsconfirm"
@@ -188,35 +87,9 @@ msgstr "Confirmer la suppression"
 
 #: uwaptres.rsconfirmhostforgetspackages
 msgid "Are you sure you want to forget %s packages from host %s ?"
-msgstr "Êtes-vous sûr de vouloir oublier %s paquets de la machine %s ?"
+msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 
 #: uwaptres.rsconfirmimport
-#, fuzzy
-#| msgid ""
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
 msgid ""
 "Are you sure you want to import\n"
 "%s\n"
@@ -249,7 +122,7 @@ msgstr "Confirmer la suppression"
 
 #: uwaptres.rsconfirmrmpackagesfromhost
 msgid "Are you sure you want to remove %s package(s) from the selected host(s) %s ?"
-msgstr "Êtes-vous sûr de vouloir supprimer %s paquet(s) de la/des machine(s) sélectionnée(s) ?"
+msgstr "Êtes-vous sûr(e) de vouloir supprimer %s paquet(s) de la/des machine(s) sélectionnée(s) ?"
 
 #: uwaptres.rscreationinprogress
 msgid "Creation in progress."
@@ -264,6 +137,7 @@ msgid "Removing %s"
 msgstr "Suppression de %s"
 
 #: uwaptres.rsdeletioninprogress
+#, fuzzy
 msgid "Removing packages..."
 msgstr "Suppression des paquets..."
 
@@ -272,6 +146,7 @@ msgid "Selection of packages to add to the hosts as dependencies"
 msgstr "Choix des paquets à ajouter aux hôtes en tant que dépendances"
 
 #: uwaptres.rsdiffpwerror
+#, fuzzy
 msgid "Passwords do not match."
 msgstr "Les mots de passe ne correspondent pas."
 
@@ -336,7 +211,6 @@ msgid "Old password must not be empty."
 msgstr "L'ancien mot de passe ne doit pas être vide."
 
 #: uwaptres.rserror
-msgctxt "uwaptres.rserror"
 msgid "Error"
 msgstr "Erreur"
 
@@ -345,7 +219,7 @@ msgid "Error cancelling: %s"
 msgstr "Erreur de l'annulation : %s"
 
 #: uwaptres.rserrorfor
-msgctxt "uwaptres.rserrorfor"
+#, fuzzy
 msgid "Error for %s"
 msgstr "Erreur pour %s"
 
@@ -358,7 +232,6 @@ msgid "Error launching upgrade: %s"
 msgstr "Erreur lors du lancement de l'upgrade : %s"
 
 #: uwaptres.rserrorwhilechecking
-msgctxt "uwaptres.rserrorwhilechecking"
 msgid "Error while checking..."
 msgstr "Erreur lors de la vérification..."
 
@@ -380,9 +253,8 @@ msgid "Failed to retrieve task."
 msgstr "Impossible de récupérer l'action."
 
 #: uwaptres.rsforceduninstallpackages
-#, fuzzy
 msgid "Selection of packages to force-remove from the hosts"
-msgstr "Choix des paquets à forcer à désinstaller sur les machines"
+msgstr "Choix des paquets pour lesquels forcer la désinstallation sur les machines"
 
 #: uwaptres.rsforgetpackageerror
 msgid "Error while forgetting package %s: %s"
@@ -417,10 +289,8 @@ msgid "Innosetup is unavailable (path : %s), please install it first."
 msgstr "Innosetup n'est pas disponible (emplacement : %s), veuillez l'installer en premier lieu."
 
 #: uwaptres.rsinputkeyname
-#, fuzzy
-#| msgid "Please input a key name"
 msgid "Please input a key name."
-msgstr "Veuillez spécifier le nom de la clé"
+msgstr "Veuillez spécifier le nom de la clé."
 
 #: uwaptres.rsinputpubkeypath
 msgid "Please input path to public key"
@@ -433,6 +303,10 @@ msgstr "Installation de %s..."
 #: uwaptres.rsinstallon
 msgid "  install on c:\\wapt : --setup -s"
 msgstr "  installation sur c:\\wapt : --setup -s"
+
+#: uwaptres.rsinterruptupdate
+msgid "Stopper la mise Ã  jour"
+msgstr ""
 
 #: uwaptres.rsinvaliddns
 msgid "Invalid DNS"
@@ -450,6 +324,10 @@ msgstr "Le répertoire de WAPTsetup n'est pas valide : %s"
 msgid "Key %s already exists, please pick another name."
 msgstr "La clé %s existe déjà, merci de choisir un nom différent."
 
+#: uwaptres.rslaunchsoftwareupdate
+msgid "Lancer la mise Ã  jour des logiciels"
+msgstr ""
+
 #: uwaptres.rslongtaskerror
 msgid "Error launching longtask: %s"
 msgstr "Erreur lors du lancement de longtask : %s"
@@ -460,9 +338,10 @@ msgstr "URL du dépôt principal : %s"
 
 #: uwaptres.rsnbmodifiedhosts
 msgid "%s hosts affected."
-msgstr "%s machines affectées."
+msgstr "%s machines modifiées."
 
 #: uwaptres.rsnobundle
+#, fuzzy
 msgid "There is no package bundle."
 msgstr "Il n'y a pas de groupe de paquets."
 
@@ -471,7 +350,6 @@ msgid "No running tasks"
 msgstr "Aucune tâche en cours"
 
 #: uwaptres.rsnotaskcanceled
-msgctxt "uwaptres.rsnotaskcanceled"
 msgid "No task canceled"
 msgstr "Aucune tâche annulée"
 
@@ -484,12 +362,10 @@ msgid " -r --repo : URL of dependencies libs"
 msgstr " -r --repo : URL des librairies des dépendances"
 
 #: uwaptres.rspackageconfigdone
-msgctxt "uwaptres.rspackageconfigdone"
 msgid "Done configuring packages for the current user session"
 msgstr "Configuration des paquets pour la session utilisateur terminée"
 
 #: uwaptres.rspackageconfigerror
-msgctxt "uwaptres.rspackageconfigerror"
 msgid "Error while configuring packages for the current user session"
 msgstr "Erreur lors de la configuration des paquets pour la session utilisateur"
 
@@ -498,38 +374,12 @@ msgid "Error while creating package : %s"
 msgstr "Erreur lors de la création du paquet : %s"
 
 #: uwaptres.rspackageduplicateconfirm
-#, fuzzy
-#| msgid ""
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
 "%s\n"
 " into your repository ?\n"
 msgstr ""
-"Etes-vous sûr de vouloir dupliquer le(s) paquet(s)\n"
+"Etes-vous sûr(e) de vouloir dupliquer le(s) paquet(s)\n"
 "%s\n"
 " dans votre répertoire ?\n"
 
@@ -595,16 +445,12 @@ msgid "Deleting TIS certificate and copying new certificate"
 msgstr "Suppression du certificat TIS et copie du nouveau certificat"
 
 #: uwaptres.rsrestartingwaptserver
-msgid "Restarting waptserver"
-msgstr "Redémarrage du serveur WAPT"
+msgid "RedÃ©marrage service waptserver"
+msgstr ""
 
 #: uwaptres.rsrestartingwaptservice
-msgid "Restarting waptservice"
-msgstr "Redémarrage du service WAPT"
-
-#: uwaptres.rsretryregisteringhostonserver
-msgid "%D retry on registering host on server"
-msgstr "%D réessayer d'enregistrer l'hôte sur le serveur"
+msgid "RedÃ©marrage waptservice"
+msgstr ""
 
 #: uwaptres.rsrmbundlefromhosts
 msgid "Selection of package bundles for removing from the selected hosts"
@@ -622,13 +468,19 @@ msgstr "Enregistrer les modifications ?"
 msgid "Setting up server password"
 msgstr "Mise en place du mot de passe du serveur"
 
+#: uwaptres.rssoftwareupdatein
+#, fuzzy
+msgid "Mise Ã  jour des logiciels dans %s sec..."
+msgstr "Mise Ã  jour des logiciels dans %s sec..."
+
 #: uwaptres.rssrv
+#, fuzzy
 msgid "SRV: %s"
-msgstr ""
+msgstr "SRV: %s"
 
 #: uwaptres.rsstoplistening
 msgid "Stop listening to events"
-msgstr "Interruption "
+msgstr "Arrêt de l'écoute des événements"
 
 #: uwaptres.rssuccessfullyimported
 msgid "%s successfully imported."
@@ -639,24 +491,6 @@ msgid "Task canceled."
 msgstr "Tâche annulée."
 
 #: uwaptres.rstaskdone
-#, fuzzy
-#| msgid ""
-#| "%s done\n"
-#| "%s\n"
-#| "%s done\n"
-#| "%s\n"
-#| "%s done\n"
-#| "%s\n"
-#| "%s done\n"
-#| "%s\n"
-#| "%s done\n"
-#| "%s\n"
-#| "%s done\n"
-#| "%s\n"
-#| "%s done\n"
-#| "%s\n"
-#| "%s done\n"
-#| "%s\n"
 msgid ""
 "%s done\n"
 "%s\n"
@@ -669,7 +503,6 @@ msgid "Error getting task list: %s"
 msgstr "Erreur lors de l'acquisition"
 
 #: uwaptres.rstaskstarted
-msgctxt "uwaptres.rstaskstarted"
 msgid "%s started"
 msgstr "%s lancé"
 
@@ -679,23 +512,15 @@ msgstr "wapt_server n'est pas défini dans votre fichier %s ini"
 
 #: uwaptres.rsuninstallingpackage
 msgid "Uninstalling %s..."
-msgstr "Désinstallation de %s..."
+msgstr "Installation de %s..."
 
 #: uwaptres.rsupdatesavailablefor
-#, fuzzy
-#| msgid ""
-#| "Available updates for :\n"
-#| "%s\n"
-#| "Available updates for :\n"
-#| "-%s\n"
-msgid ""
-"Available updates for :\n"
-"-%s\n"
+msgid "Available updates for : "
 msgstr "Mises à jour disponibles pour :"
 
 #: uwaptres.rsupdatinglocalpackages
 msgid "Updating local packages"
-msgstr "Mise à jour des paquets disponibles"
+msgstr "Mise à jour de la liste des paquets disponibles"
 
 #: uwaptres.rsupdatingpackageindex
 msgid "Updating package index"
@@ -704,6 +529,10 @@ msgstr "Mise à jour de l'index des paquets"
 #: uwaptres.rsupdatingpackagelist
 msgid "Updating package list"
 msgstr "Mise à jour de la liste des paquets"
+
+#: uwaptres.rsupdatingsoftware
+msgid "Mise Ã  jour des logiciels en cours"
+msgstr ""
 
 #: uwaptres.rsupgradehosterror
 msgid "Failed to trigger upgrade : %s"
@@ -730,24 +559,6 @@ msgid "Usage: %s -h"
 msgstr "Usage : %s -h"
 
 #: uwaptres.rsversion
-#, fuzzy
-#| msgid ""
-#| "Waptconsole version : %s\n"
-#| "Wapt-get version: %s\n"
-#| "Waptconsole version : %s\n"
-#| "Wapt-get version: %s\n"
-#| "Waptconsole version : %s\n"
-#| "Wapt-get version: %s\n"
-#| "Waptconsole version : %s\n"
-#| "Wapt-get version: %s\n"
-#| "Waptconsole version : %s\n"
-#| "Wapt-get version: %s\n"
-#| "Waptconsole version : %s\n"
-#| "Wapt-get version: %s\n"
-#| "Waptconsole version : %s\n"
-#| "Wapt-get version: %s\n"
-#| "Waptconsole version : %s\n"
-#| "Wapt-get version: %s\n"
 msgid ""
 "Waptconsole version : %s\n"
 "Wapt-get version: %s\n"
@@ -777,14 +588,13 @@ msgstr "Mise à jour du client WAPT sur les machines"
 
 #: uwaptres.rswaptgetupgrade
 msgid "WAPT-GET Upgrade using repository at %s"
-msgstr "Upgrade de WAPT-get grâce au dépôt de %s"
+msgstr "Upgrade WAPT-GET grâce au dépôt de %s"
 
 #: uwaptres.rswaptservicestopping
 msgid "Waptservice stopping"
 msgstr "Arrêt du service WAPT"
 
 #: uwaptres.rswaptserviceterminated
-msgctxt "uwaptres.rswaptserviceterminated"
 msgid "WAPTService terminated"
 msgstr "WAPTService arrêté"
 
@@ -806,75 +616,9 @@ msgstr "Erreur lors du chargement de l'agent WAPT vers le dépôt : %s"
 
 #: uwaptres.rswin32exewrapper
 msgid "Win32 Exe wrapper: %s %s"
-msgstr "Wrapper Win32 Exe : %s %s"
+msgstr "wrapper Win32 Exe : %s %s"
 
 #: uwaptres.rswinterruptreceived
 msgid "W: interrupt received, killing serverâ¦"
 msgstr "W: interruption reçue, arrêt du serveur"
-
-#: uwapttrayres.rscanceling
-msgctxt "uwapttrayres.rscanceling"
-msgid "Canceling %s"
-msgstr "Annulation de %s"
-
-#: uwapttrayres.rschecking
-msgctxt "uwapttrayres.rschecking"
-msgid "Checking..."
-msgstr "Vérification en cours..."
-
-#: uwapttrayres.rserror
-msgctxt "uwapttrayres.rserror"
-msgid "Error"
-msgstr "Erreur"
-
-#: uwapttrayres.rserrorfor
-msgctxt "uwapttrayres.rserrorfor"
-msgid "Error for %s"
-msgstr "Erreur pour %s"
-
-#: uwapttrayres.rserrorwhilechecking
-msgctxt "uwapttrayres.rserrorwhilechecking"
-msgid "Error while checking..."
-msgstr "Erreur lors de la vérification..."
-
-#: uwapttrayres.rsinstalling
-msgid "Installation en cours"
-msgstr ""
-
-#: uwapttrayres.rsnotaskcanceled
-msgctxt "uwapttrayres.rsnotaskcanceled"
-msgid "No task canceled"
-msgstr "Aucune tâche annulée"
-
-#: uwapttrayres.rspackageconfigdone
-msgctxt "uwapttrayres.rspackageconfigdone"
-msgid "Done configuring packages for the current user session"
-msgstr "Configuration des paquets pour la session utilisateur terminée"
-
-#: uwapttrayres.rspackageconfigerror
-msgctxt "uwapttrayres.rspackageconfigerror"
-msgid "Error while configuring packages for the current user session"
-msgstr "Erreur lors de la configuration des paquets pour la session utilisateur"
-
-#: uwapttrayres.rstaskdone
-msgid ""
-"%s done\n"
-"%s\n"
-msgstr ""
-
-#: uwapttrayres.rstaskstarted
-msgctxt "uwapttrayres.rstaskstarted"
-msgid "%s started"
-msgstr "%s lancé"
-
-#: uwapttrayres.rsupdatesavailablefor
-msgid ""
-"Available updates for :\n"
-"-%s\n"
-msgstr ""
-
-#: uwapttrayres.rswaptserviceterminated
-msgctxt "uwapttrayres.rswaptserviceterminated"
-msgid "WAPTService terminated"
-msgstr "WAPTService arrêté"
 

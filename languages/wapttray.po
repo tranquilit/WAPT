@@ -137,6 +137,7 @@ msgid "Cancelled %s"
 msgstr ""
 
 #: uwaptres.rscanceling
+msgctxt "uwaptres.rscanceling"
 msgid "Canceling %s"
 msgstr ""
 
@@ -145,6 +146,7 @@ msgid "Couldn't copy certificate %s to %s."
 msgstr ""
 
 #: uwaptres.rschecking
+msgctxt "uwaptres.rschecking"
 msgid "Checking..."
 msgstr ""
 
@@ -296,6 +298,7 @@ msgid "Old password must not be empty."
 msgstr ""
 
 #: uwaptres.rserror
+msgctxt "uwaptres.rserror"
 msgid "Error"
 msgstr ""
 
@@ -304,6 +307,7 @@ msgid "Error cancelling: %s"
 msgstr ""
 
 #: uwaptres.rserrorfor
+msgctxt "uwaptres.rserrorfor"
 msgid "Error for %s"
 msgstr ""
 
@@ -316,6 +320,7 @@ msgid "Error launching upgrade: %s"
 msgstr ""
 
 #: uwaptres.rserrorwhilechecking
+msgctxt "uwaptres.rserrorwhilechecking"
 msgid "Error while checking..."
 msgstr ""
 
@@ -425,6 +430,7 @@ msgid "No running tasks"
 msgstr ""
 
 #: uwaptres.rsnotaskcanceled
+msgctxt "uwaptres.rsnotaskcanceled"
 msgid "No task canceled"
 msgstr ""
 
@@ -437,10 +443,12 @@ msgid " -r --repo : URL of dependencies libs"
 msgstr ""
 
 #: uwaptres.rspackageconfigdone
+msgctxt "uwaptres.rspackageconfigdone"
 msgid "Done configuring packages for the current user session"
 msgstr ""
 
 #: uwaptres.rspackageconfigerror
+msgctxt "uwaptres.rspackageconfigerror"
 msgid "Error while configuring packages for the current user session"
 msgstr ""
 
@@ -571,6 +579,7 @@ msgid "Error getting task list: %s"
 msgstr ""
 
 #: uwaptres.rstaskstarted
+msgctxt "uwaptres.rstaskstarted"
 msgid "%s started"
 msgstr ""
 
@@ -659,6 +668,7 @@ msgid "Waptservice stopping"
 msgstr ""
 
 #: uwaptres.rswaptserviceterminated
+msgctxt "uwaptres.rswaptserviceterminated"
 msgid "WAPTService terminated"
 msgstr ""
 
@@ -684,5 +694,71 @@ msgstr ""
 
 #: uwaptres.rswinterruptreceived
 msgid "W: interrupt received, killing serverâ¦"
+msgstr ""
+
+#: uwapttrayres.rscanceling
+msgctxt "uwapttrayres.rscanceling"
+msgid "Canceling %s"
+msgstr ""
+
+#: uwapttrayres.rschecking
+msgctxt "uwapttrayres.rschecking"
+msgid "Checking..."
+msgstr ""
+
+#: uwapttrayres.rserror
+msgctxt "uwapttrayres.rserror"
+msgid "Error"
+msgstr ""
+
+#: uwapttrayres.rserrorfor
+msgctxt "uwapttrayres.rserrorfor"
+msgid "Error for %s"
+msgstr ""
+
+#: uwapttrayres.rserrorwhilechecking
+msgctxt "uwapttrayres.rserrorwhilechecking"
+msgid "Error while checking..."
+msgstr ""
+
+#: uwapttrayres.rsinstalling
+msgid "Installation en cours"
+msgstr ""
+
+#: uwapttrayres.rsnotaskcanceled
+msgctxt "uwapttrayres.rsnotaskcanceled"
+msgid "No task canceled"
+msgstr ""
+
+#: uwapttrayres.rspackageconfigdone
+msgctxt "uwapttrayres.rspackageconfigdone"
+msgid "Done configuring packages for the current user session"
+msgstr ""
+
+#: uwapttrayres.rspackageconfigerror
+msgctxt "uwapttrayres.rspackageconfigerror"
+msgid "Error while configuring packages for the current user session"
+msgstr ""
+
+#: uwapttrayres.rstaskdone
+msgid ""
+"%s done\n"
+"%s\n"
+msgstr ""
+
+#: uwapttrayres.rstaskstarted
+msgctxt "uwapttrayres.rstaskstarted"
+msgid "%s started"
+msgstr ""
+
+#: uwapttrayres.rsupdatesavailablefor
+msgid ""
+"Available updates for :\n"
+"-%s\n"
+msgstr ""
+
+#: uwapttrayres.rswaptserviceterminated
+msgctxt "uwapttrayres.rswaptserviceterminated"
+msgid "WAPTService terminated"
 msgstr ""
 
