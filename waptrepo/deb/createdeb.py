@@ -65,8 +65,8 @@ for line in open('%s/waptpackage.py' % wapt_source_dir):
         wapt_version = line.split('=')[1].replace('"','').replace("'","").replace('\n','').replace(' ','').replace('\r','')
 
 if not wapt_version:
-    print 'version non trouvée dans %s/waptpackage.py, la version est mise a 0.0.0 par défault.' % os.path.abspath('..')
-    wapt_version = '0.0.0'
+    print 'version non trouvée dans %s/waptpackage.py'
+    exit(1)
 
 control_file = './builddir/DEBIAN/control'
 
@@ -84,14 +84,8 @@ os.makedirs("builddir/opt")
 os.makedirs("builddir/opt/wapt")
 os.makedirs("builddir/opt/wapt/waptrepo/")
 
-# adding version info in VERSION file
-rev = ''
-output = subprocess.check_output('LC_ALL=C /usr/bin/svn info',shell=True)
-for line in output.split('\n'):
-    if 'Revision:' in line:
-        rev = 'rev%s' % line.split(':')[1].strip()
 version_file = open(os.path.join('./builddir/opt/wapt/waptrepo','VERSION'),'w')
-version_file.write(rev)
+version_file.write(wapt_version)
 version_file.close()
 
 print 'copie des fichiers waptrepo'
@@ -106,7 +100,7 @@ copyfile('./DEBIAN/control','./builddir/DEBIAN/control')
 copyfile('./DEBIAN/postinst','./builddir/DEBIAN/postinst')
 
 print u'inscription de la version dans le fichier de control'
-replaceAll(control_file,'0.0.7',wapt_version + '-' + rev)
+replaceAll(control_file,'0.0.7',wapt_version)
 
 print u'création du paquet Deb'
 os.chmod('./builddir/DEBIAN/postinst',
@@ -114,7 +108,6 @@ os.chmod('./builddir/DEBIAN/postinst',
          | stat.S_IXGRP | stat.S_IRGRP
          | stat.S_IROTH | stat.S_IXOTH
          )
-dpkg_command = 'dpkg-deb --build builddir tis-waptrepo-%s-%s.deb' % (
-               wapt_version, rev)
+dpkg_command = 'dpkg-deb --build builddir tis-waptrepo-%s.deb' % (wapt_version,)
 os.system(dpkg_command)
 shutil.rmtree("builddir")

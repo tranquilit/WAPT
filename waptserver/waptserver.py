@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="0.9.7"
+__version__="0.9.8"
 
 import os,sys
 try:
@@ -62,6 +62,15 @@ from waptpackage import *
 import pefile
 
 import itsdangerous
+
+# i18n
+from flask.ext.babel import Babel
+try:
+    from flask.ext.babel import gettext
+except ImportError:
+    gettext = (lambda s:s)
+_ = gettext
+
 
 from optparse import OptionParser
 usage="""\
@@ -136,6 +145,9 @@ if config.has_section('options'):
     if config.has_option('options', 'waptserver_port'):
         waptserver_port = config.get('options', 'waptserver_port')
 
+    if config.has_option('options', 'waptservice_port'):
+        waptservice_port = config.get('options', 'waptservice_port')
+
     if config.has_option('options', 'wapt_password'):
         wapt_password = config.get('options', 'wapt_password')
     else:
@@ -163,6 +175,7 @@ else:
 if not wapt_folder:
     wapt_folder = os.path.join(wapt_root_dir,'waptserver','repository','wapt')
 
+waptagent = os.path.join(wapt_folder, 'waptagent.exe')
 waptsetup = os.path.join(wapt_folder, 'waptsetup.exe')
 
 # Setup initial directories
@@ -186,6 +199,8 @@ ALLOWED_EXTENSIONS = set(['wapt'])
 
 app = Flask(__name__,static_folder='./templates/static')
 #app.secret_key = config.get('options','secret_key')
+
+babel = Babel(app)
 
 def hosts():
     """Opens a new database connection if there is none yet for the
@@ -222,6 +237,24 @@ def get_host_data(uuid, filter = {}, delete_id = True):
     return data
 
 
+@babel.localeselector
+def get_locale():
+     browser_lang = request.accept_languages.best_match(['en', 'fr'])
+     user_lang = session.get('lang',browser_lang)
+     return user_lang
+
+@app.route('/lang/<language>')
+def lang(language=None):
+     session['lang'] = language
+     return redirect('/')
+
+@babel.timezoneselector
+def get_timezone():
+    user = getattr(g, 'user', None)
+    if user is not None:
+        return user.timezone
+
+
 @app.route('/')
 def index():
     return render_template("index.html")
@@ -231,8 +264,8 @@ def index():
 def informations():
     informations = {}
     informations["server_version"] = __version__
-    if os.path.exists(waptsetup):
-        pe = pefile.PE(waptsetup)
+    if os.path.exists(waptagent):
+        pe = pefile.PE(waptagent)
         informations["client_version"] =  pe.FileInfo[0].StringTable[0].entries['ProductVersion'].strip()
 
     return Response(response=json.dumps(informations),
@@ -597,7 +630,7 @@ def upload_waptsetup():
     try:
         if request.method == 'POST':
             file = request.files['file']
-            if file and ("waptsetup.exe" in file.filename or "waptagent.exe" in file.filename):
+            if file and "waptagent.exe" in file.filename:
                 filename = secure_filename(file.filename)
                 tmp_target = os.path.join(wapt_folder, secure_filename('.'+filename))
                 target = os.path.join(wapt_folder, secure_filename(filename))
@@ -607,8 +640,22 @@ def upload_waptsetup():
                 else:
                     os.rename(tmp_target,target)
                     result = dict(status='OK',message='%s uploaded'%(filename,))
+
+                # Compat with older clients: provide a waptsetup.exe -> waptagent.exe alias
+                if os.path.exists(waptsetup):
+                    try:
+                        os.rename(waptsetup, waptsetup + '.old')
+                        os.unlink(waptsetup.exe)
+                    except:
+                        pass
+                try:
+                    os.symlink(waptagent, waptsetup)
+                except:
+                    import shutil
+                    shutil.copyfile(waptagent, waptsetup)
+
             else:
-                result = dict(status='ERROR',message='Wrong file name')
+                result = dict(status='ERROR',message='Wrong file name (version conflict?)')
         else:
             result = dict(status='ERROR',message='Unsupported method')
     except:

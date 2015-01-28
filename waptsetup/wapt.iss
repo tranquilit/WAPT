@@ -44,6 +44,7 @@ Source: "..\waptservice\network_manager.py"; DestDir: "{app}\waptservice\"; Task
 Source: "..\waptservice\static\*"; DestDir: "{app}\waptservice\static"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
 Source: "..\waptservice\ssl\*"; DestDir: "{app}\waptservice\ssl"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
 Source: "..\waptservice\templates\*"; DestDir: "{app}\waptservice\templates"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
+Source: "..\waptservice\translations\*"; DestDir: "{app}\waptservice\translations"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
 
 ; user feedback of waptservice activity
 Source: "..\wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.exe'); Flags: ignoreversion 
@@ -211,8 +212,10 @@ begin
   ConflictingService := '';
 
   NetstatOutput := RunCmd('netstat -a -n -p tcp', True);
-  if Pos('0.0.0.0:8080 ', NetstatOutput) > 0 then
+   if Pos('0.0.0.0:8080 ', NetstatOutput) > 0 then
     ConflictingService := '8080'
+  else if Pos('0.0.0.0:8088 ', NetstatOutput) > 0 then
+    ConflictingService := '8088'
   else if Pos('0.0.0.0:443 ', NetstatOutput) > 0 then
     ConflictingService := '443'
   else if Pos('0.0.0.0:80 ', NetstatOutput) > 0 then

@@ -24,3 +24,15 @@ else
     printf '\e[1;31m%-6s\e[m\n' "The installation of waptserver is finished !!"
     printf '\e[1;31m%-6s\e[m\n' "For postconf please run: /usr/bin/python /opt/wapt/waptserver/scripts/postconf.py"
 fi
+
+# Backward compat
+agent=/var/www/wapt/waptagent.exe
+setup=/var/www/wapt/waptsetup.exe
+
+if [ -e "$setup" ] && ! [ -L "$setup" ]; then
+    echo "Moving regular file $setup to $setup.old for compatibility reasons." >&2
+    mv -f "$setup" "$setup".old
+fi
+
+echo "Creating symlink from $setup to $agent for compatibility reasons." >&2
+ln -sf "$agent" "$setup"
