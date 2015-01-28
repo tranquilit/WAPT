@@ -4,16 +4,15 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="11">
+    <Units Count="12">
       <Unit0>
         <Filename Value="waptserverpostconf.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptserverpostconf"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="26" Y="1"/>
+        <CursorPos X="59" Y="9"/>
         <UsageCount Value="43"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -26,8 +25,8 @@
         <UnitName Value="uVisServerPostconf"/>
         <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="453"/>
-        <CursorPos X="36" Y="461"/>
+        <TopLine Value="473"/>
+        <CursorPos X="42" Y="487"/>
         <UsageCount Value="43"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -60,6 +59,17 @@
         <UsageCount Value="43"/>
       </Unit5>
       <Unit6>
+        <Filename Value="..\..\wapt-get\uwaptres.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uWaptRes"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="49"/>
+        <CursorPos X="36" Y="48"/>
+        <UsageCount Value="22"/>
+        <Loaded Value="True"/>
+      </Unit6>
+      <Unit7>
         <Filename Value="uvisserverpostconf.lfm"/>
         <ComponentName Value="VisWAPTServerPostConf"/>
         <HasResources Value="True"/>
@@ -69,17 +79,6 @@
         <CursorPos X="46" Y="175"/>
         <UsageCount Value="22"/>
         <DefaultSyntaxHighlighter Value="LFM"/>
-      </Unit6>
-      <Unit7>
-        <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="uWaptRes"/>
-        <EditorIndex Value="0"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="133"/>
-        <CursorPos X="36" Y="138"/>
-        <UsageCount Value="22"/>
-        <Loaded Value="True"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\..\waptconsole\uviswaptconfig.lfm"/>
@@ -104,6 +103,18 @@
         <CursorPos X="74" Y="39"/>
         <UsageCount Value="20"/>
       </Unit10>
+      <Unit11>
+        <Filename Value="uwaptserverres.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uWaptServerRes"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="5"/>
+        <CursorPos X="3" Y="28"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit11>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
@@ -111,123 +122,123 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="43" Column="12" TopLine="17"/>
+        <Caret Line="50" Column="68" TopLine="24"/>
       </Position1>
       <Position2>
         <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="44" Column="12" TopLine="18"/>
+        <Caret Line="52" Column="12" TopLine="26"/>
       </Position2>
       <Position3>
         <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="45" Column="12" TopLine="19"/>
+        <Caret Line="54" Column="12" TopLine="28"/>
       </Position3>
       <Position4>
         <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="50" Column="68" TopLine="24"/>
+        <Caret Line="59" Column="12" TopLine="33"/>
       </Position4>
       <Position5>
         <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="52" Column="12" TopLine="26"/>
+        <Caret Line="60" Column="12" TopLine="34"/>
       </Position5>
       <Position6>
         <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="54" Column="12" TopLine="28"/>
+        <Caret Line="66" Column="12" TopLine="40"/>
       </Position6>
       <Position7>
         <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="59" Column="12" TopLine="33"/>
+        <Caret Line="75" Column="12" TopLine="49"/>
       </Position7>
       <Position8>
         <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="60" Column="12" TopLine="34"/>
+        <Caret Line="164" Column="3" TopLine="130"/>
       </Position8>
       <Position9>
         <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="66" Column="12" TopLine="40"/>
+        <Caret Line="22" Column="13" TopLine="1"/>
       </Position9>
       <Position10>
         <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="75" Column="12" TopLine="49"/>
+        <Caret Line="130" Column="10" TopLine="1"/>
       </Position10>
       <Position11>
         <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="164" Column="3" TopLine="130"/>
+        <Caret Line="164" Column="13" TopLine="130"/>
       </Position11>
       <Position12>
         <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="22" Column="13" TopLine="1"/>
+        <Caret Line="19" Column="98" TopLine="1"/>
       </Position12>
       <Position13>
         <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="130" Column="10" TopLine="1"/>
+        <Caret Line="25" Column="104" TopLine="11"/>
       </Position13>
       <Position14>
         <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="164" Column="13" TopLine="130"/>
+        <Caret Line="35" Column="51" TopLine="11"/>
       </Position14>
       <Position15>
         <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="19" Column="98" TopLine="1"/>
+        <Caret Line="38" Column="43" TopLine="11"/>
       </Position15>
       <Position16>
         <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="25" Column="104" TopLine="11"/>
+        <Caret Line="40" Column="56" TopLine="11"/>
       </Position16>
       <Position17>
         <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="35" Column="51" TopLine="11"/>
+        <Caret Line="63" Column="44" TopLine="29"/>
       </Position17>
       <Position18>
         <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="38" Column="43" TopLine="11"/>
+        <Caret Line="131" Column="51" TopLine="97"/>
       </Position18>
       <Position19>
         <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="40" Column="56" TopLine="11"/>
+        <Caret Line="18" Column="56" TopLine="1"/>
       </Position19>
       <Position20>
         <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="63" Column="44" TopLine="29"/>
+        <Caret Line="151" Column="54" TopLine="129"/>
       </Position20>
       <Position21>
         <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="131" Column="51" TopLine="97"/>
+        <Caret Line="84" Column="37" TopLine="63"/>
       </Position21>
       <Position22>
         <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="18" Column="56" TopLine="1"/>
+        <Caret Line="151" Column="20" TopLine="117"/>
       </Position22>
       <Position23>
-        <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="151" Column="54" TopLine="129"/>
-      </Position23>
-      <Position24>
-        <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="84" Column="37" TopLine="63"/>
-      </Position24>
-      <Position25>
-        <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="151" Column="20" TopLine="117"/>
-      </Position25>
-      <Position26>
         <Filename Value="uvisserverpostconf.pas"/>
         <Caret Line="471" Column="50" TopLine="1"/>
-      </Position26>
-      <Position27>
+      </Position23>
+      <Position24>
         <Filename Value="waptserverpostconf.lpr"/>
         <Caret Line="9" Column="55" TopLine="1"/>
-      </Position27>
-      <Position28>
+      </Position24>
+      <Position25>
         <Filename Value="waptserverpostconf.lpr"/>
         <Caret Line="13" Column="35" TopLine="1"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\..\wapt-get\uwaptres.pas"/>
+        <Caret Line="135" Column="27" TopLine="108"/>
+      </Position26>
+      <Position27>
+        <Filename Value="uvisserverpostconf.pas"/>
+        <Caret Line="461" Column="36" TopLine="453"/>
+      </Position27>
+      <Position28>
+        <Filename Value="uwaptserverres.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position28>
       <Position29>
         <Filename Value="uvisserverpostconf.pas"/>
-        <Caret Line="31" Column="115" TopLine="210"/>
+        <Caret Line="12" Column="66" TopLine="1"/>
       </Position29>
       <Position30>
-        <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <Caret Line="135" Column="27" TopLine="108"/>
+        <Filename Value="uvisserverpostconf.pas"/>
+        <Caret Line="11" Column="62" TopLine="1"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>
