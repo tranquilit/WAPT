@@ -29,9 +29,9 @@ object VisWaptExit: TVisWaptExit
     TabOrder = 0
     object Label1: TLabel
       Left = 12
-      Height = 26
+      Height = 30
       Top = 8
-      Width = 234
+      Width = 197
       Caption = 'There are installs or updates pending.'#13#10'Do you wish to apply them now ?'
       ParentColor = False
     end
@@ -125,9 +125,9 @@ object VisWaptExit: TVisWaptExit
     end
     object CheckBox1: TCheckBox
       Left = 8
-      Height = 17
+      Height = 19
       Top = 112
-      Width = 88
+      Width = 86
       Action = ActShowDetails
       TabOrder = 2
     end
