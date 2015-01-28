@@ -64,6 +64,19 @@ if platform.system()!='Linux':
     print >> sys.stderr, "this script should be used on debian linux"
     sys.exit(1)
 
+if len(sys.argv) > 2:
+    print >> sys.stderr, "wrong number of parameters (0 or 1)"
+    sys.exit(1)
+
+deb_revision = None
+try:
+  deb_revision = int(sys.argv[1])
+  if deb_revision <= 0:
+      raise Exception()
+except:
+    print >> sys.stderr, "wrong parameter `%s' (should be a positive integer)" % (sys.argv[1],)
+    sys.exit(1)
+
 new_umask = 022
 old_umask = os.umask(new_umask)
 if new_umask != old_umask:
@@ -134,14 +147,18 @@ except Exception as e:
     print >> sys.stderr, 'error: \n%s'%e
     exit(1)
 
+deb_version = wapt_version
+if deb_revision:
+    deb_version += '-' + str(deb_revision)
+
 print >> sys.stderr, 'replacing the revision in the control file'
-replaceAll(control_file,'0.0.7',wapt_version)
+replaceAll(control_file,'0.0.7',deb_version)
 
 os.chmod('./builddir/DEBIAN/postinst',stat.S_IRWXU| stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
 os.chmod('./builddir/DEBIAN/preinst',stat.S_IRWXU| stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
 
 print >> sys.stderr, 'creating the Debian package'
-output_file = 'tis-waptserver-%s.deb' % (wapt_version)
+output_file = 'tis-waptserver-%s.deb' % (deb_version)
 dpkg_command = 'dpkg-deb --build builddir %s' % output_file
 ret = os.system(dpkg_command)
 status = ret >> 8
