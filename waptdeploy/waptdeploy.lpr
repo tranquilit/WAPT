@@ -1,8 +1,8 @@
 program waptdeploy;
 {$mode delphiunicode}
 
-uses classes, windows, SysUtils, wininet, URIParser, superobject , shellapi,
-  tishttp, uwaptdeployres;
+uses classes, windows, SysUtils, wininet, URIParser, superobject, shellapi,
+  tishttp, uwaptdeployres, DCPsha256;
 
 function GetComputerName : AnsiString;
 var
@@ -141,7 +141,8 @@ begin
   Result := False;
   try
     vDWFlagsLen := SizeOf(vDWFlags);
-    if not InternetQueryOption(oRequestHandle, INTERNET_OPTION_SECURITY_FLAGS, @vDWFlags, vDWFlagsLen) then begin
+    if not InternetQueryOption(oRequestHandle, INTERNET_OPTION_SECURITY_FLAGS, @vDWFlags, vDWFlagsLen) then
+    begin
       aErrorMsg := Format(rsWininetGetFlagsError, [GetWininetError(GetLastError)]);
       Exit;
     end;
@@ -458,10 +459,68 @@ begin
   Result := ShellExecuteExA(@sei);
 end;
 
+function BinToStr(const Bin: Array of Byte): AnsiString;
+const HexSymbols = '0123456789ABCDEF';
+var i: Integer;
+begin
+  SetLength(Result, 2 * Length(Bin));
+  for i := 0 to Length(Bin) - 1 do
+  begin
+    Result[1 + 2 * i + 0] := HexSymbols[1 + Bin[i] shr 4];
+    Result[1 + 2 * i + 1] := HexSymbols[1 + Bin[i] and $0F];
+  end;
+end;
+
+function SHA256VerifyFile(FilePath, Hash: AnsiString): Boolean;
+var
+  Context: TDCP_sha256;
+  Buf: PByte;
+  BufSize, ReadSize, TotalSize: Integer;
+  FileStream: TFileStream;
+  RawDigest: Array[0..31] of Byte;
+  HexDigest: Array[0..64] of Char;
+begin
+  Result := False;
+  FileStream := nil;
+  Buf := nil;
+  Context := nil;
+
+  TotalSize := 0;
+  Bufsize := 32 * 1024; // 32k
+
+  try
+    FileStream := TFileStream.Create(FilePath, fmOpenRead);
+    FileStream.Position := 0;
+    Buf := GetMem(BufSize);
+    Context := TDCP_sha256.Create(nil);
+    Context.Init;
+
+    while True do
+    begin
+      ReadSize := FileStream.Read(Buf^, BufSize);
+      if ReadSize <= 0 then
+       break;
+      Context.Update(Buf^, ReadSize);
+    end;
+
+    Context.Final(RawDigest);
+
+    Result := UpperCase(hash) = BinToStr(RawDigest);
+
+  finally
+    if FileStream <> nil then
+      FileStream.Free;
+    if Buf <> nil then
+      FreeMem(Buf);
+    if Context <> nil then
+      Context.Free;
+  end;
+end;
+
 var
   tmpDir,waptsetupPath,localVersion,requiredVersion,getVersion:AnsiString;
   res : AnsiString;
-  waptdeploy,waptsetupurl:AnsiString;
+  waptdeploy,waptsetupurl, hashString:AnsiString;
 {$R *.res}
 
 const
@@ -472,11 +531,11 @@ const
 begin
   if ParamStr(1)='--help'  then
   begin
-      Writeln(rsUsage1);
-      Writeln(Format(rsUsage2, [minversion]));
-      Writeln(Format(rsUsage3, [defaultwapt]));
-      Writeln(rsUsage4);
-      Exit;
+    Writeln(rsUsage1);
+    Writeln(Format(rsUsage2, [minversion]));
+    Writeln(Format(rsUsage3, [defaultwapt]));
+    Writeln(rsUsage4);
+    Exit;
   end;
   waptsetupurl := 'http://'+defaultwapt+'/wapt/waptagent.exe';
   if ParamStr(1)='force' then
@@ -489,6 +548,9 @@ begin
     localVersion := LocalWaptVersion;
     requiredVersion := ParamStr(1);
   end;
+  hashString := '';
+  if ParamCount >= 2 then
+    hashString := ParamStr(2);
   writeln('WAPT version: '+localVersion);
   if (requiredVersion='') or (requiredVersion='force') then
   begin
@@ -519,6 +581,13 @@ begin
     Writeln('Wapt agent path: '+waptsetupPath);
     writeln('Wget new waptagent '+ waptsetupurl);
     wget(waptsetupurl,waptsetupPath);
+
+    if (HashString <> '') and (not SHA256VerifyFile(WaptSetupPath, HashString)) then
+    begin
+      WriteLn('Error while checking hash.');
+      Exit;
+    end;
+
     getVersion:=GetApplicationVersion(waptsetupPath);
     writeln('Got version: '+getVersion);
     if (requiredVersion='force') or (CompareVersion(getVersion,requiredVersion)>=0) then

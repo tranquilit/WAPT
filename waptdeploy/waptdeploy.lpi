@@ -37,13 +37,16 @@
         <CommandLineParams Value="force"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="2">
+    <RequiredPackages Count="3">
       <Item1>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pl_DCP"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_utils"/>
       </Item2>
+      <Item3>
+        <PackageName Value="pltis_superobject"/>
+      </Item3>
     </RequiredPackages>
     <Units Count="1">
       <Unit0>
