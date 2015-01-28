@@ -123,7 +123,7 @@ config = ConfigParser.RawConfigParser()
 if os.path.exists(options.configfile):
     config.read(options.configfile)
 else:
-    raise Exception(_("FATAL. Couldn't open config file : {}".format(options.configfile)))
+    raise Exception(_("FATAL : couldn't open configuration file : {}.".format(options.configfile)))
 
 #default mongodb configuration for wapt
 mongodb_port = "38999"
@@ -151,7 +151,7 @@ if config.has_section('options'):
     if config.has_option('options', 'wapt_password'):
         wapt_password = config.get('options', 'wapt_password')
     else:
-        raise Exception (_('No waptserver admin password set in wapt-get.ini configuration file'))
+        raise Exception (_('No waptserver admin password set in wapt-get.ini configuration file.'))
 
     if config.has_option('options', 'mongodb_port'):
         mongodb_port = config.get('options', 'mongodb_port')
@@ -183,17 +183,17 @@ if os.path.exists(wapt_folder)==False:
     try:
         os.makedirs(wapt_folder)
     except:
-        raise Exception(_("Folder missing : {}").format(wapt_folder))
+        raise Exception(_("Folder missing : {}.").format(wapt_folder))
 if os.path.exists(wapt_folder + '-host')==False:
     try:
         os.makedirs(wapt_folder + '-host')
     except:
-        raise Exception(_("Folder missing : {}-host").format(wapt_folder))
+        raise Exception(_("Folder missing : {}-host.").format(wapt_folder))
 if os.path.exists(wapt_folder + '-group')==False:
     try:
         os.makedirs(wapt_folder + '-group')
     except:
-        raise Exception(_("Folder missing : {}-group").format(wapt_folder))
+        raise Exception(_("Folder missing : {}-group.").format(wapt_folder))
 
 ALLOWED_EXTENSIONS = set(['wapt'])
 
@@ -215,7 +215,7 @@ def hosts():
             g.hosts.ensure_index('uuid',unique=True)
             g.hosts.ensure_index('computer_name',unique=False)
         except Exception as e:
-            raise Exception(_("Could not connect do mongodb database: {}").format((repr(e),)))
+            raise Exception(_("Could not connect to mongodb database: {}.").format((repr(e),)))
     return g.hosts
 
 @app.teardown_appcontext
@@ -436,7 +436,7 @@ def host_packages(uuid=""):
     try:
         packages = get_host_data(uuid, {"packages":1})
         if not packages:
-            raise Exception(_('No host with uuid {}').format(uuid))
+            raise Exception(_('No host with uuid {}.').format(uuid))
         repo_packages = packagesFileToList(os.path.join(wapt_folder, 'Packages'))
         if 'packages' in packages:
             for p in packages['packages']:
@@ -460,7 +460,7 @@ def get_client_package_list(uuid=""):
     try:
         packages = get_host_data(uuid, {"packages":1})
         if not packages:
-            raise Exception(_('No host with uuid {}').formatat(uuid))
+            raise Exception(_('No host with uuid {}.').formatat(uuid))
         repo_packages = packagesFileToList(os.path.join(wapt_folder, 'Packages'))
         if 'packages' in packages:
             for p in packages['packages']:
@@ -599,7 +599,7 @@ def upload_host():
                             os.unlink(target)
                         os.rename(tmp_target,target)
                         data = update_packages(wapt_host_folder)
-                        result = dict(status='OK',message=_('File %s uploaded to {}').format((file.filename,target)))
+                        result = dict(status='OK',message=_('File {} uploaded to {}').format((file.filename,target)))
                     except:
                         if os.path.isfile(tmp_target):
                             os.unlink(tmp_target)
@@ -696,10 +696,10 @@ def waptupgrade_host(ip):
                     else:
                         result = {  'status' : 'ERROR', 'message': u"%s" % r.text }
             else:
-                raise Exception(_("Le port de waptservice n'est pas défini"))
+                raise Exception(_("The WAPT service port is not defined."))
 
         except Exception as e:
-            raise Exception(_("Impossible de joindre le waptservice: {}").format(e))
+            raise Exception(_("Couldn't connect to web service : {}.").format(e))
 
     except Exception, e:
             result = { 'status' : 'ERROR', 'message': u"%s" % e  }
@@ -727,10 +727,10 @@ def install_package():
                 data = json.loads(requests.get("http://%s:%d/install.json?package=%s" % ( ip, waptservice_port,package),proxies=None).text)
                 result = dict(message=data,status='OK')
             else:
-                raise Exception(_("Le port de waptservice n'est pas défini"))
+                raise Exception(_("The WAPT service port is not defined."))
 
         except Exception as e:
-            raise Exception(_("Impossible de joindre le web service: {}").format(e))
+            raise Exception(_("Couldn't connect to web service : {}.").format(e))
 
     except Exception, e:
             result = { 'status' : 'ERROR', 'message': u"%s" % e  }
@@ -759,10 +759,10 @@ def remove_package():
                 data = json.loads(httpreq.text)
                 result = dict(message=data,status='OK')
             else:
-                raise Exception(_("Le port de waptservice n'est pas défini"))
+                raise Exception(_("The WAPT service port is not defined."))
 
         except Exception as e:
-            raise Exception(_("Impossible de joindre le waptservice du poste: {}").format(e))
+            raise Exception(_("Couldn't connect to the host's WAPT service : {}.").format(e))
 
     except Exception, e:
             result = { 'status' : 'ERROR', 'message': u"%s" % e  }
@@ -791,10 +791,10 @@ def forget_packages():
                 data = json.loads(httpreq.text)
                 result = dict(message=data,status='OK')
             else:
-                raise Exception(_("Le port de waptservice n'est pas défini"))
+                raise Exception(_("The WAPT service port is not defined."))
 
         except Exception as e:
-            raise Exception(_("Impossible de joindre le waptservice du poste: {}").format(e))
+            raise Exception(_("Couldn't connect to the host's WAPT service : {}.").format(e))
 
     except Exception, e:
             result = { 'status' : 'ERROR', 'message': u"%s" % e  }
@@ -820,10 +820,10 @@ def host_tasks():
                 data = json.loads(requests.get("http://%s:%d/tasks.json" % ( ip, waptservice_port),proxies=None).text)
                 result = dict(message=data,status='OK')
             else:
-                raise Exception(_("Le port de waptservice n'est pas défini"))
+                raise Exception(_("The WAPT service port is not defined."))
 
         except Exception as e:
-            raise Exception(_("Impossible de joindre le web service: {}").format(e))
+            raise Exception(_("Couldn't connect to web service : {}.").format(e))
 
     except Exception, e:
             result = { 'status' : 'ERROR', 'message': u"%s" % e  }
@@ -848,10 +848,10 @@ def host_taskkill():
                 data = json.loads(requests.get("http://%s:%d/cancel_running_task.json" % ( ip, waptservice_port),proxies=None).text)
                 result = dict(message=data,status='OK')
             else:
-                raise Exception(_("Le port de waptservice n'est pas défini"))
+                raise Exception(_("The WAPT service port is not defined."))
 
         except Exception as e:
-            raise Exception(_("Impossible de joindre le web service: {}").format(e))
+            raise Exception(_("Couldn't connect to web service : {}.").format(e))
 
     except Exception, e:
             result = { 'status' : 'ERROR', 'message': u"%s" % e  }
@@ -907,10 +907,10 @@ def upgrade_host(ip):
                         result = {  'status' : 'ERROR', 'message': u"%s" % r.text }
 
             else:
-                raise Exception(_("Le port de waptservice n'est pas défini"))
+                raise Exception(_("The WAPT service port is not defined."))
 
         except Exception as e:
-            raise  Exception(_("Impossible de joindre le web service: {}").format(e))
+            raise  Exception(_("Couldn't connect to web service : {}.").format(e))
 
     except Exception, e:
             result = { 'status' : 'ERROR', 'message': u"%s" % e  }
@@ -925,9 +925,9 @@ def install_wapt(computer_name,authentication_file):
         subprocess.check_output(cmd,stderr=subprocess.STDOUT,shell=True)
     except subprocess.CalledProcessError as e:
         if "NT_STATUS_LOGON_FAILURE" in e.output:
-            raise Exception(_("Mauvais identifiants"))
+            raise Exception(_("Incorrect credentials."))
         if "NT_STATUS_CONNECTION_REFUSED" in e.output:
-            raise Exception(_("Partage IPC$ non accessible"))
+            raise Exception(_("Couldn't access IPC$ share."))
 
         raise Exception(u"%s" % e.output)
 
@@ -953,18 +953,18 @@ def deploy_wapt():
     try:
         result = {}
         if platform.system() != 'Linux':
-            raise Exception(_('Le serveur wapt doit être executé sous Linux'))
+            raise Exception(_('WAPT server must be run on Linux.'))
         if subprocess.call('which smbclient',shell=True) != 0:
-            raise Exception(_("smbclient n'est pas installé sur le serveur wapt"))
+            raise Exception(_("smbclient installed on WAPT server."))
         if subprocess.call('which winexe',shell=True) != 0:
-            raise Exception(_("winexe n'est pas installé sur le serveur wapt"))
+            raise Exception(_("winexe is not installed on WAPT server."))
 
         if request.method == 'POST':
             d = json.loads(request.data)
             if 'auth' not in d:
-                raise Exception(_("Les informations d'authentification sont manquantes"))
+                raise Exception(_("Credentials are missing."))
             if 'computer_fqdn' not in d:
-                raise Exception(_("Il n'y a aucuns ordinateurs de renseigné"))
+                raise Exception(_("There are no registered computers."))
 
             auth_file = tempfile.mkstemp("wapt")[1]
             try:
@@ -983,7 +983,7 @@ def deploy_wapt():
                 os.unlink(auth_file)
 
         else:
-            raise Exception(_("methode http non supportée"))
+            raise Exception(_("Unsupported HTTP method."))
 
     except Exception, e:
         result = { 'status' : 'ERROR', 'message': u"%s" % e  }
