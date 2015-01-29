@@ -18,7 +18,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="9"/>
-      <RevisionNr Value="8"/>
+      <RevisionNr Value="9"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -103,7 +103,7 @@
       <Unit7>
         <Filename Value="uwaptserverres.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="uwaptserverres"/>
+        <UnitName Value="uWaptServerRes"/>
       </Unit7>
     </Units>
   </ProjectOptions>
