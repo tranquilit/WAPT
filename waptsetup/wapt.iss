@@ -150,6 +150,7 @@ fr.LaunchIcon=Lancer l'icône de notification lors de l'ouverture de session
 fr.InstallVCpp=Installer les redistribuables VC++ 2008 (pour openssl)
 fr.ForceVCppReinstall=Forcer la réinstallation des redistribuables VC++ 2008 (pour openssl)
 fr.UpdatePkgUponShutdown=Proposer la mise à jour des paquets à l'extinction du poste
+fr.LaunchSession=Lancer WAPT session setup à l'ouverture de session
 
 ;English translations here
 en.InstallWAPservice=Install WAPT service
@@ -157,6 +158,7 @@ en.LaunchIcon=Launch notification icon upon session opening
 en.InstallVCpp=Install VC++ 2008 redistributables (for openssl)
 en.ForceVCppReinstall=Force-reinstall VC++ 2008 redistributables (for openssl
 en.UpdatePkgUponShutdown=Ask to update packages upon shutdown
+en.LaunchSession=Launch WAPT setup session upon session opening
 
 [Code]
 #include "services.iss"

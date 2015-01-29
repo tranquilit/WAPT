@@ -43,6 +43,9 @@ Source: "..\waptserver\apache-win32\*"; DestDir: "{app}\waptserver\apache-win32"
 ; For UninstallRun
 Source: "..\waptserver\uninstall-services.bat"; Destdir: "{app}\waptserver\"
 
+[Languages]
+Name: "en"; MessagesFile: "compiler:Default.isl"
+Name:"fr";MessagesFile: "compiler:Languages\French.isl"
 
 [Dirs]
 Name: "{app}\waptserver\repository"
@@ -76,10 +79,15 @@ Name: "{group}\Console WAPT"; Filename: "{app}\waptconsole.exe"; WorkingDir: "{a
 Name: "{group}\Logiciels installés avec WAPT"; Filename: "http://localhost:8088/status"
 
 [Tasks]
-Name: autorunSessionSetup; Description: "Lancer WAPT session setup à l'ouverture de session";
+Name: autorunSessionSetup; Description: "{cm:LaunchSession}"
 
 [UninstallRun]
 Filename: "{app}\waptserver\uninstall-services.bat"; Flags: runhidden; StatusMsg: "Stopping and deregistering waptserver"
+
+;[CustomMessages]
+;fr.UpdatePkg=Mise à jour des paquets à l'extinction du poste
+;"Registering WaptServer Service"
+;"Lancement de la post-configuration du serveur"
 
 [Code]
 procedure DeinitializeUninstall();
