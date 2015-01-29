@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr-FR"><head>
   <meta charset="UTF-8">
-  <title>WAPT SERVER Web Console</title>
+  <title>{{ _("WAPT SERVER Web Console") }}</title>
   <link rel="stylesheet" type="text/css" media="all" href="./static/wp-content/themes/tranquilit/style.css">
   <link rel="shortcut icon" href="./static/favicon.ico">
   <meta name="description" content="Serveur WAPT">
@@ -70,22 +70,22 @@ $(document).ready(function () {
     <![endif]-->
 <div id="wrapper" class="container hfeed">
 <div id="header" class="span-12 last">
-<div id="branding" class="span-4" role="banner"> <a href="./static/" title="Tranquil IT Systems" rel="home"><img src="./static/wp-content/themes/tranquilit/img/logo-tis.jpg"></a> </div>
+<div id="branding" class="span-4" role="banner"> <a href="./static/" title={{ _("Tranquil IT Systems") }} rel="home"><img src="./static/wp-content/themes/tranquilit/img/logo-tis.jpg"></a> </div>
 <br>
-<div id="site-description" class="span-4">WAPT - Apt-get pour Windows<br>
+<div id="site-description" class="span-4">{{ _("WAPT - Apt-get for Windows") }}<br>
 </div>
-<div class="span-3 last" id="contact"> <a href="http://www.tranquil-it-systems.fr/societe/contactez-nous/" title="Contactez-nous ou faîtes vous rappeler"><img src="./static/wp-content/themes/tranquilit/img/contact.jpg" alt="Contactez-nous"></a> </div>
+<div class="span-3 last" id="contact"> <a href="http://www.tranquil-it-systems.fr/societe/contactez-nous/" title={{ _("Contact us or have us call back") }}><img src="./static/wp-content/themes/tranquilit/img/contact.jpg" alt="Contactez-nous"></a> </div>
 <br>
 <div id="access" class="clear span-12">
 <div id="nav" class="clear span-8" role="navigation">
-<div class="skip-link screen-reader-text"><a href="#content" title="Aller au contenu">Aller au contenu</a></div>
+<div class="skip-link screen-reader-text"><a href="#content" title={{ _("To contents") }}>{{ _("To contents") }}</a></div>
 <div class="menu-header">
 <ul id="menu-main" class="menu">
-  <li id="menu-item-2912" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-567 current_page_item menu-item-2912"><a href="#">Accueil</a></li>
-  <li id="menu-item-3070" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3070"><a href="http://wapt/wapt/">Dépôt privé</a></li>
-  <li id="menu-item-310" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-310"><a href="http://wapt.tranquil.it/">Dépôts TIS</a></li>
-  <li id="menu-item-311" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-311"><a href="http://dev.tranquil.it/index.php/WAPT">Wiki WAPT</a></li>
-  <li id="menu-item-2443" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2443"><a href="http://lists.tranquil.it/pipermail/wapt/">Mailing list</a></li>
+  <li id="menu-item-2912" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-567 current_page_item menu-item-2912"><a href="#">{{ _("Home") }}</a></li>
+  <li id="menu-item-3070" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3070"><a href="http://wapt/wapt/">{{ _("Private repository") }}</a></li>
+  <li id="menu-item-310" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-310"><a href="http://wapt.tranquil.it/">{{ _("TIS repositories") }}</a></li>
+  <li id="menu-item-311" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-311"><a href="http://dev.tranquil.it/index.php/WAPT">{{ _("WAPT Wiki") }}</a></li>
+  <li id="menu-item-2443" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2443"><a href="http://lists.tranquil.it/pipermail/wapt/">{{ _("Mailing list") }}</a></li>
 </ul>
 </div>
 </div>
@@ -101,20 +101,20 @@ $(document).ready(function () {
 <table>
   <tbody>
     <tr>
-      <td bgcolor="#f3b144"><span style="color: rgb(255, 255, 255);"><strong>WAPTServer<br>
+      <td bgcolor="#f3b144"><span style="color: rgb(255, 255, 255);"><strong>{{ _("WAPTServer") }}<br>
       </strong></span></td>
     </tr>
     <tr>
       <td bgcolor="#f6f6f6">
       <ul>
 		<br>
-        <li><a href="/wapt/waptagent.exe"><strong>{{ _("WAPT Agent (for deployment on user desktop)") }}</strong></a></li>
-        <li><a href="/wapt/waptsetup-tis.exe"><strong>WAPTSetup (pour l'installation sur le poste de management)</strong></a></li>
-		<li><a href="/wapt/waptdeploy.exe"><strong>WAPTDeploy (pour la mise en place de la GPO de déploiement)</strong></a></li>
+        <li><a href="/wapt/waptagent.exe"><strong>{{ _("WAPT Agent (for deploying onto user desktop)") }}</strong></a></li>
+        <li><a href="/wapt/waptsetup-tis.exe"><strong>{{ _("WAPTSetup (for installing on management machine)") }}</strong></a></li>
+		<li><a href="/wapt/waptdeploy.exe"><strong>{{ _("WAPTDeploy (for setting up deployment GPO)") }}</strong></a></li>
         <br>
-        <li><a href="/ssl/">Certificats</a></li>
-        <li><a href="/wapt/">Dépôt privé</a></li>
-        <li><a href="http://wapt.tranquil.it/">Dépôt TIS</a><br>
+        <li><a href="/ssl/">{{ _("Certificates") }}</a></li>
+        <li><a href="/wapt/">{{ _("Private repository") }}</a></li>
+        <li><a href="http://wapt.tranquil.it/">{{ _("TIS repository") }}</a><br>
         </li>
       </ul>
       </td>
@@ -124,16 +124,15 @@ $(document).ready(function () {
       </td>
     </tr>
     <tr>
-      <td bgcolor="#81b944"><span style="color: rgb(255, 255, 255);"><strong>Aide<br>
+      <td bgcolor="#81b944"><span style="color: rgb(255, 255, 255);"><strong>{{ _("Help") }}<br>
       </strong></span></td>
     </tr>
     <tr>
       <td bgcolor="#f6f6f6">
       <ul>
-        <li><a href="http://dev.tranquil.it/index.php/WAPT_-_apt-get_pour_Windows">Wiki
-WAPT&nbsp;</a></li>
-        <li><a title="Support niveau 3" href="http://lists.tranquil.it/listinfo/wapt">Archives mailing list</a></li>
-        <li><a href="http://roundup.tranquil.it/wapt/"><span style="text-decoration: underline;">Gestionnaire de bugs (roundup)</span></a><br>
+        <li><a href="http://dev.tranquil.it/index.php/WAPT_-_apt-get_pour_Windows">{{ _("WAPT Wiki&nbsp;") }}</a></li>
+        <li><a title="Support niveau 3" href="http://lists.tranquil.it/listinfo/wapt">{{ _("mailing list archive") }}</a></li>
+        <li><a href="http://roundup.tranquil.it/wapt/"><span style="text-decoration: underline;">{{ _("Issue tracker (roundup)") }}</span></a><br>
         </li>
       </ul>
       </td>
@@ -143,15 +142,13 @@ WAPT&nbsp;</a></li>
       </td>
     </tr>
     <tr>
-      <td bgcolor="#d40050"><span style="color: rgb(255, 255, 255);"><strong>Services</strong></span></td>
+      <td bgcolor="#d40050"><span style="color: rgb(255, 255, 255);"><strong>{{ _("Services") }}</strong></span></td>
     </tr>
     <tr>
       <td bgcolor="#f6f6f6">
       <ul class="sub-menu">
-        <li><a title="Nos solutions" href="http://www.tranquil.it">Tranquil IT
-Systems</a></li>
-        <li><a href="http://dev.tranquil.it/index.php/WAPT_-_Int%C3%A9grateurs">Prestataires
-WAPT</a><br>
+        <li><a title={{ _("Our solutions") }} href="http://www.tranquil.it">{{ _("Tranquil IT Systems") }}</a></li>
+        <li><a href="http://dev.tranquil.it/index.php/WAPT_-_Int%C3%A9grateurs">{{ _("WAPT providers") }}</a><br>
         </li>
       </ul>
       </td>
@@ -161,21 +158,28 @@ WAPT</a><br>
 </div>
 <div class="span-6">
 <a class="toc-anchor" name="notre-societe"></a>
-<h2>Serveur WAPT</h2>
-<p>L'administration du serveur WAPT se fait à travers la console WAPT qui s'installe sur un poste Windows.
-Lors de l'installation du serveur WAPT sous Windows, la console est installée par défaut et peut être trouvé
-dans le menu "Démarrer".
+<h2>{{ _("WAPT server") }}</h2>
+<p>{{ _("""
+WAPT server is managed through a WAPT console installed on a Windows system.
+When installing the WAPT server on Windows, the console is installed by default and can be found under the start menu.
+""") }}
 </p>
 <p>
-Lors de l'installation du serveur WAPT sous Linux, il faut ensuite installer le <a href="/wapt/waptsetup-tis.exe">client WAPT</a> sur une machine
-d'administration et lancer la commande depuis le menu "Démarrer/Tous les programmes".
+{{ _("""
+When installing the server on Linux, the <a href=\"/wapt/waptsetup-tis.exe\">WAPT client</a> should be installed on an
+administration machine, then run from 'Start/All programs'.
+""") }}
 </p>
-<p>Pour intégrer un nouveau poste au serveur WAPT à la main, télécharger l'<a href="/wapt/waptagent.exe">agent WAPT</a> dans le menu
-à droite. La configuration de l'agent a été effectuée par le serveur et les paramètres par défaut sont les bons. Une fois le client WAPT
-installé, vous le retrouverez dans votre console.
+<p>{{ _("""
+To manually add a new host to the WAPT server, download the<a href=\"/wapt/waptagent.exe\">WAPT agent</a> from the menu
+to the right. The agent has been properly configured by the server so the default parameters should work. Once the WAPT client
+has been installed, you can find it in your console.
+""") }}
 </p>
-<p>Pour plus d'information, n'hésitez pas à vous reporter à la documentation sur le site <a href="http://dev.tranquil.it/">dev.tranquil.it</a> ou sur la
+<p>{{ _("""
+For further information, be sure to check the documentation at <a href=\"http://dev.tranquil.it/\">dev.tranquil.it</a> or on
 mailing-list.
+""") }}
 </p>
 
 </div>
@@ -185,7 +189,7 @@ mailing-list.
 <div id="home" class="widget-area span-3 last" role="complementary">
 <ul class="xoxo">
   <li id="news" class="widget-container widget_recent_entries">
-    <h2 class="widget-title">Actualités</h2>
+    <h2 class="widget-title">{{ _("What's new") }}</h2>
 	<div id="actualites"></div>
   </li>
 </ul>
@@ -200,7 +204,7 @@ mailing-list.
 <div id="footer" role="contentinfo" class="clear span-12">
 <center>
 <div style="padding-left: 1.5em;">
-© 2010-2014 <a href="http://www.tranquil.it/" title="Tranquil IT Systems" rel="home"> Tranquil IT Systems</a>
+© 2010-2014 <a href="http://www.tranquil.it/" title={{ _("Tranquil IT Systems") }} rel="home"> {{ _("Tranquil IT Systems") }}</a>
 </div>
 </center>
 <br>
