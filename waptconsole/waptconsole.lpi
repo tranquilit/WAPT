@@ -8,7 +8,11 @@
       <MainUnit Value="0"/>
       <AutoCreateForms Value="False"/>
       <Title Value="waptconsole"/>
+      <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
+      <XPManifest>
+        <ExecutionLevel Value="1"/>
+      </XPManifest>
       <Icon Value="0"/>
     </General>
     <i18n>
