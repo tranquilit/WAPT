@@ -103,7 +103,6 @@ type
     HostRunningTask: TLabeledEdit;
     Label13: TLabel;
     Label14: TLabel;
-    Label15: TLabel;
     LabelComputersNumber: TLabel;
     labSelected: TLabel;
     MemoTaskLog: TMemo;
@@ -2062,8 +2061,6 @@ begin
 end;
 
 procedure TVisWaptGUI.FormShow(Sender: TObject);
-var
-  lang,fallback_lang:String;
 begin
   MemoLog.Clear;
   ActPackagesUpdate.Execute;
@@ -2076,8 +2073,6 @@ begin
   GridGroups.LoadSettingsFromIni(Appuserinipath);
   GridHostPackages.LoadSettingsFromIni(Appuserinipath);
   GridHostSoftwares.LoadSettingsFromIni(Appuserinipath);
-  GetLanguageIDs(Lang,fallback_lang);
-  Label15.Caption:=Lang+ ' / ' +fallback_lang;
 end;
 
 procedure TVisWaptGUI.GridGroupsColumnDblClick(Sender: TBaseVirtualTree;

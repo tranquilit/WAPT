@@ -5,7 +5,7 @@ unit uWaptDeployRes;
 interface
 
 uses
-  Classes, SysUtils, DefaultTranslator;
+  Classes, SysUtils;
 
 resourcestring
 

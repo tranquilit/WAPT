@@ -61,7 +61,7 @@ object VisWaptGUI: TVisWaptGUI
           ParentColor = False
         end
         object CheckBoxMaj: TCheckBox
-          Left = 338
+          Left = 364
           Height = 17
           Top = 7
           Width = 95
@@ -70,7 +70,7 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 2
         end
         object CheckBox_error: TCheckBox
-          Left = 501
+          Left = 527
           Height = 17
           Top = 7
           Width = 70
@@ -82,7 +82,7 @@ object VisWaptGUI: TVisWaptGUI
           Left = 192
           Height = 25
           Top = 2
-          Width = 134
+          Width = 164
           Action = ActSearchHost
           Glyph.Data = {
             36040000424D3604000000000000360000002800000010000000100000000100
@@ -175,15 +175,17 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 8
         end
         object Label13: TLabel
-          Left = 627
+          Left = 671
           Height = 13
           Top = 22
-          Width = 41
+          Width = 58
+          Alignment = taRightJustify
+          AutoSize = False
           Caption = 'Selected'
           ParentColor = False
         end
         object labSelected: TLabel
-          Left = 720
+          Left = 748
           Height = 13
           Top = 22
           Width = 6
@@ -191,28 +193,21 @@ object VisWaptGUI: TVisWaptGUI
           ParentColor = False
         end
         object Label11: TLabel
-          Left = 627
+          Left = 612
           Height = 13
           Top = 7
-          Width = 89
+          Width = 128
+          Alignment = taRightJustify
+          AutoSize = False
           Caption = 'Number of hosts : '
           ParentColor = False
         end
         object LabelComputersNumber: TLabel
-          Left = 720
+          Left = 748
           Height = 13
           Top = 7
           Width = 6
           Caption = '0'
-          ParentColor = False
-        end
-        object Label15: TLabel
-          Left = 755
-          Height = 54
-          Top = 0
-          Width = 37
-          Align = alRight
-          Caption = 'Label15'
           ParentColor = False
         end
       end

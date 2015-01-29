@@ -479,25 +479,25 @@ begin
         if (running<>Nil) and (running.AsArray.Length>0) then
         begin
           trayMode:=tmRunning;
-          trayHint:=UTF8Encode(format(utf8Decode(rsInstalling), [running.AsString]));
+          trayHint:=format(utf8Decode(rsInstalling), [running.AsString]);
         end
         else
         if runstatus<>'' then
         begin
-          trayHint:=UTF8Encode(runstatus);
+          trayHint:=runstatus;
           trayMode:=tmRunning;
         end
         else
         if (errors<>Nil) and (errors.AsArray.Length>0) then
         begin
-          trayHint:= utf8Encode(format(utf8Decode(rsErrorFor),[Join(#13#10,errors)]));
+          trayHint:= format(utf8Decode(rsErrorFor),[Join(#13#10,errors)]);
           trayMode:=tmErrors;
         end
         else
         if (upgrades<>Nil) and (upgrades.AsArray.Length>0) then
         begin
           trayMode:=tmUpgrades;
-          trayHint:= utf8Encode(format(utf8Decode(rsUpdatesAvailableFor),[soutils.join(#13#10'-',upgrades)]));
+          trayHint:= format(utf8Decode(rsUpdatesAvailableFor),[soutils.join(#13#10'-',upgrades)]);
         end
         else
         begin
@@ -528,7 +528,7 @@ begin
         taskresult := SO(message.Text);
         if taskresult<>Nil then
         begin
-          trayHint:= utf8Encode(taskresult.S['runstatus']);
+          trayHint:= taskresult.S['runstatus'];
           if taskresult.B['notify_user'] then
              task_notify_user:=True
           else
@@ -714,10 +714,10 @@ end;
 
 procedure TDMWaptTray.SettrayHint(AValue: WideString);
 begin
-  if TrayIcon1.Hint<>AValue then
+  if TrayIcon1.Hint<>utf8Encode(AValue) then
   begin
-    TrayIcon1.Hint:= AValue;
-    TrayIcon1.BalloonHint:=AValue;
+    TrayIcon1.Hint:= utf8Encode(AValue);
+    TrayIcon1.BalloonHint:=utf8Encode(AValue);
     {if not popupvisible and (AValue<>'') and notify_user then
       TrayIcon1.ShowBalloonHint;}
   end;

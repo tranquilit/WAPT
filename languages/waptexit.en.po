@@ -1,6 +1,26 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: uwaptexitres.rserrorwininetflags
+msgid "Internal error in SetToIgnoreCerticateErrors when trying to get wininet flags. %s"
+msgstr ""
+
+#: uwaptexitres.rsinterruptupdate
+msgid "Interrupt software update"
+msgstr ""
+
+#: uwaptexitres.rslaunchsoftwareupdate
+msgid "Launch software update"
+msgstr ""
+
+#: uwaptexitres.rssoftwareupdatein
+msgid "Updating software in %s sec..."
+msgstr ""
+
+#: uwaptexitres.rsupdatingsoftware
+msgid "Updating software"
+msgstr ""
+
 #: uwaptres.rsbundleconfigeditcaption
 msgid "Edit package bundle configuration"
 msgstr ""

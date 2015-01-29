@@ -1,4 +1,4 @@
-# mcadorel-adm <ss>, 2015.
+ mcadorel-adm <ss>, 2015.
 msgid ""
 msgstr ""
 "PO-Revision-Date: 2015-01-28 11:32+0200\n"
@@ -146,6 +146,7 @@ msgid "Cancelled %s"
 msgstr "%s annulé"
 
 #: uwaptres.rscanceling
+msgctxt "uwaptres.rscanceling"
 msgid "Canceling %s"
 msgstr "Annulation de %s"
 
@@ -154,6 +155,7 @@ msgid "Couldn't copy certificate %s to %s."
 msgstr "Echec de la copie du certificat %s vers %s."
 
 #: uwaptres.rschecking
+msgctxt "uwaptres.rschecking"
 msgid "Checking..."
 msgstr "Vérification en cours..."
 
@@ -191,6 +193,9 @@ msgstr "Êtes-vous sûr de vouloir oublier %s paquets de la machine %s ?"
 #: uwaptres.rsconfirmimport
 #, fuzzy
 #| msgid ""
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 #| "Are you sure you want to import\n"
 #| "%s\n"
 #| " to your repository ?\n"
@@ -331,6 +336,7 @@ msgid "Old password must not be empty."
 msgstr "L'ancien mot de passe ne doit pas être vide."
 
 #: uwaptres.rserror
+msgctxt "uwaptres.rserror"
 msgid "Error"
 msgstr "Erreur"
 
@@ -339,6 +345,7 @@ msgid "Error cancelling: %s"
 msgstr "Erreur de l'annulation : %s"
 
 #: uwaptres.rserrorfor
+msgctxt "uwaptres.rserrorfor"
 msgid "Error for %s"
 msgstr "Erreur pour %s"
 
@@ -351,6 +358,7 @@ msgid "Error launching upgrade: %s"
 msgstr "Erreur lors du lancement de l'upgrade : %s"
 
 #: uwaptres.rserrorwhilechecking
+msgctxt "uwaptres.rserrorwhilechecking"
 msgid "Error while checking..."
 msgstr "Erreur lors de la vérification..."
 
@@ -432,9 +440,7 @@ msgstr "DNS invalide"
 
 #: uwaptres.rsinvaliddnsfallback
 msgid "This DNS name is not valid, would you like to use the IP address instead ?"
-msgstr ""
-"Ce nom DNS n'est pas valide, souhaitez-vous utiliser l'adresse IP à la place "
-"?"
+msgstr "Ce nom DNS n'est pas valide, souhaitez-vous utiliser l'adresse IP à la place ?"
 
 #: uwaptres.rsinvalidwaptsetupdir
 msgid "WAPTsetup directory is not valid : %s"
@@ -465,6 +471,7 @@ msgid "No running tasks"
 msgstr "Aucune tâche en cours"
 
 #: uwaptres.rsnotaskcanceled
+msgctxt "uwaptres.rsnotaskcanceled"
 msgid "No task canceled"
 msgstr "Aucune tâche annulée"
 
@@ -477,10 +484,12 @@ msgid " -r --repo : URL of dependencies libs"
 msgstr " -r --repo : URL des librairies des dépendances"
 
 #: uwaptres.rspackageconfigdone
+msgctxt "uwaptres.rspackageconfigdone"
 msgid "Done configuring packages for the current user session"
 msgstr "Configuration des paquets pour la session utilisateur terminée"
 
 #: uwaptres.rspackageconfigerror
+msgctxt "uwaptres.rspackageconfigerror"
 msgid "Error while configuring packages for the current user session"
 msgstr "Erreur lors de la configuration des paquets pour la session utilisateur"
 
@@ -491,6 +500,9 @@ msgstr "Erreur lors de la création du paquet : %s"
 #: uwaptres.rspackageduplicateconfirm
 #, fuzzy
 #| msgid ""
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
 #| " into your repository ?\n"
@@ -627,7 +639,10 @@ msgid "Task canceled."
 msgstr "Tâche annulée."
 
 #: uwaptres.rstaskdone
+#, fuzzy
 #| msgid ""
+#| "%s done\n"
+#| "%s\n"
 #| "%s done\n"
 #| "%s\n"
 #| "%s done\n"
@@ -654,6 +669,7 @@ msgid "Error getting task list: %s"
 msgstr "Erreur lors de l'acquisition"
 
 #: uwaptres.rstaskstarted
+msgctxt "uwaptres.rstaskstarted"
 msgid "%s started"
 msgstr "%s lancé"
 
@@ -666,9 +682,12 @@ msgid "Uninstalling %s..."
 msgstr "Désinstallation de %s..."
 
 #: uwaptres.rsupdatesavailablefor
+#, fuzzy
 #| msgid ""
 #| "Available updates for :\n"
 #| "%s\n"
+#| "Available updates for :\n"
+#| "-%s\n"
 msgid ""
 "Available updates for :\n"
 "-%s\n"
@@ -711,7 +730,10 @@ msgid "Usage: %s -h"
 msgstr "Usage : %s -h"
 
 #: uwaptres.rsversion
+#, fuzzy
 #| msgid ""
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
 #| "Waptconsole version : %s\n"
 #| "Wapt-get version: %s\n"
 #| "Waptconsole version : %s\n"
@@ -762,6 +784,7 @@ msgid "Waptservice stopping"
 msgstr "Arrêt du service WAPT"
 
 #: uwaptres.rswaptserviceterminated
+msgctxt "uwaptres.rswaptserviceterminated"
 msgid "WAPTService terminated"
 msgstr "WAPTService arrêté"
 
@@ -788,3 +811,70 @@ msgstr "Wrapper Win32 Exe : %s %s"
 #: uwaptres.rswinterruptreceived
 msgid "W: interrupt received, killing serverâ¦"
 msgstr "W: interruption reçue, arrêt du serveur"
+
+#: uwapttrayres.rscanceling
+msgctxt "uwapttrayres.rscanceling"
+msgid "Canceling %s"
+msgstr "Annulation de %s"
+
+#: uwapttrayres.rschecking
+msgctxt "uwapttrayres.rschecking"
+msgid "Checking..."
+msgstr "Vérification en cours..."
+
+#: uwapttrayres.rserror
+msgctxt "uwapttrayres.rserror"
+msgid "Error"
+msgstr "Erreur"
+
+#: uwapttrayres.rserrorfor
+msgctxt "uwapttrayres.rserrorfor"
+msgid "Error for %s"
+msgstr "Erreur pour %s"
+
+#: uwapttrayres.rserrorwhilechecking
+msgctxt "uwapttrayres.rserrorwhilechecking"
+msgid "Error while checking..."
+msgstr "Erreur lors de la vérification..."
+
+#: uwapttrayres.rsinstalling
+msgid "Installation en cours"
+msgstr ""
+
+#: uwapttrayres.rsnotaskcanceled
+msgctxt "uwapttrayres.rsnotaskcanceled"
+msgid "No task canceled"
+msgstr "Aucune tâche annulée"
+
+#: uwapttrayres.rspackageconfigdone
+msgctxt "uwapttrayres.rspackageconfigdone"
+msgid "Done configuring packages for the current user session"
+msgstr "Configuration des paquets pour la session utilisateur terminée"
+
+#: uwapttrayres.rspackageconfigerror
+msgctxt "uwapttrayres.rspackageconfigerror"
+msgid "Error while configuring packages for the current user session"
+msgstr "Erreur lors de la configuration des paquets pour la session utilisateur"
+
+#: uwapttrayres.rstaskdone
+msgid ""
+"%s done\n"
+"%s\n"
+msgstr ""
+
+#: uwapttrayres.rstaskstarted
+msgctxt "uwapttrayres.rstaskstarted"
+msgid "%s started"
+msgstr "%s lancé"
+
+#: uwapttrayres.rsupdatesavailablefor
+msgid ""
+"Available updates for :\n"
+"-%s\n"
+msgstr ""
+
+#: uwapttrayres.rswaptserviceterminated
+msgctxt "uwapttrayres.rswaptserviceterminated"
+msgid "WAPTService terminated"
+msgstr "WAPTService arrêté"
+
