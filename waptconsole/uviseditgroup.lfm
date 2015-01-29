@@ -1,11 +1,11 @@
 object VisEditGroup: TVisEditGroup
-  Left = 596
+  Left = 551
   Height = 610
-  Top = 120
-  Width = 786
+  Top = 122
+  Width = 883
   Caption = 'Group edition'
   ClientHeight = 610
-  ClientWidth = 786
+  ClientWidth = 883
   Font.CharSet = ANSI_CHARSET
   Font.Height = -11
   Font.Name = 'Tahoma'
@@ -16,14 +16,14 @@ object VisEditGroup: TVisEditGroup
     Left = 0
     Height = 33
     Top = 577
-    Width = 786
+    Width = 883
     Align = alBottom
     BevelOuter = bvNone
     ClientHeight = 33
-    ClientWidth = 786
+    ClientWidth = 883
     TabOrder = 0
     object BitBtn2: TBitBtn
-      Left = 706
+      Left = 781
       Height = 26
       Top = 4
       Width = 74
@@ -35,7 +35,7 @@ object VisEditGroup: TVisEditGroup
       TabOrder = 0
     end
     object Button5: TButton
-      Left = 589
+      Left = 664
       Height = 25
       Top = 4
       Width = 112
@@ -116,36 +116,36 @@ object VisEditGroup: TVisEditGroup
     WantTabs = True
   end
   object EdGroup: TLabeledEdit
-    Left = 48
+    Left = 96
     Height = 21
     Top = 4
-    Width = 250
+    Width = 242
     EditLabel.AnchorSideTop.Control = EdGroup
     EditLabel.AnchorSideTop.Side = asrCenter
     EditLabel.AnchorSideRight.Control = EdGroup
     EditLabel.AnchorSideBottom.Control = EdGroup
     EditLabel.AnchorSideBottom.Side = asrBottom
-    EditLabel.Left = 10
+    EditLabel.Left = 64
     EditLabel.Height = 13
     EditLabel.Top = 8
-    EditLabel.Width = 35
+    EditLabel.Width = 29
     EditLabel.Caption = 'Group'
     EditLabel.ParentColor = False
     LabelPosition = lpLeft
     TabOrder = 3
   end
   object Eddescription: TLabeledEdit
-    Left = 366
+    Left = 408
     Height = 21
     Top = 4
-    Width = 408
+    Width = 463
     Anchors = [akTop, akLeft, akRight]
     EditLabel.AnchorSideTop.Control = Eddescription
     EditLabel.AnchorSideTop.Side = asrCenter
     EditLabel.AnchorSideRight.Control = Eddescription
     EditLabel.AnchorSideBottom.Control = Eddescription
     EditLabel.AnchorSideBottom.Side = asrBottom
-    EditLabel.Left = 310
+    EditLabel.Left = 352
     EditLabel.Height = 13
     EditLabel.Top = 8
     EditLabel.Width = 53
@@ -156,7 +156,7 @@ object VisEditGroup: TVisEditGroup
     Text = ' '
   end
   object GridPackages: TSOGrid
-    Left = 556
+    Left = 632
     Height = 491
     Top = 69
     Width = 224
@@ -231,10 +231,10 @@ object VisEditGroup: TVisEditGroup
     WantTabs = True
   end
   object Label1: TLabel
-    Left = 556
+    Left = 632
     Height = 13
     Top = 52
-    Width = 94
+    Width = 91
     Caption = 'Available packages'
     ParentColor = False
   end
@@ -242,7 +242,7 @@ object VisEditGroup: TVisEditGroup
     Left = 8
     Height = 13
     Top = 32
-    Width = 261
+    Width = 190
     Caption = 'Packages to be installed on group hosts'
     ParentColor = False
   end
@@ -250,7 +250,7 @@ object VisEditGroup: TVisEditGroup
     Left = 8
     Height = 13
     Top = 344
-    Width = 142
+    Width = 89
     Caption = 'Hosts in this group'
     ParentColor = False
   end
