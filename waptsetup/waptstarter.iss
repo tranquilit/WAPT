@@ -38,9 +38,16 @@ Name: "{commonprograms}\WaptStarter"; IconFilename: "{app}\wapt.ico"; Filename: 
 Name: "{commondesktop}\WaptStarter"; IconFilename: "{app}\wapt.ico"; Filename: "http://localhost:8088";
 
 [Run]
-Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runhidden; StatusMsg: "Mise à jour des paquets disponibles sur le dépôt principal"; Description: "Mise à jour des paquets disponibles sur le dépôt principal"
-Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoUpgradePolicy; Flags: runhidden; StatusMsg: "Mise à jour des paquets à l'extinction du poste"; Description: "Mise à jour des paquets à l'extinction du poste"
+Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runhidden; StatusMsg: {cm:UpdateAvailablePkg}; Description: "{cm:UpdateAvailablePkg}"
+Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoUpgradePolicy; Flags: runhidden; StatusMsg: {cm:UpdateOnShutdown}; Description: "{cm:UpdateOnShutdown}"
 
+[Languages]
+Name:"en";MessagesFile: "compiler:Default.isl"
+Name:"fr";MessagesFile: "compiler:Languages\French.isl"
+
+[CustomMessages]
+fr.UpdateAvailablePkg=Mise à jour des paquets disponibles sur le dépôt principal
+fr.UpdateOnShutdown=Mise à jour des paquets à l'extinction du poste
 
 [Code]
 procedure DeinitializeUninstall();
