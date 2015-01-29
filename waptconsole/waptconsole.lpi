@@ -8,7 +8,11 @@
       <MainUnit Value="0"/>
       <AutoCreateForms Value="False"/>
       <Title Value="waptconsole"/>
+      <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
+      <XPManifest>
+        <ExecutionLevel Value="1"/>
+      </XPManifest>
       <Icon Value="0"/>
     </General>
     <i18n>
@@ -256,6 +260,9 @@
       <Unit28>
         <Filename Value="uviseditgroup.lfm"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisEditGroup"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit28>
       <Unit29>
         <Filename Value="uviswaptdeploy.lfm"/>

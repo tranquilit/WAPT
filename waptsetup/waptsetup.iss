@@ -27,9 +27,13 @@ OutputBaseFilename=waptsetup
 DefaultDirName="C:\wapt"
 WizardImageFile=..\tranquilit.bmp
 
+[Languages]
+Name: "en"; MessagesFile: "compiler:Default.isl"
+Name:"fr";MessagesFile: "compiler:Languages\French.isl"
+
 [Tasks]
 ;Name: use_hostpackages; Description: "Use automatic host management based on hostname packages";
-Name: autorunSessionSetup; Description: "Lancer WAPT session setup à l'ouverture de session";
+Name: autorunSessionSetup; Description: "{cm:StartAfterSetup}";
 
 [INI]
 Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL};
@@ -40,12 +44,25 @@ Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1
 
 
 [Run]
-Filename: "{app}\wapt-get.exe"; Parameters: "register"; Flags: runhidden postinstall; StatusMsg: "Enregistre l'ordinateur sur le serveur WAPT"; Description: "Enregistre l'ordinateur sur le serveur WAPT"
-Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runhidden; StatusMsg: "Mise à jour des paquets disponibles sur le dépôt principal"; Description: "Mise à jour des paquets disponibles sur le dépôt principal"
-Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoUpgradePolicy; Flags: runhidden; StatusMsg: "Mise à jour des paquets à l'extinction du poste"; Description: "Mise à jour des paquets à l'extinction du poste"
+Filename: "{app}\wapt-get.exe"; Parameters: "register"; Flags: runhidden postinstall; StatusMsg: StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"
+Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runhidden; StatusMsg: {cm:UpdateAvailablePkg}; Description: "{cm:UpdateAvailablePkg}"
+Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoUpgradePolicy; Flags: runhidden; StatusMsg: {cm:UpdatePkgUponShutdown}; Description: "{cm:UpdatePkgUponShutdown}"
 
 [Icons]
 Name: "{commonstartup}\WAPT session setup"; Tasks: autorunSessionSetup; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
+
+[CustomMessages]
+;English translations here
+en.StartAfterSetup=Launch WAPT setup session upon session opening
+en.RegisterHostOnServer=Register this computer onto WAPT server
+en.UpdateAvailablePkg=Update the list of packages available on the main repository
+en.UpdatePkgUponShutdown=Update packages upon shutdown
+
+;French translations here
+fr.StartAfterSetup=Lancer WAPT session setup à l'ouverture de session
+fr.RegisterHostOnServer=Enregistre l'ordinateur sur le serveur WAPT
+fr.UpdateAvailablePkg=Mise à jour des paquets disponibles sur le dépôt principal
+fr.UpdatePkgUponShutdown=Mise à jour des paquets à l'extinction du poste
 
 [Code]
 var
