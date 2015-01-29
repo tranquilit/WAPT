@@ -104,10 +104,6 @@ SetupIconFile=..\wapt.ico
 SignTool={#signtool}
 #endif
 
-[Languages]
-;Name: "en"; MessagesFile: "compiler:Default.isl"
-Name:fr;MessagesFile: "compiler:Languages\French.isl"
-
 [Registry]
 Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"; Check: NeedsAddPath('{app}')
 Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\wapt-get.exe"; ValueType: string; ValueName: ""; ValueData: "{app}\wapt-get.exe"; Flags: uninsdeletekey
@@ -131,21 +127,36 @@ Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait r
 Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\wapttray.exe"; Flags: excludefromshowinnewinstall;
 
 [Tasks]
-Name: installService; Description: "Installer le service WAPT";
-Name: autorunTray; Description: "Lancer l'icône de notification lors de l'ouverture de session"; Flags: unchecked;
-Name: installredist2008; Description: "Installer les redistribuables VC++ 2008 (pour openssl)";  Check: VCRedistNeedsInstall();
+Name: installService; Description: "{cm:InstallWAPservice}";
+Name: autorunTray; Description: "{cm:LaunchIcon}"; Flags: unchecked;
+Name: installredist2008; Description: "{cm:InstallVCpp}";  Check: VCRedistNeedsInstall();
 ; Duplication helas necessaire.
 ; On souhaite seulement changer les actions a realiser par defaut, pas a empecher
 ; l'utilisateur de forcer la reinstallation de VC++, et il n'existe pas de moyen
 ; de modifier dynamiquement le flag "unchecked" 
-Name: installredist2008unchecked; Description: "Forcer la réinstallation des redistribuables VC++ 2008 (pour openssl)"; Check: not VCRedistNeedsInstall(); Flags: unchecked
-Name: autoUpgradePolicy; Description: "Proposer la mise à jour des paquets à l'extinction du poste";
+Name: installredist2008unchecked; Description: "{cm:ForceVCppReinstall}"; Check: not VCRedistNeedsInstall(); Flags: unchecked
+Name: autoUpgradePolicy; Description: "{cm:UpdatePkgUponShutdown}";
 
 [UninstallRun]
 Filename: "taskkill"; Parameters: "/t /im ""waptconsole.exe"" /f"; Flags: runhidden; StatusMsg: "Arrêt de waptconsole"
 Filename: "taskkill"; Parameters: "/t /im ""wapttray.exe"" /f"; Flags: runhidden; StatusMsg: "Arrêt de l'icône de notification"
 Filename: "net"; Parameters: "stop waptservice"; Flags: runhidden; StatusMsg: "Arrêt du service WAPT"
 Filename: "sc"; Parameters: "delete waptservice"; Flags: runhidden; StatusMsg: "Désinstallation du service WAPT"
+
+[CustomMessages]
+;French translations here
+fr.InstallWAPservice=Installer le service WAPT
+fr.LaunchIcon=Lancer l'icône de notification lors de l'ouverture de session
+fr.InstallVCpp=Installer les redistribuables VC++ 2008 (pour openssl)
+fr.ForceVCppReinstall=Forcer la réinstallation des redistribuables VC++ 2008 (pour openssl)
+fr.UpdatePkgUponShutdown=Proposer la mise à jour des paquets à l'extinction du poste
+
+;English translations here
+en.InstallWAPservice=Install WAPT service
+en.LaunchIcon=Launch notification icon upon session opening
+en.InstallVCpp=Install VC++ 2008 redistributables (for openssl)
+en.ForceVCppReinstall=Force-reinstall VC++ 2008 redistributables (for openssl
+en.UpdatePkgUponShutdown=Ask to update packages upon shutdown
 
 [Code]
 #include "services.iss"
