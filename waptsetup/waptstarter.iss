@@ -49,6 +49,9 @@ Name:"fr";MessagesFile: "compiler:Languages\French.isl"
 fr.UpdateAvailablePkg=Mise à jour des paquets disponibles sur le dépôt principal
 fr.UpdateOnShutdown=Mise à jour des paquets à l'extinction du poste
 
+en.UpdateAvailablePkg=Update packages available on the main repository
+en.UpdateOnShutdown=Update packages upon shutdown
+
 [Code]
 procedure DeinitializeUninstall();
 var
