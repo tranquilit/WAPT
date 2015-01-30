@@ -87,6 +87,7 @@ action is either :
 parser=OptionParser(usage=usage,version='waptserver.py ' + __version__)
 parser.add_option("-c","--config", dest="configfile", default=os.path.join(wapt_root_dir,'waptserver','waptserver.ini'), help="Config file full path (default: %default)")
 parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
+parser.add_option("-d","--devel", dest="devel", default=False,action='store_true', help="Enable debug mode (for development only)")
 
 (options,args)=parser.parse_args()
 
@@ -1317,8 +1318,7 @@ if __name__ == "__main__":
         install_windows_service()
         sys.exit(0)
 
-    debug=False
-    if debug:
+    if options.devel:
         app.run(host='0.0.0.0',port=30880,debug=False)
     else:
         port = 8080
