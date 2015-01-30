@@ -197,16 +197,37 @@ begin
   end;
 end;
 
+function GetString(const Index: integer) : string;
+var
+  buffer : array[0..8191] of char;
+  ls : integer;
+begin
+  Result := '';
+  ls := LoadString(hInstance,
+                   Index,
+                   buffer,
+                   sizeof(buffer));
+  if ls <> 0 then Result := buffer;
+end;
+
+
+
 procedure TVisWAPTServerPostConf.PagesControlChange(Sender: TObject);
+const
+  PAGES_EN_OFFSET =		0;
+  PAGES_FR_OFFSET =		1000;
 var
   ini:TIniFile;
   tips_fr:TResourceStream;
+  Page: TMemoryStream;
+  PageContent: AnsiString;
 begin
-  LoadResourceFile('tips_fr.rc', tips_fr);
-  ResStream := TResourceStream.Create(HInstance,'ResStream',RT_STRING);
-  // HTMLViewer1.LoadFromFile(Format('tips\%s\page%s.html',[FallBackLanguage, IntToStr(PagesControl.PageIndex)]));
-  // HTMLViewer1.LoadFromString(rsTips[PagesControl.PageIndex]);
-  HTMLViewer1.LoadFromStream(ResStream,'PAGE_0');
+  PageContent := GetString(PAGES_EN_OFFSET + 0);
+  Page := TMemoryStream.Create;
+  ShowMessage(PageContent);
+  Page.WriteAnsiString(PageContent);
+
+  HTMLViewer1.LoadFromStream(Page);
   if PagesControl.ActivePage = pgStartServices then
   try
     ini := TMemIniFile.Create(WaptIniFilename);
@@ -220,7 +241,7 @@ begin
     EdWaptInifile.Lines.Clear;
     TMemIniFile(ini).GetStrings(EdWaptInifile.Lines);
   finally
-    ResStream.Free;
+    //ResStream.Free;
     ini.Free;
   end
   else
