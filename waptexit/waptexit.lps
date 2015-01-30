@@ -9,11 +9,10 @@
         <Filename Value="waptexit.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptexit"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="52" Y="12"/>
+        <CursorPos X="41" Y="10"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -26,8 +25,8 @@
         <UnitName Value="uwaptexit"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="72" Y="9"/>
+        <TopLine Value="196"/>
+        <CursorPos X="3" Y="200"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -36,7 +35,13 @@
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="20"/>
+        <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\wapt-get\tisstrings.pas"/>
@@ -48,7 +53,7 @@
         <Filename Value="uwaptexitres.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uWaptExitRes"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="18" Y="1"/>
@@ -59,11 +64,23 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="1" HistoryIndex="0">
+    <JumpHistory Count="4" HistoryIndex="3">
       <Position1>
         <Filename Value="uwaptexit.pas"/>
-        <Caret Line="9" Column="46" TopLine="1"/>
+        <Caret Line="9" Column="72" TopLine="1"/>
       </Position1>
+      <Position2>
+        <Filename Value="uwaptexit.pas"/>
+        <Caret Line="200" Column="3" TopLine="196"/>
+      </Position2>
+      <Position3>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="66" Column="12" TopLine="49"/>
+      </Position3>
+      <Position4>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Caret Line="1530" Column="1" TopLine="1497"/>
+      </Position4>
     </JumpHistory>
   </ProjectSession>
   <EditorMacros Count="0"/>

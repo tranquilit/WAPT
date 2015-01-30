@@ -1521,9 +1521,8 @@ end;
 initialization
 //  if not Succeeded(CoInitializeEx(nil, COINIT_MULTITHREADED)) then;
     //Raise Exception.Create('Unable to initialize ActiveX layer');
-   if Language ='' then
+   if not ReadWaptConfig then
       GetLanguageIDs(Language,FallBackLanguage);
-
 
 finalization
 //  CoUninitialize();

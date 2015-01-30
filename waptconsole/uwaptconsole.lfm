@@ -1,10 +1,10 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 518
+  Left = 521
   Height = 600
-  Top = 222
+  Top = 225
   Width = 800
   Caption = 'WAPT console'
-  ClientHeight = 580
+  ClientHeight = 581
   ClientWidth = 800
   Constraints.MinHeight = 600
   Constraints.MinWidth = 800
@@ -22,7 +22,7 @@ object VisWaptGUI: TVisWaptGUI
   LCLVersion = '1.3'
   object MainPages: TPageControl
     Left = 0
-    Height = 434
+    Height = 438
     Top = 0
     Width = 800
     ActivePage = pgInventory
@@ -32,7 +32,7 @@ object VisWaptGUI: TVisWaptGUI
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
       Caption = 'Inventory'
-      ClientHeight = 408
+      ClientHeight = 412
       ClientWidth = 792
       object Panel10: TPanel
         Left = 0
@@ -62,7 +62,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object CheckBoxMaj: TCheckBox
           Left = 404
-          Height = 19
+          Height = 17
           Top = 30
           Width = 95
           Caption = 'Needs updating'
@@ -71,7 +71,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object CheckBox_error: TCheckBox
           Left = 404
-          Height = 19
+          Height = 17
           Top = 4
           Width = 70
           Caption = 'Has errors'
@@ -124,7 +124,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object cbSearchAll: TCheckBox
           Left = 6
-          Height = 19
+          Height = 17
           Top = 30
           Width = 31
           Caption = 'All'
@@ -136,7 +136,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object cbSearchHost: TCheckBox
           Left = 68
-          Height = 19
+          Height = 17
           Top = 30
           Width = 42
           Caption = 'Host'
@@ -146,7 +146,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object cbSearchDMI: TCheckBox
           Left = 144
-          Height = 19
+          Height = 17
           Top = 30
           Width = 67
           Caption = 'Hardware'
@@ -156,7 +156,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object cbSearchSoftwares: TCheckBox
           Left = 228
-          Height = 19
+          Height = 17
           Top = 30
           Width = 64
           Caption = 'Software'
@@ -166,7 +166,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object cbSearchPackages: TCheckBox
           Left = 308
-          Height = 19
+          Height = 17
           Top = 30
           Width = 65
           Caption = 'Packages'
@@ -219,7 +219,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object GridHosts: TSOGrid
         Left = 0
-        Height = 354
+        Height = 358
         Top = 54
         Width = 215
         OnGetText = GridHostsGetText
@@ -370,6 +370,11 @@ object VisWaptGUI: TVisWaptGUI
             Position = 19
             Text = 'Domain controller address'
             PropertyName = 'host.domain_controller_address'
+          end        
+          item
+            Position = 20
+            Text = 'Groups'
+            PropertyName = 'depends'
           end>
         Header.DefaultHeight = 17
         Header.MaxHeight = 17
@@ -396,7 +401,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object HostPages: TPageControl
         Left = 220
-        Height = 354
+        Height = 358
         Top = 54
         Width = 572
         ActivePage = pgPackages
@@ -407,13 +412,13 @@ object VisWaptGUI: TVisWaptGUI
         object pgPackages: TTabSheet
           AnchorSideTop.Side = asrBottom
           Caption = 'Overview'
-          ClientHeight = 328
+          ClientHeight = 332
           ClientWidth = 564
           object GridHostPackages: TSOGrid
             AnchorSideTop.Control = Panel9
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 116
+            Height = 120
             Top = 122
             Width = 564
             Align = alBottom
@@ -785,7 +790,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel5: TPanel
             Left = 0
             Height = 90
-            Top = 238
+            Top = 242
             Width = 564
             Align = alBottom
             BevelOuter = bvNone
@@ -1485,7 +1490,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object Splitter4: TSplitter
         Left = 215
-        Height = 354
+        Height = 358
         Top = 54
         Width = 5
         Align = alRight
@@ -1988,12 +1993,12 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgSources: TTabSheet
       Caption = 'Sources'
-      ClientHeight = 408
+      ClientHeight = 412
       ClientWidth = 792
       TabVisible = False
       inline testedit: TSynEdit
         Left = 0
-        Height = 374
+        Height = 378
         Top = 34
         Width = 792
         Align = alClient
@@ -2551,7 +2556,7 @@ object VisWaptGUI: TVisWaptGUI
   object PanDebug: TPanel
     Left = 0
     Height = 118
-    Top = 439
+    Top = 443
     Width = 800
     Align = alBottom
     ClientHeight = 118
@@ -2628,8 +2633,8 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 3
         object cbShowLog: TCheckBox
           Left = 7
-          Height = 19
-          Top = -4
+          Height = 17
+          Top = -2
           Width = 79
           Anchors = [akRight, akBottom]
           Caption = 'Show debug'
@@ -2643,7 +2648,7 @@ object VisWaptGUI: TVisWaptGUI
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 434
+    Top = 438
     Width = 800
     Align = alBottom
     ResizeAnchor = akBottom
@@ -2658,8 +2663,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object plStatusBar1: TplStatusBar
     Left = 0
-    Height = 23
-    Top = 557
+    Height = 20
+    Top = 561
     Width = 800
     Panels = <    
       item
@@ -2755,7 +2760,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActCreateWaptSetupPy: TAction
       Category = 'Tools'
-      Caption = 'Create WAPT agent'
+      Caption = 'Create custom WAPT installer (py)'
       OnExecute = ActCreateWaptSetupPyExecute
     end
     object ActEvaluateVar: TAction
@@ -2955,7 +2960,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActCreateWaptSetup: TAction
       Category = 'Tools'
-      Caption = 'Create WAPT agent'
+      Caption = 'Create custom WAPT installer'
       ImageIndex = 35
       OnExecute = ActCreateWaptSetupExecute
     end
