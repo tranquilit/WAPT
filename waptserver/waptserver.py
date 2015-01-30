@@ -599,7 +599,7 @@ def upload_host():
                             os.unlink(target)
                         os.rename(tmp_target,target)
                         data = update_packages(wapt_host_folder)
-                        result = dict(status='OK',message=_('File {} uploaded to {}').format((file.filename,target)))
+                        result = dict(status='OK',message=_('File {} uploaded to {}').format(file.filename,target))
                     except:
                         if os.path.isfile(tmp_target):
                             os.unlink(tmp_target)
