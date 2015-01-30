@@ -111,7 +111,7 @@ action is either :
 """
 
 parser=OptionParser(usage=usage,version='waptservice.py ' + __version__+' common.py '+common.__version__+' setuphelpers.py '+setuphelpers.__version__)
-parser.add_option("-c","--config", dest="config", default=os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]),'..','wapt-get.ini')) , help="Config file full path (default: %default)")
+parser.add_option("-c","--config", dest="config", default=os.path.join(wapt_root_dir,'wapt-get.ini') , help="Config file full path (default: %default)")
 parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
 parser.add_option("-d","--devel", dest="devel", default=False,action='store_true', help="Enable debug mode (for development only)")
 
@@ -213,7 +213,8 @@ class WaptServiceConfig(object):
     >>> waptconfig.load()
     """
 
-    global_attributes = ['config_filename','waptservice_user','waptservice_password','MAX_HISTORY','waptservice_port',
+    global_attributes = ['config_filename','waptservice_user','waptservice_password',
+         'MAX_HISTORY','waptservice_port','waptservice_sslport',
          'dbpath','loglevel','log_directory','waptserver','authorized_callers_ip']
 
     def __init__(self,config_filename=None):
@@ -229,6 +230,7 @@ class WaptServiceConfig(object):
 
         # http localserver
         self.waptservice_port = 8088
+        self.waptservice_sslport = None
 
         # zeroMQ publishing socket
         self.zmq_port = 5000
@@ -280,6 +282,11 @@ class WaptServiceConfig(object):
                 self.waptservice_port = int(config.get('global','waptservice_port'))
             else:
                 self.waptservice_port=8088
+
+            if config.has_option('global','waptservice_sslport'):
+                self.waptservice_sslport = int(config.get('global','waptservice_sslport'))
+            else:
+                self.waptservice_sslport=None
 
             if config.has_option('global','zmq_port'):
                 self.zmq_port = int(config.get('global','zmq_port'))
@@ -1322,9 +1329,11 @@ class WaptNetworkReconfig(WaptTask):
         self.wapt.network_reconfigure()
         waptconfig.load()
         # http
-        check_open_port(waptconfig.waptservice_port)
+        if waptconfig.waptservice_port:
+            check_open_port(waptconfig.waptservice_port)
         # https
-        check_open_port(waptconfig.waptservice_port+1)
+        if waptconfig.waptservice_sslport:
+            check_open_port(waptconfig.waptservice_sslport)
         self.result = waptconfig.as_dict()
 
     def __unicode__(self):
@@ -2089,9 +2098,11 @@ def install_service():
     """
     logger.info(u'Open port on firewall')
     # http
-    check_open_port(waptconfig.waptservice_port)
+    if waptconfig.waptservice_port:
+        check_open_port(waptconfig.waptservice_port)
     # https
-    check_open_port(waptconfig.waptservice_port+1)
+    if waptconfig.waptservice_sslport:
+        check_open_port(waptconfig.waptservice_sslport)
 
     from setuphelpers import registry_set,REG_DWORD,REG_EXPAND_SZ,REG_MULTI_SZ,REG_SZ
     datatypes = {
@@ -2185,7 +2196,7 @@ if __name__ == "__main__":
                                        certfile = self.interface[3],
                                        server_side = True,
                                        ssl_version = ssl.PROTOCOL_SSLv23,
-                                       ca_certs = r'c:\tmp\caserver.pem',
+                                       ca_certs = os.path.join(wapt_root_dir,r'waptservice','ssl','caserver.pem'),
                                        cert_reqs = ssl.CERT_REQUIRED )
             except SSLError:
                 pass
@@ -2193,20 +2204,23 @@ if __name__ == "__main__":
             return sock
 
         #rocket.listener.Listener.wrap_socket = wrap_socket
-
-        server = Rocket(
-            [('0.0.0.0', waptconfig.waptservice_port),
-             ('0.0.0.0', waptconfig.waptservice_port+1,
+        port_config = []
+        if waptconfig.waptservice_port:
+            port_config.append(('0.0.0.0', waptconfig.waptservice_port))
+        if waptconfig.waptservice_sslport:
+            port_config.append(('0.0.0.0', waptconfig.waptservice_sslport,
                             os.path.join(wapt_root_dir,r'waptservice','ssl','waptservice.pem'),
-                            os.path.join(wapt_root_dir,r'waptservice','ssl','waptservice.crt'))],
-             'wsgi', {"wsgi_app":app})
+                            os.path.join(wapt_root_dir,r'waptservice','ssl','waptservice.crt')))
+        server = Rocket(port_config,'wsgi', {"wsgi_app":app})
 
         try:
             logger.info(u"starting waptservice")
             # http
-            check_open_port(waptconfig.waptservice_port)
+            if waptconfig.waptservice_port:
+                check_open_port(waptconfig.waptservice_port)
             # https
-            check_open_port(waptconfig.waptservice_port+1)
+            if waptconfig.waptservice_sslport:
+                check_open_port(waptconfig.waptservice_sslport)
             server.start()
         except KeyboardInterrupt:
             logger.info(u"stopping waptservice")
