@@ -279,12 +279,20 @@ class WaptServiceConfig(object):
                 self.waptservice_password=None  # = password
 
             if config.has_option('global','waptservice_port'):
-                self.waptservice_port = int(config.get('global','waptservice_port'))
+                port = config.get('global','waptservice_port')
+                if port:
+                    self.waptservice_port = int(port)
+                else:
+                    self.waptservice_port = None
             else:
                 self.waptservice_port=8088
 
             if config.has_option('global','waptservice_sslport'):
-                self.waptservice_sslport = int(config.get('global','waptservice_sslport'))
+                port = config.get('global','waptservice_sslport')
+                if port:
+                    self.waptservice_sslport = int(port)
+                else:
+                    self.waptservice_sslport = None
             else:
                 self.waptservice_sslport=None
 
