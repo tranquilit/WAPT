@@ -65,6 +65,7 @@ import zmq
 from zmq.log.handlers import PUBHandler
 import Queue
 import traceback
+import locale
 
 import datetime
 import copy
@@ -233,7 +234,7 @@ class WaptServiceConfig(object):
         self.zmq_port = 5000
 
         # default language
-        self.language = ''
+        self.language = locale.getdefaultlocale()[0]
 
         # session key
         self.secret_key = '1234567890'
@@ -443,7 +444,7 @@ def check_open_port(portnumber=8088):
                 logger.info(u"port %s already opened, skipping firewall configuration"%(portnumber,))
 
 
-waptconfig = WaptServiceConfig()
+waptconfig = WaptServiceConfig(config_filename = options.config)
 waptconfig.load()
 
 app = Flask(__name__)
@@ -1224,7 +1225,8 @@ class WaptTask(object):
         if self.wapt:
             self.runstatus = status
             self.wapt.runstatus = status
-            self.wapt.events.send_multipart(["TASKS",'PROGRESS',common.jsondump(self.as_dict())])
+            if self.wapt.events:
+                self.wapt.events.send_multipart(["TASKS",'PROGRESS',common.jsondump(self.as_dict())])
 
     def can_run(self,explain=False):
         """Return True if all the requirements for the task are met
@@ -1752,22 +1754,7 @@ class WaptTaskManager(threading.Thread):
         self.tasks_done = []
         self.tasks_error = []
         self.tasks_cancelled = []
-
-        # init zeromq events broadcast
-        zmq_context = zmq.Context()
-        event_queue = zmq_context.socket(zmq.PUB)
-        event_queue.hwm = 10000;
-
-        logger.debug('Starting ZMQ on port %i' % waptconfig.zmq_port)
-        # start event broadcasting
-        event_queue.bind("tcp://127.0.0.1:{}".format(waptconfig.zmq_port))
-
-        # add logger through zmq events
-        handler = PUBHandler(event_queue)
-        logger.addHandler(handler)
-
-        self.events = event_queue
-        self.wapt.events = self.events
+        self.events = self.setup_event_queue()
 
         self.running_task = None
         logger.info(u'Wapt tasks management initialized with {} configuration'.format(config_filename))
@@ -1776,6 +1763,32 @@ class WaptTaskManager(threading.Thread):
         self.last_update = None
 
         self.firewall_running = firewall_running()
+
+    def setup_event_queue(self):
+        if waptconfig.zmq_port:
+            # init zeromq events broadcast
+            try:
+                zmq_context = zmq.Context()
+                event_queue = zmq_context.socket(zmq.PUB)
+                event_queue.hwm = 10000;
+
+                logger.debug('Starting ZMQ on port %i' % waptconfig.zmq_port)
+                # start event broadcasting
+                event_queue.bind("tcp://127.0.0.1:{}".format(waptconfig.zmq_port))
+
+                # add logger through zmq events
+                handler = PUBHandler(event_queue)
+                logger.addHandler(handler)
+
+                self.events = event_queue
+            except Exception as e:
+                logger.warning('Unable to start Event queue : %s'%e)
+                self.events = None
+        else:
+            self.events = None
+            logger.info('zmq_port not set, no Event queue setup.')
+        self.wapt.events = self.events
+        return self.events
 
     def update_runstatus(self,status):
         # update database with new runstatus
@@ -2144,8 +2157,6 @@ def install_service():
     setuphelpers.run('sc sdset waptservice D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)(A;;CCLCSWRPWPDTLOCRRC;;;S-1-5-11)S:(AU;FA;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;WD)');
 
 if __name__ == "__main__":
-
-
     if len(sys.argv)>1 and sys.argv[1] == 'doctest':
         import doctest
         sys.exit(doctest.testmod())
