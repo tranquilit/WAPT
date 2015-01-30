@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 521
+  Left = 518
   Height = 600
-  Top = 225
+  Top = 222
   Width = 800
   Caption = 'WAPT console'
   ClientHeight = 580
@@ -25,9 +25,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 434
     Top = 0
     Width = 800
-    ActivePage = pgSources
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 3
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -2755,7 +2755,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActCreateWaptSetupPy: TAction
       Category = 'Tools'
-      Caption = 'Create custom WAPT installer (py)'
+      Caption = 'Create WAPT agent'
       OnExecute = ActCreateWaptSetupPyExecute
     end
     object ActEvaluateVar: TAction
@@ -2955,7 +2955,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActCreateWaptSetup: TAction
       Category = 'Tools'
-      Caption = 'Create custom WAPT installer'
+      Caption = 'Create WAPT agent'
       ImageIndex = 35
       OnExecute = ActCreateWaptSetupExecute
     end

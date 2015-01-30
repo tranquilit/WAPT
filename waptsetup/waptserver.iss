@@ -68,9 +68,9 @@ WizardImageFile=..\tranquilit.bmp
 Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1";
 
 [RUN]
-Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoUpgradePolicy; Flags: runhidden; StatusMsg: "Mise à jour des paquets à l'extinction du poste"; Description: "Mise à jour des paquets à l'extinction du poste"
-Filename: "{app}\waptpython.exe"; Parameters: """{app}\waptserver\waptserver.py"" install"; StatusMsg: "Registering WaptServer Service"    ; Description: "Setup WaptServer Service"
-Filename: "{app}\waptserverpostconf.exe"; Flags: nowait postinstall runascurrentuser skipifsilent; StatusMsg: "Lancement de la post-configuration du serveur"; Description: "Lancement de la post-configuration du serveur"
+Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoUpgradePolicy; Flags: runhidden; StatusMsg: {cm:UpdatePkg}; Description: "{cm:UpdatePkg}"
+Filename: "{app}\waptpython.exe"; Parameters: """{app}\waptserver\waptserver.py"" install"; StatusMsg: {cm:RegisteringService}; Description: "{cm:SetupService}"
+Filename: "{app}\waptserverpostconf.exe"; Flags: nowait postinstall runascurrentuser skipifsilent; StatusMsg: {cm:LaunchingPostconf}; Description: "{cm:LaunchingPostconf}"
 
 [Icons]
 Name: "{commonstartup}\WAPT session setup"; Tasks: autorunSessionSetup; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
@@ -84,10 +84,16 @@ Name: autorunSessionSetup; Description: "{cm:LaunchSession}"
 [UninstallRun]
 Filename: "{app}\waptserver\uninstall-services.bat"; Flags: runhidden; StatusMsg: "Stopping and deregistering waptserver"
 
-;[CustomMessages]
-;fr.UpdatePkg=Mise à jour des paquets à l'extinction du poste
-;"Registering WaptServer Service"
-;"Lancement de la post-configuration du serveur"
+[CustomMessages]
+fr.UpdatePkg=Mise à jour des paquets à l'extinction du poste
+fr.RegisteringService=Enregistrement de WAPTservice
+fr.SetupService=Mise en place du service WAPTserver
+fr.LaunchingPostconf=Lancement de la post-configuration du serveur
+
+en.UpdatePkg=Update packages upon shutdown
+en.RegisteringService=Registering WaptServer Service
+en.SetupService=Setup WaptServer Service
+en.LaunchingPostconf=Launching server post-configuration
 
 [Code]
 procedure DeinitializeUninstall();
