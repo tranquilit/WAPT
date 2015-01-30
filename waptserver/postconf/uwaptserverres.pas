@@ -31,6 +31,7 @@ resourcestring
   rsWaptUploadError = 'Error while uploading WAPT agent to the repository : %s';
   rsWaptSetupError = 'Error while creating agent : %s';
 
+
 implementation
 
 end.

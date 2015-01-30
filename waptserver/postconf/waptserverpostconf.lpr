@@ -16,6 +16,7 @@ uses
 
 
 {$R *.res}
+{$R tips_fr.rc}
 
 begin
   RequireDerivedFormResource := True;

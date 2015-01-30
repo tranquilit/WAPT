@@ -114,6 +114,7 @@ type
       var Handled: boolean);
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode;
       AWorkCount: Int64);
+    procedure LoadResourceFile(aFile:string; ms:TResourceStream);
     procedure PagesControlChange(Sender: TObject);
   private
     CurrentVisLoading:TVisLoading;
@@ -199,9 +200,13 @@ end;
 procedure TVisWAPTServerPostConf.PagesControlChange(Sender: TObject);
 var
   ini:TIniFile;
-
+  tips_fr:TResourceStream;
 begin
-  HTMLViewer1.LoadStrings(TMemo(FindComponent('Memo'+IntToStr(PagesControl.ActivePageIndex+1))).Lines);
+  LoadResourceFile('tips_fr.rc', tips_fr);
+  ResStream := TResourceStream.Create(HInstance,'ResStream',RT_STRING);
+  // HTMLViewer1.LoadFromFile(Format('tips\%s\page%s.html',[FallBackLanguage, IntToStr(PagesControl.PageIndex)]));
+  // HTMLViewer1.LoadFromString(rsTips[PagesControl.PageIndex]);
+  HTMLViewer1.LoadFromStream(ResStream,'PAGE_0');
   if PagesControl.ActivePage = pgStartServices then
   try
     ini := TMemIniFile.Create(WaptIniFilename);
@@ -215,6 +220,7 @@ begin
     EdWaptInifile.Lines.Clear;
     TMemIniFile(ini).GetStrings(EdWaptInifile.Lines);
   finally
+    ResStream.Free;
     ini.Free;
   end
   else
@@ -536,6 +542,31 @@ end;
 procedure TVisWAPTServerPostConf.EdKeyNameExit(Sender: TObject);
 begin
   EdKeyName.Text:= MakeIdent(EdKeyName.Text);
+end;
+
+procedure TVisWAPTServerPostConf.LoadResourceFile(aFile:string; ms:TResourceStream);
+var
+   HResInfo: HRSRC;
+   HGlobal: THandle;
+   Buffer, GoodType : pchar;
+   I: integer;
+   Ext:string;
+begin
+  ext:=uppercase(extractfileext(aFile));
+  ext:=copy(ext,2,length(ext));
+  if ext='HTM' then ext:='HTML';
+  Goodtype:=pchar(ext);
+  aFile:=changefileext(afile,'');
+  HResInfo := FindResource(HInstance, pchar(aFile), GoodType);
+  HGlobal := LoadResource(HInstance, HResInfo);
+  if HGlobal = 0 then
+     raise EResNotFound.Create('Can''t load resource: '+aFile);
+  Buffer := LockResource(HGlobal);
+  // ms.clear;
+  ms.WriteBuffer(Buffer[0], SizeOfResource(HInstance, HResInfo));
+  ms.Seek(0,0);
+  UnlockResource(HGlobal);
+  FreeResource(HGlobal);
 end;
 
 end.
