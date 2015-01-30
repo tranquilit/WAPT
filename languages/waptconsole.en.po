@@ -676,11 +676,11 @@ msgid "Generate self-signed certificate"
 msgstr ""
 
 #: tviswaptgui.actcreatewaptsetup.caption
-msgid "Create custom WAPT installer"
+msgid "Create WAPT agent"
 msgstr ""
 
 #: tviswaptgui.actcreatewaptsetuppy.caption
-msgid "Create custom WAPT installer (py)"
+msgid "Create WAPT agent"
 msgstr ""
 
 #: tviswaptgui.actdeletegroup.caption
