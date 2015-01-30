@@ -51,6 +51,8 @@ interface
   function WaptTemplatesRepo(inifilename:String=''): Utf8String;
   function GetWaptRepoURL: Utf8String;
 
+  function ReadWaptConfig(inifile:String = ''): Boolean;
+
   //function http_post(url: string;Params:String): String;
 
   function GetEthernetInfo(ConnectedOnly:Boolean):ISuperObject;
@@ -875,6 +877,31 @@ end;
 function WaptIniFilename: Utf8String;
 begin
   result := ExtractFilePath(ParamStr(0))+'wapt-get.ini';
+end;
+
+function ReadWaptConfig(inifile:String = ''): Boolean;
+begin
+  if inifile='' then
+    inifile:=WaptIniFilename;
+  if not FileExistsUTF8(inifile) then
+    Result := False
+  else
+  begin
+    waptservice_port := IniReadInteger(inifile,'global','waptservice_port',8088);
+    FallBackLanguage := IniReadString(inifile,'global','language','');
+    if FallBackLanguage ='' then
+        GetLanguageIDs(Language,FallBackLanguage);
+
+    waptserver_port := IniReadInteger(inifile,'global','waptserver_port',80);
+    waptserver_ssl_port := IniReadInteger(inifile,'global','waptserver_sslport',443);
+    zmq_port := IniReadInteger(inifile,'global','zmq_port',5000);
+
+    HttpProxy := IniReadString(inifile,'global','http_proxy','');
+    UseProxyForRepo := IniReadBool(inifile,'global','use_http_proxy_for_repo',False);
+    UseProxyForServer := IniReadBool(inifile,'global','use_http_proxy_for_server',False);
+    UseProxyForTemplates := IniReadBool(inifile,'global','use_http_proxy_for_remplates',False);
+    Result := True
+  end;
 end;
 
 function WaptDBPath: Utf8String;
