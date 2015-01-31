@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, FileUtil, RichView,
   Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, ExtCtrls,
   Buttons, ActnList, EditBtn, htmlview, Readhtml, Htmlsubs, IdHTTP,
-  IdComponent,uvisLoading, DefaultTranslator, uWaptServerRes;
+  IdComponent,uvisLoading, DefaultTranslator, LCLProc, uWaptServerRes;
 
 type
 
@@ -114,7 +114,6 @@ type
       var Handled: boolean);
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode;
       AWorkCount: Int64);
-    procedure LoadResourceFile(aFile:string; ms:TResourceStream);
     procedure PagesControlChange(Sender: TObject);
   private
     CurrentVisLoading:TVisLoading;
@@ -214,20 +213,37 @@ end;
 
 procedure TVisWAPTServerPostConf.PagesControlChange(Sender: TObject);
 const
+  PAGES_INDEX_STEP =          100; // cf. languages.rc
   PAGES_EN_OFFSET =		0;
-  PAGES_FR_OFFSET =		1000;
+  PAGES_FR_OFFSET =		1;
 var
   ini:TIniFile;
-  tips_fr:TResourceStream;
   Page: TMemoryStream;
   PageContent: AnsiString;
+  Lang, FallbackLang: String;
+  i, LangOffset: Integer;
 begin
-  PageContent := GetString(PAGES_EN_OFFSET + 0);
-  Page := TMemoryStream.Create;
-  ShowMessage(PageContent);
-  Page.WriteAnsiString(PageContent);
 
+  { XXX This is not what I'd call clean language detection... }
+  LCLGetLanguageIDs(Lang, FallbackLang);
+  LangOffset := PAGES_EN_OFFSET;
+  if FallbackLang = 'fr' then
+    LangOffset := PAGES_FR_OFFSET;
+  for i := 1 to ParamCount-1 do
+    if (ParamStr(i) = '-l') and (i+1 <> ParamCount-1) then
+    begin
+      if ParamStr(i+1) = 'fr' then
+         LangOffset := PAGES_FR_OFFSET
+      else
+        LangOffset := PAGES_EN_OFFSET;
+    end;
+
+  PageContent := GetString(langOffset + PagesControl.ActivePageIndex * PAGES_INDEX_STEP);
+  Page := TMemoryStream.Create;
+  Page.WriteAnsiString(PageContent);
   HTMLViewer1.LoadFromStream(Page);
+  Page.Free;
+
   if PagesControl.ActivePage = pgStartServices then
   try
     ini := TMemIniFile.Create(WaptIniFilename);
@@ -241,7 +257,6 @@ begin
     EdWaptInifile.Lines.Clear;
     TMemIniFile(ini).GetStrings(EdWaptInifile.Lines);
   finally
-    //ResStream.Free;
     ini.Free;
   end
   else
@@ -563,31 +578,6 @@ end;
 procedure TVisWAPTServerPostConf.EdKeyNameExit(Sender: TObject);
 begin
   EdKeyName.Text:= MakeIdent(EdKeyName.Text);
-end;
-
-procedure TVisWAPTServerPostConf.LoadResourceFile(aFile:string; ms:TResourceStream);
-var
-   HResInfo: HRSRC;
-   HGlobal: THandle;
-   Buffer, GoodType : pchar;
-   I: integer;
-   Ext:string;
-begin
-  ext:=uppercase(extractfileext(aFile));
-  ext:=copy(ext,2,length(ext));
-  if ext='HTM' then ext:='HTML';
-  Goodtype:=pchar(ext);
-  aFile:=changefileext(afile,'');
-  HResInfo := FindResource(HInstance, pchar(aFile), GoodType);
-  HGlobal := LoadResource(HInstance, HResInfo);
-  if HGlobal = 0 then
-     raise EResNotFound.Create('Can''t load resource: '+aFile);
-  Buffer := LockResource(HGlobal);
-  // ms.clear;
-  ms.WriteBuffer(Buffer[0], SizeOfResource(HInstance, HResInfo));
-  ms.Seek(0,0);
-  UnlockResource(HGlobal);
-  FreeResource(HGlobal);
 end;
 
 end.
