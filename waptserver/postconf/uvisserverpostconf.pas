@@ -355,9 +355,9 @@ begin
   else
     ActNext.Enabled := PagesControl.ActivePageIndex<=PagesControl.PageCount-1;
   if PagesControl.ActivePageIndex=PagesControl.PageCount-1 then
-    ActNext.Caption:='Done'
+    ActNext.Caption:= rsWaptSetupDone
   else
-    ActNext.Caption:='Next';
+    ActNext.Caption:=rsWaptSetupnext;
 end;
 
 procedure TVisWAPTServerPostConf.actPreviousExecute(Sender: TObject);

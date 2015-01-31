@@ -1,8 +1,5 @@
-msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
+msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
 msgstr "Content-Type: text/plain; charset=UTF-8"
-
-msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
-msgstr ""
 
 #: tvisloading.amessage.caption
 msgid "Loading..."
@@ -38,6 +35,7 @@ msgid "Input URL manually"
 msgstr ""
 
 #: tviswaptserverpostconf.actnext.caption
+msgctxt "tviswaptserverpostconf.actnext.caption"
 msgid "Next"
 msgstr ""
 
@@ -487,8 +485,17 @@ msgstr ""
 msgid "Waptservice stopping"
 msgstr ""
 
+#: uwaptserverres.rswaptsetupdone
+msgid "Done"
+msgstr ""
+
 #: uwaptserverres.rswaptsetuperror
 msgid "Error while creating agent : %s"
+msgstr ""
+
+#: uwaptserverres.rswaptsetupnext
+msgctxt "uwaptserverres.rswaptsetupnext"
+msgid "Next"
 msgstr ""
 
 #: uwaptserverres.rswaptsetupuploadsuccess

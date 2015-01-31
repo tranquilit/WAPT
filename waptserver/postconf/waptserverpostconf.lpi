@@ -135,9 +135,6 @@
       </Options>
     </Linking>
     <Other>
-      <Verbosity>
-        <ShowDebugInfo Value="True"/>
-      </Verbosity>
       <CompilerMessages>
         <MsgFileName Value=""/>
       </CompilerMessages>
