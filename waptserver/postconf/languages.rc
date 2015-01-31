@@ -1,0 +1,150 @@
+STRINGTABLE
+{
+0000, "    <html>\
+          <head>\
+          <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\
+          </head>\
+          <body>\
+          <a href=\"#page1\"></a>\
+          <b>WAPT</b> clients make requests to the server.<br>\
+          In order to connect to the WAPT server,\
+          it is advisable that a DNS name be used, as long as it has been correctly\
+          configured in your network''s DNS environment.<br>\
+          We suggest naming your WAPT server 'srvwapt.mydomain.local'\
+          (A record type), then binding an alias (CNAME record type, e.g.\
+          'wapt.mydomain.local') to srvwapt.<br>\
+          In case you don't trust your DNS, or you are just setting up a\
+          testing environment, you can fall back to the server IP address.\
+          \
+          For further information :\
+          <a href=\"http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html\">Configuring a WAPT infrastructure</a>.\
+          \
+          </body>\
+          </html>"
+0001, "  <html>\
+          <head>\
+          <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\
+          </head>\
+          <body>\
+          This is the password used to connect to the WAPT server via the WAPT \
+          console.<br /> \
+          For further information :<br /> \
+          <a \
+          href=\"http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html\">Generating a WAPT certificate</a>. \
+          </body>\
+          </html>"
+
+0002, "  <html>\
+          <head>\
+          <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\
+          </head>\
+          <body>\
+          A private (.pem) - public (.crt) keypair will be generated \
+          to allow for package authentication.<br>\
+          Only packages signed with your private key may be installed onto \
+          agents.<br>\
+          The <b>private key (.pem)</b> must not be disclosed to a third party \
+          under any circumstances.<br>\
+          The <b>public certificate (.crt)</b> may however be disclosed. It will \
+          be deployed onto client hosts via the custom installer.<br>\
+          <br>\
+          <i>NB. : the private key must be generated only once per organisation.</i>\
+          <br>\
+          For further information :\
+          <a \
+          href=\"http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html\">Generating a self-signed certificate</a>. \
+          </body>\
+          </html>"
+
+0003, "    <html>\
+          <head>\
+          <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\
+          </head>\
+          <body>\
+          \
+          <b>Tranquil IT Systems</b> provides an array of WAPT packages \
+          at <a href=\"http://wapt.tranquil.it\">wapt.tranquil.it</a> <br>\
+          For a quick start with your new WAPT installation, download ready-made\
+          packages and deploy them onto your network .<br>\
+          \
+          When you pull or create a package, its name will be prefixed \
+          with\
+          your trigram/quadrigram to mark its \
+          provenance.<br>\
+          Replace \"test\" with a trigram meaningful to your organisation (ex: tis \
+          standing for\
+          Tranquil IT Systems).<br>\
+          \
+          The development directory is where \
+          information\
+          about your package in development will be stored. <br>\
+          \
+          For further information :\
+          <a \
+          href=\"http://dev.tranquil.it/scenari/guide_admin/co/configuration_waptconsole.html\">Configuring the WAPT console</a>. \
+          </body>\
+          </html>"
+		  
+0004, "    <html>\
+          <head>\
+          <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\
+          </head>\
+          <body>\
+          The server is ready to start.<br>\
+          Parameters will be copied into wapt-get.ini<br>\
+          </body>\
+          </html>"
+		  
+0005, "    <html>\
+          <head>\
+          <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\
+          </head>\
+          <body>\
+          The custom installer \
+          (waptagent.exe) is for integrating \
+          your\
+           certificate into the WAPT agent.\
+          The WAPT agent must be installed on \
+          every host you wish to \
+          manage.\
+          To set it up, you can use one of \
+          several methods &nbsp;:\
+          <ul>\
+          <li> from a USB stick </li>\
+          <li> from https://wapt-server-name/wapt/waptagent.exe \
+          </li>\
+          <li> <a \
+          href=\"htp://dev.tranquil.it/index.php/WAPT_-_Déploiement_de_WAPT_par_GPO\">\
+          Deploying WAPT via GPO</a> \
+          </li>\
+          </ul>\
+          <br>\
+          Check the documentation \
+          at <a\
+          href=\"http://dev.tranquil.it/scenari/guide_admin/co/generation_waptsetup_personnalise_waptconsole.html\">Generating \
+          from the WAPT console</a>\
+          </body>\
+          </html>"
+
+0006, "      <html>\
+            <head>\
+            <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\
+            </head>\
+            <body>\
+            Well done, your WAPT server is now operational..<br>\
+            Check the documentation \
+            at <a href=\"http://dev.tranquil.it/scenari/guide_admin/co/generation_waptsetup_personnalise_waptconsole.html\">Generating\
+            from the WAPT console</a>\
+            <br>\
+            To deploy the WAPT agent onto your network, check \
+            the\
+            documentation <a href=\"http://dev.tranquil.it/index.php/WAPT_-_D%C3%A9ploiement_de_WAPT_par_GPO\"/>Deploying WAPT via \
+            GPO</a>\
+            </body>\
+            </html>"
+
+}		
+			
+
+		  
+   		  
