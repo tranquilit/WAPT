@@ -30,6 +30,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <CommandLineParams Value="-vd"/>
       </local>
     </RunParams>
     <RequiredPackages Count="8">
