@@ -67,7 +67,7 @@ class MyHTMLParser(HTMLParser.HTMLParser):
         self.wapt_waptsetup_exes = []
 
     def handle_starttag(self, tag, attrs):
-/        if tag != 'a':
+        if tag != 'a':
             return
         for (attr, value) in attrs:
             if attr == 'href' and value.startswith('waptsetup_'):
