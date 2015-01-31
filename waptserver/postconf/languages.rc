@@ -9,7 +9,7 @@ STRINGTABLE
           <b>WAPT</b> clients make requests to the server.<br>\
           In order to connect to the WAPT server,\
           it is advisable that a DNS name be used, as long as it has been correctly\
-          configured in your network''s DNS environment.<br>\
+          configured in your network's DNS environment.<br>\
           We suggest naming your WAPT server 'srvwapt.mydomain.local'\
           (A record type), then binding an alias (CNAME record type, e.g.\
           'wapt.mydomain.local') to srvwapt.<br>\
@@ -26,19 +26,22 @@ STRINGTABLE
           <meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\
           </head>\
           <body>\
-          XXX FR <a href=\"#page1\"></a>\
-          <b>WAPT</b> clients make requests to the server.<br>\
-          In order to connect to the WAPT server,\
-          it is advisable that a DNS name be used, as long as it has been correctly\
-          configured in your network''s DNS environment.<br>\
-          We suggest naming your WAPT server 'srvwapt.mydomain.local'\
-          (A record type), then binding an alias (CNAME record type, e.g.\
-          'wapt.mydomain.local') to srvwapt.<br>\
-          In case you don't trust your DNS, or you are just setting up a\
-          testing environment, you can fall back to the server IP address.\
+          <a href=\"#page1\"></a>\
+          Les clients <b>WAPT</b> vont faire appel au serveur Wapt<br>\
+          Pour joindre le serveur WAPT,\
+          il est préférable d'utiliser un nom DNS, mais celui-ci doit être correctement\
+          configuré dans l'environnement DNS de votre réseau.<br>\
+          Pour le nom du serveur wapt, il est conseillé d''utiliser le nom\
+          srvwapt.mondomain.local en champ de type A et\
+          créer un alias wapt.mondomain.local en champ de type CNAME pointant\
+          vers srvwapt.<br>\
+          Si vous avez quelques doutes sur vos DNS, ou que vous mettez en place\
+          juste un\
+          environnement de test, vous pouvez renseigner directement d'adresse IP\
+          du serveur.\
           \
           For further information :\
-          <a href=\"http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html\">Configuring a WAPT infrastructure</a>.\
+          <a href=\"http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html\">Configuration d'une infrastructure WAPT</a>.\
           \
           </body>\
           </html>"
@@ -63,9 +66,6 @@ STRINGTABLE
           <body>\
           C'est le mot de passe utilisé pour vous connecter au serveur WAPT via la\
           console WAPT.<br /> \
-          Pour plus d'informations :<br /> \
-          <a \
-          href=\"http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html\">Generating a WAPT certificate</a>. \
           </body>\
           </html>"
 
@@ -285,8 +285,4 @@ STRINGTABLE
             href=\"http://dev.tranquil.it/index.php/WAPT_-_D%C3%A9ploiement_de_WAPT_par_GPO\"/>Déployer WAPT via GPO</a>\
             </body>\
             </html>"	
-}		
-			
-
-		  
-   		  
+}
