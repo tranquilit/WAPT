@@ -67,7 +67,7 @@ class MyHTMLParser(HTMLParser.HTMLParser):
         self.wapt_waptsetup_exes = []
 
     def handle_starttag(self, tag, attrs):
-        if tag != 'a':
+/        if tag != 'a':
             return
         for (attr, value) in attrs:
             if attr == 'href' and value.startswith('waptsetup_'):
@@ -179,6 +179,7 @@ else:
 logger.info('Creating .deb')
 shutil.copytree('./debian/', BDIR + 'DEBIAN/')
 os.chmod(BDIR + 'DEBIAN/', 0755)
+os.chmod(BDIR + 'DEBIAN/postinst', 0755)
 replaceAll(BDIR + 'DEBIAN/control', '0.0.7', full_version)
 mkdir_p(BDIR + 'var/www/wapt/')
 shutil.copy(EXE, BDIR + 'var/www/wapt/')
