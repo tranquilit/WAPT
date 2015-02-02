@@ -1058,7 +1058,9 @@ def remove():
     logger.info(u"Remove package(s) %s" % packages)
     force=int(request.args.get('force','0')) == 1
     notify_user = int(request.args.get('notify_user','0')) == 1
-    data = task_manager.add_task(WaptPackageRemove(packages,force = force),notify_user=notify_user).as_dict()
+    data = []
+    for package in packages:
+        data.append(task_manager.add_task(WaptPackageRemove(package,force = force),notify_user=notify_user).as_dict())
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
