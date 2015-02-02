@@ -324,6 +324,7 @@ end;
 
 procedure TDMWaptTray.DataModuleCreate(Sender: TObject);
 begin
+  ReadWaptConfig;
   lastServiceMessage:=Now;
 
   //UniqueInstance1.Enabled:=True;

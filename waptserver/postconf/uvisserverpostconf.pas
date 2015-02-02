@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, FileUtil, RichView,
   Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, ExtCtrls,
   Buttons, ActnList, EditBtn, htmlview, Readhtml, Htmlsubs, IdHTTP,
-  IdComponent,uvisLoading, DefaultTranslator, uWaptServerRes;
+  IdComponent,uvisLoading, DefaultTranslator, LCLProc, uWaptServerRes;
 
 type
 
@@ -196,12 +196,54 @@ begin
   end;
 end;
 
+function GetString(const Index: integer) : string;
+var
+  buffer : array[0..8191] of char;
+  ls : integer;
+begin
+  Result := '';
+  ls := LoadString(hInstance,
+                   Index,
+                   buffer,
+                   sizeof(buffer));
+  if ls <> 0 then Result := buffer;
+end;
+
+
+
 procedure TVisWAPTServerPostConf.PagesControlChange(Sender: TObject);
+const
+  PAGES_INDEX_STEP =          100; // cf. languages.rc
+  PAGES_EN_OFFSET =		0;
+  PAGES_FR_OFFSET =		1;
 var
   ini:TIniFile;
-
+  Page: TMemoryStream;
+  PageContent: AnsiString;
+  Lang, FallbackLang: String;
+  i, LangOffset: Integer;
 begin
-  HTMLViewer1.LoadStrings(TMemo(FindComponent('Memo'+IntToStr(PagesControl.ActivePageIndex+1))).Lines);
+
+  { XXX This is not what I'd call clean language detection... }
+  LCLGetLanguageIDs(Lang, FallbackLang);
+  LangOffset := PAGES_EN_OFFSET;
+  if FallbackLang = 'fr' then
+    LangOffset := PAGES_FR_OFFSET;
+  for i := 1 to ParamCount-1 do
+    if (ParamStr(i) = '-l') and (i+1 <> ParamCount-1) then
+    begin
+      if ParamStr(i+1) = 'fr' then
+         LangOffset := PAGES_FR_OFFSET
+      else
+        LangOffset := PAGES_EN_OFFSET;
+    end;
+
+  PageContent := GetString(langOffset + PagesControl.ActivePageIndex * PAGES_INDEX_STEP);
+  Page := TMemoryStream.Create;
+  Page.WriteAnsiString(PageContent);
+  HTMLViewer1.LoadFromStream(Page);
+  Page.Free;
+
   if PagesControl.ActivePage = pgStartServices then
   try
     ini := TMemIniFile.Create(WaptIniFilename);
@@ -313,9 +355,9 @@ begin
   else
     ActNext.Enabled := PagesControl.ActivePageIndex<=PagesControl.PageCount-1;
   if PagesControl.ActivePageIndex=PagesControl.PageCount-1 then
-    ActNext.Caption:='Done'
+    ActNext.Caption:= rsWaptSetupDone
   else
-    ActNext.Caption:='Next';
+    ActNext.Caption:=rsWaptSetupnext;
 end;
 
 procedure TVisWAPTServerPostConf.actPreviousExecute(Sender: TObject);

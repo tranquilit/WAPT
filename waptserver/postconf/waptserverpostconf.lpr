@@ -16,6 +16,7 @@ uses
 
 
 {$R *.res}
+{$R languages.rc}
 
 begin
   RequireDerivedFormResource := True;

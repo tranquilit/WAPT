@@ -1,10 +1,18 @@
 #!/bin/bash
-echo "Creating wapt root diretory"
+echo "Creating wapt root directory"
 mkdir -p /var/www/wapt/
 mkdir -p /var/www/waptdev/
 mkdir -p /var/www/wapt-host
 mkdir -p /var/www/wapt-group
 mkdir -p /etc/tis
+
+id -u wapt
+if [ "$?" -eq 0 ] ; then
+  echo "wapt user already exists, skipping user creation"
+else 
+  echo "wapt user doest not exists, creating user"
+  useradd --system -g www-data wapt
+fi
 
 chown wapt:www-data -R /var/www/wapt/
 chown wapt:www-data -R /var/www/waptdev/

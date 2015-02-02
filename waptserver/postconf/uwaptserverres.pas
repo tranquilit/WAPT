@@ -30,6 +30,9 @@ resourcestring
   rsWaptSetupUploadSuccess = 'WAPT agent successfully created and uploaded to the repository : %s';
   rsWaptUploadError = 'Error while uploading WAPT agent to the repository : %s';
   rsWaptSetupError = 'Error while creating agent : %s';
+  rsWaptSetupDone = 'Done';
+  rsWaptSetupNext = 'Next';
+
 
 implementation
 
