@@ -93,7 +93,7 @@ fr.LaunchingPostconf=Lancement de la post-configuration du serveur
 en.UpdatePkg=Update packages upon shutdown
 en.RegisteringService=Registering WaptServer Service
 en.SetupService=Setup WaptServer Service
-en.LaunchingPostconf=Launching server post-configuration
+en.LaunchingPostconf=Launch server post-configuration
 
 [Code]
 procedure DeinitializeUninstall();
