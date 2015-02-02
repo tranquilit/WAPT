@@ -385,9 +385,10 @@ def get_host_list():
 
         for host in hosts().find(query,fields={'softwares':0,'packages':0}):
             host.pop("_id")
-            host_package = hosts_packages_repo.index.get(host['host']['computer_fqdn'],None)
-            if host_package:
-                host['depends'] = host_package.depends.split(',').sort()
+            if 'host' in host and 'computer_fqdn' in host['host']:
+                host_package = hosts_packages_repo.index.get(host['host']['computer_fqdn'],None)
+                if host_package:
+                    host['depends'] = host_package.depends.split(',').sort()
             list_hosts.append(host)
 
         result = list_hosts
