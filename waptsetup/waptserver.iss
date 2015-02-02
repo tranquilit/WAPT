@@ -115,5 +115,5 @@ begin
   Current := ExpandConstant('language');
   // Whitelist
   if Current = 'fr' then
-    Result := 'fr;'
+    Result := 'fr';
 end;
