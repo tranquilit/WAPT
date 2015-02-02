@@ -1941,6 +1941,14 @@ class WaptServer(object):
             logger.debug('Wapt server %s unavailable because %s'%(self._server_url,e))
             return False
 
+    def as_dict(self):
+        result = {}
+        attributes = ['server_url','proxies','dnsdomain']
+        for att in attributes:
+            result[att] = getattr(self,att)
+        return result
+
+
 
 class WaptRepo(object):
     """Gives access to a remote http repository, with a zipped Packages packages index
@@ -1949,6 +1957,7 @@ class WaptRepo(object):
     >>> 'last-modified' in delta and 'added' in delta and 'removed' in delta
     True
     """
+
     def __init__(self,name='',url=None,proxies={'http':None,'https':None},timeout = 2,dnsdomain=None):
         """Initialize a repo at url "url". If
                  url is None, the url is requested from DNS"""
@@ -2284,6 +2293,13 @@ class WaptRepo(object):
             waptdb.db.rollback()
             raise
 
+
+    def as_dict(self):
+        result = {}
+        attributes = ['name','repo_url','proxies','dnsdomain']
+        for att in attributes:
+            result[att] = getattr(self,att)
+        return result
 
 class WaptHostRepo(WaptRepo):
     """Dummy http repository for host packages"""
@@ -4034,6 +4050,9 @@ class Wapt(object):
         """
         inv = {'uuid': self.host_uuid}
         inv['wapt'] = self.wapt_status()
+        inv['wapt']['repositories'] = [ r.as_dict() for r in self.repositories]
+        if self.waptserver:
+            inv['wapt']['waptserver'] = self.waptserver.as_dict()
         inv['host'] = setuphelpers.host_info()
         inv['softwares'] = setuphelpers.installed_softwares('')
         inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
