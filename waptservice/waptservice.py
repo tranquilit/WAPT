@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 import time
 import sys
@@ -1054,10 +1054,11 @@ def package_download():
 @allow_waptserver_or_local_auth
 def remove():
     package = request.args.get('package')
-    logger.info(u"remove package %s" % package)
+    packages = package.split(',')
+    logger.info(u"Remove package(s) %s" % packages)
     force=int(request.args.get('force','0')) == 1
     notify_user = int(request.args.get('notify_user','0')) == 1
-    data = task_manager.add_task(WaptPackageRemove(package,force = force),notify_user=notify_user).as_dict()
+    data = task_manager.add_task(WaptPackageRemove(packages,force = force),notify_user=notify_user).as_dict()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
