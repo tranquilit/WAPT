@@ -53,7 +53,7 @@ uses tiscommon,waptcommon;
 
 procedure TVisHostsUpgrade.ActUpgradeExecute(Sender: TObject);
 var
-  res,host,ip:ISuperObject;
+  ips,res,host,ip:ISuperObject;
 begin
   Stopped := False;
   for host in ProgressGrid.Data do
@@ -76,8 +76,13 @@ begin
     ProgressGrid.InvalidateFordata(host);
     Application.ProcessMessages;
     try
-      if (host['host.connected_ips']<>Nil) and  (host['host.connected_ips'].DataType=stArray) then
-        for ip in host['host.connected_ips'] do
+      if (host['host.connected_ips']<>Nil) then
+      begin
+        if (host['host.connected_ips'].DataType=stArray) then
+          ips := host['host.connected_ips']
+        else
+          ips := SA([host.S['host.connected_ips']]);
+        for ip in ips do
         begin
           res := WAPTServerJsonGet(action+'/'+ ip.AsString, [],
             UseProxyForServer,
@@ -93,24 +98,9 @@ begin
             host['message'] := res['content'];
             host['status'] := res['result'];
           end;
-          if host.S['status'] ='OK' then break;
+          if host.S['status'] ='OK' then
+            break;
         end
-      else
-      begin
-        res := WAPTServerJsonGet(action+'/' + host.S['host.connected_ips'], [],
-          UseProxyForServer,
-          waptServerUser, waptServerPassword);
-        // old behaviour <0.8.10
-        if res.AsObject.Exists('status') then
-        begin
-          host['message'] := res['message'];
-          host['status'] := res['status'];
-        end
-        else
-        begin
-          host['message'] := res['content'];
-          host['status'] := res['result'];
-        end;
       end;
       ProgressGrid.InvalidateFordata(host);
       Application.ProcessMessages;

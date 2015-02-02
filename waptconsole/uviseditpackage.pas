@@ -581,7 +581,7 @@ begin
       if FisTempSourcesDir then
       begin
         FileUtil.DeleteDirectory(FSourcePath, False);
-        if Result.AsArray <> nil then
+        if (Result.AsArray <> nil) and (FileExistsUTF8(Result.AsArray[0].S['filename'])) then
           FileUtil.DeleteFileUTF8(Result.AsArray[0].S['filename']);
       end;
     except
