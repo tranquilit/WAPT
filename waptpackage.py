@@ -513,7 +513,7 @@ class WaptLocalRepo(object):
 
                 # looks for an icon in wapt package
                 icon_fn = os.path.join(icons_path,"%s.png"%entry.package)
-                if force_all or not os.path.isfile(icon_fn):
+                if not entry.section in ['group','host'] and (force_all or not os.path.isfile(icon_fn)):
                     try:
                         icon = extract_iconpng_from_wapt(fname)
                         open(icon_fn,'wb').write(icon)

@@ -20,8 +20,8 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <MinorVersionNr Value="9"/>
-      <RevisionNr Value="9"/>
+      <AutoIncrementBuild Value="True"/>
+      <MajorVersionNr Value="1"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT auto deploy" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">

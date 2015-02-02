@@ -1,0 +1,4 @@
+#!/bin/bash
+chown wapt:root  /var/www/wapt/waptsetup-tis.exe
+chmod 644  /var/www/wapt/waptsetup-tis.exe
+

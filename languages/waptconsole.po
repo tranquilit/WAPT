@@ -126,6 +126,7 @@ msgid "Optional information"
 msgstr ""
 
 #: tviscreatewaptsetup.caption
+msgctxt "tviscreatewaptsetup.caption"
 msgid "Create WAPT agent"
 msgstr ""
 
@@ -663,10 +664,12 @@ msgid "Generate self-signed certificate"
 msgstr ""
 
 #: tviswaptgui.actcreatewaptsetup.caption
+msgctxt "tviswaptgui.actcreatewaptsetup.caption"
 msgid "Create WAPT agent"
 msgstr ""
 
 #: tviswaptgui.actcreatewaptsetuppy.caption
+msgctxt "tviswaptgui.actcreatewaptsetuppy.caption"
 msgid "Create WAPT agent"
 msgstr ""
 

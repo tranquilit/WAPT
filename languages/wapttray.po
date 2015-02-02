@@ -569,6 +569,7 @@ msgid "Task canceled."
 msgstr ""
 
 #: uwaptres.rstaskdone
+msgctxt "uwaptres.rstaskdone"
 msgid ""
 "%s done\n"
 "%s\n"
@@ -592,6 +593,7 @@ msgid "Uninstalling %s..."
 msgstr ""
 
 #: uwaptres.rsupdatesavailablefor
+msgctxt "uwaptres.rsupdatesavailablefor"
 msgid ""
 "Available updates for :\n"
 "-%s\n"
@@ -741,6 +743,7 @@ msgid "Error while configuring packages for the current user session"
 msgstr ""
 
 #: uwapttrayres.rstaskdone
+msgctxt "uwapttrayres.rstaskdone"
 msgid ""
 "%s done\n"
 "%s\n"
@@ -752,6 +755,7 @@ msgid "%s started"
 msgstr ""
 
 #: uwapttrayres.rsupdatesavailablefor
+msgctxt "uwapttrayres.rsupdatesavailablefor"
 msgid ""
 "Available updates for :\n"
 "-%s\n"

@@ -70,7 +70,7 @@ Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1
 [RUN]
 Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoUpgradePolicy; Flags: runhidden; StatusMsg: {cm:UpdatePkg}; Description: "{cm:UpdatePkg}"
 Filename: "{app}\waptpython.exe"; Parameters: """{app}\waptserver\waptserver.py"" install"; StatusMsg: {cm:RegisteringService}; Description: "{cm:SetupService}"
-Filename: "{app}\waptserverpostconf.exe"; Flags: nowait postinstall runascurrentuser skipifsilent; StatusMsg: {cm:LaunchingPostconf}; Description: "{cm:LaunchingPostconf}"
+Filename: "{app}\waptserverpostconf.exe"; Parameters: "-l {code:CurrentLanguage}"; Flags: nowait postinstall runascurrentuser skipifsilent; StatusMsg: {cm:LaunchingPostconf}; Description: "{cm:LaunchingPostconf}"
 
 [Icons]
 Name: "{commonstartup}\WAPT session setup"; Tasks: autorunSessionSetup; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
@@ -105,4 +105,15 @@ begin
        (MsgBox('Des fichiers restent présents dans votre répertoire ' + installdir + ', souhaitez-vous le supprimer ainsi que tous les fichiers qu''il contient ?',
                mbConfirmation, MB_YESNO) = IDYES) then
         Deltree(installdir, True, True, True);
+end;
+
+function CurrentLanguage(Param: String):String;
+var
+  Current: String;
+begin
+  Result := 'en';
+  Current := ExpandConstant('language');
+  // Whitelist
+  if Current = 'fr' then
+    Result := 'fr;'
 end;

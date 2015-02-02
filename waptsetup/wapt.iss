@@ -189,20 +189,10 @@ end;
 
 function InitializeSetup(): Boolean;
 var
-  ResultCode: Integer;
+  Reply, ResultCode: Integer;
   ServiceStatus: LongWord;
   NetstatOutput, ConflictingService: AnsiString;
 begin
-
-#ifdef waptserver
-  try
-    ServiceStatus := SimpleQueryService('W3SVC');
-  except
-    ServiceStatus := 0;
-  end;
-  if ServiceStatus = SERVICE_RUNNING then
-    RaiseException('IIS a été détecté sur cette machine et entrera en conflit avec WAPT, installation interrompue.');
-#endif
 
   // terminate waptconsole
   if Exec('taskkill', '/t /im "waptconsole.exe" /f', '', SW_HIDE,
@@ -222,20 +212,32 @@ begin
   Exec('net', 'stop waptapache', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   Exec('net', 'stop waptmongodb', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   
-  ConflictingService := '';
+  repeat
 
-  NetstatOutput := RunCmd('netstat -a -n -p tcp', True);
-   if Pos('0.0.0.0:8080 ', NetstatOutput) > 0 then
-    ConflictingService := '8080'
-  else if Pos('0.0.0.0:8088 ', NetstatOutput) > 0 then
-    ConflictingService := '8088'
-  else if Pos('0.0.0.0:443 ', NetstatOutput) > 0 then
-    ConflictingService := '443'
-  else if Pos('0.0.0.0:80 ', NetstatOutput) > 0 then
-    ConflictingService := '80'
-  ;
-  if ConflictingService <> '' then
-    RaiseException('Un processus ecoute sur le port '+ConflictingService+' de cette machine, et entrera en conflit avec WAPT. Installation interrompue.');
+    ConflictingService := '';
+
+    NetstatOutput := RunCmd('netstat -a -n -p tcp', True);
+    if Pos('0.0.0.0:8080 ', NetstatOutput) > 0 then
+      ConflictingService := '8080'
+    else if Pos('0.0.0.0:8088 ', NetstatOutput) > 0 then
+      ConflictingService := '8088'
+    else if Pos('0.0.0.0:443 ', NetstatOutput) > 0 then
+      ConflictingService := '443'
+    else if Pos('0.0.0.0:80 ', NetstatOutput) > 0 then
+      ConflictingService := '80'
+    ;
+
+    if ConflictingService <> '' then
+    begin
+      Reply := MsgBox('A conflicting service is running on port '+ConflictingService+'. '+
+                      'This is not supported and you should probably abort the installer. '+
+                      'Visit http://dev.tranquil.it/ for documentation about WAPT.',
+                      mbError, MB_ABORTRETRYIGNORE);
+      if Reply = IDABORT then
+        Abort;
+    end;
+
+  until (ConflictingService = '') or (Reply = IDIGNORE);
 #endif
   
   Result := True;

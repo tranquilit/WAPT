@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.0.0"
+__version__ = "0.9.9"
 import codecs
 import getpass
 import glob
@@ -78,6 +78,9 @@ action is either :
                                      change the description of the computer.
   inventory         : get json encoded list of host data, installed packages and softwares as supplied to server with register
   update-status     : Send packages and softwares status to the WAPT server,
+
+  setlocalpassword  : Set the local admin password for waptservice access to
+                      packages install/remove (for standalone usage)
 
  For user session setup
   session-setup [packages,ALL] : setup local user environment for specific or all installed packages
