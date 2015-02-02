@@ -50,8 +50,11 @@ end;
 
 procedure TVisLogin.BitBtn1Click(Sender: TObject);
 begin
-    VisWaptGUI.ActWAPTLocalConfig.Execute;
+  if VisWaptGUI.EditIniFile then
+  begin
+    VisWaptGUI.ActReloadConfig.Execute;
     edWaptServerName.Text:=waptcommon.GetWaptServerURL;
+  end;
 end;
 
 end.

@@ -558,15 +558,15 @@ begin
         except
           RowSO['packages'] := nil;
         end;
-      EdHostname.Text := RowSO.S['host.computer_name'];
-      EdDescription.Text := RowSO.S['host.description'];
+      EdHostname.Text := UTF8Encode(RowSO.S['host.computer_name']);
+      EdDescription.Text := UTF8Encode(RowSO.S['host.description']);
       EdOS.Text := RowSO.S['host.windows_product_infos.version'];
       EdIPAddress.Text := RowSO.S['host.connected_ips'];
-      EdManufacturer.Text := RowSO.S['host.system_manufacturer'];
-      EdModelName.Text := RowSO.S['host.system_productname'];
-      EdUpdateDate.Text := RowSO.S['last_query_date'];
-      EdUser.Text := RowSO.S['host.current_user'];
-      EdRunningStatus.Text := RowSO.S['update_status.runstatus'];
+      EdManufacturer.Text := UTF8Encode(RowSO.S['host.system_manufacturer']);
+      EdModelName.Text := UTF8Encode(RowSO.S['host.system_productname']);
+      EdUpdateDate.Text := UTF8Encode(RowSO.S['last_query_date']);
+      EdUser.Text := UTF8Encode(RowSO.S['host.current_user']);
+      EdRunningStatus.Text := UTF8Encode(RowSO.S['update_status.runstatus']);
       GridHostPackages.Data := packages;
     end
     else if HostPages.ActivePage = pgSoftwares then
@@ -617,9 +617,9 @@ begin
                  ActCancelRunningTask.Enabled:=True;
 
               HostTaskRunningProgress.Position := running.I['progress'];
-              HostRunningTask.Text := running.S['description'];
+              HostRunningTask.Text := UTF8Encode(running.S['description']);
               if not HostRunningTaskLog.Focused then
-                HostRunningTaskLog.Text := running.S['logs'];
+                HostRunningTaskLog.Text := UTF8Encode(running.S['logs']);
             end
             else
             begin
@@ -1300,11 +1300,16 @@ end;
 
 procedure TVisWaptGUI.ActEditHostPackageExecute(Sender: TObject);
 var
-  hostname, ip: ansistring;
-  Result: ISuperObject;
+  hostname,IP: ansistring;
+  IPS,Result: ISuperObject;
 begin
-  hostname := GridHosts.GetCellStrValue(GridHosts.FocusedNode, 'host.computer_fqdn');
-  ip := GridHosts.GetCellStrValue(GridHosts.FocusedNode, 'host.connected_ips');
+  hostname := GridHosts.FocusedRow.S['host.computer_fqdn'];
+  ips := GridHosts.FocusedRow['host.connected_ips'];
+  if ips.DataType = stArray then
+    IP := ips.AsArray.S[0]
+  else
+    IP := ips.AsString;
+
   if EditHost(hostname, ActAdvancedMode.Checked, ip) <> nil then
     ActSearchHost.Execute;
 end;
@@ -1921,7 +1926,7 @@ begin
     GridHostSoftwares.Clear;
     DMPython.WAPT.update(register:=False);
     // put somewhere else
-    ////MainPagesChange(MainPages);
+    MainPagesChange(MainPages);
   end;
 end;
 

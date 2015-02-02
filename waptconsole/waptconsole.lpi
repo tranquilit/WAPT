@@ -72,7 +72,7 @@
         <PackageName Value="LCL"/>
       </Item10>
     </RequiredPackages>
-    <Units Count="38">
+    <Units Count="19">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -212,98 +212,10 @@
         <UnitName Value="uVisImportPackage"/>
       </Unit17>
       <Unit18>
-        <Filename Value="uvisapropos.lfm"/>
-        <IsPartOfProject Value="True"/>
-      </Unit18>
-      <Unit19>
-        <Filename Value="uwaptconsole.lfm"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="VisWaptGUI"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit19>
-      <Unit20>
-        <Filename Value="uvisloading.lfm"/>
-        <IsPartOfProject Value="True"/>
-      </Unit20>
-      <Unit21>
-        <Filename Value="uvislogin.lfm"/>
-        <IsPartOfProject Value="True"/>
-      </Unit21>
-      <Unit22>
-        <Filename Value="uviscreatekey.lfm"/>
-        <IsPartOfProject Value="True"/>
-      </Unit22>
-      <Unit23>
-        <Filename Value="uviseditpackage.lfm"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="VisEditPackage"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit23>
-      <Unit24>
-        <Filename Value="uviscreatewaptsetup.lfm"/>
-        <IsPartOfProject Value="True"/>
-      </Unit24>
-      <Unit25>
-        <Filename Value="uvisprivatekeyauth.lfm"/>
-        <IsPartOfProject Value="True"/>
-      </Unit25>
-      <Unit26>
-        <Filename Value="uvischangepassword.lfm"/>
-        <IsPartOfProject Value="True"/>
-      </Unit26>
-      <Unit27>
-        <Filename Value="uvisgroupchoice.lfm"/>
-        <IsPartOfProject Value="True"/>
-      </Unit27>
-      <Unit28>
-        <Filename Value="uviseditgroup.lfm"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="VisEditGroup"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit28>
-      <Unit29>
-        <Filename Value="uviswaptdeploy.lfm"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="viswaptdeploy"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit29>
-      <Unit30>
-        <Filename Value="dmwaptpython.lfm"/>
-        <IsPartOfProject Value="True"/>
-      </Unit30>
-      <Unit31>
-        <Filename Value="uvishostsupgrade.lfm"/>
-        <IsPartOfProject Value="True"/>
-      </Unit31>
-      <Unit32>
-        <Filename Value="uvisimportpackage.lfm"/>
-        <IsPartOfProject Value="True"/>
-      </Unit32>
-      <Unit33>
-        <Filename Value="uvisoptioninifile.lfm"/>
-        <IsPartOfProject Value="True"/>
-      </Unit33>
-      <Unit34>
-        <Filename Value="uvispassword.lfm"/>
-        <IsPartOfProject Value="True"/>
-      </Unit34>
-      <Unit35>
-        <Filename Value="uvissearchpackage.lfm"/>
-        <IsPartOfProject Value="True"/>
-      </Unit35>
-      <Unit36>
-        <Filename Value="uviswaptconfig.lfm"/>
-        <IsPartOfProject Value="True"/>
-      </Unit36>
-      <Unit37>
         <Filename Value="uwaptconsoleres.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uWaptConsoleRes"/>
-      </Unit37>
+      </Unit18>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
