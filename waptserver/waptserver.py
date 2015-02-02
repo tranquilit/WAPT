@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="1.0.0"
+__version__="1.0.1"
 
 import os,sys
 try:
@@ -228,6 +228,64 @@ def close_db(error):
         del g.db
         del g.client
 
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+
+        if not auth:
+            logger.info('no credential given')
+            return authenticate()
+
+        logging.debug("authenticating : %s" % auth.username)
+        if not check_auth(auth.username, auth.password):
+            return authenticate()
+        logger.info("user %s authenticated" % auth.username)
+        return f(*args, **kwargs)
+    return decorated
+
+
+def check_auth(username, password):
+    """This function is called to check if a username /
+    password combination is valid.
+    """
+
+    def any_(l):
+        """Check if any element in the list is true, in constant time.
+        """
+        ret = False
+        for e in l:
+            if e:
+                ret = True
+        return ret
+
+    user_ok = False
+    pass_sha1_ok = pass_sha512_ok = pass_sha512_crypt_ok = pass_bcrypt_crypt_ok = False
+
+    user_ok = wapt_user == username
+
+    pass_sha1_ok = wapt_password == hashlib.sha1(password.encode('utf8')).hexdigest()
+    pass_sha512_ok = wapt_password == hashlib.sha512(password.encode('utf8')).hexdigest()
+
+    if sha512_crypt.identify(wapt_password):
+        pass_sha512_crypt_ok  = sha512_crypt.verify(password, wapt_password)
+    else:
+        try:
+            if bcrypt.identify(wapt_password):
+                pass_bcrypt_crypt_ok = bcrypt.verify(password, wapt_password)
+        except Exception:
+            pass
+
+    return any_([pass_sha1_ok, pass_sha512_ok, pass_sha512_crypt_ok, pass_bcrypt_crypt_ok]) and user_ok
+
+
+def authenticate():
+    """Sends a 401 response that enables basic auth"""
+    return Response(
+        _('You have to login with proper credentials'), 401,
+        {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
+
 def get_host_data(uuid, filter = {}, delete_id = True):
     if filter:
         data = hosts().find_one({ "uuid": uuid}, filter)
@@ -281,6 +339,7 @@ def wapt_listing():
 
 @app.route('/hosts')
 @app.route('/json/host_list',methods=['GET'])
+@requires_auth
 def get_host_list():
     list_hosts = []
     params = request.args
@@ -381,6 +440,7 @@ def update_host():
 
 
 @app.route('/delete_host/<string:uuid>')
+@requires_auth
 def delete_host(uuid=""):
     try:
         hosts().remove({'uuid': uuid })
@@ -395,6 +455,7 @@ def delete_host(uuid=""):
 
 # to fix !
 @app.route('/client_software_list/<string:uuid>')
+@requires_auth
 def get_client_software_list(uuid=""):
     softwares = get_host_data(uuid, filter={"softwares":1})
     if 'softwares' in softwares:
@@ -433,6 +494,7 @@ def packagesFileToList(pathTofile):
 
 
 @app.route('/host_packages/<string:uuid>')
+@requires_auth
 def host_packages(uuid=""):
     try:
         packages = get_host_data(uuid, {"packages":1})
@@ -457,6 +519,7 @@ def host_packages(uuid=""):
 
 
 @app.route('/client_package_list/<string:uuid>')
+@requires_auth
 def get_client_package_list(uuid=""):
     try:
         packages = get_host_data(uuid, {"packages":1})
@@ -481,63 +544,6 @@ def get_client_package_list(uuid=""):
     return Response(response=json.dumps(packages['packages']),
                      status=200,
                      mimetype="application/json")
-
-
-def requires_auth(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        auth = request.authorization
-
-        if not auth:
-            logger.info('no credential given')
-            return authenticate()
-
-        logging.debug("authenticating : %s" % auth.username)
-        if not check_auth(auth.username, auth.password):
-            return authenticate()
-        logger.info("user %s authenticated" % auth.username)
-        return f(*args, **kwargs)
-    return decorated
-
-def check_auth(username, password):
-    """This function is called to check if a username /
-    password combination is valid.
-    """
-
-    def any_(l):
-        """Check if any element in the list is true, in constant time.
-        """
-        ret = False
-        for e in l:
-            if e:
-                ret = True
-        return ret
-
-    user_ok = False
-    pass_sha1_ok = pass_sha512_ok = pass_sha512_crypt_ok = pass_bcrypt_crypt_ok = False
-
-    user_ok = wapt_user == username
-
-    pass_sha1_ok = wapt_password == hashlib.sha1(password.encode('utf8')).hexdigest()
-    pass_sha512_ok = wapt_password == hashlib.sha512(password.encode('utf8')).hexdigest()
-
-    if sha512_crypt.identify(wapt_password):
-        pass_sha512_crypt_ok  = sha512_crypt.verify(password, wapt_password)
-    else:
-        try:
-            if bcrypt.identify(wapt_password):
-                pass_bcrypt_crypt_ok = bcrypt.verify(password, wapt_password)
-        except Exception:
-            pass
-
-    return any_([pass_sha1_ok, pass_sha512_ok, pass_sha512_crypt_ok, pass_bcrypt_crypt_ok]) and user_ok
-
-
-def authenticate():
-    """Sends a 401 response that enables basic auth"""
-    return Response(
-        _('You have to login with proper credentials'), 401,
-        {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
 
 @app.route('/upload_package/<string:filename>',methods=['POST'])
