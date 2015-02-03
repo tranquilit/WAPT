@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 import os
 import sys
 import logging
@@ -1658,14 +1658,7 @@ def host_info():
         info['domain_controller_address'] = None
 
     info['networking'] = networking()
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.settimeout(1)
-        s.connect(("wapt", 0))
-        info['connected_ips'] = s.getsockname()[0]
-        s.close()
-    except:
-        info['connected_ips'] = socket.gethostbyname_ex(socket.gethostname())[2]
+    info['connected_ips'] = socket.gethostbyname_ex(socket.gethostname())[2]
     info['mac'] = [ c['mac'] for c in networking() if 'mac' in c and 'addr' in c and c['addr'] in info['connected_ips']]
     info['win64'] = iswin64()
     info['description'] = registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\LanmanServer\Parameters','srvcomment')
@@ -1834,7 +1827,18 @@ programfiles64 = programfiles64()
 # some shortcuts
 isfile=os.path.isfile
 isdir=os.path.isdir
-remove_file=os.unlink
+
+def remove_file(path):
+    """Try to remove file
+        warning log if file doesn't exist
+        critical log if file can't be removed"""
+    if os.path.isfile(path):
+        try:
+            os.unlink
+        except Exception as e:
+            logger.critical(_('Unable to remove file %s : error %s')%(path,e))
+    else:
+        logger.warning(_("File %s doesn't exist, so not removed")%(path))
 
 def remove_tree(*args, **kwargs):
     """Convenience function to delete a directory tree, with any error

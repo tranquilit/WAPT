@@ -535,15 +535,17 @@ end;
 
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
-  currhost, currip: ansistring;
-  RowSO, attribs, packages, softwares, tasks, tasksresult, running: ISuperObject;
+  currhost : ansistring;
+  IPS,IP, RowSO, attribs, packages, softwares, tasks, tasksresult, running: ISuperObject;
 begin
   TimerTasks.Enabled := False;
   RowSO := Gridhosts.FocusedRow;
   if (RowSO <> nil) then
   begin
     currhost := RowSO.S['uuid'];
-    currip := RowSO.S['host.connected_ips'];
+    IPS := RowSO['host.connected_ips'];
+    if IPS.DataType <> stArray then
+      IPS := SA([RowSO['host.connected_ips']]);
     if HostPages.ActivePage = pgPackages then
     begin
       packages := RowSO['packages'];
@@ -556,15 +558,15 @@ begin
         except
           RowSO['packages'] := nil;
         end;
-      EdHostname.Text := RowSO.S['host.computer_name'];
-      EdDescription.Text := RowSO.S['host.description'];
+      EdHostname.Text := UTF8Encode(RowSO.S['host.computer_name']);
+      EdDescription.Text := UTF8Encode(RowSO.S['host.description']);
       EdOS.Text := RowSO.S['host.windows_product_infos.version'];
       EdIPAddress.Text := RowSO.S['host.connected_ips'];
-      EdManufacturer.Text := RowSO.S['host.system_manufacturer'];
-      EdModelName.Text := RowSO.S['host.system_productname'];
-      EdUpdateDate.Text := RowSO.S['last_query_date'];
-      EdUser.Text := RowSO.S['host.current_user'];
-      EdRunningStatus.Text := RowSO.S['update_status.runstatus'];
+      EdManufacturer.Text := UTF8Encode(RowSO.S['host.system_manufacturer']);
+      EdModelName.Text := UTF8Encode(RowSO.S['host.system_productname']);
+      EdUpdateDate.Text := UTF8Encode(RowSO.S['last_query_date']);
+      EdUser.Text := UTF8Encode(RowSO.S['host.current_user']);
+      EdRunningStatus.Text := UTF8Encode(RowSO.S['update_status.runstatus']);
       GridHostPackages.Data := packages;
     end
     else if HostPages.ActivePage = pgSoftwares then
@@ -584,10 +586,18 @@ begin
     else if HostPages.ActivePage = pgTasks then
     begin
       try
-        tasks := WAPTServerJsonGet('host_tasks?host=%s&uuid=%s',
-          [currip, currhost], UseProxyForServer, waptServerUser,
-          waptServerPassword);
-        if tasks.S['status'] = 'OK' then
+        tasks := Nil;
+        for IP in IPS do
+        try
+          tasks := WAPTServerJsonGet('host_tasks?host=%s&uuid=%s',
+            [ip.AsString, currhost], UseProxyForServer, waptServerUser,
+            waptServerPassword);
+          if tasks.S['status'] = 'OK' then
+            Break;
+        except
+        end;
+
+        if (tasks<>Nil) and  (tasks.S['status'] = 'OK') then
         begin
           tasksresult := tasks['message'];
           if tasksresult['done'] = nil then
@@ -607,9 +617,9 @@ begin
                  ActCancelRunningTask.Enabled:=True;
 
               HostTaskRunningProgress.Position := running.I['progress'];
-              HostRunningTask.Text := running.S['description'];
+              HostRunningTask.Text := UTF8Encode(running.S['description']);
               if not HostRunningTaskLog.Focused then
-                HostRunningTaskLog.Text := running.S['logs'];
+                HostRunningTaskLog.Text := UTF8Encode(running.S['logs']);
             end
             else
             begin
@@ -1290,11 +1300,16 @@ end;
 
 procedure TVisWaptGUI.ActEditHostPackageExecute(Sender: TObject);
 var
-  hostname, ip: ansistring;
-  Result: ISuperObject;
+  hostname,IP: ansistring;
+  IPS,Result: ISuperObject;
 begin
-  hostname := GridHosts.GetCellStrValue(GridHosts.FocusedNode, 'host.computer_fqdn');
-  ip := GridHosts.GetCellStrValue(GridHosts.FocusedNode, 'host.connected_ips');
+  hostname := GridHosts.FocusedRow.S['host.computer_fqdn'];
+  ips := GridHosts.FocusedRow['host.connected_ips'];
+  if ips.DataType = stArray then
+    IP := ips.AsArray.S[0]
+  else
+    IP := ips.AsString;
+
   if EditHost(hostname, ActAdvancedMode.Checked, ip) <> nil then
     ActSearchHost.Execute;
 end;
@@ -1311,7 +1326,7 @@ end;
 
 procedure TVisWaptGUI.ActForgetPackagesExecute(Sender: TObject);
 var
-  sel, package, res, packages : ISuperObject;
+  ip, ips, sel, package, res, packages : ISuperObject;
 begin
   if GridHostPackages.Focused then
   begin
@@ -1326,18 +1341,31 @@ begin
       packages := TSuperObject.Create(stArray);
       for package in sel do
         packages.AsArray.Add(package.S['package']);
-      res := WAPTServerJsonGet(
-        '/forget_packages.json?host=%s&package=%s&uuid=%s',
-        [GridHosts.FocusedRow.S['host.connected_ips'], Join(',',packages),
-        GridHosts.FocusedRow.S['uuid']], UseProxyForServer,
-        waptServerUser, waptServerPassword);
-      if res.S['status'] <> 'OK' then
-        ShowMessage(Format(rsForgetPackageError,
-          [package.S['package'], res.S['message']]));
+      if (GridHosts.FocusedRow['host.connected_ips']<>Nil) then
+      begin
+        if (GridHosts.FocusedRow['host.connected_ips'].DataType=stArray) then
+          ips := GridHosts.FocusedRow['host.connected_ips']
+        else
+          ips := SA([GridHosts.FocusedRow['host.connected_ips']]);
+        for ip in ips do
+        begin
+          res := WAPTServerJsonGet(
+            '/forget_packages.json?host=%s&package=%s&uuid=%s',
+            [ip.AsString, Join(',',packages),
+            GridHosts.FocusedRow.S['uuid']], UseProxyForServer,
+            waptServerUser, waptServerPassword);
+          if res.S['status'] = 'OK' then
+            break;
+        end;
+        if res.S['status'] <> 'OK' then
+          ShowMessage(Format(rsForgetPackageError,
+            [package.S['package'], res.S['message']]));
+      end;
     end;
     UpdateHostPages(Sender);
   end;
 end;
+
 
 procedure TVisWaptGUI.ActFrenchExecute(Sender: TObject);
 begin
@@ -1432,32 +1460,46 @@ end;
 
 procedure TVisWaptGUI.ActPackageRemoveExecute(Sender: TObject);
 var
-  sel, package, res: ISuperObject;
+  ip, ips, sel, package, res, packages : ISuperObject;
 begin
   if GridHostPackages.Focused then
   begin
     sel := GridHostPackages.SelectedRows;
-    if Dialogs.MessageDlg(rsConfirmCaption,
-    format(rsConfirmRmPackagesFromHost, [IntToStr(sel.AsArray.Length), GridHosts.FocusedRow.S['host.computer_fqdn']]),
-    mtConfirmation,
-    mbYesNoCancel,
-    0) = mrYes then
+    if Dialogs.MessageDlg(
+       rsConfirmCaption,
+       format(rsConfirmRmPackagesFromHost, [IntToStr(sel.AsArray.Length), GridHosts.FocusedRow.S['host.computer_fqdn']]),
+       mtConfirmation,
+       mbYesNoCancel,
+       0) = mrYes then
     begin
+      packages := TSuperObject.Create(stArray);
       for package in sel do
+        packages.AsArray.Add(package.S['package']);
+      if (GridHosts.FocusedRow['host.connected_ips']<>Nil) then
       begin
-        res := WAPTServerJsonGet(
-          '/remove_package.json?host=%s&package=%s&uuid=%s',
-          [GridHosts.FocusedRow.S['host.connected_ips'], package.S['package'],
-          GridHosts.FocusedRow.S['uuid']], UseProxyForServer,
-          waptServerUser, waptServerPassword);
+        if (GridHosts.FocusedRow['host.connected_ips'].DataType=stArray) then
+          ips := GridHosts.FocusedRow['host.connected_ips']
+        else
+          ips := SA([GridHosts.FocusedRow.S['host.connected_ips']]);
+
+        //try on all connected IPs
+        for ip in ips do
+        begin
+          res := WAPTServerJsonGet(
+            '/remove_package.json?host=%s&package=%s&uuid=%s',
+            [ip.AsString, Join(',',packages),
+            GridHosts.FocusedRow.S['uuid']], UseProxyForServer,
+            waptServerUser, waptServerPassword);
+          if res.S['status'] = 'OK' then
+            break;
+        end;
         if res.S['status'] <> 'OK' then
-          ShowMessageFmt(rsPackageRemoveError,
-            [package.S['package'], res.S['message']]);
+          ShowMessage(Format(rsForgetPackageError,
+            [package.S['package'], res.S['message']]));
       end;
     end;
     UpdateHostPages(Sender);
   end;
-
 end;
 
 procedure TVisWaptGUI.ActRDPExecute(Sender: TObject);
@@ -1883,6 +1925,7 @@ begin
     GridHostPackages.Clear;
     GridHostSoftwares.Clear;
     DMPython.WAPT.update(register:=False);
+    // put somewhere else
     MainPagesChange(MainPages);
   end;
 end;

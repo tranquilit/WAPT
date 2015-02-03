@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 import os
 import re
 import logging
@@ -1941,6 +1941,14 @@ class WaptServer(object):
             logger.debug('Wapt server %s unavailable because %s'%(self._server_url,e))
             return False
 
+    def as_dict(self):
+        result = {}
+        attributes = ['server_url','proxies','dnsdomain']
+        for att in attributes:
+            result[att] = getattr(self,att)
+        return result
+
+
 
 class WaptRepo(object):
     """Gives access to a remote http repository, with a zipped Packages packages index
@@ -1949,6 +1957,7 @@ class WaptRepo(object):
     >>> 'last-modified' in delta and 'added' in delta and 'removed' in delta
     True
     """
+
     def __init__(self,name='',url=None,proxies={'http':None,'https':None},timeout = 2,dnsdomain=None):
         """Initialize a repo at url "url". If
                  url is None, the url is requested from DNS"""
@@ -2284,6 +2293,13 @@ class WaptRepo(object):
             waptdb.db.rollback()
             raise
 
+
+    def as_dict(self):
+        result = {}
+        attributes = ['name','repo_url','proxies','dnsdomain']
+        for att in attributes:
+            result[att] = getattr(self,att)
+        return result
 
 class WaptHostRepo(WaptRepo):
     """Dummy http repository for host packages"""
@@ -3742,109 +3758,111 @@ class Wapt(object):
                     errors.append((download_url,"%s" % ensure_unicode(e)))
         return {"downloaded":downloaded,"skipped":skipped,"errors":errors}
 
-    def remove(self,package,force=False):
+    def remove(self,packages_list,force=False):
         """Removes a package giving its package name, unregister from local status DB
-            package : package to remove (package name,
-                        package requirement, package entry or development directory)
+            packages_list : packages to remove (package name,
+                            list of package requirement, package entry or development directory)
             force : unregister package from local status database, even if uninstall has failed
         """
         result = {'removed':[],'errors':[]}
-        try:
-            self.check_cancelled()
-            # development mode, remove a package by its directory
-            if os.path.isfile(os.path.join(package,'WAPT','control')):
-                package = PackageEntry().load_control_from_wapt(package).package
-            elif isinstance(package,PackageEntry):
-                package = package.package
-            else:
-                pe = self.is_installed(package)
-                if pe:
-                    package = pe.package
-
-            q = self.waptdb.query("""\
-               select * from wapt_localstatus
-                where package=?
-               """ , (package,))
-            if not q:
-                logger.debug(u"Package %s not installed, removal aborted" % package)
-                return result
-
-            # several versions installed of the same package... ?
-            for mydict in q:
-                self.runstatus="Removing package %s version %s from computer..." % (mydict['package'],mydict['version'])
-
-                # removes recursively meta packages which are not satisfied anymore
-                additional_removes = self.check_remove(package)
-
-                if mydict['uninstall_string']:
-                    if mydict['uninstall_string'][0] not in ['[','"',"'"]:
-                        guids = mydict['uninstall_string']
-                    else:
-                        try:
-                            guids = eval(mydict['uninstall_string'])
-                        except:
-                            guids = mydict['uninstall_string']
-                    if isinstance(guids,(unicode,str)):
-                        guids = [guids]
-                    for guid in guids:
-                        if guid:
-                            try:
-                                logger.info(u'Running %s' % guid)
-                                logger.info(self.run(guid))
-                            except Exception,e:
-                                logger.warning(u"Warning : %s" % ensure_unicode(e))
-
-                elif mydict['uninstall_key']:
-                    if mydict['uninstall_key'][0] not in ['[','"',"'"]:
-                        guids = mydict['uninstall_key']
-                    else:
-                        try:
-                            guids = eval(mydict['uninstall_key'])
-                        except:
-                            guids = mydict['uninstall_key']
-
-                    if isinstance(guids,(unicode,str)):
-                        guids = [guids]
-
-                    for guid in guids:
-                        if guid:
-                            try:
-                                uninstall_cmd =''
-                                uninstall_cmd = self.uninstall_cmd(guid)
-                                if uninstall_cmd:
-                                    logger.info(u'Launch uninstall cmd %s' % (uninstall_cmd,))
-                                    print ensure_unicode(self.run(uninstall_cmd))
-                            except Exception,e:
-                                logger.critical(u"Critical error during uninstall cmd %s: %s" % (uninstall_cmd,ensure_unicode(e)))
-                                result['errors'].append(package)
-                                if not force:
-                                    raise
-
+        packages_list = ensure_list(packages_list)
+        for package in packages_list:
+            try:
+                self.check_cancelled()
+                # development mode, remove a package by its directory
+                if os.path.isfile(os.path.join(package,'WAPT','control')):
+                    package = PackageEntry().load_control_from_wapt(package).package
+                elif isinstance(package,PackageEntry):
+                    package = package.package
                 else:
-                    logger.debug(u'uninstall key not registered in local DB status.')
+                    pe = self.is_installed(package)
+                    if pe:
+                        package = pe.package
 
-                if mydict['install_status'] != 'ERROR':
-                    try:
-                        self.uninstall(package)
-                    except Exception as e:
-                        logger.critical(u'Error running uninstall script: %s'%e)
-                        result['errors'].append(package)
+                q = self.waptdb.query("""\
+                   select * from wapt_localstatus
+                    where package=?
+                   """ , (package,))
+                if not q:
+                    logger.debug(u"Package %s not installed, removal aborted" % package)
+                    return result
 
-                logger.info(u'Remove status record from local DB for %s' % package)
-                self.waptdb.remove_install_status(package)
-                result['removed'].append(package)
+                # several versions installed of the same package... ?
+                for mydict in q:
+                    self.runstatus="Removing package %s version %s from computer..." % (mydict['package'],mydict['version'])
 
-                if reversed(additional_removes):
-                    logger.info(u'Additional packages to remove : %s' % additional_removes)
-                    for apackage in additional_removes:
-                        res = self.remove(apackage,force=True)
-                        result['removed'].extend(res['removed'])
-                        result['errors'].extend(res['errors'])
+                    # removes recursively meta packages which are not satisfied anymore
+                    additional_removes = self.check_remove(package)
 
-            return result
-        finally:
-            self.store_upgrade_status()
-            self.runstatus=''
+                    if mydict['uninstall_string']:
+                        if mydict['uninstall_string'][0] not in ['[','"',"'"]:
+                            guids = mydict['uninstall_string']
+                        else:
+                            try:
+                                guids = eval(mydict['uninstall_string'])
+                            except:
+                                guids = mydict['uninstall_string']
+                        if isinstance(guids,(unicode,str)):
+                            guids = [guids]
+                        for guid in guids:
+                            if guid:
+                                try:
+                                    logger.info(u'Running %s' % guid)
+                                    logger.info(self.run(guid))
+                                except Exception,e:
+                                    logger.warning(u"Warning : %s" % ensure_unicode(e))
+
+                    elif mydict['uninstall_key']:
+                        if mydict['uninstall_key'][0] not in ['[','"',"'"]:
+                            guids = mydict['uninstall_key']
+                        else:
+                            try:
+                                guids = eval(mydict['uninstall_key'])
+                            except:
+                                guids = mydict['uninstall_key']
+
+                        if isinstance(guids,(unicode,str)):
+                            guids = [guids]
+
+                        for guid in guids:
+                            if guid:
+                                try:
+                                    uninstall_cmd =''
+                                    uninstall_cmd = self.uninstall_cmd(guid)
+                                    if uninstall_cmd:
+                                        logger.info(u'Launch uninstall cmd %s' % (uninstall_cmd,))
+                                        print ensure_unicode(self.run(uninstall_cmd))
+                                except Exception,e:
+                                    logger.critical(u"Critical error during uninstall cmd %s: %s" % (uninstall_cmd,ensure_unicode(e)))
+                                    result['errors'].append(package)
+                                    if not force:
+                                        raise
+
+                    else:
+                        logger.debug(u'uninstall key not registered in local DB status.')
+
+                    if mydict['install_status'] != 'ERROR':
+                        try:
+                            self.uninstall(package)
+                        except Exception as e:
+                            logger.critical(u'Error running uninstall script: %s'%e)
+                            result['errors'].append(package)
+
+                    logger.info(u'Remove status record from local DB for %s' % package)
+                    self.waptdb.remove_install_status(package)
+                    result['removed'].append(package)
+
+                    if reversed(additional_removes):
+                        logger.info(u'Additional packages to remove : %s' % additional_removes)
+                        for apackage in additional_removes:
+                            res = self.remove(apackage,force=True)
+                            result['removed'].extend(res['removed'])
+                            result['errors'].extend(res['errors'])
+
+                return result
+            finally:
+                self.store_upgrade_status()
+                self.runstatus=''
 
     def host_packagename(self):
         """Return package name for current computer"""
@@ -4032,6 +4050,9 @@ class Wapt(object):
         """
         inv = {'uuid': self.host_uuid}
         inv['wapt'] = self.wapt_status()
+        inv['wapt']['repositories'] = [ r.as_dict() for r in self.repositories]
+        if self.waptserver:
+            inv['wapt']['waptserver'] = self.waptserver.as_dict()
         inv['host'] = setuphelpers.host_info()
         inv['softwares'] = setuphelpers.installed_softwares('')
         inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
@@ -4069,6 +4090,22 @@ class Wapt(object):
         result['wapt-py-version'] = __version__
         result['common-version'] = __version__
         return result
+
+    def reachable_ip(self):
+        """Return the local IP which is most probably reachable by wapt server"""
+        try:
+            if self.waptserver and self.waptserver.server_url:
+                host = urlparse(w.waptserver.server_url).hostname
+                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                s.settimeout(1)
+                s.connect((host, 0))
+                local_ip = s.getsockname()[0]
+                s.close()
+                return local_ip
+            else:
+                return None
+        except:
+            return None
 
     def inventory(self):
         """Return software inventory of the computer as a dictionary"""
@@ -4274,8 +4311,7 @@ class Wapt(object):
         logger.info(u'Uploading files...')
         for buildresult in buildresults:
             upload_res = self.http_upload_package(buildresult['package'],wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
-            if upload_res['status'] == 'OK':
-                result.append(buildresult)
+            result.append(buildresult)
         return result
 
     def cleanup_session_setup(self):

@@ -20,7 +20,6 @@ def update_sources():
          'waptexit.exe',
          'keyfinder.py',
          'COPYING.txt',
-         'version',
          'templates',
          'waptconsole.exe',
          'waptconsole.exe.manifest',
@@ -45,27 +44,23 @@ def update_sources():
         return result
 
     checkout_dir = os.path.abspath(os.path.join(os.getcwd(),'..'))
-    if os.path.isfile(os.path.join(checkout_dir,'version')):
-        # cleanup patchs dir
-        if os.path.exists(os.path.join(checkout_dir,'waptupgrade','patchs')):
-            shutil.rmtree(os.path.join(checkout_dir,'waptupgrade','patchs'))
+    # cleanup patchs dir
+    if os.path.exists(os.path.join(checkout_dir,'waptupgrade','patchs')):
+        shutil.rmtree(os.path.join(checkout_dir,'waptupgrade','patchs'))
 
-        os.makedirs(os.path.join(checkout_dir,'waptupgrade','patchs'))
-        for f in files:
-            fn = os.path.join(checkout_dir,f)
-            target_fn = os.path.join(checkout_dir,'waptupgrade','patchs',f)
-            if os.path.isfile(fn):
-                filecopyto(fn,target_fn)
-            elif os.path.isdir(fn):
-                copytree2(
-                    src=fn,
-                    dst=target_fn,
-                    onreplace = default_overwrite,
-                    ignore=ignore)
-        return True
-    else:
-        print(u'Unable to update sources of wapt from %s, skipping update_sources'%checkout_dir)
-        return False
+    os.makedirs(os.path.join(checkout_dir,'waptupgrade','patchs'))
+    for f in files:
+        fn = os.path.join(checkout_dir,f)
+        target_fn = os.path.join(checkout_dir,'waptupgrade','patchs',f)
+        if os.path.isfile(fn):
+            filecopyto(fn,target_fn)
+        elif os.path.isdir(fn):
+            copytree2(
+                src=fn,
+                dst=target_fn,
+                onreplace = default_overwrite,
+                ignore=ignore)
+    return True
 
 def update_control(entry):
     """Update package control file before build-upload"""

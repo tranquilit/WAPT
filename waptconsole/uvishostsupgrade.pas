@@ -47,13 +47,14 @@ var
 implementation
 
 {$R *.lfm}
-uses tiscommon,waptcommon;
+uses tiscommon,waptcommon,IdHTTP;
 
 { TVisHostsUpgrade }
 
 procedure TVisHostsUpgrade.ActUpgradeExecute(Sender: TObject);
 var
-  res,host,ip:ISuperObject;
+  ips,res,host,ip:ISuperObject;
+  lasterror:Utf8String;
 begin
   Stopped := False;
   for host in ProgressGrid.Data do
@@ -76,9 +77,14 @@ begin
     ProgressGrid.InvalidateFordata(host);
     Application.ProcessMessages;
     try
-      if (host['host.connected_ips']<>Nil) and  (host['host.connected_ips'].DataType=stArray) then
-        for ip in host['host.connected_ips'] do
-        begin
+      if (host['host.connected_ips']<>Nil) then
+      begin
+        if (host['host.connected_ips'].DataType=stArray) then
+          ips := host['host.connected_ips']
+        else
+          ips := SA([host['host.connected_ips']]);
+        for ip in ips do
+        try
           res := WAPTServerJsonGet(action+'/'+ ip.AsString, [],
             UseProxyForServer,
             waptServerUser, waptServerPassword);
@@ -93,23 +99,15 @@ begin
             host['message'] := res['content'];
             host['status'] := res['result'];
           end;
-          if host.S['status'] ='OK' then break;
-        end
-      else
-      begin
-        res := WAPTServerJsonGet(action+'/' + host.S['host.connected_ips'], [],
-          UseProxyForServer,
-          waptServerUser, waptServerPassword);
-        // old behaviour <0.8.10
-        if res.AsObject.Exists('status') then
+          if host.S['status'] ='OK' then
+            break;
+        except
+          on E:EIdHTTPProtocolException do
+            lasterror := E.ErrorMessage;
+        end;
+        if host.S['status'] <>'OK' then
         begin
-          host['message'] := res['message'];
-          host['status'] := res['status'];
-        end
-        else
-        begin
-          host['message'] := res['content'];
-          host['status'] := res['result'];
+          raise Exception.Create(lasterror);
         end;
       end;
       ProgressGrid.InvalidateFordata(host);
@@ -118,7 +116,7 @@ begin
       on E:Exception do
       begin
         host.S['status'] := 'ERROR';
-        host.S['message'] := e.Message;
+        host.S['message'] := host.S['message']+' '+e.Message;
         ProgressGrid.InvalidateFordata(host);
         Application.ProcessMessages;
       end;
