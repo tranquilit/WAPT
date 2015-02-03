@@ -19,7 +19,7 @@ Source: "..\wapt.ico"; DestDir: "{app}";
 
 ; sources to regenerate waptupgrade package
 Source: "..\waptupgrade\setup.py"; DestDir: "{app}\waptupgrade"; Flags: ignoreversion;
-Source: "..\waptupgrade\WAPT"; DestDir: "{app}\waptupgrade"; Flags: createallsubdirs recursesubdirs ignoreversion;
+Source: "..\waptupgrade\WAPT"; DestDir: "{app}\waptupgrade\WAPT"; Flags: createallsubdirs recursesubdirs ignoreversion;
 
 ; global management console
 Source: "..\waptconsole.exe.manifest"; DestDir: "{app}";
