@@ -156,7 +156,7 @@ fr.LaunchSession=Lancer WAPT session setup à l'ouverture de session
 en.InstallWAPservice=Install WAPT service
 en.LaunchIcon=Launch notification icon upon session opening
 en.InstallVCpp=Install VC++ 2008 redistributables (for openssl)
-en.ForceVCppReinstall=Force-reinstall VC++ 2008 redistributables (for openssl
+en.ForceVCppReinstall=Force-reinstall VC++ 2008 redistributables (for openssl)
 en.UpdatePkgUponShutdown=Ask to update packages upon shutdown
 en.LaunchSession=Launch WAPT setup session upon session opening
 
