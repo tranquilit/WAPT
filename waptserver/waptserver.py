@@ -203,6 +203,20 @@ app = Flask(__name__,static_folder='./templates/static')
 
 babel = Babel(app)
 
+def ensure_list(csv_or_list,ignore_empty_args=True):
+    """if argument is not a list, return a list from a csv string"""
+    if csv_or_list is None:
+        return []
+    if isinstance(csv_or_list,tuple):
+        return list(csv_or_list)
+    elif not isinstance(csv_or_list,list):
+        if ignore_empty_args:
+            return [s.strip() for s in csv_or_list.split(',') if s.strip() != '']
+        else:
+            return [s.strip() for s in csv_or_list.split(',')]
+    else:
+        return csv_or_list
+
 def hosts():
     """Opens a new database connection if there is none yet for the
     current application context.
@@ -388,7 +402,8 @@ def get_host_list():
             if 'host' in host and 'computer_fqdn' in host['host']:
                 host_package = hosts_packages_repo.index.get(host['host']['computer_fqdn'],None)
                 if host_package:
-                    host['depends'] = host_package.depends.split(',').sort()
+                    depends = ensure_list(host_package.depends.split(','))
+                    host['depends'] = depends
             list_hosts.append(host)
 
         result = list_hosts
