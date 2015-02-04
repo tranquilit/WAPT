@@ -1299,10 +1299,11 @@ def make_mongod_config(wapt_root_dir):
     dst_file.write(config_string)
     dst_file.close()
 
-def install_windows_service():
+def install_windows_service(args):
     """Setup waptserver, waptmongodb et waptapache as a windows Service managed by nssm
-    >>> install_windows_service()
+    >>> install_windows_service([])
     """
+    install_apache_service = '--without-apache' not in args
 
     # register mongodb server
     make_mongod_config(wapt_root_dir)
@@ -1317,18 +1318,20 @@ def install_windows_service():
     install_windows_nssm_service("WAPTMongodb",service_binary,service_parameters,service_logfile)
 
     # register apache frontend
-    make_httpd_config(wapt_root_dir, wapt_folder)
-
-    service_binary =os.path.abspath(os.path.join(wapt_root_dir,'waptserver','apache-win32','bin','httpd.exe'))
-    service_parameters = ""
-    service_logfile = os.path.join(log_directory,'nssm_apache.log')
-    install_windows_nssm_service("WAPTApache",service_binary,service_parameters,service_logfile)
+    if install_apache_service:
+        make_httpd_config(wapt_root_dir, wapt_folder)
+        service_binary =os.path.abspath(os.path.join(wapt_root_dir,'waptserver','apache-win32','bin','httpd.exe'))
+        service_parameters = ""
+        service_logfile = os.path.join(log_directory,'nssm_apache.log')
+        install_windows_nssm_service("WAPTApache",service_binary,service_parameters,service_logfile)
 
     # register waptserver
     service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptpython.exe'))
     service_parameters = os.path.abspath(__file__)
     service_logfile = os.path.join(log_directory,'nssm_waptserver.log')
-    service_dependencies = 'WAPTMongodb WAPTApache'
+    service_dependencies = 'WAPTMongodb'
+    if install_apache_service:
+        service_dependencies += ' WAPTApache'
     install_windows_nssm_service("WAPTServer",service_binary,service_parameters,service_logfile,service_dependencies)
 
 if __name__ == "__main__":
@@ -1337,7 +1340,8 @@ if __name__ == "__main__":
         sys.exit(doctest.testmod())
 
     if len(sys.argv)>1 and sys.argv[1] == 'install':
-        install_windows_service()
+        # pass optional parameters along with the command
+        install_windows_service(sys.argv[1:])
         sys.exit(0)
 
     if options.devel:

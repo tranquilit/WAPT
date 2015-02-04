@@ -192,6 +192,7 @@ var
   Reply, ResultCode: Integer;
   ServiceStatus: LongWord;
   NetstatOutput, ConflictingService: AnsiString;
+  DoApache: Boolean;
 begin
 
   // terminate waptconsole
@@ -208,8 +209,12 @@ begin
   Exec('net', 'stop waptservice', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   
 #ifdef waptserver
+
+  DoApache := True;
+
   Exec('net', 'stop waptserver', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-  Exec('net', 'stop waptapache', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  if DoApache then
+    Exec('net', 'stop waptapache', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   Exec('net', 'stop waptmongodb', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   
   repeat
@@ -221,9 +226,9 @@ begin
       ConflictingService := '8080'
     else if Pos('0.0.0.0:8088 ', NetstatOutput) > 0 then
       ConflictingService := '8088'
-    else if Pos('0.0.0.0:443 ', NetstatOutput) > 0 then
+    else if (DoApache) and (Pos('0.0.0.0:443 ', NetstatOutput) > 0) then
       ConflictingService := '443'
-    else if Pos('0.0.0.0:80 ', NetstatOutput) > 0 then
+    else if (DoApache) and (Pos('0.0.0.0:80 ', NetstatOutput) > 0) then
       ConflictingService := '80'
     ;
 
