@@ -669,6 +669,8 @@ def ensure_list(csv_or_list,ignore_empty_args=True):
     """if argument is not a list, return a list from a csv string"""
     if csv_or_list is None:
         return []
+    if isinstance(csv_or_list,tuple):
+        return list(csv_or_list)
     elif not isinstance(csv_or_list,list):
         if ignore_empty_args:
             return [s.strip() for s in csv_or_list.split(',') if s.strip() != '']

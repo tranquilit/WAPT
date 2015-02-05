@@ -12,8 +12,6 @@ def programfiles32():
         return os.environ['PROGRAMFILES']
 
 if __name__ == '__main__':
-    if len(sys.argv) != 1 or sys.argv[1] == "--help":
-        print >> sys.stderr, "Usage: %s installer_name[.exe]"
 
     installer = sys.argv[1]
     if installer.endswith(".exe"):

@@ -1367,7 +1367,7 @@ class WaptClientUpgrade(WaptTask):
         self.result = {'result':'OK','message':output}
 
     def __unicode__(self):
-        return u"Upgrading WAPT client"
+        return __(u"Upgrading WAPT client")
 
 
 class WaptServiceRestart(WaptTask):
@@ -1395,7 +1395,7 @@ class WaptServiceRestart(WaptTask):
         tmp_bat.write('del "%s"\n'%tmp_bat.name)
         tmp_bat.close()
         self.add_at_cmd(tmp_bat.name)
-        output = _('WaptService restarted using batch file %s')%tmp_bat.name
+        output = __(u'WaptService restarted using batch file %s') % (tmp_bat.name,)
         self.result = {'result':'OK','message':output}
 
     def __unicode__(self):
