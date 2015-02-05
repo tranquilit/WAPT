@@ -67,6 +67,7 @@ def update_control(entry):
     if update_sources():
         waptget = get_file_properties(r'patchs\wapt-get.exe')
         rev = open('../version').read().strip()
+        entry.package = '%s-waptupgrade' % WAPT.config.get('global','default_package_prefix')
         entry.version = '%s-%s' % (waptget['FileVersion'],rev)
     else:
         print(u'Keeping current control data %s (%s)'%(control.package,control.version))
