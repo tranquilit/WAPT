@@ -166,12 +166,11 @@ begin
     Exit;
   end;
 
-  Reply := MsgBox('There already is a Web server listening on port '+ ConflictingService +'.'
-   '. You have several choices: abort the installation, ignore this warning (NOT RECOMMENDED), '+
-   'deactivate the conflicting service and replace it with our bundled Apache server, or choose '+
-   'not to install Apache.  In the latter case it is advised to set up your Web server as a reverse '
-   ' proxy to http://localhost:8080/.'
-    , mbError, MB_ABORTRETRYIGNORE);
+  Reply := MsgBox('There already is a Web server listening on port '+ ConflictingService +'. ' +
+   'You have several choices: abort the installation, ignore this warning (NOT RECOMMENDED), ' +
+   'deactivate the conflicting service and replace it with our bundled Apache server, or choose ' +
+   'not to install Apache.  In the latter case it is advised to set up your Web server as a reverse ' +
+   'proxy to http://localhost:8080/.' , mbError, MB_ABORTRETRYIGNORE);
   if Reply = IDABORT then
     Abort;
 
