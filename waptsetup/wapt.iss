@@ -208,23 +208,24 @@ begin
   Exec('net', 'stop waptservice', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   
 #ifdef waptserver
+
   Exec('net', 'stop waptserver', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   Exec('net', 'stop waptapache', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   Exec('net', 'stop waptmongodb', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-  
+
+#endif
+
   repeat
 
     ConflictingService := '';
 
     NetstatOutput := RunCmd('netstat -a -n -p tcp', True);
-    if Pos('0.0.0.0:8080 ', NetstatOutput) > 0 then
-      ConflictingService := '8080'
-    else if Pos('0.0.0.0:8088 ', NetstatOutput) > 0 then
+    if Pos('0.0.0.0:8088 ', NetstatOutput) > 0 then
       ConflictingService := '8088'
-    else if Pos('0.0.0.0:443 ', NetstatOutput) > 0 then
-      ConflictingService := '443'
-    else if Pos('0.0.0.0:80 ', NetstatOutput) > 0 then
-      ConflictingService := '80'
+#ifdef waptserver
+    else if Pos('0.0.0.0:8080 ', NetstatOutput) > 0 then
+      ConflictingService := '8080'
+#endif
     ;
 
     if ConflictingService <> '' then
@@ -238,7 +239,6 @@ begin
     end;
 
   until (ConflictingService = '') or (Reply = IDIGNORE);
-#endif
   
   Result := True;
 end;
