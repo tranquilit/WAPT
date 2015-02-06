@@ -535,17 +535,14 @@ end;
 
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
-  currhost : ansistring;
-  IPS,IP, RowSO, attribs, packages, softwares, tasks, tasksresult, running: ISuperObject;
+  IP, currhost : ansistring;
+  RowSO, attribs, packages, softwares, tasks, tasksresult, running: ISuperObject;
 begin
   TimerTasks.Enabled := False;
   RowSO := Gridhosts.FocusedRow;
   if (RowSO <> nil) then
   begin
     currhost := RowSO.S['uuid'];
-    IPS := RowSO['host.connected_ips'];
-    if IPS.DataType <> stArray then
-      IPS := SA([RowSO['host.connected_ips']]);
     if HostPages.ActivePage = pgPackages then
     begin
       packages := RowSO['packages'];
@@ -587,15 +584,8 @@ begin
     begin
       try
         tasks := Nil;
-        for IP in IPS do
-        try
-          tasks := WAPTServerJsonGet('host_tasks?host=%s&uuid=%s',
-            [ip.AsString, currhost], UseProxyForServer, waptServerUser,
-            waptServerPassword);
-          if tasks.S['status'] = 'OK' then
-            Break;
-        except
-        end;
+        IP := GetReachableIP(RowSO['host.connected_ips'],waptservice_port);
+        tasks := WAPTServerJsonGet('host_tasks?host=%s&uuid=%s', [ip, currhost], UseProxyForServer, waptServerUser,waptServerPassword);
 
         if (tasks<>Nil) and  (tasks.S['status'] = 'OK') then
         begin
@@ -1304,11 +1294,7 @@ var
   IPS,Result: ISuperObject;
 begin
   hostname := GridHosts.FocusedRow.S['host.computer_fqdn'];
-  ips := GridHosts.FocusedRow['host.connected_ips'];
-  if ips.DataType = stArray then
-    IP := ips.AsArray.S[0]
-  else
-    IP := ips.AsString;
+  ip := GetReachableIP(GridHosts.FocusedRow['host.connected_ips'],waptservice_port);
 
   if EditHost(hostname, ActAdvancedMode.Checked, ip) <> nil then
     ActSearchHost.Execute;
@@ -1499,35 +1485,6 @@ begin
       end;
     end;
     UpdateHostPages(Sender);
-  end;
-end;
-
-function GetReachableIP(IPS:ISuperObject;port:word):String;
-var
-  IP:ISuperObject;
-begin
-  Result :='';
-  if (IPS=Nil) or (IPS.DataType=stNull) then
-    Result := ''
-  else
-  if (IPS.DataType=stString) then
-  begin
-    if CheckOpenPort(port,IPS.AsString,0) then
-      Result := IPS.AsString
-    else
-      Result := '';
-  end
-  else
-  if IPS.DataType=stArray then
-  begin
-    for IP in IPS do
-    begin
-      if CheckOpenPort(port,IP.AsString,0) then
-      begin
-        Result := IP.AsString;
-        Break;
-      end;
-    end;
   end;
 end;
 

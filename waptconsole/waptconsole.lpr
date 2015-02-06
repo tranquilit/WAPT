@@ -17,7 +17,6 @@ uses
 
 {$R *.res}
 
-
 begin
   RequireDerivedFormResource := True;
   Application.Initialize;
@@ -25,6 +24,7 @@ begin
   Application.CreateForm(TDMPython, DMPython);
   DMPython.WaptConfigFileName := AppIniFilename;
   Application.CreateForm(TVisWaptGUI, VisWaptGUI);
+
   if not VisWaptGUI.Login then
      Halt;
   Application.Run;

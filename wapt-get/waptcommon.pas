@@ -72,6 +72,8 @@ interface
   function IdHttpPostData(const UserAgent: ansistring; const url: Ansistring; const Data: RawByteString; enableProxy:Boolean= False;
      ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString=''):RawByteString;
 
+  function GetReachableIP(IPS:ISuperObject;port:word):String;
+  function WaptServiceReachable(IPS:ISuperObject):String;
 
   function RunAsAdmin(const Handle: Hwnd; aFile : Ansistring; Params: Ansistring): Boolean;
 
@@ -1530,6 +1532,64 @@ begin
         raise Exception.CreateFmt(rsInnoSetupUnavailable, [inno_fn]);
     Sto_RedirectedExecute(format('"%s"  %s',[inno_fn,custom_iss]),'',3600000,'','','',OnProgress);
     Result := destination + '\' + outputname + '.exe';
+end;
+
+function GetReachableIP(IPS:ISuperObject;port:word):String;
+var
+  IP:ISuperObject;
+begin
+  Result :='';
+  if (IPS=Nil) or (IPS.DataType=stNull) then
+    Result := ''
+  else
+  if (IPS.DataType=stString) then
+  begin
+    if CheckOpenPort(port,IPS.AsString,0) then
+      Result := IPS.AsString
+    else
+      Result := '';
+  end
+  else
+  if IPS.DataType=stArray then
+  begin
+    for IP in IPS do
+    begin
+      if CheckOpenPort(port,IP.AsString,0) then
+      begin
+        Result := IP.AsString;
+        Break;
+      end;
+    end;
+  end;
+end;
+
+function WaptServiceReachable(IPS: ISuperObject): String;
+var
+  IP:ISuperObject;
+begin
+  Result :='';
+  if (IPS=Nil) or (IPS.DataType=stNull) then
+    Result := ''
+  else
+  if (IPS.DataType=stString) then
+  begin
+    if WAPTServerJsonGet() then
+      Result := IPS.AsString
+    else
+      Result := '';
+  end
+  else
+  if IPS.DataType=stArray then
+  begin
+    for IP in IPS do
+    begin
+      if CheckOpenPort(port,IP.AsString,0) then
+      begin
+        Result := IP.AsString;
+        Break;
+      end;
+    end;
+  end;
 end;
 
 
