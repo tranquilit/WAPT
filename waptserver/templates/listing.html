@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Wapt folder</title>
+  </head>
+  <body>
+
+    <p>
+      You shouldn't be reading this page. If you haven't already done
+      so, please configure a webserver to serve these directoriesreverse proxy so that WAPT clients can
+      access your WAPT server over regular HTTP/HTTPS ports.  You've
+      been warned.
+    </p>
+
+    <p> <a href="..">Parent directory</a></p>
+
+    <p>Folder content</p>
+    <ul>
+      {% for entry in dir_listing %}
+      <li> <a href="{{ url_for('get_wapt_package', input_package_name=entry) }}">{{ entry }}</a></li><br />
+      {% endfor %}
+    </ul>
+  </body>
+</html>
