@@ -52,6 +52,7 @@ import requests
 import subprocess
 import tempfile
 import traceback
+import datetime
 
 from rocket import Rocket
 
@@ -165,6 +166,12 @@ if config.has_section('options'):
         if wapt_folder.endswith('/'):
             wapt_folder = wapt_folder[:-1]
 
+    if config.has_option('options', 'clients_poll_interval'):
+        clients_poll_interval = int(config.get('options', 'clients_poll_interval'))
+    else:
+        clients_poll_interval = None
+
+
     if options.loglevel is None and config.has_option('options', 'loglevel'):
         loglevel = config.get('options', 'loglevel')
         setloglevel(logger,loglevel)
@@ -202,6 +209,14 @@ app = Flask(__name__,static_folder='./templates/static')
 #app.secret_key = config.get('options','secret_key')
 
 babel = Babel(app)
+
+
+def datetime2isodate(adatetime = None):
+    if not adatetime:
+        adatetime = datetime.datetime.now()
+    assert(isinstance(adatetime,datetime.datetime))
+    return adatetime.isoformat()
+
 
 def ensure_list(csv_or_list,ignore_empty_args=True):
     """if argument is not a list, return a list from a csv string"""
@@ -424,6 +439,18 @@ def update_data(data):
         host_id = hosts().insert(data)
     return get_host_data(data["uuid"],filter={"uuid":1,"host":1})
 
+def get_reachable_ip(ips=[],waptservice_port=waptservice_port):
+    ips = ensure_list(ips)
+    for ip in ips:
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(0.5)
+            s.connect((ip,waptservice_port))
+            s.close()
+            return ip
+        except:
+            pass
+    return None
 
 @app.route('/add_host',methods=['POST'])
 @app.route('/update_host',methods=['POST'])
@@ -435,6 +462,13 @@ def update_host():
             uuid = data["uuid"]
             if uuid:
                 logger.info('Update host %s status'%(uuid,))
+                # check if client is reachable
+                if 'host' in data and 'connected_ips' in data['host']:
+                    ips = data['host']['connected_ips']
+                    ip = get_reachable_ip(ips,waptservice_port)
+                    data['wapt']['listening_address'] = dict(protocol='http',address=ip,port=waptservice_port,timestamp=datetime2isodate())
+                    logger.debug('Client {} is listening on IP {}:{}'.format(uuid,ip,waptservice_port))
+
                 result = dict(status='OK',message="update_host: No data supplied",result=update_data(data))
             else:
                 result = dict(status='ERROR',message="update_host: No uuid supplied")
@@ -827,6 +861,43 @@ def forget_packages():
 
 
 
+@app.route('/host_reachable_ip')
+@app.route('/host_reachable_ip.json')
+@requires_auth
+def host_reachable_ip():
+    """Check if supplied host's waptservice can be reached
+            param uuid : host uuid
+            return [IP,port]
+    """
+    try:
+        try:
+            uuid = request.args['uuid']
+            host_data = hosts().find_one({ "uuid": uuid},fields={'softwares':0,'packages':0})
+            if not host_data:
+                raise Exception(_('Unknown uuid'))
+            if not 'host' in host_data or not 'connected_ips' in host_data['host']:
+                raise Exception(_('Unknown connected IP for this UUID'))
+
+            if not waptservice_port:
+                raise Exception(_("The WAPT service port is not defined."))
+
+            ips = ensure_list(host_data['host']['connected_ips'])
+            ip  = get_reachable_ip(ips,waptservice_port)
+            if ip:
+                result = dict(message=[ip,waptservice_port],status='OK')
+            else:
+                result = dict(message=[],status='ERROR')
+
+        except Exception as e:
+            raise Exception(_("Couldn't connect to web service : {}.").format(e))
+
+    except Exception, e:
+            result = { 'status' : 'ERROR', 'message': u"%s" % e  }
+    return  Response(response=json.dumps(result),
+                         status=200,
+                         mimetype="application/json")
+
+
 @app.route('/host_tasks')
 @app.route('/host_tasks.json')
 @requires_auth
@@ -1125,23 +1196,42 @@ def get_group_package(input_package_name):
 
 
 class CheckHostsWaptService(threading.Thread):
-    def __init__(self):
+    def __init__(self,poll_interval=None):
         threading.Thread.__init__(self)
+        self.daemon = True
         self.mongoclient = MongoClient(mongodb_ip, int(mongodb_port))
-        self.db = mongoclient.wapt
-        self.polltimeout = 20
+        self.db = self.mongoclient.wapt
+        self.poll_interval = poll_interval
 
-    def get_hosts_ip(self):
-        list_hosts = []
+    def update_listening_address(self):
+        """Try to connect to all registered hosts using connected ips and waptservice_port
+                Stores result in database as wapt.listening_address key
+        """
         query = {"host.connected_ips":{"$exists": "true", "$ne" :[]}}
         fields = {'host.connected_ips':1,'uuid':1,'host.computer_fqdn':1}
-        result = {}
-        for host in self.db.hosts.find(query,fields=fields):
-            result[host['uuid']] = host['host.connected_ips']
-        return result
+        for data in self.db.hosts.find(query,fields=fields):
+            if 'host' in data and 'connected_ips' in data['host']:
+                ips = data['host']['connected_ips']
+                logger.debug("Client checker is testing %s" % ips)
+                ip = get_reachable_ip(ips,waptservice_port)
+                la = dict(protocol='http',address=ip,port=waptservice_port,timestamp=datetime2isodate())
+                self.db.hosts.update({"_id" : data['_id'] }, {"$set": {'wapt.listening_address':la }})
 
     def run(self):
-        pass
+        logger.debug('Start client-listening address checker thread')
+        while True:
+            try:
+                try:
+                    self.update_listening_address()
+                except Exception as e:
+                    logger.critical('Unable to poll wapt client : %s' % e)
+                logger.debug('Client-listening address checker sleeping...')
+                if self.poll_interval:
+                    time.sleep(self.poll_interval)
+                else:
+                    break
+            except KeyboardInterrupt:
+                break
 
 
 def install_windows_nssm_service(service_name,service_binary,service_parameters,service_logfile,service_dependencies=None):
@@ -1343,6 +1433,14 @@ if __name__ == "__main__":
         # pass optional parameters along with the command
         install_windows_service(sys.argv[1:])
         sys.exit(0)
+
+
+    if clients_poll_interval:
+        check_listening = CheckHostsWaptService(poll_interval = clients_poll_interval)
+        check_listening.start()
+    else:
+        check_listening = None
+
 
     if options.devel:
         app.run(host='0.0.0.0',port=30880,debug=False)
