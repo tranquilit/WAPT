@@ -361,11 +361,6 @@ def informations():
                      mimetype="application/json")
 
 
-@app.route('/wapt/')
-def wapt_listing():
-    return render_template('listing.html',data=data)
-
-
 @app.route('/hosts')
 @app.route('/json/host_list',methods=['GET'])
 @requires_auth
@@ -1146,6 +1141,9 @@ def delete_package(filename=""):
                          status=200,
                          mimetype="application/json")
 
+@app.route('/wapt/')
+def wapt_listing():
+    return render_template('listing.html', dir_listing=os.listdir(wapt_folder))
 
 @app.route('/wapt/<string:input_package_name>')
 def get_wapt_package(input_package_name):
