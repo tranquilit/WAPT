@@ -31,6 +31,8 @@ resourcestring
   rsTaskCanceled = 'Task canceled.';
   rsFailedToCancel = 'Could not cancel : %s.';
 
+  rsNoReachableIP = 'None IP reachable for this host. Check firewall, routes and remote service status';
+
   rsIncorrectPassword = 'Incorrect password.';
   rsPasswordChangeSuccess = 'Password successfully updated !';
   rsPasswordChangeError = 'Error : %s';

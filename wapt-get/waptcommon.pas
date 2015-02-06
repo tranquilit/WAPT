@@ -880,6 +880,8 @@ begin
 end;
 
 function ReadWaptConfig(inifile:String = ''): Boolean;
+var
+  i: Integer;
 begin
   if inifile='' then
     inifile:=WaptIniFilename;
@@ -888,9 +890,23 @@ begin
   else
   begin
     waptservice_port := IniReadInteger(inifile,'global','waptservice_port',8088);
-    FallBackLanguage := IniReadString(inifile,'global','language','');
-    if FallBackLanguage ='' then
-        GetLanguageIDs(Language,FallBackLanguage);
+
+    // override lang setting
+    for i := 1 to Paramcount - 1 do
+      if (ParamStrUTF8(i) = '--LANG') or (ParamStrUTF8(i) = '-l') or
+        (ParamStrUTF8(i) = '--lang') then
+        begin
+          Language := ParamStrUTF8(i + 1);
+          FallBackLanguage := copy(ParamStrUTF8(i + 1),1,2);
+        end;
+
+    if Language = '' then
+    begin
+      Language := IniReadString(inifile,'global','language','');       ;
+      FallBackLanguage := copy(Language,1,2);
+      if FallBackLanguage ='' then
+          GetLanguageIDs(Language,FallBackLanguage);
+    end;
 
     waptserver_port := IniReadInteger(inifile,'global','waptserver_port',80);
     waptserver_ssl_port := IniReadInteger(inifile,'global','waptserver_sslport',443);

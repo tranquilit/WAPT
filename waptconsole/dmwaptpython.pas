@@ -48,6 +48,7 @@ procedure TDMPython.SetWaptConfigFileName(AValue: String);
 var
   St:TStringList;
   ini : TInifile;
+  i: integer;
 begin
   if FWaptConfigFileName=AValue then Exit;
   FWaptConfigFileName:=AValue;
@@ -79,13 +80,28 @@ begin
     finally
       st.free;
     end;
-  end;
+    // override lang setting
+    for i := 1 to Paramcount - 1 do
+      if (ParamStrUTF8(i) = '--LANG') or (ParamStrUTF8(i) = '-l') or
+        (ParamStrUTF8(i) = '--lang') then
+        begin
+          waptcommon.Language := ParamStrUTF8(i + 1);
+          waptcommon.FallBackLanguage := copy(waptcommon.Language,1,2);
+          Language:=FallBackLanguage;
+        end;
 
-  ini := TIniFile.Create(AppIniFilename);
-  try
-    Language := ini.ReadString('global','language','');
-  finally
-    ini.Free;
+    // get from ini
+    if Language = '' then
+    begin
+      ini := TIniFile.Create(FWaptConfigFileName);
+      try
+        waptcommon.Language := ini.ReadString('global','language','');
+        waptcommon.FallBackLanguage := copy(waptcommon.Language,1,2);
+        Language := waptcommon.Language;
+      finally
+        ini.Free;
+      end;
+    end;
   end;
 end;
 

@@ -1502,6 +1502,35 @@ begin
   end;
 end;
 
+function GetReachableIP(IPS:ISuperObject;port:word):String;
+var
+  IP:ISuperObject;
+begin
+  Result :='';
+  if (IPS=Nil) or (IPS.DataType=stNull) then
+    Result := ''
+  else
+  if (IPS.DataType=stString) then
+  begin
+    if CheckOpenPort(port,IPS.AsString,0) then
+      Result := IPS.AsString
+    else
+      Result := '';
+  end
+  else
+  if IPS.DataType=stArray then
+  begin
+    for IP in IPS do
+    begin
+      if CheckOpenPort(port,IP.AsString,0) then
+      begin
+        Result := IP.AsString;
+        Break;
+      end;
+    end;
+  end;
+end;
+
 procedure TVisWaptGUI.ActRDPExecute(Sender: TObject);
 var
   ip: ansistring;
@@ -1509,16 +1538,20 @@ begin
   if (Gridhosts.FocusedRow <> nil) and
     (Gridhosts.FocusedRow.S['host.connected_ips'] <> '') then
   begin
-    ip := Gridhosts.FocusedRow.S['host.connected_ips'];
-    ShellExecute(0, '', PAnsiChar('mstsc'), PAnsichar('/v:' + ip), nil, SW_SHOW);
+    ip := GetReachableIP(Gridhosts.FocusedRow['host.connected_ips'],3389);
+    if ip <> '' then
+      ShellExecute(0, '', PAnsiChar('mstsc'), PAnsichar('/v:' + ip), nil, SW_SHOW)
+    else
+      ShowMessage(rsNoreachableIP);
   end;
 end;
 
 procedure TVisWaptGUI.ActRDPUpdate(Sender: TObject);
+var
+  ip: ansistring;
 begin
   try
-    ActRDP.Enabled := (Gridhosts.FocusedRow <> nil) and
-      (Gridhosts.FocusedRow.S['host.connected_ips'] <> '');
+    ActRDP.Enabled := (Gridhosts.FocusedRow <> nil) and (Gridhosts.FocusedRow.S['host.connected_ips']<>'');
   except
     ActRDP.Enabled := False;
   end;
@@ -1858,34 +1891,11 @@ begin
 end;
 
 procedure TVisWaptGUI.ActReloadConfigExecute(Sender: TObject);
-var
-  inifile: TIniFile;
-  newlang,lang,fblang:String;
 begin
+  dmpython.WaptConfigFileName:='';
   CacheWaptServerUrl := 'None';
-  inifile := TIniFile.Create(AppIniFilename);
-  try
-    DMPython.RunJSON('mywapt.load_config()', jsonlog);
-    DMPython.PythonEng.ExecString('mywapt.use_hostpackages = False');
-    DMPython.PythonEng.ExecString('mywapt.waptdb.dbpath = ":memory:"');
-    HttpProxy := inifile.ReadString('global', 'http_proxy', '');
-    UseProxyForRepo := inifile.readBool('global',
-      'use_http_proxy_for_repo', False);
-    UseProxyForServer := inifile.readBool('global', 'use_http_proxy_for_server',
-      False);
-    UseProxyForTemplates := inifile.ReadBool('global',
-      'use_http_proxy_for_templates', False);
-    MainRepoUrl := GetMainWaptRepo;
-    WAPTServer := GetWaptServerURL;
-    TemplatesRepoUrl := WaptTemplatesRepo;
-    GetLanguageIDs(Lang,fblang);
-    DMPython.Language := inifile.readString('global',
-      'language',fblang);
-    //Lazy loading
-    //DMPython.PythonEng.ExecString('mywapt.update(register=False)');
-  finally
-    inifile.Free;
-  end;
+  waptcommon.ReadWaptConfig(AppIniFilename);
+  dmpython.WaptConfigFileName:=AppIniFilename;
 end;
 
 procedure TVisWaptGUI.ActVNCExecute(Sender: TObject);
@@ -1895,9 +1905,12 @@ begin
   if (Gridhosts.FocusedRow <> nil) and
     (Gridhosts.FocusedRow.S['host.connected_ips'] <> '') then
   begin
-    ip := Gridhosts.FocusedRow.S['host.connected_ips'];
-    ShellExecute(0, '', PAnsiChar('C:\Program Files\TightVNC\tvnviewer.exe'),
-      PAnsichar(ip), nil, SW_SHOW);
+    ip := GetReachableIP(Gridhosts.FocusedRow['host.connected_ips'],5900);
+    if ip<>'' then
+      ShellExecute(0, '', PAnsiChar('C:\Program Files\TightVNC\tvnviewer.exe'),
+        PAnsichar(ip), nil, SW_SHOW)
+    else
+      ShowMessage(rsNoReachableIP);
   end;
 end;
 
@@ -1906,7 +1919,8 @@ begin
   try
     ActVNC.Enabled := (Gridhosts.FocusedRow <> nil) and
       (Gridhosts.FocusedRow.S['host.connected_ips'] <> '') and
-      FileExists('C:\Program Files\TightVNC\tvnviewer.exe');
+      FileExists('C:\Program Files\TightVNC\tvnviewer.exe') and
+      (Gridhosts.FocusedRow.S['host.connected_ips']<>'');
   except
     ActVNC.Enabled := False;
   end;

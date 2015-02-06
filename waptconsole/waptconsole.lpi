@@ -24,7 +24,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="2"/>
+      <BuildNr Value="3"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -38,6 +38,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <CommandLineParams Value="--lang fr"/>
       </local>
     </RunParams>
     <RequiredPackages Count="10">
