@@ -1224,17 +1224,30 @@ def make_response_from_exception(exception,error_code='',status=200):
             status=status,
             mimetype="application/json")
 
+
+class EWaptMissingHostData(Exception):
+    pass
+
+class EWaptUnknownHost(Exception):
+    pass
+
+class EWaptHostUnreachable(Exception):
+    pass
+
+class EWaptForbiddden(Exception):
+    pass
+
 def get_ip_port(host_data):
     """Return a dict proto,address,port for the supplied registered host
         - first check if wapt.listening_address is ok
         - if not present (old wapt client/server), check each of host.check connected_ips list
     """
     if not host_data:
-        raise Exception(_('Unknown uuid'))
+        raise EWaptUnknownHost(_('Unknown uuid'))
     if not 'host' in host_data or not 'connected_ips' in host_data['host']:
-        raise Exception(_('Unknown connected IP for this UUID'))
+        raise EWaptMissingHostData(_('Unknown connected IP for this UUID'))
     if not waptservice_port:
-        raise Exception(_("The WAPT service port is not defined."))
+        raise EWaptMissingHostData(_("The WAPT service port is not defined."))
 
     if 'wapt' in host_data and \
           'listening_address' in host_data['wapt'] and \
@@ -1247,7 +1260,7 @@ def get_ip_port(host_data):
         if ip:
             return dict(protocol='',address=ip,port=waptservice_port)
         else:
-            raise Exception(_('No reachable IP for %s')%uuid)
+            raise EWaptHostUnreachable(_('No reachable IP for %s')%uuid)
 
 
 @app.route('/ping')
@@ -1268,7 +1281,7 @@ def trigger_reachable_discovery():
 
     except Exception, e:
             return make_response_from_exception(e)
-    return  make_response(result,msg = message)
+    return make_response(result,msg = message)
 
 
 @app.route('/host_reachable_ip')
@@ -1283,11 +1296,11 @@ def host_reachable_ip():
             host_data = hosts().find_one({ "uuid": uuid},fields={'softwares':0,'packages':0})
             result = get_ip_port(host_data)
         except Exception as e:
-            raise Exception(_("Couldn't connect to web service : {}.").format(e))
+            raise EWaptHostUnreachable(_("Couldn't connect to web service : {}.").format(e))
 
     except Exception, e:
             return make_response_from_exception(e)
-    return  make_response(result)
+    return make_response(result)
 
 
 @app.route('/trigger_upgrade')
@@ -1301,13 +1314,17 @@ def trigger_upgrade():
 
         if listening_address and listening_address['address'] and listening_address['port']:
             logger.info( "Triggering upgrade for %s at address %s..." % (uuid,listening_address['address']))
-            client_result = json.loads(requests.get("%(protocol)s://%(address)s:%(port)d/upgrade.json" % listening_address,proxies=None,timeout=0.5).text)
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/upgrade.json" % listening_address,proxies=None,timeout=0.5).text
             try:
+                client_result = json.loads(client_result)
                 result = client_result['content']
             except ValueError:
-                raise Exception(client_result)
+                if 'Restricted access' in client_result:
+                    raise EWaptForbiddden(client_result)
+                else:
+                    raise Exception(client_result)
         else:
-            raise Exception(_("The WAPT service port is not defined."))
+            raise EWaptMissingHostData(_("The WAPT service port is not defined."))
         return make_response(result,
             msg = "Upgrade triggered for %s at address %s:%s..." % (uuid,listening_address['address'],listening_address['port']),
             success = client_result['result'] == 'OK',)
