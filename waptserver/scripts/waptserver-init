@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 
 ### BEGIN INIT INFO
-# Provides: tis-compliance
+# Provides: tis-waptserver
 # Required-Start: $all
 # Required-Stop: $all
 # Default-Start: 2 3 4 5
 # Default-Stop: 0 1 6
-# Short-Description: starts the uwsgi app server for tis-compliance
-# Description: starts uwsgi app server for tis-compliance using start-stop-daemon
+# Short-Description: starts the uwsgi app server for tis-waptserver
+# Description: starts uwsgi app server for tis-waptserver
 ### END INIT INFO
 set -e
 
 VERSION=waptserver
 PATH=/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/local/bin/$VERSION
+DAEMON=/usr/bin/uwsgi-core
 RUN=/var/run
 NAME=$VERSION
 CONFIG_FILE=/opt/wapt/waptserver/waptserver.ini
@@ -38,7 +38,7 @@ do_pid_check()
     local PIDFILE=$1
     [[ -f $PIDFILE ]] || return 0
     local PID=$(cat $PIDFILE)
-    for p in $(pgrep uwsgi_python); do
+    for p in $(pgrep "$DAEMON"); do
         [[ $p == $PID ]] && return 1
     done
     return 0
@@ -49,8 +49,8 @@ do_start()
 {
 	local PIDFILE=$RUN/$NAME.pid
 	if do_pid_check $PIDFILE; then
-		/usr/bin/uwsgi-core -d $LOGFILE --pidfile $PIDFILE --ini $CONFIG_FILE --uid $OWNER --gid $GROUP --plugin http,python
-    else
+		$DAEMON -d $LOGFILE --pidfile $PIDFILE --ini $CONFIG_FILE --uid $OWNER --gid $GROUP --plugin http,python
+	else
 		echo "Already running!"
 	fi
 }
@@ -66,31 +66,38 @@ send_sig()
 wait_and_clean_pidfiles()
 {
         local PIDFILE=$RUN/$NAME.pid
-        until do_pid_check $PIDFILE; do
-            echo -n "";
+        local timeout=70 # 7 seconds loop
+        until do_pid_check $PIDFILE || [ "$timeout" -le 0 ]; do
+            sleep 0.1
+            echo -n .
+            timeout=$(($timeout - 1))
         done
+        if ! do_pid_check $PIDFILE; then
+            echo " WAPTserver killed with much prejudice"
+            send_sig -KILL
+        fi
         rm -f $PIDFILE
 }
 
 do_stop()
 {
-    send_sig -3
+    send_sig -QUIT
     wait_and_clean_pidfiles
 }
 
 do_reload()
 {
-    send_sig -1
+    send_sig -HUP
 }
 
 do_force_reload()
 {
-    send_sig -15
+    send_sig -TERM
 }
 
 get_status()
 {
-    send_sig -10
+    send_sig -USR1
 }
 
 case "$OP" in
@@ -117,7 +124,6 @@ case "$OP" in
     restart)
         echo "Restarting $DESC: "
         do_stop
-	sleep 3
         do_start
         echo "$NAME."
         ;;
