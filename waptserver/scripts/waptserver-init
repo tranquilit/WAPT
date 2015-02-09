@@ -74,23 +74,23 @@ wait_and_clean_pidfiles()
 
 do_stop()
 {
-    send_sig -3
+    send_sig -QUIT
     wait_and_clean_pidfiles
 }
 
 do_reload()
 {
-    send_sig -1
+    send_sig -HUP
 }
 
 do_force_reload()
 {
-    send_sig -15
+    send_sig -TERM
 }
 
 get_status()
 {
-    send_sig -10
+    send_sig -USR1
 }
 
 case "$OP" in
