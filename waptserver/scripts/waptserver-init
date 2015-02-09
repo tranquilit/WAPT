@@ -66,9 +66,16 @@ send_sig()
 wait_and_clean_pidfiles()
 {
         local PIDFILE=$RUN/$NAME.pid
-        until do_pid_check $PIDFILE; do
-            echo -n "";
+        local timeout=70 # 7 seconds loop
+        until do_pid_check $PIDFILE || [ "$timeout" -le 0 ]; do
+            sleep 0.1
+            echo -n .
+            timeout=$(($timeout - 1))
         done
+        if ! do_pid_check $PIDFILE; then
+            echo " WAPTserver killed with much prejudice"
+            send_sig -KILL
+        fi
         rm -f $PIDFILE
 }
 
