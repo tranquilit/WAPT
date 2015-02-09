@@ -38,7 +38,7 @@ do_pid_check()
     local PIDFILE=$1
     [[ -f $PIDFILE ]] || return 0
     local PID=$(cat $PIDFILE)
-    for p in $(pgrep "$DAEMON"); do
+    for p in $(pgrep -f "$DAEMON"); do
         [[ $p == $PID ]] && return 1
     done
     return 0
