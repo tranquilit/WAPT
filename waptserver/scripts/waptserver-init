@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 ### BEGIN INIT INFO
-# Provides: tis-compliance
+# Provides: tis-waptserver
 # Required-Start: $all
 # Required-Stop: $all
 # Default-Start: 2 3 4 5
 # Default-Stop: 0 1 6
-# Short-Description: starts the uwsgi app server for tis-compliance
-# Description: starts uwsgi app server for tis-compliance using start-stop-daemon
+# Short-Description: starts the uwsgi app server for tis-waptserver
+# Description: starts uwsgi app server for tis-waptserver
 ### END INIT INFO
 set -e
 
@@ -50,7 +50,7 @@ do_start()
 	local PIDFILE=$RUN/$NAME.pid
 	if do_pid_check $PIDFILE; then
 		/usr/bin/uwsgi-core -d $LOGFILE --pidfile $PIDFILE --ini $CONFIG_FILE --uid $OWNER --gid $GROUP --plugin http,python
-    else
+	else
 		echo "Already running!"
 	fi
 }
