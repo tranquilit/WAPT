@@ -85,9 +85,7 @@ begin
           ips := SA([host['host.connected_ips']]);
         for ip in ips do
         try
-          res := WAPTServerJsonGet(action+'/'+ ip.AsString, [],
-            UseProxyForServer,
-            waptServerUser, waptServerPassword);
+          res := WAPTServerJsonGet('%s/%s',[action,ip.AsString]);
           // old behaviour <0.8.10
           if res.AsObject.Exists('status') then
           begin
@@ -106,9 +104,7 @@ begin
             lasterror := E.ErrorMessage;
         end;
         if host.S['status'] <>'OK' then
-        begin
           raise Exception.Create(lasterror);
-        end;
       end;
       ProgressGrid.InvalidateFordata(host);
       Application.ProcessMessages;

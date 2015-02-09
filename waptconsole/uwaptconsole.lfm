@@ -375,6 +375,11 @@ object VisWaptGUI: TVisWaptGUI
             Position = 20
             Text = 'Groups'
             PropertyName = 'depends'
+          end        
+          item
+            Position = 21
+            Text = 'Listening IP'
+            PropertyName = 'wapt.listening_address.address'
           end>
         Header.DefaultHeight = 17
         Header.MaxHeight = 17

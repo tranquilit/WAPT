@@ -548,9 +548,7 @@ begin
       packages := RowSO['packages'];
       if (packages = nil) or (packages.AsArray = nil) then
         try
-          packages := WAPTServerJsonGet('client_package_list/%s',
-            [currhost], UseProxyForServer, waptServerUser,
-            waptServerPassword);
+          packages := WAPTServerJsonGet('client_package_list/%s',[currhost]);
           RowSO['packages'] := packages;
         except
           RowSO['packages'] := nil;
@@ -571,9 +569,7 @@ begin
       softwares := RowSO['softwares'];
       if (softwares = nil) or (softwares.AsArray = nil) then
       begin
-        softwares := WAPTServerJsonGet('client_software_list/%s',
-          [currhost], UseProxyForServer, waptServerUser,
-          waptServerPassword);
+        softwares := WAPTServerJsonGet('client_software_list/%s',[currhost]);
         RowSO['softwares'] := softwares;
       end;
       GridHostSoftwares.Data := FilterSoftwares(softwares);
@@ -585,7 +581,7 @@ begin
       try
         tasks := Nil;
         IP := GetReachableIP(RowSO['host.connected_ips'],waptservice_port);
-        tasks := WAPTServerJsonGet('host_tasks?host=%s&uuid=%s', [ip, currhost], UseProxyForServer, waptServerUser,waptServerPassword);
+        tasks := WAPTServerJsonGet('host_tasks?host=%s&uuid=%s', [ip, currhost]);
 
         if (tasks<>Nil) and  (tasks.S['status'] = 'OK') then
         begin
@@ -1047,8 +1043,7 @@ begin
   currhost := GridHosts.FocusedRow.S['uuid'];
   currip := GridHosts.FocusedRow.S['host.connected_ips'];
 
-  res := WAPTServerJsonGet('host_taskkill?host=%s&uuid=%s', [currip, currhost],
-    UseProxyForServer, waptServerUser, waptServerPassword);
+  res := WAPTServerJsonGet('host_taskkill?host=%s&uuid=%s', [currip, currhost]);
   if res.S['status'] = 'OK' then
     ShowMessage(rsTaskCanceled)
   else
@@ -1068,8 +1063,7 @@ begin
       cred.S['password'] := UTF8Decode(WaptServerPassword);
       cred.S['newPass'] := UTF8Decode(EdNewPassword1.Text);
       try
-        resp := WAPTServerJsonPost('login', [], cred, UseProxyForServer,
-          waptServerUser, WaptServerPassword);
+        resp := WAPTServerJsonPost('login', [], cred);
         try
           if not StrToBool(resp.AsString) then
             ShowMessage(rsIncorrectPassword)
@@ -1200,8 +1194,7 @@ begin
           Inc(i);
           group := GridPackages.GetCellStrValue(N, 'filename');
           ProgressTitle(format(rsDeletingElement, [group]));
-          res := WAPTServerJsonGet('/delete_package/' + group, [],
-            UseProxyForServer, waptServerUser, waptServerPassword);
+          res := WAPTServerJsonGet('delete_package/%s',[group]);
           if not ObjectIsNull(res['error']) then
             raise Exception.Create(res.S['error']);
           N := GridGroups.GetNextSelected(N);
@@ -1240,8 +1233,7 @@ begin
           Inc(i);
           package := GridPackages.GetCellStrValue(N, 'filename');
           ProgressTitle(format(rsDeletingElement, [package]));
-          res := WAPTServerJsonGet('/delete_package/' + package, [],
-            UseProxyForServer, waptServerUser, waptServerPassword);
+          res := WAPTServerJsonGet('/delete_package/%s',[package]);
           if not ObjectIsNull(res['error']) then
             raise Exception.Create(res.S['error']);
           N := GridPackages.GetNextSelected(N);
@@ -1338,8 +1330,7 @@ begin
           res := WAPTServerJsonGet(
             '/forget_packages.json?host=%s&package=%s&uuid=%s',
             [ip.AsString, Join(',',packages),
-            GridHosts.FocusedRow.S['uuid']], UseProxyForServer,
-            waptServerUser, waptServerPassword);
+            GridHosts.FocusedRow.S['uuid']]);
           if res.S['status'] = 'OK' then
             break;
         end;
@@ -1474,8 +1465,7 @@ begin
           res := WAPTServerJsonGet(
             '/remove_package.json?host=%s&package=%s&uuid=%s',
             [ip.AsString, Join(',',packages),
-            GridHosts.FocusedRow.S['uuid']], UseProxyForServer,
-            waptServerUser, waptServerPassword);
+            GridHosts.FocusedRow.S['uuid']]);
           if res.S['status'] = 'OK' then
             break;
         end;
@@ -1637,7 +1627,7 @@ procedure TVisWaptGUI.ActHostUpgradeExecute(Sender: TObject);
 begin
   with TVisHostsUpgrade.Create(Self) do
     try
-      action := 'upgrade_host';
+      action := 'trigger_upgrade_host';
       hosts := Gridhosts.SelectedRows;
 
       if ShowModal = mrOk then
@@ -1714,9 +1704,7 @@ begin
     0) = mrYes then
     begin
       for host in sel do
-        WAPTServerJsonGet('/delete_host/' + host.S['uuid'], [],
-          UseProxyForServer,
-          waptServerUser, waptServerPassword);
+        WAPTServerJsonGet('/delete_host/%s',[host.S['uuid']]);
       ActSearchHost.Execute;
     end;
   end;
@@ -1805,8 +1793,7 @@ begin
     previous_uuid := GridHosts.FocusedRow.S['uuid']
   else
     previous_uuid := '';
-  hosts := WAPTServerJsonGet(req, [], UseProxyForServer,
-    waptServerUser, waptServerPassword);
+  hosts := WAPTServerJsonGet(req, []);
   GridHosts.Data := hosts;
   if (hosts <> nil) and (hosts.AsArray <> nil) then
   begin
@@ -2040,8 +2027,7 @@ begin
           cred.S['password'] := UTF8Decode(WaptServerPassword);
 
           try
-            resp := WAPTServerJsonPost('login', [], cred, UseProxyForServer,
-              waptServerUser, WaptServerPassword);
+            resp := WAPTServerJsonPost('login', [], cred);
             try
               Result := StrToBool(resp.AsString);
               if not Result then

@@ -57,8 +57,6 @@ uses soutils,IniFiles,waptcommon;
 { TVisWaptExit }
 
 const
-  waptservice_port:integer = 8088;
-  zmq_port:integer = 5000;
   allow_cancel_upgrade:Boolean = True;
 
 function GetWaptLocalURL: String;
@@ -123,8 +121,6 @@ begin
   //Load config
   ini := TIniFile.Create(WaptIniFilename);
   try
-    waptservice_port := ini.ReadInteger('global','waptservice_port',waptservice_port);
-    zmq_port := ini.ReadInteger('global','zmq_port',zmq_port);
     allow_cancel_upgrade := ini.ReadBool('global','allow_cancel_upgrade',allow_cancel_upgrade);
   finally
     ini.Free;

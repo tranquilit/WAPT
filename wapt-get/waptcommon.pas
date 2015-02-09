@@ -61,8 +61,8 @@ interface
   function GetDNSServer:AnsiString;
   function GetDNSDomain:AnsiString;
 
-  function WAPTServerJsonGet(action: String;args:Array of const; enableProxy:Boolean= False;user:AnsiString='';password:AnsiString=''): ISuperObject;
-  function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject; enableProxy:Boolean= False;user:AnsiString='';password:AnsiString=''): ISuperObject;
+  function WAPTServerJsonGet(action: String;args:Array of const): ISuperObject;
+  function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject): ISuperObject;
   function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString='';timeout:integer=1000):ISuperObject;
 
   Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy:Boolean=False): boolean;
@@ -73,7 +73,8 @@ interface
      ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString=''):RawByteString;
 
   function GetReachableIP(IPS:ISuperObject;port:word):String;
-  function WaptServiceReachable(IPS:ISuperObject):String;
+  //return ip for waptservice
+  function WaptServiceReachableIP(UUID:String;hostdata:ISuperObject=Nil):String;
 
   function RunAsAdmin(const Handle: Hwnd; aFile : Ansistring; Params: Ansistring): Boolean;
 
@@ -614,8 +615,7 @@ begin
 end;
 
 
-function WAPTServerJsonGet(action: String; args: array of const;
-  enableProxy: Boolean; user: AnsiString; password: AnsiString): ISuperObject;
+function WAPTServerJsonGet(action: String; args: array of const): ISuperObject;
 var
   strresult : String;
 begin
@@ -625,13 +625,12 @@ begin
     action := '/'+action;
   if length(args)>0 then
     action := format(action,args);
-  strresult:=IdhttpGetString(GetWaptServerURL+action, enableProxy,4000,60000,60000,user,password);
+  strresult:=IdhttpGetString(GetWaptServerURL+action,UseProxyForServer,4000,60000,60000,waptServerUser, waptServerPassword);
   Result := SO(strresult);
 end;
 
 function WAPTServerJsonPost(action: String; args: array of const;
-  data: ISuperObject; enableProxy: Boolean; user: AnsiString;
-  password: AnsiString): ISuperObject;
+  data: ISuperObject): ISuperObject;
 var
   res:String;
 begin
@@ -641,7 +640,7 @@ begin
     action := '/'+action;
   if length(args)>0 then
     action := format(action,args);
-  res := IdhttpPostData('wapt', GetWaptServerURL+action, data.AsJson, enableProxy,4000,60000,60000,user,password);
+  res := IdhttpPostData('wapt', GetWaptServerURL+action, data.AsJson, UseProxyForServer,4000,60000,60000,WaptServerUser,WaptServerPassword);
   result := SO(res);
 end;
 
@@ -1563,35 +1562,27 @@ begin
   end;
 end;
 
-function WaptServiceReachable(IPS: ISuperObject): String;
+
+//Check on which IP:port the waptservice is reachable for machine UUID
+function WaptServiceReachableIP(UUID:String;hostdata:ISuperObject=Nil): String;
 var
-  IP:ISuperObject;
+  wapt_listening_address,address, IP_Port:ISuperObject;
 begin
   Result :='';
-  if (IPS=Nil) or (IPS.DataType=stNull) then
-    Result := ''
-  else
-  if (IPS.DataType=stString) then
+  // try to get from hostdata
+  if (hostdata<>Nil) and (hostdata.S['uuid'] = UUID) then
   begin
-    if WAPTServerJsonGet() then
-      Result := IPS.AsString
-    else
-      Result := '';
-  end
-  else
-  if IPS.DataType=stArray then
+    wapt_listening_address := hostdata['wapt.listening_address.address'];
+    if (wapt_listening_address<>Nil) and (wapt_listening_address.AsString<>'') then
+      result := format('%s:%s',[hostdata.S['wapt.listening_address.address'],hostdata.S['wapt.listening_address.port']]);
+  end;
+  if result = '' then
   begin
-    for IP in IPS do
-    begin
-      if CheckOpenPort(port,IP.AsString,0) then
-      begin
-        Result := IP.AsString;
-        Break;
-      end;
-    end;
+    // no hostdata, ask the server.
+    IP_Port := WAPTServerJsonGet('host_reachable_ip/uuid=%s',[UUID]);
+    result := format('%s:%s',[IP_Port.AsArray.S[0],IP_Port.AsArray.S[1]]);
   end;
 end;
-
 
 
 initialization

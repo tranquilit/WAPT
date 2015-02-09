@@ -245,9 +245,7 @@ begin
         Result := PackageEdited;
         if (result<>Nil) and ApplyUpdatesImmediately and (currentip<>'')  then
         begin
-          res := WAPTServerJsonGet('upgrade_host/'+currentip, [],
-            UseProxyForServer,
-            waptServerUser, waptServerPassword);
+          res := WAPTServerJsonGet('upgrade_host/'+currentip, []);
           if (res.S['result'] = 'OK') or (res.S['status'] = 'OK') then
             ShowMessage(rsUpgradingHost)
           else

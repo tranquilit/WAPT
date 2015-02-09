@@ -47,9 +47,7 @@ procedure TVisEditGroup.SetGroup(AValue: String);
 begin
   if FGroup=AValue then Exit;
   FGroup:=AValue;
-  members :=  WAPTServerJsonGet('/hosts_by_group/'+Fgroup, [],
-    UseProxyForServer,
-    waptServerUser, waptServerPassword);
+  members :=  WAPTServerJsonGet('/hosts_by_group/%s',[Fgroup]);
   EdGroup.Text:=Fgroup;
   GridHosts.Data := members;
   GridHosts.Header.AutoFitColumns(False);
