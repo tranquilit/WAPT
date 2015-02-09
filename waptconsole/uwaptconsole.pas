@@ -1627,7 +1627,7 @@ procedure TVisWaptGUI.ActHostUpgradeExecute(Sender: TObject);
 begin
   with TVisHostsUpgrade.Create(Self) do
     try
-      action := 'trigger_upgrade_host';
+      action := 'upgrade_host';
       hosts := Gridhosts.SelectedRows;
 
       if ShowModal = mrOk then
