@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="1.0.1"
+__version__="1.0.2"
 
 import os,sys
 try:
@@ -91,6 +91,9 @@ parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice
 parser.add_option("-d","--devel", dest="devel", default=False,action='store_true', help="Enable debug mode (for development only)")
 
 (options,args)=parser.parse_args()
+
+app = Flask(__name__,static_folder='./templates/static')
+babel = Babel(app)
 
 # setup logging
 logger = logging.getLogger()
@@ -171,10 +174,16 @@ if config.has_section('options'):
     else:
         clients_poll_interval = None
 
+    if config.has_option('options', 'secret_key'):
+        app.secret_key = config.get('options','secret_key')
+    else:
+        app.secret_key = 'NOT DEFINED'
 
     if options.loglevel is None and config.has_option('options', 'loglevel'):
         loglevel = config.get('options', 'loglevel')
         setloglevel(logger,loglevel)
+
+
 
 else:
     raise Exception (_("FATAL, configuration file {} has no section [options]. Please check Waptserver documentation").format(options.configfile))
@@ -204,11 +213,6 @@ if os.path.exists(wapt_folder + '-group')==False:
         raise Exception(_("Folder missing : {}-group.").format(wapt_folder))
 
 ALLOWED_EXTENSIONS = set(['wapt'])
-
-app = Flask(__name__,static_folder='./templates/static')
-#app.secret_key = config.get('options','secret_key')
-
-babel = Babel(app)
 
 
 def datetime2isodate(adatetime = None):
@@ -426,7 +430,13 @@ def get_host_list():
 
 
 def update_data(data):
-    data['last_query_date'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    """Helper function to update host data in mongodb
+        data is a dict with at least 'uuid' key and other key to add/update
+        - insert or update data based on uuid match
+        - update last_query_date key to current datetime
+        returns whole dict for the updated host data
+    """
+    data['last_query_date'] = datetime2isodate()
     host = get_host_data(data["uuid"],delete_id=False)
     if host:
         hosts().update({"_id" : host['_id'] }, {"$set": data})
@@ -434,12 +444,17 @@ def update_data(data):
         host_id = hosts().insert(data)
     return get_host_data(data["uuid"],filter={"uuid":1,"host":1})
 
-def get_reachable_ip(ips=[],waptservice_port=waptservice_port):
+def get_reachable_ip(ips=[],waptservice_port=waptservice_port,timeout=0.5):
+    """Try to establish a TCP connection to each IP of ips list on waptservice_port
+        return first successful IP
+        return empty string if no ip is is successful
+        ips is either a single IP, or a list of IP, or a CSV list of IP
+    """
     ips = ensure_list(ips)
     for ip in ips:
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.settimeout(0.5)
+            s.settimeout(timeout)
             s.connect((ip,waptservice_port))
             s.close()
             return ip
@@ -490,6 +505,7 @@ def delete_host(uuid=""):
     try:
         hosts().remove({'uuid': uuid })
         data = get_host_data(uuid)
+        # todo : delete host package if present
         result = dict(status='OK',message=json.dumps(data))
     except Exception as e:
         result = dict(status='ERROR',message=u"%s"%e)
@@ -541,20 +557,35 @@ def packagesFileToList(pathTofile):
 @app.route('/host_packages/<string:uuid>')
 @requires_auth
 def host_packages(uuid=""):
+    """Return a the status of all installed packages on a host given its UUID
+        for each installed package, check if the package should be upgrades based on local
+          package repository.
+    """
     try:
-        packages = get_host_data(uuid, {"packages":1})
-        if not packages:
+        host_data = get_host_data(uuid, {"packages":1})
+        if not host_data:
             raise Exception(_('No host with uuid {}.').format(uuid))
-        repo_packages = packagesFileToList(os.path.join(wapt_folder, 'Packages'))
-        if 'packages' in packages:
-            for p in packages['packages']:
-                package = PackageEntry()
-                package.load_control_from_dict(p)
-                matching = [ x for x in repo_packages if package.package == x.package ]
-                if matching:
-                    if package < matching[-1]:
-                        p['install_status'] = 'NEED-UPGRADE'
-        result = dict(status='OK',message='%i packages for host uuid: %s'%(len(packages['packages']),uuid),result = packages['packages'])
+        # check packages on local repository
+        localrepo = WaptLocalRepo(localpath=os.path.join(wapt_folder))
+        localrepo.load_packages()
+
+        # keep an index of installed packages for later check of depends.
+        host_packages_index = {}
+
+        packages = host_data.get('packages',[])
+        # packages is a list of plain dict
+        for package in packages:
+            host_pe = PackageEntry().load_control_from_dict(package)
+            # update index of installed packages for later check of depends.
+            host_packages_index[host_pe.package] = host_pe
+
+            # find if there are newer version packages in local repo matching those installed on the host
+            newer = [ p for p in localrepo.packages if p.match(host_pe.package) and p > host_pe ]
+            if newer:
+                # if installed version is older than the newest available in local repo, overload status
+                package['install_status'] = 'NEED-UPGRADE'
+
+        result = dict(status='OK',message='%i packages for host uuid: %s' %(len(packages),uuid),result = packages)
     except Exception as e:
         result = dict(status='ERROR',message='%s: %s'%('host_packages',e),result=None)
 
@@ -854,45 +885,6 @@ def forget_packages():
                          status=200,
                          mimetype="application/json")
 
-
-
-@app.route('/host_reachable_ip')
-@app.route('/host_reachable_ip.json')
-@requires_auth
-def host_reachable_ip():
-    """Check if supplied host's waptservice can be reached
-            param uuid : host uuid
-            return [IP,port]
-    """
-    try:
-        try:
-            uuid = request.args['uuid']
-            host_data = hosts().find_one({ "uuid": uuid},fields={'softwares':0,'packages':0})
-            if not host_data:
-                raise Exception(_('Unknown uuid'))
-            if not 'host' in host_data or not 'connected_ips' in host_data['host']:
-                raise Exception(_('Unknown connected IP for this UUID'))
-
-            if not waptservice_port:
-                raise Exception(_("The WAPT service port is not defined."))
-
-            ips = ensure_list(host_data['host']['connected_ips'])
-            ip  = get_reachable_ip(ips,waptservice_port)
-            if ip:
-                result = dict(message=[ip,waptservice_port],status='OK')
-            else:
-                result = dict(message=[],status='ERROR')
-
-        except Exception as e:
-            raise Exception(_("Couldn't connect to web service : {}.").format(e))
-
-    except Exception, e:
-            result = { 'status' : 'ERROR', 'message': u"%s" % e  }
-    return  Response(response=json.dumps(result),
-                         status=200,
-                         mimetype="application/json")
-
-
 @app.route('/host_tasks')
 @app.route('/host_tasks.json')
 @requires_auth
@@ -971,6 +963,7 @@ def get_hosts_by_group(name=""):
     return "Unsupported method"
 
 
+# deprecated
 @app.route('/upgrade_host/<string:ip>')
 @requires_auth
 def upgrade_host(ip):
@@ -1193,7 +1186,145 @@ def get_group_package(input_package_name):
     return r
 
 
+################ API V2 #########
+def make_response(result = {},success=True,error_code='',msg='',status=200):
+    data = dict(
+            success = success,
+            msg = msg,
+            )
+    if not success:
+        data['error_code'] = error_code
+    else:
+        data['result'] = result
+    return Response(
+            response=json.dumps(data),
+            status=status,
+            mimetype="application/json")
+
+
+def make_response_from_exception(exception,error_code='',status=200):
+    """Return a error flask http response from an exception object
+        success : False
+        msg : message from exception
+        error_code : classname of exception if not provided
+        status: 200 if not provided
+    """
+    if not error_code:
+        error_code = type(exception).__name__.lower()
+    data = dict(
+            success = False,
+            error_code = error_code
+            )
+    if options.devel:
+        data['msg'] = traceback.format_exc()
+    else:
+        data['msg'] = u"%s" % (exception,),
+    return Response(
+            response=json.dumps(data),
+            status=status,
+            mimetype="application/json")
+
+def get_ip_port(host_data):
+    """Return a dict proto,address,port for the supplied registered host
+        - first check if wapt.listening_address is ok
+        - if not present (old wapt client/server), check each of host.check connected_ips list
+    """
+    if not host_data:
+        raise Exception(_('Unknown uuid'))
+    if not 'host' in host_data or not 'connected_ips' in host_data['host']:
+        raise Exception(_('Unknown connected IP for this UUID'))
+    if not waptservice_port:
+        raise Exception(_("The WAPT service port is not defined."))
+
+    if 'wapt' in host_data and \
+          'listening_address' in host_data['wapt'] and \
+          'address' in host_data['wapt']['listening_address'] and \
+          host_data['wapt']['listening_address']['address']:
+        return host_data['wapt']['listening_address']
+    else:
+        ips = ensure_list(host_data['host']['connected_ips'])
+        ip  = get_reachable_ip(ips,waptservice_port)
+        if ip:
+            return dict(protocol='',address=ip,port=waptservice_port)
+        else:
+            raise Exception(_('No reachable IP for %s')%uuid)
+
+
+@app.route('/ping')
+def ping():
+    return make_response(msg = _('WAPT Server running'), result = dict(version = __version__ ))
+
+
+@app.route('/trigger_reachable_discovery')
+@requires_auth
+def trigger_reachable_discovery():
+    """Launch a separate thread to check all reachable IP
+    """
+    try:
+        disc_thread = CheckHostsWaptService()
+        disc_thread.start()
+        result = dict(thread_ident = disc_thread.ident )
+        message = _(u'Hosts listening IP discovery launched')
+
+    except Exception, e:
+            return make_response_from_exception(e)
+    return  make_response(result,msg = message)
+
+
+@app.route('/host_reachable_ip')
+@requires_auth
+def host_reachable_ip():
+    """Check if supplied host's waptservice can be reached
+            param uuid : host uuid
+    """
+    try:
+        try:
+            uuid = request.args['uuid']
+            host_data = hosts().find_one({ "uuid": uuid},fields={'softwares':0,'packages':0})
+            result = get_ip_port(host_data)
+        except Exception as e:
+            raise Exception(_("Couldn't connect to web service : {}.").format(e))
+
+    except Exception, e:
+            return make_response_from_exception(e)
+    return  make_response(result)
+
+
+@app.route('/trigger_upgrade')
+@requires_auth
+def trigger_upgrade():
+    """Proxy the wapt upgrade action to the client"""
+    try:
+        uuid = request.args['uuid']
+        host_data = hosts().find_one({ "uuid": uuid},fields={'softwares':0,'packages':0})
+        listening_address = get_ip_port(host_data)
+
+        if listening_address and listening_address['address'] and listening_address['port']:
+            logger.info( "Triggering upgrade for %s at address %s..." % (uuid,listening_address['address']))
+            client_result = json.loads(requests.get("%(protocol)s://%(address)s:%(port)d/upgrade.json" % listening_address,proxies=None,timeout=0.5).text)
+            try:
+                result = client_result['content']
+            except ValueError:
+                raise Exception(client_result)
+        else:
+            raise Exception(_("The WAPT service port is not defined."))
+        return make_response(result,
+            msg = "Upgrade triggered for %s at address %s:%s..." % (uuid,listening_address['address'],listening_address['port']),
+            success = client_result['result'] == 'OK',)
+    except Exception, e:
+        return make_response_from_exception(e)
+
+
+##################################################################
 class CheckHostsWaptService(threading.Thread):
+    """Thread which check which IP is reachable for all registered hosts
+        The result is stored in MongoDB database as wapt.listening_address
+        {protocol
+         address
+         port}
+       if poll_interval is not None, the thread runs indefinetely/
+       if poll_interval is None, one check of all hosts is performed.
+    """
     def __init__(self,poll_interval=None):
         threading.Thread.__init__(self)
         self.daemon = True
@@ -1210,27 +1341,34 @@ class CheckHostsWaptService(threading.Thread):
         for data in self.db.hosts.find(query,fields=fields):
             if 'host' in data and 'connected_ips' in data['host']:
                 ips = data['host']['connected_ips']
-                logger.debug("Client checker is testing %s" % ips)
+                logger.debug("Client checker %s is testing %s" % (self.ident,ips))
                 ip = get_reachable_ip(ips,waptservice_port)
                 la = dict(protocol='http',address=ip,port=waptservice_port,timestamp=datetime2isodate())
                 self.db.hosts.update({"_id" : data['_id'] }, {"$set": {'wapt.listening_address':la }})
 
     def run(self):
-        logger.debug('Start client-listening address checker thread')
+        logger.debug('Client-listening %s address checker thread started'%self.ident)
         while True:
             try:
                 try:
                     self.update_listening_address()
                 except Exception as e:
                     logger.critical('Unable to poll wapt client : %s' % e)
-                logger.debug('Client-listening address checker sleeping...')
+                logger.debug('Client-listening address checker %s sleeping...'%self.ident)
                 if self.poll_interval:
                     time.sleep(self.poll_interval)
                 else:
                     break
             except KeyboardInterrupt:
                 break
+        logger.debug('Client-listening %s address checker thread stopped'%self.ident)
 
+
+
+
+#################################################
+## Helpers for installer
+##
 
 def install_windows_nssm_service(service_name,service_binary,service_parameters,service_logfile,service_dependencies=None):
     """Setup a program as a windows Service managed by nssm
@@ -1422,6 +1560,8 @@ def install_windows_service(args):
         service_dependencies += ' WAPTApache'
     install_windows_nssm_service("WAPTServer",service_binary,service_parameters,service_logfile,service_dependencies)
 
+
+##############
 if __name__ == "__main__":
     if len(sys.argv)>1 and sys.argv[1] == 'doctest':
         import doctest
@@ -1433,6 +1573,8 @@ if __name__ == "__main__":
         sys.exit(0)
 
 
+    # global thread to check listening ip of registred hosts periodically
+    # use with caution as it generates noise on the network (tcp connection try on each host)
     if clients_poll_interval:
         check_listening = CheckHostsWaptService(poll_interval = clients_poll_interval)
         check_listening.start()
@@ -1443,7 +1585,7 @@ if __name__ == "__main__":
     if options.devel:
         app.run(host='0.0.0.0',port=30880,debug=False)
     else:
-        port = 8080
+        port = waptserver_port
         server = Rocket(('0.0.0.0', port), 'wsgi', {"wsgi_app":app})
         try:
             logger.info("starting waptserver")
