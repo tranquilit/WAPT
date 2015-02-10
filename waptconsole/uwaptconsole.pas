@@ -535,7 +535,7 @@ end;
 
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
-  IP, currhost : ansistring;
+  currhost : ansistring;
   RowSO, attribs, packages, softwares, tasks, tasksresult, running: ISuperObject;
 begin
   TimerTasks.Enabled := False;
@@ -586,8 +586,12 @@ begin
     begin
       try
         tasks := Nil;
-        IP := GetReachableIP(RowSO['host.connected_ips'],waptservice_port);
-        tasks := WAPTServerJsonGet('host_tasks?host=%s&uuid=%s', [ip, currhost]);
+        try
+          tasks := WAPTServerJsonGet('host_tasks?uuid=%s', [currhost]);
+        except
+          on E:Exception do
+            HostRunningTask.Text := rsFatalError+' '+E.Message;
+        end;
 
         if (tasks<>Nil) and  (tasks.S['status'] = 'OK') then
         begin
@@ -2334,7 +2338,7 @@ begin
     if (CellData <> nil) and (CellData.DataType = stArray) then
       CellText := soutils.Join(',', CellData);
     if (TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName='last_query_date') or (TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName='wapt.listening_address.timestamp') then
-      CellText := StrReplaceChar(CellText,'T',' ');
+      CellText := Copy(StrReplaceChar(CellText,'T',' '),1,19);
     if GridHosts.Header.Columns[Column].Text = 'Status' then
     begin
       RowSO := GridHosts.GetNodeSOData(Node);
