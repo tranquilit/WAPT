@@ -1533,6 +1533,8 @@ begin
     Result := destination + '\' + outputname + '.exe';
 end;
 
+
+
 function GetReachableIP(IPS:ISuperObject;port:word):String;
 var
   IP:ISuperObject;
@@ -1543,7 +1545,7 @@ begin
   else
   if (IPS.DataType=stString) then
   begin
-    if CheckOpenPort(port,IPS.AsString,0) then
+    if CheckOpenPort(port,IPS.AsString,1000) then
       Result := IPS.AsString
     else
       Result := '';
@@ -1553,7 +1555,7 @@ begin
   begin
     for IP in IPS do
     begin
-      if CheckOpenPort(port,IP.AsString,0) then
+      if CheckOpenPort(port,IP.AsString,1000) then
       begin
         Result := IP.AsString;
         Break;
