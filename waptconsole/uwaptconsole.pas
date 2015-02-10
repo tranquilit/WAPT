@@ -556,11 +556,17 @@ begin
       EdHostname.Text := UTF8Encode(RowSO.S['host.computer_name']);
       EdDescription.Text := UTF8Encode(RowSO.S['host.description']);
       EdOS.Text := RowSO.S['host.windows_product_infos.version'];
-      EdIPAddress.Text := RowSO.S['host.connected_ips'];
+      if RowSO['host.connected_ips'].DataType=stArray then
+        EdIPAddress.Text := soutils.join(',',RowSO['host.connected_ips'])
+      else
+        EdIPAddress.Text := RowSO.S['host.connected_ips'];
       EdManufacturer.Text := UTF8Encode(RowSO.S['host.system_manufacturer']);
       EdModelName.Text := UTF8Encode(RowSO.S['host.system_productname']);
       EdUpdateDate.Text := UTF8Encode(RowSO.S['last_query_date']);
-      EdUser.Text := UTF8Encode(RowSO.S['host.current_user']);
+      If RowSO['host.current_user'].DataType=stArray then
+        EdUser.Text := UTF8Encode(soutils.join(',',RowSO['host.current_user']))
+      else
+        EdUser.Text := UTF8Encode(RowSO.S['host.current_user']);
       EdRunningStatus.Text := UTF8Encode(RowSO.S['update_status.runstatus']);
       GridHostPackages.Data := packages;
     end
@@ -2327,6 +2333,8 @@ begin
   begin
     if (CellData <> nil) and (CellData.DataType = stArray) then
       CellText := soutils.Join(',', CellData);
+    if (TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName='last_query_date') or (TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName='wapt.listening_address.timestamp') then
+      CellText := StrReplaceChar(CellText,'T',' ');
     if GridHosts.Header.Columns[Column].Text = 'Status' then
     begin
       RowSO := GridHosts.GetNodeSOData(Node);
