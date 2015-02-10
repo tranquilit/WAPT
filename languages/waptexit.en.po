@@ -1,6 +1,29 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+msgid "Do you wish to apply them now ?"
+msgstr ""
+
+#: tviswaptexit.actshowdetails.caption
+msgid "Show details"
+msgstr ""
+
+#: tviswaptexit.actskip.caption
+msgid "Not now"
+msgstr ""
+
+#: tviswaptexit.actupgrade.caption
+msgid "Install/update packages"
+msgstr ""
+
+#: tviswaptexit.caption
+msgid "Launching updates..."
+msgstr ""
+
+#: tviswaptexit.label1.caption
+msgid "There are installs or updates pending."
+msgstr ""
+
 #: uwaptexitres.rserrorwininetflags
 msgid "Internal error in SetToIgnoreCerticateErrors when trying to get wininet flags. %s"
 msgstr ""
