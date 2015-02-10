@@ -892,22 +892,25 @@ def host_tasks():
     try:
         result = {}
         try:
-            ip = request.args['host']
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.settimeout(1)
-            s.connect((ip,waptservice_port))
-            s.close
-            if ip and waptservice_port:
-                data = json.loads(requests.get("http://%s:%d/tasks.json" % ( ip, waptservice_port),proxies=None).text)
-                result = dict(message=data,status='OK')
+            uuid = request.args['uuid']
+            host_data = hosts().find_one({ "uuid": uuid},fields={'wapt':1,'host.connected_ips':1})
+            listening_data = get_ip_port(host_data)
+
+            if listening_data['address']:
+                data = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json" % listening_data,proxies=None).text
+                result = dict(message=json.loads(data),status='OK')
             else:
-                raise Exception(_("The WAPT service port is not defined."))
+                raise EWaptMissingHostData(_("The WAPT service port is not defined."))
 
         except Exception as e:
-            raise Exception(_("Couldn't connect to web service : {}.").format(e))
+            raise EWaptHostUnreachable(_("Couldn't connect to web service : {}.").format(e))
 
     except Exception, e:
-            result = { 'status' : 'ERROR', 'message': u"%s" % e  }
+        # old behaviour
+        if 'Restricted access.' in data:
+            result = { 'status' : 'ERROR', 'message': u"%s" % (data)  }
+        else:
+            result = { 'status' : 'ERROR', 'message': u"%s, %s" % (e,data)  }
     return  Response(response=json.dumps(result),
                          status=200,
                          mimetype="application/json")
@@ -1218,7 +1221,7 @@ def make_response_from_exception(exception,error_code='',status=200):
     if options.devel:
         data['msg'] = traceback.format_exc()
     else:
-        data['msg'] = u"%s" % (exception,),
+        data['msg'] = u"%s" % (exception,)
     return Response(
             response=json.dumps(data),
             status=status,
@@ -1255,10 +1258,11 @@ def get_ip_port(host_data):
           host_data['wapt']['listening_address']['address']:
         return host_data['wapt']['listening_address']
     else:
+        # old behaviour
         ips = ensure_list(host_data['host']['connected_ips'])
         ip  = get_reachable_ip(ips,waptservice_port)
         if ip:
-            return dict(protocol='',address=ip,port=waptservice_port)
+            return dict(protocol='http',address=ip,port=waptservice_port)
         else:
             raise EWaptHostUnreachable(_('No reachable IP for %s')%uuid)
 
@@ -1309,7 +1313,7 @@ def trigger_upgrade():
     """Proxy the wapt upgrade action to the client"""
     try:
         uuid = request.args['uuid']
-        host_data = hosts().find_one({ "uuid": uuid},fields={'softwares':0,'packages':0})
+        host_data = hosts().find_one({ "uuid": uuid},fields={'wapt':1,'host.connected_ips':1})
         listening_address = get_ip_port(host_data)
 
         if listening_address and listening_address['address'] and listening_address['port']:
@@ -1327,6 +1331,35 @@ def trigger_upgrade():
             raise EWaptMissingHostData(_("The WAPT service port is not defined."))
         return make_response(result,
             msg = "Upgrade triggered for %s at address %s:%s..." % (uuid,listening_address['address'],listening_address['port']),
+            success = client_result['result'] == 'OK',)
+    except Exception, e:
+        return make_response_from_exception(e)
+
+
+@app.route('/host_tasks_status')
+@requires_auth
+def host_tasks_status():
+    """Proxy the get tasks status action to the client"""
+    try:
+        uuid = request.args['uuid']
+        host_data = hosts().find_one({ "uuid": uuid},fields={'wapt':1,'host.connected_ips':1})
+        listening_address = get_ip_port(host_data)
+
+        if listening_address and listening_address['address'] and listening_address['port']:
+            logger.info( "Triggering upgrade for %s at address %s..." % (uuid,listening_address['address']))
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json" % listening_address,proxies=None,timeout=0.5).text
+            try:
+                client_result = json.loads(client_result)
+                result = client_result['content']
+            except ValueError:
+                if 'Restricted access' in client_result:
+                    raise EWaptForbiddden(client_result)
+                else:
+                    raise Exception(client_result)
+        else:
+            raise EWaptMissingHostData(_("The WAPT service port is not defined."))
+        return make_response(result,
+            msg = "Tasks status retrieved properly",
             success = client_result['result'] == 'OK',)
     except Exception, e:
         return make_response_from_exception(e)
