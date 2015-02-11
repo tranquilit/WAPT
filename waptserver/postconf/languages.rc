@@ -2,10 +2,10 @@ STRINGTABLE
 {
 0, "    <html>\
           <head>\
-          <meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\
+          <meta http-equiv=""Content-Type"" content=""text/html; charset=ISO-8859-1"">\
           </head>\
           <body>\
-          <a href=\"#page1\"></a>\
+          <a href=""#page1""></a>\
           <b>WAPT</b> clients make requests to the server.<br>\
           In order to connect to the WAPT server,\
           it is advisable that a DNS name be used, as long as it has been correctly\
@@ -17,16 +17,16 @@ STRINGTABLE
           testing environment, you can fall back to the server IP address.\
           \
           For further information :\
-          <a href=\"http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html\">Configuring a WAPT infrastructure</a>.\
+          <a href=""http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html"">Configuring a WAPT infrastructure</a>.\
           \
           </body>\
           </html>"
 1, "    <html>\
           <head>\
-          <meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\
+          <meta http-equiv=""Content-Type"" content=""text/html; charset=ISO-8859-1"">\
           </head>\
           <body>\
-          <a href=\"#page1\"></a>\
+          <a href=""#page1""></a>\
           Les clients <b>WAPT</b> vont faire appel au serveur Wapt<br>\
           Pour joindre le serveur WAPT,\
           il est préférable d'utiliser un nom DNS, mais celui-ci doit être correctement\
@@ -41,27 +41,27 @@ STRINGTABLE
           du serveur.\
           \
           For further information :\
-          <a href=\"http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html\">Configuration d'une infrastructure WAPT</a>.\
+          <a href=""http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html"">Configuration d'une infrastructure WAPT</a>.\
           \
           </body>\
           </html>"
 		  
 100, "  <html>\
           <head>\
-          <meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\
+          <meta http-equiv=""Content-Type"" content=""text/html; charset=ISO-8859-1"">\
           </head>\
           <body>\
           This is the password used to connect to the WAPT server via the WAPT \
           console.<br /> \
           For further information :<br /> \
           <a \
-          href=\"http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html\">Generating a WAPT certificate</a>. \
+          href=""http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"">Generating a WAPT certificate</a>. \
           </body>\
           </html>"
 	  
 101, "   <html>\
           <head>\
-          <meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\
+          <meta http-equiv=""Content-Type"" content=""text/html; charset=ISO-8859-1"">\
           </head>\
           <body>\
           C'est le mot de passe utilisé pour vous connecter au serveur WAPT via la\
@@ -71,7 +71,7 @@ STRINGTABLE
 
 200, "  <html>\
           <head>\
-          <meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\
+          <meta http-equiv=""Content-Type"" content=""text/html; charset=ISO-8859-1"">\
           </head>\
           <body>\
           A private (.pem) - public (.crt) keypair will be generated \
@@ -87,13 +87,13 @@ STRINGTABLE
           <br>\
           For further information :\
           <a \
-          href=\"http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html\">Generating a self-signed certificate</a>. \
+          href=""http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"">Generating a self-signed certificate</a>. \
           </body>\
           </html>"
 
 201, "   <html>\
           <head>\
-          <meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\
+          <meta http-equiv=""Content-Type"" content=""text/html; charset=ISO-8859-1"">\
           </head>\
           <body>\
           Un couple clé privée (.pem) - clé publique (.crt) sera généré \
@@ -109,18 +109,18 @@ STRINGTABLE
           <br>\
           Pour plus d'informations :\
           <a \
-          href=\"http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html\">générer un certificat auto-signé</a>. \
+          href=""http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"">générer un certificat auto-signé</a>. \
           </body>\
           </html>"
 
 300, "    <html>\
           <head>\
-          <meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\
+          <meta http-equiv=""Content-Type"" content=""text/html; charset=ISO-8859-1"">\
           </head>\
           <body>\
           \
           <b>Tranquil IT Systems</b> provides an array of WAPT packages \
-          at <a href=\"http://wapt.tranquil.it\">wapt.tranquil.it</a> <br>\
+          at <a href=""http://wapt.tranquil.it"">wapt.tranquil.it</a> <br>\
           For a quick start with your new WAPT installation, download ready-made\
           packages and deploy them onto your network .<br>\
           \
@@ -128,7 +128,7 @@ STRINGTABLE
           with\
           your trigram/quadrigram to mark its \
           provenance.<br>\
-          Replace \"test\" with a trigram meaningful to your organisation (ex: tis \
+          Replace ""test"" with a trigram meaningful to your organisation (ex: tis \
           standing for\
           Tranquil IT Systems).<br>\
           \
@@ -138,18 +138,18 @@ STRINGTABLE
           \
           For further information :\
           <a \
-          href=\"http://dev.tranquil.it/scenari/guide_admin/co/configuration_waptconsole.html\">Configuring the WAPT console</a>. \
+          href=""http://dev.tranquil.it/scenari/guide_admin/co/configuration_waptconsole.html"">Configuring the WAPT console</a>. \
           </body>\
           </html>"
 		  
 301, "   <html>\
          <head>\
-          <meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\
+          <meta http-equiv=""Content-Type"" content=""text/html; charset=ISO-8859-1"">\
           </head>\
           <body>\
           \
           <b>Tranquil IT Systems</b> propose une sélection de paquets \
-          sur <a href=\"http://wapt.tranquil.it\">wapt.tranquil.it</a> <br>\
+          sur <a href=""http://wapt.tranquil.it"">wapt.tranquil.it</a> <br>\
           Pour commencer à profiter de votre installation WAPT, téléchargez\
           des paquets pré-assemblés et déployez-les sur votre réseau.<br>\
           \
@@ -167,13 +167,13 @@ STRINGTABLE
           \
           Pour plus d'informations :\
           <a \
-          href=\"http://dev.tranquil.it/scenari/guide_admin/co/configuration_waptconsole.html\">Configurer la console WAPT</a>. \
+          href=""http://dev.tranquil.it/scenari/guide_admin/co/configuration_waptconsole.html"">Configurer la console WAPT</a>. \
           </body>\
           </html>   "
 		  
 400, "    <html>\
           <head>\
-          <meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\
+          <meta http-equiv=""Content-Type"" content=""text/html; charset=ISO-8859-1"">\
           </head>\
           <body>\
           The server is ready to start.<br>\
@@ -183,7 +183,7 @@ STRINGTABLE
 
 401, "     <html>\
           <head>\
-          <meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\
+          <meta http-equiv=""Content-Type"" content=""text/html; charset=ISO-8859-1"">\
           </head>\
           <body>\
           Le serveur est prêt à démarrer.<br>\
@@ -193,7 +193,7 @@ STRINGTABLE
 		  
 500, "    <html>\
           <head>\
-          <meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\
+          <meta http-equiv=""Content-Type"" content=""text/html; charset=ISO-8859-1"">\
           </head>\
           <body>\
           The custom installer \
@@ -210,20 +210,20 @@ STRINGTABLE
           <li> from https://wapt-server-name/wapt/waptagent.exe \
           </li>\
           <li> <a \
-          href=\"htp://dev.tranquil.it/index.php/WAPT_-_D%C3%A9ploiement_de_WAPT_par_GPO\">\
+          href=""htp://dev.tranquil.it/index.php/WAPT_-_D%C3%A9ploiement_de_WAPT_par_GPO"">\
           Deploying WAPT via GPO</a> \
           </li>\
           </ul>\
           <br>\
           Check the documentation \
           at <a\
-          href=\"http://dev.tranquil.it/scenari/guide_admin/co/generation_waptsetup_personnalise_waptconsole.html\">Generating \
+          href=""http://dev.tranquil.it/scenari/guide_admin/co/generation_waptsetup_personnalise_waptconsole.html"">Generating \
           from the WAPT console</a>\
           </body>\
           </html>"
 501, "<html>\
           <head>\
-          <meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\
+          <meta http-equiv=""Content-Type"" content=""text/html; charset=ISO-8859-1"">\
           </head>\
           <body>\
           L'installeur personnalisé WAPT \
@@ -240,49 +240,49 @@ STRINGTABLE
           <li> depuis https://name_of_your_server/wapt/waptagent.exe \
           </li>\
           <li> <a \
-          href=\"htp://dev.tranquil.it/index.php/WAPT_-_D%C3%A9ploiement_de_WAPT_par_GPO\">\
+          href=""htp://dev.tranquil.it/index.php/WAPT_-_D%C3%A9ploiement_de_WAPT_par_GPO"">\
           Déploiement_de_WAPT_par_GPO</a> \
           </li>\
           </ul>\
           <br>\
           Consultez la documentation \
           sur <a\
-          href=\"http://dev.tranquil.it/scenari/guide_admin/co/generation_waptsetup_personnalise_waptconsole.html\"\
+          href=""http://dev.tranquil.it/scenari/guide_admin/co/generation_waptsetup_personnalise_waptconsole.html""\
           >Générer depuis la console WAPT</a>\
           </body>\
           </html>"
 		  
 600, "      <html>\
             <head>\
-            <meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\
+            <meta http-equiv=""Content-Type"" content=""text/html; charset=ISO-8859-1"">\
             </head>\
             <body>\
             Well done, your WAPT server is now operational..<br>\
             Check the documentation \
-            at <a href=\"http://dev.tranquil.it/scenari/guide_admin/co/generation_waptsetup_personnalise_waptconsole.html\">Generating\
+            at <a href=""http://dev.tranquil.it/scenari/guide_admin/co/generation_waptsetup_personnalise_waptconsole.html"">Generating\
             from the WAPT console</a>\
             <br>\
             To deploy the WAPT agent onto your network, check \
             the\
-            documentation <a href=\"http://dev.tranquil.it/index.php/WAPT_-_D%C3%A9ploiement_de_WAPT_par_GPO\"/>Deploying WAPT via \
+            documentation <a href=""http://dev.tranquil.it/index.php/WAPT_-_D%C3%A9ploiement_de_WAPT_par_GPO""/>Deploying WAPT via \
             GPO</a>\
             </body>\
             </html>"
 			
 601, "   <html>\
             <head>\
-            <meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\
+            <meta http-equiv=""Content-Type"" content=""text/html; charset=ISO-8859-1"">\
             </head>\
             <body>\
             Félicitations, votre serveur WAPT est désormais opérationnel.<br>\
             Consultez la documentation  \
             sur <a\
-            href=\"http://dev.tranquil.it/scenari/guide_admin/co/generation_waptsetup_personnalise_waptconsole.html\">Générer depuis la console WAPT</a>\
+            href=""http://dev.tranquil.it/scenari/guide_admin/co/generation_waptsetup_personnalise_waptconsole.html"">Générer depuis la console WAPT</a>\
             <br>\
             Pour déployer votre infrastructure WAPT sur votre réseau, consultez \
             la\
             documentation <a\
-            href=\"http://dev.tranquil.it/index.php/WAPT_-_D%C3%A9ploiement_de_WAPT_par_GPO\"/>Déployer WAPT via GPO</a>\
+            href=""http://dev.tranquil.it/index.php/WAPT_-_D%C3%A9ploiement_de_WAPT_par_GPO""/>Déployer WAPT via GPO</a>\
             </body>\
             </html>"	
 }
