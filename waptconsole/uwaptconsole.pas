@@ -1283,12 +1283,12 @@ end;
 
 procedure TVisWaptGUI.ActEditHostPackageExecute(Sender: TObject);
 var
-  hostname,IP: ansistring;
+  hostname,uuid: ansistring;
 begin
   hostname := GridHosts.FocusedRow.S['host.computer_fqdn'];
-  ip := GetReachableIP(GridHosts.FocusedRow['host.connected_ips'],waptservice_port);
+  uuid := GridHosts.FocusedRow.S['uuid'];
 
-  if EditHost(hostname, ActAdvancedMode.Checked, ip) <> nil then
+  if EditHost(hostname, ActAdvancedMode.Checked, uuid) <> nil then
     ActSearchHost.Execute;
 end;
 
@@ -1625,7 +1625,7 @@ procedure TVisWaptGUI.ActHostUpgradeExecute(Sender: TObject);
 begin
   with TVisHostsUpgrade.Create(Self) do
     try
-      action := 'upgrade_host';
+      action := 'trigger_upgrade';
       hosts := Gridhosts.SelectedRows;
 
       if ShowModal = mrOk then

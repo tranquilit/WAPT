@@ -77,34 +77,23 @@ begin
     ProgressGrid.InvalidateFordata(host);
     Application.ProcessMessages;
     try
-      if (host['host.connected_ips']<>Nil) then
-      begin
-        if (host['host.connected_ips'].DataType=stArray) then
-          ips := host['host.connected_ips']
+      try
+        res := WAPTServerJsonGet('%s?uuid=%s',[action,host.S['uuid']]);
+        // new behaviour
+        if (res<>Nil) and res.AsObject.Exists('success') then
+        begin
+          if res.AsObject.Exists('msg') then
+            host['message'] := res['msg'];
+          if  res.B['success'] then
+            host.S['status'] := 'OK'
+          else
+            host.S['status'] := 'ERROR';
+        end
         else
-          ips := SA([host['host.connected_ips']]);
-        for ip in ips do
-        try
-          res := WAPTServerJsonGet('%s/%s',[action,ip.AsString]);
-          // old behaviour <0.8.10
-          if res.AsObject.Exists('status') then
-          begin
-            host['message'] := res['message'];
-            host['status'] := res['status'];
-          end
-          else if (uppercase(res.S['result']) ='OK') then
-          begin
-            host['message'] := res['content'];
-            host['status'] := res['result'];
-          end;
-          if host.S['status'] ='OK' then
-            break;
-        except
-          on E:EIdHTTPProtocolException do
-            lasterror := E.ErrorMessage;
-        end;
-        if host.S['status'] <>'OK' then
-          raise Exception.Create(lasterror);
+          host.S['status'] := 'BAD ANSWER';
+      except
+        on E:EIdHTTPProtocolException do
+          lasterror := E.ErrorMessage;
       end;
       ProgressGrid.InvalidateFordata(host);
       Application.ProcessMessages;

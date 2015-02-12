@@ -239,6 +239,7 @@ object VisWaptGUI: TVisWaptGUI
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed, coAllowFocus]
             Position = 1
+            Tag = 1
             Text = 'Host'
             Width = 112
             PropertyName = 'host.computer_fqdn'
@@ -246,6 +247,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Position = 2
+            Tag = 2
             Text = 'Description'
             Width = 124
             PropertyName = 'host.description'
@@ -253,6 +255,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Position = 3
+            Tag = 3
             Text = 'Manufacturer'
             Width = 100
             PropertyName = 'host.system_manufacturer'
@@ -260,6 +263,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Position = 4
+            Tag = 4
             Text = 'Model'
             Width = 100
             PropertyName = 'host.system_productname'
@@ -267,6 +271,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Position = 5
+            Tag = 5
             Text = 'Serial number'
             Width = 100
             PropertyName = 'dmi.Chassis_Information.Serial_Number'
@@ -274,6 +279,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Position = 6
+            Tag = 6
             Text = 'Last update'
             Width = 100
             PropertyName = 'last_query_date'
@@ -281,19 +287,29 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Position = 7
+            Tag = 7
             Text = 'MAC address'
             Width = 100
             PropertyName = 'host.mac'
           end        
           item
-            MaxWidth = 400
             Position = 8
+            Tag = 8
+            Text = 'Listening IP'
+            Width = 75
+            PropertyName = 'wapt.listening_address.address'
+          end        
+          item
+            MaxWidth = 400
+            Position = 9
+            Tag = 9
             Text = 'IP addresses'
             Width = 100
             PropertyName = 'host.connected_ips'
           end        
           item
-            Position = 9
+            Position = 10
+            Tag = 10
             Text = 'WAPT version'
             Width = 80
             PropertyName = 'wapt.wapt-exe-version'
@@ -301,7 +317,8 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 10
+            Position = 11
+            Tag = 11
             Text = 'uuid'
             Width = 100
             PropertyName = 'uuid'
@@ -309,7 +326,8 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 11
+            Position = 12
+            Tag = 12
             Text = 'md5sum'
             Width = 100
             PropertyName = 'md5sum'
@@ -317,7 +335,8 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 12
+            Position = 13
+            Tag = 13
             Text = 'purchase_order'
             Width = 100
             PropertyName = 'purchase_order'
@@ -325,7 +344,8 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 13
+            Position = 14
+            Tag = 14
             Text = 'purchase_date'
             Width = 100
             PropertyName = 'purchase_date'
@@ -333,7 +353,8 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 14
+            Position = 15
+            Tag = 15
             Text = 'groups'
             Width = 100
             PropertyName = 'groups'
@@ -341,7 +362,8 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 15
+            Position = 16
+            Tag = 16
             Text = 'attributes'
             Width = 100
             PropertyName = 'attributes'
@@ -349,37 +371,37 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 100
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 16
+            Position = 17
+            Tag = 17
             Text = 'Host status'
             PropertyName = 'update_status'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 17
+            Position = 18
+            Tag = 18
             Text = 'Domain controller'
             PropertyName = 'host.domain_controller'
           end        
           item
-            Position = 18
+            Position = 19
+            Tag = 19
             Text = 'Domaine'
             Width = 80
             PropertyName = 'host.domain_name'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 19
+            Position = 20
+            Tag = 20
             Text = 'Domain controller address'
             PropertyName = 'host.domain_controller_address'
           end        
           item
-            Position = 20
+            Position = 21
+            Tag = 21
             Text = 'Groups'
             PropertyName = 'depends'
-          end        
-          item
-            Position = 21
-            Text = 'Listening IP'
-            PropertyName = 'wapt.listening_address.address'
           end>
         Header.DefaultHeight = 17
         Header.MaxHeight = 17

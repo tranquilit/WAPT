@@ -154,7 +154,7 @@ type
 function EditPackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreatePackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreateGroup(packagename: string; advancedMode: boolean): ISuperObject;
-function EditHost(hostname: ansistring; advancedMode: boolean;currentip:ansiString=''): ISuperObject;
+function EditHost(hostname: ansistring; advancedMode: boolean;uuid:ansiString=''): ISuperObject;
 function EditHostDepends(hostname: string; newDependsStr: string): ISuperObject;
 function EditGroup(group: string; advancedMode: boolean): ISuperObject;
 
@@ -227,7 +227,7 @@ begin
     end;
 end;
 
-function EditHost(hostname: ansistring; advancedMode: boolean;currentip:ansiString=''): ISuperObject;
+function EditHost(hostname: ansistring; advancedMode: boolean;uuid:ansiString=''): ISuperObject;
 var
   res:ISuperObject;
 begin
@@ -239,17 +239,17 @@ begin
       Caption:= rsEditHostCaption;
       EdVersion.Enabled:=advancedMode;
       EdVersion.ReadOnly:=not advancedMode;
-      ActBUApply.Enabled:=currentip<>'';
+      ActBUApply.Enabled:=uuid<>'';
       if ShowModal = mrOk then
       begin
         Result := PackageEdited;
-        if (result<>Nil) and ApplyUpdatesImmediately and (currentip<>'')  then
+        if (result<>Nil) and ApplyUpdatesImmediately and (uuid<>'')  then
         begin
-          res := WAPTServerJsonGet('upgrade_host/'+currentip, []);
-          if (res.S['result'] = 'OK') or (res.S['status'] = 'OK') then
+          res := WAPTServerJsonGet('trigger_upgrade?uuid=%s',[uuid]);
+          if res.B['success']  then
             ShowMessage(rsUpgradingHost)
           else
-            ShowMessageFmt(rsUpgradeHostError, [res.S['message']]);
+            ShowMessageFmt(rsUpgradeHostError, [res.S['msg']]);
         end;
       end
       else

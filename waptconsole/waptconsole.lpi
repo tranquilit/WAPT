@@ -256,7 +256,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="7">
+    <Exceptions Count="8">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -278,6 +278,9 @@
       <Item7>
         <Name Value="EConvertError"/>
       </Item7>
+      <Item8>
+        <Name Value="EIdHTTPProtocolException"/>
+      </Item8>
     </Exceptions>
   </Debugging>
 </CONFIG>

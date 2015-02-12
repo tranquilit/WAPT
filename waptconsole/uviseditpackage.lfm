@@ -906,8 +906,8 @@ object VisEditPackage: TVisEditPackage
     end
     object cbShowLog: TCheckBox
       Left = 864
-      Height = 19
-      Top = 24
+      Height = 17
+      Top = 26
       Width = 79
       Anchors = [akRight, akBottom]
       Caption = 'Show debug'
