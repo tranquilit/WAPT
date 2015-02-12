@@ -164,7 +164,7 @@ begin
   retvalue := DnsQuery(
     PAnsiChar(name),
     DNS_TYPE_A,
-    DNS_QUERY_BYPASS_CACHE,
+    DNS_QUERY_BYPASS_CACHE or DNS_QUERY_NO_LOCAL_NAME or DNS_QUERY_NO_HOSTS_FILE,
     Nil,
     @ppQueryResultsSet,
     Nil);
@@ -199,7 +199,7 @@ begin
   retvalue := DnsQuery(
     PAnsiChar(name),
     DNS_TYPE_SRV,
-    DNS_QUERY_BYPASS_CACHE,
+    DNS_QUERY_BYPASS_CACHE or DNS_QUERY_NO_LOCAL_NAME or DNS_QUERY_NO_HOSTS_FILE,
     Nil,
     @ppQueryResultsSet,
     Nil);
@@ -240,7 +240,7 @@ begin
   retvalue := DnsQuery(
     PAnsiChar(name),
     DNS_TYPE_CNAME,
-    DNS_QUERY_BYPASS_CACHE,
+    DNS_QUERY_BYPASS_CACHE or DNS_QUERY_NO_LOCAL_NAME or DNS_QUERY_NO_HOSTS_FILE,
     Nil,
     @ppQueryResultsSet,
     Nil);
