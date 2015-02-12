@@ -236,6 +236,16 @@ def remove_user_programs_menu_shortcut(label):
         label += '.lnk'
     remove_file(makepath(start_menu(common=0),label))
 
+def remove_desktop_shortcut(label):
+    if not (label.endswith('.lnk') or label.endswith('.url')):
+        label += '.lnk'
+    remove_file(os.path.join(desktop(1),label))
+
+def remove_user_desktop_shortcut(label):
+    if not (label.endswith('.lnk') or label.endswith('.url')):
+        label += '.lnk'
+    remove_file(os.path.join(desktop(0),label))
+
 def wgets(url,proxies=None):
     """Return the content of a remote resource as a String
     >>> data = wgets('http://wapt:8080/info')
@@ -1847,9 +1857,9 @@ def remove_file(path):
         try:
             os.unlink(path)
         except Exception as e:
-            logger.critical(_('Unable to remove file %s : error %s')%(path,e))
+            logger.critical('Unable to remove file %s : error %s' %(path,e))
     else:
-        logger.warning(_("File %s doesn't exist, so not removed")%(path))
+        logger.warning(u"File %s doesn't exist, so not removed" % (path))
 
 def remove_tree(*args, **kwargs):
     """Convenience function to delete a directory tree, with any error
