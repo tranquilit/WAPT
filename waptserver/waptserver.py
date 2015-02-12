@@ -1320,7 +1320,7 @@ def trigger_upgrade():
 
         if listening_address and listening_address['address'] and listening_address['port']:
             logger.info( "Triggering upgrade for %s at address %s..." % (uuid,listening_address['address']))
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/upgrade.json" % listening_address,proxies=None,timeout=0.5).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/upgrade.json" % listening_address,proxies=None,timeout=1.5).text
             try:
                 client_result = json.loads(client_result)
                 result = client_result['content']
