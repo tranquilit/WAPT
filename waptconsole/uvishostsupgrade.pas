@@ -77,24 +77,19 @@ begin
     ProgressGrid.InvalidateFordata(host);
     Application.ProcessMessages;
     try
-      try
-        res := WAPTServerJsonGet('%s?uuid=%s',[action,host.S['uuid']]);
-        // new behaviour
-        if (res<>Nil) and res.AsObject.Exists('success') then
-        begin
-          if res.AsObject.Exists('msg') then
-            host['message'] := res['msg'];
-          if  res.B['success'] then
-            host.S['status'] := 'OK'
-          else
-            host.S['status'] := 'ERROR';
-        end
+      res := WAPTServerJsonGet('%s?uuid=%s',[action,host.S['uuid']]);
+      // new behaviour
+      if (res<>Nil) and res.AsObject.Exists('success') then
+      begin
+        if res.AsObject.Exists('msg') then
+          host['message'] := res['msg'];
+        if  res.B['success'] then
+          host.S['status'] := 'OK'
         else
-          host.S['status'] := 'BAD ANSWER';
-      except
-        on E:EIdHTTPProtocolException do
-          lasterror := E.ErrorMessage;
-      end;
+          host.S['status'] := 'ERROR';
+      end
+      else
+        host.S['status'] := 'BAD ANSWER';
       ProgressGrid.InvalidateFordata(host);
       Application.ProcessMessages;
     except
