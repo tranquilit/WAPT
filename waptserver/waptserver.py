@@ -444,7 +444,7 @@ def update_data(data):
         host_id = hosts().insert(data)
     return get_host_data(data["uuid"],filter={"uuid":1,"host":1})
 
-def get_reachable_ip(ips=[],waptservice_port=waptservice_port,timeout=0.5):
+def get_reachable_ip(ips=[],waptservice_port=waptservice_port,timeout=1):
     """Try to establish a TCP connection to each IP of ips list on waptservice_port
         return first successful IP
         return empty string if no ip is is successful
