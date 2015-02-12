@@ -234,6 +234,7 @@ begin
   with TVisEditPackage.Create(nil) do
     try
       IsHost := True;
+      Result := Nil;
       isAdvancedMode := advancedMode;
       PackageRequest := hostname;
       Caption:= rsEditHostCaption;
@@ -241,7 +242,7 @@ begin
       EdVersion.ReadOnly:=not advancedMode;
       ActBUApply.Enabled:=uuid<>'';
       if ShowModal = mrOk then
-      begin
+      try
         Result := PackageEdited;
         if (result<>Nil) and ApplyUpdatesImmediately and (uuid<>'')  then
         begin
@@ -251,6 +252,9 @@ begin
           else
             ShowMessageFmt(rsUpgradeHostError, [res.S['msg']]);
         end;
+      except
+        on E:Exception do
+          ShowMessageFmt('Error editing host %s',[e.Message]);
       end
       else
         Result := nil;
