@@ -1835,7 +1835,7 @@ def remove_file(path):
         critical log if file can't be removed"""
     if os.path.isfile(path):
         try:
-            os.unlink
+            os.unlink(path)
         except Exception as e:
             logger.critical(_('Unable to remove file %s : error %s')%(path,e))
     else:
