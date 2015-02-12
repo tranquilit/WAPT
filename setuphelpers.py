@@ -35,6 +35,7 @@ import psutil
 
 import win32api
 import win32net
+import win32gui
 import win32netcon
 import win32security
 import ntsecuritycon
@@ -1941,11 +1942,25 @@ def unregister_dll(dllpath):
 def add_to_system_path(path):
     """Add path to the global search PATH environment variable if it is not yet"""
     with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment',sam=KEY_READ | KEY_WRITE) as key:
-        system_path = reg_getvalue(key,'Path').lower().split(';')
-        if not path.lower() in system_path:
+        system_path = reg_getvalue(key,'Path').split(';')
+        if not path.lower() in [p.lower() for p in system_path]:
             system_path.append(path)
             reg_setvalue(key,'Path',';'.join(system_path),type=REG_EXPAND_SZ)
-            win32api.SendMessage(win32con.HWND_BROADCAST,win32con.WM_SETTINGCHANGE,0,'Environment')
+            win32gui.SendMessageTimeout(win32con.HWND_BROADCAST, win32con.WM_SETTINGCHANGE, 0, "Environment", win32con.SMTO_ABORTIFHUNG, 5000 )
+    return system_path
+
+
+def remove_from_system_path(path):
+    """Remove a path from the global search PATH environment variable if it is set"""
+    with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment',sam=KEY_READ | KEY_WRITE) as key:
+        system_path = reg_getvalue(key,'Path').split(';')
+        if path.lower() in [p.lower() for p in system_path]:
+            for p in system_path:
+                if p.lower() == path.lower():
+                    system_path.remove(p)
+                    break
+            reg_setvalue(key,'Path',';'.join(system_path),type=REG_EXPAND_SZ)
+            win32gui.SendMessageTimeout(win32con.HWND_BROADCAST, win32con.WM_SETTINGCHANGE, 0, "Environment", win32con.SMTO_ABORTIFHUNG, 5000 )
     return system_path
 
 
@@ -1961,7 +1976,7 @@ def set_environ_variable(name,value,type=REG_EXPAND_SZ):
         reg_setvalue(key,name,value,type=type)
     # force to get new environ variable, as it is not reloaded immediately.
     os.environ[name] = value
-    win32api.SendMessage(win32con.HWND_BROADCAST,win32con.WM_SETTINGCHANGE,0,'Environment')
+    win32gui.SendMessageTimeout(win32con.HWND_BROADCAST, win32con.WM_SETTINGCHANGE, 0, "Environment", win32con.SMTO_ABORTIFHUNG, 5000 )
 
 
 def unset_environ_variable(name):
@@ -1973,7 +1988,7 @@ def unset_environ_variable(name):
     # force to get new environ variable, as it is not reloaded immediately.
     if name in os.environ:
         del(os.environ[name])
-        win32api.SendMessage(win32con.HWND_BROADCAST,win32con.WM_SETTINGCHANGE,0,'Environment')
+        wwin32gui.SendMessageTimeout(win32con.HWND_BROADCAST, win32con.WM_SETTINGCHANGE, 0, "Environment", win32con.SMTO_ABORTIFHUNG, 5000 )
     return result
 
 
