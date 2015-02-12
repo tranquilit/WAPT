@@ -120,7 +120,7 @@ var
   Current: String;
 begin
   Result := 'en';
-  Current := ExpandConstant('language');
+  Current := ActiveLanguage;
   // Whitelist
   if Current = 'fr' then
     Result := 'fr';
