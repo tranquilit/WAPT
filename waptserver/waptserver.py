@@ -1254,7 +1254,7 @@ def get_ip_port(host_data):
           host_data['wapt']['listening_address']['address']:
         return host_data['wapt']['listening_address']
     else:
-        raise EWaptHostUnreachable(_('No reachable IP for %s')%uuid)
+        raise EWaptHostUnreachable(_('No reachable IP for %s')%host_data['uuid'])
 
         ## old behaviour is disabled
         if not 'host' in host_data or not 'connected_ips' in host_data['host']:
@@ -1266,7 +1266,7 @@ def get_ip_port(host_data):
         if ip:
             return dict(protocol='http',address=ip,port=waptservice_port)
         else:
-            raise EWaptHostUnreachable(_('No reachable IP for %s')%uuid)
+            raise EWaptHostUnreachable(_('No reachable IP for %s')%host_data['uuid'])
 
 
 @app.route('/ping')
