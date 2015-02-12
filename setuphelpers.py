@@ -226,6 +226,16 @@ def create_user_programs_menu_shortcut(label, target='', arguments='', wDir='', 
     return sc
 
 
+def remove_programs_menu_shortcut(label):
+    if not (label.endswith('.lnk') or label.endswith('.url')):
+        label += '.lnk'
+    remove_file(makepath(start_menu(common=1),label))
+
+def remove_user_programs_menu_shortcut(label):
+    if not (label.endswith('.lnk') or label.endswith('.url')):
+        label += '.lnk'
+    remove_file(makepath(start_menu(common=0),label))
+
 def wgets(url,proxies=None):
     """Return the content of a remote resource as a String
     >>> data = wgets('http://wapt:8080/info')
