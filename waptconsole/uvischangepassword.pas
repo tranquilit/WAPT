@@ -28,7 +28,7 @@ var
   VisChangePassword: TVisChangePassword;
 
 implementation
-uses waptcommon, uWaptRes;
+uses waptcommon;
 
 {$R *.lfm}
 

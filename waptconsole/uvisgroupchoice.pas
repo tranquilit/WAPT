@@ -46,7 +46,7 @@ implementation
 
 procedure TvisGroupChoice.ActSearchExecute(Sender: TObject);
 var
-  expr, res, sections: UTF8String;
+  expr, sections: UTF8String;
   groups : ISuperObject;
 begin
   sections := '';

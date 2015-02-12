@@ -90,7 +90,7 @@ interface
       ):String;
 
   function WAPTServerJsonMultipartFilePost(waptserver,action: String;args:Array of const;
-      FileArg,FileName:String; enableProxy:Boolean= False;
+      FileArg,FileName:String;
       user:AnsiString='';password:AnsiString='';OnHTTPWork:TWorkEvent=Nil):ISuperObject;
 
   function CreateWaptSetup(default_public_cert:String='';default_repo_url:String='';
@@ -141,9 +141,9 @@ const
 
 implementation
 
-uses FileUtil, soutils, Variants, winsock, ShellApi, JwaIpHlpApi,
+uses FileUtil, soutils, Variants, ShellApi, JwaIpHlpApi,
   JwaIpTypes, NetworkAdapterInfo, tisinifiles, registry, tisstrings, JwaWinDNS, JwaWinsock2,
-  IdHttp,IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,Dialogs,Regex,UnitRedirect, IdURI,
+  IdHttp,IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,Dialogs,UnitRedirect, IdURI,
   uwaptres,gettext;
 
 function IPV42String(ipv4:LongWord):String;
@@ -153,11 +153,9 @@ end;
 
 function DNSAQuery(name: AnsiString): ISuperObject;
 var
-  resultname : PPWideChar;
   ppQueryResultsSet : PDNS_RECORD;
   retvalue: Integer;
   res : AnsiString;
-  rec:ISuperObject;
 begin
   Result := TSuperObject.Create(stArray);
   ppQueryResultsSet := Nil;
@@ -188,7 +186,6 @@ end;
 //query current dns server for SRV record and return a list of {name,priority,weight,port}
 function DNSSRVQuery(name:AnsiString):ISuperObject;
 var
-  resultname : PPWideChar;
   ppQueryResultsSet : PDNS_RECORD;
   retvalue: Integer;
   res : AnsiString;
@@ -229,11 +226,9 @@ end;
 //query current dns server for CNAME record and return a list of {name}
 function DNSCNAMEQuery(name:AnsiString):ISuperObject;
 var
-  resultname : PPWideChar;
   ppQueryResultsSet : PDNS_RECORD;
   retvalue: Integer;
   res : AnsiString;
-  rec:ISuperObject;
 begin
   Result := TSuperObject.Create(stArray);
   ppQueryResultsSet := Nil;
@@ -565,7 +560,6 @@ function IdHttpPostData(const UserAgent: ansistring; const url: Ansistring; cons
 var
   http:TIdHTTP;
   DataStream:TStringStream;
-  progress : TIdProgressProxy;
   ssl: boolean;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
 
@@ -680,15 +674,8 @@ end;
 
 function GetMainWaptRepo: String;
 var
-  i:integer;
-  first : integer;
-  ais : TAdapterInfo;
-
-  dnsdomain,
-  dnsserver:AnsiString;
-
   rec,recs : ISuperObject;
-  wapthost:AnsiString;
+  dnsdomain:AnsiString;
 
 begin
   result := IniReadString(AppIniFilename,'Global','repo_url');
@@ -765,15 +752,8 @@ end;
 
 function GetWaptServerURL: String;
 var
-  i:integer;
-  first : integer;
-  ais : TAdapterInfo;
-
-  dnsdomain,
-  dnsserver:AnsiString;
-
+  dnsdomain:AnsiString;
   rec,recs : ISuperObject;
-  wapthost:AnsiString;
 
 begin
   if CacheWaptServerUrl<>'None' then
@@ -1241,13 +1221,10 @@ const
 
 function GetLocalIP: string;
 var
-  I, VAttempt: Integer;
-  VStrTemp, VSitesToTry: TStringList;
 {$IFDEF UNIX}
   VProcess: TProcess;
 {$ENDIF}
 {$IFDEF MSWINDOWS}
-var
   VWSAData: TWSAData;
   VHostEnt: PHostEnt;
   VName: string;
@@ -1288,7 +1265,7 @@ procedure QuickSort(var A: Array of String);
 
 procedure Sort(l, r: Integer);
 var
-  i, j,aux: integer;
+  i, j: integer;
   y,x:string;
 begin
   i := l; j := r; x := a[(l+r) DIV 2];
@@ -1343,8 +1320,6 @@ function LocalSysinfo: ISuperObject;
 var
       so:ISuperObject;
       //CPUInfo:TCpuInfo;
-      Cmd,IPS:String;
-      st : TStringList;
       waptdb:TWAPTDB;
 begin
   so := TSuperObject.Create;
@@ -1377,7 +1352,7 @@ end;
 // qad %(key)s python format
 function pyformat(template:String;params:ISuperobject):String;
 var
-  key,value:ISuperObject;
+  key:ISuperObject;
 begin
   Result := template;
   for key in params.AsObject.GetNames do
@@ -1385,7 +1360,7 @@ begin
 end;
 
 function WAPTServerJsonMultipartFilePost(waptserver, action: String;
-  args: array of const; FileArg, FileName: String; enableProxy: Boolean;
+  args: array of const; FileArg, FileName: String;
   user: AnsiString; password: AnsiString; OnHTTPWork: TWorkEvent): ISuperObject;
 var
   res:String;
@@ -1400,6 +1375,8 @@ begin
     action := format(action,args);
   http := TIdHTTP.Create;
   http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
+  if UseProxyForServer then
+    IdConfigureProxy(http,HttpProxy);
 
   ssl := copy(waptserver, 1, length('https://')) = 'https://';
   if (ssl) then
@@ -1476,11 +1453,9 @@ end;
 function CreateWaptSetup(default_public_cert:String='';default_repo_url:String='';
           default_wapt_server:String='';destination:String='';company:String='';OnProgress:TNotifyEvent = Nil;OverrideBaseName:String=''):String;
 var
-  OutputFile,iss_template,custom_iss,source,target,outputname,junk : String;
+  iss_template,custom_iss,source,target,outputname,junk : String;
   iss,new_iss,line : ISuperObject;
   wapt_base_dir,inno_fn: String;
-  re : TRegexEngine;
-  exitstatus:integer;
 
   function startswith(st:ISuperObject;subst:String):Boolean;
   begin
@@ -1489,7 +1464,6 @@ var
 
 begin
     wapt_base_dir:= WaptBaseDir;
-    OutputFile := '';
     iss_template := wapt_base_dir + '\waptsetup' + '\waptsetup.iss';
     custom_iss := wapt_base_dir + '\' + 'waptsetup' + '\' + 'custom_waptsetup.iss';
     iss := SplitLines(FileToString(iss_template));
@@ -1511,7 +1485,6 @@ begin
                 else
                     StrSplit(line.AsString,'=',outputname,junk)
                 ;
-                outputfile := wapt_base_dir + '\' + 'waptsetup' + '\' + outputname + '.exe';
                 new_iss.AsArray.Add(format('OutputBaseFilename=%s' ,[outputname]));
             end
         else if not startswith(line,'#define signtool') then
@@ -1568,7 +1541,7 @@ end;
 //Check on which IP:port the waptservice is reachable for machine UUID
 function WaptServiceReachableIP(UUID:String;hostdata:ISuperObject=Nil): String;
 var
-  wapt_listening_address,address, IP_Port:ISuperObject;
+  wapt_listening_address,IP_Port:ISuperObject;
 begin
   Result :='';
   // try to get from hostdata

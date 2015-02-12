@@ -453,10 +453,4 @@ object DMWaptTray: TDMWaptTray
       97E7D1AC8DC0CFA98C97C8A28500
     }
   end
-  object Timer1: TTimer
-    Interval = 5000
-    OnTimer = Timer1Timer
-    left = 172
-    top = 136
-  end
 end

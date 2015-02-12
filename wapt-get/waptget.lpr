@@ -200,8 +200,6 @@ var
   MainModule : TStringList;
   logleveloption : String;
   Res,task:ISuperobject;
-  i:integer;
-  force:Boolean;
   packages:String;
 
   procedure SetFlag( AFlag: PInt; AValue : Boolean );
@@ -213,10 +211,10 @@ var
   end;
 
 begin
-  {Action:='';
+  Action:='';
   packages:='';
 
-  for i:=1 to ParamCount do
+  {for i:=1 to ParamCount do
   begin
     if (Pos('-',Params[i])<>1) then
       if (action='') then
@@ -494,7 +492,6 @@ var
   procedure removeTask(id:integer);
   var
     i:integer;
-    t:ISuperObject;
   begin
     for i:=0 to tasks.AsArray.Length-1 do
       if tasks.AsArray[i].I['id'] = id then

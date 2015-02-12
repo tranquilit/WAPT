@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  Buttons, StdCtrls, ActnList, EditBtn,fpJson, jsonparser, superobject,vte_json;
+  Buttons, StdCtrls, ActnList, EditBtn,jsonparser, superobject,vte_json;
 
 type
 
@@ -63,7 +63,6 @@ procedure TVisOptionIniFile.FormCloseQuery(Sender: TObject;
 var
   params:String;
   result:ISuperObject;
-  done : Boolean;
   choice : Boolean;
 begin
   if ModalResult=mrOk then

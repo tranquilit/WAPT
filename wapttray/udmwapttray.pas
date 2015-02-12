@@ -52,7 +52,6 @@ type
     MenuItem8: TMenuItem;
     MenuItem9: TMenuItem;
     MenuWaptVersion: TMenuItem;
-    Timer1: TTimer;
     TrayUpdate: TImageList;
     TrayRunning: TImageList;
     MenuItem1: TMenuItem;
@@ -127,8 +126,7 @@ var
 
 implementation
 uses LCLIntf,Forms,dialogs,windows,graphics,tiscommon,
-    waptcommon,tisinifiles,soutils,UnitRedirect,tisstrings,tishttp,IdException,
-    uWaptRes;
+    waptcommon,soutils,UnitRedirect,tisstrings,IdException;
 
 {$R *.lfm}
 
@@ -372,16 +370,10 @@ end;
 
 procedure TDMWaptTray.Timer1Timer(Sender: TObject);
 begin
-  {if (Now - lastServiceMessage > 1/24/3600 * 30)  then
-  begin
-    trayMode:=tmErrors;
-    trayHint:='Service inaccessible';
-  end;}
 end;
 
 procedure TDMWaptTray.ActConfigureExecute(Sender: TObject);
 begin
-  //OpenDocument(WaptIniFilename);
   RunAsAdmin(0,'cmd.exe','/C start notepad "'+WaptIniFilename+'"');
 end;
 
@@ -449,8 +441,8 @@ end;
 procedure TDMWaptTray.pollerEvent(message:TStringList);
 var
   msg,msg_type,topic:String;
-  bh,progress,runstatus:String;
-  upgrade_status,running,upgrades,errors,taskresult,task,tasks : ISuperObject;
+  runstatus:String;
+  upgrade_status,running,upgrades,errors,taskresult : ISuperObject;
   task_notify_user:Boolean;
 begin
   try
@@ -641,19 +633,7 @@ end;
 procedure TDMWaptTray.ActServiceEnableExecute(Sender: TObject);
 var
   res:WideString;
-  ss : TServiceState;
 begin
-  {ss := GetServiceStatusByName('','waptservice');
-  case ss of
-    ssUnknown:res:='UNKNOWN';
-    ssStopped:res := 'SERVICE_STOPPED';
-    ssStartPending:res :='SERVICE_START_PENDING';
-    ssStopPending:res := 'SERVICE_STOP_PENDING';
-    ssRunning:res := 'SERVICE_RUNNING';
-    ssContinuePending:res := 'SERVICE_CONTINUE_PENDING';
-    ssPausePending:res := 'SERVICE_PAUSE_PENDING';
-    ssPaused:res := 'PAUSED';
-  end;}
   ActServiceEnable.Checked :=  GetServiceStatusByName('','waptservice') <> ssStopped;
   if ActServiceEnable.Checked then
   begin
@@ -676,7 +656,6 @@ end;
 
 procedure TDMWaptTray.ActSessionSetupExecute(Sender: TObject);
 var
-  status:integer;
   res : WideString;
 begin
   try

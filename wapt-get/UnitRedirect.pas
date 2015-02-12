@@ -91,6 +91,7 @@ var
   iBytesRead: DWORD;
   myBuffer: array[0..BLOCK_SIZE-1] of Byte;
 begin
+  iBytesRead := 0;
   repeat
     // try to read from pipe
     if Windows.ReadFile(FPipe, myBuffer, BLOCK_SIZE, iBytesRead, nil) then
@@ -162,7 +163,6 @@ var
   output,error:RawByteString;
 
   exitCode:LongWord;
-  ose : EOSError;
 
   start_ms:DWORD;
 

@@ -6,10 +6,10 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, SynHighlighterPython, SynEdit,
-  SynMemo, Forms, Controls, Graphics,
-  Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, EditBtn, Buttons,
-  process, superobject, VirtualTrees,
-  VarPyth, types, ActiveX, LMessages, LCLIntf, LCL, sogrid, vte_json, DefaultTranslator,
+  Forms, Controls, Graphics,
+  Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, Buttons,
+  superobject, VirtualTrees,
+  VarPyth, types, ActiveX, LCLIntf, LCL, sogrid, vte_json, DefaultTranslator,
   uWaptConsoleRes;
 
 type
@@ -164,8 +164,8 @@ var
 
 implementation
 
-uses tisstrings, soutils, LCLType, waptcommon, dmwaptpython, jwawinuser, uvisloading,
-  uvisprivatekeyauth, strutils, uwaptconsole, tiscommon, uWaptRes;
+uses soutils, LCLType, waptcommon, dmwaptpython, jwawinuser, uvisloading,
+  uvisprivatekeyauth, uwaptconsole, tiscommon, uWaptRes;
 
 {$R *.lfm}
 
@@ -352,8 +352,8 @@ end;
 
 function TVisEditPackage.CheckUpdated: boolean;
 var
-  Rep, i: integer;
-  dsnames, msg: string;
+  Rep: integer;
+  msg: string;
 begin
   Result := not IsUpdated;
   if not Result then
@@ -495,8 +495,6 @@ end;
 
 procedure TVisEditPackage.ActEditSavePackageExecute(Sender: TObject);
 var
-  i: integer;
-  n: PVirtualNode;
   res: ISuperObject;
 begin
   Screen.Cursor := crHourGlass;
@@ -554,8 +552,6 @@ end;
 
 procedure TVisEditPackage.ActBuildUploadExecute(Sender: TObject);
 var
-  expr, res: string;
-  package: string;
   Result: ISuperObject;
 begin
   Result := Nil;
@@ -651,7 +647,7 @@ end;
 
 procedure TVisEditPackage.ActSearchPackageExecute(Sender: TObject);
 var
-  expr, res: UTF8String;
+  expr : Utf8String;
   packages: ISuperObject;
 begin
   expr := format('mywapt.search(r"%s".decode(''utf8'').split())', [EdSearch.Text]);

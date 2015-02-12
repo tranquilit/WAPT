@@ -5,9 +5,9 @@ unit uVisServerPostconf;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, RichView,
+  Classes, SysUtils, FileUtil,
   Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, ExtCtrls,
-  Buttons, ActnList, EditBtn, htmlview, Readhtml, Htmlsubs, IdHTTP,
+  Buttons, ActnList, EditBtn, htmlview, Readhtml, IdHTTP,
   IdComponent,uvisLoading, DefaultTranslator, LCLProc, uWaptServerRes;
 
 type
@@ -127,8 +127,8 @@ var
   VisWAPTServerPostConf: TVisWAPTServerPostConf;
 
 implementation
-uses LCLIntf, Windows,WaptCommon,tisinifiles,superobject,tisutils,soutils,
-    tiscommon,tisstrings,IniFiles,UnitRedirect,sha1,Regex, uWaptRes;
+uses LCLIntf, Windows,WaptCommon,tisinifiles,superobject,
+    tiscommon,tisstrings,IniFiles,UnitRedirect,sha1,uWaptRes;
 {$R *.lfm}
 
 { TVisWAPTServerPostConf }
@@ -516,9 +516,7 @@ end;
 
 procedure TVisWAPTServerPostConf.ActBuildWaptsetupExecute(Sender: TObject);
 var
-  params : ISuperObject;
   waptsetupPath: string;
-  ini: TIniFile;
   SORes:ISuperObject;
 begin
   CurrentVisLoading := TVisLoading.Create(Self);
@@ -535,7 +533,7 @@ begin
     try
       Start;
       ProgressTitle(rsProgressTitle);
-      SORes := WAPTServerJsonMultipartFilePost(edWAPTServerURL1.Text,'upload_waptsetup',[],'file',waptsetupPath,False,'admin',EdPwd1.Text,@IdHTTPWork);
+      SORes := WAPTServerJsonMultipartFilePost(edWAPTServerURL1.Text,'upload_waptsetup',[],'file',waptsetupPath,'admin',EdPwd1.Text,@IdHTTPWork);
       Finish;
       if SORes.S['status'] = 'OK' then
         ShowMessageFmt(rsWaptSetupUploadSuccess, [waptsetupPath])

@@ -352,7 +352,6 @@ type
     procedure TimerTasksTimer(Sender: TObject);
   private
     CurrentVisLoading: TVisLoading;
-    FLanguage: String;
     procedure DoProgress(ASender: TObject);
     function FilterSoftwares(softs: ISuperObject): ISuperObject;
     { private declarations }
@@ -383,9 +382,9 @@ implementation
 uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, tisstrings,
   soutils, waptcommon, tiscommon, uVisCreateKey, uVisCreateWaptSetup,
   uvisOptionIniFile, dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig,
-  uvischangepassword, uvisgroupchoice, uviseditgroup, uviswaptdeploy,
+  uvischangepassword, uvisgroupchoice, uviswaptdeploy,
   uvishostsupgrade, uVisAPropos, uVisImportPackage, PythonEngine, Clipbrd,
-  RegExpr, Regex, UnitRedirect,tisinifiles, uWaptRes;
+  RegExpr, tisinifiles;
 
 {$R *.lfm}
 
@@ -536,7 +535,7 @@ end;
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
   currhost : ansistring;
-  RowSO, attribs, packages, softwares, tasks, tasksresult, running: ISuperObject;
+  RowSO, packages, softwares, tasks, tasksresult, running: ISuperObject;
 begin
   TimerTasks.Enabled := False;
   RowSO := Gridhosts.FocusedRow;
@@ -663,12 +662,8 @@ begin
 end;
 
 constructor TVisWaptGUI.Create(TheOwner: TComponent);
-var
-  l,fbl:String;
 begin
   inherited Create(TheOwner);
-  //GetLanguageIDs(l,fbl);
-  //FLanguage:=fbl;
 end;
 
 procedure TVisWaptGUI.ActLocalhostInstallExecute(Sender: TObject);
@@ -797,10 +792,9 @@ end;
 
 procedure TVisWaptGUI.ActCreateCertificateExecute(Sender: TObject);
 var
-  params, certFile, privateKey: string;
+  params, certFile: string;
   Result: ISuperObject;
   done: boolean;
-  INI: TINIFile;
 begin
   with TVisCreateKey.Create(Self) do
     try
@@ -862,8 +856,7 @@ end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
 var
-  params: ISuperObject;
-  waptsetupPath, fnPublicCert: string;
+  waptsetupPath: string;
   ini: TIniFile;
   SORes: ISuperObject;
 begin
@@ -894,7 +887,7 @@ begin
                 Start;
                 ProgressTitle(rsProgressTitle);
                 SORes := WAPTServerJsonMultipartFilePost(
-                  GetWaptServerURL, 'upload_waptsetup', [], 'file', waptsetupPath, False,
+                  GetWaptServerURL, 'upload_waptsetup', [], 'file', waptsetupPath,
                   WaptServerUser, WaptServerPassword, @IdHTTPWork);
                 Finish;
                 if SORes.S['status'] = 'OK' then
@@ -938,7 +931,7 @@ procedure TVisWaptGUI.ActAddConflictsExecute(Sender: TObject);
 var
   Res, packages, host, hosts: ISuperObject;
   N: PVirtualNode;
-  PackagesList, args: ansistring;
+  args: ansistring;
 begin
   if GridHosts.Focused then
   begin
@@ -990,7 +983,7 @@ procedure TVisWaptGUI.ActAddPackageGroupExecute(Sender: TObject);
 var
   Res, packages, host, hosts: ISuperObject;
   N: PVirtualNode;
-  PackagesList, args: ansistring;
+  args: ansistring;
 begin
   if GridHosts.Focused then
   begin
@@ -1276,9 +1269,7 @@ end;
 
 procedure TVisWaptGUI.ActEditGroupExecute(Sender: TObject);
 var
-  expr, res, depends, dep: string;
   Selpackage: string;
-  Result: ISuperObject;
   N: PVirtualNode;
 begin
   if GridGroups.Focused then
@@ -1293,7 +1284,6 @@ end;
 procedure TVisWaptGUI.ActEditHostPackageExecute(Sender: TObject);
 var
   hostname,IP: ansistring;
-  IPS,Result: ISuperObject;
 begin
   hostname := GridHosts.FocusedRow.S['host.computer_fqdn'];
   ip := GetReachableIP(GridHosts.FocusedRow['host.connected_ips'],waptservice_port);
@@ -1378,8 +1368,8 @@ end;
 procedure TVisWaptGUI.ActImportFromFileExecute(Sender: TObject);
 var
   i: integer;
-  target, sourceDir: string;
-  package, uploadResult, listPackages, Sources, aDir: ISuperObject;
+  sourceDir: string;
+  uploadResult, Sources: ISuperObject;
 
 begin
   if not FileExists(GetWaptPrivateKeyPath) then
@@ -1504,8 +1494,6 @@ begin
 end;
 
 procedure TVisWaptGUI.ActRDPUpdate(Sender: TObject);
-var
-  ip: ansistring;
 begin
   try
     ActRDP.Enabled := (Gridhosts.FocusedRow <> nil) and (Gridhosts.FocusedRow.S['host.connected_ips']<>'');
@@ -1519,7 +1507,7 @@ procedure TVisWaptGUI.ActRemoveConflictsExecute(Sender: TObject);
 var
   Res, packages, host, hosts: ISuperObject;
   N: PVirtualNode;
-  PackagesList, args: ansistring;
+  args: ansistring;
 begin
   if GridHosts.Focused then
   begin
@@ -1570,7 +1558,7 @@ procedure TVisWaptGUI.ActRemoveDependsExecute(Sender: TObject);
 var
   Res, packages, host, hosts: ISuperObject;
   N: PVirtualNode;
-  PackagesList, args: ansistring;
+  args: ansistring;
 begin
   if GridHosts.Focused then
   begin
@@ -1673,7 +1661,7 @@ end;
 
 procedure TVisWaptGUI.ActEvaluateExecute(Sender: TObject);
 var
-  o, sob: ISuperObject;
+  sob: ISuperObject;
 begin
   MemoLog.Clear;
   if cbShowLog.Checked then
@@ -1693,10 +1681,7 @@ begin
 end;
 
 procedure TVisWaptGUI.ActHostsCopyExecute(Sender: TObject);
-var
-  fmt: TClipboardFormat;
 begin
-  //GridHosts.CopyToClipBoard;
   Clipboard.AsText := GridHosts.ContentToUTF8(tstSelected, ';');
 end;
 
@@ -2416,10 +2401,7 @@ begin
 end;
 
 procedure TVisWaptGUI.MenuItem20Click(Sender: TObject);
-var
-  package: ansistring;
 begin
-  //package:=;
 end;
 
 procedure CopyMenu(menuItemSource: TPopupMenu; menuItemTarget: TMenuItem);

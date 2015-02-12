@@ -708,7 +708,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
       object CBOpenFirewall: TCheckBox
         Left = 8
-        Height = 19
+        Height = 17
         Top = 234
         Width = 378
         Caption = 'Open firewall ports 80 and 443 to allow access for packages and inventory'

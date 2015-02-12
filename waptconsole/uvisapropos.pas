@@ -29,7 +29,7 @@ var
   VisApropos: TVisApropos;
 
 implementation
-uses tiscommon,waptcommon,LCLIntf, uWaptRes;
+uses tiscommon,waptcommon,LCLIntf;
 {$R *.lfm}
 
 { TVisApropos }
@@ -37,7 +37,6 @@ uses tiscommon,waptcommon,LCLIntf, uWaptRes;
 procedure TVisApropos.FormCreate(Sender: TObject);
 begin
   LabInfos.Caption := format(rsVersion, [GetApplicationVersion, GetApplicationVersion(WaptgetPath)]);
-
 end;
 
 procedure TVisApropos.Image1Click(Sender: TObject);
