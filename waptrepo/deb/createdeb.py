@@ -70,6 +70,11 @@ if not wapt_version:
 
 control_file = './builddir/DEBIAN/control'
 
+new_umask = 022
+old_umask = os.umask(new_umask)
+if new_umask != old_umask:
+    print >> sys.stderr, 'umask fixed (previous %03o, current %03o)' % (old_umask, new_umask)
+ 
 # remove old debs
 for filename in glob.glob("tis-waptrepo*.deb"):
     print "destruction de %s" % filename
