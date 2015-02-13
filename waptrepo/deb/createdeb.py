@@ -108,6 +108,6 @@ os.chmod('./builddir/DEBIAN/postinst',
          | stat.S_IXGRP | stat.S_IRGRP
          | stat.S_IROTH | stat.S_IXOTH
          )
-dpkg_command = 'dpkg-deb --build builddir tis-waptrepo-%s.deb' % (wapt_version,)
+dpkg_command = 'dpkg-deb --build builddir tis-waptrepo.deb'
 os.system(dpkg_command)
 shutil.rmtree("builddir")
