@@ -216,6 +216,14 @@ object VisWaptGUI: TVisWaptGUI
           Caption = '0'
           ParentColor = False
         end
+        object Button1: TButton
+          Left = 516
+          Height = 25
+          Top = 2
+          Width = 128
+          Action = ActTriggerHostsListening
+          TabOrder = 9
+        end
       end
       object GridHosts: TSOGrid
         Left = 0
@@ -3011,6 +3019,11 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'English'
       OnExecute = ActEnglishExecute
       OnUpdate = ActEnglishUpdate
+    end
+    object ActTriggerHostsListening: TAction
+      Category = 'hosts'
+      Caption = 'Trigger scan listening IP'
+      OnExecute = ActTriggerHostsListeningExecute
     end
   end
   object PopupMenuPackages: TPopupMenu

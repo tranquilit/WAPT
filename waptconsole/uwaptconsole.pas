@@ -26,6 +26,7 @@ type
     ActCreateWaptSetup: TAction;
     ActFrench: TAction;
     ActEnglish: TAction;
+    ActTriggerHostsListening: TAction;
     ActRemoveConflicts: TAction;
     ActSearchSoftwares: TAction;
     ActRemoveDepends: TAction;
@@ -76,6 +77,7 @@ type
     ButCancelHostTask: TBitBtn;
     ButHostSearch: TBitBtn;
     ButPackagesUpdate: TBitBtn;
+    Button1: TButton;
     cbSearchDMI: TCheckBox;
     cbSearchHost: TCheckBox;
     cbSearchPackages: TCheckBox;
@@ -282,6 +284,7 @@ type
     procedure ActSearchPackageExecute(Sender: TObject);
     procedure ActPackagesUpdateExecute(Sender: TObject);
     procedure ActReloadConfigExecute(Sender: TObject);
+    procedure ActTriggerHostsListeningExecute(Sender: TObject);
     procedure ActVNCExecute(Sender: TObject);
     procedure ActVNCUpdate(Sender: TObject);
     procedure ActWAPTLocalConfigExecute(Sender: TObject);
@@ -1830,6 +1833,23 @@ begin
   dmpython.WaptConfigFileName:=AppIniFilename;
 end;
 
+procedure TVisWaptGUI.ActTriggerHostsListeningExecute(Sender: TObject);
+var
+  res:ISuperObject;
+begin
+  try
+    res := WAPTServerJsonGet('trigger_reachable_discovery',[]);
+    if res.B['success'] then
+      ShowMessageFmt('%s',[res.S['msg']])
+    else
+      ShowMessageFmt('Unable to trigger discovery of listening IP on wapt server: %s',[res.S['msg']]);
+  except
+    on E:Exception do
+      ShowMessageFmt('Unable to trigger discovery of listening IP on wapt server: %s',[E.Message]);
+  end;
+
+end;
+
 procedure TVisWaptGUI.ActVNCExecute(Sender: TObject);
 var
   ip: ansistring;
@@ -1851,8 +1871,7 @@ begin
   try
     ActVNC.Enabled := (Gridhosts.FocusedRow <> nil) and
       (Gridhosts.FocusedRow.S['host.connected_ips'] <> '') and
-      FileExists('C:\Program Files\TightVNC\tvnviewer.exe') and
-      (Gridhosts.FocusedRow.S['host.connected_ips']<>'');
+      FileExists('C:\Program Files\TightVNC\tvnviewer.exe');
   except
     ActVNC.Enabled := False;
   end;
