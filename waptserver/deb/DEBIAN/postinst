@@ -16,7 +16,11 @@ if [ -f "/opt/wapt/waptserver/waptserver.ini" ]
 then
   if ps aux | grep -q wapt
   then
-    [ -f /etc/init.d/waptserver ] && /etc/init.d/waptserver restart
+    [ -f /etc/init.d/waptserver ] && /etc/init.d/waptserver stop
+    # XXX temporary: clean up leftover waptserver processes
+    # due to broken /etc/init.d/waptserver script
+    pkill -INT -f '^/usr/bin/uwsgi-core.*wapt'
+    [ -f /etc/init.d/waptserver ] && /etc/init.d/waptserver start
   else
     [ -f /etc/init.d/waptserver ] && /etc/init.d/waptserver start
   fi
