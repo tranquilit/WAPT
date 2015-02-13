@@ -143,7 +143,6 @@ waptservice_port = 8088
 
 clients_connect_timeout = 1
 clients_read_timeout = 1.5
-
 clients_poll_interval = None
 
 if config.has_section('options'):
@@ -1259,11 +1258,16 @@ def get_ip_port(host_data):
     if not host_data:
         raise EWaptUnknownHost(_('Unknown uuid'))
 
-    if 'wapt' in host_data and \
-          'listening_address' in host_data['wapt'] and \
-          'address' in host_data['wapt']['listening_address'] and \
-          host_data['wapt']['listening_address']['address']:
-        return host_data['wapt']['listening_address']
+    if 'wapt' in host_data:
+        if 'listening_address' in host_data['wapt'] and \
+                  'address' in host_data['wapt']['listening_address'] and \
+                  host_data['wapt']['listening_address']['address']:
+            return host_data['wapt']['listening_address']
+        else:
+            return dict(
+                protocol='http',
+                address=get_reachable_ip(ensure_list(host_data['host']['connected_ips'])),
+                port=waptservice_port)
     else:
         raise EWaptHostUnreachable(_('No reachable IP for {}').format(host_data['uuid']))
 
@@ -1278,11 +1282,19 @@ def ping():
 def trigger_reachable_discovery():
     """Launch a separate thread to check all reachable IP
     """
+    global check_listening
     try:
-        disc_thread = CheckHostsWaptService()
-        disc_thread.start()
-        result = dict(thread_ident = disc_thread.ident )
-        message = _(u'Hosts listening IP discovery launched')
+        # recreate a thread if terminated
+        if not check_listening or not check_listening.is_alive():
+            check_listening = CheckHostsWaptService()
+            check_listening.daemon = True
+            check_listening.start()
+            message = _(u'Hosts listening IP discovery launched')
+        else:
+            logger.debug('thread is still running...')
+            message = _(u'Hosts listening IP discovery still running')
+
+        result = dict(thread_ident = check_listening.ident )
 
     except Exception, e:
             return make_response_from_exception(e)
@@ -1324,7 +1336,7 @@ def trigger_upgrade():
                 client_result = json.loads(client_result)
                 result = client_result['content']
                 if len(result)<=1:
-                    msg = _(u"Nothing to upgrade.").format(-1)
+                    msg = _(u"Nothing to upgrade.")
                 else:
                     packages= [t['description'] for t in result if t['classname'] != 'WaptUpgrade']
                     msg = _(u"Triggered {} task(s):\n{}").format(len(packages),'\n'.join(packages))
@@ -1409,8 +1421,8 @@ class CheckHostsWaptService(threading.Thread):
                     self.update_listening_address()
                 except Exception as e:
                     logger.critical('Unable to poll wapt client : %s' % e)
-                logger.debug('Client-listening address checker %s sleeping...'%self.ident)
                 if self.poll_interval:
+                    logger.debug('Client-listening address checker %s sleeping...'%self.ident)
                     time.sleep(self.poll_interval)
                 else:
                     break
@@ -1630,12 +1642,11 @@ if __name__ == "__main__":
 
     # global thread to check listening ip of registred hosts periodically
     # use with caution as it generates noise on the network (tcp connection try on each host)
-    if clients_poll_interval:
-        check_listening = CheckHostsWaptService(poll_interval = clients_poll_interval)
-        check_listening.start()
-    else:
-        check_listening = None
 
+    # create a global listener...
+    check_listening = CheckHostsWaptService(poll_interval = clients_poll_interval)
+    check_listening.daemon = True
+    check_listening.start()
 
     if options.devel:
         app.run(host='0.0.0.0',port=30880,debug=False)
