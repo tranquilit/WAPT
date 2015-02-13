@@ -65,7 +65,7 @@ for line in open('%s/waptpackage.py' % wapt_source_dir):
         wapt_version = line.split('=')[1].replace('"','').replace("'","").replace('\n','').replace(' ','').replace('\r','')
 
 if not wapt_version:
-    print 'version non trouvée dans %s/waptpackage.py'
+    print 'version non trouvee dans %s/waptpackage.py'
     exit(1)
 
 control_file = './builddir/DEBIAN/control'
@@ -77,7 +77,7 @@ for filename in glob.glob("tis-waptrepo*.deb"):
 if os.path.exists("builddir"):
     shutil.rmtree("builddir")
 
-print u'création de l\'arborescence'
+print u'creation de l\'arborescence'
 os.makedirs("builddir")
 os.makedirs("builddir/DEBIAN")
 os.makedirs("builddir/opt")
@@ -102,7 +102,7 @@ copyfile('./DEBIAN/postinst','./builddir/DEBIAN/postinst')
 print u'inscription de la version dans le fichier de control'
 replaceAll(control_file,'0.0.7',wapt_version)
 
-print u'création du paquet Deb'
+print u'creation du paquet Deb'
 os.chmod('./builddir/DEBIAN/postinst',
          stat.S_IRWXU
          | stat.S_IXGRP | stat.S_IRGRP
