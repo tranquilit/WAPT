@@ -897,7 +897,7 @@ def host_tasks():
             listening_data = get_ip_port(host_data)
 
             if listening_data['address']:
-                data = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json" % listening_data,proxies=None).text
+                data = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json" % listening_data,proxies=None,timeout=0.5).text
                 result = dict(message=json.loads(data),status='OK')
             else:
                 raise EWaptMissingHostData(_("The WAPT service port is not defined."))
@@ -1254,19 +1254,7 @@ def get_ip_port(host_data):
           host_data['wapt']['listening_address']['address']:
         return host_data['wapt']['listening_address']
     else:
-        raise EWaptHostUnreachable(_('No reachable IP for %s')%host_data['uuid'])
-
-        ## old behaviour is disabled
-        if not 'host' in host_data or not 'connected_ips' in host_data['host']:
-            raise EWaptMissingHostData(_('Unknown connected IP for this UUID'))
-        if not waptservice_port:
-            raise EWaptMissingHostData(_("The WAPT service port is not defined."))
-        ips = ensure_list(host_data['host']['connected_ips'])
-        ip  = get_reachable_ip(ips,waptservice_port)
-        if ip:
-            return dict(protocol='http',address=ip,port=waptservice_port)
-        else:
-            raise EWaptHostUnreachable(_('No reachable IP for %s')%host_data['uuid'])
+        raise EWaptHostUnreachable(_('No reachable IP for {}').format(host_data['uuid']))
 
 
 @app.route('/ping')
@@ -1315,7 +1303,7 @@ def trigger_upgrade():
     """Proxy the wapt upgrade action to the client"""
     try:
         uuid = request.args['uuid']
-        host_data = hosts().find_one({ "uuid": uuid},fields={'wapt':1,'host.connected_ips':1})
+        host_data = hosts().find_one({ "uuid": uuid},fields={'uuid':1,'wapt':1,'host.connected_ips':1})
         listening_address = get_ip_port(host_data)
 
         if listening_address and listening_address['address'] and listening_address['port']:
