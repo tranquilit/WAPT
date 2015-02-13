@@ -41,7 +41,6 @@ type
     ActCreateWaptSetupPy: TAction;
     ActEvaluateVar: TAction;
     ActEditHostPackage: TAction;
-    ActAddRemoveOptionIniFile: TAction;
     ActHostSearchPackage: TAction;
     ActHostsAddPackages: TAction;
     ActHostsDelete: TAction;
@@ -233,7 +232,6 @@ type
     GridHostPackages: TSOGrid;
     GridHostSoftwares: TSOGrid;
     procedure ActAddConflictsExecute(Sender: TObject);
-    procedure ActAddRemoveOptionIniFileExecute(Sender: TObject);
     procedure ActAddPackageGroupExecute(Sender: TObject);
     procedure ActAdvancedModeExecute(Sender: TObject);
     procedure ActCancelRunningTaskExecute(Sender: TObject);
@@ -913,20 +911,6 @@ begin
     end;
 end;
 
-procedure TVisWaptGUI.ActAddRemoveOptionIniFileExecute(Sender: TObject);
-begin
-  with TVisOptionIniFile.Create(self) do
-    try
-      if ShowModal = mrOk then
-        try
-
-        except
-        end;
-
-    finally
-    end;
-end;
-
 procedure TVisWaptGUI.ActAddConflictsExecute(Sender: TObject);
 var
   Res, packages, host, hosts: ISuperObject;
@@ -954,27 +938,36 @@ begin
     if (packages = nil) or (packages.AsArray.Length = 0) then
       Exit;
 
-    Hosts := TSuperObject.Create(stArray);
-    for host in GridHosts.SelectedRows do
-      hosts.AsArray.Add(host.S['host.computer_fqdn']);
+    CurrentVisLoading := TVisLoading.Create(Self);
+    with CurrentVisLoading do
+    try
+      Hosts := TSuperObject.Create(stArray);
+      for host in GridHosts.SelectedRows do
+        hosts.AsArray.Add(host.S['host.computer_fqdn']);
+      Start(GridHosts.SelectedRows.AsArray.Length);
+      ProgressTitle(rsCreationInProgress);
 
-    //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
-    args := '';
-    args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
-    args := args + format('hosts_list = r"%s".decode(''utf8''),',
-      [soutils.Join(',', hosts)]);
-    args := args + format('append_depends = "",', []);
-    args := args + format('remove_depends = "",', []);
-    args := args + format('append_conflicts = r"%s".decode(''utf8''),',
-      [soutils.Join(',', packages)]);
-    args := args + format('remove_conflicts = "",', []);
-    if privateKeyPassword <> '' then
-      args := args + format('key_password = "%s".decode(''utf8''),',
-        [privateKeyPassword]);
-    args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
-    args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
-      [waptServerPassword]);
-    res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)', [args]));
+      //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
+      args := '';
+      args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
+      args := args + format('hosts_list = r"%s".decode(''utf8''),',
+        [soutils.Join(',', hosts)]);
+      args := args + format('append_depends = "",', []);
+      args := args + format('remove_depends = "",', []);
+      args := args + format('append_conflicts = r"%s".decode(''utf8''),',
+        [soutils.Join(',', packages)]);
+      args := args + format('remove_conflicts = "",', []);
+      if privateKeyPassword <> '' then
+        args := args + format('key_password = "%s".decode(''utf8''),',
+          [privateKeyPassword]);
+      args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
+      args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
+        [waptServerPassword]);
+      res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)', [args]));
+    finally
+      Finish;
+      Free;
+    end;
     ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
   end;
 end;
@@ -1752,7 +1745,7 @@ var
   urlParams, Node, Hosts: ISuperObject;
   previous_uuid: string;
 const
-  url: string = 'json/host_list';
+  url: string = 'hosts';
 begin
 
   urlParams := TSuperObject.Create(stArray);
@@ -2285,9 +2278,11 @@ procedure TVisWaptGUI.GridHostsGetImageIndexEx(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
   var Ghosted: boolean; var ImageIndex: integer; var ImageList: TCustomImageList);
 var
-  RowSO, update_status, upgrades, errors: ISuperObject;
+  RowSO, update_status, upgrades, errors,
+  reachable,checktime: ISuperObject;
+  timestamp:TDateTime;
 begin
-  if GridHosts.Header.Columns[Column].Text = 'Status' then
+  if TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName = 'status' then
   begin
     RowSO := GridHosts.GetNodeSOData(Node);
     if RowSO <> nil then
@@ -2307,6 +2302,16 @@ begin
           ImageIndex := 0;
       end;
     end;
+  end
+  else if TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName = 'reachable' then
+  begin
+    ImageIndex:=-1;
+    reachable := GridHostPackages.GetCellData(Node, 'wapt.listening_address.address', Nil);
+    if (reachable<>Nil) then
+    begin
+      if reachable.AsString <> '' then
+        ImageIndex := 4;
+    end
   end;
 end;
 
@@ -2314,7 +2319,8 @@ procedure TVisWaptGUI.GridHostsGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
   TextType: TVSTTextType; var CellText: string);
 var
-  RowSO, update_status, errors, Upgrades: ISuperObject;
+  RowSO, update_status, errors, Upgrades,
+  reachable: ISuperObject;
 begin
   if Node = nil then
     CellText := ''

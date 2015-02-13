@@ -234,82 +234,91 @@ object VisWaptGUI: TVisWaptGUI
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed, coAllowFocus]
             Position = 0
             Text = 'Status'
+            PropertyName = 'status'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed, coAllowFocus]
+            Position = 1
+            Tag = 1
+            Text = 'Reachable'
+            Width = 60
+            PropertyName = 'reachable'
           end        
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed, coAllowFocus]
-            Position = 1
-            Tag = 1
+            Position = 2
+            Tag = 2
             Text = 'Host'
             Width = 112
             PropertyName = 'host.computer_fqdn'
           end        
           item
             MaxWidth = 400
-            Position = 2
-            Tag = 2
+            Position = 3
+            Tag = 3
             Text = 'Description'
             Width = 124
             PropertyName = 'host.description'
           end        
           item
             MaxWidth = 400
-            Position = 3
-            Tag = 3
+            Position = 4
+            Tag = 4
             Text = 'Manufacturer'
             Width = 100
             PropertyName = 'host.system_manufacturer'
           end        
           item
             MaxWidth = 400
-            Position = 4
-            Tag = 4
+            Position = 5
+            Tag = 5
             Text = 'Model'
             Width = 100
             PropertyName = 'host.system_productname'
           end        
           item
             MaxWidth = 400
-            Position = 5
-            Tag = 5
+            Position = 6
+            Tag = 6
             Text = 'Serial number'
             Width = 100
             PropertyName = 'dmi.Chassis_Information.Serial_Number'
           end        
           item
             MaxWidth = 400
-            Position = 6
-            Tag = 6
+            Position = 7
+            Tag = 7
             Text = 'Last update'
             Width = 100
             PropertyName = 'last_query_date'
           end        
           item
             MaxWidth = 400
-            Position = 7
-            Tag = 7
+            Position = 8
+            Tag = 8
             Text = 'MAC address'
             Width = 100
             PropertyName = 'host.mac'
           end        
           item
-            Position = 8
-            Tag = 8
+            Position = 9
+            Tag = 9
             Text = 'Listening IP'
             Width = 75
             PropertyName = 'wapt.listening_address.address'
           end        
           item
             MaxWidth = 400
-            Position = 9
-            Tag = 9
+            Position = 10
+            Tag = 10
             Text = 'IP addresses'
             Width = 100
             PropertyName = 'host.connected_ips'
           end        
           item
-            Position = 10
-            Tag = 10
+            Position = 11
+            Tag = 11
             Text = 'WAPT version'
             Width = 80
             PropertyName = 'wapt.wapt-exe-version'
@@ -317,8 +326,8 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 11
-            Tag = 11
+            Position = 12
+            Tag = 12
             Text = 'uuid'
             Width = 100
             PropertyName = 'uuid'
@@ -326,8 +335,8 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 12
-            Tag = 12
+            Position = 13
+            Tag = 13
             Text = 'md5sum'
             Width = 100
             PropertyName = 'md5sum'
@@ -335,8 +344,8 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 13
-            Tag = 13
+            Position = 14
+            Tag = 14
             Text = 'purchase_order'
             Width = 100
             PropertyName = 'purchase_order'
@@ -344,8 +353,8 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 14
-            Tag = 14
+            Position = 15
+            Tag = 15
             Text = 'purchase_date'
             Width = 100
             PropertyName = 'purchase_date'
@@ -353,8 +362,8 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 15
-            Tag = 15
+            Position = 16
+            Tag = 16
             Text = 'groups'
             Width = 100
             PropertyName = 'groups'
@@ -362,8 +371,8 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 16
-            Tag = 16
+            Position = 17
+            Tag = 17
             Text = 'attributes'
             Width = 100
             PropertyName = 'attributes'
@@ -371,35 +380,35 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 100
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 17
-            Tag = 17
+            Position = 18
+            Tag = 18
             Text = 'Host status'
             PropertyName = 'update_status'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 18
-            Tag = 18
+            Position = 19
+            Tag = 19
             Text = 'Domain controller'
             PropertyName = 'host.domain_controller'
           end        
           item
-            Position = 19
-            Tag = 19
+            Position = 20
+            Tag = 20
             Text = 'Domaine'
             Width = 80
             PropertyName = 'host.domain_name'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 20
-            Tag = 20
+            Position = 21
+            Tag = 21
             Text = 'Domain controller address'
             PropertyName = 'host.domain_controller_address'
           end        
           item
-            Position = 21
-            Tag = 21
+            Position = 22
+            Tag = 22
             Text = 'Groups'
             PropertyName = 'depends'
           end>
@@ -407,7 +416,7 @@ object VisWaptGUI: TVisWaptGUI
         Header.MaxHeight = 17
         Header.MinHeight = 17
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-        Header.SortColumn = 1
+        Header.SortColumn = 0
         Header.Style = hsFlatButtons
         Images = ImageList1
         PopupMenu = PopupMenuHosts
@@ -3640,7 +3649,7 @@ object VisWaptGUI: TVisWaptGUI
     left = 332
     top = 272
     Bitmap = {
-      4C69040000001000000010000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      4C69050000001000000010000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000093
@@ -3768,6 +3777,38 @@ object VisWaptGUI: TVisWaptGUI
       18F7C58818FFC58818FFC58818FFC58818FFC58818FFC58818FFC58818F7C487
       1875FF800002FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00C489
       1A27C5871880C58718B3C58818E6C58818E6C58718B3C5871880C4891A27FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000091
+      450000924585019548C5019247F2019247F2019548C50092458500914500FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0000808000029346000997
+      4DF553C58CFC7CDAAAFF99E8C0FF99E8C0FF7CDAAAFF53C58CFC09974DF50093
+      460000808000FFFFFF00FFFFFF00FFFFFF0000808000019448C42DAD6BF695E7
+      BDFFA9ECCAFFC1F0D8FFCAF1DDFFB9EDD4FFA9EACAFF97E8C0FF93E5BCFF2DAC
+      6AF6018D44C400800000FFFFFF00FFFFFF00029346002DAD6BF69CEBC4FFC2EF
+      D8FFF0FBF6FFF1FBF6FFE0F7ECFFCEF2E0FFB9EDD3FFA2E6C4FF8FE1B7FF98E6
+      BFFF2DA266F600803E00FFFFFF000091450009974DF595E7BDFFBBEED4FFE1F7
+      ECFFF3FCF7FFF0FBF5FFE2F7ECFFD0F2E1FFBCECD4FFA4E6C5FF8CDFB5FF7BDA
+      ABFF91DEB7FF097E42F5006E37000092458553C58BFCA2E9C5FFC9F0DDFFDDF5
+      E9FFE5F8EFFFE3F7EDFFD9F4E7FFCAF0DDFFB6EAD0FFA0E4C2FF88DDB2FF6ED4
+      A1FF82DBAEFF52B281FC006D3485019448C57CD7A8FFACE8CAFFC3EDD8FFD0F1
+      E0FFD5F3E4FFD3F2E3FFCBEFDDFFBDECD4FFABE6C9FF96E0BCFF7FD8ABFF63D0
+      99FF68D09BFF77C99FFF016A34C5019247F298E4BEFFA9E4C6FFB7E9D0FFC0EB
+      D6FFC3ECD8FFC0ECD6FFB9E9D1FFACE5C9FF9CE0BEFF89DAB1FF72D1A1FF57C8
+      90FF51C78CFF95D9B6FF01612EF2019247F298E2BDFF9EE1C0FFA7E3C5FFADE5
+      C9FFAFE6CAFFADE4C8FFA4E2C3FF99DEBCFF89D8B1FF77D2A3FF61CA95FF48C1
+      83FF4BC386FF94D6B4FF015B2BF2019447C57BD3A6FF93DDB8FF95DCB7FF99DD
+      BBFF99DEBCFF97DCBAFF8FD9B4FF83D6ADFF75D0A1FF62C995FF4CC286FF3FBC
+      7DFF58C48DFF74BF99FF015729C50092458553BE88FC8FDCB5FF7FD3A9FF82D5
+      ABFF82D4ABFF7FD2A7FF76D0A3FF6BCC9BFF5CC690FF4ABE83FF3EB97AFF37B6
+      76FF74CC9FFF509F76FC004B24850091450009934BF592DBB5FF7BD0A5FF6BCA
+      99FF69C999FF64C795FF5DC48FFF51BF87FF44BA7EFF3DB679FF36B574FF4DBE
+      85FF8FD1AFFF09532DF500452200FFFFFF00008840002D9E62F696DCB9FF70CB
+      9EFF58C28CFF51BF88FF4BBB82FF43BA7EFF3DB779FF36B574FF4CBD84FF93D7
+      B5FF2D7650F600462100FFFFFF00FFFFFF0000800000017D3CC42D955EF690D3
+      B1FF7FD0A7FF65C695FF4EBE86FF48BA80FF57C18BFF73CC9FFF8FD1AFFF2D75
+      4FF6014923C400800000FFFFFF00FFFFFF00FFFFFF0000800000007037000971
+      3AF551A77BFC75C09AFF95D4B4FF94D4B3FF74BD98FF509D75FC094F2BF50046
+      210000800000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000060
+      3000005E2E85015D2DC5015629F2015127F2014F26C50045218500452200FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00
     }
   end
