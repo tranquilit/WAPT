@@ -1282,18 +1282,11 @@ def ping():
 def trigger_reachable_discovery():
     """Launch a separate thread to check all reachable IP
     """
-    global check_listening
     try:
-        # recreate a thread if terminated
-        if not check_listening or not check_listening.is_alive():
-            check_listening = CheckHostsWaptService()
-            check_listening.daemon = True
-            check_listening.start()
-            message = _(u'Hosts listening IP discovery launched')
-        else:
-            logger.debug('thread is still running...')
-            message = _(u'Hosts listening IP discovery still running')
-
+        check_listening = CheckHostsWaptService()
+        check_listening.daemon = True
+        check_listening.start()
+        message = _(u'Hosts listening IP discovery launched')
         result = dict(thread_ident = check_listening.ident )
 
     except Exception, e:
@@ -1403,13 +1396,31 @@ class CheckHostsWaptService(threading.Thread):
         """Try to connect to all registered hosts using connected ips and waptservice_port
                 Stores result in database as wapt.listening_address key
         """
+        self.db.hosts.update({'wapt.listening_address.timestamp':''},{"$set": {'wapt.listening_address.timestamp':'aaaa' }},multi=True)
         query = {"host.connected_ips":{"$exists": "true", "$ne" :[]}}
-        fields = {'host.connected_ips':1,'uuid':1,'host.computer_fqdn':1}
+        fields = {'wapt':1,'host.connected_ips':1,'uuid':1,'host.computer_fqdn':1}
         for data in self.db.hosts.find(query,fields=fields):
-            if 'host' in data and 'connected_ips' in data['host']:
-                ips = data['host']['connected_ips']
-                logger.debug("Client checker %s is testing %s" % (self.ident,ips))
-                ip = get_reachable_ip(ips,waptservice_port)
+            if 'host' in data:
+                protocol = 'http'
+                port = waptservice_port
+                ip = ''
+                # check with last known listening informations
+                if 'wapt' in data['host'] and \
+                        'listening_address' in  data['host']['wapt'] and \
+                        data['host']['wapt'].get('address',''):
+                    la = data['host']['wapt']['listening_address']
+                    protocol = la['protocol']
+                    ip = la['address']
+                    port = la['port']
+                    logger.debug("Client checker %s is testing %s" % (self.ident,ip))
+                    ip = get_reachable_ip(ip,port)
+                # check with other connected ips
+                if not ip and 'connected_ips' in data['host']:
+                    ips = data['host']['connected_ips']
+                    logger.debug("Client checker %s is testing %s" % (self.ident,ips))
+                    ip = get_reachable_ip(ips,port)
+
+                # stores result
                 la = dict(protocol='http',address=ip,port=waptservice_port,timestamp=datetime2isodate())
                 self.db.hosts.update({"_id" : data['_id'] }, {"$set": {'wapt.listening_address':la }})
 
@@ -1642,8 +1653,6 @@ if __name__ == "__main__":
 
     # global thread to check listening ip of registred hosts periodically
     # use with caution as it generates noise on the network (tcp connection try on each host)
-
-    # create a global listener...
     check_listening = CheckHostsWaptService(poll_interval = clients_poll_interval)
     check_listening.daemon = True
     check_listening.start()
