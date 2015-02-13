@@ -1396,7 +1396,7 @@ class CheckHostsWaptService(threading.Thread):
         """Try to connect to all registered hosts using connected ips and waptservice_port
                 Stores result in database as wapt.listening_address key
         """
-        self.db.hosts.update({'wapt.listening_address.timestamp':''},{"$set": {'wapt.listening_address.timestamp':'aaaa' }},multi=True)
+        self.db.hosts.update({'wapt.listening_address.timestamp':{'$ne':''}},{"$set": {'wapt.listening_address.timestamp':'' }},multi=True)
         query = {"host.connected_ips":{"$exists": "true", "$ne" :[]}}
         fields = {'wapt':1,'host.connected_ips':1,'uuid':1,'host.computer_fqdn':1}
         for data in self.db.hosts.find(query,fields=fields):
