@@ -141,6 +141,11 @@ wapt_password = ""
 waptserver_port = 8080
 waptservice_port = 8088
 
+clients_connect_timeout = 1
+clients_read_timeout = 1.5
+
+clients_poll_interval = None
+
 if config.has_section('options'):
     if config.has_option('options', 'wapt_user'):
         wapt_user = config.get('options', 'wapt_user')
@@ -173,6 +178,12 @@ if config.has_section('options'):
         clients_poll_interval = int(config.get('options', 'clients_poll_interval'))
     else:
         clients_poll_interval = None
+
+    if config.has_option('options', 'clients_connect_timeout'):
+        clients_connect_timeout = int(config.get('options', 'clients_connect_timeout'))
+
+    if config.has_option('options', 'clients_read_timeout'):
+        clients_read_timeout = int(config.get('options', 'clients_read_timeout'))
 
     if config.has_option('options', 'secret_key'):
         app.secret_key = config.get('options','secret_key')
@@ -444,7 +455,7 @@ def update_data(data):
         host_id = hosts().insert(data)
     return get_host_data(data["uuid"],filter={"uuid":1,"host":1})
 
-def get_reachable_ip(ips=[],waptservice_port=waptservice_port,timeout=1):
+def get_reachable_ip(ips=[],waptservice_port=waptservice_port,timeout=clients_connect_timeout):
     """Try to establish a TCP connection to each IP of ips list on waptservice_port
         return first successful IP
         return empty string if no ip is is successful
@@ -768,12 +779,12 @@ def waptupgrade_host(ip):
             if ip and waptservice_port:
                 logger.info( "Upgrading %s..." % ip)
                 try:
-                    httpreq = requests.get("http://%s:%d/waptupgrade.json" % ( ip, waptservice_port),proxies=None)
+                    httpreq = requests.get("http://%s:%d/waptupgrade.json" % ( ip, waptservice_port),proxies=None,timeout=clients_read_timeout)
                     httpreq.raise_for_status()
                     result = {'status' : 'OK', 'message': u"%s" % httpreq.text }
                 except Exception as e:
                     logger.warning(u'%s'%e)
-                    r = requests.get("http://%s:%d/waptupgrade" % ( ip, waptservice_port),proxies=None)
+                    r = requests.get("http://%s:%d/waptupgrade" % ( ip, waptservice_port),proxies=None,timeout=clients_read_timeout)
                     if "OK" in r.text.upper():
                         result = {  'status' : 'OK', 'message': u"%s" % r.text }
                     else:
@@ -807,7 +818,7 @@ def install_package():
             s.close
             if ip and waptservice_port:
                 logger.info( "installing %s on %s ..." % (package,ip))
-                data = json.loads(requests.get("http://%s:%d/install.json?package=%s" % ( ip, waptservice_port,package),proxies=None).text)
+                data = json.loads(requests.get("http://%s:%d/install.json?package=%s" % ( ip, waptservice_port,package),proxies=None).text,timeout=clients_read_timeout)
                 result = dict(message=data,status='OK')
             else:
                 raise Exception(_("The WAPT service port is not defined."))
@@ -837,7 +848,7 @@ def remove_package():
             s.close
             if ip and waptservice_port:
                 logger.info( "removing %s on %s ..." % (package,ip))
-                httpreq = requests.get("http://%s:%d/remove.json?package=%s" % ( ip, waptservice_port,package),proxies=None)
+                httpreq = requests.get("http://%s:%d/remove.json?package=%s" % ( ip, waptservice_port,package),proxies=None,timeout=clients_read_timeout)
                 httpreq.raise_for_status()
                 data = json.loads(httpreq.text)
                 result = dict(message=data,status='OK')
@@ -869,7 +880,7 @@ def forget_packages():
             s.close
             if ip and waptservice_port:
                 logger.info( "Forgetting %s on %s ..." % (package,ip))
-                httpreq = requests.get("http://%s:%d/forget.json?package=%s" % ( ip, waptservice_port,package),proxies=None)
+                httpreq = requests.get("http://%s:%d/forget.json?package=%s" % ( ip, waptservice_port,package),proxies=None,timeout=clients_read_timeout)
                 httpreq.raise_for_status()
                 data = json.loads(httpreq.text)
                 result = dict(message=data,status='OK')
@@ -897,7 +908,7 @@ def host_tasks():
             listening_data = get_ip_port(host_data)
 
             if listening_data['address']:
-                data = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json" % listening_data,proxies=None,timeout=0.5).text
+                data = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json" % listening_data,proxies=None,timeout=clients_read_timeout).text
                 result = dict(message=json.loads(data),status='OK')
             else:
                 raise EWaptMissingHostData(_("The WAPT service port is not defined."))
@@ -929,7 +940,7 @@ def host_taskkill():
             s.connect((ip,waptservice_port))
             s.close
             if ip and waptservice_port:
-                data = json.loads(requests.get("http://%s:%d/cancel_running_task.json" % ( ip, waptservice_port),proxies=None).text)
+                data = json.loads(requests.get("http://%s:%d/cancel_running_task.json" % ( ip, waptservice_port),proxies=None,timeout=clients_read_timeout).text)
                 result = dict(message=data,status='OK')
             else:
                 raise Exception(_("The WAPT service port is not defined."))
@@ -981,11 +992,11 @@ def upgrade_host(ip):
             if ip and waptservice_port:
                 logger.info( "Upgrading %s..." % ip)
                 try:
-                    result = json.loads(requests.get("http://%s:%d/upgrade.json" % ( ip, waptservice_port),proxies=None).text)
+                    result = json.loads(requests.get("http://%s:%d/upgrade.json" % ( ip, waptservice_port),proxies=None,timeout=clients_read_timeout).text)
                 except Exception as e:
                     # try the old behaviour for wapt client < 0.8.10
                     logger.warning(u"%s"%e)
-                    r = requests.get("http://%s:%d/upgrade" % ( ip, waptservice_port),proxies=None)
+                    r = requests.get("http://%s:%d/upgrade" % ( ip, waptservice_port),proxies=None,timeout=clients_read_timeout)
                     if "OK" in r.text.upper():
                         result = {  'status' : 'OK', 'message': u"%s" % r.text }
                     else:
@@ -1305,22 +1316,27 @@ def trigger_upgrade():
         uuid = request.args['uuid']
         host_data = hosts().find_one({ "uuid": uuid},fields={'uuid':1,'wapt':1,'host.connected_ips':1})
         listening_address = get_ip_port(host_data)
-
+        msg = u''
         if listening_address and listening_address['address'] and listening_address['port']:
             logger.info( "Triggering upgrade for %s at address %s..." % (uuid,listening_address['address']))
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/upgrade.json" % listening_address,proxies=None,timeout=1.5).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/upgrade.json" % listening_address,proxies=None,timeout=clients_read_timeout).text
             try:
                 client_result = json.loads(client_result)
                 result = client_result['content']
+                if len(result)<=1:
+                    msg = _(u"Nothing to upgrade.").format(-1)
+                else:
+                    packages= [t['description'] for t in result if t['classname'] != 'WaptUpgrade']
+                    msg = _(u"Triggered {} task(s):\n{}").format(len(packages),'\n'.join(packages))
             except ValueError:
                 if 'Restricted access' in client_result:
                     raise EWaptForbiddden(client_result)
                 else:
                     raise Exception(client_result)
         else:
-            raise EWaptMissingHostData(_("The WAPT service port is not defined."))
+            raise EWaptMissingHostData(_("The WAPT service is unreachable."))
         return make_response(result,
-            msg = "Upgrade triggered for %s at address %s:%s..." % (uuid,listening_address['address'],listening_address['port']),
+            msg = msg,
             success = client_result['result'] == 'OK',)
     except Exception, e:
         return make_response_from_exception(e)
@@ -1337,7 +1353,7 @@ def host_tasks_status():
 
         if listening_address and listening_address['address'] and listening_address['port']:
             logger.info( "Triggering upgrade for %s at address %s..." % (uuid,listening_address['address']))
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json" % listening_address,proxies=None,timeout=0.3).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json" % listening_address,proxies=None,timeout=clients_read_timeout).text
             try:
                 client_result = json.loads(client_result)
             except ValueError:
