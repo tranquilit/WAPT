@@ -2,10 +2,10 @@ object VisWaptGUI: TVisWaptGUI
   Left = 521
   Height = 600
   Top = 225
-  Width = 800
+  Width = 877
   Caption = 'WAPT console'
   ClientHeight = 581
-  ClientWidth = 800
+  ClientWidth = 877
   Constraints.MinHeight = 600
   Constraints.MinWidth = 800
   Font.CharSet = ANSI_CHARSET
@@ -24,7 +24,7 @@ object VisWaptGUI: TVisWaptGUI
     Left = 0
     Height = 438
     Top = 0
-    Width = 800
+    Width = 877
     ActivePage = pgInventory
     Align = alClient
     TabIndex = 0
@@ -33,16 +33,16 @@ object VisWaptGUI: TVisWaptGUI
     object pgInventory: TTabSheet
       Caption = 'Inventory'
       ClientHeight = 412
-      ClientWidth = 792
+      ClientWidth = 869
       object Panel10: TPanel
         Left = 0
         Height = 54
-        Top = 0
-        Width = 792
+        Top = 26
+        Width = 869
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 54
-        ClientWidth = 792
+        ClientWidth = 869
         TabOrder = 1
         object EdSearchHost: TEdit
           Left = 60
@@ -176,7 +176,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object Label13: TLabel
           AnchorSideRight.Side = asrBottom
-          Left = 612
+          Left = 689
           Height = 13
           Top = 22
           Width = 122
@@ -187,7 +187,7 @@ object VisWaptGUI: TVisWaptGUI
           ParentColor = False
         end
         object labSelected: TLabel
-          Left = 748
+          Left = 825
           Height = 13
           Top = 22
           Width = 6
@@ -197,7 +197,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object Label11: TLabel
           AnchorSideRight.Side = asrBottom
-          Left = 612
+          Left = 689
           Height = 13
           Top = 7
           Width = 128
@@ -208,7 +208,7 @@ object VisWaptGUI: TVisWaptGUI
           ParentColor = False
         end
         object LabelComputersNumber: TLabel
-          Left = 748
+          Left = 825
           Height = 13
           Top = 7
           Width = 6
@@ -227,9 +227,9 @@ object VisWaptGUI: TVisWaptGUI
       end
       object GridHosts: TSOGrid
         Left = 0
-        Height = 358
-        Top = 54
-        Width = 215
+        Height = 332
+        Top = 80
+        Width = 292
         OnGetText = GridHostsGetText
         Align = alClient
         ChangeDelay = 50
@@ -444,9 +444,9 @@ object VisWaptGUI: TVisWaptGUI
         OnHeaderDblClick = GridHostsHeaderDblClick
       end
       object HostPages: TPageControl
-        Left = 220
-        Height = 358
-        Top = 54
+        Left = 297
+        Height = 332
+        Top = 80
         Width = 572
         ActivePage = pgPackages
         Align = alRight
@@ -456,13 +456,13 @@ object VisWaptGUI: TVisWaptGUI
         object pgPackages: TTabSheet
           AnchorSideTop.Side = asrBottom
           Caption = 'Overview'
-          ClientHeight = 332
+          ClientHeight = 306
           ClientWidth = 564
           object GridHostPackages: TSOGrid
             AnchorSideTop.Control = Panel9
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 120
+            Height = 94
             Top = 122
             Width = 564
             Align = alBottom
@@ -651,83 +651,83 @@ object VisWaptGUI: TVisWaptGUI
             Constraints.MaxHeight = 120
             TabOrder = 1
             object Label1: TLabel
-              Left = 11
+              Left = 7
               Height = 13
-              Top = 84
-              Width = 51
-              Anchors = [akLeft]
+              Top = 80
+              Width = 96
+              AutoSize = False
               Caption = 'IP address'
               ParentBidiMode = False
               ParentColor = False
             end
             object Label3: TLabel
-              Left = 346
+              Left = 335
               Height = 13
-              Top = 40
-              Width = 28
-              Anchors = [akRight]
+              Top = 36
+              Width = 80
+              Anchors = [akTop, akRight]
+              AutoSize = False
               Caption = 'Model'
-              ParentBidiMode = False
               ParentColor = False
             end
             object Label4: TLabel
-              Left = 346
+              Left = 335
               Height = 13
-              Top = 84
-              Width = 22
-              Anchors = [akRight]
+              Top = 80
+              Width = 80
+              Anchors = [akTop, akRight]
+              AutoSize = False
               Caption = 'User'
-              ParentBidiMode = False
               ParentColor = False
             end
             object Label2: TLabel
-              Left = 346
+              Left = 335
               Height = 13
-              Top = 18
-              Width = 65
-              Anchors = [akRight]
+              Top = 14
+              Width = 80
+              Anchors = [akTop, akRight]
+              AutoSize = False
               Caption = 'Manufacturer'
-              ParentBidiMode = False
               ParentColor = False
             end
             object Label6: TLabel
-              Left = 11
+              Left = 7
               Height = 13
-              Top = 18
-              Width = 27
-              Anchors = [akLeft]
+              Top = 14
+              Width = 96
+              AutoSize = False
               Caption = 'Name'
               ParentBidiMode = False
               ParentColor = False
             end
             object Label7: TLabel
-              Left = 11
+              Left = 7
               Height = 13
-              Top = 62
-              Width = 85
-              Anchors = [akLeft]
+              Top = 60
+              Width = 96
+              AutoSize = False
               Caption = 'Operating system'
               ParentBidiMode = False
               ParentColor = False
             end
             object Label8: TLabel
-              Left = 11
+              Left = 7
               Height = 13
-              Top = 40
-              Width = 53
-              Anchors = [akLeft]
+              Top = 36
+              Width = 96
+              AutoSize = False
               Caption = 'Description'
               ParentBidiMode = False
               ParentColor = False
             end
             object Label9: TLabel
-              Left = 346
+              Left = 335
               Height = 13
-              Top = 62
-              Width = 41
-              Anchors = [akRight]
+              Top = 60
+              Width = 80
+              Anchors = [akTop, akRight]
+              AutoSize = False
               Caption = 'Updated'
-              ParentBidiMode = False
               ParentColor = False
             end
             object EdHostname: TEdit
@@ -811,11 +811,11 @@ object VisWaptGUI: TVisWaptGUI
               TabOrder = 7
             end
             object Label12: TLabel
-              Left = 11
+              Left = 7
               Height = 13
-              Top = 106
-              Width = 60
-              Anchors = [akLeft]
+              Top = 101
+              Width = 96
+              AutoSize = False
               Caption = 'Current task'
               ParentBidiMode = False
               ParentColor = False
@@ -834,7 +834,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel5: TPanel
             Left = 0
             Height = 90
-            Top = 242
+            Top = 216
             Width = 564
             Align = alBottom
             BevelOuter = bvNone
@@ -1533,26 +1533,57 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
       object Splitter4: TSplitter
-        Left = 215
-        Height = 358
-        Top = 54
+        Left = 292
+        Height = 332
+        Top = 80
         Width = 5
         Align = alRight
         ResizeAnchor = akRight
       end
+      object ToolBar1: TToolBar
+        Left = 0
+        Height = 26
+        Top = 0
+        Width = 869
+        Caption = 'ToolBar1'
+        Images = ActionsImages
+        TabOrder = 4
+        object ToolButton1: TToolButton
+          Left = 24
+          Top = 2
+          Action = ActTriggerHostUpgrade
+        end
+        object ToolButton2: TToolButton
+          Left = 1
+          Top = 2
+          Action = ActEditHostPackage
+        end
+        object ToolButton4: TToolButton
+          Left = 47
+          Top = 2
+          Width = 10
+          Caption = 'ToolButton4'
+          Style = tbsSeparator
+        end
+        object ToolButton3: TToolButton
+          Left = 57
+          Top = 2
+          Action = ActHostsDelete
+        end
+      end
     end
     object pgGroups: TTabSheet
       Caption = 'Bundles'
-      ClientHeight = 408
-      ClientWidth = 792
+      ClientHeight = 412
+      ClientWidth = 869
       object GridGroups: TSOGrid
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Side = asrBottom
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 378
+        Height = 382
         Top = 30
-        Width = 792
+        Width = 869
         OnGetText = GridGroupsGetText
         Align = alClient
         Color = clWhite
@@ -1626,11 +1657,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 30
         Top = 0
-        Width = 792
+        Width = 869
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 792
+        ClientWidth = 869
         TabOrder = 1
         object butSearchGroups: TBitBtn
           Left = 156
@@ -1731,13 +1762,13 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgPrivateRepo: TTabSheet
       Caption = 'Private repository'
-      ClientHeight = 408
-      ClientWidth = 792
+      ClientHeight = 412
+      ClientWidth = 869
       object GridPackages: TSOGrid
         Left = 0
-        Height = 378
+        Height = 382
         Top = 30
-        Width = 496
+        Width = 573
         OnGetText = GridGroupsGetText
         Align = alClient
         Color = clWhite
@@ -1812,8 +1843,8 @@ object VisWaptGUI: TVisWaptGUI
         OnMeasureItem = GridGroupsMeasureItem
       end
       object Splitter3: TSplitter
-        Left = 496
-        Height = 378
+        Left = 573
+        Height = 382
         Top = 30
         Width = 6
         Align = alRight
@@ -1823,11 +1854,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 30
         Top = 0
-        Width = 792
+        Width = 869
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 792
+        ClientWidth = 869
         TabOrder = 0
         object EdSearch: TEdit
           Left = 4
@@ -2015,20 +2046,20 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
       object Panel2: TPanel
-        Left = 502
-        Height = 378
+        Left = 579
+        Height = 382
         Top = 30
         Width = 290
         Align = alRight
         Alignment = taRightJustify
         BevelOuter = bvNone
-        ClientHeight = 378
+        ClientHeight = 382
         ClientWidth = 290
         TabOrder = 2
         object MemoGroupeDescription: TMemo
           Left = 0
           Height = 300
-          Top = 78
+          Top = 82
           Width = 290
           Align = alBottom
           TabOrder = 0
@@ -2038,13 +2069,13 @@ object VisWaptGUI: TVisWaptGUI
     object pgSources: TTabSheet
       Caption = 'Sources'
       ClientHeight = 412
-      ClientWidth = 792
+      ClientWidth = 869
       TabVisible = False
       inline testedit: TSynEdit
         Left = 0
         Height = 378
         Top = 34
-        Width = 792
+        Width = 869
         Align = alClient
         Font.Height = -13
         Font.Name = 'Courier New'
@@ -2563,11 +2594,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 34
         Top = 0
-        Width = 792
+        Width = 869
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 34
-        ClientWidth = 792
+        ClientWidth = 869
         TabOrder = 1
         object butInitWapt: TBitBtn
           Left = 4
@@ -2601,28 +2632,28 @@ object VisWaptGUI: TVisWaptGUI
     Left = 0
     Height = 118
     Top = 443
-    Width = 800
+    Width = 877
     Align = alBottom
     ClientHeight = 118
-    ClientWidth = 800
+    ClientWidth = 877
     TabOrder = 1
     Visible = False
     object Panel7: TPanel
       Left = 1
       Height = 116
       Top = 1
-      Width = 798
+      Width = 875
       Align = alClient
       BevelOuter = bvNone
       Caption = 'Panel7'
       ClientHeight = 116
-      ClientWidth = 798
+      ClientWidth = 875
       TabOrder = 0
       object MemoLog: TMemo
         Left = 0
         Height = 100
         Top = 0
-        Width = 187
+        Width = 264
         Align = alClient
         Lines.Strings = (
           ''
@@ -2630,7 +2661,7 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 0
       end
       object jsonlog: TVirtualJSONInspector
-        Left = 192
+        Left = 269
         Height = 100
         Top = 0
         Width = 606
@@ -2658,7 +2689,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.SelectionOptions = [toExtendedFocus]
       end
       object Splitter2: TSplitter
-        Left = 187
+        Left = 264
         Height = 100
         Top = 0
         Width = 5
@@ -2669,14 +2700,14 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 16
         Top = 100
-        Width = 798
+        Width = 875
         Align = alBottom
         BevelOuter = bvNone
         ClientHeight = 16
-        ClientWidth = 798
+        ClientWidth = 875
         TabOrder = 3
         object cbShowLog: TCheckBox
-          Left = 7
+          Left = 84
           Height = 17
           Top = -2
           Width = 79
@@ -2693,7 +2724,7 @@ object VisWaptGUI: TVisWaptGUI
     Left = 0
     Height = 5
     Top = 438
-    Width = 800
+    Width = 877
     Align = alBottom
     ResizeAnchor = akBottom
   end
@@ -2709,14 +2740,14 @@ object VisWaptGUI: TVisWaptGUI
     Left = 0
     Height = 20
     Top = 561
-    Width = 800
+    Width = 877
     Panels = <    
       item
         Width = 200
       end>
     SimplePanel = False
     object ProgressBar1: TProgressBar
-      Left = 512
+      Left = 589
       Height = 16
       Top = 3
       Width = 264
@@ -2890,12 +2921,12 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActHostWaptUpgradeExecute
       OnUpdate = ActHostWaptUpgradeUpdate
     end
-    object ActHostUpgrade: TAction
+    object ActTriggerHostUpgrade: TAction
       Category = 'hosts'
       Caption = 'Apply updates'
       ImageIndex = 29
-      OnExecute = ActHostUpgradeExecute
-      OnUpdate = ActHostUpgradeUpdate
+      OnExecute = ActTriggerHostUpgradeExecute
+      OnUpdate = ActTriggerHostUpgradeUpdate
     end
     object ActAddPackageGroup: TAction
       Category = 'hosts'
@@ -3024,6 +3055,11 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'hosts'
       Caption = 'Trigger scan listening IP'
       OnExecute = ActTriggerHostsListeningExecute
+    end
+    object ActTriggerHostUpdate: TAction
+      Category = 'hosts'
+      Caption = 'Trigger hosts update'
+      OnExecute = ActTriggerHostUpdateExecute
     end
   end
   object PopupMenuPackages: TPopupMenu
@@ -3331,7 +3367,7 @@ object VisWaptGUI: TVisWaptGUI
       }
     end
     object MenuItem34: TMenuItem
-      Action = ActHostUpgrade
+      Action = ActTriggerHostUpgrade
       Bitmap.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
         2000000000000004000064000000640000000000000000000000000000000000
@@ -3368,6 +3404,9 @@ object VisWaptGUI: TVisWaptGUI
         6E00585F5E00585F5E00585F5D00585F5D00585F5D00575F5D00575E5C00575E
         5C00575E5C00575E5C00565E5C00575E5B00686E6C0000000000
       }
+    end
+    object MenuItem52: TMenuItem
+      Action = ActTriggerHostUpdate
     end
     object MenuItem43: TMenuItem
       Caption = '-'
@@ -4100,8 +4139,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object TimerTasks: TTimer
     OnTimer = TimerTasksTimer
-    left = 663
-    top = 111
+    left = 536
+    top = 280
   end
   object ActionsImages: TImageList
     left = 448

@@ -74,6 +74,9 @@ resourcestring
 
   rsWaptClientUpdateOnHosts = 'Updating WAPT client on the hosts';
 
+  rsTriggerHostsUpdate = 'Trigger packages list update on the hosts';
+  rsTriggerHostsUpgrade = 'Trigger installed packages upgrade on the hosts';
+
   rsConfirmRmHostsFromList = 'Are you sure you want to remove %s hosts from the list ?';
 
   rsUninstallingPackage = 'Uninstalling %s...';

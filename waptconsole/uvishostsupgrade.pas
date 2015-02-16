@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ActnList, ExtCtrls, Buttons, sogrid,superobject,VirtualTrees, DefaultTranslator;
+  ActnList, ExtCtrls, Buttons, sogrid,superobject,VirtualTrees, DefaultTranslator, ImgList;
 
 type
 
@@ -19,11 +19,30 @@ type
     BitBtn2: TBitBtn;
     Button1: TButton;
     Button5: TButton;
+    ImageList1: TImageList;
     Panel4: TPanel;
     ProgressGrid: TSOGrid;
     procedure ActStopExecute(Sender: TObject);
     procedure ActUpgradeExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure ProgressGridBeforeCellPaint(Sender: TBaseVirtualTree;
+      TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+      CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
+    procedure ProgressGridBeforeItemPaint(Sender: TBaseVirtualTree;
+      TargetCanvas: TCanvas; Node: PVirtualNode; const ItemRect: TRect;
+      var CustomDraw: Boolean);
+    procedure ProgressGridDragAllowed(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
+    procedure ProgressGridGetImageIndex(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+      var Ghosted: Boolean; var ImageIndex: Integer);
+    procedure ProgressGridGetImageIndexEx(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+      var Ghosted: Boolean; var ImageIndex: Integer;
+      var ImageList: TCustomImageList);
+    procedure ProgressGridGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      RowData, CellData: ISuperObject; Column: TColumnIndex;
+      TextType: TVSTTextType; var CellText: string);
     procedure ProgressGridInitNode(Sender: TBaseVirtualTree; ParentNode,
       Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
     procedure ProgressGridMeasureItem(Sender: TBaseVirtualTree;
@@ -107,6 +126,70 @@ end;
 procedure TVisHostsUpgrade.FormCreate(Sender: TObject);
 begin
   Action := 'upgrade_host';
+end;
+
+procedure TVisHostsUpgrade.ProgressGridBeforeCellPaint(
+  Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode;
+  Column: TColumnIndex; CellPaintMode: TVTCellPaintMode; CellRect: TRect;
+  var ContentRect: TRect);
+begin
+
+end;
+
+procedure TVisHostsUpgrade.ProgressGridBeforeItemPaint(
+  Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode;
+  const ItemRect: TRect; var CustomDraw: Boolean);
+begin
+
+end;
+
+procedure TVisHostsUpgrade.ProgressGridDragAllowed(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
+begin
+  If Column=0 then Allowed:=False;
+end;
+
+procedure TVisHostsUpgrade.ProgressGridGetImageIndex(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+  var Ghosted: Boolean; var ImageIndex: Integer);
+begin
+end;
+
+procedure TVisHostsUpgrade.ProgressGridGetImageIndexEx(
+  Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
+  Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: Integer;
+  var ImageList: TCustomImageList);
+var
+  RowSO, update_status, upgrades, errors,
+  reachable,timestamp: ISuperObject;
+begin
+  if Column=0 then
+  begin
+    RowSO := ProgressGrid.GetNodeSOData(Node);
+    if RowSO <> nil then
+    begin
+      ImageList := ImageList1;
+      update_status := RowSO['status'];
+      if (update_status <> nil) then
+      begin
+        if (update_status.AsString = 'OK') then
+          ImageIndex := 0
+        else
+        if (update_status.AsString = 'ERROR') then
+          ImageIndex := 2
+        else
+          ImageIndex := -1;
+      end;
+    end;
+  end
+end;
+
+procedure TVisHostsUpgrade.ProgressGridGetText(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
+  TextType: TVSTTextType; var CellText: string);
+begin
+  if Column=0 then
+    CellText:='';
 end;
 
 procedure TVisHostsUpgrade.ProgressGridInitNode(Sender: TBaseVirtualTree;

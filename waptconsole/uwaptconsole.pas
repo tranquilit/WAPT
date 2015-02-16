@@ -26,6 +26,7 @@ type
     ActCreateWaptSetup: TAction;
     ActFrench: TAction;
     ActEnglish: TAction;
+    ActTriggerHostUpdate: TAction;
     ActTriggerHostsListening: TAction;
     ActRemoveConflicts: TAction;
     ActSearchSoftwares: TAction;
@@ -50,7 +51,7 @@ type
     ActChangePassword: TAction;
     ActGotoHost: TAction;
     ActHostWaptUpgrade: TAction;
-    ActHostUpgrade: TAction;
+    ActTriggerHostUpgrade: TAction;
     ActAddPackageGroup: TAction;
     ActEditGroup: TAction;
     ActDeleteGroup: TAction;
@@ -133,6 +134,7 @@ type
     MenuItem49: TMenuItem;
     MenuItem50: TMenuItem;
     MenuItem51: TMenuItem;
+    MenuItem52: TMenuItem;
     OpenDialogWapt: TOpenDialog;
     PageControl1: TPageControl;
     Panel11: TPanel;
@@ -233,6 +235,11 @@ type
     GridPackages: TSOGrid;
     GridHostPackages: TSOGrid;
     GridHostSoftwares: TSOGrid;
+    ToolBar1: TToolBar;
+    ToolButton1: TToolButton;
+    ToolButton2: TToolButton;
+    ToolButton3: TToolButton;
+    ToolButton4: TToolButton;
     procedure ActAddConflictsExecute(Sender: TObject);
     procedure ActAddPackageGroupExecute(Sender: TObject);
     procedure ActAdvancedModeExecute(Sender: TObject);
@@ -262,8 +269,9 @@ type
     procedure ActRemoveConflictsExecute(Sender: TObject);
     procedure ActRemoveDependsExecute(Sender: TObject);
     procedure ActSearchGroupsExecute(Sender: TObject);
-    procedure ActHostUpgradeExecute(Sender: TObject);
-    procedure ActHostUpgradeUpdate(Sender: TObject);
+    procedure ActTriggerHostUpdateExecute(Sender: TObject);
+    procedure ActTriggerHostUpgradeExecute(Sender: TObject);
+    procedure ActTriggerHostUpgradeUpdate(Sender: TObject);
     procedure ActHostWaptUpgradeExecute(Sender: TObject);
     procedure ActHostWaptUpgradeUpdate(Sender: TObject);
     procedure ActPackageEdit(Sender: TObject);
@@ -1617,10 +1625,26 @@ begin
   GridGroups.Data := groups;
 end;
 
-procedure TVisWaptGUI.ActHostUpgradeExecute(Sender: TObject);
+procedure TVisWaptGUI.ActTriggerHostUpdateExecute(Sender: TObject);
 begin
   with TVisHostsUpgrade.Create(Self) do
     try
+      Caption:= rsTriggerHostsUpdate;
+      action := 'trigger_update';
+      hosts := Gridhosts.SelectedRows;
+
+      if ShowModal = mrOk then
+        actRefresh.Execute;
+    finally
+      Free;
+    end;
+end;
+
+procedure TVisWaptGUI.ActTriggerHostUpgradeExecute(Sender: TObject);
+begin
+  with TVisHostsUpgrade.Create(Self) do
+    try
+      Caption:= rsTriggerHostsUpgrade;
       action := 'trigger_upgrade';
       hosts := Gridhosts.SelectedRows;
 
@@ -1631,9 +1655,9 @@ begin
     end;
 end;
 
-procedure TVisWaptGUI.ActHostUpgradeUpdate(Sender: TObject);
+procedure TVisWaptGUI.ActTriggerHostUpgradeUpdate(Sender: TObject);
 begin
-  ActHostUpgrade.Enabled := GridHosts.SelectedCount > 0;
+  ActTriggerHostUpgrade.Enabled := GridHosts.SelectedCount > 0;
 end;
 
 procedure TVisWaptGUI.ActHostWaptUpgradeExecute(Sender: TObject);
@@ -2441,9 +2465,12 @@ begin
   menuItemTarget.Clear;
   for i := 0 to menuItemSource.Items.Count - 1 do
   begin
-    mi := TMenuItem.Create(menuItemTarget);
-    mi.Action := menuItemSource.Items[i].Action;
-    menuItemTarget.Add(mi);
+    if menuItemSource.Items[i].Action <> Nil then
+    begin
+      mi := TMenuItem.Create(menuItemTarget);
+      mi.Action := menuItemSource.Items[i].Action;
+      menuItemTarget.Add(mi);
+    end;
   end;
 end;
 
