@@ -240,6 +240,7 @@ type
     ToolButton2: TToolButton;
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
+    ToolButton5: TToolButton;
     procedure ActAddConflictsExecute(Sender: TObject);
     procedure ActAddPackageGroupExecute(Sender: TObject);
     procedure ActAdvancedModeExecute(Sender: TObject);
