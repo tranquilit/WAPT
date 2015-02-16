@@ -1,9 +1,10 @@
-WAPT is licensed under GPLv3. It ships with free and open source 
-software packages with their respective FOSS licenses, and MS VC++ 
+WAPT is licensed under GPLv3. It ships with free and open source
+software packages with their respective FOSS licenses, and MS VC++
 redistributable from Microsoft(r) . For more information, please go to
 http://dev.tranquil.it/wiki/WAPT_-_Licences
-					
-					GNU GENERAL PUBLIC LICENSE
+
+                     GNU GENERAL PUBLIC LICENSE
+
                        Version 3, 29 June 2007
 
  Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
