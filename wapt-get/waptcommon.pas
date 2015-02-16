@@ -896,7 +896,7 @@ begin
     HttpProxy := IniReadString(inifile,'global','http_proxy','');
     UseProxyForRepo := IniReadBool(inifile,'global','use_http_proxy_for_repo',False);
     UseProxyForServer := IniReadBool(inifile,'global','use_http_proxy_for_server',False);
-    UseProxyForTemplates := IniReadBool(inifile,'global','use_http_proxy_for_remplates',False);
+    UseProxyForTemplates := IniReadBool(inifile,'global','use_http_proxy_for_templates',False);
     Result := True
   end;
 end;
