@@ -1446,10 +1446,11 @@ def host_tasks_status():
 class CheckHostWorker(threading.Thread):
     """Worker which pull a host data from queue, checks reachability, and store result in db
     """
-    def __init__(self,db,queue):
+    def __init__(self,db,queue,timeout):
         threading.Thread.__init__(self)
         self.db = db
         self.queue = queue
+        self.timeout = timeout
         self.daemon = True
         self.start()
 
@@ -1468,17 +1469,17 @@ class CheckHostWorker(threading.Thread):
                 ip = la['address']
                 port = la['port']
                 logger.debug("Client checker %s is testing %s" % (self.ident,ip))
-                ip = get_reachable_ip(ip,port)
+                ip = get_reachable_ip(ip,port,timeout=self.timeout)
             # check with other connected ips
             if not ip and 'connected_ips' in host_data['host']:
                 ips = host_data['host']['connected_ips']
                 logger.debug("Client checker %s is testing %s" % (self.ident,ips))
-                ip = get_reachable_ip(ips,port)
+                ip = get_reachable_ip(ips,port,timeout=self.timeout)
 
             # stores result
             la = dict(protocol='http',address=ip,port=waptservice_port,timestamp=datetime2isodate())
             self.db.hosts.update({"_id" : host_data['_id'] }, {"$set": {'wapt.listening_address':la }})
-
+            logger.debug("Client check %s finished with %s" % (self.ident,ip))
 
     def run(self):
         while True:
@@ -1496,12 +1497,12 @@ class CheckHostsWaptService(threading.Thread):
        if poll_interval is not None, the thread runs indefinetely/
        if poll_interval is None, one check of all hosts is performed.
     """
-    def __init__(self,poll_interval=None):
+    def __init__(self,timeout=2):
         threading.Thread.__init__(self)
         self.daemon = True
         self.mongoclient = MongoClient(mongodb_ip, int(mongodb_port))
         self.db = self.mongoclient.wapt
-        self.poll_interval = poll_interval
+        self.timeout = timeout
         self.queue = Queue.PriorityQueue()
         self.workers = []
         self.workers_count = 20
@@ -1517,26 +1518,14 @@ class CheckHostsWaptService(threading.Thread):
 
         logger.debug('Create %i workers'%self.workers_count)
         for i in range(0,self.workers_count):
-            self.workers.append(CheckHostWorker(self.db,self.queue))
+            self.workers.append(CheckHostWorker(self.db,self.queue,self.timeout))
 
         logger.debug('Waiting for hosts queue to be empty')
         self.queue.join()
 
     def run(self):
         logger.debug('Client-listening %s address checker thread started'%self.ident)
-        while True:
-            try:
-                try:
-                    self.update_listening_address()
-                except Exception as e:
-                    logger.critical('Unable to poll wapt client : %s' % e)
-                if self.poll_interval:
-                    logger.debug('Client-listening address checker %s sleeping...'%self.ident)
-                    time.sleep(self.poll_interval)
-                else:
-                    break
-            except KeyboardInterrupt:
-                break
+        self.update_listening_address()
         logger.debug('Client-listening %s address checker thread stopped'%self.ident)
 
 
@@ -1751,7 +1740,7 @@ if __name__ == "__main__":
 
     # global thread to check listening ip of registred hosts periodically
     # use with caution as it generates noise on the network (tcp connection try on each host)
-    check_listening = CheckHostsWaptService(poll_interval = clients_poll_interval)
+    check_listening = CheckHostsWaptService(timeout = clients_connect_timeout)
     check_listening.daemon = True
     check_listening.start()
 
