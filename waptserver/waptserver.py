@@ -232,6 +232,19 @@ def datetime2isodate(adatetime = None):
     return adatetime.isoformat()
 
 
+def get_waptagent_version():
+    present = False
+    version = None
+    if os.path.exists(waptagent):
+        present = True
+        try:
+            pe = pefile.PE(waptagent)
+            version = pe.FileInfo[0].StringTable[0].entries['ProductVersion'].strip()
+        except:
+            pass
+    return (present, version)
+
+
 def ensure_list(csv_or_list,ignore_empty_args=True):
     """if argument is not a list, return a list from a csv string"""
     if csv_or_list is None:
@@ -359,16 +372,24 @@ def get_timezone():
 
 @app.route('/')
 def index():
-    return render_template("index.html", wapt_server_version=__version__)
+    agent_present, agent_version = get_waptagent_version()
+    if agent_present:
+        if agent_version is not None:
+            agent_status = agent_version
+        else:
+            agent_status = 'ERROR'
+    else:
+        agent_status = 'N/A'
+    return render_template("index.html", wapt_server_version=__version__, wapt_agent_version=agent_status)
 
 
 @app.route('/info')
 def informations():
     informations = {}
     informations["server_version"] = __version__
-    if os.path.exists(waptagent):
-        pe = pefile.PE(waptagent)
-        informations["client_version"] =  pe.FileInfo[0].StringTable[0].entries['ProductVersion'].strip()
+    present, version = get_waptagent_version()
+    if present and version is not None:
+        informations["client_version"] = version
 
     return Response(response=json.dumps(informations),
                      status=200,
