@@ -359,7 +359,7 @@ def get_timezone():
 
 @app.route('/')
 def index():
-    return render_template("index.html")
+    return render_template("index.html", wapt_server_version=__version__)
 
 
 @app.route('/info')

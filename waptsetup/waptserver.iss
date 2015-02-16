@@ -129,7 +129,7 @@ end;
 function GetWaptServerInstallFlags(Param: String):String;
 begin
   Result := '';
-  if IsTaskSelected('installApache') then
+  if IsTaskSelected('installApache') = False then
     Result := '-- --without-apache';
 end;
 
