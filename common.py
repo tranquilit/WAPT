@@ -3330,10 +3330,14 @@ class Wapt(object):
             if os.path.isfile(f):
                 can_remove = True
                 if obsolete_only:
-                    # check if cached package could be installed at next ugrade
-                    pe = PackageEntry().load_control_from_wapt(f)
-                    pe_installed = self.is_installed(pe.package)
-                    can_remove = not in_futures(pe) and ((pe_installed and pe <= pe_installed) or not self.is_available(pe.asrequirement()))
+                    try:
+                        # check if cached package could be installed at next ugrade
+                        pe = PackageEntry().load_control_from_wapt(f)
+                        pe_installed = self.is_installed(pe.package)
+                        can_remove = not in_futures(pe) and ((pe_installed and pe <= pe_installed) or not self.is_available(pe.asrequirement()))
+                    except:
+                        # if error... control file in wapt file is corrupted.
+                        continue
                 if can_remove:
                     logger.debug(u'Removing %s' % f)
                     try:
