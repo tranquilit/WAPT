@@ -28,6 +28,7 @@ def update_sources():
 
 
          r'lib\site-packages\babel\__init__.py',
+         r'lib\site-packages\babel\_compat.py',
          r'lib\site-packages\babel\core.py',
          r'lib\site-packages\babel\global.dat',
          r'lib\site-packages\babel\localtime',
