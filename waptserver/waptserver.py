@@ -450,6 +450,18 @@ def get_host_list():
                 if host_package:
                     depends = ensure_list(host_package.depends.split(','))
                     host['depends'] = depends
+            try:
+                la = host['wapt']['listening_address']
+                if la['address']  and (la['timestamp'] != ''):
+                    reachable = 'OK'
+                elif not la['address'] and (la['timestamp'] != ''):
+                    reachable = 'UNREACHABLE'
+                else:
+                    reachable = 'UNKNOWN'
+                host['reachable'] = reachable
+            except KeyError:
+                host['reachable'] = 'UNKNOWN'
+
             list_hosts.append(host)
 
         result = list_hosts
