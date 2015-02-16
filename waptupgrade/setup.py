@@ -73,7 +73,7 @@ def update_control(entry):
         print(u'Keeping current control data %s (%s)'%(control.package,control.version))
 
 def oncopy(msg,src,dst):
-    print(u'%s : "%s" to "%s"' % (ensure_unicode(msg),ensure_unicode(src),ensure_unicode(dst)))
+    #print(u'%s : "%s" to "%s"' % (ensure_unicode(msg),ensure_unicode(src),ensure_unicode(dst)))
     return True
 
 def update_registry_version(version):
