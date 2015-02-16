@@ -694,7 +694,7 @@ end;
 
 procedure TDMWaptTray.SettrayHint(AValue: WideString);
 begin
-  if TrayIcon1.Hint<>utf8Encode(AValue) then
+  if UTF8Decode(TrayIcon1.Hint)<>AValue then
   begin
     TrayIcon1.Hint:= utf8Encode(AValue);
     TrayIcon1.BalloonHint:=utf8Encode(AValue);
@@ -737,7 +737,7 @@ begin
   if not FWaptServiceRunning then
   begin
     trayMode:=tmErrors;
-    trayHint:=rsWaptServiceTerminated;
+    trayHint:=UTF8Decode(rsWaptServiceTerminated);
   end;
 end;
 
