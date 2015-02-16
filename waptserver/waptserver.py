@@ -1443,22 +1443,16 @@ def host_tasks_status():
 
 
 ##################################################################
-class CheckHostsWaptService(threading.Thread):
-    """Thread which check which IP is reachable for all registered hosts
-        The result is stored in MongoDB database as wapt.listening_address
-        {protocol
-         address
-         port}
-       if poll_interval is not None, the thread runs indefinetely/
-       if poll_interval is None, one check of all hosts is performed.
+class CheckHostWorker(threading.Thread):
+    """Worker which pull a host data from queue, checks reachability, and store result in db
     """
-    def __init__(self,poll_interval=None):
+    def __init__(self,db,queue):
         threading.Thread.__init__(self)
+        self.db = db
+        self.queue = queue
         self.daemon = True
-        self.mongoclient = MongoClient(mongodb_ip, int(mongodb_port))
-        self.db = self.mongoclient.wapt
-        self.poll_interval = poll_interval
-        self.queue = Queue.PriorityQueue()
+        self.start()
+
 
     def check_host(self,host_data):
         if 'host' in host_data:
@@ -1486,15 +1480,47 @@ class CheckHostsWaptService(threading.Thread):
             self.db.hosts.update({"_id" : host_data['_id'] }, {"$set": {'wapt.listening_address':la }})
 
 
+    def run(self):
+        while True:
+            host_data = self.queue.get()
+            self.check_host(host_data)
+            self.queue.task_done()
+
+
+class CheckHostsWaptService(threading.Thread):
+    """Thread which check which IP is reachable for all registered hosts
+        The result is stored in MongoDB database as wapt.listening_address
+        {protocol
+         address
+         port}
+       if poll_interval is not None, the thread runs indefinetely/
+       if poll_interval is None, one check of all hosts is performed.
+    """
+    def __init__(self,poll_interval=None):
+        threading.Thread.__init__(self)
+        self.daemon = True
+        self.mongoclient = MongoClient(mongodb_ip, int(mongodb_port))
+        self.db = self.mongoclient.wapt
+        self.poll_interval = poll_interval
+        self.queue = Queue.PriorityQueue()
+        self.workers = []
+        self.workers_count = 20
+
     def update_listening_address(self):
-        """Try to connect to all registered hosts using connected ips and waptservice_port
-                Stores result in database as wapt.listening_address key
+        """create a queue with all hosts
         """
         self.db.hosts.update({'wapt.listening_address.timestamp':{'$ne':''}},{"$set": {'wapt.listening_address.timestamp':'' }},multi=True)
         query = {"host.connected_ips":{"$exists": "true", "$ne" :[]}}
         fields = {'wapt':1,'host.connected_ips':1,'uuid':1,'host.computer_fqdn':1}
         for data in self.db.hosts.find(query,fields=fields):
-            self.check_host(data)
+            self.queue.put(data)
+
+        logger.debug('Create %i workers'%self.workers_count)
+        for i in range(0,self.workers_count):
+            self.workers.append(CheckHostWorker(self.db,self.queue))
+
+        logger.debug('Waiting for hosts queue to be empty')
+        self.queue.join()
 
     def run(self):
         logger.debug('Client-listening %s address checker thread started'%self.ident)
