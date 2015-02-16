@@ -858,6 +858,7 @@ def upgrade():
     for req in to_install:
         all_tasks.append(task_manager.add_task(WaptPackageInstall(req,force=force),notify_user=notify_user).as_dict())
     all_tasks.append(task_manager.add_task(WaptUpgrade(),notify_user=notify_user).as_dict())
+    all_tasks.append(task_manager.add_task(WaptCleanup(),notify_user=False))
     data = {'result':'OK','content':all_tasks}
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
@@ -2085,19 +2086,6 @@ class WaptTaskManager(threading.Thread):
         nm.daemon = True
         nm.start()
         logger.debug(u"Wapt connection monitor stopped")
-
-    def network_up(self):
-        with self.status_lock:
-            logger.warning(u'Network is UP')
-            try:
-                #self.wapt.update_server_status()
-                pass
-            except Exception as e:
-                logger.warning(u'Couldn\'t update status on server : %s'% setuphelpers.ensure_unicode(e))
-
-    def network_down(self):
-        with self.status_lock:
-            logger.warning(u'Network is DOWN')
 
     def __unicode__(self):
         return "\n".join(self.tasks_status())
