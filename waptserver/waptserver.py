@@ -1396,7 +1396,7 @@ def trigger_update():
             raise EWaptMissingHostData(_("The WAPT service is unreachable."))
         return make_response(client_result,
             msg = msg,
-            success = client_result['result'] == 'OK',)
+            success = True)
     except Exception, e:
         return make_response_from_exception(e)
 
