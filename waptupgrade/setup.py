@@ -25,7 +25,23 @@ def update_sources():
          'waptconsole.exe.manifest',
          'waptservice',
          'languages',
-         r'lib\site-packages\babel',
+
+
+         r'lib\site-packages\babel\__init__.py',
+         r'lib\site-packages\babel\core.py',
+         r'lib\site-packages\babel\global.dat',
+         r'lib\site-packages\babel\localtime',
+         r'lib\site-packages\babel\plural.py',
+         r'lib\site-packages\babel\localedata\en.dat',
+         r'lib\site-packages\babel\localedata\fr.dat',
+         r'lib\site-packages\babel\messages',
+         r'lib\site-packages\babel\support.py',
+         r'lib\site-packages\babel\compat.py',
+         r'lib\site-packages\babel\dates.py',
+         r'lib\site-packages\babel\localedata.py',
+         r'lib\site-packages\babel\numbers.py',
+         r'lib\site-packages\babel\util.py',
+
          r'lib\site-packages\flask_babel',
          r'lib\site-packages\pytz',
          r'lib\site-packages\speaklater',
@@ -53,6 +69,8 @@ def update_sources():
         fn = os.path.join(checkout_dir,f)
         target_fn = os.path.join(checkout_dir,'waptupgrade','patchs',f)
         if os.path.isfile(fn):
+            if not os.path.exists(os.path.dirname(target_fn)):
+                os.makedirs(os.path.dirname(target_fn))
             filecopyto(fn,target_fn)
         elif os.path.isdir(fn):
             copytree2(
@@ -73,7 +91,7 @@ def update_control(entry):
         print(u'Keeping current control data %s (%s)'%(control.package,control.version))
 
 def oncopy(msg,src,dst):
-    print(u'%s : "%s" to "%s"' % (ensure_unicode(msg),ensure_unicode(src),ensure_unicode(dst)))
+    #print(u'%s : "%s" to "%s"' % (ensure_unicode(msg),ensure_unicode(src),ensure_unicode(dst)))
     return True
 
 def update_registry_version(version):
