@@ -5,6 +5,7 @@
   </head>
   <body>
 
+    <h2>Warning</h2>
     <p>
       You shouldn't be reading this page. If you haven't already done
       so, please configure a webserver to serve these directories and
@@ -14,7 +15,7 @@
 
     <p> <a href="..">Parent directory</a></p>
 
-    <p>Folder content</p>
+    <h2>Folder content</h2>
     <ul>
       {% for entry in dir_listing %}
       <li> <a href="{{ url_for('get_wapt_package', input_package_name=entry) }}">{{ entry }}</a></li><br />
