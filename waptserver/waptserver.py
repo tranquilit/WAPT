@@ -58,6 +58,7 @@ from rocket import Rocket
 
 import thread
 import threading
+import Queue
 
 from waptpackage import *
 import pefile
@@ -1367,6 +1368,39 @@ def trigger_upgrade():
     except Exception, e:
         return make_response_from_exception(e)
 
+@app.route('/trigger_update')
+@requires_auth
+def trigger_update():
+    """Proxy the wapt update action to the client"""
+    try:
+        uuid = request.args['uuid']
+        notify_user = request.args.get('notify_user',0)
+        host_data = hosts().find_one({ "uuid": uuid},fields={'uuid':1,'wapt':1,'host.connected_ips':1})
+        listening_address = get_ip_port(host_data)
+        msg = u''
+        if listening_address and listening_address['address'] and listening_address['port']:
+            logger.info( "Triggering update for %s at address %s..." % (uuid,listening_address['address']))
+            args = {}
+            args.update(listening_address)
+            args['notify_user'] = notify_user
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/update.json?notify_user=%(notify_user)s" % args,proxies=None,timeout=clients_read_timeout).text
+            try:
+                client_result = json.loads(client_result)
+                msg = _(u"Triggered task: {}").format(client_result['description'])
+            except ValueError:
+                if 'Restricted access' in client_result:
+                    raise EWaptForbiddden(client_result)
+                else:
+                    raise Exception(client_result)
+        else:
+            raise EWaptMissingHostData(_("The WAPT service is unreachable."))
+        return make_response(client_result,
+            msg = msg,
+            success = client_result['result'] == 'OK',)
+    except Exception, e:
+        return make_response_from_exception(e)
+
+
 
 @app.route('/host_tasks_status')
 @requires_auth
@@ -1412,6 +1446,33 @@ class CheckHostsWaptService(threading.Thread):
         self.mongoclient = MongoClient(mongodb_ip, int(mongodb_port))
         self.db = self.mongoclient.wapt
         self.poll_interval = poll_interval
+        self.queue = Queue.PriorityQueue()
+
+    def check_host(self,host_data):
+        if 'host' in host_data:
+            protocol = 'http'
+            port = waptservice_port
+            ip = ''
+            # check with last known listening informations
+            if 'wapt' in host_data['host'] and \
+                    'listening_address' in  host_data['host']['wapt'] and \
+                    host_data['host']['wapt'].get('address',''):
+                la = host_data['host']['wapt']['listening_address']
+                protocol = la['protocol']
+                ip = la['address']
+                port = la['port']
+                logger.debug("Client checker %s is testing %s" % (self.ident,ip))
+                ip = get_reachable_ip(ip,port)
+            # check with other connected ips
+            if not ip and 'connected_ips' in host_data['host']:
+                ips = host_data['host']['connected_ips']
+                logger.debug("Client checker %s is testing %s" % (self.ident,ips))
+                ip = get_reachable_ip(ips,port)
+
+            # stores result
+            la = dict(protocol='http',address=ip,port=waptservice_port,timestamp=datetime2isodate())
+            self.db.hosts.update({"_id" : host_data['_id'] }, {"$set": {'wapt.listening_address':la }})
+
 
     def update_listening_address(self):
         """Try to connect to all registered hosts using connected ips and waptservice_port
@@ -1421,29 +1482,7 @@ class CheckHostsWaptService(threading.Thread):
         query = {"host.connected_ips":{"$exists": "true", "$ne" :[]}}
         fields = {'wapt':1,'host.connected_ips':1,'uuid':1,'host.computer_fqdn':1}
         for data in self.db.hosts.find(query,fields=fields):
-            if 'host' in data:
-                protocol = 'http'
-                port = waptservice_port
-                ip = ''
-                # check with last known listening informations
-                if 'wapt' in data['host'] and \
-                        'listening_address' in  data['host']['wapt'] and \
-                        data['host']['wapt'].get('address',''):
-                    la = data['host']['wapt']['listening_address']
-                    protocol = la['protocol']
-                    ip = la['address']
-                    port = la['port']
-                    logger.debug("Client checker %s is testing %s" % (self.ident,ip))
-                    ip = get_reachable_ip(ip,port)
-                # check with other connected ips
-                if not ip and 'connected_ips' in data['host']:
-                    ips = data['host']['connected_ips']
-                    logger.debug("Client checker %s is testing %s" % (self.ident,ips))
-                    ip = get_reachable_ip(ips,port)
-
-                # stores result
-                la = dict(protocol='http',address=ip,port=waptservice_port,timestamp=datetime2isodate())
-                self.db.hosts.update({"_id" : data['_id'] }, {"$set": {'wapt.listening_address':la }})
+            self.check_host(data)
 
     def run(self):
         logger.debug('Client-listening %s address checker thread started'%self.ident)
