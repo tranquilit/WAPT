@@ -866,7 +866,7 @@ end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
 var
-  waptsetupPath: string;
+  waptsetupPath,waptUpgradePath: string;
   ini: TIniFile;
   SORes: ISuperObject;
 begin
@@ -888,9 +888,36 @@ begin
             Screen.Cursor := crHourGlass;
             ProgressTitle(rsCreationInProgress);
             Start;
+            // create waptupgrade package
+            ProgressTitle(rsCreationInProgress);
+            try
+              SORes := DMPython.RunJSON(format('mywapt.build_upload(r"%s",private_key_passwd="%s",wapt_server_user="%s",wapt_server_passwd="%s",inc_package_release=True)',[
+                  waptpath+'\waptupgrade',privateKeyPassword,WaptServerUser,WaptServerPassword]));
+              if FileExists(SORes.AsArray[0].S['filename']) then
+              begin
+                ShowMessage(rsWaptUpgradePackageBuilt+#13#10+SORes.AsArray[0].S['filename']);
+                ProgressTitle(rsWaptUpgradePackageBuilt);
+              end
+              else
+                ShowMessage(rsWaptUpgradePackageBuildError);
+
+            except
+              On E:Exception do
+                ShowMessage(rsWaptUpgradePackageBuildError+#13#10+E.Message);
+            end;
             Application.ProcessMessages;
-            waptsetupPath := CreateWaptSetup(fnPublicCert.FileName,
-              edRepoUrl.Text, GetWaptServerURL, fnWaptDirectory.Directory, edOrgName.Text, @DoProgress, 'waptagent');
+            waptsetupPath := '';
+            try
+              waptsetupPath := CreateWaptSetup(fnPublicCert.FileName,
+                edRepoUrl.Text, GetWaptServerURL, fnWaptDirectory.Directory, edOrgName.Text, @DoProgress, 'waptagent');
+
+            except
+              on E:Exception do
+              begin
+                ShowMessageFmt(rsWaptAgentSetupError,[E.Message]);
+                exit;
+              end;
+            end;
             Finish;
             if FileExists(waptsetupPath) then
               try

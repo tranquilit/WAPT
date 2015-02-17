@@ -25,6 +25,9 @@ resourcestring
   rsWaptUploadError = 'Error while uploading WAPT agent to the repository : %s';
   rsWaptSetupError = 'Error while creating agent : %s';
 
+  rsWaptUpgradePackageBuilt = 'WAPT Upgrade package built and uploaded successfully';
+  rsWaptUpgradePackageBuildError = 'Unable to create WAPT Upgrade package';
+
   rsForcedUninstallPackages = 'Selection of packages to force-remove from the hosts';
   rsDependencies = 'Selection of packages to add to the hosts as dependencies';
   rsNbModifiedHosts = '%s hosts affected.';
