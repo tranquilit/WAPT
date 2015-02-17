@@ -142,8 +142,8 @@ wapt_password = ""
 waptserver_port = 8080
 waptservice_port = 8088
 
-clients_connect_timeout = 1
-clients_read_timeout = 1.5
+clients_connect_timeout = 5
+clients_read_timeout = 5
 clients_poll_interval = None
 
 if config.has_section('options'):
@@ -204,7 +204,8 @@ if not wapt_folder:
     wapt_folder = os.path.join(wapt_root_dir,'waptserver','repository','wapt')
 
 waptagent = os.path.join(wapt_folder, 'waptagent.exe')
-waptsetup = os.path.join(wapt_folder, 'waptsetup.exe')
+waptsetup = os.path.join(wapt_folder, 'waptsetup-tis.exe')
+waptdeploy = os.path.join(wapt_folder, 'waptdeploy.exe')
 
 # Setup initial directories
 if os.path.exists(wapt_folder)==False:
@@ -233,18 +234,17 @@ def datetime2isodate(adatetime = None):
     return adatetime.isoformat()
 
 
-def get_waptagent_version():
+def get_wapt_exe_version(exe):
     present = False
     version = None
-    if os.path.exists(waptagent):
+    if os.path.exists(exe):
         present = True
         try:
-            pe = pefile.PE(waptagent)
+            pe = pefile.PE(exe)
             version = pe.FileInfo[0].StringTable[0].entries['ProductVersion'].strip()
         except:
             pass
     return (present, version)
-
 
 def ensure_list(csv_or_list,ignore_empty_args=True):
     """if argument is not a list, return a list from a csv string"""
@@ -373,22 +373,51 @@ def get_timezone():
 
 @app.route('/')
 def index():
-    agent_present, agent_version = get_waptagent_version()
+
+    agent_status = setup_status = deploy_status = 'N/A'
+    agent_style = setup_style = deploy_style = 'style="color: red;"'
+
+    agent_present, agent_version = get_wapt_exe_version(waptagent)
     if agent_present:
+        agent_style = ''
         if agent_version is not None:
             agent_status = agent_version
         else:
             agent_status = 'ERROR'
-    else:
-        agent_status = 'N/A'
-    return render_template("index.html", wapt_server_version=__version__, wapt_agent_version=agent_status)
+
+    setup_present, setup_version = get_wapt_exe_version(waptsetup)
+    if setup_present:
+        setup_style = ''
+        if setup_version is not None:
+            setup_status = setup_version
+        else:
+            setup_status = 'ERROR'
+
+    deploy_present, deploy_version = get_wapt_exe_version(waptdeploy)
+    if deploy_present:
+        deploy_style = ''
+        if deploy_version is not None:
+            deploy_status = deploy_version
+        else:
+            deploy_status = 'ERROR'
+
+    data = {
+        'wapt': {
+            'server': { 'status': __version__ },
+            'agent': { 'status': agent_status, 'style': agent_style },
+            'setup': { 'status': setup_status, 'style': setup_style },
+            'deploy': { 'status': deploy_status, 'style': deploy_style },
+        }
+    }
+
+    return render_template("index.html", data=data)
 
 
 @app.route('/info')
 def informations():
     informations = {}
     informations["server_version"] = __version__
-    present, version = get_waptagent_version()
+    present, version = get_wapt_exe_version(waptagent)
     if present and version is not None:
         informations["client_version"] = version
 
@@ -1395,7 +1424,7 @@ def trigger_update():
             args = {}
             args.update(listening_address)
             args['notify_user'] = notify_user
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/update.json?notify_user=%(notify_user)s" % args,proxies=None,timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/update.json?notify_user=%(notify_user)s&notify_server=1" % args,proxies=None,timeout=clients_read_timeout).text
             try:
                 client_result = json.loads(client_result)
                 msg = _(u"Triggered task: {}").format(client_result['description'])
@@ -1444,7 +1473,7 @@ def host_tasks_status():
 
 ##################################################################
 class CheckHostWorker(threading.Thread):
-    """Worker which pull a host data from queue, checks reachability, and store result in db
+    """Worker which pulls a host data from queue, checks reachability, and stores result in db
     """
     def __init__(self,db,queue,timeout):
         threading.Thread.__init__(self)

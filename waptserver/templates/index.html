@@ -84,9 +84,9 @@ body.custom-background { background-color: #f1f1f1; }
       <td bgcolor="#f6f6f6">
       <ul>
 		<br>
-        <li><a href="/wapt/waptagent.exe"><strong>{{ _("WAPT Agent (for deploying onto user desktop)") }}</strong></a></li>
-        <li><a href="/wapt/waptsetup-tis.exe"><strong>{{ _("WAPTSetup (for installing on management machine)") }}</strong></a></li>
-		<li><a href="/wapt/waptdeploy.exe"><strong>{{ _("WAPTDeploy (for setting up deployment GPO)") }}</strong></a></li>
+        <li><a href="/wapt/waptagent.exe" {{ data.wapt.agent.style|safe }}><strong>{{ _("WAPT Agent (for deploying onto user desktop)") }}</strong></a></li>
+        <li><a href="/wapt/waptsetup-tis.exe" {{ data.wapt.setup.style|safe }}><strong>{{ _("WAPTSetup (for installing on management machine)") }}</strong></a></li>
+	<li><a href="/wapt/waptdeploy.exe" {{ data.wapt.deploy.style|safe }}><strong>{{ _("WAPTDeploy (for setting up deployment GPO)") }}</strong></a></li>
         <br>
         <li><a href="/ssl/">{{ _("Certificates") }}</a></li>
         <li><a href="/wapt/">{{ _("Private repository") }}</a></li>
@@ -170,8 +170,10 @@ mailing-list.
 	<div id="actualites"></div>
   </li>
 -->
-  <li><strong>{{ _("WAPT Server version:") }} {{ wapt_server_version }}</strong></li>
-  <li><strong>{{ _("WAPT Agent version:") }} {{ wapt_agent_version }}</strong></li>
+  <li><strong>{{ _("WAPT Server version:") }} {{ data.wapt.server.status }}</strong></li>
+  <li><strong>{{ _("WAPT Agent version:") }} {{ data.wapt.agent.status }}</strong></li>
+  <li><strong>{{ _("WAPT Setup version:") }} {{ data.wapt.setup.status }}</strong></li>
+  <li><strong>{{ _("WAPT Deploy version:") }} {{ data.wapt.deploy.status }}</strong></li>
 </ul>
 <h3><br>
 </h3>

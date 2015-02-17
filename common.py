@@ -2485,7 +2485,7 @@ class Wapt(object):
         if not self.config_filename:
             self.config_filename = os.path.join(self.wapt_base_dir,'wapt-get.ini')
 
-        self.package_cache_dir = os.path.join(self.wapt_base_dir,'cache')
+        self.package_cache_dir = os.path.join(os.path.dirname(self.config_filename),'cache')
         if not os.path.exists(self.package_cache_dir):
             os.makedirs(self.package_cache_dir)
 
@@ -3572,8 +3572,8 @@ class Wapt(object):
         >>> res == {'removed': ['tis-wapttest'], 'errors': []}
         True
         """
-        if not isinstance(apackages,list):
-            apackages = [apackages]
+
+        apackages = ensure_list(apackages)
 
         # ensure that apackages is a list of package requirements (strings)
         new_apackages = []
@@ -3686,8 +3686,7 @@ class Wapt(object):
         >>> wapt.download_packages(['tis-firefox','tis-waptdev'],usecache=False,printhook=nullhook)
         {'downloaded': [u'cache\\tis-firefox_28.0.0-1_all.wapt', u'cache\\tis-waptdev.wapt'], 'skipped': [], 'errors': []}
         """
-        if not isinstance(package_requests,(list,tuple)):
-            package_requests = [ package_requests ]
+        package_requests = ensure_list(package_requests)
         downloaded = []
         skipped = []
         errors = []
@@ -4265,8 +4264,7 @@ class Wapt(object):
         """Build a list of packages and upload the resulting packages to the main repository.
            if section of package is group or host, user specific wapt-host or wapt-group
         """
-        if not isinstance(sources_directories,list):
-            sources_directories = [sources_directories]
+        sources_directories = ensure_list(sources_directories)
         buildresults = []
 
         if not self.private_key or not os.path.isfile(self.private_key):
@@ -5374,7 +5372,7 @@ class Wapt(object):
                 if not has_icon:
                     if not os.path.isfile(iconpath):
                         # we take an icon in the local cache ...
-                        iconpath = os.path.join(self.wapt_base_dir,u'cache',u'{}.png'.format(result['package'].package))
+                        iconpath = os.path.join(self.package_cache_dir,u'icons',u'{}.png'.format(result['package'].package))
                         if not os.path.isfile(iconpath):
                             # try to find an icon in the first exe file we find...
                             logger.info(u'No suitable icon in cache, trying exe')

@@ -866,7 +866,7 @@ end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
 var
-  waptsetupPath: string;
+  waptsetupPath,waptUpgradePath: string;
   ini: TIniFile;
   SORes: ISuperObject;
 begin
@@ -888,9 +888,36 @@ begin
             Screen.Cursor := crHourGlass;
             ProgressTitle(rsCreationInProgress);
             Start;
+            // create waptupgrade package
+            ProgressTitle(rsCreationInProgress);
+            try
+              SORes := DMPython.RunJSON(format('mywapt.build_upload(r"%s",private_key_passwd="%s",wapt_server_user="%s",wapt_server_passwd="%s",inc_package_release=True)',[
+                  waptpath+'\waptupgrade',privateKeyPassword,WaptServerUser,WaptServerPassword]));
+              if FileExists(SORes.AsArray[0].S['filename']) then
+              begin
+                ShowMessage(rsWaptUpgradePackageBuilt+#13#10+SORes.AsArray[0].S['filename']);
+                ProgressTitle(rsWaptUpgradePackageBuilt);
+              end
+              else
+                ShowMessage(rsWaptUpgradePackageBuildError);
+
+            except
+              On E:Exception do
+                ShowMessage(rsWaptUpgradePackageBuildError+#13#10+E.Message);
+            end;
             Application.ProcessMessages;
-            waptsetupPath := CreateWaptSetup(fnPublicCert.FileName,
-              edRepoUrl.Text, GetWaptServerURL, fnWaptDirectory.Directory, edOrgName.Text, @DoProgress, 'waptagent');
+            waptsetupPath := '';
+            try
+              waptsetupPath := CreateWaptSetup(fnPublicCert.FileName,
+                edRepoUrl.Text, GetWaptServerURL, fnWaptDirectory.Directory, edOrgName.Text, @DoProgress, 'waptagent');
+
+            except
+              on E:Exception do
+              begin
+                ShowMessageFmt(rsWaptAgentSetupError,[E.Message]);
+                exit;
+              end;
+            end;
             Finish;
             if FileExists(waptsetupPath) then
               try
@@ -1770,7 +1797,7 @@ end;
 procedure TVisWaptGUI.ActSearchHostExecute(Sender: TObject);
 var
   req, filter: string;
-  urlParams, Node, Hosts: ISuperObject;
+  urlParams, Node, Hosts,host,update_status,errors,upgrades: ISuperObject;
   previous_uuid: string;
 const
   url: string = 'hosts';
@@ -1809,7 +1836,27 @@ begin
     previous_uuid := GridHosts.FocusedRow.S['uuid']
   else
     previous_uuid := '';
+
   hosts := WAPTServerJsonGet(req, []);
+  for host in hosts do
+  begin
+    update_status := host['update_status'];
+    if (update_status <> nil) then
+    begin
+      errors := update_status['errors'];
+      upgrades := update_status['upgrades'];
+      if (errors <> nil) and (errors.AsArray.Length > 0) then
+        host.S['host_status'] := 'ERROR'
+      else
+      if (upgrades <> nil) and (upgrades.AsArray.Length > 0) then
+        host.S['host_status'] := 'TO-UPGRADE'
+      else
+        host.S['host_status'] := 'OK';
+    end
+    else
+      host.S['host_status'] := '?';
+  end;
+
   GridHosts.Data := hosts;
   if (hosts <> nil) and (hosts.AsArray <> nil) then
   begin
@@ -2322,24 +2369,21 @@ procedure TVisWaptGUI.GridHostsGetImageIndexEx(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
   var Ghosted: boolean; var ImageIndex: integer; var ImageList: TCustomImageList);
 var
-  RowSO, update_status, upgrades, errors,
+  RowSO, status, upgrades, errors,
   reachable,timestamp: ISuperObject;
 begin
-  if TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName = 'status' then
+  if TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName = 'host_status' then
   begin
     RowSO := GridHosts.GetNodeSOData(Node);
     if RowSO <> nil then
     begin
-      update_status := RowSO['update_status'];
-      if (update_status <> nil) then
+      status := RowSO['host_status'];
+      if (status <> nil) then
       begin
         ImageList := ImageList1;
-        errors := update_status['errors'];
-        upgrades := update_status['upgrades'];
-        if (errors <> nil) and (errors.AsArray.Length > 0) then
+        if status.AsString = 'ERROR' then
           ImageIndex := 2
-        else
-        if (upgrades <> nil) and (upgrades.AsArray.Length > 0) then
+        else if status.AsString = 'TO-UPGRADE' then
           ImageIndex := 1
         else
           ImageIndex := 0;
@@ -2378,7 +2422,7 @@ begin
       CellText := soutils.Join(',', CellData);
     if (TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName='last_query_date') or (TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName='wapt.listening_address.timestamp') then
       CellText := Copy(StrReplaceChar(CellText,'T',' '),1,19);
-    if GridHosts.Header.Columns[Column].Text = 'Status' then
+    {if GridHosts.Header.Columns[Column].Text = 'Status' then
     begin
       RowSO := GridHosts.GetNodeSOData(Node);
       if RowSO <> nil then
@@ -2399,7 +2443,7 @@ begin
       end
       else
         CellText := '';
-    end;
+    end;}
   end;
 end;
 
