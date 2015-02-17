@@ -142,8 +142,8 @@ wapt_password = ""
 waptserver_port = 8080
 waptservice_port = 8088
 
-clients_connect_timeout = 1.5
-clients_read_timeout = 3
+clients_connect_timeout = 5
+clients_read_timeout = 5
 clients_poll_interval = None
 
 if config.has_section('options'):
