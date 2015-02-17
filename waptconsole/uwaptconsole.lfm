@@ -242,9 +242,10 @@ object VisWaptGUI: TVisWaptGUI
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed, coAllowFocus]
             Position = 0
             Text = 'Status'
-            PropertyName = 'status'
+            PropertyName = 'host_status'
           end        
           item
+            MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed, coAllowFocus]
             Position = 1
             Tag = 1
@@ -386,22 +387,14 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'attributes'
           end        
           item
-            MaxWidth = 100
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 18
-            Tag = 18
-            Text = 'Host status'
-            PropertyName = 'update_status'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 19
             Tag = 19
             Text = 'Domain controller'
             PropertyName = 'host.domain_controller'
           end        
           item
-            Position = 20
+            Position = 19
             Tag = 20
             Text = 'Domaine'
             Width = 80
@@ -409,22 +402,22 @@ object VisWaptGUI: TVisWaptGUI
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 21
+            Position = 20
             Tag = 21
             Text = 'Domain controller address'
             PropertyName = 'host.domain_controller_address'
           end        
           item
-            Position = 22
+            Position = 21
             Tag = 22
             Text = 'Groups'
             PropertyName = 'depends'
           end>
         Header.DefaultHeight = 17
+        Header.MainColumn = 2
         Header.MaxHeight = 17
         Header.MinHeight = 17
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-        Header.SortColumn = 0
         Header.Style = hsFlatButtons
         Images = ImageList1
         PopupMenu = PopupMenuHosts
@@ -3413,6 +3406,42 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem52: TMenuItem
       Action = ActTriggerHostUpdate
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        00000000000000000000000000000000000000000000393939FF000000000000
+        000000000000363636FF00000000000000000000000000000000000000000000
+        000000000000797979FFA8A8A8FFAEAEAEFFB3B3B3FFB3B3B3FFB2B2B2FFB2B2
+        B2FFB0B0B0FFAAAAAAFF868686FF000000000000000000000000000000000000
+        0000000000000000000000000000636363FF8C8C8CFFD9D9D9FFCFCFCFFF9393
+        93FF00000000565656FF00000000000000000000000000000000000000000000
+        00000000000000000000003A6DFF000000004A4A4AFFC1C7CCFFACB7C2FF5159
+        61FF000000FF00000000000000FF00000000000000FF00000000000000008F8F
+        8FFFA3A3A3FF929CA4FF0C87E6FF2E78BBFF447CB1FF1784DCFF0A9BEBFF0D8F
+        E0FF3176B3FF838B92FF00000000979797FF000000003A3A3AFF3B3B3BFFD2D2
+        D2FFB1B1B1FF758997FF05A3F7FF009DF9FF009EF6FF00C6FFFF00D8FFFF00D5
+        FFFF00B0F9FF187BC9FF757D85FF999999FFC9C9C9FF0000000000000000CECE
+        CEFF505050FF00223DFF019BF9FF05AFFFFF07BCFFFF07C3FFFF03C0F8FF01C5
+        FAFF01C6FFFF00B0FBFF013864FF303030FFC1C1C1FF4A494AFF393939FFCECE
+        CEFF555555FF0B3C65FF2CA6FDFF33B3FFFF33BCFFFF2CBDFFFF0A82DBFF0946
+        68FF1CA8E2FF0FB4FFFF026BAFFF373737FFC3C3C3FF0000000000000000CECE
+        CEFF5A5A5AFF1F5D91FF60BAFFFF5FBCFFFF5ABEFEFF50B9F2FF3398D2FF1223
+        33FF2979AEFF55C0FFFF1E7DC0FF3D3D3DFFC5C5C5FF4B4B4BFF393939FFCDCD
+        CDFF5E5E5EFF3574A7FF63A9E1FF437EAFFF2B5372FF21323FFF162F48FF0948
+        89FF47A4F1FF82CAFFFF417DADFF424242FFC6C6C6FF0000000000000000CDCD
+        CDFF666666FF2D3944FF333B43FF373738FF393939FF393939FF2C71B2FF5FAE
+        F6FFA4D7FFFF9ED1FBFF354F67FF484848FFC8C8C8FF4B4B4BFF393939FFCDCD
+        CDFF7A7A7AFF4D4D4DFF515151FF515151FF515151FF515151FF7FA4C4FFD3EC
+        FFFFBEDFF9FF678CADFF4A4B4DFF5E5E5EFFCACACAFF0000000000000000CDCD
+        CDFF888888FF626262FF656565FF656565FF656565FF656565FF6A88A2FF809B
+        B4FF667686FF626365FF636363FF767676FFCCCCCCFF4B4B4BFF383838FFCCCC
+        CCFF8D8D8DFFD7D7D7FFD8D8D8FFD8D8D8FFD8D8D8FFD8D8D8FFD8D8D8FFD8D8
+        D8FFD8D8D8FFD8D8D8FFD7D7D7FF7D7D7DFFCCCCCCFF0000000000000000C1C1
+        C1FFC6C6C6FFB6B6B6FFB5B5B5FFB3B3B3FFB3B3B3FFB3B3B3FFB4B4B4FFB6B6
+        B6FFB8B8B8FFB8B8B8FFB8B8B8FFC1C1C1FFCACACAFF4A4A4AFF202020FF5555
+        55FF5C5C5CFF5B5B5BFF5B5B5BFF595959FF595959FF595959FF5A5A5AFF5B5B
+        5BFF5C5C5CFF5C5C5CFF5B5B5BFF5D5D5DFF585858FF00000000
+      }
     end
     object MenuItem43: TMenuItem
       Caption = '-'
