@@ -1424,7 +1424,7 @@ def trigger_update():
             args = {}
             args.update(listening_address)
             args['notify_user'] = notify_user
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/update.json?notify_user=%(notify_user)s" % args,proxies=None,timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/update.json?notify_user=%(notify_user)s&notify_server=1" % args,proxies=None,timeout=clients_read_timeout).text
             try:
                 client_result = json.loads(client_result)
                 msg = _(u"Triggered task: {}").format(client_result['description'])

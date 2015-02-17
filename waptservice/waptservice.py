@@ -907,6 +907,7 @@ def update():
     task = WaptUpdate()
     task.force = int(request.args.get('force','0')) != 0
     task.notify_user = int(request.args.get('notify_user','1')) != 0
+    task.notify_server_on_finish = int(request.args.get('notify_server','0')) != 0
     data = task_manager.add_task(task).as_dict()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
