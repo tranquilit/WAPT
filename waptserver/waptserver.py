@@ -237,10 +237,10 @@ def datetime2isodate(adatetime = None):
 def get_wapt_exe_version(exe):
     present = False
     version = None
-    if os.path.exists(waptagent):
+    if os.path.exists(exe):
         present = True
         try:
-            pe = pefile.PE(waptagent)
+            pe = pefile.PE(exe)
             version = pe.FileInfo[0].StringTable[0].entries['ProductVersion'].strip()
         except:
             pass
