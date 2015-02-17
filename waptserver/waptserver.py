@@ -142,8 +142,8 @@ wapt_password = ""
 waptserver_port = 8080
 waptservice_port = 8088
 
-clients_connect_timeout = 1
-clients_read_timeout = 1.5
+clients_connect_timeout = 1.5
+clients_read_timeout = 3
 clients_poll_interval = None
 
 if config.has_section('options'):
@@ -1473,7 +1473,7 @@ def host_tasks_status():
 
 ##################################################################
 class CheckHostWorker(threading.Thread):
-    """Worker which pull a host data from queue, checks reachability, and store result in db
+    """Worker which pulls a host data from queue, checks reachability, and stores result in db
     """
     def __init__(self,db,queue,timeout):
         threading.Thread.__init__(self)
