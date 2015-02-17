@@ -2485,7 +2485,7 @@ class Wapt(object):
         if not self.config_filename:
             self.config_filename = os.path.join(self.wapt_base_dir,'wapt-get.ini')
 
-        self.package_cache_dir = os.path.join(self.wapt_base_dir,'cache')
+        self.package_cache_dir = os.path.join(os.path.dirname(self.config_filename),'cache')
         if not os.path.exists(self.package_cache_dir):
             os.makedirs(self.package_cache_dir)
 
@@ -5372,7 +5372,7 @@ class Wapt(object):
                 if not has_icon:
                     if not os.path.isfile(iconpath):
                         # we take an icon in the local cache ...
-                        iconpath = os.path.join(self.wapt_base_dir,u'cache',u'{}.png'.format(result['package'].package))
+                        iconpath = os.path.join(self.package_cache_dir,u'icons',u'{}.png'.format(result['package'].package))
                         if not os.path.isfile(iconpath):
                             # try to find an icon in the first exe file we find...
                             logger.info(u'No suitable icon in cache, trying exe')
