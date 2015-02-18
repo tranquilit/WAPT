@@ -57,6 +57,7 @@ run = subprocess.check_output
 
 BDIR = './builddir/'
 EXE = 'waptsetup-tis.exe'
+DEPLOY = 'waptdeploy.exe'
 SRV = 'srvinstallation.tranquil.it'
 BASEPATH = '/wapt/nightly/'
 
@@ -183,6 +184,7 @@ os.chmod(BDIR + 'DEBIAN/postinst', 0755)
 replaceAll(BDIR + 'DEBIAN/control', '0.0.7', full_version)
 mkdir_p(BDIR + 'var/www/wapt/')
 shutil.copy(EXE, BDIR + 'var/www/wapt/')
+shutil.copy(DEPLOY, BDIR + 'var/www/wapt/')
 
 output = 'tis-waptsetup-%s.deb' % (full_version)
 dpkg_command = ['dpkg-deb', '--build', BDIR, output]
