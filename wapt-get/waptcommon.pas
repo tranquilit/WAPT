@@ -1493,7 +1493,7 @@ begin
     end;
 
     source := default_public_cert;
-    target := ExtractFileDir(iss_template) + '..' + 'ssl' + ExtractFileName(source);
+    target := ExtractFileDir(iss_template) + '  \..\ssl\' + ExtractFileName(source);
     if not FileExists(target) then
       if not FileUtil.CopyFile(source,target,True) then
         raise Exception.CreateFmt(rsCertificateCopyFailure,[source,target]);
