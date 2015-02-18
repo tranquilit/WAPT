@@ -7,6 +7,7 @@ chdir=/opt/wapt/waptserver/
 max-requests=100
 uid=wapt
 gid=www-data
+enable-threads = true
 
 [options]
 #mongodb_port=27017

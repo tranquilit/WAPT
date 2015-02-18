@@ -1361,8 +1361,7 @@ def trigger_reachable_discovery():
     """Launch a separate thread to check all reachable IP
     """
     try:
-        check_listening = CheckHostsWaptService()
-        check_listening.daemon = True
+        check_listening = CheckHostsWaptService(timeout = clients_connect_timeout)
         check_listening.start()
         message = _(u'Hosts listening IP discovery launched')
         result = dict(thread_ident = check_listening.ident )
@@ -1790,12 +1789,6 @@ if __name__ == "__main__":
         # pass optional parameters along with the command
         install_windows_service(sys.argv[1:])
         sys.exit(0)
-
-
-    # global thread to check listening ip of registred hosts periodically
-    # use with caution as it generates noise on the network (tcp connection try on each host)
-    check_listening = CheckHostsWaptService(timeout = clients_connect_timeout)
-    check_listening.start()
 
     if options.devel:
         app.run(host='0.0.0.0',port=30880,debug=False)
