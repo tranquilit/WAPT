@@ -1,3 +1,19 @@
+# mcadorel-adm <ss>, 2015.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-02-18 09:29+0200\n"
+"PO-Revision-Date: 2015-02-18 09:36+0200\n"
+"Last-Translator: mcadorel-adm <ss>\n"
+"Language-Team: moi\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Virtaal 0.7.1\n"
+
 msgid " Uncheck \"Use simple file sharing\")."
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -722,16 +738,16 @@ msgstr "Créer un certificat auto-signé"
 
 #: tviswaptgui.actcreatewaptsetup.caption
 #, fuzzy
-#| msgid "Create custom WAPT installer"
+#| msgid "Create WAPT agent"
 msgctxt "tviswaptgui.actcreatewaptsetup.caption"
-msgid "Create WAPT agent"
+msgid "Create custom WAPT installer"
 msgstr "Créer un agent WAPT"
 
 #: tviswaptgui.actcreatewaptsetuppy.caption
 #, fuzzy
-#| msgid "Create custom WAPT installer (py)"
+#| msgid "Create WAPT agent"
 msgctxt "tviswaptgui.actcreatewaptsetuppy.caption"
-msgid "Create WAPT agent"
+msgid "Create custom WAPT installer (py)"
 msgstr "Créer un agent WAPT"
 
 #: tviswaptgui.actdeletegroup.caption
@@ -796,10 +812,6 @@ msgstr "Aide en ligne"
 #: tviswaptgui.acthostsdelete.caption
 msgid "Remove from inventory"
 msgstr "Supprimer de l'inventaire"
-
-#: tviswaptgui.acthostupgrade.caption
-msgid "Apply updates"
-msgstr "Appliquer les modifications"
 
 #: tviswaptgui.acthostwaptupgrade.caption
 msgid "Update WAPT client"
@@ -886,6 +898,19 @@ msgstr "Rechercher"
 #: tviswaptgui.actsearchsoftwares.caption
 msgid "ActSearchSoftware"
 msgstr ""
+
+#: tviswaptgui.acttriggerhostslistening.caption
+msgid "Trigger scan listening IP"
+msgstr "Scanner les IP en écoute"
+
+#: tviswaptgui.acttriggerhostupdate.caption
+msgid "Trigger hosts update"
+msgstr "Rafraîchir la liste des hôtes"
+
+#: tviswaptgui.acttriggerhostupgrade.caption
+msgctxt "tviswaptgui.acttriggerhostupgrade.caption"
+msgid "Apply updates"
+msgstr "Appliquer les modifications"
 
 #: tviswaptgui.actvnc.caption
 msgid "Connect via VNC"
@@ -1039,7 +1064,7 @@ msgstr "&Outils"
 
 #: tviswaptgui.menuitem17.caption
 msgid "Language"
-msgstr ""
+msgstr "Langue"
 
 #: tviswaptgui.menuitem20.caption
 msgid "Install package"
@@ -1165,6 +1190,14 @@ msgstr "Terminées"
 msgid "Errors"
 msgstr "Erreurs"
 
+#: tviswaptgui.toolbar1.caption
+msgid "ToolBar1"
+msgstr ""
+
+#: tviswaptgui.toolbutton4.caption
+msgid "ToolButton4"
+msgstr ""
+
 #: uwaptconsoleres.rsbundleconfigeditcaption
 msgctxt "uwaptconsoleres.rsbundleconfigeditcaption"
 msgid "Edit package bundle configuration"
@@ -1183,7 +1216,7 @@ msgstr "La tâche %s a été interrompue par l'utilisateur"
 #: uwaptconsoleres.rscanceledtask
 msgctxt "uwaptconsoleres.rscanceledtask"
 msgid "Cancelled %s"
-msgstr ""
+msgstr "%s annulé"
 
 #: uwaptconsoleres.rscertificatecopyfailure
 msgctxt "uwaptconsoleres.rscertificatecopyfailure"
@@ -1193,12 +1226,12 @@ msgstr "Echec de la copie du certificat %s vers %s."
 #: uwaptconsoleres.rscname
 msgctxt "uwaptconsoleres.rscname"
 msgid "CNAME: %s"
-msgstr ""
+msgstr "CNAME : %s"
 
 #: uwaptconsoleres.rscompletionprogress
 msgctxt "uwaptconsoleres.rscompletionprogress"
 msgid "%s : %.0f%% completed"
-msgstr ""
+msgstr "%s : %.0f%% terminé"
 
 #: uwaptconsoleres.rsconfirmcaption
 msgctxt "uwaptconsoleres.rsconfirmcaption"
@@ -1221,6 +1254,9 @@ msgid ""
 "%s\n"
 " to your repository ?\n"
 msgstr ""
+"Êtes-vous sûr(e) de vouloir importer\n"
+"%s\n"
+" dans votre dépôt ?"
 
 #: uwaptconsoleres.rsconfirmimportcaption
 msgctxt "uwaptconsoleres.rsconfirmimportcaption"
@@ -1300,12 +1336,12 @@ msgstr "Téléchargement interrompu par l'utilisateur."
 #: uwaptconsoleres.rsdnsdomain
 msgctxt "uwaptconsoleres.rsdnsdomain"
 msgid "DNS Domain : %s"
-msgstr ""
+msgstr "Domaine DNS : %s"
 
 #: uwaptconsoleres.rsdnsserver
 msgctxt "uwaptconsoleres.rsdnsserver"
 msgid "DNS Server : %s"
-msgstr ""
+msgstr "Serveur DNS : %s"
 
 #: uwaptconsoleres.rsdownloading
 msgctxt "uwaptconsoleres.rsdownloading"
@@ -1511,6 +1547,9 @@ msgid ""
 "%s\n"
 " into your repository ?\n"
 msgstr ""
+"Etes-vous sûr(e) de vouloir dupliquer le(s) paquet(s)\n"
+"%s\n"
+" dans votre répertoire ?\n"
 
 #: uwaptconsoleres.rspackageduplicateconfirmcaption
 msgctxt "uwaptconsoleres.rspackageduplicateconfirmcaption"
@@ -1668,6 +1707,8 @@ msgid ""
 "Waptconsole version : %s\n"
 "Wapt-get version: %s\n"
 msgstr ""
+"Version waptconsole : %s\n"
+"Version wapt-get : %s\n"
 
 #: uwaptconsoleres.rswaptagentsetuperror
 msgctxt "uwaptconsoleres.rswaptagentsetuperror"
@@ -1747,7 +1788,7 @@ msgstr "La tâche %s a été interrompue par l'utilisateur"
 #: uwaptres.rscanceledtask
 msgctxt "uwaptres.rscanceledtask"
 msgid "Cancelled %s"
-msgstr ""
+msgstr "%s annulé"
 
 #: uwaptres.rscanceling
 msgid "Canceling %s"
@@ -1765,12 +1806,12 @@ msgstr "Vérification..."
 #: uwaptres.rscname
 msgctxt "uwaptres.rscname"
 msgid "CNAME: %s"
-msgstr ""
+msgstr "CNAME : %s"
 
 #: uwaptres.rscompletionprogress
 msgctxt "uwaptres.rscompletionprogress"
 msgid "%s : %.0f%% completed"
-msgstr ""
+msgstr "%s : %.0f%% terminé"
 
 #: uwaptres.rsconfirm
 msgctxt "uwaptres.rsconfirm"
@@ -1799,6 +1840,9 @@ msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 #: uwaptres.rsconfirmimport
 #, fuzzy
 #| msgid ""
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 #| "Are you sure you want to import\n"
 #| "%s\n"
 #| " to your repository ?\n"
@@ -1913,12 +1957,12 @@ msgstr "Téléchargement interrompu par l'utilisateur."
 #: uwaptres.rsdnsdomain
 msgctxt "uwaptres.rsdnsdomain"
 msgid "DNS Domain : %s"
-msgstr ""
+msgstr "Domaine DNS : %s"
 
 #: uwaptres.rsdnsserver
 msgctxt "uwaptres.rsdnsserver"
 msgid "DNS Server : %s"
-msgstr ""
+msgstr "Serveur DNS : %s"
 
 #: uwaptres.rsdownloading
 msgctxt "uwaptres.rsdownloading"
@@ -2184,6 +2228,9 @@ msgstr "Erreur lors de la création du paquet : %s"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
 #| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
 "%s\n"
@@ -2333,6 +2380,8 @@ msgstr "Tâche annulée."
 #| "%s\n"
 #| "%s done\n"
 #| "%s\n"
+#| "%s done\n"
+#| "%s\n"
 msgid ""
 "%s done\n"
 "%s\n"
@@ -2428,6 +2477,8 @@ msgstr "Usage : %s -h"
 #| "Wapt-get version: %s\n"
 #| "Waptconsole version : %s\n"
 #| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
 msgid ""
 "Waptconsole version : %s\n"
 "Wapt-get version: %s\n"
@@ -2502,4 +2553,3 @@ msgstr "Wrapper Win32 Exe  : %s %s"
 msgctxt "uwaptres.rswinterruptreceived"
 msgid "W: interrupt received, killing serverâ¦"
 msgstr "W : interruption reçue, arrêt du serveur"
-

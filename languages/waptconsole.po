@@ -665,12 +665,12 @@ msgstr ""
 
 #: tviswaptgui.actcreatewaptsetup.caption
 msgctxt "tviswaptgui.actcreatewaptsetup.caption"
-msgid "Create WAPT agent"
+msgid "Create custom WAPT installer"
 msgstr ""
 
 #: tviswaptgui.actcreatewaptsetuppy.caption
 msgctxt "tviswaptgui.actcreatewaptsetuppy.caption"
-msgid "Create WAPT agent"
+msgid "Create custom WAPT installer (py)"
 msgstr ""
 
 #: tviswaptgui.actdeletegroup.caption
@@ -734,10 +734,6 @@ msgstr ""
 
 #: tviswaptgui.acthostsdelete.caption
 msgid "Remove from inventory"
-msgstr ""
-
-#: tviswaptgui.acthostupgrade.caption
-msgid "Apply updates"
 msgstr ""
 
 #: tviswaptgui.acthostwaptupgrade.caption
@@ -824,6 +820,19 @@ msgstr ""
 
 #: tviswaptgui.actsearchsoftwares.caption
 msgid "ActSearchSoftware"
+msgstr ""
+
+#: tviswaptgui.acttriggerhostslistening.caption
+msgid "Trigger scan listening IP"
+msgstr ""
+
+#: tviswaptgui.acttriggerhostupdate.caption
+msgid "Trigger hosts update"
+msgstr ""
+
+#: tviswaptgui.acttriggerhostupgrade.caption
+msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.CAPTION"
+msgid "Apply updates"
 msgstr ""
 
 #: tviswaptgui.actvnc.caption
@@ -1102,6 +1111,14 @@ msgstr ""
 
 #: tviswaptgui.tabsheet3.caption
 msgid "Errors"
+msgstr ""
+
+#: tviswaptgui.toolbar1.caption
+msgid "ToolBar1"
+msgstr ""
+
+#: tviswaptgui.toolbutton4.caption
+msgid "ToolButton4"
 msgstr ""
 
 #: uwaptconsoleres.rsbundleconfigeditcaption
