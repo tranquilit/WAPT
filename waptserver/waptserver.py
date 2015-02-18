@@ -260,30 +260,41 @@ def ensure_list(csv_or_list,ignore_empty_args=True):
     else:
         return csv_or_list
 
-def hosts():
+def get_db():
     """Opens a new database connection if there is none yet for the
     current application context.
     """
-    if not hasattr(g, 'client'):
+    if not hasattr(g, 'db'):
         try:
             logger.debug('Connecting to mongo db %s:%s'%(mongodb_ip, int(mongodb_port)))
-            g.client = MongoClient(mongodb_ip, int(mongodb_port))
-            g.db = g.client.wapt
-            g.hosts = g.db.hosts
+            mongo_client = MongoClient(mongodb_ip, int(mongodb_port))
+            g.db = mongo_client.wapt
+        except Exception as e:
+            raise Exception(_("Could not connect to mongodb database: {}.").format((repr(e),)))
+    return g.db
+
+def hosts():
+    """ Get hosts collection from db
+    """
+    if not hasattr(g, 'hosts'):
+        try:
+            logger.debug('Add hosts collection to current request context')
+            g.hosts = get_db().hosts
             g.hosts.ensure_index('uuid',unique=True)
             g.hosts.ensure_index('computer_name',unique=False)
         except Exception as e:
-            raise Exception(_("Could not connect to mongodb database: {}.").format((repr(e),)))
+            raise Exception(_("Could not get hosts collection from db: {}.").format((repr(e),)))
     return g.hosts
 
 @app.teardown_appcontext
 def close_db(error):
     """Closes the database again at the end of the request."""
-    if hasattr(g, 'client'):
-        logger.debug('Disconnected from mongodb')
+    if hasattr(g, 'hosts'):
+        logger.debug('Remove hosts from request context')
         del g.hosts
+    if hasattr(g, 'db'):
+        logger.debug('Disconnect from mongodb')
         del g.db
-        del g.client
 
 def requires_auth(f):
     @wraps(f)
@@ -545,14 +556,17 @@ def update_host():
             uuid = data["uuid"]
             if uuid:
                 logger.info('Update host %s status'%(uuid,))
-                # check if client is reachable
-                if 'host' in data and 'connected_ips' in data['host']:
-                    ips = data['host']['connected_ips']
-                    ip = get_reachable_ip(ips,waptservice_port)
-                    data['wapt']['listening_address'] = dict(protocol='http',address=ip,port=waptservice_port,timestamp=datetime2isodate())
-                    logger.debug('Client {} is listening on IP {}:{}'.format(uuid,ip,waptservice_port))
-
                 result = dict(status='OK',message="update_host: No data supplied",result=update_data(data))
+
+                # check if client is reachable
+                if not 'check_hosts_thread' in g or not g.check_hosts_thread.is_alive():
+                    logger.info('Creates check hosts thread for %s'%(uuid,))
+                    g.check_hosts_thread = CheckHostsWaptService(timeout=clients_connect_timeout,uuids=[uuid])
+                    g.check_hosts_thread.start()
+                else:
+                    logger.info('Reuses current check hosts thread for %s'%(uuid,))
+                    g.check_hosts_thread.queue.append(data)
+
             else:
                 result = dict(status='ERROR',message="update_host: No uuid supplied")
         else:
@@ -963,6 +977,7 @@ def forget_packages():
 @requires_auth
 def host_tasks():
     try:
+        data = ''
         result = {}
         try:
             uuid = request.args['uuid']
@@ -1475,9 +1490,10 @@ def host_tasks_status():
 class CheckHostWorker(threading.Thread):
     """Worker which pulls a host data from queue, checks reachability, and stores result in db
     """
-    def __init__(self,db,queue,timeout):
+    def __init__(self,queue,timeout):
         threading.Thread.__init__(self)
-        self.db = db
+        self.mongoclient = MongoClient(mongodb_ip, int(mongodb_port))
+        self.db = self.mongoclient.wapt
         self.queue = queue
         self.timeout = timeout
         self.daemon = True
@@ -1526,28 +1542,39 @@ class CheckHostsWaptService(threading.Thread):
        if poll_interval is not None, the thread runs indefinetely/
        if poll_interval is None, one check of all hosts is performed.
     """
-    def __init__(self,timeout=2):
+    def __init__(self,timeout=2,uuids=[]):
         threading.Thread.__init__(self)
         self.daemon = True
         self.mongoclient = MongoClient(mongodb_ip, int(mongodb_port))
         self.db = self.mongoclient.wapt
         self.timeout = timeout
-        self.queue = Queue.PriorityQueue()
+        self.queue = Queue.Queue()
         self.workers = []
-        self.workers_count = 20
+        self.uuids = uuids
+        if self.uuids:
+            self.workers_count = min(len(uuids),20)
+        else:
+            self.workers_count = 20
 
     def update_listening_address(self):
-        """create a queue with all hosts
+        """create a queue with host uuid
         """
-        self.db.hosts.update({'wapt.listening_address.timestamp':{'$ne':''}},{"$set": {'wapt.listening_address.timestamp':'' }},multi=True)
-        query = {"host.connected_ips":{"$exists": "true", "$ne" :[]}}
-        fields = {'wapt':1,'host.connected_ips':1,'uuid':1,'host.computer_fqdn':1}
+        fields = {'uuid':1,'host.computer_fqdn':1,'wapt':1,'host.connected_ips':1}
+        if self.uuids:
+            query = {"uuid":{"$in": self.uuids}}
+        else:
+            query = {"host.connected_ips":{"$exists": "true", "$ne" :[]}}
+
+        logger.debug('Reset listening status timestamps of hosts')
+        self.db.hosts.update(query,{"$set": {'wapt.listening_address.timestamp':'' }},multi=True)
+
         for data in self.db.hosts.find(query,fields=fields):
+            logger.debug('Hosts %s pushed in check IP queue'%data['uuid'])
             self.queue.put(data)
 
         logger.debug('Create %i workers'%self.workers_count)
         for i in range(0,self.workers_count):
-            self.workers.append(CheckHostWorker(self.db,self.queue,self.timeout))
+            self.workers.append(CheckHostWorker(self.queue,self.timeout))
 
         logger.debug('Waiting for hosts queue to be empty')
         self.queue.join()
@@ -1556,8 +1583,6 @@ class CheckHostsWaptService(threading.Thread):
         logger.debug('Client-listening %s address checker thread started'%self.ident)
         self.update_listening_address()
         logger.debug('Client-listening %s address checker thread stopped'%self.ident)
-
-
 
 
 #################################################
@@ -1770,7 +1795,6 @@ if __name__ == "__main__":
     # global thread to check listening ip of registred hosts periodically
     # use with caution as it generates noise on the network (tcp connection try on each host)
     check_listening = CheckHostsWaptService(timeout = clients_connect_timeout)
-    check_listening.daemon = True
     check_listening.start()
 
     if options.devel:
