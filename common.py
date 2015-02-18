@@ -1906,8 +1906,8 @@ class WaptServer(object):
             else:
                 self.proxies = {'http':None,'https':None}
 
-            if config.has_option(section,'timeout'):
-                self.timeout = config.getfloat(section,'timeout')
+            if config.has_option(section,'wapt_server_timeout'):
+                self.timeout = config.getfloat(section,'wapt_server_timeout')
         return self
 
     def get(self,action,auth=None,timeout=None):
@@ -2579,8 +2579,8 @@ class Wapt(object):
             'tray_check_interval':2,
             'service_interval':2,
             'use_hostpackages':'1',
-            'timeout':2.0,
-            'wapt_server_timeout':2.0,
+            'timeout':5.0,
+            'wapt_server_timeout':10.0,
             }
 
         if not self.config:
