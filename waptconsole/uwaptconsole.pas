@@ -78,7 +78,6 @@ type
     ButCancelHostTask: TBitBtn;
     ButHostSearch: TBitBtn;
     ButPackagesUpdate: TBitBtn;
-    Button1: TButton;
     cbSearchDMI: TCheckBox;
     cbSearchHost: TCheckBox;
     cbSearchPackages: TCheckBox;
@@ -241,6 +240,8 @@ type
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
     ToolButton5: TToolButton;
+    ToolButton6: TToolButton;
+    ToolButton7: TToolButton;
     procedure ActAddConflictsExecute(Sender: TObject);
     procedure ActAddPackageGroupExecute(Sender: TObject);
     procedure ActAdvancedModeExecute(Sender: TObject);
@@ -1912,12 +1913,12 @@ begin
   try
     res := WAPTServerJsonGet('trigger_reachable_discovery',[]);
     if res.B['success'] then
-      ShowMessageFmt('%s',[res.S['msg']])
+      ShowMessageFmt('%s',[UTF8Encode(res.S['msg'])])
     else
-      ShowMessageFmt('Unable to trigger discovery of listening IP on wapt server: %s',[res.S['msg']]);
+      ShowMessageFmt('Unable to trigger discovery of listening IP on wapt server: %s',[UTF8Encode(res.S['msg'])]);
   except
     on E:Exception do
-      ShowMessageFmt('Unable to trigger discovery of listening IP on wapt server: %s',[E.Message]);
+      ShowMessageFmt('Unable to trigger discovery of listening IP on wapt server: %s',[UTF8Encode(E.Message)]);
   end;
 
 end;
