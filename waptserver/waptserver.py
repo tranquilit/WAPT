@@ -1502,10 +1502,13 @@ def get_hosts():
           computer_fqdn=<dnsname>
         or
           filter=<csvlist of fields>:regular expression
+        has_errors=1
+        need_upgrade=1
         fields=<csvlist of columns>
     """
     try:
         default_columns = [u'host_status',
+                         u'update_status',
                          u'reachable',
                          u'host.computer_fqdn',
                          u'host.description',
@@ -1532,7 +1535,7 @@ def get_hosts():
 
         # keep only top tree nodes (mongo doesn't want fields like {'wapt':1,'wapt.listening_address':1} !
         # minimum columns
-        columns = ['uuid','host','wapt']
+        columns = ['uuid','host','wapt','update_status']
         other_columns = ensure_list(request.args.get('columns',default_columns))
 
         # add request columns
@@ -1561,6 +1564,12 @@ def get_hosts():
         else:
             query = {}
 
+
+        if 'has_errors' in request.args and request.args['has_errors']:
+            query["packages.install_status"] = "ERROR"
+        if "need_upgrade" in request.args and request.args['need_upgrade']:
+            query["update_status.upgrades"] = {"$exists": "true", "$ne" :[]}
+
         hosts_packages_repo = WaptLocalRepo(wapt_folder+'-host')
         hosts_packages_repo.load_packages()
 
@@ -1586,7 +1595,7 @@ def get_hosts():
                 host['reachable'] = 'UNKNOWN'
 
             try:
-                if 'update_status' in us:
+                if 'update_status' in host:
                     us = host['update_status']
                     if us.get('errors',[]):
                         host['host_status'] = 'ERROR'
