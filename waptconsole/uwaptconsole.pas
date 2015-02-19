@@ -228,7 +228,7 @@ type
     pgInventory: TTabSheet;
     pgPackages: TTabSheet;
     pgSoftwares: TTabSheet;
-    pgHostPackage: TTabSheet;
+    pgHostInventory: TTabSheet;
     testedit: TSynEdit;
     jsonlog: TVirtualJSONInspector;
     GridPackages: TSOGrid;
@@ -450,6 +450,18 @@ end;
 procedure TVisWaptGUI.CheckBoxMajClick(Sender: TObject);
 begin
   Gridhosts.Clear;
+  if (sender = cbSearchAll) then
+  begin
+    if cbSearchAll.Checked then
+    begin
+      cbSearchDMI.Checked := True;
+      cbSearchSoftwares.Checked := True;
+      cbSearchPackages.Checked := True;
+      cbSearchHost.Checked := True;
+    end
+  end
+  else
+    cbSearchAll.Checked:= cbSearchDMI.Checked and cbSearchSoftwares.Checked and cbSearchPackages.Checked and cbSearchHost.Checked;
 end;
 
 procedure TVisWaptGUI.CheckBox_errorChange(Sender: TObject);
@@ -546,23 +558,35 @@ end;
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
   currhost : ansistring;
-  RowSO, packages, softwares, tasks, tasksresult, running: ISuperObject;
+  RowSO, packages, softwares, dmi,tasks, tasksresult, running,sores: ISuperObject;
 begin
   TimerTasks.Enabled := False;
   RowSO := Gridhosts.FocusedRow;
   if (RowSO <> nil) then
   begin
     currhost := RowSO.S['uuid'];
+    dmi := RowSO['dmi'];
+    if (dmi = nil) then
+    begin
+      dmi := WAPTServerJsonGet('client_software_list/%s',[currhost]);
+      RowSO['softwares'] := softwares;
+    end;
+    GridHostSoftwares.Data := FilterSoftwares(softwares);
+
+
     if HostPages.ActivePage = pgPackages then
     begin
       packages := RowSO['packages'];
       if (packages = nil) or (packages.AsArray = nil) then
-        try
-          packages := WAPTServerJsonGet('client_package_list/%s',[currhost]);
-          RowSO['packages'] := packages;
-        except
+      try
+        sores := WAPTServerJsonGet('api/v1/host_data?field=packages&uuid=%s',[currhost]);
+        if sores.B['success'] then
+          RowSO['packages'] := sores['result']
+        else
           RowSO['packages'] := nil;
-        end;
+      except
+        RowSO['packages'] := nil;
+      end;
       EdHostname.Text := UTF8Encode(RowSO.S['host.computer_name']);
       EdDescription.Text := UTF8Encode(RowSO.S['host.description']);
       EdOS.Text := RowSO.S['host.windows_product_infos.version'];
@@ -578,82 +602,96 @@ begin
       else
         EdUser.Text := UTF8Encode(RowSO.S['host.current_user']);
       EdRunningStatus.Text := UTF8Encode(RowSO.S['update_status.runstatus']);
-      GridHostPackages.Data := packages;
+      GridHostPackages.Data := RowSO['packages'];
     end
     else if HostPages.ActivePage = pgSoftwares then
     begin
+      //Cache collection in grid data
       softwares := RowSO['softwares'];
       if (softwares = nil) or (softwares.AsArray = nil) then
-      begin
-        softwares := WAPTServerJsonGet('client_software_list/%s',[currhost]);
-        RowSO['softwares'] := softwares;
+      try
+        sores := WAPTServerJsonGet('api/v1/host_data?field=softwares&uuid=%s',[currhost]);
+        if sores.B['success'] then
+          softwares := sores['result']
+        else
+          softwares := nil;
+      except
+        softwares := nil;
       end;
+      RowSO['softwares'] := softwares;
       GridHostSoftwares.Data := FilterSoftwares(softwares);
     end
-    else if HostPages.ActivePage = pgHostPackage then
-      TreeLoadData(GridhostInventory, RowSO.AsJSon())
+    else if HostPages.ActivePage = pgHostInventory then
+    begin
+      try
+        sores := WAPTServerJsonGet('api/v1/host_data?field=dmi&uuid=%s',[currhost]);
+        if sores.B['success'] then
+          dmi := sores['result']
+        else
+          dmi := nil;
+      except
+        dmi := nil;
+      end;
+      RowSO['dmi'] := dmi;
+      TreeLoadData(GridhostInventory, RowSO.AsJSon());
+    end
     else if HostPages.ActivePage = pgTasks then
     begin
       try
-        tasks := Nil;
         try
-          tasks := WAPTServerJsonGet('host_tasks?uuid=%s', [currhost]);
+          sores := WAPTServerJsonGet('api/v1/host_tasks_status?uuid=%s', [currhost]);
+          if sores.B['success'] then
+          begin
+            tasksresult := sores['result'];
+            if tasksresult <> nil then
+            begin
+              running := tasksresult['running'];
+              if not GridHostTasksPending.Focused then
+                GridHostTasksPending.Data := tasksresult['pending'];
+              if not GridHostTasksDone.Focused then
+                GridHostTasksDone.Data := tasksresult['done'];
+              if not GridHostTasksErrors.Focused then
+                GridHostTasksErrors.Data := tasksresult['errors'];
+              if running <> nil then
+              begin
+                if running['description'] <> Nil then
+                   ActCancelRunningTask.Enabled:=True;
+
+                HostTaskRunningProgress.Position := running.I['progress'];
+                HostRunningTask.Text := UTF8Encode(running.S['description']);
+                if not HostRunningTaskLog.Focused then
+                  HostRunningTaskLog.Text := UTF8Encode(running.S['logs']);
+              end
+              else
+              begin
+                ActCancelRunningTask.Enabled:=False;
+                HostTaskRunningProgress.Position := 0;
+                HostRunningTask.Text := 'Idle';
+                if not HostRunningTaskLog.Focused then
+                  HostRunningTaskLog.Clear;
+              end;
+
+              with HostRunningTaskLog do
+              begin
+                selstart := GetTextLen; // MUCH more efficient then Length(text)!
+                SelLength := 0;
+                ScrollBy(0, 65535);
+              end;
+            end
+          end
+          else
+          begin
+            HostRunningTask.Text := rsFatalError+' '+sores.S['msg'];
+            HostTaskRunningProgress.Position := 0;
+            HostRunningTaskLog.Clear;
+            GridHostTasksPending.Data := nil;
+            GridHostTasksDone.Data := nil;
+            GridHostTasksErrors.Data := nil;
+          end;
         except
           on E:Exception do
             HostRunningTask.Text := rsFatalError+' '+E.Message;
-        end;
-
-        if (tasks<>Nil) and  (tasks.S['status'] = 'OK') then
-        begin
-          tasksresult := tasks['message'];
-          if tasksresult['done'] = nil then
-            tasksresult := tasks['result'];
-          if tasksresult <> nil then
-          begin
-            running := tasksresult['running'];
-            if not GridHostTasksPending.Focused then
-              GridHostTasksPending.Data := tasksresult['pending'];
-            if not GridHostTasksDone.Focused then
-              GridHostTasksDone.Data := tasksresult['done'];
-            if not GridHostTasksErrors.Focused then
-              GridHostTasksErrors.Data := tasksresult['errors'];
-            if running <> nil then
-            begin
-              if running['description'] <> Nil then
-                 ActCancelRunningTask.Enabled:=True;
-
-              HostTaskRunningProgress.Position := running.I['progress'];
-              HostRunningTask.Text := UTF8Encode(running.S['description']);
-              if not HostRunningTaskLog.Focused then
-                HostRunningTaskLog.Text := UTF8Encode(running.S['logs']);
-            end
-            else
-            begin
-              ActCancelRunningTask.Enabled:=False;
-              HostTaskRunningProgress.Position := 0;
-              HostRunningTask.Text := 'Idle';
-              if not HostRunningTaskLog.Focused then
-                HostRunningTaskLog.Clear;
-            end;
-
-            with HostRunningTaskLog do
-            begin
-              selstart := GetTextLen; // MUCH more efficient then Length(text)!
-              SelLength := 0;
-              ScrollBy(0, 65535);
-            end;
-
-          end;
         end
-        else
-        begin
-          HostRunningTask.Text := rsFatalError;
-          HostTaskRunningProgress.Position := 0;
-          HostRunningTaskLog.Clear;
-          GridHostTasksPending.Data := nil;
-          GridHostTasksDone.Data := nil;
-          GridHostTasksErrors.Data := nil;
-        end;
       finally
         TimerTasks.Enabled := True;
       end;
@@ -1798,78 +1836,91 @@ end;
 procedure TVisWaptGUI.ActSearchHostExecute(Sender: TObject);
 var
   req, filter: string;
-  urlParams, Node, Hosts,host,update_status,errors,upgrades: ISuperObject;
+  soresult,columns,urlParams, Node, Hosts,host,update_status,errors,upgrades,fields: ISuperObject;
   previous_uuid: string;
-const
-  url: string = 'hosts';
+  i: integer;
 begin
+  columns := TSuperObject.Create(stArray);
+  for i:=0 to GridHosts.Header.Columns.Count-1 do
+    columns.AsArray.Add(TSOGridColumn(GridHosts.Header.Columns[i]).PropertyName);
 
-  urlParams := TSuperObject.Create(stArray);
+  try
+    Screen.cursor := crHourGlass;
 
-  if CheckBox_error.Checked = True then
-    urlParams.AsArray.Add('package_error=true');
+    urlParams := TSuperObject.Create(stArray);
 
-  if CheckBoxMaj.Checked = True then
-    urlParams.AsArray.Add('need_upgrade=true');
+    {if CheckBox_error.Checked = True then
+      urlParams.AsArray.Add('package_error=true');
 
-  if EdSearchHost.Text <> '' then
-    urlParams.AsArray.Add('q=' + EdSearchHost.Text);
-
-  if cbSearchAll.Checked = False then
-  begin
-    if cbSearchHost.Checked = True then
-      filter := filter + 'host,';
-
-    if cbSearchDMI.Checked = True then
-      filter := filter + 'dmi,';
-
-    if cbSearchSoftwares.Checked = True then
-      filter := filter + 'softwares,';
-
-    if cbSearchPackages.Checked = True then
-      filter := filter + 'packages,';
-
-    urlParams.AsArray.Add('filter=' + filter);
-  end;
-
-  req := url + '?' + soutils.Join('&', urlParams);
-  if GridHosts.FocusedRow <> nil then
-    previous_uuid := GridHosts.FocusedRow.S['uuid']
-  else
-    previous_uuid := '';
-
-  hosts := WAPTServerJsonGet(req, []);
-  for host in hosts do
-  begin
-    update_status := host['update_status'];
-    if (update_status <> nil) then
+    if CheckBoxMaj.Checked = True then
+      urlParams.AsArray.Add('need_upgrade=true');
+    }
+    fields := TSuperObject.Create(stArray);
+    if EdSearchHost.Text <> '' then
     begin
-      errors := update_status['errors'];
-      upgrades := update_status['upgrades'];
-      if (errors <> nil) and (errors.AsArray.Length > 0) then
-        host.S['host_status'] := 'ERROR'
-      else
-      if (upgrades <> nil) and (upgrades.AsArray.Length > 0) then
-        host.S['host_status'] := 'TO-UPGRADE'
-      else
-        host.S['host_status'] := 'OK';
+    {if cbSearchAll.Checked then
+      fields = 'host.computer_fqn,host.description,host.system_manufacturer,host.computer_name,host.system_productname,host.current_user.*,packages.package,softwares.name'
+    else
+    begin}
+      if cbSearchHost.Checked = True then
+      begin
+        fields.AsArray.Add('host.computer_fqdn');
+        fields.AsArray.Add('host.description');
+        fields.AsArray.Add('host.system_manufacturer');
+        fields.AsArray.Add('host.computer_name');
+        fields.AsArray.Add('host.system_productname');
+        fields.AsArray.Add('host.current_user');
+        fields.AsArray.Add('dmi.Chassis_Information.Serial_Number');
+      end;
+
+      if cbSearchDMI.Checked = True then
+        fields.AsArray.Add('dmi');
+
+      if cbSearchSoftwares.Checked = True then
+      begin
+        fields.AsArray.Add('softwares.name');
+        fields.AsArray.Add('softwares.key');
+      end;
+
+      if cbSearchPackages.Checked = True then
+      begin
+        fields.AsArray.Add('packages.package');
+      end;
+      urlParams.AsArray.Add(format('filter=%s:%s',[join(',',fields),EdSearchHost.Text]));
+    end;
+
+    urlParams.AsArray.Add('columns='+join(',',columns));
+
+    if GridHosts.FocusedRow <> nil then
+      previous_uuid := GridHosts.FocusedRow.S['uuid']
+    else
+      previous_uuid := '';
+
+    soresult := WAPTServerJsonGet('api/v1/hosts?%s',[soutils.Join('&', urlParams)]);
+    if soresult.B['success'] then
+    begin
+      hosts := soresult['result'];
+      GridHosts.Data := hosts;
+      if (hosts <> nil) and (hosts.AsArray <> nil) then
+      begin
+        LabelComputersNumber.Caption := IntToStr(hosts.AsArray.Length);
+        for node in GridHosts.Data do
+        begin
+          if node.S['uuid'] = previous_uuid then
+          begin
+            GridHosts.FocusedRow := node;
+            Break;
+          end;
+        end;
+      end;
     end
     else
-      host.S['host_status'] := '?';
-  end;
-
-  GridHosts.Data := hosts;
-  if (hosts <> nil) and (hosts.AsArray <> nil) then
-  begin
-    LabelComputersNumber.Caption := IntToStr(hosts.AsArray.Length);
-    for node in GridHosts.Data do
     begin
-      if node.S['uuid'] = previous_uuid then
-      begin
-        GridHosts.FocusedRow := node;
-        Break;
-      end;
+      GridHosts.Data := Nil;
+      ShowMessageFmt('Unable to get hosts list : %s',[soresult.S['msg']]);
     end;
+  finally
+    Screen.Cursor:=crDefault;
   end;
 end;
 
@@ -2035,17 +2086,7 @@ end;
 
 procedure TVisWaptGUI.cbSearchAllChange(Sender: TObject);
 begin
-  cbSearchDMI.Checked := cbSearchAll.Checked;
-  cbSearchDMI.Enabled := not cbSearchAll.Checked;
 
-  cbSearchSoftwares.Checked := cbSearchAll.Checked;
-  cbSearchSoftwares.Enabled := not cbSearchAll.Checked;
-
-  cbSearchPackages.Checked := cbSearchAll.Checked;
-  cbSearchPackages.Enabled := not cbSearchAll.Checked;
-
-  cbSearchHost.Checked := cbSearchAll.Checked;
-  cbSearchHost.Enabled := not cbSearchAll.Checked;
 end;
 
 function checkReadWriteAccess(dir: string): boolean;
@@ -2396,7 +2437,7 @@ begin
     ImageIndex:=-1;
     reachable := GridHostPackages.GetCellData(Node, 'wapt.listening_address.address', Nil);
     timestamp := GridHostPackages.GetCellData(Node, 'wapt.listening_address.timestamp', Nil);
-    if (reachable<>Nil) then
+    if (reachable<>Nil) and (timestamp<>Nil) then
     begin
       if (reachable.AsString <> '') and (timestamp.AsString <> '') then
         ImageIndex := 4

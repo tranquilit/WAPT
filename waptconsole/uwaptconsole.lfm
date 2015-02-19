@@ -129,7 +129,6 @@ object VisWaptGUI: TVisWaptGUI
           Width = 31
           Caption = 'All'
           Checked = True
-          OnChange = cbSearchAllChange
           OnClick = CheckBoxMajClick
           State = cbChecked
           TabOrder = 4
@@ -140,8 +139,9 @@ object VisWaptGUI: TVisWaptGUI
           Top = 30
           Width = 42
           Caption = 'Host'
+          Checked = True
           OnClick = CheckBoxMajClick
-          State = cbGrayed
+          State = cbChecked
           TabOrder = 5
         end
         object cbSearchDMI: TCheckBox
@@ -150,8 +150,9 @@ object VisWaptGUI: TVisWaptGUI
           Top = 30
           Width = 67
           Caption = 'Hardware'
+          Checked = True
           OnClick = CheckBoxMajClick
-          State = cbGrayed
+          State = cbChecked
           TabOrder = 6
         end
         object cbSearchSoftwares: TCheckBox
@@ -160,8 +161,9 @@ object VisWaptGUI: TVisWaptGUI
           Top = 30
           Width = 64
           Caption = 'Software'
+          Checked = True
           OnClick = CheckBoxMajClick
-          State = cbGrayed
+          State = cbChecked
           TabOrder = 7
         end
         object cbSearchPackages: TCheckBox
@@ -170,8 +172,9 @@ object VisWaptGUI: TVisWaptGUI
           Top = 30
           Width = 65
           Caption = 'Packages'
+          Checked = True
           OnClick = CheckBoxMajClick
-          State = cbGrayed
+          State = cbChecked
           TabOrder = 8
         end
         object Label13: TLabel
@@ -433,9 +436,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 316
         Top = 96
         Width = 572
-        ActivePage = pgPackages
+        ActivePage = pgHostInventory
         Align = alRight
-        TabIndex = 0
+        TabIndex = 1
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -837,7 +840,7 @@ object VisWaptGUI: TVisWaptGUI
             end
           end
         end
-        object pgHostPackage: TTabSheet
+        object pgHostInventory: TTabSheet
           Caption = 'Hardware inventory'
           ClientHeight = 290
           ClientWidth = 564

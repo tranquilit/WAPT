@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="1.0.2"
+__version__="1.0.3"
 
 import os,sys
 try:
@@ -1328,6 +1328,9 @@ class EWaptHostUnreachable(Exception):
 class EWaptForbiddden(Exception):
     pass
 
+class EWaptMissingParameter(Exception):
+    pass
+
 def get_ip_port(host_data):
     """Return a dict proto,address,port for the supplied registered host
         - first check if wapt.listening_address is ok
@@ -1458,16 +1461,18 @@ def trigger_update():
 
 
 @app.route('/host_tasks_status')
+@app.route('/api/v1/host_tasks_status')
 @requires_auth
 def host_tasks_status():
     """Proxy the get tasks status action to the client"""
     try:
         uuid = request.args['uuid']
         host_data = hosts().find_one({ "uuid": uuid},fields={'wapt':1,'host.connected_ips':1})
-        listening_address = get_ip_port(host_data)
+        #listening_address = get_ip_port(host_data)
+        listening_address = host_data['wapt'].get('listening_address',None)
 
         if listening_address and listening_address['address'] and listening_address['port']:
-            logger.info( "Triggering upgrade for %s at address %s..." % (uuid,listening_address['address']))
+            logger.info( "Get tasks status for %s at address %s..." % (uuid,listening_address['address']))
             client_result = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json" % listening_address,proxies=None,timeout=clients_read_timeout).text
             try:
                 client_result = json.loads(client_result)
@@ -1477,12 +1482,187 @@ def host_tasks_status():
                 else:
                     raise Exception(client_result)
         else:
-            raise EWaptMissingHostData(_("The WAPT service port is not defined."))
+            raise EWaptMissingHostData(_("The host reachability is not defined."))
         return make_response(client_result,
             msg = "Tasks status retrieved properly",
             success = isinstance(client_result,dict),)
     except Exception, e:
         return make_response_from_exception(e)
+
+
+
+
+@app.route('/api/v1/hosts')
+@requires_auth
+def get_hosts():
+    """
+        query:
+          uuid=<uuid>
+        or
+          computer_fqdn=<dnsname>
+        or
+          filter=<csvlist of fields>:regular expression
+        fields=<csvlist of columns>
+    """
+    try:
+        default_columns = [u'host_status',
+                         u'reachable',
+                         u'host.computer_fqdn',
+                         u'host.description',
+                         u'host.system_manufacturer',
+                         u'host.system_productname',
+                         u'dmi.Chassis_Information.Serial_Number',
+                         u'last_query_date',
+                         u'host.mac',
+                         u'host.connected_ips',
+                         u'wapt.*',
+                         u'uuid',
+                         u'md5sum',
+                         u'purchase_order',
+                         u'purchase_date',
+                         u'groups',
+                         u'attributes',
+                         u'host.domain_controller',
+                         u'host.domain_name',
+                         u'host.domain_controller_address',
+                         u'depends',
+                         u'dmi.Chassis_Information.Type',
+                         u'host.windows_product_infos.product_key',
+                         u'host.windows_product_infos.version']
+
+        # keep only top tree nodes (mongo doesn't want fields like {'wapt':1,'wapt.listening_address':1} !
+        # minimum columns
+        columns = ['uuid','host','wapt']
+        other_columns = ensure_list(request.args.get('columns',default_columns))
+
+        # add request columns
+        for fn in other_columns:
+            if not fn in columns:
+                columns.append(fn)
+
+        # remove children
+        columns_tree =  [c.split('.') for c in columns]
+        columns_tree.sort()
+        last = None
+        new_tree = []
+        for col in columns_tree:
+            if last is None or col[:len(last)] != last:
+                new_tree.append(col)
+                last = col
+
+        columns = ['.'.join(c) for c in new_tree]
+
+        # build filter
+        if 'uuid' in request.args:
+            query = dict(uuid=request.args['uuid'])
+        elif 'filter' in request.args:
+            (search_fields,search_expr) = request.args['filter'].split(':')
+            query = {'$or':[ {fn:re.compile(search_expr, re.IGNORECASE)} for fn in ensure_list(search_fields)]}
+        else:
+            query = {}
+
+        hosts_packages_repo = WaptLocalRepo(wapt_folder+'-host')
+        hosts_packages_repo.load_packages()
+
+        result = []
+        print { col:1 for col in columns }
+        for host in hosts().find(query,fields={ col:1 for col in columns }):
+            host.pop("_id")
+            if 'host' in host and 'computer_fqdn' in host['host']:
+                host_package = hosts_packages_repo.index.get(host['host']['computer_fqdn'],None)
+                if host_package:
+                    depends = ensure_list(host_package.depends.split(','))
+                    host['depends'] = depends
+            try:
+                la = host['wapt']['listening_address']
+                if la['address']  and (la['timestamp'] != ''):
+                    reachable = 'OK'
+                elif not la['address'] and (la['timestamp'] != ''):
+                    reachable = 'UNREACHABLE'
+                else:
+                    reachable = 'UNKNOWN'
+                host['reachable'] = reachable
+            except KeyError:
+                host['reachable'] = 'UNKNOWN'
+
+            try:
+                if 'update_status' in us:
+                    us = host['update_status']
+                    if us.get('errors',[]):
+                        host['host_status'] = 'ERROR'
+                    elif us.get('upgrades',[]):
+                        host['host_status'] = 'TO-UPGRADE'
+                    else:
+                        host['host_status'] = 'OK'
+                else:
+                    host['host_status'] = '?'
+            except:
+                host['host_status'] = '?'
+
+            result.append(host)
+
+        if  'uuid' in request.args:
+            if len(result) == 0:
+                msg = 'No data found for uuid {}'.format(request.args['uuid'])
+            else:
+                msg = 'host data fields {} returned for uuid {}'.format(','.join(columns),request.args['uuid'])
+        elif 'filter' in request.args:
+            if len(result) == 0:
+                msg = 'No data found for filter {}'.format(request.args['filter'])
+            else:
+                msg = '{} hosts returned for filter {}'.format(len(result),request.args['filter'])
+        else:
+            if len(result) == 0:
+                msg = 'No data found'
+            else:
+                msg = '{} hosts returned'.format(len(result))
+
+    except Exception as e:
+        return make_response_from_exception(e)
+
+    return make_response(result=result,msg=msg,success=len(result)>0,status=200)
+
+@app.route('/api/v1/host_data')
+@requires_auth
+def host_data():
+    """
+        Get additional data for a host
+        query:
+          uuid=<uuid>
+          field=packages, dmi or softwares
+    """
+    try:
+        # build filter
+        if 'uuid' in request.args:
+            uuid = request.args['uuid']
+        else:
+            raise EWaptMissingParameter('Parameter uuid is missing')
+
+        if 'field' in request.args:
+            field = request.args['field']
+        else:
+            raise EWaptMissingParameter('Parameter field is missing')
+
+        data = hosts().find_one({'uuid':uuid},fields={field:1})
+        if data is None:
+            raise EWaptUnknownHost('Host {} not found in database'.format(uuid) )
+        else:
+            msg = '{} data for host {}'.format(field,uuid)
+
+    except Exception as e:
+        return make_response_from_exception(e)
+
+    result = data.get(field,None)
+    if result is None:
+        msg = 'No {} data for host {}'.format(field,uuid)
+        success = False
+        error_code = 'empty_data'
+    else:
+        success = True
+        error_code = None
+
+    return make_response(result=result,msg=msg,success=success,error_code=error_code,status=200)
+
 
 
 ##################################################################
