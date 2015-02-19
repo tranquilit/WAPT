@@ -60,22 +60,22 @@ object VisWaptGUI: TVisWaptGUI
           Caption = 'Search'
           ParentColor = False
         end
-        object CheckBoxMaj: TCheckBox
+        object cbNeedUpgrade: TCheckBox
           Left = 404
           Height = 17
           Top = 30
           Width = 95
           Caption = 'Needs updating'
-          OnClick = CheckBoxMajClick
+          OnClick = cbNeedUpgradeClick
           TabOrder = 2
         end
-        object CheckBox_error: TCheckBox
+        object cbHasErrors: TCheckBox
           Left = 404
           Height = 17
           Top = 4
           Width = 70
           Caption = 'Has errors'
-          OnClick = CheckBoxMajClick
+          OnClick = cbNeedUpgradeClick
           TabOrder = 3
         end
         object ButHostSearch: TBitBtn
@@ -129,7 +129,7 @@ object VisWaptGUI: TVisWaptGUI
           Width = 31
           Caption = 'All'
           Checked = True
-          OnClick = CheckBoxMajClick
+          OnClick = cbNeedUpgradeClick
           State = cbChecked
           TabOrder = 4
         end
@@ -140,7 +140,7 @@ object VisWaptGUI: TVisWaptGUI
           Width = 42
           Caption = 'Host'
           Checked = True
-          OnClick = CheckBoxMajClick
+          OnClick = cbNeedUpgradeClick
           State = cbChecked
           TabOrder = 5
         end
@@ -151,7 +151,7 @@ object VisWaptGUI: TVisWaptGUI
           Width = 67
           Caption = 'Hardware'
           Checked = True
-          OnClick = CheckBoxMajClick
+          OnClick = cbNeedUpgradeClick
           State = cbChecked
           TabOrder = 6
         end
@@ -162,7 +162,7 @@ object VisWaptGUI: TVisWaptGUI
           Width = 64
           Caption = 'Software'
           Checked = True
-          OnClick = CheckBoxMajClick
+          OnClick = cbNeedUpgradeClick
           State = cbChecked
           TabOrder = 7
         end
@@ -173,7 +173,7 @@ object VisWaptGUI: TVisWaptGUI
           Width = 65
           Caption = 'Packages'
           Checked = True
-          OnClick = CheckBoxMajClick
+          OnClick = cbNeedUpgradeClick
           State = cbChecked
           TabOrder = 8
         end

@@ -87,8 +87,8 @@ type
     cbShowHostPackagesGroup: TCheckBox;
     cbMaskSystemComponents: TCheckBox;
     cbShowLog: TCheckBox;
-    CheckBoxMaj: TCheckBox;
-    CheckBox_error: TCheckBox;
+    cbNeedUpgrade: TCheckBox;
+    cbHasErrors: TCheckBox;
     EdSoftwaresFilter: TEdit;
     EdRunningStatus: TEdit;
     EdSearchGroups: TEdit;
@@ -302,7 +302,7 @@ type
     procedure cbSearchAllChange(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure CheckBoxMajChange(Sender: TObject);
-    procedure CheckBoxMajClick(Sender: TObject);
+    procedure cbNeedUpgradeClick(Sender: TObject);
     procedure CheckBox_errorChange(Sender: TObject);
     procedure EdRunKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchHostKeyPress(Sender: TObject; var Key: char);
@@ -447,7 +447,7 @@ begin
   ActHostSearchPackage.Execute;
 end;
 
-procedure TVisWaptGUI.CheckBoxMajClick(Sender: TObject);
+procedure TVisWaptGUI.cbNeedUpgradeClick(Sender: TObject);
 begin
   Gridhosts.Clear;
   if (sender = cbSearchAll) then
@@ -1849,19 +1849,15 @@ begin
 
     urlParams := TSuperObject.Create(stArray);
 
-    {if CheckBox_error.Checked = True then
+    {if cbHasErrors.Checked = True then
       urlParams.AsArray.Add('package_error=true');
 
-    if CheckBoxMaj.Checked = True then
+    if cbNeedUpgrade.Checked = True then
       urlParams.AsArray.Add('need_upgrade=true');
     }
     fields := TSuperObject.Create(stArray);
     if EdSearchHost.Text <> '' then
     begin
-    {if cbSearchAll.Checked then
-      fields = 'host.computer_fqn,host.description,host.system_manufacturer,host.computer_name,host.system_productname,host.current_user.*,packages.package,softwares.name'
-    else
-    begin}
       if cbSearchHost.Checked = True then
       begin
         fields.AsArray.Add('host.computer_fqdn');
@@ -1888,6 +1884,12 @@ begin
       end;
       urlParams.AsArray.Add(format('filter=%s:%s',[join(',',fields),EdSearchHost.Text]));
     end;
+
+    if cbHasErrors.Checked then
+      urlParams.AsArray.Add('has_errors=1');
+
+    if cbNeedUpgrade.Checked then
+      urlParams.AsArray.Add('need_upgrade=1');
 
     urlParams.AsArray.Add('columns='+join(',',columns));
 
