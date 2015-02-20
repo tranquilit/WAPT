@@ -241,7 +241,9 @@ def get_wapt_exe_version(exe):
         present = True
         try:
             pe = pefile.PE(exe)
-            version = pe.FileInfo[0].StringTable[0].entries['ProductVersion'].strip()
+            version = pe.FileInfo[0].StringTable[0].entries['FileVersion'].strip()
+            if not version:
+                version = pe.FileInfo[0].StringTable[0].entries['FileVersion'].strip()
         except:
             pass
     return (present, version)
