@@ -4930,6 +4930,15 @@ class Wapt(object):
         remove_depends = ensure_list(remove_depends)
         append_conflicts = ensure_list(append_conflicts)
         remove_conflicts = ensure_list(remove_conflicts)
+
+        for d in append_depends:
+            if not d in remove_conflicts:
+                remove_conflicts.append(d)
+
+        for d in append_conflicts:
+            if not d in remove_depends:
+                remove_depends.append(d)
+
         # check if host package exists on repos
         if self.repositories and isinstance(self.repositories[-1],WaptHostRepo):
             (entry,entry_date) = self.repositories[-1].update_host(hostname,self.waptdb)
