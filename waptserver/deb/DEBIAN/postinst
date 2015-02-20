@@ -12,6 +12,35 @@ chown wapt:www-data -R /opt/wapt/
 
 update-rc.d waptserver defaults
 
+echo "Ensuring that enable-threads is present in waptserver.ini" >&2
+tmpfile=$(mktemp)
+cat > "$tmpfile" << 'EOF'
+import os
+import sys
+import ConfigParser
+
+CFG_PATH = "/opt/wapt/waptserver/waptserver.ini"
+
+if not os.path.exists(CFG_PATH):
+    print "No config file found at " + CFG_PATH
+    exit(0)
+
+try:
+    cfg = ConfigParser.RawConfigParser()
+    cfg.read(CFG_PATH)
+    if not cfg.has_option("uwsgi", "enable-threads"):
+        cfg.set("uwsgi", "enable-threads", "true")
+        with open(CFG_PATH, 'wb') as out:
+            cfg.write(out)
+except Exception:
+    import traceback
+    print "Error when amending" + CFG_PATH
+    traceback.print_exc()
+    exit(0)
+EOF
+python "$tmpfile"
+rm -f "$tmpfile"
+
 if [ -f "/opt/wapt/waptserver/waptserver.ini" ]
 then
   if ps aux | grep -q wapt
@@ -40,3 +69,5 @@ fi
 
 echo "Creating symlink from $setup to $agent for compatibility reasons." >&2
 ln -sf "$agent" "$setup"
+
+exit 0
