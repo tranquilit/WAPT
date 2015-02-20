@@ -1761,19 +1761,14 @@ var
 begin
   columns := TSuperObject.Create(stArray);
   for i:=0 to GridHosts.Header.Columns.Count-1 do
-    columns.AsArray.Add(TSOGridColumn(GridHosts.Header.Columns[i]).PropertyName);
+    if coVisible in GridHosts.Header.Columns[i].Options then
+      columns.AsArray.Add(TSOGridColumn(GridHosts.Header.Columns[i]).PropertyName);
 
   try
     Screen.cursor := crHourGlass;
 
     urlParams := TSuperObject.Create(stArray);
 
-    {if cbHasErrors.Checked = True then
-      urlParams.AsArray.Add('package_error=true');
-
-    if cbNeedUpgrade.Checked = True then
-      urlParams.AsArray.Add('need_upgrade=true');
-    }
     fields := TSuperObject.Create(stArray);
     if EdSearchHost.Text <> '' then
     begin
@@ -2408,30 +2403,9 @@ begin
   begin
     if (CellData <> nil) and (CellData.DataType = stArray) then
       CellText := soutils.Join(',', CellData);
+
     if (TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName='last_query_date') or (TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName='wapt.listening_address.timestamp') then
-      CellText := Copy(StrReplaceChar(CellText,'T',' '),1,19);
-    {if GridHosts.Header.Columns[Column].Text = 'Status' then
-    begin
-      RowSO := GridHosts.GetNodeSOData(Node);
-      if RowSO <> nil then
-      begin
-        update_status := RowSO['update_status'];
-        if (update_status <> nil) then
-        begin
-          errors := update_status['errors'];
-          upgrades := update_status['upgrades'];
-          if (errors <> nil) and (errors.AsArray.Length > 0) then
-            CellText := 'ERROR'
-          else
-          if (upgrades <> nil) and (upgrades.AsArray.Length > 0) then
-            CellText := 'TO-UPGRADE'
-          else
-            CellText := 'OK';
-        end;
-      end
-      else
-        CellText := '';
-    end;}
+        CellText := Copy(StrReplaceChar(CellText,'T',' '),1,19);
   end;
 end;
 

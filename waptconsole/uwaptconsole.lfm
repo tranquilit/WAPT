@@ -368,29 +368,27 @@ object VisWaptGUI: TVisWaptGUI
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 16
             Tag = 16
-            Text = 'groups'
-            Width = 100
-            PropertyName = 'groups'
-          end        
-          item
-            MaxWidth = 400
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 17
-            Tag = 17
             Text = 'attributes'
             Width = 100
             PropertyName = 'attributes'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 18
-            Tag = 19
+            Position = 17
+            Tag = 17
             Text = 'Domain controller'
             PropertyName = 'host.domain_controller'
           end        
           item
+            Position = 18
+            Tag = 18
+            Text = 'Groups'
+            Width = 64
+            PropertyName = 'depends'
+          end        
+          item
             Position = 19
-            Tag = 20
+            Tag = 19
             Text = 'Domaine'
             Width = 80
             PropertyName = 'host.domain_name'
@@ -398,18 +396,11 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 20
-            Tag = 21
+            Tag = 20
             Text = 'Domain controller address'
             PropertyName = 'host.domain_controller_address'
-          end        
-          item
-            Position = 21
-            Tag = 22
-            Text = 'Groups'
-            PropertyName = 'depends'
           end>
         Header.DefaultHeight = 17
-        Header.MainColumn = 2
         Header.MaxHeight = 17
         Header.MinHeight = 17
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
