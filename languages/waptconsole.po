@@ -694,6 +694,11 @@ msgctxt "TVISWAPTGUI.ACTEDITHOSTPACKAGE.CAPTION"
 msgid "Edit host configuration"
 msgstr ""
 
+#: tviswaptgui.actedithostpackage.hint
+msgctxt "TVISWAPTGUI.ACTEDITHOSTPACKAGE.HINT"
+msgid "Edit host configuration"
+msgstr ""
+
 #: tviswaptgui.acteditpackage.caption
 msgctxt "tviswaptgui.acteditpackage.caption"
 msgid "Edit package"
@@ -733,6 +738,12 @@ msgid "Online help"
 msgstr ""
 
 #: tviswaptgui.acthostsdelete.caption
+msgctxt "tviswaptgui.acthostsdelete.caption"
+msgid "Remove from inventory"
+msgstr ""
+
+#: tviswaptgui.acthostsdelete.hint
+msgctxt "TVISWAPTGUI.ACTHOSTSDELETE.HINT"
 msgid "Remove from inventory"
 msgstr ""
 
@@ -823,15 +834,32 @@ msgid "ActSearchSoftware"
 msgstr ""
 
 #: tviswaptgui.acttriggerhostslistening.caption
+msgctxt "tviswaptgui.acttriggerhostslistening.caption"
+msgid "Trigger scan listening IP"
+msgstr ""
+
+#: tviswaptgui.acttriggerhostslistening.hint
+msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTSLISTENING.HINT"
 msgid "Trigger scan listening IP"
 msgstr ""
 
 #: tviswaptgui.acttriggerhostupdate.caption
+msgctxt "tviswaptgui.acttriggerhostupdate.caption"
+msgid "Trigger hosts update"
+msgstr ""
+
+#: tviswaptgui.acttriggerhostupdate.hint
+msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPDATE.HINT"
 msgid "Trigger hosts update"
 msgstr ""
 
 #: tviswaptgui.acttriggerhostupgrade.caption
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.CAPTION"
+msgid "Apply updates"
+msgstr ""
+
+#: tviswaptgui.acttriggerhostupgrade.hint
+msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.HINT"
 msgid "Apply updates"
 msgstr ""
 
@@ -848,8 +876,18 @@ msgstr ""
 msgid "WAPT console"
 msgstr ""
 
+#: tviswaptgui.cbhaserrors.caption
+msgctxt "TVISWAPTGUI.CBHASERRORS.CAPTION"
+msgid "Has errors"
+msgstr ""
+
 #: tviswaptgui.cbmasksystemcomponents.caption
 msgid "Hide system components"
+msgstr ""
+
+#: tviswaptgui.cbneedupgrade.caption
+msgctxt "TVISWAPTGUI.CBNEEDUPGRADE.CAPTION"
+msgid "Needs updating"
 msgstr ""
 
 #: tviswaptgui.cbsearchall.caption
@@ -876,14 +914,6 @@ msgstr ""
 #: tviswaptgui.cbshowlog.caption
 msgctxt "tviswaptgui.cbshowlog.caption"
 msgid "Show debug"
-msgstr ""
-
-#: tviswaptgui.checkboxmaj.caption
-msgid "Needs updating"
-msgstr ""
-
-#: tviswaptgui.checkbox_error.caption
-msgid "Has errors"
 msgstr ""
 
 #: tviswaptgui.edrun.text
@@ -1073,7 +1103,8 @@ msgstr ""
 msgid "Bundles"
 msgstr ""
 
-#: tviswaptgui.pghostpackage.caption
+#: tviswaptgui.pghostinventory.caption
+msgctxt "TVISWAPTGUI.PGHOSTINVENTORY.CAPTION"
 msgid "Hardware inventory"
 msgstr ""
 
@@ -1119,6 +1150,10 @@ msgstr ""
 
 #: tviswaptgui.toolbutton4.caption
 msgid "ToolButton4"
+msgstr ""
+
+#: tviswaptgui.toolbutton6.caption
+msgid "ToolButton6"
 msgstr ""
 
 #: uwaptconsoleres.rsbundleconfigeditcaption

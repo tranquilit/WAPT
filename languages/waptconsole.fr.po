@@ -1,5 +1,4 @@
-# mcadorel-adm <ss>, 2015.
-msgid ""
+msgid " Uncheck \"Use simple file sharing\")."
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
@@ -13,9 +12,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
-
-msgid " Uncheck \"Use simple file sharing\")."
-msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-30 10:42+0200\n"
@@ -771,6 +767,11 @@ msgctxt "tviswaptgui.actedithostpackage.caption"
 msgid "Edit host configuration"
 msgstr "Editer la configuration d'une machine"
 
+#: tviswaptgui.actedithostpackage.hint
+msgctxt "tviswaptgui.actedithostpackage.hint"
+msgid "Edit host configuration"
+msgstr "Editer la configuration de la machine"
+
 #: tviswaptgui.acteditpackage.caption
 msgctxt "tviswaptgui.acteditpackage.caption"
 msgid "Edit package"
@@ -810,6 +811,12 @@ msgid "Online help"
 msgstr "Aide en ligne"
 
 #: tviswaptgui.acthostsdelete.caption
+msgctxt "tviswaptgui.acthostsdelete.caption"
+msgid "Remove from inventory"
+msgstr "Supprimer de l'inventaire"
+
+#: tviswaptgui.acthostsdelete.hint
+msgctxt "tviswaptgui.acthostsdelete.hint"
 msgid "Remove from inventory"
 msgstr "Supprimer de l'inventaire"
 
@@ -900,15 +907,32 @@ msgid "ActSearchSoftware"
 msgstr ""
 
 #: tviswaptgui.acttriggerhostslistening.caption
+msgctxt "tviswaptgui.acttriggerhostslistening.caption"
+msgid "Trigger scan listening IP"
+msgstr "Scanner les IP en écoute"
+
+#: tviswaptgui.acttriggerhostslistening.hint
+msgctxt "tviswaptgui.acttriggerhostslistening.hint"
 msgid "Trigger scan listening IP"
 msgstr "Scanner les IP en écoute"
 
 #: tviswaptgui.acttriggerhostupdate.caption
+msgctxt "tviswaptgui.acttriggerhostupdate.caption"
+msgid "Trigger hosts update"
+msgstr "Rafraîchir la liste des hôtes"
+
+#: tviswaptgui.acttriggerhostupdate.hint
+msgctxt "tviswaptgui.acttriggerhostupdate.hint"
 msgid "Trigger hosts update"
 msgstr "Rafraîchir la liste des hôtes"
 
 #: tviswaptgui.acttriggerhostupgrade.caption
 msgctxt "tviswaptgui.acttriggerhostupgrade.caption"
+msgid "Apply updates"
+msgstr "Appliquer les modifications"
+
+#: tviswaptgui.acttriggerhostupgrade.hint
+msgctxt "tviswaptgui.acttriggerhostupgrade.hint"
 msgid "Apply updates"
 msgstr "Appliquer les modifications"
 
@@ -925,9 +949,19 @@ msgstr "Configuration WAPT locale"
 msgid "WAPT console"
 msgstr "Console WAPT"
 
+#: tviswaptgui.cbhaserrors.caption
+msgctxt "tviswaptgui.cbhaserrors.caption"
+msgid "Has errors"
+msgstr "Avec des erreurs"
+
 #: tviswaptgui.cbmasksystemcomponents.caption
 msgid "Hide system components"
 msgstr "Ne pas afficher les composants système"
+
+#: tviswaptgui.cbneedupgrade.caption
+msgctxt "tviswaptgui.cbneedupgrade.caption"
+msgid "Needs updating"
+msgstr "Nécessite une mise à jour"
 
 #: tviswaptgui.cbsearchall.caption
 msgid "All"
@@ -954,14 +988,6 @@ msgstr "Logiciel"
 msgctxt "tviswaptgui.cbshowlog.caption"
 msgid "Show debug"
 msgstr "Afficher les informations de débogage"
-
-#: tviswaptgui.checkboxmaj.caption
-msgid "Needs updating"
-msgstr "Nécessite une mise à jour"
-
-#: tviswaptgui.checkbox_error.caption
-msgid "Has errors"
-msgstr "Avec des erreurs"
 
 #: tviswaptgui.edrun.text
 msgid "mywapt.update()"
@@ -1150,7 +1176,8 @@ msgstr ""
 msgid "Bundles"
 msgstr "Groupes de paquets"
 
-#: tviswaptgui.pghostpackage.caption
+#: tviswaptgui.pghostinventory.caption
+msgctxt "tviswaptgui.pghostinventory.caption"
 msgid "Hardware inventory"
 msgstr "Inventaire matériel"
 
@@ -1196,6 +1223,10 @@ msgstr ""
 
 #: tviswaptgui.toolbutton4.caption
 msgid "ToolButton4"
+msgstr ""
+
+#: tviswaptgui.toolbutton6.caption
+msgid "ToolButton6"
 msgstr ""
 
 #: uwaptconsoleres.rsbundleconfigeditcaption
@@ -1256,7 +1287,7 @@ msgid ""
 msgstr ""
 "Êtes-vous sûr(e) de vouloir importer\n"
 "%s\n"
-" dans votre dépôt ?"
+" dans votre dépôt ?\n"
 
 #: uwaptconsoleres.rsconfirmimportcaption
 msgctxt "uwaptconsoleres.rsconfirmimportcaption"
@@ -1870,6 +1901,18 @@ msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 #| "Are you sure you want to import\n"
 #| "%s\n"
 #| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 msgid ""
 "Are you sure you want to import\n"
 "%s\n"
@@ -2231,6 +2274,18 @@ msgstr "Erreur lors de la création du paquet : %s"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
 #| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
 "%s\n"
@@ -2382,6 +2437,14 @@ msgstr "Tâche annulée."
 #| "%s\n"
 #| "%s done\n"
 #| "%s\n"
+#| "%s done\n"
+#| "%s\n"
+#| "%s done\n"
+#| "%s\n"
+#| "%s done\n"
+#| "%s\n"
+#| "%s done\n"
+#| "%s\n"
 msgid ""
 "%s done\n"
 "%s\n"
@@ -2479,6 +2542,14 @@ msgstr "Usage : %s -h"
 #| "Wapt-get version: %s\n"
 #| "Waptconsole version : %s\n"
 #| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
 msgid ""
 "Waptconsole version : %s\n"
 "Wapt-get version: %s\n"
@@ -2553,3 +2624,4 @@ msgstr "Wrapper Win32 Exe  : %s %s"
 msgctxt "uwaptres.rswinterruptreceived"
 msgid "W: interrupt received, killing serverâ¦"
 msgstr "W : interruption reçue, arrêt du serveur"
+

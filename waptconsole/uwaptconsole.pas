@@ -249,7 +249,6 @@ type
     procedure ActChangePasswordExecute(Sender: TObject);
     procedure ActCreateCertificateExecute(Sender: TObject);
     procedure ActCreateWaptSetupExecute(Sender: TObject);
-    procedure ActCreateWaptSetupPyExecute(Sender: TObject);
     procedure ActDeleteGroupExecute(Sender: TObject);
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
@@ -565,15 +564,6 @@ begin
   if (RowSO <> nil) then
   begin
     currhost := RowSO.S['uuid'];
-    dmi := RowSO['dmi'];
-    if (dmi = nil) then
-    begin
-      dmi := WAPTServerJsonGet('client_software_list/%s',[currhost]);
-      RowSO['softwares'] := softwares;
-    end;
-    GridHostSoftwares.Data := FilterSoftwares(softwares);
-
-
     if HostPages.ActivePage = pgPackages then
     begin
       packages := RowSO['packages'];
@@ -1157,91 +1147,6 @@ begin
   finally
     Free;
   end;
-end;
-
-procedure TVisWaptGUI.ActCreateWaptSetupPyExecute(Sender: TObject);
-var
-  params, waptsetupPath: string;
-  done: boolean;
-  ini: TIniFile;
-  SORes: ISuperObject;
-begin
-  with TVisCreateWaptSetup.Create(self) do
-    try
-      ini := TIniFile.Create(AppIniFilename);
-      try
-        repeat
-          fnPublicCert.Text := ChangeFileExt(ini.ReadString('global',
-            'private_key', ''), '.crt');
-          if not FileExists(fnPublicCert.Text) then
-            fnPublicCert.Clear;
-          edWaptServerUrl.Text := ini.ReadString('global', 'wapt_server', '');
-          edRepoUrl.Text := ini.ReadString('global', 'repo_url', '');
-          fnWaptDirectory.Directory := GetTempDir(False);
-          if ShowModal = mrOk then
-          begin
-            try
-              Screen.Cursor := crHourGlass;
-              DMPython.PythonEng.ExecString('import waptdevutils');
-              params := '';
-              params := params + format('default_public_cert=r"%s",',
-                [fnPublicCert.FileName]);
-              params := params + format('default_repo_url=r"%s",', [edRepoUrl.Text]);
-              params := params + format('default_wapt_server=r"%s",',
-                [edWaptServerUrl.Text]);
-              params := params + format('destination=r"%s",',
-                [ExcludeTrailingBackslash(fnWaptDirectory.Directory)]);
-              params := params + format('company=r"%s",', [edOrgName.Text]);
-              with  TVisLoading.Create(Self) do
-                try
-                  ProgressTitle(rsProgressTitle);
-                  Application.ProcessMessages;
-                  waptsetupPath :=
-                    DMPython.RunJSON(
-                    format('waptdevutils.create_wapt_setup(mywapt,%s)', [params]),
-                    jsonlog).AsString;
-                  if FileExists(waptsetupPath) then
-                  begin
-                    ProgressStep(1, 2);
-                    ProgressTitle(rsProgressTitle);
-                    SORes :=
-                      DMPython.RunJSON(format(
-                      'waptdevutils.upload_wapt_setup(mywapt,r"%s","%s","%s")',
-                      [waptsetupPath, waptServerUser, waptServerPassword]));
-                    if SORes.S['status'] = 'OK' then
-                    begin
-                      ShowMessage(rsWaptAgentUploadSuccess);
-                      done := True;
-                    end
-                    else
-                      ShowMessageFmt(rsWaptAgentUploadError, [SORes.S['message']]);
-                  end;
-                finally
-                  Free;
-                end;
-              if done then
-              begin
-                Screen.Cursor := crDefault;
-                ShowMessageFmt(rsWaptAgentSetupSuccess, [waptsetupPath]);
-              end;
-            except
-              on e: Exception do
-              begin
-                ShowMessageFmt(rsWaptAgentSetupError, [e.Message]);
-                done := False;
-              end;
-            end;
-          end
-          else
-            done := True;
-        until done;
-        Screen.Cursor := crDefault;
-      finally
-        ini.Free;
-      end;
-    finally
-      Free;
-    end;
 end;
 
 procedure TVisWaptGUI.ActDeleteGroupExecute(Sender: TObject);
@@ -1966,9 +1871,9 @@ begin
   try
     res := WAPTServerJsonGet('trigger_reachable_discovery',[]);
     if res.B['success'] then
-      ShowMessageFmt('%s',[UTF8Encode(res.S['msg'])])
+      ShowMessageFmt('%s',[res.S['msg']])
     else
-      ShowMessageFmt('Unable to trigger discovery of listening IP on wapt server: %s',[UTF8Encode(res.S['msg'])]);
+      ShowMessageFmt('Unable to trigger discovery of listening IP on wapt server: %s',[res.S['msg']]);
   except
     on E:Exception do
       ShowMessageFmt('Unable to trigger discovery of listening IP on wapt server: %s',[UTF8Encode(E.Message)]);

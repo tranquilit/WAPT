@@ -436,9 +436,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 316
         Top = 96
         Width = 572
-        ActivePage = pgHostInventory
+        ActivePage = pgPackages
         Align = alRight
-        TabIndex = 1
+        TabIndex = 0
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -1643,6 +1643,12 @@ object VisWaptGUI: TVisWaptGUI
             Position = 6
             Text = 'Installed by'
             PropertyName = 'explicit_by'
+          end        
+          item
+            Position = 7
+            Text = 'Conflicts'
+            Width = 186
+            PropertyName = 'conflicts'
           end>
         Header.DefaultHeight = 17
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
@@ -1831,6 +1837,12 @@ object VisWaptGUI: TVisWaptGUI
             Position = 6
             Text = 'Installed by'
             PropertyName = 'explicit_by'
+          end        
+          item
+            Position = 7
+            Text = 'Conflicts'
+            Width = 205
+            PropertyName = 'conflicts'
           end>
         Header.DefaultHeight = 17
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
@@ -2843,7 +2855,6 @@ object VisWaptGUI: TVisWaptGUI
     object ActCreateWaptSetupPy: TAction
       Category = 'Tools'
       Caption = 'Create custom WAPT installer (py)'
-      OnExecute = ActCreateWaptSetupPyExecute
     end
     object ActEvaluateVar: TAction
       Caption = 'Evaluer Variant'
