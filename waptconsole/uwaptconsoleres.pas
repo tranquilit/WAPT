@@ -40,6 +40,10 @@ resourcestring
   rsPasswordChangeSuccess = 'Password successfully updated !';
   rsPasswordChangeError = 'Error : %s';
 
+  rsWaptServerError = 'Error on WAPT server:'#13#10'%s';
+  rsWaptServerOldVersion = 'Warning, the version of the server is too old.'#13#10'Current server version: %s'#13#10'Required server version: %s';
+  rsUnknownVersion = 'Unknown version';
+
   rsWaptAgentUploadSuccess = 'Successfully uploaded WAPT agent !';
   rsWaptAgentUploadError = 'Error while uploading WAPT agent : %s';
   rsWaptAgentSetupSuccess = 'waptagent.exe successfully created : %s';

@@ -98,6 +98,7 @@ type
     GridHostTasksErrors: TSOGrid;
     HostRunningTaskLog: TMemo;
     ActionsImages: TImageList;
+    Image1: TImage;
     Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
@@ -355,6 +356,7 @@ type
       TextType: TVSTTextType);
 
     procedure HostPagesChange(Sender: TObject);
+    procedure Image1Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
     procedure MainPagesChange(Sender: TObject);
     procedure InstallPackage(Grid: TSOGrid);
@@ -2018,7 +2020,7 @@ end;
 
 function TVisWaptGUI.Login: boolean;
 var
-  cred, resp: ISuperObject;
+  cred, resp, sores: ISuperObject;
   localfn: string;
 begin
   Result := False;
@@ -2048,6 +2050,19 @@ begin
         edWaptServerName.Text := GetWaptServerURL;
         if ShowModal = mrOk then
         begin
+          try
+              sores := WAPTServerJsonGet('ping', []);
+              try
+                if sores.B['success'] and (CompareVersion(sores['result'].S['version'],WAPTServerMinVersion)<0) then
+                  ShowMessageFmt(rsWaptServerOldVersion,[sores['result'].S['version'],WAPTServerMinVersion]);
+              except
+                  on E:Exception do
+                    ShowMessageFmt(rsWaptServerOldVersion,[rsUnknownVersion,WAPTServerMinVersion]);
+              end;
+          except
+            on E:Exception do
+              ShowMessageFmt(rsWaptServerError,[e.Message]);
+          end;
           waptServerPassword := edPassword.Text;
           waptServerUser := edUser.Text;
           cred := SO();
@@ -2101,6 +2116,8 @@ begin
   GridGroups.LoadSettingsFromIni(Appuserinipath);
   GridHostPackages.LoadSettingsFromIni(Appuserinipath);
   GridHostSoftwares.LoadSettingsFromIni(Appuserinipath);
+
+  plStatusBar1.Panels[0].Text :=ApplicationName+' '+GetApplicationVersion;
 end;
 
 procedure TVisWaptGUI.GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
@@ -2445,6 +2462,11 @@ end;
 procedure TVisWaptGUI.HostPagesChange(Sender: TObject);
 begin
   UpdateHostPages(Sender);
+end;
+
+procedure TVisWaptGUI.Image1Click(Sender: TObject);
+begin
+  OpenDocument('http://www.tranquil.it');
 end;
 
 procedure TVisWaptGUI.MenuItem20Click(Sender: TObject);

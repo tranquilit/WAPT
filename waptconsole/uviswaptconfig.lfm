@@ -43,17 +43,17 @@ object VisWAPTConfig: TVisWAPTConfig
     EditLabel.AnchorSideRight.Control = eddefault_package_prefix
     EditLabel.AnchorSideBottom.Control = eddefault_package_prefix
     EditLabel.AnchorSideBottom.Side = asrBottom
-    EditLabel.Left = 75
+    EditLabel.Left = 74
     EditLabel.Height = 13
     EditLabel.Top = 128
-    EditLabel.Width = 201
+    EditLabel.Width = 202
     EditLabel.Caption = 'Prefix for naming created WAPT packages'
     EditLabel.ParentColor = False
     LabelPosition = lpLeft
     TabOrder = 5
   end
   object eddefault_sources_root: TDirectoryEdit
-    Left = 279
+    Left = 280
     Height = 21
     Hint = 'E.g. : c:\waptdev'#13#10'Local directory for saving package development projects'
     Top = 100
@@ -68,7 +68,7 @@ object VisWAPTConfig: TVisWAPTConfig
     Left = 15
     Height = 13
     Top = 104
-    Width = 262
+    Width = 194
     Caption = 'Base directory for package development'
     ParentColor = False
   end
@@ -83,10 +83,10 @@ object VisWAPTConfig: TVisWAPTConfig
     EditLabel.AnchorSideRight.Control = edrepo_url
     EditLabel.AnchorSideBottom.Control = edrepo_url
     EditLabel.AnchorSideBottom.Side = asrBottom
-    EditLabel.Left = 170
+    EditLabel.Left = 149
     EditLabel.Height = 13
     EditLabel.Top = 8
-    EditLabel.Width = 107
+    EditLabel.Width = 128
     EditLabel.Caption = 'URL to the main repository'
     EditLabel.ParentColor = False
     LabelPosition = lpLeft
@@ -110,7 +110,7 @@ object VisWAPTConfig: TVisWAPTConfig
     Left = 51
     Height = 13
     Top = 152
-    Width = 225
+    Width = 193
     Caption = 'Path to private key for signing packages'
     ParentColor = False
   end
@@ -125,10 +125,10 @@ object VisWAPTConfig: TVisWAPTConfig
     EditLabel.AnchorSideRight.Control = edtemplates_repo_url
     EditLabel.AnchorSideBottom.Control = edtemplates_repo_url
     EditLabel.AnchorSideBottom.Side = asrBottom
-    EditLabel.Left = 89
+    EditLabel.Left = 96
     EditLabel.Height = 13
     EditLabel.Top = 76
-    EditLabel.Width = 187
+    EditLabel.Width = 180
     EditLabel.Caption = 'URL to the package model repository '
     EditLabel.ParentColor = False
     LabelPosition = lpLeft
@@ -166,10 +166,10 @@ object VisWAPTConfig: TVisWAPTConfig
     EditLabel.AnchorSideRight.Control = edhttp_proxy
     EditLabel.AnchorSideBottom.Control = edhttp_proxy
     EditLabel.AnchorSideBottom.Side = asrBottom
-    EditLabel.Left = 59
+    EditLabel.Left = 137
     EditLabel.Height = 13
     EditLabel.Top = 220
-    EditLabel.Width = 218
+    EditLabel.Width = 140
     EditLabel.Caption = 'http proxy to use (if needed)'
     EditLabel.ParentColor = False
     LabelPosition = lpLeft
@@ -179,14 +179,14 @@ object VisWAPTConfig: TVisWAPTConfig
     Left = 6
     Height = 13
     Top = 52
-    Width = 174
+    Width = 131
     Caption = 'For package development :'
     ParentColor = False
   end
   object cbUseProxyForRepo: TCheckBox
     Left = 281
     Height = 17
-    Hint = 'Activates proxy during transactions with the WAPT server.'
+    Hint = 'Activates proxy when accessing the main repository'
     Top = 239
     Width = 20
     Checked = True
@@ -220,7 +220,7 @@ object VisWAPTConfig: TVisWAPTConfig
   object cbUseProxyForServer: TCheckBox
     Left = 281
     Height = 17
-    Hint = 'Activates proxy during transactions with the WAPT server.'
+    Hint = 'Activate proxy when accessing the WAPT server'
     Top = 256
     Width = 20
     Checked = True
@@ -242,7 +242,7 @@ object VisWAPTConfig: TVisWAPTConfig
   object cbUseProxyForTemplate: TCheckBox
     Left = 281
     Height = 17
-    Hint = 'Activates proxy during transactions with the WAPT server.'
+    Hint = 'Axctivate proxy when accessing the model repository'
     Top = 272
     Width = 20
     Checked = True

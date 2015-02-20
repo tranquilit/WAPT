@@ -941,6 +941,7 @@ object VisEditPackage: TVisEditPackage
     object ButSave: TBitBtn
       Left = 752
       Height = 25
+      Hint = 'Build and upload the package'
       Top = 4
       Width = 112
       Action = ActBuildUpload
@@ -951,6 +952,7 @@ object VisEditPackage: TVisEditPackage
     object butBUApply: TBitBtn
       Left = 561
       Height = 25
+      Hint = 'Build the package, upload to the server and trigger Upgrade on the target host.'
       Top = 4
       Width = 184
       Action = ActBUApply

@@ -139,6 +139,8 @@ const
   Language:String = '';
   FallBackLanguage:String = '';
 
+  WAPTServerMinVersion='1.1.0';
+
 implementation
 
 uses FileUtil, soutils, Variants, ShellApi, JwaIpHlpApi,
