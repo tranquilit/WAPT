@@ -56,8 +56,8 @@ makepath = os.path.join
 run = subprocess.check_output
 
 BDIR = './builddir/'
-EXE = 'waptsetup-tis.exe'
-DEPLOY = 'waptdeploy.exe'
+WAPTSETUP = 'waptsetup-tis.exe'
+WAPTDEPLOY = 'waptdeploy.exe'
 SRV = 'srvinstallation.tranquil.it'
 BASEPATH = '/wapt/nightly/'
 
@@ -77,9 +77,9 @@ class MyHTMLParser(HTMLParser.HTMLParser):
 def fetch_from_server():
 
     try:
-        os.unlink(EXE)
+        os.unlink(WAPTSETUP)
     except Exception as e:
-        logger.info('Error while unlinking %s: %s', EXE, e)
+        logger.info('Error while unlinking %s: %s', WAPTSETUP, e)
         pass
 
     logger.info('Fetching executable')
@@ -121,7 +121,7 @@ def fetch_from_server():
         logger.error('Unexpected response from server (%s)', response.status)
         sys.exit(1)
 
-    out = file(EXE, 'wb')
+    out = file(WAPTSETUP, 'wb')
     while True:
         buffer = response.read(2**15)
         if len(buffer) == 0:
@@ -129,7 +129,7 @@ def fetch_from_server():
         out.write(buffer)
     out.close()
 
-    logger.info('Correctly fetched %s', EXE)
+    logger.info('Correctly fetched %s', WAPTSETUP)
     return revision
 
 
@@ -168,9 +168,9 @@ if options.download:
     revision = fetch_from_server()
 
 logger.debug('Getting version from executable')
-pe = pefile.PE(EXE)
+pe = pefile.PE(WAPTSETUP)
 version = pe.FileInfo[0].StringTable[0].entries['ProductVersion'].strip()
-logger.debug('%s version: %s', EXE, version)
+logger.debug('%s version: %s', WAPTSETUP, version)
 
 if revision != 0:
     full_version = version + '-rev' + revision
@@ -183,8 +183,10 @@ os.chmod(BDIR + 'DEBIAN/', 0755)
 os.chmod(BDIR + 'DEBIAN/postinst', 0755)
 replaceAll(BDIR + 'DEBIAN/control', '0.0.7', full_version)
 mkdir_p(BDIR + 'var/www/wapt/')
-shutil.copy(EXE, BDIR + 'var/www/wapt/')
-shutil.copy(DEPLOY, BDIR + 'var/www/wapt/')
+shutil.copy(WAPTSETUP, BDIR + 'var/www/wapt/')
+os.chmod(BDIR + 'var/www/wapt/' + WAPTSETUP, 0644)
+shutil.copy(WAPTDEPLOY, BDIR + 'var/www/wapt/')
+os.chmod(BDIR + 'var/www/wapt/' + WAPTDEPLOY, 0644)
 
 output = 'tis-waptsetup-%s.deb' % (full_version)
 dpkg_command = ['dpkg-deb', '--build', BDIR, output]
