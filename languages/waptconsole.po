@@ -1,8 +1,5 @@
-msgid " Uncheck \"Use simple file sharing\").Only required if a proxy is needed."
+msgid " Uncheck \"Use simple file sharing\").Only required if a proxy is needed.Only required if a proxy is needed."
 msgstr "Content-Type: text/plain; charset=UTF-8"
-
-msgid "Only required if a proxy is needed."
-msgstr ""
 
 #: tvisapropos.button1.caption
 msgid "Close"
@@ -828,6 +825,14 @@ msgstr ""
 msgid "Remove dependencies from packages/bundles"
 msgstr ""
 
+#: tviswaptgui.actrestoredefaultlayout.caption
+msgid "Restore default grid layout"
+msgstr ""
+
+#: tviswaptgui.actrestoredefaultlayout.hint
+msgid "Restore default columns settings for all grids"
+msgstr ""
+
 #: tviswaptgui.actsearchgroups.caption
 msgctxt "TVISWAPTGUI.ACTSEARCHGROUPS.CAPTION"
 msgid "Search"
@@ -1081,6 +1086,10 @@ msgstr ""
 
 #: tviswaptgui.menuitem5.caption
 msgid "&File"
+msgstr ""
+
+#: tviswaptgui.menuitem53.caption
+msgid "Restore default grids layout"
 msgstr ""
 
 #: tviswaptgui.menuitem6.caption

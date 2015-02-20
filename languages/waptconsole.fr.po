@@ -1,5 +1,20 @@
-# htouvet <htouvet@tranquil.it>, 2015.
 msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-02-20 12:39+0200\n"
+"PO-Revision-Date: 2015-02-20 12:39+0200\n"
+"Last-Translator: htouvet <htouvet@tranquil.it>\n"
+"Language-Team: TranquilITSystems\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Virtaal 0.7.1\n"
+
+# htouvet <htouvet@tranquil.it>, 2015.
+msgid " Uncheck \"Use simple file sharing\").Only required if a proxy is needed.Only required if a proxy is needed."
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
@@ -13,13 +28,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
-
-#, fuzzy
-msgid " Uncheck \"Use simple file sharing\").Only required if a proxy is needed."
-msgstr "Content-Type: text/plain; charset=UTF-8"
-
-msgid "Only required if a proxy is needed."
-msgstr "Requis seulement si un proxy http est nécessaire"
+"Content-Type: text/plain; charset=UTF-8Requis seulement si un proxy http est "
+"nécessaire\n"
 
 #: tvisapropos.button1.caption
 msgid "Close"
@@ -214,7 +224,7 @@ msgstr "Edition de groupe"
 #: tviseditgroup.eddescription.editlabel.caption
 msgctxt "TVISEDITGROUP.EDDESCRIPTION.EDITLABEL.CAPTION"
 msgid "Description"
-msgstr ""
+msgstr "Description"
 
 #: tviseditgroup.eddescription.text
 msgctxt "tviseditgroup.eddescription.text"
@@ -274,7 +284,6 @@ msgid "Save"
 msgstr "Enregistrer"
 
 #: tviseditpackage.acteditsearch.caption
-#, fuzzy
 msgctxt "tviseditpackage.acteditsearch.caption"
 msgid "Search"
 msgstr "Rechercher"
@@ -290,9 +299,7 @@ msgstr "Recher"
 
 #: tviseditpackage.butbuapply.hint
 msgid "Build the package, upload to the server and trigger Upgrade on the target host."
-msgstr ""
-"Contruit et télécharge le paquet vers le serveur, et lance la mise à jour du "
-"client."
+msgstr "Contruit et télécharge le paquet vers le serveur, et lance la mise à jour du client."
 
 #: tviseditpackage.butsave.caption
 msgctxt "TVISEDITPACKAGE.BUTSAVE.CAPTION"
@@ -320,7 +327,7 @@ msgstr "Afficher les informations de débogage"
 #: tviseditpackage.eddescription.editlabel.caption
 msgctxt "TVISEDITPACKAGE.EDDESCRIPTION.EDITLABEL.CAPTION"
 msgid "Description"
-msgstr ""
+msgstr "Description"
 
 #: tviseditpackage.eddescription.text
 msgctxt "TVISEDITPACKAGE.EDDESCRIPTION.TEXT"
@@ -655,9 +662,7 @@ msgstr "Utilisateur"
 
 #: tviswaptdeploy.label1.caption
 msgid "This method lets you deploy waptagent.exe onto all hosts via psexec."
-msgstr ""
-"Cette méthode vous permet de déployer waptagent.exe sur toutes les machines "
-"par psexec."
+msgstr "Cette méthode vous permet de déployer waptagent.exe sur toutes les machines par psexec."
 
 #: tviswaptdeploy.label2.caption
 #, fuzzy
@@ -857,6 +862,14 @@ msgstr "Autoriser des paquets"
 msgid "Remove dependencies from packages/bundles"
 msgstr "Supprimer des dépendances de paquets ou groupes de paquets"
 
+#: tviswaptgui.actrestoredefaultlayout.caption
+msgid "Restore default grid layout"
+msgstr "Restaurer l'affichage par défaut des grilles"
+
+#: tviswaptgui.actrestoredefaultlayout.hint
+msgid "Restore default columns settings for all grids"
+msgstr "Restaure la configuration par défaut des colonnes de toutes les grilles"
+
 #: tviswaptgui.actsearchgroups.caption
 msgctxt "TVISWAPTGUI.ACTSEARCHGROUPS.CAPTION"
 msgid "Search"
@@ -894,8 +907,7 @@ msgstr "Rafraîchir la liste des hôtes"
 #: tviswaptgui.acttriggerhostupdate.hint
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPDATE.HINT"
 msgid "Trigger update of available packages on hosts."
-msgstr ""
-"Lancer la mise à jour de la liste des paquets disponibles sur les machines"
+msgstr "Lancer la mise à jour de la liste des paquets disponibles sur les machines"
 
 #: tviswaptgui.acttriggerhostupgrade.caption
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.CAPTION"
@@ -1078,7 +1090,7 @@ msgstr ""
 
 #: tviswaptgui.menuitem26.caption
 msgid "?"
-msgstr ""
+msgstr "?"
 
 #: tviswaptgui.menuitem27.caption
 msgid "About"
@@ -1087,7 +1099,7 @@ msgstr "A propos"
 #: tviswaptgui.menuitem32.caption
 msgctxt "TVISWAPTGUI.MENUITEM32.CAPTION"
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: tviswaptgui.menuitem4.caption
 msgctxt "tviswaptgui.menuitem4.caption"
@@ -1095,23 +1107,30 @@ msgid "Remove"
 msgstr "Supprimer"
 
 #: tviswaptgui.menuitem43.caption
+#, fuzzy
 msgctxt "TVISWAPTGUI.MENUITEM43.CAPTION"
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: tviswaptgui.menuitem44.caption
+#, fuzzy
 msgctxt "TVISWAPTGUI.MENUITEM44.CAPTION"
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: tviswaptgui.menuitem47.caption
+#, fuzzy
 msgctxt "TVISWAPTGUI.MENUITEM47.CAPTION"
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: tviswaptgui.menuitem5.caption
 msgid "&File"
 msgstr "&Fichier"
+
+#: tviswaptgui.menuitem53.caption
+msgid "Restore default grids layout"
+msgstr "Restaurer l'affichage par défaut des grilles"
 
 #: tviswaptgui.menuitem6.caption
 msgid "New"
@@ -1120,7 +1139,7 @@ msgstr "Nouveau"
 #: tviswaptgui.menuitem7.caption
 msgctxt "tviswaptgui.menuitem7.caption"
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: tviswaptgui.menuitem8.caption
 msgid "Open..."
@@ -1274,8 +1293,7 @@ msgstr "Êtes-vous sûr(e) de vouloir supprimer %s machines de la liste ?"
 #: uwaptconsoleres.rsconfirmrmmultiplepackages
 msgctxt "uwaptconsoleres.rsconfirmrmmultiplepackages"
 msgid "Are you sure you want to remove the selected packages from the server ?"
-msgstr ""
-"Êtes-vous sûr(e) de vouloir supprimer les paquets sélectionnés du serveur ?"
+msgstr "Êtes-vous sûr(e) de vouloir supprimer les paquets sélectionnés du serveur ?"
 
 #: uwaptconsoleres.rsconfirmrmonepackage
 msgctxt "uwaptconsoleres.rsconfirmrmonepackage"
@@ -1290,9 +1308,7 @@ msgstr "Confirmer la suppression"
 #: uwaptconsoleres.rsconfirmrmpackagesfromhost
 msgctxt "uwaptconsoleres.rsconfirmrmpackagesfromhost"
 msgid "Are you sure you want to remove %s package(s) from the selected host(s) %s ?"
-msgstr ""
-"Êtes-vous sûr(e) de vouloir supprimer %s paquet(s) de la/des machine(s) "
-"sélectionnée(s) ?"
+msgstr "Êtes-vous sûr(e) de vouloir supprimer %s paquet(s) de la/des machine(s) sélectionnée(s) ?"
 
 #: uwaptconsoleres.rscreationinprogress
 msgctxt "uwaptconsoleres.rscreationinprogress"
@@ -1302,9 +1318,7 @@ msgstr "Création en cours."
 #: uwaptconsoleres.rsdefinewaptdevpath
 msgctxt "uwaptconsoleres.rsdefinewaptdevpath"
 msgid "Please select a directory on your package development host before editing a package bundle."
-msgstr ""
-"Veuillez sélectionner un répertoire sur votre machine de développement de "
-"paquets pour pouvoir éditer un groupe de paquets."
+msgstr "Veuillez sélectionner un répertoire sur votre machine de développement de paquets pour pouvoir éditer un groupe de paquets."
 
 #: uwaptconsoleres.rsdeletingelement
 msgctxt "uwaptconsoleres.rsdeletingelement"
@@ -1454,9 +1468,7 @@ msgstr "Editer la configuration de la machine"
 #: uwaptconsoleres.rsignoredconfictingpackages
 msgctxt "uwaptconsoleres.rsignoredconfictingpackages"
 msgid "Warning : couldn't find package(s) %s ; conflicting package(s) have been ignored."
-msgstr ""
-"Attention, le(s) paquet(s) %s n'ont pu être trouvés ; les paquets en conflit "
-"ont été ignorés."
+msgstr "Attention, le(s) paquet(s) %s n'ont pu être trouvés ; les paquets en conflit ont été ignorés."
 
 #: uwaptconsoleres.rsignoredpackages
 msgctxt "uwaptconsoleres.rsignoredpackages"
@@ -1481,9 +1493,7 @@ msgstr "Le mot de passe est incorrect."
 #: uwaptconsoleres.rsinnosetupunavailable
 msgctxt "uwaptconsoleres.rsinnosetupunavailable"
 msgid "Innosetup is unavailable (path : %s), please install it first."
-msgstr ""
-"Innosetup n'est pas disponible (emplacement : %s), veuillez l'installer en "
-"premier lieu."
+msgstr "Innosetup n'est pas disponible (emplacement : %s), veuillez l'installer en premier lieu."
 
 #: uwaptconsoleres.rsinputkeyname
 msgctxt "uwaptconsoleres.rsinputkeyname"
@@ -1537,9 +1547,7 @@ msgstr "Il n'y a pas de groupe de paquets."
 
 #: uwaptconsoleres.rsnoreachableip
 msgid "None IP reachable for this host. Check firewall, routes and remote service status"
-msgstr ""
-"Aucune IP n'est accessible pour cette machine. Vérifiez le firewall, les "
-"routes et l'état du service distant."
+msgstr "Aucune IP n'est accessible pour cette machine. Vérifiez le firewall, les routes et l'état du service distant."
 
 #: uwaptconsoleres.rsnorunningtask
 msgctxt "uwaptconsoleres.rsnorunningtask"
@@ -1913,8 +1921,7 @@ msgstr "Êtes-vous sûr(e) de vouloir supprimer %s machines de la liste ?"
 #: uwaptres.rsconfirmrmmultiplepackages
 msgctxt "uwaptres.rsconfirmrmmultiplepackages"
 msgid "Are you sure you want to remove the selected packages from the server ?"
-msgstr ""
-"Êtes-vous sûr(e) de vouloir supprimer les paquets sélectionnés du serveur ?"
+msgstr "Êtes-vous sûr(e) de vouloir supprimer les paquets sélectionnés du serveur ?"
 
 #: uwaptres.rsconfirmrmonepackage
 msgctxt "uwaptres.rsconfirmrmonepackage"
@@ -1929,9 +1936,7 @@ msgstr "Confirmer la suppression"
 #: uwaptres.rsconfirmrmpackagesfromhost
 msgctxt "uwaptres.rsconfirmrmpackagesfromhost"
 msgid "Are you sure you want to remove %s package(s) from the selected host(s) %s ?"
-msgstr ""
-"Êtes-vous sûr(e) de vouloir supprimer %s paquet(s) de la/des machine(s) "
-"sélectionnée(s) ?"
+msgstr "Êtes-vous sûr(e) de vouloir supprimer %s paquet(s) de la/des machine(s) sélectionnée(s) ?"
 
 #: uwaptres.rscreationinprogress
 msgctxt "uwaptres.rscreationinprogress"
@@ -1941,9 +1946,7 @@ msgstr "Création en cours."
 #: uwaptres.rsdefinewaptdevpath
 msgctxt "uwaptres.rsdefinewaptdevpath"
 msgid "Please select a directory on your package development host before editing a package bundle."
-msgstr ""
-"Veuillez sélectionner un répertoire sur votre machine de développement de "
-"paquets pour pouvoir éditer un groupe de paquets."
+msgstr "Veuillez sélectionner un répertoire sur votre machine de développement de paquets pour pouvoir éditer un groupe de paquets."
 
 #: uwaptres.rsdeletingelement
 msgctxt "uwaptres.rsdeletingelement"
@@ -2105,9 +2108,7 @@ msgstr "Editer la configuration de la machine"
 #: uwaptres.rsignoredconfictingpackages
 msgctxt "uwaptres.rsignoredconfictingpackages"
 msgid "Warning : couldn't find package(s) %s ; conflicting package(s) have been ignored."
-msgstr ""
-"Attention, le(s) paquet(s) %s n'ont pu être trouvés ; les paquets en conflit "
-"ont été ignorés."
+msgstr "Attention, le(s) paquet(s) %s n'ont pu être trouvés ; les paquets en conflit ont été ignorés."
 
 #: uwaptres.rsignoredpackages
 msgctxt "uwaptres.rsignoredpackages"
@@ -2132,9 +2133,7 @@ msgstr "Le mot de passe est incorrect."
 #: uwaptres.rsinnosetupunavailable
 msgctxt "uwaptres.rsinnosetupunavailable"
 msgid "Innosetup is unavailable (path : %s), please install it first."
-msgstr ""
-"Innosetup n'est pas disponible (emplacement : %s), veuillez l'installer en "
-"premier lieu."
+msgstr "Innosetup n'est pas disponible (emplacement : %s), veuillez l'installer en premier lieu."
 
 #: uwaptres.rsinputkeyname
 #, fuzzy
@@ -2163,9 +2162,7 @@ msgstr "DNS invalide"
 
 #: uwaptres.rsinvaliddnsfallback
 msgid "This DNS name is not valid, would you like to use the IP address instead ?"
-msgstr ""
-"Ce nom DNS n'est pas valide, souhaitez-vous utiliser l'adresse IP à la place "
-"?"
+msgstr "Ce nom DNS n'est pas valide, souhaitez-vous utiliser l'adresse IP à la place ?"
 
 #: uwaptres.rsinvalidwaptsetupdir
 msgctxt "uwaptres.rsinvalidwaptsetupdir"

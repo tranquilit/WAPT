@@ -26,6 +26,7 @@ type
     ActCreateWaptSetup: TAction;
     ActFrench: TAction;
     ActEnglish: TAction;
+    ActRestoreDefaultLayout: TAction;
     ActTriggerHostUpdate: TAction;
     ActTriggerHostsListening: TAction;
     ActRemoveConflicts: TAction;
@@ -135,6 +136,7 @@ type
     MenuItem50: TMenuItem;
     MenuItem51: TMenuItem;
     MenuItem52: TMenuItem;
+    MenuItem53: TMenuItem;
     OpenDialogWapt: TOpenDialog;
     PageControl1: TPageControl;
     Panel11: TPanel;
@@ -270,6 +272,7 @@ type
     procedure ActRDPUpdate(Sender: TObject);
     procedure ActRemoveConflictsExecute(Sender: TObject);
     procedure ActRemoveDependsExecute(Sender: TObject);
+    procedure ActRestoreDefaultLayoutExecute(Sender: TObject);
     procedure ActSearchGroupsExecute(Sender: TObject);
     procedure ActTriggerHostUpdateExecute(Sender: TObject);
     procedure ActTriggerHostUpgradeExecute(Sender: TObject);
@@ -1588,6 +1591,15 @@ begin
   end;
 end;
 
+procedure TVisWaptGUI.ActRestoreDefaultLayoutExecute(Sender: TObject);
+begin
+  Gridhosts.LoadSettingsFromIni(Appuserinipath+'.default');
+  GridPackages.LoadSettingsFromIni(Appuserinipath+'.default');
+  GridGroups.LoadSettingsFromIni(Appuserinipath+'.default');
+  GridHostPackages.LoadSettingsFromIni(Appuserinipath+'.default');
+  GridHostSoftwares.LoadSettingsFromIni(Appuserinipath+'.default');
+end;
+
 procedure TVisWaptGUI.ActSearchGroupsExecute(Sender: TObject);
 var
   expr: UTF8String;
@@ -2110,6 +2122,16 @@ begin
 
   MainPages.ActivePage := pgInventory;
   MainPagesChange(Sender);
+
+  HostPages.ActivePage := pgPackages;
+
+  // saves default initial config...
+  Gridhosts.SaveSettingsToIni(Appuserinipath+'.default');
+  GridPackages.SaveSettingsToIni(Appuserinipath+'.default');
+  GridGroups.SaveSettingsToIni(Appuserinipath+'.default');
+  GridHostPackages.SaveSettingsToIni(Appuserinipath+'.default');
+  GridHostSoftwares.SaveSettingsToIni(Appuserinipath+'.default');
+
 
   Gridhosts.LoadSettingsFromIni(Appuserinipath);
   GridPackages.LoadSettingsFromIni(Appuserinipath);

@@ -842,11 +842,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostInventory: TTabSheet
           Caption = 'Hardware inventory'
-          ClientHeight = 290
+          ClientHeight = 295
           ClientWidth = 564
           object GridhostInventory: TVirtualJSONInspector
             Left = 0
-            Height = 290
+            Height = 295
             Top = 0
             Width = 564
             PropertyDefs = <>
@@ -3204,6 +3204,12 @@ object VisWaptGUI: TVisWaptGUI
       ImageIndex = 12
       OnExecute = ActRemoveConflictsExecute
     end
+    object ActRestoreDefaultLayout: TAction
+      Category = 'Tools'
+      Caption = 'Restore default grid layout'
+      Hint = 'Restore default columns settings for all grids'
+      OnExecute = ActRestoreDefaultLayoutExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
@@ -3417,6 +3423,10 @@ object VisWaptGUI: TVisWaptGUI
         object MenuItem51: TMenuItem
           Action = ActFrench
         end
+      end
+      object MenuItem53: TMenuItem
+        Action = ActRestoreDefaultLayout
+        Caption = 'Restore default grids layout'
       end
     end
     object MenuItem26: TMenuItem
