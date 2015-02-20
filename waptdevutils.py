@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.0.2"
+__version__ = "1.1.0"
 
 import common
 import json
@@ -87,14 +87,15 @@ def upload_wapt_setup(wapt,waptsetup_path, wapt_server_user, wapt_server_passwd)
     """
     auth =  (wapt_server_user, wapt_server_passwd)
     with open(waptsetup_path,'rb') as afile:
-        req = requests.post("%s/upload_waptsetup" % (wapt.waptserver.server_url,),files={'file':afile},proxies=wapt.waptserver.proxies,verify=False,auth=auth)
+        req = requests.post("%s/upload_waptsetup" % (wapt.waptserver.server_url,),files={'file':afile},proxies=wapt.waptserver.proxies,
+            verify=False,auth=auth,headers=common.default_http_headers())
         req.raise_for_status()
         res = json.loads(req.content)
     return res
 
 
 def diff_computer_ad_wapt(wapt):
-    """Return the computer in the Active Directory but not in Wapt Serveur
+    """Return the list of computers in the Active Directory but not registred in Wapt database
     >>> wapt = common.Wapt(config_filename=r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
     >>> diff_computer_ad_wapt(wapt)
     ???
@@ -106,7 +107,7 @@ def diff_computer_ad_wapt(wapt):
 
 
 def diff_computer_wapt_ad(wapt):
-    """Return the computer in Wapt Serveur but not in the Active Directory
+    """Return the list of computers registered in Wapt database but not in the Active Directory
     >>> wapt = common.Wapt(config_filename=r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
     >>> diff_computer_wapt_ad(wapt)
     ???
@@ -115,18 +116,6 @@ def diff_computer_wapt_ad(wapt):
     computer_wapt = set( [ c['host']['computer_fqdn'].lower() for c in json.loads(requests.request('GET','%s/json/host_list'%wapt.waptserver.server_url).text)])
     result = list(set(computer_wapt)-set(computer_ad))
     return result
-
-
-def search_bad_waptsetup(wapt,wapt_version):
-    """Return list of computers in the Wapt Server who have not the version of Wapt specified"""
-    hosts =  wapt.waptserver.get('hosts')
-    result = dict()
-    for i in hosts:
-        wapt = [w for w in  i['softwares'] if w['key'] == 'WAPT_is1' ]
-        if wapt[0]['version'] != wapt_version:
-            result[i['name']] = wapt[0]['version']
-    return result
-
 
 def update_external_repo(waptconfigfile,search_string):
     """Get a list of entries from external templates public repository matching search_string
@@ -213,13 +202,26 @@ def duplicate_from_external_repo(waptconfigfile,package_filename):
     package =  res['package']
     if package.depends:
         newdepends = []
-        depends = [s.strip() for s in package.depends.split(',')]
+        depends = common.ensure_list(package.depends)
         for dependname in depends:
             newname = rename_package(dependname,prefix)
             newdepends.append(newname)
 
         package.depends = ','.join(newdepends)
         package.save_control_to_wapt(result)
+
+    # renames conflicts
+    if package.conflicts:
+        newconflicts = []
+        conflicts = common.ensure_list(package.conflicts)
+        for dependname in conflicts:
+            newname = rename_package(dependname,prefix)
+            newconflicts.append(newname)
+
+        package.conflicts = ','.join(newconflicts)
+        package.save_control_to_wapt(result)
+
+
     return result
 
 def wapt_sources_edit(wapt_sources_dir):
@@ -235,16 +237,6 @@ def wapt_sources_edit(wapt_sources_dir):
     else:
         os.startfile(wapt_sources_dir)
 
-
-def login_to_waptserver(url, login, passwd,newPass="",auth=None):
-    try:
-        data = {"username":login, "password": passwd}
-        if newPass:
-            data['newPass'] = newPass
-        resp = requests.post(url, json.dumps(data),verify=False,auth=auth)
-        return resp.text
-    except Exception as e:
-        return unicode(str(e.message), 'ISO-8859-1')
 
 def edit_hosts_depends(waptconfigfile,hosts_list,
         append_depends=[],
