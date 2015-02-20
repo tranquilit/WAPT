@@ -1487,7 +1487,7 @@ class WaptUpgrade(WaptTask):
         upgrade = cjoin(self.result.get('upgrade',[]))
         #skipped = cjoin(self.result['skipped'])
         errors = ','.join([p.asrequirement() for p in  self.wapt.error_packages()])
-        unavailable = u','.join(self.result.get('unavailable',[]))
+        unavailable = u','.join([p[0] for p in self.result.get('unavailable',[])])
         s = []
         if install:
             s.append(__(u'Installed : {}').format(install))
