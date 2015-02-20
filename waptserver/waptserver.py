@@ -1355,7 +1355,7 @@ def get_ip_port(host_data):
 
 @app.route('/ping')
 def ping():
-    return make_response(msg = _('WAPT Server running'), result = dict(version = __version__ ))
+    return make_response(msg = _('WAPT Server running'), result = dict(version = __version__,api_root='/api/',api_version='v1'))
 
 
 @app.route('/trigger_reachable_discovery')
