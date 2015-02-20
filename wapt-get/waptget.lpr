@@ -21,8 +21,8 @@ program waptget;
 # -----------------------------------------------------------------------
 }
 
-{.$mode delphiunicode}
-{$mode objfpc}{$H+}
+{$mode delphiunicode}
+{.$mode objfpc}{$H+}
 
 uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
@@ -210,28 +210,30 @@ var
       AFlag^ := 0;
   end;
 
+var
+  i:integer;
 begin
   Action:='';
   packages:='';
 
-  {for i:=1 to ParamCount do
+  for i:=1 to ParamCount do
   begin
     if (Pos('-',Params[i])<>1) then
       if (action='') then
         Action := lowercase(Params[i])
       else
         if packages='' then
-          Params[i]
+          packages := Params[i]
         else
           packages:=packages+','+Params[i];
-  end;}
-  Action := Params[ParamCount];
+  end;
+  //Action := Params[ParamCount];
 
   // parse parameters
-  if HasOption('?') or HasOption('h','--help') then
+  if HasOption('?') or HasOption('h','help') then
   begin
-    writeln(rsOptRepo);
-    writeln(rsWaptUpgrade);
+    writeln(utf8decode(rsOptRepo));
+    writeln(utf8decode(rsWaptUpgrade));
   end;
 
   if HasOption('r','repo') then
@@ -271,7 +273,7 @@ begin
     WriteLn(format(rsDNSserver, [GetDNSServer]));
     WriteLn(format(rsDNSdomain, [GetDNSDomain]));
     repourl := GetMainWaptRepo;
-    Writeln(format(rsMainRepoURL, [RepoURL]));
+    Writeln(utf8decode(format(rsMainRepoURL, [RepoURL])));
 
     Writeln(format(rsSRV, [DNSSRVQuery('_wapt._tcp.'+GetDNSDomain).AsJSon(True)]));
     Writeln(format(rsCNAME, [DNSCNAMEQuery('wapt.'+GetDNSDomain).AsJSon(True)]));
@@ -519,7 +521,7 @@ begin
         if (status = 'START') then
           writeln(msg.S['description']);
         if (status = 'PROGRESS') then
-          write(format(rsCompletionProgress,[msg.S['runstatus'], msg.D['progress']])+#13);
+          write(format(rsCompletionProgress,[utf8encode(msg.S['runstatus']), msg.D['progress']])+#13);
         //catch finish of task
         if (status = 'FINISH') or (status = 'ERROR') or (status = 'CANCEL') then
         begin
