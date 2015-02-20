@@ -1359,6 +1359,7 @@ def ping():
 
 
 @app.route('/trigger_reachable_discovery')
+@app.route('/api/v1/trigger_reachable_discovery')
 @requires_auth
 def trigger_reachable_discovery():
     """Launch a separate thread to check all reachable IP
@@ -1375,6 +1376,7 @@ def trigger_reachable_discovery():
 
 
 @app.route('/host_reachable_ip')
+@app.route('/api/v1/host_reachable_ip')
 @requires_auth
 def host_reachable_ip():
     """Check if supplied host's waptservice can be reached
@@ -1394,6 +1396,7 @@ def host_reachable_ip():
 
 
 @app.route('/trigger_upgrade')
+@app.route('/api/v1/trigger_upgrade')
 @requires_auth
 def trigger_upgrade():
     """Proxy the wapt upgrade action to the client"""
@@ -1427,6 +1430,7 @@ def trigger_upgrade():
         return make_response_from_exception(e)
 
 @app.route('/trigger_update')
+@app.route('/api/v1/trigger_update')
 @requires_auth
 def trigger_update():
     """Proxy the wapt update action to the client"""
@@ -1488,8 +1492,6 @@ def host_tasks_status():
             success = isinstance(client_result,dict),)
     except Exception, e:
         return make_response_from_exception(e)
-
-
 
 
 @app.route('/api/v1/hosts')
