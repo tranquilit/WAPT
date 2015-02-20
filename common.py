@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.0.2"
+__version__ = "1.1.0"
 import os
 import re
 import logging
@@ -680,6 +680,13 @@ def ensure_list(csv_or_list,ignore_empty_args=True):
         return csv_or_list
 
 
+def default_http_headers():
+    return {
+        'cache-control':'no-cache',
+        'pragma':'no-cache',
+        'user-agent':'wapt/{}'.format(__version__),
+        }
+
 ###########################"
 class LogInstallOutput(object):
     """file like to log print output to db installstatus"""
@@ -755,7 +762,7 @@ def host_ipv4():
 def tryurl(url,proxies=None,timeout=2,auth=None):
     try:
         logger.debug(u'  trying %s' % url)
-        headers = requests.head(url,proxies=proxies,timeout=timeout,auth=auth,verify=False)
+        headers = requests.head(url,proxies=proxies,timeout=timeout,auth=auth,verify=False,headers=default_http_headers())
         if headers.ok:
             logger.debug(u'  OK')
             return True
@@ -1914,7 +1921,7 @@ class WaptServer(object):
         """ """
         surl = self.server_url
         if surl:
-            req = requests.get("%s/%s" % (surl,action),proxies=self.proxies,verify=False,timeout=timeout or self.timeout,auth=auth or self.auth())
+            req = requests.get("%s/%s" % (surl,action),proxies=self.proxies,verify=False,timeout=timeout or self.timeout,auth=auth or self.auth(),headers=default_http_headers())
             req.raise_for_status()
             return json.loads(req.content)
         else:
@@ -1924,7 +1931,7 @@ class WaptServer(object):
         """ """
         surl = self.server_url
         if surl:
-            req = requests.post("%s/%s" % (surl,action),data=data,files=files,proxies=self.proxies,verify=False,timeout=timeout or self.timeout,auth=auth or self.auth())
+            req = requests.post("%s/%s" % (surl,action),data=data,files=files,proxies=self.proxies,verify=False,timeout=timeout or self.timeout,auth=auth or self.auth(),headers=default_http_headers())
             req.raise_for_status()
             return json.loads(req.content)
         else:
@@ -1933,7 +1940,7 @@ class WaptServer(object):
     def available(self):
         try:
             if self.server_url:
-                req = requests.head("%s" % (self.server_url),proxies=self.proxies,verify=False,timeout=self.timeout,auth=self.auth())
+                req = requests.head("%s" % (self.server_url),proxies=self.proxies,verify=False,timeout=self.timeout,auth=self.auth(),headers=default_http_headers())
                 req.raise_for_status()
                 return True
             else:
@@ -2210,7 +2217,7 @@ class WaptRepo(object):
                 timeout=self.timeout,
                 proxies=self.proxies,
                 verify=False,
-                headers={'cache-control':'no-cache','pragma':'no-cache'}
+                headers=default_http_headers()
                 ).headers['last-modified']
             return httpdatetime2isodate(packages_last_modified)
         except requests.RequestException as e:
@@ -2224,7 +2231,7 @@ class WaptRepo(object):
         """
         new_packages = []
         logger.debug(u'Read remote Packages zip file %s' % self.packages_url)
-        packages_answer = requests.get(self.packages_url,proxies=self.proxies,timeout=self.timeout, verify=False,headers={'cache-control':'no-cache','pragma':'no-cache'})
+        packages_answer = requests.get(self.packages_url,proxies=self.proxies,timeout=self.timeout, verify=False,headers=default_http_headers())
         packages_answer.raise_for_status()
 
         # Packages file is a zipfile with one Packages file inside
@@ -2333,14 +2340,14 @@ class WaptHostRepo(WaptRepo):
         try:
             host_package_url = "%s/%s.wapt" % (self.repo_url,host)
             host_cachedate = 'date-%s' % (host,)
-            host_request = requests.head(host_package_url,proxies=self.proxies,verify=False,timeout=self.timeout,headers={'cache-control':'no-cache','pragma':'no-cache'})
+            host_request = requests.head(host_package_url,proxies=self.proxies,verify=False,timeout=self.timeout,headers=default_http_headers())
             try:
                 host_request.raise_for_status()
                 host_package_date = httpdatetime2isodate(host_request.headers['last-modified'])
                 package = None
                 if host_package_date:
                     if force or host_package_date != waptdb.get_param(host_cachedate) or not waptdb.packages_matching(host):
-                        host_package = requests.get(host_package_url,proxies=self.proxies,verify=False,timeout=self.timeout,headers={'cache-control':'no-cache','pragma':'no-cache'})
+                        host_package = requests.get(host_package_url,proxies=self.proxies,verify=False,timeout=self.timeout,headers=default_http_headers())
                         host_package.raise_for_status()
 
                         # Packages file is a zipfile with one Packages file inside
@@ -2869,7 +2876,13 @@ class Wapt(object):
                     file = file[1:-1]
                     #upload par http vers un serveur WAPT  (url POST upload_package)
                     with open(file,'rb') as afile:
-                        req = requests.post("%s/upload_package/%s" % (self.waptserver.server_url,os.path.basename(file)),data=afile,proxies=self.waptserver.proxies,verify=False,auth=auth)
+                        req = requests.post("%s/upload_package/%s" % (self.waptserver.server_url,
+                                os.path.basename(file)),
+                                data=afile,
+                                proxies=self.waptserver.proxies,
+                                verify=False,
+                                auth=auth,
+                                headers=default_http_headers())
                         req.raise_for_status()
                         res = json.loads(req.content)
                         if res['status'] != 'OK':
