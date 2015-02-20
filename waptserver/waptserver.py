@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="1.0.3"
+__version__="1.1.0"
 
 import os,sys
 try:
@@ -1577,7 +1577,7 @@ def get_hosts():
         print { col:1 for col in columns }
         for host in hosts().find(query,fields={ col:1 for col in columns }):
             host.pop("_id")
-            if 'host' in host and 'computer_fqdn' in host['host']:
+            if 'depends' in columns and 'host' in host and 'computer_fqdn' in host['host']:
                 host_package = hosts_packages_repo.index.get(host['host']['computer_fqdn'],None)
                 if host_package:
                     depends = ensure_list(host_package.depends.split(','))
