@@ -3585,8 +3585,8 @@ class Wapt(object):
         >>> res == {'removed': ['tis-wapttest'], 'errors': []}
         True
         """
-
-        apackages = ensure_list(apackages)
+        if not isinstance(apackages,list):
+            apackages = [apackages]
 
         # ensure that apackages is a list of package requirements (strings)
         new_apackages = []
@@ -3699,7 +3699,8 @@ class Wapt(object):
         >>> wapt.download_packages(['tis-firefox','tis-waptdev'],usecache=False,printhook=nullhook)
         {'downloaded': [u'cache\\tis-firefox_28.0.0-1_all.wapt', u'cache\\tis-waptdev.wapt'], 'skipped': [], 'errors': []}
         """
-        package_requests = ensure_list(package_requests)
+        if not isinstance(package_requests,(list,tuple)):
+            package_requests = [ package_requests ]
         downloaded = []
         skipped = []
         errors = []
