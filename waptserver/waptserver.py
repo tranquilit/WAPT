@@ -1983,7 +1983,7 @@ if __name__ == "__main__":
         app.run(host='0.0.0.0',port=30880,debug=False)
     else:
         port = waptserver_port
-        server = Rocket(('0.0.0.0', port), 'wsgi', {"wsgi_app":app})
+        server = Rocket(('127.0.0.1', port), 'wsgi', {"wsgi_app":app})
         try:
             logger.info("starting waptserver")
             server.start()
