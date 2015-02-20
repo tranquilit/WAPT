@@ -1,9 +1,10 @@
+# htouvet <htouvet@tranquil.it>, 2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-02-20 12:39+0200\n"
-"PO-Revision-Date: 2015-02-20 12:39+0200\n"
+"PO-Revision-Date: 2015-02-20 13:06+0200\n"
 "Last-Translator: htouvet <htouvet@tranquil.it>\n"
 "Language-Team: TranquilITSystems\n"
 "Language: fr\n"
@@ -299,7 +300,9 @@ msgstr "Recher"
 
 #: tviseditpackage.butbuapply.hint
 msgid "Build the package, upload to the server and trigger Upgrade on the target host."
-msgstr "Contruit et télécharge le paquet vers le serveur, et lance la mise à jour du client."
+msgstr ""
+"Construit et télécharge le paquet vers le serveur, et lance la mise à jour "
+"du client."
 
 #: tviseditpackage.butsave.caption
 msgctxt "TVISEDITPACKAGE.BUTSAVE.CAPTION"
@@ -907,12 +910,13 @@ msgstr "Rafraîchir la liste des hôtes"
 #: tviswaptgui.acttriggerhostupdate.hint
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPDATE.HINT"
 msgid "Trigger update of available packages on hosts."
-msgstr "Lancer la mise à jour de la liste des paquets disponibles sur les machines"
+msgstr ""
+"Lancer la mise à jour de la liste des paquets disponibles sur les machines"
 
 #: tviswaptgui.acttriggerhostupgrade.caption
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.CAPTION"
 msgid "Apply updates"
-msgstr "Lancer la mise à jour des paquets."
+msgstr "Lancer l'installation des paquets."
 
 #: tviswaptgui.acttriggerhostupgrade.hint
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.HINT"
@@ -1428,7 +1432,7 @@ msgstr "Erreur lors du lancement de la mise à jour : %s"
 #: uwaptconsoleres.rserrorlaunchingupgrade
 msgctxt "uwaptconsoleres.rserrorlaunchingupgrade"
 msgid "Error launching upgrade: %s"
-msgstr "Erreur lors du lancement de l'upgrade : %s"
+msgstr "Erreur lors du lancement de la mise à jour : %s"
 
 #: uwaptconsoleres.rserrorwithmessage
 msgctxt "uwaptconsoleres.rserrorwithmessage"
