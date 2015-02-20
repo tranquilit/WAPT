@@ -67,9 +67,9 @@ interface
 
   Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy:Boolean=False): boolean;
   Function IdWget_Try(const fileURL: Utf8String;enableProxy:Boolean=False): boolean;
-  function IdHttpGetString(url: ansistring; enableProxy:Boolean= False;
+  function IdHttpGetString(const url: ansistring; enableProxy:Boolean= False;
       ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString=''):RawByteString;
-  function IdHttpPostData(const UserAgent: ansistring; const url: Ansistring; const Data: RawByteString; enableProxy:Boolean= False;
+  function IdHttpPostData(const url: Ansistring; const Data: RawByteString; enableProxy:Boolean= False;
      ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString=''):RawByteString;
 
   function GetReachableIP(IPS:ISuperObject;port:word):String;
@@ -414,6 +414,7 @@ begin
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
   http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
+  http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent;
 
   ssl := copy(fileURL, 1, length('https://')) = 'https://';
   if (ssl) then
@@ -478,6 +479,7 @@ begin
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
   http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
+  http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent;
 
   ssl := copy(fileUrl, 1, length('https://')) = 'https://';
   if (ssl) then
@@ -510,7 +512,7 @@ begin
 end;
 
 
-function IdHttpGetString(url: ansistring; enableProxy:Boolean= False;
+function IdHttpGetString(const url: ansistring; enableProxy:Boolean= False;
     ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString=''):RawByteString;
 var
   http:TIdHTTP;
@@ -520,6 +522,7 @@ begin
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
   http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
+  http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent;
 
   ssl := copy(url, 1, length('https://')) = 'https://';
   if (ssl) then
@@ -555,7 +558,7 @@ begin
   end;
 end;
 
-function IdHttpPostData(const UserAgent: ansistring; const url: Ansistring; const Data: RawByteString; enableProxy:Boolean= False;
+function IdHttpPostData(const url: Ansistring; const Data: RawByteString; enableProxy:Boolean= False;
    ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString=''):RawByteString;
 var
   http:TIdHTTP;
@@ -567,6 +570,7 @@ begin
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
   http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
+  http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent;
 
   ssl := copy(url, 1, length('https://')) = 'https://';
   if (ssl) then
@@ -634,7 +638,7 @@ begin
     action := '/'+action;
   if length(args)>0 then
     action := format(action,args);
-  res := IdhttpPostData('wapt', GetWaptServerURL+action, data.AsJson, UseProxyForServer,4000,60000,60000,WaptServerUser,WaptServerPassword);
+  res := IdhttpPostData(GetWaptServerURL+action, data.AsJson, UseProxyForServer,4000,60000,60000,WaptServerUser,WaptServerPassword);
   result := SO(res);
 end;
 
@@ -648,6 +652,7 @@ begin
   try
     try
       http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
+      http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent;
       http.ConnectTimeout:=timeout;
       if user <>'' then
       begin
@@ -1375,6 +1380,8 @@ begin
     action := format(action,args);
   http := TIdHTTP.Create;
   http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
+  http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent;
+
   if UseProxyForServer then
     IdConfigureProxy(http,HttpProxy);
 
