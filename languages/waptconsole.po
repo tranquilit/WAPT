@@ -1,5 +1,8 @@
-msgid " Uncheck \"Use simple file sharing\")."
+msgid " Uncheck \"Use simple file sharing\").Only required if a proxy is needed."
 msgstr "Content-Type: text/plain; charset=UTF-8"
+
+msgid "Only required if a proxy is needed."
+msgstr ""
 
 #: tvisapropos.button1.caption
 msgid "Close"
@@ -267,9 +270,17 @@ msgctxt "TVISEDITPACKAGE.ACTSEARCHPACKAGE.CAPTION"
 msgid "Search"
 msgstr ""
 
+#: tviseditpackage.butbuapply.hint
+msgid "Build the package, upload to the server and trigger Upgrade on the target host."
+msgstr ""
+
 #: tviseditpackage.butsave.caption
 msgctxt "TVISEDITPACKAGE.BUTSAVE.CAPTION"
 msgid "Save"
+msgstr ""
+
+#: tviseditpackage.butsave.hint
+msgid "Build and upload the package"
 msgstr ""
 
 #: tviseditpackage.button3.caption
@@ -496,17 +507,17 @@ msgstr ""
 
 #: tviswaptconfig.cbuseproxyforrepo.hint
 msgctxt "tviswaptconfig.cbuseproxyforrepo.hint"
-msgid "Activates proxy during transactions with the WAPT server."
+msgid "Activates proxy when accessing the main repository"
 msgstr ""
 
 #: tviswaptconfig.cbuseproxyforserver.hint
 msgctxt "TVISWAPTCONFIG.CBUSEPROXYFORSERVER.HINT"
-msgid "Activates proxy during transactions with the WAPT server."
+msgid "Activate proxy when accessing the WAPT server"
 msgstr ""
 
 #: tviswaptconfig.cbuseproxyfortemplate.hint
 msgctxt "TVISWAPTCONFIG.CBUSEPROXYFORTEMPLATE.HINT"
-msgid "Activates proxy during transactions with the WAPT server."
+msgid "Activate proxy when accessing the model repository"
 msgstr ""
 
 #: tviswaptconfig.eddefault_package_prefix.editlabel.caption
@@ -574,15 +585,18 @@ msgid "For package development :"
 msgstr ""
 
 #: tviswaptconfig.label4.caption
+msgctxt "tviswaptconfig.label4.caption"
 msgid "Activates proxy when accessing the main repository"
 msgstr ""
 
 #: tviswaptconfig.label5.caption
+msgctxt "tviswaptconfig.label5.caption"
 msgid "Activate proxy when accessing the WAPT server"
 msgstr ""
 
 #: tviswaptconfig.label6.caption
-msgid "Axctivate proxy when accessing the model repository"
+msgctxt "tviswaptconfig.label6.caption"
+msgid "Activate proxy when accessing the model repository"
 msgstr ""
 
 #: tviswaptconfig.label7.caption
@@ -840,7 +854,7 @@ msgstr ""
 
 #: tviswaptgui.acttriggerhostslistening.hint
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTSLISTENING.HINT"
-msgid "Trigger scan listening IP"
+msgid "Trigger scan of listening IP of registered hosts."
 msgstr ""
 
 #: tviswaptgui.acttriggerhostupdate.caption
@@ -850,7 +864,7 @@ msgstr ""
 
 #: tviswaptgui.acttriggerhostupdate.hint
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPDATE.HINT"
-msgid "Trigger hosts update"
+msgid "Trigger update of available packages on hosts."
 msgstr ""
 
 #: tviswaptgui.acttriggerhostupgrade.caption
@@ -1479,6 +1493,10 @@ msgctxt "uwaptconsoleres.rsnobundle"
 msgid "There is no package bundle."
 msgstr ""
 
+#: uwaptconsoleres.rsnoreachableip
+msgid "None IP reachable for this host. Check firewall, routes and remote service status"
+msgstr ""
+
 #: uwaptconsoleres.rsnorunningtask
 msgctxt "uwaptconsoleres.rsnorunningtask"
 msgid "No running tasks"
@@ -1607,6 +1625,14 @@ msgctxt "uwaptconsoleres.rstasklisterror"
 msgid "Error getting task list: %s"
 msgstr ""
 
+#: uwaptconsoleres.rstriggerhostsupdate
+msgid "Trigger packages list update on the hosts"
+msgstr ""
+
+#: uwaptconsoleres.rstriggerhostsupgrade
+msgid "Trigger installed packages upgrade on the hosts"
+msgstr ""
+
 #: uwaptconsoleres.rsundefwaptsrvinini
 msgctxt "uwaptconsoleres.rsundefwaptsrvinini"
 msgid "wapt_server is not defined in your %s ini file"
@@ -1615,6 +1641,10 @@ msgstr ""
 #: uwaptconsoleres.rsuninstallingpackage
 msgctxt "uwaptconsoleres.rsuninstallingpackage"
 msgid "Uninstalling %s..."
+msgstr ""
+
+#: uwaptconsoleres.rsunknownversion
+msgid "Unknown version"
 msgstr ""
 
 #: uwaptconsoleres.rsupdatingpackagelist
@@ -1689,6 +1719,19 @@ msgctxt "uwaptconsoleres.rswaptgetupgrade"
 msgid "WAPT-GET Upgrade using repository at %s"
 msgstr ""
 
+#: uwaptconsoleres.rswaptservererror
+msgid ""
+"Error on WAPT server:\n"
+"%s\n"
+msgstr ""
+
+#: uwaptconsoleres.rswaptserveroldversion
+msgid ""
+"Warning, the version of the server is too old.\n"
+"Current server version: %s\n"
+"Required server version: %s\n"
+msgstr ""
+
 #: uwaptconsoleres.rswaptsetuperror
 msgctxt "uwaptconsoleres.rswaptsetuperror"
 msgid "Error while creating agent : %s"
@@ -1702,6 +1745,14 @@ msgstr ""
 #: uwaptconsoleres.rswaptupgrade
 msgctxt "uwaptconsoleres.rswaptupgrade"
 msgid " waptupgrade : upgrade wapt-get.exe and database"
+msgstr ""
+
+#: uwaptconsoleres.rswaptupgradepackagebuilderror
+msgid "Unable to create WAPT Upgrade package"
+msgstr ""
+
+#: uwaptconsoleres.rswaptupgradepackagebuilt
+msgid "WAPT Upgrade package built and uploaded successfully"
 msgstr ""
 
 #: uwaptconsoleres.rswaptuploaderror

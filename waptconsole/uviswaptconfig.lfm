@@ -236,13 +236,13 @@ object VisWAPTConfig: TVisWAPTConfig
     Alignment = taRightJustify
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Right = 3
-    Caption = 'Axctivate proxy when accessing the model repository'
+    Caption = 'Activate proxy when accessing the model repository'
     ParentColor = False
   end
   object cbUseProxyForTemplate: TCheckBox
     Left = 281
     Height = 17
-    Hint = 'Axctivate proxy when accessing the model repository'
+    Hint = 'Activate proxy when accessing the model repository'
     Top = 272
     Width = 20
     Checked = True
