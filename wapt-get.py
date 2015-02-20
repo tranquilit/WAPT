@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.0.2"
+__version__ = "1.1.0"
 
 import codecs
 import getpass
@@ -675,7 +675,7 @@ def main():
                         result = mywapt.build_package(
                             source_dir,
                             inc_package_release=options.increlease,
-                            excludes=options.excludes.split(','))
+                            excludes=common.ensure_list(options.excludes))
                         package_fn = result['filename']
                         if package_fn:
                             packages.append(result)
@@ -701,12 +701,12 @@ def main():
                                 if options.private_key_passwd:
                                     signature = mywapt.sign_package(
                                         package_fn,
-                                        excludes=options.excludes.split(','),
+                                        excludes=common.ensure_list(options.excludes),
                                         callback=pwd_callback)
                                 else:
                                     signature = mywapt.sign_package(
                                         package_fn,
-                                        excludes=options.excludes.split(','),
+                                        excludes=common.ensure_list(options.excludes),
                                         callback=pwd_callback2)
                                 print u"Package %s signed : signature :\n%s" % (package_fn,signature)
                             else:
@@ -765,7 +765,7 @@ def main():
                         print('Signing %s' % waptfile)
                         signature = mywapt.sign_package(
                             waptfile,
-                            excludes=options.excludes.split(','))
+                            excludes=common.ensure_list(options.excludes))
                         print u"Package %s signed : signature :\n%s" % (
                             waptfile, signature)
                         sys.exit(0)
