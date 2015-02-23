@@ -76,7 +76,7 @@ _ = gettext
 
 from optparse import OptionParser
 usage="""\
-%prog -c configfile [action]
+%prog [-c configfile] [--devel] [action]
 
 WAPTServer daemon.
 

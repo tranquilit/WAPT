@@ -14,21 +14,14 @@ import sys
 
 import subprocess
 import ConfigParser
-import paramiko
 import shutil
 import getpass
 import glob
 import win32api
 
 """
-depends on paramiko
-
 pour le fichier autobuild.ini, la syntaxe est la suivante:
 [global]
-svn_username=xxxxxx
-svn_password=xxxxxxx
-checkout_dir=c:\\xxxxxxx
-svnroot=https://srvsvn/wapt/trunk
 ssh_username = root
 ssh_private_key = c:\private\srvwapt_priv.key
 ssh_hostname = srvwapt
@@ -37,12 +30,6 @@ ksigntool_path=C:\Program Files\kSign\kSignCMD.exe
 private_key=c:\private\certificat.p12
 key_password=xxxxxxxxx
 ksign=C:\Program Files\kSign\kSignCMD.exe /f C:\private\certificat.p12 /p xxxxxxxx $p
-
-Installation de pycrypto depuis
-http://www.voidspace.org.uk/python/modules.shtml#pycrypto
-
-Installation paramiko avec easy_install
-easy_install paramiko
 
 """
 
@@ -105,14 +92,10 @@ else:
     raise Exception("FATAL. Couldn't open config file : " + config_file)
 
 if config.has_section('global'):
-    svn_username = get_required_param('svn_username')
-    svn_password = get_required_param('svn_password')
-    checkout_dir = get_required_param('checkout_dir')
-    svnroot = get_required_param('svnroot')
-    ssh_username = get_required_param('ssh_username')
-    ssh_private_key = get_required_param('ssh_private_key')
-    ssh_hostname = get_required_param('ssh_hostname')
-    ssh_log_file = get_required_param('ssh_log_file')
+    #ssh_username = get_required_param('ssh_username')
+    #ssh_private_key = get_required_param('ssh_private_key')
+    #ssh_hostname = get_required_param('ssh_hostname')
+    #ssh_log_file = get_required_param('ssh_log_file')
 
     if config.has_option('global','ksigntool_path'):
         ksigntool_path =get_required_param('ksigntool_path')
@@ -157,15 +140,9 @@ ksign = """%(ksigntool_path)s /f %(private_key)s /p %(key_password)s $p""" % {
 print ksign
 
 ###CHECKOUT
-print "checkout du projet"
-if not os.path.isdir(os.path.dirname(checkout_dir)):
-    os.mkdir(os.path.dirname(checkout_dir))
-    print subprocess.check_output('git clone git://srvdev/wapt.git "%s"' % checkout_dir)
-else:
-    os.chdir(checkout_dir)
-    print subprocess.check_output('git checkout -f --')
-
-rev = open(os.path.join(checkout_dir,'version'),'r').read().strip()
+checkout_dir = os.path.join('C:\\', 'tranquilit', 'wapt')
+os.chdir(checkout_dir)
+#print subprocess.check_output('git checkout -f --')
 
 ### .EXE Signature
 sign_all_exe(ksigntool_path,private_key_p12,key_password,checkout_dir)
@@ -176,33 +153,16 @@ update_waptupgrade(checkout_dir)
 issc_binary = os.path.join(programfiles32(),'Inno Setup 5','ISCC.exe')
 
 for buildtype in ('waptserver','waptsetup','waptstarter'):
-    print "building %s_%s.exe" % (buildtype,rev)
+    print "building %s.exe" % (buildtype,)
 
     issfile = os.path.join(checkout_dir,'waptsetup','%s.iss'%buildtype )
     print "running waptsetup for iss file : %s " % issfile
-    cmd = '"%(issc_binary)s" /s"kSign=%(ksign)s" /f%(buildtype)s_rev%(rev)s %(issfile)s' % {
+    cmd = '"%(issc_binary)s" /s"kSign=%(ksign)s" /f%(buildtype)s %(issfile)s' % {
                     'issc_binary':issc_binary,
                     'ksign':ksign,
                     'buildtype':buildtype,
-                    'rev':rev,
                     'issfile':issfile
                     }
     print "ligne de commande : %s " % cmd
     print subprocess.check_output(cmd)
-                            #,'' % (buildtype,rev),"%s"%issfile])
-
-    localfile = os.path.join(os.path.dirname(issfile),'%s_rev%s.exe' % (buildtype,rev) )
-    remotefile = os.path.join('/var/www/wapt/nightly/','%s_rev%s.exe' % (buildtype,rev))
-
-    print "uploading %s to remote server" % localfile
-    print remotefile
-    paramiko.util.log_to_file(ssh_log_file)
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(
-                paramiko.AutoAddPolicy())
-    my_key = paramiko.DSSKey.from_private_key_file(ssh_private_key)
-    ssh.connect(ssh_hostname,port=22,username=ssh_username,pkey=my_key,timeout=10)
-    sftp = ssh.open_sftp()
-    sftp.put(remotepath=remotefile, localpath=localfile)
-    sftp.close()
-    ssh.close()
+                            #,'' % (buildtype,),"%s"%issfile])
