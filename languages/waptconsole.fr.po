@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-02-20 12:39+0200\n"
-"PO-Revision-Date: 2015-02-20 13:06+0200\n"
+"PO-Revision-Date: 2015-02-20 20:29+0200\n"
 "Last-Translator: htouvet <htouvet@tranquil.it>\n"
 "Language-Team: TranquilITSystems\n"
 "Language: fr\n"
@@ -905,7 +905,7 @@ msgstr "Scanner les IP en écoute des machines enregistrées"
 #: tviswaptgui.acttriggerhostupdate.caption
 msgctxt "tviswaptgui.acttriggerhostupdate.caption"
 msgid "Trigger hosts update"
-msgstr "Rafraîchir la liste des hôtes"
+msgstr "Lancer la mise à jour des paquets disponibles"
 
 #: tviswaptgui.acttriggerhostupdate.hint
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPDATE.HINT"
