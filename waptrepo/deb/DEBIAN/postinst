@@ -1,4 +1,15 @@
 #!/bin/bash
+
+umask 022
+
+id -u wapt
+if [ "$?" -eq 0 ] ; then
+  echo "wapt user already exists, skipping user creation"
+else
+  echo "wapt user doest not exists, creating user"
+  useradd --system -g www-data wapt
+fi
+
 echo "Creating wapt root directory"
 mkdir -p /var/www/wapt/
 mkdir -p /var/www/waptdev/
@@ -6,25 +17,16 @@ mkdir -p /var/www/wapt-host
 mkdir -p /var/www/wapt-group
 mkdir -p /etc/tis
 
-id -u wapt
-if [ "$?" -eq 0 ] ; then
-  echo "wapt user already exists, skipping user creation"
-else 
-  echo "wapt user doest not exists, creating user"
-  useradd --system -g www-data wapt
-fi
+find /var/www/ -type d -exec chown wapt:www-data {} ';'
 
-chown wapt:www-data -R /var/www/wapt/
-chown wapt:www-data -R /var/www/waptdev/
-chown wapt:www-data -R /var/www/wapt-host
-chown wapt:www-data -R /var/www/wapt-group
-
-chmod g+ws /var/www/wapt/
-chmod g+ws /var/www/waptdev/
-chmod g+ws /var/www/wapt-host/
-chmod g+ws /var/www/wapt-group/
+chmod 755 /var/www/
+chmod 755 /var/www/wapt/
+chmod 755 /var/www/waptdev/
+chmod 755 /var/www/wapt-host/
+chmod 755 /var/www/wapt-group/
 
 chmod +x /opt/wapt/waptpackage.py
 chmod +x /opt/wapt/wapt-scanpackages.py
 /usr/bin/python /opt/wapt/wapt-scanpackages.py /var/www/wapt/
 
+exit 0
