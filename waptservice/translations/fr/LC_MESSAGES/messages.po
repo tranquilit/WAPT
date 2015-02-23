@@ -1,251 +1,73 @@
 # French translations for PROJECT.
 # Copyright (C) 2015 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
-# mcadorel-adm <ss>, 2015.
+# Mael Cadorel <mcadorel@tranquil.it>, 2015.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-01-23 17:45+0100\n"
-"PO-Revision-Date: 2015-01-22 17:28+0200\n"
-"Last-Translator: mcadorel-adm <ss>\n"
-"Language-Team: moi\n"
+"POT-Creation-Date: 2015-02-23 17:10+0100\n"
+"PO-Revision-Date: 2015-02-23 17:10+0100\n"
+"Last-Translator: Jeremie Courreges-Anglas <jca@tranquil.it>\n"
+"Language-Team: Technique TIS <technique@tranquil.it>\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 1.3\n"
+"Generated-By: Babel 0.9.6\n"
 
-#: waptservice.py:125
+#: waptservice.py:129
 msgid "Invalid log level: {}"
 msgstr ""
 
-#: waptservice.py:255
+#: waptservice.py:267
 msgid "FATAL. Couldn't open config file : {}"
-msgstr "Irrécupérable. Impossible d'ouvrir le fichier : {}"
+msgstr "Erreur fatale. Impossible d'ouvrir le fichier : {}"
 
-#: waptservice.py:320
+#: waptservice.py:351
 msgid ""
 "FATAL, configuration file {} has no section [global]. Please check "
 "Waptserver documentation"
 msgstr ""
-"Irrécupérable. Le fichier de configuration {} n'a pas de section "
+"Erreur fatale. Le fichier de configuration {} n'a pas de section "
 "[global]. Veuillez vous référer à la documentation de WAPTserver."
 
-#: waptservice.py:765
+#: waptservice.py:806
 msgid "Update status"
 msgstr "Statut des mises à jour"
 
-#: waptservice.py:803
+#: waptservice.py:844
 msgid "Reload configuration"
 msgstr "Recharger la configuration"
 
-#: waptservice.py:842
+#: waptservice.py:884
 msgid "Download upgrades"
 msgstr "Télécharger les mises à jour"
 
-#: waptservice.py:872
+#: waptservice.py:915
 msgid "Installed software update"
 msgstr "Mises à jour des logiciels installés"
 
-#: waptservice.py:902
+#: waptservice.py:945
 msgid "LongTask"
 msgstr ""
 
-#: waptservice.py:917
+#: waptservice.py:960
 msgid "Cleanup"
 msgstr ""
 
-#: waptservice.py:933
+#: waptservice.py:976
 msgid "Trace of the installation of {}"
 msgstr "Traces de l'installation de {}"
 
-#: waptservice.py:963
+#: waptservice.py:1006
 msgid "Saving host to the WAPT server"
 msgstr "Enregistrement de la machine sur le serveur WAPT."
 
-#: waptservice.py:976
+#: waptservice.py:1019
 msgid "Inventory of the host"
 msgstr "Inventaire de la machine"
-
-#: waptservice.py:1248
-msgid ""
-"{classname} {id} created {create_date} started:{start_date} "
-"finished:{finish_date} "
-msgstr ""
-"{classname} {id} créé le {create_date} commencé le : {start_date} terminé"
-" le :{finish_date} "
-
-#: waptservice.py:1304
-msgid "Reconfiguring network access"
-msgstr "Reconfiguration de l'accès au réseau"
-
-#: waptservice.py:1351
-#, python-format
-msgid "WaptService restarted using batch file %s"
-msgstr "WAPTservice relancé avec le fichier batch %s"
-
-#: waptservice.py:1355
-msgid "Restarting local WAPT service"
-msgstr "Redémarrage du service WAPT local"
-
-#: waptservice.py:1383
-msgid "{} new package(s)"
-msgstr "{} nouveau(x) paquet(s)"
-
-#: waptservice.py:1385
-msgid "{} removed package(s)"
-msgstr "{} paquet(s) retiré(s)"
-
-#: waptservice.py:1386
-msgid "{} package(s) in the repository"
-msgstr "{} paquet(s) dans le dépôt"
-
-#: waptservice.py:1393
-msgid "Packages to be updated : {}"
-msgstr "Paquets à mettre à jour : {}"
-
-#: waptservice.py:1395
-msgid "Packages with errors : {}"
-msgstr "Paquets avec des erreurs : {}"
-
-#: waptservice.py:1397 waptservice.py:1452
-msgid "System up-to-date"
-msgstr "Le système est à jour"
-
-#: waptservice.py:1401
-msgid "Updating available packages"
-msgstr "Mise à jour de la liste des paquets disponibles"
-
-#: waptservice.py:1444 waptservice.py:1637
-msgid "Installed : {}"
-msgstr "Installé(s) : {}"
-
-#: waptservice.py:1446 waptservice.py:1639
-msgid "Updated : {}"
-msgstr "Mis à jour : {}"
-
-#: waptservice.py:1448 waptservice.py:1641 waptservice.py:1677
-msgid "Errors : {}"
-msgstr "Erreurs : {}"
-
-#: waptservice.py:1450 waptservice.py:1643
-msgid "Unavailable : {}"
-msgstr "Indisponible(s) : {}"
-
-#: waptservice.py:1457
-msgid "Update packages installed on host"
-msgstr "Mettre à jour les paquets installés sur la machine"
-
-#: waptservice.py:1474
-msgid "WAPT Server has been notified"
-msgstr "Le serveur WAPT a été informé"
-
-#: waptservice.py:1477
-msgid "Error while sending to the server : {}"
-msgstr "Erreur lors de l'envoi au serveur : {}"
-
-#: waptservice.py:1480
-msgid "WAPT Server is not available"
-msgstr "Le serveur WAPT n'est pas disponible"
-
-#: waptservice.py:1483
-msgid "Update server with this host's status"
-msgstr "Informer le serveur du statut de cette machine"
-
-#: waptservice.py:1500
-msgid "Inventory has been sent to the WAPT server"
-msgstr "L'inventaire a été envoyé au serveur WAPT"
-
-#: waptservice.py:1503
-msgid "Error while sending inventory to the server : {}"
-msgstr "Erreur lors de l'envoi de l'inventaire au serveur : {}"
-
-#: waptservice.py:1506
-msgid "WAPT Server is not avalable"
-msgstr "Le serveur WAPT n'est pas disponible"
-
-#: waptservice.py:1529
-msgid "Packages erased : {}"
-msgstr "Paquets effacés : {}"
-
-#: waptservice.py:1532
-msgid "Error while clearing local cache : {}"
-msgstr "Erreur lors du vidage de cache local : {}"
-
-#: waptservice.py:1535
-msgid "Clear local package cache"
-msgstr "Vider le cache local de paquets"
-
-#: waptservice.py:1560
-msgid "raising an error for Test WaptLongTask"
-msgstr "remontée d'une erreur pour le test de WaptLongTask"
-
-#: waptservice.py:1566
-msgid "Test long running task of {}s"
-msgstr ""
-
-#: waptservice.py:1592
-msgid "Error while downloading {packagename}: {error}"
-msgstr "Erreur lors du téléchargement de {packagename}: {error}"
-
-#: waptservice.py:1595
-msgid "Done downloading {packagename}. {speed} kB/s"
-msgstr "Téléchargement de {packagename} terminé. {speed} kB/s"
-
-#: waptservice.py:1597
-msgid "Done downloading {packagename}."
-msgstr "Téléchargement de {packagename} terminé."
-
-#: waptservice.py:1610
-msgid "Download of {packagename} (tâche #{id})"
-msgstr "Téléchargement de {packagename} (tâche #{id})"
-
-#: waptservice.py:1646
-msgid "Error during install of {}:{}"
-msgstr "Erreur lors de l'installation de {} : {}"
-
-#: waptservice.py:1658
-msgid "Installation of {packagename} (task #{id})"
-msgstr "Installation de {packagename} (task #{id})"
-
-#: waptservice.py:1675
-msgid "Removed : {}"
-msgstr "Retiré(s) : {}"
-
-#: waptservice.py:1681
-msgid "Uninstall of {packagename} (task #{id})"
-msgstr "Désinstallation de {packagename} (task #{id})"
-
-#: waptservice.py:1691
-#, python-format
-msgid "Packages removed from database : %s"
-msgstr "Paquets retirés de la base : %s"
-
-#: waptservice.py:1693
-msgid "No package removed from database."
-msgstr "Aucun paquet retiré de la base."
-
-#: waptservice.py:1696
-msgid "Forget {packagenames} (task #{id})"
-msgstr "Oubli de {packagenames} (task #{id})"
-
-#: waptservice.py:1867
-msgid "Running: {description}"
-msgstr "En cours : {description}"
-
-#: waptservice.py:1875
-msgid ""
-"Done: {description}\n"
-"{summary}"
-msgstr ""
-"Terminé : {description}\n"
-"{summary}"
-
-#: waptservice.py:1881
-msgid "Canceled"
-msgstr "Annulé"
 
 #: templates/download.html:4
 msgid "Downloads"
@@ -350,6 +172,10 @@ msgstr "Constructeur du système : {0}"
 #: templates/index.html:31
 msgid "System product name : {0}"
 msgstr "Nom de produit du système : {0}"
+
+#: templates/install.html:3
+msgid "Installing {0} <a href=\"task?id={1}\">task {1}"
+msgstr ""
 
 #: templates/layout.html:19
 msgid "WAPT Service status"
@@ -459,6 +285,10 @@ msgstr "Téléchargement"
 msgid "Uninstall"
 msgstr "Désinstaller"
 
+#: templates/remove.html:3
+msgid "Launched uninstall of {0} <a href=\"task?id={1}\"> task {1}</a>"
+msgstr ""
+
 #: templates/status.html:8
 msgid "Status"
 msgstr "Statut"
@@ -491,170 +321,11 @@ msgstr "Tâche n°{0} : {1}"
 msgid "Tasks manager"
 msgstr "Gestionnaire de tâches"
 
-#: templates/tasks.html:6
+#: templates/tasks.html:5
 msgid "Running: {0}"
 msgstr "En cours : {0}"
 
-#: templates/tasks.html:14
-msgid "pending"
-msgstr "en attente"
-
-#: templates/tasks.html:14
-msgid "done"
-msgstr "terminé"
-
-#: templates/tasks.html:14
-msgid "errors"
-msgstr "erreurs"
-
-#: templates/tasks.html:19
+#: templates/tasks.html:18
 msgid "Cancel"
 msgstr "Annuler"
-
-#~ msgid "usage: "
-#~ msgstr ""
-
-#~ msgid ".__call__() not defined"
-#~ msgstr ""
-
-#~ msgid "unknown parser %r (choices: %s)"
-#~ msgstr ""
-
-#~ msgid "argument \"-\" with mode %r"
-#~ msgstr ""
-
-#~ msgid "can't open '%s': %s"
-#~ msgstr ""
-
-#~ msgid "cannot merge actions - two groups are named %r"
-#~ msgstr ""
-
-#~ msgid "'required' is an invalid argument for positionals"
-#~ msgstr ""
-
-#~ msgid "invalid option string %r: must start with a character %r"
-#~ msgstr ""
-
-#~ msgid "dest= is required for options like %r"
-#~ msgstr ""
-
-#~ msgid "invalid conflict_resolution value: %r"
-#~ msgstr ""
-
-#~ msgid "conflicting option string(s): %s"
-#~ msgstr ""
-
-#~ msgid "mutually exclusive arguments must be optional"
-#~ msgstr ""
-
-#~ msgid "positional arguments"
-#~ msgstr ""
-
-#~ msgid "optional arguments"
-#~ msgstr ""
-
-#~ msgid "show this help message and exit"
-#~ msgstr ""
-
-#~ msgid "show program's version number and exit"
-#~ msgstr ""
-
-#~ msgid "cannot have multiple subparser arguments"
-#~ msgstr ""
-
-#~ msgid "unrecognized arguments: %s"
-#~ msgstr ""
-
-#~ msgid "not allowed with argument %s"
-#~ msgstr ""
-
-#~ msgid "ignored explicit argument %r"
-#~ msgstr ""
-
-#~ msgid "too few arguments"
-#~ msgstr ""
-
-#~ msgid "argument %s is required"
-#~ msgstr ""
-
-#~ msgid "one of the arguments %s is required"
-#~ msgstr ""
-
-#~ msgid "expected one argument"
-#~ msgstr ""
-
-#~ msgid "expected at most one argument"
-#~ msgstr ""
-
-#~ msgid "expected at least one argument"
-#~ msgstr ""
-
-#~ msgid "expected %s argument(s)"
-#~ msgstr ""
-
-#~ msgid "ambiguous option: %s could match %s"
-#~ msgstr ""
-
-#~ msgid "unexpected option string: %s"
-#~ msgstr ""
-
-#~ msgid "%r is not callable"
-#~ msgstr ""
-
-#~ msgid "invalid %s value: %r"
-#~ msgstr ""
-
-#~ msgid "invalid choice: %r (choose from %s)"
-#~ msgstr ""
-
-#~ msgid "%s: error: %s\n"
-#~ msgstr ""
-
-#~ msgid "no such option: %s"
-#~ msgstr ""
-
-#~ msgid "ambiguous option: %s (%s?)"
-#~ msgstr ""
-
-#~ msgid "Usage: %s\n"
-#~ msgstr ""
-
-#~ msgid "Usage"
-#~ msgstr ""
-
-#~ msgid "integer"
-#~ msgstr ""
-
-#~ msgid "long integer"
-#~ msgstr ""
-
-#~ msgid "floating-point"
-#~ msgstr ""
-
-#~ msgid "complex"
-#~ msgstr ""
-
-#~ msgid "option %s: invalid %s value: %r"
-#~ msgstr ""
-
-#~ msgid "option %s: invalid choice: %r (choose from %s)"
-#~ msgstr ""
-
-#~ msgid "%prog [options]"
-#~ msgstr ""
-
-#~ msgid "%s option requires an argument"
-#~ msgstr ""
-
-#~ msgid "%s option requires %d arguments"
-#~ msgstr ""
-
-#~ msgid "%s option does not take a value"
-#~ msgstr ""
-
-#~ msgid "Options"
-#~ msgstr ""
-
-#~ msgid "algorithm"
-#~ msgstr ""
 

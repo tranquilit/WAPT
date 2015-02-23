@@ -8,237 +8,63 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-01-23 17:45+0100\n"
+"POT-Creation-Date: 2015-02-23 17:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 1.3\n"
+"Generated-By: Babel 0.9.6\n"
 
-#: waptservice.py:125
+#: waptservice.py:129
 msgid "Invalid log level: {}"
 msgstr ""
 
-#: waptservice.py:255
+#: waptservice.py:267
 msgid "FATAL. Couldn't open config file : {}"
 msgstr ""
 
-#: waptservice.py:320
+#: waptservice.py:351
 msgid ""
 "FATAL, configuration file {} has no section [global]. Please check "
 "Waptserver documentation"
 msgstr ""
 
-#: waptservice.py:765
+#: waptservice.py:806
 msgid "Update status"
 msgstr ""
 
-#: waptservice.py:803
+#: waptservice.py:844
 msgid "Reload configuration"
 msgstr ""
 
-#: waptservice.py:842
+#: waptservice.py:884
 msgid "Download upgrades"
 msgstr ""
 
-#: waptservice.py:872
+#: waptservice.py:915
 msgid "Installed software update"
 msgstr ""
 
-#: waptservice.py:902
+#: waptservice.py:945
 msgid "LongTask"
 msgstr ""
 
-#: waptservice.py:917
+#: waptservice.py:960
 msgid "Cleanup"
 msgstr ""
 
-#: waptservice.py:933
+#: waptservice.py:976
 msgid "Trace of the installation of {}"
 msgstr ""
 
-#: waptservice.py:963
+#: waptservice.py:1006
 msgid "Saving host to the WAPT server"
 msgstr ""
 
-#: waptservice.py:976
+#: waptservice.py:1019
 msgid "Inventory of the host"
-msgstr ""
-
-#: waptservice.py:1248
-msgid ""
-"{classname} {id} created {create_date} started:{start_date} "
-"finished:{finish_date} "
-msgstr ""
-
-#: waptservice.py:1304
-msgid "Reconfiguring network access"
-msgstr ""
-
-#: waptservice.py:1351
-#, python-format
-msgid "WaptService restarted using batch file %s"
-msgstr ""
-
-#: waptservice.py:1355
-msgid "Restarting local WAPT service"
-msgstr ""
-
-#: waptservice.py:1383
-msgid "{} new package(s)"
-msgstr ""
-
-#: waptservice.py:1385
-msgid "{} removed package(s)"
-msgstr ""
-
-#: waptservice.py:1386
-msgid "{} package(s) in the repository"
-msgstr ""
-
-#: waptservice.py:1393
-msgid "Packages to be updated : {}"
-msgstr ""
-
-#: waptservice.py:1395
-msgid "Packages with errors : {}"
-msgstr ""
-
-#: waptservice.py:1397 waptservice.py:1452
-msgid "System up-to-date"
-msgstr ""
-
-#: waptservice.py:1401
-msgid "Updating available packages"
-msgstr ""
-
-#: waptservice.py:1444 waptservice.py:1637
-msgid "Installed : {}"
-msgstr ""
-
-#: waptservice.py:1446 waptservice.py:1639
-msgid "Updated : {}"
-msgstr ""
-
-#: waptservice.py:1448 waptservice.py:1641 waptservice.py:1677
-msgid "Errors : {}"
-msgstr ""
-
-#: waptservice.py:1450 waptservice.py:1643
-msgid "Unavailable : {}"
-msgstr ""
-
-#: waptservice.py:1457
-msgid "Update packages installed on host"
-msgstr ""
-
-#: waptservice.py:1474
-msgid "WAPT Server has been notified"
-msgstr ""
-
-#: waptservice.py:1477
-msgid "Error while sending to the server : {}"
-msgstr ""
-
-#: waptservice.py:1480
-msgid "WAPT Server is not available"
-msgstr ""
-
-#: waptservice.py:1483
-msgid "Update server with this host's status"
-msgstr ""
-
-#: waptservice.py:1500
-msgid "Inventory has been sent to the WAPT server"
-msgstr ""
-
-#: waptservice.py:1503
-msgid "Error while sending inventory to the server : {}"
-msgstr ""
-
-#: waptservice.py:1506
-msgid "WAPT Server is not avalable"
-msgstr ""
-
-#: waptservice.py:1529
-msgid "Packages erased : {}"
-msgstr ""
-
-#: waptservice.py:1532
-msgid "Error while clearing local cache : {}"
-msgstr ""
-
-#: waptservice.py:1535
-msgid "Clear local package cache"
-msgstr ""
-
-#: waptservice.py:1560
-msgid "raising an error for Test WaptLongTask"
-msgstr ""
-
-#: waptservice.py:1566
-msgid "Test long running task of {}s"
-msgstr ""
-
-#: waptservice.py:1592
-msgid "Error while downloading {packagename}: {error}"
-msgstr ""
-
-#: waptservice.py:1595
-msgid "Done downloading {packagename}. {speed} kB/s"
-msgstr ""
-
-#: waptservice.py:1597
-msgid "Done downloading {packagename}."
-msgstr ""
-
-#: waptservice.py:1610
-msgid "Download of {packagename} (tâche #{id})"
-msgstr ""
-
-#: waptservice.py:1646
-msgid "Error during install of {}:{}"
-msgstr ""
-
-#: waptservice.py:1658
-msgid "Installation of {packagename} (task #{id})"
-msgstr ""
-
-#: waptservice.py:1675
-msgid "Removed : {}"
-msgstr ""
-
-#: waptservice.py:1681
-msgid "Uninstall of {packagename} (task #{id})"
-msgstr ""
-
-#: waptservice.py:1691
-#, python-format
-msgid "Packages removed from database : %s"
-msgstr ""
-
-#: waptservice.py:1693
-msgid "No package removed from database."
-msgstr ""
-
-#: waptservice.py:1696
-msgid "Forget {packagenames} (task #{id})"
-msgstr ""
-
-#: waptservice.py:1867
-msgid "Running: {description}"
-msgstr ""
-
-#: waptservice.py:1875
-msgid ""
-"Done: {description}\n"
-"{summary}"
-msgstr ""
-
-#: waptservice.py:1881
-msgid "Canceled"
 msgstr ""
 
 #: templates/download.html:4
@@ -343,6 +169,10 @@ msgstr ""
 
 #: templates/index.html:31
 msgid "System product name : {0}"
+msgstr ""
+
+#: templates/install.html:3
+msgid "Installing {0} <a href=\"task?id={1}\">task {1}"
 msgstr ""
 
 #: templates/layout.html:19
@@ -451,6 +281,10 @@ msgstr ""
 msgid "Uninstall"
 msgstr ""
 
+#: templates/remove.html:3
+msgid "Launched uninstall of {0} <a href=\"task?id={1}\"> task {1}</a>"
+msgstr ""
+
 #: templates/status.html:8
 msgid "Status"
 msgstr ""
@@ -479,27 +313,15 @@ msgstr ""
 msgid "Task n.{0} : {1}"
 msgstr ""
 
-#: templates/tasks.html:4
+#: templates/tasks.html:3
 msgid "Tasks manager"
 msgstr ""
 
-#: templates/tasks.html:6
+#: templates/tasks.html:5
 msgid "Running: {0}"
 msgstr ""
 
-#: templates/tasks.html:14
-msgid "pending"
-msgstr ""
-
-#: templates/tasks.html:14
-msgid "done"
-msgstr ""
-
-#: templates/tasks.html:14
-msgid "errors"
-msgstr ""
-
-#: templates/tasks.html:19
+#: templates/tasks.html:18
 msgid "Cancel"
 msgstr ""
 
