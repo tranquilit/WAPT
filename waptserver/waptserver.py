@@ -899,7 +899,7 @@ def install_package():
             s.close
             if ip and waptservice_port:
                 logger.info( "installing %s on %s ..." % (package,ip))
-                data = json.loads(requests.get("http://%s:%d/install.json?package=%s" % ( ip, waptservice_port,package),proxies=None).text,timeout=clients_read_timeout)
+                data = json.loads(requests.get("http://%s:%d/install.json?package=%s" % ( ip, waptservice_port,package),proxies=None,verify=False).text,timeout=clients_read_timeout)
                 result = dict(message=data,status='OK')
             else:
                 raise Exception(_("The WAPT service port is not defined."))
@@ -929,7 +929,7 @@ def remove_package():
             s.close
             if ip and waptservice_port:
                 logger.info( "removing %s on %s ..." % (package,ip))
-                httpreq = requests.get("http://%s:%d/remove.json?package=%s" % ( ip, waptservice_port,package),proxies=None,timeout=clients_read_timeout)
+                httpreq = requests.get("http://%s:%d/remove.json?package=%s" % ( ip, waptservice_port,package),proxies=None,verify=False, timeout=clients_read_timeout)
                 httpreq.raise_for_status()
                 data = json.loads(httpreq.text)
                 result = dict(message=data,status='OK')
@@ -961,7 +961,7 @@ def forget_packages():
             s.close
             if ip and waptservice_port:
                 logger.info( "Forgetting %s on %s ..." % (package,ip))
-                httpreq = requests.get("http://%s:%d/forget.json?package=%s" % ( ip, waptservice_port,package),proxies=None,timeout=clients_read_timeout)
+                httpreq = requests.get("http://%s:%d/forget.json?package=%s" % ( ip, waptservice_port,package),verify=False, proxies=None,timeout=clients_read_timeout)
                 httpreq.raise_for_status()
                 data = json.loads(httpreq.text)
                 result = dict(message=data,status='OK')
@@ -990,7 +990,7 @@ def host_tasks():
             listening_data = get_ip_port(host_data)
 
             if listening_data['address']:
-                data = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json" % listening_data,proxies=None,timeout=clients_read_timeout).text
+                data = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json" % listening_data,proxies=None,verify=False, timeout=clients_read_timeout).text
                 result = dict(message=json.loads(data),status='OK')
             else:
                 raise EWaptMissingHostData(_("The WAPT service port is not defined."))
@@ -1022,7 +1022,7 @@ def host_taskkill():
             s.connect((ip,waptservice_port))
             s.close
             if ip and waptservice_port:
-                data = json.loads(requests.get("http://%s:%d/cancel_running_task.json" % ( ip, waptservice_port),proxies=None,timeout=clients_read_timeout).text)
+                data = json.loads(requests.get("http://%s:%d/cancel_running_task.json" % ( ip, waptservice_port),verify=False, proxies=None,timeout=clients_read_timeout).text)
                 result = dict(message=data,status='OK')
             else:
                 raise Exception(_("The WAPT service port is not defined."))
@@ -1345,15 +1345,16 @@ def get_ip_port(host_data):
         raise EWaptUnknownHost(_('Unknown uuid'))
 
     if 'wapt' in host_data:
-        if 'listening_address' in host_data['wapt'] and \
+        if host_data['wapt'].get('listening_address',None) and \
                   'address' in host_data['wapt']['listening_address'] and \
                   host_data['wapt']['listening_address']['address']:
             return host_data['wapt']['listening_address']
         else:
             return dict(
-                protocol='http',
+                protocol=host_data['wapt'].get('waptservice_protocol','http'),
                 address=get_reachable_ip(ensure_list(host_data['host']['connected_ips'])),
-                port=waptservice_port)
+                port=host_data['wapt'].get('waptservice_port',waptservice_port),
+                timestamp=datetime2isodate())
     else:
         raise EWaptHostUnreachable(_('No reachable IP for {}').format(host_data['uuid']))
 
@@ -1394,7 +1395,7 @@ def host_reachable_ip():
     try:
         try:
             uuid = request.args['uuid']
-            host_data = hosts().find_one({ "uuid": uuid},fields={'softwares':0,'packages':0})
+            host_data = hosts().find_one({ "uuid": uuid},fields = {'uuid':1,'host.computer_fqdn':1,'wapt':1,'host.connected_ips':1})
             result = get_ip_port(host_data)
         except Exception as e:
             raise EWaptHostUnreachable(_("Couldn't connect to web service : {}.").format(e))
@@ -1416,7 +1417,7 @@ def trigger_upgrade():
         msg = u''
         if listening_address and listening_address['address'] and listening_address['port']:
             logger.info( "Triggering upgrade for %s at address %s..." % (uuid,listening_address['address']))
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/upgrade.json" % listening_address,proxies=None,timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/upgrade.json" % listening_address,proxies=None,verify=False, timeout=clients_read_timeout).text
             try:
                 client_result = json.loads(client_result)
                 result = client_result['content']
@@ -1454,7 +1455,7 @@ def trigger_update():
             args = {}
             args.update(listening_address)
             args['notify_user'] = notify_user
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/update.json?notify_user=%(notify_user)s&notify_server=1" % args,proxies=None,timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/update.json?notify_user=%(notify_user)s&notify_server=1" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
             try:
                 client_result = json.loads(client_result)
                 msg = _(u"Triggered task: {}").format(client_result['description'])
@@ -1486,7 +1487,7 @@ def host_tasks_status():
 
         if listening_address and listening_address['address'] and listening_address['port']:
             logger.info( "Get tasks status for %s at address %s..." % (uuid,listening_address['address']))
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json" % listening_address,proxies=None,timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json" % listening_address,proxies=None,verify=False,timeout=clients_read_timeout).text
             try:
                 client_result = json.loads(client_result)
             except ValueError:
@@ -1595,14 +1596,14 @@ def get_hosts():
                     host['depends'] = depends
             try:
                 la = host['wapt']['listening_address']
-                if la['address']  and (la['timestamp'] != ''):
+                if la['address']  and la['timestamp']:
                     reachable = 'OK'
-                elif not la['address'] and (la['timestamp'] != ''):
+                elif not la['address'] and la['timestamp']:
                     reachable = 'UNREACHABLE'
                 else:
                     reachable = 'UNKNOWN'
                 host['reachable'] = reachable
-            except KeyError:
+            except (KeyError,TypeError):
                 host['reachable'] = 'UNKNOWN'
 
             try:
@@ -1697,26 +1698,14 @@ class CheckHostWorker(threading.Thread):
         self.start()
 
     def check_host(self,host_data):
-        protocol = 'http'
-        port = waptservice_port
-        ip = ''
-        if 'host' in host_data:
-            # check with last known listening informations
-            if 'wapt' in host_data['host'] and \
-                    'listening_address' in  host_data['host']['wapt'] and \
-                    host_data['host']['wapt'].get('address',''):
-                la = host_data['host']['wapt']['listening_address']
-                protocol = la['protocol']
-                ip = la['address']
-                port = la['port']
-                logger.debug("Client checker %s is testing %s" % (self.ident,ip))
-                ip = get_reachable_ip(ip,port,timeout=self.timeout)
-            # check with other connected ips
-            if not ip and 'connected_ips' in host_data['host']:
-                ips = host_data['host']['connected_ips']
-                logger.debug("Client checker %s is testing %s" % (self.ident,ips))
-                ip = get_reachable_ip(ips,port,timeout=self.timeout)
-        return dict(protocol='http',address=ip,port=waptservice_port,timestamp=datetime2isodate())
+        try:
+            listening_info = get_ip_port(host_data)
+            #update timestamp
+            listening_info['timestamp'] = datetime2isodate()
+            return listening_info
+        except:
+            # return "not reachable" information
+            return dict(protocol='',address='',port=waptservice_port,timestamp=datetime2isodate())
 
     def run(self):
         logger.debug('worker %s running'%self.ident)
@@ -1727,7 +1716,7 @@ class CheckHostWorker(threading.Thread):
                 with MongoClient(mongodb_ip, int(mongodb_port)) as mongo_client:
                     # stores result
                     mongo_client.wapt.hosts.update({"_id" : host_data['_id'] }, {"$set": {'wapt.listening_address':listening_infos }})
-                    logger.debug("Client check %s finished with %s" % (self.ident,listening_infos['address']))
+                    logger.debug("Client check %s finished with %s" % (self.ident,listening_infos))
                 self.queue.task_done()
             except Queue.Empty:
                 break
@@ -1763,7 +1752,11 @@ class CheckHostsWaptService(threading.Thread):
                 query = {"host.connected_ips":{"$exists": "true", "$ne" :[]}}
 
             logger.debug('Reset listening status timestamps of hosts')
-            mongoclient.wapt.hosts.update(query,{"$set": {'wapt.listening_address.timestamp':'' }},multi=True)
+            try:
+                mongoclient.wapt.hosts.update(query,{"$set": {'wapt.listening_address.timestamp':''}},multi=True)
+            except Exception as e:
+                logger.debug('error resetting timestamp %s' % e)
+                mongoclient.wapt.hosts.update(query,{"$unset": {'wapt.listening_address':1}},multi=True)
 
             queue = Queue.Queue()
             for data in mongoclient.wapt.hosts.find(query,fields=fields):
