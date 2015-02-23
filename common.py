@@ -4069,9 +4069,6 @@ class Wapt(object):
         """
         inv = {'uuid': self.host_uuid}
         inv['wapt'] = self.wapt_status()
-        inv['wapt']['repositories'] = [ r.as_dict() for r in self.repositories]
-        if self.waptserver:
-            inv['wapt']['waptserver'] = self.waptserver.as_dict()
         inv['host'] = setuphelpers.host_info()
         inv['softwares'] = setuphelpers.installed_softwares('')
         inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
@@ -4108,6 +4105,33 @@ class Wapt(object):
         result['setuphelpers-version'] = setuphelpers.__version__
         result['wapt-py-version'] = __version__
         result['common-version'] = __version__
+
+        # read from config
+        if self.config.has_option('global','waptservice_sslport'):
+            port = self.config.get('global','waptservice_sslport')
+            if port:
+                result['waptservice_protocol'] = 'https'
+                result['waptservice_port'] = int(port)
+            else:
+                result['waptservice_protocol'] = None
+                result['waptservice_port'] = None
+        elif self.config.has_option('global','waptservice_port'):
+            port = self.config.get('global','waptservice_port')
+            if port:
+                result['waptservice_protocol'] = 'http'
+                result['waptservice_port'] = int(port)
+            else:
+            # could be better
+                result['waptservice_protocol'] = None
+                result['waptservice_port'] = None
+        else:
+            # could be better
+            result['waptservice_protocol'] = 'http'
+            result['waptservice_port'] = 8088
+
+        result['repositories'] = [ r.as_dict() for r in self.repositories]
+        if self.waptserver:
+            result['waptserver'] = self.waptserver.as_dict()
         return result
 
     def reachable_ip(self):
