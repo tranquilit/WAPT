@@ -116,9 +116,9 @@ log_directory = os.path.join(wapt_root_dir,'log')
 if not os.path.exists(log_directory):
     os.mkdir(log_directory)
 
-hdlr = logging.StreamHandler(sys.stdout)
-hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
-logger.addHandler(hdlr)
+#hdlr = logging.StreamHandler(sys.stdout)
+#hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+#logger.addHandler(hdlr)
 
 hdlr = logging.FileHandler(os.path.join(log_directory,'waptserver.log'))
 hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
@@ -270,6 +270,7 @@ def get_db():
         try:
             logger.debug('Connecting to mongo db %s:%s'%(mongodb_ip, int(mongodb_port)))
             mongo_client = MongoClient(mongodb_ip, int(mongodb_port))
+            g.mongo_client = mongo_client
             g.db = mongo_client.wapt
         except Exception as e:
             raise Exception(_("Could not connect to mongodb database: {}.").format((repr(e),)))
@@ -295,8 +296,10 @@ def close_db(error):
         logger.debug('Remove hosts from request context')
         del g.hosts
     if hasattr(g, 'db'):
-        logger.debug('Disconnect from mongodb')
         del g.db
+    if hasattr(g, 'mongo_client'):
+        logger.debug('del mongo_client instance')
+        del g.mongo_client
 
 def requires_auth(f):
     @wraps(f)
@@ -1367,10 +1370,14 @@ def trigger_reachable_discovery():
     """Launch a separate thread to check all reachable IP
     """
     try:
-        check_listening = CheckHostsWaptService(timeout = clients_connect_timeout)
-        check_listening.start()
+        # check if client is reachable
+        if 'check_hosts_thread' in g:
+            if not g.check_hosts_thread.is_alive():
+                del(g.check_hosts_thread)
+        g.check_hosts_thread = CheckHostsWaptService(timeout=clients_connect_timeout)
+        g.check_hosts_thread.start()
         message = _(u'Hosts listening IP discovery launched')
-        result = dict(thread_ident = check_listening.ident )
+        result = dict(thread_ident = g.check_hosts_thread.ident )
 
     except Exception, e:
             return make_response_from_exception(e)
@@ -1684,19 +1691,16 @@ class CheckHostWorker(threading.Thread):
     """
     def __init__(self,queue,timeout):
         threading.Thread.__init__(self)
-        self.mongoclient = MongoClient(mongodb_ip, int(mongodb_port))
-        self.db = self.mongoclient.wapt
         self.queue = queue
         self.timeout = timeout
         self.daemon = True
         self.start()
 
-
     def check_host(self,host_data):
+        protocol = 'http'
+        port = waptservice_port
+        ip = ''
         if 'host' in host_data:
-            protocol = 'http'
-            port = waptservice_port
-            ip = ''
             # check with last known listening informations
             if 'wapt' in host_data['host'] and \
                     'listening_address' in  host_data['host']['wapt'] and \
@@ -1712,17 +1716,22 @@ class CheckHostWorker(threading.Thread):
                 ips = host_data['host']['connected_ips']
                 logger.debug("Client checker %s is testing %s" % (self.ident,ips))
                 ip = get_reachable_ip(ips,port,timeout=self.timeout)
-
-            # stores result
-            la = dict(protocol='http',address=ip,port=waptservice_port,timestamp=datetime2isodate())
-            self.db.hosts.update({"_id" : host_data['_id'] }, {"$set": {'wapt.listening_address':la }})
-            logger.debug("Client check %s finished with %s" % (self.ident,ip))
+        return dict(protocol='http',address=ip,port=waptservice_port,timestamp=datetime2isodate())
 
     def run(self):
+        logger.debug('worker %s running'%self.ident)
         while True:
-            host_data = self.queue.get()
-            self.check_host(host_data)
-            self.queue.task_done()
+            try:
+                host_data = self.queue.get(timeout=2)
+                listening_infos = self.check_host(host_data)
+                with MongoClient(mongodb_ip, int(mongodb_port)) as mongo_client:
+                    # stores result
+                    mongo_client.wapt.hosts.update({"_id" : host_data['_id'] }, {"$set": {'wapt.listening_address':listening_infos }})
+                    logger.debug("Client check %s finished with %s" % (self.ident,listening_infos['address']))
+                self.queue.task_done()
+            except Queue.Empty:
+                break
+        logger.debug('worker %s finished'%self.ident)
 
 
 class CheckHostsWaptService(threading.Thread):
@@ -1737,44 +1746,37 @@ class CheckHostsWaptService(threading.Thread):
     def __init__(self,timeout=2,uuids=[]):
         threading.Thread.__init__(self)
         self.daemon = True
-        self.mongoclient = MongoClient(mongodb_ip, int(mongodb_port))
-        self.db = self.mongoclient.wapt
         self.timeout = timeout
-        self.queue = Queue.Queue()
-        self.workers = []
         self.uuids = uuids
         if self.uuids:
             self.workers_count = min(len(uuids),20)
         else:
             self.workers_count = 20
 
-    def update_listening_address(self):
-        """create a queue with host uuid
-        """
-        fields = {'uuid':1,'host.computer_fqdn':1,'wapt':1,'host.connected_ips':1}
-        if self.uuids:
-            query = {"uuid":{"$in": self.uuids}}
-        else:
-            query = {"host.connected_ips":{"$exists": "true", "$ne" :[]}}
-
-        logger.debug('Reset listening status timestamps of hosts')
-        self.db.hosts.update(query,{"$set": {'wapt.listening_address.timestamp':'' }},multi=True)
-
-        for data in self.db.hosts.find(query,fields=fields):
-            logger.debug('Hosts %s pushed in check IP queue'%data['uuid'])
-            self.queue.put(data)
-
-        logger.debug('Create %i workers'%self.workers_count)
-        for i in range(0,self.workers_count):
-            self.workers.append(CheckHostWorker(self.queue,self.timeout))
-
-        logger.debug('Waiting for hosts queue to be empty')
-        self.queue.join()
-
     def run(self):
         logger.debug('Client-listening %s address checker thread started'%self.ident)
-        self.update_listening_address()
-        logger.debug('Client-listening %s address checker thread stopped'%self.ident)
+        with MongoClient(mongodb_ip, int(mongodb_port)) as mongoclient:
+            fields = {'uuid':1,'host.computer_fqdn':1,'wapt':1,'host.connected_ips':1}
+            if self.uuids:
+                query = {"uuid":{"$in": self.uuids}}
+            else:
+                query = {"host.connected_ips":{"$exists": "true", "$ne" :[]}}
+
+            logger.debug('Reset listening status timestamps of hosts')
+            mongoclient.wapt.hosts.update(query,{"$set": {'wapt.listening_address.timestamp':'' }},multi=True)
+
+            queue = Queue.Queue()
+            for data in mongoclient.wapt.hosts.find(query,fields=fields):
+                logger.debug('Hosts %s pushed in check IP queue'%data['uuid'])
+                queue.put(data)
+
+            logger.debug('Create %i workers'%self.workers_count)
+            for i in range(self.workers_count):
+                CheckHostWorker(queue,self.timeout)
+
+            logger.debug('%s CheckHostsWaptService waiting for check queue to be empty'%(self.ident))
+            queue.join()
+            logger.debug('%s CheckHostsWaptService workers all terminated'%(self.ident))
 
 
 #################################################
