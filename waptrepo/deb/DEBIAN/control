@@ -4,7 +4,6 @@ Section: base
 Priority: optional
 Architecture: all
 Depends: python, apache2
-Pre-Depends: apache2.2-common
 Maintainer: Tranquil-IT-Systems <admin@tranquil-it-systems.fr>
 Description: serveur depot wapt local
 Homepage: http://www.tranquil-it-systems.fr
