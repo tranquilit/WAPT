@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-02-20 12:39+0200\n"
-"PO-Revision-Date: 2015-02-20 20:29+0200\n"
+"PO-Revision-Date: 2015-02-23 16:11+0200\n"
 "Last-Translator: htouvet <htouvet@tranquil.it>\n"
 "Language-Team: TranquilITSystems\n"
 "Language: fr\n"
@@ -296,7 +296,7 @@ msgstr "Exécuter du code Python"
 #: tviseditpackage.actsearchpackage.caption
 msgctxt "TVISEDITPACKAGE.ACTSEARCHPACKAGE.CAPTION"
 msgid "Search"
-msgstr "Recher"
+msgstr "Rechercher"
 
 #: tviseditpackage.butbuapply.hint
 msgid "Build the package, upload to the server and trigger Upgrade on the target host."
@@ -307,7 +307,7 @@ msgstr ""
 #: tviseditpackage.butsave.caption
 msgctxt "TVISEDITPACKAGE.BUTSAVE.CAPTION"
 msgid "Save"
-msgstr "Enregis"
+msgstr "Enregistrer"
 
 #: tviseditpackage.butsave.hint
 msgid "Build and upload the package"
@@ -452,7 +452,7 @@ msgstr "Actualiser"
 #: tvisimportpackage.actsearchexternalpackage.caption
 msgctxt "TVISIMPORTPACKAGE.ACTSEARCHEXTERNALPACKAGE.CAPTION"
 msgid "Search"
-msgstr "Reche"
+msgstr "Rechercher"
 
 #: tvisimportpackage.actwaptlocalconfig.caption
 msgctxt "TVISIMPORTPACKAGE.ACTWAPTLOCALCONFIG.CAPTION"
@@ -876,7 +876,7 @@ msgstr "Restaure la configuration par défaut des colonnes de toutes les grilles
 #: tviswaptgui.actsearchgroups.caption
 msgctxt "TVISWAPTGUI.ACTSEARCHGROUPS.CAPTION"
 msgid "Search"
-msgstr "Reche"
+msgstr "Rechercher"
 
 #: tviswaptgui.actsearchhost.caption
 msgctxt "tviswaptgui.actsearchhost.caption"
@@ -886,7 +886,7 @@ msgstr "Rechercher une machine"
 #: tviswaptgui.actsearchpackage.caption
 msgctxt "TVISWAPTGUI.ACTSEARCHPACKAGE.CAPTION"
 msgid "Search"
-msgstr "Reche"
+msgstr "Rechercher"
 
 #: tviswaptgui.actsearchsoftwares.caption
 msgid "ActSearchSoftware"
