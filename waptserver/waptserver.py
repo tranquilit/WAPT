@@ -1339,8 +1339,8 @@ class EWaptMissingParameter(Exception):
 
 def get_ip_port(host_data,recheck=False,timeout=None):
     """Return a dict proto,address,port for the supplied registered host
-        - first check if wapt.listening_address is ok
-        - if not present (old wapt client/server), check each of host.check connected_ips list
+        - first check if wapt.listening_address is ok and recheck is False
+        - if not present or recheck is True, check each of host.check connected_ips list with timeout
     """
     if not timeout:
         timeout = clients_connect_timeout
@@ -1372,7 +1372,7 @@ def ping():
 @app.route('/api/v1/trigger_reachable_discovery')
 @requires_auth
 def trigger_reachable_discovery():
-    """Launch a separate thread to check all reachable IP
+    """Launch a separate thread to check all reachable IP and update database with results.
     """
     try:
         # check if client is reachable
@@ -1451,6 +1451,9 @@ def trigger_update():
     try:
         uuid = request.args['uuid']
         notify_user = request.args.get('notify_user',0)
+        notify_server = request.args.get('notify_server',1)
+
+
         host_data = hosts().find_one({ "uuid": uuid},fields={'uuid':1,'wapt':1,'host.connected_ips':1})
         listening_address = get_ip_port(host_data)
         msg = u''
@@ -1476,6 +1479,141 @@ def trigger_update():
     except Exception, e:
         return make_response_from_exception(e)
 
+
+@app.route('/api/v1/host_forget_packages')
+@requires_auth
+def host_forget_packages():
+    """Proxy the wapt forget action to the client
+            uuid
+            packages
+            notify_user
+            notify_server
+    """
+    try:
+        uuid = request.args['uuid']
+        packages = ensure_list(request.args['packages'])
+        notify_user = request.args.get('notify_user',0)
+
+        host_data = hosts().find_one({ "uuid": uuid},fields={'uuid':1,'wapt':1,'host.connected_ips':1})
+        listening_address = get_ip_port(host_data)
+        msg = u''
+        if listening_address and listening_address['address'] and listening_address['port']:
+            logger.info( "Removing packages %s from %s at address %s..." % (','.join(packages),uuid,listening_address['address']))
+            args = {}
+            args.update(listening_address)
+            args['notify_user'] = notify_user
+            args['packages'] = ','.join(packages)
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/remove.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=1" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            try:
+                client_result = json.loads(client_result)
+                msg = _(u"Triggered tasks: {}").format(','.join(t['description'] for t in client_result))
+            except ValueError:
+                if 'Restricted access' in client_result:
+                    raise EWaptForbiddden(client_result)
+                else:
+                    raise Exception(client_result)
+        else:
+            raise EWaptMissingHostData(_("The WAPT service is unreachable."))
+        return make_response(client_result,
+            msg = msg,
+            success = True)
+    except Exception, e:
+        return make_response_from_exception(e)
+
+
+@app.route('/api/v1/host_remove_packages')
+@requires_auth
+def host_remove_packages():
+    """Proxy the wapt remove action to the client
+            uuid
+            packages
+            notify_user
+            notify_server
+            force
+    """
+    try:
+        uuid = request.args['uuid']
+        packages = ensure_list(request.args['packages'])
+        notify_user = request.args.get('notify_user',0)
+        notify_server = request.args.get('notify_server',1)
+        force = request.args.get('force',0)
+
+        host_data = hosts().find_one({ "uuid": uuid},fields={'uuid':1,'wapt':1,'host.connected_ips':1})
+        listening_address = get_ip_port(host_data)
+        msg = u''
+        if listening_address and listening_address['address'] and listening_address['port']:
+            logger.info( "Removing packages %s from %s at address %s..." % (','.join(packages),uuid,listening_address['address']))
+            args = {}
+            args.update(listening_address)
+            args['notify_user'] = notify_user
+            args['notify_server'] = notify_server
+            args['packages'] = ','.join(packages)
+            args['force'] = force
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/remove.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=%(notify_server)s&force=%(force)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            try:
+                client_result = json.loads(client_result)
+                msg = _(u"Triggered tasks: {}").format(','.join(t['description'] for t in client_result))
+            except ValueError:
+                if 'Restricted access' in client_result:
+                    raise EWaptForbiddden(client_result)
+                else:
+                    raise Exception(client_result)
+        else:
+            raise EWaptMissingHostData(_("The WAPT service is unreachable."))
+        return make_response(client_result,
+            msg = msg,
+            success = True)
+    except Exception, e:
+        return make_response_from_exception(e)
+
+
+@app.route('/api/v1/host_install_packages')
+@requires_auth
+def host_install_packages():
+    """Proxy the wapt install action to the client
+            uuid
+            packages
+            notify_user
+            notify_server
+    """
+    try:
+        uuid = request.args['uuid']
+        packages = ensure_list(request.args['packages'])
+        notify_user = request.args.get('notify_user',0)
+        notify_server = request.args.get('notify_server',1)
+        force = request.args.get('force',0)
+
+        host_data = hosts().find_one({ "uuid": uuid},fields={'uuid':1,'wapt':1,'host.connected_ips':1})
+        listening_address = get_ip_port(host_data)
+        msg = u''
+        if listening_address and listening_address['address'] and listening_address['port']:
+            logger.info( "Trigger install packages %s for %s at address %s..." % (','.join(packages),uuid,listening_address['address']))
+            args = {}
+            args.update(listening_address)
+            args['notify_user'] = notify_user
+            args['notify_server'] = notify_server
+            args['packages'] = ','.join(packages)
+            args['force'] = force
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/install.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=1&force=%(force)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            try:
+                client_result = json.loads(client_result)
+                if isinstance(client_result,list):
+                    description = ','.join(t['description'] for t in client_result)
+                else:
+                    description = client_result['description']
+                msg = _(u"Triggered tasks: {}").format(description)
+            except ValueError:
+                if 'Restricted access' in client_result:
+                    raise EWaptForbiddden(client_result)
+                else:
+                    raise Exception(client_result)
+        else:
+            raise EWaptMissingHostData(_("The WAPT service is unreachable."))
+        return make_response(client_result,
+            msg = msg,
+            success = True)
+    except Exception, e:
+        return make_response_from_exception(e)
 
 
 @app.route('/host_tasks_status')
