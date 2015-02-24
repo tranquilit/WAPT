@@ -1342,11 +1342,12 @@ class WaptNetworkReconfig(WaptTask):
         self.wapt.network_reconfigure()
         waptconfig.load()
         # http
-        if waptconfig.waptservice_port:
-            check_open_port(waptconfig.waptservice_port)
-        # https
-        if waptconfig.waptservice_sslport:
-            check_open_port(waptconfig.waptservice_sslport)
+        if waptconfig.waptserver is not None:
+            if waptconfig.waptservice_port is not None:
+                check_open_port(waptconfig.waptservice_port)
+            # https
+            if waptconfig.waptservice_sslport is not None:
+                check_open_port(waptconfig.waptservice_sslport)
         self.result = waptconfig.as_dict()
 
     def __unicode__(self):
@@ -2098,11 +2099,12 @@ def install_service():
     """
     logger.info(u'Open port on firewall')
     # http
-    if waptconfig.waptservice_port:
-        check_open_port(waptconfig.waptservice_port)
-    # https
-    if waptconfig.waptservice_sslport:
-        check_open_port(waptconfig.waptservice_sslport)
+    if waptconfig.waptserver is not None:
+        if waptconfig.waptservice_port is not None:
+            check_open_port(waptconfig.waptservice_port)
+        # https
+        if waptconfig.waptservice_sslport is not None:
+            check_open_port(waptconfig.waptservice_sslport)
 
     from setuphelpers import registry_set,REG_DWORD,REG_EXPAND_SZ,REG_MULTI_SZ,REG_SZ
     datatypes = {
@@ -2216,11 +2218,12 @@ if __name__ == "__main__":
         try:
             logger.info(u"starting waptservice")
             # http
-            if waptconfig.waptservice_port:
-                check_open_port(waptconfig.waptservice_port)
-            # https
-            if waptconfig.waptservice_sslport:
-                check_open_port(waptconfig.waptservice_sslport)
+            if waptconfig.waptserver is not None:
+                if waptconfig.waptservice_port is not None:
+                    check_open_port(waptconfig.waptservice_port)
+                # https
+                if waptconfig.waptservice_sslport is not None:
+                    check_open_port(waptconfig.waptservice_sslport)
             server.start()
         except KeyboardInterrupt:
             logger.info(u"stopping waptservice")
