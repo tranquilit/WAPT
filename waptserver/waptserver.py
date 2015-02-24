@@ -1337,24 +1337,27 @@ class EWaptForbiddden(Exception):
 class EWaptMissingParameter(Exception):
     pass
 
-def get_ip_port(host_data):
+def get_ip_port(host_data,recheck=False,timeout=None):
     """Return a dict proto,address,port for the supplied registered host
         - first check if wapt.listening_address is ok
         - if not present (old wapt client/server), check each of host.check connected_ips list
     """
+    if not timeout:
+        timeout = clients_connect_timeout
     if not host_data:
         raise EWaptUnknownHost(_('Unknown uuid'))
 
     if 'wapt' in host_data:
-        if host_data['wapt'].get('listening_address',None) and \
+        if not recheck and host_data['wapt'].get('listening_address',None) and \
                   'address' in host_data['wapt']['listening_address'] and \
                   host_data['wapt']['listening_address']['address']:
             return host_data['wapt']['listening_address']
         else:
+            port = host_data['wapt'].get('waptservice_port',waptservice_port)
             return dict(
                 protocol=host_data['wapt'].get('waptservice_protocol','http'),
-                address=get_reachable_ip(ensure_list(host_data['host']['connected_ips'])),
-                port=host_data['wapt'].get('waptservice_port',waptservice_port),
+                address=get_reachable_ip(ensure_list(host_data['host']['connected_ips']),waptservice_port=port,timeout=timeout),
+                port=port,
                 timestamp=datetime2isodate())
     else:
         raise EWaptHostUnreachable(_('No reachable IP for {}').format(host_data['uuid']))
