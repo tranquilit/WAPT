@@ -145,6 +145,7 @@ waptservice_port = 8088
 clients_connect_timeout = 5
 clients_read_timeout = 5
 clients_poll_interval = None
+client_tasks_timeout = 0.3
 
 if config.has_section('options'):
     if config.has_option('options', 'wapt_user'):
@@ -1487,7 +1488,7 @@ def host_tasks_status():
 
         if listening_address and listening_address['address'] and listening_address['port']:
             logger.info( "Get tasks status for %s at address %s..." % (uuid,listening_address['address']))
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json" % listening_address,proxies=None,verify=False,timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json" % listening_address,proxies=None,verify=False,timeout=client_tasks_timeout).text
             try:
                 client_result = json.loads(client_result)
             except ValueError:
