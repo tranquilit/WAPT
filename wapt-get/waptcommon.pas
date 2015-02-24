@@ -124,8 +124,9 @@ Type
 
 const
   waptservice_port:integer = 8088;
+  waptservice_sslport:integer = -1;
   waptserver_port:integer = 80;
-  waptserver_ssl_port:integer = 443;
+  waptserver_sslport:integer = 443;
   zmq_port:integer = 5000;
 
   CacheWaptServerUrl: AnsiString = 'None';
@@ -647,8 +648,12 @@ end;
 function WAPTLocalJsonGet(action: String; user: AnsiString;
   password: AnsiString; timeout: integer): ISuperObject;
 var
-  strresult : String;
+  url,strresult : String;
   http:TIdHTTP;
+  ssl: boolean;
+  ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
+
+
 begin
   http := TIdHTTP.Create;
   try
@@ -656,6 +661,7 @@ begin
       http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
       http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent;
       http.ConnectTimeout:=timeout;
+
       if user <>'' then
       begin
         http.Request.BasicAuthentication:=True;
@@ -666,8 +672,18 @@ begin
       if copy(action,length(action),1)<>'/' then
         action := '/'+action;
 
+      url := GetWaptLocalURL+action;
+      ssl := copy(url, 1, length('https://')) = 'https://';
+      if (ssl) then
+      begin
+        ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
+    	  HTTP.IOHandler := ssl_handler;
+      end
+      else
+        ssl_handler := Nil;
 
-      strresult := http.Get(GetWaptLocalURL+action);
+
+      strresult := http.Get(url);
       Result := SO(strresult);
 
     except
@@ -834,7 +850,11 @@ begin
 end;
 function GetWaptLocalURL: String;
 begin
-  result := format('http://127.0.0.1:%d',[waptservice_port]);
+  if waptservice_port >0 then
+      result := format('http://127.0.0.1:%d',[waptservice_port])
+  else
+  if waptservice_sslport >0 then
+      result := format('https://127.0.0.1:%d',[waptservice_sslport]);
 end;
 
 function WaptBaseDir: Utf8String;
@@ -877,7 +897,10 @@ begin
     Result := False
   else
   begin
-    waptservice_port := IniReadInteger(inifile,'global','waptservice_port',8088);
+    waptservice_port := IniReadInteger(inifile,'global','waptservice_port',-1);
+    waptservice_sslport := IniReadInteger(inifile,'global','waptservice_sslport',-1);
+    if (waptservice_port<=0) and (waptservice_sslport<=0) then
+      waptservice_port := 8088;
 
     // override lang setting
     for i := 1 to Paramcount - 1 do
@@ -897,7 +920,7 @@ begin
     end;
 
     waptserver_port := IniReadInteger(inifile,'global','waptserver_port',80);
-    waptserver_ssl_port := IniReadInteger(inifile,'global','waptserver_sslport',443);
+    waptserver_sslport := IniReadInteger(inifile,'global','waptserver_sslport',443);
     zmq_port := IniReadInteger(inifile,'global','zmq_port',5000);
 
     HttpProxy := IniReadString(inifile,'global','http_proxy','');
