@@ -26,6 +26,7 @@ type
     ActCreateWaptSetup: TAction;
     ActFrench: TAction;
     ActEnglish: TAction;
+    ActPackageInstall: TAction;
     ActRestoreDefaultLayout: TAction;
     ActTriggerHostUpdate: TAction;
     ActTriggerHostsListening: TAction;
@@ -267,6 +268,7 @@ type
     procedure ActHelpExecute(Sender: TObject);
     procedure ActImportFromFileExecute(Sender: TObject);
     procedure ActImportFromRepoExecute(Sender: TObject);
+    procedure ActPackageInstallExecute(Sender: TObject);
     procedure ActPackageRemoveExecute(Sender: TObject);
     procedure ActRDPExecute(Sender: TObject);
     procedure ActRDPUpdate(Sender: TObject);
@@ -561,8 +563,8 @@ end;
 
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
-  currhost : ansistring;
-  RowSO, packages, softwares, dmi,tasks, tasksresult, running,sores: ISuperObject;
+  currhost,packagename : ansistring;
+  RowSO, package,packagereq, packages, softwares, dmi,tasks, tasksresult, running,sores,additional,upgrades: ISuperObject;
 begin
   TimerTasks.Enabled := False;
   RowSO := Gridhosts.FocusedRow;
@@ -576,7 +578,34 @@ begin
       try
         sores := WAPTServerJsonGet('api/v1/host_data?field=packages&uuid=%s',[currhost]);
         if sores.B['success'] then
-          RowSO['packages'] := sores['result']
+        begin
+          RowSO['packages'] := sores['result'];
+          // add missing packages
+          additional := RowSO['update_status.pending.additional'];
+          if (additional<>Nil) and (additional.AsArray.Length>0) then
+          begin
+            for packagereq in additional do
+            begin
+              package := TSuperObject.Create();
+              package['package'] := packagereq;
+              package.S['install_status'] := 'MISSING';
+              RowSO.A['packages'].Add(package);
+            end;
+          end;
+          upgrades := RowSO['update_status.pending.upgrade'];
+          if (upgrades<>Nil) and (upgrades.AsArray.Length>0) then
+          begin
+            for package in RowSO['packages'] do
+            begin
+              for packagereq in upgrades do
+              begin
+                packagename:= Trim(copy(packagereq.AsString,1,pos('(',packagereq.AsString)-1));
+                if package.S['package'] = packagename then
+                  package.S['install_status'] := 'NEED-UPGRADE';
+              end;
+            end;
+          end;
+        end
         else
           RowSO['packages'] := nil;
       except
@@ -1285,7 +1314,7 @@ end;
 
 procedure TVisWaptGUI.ActForgetPackagesExecute(Sender: TObject);
 var
-  ip, ips, sel, package, res, packages : ISuperObject;
+  uuid,sel, package, res, packages : ISuperObject;
 begin
   if GridHostPackages.Focused then
   begin
@@ -1300,24 +1329,19 @@ begin
       packages := TSuperObject.Create(stArray);
       for package in sel do
         packages.AsArray.Add(package.S['package']);
-      if (GridHosts.FocusedRow['host.connected_ips']<>Nil) then
-      begin
-        if (GridHosts.FocusedRow['host.connected_ips'].DataType=stArray) then
-          ips := GridHosts.FocusedRow['host.connected_ips']
-        else
-          ips := SA([GridHosts.FocusedRow['host.connected_ips']]);
-        for ip in ips do
-        begin
+
+      uuid := GridHosts.FocusedRow['uuid'];
+      if (uuid<>Nil) and (packages.AsArray.Length>0) then
+      try
           res := WAPTServerJsonGet(
-            '/forget_packages.json?host=%s&package=%s&uuid=%s',
-            [ip.AsString, Join(',',packages),
-            GridHosts.FocusedRow.S['uuid']]);
-          if res.S['status'] = 'OK' then
-            break;
-        end;
-        if res.S['status'] <> 'OK' then
+            '/api/v1/host_forget_packages?uuid=%s&packages=%s',
+            [uuid.asString, Join(',',packages)]);
+          if not res.B['success'] then
+            Raise Exception.Create(res.S['msg']);
+      except
+        on E:Exception do
           ShowMessage(Format(rsForgetPackageError,
-            [package.S['package'], res.S['message']]));
+              [ Join(',',packages),e.Message]));
       end;
     end;
     UpdateHostPages(Sender);
@@ -1416,9 +1440,45 @@ begin
   end;
 end;
 
+procedure TVisWaptGUI.ActPackageInstallExecute(Sender: TObject);
+var
+  uuid,sel, package, res, packages : ISuperObject;
+begin
+  if GridHostPackages.Focused then
+  begin
+    sel := GridHostPackages.SelectedRows;
+    if Dialogs.MessageDlg(
+       rsConfirmCaption,
+       format(rsConfirmPackageInstall, [IntToStr(sel.AsArray.Length), GridHosts.FocusedRow.S['host.computer_fqdn']]),
+       mtConfirmation,
+       mbYesNoCancel,
+       0) = mrYes then
+    begin
+      packages := TSuperObject.Create(stArray);
+      for package in sel do
+        packages.AsArray.Add(package.S['package']);
+
+      uuid := GridHosts.FocusedRow['uuid'];
+      if (uuid<>Nil) and (packages.AsArray.Length>0) then
+      try
+          res := WAPTServerJsonGet(
+            '/api/v1/host_install_packages?uuid=%s&packages=%s',
+            [uuid.asString, Join(',',packages)]);
+          if not res.B['success'] then
+            Raise Exception.Create(res.S['msg']);
+      except
+        on E:Exception do
+          ShowMessage(Format(rsPackageInstallError,
+              [ Join(',',packages),e.Message]));
+      end;
+    end;
+    UpdateHostPages(Sender);
+  end;
+end;
+
 procedure TVisWaptGUI.ActPackageRemoveExecute(Sender: TObject);
 var
-  ip, ips, sel, package, res, packages : ISuperObject;
+  uuid,sel, package, res, packages : ISuperObject;
 begin
   if GridHostPackages.Focused then
   begin
@@ -1433,26 +1493,19 @@ begin
       packages := TSuperObject.Create(stArray);
       for package in sel do
         packages.AsArray.Add(package.S['package']);
-      if (GridHosts.FocusedRow['host.connected_ips']<>Nil) then
-      begin
-        if (GridHosts.FocusedRow['host.connected_ips'].DataType=stArray) then
-          ips := GridHosts.FocusedRow['host.connected_ips']
-        else
-          ips := SA([GridHosts.FocusedRow.S['host.connected_ips']]);
 
-        //try on all connected IPs
-        for ip in ips do
-        begin
+      uuid := GridHosts.FocusedRow['uuid'];
+      if (uuid<>Nil) and (packages.AsArray.Length>0) then
+      try
           res := WAPTServerJsonGet(
-            '/remove_package.json?host=%s&package=%s&uuid=%s',
-            [ip.AsString, Join(',',packages),
-            GridHosts.FocusedRow.S['uuid']]);
-          if res.S['status'] = 'OK' then
-            break;
-        end;
-        if res.S['status'] <> 'OK' then
-          ShowMessage(Format(rsForgetPackageError,
-            [package.S['package'], res.S['message']]));
+            '/api/v1/host_remove_packages?uuid=%s&packages=%s',
+            [uuid.asString, Join(',',packages)]);
+          if not res.B['success'] then
+            Raise Exception.Create(res.S['msg']);
+      except
+        on E:Exception do
+          ShowMessage(Format(rsPackageRemoveError,
+              [ Join(',',packages),e.Message]));
       end;
     end;
     UpdateHostPages(Sender);
@@ -2209,6 +2262,7 @@ begin
         'OK': ImageIndex := 0;
         'ERROR': ImageIndex := 2;
         'NEED-UPGRADE': ImageIndex := 1;
+        'MISSING': ImageIndex := 7;
       end;
     end;
   end;

@@ -1,5 +1,6 @@
-# htouvet <htouvet@tranquil.it>, 2015.
-msgid ""
+ htouvet <htouvet@tranquil.it>, 2015.
+ htouvet <htouvet@tranquil.it>, 2015.
+msgid " Uncheck \"Use simple file sharing\").Only required if a proxy is needed.Only required if a proxy is needed."
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
@@ -13,10 +14,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
-
-# htouvet <htouvet@tranquil.it>, 2015.
-msgid " Uncheck \"Use simple file sharing\").Only required if a proxy is needed.Only required if a proxy is needed."
-msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-02-20 12:21+0200\n"
@@ -29,8 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
-"Content-Type: text/plain; charset=UTF-8Requis seulement si un proxy http est "
-"nécessaire\n"
+"Content-Type: text/plain; charset=UTF-8Requis seulement si un proxy http est nécessaire\n"
 
 #: tvisapropos.button1.caption
 msgid "Close"
@@ -300,9 +296,7 @@ msgstr "Rechercher"
 
 #: tviseditpackage.butbuapply.hint
 msgid "Build the package, upload to the server and trigger Upgrade on the target host."
-msgstr ""
-"Construit et télécharge le paquet vers le serveur, et lance la mise à jour "
-"du client."
+msgstr "Construit et télécharge le paquet vers le serveur, et lance la mise à jour du client."
 
 #: tviseditpackage.butsave.caption
 msgctxt "TVISEDITPACKAGE.BUTSAVE.CAPTION"
@@ -549,9 +543,7 @@ msgstr "Utiliser le proxy pour les communications avec le serveur WAPT"
 #, fuzzy
 msgctxt "TVISWAPTCONFIG.CBUSEPROXYFORTEMPLATE.HINT"
 msgid "Activate proxy when accessing the model repository"
-msgstr ""
-"Utiliser le proxy pour les communications avec le dépôt de modèles de "
-"paquets"
+msgstr "Utiliser le proxy pour les communications avec le dépôt de modèles de paquets"
 
 #: tviswaptconfig.eddefault_package_prefix.editlabel.caption
 msgid "Prefix for naming created WAPT packages"
@@ -827,6 +819,15 @@ msgstr "Désinstaller un paquet"
 msgid "System update"
 msgstr "Mise à jour du système"
 
+#: tviswaptgui.actpackageinstall.caption
+msgctxt "tviswaptgui.actpackageinstall.caption"
+msgid "Install package"
+msgstr "Installer un paquet"
+
+#: tviswaptgui.actpackageinstall.hint
+msgid "Force remote install or upgrade of package"
+msgstr ""
+
 #: tviswaptgui.actpackageremove.caption
 msgctxt "TVISWAPTGUI.ACTPACKAGEREMOVE.CAPTION"
 msgid "Uninstall package"
@@ -910,8 +911,7 @@ msgstr "Lancer la mise à jour des paquets disponibles"
 #: tviswaptgui.acttriggerhostupdate.hint
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPDATE.HINT"
 msgid "Trigger update of available packages on hosts."
-msgstr ""
-"Lancer la mise à jour de la liste des paquets disponibles sur les machines"
+msgstr "Lancer la mise à jour de la liste des paquets disponibles sur les machines"
 
 #: tviswaptgui.acttriggerhostupgrade.caption
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.CAPTION"
@@ -1078,10 +1078,6 @@ msgstr "&Outils"
 #: tviswaptgui.menuitem17.caption
 msgid "Language"
 msgstr "Langue"
-
-#: tviswaptgui.menuitem20.caption
-msgid "Install package"
-msgstr "Installer un paquet"
 
 #: tviswaptgui.menuitem24.caption
 msgid "&Edit"
@@ -1274,6 +1270,11 @@ msgid "Are you sure you want to forget %s packages from host %s ?"
 msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 
 #: uwaptconsoleres.rsconfirmimport
+#, fuzzy
+#| msgid ""
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 msgctxt "uwaptconsoleres.rsconfirmimport"
 msgid ""
 "Are you sure you want to import\n"
@@ -1288,6 +1289,10 @@ msgstr ""
 msgctxt "uwaptconsoleres.rsconfirmimportcaption"
 msgid "Confirm import"
 msgstr "Confirmer l'importation"
+
+#: uwaptconsoleres.rsconfirmpackageinstall
+msgid "Are you sure you want to install/upgrade %s package(s) for the selected host(s) %s ?"
+msgstr ""
 
 #: uwaptconsoleres.rsconfirmrmhostsfromlist
 msgctxt "uwaptconsoleres.rsconfirmrmhostsfromlist"
@@ -1569,6 +1574,11 @@ msgid "Error while creating package : %s"
 msgstr "Erreur lors de la création du paquet : %s"
 
 #: uwaptconsoleres.rspackageduplicateconfirm
+#, fuzzy
+#| msgid ""
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -1583,6 +1593,10 @@ msgstr ""
 msgctxt "uwaptconsoleres.rspackageduplicateconfirmcaption"
 msgid "Confirm duplication of package"
 msgstr "Confirmer la duplication du paquet"
+
+#: uwaptconsoleres.rspackageinstallerror
+msgid "Error while triggering package install/upgrade %s: %s"
+msgstr ""
 
 #: uwaptconsoleres.rspackageremoveerror
 msgctxt "uwaptconsoleres.rspackageremoveerror"
@@ -1779,6 +1793,10 @@ msgid "WAPT-GET Upgrade using repository at %s"
 msgstr "Upgrade de WAPT-GET grâce au dépôt de %s"
 
 #: uwaptconsoleres.rswaptservererror
+#, fuzzy
+#| msgid ""
+#| "Error on WAPT server:\n"
+#| "%s\n"
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -1787,6 +1805,11 @@ msgstr ""
 "%s\n"
 
 #: uwaptconsoleres.rswaptserveroldversion
+#, fuzzy
+#| msgid ""
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 msgid ""
 "Warning, the version of the server is too old.\n"
 "Current server version: %s\n"
@@ -2513,3 +2536,4 @@ msgstr "Wrapper Win32 Exe  : %s %s"
 msgctxt "uwaptres.rswinterruptreceived"
 msgid "W: interrupt received, killing serverâ¦"
 msgstr "W : interruption reçue, arrêt du serveur"
+

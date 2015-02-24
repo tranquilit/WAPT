@@ -787,6 +787,15 @@ msgstr ""
 msgid "System update"
 msgstr ""
 
+#: tviswaptgui.actpackageinstall.caption
+msgctxt "TVISWAPTGUI.ACTPACKAGEINSTALL.CAPTION"
+msgid "Install package"
+msgstr ""
+
+#: tviswaptgui.actpackageinstall.hint
+msgid "Force remote install or upgrade of package"
+msgstr ""
+
 #: tviswaptgui.actpackageremove.caption
 msgctxt "TVISWAPTGUI.ACTPACKAGEREMOVE.CAPTION"
 msgid "Uninstall package"
@@ -1038,10 +1047,6 @@ msgstr ""
 msgid "Language"
 msgstr ""
 
-#: tviswaptgui.menuitem20.caption
-msgid "Install package"
-msgstr ""
-
 #: tviswaptgui.menuitem24.caption
 msgid "&Edit"
 msgstr ""
@@ -1240,6 +1245,10 @@ msgstr ""
 #: uwaptconsoleres.rsconfirmimportcaption
 msgctxt "uwaptconsoleres.rsconfirmimportcaption"
 msgid "Confirm import"
+msgstr ""
+
+#: uwaptconsoleres.rsconfirmpackageinstall
+msgid "Are you sure you want to install/upgrade %s package(s) for the selected host(s) %s ?"
 msgstr ""
 
 #: uwaptconsoleres.rsconfirmrmhostsfromlist
@@ -1532,6 +1541,10 @@ msgstr ""
 #: uwaptconsoleres.rspackageduplicateconfirmcaption
 msgctxt "uwaptconsoleres.rspackageduplicateconfirmcaption"
 msgid "Confirm duplication of package"
+msgstr ""
+
+#: uwaptconsoleres.rspackageinstallerror
+msgid "Error while triggering package install/upgrade %s: %s"
 msgstr ""
 
 #: uwaptconsoleres.rspackageremoveerror

@@ -75,6 +75,10 @@ resourcestring
   rsConfirmRmPackagesFromHost = 'Are you sure you want to remove %s package(s) from the selected host(s) %s ?';
   rsPackageRemoveError = 'Error while removing package %s: %s';
 
+  rsConfirmPackageInstall = 'Are you sure you want to install/upgrade %s package(s) for the selected host(s) %s ?';
+  rsPackageInstallError = 'Error while triggering package install/upgrade %s: %s';
+
+
   rsReallowPackagesOnHost = 'Selection of package(s) to remove from conflict list';
   rsRmBundleFromHosts = 'Selection of package bundles for removing from the selected hosts';
   rsNoBundle = 'There is no package bundle.'; // 'Il n''y a aucun groupe.'; TODO : pas assez explicite ?
