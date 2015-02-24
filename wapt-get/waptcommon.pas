@@ -816,11 +816,8 @@ begin
       else
         Result := 'http://'+rec.S['name']+':'+rec.S['port'];
       Logger('trying '+result,INFO);
-      if IdWget_try(result,UseProxyForServer) then
-      begin
-        CacheWaptServerUrl := Result;
-        exit;
-      end;
+      CacheWaptServerUrl := Result;
+      exit;
     end;
   end;
   result :='';

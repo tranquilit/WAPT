@@ -1846,12 +1846,10 @@ class WaptServer(object):
                             wapthost = a.target.to_text()[0:-1]
                             if a.port == 443:
                                 url = 'https://%s' % (wapthost)
-                                if tryurl(url,timeout=self.timeout,auth=self.auth(),proxies=self.proxies):
-                                    working_url.append((a.weight,url))
+                                working_url.append((a.weight,url))
                             else:
                                 url = 'http://%s:%i' % (wapthost,a.port)
-                                if tryurl(url,timeout=self.timeout,auth=self.auth(),proxies=self.proxies):
-                                    working_url.append((a.weight,url))
+                                working_url.append((a.weight,url))
                         except Exception,e:
                             logging.debug('Unable to resolve : error %s' % (ensure_unicode(e),))
 
