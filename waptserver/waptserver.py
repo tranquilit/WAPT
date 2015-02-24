@@ -1503,9 +1503,11 @@ def host_forget_packages():
             args.update(listening_address)
             args['notify_user'] = notify_user
             args['packages'] = ','.join(packages)
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/remove.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=1" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/forget.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=1" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
             try:
                 client_result = json.loads(client_result)
+                if not isinstance(client_result,list):
+                    client_result = [client_result]
                 msg = _(u"Triggered tasks: {}").format(','.join(t['description'] for t in client_result))
             except ValueError:
                 if 'Restricted access' in client_result:
@@ -1552,6 +1554,8 @@ def host_remove_packages():
             client_result = requests.get("%(protocol)s://%(address)s:%(port)d/remove.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=%(notify_server)s&force=%(force)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
             try:
                 client_result = json.loads(client_result)
+                if not isinstance(client_result,list):
+                    client_result = [client_result]
                 msg = _(u"Triggered tasks: {}").format(','.join(t['description'] for t in client_result))
             except ValueError:
                 if 'Restricted access' in client_result:
