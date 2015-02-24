@@ -10,12 +10,10 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptserverpostconf"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="3" Y="12"/>
         <UsageCount Value="61"/>
-        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="uvisserverpostconf.pas"/>
@@ -25,8 +23,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisServerPostconf"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="104"/>
-        <CursorPos X="53" Y="122"/>
+        <TopLine Value="281"/>
+        <CursorPos X="167" Y="306"/>
         <UsageCount Value="61"/>
       </Unit1>
       <Unit2>

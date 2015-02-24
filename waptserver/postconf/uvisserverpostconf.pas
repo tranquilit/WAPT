@@ -293,7 +293,7 @@ begin
     if pos('waptserver 80',output)<=0 then
       Sto_RedirectedExecute(format('netsh.exe firewall add portopening name="waptserver %d" port=%d protocol=TCP',[waptserver_port,waptserver_port]));
     if pos('waptserver 443',output)<=0 then
-      Sto_RedirectedExecute(format('netsh.exe firewall add portopening name="waptserver %d" port=%d protocol=TCP',[waptserver_ssl_port,waptserver_ssl_port]));
+      Sto_RedirectedExecute(format('netsh.exe firewall add portopening name="waptserver %d" port=%d protocol=TCP',[waptserver_sslport,waptserver_sslport]));
   end
   else if GetServiceStatusByName('','MpsSvc') = ssRunning then
   begin
@@ -305,11 +305,11 @@ begin
     if pos('waptserver 80',output)<=0 then
       output := Sto_RedirectedExecute(format('netsh advfirewall firewall add rule name="waptserver %d" dir=in localport=%d protocol=TCP action=allow',[waptserver_port,waptserver_port]));
     try
-      output := Sto_RedirectedExecute(format('netsh advfirewall firewall show rule name="waptserver %d"',[waptserver_ssl_port]));
+      output := Sto_RedirectedExecute(format('netsh advfirewall firewall show rule name="waptserver %d"',[waptserver_sslport]));
     except
     end;
     if pos('waptserver 443',output)<=0 then
-      output := Sto_RedirectedExecute(format('netsh advfirewall firewall add rule name="waptserver %d" dir=in localport=%d protocol=TCP action=allow',[waptserver_ssl_port,waptserver_ssl_port]));
+      output := Sto_RedirectedExecute(format('netsh advfirewall firewall add rule name="waptserver %d" dir=in localport=%d protocol=TCP action=allow',[waptserver_sslport,waptserver_sslport]));
   end;
 end;
 
