@@ -144,8 +144,7 @@ waptservice_port = 8088
 
 clients_connect_timeout = 5
 clients_read_timeout = 5
-clients_poll_interval = None
-client_tasks_timeout = 0.3
+client_tasks_timeout = 0.5
 
 if config.has_section('options'):
     if config.has_option('options', 'wapt_user'):
@@ -175,16 +174,14 @@ if config.has_section('options'):
         if wapt_folder.endswith('/'):
             wapt_folder = wapt_folder[:-1]
 
-    if config.has_option('options', 'clients_poll_interval'):
-        clients_poll_interval = int(config.get('options', 'clients_poll_interval'))
-    else:
-        clients_poll_interval = None
-
     if config.has_option('options', 'clients_connect_timeout'):
         clients_connect_timeout = int(config.get('options', 'clients_connect_timeout'))
 
     if config.has_option('options', 'clients_read_timeout'):
         clients_read_timeout = int(config.get('options', 'clients_read_timeout'))
+
+    if config.has_option('options', 'client_tasks_timeout'):
+        client_tasks_timeout = int(config.get('options', 'client_tasks_timeout'))
 
     if config.has_option('options', 'secret_key'):
         app.secret_key = config.get('options','secret_key')
