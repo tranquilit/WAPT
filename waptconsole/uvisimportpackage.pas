@@ -148,10 +148,13 @@ begin
           IdWget(WaptTemplatesRepo + '/' + FileName.AsString,
             target, ProgressForm, @updateprogress, UseProxyForTemplates);
       except
-        ShowMessage(rsDlCanceled);
-        if FileExists(target) then
-          DeleteFileUTF8(Target);
-        exit;
+        on e:Exception do
+        begin
+          ShowMessage(rsDlCanceled+' : '+e.Message);
+          if FileExists(target) then
+            DeleteFileUTF8(Target);
+          exit;
+        end;
       end;
     end;
 
