@@ -1832,6 +1832,8 @@ begin
         fields.AsArray.Add('host.system_manufacturer');
         fields.AsArray.Add('host.computer_name');
         fields.AsArray.Add('host.system_productname');
+        fields.AsArray.Add('host.connected_ips');
+        fields.AsArray.Add('host.mac');
         fields.AsArray.Add('host.current_user');
         fields.AsArray.Add('dmi.Chassis_Information.Serial_Number');
       end;
