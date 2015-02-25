@@ -1845,7 +1845,7 @@ class CheckHostWorker(threading.Thread):
 
     def check_host(self,host_data):
         try:
-            listening_info = get_ip_port(host_data)
+            listening_info = get_ip_port(host_data,recheck=True,timeout=self.timeout)
             #update timestamp
             listening_info['timestamp'] = datetime2isodate()
             return listening_info
