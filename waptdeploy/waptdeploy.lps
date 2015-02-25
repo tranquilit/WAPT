@@ -11,8 +11,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="259"/>
-        <CursorPos X="10" Y="259"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="43"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -248,7 +248,7 @@
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="8" HistoryIndex="7">
+    <JumpHistory Count="9" HistoryIndex="8">
       <Position1>
         <Filename Value="uwaptdeployres.pas"/>
         <Caret Line="1" Column="1" TopLine="1"/>
@@ -281,6 +281,10 @@
         <Filename Value="uwaptdeployres.pas"/>
         <Caret Line="8" Column="32" TopLine="1"/>
       </Position8>
+      <Position9>
+        <Filename Value="waptdeploy.lpr"/>
+        <Caret Line="259" Column="71" TopLine="259"/>
+      </Position9>
     </JumpHistory>
   </ProjectSession>
   <EditorMacros Count="0"/>
