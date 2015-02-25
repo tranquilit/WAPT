@@ -1714,8 +1714,11 @@ def get_hosts():
         if 'uuid' in request.args:
             query = dict(uuid=request.args['uuid'])
         elif 'filter' in request.args:
-            (search_fields,search_expr) = request.args['filter'].split(':')
-            query = {'$or':[ {fn:re.compile(search_expr, re.IGNORECASE)} for fn in ensure_list(search_fields)]}
+            (search_fields,search_expr) = request.args['filter'].split(':',1)
+            if search_fields.strip() and search_expr.strip():
+                query = {'$or':[ {fn:re.compile(search_expr, re.IGNORECASE)} for fn in ensure_list(search_fields)]}
+            else:
+                query = {}
         else:
             query = {}
 
@@ -1784,7 +1787,7 @@ def get_hosts():
     except Exception as e:
         return make_response_from_exception(e)
 
-    return make_response(result=result,msg=msg,success=len(result)>0,status=200)
+    return make_response(result=result,msg=msg,status=200)
 
 @app.route('/api/v1/host_data')
 @requires_auth
