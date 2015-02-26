@@ -838,8 +838,8 @@ end;
 
 procedure TVisWaptGUI.ActPackageEdit(Sender: TObject);
 var
-  Selpackage: string;
-  res: ISUperObject;
+  Selpackage,DevPath: string;
+  res: ISuperObject;
 begin
   if GridPackages.FocusedNode <> nil then
   begin
@@ -848,7 +848,18 @@ begin
       Selpackage := format('%s(=%s)', [GridPackages.GetCellStrValue(
         GridPackages.FocusedNode, 'package'), GridPackages.GetCellStrValue(
         GridPackages.FocusedNode, 'version')]);
-      res := DMPython.RunJSON(format('mywapt.edit_package("%s")', [SelPackage]));
+      try
+        DevPath:=DMPython.RunJSON(format('mywapt.get_default_development_dir("%s")', [SelPackage])).AsString;
+        if DirectoryExistsUTF8(DevPath) then
+          DevPath:=DevPath+'.'+GridPackages.GetCellStrValue(GridPackages.FocusedNode, 'version');
+        res := DMPython.RunJSON(format('mywapt.edit_package(r"%s",target_directory=r"%s",auto_inc_version=False)', [SelPackage,DevPath]));
+      except
+        on E:Exception do
+        begin
+          ShowMessageFmt(rsErrorWithMessage,[e.Message]);
+          exit;
+        end;
+      end;
       DMPython.RunJSON(format('waptdevutils.wapt_sources_edit(r"%s")', [res.S['target']]));
       //if EditPackage(Selpackage, ActAdvancedMode.Checked) <> nil then
       //  ActPackagesUpdate.Execute;

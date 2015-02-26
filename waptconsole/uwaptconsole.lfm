@@ -3216,6 +3216,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem22: TMenuItem
       Action = ActDeletePackage
+      ShortCut = 16430
     end
     object MenuItem2: TMenuItem
       Action = ActLocalhostRemove
