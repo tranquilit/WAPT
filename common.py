@@ -1103,6 +1103,7 @@ class WaptSessionDB(WaptBaseDB):
         """Remove status of package installation from localdb
         >>> wapt = Wapt()
         >>> wapt.forget_packages('tis-7zip')
+        ???
         """
         try:
             cur = self.db.execute("""delete from wapt_sessionsetup where package=?""" ,(package,))
@@ -1665,11 +1666,11 @@ class WaptDB(WaptBaseDB):
         >>> waptdb.add_package_entry(PackageEntry('dummy','2'))
         >>> waptdb.add_package_entry(PackageEntry('dummy','3'))
         >>> waptdb.package_entry_from_db('dummy')
-        "dummy (=3)"
+        PackageEntry('dummy','3')
         >>> waptdb.package_entry_from_db('dummy',version_min=2)
-        "dummy (=3)"
+        PackageEntry('dummy','3')
         >>> waptdb.package_entry_from_db('dummy',version_max=1)
-        "dummy (=1)"
+        PackageEntry('dummy','1')
         """
         result = PackageEntry()
         filter = ""
@@ -1700,9 +1701,9 @@ class WaptDB(WaptBaseDB):
         >>> waptdb.add_package_entry(PackageEntry('dummy','2',repo='main'))
         >>> waptdb.add_package_entry(PackageEntry('dummy','1',repo='main'))
         >>> waptdb.query_package_entry("select * from wapt_package where package=?",["dummy"])
-        ["dummy (=2)", "dummy (=1)"]
+        [PackageEntry('dummy','2'), PackageEntry('dummy','1')]
         >>> waptdb.query_package_entry("select * from wapt_package where package=?",["dummy"],one=True)
-        "dummy (=2)"
+        PackageEntry('dummy','2')
         """
         result = []
         cur = self.db.execute(query, args)
@@ -1807,7 +1808,7 @@ class WaptServer(object):
         >>> print server.dnsdomain
         tranquilit.local
         >>> print server.server_url
-        http://srvwapt.tranquilit.local:8080
+        https://wapt.tranquil.it
         """
         if self._server_url is not None:
             return self._server_url
@@ -1821,11 +1822,9 @@ class WaptServer(object):
 
     def find_wapt_server_url(self):
         """Search the WAPT server with dns SRV query
-        >>> server = WaptServer(dnsdomain='tranquil.it',timeout=4,url=None)
-        >>> server.server_url
-        'http://wapt.tranquil.it./wapt'
-        >>> server = WaptServer(url='http://srvwapt:8080',timeout=4)
-        >>> server.server_url
+        >>> WaptServer(dnsdomain='tranquilit.local',timeout=4,url=None).server_url
+        'https://wapt.tranquilit.local'
+        >>> WaptServer(url='http://srvwapt:8080',timeout=4).server_url
         'http://srvwapt:8080'
         """
 
@@ -2330,7 +2329,7 @@ class WaptHostRepo(WaptRepo):
         >>> print repo.dnsdomain
         tranquilit.local
         >>> print repo.repo_url
-        http://srvwapt.tranquilit.local/wapt-host
+        http://wapt.tranquilit.local/wapt-host
         >>> waptdb = WaptDB(':memory:')
         >>> repo.update_host('test-dummy',waptdb)
         (None, None)
@@ -2810,7 +2809,7 @@ class Wapt(object):
             >>> r = wapt.update()
             >>> d = wapt.duplicate_package('tis-wapttest','toto')
             >>> print d
-            {'target': u'c:\\users\\htouvet\\appdata\\local\\temp\\toto.wapt', 'package': "toto (=117)"}
+            {'target': u'c:\\users\\htouvet\\appdata\\local\\temp\\toto.wapt', 'package': PackageEntry('toto','119')}
             >>> wapt.http_upload_package(d['package'],wapt_server_user='admin',wapt_server_passwd='password')
             """
         if not (isinstance(package,(str,unicode)) and os.path.isfile(package)) and not isinstance(package,PackageEntry):
@@ -3695,7 +3694,7 @@ class Wapt(object):
         >>> def nullhook(*args):
         ...     pass
         >>> wapt.download_packages(['tis-firefox','tis-waptdev'],usecache=False,printhook=nullhook)
-        {'downloaded': [u'cache\\tis-firefox_28.0.0-1_all.wapt', u'cache\\tis-waptdev.wapt'], 'skipped': [], 'errors': []}
+        {'downloaded': [u'c:/wapt\\cache\\tis-firefox_35.0.1-1_all.wapt', u'c:/wapt\\cache\\tis-waptdev.wapt'], 'skipped': [], 'errors': []}
         """
         if not isinstance(package_requests,(list,tuple)):
             package_requests = [ package_requests ]
@@ -4655,7 +4654,7 @@ class Wapt(object):
         ...    shutil.rmtree(tmpdir)
         >>> p = wapt.make_group_template(packagename='testgroupe',directoryname=tmpdir,depends='tis-firefox',description=u'Test de groupe')
         >>> print p
-        {'target': 'c:\\tmp\\dummy', 'source_dir': 'c:\\tmp\\dummy', 'package': "testgroupe (=0)"}
+        {'target': 'c:\\tmp\\dummy', 'source_dir': 'c:\\tmp\\dummy', 'package': PackageEntry('testgroupe','0')}
         >>> print p['package'].depends
         tis-firefox
         >>> import shutil
@@ -4795,13 +4794,14 @@ class Wapt(object):
             proj_template = codecs.open(os.path.join(self.wapt_base_dir,'templates','wapt.psproj'),encoding='utf8').read()%datas
             codecs.open(psproj_filename,'w',encoding='utf8').write(proj_template)
 
-    def edit_package(self,packagename,
+    def edit_package(self,packagerequest,
             target_directory='',
             use_local_sources=True,
             append_depends=None,
             remove_depends=None,
             append_conflicts=None,
             remove_conflicts=None,
+            auto_inc_version=True,
             ):
         r"""Download an existing package from repositories into target_directory for modification
             if use_local_sources is True and no newer package exists on repos, updates current local edited data
@@ -4820,19 +4820,20 @@ class Wapt(object):
 
         """
         # check if available in repos
-        entries = self.is_available(packagename)
+        entries = self.is_available(packagerequest)
         if entries:
             entry = entries[-1]
             # the package can be downloaded
             if not target_directory:
                 target_directory = self.get_default_development_dir(entry.package,section=entry.section)
+            packagename = entry.package
         else:
             # argument is a wapt package
-            entry = self.is_wapt_package_file(packagename)
+            entry = self.is_wapt_package_file(packagerequest)
             if entry:
                 if not target_directory:
                     target_directory = tempfile.mkdtemp(prefix="wapt")
-                zip = ZipFile(packagename)
+                zip = ZipFile(packagerequest)
                 zip.extractall(path=target_directory)
                 packagename = entry.package
             else:
@@ -4848,7 +4849,7 @@ class Wapt(object):
             if use_local_sources:
                 if entry > local_dev_entry:
                     raise Exception('A newer package version %s is already in repository "%s", local source %s is %s aborting' % (entry.asrequirement(),entry.repo,target_directory,local_dev_entry.asrequirement()))
-                if local_dev_entry.match(packagename):
+                if local_dev_entry.match(packagerequest):
                     if append_depends or remove_depends or append_conflicts or remove_conflicts:
                         prev_depends = ensure_list(local_dev_entry.depends)
                         for d in append_depends:
@@ -4877,7 +4878,7 @@ class Wapt(object):
                     self.add_pyscripter_project(target_directory)
                     return {'target':target_directory,'source_dir':target_directory,'package':local_dev_entry}
                 else:
-                    raise Exception('Local target %s directory is the sources of a different package %s than expected %s' % (target_directory,local_dev_entry.package,packagename))
+                    raise Exception('Local target %s directory is the sources of a different package %s than expected %s' % (target_directory,local_dev_entry.package,packagerequest))
             else:
                 raise Exception('%s wapt developement directory exists' % target_directory)
         if entry:
@@ -4890,9 +4891,11 @@ class Wapt(object):
                 remove_depends = remove_depends,
                 append_conflicts = append_conflicts,
                 remove_conflicts = remove_conflicts,
+                auto_inc_version = auto_inc_version,
                 )
         else:
             # create a new one
+            packagename = PackageRequest(packagerequest).package
             return self.duplicate_package(packagename=packagename,
                 newname=packagename,
                 target_directory=target_directory,
@@ -4936,7 +4939,7 @@ class Wapt(object):
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
         >>> tmpdir = 'c:/tmp/dummy'
         >>> wapt.edit_host('dummy.tranquilit.local',target_directory=tmpdir,append_depends='tis-firefox')
-        {'target': 'c:\\\\tmp\\\\dummy', 'source_dir': 'c:\\\\tmp\\\\dummy', 'package': "dummy.tranquilit.local (=0)"}
+        {'target': 'c:\tmp\dummy', 'source_dir': 'c:\tmp\dummy', 'package': PackageEntry('dummy.tranquilit.local','0')}
         >>> import shutil
         >>> shutil.rmtree(tmpdir)
         >>> host = wapt.edit_host('htlaptop.tranquilit.local',target_directory=tmpdir,append_depends='tis-firefox')
@@ -5034,6 +5037,7 @@ class Wapt(object):
         >>> isinstance(res,PackageEntry)
         True
         >>> wapt.forget_packages('tis-test')
+        ['tis-test']
         >>> wapt.is_installed('tis-test')
         >>> print wapt.is_installed('tis-test')
         None
@@ -5096,7 +5100,7 @@ class Wapt(object):
         ...     usecache=False,
         ...     printhook=nullhook)
         >>> print repr(p['package'])
-        "testdup (=20.0-0)"
+        PackageEntry('testdup','20.0-0')
         >>> if os.path.isdir(tmpdir):
         ...     import shutil
         ...     shutil.rmtree(tmpdir)
@@ -5108,18 +5112,17 @@ class Wapt(object):
         ...    remove_depends=['tis-wapttestsub'],
         ...    )
         >>> print repr(p['package'])
-        "tis-wapttest (=118)"
+        PackageEntry('tis-wapttest','120')
         """
         if target_directory:
              target_directory = os.path.abspath(target_directory)
 
         if newname:
             newname = newname.lower()
-
-        while newname.endswith('.wapt'):
-            dot_wapt = newname.rfind('.wapt')
-            newname = newname[0:dot_wapt]
-            logger.warning("Target ends with '.wapt', stripping.  New name: %s", newname)
+            while newname.endswith('.wapt'):
+                dot_wapt = newname.rfind('.wapt')
+                newname = newname[0:dot_wapt]
+                logger.warning("Target ends with '.wapt', stripping.  New name: %s", newname)
 
         if not private_key:
             private_key = self.private_key
@@ -5528,7 +5531,7 @@ def lookup_name_from_rid(domain_controller, rid):
         from https://mail.python.org/pipermail/python-win32/2006-May/004655.html
         domain_controller : should be a DC
         rid : integer number (512 for domain admins, 513 for domain users, etc.)
-    >>> lookup_user_group_from_rid('srvads', DOMAIN_GROUP_RID_ADMINS)
+    >>> lookup_name_from_rid('srvads', DOMAIN_GROUP_RID_ADMINS)
     u'Domain Admins'
 
     """
@@ -5562,7 +5565,7 @@ def check_is_member_of(huser,group_name):
     group_name : group as a string
     >>> from win32security import LogonUser
     >>> hUser = win32security.LogonUser ('technique','tranquilit','xxxxxxx',win32security.LOGON32_LOGON_NETWORK,win32security.LOGON32_PROVIDER_DEFAULT)
-    >>> test_member_of(hUser,'domain admins')
+    >>> check_is_member_of(hUser,'domain admins')
     False
     """
     try:
@@ -5581,7 +5584,7 @@ def check_user_membership(user_name,password,domain_name,group_name):
     group_name : group as a string
     >>> from win32security import LogonUser
     >>> hUser = win32security.LogonUser ('technique','tranquilit','xxxxxxx',win32security.LOGON32_LOGON_NETWORK,win32security.LOGON32_PROVIDER_DEFAULT)
-    >>> test_member_of(hUser,'domain admins')
+    >>> check_is_member_of(hUser,'domain admins')
     False
     """
     try:
@@ -5599,17 +5602,6 @@ def check_user_membership(user_name,password,domain_name,group_name):
 Version = setuphelpers.Version  # obsolete
 
 if __name__ == '__main__':
-    wapt = Wapt(config_filename=r'C:\tranquilit\wapt\wapt-get.ini')
-    sys.exit(1)
-
-
-    srv = WaptServer().load_config(wapt.config)
-    srv.server_url='https://srvwapt.tranquilit.local'
-    print srv.server_url
-    crt =  srv.get_server_certificate()
-    print srv.get('hosts')
-    sys.exit(1)
-
     import doctest
     import sys
     reload(sys)

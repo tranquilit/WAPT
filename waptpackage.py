@@ -33,6 +33,7 @@ import re
 import time
 import json
 import sys
+import types
 
 logger = logging.getLogger()
 
@@ -56,7 +57,7 @@ REGEX_PACKAGE_VERSION = re.compile(r'^(?P<major>[0-9]+)'
                     '(\-(?P<packaging>[0-9A-Za-z]+(\.[0-9A-Za-z]+)*))?$')
 
 # tis-exodus (>2.3.4-10)
-REGEX_PACKAGE_CONDITION = re.compile(r'(?P<package>[^\s()]+)\s*(\((?P<operator>[<=>]+)\s*(?P<version>\S+)\))?')
+REGEX_PACKAGE_CONDITION = re.compile(r'(?P<package>[^\s()]+)\s*(\(\s*(?P<operator>[<=>]+)\s*(?P<version>\S+)\s*\))?')
 
 
 def parse_major_minor_patch_build(version):
@@ -89,6 +90,79 @@ def make_version(major_minor_patch_build):
     else:
         return p1
 
+
+class Version(object):
+    """Version object of form 0.0.0
+        can compare with respect to natural numbering and not alphabetical
+    >>> Version('0.10.2') > Version('0.2.5')
+    True
+    >>> Version('0.1.2') < Version('0.2.5')
+    True
+    >>> Version('0.1.2') == Version('0.1.2')
+    True
+    """
+
+    def __init__(self,versionstring):
+        if versionstring is None:
+            versionstring = ''
+        assert isinstance(versionstring,types.ModuleType) or isinstance(versionstring,str) or isinstance(versionstring,unicode)
+        if isinstance(versionstring,ModuleType):
+            versionstring = versionstring.__version__
+        self.members = [ v.strip() for v in versionstring.split('.')]
+
+    def __cmp__(self,aversion):
+        def nat_cmp(a, b):
+            a = a or ''
+            b = b or ''
+
+            def convert(text):
+                if text.isdigit():
+                    return int(text)
+                else:
+                    return text.lower()
+
+            def alphanum_key(key):
+                return [convert(c) for c in re.split('([0-9]+)', key)]
+
+            return cmp(alphanum_key(a), alphanum_key(b))
+
+        assert isinstance(aversion,Version)
+        for i in range(0,min([len(self.members),len(aversion.members)])):
+            i1,i2  = self.members[i], aversion.members[i]
+            v = nat_cmp(i1,i2)
+            if v:
+                return v
+        return 0
+
+    def __str__(self):
+        return '.'.join(self.members)
+
+    def __repr__(self):
+        return "Version('{}')".format('.'.join(self.members))
+
+
+class PackageRequest(object):
+    """Package and version request / condition
+    >>> PackageRequest('7-zip( >= 7.2)')
+    PackageRequest('7-zip (>=7.2)')
+    """
+    def __init__(self,package_request):
+        self.package_request = package_request
+        parts = REGEX_PACKAGE_CONDITION.match(self.package_request).groupdict()
+        self.package = parts['package']
+        self.operator = parts['operator']
+        self.version = Version(parts['version'])
+
+    def __cmp__(self,other):
+        if isinstance(other,str) or isinstance(other,unicode):
+            other = PackageRequest(other)
+        return cmp((self.package,self.version,self.operator),(other.package,other.version,other.operator))
+
+    def __str__(self):
+        return self.package_request
+
+    def __repr__(self):
+        return "PackageRequest('{package} ({operator}{version})')".format(package=self.package,operator=self.operator,version=self.version)
 
 class PackageEntry(object):
     """Package attributes coming from either control files in WAPT package or local DB"""
@@ -367,12 +441,14 @@ sources      : %(sources)s
             result[k] = getattr(self,k)
         return result
 
-    def __str__(self):
+    def __unicode__(self):
         return self.ascontrol(with_non_control_attributes=True)
 
+    def __str__(self):
+        return self.__unicode__()
+
     def __repr__(self):
-        return u'"%s (=%s)"' % (self.package,self.version)
-        #return self.ascontrol(with_non_control_attributes=True).encode('utf8')
+        return u"PackageEntry('%s','%s')" % (self.package,self.version)
 
     def inc_build(self):
         """Increment last number part of version"""

@@ -21,6 +21,163 @@
 #
 # -----------------------------------------------------------------------
 __version__ = "1.1.1"
+
+__all__ = \
+['EWaptSetupException',
+ 'HKEY_CLASSES_ROOT',
+ 'HKEY_CURRENT_CONFIG',
+ 'HKEY_CURRENT_USER',
+ 'HKEY_LOCAL_MACHINE',
+ 'HKEY_USERS',
+ 'KEY_ALL_ACCESS',
+ 'KEY_READ',
+ 'KEY_WRITE',
+ 'PackageEntry',
+ 'REG_DWORD',
+ 'REG_EXPAND_SZ',
+ 'REG_MULTI_SZ',
+ 'REG_SZ',
+ 'TimeoutExpired',
+ 'Version',
+ '__version__',
+ 'add_shutdown_script',
+ 'add_to_system_path',
+ 'add_user_to_group',
+ 'adjust_current_privileges',
+ 'application_data',
+ 'bookmarks',
+ 'common_desktop',
+ 'control',
+ 'copytree2',
+ 'create_daily_task',
+ 'create_desktop_shortcut',
+ 'create_group',
+ 'create_programs_menu_shortcut',
+ 'create_shortcut',
+ 'create_user',
+ 'create_user_desktop_shortcut',
+ 'create_user_programs_menu_shortcut',
+ 'critical_system_pending_updates',
+ 'currentdate',
+ 'currentdatetime',
+ 'default_oncopy',
+ 'default_overwrite',
+ 'default_overwrite_older',
+ 'default_skip',
+ 'delete_at_next_reboot',
+ 'delete_group',
+ 'delete_task',
+ 'delete_user',
+ 'desktop',
+ 'disable_file_system_redirection',
+ 'disable_task',
+ 'dmi_info',
+ 'enable_task',
+ 'ensure_dir',
+ 'ensure_unicode',
+ 'error',
+ 'filecopyto',
+ 'find_processes',
+ 'get_appath',
+ 'get_computername',
+ 'get_current_user',
+ 'get_domain_fromregistry',
+ 'get_file_properties',
+ 'get_hostname',
+ 'get_language',
+ 'get_loggedinusers',
+ 'get_msi_properties',
+ 'get_task',
+ 'getproductprops',
+ 'getsilentflags',
+ 'glob',
+ 'host_info',
+ 'inifile_hasoption',
+ 'inifile_readstring',
+ 'inifile_writestring',
+ 'installed_softwares',
+ 'isdir',
+ 'isfile',
+ 'isrunning',
+ 'iswin64',
+ 'killalltasks',
+ 'killtree',
+ 'local_admins',
+ 'local_groups',
+ 'local_users',
+ 'makepath',
+ 'memory_status',
+ 'messagebox',
+ 'mkdirs',
+ 'my_documents',
+ 'networking',
+ 'os',
+ 'params',
+ 'processnames_list',
+ 'programfiles',
+ 'programfiles32',
+ 'programfiles64',
+ 'programs',
+ 'reboot_machine',
+ 'recent',
+ 'reg_closekey',
+ 'reg_delvalue',
+ 'reg_getvalue',
+ 'reg_openkey_noredir',
+ 'reg_setvalue',
+ 'register_dll',
+ 'register_ext',
+ 'register_uninstall',
+ 'register_windows_uninstall',
+ 'registered_organization',
+ 'registry_delete',
+ 'registry_readstring',
+ 'registry_set',
+ 'registry_setstring',
+ 'remove_desktop_shortcut',
+ 'remove_file',
+ 'remove_from_system_path',
+ 'remove_programs_menu_shortcut',
+ 'remove_shutdown_script',
+ 'remove_tree',
+ 'remove_user_desktop_shortcut',
+ 'remove_user_from_group',
+ 'remove_user_programs_menu_shortcut',
+ 'replace_at_next_reboot',
+ 'run',
+ 'run_notfatal',
+ 'run_task',
+ 'sendto',
+ 'service_installed',
+ 'service_is_running',
+ 'service_is_stopped',
+ 'service_start',
+ 'service_stop',
+ 'set_environ_variable',
+ 'set_file_hidden',
+ 'set_file_visible',
+ 'shell_launch',
+ 'showmessage',
+ 'shutdown_scripts_ui_visible',
+ 'start_menu',
+ 'startup',
+ 'system32',
+ 'task_exists',
+ 'taskscheduler',
+ 'uninstall_cmd',
+ 'unregister_dll',
+ 'unregister_uninstall',
+ 'unset_environ_variable',
+ 'user_appdata',
+ 'user_desktop',
+ 'wget',
+ 'wgets',
+ 'wincomputername',
+ 'windomainname',
+ 'winshell',
+ 'wmi_info',
+ 'wmi_info_basic']
+
 import os
 import sys
 import logging
@@ -63,11 +220,11 @@ import locale
 import types
 import re
 import threading
+import codecs
+from waptpackage import PackageEntry
+from waptpackage import Version as Version
 from types import ModuleType
 
-import codecs
-
-from waptpackage import PackageEntry
 from iniparse import RawConfigParser
 import keyfinder
 logger = logging.getLogger()
@@ -82,7 +239,6 @@ startup = winshell.startup
 my_documents= winshell.my_documents
 recent = winshell.recent
 sendto = winshell.sendto
-
 
 def ensure_dir(f):
     """Be sure the directory of f exists on disk. Make it if not"""
@@ -165,7 +321,9 @@ def create_desktop_shortcut(label, target='', arguments ='', wDir='', icon=''):
         wDir : working directory
         icon : path to ico file
     >>> create_desktop_shortcut(r'WAPT Console Management',target='c:\\wapt\\waptconsole.exe')
+    u'C:\\Users\\Public\\Desktop\\WAPT Console Management.lnk'
     >>> create_desktop_shortcut(r'WAPT local status',target='http://localhost:8088/')
+    u'C:\\Users\\Public\\Desktop\\WAPT local status.url'
     """
     if not (label.endswith('.lnk') or label.endswith('.url')):
         if target.startswith('http://') or target.startswith('https://'):
@@ -201,11 +359,12 @@ def create_user_desktop_shortcut(label, target='',arguments='', wDir='', icon=''
 
 def create_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=''):
     """Create a program menu shortcut link for all users
-        label  : Name of the shorcut (.lnk extension is appended if not provided)
+        label  : Name of the shorcut (.lnk extension is appended if not provided.)
         target : path to application
         arguments : argument to pass to application
         wDir : working directory
         icon : path to ico file
+        if label's extension is url, a http shortcut is created, else creates a file system shortcut.
     """
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
@@ -217,6 +376,10 @@ def create_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=
 
 
 def create_user_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=''):
+    """Create a shortcut in the start menu of the current user
+        return absolute path to this shortcut lnk/url file
+       If label extension is url, create a Http shortcut, else a file system shortcut.
+    """
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
     sc = os.path.join(start_menu(0),label)
@@ -227,6 +390,7 @@ def create_user_programs_menu_shortcut(label, target='', arguments='', wDir='', 
 
 
 def remove_programs_menu_shortcut(label):
+    """Create a shortcut in the start menu of the current user"""
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
     remove_file(makepath(start_menu(common=1),label))
@@ -247,7 +411,8 @@ def remove_user_desktop_shortcut(label):
     remove_file(os.path.join(desktop(0),label))
 
 def wgets(url,proxies=None):
-    """Return the content of a remote resource as a String
+    """Return the content of a remote resource as a String with a http get request.
+    Raise an exception if remote data can't be retrieved.
     >>> data = wgets('http://wapt:8080/info')
     >>> "client_version" in data and "server_version" in data
     True
@@ -260,8 +425,7 @@ def wgets(url,proxies=None):
 
 
 def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_timeout=None):
-    r"""Copy the contents of a file from a given URL
-    to a local file.
+    r"""Copy the contents of a file from a given URL to a local file.
     >>> respath = wget('http://wapt.tranquil.it/wapt/tis-firefox_28.0.0-1_all.wapt','c:\\tmp\\test.wapt',proxies={'http':'http://proxy:3128'})
     ???
     >>> os.stat(respath).st_size>10000
@@ -2227,53 +2391,6 @@ def getproductprops(installer_path):
 
 
 
-class Version():
-    """Version object of form 0.0.0
-        can compare with respect to natural numbering and not alphabetical
-    >>> Version('0.10.2') > Version('0.2.5')
-    True
-    >>> Version('0.1.2') < Version('0.2.5')
-    True
-    >>> Version('0.1.2') == Version('0.1.2')
-    True
-    """
-
-    def __init__(self,versionstring):
-        if versionstring is None:
-            versionstring = ''
-        assert isinstance(versionstring,types.ModuleType) or isinstance(versionstring,str) or isinstance(versionstring,unicode)
-        if isinstance(versionstring,ModuleType):
-            versionstring = versionstring.__version__
-        self.members = [ v.strip() for v in versionstring.split('.')]
-
-    def __cmp__(self,aversion):
-        def nat_cmp(a, b):
-            a = a or ''
-            b = b or ''
-
-            def convert(text):
-                if text.isdigit():
-                    return int(text)
-                else:
-                    return text.lower()
-
-            def alphanum_key(key):
-                return [convert(c) for c in re.split('([0-9]+)', key)]
-
-            return cmp(alphanum_key(a), alphanum_key(b))
-
-        assert isinstance(aversion,Version)
-        for i in range(0,min([len(self.members),len(aversion.members)])):
-            i1,i2  = self.members[i], aversion.members[i]
-            v = nat_cmp(i1,i2)
-            if v:
-                return v
-        return 0
-
-    def __repr__(self):
-        return '.'.join(self.members)
-
-
 class EWaptSetupException(Exception):
     pass
 
@@ -2284,15 +2401,12 @@ def error(reason):
     """Raise a WAPT fatal error"""
     raise EWaptSetupException(u'Fatal error : %s' % reason)
 
-# to help pyscripter code completion in setup.py
-params = {}
 """Specific parameters for install scripts"""
-
+params = {}
 control = PackageEntry()
 
+
 if __name__=='__main__':
-    #add_shutdown_script('titi','toto')
-    #remove_shutdown_script('titi','toto')
     import doctest
     import sys
     reload(sys)
@@ -2301,33 +2415,3 @@ if __name__=='__main__':
     doctest.ELLIPSIS_MARKER = '???'
     doctest.testmod(optionflags=doctest.ELLIPSIS)
     sys.exit(0)
-
-    copytree2('c:\\tmp','c:\\tmp2\\toto',onreplace=default_overwrite)
-    copytree2('c:\\tmp','c:\\tmp2\\toto',onreplace=default_skip)
-    create_desktop_shortcut('test','c:\\')
-    assert isfile(makepath(common_desktop(),'test.lnk'))
-    shell_launch(makepath(common_desktop(),'test.lnk'))
-    remove_file(makepath(common_desktop(),'test.lnk'))
-    assert not isfile(makepath(common_desktop(),'test.lnk'))
-
-    create_user_desktop_shortcut('test2','c:\\')
-    assert isfile(makepath(desktop(0),'test2.lnk'))
-    remove_file(makepath(desktop(0),'test2.lnk'))
-    assert not isfile(makepath(desktop(0),'test2.lnk'))
-
-    assert isrunning('explorer')
-    assert service_installed('waptservice')
-    if not service_is_running('waptservice'):
-        service_start('waptservice')
-    assert service_is_running('waptservice')
-    service_stop('waptservice')
-    assert not service_is_running('waptservice')
-    service_start('waptservice')
-    assert not service_installed('wapt')
-    assert get_computername() != ''
-    #print getloggedinusers()
-    #assert get_domainname() != ''
-    assert get_msi_properties(glob.glob('C:\\Windows\\Installer\\*.msi')[0])['Manufacturer'] != ''
-    assert installed_softwares('offi')[0]['uninstall_string'] != ''
-    assert get_file_properties('c:\\wapt\\waptservice.exe')['FileVersion'] != ''
-    assert get_file_properties('c:\\wapt\\wapt-get.exe')['FileVersion'] != ''
