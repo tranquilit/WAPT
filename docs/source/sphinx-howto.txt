@@ -1,0 +1,6 @@
+Dans le fichier conf.py ajouter : 
+sys.path.insert(0, os.path.abspath('../../'))
+
+C:\python27\SCRIPTS\sphinx-quickstart.exe
+C:\python27\SCRIPTS\sphinx-apidoc.exe  -o sphinx/source ./
+C:\python27\SCRIPTS\sphinx-build.exe -b html docs/source docs/build
