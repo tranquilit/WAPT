@@ -1169,7 +1169,7 @@ msgstr "Groupes de paquets"
 #: tviswaptgui.pghostinventory.caption
 msgctxt "TVISWAPTGUI.PGHOSTINVENTORY.CAPTION"
 msgid "Hardware inventory"
-msgstr "Inventaire logiciel"
+msgstr "Inventaire matériel"
 
 #: tviswaptgui.pginventory.caption
 msgid "Inventory"
