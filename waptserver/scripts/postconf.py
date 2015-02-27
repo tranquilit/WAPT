@@ -210,6 +210,10 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
             void = subprocess.check_output(['a2ensite', 'wapt'], stderr=subprocess.STDOUT)
             void = subprocess.check_output(['/etc/init.d/apache2', 'graceful'], stderr=subprocess.STDOUT)
 
+            reply = postconf.yesno("The Apache config has been reloaded. Do you want to force-restart Apache?")
+            if reply == postconf.DIALOG_OK:
+                void = subprocess.check_output(['/etc/init.d/apache2', 'restart'], stderr=subprocess.STDOUT)
+
             final_msg.append('Please connect to https://' + fqdn + '/ to access the server.')
 
         except subprocess.CalledProcessError as cpe:
