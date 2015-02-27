@@ -4939,7 +4939,7 @@ class Wapt(object):
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
         >>> tmpdir = 'c:/tmp/dummy'
         >>> wapt.edit_host('dummy.tranquilit.local',target_directory=tmpdir,append_depends='tis-firefox')
-        {'target': 'c:\tmp\dummy', 'source_dir': 'c:\tmp\dummy', 'package': PackageEntry('dummy.tranquilit.local','0')}
+        {'target': 'c:\\\\tmp\\\\dummy', 'source_dir': 'c:\\\\tmp\\\\dummy', 'package': PackageEntry('dummy.tranquilit.local','0')}
         >>> import shutil
         >>> shutil.rmtree(tmpdir)
         >>> host = wapt.edit_host('htlaptop.tranquilit.local',target_directory=tmpdir,append_depends='tis-firefox')

@@ -321,9 +321,9 @@ def create_desktop_shortcut(label, target='', arguments ='', wDir='', icon=''):
         wDir : working directory
         icon : path to ico file
     >>> create_desktop_shortcut(r'WAPT Console Management',target='c:\\wapt\\waptconsole.exe')
-    u'C:\\Users\\Public\\Desktop\\WAPT Console Management.lnk'
+    u'C:\\\\Users\\\\Public\\\\Desktop\\\\WAPT Console Management.lnk'
     >>> create_desktop_shortcut(r'WAPT local status',target='http://localhost:8088/')
-    u'C:\\Users\\Public\\Desktop\\WAPT local status.url'
+    u'C:\\\\Users\\\\Public\\\\Desktop\\\\WAPT local status.url'
     """
     if not (label.endswith('.lnk') or label.endswith('.url')):
         if target.startswith('http://') or target.startswith('https://'):
@@ -413,8 +413,8 @@ def remove_user_desktop_shortcut(label):
 def wgets(url,proxies=None):
     """Return the content of a remote resource as a String with a http get request.
     Raise an exception if remote data can't be retrieved.
-    >>> data = wgets('http://wapt:8080/info')
-    >>> "client_version" in data and "server_version" in data
+    >>> data = wgets('https://wapt/ping')
+    >>> "msg" in data
     True
     """
     r = requests.get(url,proxies=proxies,verify=False)
