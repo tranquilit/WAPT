@@ -1,5 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 """Implementation of ISesNework in Python."""
-
 # From UbuntuOne
 
 import logging

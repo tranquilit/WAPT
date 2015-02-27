@@ -1661,6 +1661,7 @@ class WaptDB(WaptBaseDB):
 
     def package_entry_from_db(self,package,version_min='',version_max=''):
         """Return the most recent package entry given its packagename and minimum and maximum version
+
         >>> waptdb = WaptDB(':memory:')
         >>> waptdb.add_package_entry(PackageEntry('dummy','1'))
         >>> waptdb.add_package_entry(PackageEntry('dummy','2'))
@@ -1801,6 +1802,7 @@ class WaptServer(object):
     @property
     def server_url(self):
         """Return fixed url if any, else request DNS
+
         >>> server = WaptServer(timeout=4)
         >>> print server.dnsdomain
         tranquilit.local
@@ -1822,6 +1824,7 @@ class WaptServer(object):
 
     def find_wapt_server_url(self):
         """Search the WAPT server with dns SRV query
+
         >>> WaptServer(dnsdomain='tranquilit.local',timeout=4,url=None).server_url
         'https://wapt.tranquilit.local'
         >>> WaptServer(url='http://srvwapt:8080',timeout=4).server_url
@@ -1876,7 +1879,8 @@ class WaptServer(object):
 
     @server_url.setter
     def server_url(self,value):
-        """Wapt main repository URL"""
+        """Wapt main repository URL
+        """
         # remove / at the end
         if value:
             value = value.rstrip('/')
@@ -1958,6 +1962,7 @@ class WaptServer(object):
 
 class WaptRepo(object):
     """Gives access to a remote http repository, with a zipped Packages packages index
+
     >>> repo = WaptRepo(name='main',url='http://wapt/wapt',timeout=4)
     >>> delta = repo.load_packages()
     >>> 'last-modified' in delta and 'added' in delta and 'removed' in delta
@@ -1965,8 +1970,18 @@ class WaptRepo(object):
     """
 
     def __init__(self,name='',url=None,proxies={'http':None,'https':None},timeout = 2,dnsdomain=None):
-        """Initialize a repo at url "url". If
-                 url is None, the url is requested from DNS"""
+        """Initialize a repo at url "url".
+
+        Args:
+            name (str): internal local name of this repository
+            url  (str): http URL to the repository.
+                 If url is None, the url is requested from DNS by a SRV query
+            proxies (dict): configuration of http proxies as defined for requests
+            timeout (float): timeout in seconds for the connection to the rmeote repository
+            dnsdomain (str): DNS domain to use for autodiscovery of URL if url is not supplied.
+                             if this is not supplied, DNS domain is taken from computer registry.
+        """
+
         self.name = name
         if url and url[-1]=='/':
             url = url.rstrip('/')
@@ -1987,7 +2002,16 @@ class WaptRepo(object):
 
     @property
     def repo_url(self):
-        """Return fixed url if any, else request DNS
+        """Repository URL
+
+        Fixed url if any, else request DNS with a SRV _wapt._tcp.domain query
+         or a CNAME by the find_wapt_repo_url method.
+
+        The URL is queried once and then cached into a local property.
+
+        Returns:
+            str: url to the repository
+
         >>> repo = WaptRepo(name='main',timeout=4)
         >>> print repo.dnsdomain
         tranquilit.local
@@ -1997,7 +2021,6 @@ class WaptRepo(object):
         >>> print repo.repo_url
         http://srvwapt.tranquilit.local/wapt
         """
-
         if self._repo_url:
             return self._repo_url
         else:
@@ -2011,6 +2034,7 @@ class WaptRepo(object):
            - first SRV record in the same network as one of the connected network interface
            - first SRV record with the highest weight
            - wapt CNAME in the local dns domain (https first then http)
+
         >>> repo = WaptRepo(name='main',dnsdomain='tranquil.it',timeout=4,url=None)
         >>> repo.repo_url
         'http://wapt.tranquil.it./wapt'
@@ -2026,7 +2050,11 @@ class WaptRepo(object):
             logger.debug(u'Local connected IPs: %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in connected_interfaces])
 
             def is_inmysubnets(ip):
-                """Return True if IP is in one of my connected subnets"""
+                """Return True if IP is in one of my connected subnets
+
+                Returns:
+                    boolean: True if ip is in one of my local connected interfaces subnets
+                """
                 for i in connected_interfaces:
                     if same_net(i['addr'],ip,i['netmask']):
                         logger.debug(u'  %s is in same subnet as %s/%s local connected interface' % (ip,i['addr'],i['netmask']))
@@ -2135,7 +2163,8 @@ class WaptRepo(object):
 
     @repo_url.setter
     def repo_url(self,value):
-        """Wapt main repository URL"""
+        """Setter for Wapt main repository URL
+        """
         # remove / at the end
         if value:
             value = value.rstrip('/')
@@ -2143,8 +2172,16 @@ class WaptRepo(object):
 
     def load_config(self,config,section=None):
         """Load waptrepo configuration from inifile section.
+
                 Use name of repo as section name if section is not provided.
                 Use 'global' if no section named section in ini file
+        Args:
+            config (RawConfigParser): ini configuration
+            section (str)           : section where to loads parameters
+                                      defaults to name of repository
+
+        Returns:
+            WaptRepo: return itself to chain calls.
         """
         if not section:
              section = self.name
@@ -2171,11 +2208,25 @@ class WaptRepo(object):
 
     @property
     def packages_url(self):
-        """return url of Packages index file"""
+        """return url of Packages index file
+
+        hardcoded path to the Packages index.
+        """
         return self.repo_url + '/Packages'
 
     def need_update(self,waptdb):
-        """Return True if index has changed on repo and local db needs an update
+        """Check if index has changed on repo and local db needs an update
+
+        Compare date on local package index DB with the Packages file on remote
+          repository with a HEAD http request.
+
+        Args:
+            waptdb (WaptDB): local Wapt status database.
+
+        Returns
+            bool:   True if either Packages was never read or remote date of Packages is
+                    more recent than the date stored in local DB.
+
         >>> repo = WaptRepo(name='main',url='http://wapt/wapt',timeout=4)
         >>> waptdb = WaptDB('c:/wapt/db/waptdb.sqlite')
         >>> res = repo.need_update(waptdb)
@@ -2199,7 +2250,13 @@ class WaptRepo(object):
                 return True
 
     def is_available(self):
-        """Try to access the repo and return last modified date of repo index or None if not accessible
+        """Check if repo is reachable an return createion date of Packages.
+
+        Try to access the repo and return last modified date of repo index or None if not accessible
+
+        Returns:
+            str: Iso creation date of remote Package file as returned in http headers
+
         >>> repo = WaptRepo(name='main',url='http://wapt/wapt',timeout=1)
         >>> repo.is_available() <= datetime2isodate()
         True
@@ -2224,7 +2281,13 @@ class WaptRepo(object):
 
     def load_packages(self):
         """Try to load index of packages as PackageEntry list from repository
-                return {'added','removed'}
+
+        HTTP Get remote Packages zip file and parses the entries.
+
+        The list of package entries is stored in the packages property.
+
+        Returns
+            dict: list of added or removed packages and create date {'added':list,'removed':list,'last-modified':isodatetime}
         """
         new_packages = []
         logger.debug(u'Read remote Packages zip file %s' % self.packages_url)
@@ -2266,6 +2329,18 @@ class WaptRepo(object):
     def update_db(self,force=False,waptdb=None):
         """Get Packages from http repo and update local package database
             return last-update header
+
+        The local status DB is updated. Date of index is stored in params table
+          for further checks.
+
+        Args:
+            force (bool): get index from remote repo even if creation date is not newer
+                          than the datetime stored in local status database
+            waptdb (WaptDB): instance of Wapt status database.
+
+        Returns:
+            isodatetime: date of Packages index
+
         >>> import common
         >>> repo = common.WaptRepo('main','http://wapt/wapt')
         >>> localdb = common.WaptDB('c:/wapt/db/waptdb.sqlite')
@@ -2309,6 +2384,7 @@ class WaptRepo(object):
 
 class WaptHostRepo(WaptRepo):
     """Dummy http repository for host packages"""
+
     def update_db(self,force=False,waptdb=None,hosts_list=[]):
         """get a list of host packages from remote repo"""
         current_host = setuphelpers.get_hostname()
@@ -2325,6 +2401,7 @@ class WaptHostRepo(WaptRepo):
         """Update host package from repo.
            Stores last-http-date in database/
             returns (host package entry,entry date on server)
+
         >>> repo = WaptHostRepo(name='wapt-host',timeout=4)
         >>> print repo.dnsdomain
         tranquilit.local
@@ -3317,7 +3394,8 @@ class Wapt(object):
 
     def cleanup(self,obsolete_only=False):
         """Remove cached WAPT files from local disk
-        obsolete_only : If True, remove packages which are either no more available, or installed at a equal or newer version
+           obsolete_only: If True, remove packages which are either no more available,
+                          or installed at a equal or newer version
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
         >>> l = wapt.download_packages(wapt.check_downloads())
         >>> res = wapt.cleanup(True)
@@ -5066,18 +5144,26 @@ class Wapt(object):
             auto_inc_version=True,
             usecache=True,
             printhook=None):
-        r"""Duplicate an existing package from repositories into targetdirectory with newname.
-            Return  {'target':new package if build, or 'source_dir':new source directory if not build ,'package':new PackageEntry}
-                newname          : name of target package
-                newversion       : version of target package. if None, use source package version
-                target_directory : path where to put development files. If None, use temporary. If empty, use default development dir
-                build            : If True, build and sign the package. The filename of build package will be in 'target' key of result
-                callback         : function to get rawbytes password of private key
-                append_depends   : comma str or list of depends to append.
-                remove_depends   : comma str or list of depends to remove.
-                auto_inc_version : if version is less than existing package in repo, set version to repo version+1
-                usecache         : If True, allow to use cached package in local repo instead of downloading it.
-                printhook: hook for download progress
+        """Duplicate an existing package.
+
+        Duplicate an existing package from declared repostory or file into targetdirectory with
+          optional newname and version.
+
+        Args:
+            newname (str):           name of target package
+            newversion (str):        version of target package. if None, use source package version
+            target_directory (str):  path where to put development files. If None, use temporary. If empty, use default development dir
+            build (bool):            If True, build and sign the package. The filename of build package will be in 'target' key of result
+            callback (func):         function to get rawbytes password of private key
+            append_depends (list):   comma str or list of depends to append.
+            remove_depends (list):   comma str or list of depends to remove.
+            auto_inc_version (bool): if version is less than existing package in repo, set version to repo version+1
+            usecache (bool):         If True, allow to use cached package in local repo instead of downloading it.
+            printhook (func):        hook for download progress
+
+        Returns:
+            dict: {'target':new package if build, or 'source_dir':new source directory if not build ,'package':new PackageEntry}
+
         >>> wapt = Wapt(config_filename='c:/tranquilit/wapt/tests/wapt-get.ini')
         >>> wapt.dbpath = ':memory:'
         >>> r= wapt.update()

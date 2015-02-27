@@ -94,6 +94,7 @@ def make_version(major_minor_patch_build):
 class Version(object):
     """Version object of form 0.0.0
         can compare with respect to natural numbering and not alphabetical
+
     >>> Version('0.10.2') > Version('0.2.5')
     True
     >>> Version('0.1.2') < Version('0.2.5')
@@ -143,6 +144,7 @@ class Version(object):
 
 class PackageRequest(object):
     """Package and version request / condition
+
     >>> PackageRequest('7-zip( >= 7.2)')
     PackageRequest('7-zip (>=7.2)')
     """
@@ -165,7 +167,9 @@ class PackageRequest(object):
         return "PackageRequest('{package} ({operator}{version})')".format(package=self.package,operator=self.operator,version=self.version)
 
 class PackageEntry(object):
-    """Package attributes coming from either control files in WAPT package or local DB"""
+    """Package attributes coming from either control files in WAPT package or local DB
+
+    """
     required_attributes = ['package','version','architecture',]
     optional_attributes = ['section','priority','maintainer','description','depends','conflicts','sources','installed_size']
     non_control_attributes = ['localpath','filename','size','repo_url','md5sum','repo',]
@@ -324,6 +328,7 @@ class PackageEntry(object):
 
     def load_control_from_wapt(self,fname,calc_md5=True):
         """Load package attributes from the control file (utf8 encoded) included in WAPT zipfile fname
+
           fname can be
            - the path to WAPT file itelsef (zip file)
            - a list with the lines from control file
@@ -377,6 +382,7 @@ class PackageEntry(object):
 
     def save_control_to_wapt(self,fname):
         """Save package attributes to the control file (utf8 encoded)
+
           fname can be
            - the path to WAPT file itelsef (zip file)
            - a path to the directory of wapt file unzipped content (debugging)
@@ -498,7 +504,13 @@ class WaptLocalRepo(object):
         self.index = {}
 
     def load_packages(self):
-        """Get Packages from local repo Packages file
+        """Parse Packages index from local repo Packages file
+
+        Packages file is zipped file with one file named Packages.
+
+        This files is the concatenation of control files of each package
+          in the repository
+
         >>> repo = WaptLocalRepo(localpath='c:\\wapt\\cache')
         >>> repo.load_packages()
         >>> isinstance(repo.packages,list)
@@ -541,7 +553,9 @@ class WaptLocalRepo(object):
             add(startline,endline)
 
     def update_packages_index(self,force_all=False):
-        """Scan self.localpath directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash"""
+        """Scan self.localpath directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash
+
+        """
         packages_fname = os.path.join(self.localpath,'Packages')
         icons_path = os.path.join(self.localpath,'icons')
         if not os.path.isdir(icons_path):
@@ -615,6 +629,10 @@ class WaptLocalRepo(object):
 
 def update_packages(adir):
     """Update packages index
+
+    This function is used on repositories to rescan all packages and
+      update the Packages index.
+
     >>> if os.path.isdir('c:\\wapt\\cache'):
     ...     repopath = 'c:\\wapt\\cache'
     ... else:
