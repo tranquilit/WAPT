@@ -628,10 +628,10 @@ def main():
                     print u"You must provide the package to edit"
                     sys.exit(1)
                 if len(args) >= 3:
-                    result = mywapt.edit_package(packagename=args[1],
+                    result = mywapt.edit_package(packagerequest=args[1],
                                                  append_depends=args[2])
                 else:
-                    result = mywapt.edit_package(packagename=args[1])
+                    result = mywapt.edit_package(packagerequest=args[1])
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
