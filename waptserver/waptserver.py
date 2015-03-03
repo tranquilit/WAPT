@@ -1654,12 +1654,11 @@ def get_hosts():
         query:
           uuid=<uuid>
         or
-          computer_fqdn=<dnsname>
-        or
           filter=<csvlist of fields>:regular expression
         has_errors=1
         need_upgrade=1
-        fields=<csvlist of columns>
+        groups=<csvlist of packages>
+        columns=<csvlist of columns>
     """
     try:
         default_columns = [u'host_status',
@@ -1731,11 +1730,13 @@ def get_hosts():
         hosts_packages_repo = WaptLocalRepo(wapt_folder+'-host')
         hosts_packages_repo.load_packages()
 
+        groups = ensure_list(request.args.get('groups',''))
+
         result = []
         print { col:1 for col in columns }
         for host in hosts().find(query,fields={ col:1 for col in columns }):
             host.pop("_id")
-            if 'depends' in columns and 'host' in host and 'computer_fqdn' in host['host']:
+            if ('depends' in columns or groups) and 'host' in host and 'computer_fqdn' in host['host']:
                 host_package = hosts_packages_repo.index.get(host['host']['computer_fqdn'],None)
                 if host_package:
                     depends = ensure_list(host_package.depends.split(','))
@@ -1766,7 +1767,8 @@ def get_hosts():
             except:
                 host['host_status'] = '?'
 
-            result.append(host)
+            if not groups or list(set(groups) & set(depends)):
+                result.append(host)
 
         if  'uuid' in request.args:
             if len(result) == 0:
