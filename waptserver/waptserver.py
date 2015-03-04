@@ -237,6 +237,7 @@ def get_wapt_exe_version(exe):
     version = None
     if os.path.exists(exe):
         present = True
+        pe = None
         try:
             pe = pefile.PE(exe)
             version = pe.FileInfo[0].StringTable[0].entries['FileVersion'].strip()
@@ -244,6 +245,8 @@ def get_wapt_exe_version(exe):
                 version = pe.FileInfo[0].StringTable[0].entries['ProductVersion'].strip()
         except:
             pass
+        if pe is not None:
+            pe.close()
     return (present, version)
 
 def ensure_list(csv_or_list,ignore_empty_args=True):
