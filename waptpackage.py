@@ -107,7 +107,7 @@ class Version(object):
         if versionstring is None:
             versionstring = ''
         assert isinstance(versionstring,types.ModuleType) or isinstance(versionstring,str) or isinstance(versionstring,unicode)
-        if isinstance(versionstring,ModuleType):
+        if isinstance(versionstring,types.ModuleType):
             versionstring = versionstring.__version__
         self.members = [ v.strip() for v in versionstring.split('.')]
 
