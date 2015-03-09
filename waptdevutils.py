@@ -20,7 +20,21 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
+"""
+ A collection of utility python functions for WaptConsole lazarus application.
+
+ This module is imported in waptconsole using python4delphi.
+
+ Some tasks are easier to script in Python than to use raw Freepascal
+ as common.Wapt class already implements many use full mechanisms.
+
+ Notes :
+  - This module will be less and less used as Wapconsole will use waptserver
+    exported functions instead of local Wapt functions (except crypto signatures)
+
+"""
 __version__ = "1.1.1"
+
 
 import common
 import json

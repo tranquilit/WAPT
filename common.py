@@ -1958,6 +1958,24 @@ class WaptServer(object):
             result[att] = getattr(self,att)
         return result
 
+    def upload_package(self,package,auth=None,timeout=None):
+        """ """
+        if not (isinstance(package,(str,unicode)) and os.path.isfile(package)) and not isinstance(package,PackageEntry):
+            raise Exception('Package %s is not found.')
+
+        if not isinstance(package,PackageEntry):
+            pe = PackageEntry().load_control_from_wapt(package)
+            package_filename = package
+        else:
+            pe = package
+            package_filename = pe.wapt_fullpath()
+
+        with open(package_filename,'rb') as afile:
+            res = json.loads(self.post('api/v1/upload_package?filename=%s' % os.path.basename(package_filename),data=afile,auth=auth,timeout=timeout))
+        if not res['success']:
+            raise Exception(u'Unable to upload package: %s'%ensure_unicode(res['msg']))
+
+
 
 
 class WaptRepo(object):
@@ -3383,7 +3401,19 @@ class Wapt(object):
         return co_dir
 
     def last_install_log(self,packagename):
-        """Return a dict {status,log} of the last install of a package"""
+        r"""Get the printed output of the last install of package named packagename
+
+        Args:
+            packagename (str): name of package to query
+        Returns:
+            dict: {status,log} of the last install of a package
+
+        >>> w = Wapt()
+        >>> w.last_install_log('tis-7zip')
+        ???
+        {'status': u'OK', 'log': u'Installing 7-Zip 9.38.0-1\n7-Zip already installed, skipping msi install\n'}
+
+        """
         q = self.waptdb.query("""\
            select install_status,install_output from wapt_localstatus
             where package=? order by install_date desc limit 1
@@ -3394,8 +3424,14 @@ class Wapt(object):
 
     def cleanup(self,obsolete_only=False):
         """Remove cached WAPT files from local disk
-           obsolete_only: If True, remove packages which are either no more available,
-                          or installed at a equal or newer version
+
+        Args:
+           obsolete_only (boolean):  If True, remove packages which are either no more available,
+                                     or installed at a equal or newer version
+
+        Returns:
+            list: list of filenames of removed packages
+
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
         >>> l = wapt.download_packages(wapt.check_downloads())
         >>> res = wapt.cleanup(True)
@@ -3437,11 +3473,15 @@ class Wapt(object):
 
     def update(self,force=False,register=True):
         """Update local database with packages definition from repositories
-            returns a dict of
-                "added","removed","count","repos","upgrades","date"
-            force : update even if Packages on repository has not been updated
-                    since last update (based on http headers)
-            register : Send informations about packages to waptserver
+
+        Args:
+            force (boolean):    update even if Packages index on repository has not been
+                                updated since last update (based on http headers)
+            register (boolean): Send informations about status of local packages to waptserver
+
+        Returns:
+            dict: {"added","removed","count","repos","upgrades","date"}
+
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
         >>> updates = wapt.update()
         >>> 'count' in updates and 'added' in updates and 'upgrades' in updates and 'date' in updates and 'removed' in updates
@@ -3463,7 +3503,7 @@ class Wapt(object):
             }
 
         self.store_upgrade_status(result['upgrades'])
-        if not self.disable_update_server_status and register:
+        if self.waptserver and not self.disable_update_server_status and register:
             try:
                 self.update_server_status()
             except Exception as e:
@@ -4138,6 +4178,7 @@ class Wapt(object):
 
     def update_server_status(self):
         """Send packages and software informations to WAPT Server, don't send dmi
+
         >>> wapt = Wapt()
         >>> s = wapt.update_server_status()
         >>>
@@ -4165,11 +4206,58 @@ class Wapt(object):
             return json.dumps(inv,indent=True)
 
     def waptserver_available(self):
-        """Return ident of waptserver if defined and available, else False"""
+        """Test reachability of waptserver.
+
+        If waptserver is defined and available, return True, else False
+
+        Returns:
+            boolean: True if server is defined and actually reachable
+        """
         return self.waptserver and self.waptserver.available()
 
     def wapt_status(self):
-        """return wapt version info"""
+        """Wapt configuration and version informations
+
+        Returns:
+            dict: versions of main main files, waptservice config,
+                  repos and waptserver config
+
+        >>> w.wapt_status()
+        {
+        	'setuphelpers-version': '1.1.1',
+        	'waptserver': {
+        		'dnsdomain': u'tranquilit.local',
+        		'proxies': {
+        			'http': None,
+        			'https': None
+        		},
+        		'server_url': 'https: //wapt.tranquilit.local'
+        	},
+        	'waptservice_protocol': 'http',
+        	'repositories': [{
+        		'dnsdomain': u'tranquilit.local',
+        		'proxies': {
+        			'http': None,
+        			'https': None
+        		},
+        		'name': 'global',
+        		'repo_url': 'http: //wapt.tranquilit.local/wapt'
+        	},
+        	{
+        		'dnsdomain': u'tranquilit.local',
+        		'proxies': {
+        			'http': None,
+        			'https': None
+        		},
+        		'name': 'wapt-host',
+        		'repo_url': 'http: //srvwapt.tranquilit.local/wapt-host'
+        	}],
+        	'common-version': '1.1.1',
+        	'wapt-exe-version': u'1.1.1.0',
+        	'waptservice_port': 8088,
+        	'wapt-py-version': '1.1.1'
+        }
+        """
         result = {}
         waptexe = os.path.join(self.wapt_base_dir,'wapt-get.exe')
         if os.path.isfile(waptexe):
@@ -4210,7 +4298,16 @@ class Wapt(object):
         return result
 
     def reachable_ip(self):
-        """Return the local IP which is most probably reachable by wapt server"""
+        """Return the local IP which is most probably reachable by wapt server
+
+        In case there are several network connections, returns the local IP
+          which Windows choose for sending packets to WaptServer.
+
+        This can be the most probable IP which would get packets from WaptServer.
+
+        Returns:
+            str: Local IP
+        """
         try:
             if self.waptserver and self.waptserver.server_url:
                 host = urlparse(w.waptserver.server_url).hostname
@@ -4226,7 +4323,11 @@ class Wapt(object):
             return None
 
     def inventory(self):
-        """Return software inventory of the computer as a dictionary"""
+        """Return full inventory of the computer as a dictionary.
+
+        Returns:
+            dict: {'host','wapt','dmi','softwares','packages'}
+        """
         inv = {}
         inv['host'] = setuphelpers.host_info()
         inv['dmi'] = setuphelpers.dmi_info()
@@ -4242,8 +4343,22 @@ class Wapt(object):
         return None
 
     def sign_package(self,zip_or_directoryname,excludes=['.svn','.git*','*.pyc','src'],private_key=None,callback=pwd_callback):
-        """calc the signature of the WAPT/manifest.sha1 file and put/replace it in ZIP or directory.
-            create manifest.sha1 a directory is supplied"""
+        """Calc the signature of the WAPT/manifest.sha1 file and put/replace it in ZIP or directory.
+            if directory, creates WAPT/manifest.sha1 and add it to the content of package
+            create a WAPT/signature file and it to directory or zip file.
+
+            known issue : if zip file already contains a manifest.sha1 file, it is not removed, so there will be
+                          2 manifest files in zip / wapt package.
+
+        Args:
+            zip_or_directoryname: filename or path for the wapt package's content
+            excludes: list of patterns to exclude from
+            private_key: path to the proivate key to use for SSL signing.
+            callback: ref to the function to call if a password is required for opening the private key.
+
+        Returns:
+            str: base64 encoded signature of manifest.sha1 file (content
+        """
         if not isinstance(zip_or_directoryname,unicode):
             zip_or_directoryname = unicode(zip_or_directoryname)
         if not private_key:
@@ -4271,7 +4386,17 @@ class Wapt(object):
 
     def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git*','*.pyc','src']):
         """Build the WAPT package from a directory
-            return a dict {'filename':waptfilename,'files':[list of files],'package':PackageEntry}
+
+        Call update_control from setup.py if this function is defined.
+        Then zip the content of directory. Add a manifest.sha1 file with sha1 hash of
+          the content of each file.
+
+        Args:
+            directoryname (str): source root directory of package to build
+            inc_package_release (boolean): increment the version of package in control file.
+
+        Returns:
+            dict: {'filename':waptfilename,'files':[list of files],'package':PackageEntry}
         """
         if not isinstance(directoryname,unicode):
             directoryname = unicode(directoryname)
@@ -4364,6 +4489,7 @@ class Wapt(object):
                 target_root = '' ,
                 excludes=excludes)
             return {'filename':result_filename,'files':allfiles,'package':entry}
+
         finally:
             if 'setup' in dir():
                 del setup
@@ -4825,11 +4951,29 @@ class Wapt(object):
 
     def is_installed(self,packagename):
         """Checks if a package is installed.
-            Return package entry and additional local status or None"""
+        Return package entry and additional local status or None
+
+        Args:
+            packagename (str): name / package request to query
+
+        Returns:
+            PackageEntry: None en PackageEntry merged with local install_xxx fields
+                          * install_date
+                          * install_output
+                          * install_params
+                          * install_status
+        """
         return self.waptdb.installed_matching(packagename)
 
     def installed(self,include_errors=False):
-        """returns all installed packages with their status"""
+        """Returns all installed packages with their status
+
+        Args:
+            include_errors (boolean): include packages wnot installed successfully
+
+        Returns:
+            list: list of PackageEntry merged with local install status.
+        """
         return self.waptdb.installed(include_errors=include_errors)
 
     def is_available(self,packagename):
@@ -4844,8 +4988,14 @@ class Wapt(object):
         return self.waptdb.packages_matching(packagename)
 
     def get_default_development_dir(self,packagecond,section='base'):
-        """Returns the default developement directory for package named "packagecond" based on default_sources_root and default_sources_suffix ini parameters*
-            packagecond can be of the form "name (=version)" or a simple package name
+        """Returns the default developement directory for package named <packagecond>
+           based on default_sources_root and default_sources_suffix ini parameters
+
+        Args:
+            packagecond (str): packahe name or pacjage request "name (=version)"
+
+        Returns:
+            str: path to local development directory
         """
         packagename = REGEX_PACKAGE_CONDITION.match(packagecond).groupdict()['package']
         default_root = 'c:\\waptdev\\%(package)s-%(suffix)s'
@@ -4862,7 +5012,13 @@ class Wapt(object):
         return root % {'package':packagename,'section':section,'suffix':suffix}
 
     def add_pyscripter_project(self,target_directory):
-        """Add a pyscripte project file to package development directory
+        """Add a pyscripter project file to package development directory.
+
+        Args:
+            target_directory (str): path to location where to create the wa^t.psproj file.
+
+        Returns:
+            None
         """
         psproj_filename = os.path.join(target_directory,'WAPT','wapt.psproj')
         if not os.path.isfile(psproj_filename):
@@ -5108,6 +5264,12 @@ class Wapt(object):
     def forget_packages(self,packages_list):
         """Remove install status for packages from local database
              without actually uninstalling the packages
+        Args:
+            packages_list (list): list of installed package names to forget
+
+        Returns:
+            list: list of package names actually forgotten
+
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
         >>> res = wapt.install('tis-test')
         ???
@@ -5640,10 +5802,12 @@ def get_domain_admins_group_name():
         logger.debug('Error getting Domain Admins group name : %s'%e)
         return 'Domain Admins'
 
+
 def get_local_admins_group_name():
     sid = win32security.GetBinarySid('S-1-5-32-544')
     name, domain, typ = win32security.LookupAccountSid(setuphelpers.wincomputername(), sid)
     return name
+
 
 def check_is_member_of(huser,group_name):
     """ check if a user is a member of a group

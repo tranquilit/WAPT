@@ -240,9 +240,18 @@ my_documents= winshell.my_documents
 recent = winshell.recent
 sendto = winshell.sendto
 
-def ensure_dir(f):
-    """Be sure the directory of f exists on disk. Make it if not"""
-    d = os.path.dirname(f)
+def ensure_dir(filename):
+    """Be sure the directory of filename exists on disk. Create it if not
+
+    The intermediate directories are created either.
+
+    Args:
+        filename (str): path to a future file for which to create directory.
+    Returns:
+        None
+
+    """
+    d = os.path.dirname(filename)
     if not os.path.isdir(d):
         os.makedirs(d)
 
@@ -250,6 +259,18 @@ def ensure_dir(f):
 # from opsi
 def ensure_unicode(data):
     ur"""Return a unicode string from data object
+
+    It is sometimes diffcult to know in advance what we will get from command line
+     application output.
+
+    This is to ensure we get a (not always accurate) representation of the data
+     mainly for logging purpose.
+
+    Args:
+        data: either str or unicode or object having a __unicode__ or WindowsError or Exception
+    Returns:
+        unicode: unicode string representing the data
+
     >>> ensure_unicode(str('éé'))
     u'\xe9\xe9'
     >>> ensure_unicode(u'éé')
@@ -294,11 +315,18 @@ def ensure_unicode(data):
 
 def create_shortcut(path, target='', arguments='', wDir='', icon=''):
     """Create a windows shortcut
-          path - As what file should the shortcut be created?
-          target - What command should the desktop use?
-          arguments - What arguments should be supplied to the command?
-          wdir - What folder should the command start in?
-          icon - (filename, index) What icon should be used for the shortcut?
+
+    Args:
+        path (str) : As what file should the shortcut be created?
+        target (str): What command should the desktop use?
+        arguments (str): What arguments should be supplied to the command?
+        wdir (str) : working directory. What folder should the command start in?
+        icon (str or list) : filename or (filename, index) (only for file sc)
+                              What icon should be used for the shortcut
+
+    Returns:
+        None
+
     >>> create_shortcut(r'c:\\tmp\\test.lnk',target='c:\\wapt\\wapt-get.exe')
     """
     ext = path[-3:]
@@ -315,11 +343,17 @@ def create_shortcut(path, target='', arguments='', wDir='', icon=''):
 
 def create_desktop_shortcut(label, target='', arguments ='', wDir='', icon=''):
     """Create a desktop shortcut link for all users
-        label  : Name of the shorcut (.lnk extension is appended if not provided)
-        target : path to application
-        arguments : argument to pass to application
-        wDir : working directory
-        icon : path to ico file
+
+    Args:
+        label  (str): Name of the shorcut (.lnk extension is appended if not provided)
+        target (str) : path to application
+        arguments (str): argument to pass to application
+        wDir (str): working directory
+        icon (str): path to ico file
+
+    Returns:
+        str: Path to the shortcut
+
     >>> create_desktop_shortcut(r'WAPT Console Management',target='c:\\wapt\\waptconsole.exe')
     u'C:\\\\Users\\\\Public\\\\Desktop\\\\WAPT Console Management.lnk'
     >>> create_desktop_shortcut(r'WAPT local status',target='http://localhost:8088/')
@@ -339,11 +373,18 @@ def create_desktop_shortcut(label, target='', arguments ='', wDir='', icon=''):
 
 def create_user_desktop_shortcut(label, target='',arguments='', wDir='', icon=''):
     """Create a desktop shortcut link for current user
-        label  : Name of the shorcut (.lnk extension is appended if not provided)
-        target : path to application
-        arguments : argument to pass to application
-        wDir : working directory
-        icon : path to ico file
+
+    Args:
+        label  (str): Name of the shorcut (.lnk extension is appended if not provided)
+        target (str) : path to application
+        arguments (str): argument to pass to application
+        wDir (str): working directory
+        icon (str): path to ico file
+
+    Returns:
+        str: Path to the shortcut
+
+
     """
     if not (label.endswith('.lnk') or label.endswith('.url')):
         if target.startswith('http://') or target.startswith('https://'):
@@ -359,12 +400,17 @@ def create_user_desktop_shortcut(label, target='',arguments='', wDir='', icon=''
 
 def create_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=''):
     """Create a program menu shortcut link for all users
+
+    if label's extension is url, a http shortcut is created, else creates a file system shortcut.
+
+    Args:
         label  : Name of the shorcut (.lnk extension is appended if not provided.)
         target : path to application
         arguments : argument to pass to application
         wDir : working directory
         icon : path to ico file
-        if label's extension is url, a http shortcut is created, else creates a file system shortcut.
+    Returns:
+        str: Path to the shortcut
     """
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
@@ -377,8 +423,18 @@ def create_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=
 
 def create_user_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=''):
     """Create a shortcut in the start menu of the current user
-        return absolute path to this shortcut lnk/url file
+
        If label extension is url, create a Http shortcut, else a file system shortcut.
+
+    Args:
+        label  : Name of the shorcut (.lnk extension is appended if not provided.)
+        target : path to application
+        arguments : argument to pass to application
+        wDir : working directory
+        icon : path to ico file
+    Returns:
+        str: Path to the shortcut
+
     """
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
@@ -390,29 +446,56 @@ def create_user_programs_menu_shortcut(label, target='', arguments='', wDir='', 
 
 
 def remove_programs_menu_shortcut(label):
-    """Create a shortcut in the start menu of the current user"""
+    """Remove a shortcut from the start menu of all users
+
+    Args:
+        label (str): label of shortcut with extension lnk or url
+    """
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
     remove_file(makepath(start_menu(common=1),label))
 
 def remove_user_programs_menu_shortcut(label):
+    """Remove a shortcut from the start menu of current user
+
+    Args:
+        label (str): label of shortcut with extension lnk or url
+    """
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
     remove_file(makepath(start_menu(common=0),label))
 
 def remove_desktop_shortcut(label):
+    """Remove a shortcut from the desktop of all users
+
+    Args:
+        label (str): label of shortcut with extension lnk or url
+    """
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
     remove_file(os.path.join(desktop(1),label))
 
 def remove_user_desktop_shortcut(label):
+    """Remove a shortcut from the desktop of current user
+
+    Args:
+        label (str): label of shortcut with extension lnk or url
+    """
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
     remove_file(os.path.join(desktop(0),label))
 
 def wgets(url,proxies=None):
     """Return the content of a remote resource as a String with a http get request.
+
     Raise an exception if remote data can't be retrieved.
+
+    Args:
+        url (str): http(s) url
+        proxies (dict): proxy configuration as requests requires it {'http': url, 'https':url}
+    Returns:
+        str : content of remote resource
+
     >>> data = wgets('https://wapt/ping')
     >>> "msg" in data
     True
@@ -501,9 +584,19 @@ def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_time
 
 
 def filecopyto(filename,target):
-    """Copy file from package temporary directory to target directory
+    """Copy file from absolute or package temporary directory to target directory
+
+    If file is dll or exe, logs the originale and new version.
+
+    Args:
+        filename (str): absolute path to file to copy,
+                        or relative path to temporary package install content directory.
+
+        target (str) : absolute path to target directory where to copy file.
+
         target is either a full filename or a directory name
         if filename is .exe or .dll, logger prints version numbers
+
     >>> if not os.path.isfile('c:/tmp/fc.test'):
     ...     with open('c:/tmp/fc.test','wb') as f:
     ...         f.write('test')
@@ -562,6 +655,12 @@ def default_overwrite_older(src,dst):
 
 def register_ext(appname,fileext,shellopen,icon=None,otherverbs=[]):
     """Associates a file extension with an application, and command to open it
+
+    Args:
+        appname (str): descriptive name of the type of file / appication
+        fileext (str): extension with dot prefix of
+
+
     >>> register_ext(
     ...     appname='WAPT.Package',
     ...     fileext='.wapt',
@@ -874,7 +973,7 @@ def programfiles64():
 
 def programfiles():
     """Return native program directory, ie C:\Program Files for both 64 and 32 bits"""
-    #return get_path(shellcon.CSIDL_PROGRAM_FILES)
+    #return winshell.get_path(shellcon.CSIDL_PROGRAM_FILES)
     if 'PROGRAMW6432' in os.environ:
         return os.environ['PROGRAMW6432']
     else:
@@ -1142,9 +1241,10 @@ def inifile_writestring(inifilename,section,key,value):
 
 
 class disable_file_system_redirection:
-    """disable wow3264 redirection
-    .>>> with disable_file_system_redirection():
-    ....
+    """Context manager to diable temporarily the wow3264 file redirector
+
+    >>> with disable_file_system_redirection():
+            print winshell.get_path(shellcon.CSIDL_PROGRAM_FILES)
     """
     if iswin64():
         _disable = ctypes.windll.kernel32.Wow64DisableWow64FsRedirection
@@ -1162,10 +1262,18 @@ class disable_file_system_redirection:
             self._revert(self.old_value)
 
 def system32():
+    r"""returns the path of system32 (c:\windows\system32) directory
+    """
     return win32api.GetSystemDirectory()
 
 def set_file_visible(path):
-    """unset the hidden attribute of path"""
+    """Unset the hidden attribute of file located at path
+
+    Utility function for shutdown gpo script
+
+    Args:
+        path (str): path to the file
+    """
     FILE_ATTRIBUTE_HIDDEN = 0x02
     old_att = ctypes.windll.kernel32.GetFileAttributesW(unicode(path))
     ret = ctypes.windll.kernel32.SetFileAttributesW(unicode(path),old_att  & ~FILE_ATTRIBUTE_HIDDEN)
@@ -1173,7 +1281,13 @@ def set_file_visible(path):
         raise ctypes.WinError()
 
 def set_file_hidden(path):
-    """set the hidden attribute of path"""
+    """Set the hidden attribute of file located at path
+
+    Utility function for shutdown gpo script
+
+    Args:
+        path (str): path to the file
+    """
     FILE_ATTRIBUTE_HIDDEN = 0x02
     old_att = ctypes.windll.kernel32.GetFileAttributesW(unicode(path))
     ret = ctypes.windll.kernel32.SetFileAttributesW(unicode(path),old_att | FILE_ATTRIBUTE_HIDDEN)
@@ -1181,11 +1295,16 @@ def set_file_hidden(path):
         raise ctypes.WinError()
 
 def replace_at_next_reboot(tmp_filename,target_filename):
-    """Create a key in HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager
-        with content :
+    r"""Schedule a file rename at next reboot using standard Windows PendingFileRenameOperations
+
+    Creates a key in HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager with content :
             PendingFileRenameOperations
                 Data type : REG_MULTI_SZ Value
                 data: \??\c:\temp\win32k.sys !\??\c:\winnt\system32\win32k.s
+
+    Args:
+        tmp_filename (str):  Temporary path to file to rename (defaults to <target_filename>.pending)
+        target_filename (str): Final target filename
     """
     if not tmp_filename:
         tmp_filename=target_filename+'.pending'
@@ -1198,11 +1317,15 @@ def replace_at_next_reboot(tmp_filename,target_filename):
             reg_setvalue(key,'PendingFileRenameOperations',pending,type=REG_MULTI_SZ)
 
 def delete_at_next_reboot(target_filename):
-    """Create a key in HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager
-        with content :
+    r"""delete at next reboot using standard Windows PendingFileRenameOperations
+
+    Creates a key in HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager with content :
             PendingFileRenameOperations
                 Data type : REG_MULTI_SZ Value
                 data: [\??\path,\0]
+
+    Args:
+        target_filename (str): File to delete
     """
     with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'System\CurrentControlSet\Control\Session Manager',sam=KEY_WRITE|KEY_READ) as key:
         pending = reg_getvalue(key,'PendingFileRenameOperations',default=[])
@@ -1213,7 +1336,10 @@ def delete_at_next_reboot(target_filename):
 
 
 def ini2winstr(ini):
-    """Returns a unicode string from an iniparse.RawConfigParser with windows crlf"""
+    """Returns a unicode string from an iniparse.RawConfigParser with windows crlf
+
+    Utility function for local gpo
+    """
     items = []
     for sub in [ (u"%s"%l).strip() for l in ini.data._data.contents]:
         items.extend(sub.splitlines())
@@ -1224,6 +1350,13 @@ def _lower(s):
 
 def add_shutdown_script(cmd,parameters):
     """ Adds a local shutdown script as a local GPO
+
+    Args:
+        cmd (str): absolute path to exe or bat file (without parameters)
+        parameters (str): parameters to append to command
+    Returns:
+        int: index of command into the list of shutdown scripts
+
     >>> index = add_shutdown_script(r'c:\wapt\wapt-get.exe','update')
     """
     gp_path = makepath(system32(),'GroupPolicy')
@@ -2070,17 +2203,24 @@ def service_stop(service_name):
 
 def service_is_running(service_name):
     """Return True if the service is running
+
     >>> state = service_is_running('waptservice')
     """
     return win32serviceutil.QueryServiceStatus(service_name)[1] == win32service.SERVICE_RUNNING
 
 def service_is_stopped(service_name):
     """Return True if the service is running
+
     >>> state = service_is_running('waptservice')
     """
     return win32serviceutil.QueryServiceStatus(service_name)[1] == win32service.SERVICE_STOPPED
 
 def user_appdata():
+    r"""Return the roaming appdata profile of current user
+
+    Returns:
+        str: path like u'C:\\Users\\username\\AppData\\Roaming'
+    """
     return ensure_unicode((winshell.get_path(shellcon.CSIDL_APPDATA)))
 
 
@@ -2091,6 +2231,7 @@ def mkdirs(path):
 
 def user_desktop():
     r"""return path to current logged in user desktop
+
     >>> user_desktop()
     u'C:\\Users\\htouvet\\Desktop'
     """

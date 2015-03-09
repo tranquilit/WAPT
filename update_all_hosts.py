@@ -28,6 +28,14 @@
 #
 #  This allows to install packages based on computers active directory memberships
 #------------------------------------------------
+"""
+    Sample script which updates dependencies of all hosts registered on waptserver
+     - append a list of basic packages that all hosts should install
+     - query active directory for the groups of each host.
+         if the CN of the group match a wapt package, the package is appended as dependency
+
+    This allows to install packages based on computers active directory memberships
+"""
 
 import sys,os
 from common import *
@@ -38,24 +46,6 @@ from getpass import getpass
 import active_directory
 
 from optparse import OptionParser
-usage = """\
-Sample script which updates dependencies of all hosts registered on waptserver
- - append a list of basic packages that all hosts should install
- - query active directory for the groups of each host.
-     if the CN of the group match a wapt package, the package is appended as dependency
-
-This allows to install packages based on computers active directory memberships
-"""
-
-parser=OptionParser(usage=usage)
-parser.add_option("-g","--groups", dest="groups", default='', help="List of packages to append to all hosts (default: %default)")
-parser.add_option("-c","--config", dest="config", default=os.path.join(os.path.dirname(sys.argv[0]),'wapt-get.ini') , help="Config file full path (default: %default)")
-parser.add_option("-d","--dry-run", dest="dry_run",    default=False, action='store_true', help="Dry run (default: %default)")
-(options,args) = parser.parse_args()
-
-# put at least these packages to all computers
-base_packages = ensure_list(options.groups)
-server_password = getpass('Please input wapt server admin password:')
 
 def ensure_list(csv_or_list,ignore_empty_args=True):
     """if argument is not a list, return a list from a csv string"""
@@ -88,6 +78,17 @@ def get_computer_groups(computername):
     return groups
 
 if __name__ == '__main__':
+    parser=OptionParser(usage=__doc__)
+    parser.add_option("-g","--groups", dest="groups", default='', help="List of packages to append to all hosts (default: %default)")
+    parser.add_option("-c","--config", dest="config", default=os.path.join(os.path.dirname(sys.argv[0]),'wapt-get.ini') , help="Config file full path (default: %default)")
+    parser.add_option("-d","--dry-run", dest="dry_run",    default=False, action='store_true', help="Dry run (default: %default)")
+    (options,args) = parser.parse_args()
+
+    # put at least these packages to all computers
+    base_packages = ensure_list(options.groups)
+    server_password = getpass('Please input wapt server admin password:')
+
+
     # initialise wapt api with local config file
     wapt = Wapt(config_filename = options.config)
     wapt.dbpath=':memory:'
