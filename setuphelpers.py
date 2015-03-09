@@ -2168,8 +2168,13 @@ def remove_tree(*args, **kwargs):
     return shutil.rmtree(*args, **kwargs)
 
 def makepath(a, *p):
-    """Create a path given the components passed, but with saner defaults
+    r"""Create a path given the components passed, but with saner defaults
     than os.path.join.
+
+    In particular, removes ending path separators (backslashes) from components
+
+    >>> makepath('c:',programfiles)
+    'C:\\Program Files'
     """
     p = [e.lstrip(os.path.sep) for e in p]
     return os.path.join(a, *p)
