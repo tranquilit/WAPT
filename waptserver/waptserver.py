@@ -1110,14 +1110,11 @@ def install_wapt(computer_name,authentication_file):
 
         raise Exception(u"%s" % e.output)
 
-    cmd = '/usr/bin/smbclient -A "%s" //%s/c\\$ -c "put waptsetup.exe" ' % (authentication_file, computer_name)
+    cmd = '/usr/bin/smbclient -A "%s" //%s/c\\$ -c "put waptagent.exe" ' % (authentication_file, computer_name)
     print subprocess.check_output(cmd,shell=True)
 
-    cmd = '/usr/bin/winexe -A "%s"  //%s  "c:\\waptsetup.exe  /MERGETASKS=""useWaptServer,autorunTray"" /VERYSILENT"  ' % (authentication_file, computer_name)
+    cmd = '/usr/bin/winexe -A "%s"  //%s  "c:\\waptagent.exe  /MERGETASKS=""useWaptServer"" /VERYSILENT"  ' % (authentication_file, computer_name)
     print subprocess.check_output(cmd,shell=True)
-
-#    cmd = '/usr/bin/smbclient -A "%s" //%s/c\\$ -c "cd wapt ; put wapt-get.ini ; exit" ' % (authentication_file, computer_name)
-#    print subprocess.check_output(cmd,shell=True)
 
     cmd = '/usr/bin/winexe -A "%s"  //%s  "c:\\wapt\\wapt-get.exe register"' % (authentication_file, computer_name)
     print subprocess.check_output(cmd,shell=True)
