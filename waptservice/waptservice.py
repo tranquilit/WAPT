@@ -563,6 +563,7 @@ def allow_waptserver_or_local_auth(f):
                 return authenticate()
             logging.info("user %s authenticated" % auth.username)
         else:
+            logger.debug(u'Forbidden: caller src address {} is not in authorized list {}'.format(request.remote_addr,app.waptconfig.authorized_callers_ip))
             return forbidden()
         return f(*args, **kwargs)
     return decorated
@@ -573,7 +574,7 @@ def allow_waptserver_or_local_unauth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         if not request.remote_addr in (app.waptconfig.authorized_callers_ip + ['127.0.0.1']):
-            logger.debug(u'caller src address {} is not in authorized list {}'.format(request.remote_addr,app.waptconfig.authorized_callers_ip))
+            logger.debug(u'Forbidden: caller src address {} is not in authorized list {}'.format(request.remote_addr,app.waptconfig.authorized_callers_ip))
             return forbidden()
         return f(*args, **kwargs)
     return decorated
@@ -1349,6 +1350,7 @@ class WaptNetworkReconfig(WaptTask):
             if waptconfig.waptservice_sslport is not None:
                 check_open_port(waptconfig.waptservice_sslport)
         self.result = waptconfig.as_dict()
+        self.notify_server_on_finish = self.wapt.waptserver_available()
 
     def __unicode__(self):
         return __(u"Reconfiguring network access")
@@ -2071,11 +2073,10 @@ class WaptTaskManager(threading.Thread):
                 ctypes.windll.iphlpapi.NotifyAddrChange(0, 0)
                 wapt.add_task(WaptNetworkReconfig())
 
-        logger.debug(u"Wapt network address monitoring started")
         nm = threading.Thread(target=addr_change,args=(self,))
         nm.daemon = True
         nm.start()
-        logger.debug(u"Wapt network address monitoring stopped")
+        logger.debug(u"Wapt network address monitoring started")
 
     def start_network_monitoring(self):
         def connected_change(taskman):
@@ -2083,11 +2084,10 @@ class WaptTaskManager(threading.Thread):
                 ctypes.windll.iphlpapi.NotifyRouteChange(0, 0)
                 taskman.add_task(WaptNetworkReconfig())
 
-        logger.debug(u"Wapt connection monitor started")
         nm = threading.Thread(target=connected_change,args=(self,))
         nm.daemon = True
         nm.start()
-        logger.debug(u"Wapt connection monitor stopped")
+        logger.debug(u"Wapt connection monitor started")
 
     def __unicode__(self):
         return "\n".join(self.tasks_status())
