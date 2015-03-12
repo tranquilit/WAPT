@@ -26,6 +26,7 @@ type
     ActCreateWaptSetup: TAction;
     ActFrench: TAction;
     ActEnglish: TAction;
+    ActCleanCache: TAction;
     ActPackageInstall: TAction;
     ActRestoreDefaultLayout: TAction;
     ActTriggerHostUpdate: TAction;
@@ -138,6 +139,7 @@ type
     MenuItem51: TMenuItem;
     MenuItem52: TMenuItem;
     MenuItem53: TMenuItem;
+    MenuItem54: TMenuItem;
     OpenDialogWapt: TOpenDialog;
     PageControl1: TPageControl;
     Panel11: TPanel;
@@ -251,6 +253,7 @@ type
     procedure ActAdvancedModeExecute(Sender: TObject);
     procedure ActCancelRunningTaskExecute(Sender: TObject);
     procedure ActChangePasswordExecute(Sender: TObject);
+    procedure ActCleanCacheExecute(Sender: TObject);
     procedure ActCreateCertificateExecute(Sender: TObject);
     procedure ActCreateWaptSetupExecute(Sender: TObject);
     procedure ActDeleteGroupExecute(Sender: TObject);
@@ -1191,6 +1194,23 @@ begin
     end;
   finally
     Free;
+  end;
+end;
+
+procedure TVisWaptGUI.ActCleanCacheExecute(Sender: TObject);
+var
+  waptpackages:TStringList;
+  fn:Utf8String;
+begin
+  waptpackages := FindAllFiles(AppLocalDir + 'cache','*.wapt',False);
+  try
+    for fn in waptpackages do
+    try
+      DeleteFileUTF8(fn);
+    except
+    end;
+  finally
+    waptpackages.Free;
   end;
 end;
 

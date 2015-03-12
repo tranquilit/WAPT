@@ -683,6 +683,14 @@ msgstr ""
 msgid "Update password"
 msgstr ""
 
+#: tviswaptgui.actcleancache.caption
+msgid "Clean local cache"
+msgstr ""
+
+#: tviswaptgui.actcleancache.hint
+msgid "Remove all packages locall cached by WaptConsole"
+msgstr ""
+
 #: tviswaptgui.actcreatecertificate.caption
 msgid "Generate self-signed certificate"
 msgstr ""
