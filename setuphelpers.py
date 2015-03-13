@@ -314,7 +314,7 @@ def ensure_unicode(data):
 
 
 def create_shortcut(path, target='', arguments='', wDir='', icon=''):
-    """Create a windows shortcut
+    r"""Create a windows shortcut
 
     Args:
         path (str) : As what file should the shortcut be created?
@@ -327,10 +327,10 @@ def create_shortcut(path, target='', arguments='', wDir='', icon=''):
     Returns:
         None
 
-    >>> create_shortcut(r'c:\\tmp\\test.lnk',target='c:\\wapt\\wapt-get.exe')
+    >>> create_shortcut(r'c:\\tmp\\test.lnk',target='c:\\wapt\\waptconsole.exe')
     """
-    ext = path[-3:]
-    if ext == 'url':
+    ext = os.path.splitext(path)[1].lower()
+    if ext == '.url':
         shortcut = file(path, 'w')
         shortcut.write('[InternetShortcut]\n')
         shortcut.write('URL=%s\n' % target)
@@ -342,7 +342,7 @@ def create_shortcut(path, target='', arguments='', wDir='', icon=''):
 
 
 def create_desktop_shortcut(label, target='', arguments ='', wDir='', icon=''):
-    """Create a desktop shortcut link for all users
+    r"""Create a desktop shortcut link for all users
 
     Args:
         label  (str): Name of the shorcut (.lnk extension is appended if not provided)
@@ -354,12 +354,13 @@ def create_desktop_shortcut(label, target='', arguments ='', wDir='', icon=''):
     Returns:
         str: Path to the shortcut
 
-    >>> create_desktop_shortcut(r'WAPT Console Management',target='c:\\wapt\\waptconsole.exe')
-    u'C:\\\\Users\\\\Public\\\\Desktop\\\\WAPT Console Management.lnk'
+    >>> create_desktop_shortcut(r'WAPT Console Management',target=r'c:\wapt\waptconsole.exe')
+    u'C:\\Users\\Public\\Desktop\\WAPT Console Management.lnk'
     >>> create_desktop_shortcut(r'WAPT local status',target='http://localhost:8088/')
-    u'C:\\\\Users\\\\Public\\\\Desktop\\\\WAPT local status.url'
+    u'C:\\Users\\Public\\Desktop\\WAPT local status.url'
     """
-    if not (label.endswith('.lnk') or label.endswith('.url')):
+    ext = os.path.splitext(label)[1].lower()
+    if not ext in ('.lnk','.url'):
         if target.startswith('http://') or target.startswith('https://'):
             label += '.url'
         else:
@@ -372,7 +373,7 @@ def create_desktop_shortcut(label, target='', arguments ='', wDir='', icon=''):
 
 
 def create_user_desktop_shortcut(label, target='',arguments='', wDir='', icon=''):
-    """Create a desktop shortcut link for current user
+    r"""Create a desktop shortcut link for current user
 
     Args:
         label  (str): Name of the shorcut (.lnk extension is appended if not provided)
@@ -385,8 +386,13 @@ def create_user_desktop_shortcut(label, target='',arguments='', wDir='', icon=''
         str: Path to the shortcut
 
 
+    >>> create_user_desktop_shortcut(r'WAPT Console Management',target='c:\\wapt\\waptconsole.exe')
+    u'C:\\Users\\htouvet\\Desktop\\WAPT Console Management.lnk'
+    >>> create_user_desktop_shortcut(r'WAPT local status',target='http://localhost:8088/')
+    u'C:\\Users\\htouvet\\Desktop\\WAPT local status.url'
     """
-    if not (label.endswith('.lnk') or label.endswith('.url')):
+    ext = os.path.splitext(label)[1].lower()
+    if not ext in ('.lnk','.url'):
         if target.startswith('http://') or target.startswith('https://'):
             label += '.url'
         else:
@@ -399,7 +405,7 @@ def create_user_desktop_shortcut(label, target='',arguments='', wDir='', icon=''
 
 
 def create_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=''):
-    """Create a program menu shortcut link for all users
+    r"""Create a program menu shortcut link for all users
 
     if label's extension is url, a http shortcut is created, else creates a file system shortcut.
 
@@ -411,9 +417,19 @@ def create_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=
         icon : path to ico file
     Returns:
         str: Path to the shortcut
+
+    >>> create_programs_menu_shortcut('Dev-TranquilIT', target='http://dev.tranquil.it')
+    u'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Dev-TranquilIT.url'
+    >>> create_programs_menu_shortcut('Console WAPT', target=makepath('c:/wapt','waptconsole.exe'))
+    u'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Console WAPT.lnk'
+
     """
-    if not (label.endswith('.lnk') or label.endswith('.url')):
-        label += '.lnk'
+    ext = os.path.splitext(label)[1].lower()
+    if not ext in ('.lnk','.url'):
+        if target.startswith('http://') or target.startswith('https://'):
+            label += '.url'
+        else:
+            label += '.lnk'
     sc = os.path.join(start_menu(1),label)
     if os.path.isfile(sc):
         os.remove(sc)
@@ -422,12 +438,12 @@ def create_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=
 
 
 def create_user_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=''):
-    """Create a shortcut in the start menu of the current user
+    r"""Create a shortcut in the start menu of the current user
 
        If label extension is url, create a Http shortcut, else a file system shortcut.
 
     Args:
-        label  : Name of the shorcut (.lnk extension is appended if not provided.)
+        label  : Name of the shorcut (.lnk or .url extension is appended if not provided.)
         target : path to application
         arguments : argument to pass to application
         wDir : working directory
@@ -435,9 +451,17 @@ def create_user_programs_menu_shortcut(label, target='', arguments='', wDir='', 
     Returns:
         str: Path to the shortcut
 
+    >>> create_user_programs_menu_shortcut('Dev-TranquilIT', target='http://dev.tranquil.it')
+    u'C:\\Users\\htouvet\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Dev-TranquilIT.url'
+    >>> create_user_programs_menu_shortcut('Console WAPT', target=makepath('c:/wapt','waptconsole.exe'))
+    u'C:\\Users\\htouvet\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Console WAPT.lnk'
     """
-    if not (label.endswith('.lnk') or label.endswith('.url')):
-        label += '.lnk'
+    ext = os.path.splitext(label)[1].lower()
+    if not ext in ('.lnk','.url'):
+        if target.startswith('http://') or target.startswith('https://'):
+            label += '.url'
+        else:
+            label += '.lnk'
     sc = os.path.join(start_menu(0),label)
     if os.path.isfile(sc):
         os.remove(sc)
@@ -586,7 +610,7 @@ def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_time
 def filecopyto(filename,target):
     """Copy file from absolute or package temporary directory to target directory
 
-    If file is dll or exe, logs the originale and new version.
+    If file is dll or exe, logs the original and new version.
 
     Args:
         filename (str): absolute path to file to copy,
@@ -616,18 +640,62 @@ def filecopyto(filename,target):
         target = os.path.join(target,os.path.basename(filename))
     if os.path.isfile(target):
         if os.path.splitext(target)[1] in ('.exe','.dll'):
-            ov = get_file_properties(target)['FileVersion']
-            nv = get_file_properties(filename)['FileVersion']
-            logger.info(u'Replacing %s (%s) -> %s' % (ensure_unicode(target),ov,nv))
+            try:
+                ov = get_file_properties(target)['FileVersion']
+                nv = get_file_properties(filename)['FileVersion']
+                logger.info(u'Replacing %s (%s) -> %s' % (ensure_unicode(target),ov,nv))
+            except:
+                logger.info(u'Replacing %s' % target)
         else:
             logger.info(u'Replacing %s' % target)
     else:
         if os.path.splitext(target)[1] in ('.exe','.dll'):
-            nv = get_file_properties(filename)['FileVersion']
-            logger.info(u'Copying %s (%s)' % (ensure_unicode(target),nv))
+            try:
+                nv = get_file_properties(filename)['FileVersion']
+                logger.info(u'Copying %s (%s)' % (ensure_unicode(target),nv))
+            except:
+                logger.info(u'Copying %s' % (ensure_unicode(target)))
         else:
             logger.info(u'Copying %s' % (ensure_unicode(target)))
     shutil.copy(filename,target)
+
+
+def register_ext(appname,fileext,shellopen,icon=None,otherverbs=[]):
+    """Associates a file extension with an application, and command to open it
+
+    Args:
+        appname (str): descriptive name of the type of file / appication
+        fileext (str): extension with dot prefix of
+
+
+    >>> register_ext(
+    ...     appname='WAPT.Package',
+    ...     fileext='.wapt',
+    ...     icon=r'c:\wapt\wapt.ico',
+    ...     shellopen=r'"7zfm.exe" "%1"',otherverbs=[
+    ...        ('install',r'"c:\wapt\wapt-get.exe" install "%1"'),
+    ...        ('edit',r'"c:\wapt\wapt-get.exe" edit "%1"'),
+    ...     ])
+    >>>
+    """
+    def setvalue(key,path,value):
+        rootpath = os.path.dirname(path)
+        name = os.path.basename(path)
+        with reg_openkey_noredir(key,path,sam=KEY_READ | KEY_WRITE,create_if_missing=True) as k:
+            if value != None:
+                reg_setvalue(k,'',value)
+    filetype = appname+fileext
+    setvalue(HKEY_CLASSES_ROOT,fileext,filetype)
+    setvalue(HKEY_CLASSES_ROOT,filetype,appname+ " file")
+    if icon:
+        setvalue(HKEY_CLASSES_ROOT,makepath(filetype,"DefaultIcon"),icon)
+    setvalue(HKEY_CLASSES_ROOT,makepath(filetype,"shell"),'')
+    setvalue(HKEY_CLASSES_ROOT,makepath(filetype,"shell","open"),'')
+    setvalue(HKEY_CLASSES_ROOT,makepath(filetype,"shell","open","command"),shellopen)
+    if otherverbs:
+        for (verb,cmd) in otherverbs:
+            setvalue(HKEY_CLASSES_ROOT,makepath(filetype,"shell",verb),'')
+            setvalue(HKEY_CLASSES_ROOT,makepath(filetype,"shell",verb,"command"),cmd)
 
 
 # Copy of an entire tree from install temp directory to target
@@ -653,49 +721,32 @@ def default_overwrite_older(src,dst):
         return True
 
 
-def register_ext(appname,fileext,shellopen,icon=None,otherverbs=[]):
-    """Associates a file extension with an application, and command to open it
-
-    Args:
-        appname (str): descriptive name of the type of file / appication
-        fileext (str): extension with dot prefix of
-
-
-    >>> register_ext(
-    ...     appname='WAPT.Package',
-    ...     fileext='.wapt',
-    ...     icon=r'c:\wapt\wapt.ico',
-    ...     shellopen=r'"7zfm.exe" "%1"',otherverbs=[
-    ...        ('install',r'"c:\wapt\wapt-get.exe" install "%1"'),
-    ...        ('edit',r'"c:\wapt\wapt-get.exe" edit "%1"'),
-    ...     ])
-    >>>
-    """
-    def setvalue(key,path,value):
-        rootpath = os.path.dirname(path)
-        name = os.path.basename(path)
-        k = reg_openkey_noredir(key,path,sam=KEY_READ | KEY_WRITE,create_if_missing=True)
-        if value != None:
-            reg_setvalue(k,'',value)
-    filetype = appname+fileext
-    setvalue(HKEY_CLASSES_ROOT,fileext,filetype)
-    setvalue(HKEY_CLASSES_ROOT,filetype,appname+ " file")
-    if icon:
-        setvalue(HKEY_CLASSES_ROOT,makepath(filetype,"DefaultIcon"),icon)
-    setvalue(HKEY_CLASSES_ROOT,makepath(filetype,"shell"),'')
-    setvalue(HKEY_CLASSES_ROOT,makepath(filetype,"shell","open"),'')
-    setvalue(HKEY_CLASSES_ROOT,makepath(filetype,"shell","open","command"),shellopen)
-    if otherverbs:
-        for (verb,cmd) in otherverbs:
-            setvalue(HKEY_CLASSES_ROOT,makepath(filetype,"shell",verb),'')
-            setvalue(HKEY_CLASSES_ROOT,makepath(filetype,"shell",verb,"command"),cmd)
-
-
 def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy,enable_replace_at_reboot=True):
-    """Copy src directory to dst directory. dst is created if it doesn't exists
+    r"""Copy src directory to dst directory. dst is created if it doesn't exists
         src can be relative to installation temporary dir
+
         oncopy is called for each file copy. if False is returned, copy is skipped
         onreplace is called when a file will be overwritten.
+
+    Args:
+        src (str): path to source directory (absolute path or relative to package extraction tempdir)
+        dst (str): path to target directory (created if not present)
+        ignore (func) : callback func(root_dir,filenames) which returns names to ignore
+        onreplace (func) : callback func(src,dst):boolean called when a file will be replaced to decide what to do.
+                        default is to not replace if target exist. can be default_override or default_override_older.
+        oncopy (func) : callback func(msg,src,dst) called when a file is copied.
+                        default is to log in debug level the operation
+        enable_replace_at_reboot (boolean): if True, files which are locked will be scheduled for replace at next reboot
+    Returns:
+
+    Exceptions:
+
+    >>> copytree2(r'c:\tranquilit\wapt\tests',r'c:\tranquilit\wapt\tests2')
+    >>> isdir(r'c:\tranquilit\wapt\tests2')
+    True
+    >>> remove_tree(r'c:\tranquilit\wapt\tests2')
+    >>> isdir(r'c:\tranquilit\wapt\tests2')
+    False
     """
     logger.debug('Copy tree from "%s" to "%s"' % (ensure_unicode(src),ensure_unicode(dst)))
     # path relative to temp directory...
@@ -789,15 +840,47 @@ class TimeoutExpired(Exception):
                 (self.cmd, self.timeout, self.output))
 
 
-def run(*cmd,**args):
-    """Run the command cmd and return the output and error text
-        shell=True is assumed
-        timeout=600 (seconds) after that time, a TimeoutExpired is raised
-        if return code of cmd is non zero, a CalledProcessError is raised
-        on_write : called when a new line is printed on stdout or stderr by the subprocess
-        accept_returncodes=[0,1601]
+def run(*cmd,**kwargs):
+    r"""Run the command cmd in a shell and return the output and error text as string
 
-        pidlist : list wher to append
+    Args:
+        *cmd : command and arguments, either as a string or as a list of arguments
+
+    Kwargs:
+        shell (boolean) : True is assumed
+        timeout (int) : maximum time to wait for cmd completion is second (default = 600)
+                        a TimeoutExpired exception is raised if tiemout is reached.
+        on_write      : callback when a new line is printed on stdout or stderr by the subprocess
+                        func(linestr)
+        accept_returncodes (list) : list of return code which are considered OK default = (0,1601)
+        pidlist (list): external list where to append the pid of the launched process.
+
+        all other parameters from the psutil.Popen constructor are accepted/
+
+    Returns:
+        unicode : merged output of stdout and stderr streams
+
+    Exceptions:
+        CalledProcessError: if return code of cmd is not in accept_returncodes list
+        TimeoutExpired:  if process is running for more than timeout time.
+
+    >>> run(r'dir /B c:\windows\explorer.exe')
+    u'explorer.exe\r\n'
+
+    >>> out = []
+    >>> pids = []
+    >>> def getlines(line):
+    ...    out.append(line)
+    >>> run(r'dir /B c:\windows\explorer.exe',pidlist=pids,on_write=getlines)
+    u'explorer.exe\r\n'
+
+    >>> print out
+    ['explorer.exe\r\n']
+    >>> try:
+    ...     run(r'ping /t 127.0.0.1',timeout=3)
+    ... except TimeoutExpired:
+    ...     print('timeout')
+    timeout
     """
     logger.info(u'Run "%s"' % (ensure_unicode(cmd),))
     output = []
@@ -812,36 +895,42 @@ def run(*cmd,**args):
                     on_write(line)
                 output.append(line)
 
-    if 'timeout' in args:
-        timeout = args['timeout']
-        del args['timeout']
+    if 'timeout' in kwargs:
+        timeout = kwargs['timeout']
+        del kwargs['timeout']
     else:
         timeout = 10*60.0
 
-    if not "shell" in args:
-        args['shell']=True
+    if not "shell" in kwargs:
+        kwargs['shell']=True
 
-    if not 'accept_returncodes' in args:
+    if not 'accept_returncodes' in kwargs:
         # 1603 : souvent renvoyé quand déjà installé.
         # 3010 : reboot required.
         valid_returncodes = [0,1603,3010]
     else:
-        valid_returncodes = args['accept_returncodes']
-        del args['accept_returncodes']
+        valid_returncodes = kwargs['accept_returncodes']
+        del kwargs['accept_returncodes']
 
-    if 'pidlist' in args and isinstance(args['pidlist'],list):
-        pidlist = args['pidlist']
-        args.pop('pidlist')
+    if 'pidlist' in kwargs and isinstance(kwargs['pidlist'],list):
+        pidlist = kwargs['pidlist']
+        kwargs.pop('pidlist')
     else:
         pidlist = []
 
-    proc = psutil.Popen(*cmd, bufsize=1, stdout=PIPE, stderr=PIPE,**args)
+    if 'on_write' in kwargs and isinstance(kwargs['on_write'],types.FunctionType):
+        on_write = kwargs['on_write']
+        kwargs.pop('on_write')
+    else:
+        on_write = None
+
+    proc = psutil.Popen(*cmd, bufsize=1, stdout=PIPE, stderr=PIPE,**kwargs)
     # keep track of launched pid if required by providing a pidlist argument to run
     if not proc.pid in pidlist:
         pidlist.append(proc.pid)
 
-    stdout_worker = RunReader(worker, proc.stdout,args.get('on_write',None))
-    stderr_worker = RunReader(worker, proc.stderr,args.get('on_write',None))
+    stdout_worker = RunReader(worker, proc.stdout,on_write)
+    stderr_worker = RunReader(worker, proc.stderr,on_write)
     stdout_worker.start()
     stderr_worker.start()
     stdout_worker.join(timeout)
@@ -850,13 +939,13 @@ def run(*cmd,**args):
         if proc.pid in pidlist:
             pidlist.remove(proc.pid)
             killtree(proc.pid)
-        raise TimeoutExpired(cmd,timeout,''.join(output))
+        raise TimeoutExpired(cmd,''.join(output),timeout)
     stderr_worker.join(timeout)
     if stderr_worker.is_alive():
         if proc.pid in pidlist:
             pidlist.remove(proc.pid)
             killtree(proc.pid)
-        raise TimeoutExpired(cmd,timeout,''.join(output))
+        raise TimeoutExpired(cmd,''.join(output),timeout)
     proc.returncode = _subprocess.GetExitCodeProcess(proc._handle)
     if proc.pid in pidlist:
         pidlist.remove(proc.pid)
@@ -872,8 +961,9 @@ def run(*cmd,**args):
 
 
 def run_notfatal(*cmd,**args):
-    """Runs the command and wait for it termination
-    returns output, don't raise exception if exitcode is not null but return '' """
+    """Runs the command and wait for it termination, returns output
+    Ignore exit status code of command, return '' instead
+    """
     try:
         return run(*cmd,**args)
     except Exception,e:
@@ -883,6 +973,7 @@ def run_notfatal(*cmd,**args):
 
 def shell_launch(cmd):
     """Launch a command (without arguments) but doesn't wait for its termination
+
     .>>> open('c:/tmp/test.txt','w').write('Test line')
     .>>> shell_launch('c:/tmp/test.txt')
     """
@@ -890,7 +981,11 @@ def shell_launch(cmd):
 
 
 def isrunning(processname):
-    """Check if a process is running, example isrunning('explorer')"""
+    """Check if a process is running,
+
+    >>> isrunning('explorer')
+    True
+    """
     processname = processname.lower()
     for p in psutil.process_iter():
         try:
@@ -902,7 +997,10 @@ def isrunning(processname):
 
 
 def killalltasks(exenames,include_children=True):
-    """Kill the task by their exename : example killalltasks('explorer.exe') """
+    """Kill the task by their exename
+
+    >>> killalltasks('firefox.exe')
+    """
     logger.debug('Kill tasks %s' % (exenames,))
     if not isinstance(exenames,list):
         exenames = [exenames]
@@ -1053,55 +1151,130 @@ def _environ_params(dict_or_module={}):
     return params_dict
 
 ###########
+# root key
 HKEY_CLASSES_ROOT = _winreg.HKEY_CLASSES_ROOT
 HKEY_CURRENT_USER = _winreg.HKEY_CURRENT_USER
 HKEY_LOCAL_MACHINE = _winreg.HKEY_LOCAL_MACHINE
 HKEY_USERS = _winreg.HKEY_USERS
 HKEY_CURRENT_CONFIG = _winreg.HKEY_CURRENT_CONFIG
 
+# Access modes when opening registry keys
 KEY_WRITE = _winreg.KEY_WRITE
 KEY_READ = _winreg.KEY_READ
 KEY_ALL_ACCESS = _winreg.KEY_ALL_ACCESS
 
+# Types of value
 REG_SZ = _winreg.REG_SZ
 REG_MULTI_SZ = _winreg.REG_MULTI_SZ
 REG_DWORD = _winreg.REG_DWORD
 REG_EXPAND_SZ = _winreg.REG_EXPAND_SZ
 
 def reg_closekey(hkey):
-    """Close a registry key opened with reg_openkey_noredir"""
+    """Close a registry key opened with reg_openkey_noredir
+
+    """
     _winreg.CloseKey(hkey)
 
-def reg_openkey_noredir(key, sub_key, sam=_winreg.KEY_READ,create_if_missing=False):
+def reg_openkey_noredir(rootkey, subkeypath, sam=_winreg.KEY_READ,create_if_missing=False):
     """Open the registry key\subkey with access rights sam
-        Returns a key handle for reg_getvalue and reg_set_value
-       key     : HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER ...
-       sub_key : string like "software\\microsoft\\windows\\currentversion"
-       sam     : a boolean comination of KEY_READ | KEY_WRITE
-       create_if_missing : True to create the sub_key if not exists, access rights will include KEY_WRITE
+
+    The Wow6432Node redirector is disabled. So one can access 32 and 64 part or the registry
+     even if python is running in 32 bits mode.
+
+    Args:
+       rootkey    : HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER ...
+       subkeypath : string like "software\\microsoft\\windows\\currentversion"
+       sam        : a boolean combination of KEY_READ | KEY_WRITE
+       create_if_missing : True to create the subkeypath if not exists, access rights will include KEY_WRITE
+
+    Returns:
+        keyhandle :   a key handle for reg_getvalue and reg_set_value
+
+    >>>
+
     """
     try:
         if platform.machine() == 'AMD64':
-            result = _winreg.OpenKey(key,sub_key,0, sam | _winreg.KEY_WOW64_64KEY)
+            result = _winreg.OpenKey(rootkey,subkeypath,0, sam | _winreg.KEY_WOW64_64KEY)
         else:
-            result = _winreg.OpenKey(key,sub_key,0,sam)
+            result = _winreg.OpenKey(rootkey,subkeypath,0,sam)
         return result
     except WindowsError,e:
         if e.errno == 2:
             if create_if_missing:
                 if platform.machine() == 'AMD64':
-                    return _winreg.CreateKeyEx(key,sub_key,0, sam | _winreg.KEY_READ| _winreg.KEY_WOW64_64KEY | _winreg.KEY_WRITE )
+                    return _winreg.CreateKeyEx(rootkey,subkeypath,0, sam | _winreg.KEY_READ| _winreg.KEY_WOW64_64KEY | _winreg.KEY_WRITE )
                 else:
-                    return _winreg.CreateKeyEx(key,sub_key,0,sam | _winreg.KEY_READ | _winreg.KEY_WRITE )
+                    return _winreg.CreateKeyEx(rootkey,subkeypath,0,sam | _winreg.KEY_READ | _winreg.KEY_WRITE )
             else:
-                raise WindowsError(e.errno,'The key %s can not be opened' % sub_key)
+                raise WindowsError(e.errno,'The key %s can not be opened' % subkeypath)
 
+def reg_key_exists(rootkey, subkeypath):
+    """Check if a key exists in registry
+
+    The Wow6432Node redirector is disabled. So one can access 32 and 64 part or the registry
+     even if python is running in 32 bits mode.
+
+    Args:
+       rootkey     : HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER ...
+       subkeypath : string like "software\\microsoft\\windows\\currentversion"
+
+    Returns:
+        boolean
+
+    >>> if reg_key_exists(HKEY_LOCAL_MACHINE,makepath('SOFTWARE','VideoLAN','VLC')):
+    ...     print('VLC key exists')
+    ???
+    """
+    try:
+        with reg_openkey_noredir(rootkey,subkeypath):
+            return True
+    except WindowsError as e:
+        if e.errno == 2:
+            return False
+        else:
+            raise
+
+def reg_value_exists(rootkey, subkeypath,value_name):
+    """Check if there is value named value_name in the subkeypath registry key of rootkey
+
+    Args:
+        rootkey (int): branch of registry HKEY_LOCAL_MACHINE,HKEY_USERS,HKEY_CURRENT_USER,HKEY_CURRENT_CONFIG
+        subkeypath (str): path with back slashes like 'SOFTWARE\\VideoLAN\\VLC'
+        value_name (str) : value key like "Version"
+
+    Returns:
+        boolean: True if there is a value called value_name in the subkeypath of rootkey
+
+    >>> if reg_value_exists(HKEY_LOCAL_MACHINE,makepath('SOFTWARE','VideoLAN','VLC'),'Version'):
+    ...     print('VLC seems to be installed')
+    ???
+    """
+    try:
+        with reg_openkey_noredir(rootkey,subkeypath) as key:
+            value = _winreg.QueryValueEx(key,value_name)[0]
+            return True
+
+    except WindowsError as e:
+        if e.errno in(259,2):
+            return False
+        else:
+            raise
 
 def reg_getvalue(key,name,default=None):
-    """Return the value of specified name inside 'key' folder
+    r"""Return the value of specified name inside 'key' folder
+
+    >>> with reg_openkey_noredir(HKEY_LOCAL_MACHINE,'SOFTWARE\\7-Zip') as zkey:
+    ...     path = reg_getvalue(zkey,'Path')
+    >>> print path
+    c:\Program Files\7-Zip\
+
+    Args:
          key  : handle of registry key as returned by reg_openkey_noredir()
          name : value name or None for key default value
          default : value returned if specified name doesn't exist
+    Returns:
+        int or str or list: depends on type of value named name.
     """
     try:
         value = _winreg.QueryValueEx(key,name)[0]
@@ -1120,6 +1293,7 @@ def reg_getvalue(key,name,default=None):
 
 def reg_setvalue(key,name,value,type=_winreg.REG_SZ ):
     """Set the value of specified name inside 'key' folder
+
          key  : handle of registry key as returned by reg_openkey_noredir()
          name : value name
          type : type of value (REG_SZ,REG_MULTI_SZ,REG_DWORD,REG_EXPAND_SZ)
@@ -1144,39 +1318,45 @@ def reg_delvalue(key,name):
 
 def registry_setstring(root,path,keyname,value,type=_winreg.REG_SZ):
     """Set the value of a string key in registry
+    the path can be either with backslash or slash
+
+    Args:
         root    : HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER ...
         path    : string like "software\\microsoft\\windows\\currentversion"
                            or "software\\wow6432node\\microsoft\\windows\\currentversion"
         keyname : None for value of key or str for a specific value like 'CommonFilesDir'
         value   : string to put in keyname
-    the path can be either with backslash or slash"""
+    """
     path = path.replace(u'/',u'\\')
-    key = reg_openkey_noredir(root,path,sam=KEY_WRITE,create_if_missing=True)
-    result = reg_setvalue(key,keyname,value,type=type)
-    return result
+    with reg_openkey_noredir(root,path,sam=KEY_WRITE,create_if_missing=True) as key:
+        return reg_setvalue(key,keyname,value,type=type)
 
 
 def registry_readstring(root,path,keyname,default=''):
     """Return a string from registry
+
+    Args:
         root    : HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER ...
         path    : string like "software\\microsoft\\windows\\currentversion"
                            or "software\\wow6432node\\microsoft\\windows\\currentversion"
         keyname : None for value of key or str for a specific value like 'CommonFilesDir'
         the path can be either with backslash or slash
-    >>> registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM/CurrentControlSet/services/Tcpip/Parameters','Hostname')
+
+    >>> registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM/CurrentControlSet/services/Tcpip/Parameters','Hostname').upper()
     u'HTLAPTOP'
     """
     path = path.replace(u'/',u'\\')
     try:
-        key = reg_openkey_noredir(root,path)
-        result = reg_getvalue(key,keyname,default)
-        return result
+        with reg_openkey_noredir(root,path) as key:
+            return reg_getvalue(key,keyname,default)
     except:
         return default
 
 
 def registry_set(root,path,keyname,value,type=None):
-    """Set the value of a key in registry, tajing in account calue type
+    """Set the value of a key in registry, taking in account value type
+
+    Args:
         root    : HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER ...
         path    : string like "software\\microsoft\\windows\\currentversion"
                            or "software\\wow6432node\\microsoft\\windows\\currentversion"
@@ -1184,44 +1364,64 @@ def registry_set(root,path,keyname,value,type=None):
         value   : value (integer or string type) to put in keyname
     the path can be either with backslash or slash"""
     path = path.replace(u'/',u'\\')
-    key = reg_openkey_noredir(root,path,sam=KEY_WRITE,create_if_missing=True)
-    if not type:
-        if isinstance(value,list):
-            type = REG_MULTI_SZ
-        elif isinstance(value,int):
-            type = REG_DWORD
-        else:
-            type = REG_SZ
-    result = reg_setvalue(key,keyname,value,type=type)
-    return result
+    with reg_openkey_noredir(root,path,sam=KEY_WRITE,create_if_missing=True) as key:
+        if not type:
+            if isinstance(value,list):
+                type = REG_MULTI_SZ
+            elif isinstance(value,int):
+                type = REG_DWORD
+            else:
+                type = REG_SZ
+        return reg_setvalue(key,keyname,value,type=type)
 
 def registry_delete(root,path,valuename):
     """Delete the valuename inside specified registry path
+
+    the path can be either with backslash or slash
+
+    Args:
         root    : HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER ...
         path    : string like "software\\microsoft\\windows\\currentversion"
                            or "software\\wow6432node\\microsoft\\windows\\currentversion"
         valuename : None for value of key or str for a specific value like 'CommonFilesDir'
-    the path can be either with backslash or slash
+
     """
     result = False
     path = path.replace(u'/',u'\\')
     try:
-        key = reg_openkey_noredir(root,path,sam=KEY_WRITE)
-        result = _winreg.DeleteValue(key,valuename)
+        with reg_openkey_noredir(root,path,sam=KEY_WRITE) as key:
+            return _winreg.DeleteValue(key,valuename)
     except WindowsError as e:
         logger.warning('registry_delete:%s'%ensure_unicode(e))
     return result
 
 
 def inifile_hasoption(inifilename,section,key):
-    """Read a string parameter from inifile"""
+    """Read a string parameter from inifile
+
+    >>> inifile_writestring('c:/tranquilit/wapt/tests/test.ini','global','version','1.1.2')
+    >>> print inifile_hasoption('c:/tranquilit/wapt/tests/test.ini','global','version')
+    True
+    >>> print inifile_hasoption('c:/tranquilit/wapt/tests/test.ini','global','dontexist')
+    False
+
+    """
     inifile = RawConfigParser()
     inifile.read(inifilename)
     return inifile.has_section(section) and inifile.has_option(section,key)
 
 
 def inifile_readstring(inifilename,section,key,default=None):
-    """Read a string parameter from inifile"""
+    """Read a string parameter from inifile
+
+    >>> inifile_writestring('c:/tranquilit/wapt/tests/test.ini','global','version','1.1.2')
+    >>> print inifile_readstring('c:/tranquilit/wapt/tests/test.ini','global','version')
+    1.1.2
+    >>> print inifile_readstring('c:/tranquilit/wapt/tests/test.ini','global','undefaut','defvalue')
+    defvalue
+    """
+
+
     inifile = RawConfigParser()
     inifile.read(inifilename)
     if inifile.has_section(section) and inifile.has_option(section,key):
@@ -1231,7 +1431,12 @@ def inifile_readstring(inifilename,section,key,default=None):
 
 
 def inifile_writestring(inifilename,section,key,value):
-    """Write a string parameter to inifile"""
+    r"""Write a string parameter to inifile
+
+    >>> inifile_writestring('c:/tranquilit/wapt/tests/test.ini','global','version','1.1.1')
+    >>> print inifile_readstring('c:/tranquilit/wapt/tests/test.ini','global','version')
+    1.1.1
+    """
     inifile = RawConfigParser()
     inifile.read(inifilename)
     if not inifile.has_section(section):
@@ -1241,10 +1446,11 @@ def inifile_writestring(inifilename,section,key,value):
 
 
 class disable_file_system_redirection:
-    """Context manager to diable temporarily the wow3264 file redirector
+    r"""Context manager to diable temporarily the wow3264 file redirector
 
     >>> with disable_file_system_redirection():
-            print winshell.get_path(shellcon.CSIDL_PROGRAM_FILES)
+    ...     winshell.get_path(shellcon.CSIDL_PROGRAM_FILES)
+    u'C:\\Program Files (x86)'
     """
     if iswin64():
         _disable = ctypes.windll.kernel32.Wow64DisableWow64FsRedirection
@@ -1262,7 +1468,14 @@ class disable_file_system_redirection:
             self._revert(self.old_value)
 
 def system32():
-    r"""returns the path of system32 (c:\windows\system32) directory
+    r"""returns the path of system32directory
+
+    Returns:
+        str: path to system32 directory
+
+    >>> print system32()
+    C:\Windows\system32
+
     """
     return win32api.GetSystemDirectory()
 
@@ -1565,74 +1778,75 @@ def shutdown_scripts_ui_visible(state=True):
     >>> shutdown_scripts_ui_visible(False)
     >>> shutdown_scripts_ui_visible(True)
     """
-    key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,\
-        r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',sam=KEY_ALL_ACCESS)
-    if state is None:
-        _winreg.DeleteValue(key,'HideShutdownScripts')
-    elif state:
-        reg_setvalue(key,'HideShutdownScripts',0,REG_DWORD)
-    elif not state:
-        reg_setvalue(key,'HideShutdownScripts',1,REG_DWORD)
+    with reg_openkey_noredir(HKEY_LOCAL_MACHINE,\
+        r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',sam=KEY_ALL_ACCESS) as key:
+        if state is None:
+            _winreg.DeleteValue(key,'HideShutdownScripts')
+        elif state:
+            reg_setvalue(key,'HideShutdownScripts',0,REG_DWORD)
+        elif not state:
+            reg_setvalue(key,'HideShutdownScripts',1,REG_DWORD)
 
 
 def uninstall_cmd(guid):
     r"""return the (quiet) command stored in registry to uninstall a software given its registry key
+
     >>> old_softs = installed_softwares('notepad++')
     >>> for soft in old_softs:
     ...     print uninstall_cmd(soft['key'])
     [u'C:\\Program Files (x86)\\Notepad++\\uninstall.exe', '/S']
     """
     def get_fromkey(uninstall):
-        key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,guid))
-        try:
-            cmd = _winreg.QueryValueEx(key,'QuietUninstallString')[0]
-            return cmd
-        except WindowsError:
+        with reg_openkey_noredir(HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,guid)) as key:
             try:
-                cmd = _winreg.QueryValueEx(key,'UninstallString')[0]
-                if 'msiexec' in cmd.lower():
-                    cmd = cmd.replace('/I','/X').replace('/i','/X')
-                    args = shlex.split(cmd,posix=False)
-                    if not '/q' in cmd.lower():
-                        args.append('/q')
-                    if not '/norestart' in cmd.lower():
-                        args.append('/norestart')
-
-                else:
-                    # separer commande et parametres pour eventuellement
-                    cmd_arg = re.match(r'([^/]*?)\s+([/-].*)',cmd)
-                    if cmd_arg:
-                        (prog,arg) = cmd_arg.groups()
-                        args = [ prog ]
-                        args.extend(shlex.split(arg,posix=False))
-                    # mozilla et autre
-                    # si pas de "" et des espaces et pas d'option, alors encadrer avec des quotes
-                    elif not(' -' in cmd or ' /' in cmd) and ' ' in cmd:
-                        args = [ cmd ]
-                    else:
-                    #sinon splitter sur les paramètres
-                        args = shlex.split(cmd,posix=False)
-
-                    # remove double quotes if any
-                    if args[0].startswith('"') and args[0].endswith('"') and (not "/" in cmd or not "--" in cmd):
-                        args[0] = args[0][1:-1]
-
-                    if ('spuninst' in cmd.lower()):
-                         if not ' /quiet' in cmd.lower():
-                            args.append('/quiet')
-                    elif ('uninst' in cmd.lower() or 'helper.exe' in cmd.lower()) :
-                        if not ' /s' in cmd.lower():
-                            args.append('/S')
-                    elif ('unins000' in cmd.lower()):
-                         if not ' /silent' in cmd.lower():
-                            args.append('/silent')
-                return args
+                cmd = _winreg.QueryValueEx(key,'QuietUninstallString')[0]
+                return cmd
             except WindowsError:
-                is_msi = _winreg.QueryValueEx(key,'WindowsInstaller')[0]
-                if is_msi == 1:
-                    return u'msiexec /quiet /norestart /X %s' % guid
-                else:
-                    raise
+                try:
+                    cmd = _winreg.QueryValueEx(key,'UninstallString')[0]
+                    if 'msiexec' in cmd.lower():
+                        cmd = cmd.replace('/I','/X').replace('/i','/X')
+                        args = shlex.split(cmd,posix=False)
+                        if not '/q' in cmd.lower():
+                            args.append('/q')
+                        if not '/norestart' in cmd.lower():
+                            args.append('/norestart')
+
+                    else:
+                        # separer commande et parametres pour eventuellement
+                        cmd_arg = re.match(r'([^/]*?)\s+([/-].*)',cmd)
+                        if cmd_arg:
+                            (prog,arg) = cmd_arg.groups()
+                            args = [ prog ]
+                            args.extend(shlex.split(arg,posix=False))
+                        # mozilla et autre
+                        # si pas de "" et des espaces et pas d'option, alors encadrer avec des quotes
+                        elif not(' -' in cmd or ' /' in cmd) and ' ' in cmd:
+                            args = [ cmd ]
+                        else:
+                        #sinon splitter sur les paramètres
+                            args = shlex.split(cmd,posix=False)
+
+                        # remove double quotes if any
+                        if args[0].startswith('"') and args[0].endswith('"') and (not "/" in cmd or not "--" in cmd):
+                            args[0] = args[0][1:-1]
+
+                        if ('spuninst' in cmd.lower()):
+                             if not ' /quiet' in cmd.lower():
+                                args.append('/quiet')
+                        elif ('uninst' in cmd.lower() or 'helper.exe' in cmd.lower()) :
+                            if not ' /s' in cmd.lower():
+                                args.append('/S')
+                        elif ('unins000' in cmd.lower()):
+                             if not ' /silent' in cmd.lower():
+                                args.append('/silent')
+                    return args
+                except WindowsError:
+                    is_msi = _winreg.QueryValueEx(key,'WindowsInstaller')[0]
+                    if is_msi == 1:
+                        return u'msiexec /quiet /norestart /X %s' % guid
+                    else:
+                        raise
 
     try:
         return get_fromkey("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
@@ -1661,44 +1875,44 @@ def installed_softwares(keywords='',uninstallkey=None):
     def list_fromkey(uninstall):
         result = []
         os_encoding=locale.getpreferredencoding()
-        key = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,uninstall)
-        if isinstance(keywords,str) or isinstance(keywords,unicode):
-            mykeywords = keywords.lower().split()
-        else:
-            mykeywords = [ ensure_unicode(k).lower() for k in keywords ]
+        with reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,uninstall) as key:
+            if isinstance(keywords,str) or isinstance(keywords,unicode):
+                mykeywords = keywords.lower().split()
+            else:
+                mykeywords = [ ensure_unicode(k).lower() for k in keywords ]
 
-        i = 0
-        while True:
-            try:
-                subkey = _winreg.EnumKey(key, i).decode(os_encoding)
-                appkey = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,subkey.encode(os_encoding)))
-                display_name = reg_getvalue(appkey,'DisplayName','')
-                display_version = reg_getvalue(appkey,'DisplayVersion','')
-                install_date = reg_getvalue(appkey,'InstallDate','')
-                install_location = reg_getvalue(appkey,'InstallLocation','')
-                uninstallstring = reg_getvalue(appkey,'UninstallString','')
-                publisher = reg_getvalue(appkey,'Publisher','')
-                if reg_getvalue(appkey,'ParentKeyName','') == 'OperatingSystem' or reg_getvalue(appkey,'SystemComponent',0) == 1:
-                    system_component = 1
-                else:
-                    system_component = 0
-                if (uninstallkey is None and display_name and check_words(subkey+' '+display_name+' '+publisher,mykeywords)) or\
-                        (uninstallkey is not None and (subkey == uninstallkey)):
-                    result.append({'key':subkey,
-                        'name':display_name,
-                        'version':display_version,
-                        'install_date':install_date,
-                        'install_location':install_location,
-                        'uninstall_string':uninstallstring,
-                        'publisher':publisher,
-                        'system_component':system_component,})
-                i += 1
-            except WindowsError,e:
-                # WindowsError: [Errno 259] No more data is available
-                if e.winerror == 259:
-                    break
-                else:
-                    raise
+            i = 0
+            while True:
+                try:
+                    subkey = _winreg.EnumKey(key, i).decode(os_encoding)
+                    appkey = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,subkey.encode(os_encoding)))
+                    display_name = reg_getvalue(appkey,'DisplayName','')
+                    display_version = reg_getvalue(appkey,'DisplayVersion','')
+                    install_date = reg_getvalue(appkey,'InstallDate','')
+                    install_location = reg_getvalue(appkey,'InstallLocation','')
+                    uninstallstring = reg_getvalue(appkey,'UninstallString','')
+                    publisher = reg_getvalue(appkey,'Publisher','')
+                    if reg_getvalue(appkey,'ParentKeyName','') == 'OperatingSystem' or reg_getvalue(appkey,'SystemComponent',0) == 1:
+                        system_component = 1
+                    else:
+                        system_component = 0
+                    if (uninstallkey is None and display_name and check_words(subkey+' '+display_name+' '+publisher,mykeywords)) or\
+                            (uninstallkey is not None and (subkey == uninstallkey)):
+                        result.append({'key':subkey,
+                            'name':display_name,
+                            'version':display_version,
+                            'install_date':install_date,
+                            'install_location':install_location,
+                            'uninstall_string':uninstallstring,
+                            'publisher':publisher,
+                            'system_component':system_component,})
+                    i += 1
+                except WindowsError,e:
+                    # WindowsError: [Errno 259] No more data is available
+                    if e.winerror == 259:
+                        break
+                    else:
+                        raise
         return result
     result = list_fromkey("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
     if platform.machine() == 'AMD64':
@@ -1729,22 +1943,22 @@ def register_uninstall(uninstallkey,uninstallstring,win64app=False,
         root = "Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
     else:
         root = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
-    appkey = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,"%s\\%s" % (root,uninstallkey.encode(locale.getpreferredencoding())),
-        sam=_winreg.KEY_ALL_ACCESS,create_if_missing=True)
-    reg_setvalue(appkey,'UninstallString',uninstallstring)
-    reg_setvalue(appkey,'install_date',currentdate())
-    if quiet_uninstall_string:
-        reg_setvalue(appkey,'QuietUninstallString',quiet_uninstall_string)
-    else:
-        reg_setvalue(appkey,'QuietUninstallString',uninstallstring)
-    if display_name:
-        reg_setvalue(appkey,'DisplayName',display_name)
-    if display_version:
-        reg_setvalue(appkey,'DisplayVersion',display_version)
-    if install_location:
-        reg_setvalue(appkey,'InstallLocation',install_location)
-    if publisher:
-        reg_setvalue(appkey,'Publisher',publisher)
+    with reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,"%s\\%s" % (root,uninstallkey.encode(locale.getpreferredencoding())),
+           sam=_winreg.KEY_ALL_ACCESS,create_if_missing=True) as appkey:
+        reg_setvalue(appkey,'UninstallString',uninstallstring)
+        reg_setvalue(appkey,'install_date',currentdate())
+        if quiet_uninstall_string:
+            reg_setvalue(appkey,'QuietUninstallString',quiet_uninstall_string)
+        else:
+            reg_setvalue(appkey,'QuietUninstallString',uninstallstring)
+        if display_name:
+            reg_setvalue(appkey,'DisplayName',display_name)
+        if display_version:
+            reg_setvalue(appkey,'DisplayVersion',display_version)
+        if install_location:
+            reg_setvalue(appkey,'InstallLocation',install_location)
+        if publisher:
+            reg_setvalue(appkey,'Publisher',publisher)
 
 
 def register_windows_uninstall(package_entry):
@@ -1766,7 +1980,6 @@ def unregister_uninstall(uninstallkey,win64app=False):
             root = "Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"+uninstallkey
         else:
             root = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"+uninstallkey
-        #key = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,root)
         try:
             _winreg.DeleteKeyEx(_winreg.HKEY_LOCAL_MACHINE,root.encode(locale.getpreferredencoding()))
         except WindowsError,e:
@@ -2000,6 +2213,13 @@ def host_info():
 # from http://stackoverflow.com/questions/580924/python-windows-file-version-attribute
 def get_file_properties(fname):
     r"""Read all properties of the given file return them as a dictionary.
+
+    Args:
+        fname : path to Windows executable or DLL
+
+    Returns:
+        dict: properties of executable
+
     >>> xp = get_file_properties(r'c:\windows\explorer.exe')
     >>> 'FileVersion' in xp and 'FileDescription' in xp
     True
@@ -2040,7 +2260,15 @@ def get_file_properties(fname):
 # from http://stackoverflow.com/questions/3157955/get-msi-product-name-version-from-command-line
 def get_msi_properties(msi_filename):
     r"""Return a dict of msi installer properties
-    >>> zprop = get_msi_properties(r'C:\tranquilit\tis-7zip-wapt\7z920.msi')
+
+    Args:
+        msi_filename (str): path to msi file
+
+    Returns:
+        dict: properties of msi. at least there seems to be keys like
+             'Manufacturer','ProductCode','ProductName','ProductVersion'
+
+    >>> zprop = get_msi_properties(r'C:\tranquilit\wapt\tests\7z920.msi')
     >>> 'ProductVersion' in zprop and 'ProductCode' in zprop and 'ProductName' in zprop
     True
     """
@@ -2458,10 +2686,12 @@ def get_appath(exename):
     u'C:\\wapt\\wapt-get.exe'
     """
     if iswin64():
-        key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\App Paths\%s' % exename)
+        with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\App Paths\%s' % exename) as key:
+            return reg_getvalue(key,None)
     else:
-        key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\%s' % exename)
-    return reg_getvalue(key,None)
+        with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\%s' % exename) as key:
+            return reg_getvalue(key,None)
+
 
 
 def getsilentflags(installer_path):
