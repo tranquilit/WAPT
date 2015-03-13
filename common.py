@@ -3050,18 +3050,18 @@ class Wapt(object):
 
         if platform.machine() == 'AMD64':
             with reg_openkey_noredir(HKEY_LOCAL_MACHINE,"Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall") as key:
-            try:
-                i = 0
-                while True:
-                    subkey = EnumKey(key, i)
-                    result.append(subkey)
-                    i += 1
-            except WindowsError,e:
-                # WindowsError: [Errno 259] No more data is available
-                if e.winerror == 259:
-                    pass
-                else:
-                    raise
+                try:
+                    i = 0
+                    while True:
+                        subkey = EnumKey(key, i)
+                        result.append(subkey)
+                        i += 1
+                except WindowsError,e:
+                    # WindowsError: [Errno 259] No more data is available
+                    if e.winerror == 259:
+                        pass
+                    else:
+                        raise
         return result
 
     def uninstall_cmd(self,guid):
