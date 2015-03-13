@@ -3034,21 +3034,22 @@ class Wapt(object):
              launched before and after an installation to capture uninstallkey
         """
         result = []
-        key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
-        try:
-            i = 0
-            while True:
-                subkey = EnumKey(key, i)
-                result.append(subkey)
-                i += 1
-        except WindowsError,e:
-            # WindowsError: [Errno 259] No more data is available
-            if e.winerror == 259:
-                pass
-            else:
-                raise
+        with reg_openkey_noredir(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall") aa key:
+            try:
+                i = 0
+                while True:
+                    subkey = EnumKey(key, i)
+                    result.append(subkey)
+                    i += 1
+            except WindowsError,e:
+                # WindowsError: [Errno 259] No more data is available
+                if e.winerror == 259:
+                    pass
+                else:
+                    raise
+
         if platform.machine() == 'AMD64':
-            key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,"Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
+            with reg_openkey_noredir(HKEY_LOCAL_MACHINE,"Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall") as key:
             try:
                 i = 0
                 while True:
@@ -3080,8 +3081,7 @@ class Wapt(object):
         return errors
 
     def set_local_password(self,user='admin',pwd='password'):
-        """Set admin/password local auth for waptservice in ini file as a MD5 hex hash"""
-        import md5
+        """Set admin/password local auth for waptservice in ini file as a sha256 hex hash"""
         conf = RawConfigParser()
         conf.read(self.config_filename)
         conf.set('global','waptservice_user',user)
@@ -3090,7 +3090,6 @@ class Wapt(object):
 
     def reset_local_password(self):
         """Remove the local waptservice auth from ini file"""
-        import md5
         conf = RawConfigParser()
         conf.read(self.config_filename)
         if conf.has_option('global','waptservice_user'):
