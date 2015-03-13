@@ -3034,7 +3034,7 @@ class Wapt(object):
              launched before and after an installation to capture uninstallkey
         """
         result = []
-        with reg_openkey_noredir(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall") aa key:
+        with reg_openkey_noredir(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall") as key:
             try:
                 i = 0
                 while True:
