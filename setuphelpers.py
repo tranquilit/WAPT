@@ -105,6 +105,7 @@ __all__ = \
  'local_admins',
  'local_groups',
  'local_users',
+ 'logger',
  'makepath',
  'memory_status',
  'messagebox',
