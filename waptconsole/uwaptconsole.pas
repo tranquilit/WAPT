@@ -92,6 +92,7 @@ type
     cbShowLog: TCheckBox;
     cbNeedUpgrade: TCheckBox;
     cbHasErrors: TCheckBox;
+    cbGroups: TComboBox;
     EdSoftwaresFilter: TEdit;
     EdRunningStatus: TEdit;
     EdSearchGroups: TEdit;
@@ -108,6 +109,7 @@ type
     HostRunningTask: TLabeledEdit;
     Label13: TLabel;
     Label14: TLabel;
+    Label15: TLabel;
     LabelComputersNumber: TLabel;
     labSelected: TLabel;
     MemoTaskLog: TMemo;
@@ -306,8 +308,9 @@ type
     procedure ActVNCExecute(Sender: TObject);
     procedure ActVNCUpdate(Sender: TObject);
     procedure ActWAPTLocalConfigExecute(Sender: TObject);
+    procedure cbGroupsDropDown(Sender: TObject);
+    procedure cbGroupsSelect(Sender: TObject);
     procedure cbMaskSystemComponentsClick(Sender: TObject);
-    procedure cbSearchAllChange(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure CheckBoxMajChange(Sender: TObject);
     procedure cbNeedUpgradeClick(Sender: TObject);
@@ -365,7 +368,6 @@ type
 
     procedure HostPagesChange(Sender: TObject);
     procedure Image1Click(Sender: TObject);
-    procedure MenuItem20Click(Sender: TObject);
     procedure MainPagesChange(Sender: TObject);
     procedure InstallPackage(Grid: TSOGrid);
     procedure MenuItem27Click(Sender: TObject);
@@ -373,6 +375,7 @@ type
   private
     CurrentVisLoading: TVisLoading;
     procedure DoProgress(ASender: TObject);
+    procedure FillcbGroups;
     function FilterSoftwares(softs: ISuperObject): ISuperObject;
     { private declarations }
     procedure GridLoadData(grid: TSOGrid; jsondata: string);
@@ -824,7 +827,12 @@ begin
   Screen.Cursor := crHourGlass;
   try
     if MainPages.ActivePage = pgInventory then
+    begin
+      //update groups filter combobox
+      if cbGroups.ItemIndex>=0 then
+        FillcbGroups;
       ActSearchHost.Execute
+    end
     else
     if MainPages.ActivePage = pgPackages then
     begin
@@ -1115,27 +1123,33 @@ begin
     if (packages = nil) or (packages.AsArray.Length = 0) then
       Exit;
 
-    Hosts := TSuperObject.Create(stArray);
-    for host in GridHosts.SelectedRows do
-      hosts.AsArray.Add(host.S['host.computer_fqdn']);
+    try
+      Screen.Cursor := crHourGlass;
+      Hosts := TSuperObject.Create(stArray);
+      for host in GridHosts.SelectedRows do
+        hosts.AsArray.Add(host.S['host.computer_fqdn']);
 
-    //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
-    args := '';
-    args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
-    args := args + format('hosts_list = r"%s".decode(''utf8''),',
-      [soutils.Join(',', hosts)]);
-    args := args + format('append_depends = r"%s".decode(''utf8''),',
-      [soutils.Join(',', packages)]);
-    args := args + format('remove_depends = "",', []);
-    args := args + format('append_conflicts = "",', []);
-    args := args + format('remove_conflicts = "",', []);
-    if privateKeyPassword <> '' then
-      args := args + format('key_password = "%s".decode(''utf8''),',
-        [privateKeyPassword]);
-    args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
-    args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
-      [waptServerPassword]);
-    res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)', [args]));
+      //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
+      args := '';
+      args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
+      args := args + format('hosts_list = r"%s".decode(''utf8''),',
+        [soutils.Join(',', hosts)]);
+      args := args + format('append_depends = r"%s".decode(''utf8''),',
+        [soutils.Join(',', packages)]);
+      args := args + format('remove_depends = "",', []);
+      args := args + format('append_conflicts = "",', []);
+      args := args + format('remove_conflicts = "",', []);
+      if privateKeyPassword <> '' then
+        args := args + format('key_password = "%s".decode(''utf8''),',
+          [privateKeyPassword]);
+      args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
+      args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
+        [waptServerPassword]);
+      res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)', [args]));
+    finally
+      Screen.Cursor := crDefault;
+    end;
+
     ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
   end;
 end;
@@ -1891,6 +1905,9 @@ begin
     if cbNeedUpgrade.Checked then
       urlParams.AsArray.Add('need_upgrade=1');
 
+    if cbGroups.ItemIndex>0 then
+      urlParams.AsArray.Add(Format('groups=%s',[cbGroups.Text]));
+
     urlParams.AsArray.Add('columns='+join(',',columns));
 
     if GridHosts.FocusedRow <> nil then
@@ -1949,6 +1966,10 @@ begin
 
   ActSearchPackage.Execute;
   ActSearchGroups.Execute;
+
+  //update groups filter combobox
+  if cbGroups.ItemIndex>=0 then
+    FillcbGroups;
 end;
 
 procedure TVisWaptGUI.ActReloadConfigExecute(Sender: TObject);
@@ -2021,6 +2042,17 @@ begin
   end;
 end;
 
+procedure TVisWaptGUI.cbGroupsDropDown(Sender: TObject);
+begin
+  if cbGroups.ItemIndex<0 then
+    FillCBGroups;
+end;
+
+procedure TVisWaptGUI.cbGroupsSelect(Sender: TObject);
+begin
+  ActSearchHost.Execute;
+end;
+
 function TVisWaptGUI.EditIniFile: boolean;
 var
   inifile: TIniFile;
@@ -2084,11 +2116,6 @@ end;
 procedure TVisWaptGUI.cbMaskSystemComponentsClick(Sender: TObject);
 begin
   GridHostSoftwares.Data := FilterSoftwares(Gridhosts.FocusedRow['softwares']);
-end;
-
-procedure TVisWaptGUI.cbSearchAllChange(Sender: TObject);
-begin
-
 end;
 
 function checkReadWriteAccess(dir: string): boolean;
@@ -2552,10 +2579,6 @@ begin
   OpenDocument('http://www.tranquil.it');
 end;
 
-procedure TVisWaptGUI.MenuItem20Click(Sender: TObject);
-begin
-end;
-
 procedure CopyMenu(menuItemSource: TPopupMenu; menuItemTarget: TMenuItem);
 var
   i: integer;
@@ -2573,13 +2596,41 @@ begin
   end;
 end;
 
+procedure TVisWaptGUI.FillcbGroups;
+var
+  Package,Group,Groups:ISuperObject;
+  oldSelect:String;
+begin
+  try
+    Screen.Cursor:=crHourGlass;
+
+    oldSelect:=cbGroups.Text;
+    cbGroups.Items.Clear;
+    cbGroups.Items.Add(rsFilterAll);
+
+    Groups := WAPTServerJsonGet('api/v1/groups',[])['result'];
+    SortByFields(Groups,['package']);
+    for Group in Groups do
+      cbGroups.Items.Add(group.S['package']);
+    cbGroups.Text := oldSelect;
+
+  finally
+    Screen.Cursor:=crdefault;
+  end;
+end;
+
 procedure TVisWaptGUI.MainPagesChange(Sender: TObject);
 begin
   if MainPages.ActivePage = pgInventory then
-  begin
+  try
+    Screen.Cursor:=crHourGlass;
+
     CopyMenu(PopupMenuHosts, MenuItem24);
     if GridHosts.Data = nil then
       ActSearchHost.Execute;
+
+  finally
+    Screen.Cursor:=crDefault;
   end
   else if MainPages.ActivePage = pgPrivateRepo then
   begin

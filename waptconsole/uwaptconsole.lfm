@@ -25,9 +25,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 438
     Top = 0
     Width = 877
-    ActivePage = pgInventory
+    ActivePage = pgGroups
     Align = alClient
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -61,7 +61,7 @@ object VisWaptGUI: TVisWaptGUI
           ParentColor = False
         end
         object cbNeedUpgrade: TCheckBox
-          Left = 404
+          Left = 388
           Height = 17
           Top = 30
           Width = 95
@@ -70,7 +70,7 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 2
         end
         object cbHasErrors: TCheckBox
-          Left = 404
+          Left = 388
           Height = 17
           Top = 4
           Width = 70
@@ -217,6 +217,25 @@ object VisWaptGUI: TVisWaptGUI
           Width = 6
           Anchors = [akTop, akRight]
           Caption = '0'
+          ParentColor = False
+        end
+        object cbGroups: TComboBox
+          Left = 540
+          Height = 21
+          Top = 4
+          Width = 160
+          ItemHeight = 13
+          OnDropDown = cbGroupsDropDown
+          OnSelect = cbGroupsSelect
+          Style = csDropDownList
+          TabOrder = 9
+        end
+        object Label15: TLabel
+          Left = 496
+          Height = 13
+          Top = 7
+          Width = 34
+          Caption = 'Groups'
           ParentColor = False
         end
       end
@@ -4284,7 +4303,6 @@ object VisWaptGUI: TVisWaptGUI
     top = 424
     object MenuItem20: TMenuItem
       Action = ActPackageInstall
-      OnClick = MenuItem20Click
     end
     object MenuItem19: TMenuItem
       Action = ActPackageRemove

@@ -94,6 +94,8 @@ resourcestring
 
   rsCanceledByUser = 'Task %s has been canceled by the user';
 
+  rsFilterAll = '(All)';
+
   { Messages dans wapt-get/waptcommon.pas }
   rsInnoSetupUnavailable = 'Innosetup is unavailable (path : %s), please install it first.';
   rsUndefWaptSrvInIni = 'wapt_server is not defined in your %s ini file';

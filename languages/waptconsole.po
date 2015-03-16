@@ -986,6 +986,10 @@ msgstr ""
 msgid "Filter : "
 msgstr ""
 
+#: tviswaptgui.label15.caption
+msgid "Groups"
+msgstr ""
+
 #: tviswaptgui.label2.caption
 msgid "Manufacturer"
 msgstr ""
@@ -1422,6 +1426,11 @@ msgstr ""
 #: uwaptconsoleres.rsfatalerror
 msgctxt "uwaptconsoleres.rsfatalerror"
 msgid "Failed to retrieve task."
+msgstr ""
+
+#: uwaptconsoleres.rsfilterall
+msgctxt "uwaptconsoleres.rsfilterall"
+msgid "(All)"
 msgstr ""
 
 #: uwaptconsoleres.rsforceduninstallpackages
