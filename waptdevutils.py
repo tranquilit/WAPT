@@ -35,11 +35,15 @@
 """
 __version__ = "1.1.1"
 
-
+import os
+import shutil
+import psutil
 import common
 import json
+
 from setuphelpers import *
 from waptpackage import *
+
 import active_directory
 import codecs
 from iniparse import RawConfigParser
@@ -131,6 +135,7 @@ def diff_computer_wapt_ad(wapt):
     result = list(set(computer_wapt)-set(computer_ad))
     return result
 
+
 def update_external_repo(waptconfigfile,search_string):
     """Get a list of entries from external templates public repository matching search_string
     >>> firefox = update_tis_repo(r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini","tis-firefox-esr")
@@ -151,8 +156,13 @@ def update_external_repo(waptconfigfile,search_string):
 
 
 def get_packages_filenames(waptconfigfile,packages_names):
-    """Returns list of package filenames (latest version) matching comma seperated list of packages names and their dependencies
+    """Returns list of package filenames (latest version) matching comma separated list of packages names and their dependencies
         helps to batch download a list of selected packages using tools like curl or wget
+
+    Args:
+        waptconfigfile (str): path to wapt ini file
+        packages_names (list or csv str): list of package names
+
     >>> get_packages_filenames(r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini","tis-firefox-esr,tis-flash,tis-wapttest")
     [u'tis-firefox-esr_24.4.0-0_all.wapt', u'tis-flash_12.0.0.77-3_all.wapt', u'tis-wapttest.wapt', u'tis-wapttestsub_0.1.0-1_all.wapt', u'tis-7zip_9.2.0-15_all.wapt']
     """
@@ -235,7 +245,6 @@ def duplicate_from_external_repo(waptconfigfile,package_filename):
         package.conflicts = ','.join(newconflicts)
         package.save_control_to_wapt(result)
 
-
     return result
 
 def wapt_sources_edit(wapt_sources_dir):
@@ -245,7 +254,6 @@ def wapt_sources_edit(wapt_sources_dir):
     setup_filename = os.path.join(wapt_sources_dir,'setup.py')
     pyscripter_filename = os.path.join(programfiles32,'PyScripter','PyScripter.exe')
     if os.path.isfile(pyscripter_filename) and os.path.isfile(psproj_filename):
-        import psutil
         p = psutil.Popen('"%s" --newinstance --project "%s" "%s" "%s"' % (pyscripter_filename,psproj_filename,setup_filename,control_filename),
             cwd = os.path.join(programfiles32,'PyScripter'))
     else:
