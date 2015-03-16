@@ -5120,7 +5120,7 @@ class Wapt(object):
                     self.add_pyscripter_project(target_directory)
                     return {'target':target_directory,'source_dir':target_directory,'package':local_dev_entry}
                 else:
-                    raise Exception('Local target %s directory is the sources of a different package %s than expected %s' % (target_directory,local_dev_entry.package,packagerequest))
+                    raise Exception('Local target %s directory is the sources of a different package %s than expected %s' % (target_directory,local_dev_entry.asrequirement(),packagerequest))
             else:
                 raise Exception('%s wapt developement directory exists' % target_directory)
         if entry:
