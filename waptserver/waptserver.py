@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="1.1.1"
+__version__="1.2.0"
 
 import os,sys
 try:
@@ -1645,6 +1645,24 @@ def host_tasks_status():
             success = isinstance(client_result,dict),)
     except Exception, e:
         return make_response_from_exception(e)
+
+@app.route('/api/v1/groups')
+@requires_auth
+def get_groups():
+    """List of packages having section == group
+    """
+    try:
+
+        packages = WaptLocalRepo(wapt_folder)
+        packages.load_packages()
+
+        groups = [ p.as_dict() for p in packages.packages if p.section == 'group']
+        msg = '{} Packages for section group'.format(len(groups))
+
+    except Exception as e:
+        return make_response_from_exception(e)
+
+    return make_response(result=groups,msg=msg,status=200)
 
 
 @app.route('/api/v1/hosts')
