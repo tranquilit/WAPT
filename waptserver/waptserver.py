@@ -1748,6 +1748,9 @@ def get_hosts():
         hosts_packages_repo = WaptLocalRepo(wapt_folder+'-host')
         hosts_packages_repo.load_packages()
 
+        packages_repo = WaptLocalRepo(wapt_folder)
+        packages_repo.load_packages()
+
         groups = ensure_list(request.args.get('groups',''))
 
         result = []
@@ -1758,7 +1761,8 @@ def get_hosts():
                 host_package = hosts_packages_repo.index.get(host['host']['computer_fqdn'],None)
                 if host_package:
                     depends = ensure_list(host_package.depends.split(','))
-                    host['depends'] = depends
+                    host['depends'] = [ d for d in depends
+                            if (d in packages_repo.index and packages_repo.index[d].section == 'group')]
             try:
                 la = host['wapt']['listening_address']
                 if la['address']  and la['timestamp']:
