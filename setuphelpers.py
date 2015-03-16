@@ -160,6 +160,7 @@ __all__ = \
  'shell_launch',
  'showmessage',
  'shutdown_scripts_ui_visible',
+ 'shutil',
  'start_menu',
  'startup',
  'system32',

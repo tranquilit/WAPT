@@ -3,6 +3,7 @@ from setuphelpers import *
 import os
 import _winreg
 import tempfile
+import shutil
 
 # registry key(s) where WAPT will find how to remove the application(s)
 uninstallkey = []
