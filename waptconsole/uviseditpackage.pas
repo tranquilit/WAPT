@@ -246,7 +246,7 @@ begin
         Result := PackageEdited;
         if (result<>Nil) and ApplyUpdatesImmediately and (uuid<>'')  then
         begin
-          res := WAPTServerJsonGet('trigger_upgrade?uuid=%s',[uuid]);
+          res := WAPTServerJsonGet('api/v1/trigger_upgrade?uuid=%s',[uuid]);
           if res.B['success']  then
             ShowMessage(rsUpgradingHost)
           else
@@ -397,11 +397,11 @@ begin
   EdVersion.Text := PackageEdited.S['version'];
   EdDescription.Text := UTF8Encode(PackageEdited.S['description']);
   EdSection.Text := PackageEdited.S['section'];
+  IsUpdated := False;
   // get a list of package entries given a
   Depends := PackageEdited.S['depends'];
   Conflicts := PackageEdited.S['conflicts'];
   EdSetupPy.Lines.LoadFromFile(AppendPathDelim(FSourcePath) + 'setup.py');
-  IsUpdated := False;
   butBUApply.Visible:=IsHost;
 end;
 
@@ -714,7 +714,7 @@ begin
   repeat
     Inc(i);
     Result := GetTempDir(False) + prefix + FormatFloat('0000', i);
-  until not DirectoryExists(Result);
+  until not DirectoryExists(Result) and not FileExists(Result);
   MkDir(Result);
 end;
 

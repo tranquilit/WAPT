@@ -25,9 +25,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 438
     Top = 0
     Width = 877
-    ActivePage = pgGroups
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
