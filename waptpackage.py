@@ -426,7 +426,13 @@ sources      : %(sources)s
         return val
 
     def make_package_filename(self):
-        """Return the standard package filename based on current attributes"""
+        """Return the standard package filename based on current attributes
+
+        Returns:
+            str:  standard package filename packagename_version_arch.wapt for
+                    softwares
+                  packagename.wapt for group and host.
+        """
         if not self.section in ['host','group'] and not (self.package and self.version and self.architecture):
             raise Exception(u'Not enough information to build the package filename for %s (%s)'%(self.package,self.version))
         if self.section in ['host','group']:
@@ -435,6 +441,11 @@ sources      : %(sources)s
             return self.package + '_' + self.version + '_' +  self.architecture  + '.wapt'
 
     def asrequirement(self):
+        """resturn package and version for designing this package in depends or install actions
+
+        Returns:
+            str: "packagename (=version)"
+        """
         return "%s (=%s)" % (self.package,self.version)
 
     property

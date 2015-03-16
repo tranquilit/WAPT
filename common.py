@@ -5041,6 +5041,14 @@ class Wapt(object):
               else if target_directory exists and is not empty, raise an exception
             Return {'target':target_directory,'source_dir':target_directory,'package':package_entry}
 
+        Args:
+            packagerequest (str)        : path to existing wapt file, or package request
+            use_local_sources (boolean) : don't raise an exception if target exist and match package version
+
+        Returns:
+            dict : {'target':target_directory,'source_dir':target_directory,'package':package_entry}
+
+
         >>> wapt = Wapt(config_filename='c:/tranquilit/wapt/tests/wapt-get.ini')
         >>> wapt.dbpath = ':memory:'
         >>> r= wapt.update()
@@ -5069,6 +5077,7 @@ class Wapt(object):
                 zip = ZipFile(packagerequest)
                 zip.extractall(path=target_directory)
                 packagename = entry.package
+                packagerequest = entry.asrequirement()
             else:
                 raise Exception('%s is neither a package name nor a package filename' % packagename)
 
