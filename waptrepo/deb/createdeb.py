@@ -60,13 +60,12 @@ wapt_source_dir = os.path.abspath('../..')
 # waptrepo
 source_dir = os.path.abspath('..')
 
-for line in open('%s/waptpackage.py' % wapt_source_dir):
-    if '__version__' in line:
-        wapt_version = line.split('=')[1].replace('"','').replace("'","").replace('\n','').replace(' ','').replace('\r','')
+sys.path.insert(0, wapt_source_dir)
+from waptpackage import __version__ as wapt_version
 
 if not wapt_version:
-    print 'version non trouvee dans %s/waptpackage.py'
-    exit(1)
+    print 'version "%s" incorrecte dans waptpackage.py' % (wapt_version,)
+    sys.exit(1)
 
 control_file = './builddir/DEBIAN/control'
 
@@ -104,7 +103,7 @@ print 'copie des fichiers control et postinst'
 copyfile('./DEBIAN/control','./builddir/DEBIAN/control')
 copyfile('./DEBIAN/postinst','./builddir/DEBIAN/postinst')
 
-print u'inscription de la version dans le fichier de control'
+print u'inscription de la version dans le fichier de control. new version: ' + wapt_version
 replaceAll(control_file,'0.0.7',wapt_version)
 
 print u'creation du paquet Deb'
