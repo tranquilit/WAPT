@@ -35,7 +35,7 @@
 """
 __version__ = "1.2.0"
 
-import os
+import sys,os
 import shutil
 import psutil
 import common
@@ -48,6 +48,11 @@ import active_directory
 import codecs
 from iniparse import RawConfigParser
 import getpass
+
+from common import *
+from tempfile import mkdtemp
+
+from shutil import rmtree
 
 create_self_signed_key = common.create_self_signed_key
 is_encrypt_private_key = common.private_key_has_password
@@ -314,6 +319,77 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
             if os.path.isfile(s['filename']):
                 os.unlink(s['filename'])
     return build_res
+
+
+def get_computer_groups(computername):
+    """Try to finc the computer in the Active Directory
+        and return the list of groups
+    """
+    groups = []
+    computer = active_directory.find_computer(computername)
+    if computer:
+        computer_groups = computer.memberOf
+        if computer_groups:
+            computer_groups = ensure_list(computer_groups)
+            for group in computer_groups:
+                # extract first component of group's DN
+                cn = group.split(',')[0].split('=')[1]
+                groups.append(cn)
+    return groups
+
+def add_ads_groups(waptconfigfile,hosts_list,wapt_server_user,wapt_server_passwd,key_password=None):
+    # initialise wapt api with local config file
+    wapt = Wapt(config_filename = waptconfigfile)
+    wapt.dbpath=':memory:'
+
+    # get current packages status from repositories
+    wapt.update()
+
+    hosts_list = ensure_list(hosts_list)
+
+    # get the collection of hosts from waptserver inventory
+    all_hosts = wapt.waptserver.get('api/v1/hosts?columns=uuid,host.computer_fqdn,depends',auth=(wapt_server_user,wapt_server_passwd))['result']
+    if hosts_list:
+        hosts = [ h for h in all_hosts if h['host']['computer_fqdn'] in hosts_list]
+    else:
+        hosts = hosts_list
+
+    result = []
+
+    for h in hosts:
+        try:
+            hostname = h['host']['computer_fqdn']
+            print 'Computer %s... ' % hostname,
+
+            groups = get_computer_groups(h['host']['computer_name'])
+            wapt_groups = h['depends']
+            additional = [ group for group in groups if not group in wapt_groups and wapt.is_available(group) ]
+
+            if additional:
+                # now update the host package : download and append missing packages
+                tmpdir = mkdtemp()
+                try:
+                    package = wapt.edit_host(hostname,target_directory = tmpdir, use_local_sources=False)
+                    control = package['package']
+                    depends =  ensure_list(control.depends)
+
+                    control.depends = ','.join(depends+additional)
+                    control.save_control_to_wapt(package['source_dir'])
+                    buid_res = wapt.build_upload(package['source_dir'], private_key_passwd = key_password, wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd,
+                        inc_package_release=True)[0]
+                    print "  done, new packages: %s" % (','.join(additional))
+                    if os.path.isfile(buid_res['filename']):
+                        os.remove(buid_res['filename'])
+                    result.append(hostname)
+                finally:
+                    # cleanup of temporary
+                    if os.path.isdir(tmpdir):
+                        rmtree(tmpdir)
+        except Exception as e:
+            print " error %s" % e
+            raise
+
+    return result
 
 if __name__ == '__main__':
     import doctest
