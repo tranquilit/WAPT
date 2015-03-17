@@ -96,6 +96,11 @@ resourcestring
 
   rsFilterAll = '(All)';
 
+  rsAddADSGroups = 'This will get the Active Directory groups of each selected host and '+LineEnding+
+        'add the matching Wapt packages to dependencies of the host'+LineEnding+
+        'if the package exists.'+LineEnding+''+LineEnding+
+        'Are you sure to continue ?';
+
   { Messages dans wapt-get/waptcommon.pas }
   rsInnoSetupUnavailable = 'Innosetup is unavailable (path : %s), please install it first.';
   rsUndefWaptSrvInIni = 'wapt_server is not defined in your %s ini file';

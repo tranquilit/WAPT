@@ -27,6 +27,7 @@ type
     ActFrench: TAction;
     ActEnglish: TAction;
     ActCleanCache: TAction;
+    ActAddADSGroups: TAction;
     ActPackageInstall: TAction;
     ActRestoreDefaultLayout: TAction;
     ActTriggerHostUpdate: TAction;
@@ -142,6 +143,8 @@ type
     MenuItem52: TMenuItem;
     MenuItem53: TMenuItem;
     MenuItem54: TMenuItem;
+    MenuItem55: TMenuItem;
+    MenuItem56: TMenuItem;
     OpenDialogWapt: TOpenDialog;
     PageControl1: TPageControl;
     Panel11: TPanel;
@@ -250,6 +253,7 @@ type
     ToolButton5: TToolButton;
     ToolButton6: TToolButton;
     ToolButton7: TToolButton;
+    procedure ActAddADSGroupsExecute(Sender: TObject);
     procedure ActAddConflictsExecute(Sender: TObject);
     procedure ActAddPackageGroupExecute(Sender: TObject);
     procedure ActAdvancedModeExecute(Sender: TObject);
@@ -1093,6 +1097,39 @@ begin
       Free;
     end;
     ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
+  end;
+end;
+
+procedure TVisWaptGUI.ActAddADSGroupsExecute(Sender: TObject);
+var
+  Res, packages, host, hosts: ISuperObject;
+  N: PVirtualNode;
+  args: ansistring;
+begin
+  if GridHosts.Focused and (MessageDlg(rsAddADSGroups, mtConfirmation, [mbYes, mbNo, mbCancel],0) = mrYes) then
+  try
+
+    Screen.Cursor := crHourGlass;
+    Hosts := TSuperObject.Create(stArray);
+
+    for host in GridHosts.SelectedRows do
+      hosts.AsArray.Add(host.S['host.computer_fqdn']);
+
+    //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
+    args := '';
+    args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
+    args := args + format('hosts_list = r"%s".decode(''utf8''),',
+      [soutils.Join(',', hosts)]);
+    if privateKeyPassword <> '' then
+      args := args + format('key_password = "%s".decode(''utf8''),',
+        [privateKeyPassword]);
+    args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
+    args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
+      [waptServerPassword]);
+    res := DMPython.RunJSON(format('waptdevutils.add_ads_groups(%s)', [args]));
+    ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
+  finally
+    Screen.Cursor := crDefault;
   end;
 end;
 

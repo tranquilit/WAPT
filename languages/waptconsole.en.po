@@ -653,6 +653,14 @@ msgstr ""
 msgid "One host per row."
 msgstr ""
 
+#: tviswaptgui.actaddadsgroups.caption
+msgid "Add ADS Groups as packages"
+msgstr ""
+
+#: tviswaptgui.actaddadsgroups.hint
+msgid "Add the WAPT group packages matching the ADS groups of the machines"
+msgstr ""
+
 #: tviswaptgui.actaddconflicts.caption
 msgid "Block packages (causes forced uninstall)"
 msgstr ""
@@ -1122,6 +1130,11 @@ msgstr ""
 msgid "Restore default grids layout"
 msgstr ""
 
+#: tviswaptgui.menuitem55.caption
+msgctxt "tviswaptgui.menuitem55.caption"
+msgid "-"
+msgstr ""
+
 #: tviswaptgui.menuitem6.caption
 msgid "New"
 msgstr ""
@@ -1207,6 +1220,15 @@ msgstr ""
 
 #: tviswaptgui.toolbutton6.caption
 msgid "ToolButton6"
+msgstr ""
+
+#: uwaptconsoleres.rsaddadsgroups
+msgid ""
+"This will get the Active Directory groups of each selected host and \n"
+"add the matching Wapt packages to dependencies of the host\n"
+"if the package exists.\n"
+"\n"
+"Are you sure to continue ?\n"
 msgstr ""
 
 #: uwaptconsoleres.rsbundleconfigeditcaption
