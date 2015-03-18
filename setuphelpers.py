@@ -114,7 +114,6 @@ __all__ = \
  'networking',
  'os',
  'params',
- 'processnames_list',
  'programfiles',
  'programfiles32',
  'programfiles64',
@@ -1036,13 +1035,17 @@ def killtree(pid, including_parent=True):
         pass
 
 
-def processnames_list():
-    """return all process name of running processes in lower case"""
-    return list(set([p.name().lower() for p in psutil.get_process_list()]))
-
-
 def find_processes(process_name):
-    """Return list of Process having process_name"""
+    """Return list of Process names process_name
+
+    Args;
+        process_name (str): process name to lookup
+    Returns:
+        list: list of processes (Process) named process_name or process_name.exe
+
+    >>> [p.pid for p in find_processes('explorer')]
+    [2756, 4024]
+    """
     process_name = process_name.lower()
     result = []
     for p in psutil.process_iter():
@@ -1081,7 +1084,11 @@ def programfiles():
 
 
 def programfiles32():
-    """Return 32bits applications folder."""
+    """Return 32bits applications folder.
+
+    Returns:
+        str: path of programs files (x86) (on win64) or programs files (on 32bits)
+    """
     if 'PROGRAMW6432' in os.environ and 'PROGRAMFILES(X86)' in os.environ:
         return os.environ['PROGRAMFILES(X86)']
     else:
@@ -1089,6 +1096,14 @@ def programfiles32():
 
 
 def iswin64():
+    """Check whether operating system is 64bits
+
+    Returns:
+        boolean
+    >>> iswin64()
+    True
+    """
+
     # could be
     # return platform.machine()=='AMD64'
     return 'PROGRAMW6432' in os.environ
@@ -1687,6 +1702,7 @@ def add_shutdown_script(cmd,parameters):
 
 def remove_shutdown_script(cmd,parameters):
     """ Removes a local shutdown GPO script
+
     >>> index = remove_shutdown_script(r'c:\wapt\wapt-get.exe','update')
     """
     gp_path = makepath(system32(),'GroupPolicy')
@@ -1776,6 +1792,7 @@ def remove_shutdown_script(cmd,parameters):
 
 def shutdown_scripts_ui_visible(state=True):
     """Enable or disable the GUI for windows shutdown scripts
+
     >>> shutdown_scripts_ui_visible(None)
     >>> shutdown_scripts_ui_visible(False)
     >>> shutdown_scripts_ui_visible(True)
@@ -1834,13 +1851,13 @@ def uninstall_cmd(guid):
                             args[0] = args[0][1:-1]
 
                         if ('spuninst' in cmd.lower()):
-                             if not ' /quiet' in cmd.lower():
+                            if not ' /quiet' in cmd.lower():
                                 args.append('/quiet')
                         elif ('uninst' in cmd.lower() or 'helper.exe' in cmd.lower()) :
                             if not ' /s' in cmd.lower():
                                 args.append('/S')
                         elif ('unins000' in cmd.lower()):
-                             if not ' /silent' in cmd.lower():
+                            if not ' /silent' in cmd.lower():
                                 args.append('/silent')
                     return args
                 except WindowsError:
@@ -1861,6 +1878,15 @@ def uninstall_cmd(guid):
 
 def installed_softwares(keywords='',uninstallkey=None):
     """return list of installed software from registry (both 32bit and 64bit
+
+    Args;
+        keywords (str or list): string to lookup in key, display_name or publisher fields
+        uninstallkey : filter on a specific uninstall key instead of fuzzy search
+
+    Returns
+        dict: {'key', 'name', 'version', 'install_date', 'install_location'
+                     'uninstall_string', 'publisher','system_component'}
+
     >>> softs = installed_softwares('libre office')
     >>> if softs:
     ...     for soft in softs:
@@ -1936,7 +1962,9 @@ def register_uninstall(uninstallkey,uninstallstring,win64app=False,
         quiet_uninstall_string='',
         install_location = None, display_name=None,display_version=None,publisher=''):
     """Register the uninstall method in Windows registry,
-        so that the application is displayed in Control Panel / Programs and features"""
+        so that the application is displayed in Control Panel / Programs and features
+
+    """
     if not uninstallkey:
         raise Exception('No uninstall key provided')
     if not uninstallstring:
@@ -1999,7 +2027,9 @@ windomainname = win32api.GetDomainName
 
 
 def networking():
-    """return a list of (iface,mac,{addr,broadcast,netmask})"""
+    """return a list of (iface,mac,{addr,broadcast,netmask})
+
+    """
     import netifaces
     ifaces = netifaces.interfaces()
     local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
@@ -2019,7 +2049,9 @@ def networking():
 
 # from http://stackoverflow.com/questions/2017545/get-memory-usage-of-computer-in-windows-with-python
 def memory_status():
-    # Return system memory statistics
+    """Return system memory statistics
+
+    """
     class MEMORYSTATUSEX(ctypes.Structure):
         _fields_ = [
             ("dwLength", ctypes.c_ulong),
@@ -2046,7 +2078,13 @@ def memory_status():
 
 
 def dmi_info():
-    """Convert dmidecode -q output to python dict
+    """Hardware System information from BIOS estracted with dmidecode
+
+        Convert dmidecode -q output to python dict
+
+    Returns:
+        dict
+
     >>> dmi = dmi_info()
     >>> 'UUID' in dmi['System_Information']
     True
@@ -2090,7 +2128,7 @@ def dmi_info():
                     currarray.append(l.strip())
             new_section = False
         if not 'System_Information' in result or not 'UUID' in result['System_Information']:
-           result = wmi_info_basic()
+            result = wmi_info_basic()
     except:
         # dmidecode fails on some BIOS.
         # TODO : fall back to wmi for most impirtant parameters
@@ -2099,7 +2137,9 @@ def dmi_info():
 
 
 def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_BIOS','Win32_NetworkAdapter']):
-    """Get WMI machine informations as dictionaries"""
+    """Get WMI machine informations as dictionaries
+
+    """
     result = {}
     import wmi
     wm = wmi.WMI()
@@ -2133,6 +2173,10 @@ def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_B
 
 def wmi_info_basic():
     """Return uuid, serial, model, vendor from WMI
+
+    Returns:
+        dict: minimal informations for wapt registration
+
     >>> r = wmi_info_basic()
     >>> 'System_Information' in r
     True
@@ -2154,7 +2198,12 @@ def wmi_info_basic():
     return result
 
 def critical_system_pending_updates():
-    """Return list of not installed critical updates"""
+    """Return list of not installed critical updates
+
+    Returns:
+        list: list of title of WSUS crititcal updates not applied
+
+    """
     import win32com.client
     updateSession = win32com.client.Dispatch("Microsoft.Update.Session")
     updateSearcher = updateSession.CreateupdateSearcher()
@@ -2163,6 +2212,10 @@ def critical_system_pending_updates():
 
 def host_info():
     """Read main workstation inforamtions, returned as a dict
+
+    Returns:
+        dict: main properties of host, networking and windows system
+
     >>> hi = host_info()
     >>> 'computer_fqdn' in hi and 'connected_ips' in hi and 'computer_name' in hi and 'mac' in hi
     True
@@ -2292,56 +2345,111 @@ def get_msi_properties(msi_filename):
 
 # local user / groups management (from winsys examples)
 def create_user (user, password,full_name=None,comment=None):
-  user_info = dict (
-    name = user,
-    password = password,
-    priv = win32netcon.USER_PRIV_USER,
-    home_dir = None,
-    comment = comment,
-    full_name = full_name,
-    flags = win32netcon.UF_SCRIPT,
-    script_path = None,
-    password_expired = 1
-  )
-  win32net.NetUserAdd (None, 1, user_info)
+    """Creates a local user
+
+    """
+    user_info = dict (
+      name = user,
+      password = password,
+      priv = win32netcon.USER_PRIV_USER,
+      home_dir = None,
+      comment = comment,
+      full_name = full_name,
+      flags = win32netcon.UF_SCRIPT,
+      script_path = None,
+      password_expired = 1
+    )
+    win32net.NetUserAdd (None, 1, user_info)
 
 def create_group (group):
-  group_info = dict (
-    name = group
-  )
-  win32net.NetLocalGroupAdd (None, 0, group_info)
+    """Creates a local group
+
+    """
+    group_info = dict (
+      name = group
+    )
+    win32net.NetLocalGroupAdd (None, 0, group_info)
 
 def add_user_to_group (user, group):
-  user_group_info = dict (
-    domainandname = user
-  )
-  win32net.NetLocalGroupAddMembers (None, group, 3, [user_group_info])
+    """Add membership to a local group for a user
+
+    """
+    user_group_info = dict (
+      domainandname = user
+    )
+    win32net.NetLocalGroupAddMembers (None, group, 3, [user_group_info])
 
 def remove_user_from_group (user, group):
-  win32net.NetLocalGroupDelMembers (None, group, [user])
+    """Remove membership from a local group for a user
+
+    """
+    win32net.NetLocalGroupDelMembers (None, group, [user])
 
 def delete_user (user):
-  try:
-    win32net.NetUserDel (None, user)
-  except win32net.error as error:
-    errno, errctx, errmsg = error.args
-    if errno != 2221: raise
+    """Delete a local user
+
+    """
+    try:
+        win32net.NetUserDel (None, user)
+    except win32net.error as error:
+        errno, errctx, errmsg = error.args
+        if errno != 2221: raise
 
 def delete_group (group):
-  try:
-    win32net.NetLocalGroupDel (None, group)
-  except win32net.error as error:
-    errno, errctx, errmsg = error.args
-    if errno != 2220: raise
+    """Delete a local user group
+
+    """
+
+    try:
+        win32net.NetLocalGroupDel (None, group)
+    except win32net.error as error:
+        errno, errctx, errmsg = error.args
+        if errno != 2220: raise
 
 def local_users():
+    """Returns local users
+
+    >>> local_users()
+    [u'Administrateur',
+     u'ASPNET',
+     u'cyg_user',
+     u'install',
+     u'Invit\xe9',
+     u'newadmin',
+     u'sshd',
+     u'toto',
+     u'UpdatusUser']
+    """
     return [u['name'] for u in win32net.NetUserEnum(None,2)[0]]
 
 def local_groups():
+    """Returns local groups
+
+    >>> local_groups()
+    [u'Administrateurs',
+     u'Duplicateurs',
+     u'IIS_IUSRS',
+     u'Invit\xe9s',
+     u'Lecteurs des journaux d\u2019\xe9v\xe9nements',
+     u'Op\xe9rateurs de chiffrement',
+     u'Op\xe9rateurs de configuration r\xe9seau',
+     u'Op\xe9rateurs de sauvegarde',
+     u'Utilisateurs',
+     u'Utilisateurs avec pouvoir',
+     u'Utilisateurs de l\u2019Analyseur de performances',
+     u'Utilisateurs du Bureau \xe0 distance',
+     u'Utilisateurs du journal de performances',
+     u'Utilisateurs du mod\xe8le COM distribu\xe9',
+     u'IIS_WPG',
+     u'test']
+     """
     return [g['name'] for g in win32net.NetLocalGroupEnum(None,0)[0]]
 
 def local_admins():
-    """List local users who are local administrators"""
+    """List local users who are local administrators
+
+    >>> local_admins()
+    [u'Administrateur', u'cyg_user', u'install', u'toto']    """
     return [g['name'] for g  in win32net.NetUserEnum(None,2)[0] if g['priv'] == win32netcon.USER_PRIV_ADMIN ]
 
 
@@ -2360,6 +2468,20 @@ def adjust_current_privileges(priv, enable = 1):
     win32security.AdjustTokenPrivileges(htoken, False, new_privileges)
 
 def reboot_machine(message="Machine Rebooting", timeout=30, force=0, reboot=1):
+    r"""Reboot the current host within specified timeout, display a message to the user
+
+    This can not be cancelled bu the user.
+
+    Args:
+        message (str) : displayed to user to warn him
+        timeout (int) : timeout in seconds before proceeding
+        force (int) : If this parameter is 1, applications with unsaved changes
+                        are to be forcibly closed.
+                      If this parameter is 0, the system displays a dialog box instructing
+                        the user to close the applications.
+        reboot (int) : 1 to reboot after shutdown; If 0, the system halt.
+
+    """
     adjust_current_privileges(win32con.SE_SHUTDOWN_NAME)
     try:
         win32api.InitiateSystemShutdown(None, message, timeout, force, reboot)
@@ -2377,9 +2499,16 @@ isfile=os.path.isfile
 isdir=os.path.isdir
 
 def remove_file(path):
-    """Try to remove file
-        warning log if file doesn't exist
-        critical log if file can't be removed"""
+    r"""Try to remove a single file
+        log a warning msg if file doesn't exist
+        log a critical msg if file can't be removed
+
+    Args:
+        path (str): path to file
+
+    >>> remove_file(r'c:\tmp\fc.txt')
+
+    """
     if os.path.isfile(path):
         try:
             os.unlink(path)
@@ -2389,9 +2518,17 @@ def remove_file(path):
         logger.warning(u"File %s doesn't exist, so not removed" % (path))
 
 def remove_tree(*args, **kwargs):
-    """Convenience function to delete a directory tree, with any error
+    r"""Convenience function to delete a directory tree, with any error
     ignored by default.  Pass ignore_errors=False to access possible
     errors.
+
+    Args:
+        path (str): path to directory to remove
+        ignore_errors (boolean) : default to True to ignore exceptions on children deletion
+        onerror (func) : hook called with (os.path.islink, path, sys.exc_info())
+                         on each delete exception. Should raise if stop is required.
+
+    >>> remove_tree(r'c:\tmp\target')
     """
     if 'ignore_errors' not in kwargs:
         kwargs['ignore_errors'] = True
@@ -2415,14 +2552,15 @@ def service_installed(service_name):
         service_is_running(service_name)
         return True
     except win32service.error,e :
-         if e.winerror == 1060:
+        if e.winerror == 1060:
             return False
-         else:
+        else:
             raise
 
 
 def service_start(service_name):
     """Start a service by its service name
+
     """
     logger.debug('Starting service %s' % service_name)
     win32serviceutil.StartService(service_name)
@@ -2460,7 +2598,10 @@ def user_appdata():
 
 
 def mkdirs(path):
-    """Create directory path if it doesn't exists yet"""
+    """Create directory path if it doesn't exists yet
+        Creates intermediate directories too.
+
+    """
     if not os.path.isdir(path):
         os.makedirs(path)
 
@@ -2475,6 +2616,7 @@ def user_desktop():
 
 def common_desktop():
     r"""return path to public desktop (visible by all users)
+
     >>> common_desktop()
     u'C:\\Users\\Public\\Desktop'
     """
@@ -2482,7 +2624,9 @@ def common_desktop():
 
 
 def register_dll(dllpath):
-    """Register a COM/OLE server DLL in registry (similar to regsvr32)"""
+    """Register a COM/OLE server DLL in registry (similar to regsvr32)
+
+    """
     dll = ctypes.windll[dllpath]
     result = dll.DllRegisterServer()
     logger.info('DLL %s registered' % dllpath)
@@ -2491,7 +2635,9 @@ def register_dll(dllpath):
 
 
 def unregister_dll(dllpath):
-    """Unregister a COM/OLE server DLL from registry"""
+    """Unregister a COM/OLE server DLL from registry
+
+    """
     dll = ctypes.windll[dllpath]
     result = dll.DllUnregisterServer()
     logger.info('DLL %s unregistered' % dllpath)
@@ -2500,7 +2646,9 @@ def unregister_dll(dllpath):
 
 
 def add_to_system_path(path):
-    """Add path to the global search PATH environment variable if it is not yet"""
+    """Add path to the global search PATH environment variable if it is not yet
+
+    """
     with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment',sam=KEY_READ | KEY_WRITE) as key:
         system_path = reg_getvalue(key,'Path').split(';')
         if not path.lower() in [p.lower() for p in system_path]:
@@ -2511,7 +2659,9 @@ def add_to_system_path(path):
 
 
 def remove_from_system_path(path):
-    """Remove a path from the global search PATH environment variable if it is set"""
+    """Remove a path from the global search PATH environment variable if it is set
+
+    """
     with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment',sam=KEY_READ | KEY_WRITE) as key:
         system_path = reg_getvalue(key,'Path').split(';')
         if path.lower() in [p.lower() for p in system_path]:
@@ -2526,6 +2676,7 @@ def remove_from_system_path(path):
 
 def set_environ_variable(name,value,type=REG_EXPAND_SZ):
     r"""Add or update a system wide persistent environment variable
+
     .>>> set_environ_variable('WAPT_HOME','c:\\wapt')
     .>>> import os
     .>>> os.environ['WAPT_HOME']
@@ -2541,6 +2692,7 @@ def set_environ_variable(name,value,type=REG_EXPAND_SZ):
 
 def unset_environ_variable(name):
     r"""Remove a system wide persistent environment variable if it exist. Fails silently if it doesn't exist
+
     """
     with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment',
             sam=KEY_READ | KEY_WRITE) as key:
@@ -2553,7 +2705,9 @@ def unset_environ_variable(name):
 
 
 def get_task(name):
-    """Return an instance of PyITask given its name (without .job)"""
+    """Return an instance of PyITask given its name (without .job)
+
+    """
     ts = pythoncom.CoCreateInstance(taskscheduler.CLSID_CTaskScheduler,None,
                                     pythoncom.CLSCTX_INPROC_SERVER,
                                     taskscheduler.IID_ITaskScheduler)
@@ -2565,12 +2719,16 @@ def get_task(name):
 
 
 def run_task(name):
-    """Launch immediately the Windows Scheduled task"""
+    """Launch immediately the Windows Scheduled task
+
+    """
     get_task(name).Run()
 
 
 def task_exists(name):
-    """Return true if a sheduled task names 'name.job' is defined"""
+    """Return true if a sheduled task names 'name.job' is defined
+
+    """
     ts = pythoncom.CoCreateInstance(taskscheduler.CLSID_CTaskScheduler,None,
                                     pythoncom.CLSCTX_INPROC_SERVER,
                                     taskscheduler.IID_ITaskScheduler)
@@ -2578,7 +2736,11 @@ def task_exists(name):
 
 
 def delete_task(name):
-    """removes a Windows scheduled task"""
+    """Removes a Windows scheduled task
+
+    Args:
+        name (str) : name of the tasks as created in create_daily_task
+    """
     ts = pythoncom.CoCreateInstance(taskscheduler.CLSID_CTaskScheduler,None,
                                     pythoncom.CLSCTX_INPROC_SERVER,
                                     taskscheduler.IID_ITaskScheduler)
@@ -2600,7 +2762,11 @@ def disable_task(name):
 
 
 def enable_task(name):
-    """Enable a Windows scheduled task"""
+    """Enable (start of) a Windows scheduled task
+
+    Args:
+        name (str) : name of the tasks as created in create_daily_task
+    """
     return run('schtasks /Change /TN "%s" /ENABLE' % name)
 
     """
@@ -2613,8 +2779,19 @@ def enable_task(name):
 
 
 def create_daily_task(name,cmd,parameters, max_runtime=10, repeat_minutes=None, start_hour=None, start_minute=None):
-    """creates a Windows scheduled daily task
-        Return an instance of PyITask
+    """creates a Windows scheduled daily task and activate it.
+
+    Args:
+        name (str): name of task for reference
+        cmd(str) :  command line
+        parameters (str) : arguments to append to cmd
+        max_runtime (int): maximum running time in minutes
+        repeat_minutes (int): interval in minutes between run
+        start_hour   (int): hour time of start
+        start_minute (int): minute time of start
+
+    Returns:
+        PyITask: scheduled task
     """
     ts = pythoncom.CoCreateInstance(taskscheduler.CLSID_CTaskScheduler,None,
                                     pythoncom.CLSCTX_INPROC_SERVER,
@@ -2663,6 +2840,7 @@ def create_daily_task(name,cmd,parameters, max_runtime=10, repeat_minutes=None, 
 
 def get_current_user():
     r"""Get the login name for the current user.
+
     >>> get_current_user()
     u'htouvet'
     """
@@ -2676,12 +2854,17 @@ def get_current_user():
 
 
 def get_language():
-    """Get the default locale like fr, en, pl etc..  etc"""
+    """Get the default locale like fr, en, pl etc..  etc
+
+    >>> get_language()
+    'fr'
+    """
     return locale.getdefaultlocale()[0].split('_')[0]
 
 
 def get_appath(exename):
     r"""Get the registered application location from registry given its executable name
+
     >>> get_appath('firefox.exe')
     u'C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe'
     >>> get_appath('wapt-get.exe')
@@ -2697,7 +2880,17 @@ def get_appath(exename):
 
 
 def getsilentflags(installer_path):
-    """Detect the type of installer and returns silent silent install flags"""
+    """Detect the type of installer and returns silent silent install flags
+
+    Args;
+        installer_path (str): filepath to installer
+
+    Returns:
+        str: detected command line flags to append to installer
+
+    >>> getsilentflags(r'C:\tranquilit\wapt\tests\7z920.msi')
+    '/q /norestart'
+    """
     (product_name,ext) = os.path.splitext(installer_path)
     ext = ext.lower()
     if ext=='.exe':
@@ -2730,7 +2923,15 @@ def getsilentflags(installer_path):
 
 
 def getproductprops(installer_path):
-    """returns a dict {'product','description','version','publisher'}"""
+    """get the properties (product, version, description...) of an exe file or a msi file
+
+    Args:
+        installer_path (str): filepath to exe or msi file
+
+    Returns:
+        dict: {'product','description','version','publisher'}
+
+    """
     (product_name,ext) = os.path.splitext(installer_path.lower())
     product_name = os.path.basename(product_name)
     product_desc = product_name
@@ -2793,3 +2994,4 @@ if __name__=='__main__':
     doctest.ELLIPSIS_MARKER = '???'
     doctest.testmod(optionflags=doctest.ELLIPSIS)
     sys.exit(0)
+
