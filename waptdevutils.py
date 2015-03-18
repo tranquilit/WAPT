@@ -63,6 +63,7 @@ import tempfile
 def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wapt_server='',destination='',company=''):
     r"""Build a customized waptsetup with provided certificate included.
     Returns filename
+
     >>> from common import Wapt
     >>> wapt = Wapt(config_filename=r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini')
     >>> create_wapt_setup(wapt,r'C:\private\ht.crt',destination='c:\\tranquilit\\wapt\\waptsetup')
@@ -117,27 +118,30 @@ def upload_wapt_setup(wapt,waptsetup_path, wapt_server_user, wapt_server_passwd)
     return res
 
 
-def diff_computer_ad_wapt(wapt):
+def diff_computer_ad_wapt(wapt,wapt_server_user='admin',wapt_server_passwd=None):
     """Return the list of computers in the Active Directory but not registred in Wapt database
+
     >>> wapt = common.Wapt(config_filename=r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
     >>> diff_computer_ad_wapt(wapt)
     ???
     """
-    computer_ad =  set([ c['dnshostname'].lower() for c in active_directory.search("objectClass='computer'") if c['dnshostname']])
-    computer_wapt = set( [ c['host']['computer_fqdn'].lower() for c in json.loads(requests.request('GET','%s/json/host_list'%wapt.waptserver.server_url).text)])
-    diff = list(set(computer_ad)-set(computer_wapt))
+    computer_ad =  set([ c['dnshostname'].lower() for c in active_directory.search("objectClass='computer'") if c['dnshostname'] and c.operatingSystem and c.operatingSystem.startswith('Windows')])
+    computer_wapt = set( [ c['host']['computer_fqdn'].lower() for c in  wapt.waptserver.get('api/v1/hosts?columns=host.computer_fqdn',auth=(wapt_server_user,wapt_server_passwd))['result']])
+    diff = list(computer_ad-computer_wapt)
     return diff
 
 
-def diff_computer_wapt_ad(wapt):
+def diff_computer_wapt_ad(wapt,wapt_server_user='admin',wapt_server_passwd=None):
     """Return the list of computers registered in Wapt database but not in the Active Directory
+
     >>> wapt = common.Wapt(config_filename=r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
     >>> diff_computer_wapt_ad(wapt)
+
     ???
     """
     computer_ad =  set([ c['dnshostname'].lower() for c in active_directory.search("objectClass='computer'") if c['dnshostname']])
-    computer_wapt = set( [ c['host']['computer_fqdn'].lower() for c in json.loads(requests.request('GET','%s/json/host_list'%wapt.waptserver.server_url).text)])
-    result = list(set(computer_wapt)-set(computer_ad))
+    computer_wapt = set( [ c['host']['computer_fqdn'].lower() for c in  wapt.waptserver.get('api/v1/hosts?columns=host.computer_fqdn',auth=(wapt_server_user,wapt_server_passwd))['result']])
+    result = list(computer_wapt - computer_ad)
     return result
 
 
