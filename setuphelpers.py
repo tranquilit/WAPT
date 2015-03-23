@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 __all__ = \
 ['EWaptSetupException',
@@ -96,6 +96,8 @@ __all__ = \
  'inifile_readstring',
  'inifile_writestring',
  'installed_softwares',
+ 'install_exe_if_needed',
+ 'install_msi_if_needed',
  'isdir',
  'isfile',
  'isrunning',
@@ -112,6 +114,7 @@ __all__ = \
  'mkdirs',
  'my_documents',
  'networking',
+ 'need_install',
  'os',
  'params',
  'programfiles',
@@ -2968,6 +2971,99 @@ def getproductprops(installer_path):
     props['publisher'] = publisher
     return props
 
+
+
+def need_install(key,min_version=None):
+    """Return True if the software with key can be found in uninstall registry
+        and the registred version is equal or greater than min_version
+
+    Args:
+        key (str) : uninstall key
+        min_version (str) : minimum version or None if don't check verion
+    Returns:
+        boolean
+
+    """
+    if ('WAPT' in globals() and  WAPT.options.force) or not key:
+        return True
+    else:
+        current = installed_softwares(uninstallkey=key)
+        for soft in current:
+            if not min_version or Version(soft['version']) >= Version(min_version):
+                return False
+        return True
+
+def install_msi_if_needed(msi,min_version=None,killbefore=[]):
+    """Install silently the supplied msi file, and add the uninstall key to
+           global uninstall key list
+        uninstall key, min_version and silent flags are guessed from msi file.
+
+        raise an error if, after the msi install, the uninstall key is not
+          found in registry.
+
+        the matching is done on key
+
+    Args:
+        msi (str) : path to the MSI file
+        min_version (str) : if installed version is equal or gretaer than this, don't install
+                            if not provided, guess it from exe setup file properties.
+        kill_before (list of str) : processes to kill before setup, to avoid file locks
+                                    issues.
+
+    """
+    if not isfile(msi):
+        error('msi file %s not found in package' % msi)
+    key = get_msi_properties(msi)['ProductCode']
+    if not min_version:
+        min_version = getproductprops(msi)['version']
+    if need_install(key,min_version=min_version):
+        if killbefore:
+            killalltasks(killbefore)
+        run(r'msiexec /norestart /q /i "%s"' % msi)
+        if not installed_softwares(uninstallkey=key):
+            error('MSI %s has been installed but the uninstall key %s can not be found' % (msi,key))
+    else:
+        print('MSI %s already installed. Skipping msiexec' % msi)
+    if key and 'uninstallkey' in globals() and not key in uninstallkey:
+        uninstallkey.append(key)
+
+def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefore=[]):
+    """Install silently the supplied setup executable file, and add the uninstall key to
+       global uninstallkey list if it is defined.
+
+        Check if already installed at the supllied min_version.
+
+        Kill the processes in killbefore list before launching the setup.
+
+        raise an error if, after the setup install, the uninstall key is not
+            found in registry.
+    Args:
+        exe (str) : path to the setup exe file
+        silentflags (str) : flags to append to the exe command line for silent install
+                            if not provided, tries to guess them.
+        key (str) : uninstall key to check in registry and to add to uninstallkey global list
+        min_version (str) : if installed version is equal or gretaer than this, don't install
+                            if not provided, guess it from exe setup file properties.
+        kill_before (list of str) : processes to kill before setup, to avoid file locks
+                                    issues.
+
+    """
+    if not isfile(exe):
+        error('setup exe file %s not found in package' % exe)
+    if not silentflags:
+        silentflags = getsilentflags(exe)
+    if not min_version:
+        min_version = getproductprops(exe)['version']
+    if need_install(key,min_version=min_version):
+        if killbefore:
+            killalltasks(killbefore)
+        run(r'"%s" %s' % (exe,silentflags))
+        if key and not installed_softwares(uninstallkey=key):
+            error('Setup %s has been ran but the uninstall key %s can not be found' % (msi,key))
+    else:
+        print('Exe setup %s already installed. Skipping' % exe)
+    if key and 'uninstallkey' in globals() and not key in uninstallkey:
+        uninstallkey.append(key)
 
 
 class EWaptSetupException(Exception):
