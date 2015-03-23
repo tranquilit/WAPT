@@ -1763,6 +1763,10 @@ def get_hosts():
                     depends = ensure_list(host_package.depends.split(','))
                     host['depends'] = [ d for d in depends
                             if (d in packages_repo.index and packages_repo.index[d].section == 'group')]
+                else:
+                    depends = []
+            else:
+                depends = []
             try:
                 la = host['wapt']['listening_address']
                 if la['address']  and la['timestamp']:
