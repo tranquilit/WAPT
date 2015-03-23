@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 import os
 import zipfile
@@ -127,7 +127,8 @@ class Version(object):
 
             return cmp(alphanum_key(a), alphanum_key(b))
 
-        assert isinstance(aversion,Version)
+        if not isinstance(aversion,Version):
+            aversion = Version(aversion)
         for i in range(0,min([len(self.members),len(aversion.members)])):
             i1,i2  = self.members[i], aversion.members[i]
             v = nat_cmp(i1,i2)
