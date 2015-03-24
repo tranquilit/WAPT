@@ -1860,6 +1860,35 @@ def host_data():
 
 
 
+@app.route('/api/v1/host_cancel_task')
+@requires_auth
+def host_cancel_task():
+    try:
+        uuid = request.args['uuid']
+        host_data = hosts().find_one({ "uuid": uuid},fields={'wapt':1,'host.connected_ips':1})
+        #listening_address = get_ip_port(host_data)
+        listening_address = host_data['wapt'].get('listening_address',None)
+
+        if listening_address and listening_address['address'] and listening_address['port']:
+            logger.info( "Get tasks status for %s at address %s..." % (uuid,listening_address['address']))
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/cancel_running_task.json" % listening_address,proxies=None,verify=False,timeout=client_tasks_timeout).text
+            try:
+                client_result = json.loads(client_result)
+            except ValueError:
+                if 'Restricted access' in client_result:
+                    raise EWaptForbiddden(client_result)
+                else:
+                    raise Exception(client_result)
+        else:
+            raise EWaptMissingHostData(_("The host reachability is not defined."))
+        return make_response(client_result,
+            msg = "Task canceled",
+            success = isinstance(client_result,dict),)
+    except Exception, e:
+        return make_response_from_exception(e)
+
+
+
 ##################################################################
 class CheckHostWorker(threading.Thread):
     """Worker which pulls a host data from queue, checks reachability, and stores result in db

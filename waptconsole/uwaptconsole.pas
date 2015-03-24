@@ -1200,17 +1200,19 @@ end;
 
 procedure TVisWaptGUI.ActCancelRunningTaskExecute(Sender: TObject);
 var
-  res: ISuperObject;
-  currip, currhost: ansistring;
+  sores,taskresult: ISuperObject;
+  currhost: ansistring;
 begin
   currhost := GridHosts.FocusedRow.S['uuid'];
-  currip := GridHosts.FocusedRow.S['host.connected_ips'];
 
-  res := WAPTServerJsonGet('host_taskkill?host=%s&uuid=%s', [currip, currhost]);
-  if res.S['status'] = 'OK' then
+  sores := WAPTServerJsonGet('api/v1/host_cancel_task?uuid=%s', [currhost]);
+  if sores.B['success'] then
+  begin
+    taskresult := sores['result'];
     ShowMessage(rsTaskCanceled)
+  end
   else
-    ShowMessageFmt(rsFailedToCancel, [res.S['message']]);
+    ShowMessageFmt(rsFailedToCancel, [sores.S['msg']]);
 end;
 
 procedure TVisWaptGUI.ActChangePasswordExecute(Sender: TObject);
