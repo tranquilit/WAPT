@@ -1841,24 +1841,24 @@ class WaptServer(object):
                     logger.debug(u'DNS server %s' % (resolv.nameservers,))
                     logger.debug(u'Trying _waptserver._tcp.%s SRV records' % self.dnsdomain)
                     answers = resolv.query('_waptserver._tcp.%s.' % self.dnsdomain,'SRV')
-                    working_url = []
+                    servers = []
                     for a in answers:
                         # get first numerical ipv4 from SRV name record
                         try:
                             wapthost = a.target.to_text()[0:-1]
                             if a.port == 443:
                                 url = 'https://%s' % (wapthost)
-                                working_url.append((a.weight,url))
+                                servers.append((a.weight,a.priority,url))
                             else:
                                 url = 'http://%s:%i' % (wapthost,a.port)
-                                working_url.append((a.weight,url))
+                                servers.append((a.weight,a.priority,url))
                         except Exception,e:
                             logging.debug('Unable to resolve : error %s' % (ensure_unicode(e),))
 
-                    if working_url:
-                        working_url.sort()
-                        logger.debug(u'  Accessible servers : %s' % (working_url,))
-                        return working_url[-1][1]
+                    if servers:
+                        servers.sort()
+                        logger.debug(u'  Defined servers : %s' % (servers,))
+                        return servers[-1][1]
 
                     if not answers:
                         logger.debug(u'  No _waptserver._tcp.%s SRV record found' % self.dnsdomain)
@@ -2088,7 +2088,9 @@ class WaptRepo(object):
                     logger.debug(u'DNS server %s' % (resolv.nameservers,))
                     logger.debug(u'Trying _wapt._tcp.%s SRV records' % self.dnsdomain)
                     answers = resolv.query('_wapt._tcp.%s.' % self.dnsdomain,'SRV')
-                    working_url = []
+
+                    # inmynet,weight,priority,time,url
+                    servers = []
                     for a in answers:
                         # get first numerical ipv4 from SRV name record
                         try:
@@ -2096,29 +2098,21 @@ class WaptRepo(object):
                             ip = resolv.query(a.target)[0].to_text()
                             if a.port == 80:
                                 url = 'http://%s/wapt' % (wapthost,)
-                                if tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies):
-                                    working_url.append((a.weight,url))
-                                    if is_inmysubnets(ip):
-                                        return url
+                                servers.append([is_inmysubnets(ip),a.weight,a.priority,url])
                             elif a.port == 443:
                                 url = 'https://%s/wapt' % (wapthost)
-                                if tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies):
-                                    working_url.append((a.weight,url))
-                                    if is_inmysubnets(ip):
-                                        return url
+                                servers.append([is_inmysubnets(ip),a.weight,a.priority,url])
                             else:
                                 url = 'http://%s:%i/wapt' % (wapthost,a.port)
-                                if tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies):
-                                    working_url.append((a.weight,url))
-                                    if is_inmysubnets(ip):
-                                        return url
+                                servers.append([is_inmysubnets(ip),a.weight,a.priority,url])
                         except Exception,e:
                             logging.debug('Unable to resolve : error %s' % (ensure_unicode(e),))
 
-                    if working_url:
-                        working_url.sort()
-                        logger.debug(u'  Accessible servers : %s' % (working_url,))
-                        return working_url[-1][1]
+                    servers.sort()
+                    servers.reverse()
+                    for (inmysubnets,weight,priority,url) in servers:
+                        if tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies):
+                            return url
 
                     if not answers:
                         logger.debug(u'  No _wapt._tcp.%s SRV record found' % self.dnsdomain)
