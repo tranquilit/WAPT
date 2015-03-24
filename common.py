@@ -1858,7 +1858,7 @@ class WaptServer(object):
                     if servers:
                         servers.sort()
                         logger.debug(u'  Defined servers : %s' % (servers,))
-                        return servers[-1][1]
+                        return servers[-1][2]
 
                     if not answers:
                         logger.debug(u'  No _waptserver._tcp.%s SRV record found' % self.dnsdomain)
