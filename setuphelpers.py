@@ -1070,7 +1070,11 @@ def showmessage(msg):
 
 
 def programfiles64():
-    """Return 64 bits program folder"""
+    """Return 64 bits program folder
+
+    >>> programfiles64
+    'C:\\Program Files'
+    """
     if 'PROGRAMW6432' in os.environ :
         return os.environ['PROGRAMW6432']
     else:
@@ -1091,6 +1095,9 @@ def programfiles32():
 
     Returns:
         str: path of programs files (x86) (on win64) or programs files (on 32bits)
+
+    >>> programfiles32
+    'C:\\Program Files (x86)'
     """
     if 'PROGRAMW6432' in os.environ and 'PROGRAMFILES(X86)' in os.environ:
         return os.environ['PROGRAMFILES(X86)']
@@ -1123,7 +1130,14 @@ def get_hostname():
 
 
 def get_domain_fromregistry():
-    """Return main DNS domain of the computer"""
+    """Return main DNS domain of the computer
+
+    Returns:
+        str: domain name
+
+    >>> get_domain_fromregistry()
+    u'tranquilit.local'
+    """
     key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE,"SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters")
     try:
         (domain,atype) = _winreg.QueryValueEx(key,'Domain')
@@ -1138,6 +1152,14 @@ def get_domain_fromregistry():
 
 
 def get_loggedinusers():
+    """Return the list of logged in users on this host
+
+    Returns:
+        list: list of users logins
+
+    >>> get_loggedinusers()
+    [u'htouvet']
+    """
     result = []
     try:
         import win32ts
@@ -2362,7 +2384,7 @@ def create_user (user, password,full_name=None,comment=None):
       script_path = None,
       password_expired = 1
     )
-    win32net.NetUserAdd (None, 1, user_info)
+    win32net.NetUserAdd(None, 1, user_info)
 
 def create_group (group):
     """Creates a local group
@@ -2422,6 +2444,7 @@ def local_users():
      u'sshd',
      u'toto',
      u'UpdatusUser']
+    >>>
     """
     return [u['name'] for u in win32net.NetUserEnum(None,2)[0]]
 
