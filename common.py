@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 import os
 import re
 import logging
@@ -774,6 +774,9 @@ def tryurl(url,proxies=None,timeout=2,auth=None):
 
 
 def force_utf8_no_bom(filename):
+    """Check if the file is encoded in utf8 readable encoding without BOM
+         rewrite the file in place if not compliant.
+    """
     BUFSIZE = 4096
     BOMLEN = len(codecs.BOM_UTF8)
 
@@ -800,6 +803,7 @@ class WaptBaseDB(object):
     curr_db_version = None
 
     def __init__(self,dbpath):
+        self.transaction_depth = 0
         self._db_version = None
         self.dbpath = dbpath
 
@@ -813,6 +817,26 @@ class WaptBaseDB(object):
             self._dbpath = value
             self.connect()
 
+    def begin(self):
+        if self.transaction_depth == 0:
+            logger.debug(u'DB Start transaction')
+            self.db.execute('begin')
+        self.transaction_depth += 1
+
+    def commit(self):
+        if self.transaction_depth > 0:
+            self.transaction_depth -= 1
+        if self.transaction_depth == 0:
+            logger.debug(u'DB commit')
+            self.db.execute('commit')
+
+    def rollback(self):
+        if self.transaction_depth > 0:
+            self.transaction_depth -= 1
+        if self.transaction_depth == 0:
+            logger.debug(u'DB rollback')
+            self.db.execute('rollback')
+
     def connect(self):
         if not self.dbpath:
             return
@@ -822,83 +846,65 @@ class WaptBaseDB(object):
                 os.makedirs(dirname)
             os.path.dirname(self.dbpath)
             self.db=sqlite3.connect(self.dbpath,detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+            self.db.isolation_level = None
+            self.transaction_depth = 0
             self.initdb()
-            self.db.commit()
         elif self.dbpath == ':memory:':
             self.db=sqlite3.connect(self.dbpath,detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+            self.db.isolation_level = None
+            self.transaction_depth = 0
             self.initdb()
-            self.db.commit()
         else:
             self.db=sqlite3.connect(self.dbpath,detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+            self.db.isolation_level = None
+            self.transaction_depth = 0
             if self.curr_db_version != self.db_version:
                 self.upgradedb()
 
+
+
     def __enter__(self):
+        self.begin()
+        logger.debug(u'DB enter %i' % self.transaction_depth)
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, type, value, tb):
         if not value:
-            self.db.commit()
-            self.db.close()
-            logger.debug(u'DB commit')
+            logger.debug(u'DB exit %i' % self.transaction_depth)
+            self.commit()
         else:
-            self.db.rollback()
-            self.db.close()
-            logger.critical(u'DB error %s, rollbacking\n' % (value,))
+            logger.critical(u'DB error %s, rollbacking\n%s' % (value,traceback.format_tb(traceback)))
+            self.rollback()
 
     @property
     def db_version(self):
         if not self._db_version:
-            try:
-                val = self.db.execute('select value from wapt_params where name="db_version"').fetchone()
-                if val:
-                    self._db_version = val[0]
-                else:
-                    raise Exception('Unknown DB Version')
-            except Exception,e:
-                logger.critical(u'Unable to get DB version (%s), upgrading' % ensure_unicode(e))
-                self.db.rollback()
-                # pre-params version
-                self.upgradedb()
-                self.db.execute('insert or replace into wapt_params(name,value,create_date) values (?,?,?)',('db_version',self.curr_db_version,datetime2isodate()))
-                self.db.commit()
-                self._db_version = self.curr_db_version
+            val = self.db.execute('select value from wapt_params where name="db_version"').fetchone()
+            if val:
+                self._db_version = val[0]
+            else:
+                raise Exception('Unknown DB Version')
         return self._db_version
 
     @db_version.setter
     def db_version(self,value):
-        try:
+        with self:
             self.db.execute('insert or replace into wapt_params(name,value,create_date) values (?,?,?)',('db_version',value,datetime2isodate()))
-            self.db.commit()
             self._db_version = value
-        except:
-            logger.critical(u'Unable to set version, upgrading')
-            self.db.rollback()
-            self.upgradedb()
 
     @db_version.deleter
     def db_version(self):
-        try:
+        with self:
             self.db.execute("delete from wapt_params where name = 'db_version'")
-            self.db.commit()
             self._db_version = None
-        except:
-            logger.critical(u'Unable to delete version, upgrading')
-            self.db.rollback()
-            self.upgradedb()
 
     def initdb(self):
         pass
 
     def set_param(self,name,value):
         """Store permanently a (name/value) pair in database, replace existing one"""
-        try:
+        with self:
             self.db.execute('insert or replace into wapt_params(name,value,create_date) values (?,?,?)',(name,value,datetime2isodate()))
-            self.db.commit()
-        except Exception,e:
-            logger.critical(u'Unable to set param %s : %s : %s' % (name,value,ensure_unicode(e)))
-            self.db.rollback()
-            raise
 
     def get_param(self,name,default=None):
         """Retrieve the value associated with name from database"""
@@ -909,14 +915,8 @@ class WaptBaseDB(object):
             return default
 
     def delete_param(self,name):
-        try:
+        with self:
             self.db.execute('delete from wapt_params where name=?',(name,))
-            self.db.commit()
-        except:
-
-            logger.critical(u'Unable to delete param %s' % (name,))
-            self.db.rollback()
-            raise
 
     def query(self,query, args=(), one=False):
         """
@@ -931,6 +931,7 @@ class WaptBaseDB(object):
     def upgradedb(self,force=False):
         """Update local database structure to current version if rules are described in db_upgrades"""
         try:
+            self.begin()
             backupfn = ''
             # use cached value to avoid infinite loop
             old_structure_version = self._db_version
@@ -962,7 +963,7 @@ class WaptBaseDB(object):
             # create new empty structure
             logger.debug(u' recreates new tables ')
             new_structure_version = self.initdb()
-
+            del(self.db_version)
             # append old data in new tables
             logger.debug(u' fill with old data')
             for tablename in tables:
@@ -979,10 +980,10 @@ class WaptBaseDB(object):
 
             # be sure to put back new version in table as db upgrade has put the old value in table
             self.db_version = new_structure_version
-            self.db.commit()
+            self.commit()
             return (old_structure_version,new_structure_version)
         except Exception,e:
-            self.db.rollback()
+            self.rollback()
             if backupfn:
                 logger.critical(u"UpgradeDB ERROR : %s, copy back backup database %s" % (e,backupfn))
                 shutil.copy(backupfn,self.dbpath)
@@ -1030,12 +1031,13 @@ class WaptSessionDB(WaptBaseDB):
         self.db.execute("""
           create unique index if not exists idx_params_name on wapt_params(name);
           """)
+        self.db_version = self.curr_db_version
         return self.curr_db_version
 
     def add_start_install(self,package,version,architecture):
         """Register the start of installation in local db
         """
-        try:
+        with self:
             cur = self.db.execute("""delete from wapt_sessionsetup where package=?""" ,(package,))
             cur = self.db.execute("""\
                   insert into wapt_sessionsetup (
@@ -1058,13 +1060,11 @@ class WaptSessionDB(WaptBaseDB):
                      '',
                      os.getpid()
                    ))
-        finally:
-            self.db.commit()
-        return cur.lastrowid
+            return cur.lastrowid
 
     def update_install_status(self,rowid,install_status,install_output):
         """Update status of package installation on localdb"""
-        try:
+        with self:
             if install_status in ('OK','ERROR'):
                 pid = None
             else:
@@ -1080,13 +1080,11 @@ class WaptSessionDB(WaptBaseDB):
                      rowid,
                      )
                    )
-        finally:
-            self.db.commit()
-        return cur.lastrowid
+            return cur.lastrowid
 
     def update_install_status_pid(self,pid,install_status='ERROR'):
         """Update status of package installation on localdb"""
-        try:
+        with self:
             cur = self.db.execute("""\
                   update wapt_sessionsetup
                     set install_status=? where process_id = ?
@@ -1095,9 +1093,7 @@ class WaptSessionDB(WaptBaseDB):
                      pid,
                      )
                    )
-        finally:
-            self.db.commit()
-        return cur.lastrowid
+            return cur.lastrowid
 
     def remove_install_status(self,package):
         """Remove status of package installation from localdb
@@ -1105,20 +1101,16 @@ class WaptSessionDB(WaptBaseDB):
         >>> wapt.forget_packages('tis-7zip')
         ???
         """
-        try:
+        with self:
             cur = self.db.execute("""delete from wapt_sessionsetup where package=?""" ,(package,))
-        finally:
-            self.db.commit()
-        return cur.rowcount
+            return cur.rowcount
 
     def remove_obsolete_install_status(self,installed_packages):
         """Remove local user status of packages no more installed"""
-        try:
+        with self:
             cur = self.db.execute("""delete from wapt_sessionsetup where package not in (%s)"""%\
                 ','.join('?' for i in installed_packages), installed_packages)
-        finally:
-            self.db.commit()
-        return cur.rowcount
+            return cur.rowcount
 
     def is_installed(self,package,version):
         p = self.query('select * from  wapt_sessionsetup where package=? and version=? and install_status="OK"',(package,version))
@@ -1243,6 +1235,7 @@ class WaptDB(WaptBaseDB):
         self.db.execute("""
         create index idx_sessionsetup_username on wapt_sessionsetup(username,package);""")
 
+        self.db_version = self.curr_db_version
         return self.curr_db_version
 
     def add_package(self,
@@ -1263,63 +1256,65 @@ class WaptDB(WaptBaseDB):
                     repo='',
                     ):
 
-        cur = self.db.execute("""\
-              insert into wapt_package (
-                package,
-                version,
-                section,
-                priority,
-                architecture,
-                maintainer,
-                description,
-                filename,
-                size,
-                md5sum,
-                depends,
-                conflicts,
-                sources,
-                repo_url,
-                repo
-                ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-            """,(
-                 package,
-                 version,
-                 section,
-                 priority,
-                 architecture,
-                 maintainer,
-                 description,
-                 filename,
-                 size,
-                 md5sum,
-                 depends,
-                 conflicts,
-                 sources,
-                 repo_url,
-                 repo
-                 )
-               )
-        return cur.lastrowid
+        with self:
+            cur = self.db.execute("""\
+                  insert into wapt_package (
+                    package,
+                    version,
+                    section,
+                    priority,
+                    architecture,
+                    maintainer,
+                    description,
+                    filename,
+                    size,
+                    md5sum,
+                    depends,
+                    conflicts,
+                    sources,
+                    repo_url,
+                    repo
+                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                """,(
+                     package,
+                     version,
+                     section,
+                     priority,
+                     architecture,
+                     maintainer,
+                     description,
+                     filename,
+                     size,
+                     md5sum,
+                     depends,
+                     conflicts,
+                     sources,
+                     repo_url,
+                     repo
+                     )
+                   )
+            return cur.lastrowid
 
     def add_package_entry(self,package_entry):
         cur = self.db.execute("""delete from wapt_package where package=? and version=?""" ,(package_entry.package,package_entry.version))
 
-        self.add_package(package=package_entry.package,
-                         version=package_entry.version,
-                         section=package_entry.section,
-                         priority=package_entry.priority,
-                         architecture=package_entry.architecture,
-                         maintainer=package_entry.maintainer,
-                         description=package_entry.description,
-                         filename=package_entry.filename,
-                         size=package_entry.size,
-                         md5sum=package_entry.md5sum,
-                         depends=package_entry.depends,
-                         conflicts=package_entry.conflicts,
-                         sources=package_entry.sources,
-                         repo_url=package_entry.repo_url,
-                         repo=package_entry.repo,
-                         )
+        with self:
+            self.add_package(package=package_entry.package,
+                             version=package_entry.version,
+                             section=package_entry.section,
+                             priority=package_entry.priority,
+                             architecture=package_entry.architecture,
+                             maintainer=package_entry.maintainer,
+                             description=package_entry.description,
+                             filename=package_entry.filename,
+                             size=package_entry.size,
+                             md5sum=package_entry.md5sum,
+                             depends=package_entry.depends,
+                             conflicts=package_entry.conflicts,
+                             sources=package_entry.sources,
+                             repo_url=package_entry.repo_url,
+                             repo=package_entry.repo,
+                             )
 
     def add_start_install(self,package,version,architecture,params_dict={},explicit_by=None):
         """Register the start of installation in local db
@@ -1331,7 +1326,7 @@ class WaptDB(WaptBaseDB):
               code used for uninstall or session_setup must use only wapt self library as
               package content is not longer available at this step.
         """
-        try:
+        with self:
             cur = self.db.execute("""delete from wapt_localstatus where package=?""" ,(package,))
             cur = self.db.execute("""\
                   insert into wapt_localstatus (
@@ -1356,13 +1351,11 @@ class WaptDB(WaptBaseDB):
                      explicit_by,
                      os.getpid()
                    ))
-        finally:
-            self.db.commit()
-        return cur.lastrowid
+            return cur.lastrowid
 
     def update_install_status(self,rowid,install_status,install_output,uninstall_key=None,uninstall_string=None):
         """Update status of package installation on localdb"""
-        try:
+        with self:
             if install_status in ('OK','ERROR'):
                 pid = None
             else:
@@ -1380,13 +1373,11 @@ class WaptDB(WaptBaseDB):
                      rowid,
                      )
                    )
-        finally:
-            self.db.commit()
-        return cur.lastrowid
+            return cur.lastrowid
 
     def update_install_status_pid(self,pid,install_status='ERROR'):
         """Update status of package installation on localdb"""
-        try:
+        with self:
             cur = self.db.execute("""\
                   update wapt_localstatus
                     set install_status=? where process_id = ?
@@ -1395,16 +1386,14 @@ class WaptDB(WaptBaseDB):
                      pid,
                      )
                    )
-        finally:
-            self.db.commit()
-        return cur.lastrowid
+            return cur.lastrowid
 
     def switch_to_explicit_mode(self,package,user_id):
         """Set package install mode to manual
             so that package is not removed
             when meta packages don't require it anymore
         """
-        try:
+        with self:
             cur = self.db.execute("""\
                   update wapt_localstatus
                     set explicit_by=? where package = ?
@@ -1413,13 +1402,11 @@ class WaptDB(WaptBaseDB):
                      package,
                      )
                    )
-        finally:
-            self.db.commit()
-        return cur.lastrowid
+            return cur.lastrowid
 
     def store_setuppy(self,rowid,setuppy=None,install_params={}):
         """Update status of package installation on localdb"""
-        try:
+        with self:
             cur = self.db.execute("""\
                   update wapt_localstatus
                     set setuppy=?,install_params=? where rowid = ?
@@ -1429,17 +1416,13 @@ class WaptDB(WaptBaseDB):
                      rowid,
                      )
                    )
-        finally:
-            self.db.commit()
-        return cur.lastrowid
+            return cur.lastrowid
 
     def remove_install_status(self,package):
         """Remove status of package installation from localdb"""
-        try:
+        with self:
             cur = self.db.execute("""delete from wapt_localstatus where package=?""" ,(package,))
-        finally:
-            self.db.commit()
-        return cur.rowcount
+            return cur.rowcount
 
     def known_packages(self):
         """return a list of all (package,version)"""
@@ -1577,23 +1560,17 @@ class WaptDB(WaptBaseDB):
         >>> wapt = Wapt(config_filename = 'c:/tranquilit/wapt/tests/wapt-get.ini' )
         >>> res = wapt.waptdb.update_repos_list(wapt.repositories)
         """
-        try:
+        with self:
             result = {}
             logger.debug(u'Remove unknown repositories from packages table and params (%s)' %(','.join('"%s"'% r.name for r in repos_list,),)  )
             self.db.execute('delete from wapt_package where repo not in (%s)' % (','.join('"%s"'% r.name for r in repos_list,)))
             self.db.execute('delete from wapt_params where name like "last-http%%" and name not in (%s)' % (','.join('"last-%s"'% r.repo_url for r in repos_list,)))
-            self.db.commit()
             for repo in repos_list:
                 logger.info(u'Getting packages from %s' % repo.repo_url)
                 try:
                     result[repo.name] = repo.update_db(waptdb=self,force=force)
                 except Exception,e:
                     logger.debug(u'Error getting Packages index from %s : %s' % (repo.repo_url,ensure_unicode(e)))
-            logger.debug(u'Commit wapt_package updates')
-        except:
-            logger.debug(u'rollback delete table')
-            self.db.rollback()
-            raise
         return result
 
     def build_depends(self,packages):
@@ -1726,12 +1703,8 @@ class WaptDB(WaptBaseDB):
         >>> waptdb = WaptDB('c:/wapt/db/waptdb.sqlite')
         >>> waptdb.purge_repo('main')
         """
-        try:
+        with self:
             self.db.execute('delete from wapt_package where repo=?',(repo_name,))
-            self.db.commit()
-        except:
-            self.db.rollback()
-            raise
 
 def get_server_certificate(url):
     """Retrieve certificate for further checks"""
@@ -1926,7 +1899,7 @@ class WaptServer(object):
             req.raise_for_status()
             return json.loads(req.content)
         else:
-            raise Exception('Wapt server url not defined or not found in DNS')
+            raise Exception(u'Wapt server url not defined or not found in DNS')
 
     def post(self,action,data=None,files=None,auth=None,timeout=None):
         """ """
@@ -1936,7 +1909,7 @@ class WaptServer(object):
             req.raise_for_status()
             return json.loads(req.content)
         else:
-            raise Exception('Wapt server url not defined or not found in DNS')
+            raise Exception(u'Wapt server url not defined or not found in DNS')
 
     def available(self):
         try:
@@ -1945,10 +1918,10 @@ class WaptServer(object):
                 req.raise_for_status()
                 return True
             else:
-                logger.debug('Wapt server is unavailable because no URL is defined')
+                logger.debug(u'Wapt server is unavailable because no URL is defined')
                 return False
         except Exception as e:
-            logger.debug('Wapt server %s unavailable because %s'%(self._server_url,e))
+            logger.debug(u'Wapt server %s unavailable because %s'%(self._server_url,ensure_unicode(e)))
             return False
 
     def as_dict(self):
@@ -2045,6 +2018,9 @@ class WaptRepo(object):
             if not self._cached_dns_repo_url:
                 self._cached_dns_repo_url = self.find_wapt_repo_url()
             return self._cached_dns_repo_url
+
+    def last_known_repo_url(self):
+        return self._repo_url or self._cached_dns_repo_url
 
     def find_wapt_repo_url(self):
         """Search the nearest working main WAPT repository given the following priority
@@ -2360,18 +2336,17 @@ class WaptRepo(object):
         >>> repo.update_db(waptdb=localdb) == last_update
         True
         """
-        try:
-            result = None
-            # Check if updated
-            if force or self.need_update(waptdb):
+
+        result = None
+        # Check if updated
+        if force or self.need_update(waptdb):
+            with waptdb:
                 try:
                     logger.debug(u'Read remote Packages index file %s' % self.packages_url)
                     delta = self.load_packages()
                     waptdb.purge_repo(self.name)
                     for package in self.packages:
                         waptdb.add_package_entry(package)
-                    logger.debug(u'Commit wapt_package updates')
-                    waptdb.db.commit()
                     last_modified =delta['last-modified']
                     logger.debug(u'Storing last-modified header for repo_url %s : %s' % (self.repo_url,last_modified))
                     waptdb.set_param('last-%s' % self.repo_url[:59],last_modified)
@@ -2379,13 +2354,8 @@ class WaptRepo(object):
                 except Exception as e:
                     logger.info(u'Unable to update repository status of %s, error %s'%(self._repo_url,e))
                     raise
-            else:
-                return waptdb.get_param('last-%s' % self.repo_url[:59])
-        except:
-            logger.debug(u'rollback delete package')
-            waptdb.db.rollback()
-            raise
-
+        else:
+            return waptdb.get_param('last-%s' % self.repo_url[:59])
 
     def as_dict(self):
         result = {}
@@ -2441,19 +2411,19 @@ class WaptHostRepo(WaptRepo):
                               StringIO.StringIO(host_package.content)
                             ).read(name='WAPT/control'),'UTF-8').splitlines()
 
-                        logger.debug(u'Purge packages table')
-                        waptdb.db.execute('delete from wapt_package where package=?',(host,))
+                        with waptdb:
+                            logger.debug(u'Purge packages table')
+                            waptdb.db.execute('delete from wapt_package where package=?',(host,))
 
-                        package = PackageEntry()
-                        package.load_control_from_wapt(control)
-                        logger.info(u"%s (%s)" % (package.package,package.version))
-                        package.repo_url = self.repo_url
-                        package.repo = self.name
-                        waptdb.add_package_entry(package)
+                            package = PackageEntry()
+                            package.load_control_from_wapt(control)
+                            logger.info(u"%s (%s)" % (package.package,package.version))
+                            package.repo_url = self.repo_url
+                            package.repo = self.name
+                            waptdb.add_package_entry(package)
 
-                        logger.debug(u'Commit wapt_package updates')
-                        waptdb.db.commit()
-                        waptdb.set_param(host_cachedate,host_package_date)
+                            logger.debug(u'Commit wapt_package updates')
+                            waptdb.set_param(host_cachedate,host_package_date)
                     else:
                         logger.debug(u'No change on host package at %s (%s)' % (host_package_url,host_package_date))
                         packages = waptdb.packages_matching(host)
@@ -2464,11 +2434,11 @@ class WaptHostRepo(WaptRepo):
 
             except requests.HTTPError as e:
                 # no host package
-                package,host_package_date=(None,None)
-                logger.info(u'No host package available at %s' % host_package_url)
-                waptdb.db.execute('delete from wapt_package where package=?',(host,))
-                waptdb.db.commit()
-                waptdb.delete_param(host_cachedate)
+                with waptdb:
+                    package,host_package_date=(None,None)
+                    logger.info(u'No host package available at %s' % host_package_url)
+                    waptdb.db.execute('delete from wapt_package where package=?',(host,))
+                    waptdb.delete_param(host_cachedate)
 
             return (package,host_package_date)
         except:

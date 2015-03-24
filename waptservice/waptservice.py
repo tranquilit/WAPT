@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 import time
 import sys
@@ -478,6 +478,17 @@ def wapt():
     return g.wapt
 
 
+@app.teardown_appcontext
+def close_connection(exception):
+    local_wapt = getattr(g, 'wapt', None)
+    if local_wapt is not None and local_wapt._waptdb:
+        try:
+            local_wapt._waptdb.commit()
+        except:
+            try:
+                local_wapt._waptdb.rollback()
+            except:
+                pass
 
 def forbidden():
     """Sends a 403 response that enables basic auth"""
@@ -725,16 +736,19 @@ def package_icon():
     def get_icon(package):
         """Get icon from local cache or remote wapt directory, returns local filename"""
         icon_local_filename = os.path.join(icon_local_cache,package+'.png')
-        if not os.path.isfile(icon_local_filename) or os.path.getsize(icon_local_filename)<10:
-            proxies = wapt().repositories[0].proxies
-            repo_url = wapt().repositories[0].repo_url
-            timeout = wapt().repositories[0].timeout
+        if (not os.path.isfile(icon_local_filename) or os.path.getsize(icon_local_filename)<10):
+            if wapt().repositories[0].last_known_repo_url():
+                proxies = wapt().repositories[0].proxies
+                repo_url = wapt().repositories[0].repo_url
+                timeout = wapt().repositories[0].timeout
 
-            remote_icon_path = "{repo}/icons/{package}.png".format(repo=repo_url,package=package)
-            icon = requests.get(remote_icon_path,proxies=proxies,timeout=timeout,verify=False)
-            icon.raise_for_status()
-            open(icon_local_filename,'wb').write(icon.content)
-            return StringIO.StringIO(icon.content)
+                remote_icon_path = "{repo}/icons/{package}.png".format(repo=repo_url,package=package)
+                icon = requests.get(remote_icon_path,proxies=proxies,timeout=timeout,verify=False)
+                icon.raise_for_status()
+                open(icon_local_filename,'wb').write(icon.content)
+                return StringIO.StringIO(icon.content)
+            else:
+                raise requests.HTTPError('Unavailable icon')
         else:
             return open(icon_local_filename,'rb')
 
