@@ -873,8 +873,8 @@ class WaptBaseDB(object):
             logger.debug(u'DB exit %i' % self.transaction_depth)
             self.commit()
         else:
-            logger.critical(u'DB error %s, rollbacking\n%s' % (value,traceback.format_tb(traceback)))
             self.rollback()
+            logger.critical(u'DB error %s, rollbacking\n%s' % (value,traceback.format_tb(tb)))
 
     @property
     def db_version(self):
