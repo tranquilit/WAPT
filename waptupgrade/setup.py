@@ -92,10 +92,6 @@ def update_control(entry):
     else:
         print(u'Keeping current control data %s (%s)'%(control.package,control.version))
 
-def oncopy(msg,src,dst):
-    #print(u'%s : "%s" to "%s"' % (ensure_unicode(msg),ensure_unicode(src),ensure_unicode(dst)))
-    return True
-
 def update_registry_version(version):
     # updatethe registry
     with _winreg.CreateKeyEx(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1',\
@@ -104,16 +100,6 @@ def update_registry_version(version):
         reg_setvalue(waptis,"DisplayVersion","WAPT %s" % version)
         reg_setvalue(waptis,"InstallDate",currentdate())
 
-def check_exe_version(src,dst):
-    if os.path.splitext(dst)[1] in ('.exe','.dll'):
-        try:
-            ov = get_file_properties(dst)['FileVersion']
-            nv = get_file_properties(src)['FileVersion']
-            return Version(ov)<Version(nv)
-        except:
-            return True
-    else:
-        return True
 
 
 def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy,enable_replace_at_reboot=True,onerror=None):
@@ -138,7 +124,6 @@ def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy
         if oncopy('create directory',src,dst):
             os.makedirs(dst)
     errors = []
-    skipped = []
     for name in names:
         if name in ignored_names:
             continue
@@ -149,35 +134,42 @@ def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy
                 if oncopy('directory',srcname,dstname):
                     copytree2(srcname, dstname, ignore = ignore,onreplace=onreplace,oncopy=oncopy)
             else:
-                try:
-                    if os.path.isfile(dstname):
-                        if onreplace(srcname,dstname) and oncopy('overwrites',srcname,dstname):
-                            os.unlink(dstname)
-                            shutil.copy2(srcname, dstname)
-                    else:
-                        if oncopy('copy',srcname,dstname):
-                            shutil.copy2(srcname, dstname)
-                except (IOError, os.error) as e:
-                    if onerror is not None and callable(onerror):
-                        onerror(srcname,dstname,e)
+                if os.path.isfile(dstname):
+                    if onreplace(srcname,dstname) and oncopy('overwrites',srcname,dstname):
+                        os.unlink(dstname)
+                        shutil.copy2(srcname, dstname)
+                else:
+                    if oncopy('copy',srcname,dstname):
+                        shutil.copy2(srcname, dstname)
 
-        except (IOError, os.error), why:
-            logger.critical(u'Error copying from "%s" to "%s" : %s' % (ensure_unicode(src),ensure_unicode(dst),ensure_unicode(why)))
-            errors.append((srcname, dstname, str(why)))
+        except (IOError, os.error) as why:
+            #print(u'IO Error copying from "%s" to "%s" : %s' % (ensure_unicode(src),ensure_unicode(dst),ensure_unicode(why)))
+            if onerror is not None and callable(onerror):
+                try:
+                    onerror(srcname,dstname,why)
+                except Exception as e:
+                    errors.append((srcname,dstname,ensure_unicode(e)))
+            else:
+                errors.append((srcname,dstname,ensure_unicode(why)))
+
         # catch the Error from the recursive copytree so that we can
         # continue with other files
-        except shutil.Error, err:
-            #errors.extend(err.args[0])
-            errors.append(err)
+        except shutil.Error as err:
+            logger.critical(u'shutil Error copying from "%s" to "%s" : %s' % (ensure_unicode(srcname),ensure_unicode(dstname),ensure_unicode(err)))
+            errors.extend(err.args[0])
     try:
         shutil.copystat(src, dst)
-    except WindowsError:
-        # can't copy file access times on Windows
-        pass
     except OSError, why:
-        errors.extend((src, dst, str(why)))
+        if WindowsError is not None and isinstance(why, WindowsError):
+            # Copying file access times may fail on Windows
+            pass
+        else:
+            print(u'Error copying stats from "%s" to "%s" : %s' % (ensure_unicode(src),ensure_unicode(dst),ensure_unicode(why)))
+            errors.append((src, dst, str(why)))
     if errors:
-        raise shutil.Error(errors)
+        raise shutil.Error, errors
+
+
 
 def add_at_cmd(cmd,delay=1):
     import datetime
@@ -190,10 +182,32 @@ def install():
     print(u'Partial upgrade of WAPT  client')
     killalltasks('wapttray.exe')
     killalltasks('waptconsole.exe')
+
+    def onerror(srcname,dstname,e):
+        print u"Error %s %s %s" %(srcname,dstname,ensure_unicode(e))
+        if e[0] == 5:   # locked
+            filecopyto(srcname,dstname+'.pending')
+            replace_at_next_reboot(None, dstname)
+        else:
+            raise e
+
+    def check_exe_version(src,dst):
+        if os.path.splitext(dst)[1] in ('.exe','.dll'):
+            try:
+                ov = get_file_properties(dst)['FileVersion']
+                nv = get_file_properties(src)['FileVersion']
+                return Version(ov)<Version(nv)
+            except:
+                return True
+        else:
+            return True
+
     copytree2('patchs',WAPT.wapt_base_dir,
         onreplace = check_exe_version,
-        oncopy = oncopy)
+        onerror = onerror)
+
     update_registry_version(control.version)
+
     # restart of service can not be done by service...
     if service_installed('waptservice') and service_is_running('waptservice'):
         import requests,json
