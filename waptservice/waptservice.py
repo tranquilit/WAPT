@@ -480,15 +480,18 @@ def wapt():
 
 @app.teardown_appcontext
 def close_connection(exception):
-    local_wapt = getattr(g, 'wapt', None)
-    if local_wapt is not None and local_wapt._waptdb:
-        try:
-            local_wapt._waptdb.commit()
-        except:
+    try:
+        local_wapt = getattr(g, 'wapt', None)
+        if local_wapt is not None and local_wapt._waptdb:
             try:
-                local_wapt._waptdb.rollback()
+                local_wapt._waptdb.commit()
             except:
-                pass
+                try:
+                    local_wapt._waptdb.rollback()
+                except:
+                    pass
+    except Exception as e:
+        logger.debug('Error in teardown, please consider upgrading Flask if <0.10. %s' % e)
 
 def forbidden():
     """Sends a 403 response that enables basic auth"""
