@@ -4,12 +4,11 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="14">
+    <Units Count="15">
       <Unit0>
         <Filename Value="waptserverpostconf.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptserverpostconf"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="3" Y="12"/>
@@ -22,7 +21,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisServerPostconf"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="281"/>
         <CursorPos X="167" Y="306"/>
@@ -32,7 +30,6 @@
         <Filename Value="..\..\wapt-get\UnitRedirect.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitRedirect"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="233"/>
         <CursorPos X="95" Y="242"/>
@@ -42,7 +39,6 @@
         <Filename Value="..\..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1349"/>
         <CursorPos X="10" Y="1362"/>
@@ -67,7 +63,6 @@
         <Filename Value="..\..\wapt-get\uwaptres.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uWaptRes"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="8"/>
         <CursorPos X="36" Y="48"/>
@@ -77,7 +72,6 @@
         <Filename Value="uwaptserverres.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uWaptServerRes"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="40" Y="8"/>
@@ -88,7 +82,6 @@
         <ComponentName Value="VisWAPTServerPostConf"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="183"/>
         <CursorPos X="20" Y="189"/>
@@ -97,7 +90,6 @@
       </Unit8>
       <Unit9>
         <Filename Value="..\..\waptconsole\uviswaptconfig.lfm"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="73" Y="13"/>
@@ -106,7 +98,6 @@
       </Unit9>
       <Unit10>
         <Filename Value="..\..\waptconsole\uviscreatekey.lfm"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="120"/>
         <CursorPos X="52" Y="128"/>
@@ -115,7 +106,6 @@
       </Unit10>
       <Unit11>
         <Filename Value="..\..\waptconsole\waptconsole.lpr"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="12"/>
         <CursorPos X="74" Y="39"/>
@@ -124,7 +114,6 @@
       <Unit12>
         <Filename Value="..\..\..\thtmlport\package\htmlview.pas"/>
         <UnitName Value="htmlview"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="382"/>
         <CursorPos X="63" Y="401"/>
@@ -134,17 +123,41 @@
       <Unit13>
         <Filename Value="C:\Users\mcadorel-adm\Downloads\utishelp.pas"/>
         <UnitName Value="utishelp"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="703"/>
         <CursorPos X="12" Y="741"/>
         <UsageCount Value="15"/>
       </Unit13>
+      <Unit14>
+        <Filename Value="..\..\..\thtmlport\package\htmlun2.pas"/>
+        <UnitName Value="htmlun2"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="480"/>
+        <CursorPos X="71" Y="494"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit14>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="3" HistoryIndex="2">
+      <Position1>
+        <Filename Value="..\..\..\thtmlport\package\htmlun2.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position1>
+      <Position2>
+        <Filename Value="..\..\..\thtmlport\package\htmlun2.pas"/>
+        <Caret Line="492" Column="85" TopLine="474"/>
+      </Position2>
+      <Position3>
+        <Filename Value="..\..\..\thtmlport\package\htmlun2.pas"/>
+        <Caret Line="493" Column="6" TopLine="480"/>
+      </Position3>
+    </JumpHistory>
   </ProjectSession>
   <EditorMacros Count="0"/>
 </CONFIG>
