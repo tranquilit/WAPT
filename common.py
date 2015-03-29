@@ -874,7 +874,7 @@ class WaptBaseDB(object):
             self.commit()
         else:
             self.rollback()
-            logger.critical(u'DB error %s, rollbacking\n%s' % (value,traceback.format_tb(tb)))
+            logger.debug(u'Error at DB exit %s, rollbacking\n%s' % (value,traceback.format_tb(tb)))
 
     @property
     def db_version(self):
@@ -2020,7 +2020,7 @@ class WaptRepo(object):
             return self._cached_dns_repo_url
 
     def last_known_repo_url(self):
-        return self._repo_url or self._cached_dns_repo_url
+        return self._repo_url or self._cached_dns_repo_url or (self._cached_dns_repo_url is None and not self._repo_url and self.repo_url)
 
     def find_wapt_repo_url(self):
         """Search the nearest working main WAPT repository given the following priority
