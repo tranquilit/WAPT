@@ -1689,6 +1689,7 @@ def hosts_delete():
             raise Exception('Neither uuid not filter provided in query')
 
         msg = []
+        result = dict(files=[],records=[])
 
         hosts_packages_repo = WaptLocalRepo(wapt_folder+'-host')
         hosts_packages_repo.load_packages()
@@ -1700,21 +1701,22 @@ def hosts_delete():
             selected = hosts().find(query,fields={'uuid':1,'host.computer_fqdn':1})
             if selected:
                 for host in selected:
-                    msg.append('%s: %s' %(host['host']['computer_fqdn'],host['host']['computer_fqdn'] in hosts_packages_repo.index))
+                    result['records'].append(dict(uuid=host['uuid'],computer_fqdn=host['host']['computer_fqdn']))
                     if host['host']['computer_fqdn'] in hosts_packages_repo.index:
                         fn = hosts_packages_repo.index[host['host']['computer_fqdn']].wapt_fullpath()
-                        msg.append('filename: %s'%fn)
                         if os.path.isfile(fn):
-                            msg.append('File %s deleted' % fn)
+                            result['files'].append(fn)
                             os.remove(fn)
             else:
                 msg.append('No host found in DB')
 
-        result = hosts().remove(query)
-        if not result['ok'] == 1:
-            raise Exception('Error removing hosts from DB: %s'%(result['err'],))
+        msg.append('{} files removed from host repository'.format(len(result['files'])))
 
-        nb = result['n']
+        remove_result = hosts().remove(query)
+        if not remove_result['ok'] == 1:
+            raise Exception('Error removing hosts from DB: %s'%(remove_result['err'],))
+
+        nb = remove_result['n']
         msg.append('{} hosts removed from DB'.format(nb))
 
     except Exception as e:
