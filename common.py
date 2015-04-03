@@ -48,6 +48,7 @@ import psutil
 import threading
 import email.utils
 import traceback
+import uuid
 
 from waptpackage import *
 
@@ -2644,6 +2645,7 @@ class Wapt(object):
             'use_hostpackages':'1',
             'timeout':5.0,
             'wapt_server_timeout':10.0,
+            'uuid':'',
             }
 
         if not self.config:
@@ -2699,6 +2701,11 @@ class Wapt(object):
 
         if self.config.has_option('global','language'):
             self.language = self.config.get('global','language')
+
+        if self.config.has_option('global','uuid'):
+            forced_uuid = self.config.get('global','uuid')
+            if forced_uuid != self.host_uuid:
+                self.host_uuid = forced_uuid
 
         # Get the configuration of all repositories (url, ...)
         self.repositories = []
@@ -2827,6 +2834,39 @@ class Wapt(object):
     @host_uuid.deleter
     def host_uuid(self):
         self.delete_param('uuid')
+
+    def generate_host_uuid(self,forced_uuid=None):
+        """Regenerate a random UUID for this host or force with supplied one.
+
+        Args;
+            forced_uuid (str): uuid to force for this host. If None, generate a random one
+
+        Normally, the UUID is taken from BIOS through wmi.
+
+        In case bios returns some duplicates or garbage, it can be useful to
+          force a random uuid. This is stored as uuid key in wapt-get.ini.
+
+        In case we want to link th host with a an existing record on server, we
+            can force a old UUID.
+        """
+        auuid = forced_uuid or str(uuid.uuid4())
+        self.host_uuid = auuid
+        ini = RawConfigParser()
+        ini.read(self.config_filename)
+        ini.set('global','uuid',auuid)
+        ini.write(open(self.config_filename,'w'))
+        return auuid
+
+    def reset_host_uuid(self):
+        """Reset host uuid to bios provided UUID.
+        """
+        del(self.host_uuid)
+        ini = RawConfigParser()
+        ini.read(self.config_filename)
+        if ini.has_option('global','uuid'):
+            ini.remove_option('global','uuid')
+            ini.write(open(self.config_filename,'w'))
+        return self.host_uuid
 
     def host_keys(self,force=False):
         """Creates a set of private/public keys to identify the host on the waptserver

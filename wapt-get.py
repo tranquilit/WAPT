@@ -83,6 +83,9 @@ action is either :
   setlocalpassword  : Set the local admin password for waptservice access to
                       packages install/remove (for standalone usage)
 
+  reset-uuid        : reset host's UUID to the uuid provided by the BIOS.
+  generate-uuid     : regenerate a random host's UUID, stored in wapt-get.ini.
+
  For user session setup
   session-setup [packages,ALL] : setup local user environment for specific or all installed packages
 
@@ -861,6 +864,31 @@ def main():
                     jsonresult['result'] = result
                 else:
                     print u"Local auth password set successfully"
+
+            elif action == 'generate-uuid':
+                if len(args)>=2:
+                    uuid = args[1]
+                else:
+                    uuid = None
+                result = mywapt.generate_host_uuid(forced_uuid=uuid)
+
+                if mywapt.waptserver:
+                    mywapt.update_server_status()
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    logger.debug(u"Registering host info against server: %s", result)
+                    print u"New UUID: %s" % (mywapt.host_uuid,)
+
+            elif action == 'reset-uuid':
+                result = mywapt.reset_host_uuid()
+
+                if mywapt.waptserver:
+                    mywapt.update_server_status()
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print u"New UUID: %s" % (mywapt.host_uuid,)
 
             elif action == 'update-status':
                 if mywapt.waptserver:
