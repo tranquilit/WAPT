@@ -3012,6 +3012,7 @@ object VisWaptGUI: TVisWaptGUI
       Hint = 'Remove from inventory'
       ImageIndex = 9
       OnExecute = ActHostsDeleteExecute
+      OnUpdate = ActHostsActionsUpdate
       ShortCut = 16430
     end
     object ActDeletePackage: TAction
@@ -3062,13 +3063,6 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActGotoHostExecute
       ShortCut = 16454
     end
-    object ActHostWaptUpgrade: TAction
-      Category = 'hosts'
-      Caption = 'Update WAPT client'
-      Hint = 'Run agent.exe in silent mode from <url-depot>/waptagent.exe'
-      OnExecute = ActHostWaptUpgradeExecute
-      OnUpdate = ActHostWaptUpgradeUpdate
-    end
     object ActSearchGroups: TAction
       Category = 'Bundles'
       Caption = 'Search'
@@ -3086,7 +3080,8 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Delete bundle'
       ImageIndex = 6
       OnExecute = ActDeleteGroupExecute
-      ShortCut = 46
+      OnUpdate = ActDeleteGroupUpdate
+      ShortCut = 16430
     end
     object ActDeployWapt: TAction
       Category = 'Tools'
@@ -3168,52 +3163,6 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActEnglishExecute
       OnUpdate = ActEnglishUpdate
     end
-    object ActTriggerHostUpdate: TAction
-      Category = 'hosts'
-      Caption = 'Trigger hosts update'
-      Hint = 'Trigger update of available packages on hosts.'
-      ImageIndex = 37
-      OnExecute = ActTriggerHostUpdateExecute
-    end
-    object ActTriggerHostUpgrade: TAction
-      Category = 'hosts'
-      Caption = 'Apply updates'
-      Hint = 'Apply updates'
-      ImageIndex = 29
-      OnExecute = ActTriggerHostUpgradeExecute
-      OnUpdate = ActTriggerHostUpgradeUpdate
-    end
-    object ActTriggerHostsListening: TAction
-      Category = 'hosts'
-      Caption = 'Trigger scan listening IP'
-      Hint = 'Trigger scan of listening IP of registered hosts.'
-      ImageIndex = 36
-      OnExecute = ActTriggerHostsListeningExecute
-    end
-    object ActAddPackageGroup: TAction
-      Category = 'hosts'
-      Caption = 'Add package or bundle'
-      ImageIndex = 11
-      OnExecute = ActAddPackageGroupExecute
-    end
-    object ActRemoveDepends: TAction
-      Category = 'hosts'
-      Caption = 'Remove dependencies from packages/bundles'
-      ImageIndex = 12
-      OnExecute = ActRemoveDependsExecute
-    end
-    object ActAddConflicts: TAction
-      Category = 'hosts'
-      Caption = 'Block packages (causes forced uninstall)'
-      ImageIndex = 11
-      OnExecute = ActAddConflictsExecute
-    end
-    object ActRemoveConflicts: TAction
-      Category = 'hosts'
-      Caption = 'Allow packages '
-      ImageIndex = 12
-      OnExecute = ActRemoveConflictsExecute
-    end
     object ActRestoreDefaultLayout: TAction
       Category = 'Tools'
       Caption = 'Restore default grid layout'
@@ -3232,11 +3181,77 @@ object VisWaptGUI: TVisWaptGUI
       Hint = 'Remove all packages locall cached by WaptConsole'
       OnExecute = ActCleanCacheExecute
     end
+    object ActHostsDeleteHostPackage: TAction
+      Category = 'hosts'
+      Caption = 'Remove host configuration and inventory '
+      ImageIndex = 6
+      OnExecute = ActHostsDeleteExecute
+      OnUpdate = ActHostsActionsUpdate
+    end
+    object ActHostWaptUpgrade: TAction
+      Category = 'hosts'
+      Caption = 'Update WAPT client'
+      Hint = 'Run agent.exe in silent mode from <url-depot>/waptagent.exe'
+      OnExecute = ActHostWaptUpgradeExecute
+      OnUpdate = ActHostsActionsUpdate
+    end
+    object ActTriggerHostUpdate: TAction
+      Category = 'hosts'
+      Caption = 'Trigger hosts update'
+      Hint = 'Trigger update of available packages on hosts.'
+      ImageIndex = 37
+      OnExecute = ActTriggerHostUpdateExecute
+      OnUpdate = ActHostsActionsUpdate
+    end
+    object ActTriggerHostUpgrade: TAction
+      Category = 'hosts'
+      Caption = 'Apply updates'
+      Hint = 'Apply updates'
+      ImageIndex = 29
+      OnExecute = ActTriggerHostUpgradeExecute
+      OnUpdate = ActHostsActionsUpdate
+    end
+    object ActTriggerHostsListening: TAction
+      Category = 'hosts'
+      Caption = 'Trigger scan listening IP'
+      Hint = 'Trigger scan of listening IP of registered hosts.'
+      ImageIndex = 36
+      OnExecute = ActTriggerHostsListeningExecute
+    end
+    object ActAddPackageGroup: TAction
+      Category = 'hosts'
+      Caption = 'Add package or bundle'
+      ImageIndex = 11
+      OnExecute = ActAddPackageGroupExecute
+      OnUpdate = ActHostsActionsUpdate
+    end
+    object ActRemoveDepends: TAction
+      Category = 'hosts'
+      Caption = 'Remove dependencies from packages/bundles'
+      ImageIndex = 12
+      OnExecute = ActRemoveDependsExecute
+      OnUpdate = ActHostsActionsUpdate
+    end
+    object ActAddConflicts: TAction
+      Category = 'hosts'
+      Caption = 'Block packages (causes forced uninstall)'
+      ImageIndex = 11
+      OnExecute = ActAddConflictsExecute
+      OnUpdate = ActHostsActionsUpdate
+    end
+    object ActRemoveConflicts: TAction
+      Category = 'hosts'
+      Caption = 'Allow packages '
+      ImageIndex = 12
+      OnExecute = ActRemoveConflictsExecute
+      OnUpdate = ActHostsActionsUpdate
+    end
     object ActAddADSGroups: TAction
       Category = 'hosts'
       Caption = 'Add ADS Groups as packages'
       Hint = 'Add the WAPT group packages matching the ADS groups of the machines'
       OnExecute = ActAddADSGroupsExecute
+      OnUpdate = ActHostsActionsUpdate
     end
   end
   object PopupMenuPackages: TPopupMenu
@@ -3835,6 +3850,9 @@ object VisWaptGUI: TVisWaptGUI
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00CDCDCD9FC9C9
         C9FBC4C4C4FFC0C0C0FFBBBBBBFFB6B6B6FFB0B0B0FFABABABA7
       }
+    end
+    object MenuItem57: TMenuItem
+      Action = ActHostsDeleteHostPackage
     end
     object MenuItem25: TMenuItem
       Caption = '-'

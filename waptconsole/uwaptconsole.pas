@@ -28,6 +28,7 @@ type
     ActEnglish: TAction;
     ActCleanCache: TAction;
     ActAddADSGroups: TAction;
+    ActHostsDeleteHostPackage: TAction;
     ActPackageInstall: TAction;
     ActRestoreDefaultLayout: TAction;
     ActTriggerHostUpdate: TAction;
@@ -145,6 +146,7 @@ type
     MenuItem54: TMenuItem;
     MenuItem55: TMenuItem;
     MenuItem56: TMenuItem;
+    MenuItem57: TMenuItem;
     OpenDialogWapt: TOpenDialog;
     PageControl1: TPageControl;
     Panel11: TPanel;
@@ -263,6 +265,7 @@ type
     procedure ActCreateCertificateExecute(Sender: TObject);
     procedure ActCreateWaptSetupExecute(Sender: TObject);
     procedure ActDeleteGroupExecute(Sender: TObject);
+    procedure ActDeleteGroupUpdate(Sender: TObject);
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
     procedure ActDeployWaptExecute(Sender: TObject);
@@ -275,6 +278,7 @@ type
     procedure ActFrenchUpdate(Sender: TObject);
     procedure ActGotoHostExecute(Sender: TObject);
     procedure ActHelpExecute(Sender: TObject);
+    procedure ActHostsActionsUpdate(Sender: TObject);
     procedure ActImportFromFileExecute(Sender: TObject);
     procedure ActImportFromRepoExecute(Sender: TObject);
     procedure ActPackageInstallExecute(Sender: TObject);
@@ -289,7 +293,6 @@ type
     procedure ActTriggerHostUpgradeExecute(Sender: TObject);
     procedure ActTriggerHostUpgradeUpdate(Sender: TObject);
     procedure ActHostWaptUpgradeExecute(Sender: TObject);
-    procedure ActHostWaptUpgradeUpdate(Sender: TObject);
     procedure ActPackageEdit(Sender: TObject);
     procedure ActEditpackageUpdate(Sender: TObject);
     procedure ActEvaluateExecute(Sender: TObject);
@@ -1276,7 +1279,7 @@ var
   N: PVirtualNode;
 begin
   if GridGroups.SelectedCount > 1 then
-    message := rsConfirmRmMultiplePackages;
+    message := format(rsConfirmRmMultiplePackages,[GridGroups.SelectedCount]);
 
   if MessageDlg(rsConfirmRmPackageCaption, message, mtConfirmation,
     mbYesNoCancel, 0) = mrYes then
@@ -1306,16 +1309,21 @@ begin
       end;
 end;
 
+procedure TVisWaptGUI.ActDeleteGroupUpdate(Sender: TObject);
+begin
+  ActDeleteGroup.Enabled := GridGroups.Focused and (GridGroups.SelectedCount>0);
+end;
+
 procedure TVisWaptGUI.ActDeletePackageExecute(Sender: TObject);
 var
-  message: string = rsConfirmRmMultiplePackages;
+  message: string = rsConfirmRmOnePackage;
   res: ISuperObject;
   package: string;
   i: integer;
   N: PVirtualNode;
 begin
   if GridPackages.SelectedCount > 1 then
-    message := rsConfirmRmMultiplePackages;
+    message := Format(rsConfirmRmMultiplePackages,[GridPackages.SelectedCount]);
 
   if MessageDlg(rsConfirmDeletion, message, mtConfirmation,
     mbYesNoCancel, 0) = mrYes then
@@ -1347,7 +1355,7 @@ end;
 
 procedure TVisWaptGUI.ActDeletePackageUpdate(Sender: TObject);
 begin
-  ActDeletePackage.Enabled := GridPackages.SelectedCount > 0;
+  ActDeletePackage.Enabled := GridPackages.Focused and (GridPackages.SelectedCount > 0);
 end;
 
 procedure TVisWaptGUI.ActDeployWaptExecute(Sender: TObject);
@@ -1452,6 +1460,11 @@ end;
 procedure TVisWaptGUI.ActHelpExecute(Sender: TObject);
 begin
   OpenDocument('http://dev.tranquil.it/index.php/WAPT_-_apt-get_pour_Windows');
+end;
+
+procedure TVisWaptGUI.ActHostsActionsUpdate(Sender: TObject);
+begin
+  (Sender as TAction).Enabled:=GridHosts.Focused and (GridHosts.SelectedCount>0);
 end;
 
 procedure TVisWaptGUI.ActImportFromFileExecute(Sender: TObject);
@@ -1797,11 +1810,6 @@ begin
     end;
 end;
 
-procedure TVisWaptGUI.ActHostWaptUpgradeUpdate(Sender: TObject);
-begin
-  ActHostWaptUpgrade.Enabled := GridHosts.SelectedCount > 0;
-end;
-
 procedure TVisWaptGUI.ActEvaluateExecute(Sender: TObject);
 var
   sob: ISuperObject;
@@ -1828,21 +1836,45 @@ begin
   Clipboard.AsText := GridHosts.ContentToUTF8(tstSelected, ';');
 end;
 
+function ExtractField(SOList:ISuperObject;fieldname:String):ISuperObject;
+var
+  item:ISuperObject;
+begin
+  Result := TSuperObject.Create(stArray);
+  for item in SOList do
+     Result.AsArray.Add(item[fieldname]);
+end;
+
 procedure TVisWaptGUI.ActHostsDeleteExecute(Sender: TObject);
 var
-  sel, host: ISuperObject;
+  sel, res: ISuperObject;
+  msg,uuids : String;
 begin
   if GridHosts.Focused then
   begin
     sel := GridHosts.SelectedRows;
+
+    if Sender = ActHostsDeleteHostPackage then
+      msg := format(rsConfirmRmHostsPackagesFromList, [IntToStr(sel.AsArray.Length)])
+    else
+      msg := format(rsConfirmRmHostsFromList, [IntToStr(sel.AsArray.Length)]);
+
+
     if Dialogs.MessageDlg(rsConfirmCaption,
-    format(rsConfirmRmHostsFromList, [IntToStr(sel.AsArray.Length)]),
-    mtConfirmation,
-    mbYesNoCancel,
-    0) = mrYes then
+      msg,
+      mtConfirmation,
+      mbYesNoCancel,
+      0) = mrYes then
     begin
-      for host in sel do
-        WAPTServerJsonGet('/delete_host/%s',[host.S['uuid']]);
+      uuids := Join(',',ExtractField(sel,'uuid'));
+      if Sender = ActHostsDeleteHostPackage then
+        res := WAPTServerJsonGet('/api/v1/hosts_delete?uuid=%s&delete_packages=1',[uuids])
+      else
+        res := WAPTServerJsonGet('/api/v1/hosts_delete?uuid=%s',[uuids]);
+      if res.B['success'] then
+        ShowMessageFmt('%s',[res.S['msg']])
+      else
+        ShowMessageFmt('Unable to remove hosts from DB: %s',[res.S['msg']]);
       ActSearchHost.Execute;
     end;
   end;
@@ -2648,9 +2680,12 @@ begin
     cbGroups.Items.Add(rsFilterAll);
 
     Groups := WAPTServerJsonGet('api/v1/groups',[])['result'];
-    SortByFields(Groups,['package']);
-    for Group in Groups do
-      cbGroups.Items.Add(group.S['package']);
+    if Groups<>Nil then
+    begin
+      SortByFields(Groups,['package']);
+      for Group in Groups do
+        cbGroups.Items.Add(group.S['package']);
+    end;
     cbGroups.Text := oldSelect;
 
   finally

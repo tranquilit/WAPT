@@ -774,6 +774,10 @@ msgctxt "TVISWAPTGUI.ACTHOSTSDELETE.HINT"
 msgid "Remove from inventory"
 msgstr ""
 
+#: tviswaptgui.acthostsdeletehostpackage.caption
+msgid "Remove host configuration and inventory "
+msgstr ""
+
 #: tviswaptgui.acthostwaptupgrade.caption
 msgid "Update WAPT client"
 msgstr ""
@@ -1290,9 +1294,13 @@ msgctxt "uwaptconsoleres.rsconfirmrmhostsfromlist"
 msgid "Are you sure you want to remove %s hosts from the list ?"
 msgstr ""
 
+#: uwaptconsoleres.rsconfirmrmhostspackagesfromlist
+msgid "Are you sure you want to remove %s hosts and matching configuration packages from the server ?"
+msgstr ""
+
 #: uwaptconsoleres.rsconfirmrmmultiplepackages
 msgctxt "uwaptconsoleres.rsconfirmrmmultiplepackages"
-msgid "Are you sure you want to remove the selected packages from the server ?"
+msgid "Are you sure you want to remove %d selected packages from the server ?"
 msgstr ""
 
 #: uwaptconsoleres.rsconfirmrmonepackage

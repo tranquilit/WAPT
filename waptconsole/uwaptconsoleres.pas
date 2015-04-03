@@ -50,7 +50,7 @@ resourcestring
   rsWaptAgentSetupError = 'Error while creating waptagent.exe: %s';
 
   rsConfirmRmOnePackage = 'Are you sure you want to remove this package from the server ?';
-  rsConfirmRmMultiplePackages = 'Are you sure you want to remove the selected packages from the server ?';
+  rsConfirmRmMultiplePackages = 'Are you sure you want to remove %d selected packages from the server ?';
   rsConfirmRmPackageCaption = 'Confirm removal';
   rsDeletionInProgress = 'Removing packages...';
   rsDeletingElement = 'Removing %s';
@@ -89,6 +89,7 @@ resourcestring
   rsTriggerHostsUpgrade = 'Trigger installed packages upgrade on the hosts';
 
   rsConfirmRmHostsFromList = 'Are you sure you want to remove %s hosts from the list ?';
+  rsConfirmRmHostsPackagesFromList = 'Are you sure you want to remove %s hosts and matching configuration packages from the server ?';
 
   rsUninstallingPackage = 'Uninstalling %s...';
 
