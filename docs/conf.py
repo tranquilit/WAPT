@@ -244,7 +244,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'WAPT', u'WAPT Documentation',
-   u'Tranquil IT Systems', 'WAPT', 'One line description of project.',
+   u'Tranquil IT Systems', 'WAPT', 'Software lifecycle management for Windows.',
    'Miscellaneous'),
 ]
 
