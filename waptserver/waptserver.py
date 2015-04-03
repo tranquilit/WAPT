@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="1.2.1"
+__version__="1.2.2"
 
 import os,sys
 try:
@@ -1684,9 +1684,9 @@ def hosts_delete():
             if search_fields.strip() and search_expr.strip():
                 query = {'$or':[ {fn:re.compile(search_expr, re.IGNORECASE)} for fn in ensure_list(search_fields)]}
             else:
-                raise Exception('Neither uuid not filter provided in query')
+                raise Exception('Neither uuid nor filter provided in query')
         else:
-            raise Exception('Neither uuid not filter provided in query')
+            raise Exception('Neither uuid nor filter provided in query')
 
         msg = []
         result = dict(files=[],records=[])
@@ -1704,13 +1704,13 @@ def hosts_delete():
                     result['records'].append(dict(uuid=host['uuid'],computer_fqdn=host['host']['computer_fqdn']))
                     if host['host']['computer_fqdn'] in hosts_packages_repo.index:
                         fn = hosts_packages_repo.index[host['host']['computer_fqdn']].wapt_fullpath()
+                        logger.debug('Trying to remove %s' % fn)
                         if os.path.isfile(fn):
                             result['files'].append(fn)
                             os.remove(fn)
+                msg.append('{} files removed from host repository'.format(len(result['files'])))
             else:
                 msg.append('No host found in DB')
-
-        msg.append('{} files removed from host repository'.format(len(result['files'])))
 
         remove_result = hosts().remove(query)
         if not remove_result['ok'] == 1:
