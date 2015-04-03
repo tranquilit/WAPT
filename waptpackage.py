@@ -548,6 +548,8 @@ class WaptLocalRepo(object):
                     logger.info(u"%s (%s)" % (package.package,package.version))
                     package.repo_url = 'file:///%s'%(self.localpath.replace('\\','/'))
                     package.repo = self.name
+                    package.localpath = self.localpath
+                    package.filename = package.make_package_filename()
                     self.packages.append(package)
                     # index last version
                     if not package.package in self.index or self.index[package.package] < package:
@@ -566,6 +568,8 @@ class WaptLocalRepo(object):
 
     def update_packages_index(self,force_all=False):
         """Scan self.localpath directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash
+
+        Extract icons from packages (WAPT/icon.png) and stores them in <repo path>/icons/<package name>.png
 
         """
         packages_fname = os.path.join(self.localpath,'Packages')

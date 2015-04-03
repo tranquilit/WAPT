@@ -1665,7 +1665,66 @@ def get_groups():
     return make_response(result=groups,msg=msg,status=200)
 
 
-@app.route('/api/v1/hosts')
+@app.route('/api/v1/hosts',methods=['DELETE'])
+@app.route('/api/v1/hosts_delete',methods=['GET'])
+@requires_auth
+def hosts_delete():
+    """
+        query:
+          uuid=<uuid1[,uuid2,...]>
+        or
+          filter=<csvlist of fields>:regular expression
+    """
+    try:
+        # build filter
+        if 'uuid' in request.args:
+            query = {'uuid':{'$in':ensure_list(request.args['uuid'])}}
+        elif 'filter' in request.args:
+            (search_fields,search_expr) = request.args['filter'].split(':',1)
+            if search_fields.strip() and search_expr.strip():
+                query = {'$or':[ {fn:re.compile(search_expr, re.IGNORECASE)} for fn in ensure_list(search_fields)]}
+            else:
+                raise Exception('Neither uuid not filter provided in query')
+        else:
+            raise Exception('Neither uuid not filter provided in query')
+
+        msg = []
+
+        hosts_packages_repo = WaptLocalRepo(wapt_folder+'-host')
+        hosts_packages_repo.load_packages()
+
+        packages_repo = WaptLocalRepo(wapt_folder)
+        packages_repo.load_packages()
+
+        if  'delete_packages' in request.args and request.args['delete_packages'] == '1':
+            selected = hosts().find(query,fields={'uuid':1,'host.computer_fqdn':1})
+            if selected:
+                for host in selected:
+                    msg.append('%s: %s' %(host['host']['computer_fqdn'],host['host']['computer_fqdn'] in hosts_packages_repo.index))
+                    if host['host']['computer_fqdn'] in hosts_packages_repo.index:
+                        fn = hosts_packages_repo.index[host['host']['computer_fqdn']].wapt_fullpath()
+                        msg.append('filename: %s'%fn)
+                        if os.path.isfile(fn):
+                            msg.append('File %s deleted' % fn)
+                            os.remove(fn)
+            else:
+                msg.append('No host found in DB')
+
+        result = hosts().remove(query)
+        if not result['ok'] == 1:
+            raise Exception('Error removing hosts from DB: %s'%(result['err'],))
+
+        nb = result['n']
+        msg.append('{} hosts removed from DB'.format(nb))
+
+    except Exception as e:
+        return make_response_from_exception(e)
+
+    return make_response(result=result,msg='\n'.join(msg),status=200)
+
+
+
+@app.route('/api/v1/hosts',methods=['GET'])
 @requires_auth
 def get_hosts():
     """
