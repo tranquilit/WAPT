@@ -61,8 +61,7 @@ REGEX_PACKAGE_CONDITION = re.compile(r'(?P<package>[^\s()]+)\s*(\(\s*(?P<operato
 
 
 def parse_major_minor_patch_build(version):
-    """
-    Parse version to major, minor, patch, pre-release, build parts.
+    """Parse version to major, minor, patch, pre-release, build parts.
     """
     match = REGEX_PACKAGE_VERSION.match(version)
     if match is None:
@@ -276,7 +275,9 @@ class PackageEntry(object):
                 return cmp(self.version,entry_or_version)
 
     def match(self, match_expr):
-        """Return True if package entry match a package string like 'tis-package (>=1.0.1-00)"""
+        """Return True if package entry match a package string like 'tis-package (>=1.0.1-00)
+
+        """
         pcv = REGEX_PACKAGE_CONDITION.match(match_expr).groupdict()
         if pcv['package'] != self.package:
             return False
@@ -287,7 +288,9 @@ class PackageEntry(object):
                 return True
 
     def match_version(self, match_expr):
-        """Return True if package entry match a version string condition like '>=1.0.1-00'"""
+        """Return True if package entry match a version string condition like '>=1.0.1-00'
+
+        """
         prefix = match_expr[:2]
         if prefix in ('>=', '<=', '=='):
             match_version = match_expr[2:]
@@ -430,9 +433,9 @@ sources      : %(sources)s
         """Return the standard package filename based on current attributes
 
         Returns:
-            str:  standard package filename packagename_version_arch.wapt for
-                    softwares
-                  packagename.wapt for group and host.
+            str:  standard package filename
+                  - packagename_version_arch.wapt for softwares
+                  - packagename.wapt for group and host.
         """
         if not self.section in ['host','group'] and not (self.package and self.version and self.architecture):
             raise Exception(u'Not enough information to build the package filename for %s (%s)'%(self.package,self.version))

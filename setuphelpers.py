@@ -107,6 +107,7 @@ __all__ = \
  'local_admins',
  'local_groups',
  'local_users',
+ 'local_desktops',
  'logger',
  'makepath',
  'memory_status',
@@ -854,12 +855,12 @@ def run(*cmd,**kwargs):
         shell (boolean) : True is assumed
         timeout (int) : maximum time to wait for cmd completion is second (default = 600)
                         a TimeoutExpired exception is raised if tiemout is reached.
-        on_write      : callback when a new line is printed on stdout or stderr by the subprocess
+        on_write : callback when a new line is printed on stdout or stderr by the subprocess
                         func(linestr)
         accept_returncodes (list) : list of return code which are considered OK default = (0,1601)
         pidlist (list): external list where to append the pid of the launched process.
 
-        all other parameters from the psutil.Popen constructor are accepted/
+        all other parameters from the psutil.Popen constructor are accepted
 
     Returns:
         unicode : merged output of stdout and stderr streams
@@ -1043,6 +1044,7 @@ def find_processes(process_name):
 
     Args;
         process_name (str): process name to lookup
+
     Returns:
         list: list of processes (Process) named process_name or process_name.exe
 
@@ -1110,6 +1112,7 @@ def iswin64():
 
     Returns:
         boolean
+
     >>> iswin64()
     True
     """
@@ -3033,6 +3036,9 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[]):
         kill_before (list of str) : processes to kill before setup, to avoid file locks
                                     issues.
 
+    Returns:
+        None
+
     """
     if not isfile(msi):
         error('msi file %s not found in package' % msi)
@@ -3054,12 +3060,13 @@ def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefor
     """Install silently the supplied setup executable file, and add the uninstall key to
        global uninstallkey list if it is defined.
 
-        Check if already installed at the supllied min_version.
+    Check if already installed at the supllied min_version.
 
-        Kill the processes in killbefore list before launching the setup.
+    Kill the processes in killbefore list before launching the setup.
 
-        raise an error if, after the setup install, the uninstall key is not
+    raise an error if, after the setup install, the uninstall key is not
             found in registry.
+
     Args:
         exe (str) : path to the setup exe file
         silentflags (str) : flags to append to the exe command line for silent install
@@ -3069,6 +3076,8 @@ def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefor
                             if not provided, guess it from exe setup file properties.
         kill_before (list of str) : processes to kill before setup, to avoid file locks
                                     issues.
+    Returns:
+        None
 
     """
     if not isfile(exe):
@@ -3087,6 +3096,51 @@ def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefor
         print('Exe setup %s already installed. Skipping' % exe)
     if key and 'uninstallkey' in globals() and not key in uninstallkey:
         uninstallkey.append(key)
+
+
+def local_desktops():
+    """Return a list of all local user's desktops paths
+
+    Args:
+        None
+
+    Returns:
+        list : list of desktop path
+
+    >>> local_desktops()
+    [u'C:\\Windows\\ServiceProfiles\\LocalService\\Desktop',
+     u'C:\\Windows\\ServiceProfiles\\NetworkService\\Desktop',
+     u'C:\\Users\\install\\Desktop',
+     u'C:\\Users\\UpdatusUser\\Desktop',
+     u'C:\\Users\\administrateur\\Desktop',
+     u'C:\\Users\\htouvet-adm\\Desktop']
+    """
+    result = []
+    profiles_path = r'SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList'
+    key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,profiles_path)
+
+    import _winreg
+    import locale
+    os_encoding=locale.getpreferredencoding()
+    i = 0
+    while True:
+        try:
+            profid = _winreg.EnumKey(key, i).decode(os_encoding)
+            prof_key = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,"%s\\%s"%(profiles_path,profid))
+            image_path = reg_getvalue(prof_key,'ProfileImagePath','')
+            if isdir(makepath(image_path,'Desktop')):
+                result.append(makepath(image_path,'Desktop'))
+            if isdir(makepath(image_path,'Bureau')):
+                result.append(makepath(image_path,'Bureau'))
+
+            i += 1
+        except WindowsError,e:
+            # WindowsError: [Errno 259] No more data is available
+            if e.winerror == 259:
+                break
+            else:
+                raise
+    return result
 
 
 class EWaptSetupException(Exception):
