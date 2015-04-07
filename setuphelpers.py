@@ -2911,7 +2911,7 @@ def get_appath(exename):
 def getsilentflags(installer_path):
     """Detect the type of installer and returns silent silent install flags
 
-    Args;
+    Args:
         installer_path (str): filepath to installer
 
     Returns:
@@ -3021,13 +3021,13 @@ def need_install(key,min_version=None):
 
 def install_msi_if_needed(msi,min_version=None,killbefore=[]):
     """Install silently the supplied msi file, and add the uninstall key to
-           global uninstall key list
-        uninstall key, min_version and silent flags are guessed from msi file.
+    global uninstall key list
 
-        raise an error if, after the msi install, the uninstall key is not
-          found in registry.
+    uninstall key, min_version and silent flags are guessed from msi file.
 
-        the matching is done on key
+    Raises an error if, after the msi install, the uninstall key is not found in registry.
+
+    The matching is done on key
 
     Args:
         msi (str) : path to the MSI file
@@ -3058,14 +3058,13 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[]):
 
 def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefore=[]):
     """Install silently the supplied setup executable file, and add the uninstall key to
-       global uninstallkey list if it is defined.
+    global uninstallkey list if it is defined.
 
     Check if already installed at the supllied min_version.
 
     Kill the processes in killbefore list before launching the setup.
 
-    raise an error if, after the setup install, the uninstall key is not
-            found in registry.
+    Raises an error if, after the setup install, the uninstall key is not found in registry.
 
     Args:
         exe (str) : path to the setup exe file
