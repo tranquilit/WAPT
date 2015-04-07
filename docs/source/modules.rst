@@ -14,3 +14,4 @@
    waptdevutils
    waptpackage
    waptservice
+   windnsquery
