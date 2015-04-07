@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.2.1"
+__version__ = "1.2.2"
 import os
 import re
 import logging
@@ -41,7 +41,7 @@ import fnmatch
 import platform
 import imp
 import socket
-import dns.resolver
+import windnsquery
 import copy
 import getpass
 import psutil
@@ -807,6 +807,7 @@ class WaptBaseDB(object):
         self.transaction_depth = 0
         self._db_version = None
         self.dbpath = dbpath
+        self.threadid = None
 
     @property
     def dbpath(self):
@@ -819,6 +820,12 @@ class WaptBaseDB(object):
             self.connect()
 
     def begin(self):
+        # recreate a connection if not in same thread (reuse of object...)
+        if self.threadid is not None and self.threadid != threading.current_thread().ident:
+            logger.warning('Reset of DB connection, reusing wapt db object in a new thread')
+            self.connect()
+        elif self.threadid is None:
+            self.connect()
         if self.transaction_depth == 0:
             logger.debug(u'DB Start transaction')
             self.db.execute('begin')
@@ -841,6 +848,8 @@ class WaptBaseDB(object):
     def connect(self):
         if not self.dbpath:
             return
+        logger.debug('Thread %s is connecting to wapt db' % threading.current_thread().ident)
+        self.threadid = threading.current_thread().ident
         if not self.dbpath == ':memory:' and not os.path.isfile(self.dbpath):
             dirname = os.path.dirname(self.dbpath)
             if os.path.isdir (dirname)==False:
@@ -861,8 +870,6 @@ class WaptBaseDB(object):
             self.transaction_depth = 0
             if self.curr_db_version != self.db_version:
                 self.upgradedb()
-
-
 
     def __enter__(self):
         self.begin()
@@ -1792,7 +1799,7 @@ class WaptServer(object):
             if not self._cached_dns_server_url:
                 try:
                     self._cached_dns_server_url = self.find_wapt_server_url()
-                except dns.exception.Timeout:
+                except Exception:
                     logger.debug('DNS server is not available to get waptserver URL')
             return self._cached_dns_server_url
 
@@ -1809,46 +1816,38 @@ class WaptServer(object):
             if self.dnsdomain and self.dnsdomain != '.':
                 # find by dns SRV _wapt._tcp
                 try:
-                    resolv = dns.resolver.get_default_resolver()
-                    resolv.timeout = self.timeout
-                    resolv.lifetime = self.timeout
-                    logger.debug(u'DNS server %s' % (resolv.nameservers,))
                     logger.debug(u'Trying _waptserver._tcp.%s SRV records' % self.dnsdomain)
-                    answers = resolv.query('_waptserver._tcp.%s.' % self.dnsdomain,'SRV')
+                    answers = windnsquery.dnsquery_srv('_waptserver._tcp.%s' % self.dnsdomain)
                     servers = []
-                    for a in answers:
+                    for (priority,weight,wapthost,port) in answers:
                         # get first numerical ipv4 from SRV name record
                         try:
-                            wapthost = a.target.to_text()[0:-1]
-                            if a.port == 443:
+                            if port == 443:
                                 url = 'https://%s' % (wapthost)
-                                servers.append((a.weight,a.priority,url))
+                                servers.append((priority,weight,url))
                             else:
                                 url = 'http://%s:%i' % (wapthost,a.port)
-                                servers.append((a.weight,a.priority,url))
-                        except Exception,e:
+                                servers.append((priority,weight,url))
+                        except Exception as e:
                             logging.debug('Unable to resolve : error %s' % (ensure_unicode(e),))
 
                     if servers:
                         servers.sort()
                         logger.debug(u'  Defined servers : %s' % (servers,))
-                        return servers[-1][2]
+                        return servers[0][2]
 
                     if not answers:
                         logger.debug(u'  No _waptserver._tcp.%s SRV record found' % self.dnsdomain)
-                except dns.exception.Timeout,e:
-                    logger.debug(u'  DNS resolver timedout _SRV records: %s' % (ensure_unicode(e),))
+                except Exception as e:
+                    logger.debug(u'  DNS resolver exception _SRV records: %s' % (ensure_unicode(e),))
                     raise
-
-                except dns.exception.DNSException,e:
-                    logger.debug(u'  DNS resolver failed looking for _SRV records: %s' % (ensure_unicode(e),))
 
             else:
                 logger.warning(u'Local DNS domain not found, skipping SRV _wapt._tcp and CNAME search ')
 
             return None
-        except dns.exception.Timeout,e:
-            logger.debug(u'WaptServer.find_wapt_server_url: DNS resolver timeout: %s' % (e,))
+        except Exception  as e:
+            logger.debug(u'WaptServer.find_wapt_server_url: DNS resolver exception: %s' % (e,))
             raise
 
     @server_url.setter
@@ -2059,53 +2058,51 @@ class WaptRepo(object):
             if self.dnsdomain and self.dnsdomain != '.':
                 # find by dns SRV _wapt._tcp
                 try:
-                    resolv = dns.resolver.get_default_resolver()
-                    resolv.timeout = self.timeout
-                    resolv.lifetime = self.timeout
-                    logger.debug(u'DNS server %s' % (resolv.nameservers,))
                     logger.debug(u'Trying _wapt._tcp.%s SRV records' % self.dnsdomain)
-                    answers = resolv.query('_wapt._tcp.%s.' % self.dnsdomain,'SRV')
+                    answers = windnsquery.dnsquery_srv('_wapt._tcp.%s' % self.dnsdomain)
 
-                    # inmynet,weight,priority,time,url
+                    # list of (outside,priority,weight,url)
                     servers = []
-                    for a in answers:
+                    for (priority,weight,wapthost,port) in answers:
                         # get first numerical ipv4 from SRV name record
                         try:
-                            wapthost = a.target.to_text()[0:-1]
-                            ip = resolv.query(a.target)[0].to_text()
-                            if a.port == 80:
-                                url = 'http://%s/wapt' % (wapthost,)
-                                servers.append([is_inmysubnets(ip),a.weight,a.priority,url])
-                            elif a.port == 443:
-                                url = 'https://%s/wapt' % (wapthost)
-                                servers.append([is_inmysubnets(ip),a.weight,a.priority,url])
+                            ips = windnsquery.dnsquery_a(wapthost)
+                            if not ips:
+                                logger.debug('DNS Name %s is not resolvable' % wapthost)
                             else:
-                                url = 'http://%s:%i/wapt' % (wapthost,a.port)
-                                servers.append([is_inmysubnets(ip),a.weight,a.priority,url])
+                                ip = ips[0]
+                                if port == 80:
+                                    url = 'http://%s/wapt' % (wapthost,)
+                                    servers.append([not is_inmysubnets(ip),priority,weight,url])
+                                elif a.port == 443:
+                                    url = 'https://%s/wapt' % (wapthost)
+                                    servers.append([not is_inmysubnets(ip),priority,weight,url])
+                                else:
+                                    url = 'http://%s:%i/wapt' % (wapthost,port)
+                                    servers.append([not is_inmysubnets(ip),priority,weight,url])
                         except Exception,e:
-                            logging.debug('Unable to resolve : error %s' % (ensure_unicode(e),))
+                            logging.debug('Unable to resolve %s : error %s' % (wapthost,ensure_unicode(e),))
 
                     servers.sort()
-                    servers.reverse()
-                    for (inmysubnets,weight,priority,url) in servers:
+                    for (outside,priority,weight,url) in servers:
                         if tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies):
                             return url
 
                     if not answers:
                         logger.debug(u'  No _wapt._tcp.%s SRV record found' % self.dnsdomain)
-                except dns.exception.Timeout,e:
-                    logger.debug(u'  DNS resolver timedout _SRV records: %s' % (ensure_unicode(e),))
-                    raise
 
-                except dns.exception.DNSException,e:
-                    logger.debug(u'  DNS resolver failed looking for _SRV records: %s' % (ensure_unicode(e),))
+                except Exception as e:
+                    logger.debug(u'  DNS resolver exception: %s' % (ensure_unicode(e),))
+                    raise
 
                 # find by dns CNAME
                 try:
                     logger.debug(u'Trying wapt.%s CNAME records' % self.dnsdomain)
-                    answers = resolv.query('wapt.%s.' % self.dnsdomain,'CNAME')
-                    for a in answers:
-                        wapthost = a.target.canonicalize().to_text()[0:-1]
+                    answers = windnsquery.dnsquery_cname('wapt.%s' % self.dnsdomain)
+                    # list of (outside,priority,weight,url)
+                    servers = []
+
+                    for wapthost in answers:
                         url = 'https://%s/wapt' % (wapthost,)
                         if tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies):
                             return url
@@ -2113,19 +2110,17 @@ class WaptRepo(object):
                         if tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies):
                             return url
                     if not answers:
-                        logger.debug(u'  No wapt.%s CNAME record found' % self.dnsdomain)
+                        logger.debug(u'  No working wapt.%s CNAME record found' % self.dnsdomain)
 
-                except dns.exception.Timeout,e:
-                    logger.debug(u'  DNS resolver timedout CNAME records: %s' % (ensure_unicode(e),))
+                except Exception as e:
+                    logger.debug(u'  DNS error: %s' % (ensure_unicode(e),))
                     raise
-                except dns.exception.DNSException,e:
-                    logger.warning(u'  DNS resolver error : %s' % (ensure_unicode(e),))
 
                 # find by dns A
                 try:
                     wapthost = 'wapt.%s.' % self.dnsdomain
                     logger.debug(u'Trying %s A records' % wapthost)
-                    answers = resolv.query(wapthost,'A')
+                    answers = windnsquery.dnsquery_a(wapthost)
                     if answers:
                         url = 'https://%s/wapt' % (wapthost,)
                         if tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies):
@@ -2136,18 +2131,16 @@ class WaptRepo(object):
                     if not answers:
                         logger.debug(u'  No %s A record found' % wapthost)
 
-                except dns.exception.Timeout,e:
-                    logger.debug(u'  DNS resolver timedout A records: %s' % (ensure_unicode(e),))
+                except Exception as e:
+                    logger.debug(u'  DNS resolver exception: %s' % (ensure_unicode(e),))
                     raise
 
-                except dns.exception.DNSException,e:
-                    logger.warning(u'  DNS resolver error : %s' % (ensure_unicode(e),))
             else:
                 logger.warning(u'Local DNS domain not found, skipping SRV _wapt._tcp and CNAME search ')
 
             return None
-        except dns.exception.Timeout,e:
-            logger.debug(u'Waptrepo.find_wapt_repo_url: DNS resolver timeout: %s' % (e,))
+        except Exception as e:
+            logger.debug(u'Waptrepo.find_wapt_repo_url: exception: %s' % (e,))
             raise
 
     @repo_url.setter
@@ -2645,7 +2638,6 @@ class Wapt(object):
             'use_hostpackages':'1',
             'timeout':5.0,
             'wapt_server_timeout':10.0,
-            'uuid':'',
             }
 
         if not self.config:
@@ -2705,6 +2697,7 @@ class Wapt(object):
         if self.config.has_option('global','uuid'):
             forced_uuid = self.config.get('global','uuid')
             if forced_uuid != self.host_uuid:
+                logger.debug('Storing new uuid in DB %s' % forced_uuid)
                 self.host_uuid = forced_uuid
 
         # Get the configuration of all repositories (url, ...)
@@ -3007,28 +3000,29 @@ class Wapt(object):
                 pass
 
         # reset install_status
-        logger.debug(u'reset stalled install_status in database')
-        init_run_pids = self.waptdb.query("""\
-           select process_id from wapt_localstatus
-              where install_status in ('INIT','RUNNING')
-           """ )
+        with self.waptdb:
+            logger.debug(u'reset stalled install_status in database')
+            init_run_pids = self.waptdb.query("""\
+               select process_id from wapt_localstatus
+                  where install_status in ('INIT','RUNNING')
+               """ )
 
-        all_pids = psutil.pids()
-        reset_error = []
-        result = []
-        for rec in init_run_pids:
-            # check if process is no more running
-            if not rec['process_id'] in all_pids or rec['process_id'] in killed:
-                reset_error.append(rec['process_id'])
-            else:
-                # install in progress
-                result.append(rec['process_id'])
+            all_pids = psutil.pids()
+            reset_error = []
+            result = []
+            for rec in init_run_pids:
+                # check if process is no more running
+                if not rec['process_id'] in all_pids or rec['process_id'] in killed:
+                    reset_error.append(rec['process_id'])
+                else:
+                    # install in progress
+                    result.append(rec['process_id'])
 
-        for pid in reset_error:
-            self.waptdb.update_install_status_pid(pid,'ERROR')
+            for pid in reset_error:
+                self.waptdb.update_install_status_pid(pid,'ERROR')
 
-        if reset_error or not init_run_pids:
-            self.runstatus = ''
+            if reset_error or not init_run_pids:
+                self.runstatus = ''
 
         # return pids of install in progress
         return result

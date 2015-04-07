@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.2.1"
+__version__ = "1.2.2"
 
 import time
 import sys
@@ -485,11 +485,14 @@ def close_connection(exception):
         if local_wapt is not None and local_wapt._waptdb:
             try:
                 local_wapt._waptdb.commit()
+                local_wapt._waptdb = None
             except:
                 try:
                     local_wapt._waptdb.rollback()
+                    local_wapt._waptdb = None
                 except:
-                    pass
+                    local_wapt._waptdb = None
+
     except Exception as e:
         logger.debug('Error in teardown, please consider upgrading Flask if <0.10. %s' % e)
 
@@ -1787,7 +1790,7 @@ class WaptTaskManager(threading.Thread):
         threading.Thread.__init__(self)
         self.status_lock = threading.RLock()
 
-        self.wapt=Wapt(config_filename=config_filename)
+        self.wapt=None
         self.tasks = []
 
         self.tasks_queue = Queue.PriorityQueue()
@@ -1796,15 +1799,15 @@ class WaptTaskManager(threading.Thread):
         self.tasks_done = []
         self.tasks_error = []
         self.tasks_cancelled = []
-        self.events = self.setup_event_queue()
+        self.events = None
 
         self.running_task = None
-        logger.info(u'Wapt tasks management initialized with {} configuration'.format(config_filename))
+        self.config_filename = config_filename
 
         self.last_upgrade = None
         self.last_update = None
 
-        self.firewall_running = firewall_running()
+        self.firewall_running = None
 
     def setup_event_queue(self):
         if waptconfig.zmq_port:
@@ -1936,6 +1939,11 @@ class WaptTaskManager(threading.Thread):
     def run(self):
         """Queue management, event processing"""
         pythoncom.CoInitialize()
+
+        self.wapt = Wapt(config_filename=self.config_filename)
+        self.events = self.setup_event_queue()
+        self.firewall_running = firewall_running()
+        logger.info(u'Wapt tasks management initialized with {} configuration, thread ID {}'.format(self.config_filename,threading.current_thread().ident))
 
         self.start_network_monitoring()
         self.start_ipaddr_monitoring()
