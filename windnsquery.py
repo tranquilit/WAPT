@@ -25,7 +25,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "1.2.0"
+__version__ = "1.2.2"
 
 import ctypes
 from ctypes import wintypes
@@ -526,14 +526,30 @@ def dnsquery_raw(host, type, server=0, opt=0):
         psrv = ctypes.byref(server_arr)
     else:
         psrv = 0
-    retval = ctypes.windll.dnsapi.DnsQuery_A(host, type, opt, psrv, ctypes.byref(rr), 0)
+    retval = ctypes.windll.dnsapi.DnsQuery_A(str(host), type, opt, psrv, ctypes.byref(rr), 0)
     if retval == 0:
         return rr
     else:
         return None
 
-def dnsquery(host, type, server=0, opt=0):
-    res =  dnsquery_raw(host, type , server = server, opt=opt)
+def dnsquery(name, type, server=0, opt=0):
+    """Query DNS registred on specific or connected network interfaces
+
+    Args:
+        name (str) : name to lookup
+        type (int) : type of query like DNS_TYPE_A, DNS_TYPE_CNAME etc...
+        server : server to query, or 0 to use default on connected interfaces
+        opt : or'ed list of options for the query like DNS_QUERY_BYPASS_CACHE
+
+    Returns:
+        list : list of windows dns records. Use type property
+                 data.A.* or data.CNAME.* etc... to access fields
+
+    >>> [ ipv4_to_str(r.Data.A.IpAddress) for r in dnsquery('srvwapt.tranquilit.local',DNS_TYPE_A) if r.wType == DNS_TYPE_A]
+    ['192.168.149.37']
+
+    """
+    res =  dnsquery_raw(name, type , server = server, opt=opt)
     r = res
     result = []
     while r:
@@ -543,17 +559,52 @@ def dnsquery(host, type, server=0, opt=0):
 
 
 def dnsquery_a(name,opt=DNS_QUERY_BYPASS_CACHE | DNS_QUERY_NO_LOCAL_NAME | DNS_QUERY_NO_HOSTS_FILE):
+    """Recursively resolve the IP matching a hostname <name> (A)
+
+    Args:
+        name (str) : name of IP to lookup in dns
+        opt  (str) : windows DNS or'ed options
+
+    Returns:
+        list : list of str, IP matching the <name>
+
+    >>> dnsquery_a('srvwapt.tranquilit.local')
+    ['192.168.149.37']
+
+    >>> dnsquery_a('www.google.com')
+    ['216.58.208.228',
+     '216.239.32.10',
+     '216.239.34.10',
+     '216.239.36.10',
+     '216.239.38.10']
+
+    """
     result = []
     res = dnsquery(name, DNS_TYPE_A , opt=opt)
     for r in res:
         if r.wType == DNS_TYPE_CNAME:
-            result.append(r.Data.CNAME.pNameHost)
-        elif r.wType == DNS_TYPE_A:
+            ips = dnsquery_a(r.Data.CNAME.pNameHost)
+            if ips:
+                result.extend(ips)
+        elif (r.wType == DNS_TYPE_A) and (r.pName.lower() == name.lower()) :
             result.append(ipv4_to_str(r.Data.A.IpAddress))
     return result
 
 
 def dnsquery_cname(name,opt=DNS_QUERY_BYPASS_CACHE | DNS_QUERY_NO_LOCAL_NAME | DNS_QUERY_NO_HOSTS_FILE):
+    """Returns the name matching a cname
+
+    Args:
+        name : cname to lookup in dns
+
+    Returns:
+        list : list of str, matching targets for the <name>
+
+    >>> dnsquery_cname('wapt.tranquilit.local')
+    ['srvwapt.tranquilit.local']
+
+    """
+
     result = []
     res = dnsquery(name, DNS_TYPE_CNAME , opt=opt)
     for r in res:
@@ -562,7 +613,38 @@ def dnsquery_cname(name,opt=DNS_QUERY_BYPASS_CACHE | DNS_QUERY_NO_LOCAL_NAME | D
     return result
 
 
+def dnsquery_srv(name,opt=DNS_QUERY_BYPASS_CACHE | DNS_QUERY_NO_LOCAL_NAME | DNS_QUERY_NO_HOSTS_FILE):
+    """Returns the mains fields for SRV records for <name> service.
+
+    Args:
+        name (str) : servic ename like _ldap._tcp.mondomain.local
+        opt (int) : windows DNS options : default to no cache query.
+
+    Returns:
+        list : list of (prio,weight,dnsname,port)
+
+    >>> dnsquery_srv('_wapt._tcp.tranquilit.local')
+    [(30, 0, 'waptwifi.tranquilit.local', 80),
+     (20, 0, 'nexiste2pas.tranquil.it', 80),
+     (20, 0, 'srvinstallation.tranquil.it', 80),
+     (20, 0, 'nexistepas.tranquilit.local', 80),
+     (20, 0, 'wapt.tranquilit.local', 80)]
+    >>> dnsquery_srv('_ldap._tcp.tranquilit.local')
+    [(0, 100, 'srvads.tranquilit.local', 389)]
+
+    """
+    result = []
+    res = dnsquery_raw(name, DNS_TYPE_SRV , opt=opt)
+    while res:
+        if res.contents.wType == DNS_TYPE_SRV:
+            result.append((res.contents.Data.SRV.wPriority,res.contents.Data.SRV.wWeight,res.contents.Data.SRV.pNameTarget,res.contents.Data.SRV.wPort))
+        res = res.contents.pNext
+    return result
+
+
 if __name__ == "__main__":
+    print dnsquery_a('wapt.tranquilit.local')
+
     res =  dnsquery_raw("www.google.com", DNS_TYPE_A , opt=DNS_QUERY_BYPASS_CACHE | DNS_QUERY_NO_LOCAL_NAME | DNS_QUERY_NO_HOSTS_FILE)
     print  ipv4_to_str(res.contents.Data.A.IpAddress)
 
