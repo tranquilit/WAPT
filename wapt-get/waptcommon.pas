@@ -25,7 +25,20 @@ unit waptcommon;
 interface
   uses
      Classes, SysUtils, Windows,
-     DB,sqldb,sqlite3conn,SuperObject,syncobjs,IdComponent,tiscommon,tishttp, DefaultTranslator;
+     DB,sqldb,sqlite3conn,SuperObject,syncobjs,IdComponent,tiscommon,tisstrings, DefaultTranslator;
+
+  type
+      TProgressCallback=function(Receiver:TObject;current,total:Integer):Boolean of object;
+      TLoginCallback = function(realm:String;var user,password:String):Boolean of object;
+
+      { EHTTPException }
+
+      EHTTPException=Class(Exception)
+        HTTPStatus: Integer;
+        constructor Create(const msg: string;AHTTPStatus:Integer);
+      end;
+
+
 
   Function  GetMainWaptRepo:String;
   Function  GetWaptServerURL:String;
@@ -58,8 +71,13 @@ interface
   function GetEthernetInfo(ConnectedOnly:Boolean):ISuperObject;
   function LocalSysinfo: ISuperObject;
   function GetLocalIP: string;
+  Function GetDNSServers:TDynStringArray;
   function GetDNSServer:AnsiString;
   function GetDNSDomain:AnsiString;
+
+  Function IPV4ToInt(ipaddr:AnsiString):LongInt;
+  Function SameSubnet(ip1,ip2,netmask:AnsiString):Boolean;
+
 
   function WAPTServerJsonGet(action: String;args:Array of const): ISuperObject;
   function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject): ISuperObject;
@@ -185,11 +203,11 @@ const
 implementation
 
 uses FileUtil, soutils, Variants, ShellApi, JwaIpHlpApi,
-  JwaIpTypes, NetworkAdapterInfo, tisinifiles, registry, tisstrings, JwaWinDNS, JwaWinsock2,
+  JwaIpTypes, NetworkAdapterInfo, tisinifiles, registry, JwaWinDNS, JwaWinsock2,
   IdHttp,IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,Dialogs,UnitRedirect, IdURI,
-  uwaptres,gettext,zipper;
+  uwaptres,gettext,IdStack;
 
-function IPV42String(ipv4:LongWord):String;
+function IPV4ToString(ipv4:LongWord):String;
 begin
   Result :=  format('%D.%D.%D.%D',[ipv4  and $FF, (ipv4  shr 8) and $FF,  (ipv4  shr 16) and $FF, (ipv4  shr 24) and $FF]);
 end;
@@ -199,6 +217,7 @@ var
   ppQueryResultsSet : PDNS_RECORD;
   retvalue: Integer;
   res : AnsiString;
+  ip,ips: ISuperObject;
 begin
   Result := TSuperObject.Create(stArray);
   ppQueryResultsSet := Nil;
@@ -213,9 +232,18 @@ begin
   try
     while ppQueryResultsSet<>Nil do
     begin
-      if (ppQueryResultsSet^.wType=DNS_TYPE_A) and (ppQueryResultsSet^.Data.A.IpAddress<>0) then
+      if (ppQueryResultsSet^.wType=DNS_TYPE_CNAME) then
       begin
-        res := IPV42String(ppQueryResultsSet^.Data.A.IpAddress);
+        // recursive query if a CNAME is returned.
+        // very strange ... ppQueryResultsSet^.Data.PTR works but ppQueryResultsSet^.Data.CNAME not... same structure pNameHost in both cases.
+        ips := DNSAQuery(ppQueryResultsSet^.Data.PTR.pNameHost);
+        for ip in ips do
+          Result.AsArray.Add(ip.AsString);
+      end
+      else
+      if (ppQueryResultsSet^.wType=DNS_TYPE_A) and (ppQueryResultsSet^.Data.A.IpAddress<>0) and (LowerCase(ppQueryResultsSet^.pName) = LowerCase(name)) then
+      begin
+        res := IPV4ToString(ppQueryResultsSet^.Data.A.IpAddress);
         UniqueString(res);
         Result.AsArray.Add(res);
       end;
@@ -286,6 +314,7 @@ begin
   try
     while ppQueryResultsSet<>Nil do
     begin
+      // strange ppQueryResultsSet^.Data.PTR works but not ppQueryResultsSet^.Data.CNAME
       if (ppQueryResultsSet^.wType=DNS_TYPE_CNAME) and (ppQueryResultsSet^.Data.PTR.pNameHost<>Nil) then
       begin
         res := ppQueryResultsSet^.Data.PTR.pNameHost;
@@ -384,6 +413,17 @@ begin
   end;
 end;
 
+Function IPV4ToInt(ipaddr:AnsiString):LongInt;
+begin
+  Result := inet_addr(PChar(ipaddr));
+end;
+
+Function SameSubnet(ip1,ip2,netmask:AnsiString):Boolean;
+begin
+    Result := (IPV4ToInt(ip1) and IPV4ToInt(netmask)) = (IPV4ToInt(ip2) and IPV4ToInt(netmask));
+end;
+
+
 procedure IdConfigureProxy(http:TIdHTTP;ProxyUrl:String);
 var
   url : TIdURI;
@@ -419,6 +459,14 @@ type
     progressCallback:TProgressCallback;
     procedure OnWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
     procedure OnWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
+  end;
+
+  { HTTPException }
+
+  constructor EHTTPException.Create(const msg: string; AHTTPStatus: Integer);
+  begin
+    inherited Create(msg);
+    HTTPStatus:=AHTTPStatus;
   end;
 
 { TWaptPackage }
@@ -601,7 +649,6 @@ begin
   else
     ssl_handler := Nil;
 
-
   try
     try
       http.ConnectTimeout := 1000;
@@ -611,9 +658,9 @@ begin
       Result := True
     except
       on E:EIdReadTimeout do
-      begin
         Result := False;
-      end;
+      on E:EIdSocketError do
+        Result := False;
     end;
   finally
     http.Free;
@@ -687,11 +734,17 @@ begin
   if (ssl) then
   begin
     ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
-	  HTTP.IOHandler := ssl_handler;
+	  http.IOHandler := ssl_handler;
   end
   else
     ssl_handler := Nil;
 
+  if user <>'' then
+  begin
+    http.Request.BasicAuthentication:=True;
+    http.Request.Username:=user;
+    http.Request.Password:=password;
+  end;
 
   DataStream :=TStringStream.Create(Data);
   {progress :=  TIdProgressProxy.Create(Nil);
@@ -805,8 +858,24 @@ end;
 
 function GetMainWaptRepo: String;
 var
-  rec,recs : ISuperObject;
-  dnsdomain:AnsiString;
+  rec,recs,urls,ConnectedIps,ServerIp : ISuperObject;
+  url,dnsdomain:AnsiString;
+
+
+  function SameNet(connected:ISuperObject;IP:AnsiString):Boolean;
+  var
+    conn:ISuperObject;
+  begin
+    for conn in Connected do
+    begin
+      if SameSubnet(conn.S['ipAddress'],IP,conn.S['ipMask']) then
+      begin
+        Result := True;
+        Exit;
+      end;
+    end;
+    Result := False;
+  end;
 
 begin
   result := IniReadString(AppIniFilename,'Global','repo_url');
@@ -814,20 +883,37 @@ begin
     exit;
 
   dnsdomain:=GetDNSDomain;
-
-  //dnsserver:=GetDNSServer;
   if dnsdomain<>'' then
   begin
+    ConnectedIps := GetEthernetInfo(True);
+
     //SRV _wapt._tcp
     recs := DNSSRVQuery('_wapt._tcp.'+dnsdomain);
     for rec in recs do
     begin
       if rec.I['port'] = 443 then
-        Result := 'https://'+rec.S['name']+'/wapt'
+        url := 'https://'+rec.S['name']+'/wapt'
       else
-        Result := 'http://'+rec.S['name']+':'+rec.S['port']+'/wapt';
-      Logger('trying '+result,INFO);
-      if IdWget_try(result,UseProxyForRepo) then
+        url := 'http://'+rec.S['name']+':'+rec.S['port']+'/wapt';
+      rec.S['url'] := url;
+      try
+        ServerIp := DNSAQuery(rec.S['name']);
+        if ServerIp.AsArray.Length > 0 then
+          rec.B['outside'] := not SameNet(ConnectedIps,ServerIp.AsArray.S[0])
+        else
+          rec.B['outside'] := True;
+      except
+        rec.B['outside'] := True;
+      end;
+      // order is priority asc but wieght desc
+      rec.I['weight'] := - rec.I['weight'];
+    end;
+    SortByFields(recs,['outside','priority','weight']);
+
+    for rec in recs do
+    begin
+      Logger('trying '+rec.S['url'],INFO);
+      if IdWget_try(rec.S['url'],UseProxyForRepo) then
         Exit;
     end;
 
@@ -912,7 +998,6 @@ begin
 
 
   dnsdomain:=GetDNSDomain;
-  //dnsserver:=GetDNSServer;
   if dnsdomain<>'' then
   begin
     //SRV _wapt._tcp
