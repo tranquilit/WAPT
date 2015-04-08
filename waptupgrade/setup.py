@@ -17,6 +17,7 @@ def update_sources():
          'wapt-get.py',
          'waptdevutils.py',
          'waptpackage.py',
+         'windnsquery.py',
          'wapttray.exe',
          'waptexit.exe',
          'keyfinder.py',
