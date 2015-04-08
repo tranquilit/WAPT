@@ -31,7 +31,7 @@ uses
   Classes, SysUtils, CustApp,
   { you can add units after this }
   Windows, PythonEngine, waptcommon, uwaptres, tiscommon, superobject,
-  soutils, zmqapi, pl_indy;
+  soutils, zmqapi,tisstrings;
 type
   { pwaptget }
 
@@ -270,7 +270,7 @@ begin
   else
   if (action = 'dnsdebug') then
   begin
-    WriteLn(format(rsDNSserver, [GetDNSServer]));
+    WriteLn(format(rsDNSserver, [StrJoin(',',GetDNSServers)]));
     WriteLn(format(rsDNSdomain, [GetDNSDomain]));
     repourl := GetMainWaptRepo;
     Writeln(utf8decode(format(rsMainRepoURL, [RepoURL])));
