@@ -27,6 +27,7 @@ Source: "..\waptpackage.py"; DestDir: "{app}";
 Source: "..\wapt-get.py"; DestDir: "{app}"; 
 Source: "..\keyfinder.py"; DestDir: "{app}"; 
 Source: "..\setuphelpers.py"; DestDir: "{app}"; 
+Source: "..\windnsquery.py"; DestDir: "{app}"; 
 Source: "..\COPYING.txt"; DestDir: "{app}";
 Source: "..\version"; DestDir: "{app}";
 Source: "..\templates\*"; DestDir: "{app}\templates"; Flags: createallsubdirs recursesubdirs
