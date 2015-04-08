@@ -72,8 +72,7 @@ uses tiscommon,waptcommon,IdHTTP;
 
 procedure TVisHostsUpgrade.ActUpgradeExecute(Sender: TObject);
 var
-  ips,res,host,ip:ISuperObject;
-  lasterror:Utf8String;
+  res,host:ISuperObject;
 begin
   Stopped := False;
   for host in ProgressGrid.Data do
@@ -160,8 +159,7 @@ procedure TVisHostsUpgrade.ProgressGridGetImageIndexEx(
   Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: Integer;
   var ImageList: TCustomImageList);
 var
-  RowSO, update_status, upgrades, errors,
-  reachable,timestamp: ISuperObject;
+  RowSO, update_status: ISuperObject;
 begin
   if Column=0 then
   begin

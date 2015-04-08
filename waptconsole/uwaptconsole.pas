@@ -411,7 +411,7 @@ implementation
 
 uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, tisstrings,
   soutils, waptcommon, tiscommon, uVisCreateKey, uVisCreateWaptSetup,
-  uvisOptionIniFile, dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig,
+  dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig,
   uvischangepassword, uvisgroupchoice, uviswaptdeploy,
   uvishostsupgrade, uVisAPropos, uVisImportPackage, PythonEngine, Clipbrd,
   RegExpr, tisinifiles;
@@ -577,7 +577,7 @@ end;
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
   currhost,packagename : ansistring;
-  RowSO, package,packagereq, packages, softwares, dmi,tasks, tasksresult, running,sores,additional,upgrades: ISuperObject;
+  RowSO, package,packagereq, packages, softwares, dmi,tasksresult, running,sores,additional,upgrades: ISuperObject;
 begin
   TimerTasks.Enabled := False;
   RowSO := Gridhosts.FocusedRow;
@@ -958,7 +958,7 @@ end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
 var
-  waptsetupPath,waptUpgradePath: string;
+  waptsetupPath: string;
   ini: TIniFile;
   SORes: ISuperObject;
 begin
@@ -1105,8 +1105,7 @@ end;
 
 procedure TVisWaptGUI.ActAddADSGroupsExecute(Sender: TObject);
 var
-  Res, packages, host, hosts: ISuperObject;
-  N: PVirtualNode;
+  Res, host, hosts: ISuperObject;
   args: ansistring;
 begin
   if GridHosts.Focused and (MessageDlg(rsAddADSGroups, mtConfirmation, [mbYes, mbNo, mbCancel],0) = mrYes) then
@@ -1923,8 +1922,7 @@ end;
 
 procedure TVisWaptGUI.ActSearchHostExecute(Sender: TObject);
 var
-  req, filter: string;
-  soresult,columns,urlParams, Node, Hosts,host,update_status,errors,upgrades,fields: ISuperObject;
+  soresult,columns,urlParams, Node, Hosts,fields: ISuperObject;
   previous_uuid: string;
   i: integer;
 begin
@@ -2407,11 +2405,7 @@ end;
 
 procedure TVisWaptGUI.GridHostsColumnDblClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
-var
-  hi: THitInfo;
 begin
-  //Sender.GetHitTestInfoAt(Mouse.x,Mouse.y,False,hi);
-
   ActEditHostPackage.Execute;
 end;
 
@@ -2537,7 +2531,7 @@ procedure TVisWaptGUI.GridHostsGetImageIndexEx(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
   var Ghosted: boolean; var ImageIndex: integer; var ImageList: TCustomImageList);
 var
-  RowSO, status, upgrades, errors,
+  RowSO, status,
   reachable,timestamp: ISuperObject;
 begin
   if TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName = 'host_status' then
@@ -2578,9 +2572,7 @@ end;
 procedure TVisWaptGUI.GridHostsGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
   TextType: TVSTTextType; var CellText: string);
-var
-  RowSO, update_status, errors, Upgrades,
-  reachable: ISuperObject;
+
 begin
   if Node = nil then
     CellText := ''
@@ -2669,7 +2661,7 @@ end;
 
 procedure TVisWaptGUI.FillcbGroups;
 var
-  Package,Group,Groups:ISuperObject;
+  Group,Groups:ISuperObject;
   oldSelect:String;
 begin
   try

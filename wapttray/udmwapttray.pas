@@ -84,7 +84,6 @@ type
     procedure DataModuleDestroy(Sender: TObject);
     procedure PopupMenu1Close(Sender: TObject);
     procedure PopupMenu1Popup(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
     procedure TrayIcon1DblClick(Sender: TObject);
     procedure TrayIcon1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -182,8 +181,6 @@ begin
 end;
 
 procedure TCheckWaptservice.Execute;
-var
-  newStatus:Boolean;
 begin
   While not Terminated do
   begin
@@ -366,10 +363,6 @@ begin
 
   // to avoid message popups when popup menu is displayed
   PopupVisible := True;
-end;
-
-procedure TDMWaptTray.Timer1Timer(Sender: TObject);
-begin
 end;
 
 procedure TDMWaptTray.ActConfigureExecute(Sender: TObject);
