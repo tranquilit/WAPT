@@ -1806,6 +1806,9 @@ class WaptServer(object):
     def find_wapt_server_url(self):
         """Search the WAPT server with dns SRV query
 
+        preference for SRV is :
+           same priority asc -> weight desc
+
         >>> WaptServer(dnsdomain='tranquilit.local',timeout=4,url=None).server_url
         'https://wapt.tranquilit.local'
         >>> WaptServer(url='http://srvwapt:8080',timeout=4).server_url
@@ -1824,10 +1827,10 @@ class WaptServer(object):
                         try:
                             if port == 443:
                                 url = 'https://%s' % (wapthost)
-                                servers.append((priority,weight,url))
+                                servers.append((priority,-weight,url))
                             else:
                                 url = 'http://%s:%i' % (wapthost,a.port)
-                                servers.append((priority,weight,url))
+                                servers.append((priority,-weight,url))
                         except Exception as e:
                             logging.debug('Unable to resolve : error %s' % (ensure_unicode(e),))
 
@@ -2029,6 +2032,10 @@ class WaptRepo(object):
            - first SRV record with the highest weight
            - wapt CNAME in the local dns domain (https first then http)
 
+        preference for SRV records is :
+           same subnet -> priority asc -> weight desc
+
+
         >>> repo = WaptRepo(name='main',dnsdomain='tranquil.it',timeout=4,url=None)
         >>> repo.repo_url
         'http://wapt.tranquil.it./wapt'
@@ -2073,13 +2080,13 @@ class WaptRepo(object):
                                 ip = ips[0]
                                 if port == 80:
                                     url = 'http://%s/wapt' % (wapthost,)
-                                    servers.append([not is_inmysubnets(ip),priority,weight,url])
+                                    servers.append([not is_inmysubnets(ip),priority,-weight,url])
                                 elif a.port == 443:
                                     url = 'https://%s/wapt' % (wapthost)
-                                    servers.append([not is_inmysubnets(ip),priority,weight,url])
+                                    servers.append([not is_inmysubnets(ip),priority,-weight,url])
                                 else:
                                     url = 'http://%s:%i/wapt' % (wapthost,port)
-                                    servers.append([not is_inmysubnets(ip),priority,weight,url])
+                                    servers.append([not is_inmysubnets(ip),priority,-weight,url])
                         except Exception,e:
                             logging.debug('Unable to resolve %s : error %s' % (wapthost,ensure_unicode(e),))
 
