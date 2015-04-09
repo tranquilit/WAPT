@@ -724,7 +724,15 @@ def upload_package(filename=""):
             if filename and allowed_file(filename):
                 tmp_target = os.path.join(wapt_folder, secure_filename(filename+'.tmp'))
                 with open(tmp_target, 'wb') as f:
-                    f.write(request.stream.read())
+                    data = request.stream.read(65535)
+                    try:
+                        while len(data) > 0:
+                            f.write(data)
+                            data = request.stream.read(65535)
+                    except:
+                        logger.debug('End of stream')
+                        raise
+
                 if not os.path.isfile(tmp_target):
                     result = dict(status='ERROR',message=_('Problem during upload'))
                 else:
