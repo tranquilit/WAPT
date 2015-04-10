@@ -230,13 +230,18 @@ begin
     myReadErrorThread := TStoReadPipeThread.Create(hPipeErrorRead);
     try
       start_ms := GetTickCount;
-      repeat
-        // wait unitl there is no more data to receive, or the timeout is reached
-        iWaitRes := WaitForSingleObject(myProcessInfo.hProcess, pollwait);
-        if Assigned(onpoll) then
-          onpoll(Nil);
-        // timeout reached ?
-      until ((GetTickCount-start_ms > Wait) and  (iWaitRes = WAIT_TIMEOUT)) or (iWaitRes <> WAIT_TIMEOUT);
+      try
+        repeat
+          // wait unitl there is no more data to receive, or the timeout is reached
+          iWaitRes := WaitForSingleObject(myProcessInfo.hProcess, pollwait);
+          if Assigned(onpoll) then
+            onpoll(Nil);
+          // timeout reached ?
+        until ((GetTickCount-start_ms > Wait) and  (iWaitRes = WAIT_TIMEOUT)) or (iWaitRes <> WAIT_TIMEOUT);
+      except
+        TerminateProcess(myProcessInfo.hProcess, UINT(ERROR_CANCELLED));
+        raise;
+      end;
       if (GetTickCount-start_ms > Wait) then
       begin
         TerminateProcess(myProcessInfo.hProcess, UINT(ERROR_CANCELLED));

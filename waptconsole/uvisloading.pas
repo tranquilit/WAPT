@@ -49,8 +49,6 @@ begin
   StopRequired:=True;
   if Assigned(OnStop) then
     OnStop(Self);
-  if ExceptionOnStop then
-    Raise EStopRequest.CreateFmt(rsCanceledByUser,[AMessage.Caption]);
 
 end;
 
@@ -99,6 +97,9 @@ end;
 
 procedure TVisLoading.DoProgress(Sender: TObject);
 begin
+  if StopRequired and ExceptionOnStop then
+    Raise EStopRequest.CreateFmt(rsCanceledByUser,[AMessage.Caption]);
+
   if AProgressBar.position >= AProgressBar.Max then
       AProgressBar.position := AProgressBar.Min
   else
