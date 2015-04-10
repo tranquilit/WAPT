@@ -45,7 +45,6 @@ type
     ActEvaluate: TAction;
     ActBuildUpload: TAction;
     ActCreateCertificate: TAction;
-    ActCreateWaptSetupPy: TAction;
     ActEvaluateVar: TAction;
     ActEditHostPackage: TAction;
     ActHostSearchPackage: TAction;
@@ -1000,6 +999,7 @@ begin
             Application.ProcessMessages;
             waptsetupPath := '';
             try
+              ProgressTitle(rsCreationInProgress);
               waptsetupPath := CreateWaptSetup(fnPublicCert.FileName,
                 edRepoUrl.Text, GetWaptServerURL, fnWaptDirectory.Directory, edOrgName.Text, @DoProgress, 'waptagent');
 
