@@ -202,8 +202,15 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
 
             make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn)
             void = subprocess.check_output(['/etc/init.d/waptserver', 'start'], stderr=subprocess.STDOUT)
-            void = subprocess.check_output(['a2dissite', 'default'], stderr=subprocess.STDOUT)
-            void = subprocess.check_output(['a2dissite', 'default-ssl'], stderr=subprocess.STDOUT)
+            # the two following calls may fail on Debian Jessie
+            try:
+                void = subprocess.check_output(['a2dissite', 'default'], stderr=subprocess.STDOUT)
+            except Exception:
+                pass
+            try:
+                void = subprocess.check_output(['a2dissite', 'default-ssl'], stderr=subprocess.STDOUT)
+            except Exception:
+                pass
             void = subprocess.check_output(['a2enmod', 'ssl'], stderr=subprocess.STDOUT)
             void = subprocess.check_output(['a2enmod', 'proxy'], stderr=subprocess.STDOUT)
             void = subprocess.check_output(['a2enmod', 'proxy_http'], stderr=subprocess.STDOUT)
