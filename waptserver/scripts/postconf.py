@@ -86,7 +86,7 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn):
         }
 
     config_string = template.render(template_vars)
-    dst_file = file('/etc/apache2/sites-available/wapt', 'wt')
+    dst_file = file('/etc/apache2/sites-available/wapt.conf', 'wt')
     dst_file.write(config_string)
     dst_file.close()
 
