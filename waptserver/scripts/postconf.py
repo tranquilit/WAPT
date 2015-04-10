@@ -86,7 +86,7 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn):
         }
 
     config_string = template.render(template_vars)
-    dst_file = file('/etc/apache2/sites-available/wapt', 'wt')
+    dst_file = file('/etc/apache2/sites-available/wapt.conf', 'wt')
     dst_file.write(config_string)
     dst_file.close()
 
@@ -192,7 +192,7 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
             if not fqdn:
                 fqdn = 'wapt'
             if '.' not in fqdn:
-                fqdn += '.local'
+                fqdn += '.lan'
             msg = 'FQDN for the WAPT server (eg. wapt.acme.com)'
             (code, reply) = postconf.inputbox(text=msg, width=len(msg)+4, init=fqdn)
             if code != postconf.DIALOG_OK:
@@ -202,8 +202,19 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
 
             make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn)
             void = subprocess.check_output(['/etc/init.d/waptserver', 'start'], stderr=subprocess.STDOUT)
-            void = subprocess.check_output(['a2dissite', 'default'], stderr=subprocess.STDOUT)
-            void = subprocess.check_output(['a2dissite', 'default-ssl'], stderr=subprocess.STDOUT)
+            # the two following calls may fail on Debian Jessie
+            try:
+                void = subprocess.check_output(['a2dissite', 'default'], stderr=subprocess.STDOUT)
+            except Exception:
+                pass
+            try:
+                void = subprocess.check_output(['a2dissite', '000-default'], stderr=subprocess.STDOUT)
+            except Exception:
+                pass
+            try:
+                void = subprocess.check_output(['a2dissite', 'default-ssl'], stderr=subprocess.STDOUT)
+            except Exception:
+                pass
             void = subprocess.check_output(['a2enmod', 'ssl'], stderr=subprocess.STDOUT)
             void = subprocess.check_output(['a2enmod', 'proxy'], stderr=subprocess.STDOUT)
             void = subprocess.check_output(['a2enmod', 'proxy_http'], stderr=subprocess.STDOUT)
