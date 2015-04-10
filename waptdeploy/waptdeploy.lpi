@@ -24,6 +24,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="2"/>
       <RevisionNr Value="2"/>
+      <BuildNr Value="2"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT auto deploy" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -35,19 +36,22 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="force"/>
+        <CommandLineParams Value="--minversion=0.9.8 --tasks=useWaptServer,autorunTray"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="pl_DCP"/>
+        <PackageName Value="pl_synapse"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pl_DCP"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_utils"/>
       </Item3>
+      <Item4>
+        <PackageName Value="pltis_superobject"/>
+      </Item4>
     </RequiredPackages>
     <Units Count="1">
       <Unit0>
@@ -84,6 +88,11 @@
       <LinkSmart Value="True"/>
     </Linking>
     <Other>
+      <Verbosity>
+        <ShowCompProc Value="True"/>
+        <ShowHintsForUnusedUnitsInMainSrc Value="True"/>
+      </Verbosity>
+      <WriteFPCLogo Value="False"/>
       <CompilerMessages>
         <MsgFileName Value=""/>
       </CompilerMessages>

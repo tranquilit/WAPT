@@ -31,7 +31,7 @@ uses
   Classes, SysUtils, CustApp,
   { you can add units after this }
   Windows, PythonEngine, waptcommon, uwaptres, tiscommon, superobject,
-  soutils, zmqapi,tisstrings;
+  zmqapi,tisstrings;
 type
   { pwaptget }
 
