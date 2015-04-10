@@ -873,12 +873,12 @@ class WaptBaseDB(object):
 
     def __enter__(self):
         self.begin()
-        logger.debug(u'DB enter %i' % self.transaction_depth)
+        #logger.debug(u'DB enter %i' % self.transaction_depth)
         return self
 
     def __exit__(self, type, value, tb):
         if not value:
-            logger.debug(u'DB exit %i' % self.transaction_depth)
+            #logger.debug(u'DB exit %i' % self.transaction_depth)
             self.commit()
         else:
             self.rollback()
@@ -1908,7 +1908,13 @@ class WaptServer(object):
         """ """
         surl = self.server_url
         if surl:
-            req = requests.post("%s/%s" % (surl,action),data=data,files=files,proxies=self.proxies,verify=False,timeout=timeout or self.timeout,auth=auth or self.auth(),headers=default_http_headers())
+            headers = default_http_headers()
+            if data:
+                headers.update({
+                    'Content-type': 'binary/octet-stream',
+                    'Content-transfer-encoding': 'binary',
+                    })
+            req = requests.post("%s/%s" % (surl,action),data=data,files=files,proxies=self.proxies,verify=False,timeout=timeout or self.timeout,auth=auth or self.auth(),headers=headers)
             req.raise_for_status()
             return json.loads(req.content)
         else:
@@ -2972,17 +2978,9 @@ class Wapt(object):
                     file = file[1:-1]
                     #upload par http vers un serveur WAPT  (url POST upload_package)
                     with open(file,'rb') as afile:
-                        req = requests.post("%s/upload_package/%s" % (self.waptserver.server_url,
-                                os.path.basename(file)),
-                                data=afile,
-                                proxies=self.waptserver.proxies,
-                                verify=False,
-                                auth=auth,
-                                headers=default_http_headers())
-                        req.raise_for_status()
-                        res = json.loads(req.content)
-                        if res['status'] != 'OK':
-                            raise Exception(u'Unable to upload package: %s'%ensure_unicode(res['message']))
+                        res = self.waptserver.post('upload_package/%s'%os.path.basename(file),data=afile,auth=auth,timeout=300)
+                    if res['status'] != 'OK':
+                        raise Exception(u'Unable to upload package: %s'%ensure_unicode(res['message']))
                 return res
 
     def check_install_running(self,max_ttl=60):
