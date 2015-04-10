@@ -192,7 +192,7 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
             if not fqdn:
                 fqdn = 'wapt'
             if '.' not in fqdn:
-                fqdn += '.local'
+                fqdn += '.lan'
             msg = 'FQDN for the WAPT server (eg. wapt.acme.com)'
             (code, reply) = postconf.inputbox(text=msg, width=len(msg)+4, init=fqdn)
             if code != postconf.DIALOG_OK:
