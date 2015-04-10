@@ -208,6 +208,10 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
             except Exception:
                 pass
             try:
+                void = subprocess.check_output(['a2dissite', '000-default'], stderr=subprocess.STDOUT)
+            except Exception:
+                pass
+            try:
                 void = subprocess.check_output(['a2dissite', 'default-ssl'], stderr=subprocess.STDOUT)
             except Exception:
                 pass
