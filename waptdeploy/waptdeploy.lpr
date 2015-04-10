@@ -1,8 +1,23 @@
 program waptdeploy;
 {$mode delphiunicode}
 
-uses classes, windows, SysUtils, wininet, URIParser, superobject, shellapi,
-  tishttp, uwaptdeployres, DCPsha256;
+uses classes, windows, SysUtils, wininet, superobject, shellapi,
+  tishttp, uwaptdeployres, DCPsha256,winsock2,jwawindns,synautil,
+  IniFiles;
+
+
+function IniReadString(const FileName, Section, Line: string; Default: String
+  ): string;
+var
+  Ini: TIniFile;
+begin
+  Ini := TIniFile.Create(FileName);
+  try
+    Result := Ini.ReadString(Section, Line, Default);
+  finally
+    Ini.Free;
+  end;
+end;
 
 function GetComputerName : AnsiString;
 var
@@ -16,6 +31,68 @@ begin
     Result := ''
 end;
 
+procedure SortByFields(SOArray: ISuperObject;Fields:array of string);
+  function SOCompareFields(SOArray:ISuperObject;idx1,idx2:integer):integer;
+  var
+    compresult : TSuperCompareResult;
+    SO1,SO2,F1,F2:ISuperObject;
+    i:integer;
+  begin
+    SO1 := SOArray.AsArray[idx1];
+    SO2 := SOArray.AsArray[idx2];
+    for i:=low(Fields) to high(fields) do
+    begin
+      F1 := SO1[Fields[i]];
+      F2 := SO2[Fields[i]];
+      compresult := SO1.Compare(SO2);
+      case compresult of
+        cpLess : Result := -1;
+        cpEqu  : Result := 0;
+        cpGreat : Result := 1;
+        cpError :  Result := CompareStr(F1.AsString,F2.AsString);
+      end;
+      if Result<>0 then
+        Break;
+    end;
+  end;
+
+  procedure QuickSort(L, R: integer);
+  var
+    I, J, P: Integer;
+    item1,item2:ISuperObject;
+  begin
+    repeat
+      I := L;
+      J := R;
+      P := (L + R) shr 1;
+      repeat
+        while SOCompareFields(SOArray, I, P) < 0 do Inc(I);
+        while SOCompareFields(SOArray,J, P) > 0 do Dec(J);
+        if I <= J then
+        begin
+          //exchange items
+          item1 := SOArray.AsArray[I];
+          item2 := SOArray.AsArray[J];
+          SOArray.AsArray[I] := item2;
+          SOArray.AsArray[J] := item1;
+          if P = I then
+            P := J
+          else if P = J then
+            P := I;
+          Inc(I);
+          Dec(J);
+        end;
+      until I > J;
+      if L < J then QuickSort(L, J);
+      L := I;
+    until I >= R;
+  end;
+
+begin
+  if SOArray.AsArray<>Nil then
+    QuickSort(0,SOArray.AsArray.Length-1);
+end;
+
 function ReadRegEntry(strSubKey,strValueName: AnsiString): AnsiString;
 var
  Key: HKey;
@@ -23,6 +100,7 @@ var
  Buffer: array[0..255] of ansichar;
  Size: cardinal;
 begin
+ Key := 0;
  Result := 'ERROR';
  Size := SizeOf(Buffer);
  subkey:= PAnsiChar(strSubKey);
@@ -98,6 +176,28 @@ begin
 	 end; // if dwVersionSize
 end;
 
+function WaptGetIniPath:String;
+begin
+  if FileExists('c:\wapt\wapt-get.ini') then
+    Result := 'c:\wapt\wapt-get.ini'
+  else
+  if FileExists(GetEnvironmentVariable('ProgramFiles(x86)')+'\wapt\wapt-get.ini') then
+      Result := GetEnvironmentVariable('ProgramFiles(x86)')+'\wapt\wapt-get.ini'
+  else
+  if FileExists(GetEnvironmentVariable('ProgramFiles')+'\wapt\wapt-get.ini') then
+      Result := GetEnvironmentVariable('ProgramFiles')+'\wapt\wapt-get.ini'
+  else
+    Result := 'c:\wapt\wapt-get.ini';
+end;
+
+function WaptIniReadString(Parameter,DefaultValue:String):String;
+begin
+  if FileExists(WaptGetIniPath) then
+    Result := IniReadString(WaptGetIniPath,'global',Parameter,DefaultValue)
+  else
+    Result := DefaultValue;
+end;
+
 function LocalWaptVersion:AnsiString;
 var
   local_version: Ansistring;
@@ -133,6 +233,7 @@ begin
   end;
 end;
 
+//Configure supplied Wininet Request handle to ignore certificates errors
 function SetToIgnoreCerticateErrors(oRequestHandle:HINTERNET; var aErrorMsg: Ansistring): Boolean;
 var
   vDWFlags: DWord;
@@ -178,6 +279,7 @@ begin
 end;
 
 
+//Given a string and a separator, return next token and remove this token from start of source string.
 function StrToken(var S: Ansistring; Separator: AnsiString): Ansistring;
 var
   I: SizeInt;
@@ -186,7 +288,7 @@ begin
   if I <> 0 then
   begin
     Result := Copy(S, 1, I - 1);
-    Delete(S, 1, I);
+    Delete(S, 1, I+length(Separator)-1);
   end
   else
   begin
@@ -195,6 +297,7 @@ begin
   end;
 end;
 
+// Run Commandline, return output in Text var, and retunr True is command has benn launched properly.
 function GetDosOutput(const CommandLine: Ansistring;
    WorkDir: Ansistring;
    var text: AnsiString): Boolean;
@@ -284,7 +387,7 @@ begin
    end;
 end;
 
-
+// Compare version member by member as int or string
 function CompareVersion(v1,v2:AnsiString):integer;
 var
   tok1,tok2:AnsiString;
@@ -303,6 +406,7 @@ begin
   until (result<>0) or (tok1='') or (tok2='');
 end;
 
+//Decodes a string of lines like key=value as returned by wmic /VALUE command.
 function DecodeKeyValue(wmivalue:AnsiString;LowerKey:Boolean=True;ConvertArrayValue:Boolean=True):ISuperObject;
 var
   line,key,value:AnsiString;
@@ -347,12 +451,13 @@ begin
   until trim(wmivalue)='';
 end;
 
+
+//Get basic identification information fir the computer using wmic
 function ComputerSystem: ISuperObject;
 var
   Res:AnsiString;
 begin
   if GetDosOutput('wmic PATH Win32_ComputerSystemProduct GET UUID,IdentifyingNumber,Name,Vendor /VALUE','',res) then
-//  if ExecAndCapture('wmic PATH Win32_ComputerSystemProduct GET UUID',res)>0 then
   begin
     Result := DecodeKeyValue(res);
     if Result.DataType=stArray then
@@ -363,30 +468,368 @@ begin
     Result:=SO();
 end;
 
+// Retrieve enabled network interfaces with ip parameters.
 function NetworkConfig:ISUperObject;
 var
   res:AnsiString;
 begin
   if GetDosOutput('wmic NICCONFIG where ipenabled=True get MACAddress, DefaultIPGateway, IPAddress, IPSubnet, DNSHostName, DNSDomain /VALUE','',res) then
-  begin
-    Result := DecodeKeyValue(res);
-    //WriteLn(Result.AsJSon(True));
-  end
+    Result := DecodeKeyValue(res)
   else
     Result := SO(stArray);
 end;
 
+// Trigger a local update of available packages. (require local service to be running)
 function UpdateStatus:AnsiString;
 var
-  data:String;
+  port,data:String;
 begin
-  data := httpGetString('http://127.0.0.1:8088/update.json');
+  port := WaptIniReadString('waptservice_port','8088');
+  data := httpGetString('http://127.0.0.1:'+port+'/update.json');
   result := data;
 end;
 
+
+function killtask(exename:AnsiString):AnsiString;
+var
+    Res :AnsiString;
+begin
+  if GetDosOutput('taskkill /F /IM '+exename+ ' /T','',res) then
+    Result := res
+  else
+    Res:= '';
+end;
+
+function IPV4ToString(ipv4:LongWord):String;
+begin
+  Result :=  format('%D.%D.%D.%D',[ipv4  and $FF, (ipv4  shr 8) and $FF,  (ipv4  shr 16) and $FF, (ipv4  shr 24) and $FF]);
+end;
+
+//query current dns server for A record and return a list of IP (recursive if cname is returned by the DNS)
+function DNSAQuery(name: AnsiString): ISuperObject;
+var
+  ppQueryResultsSet : PDNS_RECORD;
+  retvalue: Integer;
+  res : AnsiString;
+  ip,ips: ISuperObject;
+begin
+  Result := TSuperObject.Create(stArray);
+  ppQueryResultsSet := Nil;
+  retvalue := DnsQuery(
+    PAnsiChar(name),
+    DNS_TYPE_A,
+    DNS_QUERY_BYPASS_CACHE or DNS_QUERY_NO_LOCAL_NAME or DNS_QUERY_NO_HOSTS_FILE,
+    Nil,
+    @ppQueryResultsSet,
+    Nil);
+  if (retvalue=0) and (ppQueryResultsSet<>Nil) then
+  try
+    while ppQueryResultsSet<>Nil do
+    begin
+      if (ppQueryResultsSet^.wType=DNS_TYPE_CNAME) then
+      begin
+        // recursive query if a CNAME is returned.
+        // very strange ... ppQueryResultsSet^.Data.PTR works but ppQueryResultsSet^.Data.CNAME not... same structure pNameHost in both cases.
+        ips := DNSAQuery(ppQueryResultsSet^.Data.PTR.pNameHost);
+        for ip in ips do
+          Result.AsArray.Add(ip.AsString);
+      end
+      else
+      if (ppQueryResultsSet^.wType=DNS_TYPE_A) and (ppQueryResultsSet^.Data.A.IpAddress<>0) and (LowerCase(ppQueryResultsSet^.pName) = LowerCase(name)) then
+      begin
+        res := IPV4ToString(ppQueryResultsSet^.Data.A.IpAddress);
+        UniqueString(res);
+        Result.AsArray.Add(res);
+      end;
+      ppQueryResultsSet:= ppQueryResultsSet^.pNext;
+    end;
+  finally
+    DnsRecordListFree(ppQueryResultsSet,DnsFreeRecordList);
+  end;
+end;
+
+//query current dns server for SRV record and return a list of {name,priority,weight,port}
+function DNSSRVQuery(name:AnsiString):ISuperObject;
+var
+  ppQueryResultsSet : PDNS_RECORD;
+  retvalue: Integer;
+  res : AnsiString;
+  rec:ISuperObject;
+begin
+  Result := TSuperObject.Create(stArray);
+  ppQueryResultsSet := Nil;
+  retvalue := DnsQuery(
+    PAnsiChar(name),
+    DNS_TYPE_SRV,
+    DNS_QUERY_BYPASS_CACHE or DNS_QUERY_NO_LOCAL_NAME or DNS_QUERY_NO_HOSTS_FILE,
+    Nil,
+    @ppQueryResultsSet,
+    Nil);
+  if (retvalue=0) and (ppQueryResultsSet<>Nil) then
+  try
+    while ppQueryResultsSet<>Nil do
+    begin
+      rec:= TSuperObject.Create(stObject);
+      if ppQueryResultsSet^.wType=DNS_TYPE_SRV then
+      begin
+        res := ppQueryResultsSet^.Data.SRV.pNameTarget;
+        UniqueString(res);
+        rec.S['name'] := res;
+        rec.I['port'] := ppQueryResultsSet^.Data.SRV.wPort;
+        rec.I['priority'] := ppQueryResultsSet^.Data.SRV.wPriority;
+        rec.I['weight'] := ppQueryResultsSet^.Data.SRV.wWeight;
+        Result.AsArray.Add(rec);
+      end;
+      ppQueryResultsSet:= ppQueryResultsSet^.pNext;
+    end;
+    SortByFields(Result,['priority','port']);
+  finally
+    DnsRecordListFree(ppQueryResultsSet,DnsFreeRecordList);
+  end;
+end;
+
+//query current dns server for CNAME record and return a list of {name}
+function DNSCNAMEQuery(name:AnsiString):ISuperObject;
+var
+  ppQueryResultsSet : PDNS_RECORD;
+  retvalue: Integer;
+  res : AnsiString;
+begin
+  Result := TSuperObject.Create(stArray);
+  ppQueryResultsSet := Nil;
+  retvalue := DnsQuery(
+    PAnsiChar(name),
+    DNS_TYPE_CNAME,
+    DNS_QUERY_BYPASS_CACHE or DNS_QUERY_NO_LOCAL_NAME or DNS_QUERY_NO_HOSTS_FILE,
+    Nil,
+    @ppQueryResultsSet,
+    Nil);
+  if (retvalue=0) and (ppQueryResultsSet<>Nil) then
+  try
+    while ppQueryResultsSet<>Nil do
+    begin
+      // strange ppQueryResultsSet^.Data.PTR works but not ppQueryResultsSet^.Data.CNAME
+      if (ppQueryResultsSet^.wType=DNS_TYPE_CNAME) and (ppQueryResultsSet^.Data.PTR.pNameHost<>Nil) then
+      begin
+        res := ppQueryResultsSet^.Data.PTR.pNameHost;
+        UniqueString(res);
+        Result.AsArray.Add(res);
+      end;
+      ppQueryResultsSet:= ppQueryResultsSet^.pNext;
+    end;
+  finally
+    DnsRecordListFree(ppQueryResultsSet,DnsFreeRecordList);
+  end;
+end;
+
+Function IPV4ToInt(ipaddr:AnsiString):LongInt;
+begin
+  Result := inet_addr(PAnsiChar(ipaddr));
+end;
+
+Function SameIPV4Subnet(ip1,ip2,netmask:AnsiString):Boolean;
+begin
+    Result := (IPV4ToInt(ip1) and IPV4ToInt(netmask)) = (IPV4ToInt(ip2) and IPV4ToInt(netmask));
+end;
+
+//Get dns domain from global tcpip parameters in registry
+function GetDNSDomain:AnsiString;
+begin
+  try
+    Result := ReadRegEntry('SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters','Domain');
+    if (Result='') or (Result = 'ERROR') then
+        Result := ReadRegEntry('SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters','DhcpDomain');
+  except
+    Result := ReadRegEntry('SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters','DhcpDomain');
+  end;
+end;
+
+function httpGetDate(url:RawByteString):TDateTime;
+var
+  headers,line : AnsiString;
+begin
+  Result := 0;
+  headers:=httpGetHeaders(url);
+  if headers<>'' then
+  begin
+{HTTP/1.1 200 OK
+Date: Fri, 10 Apr 2015 10:18:54 GMT
+Server: Apache
+Last-Modified: Fri, 10 Apr 2015 10:15:02 GMT
+ETag: "81fd1-82df-5135c099975fd"
+Accept-Ranges: bytes
+Content-Length: 33503
+Keep-Alive: timeout=5, max=100
+Connection: Keep-Alive}
+    Headers := ReplaceString(Headers,#13#10,#13);
+    while Headers<>'' do
+    begin
+      line := StrToken(Headers,#13);
+      if pos('Last-Modified:',line)=1 then
+      begin
+        Result := DecodeRfcDateTime(Copy(line,pos(':',line)+2,255));
+        exit;
+      end;
+    end;
+  end;
+end;
+
+
+function SameNet(connected:ISuperObject;IP:AnsiString):Boolean;
+var
+  conn:ISuperObject;
+begin
+  for conn in Connected do
+  begin
+    //Assumed first ip is ipv4 and second is IPV6... in the wmic network value object
+    if SameIPV4Subnet(conn['ipaddress'].AsArray.S[0],IP,conn['ipsubnet'].AsArray.S[0]) then
+    begin
+      Result := True;
+      Exit;
+    end;
+  end;
+  Result := False;
+end;
+
+function GetMainWaptRepo: String;
+var
+  rec,recs,urls,ConnectedIps,ServerIp : ISuperObject;
+  url,dnsdomain:AnsiString;
+  PackagesDate: TDateTime;
+begin
+  Result := WaptIniReadString('repo_url','');
+  if Result <> '' then
+    exit;
+
+  dnsdomain:=GetDNSDomain;
+  if dnsdomain<>'' then
+  begin
+    ConnectedIps := NetworkConfig;
+    //SRV _wapt._tcp
+    recs := DNSSRVQuery('_wapt._tcp.'+dnsdomain);
+    for rec in recs do
+    begin
+      if rec.I['port'] = 443 then
+        url := 'https://'+rec.S['name']+'/wapt'
+      else
+        url := 'http://'+rec.S['name']+':'+rec.S['port']+'/wapt';
+      rec.S['url'] := url;
+      try
+        ServerIp := DNSAQuery(rec.S['name']);
+        if ServerIp.AsArray.Length > 0 then
+          rec.B['outside'] := not SameNet(ConnectedIps,ServerIp.AsArray.S[0])
+        else
+          rec.B['outside'] := True;
+      except
+        rec.B['outside'] := True;
+      end;
+      // order is priority asc but wieght desc
+      rec.I['weight'] := - rec.I['weight'];
+    end;
+    SortByFields(recs,['outside','priority','weight']);
+
+    for rec in recs do
+    try
+      writeln('trying '+rec.S['url']+'/Packages');
+      Result := rec.S['url'];
+      PackagesDate:=httpGetDate(Result+'/Packages');
+      if PackagesDate>0 then
+        Exit;
+    except
+      on E:Exception do writeln('Unable to HEAD '+ rec.S['url']+'/Packages'+' '+E.Message);
+    end;
+
+    //CNAME wapt.
+    recs := DNSCNAMEQuery('wapt'+dnsdomain);
+    for rec in recs do
+    try
+      Result := 'http://'+rec.AsString+'/wapt';
+      writeln('trying '+result+'/Packages');
+      PackagesDate:=httpGetDate(Result+'/Packages');
+      if PackagesDate>0 then
+        Exit;
+    except
+      on E:Exception do writeln('Unable to HEAD '+ result+'/Packages'+' '+E.Message);
+    end;
+
+    //A wapt
+    Result := 'http://wapt.'+dnsdomain+'/wapt';
+    writeln('trying '+result+'/Packages');
+    try
+      PackagesDate:=httpGetDate(Result+'/Packages');
+      if PackagesDate>0 then
+        Exit;
+    except
+      on E:Exception do writeln('Unable to HEAD '+ result+'/Packages'+' '+E.Message);
+    end;
+  end;
+  result :='';
+end;
+
+const
+  CacheWaptServerUrl: AnsiString = 'None';
+
+function GetWaptServerURL: String;
+var
+  dnsdomain,url:AnsiString;
+  rec,recs,ConnectedIps,ServerIp : ISuperObject;
+
+begin
+  Result := WaptIniReadString('wapt_server','');
+  if Result <> '' then
+    exit;
+
+  if CacheWaptServerUrl<>'None' then
+  begin
+    Result := CacheWaptServerUrl;
+    Exit;
+  end;
+
+  ConnectedIps := NetworkConfig;
+  dnsdomain:=GetDNSDomain;
+  if dnsdomain<>'' then
+  begin
+    //SRV _wapt._tcp
+    recs := DNSSRVQuery('_waptserver._tcp.'+dnsdomain);
+    for rec in recs do
+    begin
+      if rec.I['port'] = 443 then
+        url := 'https://'+rec.S['name']
+      else
+        url := 'http://'+rec.S['name']+':'+rec.S['port'];
+      rec.S['url'] := url;
+      try
+        ServerIp := DNSAQuery(rec.S['name']);
+        if ServerIp.AsArray.Length > 0 then
+          rec.B['outside'] := not SameNet(ConnectedIps,ServerIp.AsArray.S[0])
+        else
+          rec.B['outside'] := True;
+      except
+        rec.B['outside'] := True;
+      end;
+      // order is priority asc but wieght desc
+      rec.I['weight'] := - rec.I['weight'];
+    end;
+    SortByFields(recs,['outside','priority','weight']);
+
+    for rec in recs do
+    begin
+      Result := rec.S['url'];
+      CacheWaptServerUrl := Result;
+      exit;
+    end;
+  end;
+
+  //None found by DNS Query
+  result :='';
+  //Invalid cache
+  CacheWaptServerUrl := 'None';
+end;
+
+// Send to the WAPT Server the minimum registration information
 function BasicRegisterComputer:ISuperObject;
 var
-  json : String;
+  uuid,json : String;
   data,nw,intf,computer: ISuperObject;
 
   procedure addkey(key,value:String);
@@ -397,7 +840,9 @@ var
 begin
   data := SO;
   computer := ComputerSystem;
-  data.S['uuid'] := computer.S['uuid'];
+  uuid := WaptIniReadString('uuid',computer.S['uuid']);
+
+  data.S['uuid'] := uuid;
   data.S['wapt.wapt-exe-version'] := LocalWaptVersion;
   data.S['host.computer_name'] := GetComputerName;
   data.S['host.system_productname'] := computer.S['name'];
@@ -427,20 +872,9 @@ begin
       break;
     end;
   end;
-  result:=SO(httpPostData('waptdeploy','http://wapt:8080/add_host',
+  result:=SO(httpPostData('waptdeploy',getWaptServerURL+'/add_host',
           data.AsJSon));
 end;
-
-function killtask(exename:AnsiString):AnsiString;
-var
-    Res :AnsiString;
-begin
-  if GetDosOutput('taskkill /F /IM '+exename+ ' /T','',res) then
-    Result := res
-  else
-    Res:= '';
-end;
-
 
 function RunAsAdmin(const Handle: Hwnd; aFile : Ansistring; Params: Ansistring): Boolean;
 var
@@ -517,6 +951,57 @@ begin
   end;
 end;
 
+type TStrArray = Array of AnsiString;
+
+// Returns only non options arguments of command line (those not starting with -- or -)
+function CommandParams:TStrArray;
+var
+  i,p:Integer;
+begin
+  SetLength(Result,Paramcount);
+  p := 0;
+  For i:=1 to Paramcount do
+  begin
+    if (ParamStr(i)<>'') and (ParamStr(i)[1]<>'-') then
+    begin
+      Result[p] := ParamStr(i);
+      inc(p);
+    end;
+  end;
+  SetLength(result,p);
+end;
+
+//Return a map of the options of command line (starting with - or --)
+function CommandOptions:ISuperObject;
+var
+  i:integer;
+  line,key,value:AnsiString;
+begin
+  Result := TSuperObject.Create(stObject);
+  for i:=1 to Paramcount do
+  begin
+    line := ParamStr(i);
+    if (line<>'') and (line[1]='-') then
+    begin
+      if pos('--',line)=1 then
+      begin
+        line := copy(line,3,length(line));
+        key := StrToken(line,'=');
+        value := line;
+        Result.S[key] := value;
+      end
+      else
+      if pos('-',line)=1 then
+      begin
+        line := copy(line,2,length(line));
+        key := line[1];
+        value := trim(copy(line,2,length(line)));
+        Result.S[key] := value;
+      end
+    end;
+  end;
+end;
+
 var
   tmpDir,waptsetupPath,localVersion,requiredVersion,getVersion:AnsiString;
   res : AnsiString;
@@ -525,53 +1010,107 @@ var
 
 const
   defaultwapt:AnsiString='wapt';
-  minversion:AnsiString='0.9.5.1';
+  minversion:AnsiString='1.2.2.0';
+  mainrepo:AnsiString='http://wapt/wapt';
+
+var
+  cmdparams:TStrArray;
+  cmdoptions:ISuperObject;
+  mergetasks:String;
 
 
 begin
-  if ParamStr(1)='--help'  then
+  cmdparams := CommandParams;
+  cmdoptions := CommandOptions;
+
+  if cmdoptions.AsObject.Exists('help') or cmdoptions.AsObject.Exists('h')  then
   begin
     Writeln(rsUsage1);
     Writeln(Format(rsUsage2, [minversion]));
     Writeln(Format(rsUsage3, [defaultwapt]));
-    Writeln(rsUsage4);
+    Writeln(Format(rsUsage4, []));
+    Writeln(Format(rsUsage5, []));
+    Writeln(Format(rsUsage6, []));
     Exit;
   end;
-  waptsetupurl := 'http://'+defaultwapt+'/wapt/waptagent.exe';
-  if ParamStr(1)='force' then
+
+  if cmdoptions.AsObject.Exists('repo_url') then
+    mainrepo := cmdoptions.S['repo_url']
+  else
+  try
+    mainrepo :=GetMainWaptRepo;
+  except
+    on E:Exception do
+    begin
+      Writeln('Unable to discover the wapt repository: '+E.Message);
+      if GetDNSDomain<>'' then
+        mainrepo := 'http://wapt.'+GetDNSDomain+'/wapt'
+      else
+        mainrepo := 'http://wapt/wapt';
+    end;
+  end;
+
+  try
+    Writeln('WAPT Server : '+GetWaptServerURL);
+  except
+    on E:Exception do
+      Writeln('Unable to discover the wapt repository: '+E.Message);
+  end;
+
+  WriteLn('Main repo:'+mainrepo);
+  waptsetupurl := mainrepo+'/waptagent.exe';
+  if cmdoptions.AsObject.Exists('force') then
   begin
     localVersion := '';
     requiredVersion :='force';
   end
   else
-   begin
+  if cmdoptions.AsObject.Exists('minversion') then
+  begin
     localVersion := LocalWaptVersion;
-    requiredVersion := ParamStr(1);
+    requiredVersion := cmdoptions.S['minversion'];
+  end
+  else
+  begin
+    localVersion := LocalWaptVersion;
+    if Length(cmdparams)>=1 then
+      requiredVersion := cmdparams[0]
   end;
+
   hashString := '';
-  if ParamCount >= 2 then
-    hashString := ParamStr(2);
+  if cmdoptions.AsObject.Exists('hash') then
+    hashString := cmdoptions.S['hash'];
+
+  mergetasks := 'useWaptServer';
+  if cmdoptions.AsObject.Exists('tasks') then
+    mergetasks := cmdoptions.S['tasks'];
+
+  waptsetupurl := '';
   writeln('WAPT version: '+localVersion);
   if (requiredVersion='') or (requiredVersion='force') then
   begin
     requiredVersion:=minversion;
     try
-      waptdeploy := httpGetString('http://'+defaultwapt+'/wapt/waptdeploy.version');
+      waptdeploy := httpGetString(mainrepo+'/waptdeploy.version');
       waptdeploy := StringReplace(waptdeploy,#13#10,#10,[rfReplaceAll]);
       requiredVersion:=trim(StrToken(waptdeploy,#10));
       if requiredVersion='' then
         requiredVersion:=minversion;
       waptsetupurl :=trim(StrToken(waptdeploy,#10));
       if waptsetupurl='' then
-          waptsetupurl := 'http://wapt/wapt/waptagent.exe';
+        waptsetupurl := mainrepo+'/waptagent.exe';
       writeln('Got waptdeploy.version');
       writeln('   required version:'+requiredVersion);
       writeln('   download URL :'+waptsetupurl);
     except
       requiredVersion:=minversion;
-      waptsetupurl := 'http://'+defaultwapt+'/wapt/waptagent.exe';
+      waptsetupurl := mainrepo+'/waptagent.exe';
     end;
   end;
+
+  if cmdoptions.AsObject.Exists('waptsetupurl') then
+    waptsetupurl := cmdoptions.S['waptsetupurl'];
+
   writeln('WAPT required version: '+requiredVersion);
   if (localVersion='') or (CompareVersion(localVersion,requiredVersion)<0) or (requiredVersion='force') then
   try
@@ -593,9 +1132,7 @@ begin
     if (requiredVersion='force') or (CompareVersion(getVersion,requiredVersion)>=0) then
     begin
       writeln(rsInstall);
-
-      //writeln(Sto_RedirectedExecute(waptsetupPath+' /VERYSILENT /MERGETASKS=""useWaptServer,autorunTray','',100000,'Administrateur','','.....'));
-      if GetDosOutput(waptsetupPath+' /VERYSILENT /MERGETASKS=""useWaptServer""','',res) then
+      if GetDosOutput(waptsetupPath+' /VERYSILENT /MERGETASKS=""'+mergetasks+'""','',res) then
         writeln(Format(rsInstallOK, [LocalWaptVersion]));
     end
     else
