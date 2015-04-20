@@ -836,7 +836,11 @@ class WaptBaseDB(object):
             self.transaction_depth -= 1
         if self.transaction_depth == 0:
             logger.debug(u'DB commit')
-            self.db.execute('commit')
+            try:
+                self.db.execute('commit')
+            except:
+                self.db.execute('rollback')
+                raise
 
     def rollback(self):
         if self.transaction_depth > 0:
