@@ -3053,8 +3053,12 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[]):
             error('MSI %s has been installed but the uninstall key %s can not be found' % (msi,key))
     else:
         print('MSI %s already installed. Skipping msiexec' % msi)
-    if key and 'uninstallkey' in globals() and not key in uninstallkey:
-        uninstallkey.append(key)
+    if key:
+        # will try to add key in the caller's (setup.py) uninstallkey list
+        import inspect
+        caller_globals = inspect.stack()[1][0].f_globals
+        if 'uninstallkey' in caller_globals and not key in caller_globals['uninstallkey']:
+            caller_globals['uninstallkey'].append(key)
 
 def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefore=[]):
     """Install silently the supplied setup executable file, and add the uninstall key to
@@ -3093,9 +3097,12 @@ def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefor
             error('Setup %s has been ran but the uninstall key %s can not be found' % (msi,key))
     else:
         print('Exe setup %s already installed. Skipping' % exe)
-    if key and 'uninstallkey' in globals() and not key in uninstallkey:
-        uninstallkey.append(key)
-
+    if key:
+        # will try to add key in the caller's (setup.py) uninstallkey list
+        import inspect
+        caller_globals = inspect.stack()[1][0].f_globals
+        if 'uninstallkey' in caller_globals and not key in caller_globals['uninstallkey']:
+            caller_globals['uninstallkey'].append(key)
 
 def local_desktops():
     """Return a list of all local user's desktops paths
