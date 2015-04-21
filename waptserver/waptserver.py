@@ -53,6 +53,8 @@ import subprocess
 import tempfile
 import traceback
 import datetime
+import uuid
+
 
 from rocket import Rocket
 
@@ -78,7 +80,7 @@ from optparse import OptionParser
 usage="""\
 %prog [-c configfile] [--devel] [action]
 
-WAPTServer daemon.
+WAPT daemon.
 
 action is either :
   <nothing> : run service in foreground
@@ -138,7 +140,7 @@ mongodb_ip = "127.0.0.1"
 wapt_folder = ""
 wapt_user = ""
 wapt_password = ""
-wapt_server_uuid = ''
+server_uuid = ''
 
 waptserver_port = 8080
 waptservice_port = 8088
@@ -194,7 +196,7 @@ if config.has_section('options'):
         setloglevel(logger,loglevel)
 
     if config.has_option('options', 'server_uuid'):
-        wapt_server_uuid = config.get('options', 'server_uuid')
+        server_uuid = config.get('options', 'server_uuid')
 
 
 else:
@@ -1373,7 +1375,15 @@ def get_ip_port(host_data,recheck=False,timeout=None):
 
 @app.route('/ping')
 def ping():
-    return make_response(msg = _('WAPT Server running'), result = dict(version = __version__,api_root='/api/',api_version='v1',server_uuid=wapt_server_uuid))
+    return make_response(
+        msg = _('WAPT Server running'), result = dict(
+            version = __version__,
+            api_root='/api/',
+            api_version='v1',
+            uuid = server_uuid,
+            date = datetime2isodate(),
+            )
+            )
 
 
 @app.route('/trigger_reachable_discovery')
@@ -1959,6 +1969,43 @@ def host_cancel_task():
     except Exception, e:
         return make_response_from_exception(e)
 
+
+
+@app.route('/api/v1/usage_statistics')
+def usage_statictics():
+    """returns some anonymous usage statistics to give an idea of depth of use"""
+    hosts = get_db().hosts
+    stats = hosts.aggregate([
+        {'$unwind':'$packages'},
+        {'$group':
+            {'_id':'$uuid',
+                'last_query_date':{'$first':{'$substr':['$last_query_date',0,10]}},
+                'count':{'$sum':1},
+                'ok':{'$sum':{'$cond':[{'$eq': ['$packages.install_status', 'OK']},1,0]}},
+                'has_error':{'$first':{'$cond':[{'$ne':['$update_status.errors',[]]},1,0]}},
+                'need_upgrade':{'$first':{'$cond':[{'$ne':['$update_status.upgrades',[]]},1,0]}},
+            }},
+        {'$group':
+            {'_id':1,
+                'hosts_count':{'$sum':1},
+                'oldest_query':{'$min':'$last_query_date'},
+                'newest_query':{'$max':'$last_query_date'},
+                'packages_count_max':{'$max':'$count'},
+                'packages_count_avg':{'$avg':'$count'},
+                'packages_count_ok':{'$sum':'$ok'},
+                'hosts_count_has_error':{'$sum':'$has_error'},
+                'hosts_count_need_upgrade':{'$sum':'$need_upgrade'},
+            }},
+        ])
+
+    result = dict(
+        uuid = server_uuid,
+        version = __version__,
+        date = datetime2isodate(),
+        )
+    del(stats['result'][0]['_id'])
+    result.update(stats['result'][0])
+    return make_response(msg = _('Anomnymous usage statistics'), result = result)
 
 
 ##################################################################
