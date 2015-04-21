@@ -54,7 +54,7 @@ import tempfile
 import traceback
 import datetime
 import uuid
-from bson.son.json_util import dumps
+from bson.json_util import dumps
 
 from rocket import Rocket
 
@@ -1962,22 +1962,23 @@ def update_hosts():
     msg = []
     result = []
 
-    for data in post_data:
-        # build filter
-        if not 'uuid' in data:
-            raise Exception('No uuid provided in post host data')
-        uuid = data["uuid"]
-        result.append(hosts().update({'uuid':uuid},{"$set": data},upsert=True)
-        # check if client is reachable
-        if not 'check_hosts_thread' in g or not g.check_hosts_thread.is_alive():
-            logger.info('Creates check hosts thread for %s'%(uuid,))
-            g.check_hosts_thread = CheckHostsWaptService(timeout=clients_connect_timeout,uuids=[uuid])
-            g.check_hosts_thread.start()
-        else:
-            logger.info('Reuses current check hosts thread for %s'%(uuid,))
-            g.check_hosts_thread.queue.append(data)
+    try:
+        for data in post_data:
+            # build filter
+            if not 'uuid' in data:
+                raise Exception('No uuid provided in post host data')
+            uuid = data["uuid"]
+            result.append(hosts().update({'uuid':uuid},{"$set": data},upsert=True))
+            # check if client is reachable
+            if not 'check_hosts_thread' in g or not g.check_hosts_thread.is_alive():
+                logger.info('Creates check hosts thread for %s'%(uuid,))
+                g.check_hosts_thread = CheckHostsWaptService(timeout=clients_connect_timeout,uuids=[uuid])
+                g.check_hosts_thread.start()
+            else:
+                logger.info('Reuses current check hosts thread for %s'%(uuid,))
+                g.check_hosts_thread.queue.append(data)
 
-        msg.append('host {} updated in DB'.format(uuid))
+            msg.append('host {} updated in DB'.format(uuid))
 
     except Exception as e:
         return make_response_from_exception(e)
