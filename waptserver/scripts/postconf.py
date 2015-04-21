@@ -200,6 +200,11 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
             else:
                 fqdn = reply
 
+            if os.path.exists('/etc/apache2/sites-available/wapt'):
+                try:
+                    subprocess.check_output(['a2dissite', 'wapt'])
+                except Exception:
+                    pass
             make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn)
             void = subprocess.check_output(['/etc/init.d/waptserver', 'start'], stderr=subprocess.STDOUT)
             # the two following calls may fail on Debian Jessie
