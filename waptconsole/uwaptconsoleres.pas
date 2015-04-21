@@ -188,6 +188,7 @@ resourcestring
   rsCompletionProgress = '%s : %.0f%% completed';
 
 
+  rsDefaultUsageStatsURL = 'http://wapt.tranquil.it/usage_stats';
 
 implementation
 

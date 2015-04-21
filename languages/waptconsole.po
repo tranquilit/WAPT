@@ -1,4 +1,4 @@
-msgid " Uncheck \"Use simple file sharing\").Only required if a proxy is needed.Only required if a proxy is needed."
+msgid " Uncheck \"Use simple file sharing\").Only required if a proxy is needed.Only required if a proxy is needed.Only required if a proxy is needed."
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: tvisapropos.button1.caption
@@ -498,6 +498,10 @@ msgstr ""
 msgid "Private key password :"
 msgstr ""
 
+#: tviswaptconfig.button1.caption
+msgid "Show statistics"
+msgstr ""
+
 #: tviswaptconfig.caption
 msgid "Locale WAPT configuration"
 msgstr ""
@@ -598,6 +602,10 @@ msgstr ""
 
 #: tviswaptconfig.label7.caption
 msgid "http proxy"
+msgstr ""
+
+#: tviswaptconfig.label8.caption
+msgid "Send anonymous usage statistics to Tranquil IT"
 msgstr ""
 
 #: tviswaptdeploy.actdeploywapt.caption
@@ -1321,6 +1329,10 @@ msgstr ""
 #: uwaptconsoleres.rscreationinprogress
 msgctxt "uwaptconsoleres.rscreationinprogress"
 msgid "Creation in progress."
+msgstr ""
+
+#: uwaptconsoleres.rsdefaultusagestatsurl
+msgid "http://wapt.tranquil.it/usage_stats"
 msgstr ""
 
 #: uwaptconsoleres.rsdefinewaptdevpath

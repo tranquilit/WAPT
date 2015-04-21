@@ -522,6 +522,9 @@ end;
 procedure TVisWaptGUI.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 var
   ini : TIniFile;
+  last_usage_report : TDateTime;
+  stats: ISuperObject;
+  stats_report_url:String;
 begin
   Gridhosts.SaveSettingsToIni(Appuserinipath);
   GridPackages.SaveSettingsToIni(Appuserinipath);
@@ -530,11 +533,23 @@ begin
   GridHostSoftwares.SaveSettingsToIni(Appuserinipath);
   ini := TIniFile.Create(AppIniFilename);
   try
+    if ini.ReadBool('Global','send_usage_report',True) then
+    begin
+      last_usage_report:=ini.ReadDateTime('Global','last_usage_report',0);
+      if now - last_usage_report > 24 then
+      try
+        stats_report_url:=ini.ReadString('Global','usage_report_url',rsDefaultUsageStatsURL);
+        stats := WAPTServerJsonGet('api/v1/usage_statistics',[])['result'];
+        IdHttpPostData(stats_report_url,stats.AsJSon,waptcommon.UseProxyForTemplates);
+        ini.WriteDateTime('Global','last_usage_report',Now);
+      except
+        ini.WriteDateTime('Global','last_usage_report',Now);
+      end;
+    end;
     ini.WriteString('Global','language',DMPython.Language);
   finally
     ini.Free;
   end;
-
 end;
 
 function TVisWaptGUI.FilterSoftwares(softs: ISuperObject): ISuperObject;
@@ -1867,9 +1882,9 @@ begin
     begin
       uuids := Join(',',ExtractField(sel,'uuid'));
       if Sender = ActHostsDeleteHostPackage then
-        res := WAPTServerJsonGet('/api/v1/hosts_delete?uuid=%s&delete_packages=1',[uuids])
+        res := WAPTServerJsonGet('api/v1/hosts_delete?uuid=%s&delete_packages=1',[uuids])
       else
-        res := WAPTServerJsonGet('/api/v1/hosts_delete?uuid=%s',[uuids]);
+        res := WAPTServerJsonGet('api/v1/hosts_delete?uuid=%s',[uuids]);
       if res.B['success'] then
         ShowMessageFmt('%s',[res.S['msg']])
       else
@@ -2148,6 +2163,8 @@ begin
           inifile.ReadBool('global', 'use_http_proxy_for_server', edhttp_proxy.Text <> '');
         cbUseProxyForRepo.Checked :=
           inifile.ReadBool('global', 'use_http_proxy_for_repo', edhttp_proxy.Text <> '');
+        cbSendStats.Checked :=
+          inifile.ReadBool('global', 'send_usage_report', True);
         //eddefault_sources_root.Directory := inifile.ReadString('global','default_sources_root','');
         //eddefault_sources_url.text = inifile.ReadString('global','default_sources_url','https://srvdev/sources/%(packagename)s-wapt/trunk');
 
@@ -2168,6 +2185,8 @@ begin
             cbUseProxyForServer.Checked);
           inifile.WriteBool('global', 'use_http_proxy_for_repo',
             cbUseProxyForRepo.Checked);
+          inifile.WriteBool('global', 'send_usage_report',
+            cbSendStats.Checked);
           inifile.WriteString('global', 'default_sources_root',
             eddefault_sources_root.Text);
           //inifile.WriteString('global','default_sources_url',eddefault_sources_url.text);

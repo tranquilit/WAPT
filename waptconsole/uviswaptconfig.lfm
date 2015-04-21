@@ -1,11 +1,11 @@
 object VisWAPTConfig: TVisWAPTConfig
   Left = 419
-  Height = 340
+  Height = 370
   Top = 371
   Width = 507
   BorderStyle = bsDialog
   Caption = 'Locale WAPT configuration'
-  ClientHeight = 340
+  ClientHeight = 370
   ClientWidth = 507
   Font.CharSet = ANSI_CHARSET
   Font.Height = -11
@@ -18,7 +18,7 @@ object VisWAPTConfig: TVisWAPTConfig
   object ButtonPanel1: TButtonPanel
     Left = 6
     Height = 34
-    Top = 300
+    Top = 330
     Width = 495
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True
@@ -227,18 +227,6 @@ object VisWAPTConfig: TVisWAPTConfig
     State = cbChecked
     TabOrder = 9
   end
-  object Label6: TLabel
-    AnchorSideRight.Control = cbUseProxyForTemplate
-    Left = 4
-    Height = 13
-    Top = 273
-    Width = 274
-    Alignment = taRightJustify
-    Anchors = [akTop, akLeft, akRight]
-    BorderSpacing.Right = 3
-    Caption = 'Activate proxy when accessing the model repository'
-    ParentColor = False
-  end
   object cbUseProxyForTemplate: TCheckBox
     Left = 281
     Height = 17
@@ -256,5 +244,44 @@ object VisWAPTConfig: TVisWAPTConfig
     Width = 51
     Caption = 'http proxy'
     ParentColor = False
+  end
+  object Label6: TLabel
+    AnchorSideRight.Control = cbUseProxyForTemplate
+    Left = 4
+    Height = 13
+    Top = 273
+    Width = 274
+    Alignment = taRightJustify
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Right = 3
+    Caption = 'Activate proxy when accessing the model repository'
+    ParentColor = False
+  end
+  object cbSendStats: TCheckBox
+    Left = 281
+    Height = 17
+    Top = 296
+    Width = 20
+    Checked = True
+    State = cbChecked
+    TabOrder = 11
+  end
+  object Label8: TLabel
+    Left = 52
+    Height = 13
+    Top = 296
+    Width = 226
+    Alignment = taRightJustify
+    Caption = 'Send anonymous usage statistics to Tranquil IT'
+    ParentColor = False
+  end
+  object Button1: TButton
+    Left = 312
+    Height = 25
+    Top = 288
+    Width = 171
+    Caption = 'Show statistics'
+    OnClick = Button1Click
+    TabOrder = 12
   end
 end
