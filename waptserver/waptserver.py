@@ -1189,6 +1189,18 @@ def rewrite_config_item(cfg_file, *args):
     with open(cfg_file, 'wb') as cfg:
         config.write(cfg)
 
+# Reload config file.
+# On Rocket we rely on inter-threads synchronization,
+# thus the variable you want to sync MUST be declared as a *global*
+# On Unix we ask uwsgi to perform a graceful restart.
+def reload_config():
+    if os.name == "posix":
+        try:
+            import uwsgi
+            uwsgi.reload()
+        except ImportError:
+            pass
+
 @app.route('/login',methods=['POST'])
 def login():
     try:
@@ -1200,14 +1212,7 @@ def login():
                         global wapt_password
                         wapt_password = hashlib.sha1(d["newPass"].encode('utf8')).hexdigest()
                         rewrite_config_item(options.configfile, 'options', 'wapt_password', wapt_password)
-                        # Graceful reload pour prendre en compte le nouveau mot
-                        # mot de passe dans tous les workers uwsgi
-                        if os.name == "posix":
-                            try:
-                                import uwsgi
-                                uwsgi.reload()
-                            except ImportError:
-                                pass
+                        reload_config()
                     return "True"
             return "False"
         else:
@@ -1375,6 +1380,11 @@ def get_ip_port(host_data,recheck=False,timeout=None):
 
 @app.route('/ping')
 def ping():
+    global server_uuid
+    if server_uuid == '':
+        server_uuid = str(uuid.uuid1())
+        rewrite_config_item(options.configfile, 'options', 'server_uuid', server_uuid)
+        reload_config()
     return make_response(
         msg = _('WAPT Server running'), result = dict(
             version = __version__,
