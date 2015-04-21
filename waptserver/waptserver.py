@@ -1177,10 +1177,10 @@ def deploy_wapt():
                          mimetype="application/json")
 
 
-def rewrite_password(cfg_file, password):
+def rewrite_config_item(cfg_file, *args):
     config = ConfigParser.RawConfigParser()
     config.read(cfg_file)
-    config.set('options', 'wapt_password', password)
+    config.set(*args)
     with open(cfg_file, 'wb') as cfg:
         config.write(cfg)
 
@@ -1194,7 +1194,7 @@ def login():
                     if "newPass" in d:
                         global wapt_password
                         wapt_password = hashlib.sha1(d["newPass"].encode('utf8')).hexdigest()
-                        rewrite_password(options.configfile, wapt_password)
+                        rewrite_config_item(options.configfile, 'options', 'wapt_password', wapt_password)
                         # Graceful reload pour prendre en compte le nouveau mot
                         # mot de passe dans tous les workers uwsgi
                         if os.name == "posix":
