@@ -17,7 +17,8 @@ mkdir -p /var/www/wapt-host
 mkdir -p /var/www/wapt-group
 mkdir -p /etc/tis
 
-find /var/www/ -type d -exec chown wapt:www-data {} ';'
+find /var/www/wapt /var/www/waptdev /var/www/wapt-host /var/www/wapt-group \
+    -type d -exec chown wapt:www-data {} ';'
 
 chmod 755 /var/www/
 chmod 755 /var/www/wapt/
