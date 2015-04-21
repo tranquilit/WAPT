@@ -389,6 +389,7 @@ var
   ini:TMemIniFile;
   retry:integer;
   res:String;
+  GUID: TGuid;
 begin
   CurrentVisLoading := TVisLoading.Create(Self);
   with CurrentVisLoading do
@@ -407,6 +408,8 @@ begin
 
     ini := TMemIniFile.Create(WaptIniFilename);
     ini.SetStrings(EdWaptInifile.Lines);
+    if (ini.ReadString('options', 'server_uuid', '') = '') and (CreateGUID(GUID) = 0) then
+      ini.WriteString('options', 'server_uuid', Lowercase(Copy(GUIDToString(GUID), 2, Length(GUIDToString(GUID)) - 2)));
     ini.UpdateFile;
 
     ProgressTitle(rsUpdatingPackageIndex);
