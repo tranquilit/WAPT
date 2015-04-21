@@ -54,7 +54,7 @@ import tempfile
 import traceback
 import datetime
 import uuid
-
+from bson.son.json_util import dumps
 
 from rocket import Rocket
 
@@ -1309,7 +1309,7 @@ def make_response(result = {},success=True,error_code='',msg='',status=200):
     else:
         data['result'] = result
     return Response(
-            response=json.dumps(data),
+            response=dumps(data),
             status=status,
             mimetype="application/json")
 
@@ -1951,6 +1951,38 @@ def host_data():
     return make_response(result=result,msg=msg,success=success,error_code=error_code,status=200)
 
 
+@app.route('/api/v1/hosts',methods=['POST'])
+@requires_auth
+def update_hosts():
+    """update one or several hosts
+        post data is a json list of host data
+        for each host, the key is the uuid
+    """
+    post_data = ensure_list(json.loads(request.data))
+    msg = []
+    result = []
+
+    for data in post_data:
+        # build filter
+        if not 'uuid' in data:
+            raise Exception('No uuid provided in post host data')
+        uuid = data["uuid"]
+        result.append(hosts().update({'uuid':uuid},{"$set": data},upsert=True)
+        # check if client is reachable
+        if not 'check_hosts_thread' in g or not g.check_hosts_thread.is_alive():
+            logger.info('Creates check hosts thread for %s'%(uuid,))
+            g.check_hosts_thread = CheckHostsWaptService(timeout=clients_connect_timeout,uuids=[uuid])
+            g.check_hosts_thread.start()
+        else:
+            logger.info('Reuses current check hosts thread for %s'%(uuid,))
+            g.check_hosts_thread.queue.append(data)
+
+        msg.append('host {} updated in DB'.format(uuid))
+
+    except Exception as e:
+        return make_response_from_exception(e)
+
+    return make_response(result=result,msg='\n'.join(msg),status=200)
 
 @app.route('/api/v1/host_cancel_task')
 @requires_auth
