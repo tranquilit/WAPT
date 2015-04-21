@@ -30,7 +30,7 @@ sys.path.insert(0,os.path.join(wapt_root_dir))
 sys.path.insert(0,os.path.join(wapt_root_dir,'lib'))
 sys.path.insert(0,os.path.join(wapt_root_dir,'lib','site-packages'))
 
-from iniparse import RawConfigParser
+import iniparse
 import shutil
 import fileinput
 import glob
@@ -39,6 +39,7 @@ import dialog
 import subprocess
 import jinja2
 import socket
+import uuid
 
 # for python < 2.7
 if "check_output" not in dir( subprocess ): # duck punch it in!
@@ -109,7 +110,7 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn):
 
 if postconf.yesno("Do you want to launch post configuration tool ?") == postconf.DIALOG_OK:
     shutil.copyfile('/opt/wapt/waptserver/waptserver.ini.template','/opt/wapt/waptserver/waptserver.ini')
-    waptserver_ini = RawConfigParser()
+    waptserver_ini = iniparse.RawConfigParser()
 
     waptserver_ini.read('/opt/wapt/waptserver/waptserver.ini')
 
@@ -172,11 +173,15 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
             wapt_password_ok = True
 
     password = hashlib.sha1(wapt_password).hexdigest()
-    waptserver_ini.set('options','wapt_password',password) 
+    waptserver_ini.set('options','wapt_password',password)
 
+    try:
+        waptserver_ini.get('options', 'wapt_server_uuid')
+    except Exception:
+        waptserver_ini.set('options', 'wapt_server_uuid', str(uuid.uuid1()))
 
     with open('/opt/wapt/waptserver/waptserver.ini','w') as inifile:
-        subprocess.check_output("/bin/chmod 640 /opt/wapt/waptserver/waptserver.ini",shell=True) 
+        subprocess.check_output("/bin/chmod 640 /opt/wapt/waptserver/waptserver.ini",shell=True)
         subprocess.check_output("/bin/chown wapt /opt/wapt/waptserver/waptserver.ini",shell=True)
         waptserver_ini.write(inifile)
 
