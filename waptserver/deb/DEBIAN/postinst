@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/sh
+
 touch  /var/log/waptserver.log
 touch  /var/run/waptserver.pid
 
