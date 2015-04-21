@@ -175,9 +175,7 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
     password = hashlib.sha1(wapt_password).hexdigest()
     waptserver_ini.set('options','wapt_password',password)
 
-    try:
-        waptserver_ini.get('options', 'wapt_server_uuid')
-    except Exception:
+    if not waptserver_ini.has_option('options', 'wapt_server_uuid'):
         waptserver_ini.set('options', 'wapt_server_uuid', str(uuid.uuid1()))
 
     with open('/opt/wapt/waptserver/waptserver.ini','w') as inifile:
