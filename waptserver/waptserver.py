@@ -138,6 +138,7 @@ mongodb_ip = "127.0.0.1"
 wapt_folder = ""
 wapt_user = ""
 wapt_password = ""
+wapt_server_uuid = ''
 
 waptserver_port = 8080
 waptservice_port = 8088
@@ -192,6 +193,8 @@ if config.has_section('options'):
         loglevel = config.get('options', 'loglevel')
         setloglevel(logger,loglevel)
 
+    if config.has_option('options', 'server_uuid'):
+        wapt_server_uuid = config.get('options', 'server_uuid')
 
 
 else:
@@ -1370,7 +1373,7 @@ def get_ip_port(host_data,recheck=False,timeout=None):
 
 @app.route('/ping')
 def ping():
-    return make_response(msg = _('WAPT Server running'), result = dict(version = __version__,api_root='/api/',api_version='v1'))
+    return make_response(msg = _('WAPT Server running'), result = dict(version = __version__,api_root='/api/',api_version='v1',server_uuid=wapt_server_uuid))
 
 
 @app.route('/trigger_reachable_discovery')
