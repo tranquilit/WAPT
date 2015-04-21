@@ -175,8 +175,8 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
     password = hashlib.sha1(wapt_password).hexdigest()
     waptserver_ini.set('options','wapt_password',password)
 
-    if not waptserver_ini.has_option('options', 'wapt_server_uuid'):
-        waptserver_ini.set('options', 'wapt_server_uuid', str(uuid.uuid1()))
+    if not waptserver_ini.has_option('options', 'server_uuid'):
+        waptserver_ini.set('options', 'server_uuid', str(uuid.uuid1()))
 
     with open('/opt/wapt/waptserver/waptserver.ini','w') as inifile:
         subprocess.check_output("/bin/chmod 640 /opt/wapt/waptserver/waptserver.ini",shell=True)
