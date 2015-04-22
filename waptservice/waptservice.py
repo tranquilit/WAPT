@@ -438,26 +438,28 @@ def check_open_port(portnumber=8088):
     import platform
     import win32service
     win_major_version = int(platform.win32_ver()[1].split('.')[0])
-    if win_major_version<6:
-        #check if firewall is running
-        if win32serviceutil.QueryServiceStatus( 'SharedAccess', None)[1]==win32service.SERVICE_RUNNING:
-            logger.info(u"Firewall started, checking for port openning...")
-            #WinXP 2003
-            if 'waptservice' not in setuphelpers.run_notfatal('netsh firewall show portopening'):
-                logger.info(u"Adding a firewall rule to open port %s"%portnumber)
-                setuphelpers.run_notfatal("""netsh.exe firewall add portopening name="waptservice %s" port=%s protocol=TCP"""%(portnumber,portnumber))
-            else:
-                logger.info(u"port %s already opened, skipping firewall configuration"%(portnumber,))
-    else:
-        if win32serviceutil.QueryServiceStatus( 'MpsSvc', None)[1]==win32service.SERVICE_RUNNING:
-            logger.info(u"Firewall started, checking for port openning...")
-            if 'waptservice' not in setuphelpers.run_notfatal('netsh advfirewall firewall show rule name="waptservice %s"'%(portnumber,)):
-                logger.info(u"No port opened for waptservice, opening port %s"%portnumber)
-                #win Vista and higher
-                setuphelpers.run_notfatal("""netsh advfirewall firewall add rule name="waptservice %s" dir=in action=allow protocol=TCP localport=%s remoteip=%s,LocalSubnet """%(portnumber,portnumber,','.join(waptconfig.authorized_callers_ip)))
-            else:
-                logger.info(u"port %s already opened, skipping firewall configuration"%(portnumber,))
-
+    try:
+        if win_major_version<6:
+            #check if firewall is running
+            if win32serviceutil.QueryServiceStatus( 'SharedAccess', None)[1]==win32service.SERVICE_RUNNING:
+                logger.info(u"Firewall started, checking for port openning...")
+                #WinXP 2003
+                if 'waptservice' not in setuphelpers.run_notfatal('netsh firewall show portopening'):
+                    logger.info(u"Adding a firewall rule to open port %s"%portnumber)
+                    setuphelpers.run_notfatal("""netsh.exe firewall add portopening name="waptservice %s" port=%s protocol=TCP"""%(portnumber,portnumber))
+                else:
+                    logger.info(u"port %s already opened, skipping firewall configuration"%(portnumber,))
+        else:
+            if win32serviceutil.QueryServiceStatus('MpsSvc', None)[1]==win32service.SERVICE_RUNNING:
+                logger.info(u"Firewall started, checking for port openning...")
+                if 'waptservice' not in setuphelpers.run_notfatal('netsh advfirewall firewall show rule name="waptservice %s"'%(portnumber,)):
+                    logger.info(u"No port opened for waptservice, opening port %s"%portnumber)
+                    #win Vista and higher
+                    setuphelpers.run_notfatal("""netsh advfirewall firewall add rule name="waptservice %s" dir=in action=allow protocol=TCP localport=%s remoteip=%s,LocalSubnet """%(portnumber,portnumber,','.join(waptconfig.authorized_callers_ip)))
+                else:
+                    logger.info(u"port %s already opened, skipping firewall configuration"%(portnumber,))
+    except Exception as e:
+        logger.info('Unable to check if port %s is opened : %s' % (portnumber,e))
 
 waptconfig = WaptServiceConfig(config_filename = options.config)
 waptconfig.load()
