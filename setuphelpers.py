@@ -3094,7 +3094,7 @@ def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefor
             killalltasks(killbefore)
         run(r'"%s" %s' % (exe,silentflags))
         if key and not installed_softwares(uninstallkey=key):
-            error('Setup %s has been ran but the uninstall key %s can not be found' % (msi,key))
+            error('Setup %s has been ran but the uninstall key %s can not be found' % (exe,key))
     else:
         print('Exe setup %s already installed. Skipping' % exe)
     if key:
