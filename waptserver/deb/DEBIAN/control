@@ -3,7 +3,7 @@ Version: 0.0.7
 Section: base
 Priority: optional
 Architecture: all
-Depends: python, mongodb-server, dialog, tis-waptrepo, python-m2crypto, python-passlib, uwsgi, uwsgi-plugin-python, python-tz
+Depends: python, mongodb-server (>= 2.4.8), dialog, tis-waptrepo, python-m2crypto, python-passlib, uwsgi, uwsgi-plugin-python, python-tz
 Recommends: tis-waptsetup
 Maintainer: TIS <technique@tranquil-it-systems.fr>
 Description: WAPT Server for linux
