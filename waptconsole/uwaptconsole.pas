@@ -1352,7 +1352,7 @@ begin
           Inc(i);
           package := GridPackages.GetCellStrValue(N, 'filename');
           ProgressTitle(format(rsDeletingElement, [package]));
-          res := WAPTServerJsonGet('/delete_package/%s',[package]);
+          res := WAPTServerJsonGet('delete_package/%s',[package]);
           if not ObjectIsNull(res['error']) then
             raise Exception.Create(res.S['error']);
           N := GridPackages.GetNextSelected(N);
@@ -1440,7 +1440,7 @@ begin
       if (uuid<>Nil) and (packages.AsArray.Length>0) then
       try
           res := WAPTServerJsonGet(
-            '/api/v1/host_forget_packages?uuid=%s&packages=%s',
+            'api/v1/host_forget_packages?uuid=%s&packages=%s',
             [uuid.asString, Join(',',packages)]);
           if not res.B['success'] then
             Raise Exception.Create(res.S['msg']);
@@ -1573,7 +1573,7 @@ begin
       if (uuid<>Nil) and (packages.AsArray.Length>0) then
       try
           res := WAPTServerJsonGet(
-            '/api/v1/host_install_packages?uuid=%s&packages=%s',
+            'api/v1/host_install_packages?uuid=%s&packages=%s',
             [uuid.asString, Join(',',packages)]);
           if not res.B['success'] then
             Raise Exception.Create(res.S['msg']);
@@ -1609,7 +1609,7 @@ begin
       if (uuid<>Nil) and (packages.AsArray.Length>0) then
       try
           res := WAPTServerJsonGet(
-            '/api/v1/host_remove_packages?uuid=%s&packages=%s',
+            'api/v1/host_remove_packages?uuid=%s&packages=%s',
             [uuid.asString, Join(',',packages)]);
           if not res.B['success'] then
             Raise Exception.Create(res.S['msg']);
@@ -1780,7 +1780,7 @@ begin
   with TVisHostsUpgrade.Create(Self) do
     try
       Caption:= rsTriggerHostsUpdate;
-      action := 'trigger_update';
+      action := 'api/v1/trigger_update';
       hosts := Gridhosts.SelectedRows;
 
       if ShowModal = mrOk then
@@ -1795,7 +1795,7 @@ begin
   with TVisHostsUpgrade.Create(Self) do
     try
       Caption:= rsTriggerHostsUpgrade;
-      action := 'trigger_upgrade';
+      action := 'api/v1/trigger_upgrade';
       hosts := Gridhosts.SelectedRows;
 
       if ShowModal = mrOk then
@@ -2069,7 +2069,7 @@ var
   res:ISuperObject;
 begin
   try
-    res := WAPTServerJsonGet('trigger_reachable_discovery',[]);
+    res := WAPTServerJsonGet('api/v1/trigger_reachable_discovery',[]);
     if res.B['success'] then
       ShowMessageFmt('%s',[res.S['msg']])
     else
