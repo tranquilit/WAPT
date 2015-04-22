@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="1.2.2"
+__version__="1.2.3"
 
 import os,sys
 try:
@@ -597,129 +597,6 @@ def update_host():
                          mimetype="application/json")
 
 
-@app.route('/delete_host/<string:uuid>')
-@requires_auth
-def delete_host(uuid=""):
-    try:
-        hosts().remove({'uuid': uuid })
-        data = get_host_data(uuid)
-        # todo : delete host package if present
-        result = dict(status='OK',message=json.dumps(data))
-    except Exception as e:
-        result = dict(status='ERROR',message=u"%s"%e)
-    return Response(response=json.dumps(data),
-                 status=200,
-                 mimetype="application/json")
-
-
-# to fix !
-@app.route('/client_software_list/<string:uuid>')
-@requires_auth
-def get_client_software_list(uuid=""):
-    softwares = get_host_data(uuid, filter={"softwares":1})
-    if 'softwares' in softwares:
-        return  Response(response=json.dumps(softwares['softwares']),
-                         status=200,
-                         mimetype="application/json")
-    else:
-        return "{}"
-
-def packagesFileToList(pathTofile):
-    listPackages = codecs.decode(zipfile.ZipFile(pathTofile).read(name='Packages'),'utf-8')
-    packages = []
-
-    def add_package(lines):
-        package = PackageEntry()
-        package.load_control_from_wapt(lines)
-        package.filename = package.make_package_filename()
-        packages.append(package)
-
-    lines = []
-    for line in listPackages.splitlines():
-        # new package
-        if line.strip()=='':
-            add_package(lines)
-            lines = []
-            # add ettribute to current package
-        else:
-            lines.append(line)
-
-    if lines:
-        add_package(lines)
-        lines = []
-
-    packages.sort()
-    return packages
-
-
-@app.route('/host_packages/<string:uuid>')
-@requires_auth
-def host_packages(uuid=""):
-    """Return a the status of all installed packages on a host given its UUID
-        for each installed package, check if the package should be upgrades based on local
-          package repository.
-    """
-    try:
-        host_data = get_host_data(uuid, {"packages":1})
-        if not host_data:
-            raise Exception(_('No host with uuid {}.').format(uuid))
-        # check packages on local repository
-        localrepo = WaptLocalRepo(localpath=os.path.join(wapt_folder))
-        localrepo.load_packages()
-
-        # keep an index of installed packages for later check of depends.
-        host_packages_index = {}
-
-        packages = host_data.get('packages',[])
-        # packages is a list of plain dict
-        for package in packages:
-            host_pe = PackageEntry().load_control_from_dict(package)
-            # update index of installed packages for later check of depends.
-            host_packages_index[host_pe.package] = host_pe
-
-            # find if there are newer version packages in local repo matching those installed on the host
-            newer = [ p for p in localrepo.packages if p.match(host_pe.package) and p > host_pe ]
-            if newer:
-                # if installed version is older than the newest available in local repo, overload status
-                package['install_status'] = 'NEED-UPGRADE'
-
-        result = dict(status='OK',message='%i packages for host uuid: %s' %(len(packages),uuid),result = packages)
-    except Exception as e:
-        result = dict(status='ERROR',message='%s: %s'%('host_packages',e),result=None)
-
-    return Response(response=json.dumps(result),
-                     status=200,
-                     mimetype="application/json")
-
-
-@app.route('/client_package_list/<string:uuid>')
-@requires_auth
-def get_client_package_list(uuid=""):
-    try:
-        packages = get_host_data(uuid, {"packages":1})
-        if not packages:
-            raise Exception(_('No host with uuid {}.').formatat(uuid))
-        repo_packages = packagesFileToList(os.path.join(wapt_folder, 'Packages'))
-        if 'packages' in packages:
-            for p in packages['packages']:
-                package = PackageEntry()
-                package.load_control_from_dict(p)
-                matching = [ x for x in repo_packages if package.package == x.package ]
-                if matching:
-                    if package < matching[-1]:
-                        p['install_status'] = 'NEED-UPGRADE'
-        result = dict(status='OK',message='%i packages for host uuid: %s'%(len(packages['packages']),uuid),result = packages['packages'])
-        return Response(response=json.dumps(packages['packages']),
-                         status=200,
-                         mimetype="application/json")
-    except Exception as e:
-        result = dict(status='ERROR',message='%s: %s'%('get_client_package_list',e),result=None)
-
-    return Response(response=json.dumps(packages['packages']),
-                     status=200,
-                     mimetype="application/json")
-
-
 @app.route('/upload_package/<string:filename>',methods=['POST'])
 @requires_auth
 def upload_package(filename=""):
@@ -861,254 +738,6 @@ def upload_waptsetup():
                          mimetype="application/json")
 
 
-@app.route('/waptupgrade_host/<string:ip>')
-@requires_auth
-def waptupgrade_host(ip):
-    try:
-        result = {}
-        try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.settimeout(1)
-            s.connect((ip,waptservice_port))
-            s.close
-            if ip and waptservice_port:
-                logger.info( "Upgrading %s..." % ip)
-                try:
-                    httpreq = requests.get("http://%s:%d/waptupgrade.json" % ( ip, waptservice_port),proxies=None,timeout=clients_read_timeout)
-                    httpreq.raise_for_status()
-                    result = {'status' : 'OK', 'message': u"%s" % httpreq.text }
-                except Exception as e:
-                    logger.warning(u'%s'%e)
-                    r = requests.get("http://%s:%d/waptupgrade" % ( ip, waptservice_port),proxies=None,timeout=clients_read_timeout)
-                    if "OK" in r.text.upper():
-                        result = {  'status' : 'OK', 'message': u"%s" % r.text }
-                    else:
-                        result = {  'status' : 'ERROR', 'message': u"%s" % r.text }
-            else:
-                raise Exception(_("The WAPT service port is not defined."))
-
-        except Exception as e:
-            raise Exception(_("Couldn't connect to web service : {}.").format(e))
-
-    except Exception, e:
-            result = { 'status' : 'ERROR', 'message': u"%s" % e  }
-
-    return  Response(response=json.dumps(result),
-                         status=200,
-                         mimetype="application/json")
-
-
-@app.route('/install_package')
-@app.route('/install_package.json')
-@requires_auth
-def install_package():
-    try:
-        result = {}
-        try:
-            package = request.args['package']
-            ip = request.args['host']
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.settimeout(1)
-            s.connect((ip,waptservice_port))
-            s.close
-            if ip and waptservice_port:
-                logger.info( "installing %s on %s ..." % (package,ip))
-                data = json.loads(requests.get("http://%s:%d/install.json?package=%s" % ( ip, waptservice_port,package),proxies=None,verify=False).text,timeout=clients_read_timeout)
-                result = dict(message=data,status='OK')
-            else:
-                raise Exception(_("The WAPT service port is not defined."))
-
-        except Exception as e:
-            raise Exception(_("Couldn't connect to web service : {}.").format(e))
-
-    except Exception, e:
-            result = { 'status' : 'ERROR', 'message': u"%s" % e  }
-    return  Response(response=json.dumps(result),
-                         status=200,
-                         mimetype="application/json")
-
-
-@app.route('/remove_package')
-@app.route('/remove_package.json')
-@requires_auth
-def remove_package():
-    try:
-        result = {}
-        try:
-            package = request.args['package']
-            ip = request.args['host']
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.settimeout(1)
-            s.connect((ip,waptservice_port))
-            s.close
-            if ip and waptservice_port:
-                logger.info( "removing %s on %s ..." % (package,ip))
-                httpreq = requests.get("http://%s:%d/remove.json?package=%s" % ( ip, waptservice_port,package),proxies=None,verify=False, timeout=clients_read_timeout)
-                httpreq.raise_for_status()
-                data = json.loads(httpreq.text)
-                result = dict(message=data,status='OK')
-            else:
-                raise Exception(_("The WAPT service port is not defined."))
-
-        except Exception as e:
-            raise Exception(_("Couldn't connect to the host's WAPT service : {}.").format(e))
-
-    except Exception, e:
-            result = { 'status' : 'ERROR', 'message': u"%s" % e  }
-    return  Response(response=json.dumps(result),
-                         status=200,
-                         mimetype="application/json")
-
-
-@app.route('/forget_packages')
-@app.route('/forget_packages.json')
-@requires_auth
-def forget_packages():
-    try:
-        result = {}
-        try:
-            package = request.args['package']
-            ip = request.args['host']
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.settimeout(1)
-            s.connect((ip,waptservice_port))
-            s.close
-            if ip and waptservice_port:
-                logger.info( "Forgetting %s on %s ..." % (package,ip))
-                httpreq = requests.get("http://%s:%d/forget.json?package=%s" % ( ip, waptservice_port,package),verify=False, proxies=None,timeout=clients_read_timeout)
-                httpreq.raise_for_status()
-                data = json.loads(httpreq.text)
-                result = dict(message=data,status='OK')
-            else:
-                raise Exception(_("The WAPT service port is not defined."))
-
-        except Exception as e:
-            raise Exception(_("Couldn't connect to the host's WAPT service : {}.").format(e))
-
-    except Exception, e:
-            result = { 'status' : 'ERROR', 'message': u"%s" % e  }
-    return  Response(response=json.dumps(result),
-                         status=200,
-                         mimetype="application/json")
-
-@app.route('/host_tasks')
-@app.route('/host_tasks.json')
-@requires_auth
-def host_tasks():
-    try:
-        data = ''
-        result = {}
-        try:
-            uuid = request.args['uuid']
-            host_data = hosts().find_one({ "uuid": uuid},fields={'wapt':1,'host.connected_ips':1})
-            listening_data = get_ip_port(host_data)
-
-            if listening_data['address']:
-                data = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json" % listening_data,proxies=None,verify=False, timeout=clients_read_timeout).text
-                result = dict(message=json.loads(data),status='OK')
-            else:
-                raise EWaptMissingHostData(_("The WAPT service port is not defined."))
-
-        except Exception as e:
-            raise EWaptHostUnreachable(_("Couldn't connect to web service : {}.").format(e))
-
-    except Exception, e:
-        # old behaviour
-        if 'Restricted access.' in data:
-            result = { 'status' : 'ERROR', 'message': u"%s" % (data)  }
-        else:
-            result = { 'status' : 'ERROR', 'message': u"%s, %s" % (e,data)  }
-    return  Response(response=json.dumps(result),
-                         status=200,
-                         mimetype="application/json")
-
-
-@app.route('/host_taskkill')
-@app.route('/host_taskkill.json')
-@requires_auth
-def host_taskkill():
-    try:
-        result = {}
-        try:
-            ip = request.args['host']
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.settimeout(1)
-            s.connect((ip,waptservice_port))
-            s.close
-            if ip and waptservice_port:
-                data = json.loads(requests.get("http://%s:%d/cancel_running_task.json" % ( ip, waptservice_port),verify=False, proxies=None,timeout=clients_read_timeout).text)
-                result = dict(message=data,status='OK')
-            else:
-                raise Exception(_("The WAPT service port is not defined."))
-
-        except Exception as e:
-            raise Exception(_("Couldn't connect to web service : {}.").format(e))
-
-    except Exception, e:
-            result = { 'status' : 'ERROR', 'message': u"%s" % e  }
-    return  Response(response=json.dumps(result),
-                         status=200,
-                         mimetype="application/json")
-
-
-@app.route('/hosts_by_group/<string:name>')
-@requires_auth
-def get_hosts_by_group(name=""):
-    try:
-        list_hosts  =  []
-        os.chdir(wapt_folder + '-host')
-        hosts = [f for f in os.listdir('.') if os.path.isfile(f) and f.endswith('.wapt')]
-        package = PackageEntry()
-        for h in hosts:
-            package.load_control_from_wapt(h)
-            if name in package.depends.split(','):
-                list_hosts.append({"computer_fqdn":package.package})
-
-        return  Response(response=json.dumps(list_hosts),
-                         status=200,
-                         mimetype="application/json")
-    except:
-        e = sys.exc_info()
-        return str(e)
-    return "Unsupported method"
-
-
-# deprecated
-@app.route('/upgrade_host/<string:ip>')
-@requires_auth
-def upgrade_host(ip):
-    """Proxy the wapt upgrade action to the client"""
-    try:
-        result = {}
-        try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.settimeout(1)
-            s.connect((ip,waptservice_port))
-            s.close
-            if ip and waptservice_port:
-                logger.info( "Upgrading %s..." % ip)
-                try:
-                    result = json.loads(requests.get("http://%s:%d/upgrade.json" % ( ip, waptservice_port),proxies=None,timeout=clients_read_timeout).text)
-                except Exception as e:
-                    # try the old behaviour for wapt client < 0.8.10
-                    logger.warning(u"%s"%e)
-                    r = requests.get("http://%s:%d/upgrade" % ( ip, waptservice_port),proxies=None,timeout=clients_read_timeout)
-                    if "OK" in r.text.upper():
-                        result = {  'status' : 'OK', 'message': u"%s" % r.text }
-                    else:
-                        result = {  'status' : 'ERROR', 'message': u"%s" % r.text }
-
-            else:
-                raise Exception(_("The WAPT service port is not defined."))
-
-        except Exception as e:
-            raise  Exception(_("Couldn't connect to web service : {}.").format(e))
-
-    except Exception, e:
-            result = { 'status' : 'ERROR', 'message': u"%s" % e  }
-    return  Response(response=json.dumps(result),
-                         status=200,
-                         mimetype="application/json")
 
 
 def install_wapt(computer_name,authentication_file):
@@ -1396,7 +1025,6 @@ def ping():
             )
 
 
-@app.route('/trigger_reachable_discovery')
 @app.route('/api/v1/trigger_reachable_discovery')
 @requires_auth
 def trigger_reachable_discovery():
@@ -1417,7 +1045,6 @@ def trigger_reachable_discovery():
     return make_response(result,msg = message)
 
 
-@app.route('/host_reachable_ip')
 @app.route('/api/v1/host_reachable_ip')
 @requires_auth
 def host_reachable_ip():
@@ -1437,7 +1064,6 @@ def host_reachable_ip():
     return make_response(result)
 
 
-@app.route('/trigger_upgrade')
 @app.route('/api/v1/trigger_upgrade')
 @requires_auth
 def trigger_upgrade():
@@ -1449,7 +1075,10 @@ def trigger_upgrade():
         msg = u''
         if listening_address and listening_address['address'] and listening_address['port']:
             logger.info( "Triggering upgrade for %s at address %s..." % (uuid,listening_address['address']))
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/upgrade.json" % listening_address,proxies=None,verify=False, timeout=clients_read_timeout).text
+            args = {}
+            args.update(listening_address)
+            args['uuid'] = uuid
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/upgrade.json?uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
             try:
                 client_result = json.loads(client_result)
                 result = client_result['content']
@@ -1471,7 +1100,7 @@ def trigger_upgrade():
     except Exception, e:
         return make_response_from_exception(e)
 
-@app.route('/trigger_update')
+
 @app.route('/api/v1/trigger_update')
 @requires_auth
 def trigger_update():
@@ -1490,7 +1119,8 @@ def trigger_update():
             args = {}
             args.update(listening_address)
             args['notify_user'] = notify_user
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/update.json?notify_user=%(notify_user)s&notify_server=1" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            args['uuid'] = uuid
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/update.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
             try:
                 client_result = json.loads(client_result)
                 msg = _(u"Triggered task: {}").format(client_result['description'])
@@ -1531,7 +1161,8 @@ def host_forget_packages():
             args.update(listening_address)
             args['notify_user'] = notify_user
             args['packages'] = ','.join(packages)
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/forget.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=1" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            args['uuid'] = uuid
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/forget.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
             try:
                 client_result = json.loads(client_result)
                 if not isinstance(client_result,list):
@@ -1579,7 +1210,8 @@ def host_remove_packages():
             args['notify_server'] = notify_server
             args['packages'] = ','.join(packages)
             args['force'] = force
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/remove.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=%(notify_server)s&force=%(force)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            args['uuid'] = uuid
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/remove.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=%(notify_server)s&force=%(force)s&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
             try:
                 client_result = json.loads(client_result)
                 if not isinstance(client_result,list):
@@ -1626,7 +1258,8 @@ def host_install_packages():
             args['notify_server'] = notify_server
             args['packages'] = ','.join(packages)
             args['force'] = force
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/install.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=1&force=%(force)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            args['uuid'] = uuid
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/install.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=1&force=%(force)s&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
             try:
                 client_result = json.loads(client_result)
                 if isinstance(client_result,list):
@@ -1648,7 +1281,6 @@ def host_install_packages():
         return make_response_from_exception(e)
 
 
-@app.route('/host_tasks_status')
 @app.route('/api/v1/host_tasks_status')
 @requires_auth
 def host_tasks_status():
@@ -1661,7 +1293,10 @@ def host_tasks_status():
 
         if listening_address and listening_address['address'] and listening_address['port']:
             logger.info( "Get tasks status for %s at address %s..." % (uuid,listening_address['address']))
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json" % listening_address,proxies=None,verify=False,timeout=client_tasks_timeout).text
+            args = {}
+            args.update(listening_address)
+            args['uuid'] = uuid
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json?uuid=%(uuid)s" % args,proxies=None,verify=False,timeout=client_tasks_timeout).text
             try:
                 client_result = json.loads(client_result)
             except ValueError:
@@ -1728,7 +1363,7 @@ def hosts_delete():
         packages_repo = WaptLocalRepo(wapt_folder)
         packages_repo.load_packages()
 
-        if  'delete_packages' in request.args and request.args['delete_packages'] == '1':
+        if 'delete_packages' in request.args and request.args['delete_packages'] == '1':
             selected = hosts().find(query,fields={'uuid':1,'host.computer_fqdn':1})
             if selected:
                 for host in selected:
@@ -1996,7 +1631,10 @@ def host_cancel_task():
 
         if listening_address and listening_address['address'] and listening_address['port']:
             logger.info( "Get tasks status for %s at address %s..." % (uuid,listening_address['address']))
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/cancel_running_task.json" % listening_address,proxies=None,verify=False,timeout=client_tasks_timeout).text
+            args = {}
+            args.update(listening_address)
+            args['uuid'] = uuid
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/cancel_running_task.json?uuid=%(uuid)s" % args,proxies=None,verify=False,timeout=client_tasks_timeout).text
             try:
                 client_result = json.loads(client_result)
             except ValueError:
