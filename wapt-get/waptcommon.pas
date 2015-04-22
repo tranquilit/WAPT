@@ -198,7 +198,7 @@ const
   Language:String = '';
   FallBackLanguage:String = '';
 
-  WAPTServerMinVersion='1.2.2';
+  WAPTServerMinVersion='1.2.3';
 
 implementation
 
