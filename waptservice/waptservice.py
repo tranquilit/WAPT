@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.2.2"
+__version__ = "1.2.3"
 
 import time
 import sys
@@ -504,6 +504,11 @@ def forbidden():
         'Restricted access.\n',
          403)
 
+def badtarget():
+    """Sends a 400 response if uuid mismatch"""
+    return Response(
+        'Host target UUID is not matching your request.\n',
+         400)
 
 def authenticate():
     """Sends a 401 response that enables basic auth"""
@@ -570,6 +575,9 @@ def allow_waptserver_or_local_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         if request.remote_addr in app.waptconfig.authorized_callers_ip:
+            uuid = wapt().host_uuid
+            if not 'uuid' in request.args or request.args['uuid'] != uuid:
+                return badtarget()
             return f(*args, **kwargs)
         elif request.remote_addr == '127.0.0.1':
             auth = request.authorization
@@ -595,6 +603,10 @@ def allow_waptserver_or_local_unauth(f):
         if not request.remote_addr in (app.waptconfig.authorized_callers_ip + ['127.0.0.1']):
             logger.debug(u'Forbidden: caller src address {} is not in authorized list {}'.format(request.remote_addr,app.waptconfig.authorized_callers_ip))
             return forbidden()
+        if request.remote_addr != '127.0.0.1':
+            uuid = wapt().host_uuid
+            if not 'uuid' in request.args or request.args['uuid'] != uuid:
+                return badtarget()
         return f(*args, **kwargs)
     return decorated
 
