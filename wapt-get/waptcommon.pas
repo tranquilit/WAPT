@@ -95,6 +95,7 @@ interface
   function WaptServiceReachableIP(UUID:String;hostdata:ISuperObject=Nil):String;
 
   function RunAsAdmin(const Handle: Hwnd; aFile : Ansistring; Params: Ansistring): Boolean;
+  function killtask(exename: ansistring): ansistring;
 
   function CreateSelfSignedCert(orgname,
           wapt_base_dir,
@@ -345,6 +346,16 @@ begin
      nShow := SW_SHOWNORMAL;
   end;
   Result := ShellExecuteExA(@sei);
+end;
+
+function killtask(exename: ansistring): ansistring;
+var
+  Res: ansistring;
+begin
+  if GetDosOutput('taskkill /F /IM ' + exename + ' /T', '', res) then
+    Result := res
+  else
+    Res := '';
 end;
 
 
