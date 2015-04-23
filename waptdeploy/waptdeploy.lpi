@@ -35,7 +35,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="--minversion=0.9.8 --tasks=useWaptServer,autorunTray"/>
+        <CommandLineParams Value="--minversion=1.2.4 --hash=1233qsdqsdqsd"/>
       </local>
     </RunParams>
     <RequiredPackages Count="4">
@@ -77,6 +77,7 @@
     <CodeGeneration>
       <SmartLinkUnit Value="True"/>
       <RelocatableUnit Value="True"/>
+      <SmallerCode Value="True"/>
     </CodeGeneration>
     <Linking>
       <Debugging>

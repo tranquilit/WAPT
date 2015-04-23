@@ -20,9 +20,11 @@ resourcestring
   rsUsage4 = '  If --force is given, install waptagent.exe even if version doesn''t match';
   rsUsage5 = '  If --tasks=useWaptServer,autorunTray is given, pass this arguments to the /MERGETASKS options of the waptagent installer';
   rsUsage6 = '  If --hash=<sha256hash> is given, check that downloaded waptagent.exe setup sha256 hash match this parameter.';
-  rsInstall = 'Install ...';
+  rsInstall = 'Install ...'#13#10' %s';
   rsInstallOK = 'Install OK : %s';
+  rsInstallError = 'Install Error : %s';
   rsVersionError = 'Got a waptsetup version older than required version';
+  rsHashError = 'Error found in downloaded setup file: HASH mismatch. File is perhaps corrupted.';
   rsCleanup = 'Cleanup...';
   rsNothingToDo = 'Nothing to do';
 
