@@ -203,9 +203,14 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
             else:
                 fqdn = reply
 
+            if os.path.exists('/etc/apache2/sites-enabled/wapt'):
+                try:
+                    os.unlink('/etc/apache2/sites-enabled/wapt')
+                except Exception:
+                    pass
             if os.path.exists('/etc/apache2/sites-available/wapt'):
                 try:
-                    subprocess.check_output(['a2dissite', 'wapt'])
+                    os.unlink('/etc/apache2/sites-available/wapt')
                 except Exception:
                     pass
             make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn)
@@ -226,7 +231,7 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
             void = subprocess.check_output(['a2enmod', 'ssl'], stderr=subprocess.STDOUT)
             void = subprocess.check_output(['a2enmod', 'proxy'], stderr=subprocess.STDOUT)
             void = subprocess.check_output(['a2enmod', 'proxy_http'], stderr=subprocess.STDOUT)
-            void = subprocess.check_output(['a2ensite', 'wapt'], stderr=subprocess.STDOUT)
+            void = subprocess.check_output(['a2ensite', 'wapt.conf'], stderr=subprocess.STDOUT)
             void = subprocess.check_output(['/etc/init.d/apache2', 'graceful'], stderr=subprocess.STDOUT)
 
             reply = postconf.yesno("The Apache config has been reloaded. Do you want to force-restart Apache?")
@@ -238,7 +243,7 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
         except subprocess.CalledProcessError as cpe:
             final_msg += [
                 'Error while trying to configure Apache!',
-                'errno = ' + str(cpe.code) + ', output: ' + cpe.output
+                'errno = ' + str(cpe.returncode) + ', output: ' + cpe.output
                 ]
         except Exception as e:
             import traceback
