@@ -127,7 +127,7 @@ type
 
 
 implementation
-uses Windows,JwaIpRtrMib,winsock,Jwaiphlpapi;
+uses Windows,winsock;
 
 function GetIfTable(pIfTable: P_IfTable; var pdwSize: LongInt; bOrder: BOOL): DWORD; stdcall; external 'IPHLPAPI.DLL';
 function GetIpAddrTable(pIpAddrTable: P_IpAddrTable; var pdwSize: LongInt; bOrder: BOOL): DWORD; stdcall; external 'IPHLPAPI.DLL';
