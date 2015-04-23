@@ -231,7 +231,7 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
             void = subprocess.check_output(['a2enmod', 'ssl'], stderr=subprocess.STDOUT)
             void = subprocess.check_output(['a2enmod', 'proxy'], stderr=subprocess.STDOUT)
             void = subprocess.check_output(['a2enmod', 'proxy_http'], stderr=subprocess.STDOUT)
-            void = subprocess.check_output(['a2ensite', 'wapt'], stderr=subprocess.STDOUT)
+            void = subprocess.check_output(['a2ensite', 'wapt.conf'], stderr=subprocess.STDOUT)
             void = subprocess.check_output(['/etc/init.d/apache2', 'graceful'], stderr=subprocess.STDOUT)
 
             reply = postconf.yesno("The Apache config has been reloaded. Do you want to force-restart Apache?")
