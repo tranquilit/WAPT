@@ -203,9 +203,14 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
             else:
                 fqdn = reply
 
+            if os.path.exists('/etc/apache2/sites-enabled/wapt'):
+                try:
+                    os.unlink('/etc/apache2/sites-enabled/wapt')
+                except Exception:
+                    pass
             if os.path.exists('/etc/apache2/sites-available/wapt'):
                 try:
-                    subprocess.check_output(['a2dissite', 'wapt'])
+                    os.unlink('/etc/apache2/sites-available/wapt')
                 except Exception:
                     pass
             make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn)
