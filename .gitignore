@@ -43,3 +43,9 @@ waptupgrade/patchs/
 .*.swp
 .DS_store
 *.lps
+/waptdeploy/*.lps
+/waptgui/*.lps
+/waptexit/*.lps
+/waptserver/postconf/*.lps
+/wapttray/*.lps
+/waptconsole/*.lps
