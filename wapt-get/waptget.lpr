@@ -30,19 +30,16 @@ uses
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, CustApp,
   { you can add units after this }
-  Windows, PythonEngine, waptcommon, uwaptres, tiscommon, superobject,
-  zmqapi,tisstrings;
+  Windows, PythonEngine, zmqapi, uwaptres, waptcommon, waptwinutils, superobject,soutils,
+  tisstrings,tiscommon,tislogging;
 type
   { pwaptget }
 
   pwaptget = class(TCustomApplication)
   private
     FRepoURL: String;
-    FWaptDB: TWAPTDB;
     function GetRepoURL: String;
-    function GetWaptDB: TWAPTDB;
     procedure SetRepoURL(AValue: String);
-    procedure SetWaptDB(AValue: TWAPTDB);
   protected
     APythonEngine: TPythonEngine;
 
@@ -57,7 +54,6 @@ type
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
     procedure WriteHelp; virtual;
-    property WaptDB:TWAPTDB read GetWaptDB write SetWaptDB;
     property RepoURL:String read GetRepoURL write SetRepoURL;
     procedure pollerEvent(message:TStringList);
     function remainingtasks:ISuperObject;
@@ -165,23 +161,6 @@ end;
 var
   Application: pwaptget;
 
-procedure pwaptget.SetWaptDB(AValue: TWAPTDB);
-begin
-  if FWaptDB=AValue then Exit;
-  if Assigned(FWaptDB) then
-    FreeAndNil(FWaptDB);
-  FWaptDB:=AValue;
-end;
-
-function pwaptget.GetWaptDB: TWAPTDB;
-begin
-  if not Assigned(FWaptDB) then
-  begin
-    Fwaptdb := TWAPTDB.Create(WaptDBPath);
-  end;
-  Result := FWaptDB;
-end;
-
 function pwaptget.GetRepoURL: String;
 begin
   if FRepoURL='' then
@@ -270,7 +249,7 @@ begin
   else
   if (action = 'dnsdebug') then
   begin
-    WriteLn(format(rsDNSserver, [StrJoin(',',GetDNSServers)]));
+    WriteLn(format(rsDNSserver, [Join(',',GetDNSServers)]));
     WriteLn(format(rsDNSdomain, [GetDNSDomain]));
     repourl := GetMainWaptRepo;
     Writeln(utf8decode(format(rsMainRepoURL, [RepoURL])));
@@ -411,9 +390,6 @@ begin
     end;
   end
   else
-  if Action = 'dumpdb' then
-    writeln(WaptDB.dumpdb.AsJson(True))
-  else
   begin
     // Running python stuff
     APythonEngine := TPythonEngine.Create(Self);
@@ -457,8 +433,6 @@ destructor pwaptget.Destroy;
 begin
   if Assigned(APythonEngine) then
     APythonEngine.Free;
-  if assigned(waptdb) then
-    waptdb.Free;
   DeleteCriticalSection(lock);
   inherited Destroy;
 end;

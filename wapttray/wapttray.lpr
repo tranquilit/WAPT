@@ -31,7 +31,7 @@ uses
   Forms,Interfaces,
   uDMWAPTTray, uwapttray, uwapttrayres,
   DefaultTranslator,
-  Translations;
+  Translations, waptwinutils;
 
 {$R *.res}
 

@@ -125,7 +125,7 @@ var
 
 implementation
 uses LCLIntf,Forms,dialogs,windows,graphics,tiscommon,
-    waptcommon,soutils,UnitRedirect,tisstrings,IdException;
+    waptcommon,waptwinutils,soutils,UnitRedirect,tisstrings,IdException;
 
 {$R *.lfm}
 

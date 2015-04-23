@@ -2233,7 +2233,7 @@ var
 begin
   Result := False;
   // Initialize user local config file with global wapt settings
-  localfn := GetAppConfigDir(False) + GetApplicationName + '.ini';
+  localfn := GetAppConfigDir(False) + ApplicationName + '.ini';
   if not FileExists(localfn) then
   begin
     if not DirectoryExists(GetAppConfigDir(False)) then

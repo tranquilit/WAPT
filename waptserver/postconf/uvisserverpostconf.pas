@@ -127,8 +127,8 @@ var
   VisWAPTServerPostConf: TVisWAPTServerPostConf;
 
 implementation
-uses LCLIntf, Windows,WaptCommon,tisinifiles,superobject,
-    tiscommon,tisstrings,IniFiles,UnitRedirect,sha1,uWaptRes;
+uses LCLIntf, Windows,WaptCommon,waptwinutils,tisinifiles,superobject,
+    tiscommon,tisstrings,IniFiles,UnitRedirect,sha1;
 {$R *.lfm}
 
 { TVisWAPTServerPostConf }

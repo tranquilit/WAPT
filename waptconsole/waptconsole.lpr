@@ -13,7 +13,7 @@ uses
   waptcommon, dmwaptpython, uVisEditPackage, uviscreatewaptsetup,
   uvislogin, uvisprivatekeyauth, uvisloading, uviswaptconfig,
   uvischangepassword, uviswaptdeploy, uvishostsupgrade, uVisAPropos,
-  uVisImportPackage, uwaptconsoleres, tiscommon;
+  uVisImportPackage, uwaptconsoleres;
 
 {$R *.res}
 

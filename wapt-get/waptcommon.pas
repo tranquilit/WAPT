@@ -25,7 +25,7 @@ unit waptcommon;
 interface
   uses
      Classes, SysUtils, Windows,
-     DB,sqldb,sqlite3conn,SuperObject,syncobjs,IdComponent,tiscommon,tisstrings, DefaultTranslator;
+     SuperObject,IdComponent,tiscommon,tisstrings, DefaultTranslator;
 
   type
       TProgressCallback=function(Receiver:TObject;current,total:Integer):Boolean of object;
@@ -38,20 +38,9 @@ interface
         constructor Create(const msg: string;AHTTPStatus:Integer);
       end;
 
-
-
-  Function  GetMainWaptRepo:String;
-  Function  GetWaptServerURL:String;
   function GetWaptPrivateKeyPath: String;
 
-  //function  GetLDAPServer(dnsdomain:String=''): String;
-
-  function DNSAQuery(name:AnsiString):ISuperObject;
-  function DNSSRVQuery(name:AnsiString):ISuperObject;
-  function DNSCNAMEQuery(name:AnsiString):ISuperObject;
-
-  Function  GetWaptLocalURL:String;
-
+  Function GetWaptLocalURL:String;
 
   function AppLocalDir: Utf8String; // returns Users/<user>/local/appdata/<application_name>
   function AppIniFilename: Utf8String; // returns Users/<user>/local/appdata/<application_name>/<application_name>.ini
@@ -59,28 +48,22 @@ interface
 
   function WaptBaseDir: Utf8String; // c:\wapt
   function WaptgetPath: Utf8String; // c:\wapt\wapt-get.exe
-  function WaptservicePath: Utf8String;
+  function WaptservicePath: Utf8String; //c:\wapt\waptservice.exe # obsolete
   function WaptDBPath: Utf8String;
-  function WaptTemplatesRepo(inifilename:String=''): Utf8String;
-  function GetWaptRepoURL: Utf8String;
+  function WaptTemplatesRepo(inifilename:String=''): Utf8String; // http://wapt.tranquil.it/wapt/
 
-  function ReadWaptConfig(inifile:String = ''): Boolean;
+  function GetWaptRepoURL: Utf8String; // from wapt-get.ini, can be empty
+  Function GetMainWaptRepo:String;   // read from ini, if empty, do a discovery using dns
+  Function GetWaptServerURL:String;  // read ini. if no wapt_server key -> return '', return value in inifile or perform a DNS discovery
 
-  //function http_post(url: string;Params:String): String;
+  function ReadWaptConfig(inifile:String = ''): Boolean; //read global parameters from wapt-get ini file
 
   function GetEthernetInfo(ConnectedOnly:Boolean):ISuperObject;
   function LocalSysinfo: ISuperObject;
   function GetLocalIP: string;
-  Function GetDNSServers:TDynStringArray;
-  function GetDNSServer:AnsiString;
-  function GetDNSDomain:AnsiString;
 
-  Function IPV4ToInt(ipaddr:AnsiString):LongInt;
-  Function SameSubnet(ip1,ip2,netmask:AnsiString):Boolean;
-
-
-  function WAPTServerJsonGet(action: String;args:Array of const): ISuperObject;
-  function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject): ISuperObject;
+  function WAPTServerJsonGet(action: String;args:Array of const): ISuperObject; //use global credentials and proxy settings
+  function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject): ISuperObject; //use global credentials and proxy settings
   function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString='';timeout:integer=1000):ISuperObject;
 
   Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy:Boolean=False): boolean;
@@ -91,11 +74,9 @@ interface
      ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString=''):RawByteString;
 
   function GetReachableIP(IPS:ISuperObject;port:word):String;
+
   //return ip for waptservice
   function WaptServiceReachableIP(UUID:String;hostdata:ISuperObject=Nil):String;
-
-  function RunAsAdmin(const Handle: Hwnd; aFile : Ansistring; Params: Ansistring): Boolean;
-  function killtask(exename: ansistring): ansistring;
 
   function CreateSelfSignedCert(orgname,
           wapt_base_dir,
@@ -116,37 +97,10 @@ interface
             default_wapt_server:String='';destination:String='';company:String='';OnProgress:TNotifyEvent = Nil;OverrideBaseName:String=''):String;
 
 Type
-  TFormatHook = Function(Dataset:TDataset;Data,FN:Utf8String):UTF8String of object;
   TWaptProgressEvent = Procedure(Sender : TObject; Const msg : String;Percent:Double) of object;
 
-  { TWAPTDB }
-  TWAPTDB = class(TObject)
-  private
-    fsqltrans : TSQLTransaction;
-    fdb : TSQLite3Connection;
-    dbinuse : TCriticalSection;
-    function QueryCreate(SQL: String): TSqlQuery;
-    property db:TSQLite3Connection read fDB;
-    property sqltrans:TSQLTransaction read fsqltrans;
-  public
-    constructor create(dbpath:String);
-    destructor Destroy; override;
-
-    // execute SQL query and returns a JSON structure with records (stArray)
-    function Select(SQL:String):ISuperObject;
-    function dumpdb:ISuperObject;
-
-    procedure SetParam(name,value:String);
-    function GetParam(name:String):String;
-
-    function QueryToHTMLtable(SQL: String; FormatHook: TFormatHook=nil): String;
-  end;
-
-
   { TWaptPackage }
-
   TWaptPackage = class(TObject)
-
   private
     Fcontrol: String;
     Fdescription: String;
@@ -203,236 +157,10 @@ const
 
 implementation
 
-uses FileUtil, soutils, Variants, ShellApi, JwaIpHlpApi,
-  JwaIpTypes, NetworkAdapterInfo, tisinifiles, registry, JwaWinDNS, JwaWinsock2,
-  IdHttp,IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,Dialogs,UnitRedirect, IdURI,
-  uwaptres,gettext,IdStack;
-
-function IPV4ToString(ipv4:LongWord):String;
-begin
-  Result :=  format('%D.%D.%D.%D',[ipv4  and $FF, (ipv4  shr 8) and $FF,  (ipv4  shr 16) and $FF, (ipv4  shr 24) and $FF]);
-end;
-
-function DNSAQuery(name: AnsiString): ISuperObject;
-var
-  ppQueryResultsSet : PDNS_RECORD;
-  retvalue: Integer;
-  res : AnsiString;
-  ip,ips: ISuperObject;
-begin
-  Result := TSuperObject.Create(stArray);
-  ppQueryResultsSet := Nil;
-  retvalue := DnsQuery(
-    PAnsiChar(name),
-    DNS_TYPE_A,
-    DNS_QUERY_BYPASS_CACHE or DNS_QUERY_NO_LOCAL_NAME or DNS_QUERY_NO_HOSTS_FILE,
-    Nil,
-    @ppQueryResultsSet,
-    Nil);
-  if (retvalue=0) and (ppQueryResultsSet<>Nil) then
-  try
-    while ppQueryResultsSet<>Nil do
-    begin
-      if (ppQueryResultsSet^.wType=DNS_TYPE_CNAME) then
-      begin
-        // recursive query if a CNAME is returned.
-        // very strange ... ppQueryResultsSet^.Data.PTR works but ppQueryResultsSet^.Data.CNAME not... same structure pNameHost in both cases.
-        ips := DNSAQuery(ppQueryResultsSet^.Data.PTR.pNameHost);
-        for ip in ips do
-          Result.AsArray.Add(ip.AsString);
-      end
-      else
-      if (ppQueryResultsSet^.wType=DNS_TYPE_A) and (ppQueryResultsSet^.Data.A.IpAddress<>0) and (LowerCase(ppQueryResultsSet^.pName) = LowerCase(name)) then
-      begin
-        res := IPV4ToString(ppQueryResultsSet^.Data.A.IpAddress);
-        UniqueString(res);
-        Result.AsArray.Add(res);
-      end;
-      ppQueryResultsSet:= ppQueryResultsSet^.pNext;
-    end;
-  finally
-    DnsRecordListFree(ppQueryResultsSet,DnsFreeRecordList);
-  end;
-end;
-
-//query current dns server for SRV record and return a list of {name,priority,weight,port}
-function DNSSRVQuery(name:AnsiString):ISuperObject;
-var
-  ppQueryResultsSet : PDNS_RECORD;
-  retvalue: Integer;
-  res : AnsiString;
-  rec:ISuperObject;
-begin
-  Result := TSuperObject.Create(stArray);
-  ppQueryResultsSet := Nil;
-  retvalue := DnsQuery(
-    PAnsiChar(name),
-    DNS_TYPE_SRV,
-    DNS_QUERY_BYPASS_CACHE or DNS_QUERY_NO_LOCAL_NAME or DNS_QUERY_NO_HOSTS_FILE,
-    Nil,
-    @ppQueryResultsSet,
-    Nil);
-  if (retvalue=0) and (ppQueryResultsSet<>Nil) then
-  try
-    while ppQueryResultsSet<>Nil do
-    begin
-      rec:= TSuperObject.Create(stObject);
-      if ppQueryResultsSet^.wType=DNS_TYPE_SRV then
-      begin
-        res := ppQueryResultsSet^.Data.SRV.pNameTarget;
-        UniqueString(res);
-        rec.S['name'] := res;
-        rec.I['port'] := ppQueryResultsSet^.Data.SRV.wPort;
-        rec.I['priority'] := ppQueryResultsSet^.Data.SRV.wPriority;
-        rec.I['weight'] := ppQueryResultsSet^.Data.SRV.wWeight;
-        Result.AsArray.Add(rec);
-      end;
-      ppQueryResultsSet:= ppQueryResultsSet^.pNext;
-    end;
-    SortByFields(Result,['priority','port']);
-  finally
-    DnsRecordListFree(ppQueryResultsSet,DnsFreeRecordList);
-  end;
-end;
-
-//query current dns server for CNAME record and return a list of {name}
-function DNSCNAMEQuery(name:AnsiString):ISuperObject;
-var
-  ppQueryResultsSet : PDNS_RECORD;
-  retvalue: Integer;
-  res : AnsiString;
-begin
-  Result := TSuperObject.Create(stArray);
-  ppQueryResultsSet := Nil;
-  retvalue := DnsQuery(
-    PAnsiChar(name),
-    DNS_TYPE_CNAME,
-    DNS_QUERY_BYPASS_CACHE or DNS_QUERY_NO_LOCAL_NAME or DNS_QUERY_NO_HOSTS_FILE,
-    Nil,
-    @ppQueryResultsSet,
-    Nil);
-  if (retvalue=0) and (ppQueryResultsSet<>Nil) then
-  try
-    while ppQueryResultsSet<>Nil do
-    begin
-      // strange ppQueryResultsSet^.Data.PTR works but not ppQueryResultsSet^.Data.CNAME
-      if (ppQueryResultsSet^.wType=DNS_TYPE_CNAME) and (ppQueryResultsSet^.Data.PTR.pNameHost<>Nil) then
-      begin
-        res := ppQueryResultsSet^.Data.PTR.pNameHost;
-        UniqueString(res);
-        Result.AsArray.Add(res);
-      end;
-      ppQueryResultsSet:= ppQueryResultsSet^.pNext;
-    end;
-  finally
-    DnsRecordListFree(ppQueryResultsSet,DnsFreeRecordList);
-  end;
-end;
-
-// launch aFile with Params asking for a different user
-function RunAsAdmin(const Handle: Hwnd; aFile : Ansistring; Params: Ansistring): Boolean;
-var
-  sei:  TSHELLEXECUTEINFO;
-begin
-  FillChar(sei, SizeOf(sei), 0);
-  With sei do begin
-     cbSize := SizeOf(sei);
-     Wnd := Handle;
-     //fMask := SEE_MASK_FLAG_DDEWAIT or SEE_MASK_FLAG_NO_UI;
-     fMask := SEE_MASK_FLAG_DDEWAIT;
-     lpVerb := 'runAs';
-     lpFile := PAnsiChar(aFile);
-     lpParameters := PAnsiChar(Params);
-     nShow := SW_SHOWNORMAL;
-  end;
-  Result := ShellExecuteExA(@sei);
-end;
-
-function killtask(exename: ansistring): ansistring;
-var
-  Res: ansistring;
-begin
-  if GetDosOutput('taskkill /F /IM ' + exename + ' /T', '', res) then
-    Result := res
-  else
-    Res := '';
-end;
-
-
-Function GetDNSServers:TDynStringArray;
-var
-  pFI: PFixedInfo;
-  pIPAddr: PIPAddrString;
-  OutLen: Cardinal;
-begin
-  SetLength(Result,0);
-  OutLen := SizeOf(TFixedInfo);
-  GetMem(pFI, SizeOf(TFixedInfo));
-  try
-    if GetNetworkParams(pFI, OutLen) = ERROR_BUFFER_OVERFLOW then
-    begin
-      ReallocMem(pFI, OutLen);
-      if GetNetworkParams(pFI, OutLen) <> NO_ERROR then Exit;
-    end;
-    // If there is no network available there may be no DNS servers defined
-    if pFI^.DnsServerList.IpAddress.S[0] = #0 then Exit;
-    // Add first server
-    SetLength(Result,length(Result)+1);
-    Result[length(Result)-1] := pFI^.DnsServerList.IpAddress.S;
-    // Add rest of servers
-    pIPAddr := pFI^.DnsServerList.Next;
-    while Assigned(pIPAddr) do
-    begin
-      SetLength(Result,length(Result)+1);
-      Result[length(Result)-1] := pIPAddr^.IpAddress.S;
-      pIPAddr := pIPAddr^.Next;
-    end;
-  finally
-    FreeMem(pFI);
-  end;
-end;
-
-function GetDNSServer:AnsiString;
-var
-  dnsserv : TDynStringArray;
-begin
-  dnsserv := GetDNSServers;
-  if length(dnsserv)>0 then
-    result := GetDNSServers[0]
-  else
-    result :='';
-end;
-
-//Get dns domain from global tcpip parameters in registry
-function GetDNSDomain:AnsiString;
-var
-  reg:TRegistry;
-begin
-  reg := TRegistry.create;
-  try
-    reg.RootKey:=HKEY_LOCAL_MACHINE;
-    if reg.OpenKeyReadOnly('SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters') then
-    begin
-      if reg.ValueExists('Domain') then
-        Result := reg.ReadString('Domain');
-      if Result='' then
-        if reg.ValueExists('DhcpDomain') then
-          Result := reg.ReadString('DhcpDomain');
-    end;
-  finally
-    reg.Free;
-  end;
-end;
-
-Function IPV4ToInt(ipaddr:AnsiString):LongInt;
-begin
-  Result := inet_addr(PChar(ipaddr));
-end;
-
-Function SameSubnet(ip1,ip2,netmask:AnsiString):Boolean;
-begin
-    Result := (IPV4ToInt(ip1) and IPV4ToInt(netmask)) = (IPV4ToInt(ip2) and IPV4ToInt(netmask));
-end;
+uses FileUtil, soutils, Variants,uwaptres,waptwinutils,tisinifiles,tislogging,
+  NetworkAdapterInfo, JwaWinsock2,
+  IdHttp,IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,UnitRedirect, IdURI,
+  gettext,IdStack;
 
 
 procedure IdConfigureProxy(http:TIdHTTP;ProxyUrl:String);
@@ -866,30 +594,28 @@ begin
   end;
 end;
 
+function SameNet(connected:ISuperObject;IP:AnsiString):Boolean;
+var
+  conn:ISuperObject;
+begin
+  for conn in Connected do
+  begin
+    if SameIPV4Subnet(conn.S['ipAddress'],IP,conn.S['ipMask']) then
+    begin
+      Result := True;
+      Exit;
+    end;
+  end;
+  Result := False;
+end;
 
 function GetMainWaptRepo: String;
 var
-  rec,recs,urls,ConnectedIps,ServerIp : ISuperObject;
+  rec,recs,ConnectedIps,ServerIp : ISuperObject;
   url,dnsdomain:AnsiString;
 
-
-  function SameNet(connected:ISuperObject;IP:AnsiString):Boolean;
-  var
-    conn:ISuperObject;
-  begin
-    for conn in Connected do
-    begin
-      if SameSubnet(conn.S['ipAddress'],IP,conn.S['ipMask']) then
-      begin
-        Result := True;
-        Exit;
-      end;
-    end;
-    Result := False;
-  end;
-
 begin
-  result := IniReadString(AppIniFilename,'Global','repo_url');
+  result := IniReadString(AppIniFilename,'Global','repo_url','');
   if (Result <> '') then
     exit;
 
@@ -978,18 +704,13 @@ begin
   end;
 end;
 
-function GetWaptServerURL: String;
+
+function GetWaptServerURL: string;
 var
-  dnsdomain:AnsiString;
-  rec,recs : ISuperObject;
+  dnsdomain, url: ansistring;
+  rec, recs, ConnectedIps, ServerIp: ISuperObject;
 
 begin
-  if CacheWaptServerUrl<>'None' then
-  begin
-    Result := CacheWaptServerUrl;
-    Exit;
-  end;
-
   if IniHasKey(AppIniFilename,'Global','wapt_server') then
   begin
     result := IniReadString(AppIniFilename,'Global','wapt_server');
@@ -1007,33 +728,53 @@ begin
     Exit;
   end;
 
+  if CacheWaptServerUrl<>'None' then
+  begin
+    Result := CacheWaptServerUrl;
+    Exit;
+  end;
 
-  dnsdomain:=GetDNSDomain;
-  if dnsdomain<>'' then
+  ConnectedIps := NetworkConfig;
+  dnsdomain := GetDNSDomain;
+  if dnsdomain <> '' then
   begin
     //SRV _wapt._tcp
-    recs := DNSSRVQuery('_waptserver._tcp.'+dnsdomain);
+    recs := DNSSRVQuery('_waptserver._tcp.' + dnsdomain);
     for rec in recs do
     begin
       if rec.I['port'] = 443 then
-        Result := 'https://'+rec.S['name']
+        url := 'https://' + rec.S['name']
       else
-        Result := 'http://'+rec.S['name']+':'+rec.S['port'];
-      Logger('trying '+result,INFO);
+        url := 'http://' + rec.S['name'] + ':' + rec.S['port'];
+      rec.S['url'] := url;
+      try
+        ServerIp := DNSAQuery(rec.S['name']);
+        if ServerIp.AsArray.Length > 0 then
+          rec.B['outside'] := not SameNet(ConnectedIps, ServerIp.AsArray.S[0])
+        else
+          rec.B['outside'] := True;
+      except
+        rec.B['outside'] := True;
+      end;
+      // order is priority asc but wieght desc
+      rec.I['weight'] := -rec.I['weight'];
+    end;
+    SortByFields(recs, ['outside', 'priority', 'weight']);
+
+    for rec in recs do
+    begin
+      Result := rec.S['url'];
       CacheWaptServerUrl := Result;
       exit;
     end;
   end;
-  result :='';
+
+  //None found by DNS Query
+  Result := '';
+  //Invalid cache
   CacheWaptServerUrl := 'None';
 end;
 
-{
-function GetWaptServerURL: String;
-begin
-  result := IniReadString(AppIniFilename,'Global','wapt_server');
-end;
-}
 
 function GetWaptRepoURL: Utf8String;
 begin
@@ -1049,6 +790,7 @@ function GetWaptPrivateKeyPath: String;
 begin
   result := IniReadString(AppIniFilename,'Global','private_key');
 end;
+
 function GetWaptLocalURL: String;
 begin
   if waptservice_port >0 then
@@ -1080,7 +822,7 @@ end;
 
 function AppIniFilename: Utf8String;
 begin
-  result := GetAppConfigDir(False)+GetApplicationName+'.ini';
+  result := GetAppConfigDir(False)+ApplicationName+'.ini';
 end;
 
 function WaptIniFilename: Utf8String;
@@ -1159,203 +901,6 @@ begin
      inifilename:=AppIniFilename;
   Result := StrIsOneOf(IniReadString (inifilename,'Global','use_local_connection_proxy'),['True','true','1'] );
 end;
-
-constructor TWAPTDB.create(dbpath:String);
-begin
-  dbinuse := syncobjs.TCriticalSection.Create;
-
-  // The sqlite dll is either in the same dir as application, or in the DLLs directory, or relative to dbpath (in case of initial install)
-  if FileExists(AppendPathDelim(ExtractFilePath(ParamStr(0)))+'sqlite3.dll') then
-    SQLiteLibraryName:=AppendPathDelim(ExtractFilePath(ParamStr(0)))+'sqlite3.dll'
-  else if FileExists(AppendPathDelim(ExtractFilePath(ParamStr(0)))+'DLLs\sqlite3.dll') then
-    SQLiteLibraryName:=AppendPathDelim(ExtractFilePath(ParamStr(0)))+'DLLs\sqlite3.dll'
-  else if FileExists(AppendPathDelim(ExtractFilePath(dbpath))+'..\DLLs\sqlite3.dll') then
-    SQLiteLibraryName:=AppendPathDelim(ExtractFilePath(dbpath))+'..\DLLs\sqlite3.dll';
-
-  fsqltrans := TSQLTransaction.Create(Nil);
-  fdb := TSQLite3Connection.Create(Nil);
-  db.LoginPrompt := False;
-  if not DirectoryExists(ExtractFileDir(dbpath)) then
-    mkdir(ExtractFileDir(dbpath));
-  db.DatabaseName := dbpath;
-  db.KeepConnection := False;
-  db.Transaction := SQLTrans;
-  sqltrans.DataBase := db;
-
-end;
-
-destructor TWAPTDB.Destroy;
-begin
-  try
-    db.Close;
-  finally
-    dbinuse.Free;
-    if Assigned(db) then
-      db.free;
-    if Assigned(sqltrans) then
-      sqltrans.free;
-  end;
-
-  inherited Destroy;
-end;
-
-function TWAPTDB.Select(SQL: String): ISuperObject;
-var
-  query : TSQLQuery;
-begin
-  dbinuse.Acquire;
-  try
-    //db.Open;
-    Query := TSQLQuery.Create(Nil);
-    try
-      Query.DataBase := db;
-      Query.Transaction := sqltrans;
-
-      Query.SQL.Text:=SQL;
-      Query.Open;
-      Result := Dataset2SO(Query);
-
-    finally
-      Query.Free;
-      db.Close;
-    end;
-  finally
-    dbinuse.Leave;
-  end;
-end;
-
-
-function TWAPTDB.dumpdb: ISuperObject;
-var
-  tables:TStringList;
-  i:integer;
-begin
-  dbinuse.Acquire;
-  try
-    Result := TSuperObject.Create;
-    try
-      tables := TStringList.Create;
-      db.GetTableNames(tables);
-      for i:=0 to tables.Count-1 do
-        if tables[i] <> 'sqlite_sequence' then
-          Result[tables[i]] := Select('select * from '+tables[i]);
-    finally
-      tables.Free;
-    end;
-
-  finally
-    dbinuse.Release;
-  end;
-end;
-
-procedure TWAPTDB.SetParam(name, value: String);
-var
-  q:TSQLQuery;
-begin
-  try
-    dbinuse.Acquire;
-    q := QueryCreate('insert or replace into wapt_params(name,value,create_date) values (:name,:value,:date)');
-    try
-      try
-        q.ParamByName('name').AsString:=name;
-        q.ParamByName('value').AsString:=value;
-        q.ParamByName('date').AsString:=FormatDateTime('YYYYMMDD-hhnnss',Now);
-        q.ExecSQL;
-        sqltrans.Commit;
-      except
-        sqltrans.Rollback;
-      end;
-    finally
-      q.Free;
-    end;
-  finally
-    db.Close;
-    dbinuse.Release;
-  end;
-end;
-
-function TWAPTDB.GetParam(name: String): String;
-var
-  q:TSQLQuery;
-begin
-  try
-    dbinuse.Acquire;
-    result := '';
-    q := QueryCreate('select value from wapt_params where name=:name');
-    try
-      try
-        q.ParamByName('name').AsString:=name;
-        q.open;
-        Result := q.Fields[0].AsString;
-        sqltrans.Commit;
-      except
-        sqltrans.Rollback;
-      end;
-    finally
-      q.Free;
-    end;
-
-  finally
-    db.Close;
-    dbinuse.Release;
-  end;
-end;
-
-function TWAPTDB.QueryCreate(SQL: String):TSQLQuery;
-var
-    ds:TSQLQuery;
-begin
-  ds := TSQLQuery.Create(Nil);
-  ds.DataBase := db;
-  ds.Transaction := sqltrans;
-  ds.SQL.Text:=SQL;
-  ds.ParseSQL:=True;
-  ds.Open;
-  result := ds;
-end;
-
-function TWAPTDB.QueryToHTMLtable(SQL: String;FormatHook: TFormatHook=Nil):String;
-var
-    ds:TSQLQuery;
-    i:integer;
-begin
-  dbinuse.Acquire;
-  try
-    ds := TSQLQuery.Create(Nil);
-    ds.DataBase := db;
-    ds.Transaction := sqltrans;
-    ds.SQL.Text:=SQL;
-    ds.ParseSQL:=True;
-    ds.Open;
-
-    result := '<table><tr>';
-    For i:=0 to ds.FieldCount-1 do
-      if ds.Fields[i].Visible then
-        Result := Result + '<th>'+ds.Fields[i].DisplayLabel+'</th>';
-    result := Result+'</tr>';
-    ds.First;
-    while not ds.EOF do
-    begin
-      result := Result + '<tr>';
-      For i:=0 to ds.FieldCount-1 do
-        if ds.Fields[i].Visible then
-        begin
-          if Assigned(FormatHook) then
-            Result := Result + '<td>'+FormatHook(ds,ds.Fields[i].AsString,ds.Fields[i].FieldName)+'</td>'
-          else
-            Result := Result + '<td>'+ds.Fields[i].AsString+'</td>';
-        end;
-      result := Result+'</tr>';
-      ds.Next;
-    end;
-    result:=result+'</table>';
-  finally
-    db.Close;
-    dbinuse.Release;
-  end;
-end;
-
-
 
 //////
 
@@ -1550,8 +1095,6 @@ end;
 function LocalSysinfo: ISuperObject;
 var
       so:ISuperObject;
-      //CPUInfo:TCpuInfo;
-      waptdb:TWAPTDB;
 begin
   so := TSuperObject.Create;
   //so.S['uuid'] := GetSystemUUID;
@@ -1569,14 +1112,6 @@ begin
   so.S['ipaddress'] := GetLocalIP;
   so.S['waptget-version'] := GetApplicationVersion(WaptgetPath);
   so.S['waptservice-version'] := GetApplicationVersion(WaptservicePath);
-  so.S['wapt-dbpath'] := WaptDBPath;
-
-  waptdb := TWAPTDB.create(WaptDBPath);
-  try
-    so.S['wapt-dbversion'] := waptdb.GetParam('db_version');
-  finally
-    waptdb.Free;
-  end;
   result := so;
 end;
 
@@ -1631,7 +1166,7 @@ begin
     try
       res := HTTP.Post(waptserver+action,St);
     except
-      on E:EIdException do ShowMessage(E.Message);
+      on E:EIdException do raise;
     end;
     result := SO(res);
   finally
@@ -1791,6 +1326,7 @@ begin
     result := format('%s:%s',[IP_Port.AsArray.S[0],IP_Port.AsArray.S[1]]);
   end;
 end;
+
 
 
 initialization

@@ -60,28 +60,28 @@
         <PackageName Value="pltis_superobject"/>
       </Item6>
     </RequiredPackages>
-    <Units Count="69">
+    <Units Count="76">
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="19"/>
-        <CursorPos X="89" Y="37"/>
+        <TopLine Value="16"/>
+        <CursorPos X="51" Y="34"/>
         <UsageCount Value="222"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
         <Filename Value="waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="4"/>
-        <CursorPos X="82" Y="28"/>
+        <TopLine Value="599"/>
+        <CursorPos X="35" Y="613"/>
         <UsageCount Value="207"/>
+        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
@@ -265,8 +265,8 @@
         <Filename Value="..\..\pltis_superobject\soutils.pas"/>
         <UnitName Value="soutils"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="32"/>
-        <CursorPos X="15" Y="39"/>
+        <TopLine Value="226"/>
+        <CursorPos X="3" Y="254"/>
         <UsageCount Value="13"/>
       </Unit24>
       <Unit25>
@@ -340,11 +340,11 @@
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
         <UnitName Value="tiscommon"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1141"/>
-        <CursorPos X="95" Y="1165"/>
+        <TopLine Value="113"/>
+        <CursorPos X="1" Y="129"/>
         <UsageCount Value="20"/>
         <Bookmarks Count="1">
-          <Item0 X="74" Y="314" ID="1"/>
+          <Item0 X="74" Y="303" ID="1"/>
         </Bookmarks>
       </Unit34>
       <Unit35>
@@ -397,8 +397,8 @@
         <Filename Value="..\..\pltis_utils\tisstrings.pas"/>
         <UnitName Value="tisstrings"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="265"/>
-        <CursorPos X="10" Y="289"/>
+        <TopLine Value="154"/>
+        <CursorPos X="1" Y="166"/>
         <UsageCount Value="10"/>
       </Unit41>
       <Unit42>
@@ -412,9 +412,9 @@
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\custapp.pp"/>
         <UnitName Value="CustApp"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="62"/>
-        <CursorPos X="14" Y="86"/>
-        <UsageCount Value="4"/>
+        <TopLine Value="1"/>
+        <CursorPos X="56" Y="5"/>
+        <UsageCount Value="10"/>
       </Unit43>
       <Unit44>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\win\wininc\redef.inc"/>
@@ -435,7 +435,7 @@
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <UnitName Value="superobject"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="2116"/>
+        <TopLine Value="2115"/>
         <CursorPos X="1" Y="2135"/>
         <UsageCount Value="14"/>
       </Unit46>
@@ -490,10 +490,12 @@
       <Unit53>
         <Filename Value="UnitRedirect.pas"/>
         <UnitName Value="UnitRedirect"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="125"/>
-        <CursorPos X="25" Y="141"/>
+        <TopLine Value="1"/>
+        <CursorPos X="5" Y="11"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit53>
       <Unit54>
@@ -523,10 +525,12 @@
       <Unit57>
         <Filename Value="..\..\pltis_delphizmq\zmqapi.pas"/>
         <UnitName Value="zmqapi"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="61"/>
-        <CursorPos X="1" Y="1"/>
+        <TopLine Value="892"/>
+        <CursorPos X="20" Y="907"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit57>
       <Unit58>
         <Filename Value="..\..\pltis_utils\tisutils.pas"/>
@@ -568,7 +572,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="26"/>
+        <UsageCount Value="27"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit62>
       <Unit63>
@@ -619,32 +623,189 @@
         <CursorPos X="11" Y="658"/>
         <UsageCount Value="11"/>
       </Unit68>
+      <Unit69>
+        <Filename Value="..\..\pltis_superobject\sodbutils.pas"/>
+        <UnitName Value="soutils"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="87"/>
+        <CursorPos X="1" Y="116"/>
+        <UsageCount Value="10"/>
+      </Unit69>
+      <Unit70>
+        <Filename Value="waptdb.pas"/>
+        <UnitName Value="waptdb"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="25"/>
+        <CursorPos X="4" Y="31"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit70>
+      <Unit71>
+        <Filename Value="waptwinutils.pas"/>
+        <UnitName Value="waptwinutils"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="597"/>
+        <CursorPos X="14" Y="611"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit71>
+      <Unit72>
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwaiptypes.pas"/>
+        <UnitName Value="jwaiptypes"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="101"/>
+        <CursorPos X="5" Y="116"/>
+        <UsageCount Value="10"/>
+      </Unit72>
+      <Unit73>
+        <Filename Value="..\..\pltis_utils\tislogging.pas"/>
+        <UnitName Value="tislogging"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="28"/>
+        <CursorPos X="25" Y="37"/>
+        <UsageCount Value="10"/>
+      </Unit73>
+      <Unit74>
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\systemh.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="660"/>
+        <CursorPos X="3" Y="675"/>
+        <UsageCount Value="10"/>
+      </Unit74>
+      <Unit75>
+        <Filename Value="..\..\pltis_delphizmq\zhelpers.pas"/>
+        <UnitName Value="zhelpers"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="73"/>
+        <CursorPos X="3" Y="88"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit75>
     </Units>
-    <JumpHistory Count="6" HistoryIndex="5">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="32" Column="1" TopLine="31"/>
+        <Filename Value="..\..\pltis_delphizmq\zmqapi.pas"/>
+        <Caret Line="1" Column="1" TopLine="61"/>
       </Position1>
       <Position2>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="273" Column="46" TopLine="249"/>
+        <Filename Value="..\..\pltis_delphizmq\zmqapi.pas"/>
+        <Caret Line="850" Column="20" TopLine="835"/>
       </Position2>
       <Position3>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="273" Column="57" TopLine="249"/>
+        <Filename Value="..\..\pltis_delphizmq\zmqapi.pas"/>
+        <Caret Line="907" Column="20" TopLine="892"/>
       </Position3>
       <Position4>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="273" Column="37" TopLine="259"/>
+        <Filename Value="..\..\pltis_delphizmq\zmqapi.pas"/>
+        <Caret Line="850" Column="20" TopLine="835"/>
       </Position4>
       <Position5>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="273" Column="34" TopLine="259"/>
+        <Filename Value="..\..\pltis_delphizmq\zhelpers.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position5>
       <Position6>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="34" Column="28" TopLine="16"/>
+        <Filename Value="..\..\pltis_delphizmq\zhelpers.pas"/>
+        <Caret Line="142" Column="41" TopLine="123"/>
       </Position6>
+      <Position7>
+        <Filename Value="..\..\pltis_delphizmq\zhelpers.pas"/>
+        <Caret Line="107" Column="35" TopLine="92"/>
+      </Position7>
+      <Position8>
+        <Filename Value="waptwinutils.pas"/>
+        <Caret Line="70" Column="44" TopLine="53"/>
+      </Position8>
+      <Position9>
+        <Filename Value="waptwinutils.pas"/>
+        <Caret Line="103" Column="31" TopLine="88"/>
+      </Position9>
+      <Position10>
+        <Filename Value="waptwinutils.pas"/>
+        <Caret Line="138" Column="29" TopLine="125"/>
+      </Position10>
+      <Position11>
+        <Filename Value="waptwinutils.pas"/>
+        <Caret Line="177" Column="31" TopLine="164"/>
+      </Position11>
+      <Position12>
+        <Filename Value="waptwinutils.pas"/>
+        <Caret Line="214" Column="6" TopLine="200"/>
+      </Position12>
+      <Position13>
+        <Filename Value="waptwinutils.pas"/>
+        <Caret Line="215" Column="17" TopLine="200"/>
+      </Position13>
+      <Position14>
+        <Filename Value="waptwinutils.pas"/>
+        <Caret Line="221" Column="13" TopLine="206"/>
+      </Position14>
+      <Position15>
+        <Filename Value="waptwinutils.pas"/>
+        <Caret Line="239" Column="16" TopLine="224"/>
+      </Position15>
+      <Position16>
+        <Filename Value="waptwinutils.pas"/>
+        <Caret Line="258" Column="15" TopLine="244"/>
+      </Position16>
+      <Position17>
+        <Filename Value="waptwinutils.pas"/>
+        <Caret Line="504" Column="3" TopLine="489"/>
+      </Position17>
+      <Position18>
+        <Filename Value="waptwinutils.pas"/>
+        <Caret Line="600" Column="17" TopLine="573"/>
+      </Position18>
+      <Position19>
+        <Filename Value="UnitRedirect.pas"/>
+        <Caret Line="141" Column="25" TopLine="125"/>
+      </Position19>
+      <Position20>
+        <Filename Value="UnitRedirect.pas"/>
+        <Caret Line="97" Column="40" TopLine="82"/>
+      </Position20>
+      <Position21>
+        <Filename Value="UnitRedirect.pas"/>
+        <Caret Line="232" Column="19" TopLine="217"/>
+      </Position21>
+      <Position22>
+        <Filename Value="UnitRedirect.pas"/>
+        <Caret Line="248" Column="58" TopLine="234"/>
+      </Position22>
+      <Position23>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="161" Column="39" TopLine="139"/>
+      </Position23>
+      <Position24>
+        <Filename Value="UnitRedirect.pas"/>
+        <Caret Line="11" Column="5" TopLine="1"/>
+      </Position24>
+      <Position25>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="128" Column="24" TopLine="114"/>
+      </Position25>
+      <Position26>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="274" Column="23" TopLine="260"/>
+      </Position26>
+      <Position27>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="199" Column="45" TopLine="184"/>
+      </Position27>
+      <Position28>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="200" Column="40" TopLine="185"/>
+      </Position28>
+      <Position29>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="72" Column="61" TopLine="57"/>
+      </Position29>
+      <Position30>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="530" Column="25" TopLine="515"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

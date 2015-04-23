@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls,
-  ExtCtrls, StdCtrls, Buttons, DefaultTranslator, uWaptConsoleRes;
+  ExtCtrls, StdCtrls, Buttons, DefaultTranslator;
 
 type
 
@@ -39,7 +39,7 @@ var
   VisLoading: TVisLoading;
 
 implementation
-uses uWaptRes;
+uses uWaptConsoleRes;
 {$R *.lfm}
 
 { TVisLoading }
