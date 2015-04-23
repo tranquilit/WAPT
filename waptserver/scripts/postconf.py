@@ -238,7 +238,7 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
         except subprocess.CalledProcessError as cpe:
             final_msg += [
                 'Error while trying to configure Apache!',
-                'errno = ' + str(cpe.code) + ', output: ' + cpe.output
+                'errno = ' + str(cpe.returncode) + ', output: ' + cpe.output
                 ]
         except Exception as e:
             import traceback
