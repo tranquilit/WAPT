@@ -1656,31 +1656,43 @@ def host_cancel_task():
 def usage_statictics():
     """returns some anonymous usage statistics to give an idea of depth of use"""
     hosts = get_db().hosts
-    stats = hosts.aggregate([
-        {'$unwind':'$packages'},
-        {'$group':
-            {'_id':'$uuid',
-                'last_query_date':{'$first':{'$substr':['$last_query_date',0,10]}},
-                'count':{'$sum':1},
-                'ok':{'$sum':{'$cond':[{'$eq': ['$packages.install_status', 'OK']},1,0]}},
-                'has_error':{'$first':{'$cond':[{'$ne':['$update_status.errors',[]]},1,0]}},
-                'need_upgrade':{'$first':{'$cond':[{'$ne':['$update_status.upgrades',[]]},1,0]}},
-            }},
-        {'$group':
-            {'_id':1,
-                'hosts_count':{'$sum':1},
-                'oldest_query':{'$min':'$last_query_date'},
-                'newest_query':{'$max':'$last_query_date'},
-                'packages_count_max':{'$max':'$count'},
-                'packages_count_avg':{'$avg':'$count'},
-                'packages_count_ok':{'$sum':'$ok'},
-                'hosts_count_has_error':{'$sum':'$has_error'},
-                'hosts_count_need_upgrade':{'$sum':'$need_upgrade'},
-            }},
-        ])
+    try:
+        stats = hosts.aggregate([
+            {'$unwind':'$packages'},
+            {'$group':
+                {'_id':'$uuid',
+                    'last_query_date':{'$first':{'$substr':['$last_query_date',0,10]}},
+                    'count':{'$sum':1},
+                    'ok':{'$sum':{'$cond':[{'$eq': ['$packages.install_status', 'OK']},1,0]}},
+                    'has_error':{'$first':{'$cond':[{'$ne':['$update_status.errors',[]]},1,0]}},
+                    'need_upgrade':{'$first':{'$cond':[{'$ne':['$update_status.upgrades',[]]},1,0]}},
+                }},
+            {'$group':
+                {'_id':1,
+                    'hosts_count':{'$sum':1},
+                    'oldest_query':{'$min':'$last_query_date'},
+                    'newest_query':{'$max':'$last_query_date'},
+                    'packages_count_max':{'$max':'$count'},
+                    'packages_count_avg':{'$avg':'$count'},
+                    'packages_count_ok':{'$sum':'$ok'},
+                    'hosts_count_has_error':{'$sum':'$has_error'},
+                    'hosts_count_need_upgrade':{'$sum':'$need_upgrade'},
+                }},
+            ])
+        raise test
+    except:
+        # fallback for old mongo without aggregate framework
+        stats = {}
+        stats['result'] = [
+            {
+                '_id':0,
+                'hosts_count':hosts.count(),
+            }]
 
     result = dict(
         uuid = server_uuid,
+        platform = platform.system(),
+        architecture = platform.architecture(),
         version = __version__,
         date = datetime2isodate(),
         )
@@ -1688,6 +1700,15 @@ def usage_statictics():
     result.update(stats['result'][0])
     return make_response(msg = _('Anomnymous usage statistics'), result = result)
 
+
+def test():
+    import flask
+    app = flask.Flask(__name__)
+    babel = Babel(app)
+    with app.test_request_context():
+        db = get_db()
+        a =  usage_statictics()
+        print a.data
 
 ##################################################################
 class CheckHostWorker(threading.Thread):
