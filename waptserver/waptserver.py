@@ -1564,7 +1564,7 @@ def host_cancel_task():
 
 
 @app.route('/api/v1/usage_statistics')
-def usage_statictics():
+def usage_statistics():
     """returns some anonymous usage statistics to give an idea of depth of use"""
     hosts = get_db().hosts
     try:
