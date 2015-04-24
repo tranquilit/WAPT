@@ -56,10 +56,7 @@ type
 
 implementation
 
-uses FileUtil, soutils, Variants, ShellApi, JwaIpHlpApi,
-  JwaIpTypes, NetworkAdapterInfo, registry, JwaWinDNS, JwaWinsock2,
-  IdHttp,IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,Dialogs,UnitRedirect, IdURI,
-  uwaptres,gettext,IdStack,waptwinutils,tisinifiles;
+uses FileUtil, soutils,sodbutils, Variants;
 
 constructor TWAPTDB.create(dbpath:String);
 begin
