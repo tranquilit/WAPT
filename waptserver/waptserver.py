@@ -1679,7 +1679,6 @@ def usage_statictics():
                     'hosts_count_need_upgrade':{'$sum':'$need_upgrade'},
                 }},
             ])
-        raise test
     except:
         # fallback for old mongo without aggregate framework
         stats = {}
