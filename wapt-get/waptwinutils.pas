@@ -532,21 +532,26 @@ end;
 function LocalWaptVersion: ansistring;
 var
   local_version: ansistring;
+  i:integer;
 begin
   Result := '';
   try
-    Result := ReadRegEntry(
+    local_version := ReadRegEntry(
       'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1',
       'DisplayVersion');
   except
     try
-      Result := ReadRegEntry(
+      local_version := ReadRegEntry(
         'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1',
         'DisplayVersion');
     except
-      Result := '';
+      local_version := '';
     end;
+    // check if looks like actual version string.
   end;
+  for i := 1 to length(local_version) do
+    if CharInSet(local_version[i],['0'..'9','-','.']) then
+      Result := Result + local_version[i];
 end;
 
 // Compare version member by member as int or string
