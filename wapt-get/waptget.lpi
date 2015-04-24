@@ -23,8 +23,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="2"/>
-      <RevisionNr Value="3"/>
-      <BuildNr Value="1"/>
+      <RevisionNr Value="4"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -41,25 +40,28 @@
         <CommandLineParams Value="dnsdebug"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="6">
+    <RequiredPackages Count="7">
       <Item1>
-        <PackageName Value="pl_indy"/>
+        <PackageName Value="pltis_wapt"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_delphizmq"/>
+        <PackageName Value="pl_indy"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pltis_delphizmq"/>
       </Item3>
       <Item4>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pltis_utils"/>
       </Item4>
       <Item5>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="FCL"/>
       </Item5>
       <Item6>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item6>
+      <Item7>
+        <PackageName Value="pltis_superobject"/>
+      </Item7>
     </RequiredPackages>
     <Units Count="76">
       <Unit0>
@@ -70,14 +72,13 @@
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="52"/>
-        <CursorPos X="5" Y="23"/>
+        <CursorPos X="25" Y="62"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
         <Filename Value="waptcommon.pas"/>
-        <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
         <WindowIndex Value="0"/>
         <TopLine Value="10"/>
@@ -126,7 +127,6 @@
       </Unit6>
       <Unit7>
         <Filename Value="tiscommon.pas"/>
-        <IsPartOfProject Value="True"/>
         <UnitName Value="tiscommon"/>
         <WindowIndex Value="0"/>
         <TopLine Value="39"/>
@@ -143,7 +143,6 @@
       </Unit8>
       <Unit9>
         <Filename Value="tisstrings.pas"/>
-        <IsPartOfProject Value="True"/>
         <UnitName Value="tisstrings"/>
         <WindowIndex Value="0"/>
         <TopLine Value="35"/>
@@ -152,7 +151,6 @@
       </Unit9>
       <Unit10>
         <Filename Value="tisinifiles.pas"/>
-        <IsPartOfProject Value="True"/>
         <UnitName Value="tisinifiles"/>
         <WindowIndex Value="0"/>
         <TopLine Value="49"/>
@@ -169,7 +167,6 @@
       </Unit11>
       <Unit12>
         <Filename Value="networkadapterinfo.pas"/>
-        <IsPartOfProject Value="True"/>
         <UnitName Value="NetworkAdapterInfo"/>
         <WindowIndex Value="0"/>
         <TopLine Value="106"/>
@@ -564,7 +561,6 @@
       </Unit61>
       <Unit62>
         <Filename Value="uwaptres.pas"/>
-        <IsPartOfProject Value="True"/>
         <UnitName Value="uWaptRes"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>

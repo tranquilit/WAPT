@@ -25,7 +25,7 @@ unit waptwinutils;
 interface
 
 uses
-  Classes, windows,SysUtils,superobject;
+  Classes,windows,SysUtils,superobject, ShellApi, JwaWinbase;
 
 function DNSAQuery(name:AnsiString):ISuperObject;
 function DNSSRVQuery(name:AnsiString):ISuperObject;
@@ -41,6 +41,36 @@ Function SameIPV4Subnet(ip1,ip2,netmask:AnsiString):Boolean;
 function GetDosOutput(const CommandLine: ansistring; WorkDir: ansistring; var Text: ansistring): boolean;
 function RunAsAdmin(const Handle: Hwnd; aFile : Ansistring; Params: Ansistring): Boolean;
 
+/// <summary>
+///   Runs a console application and captures the stdoutput and
+///   stderror.</summary>
+/// <param name="CmdLine">The commandline contains the full path to
+///   the executable and the necessary parameters. Don't forget to
+///   quote filenames with "" if the path contains spaces.</param>
+/// <param name="Output">Receives the console stdoutput.</param>
+/// <param name="Error">Receives the console stderror.</param>
+/// <param name="Input">Send to stdinput of the process.</param>
+/// <param name="Wait">[milliseconds] Maximum of time to wait,
+///   until application has finished. After reaching this timeout,
+///   the application will be terminated and False is returned as
+///   result.</param>
+/// <returns>True if process could be started and did not reach the
+///   timeout.</returns>
+// Adapted From http://www.martinstoeckli.ch/delphi/  (
+function Run(CmdLine: WideString;
+  const Input: RawByteString = '';
+  const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString='';onpoll:TNotifyEvent=Nil): RawByteString;
+
+const
+  LOGON_WITH_PROFILE = $00000001;
+
+function CreateProcessWithLogonW(lpUsername, lpDomain, lpPassword: PWideChar;
+  dwLogonFlags: dword; lpApplicationName, lpCommandLine: PWideChar;
+  dwCreationFlags: dword; lpEnvironment: pointer;
+  lpCurrentDirectory: PWideChar; lpStartupInfo: PStartUpInfoW;
+  lpProcessInfo: PProcessInformation): boolean; stdcall;
+  external 'advapi32.dll';
+
 function NetworkConfig: ISuperObject;
 function ComputerSystem: ISuperObject;
 function BasicRegistrationData: ISuperObject;
@@ -53,8 +83,8 @@ function LocalWaptVersion: ansistring;
 
 implementation
 
-uses Variants, ShellApi, JwaIpHlpApi,soutils,
-  JwaIpTypes, registry, JwaWinDNS, JwaWinsock2,TisIniFiles;
+uses Variants, registry, sysconst, JwaIpHlpApi,
+  JwaIpTypes, JwaWinDNS, JwaWinsock2, tisinifiles, soutils;
 
 
 Function IPV4ToInt(ipaddr:AnsiString):LongWord;
@@ -403,7 +433,7 @@ begin
         Line := '';
         repeat
           // read block of characters (might contain carriage returns and  line feeds)
-          WasOK := ReadFile(StdOutPipeRead, Buffer, 255, BytesRead, nil);
+          WasOK := windows.ReadFile(StdOutPipeRead, Buffer, 255, BytesRead, nil);
 
           // has anything been read?
           if BytesRead > 0 then
@@ -649,12 +679,12 @@ begin
   if FileExists('c:\wapt\wapt-get.ini') then
     Result := 'c:\wapt\wapt-get.ini'
   else
-  if FileExists(GetEnvironmentVariable('ProgramFiles(x86)') +
+  if FileExists(SysUtils.GetEnvironmentVariable('ProgramFiles(x86)') +
     '\wapt\wapt-get.ini') then
-    Result := GetEnvironmentVariable('ProgramFiles(x86)') + '\wapt\wapt-get.ini'
+    Result := SysUtils.GetEnvironmentVariable('ProgramFiles(x86)') + '\wapt\wapt-get.ini'
   else
-  if FileExists(GetEnvironmentVariable('ProgramFiles') + '\wapt\wapt-get.ini') then
-    Result := GetEnvironmentVariable('ProgramFiles') + '\wapt\wapt-get.ini'
+  if FileExists(SysUtils.GetEnvironmentVariable('ProgramFiles') + '\wapt\wapt-get.ini') then
+    Result := SysUtils.GetEnvironmentVariable('ProgramFiles') + '\wapt\wapt-get.ini'
   else
     Result := 'c:\wapt\wapt-get.ini';
 end;
@@ -666,6 +696,236 @@ begin
   else
     Result := DefaultValue;
 end;
+
+
+// Run
+
+type
+  TRunReadPipeThread = class(TThread)
+  protected
+    FPipe: THandle;
+    FContent: TStringStream;
+    function Get_Content: RawByteString;
+    procedure Execute; override;
+  public
+    constructor Create(const Pipe: THandle);
+    destructor Destroy; override;
+    property Content: RawByteString read Get_Content;
+  end;
+
+  TRunWritePipeThread = class(TThread)
+  protected
+    FPipe: THandle;
+    FContent: TStringStream;
+    procedure Execute; override;
+  public
+    constructor Create(const Pipe: THandle; const Content: RawByteString);
+    destructor Destroy; override;
+  end;
+
+{ TStoReadPipeThread }
+
+constructor TRunReadPipeThread.Create(const Pipe: THandle);
+begin
+  FPipe := Pipe;
+  FContent := TStringStream.Create('');
+  inherited Create(False); // start running
+end;
+
+destructor TRunReadPipeThread.Destroy;
+begin
+  FContent.Free;
+  inherited Destroy;
+end;
+
+procedure TRunReadPipeThread.Execute;
+const
+  BLOCK_SIZE = 4096;
+var
+  iBytesRead: DWORD;
+  myBuffer: array[0..BLOCK_SIZE-1] of Byte;
+begin
+  iBytesRead := 0;
+  repeat
+    // try to read from pipe
+    if Windows.ReadFile(FPipe, myBuffer, BLOCK_SIZE, iBytesRead, nil) then
+      FContent.Write(myBuffer, iBytesRead);
+  // a process may write less than BLOCK_SIZE, even if not at the end
+  // of the output, so checking for < BLOCK_SIZE would block the pipe.
+  until (iBytesRead = 0);
+end;
+
+function TRunReadPipeThread.Get_Content: RawByteString;
+begin
+  Result := FContent.DataString;
+end;
+
+{ TStoWritePipeThread }
+
+constructor TRunWritePipeThread.Create(const Pipe: THandle;
+  const Content: RawByteString);
+begin
+  FPipe := Pipe;
+  FContent := TStringStream.Create(Content);
+  inherited Create(False); // start running
+end;
+
+destructor TRunWritePipeThread.Destroy;
+begin
+  FContent.Free;
+  if (FPipe <> 0) then
+    CloseHandle(FPipe);
+  inherited Destroy;
+end;
+
+procedure TRunWritePipeThread.Execute;
+const
+  BLOCK_SIZE = 4096;
+var
+  myBuffer: array[0..BLOCK_SIZE-1] of Byte;
+  iBytesToWrite: DWORD;
+  iBytesWritten: DWORD;
+begin
+  iBytesToWrite := FContent.Read(myBuffer, BLOCK_SIZE);
+  while (iBytesToWrite > 0) do
+  begin
+    Windows.WriteFile(FPipe, myBuffer, iBytesToWrite, iBytesWritten, nil);
+    iBytesToWrite := FContent.Read(myBuffer, BLOCK_SIZE);
+  end;
+  // close our handle to let the other process know, that
+  // there won't be any more data.
+  CloseHandle(FPipe);
+  FPipe := 0;
+end;
+
+function Run(CmdLine: WideString;
+  const Input: RawByteString = '';
+  const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString='';onpoll:TNotifyEvent=Nil): RawByteString;
+var
+  mySecurityAttributes: SECURITY_ATTRIBUTES;
+  myStartupInfo: STARTUPINFOW;
+  myProcessInfo: PROCESS_INFORMATION;
+  hPipeInputRead, hPipeInputWrite: THandle;
+  hPipeOutputRead, hPipeOutputWrite: THandle;
+  hPipeErrorRead, hPipeErrorWrite: THandle;
+  myWriteInputThread: TRunWritePipeThread;
+  myReadOutputThread: TRunReadPipeThread;
+  myReadErrorThread: TRunReadPipeThread;
+  iWaitRes: Integer;
+
+  wparams:WideString;
+  output,error:RawByteString;
+
+  exitCode:LongWord;
+
+  start_ms:DWORD;
+
+const
+  pollwait:DWORD = 500;
+
+begin
+  try
+    ZeroMemory(@mySecurityAttributes, SizeOf(SECURITY_ATTRIBUTES));
+    mySecurityAttributes.nLength := SizeOf(SECURITY_ATTRIBUTES);
+    mySecurityAttributes.bInheritHandle := TRUE;
+    // create pipe to set stdinput
+    hPipeInputRead := 0;
+    hPipeInputWrite := 0;
+    CreatePipe(hPipeInputRead, hPipeInputWrite, @mySecurityAttributes, 0);
+    CreatePipe(hPipeOutputRead, hPipeOutputWrite, @mySecurityAttributes, 0);
+    CreatePipe(hPipeErrorRead, hPipeErrorWrite, @mySecurityAttributes, 0);
+
+    try
+      // prepare startupinfo structure
+      ZeroMemory(@myStartupInfo, SizeOf(STARTUPINFO));
+      myStartupInfo.cb := Sizeof(STARTUPINFO);
+
+      // hide application
+      myStartupInfo.dwFlags := STARTF_USESHOWWINDOW;
+      myStartupInfo.wShowWindow := SW_HIDE;
+      // assign pipes
+      myStartupInfo.dwFlags := myStartupInfo.dwFlags or STARTF_USESTDHANDLES;
+      myStartupInfo.hStdInput := hPipeInputRead;
+      myStartupInfo.hStdOutput := hPipeOutputWrite;
+      myStartupInfo.hStdError := hPipeErrorWrite;
+
+      // since Delphi calls CreateProcessW, literal strings cannot be used anymore
+      UniqueString(CmdLine);
+
+      // start the process
+      wparams := CmdLine;
+      if user<>'' then
+      begin
+        UniqueString(user);
+        UniqueString(password);
+        UniqueString(domain);
+        if not CreateProcessWithLogonW(PWidechar(user),pwidechar(domain),pwidechar(password),0, Nil,PWideChar(wparams), CREATE_NEW_CONSOLE,nil,nil,@myStartupInfo, @myProcessInfo) then
+          RaiseLastOSError;
+      end
+      else
+      begin
+        if not CreateProcessW(Nil,PWideChar(wparams),  Nil,Nil, True, CREATE_NEW_CONSOLE,nil,nil,myStartupInfo,myProcessInfo) then
+          RaiseLastOSError();
+      end;
+
+    finally
+      // close the ends of the pipes, now used by the process
+      CloseHandle(hPipeInputRead);
+      CloseHandle(hPipeOutputWrite);
+      CloseHandle(hPipeErrorWrite);
+    end;
+
+    myWriteInputThread := Nil;
+    myReadOutputThread := Nil;
+    myReadErrorThread := Nil;
+
+    myWriteInputThread := TRunWritePipeThread.Create(hPipeInputWrite, Input);
+    myReadOutputThread := TRunReadPipeThread.Create(hPipeOutputRead);
+    myReadErrorThread := TRunReadPipeThread.Create(hPipeErrorRead);
+    try
+      start_ms := GetTickCount;
+      try
+        repeat
+          // wait unitl there is no more data to receive, or the timeout is reached
+          iWaitRes := WaitForSingleObject(myProcessInfo.hProcess, pollwait);
+          if Assigned(onpoll) then
+            onpoll(Nil);
+          // timeout reached ?
+        until ((GetTickCount-start_ms > Wait) and  (iWaitRes = WAIT_TIMEOUT)) or (iWaitRes <> WAIT_TIMEOUT);
+      except
+        TerminateProcess(myProcessInfo.hProcess, UINT(ERROR_CANCELLED));
+        raise;
+      end;
+      if (GetTickCount-start_ms > Wait) then
+      begin
+        TerminateProcess(myProcessInfo.hProcess, UINT(ERROR_CANCELLED));
+        raise Exception.Create('Timeout running '+CmdLine);
+      end;
+      // return output
+      myReadOutputThread.WaitFor;
+      Output := myReadOutputThread.Content;
+      Result := output;
+      myReadErrorThread.WaitFor;
+      Error := myReadErrorThread.Content;
+      exitCode :=0;
+      if not GetExitCodeProcess(myProcessInfo.hProcess, exitCode) or (exitCode>0) then
+        raise EOSError.CreateFmt(SOSError, [exitCode, SysErrorMessage(exitCode)+' : '+Error])
+    finally
+      if myWriteInputThread<>Nil then  myWriteInputThread.Free;
+      if myReadOutputThread<>Nil then myReadOutputThread.Free;
+      if myReadErrorThread<>Nil then myReadErrorThread.Free;
+      CloseHandle(myProcessInfo.hThread);
+      CloseHandle(myProcessInfo.hProcess);
+    end;
+
+  finally
+    // close our ends of the pipes
+    CloseHandle(hPipeOutputRead);
+    CloseHandle(hPipeErrorRead);
+
+  end;
+end;
+
 
 
 end.

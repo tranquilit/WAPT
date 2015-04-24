@@ -125,7 +125,7 @@ var
 
 implementation
 uses LCLIntf,Forms,dialogs,windows,graphics,tiscommon,
-    waptcommon,waptwinutils,soutils,UnitRedirect,tisstrings,IdException;
+    waptcommon,waptwinutils,soutils,tisstrings,IdException;
 
 {$R *.lfm}
 
@@ -630,13 +630,13 @@ begin
   ActServiceEnable.Checked :=  GetServiceStatusByName('','waptservice') <> ssStopped;
   if ActServiceEnable.Checked then
   begin
-    res := Sto_RedirectedExecute('net stop waptservice');
+    Run('net stop waptservice');
     lastServiceMessage:=0;
     ActServiceEnable.Update;
   end
   else
   begin
-    res := Sto_RedirectedExecute('net start waptservice');
+    res := Run('net start waptservice');
     lastServiceMessage:=Now;
     ActServiceEnable.Update;
   end;
@@ -652,7 +652,7 @@ var
   res : WideString;
 begin
   try
-    res := Sto_RedirectedExecute( WaptgetPath+' session-setup ALL','',120*1000);
+    res := Run( WaptgetPath+' session-setup ALL','',120*1000);
     ShowMessage(rsPackageConfigDone)
   except
     MessageDlg(rsError,rsPackageConfigError,mtError,[mbOK],0);

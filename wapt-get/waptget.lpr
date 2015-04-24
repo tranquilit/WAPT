@@ -30,8 +30,8 @@ uses
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, CustApp,
   { you can add units after this }
-  Windows, PythonEngine, zmqapi, uwaptres, waptcommon, waptwinutils, superobject,soutils,
-  tisstrings,tiscommon,tislogging;
+  Interfaces,Windows, PythonEngine, zmqapi, superobject,soutils,
+  tislogging,uWaptRes,waptcommon,waptwinutils,tiscommon,tisstrings;
 type
   { pwaptget }
 
@@ -78,20 +78,6 @@ type
     destructor Destroy; override;
     procedure Execute; override;
 end;
-
-//#########################
-
-{
-function WAPTLocalJsonGet(action: String;user:AnsiString='';password:AnsiString='';timeout:integer=1000): ISuperObject;
-var
-  strresult : String;
-begin
-  if StrLeft(action,1)<>'/' then
-    action := '/'+action;
-  strresult := retrieve(GetWaptLocalURL+action);
-  Result := SO(strresult);
-end;
-}
 
 { TZMQPollThread }
 
