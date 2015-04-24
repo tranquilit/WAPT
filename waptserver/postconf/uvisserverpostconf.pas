@@ -442,6 +442,18 @@ begin
     ProgressStep(6,8);
     Sto_RedirectedExecute('cmd /C net start waptservice');
 
+    ProgressTitle(WAPTServerJsonGet('ping',[]).S['msg']);
+    ProgressTitle(WAPTLocalJsonGet('runstatus','','',5000).S['0.value']);
+
+    ProgressTitle(rsRegisteringHostOnServer);
+    ProgressStep(7,8);
+
+
+    ProgressTitle(WAPTLocalJsonGet('update.json?notify_server=1','','',5000).S['description']);
+
+    {retry := 0;
+
+
     ProgressTitle(rsRegisteringHostOnServer);
     ProgressStep(7,8);
 
@@ -457,10 +469,9 @@ begin
       Sleep(2000);
       inc(retry);
     end;
-
+    }
     ProgressTitle(rsUpdatingLocalPackages);
     ProgressStep(8,8);
-    runwapt('{app}\wapt-get.exe -D update');
 
     ActNext.Execute;
 
