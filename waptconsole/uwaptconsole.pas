@@ -1401,11 +1401,14 @@ procedure TVisWaptGUI.ActEditHostPackageExecute(Sender: TObject);
 var
   hostname,uuid: ansistring;
 begin
-  hostname := GridHosts.FocusedRow.S['host.computer_fqdn'];
-  uuid := GridHosts.FocusedRow.S['uuid'];
+  if GridHosts.FocusedRow<>Nil then
+  begin
+    hostname := GridHosts.FocusedRow.S['host.computer_fqdn'];
+    uuid := GridHosts.FocusedRow.S['uuid'];
 
-  if EditHost(hostname, ActAdvancedMode.Checked, uuid) <> nil then
-    ActSearchHost.Execute;
+    if EditHost(hostname, ActAdvancedMode.Checked, uuid) <> nil then
+      ActSearchHost.Execute;
+  end;
 end;
 
 procedure TVisWaptGUI.ActEnglishExecute(Sender: TObject);
