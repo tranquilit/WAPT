@@ -38,21 +38,24 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="4">
+    <RequiredPackages Count="5">
       <Item1>
-        <PackageName Value="pl_indy"/>
+        <PackageName Value="pltis_wapt"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pl_indy"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_utils"/>
       </Item3>
       <Item4>
-        <PackageName Value="LCL"/>
+        <PackageName Value="pltis_superobject"/>
       </Item4>
+      <Item5>
+        <PackageName Value="LCL"/>
+      </Item5>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="3">
       <Unit0>
         <Filename Value="waptexit.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -67,20 +70,10 @@
         <UnitName Value="uwaptexit"/>
       </Unit1>
       <Unit2>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="waptcommon"/>
-      </Unit2>
-      <Unit3>
-        <Filename Value="..\wapt-get\tisstrings.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tisstrings"/>
-      </Unit3>
-      <Unit4>
         <Filename Value="uwaptexitres.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uWaptExitRes"/>
-      </Unit4>
+      </Unit2>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -91,7 +84,6 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\wapt-get"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>

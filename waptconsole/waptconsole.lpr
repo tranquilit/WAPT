@@ -10,17 +10,16 @@ uses
 
   Interfaces, // this includes the LCL widgetset
   Forms, uwaptconsole, uVisCreateKey,
-  waptcommon, dmwaptpython, uVisEditPackage, uviscreatewaptsetup,
+  dmwaptpython, uVisEditPackage, uviscreatewaptsetup,
   uvislogin, uvisprivatekeyauth, uvisloading, uviswaptconfig,
   uvischangepassword, uviswaptdeploy, uvishostsupgrade, uVisAPropos,
-  uVisImportPackage, uwaptconsoleres;
+  uVisImportPackage, uwaptconsoleres,waptcommon;
 
 {$R *.res}
 
 begin
   RequireDerivedFormResource := True;
   Application.Initialize;
-
   Application.CreateForm(TDMPython, DMPython);
   DMPython.WaptConfigFileName := AppIniFilename;
   Application.CreateForm(TVisWaptGUI, VisWaptGUI);

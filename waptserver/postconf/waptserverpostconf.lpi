@@ -20,7 +20,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="2"/>
-      <RevisionNr Value="3"/>
+      <RevisionNr Value="4"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -35,33 +35,36 @@
         <CommandLineParams Value="-vd"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="8">
+    <RequiredPackages Count="9">
       <Item1>
-        <PackageName Value="pl_indy"/>
+        <PackageName Value="pltis_wapt"/>
       </Item1>
       <Item2>
-        <PackageName Value="HtmlComp"/>
+        <PackageName Value="pl_indy"/>
       </Item2>
       <Item3>
-        <PackageName Value="pl_richview"/>
+        <PackageName Value="HtmlComp"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_rx"/>
+        <PackageName Value="pl_richview"/>
       </Item4>
       <Item5>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pl_rx"/>
       </Item5>
       <Item6>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_utils"/>
       </Item6>
       <Item7>
-        <PackageName Value="pl_luicontrols"/>
+        <PackageName Value="pltis_superobject"/>
       </Item7>
       <Item8>
-        <PackageName Value="LCL"/>
+        <PackageName Value="pl_luicontrols"/>
       </Item8>
+      <Item9>
+        <PackageName Value="LCL"/>
+      </Item9>
     </RequiredPackages>
-    <Units Count="8">
+    <Units Count="3">
       <Unit0>
         <Filename Value="waptserverpostconf.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -76,38 +79,10 @@
         <UnitName Value="uVisServerPostconf"/>
       </Unit1>
       <Unit2>
-        <Filename Value="..\..\wapt-get\UnitRedirect.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="UnitRedirect"/>
-      </Unit2>
-      <Unit3>
-        <Filename Value="..\..\wapt-get\waptcommon.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="waptcommon"/>
-      </Unit3>
-      <Unit4>
-        <Filename Value="..\..\wapt-get\networkadapterinfo.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="NetworkAdapterInfo"/>
-      </Unit4>
-      <Unit5>
-        <Filename Value="..\..\waptconsole\uvisloading.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="VisLoading"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uvisloading"/>
-      </Unit5>
-      <Unit6>
-        <Filename Value="..\..\wapt-get\uwaptres.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="uWaptRes"/>
-      </Unit6>
-      <Unit7>
         <Filename Value="uwaptserverres.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uWaptServerRes"/>
-      </Unit7>
+      </Unit2>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -118,7 +93,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\..\wapt-get;..\..\waptconsole;..\..\..\cryptobboxvcl\sources"/>
+      <OtherUnitFiles Value="..\..\waptconsole;..\..\..\cryptobboxvcl\sources"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>

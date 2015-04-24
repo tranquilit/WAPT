@@ -128,7 +128,7 @@ var
 
 implementation
 uses LCLIntf, Windows,WaptCommon,waptwinutils,tisinifiles,superobject,
-    tiscommon,tisstrings,IniFiles,UnitRedirect,sha1;
+    tiscommon,tisstrings,IniFiles,sha1;
 {$R *.lfm}
 
 { TVisWAPTServerPostConf }
@@ -157,7 +157,7 @@ end;
 procedure TVisWAPTServerPostConf.FormShow(Sender: TObject);
 begin
   if GetServiceStatusByName('','WAPTServer') in  [ssRunning,ssPaused,ssPausePending,ssStartPending] then
-    Sto_RedirectedExecute('cmd /C net stop waptserver');
+    Run('cmd /C net stop waptserver');
 
   EdWAPTServerName.Text:=LowerCase(GetComputerName)+'.'+GetDNSDomain;
   if IniHasKey(WaptIniFilename,'global','default_package_prefix') then
@@ -289,27 +289,27 @@ var
 begin
   if GetServiceStatusByName('','SharedAccess') = ssRunning then
   begin
-    output := Sto_RedirectedExecute('netsh firewall show portopening');
+    output := Run('netsh firewall show portopening');
     if pos('waptserver 80',output)<=0 then
-      Sto_RedirectedExecute(format('netsh.exe firewall add portopening name="waptserver %d" port=%d protocol=TCP',[waptserver_port,waptserver_port]));
+      Run(format('netsh.exe firewall add portopening name="waptserver %d" port=%d protocol=TCP',[waptserver_port,waptserver_port]));
     if pos('waptserver 443',output)<=0 then
-      Sto_RedirectedExecute(format('netsh.exe firewall add portopening name="waptserver %d" port=%d protocol=TCP',[waptserver_sslport,waptserver_sslport]));
+      Run(format('netsh.exe firewall add portopening name="waptserver %d" port=%d protocol=TCP',[waptserver_sslport,waptserver_sslport]));
   end
   else if GetServiceStatusByName('','MpsSvc') = ssRunning then
   begin
     output:='';
     try
-      output := Sto_RedirectedExecute(format('netsh advfirewall firewall show rule name="waptserver %d"',[waptserver_port]));
+      output := Run(format('netsh advfirewall firewall show rule name="waptserver %d"',[waptserver_port]));
     except
     end;
     if pos('waptserver 80',output)<=0 then
-      output := Sto_RedirectedExecute(format('netsh advfirewall firewall add rule name="waptserver %d" dir=in localport=%d protocol=TCP action=allow',[waptserver_port,waptserver_port]));
+      output := Run(format('netsh advfirewall firewall add rule name="waptserver %d" dir=in localport=%d protocol=TCP action=allow',[waptserver_port,waptserver_port]));
     try
-      output := Sto_RedirectedExecute(format('netsh advfirewall firewall show rule name="waptserver %d"',[waptserver_sslport]));
+      output := Run(format('netsh advfirewall firewall show rule name="waptserver %d"',[waptserver_sslport]));
     except
     end;
     if pos('waptserver 443',output)<=0 then
-      output := Sto_RedirectedExecute(format('netsh advfirewall firewall add rule name="waptserver %d" dir=in localport=%d protocol=TCP action=allow',[waptserver_sslport,waptserver_sslport]));
+      output := Run(format('netsh advfirewall firewall add rule name="waptserver %d" dir=in localport=%d protocol=TCP action=allow',[waptserver_sslport,waptserver_sslport]));
   end;
 end;
 
@@ -373,7 +373,7 @@ end;
 function runwapt(cmd:String):String;
 begin
   StrReplace(cmd,'{app}',WaptBaseDir,[rfReplaceAll]);
-  result := Sto_RedirectedExecute(cmd);
+  result := Run(cmd);
 end;
 
 //function GetSHA512Crypt(password:String):String;
@@ -398,12 +398,12 @@ begin
     if GetServiceStatusByName('','WAPTService') in [ssRunning,ssPaused,ssPausePending,ssStartPending]  then
     begin
       ProgressTitle(rsWaptServiceStopping);
-      Sto_RedirectedExecute('cmd /C net stop waptservice');
+      Run('cmd /C net stop waptservice');
     end;
     if GetServiceStatusByName('','WAPTServer') in [ssRunning,ssPaused,ssPausePending,ssStartPending] then
     begin
       ProgressTitle(rsWaptServiceStopping);
-      Sto_RedirectedExecute('cmd /C net stop waptserver');
+      Run('cmd /C net stop waptserver');
     end;
 
     ini := TMemIniFile.Create(WaptIniFilename);
@@ -436,16 +436,22 @@ begin
 
     ProgressTitle(rsRestartingWaptServer);
     ProgressStep(5,8);
-    Sto_RedirectedExecute('cmd /C net start waptserver');
+    Run('cmd /C net start waptserver');
 
     ProgressTitle(rsRestartingWaptService);
     ProgressStep(6,8);
-    Sto_RedirectedExecute('cmd /C net start waptservice');
+    Run('cmd /C net start waptservice');
+
+    ProgressTitle(WAPTServerJsonGet('ping',[]).S['msg']);
+    ProgressTitle(WAPTLocalJsonGet('runstatus','','',5000).S['0.value']);
 
     ProgressTitle(rsRegisteringHostOnServer);
     ProgressStep(7,8);
 
-    retry := 0;
+
+    ProgressTitle(WAPTLocalJsonGet('update.json?notify_server=1','','',5000).S['description']);
+
+    {retry := 0;
     ProgressTitle(rsRegisteringHostOnServer);
     while retry<4 do
     try
@@ -456,11 +462,12 @@ begin
       Showmessage(res);
       Sleep(2000);
       inc(retry);
-    end;
+    end;}
 
     ProgressTitle(rsUpdatingLocalPackages);
     ProgressStep(8,8);
-    runwapt('{app}\wapt-get.exe -D update');
+    //runwapt('{app}\wapt-get.exe -D update');
+    //ProgressTitle(WAPTLocalJsonGet('update.json?notify_server=1','','',5000).S['description']);
 
     ActNext.Execute;
 

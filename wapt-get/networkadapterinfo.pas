@@ -4,7 +4,7 @@ interface
 {$mode delphi}
 {$R-}
 
-uses interfaces,Classes, SysUtils;
+uses Classes, SysUtils;
 
 type
   TAdapterInfo = array of record

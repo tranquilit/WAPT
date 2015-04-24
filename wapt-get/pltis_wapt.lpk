@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="4">
+    <PathDelim Value="\"/>
+    <Name Value="pltis_wapt"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\$(LCLWidgetType)"/>
+      </SearchPaths>
+      <Other>
+        <CompilerMessages>
+          <MsgFileName Value=""/>
+        </CompilerMessages>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Description Value="Common files for wapt fpc"/>
+    <Version Major="1" Minor="2" Release="3"/>
+    <Files Count="5">
+      <Item1>
+        <Filename Value="waptwinutils.pas"/>
+        <UnitName Value="waptwinutils"/>
+      </Item1>
+      <Item2>
+        <Filename Value="networkadapterinfo.pas"/>
+        <UnitName Value="NetworkAdapterInfo"/>
+      </Item2>
+      <Item3>
+        <Filename Value="uwaptres.pas"/>
+        <UnitName Value="uWaptRes"/>
+      </Item3>
+      <Item4>
+        <Filename Value="waptcommon.pas"/>
+        <UnitName Value="waptcommon"/>
+      </Item4>
+      <Item5>
+        <Filename Value="waptdb.pas"/>
+        <UnitName Value="waptdb"/>
+      </Item5>
+    </Files>
+    <Type Value="RunAndDesignTime"/>
+    <RequiredPkgs Count="4">
+      <Item1>
+        <PackageName Value="pl_indy"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="pltis_superobject"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="pltis_utils"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="FCL"/>
+      </Item4>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>

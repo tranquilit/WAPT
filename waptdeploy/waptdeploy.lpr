@@ -7,14 +7,14 @@ uses
   Windows,
   SysUtils,
   uwaptdeployres,
-  waptwinutils,
   superobject,
   tiswinhttp,
   DCPsha256,
   synautil,
   soutils,
   tisstrings,
-  tiscommon;
+  tiscommon,
+  waptwinutils;
 
 
   // Trigger a local update of available packages. (require local service to be running)
