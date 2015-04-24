@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.2.3"
+__version__ = "1.2.4"
 
 import time
 import sys
@@ -659,6 +659,22 @@ def get_timezone():
         return user.timezone
 
 
+@app.route('/ping')
+@allow_waptserver_or_local_unauth
+def ping():
+    if 'uuid' in request.args:
+        w = wapt()
+        data = dict(
+            hostname = setuphelpers.get_hostname(),
+            version=__version__,
+            uuid = w.host_uuid,
+            waptserver = w.waptserver,
+            )
+    else:
+        data = dict(
+            version=__version__,
+            )
+    return Response(common.jsondump(data), mimetype='application/json')
 
 @app.route('/status')
 @app.route('/status.json')
