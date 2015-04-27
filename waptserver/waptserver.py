@@ -1895,6 +1895,8 @@ def make_httpd_config(wapt_root_dir, wapt_folder):
     ap_file_name = 'httpd.conf'
     ap_conf_file = os.path.join(ap_conf_dir ,ap_file_name)
     ap_ssl_dir = os.path.join(wapt_root_dir,'waptserver','apache-win32','ssl')
+    if not os.path.isdir(ap_ssl_dir):
+        os.makedirs(ap_ssl_dir)
 
     # generate ssl keys
     openssl = os.path.join(wapt_root_dir,'waptserver','apache-win32','bin','openssl.exe')
