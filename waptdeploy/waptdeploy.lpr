@@ -198,20 +198,29 @@ begin
     Result := DefaultValue;
 end;
 
-function LocalWaptVersion:AnsiString;
+function LocalWaptVersion: ansistring;
 var
-  local_version: Ansistring;
+  local_version: ansistring;
+  i:integer;
 begin
- result :='';
+  Result := '';
   try
-    result := ReadRegEntry('SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1','DisplayVersion');
+    local_version := ReadRegEntry(
+      'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1',
+      'DisplayVersion');
   except
     try
-      result := ReadRegEntry('SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1','DisplayVersion');
+      local_version := ReadRegEntry(
+        'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1',
+        'DisplayVersion');
     except
-      Result := '';
+      local_version := '';
     end;
+    // check if looks like actual version string.
   end;
+  for i := 1 to length(local_version) do
+    if CharInSet(local_version[i],['0'..'9','-','.']) then
+      Result := Result + local_version[i];
 end;
 
 function GetWinInetError(ErrorCode:Cardinal): Ansistring;
