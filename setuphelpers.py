@@ -728,10 +728,11 @@ def default_overwrite_older(src,dst):
 
 def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy,enable_replace_at_reboot=True):
     r"""Copy src directory to dst directory. dst is created if it doesn't exists
-        src can be relative to installation temporary dir
 
-        oncopy is called for each file copy. if False is returned, copy is skipped
-        onreplace is called when a file will be overwritten.
+    src can be relative to installation temporary dir
+
+    oncopy is called for each file copy. if False is returned, copy is skipped
+    onreplace is called when a file will be overwritten.
 
     Args:
         src (str): path to source directory (absolute path or relative to package extraction tempdir)
