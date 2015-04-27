@@ -451,7 +451,7 @@ begin
       IdhttpGetString('https://127.0.0.1/ping',False,4000,60000,60000);
       break;
     except
-      ProgressTitle(Format(rsWaitWaptserverStartup+' (error : '+res+')',[retry]));
+      ProgressTitle(Format(rsWaitWaptserverStartup,[inttoStr(retry)]));
       Sleep(200);
       inc(retry);
     end;
