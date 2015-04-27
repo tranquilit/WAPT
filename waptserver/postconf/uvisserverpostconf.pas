@@ -442,34 +442,28 @@ begin
     ProgressStep(6,8);
     Sto_RedirectedExecute('cmd /C net start waptservice');
 
-    ProgressTitle(WAPTServerJsonGet('ping',[]).S['msg']);
+    ProgressTitle(Format(rsWaitWaptserverStartup,['']));
+    ProgressStep(7,8);
+
+    retry := 0;
+    while retry<4 do
+    try
+      IdhttpGetString('https://127.0.0.1/ping',False,4000,60000,60000);
+      break;
+    except
+      ProgressTitle(Format(rsWaitWaptserverStartup+' (error : '+res+')',[retry]));
+      Sleep(200);
+      inc(retry);
+    end;
+
+    ProgressTitle(Format(rsWaitWaptserviceStartup,['']));
     ProgressTitle(WAPTLocalJsonGet('runstatus','','',5000).S['0.value']);
 
     ProgressTitle(rsRegisteringHostOnServer);
     ProgressStep(7,8);
 
-
     ProgressTitle(WAPTLocalJsonGet('update.json?notify_server=1','','',5000).S['description']);
 
-    {retry := 0;
-
-
-    ProgressTitle(rsRegisteringHostOnServer);
-    ProgressStep(7,8);
-
-    retry := 0;
-    ProgressTitle(rsRegisteringHostOnServer);
-    while retry<4 do
-    try
-      res := runwapt('{app}\wapt-get.exe -ldebug -D register');
-      break;
-    except
-      ProgressTitle(Format(rsRetryRegisteringHostOnServer+' (error : '+res+')',[retry]));
-      Showmessage(res);
-      Sleep(2000);
-      inc(retry);
-    end;
-    }
     ProgressTitle(rsUpdatingLocalPackages);
     ProgressStep(8,8);
 

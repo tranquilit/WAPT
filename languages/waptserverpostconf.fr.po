@@ -522,6 +522,14 @@ msgctxt "uwaptserverres.rsupdatingpackageindex"
 msgid "Updating package index"
 msgstr "Mise à jour de l'index des paquets"
 
+#: uwaptserverres.rswaitwaptserverstartup
+msgid "Waiting for local waptserver to start %s"
+msgstr "En attente du démarrage de Waptserver %s"
+
+#: uwaptserverres.rswaitwaptservicestartup
+msgid "Waiting for local waptservice to start %s"
+msgstr "En attente du démarrage de Waptservice %s"
+
 #: uwaptserverres.rswaptservicestopping
 msgctxt "uwaptserverres.rswaptservicestopping"
 msgid "Waptservice stopping"

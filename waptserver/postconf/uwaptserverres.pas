@@ -16,7 +16,11 @@ resourcestring
   rsSettingServerPassword = 'Setting up server password';
   rsOpeningFirewall = 'Opening firewall for WaptServer';
   rsRestartingWaptServer = 'Restarting waptserver';
+  rsWaitWaptserverStartup = 'Waiting for local waptserver to start %s';
+
   rsRestartingWaptService = 'Restarting waptservice';
+  rsWaitWaptserviceStartup = 'Waiting for local waptservice to start %s';
+
   rsRegisteringHostOnServer = 'Registering host on server';
   rsRetryRegisteringHostOnServer = '%D retry on registering host on server';
   rsUpdatingLocalPackages = 'Updating local packages';

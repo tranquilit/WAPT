@@ -42,3 +42,4 @@ waptupgrade/patchs/
 .#*
 .*.swp
 .DS_store
+/waptserver/apache-win32/ssl
