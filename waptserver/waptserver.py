@@ -1590,13 +1590,12 @@ def usage_statistics():
                     'hosts_count_need_upgrade':{'$sum':'$need_upgrade'},
                 }},
             ])
-        raise test
+        del(stats['result'][0]['_id'])
     except:
         # fallback for old mongo without aggregate framework
         stats = {}
         stats['result'] = [
             {
-                '_id':0,
                 'hosts_count':hosts.count(),
             }]
 
@@ -1607,7 +1606,6 @@ def usage_statistics():
         version = __version__,
         date = datetime2isodate(),
         )
-    del(stats['result'][0]['_id'])
     result.update(stats['result'][0])
     return make_response(msg = _('Anomnymous usage statistics'), result = result)
 
