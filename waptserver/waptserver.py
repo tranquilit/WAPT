@@ -1679,10 +1679,7 @@ def usage_statictics():
                     'hosts_count_need_upgrade':{'$sum':'$need_upgrade'},
                 }},
             ])
-<<<<<<< HEAD
-=======
         del(stats['result'][0]['_id'])
->>>>>>> 15efc7b... fix internal error in usage_statistics when no package deployed yet
     except:
         # fallback for old mongo without aggregate framework
         stats = {}
