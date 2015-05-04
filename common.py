@@ -525,7 +525,7 @@ def jsondump(o,**kwargs):
     return json.dumps(o,default=default_json,**kwargs)
 
 
-def create_recursive_zip_signed(zipfn, source_root, target_root = u"",excludes = [u'.svn',u'.git*',u'*.pyc',u'*.dbg',u'src']):
+def create_recursive_zip_signed(zipfn, source_root, target_root = u"",excludes = [u'.svn',u'.git',u'.gitignore',u'*.pyc',u'*.dbg',u'src']):
     """Create a zip file with filename zipf from source_root directory with target_root as new root.
        Don't include file which match excludes file pattern
        add a file WAPT/manifest.sha1 with sha1 hash of all files
@@ -570,7 +570,7 @@ def create_recursive_zip_signed(zipfn, source_root, target_root = u"",excludes =
     return result
 
 
-def get_manifest_data(source_root, target_root=u'', excludes = [u'.svn',u'.git*',u'*.pyc',u'*.dbg',u'src']):
+def get_manifest_data(source_root, target_root=u'', excludes = [u'.svn',u'.git',u'.gitignore',u'*.pyc',u'*.dbg',u'src']):
     """Return a list of [filenames,sha1 hash] from files from source_root directory with target_root as new root.
        Don't include file which match excludes file pattern
     """
@@ -4348,7 +4348,7 @@ class Wapt(object):
                 return r
         return None
 
-    def sign_package(self,zip_or_directoryname,excludes=['.svn','.git*','*.pyc','src'],private_key=None,callback=pwd_callback):
+    def sign_package(self,zip_or_directoryname,excludes=['.svn','.git','.gitignore','*.pyc','src'],private_key=None,callback=pwd_callback):
         """Calc the signature of the WAPT/manifest.sha1 file and put/replace it in ZIP or directory.
             if directory, creates WAPT/manifest.sha1 and add it to the content of package
             create a WAPT/signature file and it to directory or zip file.
@@ -4390,7 +4390,7 @@ class Wapt(object):
 
         return signature.encode('base64')
 
-    def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git*','*.pyc','src']):
+    def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git','.gitignore','*.pyc','src']):
         """Build the WAPT package from a directory
 
         Call update_control from setup.py if this function is defined.
@@ -5311,7 +5311,7 @@ class Wapt(object):
             newversion=None,
             target_directory=None,
             build=True,
-            excludes=['.svn','.git*','*.pyc','src'],
+            excludes=['.svn','.git','.gitignore','*.pyc','src'],
             private_key=None,
             callback=pwd_callback,
             append_depends=None,
@@ -5355,7 +5355,7 @@ class Wapt(object):
         ...     newversion='20.0-0',
         ...     target_directory=tmpdir,
         ...     build=False,
-        ...     excludes=['.svn','.git*','*.pyc','src'],
+        ...     excludes=['.svn','.git','.gitignore','*.pyc','src'],
         ...     private_key=None,
         ...     callback=pwd_callback,
         ...     append_depends=None,
