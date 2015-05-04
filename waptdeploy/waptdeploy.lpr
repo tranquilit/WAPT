@@ -1019,7 +1019,7 @@ var
 
 const
   defaultwapt:AnsiString='wapt';
-  minversion:AnsiString='1.2.2.0';
+  minversion:AnsiString='1.2.3.0';
   mainrepo:AnsiString='http://wapt/wapt';
 
 var
@@ -1042,7 +1042,6 @@ begin
     Writeln(Format(rsUsage6, []));
     Writeln(Format(rsUsage7, []));
     Writeln(Format(rsUsage8, []));
-    Writeln(Format(rsUsage9, []));
     Exit;
   end;
 
