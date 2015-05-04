@@ -24,6 +24,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="2"/>
       <RevisionNr Value="3"/>
+      <BuildNr Value="2"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT auto deploy" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -35,7 +36,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="--minversion=0.9.8 --tasks=useWaptServer,autorunTray"/>
+        <CommandLineParams Value="1.2.4"/>
       </local>
     </RunParams>
     <RequiredPackages Count="4">

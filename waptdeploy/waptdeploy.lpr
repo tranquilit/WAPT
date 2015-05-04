@@ -1025,7 +1025,7 @@ const
 var
   cmdparams:TStrArray;
   cmdoptions:ISuperObject;
-  mergetasks:String;
+  innotasks:String;
 
 
 begin
@@ -1040,33 +1040,12 @@ begin
     Writeln(Format(rsUsage4, []));
     Writeln(Format(rsUsage5, []));
     Writeln(Format(rsUsage6, []));
+    Writeln(Format(rsUsage7, []));
+    Writeln(Format(rsUsage8, []));
+    Writeln(Format(rsUsage9, []));
     Exit;
   end;
 
-  if cmdoptions.AsObject.Exists('repo_url') then
-    mainrepo := cmdoptions.S['repo_url']
-  else
-  try
-    mainrepo :=GetMainWaptRepo;
-  except
-    on E:Exception do
-    begin
-      Writeln('Unable to discover the wapt repository: '+E.Message);
-      if GetDNSDomain<>'' then
-        mainrepo := 'http://wapt.'+GetDNSDomain+'/wapt'
-      else
-        mainrepo := 'http://wapt/wapt';
-    end;
-  end;
-
-  try
-    Writeln('WAPT Server : '+GetWaptServerURL);
-  except
-    on E:Exception do
-      Writeln('Unable to discover the wapt repository: '+E.Message);
-  end;
-
-  WriteLn('Main repo:'+mainrepo);
   waptsetupurl := mainrepo+'/waptagent.exe';
   if cmdoptions.AsObject.Exists('force') then
   begin
@@ -1090,35 +1069,38 @@ begin
   if cmdoptions.AsObject.Exists('hash') then
     hashString := cmdoptions.S['hash'];
 
-  mergetasks := 'useWaptServer';
+  innotasks := 'installService,installredist2008,autoUpgradePolicy';
   if cmdoptions.AsObject.Exists('tasks') then
-    mergetasks := cmdoptions.S['tasks'];
+    innotasks := cmdoptions.S['tasks'];
 
   waptsetupurl := '';
   writeln('WAPT version: '+localVersion);
   if (requiredVersion='') or (requiredVersion='force') then
   begin
-    requiredVersion:=minversion;
+    if cmdoptions.AsObject.Exists('repo_url') then
+      mainrepo := cmdoptions.S['repo_url']
+    else
     try
-      waptdeploy := httpGetString(mainrepo+'/waptdeploy.version');
-      waptdeploy := StringReplace(waptdeploy,#13#10,#10,[rfReplaceAll]);
-      requiredVersion:=trim(StrToken(waptdeploy,#10));
-      if requiredVersion='' then
-        requiredVersion:=minversion;
-      waptsetupurl :=trim(StrToken(waptdeploy,#10));
-      if waptsetupurl='' then
-        waptsetupurl := mainrepo+'/waptagent.exe';
-      writeln('Got waptdeploy.version');
-      writeln('   required version:'+requiredVersion);
-      writeln('   download URL :'+waptsetupurl);
+      mainrepo :=GetMainWaptRepo;
     except
-      requiredVersion:=minversion;
-      waptsetupurl := mainrepo+'/waptagent.exe';
+      on E:Exception do
+      begin
+        Writeln('Unable to discover the wapt repository: '+E.Message);
+        if GetDNSDomain<>'' then
+          mainrepo := 'http://wapt.'+GetDNSDomain+'/wapt'
+        else
+          mainrepo := 'http://wapt/wapt';
+      end;
     end;
+    WriteLn('Main repo:'+mainrepo);
+    requiredVersion:=minversion;
   end;
 
   if cmdoptions.AsObject.Exists('waptsetupurl') then
     waptsetupurl := cmdoptions.S['waptsetupurl'];
+
+  if waptsetupurl = '' then
+    waptsetupurl := mainrepo+'/waptagent.exe';
 
   writeln('WAPT required version: '+requiredVersion);
   if (localVersion='') or (CompareVersion(localVersion,requiredVersion)<0) or (requiredVersion='force') then
@@ -1141,7 +1123,7 @@ begin
     if (requiredVersion='force') or (CompareVersion(getVersion,requiredVersion)>=0) then
     begin
       writeln(rsInstall);
-      if GetDosOutput(waptsetupPath+' /VERYSILENT /MERGETASKS=""'+mergetasks+'""','',res) then
+      if GetDosOutput(waptsetupPath+' /VERYSILENT /TASKS=""'+innotasks+'""','',res) then
         writeln(Format(rsInstallOK, [LocalWaptVersion]));
     end
     else
