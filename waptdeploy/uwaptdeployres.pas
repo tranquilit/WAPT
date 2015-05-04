@@ -15,16 +15,16 @@ resourcestring
   rsUnknownError = 'Unknown error in SetToIgnoreCerticateErrors. %s';
 
   rsUsage1 = 'Usage : waptdeploy.exe [min_wapt_version]';
-  rsUsage2 = '  Download waptagent.exe from WAPT repository and launch it if local version is obsolete (< %s or < parameter 1)';
-  rsUsage3 = '  If no argument is given, looks for http://%s/waptdeploy.version file. This file should contain 2 lines. One for version, and another for download url';
-  rsUsage4 = '  If --force is given, install waptagent.exe even if version doesn''t match';
-  rsUsage5 = '  If --tasks=useWaptServer,autorunTray is given, pass this arguments to the /MERGETASKS options of the waptagent installer';
-  rsUsage6 = '  If --hash=<sha256hash> is given, check that downloaded waptagent.exe setup sha256 hash match this parameter.';
-  rsInstall = 'Install ...'#13#10' %s';
+  rsUsage2 = '  Download waptagent.exe from WAPT repository and launch it if local version is obsolete (< %s or < parameter 1 or < --minversion parameter)';
+  rsUsage3 = ' --force : install waptagent.exe even if version doesn''t match';
+  rsUsage4 = ' --minversion=1.2.3 : install waptagent.exe even if installed version is less than that';
+  rsUsage5 = ' --repo_url=http://wapt/wapt : location of repo where to lookup waptdeploy.version and to get waptagent.exe';
+  rsUsage6 = ' --waptsetupurl=http://wapt/wapt/waptagent.exe : location wher to download setup exe. (default=<repo_url>/waptagent.exe';
+  rsUsage7 = ' --tasks=autorunTray,installService,installredist2008,autoUpgradePolicy  : if given, pass this arguments to the /TASKS options of the waptagent installer. Default = installService,installredist2008,autoUpgradePolicy';
+  rsUsage8 = ' --hash=<sha256hash> : check that downloaded waptagent.exe setup sha256 hash match this parameter.';
+  rsInstall = 'Install ...';
   rsInstallOK = 'Install OK : %s';
-  rsInstallError = 'Install Error : %s';
   rsVersionError = 'Got a waptsetup version older than required version';
-  rsHashError = 'Error found in downloaded setup file: HASH mismatch. File is perhaps corrupted.';
   rsCleanup = 'Cleanup...';
   rsNothingToDo = 'Nothing to do';
 
