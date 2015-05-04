@@ -276,7 +276,7 @@ var
 
 const
   defaultwapt: ansistring = 'wapt';
-  minversion: ansistring = '1.2.2.0';
+  minversion: ansistring = '1.2.3.0';
   _mainrepo: ansistring = '';
 
 var

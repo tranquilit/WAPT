@@ -24,7 +24,9 @@ resourcestring
   rsUsage8 = ' --hash=<sha256hash> : check that downloaded waptagent.exe setup sha256 hash match this parameter.';
   rsInstall = 'Install ...';
   rsInstallOK = 'Install OK : %s';
+  rsInstallError = 'Install Error : %s';
   rsVersionError = 'Got a waptsetup version older than required version';
+  rsHashError = 'Error found in downloaded setup file: HASH mismatch. File is perhaps corrupted.';
   rsCleanup = 'Cleanup...';
   rsNothingToDo = 'Nothing to do';
 
