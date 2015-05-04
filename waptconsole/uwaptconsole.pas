@@ -536,7 +536,7 @@ begin
     if ini.ReadBool('Global','send_usage_report',True) then
     begin
       last_usage_report:=ini.ReadDateTime('Global','last_usage_report',0);
-      if now - last_usage_report > 24 then
+      if now - last_usage_report >= 1 then
       try
         stats_report_url:=ini.ReadString('Global','usage_report_url',rsDefaultUsageStatsURL);
         stats := WAPTServerJsonGet('api/v1/usage_statistics',[])['result'];
