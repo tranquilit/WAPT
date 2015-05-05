@@ -1616,7 +1616,7 @@ def test():
     babel = Babel(app)
     with app.test_request_context():
         db = get_db()
-        a =  usage_statictics()
+        a =  usage_statistics()
         print a.data
 
 ##################################################################
