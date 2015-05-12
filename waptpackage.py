@@ -102,13 +102,17 @@ class Version(object):
     True
     """
 
-    def __init__(self,versionstring):
-        if versionstring is None:
-            versionstring = ''
-        assert isinstance(versionstring,types.ModuleType) or isinstance(versionstring,str) or isinstance(versionstring,unicode)
-        if isinstance(versionstring,types.ModuleType):
-            versionstring = versionstring.__version__
-        self.members = [ v.strip() for v in versionstring.split('.')]
+    def __init__(self,version):
+        if version is None:
+            version = ''
+        assert isinstance(version,types.ModuleType) or isinstance(version,str) or isinstance(version,unicode) or isinstance(version,Version)
+        if isinstance(version,types.ModuleType):
+            self.versionstring = version.__version__
+        elif isinstance(version,Version):
+            self.versionstring = version.versionstring
+        else:
+            self.versionstring = version
+        self.members = [ v.strip() for v in self.versionstring.split('.')]
 
     def __cmp__(self,aversion):
         def nat_cmp(a, b):
