@@ -3047,7 +3047,7 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[]):
     import inspect
     caller_globals = inspect.stack()[1][0].f_globals
     WAPT = caller_globals.get('WAPT',None)
-    force = WAPT and WAPT.force
+    force = WAPT and WAPT.options.force
 
     if not min_version:
         min_version = getproductprops(msi)['version']
@@ -3097,7 +3097,7 @@ def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefor
     import inspect
     caller_globals = inspect.stack()[1][0].f_globals
     WAPT = caller_globals.get('WAPT',None)
-    force = WAPT and WAPT.force
+    force = WAPT and WAPT.options.force
 
     if need_install(key,min_version=min_version,force=force):
         if killbefore:
