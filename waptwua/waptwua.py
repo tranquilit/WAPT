@@ -29,6 +29,16 @@ import win32com.client
 # download updated version of  wsus index cab file
 #wget('http://go.microsoft.com/fwlink/?LinkID=74689','wsusscn2.cab')
 
+def update_as_dict(update):
+    return dict(
+        uuid = update.Identity.UpdateID,
+        title = update.Title,
+        type = update.Type,
+        description = update.Description,
+        kbs = [ "%s" % kb in update.KBArticleIDs ],
+        severity = update.MsrcSeverity,
+        )
+
 class WaptWUA(object):
     def __init__(self,wapt,allowed_patches=[], filter="Type='Software'"):
         self.wapt = wapt
@@ -65,6 +75,8 @@ class WaptWUA(object):
                 print('Skipping %s : %s' % (update.Identity.UpdateID,update.Title ))
                 self._discarded_patches.append(update)
 
+        self.wapt.write_param('waptwua.pending',jsondump([ update_as_dict(u) for u in self._selected_patches]))
+        self.wapt.write_param('waptwua.discarded',jsondump([ update_as_dict(u) for u in self._discarded_patches]))
         return self._selected_patches
 
     @property
@@ -93,7 +105,7 @@ class WaptWUA(object):
                 for dc in update.DownloadContents:
                     #https://msdn.microsoft.com/en-us/library/windows/desktop/aa386120(v=vs.85).aspx
                     print dc.DownloadUrl
-                    target = makepath(r'C:\tranquilit\tis-mbsa-wapt',os.path.split(dc.DownloadUrl)[1])
+                    target = makepath(self.cache_path,os.path.split(dc.DownloadUrl)[1])
                     files = win32com.client.Dispatch('Microsoft.Update.StringColl')
                     if not isfile(target):
                         wget(dc.DownloadUrl,target)
@@ -129,7 +141,7 @@ class WaptWUA(object):
             updates_to_install = win32com.client.Dispatch("Microsoft.Update.UpdateColl")
             #apply the updates
             for update in self._selected_patches:
-                if update.IsDownloaded == 1:
+                if update.IsDownloaded:
                     update.AcceptEula()
                     updates_to_install.add(update)
                     result.append(update.Identity.UpdateID)
@@ -149,6 +161,9 @@ if __name__ == '__main__':
     wua = WaptWUA(w,allowed_patches=['1072c136-fabd-435a-a032-10996626e444'])
     #us = wua.update_searcher
     print wua.scan_updates()
-    print '\n'.join([u.Title for u in wua._selected_patches])
-    print '\n'.join([u.Title for u in wua._discarded_patches])
+    print 'Pending : '+wua.wapt.read_param('waptwua.pending')
+    print 'Discarded : '+wua.wapt.read_param('waptwua.discarded')
+    print wua.download_patches()
+
+
 
