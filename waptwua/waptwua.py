@@ -35,7 +35,7 @@ def update_as_dict(update):
         title = update.Title,
         type = update.Type,
         description = update.Description,
-        kbs = [ "%s" % kb in update.KBArticleIDs ],
+        kbids = [ "%s" % kb for kb in update.KBArticleIDs ],
         severity = update.MsrcSeverity,
         )
 
