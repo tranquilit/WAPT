@@ -179,14 +179,14 @@ class WaptWUA(object):
             installation_result = installer.Install()
             print "Result: %s" % installation_result.ResultCode
             print "Reboot required: %s" % installation_result.RebootRequired
-            self.write_param('waptwua.rebootrequired',jsondump(installation_result.RebootRequired))
-            self.write_param('waptwua.last_install_result',InstallResult[installation_result.ResultCode])
+            self.wapt.write_param('waptwua.rebootrequired',jsondump(installation_result.RebootRequired))
+            self.wapt.write_param('waptwua.last_install_result',InstallResult[installation_result.ResultCode])
         else:
-            self.write_param('waptwua.rebootrequired',jsondump(False))
-            self.write_param('waptwua.last_install_result','None')
+            self.wapt.write_param('waptwua.rebootrequired',jsondump(False))
+            self.wapt.write_param('waptwua.last_install_result','None')
 
-        self.write_param('waptwua.last_install_batch',jsondump(result))
-        self.write_param('waptwua.last_install_date',datetime2isodate())
+        self.wapt.write_param('waptwua.last_install_batch',jsondump(result))
+        self.wapt.write_param('waptwua.last_install_date',datetime2isodate())
         return result
 
 
