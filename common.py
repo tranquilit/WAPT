@@ -70,6 +70,9 @@ import pywintypes
 from ntsecuritycon import SECURITY_NT_AUTHORITY,SECURITY_BUILTIN_DOMAIN_RID
 from ntsecuritycon import DOMAIN_GROUP_RID_ADMINS,DOMAIN_GROUP_RID_USERS
 
+import ctypes
+from ctypes import wintypes
+
 from M2Crypto import EVP, X509, SSL
 from M2Crypto.EVP import EVPError
 
@@ -664,6 +667,32 @@ def adjust_privileges():
         ]
 
     return win32security.AdjustTokenPrivileges(htoken, 0, privileges)
+
+
+def running_on_ac():
+    """Return True if computer is connected to AC power supply
+
+    """
+    class SYSTEM_POWER_STATUS(ctypes.Structure):
+        _fields_ = [
+            ('ACLineStatus', wintypes.BYTE),
+            ('BatteryFlag', wintypes.BYTE),
+            ('BatteryLifePercent', wintypes.BYTE),
+            ('Reserved1', wintypes.BYTE),
+            ('BatteryLifeTime', wintypes.DWORD),
+            ('BatteryFullLifeTime', wintypes.DWORD),
+        ]
+
+    SYSTEM_POWER_STATUS_P = ctypes.POINTER(SYSTEM_POWER_STATUS)
+
+    GetSystemPowerStatus = ctypes.windll.kernel32.GetSystemPowerStatus
+    GetSystemPowerStatus.argtypes = [SYSTEM_POWER_STATUS_P]
+    GetSystemPowerStatus.restype = wintypes.BOOL
+
+    status = SYSTEM_POWER_STATUS()
+    if not GetSystemPowerStatus(ctypes.pointer(status)):
+        raise ctypes.WinError()
+    return status.ACLineStatus == 1
 
 
 def ensure_list(csv_or_list,ignore_empty_args=True):
