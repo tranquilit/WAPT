@@ -37,10 +37,21 @@ def update_as_dict(update):
         description = update.Description,
         kbids = [ "%s" % kb for kb in update.KBArticleIDs ],
         severity = update.MsrcSeverity,
+        installed = update.IsInstalled,
+        downloaded = update.IsDownloaded,
         )
 
+InstallResult = {
+  0: 'NotStarted',
+  1: 'InProgress',
+  2: 'Succeeded',
+  3: 'SucceededWithErrors',
+  4: 'Failed',
+  5: 'Aborted',
+ }
+
 class WaptWUA(object):
-    def __init__(self,wapt,allowed_patches=[], filter="Type='Software'"):
+    def __init__(self,wapt,allowed_updates=[], filter="Type='Software'"):
         self.wapt = wapt
         self.cache_path = makepath(wapt.wapt_base_dir,'waptwua','cache')
         self.update_session = win32com.client.Dispatch("Microsoft.Update.Session")
@@ -48,39 +59,49 @@ class WaptWUA(object):
         self._update_searcher = None
         self._update_service = None
         self.filter = filter
-        self.allowed_patches = allowed_patches
-        self._discarded_patches = None
-        self._selected_patches = None
+        self.allowed_updates = allowed_updates
+
+        self._installed_updates = None
+        self._pending_updates = None
+        self._discarded_updates = None
 
     def update_wsusscan_cab(self):
         if len(self.wapt.repositories)>0:
             wget('%swua/wsusscn2.cab' % self.wapt.repositories[0].repo_url,makepath(self.cache_path,'wsusscn2.cab'))
 
     def scan_updates(self):
-        filter = 'IsInstalled=0 and ' + self.filter
+        filter = self.filter
         print 'Looking for updates with filter: %s'%filter
         search_result = self.update_searcher.Search(filter)
         updates_to_install = win32com.client.Dispatch("Microsoft.Update.UpdateColl")
 
-        self._discarded_patches = []
-        self._selected_patches = []
+        self._installed_updates = []
+        self._pending_updates = []
+        self._discarded_updates = []
 
         for update in search_result.Updates:
-            if update.Identity.UpdateID in self.allowed_patches:
+            if update.IsInstalled:
+                self._installed_updates.append(update)
+            elif update.Identity.UpdateID in self.allowed_updates:
                 # IUpdate : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386099(v=vs.85).aspx
                 # IUpdate2 : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386100(v=vs.85).aspx
                 print('Adding %s : %s' % (update.Identity.UpdateID,update.Title ))
-                self._selected_patches.append(update)
+                self._pending_updates.append(update)
             else:
                 print('Skipping %s : %s' % (update.Identity.UpdateID,update.Title ))
-                self._discarded_patches.append(update)
+                self._discarded_updates.append(update)
 
-        self.wapt.write_param('waptwua.pending',jsondump([ update_as_dict(u) for u in self._selected_patches]))
-        self.wapt.write_param('waptwua.discarded',jsondump([ update_as_dict(u) for u in self._discarded_patches]))
-        return self._selected_patches
+        self.wapt.write_param('waptwua.installed',jsondump([ update_as_dict(u) for u in self._installed_updates]))
+        self.wapt.write_param('waptwua.pending',jsondump([ update_as_dict(u) for u in self._pending_updates]))
+        self.wapt.write_param('waptwua.discarded',jsondump([ update_as_dict(u) for u in self._discarded_updates]))
+        self.wapt.write_param('waptwua.last_scan_date',datetime2isodate())
+
+        return self._pending_updates
 
     @property
     def update_searcher(self):
+        """Instantiate a updateSearcher instance
+        """
         if not self._update_searcher:
             print('   Connecting to local update searcher using offline wsusscn2 file...')
             wsusscn2_path = makepath(self.cache_path,'wsusscn2.cab')
@@ -92,12 +113,15 @@ class WaptWUA(object):
             # use offline only
             self._update_searcher.ServerSelection = 3 # other
             self._update_searcher.ServiceID = self._update_service.ServiceID
-            print('   Update searcher ready...')
+            print('   Offline Update searcher ready...')
         return self._update_searcher
 
-    def download_patches(self):
+    def download_updates(self):
+        """Download all pending updates and put them in Windows Update cache
+
+        """
         updates_to_download = win32com.client.Dispatch("Microsoft.Update.UpdateColl")
-        for update in self._selected_patches:
+        for update in self._pending_updates:
             if update.IsDownloaded == 0:
                 # IUpdate : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386099(v=vs.85).aspx
                 # IUpdate2 : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386100(v=vs.85).aspx
@@ -136,34 +160,48 @@ class WaptWUA(object):
                             remove_file(fn)
 
 
-        def install_patches(self):
-            result = []
-            updates_to_install = win32com.client.Dispatch("Microsoft.Update.UpdateColl")
-            #apply the updates
-            for update in self._selected_patches:
-                if update.IsDownloaded:
-                    update.AcceptEula()
-                    updates_to_install.add(update)
-                    result.append(update.Identity.UpdateID)
+    def install_updates(self):
+        """Install all pending downloaded updates"""
+        result = []
+        if self._pending_updates is None:
+            self.scan_updates()
+        updates_to_install = win32com.client.Dispatch("Microsoft.Update.UpdateColl")
+        #apply the updates
+        for update in self._pending_updates:
+            if update.IsDownloaded:
+                update.AcceptEula()
+                updates_to_install.add(update)
+                result.append(update.Identity.UpdateID)
 
+        if result:
             installer = self.update_session.CreateUpdateInstaller()
             installer.Updates = updates_to_install
             installation_result = installer.Install()
-            print "Result %s" % installation_result.ResultCode
-            print "Reboot required %s" % installation_result.RebootRequired
-            return result
+            print "Result: %s" % installation_result.ResultCode
+            print "Reboot required: %s" % installation_result.RebootRequired
+            self.write_param('waptwua.rebootrequired',jsondump(installation_result.RebootRequired))
+            self.write_param('waptwua.last_install_result',InstallResult[installation_result.ResultCode])
+        else:
+            self.write_param('waptwua.rebootrequired',jsondump(False))
+            self.write_param('waptwua.last_install_result','None')
+
+        self.write_param('waptwua.last_install_batch',jsondump(result))
+        self.write_param('waptwua.last_install_date',datetime2isodate())
+        return result
 
 
 # list of properties : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386099(v=vs.85).aspx
 if __name__ == '__main__':
     from common import *
     w = Wapt()
-    wua = WaptWUA(w,allowed_patches=['1072c136-fabd-435a-a032-10996626e444'])
+    wua = WaptWUA(w,allowed_updates=['1072c136-fabd-435a-a032-10996626e444'])
     #us = wua.update_searcher
     print wua.scan_updates()
     print 'Pending : '+wua.wapt.read_param('waptwua.pending')
     print 'Discarded : '+wua.wapt.read_param('waptwua.discarded')
-    print wua.download_patches()
+    print wua.download_updates()
+    print wua.install_updates()
+    print "Finished"
 
 
 
