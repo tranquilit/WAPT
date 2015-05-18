@@ -139,6 +139,7 @@ mongodb_ip = "127.0.0.1"
 
 wapt_folder = ""
 wapt_user = ""
+waptwua_folder = ""
 wapt_password = ""
 server_uuid = ''
 
@@ -177,6 +178,11 @@ if config.has_section('options'):
         if wapt_folder.endswith('/'):
             wapt_folder = wapt_folder[:-1]
 
+    if config.has_option('options', 'waptwua_folder'):
+        waptwua_folder = config.get('options', 'waptwua_folder')
+        if waptwua_folder.endswith('/'):
+            waptwua_folder = waptwua_folder[:-1]
+
     if config.has_option('options', 'clients_connect_timeout'):
         clients_connect_timeout = int(config.get('options', 'clients_connect_timeout'))
 
@@ -205,6 +211,9 @@ else:
 # XXX keep in sync with scripts/postconf.py
 if not wapt_folder:
     wapt_folder = os.path.join(wapt_root_dir,'waptserver','repository','wapt')
+
+if not waptwua_folder:
+    waptwua_folder = os.path.join(wapt_root_dir,'waptserver','repository','waptwua')
 
 waptagent = os.path.join(wapt_folder, 'waptagent.exe')
 waptsetup = os.path.join(wapt_folder, 'waptsetup-tis.exe')
@@ -789,6 +798,16 @@ def delete_package(filename=""):
 @app.route('/wapt/')
 def wapt_listing():
     return render_template('listing.html', dir_listing=os.listdir(wapt_folder))
+
+@app.route('/waptwua/')
+def waptwua():
+    return render_template('listing.html', dir_listing=os.listdir(waptwua_folder))
+
+
+@app.route('/waptwua/<string:wsuspackage>')
+def get_wua_package():
+    return render_template('listing.html', dir_listing=os.listdir(waptwua_folder))
+
 
 @app.route('/wapt/<string:input_package_name>')
 def get_wapt_package(input_package_name):
@@ -1609,6 +1628,79 @@ def usage_statistics():
     result.update(stats['result'][0])
     return make_response(msg = _('Anomnymous usage statistics'), result = result)
 
+def wget(url,target,proxies=None,connect_timeout=10,download_timeout=None):
+    r"""Copy the contents of a file from a given URL to a local file.
+    >>> respath = wget('http://wapt.tranquil.it/wapt/tis-firefox_28.0.0-1_all.wapt','c:\\tmp\\test.wapt',proxies={'http':'http://proxy:3128'})
+    ???
+    >>> os.stat(respath).st_size>10000
+    True
+    >>> respath = wget('http://localhost:8088/runstatus','c:\\tmp\\test.json')
+    ???
+    """
+    if os.path.isdir(target):
+        target = os.path.join(target,'')
+
+    (dir,filename) = os.path.split(target)
+    if not filename:
+        filename = url.split('/')[-1]
+    if not dir:
+        dir = os.getcwd()
+
+    if not os.path.isdir(dir):
+        os.makedirs(dir)
+
+    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout, verify=False)
+
+    total_bytes = int(httpreq.headers['content-length'])
+    # 1Mb max, 1kb min
+    chunk_size = min([1024*1024,max([total_bytes/100,2048])])
+
+    with open(os.path.join(dir,filename),'wb') as output_file:
+        last_downloaded = 0
+        if httpreq.ok:
+            for chunk in httpreq.iter_content(chunk_size=chunk_size):
+                output_file.write(chunk)
+                if download_timeout is not None and (time.time()-start_time>download_timeout):
+                    raise requests.Timeout(r'Download of %s takes more than the requested %ss'%(url,download_timeout))
+                last_downloaded += len(chunk)
+        else:
+            httpreq.raise_for_status()
+    return os.path.join(dir,filename)
+
+@app.route('/api/v2/download_wsusscan')
+def download_wsusscan():
+    """Launch a task to update current wsus offline cab file
+        download in a temporary well known file
+        abort if the temporary file is present (means another download is in progress
+
+    """
+    wsus_filename = os.path.join(waptwua_folder,'wsusscan2.cab')
+    tmp_filename = os.path.join(waptwua_folder,'wsusscan2.cab.tmp')
+    if not request.args.get('force',0) and os.path.isfile(tmp_filename):
+        # check if not too old.... ?
+        return make_response(msg ='Download in progress, current size = %s' % os.stat(tmp_filename).st_size)
+    try:
+        # download every day at most
+        if not os.path.isfile(wsus_filename) or ( time.time() - os.stat(wsus_filename).st_mtime > 24*3600):
+            fn = wget('http://go.microsoft.com/fwlink/?LinkID=74689',tmp_filename)
+            # check integrity
+            try:
+                if sys.platform == 'win32':
+                    cablist = subprocess.check_output('expand -D "%s"' % fn,shell = True).decode('cp850').splitlines()
+                else:
+                    cablist = subprocess.check_output('cabextract -t "%s"' % fn ,shell = True).splitlines()
+            except Exception as e:
+                if os.path.isfile(tmp_filename):
+                    os.unlink(tmp_filename)
+                return make_response_from_exception(e)
+            if os.path.isfile(wsus_filename):
+                os.unlink(wsus_filename)
+            os.rename(tmp_filename,wsus_filename)
+        else:
+            fn = wsus_filename
+        return make_response(msg = 'File wsusscan2.cab available',result = dict(url = '/waptwua/wsusscan2.cab', size=os.stat(wsus_filename).st_size))
+    except Exception as e:
+        return make_response_from_exception(e)
 
 def test():
     import flask
@@ -1912,7 +2004,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     if options.devel:
-        app.run(host='0.0.0.0',port=30880,debug=False)
+        app.run(host='0.0.0.0',port=30880,debug=True)
     else:
         port = waptserver_port
         server = Rocket(('127.0.0.1', port), 'wsgi', {"wsgi_app":app})
