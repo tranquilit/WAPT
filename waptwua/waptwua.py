@@ -30,63 +30,42 @@ import win32com.client
 #wget('http://go.microsoft.com/fwlink/?LinkID=74689','wsusscn2.cab')
 
 class WaptWUA(object):
-    def __init__(self,wapt):
+    def __init__(self,wapt,allowed_patches=[], filter="Type='Software'"):
         self.wapt = wapt
         self.cache_path = makepath(wapt.wapt_base_dir,'waptwua','cache')
         self.update_session = win32com.client.Dispatch("Microsoft.Update.Session")
         self.update_service_manager = win32com.client.Dispatch("Microsoft.Update.ServiceManager")
         self._update_searcher = None
         self._update_service = None
+        self.filter = filter
+        self.allowed_patches = allowed_patches
+        self._discarded_patches = None
+        self._selected_patches = None
 
     def update_wsusscan_cab(self):
         if len(self.wapt.repositories)>0:
             wget('%swua/wsusscn2.cab' % self.wapt.repositories[0].repo_url,makepath(self.cache_path,'wsusscn2.cab'))
 
-    def scan_updates(self,filter="IsInstalled=0 and Type='Software'"):
+    def scan_updates(self):
+        filter = 'IsInstalled=0 and ' + self.filter
         print 'Looking for updates with filter: %s'%filter
         search_result = self.update_searcher.Search(filter)
         updates_to_install = win32com.client.Dispatch("Microsoft.Update.UpdateColl")
 
+        self._discarded_patches = []
+        self._selected_patches = []
+
         for update in search_result.Updates:
-            if update.MsrcSeverity == 'Critical':
+            if update.Identity.UpdateID in self.allowed_patches:
                 # IUpdate : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386099(v=vs.85).aspx
                 # IUpdate2 : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386100(v=vs.85).aspx
+                print('Adding %s : %s' % (update.Identity.UpdateID,update.Title ))
+                self._selected_patches.append(update)
+            else:
+                print('Skipping %s : %s' % (update.Identity.UpdateID,update.Title ))
+                self._discarded_patches.append(update)
 
-                #update.AcceptEula()
-                updates_to_install.add(update)
-                print update.Identity.UpdateID,update.Title,
-                """for dc in update.DownloadContents:
-                    #https://msdn.microsoft.com/en-us/library/windows/desktop/aa386120(v=vs.85).aspx
-                    print dc.DownloadUrl
-                    target = makepath(r'C:\tranquilit\tis-mbsa-wapt',os.path.split(dc.DownloadUrl)[1])
-                    files = win32com.client.Dispatch('Microsoft.Update.StringColl')
-                    if not isfile(target):
-                        wget(dc.DownloadUrl,target)
-                    if isfile(target):
-                        files.add(target)
-
-                    update.CopyToCache(files)
-                    for fn in files:
-                        print"%s put to local WUA cache for update %s" % (fn,update.Title)
-
-                for bu in update.BundledUpdates:
-                    files = win32com.client.Dispatch('Microsoft.Update.StringColl')
-                    for dc in bu.DownloadContents:
-                        #https://msdn.microsoft.com/en-us/library/windows/desktop/aa386120(v=vs.85).aspx
-                        print dc.DownloadUrl
-                        target = makepath(self.cache_path,os.path.split(dc.DownloadUrl)[1])
-                        if not isfile(target):
-                            wget(dc.DownloadUrl,target,proxies={'http':'http://wapt.tranquilit.local:8123'})
-                        if isfile(target):
-                            files.add(target)
-
-                    bu.CopyToCache(files)
-                    for fn in files:
-                        print"%s put to local WUA cache for update %s" % (fn,update.Title)
-                        if isfile(fn):
-                            remove_file(fn)
-                """
-        return updates_to_install
+        return self._selected_patches
 
     @property
     def update_searcher(self):
@@ -104,20 +83,14 @@ class WaptWUA(object):
             print('   Update searcher ready...')
         return self._update_searcher
 
-
     def download_patches(self):
-        search_result = self.update_searcher.Search("IsInstalled=0 and Type='Software' and IsDownloaded=0")
-        updates_to_install = win32com.client.Dispatch("Microsoft.Update.UpdateColl")
-
-        for update in search_result.Updates:
-            if update.MsrcSeverity == 'Critical':
+        updates_to_download = win32com.client.Dispatch("Microsoft.Update.UpdateColl")
+        for update in self._selected_patches:
+            if update.IsDownloaded == 0:
                 # IUpdate : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386099(v=vs.85).aspx
                 # IUpdate2 : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386100(v=vs.85).aspx
-
-                #update.AcceptEula()
-                updates_to_install.add(update)
-                print update.Identity.UpdateID,update.Title,
-                """for dc in update.DownloadContents:
+                updates_to_download.add(update)
+                for dc in update.DownloadContents:
                     #https://msdn.microsoft.com/en-us/library/windows/desktop/aa386120(v=vs.85).aspx
                     print dc.DownloadUrl
                     target = makepath(r'C:\tranquilit\tis-mbsa-wapt',os.path.split(dc.DownloadUrl)[1])
@@ -130,6 +103,8 @@ class WaptWUA(object):
                     update.CopyToCache(files)
                     for fn in files:
                         print"%s put to local WUA cache for update %s" % (fn,update.Title)
+                        if isfile(fn):
+                            remove_file(fn)
 
                 for bu in update.BundledUpdates:
                     files = win32com.client.Dispatch('Microsoft.Update.StringColl')
@@ -147,26 +122,33 @@ class WaptWUA(object):
                         print"%s put to local WUA cache for update %s" % (fn,update.Title)
                         if isfile(fn):
                             remove_file(fn)
-                """
+
 
         def install_patches(self):
+            result = []
+            updates_to_install = win32com.client.Dispatch("Microsoft.Update.UpdateColl")
             #apply the updates
-            for update in self.scan_updates():
-                update.AcceptEula()
+            for update in self._selected_patches:
+                if update.IsDownloaded == 1:
+                    update.AcceptEula()
+                    updates_to_install.add(update)
+                    result.append(update.Identity.UpdateID)
+
             installer = self.update_session.CreateUpdateInstaller()
             installer.Updates = updates_to_install
             installation_result = installer.Install()
             print "Result %s" % installation_result.ResultCode
             print "Reboot required %s" % installation_result.RebootRequired
-
+            return result
 
 
 # list of properties : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386099(v=vs.85).aspx
 if __name__ == '__main__':
     from common import *
     w = Wapt()
-    wua = WaptWUA(w)
+    wua = WaptWUA(w,allowed_patches=['1072c136-fabd-435a-a032-10996626e444'])
     #us = wua.update_searcher
     print wua.scan_updates()
-    print wua
+    print '\n'.join([u.Title for u in wua._selected_patches])
+    print '\n'.join([u.Title for u in wua._discarded_patches])
 
