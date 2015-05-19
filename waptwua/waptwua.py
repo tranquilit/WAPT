@@ -20,7 +20,23 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
+"""
+    waptpython waptwua.py <action>
+
+    Script which scans the computer for Windows Update based on wsusscn2 cab
+    Stores the result of scan in waptdb
+    Can download and apply Windows Updates from wapt server
+    based on allowed_updates list
+
+    <action> can be :
+        scan : updates wsusscn2.cab, and checks current computer againt allowed KB
+        download : download necessary updates from wapt server and push them in cache
+        install : install allowed cached updates
+"""
+
 from setuphelpers import *
+from common import *
+
 import os
 import win32com.client
 import json
@@ -60,6 +76,7 @@ def update_as_dict(update):
         severity = update.MsrcSeverity,
         installed = update.IsInstalled,
         downloaded = update.IsDownloaded,
+        changetime = datetime2isodate(datetime.datetime.fromtimestamp(int(update.LastDeploymentChangeTime)))
         )
 
 InstallResult = {
@@ -124,15 +141,23 @@ class WaptWUA(object):
         self._discarded_updates = []
 
         for update in search_result.Updates:
+            kbs = [ "KB%s" % kb for kb in update.KBArticleIDs ]
+            match_kb = False
+            for kb in kbs:
+                if kb in self.allowed_updates:
+                    match_kb = True
+                    break
             if update.IsInstalled:
                 self._installed_updates.append(update)
-            elif update.Identity.UpdateID in self.allowed_updates:
+            elif update.Identity.UpdateID in self.allowed_updates or match_kb:
                 # IUpdate : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386099(v=vs.85).aspx
                 # IUpdate2 : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386100(v=vs.85).aspx
                 print('Adding %s : %s' % (update.Identity.UpdateID,update.Title ))
+                update.IsHidden = False
                 self._pending_updates.append(update)
             else:
                 print('Skipping %s : %s' % (update.Identity.UpdateID,update.Title ))
+                update.IsHidden = True
                 self._discarded_updates.append(update)
 
         self.wapt.write_param('waptwua.installed',jsondump([ update_as_dict(u) for u in self._installed_updates]))
@@ -247,19 +272,41 @@ class WaptWUA(object):
         self.wapt.write_param('waptwua.last_install_date',datetime2isodate())
         return result
 
+    def status(self):
+        return {
+            'last_install_batch':self.wapt.read_param('waptwua.last_install_batch'),
+            'last_install_date':self.wapt.read_param('waptwua.last_install_date'),
+            'last_install_result':self.wapt.read_param('waptwua.last_install_result'),
+            'wsusscn2cab_date':self.wapt.read_param('waptwua.wsusscn2cab_date'),
+            'installed':ensure_list(json.loads(self.wapt.read_param('waptwua.installed'))),
+            'pending':ensure_list(json.loads(self.wapt.read_param('waptwua.pending'))),
+            'discarded':ensure_list(json.loads(self.wapt.read_param('waptwua.discarded'))),
+            }
 
-# list of properties : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386099(v=vs.85).aspx
+
 if __name__ == '__main__':
-    from common import *
-    w = Wapt()
-    wua = WaptWUA(w,allowed_updates=['1072c136-fabd-435a-a032-10996626e444','05411874-4d1f-44c4-8aad-dc84726878c9'])
-    #us = wua.update_searcher
-    print wua.scan_updates()
-    print 'Pending : '+wua.wapt.read_param('waptwua.pending')
-    print 'Discarded : '+wua.wapt.read_param('waptwua.discarded')
-    print wua.download_updates()
-    #print wua.install_updates()
-    print "Finished"
+    parser=OptionParser(usage=__doc__)
+    parser.add_option("-a","--allowed", dest="allowed", default='', help="List of updates uuid to apply (default: %default)")
+    parser.add_option("-c","--config", dest="config", default=None, help="Config file full path (default: %default)")
+    #parser.add_option("-d","--dry-run", dest="dry_run",    default=False, action='store_true', help="Dry run (default: %default)")
+    (options,args) = parser.parse_args()
 
+    wapt = Wapt(config_filename=options.config)
 
+    allowed_updates = ensure_list(options.allowed) or None
+    wua = WaptWUA(wapt,allowed_updates=allowed_updates)
+    if len(args) <1:
+        print parser.usage
+        sys.exit(1)
+
+    action = args[0]
+    if action == 'scan':
+        pending = wua.scan_updates()
+        print "%s pending updates" % (len(pending),)
+    elif action == 'download':
+        print wua.download_updates()
+    elif action == 'install':
+        print wua.install_updates()
+    else:
+        print parser.usage
 
