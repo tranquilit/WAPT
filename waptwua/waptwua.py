@@ -89,7 +89,7 @@ InstallResult = {
  }
 
 class WaptWUA(object):
-    def __init__(self,wapt,allowed_updates=None, filter="Type='Software'"):
+    def __init__(self,wapt,allowed_updates=None, filter="Type='Software'", allow_critical=False):
         self.wapt = wapt
         self.cache_path = makepath(wapt.wapt_base_dir,'waptwua','cache')
         self.update_session = win32com.client.Dispatch("Microsoft.Update.Session")
@@ -97,6 +97,7 @@ class WaptWUA(object):
         self._update_searcher = None
         self._update_service = None
         self.filter = filter
+        self.allow_critical = allow_critical
         if allowed_updates is not None:
             self.allowed_updates = allowed_updates
         else:
@@ -149,7 +150,7 @@ class WaptWUA(object):
                     break
             if update.IsInstalled:
                 self._installed_updates.append(update)
-            elif update.Identity.UpdateID in self.allowed_updates or match_kb:
+            elif update.Identity.UpdateID in self.allowed_updates or match_kb or (self.allow_critical and update.MsrcSeverity == 'Critical'):
                 # IUpdate : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386099(v=vs.85).aspx
                 # IUpdate2 : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386100(v=vs.85).aspx
                 print('Adding %s : %s' % (update.Identity.UpdateID,update.Title ))
@@ -287,6 +288,7 @@ class WaptWUA(object):
 
     def status(self):
         return {
+            'last_scan_date':self.wapt.read_param('waptwua.last_scan_date'),
             'last_install_batch':self.wapt.read_param('waptwua.last_install_batch'),
             'last_install_date':self.wapt.read_param('waptwua.last_install_date'),
             'last_install_result':self.wapt.read_param('waptwua.last_install_result'),
@@ -301,13 +303,14 @@ if __name__ == '__main__':
     parser=OptionParser(usage=__doc__)
     parser.add_option("-a","--allowed", dest="allowed", default='', help="List of updates uuid or KB to apply (default: %default)")
     parser.add_option("-c","--config", dest="config", default=None, help="Config file full path (default: %default)")
+    parser.add_option("-C","--critical", dest="allow_critical", default=False, action='store_true', help="Allows all 'Critical' updates too (default: %default)")
     #parser.add_option("-d","--dry-run", dest="dry_run",    default=False, action='store_true', help="Dry run (default: %default)")
     (options,args) = parser.parse_args()
 
     wapt = Wapt(config_filename=options.config)
 
     allowed_updates = ensure_list(options.allowed) or None
-    wua = WaptWUA(wapt,allowed_updates=allowed_updates)
+    wua = WaptWUA(wapt,allowed_updates=allowed_updates,allow_critical=options.allow_critical)
     if len(args) <1:
         print parser.usage
         sys.exit(1)
