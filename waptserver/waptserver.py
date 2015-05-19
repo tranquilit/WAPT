@@ -54,6 +54,7 @@ import tempfile
 import traceback
 import datetime
 import uuid
+import email.utils
 from bson.json_util import dumps
 
 from rocket import Rocket
@@ -213,7 +214,7 @@ if not wapt_folder:
     wapt_folder = os.path.join(wapt_root_dir,'waptserver','repository','wapt')
 
 if not waptwua_folder:
-    waptwua_folder = os.path.join(wapt_root_dir,'waptserver','repository','waptwua')
+    waptwua_folder = wapt_folder+'wua'
 
 waptagent = os.path.join(wapt_folder, 'waptagent.exe')
 waptsetup = os.path.join(wapt_folder, 'waptsetup-tis.exe')
@@ -244,6 +245,19 @@ def datetime2isodate(adatetime = None):
         adatetime = datetime.datetime.now()
     assert(isinstance(adatetime,datetime.datetime))
     return adatetime.isoformat()
+
+def isodate2datetime(isodatestr):
+    # we remove the microseconds part as it is not working for python2.5 strptime
+    return datetime.datetime.strptime(isodatestr.split('.')[0] , "%Y-%m-%dT%H:%M:%S")
+
+def httpdatetime2isodate(httpdate):
+    """convert a date string as returned in http headers or mail headers to isodate
+    >>> import requests
+    >>> last_modified = requests.head('http://wapt/wapt/Packages',headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
+    >>> len(httpdatetime2isodate(last_modified)) == 19
+    True
+    """
+    return datetime2isodate(datetime.datetime(*email.utils.parsedate(httpdate)[:6]))
 
 
 def get_wapt_exe_version(exe):
@@ -1665,6 +1679,11 @@ def wget(url,target,proxies=None,connect_timeout=10,download_timeout=None):
                 last_downloaded += len(chunk)
         else:
             httpreq.raise_for_status()
+
+    if 'last-modified' in httpreq.headers:
+        filedate = isodate2datetime(httpdatetime2isodate(httpreq.headers['last-modified']))
+        unixtime = time.mktime(filedate.timetuple())
+        os.utime(filename,(unixtime,unixtime))
     return os.path.join(dir,filename)
 
 @app.route('/api/v2/download_wsusscan')
@@ -1674,15 +1693,21 @@ def download_wsusscan():
         abort if the temporary file is present (means another download is in progress
 
     """
+    cab_url = 'http://download.windowsupdate.com/microsoftupdate/v6/wsusscan/wsusscn2.cab'
     wsus_filename = os.path.join(waptwua_folder,'wsusscan2.cab')
     tmp_filename = os.path.join(waptwua_folder,'wsusscan2.cab.tmp')
     if not request.args.get('force',0) and os.path.isfile(tmp_filename):
         # check if not too old.... ?
         return make_response(msg ='Download in progress, current size = %s' % os.stat(tmp_filename).st_size)
     try:
-        # download every day at most
-        if not os.path.isfile(wsus_filename) or ( time.time() - os.stat(wsus_filename).st_mtime > 24*3600):
-            fn = wget('http://go.microsoft.com/fwlink/?LinkID=74689',tmp_filename)
+        new_cab_date =  httpdatetime2isodate(requests.head(cab_url).headers['last-modified'])
+        if os.path.isfile(wsus_filename):
+            current_cab_date = datetime2isodate(datetime.datetime.utcfromtimestamp(os.stat(wsus_filename).st_mtime))
+        else:
+            current_cab_date = ''
+        logger.info('Current cab date: %s, New cab date: %s'%(current_cab_date,new_cab_date))
+        if not os.path.isfile(wsus_filename) or ( new_cab_date > current_cab_date ) or request.args.get('force',0):
+            fn = wget(cab_url,tmp_filename)
             # check integrity
             try:
                 if sys.platform == 'win32':
