@@ -199,49 +199,58 @@ class WaptWUA(object):
             wua_proxy = None
         wget(url,target,proxies=wua_proxy)
 
+    def download_single(self,update):
+        result = []
+        for dc in update.DownloadContents:
+            #https://msdn.microsoft.com/en-us/library/windows/desktop/aa386120(v=vs.85).aspx
+            print dc.DownloadUrl
+            target = makepath(self.cache_path,os.path.split(dc.DownloadUrl)[1])
+            files = win32com.client.Dispatch('Microsoft.Update.StringColl')
+            if not isfile(target):
+                self.wget_update(dc.DownloadUrl,target)
+                result.append(dc.DownloadUrl)
+            if isfile(target):
+                files.add(target)
+
+            update.CopyToCache(files)
+            for fn in files:
+                print"%s put to local WUA cache for update" % (fn,)
+                if isfile(fn):
+                    remove_file(fn)
+
+        for bu in update.BundledUpdates:
+            files = win32com.client.Dispatch('Microsoft.Update.StringColl')
+            for dc in bu.DownloadContents:
+                #https://msdn.microsoft.com/en-us/library/windows/desktop/aa386120(v=vs.85).aspx
+                print dc.DownloadUrl
+                target = makepath(self.cache_path,os.path.split(dc.DownloadUrl)[1])
+                if not isfile(target):
+                    self.wget_update(dc.DownloadUrl,target)
+                    result.append(dc.DownloadUrl)
+                if isfile(target):
+                    files.add(target)
+
+            bu.CopyToCache(files)
+            for fn in files:
+                print"%s put to local WUA cache for update %s" % (fn,update.Title)
+                if isfile(fn):
+                    remove_file(fn)
+
+        return result
+
     def download_updates(self):
         """Download all pending updates and put them in Windows Update cache
 
         """
-        updates_to_download = win32com.client.Dispatch("Microsoft.Update.UpdateColl")
+        result = []
+        if self._pending_updates is None:
+            self.scan_updates()
         for update in self._pending_updates:
             if update.IsDownloaded == 0:
                 # IUpdate : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386099(v=vs.85).aspx
                 # IUpdate2 : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386100(v=vs.85).aspx
-                updates_to_download.add(update)
-                for dc in update.DownloadContents:
-                    #https://msdn.microsoft.com/en-us/library/windows/desktop/aa386120(v=vs.85).aspx
-                    print dc.DownloadUrl
-                    target = makepath(self.cache_path,os.path.split(dc.DownloadUrl)[1])
-                    files = win32com.client.Dispatch('Microsoft.Update.StringColl')
-                    if not isfile(target):
-                        self.wget_update(dc.DownloadUrl,target)
-                    if isfile(target):
-                        files.add(target)
-
-                    update.CopyToCache(files)
-                    for fn in files:
-                        print"%s put to local WUA cache for update %s" % (fn,update.Title)
-                        if isfile(fn):
-                            remove_file(fn)
-
-                for bu in update.BundledUpdates:
-                    files = win32com.client.Dispatch('Microsoft.Update.StringColl')
-                    for dc in bu.DownloadContents:
-                        #https://msdn.microsoft.com/en-us/library/windows/desktop/aa386120(v=vs.85).aspx
-                        print dc.DownloadUrl
-                        target = makepath(self.cache_path,os.path.split(dc.DownloadUrl)[1])
-                        if not isfile(target):
-                            self.wget_update(dc.DownloadUrl,target)
-                        if isfile(target):
-                            files.add(target)
-
-                    bu.CopyToCache(files)
-                    for fn in files:
-                        print"%s put to local WUA cache for update %s" % (fn,update.Title)
-                        if isfile(fn):
-                            remove_file(fn)
-
+                result.extend(self.download_single(update))
+        return result
 
     def install_updates(self):
         """Install all pending downloaded updates"""
@@ -251,10 +260,11 @@ class WaptWUA(object):
         updates_to_install = win32com.client.Dispatch("Microsoft.Update.UpdateColl")
         #apply the updates
         for update in self._pending_updates:
-            if update.IsDownloaded:
-                update.AcceptEula()
-                updates_to_install.add(update)
-                result.append(update.Identity.UpdateID)
+            if not update.IsDownloaded:
+                self.download_single(update)
+            update.AcceptEula()
+            updates_to_install.add(update)
+            result.append(update.Identity.UpdateID)
 
         if result:
             installer = self.update_session.CreateUpdateInstaller()
@@ -272,6 +282,9 @@ class WaptWUA(object):
         self.wapt.write_param('waptwua.last_install_date',datetime2isodate())
         return result
 
+    def store_status(self):
+        pass
+
     def status(self):
         return {
             'last_install_batch':self.wapt.read_param('waptwua.last_install_batch'),
@@ -286,7 +299,7 @@ class WaptWUA(object):
 
 if __name__ == '__main__':
     parser=OptionParser(usage=__doc__)
-    parser.add_option("-a","--allowed", dest="allowed", default='', help="List of updates uuid to apply (default: %default)")
+    parser.add_option("-a","--allowed", dest="allowed", default='', help="List of updates uuid or KB to apply (default: %default)")
     parser.add_option("-c","--config", dest="config", default=None, help="Config file full path (default: %default)")
     #parser.add_option("-d","--dry-run", dest="dry_run",    default=False, action='store_true', help="Dry run (default: %default)")
     (options,args) = parser.parse_args()
