@@ -19,8 +19,8 @@
 <input onclick="location.href='wua_pending_updates'" type="button" name="wua_pending_updates" value="{{ _('Pending Windows updates') }}"/>
 <input onclick="location.href='wua_discarded_updates'" type="button" name="wua_discarded_updates" value="{{ _('Discarded Windows updates') }}"/>
 <h1>{{ title }}</h1>
-{% set cols = ['kbids','title','severity','uuid'] %}
-{% set cols_header = [_('KB'),_('Title'),_('Severity'),_('UUID')] %}
+{% set cols = ['kbids','title','severity','uuid','changetime','downloaded'] %}
+{% set cols_header = [_('KB'),_('Title'),_('Severity'),_('UUID'),_('Date'),_('Downloaded')] %}
 <table border=1 cellspacing=0 cellpadding=4 class=sample>
 	<tr>
     	{% for c in cols_header %}
