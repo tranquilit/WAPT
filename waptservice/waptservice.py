@@ -1241,9 +1241,7 @@ def cancel_task():
 @app.route('/wua_installed_updates.json')
 @allow_waptserver_or_local_unauth
 def wua_installed_updates():
-    rawdata = wapt().read_param('waptwua.installed')
-    if rawdata:
-        data = json.loads(rawdata)
+    data = json.loads(wapt().read_param('waptwua.installed') or '[]')
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -1259,9 +1257,8 @@ def wua_installed_updates():
 @app.route('/wua_pending_updates.json')
 @allow_waptserver_or_local_unauth
 def wua_pending_updates():
-    rawdata = wapt().read_param('waptwua.pending')
-    if rawdata:
-        data = json.loads(rawdata)
+    data = json.loads(wapt().read_param('waptwua.pending') or '[]')
+
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -1276,9 +1273,8 @@ def wua_pending_updates():
 @app.route('/wua_discarded_updates.json')
 @allow_waptserver_or_local_unauth
 def wua_discarded_updates():
-    rawdata = wapt().read_param('waptwua.discarded')
-    if rawdata:
-        data = json.loads(rawdata)
+    data = json.loads(wapt().read_param('waptwua.discarded') or '[]')
+
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:

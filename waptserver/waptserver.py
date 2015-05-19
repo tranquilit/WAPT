@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="1.2.3"
+__version__="1.2.4"
 
 import os,sys
 try:
@@ -1694,8 +1694,8 @@ def download_wsusscan():
 
     """
     cab_url = 'http://download.windowsupdate.com/microsoftupdate/v6/wsusscan/wsusscn2.cab'
-    wsus_filename = os.path.join(waptwua_folder,'wsusscan2.cab')
-    tmp_filename = os.path.join(waptwua_folder,'wsusscan2.cab.tmp')
+    wsus_filename = os.path.join(waptwua_folder,'wsusscn2.cab')
+    tmp_filename = os.path.join(waptwua_folder,'wsusscn2.cab.tmp')
     if not request.args.get('force',0) and os.path.isfile(tmp_filename):
         # check if not too old.... ?
         return make_response(msg ='Download in progress, current size = %s' % os.stat(tmp_filename).st_size)
@@ -1707,23 +1707,22 @@ def download_wsusscan():
             current_cab_date = ''
         logger.info('Current cab date: %s, New cab date: %s'%(current_cab_date,new_cab_date))
         if not os.path.isfile(wsus_filename) or ( new_cab_date > current_cab_date ) or request.args.get('force',0):
-            fn = wget(cab_url,tmp_filename)
+            wget(cab_url,tmp_filename)
             # check integrity
-            try:
+            """try:
                 if sys.platform == 'win32':
-                    cablist = subprocess.check_output('expand -D "%s"' % fn,shell = True).decode('cp850').splitlines()
+                    cablist = subprocess.check_output('expand -D "%s"' % tmp_filename,shell = True).decode('cp850').splitlines()
                 else:
-                    cablist = subprocess.check_output('cabextract -t "%s"' % fn ,shell = True).splitlines()
+                    cablist = subprocess.check_output('cabextract -t "%s"' % tmp_filename ,shell = True).splitlines()
             except Exception as e:
                 if os.path.isfile(tmp_filename):
                     os.unlink(tmp_filename)
                 return make_response_from_exception(e)
+            """
             if os.path.isfile(wsus_filename):
                 os.unlink(wsus_filename)
             os.rename(tmp_filename,wsus_filename)
-        else:
-            fn = wsus_filename
-        return make_response(msg = 'File wsusscan2.cab available',result = dict(url = '/waptwua/wsusscan2.cab', size=os.stat(wsus_filename).st_size))
+        return make_response(msg = 'File wsusscn2.cab available',result = dict(url = '/waptwua/wsusscn2.cab', size=os.stat(wsus_filename).st_size))
     except Exception as e:
         return make_response_from_exception(e)
 

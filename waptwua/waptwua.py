@@ -293,9 +293,9 @@ class WaptWUA(object):
             'last_install_date':self.wapt.read_param('waptwua.last_install_date'),
             'last_install_result':self.wapt.read_param('waptwua.last_install_result'),
             'wsusscn2cab_date':self.wapt.read_param('waptwua.wsusscn2cab_date'),
-            'installed':ensure_list(json.loads(self.wapt.read_param('waptwua.installed'))),
-            'pending':ensure_list(json.loads(self.wapt.read_param('waptwua.pending'))),
-            'discarded':ensure_list(json.loads(self.wapt.read_param('waptwua.discarded'))),
+            'installed':json.loads(self.wapt.read_param('waptwua.installed') or '[]'),
+            'pending':json.loads(self.wapt.read_param('waptwua.pending') or '[]'),
+            'discarded':json.loads(self.wapt.read_param('waptwua.discarded') or '[]'),
             }
 
 
