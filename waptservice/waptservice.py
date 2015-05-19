@@ -1237,6 +1237,59 @@ def cancel_task():
         return render_template('default.html',data=data)
 
 
+@app.route('/wua_installed_updates')
+@app.route('/wua_installed_updates.json')
+@allow_waptserver_or_local_unauth
+def wua_installed_updates():
+    rawdata = wapt().read_param('waptwua.installed')
+    if rawdata:
+        data = json.loads(rawdata)
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('waptwua.html',data=data,
+            title=_('Installed Windows Updates'),
+            waptwua_last_scan_date = wapt().read_param('waptwua.last_scan_date'),
+            waptwua_wsusscn2cab_date = wapt().read_param('waptwua.wsusscn2cab_date'),
+            waptwua_last_install_result = wapt().read_param('waptwua.last_install_result'),
+            waptwua_last_install_date = wapt().read_param('waptwua.last_install_date'))
+
+
+@app.route('/wua_pending_updates')
+@app.route('/wua_pending_updates.json')
+@allow_waptserver_or_local_unauth
+def wua_pending_updates():
+    rawdata = wapt().read_param('waptwua.pending')
+    if rawdata:
+        data = json.loads(rawdata)
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('waptwua.html',data=data,
+            title=_('Pending Windows Updates'),
+            waptwua_last_scan_date = wapt().read_param('waptwua.last_scan_date'),
+            waptwua_wsusscn2cab_date = wapt().read_param('waptwua.wsusscn2cab_date'),
+            waptwua_last_install_result = wapt().read_param('waptwua.last_install_result'),
+            waptwua_last_install_date = wapt().read_param('waptwua.last_install_date'))
+
+@app.route('/wua_discarded_updates')
+@app.route('/wua_discarded_updates.json')
+@allow_waptserver_or_local_unauth
+def wua_discarded_updates():
+    rawdata = wapt().read_param('waptwua.discarded')
+    if rawdata:
+        data = json.loads(rawdata)
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('waptwua.html',data=data,
+            title=_('Discarded Windows Updates'),
+            waptwua_last_scan_date = wapt().read_param('waptwua.last_scan_date'),
+            waptwua_wsusscn2cab_date = wapt().read_param('waptwua.wsusscn2cab_date'),
+            waptwua_last_install_result = wapt().read_param('waptwua.last_install_result'),
+            waptwua_last_install_date = wapt().read_param('waptwua.last_install_date'))
+
+
 class EventsPrinter:
     '''EventsPrinter class which serves to emulates a file object and logs
        whatever it gets sent to a broadcast object at the INFO level.'''
