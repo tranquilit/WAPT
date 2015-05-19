@@ -21,20 +21,41 @@
 #
 # -----------------------------------------------------------------------
 from setuphelpers import *
-
 import os
 import win32com.client
+import json
+
+from optparse import OptionParser
+from urlparse import urlparse
+
+from common import httpdatetime2isodate,isodate2datetime
+import datetime
+
+def ensure_list(csv_or_list,ignore_empty_args=True):
+    """if argument is not a list, return a list from a csv string"""
+    if csv_or_list is None:
+        return []
+    if isinstance(csv_or_list,tuple):
+        return list(csv_or_list)
+    elif not isinstance(csv_or_list,list):
+        if ignore_empty_args:
+            return [s.strip() for s in csv_or_list.split(',') if s.strip() != '']
+        else:
+            return [s.strip() for s in csv_or_list.split(',')]
+    else:
+        return csv_or_list
 
 # https://support.microsoft.com/en-us/kb/927745
 # download updated version of  wsus index cab file
 #wget('http://go.microsoft.com/fwlink/?LinkID=74689','wsusscn2.cab')
 
 def update_as_dict(update):
+    """Convert a IUpdate instance into a dict
+    """
     return dict(
         uuid = update.Identity.UpdateID,
         title = update.Title,
         type = update.Type,
-        description = update.Description,
         kbids = [ "%s" % kb for kb in update.KBArticleIDs ],
         severity = update.MsrcSeverity,
         installed = update.IsInstalled,
@@ -51,7 +72,7 @@ InstallResult = {
  }
 
 class WaptWUA(object):
-    def __init__(self,wapt,allowed_updates=[], filter="Type='Software'"):
+    def __init__(self,wapt,allowed_updates=None, filter="Type='Software'"):
         self.wapt = wapt
         self.cache_path = makepath(wapt.wapt_base_dir,'waptwua','cache')
         self.update_session = win32com.client.Dispatch("Microsoft.Update.Session")
@@ -59,7 +80,14 @@ class WaptWUA(object):
         self._update_searcher = None
         self._update_service = None
         self.filter = filter
-        self.allowed_updates = allowed_updates
+        if allowed_updates is not None:
+            self.allowed_updates = allowed_updates
+        else:
+            au = self.wapt.read_param('waptwua.allowed_updates')
+            if au:
+                self.allowed_updates = json.loads(au)
+            else:
+                self.allowed_updates = []
 
         self._installed_updates = None
         self._pending_updates = None
@@ -67,7 +95,23 @@ class WaptWUA(object):
 
     def update_wsusscan_cab(self):
         if len(self.wapt.repositories)>0:
-            wget('%swua/wsusscn2.cab' % self.wapt.repositories[0].repo_url,makepath(self.cache_path,'wsusscn2.cab'))
+            try:
+                cab_location = '%swua/wsusscn2.cab' % self.wapt.repositories[0].repo_url
+                cab_target = makepath(self.cache_path,'wsusscn2.cab')
+                cab_current_date = self.wapt.read_param('waptwua.wsusscn2cab_date')
+                cab_new_date = httpdatetime2isodate(requests.head(
+                    cab_location,
+                    timeout=self.wapt.repositories[0].timeout,
+                    proxies=self.wapt.repositories[0].proxies,
+                    verify=False,
+                    ).headers['last-modified'])
+                if not isfile(cab_target) or (cab_new_date > cab_current_date ):
+                    wget(cab_location,cab_target,proxies=self.wapt.repositories[0].proxies,connect_timeout=self.wapt.repositories[0].timeout)
+                    self.wapt.write_param('waptwua.wsusscn2cab_date',cab_new_date)
+
+                return cab_new_date
+            except requests.RequestException as e:
+                return None
 
     def scan_updates(self):
         filter = self.filter
@@ -105,8 +149,14 @@ class WaptWUA(object):
         if not self._update_searcher:
             print('   Connecting to local update searcher using offline wsusscn2 file...')
             wsusscn2_path = makepath(self.cache_path,'wsusscn2.cab')
-            if not isfile(wsusscn2_path):
-                self.update_wsusscan_cab()
+            try:
+                cab_sourcedate = self.update_wsusscan_cab()
+            except Exception as e:
+                if isfile(wsusscn2_path):
+                    print('Unable to refresh wsusscan cab, using old one. (error: %s)'%e)
+                else:
+                    print('Unable to get wsusscan cab, aborting.')
+                    raise
             # use wsus offline updates index cab
             self._update_service = self.update_service_manager.AddScanPackageService("Offline Sync Service",wsusscn2_path)
             self._update_searcher = self.update_session.CreateupdateSearcher()
@@ -115,6 +165,14 @@ class WaptWUA(object):
             self._update_searcher.ServiceID = self._update_service.ServiceID
             print('   Offline Update searcher ready...')
         return self._update_searcher
+
+    def wget_update(self,url,target):
+        # try using specialized proxy
+        if len(self.wapt.repositories)>0:
+            wua_proxy = {'http':'http://%s:8123' % (urlparse(self.wapt.repositories[0].repo_url).netloc,)}
+        else:
+            wua_proxy = None
+        wget(url,target,proxies=wua_proxy)
 
     def download_updates(self):
         """Download all pending updates and put them in Windows Update cache
@@ -132,7 +190,7 @@ class WaptWUA(object):
                     target = makepath(self.cache_path,os.path.split(dc.DownloadUrl)[1])
                     files = win32com.client.Dispatch('Microsoft.Update.StringColl')
                     if not isfile(target):
-                        wget(dc.DownloadUrl,target)
+                        self.wget_update(dc.DownloadUrl,target)
                     if isfile(target):
                         files.add(target)
 
@@ -149,7 +207,7 @@ class WaptWUA(object):
                         print dc.DownloadUrl
                         target = makepath(self.cache_path,os.path.split(dc.DownloadUrl)[1])
                         if not isfile(target):
-                            wget(dc.DownloadUrl,target,proxies={'http':'http://wapt.tranquilit.local:8123'})
+                            self.wget_update(dc.DownloadUrl,target)
                         if isfile(target):
                             files.add(target)
 
@@ -194,13 +252,13 @@ class WaptWUA(object):
 if __name__ == '__main__':
     from common import *
     w = Wapt()
-    wua = WaptWUA(w,allowed_updates=['1072c136-fabd-435a-a032-10996626e444'])
+    wua = WaptWUA(w,allowed_updates=['1072c136-fabd-435a-a032-10996626e444','05411874-4d1f-44c4-8aad-dc84726878c9'])
     #us = wua.update_searcher
     print wua.scan_updates()
     print 'Pending : '+wua.wapt.read_param('waptwua.pending')
     print 'Discarded : '+wua.wapt.read_param('waptwua.discarded')
     print wua.download_updates()
-    print wua.install_updates()
+    #print wua.install_updates()
     print "Finished"
 
 
