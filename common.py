@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.2.3"
+__version__ = "1.2.4"
 import os
 import re
 import logging
@@ -4211,6 +4211,31 @@ class Wapt(object):
         status['runstatus'] = self.read_param('runstatus','')
         return json.loads(json.dumps(status))
 
+    def wua_status(self):
+        pending = ensure_list(json.loads(self.read_param('waptwua.pending')))
+        last_install_result = self.read_param('waptwua.last_install_result')
+        last_scan_date = self.read_param('waptwua.last_scan_date')
+        if not pending and last_install_result == 'Succeeded':
+            status = 'OK'
+        elif not last_scan_date:
+            status = 'TO-SCAN'
+        elif pending and last_install_result in ('Succeeded',''):
+            status = 'TO-UPDATE'
+        else:
+            status = 'UNKNOWN'
+
+        return {
+            'status':status,
+            'last_scan_date':last_scan_date,
+            'last_install_batch':self.read_param('waptwua.last_install_batch'),
+            'last_install_date':self.read_param('waptwua.last_install_date'),
+            'last_install_result':last_install_result,
+            'wsusscn2cab_date':self.read_param('waptwua.wsusscn2cab_date'),
+            'installed':ensure_list(json.loads(self.read_param('waptwua.installed'))),
+            'pending':pending,
+            'discarded':ensure_list(json.loads(self.read_param('waptwua.discarded'))),
+            }
+
     def update_server_status(self):
         """Send packages and software informations to WAPT Server, don't send dmi
 
@@ -4223,6 +4248,7 @@ class Wapt(object):
         inv['host'] = setuphelpers.host_info()
         inv['softwares'] = setuphelpers.installed_softwares('')
         inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
+        inv['waptwua'] = self.wua_status()
         inv['update_status'] = self.get_last_update_status()
 
         if self.waptserver_available():
@@ -4369,6 +4395,7 @@ class Wapt(object):
         inv['wapt'] = self.wapt_status()
         inv['softwares'] = setuphelpers.installed_softwares('')
         inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
+        inv['waptwua'] = self.wua_status()
         return inv
 
     def get_repo(self,name):

@@ -413,9 +413,15 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'host.domain_name'
           end        
           item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 20
             Tag = 20
+            Text = 'WUA'
+            PropertyName = 'waptwua.status'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 21
+            Tag = 21
             Text = 'Domain controller address'
             PropertyName = 'host.domain_controller_address'
           end>
