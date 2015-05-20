@@ -67,7 +67,8 @@ def parse_metadata(upd, descr_file):
         elem = props.find(qualify('SecurityBulletinID'))
         if elem is not None:
             data['security_bulletin_id'] = elem.text
-            print 'SecurityBulletinID', data['security_bulletin_id']
+            if debug:
+                print 'SecurityBulletinID', data['security_bulletin_id']
 
         localized_properties_collection = root.find(qualify('LocalizedPropertiesCollection'))
         for elem in localized_properties_collection.iter():
