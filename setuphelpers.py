@@ -181,7 +181,16 @@ __all__ = \
  'windomainname',
  'winshell',
  'wmi_info',
- 'wmi_info_basic']
+ 'wmi_info_basic',
+ 'datetime2isodate',
+ 'httpdatetime2isodate',
+ 'isodate2datetime',
+ 'time2display',
+ 'hours_minutes',
+ 'fileisodate',
+ 'dateof',
+ 'ensure_list',
+ ]
 
 import os
 import sys
@@ -226,6 +235,7 @@ import types
 import re
 import threading
 import codecs
+import email.utils
 from waptpackage import PackageEntry
 from waptpackage import Version as Version
 from types import ModuleType
@@ -316,6 +326,21 @@ def ensure_unicode(data):
             return("Error in ensure_unicode / %s"%(repr(data)))
         else:
             raise
+
+
+def ensure_list(csv_or_list,ignore_empty_args=True):
+    """if argument is not a list, return a list from a csv string"""
+    if csv_or_list is None:
+        return []
+    if isinstance(csv_or_list,tuple):
+        return list(csv_or_list)
+    elif not isinstance(csv_or_list,list):
+        if ignore_empty_args:
+            return [s.strip() for s in csv_or_list.split(',') if s.strip() != '']
+        else:
+            return [s.strip() for s in csv_or_list.split(',')]
+    else:
+        return csv_or_list
 
 
 def create_shortcut(path, target='', arguments='', wDir='', icon=''):
@@ -3155,6 +3180,47 @@ def local_desktops():
             else:
                 raise
     return result
+
+def datetime2isodate(adatetime = None):
+    if not adatetime:
+        adatetime = datetime.datetime.now()
+    assert(isinstance(adatetime,datetime.datetime))
+    return adatetime.isoformat()
+
+
+def httpdatetime2isodate(httpdate):
+    """convert a date string as returned in http headers or mail headers to isodate
+    >>> import requests
+    >>> last_modified = requests.head('http://wapt/wapt/Packages',headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
+    >>> len(httpdatetime2isodate(last_modified)) == 19
+    True
+    """
+    return datetime2isodate(datetime.datetime(*email.utils.parsedate(httpdate)[:6]))
+
+
+def isodate2datetime(isodatestr):
+    # we remove the microseconds part as it is not working for python2.5 strptime
+    return datetime.datetime.strptime(isodatestr.split('.')[0] , "%Y-%m-%dT%H:%M:%S")
+
+
+def time2display(adatetime):
+    return adatetime.strftime("%Y-%m-%d %H:%M")
+
+
+def hours_minutes(hours):
+    if hours is None:
+        return None
+    else:
+        return "%02i:%02i" % ( int(hours) , int((hours - int(hours)) * 60.0))
+
+
+def fileisodate(filename):
+    return datetime.datetime.fromtimestamp(os.stat(filename).st_mtime).isoformat()
+
+
+def dateof(adatetime):
+    return adatetime.replace(hour=0,minute=0,second=0,microsecond=0)
+
 
 
 class EWaptSetupException(Exception):

@@ -46,12 +46,11 @@ import copy
 import getpass
 import psutil
 import threading
-import email.utils
 import traceback
 import uuid
 
 from waptpackage import *
-
+from waptwua import WaptWUA
 import locale
 
 import shlex
@@ -92,51 +91,11 @@ import struct
 
 import re
 import setuphelpers
-from setuphelpers import ensure_unicode
+from setuphelpers import ensure_unicode,datetime2isodate,httpdatetime2isodate,ensure_list
 
 import types
 
 logger = logging.getLogger()
-
-def datetime2isodate(adatetime = None):
-    if not adatetime:
-        adatetime = datetime.datetime.now()
-    assert(isinstance(adatetime,datetime.datetime))
-    return adatetime.isoformat()
-
-
-def httpdatetime2isodate(httpdate):
-    """convert a date string as returned in http headers or mail headers to isodate
-    >>> import requests
-    >>> last_modified = requests.head('http://wapt/wapt/Packages',headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
-    >>> len(httpdatetime2isodate(last_modified)) == 19
-    True
-    """
-    return datetime2isodate(datetime.datetime(*email.utils.parsedate(httpdate)[:6]))
-
-
-def isodate2datetime(isodatestr):
-    # we remove the microseconds part as it is not working for python2.5 strptime
-    return datetime.datetime.strptime(isodatestr.split('.')[0] , "%Y-%m-%dT%H:%M:%S")
-
-
-def time2display(adatetime):
-    return adatetime.strftime("%Y-%m-%d %H:%M")
-
-
-def hours_minutes(hours):
-    if hours is None:
-        return None
-    else:
-        return "%02i:%02i" % ( int(hours) , int((hours - int(hours)) * 60.0))
-
-
-def fileisodate(filename):
-    return datetime.datetime.fromtimestamp(os.stat(filename).st_mtime).isoformat()
-
-
-def dateof(adatetime):
-    return adatetime.replace(hour=0,minute=0,second=0,microsecond=0)
 
 ArchitecturesList = ('all','x86','x64')
 
@@ -693,21 +652,6 @@ def running_on_ac():
     if not GetSystemPowerStatus(ctypes.pointer(status)):
         raise ctypes.WinError()
     return status.ACLineStatus == 1
-
-
-def ensure_list(csv_or_list,ignore_empty_args=True):
-    """if argument is not a list, return a list from a csv string"""
-    if csv_or_list is None:
-        return []
-    if isinstance(csv_or_list,tuple):
-        return list(csv_or_list)
-    elif not isinstance(csv_or_list,list):
-        if ignore_empty_args:
-            return [s.strip() for s in csv_or_list.split(',') if s.strip() != '']
-        else:
-            return [s.strip() for s in csv_or_list.split(',')]
-    else:
-        return csv_or_list
 
 
 def default_http_headers():
@@ -3847,7 +3791,7 @@ class Wapt(object):
         >>> def nullhook(*args):
         ...     pass
         >>> wapt.download_packages(['tis-firefox','tis-waptdev'],usecache=False,printhook=nullhook)
-        {'downloaded': [u'c:/wapt\\cache\\tis-firefox_35.0.1-1_all.wapt', u'c:/wapt\\cache\\tis-waptdev.wapt'], 'skipped': [], 'errors': []}
+        {'downloaded': [u'c:/wapt\\cache\\tis-firefox_37.0.2-9_all.wapt', u'c:/wapt\\cache\\tis-waptdev.wapt'], 'skipped': [], 'errors': []}
         """
         if not isinstance(package_requests,(list,tuple)):
             package_requests = [ package_requests ]
@@ -4212,29 +4156,26 @@ class Wapt(object):
         return json.loads(json.dumps(status))
 
     def wua_status(self):
-        pending = ensure_list(json.loads(self.read_param('waptwua.pending')))
-        last_install_result = self.read_param('waptwua.last_install_result')
-        last_scan_date = self.read_param('waptwua.last_scan_date')
-        if not pending and last_install_result == 'Succeeded':
-            status = 'OK'
-        elif not last_scan_date:
-            status = 'TO-SCAN'
-        elif pending and last_install_result in ('Succeeded',''):
-            status = 'TO-UPDATE'
-        else:
-            status = 'UNKNOWN'
+        """Get the local wapt WUA status as a dict
 
-        return {
-            'status':status,
-            'last_scan_date':last_scan_date,
-            'last_install_batch':self.read_param('waptwua.last_install_batch'),
-            'last_install_date':self.read_param('waptwua.last_install_date'),
-            'last_install_result':last_install_result,
-            'wsusscn2cab_date':self.read_param('waptwua.wsusscn2cab_date'),
-            'installed':ensure_list(json.loads(self.read_param('waptwua.installed'))),
-            'pending':pending,
-            'discarded':ensure_list(json.loads(self.read_param('waptwua.discarded'))),
-            }
+        the 'status' key has one the value :
+            SCANNING,READY,PENDING,OK,DOWNLOADING
+        >>> w = Wapt()
+        >>> w.wua_status().keys()
+        ['status',
+         'allowed_updates',
+         'last_install_date',
+         'last_scan_date',
+         'wsusscn2cab_date',
+         'rebootrequired',
+         'last_install_batch',
+         'updates',
+         'last_install_result']
+
+        """
+
+        wua = WaptWUA(self)
+        return wua.stored_status()
 
     def update_server_status(self):
         """Send packages and software informations to WAPT Server, don't send dmi
@@ -4283,6 +4224,7 @@ class Wapt(object):
             dict: versions of main main files, waptservice config,
                   repos and waptserver config
 
+        >>> w = Wapt()
         >>> w.wapt_status()
         {
         	'setuphelpers-version': '1.1.1',
@@ -5142,7 +5084,7 @@ class Wapt(object):
                 packagename = entry.package
                 packagerequest = entry.asrequirement()
             else:
-                raise Exception('%s is neither a package name nor a package filename' % packagename)
+                raise Exception('%s is neither a package name nor a package filename' % packagerequest)
 
         append_depends = ensure_list(append_depends)
         remove_depends = ensure_list(remove_depends)

@@ -188,7 +188,7 @@ def get_packages_filenames(waptconfigfile,packages_names):
         wapt.repositories[0].proxies = {'http':None,'https':None}
     # be sure to be up to date
     wapt.update(register=False)
-    packages_names = common.ensure_list(packages_names)
+    packages_names = ensure_list(packages_names)
     for name in packages_names:
         entries = wapt.is_available(name)
         if entries:
@@ -235,7 +235,7 @@ def duplicate_from_external_repo(waptconfigfile,package_filename):
     package =  res['package']
     if package.depends:
         newdepends = []
-        depends = common.ensure_list(package.depends)
+        depends = ensure_list(package.depends)
         for dependname in depends:
             newname = rename_package(dependname,prefix)
             newdepends.append(newname)
@@ -246,7 +246,7 @@ def duplicate_from_external_repo(waptconfigfile,package_filename):
     # renames conflicts
     if package.conflicts:
         newconflicts = []
-        conflicts = common.ensure_list(package.conflicts)
+        conflicts = ensure_list(package.conflicts)
         for dependname in conflicts:
             newname = rename_package(dependname,prefix)
             newconflicts.append(newname)
@@ -287,11 +287,11 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
     wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
     wapt.dbpath = r':memory:'
     wapt.use_hostpackages = True
-    hosts_list = common.ensure_list(hosts_list)
-    append_depends = common.ensure_list(append_depends)
-    remove_depends = common.ensure_list(remove_depends)
-    append_conflicts = common.ensure_list(append_conflicts)
-    remove_conflicts = common.ensure_list(remove_conflicts)
+    hosts_list = ensure_list(hosts_list)
+    append_depends = ensure_list(append_depends)
+    remove_depends = ensure_list(remove_depends)
+    append_conflicts = ensure_list(append_conflicts)
+    remove_conflicts = ensure_list(remove_conflicts)
 
     result = []
     sources = []

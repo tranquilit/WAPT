@@ -11,7 +11,6 @@ def install():
 
     mkdirs(makepath(waptwua_path,'cache'))
     mkdirs(waptwuabin_path)
-    filecopyto('waptwua.py',waptwuabin_path)
     if task_exists('waptwua'):
         delete_task('waptwua')
     create_daily_task('waptwua',waptpython_path,'"%s" --critical download' % (makepath(waptwuabin_path,'waptwua.py'),))

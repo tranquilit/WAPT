@@ -44,7 +44,7 @@ from common import Wapt
 from common import WaptDB
 
 import setuphelpers
-from setuphelpers import ensure_unicode
+from setuphelpers import ensure_unicode,ensure_list
 
 usage = """\
 %prog -c configfile action
@@ -678,7 +678,7 @@ def main():
                         result = mywapt.build_package(
                             source_dir,
                             inc_package_release=options.increlease,
-                            excludes=common.ensure_list(options.excludes))
+                            excludes=ensure_list(options.excludes))
                         package_fn = result['filename']
                         if package_fn:
                             packages.append(result)
