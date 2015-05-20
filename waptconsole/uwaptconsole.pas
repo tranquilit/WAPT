@@ -18,6 +18,7 @@ type
 
   TVisWaptGUI = class(TForm)
     ActCancelRunningTask: TAction;
+    ActCreateWaptSetupPy: TAction;
     ActForgetPackages: TAction;
     ActAddConflicts: TAction;
     ActHelp: TAction;
@@ -94,10 +95,15 @@ type
     cbNeedUpgrade: TCheckBox;
     cbHasErrors: TCheckBox;
     cbGroups: TComboBox;
+    cbWUACriticalOnly: TCheckBox;
+    cbWUAInstalled: TCheckBox;
+    cbWUAPending: TCheckBox;
+    cbWUADiscarded: TCheckBox;
     EdSoftwaresFilter: TEdit;
     EdRunningStatus: TEdit;
     EdSearchGroups: TEdit;
     GridGroups: TSOGrid;
+    GridHostWinUpdates: TSOGrid;
     GridHostTasksPending: TSOGrid;
     GridHostTasksDone: TSOGrid;
     GridHostTasksErrors: TSOGrid;
@@ -182,6 +188,7 @@ type
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
+    pgHostWUA: TTabSheet;
     TimerTasks: TTimer;
     Label2: TLabel;
     Label3: TLabel;
@@ -383,6 +390,7 @@ type
     procedure DoProgress(ASender: TObject);
     procedure FillcbGroups;
     function FilterSoftwares(softs: ISuperObject): ISuperObject;
+    function FilterWUA(wua: ISuperObject): ISuperObject;
     { private declarations }
     procedure GridLoadData(grid: TSOGrid; jsondata: string);
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
@@ -588,10 +596,39 @@ begin
   end;
 end;
 
+function TVisWaptGUI.FilterWUA(wua: ISuperObject): ISuperObject;
+var
+  wupdate: ISuperObject;
+  accept: boolean;
+  reg: string;
+begin
+  Result := TSuperObject.Create(stArray);
+  if wua = nil then
+    Exit;
+  for wupdate in wua do
+  begin
+    Accept := False;
+
+    if cbWUADiscarded.Checked then
+      accept := accept or (wupdate.B['hidden']);
+
+    if cbWUAInstalled.Checked then
+      accept := accept or ( wupdate.B['installed']);
+
+    if cbWUAPending.Checked then
+      accept := accept or ( not wupdate.B['installed'] and not wupdate.B['hidden']);
+
+    accept := accept and (not cbWUACriticalOnly.Checked or (wupdate.S['severity'] ='Critical'));
+    if accept then
+      Result.AsArray.Add(wupdate);
+  end;
+end;
+
+
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
   currhost,packagename : ansistring;
-  RowSO, package,packagereq, packages, softwares, dmi,tasksresult, running,sores,additional,upgrades: ISuperObject;
+  RowSO, package,packagereq, packages, softwares, waptwua,dmi,tasksresult, running,sores,additional,upgrades: ISuperObject;
 begin
   TimerTasks.Enabled := False;
   RowSO := Gridhosts.FocusedRow;
@@ -671,6 +708,27 @@ begin
       end;
       RowSO['softwares'] := softwares;
       GridHostSoftwares.Data := FilterSoftwares(softwares);
+    end
+    else if HostPages.ActivePage = pgHostWUA then
+    begin
+      //Cache collection in grid data
+      waptwua := RowSO['waptwua'];
+      if (waptwua = nil) or (waptwua.AsArray = nil) then
+      try
+        sores := WAPTServerJsonGet('api/v1/host_data?field=waptwua&uuid=%s',[currhost]);
+        if sores.B['success'] then
+          waptwua := sores['result']
+        else
+          waptwua := nil;
+      except
+        waptwua := nil;
+      end;
+      RowSO['waptwua'] := waptwua;
+      if waptwua<>Nil then
+        GridHostWinUpdates.Data := FilterWUA(waptwua['updates'])
+      else
+        GridHostWinUpdates.Data := Nil;
+
     end
     else if HostPages.ActivePage = pgHostInventory then
     begin

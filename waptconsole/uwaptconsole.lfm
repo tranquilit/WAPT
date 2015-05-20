@@ -452,9 +452,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 321
         Top = 91
         Width = 572
-        ActivePage = pgHostInventory
+        ActivePage = pgHostWUA
         Align = alRight
-        TabIndex = 1
+        TabIndex = 3
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -894,11 +894,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgSoftwares: TTabSheet
           Caption = 'Software inventory'
-          ClientHeight = 332
+          ClientHeight = 295
           ClientWidth = 564
           object GridHostSoftwares: TSOGrid
             Left = 0
-            Height = 302
+            Height = 265
             Top = 30
             Width = 564
             Align = alClient
@@ -1004,7 +1004,7 @@ object VisWaptGUI: TVisWaptGUI
               Left = 221
               Height = 17
               Top = 4
-              Width = 185
+              Width = 139
               Caption = 'Hide system components'
               Checked = True
               OnClick = cbMaskSystemComponentsClick
@@ -1013,9 +1013,247 @@ object VisWaptGUI: TVisWaptGUI
             end
           end
         end
+        object pgHostWUA: TTabSheet
+          Caption = 'Windows updates'
+          ClientHeight = 295
+          ClientWidth = 564
+          object GridHostWinUpdates: TSOGrid
+            AnchorSideTop.Control = Panel9
+            AnchorSideTop.Side = asrBottom
+            Left = 0
+            Height = 269
+            Top = 26
+            Width = 564
+            Align = alBottom
+            Anchors = [akTop, akLeft, akRight, akBottom]
+            BorderSpacing.Top = 2
+            Color = clWhite
+            Header.AutoSizeIndex = -1
+            Header.Columns = <            
+              item
+                Position = 0
+                Text = 'Status'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 1
+                Tag = 1
+                Text = 'sources'
+                Width = 100
+                PropertyName = 'sources'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 2
+                Tag = 2
+                Text = 'md5sum'
+                Width = 100
+                PropertyName = 'md5sum'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 3
+                Tag = 3
+                Text = 'File name'
+                Width = 100
+                PropertyName = 'filename'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 4
+                Tag = 4
+                Text = 'Parameters'
+                Width = 100
+                PropertyName = 'install_params'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 5
+                Tag = 5
+                Text = 'Log install'
+                Width = 100
+                PropertyName = 'install_output'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 6
+                Tag = 6
+                Text = 'maintainer'
+                Width = 100
+                PropertyName = 'maintainer'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 7
+                Tag = 7
+                Text = 'conflicts'
+                Width = 100
+                PropertyName = 'conflicts'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 8
+                Tag = 8
+                Text = 'Size after install'
+                Width = 100
+                PropertyName = 'installed_size'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 9
+                Tag = 9
+                Text = 'URL of repository'
+                Width = 100
+                PropertyName = 'repo_url'
+              end            
+              item
+                Alignment = taRightJustify
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 10
+                Tag = 10
+                Text = 'Size'
+                Width = 100
+                PropertyName = 'size'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 11
+                Tag = 11
+                Text = 'Name of repository'
+                Width = 100
+                PropertyName = 'repo'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 12
+                Tag = 12
+                Text = 'localpath'
+                Width = 100
+                PropertyName = 'localpath'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 13
+                Tag = 13
+                Text = 'Arch'
+                Width = 23
+                PropertyName = 'architecture'
+              end            
+              item
+                Position = 14
+                Tag = 14
+                Text = 'kbids'
+                Width = 100
+                PropertyName = 'kbids'
+              end            
+              item
+                Position = 15
+                Tag = 15
+                Text = 'severity'
+                Width = 79
+                PropertyName = 'severity'
+              end            
+              item
+                Position = 16
+                Tag = 16
+                Text = 'title'
+                Width = 501
+                PropertyName = 'title'
+              end            
+              item
+                Position = 17
+                Tag = 17
+                Text = 'changetime'
+                Width = 100
+                PropertyName = 'changetime'
+              end            
+              item
+                Position = 18
+                Tag = 18
+                Text = 'installed'
+                Width = 55
+                PropertyName = 'installed'
+              end            
+              item
+                Position = 19
+                Tag = 19
+                Text = 'downloaded'
+                Width = 69
+                PropertyName = 'downloaded'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 20
+                Tag = 20
+                Text = 'uuid'
+                Width = 100
+                PropertyName = 'uuid'
+              end            
+              item
+                Alignment = taRightJustify
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 21
+                Tag = 21
+                Text = 'type'
+                Width = 43
+                PropertyName = 'type'
+              end>
+            Header.DefaultHeight = 17
+            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+            Header.SortColumn = 17
+            Header.SortDirection = sdDescending
+            Header.Style = hsFlatButtons
+            Images = ImageList1
+            PopupMenu = PopupHostPackages
+            TabOrder = 0
+            TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+            TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+            TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
+            TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
+            WantTabs = True
+            OnChange = GridHostPackagesChange
+            OnGetImageIndexEx = GridHostPackagesGetImageIndexEx
+          end
+          object cbWUACriticalOnly: TCheckBox
+            Left = 7
+            Height = 17
+            Top = 5
+            Width = 75
+            Caption = 'Critical only'
+            Checked = True
+            State = cbChecked
+            TabOrder = 1
+          end
+          object cbWUAInstalled: TCheckBox
+            Left = 127
+            Height = 17
+            Top = 5
+            Width = 61
+            Caption = 'Installed'
+            TabOrder = 2
+          end
+          object cbWUAPending: TCheckBox
+            Left = 215
+            Height = 17
+            Top = 5
+            Width = 58
+            Caption = 'Pending'
+            Checked = True
+            State = cbChecked
+            TabOrder = 3
+          end
+          object cbWUADiscarded: TCheckBox
+            Left = 303
+            Height = 17
+            Top = 5
+            Width = 67
+            Caption = 'Discarded'
+            TabOrder = 4
+          end
+        end
         object pgTasks: TTabSheet
           Caption = 'Tasks'
-          ClientHeight = 332
+          ClientHeight = 295
           ClientWidth = 564
           object HostTaskRunningProgress: TProgressBar
             Left = 4
@@ -1089,14 +1327,14 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 5
-            Top = 277
+            Top = 240
             Width = 564
             Align = alBottom
             ResizeAnchor = akBottom
           end
           object PageControl1: TPageControl
             Left = 0
-            Height = 175
+            Height = 138
             Top = 102
             Width = 564
             ActivePage = TabSheet1
@@ -1106,11 +1344,11 @@ object VisWaptGUI: TVisWaptGUI
             TabOrder = 3
             object TabSheet1: TTabSheet
               Caption = 'Pending'
-              ClientHeight = 149
+              ClientHeight = 112
               ClientWidth = 556
               object GridHostTasksPending: TSOGrid
                 Left = 0
-                Height = 147
+                Height = 110
                 Top = 2
                 Width = 556
                 Align = alClient
@@ -1507,7 +1745,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel6: TPanel
             Left = 0
             Height = 50
-            Top = 282
+            Top = 245
             Width = 564
             Align = alBottom
             BevelOuter = bvNone
