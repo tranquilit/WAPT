@@ -1680,10 +1680,11 @@ def wget(url,target,proxies=None,connect_timeout=10,download_timeout=None):
         else:
             httpreq.raise_for_status()
 
+    # restore mtime of file if information is provided.
     if 'last-modified' in httpreq.headers:
         filedate = isodate2datetime(httpdatetime2isodate(httpreq.headers['last-modified']))
         unixtime = time.mktime(filedate.timetuple())
-        os.utime(filename,(unixtime,unixtime))
+        os.utime(os.path.join(dir,filename),(unixtime,unixtime))
     return os.path.join(dir,filename)
 
 @app.route('/api/v2/download_wsusscan')
@@ -1709,7 +1710,7 @@ def download_wsusscan():
         if not os.path.isfile(wsus_filename) or ( new_cab_date > current_cab_date ) or request.args.get('force',0):
             wget(cab_url,tmp_filename)
             # check integrity
-            """try:
+            try:
                 if sys.platform == 'win32':
                     cablist = subprocess.check_output('expand -D "%s"' % tmp_filename,shell = True).decode('cp850').splitlines()
                 else:
@@ -1718,7 +1719,6 @@ def download_wsusscan():
                 if os.path.isfile(tmp_filename):
                     os.unlink(tmp_filename)
                 return make_response_from_exception(e)
-            """
             if os.path.isfile(wsus_filename):
                 os.unlink(wsus_filename)
             os.rename(tmp_filename,wsus_filename)
