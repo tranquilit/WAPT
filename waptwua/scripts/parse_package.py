@@ -44,6 +44,7 @@ UpdateCategories = [
 updates = 0
 locations = 0
 payload_files_found = 0
+payload_files_seen = 0
 files_found = 0
 
 client = MongoClient()
@@ -53,7 +54,7 @@ def qualify(tag):
     return OFFLINE_SYNC + tag
 
 def parse_update(update):
-    global updates, payload_files_found, files_found
+    global updates, payload_files_found, payload_files_seen, files_found
 
     superseded = update.findall(qualify('SupersededBy'))
     if superseded:
@@ -87,10 +88,9 @@ def parse_update(update):
     if prereqs:
         upd['prereqs'] = []
         for prereq in prereqs:
-            for update in prereq.iterchildren(qualify('UpdateId')):
-                upd['prereqs'].append(update.get('Id').lower())
+            for update_ in prereq.iterchildren(qualify('UpdateId')):
+                upd['prereqs'].append(update_.get('Id').lower())
 
-    # FIXME the following statements don't find all the necessary <PayloadFiles>
     files = update.findall(qualify('PayloadFiles'))
     if files:
         upd['payload_files'] = []
@@ -134,7 +134,8 @@ def main(args):
         print >> sys.stderr, "Warning:", str(e)    
     print "Updates inserted: " + str(updates)
     print "Locations inserted: " + str(locations)
-    print "PayloadFiles/File statements found: " + str(payload_files_found) + "/" + str(files_found)
+    print "PayloadFiles/File statements found (%d/%d) (seen %d)" % \
+        (payload_files_found, files_found, payload_files_seen)
 
 
 if __name__ == '__main__':
