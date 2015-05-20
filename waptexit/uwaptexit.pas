@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, ActnList, Buttons, superobject, DefaultTranslator, uWaptExitRes;
+  ExtCtrls, ActnList, Buttons, superobject, DefaultTranslator, ComCtrls,
+  uWaptExitRes;
 
 type
 
@@ -26,6 +27,7 @@ type
     Memo1: TMemo;
     panHaut: TPanel;
     panBas: TPanel;
+    ProgressBar: TProgressBar;
     Timer1: TTimer;
     procedure ActShowDetailsExecute(Sender: TObject);
     procedure actSkipExecute(Sender: TObject);
@@ -78,6 +80,9 @@ begin
     aso := WAPTLocalJsonGet('upgrade.json');
     Memo1.Text:=aso.AsJSon();
     tasks := aso['content'];
+    pending := tasks;
+    ProgressBar.Max:=tasks.AsArray.Length;
+    ProgressBar.Position:=0;
     //GridTasks.Data := tasks;
     upgrades := Nil;
     CountDown := 0;
@@ -181,7 +186,10 @@ begin
       ActUpgrade.Enabled:=True;
       Memo1.Text:= Join(#13#10, upgrades);
     end;
-    CountDown:=10;
+    if allow_cancel_upgrade then
+      CountDown:=10
+    else
+      CountDown:=1;
     Timer1.Enabled := True;
 
   except
@@ -219,7 +227,7 @@ begin
     begin
       if (running<>Nil) and (running.DataType<>stNull) then
       begin
-        //ProgressBar1.Position:=running.I['progress'];
+        //ProgressBar.Position:=running.I['progress'];
         Memo1.Lines.Text:=running.S['description']+#13#10+running.S['runstatus'];
       end;
       //GridTasks.Data:=pending;
@@ -229,16 +237,20 @@ begin
     if ((running=Nil) or (Running.datatype=stNull)) and ((pending=Nil) or (pending.AsArray.Length=0)) and (upgrades=Nil) then
       Close;
 
+    if (pending<>Nil) then
+      ProgressBar.Position:=ProgressBar.Max - pending.AsArray.Length;
+
+
     //upgrades are pending, launch upgrades after timeout expired or manual action
     if (upgrades<>Nil) then
     begin
       if CountDown<=0 then
       begin
         ActUpgrade.Execute;
-        //ProgressBar1.Position := 0;
+        //ProgressBar.Position := 0;
       end
       else
-        //ProgressBar1.Position := ProgressBar1.Position+1;
+        //ProgressBar.Position := ProgressBar.Position+1;
         CountDown:=CountDown-1;
     end;
 

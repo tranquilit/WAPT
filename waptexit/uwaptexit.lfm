@@ -198,6 +198,13 @@ object VisWaptExit: TVisWaptExit
         454E44AE426082
       }
     end
+    object ProgressBar: TProgressBar
+      Left = 160
+      Height = 20
+      Top = 109
+      Width = 180
+      TabOrder = 3
+    end
   end
   object panBas: TPanel
     Left = 0
