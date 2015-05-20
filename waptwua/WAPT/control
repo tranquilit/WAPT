@@ -1,10 +1,10 @@
 package      : tis-waptwua
-version      : 0
+version      : 2
 architecture : all
 section      : base
 priority     : standard
 maintainer   : Hubert TOUVET
 description  : wsus like task
-depends      :
-conflicts    :
+depends      : 
+conflicts    : 
 sources      : https://srvdev/sources/tis-waptwsus-wapt/trunk
