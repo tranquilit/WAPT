@@ -12,6 +12,7 @@ sys.path.insert(0,os.path.join(wapt_root_dir))
 sys.path.insert(0,os.path.join(wapt_root_dir,'lib'))
 sys.path.insert(0,os.path.join(wapt_root_dir,'lib','site-packages'))
 
+import logging
 from pymongo import MongoClient
 
 from lxml import etree as ET
@@ -44,17 +45,18 @@ UpdateCategories = [
 updates = 0
 locations = 0
 payload_files_found = 0
-payload_files_seen = 0
-files_found = 0
 
 client = MongoClient()
 db = client.wapt
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger()
+
 
 def qualify(tag):
     return OFFLINE_SYNC + tag
 
 def parse_update(update):
-    global updates, payload_files_found, payload_files_seen, files_found
+    global updates, payload_files_found
 
     superseded = update.findall(qualify('SupersededBy'))
     if superseded:
@@ -97,7 +99,6 @@ def parse_update(update):
         for files_ in files:
             payload_files_found += 1
             for f in files_.iter(qualify('File')):
-                files_found += 1
                 upd['payload_files'].append(f.get('Id'))
 
     db.wsus_updates.insert(upd)
@@ -126,20 +127,19 @@ def get_dl_urls(package_xml):
 
 
 def main(args):
-    global updates, locations, payload_files_found, files_found
+    global updates, locations, payload_files_found
 
     try:
         get_dl_urls(args[0])
     except Exception, e:
-        print >> sys.stderr, "Warning:", str(e)    
-    print "Updates inserted: " + str(updates)
-    print "Locations inserted: " + str(locations)
-    print "PayloadFiles/File statements found (%d/%d) (seen %d)" % \
-        (payload_files_found, files_found, payload_files_seen)
+        logger.error("Warning: %s", str(e))
+    logger.info("Updates inserted: %d", updates)
+    logger.info("Locations inserted: %d", locations)
+    logger.info("PayloadFiles statements found: %d", payload_files_found)
 
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print >> sys.stderr, 'Usage: %s /path/to/package.xml' % sys.argv[0]
+        logger.error('Usage: %s /path/to/package.xml', sys.argv[0])
         exit(1)
     main(sys.argv[1:])

@@ -15,11 +15,15 @@ sys.path.insert(0,os.path.join(wapt_root_dir,'lib'))
 sys.path.insert(0,os.path.join(wapt_root_dir,'lib','site-packages'))
 
 import collections
+import logging
 import pymongo
 
 from lxml import etree as ET
 
 PFX = "{http://schemas.microsoft.com/msus/2002/12/Update}"
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger()
 
 def qualify(tag):
     return PFX + tag
@@ -32,9 +36,6 @@ def find_cab(rev, cabset):
 
 def parse_metadata(upd, descr_file):
 
-    debug = False
-    #debug = True
-
     data = {}
 
     if not os.path.exists(descr_file):
@@ -46,29 +47,24 @@ def parse_metadata(upd, descr_file):
         xml_str = file(descr_file, 'r').read()
         root = ET.fromstring(xml_str)
 
-        if debug:
-            print ""
-
+        logger.debug("")
 
         props = root.find(qualify('Properties'))
 
         msrc_severity = props.get('MsrcSeverity')
         if msrc_severity is not None:
             data['msrc_severity'] = msrc_severity
-            if debug:
-                print 'MsrcSeverity', data['msrc_severity']
+            logger.debug('MsrcSeverity: %s', data['msrc_severity'])
 
         elem = props.find(qualify('KBArticleID'))
         if elem is not None:
             data['kb_article_id'] = elem.text
-            if debug:
-                print 'KBArticleID', data['kb_article_id']
+            logger.debug('KBArticleID: %s', data['kb_article_id'])
 
         elem = props.find(qualify('SecurityBulletinID'))
         if elem is not None:
             data['security_bulletin_id'] = elem.text
-            if debug:
-                print 'SecurityBulletinID', data['security_bulletin_id']
+            logger.debug('SecurityBulletinID: %s', data['security_bulletin_id'])
 
         localized_properties_collection = root.find(qualify('LocalizedPropertiesCollection'))
         for elem in localized_properties_collection.iter():
@@ -84,17 +80,16 @@ def parse_metadata(upd, descr_file):
                 title = elem.find(qualify('Title'))
                 if title is not None and title.text != '':
                     data['title'] = title.text
-                    if debug:
-                        print 'Title:', data['title']
+                    logger.debug('Title: %s', data['title'])
 
                 descr = elem.find(qualify('Description'))
                 if descr is not None and descr.text != '':
                     data['description'] = descr.text
-                    if debug:
-                        print 'Description:', data['description']
+                    logger.debug('Description: %s', data['description'])
 
     except Exception, e:
-        print >> sys.stderr, "Error while using %s: %s" % (descr_file, str(e))
+        logger.warning("Error while using %s: %s", descr_file, str(e))
+
     return data
 
 
@@ -139,16 +134,16 @@ def main(directory):
 
         descr_file = os.path.join(directory, cab_dir, 's', rev)
         metadata = parse_metadata(update, descr_file)
-        if metadata:
-            # XXX add data to MongoDB
-            db.wsus_updates.update(
-                { "_id": update["_id"] },
-                {
-                    "$set": metadata,
-                }
-            )
+        # if metadata:
+        #     # XXX add data to MongoDB
+        #     db.wsus_updates.update(
+        #         { "_id": update["_id"] },
+        #         {
+        #             "$set": metadata,
+        #         }
+        #     )
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print >> sys.stderr, 'Usage: %s <packages_directory>' % sys.argv[0]
+        logger.error('Usage: %s <packages_directory>', sys.argv[0])
         exit(1)
     main(sys.argv[1])
