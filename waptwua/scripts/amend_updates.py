@@ -51,6 +51,10 @@ def parse_metadata(upd, descr_file):
 
         props = root.find(qualify('Properties'))
 
+        creation_date = props.get('CreationDate')
+        if creation_date is not None:
+            data['creation_date'] = creation_date
+
         msrc_severity = props.get('MsrcSeverity')
         if msrc_severity is not None:
             data['msrc_severity'] = msrc_severity
