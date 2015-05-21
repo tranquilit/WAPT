@@ -30,6 +30,11 @@ type
     ActCleanCache: TAction;
     ActAddADSGroups: TAction;
     ActHostsDeleteHostPackage: TAction;
+    ActDownloadSelectedWinUpdate: TAction;
+    ActEnableSelectedWinUpdates: TAction;
+    ActDisableSelectedWinUpdates: TAction;
+    ActSaveWinupdates: TAction;
+    ActLoadWindowsUpdates: TAction;
     ActPackageInstall: TAction;
     ActRestoreDefaultLayout: TAction;
     ActTriggerHostUpdate: TAction;
@@ -75,6 +80,10 @@ type
     ActionList1: TActionList;
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
+    BitBtn3: TBitBtn;
+    BitBtn4: TBitBtn;
+    BitBtn5: TBitBtn;
+    BitBtn6: TBitBtn;
     btAddGroup: TBitBtn;
     butInitWapt: TBitBtn;
     butRun: TBitBtn;
@@ -83,6 +92,7 @@ type
     ButCancelHostTask: TBitBtn;
     ButHostSearch: TBitBtn;
     ButPackagesUpdate: TBitBtn;
+    Button1: TButton;
     cbSearchDMI: TCheckBox;
     cbSearchHost: TCheckBox;
     cbSearchPackages: TCheckBox;
@@ -96,6 +106,7 @@ type
     cbHasErrors: TCheckBox;
     cbGroups: TComboBox;
     cbWUACriticalOnly: TCheckBox;
+    cbWUCriticalOnly: TCheckBox;
     cbWUAInstalled: TCheckBox;
     cbWUAPending: TCheckBox;
     cbWUADiscarded: TCheckBox;
@@ -107,6 +118,8 @@ type
     GridHostTasksPending: TSOGrid;
     GridHostTasksDone: TSOGrid;
     GridHostTasksErrors: TSOGrid;
+    GridWinUpdates: TSOGrid;
+    GridWinproducts: TSOGrid;
     HostRunningTaskLog: TMemo;
     ActionsImages: TImageList;
     Image1: TImage;
@@ -152,16 +165,22 @@ type
     MenuItem55: TMenuItem;
     MenuItem56: TMenuItem;
     MenuItem57: TMenuItem;
+    MenuItem58: TMenuItem;
+    MenuItem59: TMenuItem;
+    MenuItem60: TMenuItem;
     OpenDialogWapt: TOpenDialog;
     PageControl1: TPageControl;
     Panel11: TPanel;
     Panel12: TPanel;
+    panbaswinupdates: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
     Panel5: TPanel;
     Panel6: TPanel;
+    panhautwinupdates: TPanel;
     plStatusBar1: TplStatusBar;
     PopupHostPackages: TPopupMenu;
+    PopupWinUpdates: TPopupMenu;
     PopupMenuGroups: TPopupMenu;
     ProgressBar: TProgressBar;
     EdHostname: TEdit;
@@ -185,10 +204,13 @@ type
     Splitter3: TSplitter;
     pgTasks: TTabSheet;
     Splitter5: TSplitter;
+    Splitter6: TSplitter;
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
     pgHostWUA: TTabSheet;
+    pgWinUpdates: TTabSheet;
+    TimerLoadWinUpdates: TTimer;
     TimerTasks: TTimer;
     Label2: TLabel;
     Label3: TLabel;
@@ -275,8 +297,11 @@ type
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
     procedure ActDeployWaptExecute(Sender: TObject);
+    procedure ActDisableSelectedWinUpdatesExecute(Sender: TObject);
+    procedure ActDownloadSelectedWinUpdateUpdate(Sender: TObject);
     procedure ActEditGroupExecute(Sender: TObject);
     procedure ActEditHostPackageExecute(Sender: TObject);
+    procedure ActEnableSelectedWinUpdatesExecute(Sender: TObject);
     procedure ActEnglishExecute(Sender: TObject);
     procedure ActEnglishUpdate(Sender: TObject);
     procedure ActForgetPackagesExecute(Sender: TObject);
@@ -287,6 +312,7 @@ type
     procedure ActHostsActionsUpdate(Sender: TObject);
     procedure ActImportFromFileExecute(Sender: TObject);
     procedure ActImportFromRepoExecute(Sender: TObject);
+    procedure ActLoadWindowsUpdatesExecute(Sender: TObject);
     procedure ActPackageInstallExecute(Sender: TObject);
     procedure ActPackageRemoveExecute(Sender: TObject);
     procedure ActRDPExecute(Sender: TObject);
@@ -294,6 +320,8 @@ type
     procedure ActRemoveConflictsExecute(Sender: TObject);
     procedure ActRemoveDependsExecute(Sender: TObject);
     procedure ActRestoreDefaultLayoutExecute(Sender: TObject);
+    procedure ActSaveWinupdatesExecute(Sender: TObject);
+    procedure ActSaveWinupdatesUpdate(Sender: TObject);
     procedure ActSearchGroupsExecute(Sender: TObject);
     procedure ActTriggerHostUpdateExecute(Sender: TObject);
     procedure ActTriggerHostUpgradeExecute(Sender: TObject);
@@ -326,6 +354,7 @@ type
     procedure cbMaskSystemComponentsClick(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure cbWUAPendingChange(Sender: TObject);
+    procedure cbWUCriticalOnlyClick(Sender: TObject);
     procedure CheckBoxMajChange(Sender: TObject);
     procedure cbNeedUpgradeClick(Sender: TObject);
     procedure CheckBox_errorChange(Sender: TObject);
@@ -373,6 +402,10 @@ type
     procedure GridHostsHeaderDblClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
     procedure GridHostTasksPendingChange(Sender: TBaseVirtualTree;
       Node: PVirtualNode);
+    procedure GridHostWinUpdatesGetImageIndexEx(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+      var Ghosted: Boolean; var ImageIndex: Integer;
+      var ImageList: TCustomImageList);
     procedure GridHostWinUpdatesGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; RowData, CellData: ISuperObject;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
@@ -382,12 +415,18 @@ type
     procedure GridPackagesPaintText(Sender: TBaseVirtualTree;
       const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType);
-
+    procedure GridWinproductsChange(Sender: TBaseVirtualTree; Node: PVirtualNode
+      );
+    procedure GridWinUpdatesGetImageIndexEx(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+      var Ghosted: Boolean; var ImageIndex: Integer;
+      var ImageList: TCustomImageList);
     procedure HostPagesChange(Sender: TObject);
     procedure Image1Click(Sender: TObject);
     procedure MainPagesChange(Sender: TObject);
     procedure InstallPackage(Grid: TSOGrid);
     procedure MenuItem27Click(Sender: TObject);
+    procedure TimerLoadWinUpdatesTimer(Sender: TObject);
     procedure TimerTasksTimer(Sender: TObject);
   private
     CurrentVisLoading: TVisLoading;
@@ -395,6 +434,7 @@ type
     procedure FillcbGroups;
     function FilterSoftwares(softs: ISuperObject): ISuperObject;
     function FilterWUA(wua: ISuperObject): ISuperObject;
+    function FilterWindowsUpdate(wua: ISuperObject): ISuperObject;
     { private declarations }
     procedure GridLoadData(grid: TSOGrid; jsondata: string);
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
@@ -407,6 +447,9 @@ type
     waptpath: string;
 
     MainRepoUrl, WAPTServer, TemplatesRepoUrl: string;
+
+    WinupdatesModified:Boolean;
+    EnabledWinUpdates,DiscardedWinUpdates:TStringList;
 
     constructor Create(TheOwner: TComponent); override;
 
@@ -475,8 +518,12 @@ end;
 procedure TVisWaptGUI.cbWUAPendingChange(Sender: TObject);
 begin
   if (Gridhosts.FocusedRow <> nil) then
-    GridHostWinUpdates.Data := FilterWUA(Gridhosts.FocusedRow['waptwua']);
+    GridHostWinUpdates.Data := FilterWUA(Gridhosts.FocusedRow['waptwua.updates']);
+end;
 
+procedure TVisWaptGUI.cbWUCriticalOnlyClick(Sender: TObject);
+begin
+  ActLoadWindowsUpdates.Execute;
 end;
 
 procedure TVisWaptGUI.CheckBoxMajChange(Sender: TObject);
@@ -608,6 +655,35 @@ begin
 end;
 
 function TVisWaptGUI.FilterWUA(wua: ISuperObject): ISuperObject;
+var
+  wupdate: ISuperObject;
+  accept: boolean;
+  reg: string;
+begin
+  Result := TSuperObject.Create(stArray);
+  if (wua = nil) or (wua.AsArray = Nil) then
+    Exit;
+  for wupdate in wua do
+  begin
+    Accept := False;
+
+    if cbWUADiscarded.Checked then
+      accept := accept or (wupdate.B['hidden']);
+
+    if cbWUAInstalled.Checked then
+      accept := accept or ( wupdate.B['installed']);
+
+    if cbWUAPending.Checked then
+      accept := accept or ( not wupdate.B['installed'] and not wupdate.B['hidden']);
+
+    accept := accept and (not cbWUACriticalOnly.Checked or (wupdate.S['severity'] ='Critical'));
+    if accept then
+      Result.AsArray.Add(wupdate);
+  end;
+end;
+
+function TVisWaptGUI.FilterWindowsUpdate(wua: ISuperObject
+  ): ISuperObject;
 var
   wupdate: ISuperObject;
   accept: boolean;
@@ -881,6 +957,12 @@ procedure TVisWaptGUI.MenuItem27Click(Sender: TObject);
 begin
   with TVisApropos.Create(Self) do
     ShowModal;
+end;
+
+procedure TVisWaptGUI.TimerLoadWinUpdatesTimer(Sender: TObject);
+begin
+  TimerLoadWinUpdates.Enabled:=False;
+  ActLoadWindowsUpdates.Execute;
 end;
 
 procedure TVisWaptGUI.TimerTasksTimer(Sender: TObject);
@@ -1452,6 +1534,30 @@ begin
     end;
 end;
 
+procedure TVisWaptGUI.ActDisableSelectedWinUpdatesExecute(Sender: TObject);
+var
+  wupdate:ISuperObject;
+  idx:Integer;
+  update_id:String;
+begin
+  for wupdate in GridWinUpdates.SelectedRows do
+  begin
+    wupdate.S['status'] := 'DISCARDED';
+    update_id:=wupdate.S['update_id'];
+    DiscardedWinUpdates.Add(update_id);
+    idx := EnabledWinUpdates.IndexOf(update_id);
+    if idx>=0 then
+      EnabledWinUpdates.Delete(idx);
+  end;
+  WinupdatesModified:=True;
+  GridWinUpdates.Invalidate;
+end;
+
+procedure TVisWaptGUI.ActDownloadSelectedWinUpdateUpdate(Sender: TObject);
+begin
+  (Sender as TAction).Enabled:=GridWinUpdates.SelectedCount>0;
+end;
+
 procedure TVisWaptGUI.ActEditGroupExecute(Sender: TObject);
 var
   Selpackage: string;
@@ -1478,6 +1584,25 @@ begin
     if EditHost(hostname, ActAdvancedMode.Checked, uuid) <> nil then
       ActSearchHost.Execute;
   end;
+end;
+
+procedure TVisWaptGUI.ActEnableSelectedWinUpdatesExecute(Sender: TObject);
+var
+  wupdate:ISuperObject;
+  idx:Integer;
+  update_id:String;
+begin
+  for wupdate in GridWinUpdates.SelectedRows do
+  begin
+    wupdate.S['status'] := 'ENABLED';
+    update_id:=wupdate.S['update_id'];
+    EnabledWinUpdates.Add(update_id);
+    idx := DiscardedWinUpdates.IndexOf(update_id);
+    if idx>=0 then
+      DiscardedWinUpdates.Delete(idx);
+  end;
+  WinupdatesModified:=True;
+  GridWinUpdates.Invalidate;
 end;
 
 procedure TVisWaptGUI.ActEnglishExecute(Sender: TObject);
@@ -1620,6 +1745,45 @@ begin
       ActPackagesUpdate.Execute;
       ActSearchPackage.Execute;
     end;
+  end;
+end;
+
+procedure TVisWaptGUI.ActLoadWindowsUpdatesExecute(Sender: TObject);
+var
+  soresult,winupdates,winupdate,urlParams,product,products,idx: ISuperObject;
+  update_id:String;
+begin
+  Screen.Cursor:=crHourGlass;
+  try
+    urlParams := TSuperObject.Create(stArray);
+    urlParams.AsArray.Add('has_kb=1');
+
+    products := TSuperObject.Create(stArray);
+    for product in GridWinproducts.SelectedRows do
+      products.AsArray.Add(product.S['product']);
+
+    if products.AsArray.Length>0 then
+      urlParams.AsArray.Add(Format('products=%s',[soutils.Join(',',products)]));
+
+    if cbWUCriticalOnly.Checked then
+      urlParams.AsArray.Add('critical=1');
+
+    soresult := WAPTServerJsonGet('api/v2/windows_updates?%s',[soutils.Join('&', urlParams)]);
+    winupdates := soResult['result'];
+    for winupdate in winupdates do
+    begin
+      update_id:=winupdate.S['update_id'];
+      if EnabledWinUpdates.IndexOf(update_id)>=0 then
+        winupdate.S['status'] := 'ENABLED'
+      else
+      if DiscardedWinUpdates.IndexOf(update_id)>=0 then
+        winupdate.S['status'] := 'DISCARDED';
+    end;
+
+    GridWinUpdates.Data := winupdates;
+
+  finally
+    Screen.Cursor:=crDefault;
   end;
 end;
 
@@ -1834,6 +1998,23 @@ begin
   GridGroups.LoadSettingsFromIni(Appuserinipath+'.default');
   GridHostPackages.LoadSettingsFromIni(Appuserinipath+'.default');
   GridHostSoftwares.LoadSettingsFromIni(Appuserinipath+'.default');
+end;
+
+procedure TVisWaptGUI.ActSaveWinupdatesExecute(Sender: TObject);
+var
+  wsus_restrictions :ISuperObject;
+begin
+  wsus_restrictions := TSuperObject.Create();
+  wsus_restrictions.S['group'] := 'default';
+  wsus_restrictions['enabled'] := StringList2SuperObject(EnabledWinUpdates);
+  wsus_restrictions['discarded'] := StringList2SuperObject(DiscardedWinUpdates);
+  WAPTServerJsonPost('api/v2/windows_updates_restrictions?group=%s',['default'],wsus_restrictions);
+  WinUpdatesModified := False;
+end;
+
+procedure TVisWaptGUI.ActSaveWinupdatesUpdate(Sender: TObject);
+begin
+  ActSaveWinupdates.Enabled:=WinupdatesModified;
 end;
 
 procedure TVisWaptGUI.ActSearchGroupsExecute(Sender: TObject);
@@ -2696,6 +2877,26 @@ begin
     MemoTaskLog.Clear;
 end;
 
+procedure TVisWaptGUI.GridHostWinUpdatesGetImageIndexEx(
+  Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
+  Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: Integer;
+  var ImageList: TCustomImageList);
+var
+  row: ISuperObject;
+begin
+  if Column = 0 then
+  begin
+    row := GridHostPackages.GetNodeSOData(Node);
+    if row.B['installed'] then
+      ImageIndex := 0
+    else
+    if not row.B['installed'] and not row.B['hidden'] then
+      ImageIndex := 7
+    else
+      ImageIndex := 8
+  end;
+end;
+
 procedure TVisWaptGUI.GridHostWinUpdatesGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
   TextType: TVSTTextType; var CellText: string);
@@ -2742,6 +2943,33 @@ begin
     TargetCanvas.Font.style := TargetCanvas.Font.style + [fsBold]
   else
     TargetCanvas.Font.style := TargetCanvas.Font.style - [fsBold];
+end;
+
+procedure TVisWaptGUI.GridWinproductsChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+begin
+  GridWinUpdates.Data := Nil;
+  TimerLoadWinUpdates.Enabled:=False;
+  TimerLoadWinUpdates.Enabled:=True;
+end;
+
+procedure TVisWaptGUI.GridWinUpdatesGetImageIndexEx(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+  var Ghosted: Boolean; var ImageIndex: Integer; var ImageList: TCustomImageList
+  );
+var
+  row: ISuperObject;
+begin
+  if Column = 0 then
+  begin
+    row := GridHostPackages.GetNodeSOData(Node);
+    case row.S['status'] of
+      'ENABLED': ImageIndex := 0;
+      'DISCARDED': ImageIndex := 8;
+    else
+      ImageIndex := -1;
+    end;
+  end;
 end;
 
 procedure TVisWaptGUI.HostPagesChange(Sender: TObject);
@@ -2798,6 +3026,8 @@ begin
 end;
 
 procedure TVisWaptGUI.MainPagesChange(Sender: TObject);
+var
+  winproduct,winproducts,wsus_restrictions:ISuperObject;
 begin
   if MainPages.ActivePage = pgInventory then
   try
@@ -2821,6 +3051,29 @@ begin
     CopyMenu(PopupMenuGroups, MenuItem24);
     if GridGroups.Data = nil then
       ActSearchGroups.Execute;
+  end
+  else if MainPages.ActivePage = pgWinUpdates then
+  begin
+    if (EnabledWinUpdates=Nil) or (DiscardedWinUpdates=Nil) then
+    begin
+      EnabledWinUpdates := TStringList.Create();
+      //EnabledWinUpdates.Sorted:=True;
+
+      DiscardedWinUpdates := TStringList.Create();
+      //DiscardedWinUpdates.Sorted:=True;
+
+      wsus_restrictions := WAPTServerJsonGet('api/v2/windows_updates_restrictions?group=%s',['default'])['result'];
+      if wsus_restrictions.AsArray.Length>0 then
+      begin
+        EnabledWinUpdates.Text:=Join(#13#10,wsus_restrictions.AsArray[0]['enabled']);
+        DiscardedWinUpdates.Text:=Join(#13#10,wsus_restrictions.AsArray[0]['discarded']);
+      end;
+
+      WinupdatesModified:=False;
+    end;
+
+    GridWinproducts.Data := WAPTServerJsonGet('api/v2/windows_products',[])['result'];
+    ActLoadWindowsUpdates.Execute;
   end;
 end;
 
