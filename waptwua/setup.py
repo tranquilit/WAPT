@@ -10,9 +10,14 @@ def update_control(control):
         enabled = restrictions[0]['enabled']
         if enabled:
             open('enabled_updates.lst','w').write('\n'.join(enabled))
+        else:
+            remove_file('enabled_updates.lst')
+
         discarded = restrictions[0]['discarded']
         if discarded:
             open('discarded_updates.lst','w').write('\n'.join(discarded))
+        else:
+            remove_file('discarded_updates.lst')
 
 def install():
     print('installing tis-waptwsus')
@@ -33,6 +38,7 @@ def install():
         create_daily_task('waptwua',waptpython_path,'"%s" download' % (makepath(waptwuabin_path,'waptwua.py'),))
     else:
         create_daily_task('waptwua',waptpython_path,'"%s" --critical download' % (makepath(waptwuabin_path,'waptwua.py'),))
+    run_task('waptwua')
 
 def uninstall():
     delete_task('waptwua')
