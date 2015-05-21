@@ -7,7 +7,7 @@ def install():
     print('installing tis-waptwsus')
     waptpython_path = makepath(WAPT.wapt_base_dir,'waptpython.exe')
     waptwua_path = makepath(WAPT.wapt_base_dir,'waptwua')
-    waptwuabin_path = makepath(WAPT.wapt_base_dir,'waptwua','bin')
+    waptwuabin_path = WAPT.wapt_base_dir
 
     mkdirs(makepath(waptwua_path,'cache'))
     mkdirs(waptwuabin_path)
