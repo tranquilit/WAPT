@@ -325,6 +325,7 @@ type
     procedure cbGroupsSelect(Sender: TObject);
     procedure cbMaskSystemComponentsClick(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
+    procedure cbWUAPendingChange(Sender: TObject);
     procedure CheckBoxMajChange(Sender: TObject);
     procedure cbNeedUpgradeClick(Sender: TObject);
     procedure CheckBox_errorChange(Sender: TObject);
@@ -372,6 +373,9 @@ type
     procedure GridHostsHeaderDblClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
     procedure GridHostTasksPendingChange(Sender: TBaseVirtualTree;
       Node: PVirtualNode);
+    procedure GridHostWinUpdatesGetText(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; RowData, CellData: ISuperObject;
+      Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure GridPackagesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridPackagesColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
@@ -465,6 +469,13 @@ begin
     DMPython.PythonEng.ExecString('logger.setLevel(logging.DEBUG)')
   else
     DMPython.PythonEng.ExecString('logger.setLevel(logging.WARNING)');
+
+end;
+
+procedure TVisWaptGUI.cbWUAPendingChange(Sender: TObject);
+begin
+  if (Gridhosts.FocusedRow <> nil) then
+    GridHostWinUpdates.Data := FilterWUA(Gridhosts.FocusedRow['waptwua']);
 
 end;
 
@@ -603,7 +614,7 @@ var
   reg: string;
 begin
   Result := TSuperObject.Create(stArray);
-  if wua = nil then
+  if (wua = nil) or (wua.AsArray = Nil) then
     Exit;
   for wupdate in wua do
   begin
@@ -2683,6 +2694,27 @@ begin
   end
   else
     MemoTaskLog.Clear;
+end;
+
+procedure TVisWaptGUI.GridHostWinUpdatesGetText(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
+  TextType: TVSTTextType; var CellText: string);
+begin
+  if Node = nil then
+    CellText := ''
+  else
+  begin
+    if (TSOGridColumn(TSOGrid(Sender).Header.Columns[Column]).PropertyName='changetime') then
+        CellText := Copy(StrReplaceChar(CellText,'T',' '),1,19);
+
+    if (TSOGridColumn(TSOGrid(Sender).Header.Columns[Column]).PropertyName='kbids') then
+      CellText := 'KB'+soutils.Join(',KB', CellData);
+
+    {if (CellData <> nil) and (CellData.DataType = stArray) then
+      CellText := soutils.Join(',', CellData);}
+
+  end;
+
 end;
 
 procedure TVisWaptGUI.GridPackagesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);

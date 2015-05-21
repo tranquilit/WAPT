@@ -1024,6 +1024,7 @@ object VisWaptGUI: TVisWaptGUI
             Height = 269
             Top = 26
             Width = 564
+            OnGetText = GridHostWinUpdatesGetText
             Align = alBottom
             Anchors = [akTop, akLeft, akRight, akBottom]
             BorderSpacing.Top = 2
@@ -1221,6 +1222,7 @@ object VisWaptGUI: TVisWaptGUI
             Width = 75
             Caption = 'Critical only'
             Checked = True
+            OnClick = cbWUAPendingChange
             State = cbChecked
             TabOrder = 1
           end
@@ -1230,6 +1232,7 @@ object VisWaptGUI: TVisWaptGUI
             Top = 5
             Width = 61
             Caption = 'Installed'
+            OnClick = cbWUAPendingChange
             TabOrder = 2
           end
           object cbWUAPending: TCheckBox
@@ -1239,6 +1242,7 @@ object VisWaptGUI: TVisWaptGUI
             Width = 58
             Caption = 'Pending'
             Checked = True
+            OnClick = cbWUAPendingChange
             State = cbChecked
             TabOrder = 3
           end
@@ -1248,6 +1252,7 @@ object VisWaptGUI: TVisWaptGUI
             Top = 5
             Width = 67
             Caption = 'Discarded'
+            OnClick = cbWUAPendingChange
             TabOrder = 4
           end
         end
