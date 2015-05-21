@@ -226,7 +226,7 @@ class WaptWUA(object):
             else:
                 installed += 1
 
-        self.wapt.write_param('waptwua.updates',json.dumps([ update_as_dict(u) for u in self.updates]))
+        self.wapt.write_param('waptwua.updates',json.dumps([ self.update_as_dict(u) for u in self.updates]))
         self.wapt.write_param('waptwua.last_scan_date',datetime2isodate())
         if not pending:
             self.wapt.write_param('waptwua.status','OK')
