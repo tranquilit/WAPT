@@ -33,6 +33,7 @@ type
     ActDownloadSelectedWinUpdate: TAction;
     ActEnableSelectedWinUpdates: TAction;
     ActDisableSelectedWinUpdates: TAction;
+    ActResetSelectedWinUpdates: TAction;
     ActSaveWinupdates: TAction;
     ActLoadWindowsUpdates: TAction;
     ActPackageInstall: TAction;
@@ -168,6 +169,7 @@ type
     MenuItem58: TMenuItem;
     MenuItem59: TMenuItem;
     MenuItem60: TMenuItem;
+    MenuItem61: TMenuItem;
     OpenDialogWapt: TOpenDialog;
     PageControl1: TPageControl;
     Panel11: TPanel;
@@ -313,12 +315,14 @@ type
     procedure ActImportFromFileExecute(Sender: TObject);
     procedure ActImportFromRepoExecute(Sender: TObject);
     procedure ActLoadWindowsUpdatesExecute(Sender: TObject);
+    procedure ActLoadWindowsUpdatesUpdate(Sender: TObject);
     procedure ActPackageInstallExecute(Sender: TObject);
     procedure ActPackageRemoveExecute(Sender: TObject);
     procedure ActRDPExecute(Sender: TObject);
     procedure ActRDPUpdate(Sender: TObject);
     procedure ActRemoveConflictsExecute(Sender: TObject);
     procedure ActRemoveDependsExecute(Sender: TObject);
+    procedure ActResetSelectedWinUpdatesExecute(Sender: TObject);
     procedure ActRestoreDefaultLayoutExecute(Sender: TObject);
     procedure ActSaveWinupdatesExecute(Sender: TObject);
     procedure ActSaveWinupdatesUpdate(Sender: TObject);
@@ -1754,6 +1758,7 @@ var
   update_id:String;
 begin
   Screen.Cursor:=crHourGlass;
+  if GridWinproducts.SelectedCount>0 then
   try
     urlParams := TSuperObject.Create(stArray);
     urlParams.AsArray.Add('has_kb=1');
@@ -1785,6 +1790,11 @@ begin
   finally
     Screen.Cursor:=crDefault;
   end;
+end;
+
+procedure TVisWaptGUI.ActLoadWindowsUpdatesUpdate(Sender: TObject);
+begin
+  ActLoadWindowsUpdates.Enabled:=GridWinproducts.SelectedCount>0;
 end;
 
 procedure TVisWaptGUI.ActPackageInstallExecute(Sender: TObject);
@@ -1989,6 +1999,27 @@ begin
     res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)', [args]));
     ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
   end;
+end;
+
+procedure TVisWaptGUI.ActResetSelectedWinUpdatesExecute(Sender: TObject);
+var
+  wupdate:ISuperObject;
+  idx:Integer;
+  update_id:String;
+begin
+  for wupdate in GridWinUpdates.SelectedRows do
+  begin
+    wupdate.Delete('status');
+    update_id:=wupdate.S['update_id'];
+    idx := DiscardedWinUpdates.IndexOf(update_id);
+    if idx>=0 then
+      DiscardedWinUpdates.Delete(idx);
+    idx := EnabledWinUpdates.IndexOf(update_id);
+    if idx>=0 then
+      EnabledWinUpdates.Delete(idx);
+  end;
+  WinupdatesModified:=True;
+  GridWinUpdates.Invalidate;
 end;
 
 procedure TVisWaptGUI.ActRestoreDefaultLayoutExecute(Sender: TObject);

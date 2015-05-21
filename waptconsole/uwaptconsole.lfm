@@ -3229,12 +3229,12 @@ object VisWaptGUI: TVisWaptGUI
       Left = 168
       Height = 30
       Top = 12
-      Width = 160
+      Width = 152
       Action = ActDisableSelectedWinUpdates
       TabOrder = 1
     end
     object BitBtn5: TBitBtn
-      Left = 336
+      Left = 392
       Height = 30
       Top = 12
       Width = 136
@@ -3242,7 +3242,7 @@ object VisWaptGUI: TVisWaptGUI
       TabOrder = 2
     end
     object BitBtn6: TBitBtn
-      Left = 536
+      Left = 544
       Height = 30
       Top = 12
       Width = 75
@@ -3605,6 +3605,7 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'wua'
       Caption = 'Load'
       OnExecute = ActLoadWindowsUpdatesExecute
+      OnUpdate = ActLoadWindowsUpdatesUpdate
     end
     object ActDownloadSelectedWinUpdate: TAction
       Category = 'wua'
@@ -3628,6 +3629,11 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Save'
       OnExecute = ActSaveWinupdatesExecute
       OnUpdate = ActSaveWinupdatesUpdate
+    end
+    object ActResetSelectedWinUpdates: TAction
+      Category = 'wua'
+      Caption = 'Reset Selected'
+      OnExecute = ActResetSelectedWinUpdatesExecute
     end
   end
   object PopupMenuPackages: TPopupMenu
@@ -6111,6 +6117,9 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem60: TMenuItem
       Action = ActDownloadSelectedWinUpdate
+    end
+    object MenuItem61: TMenuItem
+      Action = ActResetSelectedWinUpdates
     end
   end
 end
