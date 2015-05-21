@@ -51,6 +51,10 @@ def parse_metadata(upd, descr_file):
 
         props = root.find(qualify('Properties'))
 
+        creation_date = props.get('CreationDate')
+        if creation_date is not None:
+            data['creation_date'] = creation_date
+
         msrc_severity = props.get('MsrcSeverity')
         if msrc_severity is not None:
             data['msrc_severity'] = msrc_severity
@@ -134,14 +138,13 @@ def main(directory):
 
         descr_file = os.path.join(directory, cab_dir, 's', rev)
         metadata = parse_metadata(update, descr_file)
-        # if metadata:
-        #     # XXX add data to MongoDB
-        #     db.wsus_updates.update(
-        #         { "_id": update["_id"] },
-        #         {
-        #             "$set": metadata,
-        #         }
-        #     )
+        if metadata:
+            db.wsus_updates.update(
+                { "_id": update["_id"] },
+                {
+                    "$set": metadata,
+                }
+            )
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         logger.error('Usage: %s <packages_directory>', sys.argv[0])
