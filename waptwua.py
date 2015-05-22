@@ -75,7 +75,7 @@ class WaptWUA(object):
                 self.allowed_updates = []
 
         self._updates = None
-        # to store successful changes in _updates after initial scan
+        # to store successful changes in read only properties of _updates after initial scan
         self._cached_updates = {}
 
     def cached_update_property(self,update,key):
@@ -109,13 +109,11 @@ class WaptWUA(object):
             status = status,
             kbids = [ "%s" % kb for kb in update.KBArticleIDs ],
             severity = update.MsrcSeverity,
-            installed = cached_update_property(update,'IsInstalled'),
+            installed = self.cached_update_property(update,'IsInstalled'),
             hidden = update.IsHidden,
             downloaded = update.IsDownloaded,
             changetime = datetime2isodate(datetime.datetime.fromtimestamp(int(update.LastDeploymentChangeTime)))
             )
-
-
 
     @property
     def update_session(self):
