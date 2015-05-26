@@ -2199,8 +2199,8 @@ def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_B
     for key in keys:
         cs = getattr(wm,key)()
         if len(cs)>1:
+            na = result[key] = []
             for cs2 in cs:
-                na = result[key] = []
                 na.append({})
                 for k in cs2.properties.keys():
                     prop = cs2.wmi_property(k)
