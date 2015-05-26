@@ -4334,6 +4334,10 @@ class Wapt(object):
         inv = {}
         inv['host'] = setuphelpers.host_info()
         inv['dmi'] = setuphelpers.dmi_info()
+        try:
+            inv['wmi'] = setuphelpers.wmi_info()
+        except:
+            logger.warning('WMI unavailable')
         inv['wapt'] = self.wapt_status()
         inv['softwares'] = setuphelpers.installed_softwares('')
         inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]

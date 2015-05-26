@@ -190,6 +190,8 @@ __all__ = \
  'fileisodate',
  'dateof',
  'ensure_list',
+ 'reg_enum_subkeys',
+ 'win_startup_info',
  ]
 
 import os
@@ -1386,6 +1388,40 @@ def reg_delvalue(key,name):
         else:
             raise
 
+
+def reg_enum_subkeys(rootkey):
+    os_encoding=locale.getpreferredencoding()
+    i = 0
+    while True:
+        try:
+            subkey_name = _winreg.EnumKey(rootkey, i).decode(os_encoding)
+            if subkey_name is not None:
+                yield subkey_name
+            i += 1
+        except WindowsError,e:
+            # WindowsError: [Errno 259] No more data is available
+            if e.winerror == 259:
+                break
+            else:
+                raise
+
+def reg_enum_values(rootkey):
+    os_encoding=locale.getpreferredencoding()
+    i = 0
+    while True:
+        try:
+            subkey_name = _winreg.EnumKey(rootkey, i).decode(os_encoding)
+            if subkey_name is not None:
+                yield subkey_name
+            i += 1
+        except WindowsError,e:
+            # WindowsError: [Errno 259] No more data is available
+            if e.winerror == 259:
+                break
+            else:
+                raise
+
+
 def registry_setstring(root,path,keyname,value,type=_winreg.REG_SZ):
     """Set the value of a string key in registry
     the path can be either with backslash or slash
@@ -2189,7 +2225,16 @@ def dmi_info():
     return result
 
 
-def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_BIOS','Win32_NetworkAdapter']):
+def win_startup_info():
+    """Return the application started at boot or login"""
+    result = {}
+    with reg_openkey_noredir(HKEY_LOCAL_MACHINE,makepath('Software','Microsoft','Windows','CurrentVersion','Run')) as run_key:
+        for key in reg_enum_subkeys(run_key):
+            print key
+
+
+
+def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_BIOS','Win32_NetworkAdapter','Win32_Printer','Win32_VideoController']):
     """Get WMI machine informations as dictionaries
 
     """
