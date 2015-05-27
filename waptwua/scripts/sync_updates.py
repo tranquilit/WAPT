@@ -38,6 +38,9 @@ def mkdir_p(path):
         else:
             raise
 
+def pp(elem):
+    print ET.tostring(elem, pretty_print=True)
+
 # start of cab extraction
 
 def extract_cabs(wsusscan2, tmpdir):
@@ -87,14 +90,23 @@ def parse_update(update, db):
 
     upd['update_id'] = update.get('UpdateId')
 
-    if update.get('isBundle', False):
-        upd['isBundle'] = True
+    if update.get('IsBundle', False):
+        upd['is_bundle'] = True
 
-    if update.get('isLeaf', False):
-        upd['isLeaf'] = True
+    if update.get('IsLeaf', False):
+        upd['is_leaf'] = True
 
     if update.get('RevisionId', False) != False:
         upd['revision_id'] = update.get('RevisionId')
+
+    if update.get('RevisionNumber', False) != False:
+        upd['revision_number'] = update.get('RevisionNumber')
+
+    if update.get('DeploymentAction', False) != False:
+        upd['deployment_action'] = update.get('DeploymentAction')
+
+    if update.get('CreationDate', False) != False:
+        upd['creation_date'] = update.get('CreationDate')
 
     categories = update.findall(off_sync_qualify('Categories'))
     if categories:
@@ -102,14 +114,21 @@ def parse_update(update, db):
         for cat in categories:
             for subcat in cat.getchildren():
                 type_ = subcat.get('Type')
-                if type_ in UpdateCategories:
-                    upd['categories'][type_] = subcat.get('Id', '').lower()
+                assert type_ in UpdateCategories
+                upd['categories'][type_] = subcat.get('Id').lower()
+
+    languages = update.findall(off_sync_qualify('Languages'))
+    if languages:
+        upd['languages'] = []
+        assert len(languages) == 1
+        for l in languages[0].findall(off_sync_qualify('Language')):
+            upd['languages'].append(l.get('Name'))
 
     prereqs = update.findall(off_sync_qualify('Prerequisites'))
     if prereqs:
         upd['prereqs'] = []
-        for prereq in prereqs:
-            for update_ in prereq.iterchildren(off_sync_qualify('UpdateId')):
+        assert len(prereqs) == 1
+        for update_ in prereqs[0].iterchildren(off_sync_qualify('UpdateId')):
                 upd['prereqs'].append(update_.get('Id').lower())
 
     files = update.findall(off_sync_qualify('PayloadFiles'))
@@ -118,6 +137,18 @@ def parse_update(update, db):
         for files_ in files:
             for f in files_.iter(off_sync_qualify('File')):
                 upd['payload_files'].append(f.get('Id'))
+
+    bundled_by = update.findall(off_sync_qualify('BundledBy'))
+    if bundled_by:
+        assert len(bundled_by) == 1
+        revisions = bundled_by[0].findall(off_sync_qualify('Revision'))
+        old_id = None
+        for rev in revisions:
+            if old_id is None:
+                id_ = rev.get('Id')
+            else:
+                assert old_id == rev.get('Id')
+        upd['bundled_by'] = old_id
 
     db.wsus_updates.insert(upd)
 
@@ -170,7 +201,7 @@ def parse_metadata(upd, descr_file):
 
         creation_date = props.get('CreationDate')
         if creation_date is not None:
-            data['creation_date'] = creation_date
+            data['creation_date2'] = creation_date
 
         msrc_severity = props.get('MsrcSeverity')
         if msrc_severity is not None:
