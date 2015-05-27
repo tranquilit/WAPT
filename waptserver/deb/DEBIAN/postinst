@@ -55,8 +55,8 @@ then
     [ -f /etc/init.d/waptserver ] && /etc/init.d/waptserver start
   fi
 else
-    printf '\e[1;31m%-6s\e[m\n' "The installation of waptserver is finished !!"
-    printf '\e[1;31m%-6s\e[m\n' "For postconf please run: /usr/bin/python /opt/wapt/waptserver/scripts/postconf.py"
+    /usr/bin/printf '\e[1;31m%-6s\e[m\n' "The installation of waptserver is finished!"
+    /usr/bin/printf '\e[1;31m%-6s\e[m\n' "For postconf please run: /usr/bin/python /opt/wapt/waptserver/scripts/postconf.py"
 fi
 
 # Backward compat
