@@ -56,6 +56,7 @@ import datetime
 import uuid
 import email.utils
 import collections
+import urlparse
 from bson.json_util import dumps
 
 from rocket import Rocket
@@ -819,10 +820,15 @@ def waptwua():
     return render_template('listing.html', dir_listing=os.listdir(waptwua_folder))
 
 
-@app.route('/waptwua/<string:wsuspackage>')
-def get_wua_package():
-    return render_template('listing.html', dir_listing=os.listdir(waptwua_folder))
-
+@app.route('/waptwua/<path:wsuspackage>')
+def get_wua_package(wsuspackage):
+    fileparts = wsuspackage.split('/')
+    full_path = os.path.join(waptwua_folder,*fileparts[:-1])
+    package_name = secure_filename(fileparts[-1])
+    r =  send_from_directory(full_path, package_name)
+    if 'content-length' not in r.headers:
+        r.headers.add_header('content-length', int(os.path.getsize(os.path.join(full_path,package_name))))
+    return r
 
 @app.route('/wapt/<string:input_package_name>')
 def get_wapt_package(input_package_name):
@@ -1066,6 +1072,43 @@ def trigger_update():
             args['notify_user'] = notify_user
             args['uuid'] = uuid
             client_result = requests.get("%(protocol)s://%(address)s:%(port)d/update.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            try:
+                client_result = json.loads(client_result)
+                msg = _(u"Triggered task: {}").format(client_result['description'])
+            except ValueError:
+                if 'Restricted access' in client_result:
+                    raise EWaptForbiddden(client_result)
+                else:
+                    raise Exception(client_result)
+        else:
+            raise EWaptMissingHostData(_("The WAPT service is unreachable."))
+        return make_response(client_result,
+            msg = msg,
+            success = True)
+    except Exception, e:
+        return make_response_from_exception(e)
+
+
+@app.route('/api/v2/trigger_host_inventory')
+@requires_auth
+def trigger_host_inventory():
+    """Proxy the wapt update action to the client"""
+    try:
+        uuid = request.args['uuid']
+        notify_user = request.args.get('notify_user',0)
+        notify_server = request.args.get('notify_server',1)
+
+
+        host_data = hosts().find_one({ "uuid": uuid},fields={'uuid':1,'wapt':1,'host.connected_ips':1})
+        listening_address = get_ip_port(host_data)
+        msg = u''
+        if listening_address and listening_address['address'] and listening_address['port']:
+            logger.info( "Triggering inventory for %s at address %s..." % (uuid,listening_address['address']))
+            args = {}
+            args.update(listening_address)
+            args['notify_user'] = notify_user
+            args['uuid'] = uuid
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/register.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
             try:
                 client_result = json.loads(client_result)
                 msg = _(u"Triggered task: {}").format(client_result['description'])
@@ -1727,18 +1770,32 @@ def download_wsusscan():
     except Exception as e:
         return make_response_from_exception(e)
 
+#https://msdn.microsoft.com/en-us/library/ff357803%28v=vs.85%29.aspx
+update_classifications_id = {
+ '28bc880e-0592-4cbf-8f95-c79b17911d5f': 'UpdateRollups',    # Ensemble de mises à jour
+ 'b54e7d24-7add-428f-8b75-90a396fa584f': 'FeaturePacks',     # feature packs
+ 'e6cf1350-c01b-414d-a61f-263d14d133b4': 'CriticalUpdates',   # Mises à jour critiques
+ '0fa1201d-4330-4fa8-8ae9-b877473b6441': 'SecurityUpdates',  # Mises à jour de la sécurité
+ 'cd5ffd1e-e932-4e3a-bf74-18bf0b1bbd83': 'Updates',          # Mises à jour
+ 'e0789628-ce08-4437-be74-2495b842f43b': 'DefinitionUpdates',# Mises à jour de définitions
+ 'b4832bd8-e735-4761-8daf-37f882276dab': 'Tools',            # Outils
+ 'ebfc1fc5-71a4-4f7b-9aca-3b9a503104a0': 'Drivers',          # Pilotes
+ '68c5b0a3-d1a6-4553-ae49-01d3a7827828': 'ServicePacks',     # Services pack
+ '434de588-ed14-48f5-8eed-a15e09a991f6': 'Connectors',       #
+ '5c9376ab-8ce6-464a-b136-22113dd69801': 'Application',      #
+ '9511d615-35b2-47bb-927f-f73d8e9260bb': 'Guidance',         #
+ 'e140075d-8433-45c3-ad87-e72345b36078': 'DeveloperKits',    #
+ }
+
+#https://msdn.microsoft.com/en-us/library/bb902472%28v=vs.85%29.aspx
+detectoid_id = {
+ '59653007-e2e9-4f71-8525-2ff588527978': 'x64-based systems',
+ 'aabd43ad-a183-4f0b-8eee-8dbbcd67687f': 'Itanium-based systems',
+ '3e0afb10-a9fb-4c16-a60e-5790c3803437': 'x86-based systems',
+}
+
 
 products_id = {
-    "5c9376ab-8ce6-464a-b136-22113dd69801":"Applications",
-    "e6cf1350-c01b-414d-a61f-263d14d133b4":"Critical Updates",
-    "e0789628-ce08-4437-be74-2495b842f43b":"Definition Updates",
-    "ebfc1fc5-71a4-4f7b-9aca-3b9a503104a0":"Drivers",
-    "b54e7d24-7add-428f-8b75-90a396fa584f":"Feature Packs",
-    "0fa1201d-4330-4fa8-8ae9-b877473b6441":"Security Updates",
-    "68c5b0a3-d1a6-4553-ae49-01d3a7827828":"Service Packs",
-    "b4832bd8-e735-4761-8daf-37f882276dab":"Tools",
-    "28bc880e-0592-4cbf-8f95-c79b17911d5f":"Update Rollups",
-    "cd5ffd1e-e932-4e3a-bf74-18bf0b1bbd83":"Updates",
     "fdcfda10-5b1f-4e57-8298-c744257e30db":"Active Directory Rights Management Services Client 2.0",
     "57742761-615a-4e06-90bb-008394eaea47":"Active Directory",
     "5d6a452a-55ba-4e11-adac-85e180bda3d6":"Antigen for Exchange/SMTP",
@@ -1756,8 +1813,6 @@ products_id = {
     "eb658c03-7d9f-4bfa-8ef3-c113b7466e73":"Data Protection Manager 2006",
     "48ce8c86-6850-4f68-8e9d-7dc8535ced60":"Developer Tools, Runtimes, and Redistributables",
     "f76b7f51-b762-4fd0-a35c-e04f582acf42":"Dictionary Updates for Microsoft IMEs",
-    "cb263e3f-6c5a-4b71-88fa-1706f9549f51":"Dynamisches Installationsprogramm für Windows Internet Explorer 7",
-    "5312e4f1-6372-442d-aeb2-15f2132c9bd7":"Dynamisches Installationsprogramm für Windows Internet Explorer 8",
     "83a83e29-7d55-44a0-afed-aea164bc35e6":"Exchange 2000 Server",
     "3cf32f7c-d8ee-43f8-a0da-8b88a6f8af1a":"Exchange Server 2003",
     "ab62c5bd-5539-49f6-8aea-5a114dd42314":"Exchange Server 2007 and Above Anti-spam",
@@ -2015,12 +2070,7 @@ def windows_updates():
 		"Product": "558f4bc3-4827-49e1-accf-ea79fd72d4c9"
 	}
 }
-
-
-
     """
-
-    #db.wsus_updates.find({"kb_article_id":{$exists:true}})
     wsus_updates = get_db().wsus_updates
     query = {}
 
@@ -2034,20 +2084,94 @@ def windows_updates():
             else:
                 kbs.append(kb)
         query["kb_article_id"]={'$in':kbs}
+    if 'update_classifications' in request.args:
+        update_classifications = []
+        for update_classification in ensure_list(request.args['update_classifications']):
+            update_classifications.append(update_classification)
+        query["categories.UpdateClassification"]={'$in':update_classifications}
     if 'product' in request.args:
         query["categories.Product"] = {'$in':get_product_id(request.args['product'])}
     if 'products' in request.args:
         query["categories.Product"] = {'$in':ensure_list(request.args['products'])}
-    if 'critical' in request.args and request.args['critical']:
-        query["msrc_severity"] = 'Critical'
+    if 'severity' in request.args and request.args['severity']:
+        query["msrc_severity"] = {'$in':ensure_list(request.args['severity'])}
+    if 'update_ids' in request.args:
+        query["update_id"] = {'$in':ensure_list(request.args['update_ids'])}
 
     result = wsus_updates.find(query)
     cnt = result.count()
-    return make_response(msg = _('Windows Updates with KB Article, filter: %(query)s, count: %(cnt)s',query=query,cnt=cnt),result = result)
+    return make_response(msg = _('Windows Updates, filter: %(query)s, count: %(cnt)s',query=query,cnt=cnt),result = result)
 
 
+@app.route('/api/v2/windows_updates_urls',methods=['GET','POST'])
+def windows_updates_urls():
+    wsus_updates = get_db().wsus_updates
+    def get_payloads(id):
+        result = []
+        updates = [ u for u in wsus_updates.find({'update_id':id},{'prereqs':1,'payload_files':1})]
+        if updates:
+            for update in updates:
+                result.extend(update.get('payload_files',[]))
+                for req in update.get('prereqs',[]):
+                    result.extend(get_payloads(req))
+        return result
+
+    update_id = request.args['update_id']
+    files_id = get_payloads(update_id)
+    result = get_db().wsus_locations.find({'id':files_id},{'url':1})
+    cnt = result.count()
+    return make_response(msg = _('Downloads for Windows Updates %(update_id)s, count: %(cnt)s',update_id=update_id,cnt=cnt),result = files_id)
+
+
+def sha1_for_file(fname, block_size=2**20):
+    f = open(fname,'rb')
+    sha1 = hashlib.sha1()
+    while True:
+        data = f.read(block_size)
+        if not data:
+            break
+        sha1.update(data)
+    return sha1.hexdigest()
+
+
+
+@app.route('/api/v2/download_windows_update')
 def download_windows_updates():
-    pass
+    def check_sha1_filename(target):
+        # check sha1 sum if possible...
+        if os.path.isfile(target):
+            sha1sum_parts = os.path.basename(target).rsplit('.')[0].rsplit('_',1)
+            if sha1sum_parts:
+                sha1sum = sha1sum_parts[1]
+                #looks like hex sha1
+                if len(sha1sum) == 40 and (sha1sum != sha1_for_file(target)):
+                    return False
+            return True
+
+    try:
+        url = request.args['url']
+        url_parts = urlparse.urlparse(url)
+        if url_parts.netloc not in ['download.windowsupdate.com','www.download.windowsupdate.com']:
+            raise Exception('Unauthorized location')
+        fileparts = urlparse.urlparse(url).path.split('/')
+        target = os.path.join(waptwua_folder,*fileparts)
+
+        # check sha1 sum if possible...
+        if os.path.isfile(target) and not check_sha1_filename(target):
+            os.remove(target)
+
+        if not os.path.isfile(target):
+            if not os.path.isdir(os.path.join(waptwua_folder,*fileparts[:-1])):
+                os.makedirs(os.path.join(waptwua_folder,*fileparts[:-1]))
+            os.system('wget -O "%s" "%s"'% (target,url))
+            if not check_sha1_filename(target):
+                os.remove(target)
+                raise Exception('Error during download, sha1 mismatch')
+
+        result = {'url':'/waptwua%s'% ('/'.join(fileparts),),'size':os.stat(target).st_size}
+        return make_response(msg='Windows patch available',result=result)
+    except Exception as e:
+        return make_response_from_exception(e)
 
 
 @app.route('/api/v2/windows_updates_restrictions',methods=['GET','POST'])
