@@ -1045,7 +1045,7 @@ def disable():
 
 @app.route('/register')
 @app.route('/register.json')
-@allow_local_auth
+@allow_waptserver_or_local_auth
 def register():
     logger.info(u"register computer")
     notify_user = int(request.args.get('notify_user','0')) == 1
