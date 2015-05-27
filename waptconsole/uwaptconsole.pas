@@ -6,11 +6,11 @@ interface
 
 uses
   Classes, SysUtils, Windows, ActiveX, Types, Forms, Controls, Graphics,
-  Dialogs, Buttons, FileUtil,
-  SynEdit, SynHighlighterPython, TplStatusBarUnit, vte_json, ExtCtrls,
-  StdCtrls, ComCtrls, ActnList, Menus, jsonparser, superobject,
-  VirtualTrees, VarPyth, ImgList, SOGrid, uvisloading, IdComponent, DefaultTranslator,GetText,
-  uWaptConsoleRes;
+  Dialogs, Buttons, FileUtil, SynEdit, SynHighlighterPython, TAGraph, TASeries,
+  exprplotpanel, cyPieGauge, TplStatusBarUnit, TplSimplePieUnit,
+  TplButtonsPanelUnit, vte_json, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus,
+  jsonparser, superobject, VirtualTrees, VarPyth, ImgList, SOGrid, uvisloading,
+  IdComponent, DefaultTranslator, GetText, uWaptConsoleRes;
 
 type
 
@@ -33,6 +33,7 @@ type
     ActDownloadSelectedWinUpdate: TAction;
     ActEnableSelectedWinUpdates: TAction;
     ActDisableSelectedWinUpdates: TAction;
+    ActRefreshHostInventory: TAction;
     ActResetSelectedWinUpdates: TAction;
     ActSaveWinupdates: TAction;
     ActLoadWindowsUpdates: TAction;
@@ -85,6 +86,7 @@ type
     BitBtn4: TBitBtn;
     BitBtn5: TBitBtn;
     BitBtn6: TBitBtn;
+    BitBtn7: TBitBtn;
     btAddGroup: TBitBtn;
     butInitWapt: TBitBtn;
     butRun: TBitBtn;
@@ -111,6 +113,8 @@ type
     cbWUAInstalled: TCheckBox;
     cbWUAPending: TCheckBox;
     cbWUADiscarded: TCheckBox;
+    Chart1: TChart;
+    Chart1PieSeries1: TPieSeries;
     EdSoftwaresFilter: TEdit;
     EdRunningStatus: TEdit;
     EdSearchGroups: TEdit;
@@ -170,6 +174,7 @@ type
     MenuItem59: TMenuItem;
     MenuItem60: TMenuItem;
     MenuItem61: TMenuItem;
+    MenuItem62: TMenuItem;
     OpenDialogWapt: TOpenDialog;
     PageControl1: TPageControl;
     Panel11: TPanel;
@@ -212,6 +217,7 @@ type
     TabSheet3: TTabSheet;
     pgHostWUA: TTabSheet;
     pgWinUpdates: TTabSheet;
+    TabSheet4: TTabSheet;
     TimerLoadWinUpdates: TTimer;
     TimerTasks: TTimer;
     Label2: TLabel;
@@ -320,6 +326,7 @@ type
     procedure ActPackageRemoveExecute(Sender: TObject);
     procedure ActRDPExecute(Sender: TObject);
     procedure ActRDPUpdate(Sender: TObject);
+    procedure ActRefreshHostInventoryExecute(Sender: TObject);
     procedure ActRemoveConflictsExecute(Sender: TObject);
     procedure ActRemoveDependsExecute(Sender: TObject);
     procedure ActResetSelectedWinUpdatesExecute(Sender: TObject);
@@ -353,6 +360,7 @@ type
     procedure ActVNCExecute(Sender: TObject);
     procedure ActVNCUpdate(Sender: TObject);
     procedure ActWAPTLocalConfigExecute(Sender: TObject);
+    procedure BitBtn7Click(Sender: TObject);
     procedure cbGroupsDropDown(Sender: TObject);
     procedure cbGroupsSelect(Sender: TObject);
     procedure cbMaskSystemComponentsClick(Sender: TObject);
@@ -1894,6 +1902,21 @@ begin
 
 end;
 
+procedure TVisWaptGUI.ActRefreshHostInventoryExecute(Sender: TObject);
+begin
+  with TVisHostsUpgrade.Create(Self) do
+  try
+    Caption:= rsTriggerHostsUpdate;
+    action := 'api/v2/trigger_host_inventory';
+    hosts := Gridhosts.SelectedRows;
+
+    if ShowModal = mrOk then
+      actRefresh.Execute;
+  finally
+    Free;
+  end;
+end;
+
 procedure TVisWaptGUI.ActRemoveConflictsExecute(Sender: TObject);
 var
   Res, packages, host, hosts: ISuperObject;
@@ -2091,7 +2114,7 @@ end;
 
 procedure TVisWaptGUI.ActTriggerHostUpgradeUpdate(Sender: TObject);
 begin
-  ActTriggerHostUpgrade.Enabled := GridHosts.SelectedCount > 0;
+  (Sender as TAction).Enabled := GridHosts.SelectedCount > 0;
 end;
 
 procedure TVisWaptGUI.ActHostWaptUpgradeExecute(Sender: TObject);
@@ -2408,6 +2431,14 @@ begin
     // put somewhere else
     MainPagesChange(MainPages);
   end;
+end;
+
+procedure TVisWaptGUI.BitBtn7Click(Sender: TObject);
+var
+  host:ISuperObject;
+begin
+  Chart1PieSeries1.Clear;
+  Chart1PieSeries1.AddArray([12,67,12,78]);
 end;
 
 procedure TVisWaptGUI.cbGroupsDropDown(Sender: TObject);

@@ -42,40 +42,49 @@
         <CommandLineParams Value="--lang fr"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="11">
+    <RequiredPackages Count="14">
       <Item1>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="pl_cindy"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_excontrols"/>
+        <PackageName Value="lazplotfunction"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="TAChartLazarusPkg"/>
       </Item3>
       <Item4>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="pltis_wapt"/>
       </Item4>
       <Item5>
-        <PackageName Value="pl_virtualtrees"/>
+        <PackageName Value="pl_excontrols"/>
       </Item5>
       <Item6>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_utils"/>
       </Item6>
       <Item7>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item7>
       <Item8>
-        <PackageName Value="pl_virtualtreesextra"/>
+        <PackageName Value="pl_virtualtrees"/>
       </Item8>
       <Item9>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pltis_superobject"/>
       </Item9>
       <Item10>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item10>
       <Item11>
-        <PackageName Value="LCL"/>
+        <PackageName Value="pl_virtualtreesextra"/>
       </Item11>
+      <Item12>
+        <PackageName Value="FCL"/>
+      </Item12>
+      <Item13>
+        <PackageName Value="SynEdit"/>
+      </Item13>
+      <Item14>
+        <PackageName Value="LCL"/>
+      </Item14>
     </RequiredPackages>
     <Units Count="18">
       <Unit0>

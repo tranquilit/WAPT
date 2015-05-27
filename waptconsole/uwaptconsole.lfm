@@ -25,9 +25,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 436
     Top = 0
     Width = 955
-    ActivePage = pgWinUpdates
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 4
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -3079,6 +3079,67 @@ object VisWaptGUI: TVisWaptGUI
         Width = 5
       end
     end
+    object TabSheet4: TTabSheet
+      Caption = 'TabSheet4'
+      ClientHeight = 410
+      ClientWidth = 947
+      object Chart1: TChart
+        Left = -28
+        Height = 296
+        Top = 18
+        Width = 564
+        AntialiasingMode = amOn
+        AxisList = <        
+          item
+            Minors = <>
+            Title.LabelFont.Orientation = 900
+          end        
+          item
+            Alignment = calBottom
+            Minors = <>
+          end>
+        AxisVisible = False
+        Foot.Brush.Color = clBtnFace
+        Foot.Font.Color = clBlue
+        Foot.Text.Strings = (
+          'Texte'
+        )
+        Foot.Visible = True
+        Frame.Visible = False
+        Legend.GroupTitles.Strings = (
+          'Windows'
+          'Office'
+        )
+        Title.Brush.Color = clBtnFace
+        Title.Font.Color = clBlue
+        Title.Text.Strings = (
+          'Versions de Windows'
+        )
+        Title.Visible = True
+        DoubleBuffered = True
+        ParentColor = False
+        object Chart1PieSeries1: TPieSeries
+          Legend.Format = '%2:s : %1:.0f%%'
+          Legend.GroupIndex = 0
+          Legend.Multiplicity = lmPoint
+          Shadow.Visible = True
+          Marks.Shape = clsRoundRect
+          Marks.Format = '%2:s %1:.2f%%'
+          Marks.Style = smsCustom
+          Title = 'Test'
+          Depth = 5
+        end
+      end
+      object BitBtn7: TBitBtn
+        Left = 12
+        Height = 30
+        Top = 2
+        Width = 75
+        Caption = 'BitBtn7'
+        OnClick = BitBtn7Click
+        TabOrder = 1
+      end
+    end
   end
   object PanDebug: TPanel
     Left = 0
@@ -3272,8 +3333,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object ActionList1: TActionList
     Images = ActionsImages
-    left = 376
-    top = 120
+    left = 400
+    top = 216
     object ActLocalhostInstall: TAction
       Category = 'Host'
       Caption = 'Install'
@@ -3634,6 +3695,12 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'wua'
       Caption = 'Reset Selected'
       OnExecute = ActResetSelectedWinUpdatesExecute
+    end
+    object ActRefreshHostInventory: TAction
+      Category = 'hosts'
+      Caption = 'Refresh host inventory'
+      OnExecute = ActRefreshHostInventoryExecute
+      OnUpdate = ActTriggerHostUpgradeUpdate
     end
   end
   object PopupMenuPackages: TPopupMenu
@@ -4358,6 +4425,9 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem56: TMenuItem
       Action = ActAddADSGroups
+    end
+    object MenuItem62: TMenuItem
+      Action = ActRefreshHostInventory
     end
   end
   object ImageList1: TImageList
