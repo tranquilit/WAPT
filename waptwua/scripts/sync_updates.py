@@ -148,7 +148,7 @@ def parse_update(update, db):
                 id_ = rev.get('Id')
             else:
                 assert old_id == rev.get('Id')
-        upd['bundled_by'] = old_id
+        upd['bundled_by'] = id_
 
     db.wsus_updates.insert(upd)
 
