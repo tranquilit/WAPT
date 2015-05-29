@@ -25,9 +25,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 486
     Top = 0
     Width = 955
-    ActivePage = pgPrivateRepo
+    ActivePage = pgWinUpdates
     Align = alClient
-    TabIndex = 2
+    TabIndex = 4
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -2961,46 +2961,48 @@ object VisWaptGUI: TVisWaptGUI
           item
             Position = 1
             Tag = 1
-            Text = 'kb_article_id'
+            Text = 'KB Article'
             Width = 62
             PropertyName = 'kb_article_id'
           end        
           item
             Position = 2
             Tag = 2
-            Text = 'msrc_severity'
+            Text = 'Severity'
             Width = 89
             PropertyName = 'msrc_severity'
           end        
           item
             Position = 3
             Tag = 3
-            Text = 'title'
+            Text = 'Title'
             Width = 353
             PropertyName = 'title'
           end        
           item
             Position = 4
             Tag = 4
-            Text = 'description'
+            Text = 'Description'
             Width = 100
             PropertyName = 'description'
           end        
           item
             Position = 5
             Tag = 5
-            Text = 'categories'
+            Text = 'Categories'
             Width = 121
             PropertyName = 'categories'
           end        
           item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 6
             Tag = 6
-            Text = 'update_id'
+            Text = 'Update Id'
             Width = 225
             PropertyName = 'update_id'
           end        
           item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 7
             Tag = 7
             Text = '_id'
@@ -3008,13 +3010,15 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = '_id'
           end        
           item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 8
             Tag = 8
-            Text = 'revision_id'
+            Text = 'Revision Id'
             Width = 81
             PropertyName = 'revision_id'
           end        
           item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 9
             Tag = 9
             Text = 'prereqs'
@@ -3024,9 +3028,14 @@ object VisWaptGUI: TVisWaptGUI
           item
             Position = 10
             Tag = 10
-            Text = 'security_bulletin_id'
+            Text = 'Security Bulletin ID'
             Width = 61
             PropertyName = 'security_bulletin_id'
+          end        
+          item
+            Position = 11
+            Text = 'Date'
+            PropertyName = 'creation_date'
           end>
         Header.DefaultHeight = 17
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
@@ -3093,7 +3102,7 @@ object VisWaptGUI: TVisWaptGUI
           Height = 30
           Top = 12
           Width = 144
-          Action = ActEnableSelectedWinUpdates
+          Action = ActAllowSelectedWinUpdates
           TabOrder = 0
         end
         object BitBtn4: TBitBtn
@@ -3101,7 +3110,7 @@ object VisWaptGUI: TVisWaptGUI
           Height = 30
           Top = 12
           Width = 152
-          Action = ActDisableSelectedWinUpdates
+          Action = ActForbidSelectedWinUpdates
           TabOrder = 1
         end
         object BitBtn5: TBitBtn
@@ -3124,7 +3133,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object TabSheet4: TTabSheet
       Caption = 'TabSheet4'
-      ClientHeight = 410
+      ClientHeight = 460
       ClientWidth = 947
       object Chart1: TChart
         Left = -28
@@ -3673,16 +3682,16 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Download selected'
       OnUpdate = ActDownloadSelectedWinUpdateUpdate
     end
-    object ActEnableSelectedWinUpdates: TAction
+    object ActAllowSelectedWinUpdates: TAction
       Category = 'wua'
-      Caption = 'Enable Selected Updates'
-      OnExecute = ActEnableSelectedWinUpdatesExecute
+      Caption = 'Allow Selected Updates'
+      OnExecute = ActAllowSelectedWinUpdatesExecute
       OnUpdate = ActDownloadSelectedWinUpdateUpdate
     end
-    object ActDisableSelectedWinUpdates: TAction
+    object ActForbidSelectedWinUpdates: TAction
       Category = 'wua'
-      Caption = 'Disable Selected Updates'
-      OnExecute = ActDisableSelectedWinUpdatesExecute
+      Caption = 'Forbid Selected Updates'
+      OnExecute = ActForbidSelectedWinUpdatesExecute
       OnUpdate = ActDownloadSelectedWinUpdateUpdate
     end
     object ActSaveWinupdates: TAction
@@ -6180,10 +6189,10 @@ object VisWaptGUI: TVisWaptGUI
     left = 571
     top = 214
     object MenuItem58: TMenuItem
-      Action = ActEnableSelectedWinUpdates
+      Action = ActAllowSelectedWinUpdates
     end
     object MenuItem59: TMenuItem
-      Action = ActDisableSelectedWinUpdates
+      Action = ActForbidSelectedWinUpdates
     end
     object MenuItem60: TMenuItem
       Action = ActDownloadSelectedWinUpdate

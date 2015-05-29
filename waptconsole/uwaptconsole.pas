@@ -31,8 +31,8 @@ type
     ActAddADSGroups: TAction;
     ActHostsDeleteHostPackage: TAction;
     ActDownloadSelectedWinUpdate: TAction;
-    ActEnableSelectedWinUpdates: TAction;
-    ActDisableSelectedWinUpdates: TAction;
+    ActAllowSelectedWinUpdates: TAction;
+    ActForbidSelectedWinUpdates: TAction;
     ActRefreshHostInventory: TAction;
     ActResetSelectedWinUpdates: TAction;
     ActSaveWinupdates: TAction;
@@ -305,11 +305,11 @@ type
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
     procedure ActDeployWaptExecute(Sender: TObject);
-    procedure ActDisableSelectedWinUpdatesExecute(Sender: TObject);
+    procedure ActForbidSelectedWinUpdatesExecute(Sender: TObject);
     procedure ActDownloadSelectedWinUpdateUpdate(Sender: TObject);
     procedure ActEditGroupExecute(Sender: TObject);
     procedure ActEditHostPackageExecute(Sender: TObject);
-    procedure ActEnableSelectedWinUpdatesExecute(Sender: TObject);
+    procedure ActAllowSelectedWinUpdatesExecute(Sender: TObject);
     procedure ActEnglishExecute(Sender: TObject);
     procedure ActEnglishUpdate(Sender: TObject);
     procedure ActForgetPackagesExecute(Sender: TObject);
@@ -461,7 +461,7 @@ type
     MainRepoUrl, WAPTServer, TemplatesRepoUrl: string;
 
     WinupdatesModified:Boolean;
-    EnabledWinUpdates,DiscardedWinUpdates:TStringList;
+    AllowedWinUpdates,ForbiddenWinUpdates,AllowedSeverities:TStringList;
 
     constructor Create(TheOwner: TComponent); override;
 
@@ -1546,7 +1546,7 @@ begin
     end;
 end;
 
-procedure TVisWaptGUI.ActDisableSelectedWinUpdatesExecute(Sender: TObject);
+procedure TVisWaptGUI.ActForbidSelectedWinUpdatesExecute(Sender: TObject);
 var
   wupdate:ISuperObject;
   idx:Integer;
@@ -1554,12 +1554,12 @@ var
 begin
   for wupdate in GridWinUpdates.SelectedRows do
   begin
-    wupdate.S['status'] := 'DISCARDED';
+    wupdate.S['status'] := 'FORBIDDEN';
     update_id:=wupdate.S['update_id'];
-    DiscardedWinUpdates.Add(update_id);
-    idx := EnabledWinUpdates.IndexOf(update_id);
+    ForbiddenWinUpdates.Add(update_id);
+    idx := AllowedWinUpdates.IndexOf(update_id);
     if idx>=0 then
-      EnabledWinUpdates.Delete(idx);
+      AllowedWinUpdates.Delete(idx);
   end;
   WinupdatesModified:=True;
   GridWinUpdates.Invalidate;
@@ -1598,7 +1598,7 @@ begin
   end;
 end;
 
-procedure TVisWaptGUI.ActEnableSelectedWinUpdatesExecute(Sender: TObject);
+procedure TVisWaptGUI.ActAllowSelectedWinUpdatesExecute(Sender: TObject);
 var
   wupdate:ISuperObject;
   idx:Integer;
@@ -1606,12 +1606,12 @@ var
 begin
   for wupdate in GridWinUpdates.SelectedRows do
   begin
-    wupdate.S['status'] := 'ENABLED';
+    wupdate.S['status'] := 'ALLOWED';
     update_id:=wupdate.S['update_id'];
-    EnabledWinUpdates.Add(update_id);
-    idx := DiscardedWinUpdates.IndexOf(update_id);
+    AllowedWinUpdates.Add(update_id);
+    idx := ForbiddenWinUpdates.IndexOf(update_id);
     if idx>=0 then
-      DiscardedWinUpdates.Delete(idx);
+      ForbiddenWinUpdates.Delete(idx);
   end;
   WinupdatesModified:=True;
   GridWinUpdates.Invalidate;
@@ -1779,18 +1779,18 @@ begin
       urlParams.AsArray.Add(Format('products=%s',[soutils.Join(',',products)]));
 
     if cbWUCriticalOnly.Checked then
-      urlParams.AsArray.Add('critical=1');
+      urlParams.AsArray.Add('severity=Critical');
 
     soresult := WAPTServerJsonGet('api/v2/windows_updates?%s',[soutils.Join('&', urlParams)]);
     winupdates := soResult['result'];
     for winupdate in winupdates do
     begin
       update_id:=winupdate.S['update_id'];
-      if EnabledWinUpdates.IndexOf(update_id)>=0 then
-        winupdate.S['status'] := 'ENABLED'
+      if AllowedWinUpdates.IndexOf(update_id)>=0 then
+        winupdate.S['status'] := 'ALLOWED'
       else
-      if DiscardedWinUpdates.IndexOf(update_id)>=0 then
-        winupdate.S['status'] := 'DISCARDED';
+      if ForbiddenWinUpdates.IndexOf(update_id)>=0 then
+        winupdate.S['status'] := 'FORBIDDEN';
     end;
 
     GridWinUpdates.Data := winupdates;
@@ -2034,12 +2034,12 @@ begin
   begin
     wupdate.Delete('status');
     update_id:=wupdate.S['update_id'];
-    idx := DiscardedWinUpdates.IndexOf(update_id);
+    idx := ForbiddenWinUpdates.IndexOf(update_id);
     if idx>=0 then
-      DiscardedWinUpdates.Delete(idx);
-    idx := EnabledWinUpdates.IndexOf(update_id);
+      ForbiddenWinUpdates.Delete(idx);
+    idx := AllowedWinUpdates.IndexOf(update_id);
     if idx>=0 then
-      EnabledWinUpdates.Delete(idx);
+      AllowedWinUpdates.Delete(idx);
   end;
   WinupdatesModified:=True;
   GridWinUpdates.Invalidate;
@@ -2060,8 +2060,9 @@ var
 begin
   wsus_restrictions := TSuperObject.Create();
   wsus_restrictions.S['group'] := 'default';
-  wsus_restrictions['enabled'] := StringList2SuperObject(EnabledWinUpdates);
-  wsus_restrictions['discarded'] := StringList2SuperObject(DiscardedWinUpdates);
+  wsus_restrictions['allowed'] := StringList2SuperObject(AllowedWinUpdates);
+  wsus_restrictions['forbidden'] := StringList2SuperObject(ForbiddenWinUpdates);
+  wsus_restrictions['allowed_severities'] := StringList2SuperObject(AllowedSeverities);
   WAPTServerJsonPost('api/v2/windows_updates_restrictions?group=%s',['default'],wsus_restrictions);
   WinUpdatesModified := False;
 end;
@@ -3026,8 +3027,8 @@ begin
   begin
     row := GridHostPackages.GetNodeSOData(Node);
     case row.S['status'] of
-      'ENABLED': ImageIndex := 0;
-      'DISCARDED': ImageIndex := 8;
+      'ALLOWED': ImageIndex := 0;
+      'FORBIDDEN': ImageIndex := 8;
     else
       ImageIndex := -1;
     end;
@@ -3116,19 +3117,22 @@ begin
   end
   else if MainPages.ActivePage = pgWinUpdates then
   begin
-    if (EnabledWinUpdates=Nil) or (DiscardedWinUpdates=Nil) then
+    if (AllowedWinUpdates=Nil) or (ForbiddenWinUpdates=Nil) then
     begin
-      EnabledWinUpdates := TStringList.Create();
-      //EnabledWinUpdates.Sorted:=True;
+      AllowedWinUpdates := TStringList.Create();
+      //AllowedWinUpdates.Sorted:=True;
 
-      DiscardedWinUpdates := TStringList.Create();
-      //DiscardedWinUpdates.Sorted:=True;
+      ForbiddenWinUpdates := TStringList.Create();
+      //ForbiddenWinUpdates.Sorted:=True;
+
+      AllowedSeverities := TStringList.Create();
 
       wsus_restrictions := WAPTServerJsonGet('api/v2/windows_updates_restrictions?group=%s',['default'])['result'];
       if wsus_restrictions.AsArray.Length>0 then
       begin
-        EnabledWinUpdates.Text:=Join(#13#10,wsus_restrictions.AsArray[0]['enabled']);
-        DiscardedWinUpdates.Text:=Join(#13#10,wsus_restrictions.AsArray[0]['discarded']);
+        AllowedWinUpdates.Text:=Join(#13#10,wsus_restrictions.AsArray[0]['allowed']);
+        ForbiddenWinUpdates.Text:=Join(#13#10,wsus_restrictions.AsArray[0]['forbidden']);
+        AllowedSeverities.Text:=Join(#13#10,wsus_restrictions.AsArray[0]['allowed_severities']);
       end;
 
       WinupdatesModified:=False;
