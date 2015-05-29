@@ -2275,6 +2275,8 @@ def select_windows_update():
         raise Exception('WARNING: method called with no auth ; forget=' + str(forget) + ' ' + str(ok) + '/' + str(total))
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return make_response_from_exception(e)
 
 
