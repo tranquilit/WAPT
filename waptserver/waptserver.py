@@ -2188,6 +2188,7 @@ def do_resolve_update(update_map, update_id, recursion_level):
         raise Exception('Max recursion reached when resolving update.')
 
     wsus_locations = get_db().wsus_locations
+    wsus_locations.ensure_index('id', unique=True)
 
     files = update.get('payload_files', [])
     if files:
@@ -2198,6 +2199,7 @@ def do_resolve_update(update_map, update_id, recursion_level):
         update_map[update_id]['file_locations'] = file_locations
 
     wsus_updates = get_db().wsus_updates
+    wsus_updates.ensure_index([('update_id', pymongo.ASCENDING), ('revision_id', pymongo.DESCENDING)], unique=True)
 
     if update.get('is_bundle') or update.get('deployment_action') == 'Bundle':
         bundles = wsus_updates.find({ 'bundled_by': update['revision_id'] })
@@ -2251,14 +2253,14 @@ def select_windows_update():
         del update_map
 
         wsus_fetch_info = get_db().wsus_fetch_info
-        wsus_fetch_info.create_index('id', unique=True)
+        wsus_fetch_info.ensure_index('id', unique=True)
         
         ok = 0
         total = len(dl_info)
         if forget:
             for fl in dl_info:
                 try:
-                    wsus_fetch_info.remove(fl, multi=False)
+                    wsus_fetch_info.remove({ 'id': fl['id'] })
                     ok += 1
                 except:
                     pass
