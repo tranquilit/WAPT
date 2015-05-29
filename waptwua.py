@@ -58,7 +58,7 @@ InstallResult = {
 class WaptWUA(object):
     def __init__(self,wapt,allowed_updates=None, filter="Type='Software'", allow_critical=False):
         self.wapt = wapt
-        self.cache_path = makepath(wapt.wapt_base_dir,'waptwua','cache')
+        self.cache_path = os.path.abspath(makepath(wapt.wapt_base_dir,'waptwua','cache'))
         self._update_session = None
         self._update_service_manager = None
         self._update_searcher = None
