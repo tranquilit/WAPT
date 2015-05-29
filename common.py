@@ -1973,7 +1973,7 @@ class WaptRepo(object):
         self._repo_url = url
         self._cached_dns_repo_url = None
         self._last_modified = None
-        self._packages = []
+        self._packages = None
 
         self.proxies = proxies
         self.verify_cert = False
@@ -2279,6 +2279,8 @@ class WaptRepo(object):
         Returns
             dict: list of added or removed packages and create date {'added':list,'removed':list,'last-modified':isodatetime}
         """
+        if self._packages is None:
+            self._packages = []
         new_packages = []
         logger.debug(u'Read remote Packages zip file %s' % self.packages_url)
         packages_answer = requests.get(self.packages_url,proxies=self.proxies,timeout=self.timeout, verify=self.verify_cert,headers=default_http_headers())
@@ -2311,8 +2313,8 @@ class WaptRepo(object):
                 endline += 1
         # last one
         add(startline,endline)
-        added = [ p for p in new_packages if not p in self.packages]
-        removed = [ p for p in self.packages if not p in new_packages]
+        added = [ p for p in new_packages if not p in self._packages]
+        removed = [ p for p in self._packages if not p in new_packages]
         self._packages = new_packages
         self._last_modified = httpdatetime2isodate(packages_answer.headers['last-modified'])
         return {'added':added,'removed':removed,'last-modified': self._last_modified }
@@ -2391,7 +2393,7 @@ class WaptRepo(object):
                     selected = False
             if selected:
                 result.append(package)
-        return result
+        return sorted(result)
 
     def as_dict(self):
         result = {}
