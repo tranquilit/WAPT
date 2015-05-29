@@ -2244,15 +2244,14 @@ def select_windows_update():
         dl_info = []
         for u in update_map:
             for fl in update_map[u].get('file_locations', []):
-                fl.pop('id')
+                del fl['_id']
                 dl_info.append(fl)
 
         # not needed any more, free resources
         del update_map
 
-
         wsus_fetch_info = get_db().wsus_fetch_info
-
+        wsus_fetch_info.create_index('id', unique=True)
         
         ok = 0
         total = len(dl_info)
