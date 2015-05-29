@@ -271,11 +271,27 @@ class WaptWUA(object):
 
     def wget_update(self,url,target):
         # try using specialized proxy
+        url_parts = urlparse(url)
+
         if len(self.wapt.repositories)>0:
-            wua_proxy = {'http':'http://%s:8123' % (urlparse(self.wapt.repositories[0].repo_url).netloc,)}
+            repo_parts = urlparse(self.wapt.repositories[0].repo_url)
+            wua_proxy = {'http':'http://%s:8123' % (repo_parts.netloc,)}
         else:
+            repo_parts = None
             wua_proxy = None
-        wget(url,target,proxies=wua_proxy)
+        try:
+            # direct download of prefetch
+            patch_url = '%s://%s%swua%s' % (repo_parts.scheme,repo_parts.netloc,repo_parts.path,url_parts.path)
+            wget(patch_url,target,proxies=self.wapt.repositories[0].proxies)
+        except:
+            # trigger background download on server
+            try:
+                res = self.wapt.waptserver.get('api/v2/download_windows_update?url=%s'%url)
+                patch_url = '%s://%s%s' % (repo_parts.scheme,repo_parts.netloc,res['result']['url'])
+                wget(patch_url,target,proxies=self.wapt.repositories[0].proxies)
+            except:
+                # using polipo proxy or direct download
+                wget(url,target,proxies=wua_proxy)
 
     def download_single(self,update):
         result = []
@@ -390,11 +406,13 @@ class WaptWUA(object):
             'updates':json.loads(self.wapt.read_param('waptwua.updates') or '[]'),
             'status':self.wapt.read_param('waptwua.status'),
             'allowed_updates':json.loads(self.wapt.read_param('waptwua.allowed_updates') or '[]'),
+            'allowed_severities':json.loads(self.wapt.read_param('waptwua.allowed_severities') or '[]'),
+            'forbidden_updates':json.loads(self.wapt.read_param('waptwua.forbidden_updates') or '[]'),
             }
 
 if __name__ == '__main__':
     parser=OptionParser(usage=__doc__)
-    parser.add_option("-S","--severity", dest="severity", default='All', help="Allow updates by severity. csv list of  Critical,Important,Moderate,Low (default: %default)")
+    parser.add_option("-S","--severity", dest="severity", default='All', help="Allow updates by severity. csv list of  Critical,Important,Moderate,Low. If empty : allow all. (default: %default)")
     parser.add_option("-a","--allowed", dest="allowed", default=None, help="Allow updates by update-id or KB. csv list of id to allow (default: %default)")
     parser.add_option("-b","--forbidden", dest="forbidden", default=None, help="Forbid updates by update-id or KB. csv list (default: %default)")
     parser.add_option("-c","--config", dest="config", default=None, help="Config file full path (default: %default)")
