@@ -52,7 +52,7 @@ var
 implementation
 
 uses uwaptconsole,tiscommon,soutils,waptcommon,
-    dmwaptpython,superobject,uvisloading,uvisprivatekeyauth, uWaptRes;
+    dmwaptpython,superobject,uvisloading,uvisprivatekeyauth, uWaptRes,md5;
 
 {$R *.lfm}
 
@@ -100,8 +100,8 @@ var
   expr: UTF8String;
   packages: ISuperObject;
 begin
-  expr := format('waptdevutils.update_external_repo(r"%s","%s")',
-    [AppIniFilename, EdSearch1.Text]);
+  expr := format('waptdevutils.update_external_repo("%s","%s")',
+    [WaptTemplatesRepo(AppIniFilename) , EdSearch1.Text]);
   packages := DMPython.RunJSON(expr);
   GridExternalPackages.Data := packages;
 end;
@@ -121,11 +121,11 @@ begin
   listPackages := TSuperObject.create(stArray);
   for package in GridExternalPackages.SelectedRows do
     listPackages.AsArray.Add(package.S['package']+'(='+package.S['version']+')');
-  //calcule liste de tous les fichiers wapt nécessaires y compris les dépendances
+  //calcule liste de tous les fichiers wapt + md5  nécessaires y compris les dépendances
   FileNames := DMPython.RunJSON(format('waptdevutils.get_packages_filenames(r"%s".decode(''utf8''),"%s")',
         [AppIniFilename,Join(',',listPackages)]));
 
-  if MessageDlg(rsPackageDuplicateConfirmCaption, format(rsPackageDuplicateConfirm, [Join(',', FileNames)]),
+  if MessageDlg(rsPackageDuplicateConfirmCaption, format(rsPackageDuplicateConfirm, [Join(',', listPackages)]),
         mtConfirmation, mbYesNoCancel, 0) <> mrYes then
     Exit;
 
@@ -141,12 +141,16 @@ begin
     begin
       Application.ProcessMessages;
       ProgressTitle(
-        format(rsDownloadingPackage, [Filename.AsString]));
-      target := AppLocalDir + 'cache\' + Filename.AsString;
+        format(rsDownloadingPackage, [Filename.AsArray[0].AsString]));
+      target := AppLocalDir + 'cache\' + Filename.AsArray[0].AsString;
       try
-        if not FileExists(target) then
-          IdWget(WaptTemplatesRepo + '/' + FileName.AsString,
+        if not FileExists(target) or (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
+        begin
+          IdWget(WaptTemplatesRepo + '/' + Filename.AsArray[0].AsString,
             target, ProgressForm, @updateprogress, UseProxyForTemplates);
+          if (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
+            raise Exception.CreateFmt(rsDownloadCurrupted,[Filename.AsArray[0].AsString]);
+        end;
       except
         on e:Exception do
         begin
@@ -160,11 +164,11 @@ begin
 
     for Filename in FileNames do
     begin
-      ProgressTitle(format(rsDuplicating, [FileName.AsString]));
+      ProgressTitle(format(rsDuplicating, [Filename.AsArray[0].AsString]));
       Application.ProcessMessages;
       sourceDir := DMPython.RunJSON(
         Format('waptdevutils.duplicate_from_external_repo(r"%s",r"%s")',
-        [AppIniFilename,AppLocalDir + 'cache\' + Filename.AsString])).AsString;
+        [AppIniFilename,AppLocalDir + 'cache\' + Filename.AsArray[0].AsString])).AsString;
       sources.AsArray.Add('r"'+sourceDir+'"');
     end;
 

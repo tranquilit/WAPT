@@ -177,9 +177,9 @@ type
     MenuItem62: TMenuItem;
     OpenDialogWapt: TOpenDialog;
     PageControl1: TPageControl;
+    panbaswinupdates: TPanel;
     Panel11: TPanel;
     Panel12: TPanel;
-    panbaswinupdates: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
     Panel5: TPanel;
