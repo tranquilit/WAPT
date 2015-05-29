@@ -4223,6 +4223,8 @@ class Wapt(object):
         >>> w.wua_status().keys()
         ['status',
          'allowed_updates',
+         'forbidden_updates',
+         'allowed_severities',
          'last_install_date',
          'last_scan_date',
          'wsusscn2cab_date',
