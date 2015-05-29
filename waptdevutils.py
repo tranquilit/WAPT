@@ -184,11 +184,11 @@ def get_packages_filenames(waptconfigfile,packages_names):
         entries = wapt.is_available(name)
         if entries:
             pe = entries[-1]
-            result.append(pe.filename,pe.md5sum)
+            result.append((pe.filename,pe.md5sum,))
             if pe.depends:
                 for (fn,md5) in get_packages_filenames(waptconfigfile,pe.depends):
                     if not fn in result:
-                        result.append((fn,md5))
+                        result.append((fn,md5,))
     return result
 
 
