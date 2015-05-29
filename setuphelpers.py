@@ -2916,11 +2916,11 @@ def create_daily_task(name,cmd,parameters, max_runtime=10, repeat_minutes=None, 
         if start_minute is None:
             tt.StartMinute = int(time.strftime('%M', run_time))
         else:
-            tt.StartMinute = minute
+            tt.StartMinute = start_minute
         if start_hour is None:
             tt.StartHour = int(time.strftime('%H', run_time))
         else:
-            tt.StartHour = hour
+            tt.StartHour = start_hour
         tt.TriggerType = int(taskscheduler.TASK_TIME_TRIGGER_DAILY)
         if repeat_minutes:
             tt.MinutesInterval = repeat_minutes
