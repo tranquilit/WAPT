@@ -2257,22 +2257,17 @@ def select_windows_update():
         
         ok = 0
         total = len(dl_info)
-        if forget:
-            for fl in dl_info:
-                try:
+        for fl in dl_info:
+            try:
+                if forget:
                     wsus_fetch_info.remove({ 'id': fl['id'] })
-                    ok += 1
-                except:
-                    pass
-        else:
-            for fl in dl_info:
-                try:
+                else:
                     wsus_fetch_info.insert(fl)
-                    ok += 1
-                except:
-                    pass
+                ok += 1
+            except:
+                pass
 
-        raise Exception('WARNING: method called with no auth ; forget=' + str(forget) + ' ' + str(ok) + '/' + str(total))
+        raise Exception('WARNING: method called with no auth ; forget=' + str(forget) + ', ok=' + str(ok) + '/' + str(total))
 
     except Exception as e:
         import traceback
