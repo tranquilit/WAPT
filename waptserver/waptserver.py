@@ -2272,7 +2272,7 @@ def select_windows_update():
                 except:
                     pass
 
-        raise Exception(str(ok) + '/' + str(total))
+        raise Exception('WARNING: method called with no auth ; forget=' + str(forget) + ' ' + str(ok) + '/' + str(total))
 
     except Exception as e:
         return make_response_from_exception(e)
