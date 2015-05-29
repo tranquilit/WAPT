@@ -541,7 +541,7 @@ def remove_user_desktop_shortcut(label):
         label += '.lnk'
     remove_file(os.path.join(desktop(0),label))
 
-def wgets(url,proxies=None):
+def wgets(url,proxies=None,verify_cert=False):
     """Return the content of a remote resource as a String with a http get request.
 
     Raise an exception if remote data can't be retrieved.
@@ -556,14 +556,14 @@ def wgets(url,proxies=None):
     >>> "msg" in data
     True
     """
-    r = requests.get(url,proxies=proxies,verify=False)
+    r = requests.get(url,proxies=proxies,verify=verify_cert)
     if r.ok:
         return r.text
     else:
         r.raise_for_status()
 
 
-def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_timeout=None):
+def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False):
     r"""Copy the contents of a file from a given URL to a local file.
     >>> respath = wget('http://wapt.tranquil.it/wapt/tis-firefox_28.0.0-1_all.wapt','c:\\tmp\\test.wapt',proxies={'http':'http://proxy:3128'})
     ???
@@ -610,7 +610,7 @@ def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_time
     if not os.path.isdir(dir):
         os.makedirs(dir)
 
-    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout,verify=False)
+    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout,verify=verify_cert)
 
     total_bytes = int(httpreq.headers['content-length'])
     # 1Mb max, 1kb min
