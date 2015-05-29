@@ -2174,6 +2174,109 @@ def download_windows_updates():
         return make_response_from_exception(e)
 
 
+def do_resolve_update(update_map, update_id, recursion_level):
+
+    update = update_map[update_id]
+
+    status = update.get('done', False)
+    if status:
+        return
+
+    recursion_level += 1
+
+    if recursion_level > 30:
+        raise Exception('Max recursion reached when resolving update.')
+
+    wsus_locations = get_db().wsus_locations
+
+    files = update.get('payload_files', [])
+    if files:
+        file_locations = []
+        for f in files:
+            for fl in wsus_locations.find({ 'id': f }):
+                file_locations.append(fl)
+        update_map[update_id]['file_locations'] = file_locations
+
+    wsus_updates = get_db().wsus_updates
+
+    if update.get('is_bundle') or update.get('deployment_action') == 'Bundle':
+        bundles = wsus_updates.find({ 'bundled_by': update['revision_id'] })
+        for b in bundles:
+            if b['update_id'] not in update_map:
+                update_map[b['update_id']] = b
+            do_resolve_update(update_map, b['update_id'], recursion_level)
+
+    for p in update.get('prereqs', []):
+        sub_updates = wsus_updates.find({ 'update_id': p })
+        for s in sub_updates:
+            if s['update_id'] not in update_map:
+                update_map[s['update_id']] = s
+            do_resolve_update(update_map, s['update_id'], recursion_level)
+
+    update_map[update_id]['done'] = True
+
+
+@app.route('/api/v2/select_windows_update', methods=['GET'])
+def select_windows_update():
+    try:
+        try:
+            update_id = request.args['update_id']
+            forget = request.args.get('forget', False)
+        except:
+            raise Exception('Invalid or missing parameters')
+
+        try:
+            # normalize
+            update = str(uuid.UUID(update_id))
+        except:
+            raise Exception('Invalid update_id format')
+
+        wsus_updates = get_db().wsus_updates
+        update_map = {}
+        for update in wsus_updates.find({ 'update_id': update_id }):
+            update_map[update['update_id']] = update
+        if not update_map:
+            raise Exception('No such update_id')
+
+        # the real work
+        do_resolve_update(update_map, update_id, 0)
+
+        dl_info = []
+        for u in update_map:
+            for fl in update_map[u].get('file_locations', []):
+                fl.pop('id')
+                dl_info.append(fl)
+
+        # not needed any more, free resources
+        del update_map
+
+
+        wsus_fetch_info = get_db().wsus_fetch_info
+
+        
+        ok = 0
+        total = len(dl_info)
+        if forget:
+            for fl in dl_info:
+                try:
+                    wsus_fetch_info.remove(fl, multi=False)
+                    ok += 1
+                except:
+                    pass
+        else:
+            for fl in dl_info:
+                try:
+                    wsus_fetch_info.insert(fl)
+                    ok += 1
+                except:
+                    pass
+
+        raise Exception(str(ok) + '/' + str(total))
+
+    except Exception as e:
+        return make_response_from_exception(e)
+
+
 @app.route('/api/v2/windows_updates_restrictions',methods=['GET','POST'])
 def windows_updates_restrictions():
     group = request.args.get('group','default')
