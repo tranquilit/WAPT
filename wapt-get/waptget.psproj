@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=2.5.3.0
+Version=2.6.0.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -52,8 +52,12 @@ FileName=C:\tranquilit\wapt\wapt-get.ini
 ClassName=TProjectFileNode
 FileName=C:\tranquilit\wapt\waptpackage.py
 
+[Project\ChildNodes\Node0\ChildNodes\Node7]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptwua.py
+
 [Project\ChildNodes\Node0\ChildNodes]
-Count=7
+Count=8
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode
