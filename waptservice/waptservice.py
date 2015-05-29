@@ -1241,7 +1241,7 @@ def cancel_task():
 @app.route('/wua_installed_updates.json')
 @allow_waptserver_or_local_unauth
 def wua_installed_updates():
-    data = json.loads(wapt().read_param('waptwua.installed') or '[]')
+    data = [u for u in json.loads(wapt().read_param('waptwua.updates') or '[]') if u['installed']]
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -1257,7 +1257,7 @@ def wua_installed_updates():
 @app.route('/wua_pending_updates.json')
 @allow_waptserver_or_local_unauth
 def wua_pending_updates():
-    data = json.loads(wapt().read_param('waptwua.pending') or '[]')
+    data = [u for u in json.loads(wapt().read_param('waptwua.updates') or '[]') if not u['installed'] and not u['hidden']]
 
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
@@ -1273,7 +1273,7 @@ def wua_pending_updates():
 @app.route('/wua_discarded_updates.json')
 @allow_waptserver_or_local_unauth
 def wua_discarded_updates():
-    data = json.loads(wapt().read_param('waptwua.discarded') or '[]')
+    data = [u for u in json.loads(wapt().read_param('waptwua.updates') or '[]') if not u['installed'] and u['hidden']]
 
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
