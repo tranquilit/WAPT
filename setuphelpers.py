@@ -1410,9 +1410,13 @@ def reg_enum_values(rootkey):
     i = 0
     while True:
         try:
-            subkey_name = _winreg.EnumKey(rootkey, i).decode(os_encoding)
-            if subkey_name is not None:
-                yield subkey_name
+            (name,value,_type) = _winreg.EnumValue(rootkey, i)
+            try:
+                name = name.decode(os_encoding)
+            except:
+                pass
+            if name is not None:
+                yield (name,value,_type)
             i += 1
         except WindowsError,e:
             # WindowsError: [Errno 259] No more data is available
@@ -2227,11 +2231,14 @@ def dmi_info():
 
 def win_startup_info():
     """Return the application started at boot or login"""
-    result = {}
+    result = {'run':{},'common_startup':{}}
     with reg_openkey_noredir(HKEY_LOCAL_MACHINE,makepath('Software','Microsoft','Windows','CurrentVersion','Run')) as run_key:
-        for key in reg_enum_subkeys(run_key):
-            print key
-
+        for (name,value,_type) in reg_enum_values(run_key):
+            result['run'][name] = value
+    for lnk in glob.glob(makepath(startup(1),'*.lnk')):
+        sc = winshell.shortcut(lnk)
+        result['common_startup'][lnk] = '"%s" %s' % (sc.path,sc.arguments)
+    return result
 
 
 def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_BIOS','Win32_NetworkAdapter','Win32_Printer','Win32_VideoController']):
@@ -2309,7 +2316,7 @@ def critical_system_pending_updates():
     return [ update.Title for update in searchResult.Updates if update.MsrcSeverity == 'Critical']
 
 def host_info():
-    """Read main workstation inforamtions, returned as a dict
+    """Read main workstation informations, returned as a dict
 
     Returns:
         dict: main properties of host, networking and windows system
