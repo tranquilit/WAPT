@@ -1936,15 +1936,12 @@ class WaptServer(object):
             raise Exception(u'Unable to upload package: %s'%ensure_unicode(res['msg']))
 
 
-
-
 class WaptRepo(object):
     """Gives access to a remote http repository, with a zipped Packages packages index
 
     >>> repo = WaptRepo(name='main',url='http://wapt/wapt',timeout=4)
-    >>> delta = repo.load_packages()
-    >>> 'last-modified' in delta and 'added' in delta and 'removed' in delta
-    True
+    >>> packages = repo.packages()
+    >>> len(packages)
     """
 
     def __init__(self,url=None,name='',proxies={'http':None,'https':None},timeout = 2,dnsdomain=None):
@@ -1965,9 +1962,9 @@ class WaptRepo(object):
             url = url.rstrip('/')
         self._repo_url = url
         self._cached_dns_repo_url = None
-        self._last_modified = None
         self._packages = None
 
+        self.last_modified = None
         self.proxies = proxies
         self.verify_cert = False
         self.timeout = timeout
@@ -2213,12 +2210,12 @@ class WaptRepo(object):
         >>> isinstance(res,bool)
         True
         """
-        if not last_modified and not self._last_modified:
+        if not last_modified and not self.packages_date:
             logger.debug(u'need_update : no las_update date provided, update is needed')
             return True
         else:
             if not last_modified:
-                last_modified = self._last_modified
+                last_modified = self.packages_date
             if last_modified:
                 logger.debug(u'Check last-modified header for %s to avoid unecessary update' % (self.packages_url,))
                 current_update = self.is_available()
@@ -2262,7 +2259,7 @@ class WaptRepo(object):
             logger.debug(u'Repo packages index %s is not available : %s'%(self.packages_url,ensure_unicode(e)))
             return None
 
-    def load_packages(self):
+    def _load_packages_index(self):
         """Try to load index of packages as PackageEntry list from repository
 
         HTTP Get remote Packages zip file and parses the entries.
@@ -2309,8 +2306,8 @@ class WaptRepo(object):
         added = [ p for p in new_packages if not p in self._packages]
         removed = [ p for p in self._packages if not p in new_packages]
         self._packages = new_packages
-        self._last_modified = httpdatetime2isodate(packages_answer.headers['last-modified'])
-        return {'added':added,'removed':removed,'last-modified': self._last_modified }
+        self.packages_date = httpdatetime2isodate(packages_answer.headers['last-modified'])
+        return {'added':added,'removed':removed,'last-modified': self.packages_date }
 
     def update_db(self,force=False,waptdb=None):
         """Get Packages from http repo and update local package database
@@ -2342,11 +2339,13 @@ class WaptRepo(object):
             with waptdb:
                 try:
                     logger.debug(u'Read remote Packages index file %s' % self.packages_url)
-                    delta = self.load_packages()
+                    if force:
+                        self._packages = None
+
                     waptdb.purge_repo(self.name)
                     for package in self.packages:
                         waptdb.add_package_entry(package)
-                    last_modified =delta['last-modified']
+                    last_modified = self.packages_date
                     logger.debug(u'Storing last-modified header for repo_url %s : %s' % (self.repo_url,last_modified))
                     waptdb.set_param('last-%s' % self.repo_url[:59],last_modified)
                     return last_modified
@@ -2359,7 +2358,7 @@ class WaptRepo(object):
     @property
     def packages(self):
         if self._packages is None:
-            self.load_packages()
+            self._load_packages_index()
         return self._packages
 
     def search(self,searchwords = [],sections=[]):
@@ -2398,17 +2397,24 @@ class WaptRepo(object):
 class WaptHostRepo(WaptRepo):
     """Dummy http repository for host packages"""
 
-    def update_db(self,force=False,waptdb=None,hosts_list=[]):
+    def __init__(self,url=None,name='',proxies={'http':None,'https':None},timeout = 2,dnsdomain=None,hosts=[]):
+        WaptRepo.__init__(self,url=url,name=name,proxies=proxies,timeout = timeout,dnsdomain=dnsdomain)
+        self.hosts_list = hosts
+
+    def _load_packages_index(self):
+        self._packages = []
+
+    def update_db(self,force=False,waptdb=None):
         """get a list of host packages from remote repo"""
         current_host = setuphelpers.get_hostname()
-        if not current_host in hosts_list:
-            hosts_list.append(current_host)
-        result = {}
-        self.packages = []
-        for host in hosts_list:
-            (entry,result[host]) = self.update_host(host,waptdb,force=force)
+        if not current_host in self.hosts_list:
+            self.hosts_list.append(current_host)
+        result = ''
+        for host in self.hosts_list:
+            (entry,result) = self.update_host(host,waptdb,force=force)
             if not entry in self.packages:
                 self.packages.append(entry)
+        return result
 
     def update_host(self,host,waptdb,force=False):
         """Update host package from repo.
