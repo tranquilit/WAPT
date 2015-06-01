@@ -42,51 +42,42 @@
         <CommandLineParams Value="--lang fr"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="14">
+    <RequiredPackages Count="11">
       <Item1>
-        <PackageName Value="pl_cindy"/>
+        <PackageName Value="pltis_wapt"/>
       </Item1>
       <Item2>
-        <PackageName Value="lazplotfunction"/>
+        <PackageName Value="pl_excontrols"/>
       </Item2>
       <Item3>
-        <PackageName Value="TAChartLazarusPkg"/>
+        <PackageName Value="pltis_utils"/>
       </Item3>
       <Item4>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item4>
       <Item5>
-        <PackageName Value="pl_excontrols"/>
+        <PackageName Value="pl_virtualtrees"/>
       </Item5>
       <Item6>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pltis_superobject"/>
       </Item6>
       <Item7>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item7>
       <Item8>
-        <PackageName Value="pl_virtualtrees"/>
+        <PackageName Value="pl_virtualtreesextra"/>
       </Item8>
       <Item9>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="FCL"/>
       </Item9>
       <Item10>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="SynEdit"/>
       </Item10>
       <Item11>
-        <PackageName Value="pl_virtualtreesextra"/>
-      </Item11>
-      <Item12>
-        <PackageName Value="FCL"/>
-      </Item12>
-      <Item13>
-        <PackageName Value="SynEdit"/>
-      </Item13>
-      <Item14>
         <PackageName Value="LCL"/>
-      </Item14>
+      </Item11>
     </RequiredPackages>
-    <Units Count="18">
+    <Units Count="17">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -181,50 +172,42 @@
         <UnitName Value="uvisgroupchoice"/>
       </Unit11>
       <Unit12>
-        <Filename Value="uviseditgroup.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="VisEditGroup"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uviseditgroup"/>
-      </Unit12>
-      <Unit13>
         <Filename Value="uviswaptdeploy.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="viswaptdeploy"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviswaptdeploy"/>
-      </Unit13>
-      <Unit14>
+      </Unit12>
+      <Unit13>
         <Filename Value="uvishostsupgrade.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisHostsUpgrade"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvishostsupgrade"/>
-      </Unit14>
-      <Unit15>
+      </Unit13>
+      <Unit14>
         <Filename Value="uvisapropos.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisApropos"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisAPropos"/>
-      </Unit15>
-      <Unit16>
+      </Unit14>
+      <Unit15>
         <Filename Value="uvisimportpackage.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisImportPackage"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisImportPackage"/>
-      </Unit16>
-      <Unit17>
+      </Unit15>
+      <Unit16>
         <Filename Value="uwaptconsoleres.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uWaptConsoleRes"/>
-      </Unit17>
+      </Unit16>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
