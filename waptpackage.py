@@ -551,10 +551,10 @@ class WaptLocalRepo(object):
         self.name = name
         localpath = localpath.rstrip(os.path.sep)
         self.localpath = localpath
-        self.packages = []
+        self._packages = None
         self.index = {}
 
-    def load_packages(self):
+    def _load_packages_index(self):
         """Parse Packages index from local repo Packages file
 
         Packages file is zipped file with one file named Packages.
@@ -563,7 +563,7 @@ class WaptLocalRepo(object):
           in the repository
 
         >>> repo = WaptLocalRepo(localpath='c:\\wapt\\cache')
-        >>> repo.load_packages()
+        >>> repo._load_packages_index()
         >>> isinstance(repo.packages,list)
         True
         """
@@ -574,7 +574,10 @@ class WaptLocalRepo(object):
                 packages_lines = packages_file.read(name='Packages').decode('utf8').splitlines()
             finally:
                 packages_file.close()
-            del(self.packages[:])
+            if self._packages is not None:
+                del(self._packages[:])
+            else:
+                self._packages = []
             self.index.clear()
 
             startline = 0
@@ -589,7 +592,7 @@ class WaptLocalRepo(object):
                     package.repo = self.name
                     package.localpath = self.localpath
                     package.filename = package.make_package_filename()
-                    self.packages.append(package)
+                    self._packages.append(package)
                     # index last version
                     if not package.package in self.index or self.index[package.package] < package:
                         self.index[package.package] = package
@@ -604,6 +607,17 @@ class WaptLocalRepo(object):
                     endline += 1
             # last one
             add(startline,endline)
+        else:
+            self._packages = []
+            self.index.clear()
+
+
+
+    @property
+    def packages(self):
+        if self._packages is None:
+            self._load_packages_index()
+        return self._packages
 
     def update_packages_index(self,force_all=False):
         """Scan self.localpath directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash
@@ -616,8 +630,8 @@ class WaptLocalRepo(object):
         if not os.path.isdir(icons_path):
             os.makedirs(icons_path)
 
-        if not force_all and not self.packages:
-            self.load_packages()
+        if force_all:
+            self._packages = []
         old_entries = {}
         for package in self.packages:
             old_entries[os.path.basename(package.filename)] = package
@@ -630,7 +644,10 @@ class WaptLocalRepo(object):
         kept = []
         processed = []
         errors = []
-        del(self.packages[:])
+        if self._packages is None:
+            self._packages = []
+        else:
+            del(self._packages[:])
         self.index.clear()
 
         for fname in waptlist:
@@ -651,10 +668,10 @@ class WaptLocalRepo(object):
                     entry.load_control_from_wapt(fname)
                     processed.append(fname)
                 packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
-                self.packages.append(entry)
+                self._packages.append(entry)
                 # index last version
-                if not package.package in self.index or self.index[package.package] < package:
-                    self.index[package.package] = package
+                if not entry.package in self.index or self.index[entry.package] < package:
+                    self.index[entry.package] = entry
 
                 # looks for an icon in wapt package
                 icon_fn = os.path.join(icons_path,"%s.png"%entry.package)
@@ -714,7 +731,7 @@ class WaptRemoteRepo(object):
             url = url.rstrip('/')
         self.repo_url = url
 
-        self._last_modified = None
+        self.packages_date = None
         self._packages = None
 
         self.proxies = proxies
@@ -790,12 +807,12 @@ class WaptRemoteRepo(object):
         >>> isinstance(res,bool)
         True
         """
-        if not last_modified and not self._last_modified:
+        if not last_modified and not self.packages_date:
             logger.debug(u'need_update : no las_update date provided, update is needed')
             return True
         else:
             if not last_modified:
-                last_modified = self._last_modified
+                last_modified = self.packages_date
             if last_modified:
                 logger.debug(u'Check last-modified header for %s to avoid unecessary update' % (self.packages_url,))
                 current_update = self.is_available()
@@ -838,7 +855,7 @@ class WaptRemoteRepo(object):
             logger.debug(u'Repo packages index %s is not available : %s'%(self.packages_url,ensure_unicode(e)))
             return None
 
-    def load_packages(self):
+    def _load_packages_index(self):
         """Try to load index of packages as PackageEntry list from repository
 
         HTTP Get remote Packages zip file and parses the entries.
@@ -885,13 +902,13 @@ class WaptRemoteRepo(object):
         added = [ p for p in new_packages if not p in self._packages]
         removed = [ p for p in self._packages if not p in new_packages]
         self._packages = new_packages
-        self._last_modified = httpdatetime2isodate(packages_answer.headers['last-modified'])
-        return {'added':added,'removed':removed,'last-modified': self._last_modified }
+        self.packages_date = httpdatetime2isodate(packages_answer.headers['last-modified'])
+        return {'added':added,'removed':removed,'last-modified': self.packages_date }
 
     @property
     def packages(self):
         if self._packages is None:
-            self.load_packages()
+            self._load_packages_index()
         return self._packages
 
     def search(self,searchwords = [],sections=[]):
