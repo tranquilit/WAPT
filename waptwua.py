@@ -96,10 +96,6 @@ class WaptWUA(object):
         self._updates = None
         # to store successful changes in read only properties of _updates after initial scan
         self._cached_updates = {}
-        logger.info('Forbidden updates:%s'%self.forbidden_updates or 'None')
-        logger.info('Allowed severities:%s'%(self.allowed_severities or 'All'))
-        logger.info('Allowed additional specific updates:%s'%self.allowed_updates or 'None')
-
 
     def cached_update_property(self,update,key):
         update_id = update.Identity.UpdateID
@@ -239,6 +235,9 @@ class WaptWUA(object):
 
     def scan_updates_status(self):
         """Check all updates and filter out which one should be installed"""
+        logger.info('Forbidden updates:%s'%self.forbidden_updates or 'None')
+        logger.info('Allowed severities:%s'%(self.allowed_severities or 'All'))
+        logger.info('Allowed additional specific updates:%s'%self.allowed_updates or 'None')
         installed,pending,discarded = 0,0,0
         logger.debug('Scanning installed / not installed Updates')
         for update in self.updates:
