@@ -1954,7 +1954,7 @@ class WaptRepo(object):
     True
     """
 
-    def __init__(self,name='',url=None,proxies={'http':None,'https':None},timeout = 2,dnsdomain=None):
+    def __init__(self,url=None,name='',proxies={'http':None,'https':None},timeout = 2,dnsdomain=None):
         """Initialize a repo at url "url".
 
         Args:
@@ -2374,7 +2374,7 @@ class WaptRepo(object):
             with description or name matching all the searchwords and section in
             provided sections list
 
-        >>> r = WaptRepo('http://wapt.tranquil.it/wapt')
+        >>> r = WaptRepo(name='test',url='http://wapt.tranquil.it/wapt')
         >>> r.search(')
         """
         searchwords = ensure_list(searchwords)
