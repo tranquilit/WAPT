@@ -654,13 +654,6 @@ def running_on_ac():
     return status.ACLineStatus == 1
 
 
-def default_http_headers():
-    return {
-        'cache-control':'no-cache',
-        'pragma':'no-cache',
-        'user-agent':'wapt/{}'.format(__version__),
-        }
-
 ###########################"
 class LogInstallOutput(object):
     """file like to log print output to db installstatus"""
