@@ -1783,8 +1783,8 @@ def download_wsusscan(force=False):
         logger.info('Current cab date: %s, New cab date: %s'%(current_cab_date,new_cab_date))
 
         if not os.path.isfile(wsus_filename) or ( new_cab_date > current_cab_date ) or force:
-            wget(cab_url,tmp_filename)
-            #os.link(wsus_filename, tmp_filename)
+            #wget(cab_url,tmp_filename)
+            os.link(wsus_filename, tmp_filename)
 
             file_stats = os.stat(tmp_filename)
             stats['file_timestamp'] = file_stats[stat.ST_MTIME]
