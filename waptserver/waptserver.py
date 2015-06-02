@@ -2144,9 +2144,7 @@ def windows_updates_options():
     key = request.args.get('key','default')
     if request.method == 'POST':
         data = json.loads(request.data)
-        if not 'key' in data:
-            data['key'] = key
-        result = get_db().wsus_options.update({'key':key},{"$set": data},upsert=True)
+        result = get_db().wsus_options.update({'key':key},{'key':key,'value': data},upsert=True)
     else:
         result = get_db().wsus_options.find({'key':key})
     return make_response(msg = _('Win updates global option for key %(key)s',key=key),result = result)
