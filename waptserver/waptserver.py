@@ -67,6 +67,8 @@ import threading
 import Queue
 
 from uwsgidecorators import *
+from lxml import etree as ET
+
 
 from waptpackage import *
 import pefile
@@ -155,6 +157,11 @@ waptservice_port = 8088
 clients_connect_timeout = 5
 clients_read_timeout = 5
 client_tasks_timeout = 0.5
+
+# Unique, constant UUIDs
+WSUS_UPDATE_DOWNLOAD_LOCK = '420d1a1e-5f63-4afc-b055-2ce1538054aa'
+WSUS_PARSE_WSUSSCN2_LOCK = 'b526e9da-ebf0-45c7-9d01-90218d110e61'
+
 
 if config.has_section('options'):
     if config.has_option('options', 'wapt_user'):
@@ -264,6 +271,14 @@ def httpdatetime2isodate(httpdate):
     """
     return datetime2isodate(datetime.datetime(*email.utils.parsedate(httpdate)[:6]))
 
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError, exc:
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
 
 def get_wapt_exe_version(exe):
     present = False
@@ -1750,6 +1765,9 @@ def download_wsusscan(force=False):
     tmp_filename = os.path.join(waptwua_folder,'wsusscn2.cab.tmp')
 
     wsusscan2_history = None
+    stats = {
+        'run_date': datetime2isodate()
+    }
 
     if not force and os.path.isfile(tmp_filename):
         # check if not too old.... ?
@@ -1757,10 +1775,6 @@ def download_wsusscan(force=False):
     try:
 
         wsusscan2_history = pymongo.MongoClient().wapt.wsusscan2_history
-        stats = {
-            'run_date': datetime2isodate()
-        }
-
         new_cab_date =  httpdatetime2isodate(requests.head(cab_url).headers['last-modified'])
         if os.path.isfile(wsus_filename):
             current_cab_date = datetime2isodate(datetime.datetime.utcfromtimestamp(os.stat(wsus_filename).st_mtime))
@@ -1827,9 +1841,293 @@ def download_wsusscan(force=False):
         logger.error("Error in download_wsusscan: %s", str(e))
         return SPOOL_OK
 
+
+def wsusscan2_extract_cabs(wsusscan2, tmpdir):
+
+    if not os.path.exists(wsusscan2):
+        logger.error("%s does not exist", wsusscan2)
+
+    packages = os.path.join(tmpdir, 'packages')
+
+    mkdir_p(packages)
+
+    subprocess.check_output(['cabextract', '-d', packages, wsusscan2])
+
+    cab_list = filter(lambda f: f.endswith('.cab'), os.listdir(packages))
+
+    for cab in cab_list:
+        cab_path = os.path.join(packages, cab)
+        package_dir = cab_path[:-len('.cab')]
+        mkdir_p(package_dir)
+        subprocess.check_output(['cabextract', '-d', package_dir, cab_path])
+
+    subprocess.check_output(['cabextract', '-d', packages, os.path.join(packages, 'package.cab')])
+
+# end of cab extraction
+
+# start of updates parsing
+
+OFFLINE_SYNC_PFX = '{http://schemas.microsoft.com/msus/2004/02/OfflineSync}'
+
+def off_sync_qualify(tag):
+    return OFFLINE_SYNC_PFX + tag
+
+UpdateCategories = [
+    'Company',
+    'Product',
+    'ProductFamily',
+    'UpdateClassification',
+]
+
+def wsusscan2_do_parse_update(update, db):
+
+    superseded = update.findall(off_sync_qualify('SupersededBy'))
+    if superseded:
+        return
+
+    upd = {}
+
+    upd['update_id'] = update.get('UpdateId')
+
+    if update.get('IsBundle', False):
+        upd['is_bundle'] = True
+
+    if update.get('IsLeaf', False):
+        upd['is_leaf'] = True
+
+    if update.get('RevisionId', False) != False:
+        upd['revision_id'] = update.get('RevisionId')
+
+    if update.get('RevisionNumber', False) != False:
+        upd['revision_number'] = update.get('RevisionNumber')
+
+    if db.wsus_updates.find(upd).count() != 0:
+        return
+
+    if update.get('DeploymentAction', False) != False:
+        upd['deployment_action'] = update.get('DeploymentAction')
+
+    if update.get('CreationDate', False) != False:
+        upd['creation_date'] = update.get('CreationDate')
+
+    categories = update.findall(off_sync_qualify('Categories'))
+    if categories:
+        upd['categories'] = {}
+        for cat in categories:
+            for subcat in cat.getchildren():
+                type_ = subcat.get('Type')
+                assert type_ in UpdateCategories
+                upd['categories'][type_] = subcat.get('Id').lower()
+
+    languages = update.findall(off_sync_qualify('Languages'))
+    if languages:
+        upd['languages'] = []
+        assert len(languages) == 1
+        for l in languages[0].findall(off_sync_qualify('Language')):
+            upd['languages'].append(l.get('Name'))
+
+    prereqs = update.findall(off_sync_qualify('Prerequisites'))
+    if prereqs:
+        upd['prereqs'] = []
+        assert len(prereqs) == 1
+        for update_ in prereqs[0].iterchildren(off_sync_qualify('UpdateId')):
+                upd['prereqs'].append(update_.get('Id').lower())
+
+    files = update.findall(off_sync_qualify('PayloadFiles'))
+    if files:
+        upd['payload_files'] = []
+        for files_ in files:
+            for f in files_.iter(off_sync_qualify('File')):
+                upd['payload_files'].append(f.get('Id'))
+
+    bundled_by = update.findall(off_sync_qualify('BundledBy'))
+    if bundled_by:
+        assert len(bundled_by) == 1
+        revisions = bundled_by[0].findall(off_sync_qualify('Revision'))
+        old_id = None
+        for rev in revisions:
+            if old_id is None:
+                id_ = rev.get('Id')
+            else:
+                assert old_id == rev.get('Id')
+        upd['bundled_by'] = id_
+
+    db.wsus_updates.update(upd, upd, upsert=True)
+
+
+def wsusscan2_do_parse_file_location(location, db):
+
+    location_id = location.get('Id')
+    location_url = location.get('Url')
+
+    locations_collection = db.wsus_locations
+    locations_collection.update({ 'id': location_id }, {
+        'id': location_id,
+        'url': location_url,
+    }, upsert=True)
+
+
+def wsusscan2_parse_updates(tmpdir, db):
+
+    package_xml = os.path.join(tmpdir, 'package.xml')
+    for _, elem in ET.iterparse(package_xml):
+        if elem.tag == off_sync_qualify('Update'):
+            wsusscan2_do_parse_update(elem, db)
+        elif elem.tag == off_sync_qualify('FileLocation'):
+            wsusscan2_do_parse_file_location(elem, db)
+
+# end of updates parsing
+
+# start of metadata parsing
+
+UPDATE_SCHEMA_PFX = "{http://schemas.microsoft.com/msus/2002/12/Update}"
+
+def update_qualify(tag):
+    return UPDATE_SCHEMA_PFX + tag
+
+def wsusscn2_parse_metadata(upd, descr_file):
+
+    data = {}
+
+    if not os.path.exists(descr_file):
+        return
+    if os.path.getsize(descr_file) == 0:
+        return
+
+    try:
+        xml_str = file(descr_file, 'r').read()
+        root = ET.fromstring(xml_str)
+
+        logger.debug("")
+
+        props = root.find(update_qualify('Properties'))
+
+        creation_date = props.get('CreationDate')
+        if creation_date is not None:
+            data['creation_date2'] = creation_date
+
+        msrc_severity = props.get('MsrcSeverity')
+        if msrc_severity is not None:
+            data['msrc_severity'] = msrc_severity
+            logger.debug('MsrcSeverity: %s', data['msrc_severity'])
+
+        elem = props.find(update_qualify('KBArticleID'))
+        if elem is not None:
+            data['kb_article_id'] = elem.text
+            logger.debug('KBArticleID: %s', data['kb_article_id'])
+
+        elem = props.find(update_qualify('SecurityBulletinID'))
+        if elem is not None:
+            data['security_bulletin_id'] = elem.text
+            logger.debug('SecurityBulletinID: %s', data['security_bulletin_id'])
+
+        localized_properties_collection = root.find(update_qualify('LocalizedPropertiesCollection'))
+        for elem in localized_properties_collection.iter():
+            if elem.tag.endswith('LocalizedProperties'):
+
+                lang = elem.find(update_qualify('Language'))
+                if lang is not None:
+                    if lang.text != 'en':
+                        break
+                else:
+                    continue
+
+                title = elem.find(update_qualify('Title'))
+                if title is not None and title.text != '':
+                    data['title'] = title.text
+                    logger.debug('Title: %s', data['title'])
+
+                descr = elem.find(update_qualify('Description'))
+                if descr is not None and descr.text != '':
+                    data['description'] = descr.text
+                    logger.debug('Description: %s', data['description'])
+
+    except Exception, e:
+        logger.warning("Error while using %s: %s", descr_file, str(e))
+
+    return data
+
+
+def amend_metadata(directory, db):
+
+    def find_cab(rev, cabset):
+        for start, cab in cabset.items():
+            if int(rev) > int(start):
+                return cab
+
+    xmlindex = os.path.join(directory, 'index.xml')
+    tree = ET.parse(xmlindex)
+    root = tree.getroot()
+    cablist = root.find('CABLIST').findall('CAB')
+
+    cabs = {}
+    for cab in cablist:
+        cabname = cab.get('NAME')
+        rangestart = cab.get('RANGESTART')
+        # 'package.cab' has no rangestart attribute
+        if rangestart is None:
+            continue
+        # strip the extension, keep the directory name
+        cabs[rangestart] = cabname[:-len('.cab')]
+
+    cabs = collections.OrderedDict(
+        sorted(
+            cabs.items(),
+            key=lambda i: int(i[0]),
+            reverse=True
+        )
+    )
+
+    for update in db.wsus_updates.find():
+
+        rev = update.get('revision_id')
+        # no revision -> no metadata on disk
+        if rev is None:
+            continue
+
+        cab_dir = find_cab(rev, cabs)
+
+        descr_file = os.path.join(directory, cab_dir, 's', rev)
+        metadata = wsusscn2_parse_metadata(update, descr_file)
+        if metadata:
+            db.wsus_updates.update(
+                { "_id": update["_id"] },
+                {
+                    "$set": metadata,
+                }
+            )
+
+# end of metadata parsing
+
+def wsusscan_parse_entrypoint():
+    wsusscan2 = os.path.join(waptwua_folder, 'wsusscn2.cab')
+
+    client = pymongo.MongoClient()
+    db = client.wapt
+
+
+    tmpdir = tempfile.mkdtemp(prefix='wsusscn2', dir=waptwua_folder)
+    #wsusscan2_extract_cabs(wsusscan2, tmpdir)
+
+    packages = os.path.join(waptwua_folder, 'packages')
+    #shutil.rmtree(packages)
+    #shutil.move(tmpdir, packages)
+
+    wsusscan2_parse_updates(packages, db)
+    amend_metadata(packages, db)
+
+
 @spool
 def parse_wsusscan2(arg=None):
-    pass
+
+    runtime = pymongo.MongoClient().wapt.wsus_runtime
+    try:
+        runtime.insert({ '_id': WSUS_PARSE_WSUSSCN2_LOCK })
+        parse_wsusscan_entry()
+    except Exception as e:
+        runtime.remove({'_id': WSUS_PARSE_WSUSSCN2_LOCK })
+        logger.error('Exception in parse_wsusscan2: %s', str(e))
+
 
 @app.route('/api/v2/download_wsusscan')
 def trigger_wsusscan2_download():
