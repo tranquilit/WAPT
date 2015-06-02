@@ -57,6 +57,7 @@ import uuid
 import email.utils
 import collections
 import urlparse
+import stat
 from bson.json_util import dumps
 
 from rocket import Rocket
@@ -1747,37 +1748,88 @@ def download_wsusscan(force=False):
     cab_url = 'http://download.windowsupdate.com/microsoftupdate/v6/wsusscan/wsusscn2.cab'
     wsus_filename = os.path.join(waptwua_folder,'wsusscn2.cab')
     tmp_filename = os.path.join(waptwua_folder,'wsusscn2.cab.tmp')
+
+    wsusscan2_history = None
+
     if not force and os.path.isfile(tmp_filename):
         # check if not too old.... ?
         return SPOOL_OK
     try:
+
+        wsusscan2_history = pymongo.MongoClient().wapt.wsusscan2_history
+        stats = {
+            'run_date': datetime2isodate()
+        }
+
         new_cab_date =  httpdatetime2isodate(requests.head(cab_url).headers['last-modified'])
         if os.path.isfile(wsus_filename):
             current_cab_date = datetime2isodate(datetime.datetime.utcfromtimestamp(os.stat(wsus_filename).st_mtime))
         else:
             current_cab_date = ''
         logger.info('Current cab date: %s, New cab date: %s'%(current_cab_date,new_cab_date))
+
         if not os.path.isfile(wsus_filename) or ( new_cab_date > current_cab_date ) or force:
             wget(cab_url,tmp_filename)
+            #os.link(wsus_filename, tmp_filename)
+
+            file_stats = os.stat(tmp_filename)
+            stats['file_timestamp'] = file_stats[stat.ST_MTIME]
+            stats['file_size'] = file_stats[stat.ST_SIZE]
+
             # check integrity
             try:
+
                 if sys.platform == 'win32':
                     cablist = subprocess.check_output('expand -D "%s"' % tmp_filename,shell = True).decode('cp850').splitlines()
                 else:
                     cablist = subprocess.check_output('cabextract -t "%s"' % tmp_filename ,shell = True).splitlines()
+                stats['cablist'] = cablist
+
             except Exception as e:
                 if os.path.isfile(tmp_filename):
                     os.unlink(tmp_filename)
+
+                stats['error'] = str(e)
+                try:
+                    wsusscan2_history.insert(stats)
+                except Exception:
+                    pass
                 logger.error("Error in download_wsusscan: %s", str(e))
                 return SPOOL_OK
+
             if os.path.isfile(wsus_filename):
                 os.unlink(wsus_filename)
-            os.rename(tmp_filename,wsus_filename)
+            os.rename(tmp_filename, wsus_filename)
+
+            try:
+                wsusscan2_history.insert(stats)
+            except Exception:
+                pass
+
+            parse_wsusscan2.spool(arg=None)
+
+        else:
+            stats['skipped'] = True
+            try:
+                wsusscan2_history.insert(stats)
+            except Exception:
+                pass
+
         return SPOOL_OK
+
     except Exception as e:
+        stats.update({ 'error': str(e) })
+        if wsusscan2_history:
+            try:
+                wsusscan2_history.insert(stats)
+            except:
+                pass
         logger.error("Error in download_wsusscan: %s", str(e))
         return SPOOL_OK
 
+@spool
+def parse_wsusscan2(arg=None):
+    pass
 
 @app.route('/api/v2/download_wsusscan')
 def trigger_wsusscan2_download():
