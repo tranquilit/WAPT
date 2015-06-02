@@ -23,11 +23,11 @@ FileName=C:\WAPT\setuphelpers.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node2]
 ClassName=TProjectFileNode
-FileName=C:\WAPT\wapt-get.ini
+FileName=C:\WAPT\wapt-get.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node3]
 ClassName=TProjectFileNode
-FileName=C:\WAPT\wapt-get.py
+FileName=C:\WAPT\wapt-get.ini
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node4]
 ClassName=TProjectFileNode
@@ -46,7 +46,7 @@ FileName=$[Project-Path]..\setup.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node3]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptwua\waptwua.py
+FileName=C:\tranquilit\wapt\waptwua.py
 
 [Project\ChildNodes\Node0\ChildNodes]
 Count=4
