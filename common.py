@@ -1964,7 +1964,7 @@ class WaptRepo(object):
         self._cached_dns_repo_url = None
         self._packages = None
 
-        self.last_modified = None
+        self.packages_date = None
         self.proxies = proxies
         self.verify_cert = False
         self.timeout = timeout
@@ -2211,7 +2211,7 @@ class WaptRepo(object):
         True
         """
         if not last_modified and not self.packages_date:
-            logger.debug(u'need_update : no las_update date provided, update is needed')
+            logger.debug(u'need_update : no last_update date provided, update is needed')
             return True
         else:
             if not last_modified:
