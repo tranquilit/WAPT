@@ -1961,10 +1961,14 @@ def wsusscan2_do_parse_file_location(location, db):
     location_url = location.get('Url')
 
     locations_collection = db.wsus_locations
-    locations_collection.update({ 'id': location_id }, {
-        'id': location_id,
-        'url': location_url,
-    }, upsert=True)
+    locations_collection.update(
+        { 'id': location_id },
+        {
+            'id': location_id,
+            'url': location_url,
+        },
+        upsert=True
+    )
 
 
 def wsusscan2_parse_updates(tmpdir, db):
@@ -2105,7 +2109,6 @@ def wsusscan_parse_entrypoint():
     client = pymongo.MongoClient()
     db = client.wapt
 
-
     tmpdir = tempfile.mkdtemp(prefix='wsusscn2', dir=waptwua_folder)
     #wsusscan2_extract_cabs(wsusscan2, tmpdir)
 
@@ -2178,7 +2181,7 @@ def wsusscan2_history():
 update_classifications_id = {
  '28bc880e-0592-4cbf-8f95-c79b17911d5f': 'UpdateRollups',    # Ensemble de mises à jour
  'b54e7d24-7add-428f-8b75-90a396fa584f': 'FeaturePacks',     # feature packs
- 'e6cf1350-c01b-414d-a61f-263d14d133b4': 'CriticalUpdates',   # Mises à jour critiques
+ 'e6cf1350-c01b-414d-a61f-263d14d133b4': 'CriticalUpdates',  # Mises à jour critiques
  '0fa1201d-4330-4fa8-8ae9-b877473b6441': 'SecurityUpdates',  # Mises à jour de la sécurité
  'cd5ffd1e-e932-4e3a-bf74-18bf0b1bbd83': 'Updates',          # Mises à jour
  'e0789628-ce08-4437-be74-2495b842f43b': 'DefinitionUpdates',# Mises à jour de définitions
@@ -2420,6 +2423,7 @@ def get_product_id(expr):
             result.append(key)
     return result
 
+
 def simplematch(expr):
     words = expr.split()
     match = re.compile('[ \s.,:]*'.join(words) ,re.IGNORECASE)
@@ -2434,6 +2438,9 @@ def windows_products():
                     if match.match(title) or product == request.args['search']]
     else:
         result = [ dict(product=product,title=title) for (product,title) in products_id.iteritems()]
+    if 'selected' in request.args and request.args['selected']:
+        selection = get_selected_products()
+        result = [ r for r in result if r['product'] in selection]
     return make_response(msg = _('Windows Products'), result = result )
 
 
@@ -2447,6 +2454,16 @@ def windows_updates_options():
         result = get_db().wsus_options.find({'key':key})
     return make_response(msg = _('Win updates global option for key %(key)s',key=key),result = result)
 
+
+def get_selected_products():
+     result = get_db().wsus_options.find({'key':'products_selection'})
+     if result:
+         for r in result:
+             return r['value']
+         else:
+             return []
+     else:
+         return []
 
 @app.route('/api/v2/windows_updates')
 def windows_updates():
@@ -2514,6 +2531,9 @@ def windows_updates():
     if 'update_ids' in request.args:
         query["update_id"] = {'$in':ensure_list(request.args['update_ids'])}
 
+    if 'selected_products'  in request.args and request.args['selected_products']:
+        query["categories.Product"] = {'$in':get_selected_products()}
+
     result = wsus_updates.find(query)
     cnt = result.count()
     return make_response(msg = _('Windows Updates, filter: %(query)s, count: %(cnt)s',query=query,cnt=cnt),result = result)
@@ -2565,6 +2585,14 @@ def download_windows_updates():
             return True
 
     try:
+        try:
+            kb_article_id = request.args.get('kb_article_id', None)
+            if kb_article_id != None:
+                requested_kb = get_db().requested_kb
+                requested_kb.update({ 'kb_article_id': kb_article_id }, { 'kb_article_id': kb_article_id, '$inc': { 'request_count', int(1) } }, upsert=True)
+        except Exception as e:
+            logger.error('download_windows_updates: %s', str(e))
+
         url = request.args['url']
         url_parts = urlparse.urlparse(url)
         if url_parts.netloc not in ['download.windowsupdate.com','www.download.windowsupdate.com']:
@@ -2691,17 +2719,22 @@ def select_windows_update():
         return make_response_from_exception(e)
 
 
-@app.route('/api/v2/windows_updates_restrictions',methods=['GET','POST'])
-def windows_updates_restrictions():
-    group = request.args.get('group','default')
+@app.route('/api/v2/windows_updates_rules',methods=['GET','POST'])
+def windows_updates_rules():
     if request.method == 'POST':
+        group = request.args.get('group','default')
         data = json.loads(request.data)
         if not 'group' in data:
             data['group'] = group
-        result = get_db().wsus_restrictions.update({'group':group},{"$set": data},upsert=True)
+        result = get_db().wsus_rules.update({'group':group},{"$set": data},upsert=True)
     else:
-        result = get_db().wsus_restrictions.find({'group':group})
-    return make_response(msg = _('Win updates restrictions for group %(group)s',group=group),result = result)
+        if 'group' in  request.args:
+            group = request.args.get('group','default')
+            result = get_db().wsus_rules.find({'group':group})
+        else:
+            result = get_db().wsus_rules.find()
+
+    return make_response(msg = _('Win updates rules'),result = result)
 
 def test():
     import flask
