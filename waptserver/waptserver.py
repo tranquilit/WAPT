@@ -1839,6 +1839,34 @@ def trigger_wsusscan2_download():
     return make_response()
 
 
+@app.route('/api/v2/wsusscan2_status')
+def wsusscan2_status():
+    wsus_filename = os.path.join(waptwua_folder,'wsusscn2.cab')
+    tmp_filename = os.path.join(waptwua_folder,'wsusscn2.cab.tmp')
+
+    success = False
+    data = {}
+    try:
+        stats = os.stat(wsus_filename)
+        success = True
+        data.update({
+            'wsus_timestamp': stats[stat.ST_MTIME],
+            'wsus_size':      stats[stat.ST_SIZE],
+        })
+    except Exception:
+        pass
+
+    try:
+        tmp_stats = os.stat(tmp_filename)
+        data.update({
+            'tmp_wsus_timestamp': tmp_stats[stat.ST_MTIME],
+            'tmp_wsus_size':      tmp_stats[stat.ST_SIZE],
+        })
+    except Exception:
+        pass
+
+    return make_response(success=success, result=data)
+
 @app.route('/api/v2/wsusscan2_history')
 def wsusscan2_history():
     data = []
