@@ -65,6 +65,8 @@ import thread
 import threading
 import Queue
 
+from uwsgidecorators import *
+
 from waptpackage import *
 import pefile
 
@@ -1731,8 +1733,12 @@ def wget(url,target,proxies=None,connect_timeout=10,download_timeout=None):
         os.utime(os.path.join(dir,filename),(unixtime,unixtime))
     return os.path.join(dir,filename)
 
-@app.route('/api/v2/download_wsusscan')
-def download_wsusscan():
+SPOOL_OK = -2 # the task has been completed, the spool file will be removed
+SPOOL_RETRY = -1 # something is temporarily wrong, the task will be retried at the next spooler iteration
+SPOOL_IGNORE = 0 #  ignore this task, if multiple languages are loaded in the instance all of them will fight for managing the task. This return values allows you to skip a task in specific languages.
+
+@spool
+def download_wsusscan(force=False):
     """Launch a task to update current wsus offline cab file
         download in a temporary well known file
         abort if the temporary file is present (means another download is in progress
@@ -1741,9 +1747,9 @@ def download_wsusscan():
     cab_url = 'http://download.windowsupdate.com/microsoftupdate/v6/wsusscan/wsusscn2.cab'
     wsus_filename = os.path.join(waptwua_folder,'wsusscn2.cab')
     tmp_filename = os.path.join(waptwua_folder,'wsusscn2.cab.tmp')
-    if not request.args.get('force',0) and os.path.isfile(tmp_filename):
+    if not force and os.path.isfile(tmp_filename):
         # check if not too old.... ?
-        return make_response(msg ='Download in progress, current size = %s' % os.stat(tmp_filename).st_size)
+        return SPOOL_OK
     try:
         new_cab_date =  httpdatetime2isodate(requests.head(cab_url).headers['last-modified'])
         if os.path.isfile(wsus_filename):
@@ -1751,7 +1757,7 @@ def download_wsusscan():
         else:
             current_cab_date = ''
         logger.info('Current cab date: %s, New cab date: %s'%(current_cab_date,new_cab_date))
-        if not os.path.isfile(wsus_filename) or ( new_cab_date > current_cab_date ) or request.args.get('force',0):
+        if not os.path.isfile(wsus_filename) or ( new_cab_date > current_cab_date ) or force:
             wget(cab_url,tmp_filename)
             # check integrity
             try:
@@ -1762,13 +1768,23 @@ def download_wsusscan():
             except Exception as e:
                 if os.path.isfile(tmp_filename):
                     os.unlink(tmp_filename)
-                return make_response_from_exception(e)
+                logger.error("Error in download_wsusscan: %s", str(e))
+                return SPOOL_OK
             if os.path.isfile(wsus_filename):
                 os.unlink(wsus_filename)
             os.rename(tmp_filename,wsus_filename)
-        return make_response(msg = 'File wsusscn2.cab available',result = dict(url = '/waptwua/wsusscn2.cab', size=os.stat(wsus_filename).st_size))
+        return SPOOL_OK
     except Exception as e:
-        return make_response_from_exception(e)
+        logger.error("Error in download_wsusscan: %s", str(e))
+        return SPOOL_OK
+
+
+@app.route('/api/v2/download_wsusscan')
+def trigger_wsusscan2_download():
+    force = request.args.get('force', False)
+    logger.info('Triggering download_wsusscan with parameter ' + str(force))
+    download_wsusscan.spool(force=force)
+    return make_response()
 
 #https://msdn.microsoft.com/en-us/library/ff357803%28v=vs.85%29.aspx
 update_classifications_id = {
