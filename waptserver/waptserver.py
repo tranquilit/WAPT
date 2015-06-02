@@ -1874,7 +1874,7 @@ def wsusscan2_history():
     for log in wsusscan2_history.find():
         data.append(log)
     return make_response(result=data)
- 
+
 
 #https://msdn.microsoft.com/en-us/library/ff357803%28v=vs.85%29.aspx
 update_classifications_id = {
@@ -2138,6 +2138,20 @@ def windows_products():
         result = [ dict(product=product,title=title) for (product,title) in products_id.iteritems()]
     return make_response(msg = _('Windows Products'), result = result )
 
+
+@app.route('/api/v2/windows_updates_options',methods=['GET','POST'])
+def windows_updates_options():
+    key = request.args.get('key','default')
+    if request.method == 'POST':
+        data = json.loads(request.data)
+        if not 'key' in data:
+            data['key'] = key
+        result = get_db().wsus_options.update({'key':key},{"$set": data},upsert=True)
+    else:
+        result = get_db().wsus_options.find({'key':key})
+    return make_response(msg = _('Win updates global option for key %(key)s',key=key),result = result)
+
+
 @app.route('/api/v2/windows_updates')
 def windows_updates():
     """
@@ -2360,7 +2374,7 @@ def select_windows_update():
 
         wsus_fetch_info = get_db().wsus_fetch_info
         wsus_fetch_info.ensure_index('id', unique=True)
-        
+
         ok = 0
         total = len(dl_info)
         for fl in dl_info:
