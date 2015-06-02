@@ -2231,13 +2231,13 @@ def dmi_info():
 
 def win_startup_info():
     """Return the application started at boot or login"""
-    result = {'run':{},'common_startup':{}}
+    result = {'run':[],'common_startup':[]}
     with reg_openkey_noredir(HKEY_LOCAL_MACHINE,makepath('Software','Microsoft','Windows','CurrentVersion','Run')) as run_key:
         for (name,value,_type) in reg_enum_values(run_key):
-            result['run'][name] = value
+            result['run'].append({'name':name,'command':value})
     for lnk in glob.glob(makepath(startup(1),'*.lnk')):
         sc = winshell.shortcut(lnk)
-        result['common_startup'][lnk] = '"%s" %s' % (sc.path,sc.arguments)
+        result['common_startup'].append({'name':lnk,'command':'"%s" %s' % (sc.path,sc.arguments)})
     return result
 
 
@@ -2367,6 +2367,7 @@ def host_info():
     info['virtual_memory'] = memory_status().ullTotalVirtual
 
     info['current_user'] = get_loggedinusers()
+    info['windows_startup_items'] = win_startup_info()
     return info
 
 
