@@ -1712,7 +1712,7 @@ def wget(url,target,proxies=None,connect_timeout=10,download_timeout=None):
     httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout, verify=False)
 
     total_bytes = int(httpreq.headers['content-length'])
-    # 1Mb max, 1kb min
+    # 1MB max, 2KB min
     chunk_size = min([1024*1024,max([total_bytes/100,2048])])
 
     with open(os.path.join(dir,filename),'wb') as output_file:
