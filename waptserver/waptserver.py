@@ -1838,6 +1838,16 @@ def trigger_wsusscan2_download():
     download_wsusscan.spool(force=force)
     return make_response()
 
+
+@app.route('/api/v2/wsusscan2_history')
+def wsusscan2_history():
+    data = []
+    wsusscan2_history = get_db().wsusscan2_history
+    for log in wsusscan2_history.find():
+        data.append(log)
+    return make_response(result=data)
+ 
+
 #https://msdn.microsoft.com/en-us/library/ff357803%28v=vs.85%29.aspx
 update_classifications_id = {
  '28bc880e-0592-4cbf-8f95-c79b17911d5f': 'UpdateRollups',    # Ensemble de mises à jour
