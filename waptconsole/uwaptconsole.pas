@@ -29,6 +29,10 @@ type
     ActCleanCache: TAction;
     ActAddADSGroups: TAction;
     ActHostsDeleteHostPackage: TAction;
+    ActWUANewGroup: TAction;
+    ActWUAProductsSelection: TAction;
+    ActWUAEditGroup: TAction;
+    ActWUALoadGroups: TAction;
     ActWUAProductShow: TAction;
     ActWUAProductHide: TAction;
     ActWUADownloadSelectedUpdate: TAction;
@@ -91,7 +95,11 @@ type
     BitBtn4: TBitBtn;
     BitBtn5: TBitBtn;
     BitBtn6: TBitBtn;
+    BitBtn7: TBitBtn;
     btAddGroup: TBitBtn;
+    btAddGroup1: TBitBtn;
+    btAddGroup2: TBitBtn;
+    btAddGroup3: TBitBtn;
     butInitWapt: TBitBtn;
     butRun: TBitBtn;
     butSearchPackages: TBitBtn;
@@ -99,7 +107,6 @@ type
     ButCancelHostTask: TBitBtn;
     ButHostSearch: TBitBtn;
     ButPackagesUpdate: TBitBtn;
-    Button1: TButton;
     cbSearchDMI: TCheckBox;
     cbSearchHost: TCheckBox;
     cbSearchPackages: TCheckBox;
@@ -122,18 +129,18 @@ type
     cbWUModerate: TCheckBox;
     cbWUOther: TCheckBox;
     CBWUProductsShowAll: TCheckBox;
-    ComboBox1: TComboBox;
     EdSoftwaresFilter: TEdit;
     EdRunningStatus: TEdit;
     EdSearchGroups: TEdit;
     GridGroups: TSOGrid;
+    GridWUAGroups: TSOGrid;
     GridHostWinUpdates: TSOGrid;
     GridHostTasksPending: TSOGrid;
     GridHostTasksDone: TSOGrid;
     GridHostTasksErrors: TSOGrid;
     GridWinproducts: TSOGrid;
-    GridWUContent: TSOGrid;
     GridWinUpdates: TSOGrid;
+    GridWUContent1: TSOGrid;
     HostRunningTaskLog: TMemo;
     ActionsImages: TImageList;
     Image1: TImage;
@@ -144,7 +151,7 @@ type
     Label13: TLabel;
     Label14: TLabel;
     Label15: TLabel;
-    Label16: TLabel;
+    Label17: TLabel;
     LabelComputersNumber: TLabel;
     labSelected: TLabel;
     MemoTaskLog: TMemo;
@@ -197,17 +204,19 @@ type
     panbaswinupdates: TPanel;
     Panel11: TPanel;
     Panel12: TPanel;
+    Panel13: TPanel;
     Panel16: TPanel;
+    Panel17: TPanel;
+    Panel8: TPanel;
     PopupWUAProducts: TPopupMenu;
-    wupanleft: TPanel;
-    Panel14: TPanel;
+    Splitter7: TSplitter;
+    pgWindowsUpdates: TTabSheet;
     Panel15: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
     Panel5: TPanel;
     Panel6: TPanel;
     wupanright: TPanel;
-    panhautwinupdates: TPanel;
     plStatusBar1: TplStatusBar;
     PopupHostPackages: TPopupMenu;
     PopupWUAUpdates: TPopupMenu;
@@ -327,11 +336,10 @@ type
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
     procedure ActDeployWaptExecute(Sender: TObject);
-    procedure ActWUAForbidSelectedUpdatesExecute(Sender: TObject);
+    procedure ActWUAEditGroupExecute(Sender: TObject);
     procedure ActWUADownloadSelectedUpdateUpdate(Sender: TObject);
     procedure ActEditGroupExecute(Sender: TObject);
     procedure ActEditHostPackageExecute(Sender: TObject);
-    procedure ActWUAAllowSelectedUpdatesExecute(Sender: TObject);
     procedure ActEnglishExecute(Sender: TObject);
     procedure ActEnglishUpdate(Sender: TObject);
     procedure ActForgetPackagesExecute(Sender: TObject);
@@ -351,13 +359,11 @@ type
     procedure ActRefreshHostInventoryExecute(Sender: TObject);
     procedure ActRemoveConflictsExecute(Sender: TObject);
     procedure ActRemoveDependsExecute(Sender: TObject);
-    procedure ActWUAProductAllowExecute(Sender: TObject);
+    procedure ActWUANewGroupExecute(Sender: TObject);
     procedure ActWUAProductHideExecute(Sender: TObject);
     procedure ActWUAProductShowExecute(Sender: TObject);
-    procedure ActWUAResetSelectedUpdatesExecute(Sender: TObject);
+    procedure ActWUAProductsSelectionExecute(Sender: TObject);
     procedure ActRestoreDefaultLayoutExecute(Sender: TObject);
-    procedure ActWUASaveUpdatesGroupExecute(Sender: TObject);
-    procedure ActWUASaveUpdatesGroupUpdate(Sender: TObject);
     procedure ActSearchGroupsExecute(Sender: TObject);
     procedure ActTriggerHostUpdateExecute(Sender: TObject);
     procedure ActTriggerHostUpgradeExecute(Sender: TObject);
@@ -458,6 +464,7 @@ type
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: Boolean; var ImageIndex: Integer;
       var ImageList: TCustomImageList);
+    procedure GridWUAGroupsClick(Sender: TObject);
     procedure HostPagesChange(Sender: TObject);
     procedure Image1Click(Sender: TObject);
     procedure MainPagesChange(Sender: TObject);
@@ -486,10 +493,8 @@ type
 
     MainRepoUrl, WAPTServer, TemplatesRepoUrl: string;
 
-    WUAProducts : ISUperObject;
-
-    WinupdatesModified:Boolean;
-    AllowedWinUpdates,ForbiddenWinUpdates,AllowedSeverities:TStringList;
+    WUAProducts : ISuperObject;
+    WUAWinUpdates : ISuperObject;
 
     constructor Create(TheOwner: TComponent); override;
 
@@ -503,11 +508,11 @@ var
 
 implementation
 
-uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, tisstrings,
-  soutils, waptcommon, tiscommon, uVisCreateKey, uVisCreateWaptSetup,
-  dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig,
-  uvischangepassword, uvisgroupchoice, uviswaptdeploy,
-  uvishostsupgrade, uVisAPropos, uVisImportPackage, PythonEngine, Clipbrd,
+uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, tisstrings, soutils,
+  waptcommon, tiscommon, uVisCreateKey, uVisCreateWaptSetup, dmwaptpython,
+  uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
+  uvisgroupchoice, uviswaptdeploy, uvishostsupgrade, uVisAPropos,
+  uVisImportPackage, uVisWUAGroup, uVisWAPTWUAProducts, PythonEngine, Clipbrd,
   RegExpr, tisinifiles;
 
 {$R *.lfm}
@@ -1596,23 +1601,18 @@ begin
     end;
 end;
 
-procedure TVisWaptGUI.ActWUAForbidSelectedUpdatesExecute(Sender: TObject);
-var
-  wupdate:ISuperObject;
-  idx:Integer;
-  update_id:String;
+procedure TVisWaptGUI.ActWUAEditGroupExecute(Sender: TObject);
 begin
-  for wupdate in GridWinUpdates.SelectedRows do
-  begin
-    wupdate.S['status'] := 'FORBIDDEN';
-    update_id:=wupdate.S['update_id'];
-    ForbiddenWinUpdates.Add(update_id);
-    idx := AllowedWinUpdates.IndexOf(update_id);
-    if idx>=0 then
-      AllowedWinUpdates.Delete(idx);
+  With TVisWUAGroup.Create(Self) do
+  try
+    WUAGroup:=GridWUAGroups.FocusedRow.S['group'];
+    if ShowModal = mrOK then
+      ActWUALoadGroups.Execute;
+
+  finally
+    Free;
   end;
-  WinupdatesModified:=True;
-  GridWinUpdates.Invalidate;
+
 end;
 
 procedure TVisWaptGUI.ActWUADownloadSelectedUpdateUpdate(Sender: TObject);
@@ -1646,25 +1646,6 @@ begin
     if EditHost(hostname, ActAdvancedMode.Checked, uuid) <> nil then
       ActSearchHost.Execute;
   end;
-end;
-
-procedure TVisWaptGUI.ActWUAAllowSelectedUpdatesExecute(Sender: TObject);
-var
-  wupdate:ISuperObject;
-  idx:Integer;
-  update_id:String;
-begin
-  for wupdate in GridWinUpdates.SelectedRows do
-  begin
-    wupdate.S['status'] := 'ALLOWED';
-    update_id:=wupdate.S['update_id'];
-    AllowedWinUpdates.Add(update_id);
-    idx := ForbiddenWinUpdates.IndexOf(update_id);
-    if idx>=0 then
-      ForbiddenWinUpdates.Delete(idx);
-  end;
-  WinupdatesModified:=True;
-  GridWinUpdates.Invalidate;
 end;
 
 procedure TVisWaptGUI.ActEnglishExecute(Sender: TObject);
@@ -1845,15 +1826,6 @@ begin
 
     soresult := WAPTServerJsonGet('api/v2/windows_updates?%s',[soutils.Join('&', urlParams)]);
     winupdates := soResult['result'];
-    for winupdate in winupdates do
-    begin
-      update_id:=winupdate.S['update_id'];
-      if AllowedWinUpdates.IndexOf(update_id)>=0 then
-        winupdate.S['status'] := 'ALLOWED'
-      else
-      if ForbiddenWinUpdates.IndexOf(update_id)>=0 then
-        winupdate.S['status'] := 'FORBIDDEN';
-    end;
 
     GridWinUpdates.Data := winupdates;
 
@@ -2086,22 +2058,16 @@ begin
   end;
 end;
 
-procedure TVisWaptGUI.ActWUAProductAllowExecute(Sender: TObject);
-var
-  wupdate,wselection:ISuperObject;
-  idx:Integer;
-  update_id:String;
+procedure TVisWaptGUI.ActWUANewGroupExecute(Sender: TObject);
 begin
-  if GridWUContent.Data = Nil then
-    GridWUContent.data := TSuperObject.create(stArray);
-  for wupdate in GridWinproducts.SelectedRows do
-  begin
-    wselection := TSuperObject.Create();
-    wselection['product'] := wupdate['title'];
-    wselection['product_id'] := wupdate['product'];
-    GridWUContent.Data.AsArray.Add(wselection);
+  With TVisWUAGroup.Create(Self) do
+  try
+    WUAGroup:='';
+    if ShowModal = mrOK then
+      ActWUALoadGroups.Execute;
+  finally
+    Free;
   end;
-  TSOGrid(GridWUContent).LoadData;
 end;
 
 procedure TVisWaptGUI.ActWUAProductHideExecute(Sender: TObject);
@@ -2122,25 +2088,15 @@ begin
   GridWinproducts.Data := FilterWinProducts(WUAProducts);
 end;
 
-procedure TVisWaptGUI.ActWUAResetSelectedUpdatesExecute(Sender: TObject);
-var
-  wupdate:ISuperObject;
-  idx:Integer;
-  update_id:String;
+procedure TVisWaptGUI.ActWUAProductsSelectionExecute(Sender: TObject);
 begin
-  for wupdate in GridWinUpdates.SelectedRows do
-  begin
-    wupdate.Delete('status');
-    update_id:=wupdate.S['update_id'];
-    idx := ForbiddenWinUpdates.IndexOf(update_id);
-    if idx>=0 then
-      ForbiddenWinUpdates.Delete(idx);
-    idx := AllowedWinUpdates.IndexOf(update_id);
-    if idx>=0 then
-      AllowedWinUpdates.Delete(idx);
+  With TVisWUAProducts.Create(self) do
+  try
+    if ShowModal = mrOk then
+      ActWUALoadGroups.Execute;
+  finally
+    Free;
   end;
-  WinupdatesModified:=True;
-  GridWinUpdates.Invalidate;
 end;
 
 procedure TVisWaptGUI.ActRestoreDefaultLayoutExecute(Sender: TObject);
@@ -2150,24 +2106,6 @@ begin
   GridGroups.LoadSettingsFromIni(Appuserinipath+'.default');
   GridHostPackages.LoadSettingsFromIni(Appuserinipath+'.default');
   GridHostSoftwares.LoadSettingsFromIni(Appuserinipath+'.default');
-end;
-
-procedure TVisWaptGUI.ActWUASaveUpdatesGroupExecute(Sender: TObject);
-var
-  wsus_restrictions :ISuperObject;
-begin
-  wsus_restrictions := TSuperObject.Create();
-  wsus_restrictions.S['group'] := 'default';
-  wsus_restrictions['allowed'] := StringList2SuperObject(AllowedWinUpdates);
-  wsus_restrictions['forbidden'] := StringList2SuperObject(ForbiddenWinUpdates);
-  wsus_restrictions['allowed_severities'] := StringList2SuperObject(AllowedSeverities);
-  WAPTServerJsonPost('api/v2/windows_updates_restrictions?group=%s',['default'],wsus_restrictions);
-  WinUpdatesModified := False;
-end;
-
-procedure TVisWaptGUI.ActWUASaveUpdatesGroupUpdate(Sender: TObject);
-begin
-  ActWUASaveUpdatesGroup.Enabled:=WinupdatesModified;
 end;
 
 procedure TVisWaptGUI.ActSearchGroupsExecute(Sender: TObject);
@@ -3125,6 +3063,11 @@ begin
   end;
 end;
 
+procedure TVisWaptGUI.GridWUAGroupsClick(Sender: TObject);
+begin
+  GridWUContent1.Data := GridWUAGroups.FocusedRow['rules'];
+end;
+
 procedure TVisWaptGUI.HostPagesChange(Sender: TObject);
 begin
   UpdateHostPages(Sender);
@@ -3180,7 +3123,7 @@ end;
 
 procedure TVisWaptGUI.MainPagesChange(Sender: TObject);
 var
-  wsus_restrictions:ISuperObject;
+  wsus_restrictions,wsus_rules:ISuperObject;
 begin
   if MainPages.ActivePage = pgInventory then
   try
@@ -3207,31 +3150,16 @@ begin
   end
   else if MainPages.ActivePage = pgWinUpdates then
   begin
-    if (AllowedWinUpdates=Nil) or (ForbiddenWinUpdates=Nil) then
-    begin
-      AllowedWinUpdates := TStringList.Create();
-      //AllowedWinUpdates.Sorted:=True;
-
-      ForbiddenWinUpdates := TStringList.Create();
-      //ForbiddenWinUpdates.Sorted:=True;
-
-      AllowedSeverities := TStringList.Create();
-
-      wsus_restrictions := WAPTServerJsonGet('api/v2/windows_updates_restrictions?group=%s',['default'])['result'];
-      if wsus_restrictions.AsArray.Length>0 then
-      begin
-        AllowedWinUpdates.Text:=Join(#13#10,wsus_restrictions.AsArray[0]['allowed']);
-        ForbiddenWinUpdates.Text:=Join(#13#10,wsus_restrictions.AsArray[0]['forbidden']);
-        AllowedSeverities.Text:=Join(#13#10,wsus_restrictions.AsArray[0]['allowed_severities']);
-      end;
-
-      WinupdatesModified:=False;
-    end;
-
     WUAProducts := WAPTServerJsonGet('api/v2/windows_products',[])['result'];
     GridWinproducts.Data := FilterWinproducts(WUAProducts);
     ActWUALoadUpdates.Execute;
-  end;
+  end
+  else if MainPages.ActivePage = pgWindowsUpdates then
+  begin
+      wsus_rules := WAPTServerJsonGet('api/v2/windows_updates_rules',[])['result'];
+      GridWUAGroups.data := wsus_rules;
+  end
+
 end;
 
 function TVisWaptGUI.updateprogress(receiver: TObject;

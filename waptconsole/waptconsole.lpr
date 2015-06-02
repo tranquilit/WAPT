@@ -13,7 +13,8 @@ uses
   dmwaptpython, uVisEditPackage, uviscreatewaptsetup,
   uvislogin, uvisprivatekeyauth, uvisloading, uviswaptconfig,
   uvischangepassword, uviswaptdeploy, uvishostsupgrade, uVisAPropos,
-  uVisImportPackage, uwaptconsoleres,waptcommon;
+  uVisImportPackage, uwaptconsoleres,waptcommon, uVisWUAGroup,
+uVisWAPTWUAProducts;
 
 {$R *.res}
 

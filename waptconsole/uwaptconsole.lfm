@@ -25,7 +25,7 @@ object VisWaptGUI: TVisWaptGUI
     Height = 486
     Top = 0
     Width = 955
-    ActivePage = pgWinUpdates
+    ActivePage = pgWindowsUpdates
     Align = alClient
     TabIndex = 4
     TabOrder = 0
@@ -452,9 +452,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 369
         Top = 91
         Width = 572
-        ActivePage = pgPackages
+        ActivePage = pgSoftwares
         Align = alRight
-        TabIndex = 0
+        TabIndex = 2
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -894,11 +894,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgSoftwares: TTabSheet
           Caption = 'Software inventory'
-          ClientHeight = 293
+          ClientHeight = 343
           ClientWidth = 564
           object GridHostSoftwares: TSOGrid
             Left = 0
-            Height = 263
+            Height = 313
             Top = 30
             Width = 564
             Align = alClient
@@ -2899,42 +2899,363 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
     end
-    object pgWinUpdates: TTabSheet
-      Caption = 'Windows Updates'
+    object pgWindowsUpdates: TTabSheet
+      Caption = 'Windows Updates Bundles'
       ClientHeight = 460
       ClientWidth = 947
-      object panhautwinupdates: TPanel
+      object GridWUAGroups: TSOGrid
         Left = 0
-        Height = 30
+        Height = 426
+        Top = 34
+        Width = 242
+        OnGetText = GridGroupsGetText
+        Align = alLeft
+        Color = clWhite
+        Header.AutoSizeIndex = -1
+        Header.Columns = <        
+          item
+            Position = 0
+            Tag = 1
+            Text = 'WUA Group'
+            Width = 100
+            PropertyName = 'group'
+          end        
+          item
+            MaxWidth = 400
+            Position = 1
+            Tag = 2
+            Text = 'Description'
+            Width = 240
+            PropertyName = 'description'
+          end>
+        Header.DefaultHeight = 17
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+        Header.Style = hsFlatButtons
+        PopupMenu = PopupMenuGroups
+        TabOrder = 0
+        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize]
+        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
+        TreeOptions.SelectionOptions = [toDisableDrawSelection, toMultiSelect, toRightClickSelect, toSimpleDrawSelection]
+        WantTabs = True
+        OnClick = GridWUAGroupsClick
+        OnColumnDblClick = GridGroupsColumnDblClick
+        OnPaintText = GridPackagesPaintText
+        OnInitNode = GridGroupsInitNode
+        OnMeasureItem = GridGroupsMeasureItem
+      end
+      object Panel8: TPanel
+        Left = 0
+        Height = 34
         Top = 0
         Width = 947
         Align = alTop
         BevelOuter = bvNone
-        ClientHeight = 30
+        ClientHeight = 34
         ClientWidth = 947
-        TabOrder = 0
-        object Button1: TButton
-          Left = 296
+        TabOrder = 1
+        object btAddGroup1: TBitBtn
+          Left = 148
           Height = 25
           Top = 2
-          Width = 75
-          Action = ActWUALoadUpdates
+          Width = 184
+          Action = ActWUANewGroup
+          Glyph.Data = {
+            36040000424D3604000000000000360000002800000010000000100000000100
+            2000000000000004000064000000640000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            000000000000000000000E5613000F5714002270310025783981257739812270
+            3200115816001159160000000000000000000000000000000000000000000000
+            00000000000000000000176220001B63230026914EF3169A4FFF15994FFF2591
+            4EF61D6626001B66260000000000000000000000000000000000000000000000
+            000000000000000000001B6927001E6928001F9D52F507A74FFF07A64EFF1E9B
+            51F7206A2A001E6B2A0000000000000000000000000000000000000000001058
+            15000F5613001A6424001E6928002370300020A958F908B656FF08B455FF20A6
+            57FA2470300020692A001C6425000F5613001057150000000000000000002772
+            3400226B2C003E9B5FF32BA45CF721AB5AF916BE60FE09C45CFF09C15BFF16B9
+            5DFE20A556F91E9A50F7278D4CF31E682900236E300000000000000000002F7B
+            3F00287134004DAE74FC41BF7AFF2EC471FF1DCB6AFF13D268FF0DCC62FF0ABE
+            5AFF08B154FF07A24CFF1C954EFC226D2F002876390000000000000000002F7B
+            3F002871340050B077FC4DC382FF47CB82FF40D381FF37D87FFF2DD277FF25C5
+            6CFF1EB763FF19A959FF269956FC236E300029763A0000000000000000002772
+            3500226B2C004BA068F34EB075F64BB776F94ACB82FE3FCF7FFF39CC7AFF3BC2
+            76FE37AC67F931A15EF7329154F41F682900246F310000000000000000001058
+            15000F5613001E662600226B2C002571310049B574F943C67EFF3CC378FF3FB0
+            6DFA2570310021692A001D6425000F5613001057150000000000000000000000
+            000000000000000000001D6A28001F6929004AAC70F547BD7CFF40B976FF40A7
+            69F7216A2B00216C2C0000000000000000000000000000000000000000000000
+            00000000000000000000186221001B6323004AA069F34EB078FF48AD74FF439D
+            64F61E6627001D67270000000000000000000000000000000000000000000000
+            000000000000000000000F5613000F5614002A733700327D4381317C42812973
+            3700115816001159170000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000
+          }
           TabOrder = 0
         end
-        object ComboBox1: TComboBox
-          Left = 108
-          Height = 21
-          Top = 6
-          Width = 172
-          ItemHeight = 13
+        object btAddGroup2: TBitBtn
+          Left = 4
+          Height = 25
+          Top = 2
+          Width = 128
+          Action = ActWUALoadGroups
+          Glyph.Data = {
+            36040000424D3604000000000000360000002800000010000000100000000100
+            2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00004D0000004D0000004D00BA014F03ED014E02EE004D
+            00C0004D0085004D0000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00004D0000004D0000085F0DF40C8116FD1AA931FF16CF29FF10E21EFF12C6
+            21FF078F0DFE05590AF4004D0000004D0000FFFFFF00FFFFFF00FFFFFF00004D
+            0000004D00B80E701BF8149B26FF17A62BFF19B330FF12C723FF0ED31BFF0FD1
+            1CFF14C326FF1EAA3AFC0F731CEE004E00B2004D0000FFFFFF00FFFFFF00004D
+            00000A6513FA06920BFF0B9916FF12A123FF18A82FFF1AB131FF17B92CFF17B8
+            2CFF1BAE33FF17A62CD9159F25AE065E0ADC004D0000FFFFFF00004D00000555
+            09F7057609FF018E03FF07930DFF0D9A18FF179E2BFF148B26FE158B29FE19A3
+            32FA15A428DC119F20AF0B991686098C110004650800FFFFFF00004E0000074C
+            0CFE006B00FF008200FF028F05FF07861AFE065C0AF4004E01A9014F01AA0453
+            07F40C7016BD0A97120005920B00018D030006640B0000600000025404C40446
+            08FF005900FF006E00FF047807FF045809F7004D0000FFFFFF00FFFFFF00004D
+            0000014E02B9047B0600007E0200046C0800075C0D00FFFFFF00055B0AFA0850
+            08FF085408FF035B03FF045608FF015002B9FFFFFF00FFFFFF00FFFFFF00004D
+            0000004D0000034D0500024E0500014F0300004E0000FFFFFF00075F0DF5276E
+            27FF2B752BFF156115FF044907FF025003B0FFFFFF00FFFFFF0008560C000A64
+            12FF10A012FF159718FF158818FF08710BFF06660AFF035706B6055808C52C71
+            2FFF3A843AFF2C752CFF024C04FF07560EF5004D0000FFFFFF00004D00000752
+            0DF6048F05FF1CAE1CFF37B237FF3BA63BFF2C8F2CFF065F0CFE004E01842C74
+            30FE4C944CFF4C944CFF1F681FFF05520AFE07560EF8025004B4024F03B10751
+            0DF8036206FE067D06FF44A744FF4CA64CFF4DA04DFF06610BFF004D00001065
+            15F7579C57FF5DA45DFF5AA05AFF286F28FF024E03FF074B0AFF105113FF034F
+            05FF166A16FF4C9D4CFF5DAB5DFF5DAA5DFF60A960FF056008FFFFFFFF00004F
+            01002D7C32FA70B470FF6DB36DFF6EB36EFF5BA05BFF408740FF418641FF64A3
+            64FF6DB36DFF6DB36DFF6FB46FFF6FB26FFF71B571FF035F06FFFFFFFF00004D
+            0000015402C1398C3BFA7CBD7CFF7EC37EFF7EC37EFF7EC37EFF7EC37EFF7EC3
+            7EFF7EC37EFF7BBD7BFF3F8F41FA0F7212FB72B673FF025F04FFFFFFFF00FFFF
+            FF00004D0000004E0000137013F75EA55EFF79BA79FF92CE92FF95D095FF86C1
+            86FF63A863FF126E12F7004F0000004D00000E680FF2075908EAFFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00004D0000004F0000035B03C0247624F1378237F31668
+            16C900500085004D0000FFFFFF00FFFFFF00004D0000004D0000
+          }
           TabOrder = 1
-          Text = 'ComboBox1'
+        end
+        object btAddGroup3: TBitBtn
+          Left = 372
+          Height = 25
+          Top = 2
+          Width = 112
+          Action = ActWUAEditGroup
+          Glyph.Data = {
+            36040000424D3604000000000000360000002800000010000000100000000100
+            2000000000000004000064000000640000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000FFFFFFFFDDDFE1FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFDFCFAFFD3D0
+            CAFF656665BA0000000000000000000000000000000000000000000000000000
+            0000FFFFFFFF919496FF5A747DFFC5DCE5FFFAFBFBFFFEFEFEFFFBFBFBFFC2C2
+            C2FFF2F2F2FF6B6C6BD200000000000000000000000000000000000000000000
+            0000FFFFFFFFDDE2E5FF79B6CAFF49A2BDFF54A7C2FF9EBEC9FFD2D2D2FFAAAA
+            AAFFFEFEFEFFF3F3F3FF6B6C6BD2000000000000000000000000000000000000
+            0000FFFFFFFFF8F8F8FFB1CFDCFF628D9BFF205666FF1EB8E9FF83979DFF6969
+            69FFECECECFFFEFEFEFFF2F2F2FF656564BB0000000000000000000000000000
+            0000FFFFFFFFF7F7F7FFB0DAE8FF428FA6FF252626FF1C6176FF27B8E4FF838D
+            90FF747474FFB2B2B2FFC8C8C8FFD7D5D1FF0000000000000000000000000000
+            0000FFFFFFFFF6F6F6FFF2F6F7FF83D9F4FF4E8292FF252525FF18728EFF35B6
+            DDFFA1A4A5FFBFBFBFFFFAFAFAFFFEFEFDFF0000000000000000000000000000
+            0000FFFFFFFFF5F5F5FFF7F7F7FFEAF4F7FF7FD8F4FF446F7CFF252626FF1381
+            A3FF49B5D6FFACADADFFD0D0D0FFFEFEFEFF0000000000000000000000000000
+            0000FFFFFFFFF4F4F3FFF6F6F5FFF8F8F8FFDFF0F5FF6FD3F2FF3E5C66FF2328
+            2AFF0F8DB5FF60B5D0FFB5B5B5FFE1E1E1FF0000000000000000000000000000
+            0000FFFFFFFFF2F2F1FFF4F4F4FFF6F6F6FFF8F8F8FFCFEBF4FF60CCEDFF374F
+            56FF1F2B2FFF0B97C3FF79B8CBFFC1C1C1FF0000000000000000000000000000
+            0000FEFEFEFFF0F0F0FFF2F2F2FFF4F4F4FFF6F6F5FFF7F7F7FFB9E4F1FF44BA
+            E0FF2B393EFF192F36FF0EA1CFFF93BFCDFF0000000000000000000000000000
+            0000FEFEFEFFEEEEEEFFF0F0F0FFF2F2F1FFF3F3F3FFF5F5F4FFF6F6F6FF9CDA
+            EEFF33ACD1FF262E31FF10333EFF15A8D7FF0442550000000000000000000000
+            0000FEFEFEFFEDEDECFFEEEEEDFFF0F0EFFFF1F1F1FFF2F2F2FFF4F4F3FFF4F4
+            F4FF7AD1ECFF2094B8FF232626FF0B3E4EFF04A3D5E404485D00000000000000
+            0000FEFEFEFFEAEAE9FFECECEBFFEEEEEDFFEFEFEEFFF0F0F0FFF1F1F0FFF2F2
+            F1FFF0F2F1FF5AC9EBFF1D82A2FF1F1F1FFF033C71FB0216A3D5000000000000
+            0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+            FFFFFFFFFFFFF6FAFCFF47C7EFFF26649FFF2323C6FF0C0CBCC4000000000000
+            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000002334600484FD4DC3838D0BA4444D000
+          }
+          TabOrder = 2
+        end
+        object BitBtn7: TBitBtn
+          Left = 516
+          Height = 25
+          Top = 2
+          Width = 168
+          Action = ActWUAProductsSelection
+          TabOrder = 3
         end
       end
+      object Panel13: TPanel
+        Left = 247
+        Height = 426
+        Top = 34
+        Width = 700
+        Align = alClient
+        BevelOuter = bvNone
+        Caption = 'Panel13'
+        ClientHeight = 426
+        ClientWidth = 700
+        TabOrder = 2
+        object GridWUContent1: TSOGrid
+          Left = 0
+          Height = 398
+          Top = 28
+          Width = 700
+          Align = alClient
+          BorderSpacing.Top = 2
+          Color = clWhite
+          Header.AutoSizeIndex = -1
+          Header.Columns = <          
+            item
+              Position = 0
+              Text = 'Status'
+              PropertyName = 'status'
+            end          
+            item
+              Position = 1
+              Tag = 1
+              Text = 'Product'
+              Width = 126
+              PropertyName = 'product_id'
+            end          
+            item
+              Position = 2
+              Tag = 2
+              Text = 'Severity'
+              Width = 70
+              PropertyName = 'msrc_severity'
+            end          
+            item
+              Position = 3
+              Tag = 3
+              Text = 'KB Article'
+              Width = 62
+              PropertyName = 'kb_article_id'
+            end          
+            item
+              Position = 4
+              Tag = 4
+              Text = 'Title'
+              Width = 353
+              PropertyName = 'title'
+            end          
+            item
+              Position = 5
+              Tag = 5
+              Text = 'Description'
+              Width = 100
+              PropertyName = 'description'
+            end          
+            item
+              Position = 6
+              Tag = 6
+              Text = 'Categories'
+              Width = 121
+              PropertyName = 'categories'
+            end          
+            item
+              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+              Position = 7
+              Tag = 7
+              Text = 'Update Id'
+              Width = 225
+              PropertyName = 'update_id'
+            end          
+            item
+              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+              Position = 8
+              Tag = 8
+              Text = '_id'
+              Width = 100
+              PropertyName = '_id'
+            end          
+            item
+              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+              Position = 9
+              Tag = 9
+              Text = 'Revision Id'
+              Width = 81
+              PropertyName = 'revision_id'
+            end          
+            item
+              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+              Position = 10
+              Tag = 10
+              Text = 'prereqs'
+              Width = 100
+              PropertyName = 'prereqs'
+            end          
+            item
+              Position = 11
+              Tag = 11
+              Text = 'Security Bulletin ID'
+              Width = 61
+              PropertyName = 'security_bulletin_id'
+            end          
+            item
+              Position = 12
+              Tag = 12
+              Text = 'Date'
+              PropertyName = 'creation_date'
+            end>
+          Header.DefaultHeight = 17
+          Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+          Header.SortDirection = sdDescending
+          Header.Style = hsFlatButtons
+          Images = ImageList1
+          TabOrder = 0
+          TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+          TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+          TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
+          TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
+          WantTabs = True
+          OnGetImageIndexEx = GridWinUpdatesGetImageIndexEx
+        end
+        object Panel17: TPanel
+          Left = 0
+          Height = 26
+          Top = 0
+          Width = 700
+          Align = alTop
+          BevelOuter = bvNone
+          ClientHeight = 26
+          ClientWidth = 700
+          TabOrder = 1
+          object Label17: TLabel
+            Left = 10
+            Height = 13
+            Top = 8
+            Width = 141
+            Caption = 'Windows updates restrictions'
+            ParentColor = False
+          end
+        end
+      end
+      object Splitter7: TSplitter
+        Left = 242
+        Height = 426
+        Top = 34
+        Width = 5
+      end
+    end
+    object pgWinUpdates: TTabSheet
+      Caption = 'Windows Updates'
+      ClientHeight = 460
+      ClientWidth = 947
       object Splitter6: TSplitter
-        Left = 447
-        Height = 380
-        Top = 30
+        Left = 0
+        Height = 410
+        Top = 0
         Width = 5
       end
       object panbaswinupdates: TPanel
@@ -2946,7 +3267,7 @@ object VisWaptGUI: TVisWaptGUI
         BevelOuter = bvNone
         ClientHeight = 50
         ClientWidth = 947
-        TabOrder = 2
+        TabOrder = 1
         object BitBtn3: TBitBtn
           Left = 8
           Height = 30
@@ -2981,21 +3302,21 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
       object wupanright: TPanel
-        Left = 452
-        Height = 380
-        Top = 30
-        Width = 495
+        Left = 5
+        Height = 410
+        Top = 0
+        Width = 942
         Align = alClient
         BevelOuter = bvNone
         Caption = 'wupanright'
-        ClientHeight = 380
-        ClientWidth = 495
-        TabOrder = 3
+        ClientHeight = 410
+        ClientWidth = 942
+        TabOrder = 2
         object GridWinUpdates: TSOGrid
           Left = 0
-          Height = 157
+          Height = 187
           Top = 223
-          Width = 495
+          Width = 942
           Align = alClient
           BorderSpacing.Top = 2
           Color = clWhite
@@ -3102,11 +3423,11 @@ object VisWaptGUI: TVisWaptGUI
           Left = 0
           Height = 25
           Top = 0
-          Width = 495
+          Width = 942
           Align = alTop
           BevelOuter = bvNone
           ClientHeight = 25
-          ClientWidth = 495
+          ClientWidth = 942
           TabOrder = 1
           object CBWUProductsShowAll: TCheckBox
             Left = 3
@@ -3122,7 +3443,7 @@ object VisWaptGUI: TVisWaptGUI
           Left = 0
           Height = 169
           Top = 27
-          Width = 495
+          Width = 942
           OnGetText = GridHostWinUpdatesGetText
           Align = alTop
           BorderSpacing.Top = 2
@@ -3163,11 +3484,11 @@ object VisWaptGUI: TVisWaptGUI
           Left = 0
           Height = 25
           Top = 196
-          Width = 495
+          Width = 942
           Align = alTop
           BevelOuter = bvNone
           ClientHeight = 25
-          ClientWidth = 495
+          ClientWidth = 942
           TabOrder = 3
           object cbWUCritical: TCheckBox
             Left = 0
@@ -3216,151 +3537,6 @@ object VisWaptGUI: TVisWaptGUI
             OnClick = cbWUCriticalClick
             TabOrder = 4
           end
-        end
-      end
-      object wupanleft: TPanel
-        Left = 0
-        Height = 380
-        Top = 30
-        Width = 447
-        Align = alLeft
-        Caption = 'wupanleft'
-        ClientHeight = 380
-        ClientWidth = 447
-        TabOrder = 4
-        object Panel14: TPanel
-          Left = 1
-          Height = 19
-          Top = 1
-          Width = 445
-          Align = alTop
-          BevelOuter = bvNone
-          ClientHeight = 19
-          ClientWidth = 445
-          TabOrder = 0
-          object Label16: TLabel
-            Left = 5
-            Height = 13
-            Top = 6
-            Width = 164
-            Caption = 'Windows Updates group content :'
-            ParentColor = False
-          end
-        end
-        object GridWUContent: TSOGrid
-          Left = 1
-          Height = 357
-          Top = 22
-          Width = 445
-          Align = alClient
-          BorderSpacing.Top = 2
-          Color = clWhite
-          Header.AutoSizeIndex = -1
-          Header.Columns = <          
-            item
-              Position = 0
-              Text = 'Status'
-              PropertyName = 'status'
-            end          
-            item
-              Position = 1
-              Tag = 1
-              Text = 'Product'
-              Width = 126
-              PropertyName = 'product_id'
-            end          
-            item
-              Position = 2
-              Tag = 2
-              Text = 'Severity'
-              Width = 70
-              PropertyName = 'msrc_severity'
-            end          
-            item
-              Position = 3
-              Tag = 3
-              Text = 'KB Article'
-              Width = 62
-              PropertyName = 'kb_article_id'
-            end          
-            item
-              Position = 4
-              Tag = 4
-              Text = 'Title'
-              Width = 353
-              PropertyName = 'title'
-            end          
-            item
-              Position = 5
-              Tag = 5
-              Text = 'Description'
-              Width = 100
-              PropertyName = 'description'
-            end          
-            item
-              Position = 6
-              Tag = 6
-              Text = 'Categories'
-              Width = 121
-              PropertyName = 'categories'
-            end          
-            item
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 7
-              Tag = 7
-              Text = 'Update Id'
-              Width = 225
-              PropertyName = 'update_id'
-            end          
-            item
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 8
-              Tag = 8
-              Text = '_id'
-              Width = 100
-              PropertyName = '_id'
-            end          
-            item
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 9
-              Tag = 9
-              Text = 'Revision Id'
-              Width = 81
-              PropertyName = 'revision_id'
-            end          
-            item
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 10
-              Tag = 10
-              Text = 'prereqs'
-              Width = 100
-              PropertyName = 'prereqs'
-            end          
-            item
-              Position = 11
-              Tag = 11
-              Text = 'Security Bulletin ID'
-              Width = 61
-              PropertyName = 'security_bulletin_id'
-            end          
-            item
-              Position = 12
-              Tag = 12
-              Text = 'Date'
-              PropertyName = 'creation_date'
-            end>
-          Header.DefaultHeight = 17
-          Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-          Header.SortDirection = sdDescending
-          Header.Style = hsFlatButtons
-          Images = ImageList1
-          TabOrder = 1
-          TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
-          TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
-          TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
-          TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
-          WantTabs = True
-          OnGetImageIndexEx = GridWinUpdatesGetImageIndexEx
         end
       end
     end
@@ -3857,25 +4033,20 @@ object VisWaptGUI: TVisWaptGUI
     object ActWUAAllowSelectedUpdates: TAction
       Category = 'wua'
       Caption = 'Allow Selected Updates'
-      OnExecute = ActWUAAllowSelectedUpdatesExecute
       OnUpdate = ActWUADownloadSelectedUpdateUpdate
     end
     object ActWUAForbidSelectedUpdates: TAction
       Category = 'wua'
       Caption = 'Forbid Selected Updates'
-      OnExecute = ActWUAForbidSelectedUpdatesExecute
       OnUpdate = ActWUADownloadSelectedUpdateUpdate
     end
     object ActWUASaveUpdatesGroup: TAction
       Category = 'wua'
       Caption = 'Save'
-      OnExecute = ActWUASaveUpdatesGroupExecute
-      OnUpdate = ActWUASaveUpdatesGroupUpdate
     end
     object ActWUAResetSelectedUpdates: TAction
       Category = 'wua'
       Caption = 'Reset Selected'
-      OnExecute = ActWUAResetSelectedUpdatesExecute
     end
     object ActRefreshHostInventory: TAction
       Category = 'hosts'
@@ -3886,7 +4057,6 @@ object VisWaptGUI: TVisWaptGUI
     object ActWUAProductAllow: TAction
       Category = 'wua'
       Caption = 'Allow all updates for selected products'
-      OnExecute = ActWUAProductAllowExecute
     end
     object ActWUAProductAllowSeverity: TAction
       Category = 'wua'
@@ -3909,6 +4079,27 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'wua'
       Caption = 'Hide product'
       OnExecute = ActWUAProductHideExecute
+    end
+    object ActWUALoadGroups: TAction
+      Category = 'wua'
+      Caption = 'Refresh'
+      ImageIndex = 1
+    end
+    object ActWUAEditGroup: TAction
+      Category = 'wua'
+      Caption = 'Edit group'
+      ImageIndex = 18
+      OnExecute = ActWUAEditGroupExecute
+    end
+    object ActWUAProductsSelection: TAction
+      Category = 'wua'
+      Caption = 'Windows Products selection'
+      OnExecute = ActWUAProductsSelectionExecute
+    end
+    object ActWUANewGroup: TAction
+      Category = 'wua'
+      Caption = 'New Windows Updates bundle'
+      OnExecute = ActWUANewGroupExecute
     end
   end
   object PopupMenuPackages: TPopupMenu
