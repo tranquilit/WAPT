@@ -562,6 +562,12 @@ def wgets(url,proxies=None,verify_cert=False):
     else:
         r.raise_for_status()
 
+def default_http_headers():
+    return {
+        'cache-control':'no-cache',
+        'pragma':'no-cache',
+        'user-agent':'wapt/{}'.format(__version__),
+        }
 
 def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False):
     r"""Copy the contents of a file from a given URL to a local file.
@@ -610,7 +616,7 @@ def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_time
     if not os.path.isdir(dir):
         os.makedirs(dir)
 
-    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout,verify=verify_cert)
+    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout,verify=verify_cert,http_headers = default_http_headers )
 
     total_bytes = int(httpreq.headers['content-length'])
     # 1Mb max, 1kb min
