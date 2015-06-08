@@ -2187,10 +2187,13 @@ class WaptRepo(WaptRemoteRepo):
 
 
     def as_dict(self):
-        result = {}
-        attributes = ['name','repo_url','proxies','dnsdomain']
-        for att in attributes:
-            result[att] = getattr(self,att)
+        result = {
+            'name':self.name,
+            'repo_url':self._repo_url or self._cached_dns_repo_url,
+            'proxies':self.proxies,
+            'dnsdomain':self.dnsdomain,
+            'timeout':self.timeout,
+            }
         return result
 
 class WaptHostRepo(WaptRepo):
