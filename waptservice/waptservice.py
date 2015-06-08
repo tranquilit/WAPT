@@ -773,7 +773,7 @@ def package_icon():
         """Get icon from local cache or remote wapt directory, returns local filename"""
         icon_local_filename = os.path.join(icon_local_cache,package+'.png')
         if (not os.path.isfile(icon_local_filename) or os.path.getsize(icon_local_filename)<10):
-            if wapt().repositories[0].last_known_repo_url():
+            if wapt().repositories[0].repo_url:
                 proxies = wapt().repositories[0].proxies
                 repo_url = wapt().repositories[0].repo_url
                 timeout = wapt().repositories[0].timeout
@@ -1411,6 +1411,8 @@ class WaptTask(object):
             description = u"{}".format(self),
             pidlist = u"{0}".format(self.external_pids),
             notify_user = self.notify_user,
+            notify_server_on_start = self.notify_server_on_start,
+            notify_server_on_finish = self.notify_server_on_finish,
             ))
 
     def as_json(self):
