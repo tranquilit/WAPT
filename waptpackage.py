@@ -552,10 +552,14 @@ class WaptBaseRepo(object):
         self.name = name
         self._packages = None
         self.index = {}
-        self.packages_date = None
+        self._packages_date = None
 
     def _load_packages_index(self):
         self._packages = []
+        self._packages_date = None
+
+    def update(self):
+        return self._load_packages_index()
 
     @property
     def packages(self):
@@ -563,8 +567,14 @@ class WaptBaseRepo(object):
             self._load_packages_index()
         return self._packages
 
+    @property
+    def packages_date(self):
+        if self._packages is None:
+            self._load_packages_index()
+        return self._packages_date
+
     def need_update(self,last_modified=None):
-        """Check if index has changed on repo and local db needs an update
+        """Check if packges index has changed on repo and local db needs an update
 
         Compare date on local package index DB with the Packages file on remote
           repository with a HEAD http request.
@@ -587,7 +597,7 @@ class WaptBaseRepo(object):
             return True
         else:
             if not last_modified:
-                last_modified = self.packages_date
+                last_modified = self._packages_date
             if last_modified:
                 logger.debug(u'Check last-modified header for %s to avoid unecessary update' % (self.packages_url,))
                 current_update = self.is_available()
@@ -668,7 +678,7 @@ class WaptLocalRepo(WaptBaseRepo):
         """
         # Packages file is a zipfile with one Packages file inside
         if os.path.isfile(self.packages_path):
-            self.packages_date = datetime2isodate(datetime.datetime.utcfromtimestamp(os.stat(self.packages_path).st_mtime))
+            self._packages_date = datetime2isodate(datetime.datetime.utcfromtimestamp(os.stat(self.packages_path).st_mtime))
             packages_file = zipfile.ZipFile(self.packages_path)
             try:
                 packages_lines = packages_file.read(name='Packages').decode('utf8').splitlines()
@@ -710,7 +720,7 @@ class WaptLocalRepo(WaptBaseRepo):
         else:
             self._packages = []
             self.index.clear()
-            self.packages_date = None
+            self._packages_date = None
 
     def update_packages_index(self,force_all=False):
         """Scan self.localpath directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash
@@ -795,7 +805,7 @@ class WaptLocalRepo(WaptBaseRepo):
         """Check if repo is reachable an return last update date.
         """
         if os.path.isfile(self.packages_path):
-            return self.packages_date
+            return self._packages_date
         else:
             return None
 
@@ -907,7 +917,7 @@ class WaptRemoteRepo(WaptBaseRepo):
             url = url.rstrip('/')
         self.repo_url = url
 
-        self.packages_date = None
+        self._packages_date = None
         self._packages = None
 
         self.proxies = proxies
@@ -1042,7 +1052,7 @@ class WaptRemoteRepo(WaptBaseRepo):
         added = [ p for p in new_packages if not p in self._packages]
         removed = [ p for p in self._packages if not p in new_packages]
         self._packages = new_packages
-        self.packages_date = httpdatetime2isodate(packages_answer.headers['last-modified'])
+        self._packages_date = httpdatetime2isodate(packages_answer.headers['last-modified'])
         return {'added':added,'removed':removed,'last-modified': self.packages_date }
 
     @property
