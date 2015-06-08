@@ -1075,10 +1075,12 @@ class WaptRemoteRepo(WaptBaseRepo):
         return self._packages
 
     def as_dict(self):
-        result = {}
-        attributes = ['name','repo_url','proxies']
-        for att in attributes:
-            result[att] = getattr(self,att)
+        result = {
+            'name':self.name,
+            'repo_url':self._repo_url,
+            'proxies':self.proxies,
+            'timeout':self.timeout,
+            }
         return result
 
     def download_packages(self,package_requests,target_dir=None,usecache=True,printhook=None):
