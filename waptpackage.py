@@ -864,7 +864,7 @@ def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_time
     if not os.path.isdir(dir):
         os.makedirs(dir)
 
-    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout,verify=verify_cert)
+    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout,verify=verify_cert,headers=default_http_headers())
 
     total_bytes = int(httpreq.headers['content-length'])
     # 1Mb max, 1kb min
@@ -915,7 +915,7 @@ class WaptRemoteRepo(WaptBaseRepo):
         WaptBaseRepo.__init__(self,name=name)
         if url and url[-1]=='/':
             url = url.rstrip('/')
-        self.repo_url = url
+        self._repo_url = url
 
         self._packages_date = None
         self._packages = None
@@ -924,6 +924,19 @@ class WaptRemoteRepo(WaptBaseRepo):
         self.verify_cert = False
         self.timeout = timeout
 
+    @property
+    def repo_url(self):
+        return self._repo_url
+
+    @repo_url.setter
+    def repo_url(self,value):
+        if value:
+            value = value.rstrip('/')
+
+        if value != self._repo_url:
+            self._repo_url = value
+            self._packages = None
+            self._packages_date = None
 
     def load_config(self,config,section=None):
         """Load waptrepo configuration from inifile section.
