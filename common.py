@@ -2186,6 +2186,19 @@ class WaptRepo(WaptRemoteRepo):
             return waptdb.get_param('last-%s' % self.repo_url[:59])
 
 
+    def load_config(self,config,section=None):
+        """Load waptrepo configuration from inifile section.
+                Use name of repo as section name if section is not provided.
+                Use 'global' if no section named section in ini file
+        """
+        WaptRemoteRepo.load_config(self,config,section)
+        if section is None:
+			section = 'global'
+        if config.has_section(section) and config.has_option(section,'dnsdomain'):
+            self.dnsdomain = config.get(section,'dnsdomain')
+        return self
+
+
     def as_dict(self):
         result = {
             'name':self.name,
