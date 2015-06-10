@@ -379,7 +379,8 @@ class WaptWUA(object):
                 else:
                     # assume all is installed for the next report...
                     for update in self.updates:
-                        self.store_cached_update_property(update,'IsInstalled',True)
+                        if self.is_allowed(update):
+                            self.store_cached_update_property(update,'IsInstalled',True)
 
             else:
                 self.wapt.write_param('waptwua.rebootrequired',json.dumps(False))
@@ -454,7 +455,7 @@ if __name__ == '__main__':
     else:
         allowed_severities = None
 
-    wua = WaptWUA(wapt,allowed_updates=allowed_updates,forbidden_updates=forbidden_updates,allowed_severities=allowed_severities)
+    wua = WaptWUA(wapt,allowed_updates=allowed_updates,forbidden_updates=forbidden_updates,allowed_severities=allowed_severities,filter="Type!='Driver'")
     if len(args) <1:
         print parser.usage
         sys.exit(1)
