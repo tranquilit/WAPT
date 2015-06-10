@@ -592,7 +592,7 @@ class WaptBaseRepo(object):
         >>> isinstance(res,bool)
         True
         """
-        if not last_modified and not self.packages_date:
+        if not last_modified and not self._packages_date:
             logger.debug(u'need_update : no las_update date provided, update is needed')
             return True
         else:
