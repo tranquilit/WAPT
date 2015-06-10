@@ -1817,7 +1817,7 @@ class WaptServer(object):
                     raise
 
             else:
-                logger.warning(u'Local DNS domain not found, skipping SRV _wapt._tcp and CNAME search ')
+                logger.warning(u'Local DNS domain not found, skipping SRV _waptserver._tcp search ')
 
             return None
         except Exception  as e:
@@ -1863,6 +1863,9 @@ class WaptServer(object):
 
             if config.has_option(section,'wapt_server_timeout'):
                 self.timeout = config.getfloat(section,'wapt_server_timeout')
+
+            if config.has_option(section,'dnsdomain'):
+                self.dnsdomain = config.get(section,'dnsdomain')
 
             if config.has_option(section,'verify_cert'):
                 self.verify_cert = config.getboolean(section,'verify_cert')
@@ -2197,7 +2200,6 @@ class WaptRepo(WaptRemoteRepo):
         if config.has_section(section) and config.has_option(section,'dnsdomain'):
             self.dnsdomain = config.get(section,'dnsdomain')
         return self
-
 
     def as_dict(self):
         result = {
