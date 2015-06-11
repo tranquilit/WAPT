@@ -119,6 +119,7 @@ def setloglevel(logger,loglevel):
             raise ValueError(_('Invalid log level: {}'.format(loglevel)))
         logger.setLevel(numeric_level)
 
+setloglevel(logger, 'info')
 # force loglevel
 if options.loglevel is not None:
     setloglevel(logger,options.loglevel)
@@ -2147,15 +2148,40 @@ def parse_wsusscan_entrypoint():
     client = pymongo.MongoClient()
     db = client.wapt
 
-    tmpdir = tempfile.mkdtemp(prefix='wsusscn2', dir=waptwua_folder)
-    #wsusscan2_extract_cabs(wsusscan2, tmpdir)
+    db.wsus_updates.ensure_index([('revision_id', pymongo.DESCENDING)], unique=True)
+    db.wsus_updates.ensure_index('update_id')
+
+    db.wsus_locations.ensure_index('id', unique=True)
+
+    last_known_rev = None
+    cursor = db.wsus_updates.find(fields=['revision_id'], sort=[('revision_id', pymongo.DESCENDING)], limit=1)
+    if cursor.count() != 0:
+        last_known_rev = int(cursor[0]['revision_id'])
+
+    tmpdir = os.path.join(waptwua_folder, 'packages.tmp')
+    if os.path.exists(tmpdir):
+        shutil.rmtree(tmpdir)
+    mkdir_p(tmpdir)
+
+    to_parse = wsusscan2_extract_cabs(wsusscan2, tmpdir)
+    logger.info('cab archives to parse: %s', str(to_parse.keys()))
 
     packages = os.path.join(waptwua_folder, 'packages')
-    #shutil.rmtree(packages)
-    #shutil.move(tmpdir, packages)
+    if os.path.exists(packages):
+        shutil.rmtree(packages)
+    shutil.move(tmpdir, packages)
 
-    wsusscan2_parse_updates(packages, db)
-    amend_metadata(packages, db)
+    logger.info('starting wsusscan2_parse_updates')
+    before = time.time()
+    wsusscan2_parse_updates(packages, db, last_known_rev)
+    after = time.time()
+    logger.info('wsusscan2_parse_updates in %s secs', str(after - before))
+
+    logger.info('starting amend_metadata')
+    before = time.time()
+    amend_metadata(packages, to_parse, db)
+    after = time.time()
+    logger.info('amend_metadata in %s secs', str(after - before))
 
 
 @spool
@@ -2679,6 +2705,7 @@ def do_resolve_update(update_map, update_id, recursion_level):
         raise Exception('Max recursion reached when resolving update.')
 
     wsus_locations = get_db().wsus_locations
+
     wsus_locations.ensure_index('id', unique=True)
 
     files = update.get('payload_files', [])
@@ -2690,7 +2717,9 @@ def do_resolve_update(update_map, update_id, recursion_level):
         update_map[update_id]['file_locations'] = file_locations
 
     wsus_updates = get_db().wsus_updates
-    wsus_updates.ensure_index([('update_id', pymongo.ASCENDING), ('revision_id', pymongo.DESCENDING)], unique=True)
+
+    db.wsus_updates.ensure_index([('revision_id', pymongo.DESCENDING)], unique=True)
+    db.wsus_updates.ensure_index('update_id')
 
     if update.get('is_bundle') or update.get('deployment_action') == 'Bundle':
         bundles = wsus_updates.find({ 'bundled_by': update['revision_id'] })
