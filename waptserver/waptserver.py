@@ -119,7 +119,6 @@ def setloglevel(logger,loglevel):
             raise ValueError(_('Invalid log level: {}'.format(loglevel)))
         logger.setLevel(numeric_level)
 
-setloglevel(logger, 'info')
 # force loglevel
 if options.loglevel is not None:
     setloglevel(logger,options.loglevel)
