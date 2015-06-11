@@ -2141,7 +2141,7 @@ def amend_metadata(directory, to_parse, db):
 
 # end of metadata parsing
 
-def wsusscan_parse_entrypoint():
+def parse_wsusscan_entrypoint():
     wsusscan2 = os.path.join(waptwua_folder, 'wsusscn2.cab')
 
     client = pymongo.MongoClient()
