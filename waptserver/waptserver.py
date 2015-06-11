@@ -1810,6 +1810,7 @@ def download_wsusscan(force=False):
                 except Exception:
                     pass
                 logger.error("Error in download_wsusscan: %s", str(e))
+                logger.error('Trace:\n%s', traceback.format_exc())
                 return SPOOL_OK
 
             if os.path.isfile(wsus_filename):
@@ -1840,6 +1841,7 @@ def download_wsusscan(force=False):
             except:
                 pass
         logger.error("Error in download_wsusscan: %s", str(e))
+        logger.error('Trace:\n%s', traceback.format_exc())
         return SPOOL_OK
 
 
