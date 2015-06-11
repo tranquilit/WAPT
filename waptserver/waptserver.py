@@ -1906,30 +1906,28 @@ UpdateCategories = [
     'UpdateClassification',
 ]
 
-def wsusscan2_do_parse_update(update, db):
-
-    superseded = update.findall(off_sync_qualify('SupersededBy'))
-    if superseded:
-        return
+def wsusscan2_do_parse_update(update, db, min_rev):
 
     upd = {}
 
     upd['update_id'] = update.get('UpdateId')
 
-    if update.get('IsBundle', False):
-        upd['is_bundle'] = True
-
-    if update.get('IsLeaf', False):
-        upd['is_leaf'] = True
-
     if update.get('RevisionId', False) != False:
         upd['revision_id'] = update.get('RevisionId')
+        if min_rev > int(upd['revision_id']):
+            return
 
     if update.get('RevisionNumber', False) != False:
         upd['revision_number'] = update.get('RevisionNumber')
 
     if db.wsus_updates.find(upd).count() != 0:
         return
+
+    if update.get('IsBundle', False):
+        upd['is_bundle'] = True
+
+    if update.get('IsLeaf', False):
+        upd['is_leaf'] = True
 
     if update.get('DeploymentAction', False) != False:
         upd['deployment_action'] = update.get('DeploymentAction')
@@ -1998,12 +1996,13 @@ def wsusscan2_do_parse_file_location(location, db):
     )
 
 
-def wsusscan2_parse_updates(tmpdir, db):
+def wsusscan2_parse_updates(tmpdir, db, last_known_rev=0):
 
     package_xml = os.path.join(tmpdir, 'package.xml')
+
     for _, elem in ET.iterparse(package_xml):
         if elem.tag == off_sync_qualify('Update'):
-            wsusscan2_do_parse_update(elem, db)
+            wsusscan2_do_parse_update(elem, db, min_rev=last_known_rev)
         elif elem.tag == off_sync_qualify('FileLocation'):
             wsusscan2_do_parse_file_location(elem, db)
 
