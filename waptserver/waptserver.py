@@ -2015,7 +2015,7 @@ UPDATE_SCHEMA_PFX = "{http://schemas.microsoft.com/msus/2002/12/Update}"
 def update_qualify(tag):
     return UPDATE_SCHEMA_PFX + tag
 
-def wsusscn2_parse_metadata(upd, descr_file):
+def wsusscn2_parse_metadata(descr_file):
 
     data = {}
 
@@ -2078,7 +2078,7 @@ def wsusscn2_parse_metadata(upd, descr_file):
     return data
 
 
-def amend_metadata(directory, db):
+def amend_metadata(directory, to_parse, db):
 
     def find_cab(rev, cabset):
         for start, cab in cabset.items():
@@ -2097,8 +2097,7 @@ def amend_metadata(directory, db):
         # 'package.cab' has no rangestart attribute
         if rangestart is None:
             continue
-        # strip the extension, keep the directory name
-        cabs[rangestart] = cabname[:-len('.cab')]
+        cabs[rangestart] = cabname
 
     cabs = collections.OrderedDict(
         sorted(
@@ -2108,17 +2107,22 @@ def amend_metadata(directory, db):
         )
     )
 
-    for update in db.wsus_updates.find():
+    for update in db.wsus_updates.find(fields=['revision_id']):
 
         rev = update.get('revision_id')
         # no revision -> no metadata on disk
         if rev is None:
             continue
 
-        cab_dir = find_cab(rev, cabs)
+        cab = find_cab(rev, cabs)
+        if cab not in to_parse:
+            continue
+
+        # strip the extension, keep the directory name
+        cab_dir = cab[:-len('.cab')]
 
         descr_file = os.path.join(directory, cab_dir, 's', rev)
-        metadata = wsusscn2_parse_metadata(update, descr_file)
+        metadata = wsusscn2_parse_metadata(descr_file)
         if metadata:
             db.wsus_updates.update(
                 { "_id": update["_id"] },
@@ -2126,6 +2130,14 @@ def amend_metadata(directory, db):
                     "$set": metadata,
                 }
             )
+
+    # everything went fine, update cksums for updated package*.cab so
+    # that we can skip them next time
+    cab_info = pymongo.MongoClient().wapt.wsus_cab_info
+    for cab, cksum in to_parse.items():
+        logger.info('Updating checksum for cab %s', cab)
+        cab_info.update({ 'cab_name': cab }, { 'cab_name': cab, 'cksum': cksum }, upsert=True)
+
 
 # end of metadata parsing
 
