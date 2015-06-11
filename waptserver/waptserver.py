@@ -1846,25 +1846,49 @@ def download_wsusscan(force=False):
 
 
 def wsusscan2_extract_cabs(wsusscan2, tmpdir):
+    result = {}
 
     if not os.path.exists(wsusscan2):
-        logger.error("%s does not exist", wsusscan2)
+        raise Exception("File %s not found" % wsusscan2)
 
-    packages = os.path.join(tmpdir, 'packages')
 
-    mkdir_p(packages)
+    mkdir_p(tmpdir)
 
-    subprocess.check_output(['cabextract', '-d', packages, wsusscan2])
+    subprocess.check_output(['ionice', '-c3', 'cabextract', '-d', tmpdir, wsusscan2])
+    subprocess.check_output(['ionice', '-c3', 'cabextract', '-d', tmpdir, os.path.join(tmpdir, 'package.cab')])
 
-    cab_list = filter(lambda f: f.endswith('.cab'), os.listdir(packages))
+    cab_list = sorted(filter(lambda f: f.endswith('.cab'), os.listdir(tmpdir)))
+    cab_info = pymongo.MongoClient().wapt.wsus_cab_info
 
     for cab in cab_list:
-        cab_path = os.path.join(packages, cab)
-        package_dir = cab_path[:-len('.cab')]
-        mkdir_p(package_dir)
-        subprocess.check_output(['cabextract', '-d', package_dir, cab_path])
+        cab_path = os.path.join(tmpdir, cab)
 
-    subprocess.check_output(['cabextract', '-d', packages, os.path.join(packages, 'package.cab')])
+        old_cksum = ''
+        before = time.time()
+        new_cksum = sha1_for_file(cab_path)
+        after = time.time()
+        logger.debug('sha1 for file %s processed in %s sec', cab, str(after - before))
+
+        # mark file as processable
+        result[cab] = new_cksum
+
+        cur = cab_info.find({ 'cab_name': cab }, limit=1)
+        if cur.count():
+            old_cksum = cur.next()['cksum']
+
+        logger.debug('cab %s, old [%s]', cab, old_cksum)
+        logger.debug('cab %s, new [%s]', cab, new_cksum)
+
+        if old_cksum == new_cksum:
+            # no need to extract / process it
+            result.pop(cab)
+        else:
+            logger.info('extracting %s', cab)
+            package_dir = cab_path[:-len('.cab')]
+            mkdir_p(package_dir)
+            subprocess.check_output(['ionice', '-c3', 'cabextract', '-d', package_dir, cab_path])
+
+    return result
 
 # end of cab extraction
 
