@@ -273,6 +273,7 @@ def httpdatetime2isodate(httpdate):
     return datetime2isodate(datetime.datetime(*email.utils.parsedate(httpdate)[:6]))
 
 def mkdir_p(path):
+    import errno
     try:
         os.makedirs(path)
     except OSError, exc:
