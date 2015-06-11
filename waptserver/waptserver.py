@@ -2160,14 +2160,23 @@ def wsusscan_parse_entrypoint():
 
 @spool
 def parse_wsusscan2(arg=None):
+    got_lock = False
 
     runtime = pymongo.MongoClient().wapt.wsus_runtime
     try:
+        logger.info('Acquiring lock for parse_wsusscan2')
         runtime.insert({ '_id': WSUS_PARSE_WSUSSCN2_LOCK })
-        parse_wsusscan_entry()
+        got_lock = True
+
+        parse_wsusscan_entrypoint()
+
+    except pymongo.errors.DuplicateKeyError:
+        logger.warning('parse_wsusscan2 already running, aborting')
     except Exception as e:
-        runtime.remove({'_id': WSUS_PARSE_WSUSSCN2_LOCK })
-        logger.error('Exception in parse_wsusscan2: %s', str(e))
+        logger.error('Exception in parse_wsusscan2: %s', repr(e))
+    finally:
+        if got_lock == True:
+            runtime.remove({'_id': WSUS_PARSE_WSUSSCN2_LOCK })
 
 
 @app.route('/api/v2/download_wsusscan')
