@@ -49,6 +49,7 @@ import zipfile
 import platform
 import socket
 import requests
+import shutil
 import subprocess
 import tempfile
 import traceback
@@ -675,7 +676,6 @@ def upload_waptsetup():
                 try:
                     os.symlink(waptagent, waptsetup)
                 except:
-                    import shutil
                     shutil.copyfile(waptagent, waptsetup)
 
             else:
