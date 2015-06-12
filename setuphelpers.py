@@ -3103,7 +3103,7 @@ def need_install(key,min_version=None,force=False):
                 return False
         return True
 
-def install_msi_if_needed(msi,min_version=None,killbefore=[]):
+def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=[0,1603,3010],timeout=300):
     """Install silently the supplied msi file, and add the uninstall key to
     global uninstall key list
 
@@ -3139,7 +3139,7 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[]):
     if need_install(key,min_version=min_version,force=force):
         if killbefore:
             killalltasks(killbefore)
-        run(r'msiexec /norestart /q /i "%s"' % msi)
+        run(r'msiexec /norestart /q /i "%s"' % msi,accept_returncodes=accept_returncodes,timeout=timeout)
         if not installed_softwares(uninstallkey=key):
             error('MSI %s has been installed but the uninstall key %s can not be found' % (msi,key))
     else:
@@ -3148,7 +3148,7 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[]):
         if 'uninstallkey' in caller_globals and not key in caller_globals['uninstallkey']:
             caller_globals['uninstallkey'].append(key)
 
-def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefore=[]):
+def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefore=[],accept_returncodes=[0,1603,3010],timeout=300):
     """Install silently the supplied setup executable file, and add the uninstall key to
     global uninstallkey list if it is defined.
 
@@ -3186,7 +3186,7 @@ def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefor
     if need_install(key,min_version=min_version,force=force):
         if killbefore:
             killalltasks(killbefore)
-        run(r'"%s" %s' % (exe,silentflags))
+        run(r'"%s" %s' % (exe,silentflags),accept_returncodes=accept_returncodes,timeout=timeout)
         if key and not installed_softwares(uninstallkey=key):
             error('Setup %s has been ran but the uninstall key %s can not be found' % (exe,key))
     else:
