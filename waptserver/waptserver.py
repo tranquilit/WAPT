@@ -49,6 +49,7 @@ import zipfile
 import platform
 import socket
 import requests
+import shutil
 import subprocess
 import tempfile
 import traceback
@@ -272,6 +273,7 @@ def httpdatetime2isodate(httpdate):
     return datetime2isodate(datetime.datetime(*email.utils.parsedate(httpdate)[:6]))
 
 def mkdir_p(path):
+    import errno
     try:
         os.makedirs(path)
     except OSError, exc:
@@ -675,7 +677,6 @@ def upload_waptsetup():
                 try:
                     os.symlink(waptagent, waptsetup)
                 except:
-                    import shutil
                     shutil.copyfile(waptagent, waptsetup)
 
             else:
@@ -1809,6 +1810,7 @@ def download_wsusscan(force=False):
                 except Exception:
                     pass
                 logger.error("Error in download_wsusscan: %s", str(e))
+                logger.error('Trace:\n%s', traceback.format_exc())
                 return SPOOL_OK
 
             if os.path.isfile(wsus_filename):
@@ -1839,29 +1841,54 @@ def download_wsusscan(force=False):
             except:
                 pass
         logger.error("Error in download_wsusscan: %s", str(e))
+        logger.error('Trace:\n%s', traceback.format_exc())
         return SPOOL_OK
 
 
 def wsusscan2_extract_cabs(wsusscan2, tmpdir):
+    result = {}
 
     if not os.path.exists(wsusscan2):
-        logger.error("%s does not exist", wsusscan2)
+        raise Exception("File %s not found" % wsusscan2)
 
-    packages = os.path.join(tmpdir, 'packages')
 
-    mkdir_p(packages)
+    mkdir_p(tmpdir)
 
-    subprocess.check_output(['cabextract', '-d', packages, wsusscan2])
+    subprocess.check_output(['ionice', '-c3', 'cabextract', '-d', tmpdir, wsusscan2])
+    subprocess.check_output(['ionice', '-c3', 'cabextract', '-d', tmpdir, os.path.join(tmpdir, 'package.cab')])
 
-    cab_list = filter(lambda f: f.endswith('.cab'), os.listdir(packages))
+    cab_list = sorted(filter(lambda f: f.endswith('.cab'), os.listdir(tmpdir)))
+    cab_info = pymongo.MongoClient().wapt.wsus_cab_info
 
     for cab in cab_list:
-        cab_path = os.path.join(packages, cab)
-        package_dir = cab_path[:-len('.cab')]
-        mkdir_p(package_dir)
-        subprocess.check_output(['cabextract', '-d', package_dir, cab_path])
+        cab_path = os.path.join(tmpdir, cab)
 
-    subprocess.check_output(['cabextract', '-d', packages, os.path.join(packages, 'package.cab')])
+        old_cksum = ''
+        before = time.time()
+        new_cksum = sha1_for_file(cab_path)
+        after = time.time()
+        logger.debug('sha1 for file %s processed in %s sec', cab, str(after - before))
+
+        # mark file as processable
+        result[cab] = new_cksum
+
+        cur = cab_info.find({ 'cab_name': cab }, limit=1)
+        if cur.count():
+            old_cksum = cur.next()['cksum']
+
+        logger.debug('cab %s, old [%s]', cab, old_cksum)
+        logger.debug('cab %s, new [%s]', cab, new_cksum)
+
+        if old_cksum == new_cksum:
+            # no need to extract / process it
+            result.pop(cab)
+        else:
+            logger.info('extracting %s', cab)
+            package_dir = cab_path[:-len('.cab')]
+            mkdir_p(package_dir)
+            subprocess.check_output(['ionice', '-c3', 'cabextract', '-d', package_dir, cab_path])
+
+    return result
 
 # end of cab extraction
 
@@ -1879,30 +1906,28 @@ UpdateCategories = [
     'UpdateClassification',
 ]
 
-def wsusscan2_do_parse_update(update, db):
-
-    superseded = update.findall(off_sync_qualify('SupersededBy'))
-    if superseded:
-        return
+def wsusscan2_do_parse_update(update, db, min_rev):
 
     upd = {}
 
     upd['update_id'] = update.get('UpdateId')
 
-    if update.get('IsBundle', False):
-        upd['is_bundle'] = True
-
-    if update.get('IsLeaf', False):
-        upd['is_leaf'] = True
-
     if update.get('RevisionId', False) != False:
         upd['revision_id'] = update.get('RevisionId')
+        if min_rev > int(upd['revision_id']):
+            return
 
     if update.get('RevisionNumber', False) != False:
         upd['revision_number'] = update.get('RevisionNumber')
 
     if db.wsus_updates.find(upd).count() != 0:
         return
+
+    if update.get('IsBundle', False):
+        upd['is_bundle'] = True
+
+    if update.get('IsLeaf', False):
+        upd['is_leaf'] = True
 
     if update.get('DeploymentAction', False) != False:
         upd['deployment_action'] = update.get('DeploymentAction')
@@ -1971,12 +1996,13 @@ def wsusscan2_do_parse_file_location(location, db):
     )
 
 
-def wsusscan2_parse_updates(tmpdir, db):
+def wsusscan2_parse_updates(tmpdir, db, last_known_rev=0):
 
     package_xml = os.path.join(tmpdir, 'package.xml')
+
     for _, elem in ET.iterparse(package_xml):
         if elem.tag == off_sync_qualify('Update'):
-            wsusscan2_do_parse_update(elem, db)
+            wsusscan2_do_parse_update(elem, db, min_rev=last_known_rev)
         elif elem.tag == off_sync_qualify('FileLocation'):
             wsusscan2_do_parse_file_location(elem, db)
 
@@ -1989,7 +2015,7 @@ UPDATE_SCHEMA_PFX = "{http://schemas.microsoft.com/msus/2002/12/Update}"
 def update_qualify(tag):
     return UPDATE_SCHEMA_PFX + tag
 
-def wsusscn2_parse_metadata(upd, descr_file):
+def wsusscn2_parse_metadata(descr_file):
 
     data = {}
 
@@ -2052,7 +2078,7 @@ def wsusscn2_parse_metadata(upd, descr_file):
     return data
 
 
-def amend_metadata(directory, db):
+def amend_metadata(directory, to_parse, db):
 
     def find_cab(rev, cabset):
         for start, cab in cabset.items():
@@ -2071,8 +2097,7 @@ def amend_metadata(directory, db):
         # 'package.cab' has no rangestart attribute
         if rangestart is None:
             continue
-        # strip the extension, keep the directory name
-        cabs[rangestart] = cabname[:-len('.cab')]
+        cabs[rangestart] = cabname
 
     cabs = collections.OrderedDict(
         sorted(
@@ -2082,17 +2107,22 @@ def amend_metadata(directory, db):
         )
     )
 
-    for update in db.wsus_updates.find():
+    for update in db.wsus_updates.find(fields=['revision_id']):
 
         rev = update.get('revision_id')
         # no revision -> no metadata on disk
         if rev is None:
             continue
 
-        cab_dir = find_cab(rev, cabs)
+        cab = find_cab(rev, cabs)
+        if cab not in to_parse:
+            continue
+
+        # strip the extension, keep the directory name
+        cab_dir = cab[:-len('.cab')]
 
         descr_file = os.path.join(directory, cab_dir, 's', rev)
-        metadata = wsusscn2_parse_metadata(update, descr_file)
+        metadata = wsusscn2_parse_metadata(descr_file)
         if metadata:
             db.wsus_updates.update(
                 { "_id": update["_id"] },
@@ -2101,35 +2131,77 @@ def amend_metadata(directory, db):
                 }
             )
 
+    # everything went fine, update cksums for updated package*.cab so
+    # that we can skip them next time
+    cab_info = pymongo.MongoClient().wapt.wsus_cab_info
+    for cab, cksum in to_parse.items():
+        logger.info('Updating checksum for cab %s', cab)
+        cab_info.update({ 'cab_name': cab }, { 'cab_name': cab, 'cksum': cksum }, upsert=True)
+
+
 # end of metadata parsing
 
-def wsusscan_parse_entrypoint():
+def parse_wsusscan_entrypoint():
     wsusscan2 = os.path.join(waptwua_folder, 'wsusscn2.cab')
 
     client = pymongo.MongoClient()
     db = client.wapt
 
-    tmpdir = tempfile.mkdtemp(prefix='wsusscn2', dir=waptwua_folder)
-    #wsusscan2_extract_cabs(wsusscan2, tmpdir)
+    db.wsus_updates.ensure_index([('revision_id', pymongo.DESCENDING)], unique=True)
+    db.wsus_updates.ensure_index('update_id')
+
+    db.wsus_locations.ensure_index('id', unique=True)
+
+    last_known_rev = None
+    cursor = db.wsus_updates.find(fields=['revision_id'], sort=[('revision_id', pymongo.DESCENDING)], limit=1)
+    if cursor.count() != 0:
+        last_known_rev = int(cursor[0]['revision_id'])
+
+    tmpdir = os.path.join(waptwua_folder, 'packages.tmp')
+    if os.path.exists(tmpdir):
+        shutil.rmtree(tmpdir)
+    mkdir_p(tmpdir)
+
+    to_parse = wsusscan2_extract_cabs(wsusscan2, tmpdir)
+    logger.info('cab archives to parse: %s', str(to_parse.keys()))
 
     packages = os.path.join(waptwua_folder, 'packages')
-    #shutil.rmtree(packages)
-    #shutil.move(tmpdir, packages)
+    if os.path.exists(packages):
+        shutil.rmtree(packages)
+    shutil.move(tmpdir, packages)
 
-    wsusscan2_parse_updates(packages, db)
-    amend_metadata(packages, db)
+    logger.info('starting wsusscan2_parse_updates')
+    before = time.time()
+    wsusscan2_parse_updates(packages, db, last_known_rev)
+    after = time.time()
+    logger.info('wsusscan2_parse_updates in %s secs', str(after - before))
+
+    logger.info('starting amend_metadata')
+    before = time.time()
+    amend_metadata(packages, to_parse, db)
+    after = time.time()
+    logger.info('amend_metadata in %s secs', str(after - before))
 
 
 @spool
 def parse_wsusscan2(arg=None):
+    got_lock = False
 
     runtime = pymongo.MongoClient().wapt.wsus_runtime
     try:
+        logger.info('Acquiring lock for parse_wsusscan2')
         runtime.insert({ '_id': WSUS_PARSE_WSUSSCN2_LOCK })
-        parse_wsusscan_entry()
+        got_lock = True
+
+        parse_wsusscan_entrypoint()
+
+    except pymongo.errors.DuplicateKeyError:
+        logger.warning('parse_wsusscan2 already running, aborting')
     except Exception as e:
-        runtime.remove({'_id': WSUS_PARSE_WSUSSCN2_LOCK })
-        logger.error('Exception in parse_wsusscan2: %s', str(e))
+        logger.error('Exception in parse_wsusscan2: %s', repr(e))
+    finally:
+        if got_lock == True:
+            runtime.remove({'_id': WSUS_PARSE_WSUSSCN2_LOCK })
 
 
 @app.route('/api/v2/download_wsusscan')
@@ -2632,6 +2704,7 @@ def do_resolve_update(update_map, update_id, recursion_level):
         raise Exception('Max recursion reached when resolving update.')
 
     wsus_locations = get_db().wsus_locations
+
     wsus_locations.ensure_index('id', unique=True)
 
     files = update.get('payload_files', [])
@@ -2643,7 +2716,9 @@ def do_resolve_update(update_map, update_id, recursion_level):
         update_map[update_id]['file_locations'] = file_locations
 
     wsus_updates = get_db().wsus_updates
-    wsus_updates.ensure_index([('update_id', pymongo.ASCENDING), ('revision_id', pymongo.DESCENDING)], unique=True)
+
+    db.wsus_updates.ensure_index([('revision_id', pymongo.DESCENDING)], unique=True)
+    db.wsus_updates.ensure_index('update_id')
 
     if update.get('is_bundle') or update.get('deployment_action') == 'Bundle':
         bundles = wsus_updates.find({ 'bundled_by': update['revision_id'] })
