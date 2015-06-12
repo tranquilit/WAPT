@@ -446,7 +446,7 @@ def check_open_port(portnumber=8088):
                 #WinXP 2003
                 if 'waptservice' not in setuphelpers.run_notfatal('netsh firewall show portopening'):
                     logger.info(u"Adding a firewall rule to open port %s"%portnumber)
-                    setuphelpers.run_notfatal("""netsh.exe firewall add portopening name="waptservice %s" port=%s protocol=TCP"""%(portnumber,portnumber))
+                    setuphelpers.run_notfatal("""netsh.exe firewall add portopening name="waptservice %s" port=%s protocol=TCP profile=ALL"""%(portnumber,portnumber))
                 else:
                     logger.info(u"port %s already opened, skipping firewall configuration"%(portnumber,))
         else:
@@ -455,7 +455,7 @@ def check_open_port(portnumber=8088):
                 if 'waptservice' not in setuphelpers.run_notfatal('netsh advfirewall firewall show rule name="waptservice %s"'%(portnumber,)):
                     logger.info(u"No port opened for waptservice, opening port %s"%portnumber)
                     #win Vista and higher
-                    setuphelpers.run_notfatal("""netsh advfirewall firewall add rule name="waptservice %s" dir=in action=allow protocol=TCP localport=%s remoteip=%s,LocalSubnet """%(portnumber,portnumber,','.join(waptconfig.authorized_callers_ip)))
+                    setuphelpers.run_notfatal("""netsh advfirewall firewall add rule name="waptservice %s" dir=in action=allow protocol=TCP localport=%s remoteip=%s """%(portnumber,portnumber,','.join(waptconfig.authorized_callers_ip)))
                 else:
                     logger.info(u"port %s already opened, skipping firewall configuration"%(portnumber,))
     except Exception as e:
