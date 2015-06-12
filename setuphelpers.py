@@ -135,6 +135,7 @@ __all__ = \
  'register_windows_uninstall',
  'registered_organization',
  'registry_delete',
+ 'registry_deletekey',
  'registry_readstring',
  'registry_set',
  'registry_setstring',
@@ -1509,6 +1510,28 @@ def registry_delete(root,path,valuename):
             return _winreg.DeleteValue(key,valuename)
     except WindowsError as e:
         logger.warning('registry_delete:%s'%ensure_unicode(e))
+    return result
+
+def registry_deletekey(root,path,keyname):
+    """Delete the key under specified registry path and all its values.
+
+    the path can be either with backslash or slash
+    if the key has sub keys, the function fails.
+
+    Args:
+        root    : HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER ...
+        path    : string like "software\\microsoft\\windows\\currentversion"
+                           or "software\\wow6432node\\microsoft\\windows\\currentversion"
+        keyname : Name of key
+
+    """
+    result = False
+    path = path.replace(u'/',u'\\')
+    try:
+        with reg_openkey_noredir(root,path,sam=KEY_WRITE) as key:
+            return _winreg.DeleteKey(key,keyname)
+    except WindowsError as e:
+        logger.warning('registry_deletekey:%s'%ensure_unicode(e))
     return result
 
 
