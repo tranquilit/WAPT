@@ -1773,8 +1773,16 @@ def download_wsusscan(params={}):
     force = params.get('force', False) == 'True'
 
     if not force and os.path.isfile(tmp_filename):
-        # check if not too old.... ?
-        return SPOOL_OK
+        tmp_timestamp = os.stat(tmp_filename).st_mtime
+        current_timestamp = time.time()
+        if current_timestamp < tmp_timestamp + 24 * 60 * 60:
+            logger.info('download_wsusscan: %s is present but less than 24 hours old (timestamp %f), skipping download', tmp_filename, tmp_timestamp)
+            return SPOOL_OK
+        else:
+            try:
+                os.unlink(tmp_filename)
+            except Exception as e:
+                logger.warning('download_wsusscan: I tried to remove %s but failed (reason: %s)', tmp_filename, str(e))
     try:
 
         wsusscan2_history = pymongo.MongoClient().wapt.wsusscan2_history
@@ -1788,7 +1796,7 @@ def download_wsusscan(params={}):
         if not os.path.isfile(wsus_filename) or ( new_cab_timestamp > current_cab_timestamp ) or force:
             logger.info('Downloading because of: file not found == %s, timestamps == %s, force == %s', \
                             str(os.path.isfile(wsus_filename) == False), str(new_cab_timestamp > current_cab_timestamp), str(force))
-            
+
             wget(cab_url,tmp_filename)
 
             file_stats = os.stat(tmp_filename)
