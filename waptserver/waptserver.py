@@ -1745,9 +1745,9 @@ def wget(url,target,proxies=None,connect_timeout=10,download_timeout=None):
 
     # restore mtime of file if information is provided.
     if 'last-modified' in httpreq.headers:
-        filedate = isodate2datetime(httpdatetime2isodate(httpreq.headers['last-modified']))
-        unixtime = time.mktime(filedate.timetuple())
-        os.utime(os.path.join(dir,filename),(unixtime,unixtime))
+        last_modified = httpreq.headers['last-modified']
+        unix_timestamp = float(email.utils.mktime_tz(email.utils.parsedate_tz(last_modified)))
+        os.utime(os.path.join(dir,filename),(unix_timestamp,unix_timestamp))
     return os.path.join(dir,filename)
 
 SPOOL_OK = -2 # the task has been completed, the spool file will be removed
