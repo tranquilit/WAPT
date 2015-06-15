@@ -1776,16 +1776,18 @@ def download_wsusscan(force=False):
     try:
 
         wsusscan2_history = pymongo.MongoClient().wapt.wsusscan2_history
-        new_cab_date =  httpdatetime2isodate(requests.head(cab_url).headers['last-modified'])
+        new_cab_timestamp = float(email.utils.mktime_tz(email.utils.parsedate_tz(requests.head(cab_url).headers['last-modified'])))
         if os.path.isfile(wsus_filename):
-            current_cab_date = datetime2isodate(datetime.datetime.utcfromtimestamp(os.stat(wsus_filename).st_mtime))
+            current_cab_timestamp = os.stat(wsus_filename).st_mtime
         else:
-            current_cab_date = ''
-        logger.info('Current cab date: %s, New cab date: %s'%(current_cab_date,new_cab_date))
+            current_cab_timestamp = 0.0
+        logger.info('Current cab timestamp: %f, New cab timestamp: %f'%(current_cab_timestamp,new_cab_timestamp))
 
-        if not os.path.isfile(wsus_filename) or ( new_cab_date > current_cab_date ) or force:
-            #wget(cab_url,tmp_filename)
-            os.link(wsus_filename, tmp_filename)
+        if not os.path.isfile(wsus_filename) or ( new_cab_timestamp > current_cab_timestamp ) or force:
+            logger.info('Downloading because of: file not found == %s, timestamps == %s, force == %s', \
+                            str(os.path.isfile(wsus_filename) == False), str(new_cab_timestamp > current_cab_timestamp), str(force))
+            
+            wget(cab_url,tmp_filename)
 
             file_stats = os.stat(tmp_filename)
             stats['file_timestamp'] = file_stats[stat.ST_MTIME]
