@@ -1755,7 +1755,7 @@ SPOOL_RETRY = -1 # something is temporarily wrong, the task will be retried at t
 SPOOL_IGNORE = 0 #  ignore this task, if multiple languages are loaded in the instance all of them will fight for managing the task. This return values allows you to skip a task in specific languages.
 
 @spool
-def download_wsusscan(force=False):
+def download_wsusscan(params={}):
     """Launch a task to update current wsus offline cab file
         download in a temporary well known file
         abort if the temporary file is present (means another download is in progress
@@ -1769,6 +1769,8 @@ def download_wsusscan(force=False):
     stats = {
         'run_date': datetime2isodate()
     }
+
+    force = params.get('force', False) == 'True'
 
     if not force and os.path.isfile(tmp_filename):
         # check if not too old.... ?
@@ -2208,8 +2210,8 @@ def parse_wsusscan2(arg=None):
 
 @app.route('/api/v2/download_wsusscan')
 def trigger_wsusscan2_download():
-    force = request.args.get('force', False)
-    logger.info('Triggering download_wsusscan with parameter ' + str(force))
+    force = bool(request.args.get('force', False))
+    logger.error('Triggering download_wsusscan with parameter ' + str(force))
     download_wsusscan.spool(force=force)
     return make_response()
 
