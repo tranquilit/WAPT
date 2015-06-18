@@ -67,9 +67,12 @@ import thread
 import threading
 import Queue
 
-from uwsgidecorators import *
-from lxml import etree as ET
-
+try:
+    from uwsgidecorators import *
+    from lxml import etree as ET
+except:
+    def spool(func):
+        return func
 
 from waptpackage import *
 import pefile
@@ -101,6 +104,7 @@ parser=OptionParser(usage=usage,version='waptserver.py ' + __version__)
 parser.add_option("-c","--config", dest="configfile", default=os.path.join(wapt_root_dir,'waptserver','waptserver.ini'), help="Config file full path (default: %default)")
 parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
 parser.add_option("-d","--devel", dest="devel", default=False,action='store_true', help="Enable debug mode (for development only)")
+parser.add_option("-w","--without-apache", dest="without_apache", default=False, action='store_true',help="Loglevel (default: warning)")
 
 (options,args)=parser.parse_args()
 
@@ -836,7 +840,7 @@ def wapt_listing():
 
 @app.route('/waptwua/')
 def waptwua():
-    return render_template('listing.html', dir_listing=os.listdir(waptwua_folder))
+    return render_template('listingwua.html', dir_listing=os.listdir(waptwua_folder))
 
 
 @app.route('/waptwua/<path:wsuspackage>')
@@ -2625,6 +2629,13 @@ def windows_updates():
 
 @app.route('/api/v2/windows_updates_urls',methods=['GET','POST'])
 def windows_updates_urls():
+    """Return list of URL of files to download for the selected update_id
+
+    Args:
+        update_id
+    Returns:
+        urls
+    """
     wsus_updates = get_db().wsus_updates
     def get_payloads(id):
         result = []
@@ -2731,6 +2742,7 @@ def do_resolve_update(update_map, update_id, recursion_level):
 
     db.wsus_updates.ensure_index([('revision_id', pymongo.DESCENDING)], unique=True)
     db.wsus_updates.ensure_index('update_id')
+    db.wsus_updates.ensure_index('bundled_by')
 
     if update.get('is_bundle') or update.get('deployment_action') == 'Bundle':
         bundles = wsus_updates.find({ 'bundled_by': update['revision_id'] })
@@ -2751,6 +2763,8 @@ def do_resolve_update(update_map, update_id, recursion_level):
 
 @app.route('/api/v2/select_windows_update', methods=['GET'])
 def select_windows_update():
+    """
+    """
     try:
         try:
             update_id = request.args['update_id']
@@ -2806,7 +2820,7 @@ def select_windows_update():
         return make_response_from_exception(e)
 
 
-@app.route('/api/v2/windows_updates_rules',methods=['GET','POST'])
+@app.route('/api/v2/windows_updates_rules',methods=['GET','POST','DELETE'])
 def windows_updates_rules():
     if request.method == 'POST':
         group = request.args.get('group','default')
@@ -2814,6 +2828,9 @@ def windows_updates_rules():
         if not 'group' in data:
             data['group'] = group
         result = get_db().wsus_rules.update({'group':group},{"$set": data},upsert=True)
+    elif request.method == 'DELETE':
+        group = request.args.get('group','default')
+        result = get_db().wsus_rules. update({'group':group},{"$set": data},upsert=True)
     else:
         if 'group' in  request.args:
             group = request.args.get('group','default')
@@ -3077,11 +3094,11 @@ def make_mongod_config(wapt_root_dir):
     dst_file.write(config_string)
     dst_file.close()
 
-def install_windows_service(args):
+def install_windows_service():
     """Setup waptserver, waptmongodb et waptapache as a windows Service managed by nssm
     >>> install_windows_service([])
     """
-    install_apache_service = '--without-apache' not in args
+    install_apache_service = options.without_apache #'--without-apache' not in options
 
     # register mongodb server
     make_mongod_config(wapt_root_dir)
@@ -3115,13 +3132,18 @@ def install_windows_service(args):
 
 ##############
 if __name__ == "__main__":
-    if len(sys.argv)>1 and sys.argv[1] == 'doctest':
+    if args and args[0] == 'doctest':
         import doctest
         sys.exit(doctest.testmod())
 
-    if len(sys.argv)>1 and sys.argv[1] == 'install':
+    if args and args[0] == 'install':
         # pass optional parameters along with the command
-        install_windows_service(sys.argv[1:])
+        install_windows_service()
+        sys.exit(0)
+
+    if args and args[0] == 'test':
+        # pass optional parameters along with the command
+        test()
         sys.exit(0)
 
     if options.devel:
