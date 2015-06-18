@@ -240,6 +240,12 @@ begin
       Caption:= rsEditHostCaption;
       EdVersion.Enabled:=advancedMode;
       EdVersion.ReadOnly:=not advancedMode;
+      if description<>'' then
+      begin
+        Eddescription.Modified:= Eddescription.Text<>description;
+        Eddescription.Text := description;
+      end;
+
       ActBUApply.Enabled:=uuid<>'';
       if ShowModal = mrOk then
       try

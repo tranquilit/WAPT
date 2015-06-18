@@ -1642,7 +1642,7 @@ begin
   begin
     hostname := GridHosts.FocusedRow.S['host.computer_fqdn'];
     uuid := GridHosts.FocusedRow.S['uuid'];
-    desc := GridHosts.FocusedRow.S['description'];
+    desc := GridHosts.FocusedRow.S['host.description'];
 
     if EditHost(hostname, ActAdvancedMode.Checked, uuid,desc) <> nil then
       ActSearchHost.Execute;
