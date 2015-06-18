@@ -1745,9 +1745,9 @@ def wget(url,target,proxies=None,connect_timeout=10,download_timeout=None):
 
     # restore mtime of file if information is provided.
     if 'last-modified' in httpreq.headers:
-        filedate = isodate2datetime(httpdatetime2isodate(httpreq.headers['last-modified']))
-        unixtime = time.mktime(filedate.timetuple())
-        os.utime(os.path.join(dir,filename),(unixtime,unixtime))
+        last_modified = httpreq.headers['last-modified']
+        unix_timestamp = float(email.utils.mktime_tz(email.utils.parsedate_tz(last_modified)))
+        os.utime(os.path.join(dir,filename),(unix_timestamp,unix_timestamp))
     return os.path.join(dir,filename)
 
 SPOOL_OK = -2 # the task has been completed, the spool file will be removed
@@ -1755,7 +1755,7 @@ SPOOL_RETRY = -1 # something is temporarily wrong, the task will be retried at t
 SPOOL_IGNORE = 0 #  ignore this task, if multiple languages are loaded in the instance all of them will fight for managing the task. This return values allows you to skip a task in specific languages.
 
 @spool
-def download_wsusscan(force=False):
+def download_wsusscan(params={}):
     """Launch a task to update current wsus offline cab file
         download in a temporary well known file
         abort if the temporary file is present (means another download is in progress
@@ -1770,22 +1770,34 @@ def download_wsusscan(force=False):
         'run_date': datetime2isodate()
     }
 
+    force = params.get('force', False) == 'True'
+
     if not force and os.path.isfile(tmp_filename):
-        # check if not too old.... ?
-        return SPOOL_OK
+        tmp_timestamp = os.stat(tmp_filename).st_mtime
+        current_timestamp = time.time()
+        if current_timestamp < tmp_timestamp + 24 * 60 * 60:
+            logger.info('download_wsusscan: %s is present but less than 24 hours old (timestamp %f), skipping download', tmp_filename, tmp_timestamp)
+            return SPOOL_OK
+        else:
+            try:
+                os.unlink(tmp_filename)
+            except Exception as e:
+                logger.warning('download_wsusscan: I tried to remove %s but failed (reason: %s)', tmp_filename, str(e))
     try:
 
         wsusscan2_history = pymongo.MongoClient().wapt.wsusscan2_history
-        new_cab_date =  httpdatetime2isodate(requests.head(cab_url).headers['last-modified'])
+        new_cab_timestamp = float(email.utils.mktime_tz(email.utils.parsedate_tz(requests.head(cab_url).headers['last-modified'])))
         if os.path.isfile(wsus_filename):
-            current_cab_date = datetime2isodate(datetime.datetime.utcfromtimestamp(os.stat(wsus_filename).st_mtime))
+            current_cab_timestamp = os.stat(wsus_filename).st_mtime
         else:
-            current_cab_date = ''
-        logger.info('Current cab date: %s, New cab date: %s'%(current_cab_date,new_cab_date))
+            current_cab_timestamp = 0.0
+        logger.info('Current cab timestamp: %f, New cab timestamp: %f'%(current_cab_timestamp,new_cab_timestamp))
 
-        if not os.path.isfile(wsus_filename) or ( new_cab_date > current_cab_date ) or force:
-            #wget(cab_url,tmp_filename)
-            os.link(wsus_filename, tmp_filename)
+        if not os.path.isfile(wsus_filename) or ( new_cab_timestamp > current_cab_timestamp ) or force:
+            logger.info('Downloading because of: file not found == %s, timestamps == %s, force == %s', \
+                            str(os.path.isfile(wsus_filename) == False), str(new_cab_timestamp > current_cab_timestamp), str(force))
+
+            wget(cab_url,tmp_filename)
 
             file_stats = os.stat(tmp_filename)
             stats['file_timestamp'] = file_stats[stat.ST_MTIME]
@@ -2206,8 +2218,8 @@ def parse_wsusscan2(arg=None):
 
 @app.route('/api/v2/download_wsusscan')
 def trigger_wsusscan2_download():
-    force = request.args.get('force', False)
-    logger.info('Triggering download_wsusscan with parameter ' + str(force))
+    force = bool(request.args.get('force', False))
+    logger.error('Triggering download_wsusscan with parameter ' + str(force))
     download_wsusscan.spool(force=force)
     return make_response()
 
