@@ -4710,10 +4710,10 @@ class Wapt(object):
         self.add_pyscripter_project(directoryname)
         return directoryname
 
-    def make_host_template(self,packagename='',depends=None,directoryname=None):
-        return self.make_group_template(packagename=packagename,depends=depends,directoryname=directoryname,section='host')
+    def make_host_template(self,packagename='',depends=None,directoryname=None,description=None):
+        return self.make_group_template(packagename=packagename,depends=depends,directoryname=directoryname,section='host',description=description)
 
-    def make_group_template(self,packagename='',depends=None,directoryname=None,section='group',description=''):
+    def make_group_template(self,packagename='',depends=None,directoryname=None,section='group',description=None):
         r"""Build a skeleton of WAPT group package
             depends : list of package dependencies.
            Return the path of the skeleton
@@ -5035,7 +5035,8 @@ class Wapt(object):
             remove_depends=None,
             append_conflicts=None,
             remove_conflicts=None,
-            printhook=None):
+            printhook=None,
+            description=None):
         """Download and extract a host package from host repositories into target_directory for modification
                 Return dict {'target': 'c:\\\\tmp\\\\dummy', 'source_dir': 'c:\\\\tmp\\\\dummy', 'package': "dummy.tranquilit.local (=0)"}
 
@@ -5106,6 +5107,8 @@ class Wapt(object):
                                     if d in prev_conflicts:
                                         prev_conflicts.remove(d)
                             local_dev_entry.conflicts = ','.join(prev_conflicts)
+                            if description is not None:
+                                local_dev_entry.description = description
 
                             local_dev_entry.save_control_to_wapt(target_directory)
                             self.add_pyscripter_project(target_directory)
@@ -5132,7 +5135,7 @@ class Wapt(object):
                 raise Exception('directory %s is not empty, aborting.' % target_directory)
             else:
                 # create new host package from template
-                return self.make_host_template(packagename=hostname,directoryname=target_directory,depends=append_depends)
+                return self.make_host_template(packagename=hostname,directoryname=target_directory,depends=append_depends,description=description)
         else:
             raise Exception('No Wapthost repository defined')
 

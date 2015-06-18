@@ -154,7 +154,7 @@ type
 function EditPackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreatePackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreateGroup(packagename: string; advancedMode: boolean): ISuperObject;
-function EditHost(hostname: ansistring; advancedMode: boolean;uuid:ansiString=''): ISuperObject;
+function EditHost(hostname: ansistring; advancedMode: boolean;uuid:ansiString='';description:ansiString=''): ISuperObject;
 function EditHostDepends(hostname: string; newDependsStr: string): ISuperObject;
 function EditGroup(group: string; advancedMode: boolean): ISuperObject;
 
@@ -227,7 +227,7 @@ begin
     end;
 end;
 
-function EditHost(hostname: ansistring; advancedMode: boolean;uuid:ansiString=''): ISuperObject;
+function EditHost(hostname: ansistring; advancedMode: boolean;uuid:ansiString='';description:ansiString=''): ISuperObject;
 var
   res:ISuperObject;
 begin
@@ -500,13 +500,14 @@ end;
 procedure TVisEditPackage.ActEditSavePackageExecute(Sender: TObject);
 var
   res: ISuperObject;
+  section:String;
 begin
   Screen.Cursor := crHourGlass;
   try
     if IsNewPackage then
     begin
       res := DMPython.RunJSON(
-        format('mywapt.make_group_template(packagename="%s",depends="%s",description=r"%s".decode(''utf8''))', [Trim(EdPackage.Text), Depends, Eddescription.Text]));
+        format('mywapt.make_group_template(packagename="%s",depends="%s",description=r"%s".decode(''utf8''),section="%s")', [Trim(EdPackage.Text), Depends, Eddescription.Text,EdSection.Text]));
       FSourcePath := res.S['source_dir'];
       PackageEdited := res['package'];
     end

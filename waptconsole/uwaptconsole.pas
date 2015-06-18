@@ -1636,14 +1636,15 @@ end;
 
 procedure TVisWaptGUI.ActEditHostPackageExecute(Sender: TObject);
 var
-  hostname,uuid: ansistring;
+  hostname,uuid,desc: ansistring;
 begin
   if GridHosts.FocusedRow<>Nil then
   begin
     hostname := GridHosts.FocusedRow.S['host.computer_fqdn'];
     uuid := GridHosts.FocusedRow.S['uuid'];
+    desc := GridHosts.FocusedRow.S['description'];
 
-    if EditHost(hostname, ActAdvancedMode.Checked, uuid) <> nil then
+    if EditHost(hostname, ActAdvancedMode.Checked, uuid,desc) <> nil then
       ActSearchHost.Execute;
   end;
 end;
