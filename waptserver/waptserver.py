@@ -1782,11 +1782,6 @@ def download_wsusscan(params={}):
         if current_timestamp < tmp_timestamp + 24 * 60 * 60:
             logger.info('download_wsusscan: %s is present but less than 24 hours old (timestamp %f), skipping download', tmp_filename, tmp_timestamp)
             return SPOOL_OK
-        else:
-            try:
-                os.unlink(tmp_filename)
-            except Exception as e:
-                logger.warning('download_wsusscan: I tried to remove %s but failed (reason: %s)', tmp_filename, str(e))
     try:
 
         wsusscan2_history = pymongo.MongoClient().wapt.wsusscan2_history
