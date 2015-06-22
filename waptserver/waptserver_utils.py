@@ -2,27 +2,27 @@
 # -*-: coding: utf-8 -*-
 
 import bson.json_util
-import datetime as _datetime
+import datetime
 import email.utils
-import errno as _errno
+import errno
 import flask
 import json
 import logging
 import os
-import requests as _requests
+import requests
 
 __all__ = []
 
 ##### Date/Time utilities #####
 def datetime2isodate(adatetime = None):
     if not adatetime:
-        adatetime = _datetime.datetime.now()
-    assert(isinstance(adatetime,_datetime.datetime))
+        adatetime = datetime.datetime.now()
+    assert(isinstance(adatetime,datetime.datetime))
     return adatetime.isoformat()
 
 def isodate2datetime(isodatestr):
     # we remove the microseconds part as it is not working for python2.5 strptime
-    return _datetime.datetime.strptime(isodatestr.split('.')[0] , "%Y-%m-%dT%H:%M:%S")
+    return datetime.datetime.strptime(isodatestr.split('.')[0] , "%Y-%m-%dT%H:%M:%S")
 
 def httpdatetime2isodate(httpdate):
     """convert a date string as returned in http headers or mail headers to isodate
@@ -44,7 +44,7 @@ def mkdir_p(path):
     try:
         os.makedirs(path)
     except OSError, exc:
-        if exc.errno == _errno.EEXIST and os.path.isdir(path):
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
             pass
         else:
             raise
