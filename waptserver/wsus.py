@@ -28,8 +28,10 @@ sys.path.insert(0,os.path.join(wapt_root_dir,'lib','site-packages'))
 import collections
 import email.utils
 from flask import request
+import hashlib
 import pymongo
 import requests
+import shutil
 import stat
 import subprocess
 import time
