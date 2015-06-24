@@ -20,16 +20,19 @@ Requires:  httpd dialog pytz m2crypto python-passlib
 cd ..
 python  ./createrpm.py
 
-
 %files
 %defattr(-,wapt,apache)
  /opt/wapt/waptrepo/VERSION
  /opt/wapt/waptpackage.py
  /opt/wapt/wapt-scanpackages.py
-   /opt/wapt/wapt-scanpackages.pyc
-   /opt/wapt/wapt-scanpackages.pyo
-   /opt/wapt/waptpackage.pyc
-   /opt/wapt/waptpackage.pyo
+ /opt/wapt/wapt-scanpackages.pyc
+ /opt/wapt/wapt-scanpackages.pyo
+ /opt/wapt/waptpackage.pyc
+ /opt/wapt/waptpackage.pyo
+ /var/www/html/wapt
+ /var/www/html/wapt-host
+ /var/www/html/wapt-group
+
 
 
 
@@ -43,5 +46,5 @@ exit 0
 
 %post
 systemctl enable httpd
-firewall-cmd --add-port=443/tcp
-firewall-cmd --add-port=80/tcp
+firewall-cmd --permanent --add-port=443/tcp
+firewall-cmd --permanent --add-port=80/tcp
