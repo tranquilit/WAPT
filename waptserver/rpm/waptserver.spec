@@ -12,7 +12,7 @@ URL:		http://dev.tranquil.it
 Source0:	./waptserver/
 Prefix:		/opt
 
-Requires:  httpd python-pymongo mongodb-server dialog uwsgi-plugin-python uwsgi pytz m2crypto python-passlib
+Requires:  httpd mod_ssl python-pymongo mongodb-server dialog uwsgi-plugin-python uwsgi pytz m2crypto python-passlib
 
 # Turn off the brp-python-bytecompile script
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
@@ -56,7 +56,7 @@ exit 0
 systemctl enable mongod
 systemctl enable httpd
 chkconfig --add waptserver
-firewall-cmd --add-port=443/tcp
-firewall-cmd --add-port=80/tcp
+firewall-cmd --permanent --add-port=443/tcp
+firewall-cmd --permanent --add-port=80/tcp
 mkdir -p /opt/wapt/log
 chown wapt:apache /opt/wapt/log
