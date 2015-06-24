@@ -19,7 +19,7 @@ NAME=$VERSION
 CONFIG_FILE=/opt/wapt/waptserver/waptserver.ini
 LOGFILE=/var/log/$NAME.log
 OWNER=wapt
-GROUP=httpd
+GROUP=apache
 DESC=$VERSION
 OP=$1
 
