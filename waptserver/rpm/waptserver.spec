@@ -53,7 +53,7 @@ exit 0
 
 
 %post
-systemctl enable mongod.service
+systemctl enable mongod
 systemctl enable httpd
 chkconfig --add waptserver
 firewall-cmd --add-port=443/tcp
