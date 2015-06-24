@@ -28,7 +28,7 @@ import shutil
 import stat
 import subprocess
 import sys
-
+import platform
 
 def replaceAll(file,searchExp,replaceExp):
     for line in fileinput.input(file, inplace=1):
@@ -100,6 +100,19 @@ copyfile(makepath(wapt_source_dir,'waptpackage.py'),
          './builddir/opt/wapt/waptpackage.py')
 copyfile(makepath(wapt_source_dir,'wapt-scanpackages.py'),
          './builddir/opt/wapt/wapt-scanpackages.py')
+
+if platform.dist()[0] in ('debian','ubuntu'):
+    os.makedirs('builddir/var/www/wapt')
+    os.makedirs('builddir/var/www/wapt-host')
+    os.makedirs('builddir/var/www/wapt-group')
+elif platform.dist()[0] in ('centos','redhat','ubuntu'):
+    os.makedirs('builddir/var/www/html/wapt')
+    os.makedirs('builddir/var/www/html/wapt-host')
+    os.makedirs('builddir/var/www/html/wapt-group')
+else:
+    print "distrib not supported"
+    sys.exit(1)
+
 
 #print 'copie des fichiers control et postinst'
 #copyfile('./DEBIAN/control','./builddir/DEBIAN/control')
