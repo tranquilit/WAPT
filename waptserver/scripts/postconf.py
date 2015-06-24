@@ -26,6 +26,7 @@ try:
 except:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
+
 sys.path.insert(0,os.path.join(wapt_root_dir))
 sys.path.insert(0,os.path.join(wapt_root_dir,'lib'))
 sys.path.insert(0,os.path.join(wapt_root_dir,'lib','site-packages'))
@@ -40,6 +41,13 @@ import subprocess
 import jinja2
 import socket
 import uuid
+import platform
+
+def type_debian():
+    return platform.dist()[0] in ('debian','ubuntu')
+
+def type_redhat():
+    return platform.dist()[0] in ('redhat','centos','fedora')
 
 # for python < 2.7
 if "check_output" not in dir( subprocess ): # duck punch it in!
@@ -57,13 +65,14 @@ if "check_output" not in dir( subprocess ): # duck punch it in!
         return output
     subprocess.check_output = f
 
-
 # XXX on CentOS 6.5 the first call would fail because of compat mismatch between
 # dialog(1) and our recent dialog.py
 try:
     postconf = dialog.Dialog(dialog="dialog")
 except dialog.UnableToRetrieveBackendVersion:
     postconf = dialog.Dialog(dialog="dialog", use_stdout=True)
+
+
 
 def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn):
     if wapt_folder.endswith('\\') or wapt_folder.endswith('/'):
@@ -81,13 +90,21 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn):
         'wapt_repository_path': os.path.dirname(wapt_folder),
         'apache_root_folder': '/not/used',
         'windows': False,
+        'debian': type_debian(),
+        'redhat': type_redhat(),
         'ssl': True,
         'wapt_ssl_key_file': wapt_ssl_key_file,
         'wapt_ssl_cert_file': wapt_ssl_cert_file,
         }
 
     config_string = template.render(template_vars)
-    dst_file = file('/etc/apache2/sites-available/wapt.conf', 'wt')
+    if type_debian():
+        dst_file = file('/etc/apache2/sites-available/wapt.conf', 'wt')
+    elif type_redhat():
+        dst_file = file('/etc/httpd/conf.d/wapt.conf', 'wt')
+    else:
+        print ('unsupported distrib')
+        sys.exit(1)
     dst_file.write(config_string)
     dst_file.close()
 
@@ -108,17 +125,65 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn):
                 '-subj', '/C=/ST=/L=/O=/CN=' + fqdn + '/'
                 ], stderr=subprocess.STDOUT)
 
-if postconf.yesno("Do you want to launch post configuration tool ?") == postconf.DIALOG_OK:
+def enable_debian_vhost():
+    # the two following calls may fail on Debian Jessie
+    try:
+        void = subprocess.check_output(['a2dissite', 'default'], stderr=subprocess.STDOUT)
+    except Exception:
+        pass
+    try:
+        void = subprocess.check_output(['a2dissite', '000-default'], stderr=subprocess.STDOUT)
+    except Exception:
+        pass
+    try:
+        void = subprocess.check_output(['a2dissite', 'default-ssl'], stderr=subprocess.STDOUT)
+    except Exception:
+        pass
+    void = subprocess.check_output(['a2enmod', 'ssl'], stderr=subprocess.STDOUT)
+    void = subprocess.check_output(['a2enmod', 'proxy'], stderr=subprocess.STDOUT)
+    void = subprocess.check_output(['a2enmod', 'proxy_http'], stderr=subprocess.STDOUT)
+    void = subprocess.check_output(['a2ensite', 'wapt.conf'], stderr=subprocess.STDOUT)
+    void = subprocess.check_output(['/etc/init.d/apache2', 'graceful'], stderr=subprocess.STDOUT)
+
+    reply = postconf.yesno("The Apache config has been reloaded. Do you want to force-restart Apache?")
+    if reply == postconf.DIALOG_OK:
+        void = subprocess.check_output(['/etc/init.d/apache2', 'restart'], stderr=subprocess.STDOUT)
+
+def enable_redhat_vhost():
+    if os.path.exists('/etc/httpd/conf.d/ssl.conf'):
+        subprocess.check_output('mv /etc/httpd/conf.d/ssl.conf /etc/httpd/conf.d/ssl.conf.disabled',shell=True)
+    reply = postconf.yesno("The Apache config has been reloaded. Do you want to force-restart Apache?")
+    if reply == postconf.DIALOG_OK:
+        void = subprocess.check_output('systemctl restart httpd', stderr=subprocess.STDOUT, shell=True)
+
+
+# main program 
+def main():
+
+    if postconf.yesno("Do you want to launch post configuration tool ?") != postconf.DIALOG_OK:
+        print "canceling wapt postconfiguration"
+        sys.exit(1)
+
     shutil.copyfile('/opt/wapt/waptserver/waptserver.ini.template','/opt/wapt/waptserver/waptserver.ini')
     waptserver_ini = iniparse.RawConfigParser()
 
     waptserver_ini.read('/opt/wapt/waptserver/waptserver.ini')
 
     # no trailing slash
-    wapt_folder = '/var/www/wapt'
+
+    if type_debian():
+        wapt_folder = '/var/www/wapt'
+    elif type_redhat():
+        wapt_folder = '/var/www/html/wapt'
+        waptserver_ini.set('uwsgi','gid','httpd')
+    else:
+        print ('distrib not supported')
+        sys.exit(1)
+
     if os.path.isdir(wapt_folder):
         waptserver_ini.set('options','wapt_folder',wapt_folder)
     else:
+        # for install on windows
         # keep in sync with waptserver.py
         wapt_folder = os.path.join(wapt_root_dir,'waptserver','repository','wapt')
 
@@ -202,43 +267,30 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
                 exit(1)
             else:
                 fqdn = reply
+            
+            # cleanup of old naming convention for the wapt vhost definition
+            if type_debian():
+                if os.path.exists('/etc/apache2/sites-enabled/wapt'):
+                    try:
+                        os.unlink('/etc/apache2/sites-enabled/wapt')
+                    except Exception:
+                        pass
+                if os.path.exists('/etc/apache2/sites-available/wapt'):
+                    try:
+                        os.unlink('/etc/apache2/sites-available/wapt')
+                    except Exception:
+                        pass
 
-            if os.path.exists('/etc/apache2/sites-enabled/wapt'):
-                try:
-                    os.unlink('/etc/apache2/sites-enabled/wapt')
-                except Exception:
-                    pass
-            if os.path.exists('/etc/apache2/sites-available/wapt'):
-                try:
-                    os.unlink('/etc/apache2/sites-available/wapt')
-                except Exception:
-                    pass
             make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn)
             void = subprocess.check_output(['/etc/init.d/waptserver', 'start'], stderr=subprocess.STDOUT)
-            # the two following calls may fail on Debian Jessie
-            try:
-                void = subprocess.check_output(['a2dissite', 'default'], stderr=subprocess.STDOUT)
-            except Exception:
-                pass
-            try:
-                void = subprocess.check_output(['a2dissite', '000-default'], stderr=subprocess.STDOUT)
-            except Exception:
-                pass
-            try:
-                void = subprocess.check_output(['a2dissite', 'default-ssl'], stderr=subprocess.STDOUT)
-            except Exception:
-                pass
-            void = subprocess.check_output(['a2enmod', 'ssl'], stderr=subprocess.STDOUT)
-            void = subprocess.check_output(['a2enmod', 'proxy'], stderr=subprocess.STDOUT)
-            void = subprocess.check_output(['a2enmod', 'proxy_http'], stderr=subprocess.STDOUT)
-            void = subprocess.check_output(['a2ensite', 'wapt.conf'], stderr=subprocess.STDOUT)
-            void = subprocess.check_output(['/etc/init.d/apache2', 'graceful'], stderr=subprocess.STDOUT)
-
-            reply = postconf.yesno("The Apache config has been reloaded. Do you want to force-restart Apache?")
-            if reply == postconf.DIALOG_OK:
-                void = subprocess.check_output(['/etc/init.d/apache2', 'restart'], stderr=subprocess.STDOUT)
-
             final_msg.append('Please connect to https://' + fqdn + '/ to access the server.')
+            if type_debian():
+                enable_debian_vhost()
+            elif type_redhat():
+                enable_redhat_vhost()
+            else:
+                print "unsupported distrib"
+                sys.exit(1)
 
         except subprocess.CalledProcessError as cpe:
             final_msg += [
@@ -253,5 +305,11 @@ if postconf.yesno("Do you want to launch post configuration tool ?") == postconf
             ]
 
     width = 4 + max(10, len(max(final_msg, key=len)))
-    height = 2 + max(5, len(final_msg))
+    height = 2 + max(20, len(final_msg))
     postconf.msgbox('\n'.join(final_msg), height=height, width=width)
+
+
+
+
+if __name__ == "__main__":
+    main()
