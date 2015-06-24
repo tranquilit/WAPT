@@ -93,9 +93,9 @@ if not wapt_version:
 
 control_file = './builddir/DEBIAN/control'
 
-for filename in glob.glob("tis-waptserver*.deb"):
-    print >> sys.stderr, "Removing %s"%filename
-    os.remove(filename)
+#for filename in glob.glob("tis-waptserver*.deb"):
+#    print >> sys.stderr, "Removing %s"%filename
+#    os.remove(filename)
 
 if os.path.exists("builddir"):
     shutil.rmtree("builddir")
@@ -125,7 +125,14 @@ for lib in ('requests','iniparse','dns','pefile.py','rocket','pymongo','bson','f
 print >> sys.stderr, "copying the startup script /etc/init.d/waptserver"
 try:
     mkdir_p('./builddir/etc/init.d/')
-    copyfile('../scripts/waptserver-init','./builddir/etc/init.d/waptserver')
+    if platform.dist()[0] in ('debian','ubuntu'):
+        copyfile('../scripts/waptserver-init','./builddir/etc/init.d/waptserver')
+    elif platform.dist()[0] in ('centos','redhat','fedora'):
+        copyfile('../scripts/waptserver-init-centos','./builddir/etc/init.d/waptserver')
+    else:
+        print "unsupported distrib"
+        sys.exit(1)
+
     subprocess.check_output('chmod 755 ./builddir/etc/init.d/waptserver',shell=True)
     subprocess.check_output('chown root:root ./builddir/etc/init.d/waptserver',shell=True)
 except Exception as e:
