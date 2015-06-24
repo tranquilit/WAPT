@@ -1901,3 +1901,5 @@ systemctl enable httpd
 chkconfig --add waptserver
 firewall-cmd --add-port=443/tcp
 firewall-cmd --add-port=80/tcp
+mkdir /opt/wapt/log
+chown wapt:apache /opt/wapt/log
