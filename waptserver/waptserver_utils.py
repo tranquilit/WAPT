@@ -9,6 +9,7 @@ import flask
 import json
 import logging
 import os
+import pymongo
 import requests
 
 __all__ = []
@@ -39,6 +40,40 @@ __all__ += ['httpdatetime2isodate']
 
 
 ##### Misc. utilities #####
+def ensure_list(csv_or_list,ignore_empty_args=True):
+    """if argument is not a list, return a list from a csv string"""
+    if csv_or_list is None:
+        return []
+    if isinstance(csv_or_list,tuple):
+        return list(csv_or_list)
+    elif not isinstance(csv_or_list,list):
+        if ignore_empty_args:
+            return [s.strip() for s in csv_or_list.split(',') if s.strip() != '']
+        else:
+            return [s.strip() for s in csv_or_list.split(',')]
+    else:
+        return csv_or_list
+
+utils_mongodb_ip = ''
+utils_mongodb_port = ''
+
+def utils_setup_db(ip, port):
+    global utils_mongodb_ip, utils_mongodb_port
+    utils_mongodb_ip = ip
+    utils_mongodb_port = port
+
+def utils_get_db():
+    """Opens a new database connection if there is none yet for the
+    current application context.
+    """
+    try:
+        logger.debug('Connecting to mongo db %s:%s'%(utils_mongodb_ip, int(utils_mongodb_port)))
+        mongo_client = pymongo.MongoClient(utils_mongodb_ip, int(utils_mongodb_port))
+        return mongo_client.wapt
+    except Exception as e:
+        raise Exception("Could not connect to mongodb database: {}.".format((repr(e),)))
+
+
 def mkdir_p(path):
     import errno
     try:
@@ -94,7 +129,10 @@ def wget(url,target,proxies=None,connect_timeout=10,download_timeout=None):
         os.utime(os.path.join(dir,filename),(unix_timestamp,unix_timestamp))
     return os.path.join(dir,filename)
 
+__all__ += ['ensure_list']
 __all__ += ['mkdir_p']
+__all__ += ['utils_get_db']
+__all__ += ['utils_setup_db']
 __all__ += ['wget']
 
 
