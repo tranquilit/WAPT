@@ -171,7 +171,7 @@ def download_wsusscan(params={}):
             stats['status'] = 'parsing'
             wsusscan2_history.save(stats)
 
-            parse_wsusscan2()
+            parse_wsusscan2(dl_uuid=dl_uuid)
 
             stats['status'] = 'finished'
             wsusscan2_history.save(stats)
@@ -490,11 +490,12 @@ def amend_metadata(directory, to_parse, db):
 
 # end of metadata parsing
 
-def parse_wsusscan_entrypoint():
+def parse_wsusscan_entrypoint(dl_uuid=None):
     wsusscan2 = os.path.join(waptwua_folder, 'wsusscn2.cab')
 
     client = pymongo.MongoClient()
     db = client.wapt
+    wsusscan2_history = db.wsusscan2_history
 
     db.wsus_updates.ensure_index([('revision_id', pymongo.DESCENDING)], unique=True)
     db.wsus_updates.ensure_index('update_id')
@@ -513,6 +514,9 @@ def parse_wsusscan_entrypoint():
 
     to_parse = wsusscan2_extract_cabs(wsusscan2, tmpdir)
     logger.info('cab archives to parse: %s', str(to_parse.keys()))
+
+    if dl_uuid:
+        wsusscan2_history.update({ 'uuid': dl_uuid }, { '$set': { 'changed_cabs': to_parse } })
 
     packages = os.path.join(waptwua_folder, 'packages')
     if os.path.exists(packages):
@@ -536,7 +540,7 @@ def parse_wsusscan_entrypoint():
     logger.info('amend_metadata in %s secs', str(after - before))
 
 
-def parse_wsusscan2():
+def parse_wsusscan2(dl_uuid):
     got_lock = False
 
     runtime = pymongo.MongoClient().wapt.wsus_runtime
@@ -545,7 +549,7 @@ def parse_wsusscan2():
         runtime.insert({ '_id': WSUS_PARSE_WSUSSCN2_LOCK })
         got_lock = True
 
-        parse_wsusscan_entrypoint()
+        parse_wsusscan_entrypoint(dl_uuid)
 
     except pymongo.errors.DuplicateKeyError:
         logger.warning('parse_wsusscan2 already running, aborting')
