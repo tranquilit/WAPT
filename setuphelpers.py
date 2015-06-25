@@ -3126,7 +3126,7 @@ def need_install(key,min_version=None,force=False):
                 return False
         return True
 
-def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=[0,1603,3010],timeout=300):
+def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=[0,1603,3010],timeout=300,properties={}):
     """Install silently the supplied msi file, and add the uninstall key to
     global uninstall key list
 
@@ -3162,7 +3162,8 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
     if need_install(key,min_version=min_version,force=force):
         if killbefore:
             killalltasks(killbefore)
-        run(r'msiexec /norestart /q /i "%s"' % msi,accept_returncodes=accept_returncodes,timeout=timeout)
+        props = ' '.join(["%s=%s" % (k,v) for (k,v) in properties.iteritems()])
+        run(r'msiexec /norestart /q /i "%s" %s' % (msi,props),accept_returncodes=accept_returncodes,timeout=timeout)
         if not installed_softwares(uninstallkey=key):
             error('MSI %s has been installed but the uninstall key %s can not be found' % (msi,key))
     else:
