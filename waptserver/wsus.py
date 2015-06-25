@@ -159,9 +159,9 @@ def download_wsusscan(params={}):
 
             # check integrity
             if sys.platform == 'win32':
-                cablist = subprocess.check_output('expand -D "%s"' % tmp_filename,shell = True).decode('cp850').splitlines()
+                cablist = subprocess.check_output('expand -D "%s"' % tmp_filename, shell = True).decode('cp850').splitlines()
             else:
-                cablist = subprocess.check_output('cabextract -t "%s"' % tmp_filename ,shell = True).splitlines()
+                cablist = subprocess.check_output('cabextract -t "%s"' % tmp_filename, shell = True).splitlines()
             stats['cablist'] = cablist
 
             if os.path.isfile(wsus_filename):
