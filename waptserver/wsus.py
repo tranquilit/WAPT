@@ -482,11 +482,15 @@ def parse_wsusscan_entrypoint():
         shutil.rmtree(packages)
     shutil.move(tmpdir, packages)
 
-    logger.info('starting wsusscan2_parse_updates')
-    before = time.time()
-    wsusscan2_parse_updates(packages, db, last_known_rev)
-    after = time.time()
-    logger.info('wsusscan2_parse_updates in %s secs', str(after - before))
+    if 'package.cab' in to_parse:
+        logger.info('starting wsusscan2_parse_updates')
+        before = time.time()
+        wsusscan2_parse_updates(packages, db, last_known_rev)
+        after = time.time()
+        logger.info('wsusscan2_parse_updates in %s secs', str(after - before))
+    else:
+        # No new updates / file locations
+        logger.info('parse_wsusscan_entrypoint: skipping updates parsing')
 
     logger.info('starting amend_metadata')
     before = time.time()
