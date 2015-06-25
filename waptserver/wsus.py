@@ -36,6 +36,7 @@ import stat
 import subprocess
 import time
 import traceback
+import uuid
 
 try:
     from uwsgidecorators import *
@@ -70,88 +71,124 @@ def download_wsusscan(params={}):
     wsus_filename = os.path.join(waptwua_folder,'wsusscn2.cab')
     tmp_filename = os.path.join(waptwua_folder,'wsusscn2.cab.tmp')
 
-    wsusscan2_history = None
-    stats = {
-        'run_date': datetime2isodate()
-    }
+    wsusscan2_history = pymongo.MongoClient().wapt.wsusscan2_history
+    wsusscan2_history.ensure_index('uuid', unique=True)
+    wsusscan2_history.ensure_index([('run_date', pymongo.DESCENDING)])
 
     force = params.get('force', False) == 'True'
+    dryrun = params.get('dryrun', False) == 'True'
+    dl_uuid = str(uuid.uuid4())
+
+    stats = {
+        'run_date': datetime2isodate(),
+        'forced': str(force),
+        'uuid': dl_uuid,
+    }
+    _id = wsusscan2_history.insert(stats)
+    stats['_id'] = _id
+
+
+    # should we remove the tmp filename when we get an error?
+    cleanup_on_error = False
 
     if not force and os.path.isfile(tmp_filename):
+
         tmp_timestamp = os.stat(tmp_filename).st_mtime
         current_timestamp = time.time()
         if current_timestamp < tmp_timestamp + 24 * 60 * 60:
             logger.info('download_wsusscan: %s is present but less than 24 hours old (timestamp %f), skipping download', tmp_filename, tmp_timestamp)
-            return SPOOL_OK
+            stats['status'] = 'aborted'
+            wsusscan2_history.save(stats)
+
     try:
 
-        wsusscan2_history = pymongo.MongoClient().wapt.wsusscan2_history
-        new_cab_timestamp = float(email.utils.mktime_tz(email.utils.parsedate_tz(requests.head(cab_url).headers['last-modified'])))
+        last_modified = requests.head(cab_url).headers['last-modified']
+
+        new_cab_timestamp = float(email.utils.mktime_tz(email.utils.parsedate_tz(last_modified)))
         if os.path.isfile(wsus_filename):
             current_cab_timestamp = os.stat(wsus_filename).st_mtime
         else:
             current_cab_timestamp = 0.0
-        logger.info('Current cab timestamp: %f, New cab timestamp: %f'%(current_cab_timestamp,new_cab_timestamp))
 
-        if not os.path.isfile(wsus_filename) or ( new_cab_timestamp > current_cab_timestamp ) or force:
+        logger.info('download_wsuscan: current cab timestamp: %f, New cab timestamp: %f' % (current_cab_timestamp,new_cab_timestamp))
+
+        if not os.path.isfile(wsus_filename) or (new_cab_timestamp > current_cab_timestamp) or force:
+
             logger.info('Downloading because of: file not found == %s, timestamps == %s, force == %s', \
                             str(os.path.isfile(wsus_filename) == False), str(new_cab_timestamp > current_cab_timestamp), str(force))
 
-            wget(cab_url,tmp_filename)
+            if not os.path.isfile(wsus_filename):
+                stats['reason'] = 'file missing'
+            elif (new_cab_timestamp > current_cab_timestamp):
+                stats['reason'] = 'newer available'
+            elif force:
+                stats['reason'] = 'forced download'
+            else:
+                logger.error('download_wsusscan: logic error')
+                assert False
+            stats['status'] = 'downloading'
+            wsusscan2_history.save(stats)
+
+            def download_wsusscan_callback(total_bytes, downloaded_bytes):
+                wsusscan2_history.update(
+                    {
+                        'uuid': dl_uuid
+                    },
+                    {
+                        '$set': {
+                            'file_size': total_bytes,
+                            'current_size': downloaded_bytes
+                        }
+                    }
+                )
+
+            cleanup_on_error = True
+            if dryrun:
+                try:
+                    os.link(wsus_filename, tmp_filename)
+                except:
+                    pass
+            else:
+                wget(cab_url, tmp_filename, chunk_callback=download_wsusscan_callback)
 
             file_stats = os.stat(tmp_filename)
             stats['file_timestamp'] = file_stats[stat.ST_MTIME]
             stats['file_size'] = file_stats[stat.ST_SIZE]
+            stats['status'] = 'checking'
+            wsusscan2_history.save(stats)
 
             # check integrity
-            try:
-
-                if sys.platform == 'win32':
-                    cablist = subprocess.check_output('expand -D "%s"' % tmp_filename,shell = True).decode('cp850').splitlines()
-                else:
-                    cablist = subprocess.check_output('cabextract -t "%s"' % tmp_filename ,shell = True).splitlines()
-                stats['cablist'] = cablist
-
-            except Exception as e:
-                if os.path.isfile(tmp_filename):
-                    os.unlink(tmp_filename)
-
-                stats['error'] = str(e)
-                try:
-                    wsusscan2_history.insert(stats)
-                except Exception:
-                    pass
-                logger.error("Error in download_wsusscan: %s", str(e))
-                logger.error('Trace:\n%s', traceback.format_exc())
-                return SPOOL_OK
+            if sys.platform == 'win32':
+                cablist = subprocess.check_output('expand -D "%s"' % tmp_filename,shell = True).decode('cp850').splitlines()
+            else:
+                cablist = subprocess.check_output('cabextract -t "%s"' % tmp_filename ,shell = True).splitlines()
+            stats['cablist'] = cablist
 
             if os.path.isfile(wsus_filename):
                 os.unlink(wsus_filename)
             os.rename(tmp_filename, wsus_filename)
 
-            try:
-                wsusscan2_history.insert(stats)
-            except Exception:
-                pass
+            stats['status'] = 'parsing'
+            wsusscan2_history.save(stats)
 
-            parse_wsusscan2.spool(arg=None)
+            parse_wsusscan2()
+
+            stats['status'] = 'finished'
+            wsusscan2_history.save(stats)
 
         else:
             stats['skipped'] = True
-            try:
-                wsusscan2_history.insert(stats)
-            except Exception:
-                pass
+            wsusscan2_history.save(stats)
 
         return SPOOL_OK
 
     except Exception as e:
-        stats.update({ 'error': str(e) })
-        if wsusscan2_history:
-            try:
-                wsusscan2_history.insert(stats)
-            except:
-                pass
+        stats['error'] = str(e)
+        wsusscan2_history.save(stats)
+
+        if cleanup_on_error and os.path.isfile(tmp_filename):
+            os.unlink(tmp_filename)
+
         logger.error("Error in download_wsusscan: %s", str(e))
         logger.error('Trace:\n%s', traceback.format_exc())
         return SPOOL_OK
@@ -499,8 +536,7 @@ def parse_wsusscan_entrypoint():
     logger.info('amend_metadata in %s secs', str(after - before))
 
 
-@spool
-def parse_wsusscan2(arg=None):
+def parse_wsusscan2():
     got_lock = False
 
     runtime = pymongo.MongoClient().wapt.wsus_runtime
@@ -522,9 +558,10 @@ def parse_wsusscan2(arg=None):
 
 #@app.route('/api/v2/download_wsusscan')
 def trigger_wsusscan2_download():
+    dryrun = bool(request.args.get('dryrun', False))
     force = bool(request.args.get('force', False))
     logger.info('Triggering download_wsusscan with parameter ' + str(force))
-    download_wsusscan.spool(force=force)
+    download_wsusscan.spool(dryrun=dryrun, force=force)
     return make_response()
 
 #@app.route('/api/v2/wsusscan2_status')
