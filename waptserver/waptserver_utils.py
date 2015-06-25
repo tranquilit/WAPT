@@ -84,7 +84,7 @@ def mkdir_p(path):
         else:
             raise
 
-def wget(url,target,proxies=None,connect_timeout=10,download_timeout=None):
+def wget(url,target,proxies=None,connect_timeout=10,download_timeout=None, chunk_callback=None):
     r"""Copy the contents of a file from a given URL to a local file.
     >>> respath = wget('http://wapt.tranquil.it/wapt/tis-firefox_28.0.0-1_all.wapt','c:\\tmp\\test.wapt',proxies={'http':'http://proxy:3128'})
     ???
@@ -93,6 +93,14 @@ def wget(url,target,proxies=None,connect_timeout=10,download_timeout=None):
     >>> respath = wget('http://localhost:8088/runstatus','c:\\tmp\\test.json')
     ???
     """
+
+    def default_chunk_callback(expected_size, downloaded_size):
+        # nothing
+        pass
+
+    if chunk_callback is None:
+        chunk_callback = default_chunk_callback
+
     if os.path.isdir(target):
         target = os.path.join(target,'')
 
@@ -108,17 +116,21 @@ def wget(url,target,proxies=None,connect_timeout=10,download_timeout=None):
     httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout, verify=False)
 
     total_bytes = int(httpreq.headers['content-length'])
+
     # 1MB max, 2KB min
     chunk_size = min([1024*1024,max([total_bytes/100,2048])])
 
     with open(os.path.join(dir,filename),'wb') as output_file:
-        last_downloaded = 0
+        downloaded_bytes = 0
         if httpreq.ok:
             for chunk in httpreq.iter_content(chunk_size=chunk_size):
+                chunk_callback(total_bytes, downloaded_bytes)
                 output_file.write(chunk)
                 if download_timeout is not None and (time.time()-start_time>download_timeout):
                     raise requests.Timeout(r'Download of %s takes more than the requested %ss'%(url,download_timeout))
-                last_downloaded += len(chunk)
+                if len(chunk) != 0:
+                    downloaded_bytes += len(chunk)
+                    chunk_callback(total_bytes, downloaded_bytes)
         else:
             httpreq.raise_for_status()
 
