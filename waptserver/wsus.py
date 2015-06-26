@@ -36,6 +36,7 @@ import stat
 import subprocess
 import time
 import traceback
+import urlparse
 import uuid
 
 try:
