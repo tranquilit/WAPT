@@ -227,8 +227,12 @@ class EWaptForbiddden(Exception):
 class EWaptMissingParameter(Exception):
     pass
 
+class EWaptSignalReceived(Exception):
+    pass
+
 __all__ += ['EWaptMissingHostData']
 __all__ += ['EWaptUnknownHost']
 __all__ += ['EWaptHostUnreachable']
 __all__ += ['EWaptForbiddden']
 __all__ += ['EWaptMissingParameter']
+__all__ += ['EWaptSignalReceived']
