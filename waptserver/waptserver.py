@@ -234,6 +234,7 @@ ALLOWED_EXTENSIONS = set(['wapt'])
 
 
 utils_setup_db(mongodb_ip, mongodb_port)
+utils_set_devel_mode(options.devel)
 
 try:
     import wsus

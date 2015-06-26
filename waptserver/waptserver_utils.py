@@ -62,6 +62,11 @@ def utils_setup_db(ip, port):
     utils_mongodb_ip = ip
     utils_mongodb_port = port
 
+utils_devel_mode = False
+def utils_set_devel_mode(devel):
+    global utils_devel_mode
+    utils_devel_mode = devel
+
 def utils_get_db():
     """Opens a new database connection if there is none yet for the
     current application context.
@@ -145,6 +150,7 @@ __all__ += ['ensure_list']
 __all__ += ['mkdir_p']
 __all__ += ['utils_get_db']
 __all__ += ['utils_setup_db']
+__all__ += ['utils_set_devel_mode']
 __all__ += ['wget']
 
 
@@ -192,7 +198,7 @@ def make_response_from_exception(exception,error_code='',status=200):
             success = False,
             error_code = error_code
             )
-    if options.devel:
+    if utils_devel_mode:
         data['msg'] = traceback.format_exc()
     else:
         data['msg'] = u"%s" % (exception,)
