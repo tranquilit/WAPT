@@ -259,10 +259,17 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'host_status'
           end        
           item
-            MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed, coAllowFocus]
             Position = 1
             Tag = 1
+            Text = 'WUA'
+            PropertyName = 'waptwua.status'
+          end        
+          item
+            MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed, coAllowFocus]
+            Position = 2
+            Tag = 2
             Text = 'Reachable'
             Width = 60
             PropertyName = 'reachable'
@@ -270,78 +277,78 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed, coAllowFocus]
-            Position = 2
-            Tag = 2
+            Position = 3
+            Tag = 3
             Text = 'Host'
             Width = 112
             PropertyName = 'host.computer_fqdn'
           end        
           item
             MaxWidth = 400
-            Position = 3
-            Tag = 3
+            Position = 4
+            Tag = 4
             Text = 'Description'
             Width = 124
             PropertyName = 'host.description'
           end        
           item
             MaxWidth = 400
-            Position = 4
-            Tag = 4
+            Position = 5
+            Tag = 5
             Text = 'Manufacturer'
             Width = 100
             PropertyName = 'host.system_manufacturer'
           end        
           item
             MaxWidth = 400
-            Position = 5
-            Tag = 5
+            Position = 6
+            Tag = 6
             Text = 'Model'
             Width = 100
             PropertyName = 'host.system_productname'
           end        
           item
             MaxWidth = 400
-            Position = 6
-            Tag = 6
+            Position = 7
+            Tag = 7
             Text = 'Serial number'
             Width = 100
             PropertyName = 'dmi.Chassis_Information.Serial_Number'
           end        
           item
             MaxWidth = 400
-            Position = 7
-            Tag = 7
+            Position = 8
+            Tag = 8
             Text = 'Last update'
             Width = 100
             PropertyName = 'last_query_date'
           end        
           item
             MaxWidth = 400
-            Position = 8
-            Tag = 8
+            Position = 9
+            Tag = 9
             Text = 'MAC address'
             Width = 100
             PropertyName = 'host.mac'
           end        
           item
-            Position = 9
-            Tag = 9
+            Position = 10
+            Tag = 10
             Text = 'Listening IP'
             Width = 75
             PropertyName = 'wapt.listening_address.address'
           end        
           item
             MaxWidth = 400
-            Position = 10
-            Tag = 10
+            Position = 11
+            Tag = 11
             Text = 'IP addresses'
             Width = 100
             PropertyName = 'host.connected_ips'
           end        
           item
-            Position = 11
-            Tag = 11
+            Position = 12
+            Tag = 12
             Text = 'WAPT version'
             Width = 80
             PropertyName = 'wapt.wapt-exe-version'
@@ -349,8 +356,8 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 12
-            Tag = 12
+            Position = 13
+            Tag = 13
             Text = 'uuid'
             Width = 100
             PropertyName = 'uuid'
@@ -358,8 +365,8 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 13
-            Tag = 13
+            Position = 14
+            Tag = 14
             Text = 'md5sum'
             Width = 100
             PropertyName = 'md5sum'
@@ -367,8 +374,8 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 14
-            Tag = 14
+            Position = 15
+            Tag = 15
             Text = 'purchase_order'
             Width = 100
             PropertyName = 'purchase_order'
@@ -376,8 +383,8 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 15
-            Tag = 15
+            Position = 16
+            Tag = 16
             Text = 'purchase_date'
             Width = 100
             PropertyName = 'purchase_date'
@@ -385,38 +392,32 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 16
-            Tag = 16
+            Position = 17
+            Tag = 17
             Text = 'attributes'
             Width = 100
             PropertyName = 'attributes'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 17
-            Tag = 17
+            Position = 18
+            Tag = 18
             Text = 'Domain controller'
             PropertyName = 'host.domain_controller'
           end        
           item
-            Position = 18
-            Tag = 18
+            Position = 19
+            Tag = 19
             Text = 'Groups'
             Width = 64
             PropertyName = 'depends'
           end        
           item
-            Position = 19
-            Tag = 19
+            Position = 20
+            Tag = 20
             Text = 'Domaine'
             Width = 80
             PropertyName = 'host.domain_name'
-          end        
-          item
-            Position = 20
-            Tag = 20
-            Text = 'WUA'
-            PropertyName = 'waptwua.status'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
@@ -452,9 +453,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 369
         Top = 91
         Width = 572
-        ActivePage = pgSoftwares
+        ActivePage = pgPackages
         Align = alRight
-        TabIndex = 2
+        TabIndex = 0
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -858,11 +859,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostInventory: TTabSheet
           Caption = 'Hardware inventory'
-          ClientHeight = 295
+          ClientHeight = 343
           ClientWidth = 564
           object GridhostInventory: TVirtualJSONInspector
             Left = 0
-            Height = 295
+            Height = 343
             Top = 0
             Width = 564
             PropertyDefs = <>
@@ -1015,13 +1016,13 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostWUA: TTabSheet
           Caption = 'Windows updates'
-          ClientHeight = 293
+          ClientHeight = 343
           ClientWidth = 564
           object GridHostWinUpdates: TSOGrid
             AnchorSideTop.Control = Panel9
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 267
+            Height = 317
             Top = 26
             Width = 564
             OnGetText = GridHostWinUpdatesGetText
@@ -1037,42 +1038,56 @@ object VisWaptGUI: TVisWaptGUI
               end            
               item
                 Position = 1
-                Tag = 14
+                Tag = 1
                 Text = 'kbids'
-                Width = 100
+                Width = 85
                 PropertyName = 'kbids'
               end            
               item
                 Position = 2
-                Tag = 15
+                Tag = 2
                 Text = 'severity'
-                Width = 79
+                Width = 69
                 PropertyName = 'severity'
               end            
               item
                 Position = 3
-                Tag = 16
-                Text = 'title'
-                Width = 501
-                PropertyName = 'title'
+                Tag = 3
+                Text = 'Product'
+                Width = 63
+                PropertyName = 'product'
               end            
               item
                 Position = 4
-                Tag = 17
+                Tag = 4
+                Text = 'Classification'
+                Width = 78
+                PropertyName = 'classification'
+              end            
+              item
+                Position = 5
+                Tag = 5
+                Text = 'title'
+                Width = 438
+                PropertyName = 'title'
+              end            
+              item
+                Position = 6
+                Tag = 6
                 Text = 'changetime'
                 Width = 100
                 PropertyName = 'changetime'
               end            
               item
-                Position = 5
-                Tag = 18
+                Position = 7
+                Tag = 7
                 Text = 'installed'
                 Width = 55
                 PropertyName = 'installed'
               end            
               item
-                Position = 6
-                Tag = 19
+                Position = 8
+                Tag = 8
                 Text = 'downloaded'
                 Width = 69
                 PropertyName = 'downloaded'
@@ -1080,7 +1095,6 @@ object VisWaptGUI: TVisWaptGUI
             Header.DefaultHeight = 17
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
             Header.SortColumn = 4
-            Header.SortDirection = sdDescending
             Header.Style = hsFlatButtons
             Images = ImageList1
             TabOrder = 0
@@ -3537,6 +3551,106 @@ object VisWaptGUI: TVisWaptGUI
             OnClick = cbWUCriticalClick
             TabOrder = 4
           end
+        end
+      end
+    end
+    object TabSheet4: TTabSheet
+      Caption = 'TabSheet4'
+      ClientHeight = 460
+      ClientWidth = 947
+      object GridWSUSScn: TSOGrid
+        Left = 0
+        Height = 424
+        Top = 36
+        Width = 947
+        Align = alClient
+        BorderSpacing.Top = 2
+        Color = clWhite
+        Header.AutoSizeIndex = -1
+        Header.Columns = <        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 0
+            Text = '_id'
+            Width = 100
+            PropertyName = '_id'
+          end        
+          item
+            Position = 1
+            Tag = 1
+            Text = 'Date'
+            Width = 169
+            PropertyName = 'run_date'
+          end        
+          item
+            Alignment = taRightJustify
+            Position = 2
+            Tag = 2
+            Text = 'WSUS Cab Size'
+            Width = 73
+            PropertyName = 'file_size'
+          end        
+          item
+            Alignment = taRightJustify
+            Position = 3
+            Tag = 3
+            Text = 'WSUS Cab Date'
+            Width = 85
+            PropertyName = 'file_timestamp'
+          end        
+          item
+            Position = 4
+            Tag = 4
+            Text = 'skipped'
+            Width = 44
+            PropertyName = 'skipped'
+          end        
+          item
+            Position = 5
+            Tag = 5
+            Text = 'Error'
+            Width = 107
+            PropertyName = 'error'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 6
+            Tag = 8
+            Text = 'cablist'
+            Width = 100
+            PropertyName = 'cablist'
+          end>
+        Header.DefaultHeight = 17
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+        Header.SortColumn = 1
+        Header.SortDirection = sdDescending
+        Header.Style = hsFlatButtons
+        Images = ImageList1
+        PopupMenu = PopupWUAUpdates
+        TabOrder = 0
+        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
+        TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
+        WantTabs = True
+      end
+      object Panel18: TPanel
+        Left = 0
+        Height = 34
+        Top = 0
+        Width = 947
+        Align = alTop
+        BevelOuter = bvNone
+        ClientHeight = 34
+        ClientWidth = 947
+        TabOrder = 1
+        object BitBtn8: TBitBtn
+          Left = 12
+          Height = 32
+          Top = 2
+          Width = 192
+          Action = ActWSUSRefreshCabHistory
+          TabOrder = 0
         end
       end
     end
@@ -6614,6 +6728,14 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem68: TMenuItem
       Action = ActWUAProductHide
+    end
+  end
+  object WSUSActions: TActionList
+    left = 784
+    top = 144
+    object ActWSUSRefreshCabHistory: TAction
+      Caption = 'Refresh WSUScan cab history'
+      OnExecute = ActWSUSRefreshCabHistoryExecute
     end
   end
 end

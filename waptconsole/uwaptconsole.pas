@@ -29,6 +29,8 @@ type
     ActCleanCache: TAction;
     ActAddADSGroups: TAction;
     ActHostsDeleteHostPackage: TAction;
+    ActWSUSRefreshCabHistory: TAction;
+    WSUSActions: TActionList;
     ActWUANewGroup: TAction;
     ActWUAProductsSelection: TAction;
     ActWUAEditGroup: TAction;
@@ -96,6 +98,7 @@ type
     BitBtn5: TBitBtn;
     BitBtn6: TBitBtn;
     BitBtn7: TBitBtn;
+    BitBtn8: TBitBtn;
     btAddGroup: TBitBtn;
     btAddGroup1: TBitBtn;
     btAddGroup2: TBitBtn;
@@ -133,6 +136,7 @@ type
     EdRunningStatus: TEdit;
     EdSearchGroups: TEdit;
     GridGroups: TSOGrid;
+    GridWSUSScn: TSOGrid;
     GridWUAGroups: TSOGrid;
     GridHostWinUpdates: TSOGrid;
     GridHostTasksPending: TSOGrid;
@@ -207,6 +211,7 @@ type
     Panel13: TPanel;
     Panel16: TPanel;
     Panel17: TPanel;
+    Panel18: TPanel;
     Panel8: TPanel;
     PopupWUAProducts: TPopupMenu;
     Splitter7: TSplitter;
@@ -216,6 +221,7 @@ type
     Panel3: TPanel;
     Panel5: TPanel;
     Panel6: TPanel;
+    TabSheet4: TTabSheet;
     wupanright: TPanel;
     plStatusBar1: TplStatusBar;
     PopupHostPackages: TPopupMenu;
@@ -336,6 +342,7 @@ type
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
     procedure ActDeployWaptExecute(Sender: TObject);
+    procedure ActWSUSRefreshCabHistoryExecute(Sender: TObject);
     procedure ActWUAEditGroupExecute(Sender: TObject);
     procedure ActWUADownloadSelectedUpdateUpdate(Sender: TObject);
     procedure ActEditGroupExecute(Sender: TObject);
@@ -1601,6 +1608,17 @@ begin
     end;
 end;
 
+procedure TVisWaptGUI.ActWSUSRefreshCabHistoryExecute(Sender: TObject);
+var
+  res:ISuperObject;
+begin
+  res := WAPTServerJsonGet('api/v2/wsusscan2_history',[]);
+  if res.B['success'] then
+    GridWSUSScn.Data := res['result']
+  else
+    GridWSUSScn.Data := Nil;
+end;
+
 procedure TVisWaptGUI.ActWUAEditGroupExecute(Sender: TObject);
 begin
   With TVisWUAGroup.Create(Self) do
@@ -2795,8 +2813,10 @@ begin
       d2 := SO('""');
     if (d1 <> nil) and (d2 <> nil) then
     begin
-      if (pos('version', propname) > 0) or (pos('connected_ips', propname) > 0) then
+      if (pos('version', propname) > 0) then
         Result := CompareVersion(d1.AsString, d2.AsString)
+      else if (pos('connected_ips', propname) > 0) then
+          Result := CompareVersion(Join('-',d1),Join('-',d2))
       else
       if (pos('host.mac', propname) > 0) then
         Result := CompareStr(d1.AsString, d2.AsString)
