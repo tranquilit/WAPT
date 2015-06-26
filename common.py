@@ -1543,6 +1543,7 @@ class WaptDB(WaptBaseDB):
             logger.debug(u'Remove unknown repositories from packages table and params (%s)' %(','.join('"%s"'% r.name for r in repos_list,),)  )
             self.db.execute('delete from wapt_package where repo not in (%s)' % (','.join('"%s"'% r.name for r in repos_list,)))
             self.db.execute('delete from wapt_params where name like "last-http%%" and name not in (%s)' % (','.join('"last-%s"'% r.repo_url for r in repos_list,)))
+            self.db.execute('delete from wapt_params where name like "last-url-%%" and name not in (%s)' % (','.join('"last-url-%s"'% r.name for r in repos_list,)))
             for repo in repos_list:
                 logger.info(u'Getting packages from %s' % repo.repo_url)
                 try:
@@ -2164,15 +2165,15 @@ class WaptRepo(WaptRemoteRepo):
 
         result = None
         last_modified = waptdb.get_param('last-%s'%(self.repo_url[:59]))
-        last_url = waptdb.get_param('last-%s' % self.name)
+        last_url = waptdb.get_param('last-url-%s' % self.name)
 
         # Check if updated
         if force or self.repo_url != last_url or self.need_update(last_modified):
             with waptdb:
                 try:
                     logger.debug(u'Read remote Packages index file %s' % self.packages_url)
-                    if force:
-                        self._packages = None
+                    self._packages = None
+                    self._packages_date = None
 
                     waptdb.purge_repo(self.name)
                     for package in self.packages:
@@ -2180,7 +2181,7 @@ class WaptRepo(WaptRemoteRepo):
                     last_modified = self.packages_date
                     logger.debug(u'Storing last-modified header for repo_url %s : %s' % (self.repo_url,self.packages_date))
                     waptdb.set_param('last-%s' % self.repo_url[:59],self.packages_date)
-                    waptdb.set_param('last-%s' % self.name, self.repo_url)
+                    waptdb.set_param('last-url-%s' % self.name, self.repo_url)
                     return last_modified
                 except Exception as e:
                     logger.info(u'Unable to update repository status of %s, error %s'%(self._repo_url,e))
@@ -2556,7 +2557,7 @@ class Wapt(object):
                 if name:
                     w = WaptRepo(name=name).load_config(self.config)
                     self.repositories.append(w)
-                    logger.debug(u'    %s:%s' % (w.name,w.repo_url))
+                    logger.debug(u'    %s:%s' % (w.name,w._repo_url))
         # last is main repository so it overrides the secondary repositories
         main = WaptRepo(name='global').load_config(self.config)
         self.repositories.append(main)
@@ -2590,7 +2591,7 @@ class Wapt(object):
         if self.repositories:
             main = self.repositories[-1]
             if main._repo_url and not host_repo._repo_url:
-                host_repo.repo_url = main.repo_url+'-host'
+                host_repo.repo_url = main._repo_url+'-host'
             self.repositories.append(host_repo)
         else:
             raise Exception('host-repo : No main repository URL, unable to derive hosts URL from repo URL. Either define an explicit host repository or define first a main repository')

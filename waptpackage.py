@@ -593,7 +593,7 @@ class WaptBaseRepo(object):
         True
         """
         if not last_modified and not self._packages_date:
-            logger.debug(u'need_update : no las_update date provided, update is needed')
+            logger.debug(u'need_update : no last_modified date provided, update is needed')
             return True
         else:
             if not last_modified:
