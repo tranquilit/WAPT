@@ -15,16 +15,18 @@ mkdir -p /var/www/wapt/
 mkdir -p /var/www/waptdev/
 mkdir -p /var/www/wapt-host
 mkdir -p /var/www/wapt-group
+mkdir -p /var/www/waptwua
 mkdir -p /etc/tis
 
-find /var/www/wapt /var/www/waptdev /var/www/wapt-host /var/www/wapt-group \
+find /var/www/wapt /var/www/waptdev /var/www/wapt-host /var/www/wapt-group /var/www/waptwua \
     -type d -exec chown wapt:www-data {} ';'
 
 chmod 755 /var/www/
 chmod 755 /var/www/wapt/
 chmod 755 /var/www/waptdev/
 chmod 755 /var/www/wapt-host/
-chmod 755 /var/www/wapt-group/
+chmod 755 /var/www/waptwua/
+
 
 chmod +x /opt/wapt/waptpackage.py
 chmod +x /opt/wapt/wapt-scanpackages.py
