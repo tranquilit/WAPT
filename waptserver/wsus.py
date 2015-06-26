@@ -255,7 +255,7 @@ UpdateCategories = [
     'UpdateClassification',
 ]
 
-def wsusscan2_do_parse_update(update, db, min_rev):
+def wsusscan2_do_parse_update(update, db, min_rev, stats={}):
 
     upd = {}
 
@@ -326,7 +326,8 @@ def wsusscan2_do_parse_update(update, db, min_rev):
                 assert old_id == rev.get('Id')
         upd['bundled_by'] = id_
 
-    db.wsus_updates.update(upd, upd, upsert=True)
+    ret = db.wsus_updates.update(upd, upd, upsert=True)
+    # TODO use 'ret' and amend stats
 
 
 def wsusscan2_do_parse_file_location(location, db):
@@ -335,7 +336,7 @@ def wsusscan2_do_parse_file_location(location, db):
     location_url = location.get('Url')
 
     locations_collection = db.wsus_locations
-    locations_collection.update(
+    ret = locations_collection.update(
         { 'id': location_id },
         {
             'id': location_id,
@@ -343,17 +344,32 @@ def wsusscan2_do_parse_file_location(location, db):
         },
         upsert=True
     )
+    # TODO use 'ret' and amend stats
 
 
 def wsusscan2_parse_updates(tmpdir, db, last_known_rev=0):
 
     package_xml = os.path.join(tmpdir, 'package.xml')
 
+    updates_stats = {
+        'updates': {
+            'inserted': 0,
+            'modified': 0,
+        },
+        'file_locations': {
+            'inserted': 0,
+            'modified': 0,
+        },
+    }
+
     for _, elem in ET.iterparse(package_xml):
         if elem.tag == off_sync_qualify('Update'):
-            wsusscan2_do_parse_update(elem, db, min_rev=last_known_rev)
+            wsusscan2_do_parse_update(elem, db, min_rev=last_known_rev, stats=updates_stats)
         elif elem.tag == off_sync_qualify('FileLocation'):
-            wsusscan2_do_parse_file_location(elem, db)
+            wsusscan2_do_parse_file_location(elem, db, stats=update_stats)
+
+    return updates_stats
+
 
 # end of updates parsing
 
@@ -526,7 +542,9 @@ def parse_wsusscan_entrypoint(dl_uuid=None):
     if 'package.cab' in to_parse:
         logger.info('starting wsusscan2_parse_updates')
         before = time.time()
-        wsusscan2_parse_updates(packages, db, last_known_rev)
+        updates_stats = wsusscan2_parse_updates(packages, db, last_known_rev)
+        if update_stats:
+            wsusscan2_history.update({ 'uuid': dl_uuid }, { '$set': { 'updates': update_stats } })
         after = time.time()
         logger.info('wsusscan2_parse_updates in %s secs', str(after - before))
     else:
