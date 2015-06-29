@@ -4,6 +4,7 @@ master = true
 processes = 16
 wsgi=waptserver:app
 chdir=/opt/wapt/waptserver/
+spooler=/opt/wapt/waptserver/spool
 max-requests=100
 uid=wapt
 gid=www-data

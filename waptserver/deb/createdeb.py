@@ -108,6 +108,7 @@ os.makedirs("builddir/opt/wapt")
 os.makedirs("builddir/opt/wapt/lib")
 os.makedirs("builddir/opt/wapt/lib/site-packages")
 os.makedirs("builddir/opt/wapt/waptserver")
+os.makedirs("builddir/opt/wapt/waptserver/spool")
 
 print >> sys.stderr, 'copying the waptserver files'
 rsync(source_dir,'./builddir/opt/wapt/',excludes=['postconf','mongod.exe'])
