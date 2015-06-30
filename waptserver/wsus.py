@@ -1049,7 +1049,7 @@ def download_windows_updates():
     def check_sha1_filename(target):
         # check sha1 sum if possible...
         if os.path.isfile(target):
-            sha1sum_parts = os.path.basename(target).rsplit('.')[0].rsplit('_',1)
+            sha1sum_parts = os.path.basename(target).rsplit('.',1)[0].rsplit('_',1)
             if sha1sum_parts:
                 sha1sum = sha1sum_parts[1]
                 #looks like hex sha1
