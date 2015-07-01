@@ -723,11 +723,18 @@ WSUSScan cab date: %(wsusscn2cab_date)s
         """ % stat
 
 if __name__ == '__main__':
+    from common import Wapt
+
+    def_allowed_updates = None
+    def_forbidden_updates = None
+    def_allowed_severities = None
+    def_allowed_classifications = None
+
     parser=OptionParser(usage=__doc__)
-    parser.add_option("-S","--severity", dest="severity", default=None, help="Allow updates by severity. csv list of Critical,Important,Moderate,Low. If empty : allow all. (default: %default)")
-    parser.add_option("-C","--classifications", dest="allowed_classifications", default='CriticalUpdates,SecurityUpdates', help="Allow updates by claffication. csv list of "+','.join(UpdateClassifications.values())+". If empty : allow all. (default: %default)")
-    parser.add_option("-a","--allowed", dest="allowed", default=None, help="Allow updates by update-id or KB. csv list of id to allow (default: %default)")
-    parser.add_option("-b","--forbidden", dest="forbidden", default=None, help="Forbid updates by update-id or KB. csv list (default: %default)")
+    parser.add_option("-S","--severities", dest="allowed_severities", default=def_allowed_severities, help="Allow updates by severity. csv list of Critical,Important,Moderate,Low. If empty : allow all. (default: %default)")
+    parser.add_option("-C","--classifications", dest="allowed_classifications", default=def_allowed_classifications, help="Allow updates by claffication. csv list of "+','.join(UpdateClassifications.values())+". If empty : allow all. (default: %default)")
+    parser.add_option("-a","--allowed", dest="allowed_updates", default=def_allowed_updates, help="Allow updates by update-id or KB. csv list of id to allow (default: %default)")
+    parser.add_option("-b","--forbidden", dest="forbidden_updates", default=def_forbidden_updates, help="Forbid updates by update-id or KB. csv list (default: %default)")
     parser.add_option("-c","--config", dest="config", default=None, help="Config file full path (default: %default)")
     parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
     #parser.add_option("-d","--dry-run", dest="dry_run",    default=False, action='store_true', help="Dry run (default: %default)")
@@ -749,24 +756,25 @@ if __name__ == '__main__':
     if options.loglevel is not None:
         setloglevel(logger,options.loglevel)
 
-
-    from common import Wapt
     wapt = Wapt(config_filename=options.config)
 
-    if options.allowed is not None:
-        allowed_updates = ensure_list(options.allowed)
-    else:
-        allowed_updates = None
+    allowed_updates = ensure_list(options.allowed_updates,allow_none = True)
+    forbidden_updates = ensure_list(options.forbidden_updates,allow_none = True)
+    allowed_severities = ensure_list(options.allowed_severities,allow_none = True)
+    allowed_classifications = ensure_list(options.allowed_classifications,allow_none = True)
 
-    if options.forbidden is not None:
-        forbidden_updates = ensure_list(options.forbidden)
+    if allowed_updates is None and forbidden_updates is None and allowed_classifications is None and allowed_severities is None:
+        # get from wapt db
+        allowed_updates = ensure_list(json.loads(wapt.read_param('waptwua.allowed_updates',None)),allow_none = True)
+        forbidden_updates = ensure_list(json.loads(wapt.read_param('waptwua.forbidden_updates',None)),allow_none = True)
+        allowed_severities = ensure_list(json.loads(wapt.read_param('waptwua.allowed_severities',None)),allow_none = True)
+        allowed_classifications = ensure_list(json.loads(wapt.read_param('waptwua.allowed_classifications',None)),allow_none = True)
     else:
-        forbidden_updates = None
-
-    if options.severity is not None:
-        allowed_severities = ensure_list(options.severity)
-    else:
-        allowed_severities = None
+        # store settings
+        wapt.write_param('waptwua.allowed_updates',json.dumps(allowed_updates))
+        wapt.write_param('waptwua.forbidden_updates',json.dumps(forbidden_updates))
+        wapt.write_param('waptwua.allowed_severities',json.dumps(allowed_severities))
+        wapt.write_param('waptwua.allowed_classifications',json.dumps(allowed_classifications))
 
     wua = WaptWUA(wapt,
         allowed_updates=allowed_updates,
