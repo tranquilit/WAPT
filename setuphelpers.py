@@ -331,10 +331,10 @@ def ensure_unicode(data):
             raise
 
 
-def ensure_list(csv_or_list,ignore_empty_args=True):
+def ensure_list(csv_or_list,ignore_empty_args=True,allow_none = False):
     """if argument is not a list, return a list from a csv string"""
     if csv_or_list is None:
-        return []
+        return None
     if isinstance(csv_or_list,tuple):
         return list(csv_or_list)
     elif not isinstance(csv_or_list,list):
@@ -2858,7 +2858,9 @@ def run_task(name):
     """Launch immediately the Windows Scheduled task
 
     """
-    get_task(name).Run()
+    task = get_task(name)
+    task.Run()
+    return task
 
 
 def task_exists(name):
