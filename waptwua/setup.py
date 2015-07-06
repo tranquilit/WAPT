@@ -26,6 +26,7 @@ def install():
     waptwua_path = makepath(WAPT.wapt_base_dir,'waptwua')
     waptwuabin_path = WAPT.wapt_base_dir
 
+    """
     if isfile('allowed_updates.lst'):
         allowed = open('allowed_updates.lst','r').read().splitlines()
         WAPT.write_param('waptwua.allowed_updates',json.dumps(allowed))
@@ -38,20 +39,35 @@ def install():
         allowed_severities = open('allowed_severities.lst','r').read().splitlines()
         WAPT.write_param('waptwua.allowed_severities',json.dumps(allowed_severities))
 
+    if isfile('allowed_classifications.lst'):
+        allowed_classifications = open('allowed_classifications.lst','r').read().splitlines()
+        WAPT.write_param('waptwua.allowed_classifications',json.dumps(allowed_classifications))
+    """
+
+    # to host wsusscn2.cab file
     mkdirs(makepath(waptwua_path,'cache'))
     mkdirs(waptwuabin_path)
     if task_exists('waptwua'):
         delete_task('waptwua')
+    if task_exists('waptwua-scan'):
+        delete_task('waptwua-scan')
+    if task_exists('waptwua-install'):
+        delete_task('waptwua-install')
 
+     # randowmize a little the scan
     dt = datetime.datetime.now()+datetime.timedelta(hours=random.randrange(0,5),minutes=random.randrange(0,59))
-    create_daily_task('waptwua',waptpython_path,'"%s" download' % (makepath(waptwuabin_path,'waptwua.py'),),start_hour=dt.hour,start_minute=dt.minute)
+    create_daily_task('waptwua-scan',waptpython_path,'"%s" download -C CriticalUpdates' % (makepath(waptwuabin_path,'waptwua.py'),),start_hour=dt.hour,start_minute=dt.minute)
+    create_daily_task('waptwua-install',waptpython_path,'"%s" install -C CriticalUpdates' % (makepath(waptwuabin_path,'waptwua.py'),),start_hour=3,start_minute=0)
 
 def uninstall():
-    delete_task('waptwua')
-    waptwua_path = makepath(WAPT.wapt_base_dir,'waptwua')
+    if task_exists('waptwua-scan'):
+        run_task
+        delete_task('waptwua-scan')
+    if task_exists('waptwua-install'):
+        delete_task('waptwua-install')
     WAPT.delete_param('waptwua.allowed_updates')
     WAPT.delete_param('waptwua.forbidden_updates')
     WAPT.delete_param('waptwua.allowed_severities')
-    WAPT.delete_param('waptwua.allowed_severities')
+    WAPT.delete_param('waptwua.allowed_classifications')
+    waptwua_path = makepath(WAPT.wapt_base_dir,'waptwua')
     remove_tree(waptwua_path)
-
