@@ -7,42 +7,28 @@ import datetime
 uninstallkey = []
 
 def update_control(control):
-    restrictions = WAPT.waptserver.get('api/v2/windows_updates_restrictions?group=default')['result']
-    if restrictions:
-        allowed = restrictions[0]['allowed']
-        if allowed:
-            open('allowed_updates.lst','w').write('\n'.join(allowed))
-        else:
-            remove_file('allowed_updates.lst')
-
-        forbidden = restrictions[0]['forbidden']
-        if forbidden:
-            open('forbidden_updates.lst','w').write('\n'.join(forbidden))
-        else:
-            remove_file('forbidden_updates.lst')
+    try:
+        restrictions = WAPT.waptserver.get('api/v2/windows_updates_rules?group=default')['result']
+        open('windows_updates_rules.json','w').write(restrictions)
+    except:
+        print('Unable to get restrictions from waptserver, default to stored ones on workstations')
+        restrictions = None
+        remove_file('windows_updates_rules.json')
 
 def install():
     waptpython_path = makepath(WAPT.wapt_base_dir,'waptpython.exe')
     waptwua_path = makepath(WAPT.wapt_base_dir,'waptwua')
     waptwuabin_path = WAPT.wapt_base_dir
 
-    """
-    if isfile('allowed_updates.lst'):
-        allowed = open('allowed_updates.lst','r').read().splitlines()
-        WAPT.write_param('waptwua.allowed_updates',json.dumps(allowed))
+    # cleanup old settings
+    WAPT.delete_param('waptwua.allowed_updates')
+    WAPT.delete_param('waptwua.forbidden_updates')
+    WAPT.delete_param('waptwua.allowed_severities')
+    WAPT.delete_param('waptwua.allowed_classifications')
 
-    if isfile('forbidden_updates.lst'):
-        forbidden = open('forbidden_updates.lst','r').read().splitlines()
-        WAPT.write_param('waptwua.forbidden_updates',json.dumps(forbidden))
-
-    if isfile('allowed_severities.lst'):
-        allowed_severities = open('allowed_severities.lst','r').read().splitlines()
-        WAPT.write_param('waptwua.allowed_severities',json.dumps(allowed_severities))
-
-    if isfile('allowed_classifications.lst'):
-        allowed_classifications = open('allowed_classifications.lst','r').read().splitlines()
-        WAPT.write_param('waptwua.allowed_classifications',json.dumps(allowed_classifications))
-    """
+    if isfile('windows_updates_rules.json'):
+        windows_updates_rules = open('windows_updates_rules.json','r').read()
+        WAPT.write_param('waptwua.windows_updates_rules',windows_updates_rules)
 
     # to host wsusscn2.cab file
     mkdirs(makepath(waptwua_path,'cache'))
@@ -65,6 +51,7 @@ def uninstall():
         delete_task('waptwua-scan')
     if task_exists('waptwua-install'):
         delete_task('waptwua-install')
+    WAPT.delete_param('waptwua.windows_updates_rules')
     WAPT.delete_param('waptwua.allowed_updates')
     WAPT.delete_param('waptwua.forbidden_updates')
     WAPT.delete_param('waptwua.allowed_severities')
