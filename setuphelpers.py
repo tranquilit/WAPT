@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.2.4"
+__version__ = "1.3.0"
 
 __all__ = \
 ['EWaptSetupException',
@@ -333,7 +333,7 @@ def ensure_unicode(data):
 
 def ensure_list(csv_or_list,ignore_empty_args=True,allow_none = False):
     """if argument is not a list, return a list from a csv string"""
-    if csv_or_list is None:
+    if csv_or_list is None and allow_none:
         return None
     if isinstance(csv_or_list,tuple):
         return list(csv_or_list)
