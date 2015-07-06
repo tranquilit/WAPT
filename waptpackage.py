@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.2.4"
+__version__ = "1.3.0"
 
 import os
 import zipfile
@@ -109,10 +109,15 @@ def httpdatetime2isodate(httpdate):
     """
     return datetime2isodate(datetime.datetime(*email.utils.parsedate(httpdate)[:6]))
 
-def ensure_list(csv_or_list,ignore_empty_args=True):
+
+def ensure_list(csv_or_list,ignore_empty_args=True,allow_none = False):
     """if argument is not a list, return a list from a csv string"""
-    if csv_or_list is None:
-        return []
+    if csv_or_list is None
+        if allow_none:
+            return None
+        else:
+            return []
+
     if isinstance(csv_or_list,tuple):
         return list(csv_or_list)
     elif not isinstance(csv_or_list,list):
@@ -122,6 +127,7 @@ def ensure_list(csv_or_list,ignore_empty_args=True):
             return [s.strip() for s in csv_or_list.split(',')]
     else:
         return csv_or_list
+
 
 class Version(object):
     """Version object of form 0.0.0

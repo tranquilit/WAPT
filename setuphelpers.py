@@ -333,8 +333,12 @@ def ensure_unicode(data):
 
 def ensure_list(csv_or_list,ignore_empty_args=True,allow_none = False):
     """if argument is not a list, return a list from a csv string"""
-    if csv_or_list is None and allow_none:
-        return None
+    if csv_or_list is None
+        if allow_none:
+            return None
+        else:
+            return []
+
     if isinstance(csv_or_list,tuple):
         return list(csv_or_list)
     elif not isinstance(csv_or_list,list):
@@ -344,7 +348,6 @@ def ensure_list(csv_or_list,ignore_empty_args=True,allow_none = False):
             return [s.strip() for s in csv_or_list.split(',')]
     else:
         return csv_or_list
-
 
 def create_shortcut(path, target='', arguments='', wDir='', icon=''):
     r"""Create a windows shortcut
