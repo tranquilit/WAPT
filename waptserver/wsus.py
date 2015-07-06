@@ -38,6 +38,15 @@ import time
 import traceback
 import urlparse
 import uuid
+import re
+
+# i18n
+from flask.ext.babel import Babel
+try:
+    from flask.ext.babel import gettext
+except ImportError:
+    gettext = (lambda s:s)
+_ = gettext
 
 try:
     from uwsgidecorators import *

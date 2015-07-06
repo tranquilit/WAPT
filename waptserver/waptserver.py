@@ -1962,7 +1962,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     if options.devel:
-        app.run(host='0.0.0.0',port=30880,debug=True)
+        app.run(host='0.0.0.0',port=30880,debug=options.devel)
     else:
         port = waptserver_port
         server = Rocket(('127.0.0.1', port), 'wsgi', {"wsgi_app":app})
