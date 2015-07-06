@@ -1,0 +1,133 @@
+object VisWUAProducts: TVisWUAProducts
+  Left = 549
+  Height = 506
+  Top = 217
+  Width = 654
+  Caption = 'Windows Product Selection'
+  ClientHeight = 506
+  ClientWidth = 654
+  OnShow = FormShow
+  LCLVersion = '1.3'
+  object Panel4: TPanel
+    Left = 0
+    Height = 33
+    Top = 473
+    Width = 654
+    Align = alBottom
+    BevelOuter = bvNone
+    ClientHeight = 33
+    ClientWidth = 654
+    TabOrder = 0
+    object ButCancel: TBitBtn
+      Left = 574
+      Height = 26
+      Top = 4
+      Width = 74
+      Anchors = [akTop, akRight]
+      Cancel = True
+      DefaultCaption = True
+      Kind = bkCancel
+      ModalResult = 2
+      TabOrder = 0
+    end
+    object ButSave: TBitBtn
+      Left = 457
+      Height = 25
+      Top = 4
+      Width = 112
+      Action = ActSave
+      Anchors = [akTop, akRight]
+      TabOrder = 1
+    end
+  end
+  object GridData: TSOGrid
+    Left = 0
+    Height = 437
+    Top = 36
+    Width = 654
+    Align = alClient
+    BorderSpacing.Top = 2
+    Color = clWhite
+    Header.AutoSizeIndex = -1
+    Header.Columns = <    
+      item
+        CheckBox = True
+        Color = clWhite
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coResizable, coShowDropMark, coVisible, coAllowFocus]
+        Position = 0
+        Text = 'Selected'
+        PropertyName = 'selected'
+      end    
+      item
+        Position = 1
+        Tag = 1
+        Text = 'title'
+        Width = 327
+        PropertyName = 'title'
+      end    
+      item
+        Position = 2
+        Tag = 2
+        Text = 'product'
+        Width = 154
+        PropertyName = 'product'
+      end>
+    Header.DefaultHeight = 17
+    Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+    Header.SortColumn = 1
+    Header.Style = hsFlatButtons
+    TabOrder = 1
+    TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+    TreeOptions.MiscOptions = [toAcceptOLEDrop, toCheckSupport, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+    TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
+    TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
+    WantTabs = True
+    OnChecked = GridDataChecked
+    OnPaintText = GridDataPaintText
+  end
+  object Panel1: TPanel
+    Left = 0
+    Height = 34
+    Top = 0
+    Width = 654
+    Align = alTop
+    BevelOuter = bvNone
+    ClientHeight = 34
+    ClientWidth = 654
+    TabOrder = 2
+    object EdKeywords: TEdit
+      Left = 48
+      Height = 21
+      Top = 5
+      Width = 176
+      OnChange = EdKeywordsChange
+      TabOrder = 0
+    end
+    object Label1: TLabel
+      Left = 16
+      Height = 13
+      Top = 9
+      Width = 24
+      Caption = 'Filter'
+      ParentColor = False
+    end
+    object cbOnlySelected: TCheckBox
+      Left = 256
+      Height = 17
+      Top = 8
+      Width = 84
+      Caption = 'Selected only'
+      OnClick = EdKeywordsChange
+      TabOrder = 1
+    end
+  end
+  object ActionList1: TActionList
+    left = 164
+    top = 122
+    object ActSave: TAction
+      Caption = 'Save'
+      OnExecute = ActSaveExecute
+      OnUpdate = ActSaveUpdate
+    end
+  end
+end

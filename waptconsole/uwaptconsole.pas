@@ -726,7 +726,7 @@ begin
     Accept := False;
 
     if cbWUADiscarded.Checked then
-      accept := accept or (wupdate.B['hidden']);
+      accept := accept or (wupdate.B['hidden'] and not wupdate.B['installed']);
 
     if cbWUAInstalled.Checked then
       accept := accept or ( wupdate.B['installed']);
