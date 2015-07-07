@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.2.4"
+__version__ = "1.3.0"
 import os
 import re
 import logging
@@ -2658,6 +2658,10 @@ class Wapt(object):
         registered_hostname = self.read_param('hostname')
         current_hostname = setuphelpers.get_hostname()
         if not value or registered_hostname != current_hostname:
+            if registered_hostname != current_hostname:
+                # forget old host package if any as it is not relevant anymore
+                self.forget_packages(registered_hostname)
+
             logger.info('Unknown UUID or hostname has changed: reading host UUID from wmi informations')
             inv = setuphelpers.wmi_info_basic()
             value = inv['System_Information']['UUID']
