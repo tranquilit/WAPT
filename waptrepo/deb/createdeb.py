@@ -60,11 +60,13 @@ wapt_source_dir = os.path.abspath('../..')
 # waptrepo
 source_dir = os.path.abspath('..')
 
-sys.path.insert(0, wapt_source_dir)
-from waptpackage import __version__ as wapt_version
+wapt_version = None
+for line in file('../../waptpackage.py', 'r').readlines():
+    if line.strip().startswith('__version__'):
+        wapt_version = line.split('=')[1].strip().replace('"','').replace("'","")
 
-if not wapt_version:
-    print 'version "%s" incorrecte dans waptpackage.py' % (wapt_version,)
+if wapt_version is None:
+    print 'version "%s" incorrecte/non trouvee dans waptpackage.py' % str(wapt_version)
     sys.exit(1)
 
 control_file = './builddir/DEBIAN/control'
