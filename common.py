@@ -1801,7 +1801,7 @@ class WaptServer(object):
                                 url = 'https://%s' % (wapthost)
                                 servers.append((priority,-weight,url))
                             else:
-                                url = 'http://%s:%i' % (wapthost,a.port)
+                                url = 'http://%s:%i' % (wapthost,port)
                                 servers.append((priority,-weight,url))
                         except Exception as e:
                             logging.debug('Unable to resolve : error %s' % (ensure_unicode(e),))
