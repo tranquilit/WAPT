@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.2.4"
+__version__ = "1.3.0"
 
 import time
 import sys
@@ -1847,6 +1847,38 @@ class WaptPackageForget(WaptTask):
 
     def __unicode__(self):
         return __(u"Forget {packagenames} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagenames=self.packagenames)
+
+
+class WaptWUAScan(WaptTask):
+    def __init__(self):
+        super(WaptWUAScan,self).__init__()
+
+    def _run(self):
+        if setuphelpers.task_exists('waptwua_scan'):
+            self.result = setuphelpers.run_task('waptwua_scan')
+            self.summary = __(u"waptwua_scan task launched.")
+        else:
+            self.result = None
+            self.summary = __(u"WAPTWua_scan task not setup.")
+
+    def __unicode__(self):
+        return __(u"Launch WAPTWua windows updates scan").format(classname=self.__class__.__name__,id=self.id)
+
+
+class WaptWUAInstall(WaptTask):
+    def __init__(self):
+        super(WaptWUAInstall,self).__init__()
+
+    def _run(self):
+        if setuphelpers.task_exists('waptwua_install'):
+            self.result = setuphelpers.run_task('waptwua_install')
+            self.summary = __(u"WAPTWua_install task launched.")
+        else:
+            self.result = None
+            self.summary = __(u"WAPTWua_install task not setup.")
+
+    def __unicode__(self):
+        return __(u"Launch WAPTWua pending windows updates").format(classname=self.__class__.__name__,id=self.id)
 
 
 def firewall_running():

@@ -22,6 +22,25 @@
 # -----------------------------------------------------------------------
 __version__ = "1.3.0"
 
+__all__ = [
+    'md5_for_file',
+    'parse_major_minor_patch_build',
+    'make_version',
+    'datetime2isodate',
+    'httpdatetime2isodate',
+    'Version',
+    'PackageRequest',
+    'PackageEntry',
+    'WaptBaseRepo',
+    'WaptLocalRepo',
+    'default_http_headers',
+    'wget',
+    'WaptRemoteRepo',
+    'update_packages',
+    'REGEX_PACKAGE_VERSION',
+    'REGEX_PACKAGE_CONDITION',
+]
+
 import os
 import zipfile
 import StringIO

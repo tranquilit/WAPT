@@ -335,7 +335,7 @@ def map_classifications(lst):
 
 
 class WaptWUA(object):
-    def __init__(self,wapt,allowed_updates=ALL, forbidden_updates=ALL, allowed_severities=ALL, allowed_classifications=ALL, filter="Type='Software'"):
+    def __init__(self,wapt,windows_updates_rules = {}, filter="Type='Software'"):
         self.wapt = wapt
         self.cache_path = os.path.abspath(makepath(wapt.wapt_base_dir,'waptwua','cache'))
         self._update_session = None
@@ -343,10 +343,14 @@ class WaptWUA(object):
         self._update_searcher = None
         self._update_service = None
         self.filter = filter
-        self.forbidden_updates = forbidden_updates
-        self.allowed_updates = allowed_updates
-        self.allowed_severities = allowed_severities
-        self.allowed_classifications = map_classifications(ensure_list(allowed_classifications))
+
+        self.windows_updates_rules = windows_updates_rules
+
+        #
+        self.forbidden_updates = windows_updates_rules.get('forbidden_updates',None)
+        self.allowed_updates = windows_updates_rules.get('allowed_updates',None)
+        self.allowed_severities = windows_updates_rules.get('allowed_severities',None)
+        self.allowed_classifications = windows_updates_rules.get('allowed_classifications',None)
 
         self._updates = None
         # to store successful changes in read only properties of _updates after initial scan
@@ -501,7 +505,7 @@ class WaptWUA(object):
         if self.allowed_classifications is not None:
             # get updateClassification list of this update
             update_class = [c.CategoryID for c in update.Categories if c.Type == 'UpdateClassification']
-            for cat in self.allowed_classifications:
+            for cat in map_classifications(self.allowed_classifications):
                 if cat in update_class:
                     allowed_classification = True
                     break
@@ -539,10 +543,7 @@ class WaptWUA(object):
                 installed += 1
 
         logger.debug('Writing status in local wapt DB')
-        self.wapt.write_param('waptwua.allowed_classification',json.dumps(self.allowed_classifications))
-        self.wapt.write_param('waptwua.forbidden_updates',json.dumps(self.forbidden_updates))
-        self.wapt.write_param('waptwua.allowed_updates',json.dumps(self.allowed_updates))
-        self.wapt.write_param('waptwua.allowed_severities',json.dumps(self.allowed_severities))
+        self.wapt.write_param('waptwua.windows_updates_rules',json.dumps(self.windows_updates_rules))
 
         self.wapt.write_param('waptwua.updates',json.dumps([ self.update_as_dict(u) for u in self.updates]))
         self.wapt.write_param('waptwua.last_scan_date',datetime2isodate())
@@ -690,12 +691,9 @@ class WaptWUA(object):
             'last_install_result':self.wapt.read_param('waptwua.last_install_result'),
             'wsusscn2cab_date':self.wapt.read_param('waptwua.wsusscn2cab_date'),
             'rebootrequired':self.wapt.read_param('waptwua.rebootrequired'),
-            'updates':json.loads(self.wapt.read_param('waptwua.updates') or '[]'),
+            'updates':json.loads(self.wapt.read_param('waptwua.updates','[]')),
             'status':self.wapt.read_param('waptwua.status'),
-            'allowed_classifications':json.loads(self.wapt.read_param('waptwua.allowed_classification')),
-            'forbidden_updates':json.loads(self.wapt.read_param('waptwua.forbidden_updates')),
-            'allowed_updates':json.loads(self.wapt.read_param('waptwua.allowed_updates')),
-            'allowed_severities':json.loads(self.wapt.read_param('waptwua.allowed_severities')),
+            'windows_updates_rules':json.loads(self.wapt.read_param('waptwua.windows_updates_rules','{}')),
             }
 
 def status():
@@ -705,10 +703,7 @@ def status():
         stat['discarded'] = len([ u for u in stat['updates'] if u['status'] == 'DISCARDED'])
 
         return u"""\
-Allowed classifications: %(allowed_classifications)s
-Allowed severities:      %(allowed_severities)s
-Forbidden updates/KB:    %(forbidden_updates)s
-Allowed updates/KB:      %(allowed_updates)s
+windows_updates_rules: %(windows_updates_rules)s
 
 Status:            %(status)s
 Installed updates: %(installed)s
@@ -763,24 +758,26 @@ if __name__ == '__main__':
     allowed_severities = ensure_list(options.allowed_severities,allow_none = True)
     allowed_classifications = ensure_list(options.allowed_classifications,allow_none = True)
 
+    stored_windows_updates_rules = json.loads(wapt.read_param('waptwua.windows_updates_rules','{}'))
+    if not stored_windows_updates_rules:
+        stored_windows_updates_rules = {}
+
     if allowed_updates is None and forbidden_updates is None and allowed_classifications is None and allowed_severities is None:
         # get from wapt db
-        allowed_updates = ensure_list(json.loads(wapt.read_param('waptwua.allowed_updates',None)),allow_none = True)
-        forbidden_updates = ensure_list(json.loads(wapt.read_param('waptwua.forbidden_updates',None)),allow_none = True)
-        allowed_severities = ensure_list(json.loads(wapt.read_param('waptwua.allowed_severities',None)),allow_none = True)
-        allowed_classifications = ensure_list(json.loads(wapt.read_param('waptwua.allowed_classifications',None)),allow_none = True)
+        allowed_updates = stored_windows_updates_rules.get('allowed_updates',None)
+        forbidden_updates = stored_windows_updates_rules.get('forbidden_updates',None)
+        allowed_severities = stored_windows_updates_rules.get('allowed_severities',None)
+        allowed_classifications = stored_windows_updates_rules.get('allowed_classifications',None)
     else:
         # store settings
-        wapt.write_param('waptwua.allowed_updates',json.dumps(allowed_updates))
-        wapt.write_param('waptwua.forbidden_updates',json.dumps(forbidden_updates))
-        wapt.write_param('waptwua.allowed_severities',json.dumps(allowed_severities))
-        wapt.write_param('waptwua.allowed_classifications',json.dumps(allowed_classifications))
+        stored_windows_updates_rules['allowed_updates'] = allowed_updates
+        stored_windows_updates_rules['forbidden_updates'] = forbidden_updates
+        stored_windows_updates_rules['allowed_severities'] = allowed_severities
+        stored_windows_updates_rules['allowed_classifications'] = allowed_classifications
+        wapt.write_param('waptwua.windows_updates_rules',json.dumps(stored_windows_updates_rules))
 
     wua = WaptWUA(wapt,
-        allowed_updates=allowed_updates,
-        forbidden_updates=forbidden_updates,
-        allowed_severities=allowed_severities,
-        allowed_classifications=options.allowed_classifications,
+        windows_updates_rules = stored_windows_updates_rules,
         filter="Type!='Driver'")
     if len(args) <1:
         print parser.usage
