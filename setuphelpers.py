@@ -3147,6 +3147,9 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
                             if not provided, guess it from exe setup file properties.
         kill_before (list of str) : processes to kill before setup, to avoid file locks
                                     issues.
+        accept_returncodes (list of int) : return codes which are acceptable and don't raise exception
+        timeout int) : maximum run time of command in seconds bfore the child is killed and error is raised.
+        properties (dict) : map (key=value) of properties for specific msi installation.
 
     Returns:
         None
