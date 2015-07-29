@@ -982,34 +982,50 @@ def windows_updates():
     wsus_updates = utils_get_db().wsus_updates
     query = {}
 
-    if len(request.args) == 0:
-        return make_response(msg='Error, no request filter provided', success=False)
+    supported_filters = [
+        'has_kb',
+        'kb',
+        'update_classifications',
+        'product',
+        'products',
+        'severity',
+        'update_ids',
+        'selected_products',
+    ]
 
-    if 'has_kb' in request.args and request.args['has_kb']:
+    filters = {}
+    got_filter = False
+    for f in supported_filters:
+        filters[f] = request.args.get(f, False)
+        if filters[f]:
+            got_filter = True
+    if not got_filter:
+        return make_response(msg='Error, no valid request filter provided', success=False)
+
+    if filters['has_kb']:
         query["kb_article_id"]={'$exists':True}
-    if 'kb' in request.args:
+    if filters['kb']:
         kbs = []
-        for kb in ensure_list(request.args['kb']):
+        for kb in ensure_list(filters['kb']):
             if kb.upper().startswith('KB'):
                 kbs.append(kb[2:])
             else:
                 kbs.append(kb)
         query["kb_article_id"]={'$in':kbs}
-    if 'update_classifications' in request.args:
+    if filters['update_classifications']:
         update_classifications = []
-        for update_classification in ensure_list(request.args['update_classifications']):
+        for update_classification in ensure_list(filters['update_classifications']):
             update_classifications.append(update_classification)
         query["categories.UpdateClassification"]={'$in':update_classifications}
-    if 'product' in request.args:
-        query["categories.Product"] = {'$in':get_product_id(request.args['product'])}
-    if 'products' in request.args:
-        query["categories.Product"] = {'$in':ensure_list(request.args['products'])}
-    if 'severity' in request.args and request.args['severity']:
-        query["msrc_severity"] = {'$in':ensure_list(request.args['severity'])}
-    if 'update_ids' in request.args:
-        query["update_id"] = {'$in':ensure_list(request.args['update_ids'])}
-
-    if 'selected_products'  in request.args and request.args['selected_products']:
+    if filters['product']:
+        query["categories.Product"] = {'$in':get_product_id(filters['product'])}
+    if filters['products']:
+        query["categories.Product"] = {'$in':ensure_list(filters['products'])}
+    if filters['severity']:
+        query["msrc_severity"] = {'$in':ensure_list(filters['severity'])}
+    if filters['update_ids']:
+        query["update_id"] = {'$in':ensure_list(filters['update_ids'])}
+    if filters['selected_products']:
         query["categories.Product"] = {'$in':get_selected_products()}
 
     result = wsus_updates.find(query)
