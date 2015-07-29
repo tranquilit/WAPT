@@ -42,11 +42,11 @@ FileName=C:\tranquilit\wapt\waptdevutils.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node4]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-get.ini
+FileName=C:\tranquilit\wapt\wapt-get.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node5]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-get.py
+FileName=C:\tranquilit\wapt\wapt-get.ini
 
 [Project\ChildNodes\Node0\ChildNodes\Node6]
 ClassName=TProjectFileNode
@@ -56,8 +56,12 @@ FileName=C:\tranquilit\wapt\waptpackage.py
 ClassName=TProjectFileNode
 FileName=C:\tranquilit\wapt\waptwua.py
 
+[Project\ChildNodes\Node0\ChildNodes\Node8]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptserver\wsus.py
+
 [Project\ChildNodes\Node0\ChildNodes]
-Count=8
+Count=9
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode
@@ -98,7 +102,7 @@ ScriptName=C:\tranquilit\wapt\wapt-get.py
 Description=wapt-get update
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug -D -f update
+Parameters=-ldebug -D update
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -384,7 +388,7 @@ Name=install current
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug -Len install $[ActiveDoc-Dir]
+Parameters=-ldebug  -f install $[ActiveDoc-Dir]
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
