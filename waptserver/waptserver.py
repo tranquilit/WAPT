@@ -1654,6 +1654,11 @@ def windows_updates_rules():
     if wsus:
         return wsus.windows_updates_rules()
 
+@app.route('/api/v2/download_wuredist')
+def download_wuredist():
+    if wsus:
+        return wsus.download_wuredist()
+
 
 def test():
     import flask

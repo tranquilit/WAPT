@@ -1261,3 +1261,94 @@ def windows_updates_rules():
             result = utils_get_db().wsus_rules.find()
 
     return make_response(msg = _('Win updates rules'),result = result)
+
+
+#@app.route('/api/v2/download_wuredist')
+def download_wuredist():
+    cab_url = 'http://update.microsoft.com/redist/wuredist.cab'
+    wuredist_filename = os.path.join(waptwua_folder, 'wuredist.cab')
+    tmp_filename = wuredist_filename + '.tmp'
+
+    # should we remove the tmp filename when we get an error?
+    cleanup_on_error = False
+    force = False
+    dryrun = False
+    stats = {}
+
+    if not force and os.path.isfile(tmp_filename):
+
+        tmp_timestamp = os.stat(tmp_filename).st_mtime
+        current_timestamp = time.time()
+        if current_timestamp < tmp_timestamp + 24 * 60 * 60:
+            logger.info('download_wuredist: %s is present but less than 24 hours old (timestamp %f), skipping download', tmp_filename, tmp_timestamp)
+            stats['status'] = 'aborted'
+            #wuredist_history.save(stats)
+
+    try:
+
+        last_modified = requests.head(cab_url).headers['last-modified']
+
+        new_cab_timestamp = float(email.utils.mktime_tz(email.utils.parsedate_tz(last_modified)))
+        if os.path.isfile(wuredist_filename):
+            current_cab_timestamp = os.stat(wuredist_filename).st_mtime
+        else:
+            current_cab_timestamp = 0.0
+
+        logger.info('download_wuredist: current cab timestamp: %f, New cab timestamp: %f' % (current_cab_timestamp,new_cab_timestamp))
+
+        if not os.path.isfile(wuredist_filename) or (new_cab_timestamp > current_cab_timestamp) or force:
+
+            cleanup_on_error = True
+            if dryrun:
+                try:
+                    os.link(wsus_filename, tmp_filename)
+                except:
+                    pass
+            else:
+                wget(cab_url, tmp_filename)
+
+            file_stats = os.stat(tmp_filename)
+            stats['file_timestamp'] = file_stats[stat.ST_MTIME]
+            stats['file_size'] = file_stats[stat.ST_SIZE]
+            stats['status'] = 'checking'
+            #wuredist_history.save(stats)
+
+            # check integrity
+            if sys.platform == 'win32':
+                cablist = subprocess.check_output('expand -D "%s"' % tmp_filename, shell = True).decode('cp850').splitlines()
+            else:
+                cablist = subprocess.check_output('cabextract -t "%s"' % tmp_filename, shell = True).splitlines()
+            stats['cablist'] = cablist
+
+            if os.path.isfile(wuredist_filename):
+                os.unlink(wuredist_filename)
+            os.rename(tmp_filename, wuredist_filename)
+
+            stats['status'] = 'parsing'
+            #wuredist_history.save(stats)
+
+            # TODO
+            # extract data from wuredist
+            # parse data
+            # fetch newer windows update agents
+            # XXX verify cryptographic signatures
+
+            stats['status'] = 'finished'
+            #wuredist_history.save(stats)
+
+        else:
+            stats['skipped'] = True
+            #wuredist_history.save(stats)
+
+    except Exception as e:
+        stats['error'] = str(e)
+        #wuredist_history.save(stats)
+
+        if cleanup_on_error and os.path.isfile(tmp_filename):
+            os.unlink(tmp_filename)
+
+        logger.error("Error in download_wuredist: %s", str(e))
+        logger.error('Trace:\n%s', traceback.format_exc())
+        return make_response_from_exception(e)
+
+    return make_response(msg=str(stats), success=True)
