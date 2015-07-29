@@ -246,7 +246,7 @@ begin
     Exit;
   end
   else
-  if not HasOption('D','direct') and StrIsOneOf(action,['update','upgrade','longtask','cancel','cancel-all','tasks'])
+  if not HasOption('D','direct') and StrIsOneOf(action,['update','upgrade','longtask','cancel','cancel-all','tasks','wuascan','wuadownload','wuainstall'])
     and CheckOpenPort(waptservice_port,'127.0.0.1',100) then
   begin
     // launch task in waptservice, waits for its termination
@@ -346,12 +346,42 @@ begin
           for task in res['content'] do
             tasks.AsArray.Add(task);
             Logger('Task '+task.S['id']+' added to queue',DEBUG);
+      end
+      else
+      if action='wuascan' then
+      begin
+        res := WAPTLocalJsonGet('waptwua_scan?notify_user=0');
+        if res = Nil then
+          WriteLn(format(rsErrorLaunchingUpdate, [res.S['message']]))
+        else
+          tasks.AsArray.Add(res);
+        Logger('Task '+res.S['id']+' added to queue',DEBUG);
+      end
+      else
+      if action='wuadownload' then
+      begin
+        res := WAPTLocalJsonGet('waptwua_download?notify_user=0');
+        if res = Nil then
+          WriteLn(format(rsErrorLaunchingUpdate, [res.S['message']]))
+        else
+          tasks.AsArray.Add(res);
+        Logger('Task '+res.S['id']+' added to queue',DEBUG);
+      end
+      else
+      if action='wuainstall' then
+      begin
+        res := WAPTLocalJsonGet('waptwua_install?notify_user=0');
+        if res = Nil then
+          WriteLn(format(rsErrorLaunchingUpdate, [res.S['message']]))
+        else
+          tasks.AsArray.Add(res);
+        Logger('Task '+res.S['id']+' added to queue',DEBUG);
       end;
 
       while (tasks.AsArray.Length > 0) and not (Terminated) and not check_thread.Finished do
       try
         //if no message from service since more that 10 min, check if remaining tasks in queue...
-        if (now-lastMessageTime>1*1/24/60) and (remainingtasks.AsArray.Length=0) then
+        if (now-lastMessageTime>10*1/24/60) and (remainingtasks.AsArray.Length=0) then
           raise Exception.create('Timeout waiting for events')
         else
         begin
