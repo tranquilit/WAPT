@@ -71,6 +71,30 @@ SPOOL_OK = -2 # the task has been completed, the spool file will be removed
 SPOOL_RETRY = -1 # something is temporarily wrong, the task will be retried at the next spooler iteration
 SPOOL_IGNORE = 0 #  ignore this task, if multiple languages are loaded in the instance all of them will fight for managing the task. This return values allows you to skip a task in specific languages.
 
+
+def cabextract(cabfile, **kwargs):
+    check_only = []
+    if kwargs.get('check_only', False):
+        check_only = ['-t']
+
+    destdir = []
+    if destdir in kwargs:
+        destdir = ['-d', kwargs['destdir']]
+
+    ionice = []
+    _ionice = None
+    if os.getenv('PATH'):
+        for directory in os.getenv('PATH').split(':'):
+            if os.path.exists(os.path.join(directory, 'ionice')):
+                _ionice = 'ionice'
+    if _ionice:
+        ionice = ['ionice', '-c3']
+
+    command = ionice + ['cabextract'] + check_only + dstdir + [cabfile]
+
+    return subprocess.check_output(command)
+
+
 @spool
 def download_wsusscan(params={}):
     """Launch a task to update current wsus offline cab file
@@ -174,7 +198,7 @@ def download_wsusscan(params={}):
             if sys.platform == 'win32':
                 cablist = subprocess.check_output('expand -D "%s"' % tmp_filename, shell = True).decode('cp850').splitlines()
             else:
-                cablist = subprocess.check_output('cabextract -t "%s"' % tmp_filename, shell = True).splitlines()
+                cablist = cabextract(tmp_filename, check_only=True).splitlines()
             stats['cablist'] = cablist
 
             if os.path.isfile(wsus_filename):
@@ -216,8 +240,8 @@ def wsusscan2_extract_cabs(wsusscan2, tmpdir):
 
     mkdir_p(tmpdir)
 
-    subprocess.check_output(['ionice', '-c3', 'cabextract', '-d', tmpdir, wsusscan2])
-    subprocess.check_output(['ionice', '-c3', 'cabextract', '-d', tmpdir, os.path.join(tmpdir, 'package.cab')])
+    cabextract(wsusscan2, dstdir=tmpdir)
+    cabextract(os.path.join(tmpdir, 'package.cab'), dstdir=tmpdir)
 
     cab_list = sorted(filter(lambda f: f.endswith('.cab'), os.listdir(tmpdir)))
     cab_info = pymongo.MongoClient().wapt.wsus_cab_info
@@ -248,7 +272,7 @@ def wsusscan2_extract_cabs(wsusscan2, tmpdir):
             logger.info('extracting %s', cab)
             package_dir = cab_path[:-len('.cab')]
             mkdir_p(package_dir)
-            subprocess.check_output(['ionice', '-c3', 'cabextract', '-d', package_dir, cab_path])
+            cabextract(cab_path, dstdir=package_dir)
 
     return result
 
@@ -1266,7 +1290,7 @@ def windows_updates_rules():
 
 
 def wuredist_extract_and_fetch(wuredist, tmpdir):
-    subprocess.check_output(['ionice', '-c3', 'cabextract', '-d', tmpdir, wuredist])
+    cabextract(wuredist, dstdir=tmpdir)
     wuredist_xml = os.path.join(tmpdir, 'wuredist.xml')
     if not os.path.exists(wuredist_xml):
         raise Exception('wuredist.cab does not contain a wuredist.xml file')
@@ -1346,7 +1370,7 @@ def download_wuredist():
             if sys.platform == 'win32':
                 cablist = subprocess.check_output('expand -D "%s"' % tmp_filename, shell = True).decode('cp850').splitlines()
             else:
-                cablist = subprocess.check_output('cabextract -t "%s"' % tmp_filename, shell = True).splitlines()
+                cablist = cabextract(tmp_filename, check_only=True).splitlines()
             stats['cablist'] = cablist
 
             if os.path.isfile(wuredist_filename):
