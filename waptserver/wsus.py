@@ -77,9 +77,9 @@ def cabextract(cabfile, **kwargs):
     if kwargs.get('check_only', False):
         check_only = ['-t']
 
-    destdir = []
-    if destdir in kwargs:
-        destdir = ['-d', kwargs['destdir']]
+    dstdir = []
+    if kwargs.get('dstdir'):
+        dstdir = ['-d', kwargs['dstdir']]
 
     ionice = []
     _ionice = None
