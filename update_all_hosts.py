@@ -101,9 +101,9 @@ if __name__ == '__main__':
             raise Exception('Package %s is not available in your repository.'%package)
 
     # get the collection of hosts from waptserver inventory
-    hosts =  wapt.waptserver.get('hosts',auth=('admin',server_password))
+    hosts =  wapt.waptserver.get('api/v1/hosts',auth=('admin',server_password))
 
-    for h in hosts:
+    for h in hosts['result']:
         try:
             hostname = h['host']['computer_fqdn']
             print 'Computer %s... ' % hostname,

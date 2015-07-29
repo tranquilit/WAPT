@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.2.3"
+__version__ = "1.3.0"
 import os
 import re
 import logging
@@ -46,12 +46,11 @@ import copy
 import getpass
 import psutil
 import threading
-import email.utils
 import traceback
 import uuid
 
 from waptpackage import *
-
+from waptwua import WaptWUA
 import locale
 
 import shlex
@@ -92,51 +91,11 @@ import struct
 
 import re
 import setuphelpers
-from setuphelpers import ensure_unicode
+from setuphelpers import ensure_unicode,datetime2isodate,httpdatetime2isodate,ensure_list
 
 import types
 
 logger = logging.getLogger()
-
-def datetime2isodate(adatetime = None):
-    if not adatetime:
-        adatetime = datetime.datetime.now()
-    assert(isinstance(adatetime,datetime.datetime))
-    return adatetime.isoformat()
-
-
-def httpdatetime2isodate(httpdate):
-    """convert a date string as returned in http headers or mail headers to isodate
-    >>> import requests
-    >>> last_modified = requests.head('http://wapt/wapt/Packages',headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
-    >>> len(httpdatetime2isodate(last_modified)) == 19
-    True
-    """
-    return datetime2isodate(datetime.datetime(*email.utils.parsedate(httpdate)[:6]))
-
-
-def isodate2datetime(isodatestr):
-    # we remove the microseconds part as it is not working for python2.5 strptime
-    return datetime.datetime.strptime(isodatestr.split('.')[0] , "%Y-%m-%dT%H:%M:%S")
-
-
-def time2display(adatetime):
-    return adatetime.strftime("%Y-%m-%d %H:%M")
-
-
-def hours_minutes(hours):
-    if hours is None:
-        return None
-    else:
-        return "%02i:%02i" % ( int(hours) , int((hours - int(hours)) * 60.0))
-
-
-def fileisodate(filename):
-    return datetime.datetime.fromtimestamp(os.stat(filename).st_mtime).isoformat()
-
-
-def dateof(adatetime):
-    return adatetime.replace(hour=0,minute=0,second=0,microsecond=0)
 
 ArchitecturesList = ('all','x86','x64')
 
@@ -671,7 +630,6 @@ def adjust_privileges():
 
 def running_on_ac():
     """Return True if computer is connected to AC power supply
-
     """
     class SYSTEM_POWER_STATUS(ctypes.Structure):
         _fields_ = [
@@ -694,28 +652,6 @@ def running_on_ac():
         raise ctypes.WinError()
     return status.ACLineStatus == 1
 
-
-def ensure_list(csv_or_list,ignore_empty_args=True):
-    """if argument is not a list, return a list from a csv string"""
-    if csv_or_list is None:
-        return []
-    if isinstance(csv_or_list,tuple):
-        return list(csv_or_list)
-    elif not isinstance(csv_or_list,list):
-        if ignore_empty_args:
-            return [s.strip() for s in csv_or_list.split(',') if s.strip() != '']
-        else:
-            return [s.strip() for s in csv_or_list.split(',')]
-    else:
-        return csv_or_list
-
-
-def default_http_headers():
-    return {
-        'cache-control':'no-cache',
-        'pragma':'no-cache',
-        'user-agent':'wapt/{}'.format(__version__),
-        }
 
 ###########################"
 class LogInstallOutput(object):
@@ -789,10 +725,10 @@ def host_ipv4():
     return res
 
 
-def tryurl(url,proxies=None,timeout=2,auth=None):
+def tryurl(url,proxies=None,timeout=2,auth=None,verify_cert=False):
     try:
         logger.debug(u'  trying %s' % url)
-        headers = requests.head(url,proxies=proxies,timeout=timeout,auth=auth,verify=False,headers=default_http_headers())
+        headers = requests.head(url,proxies=proxies,timeout=timeout,auth=auth,verify=verify_cert,headers=default_http_headers())
         if headers.ok:
             logger.debug(u'  OK')
             return True
@@ -1606,6 +1542,7 @@ class WaptDB(WaptBaseDB):
             logger.debug(u'Remove unknown repositories from packages table and params (%s)' %(','.join('"%s"'% r.name for r in repos_list,),)  )
             self.db.execute('delete from wapt_package where repo not in (%s)' % (','.join('"%s"'% r.name for r in repos_list,)))
             self.db.execute('delete from wapt_params where name like "last-http%%" and name not in (%s)' % (','.join('"last-%s"'% r.repo_url for r in repos_list,)))
+            self.db.execute('delete from wapt_params where name like "last-url-%%" and name not in (%s)' % (','.join('"last-url-%s"'% r.name for r in repos_list,)))
             for repo in repos_list:
                 logger.info(u'Getting packages from %s' % repo.repo_url)
                 try:
@@ -1774,6 +1711,7 @@ class WaptServer(object):
         self.proxies=proxies
         self.timeout = timeout
         self.use_kerberos = False
+        self.verify_cert = False
 
         if dnsdomain:
             self.dnsdomain = dnsdomain
@@ -1862,7 +1800,7 @@ class WaptServer(object):
                                 url = 'https://%s' % (wapthost)
                                 servers.append((priority,-weight,url))
                             else:
-                                url = 'http://%s:%i' % (wapthost,a.port)
+                                url = 'http://%s:%i' % (wapthost,port)
                                 servers.append((priority,-weight,url))
                         except Exception as e:
                             logging.debug('Unable to resolve : error %s' % (ensure_unicode(e),))
@@ -1879,7 +1817,7 @@ class WaptServer(object):
                     raise
 
             else:
-                logger.warning(u'Local DNS domain not found, skipping SRV _wapt._tcp and CNAME search ')
+                logger.warning(u'Local DNS domain not found, skipping SRV _waptserver._tcp search ')
 
             return None
         except Exception  as e:
@@ -1925,13 +1863,23 @@ class WaptServer(object):
 
             if config.has_option(section,'wapt_server_timeout'):
                 self.timeout = config.getfloat(section,'wapt_server_timeout')
+
+            if config.has_option(section,'dnsdomain'):
+                self.dnsdomain = config.get(section,'dnsdomain')
+
+            if config.has_option(section,'verify_cert'):
+                self.verify_cert = config.getboolean(section,'verify_cert')
+            else:
+                self.verify_cert = False
+
+
         return self
 
     def get(self,action,auth=None,timeout=None):
         """ """
         surl = self.server_url
         if surl:
-            req = requests.get("%s/%s" % (surl,action),proxies=self.proxies,verify=False,timeout=timeout or self.timeout,auth=auth or self.auth(),headers=default_http_headers())
+            req = requests.get("%s/%s" % (surl,action),proxies=self.proxies,verify=self.verify_cert,timeout=timeout or self.timeout,auth=auth or self.auth(),headers=default_http_headers())
             req.raise_for_status()
             return json.loads(req.content)
         else:
@@ -1947,7 +1895,7 @@ class WaptServer(object):
                     'Content-type': 'binary/octet-stream',
                     'Content-transfer-encoding': 'binary',
                     })
-            req = requests.post("%s/%s" % (surl,action),data=data,files=files,proxies=self.proxies,verify=False,timeout=timeout or self.timeout,auth=auth or self.auth(),headers=headers)
+            req = requests.post("%s/%s" % (surl,action),data=data,files=files,proxies=self.proxies,verify=self.verify_cert,timeout=timeout or self.timeout,auth=auth or self.auth(),headers=headers)
             req.raise_for_status()
             return json.loads(req.content)
         else:
@@ -1956,7 +1904,7 @@ class WaptServer(object):
     def available(self):
         try:
             if self.server_url:
-                req = requests.head("%s" % (self.server_url),proxies=self.proxies,verify=False,timeout=self.timeout,auth=self.auth(),headers=default_http_headers())
+                req = requests.head("%s" % (self.server_url),proxies=self.proxies,verify=self.verify_cert,timeout=self.timeout,auth=self.auth(),headers=default_http_headers())
                 req.raise_for_status()
                 return True
             else:
@@ -1991,18 +1939,15 @@ class WaptServer(object):
             raise Exception(u'Unable to upload package: %s'%ensure_unicode(res['msg']))
 
 
-
-
-class WaptRepo(object):
+class WaptRepo(WaptRemoteRepo):
     """Gives access to a remote http repository, with a zipped Packages packages index
 
     >>> repo = WaptRepo(name='main',url='http://wapt/wapt',timeout=4)
-    >>> delta = repo.load_packages()
-    >>> 'last-modified' in delta and 'added' in delta and 'removed' in delta
-    True
+    >>> packages = repo.packages()
+    >>> len(packages)
     """
 
-    def __init__(self,name='',url=None,proxies={'http':None,'https':None},timeout = 2,dnsdomain=None):
+    def __init__(self,url=None,name='',proxies={'http':None,'https':None},timeout = 2,dnsdomain=None):
         """Initialize a repo at url "url".
 
         Args:
@@ -2015,15 +1960,8 @@ class WaptRepo(object):
                              if this is not supplied, DNS domain is taken from computer registry.
         """
 
-        self.name = name
-        if url and url[-1]=='/':
-            url = url.rstrip('/')
-        self._repo_url = url
+        WaptRemoteRepo.__init__(self,url=url,name=name,proxies=proxies,timeout=timeout)
         self._cached_dns_repo_url = None
-
-        self.proxies=proxies
-        self.packages = []
-        self.timeout = timeout
         if dnsdomain:
             self.dnsdomain = dnsdomain
         else:
@@ -2032,6 +1970,8 @@ class WaptRepo(object):
     def reset_network(self):
         """called by wapt when network configuration has changed"""
         self._cached_dns_repo_url = None
+        self._packages = None
+        self._packages_date = None
 
     @property
     def repo_url(self):
@@ -2061,8 +2001,17 @@ class WaptRepo(object):
                 self._cached_dns_repo_url = self.find_wapt_repo_url()
             return self._cached_dns_repo_url
 
-    def last_known_repo_url(self):
-        return self._repo_url or self._cached_dns_repo_url or (self._cached_dns_repo_url is None and not self._repo_url and self.repo_url)
+    @repo_url.setter
+    def repo_url(self,value):
+        if value:
+            value = value.rstrip('/')
+
+        if value != self._repo_url:
+            self._repo_url = value
+            self._packages = None
+            self._packages_date = None
+            self._cached_dns_repo_url = None
+
 
     def find_wapt_repo_url(self):
         """Search the nearest working main WAPT repository given the following priority
@@ -2189,170 +2138,6 @@ class WaptRepo(object):
             logger.debug(u'Waptrepo.find_wapt_repo_url: exception: %s' % (e,))
             raise
 
-    @repo_url.setter
-    def repo_url(self,value):
-        """Setter for Wapt main repository URL
-        """
-        # remove / at the end
-        if value:
-            value = value.rstrip('/')
-        self._repo_url = value
-
-    def load_config(self,config,section=None):
-        """Load waptrepo configuration from inifile section.
-
-                Use name of repo as section name if section is not provided.
-                Use 'global' if no section named section in ini file
-        Args:
-            config (RawConfigParser): ini configuration
-            section (str)           : section where to loads parameters
-                                      defaults to name of repository
-
-        Returns:
-            WaptRepo: return itself to chain calls.
-        """
-        if not section:
-             section = self.name
-        if not config.has_section(section):
-            section = 'global'
-
-        if config.has_option(section,'repo_url'):
-            self.repo_url = config.get(section,'repo_url')
-
-        if config.has_option(section,'use_http_proxy_for_repo') and config.getboolean(section,'use_http_proxy_for_repo'):
-            if config.has_option(section,'http_proxy'):
-                # force a specific proxy from wapt conf
-                self.proxies = {'http':config.get(section,'http_proxy'),'https':config.get(section,'http_proxy')}
-            else:
-                # use default windows proxy ?
-                self.proxies = None
-        else:
-            # force to not use proxy, even if one is defined in windows
-            self.proxies = {'http':None,'https':None}
-
-        if config.has_option(section,'timeout'):
-            self.timeout = config.getfloat(section,'timeout')
-        return self
-
-    @property
-    def packages_url(self):
-        """return url of Packages index file
-
-        hardcoded path to the Packages index.
-        """
-        return self.repo_url + '/Packages'
-
-    def need_update(self,waptdb):
-        """Check if index has changed on repo and local db needs an update
-
-        Compare date on local package index DB with the Packages file on remote
-          repository with a HEAD http request.
-
-        Args:
-            waptdb (WaptDB): local Wapt status database.
-
-        Returns
-            bool:   True if either Packages was never read or remote date of Packages is
-                    more recent than the date stored in local DB.
-
-        >>> repo = WaptRepo(name='main',url='http://wapt/wapt',timeout=4)
-        >>> waptdb = WaptDB('c:/wapt/db/waptdb.sqlite')
-        >>> res = repo.need_update(waptdb)
-        >>> isinstance(res,bool)
-        True
-        """
-        if not waptdb:
-            logger.debug(u'need_update : no waptdb provided, update is needed')
-            return True
-        else:
-            last_update = waptdb.get_param('last-%s' % self.repo_url[:59])
-            if last_update:
-                logger.debug(u'Check last-modified header for %s to avoid unecessary update' % (self.packages_url,))
-                current_update = self.is_available()
-                if current_update == last_update:
-                    logger.info(u'Index from %s has not been updated (last update %s), skipping update' % (self.packages_url,last_update))
-                    return False
-                else:
-                    return True
-            else:
-                return True
-
-    def is_available(self):
-        """Check if repo is reachable an return createion date of Packages.
-
-        Try to access the repo and return last modified date of repo index or None if not accessible
-
-        Returns:
-            str: Iso creation date of remote Package file as returned in http headers
-
-        >>> repo = WaptRepo(name='main',url='http://wapt/wapt',timeout=1)
-        >>> repo.is_available() <= datetime2isodate()
-        True
-        >>> repo = WaptRepo(name='main',url='http://badwapt/wapt',timeout=1)
-        >>> repo.is_available() is None
-        True
-        """
-        logger.debug(u'Checking availability of %s' % (self.packages_url,))
-        try:
-            packages_last_modified = requests.head(
-                self.packages_url,
-                timeout=self.timeout,
-                proxies=self.proxies,
-                verify=False,
-                headers=default_http_headers()
-                ).headers['last-modified']
-            return httpdatetime2isodate(packages_last_modified)
-        except requests.RequestException as e:
-            self._cached_dns_repo_url = None
-            logger.debug(u'Repo packages index %s is not available : %s'%(self.packages_url,ensure_unicode(e)))
-            return None
-
-    def load_packages(self):
-        """Try to load index of packages as PackageEntry list from repository
-
-        HTTP Get remote Packages zip file and parses the entries.
-
-        The list of package entries is stored in the packages property.
-
-        Returns
-            dict: list of added or removed packages and create date {'added':list,'removed':list,'last-modified':isodatetime}
-        """
-        new_packages = []
-        logger.debug(u'Read remote Packages zip file %s' % self.packages_url)
-        packages_answer = requests.get(self.packages_url,proxies=self.proxies,timeout=self.timeout, verify=False,headers=default_http_headers())
-        packages_answer.raise_for_status()
-
-        # Packages file is a zipfile with one Packages file inside
-        packages_lines = codecs.decode(ZipFile(
-              StringIO.StringIO(packages_answer.content)
-            ).read(name='Packages'),'UTF-8').splitlines()
-
-        startline = 0
-        endline = 0
-
-        def add(start,end):
-            if start != end:
-                package = PackageEntry()
-                package.load_control_from_wapt(packages_lines[start:end])
-                logger.info(u"%s (%s)" % (package.package,package.version))
-                package.repo_url = self.repo_url
-                package.repo = self.name
-                new_packages.append(package)
-
-        for line in packages_lines:
-            if line.strip()=='':
-                add(startline,endline)
-                endline += 1
-                startline = endline
-            # add ettribute to current package
-            else:
-                endline += 1
-        # last one
-        add(startline,endline)
-        added = [ p for p in new_packages if not p in self.packages]
-        removed = [ p for p in self.packages if not p in new_packages]
-        self.packages = new_packages
-        return {'added':added,'removed':removed,'last-modified': httpdatetime2isodate(packages_answer.headers['last-modified'])}
 
     def update_db(self,force=False,waptdb=None):
         """Get Packages from http repo and update local package database
@@ -2378,18 +2163,24 @@ class WaptRepo(object):
         """
 
         result = None
+        last_modified = waptdb.get_param('last-%s'%(self.repo_url[:59]))
+        last_url = waptdb.get_param('last-url-%s' % self.name)
+
         # Check if updated
-        if force or self.need_update(waptdb):
+        if force or self.repo_url != last_url or self.need_update(last_modified):
             with waptdb:
                 try:
                     logger.debug(u'Read remote Packages index file %s' % self.packages_url)
-                    delta = self.load_packages()
+                    self._packages = None
+                    self._packages_date = None
+
                     waptdb.purge_repo(self.name)
                     for package in self.packages:
                         waptdb.add_package_entry(package)
-                    last_modified =delta['last-modified']
-                    logger.debug(u'Storing last-modified header for repo_url %s : %s' % (self.repo_url,last_modified))
-                    waptdb.set_param('last-%s' % self.repo_url[:59],last_modified)
+                    last_modified = self.packages_date
+                    logger.debug(u'Storing last-modified header for repo_url %s : %s' % (self.repo_url,self.packages_date))
+                    waptdb.set_param('last-%s' % self.repo_url[:59],self.packages_date)
+                    waptdb.set_param('last-url-%s' % self.name, self.repo_url)
                     return last_modified
                 except Exception as e:
                     logger.info(u'Unable to update repository status of %s, error %s'%(self._repo_url,e))
@@ -2397,27 +2188,50 @@ class WaptRepo(object):
         else:
             return waptdb.get_param('last-%s' % self.repo_url[:59])
 
+
+    def load_config(self,config,section=None):
+        """Load waptrepo configuration from inifile section.
+                Use name of repo as section name if section is not provided.
+                Use 'global' if no section named section in ini file
+        """
+        WaptRemoteRepo.load_config(self,config,section)
+        if section is None:
+			section = 'global'
+        if config.has_section(section) and config.has_option(section,'dnsdomain'):
+            self.dnsdomain = config.get(section,'dnsdomain')
+        return self
+
     def as_dict(self):
-        result = {}
-        attributes = ['name','repo_url','proxies','dnsdomain']
-        for att in attributes:
-            result[att] = getattr(self,att)
+        result = {
+            'name':self.name,
+            'repo_url':self._repo_url or self._cached_dns_repo_url,
+            'proxies':self.proxies,
+            'dnsdomain':self.dnsdomain,
+            'timeout':self.timeout,
+            }
         return result
 
 class WaptHostRepo(WaptRepo):
     """Dummy http repository for host packages"""
 
-    def update_db(self,force=False,waptdb=None,hosts_list=[]):
+    def __init__(self,url=None,name='',proxies={'http':None,'https':None},timeout = 2,dnsdomain=None,hosts=[]):
+        WaptRepo.__init__(self,url=url,name=name,proxies=proxies,timeout = timeout,dnsdomain=dnsdomain)
+        self.hosts_list = hosts
+
+    def _load_packages_index(self):
+        self._packages = []
+
+    def update_db(self,force=False,waptdb=None):
         """get a list of host packages from remote repo"""
         current_host = setuphelpers.get_hostname()
-        if not current_host in hosts_list:
-            hosts_list.append(current_host)
-        result = {}
-        self.packages = []
-        for host in hosts_list:
-            (entry,result[host]) = self.update_host(host,waptdb,force=force)
+        if not current_host in self.hosts_list:
+            self.hosts_list.append(current_host)
+        result = ''
+        for host in self.hosts_list:
+            (entry,result) = self.update_host(host,waptdb,force=force)
             if not entry in self.packages:
                 self.packages.append(entry)
+        return result
 
     def update_host(self,host,waptdb,force=False):
         """Update host package from repo.
@@ -2436,14 +2250,14 @@ class WaptHostRepo(WaptRepo):
         try:
             host_package_url = "%s/%s.wapt" % (self.repo_url,host)
             host_cachedate = 'date-%s' % (host,)
-            host_request = requests.head(host_package_url,proxies=self.proxies,verify=False,timeout=self.timeout,headers=default_http_headers())
+            host_request = requests.head(host_package_url,proxies=self.proxies,verify=self.verify_cert,timeout=self.timeout,headers=default_http_headers())
             try:
                 host_request.raise_for_status()
-                host_package_date = httpdatetime2isodate(host_request.headers['last-modified'])
+                host_package_date = httpdatetime2isodate(host_request.headers.get('last-modified',None))
                 package = None
                 if host_package_date:
                     if force or host_package_date != waptdb.get_param(host_cachedate) or not waptdb.packages_matching(host):
-                        host_package = requests.get(host_package_url,proxies=self.proxies,verify=False,timeout=self.timeout,headers=default_http_headers())
+                        host_package = requests.get(host_package_url,proxies=self.proxies,verify=self.verify_cert,timeout=self.timeout,headers=default_http_headers())
                         host_package.raise_for_status()
 
                         # Packages file is a zipfile with one Packages file inside
@@ -2500,40 +2314,26 @@ class WaptHostRepo(WaptRepo):
 
     @repo_url.setter
     def repo_url(self,value):
-        """Wapt main repository URL"""
-        # remove / at the end
         if value:
             value = value.rstrip('/')
-        self._repo_url = value
+
+        if value != self._repo_url:
+            self._repo_url = value
+            self._packages = None
+            self._packages_date = None
+            self._cached_dns_repo_url = None
 
     def load_config(self,config,section=None):
         """Load waptrepo configuration from inifile section.
                 Use name of repo as section name if section is not provided.
                 Use 'global' if no section named section in ini file
         """
-        if not section:
-             section = self.name
-
-        if not config.has_section(section):
-            section = 'global'
-        else:
-            if config.has_option(section,'repo_url'):
-                self.repo_url = config.get(section,'repo_url')
-
-        if config.has_option(section,'use_http_proxy_for_repo') and config.getboolean(section,'use_http_proxy_for_repo'):
-            if config.has_option(section,'http_proxy'):
-                # force a specific proxy from wapt conf
-                self.proxies = {'http':config.get(section,'http_proxy'),'https':config.get(section,'http_proxy')}
-            else:
-                # use default windows proxy ?
-                self.proxies = None
-        else:
-            # force to not use proxy, even if one is defined in windows
-            self.proxies = {'http':None,'https':None}
-
-        if config.has_option(section,'timeout'):
-            self.timeout = config.getfloat(section,'timeout')
+        WaptRepo.load_config(self,config,section)
+        # well known url guessed from main repo : url+"-host"
+        if section is None or section == 'global':
+            self._repo_url = None
         return self
+
 
 ######################"""
 
@@ -2756,7 +2556,7 @@ class Wapt(object):
                 if name:
                     w = WaptRepo(name=name).load_config(self.config)
                     self.repositories.append(w)
-                    logger.debug(u'    %s:%s' % (w.name,w.repo_url))
+                    logger.debug(u'    %s:%s' % (w.name,w._repo_url))
         # last is main repository so it overrides the secondary repositories
         main = WaptRepo(name='global').load_config(self.config)
         self.repositories.append(main)
@@ -2790,7 +2590,7 @@ class Wapt(object):
         if self.repositories:
             main = self.repositories[-1]
             if main._repo_url and not host_repo._repo_url:
-                host_repo.repo_url = main.repo_url+'-host'
+                host_repo.repo_url = main._repo_url+'-host'
             self.repositories.append(host_repo)
         else:
             raise Exception('host-repo : No main repository URL, unable to derive hosts URL from repo URL. Either define an explicit host repository or define first a main repository')
@@ -2857,6 +2657,10 @@ class Wapt(object):
         registered_hostname = self.read_param('hostname')
         current_hostname = setuphelpers.get_hostname()
         if not value or registered_hostname != current_hostname:
+            if registered_hostname != current_hostname:
+                # forget old host package if any as it is not relevant anymore
+                self.forget_packages(registered_hostname)
+
             logger.info('Unknown UUID or hostname has changed: reading host UUID from wmi informations')
             inv = setuphelpers.wmi_info_basic()
             value = inv['System_Information']['UUID']
@@ -3847,7 +3651,7 @@ class Wapt(object):
         >>> def nullhook(*args):
         ...     pass
         >>> wapt.download_packages(['tis-firefox','tis-waptdev'],usecache=False,printhook=nullhook)
-        {'downloaded': [u'c:/wapt\\cache\\tis-firefox_35.0.1-1_all.wapt', u'c:/wapt\\cache\\tis-waptdev.wapt'], 'skipped': [], 'errors': []}
+        {'downloaded': [u'c:/wapt\\cache\\tis-firefox_37.0.2-9_all.wapt', u'c:/wapt\\cache\\tis-waptdev.wapt'], 'skipped': [], 'errors': []}
         """
         if not isinstance(package_requests,(list,tuple)):
             package_requests = [ package_requests ]
@@ -4211,6 +4015,30 @@ class Wapt(object):
         status['runstatus'] = self.read_param('runstatus','')
         return json.loads(json.dumps(status))
 
+    def wua_status(self):
+        """Get the local wapt WUA status as a dict
+
+        the 'status' key has one the value :
+            SCANNING,READY,PENDING,OK,DOWNLOADING
+        >>> w = Wapt()
+        >>> w.wua_status().keys()
+        ['status',
+         'allowed_updates',
+         'forbidden_updates',
+         'allowed_severities',
+         'last_install_date',
+         'last_scan_date',
+         'wsusscn2cab_date',
+         'rebootrequired',
+         'last_install_batch',
+         'updates',
+         'last_install_result']
+
+        """
+
+        wua = WaptWUA(self)
+        return wua.stored_status()
+
     def update_server_status(self):
         """Send packages and software informations to WAPT Server, don't send dmi
 
@@ -4223,6 +4051,7 @@ class Wapt(object):
         inv['host'] = setuphelpers.host_info()
         inv['softwares'] = setuphelpers.installed_softwares('')
         inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
+        inv['waptwua'] = self.wua_status()
         inv['update_status'] = self.get_last_update_status()
 
         if self.waptserver_available():
@@ -4257,6 +4086,7 @@ class Wapt(object):
             dict: versions of main main files, waptservice config,
                   repos and waptserver config
 
+        >>> w = Wapt()
         >>> w.wapt_status()
         {
         	'setuphelpers-version': '1.1.1',
@@ -4366,9 +4196,14 @@ class Wapt(object):
         inv = {}
         inv['host'] = setuphelpers.host_info()
         inv['dmi'] = setuphelpers.dmi_info()
+        try:
+            inv['wmi'] = setuphelpers.wmi_info()
+        except:
+            logger.warning('WMI unavailable')
         inv['wapt'] = self.wapt_status()
         inv['softwares'] = setuphelpers.installed_softwares('')
         inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
+        inv['waptwua'] = self.wua_status()
         return inv
 
     def get_repo(self,name):
@@ -4879,10 +4714,10 @@ class Wapt(object):
         self.add_pyscripter_project(directoryname)
         return directoryname
 
-    def make_host_template(self,packagename='',depends=None,directoryname=None):
-        return self.make_group_template(packagename=packagename,depends=depends,directoryname=directoryname,section='host')
+    def make_host_template(self,packagename='',depends=None,directoryname=None,description=None):
+        return self.make_group_template(packagename=packagename,depends=depends,directoryname=directoryname,section='host',description=description)
 
-    def make_group_template(self,packagename='',depends=None,directoryname=None,section='group',description=''):
+    def make_group_template(self,packagename='',depends=None,directoryname=None,section='group',description=None):
         r"""Build a skeleton of WAPT group package
             depends : list of package dependencies.
            Return the path of the skeleton
@@ -5115,7 +4950,7 @@ class Wapt(object):
                 packagename = entry.package
                 packagerequest = entry.asrequirement()
             else:
-                raise Exception('%s is neither a package name nor a package filename' % packagename)
+                raise Exception('%s is neither a package name nor a package filename' % packagerequest)
 
         append_depends = ensure_list(append_depends)
         remove_depends = ensure_list(remove_depends)
@@ -5204,7 +5039,8 @@ class Wapt(object):
             remove_depends=None,
             append_conflicts=None,
             remove_conflicts=None,
-            printhook=None):
+            printhook=None,
+            description=None):
         """Download and extract a host package from host repositories into target_directory for modification
                 Return dict {'target': 'c:\\\\tmp\\\\dummy', 'source_dir': 'c:\\\\tmp\\\\dummy', 'package': "dummy.tranquilit.local (=0)"}
 
@@ -5275,6 +5111,8 @@ class Wapt(object):
                                     if d in prev_conflicts:
                                         prev_conflicts.remove(d)
                             local_dev_entry.conflicts = ','.join(prev_conflicts)
+                            if description is not None:
+                                local_dev_entry.description = description
 
                             local_dev_entry.save_control_to_wapt(target_directory)
                             self.add_pyscripter_project(target_directory)
@@ -5301,7 +5139,7 @@ class Wapt(object):
                 raise Exception('directory %s is not empty, aborting.' % target_directory)
             else:
                 # create new host package from template
-                return self.make_host_template(packagename=hostname,directoryname=target_directory,depends=append_depends)
+                return self.make_host_template(packagename=hostname,directoryname=target_directory,depends=append_depends,description=description)
         else:
             raise Exception('No Wapthost repository defined')
 

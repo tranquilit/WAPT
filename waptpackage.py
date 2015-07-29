@@ -20,7 +20,26 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.2.3"
+__version__ = "1.3.0"
+
+__all__ = [
+    'md5_for_file',
+    'parse_major_minor_patch_build',
+    'make_version',
+    'datetime2isodate',
+    'httpdatetime2isodate',
+    'Version',
+    'PackageRequest',
+    'PackageEntry',
+    'WaptBaseRepo',
+    'WaptLocalRepo',
+    'default_http_headers',
+    'wget',
+    'WaptRemoteRepo',
+    'update_packages',
+    'REGEX_PACKAGE_VERSION',
+    'REGEX_PACKAGE_CONDITION',
+]
 
 import os
 import zipfile
@@ -34,6 +53,10 @@ import time
 import json
 import sys
 import types
+import requests
+import email
+import datetime
+import tempfile
 
 logger = logging.getLogger()
 
@@ -88,6 +111,41 @@ def make_version(major_minor_patch_build):
         return '-'.join([p1,major_minor_patch_build['packaging']])
     else:
         return p1
+
+def datetime2isodate(adatetime = None):
+    if not adatetime:
+        adatetime = datetime.datetime.now()
+    assert(isinstance(adatetime,datetime.datetime))
+    return adatetime.isoformat()
+
+
+def httpdatetime2isodate(httpdate):
+    """convert a date string as returned in http headers or mail headers to isodate
+    >>> import requests
+    >>> last_modified = requests.head('http://wapt/wapt/Packages',headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
+    >>> len(httpdatetime2isodate(last_modified)) == 19
+    True
+    """
+    return datetime2isodate(datetime.datetime(*email.utils.parsedate(httpdate)[:6]))
+
+
+def ensure_list(csv_or_list,ignore_empty_args=True,allow_none = False):
+    """if argument is not a list, return a list from a csv string"""
+    if csv_or_list is None:
+        if allow_none:
+            return None
+        else:
+            return []
+
+    if isinstance(csv_or_list,tuple):
+        return list(csv_or_list)
+    elif not isinstance(csv_or_list,list):
+        if ignore_empty_args:
+            return [s.strip() for s in csv_or_list.split(',') if s.strip() != '']
+        else:
+            return [s.strip() for s in csv_or_list.split(',')]
+    else:
+        return csv_or_list
 
 
 class Version(object):
@@ -514,15 +572,123 @@ def extract_iconpng_from_wapt(fname):
     return iconpng
 
 
-class WaptLocalRepo(object):
-    def __init__(self,localpath='/var/www/wapt',name='waptlocal'):
+class WaptBaseRepo(object):
+    def __init__(self,name='abstract'):
         self.name = name
-        localpath = localpath.rstrip(os.path.sep)
-        self.localpath = localpath
-        self.packages = []
+        self._packages = None
         self.index = {}
+        self._packages_date = None
 
-    def load_packages(self):
+    def _load_packages_index(self):
+        self._packages = []
+        self._packages_date = None
+
+    def update(self):
+        return self._load_packages_index()
+
+    @property
+    def packages(self):
+        if self._packages is None:
+            self._load_packages_index()
+        return self._packages
+
+    @property
+    def packages_date(self):
+        if self._packages is None:
+            self._load_packages_index()
+        return self._packages_date
+
+    def need_update(self,last_modified=None):
+        """Check if packges index has changed on repo and local db needs an update
+
+        Compare date on local package index DB with the Packages file on remote
+          repository with a HEAD http request.
+
+        Args:
+            last_modified (str): iso datetime of last known update of packages.
+
+        Returns
+            bool:   True if either Packages was never read or remote date of Packages is
+                    more recent than the provided last_modifed date.
+
+        >>> repo = WaptRepo(name='main',url='http://wapt/wapt',timeout=4)
+        >>> waptdb = WaptDB('c:/wapt/db/waptdb.sqlite')
+        >>> res = repo.need_update(waptdb.read_param('last-%s'% repo.url))
+        >>> isinstance(res,bool)
+        True
+        """
+        if not last_modified and not self._packages_date:
+            logger.debug(u'need_update : no last_modified date provided, update is needed')
+            return True
+        else:
+            if not last_modified:
+                last_modified = self._packages_date
+            if last_modified:
+                logger.debug(u'Check last-modified header for %s to avoid unecessary update' % (self.packages_url,))
+                current_update = self.is_available()
+                if current_update == last_modified:
+                    logger.info(u'Index from %s has not been updated (last update %s), skipping update' % (self.packages_url,current_update))
+                    return False
+                else:
+                    return True
+            else:
+                return True
+
+    def search(self,searchwords = [],sections=[]):
+        """Return list of package entries
+            with description or name matching all the searchwords and section in
+            provided sections list
+
+        >>> r = WaptRepo(name='test',url='http://wapt.tranquil.it/wapt')
+        >>> r.search(')
+        """
+        searchwords = ensure_list(searchwords)
+        sections = ensure_list(sections)
+        words = [ w.lower() for w in searchwords ]
+
+        result = []
+        for package in self.packages:
+            selected = True
+            for w in words:
+                if not w in (package.description+' '+package.package).lower():
+                    selected = False
+                    break
+            if sections:
+                if not package.section in sections:
+                    selected = False
+            if selected:
+                result.append(package)
+        return sorted(result)
+
+    def packages_matching(self,package_cond):
+        """Return an ordered list of available packages entries which match
+            the condition "packagename[([=<>]version)]?"
+            version ascending
+        >>> from waptpackage import *
+        >>> r = WaptRemoteRepo('http://wapt.tranquil.it/wapt')
+        >>> r.packages_matching('tis-firefox (>=20)')
+        [PackageEntry('tis-firefox','20.0.1-02'),
+         PackageEntry('tis-firefox','21.0.0-00'),
+         ...]
+        """
+        pcv_match = REGEX_PACKAGE_CONDITION.match(package_cond)
+        if pcv_match:
+            pcv = pcv_match.groupdict()
+            result = [ pe for pe in self.packages if pe.package == pcv['package'] and pe.match(package_cond)]
+            result.sort()
+            return result
+        else:
+            return []
+
+
+
+class WaptLocalRepo(WaptBaseRepo):
+    def __init__(self,localpath='/var/www/wapt',name='waptlocal'):
+        WaptBaseRepo.__init__(self,name=name)
+        self.localpath = localpath.rstrip(os.path.sep)
+        self.packages_path = os.path.join(self.localpath,'Packages')
+
+    def _load_packages_index(self):
         """Parse Packages index from local repo Packages file
 
         Packages file is zipped file with one file named Packages.
@@ -531,18 +697,22 @@ class WaptLocalRepo(object):
           in the repository
 
         >>> repo = WaptLocalRepo(localpath='c:\\wapt\\cache')
-        >>> repo.load_packages()
+        >>> repo._load_packages_index()
         >>> isinstance(repo.packages,list)
         True
         """
         # Packages file is a zipfile with one Packages file inside
-        if os.path.isfile(os.path.join(self.localpath,'Packages')):
-            packages_file = zipfile.ZipFile(os.path.join(self.localpath,'Packages'))
+        if os.path.isfile(self.packages_path):
+            self._packages_date = datetime2isodate(datetime.datetime.utcfromtimestamp(os.stat(self.packages_path).st_mtime))
+            packages_file = zipfile.ZipFile(self.packages_path)
             try:
                 packages_lines = packages_file.read(name='Packages').decode('utf8').splitlines()
             finally:
                 packages_file.close()
-            del(self.packages[:])
+            if self._packages is not None:
+                del(self._packages[:])
+            else:
+                self._packages = []
             self.index.clear()
 
             startline = 0
@@ -557,7 +727,7 @@ class WaptLocalRepo(object):
                     package.repo = self.name
                     package.localpath = self.localpath
                     package.filename = package.make_package_filename()
-                    self.packages.append(package)
+                    self._packages.append(package)
                     # index last version
                     if not package.package in self.index or self.index[package.package] < package:
                         self.index[package.package] = package
@@ -572,6 +742,10 @@ class WaptLocalRepo(object):
                     endline += 1
             # last one
             add(startline,endline)
+        else:
+            self._packages = []
+            self.index.clear()
+            self._packages_date = None
 
     def update_packages_index(self,force_all=False):
         """Scan self.localpath directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash
@@ -584,8 +758,8 @@ class WaptLocalRepo(object):
         if not os.path.isdir(icons_path):
             os.makedirs(icons_path)
 
-        if not force_all and not self.packages:
-            self.load_packages()
+        if force_all:
+            self._packages = []
         old_entries = {}
         for package in self.packages:
             old_entries[os.path.basename(package.filename)] = package
@@ -598,7 +772,10 @@ class WaptLocalRepo(object):
         kept = []
         processed = []
         errors = []
-        del(self.packages[:])
+        if self._packages is None:
+            self._packages = []
+        else:
+            del(self._packages[:])
         self.index.clear()
 
         for fname in waptlist:
@@ -619,10 +796,10 @@ class WaptLocalRepo(object):
                     entry.load_control_from_wapt(fname)
                     processed.append(fname)
                 packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
-                self.packages.append(entry)
+                self._packages.append(entry)
                 # index last version
-                if not package.package in self.index or self.index[package.package] < package:
-                    self.index[package.package] = package
+                if not entry.package in self.index or self.index[entry.package] < package:
+                    self.index[entry.package] = entry
 
                 # looks for an icon in wapt package
                 icon_fn = os.path.join(icons_path,"%s.png"%entry.package)
@@ -649,9 +826,365 @@ class WaptLocalRepo(object):
             myzipfile.close()
         return {'processed':processed,'kept':kept,'errors':errors,'packages_filename':packages_fname}
 
+    def is_available(self):
+        """Check if repo is reachable an return last update date.
+        """
+        if os.path.isfile(self.packages_path):
+            return self._packages_date
+        else:
+            return None
+
+def default_http_headers():
+    return {
+        'cache-control':'no-cache',
+        'pragma':'no-cache',
+        'user-agent':'wapt/{}'.format(__version__),
+        }
+
+# todo : remove from setuphelpers...
+def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False):
+    r"""Copy the contents of a file from a given URL to a local file.
+    >>> respath = wget('http://wapt.tranquil.it/wapt/tis-firefox_28.0.0-1_all.wapt','c:\\tmp\\test.wapt',proxies={'http':'http://proxy:3128'})
+    ???
+    >>> os.stat(respath).st_size>10000
+    True
+    >>> respath = wget('http://localhost:8088/runstatus','c:\\tmp\\test.json')
+    ???
+    """
+    start_time = time.time()
+    last_time_display = 0.0
+    last_downloaded = 0
+
+    def reporthook(received,total):
+        total = float(total)
+        if total>1 and received>1:
+            # print only every second or at end
+            if (time.time()-start_time>1) and ((time.time()-last_time_display>=1) or (received>=total)):
+                speed = received /(1024.0 * (time.time()-start_time))
+                if printhook:
+                    printhook(received,total,speed,url)
+                else:
+                    try:
+                        if received == 0:
+                            print u"Downloading %s (%.1f Mb)" % (url,int(total)/1024/1024)
+                        elif received>=total:
+                            print u"  -> download finished (%.0f Kb/s)" % (total /(1024.0*(time.time()+.001-start_time)))
+                        else:
+                            print u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total,speed ),
+                    except:
+                        return False
+                return True
+            else:
+                return False
+
+    if os.path.isdir(target):
+        target = os.path.join(target,'')
+
+    (dir,filename) = os.path.split(target)
+    if not filename:
+        filename = url.split('/')[-1]
+    if not dir:
+        dir = os.getcwd()
+
+    if not os.path.isdir(dir):
+        os.makedirs(dir)
+
+    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout,verify=verify_cert,headers=default_http_headers())
+
+    total_bytes = int(httpreq.headers['content-length'])
+    # 1Mb max, 1kb min
+    chunk_size = min([1024*1024,max([total_bytes/100,2048])])
+
+    cnt = 0
+    reporthook(last_downloaded,total_bytes)
+
+    with open(os.path.join(dir,filename),'wb') as output_file:
+        last_time_display = time.time()
+        last_downloaded = 0
+        if httpreq.ok:
+            for chunk in httpreq.iter_content(chunk_size=chunk_size):
+                output_file.write(chunk)
+                if download_timeout is not None and (time.time()-start_time>download_timeout):
+                    raise requests.Timeout(r'Download of %s takes more than the requested %ss'%(url,download_timeout))
+                if reporthook(cnt*len(chunk),total_bytes):
+                    last_time_display = time.time()
+                last_downloaded += len(chunk)
+                cnt +=1
+            if reporthook(last_downloaded,total_bytes):
+                last_time_display = time.time()
+        else:
+            httpreq.raise_for_status()
+
+    return os.path.join(dir,filename)
+
+
+class WaptRemoteRepo(WaptBaseRepo):
+    """Gives access to a remote http repository, with a zipped Packages packages index
+
+    >>> repo = WaptRemoteRepo(name='main',url='http://wapt/wapt',timeout=4)
+    >>> delta = repo.load_packages()
+    >>> 'last-modified' in delta and 'added' in delta and 'removed' in delta
+    True
+    """
+
+    def __init__(self,url=None,name='',proxies={'http':None,'https':None},timeout = 2):
+        """Initialize a repo at url "url".
+
+        Args:
+            name (str): internal local name of this repository
+            url  (str): http URL to the repository.
+                 If url is None, the url is requested from DNS by a SRV query
+            proxies (dict): configuration of http proxies as defined for requests
+            timeout (float): timeout in seconds for the connection to the rmeote repository
+        """
+        WaptBaseRepo.__init__(self,name=name)
+        if url and url[-1]=='/':
+            url = url.rstrip('/')
+        self._repo_url = url
+
+        self._packages_date = None
+        self._packages = None
+
+        self.proxies = proxies
+        self.verify_cert = False
+        self.timeout = timeout
+
+    @property
+    def repo_url(self):
+        return self._repo_url
+
+    @repo_url.setter
+    def repo_url(self,value):
+        if value:
+            value = value.rstrip('/')
+
+        if value != self._repo_url:
+            self._repo_url = value
+            self._packages = None
+            self._packages_date = None
+
+    def load_config(self,config,section=None):
+        """Load waptrepo configuration from inifile section.
+
+                Use name of repo as section name if section is not provided.
+                Use 'global' if no section named section in ini file
+        Args:
+            config (RawConfigParser): ini configuration
+            section (str)           : section where to loads parameters
+                                      defaults to name of repository
+
+        Returns:
+            WaptRepo: return itself to chain calls.
+        """
+        if not section:
+             section = self.name
+        if not config.has_section(section):
+            section = 'global'
+
+        if config.has_option(section,'repo_url'):
+            self.repo_url = config.get(section,'repo_url')
+
+        if config.has_option(section,'verify_cert'):
+            self.verify_cert = config.getboolean(section,'verify_cert')
+        else:
+            self.verify_cert = False
+
+        if config.has_option(section,'use_http_proxy_for_repo') and config.getboolean(section,'use_http_proxy_for_repo'):
+            if config.has_option(section,'http_proxy'):
+                # force a specific proxy from wapt conf
+                self.proxies = {'http':config.get(section,'http_proxy'),'https':config.get(section,'http_proxy')}
+            else:
+                # use default windows proxy ?
+                self.proxies = None
+        else:
+            # force to not use proxy, even if one is defined in windows
+            self.proxies = {'http':None,'https':None}
+
+        if config.has_option(section,'timeout'):
+            self.timeout = config.getfloat(section,'timeout')
+        return self
+
+    @property
+    def packages_url(self):
+        """return url of Packages index file
+
+        hardcoded path to the Packages index.
+        """
+        return self.repo_url + '/Packages'
+
+    def is_available(self):
+        """Check if repo is reachable an return createion date of Packages.
+
+        Try to access the repo and return last modified date of repo index or None if not accessible
+
+        Returns:
+            str: Iso creation date of remote Package file as returned in http headers
+
+        >>> repo = WaptRepo(name='main',url='http://wapt/wapt',timeout=1)
+        >>> repo.is_available() <= datetime2isodate()
+        True
+        >>> repo = WaptRepo(name='main',url='http://badwapt/wapt',timeout=1)
+        >>> repo.is_available() is None
+        True
+        """
+        logger.debug(u'Checking availability of %s' % (self.packages_url,))
+        try:
+            req = requests.head(
+                self.packages_url,
+                timeout=self.timeout,
+                proxies=self.proxies,
+                verify=self.verify_cert,
+                headers=default_http_headers()
+                )
+            req.raise_for_status()
+            packages_last_modified = req.headers['last-modified']
+            return httpdatetime2isodate(packages_last_modified)
+        except requests.RequestException as e:
+            logger.debug(u'Repo packages index %s is not available : %s'%(self.packages_url,e))
+            return None
+
+    def _load_packages_index(self):
+        """Try to load index of packages as PackageEntry list from repository
+
+        HTTP Get remote Packages zip file and parses the entries.
+
+        The list of package entries is stored in the packages property.
+
+        Returns
+            dict: list of added or removed packages and create date {'added':list,'removed':list,'last-modified':isodatetime}
+        """
+        if self._packages is None:
+            self._packages = []
+        new_packages = []
+        logger.debug(u'Read remote Packages zip file %s' % self.packages_url)
+        packages_answer = requests.get(self.packages_url,proxies=self.proxies,timeout=self.timeout, verify=self.verify_cert,headers=default_http_headers())
+        packages_answer.raise_for_status()
+
+        # Packages file is a zipfile with one Packages file inside
+        packages_lines = codecs.decode(zipfile.ZipFile(
+              StringIO.StringIO(packages_answer.content)
+            ).read(name='Packages'),'UTF-8').splitlines()
+
+        startline = 0
+        endline = 0
+
+        def add(start,end):
+            if start != end:
+                package = PackageEntry()
+                package.load_control_from_wapt(packages_lines[start:end])
+                logger.info(u"%s (%s)" % (package.package,package.version))
+                package.repo_url = self.repo_url
+                package.repo = self.name
+                new_packages.append(package)
+
+        for line in packages_lines:
+            if line.strip()=='':
+                add(startline,endline)
+                endline += 1
+                startline = endline
+            # add ettribute to current package
+            else:
+                endline += 1
+        # last one
+        add(startline,endline)
+        added = [ p for p in new_packages if not p in self._packages]
+        removed = [ p for p in self._packages if not p in new_packages]
+        self._packages = new_packages
+        self._packages_date = httpdatetime2isodate(packages_answer.headers['last-modified'])
+        return {'added':added,'removed':removed,'last-modified': self.packages_date }
+
+    @property
+    def packages(self):
+        if self._packages is None:
+            self._load_packages_index()
+        return self._packages
+
+    def as_dict(self):
+        result = {
+            'name':self.name,
+            'repo_url':self._repo_url,
+            'proxies':self.proxies,
+            'timeout':self.timeout,
+            }
+        return result
+
+    def download_packages(self,package_requests,target_dir=None,usecache=True,printhook=None):
+        r"""Download a list of packages (requests are of the form packagename (>version) )
+           returns a dict of {"downloaded,"skipped","errors"}
+
+        >>> repo = WaptRemoteRepo(url='http://wapt.tranquil.it/wapt')
+        >>> wapt.download_packages(['tis-firefox','tis-waptdev'],printhook=nullhook)
+        {'downloaded': [u'c:/wapt\\cache\\tis-firefox_37.0.2-9_all.wapt', u'c:/wapt\\cache\\tis-waptdev.wapt'], 'skipped': [], 'errors': []}
+        """
+        if not isinstance(package_requests,(list,tuple)):
+            package_requests = [ package_requests ]
+        if not target_dir:
+            target_dir = tempfile.mkdtemp()
+
+        downloaded = []
+        skipped = []
+        errors = []
+        packages = []
+        for p in package_requests:
+            if isinstance(p,str) or isinstance(p,unicode):
+                mp = self.packages_matching(p)
+                if mp:
+                    packages.append(mp[-1])
+                else:
+                    errors.append((p,u'Unavailable package %s' % (p,)))
+                    logger.critical(u'Unavailable package %s' % (p,))
+            elif isinstance(p,PackageEntry):
+                packages.append(p)
+            else:
+                raise Exception('Invalid package request %s' % p)
+        for entry in packages:
+            packagefilename = entry.filename.strip('./')
+            download_url = entry.repo_url+'/'+packagefilename
+            fullpackagepath = os.path.join(target_dir,packagefilename)
+            skip = False
+            if os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath)>0 and usecache:
+                # check version
+                try:
+                    cached = PackageEntry()
+                    cached.load_control_from_wapt(fullpackagepath,calc_md5=True)
+                    if entry == cached:
+                        if entry.md5sum == cached.md5sum:
+                            skipped.append(fullpackagepath)
+                            logger.info(u"  Use cached package file from " + fullpackagepath)
+                            skip = True
+                        else:
+                            logger.critical(u"Cached file MD5 doesn't match MD5 found in packages index. Discarding cached file")
+                            os.remove(fullpackagepath)
+                except Exception,e:
+                    # error : reload
+                    logger.debug(u'Cache file %s is corrupted, reloading it. Error : %s' % (fullpackagepath,e) )
+
+            if not skip:
+                logger.info(u"  Downloading package from %s" % download_url)
+                try:
+                    def report(received,total,speed,url):
+                        try:
+                            if total>1:
+                                stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received/total, speed)
+                                print stat,
+                            else:
+                                stat = ''
+                        except:
+                            pass
+                    if not printhook:
+                        printhook = report
+
+                    wget(download_url,target_dir,proxies=self.proxies,printhook = printhook,connect_timeout=self.timeout,verify_cert = self.verify_cert)
+                    downloaded.append(fullpackagepath)
+                except Exception as e:
+                    if os.path.isfile(fullpackagepath):
+                        os.remove(fullpackagepath)
+                    logger.critical(u"Error downloading package from http repository, please update... error : %s" % e)
+                    errors.append((download_url,"%s" % e))
+        return {"downloaded":downloaded,"skipped":skipped,"errors":errors}
 
 def update_packages(adir):
-    """Update packages index
+    """Helper function to update a local packages index
 
     This function is used on repositories to rescan all packages and
       update the Packages index.

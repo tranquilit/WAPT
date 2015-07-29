@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.2.3"
+__version__ = "1.3.0"
 
 __all__ = \
 ['EWaptSetupException',
@@ -135,6 +135,7 @@ __all__ = \
  'register_windows_uninstall',
  'registered_organization',
  'registry_delete',
+ 'registry_deletekey',
  'registry_readstring',
  'registry_set',
  'registry_setstring',
@@ -181,7 +182,18 @@ __all__ = \
  'windomainname',
  'winshell',
  'wmi_info',
- 'wmi_info_basic']
+ 'wmi_info_basic',
+ 'datetime2isodate',
+ 'httpdatetime2isodate',
+ 'isodate2datetime',
+ 'time2display',
+ 'hours_minutes',
+ 'fileisodate',
+ 'dateof',
+ 'ensure_list',
+ 'reg_enum_subkeys',
+ 'win_startup_info',
+ ]
 
 import os
 import sys
@@ -226,6 +238,7 @@ import types
 import re
 import threading
 import codecs
+import email.utils
 from waptpackage import PackageEntry
 from waptpackage import Version as Version
 from types import ModuleType
@@ -317,6 +330,24 @@ def ensure_unicode(data):
         else:
             raise
 
+
+def ensure_list(csv_or_list,ignore_empty_args=True,allow_none = False):
+    """if argument is not a list, return a list from a csv string"""
+    if csv_or_list is None:
+        if allow_none:
+            return None
+        else:
+            return []
+
+    if isinstance(csv_or_list,tuple):
+        return list(csv_or_list)
+    elif not isinstance(csv_or_list,list):
+        if ignore_empty_args:
+            return [s.strip() for s in csv_or_list.split(',') if s.strip() != '']
+        else:
+            return [s.strip() for s in csv_or_list.split(',')]
+    else:
+        return csv_or_list
 
 def create_shortcut(path, target='', arguments='', wDir='', icon=''):
     r"""Create a windows shortcut
@@ -514,7 +545,7 @@ def remove_user_desktop_shortcut(label):
         label += '.lnk'
     remove_file(os.path.join(desktop(0),label))
 
-def wgets(url,proxies=None):
+def wgets(url,proxies=None,verify_cert=False):
     """Return the content of a remote resource as a String with a http get request.
 
     Raise an exception if remote data can't be retrieved.
@@ -529,14 +560,20 @@ def wgets(url,proxies=None):
     >>> "msg" in data
     True
     """
-    r = requests.get(url,proxies=proxies,verify=False)
+    r = requests.get(url,proxies=proxies,verify=verify_cert)
     if r.ok:
         return r.text
     else:
         r.raise_for_status()
 
+def default_http_headers():
+    return {
+        'cache-control':'no-cache',
+        'pragma':'no-cache',
+        'user-agent':'wapt/{}'.format(__version__),
+        }
 
-def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_timeout=None):
+def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False):
     r"""Copy the contents of a file from a given URL to a local file.
     >>> respath = wget('http://wapt.tranquil.it/wapt/tis-firefox_28.0.0-1_all.wapt','c:\\tmp\\test.wapt',proxies={'http':'http://proxy:3128'})
     ???
@@ -583,7 +620,7 @@ def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_time
     if not os.path.isdir(dir):
         os.makedirs(dir)
 
-    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout,verify=False)
+    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout,verify=verify_cert,headers=default_http_headers() )
 
     total_bytes = int(httpreq.headers['content-length'])
     # 1Mb max, 1kb min
@@ -1361,6 +1398,44 @@ def reg_delvalue(key,name):
         else:
             raise
 
+
+def reg_enum_subkeys(rootkey):
+    os_encoding=locale.getpreferredencoding()
+    i = 0
+    while True:
+        try:
+            subkey_name = _winreg.EnumKey(rootkey, i).decode(os_encoding)
+            if subkey_name is not None:
+                yield subkey_name
+            i += 1
+        except WindowsError,e:
+            # WindowsError: [Errno 259] No more data is available
+            if e.winerror == 259:
+                break
+            else:
+                raise
+
+def reg_enum_values(rootkey):
+    os_encoding=locale.getpreferredencoding()
+    i = 0
+    while True:
+        try:
+            (name,value,_type) = _winreg.EnumValue(rootkey, i)
+            try:
+                name = name.decode(os_encoding)
+            except:
+                pass
+            if name is not None:
+                yield (name,value,_type)
+            i += 1
+        except WindowsError,e:
+            # WindowsError: [Errno 259] No more data is available
+            if e.winerror == 259:
+                break
+            else:
+                raise
+
+
 def registry_setstring(root,path,keyname,value,type=_winreg.REG_SZ):
     """Set the value of a string key in registry
     the path can be either with backslash or slash
@@ -1438,6 +1513,28 @@ def registry_delete(root,path,valuename):
             return _winreg.DeleteValue(key,valuename)
     except WindowsError as e:
         logger.warning('registry_delete:%s'%ensure_unicode(e))
+    return result
+
+def registry_deletekey(root,path,keyname):
+    """Delete the key under specified registry path and all its values.
+
+    the path can be either with backslash or slash
+    if the key has sub keys, the function fails.
+
+    Args:
+        root    : HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER ...
+        path    : string like "software\\microsoft\\windows\\currentversion"
+                           or "software\\wow6432node\\microsoft\\windows\\currentversion"
+        keyname : Name of key
+
+    """
+    result = False
+    path = path.replace(u'/',u'\\')
+    try:
+        with reg_openkey_noredir(root,path,sam=KEY_WRITE) as key:
+            return _winreg.DeleteKey(key,keyname)
+    except WindowsError as e:
+        logger.warning('registry_deletekey:%s'%ensure_unicode(e))
     return result
 
 
@@ -2164,7 +2261,19 @@ def dmi_info():
     return result
 
 
-def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_BIOS','Win32_NetworkAdapter']):
+def win_startup_info():
+    """Return the application started at boot or login"""
+    result = {'run':[],'common_startup':[]}
+    with reg_openkey_noredir(HKEY_LOCAL_MACHINE,makepath('Software','Microsoft','Windows','CurrentVersion','Run')) as run_key:
+        for (name,value,_type) in reg_enum_values(run_key):
+            result['run'].append({'name':name,'command':value})
+    for lnk in glob.glob(makepath(startup(1),'*.lnk')):
+        sc = winshell.shortcut(lnk)
+        result['common_startup'].append({'name':lnk,'command':'"%s" %s' % (sc.path,sc.arguments)})
+    return result
+
+
+def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_BIOS','Win32_NetworkAdapter','Win32_Printer','Win32_VideoController']):
     """Get WMI machine informations as dictionaries
 
     """
@@ -2174,8 +2283,8 @@ def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_B
     for key in keys:
         cs = getattr(wm,key)()
         if len(cs)>1:
+            na = result[key] = []
             for cs2 in cs:
-                na = result[key] = []
                 na.append({})
                 for k in cs2.properties.keys():
                     prop = cs2.wmi_property(k)
@@ -2239,7 +2348,7 @@ def critical_system_pending_updates():
     return [ update.Title for update in searchResult.Updates if update.MsrcSeverity == 'Critical']
 
 def host_info():
-    """Read main workstation inforamtions, returned as a dict
+    """Read main workstation informations, returned as a dict
 
     Returns:
         dict: main properties of host, networking and windows system
@@ -2290,6 +2399,7 @@ def host_info():
     info['virtual_memory'] = memory_status().ullTotalVirtual
 
     info['current_user'] = get_loggedinusers()
+    info['windows_startup_items'] = win_startup_info()
     return info
 
 
@@ -2751,7 +2861,9 @@ def run_task(name):
     """Launch immediately the Windows Scheduled task
 
     """
-    get_task(name).Run()
+    task = get_task(name)
+    task.Run()
+    return task
 
 
 def task_exists(name):
@@ -2846,11 +2958,11 @@ def create_daily_task(name,cmd,parameters, max_runtime=10, repeat_minutes=None, 
         if start_minute is None:
             tt.StartMinute = int(time.strftime('%M', run_time))
         else:
-            tt.StartMinute = minute
+            tt.StartMinute = start_minute
         if start_hour is None:
             tt.StartHour = int(time.strftime('%H', run_time))
         else:
-            tt.StartHour = hour
+            tt.StartHour = start_hour
         tt.TriggerType = int(taskscheduler.TASK_TIME_TRIGGER_DAILY)
         if repeat_minutes:
             tt.MinutesInterval = repeat_minutes
@@ -3019,7 +3131,7 @@ def need_install(key,min_version=None,force=False):
                 return False
         return True
 
-def install_msi_if_needed(msi,min_version=None,killbefore=[]):
+def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=[0,1603,3010],timeout=300,properties={}):
     """Install silently the supplied msi file, and add the uninstall key to
     global uninstall key list
 
@@ -3035,6 +3147,9 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[]):
                             if not provided, guess it from exe setup file properties.
         kill_before (list of str) : processes to kill before setup, to avoid file locks
                                     issues.
+        accept_returncodes (list of int) : return codes which are acceptable and don't raise exception
+        timeout int) : maximum run time of command in seconds bfore the child is killed and error is raised.
+        properties (dict) : map (key=value) of properties for specific msi installation.
 
     Returns:
         None
@@ -3055,7 +3170,8 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[]):
     if need_install(key,min_version=min_version,force=force):
         if killbefore:
             killalltasks(killbefore)
-        run(r'msiexec /norestart /q /i "%s"' % msi)
+        props = ' '.join(["%s=%s" % (k,v) for (k,v) in properties.iteritems()])
+        run(r'msiexec /norestart /q /i "%s" %s' % (msi,props),accept_returncodes=accept_returncodes,timeout=timeout)
         if not installed_softwares(uninstallkey=key):
             error('MSI %s has been installed but the uninstall key %s can not be found' % (msi,key))
     else:
@@ -3064,7 +3180,7 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[]):
         if 'uninstallkey' in caller_globals and not key in caller_globals['uninstallkey']:
             caller_globals['uninstallkey'].append(key)
 
-def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefore=[]):
+def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefore=[],accept_returncodes=[0,1603,3010],timeout=300):
     """Install silently the supplied setup executable file, and add the uninstall key to
     global uninstallkey list if it is defined.
 
@@ -3102,7 +3218,7 @@ def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefor
     if need_install(key,min_version=min_version,force=force):
         if killbefore:
             killalltasks(killbefore)
-        run(r'"%s" %s' % (exe,silentflags))
+        run(r'"%s" %s' % (exe,silentflags),accept_returncodes=accept_returncodes,timeout=timeout)
         if key and not installed_softwares(uninstallkey=key):
             error('Setup %s has been ran but the uninstall key %s can not be found' % (exe,key))
     else:
@@ -3155,6 +3271,47 @@ def local_desktops():
             else:
                 raise
     return result
+
+def datetime2isodate(adatetime = None):
+    if not adatetime:
+        adatetime = datetime.datetime.now()
+    assert(isinstance(adatetime,datetime.datetime))
+    return adatetime.isoformat()
+
+
+def httpdatetime2isodate(httpdate):
+    """convert a date string as returned in http headers or mail headers to isodate
+    >>> import requests
+    >>> last_modified = requests.head('http://wapt/wapt/Packages',headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
+    >>> len(httpdatetime2isodate(last_modified)) == 19
+    True
+    """
+    return datetime2isodate(datetime.datetime(*email.utils.parsedate(httpdate)[:6]))
+
+
+def isodate2datetime(isodatestr):
+    # we remove the microseconds part as it is not working for python2.5 strptime
+    return datetime.datetime.strptime(isodatestr.split('.')[0] , "%Y-%m-%dT%H:%M:%S")
+
+
+def time2display(adatetime):
+    return adatetime.strftime("%Y-%m-%d %H:%M")
+
+
+def hours_minutes(hours):
+    if hours is None:
+        return None
+    else:
+        return "%02i:%02i" % ( int(hours) , int((hours - int(hours)) * 60.0))
+
+
+def fileisodate(filename):
+    return datetime.datetime.fromtimestamp(os.stat(filename).st_mtime).isoformat()
+
+
+def dateof(adatetime):
+    return adatetime.replace(hour=0,minute=0,second=0,microsecond=0)
+
 
 
 class EWaptSetupException(Exception):

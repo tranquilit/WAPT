@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="1.2.3"
+__version__="1.2.4"
 
 import os,sys
 try:
@@ -49,23 +49,25 @@ import zipfile
 import platform
 import socket
 import requests
+import shutil
 import subprocess
 import tempfile
 import traceback
 import datetime
 import uuid
-from bson.json_util import dumps
-
+import email.utils
+import collections
+import urlparse
+import stat
+import pefile
+import itsdangerous
 from rocket import Rocket
-
 import thread
 import threading
 import Queue
 
 from waptpackage import *
-import pefile
-
-import itsdangerous
+from waptserver_utils import *
 
 # i18n
 from flask.ext.babel import Babel
@@ -92,6 +94,7 @@ parser=OptionParser(usage=usage,version='waptserver.py ' + __version__)
 parser.add_option("-c","--config", dest="configfile", default=os.path.join(wapt_root_dir,'waptserver','waptserver.ini'), help="Config file full path (default: %default)")
 parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
 parser.add_option("-d","--devel", dest="devel", default=False,action='store_true', help="Enable debug mode (for development only)")
+parser.add_option("-w","--without-apache", dest="without_apache", default=False, action='store_true',help="Loglevel (default: warning)")
 
 (options,args)=parser.parse_args()
 
@@ -100,15 +103,6 @@ babel = Babel(app)
 
 # setup logging
 logger = logging.getLogger()
-logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
-
-def setloglevel(logger,loglevel):
-    """set loglevel as string"""
-    if loglevel in ('debug','warning','info','error','critical'):
-        numeric_level = getattr(logging, loglevel.upper(), None)
-        if not isinstance(numeric_level, int):
-            raise ValueError(_('Invalid log level: {}'.format(loglevel)))
-        logger.setLevel(numeric_level)
 
 # force loglevel
 if options.loglevel is not None:
@@ -139,6 +133,7 @@ mongodb_ip = "127.0.0.1"
 
 wapt_folder = ""
 wapt_user = ""
+waptwua_folder = ""
 wapt_password = ""
 server_uuid = ''
 
@@ -177,6 +172,11 @@ if config.has_section('options'):
         if wapt_folder.endswith('/'):
             wapt_folder = wapt_folder[:-1]
 
+    if config.has_option('options', 'waptwua_folder'):
+        waptwua_folder = config.get('options', 'waptwua_folder')
+        if waptwua_folder.endswith('/'):
+            waptwua_folder = waptwua_folder[:-1]
+
     if config.has_option('options', 'clients_connect_timeout'):
         clients_connect_timeout = int(config.get('options', 'clients_connect_timeout'))
 
@@ -206,6 +206,9 @@ else:
 if not wapt_folder:
     wapt_folder = os.path.join(wapt_root_dir,'waptserver','repository','wapt')
 
+if not waptwua_folder:
+    waptwua_folder = wapt_folder+'wua'
+
 waptagent = os.path.join(wapt_folder, 'waptagent.exe')
 waptsetup = os.path.join(wapt_folder, 'waptsetup-tis.exe')
 waptdeploy = os.path.join(wapt_folder, 'waptdeploy.exe')
@@ -230,11 +233,16 @@ if os.path.exists(wapt_folder + '-group')==False:
 ALLOWED_EXTENSIONS = set(['wapt'])
 
 
-def datetime2isodate(adatetime = None):
-    if not adatetime:
-        adatetime = datetime.datetime.now()
-    assert(isinstance(adatetime,datetime.datetime))
-    return adatetime.isoformat()
+utils_setup_db(mongodb_ip, mongodb_port)
+utils_set_devel_mode(options.devel)
+
+try:
+    import wsus
+    wsus.setup(waptwua_folder)
+except Exception as e:
+    logger.error(str(e))
+    wsus = False
+    raise
 
 
 def get_wapt_exe_version(exe):
@@ -254,19 +262,6 @@ def get_wapt_exe_version(exe):
             pe.close()
     return (present, version)
 
-def ensure_list(csv_or_list,ignore_empty_args=True):
-    """if argument is not a list, return a list from a csv string"""
-    if csv_or_list is None:
-        return []
-    if isinstance(csv_or_list,tuple):
-        return list(csv_or_list)
-    elif not isinstance(csv_or_list,list):
-        if ignore_empty_args:
-            return [s.strip() for s in csv_or_list.split(',') if s.strip() != '']
-        else:
-            return [s.strip() for s in csv_or_list.split(',')]
-    else:
-        return csv_or_list
 
 def get_db():
     """Opens a new database connection if there is none yet for the
@@ -478,7 +473,7 @@ def update_host():
             uuid = data["uuid"]
             if uuid:
                 logger.info('Update host %s status'%(uuid,))
-                result = dict(status='OK',message="update_host: No data supplied",result=update_data(data))
+                result = dict(status='OK',message="update_host",result=update_data(data))
 
                 # check if client is reachable
                 if not 'check_hosts_thread' in g or not g.check_hosts_thread.is_alive():
@@ -632,7 +627,6 @@ def upload_waptsetup():
                 try:
                     os.symlink(waptagent, waptsetup)
                 except:
-                    import shutil
                     shutil.copyfile(waptagent, waptsetup)
 
             else:
@@ -790,6 +784,21 @@ def delete_package(filename=""):
 def wapt_listing():
     return render_template('listing.html', dir_listing=os.listdir(wapt_folder))
 
+@app.route('/waptwua/')
+def waptwua():
+    return render_template('listingwua.html', dir_listing=os.listdir(waptwua_folder))
+
+
+@app.route('/waptwua/<path:wsuspackage>')
+def get_wua_package(wsuspackage):
+    fileparts = wsuspackage.split('/')
+    full_path = os.path.join(waptwua_folder,*fileparts[:-1])
+    package_name = secure_filename(fileparts[-1])
+    r =  send_from_directory(full_path, package_name)
+    if 'content-length' not in r.headers:
+        r.headers.add_header('content-length', int(os.path.getsize(os.path.join(full_path,package_name))))
+    return r
+
 @app.route('/wapt/<string:input_package_name>')
 def get_wapt_package(input_package_name):
     global wapt_folder
@@ -838,59 +847,6 @@ def get_group_package(input_package_name):
     return r
 
 
-################ API V2 #########
-def make_response(result = {},success=True,error_code='',msg='',status=200):
-    data = dict(
-            success = success,
-            msg = msg,
-            )
-    if not success:
-        data['error_code'] = error_code
-    else:
-        data['result'] = result
-    return Response(
-            response=dumps(data),
-            status=status,
-            mimetype="application/json")
-
-
-def make_response_from_exception(exception,error_code='',status=200):
-    """Return a error flask http response from an exception object
-        success : False
-        msg : message from exception
-        error_code : classname of exception if not provided
-        status: 200 if not provided
-    """
-    if not error_code:
-        error_code = type(exception).__name__.lower()
-    data = dict(
-            success = False,
-            error_code = error_code
-            )
-    if options.devel:
-        data['msg'] = traceback.format_exc()
-    else:
-        data['msg'] = u"%s" % (exception,)
-    return Response(
-            response=json.dumps(data),
-            status=status,
-            mimetype="application/json")
-
-
-class EWaptMissingHostData(Exception):
-    pass
-
-class EWaptUnknownHost(Exception):
-    pass
-
-class EWaptHostUnreachable(Exception):
-    pass
-
-class EWaptForbiddden(Exception):
-    pass
-
-class EWaptMissingParameter(Exception):
-    pass
 
 def get_ip_port(host_data,recheck=False,timeout=None):
     """Return a dict proto,address,port for the supplied registered host
@@ -1032,6 +988,43 @@ def trigger_update():
             args['notify_user'] = notify_user
             args['uuid'] = uuid
             client_result = requests.get("%(protocol)s://%(address)s:%(port)d/update.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            try:
+                client_result = json.loads(client_result)
+                msg = _(u"Triggered task: {}").format(client_result['description'])
+            except ValueError:
+                if 'Restricted access' in client_result:
+                    raise EWaptForbiddden(client_result)
+                else:
+                    raise Exception(client_result)
+        else:
+            raise EWaptMissingHostData(_("The WAPT service is unreachable."))
+        return make_response(client_result,
+            msg = msg,
+            success = True)
+    except Exception, e:
+        return make_response_from_exception(e)
+
+
+@app.route('/api/v2/trigger_host_inventory')
+@requires_auth
+def trigger_host_inventory():
+    """Proxy the wapt update action to the client"""
+    try:
+        uuid = request.args['uuid']
+        notify_user = request.args.get('notify_user',0)
+        notify_server = request.args.get('notify_server',1)
+
+
+        host_data = hosts().find_one({ "uuid": uuid},fields={'uuid':1,'wapt':1,'host.connected_ips':1})
+        listening_address = get_ip_port(host_data)
+        msg = u''
+        if listening_address and listening_address['address'] and listening_address['port']:
+            logger.info( "Triggering inventory for %s at address %s..." % (uuid,listening_address['address']))
+            args = {}
+            args.update(listening_address)
+            args['notify_user'] = notify_user
+            args['uuid'] = uuid
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/register.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
             try:
                 client_result = json.loads(client_result)
                 msg = _(u"Triggered task: {}").format(client_result['description'])
@@ -1610,6 +1603,58 @@ def usage_statistics():
     return make_response(msg = _('Anomnymous usage statistics'), result = result)
 
 
+@app.route('/api/v2/download_wsusscan')
+def trigger_wsusscan2_download():
+    if wsus:
+        return wsus.trigger_wsusscan2_download()
+    else:
+        raise moooooooooo
+
+@app.route('/api/v2/wsusscan2_status')
+def wsusscan2_status():
+    if wsus:
+        return wsus.wsusscan2_status()
+
+@app.route('/api/v2/wsusscan2_history')
+def wsusscan2_history():
+    if wsus:
+        return wsus.wsusscan2_history()
+
+@app.route('/api/v2/windows_products')
+def windows_products():
+    if wsus:
+        return wsus.windows_products()
+
+@app.route('/api/v2/windows_updates_options',methods=['GET','POST'])
+def windows_updates_options():
+    if wsus:
+        return wsus.windows_updates_options()
+
+@app.route('/api/v2/windows_updates')
+def windows_updates():
+    if wsus:
+        return wsus.windows_updates()
+
+@app.route('/api/v2/windows_updates_urls',methods=['GET','POST'])
+def windows_updates_urls():
+    return wsus.windows_updates_urls()
+
+@app.route('/api/v2/download_windows_update')
+def download_windows_updates():
+    if wsus:
+        return wsus.download_windows_updates()
+
+@app.route('/api/v2/select_windows_update', methods=['GET'])
+def select_windows_update():
+    if wsus:
+        return wsus.select_windows_update()
+
+@app.route('/api/v2/windows_updates_rules',methods=['GET','POST','DELETE'])
+def windows_updates_rules():
+    if wsus:
+        return wsus.windows_updates_rules()
+
+
 def test():
     import flask
     app = flask.Flask(__name__)
@@ -1864,11 +1909,11 @@ def make_mongod_config(wapt_root_dir):
     dst_file.write(config_string)
     dst_file.close()
 
-def install_windows_service(args):
+def install_windows_service():
     """Setup waptserver, waptmongodb et waptapache as a windows Service managed by nssm
     >>> install_windows_service([])
     """
-    install_apache_service = '--without-apache' not in args
+    install_apache_service = options.without_apache #'--without-apache' not in options
 
     # register mongodb server
     make_mongod_config(wapt_root_dir)
@@ -1902,17 +1947,22 @@ def install_windows_service(args):
 
 ##############
 if __name__ == "__main__":
-    if len(sys.argv)>1 and sys.argv[1] == 'doctest':
+    if args and args[0] == 'doctest':
         import doctest
         sys.exit(doctest.testmod())
 
-    if len(sys.argv)>1 and sys.argv[1] == 'install':
+    if args and args[0] == 'install':
         # pass optional parameters along with the command
-        install_windows_service(sys.argv[1:])
+        install_windows_service()
+        sys.exit(0)
+
+    if args and args[0] == 'test':
+        # pass optional parameters along with the command
+        test()
         sys.exit(0)
 
     if options.devel:
-        app.run(host='0.0.0.0',port=30880,debug=False)
+        app.run(host='0.0.0.0',port=30880,debug=options.devel)
     else:
         port = waptserver_port
         server = Rocket(('127.0.0.1', port), 'wsgi', {"wsgi_app":app})

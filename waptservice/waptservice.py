@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.2.4"
+__version__ = "1.3.0"
 
 import time
 import sys
@@ -446,7 +446,7 @@ def check_open_port(portnumber=8088):
                 #WinXP 2003
                 if 'waptservice' not in setuphelpers.run_notfatal('netsh firewall show portopening'):
                     logger.info(u"Adding a firewall rule to open port %s"%portnumber)
-                    setuphelpers.run_notfatal("""netsh.exe firewall add portopening name="waptservice %s" port=%s protocol=TCP"""%(portnumber,portnumber))
+                    setuphelpers.run_notfatal("""netsh.exe firewall add portopening name="waptservice %s" port=%s protocol=TCP profile=ALL"""%(portnumber,portnumber))
                 else:
                     logger.info(u"port %s already opened, skipping firewall configuration"%(portnumber,))
         else:
@@ -455,7 +455,7 @@ def check_open_port(portnumber=8088):
                 if 'waptservice' not in setuphelpers.run_notfatal('netsh advfirewall firewall show rule name="waptservice %s"'%(portnumber,)):
                     logger.info(u"No port opened for waptservice, opening port %s"%portnumber)
                     #win Vista and higher
-                    setuphelpers.run_notfatal("""netsh advfirewall firewall add rule name="waptservice %s" dir=in action=allow protocol=TCP localport=%s remoteip=%s,LocalSubnet """%(portnumber,portnumber,','.join(waptconfig.authorized_callers_ip)))
+                    setuphelpers.run_notfatal("""netsh advfirewall firewall add rule name="waptservice %s" dir=in action=allow protocol=TCP localport=%s remoteip=%s """%(portnumber,portnumber,','.join(waptconfig.authorized_callers_ip)))
                 else:
                     logger.info(u"port %s already opened, skipping firewall configuration"%(portnumber,))
     except Exception as e:
@@ -773,7 +773,7 @@ def package_icon():
         """Get icon from local cache or remote wapt directory, returns local filename"""
         icon_local_filename = os.path.join(icon_local_cache,package+'.png')
         if (not os.path.isfile(icon_local_filename) or os.path.getsize(icon_local_filename)<10):
-            if wapt().repositories[0].last_known_repo_url():
+            if wapt().repositories[0].repo_url:
                 proxies = wapt().repositories[0].proxies
                 repo_url = wapt().repositories[0].repo_url
                 timeout = wapt().repositories[0].timeout
@@ -1045,7 +1045,7 @@ def disable():
 
 @app.route('/register')
 @app.route('/register.json')
-@allow_local_auth
+@allow_waptserver_or_local_auth
 def register():
     logger.info(u"register computer")
     notify_user = int(request.args.get('notify_user','0')) == 1
@@ -1237,6 +1237,55 @@ def cancel_task():
         return render_template('default.html',data=data)
 
 
+@app.route('/wua_installed_updates')
+@app.route('/wua_installed_updates.json')
+@allow_waptserver_or_local_unauth
+def wua_installed_updates():
+    data = [u for u in json.loads(wapt().read_param('waptwua.updates') or '[]') if u['installed']]
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('waptwua.html',data=data,
+            title=_('Installed Windows Updates'),
+            waptwua_last_scan_date = wapt().read_param('waptwua.last_scan_date'),
+            waptwua_wsusscn2cab_date = wapt().read_param('waptwua.wsusscn2cab_date'),
+            waptwua_last_install_result = wapt().read_param('waptwua.last_install_result'),
+            waptwua_last_install_date = wapt().read_param('waptwua.last_install_date'))
+
+
+@app.route('/wua_pending_updates')
+@app.route('/wua_pending_updates.json')
+@allow_waptserver_or_local_unauth
+def wua_pending_updates():
+    data = [u for u in json.loads(wapt().read_param('waptwua.updates') or '[]') if not u['installed'] and not u['hidden']]
+
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('waptwua.html',data=data,
+            title=_('Pending Windows Updates'),
+            waptwua_last_scan_date = wapt().read_param('waptwua.last_scan_date'),
+            waptwua_wsusscn2cab_date = wapt().read_param('waptwua.wsusscn2cab_date'),
+            waptwua_last_install_result = wapt().read_param('waptwua.last_install_result'),
+            waptwua_last_install_date = wapt().read_param('waptwua.last_install_date'))
+
+@app.route('/wua_discarded_updates')
+@app.route('/wua_discarded_updates.json')
+@allow_waptserver_or_local_unauth
+def wua_discarded_updates():
+    data = [u for u in json.loads(wapt().read_param('waptwua.updates') or '[]') if not u['installed'] and u['hidden']]
+
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('waptwua.html',data=data,
+            title=_('Discarded Windows Updates'),
+            waptwua_last_scan_date = wapt().read_param('waptwua.last_scan_date'),
+            waptwua_wsusscn2cab_date = wapt().read_param('waptwua.wsusscn2cab_date'),
+            waptwua_last_install_result = wapt().read_param('waptwua.last_install_result'),
+            waptwua_last_install_date = wapt().read_param('waptwua.last_install_date'))
+
+
 class EventsPrinter:
     '''EventsPrinter class which serves to emulates a file object and logs
        whatever it gets sent to a broadcast object at the INFO level.'''
@@ -1362,6 +1411,8 @@ class WaptTask(object):
             description = u"{}".format(self),
             pidlist = u"{0}".format(self.external_pids),
             notify_user = self.notify_user,
+            notify_server_on_start = self.notify_server_on_start,
+            notify_server_on_finish = self.notify_server_on_finish,
             ))
 
     def as_json(self):
@@ -1796,6 +1847,38 @@ class WaptPackageForget(WaptTask):
 
     def __unicode__(self):
         return __(u"Forget {packagenames} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagenames=self.packagenames)
+
+
+class WaptWUAScan(WaptTask):
+    def __init__(self):
+        super(WaptWUAScan,self).__init__()
+
+    def _run(self):
+        if setuphelpers.task_exists('waptwua_scan'):
+            self.result = setuphelpers.run_task('waptwua_scan')
+            self.summary = __(u"waptwua_scan task launched.")
+        else:
+            self.result = None
+            self.summary = __(u"WAPTWua_scan task not setup.")
+
+    def __unicode__(self):
+        return __(u"Launch WAPTWua windows updates scan").format(classname=self.__class__.__name__,id=self.id)
+
+
+class WaptWUAInstall(WaptTask):
+    def __init__(self):
+        super(WaptWUAInstall,self).__init__()
+
+    def _run(self):
+        if setuphelpers.task_exists('waptwua_install'):
+            self.result = setuphelpers.run_task('waptwua_install')
+            self.summary = __(u"WAPTWua_install task launched.")
+        else:
+            self.result = None
+            self.summary = __(u"WAPTWua_install task not setup.")
+
+    def __unicode__(self):
+        return __(u"Launch WAPTWua pending windows updates").format(classname=self.__class__.__name__,id=self.id)
 
 
 def firewall_running():

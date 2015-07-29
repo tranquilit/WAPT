@@ -25,6 +25,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="2"/>
       <RevisionNr Value="4"/>
+      <BuildNr Value="8"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -76,7 +77,7 @@
         <PackageName Value="LCL"/>
       </Item11>
     </RequiredPackages>
-    <Units Count="18">
+    <Units Count="19">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -171,50 +172,58 @@
         <UnitName Value="uvisgroupchoice"/>
       </Unit11>
       <Unit12>
-        <Filename Value="uviseditgroup.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="VisEditGroup"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uviseditgroup"/>
-      </Unit12>
-      <Unit13>
         <Filename Value="uviswaptdeploy.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="viswaptdeploy"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviswaptdeploy"/>
-      </Unit13>
-      <Unit14>
+      </Unit12>
+      <Unit13>
         <Filename Value="uvishostsupgrade.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisHostsUpgrade"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvishostsupgrade"/>
-      </Unit14>
-      <Unit15>
+      </Unit13>
+      <Unit14>
         <Filename Value="uvisapropos.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisApropos"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisAPropos"/>
-      </Unit15>
-      <Unit16>
+      </Unit14>
+      <Unit15>
         <Filename Value="uvisimportpackage.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisImportPackage"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisImportPackage"/>
-      </Unit16>
-      <Unit17>
+      </Unit15>
+      <Unit16>
         <Filename Value="uwaptconsoleres.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uWaptConsoleRes"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="uviswuagroup.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisWUAGroup"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uVisWUAGroup"/>
       </Unit17>
+      <Unit18>
+        <Filename Value="uviswaptwuaproducts.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisWUAProducts"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uVisWAPTWUAProducts"/>
+      </Unit18>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

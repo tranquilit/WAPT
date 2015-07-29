@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+{% block content %}
+{% macro link(href,desc='') -%}
+	{% if desc == '' %}
+		<a href={{href}}>{{href}}</a>
+	{% else%}
+		<a href={{href}}>{{desc}}</a>
+	{%endif%}
+{%- endmacro%}
+<h1>Windows Updates status</h1>
+<ul>
+<li>Last scan date : {{waptwua_last_scan_date}}</li>
+<li>Date of updates database : {{waptwua_wsusscn2cab_date}} </li>
+<li>Last install result : {{waptwua_last_install_result}}</li>
+<li>Last install date :  {{waptwua_last_install_date}}</li>
+</ul>
+
+<input onclick="location.href='wua_installed_updates'" type="button" name="wua_installed_updates" value="{{ _('Installed Windows updates') }}"/>
+<input onclick="location.href='wua_pending_updates'" type="button" name="wua_pending_updates" value="{{ _('Pending Windows updates') }}"/>
+<input onclick="location.href='wua_discarded_updates'" type="button" name="wua_discarded_updates" value="{{ _('Discarded Windows updates') }}"/>
+<h1>{{ title }}</h1>
+{% set cols = ['kbids','title','severity','uuid','changetime','downloaded'] %}
+{% set cols_header = [_('KB'),_('Title'),_('Severity'),_('UUID'),_('Date'),_('Downloaded')] %}
+<table border=1 cellspacing=0 cellpadding=4 class=sample>
+	<tr>
+    	{% for c in cols_header %}
+    		<th>{{c or "###"}}</th>
+    	{% endfor %}
+    </tr>
+	{% for p in data %}
+    	<tr>
+		{% for c in cols %}
+		<td>
+		{%if c == 'kbids' %}
+		{{link('https://support.microsoft.com/kb/'+p[c][0],'KB'+p[c][0] )}}
+		{%else%}
+			{{p[c] or ""}}
+		{%endif%}
+		</td>	
+	    {% endfor %}
+	</tr>
+    {% endfor %}
+</table>
+{% endblock %}

@@ -132,6 +132,7 @@ resourcestring
   rsDlCanceled = 'Download canceled.';
   rsIgnoredPackages = 'Warning : couldn''t find package(s) %s ; ignoring them.';
   rsIgnoredConfictingPackages = 'Warning : couldn''t find package(s) %s ; conflicting package(s) have been ignored.';
+  rsDownloadCurrupted = 'Downloaded file %s is corrupted. MD5 mismatch.';
 
   { Messages dans uVisEditPackage.pas }
   rsInputPubKeyPath = 'Please input path to public key';

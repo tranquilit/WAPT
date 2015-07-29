@@ -33,7 +33,7 @@
     exported functions instead of local Wapt functions (except crypto signatures)
 
 """
-__version__ = "1.2.3"
+__version__ = "1.3.0"
 
 import sys,os
 import shutil
@@ -103,7 +103,7 @@ def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wa
     return os.path.abspath(os.path.join(destination,os.path.basename(outputfile)))
 
 
-def upload_wapt_setup(wapt,waptsetup_path, wapt_server_user, wapt_server_passwd):
+def upload_wapt_setup(wapt,waptsetup_path, wapt_server_user, wapt_server_passwd,verify_cert=False):
     """Upload waptsetup.exe to wapt repository
     >>> wapt = common.Wapt(config_filename="c:/users/htouvet/AppData/Local/waptconsole/waptconsole.ini")
     >>> upload_wapt_setup(wapt,'c:/tranquilit/wapt/waptsetup/waptsetup.exe', 'admin', 'password')
@@ -112,7 +112,7 @@ def upload_wapt_setup(wapt,waptsetup_path, wapt_server_user, wapt_server_passwd)
     auth =  (wapt_server_user, wapt_server_passwd)
     with open(waptsetup_path,'rb') as afile:
         req = requests.post("%s/upload_waptsetup" % (wapt.waptserver.server_url,),files={'file':afile},proxies=wapt.waptserver.proxies,
-            verify=False,auth=auth,headers=common.default_http_headers())
+            verify=verify_cert,auth=auth,headers=common.default_http_headers())
         req.raise_for_status()
         res = json.loads(req.content)
     return res
@@ -145,27 +145,18 @@ def diff_computer_wapt_ad(wapt,wapt_server_user='admin',wapt_server_passwd=None)
     return result
 
 
-def update_external_repo(waptconfigfile,search_string):
+def update_external_repo(repourl,search_string):
     """Get a list of entries from external templates public repository matching search_string
     >>> firefox = update_tis_repo(r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini","tis-firefox-esr")
     >>> isinstance(firefox,list) and firefox[-1].package == 'tis-firefox-esr'
     True
     """
-    wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
-    wapt.dbpath = r':memory:'
-    wapt.use_hostpackages = False
-    repo = wapt.config.get('global','templates_repo_url')
-    wapt.repositories[0].repo_url = repo if repo else 'http://wapt.tranquil.it/wapt'
-    if wapt.use_http_proxy_for_templates:
-        wapt.repositories[0].proxies = wapt.proxies
-    else:
-        wapt.proxies = {'http':None,'https':None}
-    wapt.update(register=False)
-    return wapt.search(search_string)
+    repo = WaptRepo(url=repourl)
+    return repo.search(search_string)
 
 
 def get_packages_filenames(waptconfigfile,packages_names):
-    """Returns list of package filenames (latest version) matching comma separated list of packages names and their dependencies
+    """Returns list of package filenames (latest version) and md5 matching comma separated list of packages names and their dependencies
         helps to batch download a list of selected packages using tools like curl or wget
 
     Args:
@@ -188,16 +179,16 @@ def get_packages_filenames(waptconfigfile,packages_names):
         wapt.repositories[0].proxies = {'http':None,'https':None}
     # be sure to be up to date
     wapt.update(register=False)
-    packages_names = common.ensure_list(packages_names)
+    packages_names = ensure_list(packages_names)
     for name in packages_names:
         entries = wapt.is_available(name)
         if entries:
             pe = entries[-1]
-            result.append(pe.filename)
+            result.append((pe.filename,pe.md5sum,))
             if pe.depends:
-                for fn in get_packages_filenames(waptconfigfile,pe.depends):
+                for (fn,md5) in get_packages_filenames(waptconfigfile,pe.depends):
                     if not fn in result:
-                        result.append(fn)
+                        result.append((fn,md5,))
     return result
 
 
@@ -235,7 +226,7 @@ def duplicate_from_external_repo(waptconfigfile,package_filename):
     package =  res['package']
     if package.depends:
         newdepends = []
-        depends = common.ensure_list(package.depends)
+        depends = ensure_list(package.depends)
         for dependname in depends:
             newname = rename_package(dependname,prefix)
             newdepends.append(newname)
@@ -246,7 +237,7 @@ def duplicate_from_external_repo(waptconfigfile,package_filename):
     # renames conflicts
     if package.conflicts:
         newconflicts = []
-        conflicts = common.ensure_list(package.conflicts)
+        conflicts = ensure_list(package.conflicts)
         for dependname in conflicts:
             newname = rename_package(dependname,prefix)
             newconflicts.append(newname)
@@ -287,11 +278,11 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
     wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
     wapt.dbpath = r':memory:'
     wapt.use_hostpackages = True
-    hosts_list = common.ensure_list(hosts_list)
-    append_depends = common.ensure_list(append_depends)
-    remove_depends = common.ensure_list(remove_depends)
-    append_conflicts = common.ensure_list(append_conflicts)
-    remove_conflicts = common.ensure_list(remove_conflicts)
+    hosts_list = ensure_list(hosts_list)
+    append_depends = ensure_list(append_depends)
+    remove_depends = ensure_list(remove_depends)
+    append_conflicts = ensure_list(append_conflicts)
+    remove_conflicts = ensure_list(remove_conflicts)
 
     result = []
     sources = []

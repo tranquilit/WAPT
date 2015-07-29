@@ -24,6 +24,7 @@ Source: "..\lib\*"; DestDir: "{app}\lib"; Flags: createallsubdirs recursesubdirs
 ; wapt sources
 Source: "..\common.py"; DestDir: "{app}"; 
 Source: "..\waptpackage.py"; DestDir: "{app}"; 
+Source: "..\waptwua.py"; DestDir: "{app}"; 
 Source: "..\wapt-get.py"; DestDir: "{app}"; 
 Source: "..\keyfinder.py"; DestDir: "{app}"; 
 Source: "..\setuphelpers.py"; DestDir: "{app}"; 
