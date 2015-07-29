@@ -1265,6 +1265,29 @@ def windows_updates_rules():
     return make_response(msg = _('Win updates rules'),result = result)
 
 
+def wuredist_extract_and_fetch(wuredist, tmpdir):
+    subprocess.check_output(['ionice', '-c3', 'cabextract', '-d', tmpdir, wuredist])
+    wuredist_xml = os.path.join(tmpdir, 'wuredist.xml')
+    if not os.path.exists(wuredist_xml):
+        raise Exception('wuredist.cab does not contain a wuredist.xml file')
+
+    tree = ET.parse(wuredist_xml)
+    root = tree.getroot()
+    cablist = root.find('StandaloneRedist').findall('architecture')
+    for cab in cablist:
+        url = cab.get('downloadUrl')
+        url_parts = urlparse.urlparse(url)
+        if url_parts.netloc not in ['download.windowsupdate.com','www.download.windowsupdate.com']:
+            raise Exception('Unauthorized location')
+        fileparts = url_parts.path.split('/')
+        target = os.path.join(waptwua_folder,*fileparts)
+        if not os.path.isfile(target):
+            folder = os.path.join(waptwua_folder,*fileparts[:-1])
+            if not os.path.isdir(folder):
+                os.makedirs(folder)
+            wget(url, target)
+
+
 #@app.route('/api/v2/download_wuredist')
 def download_wuredist():
     cab_url = 'http://update.microsoft.com/redist/wuredist.cab'
@@ -1334,10 +1357,11 @@ def download_wuredist():
             stats['status'] = 'parsing'
             #wuredist_history.save(stats)
 
-            # TODO
-            # extract data from wuredist
-            # parse data
-            # fetch newer windows update agents
+            tmpdir = os.path.join(waptwua_folder, 'wuredist.tmp')
+            if os.path.exists(tmpdir):
+                shutil.rmtree(tmpdir)
+            mkdir_p(tmpdir)
+            wuredist_extract_and_fetch(wuredist_filename, tmpdir)
 
             stats['status'] = 'finished'
             #wuredist_history.save(stats)
