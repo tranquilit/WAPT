@@ -982,6 +982,9 @@ def windows_updates():
     wsus_updates = utils_get_db().wsus_updates
     query = {}
 
+    if len(request.args) == 0:
+        return make_response(msg='Error, no request filter provided', success=False)
+
     if 'has_kb' in request.args and request.args['has_kb']:
         query["kb_article_id"]={'$exists':True}
     if 'kb' in request.args:
