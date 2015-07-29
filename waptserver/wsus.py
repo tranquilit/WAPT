@@ -1002,6 +1002,12 @@ def windows_updates():
     if not got_filter:
         return make_response(msg='Error, no valid request filter provided', success=False)
 
+    # collect invalid parameters, for logging and debugging purposes
+    unknown_filters = []
+    for arg in request.args.keys():
+        if arg not in supported_filters:
+            unknown_filters.append(arg)
+
     if filters['has_kb']:
         query["kb_article_id"]={'$exists':True}
     if filters['kb']:
@@ -1030,7 +1036,7 @@ def windows_updates():
 
     result = wsus_updates.find(query)
     cnt = result.count()
-    return make_response(msg = _('Windows Updates, filter: %(query)s, count: %(cnt)s',query=query,cnt=cnt),result = result)
+    return make_response(msg = _('Windows Updates, filter: %(query)s, count: %(cnt)s, unknown params: %(unknown)s',query=query,cnt=cnt,unknown=unknown_filters),result = result)
 
 
 #@app.route('/api/v2/windows_updates_urls',methods=['GET','POST'])
