@@ -11,6 +11,7 @@ __all__ = [
     'download_windows_updates',
     'select_windows_update',
     'windows_updates_rules',
+    'windows_updates_urls',
 ]
 
 import os
@@ -1040,7 +1041,7 @@ def windows_updates():
 
 
 #@app.route('/api/v2/windows_updates_urls',methods=['GET','POST'])
-def windows_updates_urls(request, logger):
+def windows_updates_urls():
     """Return list of URL of files to download for the selected update_id
 
     Args:
