@@ -1040,7 +1040,7 @@ def windows_updates():
     return make_response(msg = _('Windows Updates, filter: %(query)s, count: %(cnt)s, unknown params: %(unknown)s',query=query,cnt=cnt,unknown=unknown_filters),result = result)
 
 
-#@app.route('/api/v2/windows_updates_urls',methods=['GET','POST'])
+#@app.route('/api/v2/windows_updates_urls',methods=['GET'])
 def windows_updates_urls():
     """Return list of URL of files to download for the selected update_id
 
@@ -1049,21 +1049,30 @@ def windows_updates_urls():
     Returns:
         urls
     """
-    wsus_updates = utils_get_db().wsus_updates
-    def get_payloads(id):
-        result = []
-        updates = [ u for u in wsus_updates.find({'update_id':id},{'prereqs':1,'payload_files':1})]
-        if updates:
-            for update in updates:
-                result.extend(update.get('payload_files',[]))
-                for req in update.get('prereqs',[]):
-                    result.extend(get_payloads(req))
-        return result
 
-    update_id = request.args['update_id']
-    files_id = get_payloads(update_id)
-    result = utils_get_db().wsus_locations.find({'id':files_id},{'url':1})
-    cnt = result.count()
+    try:
+        update_id = request.args.get('update_id')
+        if not update_id:
+            return make_response(msg='Missing update_id parameter', success=False)
+        wsus_updates = utils_get_db().wsus_updates
+        def get_payloads(id):
+            result = []
+            updates = [ u for u in wsus_updates.find({'update_id':id},{'prereqs':1,'payload_files':1})]
+            if updates:
+                for update in updates:
+                    result.extend(update.get('payload_files',[]))
+                    for req in update.get('prereqs',[]):
+                        result.extend(get_payloads(req))
+            return result
+
+        update_id = request.args['update_id']
+        files_id = get_payloads(update_id)
+        result = utils_get_db().wsus_locations.find({'id':files_id},{'url':1})
+        cnt = result.count()
+        logger.info('returning from windows_updates_urls')
+    except Exception as e:
+        logger.error('Got an exception in windows_updates_urls: %s', str(e))
+        return make_response_from_exception(e)
     return make_response(msg = _('Downloads for Windows Updates %(update_id)s, count: %(cnt)s',update_id=update_id,cnt=cnt),result = files_id)
 
 
