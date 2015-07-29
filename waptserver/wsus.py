@@ -168,6 +168,8 @@ def download_wsusscan(params={}):
             stats['status'] = 'checking'
             wsusscan2_history.save(stats)
 
+            # TODO: verify cryptographic signatures, cabextract -t is not enough
+
             # check integrity
             if sys.platform == 'win32':
                 cablist = subprocess.check_output('expand -D "%s"' % tmp_filename, shell = True).decode('cp850').splitlines()
