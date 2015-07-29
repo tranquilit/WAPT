@@ -1352,8 +1352,11 @@ def download_wuredist():
             cleanup_on_error = True
             if dryrun:
                 try:
+                    if os.path.exists(tmp_filename):
+                        os.unlink(tmp_filename)
                     os.link(wuredist_filename, tmp_filename)
-                except:
+                except Exception as e:
+                    logger.error('download_wuredist: exception %s', str(e))
                     pass
             else:
                 wget(cab_url, tmp_filename)
