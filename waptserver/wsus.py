@@ -1328,7 +1328,7 @@ def download_wuredist():
             cleanup_on_error = True
             if dryrun:
                 try:
-                    os.link(wsus_filename, tmp_filename)
+                    os.link(wuredist_filename, tmp_filename)
                 except:
                     pass
             else:
