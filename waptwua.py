@@ -512,9 +512,12 @@ class WaptWUA(object):
 
         allowed_severity = self.allowed_severities is None or update.MsrcSeverity in self.allowed_severities
 
-        return not forbidden_kb and (self.forbidden_updates is None or not update.Identity.UpdateID in self.forbidden_updates) and allowed_classification and \
-            ( allowed_severity or
-              (self.allowed_updates is not None and (update.Identity.UpdateID in self.allowed_updates or allowed_kb)))
+        return not forbidden_kb and \
+                (self.forbidden_updates is None or not update.Identity.UpdateID in self.forbidden_updates) and \
+                (
+                    (allowed_classification and allowed_severity) or
+                    (self.allowed_updates is not None and (update.Identity.UpdateID in self.allowed_updates or allowed_kb))
+                )
 
     def scan_updates_status(self):
         """Check all updates and filter out which one should be installed"""
