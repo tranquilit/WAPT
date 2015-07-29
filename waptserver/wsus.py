@@ -1273,8 +1273,11 @@ def download_wuredist():
 
     # should we remove the tmp filename when we get an error?
     cleanup_on_error = False
+
+    # TODO: implement parameters
     force = False
     dryrun = False
+
     stats = {}
 
     if not force and os.path.isfile(tmp_filename):
