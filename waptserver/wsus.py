@@ -1297,9 +1297,8 @@ def download_wuredist():
     # should we remove the tmp filename when we get an error?
     cleanup_on_error = False
 
-    # TODO: implement parameters
-    force = False
-    dryrun = False
+    force = request.args.get('force', False)
+    dryrun = request.args.get('dryrun', False)
 
     stats = {}
 
