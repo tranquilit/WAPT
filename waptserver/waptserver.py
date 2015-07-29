@@ -1635,7 +1635,7 @@ def windows_updates():
     if wsus:
         return wsus.windows_updates()
 
-@app.route('/api/v2/windows_updates_urls',methods=['GET','POST'])
+@app.route('/api/v2/windows_updates_urls',methods=['GET'])
 def windows_updates_urls():
     return wsus.windows_updates_urls()
 
@@ -1653,6 +1653,11 @@ def select_windows_update():
 def windows_updates_rules():
     if wsus:
         return wsus.windows_updates_rules()
+
+@app.route('/api/v2/download_wuredist')
+def download_wuredist():
+    if wsus:
+        return wsus.download_wuredist()
 
 
 def test():

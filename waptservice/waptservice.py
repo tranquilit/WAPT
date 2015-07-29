@@ -87,6 +87,8 @@ import setuphelpers
 from setuphelpers import Version
 from waptpackage import PackageEntry
 
+from waptwua import WaptWUA
+
 from gettext import gettext
 
 # i18n
@@ -1247,10 +1249,12 @@ def wua_installed_updates():
     else:
         return render_template('waptwua.html',data=data,
             title=_('Installed Windows Updates'),
-            waptwua_last_scan_date = wapt().read_param('waptwua.last_scan_date'),
-            waptwua_wsusscn2cab_date = wapt().read_param('waptwua.wsusscn2cab_date'),
-            waptwua_last_install_result = wapt().read_param('waptwua.last_install_result'),
-            waptwua_last_install_date = wapt().read_param('waptwua.last_install_date'))
+            waptwua_last_scan_date = wapt().read_param('waptwua.last_scan_date','none'),
+            waptwua_wsusscn2cab_date = wapt().read_param('waptwua.wsusscn2cab_date','none'),
+            waptwua_last_install_result = wapt().read_param('waptwua.last_install_result','none'),
+            waptwua_last_install_date = wapt().read_param('waptwua.last_install_date','none'),
+            waptwua_windows_updates_rules = wapt().read_param('waptwua.windows_updates_rules','none'),
+            )
 
 
 @app.route('/wua_pending_updates')
@@ -1264,10 +1268,12 @@ def wua_pending_updates():
     else:
         return render_template('waptwua.html',data=data,
             title=_('Pending Windows Updates'),
-            waptwua_last_scan_date = wapt().read_param('waptwua.last_scan_date'),
-            waptwua_wsusscn2cab_date = wapt().read_param('waptwua.wsusscn2cab_date'),
-            waptwua_last_install_result = wapt().read_param('waptwua.last_install_result'),
-            waptwua_last_install_date = wapt().read_param('waptwua.last_install_date'))
+            waptwua_last_scan_date = wapt().read_param('waptwua.last_scan_date','none'),
+            waptwua_wsusscn2cab_date = wapt().read_param('waptwua.wsusscn2cab_date','none'),
+            waptwua_last_install_result = wapt().read_param('waptwua.last_install_result','none'),
+            waptwua_last_install_date = wapt().read_param('waptwua.last_install_date','none'),
+            waptwua_windows_updates_rules = wapt().read_param('waptwua.windows_updates_rules','none'),
+            )
 
 @app.route('/wua_discarded_updates')
 @app.route('/wua_discarded_updates.json')
@@ -1280,10 +1286,57 @@ def wua_discarded_updates():
     else:
         return render_template('waptwua.html',data=data,
             title=_('Discarded Windows Updates'),
-            waptwua_last_scan_date = wapt().read_param('waptwua.last_scan_date'),
-            waptwua_wsusscn2cab_date = wapt().read_param('waptwua.wsusscn2cab_date'),
-            waptwua_last_install_result = wapt().read_param('waptwua.last_install_result'),
-            waptwua_last_install_date = wapt().read_param('waptwua.last_install_date'))
+            waptwua_last_scan_date = wapt().read_param('waptwua.last_scan_date','none'),
+            waptwua_wsusscn2cab_date = wapt().read_param('waptwua.wsusscn2cab_date','none'),
+            waptwua_last_install_result = wapt().read_param('waptwua.last_install_result','none'),
+            waptwua_last_install_date = wapt().read_param('waptwua.last_install_date','none'),
+            waptwua_windows_updates_rules = wapt().read_param('waptwua.windows_updates_rules','none'),
+            )
+
+
+
+@app.route('/waptwua_scan', methods=['GET'])
+@allow_waptserver_or_local_unauth
+def waptwua_scan():
+    logger.info(u"Launch WaptWUA scan missing updates")
+    force=int(request.args.get('force','0')) == 1
+    notify_user = int(request.args.get('notify_user','0')) == 1
+    data = []
+    data.append(task_manager.add_task(WaptWUAScan(
+        windows_updates_rules = json.loads(wapt().read_param('waptwua.windows_updates_rules','{}'))),notify_user=notify_user).as_dict())
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('install.html',data=data)
+
+@app.route('/waptwua_download', methods=['GET'])
+@allow_waptserver_or_local_unauth
+def waptwua_download():
+    logger.info(u"Launch WaptWUA download updates")
+    force=int(request.args.get('force','0')) == 1
+    notify_user = int(request.args.get('notify_user','0')) == 1
+    data = []
+    data.append(task_manager.add_task(WaptWUADownload(
+        windows_updates_rules = json.loads(wapt().read_param('waptwua.windows_updates_rules','{}'))),notify_user=notify_user).as_dict())
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('install.html',data=data)
+
+@app.route('/waptwua_install', methods=['GET'])
+@allow_waptserver_or_local_unauth
+def waptwua_install():
+    logger.info(u"Launch WaptWUA scan download and install missing updates")
+    force=int(request.args.get('force','0')) == 1
+    notify_user = int(request.args.get('notify_user','0')) == 1
+    data = []
+    data.append(task_manager.add_task(WaptWUAInstall(
+        windows_updates_rules = json.loads(wapt().read_param('waptwua.windows_updates_rules','{}'))
+        ),notify_user=notify_user).as_dict())
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('install.html',data=data)
 
 
 class EventsPrinter:
@@ -1850,35 +1903,44 @@ class WaptPackageForget(WaptTask):
 
 
 class WaptWUAScan(WaptTask):
-    def __init__(self):
+    def __init__(self,windows_updates_rules = {}):
         super(WaptWUAScan,self).__init__()
+        self.windows_updates_rules = windows_updates_rules
 
     def _run(self):
-        if setuphelpers.task_exists('waptwua_scan'):
-            self.result = setuphelpers.run_task('waptwua_scan')
-            self.summary = __(u"waptwua_scan task launched.")
-        else:
-            self.result = None
-            self.summary = __(u"WAPTWua_scan task not setup.")
+        wua = WaptWUA(self.wapt,windows_updates_rules = self.windows_updates_rules,filter="Type!='Driver'")
+        self.result = (installed,pending,discarded) = wua.scan_updates_status()
+        self.summary = "Windows updates : already installed: %s, pending: %s, discarded: %s" % (installed,pending,discarded)
 
     def __unicode__(self):
-        return __(u"Launch WAPTWua windows updates scan").format(classname=self.__class__.__name__,id=self.id)
+        return __(u"Scans WAPTWua Windows Updates  with rules %{rules}s").format(classname=self.__class__.__name__,id=self.id,rules=self.windows_updates_rules)
+
+class WaptWUADownload(WaptTask):
+    def __init__(self,windows_updates_rules = {}):
+        super(WaptWUADownload,self).__init__()
+        self.windows_updates_rules = windows_updates_rules
+
+    def _run(self):
+        wua = WaptWUA(self.wapt,windows_updates_rules = self.windows_updates_rules,filter="Type!='Driver'")
+        self.result = wua.download_updates()
+        self.summary = "Result : %s" % self.result
+
+    def __unicode__(self):
+        return __(u"Scan and download WAPTWua Windows Updates with rules %{rules}s").format(classname=self.__class__.__name__,id=self.id,rules=self.windows_updates_rules)
 
 
 class WaptWUAInstall(WaptTask):
-    def __init__(self):
+    def __init__(self,windows_updates_rules = {}):
         super(WaptWUAInstall,self).__init__()
+        self.windows_updates_rules = windows_updates_rules
 
     def _run(self):
-        if setuphelpers.task_exists('waptwua_install'):
-            self.result = setuphelpers.run_task('waptwua_install')
-            self.summary = __(u"WAPTWua_install task launched.")
-        else:
-            self.result = None
-            self.summary = __(u"WAPTWua_install task not setup.")
+        wua = WaptWUA(self.wapt,windows_updates_rules = self.windows_updates_rules,filter="Type!='Driver'")
+        self.result = wua.install_updates()
+        self.summary = "Result : %s" % self.result
 
     def __unicode__(self):
-        return __(u"Launch WAPTWua pending windows updates").format(classname=self.__class__.__name__,id=self.id)
+        return __(u"Scan, download and install WAPTWua Windows Updates with rules %{rules}s").format(classname=self.__class__.__name__,id=self.id,rules=self.windows_updates_rules)
 
 
 def firewall_running():

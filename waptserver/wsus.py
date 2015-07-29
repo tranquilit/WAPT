@@ -11,6 +11,7 @@ __all__ = [
     'download_windows_updates',
     'select_windows_update',
     'windows_updates_rules',
+    'windows_updates_urls',
 ]
 
 import os
@@ -166,6 +167,8 @@ def download_wsusscan(params={}):
             stats['file_size'] = file_stats[stat.ST_SIZE]
             stats['status'] = 'checking'
             wsusscan2_history.save(stats)
+
+            # TODO: verify cryptographic signatures, cabextract -t is not enough
 
             # check integrity
             if sys.platform == 'win32':
@@ -982,40 +985,65 @@ def windows_updates():
     wsus_updates = utils_get_db().wsus_updates
     query = {}
 
-    if 'has_kb' in request.args and request.args['has_kb']:
+    supported_filters = [
+        'has_kb',
+        'kb',
+        'update_classifications',
+        'product',
+        'products',
+        'severity',
+        'update_ids',
+        'selected_products',
+    ]
+
+    filters = {}
+    got_filter = False
+    for f in supported_filters:
+        filters[f] = request.args.get(f, False)
+        if filters[f]:
+            got_filter = True
+    if not got_filter:
+        return make_response(msg='Error, no valid request filter provided', success=False)
+
+    # collect invalid parameters, for logging and debugging purposes
+    unknown_filters = []
+    for arg in request.args.keys():
+        if arg not in supported_filters:
+            unknown_filters.append(arg)
+
+    if filters['has_kb']:
         query["kb_article_id"]={'$exists':True}
-    if 'kb' in request.args:
+    if filters['kb']:
         kbs = []
-        for kb in ensure_list(request.args['kb']):
+        for kb in ensure_list(filters['kb']):
             if kb.upper().startswith('KB'):
                 kbs.append(kb[2:])
             else:
                 kbs.append(kb)
         query["kb_article_id"]={'$in':kbs}
-    if 'update_classifications' in request.args:
+    if filters['update_classifications']:
         update_classifications = []
-        for update_classification in ensure_list(request.args['update_classifications']):
+        for update_classification in ensure_list(filters['update_classifications']):
             update_classifications.append(update_classification)
         query["categories.UpdateClassification"]={'$in':update_classifications}
-    if 'product' in request.args:
-        query["categories.Product"] = {'$in':get_product_id(request.args['product'])}
-    if 'products' in request.args:
-        query["categories.Product"] = {'$in':ensure_list(request.args['products'])}
-    if 'severity' in request.args and request.args['severity']:
-        query["msrc_severity"] = {'$in':ensure_list(request.args['severity'])}
-    if 'update_ids' in request.args:
-        query["update_id"] = {'$in':ensure_list(request.args['update_ids'])}
-
-    if 'selected_products'  in request.args and request.args['selected_products']:
+    if filters['product']:
+        query["categories.Product"] = {'$in':get_product_id(filters['product'])}
+    if filters['products']:
+        query["categories.Product"] = {'$in':ensure_list(filters['products'])}
+    if filters['severity']:
+        query["msrc_severity"] = {'$in':ensure_list(filters['severity'])}
+    if filters['update_ids']:
+        query["update_id"] = {'$in':ensure_list(filters['update_ids'])}
+    if filters['selected_products']:
         query["categories.Product"] = {'$in':get_selected_products()}
 
     result = wsus_updates.find(query)
     cnt = result.count()
-    return make_response(msg = _('Windows Updates, filter: %(query)s, count: %(cnt)s',query=query,cnt=cnt),result = result)
+    return make_response(msg = _('Windows Updates, filter: %(query)s, count: %(cnt)s, unknown params: %(unknown)s',query=query,cnt=cnt,unknown=unknown_filters),result = result)
 
 
-#@app.route('/api/v2/windows_updates_urls',methods=['GET','POST'])
-def windows_updates_urls(request, logger):
+#@app.route('/api/v2/windows_updates_urls',methods=['GET'])
+def windows_updates_urls():
     """Return list of URL of files to download for the selected update_id
 
     Args:
@@ -1023,21 +1051,30 @@ def windows_updates_urls(request, logger):
     Returns:
         urls
     """
-    wsus_updates = utils_get_db().wsus_updates
-    def get_payloads(id):
-        result = []
-        updates = [ u for u in wsus_updates.find({'update_id':id},{'prereqs':1,'payload_files':1})]
-        if updates:
-            for update in updates:
-                result.extend(update.get('payload_files',[]))
-                for req in update.get('prereqs',[]):
-                    result.extend(get_payloads(req))
-        return result
 
-    update_id = request.args['update_id']
-    files_id = get_payloads(update_id)
-    result = utils_get_db().wsus_locations.find({'id':files_id},{'url':1})
-    cnt = result.count()
+    try:
+        update_id = request.args.get('update_id')
+        if not update_id:
+            return make_response(msg='Missing update_id parameter', success=False)
+        wsus_updates = utils_get_db().wsus_updates
+        def get_payloads(id):
+            result = []
+            updates = [ u for u in wsus_updates.find({'update_id':id},{'prereqs':1,'payload_files':1})]
+            if updates:
+                for update in updates:
+                    result.extend(update.get('payload_files',[]))
+                    for req in update.get('prereqs',[]):
+                        result.extend(get_payloads(req))
+            return result
+
+        update_id = request.args['update_id']
+        files_id = get_payloads(update_id)
+        result = utils_get_db().wsus_locations.find({'id':files_id},{'url':1})
+        cnt = result.count()
+        logger.info('returning from windows_updates_urls')
+    except Exception as e:
+        logger.error('Got an exception in windows_updates_urls: %s', str(e))
+        return make_response_from_exception(e)
     return make_response(msg = _('Downloads for Windows Updates %(update_id)s, count: %(cnt)s',update_id=update_id,cnt=cnt),result = files_id)
 
 
@@ -1226,3 +1263,121 @@ def windows_updates_rules():
             result = utils_get_db().wsus_rules.find()
 
     return make_response(msg = _('Win updates rules'),result = result)
+
+
+def wuredist_extract_and_fetch(wuredist, tmpdir):
+    subprocess.check_output(['ionice', '-c3', 'cabextract', '-d', tmpdir, wuredist])
+    wuredist_xml = os.path.join(tmpdir, 'wuredist.xml')
+    if not os.path.exists(wuredist_xml):
+        raise Exception('wuredist.cab does not contain a wuredist.xml file')
+
+    tree = ET.parse(wuredist_xml)
+    root = tree.getroot()
+    cablist = root.find('StandaloneRedist').findall('architecture')
+    for cab in cablist:
+        url = cab.get('downloadUrl')
+        url_parts = urlparse.urlparse(url)
+        if url_parts.netloc not in ['download.windowsupdate.com','www.download.windowsupdate.com']:
+            raise Exception('Unauthorized location')
+        fileparts = url_parts.path.split('/')
+        target = os.path.join(waptwua_folder,*fileparts)
+        if not os.path.isfile(target):
+            folder = os.path.join(waptwua_folder,*fileparts[:-1])
+            if not os.path.isdir(folder):
+                os.makedirs(folder)
+            wget(url, target)
+
+
+#@app.route('/api/v2/download_wuredist')
+def download_wuredist():
+    cab_url = 'http://update.microsoft.com/redist/wuredist.cab'
+    wuredist_filename = os.path.join(waptwua_folder, 'wuredist.cab')
+    tmp_filename = wuredist_filename + '.tmp'
+
+    # should we remove the tmp filename when we get an error?
+    cleanup_on_error = False
+
+    force = request.args.get('force', False)
+    dryrun = request.args.get('dryrun', False)
+
+    stats = {}
+
+    if not force and os.path.isfile(tmp_filename):
+
+        tmp_timestamp = os.stat(tmp_filename).st_mtime
+        current_timestamp = time.time()
+        if current_timestamp < tmp_timestamp + 24 * 60 * 60:
+            logger.info('download_wuredist: %s is present but less than 24 hours old (timestamp %f), skipping download', tmp_filename, tmp_timestamp)
+            stats['status'] = 'aborted'
+            #wuredist_history.save(stats)
+
+    try:
+
+        last_modified = requests.head(cab_url).headers['last-modified']
+
+        new_cab_timestamp = float(email.utils.mktime_tz(email.utils.parsedate_tz(last_modified)))
+        if os.path.isfile(wuredist_filename):
+            current_cab_timestamp = os.stat(wuredist_filename).st_mtime
+        else:
+            current_cab_timestamp = 0.0
+
+        logger.info('download_wuredist: current cab timestamp: %f, New cab timestamp: %f' % (current_cab_timestamp,new_cab_timestamp))
+
+        if not os.path.isfile(wuredist_filename) or (new_cab_timestamp > current_cab_timestamp) or force:
+
+            cleanup_on_error = True
+            if dryrun:
+                try:
+                    os.link(wsus_filename, tmp_filename)
+                except:
+                    pass
+            else:
+                wget(cab_url, tmp_filename)
+
+            file_stats = os.stat(tmp_filename)
+            stats['file_timestamp'] = file_stats[stat.ST_MTIME]
+            stats['file_size'] = file_stats[stat.ST_SIZE]
+            stats['status'] = 'checking'
+            #wuredist_history.save(stats)
+
+            # TODO verify cryptographic signatures
+
+            # check integrity
+            if sys.platform == 'win32':
+                cablist = subprocess.check_output('expand -D "%s"' % tmp_filename, shell = True).decode('cp850').splitlines()
+            else:
+                cablist = subprocess.check_output('cabextract -t "%s"' % tmp_filename, shell = True).splitlines()
+            stats['cablist'] = cablist
+
+            if os.path.isfile(wuredist_filename):
+                os.unlink(wuredist_filename)
+            os.rename(tmp_filename, wuredist_filename)
+
+            stats['status'] = 'parsing'
+            #wuredist_history.save(stats)
+
+            tmpdir = os.path.join(waptwua_folder, 'wuredist.tmp')
+            if os.path.exists(tmpdir):
+                shutil.rmtree(tmpdir)
+            mkdir_p(tmpdir)
+            wuredist_extract_and_fetch(wuredist_filename, tmpdir)
+
+            stats['status'] = 'finished'
+            #wuredist_history.save(stats)
+
+        else:
+            stats['skipped'] = True
+            #wuredist_history.save(stats)
+
+    except Exception as e:
+        stats['error'] = str(e)
+        #wuredist_history.save(stats)
+
+        if cleanup_on_error and os.path.isfile(tmp_filename):
+            os.unlink(tmp_filename)
+
+        logger.error("Error in download_wuredist: %s", str(e))
+        logger.error('Trace:\n%s', traceback.format_exc())
+        return make_response_from_exception(e)
+
+    return make_response(msg=str(stats), success=True)
