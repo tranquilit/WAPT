@@ -1318,6 +1318,8 @@ def download_wuredist():
             stats['status'] = 'checking'
             #wuredist_history.save(stats)
 
+            # TODO verify cryptographic signatures
+
             # check integrity
             if sys.platform == 'win32':
                 cablist = subprocess.check_output('expand -D "%s"' % tmp_filename, shell = True).decode('cp850').splitlines()
@@ -1336,7 +1338,6 @@ def download_wuredist():
             # extract data from wuredist
             # parse data
             # fetch newer windows update agents
-            # XXX verify cryptographic signatures
 
             stats['status'] = 'finished'
             #wuredist_history.save(stats)
