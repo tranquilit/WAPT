@@ -963,8 +963,12 @@ def windows_updates_options():
         data = json.loads(request.data)
         result = utils_get_db().wsus_options.update({'key':key},{'key':key,'value': data},upsert=True)
     else:
-        result = utils_get_db().wsus_options.find({'key':key})
-    return make_response(msg = _('Win updates global option for key %(key)s',key=key),result = result)
+        if key == 'default':
+            result = utils_get_db().wsus_options.find()
+            return make_response(msg='Win updates global options', result=result)
+        else:
+            result = utils_get_db().wsus_options.find({ 'key': key })
+            return make_response(msg = _('Win updates global option for key %(key)s',key=key),result=result)
 
 
 def get_selected_products():
