@@ -399,7 +399,7 @@ def get_timezone():
 @app.route('/')
 def index():
 
-    agent_status = setup_status = deploy_status = 'N/A'
+    agent_status = setup_status = deploy_status = mongodb_status = 'N/A'
     agent_style = setup_style = deploy_style = 'style="color: red;"'
 
     agent_present, agent_version = get_wapt_exe_version(waptagent)
@@ -426,14 +426,22 @@ def index():
         else:
             deploy_status = 'ERROR'
 
+    try:
+        get_db()
+        mongodb_status = 'OK'
+    except Exception as e:
+        mongodb_status = 'ERROR'
+
     data = {
         'wapt': {
             'server': { 'status': __version__ },
             'agent': { 'status': agent_status, 'style': agent_style },
             'setup': { 'status': setup_status, 'style': setup_style },
             'deploy': { 'status': deploy_status, 'style': deploy_style },
+            'mongodb': { 'status': mongodb_status },
         }
     }
+
 
     return render_template("index.html", data=data)
 
