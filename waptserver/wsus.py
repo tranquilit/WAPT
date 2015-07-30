@@ -1021,12 +1021,12 @@ def windows_updates():
     supported_filters = [
         'has_kb',
         'kb',
-        'update_classifications',
         'product',
         'products',
-        'severity',
-        'update_ids',
         'selected_products',
+        'severity',
+        'update_classifications',
+        'update_ids',
     ]
 
     filters = {}
@@ -1044,8 +1044,10 @@ def windows_updates():
         if arg not in supported_filters:
             unknown_filters.append(arg)
 
+    # has_kb
     if filters['has_kb']:
         query["kb_article_id"]={'$exists':True}
+    # kb
     if filters['kb']:
         kbs = []
         for kb in ensure_list(filters['kb']):
@@ -1054,21 +1056,27 @@ def windows_updates():
             else:
                 kbs.append(kb)
         query["kb_article_id"]={'$in':kbs}
+    # product
+    if filters['product']:
+        query["categories.Product"] = {'$in':get_product_id(filters['product'])}
+    # products
+    if filters['products']:
+        query["categories.Product"] = {'$in':ensure_list(filters['products'])}
+    # selected_products
+    if filters['selected_products']:
+        query["categories.Product"] = {'$in':get_selected_products()}
+    # severity
+    if filters['severity']:
+        query["msrc_severity"] = {'$in':ensure_list(filters['severity'])}
+    # update_classifications
     if filters['update_classifications']:
         update_classifications = []
         for update_classification in ensure_list(filters['update_classifications']):
             update_classifications.append(update_classification)
         query["categories.UpdateClassification"]={'$in':update_classifications}
-    if filters['product']:
-        query["categories.Product"] = {'$in':get_product_id(filters['product'])}
-    if filters['products']:
-        query["categories.Product"] = {'$in':ensure_list(filters['products'])}
-    if filters['severity']:
-        query["msrc_severity"] = {'$in':ensure_list(filters['severity'])}
+    # update_ids
     if filters['update_ids']:
         query["update_id"] = {'$in':ensure_list(filters['update_ids'])}
-    if filters['selected_products']:
-        query["categories.Product"] = {'$in':get_selected_products()}
 
     result = wsus_updates.find(query)
     cnt = result.count()
