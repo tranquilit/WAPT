@@ -363,6 +363,14 @@ def wsusscan2_do_parse_update(update, db, min_rev, stats):
                 assert old_id == rev.get('Id')
         upd['bundled_by'] = id_
 
+    languages = update.findall(off_sync_qualify('Languages'))
+    if languages:
+        assert len(languages) == 1
+        upd['languages'] = []
+        langs = languages[0].findall(off_sync_qualify('Language'))
+        for l in langs:
+            upd['languages'].append(l.get('Name'))
+
     ret = db.wsus_updates.update(upd, upd, upsert=True)
     # TODO use 'ret' and amend stats
 
