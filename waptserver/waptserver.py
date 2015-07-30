@@ -79,6 +79,14 @@ _ = gettext
 
 
 from optparse import OptionParser
+
+# Ensure that any created files have sane permissions.
+# uWSGI implicitely sets umask(0).
+try:
+    os.umask(0o022)
+except Exception:
+    pass
+
 usage="""\
 %prog [-c configfile] [--devel] [action]
 
