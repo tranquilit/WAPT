@@ -84,7 +84,7 @@ def cabextract(cabfile, **kwargs):
     ionice = []
     _ionice = None
     if os.getenv('PATH'):
-        for directory in os.getenv('PATH').split(':'):
+        for directory in os.getenv('PATH').split(os.pathsep):
             if os.path.exists(os.path.join(directory, 'ionice')):
                 _ionice = 'ionice'
     if _ionice:
