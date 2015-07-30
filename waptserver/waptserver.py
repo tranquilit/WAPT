@@ -1644,7 +1644,7 @@ def windows_updates():
     if wsus:
         return wsus.windows_updates()
 
-@app.route('/api/v2/windows_updates_urls',methods=['GET'])
+#@app.route('/api/v2/windows_updates_urls',methods=['GET'])
 def windows_updates_urls():
     return wsus.windows_updates_urls()
 
