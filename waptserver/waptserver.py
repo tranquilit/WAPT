@@ -1224,7 +1224,6 @@ def get_groups():
     try:
 
         packages = WaptLocalRepo(wapt_folder)
-        packages.load_packages()
 
         groups = [ p.as_dict() for p in packages.packages if p.section == 'group']
         msg = '{} Packages for section group'.format(len(groups))
@@ -1262,10 +1261,7 @@ def hosts_delete():
         result = dict(files=[],records=[])
 
         hosts_packages_repo = WaptLocalRepo(wapt_folder+'-host')
-        hosts_packages_repo.load_packages()
-
         packages_repo = WaptLocalRepo(wapt_folder)
-        packages_repo.load_packages()
 
         if 'delete_packages' in request.args and request.args['delete_packages'] == '1':
             selected = hosts().find(query,fields={'uuid':1,'host.computer_fqdn':1})
@@ -1377,10 +1373,7 @@ def get_hosts():
             query["update_status.upgrades"] = {"$exists": "true", "$ne" :[]}
 
         hosts_packages_repo = WaptLocalRepo(wapt_folder+'-host')
-        hosts_packages_repo.load_packages()
-
         packages_repo = WaptLocalRepo(wapt_folder)
-        packages_repo.load_packages()
 
         groups = ensure_list(request.args.get('groups',''))
 
