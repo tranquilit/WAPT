@@ -49,6 +49,8 @@ import datetime
 import requests
 import logging
 
+import time
+
 #https://msdn.microsoft.com/en-us/library/ff357803%28v=vs.85%29.aspx
 UpdateClassifications = {
  '28bc880e-0592-4cbf-8f95-c79b17911d5f': 'UpdateRollups',    # Ensemble de mises à jour
@@ -356,6 +358,16 @@ class WaptWUA(object):
         # to store successful changes in read only properties of _updates after initial scan
         self._cached_updates = {}
 
+    def wua_agent_version(self):
+        agent_info = win32com.client.Dispatch("Microsoft.Update.AgentInfo")
+        try:
+            return agent_info.GetInfo("ProductVersionString")
+        except:
+            try:
+                return get_file_properties(os.path.join(system32(),'Wuaueng.dll'))['ProductVersion']
+            except:
+                return '0.0.0'
+
     def cached_update_property(self,update,key):
         update_id = update.Identity.UpdateID
         if update_id in self._cached_updates and key in self._cached_updates[update_id]:
@@ -528,7 +540,7 @@ class WaptWUA(object):
 
         installed,pending,discarded = 0,0,0
         logger.debug('Scanning installed / not installed Updates')
-
+        start_time = time.time()
         for update in self.updates:
             if not self.cached_update_property(update,'IsInstalled'):
                 if self.is_allowed(update):
@@ -544,11 +556,14 @@ class WaptWUA(object):
             else:
                 logger.debug('Already installed %s : %s' % (update.Identity.UpdateID,update.Title ))
                 installed += 1
-
+        scan_duration = int(time.time() - start_time)
         logger.debug('Writing status in local wapt DB')
+        self.wapt.write_param('waptwua.wua_agent_version',json.dumps(self.wua_agent_version))
         self.wapt.write_param('waptwua.windows_updates_rules',json.dumps(self.windows_updates_rules))
 
         self.wapt.write_param('waptwua.updates',json.dumps([ self.update_as_dict(u) for u in self.updates]))
+
+        self.wapt.write_param('waptwua.last_scan_duration',json.dumps(scan_duration))
         self.wapt.write_param('waptwua.last_scan_date',datetime2isodate())
         if not pending:
             self.wapt.write_param('waptwua.status','OK')
@@ -688,14 +703,16 @@ class WaptWUA(object):
 
     def stored_status(self):
         return {
-            'last_scan_date':self.wapt.read_param('waptwua.last_scan_date'),
-            'last_install_batch':self.wapt.read_param('waptwua.last_install_batch'),
-            'last_install_date':self.wapt.read_param('waptwua.last_install_date'),
-            'last_install_result':self.wapt.read_param('waptwua.last_install_result'),
-            'wsusscn2cab_date':self.wapt.read_param('waptwua.wsusscn2cab_date'),
-            'rebootrequired':self.wapt.read_param('waptwua.rebootrequired'),
+            'last_scan_date':self.wapt.read_param('waptwua.last_scan_date',None),
+            'last_install_batch':self.wapt.read_param('waptwua.last_install_batch',None),
+            'last_install_date':self.wapt.read_param('waptwua.last_install_date',None),
+            'last_install_result':self.wapt.read_param('waptwua.last_install_result',None),
+            'last_scan_duration':self.wapt.read_param('waptwua.last_scan_duration',None),
+            'wsusscn2cab_date':self.wapt.read_param('waptwua.wsusscn2cab_date',None),
+            'rebootrequired':self.wapt.read_param('waptwua.rebootrequired',None),
             'updates':json.loads(self.wapt.read_param('waptwua.updates','[]')),
-            'status':self.wapt.read_param('waptwua.status'),
+            'status':self.wapt.read_param('waptwua.status',None),
+            'wua_agent_version':self.wapt.read_param('waptwua.wua_agent_version',None),
             'windows_updates_rules':json.loads(self.wapt.read_param('waptwua.windows_updates_rules','{}')),
             }
 
