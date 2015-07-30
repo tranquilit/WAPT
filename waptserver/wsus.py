@@ -1183,7 +1183,7 @@ def download_windows_updates():
         if not os.path.isfile(target):
             if not os.path.isdir(os.path.join(waptwua_folder,*fileparts[:-1])):
                 os.makedirs(os.path.join(waptwua_folder,*fileparts[:-1]))
-            os.system('wget -O "%s" "%s"'% (target,url))
+            wget(url, target)
             if not check_sha1_filename(target):
                 os.remove(target)
                 raise Exception('Error during download, sha1 mismatch')
