@@ -629,6 +629,7 @@ def parse_wsusscan2(dl_uuid):
         logger.warning('parse_wsusscan2 already running, aborting')
     except Exception as e:
         logger.error('Exception in parse_wsusscan2: %s', repr(e))
+        logger.error('Traceback: %s', traceback.format_exc())
     finally:
         if got_lock == True:
             runtime.remove({'_id': WSUS_PARSE_WSUSSCN2_LOCK })
