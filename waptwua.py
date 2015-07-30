@@ -558,7 +558,7 @@ class WaptWUA(object):
                 installed += 1
         scan_duration = int(time.time() - start_time)
         logger.debug('Writing status in local wapt DB')
-        self.wapt.write_param('waptwua.wua_agent_version',json.dumps(self.wua_agent_version))
+        self.wapt.write_param('waptwua.wua_agent_version',json.dumps(self.wua_agent_version()))
         self.wapt.write_param('waptwua.windows_updates_rules',json.dumps(self.windows_updates_rules))
 
         self.wapt.write_param('waptwua.updates',json.dumps([ self.update_as_dict(u) for u in self.updates]))
