@@ -922,8 +922,8 @@ class WaptRemoteRepo(WaptBaseRepo):
     """Gives access to a remote http repository, with a zipped Packages packages index
 
     >>> repo = WaptRemoteRepo(name='main',url='http://wapt/wapt',timeout=4)
-    >>> delta = repo.load_packages()
-    >>> 'last-modified' in delta and 'added' in delta and 'removed' in delta
+    >>> last_modified = repo.is_available()
+    >>> isinstance(last_modified,str)
     True
     """
 
@@ -1007,6 +1007,10 @@ class WaptRemoteRepo(WaptBaseRepo):
     @property
     def packages_url(self):
         """return url of Packages index file
+
+        >>> repo = WaptRemoteRepo(name='main',url='http://wapt/wapt',timeout=4)
+        >>> repo.packages_url
+        'http://wapt/wapt/Packages'
 
         hardcoded path to the Packages index.
         """
