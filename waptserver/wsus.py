@@ -1021,6 +1021,7 @@ def windows_updates():
     supported_filters = [
         'has_kb',
         'kb',
+        'languages', # none pour les updates non specifiques a un langage, fr pour francais, etc
         'product',
         'products',
         'selected_products',
@@ -1044,9 +1045,11 @@ def windows_updates():
         if arg not in supported_filters:
             unknown_filters.append(arg)
 
+    top_and_query_list = []
+
     # has_kb
     if filters['has_kb']:
-        query["kb_article_id"]={'$exists':True}
+        top_and_query_list.append({ 'kb_article_id': { '$exists': True } })
     # kb
     if filters['kb']:
         kbs = []
@@ -1055,28 +1058,41 @@ def windows_updates():
                 kbs.append(kb[2:])
             else:
                 kbs.append(kb)
-        query["kb_article_id"]={'$in':kbs}
+        top_and_query_list.append({ 'kb_article_id': { '$in':kbs } })
+    # languages
+    if filters['languages']:
+        languages = ensure_list(filters['languages'])
+        or_languages_list = []
+        try:
+            languages.remove('none')
+            or_languages_list.append({ 'languages': { '$exists': False } })
+        except ValueError:
+            pass
+        or_languages_list.append({ 'languages': { '$in': languages } })
+        top_and_query_list.append({ '$or': or_languages_list })
     # product
     if filters['product']:
-        query["categories.Product"] = {'$in':get_product_id(filters['product'])}
+        top_and_query_list.append({ 'categories.Product': { '$in': get_product_id(filters['product']) } })
     # products
     if filters['products']:
-        query["categories.Product"] = {'$in':ensure_list(filters['products'])}
+        top_and_query_list.append({ 'categories.Product': { '$in': ensure_list(filters['products'])   } })
     # selected_products
     if filters['selected_products']:
-        query["categories.Product"] = {'$in':get_selected_products()}
+        top_and_query_list.append({ 'categories.Product': { '$in': get_selected_products()            } })
     # severity
     if filters['severity']:
-        query["msrc_severity"] = {'$in':ensure_list(filters['severity'])}
+        top_and_query_list.append({ 'msrc_severity':      { '$in': ensure_list(filters['severity'])   } })
     # update_classifications
     if filters['update_classifications']:
         update_classifications = []
         for update_classification in ensure_list(filters['update_classifications']):
             update_classifications.append(update_classification)
-        query["categories.UpdateClassification"]={'$in':update_classifications}
+        top_and_query_list.append({ 'categories.UpdateClassification': { '$in': update_classifications } })
     # update_ids
     if filters['update_ids']:
-        query["update_id"] = {'$in':ensure_list(filters['update_ids'])}
+        top_and_query_list.append({ 'update_id': { '$in': ensure_list(filters['update_ids']) } })
+
+    query = { '$and': top_and_query_list }
 
     result = wsus_updates.find(query)
     cnt = result.count()
