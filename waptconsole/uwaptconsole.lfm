@@ -453,9 +453,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 369
         Top = 91
         Width = 572
-        ActivePage = pgHostWUA
+        ActivePage = pgPackages
         Align = alRight
-        TabIndex = 3
+        TabIndex = 0
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -4215,6 +4215,21 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'New Windows Updates bundle'
       OnExecute = ActWUANewGroupExecute
     end
+    object ActTriggerWaptwua_scan: TAction
+      Category = 'hosts'
+      Caption = 'Trigger the scan of missing Windows Updates'
+      OnExecute = ActTriggerWaptwua_scanExecute
+    end
+    object ActTriggerWaptwua_download: TAction
+      Category = 'hosts'
+      Caption = 'Trigger the download of pending Windows Updates'
+      OnExecute = ActTriggerWaptwua_downloadExecute
+    end
+    object ActTriggerWaptwua_install: TAction
+      Category = 'hosts'
+      Caption = 'Trigger the install of pending Windows Updates'
+      OnExecute = ActTriggerWaptwua_installExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
@@ -4934,6 +4949,18 @@ object VisWaptGUI: TVisWaptGUI
       }
     end
     object MenuItem55: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem70: TMenuItem
+      Action = ActTriggerWaptwua_scan
+    end
+    object MenuItem71: TMenuItem
+      Action = ActTriggerWaptwua_download
+    end
+    object MenuItem72: TMenuItem
+      Action = ActTriggerWaptwua_install
+    end
+    object MenuItem73: TMenuItem
       Caption = '-'
     end
     object MenuItem56: TMenuItem

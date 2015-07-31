@@ -88,6 +88,11 @@ resourcestring
   rsTriggerHostsUpdate = 'Trigger packages list update on the hosts';
   rsTriggerHostsUpgrade = 'Trigger installed packages upgrade on the hosts';
 
+  rsTriggerWAPTWUA_Scan = 'Trigger the scan of missing Windows Updates';
+  rsTriggerWAPTWUA_Download = 'Trigger the download of missing Windows Updates';
+  rsTriggerWAPTWUA_Install = 'Trigger the installation of missing Windows Updates';
+
+
   rsConfirmRmHostsFromList = 'Are you sure you want to remove %s hosts from the list ?';
   rsConfirmRmHostsPackagesFromList = 'Are you sure you want to remove %s hosts and matching configuration packages from the server ?';
 
