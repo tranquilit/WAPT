@@ -11,6 +11,7 @@ import logging
 import os
 import pymongo
 import requests
+import traceback
 
 __all__ = []
 
@@ -200,6 +201,7 @@ def make_response_from_exception(exception,error_code='',status=200):
             )
     if utils_devel_mode:
         data['msg'] = traceback.format_exc()
+        raise
     else:
         data['msg'] = u"%s" % (exception,)
     return flask.Response(
