@@ -29,7 +29,14 @@ type
     ActCleanCache: TAction;
     ActAddADSGroups: TAction;
     ActHostsDeleteHostPackage: TAction;
+    ActTriggerWaptwua_install: TAction;
+    ActTriggerWaptwua_download: TAction;
+    ActTriggerWaptwua_scan: TAction;
     ActWSUSRefreshCabHistory: TAction;
+    MenuItem70: TMenuItem;
+    MenuItem71: TMenuItem;
+    MenuItem72: TMenuItem;
+    MenuItem73: TMenuItem;
     WSUSActions: TActionList;
     ActWUANewGroup: TAction;
     ActWUAProductsSelection: TAction;
@@ -342,6 +349,9 @@ type
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
     procedure ActDeployWaptExecute(Sender: TObject);
+    procedure ActTriggerWaptwua_downloadExecute(Sender: TObject);
+    procedure ActTriggerWaptwua_installExecute(Sender: TObject);
+    procedure ActTriggerWaptwua_scanExecute(Sender: TObject);
     procedure ActWSUSRefreshCabHistoryExecute(Sender: TObject);
     procedure ActWUAEditGroupExecute(Sender: TObject);
     procedure ActWUADownloadSelectedUpdateUpdate(Sender: TObject);
@@ -1606,6 +1616,54 @@ begin
     finally
       Free;
     end;
+end;
+
+procedure TVisWaptGUI.ActTriggerWaptwua_downloadExecute(Sender: TObject);
+begin
+    with TVisHostsUpgrade.Create(Self) do
+    try
+      Caption:= rsTriggerWAPTWUA_Scan;
+      action := 'api/v2/trigger_waptwua_download';
+      hosts := Gridhosts.SelectedRows;
+
+      if ShowModal = mrOk then
+        actRefresh.Execute;
+    finally
+      Free;
+    end;
+
+end;
+
+procedure TVisWaptGUI.ActTriggerWaptwua_installExecute(Sender: TObject);
+begin
+    with TVisHostsUpgrade.Create(Self) do
+    try
+      Caption:= rsTriggerWAPTWUA_Scan;
+      action := 'api/v2/trigger_waptwua_install';
+      hosts := Gridhosts.SelectedRows;
+
+      if ShowModal = mrOk then
+        actRefresh.Execute;
+    finally
+      Free;
+    end;
+
+end;
+
+procedure TVisWaptGUI.ActTriggerWaptwua_scanExecute(Sender: TObject);
+begin
+  with TVisHostsUpgrade.Create(Self) do
+    try
+      Caption:= rsTriggerWAPTWUA_Scan;
+      action := 'api/v2/trigger_waptwua_scan';
+      hosts := Gridhosts.SelectedRows;
+
+      if ShowModal = mrOk then
+        actRefresh.Execute;
+    finally
+      Free;
+    end;
+
 end;
 
 procedure TVisWaptGUI.ActWSUSRefreshCabHistoryExecute(Sender: TObject);

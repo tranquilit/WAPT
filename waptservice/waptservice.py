@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.0"
+__version__ = "1.3.1"
 
 import time
 import sys
@@ -1296,6 +1296,7 @@ def wua_discarded_updates():
 
 
 @app.route('/waptwua_scan', methods=['GET'])
+@app.route('/waptwua_scan.json', methods=['GET'])
 @allow_waptserver_or_local_unauth
 def waptwua_scan():
     logger.info(u"Launch WaptWUA scan missing updates")
@@ -1310,6 +1311,7 @@ def waptwua_scan():
         return render_template('install.html',data=data)
 
 @app.route('/waptwua_download', methods=['GET'])
+@app.route('/waptwua_download.json', methods=['GET'])
 @allow_waptserver_or_local_unauth
 def waptwua_download():
     logger.info(u"Launch WaptWUA download updates")
@@ -1324,6 +1326,7 @@ def waptwua_download():
         return render_template('install.html',data=data)
 
 @app.route('/waptwua_install', methods=['GET'])
+@app.route('/waptwua_install.json', methods=['GET'])
 @allow_waptserver_or_local_unauth
 def waptwua_install():
     logger.info(u"Launch WaptWUA scan download and install missing updates")

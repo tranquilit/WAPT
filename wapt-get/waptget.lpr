@@ -247,8 +247,9 @@ begin
   end
   else
   if not HasOption('D','direct') and StrIsOneOf(action,['update','upgrade','longtask','cancel','cancel-all','tasks','wuascan','wuadownload','wuainstall'])
-    and CheckOpenPort(waptservice_port,'127.0.0.1',100) then
+    and CheckOpenPort(waptservice_port,'127.0.0.1',200) then
   begin
+    writeln('About to speak to waptservice...');
     // launch task in waptservice, waits for its termination
     check_thread :=TZMQPollThread.Create(Self);
     check_thread.Start;
@@ -350,7 +351,7 @@ begin
       else
       if action='wuascan' then
       begin
-        res := WAPTLocalJsonGet('waptwua_scan?notify_user=0');
+        res := WAPTLocalJsonGet('waptwua_scan?notify_user=1');
         if res = Nil then
           WriteLn(format(rsErrorLaunchingUpdate, [res.S['message']]))
         else
@@ -360,7 +361,7 @@ begin
       else
       if action='wuadownload' then
       begin
-        res := WAPTLocalJsonGet('waptwua_download?notify_user=0');
+        res := WAPTLocalJsonGet('waptwua_download?notify_user=1');
         if res = Nil then
           WriteLn(format(rsErrorLaunchingUpdate, [res.S['message']]))
         else
@@ -370,7 +371,7 @@ begin
       else
       if action='wuainstall' then
       begin
-        res := WAPTLocalJsonGet('waptwua_install?notify_user=0');
+        res := WAPTLocalJsonGet('waptwua_install?notify_user=1');
         if res = Nil then
           WriteLn(format(rsErrorLaunchingUpdate, [res.S['message']]))
         else
@@ -381,7 +382,7 @@ begin
       while (tasks.AsArray.Length > 0) and not (Terminated) and not check_thread.Finished do
       try
         //if no message from service since more that 10 min, check if remaining tasks in queue...
-        if (now-lastMessageTime>10*1/24/60) and (remainingtasks.AsArray.Length=0) then
+        if (now-lastMessageTime>1*1/24/60) and (remainingtasks.AsArray.Length=0) then
           raise Exception.create('Timeout waiting for events')
         else
         begin
