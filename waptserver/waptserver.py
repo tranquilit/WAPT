@@ -1042,6 +1042,116 @@ def trigger_host_inventory():
         return make_response_from_exception(e)
 
 
+@app.route('/api/v2/trigger_waptwua_scan')
+@requires_auth
+def trigger_waptwua_scan():
+    """Proxy the wapt waptwua_scan action to the client"""
+    try:
+        uuid = request.args['uuid']
+        notify_user = request.args.get('notify_user',0)
+        notify_server = request.args.get('notify_server',1)
+
+
+        host_data = hosts().find_one({ "uuid": uuid},fields={'uuid':1,'wapt':1,'host.connected_ips':1})
+        listening_address = get_ip_port(host_data)
+        msg = u''
+        if listening_address and listening_address['address'] and listening_address['port']:
+            logger.info( "Triggering waptwua_scan for %s at address %s..." % (uuid,listening_address['address']))
+            args = {}
+            args.update(listening_address)
+            args['notify_user'] = notify_user
+            args['uuid'] = uuid
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/waptwua_scan.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            try:
+                client_result = json.loads(client_result)
+                msg = _(u"Triggered task: {}").format(client_result['description'])
+            except ValueError:
+                if 'Restricted access' in client_result:
+                    raise EWaptForbiddden(client_result)
+                else:
+                    raise Exception(client_result)
+        else:
+            raise EWaptMissingHostData(_("The WAPT service is unreachable."))
+        return make_response(client_result,
+            msg = msg,
+            success = True)
+    except Exception, e:
+        return make_response_from_exception(e)
+
+@app.route('/api/v2/trigger_waptwua_download')
+@requires_auth
+def trigger_waptwua_download():
+    """Proxy the wapt waptwua_scan action to the client"""
+    try:
+        uuid = request.args['uuid']
+        notify_user = request.args.get('notify_user',0)
+        notify_server = request.args.get('notify_server',1)
+
+
+        host_data = hosts().find_one({ "uuid": uuid},fields={'uuid':1,'wapt':1,'host.connected_ips':1})
+        listening_address = get_ip_port(host_data)
+        msg = u''
+        if listening_address and listening_address['address'] and listening_address['port']:
+            logger.info( "Triggering waptwua_scan for %s at address %s..." % (uuid,listening_address['address']))
+            args = {}
+            args.update(listening_address)
+            args['notify_user'] = notify_user
+            args['uuid'] = uuid
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/waptwua_download.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            try:
+                client_result = json.loads(client_result)
+                msg = _(u"Triggered task: {}").format(client_result['description'])
+            except ValueError:
+                if 'Restricted access' in client_result:
+                    raise EWaptForbiddden(client_result)
+                else:
+                    raise Exception(client_result)
+        else:
+            raise EWaptMissingHostData(_("The WAPT service is unreachable."))
+        return make_response(client_result,
+            msg = msg,
+            success = True)
+    except Exception, e:
+        return make_response_from_exception(e)
+
+
+@app.route('/api/v2/trigger_waptwua_install')
+@requires_auth
+def trigger_waptwua_install():
+    """Proxy the wapt waptwua_scan action to the client"""
+    try:
+        uuid = request.args['uuid']
+        notify_user = request.args.get('notify_user',0)
+        notify_server = request.args.get('notify_server',1)
+
+
+        host_data = hosts().find_one({ "uuid": uuid},fields={'uuid':1,'wapt':1,'host.connected_ips':1})
+        listening_address = get_ip_port(host_data)
+        msg = u''
+        if listening_address and listening_address['address'] and listening_address['port']:
+            logger.info( "Triggering waptwua_scan for %s at address %s..." % (uuid,listening_address['address']))
+            args = {}
+            args.update(listening_address)
+            args['notify_user'] = notify_user
+            args['uuid'] = uuid
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/waptwua_install.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            try:
+                client_result = json.loads(client_result)
+                msg = _(u"Triggered task: {}").format(client_result['description'])
+            except ValueError:
+                if 'Restricted access' in client_result:
+                    raise EWaptForbiddden(client_result)
+                else:
+                    raise Exception(client_result)
+        else:
+            raise EWaptMissingHostData(_("The WAPT service is unreachable."))
+        return make_response(client_result,
+            msg = msg,
+            success = True)
+    except Exception, e:
+        return make_response_from_exception(e)
+
+
 @app.route('/api/v1/host_forget_packages')
 @requires_auth
 def host_forget_packages():
