@@ -17,6 +17,11 @@ if __name__ == '__main__':
     if installer.endswith(".exe"):
         installer = installer[0:installer.rfind(".exe")]
 
+    rev_file = os.path.join(os.path.dirname(installer), '..', 'revision.txt')
+    git = os.path.join(programfiles32(), 'Git', 'git.exe')
+    subprocess.check_call([git, 'rev-parse', '--short', 'HEAD'], stdout=rev_file)
+    rev_file.close()
+
     iss_file = installer + ".iss"
     issc_binary = os.path.join(programfiles32(),'Inno Setup 5','ISCC.exe')
 
