@@ -1064,7 +1064,8 @@ def trigger_waptwua_scan():
             client_result = requests.get("%(protocol)s://%(address)s:%(port)d/waptwua_scan.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
             try:
                 client_result = json.loads(client_result)
-                msg = _(u"Triggered task: {}").format(client_result['description'])
+                if client_result:
+                    msg = _(u"Triggered task: {}").format(client_result[0]['description'])
             except ValueError:
                 if 'Restricted access' in client_result:
                     raise EWaptForbiddden(client_result)
@@ -1100,7 +1101,8 @@ def trigger_waptwua_download():
             client_result = requests.get("%(protocol)s://%(address)s:%(port)d/waptwua_download.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
             try:
                 client_result = json.loads(client_result)
-                msg = _(u"Triggered task: {}").format(client_result['description'])
+                if client_result:
+                    msg = _(u"Triggered task: {}").format(client_result[0]['description'])
             except ValueError:
                 if 'Restricted access' in client_result:
                     raise EWaptForbiddden(client_result)
@@ -1137,7 +1139,8 @@ def trigger_waptwua_install():
             client_result = requests.get("%(protocol)s://%(address)s:%(port)d/waptwua_install.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
             try:
                 client_result = json.loads(client_result)
-                msg = _(u"Triggered task: {}").format(client_result['description'])
+                if client_result:
+                    msg = _(u"Triggered task: {}").format(client_result[0]['description'])
             except ValueError:
                 if 'Restricted access' in client_result:
                     raise EWaptForbiddden(client_result)
