@@ -65,6 +65,7 @@ from rocket import Rocket
 import thread
 import threading
 import Queue
+import re
 
 from waptpackage import *
 from waptserver_utils import *
