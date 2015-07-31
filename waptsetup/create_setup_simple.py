@@ -18,7 +18,7 @@ if __name__ == '__main__':
         installer = installer[0:installer.rfind(".exe")]
 
     rev_file = file(os.path.join(os.path.dirname(installer), '..', 'revision.txt'), 'w')
-    git = os.path.join(programfiles32(), 'Git', 'git.exe')
+    git = os.path.join(programfiles32(), 'Git', 'bin', 'git.exe')
     subprocess.check_call([git, 'rev-parse', '--short', 'HEAD'], stdout=rev_file)
     rev_file.close()
 
