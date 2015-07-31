@@ -149,6 +149,16 @@ except Exception as e:
     print >> sys.stderr, 'error: \n%s'%e
     exit(1)
 
+print >> sys.stderr, 'Overriding VCS revision.'
+rev_file = file('builddir/opt/wapt/revision.txt', 'w')
+try:
+    git_hash = subprocess.check_call(['git', 'rev-parse', '--short', 'HEAD'], stdout=rev_file)
+except Exception:
+    print >> sys.stderr, 'Could not retrieve the hash of the current git commit.'
+    print >> sys.stderr, 'Is git(1) installed?'
+    raise
+rev_file.close()
+
 deb_version = wapt_version
 if deb_revision:
     deb_version += '-' + str(deb_revision)

@@ -28,6 +28,7 @@ def update_sources():
          'waptconsole.exe.manifest',
          'waptservice',
          'languages',
+         'revision.txt',
 
 
          r'lib\site-packages\babel\__init__.py',

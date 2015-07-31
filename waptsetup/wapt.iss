@@ -31,6 +31,7 @@ Source: "..\setuphelpers.py"; DestDir: "{app}";
 Source: "..\windnsquery.py"; DestDir: "{app}"; 
 Source: "..\COPYING.txt"; DestDir: "{app}";
 Source: "..\version"; DestDir: "{app}";
+Source: "..\revision.txt"; DestDir: "{app}";
 Source: "..\templates\*"; DestDir: "{app}\templates"; Flags: createallsubdirs recursesubdirs
 
 ; for openssl get dll in path
