@@ -23,8 +23,8 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
-      <MinorVersionNr Value="2"/>
-      <RevisionNr Value="4"/>
+      <MinorVersionNr Value="3"/>
+      <RevisionNr Value="1"/>
       <BuildNr Value="8"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>

@@ -33,7 +33,7 @@
         download : download necessary updates from wapt server and push them in cache
         install : install allowed cached updates
 """
-__version__ = "1.2.4"
+__version__ = "1.3.1"
 
 from setuphelpers import *
 
