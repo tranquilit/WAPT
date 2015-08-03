@@ -989,7 +989,7 @@ def windows_updates_options():
             return make_response(msg='Win updates global options', result=result)
         else:
             result = utils_get_db().wsus_options.find({ 'key': key })
-            return make_response(msg = _('Win updates global option for key %(key)s',key=key),result=result)
+    return make_response(msg = _('Win updates global option for key %(key)s',key=key),result=result)
 
 
 def get_selected_products():
