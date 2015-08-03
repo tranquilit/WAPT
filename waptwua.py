@@ -599,6 +599,17 @@ class WaptWUA(object):
         return (installed,pending,discarded)
 
     def wget_update(self,url,target):
+
+        def checked_wget(url, target, **kwargs):
+            tmp_target = target + '.part'
+            if os.path.exists(tmp_target):
+                return
+            wget(url, tmp_target, **kwargs)
+            if check_sha1_filename(tmp_target) == False:
+                os.unlink(tmp_target)
+            else:
+                os.rename(tmp_target, target)
+
         # try using specialized proxy
         url_parts = urlparse(url)
 
@@ -611,16 +622,16 @@ class WaptWUA(object):
         try:
             # direct download of prefetch
             patch_url = '%s://%s%swua%s' % (repo_parts.scheme,repo_parts.netloc,repo_parts.path,url_parts.path)
-            wget(patch_url,target,proxies=self.wapt.repositories[0].proxies)
-        except:
+            checked_wget(patch_url,target,proxies=self.wapt.repositories[0].proxies)
+        except Exception:
             # trigger background download on server
             try:
                 res = self.wapt.waptserver.get('api/v2/download_windows_update?url=%s'%url)
                 patch_url = '%s://%s%s' % (repo_parts.scheme,repo_parts.netloc,res['result']['url'])
-                wget(patch_url,target,proxies=self.wapt.repositories[0].proxies)
-            except:
+                checked_wget(patch_url, target, proxies=self.wapt.repositories[0].proxies)
+            except Exception:
                 # using polipo proxy or direct download
-                wget(url,target,proxies=wua_proxy)
+                checked_wget(url, target, proxies=wua_proxy)
 
     def download_single(self,update):
         result = []
