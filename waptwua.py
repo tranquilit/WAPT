@@ -423,7 +423,7 @@ class WaptWUA(object):
         return self._update_service_manager
 
     def update_wsusscan_cab(self):
-        """Download deom wapt server the last version of wsuscn2.cab database for offline update scan
+        """Download from wapt server the last version of wsusscn2.cab database for offline update scan
 
         """
         if len(self.wapt.repositories)>0:
