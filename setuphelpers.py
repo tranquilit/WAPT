@@ -1588,7 +1588,7 @@ def inifile_writestring(inifilename,section,key,value):
 
 
 class disable_file_system_redirection:
-    r"""Context manager to diable temporarily the wow3264 file redirector
+    r"""Context manager to disable temporarily the wow3264 file redirector
 
     >>> with disable_file_system_redirection():
     ...     winshell.get_path(shellcon.CSIDL_PROGRAM_FILES)
