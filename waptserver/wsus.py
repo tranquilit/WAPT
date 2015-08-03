@@ -1213,10 +1213,15 @@ def download_windows_updates():
         if not os.path.isfile(target):
             if not os.path.isdir(os.path.join(waptwua_folder,*fileparts[:-1])):
                 os.makedirs(os.path.join(waptwua_folder,*fileparts[:-1]))
-            wget(url, target)
-            if check_sha1_filename(target) == False:
+            tmp_target = target + '.part'
+            if os.path.isfile(tmp_target):
+                raise Exception('Downloading kb %s to file already existing %s' % (kb_article_id, tmp_target))
+            wget(url, tmp_target)
+            if check_sha1_filename(tmp_target) == False:
                 os.remove(target)
                 raise Exception('Error during download, sha1 mismatch')
+            else:
+                os.rename(tmp_target, target)
 
         result = {'url':'/waptwua%s'% ('/'.join(fileparts),),'size':os.stat(target).st_size}
         return make_response(msg='Windows patch available',result=result)
