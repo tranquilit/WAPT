@@ -1172,19 +1172,23 @@ def sha1_for_file(fname, block_size=2**20):
     return sha1.hexdigest()
 
 
+# XXX returns None (ie False in boolean context) if nothing looks like a sha1
+# hash in the file name -> false positives?
+def check_sha1_filename(target):
+    # check sha1 sum if possible...
+    if os.path.isfile(target):
+        sha1sum_parts = os.path.basename(target).rsplit('.',1)[0].rsplit('_',1)
+        if sha1sum_parts:
+            sha1sum = sha1sum_parts[1]
+            # looks like hex sha1
+            if len(sha1sum) == 40 and (sha1sum != sha1_for_file(target)):
+                return False
+        return True
+
 
 #@app.route('/api/v2/download_windows_update')
 def download_windows_updates():
-    def check_sha1_filename(target):
-        # check sha1 sum if possible...
-        if os.path.isfile(target):
-            sha1sum_parts = os.path.basename(target).rsplit('.',1)[0].rsplit('_',1)
-            if sha1sum_parts:
-                sha1sum = sha1sum_parts[1]
-                #looks like hex sha1
-                if len(sha1sum) == 40 and (sha1sum != sha1_for_file(target)):
-                    return False
-            return True
+
 
     try:
         try:
