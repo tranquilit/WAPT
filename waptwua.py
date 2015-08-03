@@ -360,6 +360,28 @@ def check_sha1_filename(target):
         return True
 
 
+def windows_automatic_updates(disabled):
+    import setuphelpers
+
+    if disabled:
+        expected = 0x1
+    else:
+        expected = 0x4
+
+    key = setuphelpers.reg_openkey_noredir(setuphelpers.HKEY_LOCAL_MACHINE, r'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update')
+    updatevalue = setuphelpers.reg_getvalue(key, 'AUOptions')
+    setuphelpers.reg_closekey(key)
+
+    if updatevalue != expected:
+        if disabled:
+            logger.info("auto update enabled, disabling")
+        else:
+            logger.info("auto update disabled, enabling")
+        key = setuphelpers.reg_openkey_noredir(setuphelpers.HKEY_LOCAL_MACHINE, r'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update', setuphelpers.KEY_WRITE)
+        setuphelpers.reg_setvalue(key, 'AUOptions', expected, setuphelpers.REG_DWORD)
+        setuphelpers.reg_closekey(key)
+
+
 class WaptWUA(object):
     def __init__(self,wapt,windows_updates_rules = {}, filter="Type='Software'"):
         self.wapt = wapt
@@ -805,6 +827,8 @@ if __name__ == '__main__':
     # force loglevel
     if options.loglevel is not None:
         setloglevel(logger,options.loglevel)
+
+    windows_automatic_updates(disabled=True)
 
     wapt = Wapt(config_filename=options.config)
 
