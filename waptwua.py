@@ -383,7 +383,7 @@ def windows_automatic_updates(disabled):
 
 
 class WaptWUA(object):
-    def __init__(self,wapt,windows_updates_rules = {}, filter="Type='Software'"):
+    def __init__(self,wapt,windows_updates_rules = {}, filter="Type='Software' and IsInstalled=0 and IsHidden=0'"):
         self.wapt = wapt
         self.cache_path = os.path.abspath(makepath(wapt.wapt_base_dir,'waptwua','cache'))
         self._update_session = None
