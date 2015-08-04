@@ -383,7 +383,7 @@ def windows_automatic_updates(disabled):
 
 
 class WaptWUA(object):
-    def __init__(self,wapt,windows_updates_rules = {}, filter="Type='Software' and IsInstalled=0 and IsHidden=0'"):
+    def __init__(self,wapt,windows_updates_rules = {}, filter="Type='Software' and IsInstalled=0 and IsHidden=0"):
         self.wapt = wapt
         self.cache_path = os.path.abspath(makepath(wapt.wapt_base_dir,'waptwua','cache'))
         self._update_session = None
@@ -855,9 +855,7 @@ if __name__ == '__main__':
         stored_windows_updates_rules['allowed_classifications'] = allowed_classifications
         wapt.write_param('waptwua.windows_updates_rules',json.dumps(stored_windows_updates_rules))
 
-    wua = WaptWUA(wapt,
-        windows_updates_rules = stored_windows_updates_rules,
-        filter="Type!='Driver'")
+    wua = WaptWUA(wapt, windows_updates_rules = stored_windows_updates_rules)
     if len(args) <1:
         print parser.usage
         sys.exit(1)
