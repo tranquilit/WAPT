@@ -661,6 +661,8 @@ class WaptWUA(object):
             # trigger background download on server
             try:
                 res = self.wapt.waptserver.get('api/v2/download_windows_update?url=%s'%url)
+                if 'result' not in res:
+                    raise Exception('Requested %s, Unexpected reply from server: %s' % (url, str(res)))
                 patch_url = '%s://%s%s' % (repo_parts.scheme,repo_parts.netloc,res['result']['url'])
                 checked_wget(patch_url, target, proxies=self.wapt.repositories[0].proxies)
             except Exception:
