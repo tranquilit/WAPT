@@ -634,7 +634,8 @@ class WaptWUA(object):
         def checked_wget(url, target, **kwargs):
             tmp_target = target + '.part'
             if os.path.exists(tmp_target):
-                return
+                # XXX what about concurrent downloads?
+                os.path.unlink(tmp_target)
             wget(url, tmp_target, **kwargs)
             if check_sha1_filename(tmp_target) == False:
                 os.unlink(tmp_target)
