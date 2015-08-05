@@ -635,10 +635,11 @@ class WaptWUA(object):
             tmp_target = target + '.part'
             if os.path.exists(tmp_target):
                 # XXX what about concurrent downloads?
-                os.path.unlink(tmp_target)
+                os.unlink(tmp_target)
             wget(url, tmp_target, **kwargs)
             if check_sha1_filename(tmp_target) == False:
                 os.unlink(tmp_target)
+                raise Exception('checked_wget: bad sha1 checksum for tmp_target %s' % tmp_target)
             else:
                 os.rename(tmp_target, target)
 
