@@ -629,6 +629,8 @@ def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_time
     cnt = 0
     reporthook(last_downloaded,total_bytes)
 
+    httpreq.raise_for_status()
+
     with open(os.path.join(dir,filename),'wb') as output_file:
         last_time_display = time.time()
         last_downloaded = 0
@@ -643,8 +645,7 @@ def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_time
                 cnt +=1
             if reporthook(last_downloaded,total_bytes):
                 last_time_display = time.time()
-        else:
-            httpreq.raise_for_status()
+
 
     return os.path.join(dir,filename)
 
