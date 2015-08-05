@@ -414,10 +414,10 @@ class WaptWUA(object):
         agent_info = win32com.client.Dispatch("Microsoft.Update.AgentInfo")
         try:
             return agent_info.GetInfo("ProductVersionString")
-        except:
+        except Exception:
             try:
                 return get_file_properties(os.path.join(system32(),'Wuaueng.dll'))['ProductVersion']
-            except:
+            except Exception:
                 return '0.0.0'
 
     def cached_update_property(self,update,key):
@@ -706,7 +706,7 @@ class WaptWUA(object):
                         remove_file(fn)
 
             self.wapt.write_param('waptwua.status','READY')
-        except:
+        except Exception:
             self.wapt.write_param('waptwua.status','ERROR')
             raise
         return result
@@ -761,7 +761,7 @@ class WaptWUA(object):
 
             self.wapt.write_param('waptwua.last_install_batch',json.dumps(result))
             self.wapt.write_param('waptwua.last_install_date',datetime2isodate())
-        except:
+        except Exception:
             self.wapt.write_param('waptwua.status','ERROR')
         finally:
             self.scan_updates_status()
