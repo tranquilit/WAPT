@@ -675,38 +675,48 @@ class WaptWUA(object):
 
             for dc in update.DownloadContents:
                 #https://msdn.microsoft.com/en-us/library/windows/desktop/aa386120(v=vs.85).aspx
-                print dc.DownloadUrl
+                print "update.DownloadContents", dc.DownloadUrl
                 target = makepath(self.cache_path,os.path.split(dc.DownloadUrl)[1])
                 files = win32com.client.Dispatch('Microsoft.Update.StringColl')
                 if not isfile(target):
-                    self.wget_update(dc.DownloadUrl,target)
+                    try:
+                        self.wget_update(dc.DownloadUrl,target)
+                    except Exception as e:
+                        print "ERROR: skipping download %s, reason: %s" % (dc.DownloadUrl, str(e))
+                        continue
                     result.append(dc.DownloadUrl)
                 if isfile(target):
                     files.add(target)
 
-                update.CopyToCache(files)
                 for fn in files:
-                    print"%s put to local WUA cache for update" % (fn,)
-                    if isfile(fn):
-                        remove_file(fn)
+                    print "%s put to local WUA cache for update" % (fn,)
+                    #if isfile(fn):
+                    #    remove_file(fn)
+
+                if len(list(files)) > 0:
+                    update.CopyToCache(files)
 
             for bu in update.BundledUpdates:
                 files = win32com.client.Dispatch('Microsoft.Update.StringColl')
                 for dc in bu.DownloadContents:
                     #https://msdn.microsoft.com/en-us/library/windows/desktop/aa386120(v=vs.85).aspx
-                    print dc.DownloadUrl
+                    print "dc.DownloadUrl", dc.DownloadUrl
                     target = makepath(self.cache_path,os.path.split(dc.DownloadUrl)[1])
                     if not isfile(target):
-                        self.wget_update(dc.DownloadUrl,target)
+                        try:
+                            self.wget_update(dc.DownloadUrl,target)
+                        except Exception as e:
+                            print "ERROR: skipping download %s, reason: %s" % (dc.DownloadUrl, str(e))
+                            continue
                         result.append(dc.DownloadUrl)
                     if isfile(target):
                         files.add(target)
 
-                bu.CopyToCache(files)
                 for fn in files:
-                    print"%s put to local WUA cache for update %s" % (fn,update.Title)
-                    if isfile(fn):
-                        remove_file(fn)
+                    print "%s put to local WUA cache for update" % (fn,)
+
+                if len(list(files)) > 0:
+                    bu.CopyToCache(files)
 
             self.wapt.write_param('waptwua.status','READY')
         except Exception:
