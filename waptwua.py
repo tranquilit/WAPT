@@ -380,6 +380,12 @@ def windows_automatic_updates(disabled):
         key = setuphelpers.reg_openkey_noredir(setuphelpers.HKEY_LOCAL_MACHINE, r'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update', setuphelpers.KEY_WRITE)
         setuphelpers.reg_setvalue(key, 'AUOptions', expected, setuphelpers.REG_DWORD)
         setuphelpers.reg_closekey(key)
+        try:
+            import subprocess
+            subprocess.check_output(['net', 'stop',  'wuauserv'])
+            subprocess.check_output(['net', 'start', 'wuauserv'])
+        except Exception as e:
+            print('Could not restart wuauserv: %s', str(e))
 
 
 class WaptWUA(object):
