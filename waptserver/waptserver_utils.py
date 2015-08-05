@@ -148,6 +148,8 @@ def wget(url,target,proxies=None,connect_timeout=10,download_timeout=None, chunk
     # 1MB max, 2KB min
     chunk_size = min([1024*1024,max([total_bytes/100,2048])])
 
+    httpreq.raise_for_status()
+
     with open(os.path.join(dir,filename),'wb') as output_file:
         downloaded_bytes = 0
         if httpreq.ok:
@@ -159,8 +161,6 @@ def wget(url,target,proxies=None,connect_timeout=10,download_timeout=None, chunk
                 if len(chunk) != 0:
                     downloaded_bytes += len(chunk)
                     chunk_callback(total_bytes, downloaded_bytes)
-        else:
-            httpreq.raise_for_status()
 
     # restore mtime of file if information is provided.
     if 'last-modified' in httpreq.headers:
