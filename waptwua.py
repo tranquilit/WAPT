@@ -484,21 +484,23 @@ class WaptWUA(object):
                 cab_location = '%swua/wsusscn2.cab' % self.wapt.repositories[0].repo_url
                 cab_target = makepath(self.cache_path,'wsusscn2.cab')
                 cab_current_date = self.wapt.read_param('waptwua.wsusscn2cab_date')
-                cab_new_date = httpdatetime2isodate(requests.head(
+                r = requests.head(
                     cab_location,
                     timeout=self.wapt.repositories[0].timeout,
                     proxies=self.wapt.repositories[0].proxies,
                     verify=self.wapt.repositories[0].verify_cert,
-                    ).headers['last-modified'])
+                    )
+                r.raise_for_status()
+                cab_new_date = httpdatetime2isodate(r.headers['last-modified'])
                 if not isfile(cab_target) or (cab_new_date > cab_current_date ):
                     wget(cab_location,cab_target,proxies=self.wapt.repositories[0].proxies,connect_timeout=self.wapt.repositories[0].timeout)
                     self.wapt.write_param('waptwua.wsusscn2cab_date',cab_new_date)
                     logger.debug('New wusscn2.cab date : %s'%cab_new_date)
                 self.wapt.write_param('waptwua.status','DBREADY')
                 return cab_new_date
-            except requests.RequestException as e:
+            except Exception as e:
                 self.wapt.write_param('waptwua.status','ERROR')
-                return None
+                raise
 
     @property
     def update_searcher(self):
@@ -509,13 +511,14 @@ class WaptWUA(object):
             wsusscn2_path = makepath(self.cache_path,'wsusscn2.cab')
             try:
                 cab_sourcedate = self.update_wsusscan_cab()
+                logger.info('wsusscn2 date on server: %s', cab_sourcedate)
             except Exception as e:
                 if isfile(wsusscn2_path):
-                    print('Unable to refresh wsusscan cab, using old one. (error: %s)'%e)
+                    print('Unable to refresh wsusscan cab, using old one. (error: %s)' % e)
                 else:
                     print('Unable to get wsusscan cab, aborting.')
                     raise
-            logger.info('Using wsusscn2.cab file %s with date %s'%(wsusscn2_path,cab_sourcedate))
+            logger.info('Using file %s', wsusscn2_path)
             # use wsus offline updates index cab
             self._update_service = self.update_service_manager.AddScanPackageService("Offline Sync Service",wsusscn2_path)
             self._update_searcher = self.update_session.CreateupdateSearcher()
