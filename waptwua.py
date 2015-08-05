@@ -337,6 +337,7 @@ def map_classifications(lst):
 
 
 def sha1_for_file(fname, block_size=2**20):
+    import hashlib
     f = open(fname,'rb')
     sha1 = hashlib.sha1()
     while True:
