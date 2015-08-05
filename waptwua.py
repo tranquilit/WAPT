@@ -664,7 +664,9 @@ class WaptWUA(object):
                 checked_wget(patch_url, target, proxies=self.wapt.repositories[0].proxies)
             except Exception:
                 # using polipo proxy or direct download
-                checked_wget(url, target, proxies=wua_proxy)
+                #checked_wget(url, target, proxies=wua_proxy)
+                # Temporary: prevent the client from directly reaching Microsoft
+                raise
 
     def download_single(self,update):
         result = []
