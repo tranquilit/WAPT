@@ -387,23 +387,23 @@ class WaptWUA(object):
         self._cached_updates = {}
 
     @staticmethod
-    def automatic_updates(disabled):
+    def automatic_updates(enable):
         print "print automatic_updates"
 
-        if disabled:
-            expected = 0x1
-        else:
+        if enable:
             expected = 0x4
+        else:
+            expected = 0x1
 
         key = reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update')
         updatevalue = reg_getvalue(key, 'AUOptions')
         reg_closekey(key)
 
         if updatevalue != expected:
-            if disabled:
-                logger.info("auto update enabled, disabling")
-            else:
+            if enable:
                 logger.info("auto update disabled, enabling")
+            else:
+                logger.info("auto update enabled, disabling")
             key = reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update', KEY_WRITE)
             reg_setvalue(key, 'AUOptions', expected, REG_DWORD)
             reg_closekey(key)
@@ -884,7 +884,7 @@ if __name__ == '__main__':
         wapt.write_param('waptwua.windows_updates_rules',json.dumps(stored_windows_updates_rules))
 
     wua = WaptWUA(wapt, windows_updates_rules = stored_windows_updates_rules)
-    wua.automatic_updates(disabled=True)
+    wua.automatic_updates(False)
 
     if len(args) <1:
         print parser.usage
