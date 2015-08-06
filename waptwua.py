@@ -405,7 +405,7 @@ class WaptWUA(object):
             else:
                 logger.info("auto update disabled, enabling")
             key = reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update', KEY_WRITE)
-            reg_setvalue(key, 'AUOptions', REG_DWORD)
+            reg_setvalue(key, 'AUOptions', expected, REG_DWORD)
             reg_closekey(key)
             try:
                 import subprocess
