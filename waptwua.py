@@ -368,6 +368,7 @@ class WaptWUA(object):
     def __init__(self,wapt,windows_updates_rules = {}, filter="Type='Software' and IsInstalled=0 and IsHidden=0"):
         self.wapt = wapt
         self.cache_path = os.path.abspath(makepath(wapt.wapt_base_dir,'waptwua','cache'))
+        self.wsusscn2 = makepath(self.cache_path, 'wsusscn2.cab')
         self._update_session = None
         self._update_service_manager = None
         self._update_searcher = None
@@ -486,7 +487,7 @@ class WaptWUA(object):
             try:
                 self.wapt.write_param('waptwua.status','UPDATING')
                 cab_location = '%swua/wsusscn2.cab' % self.wapt.repositories[0].repo_url
-                cab_target = makepath(self.cache_path,'wsusscn2.cab')
+                cab_target = self.wsusscn2
                 cab_current_date = self.wapt.read_param('waptwua.wsusscn2cab_date')
                 r = requests.head(
                     cab_location,
@@ -512,7 +513,7 @@ class WaptWUA(object):
         """
         if not self._update_searcher:
             print('   Connecting to local update searcher using offline wsusscn2 file...')
-            wsusscn2_path = makepath(self.cache_path,'wsusscn2.cab')
+            wsusscn2_path = self.wsusscn2
             try:
                 cab_sourcedate = self.update_wsusscan_cab()
                 logger.info('wsusscn2 date on server: %s', cab_sourcedate)
@@ -628,6 +629,10 @@ class WaptWUA(object):
             self.wapt.write_param('waptwua.status','OK')
         else:
             self.wapt.write_param('waptwua.status','PENDING_UPDATES')
+
+        cksum = sha1_for_file(self.wsusscn2)
+        self.wapt.write_param('waptwua.wsusscn2_checksum', cksum)
+
         # send status to wapt server
         logger.debug('Updating workstation status on remote wapt server')
         self.wapt.update_server_status()
@@ -891,10 +896,11 @@ if __name__ == '__main__':
 
     action = args[0]
     if action == 'scan':
-        installed,pending,discarded = wua.scan_updates_status()
-        print "%s installed updates" % installed
-        print "%s pending updates" % pending
-        print "%s discarded updates" % discarded
+        if sha1_for_file(wua.wsusscn2) != wua.wapt.read_param('waptwua.wsusscn2_checksum'):
+            installed,pending,discarded = wua.scan_updates_status()
+            print "%s installed updates" % installed
+            print "%s pending updates" % pending
+            print "%s discarded updates" % discarded
         print status()
     elif action == 'download':
         print wua.download_updates()
