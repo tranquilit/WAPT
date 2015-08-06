@@ -1925,6 +1925,7 @@ class WaptWUADownload(WaptTask):
 
     def _run(self):
         wua = WaptWUA(self.wapt,windows_updates_rules = self.windows_updates_rules,filter="Type!='Driver'")
+        wua.automatic_updates(disabled=True)
         self.result = wua.download_updates()
         self.summary = "Result : %s" % self.result
 
@@ -1939,6 +1940,7 @@ class WaptWUAInstall(WaptTask):
 
     def _run(self):
         wua = WaptWUA(self.wapt,windows_updates_rules = self.windows_updates_rules,filter="Type!='Driver'")
+        wua.automatic_updates(disabled=True)
         self.result = wua.install_updates()
         self.summary = "Result : %s" % self.result
 
