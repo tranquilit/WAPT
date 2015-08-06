@@ -361,32 +361,7 @@ def check_sha1_filename(target):
         return True
 
 
-def windows_automatic_updates(disabled):
-    import setuphelpers
 
-    if disabled:
-        expected = 0x1
-    else:
-        expected = 0x4
-
-    key = setuphelpers.reg_openkey_noredir(setuphelpers.HKEY_LOCAL_MACHINE, r'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update')
-    updatevalue = setuphelpers.reg_getvalue(key, 'AUOptions')
-    setuphelpers.reg_closekey(key)
-
-    if updatevalue != expected:
-        if disabled:
-            logger.info("auto update enabled, disabling")
-        else:
-            logger.info("auto update disabled, enabling")
-        key = setuphelpers.reg_openkey_noredir(setuphelpers.HKEY_LOCAL_MACHINE, r'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update', setuphelpers.KEY_WRITE)
-        setuphelpers.reg_setvalue(key, 'AUOptions', expected, setuphelpers.REG_DWORD)
-        setuphelpers.reg_closekey(key)
-        try:
-            import subprocess
-            subprocess.check_output(['net', 'stop',  'wuauserv'])
-            subprocess.check_output(['net', 'start', 'wuauserv'])
-        except Exception as e:
-            print('Could not restart wuauserv: %s', str(e))
 
 
 class WaptWUA(object):
@@ -410,6 +385,35 @@ class WaptWUA(object):
         self._updates = None
         # to store successful changes in read only properties of _updates after initial scan
         self._cached_updates = {}
+
+    @staticmethod
+    def automatic_updates(disabled):
+        print "print automatic_updates"
+
+        if disabled:
+            expected = 0x1
+        else:
+            expected = 0x4
+
+        key = reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update')
+        updatevalue = reg_getvalue(key, 'AUOptions')
+        reg_closekey(key)
+
+        if updatevalue != expected:
+            if disabled:
+                logger.info("auto update enabled, disabling")
+            else:
+                logger.info("auto update disabled, enabling")
+            key = reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update', KEY_WRITE)
+            reg_setvalue(key, 'AUOptions', REG_DWORD)
+            reg_closekey(key)
+            try:
+                import subprocess
+                subprocess.check_output(['net', 'stop',  'wuauserv'])
+                subprocess.check_output(['net', 'start', 'wuauserv'])
+            except Exception as e:
+                print('Could not restart wuauserv: %s', str(e))
+
 
     def wua_agent_version(self):
         agent_info = win32com.client.Dispatch("Microsoft.Update.AgentInfo")
@@ -854,8 +858,6 @@ if __name__ == '__main__':
     if options.loglevel is not None:
         setloglevel(logger,options.loglevel)
 
-    windows_automatic_updates(disabled=True)
-
     wapt = Wapt(config_filename=options.config)
 
     allowed_updates = ensure_list(options.allowed_updates,allow_none = True)
@@ -882,6 +884,8 @@ if __name__ == '__main__':
         wapt.write_param('waptwua.windows_updates_rules',json.dumps(stored_windows_updates_rules))
 
     wua = WaptWUA(wapt, windows_updates_rules = stored_windows_updates_rules)
+    wua.automatic_updates(disabled=True)
+
     if len(args) <1:
         print parser.usage
         sys.exit(1)
