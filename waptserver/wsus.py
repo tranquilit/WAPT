@@ -152,8 +152,8 @@ def download_wsusscan(params={}):
 
         tmp_timestamp = os.stat(tmp_filename).st_mtime
         current_timestamp = time.time()
-        if current_timestamp < tmp_timestamp + 24 * 60 * 60:
-            logger.info('download_wsusscan: %s is present but less than 24 hours old (timestamp %f), skipping download', tmp_filename, tmp_timestamp)
+        if current_timestamp < tmp_timestamp + 3 * 60 * 60:
+            logger.info('download_wsusscan: %s is present but less than 3 hours old (timestamp %f), skipping download', tmp_filename, tmp_timestamp)
             stats['status'] = 'aborted'
             wsusscan2_history.save(stats)
 
@@ -1398,8 +1398,8 @@ def download_wuredist():
 
         tmp_timestamp = os.stat(tmp_filename).st_mtime
         current_timestamp = time.time()
-        if current_timestamp < tmp_timestamp + 24 * 60 * 60:
-            logger.info('download_wuredist: %s is present but less than 24 hours old (timestamp %f), skipping download', tmp_filename, tmp_timestamp)
+        if current_timestamp < tmp_timestamp + 3 * 60 * 60:
+            logger.info('download_wuredist: %s is present but less than 3 hours old (timestamp %f), skipping download', tmp_filename, tmp_timestamp)
             stats['status'] = 'aborted'
             #wuredist_history.save(stats)
 
