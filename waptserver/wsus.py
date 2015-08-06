@@ -1215,7 +1215,12 @@ def download_windows_updates():
                 os.makedirs(os.path.join(waptwua_folder,*fileparts[:-1]))
             tmp_target = target + '.part'
             if os.path.isfile(tmp_target):
-                raise Exception('Downloading kb %s to file already existing %s' % (kb_article_id, tmp_target))
+                tmp_timestamp = os.stat(tmp_target).st_mtime
+                current_timestamp = time.time()
+                if current_timestamp < tmp_timestamp + 3 * 60 * 60:
+                    raise Exception('download_windows_update: download (probably) in progress')
+                else:
+                    os.unlink(tmp_target)
             wget(url, tmp_target)
             if check_sha1_filename(tmp_target) == False:
                 os.remove(target)
