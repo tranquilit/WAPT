@@ -388,7 +388,6 @@ class WaptWUA(object):
 
     @staticmethod
     def automatic_updates(enable):
-        print "print automatic_updates"
 
         if enable:
             expected = 0x4
