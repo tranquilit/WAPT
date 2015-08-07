@@ -913,6 +913,16 @@ begin
         dmi := nil;
       end;
       RowSO['dmi'] := dmi;
+      try
+        sores := WAPTServerJsonGet('api/v1/host_data?field=waptwua&uuid=%s',[currhost]);
+        if sores.B['success'] then
+          waptwua := sores['result']
+        else
+          waptwua := nil;
+      except
+        waptwua := nil;
+      end;
+      RowSO['waptwua'] := waptwua;
       TreeLoadData(GridhostInventory, RowSO.AsJSon());
     end
     else if HostPages.ActivePage = pgTasks then
