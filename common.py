@@ -2361,7 +2361,7 @@ class Wapt(object):
         # cached runstatus to avoid setting in db if not changed.
         self._runstatus = None
         self._use_hostpackages = None
-        self._waptwua_enabled = None
+        self.waptwua_enabled = False
 
         self.repositories = []
 
@@ -2570,9 +2570,9 @@ class Wapt(object):
         if self.config.has_option('global','use_hostpackages'):
             self.use_hostpackages = self.config.getboolean('global','use_hostpackages')
 
-        self._waptwua_enabled = None
+        self.waptwua_enabled = False
         if self.config.has_option('global','waptwua_enabled'):
-            self.use_hostpackages = self.config.getboolean('global','waptwua_enabled')
+            self.waptwua_enabled = self.config.getboolean('global','waptwua_enabled')
 
 
     def write_config(self,config_filename=None):
