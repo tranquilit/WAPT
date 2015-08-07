@@ -888,13 +888,20 @@ if __name__ == '__main__':
         wapt.write_param('waptwua.windows_updates_rules',json.dumps(stored_windows_updates_rules))
 
     wua = WaptWUA(wapt, windows_updates_rules = stored_windows_updates_rules)
-    wua.automatic_updates(False)
 
     if len(args) <1:
         print parser.usage
         sys.exit(1)
 
     action = args[0]
+
+    if action == 'scan':
+        pass
+    elif wua.wapt.waptwua_enabled == False:
+        raise Exception('waptwua is currently disabled.')
+    else:
+        wua.automatic_updates(False)
+
     if action == 'scan':
         if sha1_for_file(wua.wsusscn2) != wua.wapt.read_param('waptwua.wsusscn2_checksum'):
             installed,pending,discarded = wua.scan_updates_status()
