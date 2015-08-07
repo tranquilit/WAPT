@@ -1930,6 +1930,7 @@ class WaptWUADownload(WaptTask):
             raise Exception('waptwua is currently disabled.')
 
         wua.automatic_updates(False)
+        wua.disable_os_upgrade()
 
         self.result = wua.download_updates()
         self.summary = "Result : %s" % self.result
@@ -1950,6 +1951,7 @@ class WaptWUAInstall(WaptTask):
             raise Exception('waptwua is currently disabled.')
 
         wua.automatic_updates(False)
+        wua.disable_os_upgrade()
 
         self.result = wua.install_updates()
         self.summary = "Result : %s" % self.result

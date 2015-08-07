@@ -414,6 +414,16 @@ class WaptWUA(object):
             except Exception as e:
                 print('Could not restart wuauserv: %s', str(e))
 
+    @staticmethod
+    def disable_os_upgrade():
+        key = reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate')
+        updatevalue = reg_getvalue(key, 'DisableOSUpgrade')
+        reg_closekey(key)
+        if updatevalue != 0x1:
+            key = reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate', KEY_WRITE)
+            reg_setvalue(key, 'DisableOSUpgrade', 0x1, REG_DWORD)
+            reg_closekey(key)
+
 
     def wua_agent_version(self):
         agent_info = win32com.client.Dispatch("Microsoft.Update.AgentInfo")
@@ -901,6 +911,7 @@ if __name__ == '__main__':
         raise Exception('waptwua is currently disabled.')
     else:
         wua.automatic_updates(False)
+        wua.disable_os_upgrade()
 
     if action == 'scan':
         if sha1_for_file(wua.wsusscn2) != wua.wapt.read_param('waptwua.wsusscn2_checksum'):
