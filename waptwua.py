@@ -918,7 +918,8 @@ if __name__ == '__main__':
         wua.disable_os_upgrade()
 
     if action == 'scan':
-        if sha1_for_file(wua.wsusscn2) != wua.wapt.read_param('waptwua.wsusscn2_checksum'):
+        if not os.path.exists(wua.wsusscn2) or \
+                sha1_for_file(wua.wsusscn2) != wua.wapt.read_param('waptwua.wsusscn2_checksum'):
             installed,pending,discarded = wua.scan_updates_status()
             print "%s installed updates" % installed
             print "%s pending updates" % pending
