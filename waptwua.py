@@ -442,6 +442,13 @@ class WaptWUA(object):
             except Exception:
                 return '0.0.0'
 
+
+    def ensure_minimum_wua_version(self):
+        v = map(int, self.wua_agent_version().split('.'))
+        if v[0] < WUA_MAJOR_VERSION or (v[0] == WUA_MAJOR_VERSION and v[1] < WUA_MINOR_VERSION):
+            raise Exception('Minimum required WUA version: %d.%d' % (WUA_MAJOR_VERSION, WUA_MINOR_VERSION))
+
+
     def cached_update_property(self,update,key):
         update_id = update.Identity.UpdateID
         if update_id in self._cached_updates and key in self._cached_updates[update_id]:
