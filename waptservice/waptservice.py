@@ -1911,7 +1911,7 @@ class WaptWUAScan(WaptTask):
         self.windows_updates_rules = windows_updates_rules
 
     def _run(self):
-        wua = WaptWUA(self.wapt,windows_updates_rules = self.windows_updates_rules,filter="Type!='Driver'")
+        wua = WaptWUA(self.wapt,windows_updates_rules = self.windows_updates_rules)
         self.result = (installed,pending,discarded) = wua.scan_updates_status()
         self.summary = "Windows updates : already installed: %s, pending: %s, discarded: %s" % (installed,pending,discarded)
 
@@ -1924,7 +1924,7 @@ class WaptWUADownload(WaptTask):
         self.windows_updates_rules = windows_updates_rules
 
     def _run(self):
-        wua = WaptWUA(self.wapt,windows_updates_rules = self.windows_updates_rules,filter="Type!='Driver'")
+        wua = WaptWUA(self.wapt,windows_updates_rules = self.windows_updates_rules)
 
         if wua.wapt.waptwua_enabled == False:
             raise Exception('waptwua is currently disabled.')
@@ -1945,7 +1945,7 @@ class WaptWUAInstall(WaptTask):
         self.windows_updates_rules = windows_updates_rules
 
     def _run(self):
-        wua = WaptWUA(self.wapt,windows_updates_rules = self.windows_updates_rules,filter="Type!='Driver'")
+        wua = WaptWUA(self.wapt,windows_updates_rules = self.windows_updates_rules)
 
         if wua.wapt.waptwua_enabled == False:
             raise Exception('waptwua is currently disabled.')
