@@ -313,7 +313,6 @@ InstallResult = {
   5: 'Aborted',
  }
 
-ALL = None
 
 def map_classifications(lst):
     """Given a list of updateclassification id or updateclassification names
