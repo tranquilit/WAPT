@@ -314,6 +314,10 @@ InstallResult = {
  }
 
 
+WUA_MAJOR_VERSION = 7
+WUA_MINOR_VERSION = 6
+
+
 def map_classifications(lst):
     """Given a list of updateclassification id or updateclassification names
       return list of UpdateClassification names
