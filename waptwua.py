@@ -35,22 +35,20 @@
 """
 __version__ = "1.3.1"
 
-from setuphelpers import *
-
-import sys
-import os
-import win32com.client
-import json
-
-from optparse import OptionParser
-from urlparse import urlparse
 
 import datetime
-import requests
+import json
 import logging
-
-import time
+import os
 import platform
+import requests
+import sys
+import time
+import win32com.client
+from optparse import OptionParser
+from urlparse import urlparse
+from setuphelpers import *
+
 
 #https://msdn.microsoft.com/en-us/library/ff357803%28v=vs.85%29.aspx
 UpdateClassifications = {
