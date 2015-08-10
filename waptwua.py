@@ -912,6 +912,7 @@ if __name__ == '__main__':
         wapt.write_param('waptwua.windows_updates_rules',json.dumps(stored_windows_updates_rules))
 
     wua = WaptWUA(wapt, windows_updates_rules = stored_windows_updates_rules)
+    wua.ensure_minimum_wua_version()
 
     if len(args) <1:
         print parser.usage
