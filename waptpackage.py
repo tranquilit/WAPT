@@ -808,7 +808,7 @@ class WaptLocalRepo(WaptBaseRepo):
                         icon = extract_iconpng_from_wapt(fname)
                         open(icon_fn,'wb').write(icon)
                     except Exception as e:
-                        logger.critical(r"Unable to extract icon for %s:%s"%(fname,e))
+                        logger.info(r"Unable to extract icon for %s:%s"%(fname,e))
 
             except Exception,e:
                 print e
