@@ -50,6 +50,7 @@ import requests
 import logging
 
 import time
+import platform
 
 #https://msdn.microsoft.com/en-us/library/ff357803%28v=vs.85%29.aspx
 UpdateClassifications = {
@@ -416,6 +417,11 @@ class WaptWUA(object):
 
     @staticmethod
     def disable_os_upgrade():
+
+        # XXX should we only disable this on Windows 7 clients?
+        if platform.win32_ver()[0] != '7':
+            return
+
         key = reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate')
         updatevalue = reg_getvalue(key, 'DisableOSUpgrade')
         reg_closekey(key)
