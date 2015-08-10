@@ -2655,7 +2655,7 @@ def remove_file(path):
         except Exception as e:
             logger.critical('Unable to remove file %s : error %s' %(path,e))
     else:
-        logger.warning(u"File %s doesn't exist, so not removed" % (path))
+        logger.info(u"File %s doesn't exist, so not removed" % (path))
 
 def remove_tree(*args, **kwargs):
     r"""Convenience function to delete a directory tree, with any error
