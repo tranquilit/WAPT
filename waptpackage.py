@@ -282,7 +282,7 @@ class PackageEntry(object):
 
     def __setitem__(self,name,value):
         name = name.lower()
-        if not name in self.all_attributes:
+        if name not in self.all_attributes:
             self.calculated_attributes.append(name)
         setattr(self,name,value)
 
@@ -499,7 +499,7 @@ sources      : %(sources)s
                   - packagename_version_arch.wapt for softwares
                   - packagename.wapt for group and host.
         """
-        if not self.section in ['host','group'] and not (self.package and self.version and self.architecture):
+        if self.section not in ['host','group'] and not (self.package and self.version and self.architecture):
             raise Exception(u'Not enough information to build the package filename for %s (%s)'%(self.package,self.version))
         if self.section in ['host','group']:
             return self.package+'.wapt'
@@ -650,11 +650,11 @@ class WaptBaseRepo(object):
         for package in self.packages:
             selected = True
             for w in words:
-                if not w in (package.description+' '+package.package).lower():
+                if w not in (package.description+' '+package.package).lower():
                     selected = False
                     break
             if sections:
-                if not package.section in sections:
+                if package.section not in sections:
                     selected = False
             if selected:
                 result.append(package)
@@ -729,7 +729,7 @@ class WaptLocalRepo(WaptBaseRepo):
                     package.filename = package.make_package_filename()
                     self._packages.append(package)
                     # index last version
-                    if not package.package in self.index or self.index[package.package] < package:
+                    if package.package not in self.index or self.index[package.package] < package:
                         self.index[package.package] = package
 
             for line in packages_lines:
@@ -798,12 +798,12 @@ class WaptLocalRepo(WaptBaseRepo):
                 packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
                 self._packages.append(entry)
                 # index last version
-                if not entry.package in self.index or self.index[entry.package] < entry:
+                if entry.package not in self.index or self.index[entry.package] < entry:
                     self.index[entry.package] = entry
 
                 # looks for an icon in wapt package
                 icon_fn = os.path.join(icons_path,"%s.png"%entry.package)
-                if not entry.section in ['group','host'] and (force_all or not os.path.isfile(icon_fn)):
+                if entry.section not in ['group','host'] and (force_all or not os.path.isfile(icon_fn)):
                     try:
                         icon = extract_iconpng_from_wapt(fname)
                         open(icon_fn,'wb').write(icon)
@@ -1091,8 +1091,8 @@ class WaptRemoteRepo(WaptBaseRepo):
                 endline += 1
         # last one
         add(startline,endline)
-        added = [ p for p in new_packages if not p in self._packages]
-        removed = [ p for p in self._packages if not p in new_packages]
+        added = [ p for p in new_packages if p not in self._packages]
+        removed = [ p for p in self._packages if p not in new_packages]
         self._packages = new_packages
         self._packages_date = httpdatetime2isodate(packages_answer.headers['last-modified'])
         return {'added':added,'removed':removed,'last-modified': self.packages_date }
