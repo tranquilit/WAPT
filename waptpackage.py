@@ -798,7 +798,7 @@ class WaptLocalRepo(WaptBaseRepo):
                 packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
                 self._packages.append(entry)
                 # index last version
-                if not entry.package in self.index or self.index[entry.package] < package:
+                if not entry.package in self.index or self.index[entry.package] < entry:
                     self.index[entry.package] = entry
 
                 # looks for an icon in wapt package
