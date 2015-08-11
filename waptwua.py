@@ -503,9 +503,8 @@ class WaptWUA(object):
             self._update_service_manager = win32com.client.Dispatch("Microsoft.Update.ServiceManager")
         return self._update_service_manager
 
-    def update_wsusscan_cab(self):
-        """Download from wapt server the last version of wsusscn2.cab database for offline update scan
-
+    def download_wsusscan_cab(self):
+        """Download from wapt server the last version of wsusscn2.cab database for offline update scan.
         """
         if len(self.wapt.repositories)>0:
             try:
@@ -526,36 +525,37 @@ class WaptWUA(object):
                     self.wapt.write_param('waptwua.wsusscn2cab_date',cab_new_date)
                     logger.debug('New wusscn2.cab date : %s'%cab_new_date)
                 self.wapt.write_param('waptwua.status','DBREADY')
-                return cab_new_date
             except Exception as e:
                 self.wapt.write_param('waptwua.status','ERROR')
                 raise
+
+
+    def update_wsusscan_cab(self):
+        try:
+            self.download_wsusscan_cab()
+        except Exception as e:
+            if isfile(self.wsusscn2):
+                print('Unable to refresh wsusscan cab, using old one. (error: %s)' % e)
+            else:
+                print('Unable to get wsusscan cab, aborting.')
+                raise
+
 
     @property
     def update_searcher(self):
         """Instantiate a updateSearcher instance
         """
         if not self._update_searcher:
-            print('   Connecting to local update searcher using offline wsusscn2 file...')
-            wsusscn2_path = self.wsusscn2
-            try:
-                cab_sourcedate = self.update_wsusscan_cab()
-                logger.info('wsusscn2 date on server: %s', cab_sourcedate)
-            except Exception as e:
-                if isfile(wsusscn2_path):
-                    print('Unable to refresh wsusscan cab, using old one. (error: %s)' % e)
-                else:
-                    print('Unable to get wsusscan cab, aborting.')
-                    raise
-            logger.info('Using file %s', wsusscn2_path)
             # use wsus offline updates index cab
-            self._update_service = self.update_service_manager.AddScanPackageService("Offline Sync Service",wsusscn2_path)
-            self._update_searcher = self.update_session.CreateupdateSearcher()
+            print('   Connecting to local update searcher using offline wsusscn2 file...')
+            self._update_service = self.update_service_manager.AddScanPackageService("Offline Sync Service",self.wsusscn2)
+            self._update_searcher = self.update_session.CreateUpdateSearcher()
             # use offline only
             self._update_searcher.ServerSelection = 3 # other
             self._update_searcher.ServiceID = self._update_service.ServiceID
             print('   Offline Update searcher ready...')
         return self._update_searcher
+
 
     @property
     def updates(self):
