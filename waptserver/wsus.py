@@ -64,6 +64,8 @@ import urlparse
 import uuid
 import re
 from wapthuey import huey
+from huey import crontab
+import random
 
 # i18n
 from flask.ext.babel import Babel
@@ -103,6 +105,12 @@ def cabextract(cabfile, **kwargs):
     command = ionice + ['cabextract'] + check_only + dstdir + [cabfile]
 
     return subprocess.check_output(command)
+
+
+# Between 2h00 and 2h59
+@huey.periodic_task(crontab(hour='3', minute=str(30 + random.randrange(-30, +30)))
+def download_wsusscan_crontab():
+    return download_wsusscan(False, False)
 
 
 @huey.task()
