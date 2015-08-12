@@ -114,7 +114,7 @@ def download_wsusscan(force=False, dryrun=False):
     """
     cab_url = 'http://download.windowsupdate.com/microsoftupdate/v6/wsusscan/wsusscn2.cab'
     wsus_filename = os.path.join(waptwua_folder,'wsusscn2.cab')
-    tmp_filename = os.path.join(waptwua_folder,'wsusscn2.cab.tmp')
+    tmp_filename = os.path.join(waptwua_folder,'wsusscn2.cab.part')
 
     wsusscan2_history = pymongo.MongoClient().wapt.wsusscan2_history
     wsusscan2_history.ensure_index('uuid', unique=True)
@@ -134,14 +134,8 @@ def download_wsusscan(force=False, dryrun=False):
     # should we remove the tmp filename when we get an error?
     cleanup_on_error = False
 
-    if not force and os.path.isfile(tmp_filename):
-
-        tmp_timestamp = os.stat(tmp_filename).st_mtime
-        current_timestamp = time.time()
-        if current_timestamp < tmp_timestamp + 3 * 60 * 60:
-            logger.info('download_wsusscan: %s is present but less than 3 hours old (timestamp %f), skipping download', tmp_filename, tmp_timestamp)
-            stats['status'] = 'aborted'
-            wsusscan2_history.save(stats)
+    if os.path.isfile(tmp_filename):
+        os.unlink(tmp_filename)
 
     try:
 
@@ -1189,12 +1183,7 @@ def download_windows_updates():
                 os.makedirs(os.path.join(waptwua_folder,*fileparts[:-1]))
             tmp_target = target + '.part'
             if os.path.isfile(tmp_target):
-                tmp_timestamp = os.stat(tmp_target).st_mtime
-                current_timestamp = time.time()
-                if current_timestamp < tmp_timestamp + 3 * 60 * 60:
-                    raise Exception('download_windows_update: download (probably) in progress')
-                else:
-                    os.unlink(tmp_target)
+                os.unlink(tmp_target)
             wget(url, tmp_target)
             if check_sha1_filename(tmp_target) == False:
                 os.remove(target)
@@ -1363,7 +1352,7 @@ def wuredist_extract_and_fetch(wuredist, tmpdir):
 def download_wuredist():
     cab_url = 'http://update.microsoft.com/redist/wuredist.cab'
     wuredist_filename = os.path.join(waptwua_folder, 'wuredist.cab')
-    tmp_filename = wuredist_filename + '.tmp'
+    tmp_filename = wuredist_filename + '.part'
 
     # should we remove the tmp filename when we get an error?
     cleanup_on_error = False
@@ -1373,14 +1362,8 @@ def download_wuredist():
 
     stats = {}
 
-    if not force and os.path.isfile(tmp_filename):
-
-        tmp_timestamp = os.stat(tmp_filename).st_mtime
-        current_timestamp = time.time()
-        if current_timestamp < tmp_timestamp + 3 * 60 * 60:
-            logger.info('download_wuredist: %s is present but less than 3 hours old (timestamp %f), skipping download', tmp_filename, tmp_timestamp)
-            stats['status'] = 'aborted'
-            #wuredist_history.save(stats)
+    if os.path.isfile(tmp_filename):
+        os.unlink(tmp_filename)
 
     try:
 
