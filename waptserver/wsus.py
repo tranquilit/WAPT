@@ -81,10 +81,6 @@ def setup(folder):
     global waptwua_folder
     waptwua_folder = folder
 
-# Unique, constant UUIDs
-WSUS_UPDATE_DOWNLOAD_LOCK = '420d1a1e-5f63-4afc-b055-2ce1538054aa'
-WSUS_PARSE_WSUSSCN2_LOCK = 'b526e9da-ebf0-45c7-9d01-90218d110e61'
-
 
 def cabextract(cabfile, **kwargs):
     check_only = []
@@ -635,24 +631,11 @@ def parse_wsusscan_entrypoint(dl_uuid=None):
 
 
 def parse_wsusscan2(dl_uuid):
-    got_lock = False
-
-    runtime = pymongo.MongoClient().wapt.wsus_runtime
     try:
-        logger.info('Acquiring lock for parse_wsusscan2')
-        runtime.insert({ '_id': WSUS_PARSE_WSUSSCN2_LOCK })
-        got_lock = True
-
         parse_wsusscan_entrypoint(dl_uuid)
-
-    except pymongo.errors.DuplicateKeyError:
-        logger.warning('parse_wsusscan2 already running, aborting')
     except Exception as e:
         logger.error('Exception in parse_wsusscan2: %s', repr(e))
         logger.error('Traceback: %s', traceback.format_exc())
-    finally:
-        if got_lock == True:
-            runtime.remove({'_id': WSUS_PARSE_WSUSSCN2_LOCK })
 
 
 #@app.route('/api/v2/download_wsusscan')
@@ -662,6 +645,7 @@ def trigger_wsusscan2_download():
     logger.info('Triggering download_wsusscan with parameter ' + str(force))
     download_wsusscan(dryrun=dryrun, force=force)
     return make_response()
+
 
 #@app.route('/api/v2/wsusscan2_status')
 def wsusscan2_status():
