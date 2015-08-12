@@ -69,6 +69,7 @@ import re
 
 from waptpackage import *
 from waptserver_utils import *
+from wapthuey import huey
 
 # i18n
 from flask.ext.babel import Babel
@@ -248,6 +249,7 @@ utils_set_devel_mode(options.devel)
 try:
     import wsus
     wsus.setup(waptwua_folder)
+    from wsus import download_wsusscan
 except Exception as e:
     logger.error(str(e))
     wsus = False

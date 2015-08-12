@@ -52,6 +52,7 @@ import email.utils
 from flask import request
 import hashlib
 import json
+from lxml import etree as ET
 import pymongo
 import requests
 import shutil
@@ -62,6 +63,7 @@ import traceback
 import urlparse
 import uuid
 import re
+from wapthuey import huey
 
 # i18n
 from flask.ext.babel import Babel
@@ -71,16 +73,10 @@ except ImportError:
     gettext = (lambda s:s)
 _ = gettext
 
-try:
-    from uwsgidecorators import *
-    from lxml import etree as ET
-except:
-    def spool(func):
-        return func
 
 from waptserver_utils import *
 
-waptwua_folder = ''
+waptwua_folder = '/var/www/waptwua'
 def setup(folder):
     global waptwua_folder
     waptwua_folder = folder
@@ -88,10 +84,6 @@ def setup(folder):
 # Unique, constant UUIDs
 WSUS_UPDATE_DOWNLOAD_LOCK = '420d1a1e-5f63-4afc-b055-2ce1538054aa'
 WSUS_PARSE_WSUSSCN2_LOCK = 'b526e9da-ebf0-45c7-9d01-90218d110e61'
-
-SPOOL_OK = -2 # the task has been completed, the spool file will be removed
-SPOOL_RETRY = -1 # something is temporarily wrong, the task will be retried at the next spooler iteration
-SPOOL_IGNORE = 0 #  ignore this task, if multiple languages are loaded in the instance all of them will fight for managing the task. This return values allows you to skip a task in specific languages.
 
 
 def cabextract(cabfile, **kwargs):
@@ -117,8 +109,8 @@ def cabextract(cabfile, **kwargs):
     return subprocess.check_output(command)
 
 
-@spool
-def download_wsusscan(params={}):
+@huey.task()
+def download_wsusscan(force=False, dryrun=False):
     """Launch a task to update current wsus offline cab file
         download in a temporary well known file
         abort if the temporary file is present (means another download is in progress
@@ -132,8 +124,6 @@ def download_wsusscan(params={}):
     wsusscan2_history.ensure_index('uuid', unique=True)
     wsusscan2_history.ensure_index([('run_date', pymongo.DESCENDING)])
 
-    force = params.get('force', False) == 'True'
-    dryrun = params.get('dryrun', False) == 'True'
     dl_uuid = str(uuid.uuid4())
 
     stats = {
@@ -239,7 +229,7 @@ def download_wsusscan(params={}):
             stats['skipped'] = True
             wsusscan2_history.save(stats)
 
-        return SPOOL_OK
+        return 'OK'
 
     except Exception as e:
         stats['error'] = str(e)
@@ -250,7 +240,7 @@ def download_wsusscan(params={}):
 
         logger.error("Error in download_wsusscan: %s", str(e))
         logger.error('Trace:\n%s', traceback.format_exc())
-        return SPOOL_OK
+        return 'ERROR'
 
 
 def wsusscan2_extract_cabs(wsusscan2, tmpdir):
@@ -670,7 +660,7 @@ def trigger_wsusscan2_download():
     dryrun = bool(request.args.get('dryrun', False))
     force = bool(request.args.get('force', False))
     logger.info('Triggering download_wsusscan with parameter ' + str(force))
-    download_wsusscan.spool(dryrun=dryrun, force=force)
+    download_wsusscan(dryrun=dryrun, force=force)
     return make_response()
 
 #@app.route('/api/v2/wsusscan2_status')
