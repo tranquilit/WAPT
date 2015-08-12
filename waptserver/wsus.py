@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # -----------------------------------------------------------------------
 #    This file is part of WAPT
-#    Copyright (C) 2013  Tranquil IT Systems http://www.tranquil.it
+#    Copyright (C) 2015  Tranquil IT Systems http://www.tranquil.it
 #    WAPT aims to help Windows systems administrators to deploy
 #    setup and update applications on users PC.
 #
