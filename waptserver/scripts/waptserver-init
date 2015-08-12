@@ -83,6 +83,8 @@ do_stop()
 {
     send_sig -QUIT
     wait_and_clean_pidfiles
+    # sorry...
+    send_sig -KILL
 }
 
 do_reload()
