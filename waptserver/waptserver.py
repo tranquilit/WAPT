@@ -104,7 +104,7 @@ parser=OptionParser(usage=usage,version='waptserver.py ' + __version__)
 parser.add_option("-c","--config", dest="configfile", default=os.path.join(wapt_root_dir,'waptserver','waptserver.ini'), help="Config file full path (default: %default)")
 parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
 parser.add_option("-d","--devel", dest="devel", default=False,action='store_true', help="Enable debug mode (for development only)")
-parser.add_option("-w","--without-apache", dest="without_apache", default=False, action='store_true',help="Loglevel (default: warning)")
+parser.add_option("-w","--without-apache", dest="without_apache", default=False, action='store_true',help="Internal use")
 
 (options,args)=parser.parse_args()
 
