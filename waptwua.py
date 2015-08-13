@@ -800,6 +800,7 @@ class WaptWUA(object):
         except Exception as e:
             logger.error('Unexpected error:' + str(e))
             self.wapt.write_param('waptwua.status','ERROR')
+        self.wapt.update_server_status()
         return result
 
     def install_updates(self):
@@ -846,6 +847,7 @@ class WaptWUA(object):
             self.wapt.write_param('waptwua.status','ERROR')
         finally:
             self.scan_updates_status()
+        self.wapt.update_server_status()
         return result
 
 
