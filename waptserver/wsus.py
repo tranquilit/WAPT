@@ -1163,16 +1163,15 @@ def check_sha1_filename(target):
 #@app.route('/api/v2/download_windows_update')
 def download_windows_updates():
 
-
     try:
-        try:
-            kb_article_id = request.args.get('kb_article_id', None)
-            if kb_article_id != None:
-                requested_kb = utils_get_db().requested_kb
-                requested_kb.update({ 'kb_article_id': kb_article_id }, { 'kb_article_id': kb_article_id, '$inc': { 'request_count', int(1) } }, upsert=True)
-        except Exception as e:
+        kb_article_id = request.args.get('kb_article_id', None)
+        if kb_article_id != None:
+            requested_kb = utils_get_db().requested_kb
+            requested_kb.update({ 'kb_article_id': kb_article_id }, { 'kb_article_id': kb_article_id, '$inc': { 'request_count', int(1) } }, upsert=True)
+    except Exception as e:
             logger.error('download_windows_updates: %s', str(e))
 
+    try:
         url = request.args['url']
         url_parts = urlparse.urlparse(url)
         if url_parts.netloc not in ['download.windowsupdate.com','www.download.windowsupdate.com']:
@@ -1185,22 +1184,40 @@ def download_windows_updates():
             os.remove(target)
 
         if not os.path.isfile(target):
-            if not os.path.isdir(os.path.join(waptwua_folder,*fileparts[:-1])):
-                os.makedirs(os.path.join(waptwua_folder,*fileparts[:-1]))
-            tmp_target = target + '.part'
-            if os.path.isfile(tmp_target):
-                os.unlink(tmp_target)
-            wget(url, tmp_target)
-            if check_sha1_filename(tmp_target) == False:
-                os.remove(target)
-                raise Exception('Error during download, sha1 mismatch')
-            else:
-                os.rename(tmp_target, target)
+            download_windows_update_task(url)
+            raise Exception('Download triggered, come back later!')
 
         result = {'url':'/waptwua%s'% ('/'.join(fileparts),),'size':os.stat(target).st_size}
         return make_response(msg='Windows patch available',result=result)
     except Exception as e:
         return make_response_from_exception(e)
+
+
+@huey.task(retries=3, retry_delay=60)
+def download_windows_update_task(url):
+    url_parts = urlparse.urlparse(url)
+    if url_parts.netloc not in ['download.windowsupdate.com','www.download.windowsupdate.com']:
+        raise Exception('Unauthorized location')
+    fileparts = urlparse.urlparse(url).path.split('/')
+    target = os.path.join(waptwua_folder,*fileparts)
+
+    # check sha1 sum if possible...
+    if os.path.isfile(target) and not check_sha1_filename(target):
+        os.remove(target)
+
+    if not os.path.isdir(os.path.join(waptwua_folder,*fileparts[:-1])):
+        os.makedirs(os.path.join(waptwua_folder,*fileparts[:-1]))
+    tmp_target = target + '.part'
+    if os.path.isfile(tmp_target):
+        os.unlink(tmp_target)
+    wget(url, tmp_target)
+    if check_sha1_filename(tmp_target) == False:
+        os.remove(target)
+        raise Exception('Error during download, sha1 mismatch')
+    else:
+        os.rename(tmp_target, target)
+
+    return True
 
 
 def do_resolve_update(update_map, update_id, recursion_level):
