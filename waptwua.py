@@ -778,8 +778,8 @@ class WaptWUA(object):
                     bu.CopyToCache(files)
 
             self.wapt.write_param('waptwua.status','READY')
+        # We can't handle errors here.
         except Exception:
-            self.wapt.write_param('waptwua.status','ERROR')
             raise
         return result
 
@@ -794,6 +794,12 @@ class WaptWUA(object):
                 # IUpdate2 : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386100(v=vs.85).aspx
                 result.extend(self.download_single(update))
         self.scan_updates_status()
+        except WAPTDiskSpaceException:
+            logger.error('Disk Space Error')
+            self.wapt.write_param('waptwua.status','DISK_SPACE_ERROR')
+        except Exception as e:
+            logger.error('Unexpected error:' + str(e))
+            self.wapt.write_param('waptwua.status','ERROR')
         return result
 
     def install_updates(self):
@@ -833,6 +839,9 @@ class WaptWUA(object):
 
             self.wapt.write_param('waptwua.last_install_batch',json.dumps(result))
             self.wapt.write_param('waptwua.last_install_date',datetime2isodate())
+        except WAPTDiskSpaceException:
+            self.wapt.write_param('waptwua.status','DISK_SPACE_ERROR')
+            logger.error('Disk Space Error')
         except Exception:
             self.wapt.write_param('waptwua.status','ERROR')
         finally:
