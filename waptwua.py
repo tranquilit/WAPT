@@ -979,6 +979,8 @@ if __name__ == '__main__':
     elif action == 'install':
         print wua.install_updates()
         print status()
+    elif action == 'status':
+        print status()
     else:
         print parser.usage
 
