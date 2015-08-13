@@ -45,6 +45,7 @@ import requests
 import sys
 import time
 import win32com.client
+import wmi
 from optparse import OptionParser
 from urlparse import urlparse
 from setuphelpers import *
@@ -363,6 +364,16 @@ def check_sha1_filename(target):
         return True
 
 
+class WAPTDiskSpaceException(Exception):
+    def __init__(self, message, free_space):
+        self.message = message
+        self.free_space = free_space
+
+    def __unicode__(self):
+        return unicode(self.message) + u'; free space: ' + unicode(self.free_space / 2**20) + u'MB'
+
+    def __str__(self):
+        return unicode(self).encode('utf-8')
 
 
 
@@ -702,6 +713,14 @@ class WaptWUA(object):
                 #checked_wget(url, target, proxies=wua_proxy)
                 # Temporary: prevent the client from directly reaching Microsoft
                 raise
+
+
+    def _check_disk_space(self):
+        for d in wmi.WMI().Win32_LogicalDisk():
+            device = d.Name
+            if device == 'C:' and int(d.FreeSpace) < 2 ** 30:
+                raise WAPTDiskSpaceException('Not enough space left on device ' + device, d.FreeSpace)
+
 
     def download_single(self,update):
         result = []
