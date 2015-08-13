@@ -430,7 +430,9 @@ class WaptWUA(object):
     @staticmethod
     def disable_os_upgrade():
 
-        # XXX should we only disable this on Windows 7 clients?
+        # FIXME: broken also on Windows 7 if the appropriate KB isn't installed
+        return
+
         if platform.win32_ver()[0] != '7':
             return
 
@@ -725,6 +727,9 @@ class WaptWUA(object):
     def download_single(self,update):
         result = []
         try:
+
+            self._check_disk_space()
+
             self.wapt.write_param('waptwua.status','DOWNLOADING')
 
             for dc in update.DownloadContents:
