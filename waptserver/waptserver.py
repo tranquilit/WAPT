@@ -869,7 +869,7 @@ def trigger_upgrade():
             args = {}
             args.update(listening_address)
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/upgrade.json?uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/upgrade.json?uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=conf['clients_read_timeout']).text
             try:
                 client_result = json.loads(client_result)
                 result = client_result['content']
@@ -911,7 +911,7 @@ def trigger_update():
             args.update(listening_address)
             args['notify_user'] = notify_user
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/update.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/update.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=conf['clients_read_timeout']).text
             try:
                 client_result = json.loads(client_result)
                 msg = _(u"Triggered task: {}").format(client_result['description'])
@@ -948,7 +948,7 @@ def trigger_host_inventory():
             args.update(listening_address)
             args['notify_user'] = notify_user
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/register.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/register.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=conf['clients_read_timeout']).text
             try:
                 client_result = json.loads(client_result)
                 msg = _(u"Triggered task: {}").format(client_result['description'])
@@ -985,7 +985,7 @@ def trigger_waptwua_scan():
             args.update(listening_address)
             args['notify_user'] = notify_user
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/waptwua_scan.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/waptwua_scan.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=conf['clients_read_timeout']).text
             try:
                 client_result = json.loads(client_result)
                 if client_result:
@@ -1022,7 +1022,7 @@ def trigger_waptwua_download():
             args.update(listening_address)
             args['notify_user'] = notify_user
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/waptwua_download.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/waptwua_download.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=conf['clients_read_timeout']).text
             try:
                 client_result = json.loads(client_result)
                 if client_result:
@@ -1060,7 +1060,7 @@ def trigger_waptwua_install():
             args.update(listening_address)
             args['notify_user'] = notify_user
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/waptwua_install.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/waptwua_install.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=conf['clients_read_timeout']).text
             try:
                 client_result = json.loads(client_result)
                 if client_result:
@@ -1103,7 +1103,7 @@ def host_forget_packages():
             args['notify_user'] = notify_user
             args['packages'] = ','.join(packages)
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/forget.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/forget.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=conf['clients_read_timeout']).text
             try:
                 client_result = json.loads(client_result)
                 if not isinstance(client_result,list):
@@ -1152,7 +1152,7 @@ def host_remove_packages():
             args['packages'] = ','.join(packages)
             args['force'] = force
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/remove.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=%(notify_server)s&force=%(force)s&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/remove.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=%(notify_server)s&force=%(force)s&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=conf['clients_read_timeout']).text
             try:
                 client_result = json.loads(client_result)
                 if not isinstance(client_result,list):
@@ -1200,7 +1200,7 @@ def host_install_packages():
             args['packages'] = ','.join(packages)
             args['force'] = force
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/install.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=1&force=%(force)s&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/install.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=1&force=%(force)s&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=conf['clients_read_timeout']).text
             try:
                 client_result = json.loads(client_result)
                 if isinstance(client_result,list):
@@ -1237,7 +1237,7 @@ def host_tasks_status():
             args = {}
             args.update(listening_address)
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json?uuid=%(uuid)s" % args,proxies=None,verify=False,timeout=client_tasks_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json?uuid=%(uuid)s" % args,proxies=None,verify=False,timeout=conf['client_tasks_timeout']).text
             try:
                 client_result = json.loads(client_result)
             except ValueError:
@@ -1568,7 +1568,7 @@ def host_cancel_task():
             args = {}
             args.update(listening_address)
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/cancel_running_task.json?uuid=%(uuid)s" % args,proxies=None,verify=False,timeout=client_tasks_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/cancel_running_task.json?uuid=%(uuid)s" % args,proxies=None,verify=False,timeout=conf['client_tasks_timeout']).text
             try:
                 client_result = json.loads(client_result)
             except ValueError:
