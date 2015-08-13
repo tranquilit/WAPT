@@ -9,7 +9,7 @@ max-requests=100
 uid=wapt
 gid=www-data
 enable-threads = true
-#attach-daemon=/usr/bin/python /opt/wapt/lib/site-packages/huey/bin/huey_consumer.py waptserver.huey
+#attach-daemon=/usr/bin/python /opt/wapt/lib/site-packages/huey/bin/huey_consumer.py wsus.huey
 
 [options]
 #mongodb_port=27017

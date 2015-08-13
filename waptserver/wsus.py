@@ -63,7 +63,7 @@ import traceback
 import urlparse
 import uuid
 import re
-from wapthuey import huey
+from waptserver_config import conf, huey
 from huey import crontab
 import random
 
@@ -75,13 +75,11 @@ except ImportError:
     gettext = (lambda s:s)
 _ = gettext
 
-
 from waptserver_utils import *
 
-waptwua_folder = '/var/www/waptwua'
-def setup(folder):
-    global waptwua_folder
-    waptwua_folder = folder
+waptwua_folder = conf['waptwua_folder']
+if waptwua_folder:
+    waptwua_folder = conf['wapt_folder'] + 'wua'
 
 
 def cabextract(cabfile, **kwargs):
@@ -108,7 +106,7 @@ def cabextract(cabfile, **kwargs):
 
 
 # Between 2h00 and 2h59
-@huey.periodic_task(crontab(hour='3', minute=str(30 + random.randrange(-30, +30)))
+@huey.periodic_task(crontab(hour='3', minute=str(30 + random.randrange(-30, +30))))
 def download_wsusscan_crontab():
     return download_wsusscan(False, False)
 
