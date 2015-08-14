@@ -430,19 +430,17 @@ class WaptWUA(object):
     @staticmethod
     def disable_os_upgrade():
 
-        # FIXME: broken also on Windows 7 if the appropriate KB isn't installed
-        return
-
-        if platform.win32_ver()[0] != '7':
-            return
-
-        key = reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate')
-        updatevalue = reg_getvalue(key, 'DisableOSUpgrade')
-        reg_closekey(key)
-        if updatevalue != 0x1:
-            key = reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate', KEY_WRITE)
-            reg_setvalue(key, 'DisableOSUpgrade', 0x1, REG_DWORD)
+        try:
+            key = reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate')
+            updatevalue = reg_getvalue(key, 'DisableOSUpgrade')
             reg_closekey(key)
+            if updatevalue != 0x1:
+                key = reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate', KEY_WRITE)
+                reg_setvalue(key, 'DisableOSUpgrade', 0x1, REG_DWORD)
+                reg_closekey(key)
+        except Exception as e:
+            self.wapt.write_param('waptwua.status','ERROR')
+            self.wapt.update_server_status()
 
 
     def wua_agent_version(self):
