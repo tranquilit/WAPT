@@ -446,12 +446,12 @@ class WaptWUA(object):
 
 
     def wua_agent_version(self):
-        agent_info = win32com.client.Dispatch("Microsoft.Update.AgentInfo")
         try:
-            return agent_info.GetInfo("ProductVersionString")
+            return get_file_properties(os.path.join(system32(),'Wuaueng.dll'))['ProductVersion']
         except Exception:
             try:
-                return get_file_properties(os.path.join(system32(),'Wuaueng.dll'))['ProductVersion']
+                agent_info = win32com.client.Dispatch("Microsoft.Update.AgentInfo")
+                return agent_info.GetInfo("ProductVersionString")
             except Exception:
                 return '0.0.0'
 
