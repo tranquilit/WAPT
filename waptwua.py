@@ -430,6 +430,9 @@ class WaptWUA(object):
     @staticmethod
     def disable_os_upgrade():
 
+        if int(platform.win32_ver()[0]) < 7:
+            return
+
         try:
             key = reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate')
             updatevalue = reg_getvalue(key, 'DisableOSUpgrade')
