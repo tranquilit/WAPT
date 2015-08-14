@@ -580,7 +580,6 @@ class WaptWUA(object):
             try:
                 print 'Looking for updates with filter: %s'%filter
                 search_result = self.update_searcher.Search(filter)
-                updates_to_install = win32com.client.Dispatch("Microsoft.Update.UpdateColl")
                 self._updates = []
                 self._cached_updates = {}
                 for update in search_result.Updates:
