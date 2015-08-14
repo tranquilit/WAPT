@@ -788,12 +788,13 @@ class WaptWUA(object):
 
         """
         result = []
-        for update in self.updates:
-            if not update.IsInstalled and self.is_allowed(update) and not update.IsDownloaded:
-                # IUpdate : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386099(v=vs.85).aspx
-                # IUpdate2 : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386100(v=vs.85).aspx
-                result.extend(self.download_single(update))
-        self.scan_updates_status()
+        try:
+            for update in self.updates:
+                if not update.IsInstalled and self.is_allowed(update) and not update.IsDownloaded:
+                    # IUpdate : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386099(v=vs.85).aspx
+                    # IUpdate2 : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386100(v=vs.85).aspx
+                    result.extend(self.download_single(update))
+            self.scan_updates_status()
         except WAPTDiskSpaceException:
             logger.error('Disk Space Error')
             self.wapt.write_param('waptwua.status','DISK_SPACE_ERROR')
