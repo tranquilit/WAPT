@@ -78,9 +78,6 @@ _ = gettext
 from waptserver_utils import *
 
 waptwua_folder = conf['waptwua_folder']
-if not waptwua_folder:
-    waptwua_folder = conf['wapt_folder'] + 'wua'
-
 
 def cabextract(cabfile, **kwargs):
     check_only = []

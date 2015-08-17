@@ -55,7 +55,7 @@ _defaults = {
     'wapt_user': 'admin',
     'waptserver_port': 8080,
     'waptservice_port': 8088,
-    'waptwua_folder': '',
+    'waptwua_folder': '', # default: wapt_wolder + 'wua'
 }
 
 _default_config_file = os.path.join(wapt_root_dir, 'waptserver', 'waptserver.ini')
@@ -116,8 +116,11 @@ def load_config(cfgfile=_default_config_file):
     if _config.has_option('options', 'waptservice_port'):
         conf['waptservice_port'] = _config.get('options', 'waptservice_port')
 
+    # XXX must be processed after conf['wapt_folder']
     if _config.has_option('options', 'waptwua_folder'):
         conf['waptwua_folder'] = _config.get('options', 'waptwua_folder').rstrip('/')
+    if not conf['waptwua_folder']:
+        conf['waptwua_folder'] = conf['wapt_folder'] + 'wua'
 
     return conf
 
