@@ -1410,7 +1410,7 @@ class WaptTask(object):
         return True
 
     def _run(self):
-        """method to override in descendant to do the catual work"""
+        """method to override in descendant to do the actual work"""
         pass
 
     @eventprintinfo
