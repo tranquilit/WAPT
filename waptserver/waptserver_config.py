@@ -99,10 +99,7 @@ def load_config(cfgfile=_default_config_file):
         conf['server_uuid'] = _config.get('options', 'server_uuid')
 
     if _config.has_option('options', 'wapt_folder'):
-        wapt_folder = _config.get('options', 'wapt_folder')
-        if wapt_folder.endswith('/'):
-            wapt_folder = wapt_folder[:-1]
-        conf['wapt_folder'] = wapt_folder
+        conf['wapt_folder'] _config.get('options', 'wapt_folder').rstrip('/')
 
     if _config.has_option('options', 'wapt_huey_db'):
         conf['wapt_huey_db'] = _config.get('options', 'wapt_huey_db')
@@ -120,10 +117,7 @@ def load_config(cfgfile=_default_config_file):
         conf['waptservice_port'] = _config.get('options', 'waptservice_port')
 
     if _config.has_option('options', 'waptwua_folder'):
-        waptwua_folder = _config.get('options', 'waptwua_folder')
-        if waptwua_folder.endswith('/'):
-            waptwua_folder = waptwua_folder[:-1]
-        conf['waptwua_folder'] = waptwua_folder
+        conf['waptwua_folder'] = _config.get('options', 'waptwua_folder').rstrip('/')
 
     return conf
 
