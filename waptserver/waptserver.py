@@ -721,7 +721,7 @@ def waptwua():
 @app.route('/waptwua/<path:wsuspackage>')
 def get_wua_package(wsuspackage):
     fileparts = wsuspackage.split('/')
-    full_path = os.path.join(waptwua_folder,*fileparts[:-1])
+    full_path = os.path.join(conf['waptwua_folder'],*fileparts[:-1])
     package_name = secure_filename(fileparts[-1])
     r =  send_from_directory(full_path, package_name)
     if 'content-length' not in r.headers:
