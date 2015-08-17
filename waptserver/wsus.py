@@ -78,7 +78,7 @@ _ = gettext
 from waptserver_utils import *
 
 waptwua_folder = conf['waptwua_folder']
-if waptwua_folder:
+if not waptwua_folder:
     waptwua_folder = conf['wapt_folder'] + 'wua'
 
 
