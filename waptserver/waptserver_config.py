@@ -35,10 +35,7 @@ sys.path.insert(2,os.path.join(wapt_root_dir,'lib','site-packages'))
 from huey import Huey
 from huey.backends.sqlite_backend import SqliteQueue
 import ConfigParser
-import uuid
 
-
-_fatal = uuid.uuid4()
 
 _defaults = {
     'client_tasks_timeout': 0.5,
@@ -51,7 +48,7 @@ _defaults = {
     'server_uuid': '',
     'wapt_folder': os.path.join(wapt_root_dir, 'waptserver','repository','wapt'),
     'wapt_huey_db': '/tmp/wapthuey.db',
-    'wapt_password': _fatal,
+    'wapt_password': '',
     'wapt_user': 'admin',
     'waptserver_port': 8080,
     'waptservice_port': 8088,
@@ -72,7 +69,7 @@ def load_config(cfgfile=_default_config_file):
         raise Exception(_("FATAL : couldn't open configuration file : {}.".format(options.configfile)))
 
     if not _config.has_section('options'):
-        raise Exception (_("FATAL, configuration file {} has no section [options]. Please check Waptserver documentation").format(options.configfile))
+        raise Exception (_("FATAL, configuration file {} has no section [options]. Please check the waptserver documentation.").format(options.configfile))
 
     if _config.has_option('options', 'client_tasks_timeout'):
         conf['client_tasks_timeout'] = int(_config.get('options', 'client_tasks_timeout'))
@@ -106,6 +103,8 @@ def load_config(cfgfile=_default_config_file):
 
     if _config.has_option('options', 'wapt_password'):
         conf['wapt_password'] = _config.get('options', 'wapt_password')
+    if not conf['wapt_password']:
+        raise Exception('wapt_password not defined in config file, Please check the waptserver documentation.')
 
     if _config.has_option('options', 'wapt_user'):
         conf['wapt_user'] = _config.get('options', 'wapt_user')
