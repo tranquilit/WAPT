@@ -45,6 +45,7 @@ import requests
 import sys
 import time
 import win32com.client
+import wmi
 from optparse import OptionParser
 from urlparse import urlparse
 from setuphelpers import *
@@ -363,6 +364,16 @@ def check_sha1_filename(target):
         return True
 
 
+class WAPTDiskSpaceException(Exception):
+    def __init__(self, message, free_space):
+        self.message = message
+        self.free_space = free_space
+
+    def __unicode__(self):
+        return unicode(self.message) + u'; free space: ' + unicode(self.free_space / 2**20) + u'MB'
+
+    def __str__(self):
+        return unicode(self).encode('utf-8')
 
 
 
@@ -419,26 +430,29 @@ class WaptWUA(object):
     @staticmethod
     def disable_os_upgrade():
 
-        # XXX should we only disable this on Windows 7 clients?
-        if platform.win32_ver()[0] != '7':
+        if int(platform.win32_ver()[0]) < 7:
             return
 
-        key = reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate')
-        updatevalue = reg_getvalue(key, 'DisableOSUpgrade')
-        reg_closekey(key)
-        if updatevalue != 0x1:
-            key = reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate', KEY_WRITE)
-            reg_setvalue(key, 'DisableOSUpgrade', 0x1, REG_DWORD)
+        try:
+            key = reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate')
+            updatevalue = reg_getvalue(key, 'DisableOSUpgrade')
             reg_closekey(key)
+            if updatevalue != 0x1:
+                key = reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate', KEY_WRITE)
+                reg_setvalue(key, 'DisableOSUpgrade', 0x1, REG_DWORD)
+                reg_closekey(key)
+        except Exception as e:
+            self.wapt.write_param('waptwua.status','ERROR')
+            self.wapt.update_server_status()
 
 
     def wua_agent_version(self):
-        agent_info = win32com.client.Dispatch("Microsoft.Update.AgentInfo")
         try:
-            return agent_info.GetInfo("ProductVersionString")
+            return get_file_properties(os.path.join(system32(),'Wuaueng.dll'))['ProductVersion']
         except Exception:
             try:
-                return get_file_properties(os.path.join(system32(),'Wuaueng.dll'))['ProductVersion']
+                agent_info = win32com.client.Dispatch("Microsoft.Update.AgentInfo")
+                return agent_info.GetInfo("ProductVersionString")
             except Exception:
                 return '0.0.0'
 
@@ -566,7 +580,6 @@ class WaptWUA(object):
             try:
                 print 'Looking for updates with filter: %s'%filter
                 search_result = self.update_searcher.Search(filter)
-                updates_to_install = win32com.client.Dispatch("Microsoft.Update.UpdateColl")
                 self._updates = []
                 self._cached_updates = {}
                 for update in search_result.Updates:
@@ -727,9 +740,20 @@ class WaptWUA(object):
                 # Temporary: prevent the client from directly reaching Microsoft
                 raise
 
+
+    def _check_disk_space(self):
+        for d in wmi.WMI().Win32_LogicalDisk():
+            device = d.Name
+            if device == 'C:' and int(d.FreeSpace) < 2 ** 30:
+                raise WAPTDiskSpaceException('Not enough space left on device ' + device, d.FreeSpace)
+
+
     def download_single(self,update):
         result = []
         try:
+
+            self._check_disk_space()
+
             self.wapt.write_param('waptwua.status','DOWNLOADING')
 
             for dc in update.DownloadContents:
@@ -778,8 +802,8 @@ class WaptWUA(object):
                     bu.CopyToCache(files)
 
             self.wapt.write_param('waptwua.status','READY')
+        # We can't handle errors here.
         except Exception:
-            self.wapt.write_param('waptwua.status','ERROR')
             raise
         return result
 
@@ -788,12 +812,20 @@ class WaptWUA(object):
 
         """
         result = []
-        for update in self.updates:
-            if not update.IsInstalled and self.is_allowed(update) and not update.IsDownloaded:
-                # IUpdate : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386099(v=vs.85).aspx
-                # IUpdate2 : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386100(v=vs.85).aspx
-                result.extend(self.download_single(update))
-        self.scan_updates_status()
+        try:
+            for update in self.updates:
+                if not update.IsInstalled and self.is_allowed(update) and not update.IsDownloaded:
+                    # IUpdate : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386099(v=vs.85).aspx
+                    # IUpdate2 : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386100(v=vs.85).aspx
+                    result.extend(self.download_single(update))
+            self.scan_updates_status()
+        except WAPTDiskSpaceException:
+            logger.error('Disk Space Error')
+            self.wapt.write_param('waptwua.status','DISK_SPACE_ERROR')
+        except Exception as e:
+            logger.error('Unexpected error:' + str(e))
+            self.wapt.write_param('waptwua.status','ERROR')
+        self.wapt.update_server_status()
         return result
 
     def install_updates(self):
@@ -833,10 +865,14 @@ class WaptWUA(object):
 
             self.wapt.write_param('waptwua.last_install_batch',json.dumps(result))
             self.wapt.write_param('waptwua.last_install_date',datetime2isodate())
+        except WAPTDiskSpaceException:
+            self.wapt.write_param('waptwua.status','DISK_SPACE_ERROR')
+            logger.error('Disk Space Error')
         except Exception:
             self.wapt.write_param('waptwua.status','ERROR')
         finally:
             self.scan_updates_status()
+        self.wapt.update_server_status()
         return result
 
 
@@ -953,8 +989,8 @@ if __name__ == '__main__':
         wua.disable_os_upgrade()
 
     if action == 'scan':
-            installed,pending,discarded = wua.scan_updates_status()
-            print status()
+        installed,pending,discarded = wua.scan_updates_status()
+        print status()
     elif action == 'download':
         print wua.download_updates()
         print wua.stored_status()
@@ -962,6 +998,8 @@ if __name__ == '__main__':
         print status()
     elif action == 'install':
         print wua.install_updates()
+        print status()
+    elif action == 'status':
         print status()
     else:
         print parser.usage

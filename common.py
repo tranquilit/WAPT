@@ -4043,7 +4043,7 @@ class Wapt(object):
         """
 
         wua = WaptWUA(self)
-        return wua.stored_status()
+        return wua.stored_status().update({ 'waptwua_enabled': self.waptwua_enabled })
 
     def update_server_status(self):
         """Send packages and software informations to WAPT Server, don't send dmi

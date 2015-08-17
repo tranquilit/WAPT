@@ -69,6 +69,7 @@ import re
 
 from waptpackage import *
 from waptserver_utils import *
+from waptserver_config import conf, huey
 
 # i18n
 from flask.ext.babel import Babel
@@ -103,7 +104,7 @@ parser=OptionParser(usage=usage,version='waptserver.py ' + __version__)
 parser.add_option("-c","--config", dest="configfile", default=os.path.join(wapt_root_dir,'waptserver','waptserver.ini'), help="Config file full path (default: %default)")
 parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
 parser.add_option("-d","--devel", dest="devel", default=False,action='store_true', help="Enable debug mode (for development only)")
-parser.add_option("-w","--without-apache", dest="without_apache", default=False, action='store_true',help="Loglevel (default: warning)")
+parser.add_option("-w","--without-apache", dest="without_apache", default=False, action='store_true',help="Internal use")
 
 (options,args)=parser.parse_args()
 
@@ -113,9 +114,10 @@ babel = Babel(app)
 # setup logging
 logger = logging.getLogger()
 
-# force loglevel
 if options.loglevel is not None:
-    setloglevel(logger,options.loglevel)
+    setloglevel(logger, options.loglevel)
+else:
+    setloglevel(logger, conf['loglevel'])
 
 log_directory = os.path.join(wapt_root_dir,'log')
 if not os.path.exists(log_directory):
@@ -129,125 +131,36 @@ hdlr = logging.FileHandler(os.path.join(log_directory,'waptserver.log'))
 hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
 logger.addHandler(hdlr)
 
-# read configuration from waptserver.ini
-config = ConfigParser.RawConfigParser()
-if os.path.exists(options.configfile):
-    config.read(options.configfile)
-else:
-    raise Exception(_("FATAL : couldn't open configuration file : {}.".format(options.configfile)))
-
-#default mongodb configuration for wapt
-mongodb_port = "38999"
-mongodb_ip = "127.0.0.1"
-
-wapt_folder = ""
-wapt_user = ""
-waptwua_folder = ""
-wapt_password = ""
-server_uuid = ''
-
-waptserver_port = 8080
-waptservice_port = 8088
-
-clients_connect_timeout = 5
-clients_read_timeout = 5
-client_tasks_timeout = 0.5
-
-if config.has_section('options'):
-    if config.has_option('options', 'wapt_user'):
-        wapt_user = config.get('options', 'wapt_user')
-    else:
-        wapt_user='admin'
-
-    if config.has_option('options', 'waptserver_port'):
-        waptserver_port = config.get('options', 'waptserver_port')
-
-    if config.has_option('options', 'waptservice_port'):
-        waptservice_port = config.get('options', 'waptservice_port')
-
-    if config.has_option('options', 'wapt_password'):
-        wapt_password = config.get('options', 'wapt_password')
-    else:
-        raise Exception (_('No waptserver admin password set in wapt-get.ini configuration file.'))
-
-    if config.has_option('options', 'mongodb_port'):
-        mongodb_port = config.get('options', 'mongodb_port')
-
-    if config.has_option('options', 'mongodb_ip'):
-        mongodb_ip = config.get('options', 'mongodb_ip')
-
-    if config.has_option('options', 'wapt_folder'):
-        wapt_folder = config.get('options', 'wapt_folder')
-        if wapt_folder.endswith('/'):
-            wapt_folder = wapt_folder[:-1]
-
-    if config.has_option('options', 'waptwua_folder'):
-        waptwua_folder = config.get('options', 'waptwua_folder')
-        if waptwua_folder.endswith('/'):
-            waptwua_folder = waptwua_folder[:-1]
-
-    if config.has_option('options', 'clients_connect_timeout'):
-        clients_connect_timeout = int(config.get('options', 'clients_connect_timeout'))
-
-    if config.has_option('options', 'clients_read_timeout'):
-        clients_read_timeout = int(config.get('options', 'clients_read_timeout'))
-
-    if config.has_option('options', 'client_tasks_timeout'):
-        client_tasks_timeout = int(config.get('options', 'client_tasks_timeout'))
-
-    if config.has_option('options', 'secret_key'):
-        app.secret_key = config.get('options','secret_key')
-    else:
-        app.secret_key = 'NOT DEFINED'
-
-    if options.loglevel is None and config.has_option('options', 'loglevel'):
-        loglevel = config.get('options', 'loglevel')
-        setloglevel(logger,loglevel)
-
-    if config.has_option('options', 'server_uuid'):
-        server_uuid = config.get('options', 'server_uuid')
-
-
-else:
-    raise Exception (_("FATAL, configuration file {} has no section [options]. Please check Waptserver documentation").format(options.configfile))
-
-# XXX keep in sync with scripts/postconf.py
-if not wapt_folder:
-    wapt_folder = os.path.join(wapt_root_dir,'waptserver','repository','wapt')
-
-if not waptwua_folder:
-    waptwua_folder = wapt_folder+'wua'
-
-waptagent = os.path.join(wapt_folder, 'waptagent.exe')
-waptsetup = os.path.join(wapt_folder, 'waptsetup-tis.exe')
-waptdeploy = os.path.join(wapt_folder, 'waptdeploy.exe')
+waptagent = os.path.join(conf['wapt_folder'], 'waptagent.exe')
+waptsetup = os.path.join(conf['wapt_folder'], 'waptsetup-tis.exe')
+waptdeploy = os.path.join(conf['wapt_folder'], 'waptdeploy.exe')
 
 # Setup initial directories
-if os.path.exists(wapt_folder)==False:
+if os.path.exists(conf['wapt_folder'])==False:
     try:
-        os.makedirs(wapt_folder)
+        os.makedirs(conf['wapt_folder'])
     except:
-        raise Exception(_("Folder missing : {}.").format(wapt_folder))
-if os.path.exists(wapt_folder + '-host')==False:
+        raise Exception(_("Folder missing : {}.").format(conf['wapt_folder']))
+if os.path.exists(conf['wapt_folder'] + '-host')==False:
     try:
-        os.makedirs(wapt_folder + '-host')
+        os.makedirs(conf['wapt_folder'] + '-host')
     except:
-        raise Exception(_("Folder missing : {}-host.").format(wapt_folder))
-if os.path.exists(wapt_folder + '-group')==False:
+        raise Exception(_("Folder missing : {}-host.").format(conf['wapt_folder']))
+if os.path.exists(conf['wapt_folder'] + '-group')==False:
     try:
-        os.makedirs(wapt_folder + '-group')
+        os.makedirs(conf['wapt_folder'] + '-group')
     except:
-        raise Exception(_("Folder missing : {}-group.").format(wapt_folder))
+        raise Exception(_("Folder missing : {}-group.").format(conf['wapt_folder']))
 
 ALLOWED_EXTENSIONS = set(['wapt'])
 
 
-utils_setup_db(mongodb_ip, mongodb_port)
+utils_setup_db(conf['mongodb_ip'], conf['mongodb_port'])
 utils_set_devel_mode(options.devel)
 
 try:
     import wsus
-    wsus.setup(waptwua_folder)
+    from wsus import download_wsusscan
 except Exception as e:
     logger.error(str(e))
     wsus = False
@@ -278,8 +191,8 @@ def get_db():
     """
     if not hasattr(g, 'db'):
         try:
-            logger.debug('Connecting to mongo db %s:%s'%(mongodb_ip, int(mongodb_port)))
-            mongo_client = MongoClient(mongodb_ip, int(mongodb_port))
+            logger.debug('Connecting to mongo db %s:%s'%(conf['mongodb_ip'], int(conf['mongodb_port'])))
+            mongo_client = MongoClient(conf['mongodb_ip'], int(conf['mongodb_port']))
             g.mongo_client = mongo_client
             g.db = mongo_client.wapt
         except Exception as e:
@@ -345,17 +258,17 @@ def check_auth(username, password):
     user_ok = False
     pass_sha1_ok = pass_sha512_ok = pass_sha512_crypt_ok = pass_bcrypt_crypt_ok = False
 
-    user_ok = wapt_user == username
+    user_ok = conf['wapt_user'] == username
 
-    pass_sha1_ok = wapt_password == hashlib.sha1(password.encode('utf8')).hexdigest()
-    pass_sha512_ok = wapt_password == hashlib.sha512(password.encode('utf8')).hexdigest()
+    pass_sha1_ok = conf['wapt_password'] == hashlib.sha1(password.encode('utf8')).hexdigest()
+    pass_sha512_ok = conf['wapt_password'] == hashlib.sha512(password.encode('utf8')).hexdigest()
 
-    if sha512_crypt.identify(wapt_password):
-        pass_sha512_crypt_ok  = sha512_crypt.verify(password, wapt_password)
+    if sha512_crypt.identify(conf['wapt_password']):
+        pass_sha512_crypt_ok  = sha512_crypt.verify(password, conf['wapt_password'])
     else:
         try:
-            if bcrypt.identify(wapt_password):
-                pass_bcrypt_crypt_ok = bcrypt.verify(password, wapt_password)
+            if bcrypt.identify(conf['wapt_password']):
+                pass_bcrypt_crypt_ok = bcrypt.verify(password, conf['wapt_password'])
         except Exception:
             pass
 
@@ -462,7 +375,7 @@ def update_data(data):
         host_id = hosts().insert(data)
     return get_host_data(data["uuid"],filter={"uuid":1,"host":1})
 
-def get_reachable_ip(ips=[],waptservice_port=waptservice_port,timeout=clients_connect_timeout):
+def get_reachable_ip(ips=[],waptservice_port=conf['waptservice_port'],timeout=conf['clients_connect_timeout']):
     """Try to establish a TCP connection to each IP of ips list on waptservice_port
         return first successful IP
         return empty string if no ip is is successful
@@ -473,7 +386,7 @@ def get_reachable_ip(ips=[],waptservice_port=waptservice_port,timeout=clients_co
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.settimeout(timeout)
-            s.connect((ip,waptservice_port))
+            s.connect((ip,conf['waptservice_port']))
             s.close()
             return ip
         except:
@@ -495,7 +408,7 @@ def update_host():
                 # check if client is reachable
                 if not 'check_hosts_thread' in g or not g.check_hosts_thread.is_alive():
                     logger.info('Creates check hosts thread for %s'%(uuid,))
-                    g.check_hosts_thread = CheckHostsWaptService(timeout=clients_connect_timeout,uuids=[uuid])
+                    g.check_hosts_thread = CheckHostsWaptService(timeout=conf['clients_connect_timeout'],uuids=[uuid])
                     g.check_hosts_thread.start()
                 else:
                     logger.info('Reuses current check hosts thread for %s'%(uuid,))
@@ -527,7 +440,7 @@ def upload_package(filename=""):
         tmp_target = ''
         if request.method == 'POST':
             if filename and allowed_file(filename):
-                tmp_target = os.path.join(wapt_folder, secure_filename(filename+'.tmp'))
+                tmp_target = os.path.join(conf['wapt_folder'], secure_filename(filename+'.tmp'))
                 with open(tmp_target, 'wb') as f:
                     data = request.stream.read(65535)
                     try:
@@ -542,11 +455,11 @@ def upload_package(filename=""):
                     result = dict(status='ERROR',message=_('Problem during upload'))
                 else:
                     if PackageEntry().load_control_from_wapt(tmp_target):
-                        target = os.path.join(wapt_folder, secure_filename(filename))
+                        target = os.path.join(conf['wapt_folder'], secure_filename(filename))
                         if os.path.isfile(target):
                             os.unlink(target)
                         os.rename(tmp_target,target)
-                        data = update_packages(wapt_folder)
+                        data = update_packages(conf['wapt_folder'])
                         result = dict(status='OK',message='%s uploaded, %i packages analysed'%(filename,len(data['processed'])),result=data)
                     else:
                         result = dict(status='ERROR',message=_('Not a valid wapt package'))
@@ -576,7 +489,7 @@ def upload_host():
             logger.debug('uploading host file : %s' % file)
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                wapt_host_folder = os.path.join(wapt_folder+'-host')
+                wapt_host_folder = os.path.join(conf['wapt_folder']+'-host')
                 tmp_target = os.path.join(wapt_host_folder, filename+'.tmp')
                 target = os.path.join(wapt_host_folder, filename)
                 file.save(tmp_target)
@@ -621,8 +534,8 @@ def upload_waptsetup():
             file = request.files['file']
             if file and "waptagent.exe" in file.filename:
                 filename = secure_filename(file.filename)
-                tmp_target = os.path.join(wapt_folder, secure_filename('.'+filename))
-                target = os.path.join(wapt_folder, secure_filename(filename))
+                tmp_target = os.path.join(conf['wapt_folder'], secure_filename('.'+filename))
+                target = os.path.join(conf['wapt_folder'], secure_filename(filename))
                 file.save(tmp_target)
                 if not os.path.isfile(tmp_target):
                     result = dict(status='ERROR',message=_('Problem during upload'))
@@ -714,7 +627,7 @@ def deploy_wapt():
                         d['auth']['password'],
                         d['auth']['domain']))
 
-                os.chdir(wapt_folder)
+                os.chdir(conf['wapt_folder'])
 
                 message = install_wapt(d['computer_fqdn'],auth_file)
 
@@ -760,9 +673,8 @@ def login():
             if "username" in d and "password" in d:
                 if check_auth(d["username"], d["password"]):
                     if "newPass" in d:
-                        global wapt_password
-                        wapt_password = hashlib.sha1(d["newPass"].encode('utf8')).hexdigest()
-                        rewrite_config_item(options.configfile, 'options', 'wapt_password', wapt_password)
+                        conf['wapt_password'] = hashlib.sha1(d["newPass"].encode('utf8')).hexdigest()
+                        rewrite_config_item(options.configfile, 'options', 'wapt_password', conf['wapt_password'])
                         reload_config()
                     return "True"
             return "False"
@@ -779,16 +691,16 @@ def allowed_file(filename):
 @app.route('/delete_package/<string:filename>')
 @requires_auth
 def delete_package(filename=""):
-    fullpath = os.path.join(wapt_folder,filename)
+    fullpath = os.path.join(conf['wapt_folder'],filename)
     try:
         if os.path.isfile(fullpath):
             os.unlink(fullpath)
-            data = update_packages(wapt_folder)
+            data = update_packages(conf['wapt_folder'])
             if os.path.isfile("%s.zsync"%(fullpath,)):
                 os.unlink("%s.zsync"%(fullpath,))
             result = dict(status='OK',message="Package deleted %s" % (fullpath,),result=data)
         else:
-            result = dict(status='ERROR',message="The file %s doesn't exist in wapt folder (%s)" % (filename, wapt_folder))
+            result = dict(status='ERROR',message="The file %s doesn't exist in wapt folder (%s)" % (filename, conf['wapt_folder']))
 
     except Exception, e:
         result = { 'status' : 'ERROR', 'message': u"%s" % e  }
@@ -799,7 +711,7 @@ def delete_package(filename=""):
 
 @app.route('/wapt/')
 def wapt_listing():
-    return render_template('listing.html', dir_listing=os.listdir(wapt_folder))
+    return render_template('listing.html', dir_listing=os.listdir(conf['wapt_folder']))
 
 @app.route('/waptwua/')
 def waptwua():
@@ -809,7 +721,7 @@ def waptwua():
 @app.route('/waptwua/<path:wsuspackage>')
 def get_wua_package(wsuspackage):
     fileparts = wsuspackage.split('/')
-    full_path = os.path.join(waptwua_folder,*fileparts[:-1])
+    full_path = os.path.join(conf['waptwua_folder'],*fileparts[:-1])
     package_name = secure_filename(fileparts[-1])
     r =  send_from_directory(full_path, package_name)
     if 'content-length' not in r.headers:
@@ -818,19 +730,17 @@ def get_wua_package(wsuspackage):
 
 @app.route('/wapt/<string:input_package_name>')
 def get_wapt_package(input_package_name):
-    global wapt_folder
     package_name = secure_filename(input_package_name)
-    r =  send_from_directory(wapt_folder, package_name)
+    r =  send_from_directory(conf['wapt_folder'], package_name)
     if 'content-length' not in r.headers:
-        r.headers.add_header('content-length', int(os.path.getsize(os.path.join(wapt_folder,package_name))))
+        r.headers.add_header('content-length', int(os.path.getsize(os.path.join(conf['wapt_folder'],package_name))))
     return r
 
 @app.route('/wapt/icons/<string:iconfilename>')
 def serve_icons(iconfilename):
     """Serves a png icon file from /wapt/icons/ test waptserver"""
-    global wapt_folder
     iconfilename = secure_filename(iconfilename)
-    icons_folder = os.path.join(wapt_folder,'icons')
+    icons_folder = os.path.join(conf['wapt_folder'],'icons')
     r =  send_from_directory(icons_folder,iconfilename)
     if 'content-length' not in r.headers:
         r.headers.add_header('content-length', int(os.path.getsize(os.path.join(icons_folder,iconfilename))))
@@ -840,9 +750,8 @@ def serve_icons(iconfilename):
 @app.route('/wapt-host/<string:input_package_name>')
 def get_host_package(input_package_name):
     """Returns a host package (in case there is no apache static files server)"""
-    global wapt_folder
     #TODO straighten this -host stuff
-    host_folder = wapt_folder + '-host'
+    host_folder = conf['wapt_folder'] + '-host'
     package_name = secure_filename(input_package_name)
     r =  send_from_directory(host_folder, package_name)
     if 'Content-Length' not in r.headers:
@@ -853,9 +762,8 @@ def get_host_package(input_package_name):
 @app.route('/wapt-group/<string:input_package_name>')
 def get_group_package(input_package_name):
     """Returns a group package (in case there is no apache static files server)"""
-    global wapt_folder
     #TODO straighten this -group stuff
-    group_folder = wapt_folder + '-group'
+    group_folder = conf['wapt_folder'] + '-group'
     package_name = secure_filename(input_package_name)
     r =  send_from_directory(group_folder, package_name)
     # on line content-length is not added to the header.
@@ -871,7 +779,7 @@ def get_ip_port(host_data,recheck=False,timeout=None):
         - if not present or recheck is True, check each of host.check connected_ips list with timeout
     """
     if not timeout:
-        timeout = clients_connect_timeout
+        timeout = conf['clients_connect_timeout']
     if not host_data:
         raise EWaptUnknownHost(_('Unknown uuid'))
 
@@ -881,7 +789,7 @@ def get_ip_port(host_data,recheck=False,timeout=None):
                   host_data['wapt']['listening_address']['address']:
             return host_data['wapt']['listening_address']
         else:
-            port = host_data['wapt'].get('waptservice_port',waptservice_port)
+            port = host_data['wapt'].get('waptservice_port',conf['waptservice_port'])
             return dict(
                 protocol=host_data['wapt'].get('waptservice_protocol','http'),
                 address=get_reachable_ip(ensure_list(host_data['host']['connected_ips']),waptservice_port=port,timeout=timeout),
@@ -893,17 +801,16 @@ def get_ip_port(host_data,recheck=False,timeout=None):
 
 @app.route('/ping')
 def ping():
-    global server_uuid
-    if server_uuid == '':
-        server_uuid = str(uuid.uuid1())
-        rewrite_config_item(options.configfile, 'options', 'server_uuid', server_uuid)
+    if conf['server_uuid'] == '':
+        conf['server_uuid'] = str(uuid.uuid1())
+        rewrite_config_item(options.configfile, 'options', 'server_uuid', conf['server_uuid'])
         reload_config()
     return make_response(
         msg = _('WAPT Server running'), result = dict(
             version = __version__,
             api_root='/api/',
             api_version='v1',
-            uuid = server_uuid,
+            uuid = conf['server_uuid'],
             date = datetime2isodate(),
             )
             )
@@ -919,7 +826,7 @@ def trigger_reachable_discovery():
         if 'check_hosts_thread' in g:
             if not g.check_hosts_thread.is_alive():
                 del(g.check_hosts_thread)
-        g.check_hosts_thread = CheckHostsWaptService(timeout=clients_connect_timeout)
+        g.check_hosts_thread = CheckHostsWaptService(timeout=conf['clients_connect_timeout'])
         g.check_hosts_thread.start()
         message = _(u'Hosts listening IP discovery launched')
         result = dict(thread_ident = g.check_hosts_thread.ident )
@@ -962,7 +869,7 @@ def trigger_upgrade():
             args = {}
             args.update(listening_address)
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/upgrade.json?uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/upgrade.json?uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=conf['clients_read_timeout']).text
             try:
                 client_result = json.loads(client_result)
                 result = client_result['content']
@@ -1004,7 +911,7 @@ def trigger_update():
             args.update(listening_address)
             args['notify_user'] = notify_user
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/update.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/update.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=conf['clients_read_timeout']).text
             try:
                 client_result = json.loads(client_result)
                 msg = _(u"Triggered task: {}").format(client_result['description'])
@@ -1041,7 +948,7 @@ def trigger_host_inventory():
             args.update(listening_address)
             args['notify_user'] = notify_user
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/register.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/register.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=conf['clients_read_timeout']).text
             try:
                 client_result = json.loads(client_result)
                 msg = _(u"Triggered task: {}").format(client_result['description'])
@@ -1078,7 +985,7 @@ def trigger_waptwua_scan():
             args.update(listening_address)
             args['notify_user'] = notify_user
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/waptwua_scan.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/waptwua_scan.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=conf['clients_read_timeout']).text
             try:
                 client_result = json.loads(client_result)
                 if client_result:
@@ -1115,7 +1022,7 @@ def trigger_waptwua_download():
             args.update(listening_address)
             args['notify_user'] = notify_user
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/waptwua_download.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/waptwua_download.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=conf['clients_read_timeout']).text
             try:
                 client_result = json.loads(client_result)
                 if client_result:
@@ -1153,7 +1060,7 @@ def trigger_waptwua_install():
             args.update(listening_address)
             args['notify_user'] = notify_user
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/waptwua_install.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/waptwua_install.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=conf['clients_read_timeout']).text
             try:
                 client_result = json.loads(client_result)
                 if client_result:
@@ -1196,7 +1103,7 @@ def host_forget_packages():
             args['notify_user'] = notify_user
             args['packages'] = ','.join(packages)
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/forget.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/forget.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=conf['clients_read_timeout']).text
             try:
                 client_result = json.loads(client_result)
                 if not isinstance(client_result,list):
@@ -1245,7 +1152,7 @@ def host_remove_packages():
             args['packages'] = ','.join(packages)
             args['force'] = force
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/remove.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=%(notify_server)s&force=%(force)s&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/remove.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=%(notify_server)s&force=%(force)s&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=conf['clients_read_timeout']).text
             try:
                 client_result = json.loads(client_result)
                 if not isinstance(client_result,list):
@@ -1293,7 +1200,7 @@ def host_install_packages():
             args['packages'] = ','.join(packages)
             args['force'] = force
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/install.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=1&force=%(force)s&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=clients_read_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/install.json?package=%(packages)s&notify_user=%(notify_user)s&notify_server=1&force=%(force)s&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=conf['clients_read_timeout']).text
             try:
                 client_result = json.loads(client_result)
                 if isinstance(client_result,list):
@@ -1330,7 +1237,7 @@ def host_tasks_status():
             args = {}
             args.update(listening_address)
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json?uuid=%(uuid)s" % args,proxies=None,verify=False,timeout=client_tasks_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json?uuid=%(uuid)s" % args,proxies=None,verify=False,timeout=conf['client_tasks_timeout']).text
             try:
                 client_result = json.loads(client_result)
             except ValueError:
@@ -1353,7 +1260,7 @@ def get_groups():
     """
     try:
 
-        packages = WaptLocalRepo(wapt_folder)
+        packages = WaptLocalRepo(conf['wapt_folder'])
 
         groups = [ p.as_dict() for p in packages.packages if p.section == 'group']
         msg = '{} Packages for section group'.format(len(groups))
@@ -1390,8 +1297,8 @@ def hosts_delete():
         msg = []
         result = dict(files=[],records=[])
 
-        hosts_packages_repo = WaptLocalRepo(wapt_folder+'-host')
-        packages_repo = WaptLocalRepo(wapt_folder)
+        hosts_packages_repo = WaptLocalRepo(conf['wapt_folder']+'-host')
+        packages_repo = WaptLocalRepo(conf['wapt_folder'])
 
         if 'delete_packages' in request.args and request.args['delete_packages'] == '1':
             selected = hosts().find(query,fields={'uuid':1,'host.computer_fqdn':1})
@@ -1502,8 +1409,8 @@ def get_hosts():
         if "need_upgrade" in request.args and request.args['need_upgrade']:
             query["update_status.upgrades"] = {"$exists": "true", "$ne" :[]}
 
-        hosts_packages_repo = WaptLocalRepo(wapt_folder+'-host')
-        packages_repo = WaptLocalRepo(wapt_folder)
+        hosts_packages_repo = WaptLocalRepo(conf['wapt_folder']+'-host')
+        packages_repo = WaptLocalRepo(conf['wapt_folder'])
 
         groups = ensure_list(request.args.get('groups',''))
 
@@ -1634,7 +1541,7 @@ def update_hosts():
             # check if client is reachable
             if not 'check_hosts_thread' in g or not g.check_hosts_thread.is_alive():
                 logger.info('Creates check hosts thread for %s'%(uuid,))
-                g.check_hosts_thread = CheckHostsWaptService(timeout=clients_connect_timeout,uuids=[uuid])
+                g.check_hosts_thread = CheckHostsWaptService(timeout=conf['clients_connect_timeout'],uuids=[uuid])
                 g.check_hosts_thread.start()
             else:
                 logger.info('Reuses current check hosts thread for %s'%(uuid,))
@@ -1661,7 +1568,7 @@ def host_cancel_task():
             args = {}
             args.update(listening_address)
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/cancel_running_task.json?uuid=%(uuid)s" % args,proxies=None,verify=False,timeout=client_tasks_timeout).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/cancel_running_task.json?uuid=%(uuid)s" % args,proxies=None,verify=False,timeout=conf['client_tasks_timeout']).text
             try:
                 client_result = json.loads(client_result)
             except ValueError:
@@ -1716,7 +1623,7 @@ def usage_statistics():
             }]
 
     result = dict(
-        uuid = server_uuid,
+        uuid = conf['server_uuid'],
         platform = platform.system(),
         architecture = platform.architecture(),
         version = __version__,
@@ -1811,7 +1718,7 @@ class CheckHostWorker(threading.Thread):
             return listening_info
         except:
             # return "not reachable" information
-            return dict(protocol='',address='',port=waptservice_port,timestamp=datetime2isodate())
+            return dict(protocol='',address='',port=conf['waptservice_port'],timestamp=datetime2isodate())
 
     def run(self):
         logger.debug('worker %s running'%self.ident)
@@ -1819,7 +1726,7 @@ class CheckHostWorker(threading.Thread):
             try:
                 host_data = self.queue.get(timeout=2)
                 listening_infos = self.check_host(host_data)
-                with MongoClient(mongodb_ip, int(mongodb_port)) as mongo_client:
+                with MongoClient(conf['mongodb_ip'], int(conf['mongodb_port'])) as mongo_client:
                     # stores result
                     mongo_client.wapt.hosts.update({"_id" : host_data['_id'] }, {"$set": {'wapt.listening_address':listening_infos }})
                     logger.debug("Client check %s finished with %s" % (self.ident,listening_infos))
@@ -1850,7 +1757,7 @@ class CheckHostsWaptService(threading.Thread):
 
     def run(self):
         logger.debug('Client-listening %s address checker thread started'%self.ident)
-        with MongoClient(mongodb_ip, int(mongodb_port)) as mongoclient:
+        with MongoClient(conf['mongodb_ip'], int(conf['mongodb_port'])) as mongoclient:
             fields = {'uuid':1,'host.computer_fqdn':1,'wapt':1,'host.connected_ips':1}
             if self.uuids:
                 query = {"uuid":{"$in": self.uuids}}
@@ -1971,8 +1878,8 @@ def install_windows_nssm_service(service_name,service_binary,service_parameters,
 def make_httpd_config(wapt_root_dir, wapt_folder):
     import jinja2
 
-    if wapt_folder.endswith('\\') or wapt_folder.endswith('/'):
-        wapt_folder = wapt_folder[:-1]
+    if conf['wapt_folder'].endswith('\\') or conf['wapt_folder'].endswith('/'):
+        conf['wapt_folder'] = conf['wapt_folder'][:-1]
 
     ap_conf_dir = os.path.join(wapt_root_dir,'waptserver','apache-win32','conf')
     ap_file_name = 'httpd.conf'
@@ -2010,7 +1917,7 @@ def make_httpd_config(wapt_root_dir, wapt_folder):
     jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(ap_conf_dir))
     template = jinja_env.get_template(ap_file_name + '.j2')
     template_variables = {
-        'wapt_repository_path': os.path.dirname(wapt_folder),
+        'wapt_repository_path': os.path.dirname(conf['wapt_folder']),
         'apache_root_folder':os.path.dirname(ap_conf_dir),
         'windows': True,
         'ssl': True,
@@ -2057,7 +1964,7 @@ def install_windows_service():
 
     # register apache frontend
     if install_apache_service:
-        make_httpd_config(wapt_root_dir, wapt_folder)
+        make_httpd_config(wapt_root_dir, conf['wapt_folder'])
         service_binary =os.path.abspath(os.path.join(wapt_root_dir,'waptserver','apache-win32','bin','httpd.exe'))
         service_parameters = ""
         service_logfile = os.path.join(log_directory,'nssm_apache.log')
@@ -2092,7 +1999,7 @@ if __name__ == "__main__":
     if options.devel:
         app.run(host='0.0.0.0',port=30880,debug=options.devel)
     else:
-        port = waptserver_port
+        port = conf['waptserver_port']
         server = Rocket(('127.0.0.1', port), 'wsgi', {"wsgi_app":app})
         try:
             logger.info("starting waptserver")

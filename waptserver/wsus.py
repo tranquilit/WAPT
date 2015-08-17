@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # -----------------------------------------------------------------------
 #    This file is part of WAPT
-#    Copyright (C) 2013  Tranquil IT Systems http://www.tranquil.it
+#    Copyright (C) 2015  Tranquil IT Systems http://www.tranquil.it
 #    WAPT aims to help Windows systems administrators to deploy
 #    setup and update applications on users PC.
 #
@@ -52,6 +52,7 @@ import email.utils
 from flask import request
 import hashlib
 import json
+from lxml import etree as ET
 import pymongo
 import requests
 import shutil
@@ -62,6 +63,9 @@ import traceback
 import urlparse
 import uuid
 import re
+from waptserver_config import conf, huey
+from huey import crontab
+import random
 
 # i18n
 from flask.ext.babel import Babel
@@ -71,28 +75,9 @@ except ImportError:
     gettext = (lambda s:s)
 _ = gettext
 
-try:
-    from uwsgidecorators import *
-    from lxml import etree as ET
-except:
-    def spool(func):
-        return func
-
 from waptserver_utils import *
 
-waptwua_folder = ''
-def setup(folder):
-    global waptwua_folder
-    waptwua_folder = folder
-
-# Unique, constant UUIDs
-WSUS_UPDATE_DOWNLOAD_LOCK = '420d1a1e-5f63-4afc-b055-2ce1538054aa'
-WSUS_PARSE_WSUSSCN2_LOCK = 'b526e9da-ebf0-45c7-9d01-90218d110e61'
-
-SPOOL_OK = -2 # the task has been completed, the spool file will be removed
-SPOOL_RETRY = -1 # something is temporarily wrong, the task will be retried at the next spooler iteration
-SPOOL_IGNORE = 0 #  ignore this task, if multiple languages are loaded in the instance all of them will fight for managing the task. This return values allows you to skip a task in specific languages.
-
+waptwua_folder = conf['waptwua_folder']
 
 def cabextract(cabfile, **kwargs):
     check_only = []
@@ -117,8 +102,14 @@ def cabextract(cabfile, **kwargs):
     return subprocess.check_output(command)
 
 
-@spool
-def download_wsusscan(params={}):
+# Between 2h00 and 2h59
+@huey.periodic_task(crontab(hour='3', minute=str(30 + random.randrange(-30, +30))))
+def download_wsusscan_crontab():
+    return download_wsusscan(False, False)
+
+
+@huey.task()
+def download_wsusscan(force=False, dryrun=False):
     """Launch a task to update current wsus offline cab file
         download in a temporary well known file
         abort if the temporary file is present (means another download is in progress
@@ -126,14 +117,12 @@ def download_wsusscan(params={}):
     """
     cab_url = 'http://download.windowsupdate.com/microsoftupdate/v6/wsusscan/wsusscn2.cab'
     wsus_filename = os.path.join(waptwua_folder,'wsusscn2.cab')
-    tmp_filename = os.path.join(waptwua_folder,'wsusscn2.cab.tmp')
+    tmp_filename = os.path.join(waptwua_folder,'wsusscn2.cab.part')
 
     wsusscan2_history = pymongo.MongoClient().wapt.wsusscan2_history
     wsusscan2_history.ensure_index('uuid', unique=True)
     wsusscan2_history.ensure_index([('run_date', pymongo.DESCENDING)])
 
-    force = params.get('force', False) == 'True'
-    dryrun = params.get('dryrun', False) == 'True'
     dl_uuid = str(uuid.uuid4())
 
     stats = {
@@ -148,14 +137,8 @@ def download_wsusscan(params={}):
     # should we remove the tmp filename when we get an error?
     cleanup_on_error = False
 
-    if not force and os.path.isfile(tmp_filename):
-
-        tmp_timestamp = os.stat(tmp_filename).st_mtime
-        current_timestamp = time.time()
-        if current_timestamp < tmp_timestamp + 3 * 60 * 60:
-            logger.info('download_wsusscan: %s is present but less than 3 hours old (timestamp %f), skipping download', tmp_filename, tmp_timestamp)
-            stats['status'] = 'aborted'
-            wsusscan2_history.save(stats)
+    if os.path.isfile(tmp_filename):
+        os.unlink(tmp_filename)
 
     try:
 
@@ -239,7 +222,7 @@ def download_wsusscan(params={}):
             stats['skipped'] = True
             wsusscan2_history.save(stats)
 
-        return SPOOL_OK
+        return 'OK'
 
     except Exception as e:
         stats['error'] = str(e)
@@ -250,7 +233,7 @@ def download_wsusscan(params={}):
 
         logger.error("Error in download_wsusscan: %s", str(e))
         logger.error('Trace:\n%s', traceback.format_exc())
-        return SPOOL_OK
+        return 'ERROR'
 
 
 def wsusscan2_extract_cabs(wsusscan2, tmpdir):
@@ -645,24 +628,11 @@ def parse_wsusscan_entrypoint(dl_uuid=None):
 
 
 def parse_wsusscan2(dl_uuid):
-    got_lock = False
-
-    runtime = pymongo.MongoClient().wapt.wsus_runtime
     try:
-        logger.info('Acquiring lock for parse_wsusscan2')
-        runtime.insert({ '_id': WSUS_PARSE_WSUSSCN2_LOCK })
-        got_lock = True
-
         parse_wsusscan_entrypoint(dl_uuid)
-
-    except pymongo.errors.DuplicateKeyError:
-        logger.warning('parse_wsusscan2 already running, aborting')
     except Exception as e:
         logger.error('Exception in parse_wsusscan2: %s', repr(e))
         logger.error('Traceback: %s', traceback.format_exc())
-    finally:
-        if got_lock == True:
-            runtime.remove({'_id': WSUS_PARSE_WSUSSCN2_LOCK })
 
 
 #@app.route('/api/v2/download_wsusscan')
@@ -670,8 +640,9 @@ def trigger_wsusscan2_download():
     dryrun = bool(request.args.get('dryrun', False))
     force = bool(request.args.get('force', False))
     logger.info('Triggering download_wsusscan with parameter ' + str(force))
-    download_wsusscan.spool(dryrun=dryrun, force=force)
+    download_wsusscan(dryrun=dryrun, force=force)
     return make_response()
+
 
 #@app.route('/api/v2/wsusscan2_status')
 def wsusscan2_status():
@@ -1189,16 +1160,15 @@ def check_sha1_filename(target):
 #@app.route('/api/v2/download_windows_update')
 def download_windows_updates():
 
-
     try:
-        try:
-            kb_article_id = request.args.get('kb_article_id', None)
-            if kb_article_id != None:
-                requested_kb = utils_get_db().requested_kb
-                requested_kb.update({ 'kb_article_id': kb_article_id }, { 'kb_article_id': kb_article_id, '$inc': { 'request_count', int(1) } }, upsert=True)
-        except Exception as e:
+        kb_article_id = request.args.get('kb_article_id', None)
+        if kb_article_id != None:
+            requested_kb = utils_get_db().requested_kb
+            requested_kb.update({ 'kb_article_id': kb_article_id }, { 'kb_article_id': kb_article_id, '$inc': { 'request_count', int(1) } }, upsert=True)
+    except Exception as e:
             logger.error('download_windows_updates: %s', str(e))
 
+    try:
         url = request.args['url']
         url_parts = urlparse.urlparse(url)
         if url_parts.netloc not in ['download.windowsupdate.com','www.download.windowsupdate.com']:
@@ -1211,27 +1181,40 @@ def download_windows_updates():
             os.remove(target)
 
         if not os.path.isfile(target):
-            if not os.path.isdir(os.path.join(waptwua_folder,*fileparts[:-1])):
-                os.makedirs(os.path.join(waptwua_folder,*fileparts[:-1]))
-            tmp_target = target + '.part'
-            if os.path.isfile(tmp_target):
-                tmp_timestamp = os.stat(tmp_target).st_mtime
-                current_timestamp = time.time()
-                if current_timestamp < tmp_timestamp + 3 * 60 * 60:
-                    raise Exception('download_windows_update: download (probably) in progress')
-                else:
-                    os.unlink(tmp_target)
-            wget(url, tmp_target)
-            if check_sha1_filename(tmp_target) == False:
-                os.remove(target)
-                raise Exception('Error during download, sha1 mismatch')
-            else:
-                os.rename(tmp_target, target)
+            download_windows_update_task(url)
+            raise Exception('Download triggered, come back later!')
 
         result = {'url':'/waptwua%s'% ('/'.join(fileparts),),'size':os.stat(target).st_size}
         return make_response(msg='Windows patch available',result=result)
     except Exception as e:
         return make_response_from_exception(e)
+
+
+@huey.task(retries=3, retry_delay=60)
+def download_windows_update_task(url):
+    url_parts = urlparse.urlparse(url)
+    if url_parts.netloc not in ['download.windowsupdate.com','www.download.windowsupdate.com']:
+        raise Exception('Unauthorized location')
+    fileparts = urlparse.urlparse(url).path.split('/')
+    target = os.path.join(waptwua_folder,*fileparts)
+
+    # check sha1 sum if possible...
+    if os.path.isfile(target) and not check_sha1_filename(target):
+        os.remove(target)
+
+    if not os.path.isdir(os.path.join(waptwua_folder,*fileparts[:-1])):
+        os.makedirs(os.path.join(waptwua_folder,*fileparts[:-1]))
+    tmp_target = target + '.part'
+    if os.path.isfile(tmp_target):
+        os.unlink(tmp_target)
+    wget(url, tmp_target)
+    if check_sha1_filename(tmp_target) == False:
+        os.remove(target)
+        raise Exception('Error during download, sha1 mismatch')
+    else:
+        os.rename(tmp_target, target)
+
+    return True
 
 
 def do_resolve_update(update_map, update_id, recursion_level):
@@ -1389,7 +1372,7 @@ def wuredist_extract_and_fetch(wuredist, tmpdir):
 def download_wuredist():
     cab_url = 'http://update.microsoft.com/redist/wuredist.cab'
     wuredist_filename = os.path.join(waptwua_folder, 'wuredist.cab')
-    tmp_filename = wuredist_filename + '.tmp'
+    tmp_filename = wuredist_filename + '.part'
 
     # should we remove the tmp filename when we get an error?
     cleanup_on_error = False
@@ -1399,14 +1382,8 @@ def download_wuredist():
 
     stats = {}
 
-    if not force and os.path.isfile(tmp_filename):
-
-        tmp_timestamp = os.stat(tmp_filename).st_mtime
-        current_timestamp = time.time()
-        if current_timestamp < tmp_timestamp + 3 * 60 * 60:
-            logger.info('download_wuredist: %s is present but less than 3 hours old (timestamp %f), skipping download', tmp_filename, tmp_timestamp)
-            stats['status'] = 'aborted'
-            #wuredist_history.save(stats)
+    if os.path.isfile(tmp_filename):
+        os.unlink(tmp_filename)
 
     try:
 

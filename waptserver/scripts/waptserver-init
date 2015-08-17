@@ -66,7 +66,7 @@ send_sig()
 wait_and_clean_pidfiles()
 {
         local PIDFILE=$RUN/$NAME.pid
-        local timeout=70 # 7 seconds loop
+        local timeout=600 # 60 seconds loop
         until do_pid_check $PIDFILE || [ "$timeout" -le 0 ]; do
             sleep 0.1
             echo -n .
@@ -83,6 +83,8 @@ do_stop()
 {
     send_sig -QUIT
     wait_and_clean_pidfiles
+    # sorry...
+    send_sig -KILL
 }
 
 do_reload()

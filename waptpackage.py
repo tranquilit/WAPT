@@ -57,6 +57,7 @@ import requests
 import email
 import datetime
 import tempfile
+import email.utils
 
 logger = logging.getLogger()
 
