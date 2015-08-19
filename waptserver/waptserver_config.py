@@ -96,7 +96,7 @@ def load_config(cfgfile=_default_config_file):
         conf['server_uuid'] = _config.get('options', 'server_uuid')
 
     if _config.has_option('options', 'wapt_folder'):
-        conf['wapt_folder'] _config.get('options', 'wapt_folder').rstrip('/')
+        conf['wapt_folder'] = _config.get('options', 'wapt_folder').rstrip('/')
 
     if _config.has_option('options', 'wapt_huey_db'):
         conf['wapt_huey_db'] = _config.get('options', 'wapt_huey_db')
