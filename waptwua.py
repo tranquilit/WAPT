@@ -442,8 +442,7 @@ class WaptWUA(object):
                 reg_setvalue(key, 'DisableOSUpgrade', 0x1, REG_DWORD)
                 reg_closekey(key)
         except Exception as e:
-            self.wapt.write_param('waptwua.status','ERROR')
-            self.wapt.update_server_status()
+            print('Could not disable automatic upgrades: %s', str(e))
 
 
     def wua_agent_version(self):
