@@ -3555,7 +3555,7 @@ object VisWaptGUI: TVisWaptGUI
       end
     end
     object TabSheet4: TTabSheet
-      Caption = 'TabSheet4'
+      Caption = 'WSUSscan History'
       ClientHeight = 460
       ClientWidth = 947
       object GridWSUSScn: TSOGrid
