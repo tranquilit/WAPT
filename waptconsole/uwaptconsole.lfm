@@ -6761,7 +6761,7 @@ object VisWaptGUI: TVisWaptGUI
     left = 784
     top = 144
     object ActWSUSRefreshCabHistory: TAction
-      Caption = 'Refresh WSUScan cab history'
+      Caption = 'Refresh WSUSscan cab history'
       OnExecute = ActWSUSRefreshCabHistoryExecute
     end
   end
