@@ -61,6 +61,7 @@ import StringIO
 
 import thread
 import threading
+import multiprocessing as mp
 import zmq
 from zmq.log.handlers import PUBHandler
 import Queue
@@ -1905,18 +1906,42 @@ class WaptPackageForget(WaptTask):
         return __(u"Forget {packagenames} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagenames=self.packagenames)
 
 
+def run_waptwua_scan(conn_fd, windows_updates_rules):
+    wapt = Wapt()
+    wua = WaptWUA(wapt, windows_updates_rules)
+    r = wua.scan_updates_status()
+    conn_fd.send(r)
+
 class WaptWUAScan(WaptTask):
     def __init__(self,windows_updates_rules = {}):
         super(WaptWUAScan,self).__init__()
         self.windows_updates_rules = windows_updates_rules
 
     def _run(self):
-        wua = WaptWUA(self.wapt,windows_updates_rules = self.windows_updates_rules)
-        self.result = (installed,pending,discarded) = wua.scan_updates_status()
-        self.summary = "Windows updates : already installed: %s, pending: %s, discarded: %s" % (installed,pending,discarded)
+        parent_conn, child_conn = mp.Pipe()
+        child = mp.Process(target=run_waptwua_scan, args=(child_conn, {}) ) # XXX windows_updates_rules
+        child.start()
+        r = s = None
+        try:
+            r = parent_conn.recv()
+            s = "Windows updates: already installed: %s, pending %s, discarded %s" % (r[0], r[1], r[2])
+        except Exception as e:
+            s = '%s: Failed to receive data from child process: %s' % (self.__class__.__name__, str(e))
+        self.result = r
+        self.summary = s
 
     def __unicode__(self):
         return __(u"Scans WAPTWua Windows Updates  with rules %{rules}s").format(classname=self.__class__.__name__,id=self.id,rules=self.windows_updates_rules)
+
+def run_waptwua_download(conn_fd, windows_updates_rules):
+    wapt = Wapt()
+    wua = WaptWUA(wapt, windows_updates_rules)
+    if wua.wapt.waptwua_enabled == False:
+        raise Exception('waptwua is currently disabled.')
+    wua.automatic_updates(False)
+    wua.disable_os_upgrade()
+    r = wua.download_updates()
+    conn_fd.send(r)
 
 class WaptWUADownload(WaptTask):
     def __init__(self,windows_updates_rules = {}):
@@ -1924,20 +1949,31 @@ class WaptWUADownload(WaptTask):
         self.windows_updates_rules = windows_updates_rules
 
     def _run(self):
-        wua = WaptWUA(self.wapt,windows_updates_rules = self.windows_updates_rules)
-
-        if wua.wapt.waptwua_enabled == False:
-            raise Exception('waptwua is currently disabled.')
-
-        wua.automatic_updates(False)
-        wua.disable_os_upgrade()
-
-        self.result = wua.download_updates()
-        self.summary = "Result : %s" % self.result
+        parent_conn, child_conn = mp.Pipe()
+        child = mp.Process(target=run_waptwua_download, args=(child_conn, {}) ) # XXX windows_updates_rules
+        child.start()
+        r = s = None
+        try:
+            r = parent_conn.recv()
+            s = "Result : %s" % r
+        except Exception as e:
+            s = '%s: Failed to receive data from child process: %s' % (self.__class__.__name__, str(e))
+        self.result = r
+        self.summary = s
 
     def __unicode__(self):
         return __(u"Scan and download WAPTWua Windows Updates with rules %{rules}s").format(classname=self.__class__.__name__,id=self.id,rules=self.windows_updates_rules)
 
+
+def run_waptwua_install(conn_fd, windows_updates_rules):
+    wapt = Wapt()
+    wua = WaptWUA(wapt, windows_updates_rules)
+    if wua.wapt.waptwua_enabled == False:
+        raise Exception('waptwua is currently disabled.')
+    wua.automatic_updates(False)
+    wua.disable_os_upgrade()
+    r = wua.install_updates()
+    conn_fd.send(r)
 
 class WaptWUAInstall(WaptTask):
     def __init__(self,windows_updates_rules = {}):
@@ -1945,16 +1981,17 @@ class WaptWUAInstall(WaptTask):
         self.windows_updates_rules = windows_updates_rules
 
     def _run(self):
-        wua = WaptWUA(self.wapt,windows_updates_rules = self.windows_updates_rules)
-
-        if wua.wapt.waptwua_enabled == False:
-            raise Exception('waptwua is currently disabled.')
-
-        wua.automatic_updates(False)
-        wua.disable_os_upgrade()
-
-        self.result = wua.install_updates()
-        self.summary = "Result : %s" % self.result
+        parent_conn, child_conn = mp.Pipe()
+        child = mp.Process(target=run_waptwua_install, args=(child_conn, {}) ) # XXX windows_updates_rules
+        child.start()
+        r = s = None
+        try:
+            r = parent_conn.recv()
+            s = "Result : %s" % r
+        except Exception as e:
+            s = '%s: Failed to receive data from child process: %s' % (self.__class__.__name__, str(e))
+        self.result = r
+        self.summary = s
 
     def __unicode__(self):
         return __(u"Scan, download and install WAPTWua Windows Updates with rules %{rules}s").format(classname=self.__class__.__name__,id=self.id,rules=self.windows_updates_rules)
