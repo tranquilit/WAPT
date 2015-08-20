@@ -1906,11 +1906,47 @@ class WaptPackageForget(WaptTask):
         return __(u"Forget {packagenames} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagenames=self.packagenames)
 
 
-def run_waptwua_scan(conn_fd, windows_updates_rules):
-    wapt = Wapt()
-    wua = WaptWUA(wapt, windows_updates_rules)
-    r = wua.scan_updates_status()
-    conn_fd.send(r)
+
+def run_waptwua(conn_fd, method, windows_updates_rules={}, run_waptwua_conf={}, **kwargs):
+    """Run WaptWUA 'method' using windows_updates_rules.
+
+    run_waptwua_conf is a dict of contraints for the runner:
+    - 'ensure_enabled' (waptwua_enabled in wapt-get.ini)
+    - 'disable_automatic_updates'
+    - 'disable_os_upgrade'
+    kwargs can be used to pass arguments to the method
+
+    Communication with the parent is done by returning a tuple of (result, message)
+    through conn_fd.
+
+    WARNING: everything passed through arguments or conn_fd should
+    be a basic python type, since multiprocessing uses pickle, which
+    is limited.
+
+    """
+    try:
+        wapt = Wapt()
+        wua = WaptWUA(wapt, windows_updates_rules)
+
+        ensure_enabled = run_waptwua_conf.get('ensure_enabled', True)
+        if ensure_enabled and not wua.wapt.waptwua_enabled:
+            conn_fd.send((None, 'WAPTWUA is currently disabled.'))
+            return
+
+        if run_waptwua_conf.get('disable_automatic_updates', False):
+            wua.automatic_updates(False)
+
+        if run_waptwua_conf.get('disable_os_upgrade', False):
+            wua.disable_os_upgrade()
+
+        r = getattr(wua, method).__call__(**kwargs)
+        conn_fd.send((r, None))
+    except Exception as e:
+        conn_fd.send((
+                None,
+                'run_waptwua: unexpected exception while attempting to call %s: %s' % (method, str(e))
+                ))
+
 
 class WaptWUAScan(WaptTask):
     def __init__(self,windows_updates_rules = {}):
@@ -1919,29 +1955,33 @@ class WaptWUAScan(WaptTask):
 
     def _run(self):
         parent_conn, child_conn = mp.Pipe()
-        child = mp.Process(target=run_waptwua_scan, args=(child_conn, {}) ) # XXX windows_updates_rules
+        scan_args = (
+            child_conn,
+            'scan_updates_status',
+            self.windows_updates_rules,
+            { 'ensure_enabled': False },
+        )
+        child = mp.Process(target=run_waptwua, args=scan_args)
         child.start()
+
         r = s = None
         try:
-            r = parent_conn.recv()
-            s = "Windows updates: already installed: %s, pending %s, discarded %s" % (r[0], r[1], r[2])
+            r, s = parent_conn.recv()
+            if r is None:
+                if s is None:
+                    s = '%s: no result and no summary explanation given' % (self.__class__.__name__)
+            else:
+                s = "Windows updates: already installed: %s, pending %s, discarded %s" % (r[0], r[1], r[2])
         except Exception as e:
             s = '%s: Failed to receive data from child process: %s' % (self.__class__.__name__, str(e))
+
         self.result = r
         self.summary = s
 
     def __unicode__(self):
+        # XXX missing formats?
         return __(u"Scans WAPTWua Windows Updates  with rules %{rules}s").format(classname=self.__class__.__name__,id=self.id,rules=self.windows_updates_rules)
 
-def run_waptwua_download(conn_fd, windows_updates_rules):
-    wapt = Wapt()
-    wua = WaptWUA(wapt, windows_updates_rules)
-    if wua.wapt.waptwua_enabled == False:
-        raise Exception('waptwua is currently disabled.')
-    wua.automatic_updates(False)
-    wua.disable_os_upgrade()
-    r = wua.download_updates()
-    conn_fd.send(r)
 
 class WaptWUADownload(WaptTask):
     def __init__(self,windows_updates_rules = {}):
@@ -1950,30 +1990,32 @@ class WaptWUADownload(WaptTask):
 
     def _run(self):
         parent_conn, child_conn = mp.Pipe()
-        child = mp.Process(target=run_waptwua_download, args=(child_conn, {}) ) # XXX windows_updates_rules
+        download_args = (
+            child_conn,
+            'download_updates',
+            self.windows_updates_rules,
+            { 'ensure_enabled': True, 'disable_os_upgrade': True, 'disable_automatic_updates': True },
+        )
+        child = mp.Process(target=run_waptwua, args=download_args)
         child.start()
+
         r = s = None
         try:
-            r = parent_conn.recv()
-            s = "Result : %s" % r
+            r, s = parent_conn.recv()
+            if r is None:
+                if s is None:
+                    s = '%s: no result and no summary explanation given' % (self.__class__.__name__)
+            else:
+                s = "%s result : %s" % (self.__class__.__name__, r)
         except Exception as e:
             s = '%s: Failed to receive data from child process: %s' % (self.__class__.__name__, str(e))
+
         self.result = r
         self.summary = s
 
     def __unicode__(self):
         return __(u"Scan and download WAPTWua Windows Updates with rules %{rules}s").format(classname=self.__class__.__name__,id=self.id,rules=self.windows_updates_rules)
 
-
-def run_waptwua_install(conn_fd, windows_updates_rules):
-    wapt = Wapt()
-    wua = WaptWUA(wapt, windows_updates_rules)
-    if wua.wapt.waptwua_enabled == False:
-        raise Exception('waptwua is currently disabled.')
-    wua.automatic_updates(False)
-    wua.disable_os_upgrade()
-    r = wua.install_updates()
-    conn_fd.send(r)
 
 class WaptWUAInstall(WaptTask):
     def __init__(self,windows_updates_rules = {}):
@@ -1982,14 +2024,26 @@ class WaptWUAInstall(WaptTask):
 
     def _run(self):
         parent_conn, child_conn = mp.Pipe()
-        child = mp.Process(target=run_waptwua_install, args=(child_conn, {}) ) # XXX windows_updates_rules
+        install_args = (
+            child_conn,
+            'install_updates',
+            self.windows_updates_rules,
+            { 'ensure_enabled': True, 'disable_os_upgrade': True, 'disable_automatic_updates': True },
+        )
+        child = mp.Process(target=run_waptwua, args=install_args)
         child.start()
+
         r = s = None
         try:
-            r = parent_conn.recv()
-            s = "Result : %s" % r
+            r, s = parent_conn.recv()
+            if r is None:
+                if s is None:
+                    s = '%s: no result and no summary explanation given' % (self.__class__.__name__)
+            else:
+                s = "%s result : %s" % (self.__class__.__name__, r)
         except Exception as e:
             s = '%s: Failed to receive data from child process: %s' % (self.__class__.__name__, str(e))
+
         self.result = r
         self.summary = s
 
