@@ -187,6 +187,9 @@ def main():
         # keep in sync with waptserver.py
         wapt_folder = os.path.join(wapt_root_dir,'waptserver','repository','wapt')
 
+    if os.path.exists(os.path.join(wapt_root_dir, 'waptserver', 'wsus.py')):
+        waptserver_ini.set('uwsgi', 'attach-daemon', '/usr/bin/python /opt/wapt/waptserver/wapthuey.py wsus.huey')
+
     wapt_password_ok = False
     while not wapt_password_ok:
         wapt_password = ''
