@@ -167,7 +167,7 @@ def main():
     shutil.copyfile('/opt/wapt/waptserver/waptserver.ini.template','/opt/wapt/waptserver/waptserver.ini')
     waptserver_ini = iniparse.RawConfigParser()
 
-    waptserver_ini.read('/opt/wapt/waptserver/waptserver.ini')
+    waptserver_ini.readfp(file('/opt/wapt/waptserver/waptserver.ini', 'rU'))
 
     # no trailing slash
 
