@@ -435,7 +435,13 @@ class WaptWUA(object):
     @staticmethod
     def disable_os_upgrade():
 
-        if int(platform.win32_ver()[0]) < 7:
+        try:
+            v = platform.win32_ver()[1].split('.')
+            if int(v[0]) < 6 or int(v[1]) < 1:
+                logger.info('OS version < 6.1, no need to disable OS upgrades.')
+                return
+        except Exception as e:
+            logger.warning('Problem when parsing windows version: %s' % str(e))
             return
 
         try:
