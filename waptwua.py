@@ -51,6 +51,11 @@ from urlparse import urlparse
 from setuphelpers import *
 
 
+v = (sys.version_info.major, sys.version_info.minor)
+if v != (2, 7):
+    raise Exception('waptwua supports only Python 2.7, not %d.%d' % v)
+
+
 #https://msdn.microsoft.com/en-us/library/ff357803%28v=vs.85%29.aspx
 UpdateClassifications = {
  '28bc880e-0592-4cbf-8f95-c79b17911d5f': 'UpdateRollups',    # Ensemble de mises à jour
