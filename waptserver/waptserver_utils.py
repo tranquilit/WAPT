@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*-: coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # -----------------------------------------------------------------------
 #    This file is part of WAPT
 #    Copyright (C) 2013  Tranquil IT Systems http://www.tranquil.it
