@@ -314,7 +314,7 @@ def get_timezone():
 def index():
 
     agent_status = setup_status = deploy_status = mongodb_status = 'N/A'
-    agent_style = setup_style = deploy_style = 'style="color: red;"'
+    agent_style = setup_style = deploy_style = disk_space_style = 'style="color: red;"'
 
     agent_present, agent_version = get_wapt_exe_version(waptagent)
     if agent_present:
@@ -346,6 +346,17 @@ def index():
     except Exception as e:
         mongodb_status = 'ERROR'
 
+    try:
+        space = get_disk_space(conf['wapt_folder'])
+        if not space:
+            raise Exception('Disk info not found')
+        percent_free = (space[0] * 100) / space[1]
+        if percent_free >= 20:
+            disk_space_style = ''
+        disk_space_str = str(percent_free) + '% free'
+    except Exception as e:
+        disk_space_str = 'error, %s' % str(e)
+
     data = {
         'wapt': {
             'server': { 'status': __version__ },
@@ -353,6 +364,7 @@ def index():
             'setup': { 'status': setup_status, 'style': setup_style },
             'deploy': { 'status': deploy_status, 'style': deploy_style },
             'mongodb': { 'status': mongodb_status },
+            'disk_space': { 'status': disk_space_str, 'style': disk_space_style },
         }
     }
 
