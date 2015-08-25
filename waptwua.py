@@ -437,7 +437,7 @@ class WaptWUA(object):
         self._cached_updates = {}
 
     @staticmethod
-    def setup_wuauserv(automatic_updates=None, own=None, priority=None):
+    def setup_wuauserv(automatic_updates=None, own=None, lower_prio=False):
 
         def set_automatic_updates(enable):
 
@@ -467,7 +467,7 @@ class WaptWUA(object):
         if automatic_updates is not None:
             set_automatic_updates(automatic_updates)
 
-        if own is not None or priority is not None:
+        if own is not None:
             svchosts = parse_tasklist_svc(['/fi', 'imagename eq svchost.exe'])[1:]
 
             handle = None
@@ -477,6 +477,7 @@ class WaptWUA(object):
                 if 'wuauserv' in p['service_users']:
                     handle = p['pid']
                     standalone = (len(p['service_users']) == 1)
+                    break
 
             if own is not None and own != standalone:
                 if own:
@@ -487,7 +488,15 @@ class WaptWUA(object):
                 subprocess.call(['net', 'stop',  'wuauserv'], startupinfo=_startupinfo_hide)
                 subprocess.call(['net', 'start', 'wuauserv'], startupinfo=_startupinfo_hide)
 
-            # TODO: lower the priority of wuauserv and its svchost?
+        if lower_prio:
+            svchosts = parse_tasklist_svc(['/fi', 'imagename eq svchost.exe'])[1:]
+            for p in svchosts:
+                if 'wuauserv' in p['service_users'] and len(p['service_users']) == 1:
+                    subprocess.call([
+                        'wmic', 'process', 'where', 'handle=' + str(p['pid']), 'CALL' 'setpriority', 'below normal'
+                    ])
+
+            # TODO lower prio of wuauserv
 
 
     @staticmethod
