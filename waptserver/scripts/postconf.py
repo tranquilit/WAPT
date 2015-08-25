@@ -167,7 +167,7 @@ def main():
     shutil.copyfile('/opt/wapt/waptserver/waptserver.ini.template','/opt/wapt/waptserver/waptserver.ini')
     waptserver_ini = iniparse.RawConfigParser()
 
-    waptserver_ini.read('/opt/wapt/waptserver/waptserver.ini')
+    waptserver_ini.readfp(file('/opt/wapt/waptserver/waptserver.ini', 'rU'))
 
     # no trailing slash
 
@@ -186,6 +186,9 @@ def main():
         # for install on windows
         # keep in sync with waptserver.py
         wapt_folder = os.path.join(wapt_root_dir,'waptserver','repository','wapt')
+
+    if os.path.exists(os.path.join(wapt_root_dir, 'waptserver', 'wsus.py')):
+        waptserver_ini.set('uwsgi', 'attach-daemon', '/usr/bin/python /opt/wapt/waptserver/wapthuey.py wsus.huey')
 
     wapt_password_ok = False
     while not wapt_password_ok:

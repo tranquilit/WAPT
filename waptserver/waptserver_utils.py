@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*-: coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # -----------------------------------------------------------------------
 #    This file is part of WAPT
 #    Copyright (C) 2013  Tranquil IT Systems http://www.tranquil.it
@@ -169,12 +169,33 @@ def wget(url,target,proxies=None,connect_timeout=10,download_timeout=None, chunk
         os.utime(os.path.join(dir,filename),(unix_timestamp,unix_timestamp))
     return os.path.join(dir,filename)
 
+
+def get_disk_space(directory):
+
+    ret = None
+
+    if os.name == 'posix':
+        stats = os.statvfs(directory)
+        ret = (stats.f_bavail * stats.f_bsize, stats.f_blocks * stats.f_bsize)
+    else:
+        import wmi
+
+        drive = os.path.splitdrive(os.path.abspath(directory))[0].lower()
+
+        for d in wmi.WMI().Win32_LogicalDisk():
+            if str(d.Name).lower() == drive:
+                ret = (int(d.FreeSpace), int(d.Size))
+
+    return ret
+
+
 __all__ += ['ensure_list']
 __all__ += ['mkdir_p']
 __all__ += ['utils_get_db']
 __all__ += ['utils_setup_db']
 __all__ += ['utils_set_devel_mode']
 __all__ += ['wget']
+__all__ += ['get_disk_space']
 
 
 ##### Logging #####

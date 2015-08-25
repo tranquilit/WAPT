@@ -650,7 +650,10 @@ def wsusscan2_status():
     tmp_filename = os.path.join(waptwua_folder,'wsusscn2.cab.tmp')
 
     success = False
+    downloading = False
+    exc_type = 'unknown'
     data = {}
+
     try:
         stats = os.stat(wsus_filename)
         success = True
@@ -658,11 +661,12 @@ def wsusscan2_status():
             'wsus_timestamp': stats[stat.ST_MTIME],
             'wsus_size':      stats[stat.ST_SIZE],
         })
-    except Exception:
-        pass
+    except Exception as e:
+        exc_type = type(e).__name__.lower()
 
     try:
         tmp_stats = os.stat(tmp_filename)
+        downloading = True
         data.update({
             'tmp_wsus_timestamp': tmp_stats[stat.ST_MTIME],
             'tmp_wsus_size':      tmp_stats[stat.ST_SIZE],
@@ -670,7 +674,17 @@ def wsusscan2_status():
     except Exception:
         pass
 
-    return make_response(success=success, result=data)
+    if success:
+        msg = 'wsusscn2.cab present'
+        error_code = ''
+    else:
+        if downloading:
+            msg = 'wsusscn2.cab absent, is another download running?'
+        else:
+            msg = 'wsusscn2.cab absent, please download it first'
+        error_code = exc_type
+
+    return make_response(success=success, result=data, msg=msg, error_code=error_code)
 
 #@app.route('/api/v2/wsusscan2_history')
 def wsusscan2_history():

@@ -102,6 +102,12 @@ _ = gettext
 
 import babel
 
+
+v = (sys.version_info.major, sys.version_info.minor)
+if v != (2, 7):
+    raise Exception('waptservice supports only Python 2.7, not %d.%d' % v)
+
+
 usage="""\
 %prog -c configfile [action]
 
