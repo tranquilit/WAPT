@@ -378,7 +378,7 @@ class WAPTDiskSpaceException(Exception):
 
 
 class WaptWUA(object):
-    def __init__(self,wapt,windows_updates_rules = {}, filter="Type='Software' and IsInstalled=0 and IsHidden=0"):
+    def __init__(self,wapt,windows_updates_rules = {}, filter="Type='Software'"):
         self.wapt = wapt
         self.cache_path = os.path.abspath(makepath(wapt.wapt_base_dir,'waptwua','cache'))
         self.wsusscn2 = makepath(self.cache_path, 'wsusscn2.cab')
@@ -399,6 +399,9 @@ class WaptWUA(object):
         self._updates = None
         # to store successful changes in read only properties of _updates after initial scan
         self._cached_updates = {}
+
+        self._installed_updates = None
+
 
     @staticmethod
     def automatic_updates(enable):
@@ -463,11 +466,14 @@ class WaptWUA(object):
 
 
     def cached_update_property(self,update,key):
-        update_id = update.Identity.UpdateID
-        if update_id in self._cached_updates and key in self._cached_updates[update_id]:
-            return self._cached_updates[update_id][key]
+        if hasattr(update,key):
+            update_id = update.Identity.UpdateID
+            if update_id in self._cached_updates and key in self._cached_updates[update_id]:
+                return self._cached_updates[update_id][key]
+            else:
+                return getattr(update,key,None)
         else:
-            return getattr(update,key)
+            return getattr(update,key,None)
 
     def store_cached_update_property(self,update,key,value):
         update_id = update.Identity.UpdateID
@@ -479,30 +485,45 @@ class WaptWUA(object):
     def update_as_dict(self,update):
         """Convert a IUpdate instance into a dict
         """
-        if self.cached_update_property(update,'IsInstalled'):
+        if update in self.installed_updates or self.cached_update_property(update,'IsInstalled'):
             status = 'OK'
-        elif not self.cached_update_property(update,'IsInstalled') and not update.IsHidden:
+        elif update not in self.installed_updates and not self.cached_update_property(update,'IsInstalled') and not update.IsHidden:
             status = 'PENDING'
         else:
             status = 'DISCARDED'
 
-        products = [ Products.get(c.CategoryID,c.CategoryID) for c in update.Categories if c.Type == 'Product']
-        classifications = [ UpdateClassifications.get(c.CategoryID,c.CategoryID) for c in update.Categories if c.Type == 'UpdateClassification']
-
-        return dict(
-            uuid = update.Identity.UpdateID,
-            title = update.Title,
-            type = update.Type,
-            status = status,
-            kbids = [ "%s" % kb for kb in update.KBArticleIDs ],
-            severity = update.MsrcSeverity,
-            installed = self.cached_update_property(update,'IsInstalled'),
-            hidden = update.IsHidden,
-            downloaded = update.IsDownloaded,
-            changetime = datetime2isodate(datetime.datetime.fromtimestamp(int(update.LastDeploymentChangeTime))),
-            product = (products and products[0]) or "",
-            classification = (classifications and classifications[0] or ""),
-            )
+        if hasattr(update,'Categories'):
+            products = [ Products.get(c.CategoryID,c.CategoryID) for c in update.Categories if c.Type == 'Product']
+            classifications = [ UpdateClassifications.get(c.CategoryID,c.CategoryID) for c in update.Categories if c.Type == 'UpdateClassification']
+            return dict(
+                uuid = update.Identity.UpdateID,
+                title = update.Title,
+                type = update.Type,
+                status = status,
+                kbids = [ "%s" % kb for kb in update.KBArticleIDs ],
+                severity = update.MsrcSeverity,
+                installed = self.cached_update_property(update,'IsInstalled'),
+                hidden = update.IsHidden,
+                downloaded = update.IsDownloaded,
+                changetime = datetime2isodate(datetime.datetime.fromtimestamp(int(update.LastDeploymentChangeTime))),
+                product = (products and products[0]) or "",
+                classification = (classifications and classifications[0] or ""),
+                )
+        else:
+            return dict(
+                uuid = update.UpdateIdentity.UpdateID,
+                title = update.Title,
+                type = "",
+                status = status,
+                kbids = "",
+                severity = "",
+                installed = True,
+                hidden = False,
+                downloaded = True,
+                changetime = datetime2isodate(datetime.datetime.fromtimestamp(int(update.Date))),
+                product = "",
+                classification = "",
+                )
 
     @property
     def update_session(self):
@@ -587,6 +608,19 @@ class WaptWUA(object):
                 self.wapt.write_param('waptwua.status','READY')
         return self._updates
 
+    @property
+    def installed_updates(self):
+        if self._installed_updates is None:
+            self.wapt.write_param('waptwua.status','SCANNING')
+            try:
+                print 'Looking for installed updates'
+                self._installed_updates = []
+                update_count = self.update_searcher.GetTotalHistoryCount()
+                for update in self.update_searcher.QueryHistory(0,update_count-1):
+                    self._installed_updates.append(update)
+            finally:
+                self.wapt.write_param('waptwua.status','READY')
+        return self._installed_updates
 
     def is_allowed(self,update):
         """Check if an update is allowed
@@ -890,7 +924,10 @@ class WaptWUA(object):
             'windows_updates_rules':json.loads(self.wapt.read_param('waptwua.windows_updates_rules','{}')),
             }
 
-def status():
+    def status():
+        from common import *
+        wapt = Wapt()
+        wua = WaptWUA(wapt)
         stat = wua.stored_status()
         stat['installed'] = len([ u for u in stat['updates'] if u['status'] == 'OK'])
         stat['pending'] = len([ u for u in stat['updates'] if u['status'] == 'PENDING'])
