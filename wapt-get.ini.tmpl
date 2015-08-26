@@ -2,6 +2,13 @@
 repo_url=
 dbdir = c:\wapt\db
 
+; Enable or disable the automatic install of a Wapt package named like the host's FQDN
+;  If disabled, administrator can not remotely manage the packages that must be installed.
+;  If Enabled, the host's packages created by waptconsole  are downloaded and applied on the host.
+; Host packages are downloaded from a repository located on same http server as main repo, 
+;  wapt append a '-host' at the end of main repo URL to compose the host packages repository URL.
+; By default, use_hostpackages is disabled.
+;use_hostpackages = 1
 
 ; loglevel : debug info warning critical
 ;loglevel=warning
