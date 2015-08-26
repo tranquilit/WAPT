@@ -4074,7 +4074,7 @@ class Wapt(object):
                 self.register_computer()
             return result
         else:
-            logger.warning('WAPT Server is not available to store current host status')
+            logger.info('WAPT Server is not available to store current host status')
             return json.dumps(inv,indent=True)
 
     def waptserver_available(self):
