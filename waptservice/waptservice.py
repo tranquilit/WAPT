@@ -1940,7 +1940,7 @@ def run_waptwua(conn_fd, method, windows_updates_rules={}, run_waptwua_conf={}, 
             return
 
         if run_waptwua_conf.get('disable_automatic_updates', False):
-            wua.automatic_updates(False)
+            wua.setup_wuauserv(automatic_updates=False)
 
         if run_waptwua_conf.get('disable_os_upgrade', False):
             wua.disable_os_upgrade()

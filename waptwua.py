@@ -36,12 +36,14 @@
 __version__ = "1.3.1"
 
 
+import csv
 import datetime
 import json
 import logging
 import os
 import platform
 import requests
+import subprocess
 import sys
 import time
 import win32com.client
@@ -323,6 +325,9 @@ InstallResult = {
 WUA_MAJOR_VERSION = 7
 WUA_MINOR_VERSION = 6
 
+_startupinfo_hide = subprocess.STARTUPINFO()
+_startupinfo_hide.wShowWindow = subprocess.SW_HIDE
+
 
 def map_classifications(lst):
     """Given a list of updateclassification id or updateclassification names
@@ -369,6 +374,32 @@ def check_sha1_filename(target):
         return True
 
 
+def parse_tasklist_svc(filters=[]):
+    res = []
+
+    out = subprocess.check_output(['tasklist', '/fo', 'csv', '/svc'] + filters,
+        startupinfo=_startupinfo_hide)
+    lines = out.split(os.linesep)
+
+    csv_reader = csv.reader(lines)
+    for row in csv_reader:
+        if len(row) != 3:
+            continue
+
+        p = {}
+        p['process'] = row[0]
+        p['pid'] = row[1]
+        if row[2] == 'N/A':
+            service_users = []
+        else:
+            service_users = row[2].split(',')
+        p['service_users'] = service_users
+
+        res.append(p)
+
+    return res
+
+
 class WAPTDiskSpaceException(Exception):
     def __init__(self, message, free_space):
         self.message = message
@@ -409,31 +440,67 @@ class WaptWUA(object):
 
 
     @staticmethod
-    def automatic_updates(enable):
+    def setup_wuauserv(automatic_updates=None, own=None, lower_prio=False):
 
-        if enable:
-            expected = 0x4
-        else:
-            expected = 0x1
+        def set_automatic_updates(enable):
 
-        key = reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update')
-        updatevalue = reg_getvalue(key, 'AUOptions')
-        reg_closekey(key)
-
-        if updatevalue != expected:
             if enable:
-                logger.info("auto update disabled, enabling")
+                expected = 0x4
             else:
-                logger.info("auto update enabled, disabling")
-            key = reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update', KEY_WRITE)
-            reg_setvalue(key, 'AUOptions', expected, REG_DWORD)
+                expected = 0x1
+
+            key = reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update')
+            updatevalue = reg_getvalue(key, 'AUOptions')
             reg_closekey(key)
-            try:
-                import subprocess
-                subprocess.check_output(['net', 'stop',  'wuauserv'])
-                subprocess.check_output(['net', 'start', 'wuauserv'])
-            except Exception as e:
-                print('Could not restart wuauserv: %s', str(e))
+
+            if updatevalue != expected:
+                if enable:
+                    logger.info("auto update disabled, enabling")
+                else:
+                    logger.info("auto update enabled, disabling")
+                key = reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update', KEY_WRITE)
+                reg_setvalue(key, 'AUOptions', expected, REG_DWORD)
+                reg_closekey(key)
+                try:
+                    subprocess.call(['net', 'stop',  'wuauserv'], startupinfo=_startupinfo_hide)
+                    subprocess.call(['net', 'start', 'wuauserv'], startupinfo=_startupinfo_hide)
+                except Exception as e:
+                    print('Could not restart wuauserv: %s', str(e))
+
+        if automatic_updates is not None:
+            set_automatic_updates(automatic_updates)
+
+        if own is not None:
+            svchosts = parse_tasklist_svc(['/fi', 'imagename eq svchost.exe'])[1:]
+
+            handle = None
+            standalone = False # by default wuauserv does not use its own svchost
+
+            for p in svchosts:
+                if 'wuauserv' in p['service_users']:
+                    handle = p['pid']
+                    standalone = (len(p['service_users']) == 1)
+                    break
+
+            if own is not None and own != standalone:
+                if own:
+                    type_ = 'own'
+                else:
+                    type_ = 'share'
+                subprocess.check_output(['sc', 'config', 'wuauserv', 'type=', type_])
+                subprocess.call(['net', 'stop',  'wuauserv'], startupinfo=_startupinfo_hide)
+                subprocess.call(['net', 'start', 'wuauserv'], startupinfo=_startupinfo_hide)
+
+        if lower_prio:
+            svchosts = parse_tasklist_svc(['/fi', 'imagename eq svchost.exe'])[1:]
+            for p in svchosts:
+                if 'wuauserv' in p['service_users'] and len(p['service_users']) == 1:
+                    subprocess.call([
+                        'wmic', 'process', 'where', 'handle=' + str(p['pid']), 'CALL' 'setpriority', 'below normal'
+                    ])
+
+            # TODO lower prio of wuauserv
+
 
     @staticmethod
     def disable_os_upgrade():
@@ -1032,7 +1099,7 @@ if __name__ == '__main__':
     elif wua.wapt.waptwua_enabled == False:
         raise Exception('waptwua is currently disabled.')
     else:
-        wua.automatic_updates(False)
+        wua.setup_wuauserv(automatic_updates=False, own=True)
         wua.disable_os_upgrade()
 
     if action == 'scan':
