@@ -21,7 +21,7 @@ resourcestring
 
   rsCreationInProgress = 'Creation in progress.';
   rsProgressTitle = 'Started uploading to WAPT server...';  // TODO more meaningful var name
-  rsWaptSetupUploadSuccess = 'WAPT agent successfully created and uploaded to the repository : %s';
+  rsWaptSetupUploadSuccess = 'WAPT agent and upgrade package successfully created and uploaded to the main repository';
   rsWaptUploadError = 'Error while uploading WAPT agent to the repository : %s';
   rsWaptSetupError = 'Error while creating agent : %s';
 

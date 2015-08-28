@@ -1002,16 +1002,16 @@ class WaptWUA(object):
             'windows_updates_rules':json.loads(self.wapt.read_param('waptwua.windows_updates_rules','{}')),
             }
 
-    def status():
-        from common import *
-        wapt = Wapt()
-        wua = WaptWUA(wapt)
-        stat = wua.stored_status()
-        stat['installed'] = len([ u for u in stat['updates'] if u['status'] == 'OK'])
-        stat['pending'] = len([ u for u in stat['updates'] if u['status'] == 'PENDING'])
-        stat['discarded'] = len([ u for u in stat['updates'] if u['status'] == 'DISCARDED'])
+def status():
+    from common import Wapt
+    wapt = Wapt()
+    wua = WaptWUA(wapt)
+    stat = wua.stored_status()
+    stat['installed'] = len([ u for u in stat['updates'] if u['status'] == 'OK'])
+    stat['pending'] = len([ u for u in stat['updates'] if u['status'] == 'PENDING'])
+    stat['discarded'] = len([ u for u in stat['updates'] if u['status'] == 'DISCARDED'])
 
-        return u"""\
+    return u"""\
 windows_updates_rules: %(windows_updates_rules)s
 
 Status:            %(status)s

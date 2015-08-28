@@ -4262,7 +4262,7 @@ class Wapt(object):
 
         return signature.encode('base64')
 
-    def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git','.gitignore','*.pyc','src']):
+    def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git','.gitignore','*.pyc','src'],target_directory=None):
         """Build the WAPT package from a directory
 
         Call update_control from setup.py if this function is defined.
@@ -4358,8 +4358,14 @@ class Wapt(object):
 
             entry.filename = entry.make_package_filename()
             logger.debug(u'Control data : \n%s' % entry.ascontrol())
-            result_filename = os.path.abspath(os.path.join( directoryname,'..',entry.filename))
-            entry.localpath = os.path.dirname(result_filename)
+            if target_directory is None:
+                target_directory = os.path.abspath(os.path.join( directoryname,'..'))
+
+            if not os.path.isdir(target_directory):
+                raise Exception('Bad target directory %s for package build' % target_directory)
+
+            result_filename = os.path.abspath(os.path.join(target_directory,entry.filename))
+            entry.localpath = target_directory
 
             allfiles = create_recursive_zip_signed(
                 zipfn = result_filename,
@@ -4377,7 +4383,7 @@ class Wapt(object):
             logger.debug(u'  Change current directory to %s' % previous_cwd)
             os.chdir(previous_cwd)
 
-    def build_upload(self,sources_directories,private_key_passwd=None,wapt_server_user=None,wapt_server_passwd=None,inc_package_release=False):
+    def build_upload(self,sources_directories,private_key_passwd=None,wapt_server_user=None,wapt_server_passwd=None,inc_package_release=False,target_directory=None):
         """Build a list of packages and upload the resulting packages to the main repository.
            if section of package is group or host, user specific wapt-host or wapt-group
         """
@@ -4391,9 +4397,9 @@ class Wapt(object):
             if os.path.isdir(source_dir):
                 logger.info(u'Building  %s' % source_dir)
                 if inc_package_release==False:
-                    buildresult = self.build_package(source_dir)
+                    buildresult = self.build_package(source_dir,target_directory=target_directory)
                 else:
-                    buildresult = self.build_package(source_dir,inc_package_release=True)
+                    buildresult = self.build_package(source_dir,inc_package_release=True,target_directory=target_directory)
                 package_fn = buildresult['filename']
                 if package_fn:
                     buildresults.append(buildresult)

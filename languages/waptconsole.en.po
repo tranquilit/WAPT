@@ -877,6 +877,10 @@ msgctxt "tviswaptgui.actrefresh.caption"
 msgid "Refresh"
 msgstr ""
 
+#: tviswaptgui.actrefreshhostinventory.caption
+msgid "Refresh host inventory"
+msgstr ""
+
 #: tviswaptgui.actreloadconfig.caption
 msgid "Reload wapt-get.ini"
 msgstr ""
@@ -946,6 +950,19 @@ msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.HINT"
 msgid "Apply updates"
 msgstr ""
 
+#: tviswaptgui.acttriggerwaptwua_download.caption
+msgid "Trigger the download of pending Windows Updates"
+msgstr ""
+
+#: tviswaptgui.acttriggerwaptwua_install.caption
+msgid "Trigger the install of pending Windows Updates"
+msgstr ""
+
+#: tviswaptgui.acttriggerwaptwua_scan.caption
+msgctxt "tviswaptgui.acttriggerwaptwua_scan.caption"
+msgid "Trigger the scan of missing Windows Updates"
+msgstr ""
+
 #: tviswaptgui.actvnc.caption
 msgid "Connect via VNC"
 msgstr ""
@@ -953,6 +970,76 @@ msgstr ""
 #: tviswaptgui.actwaptlocalconfig.caption
 msgctxt "tviswaptgui.actwaptlocalconfig.caption"
 msgid "Local WAPT configuration"
+msgstr ""
+
+#: tviswaptgui.actwsusrefreshcabhistory.caption
+msgid "Refresh WSUSscan cab history"
+msgstr ""
+
+#: tviswaptgui.actwuaallowselectedupdates.caption
+msgid "Allow Selected Updates"
+msgstr ""
+
+#: tviswaptgui.actwuadownloadselectedupdate.caption
+msgid "Download selected"
+msgstr ""
+
+#: tviswaptgui.actwuaeditgroup.caption
+msgid "Edit group"
+msgstr ""
+
+#: tviswaptgui.actwuaforbidselectedupdates.caption
+msgid "Forbid Selected Updates"
+msgstr ""
+
+#: tviswaptgui.actwualoadgroups.caption
+msgctxt "tviswaptgui.actwualoadgroups.caption"
+msgid "Refresh"
+msgstr ""
+
+#: tviswaptgui.actwualoadupdates.caption
+msgid "Load"
+msgstr ""
+
+#: tviswaptgui.actwuanewgroup.caption
+msgid "New Windows Updates bundle"
+msgstr ""
+
+#: tviswaptgui.actwuaproductallow.caption
+msgid "Allow all updates for selected products"
+msgstr ""
+
+#: tviswaptgui.actwuaproductallowseverity.caption
+msgid "Allow updates for selected products and severities"
+msgstr ""
+
+#: tviswaptgui.actwuaproductforbid.caption
+msgid "Forbid updates for selected products"
+msgstr ""
+
+#: tviswaptgui.actwuaproductforbidseverity.caption
+msgid "Forbid updates for selected products and severities"
+msgstr ""
+
+#: tviswaptgui.actwuaproducthide.caption
+msgid "Hide product"
+msgstr ""
+
+#: tviswaptgui.actwuaproductshow.caption
+msgid "Show product"
+msgstr ""
+
+#: tviswaptgui.actwuaproductsselection.caption
+msgid "Windows Products selection"
+msgstr ""
+
+#: tviswaptgui.actwuaresetselectedupdates.caption
+msgid "Reset Selected"
+msgstr ""
+
+#: tviswaptgui.actwuasaveupdatesgroup.caption
+msgctxt "tviswaptgui.actwuasaveupdatesgroup.caption"
+msgid "Save"
 msgstr ""
 
 #: tviswaptgui.caption
@@ -999,6 +1086,47 @@ msgctxt "tviswaptgui.cbshowlog.caption"
 msgid "Show debug"
 msgstr ""
 
+#: tviswaptgui.cbwuacriticalonly.caption
+msgid "Critical only"
+msgstr ""
+
+#: tviswaptgui.cbwuadiscarded.caption
+msgid "Discarded"
+msgstr ""
+
+#: tviswaptgui.cbwuainstalled.caption
+msgid "Installed"
+msgstr ""
+
+#: tviswaptgui.cbwuapending.caption
+msgctxt "tviswaptgui.cbwuapending.caption"
+msgid "Pending"
+msgstr ""
+
+#: tviswaptgui.cbwucritical.caption
+msgid "Critical"
+msgstr ""
+
+#: tviswaptgui.cbwuimportant.caption
+msgid "Important"
+msgstr ""
+
+#: tviswaptgui.cbwulow.caption
+msgid "Low"
+msgstr ""
+
+#: tviswaptgui.cbwumoderate.caption
+msgid "Moderate"
+msgstr ""
+
+#: tviswaptgui.cbwuother.caption
+msgid "Other"
+msgstr ""
+
+#: tviswaptgui.cbwuproductsshowall.caption
+msgid "Show all products"
+msgstr ""
+
 #: tviswaptgui.edrun.text
 msgid "mywapt.update()"
 msgstr ""
@@ -1035,6 +1163,10 @@ msgstr ""
 
 #: tviswaptgui.label15.caption
 msgid "Groups"
+msgstr ""
+
+#: tviswaptgui.label17.caption
+msgid "Windows updates restrictions"
 msgstr ""
 
 #: tviswaptgui.label2.caption
@@ -1165,8 +1297,18 @@ msgstr ""
 msgid "New"
 msgstr ""
 
+#: tviswaptgui.menuitem67.caption
+msgctxt "tviswaptgui.menuitem67.caption"
+msgid "-"
+msgstr ""
+
 #: tviswaptgui.menuitem7.caption
 msgctxt "tviswaptgui.menuitem7.caption"
+msgid "-"
+msgstr ""
+
+#: tviswaptgui.menuitem73.caption
+msgctxt "tviswaptgui.menuitem73.caption"
 msgid "-"
 msgstr ""
 
@@ -1180,6 +1322,10 @@ msgstr ""
 
 #: tviswaptgui.opendialogwapt.title
 msgid "Select WAPT file"
+msgstr ""
+
+#: tviswaptgui.panel13.caption
+msgid "Panel13"
 msgstr ""
 
 #: tviswaptgui.panel6.caption
@@ -1198,6 +1344,10 @@ msgstr ""
 #: tviswaptgui.pghostinventory.caption
 msgctxt "TVISWAPTGUI.PGHOSTINVENTORY.CAPTION"
 msgid "Hardware inventory"
+msgstr ""
+
+#: tviswaptgui.pghostwua.caption
+msgid "Windows updates"
 msgstr ""
 
 #: tviswaptgui.pginventory.caption
@@ -1224,7 +1374,16 @@ msgstr ""
 msgid "Tasks"
 msgstr ""
 
+#: tviswaptgui.pgwindowsupdates.caption
+msgid "Windows Updates Bundles"
+msgstr ""
+
+#: tviswaptgui.pgwinupdates.caption
+msgid "Windows Updates"
+msgstr ""
+
 #: tviswaptgui.tabsheet1.caption
+msgctxt "tviswaptgui.tabsheet1.caption"
 msgid "Pending"
 msgstr ""
 
@@ -1234,6 +1393,10 @@ msgstr ""
 
 #: tviswaptgui.tabsheet3.caption
 msgid "Errors"
+msgstr ""
+
+#: tviswaptgui.tabsheet4.caption
+msgid "WSUSscan History"
 msgstr ""
 
 #: tviswaptgui.toolbar1.caption
@@ -1246,6 +1409,10 @@ msgstr ""
 
 #: tviswaptgui.toolbutton6.caption
 msgid "ToolButton6"
+msgstr ""
+
+#: tviswaptgui.wupanright.caption
+msgid "wupanright"
 msgstr ""
 
 #: uwaptconsoleres.rsaddadsgroups
@@ -1410,6 +1577,10 @@ msgstr ""
 #: uwaptconsoleres.rsdnsserver
 msgctxt "uwaptconsoleres.rsdnsserver"
 msgid "DNS Server : %s"
+msgstr ""
+
+#: uwaptconsoleres.rsdownloadcurrupted
+msgid "Downloaded file %s is corrupted. MD5 mismatch."
 msgstr ""
 
 #: uwaptconsoleres.rsdownloading
@@ -1741,6 +1912,19 @@ msgstr ""
 msgid "Trigger installed packages upgrade on the hosts"
 msgstr ""
 
+#: uwaptconsoleres.rstriggerwaptwua_download
+msgid "Trigger the download of missing Windows Updates"
+msgstr ""
+
+#: uwaptconsoleres.rstriggerwaptwua_install
+msgid "Trigger the installation of missing Windows Updates"
+msgstr ""
+
+#: uwaptconsoleres.rstriggerwaptwua_scan
+msgctxt "uwaptconsoleres.rstriggerwaptwua_scan"
+msgid "Trigger the scan of missing Windows Updates"
+msgstr ""
+
 #: uwaptconsoleres.rsundefwaptsrvinini
 msgctxt "uwaptconsoleres.rsundefwaptsrvinini"
 msgid "wapt_server is not defined in your %s ini file"
@@ -1847,7 +2031,7 @@ msgstr ""
 
 #: uwaptconsoleres.rswaptsetupuploadsuccess
 msgctxt "uwaptconsoleres.rswaptsetupuploadsuccess"
-msgid "WAPT agent successfully created and uploaded to the repository : %s"
+msgid "WAPT agent and upgrade package successfully created and uploaded to the main repository"
 msgstr ""
 
 #: uwaptconsoleres.rswaptupgrade

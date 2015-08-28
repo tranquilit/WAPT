@@ -1217,7 +1217,7 @@ end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
 var
-  waptsetupPath: string;
+  waptsetupPath, buildDir: string;
   ini: TIniFile;
   SORes: ISuperObject;
 begin
@@ -1242,16 +1242,16 @@ begin
             // create waptupgrade package
             ProgressTitle(rsCreationInProgress);
             try
-              SORes := DMPython.RunJSON(format('mywapt.build_upload(r"%s",private_key_passwd="%s",wapt_server_user="%s",wapt_server_passwd="%s",inc_package_release=True)',[
-                  waptpath+'\waptupgrade',privateKeyPassword,WaptServerUser,WaptServerPassword]));
+              buildDir := GetTempDir(False);
+              if RightStr(buildDir,1) = '\' then
+                buildDir := copy(buildDir,1,length(buildDir)-1);
+              SORes := DMPython.RunJSON(format('mywapt.build_upload(r"%s",private_key_passwd="%s",wapt_server_user="%s",wapt_server_passwd="%s",inc_package_release=True,target_directory=r"%s")',[
+                  waptpath+'\waptupgrade',privateKeyPassword,WaptServerUser,WaptServerPassword,buildDir]));
               if FileExists(SORes.AsArray[0].S['filename']) then
               begin
-                ShowMessage(rsWaptUpgradePackageBuilt+#13#10+SORes.AsArray[0].S['filename']);
                 ProgressTitle(rsWaptUpgradePackageBuilt);
-              end
-              else
-                ShowMessage(rsWaptUpgradePackageBuildError);
-
+                DeleteFileUTF8(SORes.AsArray[0].S['filename']);
+              end;
             except
               On E:Exception do
                 ShowMessage(rsWaptUpgradePackageBuildError+#13#10+E.Message);
@@ -1280,7 +1280,10 @@ begin
                   WaptServerUser, WaptServerPassword, @IdHTTPWork);
                 Finish;
                 if SORes.S['status'] = 'OK' then
-                  ShowMessage(format(rsWaptSetupUploadSuccess, [waptsetupPath]))
+                begin
+                  ShowMessage(format(rsWaptSetupUploadSuccess, []));
+                  DeleteFileUTF8(waptsetupPath);
+                end
                 else
                   ShowMessage(format(rsWaptUploadError, [SORes.S['message']]));
               except
