@@ -299,7 +299,10 @@ def main():
                         # abort if there is already a running install in progress
                         if running_install:
                             raise Exception(u'Running wapt progresses (%s), please wait...' % (running_install,))
-                        result = {u'install':[(args[1],mywapt.install_wapt(args[1],params_dict = params_dict))]}
+                        result = {u'install':[]}
+                        for fn in args[1:]:
+                            res = mywapt.install_wapt(fn,params_dict = params_dict)
+                            result['install'].append((fn,res))
                 else:
                     print u"%sing WAPT packages %s" % (action,','.join(args[1:]))
                     if options.update_packages:
