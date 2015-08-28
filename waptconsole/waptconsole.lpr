@@ -9,12 +9,12 @@ uses
   Translations, LCLProc,
 
   Interfaces, // this includes the LCL widgetset
-  Forms, uwaptconsole, uVisCreateKey,
+  Forms, pl_indy, uwaptconsole, uVisCreateKey,
   dmwaptpython, uVisEditPackage, uviscreatewaptsetup,
   uvislogin, uvisprivatekeyauth, uvisloading, uviswaptconfig,
   uvischangepassword, uviswaptdeploy, uvishostsupgrade, uVisAPropos,
   uVisImportPackage, uwaptconsoleres,waptcommon, uVisWUAGroup,
-uVisWAPTWUAProducts;
+uVisWAPTWUAProducts, uviswuarules;
 
 {$R *.res}
 

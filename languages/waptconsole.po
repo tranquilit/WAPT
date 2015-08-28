@@ -1,6 +1,30 @@
 msgid " Uncheck \"Use simple file sharing\").Only required if a proxy is needed.Only required if a proxy is needed.Only required if a proxy is needed."
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: asynccalls.rsasynccallnotfinished
+msgid "The asynchronous call is not finished yet"
+msgstr ""
+
+#: asynccalls.rsasynccallunknownvarrectype
+msgid "Unknown TVarRec type %d"
+msgstr ""
+
+#: asynccalls.rsforgetwascalled
+msgid "IAsyncCall.Forget was called. The interface isn't connected to the asynchronous call anymore"
+msgstr ""
+
+#: asynccalls.rsleavemainthreadnestederror
+msgid "Unpaired call to AsyncCalls.LeaveMainThread()"
+msgstr ""
+
+#: asynccalls.rsleavemainthreadthreaderror
+msgid "AsyncCalls.LeaveMainThread() was called outside of the main thread"
+msgstr ""
+
+#: asynccalls.rsnovclsyncpossible
+msgid "Cannot synchronize with the main thread anymore. Don't call IAsyncCall.Forget for functions that access the VCL"
+msgstr ""
+
 #: tvisapropos.button1.caption
 msgid "Close"
 msgstr ""
@@ -649,22 +673,27 @@ msgid "One host per row."
 msgstr ""
 
 #: tviswaptgui.actaddadsgroups.caption
+msgctxt "tviswaptgui.actaddadsgroups.caption"
 msgid "Add ADS Groups as packages"
 msgstr ""
 
 #: tviswaptgui.actaddadsgroups.hint
+msgctxt "tviswaptgui.actaddadsgroups.hint"
 msgid "Add the WAPT group packages matching the ADS groups of the machines"
 msgstr ""
 
 #: tviswaptgui.actaddconflicts.caption
+msgctxt "tviswaptgui.actaddconflicts.caption"
 msgid "Block packages (causes forced uninstall)"
 msgstr ""
 
 #: tviswaptgui.actaddgroup.caption
+msgctxt "tviswaptgui.actaddgroup.caption"
 msgid "New bundle"
 msgstr ""
 
 #: tviswaptgui.actaddpackagegroup.caption
+msgctxt "tviswaptgui.actaddpackagegroup.caption"
 msgid "Add package or bundle"
 msgstr ""
 
@@ -679,22 +708,27 @@ msgid "Activate package"
 msgstr ""
 
 #: tviswaptgui.actcancelrunningtask.caption
+msgctxt "tviswaptgui.actcancelrunningtask.caption"
 msgid "Cancel current task"
 msgstr ""
 
 #: tviswaptgui.actchangepassword.caption
+msgctxt "tviswaptgui.actchangepassword.caption"
 msgid "Update password"
 msgstr ""
 
 #: tviswaptgui.actcleancache.caption
+msgctxt "tviswaptgui.actcleancache.caption"
 msgid "Clean local cache"
 msgstr ""
 
 #: tviswaptgui.actcleancache.hint
+msgctxt "tviswaptgui.actcleancache.hint"
 msgid "Remove all packages locall cached by WaptConsole"
 msgstr ""
 
 #: tviswaptgui.actcreatecertificate.caption
+msgctxt "tviswaptgui.actcreatecertificate.caption"
 msgid "Generate self-signed certificate"
 msgstr ""
 
@@ -709,18 +743,22 @@ msgid "Create custom WAPT installer (py)"
 msgstr ""
 
 #: tviswaptgui.actdeletegroup.caption
+msgctxt "tviswaptgui.actdeletegroup.caption"
 msgid "Delete bundle"
 msgstr ""
 
 #: tviswaptgui.actdeletepackage.caption
+msgctxt "tviswaptgui.actdeletepackage.caption"
 msgid "Remove from repository"
 msgstr ""
 
 #: tviswaptgui.actdeploywapt.caption
+msgctxt "tviswaptgui.actdeploywapt.caption"
 msgid "Deploy WAPT onto hosts"
 msgstr ""
 
 #: tviswaptgui.acteditgroup.caption
+msgctxt "tviswaptgui.acteditgroup.caption"
 msgid "Edit bundle"
 msgstr ""
 
@@ -740,26 +778,32 @@ msgid "Edit package"
 msgstr ""
 
 #: tviswaptgui.actenglish.caption
+msgctxt "tviswaptgui.actenglish.caption"
 msgid "English"
 msgstr ""
 
 #: tviswaptgui.actevaluate.caption
+msgctxt "tviswaptgui.actevaluate.caption"
 msgid "Evaluate"
 msgstr ""
 
 #: tviswaptgui.actevaluatevar.caption
+msgctxt "tviswaptgui.actevaluatevar.caption"
 msgid "Evaluer Variant"
 msgstr ""
 
 #: tviswaptgui.actexeccode.caption
+msgctxt "tviswaptgui.actexeccode.caption"
 msgid "Execute python source"
 msgstr ""
 
 #: tviswaptgui.actforgetpackages.caption
+msgctxt "tviswaptgui.actforgetpackages.caption"
 msgid "Forget packages"
 msgstr ""
 
 #: tviswaptgui.actfrench.caption
+msgctxt "tviswaptgui.actfrench.caption"
 msgid "French"
 msgstr ""
 
@@ -769,6 +813,7 @@ msgid "Search for host"
 msgstr ""
 
 #: tviswaptgui.acthelp.caption
+msgctxt "tviswaptgui.acthelp.caption"
 msgid "Online help"
 msgstr ""
 
@@ -783,26 +828,32 @@ msgid "Remove from inventory"
 msgstr ""
 
 #: tviswaptgui.acthostsdeletehostpackage.caption
+msgctxt "tviswaptgui.acthostsdeletehostpackage.caption"
 msgid "Remove host configuration and inventory "
 msgstr ""
 
 #: tviswaptgui.acthostwaptupgrade.caption
+msgctxt "tviswaptgui.acthostwaptupgrade.caption"
 msgid "Update WAPT client"
 msgstr ""
 
 #: tviswaptgui.acthostwaptupgrade.hint
+msgctxt "tviswaptgui.acthostwaptupgrade.hint"
 msgid "Run agent.exe in silent mode from <url-depot>/waptagent.exe"
 msgstr ""
 
 #: tviswaptgui.actimportfromfile.caption
+msgctxt "tviswaptgui.actimportfromfile.caption"
 msgid "Import from file"
 msgstr ""
 
 #: tviswaptgui.actimportfromrepo.caption
+msgctxt "tviswaptgui.actimportfromrepo.caption"
 msgid "Import from repository"
 msgstr ""
 
 #: tviswaptgui.actlocalhostinstall.caption
+msgctxt "tviswaptgui.actlocalhostinstall.caption"
 msgid "Install"
 msgstr ""
 
@@ -812,6 +863,7 @@ msgid "Uninstall package"
 msgstr ""
 
 #: tviswaptgui.actlocalhostupgrade.caption
+msgctxt "tviswaptgui.actlocalhostupgrade.caption"
 msgid "System update"
 msgstr ""
 
@@ -821,6 +873,7 @@ msgid "Install package"
 msgstr ""
 
 #: tviswaptgui.actpackageinstall.hint
+msgctxt "tviswaptgui.actpackageinstall.hint"
 msgid "Force remote install or upgrade of package"
 msgstr ""
 
@@ -830,18 +883,22 @@ msgid "Uninstall package"
 msgstr ""
 
 #: tviswaptgui.actpackageremove.hint
+msgctxt "tviswaptgui.actpackageremove.hint"
 msgid "Forces remote uninstall of package"
 msgstr ""
 
 #: tviswaptgui.actpackagesupdate.caption
+msgctxt "tviswaptgui.actpackagesupdate.caption"
 msgid "Update available packages"
 msgstr ""
 
 #: tviswaptgui.actquit.caption
+msgctxt "tviswaptgui.actquit.caption"
 msgid "Quit"
 msgstr ""
 
 #: tviswaptgui.actrdp.caption
+msgctxt "tviswaptgui.actrdp.caption"
 msgid "Connect via RDP"
 msgstr ""
 
@@ -851,26 +908,32 @@ msgid "Refresh"
 msgstr ""
 
 #: tviswaptgui.actrefreshhostinventory.caption
+msgctxt "tviswaptgui.actrefreshhostinventory.caption"
 msgid "Refresh host inventory"
 msgstr ""
 
 #: tviswaptgui.actreloadconfig.caption
+msgctxt "tviswaptgui.actreloadconfig.caption"
 msgid "Reload wapt-get.ini"
 msgstr ""
 
 #: tviswaptgui.actremoveconflicts.caption
+msgctxt "tviswaptgui.actremoveconflicts.caption"
 msgid "Allow packages "
 msgstr ""
 
 #: tviswaptgui.actremovedepends.caption
+msgctxt "tviswaptgui.actremovedepends.caption"
 msgid "Remove dependencies from packages/bundles"
 msgstr ""
 
 #: tviswaptgui.actrestoredefaultlayout.caption
+msgctxt "tviswaptgui.actrestoredefaultlayout.caption"
 msgid "Restore default grid layout"
 msgstr ""
 
 #: tviswaptgui.actrestoredefaultlayout.hint
+msgctxt "tviswaptgui.actrestoredefaultlayout.hint"
 msgid "Restore default columns settings for all grids"
 msgstr ""
 
@@ -890,6 +953,7 @@ msgid "Search"
 msgstr ""
 
 #: tviswaptgui.actsearchsoftwares.caption
+msgctxt "tviswaptgui.actsearchsoftwares.caption"
 msgid "ActSearchSoftware"
 msgstr ""
 
@@ -924,10 +988,12 @@ msgid "Apply updates"
 msgstr ""
 
 #: tviswaptgui.acttriggerwaptwua_download.caption
+msgctxt "tviswaptgui.acttriggerwaptwua_download.caption"
 msgid "Trigger the download of pending Windows Updates"
 msgstr ""
 
 #: tviswaptgui.acttriggerwaptwua_install.caption
+msgctxt "tviswaptgui.acttriggerwaptwua_install.caption"
 msgid "Trigger the install of pending Windows Updates"
 msgstr ""
 
@@ -937,6 +1003,7 @@ msgid "Trigger the scan of missing Windows Updates"
 msgstr ""
 
 #: tviswaptgui.actvnc.caption
+msgctxt "tviswaptgui.actvnc.caption"
 msgid "Connect via VNC"
 msgstr ""
 
@@ -945,23 +1012,33 @@ msgctxt "tviswaptgui.actwaptlocalconfig.caption"
 msgid "Local WAPT configuration"
 msgstr ""
 
+#: tviswaptgui.actwsusdowloadwsusscan.caption
+msgctxt "tviswaptgui.actwsusdowloadwsusscan.caption"
+msgid "Download WSUSScan cab from Microsoft Web site"
+msgstr ""
+
 #: tviswaptgui.actwsusrefreshcabhistory.caption
+msgctxt "tviswaptgui.actwsusrefreshcabhistory.caption"
 msgid "Refresh WSUSscan cab history"
 msgstr ""
 
 #: tviswaptgui.actwuaallowselectedupdates.caption
+msgctxt "tviswaptgui.actwuaallowselectedupdates.caption"
 msgid "Allow Selected Updates"
 msgstr ""
 
 #: tviswaptgui.actwuadownloadselectedupdate.caption
+msgctxt "tviswaptgui.actwuadownloadselectedupdate.caption"
 msgid "Download selected"
 msgstr ""
 
 #: tviswaptgui.actwuaeditgroup.caption
+msgctxt "tviswaptgui.actwuaeditgroup.caption"
 msgid "Edit group"
 msgstr ""
 
 #: tviswaptgui.actwuaforbidselectedupdates.caption
+msgctxt "tviswaptgui.actwuaforbidselectedupdates.caption"
 msgid "Forbid Selected Updates"
 msgstr ""
 
@@ -971,42 +1048,52 @@ msgid "Refresh"
 msgstr ""
 
 #: tviswaptgui.actwualoadupdates.caption
+msgctxt "tviswaptgui.actwualoadupdates.caption"
 msgid "Load"
 msgstr ""
 
 #: tviswaptgui.actwuanewgroup.caption
+msgctxt "tviswaptgui.actwuanewgroup.caption"
 msgid "New Windows Updates bundle"
 msgstr ""
 
 #: tviswaptgui.actwuaproductallow.caption
+msgctxt "tviswaptgui.actwuaproductallow.caption"
 msgid "Allow all updates for selected products"
 msgstr ""
 
 #: tviswaptgui.actwuaproductallowseverity.caption
+msgctxt "tviswaptgui.actwuaproductallowseverity.caption"
 msgid "Allow updates for selected products and severities"
 msgstr ""
 
 #: tviswaptgui.actwuaproductforbid.caption
+msgctxt "tviswaptgui.actwuaproductforbid.caption"
 msgid "Forbid updates for selected products"
 msgstr ""
 
 #: tviswaptgui.actwuaproductforbidseverity.caption
+msgctxt "tviswaptgui.actwuaproductforbidseverity.caption"
 msgid "Forbid updates for selected products and severities"
 msgstr ""
 
 #: tviswaptgui.actwuaproducthide.caption
+msgctxt "tviswaptgui.actwuaproducthide.caption"
 msgid "Hide product"
 msgstr ""
 
 #: tviswaptgui.actwuaproductshow.caption
+msgctxt "tviswaptgui.actwuaproductshow.caption"
 msgid "Show product"
 msgstr ""
 
 #: tviswaptgui.actwuaproductsselection.caption
+msgctxt "tviswaptgui.actwuaproductsselection.caption"
 msgid "Windows Products selection"
 msgstr ""
 
 #: tviswaptgui.actwuaresetselectedupdates.caption
+msgctxt "tviswaptgui.actwuaresetselectedupdates.caption"
 msgid "Reset Selected"
 msgstr ""
 
@@ -1017,6 +1104,10 @@ msgstr ""
 
 #: tviswaptgui.caption
 msgid "WAPT console"
+msgstr ""
+
+#: tviswaptgui.cbforcedwsusscandownload.caption
+msgid "Force download even if aready up to date"
 msgstr ""
 
 #: tviswaptgui.cbhaserrors.caption
@@ -1076,30 +1167,6 @@ msgctxt "TVISWAPTGUI.CBWUAPENDING.CAPTION"
 msgid "Pending"
 msgstr ""
 
-#: tviswaptgui.cbwucritical.caption
-msgid "Critical"
-msgstr ""
-
-#: tviswaptgui.cbwuimportant.caption
-msgid "Important"
-msgstr ""
-
-#: tviswaptgui.cbwulow.caption
-msgid "Low"
-msgstr ""
-
-#: tviswaptgui.cbwumoderate.caption
-msgid "Moderate"
-msgstr ""
-
-#: tviswaptgui.cbwuother.caption
-msgid "Other"
-msgstr ""
-
-#: tviswaptgui.cbwuproductsshowall.caption
-msgid "Show all products"
-msgstr ""
-
 #: tviswaptgui.edrun.text
 msgid "mywapt.update()"
 msgstr ""
@@ -1136,10 +1203,6 @@ msgstr ""
 
 #: tviswaptgui.label15.caption
 msgid "Groups"
-msgstr ""
-
-#: tviswaptgui.label17.caption
-msgid "Windows updates restrictions"
 msgstr ""
 
 #: tviswaptgui.label2.caption
@@ -1297,10 +1360,6 @@ msgstr ""
 msgid "Select WAPT file"
 msgstr ""
 
-#: tviswaptgui.panel13.caption
-msgid "Panel13"
-msgstr ""
-
 #: tviswaptgui.panel6.caption
 msgid "Panel6"
 msgstr ""
@@ -1348,10 +1407,7 @@ msgid "Tasks"
 msgstr ""
 
 #: tviswaptgui.pgwindowsupdates.caption
-msgid "Windows Updates Bundles"
-msgstr ""
-
-#: tviswaptgui.pgwinupdates.caption
+msgctxt "tviswaptgui.pgwindowsupdates.caption"
 msgid "Windows Updates"
 msgstr ""
 
@@ -1368,10 +1424,6 @@ msgstr ""
 msgid "Errors"
 msgstr ""
 
-#: tviswaptgui.tabsheet4.caption
-msgid "WSUSscan History"
-msgstr ""
-
 #: tviswaptgui.toolbar1.caption
 msgid "ToolBar1"
 msgstr ""
@@ -1384,7 +1436,491 @@ msgstr ""
 msgid "ToolButton6"
 msgstr ""
 
-#: tviswaptgui.wupanright.caption
+#: tviswuarules.actaddadsgroups.caption
+msgctxt "TVISWUARULES.ACTADDADSGROUPS.CAPTION"
+msgid "Add ADS Groups as packages"
+msgstr ""
+
+#: tviswuarules.actaddadsgroups.hint
+msgctxt "TVISWUARULES.ACTADDADSGROUPS.HINT"
+msgid "Add the WAPT group packages matching the ADS groups of the machines"
+msgstr ""
+
+#: tviswuarules.actaddconflicts.caption
+msgctxt "TVISWUARULES.ACTADDCONFLICTS.CAPTION"
+msgid "Block packages (causes forced uninstall)"
+msgstr ""
+
+#: tviswuarules.actaddgroup.caption
+msgctxt "TVISWUARULES.ACTADDGROUP.CAPTION"
+msgid "New bundle"
+msgstr ""
+
+#: tviswuarules.actaddpackagegroup.caption
+msgctxt "TVISWUARULES.ACTADDPACKAGEGROUP.CAPTION"
+msgid "Add package or bundle"
+msgstr ""
+
+#: tviswuarules.actadvancedmode.caption
+msgctxt "TVISWUARULES.ACTADVANCEDMODE.CAPTION"
+msgid "Advanced mode"
+msgstr ""
+
+#: tviswuarules.actbuildupload.caption
+msgctxt "TVISWUARULES.ACTBUILDUPLOAD.CAPTION"
+msgid "Activate package"
+msgstr ""
+
+#: tviswuarules.actcancelrunningtask.caption
+msgctxt "TVISWUARULES.ACTCANCELRUNNINGTASK.CAPTION"
+msgid "Cancel current task"
+msgstr ""
+
+#: tviswuarules.actchangepassword.caption
+msgctxt "TVISWUARULES.ACTCHANGEPASSWORD.CAPTION"
+msgid "Update password"
+msgstr ""
+
+#: tviswuarules.actcleancache.caption
+msgctxt "TVISWUARULES.ACTCLEANCACHE.CAPTION"
+msgid "Clean local cache"
+msgstr ""
+
+#: tviswuarules.actcleancache.hint
+msgctxt "TVISWUARULES.ACTCLEANCACHE.HINT"
+msgid "Remove all packages locall cached by WaptConsole"
+msgstr ""
+
+#: tviswuarules.actcreatecertificate.caption
+msgctxt "TVISWUARULES.ACTCREATECERTIFICATE.CAPTION"
+msgid "Generate self-signed certificate"
+msgstr ""
+
+#: tviswuarules.actcreatewaptsetup.caption
+msgctxt "TVISWUARULES.ACTCREATEWAPTSETUP.CAPTION"
+msgid "Create custom WAPT installer"
+msgstr ""
+
+#: tviswuarules.actcreatewaptsetuppy.caption
+msgctxt "TVISWUARULES.ACTCREATEWAPTSETUPPY.CAPTION"
+msgid "Create custom WAPT installer (py)"
+msgstr ""
+
+#: tviswuarules.actdeletegroup.caption
+msgctxt "TVISWUARULES.ACTDELETEGROUP.CAPTION"
+msgid "Delete bundle"
+msgstr ""
+
+#: tviswuarules.actdeletepackage.caption
+msgctxt "TVISWUARULES.ACTDELETEPACKAGE.CAPTION"
+msgid "Remove from repository"
+msgstr ""
+
+#: tviswuarules.actdeploywapt.caption
+msgctxt "TVISWUARULES.ACTDEPLOYWAPT.CAPTION"
+msgid "Deploy WAPT onto hosts"
+msgstr ""
+
+#: tviswuarules.acteditgroup.caption
+msgctxt "TVISWUARULES.ACTEDITGROUP.CAPTION"
+msgid "Edit bundle"
+msgstr ""
+
+#: tviswuarules.actedithostpackage.caption
+msgctxt "TVISWUARULES.ACTEDITHOSTPACKAGE.CAPTION"
+msgid "Edit host configuration"
+msgstr ""
+
+#: tviswuarules.actedithostpackage.hint
+msgctxt "TVISWUARULES.ACTEDITHOSTPACKAGE.HINT"
+msgid "Edit host configuration"
+msgstr ""
+
+#: tviswuarules.acteditpackage.caption
+msgctxt "TVISWUARULES.ACTEDITPACKAGE.CAPTION"
+msgid "Edit package"
+msgstr ""
+
+#: tviswuarules.actenglish.caption
+msgctxt "TVISWUARULES.ACTENGLISH.CAPTION"
+msgid "English"
+msgstr ""
+
+#: tviswuarules.actevaluate.caption
+msgctxt "TVISWUARULES.ACTEVALUATE.CAPTION"
+msgid "Evaluate"
+msgstr ""
+
+#: tviswuarules.actevaluatevar.caption
+msgctxt "TVISWUARULES.ACTEVALUATEVAR.CAPTION"
+msgid "Evaluer Variant"
+msgstr ""
+
+#: tviswuarules.actexeccode.caption
+msgctxt "TVISWUARULES.ACTEXECCODE.CAPTION"
+msgid "Execute python source"
+msgstr ""
+
+#: tviswuarules.actforgetpackages.caption
+msgctxt "TVISWUARULES.ACTFORGETPACKAGES.CAPTION"
+msgid "Forget packages"
+msgstr ""
+
+#: tviswuarules.actfrench.caption
+msgctxt "TVISWUARULES.ACTFRENCH.CAPTION"
+msgid "French"
+msgstr ""
+
+#: tviswuarules.actgotohost.caption
+msgctxt "TVISWUARULES.ACTGOTOHOST.CAPTION"
+msgid "Search for host"
+msgstr ""
+
+#: tviswuarules.acthelp.caption
+msgctxt "TVISWUARULES.ACTHELP.CAPTION"
+msgid "Online help"
+msgstr ""
+
+#: tviswuarules.acthostsdelete.caption
+msgctxt "TVISWUARULES.ACTHOSTSDELETE.CAPTION"
+msgid "Remove from inventory"
+msgstr ""
+
+#: tviswuarules.acthostsdelete.hint
+msgctxt "TVISWUARULES.ACTHOSTSDELETE.HINT"
+msgid "Remove from inventory"
+msgstr ""
+
+#: tviswuarules.acthostsdeletehostpackage.caption
+msgctxt "TVISWUARULES.ACTHOSTSDELETEHOSTPACKAGE.CAPTION"
+msgid "Remove host configuration and inventory "
+msgstr ""
+
+#: tviswuarules.acthostwaptupgrade.caption
+msgctxt "TVISWUARULES.ACTHOSTWAPTUPGRADE.CAPTION"
+msgid "Update WAPT client"
+msgstr ""
+
+#: tviswuarules.acthostwaptupgrade.hint
+msgctxt "TVISWUARULES.ACTHOSTWAPTUPGRADE.HINT"
+msgid "Run agent.exe in silent mode from <url-depot>/waptagent.exe"
+msgstr ""
+
+#: tviswuarules.actimportfromfile.caption
+msgctxt "TVISWUARULES.ACTIMPORTFROMFILE.CAPTION"
+msgid "Import from file"
+msgstr ""
+
+#: tviswuarules.actimportfromrepo.caption
+msgctxt "TVISWUARULES.ACTIMPORTFROMREPO.CAPTION"
+msgid "Import from repository"
+msgstr ""
+
+#: tviswuarules.actlocalhostinstall.caption
+msgctxt "TVISWUARULES.ACTLOCALHOSTINSTALL.CAPTION"
+msgid "Install"
+msgstr ""
+
+#: tviswuarules.actlocalhostremove.caption
+msgctxt "TVISWUARULES.ACTLOCALHOSTREMOVE.CAPTION"
+msgid "Uninstall package"
+msgstr ""
+
+#: tviswuarules.actlocalhostupgrade.caption
+msgctxt "TVISWUARULES.ACTLOCALHOSTUPGRADE.CAPTION"
+msgid "System update"
+msgstr ""
+
+#: tviswuarules.actpackageinstall.caption
+msgctxt "TVISWUARULES.ACTPACKAGEINSTALL.CAPTION"
+msgid "Install package"
+msgstr ""
+
+#: tviswuarules.actpackageinstall.hint
+msgctxt "TVISWUARULES.ACTPACKAGEINSTALL.HINT"
+msgid "Force remote install or upgrade of package"
+msgstr ""
+
+#: tviswuarules.actpackageremove.caption
+msgctxt "TVISWUARULES.ACTPACKAGEREMOVE.CAPTION"
+msgid "Uninstall package"
+msgstr ""
+
+#: tviswuarules.actpackageremove.hint
+msgctxt "TVISWUARULES.ACTPACKAGEREMOVE.HINT"
+msgid "Forces remote uninstall of package"
+msgstr ""
+
+#: tviswuarules.actpackagesupdate.caption
+msgctxt "TVISWUARULES.ACTPACKAGESUPDATE.CAPTION"
+msgid "Update available packages"
+msgstr ""
+
+#: tviswuarules.actquit.caption
+msgctxt "TVISWUARULES.ACTQUIT.CAPTION"
+msgid "Quit"
+msgstr ""
+
+#: tviswuarules.actrdp.caption
+msgctxt "TVISWUARULES.ACTRDP.CAPTION"
+msgid "Connect via RDP"
+msgstr ""
+
+#: tviswuarules.actrefresh.caption
+msgctxt "TVISWUARULES.ACTREFRESH.CAPTION"
+msgid "Refresh"
+msgstr ""
+
+#: tviswuarules.actrefreshhostinventory.caption
+msgctxt "TVISWUARULES.ACTREFRESHHOSTINVENTORY.CAPTION"
+msgid "Refresh host inventory"
+msgstr ""
+
+#: tviswuarules.actreloadconfig.caption
+msgctxt "TVISWUARULES.ACTRELOADCONFIG.CAPTION"
+msgid "Reload wapt-get.ini"
+msgstr ""
+
+#: tviswuarules.actremoveconflicts.caption
+msgctxt "TVISWUARULES.ACTREMOVECONFLICTS.CAPTION"
+msgid "Allow packages "
+msgstr ""
+
+#: tviswuarules.actremovedepends.caption
+msgctxt "TVISWUARULES.ACTREMOVEDEPENDS.CAPTION"
+msgid "Remove dependencies from packages/bundles"
+msgstr ""
+
+#: tviswuarules.actrestoredefaultlayout.caption
+msgctxt "TVISWUARULES.ACTRESTOREDEFAULTLAYOUT.CAPTION"
+msgid "Restore default grid layout"
+msgstr ""
+
+#: tviswuarules.actrestoredefaultlayout.hint
+msgctxt "TVISWUARULES.ACTRESTOREDEFAULTLAYOUT.HINT"
+msgid "Restore default columns settings for all grids"
+msgstr ""
+
+#: tviswuarules.actsearchgroups.caption
+msgctxt "TVISWUARULES.ACTSEARCHGROUPS.CAPTION"
+msgid "Search"
+msgstr ""
+
+#: tviswuarules.actsearchhost.caption
+msgctxt "TVISWUARULES.ACTSEARCHHOST.CAPTION"
+msgid "Search for host"
+msgstr ""
+
+#: tviswuarules.actsearchpackage.caption
+msgctxt "TVISWUARULES.ACTSEARCHPACKAGE.CAPTION"
+msgid "Search"
+msgstr ""
+
+#: tviswuarules.actsearchsoftwares.caption
+msgctxt "TVISWUARULES.ACTSEARCHSOFTWARES.CAPTION"
+msgid "ActSearchSoftware"
+msgstr ""
+
+#: tviswuarules.acttriggerhostslistening.caption
+msgctxt "TVISWUARULES.ACTTRIGGERHOSTSLISTENING.CAPTION"
+msgid "Trigger scan listening IP"
+msgstr ""
+
+#: tviswuarules.acttriggerhostslistening.hint
+msgctxt "TVISWUARULES.ACTTRIGGERHOSTSLISTENING.HINT"
+msgid "Trigger scan of listening IP of registered hosts."
+msgstr ""
+
+#: tviswuarules.acttriggerhostupdate.caption
+msgctxt "TVISWUARULES.ACTTRIGGERHOSTUPDATE.CAPTION"
+msgid "Trigger hosts update"
+msgstr ""
+
+#: tviswuarules.acttriggerhostupdate.hint
+msgctxt "TVISWUARULES.ACTTRIGGERHOSTUPDATE.HINT"
+msgid "Trigger update of available packages on hosts."
+msgstr ""
+
+#: tviswuarules.acttriggerhostupgrade.caption
+msgctxt "TVISWUARULES.ACTTRIGGERHOSTUPGRADE.CAPTION"
+msgid "Apply updates"
+msgstr ""
+
+#: tviswuarules.acttriggerhostupgrade.hint
+msgctxt "TVISWUARULES.ACTTRIGGERHOSTUPGRADE.HINT"
+msgid "Apply updates"
+msgstr ""
+
+#: tviswuarules.acttriggerwaptwua_download.caption
+msgctxt "TVISWUARULES.ACTTRIGGERWAPTWUA_DOWNLOAD.CAPTION"
+msgid "Trigger the download of pending Windows Updates"
+msgstr ""
+
+#: tviswuarules.acttriggerwaptwua_install.caption
+msgctxt "TVISWUARULES.ACTTRIGGERWAPTWUA_INSTALL.CAPTION"
+msgid "Trigger the install of pending Windows Updates"
+msgstr ""
+
+#: tviswuarules.acttriggerwaptwua_scan.caption
+msgctxt "TVISWUARULES.ACTTRIGGERWAPTWUA_SCAN.CAPTION"
+msgid "Trigger the scan of missing Windows Updates"
+msgstr ""
+
+#: tviswuarules.actvnc.caption
+msgctxt "TVISWUARULES.ACTVNC.CAPTION"
+msgid "Connect via VNC"
+msgstr ""
+
+#: tviswuarules.actwaptlocalconfig.caption
+msgctxt "TVISWUARULES.ACTWAPTLOCALCONFIG.CAPTION"
+msgid "Local WAPT configuration"
+msgstr ""
+
+#: tviswuarules.actwsusdowloadwsusscan.caption
+msgctxt "TVISWUARULES.ACTWSUSDOWLOADWSUSSCAN.CAPTION"
+msgid "Download WSUSScan cab from Microsoft Web site"
+msgstr ""
+
+#: tviswuarules.actwsusrefreshcabhistory.caption
+msgctxt "TVISWUARULES.ACTWSUSREFRESHCABHISTORY.CAPTION"
+msgid "Refresh WSUSscan cab history"
+msgstr ""
+
+#: tviswuarules.actwuaallowselectedupdates.caption
+msgctxt "TVISWUARULES.ACTWUAALLOWSELECTEDUPDATES.CAPTION"
+msgid "Allow Selected Updates"
+msgstr ""
+
+#: tviswuarules.actwuadownloadselectedupdate.caption
+msgctxt "TVISWUARULES.ACTWUADOWNLOADSELECTEDUPDATE.CAPTION"
+msgid "Download selected"
+msgstr ""
+
+#: tviswuarules.actwuaeditgroup.caption
+msgctxt "TVISWUARULES.ACTWUAEDITGROUP.CAPTION"
+msgid "Edit group"
+msgstr ""
+
+#: tviswuarules.actwuaforbidselectedupdates.caption
+msgctxt "TVISWUARULES.ACTWUAFORBIDSELECTEDUPDATES.CAPTION"
+msgid "Forbid Selected Updates"
+msgstr ""
+
+#: tviswuarules.actwualoadgroups.caption
+msgctxt "TVISWUARULES.ACTWUALOADGROUPS.CAPTION"
+msgid "Refresh"
+msgstr ""
+
+#: tviswuarules.actwualoadupdates.caption
+msgctxt "TVISWUARULES.ACTWUALOADUPDATES.CAPTION"
+msgid "Load"
+msgstr ""
+
+#: tviswuarules.actwuanewgroup.caption
+msgctxt "TVISWUARULES.ACTWUANEWGROUP.CAPTION"
+msgid "New Windows Updates bundle"
+msgstr ""
+
+#: tviswuarules.actwuaproductallow.caption
+msgctxt "TVISWUARULES.ACTWUAPRODUCTALLOW.CAPTION"
+msgid "Allow all updates for selected products"
+msgstr ""
+
+#: tviswuarules.actwuaproductallowseverity.caption
+msgctxt "TVISWUARULES.ACTWUAPRODUCTALLOWSEVERITY.CAPTION"
+msgid "Allow updates for selected products and severities"
+msgstr ""
+
+#: tviswuarules.actwuaproductforbid.caption
+msgctxt "TVISWUARULES.ACTWUAPRODUCTFORBID.CAPTION"
+msgid "Forbid updates for selected products"
+msgstr ""
+
+#: tviswuarules.actwuaproductforbidseverity.caption
+msgctxt "TVISWUARULES.ACTWUAPRODUCTFORBIDSEVERITY.CAPTION"
+msgid "Forbid updates for selected products and severities"
+msgstr ""
+
+#: tviswuarules.actwuaproducthide.caption
+msgctxt "TVISWUARULES.ACTWUAPRODUCTHIDE.CAPTION"
+msgid "Hide product"
+msgstr ""
+
+#: tviswuarules.actwuaproductshow.caption
+msgctxt "TVISWUARULES.ACTWUAPRODUCTSHOW.CAPTION"
+msgid "Show product"
+msgstr ""
+
+#: tviswuarules.actwuaproductsselection.caption
+msgctxt "TVISWUARULES.ACTWUAPRODUCTSSELECTION.CAPTION"
+msgid "Windows Products selection"
+msgstr ""
+
+#: tviswuarules.actwuaresetselectedupdates.caption
+msgctxt "TVISWUARULES.ACTWUARESETSELECTEDUPDATES.CAPTION"
+msgid "Reset Selected"
+msgstr ""
+
+#: tviswuarules.actwuasaveupdatesgroup.caption
+msgctxt "TVISWUARULES.ACTWUASAVEUPDATESGROUP.CAPTION"
+msgid "Save"
+msgstr ""
+
+#: tviswuarules.caption
+msgid "VisWUARules"
+msgstr ""
+
+#: tviswuarules.cbwucritical.caption
+msgctxt "TVISWUARULES.CBWUCRITICAL.CAPTION"
+msgid "Critical"
+msgstr ""
+
+#: tviswuarules.cbwuimportant.caption
+msgctxt "TVISWUARULES.CBWUIMPORTANT.CAPTION"
+msgid "Important"
+msgstr ""
+
+#: tviswuarules.cbwulow.caption
+msgctxt "TVISWUARULES.CBWULOW.CAPTION"
+msgid "Low"
+msgstr ""
+
+#: tviswuarules.cbwumoderate.caption
+msgctxt "TVISWUARULES.CBWUMODERATE.CAPTION"
+msgid "Moderate"
+msgstr ""
+
+#: tviswuarules.cbwuother.caption
+msgctxt "TVISWUARULES.CBWUOTHER.CAPTION"
+msgid "Other"
+msgstr ""
+
+#: tviswuarules.cbwuproductsshowall.caption
+msgctxt "TVISWUARULES.CBWUPRODUCTSSHOWALL.CAPTION"
+msgid "Show all products"
+msgstr ""
+
+#: tviswuarules.label17.caption
+msgctxt "TVISWUARULES.LABEL17.CAPTION"
+msgid "Windows updates restrictions"
+msgstr ""
+
+#: tviswuarules.menuitem67.caption
+msgctxt "TVISWUARULES.MENUITEM67.CAPTION"
+msgid "-"
+msgstr ""
+
+#: tviswuarules.panel1.caption
+msgid "Panel1"
+msgstr ""
+
+#: tviswuarules.panel13.caption
+msgctxt "TVISWUARULES.PANEL13.CAPTION"
+msgid "Panel13"
+msgstr ""
+
+#: tviswuarules.wupanright.caption
+msgctxt "TVISWUARULES.WUPANRIGHT.CAPTION"
 msgid "wupanright"
 msgstr ""
 

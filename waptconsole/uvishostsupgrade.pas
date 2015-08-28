@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ActnList, ExtCtrls, Buttons, sogrid,superobject,VirtualTrees, DefaultTranslator, ImgList;
+  Interfaces, ActnList, ExtCtrls, Buttons, sogrid, superobject, VirtualTrees,
+  DefaultTranslator, ImgList, syncobjs;
 
 type
 
@@ -25,17 +26,8 @@ type
     procedure ActStopExecute(Sender: TObject);
     procedure ActUpgradeExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure ProgressGridBeforeCellPaint(Sender: TBaseVirtualTree;
-      TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
-      CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
-    procedure ProgressGridBeforeItemPaint(Sender: TBaseVirtualTree;
-      TargetCanvas: TCanvas; Node: PVirtualNode; const ItemRect: TRect;
-      var CustomDraw: Boolean);
     procedure ProgressGridDragAllowed(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
-    procedure ProgressGridGetImageIndex(Sender: TBaseVirtualTree;
-      Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
-      var Ghosted: Boolean; var ImageIndex: Integer);
     procedure ProgressGridGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: Boolean; var ImageIndex: Integer;
@@ -51,6 +43,7 @@ type
     Faction: String;
     Fhosts: ISuperObject;
     Stopped : Boolean;
+    gridLock : TCriticalSection;
     procedure Setaction(AValue: String);
     procedure Sethosts(AValue: ISuperObject);
     { private declarations }
@@ -127,31 +120,10 @@ begin
   Action := 'upgrade_host';
 end;
 
-procedure TVisHostsUpgrade.ProgressGridBeforeCellPaint(
-  Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode;
-  Column: TColumnIndex; CellPaintMode: TVTCellPaintMode; CellRect: TRect;
-  var ContentRect: TRect);
-begin
-
-end;
-
-procedure TVisHostsUpgrade.ProgressGridBeforeItemPaint(
-  Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode;
-  const ItemRect: TRect; var CustomDraw: Boolean);
-begin
-
-end;
-
 procedure TVisHostsUpgrade.ProgressGridDragAllowed(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
 begin
   If Column=0 then Allowed:=False;
-end;
-
-procedure TVisHostsUpgrade.ProgressGridGetImageIndex(Sender: TBaseVirtualTree;
-  Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
-  var Ghosted: Boolean; var ImageIndex: Integer);
-begin
 end;
 
 procedure TVisHostsUpgrade.ProgressGridGetImageIndexEx(

@@ -28,6 +28,7 @@ object VisHostsUpgrade: TVisHostsUpgrade
         MaxWidth = 30
         Position = 0
         Tag = 1
+        Text = 'status'
         Width = 30
         PropertyName = 'status'
       end    
@@ -67,10 +68,7 @@ object VisHostsUpgrade: TVisHostsUpgrade
     TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect]
     WantTabs = True
-    OnBeforeCellPaint = ProgressGridBeforeCellPaint
-    OnBeforeItemPaint = ProgressGridBeforeItemPaint
     OnDragAllowed = ProgressGridDragAllowed
-    OnGetImageIndex = ProgressGridGetImageIndex
     OnGetImageIndexEx = ProgressGridGetImageIndexEx
     OnInitNode = ProgressGridInitNode
     OnMeasureItem = ProgressGridMeasureItem
