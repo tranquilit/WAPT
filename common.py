@@ -653,6 +653,11 @@ def running_on_ac():
     return status.ACLineStatus == 1
 
 
+def uac_enabled():
+    """Return True if UAC is enabled"""
+    with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System') as k:
+        return QueryValueEx(k,'EnableLUA')[1] == 0
+
 ###########################"
 class LogInstallOutput(object):
     """file like to log print output to db installstatus"""
