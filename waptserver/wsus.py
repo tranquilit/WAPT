@@ -127,7 +127,7 @@ def download_wsusscan(force=False, dryrun=False):
 
     stats = {
         'run_date': datetime2isodate(),
-        'forced': str(force),
+        'forced': force,
         'uuid': dl_uuid,
     }
     _id = wsusscan2_history.insert(stats)
@@ -155,7 +155,7 @@ def download_wsusscan(force=False, dryrun=False):
         if not os.path.isfile(wsus_filename) or (new_cab_timestamp > current_cab_timestamp) or force:
 
             logger.info('Downloading because of: file not found == %s, timestamps == %s, force == %s', \
-                            str(os.path.isfile(wsus_filename) == False), str(new_cab_timestamp > current_cab_timestamp), str(force))
+                            str(os.path.isfile(wsus_filename) == False), str(new_cab_timestamp > current_cab_timestamp), force)
 
             if not os.path.isfile(wsus_filename):
                 stats['reason'] = 'file missing'
@@ -689,8 +689,21 @@ def wsusscan2_status():
 #@app.route('/api/v2/wsusscan2_history')
 def wsusscan2_history():
     data = []
-    wsusscan2_history = utils_get_db().wsusscan2_history
-    for log in wsusscan2_history.find():
+    filter = {}
+    if 'uuid' in request.args:
+       filter['uuid'] = request.args['uuid']
+    if 'status' in request.args:
+       filter['status'] = request.args['status']
+    if 'skipped' in request.args:
+       if int(request.args['skipped']) == 1:
+           filter['skipped'] = True
+       else:
+           filter['skipped'] = {'$exists':False}
+
+    print filter
+    limit = int(request.args.get('limit','0'))
+    query = wsusscan2_history = utils_get_db().wsusscan2_history.find(filter,limit=limit).sort('run_date',pymongo.DESCENDING)
+    for log in query:
         data.append(log)
     return make_response(result=data)
 
