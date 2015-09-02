@@ -62,14 +62,15 @@ interface
   function LocalSysinfo: ISuperObject;
   function GetLocalIP: string;
 
-  function WAPTServerJsonGet(action: String;args:Array of const): ISuperObject; //use global credentials and proxy settings
+  //call url action on waptserver. action can contains formatting chars like %s which will be replaced by args with the Format function.
+  function WAPTServerJsonGet(action: String;args:Array of const;method:AnsiString='GET'): ISuperObject; //use global credentials and proxy settings
   function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject): ISuperObject; //use global credentials and proxy settings
   function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString='';timeout:integer=1000):ISuperObject;
 
   Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy:Boolean=False): boolean;
   Function IdWget_Try(const fileURL: Utf8String;enableProxy:Boolean=False): boolean;
   function IdHttpGetString(const url: ansistring; enableProxy:Boolean= False;
-      ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString=''):RawByteString;
+      ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';method:AnsiString='GET'):RawByteString;
   function IdHttpPostData(const url: Ansistring; const Data: RawByteString; enableProxy:Boolean= False;
      ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString=''):RawByteString;
 
@@ -121,7 +122,7 @@ implementation
 uses FileUtil, soutils, Variants,uwaptres,waptwinutils,tisinifiles,tislogging,
   NetworkAdapterInfo, JwaWinsock2,
   IdHttp,IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,IdURI,
-  gettext,IdStack;
+  gettext,IdStack,IdCompressorZLib;
 
 
 procedure IdConfigureProxy(http:TIdHTTP;ProxyUrl:String);
@@ -303,7 +304,7 @@ end;
 
 
 function IdHttpGetString(const url: ansistring; enableProxy:Boolean= False;
-    ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString=''):RawByteString;
+    ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';method:AnsiString='GET'):RawByteString;
 var
   http:TIdHTTP;
   ssl: boolean;
@@ -336,7 +337,11 @@ begin
       if enableProxy then
         IdConfigureProxy(http,HttpProxy);
 
-      Result := http.Get(url);
+      if method = 'GET' then
+        Result := http.Get(url)
+      else if method = 'DELETE' then
+        Result := http.Delete(url)
+      else raise Exception.CreateFmt('Unsupported method %s',[method]);
 
     except
       on E:EIdReadTimeout do Result := '';
@@ -359,6 +364,7 @@ var
 begin
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
+  http.Compressor := TIdCompressorZLib.Create;
   http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
   http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent;
 
@@ -393,7 +399,7 @@ begin
         http.OnWork:=@progress.OnWork;
       end;}
 
-      Result := http.Post(url,DataStream);
+      Result := http.Post(url,DataStream)
     except
       on E:EIdReadTimeout do
         Result := '';
@@ -402,6 +408,11 @@ begin
     //FreeAndNil(progress);
     if Assigned(DataStream) then
       FreeAndNil(DataStream);
+    if Assigned(http.Compressor) then
+    begin
+      http.Compressor.Free;
+      http.Compressor := Nil;
+    end;
     http.Free;
     if Assigned(ssl_handler) then
       FreeAndNil(ssl_handler);
@@ -409,7 +420,21 @@ begin
 end;
 
 
-function WAPTServerJsonGet(action: String; args: array of const): ISuperObject;
+function WAPTServerJsonGet(action: String; args: array of const;method:AnsiString='GET'): ISuperObject;
+var
+  strresult : String;
+begin
+  if GetWaptServerURL = '' then
+    raise Exception.CreateFmt(rsUndefWaptSrvInIni, [AppIniFilename]);
+  if (StrLeft(action,1)<>'/') and (StrRight(GetWaptServerURL,1)<>'/') then
+    action := '/'+action;
+  if length(args)>0 then
+    action := format(action,args);
+  strresult:=IdhttpGetString(GetWaptServerURL+action,UseProxyForServer,4000,60000,60000,waptServerUser, waptServerPassword,method);
+  Result := SO(strresult);
+end;
+
+function WAPTServerJsonDelete(action: String; args: array of const): ISuperObject;
 var
   strresult : String;
 begin

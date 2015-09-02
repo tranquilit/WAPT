@@ -37,7 +37,9 @@ type
     BitBtn10: TBitBtn;
     BitBtn9: TBitBtn;
     cbForcedWSUSscanDownload: TCheckBox;
-    GridWSUSScn: TSOGrid;
+    GridWSUSScan: TSOGrid;
+    MenuItem74: TMenuItem;
+    PopupGridWSUSScan: TPopupMenu;
     wsusResult: TMemo;
     MenuItem70: TMenuItem;
     MenuItem71: TMenuItem;
@@ -459,6 +461,7 @@ type
     procedure MainPagesChange(Sender: TObject);
     procedure InstallPackage(Grid: TSOGrid);
     procedure MenuItem27Click(Sender: TObject);
+    procedure MenuItem74Click(Sender: TObject);
     procedure TimerWUALoadWinUpdatesTimer(Sender: TObject);
     procedure TimerTasksTimer(Sender: TObject);
   private
@@ -1023,6 +1026,23 @@ procedure TVisWaptGUI.MenuItem27Click(Sender: TObject);
 begin
   with TVisApropos.Create(Self) do
     ShowModal;
+end;
+
+procedure TVisWaptGUI.MenuItem74Click(Sender: TObject);
+var
+  node,args,ids,res:ISuperObject;
+begin
+  args := TSuperObject.Create;
+  ids := TSuperObject.Create(stArray);
+  for node in GridWSUSScan.SelectedRows do
+    ids.AsArray.Add(node['uuid']);
+
+  args['ids'] := ids;
+  res := WAPTServerJsonGet('api/v2/wsusscan2_history?uuid=%s',[Join(',',ids)],'DELETE');
+  if res.B['success'] then
+    ActWSUSRefreshCabHistory.Execute
+  else
+    ShowMessageFmt(rsErrorWithMessage,[res.S['error']]);
 end;
 
 procedure TVisWaptGUI.TimerWUALoadWinUpdatesTimer(Sender: TObject);
@@ -1660,9 +1680,19 @@ var
 begin
   forced := 0;
   if cbForcedWSUSscanDownload.Checked then
-    forced:=1;
+    forced:=1
+  else
+  begin
+    res := WAPTServerJsonGet('api/v2/wsusscan2_history?limit=1&skipped=0',[]);
+    if res.B['success'] and not StrIsOneOf(res.S['result[0].status'],['finished','error']) then
+    begin
+      if MessageDlg(rsConfirmCaption,'A download task is already in progress, do you still want to append a task ?',mtConfirmation, mbYesNoCancel,0) <> mrYes then
+        Exit;
+    end;
+  end;
   res := WAPTServerJsonGet('api/v2/download_wsusscan?force=%d',[forced]);
-  skipped := res.B['skipped'];
+  ActWSUSRefreshCabHistory.Execute;
+  {skipped := res.B['result.skipped'];
   if skipped then
     wsusResult.Text := 'Download skipped'
   else
@@ -1670,7 +1700,7 @@ begin
     cabsize := res.I['result.file_size'];
     cabdate := DateTimeToStr(FileDateToDateTime(res.I['result.file_timestamp']));
     wsusResult.Text := res.S['result.status']+' started on '+res.S['result.run_date']+' file size:'+IntToStr(cabsize)+' wsusscan date:'+cabdate;
-  end;
+  end;}
 end;
 
 procedure TVisWaptGUI.ActWSUSRefreshCabHistoryExecute(Sender: TObject);
@@ -1679,9 +1709,9 @@ var
 begin
   res := WAPTServerJsonGet('api/v2/wsusscan2_history?limit=20&skipped=0',[]);
   if res.B['success'] then
-    GridWSUSScn.Data := res['result']
+    GridWSUSScan.Data := res['result']
   else
-    GridWSUSScn.Data := Nil;
+    GridWSUSScan.Data := Nil;
 end;
 
 procedure TVisWaptGUI.ActWUADownloadSelectedUpdateUpdate(Sender: TObject);

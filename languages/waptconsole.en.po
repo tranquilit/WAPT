@@ -1375,6 +1375,10 @@ msgctxt "tviswaptgui.menuitem73.caption"
 msgid "-"
 msgstr ""
 
+#: tviswaptgui.menuitem74.caption
+msgid "Delete task"
+msgstr ""
+
 #: tviswaptgui.menuitem8.caption
 msgid "Open..."
 msgstr ""

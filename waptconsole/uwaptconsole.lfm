@@ -2382,7 +2382,7 @@ object VisWaptGUI: TVisWaptGUI
         Action = ActWSUSRefreshCabHistory
         TabOrder = 2
       end
-      object GridWSUSScn: TSOGrid
+      object GridWSUSScan: TSOGrid
         Left = 4
         Height = 120
         Top = 50
@@ -2403,42 +2403,54 @@ object VisWaptGUI: TVisWaptGUI
             Position = 1
             Tag = 1
             Text = 'Date'
-            Width = 169
+            Width = 117
             PropertyName = 'run_date'
           end        
           item
-            Alignment = taRightJustify
             Position = 2
             Tag = 2
+            Text = 'Status'
+            PropertyName = 'status'
+          end        
+          item
+            Alignment = taRightJustify
+            Position = 3
+            Tag = 3
             Text = 'WSUS Cab Size'
             Width = 73
             PropertyName = 'file_size'
           end        
           item
             Alignment = taRightJustify
-            Position = 3
-            Tag = 3
+            Position = 4
+            Tag = 4
             Text = 'WSUS Cab Date'
             Width = 85
             PropertyName = 'file_timestamp'
           end        
           item
-            Position = 4
-            Tag = 4
-            Text = 'skipped'
+            Position = 5
+            Tag = 5
+            Text = 'Forced'
+            PropertyName = 'forced'
+          end        
+          item
+            Position = 6
+            Tag = 6
+            Text = 'Skipped'
             Width = 44
             PropertyName = 'skipped'
           end        
           item
-            Position = 5
-            Tag = 5
+            Position = 7
+            Tag = 7
             Text = 'Error'
             Width = 107
             PropertyName = 'error'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 6
+            Position = 8
             Tag = 8
             Text = 'cablist'
             Width = 100
@@ -2450,7 +2462,7 @@ object VisWaptGUI: TVisWaptGUI
         Header.SortDirection = sdDescending
         Header.Style = hsFlatButtons
         Images = ImageList1
-        PopupMenu = PopupWUAUpdates
+        PopupMenu = PopupGridWSUSScan
         TabOrder = 3
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
@@ -6137,6 +6149,15 @@ object VisWaptGUI: TVisWaptGUI
     object ActWSUSDowloadWSUSScan: TAction
       Caption = 'Download WSUSScan cab from Microsoft Web site'
       OnExecute = ActWSUSDowloadWSUSScanExecute
+    end
+  end
+  object PopupGridWSUSScan: TPopupMenu
+    left = 240
+    top = 112
+    object MenuItem74: TMenuItem
+      Caption = 'Delete task'
+      ShortCut = 16430
+      OnClick = MenuItem74Click
     end
   end
 end
