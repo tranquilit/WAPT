@@ -1986,7 +1986,7 @@ class WaptWUAScan(WaptTask):
 
     def __unicode__(self):
         # XXX missing formats?
-        return __(u"Scans WAPTWua Windows Updates  with rules %{rules}s").format(classname=self.__class__.__name__,id=self.id,rules=self.windows_updates_rules)
+        return __(u"Scans WAPTWua Windows Updates  with rules {rules}").format(classname=self.__class__.__name__,id=self.id,rules=self.windows_updates_rules)
 
 
 class WaptWUADownload(WaptTask):

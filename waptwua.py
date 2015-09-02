@@ -620,7 +620,7 @@ class WaptWUA(object):
         """
         if len(self.wapt.repositories)>0:
             try:
-                self.wapt.write_param('waptwua.status','UPDATING')
+                self.wapt.write_param('waptwua.status','UPDATING WSUSSCAN')
                 cab_location = '%swua/wsusscn2.cab' % self.wapt.repositories[0].repo_url
                 cab_target = self.wsusscn2
                 cab_current_date = self.wapt.read_param('waptwua.wsusscn2cab_date')
@@ -638,7 +638,7 @@ class WaptWUA(object):
                     logger.debug('New wusscn2.cab date : %s'%cab_new_date)
                 self.wapt.write_param('waptwua.status','DBREADY')
             except Exception as e:
-                self.wapt.write_param('waptwua.status','ERROR')
+                self.wapt.write_param('waptwua.status','ERROR DOWNLOADING WSUSSCAN')
                 raise
 
 
@@ -682,8 +682,11 @@ class WaptWUA(object):
                 self._cached_updates = {}
                 for update in search_result.Updates:
                     self._updates.append(update)
-            finally:
                 self.wapt.write_param('waptwua.status','READY')
+            except:
+                self.wapt.write_param('waptwua.status','ERROR SCANNING UPDATES')
+                raise
+
         return self._updates
 
     @property
@@ -696,9 +699,12 @@ class WaptWUA(object):
                 update_count = self.update_searcher.GetTotalHistoryCount()
                 for update in self.update_searcher.QueryHistory(0,update_count-1):
                     self._installed_updates.append(update)
-            finally:
                 self.wapt.write_param('waptwua.status','READY')
+            except:
+                self.wapt.write_param('waptwua.status','ERROR SCANNING INSTALLED')
+                raise
         return self._installed_updates
+
 
     def is_allowed(self,update):
         """Check if an update is allowed
