@@ -1684,7 +1684,7 @@ begin
   else
   begin
     res := WAPTServerJsonGet('api/v2/wsusscan2_history?limit=1&skipped=0',[]);
-    if res.B['success'] and not StrIsOneOf(res.S['result[0].status'],['finished','error']) then
+    if res.B['success'] and (res.A['result'].Length>0) and not StrIsOneOf(res.S['result[0].status'],['finished','error']) then
     begin
       if MessageDlg(rsConfirmCaption,'A download task is already in progress, do you still want to append a task ?',mtConfirmation, mbYesNoCancel,0) <> mrYes then
         Exit;
