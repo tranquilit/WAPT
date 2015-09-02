@@ -102,14 +102,43 @@ def cabextract(cabfile, **kwargs):
     return subprocess.check_output(command)
 
 
+def make_dl_task_descr(force=False, dryrun=False):
+    """Create a template dict describing a wsusscn2.cab download task.
+    The task will be inserted in MongoDB wapt.wsusscan2_history and updated
+    until it is done.
+    """
+    dl_uuid = str(uuid.uuid4())
+
+    task_descr = {
+        'status': 'pending',
+        'reason': '',
+        'run_date': datetime2isodate(),
+        'forced': force,
+        'uuid': dl_uuid,
+        'file_timestamp': 'N/A',
+        'file_size': 'N/A',
+    }
+
+    wsusscan2_history = pymongo.MongoClient().wapt.wsusscan2_history
+    wsusscan2_history.ensure_index('uuid', unique=True)
+    wsusscan2_history.ensure_index([('run_date', pymongo.DESCENDING)])
+
+    wsusscan2_history.insert(task_descr)
+
+    return task_descr
+
+
 # Between 2h00 and 2h59
 @huey.periodic_task(crontab(hour='3', minute=str(30 + random.randrange(-30, +30))))
 def download_wsusscan_crontab():
-    return download_wsusscan(False, False)
+
+    descr = make_dl_task_descr()
+
+    return download_wsusscan(task_descr=descr)
 
 
 @huey.task()
-def download_wsusscan(force=False, dryrun=False):
+def download_wsusscan(task_descr, force=False, dryrun=False):
     """Launch a task to update current wsus offline cab file
         download in a temporary well known file
         abort if the temporary file is present (means another download is in progress
@@ -120,19 +149,9 @@ def download_wsusscan(force=False, dryrun=False):
     tmp_filename = os.path.join(waptwua_folder,'wsusscn2.cab.part')
 
     wsusscan2_history = pymongo.MongoClient().wapt.wsusscan2_history
-    wsusscan2_history.ensure_index('uuid', unique=True)
-    wsusscan2_history.ensure_index([('run_date', pymongo.DESCENDING)])
 
-    dl_uuid = str(uuid.uuid4())
-
-    stats = {
-        'run_date': datetime2isodate(),
-        'forced': force,
-        'uuid': dl_uuid,
-    }
-    _id = wsusscan2_history.insert(stats)
-    stats['_id'] = _id
-
+    stats = task_descr
+    dl_uuid = stats['uuid']
 
     # should we remove the tmp filename when we get an error?
     cleanup_on_error = False
@@ -639,9 +658,14 @@ def parse_wsusscan2(dl_uuid):
 def trigger_wsusscan2_download():
     dryrun = bool(request.args.get('dryrun', False))
     force = bool(request.args.get('force', False))
+
     logger.info('Triggering download_wsusscan with parameter ' + str(force))
-    download_wsusscan(dryrun=dryrun, force=force)
-    return make_response()
+
+    task_descr = make_dl_task_descr(dryrun=dryrun, force=force)
+
+    download_wsusscan(task_descr, dryrun=dryrun, force=force)
+
+    return make_response(result=task_descr)
 
 
 #@app.route('/api/v2/wsusscan2_status')
