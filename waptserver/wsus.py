@@ -79,6 +79,20 @@ from waptserver_utils import *
 
 waptwua_folder = conf['waptwua_folder']
 
+def utils_get_db():
+    """Opens a new database connection if there is none yet for the
+    current application context.
+    """
+    try:
+        ip = conf['mongodb_ip']
+        port = int(conf['mongodb_port'])
+        logger.debug('Connecting to mongo db %s:%s'%(ip,port))
+        mongo_client = pymongo.MongoClient(ip,port)
+        return mongo_client.wapt
+    except Exception as e:
+        raise Exception("Could not connect to mongodb database: {}.".format((repr(e),)))
+
+
 def cabextract(cabfile, **kwargs):
     check_only = []
     if kwargs.get('check_only', False):
@@ -122,7 +136,6 @@ def make_dl_task_descr(force=False, dryrun=False):
     wsusscan2_history =  utils_get_db().wsusscan2_history
     wsusscan2_history.ensure_index('uuid', unique=True)
     wsusscan2_history.ensure_index([('run_date', pymongo.DESCENDING)])
-
     wsusscan2_history.insert(task_descr)
 
     return task_descr
@@ -131,9 +144,7 @@ def make_dl_task_descr(force=False, dryrun=False):
 # Between 2h00 and 2h59
 @huey.periodic_task(crontab(hour='3', minute=str(30 + random.randrange(-30, +30))))
 def download_wsusscan_crontab():
-
     descr = make_dl_task_descr()
-
     return download_wsusscan(task_descr=descr)
 
 

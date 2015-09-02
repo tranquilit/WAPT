@@ -77,30 +77,10 @@ def ensure_list(csv_or_list,ignore_empty_args=True):
     else:
         return csv_or_list
 
-utils_mongodb_ip = ''
-utils_mongodb_port = ''
-
-def utils_setup_db(ip, port):
-    global utils_mongodb_ip, utils_mongodb_port
-    utils_mongodb_ip = ip
-    utils_mongodb_port = port
-
 utils_devel_mode = False
 def utils_set_devel_mode(devel):
     global utils_devel_mode
     utils_devel_mode = devel
-
-def utils_get_db():
-    """Opens a new database connection if there is none yet for the
-    current application context.
-    """
-    try:
-        logger.debug('Connecting to mongo db %s:%s'%(utils_mongodb_ip, int(utils_mongodb_port)))
-        mongo_client = pymongo.MongoClient(utils_mongodb_ip, int(utils_mongodb_port))
-        return mongo_client.wapt
-    except Exception as e:
-        raise Exception("Could not connect to mongodb database: {}.".format((repr(e),)))
-
 
 def mkdir_p(path):
     import errno
@@ -191,8 +171,6 @@ def get_disk_space(directory):
 
 __all__ += ['ensure_list']
 __all__ += ['mkdir_p']
-__all__ += ['utils_get_db']
-__all__ += ['utils_setup_db']
 __all__ += ['utils_set_devel_mode']
 __all__ += ['wget']
 __all__ += ['get_disk_space']

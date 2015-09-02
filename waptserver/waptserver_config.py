@@ -35,7 +35,7 @@ sys.path.insert(2,os.path.join(wapt_root_dir,'lib','site-packages'))
 from huey import Huey
 from huey.backends.sqlite_backend import SqliteQueue
 import ConfigParser
-
+import tempfile
 
 _defaults = {
     'client_tasks_timeout': 0.5,
@@ -43,11 +43,11 @@ _defaults = {
     'clients_read_timeout': 5,
     'loglevel': 'warning',
     'mongodb_ip': "127.0.0.1",
-    'mongodb_port': "38999",
+    'mongodb_port': 38999,
     'secret_key': 'NOT DEFINED',
     'server_uuid': '',
     'wapt_folder': os.path.join(wapt_root_dir, 'waptserver','repository','wapt'),
-    'wapt_huey_db': '/tmp/wapthuey.db',
+    'wapt_huey_db': os.path.join(tempfile.gettempdir(),'wapthuey.db'),
     'wapt_password': '',
     'wapt_user': 'admin',
     'waptserver_port': 8080,
@@ -87,7 +87,7 @@ def load_config(cfgfile=_default_config_file):
         conf['mongodb_ip'] = _config.get('options', 'mongodb_ip')
 
     if _config.has_option('options', 'mongodb_port'):
-        conf['mongodb_port'] = _config.get('options', 'mongodb_port')
+        conf['mongodb_port'] = _config.getint('options', 'mongodb_port')
 
     if _config.has_option('options', 'secret_key'):
         config['secret_key'] = _config.get('options','secret_key')
