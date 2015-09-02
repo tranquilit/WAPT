@@ -1657,7 +1657,7 @@ def wsusscan2_status():
     if wsus:
         return wsus.wsusscan2_status()
 
-@app.route('/api/v2/wsusscan2_history')
+@app.route('/api/v2/wsusscan2_history',methods = ['GET','POST','DELETE'])
 def wsusscan2_history():
     if wsus:
         return wsus.wsusscan2_history()

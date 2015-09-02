@@ -119,7 +119,7 @@ def make_dl_task_descr(force=False, dryrun=False):
         'file_size': None,
     }
 
-    wsusscan2_history = pymongo.MongoClient().wapt.wsusscan2_history
+    wsusscan2_history =  utils_get_db().wsusscan2_history
     wsusscan2_history.ensure_index('uuid', unique=True)
     wsusscan2_history.ensure_index([('run_date', pymongo.DESCENDING)])
 
@@ -148,7 +148,7 @@ def download_wsusscan(task_descr, force=False, dryrun=False):
     wsus_filename = os.path.join(waptwua_folder,'wsusscn2.cab')
     tmp_filename = os.path.join(waptwua_folder,'wsusscn2.cab.part')
 
-    wsusscan2_history = pymongo.MongoClient().wapt.wsusscan2_history
+    wsusscan2_history = utils_get_db().wsusscan2_history
 
     stats = task_descr
     dl_uuid = stats['uuid']
@@ -272,7 +272,7 @@ def wsusscan2_extract_cabs(wsusscan2, tmpdir):
     cabextract(os.path.join(tmpdir, 'package.cab'), dstdir=tmpdir)
 
     cab_list = sorted(filter(lambda f: f.endswith('.cab'), os.listdir(tmpdir)))
-    cab_info = pymongo.MongoClient().wapt.wsus_cab_info
+    cab_info = utils_get_db().wsus_cab_info
 
     for cab in cab_list:
         cab_path = os.path.join(tmpdir, cab)
@@ -571,7 +571,7 @@ def amend_metadata(directory, to_parse, db):
 
     # everything went fine, update cksums for updated package*.cab so
     # that we can skip them next time
-    cab_info = pymongo.MongoClient().wapt.wsus_cab_info
+    cab_info = utils_get_db().wsus_cab_info
     for cab, cksum in to_parse.items():
         logger.info('Updating checksum for cab %s', cab)
         cab_info.update({ 'cab_name': cab }, { 'cab_name': cab, 'cksum': cksum }, upsert=True)
@@ -582,8 +582,7 @@ def amend_metadata(directory, to_parse, db):
 def parse_wsusscan_entrypoint(dl_uuid=None):
     wsusscan2 = os.path.join(waptwua_folder, 'wsusscn2.cab')
 
-    client = pymongo.MongoClient()
-    db = client.wapt
+    db = utils_get_db()
     wsusscan2_history = db.wsusscan2_history
 
     db.wsus_updates.ensure_index([('revision_id', pymongo.DESCENDING)], unique=True)
@@ -716,24 +715,33 @@ def wsusscan2_status():
 
 #@app.route('/api/v2/wsusscan2_history')
 def wsusscan2_history():
-    data = []
-    filter = {}
-    if 'uuid' in request.args:
-       filter['uuid'] = request.args['uuid']
-    if 'status' in request.args:
-       filter['status'] = request.args['status']
-    if 'skipped' in request.args:
-       if int(request.args['skipped']) == 1:
-           filter['skipped'] = True
-       else:
-           filter['skipped'] = {'$exists':False}
+    try:
+        if request.method == 'GET':
+            data = []
+            filter = {}
+            if 'uuid' in request.args:
+               filter['uuid'] = {'$in':ensure_list(request.args['uuid'])}
+            if 'status' in request.args:
+               filter['status'] = {'$in':ensure_list(request.args['status'])}
+            if 'skipped' in request.args:
+               if int(request.args['skipped']) == 1:
+                   filter['skipped'] = True
+               else:
+                   filter['skipped'] = {'$exists':False}
 
-    print filter
-    limit = int(request.args.get('limit','0'))
-    query = wsusscan2_history = utils_get_db().wsusscan2_history.find(filter,limit=limit).sort('run_date',pymongo.DESCENDING)
-    for log in query:
-        data.append(log)
-    return make_response(result=data)
+            limit = int(request.args.get('limit','0'))
+            query = wsusscan2_history = utils_get_db().wsusscan2_history.find(filter,limit=limit).sort('run_date',pymongo.DESCENDING)
+            for log in query:
+                data.append(log)
+            return make_response(result=data)
+        elif request.method == 'DELETE':
+            uuids = ensure_list(request.args['uuid'])
+            result = utils_get_db().wsusscan2_history.remove({'uuid':{'$in':uuids}})
+            if result['err']:
+                raise EWaptDatabaseError(result['err'])
+            return make_response(result = result,msg='%s tasks deleted' % result['n'])
+    except Exception as e:
+        return make_response_from_exception(e)
 
 
 #https://msdn.microsoft.com/en-us/library/ff357803%28v=vs.85%29.aspx
