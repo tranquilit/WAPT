@@ -115,7 +115,7 @@ def make_dl_task_descr(force=False, dryrun=False):
         'run_date': datetime2isodate(),
         'forced': force,
         'uuid': dl_uuid,
-        'file_timestamp': None,
+        'file_date': None,
         'file_size': None,
     }
 
@@ -163,6 +163,8 @@ def download_wsusscan(task_descr, force=False, dryrun=False):
 
         reply = requests.head(cab_url)
         last_modified = reply.headers['last-modified']
+
+        stats['file_date'] = httpdatetime2isodate(last_modified)
 
         new_cab_timestamp = float(email.utils.mktime_tz(email.utils.parsedate_tz(last_modified)))
         if os.path.isfile(wsus_filename):
@@ -215,7 +217,7 @@ def download_wsusscan(task_descr, force=False, dryrun=False):
                 wget(cab_url, tmp_filename, chunk_callback=download_wsusscan_callback)
 
             file_stats = os.stat(tmp_filename)
-            stats['file_timestamp'] = file_stats[stat.ST_MTIME]
+            stats['file_date'] = httpdatetime2isodate(email.utils.formatdate(file_stats[stat.ST_MTIME], usegmt=True))
             stats['file_size'] = stats['target_size'] = file_stats[stat.ST_SIZE]
             stats['status'] = 'checking'
             wsusscan2_history.save(stats)
