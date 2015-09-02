@@ -115,8 +115,8 @@ def make_dl_task_descr(force=False, dryrun=False):
         'run_date': datetime2isodate(),
         'forced': force,
         'uuid': dl_uuid,
-        'file_timestamp': 'N/A',
-        'file_size': 'N/A',
+        'file_timestamp': None,
+        'file_size': None,
     }
 
     wsusscan2_history = pymongo.MongoClient().wapt.wsusscan2_history
@@ -161,7 +161,8 @@ def download_wsusscan(task_descr, force=False, dryrun=False):
 
     try:
 
-        last_modified = requests.head(cab_url).headers['last-modified']
+        reply = requests.head(cab_url)
+        last_modified = reply.headers['last-modified']
 
         new_cab_timestamp = float(email.utils.mktime_tz(email.utils.parsedate_tz(last_modified)))
         if os.path.isfile(wsus_filename):
@@ -186,6 +187,10 @@ def download_wsusscan(task_descr, force=False, dryrun=False):
                 logger.error('download_wsusscan: logic error')
                 assert False
             stats['status'] = 'downloading'
+            stats['target_size'] = None
+            if 'content-length' in reply.headers:
+                stats['target_size'] = int(reply.headers['content-length'])
+            stats['file_size'] = None
             wsusscan2_history.save(stats)
 
             def download_wsusscan_callback(total_bytes, downloaded_bytes):
@@ -196,7 +201,6 @@ def download_wsusscan(task_descr, force=False, dryrun=False):
                     {
                         '$set': {
                             'file_size': total_bytes,
-                            'current_size': downloaded_bytes
                         }
                     }
                 )
@@ -212,7 +216,7 @@ def download_wsusscan(task_descr, force=False, dryrun=False):
 
             file_stats = os.stat(tmp_filename)
             stats['file_timestamp'] = file_stats[stat.ST_MTIME]
-            stats['file_size'] = file_stats[stat.ST_SIZE]
+            stats['file_size'] = stats['target_size'] = file_stats[stat.ST_SIZE]
             stats['status'] = 'checking'
             wsusscan2_history.save(stats)
 
