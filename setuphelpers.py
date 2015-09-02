@@ -2840,7 +2840,7 @@ def unset_environ_variable(name):
     # force to get new environ variable, as it is not reloaded immediately.
     if name in os.environ:
         del(os.environ[name])
-        wwin32gui.SendMessageTimeout(win32con.HWND_BROADCAST, win32con.WM_SETTINGCHANGE, 0, "Environment", win32con.SMTO_ABORTIFHUNG, 5000 )
+        win32gui.SendMessageTimeout(win32con.HWND_BROADCAST, win32con.WM_SETTINGCHANGE, 0, "Environment", win32con.SMTO_ABORTIFHUNG, 5000 )
     return result
 
 
