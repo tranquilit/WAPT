@@ -242,12 +242,14 @@ def download_wsusscan(task_descr, force=False, dryrun=False):
             wsusscan2_history.save(stats)
 
         else:
+            stats['status'] = 'finished'
             stats['skipped'] = True
             wsusscan2_history.save(stats)
 
         return 'OK'
 
     except Exception as e:
+        stats['status'] = 'finished'
         stats['error'] = str(e)
         wsusscan2_history.save(stats)
 
