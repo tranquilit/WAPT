@@ -3365,12 +3365,18 @@ class Wapt(object):
 
     def check_depends(self,apackages,forceupgrade=False,force=False,assume_removed=[]):
         """Given a list of packagename or requirement "name (=version)",
-                return a dictionnary of {'additional' 'upgrade' 'install' 'skipped' 'unavailable','remove'} of
-                    [packagerequest,matching PackageEntry]
-            forceupgrade : check if the current installed packages is the latest available
-            force : install the latest version even if the package is already there and match the requirement
-            assume_removed: list of packagename which are assumed to be absent even if they are installed to check the
-                            consequences of removal of packages, implies force=True
+        return a dictionnary of {'additional' 'upgrade' 'install' 'skipped' 'unavailable','remove'} of
+        [packagerequest,matching PackageEntry]
+
+        Args:
+            apackages (str or list): list of packages for which to check missing dependencies.
+            forceupgrade (boolean): if True, check if the current installed packages is the latest available
+            force (boolean): if True, install the latest version even if the package is already there and match the requirement
+            assume_removed (list): list of packagename which are assumed to be absent even if they are installed to check the
+                                    consequences of removal of packages, implies force=True
+        Returns:
+            dict : {'additional' 'upgrade' 'install' 'skipped' 'unavailable', 'remove'} with list of [packagerequest,matching PackageEntry]
+
         """
         if apackages is None:
             apackages = []
@@ -3481,7 +3487,15 @@ class Wapt(object):
         return result
 
     def check_remove(self,apackages):
-        """return a list of additional package to remove if apackages are removed"""
+        """Return a list of additional package to remove if apackages are removed
+
+        Args:
+            apackages (str or list): list of packages fr which parent dependencies will be checked.
+
+        Returns:
+            list: list of package requirements with broken dependencies
+
+        """
         if not isinstance(apackages,list):
             apackages = [apackages]
         result = []
@@ -3498,12 +3512,18 @@ class Wapt(object):
 
     def check_install(self,apackages=None,force=True,forceupgrade=True):
         """Return a list of actions required for install of apackages list of packages
-            if apackages is None, check for all pending updates
-           apackages : list of packages or None to check pending install/upgrades
-           force : if True, already installed package listed in apackages
-                   will be considred to be reinstalled
-           forceupgrade : if True, all dependencies are upgraded to latest version,
+        if apackages is None, check for all pending updates.
+
+        Args:
+            apackages (str or list): list of packages or None to check pending install/upgrades
+            force (boolean): if True, already installed package listed in apackages
+                                will be considered to be reinstalled
+            forceupgrade: if True, all dependencies are upgraded to latest version,
                           even if current version comply with depends requirements
+        Returns:
+            dict: with keys ['skipped', 'additional', 'remove', 'upgrade', 'install', 'unavailable'] and list of
+                        (package requirements, PackageEntry)
+
         """
         result = []
         if apackages is None:
@@ -3530,9 +3550,10 @@ class Wapt(object):
             usecache=True,
             printhook=None):
         """Install a list of packages and its dependencies
-                removes first packages which are in conflicts package attribute
-            Returns a dictionary of (package requirement,package) with 'install','skipped','additional'
+        removes first packages which are in conflicts package attribute
+        Returns a dictionary of (package requirement,package) with 'install','skipped','additional'
 
+        Args:
             apackages : list of packages requirements "packagename(=version)" or list of PackageEntry.
             force : reinstalls the packages even if it is already installed
             params_dict : dict of parameters passed to the install() procedure in the packages setup.py of all packages
@@ -3540,6 +3561,11 @@ class Wapt(object):
             download_only : don't install package, but only download them
             usecache : use the already downloaded packages if available in cache directory
             printhook: hook for progress print
+
+        Returns:
+            dict: with keys ['skipped', 'additional', 'remove', 'upgrade', 'install', 'unavailable'] and list of
+                        (package requirements, PackageEntry)
+
         >>> wapt = Wapt(config_filename='c:/tranquilit/wapt/tests/wapt-get.ini')
         >>> def nullhook(*args):
         ...     pass
@@ -3656,7 +3682,15 @@ class Wapt(object):
 
     def download_packages(self,package_requests,usecache=True,printhook=None):
         r"""Download a list of packages (requests are of the form packagename (>version) )
-           returns a dict of {"downloaded,"skipped","errors"}
+        returns a dict of {"downloaded,"skipped","errors"}
+
+        Args:
+            package_requests (str or list): list of packages to prefetch
+            usecache (boolean) : if True, don't download package if already in cache
+            printhook (func) : callback with signature report(received,total,speed,url) to display progress
+
+        Returns:
+            dict: with keys {"downloaded,"skipped","errors"} and list of cached file paths.
 
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
         >>> def nullhook(*args):
@@ -3744,9 +3778,15 @@ class Wapt(object):
 
     def remove(self,packages_list,force=False):
         """Removes a package giving its package name, unregister from local status DB
-            packages_list : packages to remove (package name,
+
+        Args:
+            packages_list (str or list or path): packages to remove (package name,
                             list of package requirement, package entry or development directory)
-            force : unregister package from local status database, even if uninstall has failed
+            force : if True, unregister package from local status database, even if uninstall has failed
+
+        Returns:
+            dict: {'errors': [], 'removed': []}
+
         """
         result = {'removed':[],'errors':[]}
         packages_list = ensure_list(packages_list)
@@ -3862,11 +3902,14 @@ class Wapt(object):
             return None
 
     def upgrade(self):
-        """\
-        Install "well known" host package from main repository if not already installed
-        then
-        Query localstatus database for packages with a version older than repository
+        """Install "well known" host package from main repository if not already installed
+        then query localstatus database for packages with a version older than repository
         and install all newest packages
+
+        Returns:
+            dict: {'upgrade': [], 'additional': [], 'downloads':
+                        {'downloaded': [], 'skipped': [], 'errors': []},
+                     'remove': [], 'skipped': [], 'install': [], 'errors': [], 'unavailable': []}
         """
         self.runstatus='Upgrade system'
         try:
@@ -3893,7 +3936,9 @@ class Wapt(object):
 
     def list_upgrade(self):
         """Returns a list of packages requirement which can be upgraded
-           Package,Current Version,Available version
+
+        Returns:
+           dict: {'additional': [], 'install': [], 'remove': [], 'upgrade': []}
         """
         result = dict(
             install=[],
@@ -3920,8 +3965,16 @@ class Wapt(object):
         return result
 
     def search(self,searchwords=[],exclude_host_repo=True,section_filter=None):
-        """Returns a list of packages which have the searchwords
-           in their description
+        """Returns a list of packages which have the searchwords in their description
+
+        Args:
+            searchwords (str or list): words to search in packages name or description
+            exclude_host_repo (boolean): if True, don't search in host repoisitories.
+            section_filter (str or list): restrict search to the specified package sections/categories
+
+        Returns:
+            list: list of packageEntry
+
         """
         available = self.waptdb.packages_search(searchwords=searchwords,exclude_host_repo=exclude_host_repo,section_filter=section_filter)
         installed = self.waptdb.installed(include_errors=True)
