@@ -660,8 +660,8 @@ def parse_wsusscan2(dl_uuid):
 
 #@app.route('/api/v2/download_wsusscan')
 def trigger_wsusscan2_download():
-    dryrun = bool(request.args.get('dryrun', False))
-    force = bool(request.args.get('force', False))
+    dryrun = bool(int(request.args.get('dryrun', 0)))
+    force = bool(int(request.args.get('force', 0)))
 
     logger.info('Triggering download_wsusscan with parameter ' + str(force))
 
