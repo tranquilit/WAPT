@@ -55,7 +55,7 @@ def httpdatetime2isodate(httpdate):
     >>> len(httpdatetime2isodate(last_modified)) == 19
     True
     """
-    return datetime2isodate(datetime.datetime(*_email_utils.parsedate(httpdate)[:6]))
+    return datetime2isodate(datetime.datetime(*email.utils.parsedate(httpdate)[:6]))
 
 __all__ += ['datetime2isodate']
 __all__ += ['isodate2datetime']
