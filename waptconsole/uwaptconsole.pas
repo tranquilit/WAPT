@@ -30,6 +30,7 @@ type
     ActAddADSGroups: TAction;
     ActHostsDeleteHostPackage: TAction;
     ActGerman: TAction;
+    ActWSUSSaveBuildRules: TAction;
     ActWUAAddForbiddenUpdate: TAction;
     ActWUAAddAllowedUpdate: TAction;
     ActWUAAddAllowedClassification: TAction;
@@ -43,11 +44,12 @@ type
     BitBtn13: TBitBtn;
     BitBtn15: TBitBtn;
     BitBtn9: TBitBtn;
+    ButHostSearch1: TBitBtn;
     cbForcedWSUSscanDownload: TCheckBox;
-    GridWUAAllowedWindowsUpdates: TSOGrid;
-    GridWUAForbiddenWindowsUpdates: TSOGrid;
+    GridWSUSAllowedWindowsUpdates: TSOGrid;
     GridWSUSScan: TSOGrid;
     GridWSUSAllowedClassifications: TSOGrid;
+    GridWSUSForbiddenWindowsUpdates: TSOGrid;
     Label10: TLabel;
     Label16: TLabel;
     Label17: TLabel;
@@ -345,6 +347,8 @@ type
     procedure ActTriggerWaptwua_scanExecute(Sender: TObject);
     procedure ActWSUSDowloadWSUSScanExecute(Sender: TObject);
     procedure ActWSUSRefreshCabHistoryExecute(Sender: TObject);
+    procedure ActWSUSSaveBuildRulesUpdate(Sender: TObject);
+    procedure ActWUAAddAllowedUpdateExecute(Sender: TObject);
     procedure ActWUADownloadSelectedUpdateUpdate(Sender: TObject);
     procedure ActEditGroupExecute(Sender: TObject);
     procedure ActEditHostPackageExecute(Sender: TObject);
@@ -504,6 +508,8 @@ type
     WUAProducts : ISuperObject;
     WUAWinUpdates : ISuperObject;
 
+    windows_updates_rulesUpdated: Boolean;
+
     constructor Create(TheOwner: TComponent); override;
 
     function Login: boolean;
@@ -520,8 +526,8 @@ uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, tisstrings, soutils,
   waptcommon, tiscommon, uVisCreateKey, uVisCreateWaptSetup, dmwaptpython,
   uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
   uvisgroupchoice, uviswaptdeploy, uvishostsupgrade, uVisAPropos,
-  uVisImportPackage, uVisWUAGroup, uVisWAPTWUAProducts, PythonEngine, Clipbrd,
-  RegExpr, tisinifiles;
+  uVisImportPackage, uVisWUAGroup, uVisWAPTWUAProducts, uviwuapackageselect,
+  PythonEngine, Clipbrd, RegExpr, tisinifiles, IdURI;
 
 {$R *.lfm}
 
@@ -1738,11 +1744,59 @@ begin
     GridWSUSScan.Data := res['result']
   else
     GridWSUSScan.Data := Nil;
+
+  res := WAPTServerJsonGet('api/v2/windows_updates_rules?group=default',[]);
+  if res.B['success'] then
+  begin
+    GridWSUSAllowedClassifications.Data := res.A['result'][0]['allowed_classifications'];
+    GridWSUSAllowedWindowsUpdates.Data := res.A['result'][0]['allowed_windows_updates'];
+    GridWSUSForbiddenWindowsUpdates.Data := res.A['result'][0]['forbidden_windows_updates'];
+    windows_updates_rulesUpdated := False;
+  end
+  else
+  begin
+    GridWSUSScan.Data := Nil;
+    GridWSUSAllowedClassifications.Data := Nil;
+    GridWSUSAllowedWindowsUpdates.Data := Nil;
+    GridWSUSForbiddenWindowsUpdates.Data := Nil;
+    windows_updates_rulesUpdated := False;
+  end;
+
+end;
+
+procedure TVisWaptGUI.ActWSUSSaveBuildRulesUpdate(Sender: TObject);
+begin
+  ActWSUSSaveBuildRules.Enabled := windows_updates_rulesUpdated;
+end;
+
+procedure TVisWaptGUI.ActWUAAddAllowedUpdateExecute(Sender: TObject);
+var
+  r:ISuperObject;
+begin
+  With TVisWUAPackageSelect.Create(Self) do
+  try
+    if ShowModal = mrOk then
+    begin
+      if GridWSUSAllowedWindowsUpdates.Data = Nil then
+        GridWSUSAllowedWindowsUpdates.Data :=  TSuperObject.Create(stArray);
+      for r in GridWinUpdates.SelectedRows do
+      begin
+        if SOArrayFindFirst(r,GridWSUSAllowedWindowsUpdates.Data,['update_id']) = Nil then
+        begin
+          GridWSUSAllowedWindowsUpdates.Data.AsArray.Add(r);
+          windows_updates_rulesUpdated := True;
+        end;
+      end;
+    end;
+  finally
+    GridWSUSAllowedWindowsUpdates.LoadData;
+    Free;
+  end;
 end;
 
 procedure TVisWaptGUI.ActWUADownloadSelectedUpdateUpdate(Sender: TObject);
 begin
-  //(Sender as TAction).Enabled:=GridWUAAllowedWindowsUpdates.SelectedCount>0;
+  //(Sender as TAction).Enabled:=GridWSUSAllowedWindowsUpdates.SelectedCount>0;
 end;
 
 procedure TVisWaptGUI.ActEditGroupExecute(Sender: TObject);
@@ -1953,7 +2007,7 @@ begin
     soresult := WAPTServerJsonGet('api/v2/windows_updates?%s',[soutils.Join('&', urlParams)]);
     winupdates := soResult['result'];
 
-    GridWUAAllowedWindowsUpdates.Data := winupdates;
+    GridWSUSAllowedWindowsUpdates.Data := winupdates;
 
   finally
     Screen.Cursor:=crDefault;
@@ -2618,10 +2672,12 @@ begin
       try
         edrepo_url.Text := inifile.ReadString('global', 'repo_url', '');
         edhttp_proxy.Text := inifile.ReadString('global', 'http_proxy', '');
+
         //edrepo_url.text := VarPythonAsString(conf.get('global','repo_url'));
         eddefault_package_prefix.Text :=
           inifile.ReadString('global', 'default_package_prefix', '');
         edwapt_server.Text := inifile.ReadString('global', 'wapt_server', '');
+
         eddefault_sources_root.Text :=
           inifile.ReadString('global', 'default_sources_root', '');
         edprivate_key.Text := inifile.ReadString('global', 'private_key', '');
@@ -3167,7 +3223,7 @@ end;
 procedure TVisWaptGUI.GridWinproductsChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
-  {GridWUAAllowedWindowsUpdates.Data := Nil;
+  {GridWSUSAllowedWindowsUpdates.Data := Nil;
   TimerWUALoadWinUpdates.Enabled:=False;
   TimerWUALoadWinUpdates.Enabled:=True;}
 end;
