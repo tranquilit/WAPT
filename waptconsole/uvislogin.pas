@@ -24,6 +24,7 @@ type
     procedure BitBtn1Click(Sender: TObject);
     procedure edPasswordKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure FormShow(Sender: TObject);
   private
     { private declarations }
   public
@@ -46,6 +47,12 @@ begin
   begin
     edPassword.SelectAll;
   end;
+end;
+
+procedure TVisLogin.FormShow(Sender: TObject);
+begin
+  if edUser.Text<>'' then
+    edPassword.SetFocus;
 end;
 
 procedure TVisLogin.BitBtn1Click(Sender: TObject);

@@ -12,6 +12,7 @@ object VisLogin: TVisLogin
   Font.Name = 'Tahoma'
   Font.Pitch = fpVariable
   Font.Quality = fqDraft
+  OnShow = FormShow
   Position = poScreenCenter
   ShowHint = True
   LCLVersion = '1.3'
@@ -23,13 +24,13 @@ object VisLogin: TVisLogin
     EchoMode = emPassword
     OnKeyDown = edPasswordKeyDown
     PasswordChar = '*'
-    TabOrder = 0
+    TabOrder = 3
   end
   object laPassword: TLabel
     Left = 6
     Height = 13
     Top = 64
-    Width = 81
+    Width = 88
     Caption = 'Server password :'
     ParentColor = False
   end
@@ -38,14 +39,14 @@ object VisLogin: TVisLogin
     Height = 21
     Top = 33
     Width = 124
-    TabOrder = 1
+    TabOrder = 2
     Text = 'admin'
   end
   object laPassword1: TLabel
     Left = 6
     Height = 13
     Top = 37
-    Width = 56
+    Width = 63
     Caption = 'Server user :'
     ParentColor = False
   end
@@ -53,7 +54,7 @@ object VisLogin: TVisLogin
     Left = 6
     Height = 13
     Top = 8
-    Width = 87
+    Width = 94
     Caption = 'Connect to server :'
     ParentColor = False
   end
@@ -63,7 +64,7 @@ object VisLogin: TVisLogin
     Top = 4
     Width = 154
     Enabled = False
-    TabOrder = 2
+    TabOrder = 0
     Text = 'edWaptServerName'
   end
   object ButtonPanel1: TButtonPanel
@@ -80,7 +81,7 @@ object VisLogin: TVisLogin
     CloseButton.Enabled = False
     CancelButton.Name = 'CancelButton'
     CancelButton.DefaultCaption = True
-    TabOrder = 3
+    TabOrder = 4
     ShowButtons = [pbOK, pbCancel]
   end
   object BitBtn1: TBitBtn
@@ -173,6 +174,6 @@ object VisLogin: TVisLogin
       000000000000000000000000000000000000000000000000000000000000
     }
     OnClick = BitBtn1Click
-    TabOrder = 4
+    TabOrder = 1
   end
 end
