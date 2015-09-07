@@ -887,6 +887,10 @@ msgctxt "tviswaptgui.actfrench.caption"
 msgid "French"
 msgstr "Français"
 
+#: tviswaptgui.actgerman.caption
+msgid "German"
+msgstr "Allemand"
+
 #: tviswaptgui.actgotohost.caption
 msgctxt "TVISWAPTGUI.ACTGOTOHOST.CAPTION"
 msgid "Search for host"
@@ -1102,10 +1106,22 @@ msgctxt "tviswaptgui.actwsusrefreshcabhistory.caption"
 msgid "Refresh WSUSscan cab history"
 msgstr "Actualiser l'historique des WSUSscan cab"
 
+#: tviswaptgui.actwuaaddallowedclassification.caption
+msgid "Add an allowed classification"
+msgstr "Autoriser des Classifications supplémentaires"
+
+#: tviswaptgui.actwuaaddallowedupdate.caption
+msgid "Add an Allowed Update"
+msgstr "Autoriser une mise à jour particulière"
+
+#: tviswaptgui.actwuaaddforbiddenupdate.caption
+msgid "Add a forbidden Windows Update"
+msgstr "Interdire une mise à jour particulière"
+
 #: tviswaptgui.actwuaallowselectedupdates.caption
 msgctxt "tviswaptgui.actwuaallowselectedupdates.caption"
 msgid "Allow Selected Updates"
-msgstr "Autoriser les mises à jour sléectionnées"
+msgstr "Autoriser les mises à jour sélectionnées"
 
 #: tviswaptgui.actwuadownloadselectedupdate.caption
 msgctxt "tviswaptgui.actwuadownloadselectedupdate.caption"
@@ -1182,13 +1198,21 @@ msgctxt "tviswaptgui.actwuasaveupdatesgroup.caption"
 msgid "Save"
 msgstr "Enregistrer"
 
+#: tviswaptgui.bitbtn10.caption
+msgid "Refresh Updates listing retrieval history"
+msgstr "Actualiser l'historique des Listes de Mises à jour"
+
+#: tviswaptgui.bitbtn9.caption
+msgid "Download Updates listing from Microsoft"
+msgstr "Télécharger une liste de mises à jour."
+
 #: tviswaptgui.caption
 msgid "WAPT console"
 msgstr "Console WAPT"
 
 #: tviswaptgui.cbforcedwsusscandownload.caption
-msgid "Force download even if aready up to date"
-msgstr ""
+msgid "Force download even if already up to date"
+msgstr "Forcer le téléchargement même si déjà à jour"
 
 #: tviswaptgui.cbhaserrors.caption
 msgctxt "TVISWAPTGUI.CBHASERRORS.CAPTION"
@@ -1261,8 +1285,8 @@ msgid "IP address"
 msgstr "Adresse IP"
 
 #: tviswaptgui.label10.caption
-msgid "Label10"
-msgstr ""
+msgid "Allowed Windows Updates Classifications"
+msgstr "Classifications de Mises à jour autorisées"
 
 #: tviswaptgui.label11.caption
 msgid "Number of hosts : "
@@ -1284,6 +1308,22 @@ msgstr "Filtre :"
 #: tviswaptgui.label15.caption
 msgid "Groups"
 msgstr "Groupes"
+
+#: tviswaptgui.label16.caption
+msgid "Label16"
+msgstr ""
+
+#: tviswaptgui.label17.caption
+msgid "Label17"
+msgstr ""
+
+#: tviswaptgui.label18.caption
+msgid "Allowed Windows Updates"
+msgstr "Mises à jour autorisées"
+
+#: tviswaptgui.label19.caption
+msgid "Forbidden Windows Updates"
+msgstr "Mises à jour interdites"
 
 #: tviswaptgui.label2.caption
 msgid "Manufacturer"
@@ -2090,6 +2130,16 @@ msgstr ""
 #| "if the package exists.\n"
 #| "\n"
 #| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -2156,6 +2206,12 @@ msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 #: uwaptconsoleres.rsconfirmimport
 #, fuzzy
 #| msgid ""
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 #| "Are you sure you want to import\n"
 #| "%s\n"
 #| " to your repository ?\n"
@@ -2590,6 +2646,12 @@ msgstr "Erreur lors de la création du paquet : %s"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
 #| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -2857,6 +2919,10 @@ msgstr "Upgrade de WAPT-GET grâce au dépôt de %s"
 #| "%s\n"
 #| "Error on WAPT server:\n"
 #| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -2867,6 +2933,12 @@ msgstr ""
 #: uwaptconsoleres.rswaptserveroldversion
 #, fuzzy
 #| msgid ""
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
 #| "Required server version: %s\n"

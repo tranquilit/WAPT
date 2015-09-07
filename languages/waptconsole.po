@@ -807,6 +807,10 @@ msgctxt "tviswaptgui.actfrench.caption"
 msgid "French"
 msgstr ""
 
+#: tviswaptgui.actgerman.caption
+msgid "German"
+msgstr ""
+
 #: tviswaptgui.actgotohost.caption
 msgctxt "TVISWAPTGUI.ACTGOTOHOST.CAPTION"
 msgid "Search for host"
@@ -1022,6 +1026,18 @@ msgctxt "tviswaptgui.actwsusrefreshcabhistory.caption"
 msgid "Refresh WSUSscan cab history"
 msgstr ""
 
+#: tviswaptgui.actwuaaddallowedclassification.caption
+msgid "Add an allowed classification"
+msgstr ""
+
+#: tviswaptgui.actwuaaddallowedupdate.caption
+msgid "Add an Allowed Update"
+msgstr ""
+
+#: tviswaptgui.actwuaaddforbiddenupdate.caption
+msgid "Add a forbidden Windows Update"
+msgstr ""
+
 #: tviswaptgui.actwuaallowselectedupdates.caption
 msgctxt "tviswaptgui.actwuaallowselectedupdates.caption"
 msgid "Allow Selected Updates"
@@ -1102,12 +1118,20 @@ msgctxt "TVISWAPTGUI.ACTWUASAVEUPDATESGROUP.CAPTION"
 msgid "Save"
 msgstr ""
 
+#: tviswaptgui.bitbtn10.caption
+msgid "Refresh Updates listing retrieval history"
+msgstr ""
+
+#: tviswaptgui.bitbtn9.caption
+msgid "Download Updates listing from Microsoft"
+msgstr ""
+
 #: tviswaptgui.caption
 msgid "WAPT console"
 msgstr ""
 
 #: tviswaptgui.cbforcedwsusscandownload.caption
-msgid "Force download even if aready up to date"
+msgid "Force download even if already up to date"
 msgstr ""
 
 #: tviswaptgui.cbhaserrors.caption
@@ -1181,7 +1205,7 @@ msgid "IP address"
 msgstr ""
 
 #: tviswaptgui.label10.caption
-msgid "Label10"
+msgid "Allowed Windows Updates Classifications"
 msgstr ""
 
 #: tviswaptgui.label11.caption
@@ -1203,6 +1227,22 @@ msgstr ""
 
 #: tviswaptgui.label15.caption
 msgid "Groups"
+msgstr ""
+
+#: tviswaptgui.label16.caption
+msgid "Label16"
+msgstr ""
+
+#: tviswaptgui.label17.caption
+msgid "Label17"
+msgstr ""
+
+#: tviswaptgui.label18.caption
+msgid "Allowed Windows Updates"
+msgstr ""
+
+#: tviswaptgui.label19.caption
+msgid "Forbidden Windows Updates"
 msgstr ""
 
 #: tviswaptgui.label2.caption
