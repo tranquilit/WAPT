@@ -347,7 +347,9 @@ type
     procedure ActTriggerWaptwua_scanExecute(Sender: TObject);
     procedure ActWSUSDowloadWSUSScanExecute(Sender: TObject);
     procedure ActWSUSRefreshCabHistoryExecute(Sender: TObject);
+    procedure ActWSUSSaveBuildRulesExecute(Sender: TObject);
     procedure ActWSUSSaveBuildRulesUpdate(Sender: TObject);
+    procedure ActWUAAddAllowedClassificationExecute(Sender: TObject);
     procedure ActWUAAddAllowedUpdateExecute(Sender: TObject);
     procedure ActWUADownloadSelectedUpdateUpdate(Sender: TObject);
     procedure ActEditGroupExecute(Sender: TObject);
@@ -526,8 +528,9 @@ uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, tisstrings, soutils,
   waptcommon, tiscommon, uVisCreateKey, uVisCreateWaptSetup, dmwaptpython,
   uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
   uvisgroupchoice, uviswaptdeploy, uvishostsupgrade, uVisAPropos,
-  uVisImportPackage, uVisWUAGroup, uVisWAPTWUAProducts, uviwuapackageselect,
-  PythonEngine, Clipbrd, RegExpr, tisinifiles, IdURI;
+  uVisImportPackage, uVisWUAGroup, uVisWAPTWUAProducts, uviswuapackageselect,
+  uVisWUAClassificationsSelect, PythonEngine, Clipbrd, RegExpr, tisinifiles,
+  IdURI;
 
 {$R *.lfm}
 
@@ -1764,10 +1767,51 @@ begin
 
 end;
 
+procedure TVisWaptGUI.ActWSUSSaveBuildRulesExecute(Sender: TObject);
+var
+  wsus_rules,WUAGroupRules,res :ISuperObject;
+begin
+  wsus_rules := TSuperObject.Create();
+  WUAGroupRules := TSuperObject.Create();
+  WUAGroupRules['allowed_classifications'] := GridWSUSAllowedClassifications.Data;
+  WUAGroupRules['allowed_windows_updates'] := GridWSUSAllowedWindowsUpdates.Data;
+  WUAGroupRules['forbidden_windows_updates'] := GridWSUSForbiddenWindowsUpdates.Data;
+  wsus_rules.S['group'] := 'default';//WUAGroup;
+  wsus_rules['rules']   := WUAGroupRules;
+  res := WAPTServerJsonPost('api/v2/windows_updates_rules?group=%s',[wsus_rules.S['group']],wsus_rules);
+  windows_updates_rulesUpdated := res.B['success'];
+end;
+
 procedure TVisWaptGUI.ActWSUSSaveBuildRulesUpdate(Sender: TObject);
 begin
   ActWSUSSaveBuildRules.Enabled := windows_updates_rulesUpdated;
 end;
+
+procedure TVisWaptGUI.ActWUAAddAllowedClassificationExecute(Sender: TObject);
+var
+  r:ISuperObject;
+begin
+  With TVisWUAClassificationsSelect.Create(Self) do
+  try
+    if ShowModal = mrOk then
+    begin
+      if GridWSUSAllowedClassifications.Data = Nil then
+        GridWSUSAllowedClassifications.Data :=  TSuperObject.Create(stArray);
+      for r in GridWinClassifications.SelectedRows do
+      begin
+        if SOArrayFindFirst(r,GridWSUSAllowedClassifications.Data,['id']) = Nil then
+        begin
+          GridWSUSAllowedClassifications.Data.AsArray.Add(r);
+          windows_updates_rulesUpdated := True;
+        end;
+      end;
+    end;
+  finally
+    GridWSUSAllowedClassifications.LoadData;
+    Free;
+  end;
+end;
+
 
 procedure TVisWaptGUI.ActWUAAddAllowedUpdateExecute(Sender: TObject);
 var

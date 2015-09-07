@@ -2042,13 +2042,13 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgPrivateRepo: TTabSheet
       Caption = 'Private repository'
-      ClientHeight = 587
-      ClientWidth = 1407
+      ClientHeight = 662
+      ClientWidth = 1269
       object GridPackages: TSOGrid
         Left = 0
-        Height = 557
+        Height = 632
         Top = 30
-        Width = 1111
+        Width = 973
         OnGetText = GridGroupsGetText
         Align = alClient
         Color = clWhite
@@ -2129,8 +2129,8 @@ object VisWaptGUI: TVisWaptGUI
         OnMeasureItem = GridGroupsMeasureItem
       end
       object Splitter3: TSplitter
-        Left = 1111
-        Height = 557
+        Left = 973
+        Height = 632
         Top = 30
         Width = 6
         Align = alRight
@@ -2140,11 +2140,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 30
         Top = 0
-        Width = 1407
+        Width = 1269
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 1407
+        ClientWidth = 1269
         TabOrder = 0
         object EdSearch: TEdit
           Left = 4
@@ -2332,20 +2332,20 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
       object Panel2: TPanel
-        Left = 1117
-        Height = 557
+        Left = 979
+        Height = 632
         Top = 30
         Width = 290
         Align = alRight
         Alignment = taRightJustify
         BevelOuter = bvNone
-        ClientHeight = 557
+        ClientHeight = 632
         ClientWidth = 290
         TabOrder = 2
         object MemoGroupeDescription: TMemo
           Left = 0
           Height = 300
-          Top = 257
+          Top = 332
           Width = 290
           Align = alBottom
           TabOrder = 0
@@ -2524,78 +2524,19 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 0
-            Text = '_id'
-            Width = 100
-            PropertyName = '_id'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 1
-            Tag = 7
-            Text = 'Forced'
-            PropertyName = 'forced'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 2
-            Tag = 8
-            Text = 'Skipped'
-            Width = 52
-            PropertyName = 'skipped'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 3
-            Tag = 9
-            Text = 'cablist'
-            Width = 100
-            PropertyName = 'cablist'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 4
-            Text = 'Reason'
-            Width = 100
-            PropertyName = 'reason'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 5
-            Text = 'uuid'
-            Width = 100
-            PropertyName = 'uuid'
-          end        
-          item
-            Alignment = taRightJustify
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 6
-            Text = 'Expected File size'
-            Width = 100
-            PropertyName = 'target_size'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 7
-            Text = 'file_timestamp'
-            Width = 13
-            PropertyName = 'file_timestamp'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 8
             Text = 'id'
             Width = 100
             PropertyName = 'id'
           end        
           item
-            Position = 9
+            Position = 1
             Text = 'Description'
             Width = 158
             PropertyName = 'name'
           end>
         Header.DefaultHeight = 17
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-        Header.SortColumn = 9
+        Header.SortColumn = 1
         Header.Style = hsFlatButtons
         Images = ImageList1
         PopupMenu = PopupGridWSUSScan
@@ -6611,6 +6552,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActWUAAddAllowedClassification: TAction
       Caption = 'Add Allowed classifications'
+      OnExecute = ActWUAAddAllowedClassificationExecute
     end
     object ActWUAAddAllowedUpdate: TAction
       Caption = 'Add Allowed Updates'
@@ -6622,6 +6564,7 @@ object VisWaptGUI: TVisWaptGUI
     object ActWSUSSaveBuildRules: TAction
       Caption = 'Save and build rules package'
       ImageIndex = 35
+      OnExecute = ActWSUSSaveBuildRulesExecute
       OnUpdate = ActWSUSSaveBuildRulesUpdate
     end
   end

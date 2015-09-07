@@ -47,6 +47,9 @@ msgid ""
 "Leave empty for auto DNS discovery\n"
 "Leave empty for auto DNS discovery\n"
 "Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
@@ -556,15 +559,15 @@ msgid "edWaptServerName"
 msgstr ""
 
 #: tvislogin.label1.caption
-msgid "Server connection"
+msgid "Connect to server :"
 msgstr ""
 
 #: tvislogin.lapassword.caption
-msgid "Server password"
+msgid "Server password :"
 msgstr ""
 
 #: tvislogin.lapassword1.caption
-msgid "Server user"
+msgid "Server user :"
 msgstr ""
 
 #: tvisprivatekeyauth.caption
@@ -1111,16 +1114,20 @@ msgctxt "tviswaptgui.actwsusrefreshcabhistory.caption"
 msgid "Refresh WSUSscan cab history"
 msgstr ""
 
+#: tviswaptgui.actwsussavebuildrules.caption
+msgid "Save and build rules package"
+msgstr ""
+
 #: tviswaptgui.actwuaaddallowedclassification.caption
-msgid "Add an allowed classification"
+msgid "Add Allowed classifications"
 msgstr ""
 
 #: tviswaptgui.actwuaaddallowedupdate.caption
-msgid "Add an Allowed Update"
+msgid "Add Allowed Updates"
 msgstr ""
 
 #: tviswaptgui.actwuaaddforbiddenupdate.caption
-msgid "Add a forbidden Windows Update"
+msgid "Add Forbidden Windows Update"
 msgstr ""
 
 #: tviswaptgui.actwuaallowselectedupdates.caption
@@ -1563,6 +1570,65 @@ msgstr ""
 
 #: tviswaptgui.toolbutton6.caption
 msgid "ToolButton6"
+msgstr ""
+
+#: tviswuaclassificationsselect.caption
+msgid "Windows Updates Classification selection"
+msgstr ""
+
+#: tviswuaclassificationsselect.label1.caption
+msgid "Classifications"
+msgstr ""
+
+#: tviswuapackageselect.actsearch.caption
+msgctxt "tviswuapackageselect.actsearch.caption"
+msgid "Search"
+msgstr ""
+
+#: tviswuapackageselect.button1.caption
+msgid "Products filtering"
+msgstr ""
+
+#: tviswuapackageselect.caption
+msgid "Windows Updates selection"
+msgstr ""
+
+#: tviswuapackageselect.cbwucritical.caption
+msgctxt "tviswuapackageselect.cbwucritical.caption"
+msgid "Critical"
+msgstr ""
+
+#: tviswuapackageselect.cbwuimportant.caption
+msgctxt "tviswuapackageselect.cbwuimportant.caption"
+msgid "Important"
+msgstr ""
+
+#: tviswuapackageselect.cbwulow.caption
+msgctxt "tviswuapackageselect.cbwulow.caption"
+msgid "Low"
+msgstr ""
+
+#: tviswuapackageselect.cbwumoderate.caption
+msgctxt "tviswuapackageselect.cbwumoderate.caption"
+msgid "Moderate"
+msgstr ""
+
+#: tviswuapackageselect.cbwuother.caption
+msgctxt "tviswuapackageselect.cbwuother.caption"
+msgid "Other"
+msgstr ""
+
+#: tviswuapackageselect.cbwuproductsshowall.caption
+msgctxt "tviswuapackageselect.cbwuproductsshowall.caption"
+msgid "Show all products"
+msgstr ""
+
+#: tviswuapackageselect.label1.caption
+msgid "Classifications  and products"
+msgstr ""
+
+#: tviswuapackageselect.label2.caption
+msgid "Filter"
 msgstr ""
 
 #: tviswuarules.actaddadsgroups.caption

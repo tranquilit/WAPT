@@ -1,5 +1,4 @@
- Jessica <jgreulich@tranquil.it>, 2015.
-msgid " Uncheck \"Use simple file sharing\").Only required if a proxy is needed.Only required if a proxy is needed.Only required if a proxy is needed."
+msgid " Uncheck \"Use simple file sharing\").Only required if a proxy is needed.Only required if a proxy is needed.Only required if a proxy is needed.Leave empty for auto DNS discoveryLeave empty for auto DNS discoveryLeave empty for auto DNS discovery"
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
@@ -502,22 +501,28 @@ msgstr "WAPT Authentifizierung"
 
 #: tvislogin.eduser.text
 msgid "admin"
-msgstr "Administrator"
+msgstr ""
 
 #: tvislogin.edwaptservername.text
 msgid "edWaptServerName"
 msgstr ""
 
 #: tvislogin.label1.caption
-msgid "Server connection"
+#, fuzzy
+#| msgid "Server connection"
+msgid "Connect to server :"
 msgstr "Server-Verbindung"
 
 #: tvislogin.lapassword.caption
-msgid "Server password"
+#, fuzzy
+#| msgid "Server password"
+msgid "Server password :"
 msgstr "Server Passwort"
 
 #: tvislogin.lapassword1.caption
-msgid "Server user"
+#, fuzzy
+#| msgid "Server user"
+msgid "Server user :"
 msgstr "Server-Benutzer"
 
 #: tvisprivatekeyauth.caption
@@ -1064,16 +1069,20 @@ msgctxt "tviswaptgui.actwsusrefreshcabhistory.caption"
 msgid "Refresh WSUSscan cab history"
 msgstr "Aktualsiere die WSUScan Geschichte"
 
+#: tviswaptgui.actwsussavebuildrules.caption
+msgid "Save and build rules package"
+msgstr ""
+
 #: tviswaptgui.actwuaaddallowedclassification.caption
-msgid "Add an allowed classification"
+msgid "Add Allowed classifications"
 msgstr ""
 
 #: tviswaptgui.actwuaaddallowedupdate.caption
-msgid "Add an Allowed Update"
+msgid "Add Allowed Updates"
 msgstr ""
 
 #: tviswaptgui.actwuaaddforbiddenupdate.caption
-msgid "Add a forbidden Windows Update"
+msgid "Add Forbidden Windows Update"
 msgstr ""
 
 #: tviswaptgui.actwuaallowselectedupdates.caption
@@ -1521,6 +1530,65 @@ msgstr "ToolButton"
 #: tviswaptgui.toolbutton6.caption
 msgid "ToolButton6"
 msgstr "ToolButton"
+
+#: tviswuaclassificationsselect.caption
+msgid "Windows Updates Classification selection"
+msgstr ""
+
+#: tviswuaclassificationsselect.label1.caption
+msgid "Classifications"
+msgstr ""
+
+#: tviswuapackageselect.actsearch.caption
+msgctxt "tviswuapackageselect.actsearch.caption"
+msgid "Search"
+msgstr "Suche"
+
+#: tviswuapackageselect.button1.caption
+msgid "Products filtering"
+msgstr ""
+
+#: tviswuapackageselect.caption
+msgid "Windows Updates selection"
+msgstr ""
+
+#: tviswuapackageselect.cbwucritical.caption
+msgctxt "tviswuapackageselect.cbwucritical.caption"
+msgid "Critical"
+msgstr "Kritisch"
+
+#: tviswuapackageselect.cbwuimportant.caption
+msgctxt "tviswuapackageselect.cbwuimportant.caption"
+msgid "Important"
+msgstr "Interessant"
+
+#: tviswuapackageselect.cbwulow.caption
+msgctxt "tviswuapackageselect.cbwulow.caption"
+msgid "Low"
+msgstr "Niedrig"
+
+#: tviswuapackageselect.cbwumoderate.caption
+msgctxt "tviswuapackageselect.cbwumoderate.caption"
+msgid "Moderate"
+msgstr "Angemessen"
+
+#: tviswuapackageselect.cbwuother.caption
+msgctxt "tviswuapackageselect.cbwuother.caption"
+msgid "Other"
+msgstr "Andere, sostiges"
+
+#: tviswuapackageselect.cbwuproductsshowall.caption
+msgctxt "tviswuapackageselect.cbwuproductsshowall.caption"
+msgid "Show all products"
+msgstr "Zeige alle Produkte"
+
+#: tviswuapackageselect.label1.caption
+msgid "Classifications  and products"
+msgstr ""
+
+#: tviswuapackageselect.label2.caption
+msgid "Filter"
+msgstr ""
 
 #: tviswuarules.actaddadsgroups.caption
 msgctxt "TVISWUARULES.ACTADDADSGROUPS.CAPTION"

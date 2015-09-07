@@ -14,7 +14,8 @@ uses
   uvislogin, uvisprivatekeyauth, uvisloading, uviswaptconfig,
   uvischangepassword, uviswaptdeploy, uvishostsupgrade, uVisAPropos,
   uVisImportPackage, uwaptconsoleres,waptcommon, uVisWUAGroup,
-  uVisWAPTWUAProducts, uviswuarules, uviwuapackageselect;
+  uVisWAPTWUAProducts, uviswuarules, uviswuapackageselect,
+  uVisWUAClassificationsSelect;
 
 {$R *.res}
 

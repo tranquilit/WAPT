@@ -71,6 +71,9 @@ msgid ""
 "Leave empty for auto DNS discovery\n"
 "Leave empty for auto DNS discovery\n"
 "Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
@@ -604,15 +607,21 @@ msgid "edWaptServerName"
 msgstr "edWaptServerName"
 
 #: tvislogin.label1.caption
-msgid "Server connection"
+#, fuzzy
+#| msgid "Server connection"
+msgid "Connect to server :"
 msgstr "Connexion au serveur"
 
 #: tvislogin.lapassword.caption
-msgid "Server password"
+#, fuzzy
+#| msgid "Server password"
+msgid "Server password :"
 msgstr "Mot de passe serveur"
 
 #: tvislogin.lapassword1.caption
-msgid "Server user"
+#, fuzzy
+#| msgid "Server user"
+msgid "Server user :"
 msgstr "Utilisateur"
 
 #: tvisprivatekeyauth.caption
@@ -1168,16 +1177,26 @@ msgctxt "tviswaptgui.actwsusrefreshcabhistory.caption"
 msgid "Refresh WSUSscan cab history"
 msgstr "Actualiser l'historique des WSUSscan cab"
 
+#: tviswaptgui.actwsussavebuildrules.caption
+msgid "Save and build rules package"
+msgstr ""
+
 #: tviswaptgui.actwuaaddallowedclassification.caption
-msgid "Add an allowed classification"
+#, fuzzy
+#| msgid "Add an allowed classification"
+msgid "Add Allowed classifications"
 msgstr "Autoriser des Classifications supplémentaires"
 
 #: tviswaptgui.actwuaaddallowedupdate.caption
-msgid "Add an Allowed Update"
+#, fuzzy
+#| msgid "Add an Allowed Update"
+msgid "Add Allowed Updates"
 msgstr "Autoriser une mise à jour particulière"
 
 #: tviswaptgui.actwuaaddforbiddenupdate.caption
-msgid "Add a forbidden Windows Update"
+#, fuzzy
+#| msgid "Add a forbidden Windows Update"
+msgid "Add Forbidden Windows Update"
 msgstr "Interdire une mise à jour particulière"
 
 #: tviswaptgui.actwuaallowselectedupdates.caption
@@ -1628,6 +1647,65 @@ msgstr ""
 
 #: tviswaptgui.toolbutton6.caption
 msgid "ToolButton6"
+msgstr ""
+
+#: tviswuaclassificationsselect.caption
+msgid "Windows Updates Classification selection"
+msgstr ""
+
+#: tviswuaclassificationsselect.label1.caption
+msgid "Classifications"
+msgstr ""
+
+#: tviswuapackageselect.actsearch.caption
+msgctxt "tviswuapackageselect.actsearch.caption"
+msgid "Search"
+msgstr "Rechercher"
+
+#: tviswuapackageselect.button1.caption
+msgid "Products filtering"
+msgstr ""
+
+#: tviswuapackageselect.caption
+msgid "Windows Updates selection"
+msgstr ""
+
+#: tviswuapackageselect.cbwucritical.caption
+msgctxt "tviswuapackageselect.cbwucritical.caption"
+msgid "Critical"
+msgstr "Critique"
+
+#: tviswuapackageselect.cbwuimportant.caption
+msgctxt "tviswuapackageselect.cbwuimportant.caption"
+msgid "Important"
+msgstr "Important"
+
+#: tviswuapackageselect.cbwulow.caption
+msgctxt "tviswuapackageselect.cbwulow.caption"
+msgid "Low"
+msgstr "Basse"
+
+#: tviswuapackageselect.cbwumoderate.caption
+msgctxt "tviswuapackageselect.cbwumoderate.caption"
+msgid "Moderate"
+msgstr "Modérée"
+
+#: tviswuapackageselect.cbwuother.caption
+msgctxt "tviswuapackageselect.cbwuother.caption"
+msgid "Other"
+msgstr "Autre"
+
+#: tviswuapackageselect.cbwuproductsshowall.caption
+msgctxt "tviswuapackageselect.cbwuproductsshowall.caption"
+msgid "Show all products"
+msgstr "Montrer tous les produits"
+
+#: tviswuapackageselect.label1.caption
+msgid "Classifications  and products"
+msgstr ""
+
+#: tviswuapackageselect.label2.caption
+msgid "Filter"
 msgstr ""
 
 #: tviswuarules.actaddadsgroups.caption
@@ -2382,6 +2460,46 @@ msgstr ""
 #| "if the package exists.\n"
 #| "\n"
 #| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -2448,6 +2566,30 @@ msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 #: uwaptconsoleres.rsconfirmimport
 #, fuzzy
 #| msgid ""
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 #| "Are you sure you want to import\n"
 #| "%s\n"
 #| " to your repository ?\n"
@@ -3110,6 +3252,30 @@ msgstr "Erreur lors de la création du paquet : %s"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
 #| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -3453,6 +3619,22 @@ msgstr "Upgrade de WAPT-GET grâce au dépôt de %s"
 #| "%s\n"
 #| "Error on WAPT server:\n"
 #| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -3463,6 +3645,30 @@ msgstr ""
 #: uwaptconsoleres.rswaptserveroldversion
 #, fuzzy
 #| msgid ""
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
 #| "Required server version: %s\n"

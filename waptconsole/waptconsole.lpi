@@ -25,7 +25,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="3"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="11"/>
+      <BuildNr Value="12"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -83,7 +83,7 @@
         <PackageName Value="LCL"/>
       </Item13>
     </RequiredPackages>
-    <Units Count="21">
+    <Units Count="22">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -239,12 +239,18 @@
         <UnitName Value="uviswuarules"/>
       </Unit19>
       <Unit20>
-        <Filename Value="uviwuapackageselect.pas"/>
+        <Filename Value="uviswuaclassificationsselect.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="VisWUAPackageSelect"/>
+        <ComponentName Value="VisWUAClassificationsSelect"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uviwuapackageselect"/>
+        <UnitName Value="uVisWUAClassificationsSelect"/>
       </Unit20>
+      <Unit21>
+        <Filename Value="uviswuapackageselect.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+        <UnitName Value="uviswuapackageselect"/>
+      </Unit21>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
