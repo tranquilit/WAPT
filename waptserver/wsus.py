@@ -1056,10 +1056,13 @@ def get_selected_products():
 #@app.route('/api/v2/windows_updates_classifications')
 def windows_updates_classifications():
     result = []
+    ids = request.args.get('id',None)
+    if ids is not None:
+        ids = ensure_list(ids)
     for k in update_classifications_id:
-        result.append(dict(id=k,name=update_classifications_id[k]))
+        if ids is None or k in ids:
+            result.append(dict(id=k,name=update_classifications_id[k]))
     return make_response(msg = _('Win updates classifications'),result=result)
-
 
 
 #@app.route('/api/v2/windows_updates')
