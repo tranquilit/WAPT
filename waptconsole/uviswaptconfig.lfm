@@ -1,287 +1,487 @@
 object VisWAPTConfig: TVisWAPTConfig
-  Left = 419
-  Height = 370
-  Top = 371
-  Width = 507
+  Left = 683
+  Height = 489
+  Top = 282
+  Width = 523
+  AutoSize = True
   BorderStyle = bsDialog
   Caption = 'Locale WAPT configuration'
-  ClientHeight = 370
-  ClientWidth = 507
+  ClientHeight = 489
+  ClientWidth = 523
   Font.CharSet = ANSI_CHARSET
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Pitch = fpVariable
   Font.Quality = fqDraft
+  OnShow = FormShow
   Position = poMainFormCenter
   ShowHint = True
   LCLVersion = '1.3'
   object ButtonPanel1: TButtonPanel
     Left = 6
     Height = 34
-    Top = 330
-    Width = 495
+    Top = 449
+    Width = 511
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True
     HelpButton.Name = 'HelpButton'
-    HelpButton.DefaultCaption = True
+    HelpButton.Caption = '&Show config file'
+    HelpButton.DefaultCaption = False
+    HelpButton.OnClick = HelpButtonClick
     CloseButton.Name = 'CloseButton'
     CloseButton.DefaultCaption = True
     CloseButton.Enabled = False
     CancelButton.Name = 'CancelButton'
     CancelButton.DefaultCaption = True
-    TabOrder = 7
-    ShowButtons = [pbOK, pbCancel]
-  end
-  object eddefault_package_prefix: TLabeledEdit
-    Left = 279
-    Height = 21
-    Hint = 'E.g. : tis'#13#10'Which prefix to use when naming created or duplicated packages'
-    Top = 124
-    Width = 80
-    EditLabel.AnchorSideTop.Control = eddefault_package_prefix
-    EditLabel.AnchorSideTop.Side = asrCenter
-    EditLabel.AnchorSideRight.Control = eddefault_package_prefix
-    EditLabel.AnchorSideBottom.Control = eddefault_package_prefix
-    EditLabel.AnchorSideBottom.Side = asrBottom
-    EditLabel.Left = 74
-    EditLabel.Height = 13
-    EditLabel.Top = 128
-    EditLabel.Width = 202
-    EditLabel.Caption = 'Prefix for naming created WAPT packages'
-    EditLabel.ParentColor = False
-    LabelPosition = lpLeft
-    TabOrder = 5
-  end
-  object eddefault_sources_root: TDirectoryEdit
-    Left = 280
-    Height = 21
-    Hint = 'E.g. : c:\waptdev'#13#10'Local directory for saving package development projects'
-    Top = 100
-    Width = 196
-    ShowHidden = False
-    ButtonWidth = 23
-    NumGlyphs = 1
-    MaxLength = 0
-    TabOrder = 4
-  end
-  object Label1: TLabel
-    Left = 15
-    Height = 13
-    Top = 104
-    Width = 194
-    Caption = 'Base directory for package development'
-    ParentColor = False
-  end
-  object edrepo_url: TLabeledEdit
-    Left = 280
-    Height = 21
-    Hint = 'E.g. : http://wapt.tranquilit.local/wapt'#13#10'Leave empty for auto DNS discovery'
-    Top = 4
-    Width = 220
-    EditLabel.AnchorSideTop.Control = edrepo_url
-    EditLabel.AnchorSideTop.Side = asrCenter
-    EditLabel.AnchorSideRight.Control = edrepo_url
-    EditLabel.AnchorSideBottom.Control = edrepo_url
-    EditLabel.AnchorSideBottom.Side = asrBottom
-    EditLabel.Left = 149
-    EditLabel.Height = 13
-    EditLabel.Top = 8
-    EditLabel.Width = 128
-    EditLabel.Caption = 'URL to the main repository'
-    EditLabel.ParentColor = False
-    LabelPosition = lpLeft
-    TabOrder = 0
-  end
-  object edprivate_key: TFileNameEdit
-    Left = 279
-    Height = 21
-    Hint = 'E.g. : c:\private\tranquilit.pem'#13#10'Path to private key for signing new packages.'#13#10'Only suitable for development hosts.'
-    Top = 148
-    Width = 196
-    Filter = 'Fichiers PEM|*.pem|Tous les fichiers|*.*'
-    FilterIndex = 0
-    HideDirectories = False
-    ButtonWidth = 23
-    NumGlyphs = 1
-    MaxLength = 0
-    TabOrder = 6
-  end
-  object Label2: TLabel
-    Left = 51
-    Height = 13
-    Top = 152
-    Width = 193
-    Caption = 'Path to private key for signing packages'
-    ParentColor = False
-  end
-  object edtemplates_repo_url: TLabeledEdit
-    Left = 279
-    Height = 21
-    Hint = 'E.g. : http://wapt.tranquil.it/wapt'#13#10'Used by WAPT console for duplicating packages.'
-    Top = 72
-    Width = 220
-    EditLabel.AnchorSideTop.Control = edtemplates_repo_url
-    EditLabel.AnchorSideTop.Side = asrCenter
-    EditLabel.AnchorSideRight.Control = edtemplates_repo_url
-    EditLabel.AnchorSideBottom.Control = edtemplates_repo_url
-    EditLabel.AnchorSideBottom.Side = asrBottom
-    EditLabel.Left = 96
-    EditLabel.Height = 13
-    EditLabel.Top = 76
-    EditLabel.Width = 180
-    EditLabel.Caption = 'URL to the package model repository '
-    EditLabel.ParentColor = False
-    LabelPosition = lpLeft
-    TabOrder = 3
-    Text = 'http://wapt.tranquil.it/wapt'
-  end
-  object edwapt_server: TLabeledEdit
-    Left = 280
-    Height = 21
-    Hint = 'E.g. : http://srvwapt.tranquilit.local:8080'#13#10'Leave empty if you don''t want a central management server.'
-    Top = 28
-    Width = 220
-    EditLabel.AnchorSideTop.Control = edwapt_server
-    EditLabel.AnchorSideTop.Side = asrCenter
-    EditLabel.AnchorSideRight.Control = edwapt_server
-    EditLabel.AnchorSideBottom.Control = edwapt_server
-    EditLabel.AnchorSideBottom.Side = asrBottom
-    EditLabel.Left = 171
-    EditLabel.Height = 13
-    EditLabel.Top = 32
-    EditLabel.Width = 106
-    EditLabel.Caption = 'URL du serveur WAPT'
-    EditLabel.ParentColor = False
-    LabelPosition = lpLeft
     TabOrder = 1
+    ShowButtons = [pbOK, pbCancel, pbHelp]
   end
-  object edhttp_proxy: TLabeledEdit
-    Left = 280
-    Height = 21
-    Hint = 'E.g. : http://proxy.tranquilit.local:3128'#13#10'Only required if a proxy is needed.'
-    Top = 216
-    Width = 220
-    EditLabel.AnchorSideTop.Control = edhttp_proxy
-    EditLabel.AnchorSideTop.Side = asrCenter
-    EditLabel.AnchorSideRight.Control = edhttp_proxy
-    EditLabel.AnchorSideBottom.Control = edhttp_proxy
-    EditLabel.AnchorSideBottom.Side = asrBottom
-    EditLabel.Left = 137
-    EditLabel.Height = 13
-    EditLabel.Top = 220
-    EditLabel.Width = 140
-    EditLabel.Caption = 'http proxy to use (if needed)'
-    EditLabel.ParentColor = False
-    LabelPosition = lpLeft
-    TabOrder = 2
+  object panClient: TPanel
+    Left = 0
+    Height = 443
+    Top = 0
+    Width = 523
+    Align = alClient
+    AutoSize = True
+    BevelOuter = bvNone
+    Caption = 'panClient'
+    ClientHeight = 443
+    ClientWidth = 523
+    TabOrder = 0
+    object Panel1: TPanel
+      Left = 2
+      Height = 313
+      Top = 2
+      Width = 519
+      Align = alClient
+      BorderSpacing.Around = 2
+      BevelOuter = bvNone
+      ClientHeight = 313
+      ClientWidth = 519
+      Constraints.MinHeight = 286
+      TabOrder = 0
+      object eddefault_package_prefix: TLabeledEdit
+        Left = 276
+        Height = 21
+        Hint = 'E.g. : tis'#13#10'Which prefix to use when naming created or duplicated packages'
+        Top = 146
+        Width = 80
+        EditLabel.AnchorSideTop.Control = eddefault_package_prefix
+        EditLabel.AnchorSideTop.Side = asrCenter
+        EditLabel.AnchorSideRight.Control = eddefault_package_prefix
+        EditLabel.AnchorSideBottom.Side = asrBottom
+        EditLabel.Left = 71
+        EditLabel.Height = 13
+        EditLabel.Top = 150
+        EditLabel.Width = 202
+        EditLabel.Caption = 'Prefix for naming created WAPT packages'
+        EditLabel.ParentColor = False
+        LabelPosition = lpLeft
+        TabOrder = 1
+      end
+      object eddefault_sources_root: TDirectoryEdit
+        Left = 277
+        Height = 21
+        Hint = 'E.g. : c:\waptdev'#13#10'Local directory for saving package development projects'
+        Top = 122
+        Width = 196
+        ShowHidden = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        MaxLength = 0
+        TabOrder = 2
+      end
+      object edprivate_key: TFileNameEdit
+        Left = 276
+        Height = 21
+        Hint = 'E.g. : c:\private\tranquilit.pem'#13#10'Path to private key for signing new packages.'#13#10'Only suitable for development hosts.'
+        Top = 170
+        Width = 196
+        Filter = 'Fichiers PEM|*.pem|Tous les fichiers|*.*'
+        FilterIndex = 0
+        HideDirectories = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        MaxLength = 0
+        TabOrder = 3
+      end
+      object Label2: TLabel
+        Left = 0
+        Height = 13
+        Top = 174
+        Width = 273
+        Alignment = taRightJustify
+        AutoSize = False
+        Caption = 'Path to private key for signing packages'
+        ParentColor = False
+      end
+      object edtemplates_repo_url: TLabeledEdit
+        Left = 276
+        Height = 21
+        Hint = 'E.g. : http://wapt.tranquil.it/wapt'#13#10'Used by WAPT console for duplicating packages.'
+        Top = 94
+        Width = 220
+        EditLabel.AnchorSideTop.Control = edtemplates_repo_url
+        EditLabel.AnchorSideTop.Side = asrCenter
+        EditLabel.AnchorSideRight.Control = edtemplates_repo_url
+        EditLabel.AnchorSideBottom.Side = asrBottom
+        EditLabel.Left = 93
+        EditLabel.Height = 13
+        EditLabel.Top = 98
+        EditLabel.Width = 180
+        EditLabel.Caption = 'URL to the package model repository '
+        EditLabel.ParentColor = False
+        LabelPosition = lpLeft
+        TabOrder = 0
+        Text = 'http://wapt.tranquil.it/wapt'
+      end
+      object edhttp_proxy: TLabeledEdit
+        Left = 277
+        Height = 21
+        Hint = 'E.g. : http://proxy.tranquilit.local:3128'#13#10'Only required if a proxy is needed.'
+        Top = 238
+        Width = 220
+        EditLabel.AnchorSideTop.Control = edhttp_proxy
+        EditLabel.AnchorSideTop.Side = asrCenter
+        EditLabel.AnchorSideRight.Control = edhttp_proxy
+        EditLabel.AnchorSideBottom.Side = asrBottom
+        EditLabel.Left = 134
+        EditLabel.Height = 13
+        EditLabel.Top = 242
+        EditLabel.Width = 140
+        EditLabel.Caption = 'http proxy to use (if needed)'
+        EditLabel.ParentColor = False
+        LabelPosition = lpLeft
+        TabOrder = 4
+      end
+      object Label3: TLabel
+        Left = 3
+        Height = 13
+        Top = 78
+        Width = 131
+        Caption = 'For package development :'
+        ParentColor = False
+      end
+      object cbUseProxyForTemplate: TCheckBox
+        Left = 278
+        Height = 17
+        Hint = 'Activate proxy when accessing the model repository'
+        Top = 262
+        Width = 20
+        Checked = True
+        State = cbChecked
+        TabOrder = 5
+      end
+      object Label7: TLabel
+        Left = 5
+        Height = 13
+        Top = 218
+        Width = 97
+        Caption = 'HTTP proxy settings'
+        ParentColor = False
+      end
+      object Label6: TLabel
+        AnchorSideRight.Control = cbUseProxyForTemplate
+        Left = 3
+        Height = 13
+        Top = 262
+        Width = 272
+        Alignment = taRightJustify
+        Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.Right = 3
+        Caption = 'Activate proxy when accessing the model repository'
+        ParentColor = False
+      end
+      object Label1: TLabel
+        Left = 5
+        Height = 13
+        Top = 126
+        Width = 266
+        Alignment = taRightJustify
+        AutoSize = False
+        Caption = 'Base directory for package development'
+        ParentColor = False
+      end
+      object cbAdvanced: TCheckBox
+        Left = 3
+        Height = 17
+        Top = 294
+        Width = 109
+        Caption = 'Advanced settings'
+        OnClick = cbAdvancedClick
+        TabOrder = 6
+      end
+      object edServerAddress: TLabeledEdit
+        Left = 174
+        Height = 21
+        Hint = 'E.g. : wapt.tranquilit.local'#13#10'Leave empty for auto discovery with DNS queries'
+        Top = 6
+        Width = 220
+        EditLabel.AnchorSideTop.Control = edServerAddress
+        EditLabel.AnchorSideTop.Side = asrCenter
+        EditLabel.AnchorSideRight.Control = edServerAddress
+        EditLabel.AnchorSideBottom.Side = asrBottom
+        EditLabel.Left = 24
+        EditLabel.Height = 13
+        EditLabel.Top = 10
+        EditLabel.Width = 147
+        EditLabel.Caption = 'WAPT Server address or name'
+        EditLabel.ParentColor = False
+        LabelPosition = lpLeft
+        TabOrder = 7
+        OnChange = edServerAddressChange
+        OnEnter = edServerAddressEnter
+      end
+      object Button2: TButton
+        Left = 406
+        Height = 25
+        Top = 4
+        Width = 96
+        Caption = 'Check and set'
+        OnClick = Button2Click
+        TabOrder = 8
+      end
+      object labStatusRepo: TLabel
+        Left = 110
+        Height = 1
+        Top = 49
+        Width = 1
+        ParentColor = False
+      end
+      object labStatusServer: TLabel
+        Left = 110
+        Height = 1
+        Top = 35
+        Width = 1
+        ParentColor = False
+      end
+    end
+    object panAdvanced: TPanel
+      Left = 6
+      Height = 116
+      Top = 321
+      Width = 511
+      Align = alBottom
+      BorderSpacing.Around = 6
+      BevelOuter = bvNone
+      ClientHeight = 116
+      ClientWidth = 511
+      TabOrder = 1
+      object edwapt_server: TLabeledEdit
+        Left = 277
+        Height = 21
+        Hint = 'E.g. : https://srvwapt.tranquilit.local'#13#10'Leave empty if you don''t want a central management server.'
+        Top = 24
+        Width = 196
+        EditLabel.AnchorSideTop.Control = edwapt_server
+        EditLabel.AnchorSideTop.Side = asrCenter
+        EditLabel.AnchorSideRight.Control = edwapt_server
+        EditLabel.AnchorSideBottom.Side = asrBottom
+        EditLabel.Left = 168
+        EditLabel.Height = 13
+        EditLabel.Top = 28
+        EditLabel.Width = 106
+        EditLabel.Caption = 'URL du serveur WAPT'
+        EditLabel.ParentColor = False
+        LabelPosition = lpLeft
+        TabOrder = 1
+        OnExit = edrepo_urlExit
+      end
+      object edrepo_url: TLabeledEdit
+        Left = 277
+        Height = 21
+        Hint = 'E.g. : http://wapt.tranquilit.local/wapt'#13#10'Leave empty for auto DNS discovery'
+        Top = 0
+        Width = 196
+        EditLabel.AnchorSideTop.Control = edrepo_url
+        EditLabel.AnchorSideTop.Side = asrCenter
+        EditLabel.AnchorSideRight.Control = edrepo_url
+        EditLabel.AnchorSideBottom.Side = asrBottom
+        EditLabel.Left = 146
+        EditLabel.Height = 13
+        EditLabel.Top = 4
+        EditLabel.Width = 128
+        EditLabel.Caption = 'URL to the main repository'
+        EditLabel.ParentColor = False
+        LabelPosition = lpLeft
+        TabOrder = 0
+        OnExit = edrepo_urlExit
+      end
+      object Label4: TLabel
+        Left = -1
+        Height = 13
+        Top = 48
+        Width = 315
+        Alignment = taRightJustify
+        AutoSize = False
+        BorderSpacing.Right = 3
+        Caption = 'Activates proxy when accessing the main repository'
+        ParentColor = False
+      end
+      object Label5: TLabel
+        Left = -1
+        Height = 13
+        Top = 67
+        Width = 315
+        Alignment = taRightJustify
+        AutoSize = False
+        BorderSpacing.Right = 3
+        Caption = 'Activate proxy when accessing the WAPT server'
+        ParentColor = False
+      end
+      object cbUseProxyForRepo: TCheckBox
+        Left = 317
+        Height = 17
+        Hint = 'Activates proxy when accessing the main repository'
+        Top = 48
+        Width = 20
+        TabOrder = 2
+      end
+      object cbUseProxyForServer: TCheckBox
+        Left = 317
+        Height = 17
+        Hint = 'Activate proxy when accessing the WAPT server'
+        Top = 67
+        Width = 20
+        TabOrder = 3
+      end
+      object Label8: TLabel
+        Left = -1
+        Height = 13
+        Top = 91
+        Width = 309
+        Alignment = taRightJustify
+        AutoSize = False
+        Caption = 'Send anonymous usage statistics to Tranquil IT'
+        ParentColor = False
+      end
+      object cbSendStats: TCheckBox
+        Left = 317
+        Height = 17
+        Top = 91
+        Width = 20
+        Checked = True
+        State = cbChecked
+        TabOrder = 4
+      end
+      object Button1: TButton
+        Left = 340
+        Height = 25
+        Top = 86
+        Width = 150
+        Caption = 'Show statistics'
+        OnClick = Button1Click
+        TabOrder = 5
+      end
+    end
   end
-  object Label3: TLabel
-    Left = 6
-    Height = 13
-    Top = 52
-    Width = 131
-    Caption = 'For package development :'
-    ParentColor = False
+  object Timer1: TTimer
+    Enabled = False
+    OnTimer = Timer1Timer
+    left = 24
+    top = 16
   end
-  object cbUseProxyForRepo: TCheckBox
-    Left = 281
-    Height = 17
-    Hint = 'Activates proxy when accessing the main repository'
-    Top = 239
-    Width = 20
-    Checked = True
-    State = cbChecked
-    TabOrder = 8
-  end
-  object Label4: TLabel
-    AnchorSideRight.Control = cbUseProxyForRepo
-    Left = -17
-    Height = 13
-    Top = 240
-    Width = 295
-    Alignment = taRightJustify
-    Anchors = [akTop, akLeft, akRight]
-    BorderSpacing.Right = 3
-    Caption = 'Activates proxy when accessing the main repository'
-    ParentColor = False
-  end
-  object Label5: TLabel
-    AnchorSideRight.Control = cbUseProxyForServer
-    Left = -17
-    Height = 13
-    Top = 257
-    Width = 295
-    Alignment = taRightJustify
-    Anchors = [akTop, akLeft, akRight]
-    BorderSpacing.Right = 3
-    Caption = 'Activate proxy when accessing the WAPT server'
-    ParentColor = False
-  end
-  object cbUseProxyForServer: TCheckBox
-    Left = 281
-    Height = 17
-    Hint = 'Activate proxy when accessing the WAPT server'
-    Top = 256
-    Width = 20
-    Checked = True
-    State = cbChecked
-    TabOrder = 9
-  end
-  object cbUseProxyForTemplate: TCheckBox
-    Left = 281
-    Height = 17
-    Hint = 'Activate proxy when accessing the model repository'
-    Top = 272
-    Width = 20
-    Checked = True
-    State = cbChecked
-    TabOrder = 10
-  end
-  object Label7: TLabel
-    Left = 8
-    Height = 13
-    Top = 196
-    Width = 51
-    Caption = 'http proxy'
-    ParentColor = False
-  end
-  object Label6: TLabel
-    AnchorSideRight.Control = cbUseProxyForTemplate
-    Left = 4
-    Height = 13
-    Top = 273
-    Width = 274
-    Alignment = taRightJustify
-    Anchors = [akTop, akLeft, akRight]
-    BorderSpacing.Right = 3
-    Caption = 'Activate proxy when accessing the model repository'
-    ParentColor = False
-  end
-  object cbSendStats: TCheckBox
-    Left = 281
-    Height = 17
-    Top = 296
-    Width = 20
-    Checked = True
-    State = cbChecked
-    TabOrder = 11
-  end
-  object Label8: TLabel
-    Left = 52
-    Height = 13
-    Top = 296
-    Width = 226
-    Alignment = taRightJustify
-    Caption = 'Send anonymous usage statistics to Tranquil IT'
-    ParentColor = False
-  end
-  object Button1: TButton
-    Left = 312
-    Height = 25
-    Top = 288
-    Width = 171
-    Caption = 'Show statistics'
-    OnClick = Button1Click
-    TabOrder = 12
+  object ImageList1: TImageList
+    left = 208
+    top = 304
+    Bitmap = {
+      4C69030000001000000010000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000093
+      0800FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00009D09001276
+      18CD0F5D11B7FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00009B0900107817D0BAD7
+      BDFF569E5DFF004D02B4FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0000960800107717D1B6D7B9FF529F
+      5AFF3A9941FF499351FF014501B2FFFFFF00FFFFFF0005A5140006A41400FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00009F0D000E7714D1B4DCB7FF51B25AFF069E
+      14FF0B9517FF105312DD04480B00FFFFFF0000930700348F3AED3F9244F9009F
+      0A00FFFFFF00FFFFFF000AAD1900117F19D1B3E3B7FF55C460FF15B725FF13A3
+      20FF024A05DB00460600FFFFFF0009851500448F49ECB5DDBAFFA9DAAEFF2F8F
+      35F607AB170013B5220017851ED1A5E2AAFF60D06AFF28C937FF22B02FFF034C
+      05DC00480600FFFFFF00FFFFFF00055207A45DB466FE6FD179FF9DDFA3FF98DF
+      9FFF238328F4207D25E299E5A0FF69DB74FF39D849FF31C23DFF035706DD0066
+      0800FFFFFF00FFFFFF00FFFFFF00FFFFFF00074F08BC24A130F953D75FFF88E4
+      91FF8EE596FF9FEAA5FF71E77CFF4AE759FF3FD64CFF08620BDD02991100FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00014F02BB24B130F94FE9
+      5EFF78EF84FF79F284FF58F567FF4AE756FF0D6C10DD1CBD2B00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00015404BD36BF
+      40F860FE6FFF69FF78FF58F065FF127216DD3ADA4900FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000458
+      07BB4ECB57F977EE81FF207422DC64F67200FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF000A5F0DBE1F8023CD90FF9C00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF0059F86700FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF006A85
+      FC236984FA7D6782F9DB6580F7F3637EF5F3617CF3DB5F7AF17D5D77EF23FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF006984FA536882
+      F9E66E83EEFF92A6F4FFA0B4F8FFA0B4F8FF91A6F3FF687DE9FF5973EBE65671
+      E953FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF006883F9536681F8F48497
+      F1FFA9BDFBFF8AA3F8FF6B89F6FF6B89F6FF89A2F8FFA8BCFAFF7F92ECFF526C
+      E4F44F69E253FFFFFF00FFFFFF00FFFFFF006781F822657FF6E58397F0FFA9BD
+      FBFF6382F5FF6382F5FFFFFFFFFFFFFFFFFF617EF3FF607CF3FFA6B9F9FF7B8D
+      EAFF4A64DEE54862DB22FFFFFF00FFFFFF00637EF57E6C81ECFFA9BDFBFF6382
+      F5FF6281F5FF6280F4FFFFFFFFFFFFFFFFFF5F7AF1FF5F78F0FF5D76EFFFA5B5
+      F8FF5D70DDFF435DD77EFFFFFF00FFFFFF005F7AF1DB91A6F3FF88A1F8FF6280
+      F4FF617EF3FF607CF3FFFFFFFFFFFFFFFFFF5D76EFFF5C73EEFF5B70ECFF8293
+      F1FF8998ECFF3E58D2DBFFFFFF00FFFFFF005B76EDF6A1B6F8FF6784F4FF607C
+      F3FF5F7AF1FF5F78F0FFFFFFFFFFFFFFFFFF5B70ECFF5A6EEBFF596CEAFF5F6F
+      E9FF9BA8F1FF3A53CEF6FFFFFF00FFFFFF005771E9F6A0B3F7FF6580F2FF5F78
+      F0FF5D76EFFF5C73EEFFD3D9FAFFFFFFFFFF596CEAFF5869E8FF5767E7FF5D6C
+      E7FF99A5F1FF354FCAF6FFFFFF00FFFFFF00526DE5DB8E9FF0FF8499F4FF5C73
+      EEFF5B70ECFF5A6EEBFF909DF1FFA6AFF3FF5767E7FF5665E6FF5562E5FF7D89
+      EBFF8591E7FF314AC6DBFFFFFF00FFFFFF004E68E17E6073E0FFA4B3F7FF5A6E
+      EBFF596CEAFF5869E8FFFFFFFFFFFFFFFFFF5562E5FF5461E3FF535FE2FF9FA9
+      F2FF5061D1FF2D46C27EFFFFFF00FFFFFF004963DC224660DAE57888E6FFA3B0
+      F5FF5767E7FF5665E6FF8992EDFF8892ECFF535FE2FF525DE1FF9FA9F2FF6F7D
+      DDFF2B44C0E52942BE22FFFFFF00FFFFFF00FFFFFF00425CD5533F59D3F47584
+      E3FFA1ACF4FF7F8BECFF5C67E4FF5B66E3FF7D87EAFF9FA8F1FF6F7CDDFF2943
+      BFF42741BD53FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF003A54CF533852
+      CCE65264D4FF8490E7FF95A0EEFF959FEDFF838EE5FF4C5DCEFF2841BDE6263F
+      BB53FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00334D
+      C823314BC67D2F48C4DB2C46C2F32A44C0F32842BEDB2640BC7D243EBA23FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00CA97
+      6400CA976480CA9764B3CA9764E6CA9764E6CA9764B3CA976480CA976400FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00E34A3000C38E5900C089
+      52F7BD844BFFBA7F43FFB5773BFFB5773BFFBA7F43FFBE844BFFC18B55F7C48F
+      5E00634A3000FFFFFF00FFFFFF00FFFFFF0096301F00C08C57BABD844CFFB272
+      33FFBC946EFFD0BFAEFFDAD5D1FFDAD5D1FFD0BFAEFFBC946DFFB37638FFBE88
+      51FFC28C56B996301F00FFFFFF00FFFFFF00BD875100B97E45FFB3773BFFD4C6
+      B8FFEBEBEBFFEDEDEDFFEDEDEDFFEDEDEDFFEDEDEDFFEBEBEBFFD4C6B8FFB479
+      3DFFB97F45FFBD875100FFFFFF00BF864D00BA824CF8B7793BFFD5C8B9FFEBEB
+      EBFFDEDEDEFFCFCFCFFFEBEBEBFFEBEBEBFFEBEBEBFFEBEBEBFFEBEBEBFFD6C8
+      B9FFB6793BFFBA824CF8BF864D00BB834D8DBA7E42FFC69F78FFE7E7E7FFEAEA
+      EAFFE0E0E0FF767676FFDEDEDEFFEAEAEAFFEAEAEAFFE9E9E9FFBBBBBBFF7F7F
+      7FFFB89776FFBA7E42FFBB834D8DBA824CBFBE8043FFD6C3AFFFE9E9E9FFEAEA
+      EAFFEAEAEAFFABABABFFA1A1A1FFEAEAEAFFD1D1D1FF909090FF8F8F8FFFCFCF
+      CFFFD6C3AFFFBE8043FFBA824CBFB9834EEBC6894BFFE1DBD4FFE8E8E8FFEAEA
+      EAFFEAEAEAFFE5E5E5FF6C6C6CFF737373FF919191FFC4C4C4FFEAEAEAFFE8E8
+      E8FFE1DBD4FFC6894BFFB9834EEBB7824CEBCA8F53FFE4DED8FFE7E7E7FFEAEA
+      EAFFEBEBEBFFEBEBEBFF6B6B6BFF696969FFE7E7E7FFEBEBEBFFEAEAEAFFE7E7
+      E7FFE4DED8FFCA8F53FFB7824CEBB4804CBECA925AFFE4D3C2FFEBEBEBFFEBEB
+      EBFFECECECFFECECECFFECECECFFECECECFFECECECFFECECECFFEBEBEBFFEBEB
+      EBFFE4D3C2FFCA925AFFB4804CBEB07E488BC38E57FFDFBE9CFFF0F0F0FFF0F0
+      F0FFF0F0F0FFF0F0F0FFF0F0F0FFF0F0F0FFF0F0F0FFF0F0F0FFF0F0F0FFF0F0
+      F0FFDFBE9CFFC38E57FFB07E488AAD764400B7824EF8D09A65FFEFE2D4FFF4F4
+      F4FFF4F4F4FFF4F4F4FFF4F4F4FFF4F4F4FFF4F4F4FFF4F4F4FFF4F4F4FFEFE2
+      D4FFD09A65FFB7824EF8AD764400FFFFFF00AD784500B88451FFD5A576FFF4E7
+      DAFFF8F8F8FFF8F8F8FFF8F8F8FFF8F8F8FFF8F8F8FFF8F8F8FFF3E6D9FFD2A2
+      74FFB88450FFAD784500FFFFFF00FFFFFF00DFCF6800A77542BBB58250FFDAA7
+      75FFF2D3B5FFF9EADBFFFBF6F1FFFBF6F1FFF9EADBFFF1D3B4FFD2A06DFFAE7A
+      48FFA77341BADFCF6800FFFFFF00FFFFFF00FFFFFF009D6A3700A3713C00AB78
+      44F7B3814EFFBB8956FFC59260FFC59260FFBB8956FFB3804EFFA87543F79E6B
+      37009D6A3700FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00A16C
+      36009F6B3983A06E3BB7A4713EE8A4713EE8A06E3BB79F6B39839F683800FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00
+    }
   end
 end
