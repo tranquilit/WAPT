@@ -13,6 +13,40 @@ msgid ""
 "X-Generator: Virtaal 0.7.1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Only required if a proxy is needed.\n"
+"Only required if a proxy is needed.\n"
+"Only required if a proxy is needed.\n"
+"Only required if a proxy is needed.\n"
+"Only required if a proxy is needed.\n"
+"Only required if a proxy is needed.\n"
+"Only required if a proxy is needed.\n"
+"Only required if a proxy is needed.\n"
+"Only required if a proxy is needed.\n"
+"Only required if a proxy is needed.\n"
+"Only required if a proxy is needed.\n"
+"Only required if a proxy is needed.\n"
+"Only required if a proxy is needed.\n"
+"Only required if a proxy is needed.\n"
+"Only required if a proxy is needed.\n"
+"Only required if a proxy is needed.\n"
+"Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
+"Leave empty for auto DNS discovery\n"
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
@@ -553,8 +587,20 @@ msgstr ""
 msgid "Show statistics"
 msgstr ""
 
+#: tviswaptconfig.button2.caption
+msgid "Check and set"
+msgstr ""
+
+#: tviswaptconfig.buttonpanel1.helpbutton.caption
+msgid "&Show config file"
+msgstr ""
+
 #: tviswaptconfig.caption
 msgid "Locale WAPT configuration"
+msgstr ""
+
+#: tviswaptconfig.cbadvanced.caption
+msgid "Advanced settings"
 msgstr ""
 
 #: tviswaptconfig.cbuseproxyforrepo.hint
@@ -604,6 +650,14 @@ msgstr ""
 msgid "E.g. : http://wapt.tranquilit.local/wapt"
 msgstr ""
 
+#: tviswaptconfig.edserveraddress.editlabel.caption
+msgid "WAPT Server address or name"
+msgstr ""
+
+#: tviswaptconfig.edserveraddress.hint
+msgid "E.g. : wapt.tranquilit.local"
+msgstr ""
+
 #: tviswaptconfig.edtemplates_repo_url.editlabel.caption
 msgid "URL to the package model repository "
 msgstr ""
@@ -621,7 +675,7 @@ msgid "URL du serveur WAPT"
 msgstr ""
 
 #: tviswaptconfig.edwapt_server.hint
-msgid "E.g. : http://srvwapt.tranquilit.local:8080"
+msgid "E.g. : https://srvwapt.tranquilit.local"
 msgstr ""
 
 #: tviswaptconfig.label1.caption
@@ -652,11 +706,15 @@ msgid "Activate proxy when accessing the model repository"
 msgstr ""
 
 #: tviswaptconfig.label7.caption
-msgid "http proxy"
+msgid "HTTP proxy settings"
 msgstr ""
 
 #: tviswaptconfig.label8.caption
 msgid "Send anonymous usage statistics to Tranquil IT"
+msgstr ""
+
+#: tviswaptconfig.panclient.caption
+msgid "panClient"
 msgstr ""
 
 #: tviswaptdeploy.actdeploywapt.caption
