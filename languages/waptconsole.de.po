@@ -1,5 +1,5 @@
-# Jessica <jgreulich@tranquil.it>, 2015.
-msgid ""
+ Jessica <jgreulich@tranquil.it>, 2015.
+msgid " Uncheck \"Use simple file sharing\").Only required if a proxy is needed.Only required if a proxy is needed.Only required if a proxy is needed."
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
@@ -13,9 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
-
-msgid " Uncheck \"Use simple file sharing\").Only required if a proxy is needed.Only required if a proxy is needed.Only required if a proxy is needed."
-msgstr "Content-Type: text/plain; charset=UTF-8"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: asynccalls.rsasynccallnotfinished
 msgid "The asynchronous call is not finished yet"
@@ -27,9 +25,7 @@ msgstr "Unbekannter TVarRec Typ"
 
 #: asynccalls.rsforgetwascalled
 msgid "IAsyncCall.Forget was called. The interface isn't connected to the asynchronous call anymore"
-msgstr ""
-"IAsyncCall. Wurde vergessen zu nennen. Die Verbindung ist nicht mehr mit dem "
-"asynchrone Anruf verbunden."
+msgstr "IAsyncCall. Wurde vergessen zu nennen. Die Verbindung ist nicht mehr mit dem asynchrone Anruf verbunden."
 
 #: asynccalls.rsleavemainthreadnestederror
 msgid "Unpaired call to AsyncCalls.LeaveMainThread()"
@@ -37,14 +33,11 @@ msgstr "Unverbudener Anruf an AsyncCalls.LeaveMainThread()"
 
 #: asynccalls.rsleavemainthreadthreaderror
 msgid "AsyncCalls.LeaveMainThread() was called outside of the main thread"
-msgstr ""
-"AsyncCalls.LeaveMainThread() wurde außerhalb des Haupt-Thread aufgerufen."
+msgstr "AsyncCalls.LeaveMainThread() wurde außerhalb des Haupt-Thread aufgerufen."
 
 #: asynccalls.rsnovclsyncpossible
 msgid "Cannot synchronize with the main thread anymore. Don't call IAsyncCall.Forget for functions that access the VCL"
-msgstr ""
-"Kann sich nicht mehr mit dem Haupt-Thread verbinden. Rufe nicht IAsyncCall "
-"auf. Vergiss die Funktionen für den VCL abzurufen"
+msgstr "Kann sich nicht mehr mit dem Haupt-Thread verbinden. Rufe nicht IAsyncCall auf. Vergiss die Funktionen für den VCL abzurufen"
 
 #: tvisapropos.button1.caption
 msgid "Close"
@@ -314,9 +307,7 @@ msgstr "Suche"
 
 #: tviseditpackage.butbuapply.hint
 msgid "Build the package, upload to the server and trigger Upgrade on the target host."
-msgstr ""
-"Bilde das Packet, lade es auf den server und leite das Upgrade auf dem "
-"Zielrechner ein."
+msgstr "Bilde das Packet, lade es auf den server und leite das Upgrade auf dem Zielrechner ein."
 
 #: tviseditpackage.butsave.caption
 msgctxt "TVISEDITPACKAGE.BUTSAVE.CAPTION"
@@ -549,9 +540,21 @@ msgstr "Privater-Key Passwort:"
 msgid "Show statistics"
 msgstr "Zeige Statistiken"
 
+#: tviswaptconfig.button2.caption
+msgid "Check and set"
+msgstr ""
+
+#: tviswaptconfig.buttonpanel1.helpbutton.caption
+msgid "&Show config file"
+msgstr ""
+
 #: tviswaptconfig.caption
 msgid "Locale WAPT configuration"
 msgstr "Lokale WAPT Konfiguration"
+
+#: tviswaptconfig.cbadvanced.caption
+msgid "Advanced settings"
+msgstr ""
 
 #: tviswaptconfig.cbuseproxyforrepo.hint
 msgctxt "tviswaptconfig.cbuseproxyforrepo.hint"
@@ -600,6 +603,14 @@ msgstr "URL zum Haupt-Repository"
 msgid "E.g. : http://wapt.tranquilit.local/wapt"
 msgstr ""
 
+#: tviswaptconfig.edserveraddress.editlabel.caption
+msgid "WAPT Server address or name"
+msgstr ""
+
+#: tviswaptconfig.edserveraddress.hint
+msgid "E.g. : wapt.tranquilit.local"
+msgstr ""
+
 #: tviswaptconfig.edtemplates_repo_url.editlabel.caption
 msgid "URL to the package model repository "
 msgstr "URL auf das Packet-Repository-Modell"
@@ -617,7 +628,7 @@ msgid "URL du serveur WAPT"
 msgstr "URL Server WAPT"
 
 #: tviswaptconfig.edwapt_server.hint
-msgid "E.g. : http://srvwapt.tranquilit.local:8080"
+msgid "E.g. : https://srvwapt.tranquilit.local"
 msgstr ""
 
 #: tviswaptconfig.label1.caption
@@ -648,12 +659,16 @@ msgid "Activate proxy when accessing the model repository"
 msgstr "Aktviert Proxy beim Zugriff auf das Modell-Repository"
 
 #: tviswaptconfig.label7.caption
-msgid "http proxy"
+msgid "HTTP proxy settings"
 msgstr ""
 
 #: tviswaptconfig.label8.caption
 msgid "Send anonymous usage statistics to Tranquil IT"
 msgstr "Sende anonyme Nutzungsstatistiken an Tranquil IT"
+
+#: tviswaptconfig.panclient.caption
+msgid "panClient"
+msgstr ""
 
 #: tviswaptdeploy.actdeploywapt.caption
 msgid "Deploy"
@@ -829,6 +844,10 @@ msgstr "Vergessene Pakete"
 msgctxt "tviswaptgui.actfrench.caption"
 msgid "French"
 msgstr "Französisch"
+
+#: tviswaptgui.actgerman.caption
+msgid "German"
+msgstr ""
 
 #: tviswaptgui.actgotohost.caption
 msgctxt "TVISWAPTGUI.ACTGOTOHOST.CAPTION"
@@ -1045,6 +1064,18 @@ msgctxt "tviswaptgui.actwsusrefreshcabhistory.caption"
 msgid "Refresh WSUSscan cab history"
 msgstr "Aktualsiere die WSUScan Geschichte"
 
+#: tviswaptgui.actwuaaddallowedclassification.caption
+msgid "Add an allowed classification"
+msgstr ""
+
+#: tviswaptgui.actwuaaddallowedupdate.caption
+msgid "Add an Allowed Update"
+msgstr ""
+
+#: tviswaptgui.actwuaaddforbiddenupdate.caption
+msgid "Add a forbidden Windows Update"
+msgstr ""
+
 #: tviswaptgui.actwuaallowselectedupdates.caption
 msgctxt "tviswaptgui.actwuaallowselectedupdates.caption"
 msgid "Allow Selected Updates"
@@ -1125,12 +1156,22 @@ msgctxt "TVISWAPTGUI.ACTWUASAVEUPDATESGROUP.CAPTION"
 msgid "Save"
 msgstr "Speichern,Sichern"
 
+#: tviswaptgui.bitbtn10.caption
+msgid "Refresh Updates listing retrieval history"
+msgstr ""
+
+#: tviswaptgui.bitbtn9.caption
+msgid "Download Updates listing from Microsoft"
+msgstr ""
+
 #: tviswaptgui.caption
 msgid "WAPT console"
 msgstr "WAPT Gerät"
 
 #: tviswaptgui.cbforcedwsusscandownload.caption
-msgid "Force download even if aready up to date"
+#, fuzzy
+#| msgid "Force download even if aready up to date"
+msgid "Force download even if already up to date"
 msgstr "Erzwinge den Download,wenn es aktuell ist"
 
 #: tviswaptgui.cbhaserrors.caption
@@ -1204,7 +1245,9 @@ msgid "IP address"
 msgstr "IP Adresse"
 
 #: tviswaptgui.label10.caption
-msgid "Label10"
+#, fuzzy
+#| msgid "Label10"
+msgid "Allowed Windows Updates Classifications"
 msgstr "Label10"
 
 #: tviswaptgui.label11.caption
@@ -1227,6 +1270,22 @@ msgstr "Filter:"
 #: tviswaptgui.label15.caption
 msgid "Groups"
 msgstr "Gruppen"
+
+#: tviswaptgui.label16.caption
+msgid "Label16"
+msgstr ""
+
+#: tviswaptgui.label17.caption
+msgid "Label17"
+msgstr ""
+
+#: tviswaptgui.label18.caption
+msgid "Allowed Windows Updates"
+msgstr ""
+
+#: tviswaptgui.label19.caption
+msgid "Forbidden Windows Updates"
+msgstr ""
 
 #: tviswaptgui.label2.caption
 msgid "Manufacturer"
@@ -1471,8 +1530,7 @@ msgstr "Füge ADS als Gruppenpackete hinzu"
 #: tviswuarules.actaddadsgroups.hint
 msgctxt "TVISWUARULES.ACTADDADSGROUPS.HINT"
 msgid "Add the WAPT group packages matching the ADS groups of the machines"
-msgstr ""
-"Füge die WAPT Gruppenpakete zu den passenden Gruppenmaschine der ADS hinzu"
+msgstr "Füge die WAPT Gruppenpakete zu den passenden Gruppenmaschine der ADS hinzu"
 
 #: tviswuarules.actaddconflicts.caption
 msgctxt "TVISWUARULES.ACTADDCONFLICTS.CAPTION"
@@ -1862,13 +1920,12 @@ msgstr "Erlaube die Updates für die ausgewählten Produkte und Severities"
 #: tviswuarules.actwuaproductforbid.caption
 msgctxt "TVISWUARULES.ACTWUAPRODUCTFORBID.CAPTION"
 msgid "Forbid updates for selected products"
-msgstr "Verweigere die Updates für die ausgewählten Produkte\n"
+msgstr "Verweigere die Updates für die ausgewählten Produkte"
 
 #: tviswuarules.actwuaproductforbidseverity.caption
 msgctxt "TVISWUARULES.ACTWUAPRODUCTFORBIDSEVERITY.CAPTION"
 msgid "Forbid updates for selected products and severities"
-msgstr ""
-"Verweigere alle Updates für die ausgewählten Produkte und die Severities"
+msgstr "Verweigere alle Updates für die ausgewählten Produkte und die Severities"
 
 #: tviswuarules.actwuaproducthide.caption
 msgctxt "TVISWUARULES.ACTWUAPRODUCTHIDE.CAPTION"
@@ -1961,10 +2018,8 @@ msgid ""
 "\n"
 "Are you sure to continue ?\n"
 msgstr ""
-"Dies wird jedem ausgewählten Hosts von den Directory Gruppen erhalten und "
-"füge die passenden WAPT Pakete hinzu, Abhängig von dem Host ob das Paket "
-"existiert.\n"
-"Bist du dir sicher mit dem fortsetzen?"
+"Dies wird jedem ausgewählten Hosts von den Directory Gruppen erhalten und füge die passenden WAPT Pakete hinzu, Abhängig von dem Host ob das Paket existiert.\n"
+"Bist du dir sicher mit dem fortsetzen?\n"
 
 #: uwaptconsoleres.rsbundleconfigeditcaption
 msgctxt "uwaptconsoleres.rsbundleconfigeditcaption"
@@ -1979,17 +2034,17 @@ msgstr "abgebrochen"
 #: uwaptconsoleres.rscanceledbyuser
 msgctxt "uwaptconsoleres.rscanceledbyuser"
 msgid "Task %s has been canceled by the user"
-msgstr "Der Task wurde vom Benutzer abgebrochen"
+msgstr "Der Task %s wurde vom Benutzer abgebrochen"
 
 #: uwaptconsoleres.rscanceledtask
 msgctxt "uwaptconsoleres.rscanceledtask"
 msgid "Cancelled %s"
-msgstr "abgebrochen"
+msgstr "abgebrochen %s"
 
 #: uwaptconsoleres.rscertificatecopyfailure
 msgctxt "uwaptconsoleres.rscertificatecopyfailure"
 msgid "Couldn't copy certificate %s to %s."
-msgstr "Das Zertifikat kann nicht kopiert werden"
+msgstr "Das Zertifikat %s kann nicht kopiert in %s werden "
 
 #: uwaptconsoleres.rscname
 msgctxt "uwaptconsoleres.rscname"
@@ -1999,7 +2054,7 @@ msgstr "CNAME: %s"
 #: uwaptconsoleres.rscompletionprogress
 msgctxt "uwaptconsoleres.rscompletionprogress"
 msgid "%s : %.0f%% completed"
-msgstr "beendet, abgeschlossen"
+msgstr "%s : %.0f%% beendet"
 
 #: uwaptconsoleres.rsconfirmcaption
 msgctxt "uwaptconsoleres.rsconfirmcaption"
@@ -2022,9 +2077,7 @@ msgid ""
 "Are you sure you want to import\n"
 "%s\n"
 " to your repository ?\n"
-msgstr ""
-"Bist du dir sicher, dass du auf es auf deinen Aufbewahrungsort importieren "
-"willst?"
+msgstr "Bist du dir sicher, dass du auf es auf deinen Aufbewahrungsort importieren willst?"
 
 #: uwaptconsoleres.rsconfirmimportcaption
 msgctxt "uwaptconsoleres.rsconfirmimportcaption"
@@ -2033,26 +2086,21 @@ msgstr "Bestätige zum einführen"
 
 #: uwaptconsoleres.rsconfirmpackageinstall
 msgid "Are you sure you want to install/upgrade %s package(s) for the selected host(s) %s ?"
-msgstr ""
-"Bist du dir sicher, dass du die Pakete installieren/upgraden willst, für die "
-"ausgewählten Host(s)?"
+msgstr "Bist du dir sicher, dass du die Pakete installieren/upgraden willst, für die ausgewählten Host(s) %s ?"
 
 #: uwaptconsoleres.rsconfirmrmhostsfromlist
 msgctxt "uwaptconsoleres.rsconfirmrmhostsfromlist"
 msgid "Are you sure you want to remove %s hosts from the list ?"
-msgstr ""
-"Bist du dir sicher, dass du die Hosts von der Liste  entfernen möchtest?"
+msgstr "Bist du dir sicher, dass du %s Hosts  von der Liste entfernen möchtest?"
 
 #: uwaptconsoleres.rsconfirmrmhostspackagesfromlist
 msgid "Are you sure you want to remove %s hosts and matching configuration packages from the server ?"
-msgstr ""
-"Bist du dir sicher, dass du die Hosts und die passenden Konfigurationspakete "
-"vom Server entfernen möchtest?"
+msgstr "Bist du dir sicher, dass du %s Hosts und die passenden Konfigurationspakete vom Server entfernen möchtest?"
 
 #: uwaptconsoleres.rsconfirmrmmultiplepackages
 msgctxt "uwaptconsoleres.rsconfirmrmmultiplepackages"
 msgid "Are you sure you want to remove %d selected packages from the server ?"
-msgstr "Bist du dir sicher, dass du die ausgewählten Pakete entfernen möchtest?"
+msgstr "Bist du dir sicher, dass du %s ausgewählten Pakete entfernen möchtest?"
 
 #: uwaptconsoleres.rsconfirmrmonepackage
 msgctxt "uwaptconsoleres.rsconfirmrmonepackage"
@@ -2067,9 +2115,7 @@ msgstr "Bestätige die Entfernung"
 #: uwaptconsoleres.rsconfirmrmpackagesfromhost
 msgctxt "uwaptconsoleres.rsconfirmrmpackagesfromhost"
 msgid "Are you sure you want to remove %s package(s) from the selected host(s) %s ?"
-msgstr ""
-"Bist du dir sicher, dass du die Pakete von den ausgewählten Hosts enfernen "
-"möchtest?"
+msgstr "Bist du dir sicher, dass du die Pakete von den ausgewählten Hosts enfernen möchtest?"
 
 #: uwaptconsoleres.rscreationinprogress
 msgctxt "uwaptconsoleres.rscreationinprogress"
@@ -2083,9 +2129,7 @@ msgstr ""
 #: uwaptconsoleres.rsdefinewaptdevpath
 msgctxt "uwaptconsoleres.rsdefinewaptdevpath"
 msgid "Please select a directory on your package development host before editing a package bundle."
-msgstr ""
-"Bitte wähle ein Verzeichnis in deiner Paketentwicklung Host bevor der "
-"Berarbeitung eines Packet-Bündel."
+msgstr "Bitte wähle ein Verzeichnis in deiner Paketentwicklung Host bevor der Berarbeitung eines Packet-Bündel."
 
 #: uwaptconsoleres.rsdeletingelement
 msgctxt "uwaptconsoleres.rsdeletingelement"
@@ -2110,7 +2154,7 @@ msgstr "Passwörter stimmen nicht überein"
 #: uwaptconsoleres.rsdisplaying
 msgctxt "uwaptconsoleres.rsdisplaying"
 msgid "Displaying"
-msgstr "Anzeigend\n"
+msgstr "Anzeigend"
 
 #: uwaptconsoleres.rsdlcanceled
 msgctxt "uwaptconsoleres.rsdlcanceled"
@@ -2244,9 +2288,7 @@ msgstr "Bearbeite die Host Einstellungen"
 #: uwaptconsoleres.rsignoredconfictingpackages
 msgctxt "uwaptconsoleres.rsignoredconfictingpackages"
 msgid "Warning : couldn't find package(s) %s ; conflicting package(s) have been ignored."
-msgstr ""
-"Warnung: konnte das Packet nicht finden, widersprüchliche Pakete wurden "
-"ignoriert."
+msgstr "Warnung: konnte das Packet nicht finden, widersprüchliche Pakete wurden ignoriert."
 
 #: uwaptconsoleres.rsignoredpackages
 msgctxt "uwaptconsoleres.rsignoredpackages"
@@ -2325,9 +2367,7 @@ msgstr "Es gibt keine Packet Bündel."
 
 #: uwaptconsoleres.rsnoreachableip
 msgid "None IP reachable for this host. Check firewall, routes and remote service status"
-msgstr ""
-"Keine IP erreichbar für diesen Host. Überprüfe die Firewall,die Routes und "
-"den Remote-Service-Status"
+msgstr "Keine IP erreichbar für diesen Host. Überprüfe die Firewall,die Routes und den Remote-Service-Status"
 
 #: uwaptconsoleres.rsnorunningtask
 msgctxt "uwaptconsoleres.rsnorunningtask"
@@ -2350,9 +2390,7 @@ msgid ""
 "Are you sure you want to duplicate the package(s)\n"
 "%s\n"
 " into your repository ?\n"
-msgstr ""
-"Bist du dir sicher das du die Paket(e) duplizieren möchtest in deinem "
-"Repository?\t"
+msgstr "Bist du dir sicher das du die Paket(e) duplizieren möchtest in deinem Repository?	"
 
 #: uwaptconsoleres.rspackageduplicateconfirmcaption
 msgctxt "uwaptconsoleres.rspackageduplicateconfirmcaption"
@@ -2581,9 +2619,7 @@ msgid ""
 "Warning, the version of the server is too old.\n"
 "Current server version: %s\n"
 "Required server version: %s\n"
-msgstr ""
-"Warnung,die Version von diesem Server ist zu alt.aktuelle Server Version: "
-";erforderliche Server Version:"
+msgstr "Warnung,die Version von diesem Server ist zu alt.aktuelle Server Version: ;erforderliche Server Version:"
 
 #: uwaptconsoleres.rswaptsetuperror
 msgctxt "uwaptconsoleres.rswaptsetuperror"
@@ -2593,9 +2629,7 @@ msgstr "Fehler beim erstellen des agent"
 #: uwaptconsoleres.rswaptsetupuploadsuccess
 msgctxt "uwaptconsoleres.rswaptsetupuploadsuccess"
 msgid "WAPT agent and upgrade package successfully created and uploaded to the main repository"
-msgstr ""
-"WAPT agent und Upgrade Paket erfolgreich erstellt und hochgeladen auf das "
-"Haupt-Repository"
+msgstr "WAPT agent und Upgrade Paket erfolgreich erstellt und hochgeladen auf das Haupt-Repository"
 
 #: uwaptconsoleres.rswaptupgrade
 msgctxt "uwaptconsoleres.rswaptupgrade"
@@ -2666,7 +2700,7 @@ msgstr "CNAME: %s"
 #: uwaptres.rscompletionprogress
 msgctxt "uwaptres.rscompletionprogress"
 msgid "%s : %.0f%% completed"
-msgstr "beendet, abgeschlossen"
+msgstr "%s : %.0f%% beendet"
 
 #: uwaptres.rsconfirm
 msgctxt "uwaptres.rsconfirm"
@@ -2675,9 +2709,7 @@ msgstr "Bestätigen"
 
 #: uwaptres.rsconfirmcancelpostconfig
 msgid "Are you sure you want to cancel configuring WAPT server ?"
-msgstr ""
-"Bist du dir sicher das du die Konfiguartion vom WAPT Server abbrechen "
-"willst?"
+msgstr "Bist du dir sicher das du die Konfiguartion vom WAPT Server abbrechen willst?"
 
 #: uwaptres.rsconfirmcaption
 msgctxt "uwaptres.rsconfirmcaption"
@@ -2700,9 +2732,7 @@ msgid ""
 "Are you sure you want to import\n"
 "%s\n"
 " to your repository ?\n"
-msgstr ""
-"Bist du dir sicher, dass du auf es auf deinen Aufbewahrungsort importieren "
-"willst?"
+msgstr "Bist du dir sicher, dass du auf es auf deinen Aufbewahrungsort importieren willst?"
 
 #: uwaptres.rsconfirmimportcaption
 msgctxt "uwaptres.rsconfirmimportcaption"
@@ -2712,8 +2742,7 @@ msgstr "Bestätige zum einführen"
 #: uwaptres.rsconfirmrmhostsfromlist
 msgctxt "uwaptres.rsconfirmrmhostsfromlist"
 msgid "Are you sure you want to remove %s hosts from the list ?"
-msgstr ""
-"Bist du dir sicher, dass du die Hosts von der Liste  entfernen möchtest?"
+msgstr "Bist du dir sicher, dass du die Hosts von der Liste  entfernen möchtest?"
 
 #: uwaptres.rsconfirmrmmultiplepackages
 msgctxt "uwaptres.rsconfirmrmmultiplepackages"
@@ -2733,9 +2762,7 @@ msgstr "Bestätige das Entfernen"
 #: uwaptres.rsconfirmrmpackagesfromhost
 msgctxt "uwaptres.rsconfirmrmpackagesfromhost"
 msgid "Are you sure you want to remove %s package(s) from the selected host(s) %s ?"
-msgstr ""
-"Bist du dir sicher, dass du die Pakete von den ausgewählten Hosts enfernen "
-"möchtest?"
+msgstr "Bist du dir sicher, dass du die Pakete von den ausgewählten Hosts enfernen möchtest?"
 
 #: uwaptres.rscreationinprogress
 msgctxt "uwaptres.rscreationinprogress"
@@ -2745,9 +2772,7 @@ msgstr "Die Kreation ist im Gange."
 #: uwaptres.rsdefinewaptdevpath
 msgctxt "uwaptres.rsdefinewaptdevpath"
 msgid "Please select a directory on your package development host before editing a package bundle."
-msgstr ""
-"Bitte wähle ein Verzeichnis in deiner Paketentwicklung Host bevor der "
-"Berarbeitung eines Packet-Bündel."
+msgstr "Bitte wähle ein Verzeichnis in deiner Paketentwicklung Host bevor der Berarbeitung eines Packet-Bündel."
 
 #: uwaptres.rsdeletingelement
 msgctxt "uwaptres.rsdeletingelement"
@@ -2917,9 +2942,7 @@ msgstr "Bearbeite die Host Einstellungen"
 #, fuzzy
 msgctxt "uwaptres.rsignoredconfictingpackages"
 msgid "Warning : couldn't find package(s) %s ; conflicting package(s) have been ignored."
-msgstr ""
-"Warnung: konnte das Packet nicht finden, widersprüchliche Pakete wurden "
-"ignoriert."
+msgstr "Warnung: konnte das Packet nicht finden, widersprüchliche Pakete wurden ignoriert."
 
 #: uwaptres.rsignoredpackages
 #, fuzzy
@@ -2978,9 +3001,7 @@ msgstr "Ungültige DNS"
 
 #: uwaptres.rsinvaliddnsfallback
 msgid "This DNS name is not valid, would you like to use the IP address instead ?"
-msgstr ""
-"Dieser DNS Name ist nicht gültig, willst du lieber stattdessen die IP-"
-"Adresse verwenden?"
+msgstr "Dieser DNS Name ist nicht gültig, willst du lieber stattdessen die IP-Adresse verwenden?"
 
 #: uwaptres.rsinvalidwaptsetupdir
 msgctxt "uwaptres.rsinvalidwaptsetupdir"
@@ -3005,7 +3026,7 @@ msgstr "Haupt Repo-URL"
 #: uwaptres.rsnbmodifiedhosts
 msgctxt "uwaptres.rsnbmodifiedhosts"
 msgid "%s hosts affected."
-msgstr ""
+msgstr "Hosts betroffen"
 
 #: uwaptres.rsnobundle
 msgctxt "uwaptres.rsnobundle"
@@ -3036,8 +3057,7 @@ msgstr "Die fertige Konfiguration der Pakete für die Benutzersitzung"
 
 #: uwaptres.rspackageconfigerror
 msgid "Error while configuring packages for the current user session"
-msgstr ""
-"Fehler bei der Konfiguration der Pakete für die aktuelle Benutzersitzung"
+msgstr "Fehler bei der Konfiguration der Pakete für die aktuelle Benutzersitzung"
 
 #: uwaptres.rspackagecreationerror
 msgctxt "uwaptres.rspackagecreationerror"
@@ -3050,8 +3070,7 @@ msgid ""
 "Are you sure you want to duplicate the package(s)\n"
 "%s\n"
 " into your repository ?\n"
-msgstr ""
-"Bist du dir sicher das du die Pakete verdoppeln willst in deine Repository?"
+msgstr "Bist du dir sicher das du die Pakete verdoppeln willst in deine Repository?"
 
 #: uwaptres.rspackageduplicateconfirmcaption
 msgctxt "uwaptres.rspackageduplicateconfirmcaption"
@@ -3141,8 +3160,7 @@ msgstr "Wiederhole die Regestrierung des Hosts auf dem Server"
 #: uwaptres.rsrmbundlefromhosts
 msgctxt "uwaptres.rsrmbundlefromhosts"
 msgid "Selection of package bundles for removing from the selected hosts"
-msgstr ""
-"Die Ausgewählten Paketbündel ist zu entfernen von den ausgewählten Hosts"
+msgstr "Die Ausgewählten Paketbündel ist zu entfernen von den ausgewählten Hosts"
 
 #: uwaptres.rsrunningtask
 msgctxt "uwaptres.rsrunningtask"
@@ -3161,7 +3179,7 @@ msgstr "Einrichten des Server Passwortes"
 #: uwaptres.rssrv
 msgctxt "uwaptres.rssrv"
 msgid "SRV: %s"
-msgstr ""
+msgstr "SRV: %s"
 
 #: uwaptres.rsstoplistening
 msgctxt "uwaptres.rsstoplistening"
@@ -3243,7 +3261,7 @@ msgstr "Pakete hochladen auf den WAPT Server"
 #: uwaptres.rsurl
 msgctxt "uwaptres.rsurl"
 msgid "Url : %s"
-msgstr ""
+msgstr "Url : %s"
 
 #: uwaptres.rsusage
 msgctxt "uwaptres.rsusage"
@@ -3255,7 +3273,7 @@ msgctxt "uwaptres.rsversion"
 msgid ""
 "Waptconsole version : %s\n"
 "Wapt-get version: %s\n"
-msgstr ""
+msgstr "Waptconsole Version, Wapt-get Version"
 
 #: uwaptres.rswaptagentsetuperror
 msgctxt "uwaptres.rswaptagentsetuperror"
@@ -3285,7 +3303,7 @@ msgstr "WAPT Kunde auf die Hosts hochladen"
 #: uwaptres.rswaptgetupgrade
 msgctxt "uwaptres.rswaptgetupgrade"
 msgid "WAPT-GET Upgrade using repository at %s"
-msgstr "WAPT-GET benutzt Repository zum Hochladen"
+msgstr "WAPT-GET benutzt Repository zum Hochladen %s"
 
 #: uwaptres.rswaptservicestopping
 msgid "Waptservice stopping"
@@ -3303,7 +3321,7 @@ msgstr "Fehler beim erstellen des Agent"
 #: uwaptres.rswaptsetupuploadsuccess
 msgctxt "uwaptres.rswaptsetupuploadsuccess"
 msgid "WAPT agent successfully created and uploaded to the repository : %s"
-msgstr "WAPT agent erfolgreich erstellt und hochgeladen auf Repository"
+msgstr "WAPT agent erfolgreich erstellt und hochgeladen auf Repository : %s"
 
 #: uwaptres.rswaptupgrade
 msgctxt "uwaptres.rswaptupgrade"
@@ -3324,3 +3342,4 @@ msgstr ""
 msgctxt "uwaptres.rswinterruptreceived"
 msgid "W: interrupt received, killing serverâ¦"
 msgstr "W: Unterbrechung empfangen, zerstöre Servera"
+
