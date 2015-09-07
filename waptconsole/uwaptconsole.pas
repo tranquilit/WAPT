@@ -57,12 +57,14 @@ type
     Label19: TLabel;
     MenuItem74: TMenuItem;
     MenuItem75: TMenuItem;
+    MenuItem76: TMenuItem;
     PopupGridWSUSScan: TPopupMenu;
     MenuItem70: TMenuItem;
     MenuItem71: TMenuItem;
     MenuItem72: TMenuItem;
     MenuItem73: TMenuItem;
     pgWindowsUpdates: TTabSheet;
+    PopupDelete: TPopupMenu;
     WSUSActions: TActionList;
     ActWUANewGroup: TAction;
     ActWUAProductsSelection: TAction;
@@ -351,6 +353,7 @@ type
     procedure ActWSUSSaveBuildRulesUpdate(Sender: TObject);
     procedure ActWUAAddAllowedClassificationExecute(Sender: TObject);
     procedure ActWUAAddAllowedUpdateExecute(Sender: TObject);
+    procedure ActWUAAddForbiddenUpdateExecute(Sender: TObject);
     procedure ActWUADownloadSelectedUpdateUpdate(Sender: TObject);
     procedure ActEditGroupExecute(Sender: TObject);
     procedure ActEditHostPackageExecute(Sender: TObject);
@@ -1748,23 +1751,27 @@ begin
   else
     GridWSUSScan.Data := Nil;
 
-  res := WAPTServerJsonGet('api/v2/windows_updates_rules?group=default',[]);
-  if res.B['success'] then
+  if not windows_updates_rulesUpdated then
   begin
-    GridWSUSAllowedClassifications.Data := res.A['result'][0]['allowed_classifications'];
-    GridWSUSAllowedWindowsUpdates.Data := res.A['result'][0]['allowed_windows_updates'];
-    GridWSUSForbiddenWindowsUpdates.Data := res.A['result'][0]['forbidden_windows_updates'];
-    windows_updates_rulesUpdated := False;
+    res := WAPTServerJsonGet('api/v2/windows_updates_rules?group=default',[]);
+    if res.B['success'] then
+    begin
+      GridWSUSAllowedClassifications.Data := WAPTServerJsonGet('api/v2/windows_updates_classifications?id=%s',[join(',',res.A['result'][0]['rules.allowed_classifications'])])['result'];
+      GridWSUSAllowedWindowsUpdates.Data := WAPTServerJsonGet('api/v2/windows_updates?update_ids=%s',[join(',',res.A['result'][0]['rules.allowed_windows_updates'])])['result'];
+      GridWSUSForbiddenWindowsUpdates.Data := WAPTServerJsonGet('api/v2/windows_updates?update_ids=%s',[join(',',res.A['result'][0]['rules.forbidden_windows_updates'])])['result'];
+      windows_updates_rulesUpdated := False;
+    end
+    else
+    begin
+      GridWSUSScan.Data := Nil;
+      GridWSUSAllowedClassifications.Data := Nil;
+      GridWSUSAllowedWindowsUpdates.Data := Nil;
+      GridWSUSForbiddenWindowsUpdates.Data := Nil;
+      windows_updates_rulesUpdated := False;
+    end;
   end
   else
-  begin
-    GridWSUSScan.Data := Nil;
-    GridWSUSAllowedClassifications.Data := Nil;
-    GridWSUSAllowedWindowsUpdates.Data := Nil;
-    GridWSUSForbiddenWindowsUpdates.Data := Nil;
-    windows_updates_rulesUpdated := False;
-  end;
-
+    ShowMessage('Warning : Windows updates rules not saved');
 end;
 
 procedure TVisWaptGUI.ActWSUSSaveBuildRulesExecute(Sender: TObject);
@@ -1773,13 +1780,20 @@ var
 begin
   wsus_rules := TSuperObject.Create();
   WUAGroupRules := TSuperObject.Create();
-  WUAGroupRules['allowed_classifications'] := GridWSUSAllowedClassifications.Data;
-  WUAGroupRules['allowed_windows_updates'] := GridWSUSAllowedWindowsUpdates.Data;
-  WUAGroupRules['forbidden_windows_updates'] := GridWSUSForbiddenWindowsUpdates.Data;
+  WUAGroupRules['allowed_classifications'] := ExtractField(GridWSUSAllowedClassifications.Data,'id');
+  WUAGroupRules['allowed_windows_updates'] := ExtractField(GridWSUSAllowedWindowsUpdates.Data,'update_id');
+  WUAGroupRules['forbidden_windows_updates'] := ExtractField(GridWSUSForbiddenWindowsUpdates.Data,'update_id');
   wsus_rules.S['group'] := 'default';//WUAGroup;
   wsus_rules['rules']   := WUAGroupRules;
   res := WAPTServerJsonPost('api/v2/windows_updates_rules?group=%s',[wsus_rules.S['group']],wsus_rules);
-  windows_updates_rulesUpdated := res.B['success'];
+  windows_updates_rulesUpdated := not res.B['success'];
+  if not res.B['success'] then
+  begin
+    ShowMessageFmt('Unable to save Windows Updates Rules : %s'#13#10'data:%s',[res.B['error'],wsus_rules.AsJSon(True)]);
+    Clipboard.AsText:=wsus_rules.AsJSon(True);
+  end
+  else
+
 end;
 
 procedure TVisWaptGUI.ActWSUSSaveBuildRulesUpdate(Sender: TObject);
@@ -1837,6 +1851,32 @@ begin
     Free;
   end;
 end;
+
+procedure TVisWaptGUI.ActWUAAddForbiddenUpdateExecute(Sender: TObject);
+var
+  r:ISuperObject;
+begin
+  With TVisWUAPackageSelect.Create(Self) do
+  try
+    if ShowModal = mrOk then
+    begin
+      if GridWSUSForbiddenWindowsUpdates.Data = Nil then
+        GridWSUSForbiddenWindowsUpdates.Data :=  TSuperObject.Create(stArray);
+      for r in GridWinUpdates.SelectedRows do
+      begin
+        if SOArrayFindFirst(r,GridWSUSForbiddenWindowsUpdates.Data,['update_id']) = Nil then
+        begin
+          GridWSUSForbiddenWindowsUpdates.Data.AsArray.Add(r);
+          windows_updates_rulesUpdated := True;
+        end;
+      end;
+    end;
+  finally
+    GridWSUSForbiddenWindowsUpdates.LoadData;
+    Free;
+  end;
+end;
+
 
 procedure TVisWaptGUI.ActWUADownloadSelectedUpdateUpdate(Sender: TObject);
 begin
@@ -2416,15 +2456,6 @@ end;
 procedure TVisWaptGUI.ActHostsCopyExecute(Sender: TObject);
 begin
   Clipboard.AsText := GridHosts.ContentToUTF8(tstSelected, ';');
-end;
-
-function ExtractField(SOList:ISuperObject;fieldname:String):ISuperObject;
-var
-  item:ISuperObject;
-begin
-  Result := TSuperObject.Create(stArray);
-  for item in SOList do
-     Result.AsArray.Add(item[fieldname]);
 end;
 
 procedure TVisWaptGUI.ActHostsDeleteExecute(Sender: TObject);
@@ -3374,7 +3405,6 @@ begin
   else if MainPages.ActivePage = pgWindowsUpdates then
   begin
     WUAClassifications := WAPTServerJsonGet('api/v2/windows_updates_classifications',[])['result'];
-    GridWSUSAllowedClassifications.Data := WUAClassifications;
     ActWSUSRefreshCabHistory.Execute;
   end
 

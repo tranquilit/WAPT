@@ -1,10 +1,10 @@
-package      : tis-waptwua
+package      : tis-waptwua-default
 version      : 23
 architecture : all
 section      : base
 priority     : standard
 maintainer   : Hubert TOUVET
-description  : wsus like task
+description  : default
 depends      : 
 conflicts    : 
 sources      : https://srvdev/sources/tis-waptwsus-wapt/trunk

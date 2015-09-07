@@ -9,9 +9,15 @@ uninstallkey = []
 def update_control(control):
     try:
         restrictions = WAPT.waptserver.get('api/v2/windows_updates_rules?group=default')['result']
-        open('windows_updates_rules.json','w').write(restrictions)
-    except:
-        print('Unable to get restrictions from waptserver, default to stored ones on workstations')
+        if restrictions:
+            control.package = '%s-waptwua-%s' % (WAPT.config.get('global','default_package_prefix'),restrictions[0]['group'])
+            control.description = restrictions[0]['description']
+            open('windows_updates_rules.json','w').write(json.dumps(restrictions[0]['rules'],indent=True))
+        else:
+            raise Exception('Empty ruleset')
+
+    except Exception as e:
+        print('Unable to get restrictions from waptserver, default to stored ones on workstations: %s' % (e,))
         restrictions = None
         remove_file('windows_updates_rules.json')
 

@@ -1420,6 +1420,11 @@ msgstr ""
 msgid "Delete task"
 msgstr ""
 
+#: tviswaptgui.menuitem76.caption
+msgctxt "TVISWAPTGUI.MENUITEM76.CAPTION"
+msgid "Remove"
+msgstr ""
+
 #: tviswaptgui.menuitem8.caption
 msgid "Open..."
 msgstr ""

@@ -2539,10 +2539,9 @@ object VisWaptGUI: TVisWaptGUI
         Header.SortColumn = 1
         Header.Style = hsFlatButtons
         Images = ImageList1
-        PopupMenu = PopupGridWSUSScan
         TabOrder = 4
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
-        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
         TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
         WantTabs = True
@@ -2685,7 +2684,7 @@ object VisWaptGUI: TVisWaptGUI
         PopupMenu = PopupWUAUpdates
         TabOrder = 6
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
-        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
         TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
         WantTabs = True
@@ -2827,7 +2826,7 @@ object VisWaptGUI: TVisWaptGUI
         PopupMenu = PopupWUAUpdates
         TabOrder = 9
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
-        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
         TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
         WantTabs = True
@@ -6560,6 +6559,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActWUAAddForbiddenUpdate: TAction
       Caption = 'Add Forbidden Windows Update'
+      OnExecute = ActWUAAddForbiddenUpdateExecute
     end
     object ActWSUSSaveBuildRules: TAction
       Caption = 'Save and build rules package'
@@ -6575,6 +6575,14 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Delete task'
       ShortCut = 16430
       OnClick = MenuItem74Click
+    end
+  end
+  object PopupDelete: TPopupMenu
+    left = 216
+    top = 464
+    object MenuItem76: TMenuItem
+      Caption = 'Remove'
+      ShortCut = 16430
     end
   end
 end
