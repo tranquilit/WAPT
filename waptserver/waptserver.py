@@ -1665,6 +1665,12 @@ def windows_products():
     if wsus:
         return wsus.windows_products()
 
+
+@app.route('/api/v2/windows_updates_classifications')
+def windows_updates_classifications():
+    if wsus:
+        return wsus.windows_updates_classifications()
+
 @app.route('/api/v2/windows_updates_options',methods=['GET','POST'])
 def windows_updates_options():
     if wsus:

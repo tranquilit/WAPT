@@ -33,6 +33,7 @@ __all__ = [
     'select_windows_update',
     'windows_updates_rules',
     'windows_updates_urls',
+    'windows_updates_classifications',
 ]
 
 import os
@@ -1050,6 +1051,16 @@ def get_selected_products():
              return []
      else:
          return []
+
+
+#@app.route('/api/v2/windows_updates_classifications')
+def windows_updates_classifications():
+    result = []
+    for k in update_classifications_id:
+        result.append(dict(id=k,name=update_classifications_id[k]))
+    return make_response(msg = _('Win updates classifications'),result=result)
+
+
 
 #@app.route('/api/v2/windows_updates')
 def windows_updates():
