@@ -1,11 +1,11 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 641
-  Height = 648
-  Top = 239
-  Width = 955
+  Left = 378
+  Height = 775
+  Top = 105
+  Width = 1415
   Caption = 'WAPT console'
-  ClientHeight = 629
-  ClientWidth = 955
+  ClientHeight = 756
+  ClientWidth = 1415
   Constraints.MinHeight = 600
   Constraints.MinWidth = 800
   Font.CharSet = ANSI_CHARSET
@@ -22,9 +22,9 @@ object VisWaptGUI: TVisWaptGUI
   LCLVersion = '1.3'
   object MainPages: TPageControl
     Left = 0
-    Height = 486
+    Height = 613
     Top = 0
-    Width = 955
+    Width = 1415
     ActivePage = pgWindowsUpdates
     Align = alClient
     TabIndex = 3
@@ -32,17 +32,17 @@ object VisWaptGUI: TVisWaptGUI
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
       Caption = 'Inventory'
-      ClientHeight = 460
-      ClientWidth = 947
+      ClientHeight = 587
+      ClientWidth = 1407
       object Panel10: TPanel
         Left = 0
         Height = 54
         Top = 37
-        Width = 947
+        Width = 1407
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 54
-        ClientWidth = 947
+        ClientWidth = 1407
         TabOrder = 1
         object EdSearchHost: TEdit
           Left = 60
@@ -179,7 +179,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object Label13: TLabel
           AnchorSideRight.Side = asrBottom
-          Left = 767
+          Left = 1227
           Height = 13
           Top = 22
           Width = 122
@@ -190,7 +190,7 @@ object VisWaptGUI: TVisWaptGUI
           ParentColor = False
         end
         object labSelected: TLabel
-          Left = 903
+          Left = 1363
           Height = 13
           Top = 22
           Width = 6
@@ -200,7 +200,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object Label11: TLabel
           AnchorSideRight.Side = asrBottom
-          Left = 767
+          Left = 1227
           Height = 13
           Top = 7
           Width = 128
@@ -211,7 +211,7 @@ object VisWaptGUI: TVisWaptGUI
           ParentColor = False
         end
         object LabelComputersNumber: TLabel
-          Left = 903
+          Left = 1363
           Height = 13
           Top = 7
           Width = 6
@@ -241,9 +241,9 @@ object VisWaptGUI: TVisWaptGUI
       end
       object GridHosts: TSOGrid
         Left = 0
-        Height = 369
+        Height = 496
         Top = 91
-        Width = 370
+        Width = 830
         OnGetText = GridHostsGetText
         Align = alClient
         ChangeDelay = 50
@@ -449,8 +449,8 @@ object VisWaptGUI: TVisWaptGUI
         OnHeaderDblClick = GridHostsHeaderDblClick
       end
       object HostPages: TPageControl
-        Left = 375
-        Height = 369
+        Left = 835
+        Height = 496
         Top = 91
         Width = 572
         ActivePage = pgPackages
@@ -461,13 +461,13 @@ object VisWaptGUI: TVisWaptGUI
         object pgPackages: TTabSheet
           AnchorSideTop.Side = asrBottom
           Caption = 'Overview'
-          ClientHeight = 343
+          ClientHeight = 470
           ClientWidth = 564
           object GridHostPackages: TSOGrid
             AnchorSideTop.Control = Panel9
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 131
+            Height = 258
             Top = 122
             Width = 564
             Align = alBottom
@@ -839,7 +839,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel5: TPanel
             Left = 0
             Height = 90
-            Top = 253
+            Top = 380
             Width = 564
             Align = alBottom
             BevelOuter = bvNone
@@ -1670,8 +1670,8 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
       object Splitter4: TSplitter
-        Left = 370
-        Height = 369
+        Left = 830
+        Height = 496
         Top = 91
         Width = 5
         Align = alRight
@@ -1681,7 +1681,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 37
         Top = 0
-        Width = 947
+        Width = 1407
         ButtonHeight = 30
         Caption = 'ToolBar1'
         Images = ActionsImages
@@ -1728,7 +1728,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object Image1: TImage
           Cursor = crHandPoint
-          Left = 915
+          Left = 1375
           Height = 35
           Top = 2
           Width = 32
@@ -1848,16 +1848,16 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgGroups: TTabSheet
       Caption = 'Bundles'
-      ClientHeight = 460
-      ClientWidth = 947
+      ClientHeight = 587
+      ClientWidth = 1407
       object GridGroups: TSOGrid
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Side = asrBottom
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 430
+        Height = 557
         Top = 30
-        Width = 947
+        Width = 1407
         OnGetText = GridGroupsGetText
         Align = alClient
         Color = clWhite
@@ -1937,11 +1937,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 30
         Top = 0
-        Width = 947
+        Width = 1407
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 947
+        ClientWidth = 1407
         TabOrder = 1
         object butSearchGroups: TBitBtn
           Left = 156
@@ -2042,13 +2042,13 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgPrivateRepo: TTabSheet
       Caption = 'Private repository'
-      ClientHeight = 460
-      ClientWidth = 947
+      ClientHeight = 587
+      ClientWidth = 1407
       object GridPackages: TSOGrid
         Left = 0
-        Height = 430
+        Height = 557
         Top = 30
-        Width = 651
+        Width = 1111
         OnGetText = GridGroupsGetText
         Align = alClient
         Color = clWhite
@@ -2129,8 +2129,8 @@ object VisWaptGUI: TVisWaptGUI
         OnMeasureItem = GridGroupsMeasureItem
       end
       object Splitter3: TSplitter
-        Left = 651
-        Height = 430
+        Left = 1111
+        Height = 557
         Top = 30
         Width = 6
         Align = alRight
@@ -2140,11 +2140,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 30
         Top = 0
-        Width = 947
+        Width = 1407
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 947
+        ClientWidth = 1407
         TabOrder = 0
         object EdSearch: TEdit
           Left = 4
@@ -2332,20 +2332,20 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
       object Panel2: TPanel
-        Left = 657
-        Height = 430
+        Left = 1117
+        Height = 557
         Top = 30
         Width = 290
         Align = alRight
         Alignment = taRightJustify
         BevelOuter = bvNone
-        ClientHeight = 430
+        ClientHeight = 557
         ClientWidth = 290
         TabOrder = 2
         object MemoGroupeDescription: TMemo
           Left = 0
           Height = 300
-          Top = 130
+          Top = 257
           Width = 290
           Align = alBottom
           TabOrder = 0
@@ -2354,25 +2354,16 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgWindowsUpdates: TTabSheet
       Caption = 'Windows Updates'
-      ClientHeight = 460
-      ClientWidth = 947
+      ClientHeight = 587
+      ClientWidth = 1407
       object BitBtn9: TBitBtn
-        Left = 4
-        Height = 30
-        Top = 194
+        Left = 316
+        Height = 32
+        Top = 10
         Width = 296
         Action = ActWSUSDowloadWSUSScan
+        Caption = 'Download Updates listing from Microsoft'
         TabOrder = 0
-      end
-      object wsusResult: TMemo
-        Left = 4
-        Height = 76
-        Top = 250
-        Width = 631
-        Lines.Strings = (
-          'wsusResult'
-        )
-        TabOrder = 1
       end
       object BitBtn10: TBitBtn
         Left = 4
@@ -2380,14 +2371,16 @@ object VisWaptGUI: TVisWaptGUI
         Top = 10
         Width = 296
         Action = ActWSUSRefreshCabHistory
-        TabOrder = 2
+        Caption = 'Refresh Updates listing retrieval history'
+        TabOrder = 1
       end
       object GridWSUSScan: TSOGrid
         Left = 4
-        Height = 120
+        Height = 168
         Top = 50
-        Width = 631
+        Width = 1396
         Align = alCustom
+        Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Top = 2
         Color = clWhite
         Header.AutoSizeIndex = -1
@@ -2403,58 +2396,97 @@ object VisWaptGUI: TVisWaptGUI
             Position = 1
             Tag = 1
             Text = 'Date'
-            Width = 117
+            Width = 124
             PropertyName = 'run_date'
           end        
           item
             Position = 2
             Tag = 2
             Text = 'Status'
+            Width = 61
             PropertyName = 'status'
           end        
           item
-            Alignment = taRightJustify
             Position = 3
             Tag = 3
-            Text = 'WSUS Cab Size'
-            Width = 73
-            PropertyName = 'file_size'
+            Text = 'Result'
+            Width = 171
+            PropertyName = 'result'
           end        
           item
             Alignment = taRightJustify
             Position = 4
             Tag = 4
             Text = 'WSUS Cab Date'
-            Width = 85
-            PropertyName = 'file_timestamp'
+            Width = 121
+            PropertyName = 'file_date'
           end        
           item
+            Alignment = taRightJustify
             Position = 5
             Tag = 5
-            Text = 'Forced'
-            PropertyName = 'forced'
+            Text = 'WSUS Cab Size'
+            Width = 128
+            PropertyName = 'file_size'
           end        
           item
             Position = 6
             Tag = 6
-            Text = 'Skipped'
-            Width = 44
-            PropertyName = 'skipped'
+            Text = 'Error'
+            Width = 155
+            PropertyName = 'error'
           end        
           item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 7
             Tag = 7
-            Text = 'Error'
-            Width = 107
-            PropertyName = 'error'
+            Text = 'Forced'
+            PropertyName = 'forced'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 8
             Tag = 8
+            Text = 'Skipped'
+            Width = 52
+            PropertyName = 'skipped'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 9
+            Tag = 9
             Text = 'cablist'
             Width = 100
             PropertyName = 'cablist'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 10
+            Text = 'Reason'
+            Width = 100
+            PropertyName = 'reason'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 11
+            Text = 'uuid'
+            Width = 100
+            PropertyName = 'uuid'
+          end        
+          item
+            Alignment = taRightJustify
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 12
+            Text = 'Expected File size'
+            Width = 100
+            PropertyName = 'target_size'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 13
+            Text = 'file_timestamp'
+            Width = 13
+            PropertyName = 'file_timestamp'
           end>
         Header.DefaultHeight = 17
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
@@ -2463,7 +2495,7 @@ object VisWaptGUI: TVisWaptGUI
         Header.Style = hsFlatButtons
         Images = ImageList1
         PopupMenu = PopupGridWSUSScan
-        TabOrder = 3
+        TabOrder = 2
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
@@ -2471,24 +2503,295 @@ object VisWaptGUI: TVisWaptGUI
         WantTabs = True
       end
       object cbForcedWSUSscanDownload: TCheckBox
-        Left = 4
+        Left = 620
         Height = 17
-        Top = 226
-        Width = 222
-        Caption = 'Force download even if aready up to date'
+        Top = 18
+        Width = 224
+        Caption = 'Force download even if already up to date'
+        TabOrder = 3
+      end
+      object GridWSUSAllowedClassifications: TSOGrid
+        Left = 4
+        Height = 303
+        Top = 242
+        Width = 288
+        Align = alCustom
+        Anchors = [akTop, akLeft, akBottom]
+        BorderSpacing.Top = 2
+        Color = clWhite
+        Header.AutoSizeIndex = -1
+        Header.Columns = <        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 0
+            Text = '_id'
+            Width = 100
+            PropertyName = '_id'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 1
+            Tag = 7
+            Text = 'Forced'
+            PropertyName = 'forced'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 2
+            Tag = 8
+            Text = 'Skipped'
+            Width = 52
+            PropertyName = 'skipped'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 3
+            Tag = 9
+            Text = 'cablist'
+            Width = 100
+            PropertyName = 'cablist'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 4
+            Text = 'Reason'
+            Width = 100
+            PropertyName = 'reason'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 5
+            Text = 'uuid'
+            Width = 100
+            PropertyName = 'uuid'
+          end        
+          item
+            Alignment = taRightJustify
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 6
+            Text = 'Expected File size'
+            Width = 100
+            PropertyName = 'target_size'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 7
+            Text = 'file_timestamp'
+            Width = 13
+            PropertyName = 'file_timestamp'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 8
+            Text = 'id'
+            Width = 100
+            PropertyName = 'id'
+          end        
+          item
+            Position = 9
+            Text = 'Description'
+            Width = 158
+            PropertyName = 'name'
+          end>
+        Header.DefaultHeight = 17
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+        Header.SortColumn = 9
+        Header.Style = hsFlatButtons
+        Images = ImageList1
+        PopupMenu = PopupGridWSUSScan
         TabOrder = 4
+        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
+        TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
+        WantTabs = True
+      end
+      object Label16: TLabel
+        Left = 10
+        Height = 13
+        Top = 10
+        Width = 37
+        Caption = 'Label16'
+        ParentColor = False
+      end
+      object Label17: TLabel
+        Left = 25
+        Height = 13
+        Top = 17
+        Width = 37
+        Caption = 'Label17'
+        ParentColor = False
+      end
+      object Label10: TLabel
+        Left = 4
+        Height = 13
+        Top = 226
+        Width = 196
+        Caption = 'Allowed Windows Updates Classifications'
+        ParentColor = False
+      end
+      object BitBtn11: TBitBtn
+        Left = 4
+        Height = 32
+        Top = 553
+        Width = 176
+        Action = ActWUAAddAllowedClassification
+        Anchors = [akLeft, akBottom]
+        TabOrder = 5
+      end
+      object GridWUAAllowedWindowsUpdates: TSOGrid
+        Left = 300
+        Height = 303
+        Top = 242
+        Width = 560
+        Anchors = [akTop, akLeft, akBottom]
+        BorderSpacing.Top = 2
+        Color = clWhite
+        Header.AutoSizeIndex = -1
+        Header.Columns = <        
+          item
+            Position = 0
+            Text = 'Status'
+            Width = 36
+            PropertyName = 'status'
+          end        
+          item
+            Position = 1
+            Tag = 1
+            Text = 'KB Article'
+            Width = 71
+            PropertyName = 'kb_article_id'
+          end        
+          item
+            Position = 2
+            Tag = 2
+            Text = 'Severity'
+            Width = 89
+            PropertyName = 'msrc_severity'
+          end        
+          item
+            Position = 3
+            Tag = 3
+            Text = 'Title'
+            Width = 353
+            PropertyName = 'title'
+          end        
+          item
+            Position = 4
+            Tag = 4
+            Text = 'Description'
+            Width = 100
+            PropertyName = 'description'
+          end        
+          item
+            Position = 5
+            Tag = 5
+            Text = 'Categories'
+            Width = 121
+            PropertyName = 'categories'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 6
+            Tag = 6
+            Text = 'Update Id'
+            Width = 225
+            PropertyName = 'update_id'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 7
+            Tag = 7
+            Text = '_id'
+            Width = 100
+            PropertyName = '_id'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 8
+            Tag = 8
+            Text = 'Revision Id'
+            Width = 81
+            PropertyName = 'revision_id'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 9
+            Tag = 9
+            Text = 'prereqs'
+            Width = 100
+            PropertyName = 'prereqs'
+          end        
+          item
+            Position = 10
+            Tag = 10
+            Text = 'Security Bulletin ID'
+            Width = 61
+            PropertyName = 'security_bulletin_id'
+          end        
+          item
+            Position = 11
+            Text = 'Date'
+            PropertyName = 'creation_date'
+          end>
+        Header.DefaultHeight = 17
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+        Header.SortColumn = 1
+        Header.Style = hsFlatButtons
+        Images = ImageList1
+        PopupMenu = PopupWUAUpdates
+        TabOrder = 6
+        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
+        TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
+        WantTabs = True
+      end
+      object Label18: TLabel
+        Left = 300
+        Height = 13
+        Top = 226
+        Width = 126
+        Caption = 'Allowed Windows Updates'
+        ParentColor = False
+      end
+      object Label19: TLabel
+        Left = 932
+        Height = 13
+        Top = 226
+        Width = 137
+        Caption = 'Forbidden Windows Updates'
+        ParentColor = False
+      end
+      object BitBtn15: TBitBtn
+        Left = 304
+        Height = 32
+        Top = 553
+        Width = 176
+        Action = ActWUAAddAllowedUpdate
+        Anchors = [akLeft, akBottom]
+        TabOrder = 7
+      end
+      object BitBtn13: TBitBtn
+        Left = 872
+        Height = 32
+        Top = 553
+        Width = 176
+        Action = ActWUAAddForbiddenUpdate
+        Anchors = [akLeft, akBottom]
+        TabOrder = 8
       end
     end
     object pgSources: TTabSheet
       Caption = 'Sources'
-      ClientHeight = 460
-      ClientWidth = 947
+      ClientHeight = 587
+      ClientWidth = 1407
       TabVisible = False
       inline testedit: TSynEdit
         Left = 0
-        Height = 426
+        Height = 553
         Top = 34
-        Width = 947
+        Width = 1407
         Align = alClient
         Font.Height = -13
         Font.Name = 'Courier New'
@@ -3007,11 +3310,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 34
         Top = 0
-        Width = 947
+        Width = 1407
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 34
-        ClientWidth = 947
+        ClientWidth = 1407
         TabOrder = 1
         object butInitWapt: TBitBtn
           Left = 4
@@ -3044,29 +3347,29 @@ object VisWaptGUI: TVisWaptGUI
   object PanDebug: TPanel
     Left = 0
     Height = 118
-    Top = 491
-    Width = 955
+    Top = 618
+    Width = 1415
     Align = alBottom
     ClientHeight = 118
-    ClientWidth = 955
+    ClientWidth = 1415
     TabOrder = 1
     Visible = False
     object Panel7: TPanel
       Left = 1
       Height = 116
       Top = 1
-      Width = 953
+      Width = 1413
       Align = alClient
       BevelOuter = bvNone
       Caption = 'Panel7'
       ClientHeight = 116
-      ClientWidth = 953
+      ClientWidth = 1413
       TabOrder = 0
       object MemoLog: TMemo
         Left = 0
         Height = 100
         Top = 0
-        Width = 342
+        Width = 802
         Align = alClient
         Lines.Strings = (
           ''
@@ -3074,7 +3377,7 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 0
       end
       object jsonlog: TVirtualJSONInspector
-        Left = 347
+        Left = 807
         Height = 100
         Top = 0
         Width = 606
@@ -3102,7 +3405,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.SelectionOptions = [toExtendedFocus]
       end
       object Splitter2: TSplitter
-        Left = 342
+        Left = 802
         Height = 100
         Top = 0
         Width = 5
@@ -3113,14 +3416,14 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 16
         Top = 100
-        Width = 953
+        Width = 1413
         Align = alBottom
         BevelOuter = bvNone
         ClientHeight = 16
-        ClientWidth = 953
+        ClientWidth = 1413
         TabOrder = 3
         object cbShowLog: TCheckBox
-          Left = 162
+          Left = 622
           Height = 17
           Top = -2
           Width = 79
@@ -3136,37 +3439,137 @@ object VisWaptGUI: TVisWaptGUI
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 486
-    Width = 955
+    Top = 613
+    Width = 1415
     Align = alBottom
     ResizeAnchor = akBottom
-  end
-  object Label10: TLabel
-    Left = 470
-    Height = 13
-    Top = 550
-    Width = 37
-    Caption = 'Label10'
-    ParentColor = False
   end
   object plStatusBar1: TplStatusBar
     Left = 0
     Height = 20
-    Top = 609
-    Width = 955
+    Top = 736
+    Width = 1415
     Panels = <    
       item
         Width = 200
       end>
     SimplePanel = False
     object ProgressBar1: TProgressBar
-      Left = 667
+      Left = 1127
       Height = 16
       Top = 3
       Width = 264
       Anchors = [akTop, akRight]
       TabOrder = 0
     end
+  end
+  object GridWUAForbiddenWindowsUpdates: TSOGrid
+    Left = 872
+    Height = 303
+    Top = 264
+    Width = 532
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Top = 2
+    Color = clWhite
+    Header.AutoSizeIndex = -1
+    Header.Columns = <    
+      item
+        Position = 0
+        Text = 'Status'
+        Width = 36
+        PropertyName = 'status'
+      end    
+      item
+        Position = 1
+        Tag = 1
+        Text = 'KB Article'
+        Width = 71
+        PropertyName = 'kb_article_id'
+      end    
+      item
+        Position = 2
+        Tag = 2
+        Text = 'Severity'
+        Width = 89
+        PropertyName = 'msrc_severity'
+      end    
+      item
+        Position = 3
+        Tag = 3
+        Text = 'Title'
+        Width = 353
+        PropertyName = 'title'
+      end    
+      item
+        Position = 4
+        Tag = 4
+        Text = 'Description'
+        Width = 100
+        PropertyName = 'description'
+      end    
+      item
+        Position = 5
+        Tag = 5
+        Text = 'Categories'
+        Width = 121
+        PropertyName = 'categories'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 6
+        Tag = 6
+        Text = 'Update Id'
+        Width = 225
+        PropertyName = 'update_id'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 7
+        Tag = 7
+        Text = '_id'
+        Width = 100
+        PropertyName = '_id'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 8
+        Tag = 8
+        Text = 'Revision Id'
+        Width = 81
+        PropertyName = 'revision_id'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 9
+        Tag = 9
+        Text = 'prereqs'
+        Width = 100
+        PropertyName = 'prereqs'
+      end    
+      item
+        Position = 10
+        Tag = 10
+        Text = 'Security Bulletin ID'
+        Width = 61
+        PropertyName = 'security_bulletin_id'
+      end    
+      item
+        Position = 11
+        Text = 'Date'
+        PropertyName = 'creation_date'
+      end>
+    Header.DefaultHeight = 17
+    Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+    Header.SortColumn = 1
+    Header.Style = hsFlatButtons
+    Images = ImageList1
+    PopupMenu = PopupWUAUpdates
+    TabOrder = 4
+    TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+    TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+    TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
+    TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
+    WantTabs = True
   end
   object SynPythonSyn1: TSynPythonSyn
     DefaultFilter = 'Fichiers Python (*.py)|*.py'
@@ -3612,6 +4015,12 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Trigger the install of pending Windows Updates'
       OnExecute = ActTriggerWaptwua_installExecute
     end
+    object ActGerman: TAction
+      Category = 'Tools'
+      Caption = 'German'
+      OnExecute = ActGermanExecute
+      OnUpdate = ActGermanUpdate
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 148
@@ -3632,8 +4041,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object PopupMenuEditDepends: TPopupMenu
     Images = ActionsImages
-    left = 144
-    top = 224
+    left = 152
+    top = 200
     object MenuItem4: TMenuItem
       Caption = 'Remove'
     end
@@ -3825,6 +4234,9 @@ object VisWaptGUI: TVisWaptGUI
         end
         object MenuItem51: TMenuItem
           Action = ActFrench
+        end
+        object MenuItem75: TMenuItem
+          Action = ActGerman
         end
       end
       object MenuItem53: TMenuItem
@@ -4353,8 +4765,8 @@ object VisWaptGUI: TVisWaptGUI
     end
   end
   object ImageList1: TImageList
-    left = 332
-    top = 272
+    left = 328
+    top = 288
     Bitmap = {
       4C69090000001000000010000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
@@ -4771,8 +5183,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object PopupHostPackages: TPopupMenu
     Images = ActionsImages
-    left = 144
-    top = 424
+    left = 232
+    top = 392
     object MenuItem20: TMenuItem
       Action = ActPackageInstall
     end
@@ -4858,11 +5270,11 @@ object VisWaptGUI: TVisWaptGUI
   object TimerTasks: TTimer
     OnTimer = TimerTasksTimer
     left = 536
-    top = 280
+    top = 288
   end
   object ActionsImages: TImageList
     left = 448
-    top = 276
+    top = 288
     Bitmap = {
       4C69260000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -6149,6 +6561,15 @@ object VisWaptGUI: TVisWaptGUI
     object ActWSUSDowloadWSUSScan: TAction
       Caption = 'Download WSUSScan cab from Microsoft Web site'
       OnExecute = ActWSUSDowloadWSUSScanExecute
+    end
+    object ActWUAAddAllowedClassification: TAction
+      Caption = 'Add an allowed classification'
+    end
+    object ActWUAAddAllowedUpdate: TAction
+      Caption = 'Add an Allowed Update'
+    end
+    object ActWUAAddForbiddenUpdate: TAction
+      Caption = 'Add a forbidden Windows Update'
     end
   end
   object PopupGridWSUSScan: TPopupMenu

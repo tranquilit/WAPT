@@ -29,18 +29,33 @@ type
     ActCleanCache: TAction;
     ActAddADSGroups: TAction;
     ActHostsDeleteHostPackage: TAction;
+    ActGerman: TAction;
+    ActWUAAddForbiddenUpdate: TAction;
+    ActWUAAddAllowedUpdate: TAction;
+    ActWUAAddAllowedClassification: TAction;
     ActWSUSDowloadWSUSScan: TAction;
     ActTriggerWaptwua_install: TAction;
     ActTriggerWaptwua_download: TAction;
     ActTriggerWaptwua_scan: TAction;
     ActWSUSRefreshCabHistory: TAction;
     BitBtn10: TBitBtn;
+    BitBtn11: TBitBtn;
+    BitBtn13: TBitBtn;
+    BitBtn15: TBitBtn;
     BitBtn9: TBitBtn;
     cbForcedWSUSscanDownload: TCheckBox;
+    GridWUAAllowedWindowsUpdates: TSOGrid;
+    GridWUAForbiddenWindowsUpdates: TSOGrid;
     GridWSUSScan: TSOGrid;
+    GridWSUSAllowedClassifications: TSOGrid;
+    Label10: TLabel;
+    Label16: TLabel;
+    Label17: TLabel;
+    Label18: TLabel;
+    Label19: TLabel;
     MenuItem74: TMenuItem;
+    MenuItem75: TMenuItem;
     PopupGridWSUSScan: TPopupMenu;
-    wsusResult: TMemo;
     MenuItem70: TMenuItem;
     MenuItem71: TMenuItem;
     MenuItem72: TMenuItem;
@@ -144,7 +159,6 @@ type
     HostRunningTaskLog: TMemo;
     ActionsImages: TImageList;
     Image1: TImage;
-    Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
     HostRunningTask: TLabeledEdit;
@@ -324,6 +338,8 @@ type
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
     procedure ActDeployWaptExecute(Sender: TObject);
+    procedure ActGermanExecute(Sender: TObject);
+    procedure ActGermanUpdate(Sender: TObject);
     procedure ActTriggerWaptwua_downloadExecute(Sender: TObject);
     procedure ActTriggerWaptwua_installExecute(Sender: TObject);
     procedure ActTriggerWaptwua_scanExecute(Sender: TObject);
@@ -1623,6 +1639,16 @@ begin
     end;
 end;
 
+procedure TVisWaptGUI.ActGermanExecute(Sender: TObject);
+begin
+  DMPython.Language:='de';
+end;
+
+procedure TVisWaptGUI.ActGermanUpdate(Sender: TObject);
+begin
+  ActGerman.Checked := DMPython.Language='de';
+end;
+
 procedure TVisWaptGUI.ActTriggerWaptwua_downloadExecute(Sender: TObject);
 begin
     with TVisHostsUpgrade.Create(Self) do
@@ -1707,7 +1733,7 @@ procedure TVisWaptGUI.ActWSUSRefreshCabHistoryExecute(Sender: TObject);
 var
   res:ISuperObject;
 begin
-  res := WAPTServerJsonGet('api/v2/wsusscan2_history?limit=20&skipped=0',[]);
+  res := WAPTServerJsonGet('api/v2/wsusscan2_history?limit=30',[]);
   if res.B['success'] then
     GridWSUSScan.Data := res['result']
   else
@@ -1716,7 +1742,7 @@ end;
 
 procedure TVisWaptGUI.ActWUADownloadSelectedUpdateUpdate(Sender: TObject);
 begin
-  //(Sender as TAction).Enabled:=GridWinUpdates.SelectedCount>0;
+  //(Sender as TAction).Enabled:=GridWUAAllowedWindowsUpdates.SelectedCount>0;
 end;
 
 procedure TVisWaptGUI.ActEditGroupExecute(Sender: TObject);
@@ -1927,7 +1953,7 @@ begin
     soresult := WAPTServerJsonGet('api/v2/windows_updates?%s',[soutils.Join('&', urlParams)]);
     winupdates := soResult['result'];
 
-    GridWinUpdates.Data := winupdates;
+    GridWUAAllowedWindowsUpdates.Data := winupdates;
 
   finally
     Screen.Cursor:=crDefault;
@@ -3141,7 +3167,7 @@ end;
 procedure TVisWaptGUI.GridWinproductsChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
-  {GridWinUpdates.Data := Nil;
+  {GridWUAAllowedWindowsUpdates.Data := Nil;
   TimerWUALoadWinUpdates.Enabled:=False;
   TimerWUALoadWinUpdates.Enabled:=True;}
 end;
@@ -3220,7 +3246,7 @@ end;
 
 procedure TVisWaptGUI.MainPagesChange(Sender: TObject);
 var
-  wsus_restrictions,wsus_rules:ISuperObject;
+  wsus_restrictions,wsus_rules,WUAClassifications:ISuperObject;
 begin
   if MainPages.ActivePage = pgInventory then
   try
@@ -3245,6 +3271,14 @@ begin
     if GridGroups.Data = nil then
       ActSearchGroups.Execute;
   end
+  else if MainPages.ActivePage = pgWindowsUpdates then
+  begin
+    WUAClassifications := WAPTServerJsonGet('api/v2/windows_updates_classifications',[])['result'];
+    GridWSUSAllowedClassifications.Data := WUAClassifications;
+    ActWSUSRefreshCabHistory.Execute;
+  end
+
+
   {else if MainPages.ActivePage = pgWUAProducts then
   begin
     WUAProducts := WAPTServerJsonGet('api/v2/windows_products',[])['result'];
