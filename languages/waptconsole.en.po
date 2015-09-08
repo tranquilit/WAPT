@@ -1127,7 +1127,7 @@ msgid "Add Allowed Updates"
 msgstr ""
 
 #: tviswaptgui.actwuaaddforbiddenupdate.caption
-msgid "Add Forbidden Windows Update"
+msgid "Add Forbidden Windows Updates"
 msgstr ""
 
 #: tviswaptgui.actwuaallowselectedupdates.caption
@@ -1585,6 +1585,14 @@ msgstr ""
 msgid "Classifications"
 msgstr ""
 
+#: tviswuapackageselect.actdefaultfilter.caption
+msgid "Default filter"
+msgstr ""
+
+#: tviswuapackageselect.actdefaultfilter.hint
+msgid "Filters on Critical and Security updates"
+msgstr ""
+
 #: tviswuapackageselect.actsearch.caption
 msgctxt "tviswuapackageselect.actsearch.caption"
 msgid "Search"
@@ -1592,6 +1600,10 @@ msgstr ""
 
 #: tviswuapackageselect.button1.caption
 msgid "Products filtering"
+msgstr ""
+
+#: tviswuapackageselect.button1.hint
+msgid "Select the default list of products to display and filter."
 msgstr ""
 
 #: tviswuapackageselect.caption

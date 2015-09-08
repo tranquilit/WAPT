@@ -21,43 +21,62 @@ FileName=$[Project-Path]waptserver.ini
 Count=1
 
 [Project\ChildNodes\Node0\ChildNodes\Node1]
+ClassName=TProjectFolderNode
+Name=templates
+
+[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node0]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\common.py
+FileName=$[Project-Path]templates\index.html
+
+[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node1]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]templates\listing.html
+
+[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node2]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]templates\listingwua.html
+
+[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes]
+Count=3
 
 [Project\ChildNodes\Node0\ChildNodes\Node2]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\setuphelpers.py
+FileName=C:\tranquilit\wapt\common.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node3]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]wapthuey.py
+FileName=C:\tranquilit\wapt\setuphelpers.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node4]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptpackage.py
+FileName=$[Project-Path]wapthuey.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node5]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-scanpackages.py
+FileName=C:\tranquilit\wapt\waptpackage.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node6]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptserver.py
+FileName=C:\tranquilit\wapt\wapt-scanpackages.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node7]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptserver_config.py
+FileName=$[Project-Path]waptserver.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node8]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptserver_utils.py
+FileName=$[Project-Path]waptserver_config.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node9]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]waptserver_utils.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node10]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]wsus.py
 
 [Project\ChildNodes\Node0\ChildNodes]
-Count=10
+Count=11
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode

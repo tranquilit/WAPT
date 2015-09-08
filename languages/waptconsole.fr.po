@@ -1195,8 +1195,8 @@ msgstr "Autoriser une mise à jour particulière"
 
 #: tviswaptgui.actwuaaddforbiddenupdate.caption
 #, fuzzy
-#| msgid "Add a forbidden Windows Update"
-msgid "Add Forbidden Windows Update"
+#| msgid "Add Forbidden Windows Update"
+msgid "Add Forbidden Windows Updates"
 msgstr "Interdire une mise à jour particulière"
 
 #: tviswaptgui.actwuaallowselectedupdates.caption
@@ -1662,6 +1662,14 @@ msgstr ""
 msgid "Classifications"
 msgstr ""
 
+#: tviswuapackageselect.actdefaultfilter.caption
+msgid "Default filter"
+msgstr ""
+
+#: tviswuapackageselect.actdefaultfilter.hint
+msgid "Filters on Critical and Security updates"
+msgstr ""
+
 #: tviswuapackageselect.actsearch.caption
 msgctxt "tviswuapackageselect.actsearch.caption"
 msgid "Search"
@@ -1669,6 +1677,10 @@ msgstr "Rechercher"
 
 #: tviswuapackageselect.button1.caption
 msgid "Products filtering"
+msgstr ""
+
+#: tviswuapackageselect.button1.hint
+msgid "Select the default list of products to display and filter."
 msgstr ""
 
 #: tviswuapackageselect.caption
@@ -2510,6 +2522,16 @@ msgstr ""
 #| "if the package exists.\n"
 #| "\n"
 #| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -2576,6 +2598,12 @@ msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 #: uwaptconsoleres.rsconfirmimport
 #, fuzzy
 #| msgid ""
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 #| "Are you sure you want to import\n"
 #| "%s\n"
 #| " to your repository ?\n"
@@ -3292,6 +3320,12 @@ msgstr "Erreur lors de la création du paquet : %s"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
 #| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -3653,6 +3687,10 @@ msgstr "Upgrade de WAPT-GET grâce au dépôt de %s"
 #| "%s\n"
 #| "Error on WAPT server:\n"
 #| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -3663,6 +3701,12 @@ msgstr ""
 #: uwaptconsoleres.rswaptserveroldversion
 #, fuzzy
 #| msgid ""
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
 #| "Required server version: %s\n"

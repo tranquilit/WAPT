@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2015-09-08 12:00+0200\n"
-"PO-Revision-Date: 2015-09-08 12:57+0200\n"
+"PO-Revision-Date: 2015-09-08 15:22+0200\n"
 "Last-Translator: Jessica <jgreulich@tranquil.it>\n"
 "Language-Team: de <LL@li.org>\n"
 "Language: fr\n"
@@ -109,7 +109,7 @@ msgstr "Anmeldedaten fehlen."
 
 #: waptserver.py:630
 msgid "There are no registered computers."
-msgstr "Es gibt keine registrierten Computern."
+msgstr "Es gibt keine registrierten Computer."
 
 #: waptserver.py:649
 msgid "Unsupported HTTP method."
@@ -133,67 +133,71 @@ msgstr "Hosts starten die Entdeckung der Überwachungs IP"
 
 #: waptserver.py:861
 msgid "Couldn't connect to web service : {}."
-msgstr "Konnte keine Verbindung zu web service her"
+msgstr "Konnte keine Verbindung zu web service herstellen : {}."
 
 #: waptserver.py:887
 msgid "Nothing to upgrade."
-msgstr ""
+msgstr "Nichts zu aktualisieren."
 
 #: waptserver.py:890
 msgid ""
 "Triggered {} task(s):\n"
 "{}"
 msgstr ""
+"Ausgelöste {} task(s):\n"
+"{}"
 
 #: waptserver.py:897 waptserver.py:934 waptserver.py:971 waptserver.py:1009
 #: waptserver.py:1046 waptserver.py:1084 waptserver.py:1128 waptserver.py:1177
 #: waptserver.py:1227
 msgid "The WAPT service is unreachable."
-msgstr ""
+msgstr "The WAPT Service ist nicht erreichbar."
 
 #: waptserver.py:927 waptserver.py:964 waptserver.py:1002 waptserver.py:1039
 #: waptserver.py:1077
 msgid "Triggered task: {}"
-msgstr ""
+msgstr "Ausgelöster task: {}"
 
 #: waptserver.py:1121 waptserver.py:1170 waptserver.py:1220
 msgid "Triggered tasks: {}"
-msgstr ""
+msgstr "Ausgelöster task: {}"
 
 #: waptserver.py:1259 waptserver.py:1590
 msgid "The host reachability is not defined."
-msgstr ""
+msgstr "Die Host-Erreichbarkeit ist nicht definiert."
 
 #: waptserver.py:1643
 msgid "Anomnymous usage statistics"
-msgstr ""
+msgstr "Anomnymous Nutzungsstatistiken"
 
 #: waptserver_config.py:69
 msgid "FATAL : couldn't open configuration file : {}."
-msgstr ""
+msgstr "FATAL. Konnte nicht geöffnet werden config Datei : {}."
 
 #: waptserver_config.py:72
 msgid ""
 "FATAL, configuration file {} has no section [options]. Please check the "
 "waptserver documentation."
 msgstr ""
+"FATAL, Konfigurations Datei {} hat kein Abschnitt [Optionen]. Bitte "
+"über­prü­fen Sie waptserver Dokumentation."
 
 #: waptserver_utils.py:188
 msgid "Invalid log level: {}"
-msgstr ""
+msgstr "Ungültige Protokollebene: {}"
 
 #: wsus.py:1027
 msgid "Windows Products"
-msgstr ""
+msgstr "Windows Produkte"
 
 #: wsus.py:1042
 #, python-format
 msgid "Win updates global option for key %(key)s"
-msgstr ""
+msgstr "Win aktualisiert globale Optionen für Key %(key)s"
 
 #: wsus.py:1065
 msgid "Win updates classifications"
-msgstr ""
+msgstr "Win aktuelle Klassifikationen"
 
 #: wsus.py:1188
 #, python-format
@@ -201,107 +205,109 @@ msgid ""
 "Windows Updates, filter: %(query)s, count: %(cnt)s, unknown params: "
 "%(unknown)s"
 msgstr ""
+"Windows Updates, Filter: %(query)s, zählen: %(cnt)s, unbekannte params: %"
+"(unknown)s"
 
 #: wsus.py:1224
 #, python-format
 msgid "Downloads for Windows Updates %(update_id)s, count: %(cnt)s"
-msgstr ""
+msgstr "Downloads für windows Updates %(update_id)s, zählen: %(cnt)s"
 
 #: wsus.py:1437
 msgid "Win updates rules"
-msgstr ""
+msgstr "Win Updates Regeln"
 
 #: templates/index.html:4
 msgid "WAPT SERVER Web Console"
-msgstr ""
+msgstr "WAPT SERVER Web Console"
 
 #: templates/index.html:49 templates/index.html:125 templates/index.html:191
 msgid "Tranquil IT Systems"
-msgstr ""
+msgstr "Tranquil IT Systems"
 
 #: templates/index.html:51
 msgid "WAPT - Apt-get for Windows"
-msgstr ""
+msgstr "APT - Apt-get für Windows"
 
 #: templates/index.html:53
 msgid "Contact us or have us call back"
-msgstr ""
+msgstr "Kontaktieren Sie uns oder rufen Sie uns zurück"
 
 #: templates/index.html:57
 msgid "To contents"
-msgstr ""
+msgstr "Um die Inhalte"
 
 #: templates/index.html:60
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #: templates/index.html:61 templates/index.html:91
 msgid "Private repository"
-msgstr ""
+msgstr "Privater Aufbewahrungsort"
 
 #: templates/index.html:62
 msgid "TIS repositories"
-msgstr ""
+msgstr "TIS repositories"
 
 #: templates/index.html:63
 msgid "WAPT Wiki"
-msgstr ""
+msgstr "WAPT Wiki"
 
 #: templates/index.html:64
 msgid "Mailing list"
-msgstr ""
+msgstr "Mailingliste"
 
 #: templates/index.html:80
 msgid "WAPTServer"
-msgstr ""
+msgstr "WAPTServer"
 
 #: templates/index.html:87
 msgid "WAPT Agent (for deploying onto user desktop)"
-msgstr ""
+msgstr "WAPT Agent (für die Bereitstellung an Benutzer-Desktop)"
 
 #: templates/index.html:88
 msgid "WAPTSetup (for installing on management machine)"
-msgstr ""
+msgstr "WAPTSetup (für die Bereitstellung an Benutzer-Desktop)"
 
 #: templates/index.html:89
 msgid "WAPTDeploy (for setting up deployment GPO)"
-msgstr ""
+msgstr "WAPTDeploy (für die Aufstellung des deployment GPO)"
 
 #: templates/index.html:92
 msgid "TIS repository"
-msgstr ""
+msgstr "TIS repository"
 
 #: templates/index.html:102
 msgid "Help"
-msgstr ""
+msgstr "Hilfe"
 
 #: templates/index.html:108
 msgid "WAPT Wiki&nbsp;"
-msgstr ""
+msgstr "WAPT Wiki&nbsp;"
 
 #: templates/index.html:109
 msgid "mailing list archive"
-msgstr ""
+msgstr "Mailinglisten-Archiv"
 
 #: templates/index.html:110
 msgid "Issue tracker (roundup)"
-msgstr ""
+msgstr "Issue tracker (Zusammenfassung)"
 
 #: templates/index.html:120
 msgid "Services"
-msgstr ""
+msgstr "Services"
 
 #: templates/index.html:125
 msgid "Our solutions"
-msgstr ""
+msgstr "Unsere Lösungen"
 
 #: templates/index.html:126
 msgid "WAPT providers"
-msgstr ""
+msgstr "WAPT Anbieter"
 
 #: templates/index.html:136
 msgid "WAPT server"
-msgstr ""
+msgstr "WAPT server"
 
 #: templates/index.html:137
 msgid ""
@@ -311,6 +317,11 @@ msgid ""
 "When installing the WAPT server on Windows, the console is installed by "
 "default and can be found under the start menu.\n"
 msgstr ""
+"\n"
+"WAPT server wird durch eine WAPT Konsole verwaltet die auf dem Windows "
+"System installiert wird\n"
+"Bei der Installation des WAPT server wird die Konsole standardmäßig "
+"installiert auf Windows und kann man im Startmenü finden."
 
 #: templates/index.html:143
 msgid ""
@@ -319,6 +330,9 @@ msgid ""
 "tis.exe\">WAPT client</a> should be installed on an\n"
 "administration machine, then run from 'Start/All programs'.\n"
 msgstr ""
+"Bei der Installation des Servers auf Linux, die <a href=\"/wapt/waptsetup-"
+"tis.exe\">WAPT client</a> sollte installiert werden auf\n"
+"Verwaltungsmaschine, dann läuft es von 'Start/All programs'."
 
 #: templates/index.html:148
 msgid ""
@@ -329,6 +343,13 @@ msgid ""
 " default parameters should work. Once the WAPT client\n"
 "has been installed, you can find it in your console.\n"
 msgstr ""
+"\n"
+"Um einen neuen Host auf dem WAPT Server hinzuzufügen, laden Sie die <a "
+"href=\"/wapt/waptagent.exe\">WAPT agent</a> von dem Menü\n"
+"auf der rechten Seite. Der Agent wurde ordnungsgemäß konfiguriert durch den "
+"Server, sodass die vorgegebenen Rahmenbedingnungen funktionieren sollte.\n"
+"Sobald der WAPT Kunde installiert wurde, können Sie es in Ihrer Konsole "
+"finden.\n"
 
 #: templates/index.html:154
 msgid ""
@@ -337,31 +358,35 @@ msgid ""
 "href=\"http://dev.tranquil.it/\">dev.tranquil.it</a> or on\n"
 "mailing-list.\n"
 msgstr ""
+"\n"
+"Für weitere Informationen, lesen Sie die Unterlagen unter at <a "
+"href=\"http://dev.tranquil.it/\">dev.tranquil.it</a> oder in\n"
+"der Mailliste.\n"
 
 #: templates/index.html:168
 msgid "What's new"
-msgstr ""
+msgstr "Was ist neu"
 
 #: templates/index.html:172
 msgid "WAPT Server version:"
-msgstr ""
+msgstr "WAPT Server Version:"
 
 #: templates/index.html:173
 msgid "WAPT Agent version:"
-msgstr ""
+msgstr "WAPT Agent Version:"
 
 #: templates/index.html:174
 msgid "WAPT Setup version:"
-msgstr ""
+msgstr "WAPT Setup Version:"
 
 #: templates/index.html:175
 msgid "WAPT Deploy version:"
-msgstr ""
+msgstr "WAPT Deploy Version:"
 
 #: templates/index.html:176
 msgid "MongoDB status:"
-msgstr ""
+msgstr "MongoDB Status:"
 
 #: templates/index.html:177
 msgid "Disk space:"
-msgstr ""
+msgstr "Speicherplatz:"
