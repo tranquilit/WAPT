@@ -1848,16 +1848,16 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgGroups: TTabSheet
       Caption = 'Bundles'
-      ClientHeight = 587
-      ClientWidth = 1407
+      ClientHeight = 662
+      ClientWidth = 1269
       object GridGroups: TSOGrid
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Side = asrBottom
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 557
+        Height = 632
         Top = 30
-        Width = 1407
+        Width = 1269
         OnGetText = GridGroupsGetText
         Align = alClient
         Color = clWhite
@@ -1937,11 +1937,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 30
         Top = 0
-        Width = 1407
+        Width = 1269
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 1407
+        ClientWidth = 1269
         TabOrder = 1
         object butSearchGroups: TBitBtn
           Left = 156
@@ -2574,7 +2574,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 4
         Height = 32
         Top = 628
-        Width = 176
+        Width = 288
         Action = ActWUAAddAllowedClassification
         Anchors = [akLeft, akBottom]
         TabOrder = 5
@@ -2709,7 +2709,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 304
         Height = 32
         Top = 628
-        Width = 176
+        Width = 292
         Action = ActWUAAddAllowedUpdate
         Anchors = [akLeft, akBottom]
         TabOrder = 7
@@ -2718,7 +2718,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 872
         Height = 32
         Top = 628
-        Width = 176
+        Width = 300
         Action = ActWUAAddForbiddenUpdate
         Anchors = [akLeft, akBottom]
         TabOrder = 8

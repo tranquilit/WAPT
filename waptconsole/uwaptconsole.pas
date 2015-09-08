@@ -1743,18 +1743,21 @@ end;
 
 procedure TVisWaptGUI.ActWSUSRefreshCabHistoryExecute(Sender: TObject);
 var
-  res:ISuperObject;
+  res,wuares:ISuperObject;
 begin
   res := WAPTServerJsonGet('api/v2/wsusscan2_history?limit=30',[]);
   if res.B['success'] then
+  begin
+    Clipboard.AsText:=res['result'].AsJSon(True);
     GridWSUSScan.Data := res['result']
+  end
   else
     GridWSUSScan.Data := Nil;
 
   if not windows_updates_rulesUpdated then
   begin
     res := WAPTServerJsonGet('api/v2/windows_updates_rules?group=default',[]);
-    if res.B['success'] then
+    if res.B['success'] and (res.A['result']<>Nil) and (res.A['result'].Length>0) then
     begin
       GridWSUSAllowedClassifications.Data := WAPTServerJsonGet('api/v2/windows_updates_classifications?id=%s',[join(',',res.A['result'][0]['rules.allowed_classifications'])])['result'];
       GridWSUSAllowedWindowsUpdates.Data := WAPTServerJsonGet('api/v2/windows_updates?update_ids=%s',[join(',',res.A['result'][0]['rules.allowed_windows_updates'])])['result'];
@@ -1763,7 +1766,6 @@ begin
     end
     else
     begin
-      GridWSUSScan.Data := Nil;
       GridWSUSAllowedClassifications.Data := Nil;
       GridWSUSAllowedWindowsUpdates.Data := Nil;
       GridWSUSForbiddenWindowsUpdates.Data := Nil;

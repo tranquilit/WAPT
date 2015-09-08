@@ -248,7 +248,9 @@
       <Unit21>
         <Filename Value="uviswuapackageselect.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisWUAPackageSelect"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviswuapackageselect"/>
       </Unit21>
     </Units>
