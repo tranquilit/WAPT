@@ -1268,9 +1268,14 @@ def download_windows_updates():
         fileparts = urlparse.urlparse(url).path.split('/')
         target = os.path.join(waptwua_folder,*fileparts)
 
-        # check sha1 sum if possible...
-        if os.path.isfile(target) and not check_sha1_filename(target):
-            os.remove(target)
+        # check sha1 sum if possible
+        if os.path.isfile(target):
+            if not check_sha1_filename(target):
+                logger.warning('Removing stale file (bad checksum): %s', target)
+                os.remove(target)
+            else:
+                logger.info('Skipping download for file already present on disk: %s', target)
+                return True
 
         if not os.path.isfile(target):
             download_windows_update_task(url)
