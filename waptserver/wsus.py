@@ -1021,7 +1021,7 @@ def windows_products():
                     if match.match(title) or product == request.args['search']]
     else:
         result = [ dict(product=product,title=title) for (product,title) in products_id.iteritems()]
-    if 'selected' in request.args and request.args['selected']:
+    if 'selected' in request.args and bool(int(request.args['selected'])):
         selection = get_selected_products()
         result = [ r for r in result if r['product'] in selection]
     return make_response(msg = _('Windows Products'), result = result )
