@@ -1937,7 +1937,7 @@ begin
     uuid := GridHosts.FocusedRow.S['uuid'];
     desc := GridHosts.FocusedRow.S['host.description'];
 
-    if EditHost(hostname, ActAdvancedMode.Checked, uuid,desc) <> nil then
+    if EditHost(hostname, ActAdvancedMode.Checked, uuid,UTF8Encode(desc)) <> nil then
       ActSearchHost.Execute;
   end;
 end;

@@ -527,7 +527,7 @@ begin
       PackageEdited.S['conflicts'] := Conflicts;
       DMPython.PythonEng.ExecString('p = waptpackage.PackageEntry()');
       DMPython.PythonEng.ExecString(
-        format('p.load_control_from_dict(json.loads(r''%s''))', [PackageEdited.AsJson]));
+        format('p.load_control_from_dict(json.loads(r''%s''))', [utf8Encode(PackageEdited.AsJson)]));
       DMPython.PythonEng.ExecString(
         format('p.save_control_to_wapt(r''%s''.decode(''utf8''))', [EdSourceDir.Text]));
       EdSetupPy.Lines.SaveToFile(AppendPathDelim(FSourcePath) + 'setup.py');
