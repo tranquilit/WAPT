@@ -481,6 +481,12 @@ type
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: Boolean; var ImageIndex: Integer;
       var ImageList: TCustomImageList);
+    procedure GridWSUSAllowedClassificationsFreeNode(Sender: TBaseVirtualTree;
+      Node: PVirtualNode);
+    procedure GridWSUSAllowedWindowsUpdatesFreeNode(Sender: TBaseVirtualTree;
+      Node: PVirtualNode);
+    procedure GridWSUSForbiddenWindowsUpdatesFreeNode(Sender: TBaseVirtualTree;
+      Node: PVirtualNode);
     procedure HostPagesChange(Sender: TObject);
     procedure Image1Click(Sender: TObject);
     procedure MainPagesChange(Sender: TObject);
@@ -1778,7 +1784,8 @@ end;
 
 procedure TVisWaptGUI.ActWSUSSaveBuildRulesExecute(Sender: TObject);
 var
-  wsus_rules,WUAGroupRules,res :ISuperObject;
+  wsus_rules,WUAGroupRules,res,sores :ISuperObject;
+  args:AnsiString;
 begin
   wsus_rules := TSuperObject.Create();
   WUAGroupRules := TSuperObject.Create();
@@ -1788,13 +1795,34 @@ begin
   wsus_rules.S['group'] := 'default';//WUAGroup;
   wsus_rules['rules']   := WUAGroupRules;
   res := WAPTServerJsonPost('api/v2/windows_updates_rules?group=%s',[wsus_rules.S['group']],wsus_rules);
+
   windows_updates_rulesUpdated := not res.B['success'];
-  if not res.B['success'] then
+
+  if res.B['success'] then
+  //update the wua package...
+  try
+    Screen.Cursor := crHourGlass;
+    //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
+    args := '';
+    args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
+    args := args + format('wuagroup = r"%s".decode(''utf8''),',
+      ['default']);
+    if privateKeyPassword <> '' then
+      args := args + format('key_password = "%s".decode(''utf8''),',
+        [privateKeyPassword]);
+    args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
+    args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
+      [waptServerPassword]);
+    res := DMPython.RunJSON(format('waptdevutils.create_waptwua_package(%s)', [args]));
+    ShowMessage('WUA Package properly created');
+  finally
+    Screen.Cursor := crDefault;
+  end
+  else
   begin
     ShowMessageFmt('Unable to save Windows Updates Rules : %s'#13#10'data:%s',[res.B['error'],wsus_rules.AsJSon(True)]);
     Clipboard.AsText:=wsus_rules.AsJSon(True);
-  end
-  else
+  end;
 
 end;
 
@@ -3322,6 +3350,26 @@ begin
       ImageIndex := -1;
     end;
   end;
+end;
+
+procedure TVisWaptGUI.GridWSUSAllowedClassificationsFreeNode(
+  Sender: TBaseVirtualTree; Node: PVirtualNode);
+begin
+  windows_updates_rulesUpdated:=True;
+end;
+
+procedure TVisWaptGUI.GridWSUSAllowedWindowsUpdatesFreeNode(
+  Sender: TBaseVirtualTree; Node: PVirtualNode);
+begin
+    windows_updates_rulesUpdated:=True;
+
+end;
+
+procedure TVisWaptGUI.GridWSUSForbiddenWindowsUpdatesFreeNode(
+  Sender: TBaseVirtualTree; Node: PVirtualNode);
+begin
+    windows_updates_rulesUpdated:=True;
+
 end;
 
 procedure TVisWaptGUI.HostPagesChange(Sender: TObject);
