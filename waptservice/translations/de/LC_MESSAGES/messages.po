@@ -2,383 +2,388 @@
 # Copyright (C) 2015 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
-#
-#, fuzzy
+# Jessica <jgreulich@tranquil.it>, 2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2015-09-08 10:18+0200\n"
-"PO-Revision-Date: 2015-09-08 10:18+0200\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2015-09-08 11:50+0200\n"
+"Last-Translator: Jessica <jgreulich@tranquil.it>\n"
 "Language-Team: de <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Virtaal 0.7.1\n"
 "Generated-By: Babel 1.3\n"
 
 #: waptservice.py:138
 msgid "Invalid log level: {}"
-msgstr ""
+msgstr "Ungültige Protokollebene: {}"
 
 #: waptservice.py:276
 msgid "FATAL. Couldn't open config file : {}"
-msgstr ""
+msgstr "FATAL. Konnte nicht geöffnet werden die config Datei : {}"
 
 #: waptservice.py:360
 msgid ""
 "FATAL, configuration file {} has no section [global]. Please check "
 "Waptserver documentation"
 msgstr ""
+"FATAL, Konfigurations Datei {} hat kein Abschnitt [global]. Bitte "
+"über­prü­fen Sie Waptserver Dokumentation"
 
 #: waptservice.py:866
 msgid "Update status"
-msgstr ""
+msgstr "Aktualisierungsstatus"
 
 #: waptservice.py:904
 msgid "Reload configuration"
-msgstr ""
+msgstr "Reload-Konfiguration"
 
 #: waptservice.py:944
 msgid "Download upgrades"
-msgstr ""
+msgstr "Download-Upgrades"
 
 #: waptservice.py:975
 msgid "Installed software update"
-msgstr ""
+msgstr "Sofware-Update installiert"
 
 #: waptservice.py:1005
 msgid "LongTask"
-msgstr ""
+msgstr "LongTask"
 
 #: waptservice.py:1020
 msgid "Cleanup"
-msgstr ""
+msgstr "Cleanup"
 
 #: waptservice.py:1036
 msgid "Trace of the installation of {}"
-msgstr ""
+msgstr "Verfolgung der Installation von {}"
 
 #: waptservice.py:1066
 msgid "Saving host to the WAPT server"
-msgstr ""
+msgstr "Host auf dem WAPT Server gespeichert"
 
 #: waptservice.py:1079
 msgid "Inventory of the host"
-msgstr ""
+msgstr "Inventar von dem Host"
 
 #: waptservice.py:1258
 msgid "Installed Windows Updates"
-msgstr ""
+msgstr "Windows Updates insalliert"
 
 #: waptservice.py:1277
 msgid "Pending Windows Updates"
-msgstr ""
+msgstr "Windows Updates ausstehend"
 
 #: waptservice.py:1295
 msgid "Discarded Windows Updates"
-msgstr ""
+msgstr "Ausrangierte Windows Updates"
 
 #: templates/download.html:4
 msgid "Downloads"
-msgstr ""
+msgstr "Downloads"
 
 #: templates/download.html:7
 msgid "{0} downloaded"
-msgstr ""
+msgstr "{0} heruntergeladen"
 
 #: templates/download.html:11
 msgid "{0} already available"
-msgstr ""
+msgstr "{0} bereits vorhanden"
 
 #: templates/download.html:16
 msgid "Error: {0}"
-msgstr ""
+msgstr "Fehler: {0}"
 
 #: templates/download.html:20 templates/package_details.html:20
 msgid "Back"
-msgstr ""
+msgstr "Zurück"
 
 #: templates/index.html:4
 msgid "WAPT Status"
-msgstr ""
+msgstr "WAPT Status"
 
 #: templates/index.html:6
 msgid "wapt-get.exe version: {0}"
-msgstr ""
+msgstr "wapt-get.exe Version: {0}"
 
 #: templates/index.html:7
 msgid "wapt-get.py version: {0}"
-msgstr ""
+msgstr "wapt-get.py Version: {0}"
 
 #: templates/index.html:8
 msgid "Host UUID: {0}"
-msgstr ""
+msgstr "Host UUID: {0}"
 
 #: templates/index.html:9
 msgid "Main WAPT Repository: <a href={0}>{0}</a>"
-msgstr ""
+msgstr "Main WAPT Repository: <a href={0}>{0}</a>"
 
 #: templates/index.html:10
 msgid "WAPT server: {0}"
-msgstr ""
+msgstr "WAPT Server: {0}"
 
 #: templates/index.html:11
 msgid "Proxies: {0}"
-msgstr ""
+msgstr "Proxies: {0}"
 
 #: templates/index.html:12
 msgid "Configuration file: {0}"
-msgstr ""
+msgstr "Konfiguration Datei: {0}"
 
 #: templates/index.html:13
 msgid "Current status: {0}"
-msgstr ""
+msgstr "Aktueller Status: {0}"
 
 #: templates/index.html:14
 msgid "Last update status:"
-msgstr ""
+msgstr "Letzter Update-Status:"
 
 #: templates/index.html:16
 msgid "Date: {0}"
-msgstr ""
+msgstr "Datum: {0}"
 
 #: templates/index.html:17
 msgid "Upgradeable packages: {0}"
-msgstr ""
+msgstr "Erweiterungsfähige Pakete: {0}"
 
 #: templates/index.html:18
 msgid "Errors: {0}"
-msgstr ""
+msgstr "Fehler: {0}"
 
 #: templates/index.html:23
 msgid "Computer information"
-msgstr ""
+msgstr "Computerinformation"
 
 #: templates/index.html:25
 msgid "Machine: {0}"
-msgstr ""
+msgstr "Maschine: {0}"
 
 #: templates/index.html:26
 msgid "Current users: {0}"
-msgstr ""
+msgstr "Aktuelle Benutzer: {0}"
 
 #: templates/index.html:27
 msgid "Workgroup: {0}"
-msgstr ""
+msgstr "Arbeitsgruppen: {0}"
 
 #: templates/index.html:28
 msgid "DNS Domain: {0}"
-msgstr ""
+msgstr "DNS Domain: {0}"
 
 #: templates/index.html:29
 msgid "IP Addresses: {0}"
-msgstr ""
+msgstr "IP-Adressen: {0}"
 
 #: templates/index.html:30
 msgid "System manufacturer : {0}"
-msgstr ""
+msgstr "Systemhersteller : {0}"
 
 #: templates/index.html:31
 msgid "System product name : {0}"
-msgstr ""
+msgstr "System produktname : {0}"
 
 #: templates/install.html:3
 msgid "Installing {0} <a href=\"task?id={1}\">task {1}"
-msgstr ""
+msgstr "Installation {0} <a href=\"task?id={1}\">task {1}"
 
 #: templates/layout.html:19
 msgid "WAPT Service status"
-msgstr ""
+msgstr "WAPT Service Status"
 
 #: templates/layout.html:37
 msgid "WAPT Service"
-msgstr ""
+msgstr "WAPT Service"
 
 #: templates/layout.html:38
 msgid "design by TIS"
-msgstr ""
+msgstr "Design von TIS"
 
 #: templates/layout.html:44
 msgid "WAPT"
-msgstr ""
+msgstr "WAPT"
 
 #: templates/layout.html:45 templates/status.html:6
 msgid "Installed packages"
-msgstr ""
+msgstr "Pakete installiert"
 
 #: templates/layout.html:46
 msgid "List of packages"
-msgstr ""
+msgstr "Liste der Pakete"
 
 #: templates/layout.html:47
 msgid "Tasks"
-msgstr ""
+msgstr "Tasks"
 
 #: templates/layout.html:48
 msgid "Windows updates"
-msgstr ""
+msgstr "Windows Updates"
 
 #: templates/layout.html:76
 msgid ""
 "Copyright (c) 2012 Tranquil IT Systems. All rights reserved. Design by <a"
 " href=\"http://www.tranquil-it-systems.fr/\">TIS</a>."
 msgstr ""
+"Copyright (c) 2012 Tranquil IT Systems. Alle Rechte vorbehalten. Design by "
+"<a href=\"http://www.tranquil-it-systems.fr/\">TIS</a>."
 
 #: templates/list.html:27
 msgid "Available packages"
-msgstr ""
+msgstr "Verfügbare Pakete"
 
 #: templates/list.html:28
 msgid "Update available packages"
-msgstr ""
+msgstr "Update der verfügbaren Pakete"
 
 #: templates/list.html:29
 msgid "Clear package cache"
-msgstr ""
+msgstr "Cache des Paketes leeren"
 
 #: templates/list.html:30
 msgid "Upgrade system"
-msgstr ""
+msgstr "Upgrade-System"
 
 #: templates/list.html:32 templates/package_details.html:5
 msgid "package"
-msgstr ""
+msgstr "packet"
 
 #: templates/list.html:32
 msgid "install_version"
-msgstr ""
+msgstr "installations_version"
 
 #: templates/list.html:32
 msgid "install_status"
-msgstr ""
+msgstr "installations_status"
 
 #: templates/list.html:32
 msgid "install_date"
-msgstr ""
+msgstr "installations_datum"
 
 #: templates/list.html:38 templates/status.html:13
 msgid "Action"
-msgstr ""
+msgstr "Aktion"
 
 #: templates/list.html:71 templates/status.html:51
 msgid "Remove"
-msgstr ""
+msgstr "Entferne"
 
 #: templates/list.html:73
 msgid "Downgrade"
-msgstr ""
+msgstr "Degradieren"
 
 #: templates/list.html:75
 msgid "Upgrade"
-msgstr ""
+msgstr "Aktualisieren"
 
 #: templates/list.html:77 templates/package_details.html:17
 msgid "Install"
-msgstr ""
+msgstr "Installation"
 
 #: templates/package_details.html:5
 msgid "version"
-msgstr ""
+msgstr "Version"
 
 #: templates/package_details.html:5
 msgid "description"
-msgstr ""
+msgstr "beschreibung"
 
 #: templates/package_details.html:5
 msgid "maintainer"
-msgstr ""
+msgstr "maintainer"
 
 #: templates/package_details.html:16
 msgid "Download"
-msgstr ""
+msgstr "Herunterladen"
 
 #: templates/package_details.html:18
 msgid "Uninstall"
-msgstr ""
+msgstr "Deinstallieren"
 
 #: templates/remove.html:3
 msgid "Launched uninstall of {0} <a href=\"task?id={1}\"> task {1}</a>"
 msgstr ""
+"Abgeschlossene deinstallation von {0} <a href=\"task?id={1}\"> task {1}</a>"
 
 #: templates/status.html:8
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: templates/status.html:8
 msgid "Package"
-msgstr ""
+msgstr "Packet"
 
 #: templates/status.html:8
 msgid "Installed by"
-msgstr ""
+msgstr "von installiert"
 
 #: templates/status.html:8
 msgid "Installed on"
-msgstr ""
+msgstr "Installiert auf"
 
 #: templates/status.html:8
 msgid "Version repo"
-msgstr ""
+msgstr "Version repo"
 
 #: templates/status.html:8
 msgid "Traces"
-msgstr ""
+msgstr "Verfolgung"
 
 #: templates/task.html:3
 msgid "Task n.{0} : {1}"
-msgstr ""
+msgstr "Task n.{0} : {1}"
 
 #: templates/tasks.html:3
 msgid "Tasks manager"
-msgstr ""
+msgstr "Task-Manager"
 
 #: templates/tasks.html:5
 msgid "Running: {0}"
-msgstr ""
+msgstr "Laufend: {0}"
 
 #: templates/tasks.html:18
 msgid "Cancel"
-msgstr ""
+msgstr "Abbrechen"
 
 #: templates/waptwua.html:19
 msgid "Installed Windows updates"
-msgstr ""
+msgstr "Windows updates insalliert"
 
 #: templates/waptwua.html:20
 msgid "Pending Windows updates"
-msgstr ""
+msgstr "Windows updates ausstehend"
 
 #: templates/waptwua.html:21
 msgid "Discarded Windows updates"
-msgstr ""
+msgstr "Ausrangierte Windows updates"
 
 #: templates/waptwua.html:24
 msgid "KB"
-msgstr ""
+msgstr "KB"
 
 #: templates/waptwua.html:24
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #: templates/waptwua.html:24
 msgid "Classification"
-msgstr ""
+msgstr "Klassifikation"
 
 #: templates/waptwua.html:24
 msgid "Severity"
-msgstr ""
+msgstr "Severity"
 
 #: templates/waptwua.html:24
 msgid "UUID"
-msgstr ""
+msgstr "UUID"
 
 #: templates/waptwua.html:24
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 #: templates/waptwua.html:24
 msgid "Downloaded"
-msgstr ""
-
+msgstr "Heruntergeladen"
