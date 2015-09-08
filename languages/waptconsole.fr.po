@@ -3911,7 +3911,7 @@ msgid ""
 "Required server version: %s\n"
 msgstr ""
 "Attention, la version du serveur WAPT est trop ancienne.\n"
-"Version actuelle du verseur: %s\n"
+"Version actuelle du serveur: %s\n"
 "Version requise : %s\n"
 
 #: uwaptconsoleres.rswaptsetuperror
