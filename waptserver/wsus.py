@@ -1258,10 +1258,12 @@ def download_windows_updates():
             requested_kb = utils_get_db().requested_kb
             requested_kb.update({ 'kb_article_id': kb_article_id }, { 'kb_article_id': kb_article_id, '$inc': { 'request_count', int(1) } }, upsert=True)
     except Exception as e:
-            logger.error('download_windows_updates: %s', str(e))
+        logger.error('download_windows_updates: %s', str(e))
+
 
     try:
         url = request.args['url']
+        logger.debug('download_windows_update started for url %s', url)
         url_parts = urlparse.urlparse(url)
         if url_parts.netloc not in ['download.windowsupdate.com','www.download.windowsupdate.com']:
             raise Exception('Unauthorized location')
@@ -1310,6 +1312,8 @@ def download_windows_update_task(url):
         raise Exception('Error during download, sha1 mismatch')
     else:
         os.rename(tmp_target, target)
+
+    logger.debug('target file %s correctly downloaded', target)
 
     return True
 
