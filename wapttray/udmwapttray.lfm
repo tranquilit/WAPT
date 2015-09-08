@@ -53,8 +53,8 @@ object DMWaptTray: TDMWaptTray
     Visible = True
     OnDblClick = TrayIcon1DblClick
     OnMouseDown = TrayIcon1MouseDown
-    left = 108
-    top = 47
+    left = 112
+    top = 48
   end
   object PopupMenu1: TPopupMenu
     OnPopup = PopupMenu1Popup

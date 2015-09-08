@@ -33,7 +33,7 @@
         download : download necessary updates from wapt server and push them in cache
         install : install allowed cached updates
 """
-__version__ = "1.3.1"
+__version__ = "1.3.2"
 
 
 import csv

@@ -118,9 +118,9 @@ object VisWAPTTray: TVisWAPTTray
   Visible = True
   WindowState = wsMinimized
   object pages: TPageControl
-    Left = 48
+    Left = 64
     Height = 280
-    Top = 104
+    Top = 96
     Width = 376
     ActivePage = pgStatus
     TabIndex = 0

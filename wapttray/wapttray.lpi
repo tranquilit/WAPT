@@ -19,9 +19,8 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
-      <MinorVersionNr Value="2"/>
-      <RevisionNr Value="4"/>
-      <BuildNr Value="4"/>
+      <MinorVersionNr Value="3"/>
+      <RevisionNr Value="2"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Tray Icon" ProductName="WAPT" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">

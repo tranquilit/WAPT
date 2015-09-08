@@ -2591,47 +2591,41 @@ object VisWaptGUI: TVisWaptGUI
         Header.Columns = <        
           item
             Position = 0
-            Text = 'Status'
-            Width = 36
-            PropertyName = 'status'
-          end        
-          item
-            Position = 1
             Tag = 1
             Text = 'KB Article'
             Width = 71
             PropertyName = 'kb_article_id'
           end        
           item
-            Position = 2
+            Position = 1
             Tag = 2
             Text = 'Title'
             Width = 353
             PropertyName = 'title'
           end        
           item
-            Position = 3
+            Position = 2
             Tag = 3
             Text = 'Description'
             Width = 100
             PropertyName = 'description'
           end        
           item
-            Position = 4
+            Position = 3
             Tag = 4
             Text = 'Date'
             Width = 101
             PropertyName = 'creation_date'
           end        
           item
-            Position = 5
+            Position = 4
             Tag = 5
             Text = 'Severity'
             Width = 89
             PropertyName = 'msrc_severity'
           end        
           item
-            Position = 6
+            Position = 5
             Tag = 6
             Text = 'Categories'
             Width = 108
@@ -2639,7 +2633,7 @@ object VisWaptGUI: TVisWaptGUI
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 7
+            Position = 6
             Tag = 7
             Text = 'Update Id'
             Width = 225
@@ -2647,7 +2641,7 @@ object VisWaptGUI: TVisWaptGUI
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 8
+            Position = 7
             Tag = 8
             Text = '_id'
             Width = 100
@@ -2655,7 +2649,7 @@ object VisWaptGUI: TVisWaptGUI
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 9
+            Position = 8
             Tag = 9
             Text = 'Revision Id'
             Width = 81
@@ -2663,14 +2657,14 @@ object VisWaptGUI: TVisWaptGUI
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 10
+            Position = 9
             Tag = 10
             Text = 'prereqs'
             Width = 100
             PropertyName = 'prereqs'
           end        
           item
-            Position = 11
+            Position = 10
             Tag = 11
             Text = 'Security Bulletin ID'
             Width = 78
@@ -2678,7 +2672,7 @@ object VisWaptGUI: TVisWaptGUI
           end>
         Header.DefaultHeight = 17
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-        Header.SortColumn = 1
+        Header.SortColumn = 0
         Header.Style = hsFlatButtons
         Images = ImageList1
         PopupMenu = PopupWUAUpdates
@@ -2735,40 +2729,34 @@ object VisWaptGUI: TVisWaptGUI
         Header.Columns = <        
           item
             Position = 0
-            Text = 'Status'
-            Width = 36
-            PropertyName = 'status'
-          end        
-          item
-            Position = 1
             Tag = 1
             Text = 'KB Article'
             Width = 71
             PropertyName = 'kb_article_id'
           end        
           item
-            Position = 2
-            Tag = 2
-            Text = 'Severity'
-            Width = 89
-            PropertyName = 'msrc_severity'
-          end        
-          item
-            Position = 3
+            Position = 1
             Tag = 3
             Text = 'Title'
-            Width = 353
+            Width = 255
             PropertyName = 'title'
           end        
           item
-            Position = 4
+            Position = 2
             Tag = 4
             Text = 'Description'
             Width = 100
             PropertyName = 'description'
           end        
           item
-            Position = 5
+            Position = 3
+            Tag = 2
+            Text = 'Severity'
+            Width = 89
+            PropertyName = 'msrc_severity'
+          end        
+          item
+            Position = 4
             Tag = 5
             Text = 'Categories'
             Width = 121
@@ -2776,7 +2764,7 @@ object VisWaptGUI: TVisWaptGUI
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 6
+            Position = 5
             Tag = 6
             Text = 'Update Id'
             Width = 225
@@ -2784,7 +2772,7 @@ object VisWaptGUI: TVisWaptGUI
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 7
+            Position = 6
             Tag = 7
             Text = '_id'
             Width = 100
@@ -2792,7 +2780,7 @@ object VisWaptGUI: TVisWaptGUI
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 8
+            Position = 7
             Tag = 8
             Text = 'Revision Id'
             Width = 81
@@ -2800,27 +2788,27 @@ object VisWaptGUI: TVisWaptGUI
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 9
+            Position = 8
             Tag = 9
             Text = 'prereqs'
             Width = 100
             PropertyName = 'prereqs'
           end        
           item
-            Position = 10
+            Position = 9
             Tag = 10
             Text = 'Security Bulletin ID'
             Width = 61
             PropertyName = 'security_bulletin_id'
           end        
           item
-            Position = 11
+            Position = 10
             Text = 'Date'
             PropertyName = 'creation_date'
           end>
         Header.DefaultHeight = 17
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-        Header.SortColumn = 1
+        Header.SortColumn = 0
         Header.Style = hsFlatButtons
         Images = ImageList1
         PopupMenu = PopupWUAUpdates
@@ -6558,7 +6546,7 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActWUAAddAllowedUpdateExecute
     end
     object ActWUAAddForbiddenUpdate: TAction
-      Caption = 'Add Forbidden Windows Update'
+      Caption = 'Add Forbidden Windows Updates'
       OnExecute = ActWUAAddForbiddenUpdateExecute
     end
     object ActWSUSSaveBuildRules: TAction

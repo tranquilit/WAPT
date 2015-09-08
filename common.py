@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.1"
+__version__ = "1.3.2"
 import os
 import re
 import logging
@@ -4444,6 +4444,9 @@ class Wapt(object):
     def build_upload(self,sources_directories,private_key_passwd=None,wapt_server_user=None,wapt_server_passwd=None,inc_package_release=False,target_directory=None):
         """Build a list of packages and upload the resulting packages to the main repository.
            if section of package is group or host, user specific wapt-host or wapt-group
+
+        Returns
+            list of build result dict: {'filename':waptfilename,'files':[list of files],'package':PackageEntry}
         """
         sources_directories = ensure_list(sources_directories)
         buildresults = []
@@ -4787,6 +4790,8 @@ class Wapt(object):
         return directoryname
 
     def make_host_template(self,packagename='',depends=None,directoryname=None,description=None):
+        if not packagename:
+            packagename = setuphelpers.get_hostname().lower()
         return self.make_group_template(packagename=packagename,depends=depends,directoryname=directoryname,section='host',description=description)
 
     def make_group_template(self,packagename='',depends=None,directoryname=None,section='group',description=None):
@@ -4826,6 +4831,8 @@ class Wapt(object):
         template_fn = os.path.join(self.wapt_base_dir,'templates','setup_%s_template.py' % section)
         if not os.path.isfile(template_fn):
             raise Exception("setup.py template %s doesn't exist" % template_fn)
+        # replacing %(var)s by local values in template
+        # so setup template must use other string formating system than % like '{}'.format()
         template = codecs.open(template_fn,encoding='utf8').read() % locals()
         setuppy_filename = os.path.join(directoryname,'setup.py')
         if not os.path.isfile(setuppy_filename):

@@ -142,6 +142,7 @@ var
 begin
   GridWinClassifications.ClearSelection;
   GridWinproducts.ClearSelection;
+  CBWUProductsShowAll.Checked := False;
   for r in GridWinClassifications.Data do
   begin
     if StrIsOneOf(r.S['id'],['e6cf1350-c01b-414d-a61f-263d14d133b4','0fa1201d-4330-4fa8-8ae9-b877473b6441']) then
@@ -163,6 +164,7 @@ end;
 procedure TVisWUAPackageSelect.FormShow(Sender: TObject);
 begin
   RefreshFilterData(Self);
+  ActDefaultFilter.Execute;
 end;
 
 procedure TVisWUAPackageSelect.GridWinUpdatesChange(Sender: TBaseVirtualTree;

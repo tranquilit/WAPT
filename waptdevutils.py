@@ -33,7 +33,7 @@
     exported functions instead of local Wapt functions (except crypto signatures)
 
 """
-__version__ = "1.3.1"
+__version__ = "1.3.2"
 
 import sys,os
 import shutil
@@ -395,6 +395,34 @@ def add_ads_groups(waptconfigfile,hosts_list,wapt_server_user,wapt_server_passwd
             raise
 
     return result
+
+def create_waptwua_package(waptconfigfile,wuagroup='default',wapt_server_user=None,wapt_server_passwd=None,key_password=None):
+    """Create/update - upload a package to enable waptwua and set windows_updates_rules
+    based on the content of database.
+    """
+    wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
+    wapt.dbpath = r':memory:'
+    wapt.use_hostpackages = False
+    # be sure to be up to date
+    wapt.update(register=False)
+    packagename = '{}-waptwua-{}'.format(wapt.config.get('global','default_package_prefix'),wuagroup)
+    """
+    packages = wapt.is_available(packagename)
+    if not packages:
+        # creates a new package based on waptwua template
+        res = wapt.make_group_template(packagename,directoryname = mkdtemp('wapt'),section='waptwua')
+    else:
+        res = wapt.edit_package(packagename,target_directory = mkdtemp('wapt'),use_local_sources = False)
+    """
+    res = wapt.make_group_template(packagename,directoryname = mkdtemp('wapt'),section='waptwua')
+    build_res = wapt.build_upload(res['target'],private_key_passwd = key_password, wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
+    if isdir(res['target']):
+        remove_tree(res['target'])
+    packagefilename = build_res[0]['filename']
+    if isfile(packagefilename):
+        remove_file(packagefilename)
+    return build_res
+
 
 if __name__ == '__main__':
     import doctest
