@@ -1258,19 +1258,26 @@ def download_windows_updates():
             requested_kb = utils_get_db().requested_kb
             requested_kb.update({ 'kb_article_id': kb_article_id }, { 'kb_article_id': kb_article_id, '$inc': { 'request_count', int(1) } }, upsert=True)
     except Exception as e:
-            logger.error('download_windows_updates: %s', str(e))
+        logger.error('download_windows_updates: %s', str(e))
+
 
     try:
         url = request.args['url']
+        logger.debug('download_windows_update started for url %s', url)
         url_parts = urlparse.urlparse(url)
         if url_parts.netloc not in ['download.windowsupdate.com','www.download.windowsupdate.com']:
             raise Exception('Unauthorized location')
         fileparts = urlparse.urlparse(url).path.split('/')
         target = os.path.join(waptwua_folder,*fileparts)
 
-        # check sha1 sum if possible...
-        if os.path.isfile(target) and not check_sha1_filename(target):
-            os.remove(target)
+        # check sha1 sum if possible
+        if os.path.isfile(target):
+            if not check_sha1_filename(target):
+                logger.warning('Removing stale file (bad checksum): %s', target)
+                os.remove(target)
+            else:
+                logger.info('Skipping download for file already present on disk: %s', target)
+                return True
 
         if not os.path.isfile(target):
             download_windows_update_task(url)
@@ -1305,6 +1312,8 @@ def download_windows_update_task(url):
         raise Exception('Error during download, sha1 mismatch')
     else:
         os.rename(tmp_target, target)
+
+    logger.debug('target file %s correctly downloaded', target)
 
     return True
 
