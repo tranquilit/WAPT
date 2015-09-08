@@ -49,3 +49,4 @@ waptupgrade/patchs/
 /waptserver/postconf/*.lps
 /wapttray/*.lps
 /waptconsole/*.lps
+/waptwua/windows_updates_rules.json

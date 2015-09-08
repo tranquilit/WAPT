@@ -1,7 +1,7 @@
 object VisWUAPackageSelect: TVisWUAPackageSelect
-  Left = 428
+  Left = 404
   Height = 490
-  Top = 212
+  Top = 158
   Width = 1057
   Caption = 'Windows Updates selection'
   ClientHeight = 490
@@ -9,6 +9,7 @@ object VisWUAPackageSelect: TVisWUAPackageSelect
   OnClick = FormClick
   OnCloseQuery = FormCloseQuery
   OnShow = FormShow
+  ShowHint = True
   LCLVersion = '1.3'
   object Panel15: TPanel
     Left = 0
@@ -32,11 +33,20 @@ object VisWUAPackageSelect: TVisWUAPackageSelect
     object Button1: TButton
       Left = 293
       Height = 25
+      Hint = 'Select the default list of products to display and filter.'
       Top = 5
       Width = 104
       Caption = 'Products filtering'
       OnClick = Button1Click
       TabOrder = 1
+    end
+    object Button3: TButton
+      Left = 8
+      Height = 25
+      Top = 5
+      Width = 104
+      Action = ActDefaultFilter
+      TabOrder = 2
     end
   end
   object ButtonPanel1: TButtonPanel
@@ -79,78 +89,20 @@ object VisWUAPackageSelect: TVisWUAPackageSelect
         item
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
           Position = 0
-          Text = '_id'
-          Width = 100
-          PropertyName = '_id'
-        end      
-        item
-          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-          Position = 1
-          Tag = 7
-          Text = 'Forced'
-          PropertyName = 'forced'
-        end      
-        item
-          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-          Position = 2
-          Tag = 8
-          Text = 'Skipped'
-          Width = 52
-          PropertyName = 'skipped'
-        end      
-        item
-          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-          Position = 3
-          Tag = 9
-          Text = 'cablist'
-          Width = 100
-          PropertyName = 'cablist'
-        end      
-        item
-          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-          Position = 4
-          Text = 'Reason'
-          Width = 100
-          PropertyName = 'reason'
-        end      
-        item
-          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-          Position = 5
-          Text = 'uuid'
-          Width = 100
-          PropertyName = 'uuid'
-        end      
-        item
-          Alignment = taRightJustify
-          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-          Position = 6
-          Text = 'Expected File size'
-          Width = 100
-          PropertyName = 'target_size'
-        end      
-        item
-          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-          Position = 7
-          Text = 'file_timestamp'
-          Width = 13
-          PropertyName = 'file_timestamp'
-        end      
-        item
-          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-          Position = 8
           Text = 'id'
           Width = 100
           PropertyName = 'id'
         end      
         item
-          Position = 9
+          Position = 1
           Text = 'Classification Description'
           Width = 222
           PropertyName = 'name'
         end>
       Header.DefaultHeight = 17
+      Header.MainColumn = 1
       Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-      Header.SortColumn = 9
+      Header.SortColumn = 1
       Header.Style = hsFlatButtons
       TabOrder = 0
       TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
@@ -216,34 +168,24 @@ object VisWUAPackageSelect: TVisWUAPackageSelect
   end
   object Panel2: TPanel
     Left = 0
-    Height = 245
-    Top = 199
-    Width = 688
+    Height = 240
+    Top = 204
+    Width = 683
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 245
-    ClientWidth = 688
+    ClientHeight = 240
+    ClientWidth = 683
     TabOrder = 3
-    object Splitter2: TSplitter
-      Cursor = crVSplit
-      Left = 0
-      Height = 5
-      Top = 0
-      Width = 688
-      Align = alTop
-      Beveled = True
-      ResizeAnchor = akTop
-    end
     object Panel16: TPanel
       Left = 0
       Height = 28
-      Top = 5
-      Width = 688
+      Top = 0
+      Width = 683
       Align = alTop
       BevelOuter = bvNone
       ClientHeight = 28
-      ClientWidth = 688
-      TabOrder = 1
+      ClientWidth = 683
+      TabOrder = 0
       object cbWUCritical: TCheckBox
         Left = 0
         Height = 17
@@ -317,8 +259,8 @@ object VisWUAPackageSelect: TVisWUAPackageSelect
     object GridWinUpdates: TSOGrid
       Left = 0
       Height = 210
-      Top = 35
-      Width = 688
+      Top = 30
+      Width = 683
       Align = alClient
       BorderSpacing.Top = 2
       Color = clWhite
@@ -326,40 +268,42 @@ object VisWUAPackageSelect: TVisWUAPackageSelect
       Header.Columns = <      
         item
           Position = 0
-          Text = 'Status'
-          PropertyName = 'status'
+          Text = 'Date'
+          Width = 125
+          PropertyName = 'creation_date'
         end      
         item
           Position = 1
-          Tag = 1
+          Tag = 2
           Text = 'KB Article'
           Width = 62
           PropertyName = 'kb_article_id'
         end      
         item
           Position = 2
-          Tag = 2
+          Tag = 3
           Text = 'Severity'
-          Width = 89
+          Width = 75
           PropertyName = 'msrc_severity'
         end      
         item
           Position = 3
-          Tag = 3
+          Tag = 4
           Text = 'Title'
-          Width = 353
+          Width = 369
           PropertyName = 'title'
         end      
         item
           Position = 4
-          Tag = 4
+          Tag = 5
           Text = 'Description'
-          Width = 100
+          Width = 138
           PropertyName = 'description'
         end      
         item
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
           Position = 5
-          Tag = 5
+          Tag = 6
           Text = 'Categories'
           Width = 121
           PropertyName = 'categories'
@@ -367,7 +311,7 @@ object VisWUAPackageSelect: TVisWUAPackageSelect
         item
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
           Position = 6
-          Tag = 6
+          Tag = 7
           Text = 'Update Id'
           Width = 225
           PropertyName = 'update_id'
@@ -375,7 +319,7 @@ object VisWUAPackageSelect: TVisWUAPackageSelect
         item
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
           Position = 7
-          Tag = 7
+          Tag = 8
           Text = '_id'
           Width = 100
           PropertyName = '_id'
@@ -383,7 +327,7 @@ object VisWUAPackageSelect: TVisWUAPackageSelect
         item
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
           Position = 8
-          Tag = 8
+          Tag = 9
           Text = 'Revision Id'
           Width = 81
           PropertyName = 'revision_id'
@@ -391,28 +335,52 @@ object VisWUAPackageSelect: TVisWUAPackageSelect
         item
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
           Position = 9
-          Tag = 9
+          Tag = 10
           Text = 'prereqs'
           Width = 100
           PropertyName = 'prereqs'
         end      
         item
           Position = 10
-          Tag = 10
+          Tag = 11
           Text = 'Security Bulletin ID'
           Width = 61
           PropertyName = 'security_bulletin_id'
         end      
         item
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
           Position = 11
-          Text = 'Date'
-          PropertyName = 'creation_date'
+          Text = 'is_bundle'
+          Width = 74
+          PropertyName = 'is_bundle'
+        end      
+        item
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+          Position = 12
+          Text = 'revision_number'
+          Width = 100
+          PropertyName = 'revision_number'
+        end      
+        item
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+          Position = 13
+          Text = 'is_leaf'
+          Width = 100
+          PropertyName = 'is_leaf'
+        end      
+        item
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+          Position = 14
+          Text = 'languages'
+          Width = 289
+          PropertyName = 'languages'
         end>
       Header.DefaultHeight = 17
       Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+      Header.SortColumn = 0
       Header.SortDirection = sdDescending
       Header.Style = hsFlatButtons
-      TabOrder = 2
+      TabOrder = 1
       TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
       TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
       TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
@@ -423,16 +391,16 @@ object VisWUAPackageSelect: TVisWUAPackageSelect
   end
   object Panel3: TPanel
     Left = 688
-    Height = 245
-    Top = 199
+    Height = 240
+    Top = 204
     Width = 369
     Align = alRight
-    ClientHeight = 245
+    ClientHeight = 240
     ClientWidth = 369
     TabOrder = 4
     object EdDescription: TMemo
       Left = 6
-      Height = 166
+      Height = 161
       Top = 73
       Width = 356
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -446,13 +414,25 @@ object VisWUAPackageSelect: TVisWUAPackageSelect
       Anchors = [akTop, akLeft, akRight]
       TabOrder = 1
     end
-    object Splitter3: TSplitter
-      Left = 1
-      Height = 243
-      Top = 1
-      Width = 5
-      Beveled = True
-    end
+  end
+  object Splitter3: TSplitter
+    Left = 683
+    Height = 240
+    Top = 204
+    Width = 5
+    Align = alRight
+    Beveled = True
+    ResizeAnchor = akRight
+  end
+  object Splitter2: TSplitter
+    Cursor = crVSplit
+    Left = 0
+    Height = 5
+    Top = 199
+    Width = 1057
+    Align = alTop
+    Beveled = True
+    ResizeAnchor = akTop
   end
   object TimerWUAFilterWinUpdates: TTimer
     Enabled = False
@@ -468,6 +448,11 @@ object VisWUAPackageSelect: TVisWUAPackageSelect
       Caption = 'Search'
       OnExecute = ActSearchExecute
       OnUpdate = ActSearchUpdate
+    end
+    object ActDefaultFilter: TAction
+      Caption = 'Default filter'
+      Hint = 'Filters on Critical and Security updates'
+      OnExecute = ActDefaultFilterExecute
     end
   end
 end

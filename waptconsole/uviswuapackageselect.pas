@@ -13,10 +13,12 @@ type
   { TVisWUAPackageSelect }
 
   TVisWUAPackageSelect = class(TForm)
+    ActDefaultFilter: TAction;
     ActSearch: TAction;
     ActionList1: TActionList;
     Button1: TButton;
     Button2: TButton;
+    Button3: TButton;
     ButtonPanel1: TButtonPanel;
     cbWUCritical: TCheckBox;
     cbWUImportant: TCheckBox;
@@ -41,6 +43,7 @@ type
     Splitter2: TSplitter;
     Splitter3: TSplitter;
     TimerWUAFilterWinUpdates: TTimer;
+    procedure ActDefaultFilterExecute(Sender: TObject);
     procedure ActSearchExecute(Sender: TObject);
     procedure ActSearchUpdate(Sender: TObject);
     procedure Button1Click(Sender: TObject);
@@ -69,21 +72,21 @@ var
   VisWUAPackageSelect: TVisWUAPackageSelect;
 
 implementation
-uses waptcommon, uVisWAPTWUAProducts,soutils;
+uses waptcommon, uVisWAPTWUAProducts,soutils,tisstrings;
 {$R *.lfm}
 
 { TVisWUAPackageSelect }
 
 procedure TVisWUAPackageSelect.RefreshFilterData(Sender: TObject);
 var
-  all:String;
+  selected:String;
 begin
   if CBWUProductsShowAll.Checked then
-    all := '1'
+    selected := '0'
   else
-    all := '0';
+    selected := '1';
   GridWinClassifications.Data := WAPTServerJsonGet('api/v2/windows_updates_classifications',[])['result'];
-  GridWinproducts.Data := WAPTServerJsonGet('api/v2/windows_products?selected=%s',[all])['result'];
+  GridWinproducts.Data := WAPTServerJsonGet('api/v2/windows_products?selected=%s',[selected])['result'];
 end;
 
 procedure TVisWUAPackageSelect.Button1Click(Sender: TObject);
@@ -113,7 +116,6 @@ var
   RemoteFilterUpdated:Boolean;
 begin
   RemoteFilterUpdated := BuildWindowsUpdatesFilter <> WindowsUpdatesFilter;
-  ActSearch.Enabled := RemoteFilterUpdated;
   if RemoteFilterUpdated and (WindowsUpdates<>Nil) then
   begin
     WindowsUpdates := Nil;
@@ -131,6 +133,19 @@ begin
     GridWinUpdates.Data := FilterWinUpdates(WindowsUpdates);
   finally
     Screen.Cursor:=crDefault;
+  end;
+end;
+
+procedure TVisWUAPackageSelect.ActDefaultFilterExecute(Sender: TObject);
+var
+  r:ISuperObject;
+begin
+  GridWinClassifications.ClearSelection;
+  GridWinproducts.ClearSelection;
+  for r in GridWinClassifications.Data do
+  begin
+    if StrIsOneOf(r.S['id'],['e6cf1350-c01b-414d-a61f-263d14d133b4','0fa1201d-4330-4fa8-8ae9-b877473b6441']) then
+       GridWinClassifications.Selected[GridWinClassifications.NodesForData(r)[0]] := True;
   end;
 end;
 
@@ -243,10 +258,10 @@ begin
     Filter.AsArray.Add('selected_products=1');
 
   if GridWinClassifications.SelectedCount>0 then
-    Filter.AsArray.Add('update_classifications='+join(',',SOColumnExtract(GridWinClassifications.SelectedRows,'id')))
-  else
+    Filter.AsArray.Add('update_classifications='+join(',',SOColumnExtract(GridWinClassifications.SelectedRows,'id')));
+  {else
     //critical and security
-    Filter.AsArray.Add('update_classifications=e6cf1350-c01b-414d-a61f-263d14d133b4,0fa1201d-4330-4fa8-8ae9-b877473b6441');
+    Filter.AsArray.Add('update_classifications=e6cf1350-c01b-414d-a61f-263d14d133b4,0fa1201d-4330-4fa8-8ae9-b877473b6441');}
 
   result := join('&',filter);
 end;
