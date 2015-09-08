@@ -48,8 +48,8 @@ def install():
 
      # randowmize a little the scan
     dt = datetime.datetime.now()+datetime.timedelta(hours=random.randrange(0,5),minutes=random.randrange(0,59))
-    create_daily_task('waptwua-scan',waptpython_path,'"%s" download -C CriticalUpdates' % (makepath(waptwuabin_path,'waptwua.py'),),start_hour=dt.hour,start_minute=dt.minute)
-    create_daily_task('waptwua-install',waptpython_path,'"%s" install -C CriticalUpdates' % (makepath(waptwuabin_path,'waptwua.py'),),start_hour=3,start_minute=0)
+    create_daily_task('waptwua-scan',waptpython_path,'"%s" download' % (makepath(waptwuabin_path,'waptwua.py'),),start_hour=dt.hour,start_minute=dt.minute)
+    create_daily_task('waptwua-install',waptpython_path,'"%s" install' % (makepath(waptwuabin_path,'waptwua.py'),),start_hour=3,start_minute=0)
 
 def uninstall():
     if task_exists('waptwua-scan'):
