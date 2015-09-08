@@ -756,7 +756,9 @@ class WaptWUA(object):
 
         self.update_wsusscan_cab()
 
-        if self.check_last_successful_scan():
+        # XXX There are no clear heuristics to tell whether we can bypass scanning or not.
+        # Fail safe until we find better.
+        if False: # self.check_last_successful_scan():
             logger.info('Bypassing scan, no change since last successful scan')
             full_stats = self.stored_status()
             installed = len([ u for u in full_stats['updates'] if u['status'] == 'OK'])
