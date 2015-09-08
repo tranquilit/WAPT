@@ -859,11 +859,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostInventory: TTabSheet
           Caption = 'Hardware inventory'
-          ClientHeight = 470
+          ClientHeight = 545
           ClientWidth = 564
           object GridhostInventory: TVirtualJSONInspector
             Left = 0
-            Height = 470
+            Height = 545
             Top = 0
             Width = 564
             PropertyDefs = <>
@@ -895,11 +895,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgSoftwares: TTabSheet
           Caption = 'Software inventory'
-          ClientHeight = 470
+          ClientHeight = 545
           ClientWidth = 564
           object GridHostSoftwares: TSOGrid
             Left = 0
-            Height = 440
+            Height = 515
             Top = 30
             Width = 564
             Align = alClient
@@ -1016,13 +1016,13 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostWUA: TTabSheet
           Caption = 'Windows updates'
-          ClientHeight = 470
+          ClientHeight = 545
           ClientWidth = 564
           object GridHostWinUpdates: TSOGrid
             AnchorSideTop.Control = Panel9
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 444
+            Height = 519
             Top = 26
             Width = 564
             OnGetText = GridHostWinUpdatesGetText
@@ -1111,9 +1111,7 @@ object VisWaptGUI: TVisWaptGUI
             Top = 5
             Width = 75
             Caption = 'Critical only'
-            Checked = True
             OnClick = cbWUAPendingChange
-            State = cbChecked
             TabOrder = 1
           end
           object cbWUAInstalled: TCheckBox
