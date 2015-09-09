@@ -1,0 +1,535 @@
+# Jessica <jgreulich@tranquil.it>, 2015.
+# htouvet <htouvet@tranquil.it>, 2015.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2015-09-09 12:20+0200\n"
+"Last-Translator: htouvet <htouvet@tranquil.it>\n"
+"Language-Team: TranquilITSystems\n"
+"Language: fr\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Virtaal 0.7.1\n"
+
+msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
+msgstr ""
+"http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htm"
+"l"
+
+#: tvisloading.amessage.caption
+msgid "Loading..."
+msgstr "Laden..."
+
+#: tvisloading.bitbtn1.caption
+msgid "Abort"
+msgstr "Abbrechen"
+
+#: tvisloading.caption
+msgid "Loading"
+msgstr "Laden"
+
+#: tviswaptserverpostconf.actbuildwaptsetup.caption
+msgid "Create custom installer"
+msgstr "Ein kundenspezifische WAPT Installationsprogramm erstellen"
+
+#: tviswaptserverpostconf.actcancel.caption
+msgctxt "TVISWAPTSERVERPOSTCONF.ACTCANCEL.CAPTION"
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: tviswaptserverpostconf.actcheckdns.caption
+msgid "Check DNS name"
+msgstr "DNS-Name überprüfen "
+
+#: tviswaptserverpostconf.actcreatekey.caption
+msgid "Generate keypair"
+msgstr "keypair erstellen"
+
+#: tviswaptserverpostconf.actmanual.caption
+msgid "Input URL manually"
+msgstr "Manuelle Eingabe URL"
+
+#: tviswaptserverpostconf.actnext.caption
+msgctxt "tviswaptserverpostconf.actnext.caption"
+msgid "Next"
+msgstr "Nächste"
+
+#: tviswaptserverpostconf.actprevious.caption
+msgid "Previous"
+msgstr "Vorherig"
+
+#: tviswaptserverpostconf.actwriteconfstartserve.caption
+msgid "Start WAPT server with this configuration"
+msgstr "WAPT Server mit diesen Kofigurationen starten"
+
+#: tviswaptserverpostconf.bitbtn3.caption
+msgctxt "tviswaptserverpostconf.bitbtn3.caption"
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: tviswaptserverpostconf.caption
+msgid "Configuration of WAPT server for Windows"
+msgstr "Konfiguration des WAPT Servers für Windows"
+
+#: tviswaptserverpostconf.cblaunchwaptconsoleonexit.caption
+msgid "Run WAPT console after setup"
+msgstr "Wapt Konsole nach der Einrichtung ausführen"
+
+#: tviswaptserverpostconf.cbopenfirewall.caption
+msgid "Open firewall ports 80 and 443 to allow access for packages and inventory"
+msgstr ""
+"Firewall Ports 80 und 443 öffnen, um den Zugang für Pakete und den Inventar "
+"zu erlauben "
+
+#: tviswaptserverpostconf.edcommonname.hint
+msgid "E.g. : srvwapt.tranquilit.local"
+msgstr "z. B. :srvwapt.tranquilit.local"
+
+#: tviswaptserverpostconf.edcountry.text
+msgid "FR"
+msgstr "FR"
+
+#: tviswaptserverpostconf.eddefaultprefix.editlabel.caption
+msgid "Default prefix to use on new packages"
+msgstr "Standard-Präfix, um neue Pakete zu verwenden"
+
+#: tviswaptserverpostconf.eddefaultprefix.text
+msgid "test"
+msgstr "Test"
+
+#: tviswaptserverpostconf.edemail.hint
+msgid "E.g. : technique@tranquil-it-systems.fr"
+msgstr "z. B. :technique@tranquil-it-systems.fr"
+
+#: tviswaptserverpostconf.edkeyname.hint
+msgid "E.g. : tranquilit"
+msgstr "z. B. : tranquilit"
+
+#: tviswaptserverpostconf.edlocality.hint
+msgid "E.g. : Nantes"
+msgstr "z. B. : Nantes"
+
+#: tviswaptserverpostconf.edorganization.hint
+msgid "E.g. : Tranquil It Systems"
+msgstr "z. B. : Tranquil It Systems"
+
+#: tviswaptserverpostconf.edorgname.hint
+msgid "E.g. : Tranquil IT Systems"
+msgstr "z. B. : Tranquil IT Systems"
+
+#: tviswaptserverpostconf.edpwd1.hint
+msgid "This is the password used to connect to the WAPT server via the WAPT console."
+msgstr ""
+"Dies ist das Passwort, das benutzt wird um sich auf den WAPT Server über die "
+"WAPT Konsole zu verbinden."
+
+#: tviswaptserverpostconf.edrepourl.hint
+msgid "E.g. : http://wapt.tranquilit.local/wapt"
+msgstr "z. B. : http://wapt.tranquilit.local/wapt"
+
+#: tviswaptserverpostconf.edsourcesroot.editlabel.caption
+msgid "Base directory for package development"
+msgstr "Basisverzeichnis für die Paketherstellung"
+
+#: tviswaptserverpostconf.edsourcesroot.text
+msgid "c:\\waptdev"
+msgstr "c:\\waptdev"
+
+#: tviswaptserverpostconf.edtemplatesrepourl.editlabel.caption
+msgid "URL to the package model repository"
+msgstr "URL auf das Packet-Repository-Modell"
+
+#: tviswaptserverpostconf.edtemplatesrepourl.hint
+msgid "URL to the the public repository whence base packages should be duplicated."
+msgstr ""
+"URL auf die der öffentliche Repository, woraus die Basispakete vervielfältig "
+"werden sollen."
+
+#: tviswaptserverpostconf.edtemplatesrepourl.text
+msgid "http://wapt.tranquil.it/wapt"
+msgstr "http://wapt.tranquil.it/wapt"
+
+#: tviswaptserverpostconf.edunit.hint
+msgid "E.g. : IT"
+msgstr "z. B. : IT"
+
+#: tviswaptserverpostconf.edwaptrepourl.editlabel.caption
+msgid "URL of the WAPT package repository"
+msgstr "URL vom WAPT Paket Repository"
+
+#: tviswaptserverpostconf.edwaptserverip.editlabel.caption
+msgid "IP of the WAPT server"
+msgstr "IP vom WAPT Server"
+
+#: tviswaptserverpostconf.edwaptservername.editlabel.caption
+msgid "DNS name of the WAPT server"
+msgstr "DNS Name vom WAPT Server"
+
+#: tviswaptserverpostconf.edwaptservername.hint
+msgid "WAPT clients make requests to the server. In order to connect to the WAPT server,"
+msgstr ""
+"WAPT Kunden machen Anfragen an den Server. Um sich mit dem WAPT Server zu "
+"verbinden,"
+
+#: tviswaptserverpostconf.edwaptservername.text
+msgid "srvwapt.mondomaine.local"
+msgstr "srvwapt.mondomaine.local"
+
+#: tviswaptserverpostconf.edwaptserverurl.editlabel.caption
+msgid "URL of the WAPT server"
+msgstr "URL vom WAPT Server"
+
+#: tviswaptserverpostconf.edwaptserverurl1.hint
+msgid "E.g. : https://wapt"
+msgstr "z. B. : https://wapt"
+
+#: tviswaptserverpostconf.label1.caption
+msgid "WAPT server password"
+msgstr "WAPT Server Passwort"
+
+#: tviswaptserverpostconf.label10.caption
+msgid "Country (2 chars. E.g. : FR):"
+msgstr "Land (2 chars. z.B. : FR):"
+
+#: tviswaptserverpostconf.label10.hint
+msgid "Main site country code"
+msgstr "Hauptseite Landesvorwahl"
+
+#: tviswaptserverpostconf.label12.caption
+msgid "City :"
+msgstr "Stadt:"
+
+#: tviswaptserverpostconf.label13.caption
+msgctxt "tviswaptserverpostconf.label13.caption"
+msgid "Organisation:"
+msgstr "Organisation:"
+
+#: tviswaptserverpostconf.label13.hint
+msgctxt "tviswaptserverpostconf.label13.hint"
+msgid "Your company name"
+msgstr "Ihr Firmenname"
+
+#: tviswaptserverpostconf.label14.caption
+msgid "Service:"
+msgstr "Service:"
+
+#: tviswaptserverpostconf.label14.hint
+msgid "E.g. : IT department."
+msgstr "z. B. : IT Abteilung."
+
+#: tviswaptserverpostconf.label15.caption
+msgid "Server FQDN :"
+msgstr "Server FQDN:"
+
+#: tviswaptserverpostconf.label15.hint
+msgid "WAPT server name. E.g. : srvwapt.tranquilit.local"
+msgstr "WAPT Servername. z. B. :srvwapt.tranquilit.local"
+
+#: tviswaptserverpostconf.label16.caption
+msgid "E-mail address :"
+msgstr "E-mail Adresse:"
+
+#: tviswaptserverpostconf.label16.hint
+msgid "Technical department e-mail address."
+msgstr "E-Mail Adresse der Technsichen Abteilung."
+
+#: tviswaptserverpostconf.label2.caption
+msgid "Confirm password"
+msgstr "Passwort bestätigen"
+
+#: tviswaptserverpostconf.label3.caption
+msgid "Target directory:"
+msgstr "Zielverzeichnis:"
+
+#: tviswaptserverpostconf.label3.hint
+msgid "Where to save the private key. This directory must be secure."
+msgstr "Wo speichert man den Privaten Key. Dieses Verzeichnis muss sicher sein."
+
+#: tviswaptserverpostconf.label4.caption
+msgid "Public key : "
+msgstr "Öffentlicher Key:"
+
+#: tviswaptserverpostconf.label4.hint
+msgid "The certificate you just created (.crt key)."
+msgstr "Das soeben erstellte Zertifikat (.crt key)."
+
+#: tviswaptserverpostconf.label5.caption
+msgid "Address of the main WAPT repository :"
+msgstr "Adresse von der Haupt WAPT Repository :"
+
+#: tviswaptserverpostconf.label5.hint
+msgid "Address of your WAPT repository (https://wapt/wapt)"
+msgstr "Adresse von Ihrere WAPT Repository (https://wapt/wapt)"
+
+#: tviswaptserverpostconf.label6.caption
+msgctxt "TVISWAPTSERVERPOSTCONF.LABEL6.CAPTION"
+msgid "Organisation:"
+msgstr "Organisation:"
+
+#: tviswaptserverpostconf.label6.hint
+msgctxt "TVISWAPTSERVERPOSTCONF.LABEL6.HINT"
+msgid "Your company name"
+msgstr "Ihr Firmenname"
+
+#: tviswaptserverpostconf.label7.caption
+msgid "Save waptagent.exe as...  "
+msgstr "Speichern waptagent.exe als..."
+
+#: tviswaptserverpostconf.label7.hint
+msgid "Where waptagent.exe will be saved."
+msgstr "Wo wird waptagent.exe gespeichert."
+
+#: tviswaptserverpostconf.label8.caption
+msgid "Adressof the WAPT server :"
+msgstr "Adressevon dem WAPT Server :"
+
+#: tviswaptserverpostconf.label8.hint
+msgid "Address of your WAPT server (https://wapt)."
+msgstr "Adresse von Ihrere WAPT Repository (https://wapt/wapt)"
+
+#: tviswaptserverpostconf.label9.caption
+msgid "Key name :"
+msgstr "Keyname:"
+
+#: tviswaptserverpostconf.label9.hint
+msgid "Please don't use any special characters (e.g.:tranquilit)"
+msgstr "Bitte verwenden Sie keine Sonderzeichen (z. B.:tranquilit)"
+
+#: tviswaptserverpostconf.pgcreatewaptsetup.caption
+msgid "Create installer for client hosts"
+msgstr "Installationsprogramm für Kunden Hosts erstellen"
+
+#: tviswaptserverpostconf.pgdevparam.caption
+msgid "Development"
+msgstr "Entwicklung"
+
+#: tviswaptserverpostconf.pgfinish.caption
+msgid "Fin"
+msgstr "Ende"
+
+#: tviswaptserverpostconf.pgparameters.caption
+msgid "Parameters"
+msgstr "Parameter"
+
+#: tviswaptserverpostconf.pgpassword.caption
+msgid "Password"
+msgstr "Passwort"
+
+#: tviswaptserverpostconf.pgprivatekey.caption
+msgid "Private Key generation"
+msgstr "Privater Key erstellt"
+
+#: tviswaptserverpostconf.pgstartservices.caption
+msgid "Start"
+msgstr "Start"
+
+#: tviswaptserverpostconf.statictext1.caption
+msgid "Optional information"
+msgstr "Optionale Infromation"
+
+#: uwaptres.rscanceled
+msgid "canceled"
+msgstr "Abgebrochen"
+
+#: uwaptres.rscanceledtask
+msgid "Cancelled %s"
+msgstr "Abgebrochen %s"
+
+#: uwaptres.rscertificatecopyfailure
+msgid "Couldn't copy certificate %s to %s."
+msgstr "Das Zertifikat %s kann nicht kopiert werden zu %s "
+
+#: uwaptres.rscname
+msgid "CNAME: %s"
+msgstr "CNAME: %s"
+
+#: uwaptres.rscompletionprogress
+msgid "%s : %.0f%% completed"
+msgstr "%s : %.0f%% beendet"
+
+#: uwaptres.rsdlstoppedbyuser
+msgid "Download stopped by the user"
+msgstr "Download wurde vom Benutzer gestoppt"
+
+#: uwaptres.rsdnsdomain
+msgid "DNS Domain : %s"
+msgstr "DNS Domain : %s"
+
+#: uwaptres.rsdnsserver
+msgid "DNS Server : %s"
+msgstr "DNS Server : %s"
+
+#: uwaptres.rserrorcanceling
+msgid "Error cancelling: %s"
+msgstr "Fehler beim Abbrechen: %s"
+
+#: uwaptres.rserrorlaunchingupdate
+msgid "Error launching update: %s"
+msgstr "Fehler beim Start von Update: %s"
+
+#: uwaptres.rserrorlaunchingupgrade
+msgid "Error launching upgrade: %s"
+msgstr "Fehler beim Start von Upgrade: %s"
+
+#: uwaptres.rserrorwithmessage
+msgctxt "uwaptres.rserrorwithmessage"
+msgid "Error : %s"
+msgstr "Fehler : %s"
+
+#: uwaptres.rsinnosetupunavailable
+msgid "Innosetup is unavailable (path : %s), please install it first."
+msgstr ""
+"Innosetup ist nicht verfügbar (Pfad : %s), installieren Sie es bitte zuerst."
+
+#: uwaptres.rsinstallon
+msgid "  install on c:\\wapt : --setup -s"
+msgstr "installiere auf c:\\wapt : --setup -s"
+
+#: uwaptres.rslongtaskerror
+msgid "Error launching longtask: %s"
+msgstr "Fehler beim Start von Longtask: %s"
+
+#: uwaptres.rsmainrepourl
+msgid "Main repo url: %s"
+msgstr "Haupt repo url: %s"
+
+#: uwaptres.rsnorunningtask
+msgid "No running tasks"
+msgstr "Keine laufenden Tasks"
+
+#: uwaptres.rsoptrepo
+msgid " -r --repo : URL of dependencies libs"
+msgstr "-r --repo : URL von Abhänigkeiten libs"
+
+#: uwaptres.rspending
+msgid "Pending : "
+msgstr "Ausstehend : "
+
+#: uwaptres.rsrunningtask
+msgid "Running task %d: %s, status:%s"
+msgstr "Laufender Task %d: %s, Status:%s"
+
+#: uwaptres.rssrv
+msgid "SRV: %s"
+msgstr "SRV: %s"
+
+#: uwaptres.rsstoplistening
+msgid "Stop listening to events"
+msgstr " Wiedergabe der Events stoppen"
+
+#: uwaptres.rstasklisterror
+msgid "Error getting task list: %s"
+msgstr "Fehler beim Abrufen der Task-Liste: %s"
+
+#: uwaptres.rsundefwaptsrvinini
+msgid "wapt_server is not defined in your %s ini file"
+msgstr "wapt_server ist nicht in Ihrer %s ini Datei definiert"
+
+#: uwaptres.rsusage
+msgid "Usage: %s -h"
+msgstr "Anwendung: %s -h "
+
+#: uwaptres.rswaptgetupgrade
+msgid "WAPT-GET Upgrade using repository at %s"
+msgstr "WAPT-GET Upgrade anwenden mit Repository %s"
+
+#: uwaptres.rswaptupgrade
+msgid " waptupgrade : upgrade wapt-get.exe and database"
+msgstr "waptupgrade: wapt-get.exe und Datenbank aktualisieren"
+
+#: uwaptres.rswin32exewrapper
+msgid "Win32 Exe wrapper: %s %s"
+msgstr "Win32 Exe wrapper: %s %s"
+
+#: uwaptres.rswinterruptreceived
+msgid "W: interrupt received, killing serverâ¦"
+msgstr "Unterbrechung empfangen, zerstört serverâ¦"
+
+#: uwaptserverres.rsconfirm
+msgid "Confirm"
+msgstr "Bestätigen"
+
+#: uwaptserverres.rsconfirmcancelpostconfig
+msgid "Are you sure you want to cancel configuring WAPT server ?"
+msgstr ""
+"Sind Sie sich sicher das du die Konfiguartion vom WAPT Server abbrechen "
+"wollen?"
+
+#: uwaptserverres.rscreationinprogress
+msgid "Creation in progress."
+msgstr "Die Kreation ist im Gange."
+
+#: uwaptserverres.rsinvaliddns
+msgid "Invalid DNS"
+msgstr "Ungültige DNS"
+
+#: uwaptserverres.rsinvaliddnsfallback
+msgid "This DNS name is not valid, would you like to use the IP address instead ?"
+msgstr ""
+"Dieser DNS Name ist nicht gültig, wollen Sie lieber stattdessen die IP-"
+"Adresse verwenden ?"
+
+#: uwaptserverres.rsopeningfirewall
+msgid "Opening firewall for WaptServer"
+msgstr "Firewall für WaptServer öffnen "
+
+#: uwaptserverres.rsprogresstitle
+msgid "Started uploading to WAPT server..."
+msgstr "Hochladen auf dem WAPT Sever starten..."
+
+#: uwaptserverres.rsregisteringhostonserver
+msgid "Registering host on server"
+msgstr "Host auf dem Server registrieren"
+
+#: uwaptserverres.rsreplacingtiscertificate
+msgid "Deleting TIS certificate and copying new certificate"
+msgstr "TIS Zertifikat löschen und das neue Zertifikat kopieren"
+
+#: uwaptserverres.rsrestartingwaptserver
+msgid "Restarting waptserver"
+msgstr "waptserver neustarten"
+
+#: uwaptserverres.rsrestartingwaptservice
+msgid "Restarting waptservice"
+msgstr "waptservice neustarten"
+
+#: uwaptserverres.rsretryregisteringhostonserver
+msgid "%D retry on registering host on server"
+msgstr "%D die Registrierung des Hosts auf dem Server wiederholen"
+
+#: uwaptserverres.rssettingserverpassword
+msgid "Setting up server password"
+msgstr "Einrichten des Server Passwortes"
+
+#: uwaptserverres.rsupdatinglocalpackages
+msgid "Updating local packages"
+msgstr "Aktualisiere lokale Pakete"
+
+#: uwaptserverres.rsupdatingpackageindex
+msgid "Updating package index"
+msgstr "Aktualisierungspaketindex"
+
+#: uwaptserverres.rswaptservicestopping
+msgid "Waptservice stopping"
+msgstr "Waptservice gestoppt"
+
+#: uwaptserverres.rswaptsetupdone
+msgid "Done"
+msgstr "Fertig"
+
+#: uwaptserverres.rswaptsetuperror
+msgid "Error while creating agent : %s"
+msgstr "Fehler beim erstellen des agent : %s"
+
+#: uwaptserverres.rswaptsetupnext
+msgctxt "uwaptserverres.rswaptsetupnext"
+msgid "Next"
+msgstr "Nächste"
+
+#: uwaptserverres.rswaptsetupuploadsuccess
+msgid "WAPT agent successfully created and uploaded to the repository : %s"
+msgstr "WAPT agent erfolgreich erstellt und hochgeladen auf Repository : %s"
+
+#: uwaptserverres.rswaptuploaderror
+msgid "Error while uploading WAPT agent to the repository : %s"
+msgstr "Fehler beim hochladen des WAPT agent auf dem Repository : %s"

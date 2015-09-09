@@ -1015,6 +1015,10 @@ msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.HINT"
 msgid "Apply updates"
 msgstr ""
 
+#: tviswaptgui.acttriggerwakeonlan.caption
+msgid "Power ON with WakeOnLan"
+msgstr ""
+
 #: tviswaptgui.acttriggerwaptwua_download.caption
 msgctxt "tviswaptgui.acttriggerwaptwua_download.caption"
 msgid "Trigger the download of pending Windows Updates"
