@@ -30,6 +30,7 @@ type
     ActAddADSGroups: TAction;
     ActHostsDeleteHostPackage: TAction;
     ActGerman: TAction;
+    ActTriggerWakeOnLan: TAction;
     ActWSUSSaveBuildRules: TAction;
     ActWUAAddForbiddenUpdate: TAction;
     ActWUAAddAllowedUpdate: TAction;
@@ -58,6 +59,7 @@ type
     MenuItem74: TMenuItem;
     MenuItem75: TMenuItem;
     MenuItem76: TMenuItem;
+    MenuItem77: TMenuItem;
     PopupGridWSUSScan: TPopupMenu;
     MenuItem70: TMenuItem;
     MenuItem71: TMenuItem;
@@ -344,6 +346,7 @@ type
     procedure ActDeployWaptExecute(Sender: TObject);
     procedure ActGermanExecute(Sender: TObject);
     procedure ActGermanUpdate(Sender: TObject);
+    procedure ActTriggerWakeOnLanExecute(Sender: TObject);
     procedure ActTriggerWaptwua_downloadExecute(Sender: TObject);
     procedure ActTriggerWaptwua_installExecute(Sender: TObject);
     procedure ActTriggerWaptwua_scanExecute(Sender: TObject);
@@ -1665,6 +1668,21 @@ end;
 procedure TVisWaptGUI.ActGermanUpdate(Sender: TObject);
 begin
   ActGerman.Checked := DMPython.Language='de';
+end;
+
+procedure TVisWaptGUI.ActTriggerWakeOnLanExecute(Sender: TObject);
+begin
+  with TVisHostsUpgrade.Create(Self) do
+    try
+      Caption:= rsTriggerWAPTWUA_Scan;
+      action := 'api/v2/trigger_wakeonlan';
+      hosts := Gridhosts.SelectedRows;
+
+      if ShowModal = mrOk then
+        actRefresh.Execute;
+    finally
+      Free;
+    end;
 end;
 
 procedure TVisWaptGUI.ActTriggerWaptwua_downloadExecute(Sender: TObject);

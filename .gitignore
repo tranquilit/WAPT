@@ -50,3 +50,6 @@ waptupgrade/patchs/
 /wapttray/*.lps
 /waptconsole/*.lps
 /waptwua/windows_updates_rules.json
+/docs/_build
+/docs/_static
+/docs/training
