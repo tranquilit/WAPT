@@ -247,6 +247,7 @@ Products = {
     "01030579-66d2-446e-8c65-538df07e0e44":"Windows 8.1 Language Packs",
     "6407468e-edc7-4ecd-8c32-521f64cee65e":"Windows 8.1",
     "2ee2ad83-828c-4405-9479-544d767993fc":"Windows 8",
+    "d2085b71-5f1f-43a9-880d-ed159016d5c6":"Windows 10",
     "393789f5-61c1-4881-b5e7-c47bcca90f94":"Windows Consumer Preview Dynamic Update",
     "8c3fcc84-7410-4a95-8b89-a166a0190486":"Windows Defender",
     "50c04525-9b15-4f7c-bed4-87455bcd7ded":"Windows Dictionary Updates",
