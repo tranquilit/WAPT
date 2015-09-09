@@ -54,8 +54,8 @@ def install():
 
      # randowmize a little the scan
     dt = datetime.datetime.now()+datetime.timedelta(hours=random.randrange(0,5),minutes=random.randrange(0,59))
-    create_daily_task('waptwua-scan',waptpython_path,'"{}" download'.format(makepath(waptwuabin_path,'waptwua.py'),),start_hour=dt.hour,start_minute=dt.minute)
-    create_daily_task('waptwua-install',waptpython_path,'"{}" install'.format(makepath(waptwuabin_path,'waptwua.py'),),start_hour=3,start_minute=0)
+    create_daily_task('waptwua-scan',waptpython_path,'"{}" download'.format(makepath(waptwuabin_path,'waptwua.py'),),start_hour=dt.hour,start_minute=dt.minute,max_runtime=120)
+    create_daily_task('waptwua-install',waptpython_path,'"{}" install'.format(makepath(waptwuabin_path,'waptwua.py'),),start_hour=3,start_minute=0,max_runtime=180)
 
     # enable waptwua in ini file
     WAPT.waptwua_enabled = True
