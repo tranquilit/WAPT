@@ -1,0 +1,385 @@
+# Polish translations for PROJECT.
+# Copyright (C) 2015 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2015-09-08 10:18+0200\n"
+"PO-Revision-Date: 2015-09-10 15:16+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: pl <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && "
+"(n%100<10 || n%100>=20) ? 1 : 2)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 1.3\n"
+
+#: waptservice.py:138
+msgid "Invalid log level: {}"
+msgstr ""
+
+#: waptservice.py:276
+msgid "FATAL. Couldn't open config file : {}"
+msgstr ""
+
+#: waptservice.py:360
+msgid ""
+"FATAL, configuration file {} has no section [global]. Please check "
+"Waptserver documentation"
+msgstr ""
+
+#: waptservice.py:866
+msgid "Update status"
+msgstr ""
+
+#: waptservice.py:904
+msgid "Reload configuration"
+msgstr ""
+
+#: waptservice.py:944
+msgid "Download upgrades"
+msgstr ""
+
+#: waptservice.py:975
+msgid "Installed software update"
+msgstr ""
+
+#: waptservice.py:1005
+msgid "LongTask"
+msgstr ""
+
+#: waptservice.py:1020
+msgid "Cleanup"
+msgstr ""
+
+#: waptservice.py:1036
+msgid "Trace of the installation of {}"
+msgstr ""
+
+#: waptservice.py:1066
+msgid "Saving host to the WAPT server"
+msgstr ""
+
+#: waptservice.py:1079
+msgid "Inventory of the host"
+msgstr ""
+
+#: waptservice.py:1258
+msgid "Installed Windows Updates"
+msgstr ""
+
+#: waptservice.py:1277
+msgid "Pending Windows Updates"
+msgstr ""
+
+#: waptservice.py:1295
+msgid "Discarded Windows Updates"
+msgstr ""
+
+#: templates/download.html:4
+msgid "Downloads"
+msgstr ""
+
+#: templates/download.html:7
+msgid "{0} downloaded"
+msgstr ""
+
+#: templates/download.html:11
+msgid "{0} already available"
+msgstr ""
+
+#: templates/download.html:16
+msgid "Error: {0}"
+msgstr ""
+
+#: templates/download.html:20 templates/package_details.html:20
+msgid "Back"
+msgstr ""
+
+#: templates/index.html:4
+msgid "WAPT Status"
+msgstr ""
+
+#: templates/index.html:6
+msgid "wapt-get.exe version: {0}"
+msgstr ""
+
+#: templates/index.html:7
+msgid "wapt-get.py version: {0}"
+msgstr ""
+
+#: templates/index.html:8
+msgid "Host UUID: {0}"
+msgstr ""
+
+#: templates/index.html:9
+msgid "Main WAPT Repository: <a href={0}>{0}</a>"
+msgstr ""
+
+#: templates/index.html:10
+msgid "WAPT server: {0}"
+msgstr ""
+
+#: templates/index.html:11
+msgid "Proxies: {0}"
+msgstr ""
+
+#: templates/index.html:12
+msgid "Configuration file: {0}"
+msgstr ""
+
+#: templates/index.html:13
+msgid "Current status: {0}"
+msgstr ""
+
+#: templates/index.html:14
+msgid "Last update status:"
+msgstr ""
+
+#: templates/index.html:16
+msgid "Date: {0}"
+msgstr ""
+
+#: templates/index.html:17
+msgid "Upgradeable packages: {0}"
+msgstr ""
+
+#: templates/index.html:18
+msgid "Errors: {0}"
+msgstr ""
+
+#: templates/index.html:23
+msgid "Computer information"
+msgstr ""
+
+#: templates/index.html:25
+msgid "Machine: {0}"
+msgstr ""
+
+#: templates/index.html:26
+msgid "Current users: {0}"
+msgstr ""
+
+#: templates/index.html:27
+msgid "Workgroup: {0}"
+msgstr ""
+
+#: templates/index.html:28
+msgid "DNS Domain: {0}"
+msgstr ""
+
+#: templates/index.html:29
+msgid "IP Addresses: {0}"
+msgstr ""
+
+#: templates/index.html:30
+msgid "System manufacturer : {0}"
+msgstr ""
+
+#: templates/index.html:31
+msgid "System product name : {0}"
+msgstr ""
+
+#: templates/install.html:3
+msgid "Installing {0} <a href=\"task?id={1}\">task {1}"
+msgstr ""
+
+#: templates/layout.html:19
+msgid "WAPT Service status"
+msgstr ""
+
+#: templates/layout.html:37
+msgid "WAPT Service"
+msgstr ""
+
+#: templates/layout.html:38
+msgid "design by TIS"
+msgstr ""
+
+#: templates/layout.html:44
+msgid "WAPT"
+msgstr ""
+
+#: templates/layout.html:45 templates/status.html:6
+msgid "Installed packages"
+msgstr ""
+
+#: templates/layout.html:46
+msgid "List of packages"
+msgstr ""
+
+#: templates/layout.html:47
+msgid "Tasks"
+msgstr ""
+
+#: templates/layout.html:48
+msgid "Windows updates"
+msgstr ""
+
+#: templates/layout.html:76
+msgid ""
+"Copyright (c) 2012 Tranquil IT Systems. All rights reserved. Design by <a"
+" href=\"http://www.tranquil-it-systems.fr/\">TIS</a>."
+msgstr ""
+
+#: templates/list.html:27
+msgid "Available packages"
+msgstr ""
+
+#: templates/list.html:28
+msgid "Update available packages"
+msgstr ""
+
+#: templates/list.html:29
+msgid "Clear package cache"
+msgstr ""
+
+#: templates/list.html:30
+msgid "Upgrade system"
+msgstr ""
+
+#: templates/list.html:32 templates/package_details.html:5
+msgid "package"
+msgstr ""
+
+#: templates/list.html:32
+msgid "install_version"
+msgstr ""
+
+#: templates/list.html:32
+msgid "install_status"
+msgstr ""
+
+#: templates/list.html:32
+msgid "install_date"
+msgstr ""
+
+#: templates/list.html:38 templates/status.html:13
+msgid "Action"
+msgstr ""
+
+#: templates/list.html:71 templates/status.html:51
+msgid "Remove"
+msgstr ""
+
+#: templates/list.html:73
+msgid "Downgrade"
+msgstr ""
+
+#: templates/list.html:75
+msgid "Upgrade"
+msgstr ""
+
+#: templates/list.html:77 templates/package_details.html:17
+msgid "Install"
+msgstr ""
+
+#: templates/package_details.html:5
+msgid "version"
+msgstr ""
+
+#: templates/package_details.html:5
+msgid "description"
+msgstr ""
+
+#: templates/package_details.html:5
+msgid "maintainer"
+msgstr ""
+
+#: templates/package_details.html:16
+msgid "Download"
+msgstr ""
+
+#: templates/package_details.html:18
+msgid "Uninstall"
+msgstr ""
+
+#: templates/remove.html:3
+msgid "Launched uninstall of {0} <a href=\"task?id={1}\"> task {1}</a>"
+msgstr ""
+
+#: templates/status.html:8
+msgid "Status"
+msgstr ""
+
+#: templates/status.html:8
+msgid "Package"
+msgstr ""
+
+#: templates/status.html:8
+msgid "Installed by"
+msgstr ""
+
+#: templates/status.html:8
+msgid "Installed on"
+msgstr ""
+
+#: templates/status.html:8
+msgid "Version repo"
+msgstr ""
+
+#: templates/status.html:8
+msgid "Traces"
+msgstr ""
+
+#: templates/task.html:3
+msgid "Task n.{0} : {1}"
+msgstr ""
+
+#: templates/tasks.html:3
+msgid "Tasks manager"
+msgstr ""
+
+#: templates/tasks.html:5
+msgid "Running: {0}"
+msgstr ""
+
+#: templates/tasks.html:18
+msgid "Cancel"
+msgstr ""
+
+#: templates/waptwua.html:19
+msgid "Installed Windows updates"
+msgstr ""
+
+#: templates/waptwua.html:20
+msgid "Pending Windows updates"
+msgstr ""
+
+#: templates/waptwua.html:21
+msgid "Discarded Windows updates"
+msgstr ""
+
+#: templates/waptwua.html:24
+msgid "KB"
+msgstr ""
+
+#: templates/waptwua.html:24
+msgid "Title"
+msgstr ""
+
+#: templates/waptwua.html:24
+msgid "Classification"
+msgstr ""
+
+#: templates/waptwua.html:24
+msgid "Severity"
+msgstr ""
+
+#: templates/waptwua.html:24
+msgid "UUID"
+msgstr ""
+
+#: templates/waptwua.html:24
+msgid "Date"
+msgstr ""
+
+#: templates/waptwua.html:24
+msgid "Downloaded"
+msgstr ""
+
