@@ -1,6 +1,19 @@
-# Jessica <jgreulich@tranquil.it>, 2015.
-# htouvet <htouvet@tranquil.it>, 2015.
 msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-09-10 11:54+0200\n"
+"PO-Revision-Date: 2015-09-10 11:54+0200\n"
+"Last-Translator: htouvet <htouvet@tranquil.it>\n"
+"Language-Team: TranquilITSystems\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Virtaal 0.7.1\n"
+
+msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
 msgstr ""
 "PO-Revision-Date: 2015-09-09 12:20+0200\n"
 "Last-Translator: htouvet <htouvet@tranquil.it>\n"
@@ -10,11 +23,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
+"http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htm"
+"l\n"
 
 msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
 msgstr ""
-"http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htm"
-"l"
 
 #: tvisloading.amessage.caption
 msgid "Loading..."
@@ -60,7 +73,7 @@ msgstr "Vorherig"
 
 #: tviswaptserverpostconf.actwriteconfstartserve.caption
 msgid "Start WAPT server with this configuration"
-msgstr "WAPT Server mit diesen Kofigurationen starten"
+msgstr "WAPT Server mit diesen Konfigurationen starten"
 
 #: tviswaptserverpostconf.bitbtn3.caption
 msgctxt "tviswaptserverpostconf.bitbtn3.caption"
@@ -120,8 +133,7 @@ msgstr "z. B. : Tranquil IT Systems"
 #: tviswaptserverpostconf.edpwd1.hint
 msgid "This is the password used to connect to the WAPT server via the WAPT console."
 msgstr ""
-"Dies ist das Passwort, das benutzt wird um sich auf den WAPT Server über die "
-"WAPT Konsole zu verbinden."
+"Passwort um sich auf den WAPT Server über die WAPT Konsole zu verbinden."
 
 #: tviswaptserverpostconf.edrepourl.hint
 msgid "E.g. : http://wapt.tranquilit.local/wapt"
@@ -168,7 +180,7 @@ msgstr "DNS Name vom WAPT Server"
 #: tviswaptserverpostconf.edwaptservername.hint
 msgid "WAPT clients make requests to the server. In order to connect to the WAPT server,"
 msgstr ""
-"WAPT Kunden machen Anfragen an den Server. Um sich mit dem WAPT Server zu "
+"WAPT Kunden machen Anfragen an den Server. um sich mit dem WAPT Server zu "
 "verbinden,"
 
 #: tviswaptserverpostconf.edwaptservername.text

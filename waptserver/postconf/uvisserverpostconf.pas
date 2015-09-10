@@ -213,9 +213,10 @@ end;
 
 procedure TVisWAPTServerPostConf.PagesControlChange(Sender: TObject);
 const
-  PAGES_INDEX_STEP =          100; // cf. languages.rc
+  PAGES_INDEX_STEP =  100; // cf. languages.rc
   PAGES_EN_OFFSET =		0;
   PAGES_FR_OFFSET =		1;
+  PAGES_DE_OFFSET =		2;
 var
   ini:TIniFile;
   Page: TMemoryStream;
@@ -223,15 +224,21 @@ var
   Lang, FallbackLang: String;
   i, LangOffset: Integer;
 begin
-
   { XXX This is not what I'd call clean language detection... }
+
   LCLGetLanguageIDs(Lang, FallbackLang);
   LangOffset := PAGES_EN_OFFSET;
   if FallbackLang = 'fr' then
-    LangOffset := PAGES_FR_OFFSET;
+    LangOffset := PAGES_FR_OFFSET
+  else if FallbackLang = 'de' then
+    LangOffset := PAGES_DE_OFFSET;
+
   for i := 1 to ParamCount-1 do
-    if (ParamStr(i) = '-l') and (i+1 <> ParamCount-1) then
+    if ((ParamStr(i) = '-l') or (ParamStr(i) = '--lang')) and (i+1 <> ParamCount-1) then
     begin
+      if ParamStr(i+1) = 'de' then
+         LangOffset := PAGES_DE_OFFSET
+      else
       if ParamStr(i+1) = 'fr' then
          LangOffset := PAGES_FR_OFFSET
       else

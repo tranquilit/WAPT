@@ -1,4 +1,4 @@
-msgid ""
+msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"

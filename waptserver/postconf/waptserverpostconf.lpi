@@ -33,7 +33,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="-vd"/>
+        <CommandLineParams Value="--lang de"/>
       </local>
     </RunParams>
     <RequiredPackages Count="9">
@@ -107,6 +107,8 @@
       </Debugging>
       <LinkSmart Value="True"/>
       <Options>
+        <PassLinkerOptions Value="True"/>
+        <LinkerOptions Value="-vd"/>
         <Win32>
           <GraphicApplication Value="True"/>
         </Win32>
