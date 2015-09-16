@@ -108,41 +108,6 @@ if v != (2, 7):
     raise Exception('waptservice supports only Python 2.7, not %d.%d' % v)
 
 
-usage="""\
-%prog -c configfile [action]
-
-WAPT Service.
-
-action is either :
-  <nothing> : run service in foreground
-  install   : install as a Windows service managed by nssm
-
-"""
-
-parser=OptionParser(usage=usage,version='waptservice.py ' + __version__+' common.py '+common.__version__+' setuphelpers.py '+setuphelpers.__version__)
-parser.add_option("-c","--config", dest="config", default=os.path.join(wapt_root_dir,'wapt-get.ini') , help="Config file full path (default: %default)")
-parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
-parser.add_option("-d","--devel", dest="devel", default=False,action='store_true', help="Enable debug mode (for development only)")
-
-(options,args)=parser.parse_args()
-
-logger = logging.getLogger()
-logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
-
-
-def setloglevel(logger,loglevel):
-    """set loglevel as string"""
-    if loglevel in ('debug','warning','info','error','critical'):
-        numeric_level = getattr(logging, loglevel.upper(), None)
-        if not isinstance(numeric_level, int):
-            raise ValueError(_('Invalid log level: {}').format(loglevel))
-        logger.setLevel(numeric_level)
-
-# force loglevel
-if options.loglevel is not None:
-    setloglevel(logger,options.loglevel)
-
-
 def get_authorized_callers_ip(waptserver_url=None):
     """Returns list of IP allowed to request actions with check_caller decorator"""
     ips = []
@@ -470,8 +435,7 @@ def check_open_port(portnumber=8088):
     except Exception as e:
         logger.info('Unable to check if port %s is opened : %s' % (portnumber,e))
 
-waptconfig = WaptServiceConfig(config_filename = options.config)
-waptconfig.load()
+waptconfig = WaptServiceConfig()
 
 app = Flask(__name__)
 app.config['PROPAGATE_EXCEPTIONS'] = True
@@ -2484,13 +2448,50 @@ def install_service():
     setuphelpers.run('sc sdset waptservice D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)(A;;CCLCSWRPWPDTLOCRRC;;;S-1-5-11)S:(AU;FA;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;WD)');
 
 if __name__ == "__main__":
-    if len(sys.argv)>1 and sys.argv[1] == 'doctest':
+    usage="""\
+    %prog -c configfile [action]
+
+    WAPT Service.
+
+    action is either :
+      <nothing> : run service in foreground
+      install   : install as a Windows service managed by nssm
+
+    """
+
+    parser=OptionParser(usage=usage,version='waptservice.py ' + __version__+' common.py '+common.__version__+' setuphelpers.py '+setuphelpers.__version__)
+    parser.add_option("-c","--config", dest="config", default=os.path.join(wapt_root_dir,'wapt-get.ini') , help="Config file full path (default: %default)")
+    parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
+    parser.add_option("-d","--devel", dest="devel", default=False,action='store_true', help="Enable debug mode (for development only)")
+
+    (options,args)=parser.parse_args()
+
+    logger = logging.getLogger()
+    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
+
+
+    def setloglevel(logger,loglevel):
+        """set loglevel as string"""
+        if loglevel in ('debug','warning','info','error','critical'):
+            numeric_level = getattr(logging, loglevel.upper(), None)
+            if not isinstance(numeric_level, int):
+                raise ValueError(_('Invalid log level: {}').format(loglevel))
+            logger.setLevel(numeric_level)
+
+    # force loglevel
+    if options.loglevel is not None:
+        setloglevel(logger,options.loglevel)
+
+    if args  and args[0] == 'doctest':
         import doctest
         sys.exit(doctest.testmod())
 
-    if len(sys.argv)>1 and sys.argv[1] == 'install':
+    if args and args[0] == 'install':
         install_service()
         sys.exit(0)
+
+    waptconfig.config_filename = options.config
+    waptconfig.load()
 
     # starts one WaptTasksManager
     task_manager = WaptTaskManager(config_filename = waptconfig.config_filename)

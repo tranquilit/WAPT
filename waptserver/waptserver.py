@@ -91,72 +91,17 @@ try:
 except Exception:
     pass
 
-usage="""\
-%prog [-c configfile] [--devel] [action]
-
-WAPT daemon.
-
-action is either :
-  <nothing> : run service in foreground
-  install   : install as a Windows service managed by nssm
-
-"""
-
-parser=OptionParser(usage=usage,version='waptserver.py ' + __version__)
-parser.add_option("-c","--config", dest="configfile", default=os.path.join(wapt_root_dir,'waptserver','waptserver.ini'), help="Config file full path (default: %default)")
-parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
-parser.add_option("-d","--devel", dest="devel", default=False,action='store_true', help="Enable debug mode (for development only)")
-parser.add_option("-w","--without-apache", dest="without_apache", default=False, action='store_true',help="Internal use")
-
-(options,args)=parser.parse_args()
-
 app = Flask(__name__,static_folder='./templates/static')
 babel = Babel(app)
+
+ALLOWED_EXTENSIONS = set(['wapt'])
 
 # setup logging
 logger = logging.getLogger()
 
-if options.loglevel is not None:
-    setloglevel(logger, options.loglevel)
-else:
-    setloglevel(logger, conf['loglevel'])
-
-log_directory = os.path.join(wapt_root_dir,'log')
-if not os.path.exists(log_directory):
-    os.mkdir(log_directory)
-
-#hdlr = logging.StreamHandler(sys.stdout)
-#hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
-#logger.addHandler(hdlr)
-
-hdlr = logging.FileHandler(os.path.join(log_directory,'waptserver.log'))
-hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
-logger.addHandler(hdlr)
-
 waptagent = os.path.join(conf['wapt_folder'], 'waptagent.exe')
 waptsetup = os.path.join(conf['wapt_folder'], 'waptsetup-tis.exe')
 waptdeploy = os.path.join(conf['wapt_folder'], 'waptdeploy.exe')
-
-# Setup initial directories
-if os.path.exists(conf['wapt_folder'])==False:
-    try:
-        os.makedirs(conf['wapt_folder'])
-    except:
-        raise Exception(_("Folder missing : {}.").format(conf['wapt_folder']))
-if os.path.exists(conf['wapt_folder'] + '-host')==False:
-    try:
-        os.makedirs(conf['wapt_folder'] + '-host')
-    except:
-        raise Exception(_("Folder missing : {}-host.").format(conf['wapt_folder']))
-if os.path.exists(conf['wapt_folder'] + '-group')==False:
-    try:
-        os.makedirs(conf['wapt_folder'] + '-group')
-    except:
-        raise Exception(_("Folder missing : {}-group.").format(conf['wapt_folder']))
-
-ALLOWED_EXTENSIONS = set(['wapt'])
-
-utils_set_devel_mode(options.devel)
 
 try:
     import wsus
@@ -1310,11 +1255,16 @@ def get_groups():
 @app.route('/api/v1/hosts_delete',methods=['GET'])
 @requires_auth
 def hosts_delete():
-    """
-        query:
-          uuid=<uuid1[,uuid2,...]>
-        or
-          filter=<csvlist of fields>:regular expression
+    """Remove one or several hosts from Server DB and optionnally the host packages
+
+    Args:
+        delete_packages: [0,1]: delete host's packages too
+        uuid (csvlist of uuid): <uuid1[,uuid2,...]>): filter based on uuid
+        filter (csvlist of field:regular expression): filter based on attributes
+
+    Returns:
+        result (dict): {'records':[],'files':[]}
+
     """
     try:
         # build filter
@@ -1367,15 +1317,23 @@ def hosts_delete():
 @app.route('/api/v1/hosts',methods=['GET'])
 @requires_auth
 def get_hosts():
-    """
+    """Get registration data of one or several hosts
+
+    Args:
+        has_errors (0/1): filter out hosts with packages errors
+        need_upgrade (0/1): filter out hosts with outdated packages
+        groups (csvlist of packages) : hosts with packages
+        columns (csvlist of columns) :
+        uuid (csvlist of uuid): <uuid1[,uuid2,...]>): filter based on uuid
+        filter (csvlist of field:regular expression): filter based on attributes
+
+    Returns:
+        result (dict): {'records':[],'files':[]}
+
         query:
           uuid=<uuid>
         or
           filter=<csvlist of fields>:regular expression
-        has_errors=1
-        need_upgrade=1
-        groups=<csvlist of packages>
-        columns=<csvlist of columns>
     """
     try:
         default_columns = [u'host_status',
@@ -1450,7 +1408,6 @@ def get_hosts():
         groups = ensure_list(request.args.get('groups',''))
 
         result = []
-        print { col:1 for col in columns }
         for host in hosts().find(query,fields={ col:1 for col in columns }):
             host.pop("_id")
             if ('depends' in columns or groups) and 'host' in host and 'computer_fqdn' in host['host']:
@@ -2023,6 +1980,57 @@ def install_windows_service():
 
 ##############
 if __name__ == "__main__":
+    usage="""\
+    %prog [-c configfile] [--devel] [action]
+
+    WAPT Server daemon.
+
+    action is either :
+      <nothing> : run service in foreground
+      install   : install as a Windows service managed by nssm
+
+    """
+
+    parser=OptionParser(usage=usage,version='waptserver.py ' + __version__)
+    parser.add_option("-c","--config", dest="configfile", default=os.path.join(wapt_root_dir,'waptserver','waptserver.ini'), help="Config file full path (default: %default)")
+    parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
+    parser.add_option("-d","--devel", dest="devel", default=False,action='store_true', help="Enable debug mode (for development only)")
+    parser.add_option("-w","--without-apache", dest="without_apache", default=False, action='store_true',help="Internal use")
+
+    (options,args)=parser.parse_args()
+
+    utils_set_devel_mode(options.devel)
+
+    if options.loglevel is not None:
+        setloglevel(logger, options.loglevel)
+    else:
+        setloglevel(logger, conf['loglevel'])
+
+    log_directory = os.path.join(wapt_root_dir,'log')
+    if not os.path.exists(log_directory):
+        os.mkdir(log_directory)
+
+    hdlr = logging.FileHandler(os.path.join(log_directory,'waptserver.log'))
+    hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+    logger.addHandler(hdlr)
+
+    # Setup initial directories
+    if os.path.exists(conf['wapt_folder'])==False:
+        try:
+            os.makedirs(conf['wapt_folder'])
+        except:
+            raise Exception(_("Folder missing : {}.").format(conf['wapt_folder']))
+    if os.path.exists(conf['wapt_folder'] + '-host')==False:
+        try:
+            os.makedirs(conf['wapt_folder'] + '-host')
+        except:
+            raise Exception(_("Folder missing : {}-host.").format(conf['wapt_folder']))
+    if os.path.exists(conf['wapt_folder'] + '-group')==False:
+        try:
+            os.makedirs(conf['wapt_folder'] + '-group')
+        except:
+            raise Exception(_("Folder missing : {}-group.").format(conf['wapt_folder']))
+
     if args and args[0] == 'doctest':
         import doctest
         sys.exit(doctest.testmod())
