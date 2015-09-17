@@ -452,6 +452,9 @@ def wapt():
     g.wapt.reload_config_if_updated()
     return g.wapt
 
+@app.before_first_request
+def before_first_request():
+    pythoncom.CoInitialize(pythoncom.COINIT_MULTITHREADED)
 
 @app.teardown_appcontext
 def close_connection(exception):
@@ -2191,7 +2194,11 @@ class WaptTaskManager(threading.Thread):
 
     def run(self):
         """Queue management, event processing"""
-        pythoncom.CoInitialize()
+        try:
+            pythoncom.CoInitializeEx(pythoncom.COINIT_MULTITHREADED)
+        except pythoncom.com_error:
+            # already initialized.
+            pass
 
         self.wapt = Wapt(config_filename=self.config_filename)
         self.events = self.setup_event_queue()
