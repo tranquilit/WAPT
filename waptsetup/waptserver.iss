@@ -51,6 +51,7 @@ Source: "..\waptserver\uninstall-services.bat"; Destdir: "{app}\waptserver\"
 [Languages]
 Name: "en"; MessagesFile: "compiler:Default.isl"
 Name:"fr";MessagesFile: "compiler:Languages\French.isl"
+Name:"de";MessagesFile: "compiler:Languages\German.isl"
 
 [Dirs]
 Name: "{app}\waptserver\repository"
@@ -102,6 +103,12 @@ en.RegisteringService=Registering WaptServer Service
 en.SetupService=Setup WaptServer Service
 en.LaunchingPostconf=Launch server post-configuration
 en.InstallApache=Install Apache (will use ports 80 and 443)
+
+de.UpdatePkg=Pakete beim Herunterfahren aktualisieren
+de.RegistreringService=Registrierung auf WaptServer Service
+de.SetupService=Setup WaptServer Service
+de.LaunchingPostconf=Server Post-Konfiguration starten
+de.InstallApachek=Apache installieren (verwendet Ports 80 und 443)
 
 [Code]
 procedure DeinitializeUninstall();

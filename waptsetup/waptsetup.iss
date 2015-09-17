@@ -32,8 +32,9 @@ DefaultDirName="C:\wapt"
 WizardImageFile=..\tranquilit.bmp
 
 [Languages]
-Name: "en"; MessagesFile: "compiler:Default.isl"
+Name:"en"; MessagesFile: "compiler:Default.isl"
 Name:"fr";MessagesFile: "compiler:Languages\French.isl"
+Name:"de";MessagesFile: "compiler:Languages\German.isl"
 
 [Tasks]
 ;Name: use_hostpackages; Description: "Use automatic host management based on hostname packages";
@@ -67,6 +68,12 @@ fr.StartAfterSetup=Lancer WAPT session setup à l'ouverture de session
 fr.RegisterHostOnServer=Enregistre l'ordinateur sur le serveur WAPT
 fr.UpdateAvailablePkg=Mise à jour des paquets disponibles sur le dépôt principal
 fr.UpdatePkgUponShutdown=Mise à jour des paquets à l'extinction du poste
+
+;German translation here
+de.StartAfterSetup=WAPT Setup-Sitzung bei Sitzungseröffnung starten
+de.RegisterHostOnServer=Diesen Computer auf WAPT Server speichern
+de.UpdateAvailablePkg=Liste der verfügbaren Pakete auf Main Repostitory aktualisieren
+de.UpdatePkgUponShutdown=Packete aktualisieren beim herunterfahren
 
 [Code]
 var

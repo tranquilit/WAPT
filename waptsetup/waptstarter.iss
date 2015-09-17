@@ -44,13 +44,19 @@ Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoU
 [Languages]
 Name:"en";MessagesFile: "compiler:Default.isl"
 Name:"fr";MessagesFile: "compiler:Languages\French.isl"
+Name:"de";MessagesFile: "compiler:Languages\German.isl"
 
 [CustomMessages]
 fr.UpdateAvailablePkg=Mise à jour des paquets disponibles sur le dépôt principal
 fr.UpdateOnShutdown=Mise à jour des paquets à l'extinction du poste
 
+;English translation here
 en.UpdateAvailablePkg=Update packages available on the main repository
 en.UpdateOnShutdown=Update packages upon shutdown
+
+;German translation here
+de.UpdateAvailablePkg=Verfügbare Pakete auf Main Repository aktualisieren
+de.UpdateOnShutdown=Pakete aktualisieren beim Herunterfahren
 
 [Code]
 procedure DeinitializeUninstall();

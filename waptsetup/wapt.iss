@@ -163,6 +163,15 @@ en.ForceVCppReinstall=Force-reinstall VC++ 2008 redistributables (for openssl)
 en.UpdatePkgUponShutdown=Ask to update packages upon shutdown
 en.LaunchSession=Launch WAPT setup session upon session opening
 
+;German translations here
+de.InstallWAPservice=WAPT service installieren
+de.LaunchIcon=Benachrichtigungssymbol bei Sitzungseröffnung starten
+de.InstallVCpp=VC++ 2008 die Redistributables (für openssl) installieren
+de.ForceVCppReinstall=Force- VC++ 2008 redistributables (für openssl) deinstallieren
+de.UpdatePkgUponShutdown=Bitten, die Packete beim herunterfahren zu aktualisieren
+de.LaunchSession=WAPT setup Sitzung bei eröffnung der Sitzung starten
+
+
 [Code]
 #include "services.iss"
 var
