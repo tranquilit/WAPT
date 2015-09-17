@@ -454,7 +454,7 @@ def wapt():
 
 @app.before_first_request
 def before_first_request():
-    pythoncom.CoInitialize(pythoncom.COINIT_MULTITHREADED)
+    pythoncom.CoInitializeEx(pythoncom.COINIT_MULTITHREADED)
 
 @app.teardown_appcontext
 def close_connection(exception):
