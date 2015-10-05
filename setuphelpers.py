@@ -1069,7 +1069,7 @@ def killtree(pid, including_parent=True):
     try:
         parent = psutil.Process(pid)
         if parent:
-            for child in parent.get_children(recursive=True):
+            for child in parent.children(recursive=True):
                 child.kill()
             if including_parent:
                 parent.kill()
