@@ -5,7 +5,7 @@
 
     This module implements a client to WSGI applications for testing.
 
-    :copyright: (c) 2013 by the Werkzeug Team, see AUTHORS for more details.
+    :copyright: (c) 2014 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
 import sys
@@ -25,7 +25,7 @@ try:
 except ImportError: # Py2
     from cookielib import CookieJar
 
-from werkzeug._compat import iterlists, iteritems, itervalues, to_native, \
+from werkzeug._compat import iterlists, iteritems, itervalues, to_bytes, \
      string_types, text_type, reraise, wsgi_encoding_dance, \
      make_literal_wrapper
 from werkzeug._internal import _empty_stream, _get_environ
@@ -97,11 +97,12 @@ def stream_encode_multipart(values, use_tempfile=True, threshold=1024 * 500,
                         break
                     write_binary(chunk)
             else:
-                if isinstance(value, string_types):
-                    value = to_native(value, charset)
-                else:
+                if not isinstance(value, string_types):
                     value = str(value)
-                write('\r\n\r\n' + value)
+                else:
+                    value = to_bytes(value, charset)
+                write('\r\n\r\n')
+                write_binary(value)
             write('\r\n')
     write('--%s--\r\n' % boundary)
 
@@ -378,9 +379,9 @@ class EnvironBuilder(object):
     def _get_content_type(self):
         ct = self.headers.get('Content-Type')
         if ct is None and not self._input_stream:
-            if self.method in ('POST', 'PUT', 'PATCH'):
-                if self._files:
-                    return 'multipart/form-data'
+            if self._files:
+                return 'multipart/form-data'
+            elif self._form:
                 return 'application/x-www-form-urlencoded'
             return None
         return ct
@@ -679,6 +680,12 @@ class Client(object):
             raise RuntimeError('%r does not support redirect to '
                                'external targets' % self.__class__)
 
+        status_code = int(response[1].split(None, 1)[0])
+        if status_code == 307:
+            method = environ['REQUEST_METHOD']
+        else:
+            method = 'GET'
+
         # For redirect handling we temporarily disable the response
         # wrapper.  This is not threadsafe but not a real concern
         # since the test client must not be shared anyways.
@@ -687,7 +694,7 @@ class Client(object):
         try:
             return self.open(path=script_root, base_url=base_url,
                              query_string=qs, as_tuple=True,
-                             buffered=buffered)
+                             buffered=buffered, method=method)
         finally:
             self.response_wrapper = old_response_wrapper
 
@@ -742,12 +749,18 @@ class Client(object):
                or not follow_redirects:
                 break
             new_location = response[2]['location']
+
+            method = 'GET'
+            if status_code == 307:
+                method = environ['REQUEST_METHOD']
+
             new_redirect_entry = (new_location, status_code)
             if new_redirect_entry in redirect_chain:
                 raise ClientRedirectError('loop detected')
             redirect_chain.append(new_redirect_entry)
             environ, response = self.resolve_redirect(response, new_location,
-                                                      environ, buffered=buffered)
+                                                      environ,
+                                                      buffered=buffered)
 
         if self.response_wrapper is not None:
             response = self.response_wrapper(*response)
@@ -851,29 +864,29 @@ def run_wsgi_app(app, environ, buffered=False):
         response[:] = [status, headers]
         return buffer.append
 
-    app_iter = app(environ, start_response)
+    app_rv = app(environ, start_response)
+    close_func = getattr(app_rv, 'close', None)
+    app_iter = iter(app_rv)
 
     # when buffering we emit the close call early and convert the
     # application iterator into a regular list
     if buffered:
-        close_func = getattr(app_iter, 'close', None)
         try:
             app_iter = list(app_iter)
         finally:
             if close_func is not None:
                 close_func()
 
-    # otherwise we iterate the application iter until we have
-    # a response, chain the already received data with the already
-    # collected data and wrap it in a new `ClosingIterator` if
-    # we have a close callable.
+    # otherwise we iterate the application iter until we have a response, chain
+    # the already received data with the already collected data and wrap it in
+    # a new `ClosingIterator` if we need to restore a `close` callable from the
+    # original return value.
     else:
         while not response:
             buffer.append(next(app_iter))
         if buffer:
-            close_func = getattr(app_iter, 'close', None)
             app_iter = chain(buffer, app_iter)
-            if close_func is not None:
-                app_iter = ClosingIterator(app_iter, close_func)
+        if close_func is not None and app_iter is not app_rv:
+            app_iter = ClosingIterator(app_iter, close_func)
 
     return app_iter, response[0], Headers(response[1])

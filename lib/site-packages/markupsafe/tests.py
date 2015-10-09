@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import gc
+import sys
 import unittest
 from markupsafe import Markup, escape, escape_silent
 from markupsafe._compat import text_type
@@ -42,7 +43,7 @@ class MarkupTestCase(unittest.TestCase):
             __str__ = __unicode__
         assert Markup(Foo()) == '<em>awesome</em>'
         assert Markup('<strong>%s</strong>') % Foo() == \
-               '<strong><em>awesome</em></strong>'
+            '<strong><em>awesome</em></strong>'
 
     def test_tuple_interpol(self):
         self.assertEqual(Markup('<em>%s:%s</em>') % (
@@ -77,6 +78,12 @@ class MarkupTestCase(unittest.TestCase):
             (Markup('{0[1][bar]}').format([0, {'bar': Markup('<bar/>')}]),
              '<bar/>')):
             assert actual == expected, "%r should be %r!" % (actual, expected)
+
+    # This is new in 2.7
+    if sys.version_info >= (2, 7):
+        def test_formatting_empty(self):
+            formatted = Markup('{}').format(0)
+            assert formatted == Markup('0')
 
     def test_custom_formatting(self):
         class HasHTMLOnly(object):

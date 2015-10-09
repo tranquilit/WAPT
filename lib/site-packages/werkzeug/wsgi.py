@@ -5,7 +5,7 @@
 
     This module implements WSGI related helpers.
 
-    :copyright: (c) 2013 by the Werkzeug Team, see AUTHORS for more details.
+    :copyright: (c) 2014 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
 import re
@@ -42,8 +42,8 @@ def responder(f):
 
 def get_current_url(environ, root_only=False, strip_querystring=False,
                     host_only=False, trusted_hosts=None):
-    """A handy helper function that recreates the full URL for the current
-    request or parts of it.  Here an example:
+    """A handy helper function that recreates the full URL as IRI for the
+    current request or parts of it.  Here an example:
 
     >>> from werkzeug.test import create_environ
     >>> env = create_environ("/?param=foo", "http://localhost/script")
@@ -59,6 +59,15 @@ def get_current_url(environ, root_only=False, strip_querystring=False,
     This optionally it verifies that the host is in a list of trusted hosts.
     If the host is not in there it will raise a
     :exc:`~werkzeug.exceptions.SecurityError`.
+
+    Note that the string returned might contain unicode characters as the
+    representation is an IRI not an URI.  If you need an ASCII only
+    representation you can use the :func:`~werkzeug.urls.iri_to_uri`
+    function:
+
+    >>> from werkzeug.urls import iri_to_uri
+    >>> iri_to_uri(get_current_url(env))
+    'http://localhost/script/?param=foo'
 
     :param environ: the WSGI environment to get the current URL from.
     :param root_only: set `True` if you only want the root URL.
@@ -120,17 +129,20 @@ def host_is_trusted(hostname, trusted_list):
 
 
 def get_host(environ, trusted_hosts=None):
-    """Return the real host for the given WSGI environment.  This takes care
-    of the `X-Forwarded-Host` header.  Optionally it verifies that the host
-    is in a list of trusted hosts.  If the host is not in there it will raise
-    a :exc:`~werkzeug.exceptions.SecurityError`.
+    """Return the real host for the given WSGI environment.  This first checks
+    the `X-Forwarded-Host` header, then the normal `Host` header, and finally
+    the `SERVER_NAME` environment variable (using the first one it finds).
+
+    Optionally it verifies that the host is in a list of trusted hosts.
+    If the host is not in there it will raise a
+    :exc:`~werkzeug.exceptions.SecurityError`.
 
     :param environ: the WSGI environment to get the host of.
     :param trusted_hosts: a list of trusted hosts, see :func:`host_is_trusted`
                           for more information.
     """
     if 'HTTP_X_FORWARDED_HOST' in environ:
-        rv = environ['HTTP_X_FORWARDED_HOST'].split(',')[0].strip()
+        rv = environ['HTTP_X_FORWARDED_HOST'].split(',', 1)[0].strip()
     elif 'HTTP_HOST' in environ:
         rv = environ['HTTP_HOST']
     else:
@@ -397,7 +409,7 @@ def extract_path_info(environ_or_baseurl, path_or_url, charset='utf-8',
             if scheme not in (u'http', u'https'):
                 return None
     else:
-        if not (base_scheme in (u'http', u'https') and \
+        if not (base_scheme in (u'http', u'https') and
                 base_scheme == cur_scheme):
             return None
 
@@ -466,7 +478,7 @@ class SharedDataMiddleware(object):
     :param disallow: a list of :func:`~fnmatch.fnmatch` rules.
     :param fallback_mimetype: the fallback mimetype for unknown files.
     :param cache: enable or disable caching headers.
-    :Param cache_timeout: the cache timeout in seconds for the headers.
+    :param cache_timeout: the cache timeout in seconds for the headers.
     """
 
     def __init__(self, app, exports, disallow=None, cache=True,
@@ -561,8 +573,8 @@ class SharedDataMiddleware(object):
         for sep in os.sep, os.altsep:
             if sep and sep != '/':
                 cleaned_path = cleaned_path.replace(sep, '/')
-        path = '/'.join([''] + [x for x in cleaned_path.split('/')
-                                if x and x != '..'])
+        path = '/' + '/'.join(x for x in cleaned_path.split('/')
+                              if x and x != '..')
         file_loader = None
         for search_path, loader in iteritems(self.exports):
             if search_path == path:
@@ -628,9 +640,8 @@ class DispatcherMiddleware(object):
             if script in self.mounts:
                 app = self.mounts[script]
                 break
-            items = script.split('/')
-            script = '/'.join(items[:-1])
-            path_info = '/%s%s' % (items[-1], path_info)
+            script, last_item = script.rsplit('/', 1)
+            path_info = '/%s%s' % (last_item, path_info)
         else:
             app = self.mounts.get(script, self.app)
         original_script_name = environ.get('SCRIPT_NAME', '')

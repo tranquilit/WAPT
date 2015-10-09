@@ -6,7 +6,7 @@
     This module implements the form parsing.  It supports url-encoded forms
     as well as non-nested multipart uploads.
 
-    :copyright: (c) 2013 by the Werkzeug Team, see AUTHORS for more details.
+    :copyright: (c) 2014 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
 import re
@@ -203,6 +203,8 @@ class FormDataParser(object):
                                  max_form_memory_size=self.max_form_memory_size,
                                  cls=self.cls)
         boundary = options.get('boundary')
+        if boundary is None:
+            raise ValueError('Missing boundary')
         if isinstance(boundary, text_type):
             boundary = boundary.encode('ascii')
         form, files = parser.parse(stream, boundary, content_length)

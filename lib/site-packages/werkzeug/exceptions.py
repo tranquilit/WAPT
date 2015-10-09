@@ -54,7 +54,7 @@
                 return e
 
 
-    :copyright: (c) 2013 by the Werkzeug Team, see AUTHORS for more details.
+    :copyright: (c) 2014 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
 import sys
@@ -181,7 +181,7 @@ class ClientDisconnected(BadRequest):
     it is silenced by default as far as Werkzeug is concerned.
 
     Since disconnections cannot be reliably detected and are unspecified
-    by WSGI to a large extend this might or might not be raised if a client
+    by WSGI to a large extent this might or might not be raised if a client
     is gone.
 
     .. versionadded:: 0.8
@@ -313,9 +313,9 @@ class Gone(HTTPException):
     """
     code = 410
     description = (
-        'The requested URL is no longer available on this server and '
-        'there is no forwarding address.</p><p>If you followed a link '
-        'from a foreign page, please contact the author of this page.'
+        'The requested URL is no longer available on this server and there '
+        'is no forwarding address. If you followed a link from a foreign '
+        'page, please contact the author of this page.'
     )
 
 
@@ -536,17 +536,46 @@ class ServiceUnavailable(HTTPException):
     )
 
 
+class GatewayTimeout(HTTPException):
+    """*504* `Gateway Timeout`
+
+    Status code you should return if a connection to an upstream server
+    times out.
+    """
+    code = 504
+    description = (
+        'The connection to an upstream server timed out.'
+    )
+
+
+class HTTPVersionNotSupported(HTTPException):
+    """*505* `HTTP Version Not Supported`
+
+    The server does not support the HTTP protocol version used in the request.
+    """
+    code = 505
+    description = (
+        'The server does not support the HTTP protocol version used in the '
+        'request.'
+    )
+
+
 default_exceptions = {}
 __all__ = ['HTTPException']
 
 def _find_exceptions():
     for name, obj in iteritems(globals()):
         try:
-            if getattr(obj, 'code', None) is not None:
-                default_exceptions[obj.code] = obj
-                __all__.append(obj.__name__)
-        except TypeError: # pragma: no cover
+            is_http_exception = issubclass(obj, HTTPException)
+        except TypeError:
+            is_http_exception = False
+        if not is_http_exception or obj.code is None:
             continue
+        __all__.append(obj.__name__)
+        old_obj = default_exceptions.get(obj.code, None)
+        if old_obj is not None and issubclass(obj, old_obj):
+            continue
+        default_exceptions[obj.code] = obj
 _find_exceptions()
 del _find_exceptions
 

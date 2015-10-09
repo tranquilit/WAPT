@@ -48,7 +48,7 @@ r"""
                 response.set_cookie('cookie_name', request.session.sid)
             return response(environ, start_response)
 
-    :copyright: (c) 2013 by the Werkzeug Team, see AUTHORS for more details.
+    :copyright: (c) 2014 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
 import re
@@ -74,7 +74,7 @@ _sha1_re = re.compile(r'^[a-f0-9]{40}$')
 def _urandom():
     if hasattr(os, 'urandom'):
         return os.urandom(30)
-    return random()
+    return text_type(random()).encode('ascii')
 
 
 def generate_key(salt=None):

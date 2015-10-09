@@ -17,7 +17,7 @@
     decoded into an unicode object if possible and if it makes sense.
 
 
-    :copyright: (c) 2013 by the Werkzeug Team, see AUTHORS for more details.
+    :copyright: (c) 2014 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
 from functools import update_wrapper
@@ -190,13 +190,17 @@ class BaseRequest(object):
 
     #: Optionally a list of hosts that is trusted by this request.  By default
     #: all hosts are trusted which means that whatever the client sends the
-    #: host is will be accepted.  This is the recommended setup as a webserver
-    #: should manually be set up to not route invalid hosts to the application.
+    #: host is will be accepted.
+    #:
+    #: This is the recommended setup as a webserver should manually be set up
+    #: to only route correct hosts to the application, and remove the
+    #: `X-Forwarded-Host` header if it is not being used (see
+    #: :func:`werkzeug.wsgi.get_host`).
     #:
     #: .. versionadded:: 0.9
     trusted_hosts = None
 
-    #: Indicates weather the data descriptor should be allowed to read and
+    #: Indicates whether the data descriptor should be allowed to read and
     #: buffer up the input stream.  By default it's enabled.
     #:
     #: .. versionadded:: 0.9
@@ -214,7 +218,7 @@ class BaseRequest(object):
         # in a debug session we don't want the repr to blow up.
         args = []
         try:
-            args.append("'%s'" % self.url)
+            args.append("'%s'" % to_native(self.url, self.url_charset))
             args.append('[%s]' % self.method)
         except Exception:
             args.append('(invalid WSGI environ)')
@@ -254,6 +258,7 @@ class BaseRequest(object):
         """
         from werkzeug.test import EnvironBuilder
         charset = kwargs.pop('charset', cls.charset)
+        kwargs['charset'] = charset
         builder = EnvironBuilder(*args, **kwargs)
         try:
             return builder.get_request(cls)
@@ -549,37 +554,49 @@ class BaseRequest(object):
 
     @cached_property
     def url(self):
-        """The reconstructed current URL"""
+        """The reconstructed current URL as IRI.
+        See also: :attr:`trusted_hosts`.
+        """
         return get_current_url(self.environ,
                                trusted_hosts=self.trusted_hosts)
 
     @cached_property
     def base_url(self):
-        """Like :attr:`url` but without the querystring"""
+        """Like :attr:`url` but without the querystring
+        See also: :attr:`trusted_hosts`.
+        """
         return get_current_url(self.environ, strip_querystring=True,
                                trusted_hosts=self.trusted_hosts)
 
     @cached_property
     def url_root(self):
-        """The full URL root (with hostname), this is the application root."""
+        """The full URL root (with hostname), this is the application
+        root as IRI.
+        See also: :attr:`trusted_hosts`.
+        """
         return get_current_url(self.environ, True,
                                trusted_hosts=self.trusted_hosts)
 
     @cached_property
     def host_url(self):
-        """Just the host with scheme."""
+        """Just the host with scheme as IRI.
+        See also: :attr:`trusted_hosts`.
+        """
         return get_current_url(self.environ, host_only=True,
                                trusted_hosts=self.trusted_hosts)
 
     @cached_property
     def host(self):
-        """Just the host including the port if available."""
+        """Just the host including the port if available.
+        See also: :attr:`trusted_hosts`.
+        """
         return get_host(self.environ, trusted_hosts=self.trusted_hosts)
 
     query_string = environ_property('QUERY_STRING', '', read_only=True,
         load_func=wsgi_get_bytes, doc=
         '''The URL parameters as raw bytestring.''')
-    method = environ_property('REQUEST_METHOD', 'GET', read_only=True, doc=
+    method = environ_property('REQUEST_METHOD', 'GET', read_only=True,
+        load_func=lambda x: x.upper(), doc=
         '''The transmission method. (For example ``'GET'`` or ``'POST'``).''')
 
     @cached_property
@@ -960,7 +977,6 @@ class BaseResponse(object):
         value of this method is used as application iterator unless
         :attr:`direct_passthrough` was activated.
         """
-        charset = self.charset
         if __debug__:
             _warn_if_string(self.response)
         # Encode in a separate function so that self.response is fetched
@@ -1105,7 +1121,10 @@ class BaseResponse(object):
         if location is not None:
             old_location = location
             if isinstance(location, text_type):
-                location = iri_to_uri(location)
+                # Safe conversion is necessary here as we might redirect
+                # to a broken URI scheme (for instance itms-services).
+                location = iri_to_uri(location, safe_conversion=True)
+
             if self.autocorrect_location_header:
                 current_url = get_current_url(environ, root_only=True)
                 if isinstance(current_url, text_type):
@@ -1136,7 +1155,8 @@ class BaseResponse(object):
         if self.automatically_set_content_length and \
            self.is_sequence and content_length is None and status != 304:
             try:
-                content_length = sum(len(to_bytes(x, 'ascii')) for x in self.response)
+                content_length = sum(len(to_bytes(x, 'ascii'))
+                                     for x in self.response)
             except UnicodeError:
                 # aha, something non-bytestringy in there, too bad, we
                 # can't safely figure out the length of the response.
@@ -1399,7 +1419,7 @@ class ETagResponseMixin(object):
             # wsgiref.
             if 'date' not in self.headers:
                 self.headers['Date'] = http_date()
-            if 'content-length' not in self.headers:
+            if self.automatically_set_content_length and 'content-length' not in self.headers:
                 length = self.calculate_content_length()
                 if length is not None:
                     self.headers['Content-Length'] = length
@@ -1488,6 +1508,7 @@ class ResponseStream(object):
             raise ValueError('I/O operation on closed file')
         self.response._ensure_sequence(mutable=True)
         self.response.response.append(value)
+        self.response.headers.pop('Content-Length', None)
 
     def writelines(self, seq):
         for item in seq:

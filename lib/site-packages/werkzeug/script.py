@@ -67,7 +67,7 @@ r'''
     or as named parameters, pretty much like Python function calls.
 
 
-    :copyright: (c) 2013 by the Werkzeug Team, see AUTHORS for more details.
+    :copyright: (c) 2014 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 '''
 from __future__ import print_function
@@ -194,8 +194,7 @@ def find_actions(namespace, action_prefix):
 
 def print_usage(actions):
     """Print the usage information.  (Help screen)"""
-    actions = actions.items()
-    actions.sort()
+    actions = sorted(iteritems(actions))
     print('usage: %s <action> [<options>]' % basename(sys.argv[0]))
     print('       %s --help' % basename(sys.argv[0]))
     print()
@@ -310,7 +309,9 @@ def make_runserver(app_factory, hostname='localhost', port=5000,
         """Start a new development server."""
         from werkzeug.serving import run_simple
         app = app_factory()
-        run_simple(hostname, port, app, reloader, debugger, evalex,
-                   extra_files, 1, threaded, processes,
+        run_simple(hostname, port, app,
+                   use_reloader=reloader, use_debugger=debugger,
+                   use_evalex=evalex, extra_files=extra_files,
+                   reloader_interval=1, threaded=threaded, processes=processes,
                    static_files=static_files, ssl_context=ssl_context)
     return action
