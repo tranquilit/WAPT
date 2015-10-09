@@ -112,7 +112,7 @@ def compile(file, cfile=None, dfile=None, doraise=False):
     try:
         codeobject = __builtin__.compile(codestring, dfile or file,'exec')
     except Exception,err:
-        py_exc = PyCompileError(err.__class__,err.args,dfile or file)
+        py_exc = PyCompileError(err.__class__, err, dfile or file)
         if doraise:
             raise py_exc
         else:
@@ -163,7 +163,7 @@ def main(args=None):
             except PyCompileError as error:
                 # return value to indicate at least one failure
                 rv = 1
-                sys.stderr.write(error.msg)
+                sys.stderr.write("%s\n" % error.msg)
     return rv
 
 if __name__ == "__main__":

@@ -90,12 +90,11 @@ DEFAULT_BUFSIZE = 8*1024
 
 def input(files=None, inplace=0, backup="", bufsize=0,
           mode="r", openhook=None):
-    """input([files[, inplace[, backup[, mode[, openhook]]]]])
+    """Return an instance of the FileInput class, which can be iterated.
 
-    Create an instance of the FileInput class. The instance will be used
-    as global state for the functions of this module, and is also returned
-    to use during iteration. The parameters to this function will be passed
-    along to the constructor of the FileInput class.
+    The parameters are passed to the constructor of the FileInput class.
+    The returned instance, in addition to being an iterator,
+    keeps global state for the functions of this module,.
     """
     global _state
     if _state and _state._file:
@@ -182,7 +181,7 @@ def isstdin():
     return _state.isstdin()
 
 class FileInput:
-    """class FileInput([files[, inplace[, backup[, mode[, openhook]]]]])
+    """FileInput([files[, inplace[, backup[, bufsize[, mode[, openhook]]]]]])
 
     Class FileInput is the implementation of the module; its methods
     filename(), lineno(), fileline(), isfirstline(), isstdin(), fileno(),
@@ -234,8 +233,10 @@ class FileInput:
         self.close()
 
     def close(self):
-        self.nextfile()
-        self._files = ()
+        try:
+            self.nextfile()
+        finally:
+            self._files = ()
 
     def __iter__(self):
         return self
@@ -271,23 +272,25 @@ class FileInput:
 
         output = self._output
         self._output = 0
-        if output:
-            output.close()
+        try:
+            if output:
+                output.close()
+        finally:
+            file = self._file
+            self._file = 0
+            try:
+                if file and not self._isstdin:
+                    file.close()
+            finally:
+                backupfilename = self._backupfilename
+                self._backupfilename = 0
+                if backupfilename and not self._backup:
+                    try: os.unlink(backupfilename)
+                    except OSError: pass
 
-        file = self._file
-        self._file = 0
-        if file and not self._isstdin:
-            file.close()
-
-        backupfilename = self._backupfilename
-        self._backupfilename = 0
-        if backupfilename and not self._backup:
-            try: os.unlink(backupfilename)
-            except OSError: pass
-
-        self._isstdin = False
-        self._buffer = []
-        self._bufindex = 0
+                self._isstdin = False
+                self._buffer = []
+                self._bufindex = 0
 
     def readline(self):
         try:
@@ -388,9 +391,10 @@ def hook_compressed(filename, mode):
 
 
 def hook_encoded(encoding):
-    import codecs
+    import io
     def openhook(filename, mode):
-        return codecs.open(filename, mode, encoding)
+        mode = mode.replace('U', '').replace('b', '') or 'r'
+        return io.open(filename, mode, encoding=encoding, newline='')
     return openhook
 
 

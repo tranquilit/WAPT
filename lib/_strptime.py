@@ -222,7 +222,7 @@ class TimeRE(dict):
         """Convert a list to a regex string for matching a directive.
 
         Want possible matching values to be from longest to shortest.  This
-        prevents the possibility of a match occuring for a value that also
+        prevents the possibility of a match occurring for a value that also
         a substring of a larger value that should have matched (e.g., 'abc'
         matching when 'abcdef' should have been the match).
 
@@ -326,7 +326,8 @@ def _strptime(data_string, format="%a %b %d %H:%M:%S %Y"):
     if len(data_string) != found.end():
         raise ValueError("unconverted data remains: %s" %
                           data_string[found.end():])
-    year = 1900
+
+    year = None
     month = day = 1
     hour = minute = second = fraction = 0
     tz = -1
@@ -334,9 +335,9 @@ def _strptime(data_string, format="%a %b %d %H:%M:%S %Y"):
     # though
     week_of_year = -1
     week_of_year_start = -1
-    # weekday and julian defaulted to -1 so as to signal need to calculate
+    # weekday and julian defaulted to None so as to signal need to calculate
     # values
-    weekday = julian = -1
+    weekday = julian = None
     found_dict = found.groupdict()
     for group_key in found_dict.iterkeys():
         # Directives not explicitly handled below:
@@ -425,16 +426,22 @@ def _strptime(data_string, format="%a %b %d %H:%M:%S %Y"):
                     else:
                         tz = value
                         break
+    leap_year_fix = False
+    if year is None and month == 2 and day == 29:
+        year = 1904  # 1904 is first leap year of 20th century
+        leap_year_fix = True
+    elif year is None:
+        year = 1900
     # If we know the week of the year and what day of that week, we can figure
     # out the Julian day of the year.
-    if julian == -1 and week_of_year != -1 and weekday != -1:
+    if julian is None and week_of_year != -1 and weekday is not None:
         week_starts_Mon = True if week_of_year_start == 0 else False
         julian = _calc_julian_from_U_or_W(year, week_of_year, weekday,
                                             week_starts_Mon)
     # Cannot pre-calculate datetime_date() since can change in Julian
     # calculation and thus could have different value for the day of the week
     # calculation.
-    if julian == -1:
+    if julian is None:
         # Need to add 1 to result since first day of the year is 1, not 0.
         julian = datetime_date(year, month, day).toordinal() - \
                   datetime_date(year, 1, 1).toordinal() + 1
@@ -444,8 +451,14 @@ def _strptime(data_string, format="%a %b %d %H:%M:%S %Y"):
         year = datetime_result.year
         month = datetime_result.month
         day = datetime_result.day
-    if weekday == -1:
+    if weekday is None:
         weekday = datetime_date(year, month, day).weekday()
+    if leap_year_fix:
+        # the caller didn't supply a year but asked for Feb 29th. We couldn't
+        # use the default of 1900 for computations. We set it back to ensure
+        # that February 29th is smaller than March 1st.
+        year = 1900
+
     return (time.struct_time((year, month, day,
                               hour, minute, second,
                               weekday, julian, tz)), fraction)

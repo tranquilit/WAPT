@@ -70,7 +70,8 @@ class DummyProcess(threading.Thread):
     def start(self):
         assert self._parent is current_process()
         self._start_called = True
-        self._parent._children[self] = None
+        if hasattr(self._parent, '_children'):
+            self._parent._children[self] = None
         threading.Thread.start(self)
 
     @property
@@ -137,7 +138,7 @@ class Value(object):
         self._value = value
     value = property(_get, _set)
     def __repr__(self):
-        return '<%r(%r, %r)>'%(type(self).__name__,self._typecode,self._value)
+        return '<%s(%r, %r)>'%(type(self).__name__,self._typecode,self._value)
 
 def Manager():
     return sys.modules[__name__]
