@@ -53,3 +53,8 @@ waptupgrade/patchs/
 /docs/_build
 /docs/_static
 /docs/training
+/waptserver/apache-win32/ssl
+/waptserver/mongodb/log
+/waptserver/mongodb/data
+/waptserver/apache-win32/conf/httpd.conf
+/waptserver/mongodb/mongod.cfg
