@@ -1,0 +1,22 @@
+Metadata-Version: 1.1
+Name: apsw
+Version: 3.8.9-r1
+Summary: Another Python SQLite Wrapper
+Home-page: https://github.com/rogerbinns/apsw/
+Author: Roger Binns
+Author-email: rogerb@rogerbinns.com
+License: OSI Approved ::
+Description: A Python wrapper for the SQLite embedded relational database engine.
+        In contrast to other wrappers such as pysqlite it focuses on being
+        a minimal layer over SQLite attempting just to translate the
+        complete SQLite API into Python.
+Keywords: database,sqlite
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: C
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Database :: Front-Ends
