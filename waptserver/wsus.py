@@ -81,9 +81,10 @@ wsus =  Blueprint('wsus', __name__)
 
 waptwua_folder = conf['waptwua_folder']
 
-def utils_get_db():
-    """Opens a new database connection if there is none yet for the
-    current application context.
+def get_db():
+    """Opens a new Mongo database connection.  The resulting database
+    is not cached in the per-request 'g' object, since the latter
+    would not be available to the huey tasks.
     """
     try:
         ip = conf['mongodb_ip']
@@ -135,7 +136,7 @@ def make_dl_task_descr(force=False, dryrun=False):
         'file_size': None,
     }
 
-    wsusscan2_history =  utils_get_db().wsusscan2_history
+    wsusscan2_history =  get_db().wsusscan2_history
     wsusscan2_history.ensure_index('uuid', unique=True)
     wsusscan2_history.ensure_index([('run_date', pymongo.DESCENDING)])
     wsusscan2_history.insert(task_descr)
@@ -161,7 +162,7 @@ def download_wsusscan(task_descr, force=False, dryrun=False):
     wsus_filename = os.path.join(waptwua_folder,'wsusscn2.cab')
     tmp_filename = os.path.join(waptwua_folder,'wsusscn2.cab.part')
 
-    wsusscan2_history = utils_get_db().wsusscan2_history
+    wsusscan2_history = get_db().wsusscan2_history
 
     stats = task_descr
     dl_uuid = stats['uuid']
@@ -289,7 +290,7 @@ def wsusscan2_extract_cabs(wsusscan2, tmpdir):
     cabextract(os.path.join(tmpdir, 'package.cab'), dstdir=tmpdir)
 
     cab_list = sorted(filter(lambda f: f.endswith('.cab'), os.listdir(tmpdir)))
-    cab_info = utils_get_db().wsus_cab_info
+    cab_info = get_db().wsus_cab_info
 
     for cab in cab_list:
         cab_path = os.path.join(tmpdir, cab)
@@ -588,7 +589,7 @@ def amend_metadata(directory, to_parse, db):
 
     # everything went fine, update cksums for updated package*.cab so
     # that we can skip them next time
-    cab_info = utils_get_db().wsus_cab_info
+    cab_info = get_db().wsus_cab_info
     for cab, cksum in to_parse.items():
         logger.info('Updating checksum for cab %s', cab)
         cab_info.update({ 'cab_name': cab }, { 'cab_name': cab, 'cksum': cksum }, upsert=True)
@@ -599,7 +600,7 @@ def amend_metadata(directory, to_parse, db):
 def parse_wsusscan_entrypoint(dl_uuid=None):
     wsusscan2 = os.path.join(waptwua_folder, 'wsusscn2.cab')
 
-    db = utils_get_db()
+    db = get_db()
     wsusscan2_history = db.wsusscan2_history
 
     db.wsus_updates.ensure_index([('revision_id', pymongo.DESCENDING)], unique=True)
@@ -747,13 +748,13 @@ def wsusscan2_history():
                    filter['skipped'] = {'$exists':False}
 
             limit = int(request.args.get('limit','0'))
-            query = wsusscan2_history = utils_get_db().wsusscan2_history.find(filter,limit=limit).sort('run_date',pymongo.DESCENDING)
+            query = wsusscan2_history = get_db().wsusscan2_history.find(filter,limit=limit).sort('run_date',pymongo.DESCENDING)
             for log in query:
                 data.append(log)
             return make_response(result=data)
         elif request.method == 'DELETE':
             uuids = ensure_list(request.args['uuid'])
-            result = utils_get_db().wsusscan2_history.remove({'uuid':{'$in':uuids}})
+            result = get_db().wsusscan2_history.remove({'uuid':{'$in':uuids}})
             if result['err']:
                 raise EWaptDatabaseError(result['err'])
             return make_response(result = result,msg='%s tasks deleted' % result['n'])
@@ -1034,18 +1035,18 @@ def windows_updates_options():
     key = request.args.get('key','default')
     if request.method == 'POST':
         data = json.loads(request.data)
-        result = utils_get_db().wsus_options.update({'key':key},{'key':key,'value': data},upsert=True)
+        result = get_db().wsus_options.update({'key':key},{'key':key,'value': data},upsert=True)
     else:
         if key == 'default':
-            result = utils_get_db().wsus_options.find()
+            result = get_db().wsus_options.find()
             return make_response(msg='Win updates global options', result=result)
         else:
-            result = utils_get_db().wsus_options.find({ 'key': key })
+            result = get_db().wsus_options.find({ 'key': key })
     return make_response(msg = _('Win updates global option for key %(key)s',key=key),result=result)
 
 
 def get_selected_products():
-     result = utils_get_db().wsus_options.find({'key':'products_selection'})
+     result = get_db().wsus_options.find({'key':'products_selection'})
      if result:
          for r in result:
              return r['value']
@@ -1106,7 +1107,7 @@ def windows_updates():
 	}
 }
     """
-    wsus_updates = utils_get_db().wsus_updates
+    wsus_updates = get_db().wsus_updates
     query = {}
 
     supported_filters = [
@@ -1204,7 +1205,7 @@ def windows_updates_urls():
         update_id = request.args.get('update_id')
         if not update_id:
             return make_response(msg='Missing update_id parameter', success=False)
-        wsus_updates = utils_get_db().wsus_updates
+        wsus_updates = get_db().wsus_updates
         def get_payloads(id):
             result = []
             updates = [ u for u in wsus_updates.find({'update_id':id},{'prereqs':1,'payload_files':1})]
@@ -1217,7 +1218,7 @@ def windows_updates_urls():
 
         update_id = request.args['update_id']
         files_id = get_payloads(update_id)
-        result = utils_get_db().wsus_locations.find({'id':files_id},{'url':1})
+        result = get_db().wsus_locations.find({'id':files_id},{'url':1})
         cnt = result.count()
         logger.info('returning from windows_updates_urls')
     except Exception as e:
@@ -1257,7 +1258,7 @@ def download_windows_updates():
     try:
         kb_article_id = request.args.get('kb_article_id', None)
         if kb_article_id != None:
-            requested_kb = utils_get_db().requested_kb
+            requested_kb = get_db().requested_kb
             requested_kb.update({ 'kb_article_id': kb_article_id }, { 'kb_article_id': kb_article_id, '$inc': { 'request_count', int(1) } }, upsert=True)
     except Exception as e:
         logger.error('download_windows_updates: %s', str(e))
@@ -1333,7 +1334,7 @@ def do_resolve_update(update_map, update_id, recursion_level):
     if recursion_level > 30:
         raise Exception('Max recursion reached when resolving update.')
 
-    wsus_locations = utils_get_db().wsus_locations
+    wsus_locations = get_db().wsus_locations
 
     wsus_locations.ensure_index('id', unique=True)
 
@@ -1345,7 +1346,7 @@ def do_resolve_update(update_map, update_id, recursion_level):
                 file_locations.append(fl)
         update_map[update_id]['file_locations'] = file_locations
 
-    wsus_updates = utils_get_db().wsus_updates
+    wsus_updates = get_db().wsus_updates
 
     db.wsus_updates.ensure_index([('revision_id', pymongo.DESCENDING)], unique=True)
     db.wsus_updates.ensure_index('update_id')
@@ -1385,7 +1386,7 @@ def select_windows_update():
         except:
             raise Exception('Invalid update_id format')
 
-        wsus_updates = utils_get_db().wsus_updates
+        wsus_updates = get_db().wsus_updates
         update_map = {}
         for update in wsus_updates.find({ 'update_id': update_id }):
             update_map[update['update_id']] = update
@@ -1404,7 +1405,7 @@ def select_windows_update():
         # not needed any more, free resources
         del update_map
 
-        wsus_fetch_info = utils_get_db().wsus_fetch_info
+        wsus_fetch_info = get_db().wsus_fetch_info
         wsus_fetch_info.ensure_index('id', unique=True)
 
         ok = 0
@@ -1434,16 +1435,16 @@ def windows_updates_rules():
         data = json.loads(request.data)
         if not 'group' in data:
             data['group'] = group
-        result = utils_get_db().wsus_rules.update({'group':group},{"$set": data},upsert=True)
+        result = get_db().wsus_rules.update({'group':group},{"$set": data},upsert=True)
     elif request.method == 'DELETE':
         group = request.args.get('group','default')
-        result = utils_get_db().wsus_rules. update({'group':group},{"$set": data},upsert=True)
+        result = get_db().wsus_rules. update({'group':group},{"$set": data},upsert=True)
     else:
         if 'group' in  request.args:
             group = request.args.get('group','default')
-            result = utils_get_db().wsus_rules.find({'group':group})
+            result = get_db().wsus_rules.find({'group':group})
         else:
-            result = utils_get_db().wsus_rules.find()
+            result = get_db().wsus_rules.find()
 
     return make_response(msg = _('Win updates rules'),result = result)
 
