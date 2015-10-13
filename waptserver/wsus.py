@@ -52,9 +52,12 @@ import collections
 import email.utils
 from flask import request, Blueprint
 import hashlib
+from huey import crontab
 import json
 from lxml import etree as ET
 import pymongo
+import random
+import re
 import requests
 import shutil
 import stat
@@ -63,10 +66,8 @@ import time
 import traceback
 import urlparse
 import uuid
-import re
 from waptserver_config import conf, huey
-from huey import crontab
-import random
+from waptserver_utils import *
 
 # i18n
 from flask.ext.babel import Babel
@@ -77,8 +78,6 @@ except ImportError:
 _ = gettext
 
 wsus =  Blueprint('wsus', __name__)
-
-from waptserver_utils import *
 
 waptwua_folder = conf['waptwua_folder']
 
