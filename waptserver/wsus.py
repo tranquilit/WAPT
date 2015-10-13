@@ -484,8 +484,6 @@ def wsusscn2_parse_metadata(descr_file):
         xml_str = file(descr_file, 'r').read()
         root = ET.fromstring(xml_str)
 
-        logger.debug("")
-
         props = root.find(update_qualify('Properties'))
 
         creation_date = props.get('CreationDate')
