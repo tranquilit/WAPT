@@ -50,7 +50,7 @@ sys.path.insert(0,os.path.join(wapt_root_dir,'lib','site-packages'))
 
 import collections
 import email.utils
-from flask import request
+from flask import request, Blueprint
 import hashlib
 import json
 from lxml import etree as ET
@@ -75,6 +75,8 @@ try:
 except ImportError:
     gettext = (lambda s:s)
 _ = gettext
+
+wsus =  Blueprint('wsus', __name__)
 
 from waptserver_utils import *
 
@@ -673,7 +675,7 @@ def parse_wsusscan2(dl_uuid):
         logger.error('Traceback: %s', traceback.format_exc())
 
 
-#@app.route('/api/v2/download_wsusscan')
+@wsus.route('/api/v2/download_wsusscan')
 def trigger_wsusscan2_download():
     dryrun = bool(int(request.args.get('dryrun', 0)))
     force = bool(int(request.args.get('force', 0)))
@@ -687,7 +689,7 @@ def trigger_wsusscan2_download():
     return make_response(result=task_descr)
 
 
-#@app.route('/api/v2/wsusscan2_status')
+@wsus.route('/api/v2/wsusscan2_status')
 def wsusscan2_status():
     wsus_filename = os.path.join(waptwua_folder,'wsusscn2.cab')
     tmp_filename = os.path.join(waptwua_folder,'wsusscn2.cab.tmp')
@@ -729,7 +731,7 @@ def wsusscan2_status():
 
     return make_response(success=success, result=data, msg=msg, error_code=error_code)
 
-#@app.route('/api/v2/wsusscan2_history')
+@wsus.route('/api/v2/wsusscan2_history')
 def wsusscan2_history():
     try:
         if request.method == 'GET':
@@ -1013,7 +1015,7 @@ def simplematch(expr):
     match = re.compile('[ \s.,:]*'.join(words) ,re.IGNORECASE)
     return match
 
-#@app.route('/api/v2/windows_products')
+@wsus.route('/api/v2/windows_products')
 def windows_products():
     result = []
     if 'search' in request.args:
@@ -1028,7 +1030,7 @@ def windows_products():
     return make_response(msg = _('Windows Products'), result = result )
 
 
-#@app.route('/api/v2/windows_updates_options',methods=['GET','POST'])
+@wsus.route('/api/v2/windows_updates_options',methods=['GET','POST'])
 def windows_updates_options():
     key = request.args.get('key','default')
     if request.method == 'POST':
@@ -1054,7 +1056,7 @@ def get_selected_products():
          return []
 
 
-#@app.route('/api/v2/windows_updates_classifications')
+@wsus.route('/api/v2/windows_updates_classifications')
 def windows_updates_classifications():
     result = []
     ids = request.args.get('id',None)
@@ -1066,7 +1068,7 @@ def windows_updates_classifications():
     return make_response(msg = _('Win updates classifications'),result=result)
 
 
-#@app.route('/api/v2/windows_updates')
+@wsus.route('/api/v2/windows_updates')
 def windows_updates():
     """
 {
@@ -1189,7 +1191,7 @@ def windows_updates():
     return make_response(msg = _('Windows Updates, filter: %(query)s, count: %(cnt)s, unknown params: %(unknown)s',query=query,cnt=cnt,unknown=unknown_filters),result = result)
 
 
-#@app.route('/api/v2/windows_updates_urls',methods=['GET'])
+@wsus.route('/api/v2/windows_updates_urls',methods=['GET'])
 def windows_updates_urls():
     """Return list of URL of files to download for the selected update_id
 
@@ -1250,7 +1252,7 @@ def check_sha1_filename(target):
         return True
 
 
-#@app.route('/api/v2/download_windows_update')
+@wsus.route('/api/v2/download_windows_update')
 def download_windows_updates():
 
     try:
@@ -1367,7 +1369,7 @@ def do_resolve_update(update_map, update_id, recursion_level):
     update_map[update_id]['done'] = True
 
 
-#@app.route('/api/v2/select_windows_update', methods=['GET'])
+@wsus.route('/api/v2/select_windows_update', methods=['GET'])
 def select_windows_update():
     """
     """
@@ -1426,7 +1428,7 @@ def select_windows_update():
         return make_response_from_exception(e)
 
 
-#@app.route('/api/v2/windows_updates_rules',methods=['GET','POST','DELETE'])
+@wsus.route('/api/v2/windows_updates_rules',methods=['GET','POST','DELETE'])
 def windows_updates_rules():
     if request.method == 'POST':
         group = request.args.get('group','default')
@@ -1470,7 +1472,7 @@ def wuredist_extract_and_fetch(wuredist, tmpdir):
             wget(url, target)
 
 
-#@app.route('/api/v2/download_wuredist')
+@wsus.route('/api/v2/download_wuredist')
 def download_wuredist():
     cab_url = 'http://update.microsoft.com/redist/wuredist.cab'
     wuredist_filename = os.path.join(waptwua_folder, 'wuredist.cab')

@@ -105,11 +105,10 @@ waptdeploy = os.path.join(conf['wapt_folder'], 'waptdeploy.exe')
 
 try:
     import wsus
-    #from wsus import download_wsusscan
+    app.register_blueprint(wsus.wsus)
 except Exception as e:
     logger.error(str(e))
     wsus = False
-    raise
 
 
 def get_wapt_exe_version(exe):
@@ -1624,78 +1623,6 @@ def usage_statistics():
     result.update(stats['result'][0])
     return make_response(msg = _('Anomnymous usage statistics'), result = result)
 
-
-@app.route('/api/v2/download_wsusscan')
-def trigger_wsusscan2_download():
-    if wsus:
-        return wsus.trigger_wsusscan2_download()
-    else:
-        raise moooooooooo
-
-@app.route('/api/v2/wsusscan2_status')
-def wsusscan2_status():
-    if wsus:
-        return wsus.wsusscan2_status()
-
-@app.route('/api/v2/wsusscan2_history',methods = ['GET','POST','DELETE'])
-def wsusscan2_history():
-    if wsus:
-        return wsus.wsusscan2_history()
-
-@app.route('/api/v2/windows_products')
-def windows_products():
-    if wsus:
-        return wsus.windows_products()
-
-
-@app.route('/api/v2/windows_updates_classifications')
-def windows_updates_classifications():
-    if wsus:
-        return wsus.windows_updates_classifications()
-
-@app.route('/api/v2/windows_updates_options',methods=['GET','POST'])
-def windows_updates_options():
-    if wsus:
-        return wsus.windows_updates_options()
-
-@app.route('/api/v2/windows_updates')
-def windows_updates():
-    if wsus:
-        return wsus.windows_updates()
-
-#@app.route('/api/v2/windows_updates_urls',methods=['GET'])
-def windows_updates_urls():
-    return wsus.windows_updates_urls()
-
-@app.route('/api/v2/download_windows_update')
-def download_windows_updates():
-    if wsus:
-        return wsus.download_windows_updates()
-
-@app.route('/api/v2/select_windows_update', methods=['GET'])
-def select_windows_update():
-    if wsus:
-        return wsus.select_windows_update()
-
-@app.route('/api/v2/windows_updates_rules',methods=['GET','POST','DELETE'])
-def windows_updates_rules():
-    if wsus:
-        return wsus.windows_updates_rules()
-
-@app.route('/api/v2/download_wuredist')
-def download_wuredist():
-    if wsus:
-        return wsus.download_wuredist()
-
-
-def test():
-    import flask
-    app = flask.Flask(__name__)
-    babel = Babel(app)
-    with app.test_request_context():
-        db = get_db()
-        a =  usage_statistics()
-        print a.data
 
 ##################################################################
 class CheckHostWorker(threading.Thread):
