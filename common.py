@@ -37,6 +37,9 @@ import sqlite3
 import json
 import StringIO
 import requests
+import requests.packages.urllib3
+requests.packages.urllib3.disable_warnings()
+
 import fnmatch
 import platform
 import imp
