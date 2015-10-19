@@ -415,7 +415,11 @@ def create_waptwua_package(waptconfigfile,wuagroup='default',wapt_server_user=No
         res = wapt.edit_package(packagename,target_directory = mkdtemp('wapt'),use_local_sources = False)
     """
     res = wapt.make_group_template(packagename,directoryname = mkdtemp('wapt'),section='waptwua')
-    build_res = wapt.build_upload(res['target'],private_key_passwd = key_password, wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
+    build_res = wapt.build_upload(res['target'],
+        private_key_passwd = key_password,
+        wapt_server_user=wapt_server_user,
+        wapt_server_passwd=wapt_server_passwd,
+        inc_package_release=True)
     if isdir(res['target']):
         remove_tree(res['target'])
     packagefilename = build_res[0]['filename']
