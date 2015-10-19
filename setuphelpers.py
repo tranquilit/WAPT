@@ -2427,12 +2427,6 @@ def get_file_properties(fname):
         props[propName] = ''
 
     try:
-        # backslash as parm returns dictionary of numeric info corresponding to VS_FIXEDFILEINFO struc
-        fixedInfo = win32api.GetFileVersionInfo(fname, '\\')
-        props['FileVersion'] = "%d.%d.%d.%d" % (fixedInfo['FileVersionMS'] / 65536,
-                fixedInfo['FileVersionMS'] % 65536, fixedInfo['FileVersionLS'] / 65536,
-                fixedInfo['FileVersionLS'] % 65536)
-
         # \VarFileInfo\Translation returns list of available (language, codepage)
         # pairs that can be used to retreive string info. We are using only the first pair.
         lang, codepage = win32api.GetFileVersionInfo(fname, '\\VarFileInfo\\Translation')[0]
@@ -2444,6 +2438,12 @@ def get_file_properties(fname):
             strInfoPath = u'\\StringFileInfo\\%04X%04X\\%s' % (lang, codepage, propName)
             ## print str_info
             props[propName] = (win32api.GetFileVersionInfo(fname, strInfoPath) or '').strip()
+
+        # backslash as parm returns dictionary of numeric info corresponding to VS_FIXEDFILEINFO struc
+        fixedInfo = win32api.GetFileVersionInfo(fname, '\\')
+        props['FileVersion'] = "%d.%d.%d.%d" % (fixedInfo['FileVersionMS'] / 65536,
+                fixedInfo['FileVersionMS'] % 65536, fixedInfo['FileVersionLS'] / 65536,
+                fixedInfo['FileVersionLS'] % 65536)
 
     except Exception,e:
         logger.warning(u"%s" % ensure_unicode(e))
