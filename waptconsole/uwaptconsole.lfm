@@ -477,125 +477,138 @@ object VisWaptGUI: TVisWaptGUI
             Header.AutoSizeIndex = -1
             Header.Columns = <            
               item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
                 Position = 0
                 Text = 'Status'
+                PropertyName = 'install_status'
               end            
               item
                 Position = 1
+                Tag = 2
                 Text = 'Section'
                 PropertyName = 'section'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
                 Position = 2
+                Tag = 3
                 Text = 'Package name'
                 Width = 171
                 PropertyName = 'package'
               end            
               item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
-                Position = 3
-                Text = 'Status'
-                PropertyName = 'install_status'
-              end            
-              item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-                Position = 4
+                Position = 3
+                Tag = 4
                 Text = 'Version'
                 Width = 62
                 PropertyName = 'version'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
-                Position = 5
+                Position = 4
+                Tag = 5
                 Text = 'Description'
                 Width = 129
                 PropertyName = 'description'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
-                Position = 6
+                Position = 5
+                Tag = 6
                 Text = 'Dependencies'
                 PropertyName = 'depends'
               end            
               item
-                Position = 7
+                Position = 6
+                Tag = 7
                 Text = 'Install date'
                 Width = 93
                 PropertyName = 'install_date'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 8
+                Position = 7
+                Tag = 8
                 Text = 'priority'
                 Width = 100
                 PropertyName = 'priority'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 9
+                Position = 8
+                Tag = 9
                 Text = 'sources'
                 Width = 100
                 PropertyName = 'sources'
               end            
               item
-                Position = 10
+                Position = 9
+                Tag = 10
                 Text = 'Installed by'
                 Width = 100
                 PropertyName = 'explicit_by'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 11
+                Position = 10
+                Tag = 11
                 Text = 'md5sum'
                 Width = 100
                 PropertyName = 'md5sum'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 12
+                Position = 11
+                Tag = 12
                 Text = 'File name'
                 Width = 100
                 PropertyName = 'filename'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 13
+                Position = 12
+                Tag = 13
                 Text = 'Parameters'
                 Width = 100
                 PropertyName = 'install_params'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 14
+                Position = 13
+                Tag = 14
                 Text = 'Log install'
                 Width = 100
                 PropertyName = 'install_output'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 15
+                Position = 14
+                Tag = 15
                 Text = 'maintainer'
                 Width = 100
                 PropertyName = 'maintainer'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 16
+                Position = 15
+                Tag = 16
                 Text = 'conflicts'
                 Width = 100
                 PropertyName = 'conflicts'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 17
+                Position = 16
+                Tag = 17
                 Text = 'Size after install'
                 Width = 100
                 PropertyName = 'installed_size'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 18
+                Position = 17
+                Tag = 18
                 Text = 'URL of repository'
                 Width = 100
                 PropertyName = 'repo_url'
@@ -603,28 +616,32 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Alignment = taRightJustify
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 19
+                Position = 18
+                Tag = 19
                 Text = 'Size'
                 Width = 100
                 PropertyName = 'size'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 20
+                Position = 19
+                Tag = 20
                 Text = 'Name of repository'
                 Width = 100
                 PropertyName = 'repo'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 21
+                Position = 20
+                Tag = 21
                 Text = 'localpath'
                 Width = 100
                 PropertyName = 'localpath'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 22
+                Position = 21
+                Tag = 22
                 Text = 'Arch'
                 Width = 23
                 PropertyName = 'architecture'
@@ -1035,6 +1052,7 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Position = 0
                 Text = 'Status'
+                PropertyName = 'status'
               end            
               item
                 Position = 1
@@ -1068,7 +1086,7 @@ object VisWaptGUI: TVisWaptGUI
                 Position = 5
                 Tag = 5
                 Text = 'title'
-                Width = 438
+                Width = 316
                 PropertyName = 'title'
               end            
               item
@@ -1094,7 +1112,7 @@ object VisWaptGUI: TVisWaptGUI
               end>
             Header.DefaultHeight = 17
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-            Header.SortColumn = 4
+            Header.SortColumn = 1
             Header.Style = hsFlatButtons
             Images = ImageList1
             TabOrder = 0
@@ -4726,6 +4744,42 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem77: TMenuItem
       Action = ActTriggerWakeOnLan
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+        FF00FFFFFF0027A8DC00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF0029ACDED527A9DCE925A6DB00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF002BAFDF002DAEDFFF2BABDEFF25A6DB8AFFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF002BAFDFCF4FBCE7FF4CBAE6FF26A7DCED24A4DB00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF002BAFDFFF84D3F2FF55BDE7FF2EAADEFF24A4
+        DB90FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF002DB2E0C070CCEEFF83D2F2FF7ECEF1FF4AB6
+        E4FF24A5DBF122A2DA00FFFFFF00FFFFFF00FFFFFF00FFFFFF0038C2E7F036C0
+        E6F835BDE5F833BBE4F831B8E3F82FB6E2F886D7F3FF2FB6EBFF4ABCECFF80CE
+        F1FF51B9E6FF2CA8DDFF23A2DA9DFFFFFF00FFFFFF00FFFFFF003AC4E8E975DA
+        F2FF93E6F8FF91E3F7FF8DE0F6FF8ADCF5FF8ADBF5FF88D7F4FF84D3F2FF7FCF
+        F1FF7CCCF0FF7AC9EFFF48B4E3FF23A3DAF5209ED800FFFFFF003BC7E9004FCD
+        ECFF98E9F9FF4AD5F3FF45CFF1FF40CAF0FF38C2EEFF89D9F4FF2EB4E1FE2CB1
+        E0F82BAEDFF829ACDEF827A9DCF825A6DBF823A3DAE9FFFFFF00FFFFFF003BC7
+        E9F480E1F5FF8EE6F8FF43D2F3FF3FCDF1FF39C7EFFF8CDCF5FF58C6EAFF2EB4
+        E100FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF003DC9
+        EA005BD4EFFF99EAF9FF47D6F4FF42D0F2FF3DCBF0FF6ED5F3FF7FD7F3FF4AC0
+        E7FF2FB4E100FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF003DCAEAF993E9F9FF72E1F7FF45D4F3FF41CEF2FF3CC9F0FF8ADCF5FF70D0
+        EFFF3DBBE4FF2FB5E100FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF003FCCEB8364D9F1FF9AEBFAFF48D8F4FF44D3F3FF3FCEF1FF3AC8F0FF8CDC
+        F5FF62CBEDFF31B8E3FCFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF003FCCEBFD9AEDFAFF99EBF9FF97E8F9FF94E5F8FF91E2F7FF8EDF
+        F6FF8BDBF5FF56C7EBFF31B8E3F3FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF0040CEECA23FCCEBFF3ECBEAFF3CC9E9FF3BC7E9FF3AC4E8FF38C2
+        E7FF36C0E6FF35BDE5FF33BBE4FF31B8E3E1FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
+      }
     end
     object MenuItem55: TMenuItem
       Caption = '-'
@@ -4738,6 +4792,42 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem72: TMenuItem
       Action = ActTriggerWaptwua_install
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00000000000000000000000000000000000000
+        000000000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF000000000007070700818181AAE0E0E0E3E0E0E0E38181
+        81AA0707070000000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF000000000000000000B4B4B4C5C6E0C6FF61AF61FF61B061FFC6E2
+        C6FFB4B4B4C50000000000000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF0000000000747474A5C4DEC4FE098309FF008A00FF008F00FF098B
+        09FFC5E2C5FE747474A500000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF000000000010101080E3EBE3F5248A24FF008A00FF009000FF00CD00FF00A4
+        00FF259725FFE6ECE6F51010108000000000FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF0000000000858585AC89B889FF007A00FF599459FFD9E4D9FF2B952BFF00D0
+        00FF009200FF8EC28EFF858585AC00000000FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF0000000000D9DAD9DE297F29FF569356FFE9F0E9FFD9E5D9FFDEE8DEFF298F
+        29FF009E00FF2A8E2AFFDADADADE00000000FFFFFF00FFFFFF00FFFFFF000000
+        00002727278ACEDFCEFE006B00FFA9D0A9FFA9D0A9FF0EC00EFFC7DCC7FFDEE8
+        DEFF278427FF007D00FFCEE2CEFE2727278A00000000FFFFFF00FFFFFF000000
+        00006060609DA3BFA3FF006D00FF008400FF00A000FF00BC00FF0DC00DFFCBDD
+        CBFFC6DEC6FF008000FFA3C5A3FF6060609D00000000FFFFFF00FFFFFF000000
+        00008C8C8CAF92B292FF016501FF008000FF009600FF00AD00FF00C200FF0DAF
+        0DFF149B14FF017501FF92B892FF8C8C8CAF00000000FFFFFF00FFFFFF000000
+        0000707070A2E8E8E8EAD2E2D2FF4D934DFF008600FF00A300FF00AE00FF0097
+        00FF4D9D4DFFD2E5D2FFE8E8E8EA707070A200000000FFFFFF00FFFFFF00FFFF
+        FF0000000000000000006F6F6FA3EFEFEFF1A9CEA9FF359335FF359835FFA9D2
+        A9FFEFEFEFF16F6F6FA30000000000000000FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00000000000D0D0D00CFCFCFD5F9F9F9F8F9F9F9F8CFCF
+        CFD50D0D0D0000000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00000000000000000000000000000000000000
+        000000000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
+      }
     end
     object MenuItem73: TMenuItem
       Caption = '-'
