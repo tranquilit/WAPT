@@ -775,11 +775,13 @@ class WaptWUA(object):
                     # IUpdate : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386099(v=vs.85).aspx
                     # IUpdate2 : https://msdn.microsoft.com/en-us/library/windows/desktop/aa386100(v=vs.85).aspx
                     logger.info('Adding %s : %s' % (update.Identity.UpdateID,update.Title ))
-                    update.IsHidden = False
+                    if update.IsHidden:
+                        update.IsHidden = False
                     pending += 1
                 else:
                     logger.info('Skipping %s : %s' % (update.Identity.UpdateID,update.Title ))
-                    update.IsHidden = True
+                    if not update.IsHidden:
+                        update.IsHidden = True
                     discarded += 1
             else:
                 logger.debug('Already installed %s : %s' % (update.Identity.UpdateID,update.Title ))
