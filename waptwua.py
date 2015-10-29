@@ -26,14 +26,22 @@
     Script which scans the computer for Windows Update based on wsusscn2 cab
     Stores the result of scan in waptdb
     Can download and apply Windows Updates from wapt server
-    based on allowed_updates list
+    based on allowed_classifications, forbidden_updates, allowed_updates, allowed_severities list
+
+    An update is allowed if :
+      not in forbidden and
+        (
+          (in allowed_classifications if specified and in allowed_severities if specified)
+          or
+          in allowed_updates if specified
+        )
 
     <action> can be :
         scan : updates wsusscn2.cab, and checks current computer againt allowed KB
         download : download necessary updates from wapt server and push them in cache
         install : install allowed cached updates
 """
-__version__ = "1.3.2"
+__version__ = "1.3.3"
 
 
 import csv
@@ -82,7 +90,7 @@ DetectoIds = {
  '3e0afb10-a9fb-4c16-a60e-5790c3803437': 'x86-based systems',
 }
 
-
+# TODO: this map should be better obtained from wsusscn2.cab file.
 Products = {
     "fdcfda10-5b1f-4e57-8298-c744257e30db":"Active Directory Rights Management Services Client 2.0",
     "57742761-615a-4e06-90bb-008394eaea47":"Active Directory",
@@ -866,11 +874,17 @@ class WaptWUA(object):
     def _check_disk_space(self):
         for d in wmi.WMI().Win32_LogicalDisk():
             device = d.Name
-            if device == 'C:' and int(d.FreeSpace) < 2 ** 30:
+            if device == os.environ['SystemDrive'] and int(d.FreeSpace) < 2 ** 30:
                 raise WAPTDiskSpaceException('Not enough space left on device ' + device, d.FreeSpace)
 
 
     def download_single(self,update):
+        """Download the files associated to an IUpdate instance
+            Direct content
+            Bundled content
+
+        """
+
         result = []
         try:
 

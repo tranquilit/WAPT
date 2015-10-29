@@ -1915,6 +1915,7 @@ def run_waptwua(conn_fd, method, windows_updates_rules={}, run_waptwua_conf={}, 
         r = getattr(wua, method).__call__(**kwargs)
         conn_fd.send((r, None))
     except Exception as e:
+        logger.critical(e)
         conn_fd.send((
                 None,
                 'run_waptwua: unexpected exception while attempting to call %s: %s' % (method, str(e))
@@ -2415,7 +2416,7 @@ def install_service():
         nssm = os.path.join(wapt_root_dir,'waptservice','win32','nssm.exe')
 
     logger.info(u'Register new waptservice with nssm')
-    setuphelpers.run('"{nssm}" install WAPTService "{waptpython}" ""{waptservicepy}""'.format(
+    setuphelpers.run('"{nssm}" install WAPTService "{waptpython}" -E ""{waptservicepy}""'.format(
         waptpython = os.path.abspath(os.path.join(wapt_root_dir,'waptpython.exe')),
         nssm = nssm,
         waptservicepy = os.path.abspath(__file__),
