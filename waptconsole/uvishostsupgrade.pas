@@ -42,6 +42,7 @@ type
   private
     Faction: String;
     Fhosts: ISuperObject;
+    Fnotifyserver: Boolean;
     Stopped : Boolean;
     gridLock : TCriticalSection;
     procedure Setaction(AValue: String);
@@ -49,6 +50,7 @@ type
     { private declarations }
   public
     { public declarations }
+    property notifyServer:Boolean read Fnotifyserver write FNotifyServer;
     property action:String read Faction write Setaction;
     property hosts:ISuperObject read Fhosts write Sethosts;
   end;
@@ -88,7 +90,7 @@ begin
     ProgressGrid.InvalidateFordata(host);
     Application.ProcessMessages;
     try
-      res := WAPTServerJsonGet('%s?uuid=%s',[action,host.S['uuid']]);
+      res := WAPTServerJsonGet('%s?uuid=%s&notify_server=%i',[action,host.S['uuid'],integer(notifyServer)]);
       // new behaviour
       if (res<>Nil) and res.AsObject.Exists('success') then
       begin

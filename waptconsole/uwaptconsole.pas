@@ -2437,6 +2437,7 @@ begin
     try
       Caption:= rsTriggerHostsUpdate;
       action := 'api/v1/trigger_update';
+      notifyServer := True;
       hosts := Gridhosts.SelectedRows;
 
       if ShowModal = mrOk then

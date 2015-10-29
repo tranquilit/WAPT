@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="1.3.2"
+__version__="1.3.3"
 
 import os,sys
 try:
@@ -856,7 +856,6 @@ def trigger_update():
         uuid = request.args['uuid']
         notify_user = request.args.get('notify_user',0)
         notify_server = request.args.get('notify_server',1)
-
 
         host_data = hosts().find_one({ "uuid": uuid},fields={'uuid':1,'wapt':1,'host.connected_ips':1})
         listening_address = get_ip_port(host_data)

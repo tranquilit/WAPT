@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=2.5.3.0
+Version=2.6.0.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -91,8 +91,12 @@ FileName=C:\tranquilit\wapt\waptpackage.py
 ClassName=TProjectFileNode
 FileName=$[Project-Path]waptservice.py
 
+[Project\ChildNodes\Node0\ChildNodes\Node7]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptwua.py
+
 [Project\ChildNodes\Node0\ChildNodes]
-Count=7
+Count=8
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode
@@ -105,7 +109,7 @@ Name=debug
 ScriptName=C:\tranquilit\wapt\waptservice\waptservice.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-d 
+Parameters=-d
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
