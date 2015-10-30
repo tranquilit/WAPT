@@ -58,3 +58,4 @@ waptupgrade/patchs/
 /waptserver/mongodb/data
 /waptserver/apache-win32/conf/httpd.conf
 /waptserver/mongodb/mongod.cfg
+/profilemigration
