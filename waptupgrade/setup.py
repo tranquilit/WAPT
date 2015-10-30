@@ -180,48 +180,68 @@ def add_at_cmd(cmd,delay=1):
     print(run('at %s "%s"'%(at_time,cmd)))
 
 
+def create_waptagent_install():
+    waptagent_path = tempfile.mktemp('waptagent')
+    if WAPT.repositories and WAPT.repositories[-1]:
+        waptagent_url = WAPT.repositories[-2]
+    wget(WAPT)
+    tmp_bat = tempfile.NamedTemporaryFile(prefix='waptagent',suffix='.cmd',mode='wt',delete=False)
+    tmp_bat.write('net stop waptservice\n')
+
+    tmp_bat.write('del "%s"\n'%tmp_bat.name)
+    tmp_bat.close()
+    add_at_cmd(tmp_bat.name)
+
 def install():
     # if you want to modify the keys depending on environment (win32/win64... params..)
-    print(u'Partial upgrade of WAPT  client')
-    killalltasks('wapttray.exe')
-    killalltasks('waptconsole.exe')
+    import common
+    wapt_version = Version(common.__version__+'.0-0')
+    if wapt_version < Version('1.3.3'):
+        print('Your current wapt version (%s) is too old to be upgraded, please reinstall a full waptagent.exe'%wapt_version)
 
-    def onerror(srcname,dstname,e):
-        print u"Error %s %s %s" %(srcname,dstname,ensure_unicode(e))
-        if e[0] == 5:   # locked
-            filecopyto(srcname,dstname+'.pending')
-            replace_at_next_reboot(None, dstname)
-        else:
-            raise e
+    if wapt_version >= Version(control.version):
+        print('Your current wapt (%s) is more recent than the upgrade package (%s). Skipping...'%(wapt_version,control.version))
+    else:
+        print(u'Partial upgrade of WAPT client')
+        killalltasks('wapttray.exe')
+        killalltasks('waptconsole.exe')
 
-    def check_exe_version(src,dst):
-        if os.path.splitext(dst)[1] in ('.exe','.dll'):
-            try:
-                ov = get_file_properties(dst)['FileVersion']
-                nv = get_file_properties(src)['FileVersion']
-                return Version(ov)<Version(nv)
-            except:
+        def onerror(srcname,dstname,e):
+            print u"Error %s %s %s" %(srcname,dstname,ensure_unicode(e))
+            if e[0] == 5:   # locked
+                filecopyto(srcname,dstname+'.pending')
+                replace_at_next_reboot(None, dstname)
+            else:
+                raise e
+
+        def check_exe_version(src,dst):
+            if os.path.splitext(dst)[1] in ('.exe','.dll'):
+                try:
+                    ov = get_file_properties(dst)['FileVersion']
+                    nv = get_file_properties(src)['FileVersion']
+                    return Version(ov)<Version(nv)
+                except:
+                    return True
+            else:
                 return True
-        else:
-            return True
 
-    copytree2('patchs',WAPT.wapt_base_dir,
-        onreplace = check_exe_version,
-        onerror = onerror)
+        copytree2('patchs',WAPT.wapt_base_dir,
+            onreplace = check_exe_version,
+            onerror = onerror)
 
-    update_registry_version(control.version)
+        update_registry_version(control.version)
 
-    # restart of service can not be done by service...
-    if service_installed('waptservice') and service_is_running('waptservice'):
-        import requests,json
-        try:
-            res = json.loads(requests.get('http://127.0.0.1:8088/waptservicerestart.json').text)
-        except:
-            tmp_bat = tempfile.NamedTemporaryFile(prefix='waptrestart',suffix='.cmd',mode='wt',delete=False)
-            tmp_bat.write('net stop waptservice\n')
-            tmp_bat.write('net start waptservice\n')
-            tmp_bat.write('del "%s"\n'%tmp_bat.name)
-            tmp_bat.close()
-            add_at_cmd(tmp_bat.name)
-    print(u'Upgrade done')
+        # restart of service can not be done by service...
+        if service_installed('waptservice') and service_is_running('waptservice'):
+            import requests,json
+            try:
+                res = json.loads(requests.get('http://127.0.0.1:8088/waptservicerestart.json').text)
+            except:
+                tmp_bat = tempfile.NamedTemporaryFile(prefix='waptrestart',suffix='.cmd',mode='wt',delete=False)
+                tmp_bat.write('net stop waptservice\n')
+                tmp_bat.write('net start waptservice\n')
+                tmp_bat.write('del "%s"\n'%tmp_bat.name)
+                tmp_bat.close()
+                add_at_cmd(tmp_bat.name)
+        print(u'Upgrade done')
 
