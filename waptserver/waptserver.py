@@ -1288,8 +1288,8 @@ def hosts_delete():
             if selected:
                 for host in selected:
                     result['records'].append(dict(uuid=host['uuid'],computer_fqdn=host['host']['computer_fqdn']))
-                    if host['host']['computer_fqdn'] in hosts_packages_repo.index:
-                        fn = hosts_packages_repo.index[host['host']['computer_fqdn']].wapt_fullpath()
+                    if host['host']['computer_fqdn'] in hosts_packages_repo:
+                        fn = hosts_packages_repo[host['host']['computer_fqdn']].wapt_fullpath()
                         logger.debug('Trying to remove %s' % fn)
                         if os.path.isfile(fn):
                             result['files'].append(fn)
@@ -1408,16 +1408,22 @@ def get_hosts():
         result = []
         for host in hosts().find(query,fields={ col:1 for col in columns }):
             host.pop("_id")
-            if ('depends' in columns or groups) and 'host' in host and 'computer_fqdn' in host['host']:
-                host_package = hosts_packages_repo.index.get(host['host']['computer_fqdn'],None)
+            if (('depends' in columns) or len(groups)>0) and 'host' in host and 'computer_fqdn' in host['host']:
+                host_package = hosts_packages_repo.get(host['host']['computer_fqdn'],None)
                 if host_package:
                     depends = ensure_list(host_package.depends.split(','))
                     host['depends'] = [ d for d in depends
-                            if (d in packages_repo.index and packages_repo.index[d].section == 'group')]
+                            if (d in packages_repo and packages_repo[d].section == 'group')]
                 else:
                     depends = []
             else:
                 depends = []
+
+            if not groups or list(set(groups) & set(depends)):
+                result.append(host)
+            else:
+                continue
+
             try:
                 la = host['wapt']['listening_address']
                 if la['address']  and la['timestamp']:
@@ -1444,8 +1450,6 @@ def get_hosts():
             except:
                 host['host_status'] = '?'
 
-            if not groups or list(set(groups) & set(depends)):
-                result.append(host)
 
         if  'uuid' in request.args:
             if len(result) == 0:
@@ -1972,7 +1976,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     if options.devel:
-        app.run(host='0.0.0.0',port=30880,debug=options.devel)
+        app.run(host='0.0.0.0',port=30880,debug=False)
     else:
         port = conf['waptserver_port']
         server = Rocket(('127.0.0.1', port), 'wsgi', {"wsgi_app":app})

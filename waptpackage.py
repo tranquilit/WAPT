@@ -122,6 +122,7 @@ def datetime2isodate(adatetime = None):
 
 def httpdatetime2isodate(httpdate):
     """convert a date string as returned in http headers or mail headers to isodate
+
     >>> import requests
     >>> last_modified = requests.head('http://wapt/wapt/Packages',headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
     >>> len(httpdatetime2isodate(last_modified)) == 19
@@ -268,21 +269,30 @@ class PackageEntry(object):
         return parse_major_minor_patch_build(self.version)
 
     def __getitem__(self,name):
-        name = name.lower()
+        if name is str or name is unicode:
+            name = name.lower()
         if hasattr(self,name):
             return getattr(self,name)
         else:
             raise Exception(u'No such attribute : %s' % name)
 
     def get(self,name,default=None):
-        name = name.lower()
+        """Get PackageEntry property like a dict
+
+        >>> r = WaptLocalRepo('C:\\wapt\\waptserver\\repository\\wapt-host')
+        >>> print(dict(r['htlaptop.tranquilit.local']))
+
+        """
+        if name is str or name is unicode:
+            name = name.lower()
         if hasattr(self,name):
             return getattr(self,name)
         else:
             return default
 
     def __setitem__(self,name,value):
-        name = name.lower()
+        if name is str or name is unicode:
+            name = name.lower()
         if name not in self.all_attributes:
             self.calculated_attributes.append(name)
         setattr(self,name,value)
@@ -520,10 +530,7 @@ sources      : %(sources)s
         return self.repo_url+'/'+self.filename.strip('./')
 
     def as_dict(self):
-        result ={}
-        for k in self.all_attributes:
-            result[k] = getattr(self,k)
-        return result
+        return self.__dict__
 
     def __unicode__(self):
         return self.ascontrol(with_non_control_attributes=True)
@@ -577,7 +584,7 @@ class WaptBaseRepo(object):
     def __init__(self,name='abstract'):
         self.name = name
         self._packages = None
-        self.index = {}
+        self._index = {}
         self._packages_date = None
 
     def _load_packages_index(self):
@@ -612,7 +619,7 @@ class WaptBaseRepo(object):
             bool:   True if either Packages was never read or remote date of Packages is
                     more recent than the provided last_modifed date.
 
-        >>> repo = WaptRepo(name='main',url='http://wapt/wapt',timeout=4)
+        >>> repo = WaptRemoteRepo(name='main',url='http://wapt/wapt',timeout=4)
         >>> waptdb = WaptDB('c:/wapt/db/waptdb.sqlite')
         >>> res = repo.need_update(waptdb.read_param('last-%s'% repo.url))
         >>> isinstance(res,bool)
@@ -640,8 +647,8 @@ class WaptBaseRepo(object):
             with description or name matching all the searchwords and section in
             provided sections list
 
-        >>> r = WaptRepo(name='test',url='http://wapt.tranquil.it/wapt')
-        >>> r.search(')
+        >>> r = WaptRemoteRepo(name='test',url='http://wapt.tranquil.it/wapt')
+        >>> r.search('test')
         """
         searchwords = ensure_list(searchwords)
         sections = ensure_list(sections)
@@ -681,6 +688,24 @@ class WaptBaseRepo(object):
         else:
             return []
 
+    def __iter__(self):
+        # ensure packages is loaded
+        if self._packages is None:
+            self._load_packages_index()
+        return self._index.__iter__()
+
+
+    def __getitem__(self,packagename):
+        # ensure packages is loaded
+        if self._packages is None:
+            self._load_packages_index()
+        return self._index[packagename]
+
+    def get(self,packagename,default=None):
+        # ensure packages is loaded
+        if self._packages is None:
+            self._load_packages_index()
+        return self._index.get(packagename,default)
 
 
 class WaptLocalRepo(WaptBaseRepo):
@@ -714,7 +739,7 @@ class WaptLocalRepo(WaptBaseRepo):
                 del(self._packages[:])
             else:
                 self._packages = []
-            self.index.clear()
+            self._index.clear()
 
             startline = 0
             endline = 0
@@ -730,8 +755,8 @@ class WaptLocalRepo(WaptBaseRepo):
                     package.filename = package.make_package_filename()
                     self._packages.append(package)
                     # index last version
-                    if package.package not in self.index or self.index[package.package] < package:
-                        self.index[package.package] = package
+                    if package.package not in self._index or self._index[package.package] < package:
+                        self._index[package.package] = package
 
             for line in packages_lines:
                 if line.strip()=='':
@@ -745,7 +770,7 @@ class WaptLocalRepo(WaptBaseRepo):
             add(startline,endline)
         else:
             self._packages = []
-            self.index.clear()
+            self._index.clear()
             self._packages_date = None
 
     def update_packages_index(self,force_all=False):
@@ -777,7 +802,7 @@ class WaptLocalRepo(WaptBaseRepo):
             self._packages = []
         else:
             del(self._packages[:])
-        self.index.clear()
+        self._index.clear()
 
         for fname in waptlist:
             try:
@@ -799,8 +824,8 @@ class WaptLocalRepo(WaptBaseRepo):
                 packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
                 self._packages.append(entry)
                 # index last version
-                if entry.package not in self.index or self.index[entry.package] < entry:
-                    self.index[entry.package] = entry
+                if entry.package not in self._index or self._index[entry.package] < entry:
+                    self._index[entry.package] = entry
 
                 # looks for an icon in wapt package
                 icon_fn = os.path.join(icons_path,"%s.png"%entry.package)
@@ -834,6 +859,7 @@ class WaptLocalRepo(WaptBaseRepo):
             return self._packages_date
         else:
             return None
+
 
 def default_http_headers():
     return {
@@ -975,7 +1001,7 @@ class WaptRemoteRepo(WaptBaseRepo):
                                       defaults to name of repository
 
         Returns:
-            WaptRepo: return itself to chain calls.
+            WaptRemoteRepo: return itself to chain calls.
         """
         if not section:
              section = self.name
@@ -1025,10 +1051,10 @@ class WaptRemoteRepo(WaptBaseRepo):
         Returns:
             str: Iso creation date of remote Package file as returned in http headers
 
-        >>> repo = WaptRepo(name='main',url='http://wapt/wapt',timeout=1)
+        >>> repo = WaptRemoteRepo(name='main',url='http://wapt/wapt',timeout=1)
         >>> repo.is_available() <= datetime2isodate()
         True
-        >>> repo = WaptRepo(name='main',url='http://badwapt/wapt',timeout=1)
+        >>> repo = WaptRemoteRepo(name='main',url='http://badwapt/wapt',timeout=1)
         >>> repo.is_available() is None
         True
         """
@@ -1208,9 +1234,7 @@ def update_packages(adir):
     >>> os.path.isfile(res['packages_filename'])
     True
     >>> r = WaptLocalRepo(localpath=repopath)
-    >>> r.load_packages()
     >>> l1 = r.packages
-    >>> p.save_control_to_wapt(os.path.join(repopath,p.make_package_filename()))
     >>> res = r.update_packages_index()
     >>> l2 = r.packages
     >>> [p for p in l2 if p not in l1]
