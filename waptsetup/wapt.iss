@@ -140,6 +140,10 @@ Name: installredist2008; Description: "{cm:InstallVCpp}";  Check: VCRedistNeedsI
 Name: installredist2008unchecked; Description: "{cm:ForceVCppReinstall}"; Check: not VCRedistNeedsInstall(); Flags: unchecked
 Name: autoUpgradePolicy; Description: "{cm:UpdatePkgUponShutdown}";
 
+[InstallDelete]
+Type: filesandordirs; Name: {app}\lib\site-packages
+Type: files; Name: {app}\*.pyc
+
 [UninstallRun]
 Filename: "taskkill"; Parameters: "/t /im ""waptconsole.exe"" /f"; Flags: runhidden; StatusMsg: "Arrêt de waptconsole"
 Filename: "taskkill"; Parameters: "/t /im ""wapttray.exe"" /f"; Flags: runhidden; StatusMsg: "Arrêt de l'icône de notification"
