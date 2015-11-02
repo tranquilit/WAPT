@@ -61,7 +61,6 @@ import StringIO
 
 import thread
 import threading
-import multiprocessing as mp
 import zmq
 from zmq.log.handlers import PUBHandler
 import Queue
@@ -88,7 +87,11 @@ import setuphelpers
 from setuphelpers import Version
 from waptpackage import PackageEntry
 
-from waptwua import WaptWUA
+try:
+    from waptwua import WaptWUA
+    app.register_blueprint(waptwua.waptwua)
+except Exception as e:
+    pass
 
 from gettext import gettext
 
@@ -1213,109 +1216,6 @@ def cancel_task():
         return render_template('default.html',data=data)
 
 
-@app.route('/wua_installed_updates')
-@app.route('/wua_installed_updates.json')
-@allow_waptserver_or_local_unauth
-def wua_installed_updates():
-    data = [u for u in json.loads(wapt().read_param('waptwua.updates') or '[]') if u['installed']]
-    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
-        return Response(common.jsondump(data), mimetype='application/json')
-    else:
-        return render_template('waptwua.html',data=data,
-            title=_('Installed Windows Updates'),
-            waptwua_last_scan_date = wapt().read_param('waptwua.last_scan_date','none'),
-            waptwua_wsusscn2cab_date = wapt().read_param('waptwua.wsusscn2cab_date','none'),
-            waptwua_last_install_result = wapt().read_param('waptwua.last_install_result','none'),
-            waptwua_last_install_date = wapt().read_param('waptwua.last_install_date','none'),
-            waptwua_windows_updates_rules = wapt().read_param('waptwua.windows_updates_rules','none'),
-            )
-
-
-@app.route('/wua_pending_updates')
-@app.route('/wua_pending_updates.json')
-@allow_waptserver_or_local_unauth
-def wua_pending_updates():
-    data = [u for u in json.loads(wapt().read_param('waptwua.updates') or '[]') if not u['installed'] and not u['hidden']]
-
-    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
-        return Response(common.jsondump(data), mimetype='application/json')
-    else:
-        return render_template('waptwua.html',data=data,
-            title=_('Pending Windows Updates'),
-            waptwua_last_scan_date = wapt().read_param('waptwua.last_scan_date','none'),
-            waptwua_wsusscn2cab_date = wapt().read_param('waptwua.wsusscn2cab_date','none'),
-            waptwua_last_install_result = wapt().read_param('waptwua.last_install_result','none'),
-            waptwua_last_install_date = wapt().read_param('waptwua.last_install_date','none'),
-            waptwua_windows_updates_rules = wapt().read_param('waptwua.windows_updates_rules','none'),
-            )
-
-@app.route('/wua_discarded_updates')
-@app.route('/wua_discarded_updates.json')
-@allow_waptserver_or_local_unauth
-def wua_discarded_updates():
-    data = [u for u in json.loads(wapt().read_param('waptwua.updates') or '[]') if not u['installed'] and u['hidden']]
-
-    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
-        return Response(common.jsondump(data), mimetype='application/json')
-    else:
-        return render_template('waptwua.html',data=data,
-            title=_('Discarded Windows Updates'),
-            waptwua_last_scan_date = wapt().read_param('waptwua.last_scan_date','none'),
-            waptwua_wsusscn2cab_date = wapt().read_param('waptwua.wsusscn2cab_date','none'),
-            waptwua_last_install_result = wapt().read_param('waptwua.last_install_result','none'),
-            waptwua_last_install_date = wapt().read_param('waptwua.last_install_date','none'),
-            waptwua_windows_updates_rules = wapt().read_param('waptwua.windows_updates_rules','none'),
-            )
-
-
-
-@app.route('/waptwua_scan', methods=['GET'])
-@app.route('/waptwua_scan.json', methods=['GET'])
-@allow_waptserver_or_local_unauth
-def waptwua_scan():
-    logger.info(u"Launch WaptWUA scan missing updates")
-    force=int(request.args.get('force','0')) == 1
-    notify_user = int(request.args.get('notify_user','0')) == 1
-    data = []
-    data.append(task_manager.add_task(WaptWUAScan(
-        windows_updates_rules = json.loads(wapt().read_param('waptwua.windows_updates_rules','{}'))),notify_user=notify_user).as_dict())
-    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
-        return Response(common.jsondump(data), mimetype='application/json')
-    else:
-        return render_template('install.html',data=data)
-
-@app.route('/waptwua_download', methods=['GET'])
-@app.route('/waptwua_download.json', methods=['GET'])
-@allow_waptserver_or_local_unauth
-def waptwua_download():
-    logger.info(u"Launch WaptWUA download updates")
-    force=int(request.args.get('force','0')) == 1
-    notify_user = int(request.args.get('notify_user','0')) == 1
-    data = []
-    data.append(task_manager.add_task(WaptWUADownload(
-        windows_updates_rules = json.loads(wapt().read_param('waptwua.windows_updates_rules','{}'))),notify_user=notify_user).as_dict())
-    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
-        return Response(common.jsondump(data), mimetype='application/json')
-    else:
-        return render_template('install.html',data=data)
-
-@app.route('/waptwua_install', methods=['GET'])
-@app.route('/waptwua_install.json', methods=['GET'])
-@allow_waptserver_or_local_unauth
-def waptwua_install():
-    logger.info(u"Launch WaptWUA scan download and install missing updates")
-    force=int(request.args.get('force','0')) == 1
-    notify_user = int(request.args.get('notify_user','0')) == 1
-    data = []
-    data.append(task_manager.add_task(WaptWUAInstall(
-        windows_updates_rules = json.loads(wapt().read_param('waptwua.windows_updates_rules','{}'))
-        ),notify_user=notify_user).as_dict())
-    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
-        return Response(common.jsondump(data), mimetype='application/json')
-    else:
-        return render_template('install.html',data=data)
-
-
 class EventsPrinter:
     '''EventsPrinter class which serves to emulates a file object and logs
        whatever it gets sent to a broadcast object at the INFO level.'''
@@ -1878,151 +1778,6 @@ class WaptPackageForget(WaptTask):
     def __unicode__(self):
         return __(u"Forget {packagenames} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagenames=self.packagenames)
 
-
-
-def run_waptwua(conn_fd, method, windows_updates_rules={}, run_waptwua_conf={}, **kwargs):
-    """Run WaptWUA 'method' using windows_updates_rules.
-
-    run_waptwua_conf is a dict of contraints for the runner:
-    - 'ensure_enabled' (waptwua_enabled in wapt-get.ini)
-    - 'disable_automatic_updates'
-    - 'disable_os_upgrade'
-    kwargs can be used to pass arguments to the method
-
-    Communication with the parent is done by returning a tuple of (result, message)
-    through conn_fd.
-
-    WARNING: everything passed through arguments or conn_fd should
-    be a basic python type, since multiprocessing uses pickle, which
-    is limited.
-
-    """
-    try:
-        wapt = Wapt()
-        wua = WaptWUA(wapt, windows_updates_rules)
-
-        ensure_enabled = run_waptwua_conf.get('ensure_enabled', True)
-        if ensure_enabled and not wua.wapt.waptwua_enabled:
-            conn_fd.send((None, 'WAPTWUA is currently disabled.'))
-            return
-
-        if run_waptwua_conf.get('disable_automatic_updates', False):
-            wua.setup_wuauserv(automatic_updates=False)
-
-        if run_waptwua_conf.get('disable_os_upgrade', False):
-            wua.disable_os_upgrade()
-
-        r = getattr(wua, method).__call__(**kwargs)
-        conn_fd.send((r, None))
-    except Exception as e:
-        logger.critical(e)
-        conn_fd.send((
-                None,
-                'run_waptwua: unexpected exception while attempting to call %s: %s' % (method, str(e))
-                ))
-
-
-class WaptWUAScan(WaptTask):
-    def __init__(self,windows_updates_rules = {}):
-        super(WaptWUAScan,self).__init__()
-        self.windows_updates_rules = windows_updates_rules
-
-    def _run(self):
-        parent_conn, child_conn = mp.Pipe()
-        scan_args = (
-            child_conn,
-            'scan_updates_status',
-            self.windows_updates_rules,
-            { 'ensure_enabled': False },
-        )
-        child = mp.Process(target=run_waptwua, args=scan_args)
-        child.start()
-
-        r = s = None
-        try:
-            r, s = parent_conn.recv()
-            if r is None:
-                if s is None:
-                    s = '%s: no result and no summary explanation given' % (self.__class__.__name__)
-            else:
-                s = "Windows updates: already installed: %s, pending %s, discarded %s" % (r[0], r[1], r[2])
-        except Exception as e:
-            s = '%s: Failed to receive data from child process: %s' % (self.__class__.__name__, str(e))
-
-        self.result = r
-        self.summary = s
-
-    def __unicode__(self):
-        # XXX missing formats?
-        return __(u"Scans WAPTWua Windows Updates  with rules {rules}").format(classname=self.__class__.__name__,id=self.id,rules=self.windows_updates_rules)
-
-
-class WaptWUADownload(WaptTask):
-    def __init__(self,windows_updates_rules = {}):
-        super(WaptWUADownload,self).__init__()
-        self.windows_updates_rules = windows_updates_rules
-
-    def _run(self):
-        parent_conn, child_conn = mp.Pipe()
-        download_args = (
-            child_conn,
-            'download_updates',
-            self.windows_updates_rules,
-            { 'ensure_enabled': True, 'disable_os_upgrade': True, 'disable_automatic_updates': True },
-        )
-        child = mp.Process(target=run_waptwua, args=download_args)
-        child.start()
-
-        r = s = None
-        try:
-            r, s = parent_conn.recv()
-            if r is None:
-                if s is None:
-                    s = '%s: no result and no summary explanation given' % (self.__class__.__name__)
-            else:
-                s = "%s result : %s" % (self.__class__.__name__, r)
-        except Exception as e:
-            s = '%s: Failed to receive data from child process: %s' % (self.__class__.__name__, str(e))
-
-        self.result = r
-        self.summary = s
-
-    def __unicode__(self):
-        return __(u"Scan and download WAPTWua Windows Updates with rules %{rules}s").format(classname=self.__class__.__name__,id=self.id,rules=self.windows_updates_rules)
-
-
-class WaptWUAInstall(WaptTask):
-    def __init__(self,windows_updates_rules = {}):
-        super(WaptWUAInstall,self).__init__()
-        self.windows_updates_rules = windows_updates_rules
-
-    def _run(self):
-        parent_conn, child_conn = mp.Pipe()
-        install_args = (
-            child_conn,
-            'install_updates',
-            self.windows_updates_rules,
-            { 'ensure_enabled': True, 'disable_os_upgrade': True, 'disable_automatic_updates': True },
-        )
-        child = mp.Process(target=run_waptwua, args=install_args)
-        child.start()
-
-        r = s = None
-        try:
-            r, s = parent_conn.recv()
-            if r is None:
-                if s is None:
-                    s = '%s: no result and no summary explanation given' % (self.__class__.__name__)
-            else:
-                s = "%s result : %s" % (self.__class__.__name__, r)
-        except Exception as e:
-            s = '%s: Failed to receive data from child process: %s' % (self.__class__.__name__, str(e))
-
-        self.result = r
-        self.summary = s
-
-    def __unicode__(self):
-        return __(u"Scan, download and install WAPTWua Windows Updates with rules %{rules}s").format(classname=self.__class__.__name__,id=self.id,rules=self.windows_updates_rules)
 
 
 def firewall_running():

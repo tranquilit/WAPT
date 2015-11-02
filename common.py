@@ -57,7 +57,6 @@ import traceback
 import uuid
 
 from waptpackage import *
-from waptwua import WaptWUA
 import locale
 
 import shlex
@@ -2373,7 +2372,6 @@ class Wapt(object):
         # cached runstatus to avoid setting in db if not changed.
         self._runstatus = None
         self._use_hostpackages = None
-        self.waptwua_enabled = False
 
         self.repositories = []
 
@@ -2497,7 +2495,6 @@ class Wapt(object):
             'use_hostpackages':'1',
             'timeout':5.0,
             'wapt_server_timeout':10.0,
-            'waptwua_enabled': '0'
             }
 
         if not self.config:
@@ -2581,11 +2578,6 @@ class Wapt(object):
         self._use_hostpackages = None
         if self.config.has_option('global','use_hostpackages'):
             self.use_hostpackages = self.config.getboolean('global','use_hostpackages')
-
-        self.waptwua_enabled = False
-        if self.config.has_option('global','waptwua_enabled'):
-            self.waptwua_enabled = self.config.getboolean('global','waptwua_enabled')
-
 
     def write_config(self,config_filename=None):
         """Update configuration parameters to supplied inifilename
@@ -4086,32 +4078,6 @@ class Wapt(object):
         status['runstatus'] = self.read_param('runstatus','')
         return json.loads(json.dumps(status))
 
-    def wua_status(self):
-        """Get the local wapt WUA status as a dict
-
-        the 'status' key has one the value :
-            SCANNING,READY,PENDING,OK,DOWNLOADING
-        >>> w = Wapt()
-        >>> w.wua_status().keys()
-        ['status',
-         'allowed_updates',
-         'forbidden_updates',
-         'allowed_severities',
-         'last_install_date',
-         'last_scan_date',
-         'wsusscn2cab_date',
-         'rebootrequired',
-         'last_install_batch',
-         'updates',
-         'last_install_result']
-
-        """
-
-        wua = WaptWUA(self)
-        status = wua.stored_status()
-        status['waptwua_enabled'] = self.waptwua_enabled
-        return status
-
     def update_server_status(self):
         """Send packages and software informations to WAPT Server, don't send dmi
 
@@ -4124,7 +4090,6 @@ class Wapt(object):
         inv['host'] = setuphelpers.host_info()
         inv['softwares'] = setuphelpers.installed_softwares('')
         inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
-        inv['waptwua'] = self.wua_status()
         inv['update_status'] = self.get_last_update_status()
 
         if self.waptserver_available():
@@ -4276,7 +4241,12 @@ class Wapt(object):
         inv['wapt'] = self.wapt_status()
         inv['softwares'] = setuphelpers.installed_softwares('')
         inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
-        inv['waptwua'] = self.wua_status()
+        """
+        try:
+            inv['qfe'] = setuphelpers.installed_windows_updates()
+        except:
+            pass
+        """
         return inv
 
     def get_repo(self,name):
