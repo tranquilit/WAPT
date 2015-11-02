@@ -101,7 +101,7 @@ def update_registry_version(version):
     with _winreg.CreateKeyEx(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1',\
             0, _winreg.KEY_READ| _winreg.KEY_WRITE ) as waptis:
         reg_setvalue(waptis,"DisplayName","WAPT %s" % version)
-        reg_setvalue(waptis,"DisplayVersion","WAPT %s" % version)
+        reg_setvalue(waptis,"DisplayVersion","%s" % version)
         reg_setvalue(waptis,"InstallDate",currentdate())
 
 
@@ -222,7 +222,7 @@ def create_waptagent_install():
                 print('Schedule delayed launch of bat file %s' % tmp_bat)
                 print add_at_cmd(tmp_bat.name)
                 return tmp_bat.name
-            except (Timeout, URLRequired, HTTPError, ConnectionError) as E:
+            except Exception as e:
                 print('Error when trying %s: %s'%(r.name,e))
         error('No proper waptagent downlaoded')
     error('No repository found for the download of waptagent.exe')
@@ -230,12 +230,16 @@ def create_waptagent_install():
 def install():
     # if you want to modify the keys depending on environment (win32/win64... params..)
     import common
-    wapt_version = Version(common.__version__+'.0-0')
-    if wapt_version < Version(control.version):
+    installed_wapt = installed_softwares(uninstallkey='WAPT_is1')
+    if installed_wapt:
+        wapt_version = Version(installed_wapt[0]['version'])
+    else:
+        wapt_version = Version('0.0.0')
+    if wapt_version > Version(control.version):
+        print('Your current wapt (%s) is more recent than the upgrade package (%s). Skipping...'%(wapt_version,control.version))
+    elif wapt_version < Version(control.version.split('-')[0]):
         print('Your current wapt version (%s) is too old to be upgraded, a full waptagent.exe'%wapt_version)
         create_waptagent_install()
-    elif wapt_version >= Version(control.version):
-        print('Your current wapt (%s) is more recent than the upgrade package (%s). Skipping...'%(wapt_version,control.version))
     else:
         print(u'Partial upgrade of WAPT client')
         killalltasks('wapttray.exe')
