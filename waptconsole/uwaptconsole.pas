@@ -1270,7 +1270,22 @@ begin
             Screen.Cursor := crHourGlass;
             ProgressTitle(rsCreationInProgress);
             Start;
-            // create waptupgrade package
+            waptsetupPath := '';
+            try
+              ProgressTitle(rsCreationInProgress);
+              waptsetupPath := CreateWaptSetup(fnPublicCert.FileName,
+                edRepoUrl.Text, GetWaptServerURL, fnWaptDirectory.Directory, edOrgName.Text, @DoProgress, 'waptagent');
+
+            except
+              on E:Exception do
+              begin
+                ShowMessageFmt(rsWaptAgentSetupError,[E.Message]);
+                exit;
+              end;
+            end;
+            Application.ProcessMessages;
+
+            // create waptupgrade package (after waptagent as we need the updated waptagent.sha1 file)
             ProgressTitle(rsCreationInProgress);
             try
               buildDir := GetTempDir(False);
@@ -1287,20 +1302,7 @@ begin
               On E:Exception do
                 ShowMessage(rsWaptUpgradePackageBuildError+#13#10+E.Message);
             end;
-            Application.ProcessMessages;
-            waptsetupPath := '';
-            try
-              ProgressTitle(rsCreationInProgress);
-              waptsetupPath := CreateWaptSetup(fnPublicCert.FileName,
-                edRepoUrl.Text, GetWaptServerURL, fnWaptDirectory.Directory, edOrgName.Text, @DoProgress, 'waptagent');
 
-            except
-              on E:Exception do
-              begin
-                ShowMessageFmt(rsWaptAgentSetupError,[E.Message]);
-                exit;
-              end;
-            end;
             Finish;
             if FileExists(waptsetupPath) then
               try

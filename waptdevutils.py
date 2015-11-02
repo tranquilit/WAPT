@@ -100,7 +100,12 @@ def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wa
         raise Exception(u"Innosetup n'est pas disponible (emplacement %s), veuillez l'installer" % inno_directory)
     run('"%s"  %s' % (inno_directory,custom_iss))
     #print('%s compiled successfully' % (outputfile, ))
-    return os.path.abspath(os.path.join(destination,os.path.basename(outputfile)))
+
+    # create a sha1 file for waptupgrade package
+    result = os.path.abspath(os.path.join(destination,os.path.basename(outputfile)))
+    with open(makepath(wapt.wapt_base_dir,'waptupgrade','waptagent.sha1','wb')) as f:
+        f.write("%s %s\n" % (sha1_for_file(result),'waptagent.exe'))
+    return result
 
 
 def upload_wapt_setup(wapt,waptsetup_path, wapt_server_user, wapt_server_passwd,verify_cert=False):
