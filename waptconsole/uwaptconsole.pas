@@ -40,6 +40,7 @@ type
     ActTriggerWaptwua_download: TAction;
     ActTriggerWaptwua_scan: TAction;
     ActWSUSRefreshCabHistory: TAction;
+    ApplicationProperties1: TApplicationProperties;
     BitBtn10: TBitBtn;
     BitBtn11: TBitBtn;
     BitBtn13: TBitBtn;
@@ -411,6 +412,7 @@ type
     procedure ActVNCExecute(Sender: TObject);
     procedure ActVNCUpdate(Sender: TObject);
     procedure ActWAPTLocalConfigExecute(Sender: TObject);
+    procedure ApplicationProperties1Exception(Sender: TObject; E: Exception);
     procedure cbGroupsDropDown(Sender: TObject);
     procedure cbGroupsSelect(Sender: TObject);
     procedure cbMaskSystemComponentsClick(Sender: TObject);
@@ -2774,6 +2776,12 @@ begin
   end;
 end;
 
+procedure TVisWaptGUI.ApplicationProperties1Exception(Sender: TObject;
+  E: Exception);
+begin
+  MessageDlg('Error in application','An unhandled exception has occured'#13#10#13#10+E.Message,mtError,[mbOK],'');
+end;
+
 procedure TVisWaptGUI.cbGroupsDropDown(Sender: TObject);
 begin
   if cbGroups.ItemIndex<0 then
@@ -2962,6 +2970,8 @@ begin
 end;
 
 procedure TVisWaptGUI.FormShow(Sender: TObject);
+var
+  i:integer;
 begin
   MemoLog.Clear;
   ActPackagesUpdate.Execute;
@@ -2986,6 +2996,14 @@ begin
   GridHostSoftwares.LoadSettingsFromIni(Appuserinipath);
 
   plStatusBar1.Panels[0].Text :=ApplicationName+' '+GetApplicationVersion;
+
+  pgWindowsUpdates.TabVisible:=waptcommon.waptwua_enabled;
+  pgHostWUA.TabVisible:=waptcommon.waptwua_enabled;
+  for i:=0 to WSUSActions.ActionCount-1 do
+  begin
+    (WSUSActions.Actions[i] as TAction).Visible:=waptcommon.waptwua_enabled;
+  end;
+
 end;
 
 procedure TVisWaptGUI.GridGroupsColumnDblClick(Sender: TBaseVirtualTree;

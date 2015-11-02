@@ -10,10 +10,11 @@ uses
 
   Interfaces, // this includes the LCL widgetset
   Forms, pl_indy, uwaptconsole, uVisCreateKey,
+  waptcommon,
   dmwaptpython, uVisEditPackage, uviscreatewaptsetup,
   uvislogin, uvisprivatekeyauth, uvisloading, uviswaptconfig,
   uvischangepassword, uviswaptdeploy, uvishostsupgrade, uVisAPropos,
-  uVisImportPackage, uwaptconsoleres,waptcommon, uVisWUAGroup,
+  uVisImportPackage, uwaptconsoleres, uVisWUAGroup,
   uVisWAPTWUAProducts, uviswuarules, uviswuapackageselect,
   uVisWUAClassificationsSelect;
 

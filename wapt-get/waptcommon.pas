@@ -98,6 +98,10 @@ interface
             default_wapt_server:String='';destination:String='';company:String='';OnProgress:TNotifyEvent = Nil;OverrideBaseName:String=''):String;
 
 const
+  waptwua_enabled : boolean = False;
+
+  wapt_config_filename : String = '';
+
   waptservice_port:integer = 8088;
   waptservice_sslport:integer = -1;
   waptserver_port:integer = 80;
@@ -115,7 +119,7 @@ const
   Language:String = '';
   FallBackLanguage:String = '';
 
-  WAPTServerMinVersion='1.3.2';
+  WAPTServerMinVersion='1.3.3';
 
 implementation
 
@@ -629,6 +633,12 @@ var
   rec, recs, ConnectedIps, ServerIp: ISuperObject;
 
 begin
+  if CacheWaptServerUrl<>'None' then
+  begin
+    Result := CacheWaptServerUrl;
+    Exit;
+  end;
+
   if IniHasKey(AppIniFilename,'Global','wapt_server') then
   begin
     result := IniReadString(AppIniFilename,'Global','wapt_server');
@@ -643,12 +653,6 @@ begin
     // No waptserver at all
     CacheWaptServerUrl := '';
     result :='';
-    Exit;
-  end;
-
-  if CacheWaptServerUrl<>'None' then
-  begin
-    Result := CacheWaptServerUrl;
     Exit;
   end;
 
@@ -745,7 +749,9 @@ end;
 
 function WaptIniFilename: Utf8String;
 begin
-  result := ExtractFilePath(ParamStr(0))+'wapt-get.ini';
+  if wapt_config_filename = '' then
+      wapt_config_filename := ExtractFilePath(ParamStr(0))+'wapt-get.ini';
+  result :=  wapt_config_filename;
 end;
 
 function ReadWaptConfig(inifile:String = ''): Boolean;
@@ -754,6 +760,10 @@ var
 begin
   if inifile='' then
     inifile:=WaptIniFilename;
+
+  if (inifile<>'') and  (wapt_config_filename='') then
+    wapt_config_filename := inifile;
+
   if not FileExistsUTF8(inifile) then
     Result := False
   else
@@ -1250,8 +1260,8 @@ end;
 initialization
 //  if not Succeeded(CoInitializeEx(nil, COINIT_MULTITHREADED)) then;
     //Raise Exception.Create('Unable to initialize ActiveX layer');
-   if not ReadWaptConfig then
-      GetLanguageIDs(Language,FallBackLanguage);
+   GetLanguageIDs(Language,FallBackLanguage);
+   waptwua_enabled := FileExists(WaptBaseDir+'\waptwua.py');
 
 finalization
 //  CoUninitialize();

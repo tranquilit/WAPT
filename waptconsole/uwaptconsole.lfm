@@ -453,9 +453,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 571
         Top = 91
         Width = 572
-        ActivePage = pgPackages
+        ActivePage = pgHostWUA
         Align = alRight
-        TabIndex = 0
+        TabIndex = 3
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -3915,99 +3915,11 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActAddADSGroupsExecute
       OnUpdate = ActHostsActionsUpdate
     end
-    object ActWUALoadUpdates: TAction
-      Category = 'wua'
-      Caption = 'Load'
-      OnExecute = ActWUALoadUpdatesExecute
-      OnUpdate = ActWUALoadUpdatesUpdate
-    end
-    object ActWUADownloadSelectedUpdate: TAction
-      Category = 'wua'
-      Caption = 'Download selected'
-    end
-    object ActWUAAllowSelectedUpdates: TAction
-      Category = 'wua'
-      Caption = 'Allow Selected Updates'
-    end
-    object ActWUAForbidSelectedUpdates: TAction
-      Category = 'wua'
-      Caption = 'Forbid Selected Updates'
-    end
-    object ActWUASaveUpdatesGroup: TAction
-      Category = 'wua'
-      Caption = 'Save'
-    end
-    object ActWUAResetSelectedUpdates: TAction
-      Category = 'wua'
-      Caption = 'Reset Selected'
-    end
     object ActRefreshHostInventory: TAction
       Category = 'hosts'
       Caption = 'Refresh host inventory'
       OnExecute = ActRefreshHostInventoryExecute
       OnUpdate = ActTriggerHostUpgradeUpdate
-    end
-    object ActWUAProductAllow: TAction
-      Category = 'wua'
-      Caption = 'Allow all updates for selected products'
-    end
-    object ActWUAProductAllowSeverity: TAction
-      Category = 'wua'
-      Caption = 'Allow updates for selected products and severities'
-    end
-    object ActWUAProductForbid: TAction
-      Category = 'wua'
-      Caption = 'Forbid updates for selected products'
-    end
-    object ActWUAProductForbidSeverity: TAction
-      Category = 'wua'
-      Caption = 'Forbid updates for selected products and severities'
-    end
-    object ActWUAProductShow: TAction
-      Category = 'wua'
-      Caption = 'Show product'
-      OnExecute = ActWUAProductShowExecute
-    end
-    object ActWUAProductHide: TAction
-      Category = 'wua'
-      Caption = 'Hide product'
-      OnExecute = ActWUAProductHideExecute
-    end
-    object ActWUALoadGroups: TAction
-      Category = 'wua'
-      Caption = 'Refresh'
-      ImageIndex = 1
-    end
-    object ActWUAEditGroup: TAction
-      Category = 'wua'
-      Caption = 'Edit group'
-      ImageIndex = 18
-    end
-    object ActWUAProductsSelection: TAction
-      Category = 'wua'
-      Caption = 'Windows Products selection'
-      OnExecute = ActWUAProductsSelectionExecute
-    end
-    object ActWUANewGroup: TAction
-      Category = 'wua'
-      Caption = 'New Windows Updates bundle'
-      OnExecute = ActWUANewGroupExecute
-    end
-    object ActTriggerWaptwua_scan: TAction
-      Category = 'hosts'
-      Caption = 'Trigger the scan of missing Windows Updates'
-      OnExecute = ActTriggerWaptwua_scanExecute
-    end
-    object ActTriggerWaptwua_download: TAction
-      Category = 'hosts'
-      Caption = 'Trigger the download of pending Windows Updates'
-      OnExecute = ActTriggerWaptwua_downloadExecute
-    end
-    object ActTriggerWaptwua_install: TAction
-      Category = 'hosts'
-      Caption = 'Trigger the install of pending Windows Updates'
-      ImageIndex = 39
-      OnExecute = ActTriggerWaptwua_installExecute
     end
     object ActGerman: TAction
       Category = 'Tools'
@@ -6694,6 +6606,94 @@ object VisWaptGUI: TVisWaptGUI
     Images = ActionsImages
     left = 240
     top = 296
+    object ActTriggerWaptwua_scan: TAction
+      Category = 'hostswua'
+      Caption = 'Trigger the scan of missing Windows Updates'
+      OnExecute = ActTriggerWaptwua_scanExecute
+    end
+    object ActTriggerWaptwua_download: TAction
+      Category = 'hostswua'
+      Caption = 'Trigger the download of pending Windows Updates'
+      OnExecute = ActTriggerWaptwua_downloadExecute
+    end
+    object ActTriggerWaptwua_install: TAction
+      Category = 'hostswua'
+      Caption = 'Trigger the install of pending Windows Updates'
+      ImageIndex = 39
+      OnExecute = ActTriggerWaptwua_installExecute
+    end
+    object ActWUALoadUpdates: TAction
+      Category = 'wua'
+      Caption = 'Load'
+      OnExecute = ActWUALoadUpdatesExecute
+      OnUpdate = ActWUALoadUpdatesUpdate
+    end
+    object ActWUADownloadSelectedUpdate: TAction
+      Category = 'wua'
+      Caption = 'Download selected'
+    end
+    object ActWUAAllowSelectedUpdates: TAction
+      Category = 'wua'
+      Caption = 'Allow Selected Updates'
+    end
+    object ActWUAForbidSelectedUpdates: TAction
+      Category = 'wua'
+      Caption = 'Forbid Selected Updates'
+    end
+    object ActWUASaveUpdatesGroup: TAction
+      Category = 'wua'
+      Caption = 'Save'
+    end
+    object ActWUAResetSelectedUpdates: TAction
+      Category = 'wua'
+      Caption = 'Reset Selected'
+    end
+    object ActWUAProductAllow: TAction
+      Category = 'wua'
+      Caption = 'Allow all updates for selected products'
+    end
+    object ActWUAProductAllowSeverity: TAction
+      Category = 'wua'
+      Caption = 'Allow updates for selected products and severities'
+    end
+    object ActWUAProductForbid: TAction
+      Category = 'wua'
+      Caption = 'Forbid updates for selected products'
+    end
+    object ActWUAProductForbidSeverity: TAction
+      Category = 'wua'
+      Caption = 'Forbid updates for selected products and severities'
+    end
+    object ActWUAProductShow: TAction
+      Category = 'wua'
+      Caption = 'Show product'
+      OnExecute = ActWUAProductShowExecute
+    end
+    object ActWUAProductHide: TAction
+      Category = 'wua'
+      Caption = 'Hide product'
+      OnExecute = ActWUAProductHideExecute
+    end
+    object ActWUALoadGroups: TAction
+      Category = 'wua'
+      Caption = 'Refresh'
+      ImageIndex = 1
+    end
+    object ActWUAEditGroup: TAction
+      Category = 'wua'
+      Caption = 'Edit group'
+      ImageIndex = 18
+    end
+    object ActWUAProductsSelection: TAction
+      Category = 'wua'
+      Caption = 'Windows Products selection'
+      OnExecute = ActWUAProductsSelectionExecute
+    end
+    object ActWUANewGroup: TAction
+      Category = 'wua'
+      Caption = 'New Windows Updates bundle'
+      OnExecute = ActWUANewGroupExecute
+    end
     object ActWSUSRefreshCabHistory: TAction
       Caption = 'Refresh WSUSscan cab history'
       OnExecute = ActWSUSRefreshCabHistoryExecute
@@ -6737,5 +6737,10 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Remove'
       ShortCut = 16430
     end
+  end
+  object ApplicationProperties1: TApplicationProperties
+    OnException = ApplicationProperties1Exception
+    left = 360
+    top = 472
   end
 end
