@@ -50,7 +50,8 @@ sys.path.insert(0,os.path.join(wapt_root_dir,'lib','site-packages'))
 
 import collections
 import email.utils
-from flask import request, Blueprint
+from flask import request, send_from_directory, Blueprint
+from werkzeug import secure_filename
 import hashlib
 from huey import crontab
 import json
@@ -1444,6 +1445,17 @@ def windows_updates_rules():
             result = get_db().wsus_rules.find()
 
     return make_response(msg = _('Win updates rules'),result = result)
+
+
+@wsus.route('/waptwua/<path:wsuspackage>')
+def get_wua_package(wsuspackage):
+    fileparts = wsuspackage.split('/')
+    full_path = os.path.join(conf['waptwua_folder'],*fileparts[:-1])
+    package_name = secure_filename(fileparts[-1])
+    r =  send_from_directory(full_path, package_name)
+    if 'content-length' not in r.headers:
+        r.headers.add_header('content-length', int(os.path.getsize(os.path.join(full_path,package_name))))
+    return r
 
 
 def wuredist_extract_and_fetch(wuredist, tmpdir):

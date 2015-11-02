@@ -678,16 +678,6 @@ def waptwua():
     return render_template('listingwua.html', dir_listing=os.listdir(waptwua_folder))
 
 
-@app.route('/waptwua/<path:wsuspackage>')
-def get_wua_package(wsuspackage):
-    fileparts = wsuspackage.split('/')
-    full_path = os.path.join(conf['waptwua_folder'],*fileparts[:-1])
-    package_name = secure_filename(fileparts[-1])
-    r =  send_from_directory(full_path, package_name)
-    if 'content-length' not in r.headers:
-        r.headers.add_header('content-length', int(os.path.getsize(os.path.join(full_path,package_name))))
-    return r
-
 @app.route('/wapt/<string:input_package_name>')
 def get_wapt_package(input_package_name):
     package_name = secure_filename(input_package_name)
