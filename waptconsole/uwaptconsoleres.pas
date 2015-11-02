@@ -92,6 +92,7 @@ resourcestring
   rsTriggerWAPTWUA_Download = 'Trigger the download of missing Windows Updates';
   rsTriggerWAPTWUA_Install = 'Trigger the installation of missing Windows Updates';
 
+  rsTriggerWakeonlan = 'Send a WakeOnlan packet to hosts';
 
   rsConfirmRmHostsFromList = 'Are you sure you want to remove %s hosts from the list ?';
   rsConfirmRmHostsPackagesFromList = 'Are you sure you want to remove %s hosts and matching configuration packages from the server ?';

@@ -1676,7 +1676,7 @@ procedure TVisWaptGUI.ActTriggerWakeOnLanExecute(Sender: TObject);
 begin
   with TVisHostsUpgrade.Create(Self) do
     try
-      Caption:= rsTriggerWAPTWUA_Scan;
+      Caption:= rsTriggerWakeonlan;
       action := 'api/v2/trigger_wakeonlan';
       hosts := Gridhosts.SelectedRows;
 
@@ -2709,7 +2709,6 @@ end;
 procedure TVisWaptGUI.ActReloadConfigExecute(Sender: TObject);
 begin
   dmpython.WaptConfigFileName:='';
-  CacheWaptServerUrl := 'None';
   waptcommon.ReadWaptConfig(AppIniFilename);
   dmpython.WaptConfigFileName:=AppIniFilename;
 end;
