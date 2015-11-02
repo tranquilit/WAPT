@@ -4,6 +4,7 @@ import os
 import _winreg
 import tempfile
 import shutil
+import hashlib
 
 # registry key(s) where WAPT will find how to remove the application(s)
 uninstallkey = []
@@ -180,26 +181,60 @@ def add_at_cmd(cmd,delay=1):
     print(run('at %s "%s"'%(at_time,cmd)))
 
 
-def create_waptagent_install():
-    waptagent_path = tempfile.mktemp('waptagent')
-    if WAPT.repositories and WAPT.repositories[-1]:
-        waptagent_url = WAPT.repositories[-2]
-    wget(WAPT)
-    tmp_bat = tempfile.NamedTemporaryFile(prefix='waptagent',suffix='.cmd',mode='wt',delete=False)
-    tmp_bat.write('net stop waptservice\n')
+def sha1_for_file(fname, block_size=2**20):
+    f = open(fname,'rb')
+    sha1 = hashlib.sha1()
+    while True:
+        data = f.read(block_size)
+        if not data:
+            break
+        sha1.update(data)
+    return sha1.hexdigest()
 
-    tmp_bat.write('del "%s"\n'%tmp_bat.name)
-    tmp_bat.close()
-    add_at_cmd(tmp_bat.name)
+def create_waptagent_install():
+    waptagent_path = tempfile.mktemp(prefix='waptagent-',suffix='.exe')
+    if WAPT.repositories:
+        for r in WAPT.repositories:
+            try:
+                waptagent_url = "%s/waptagent.exe" % r.repo_url
+                print('Trying %s'%waptagent_url)
+                print wget(waptagent_url,waptagent_path)
+                wapt_agent_sha1 =  sha1_for_file(waptagent_path)
+                # eefac39c40fdb2feb4aa920727a43d48817eb4df   waptagent.exe
+                expected_sha1 = open('waptagent.sha1','r').read().splitlines()[0].split()[0]
+                if expected_sha1 != wapt_agent_sha1:
+                    print('Error : bad  SHA1 for the downloaded waptagent.exe\n Expected : %s \n Found : %s '%(expected_sha1,wapt_agent_sha1))
+                    continue
+                tmp_bat = tempfile.NamedTemporaryFile(prefix='waptagent',suffix='.cmd',mode='wt',delete=False)
+                print('Create bat file %s' % tmp_bat)
+                tmp_bat.write('net stop waptservice\n')
+                tmp_bat.write('net stop waptmongodb\n')
+                tmp_bat.write('net stop waptserver\n')
+                tmp_bat.write('taskkill /f /im:wapttray.exe\n')
+                tmp_bat.write('taskkill /f /im:waptconsole.exe\n')
+                tmp_bat.write('taskkill /f /im:wapt-get.exe\n')
+                tmp_bat.write('taskkill /f /im:waptexit.exe\n')
+                tmp_bat.write('\n')
+                tmp_bat.write('"%s" /VERYSILENT\n'%waptagent_path)
+                tmp_bat.write('del "%s"\n'%waptagent_path)
+                tmp_bat.write('del "%s"\n'%tmp_bat.name)
+                tmp_bat.close()
+                print('Schedule delayed launch of bat file %s' % tmp_bat)
+                print add_at_cmd(tmp_bat.name)
+                return tmp_bat.name
+            except (Timeout, URLRequired, HTTPError, ConnectionError) as E:
+                print('Error when trying %s: %s'%(r.name,e))
+        error('No proper waptagent downlaoded')
+    error('No repository found for the download of waptagent.exe')
 
 def install():
     # if you want to modify the keys depending on environment (win32/win64... params..)
     import common
     wapt_version = Version(common.__version__+'.0-0')
-    if wapt_version < Version('1.3.3'):
-        print('Your current wapt version (%s) is too old to be upgraded, please reinstall a full waptagent.exe'%wapt_version)
-
-    if wapt_version >= Version(control.version):
+    if wapt_version < Version(control.version):
+        print('Your current wapt version (%s) is too old to be upgraded, a full waptagent.exe'%wapt_version)
+        create_waptagent_install()
+    elif wapt_version >= Version(control.version):
         print('Your current wapt (%s) is more recent than the upgrade package (%s). Skipping...'%(wapt_version,control.version))
     else:
         print(u'Partial upgrade of WAPT client')
