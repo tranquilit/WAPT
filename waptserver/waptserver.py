@@ -1876,7 +1876,7 @@ def install_windows_service():
     """Setup waptserver, waptmongodb et waptapache as a windows Service managed by nssm
     >>> install_windows_service([])
     """
-    install_apache_service = options.without_apache #'--without-apache' not in options
+    install_apache_service = not options.without_apache #'--without-apache' not in options
 
     # register mongodb server
     make_mongod_config(wapt_root_dir)
@@ -1925,7 +1925,7 @@ if __name__ == "__main__":
     parser.add_option("-c","--config", dest="configfile", default=os.path.join(wapt_root_dir,'waptserver','waptserver.ini'), help="Config file full path (default: %default)")
     parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
     parser.add_option("-d","--devel", dest="devel", default=False,action='store_true', help="Enable debug mode (for development only)")
-    parser.add_option("-w","--without-apache", dest="without_apache", default=False, action='store_true',help="Internal use")
+    parser.add_option("-w","--without-apache", dest="without_apache", default=False, action='store_true',help="Don't install Apache http server for wapt (service WAPTApache)")
 
     (options,args)=parser.parse_args()
 
