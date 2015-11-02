@@ -177,13 +177,17 @@ var
 
 var
   i:integer;
+  NextIsParamValue:Boolean;
 begin
   Action:='';
   packages:='';
 
+  NextIsParamValue := False;
+
   for i:=1 to ParamCount do
   begin
-    if (Pos('-',Params[i])<>1) then
+    if (Pos('-',Params[i])<>1) and not NextIsParamValue then
+    begin
       if (action='') then
         Action := lowercase(Params[i])
       else
@@ -191,6 +195,10 @@ begin
           packages := Params[i]
         else
           packages:=packages+','+Params[i];
+      NextIsParamValue := False;
+    end
+    else
+      NextIsParamValue := StrIsOneOf(Params[i],['-c','-r','-l','-p','-s','-e','-k','-w','-U','-g','-t','-L'])
   end;
   //Action := Params[ParamCount];
 
@@ -203,6 +211,9 @@ begin
 
   if HasOption('r','repo') then
     RepoURL := GetOptionValue('r','repo');
+
+  if HasOption('c','config') then
+    ReadWaptConfig(GetOptionValue('c','config'));
 
   if HasOption('l','loglevel') then
   begin
