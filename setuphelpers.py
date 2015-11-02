@@ -2323,7 +2323,7 @@ def wmi_info_basic():
     wmiout = {}
     for line in res.splitlines():
         if line.strip():
-            (key,value) = line.strip().split('=')
+            (key,value) = line.strip().split('=',1)
             wmiout[key] = value
     result = {
             u'System_Information':{
