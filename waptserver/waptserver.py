@@ -90,8 +90,20 @@ try:
 except Exception:
     pass
 
+DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir,'waptserver','waptserver.ini')
+config_file = DEFAULT_CONFIG_FILE
+
+# If we run under uWSGI, retrieve the config from the same ini file
+try:
+    import uwsgi
+    if uwsgi.magic_table['P']:
+        config_file = uwsgi.magic_table['P']
+except Exception:
+    pass
+
 app = Flask(__name__,static_folder='./templates/static')
-app.config['CONFIG_FILE'] = os.path.join(wapt_root_dir,'waptserver','waptserver.ini')
+app.config['CONFIG_FILE'] = config_file
+
 babel = Babel(app)
 
 ALLOWED_EXTENSIONS = set(['wapt'])
@@ -1918,7 +1930,7 @@ if __name__ == "__main__":
     """
 
     parser=OptionParser(usage=usage,version='waptserver.py ' + __version__)
-    parser.add_option("-c","--config", dest="configfile", default=os.path.join(wapt_root_dir,'waptserver','waptserver.ini'), help="Config file full path (default: %default)")
+    parser.add_option("-c","--config", dest="configfile", default=DEFAULT_CONFIG_FILE, help="Config file full path (default: %default)")
     parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
     parser.add_option("-d","--devel", dest="devel", default=False,action='store_true', help="Enable debug mode (for development only)")
     parser.add_option("-w","--without-apache", dest="without_apache", default=False, action='store_true',help="Don't install Apache http server for wapt (service WAPTApache)")
