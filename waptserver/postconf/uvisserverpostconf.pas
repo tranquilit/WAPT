@@ -127,29 +127,15 @@ var
   VisWAPTServerPostConf: TVisWAPTServerPostConf;
 
 implementation
-uses LCLIntf, Windows,WaptCommon,waptwinutils,tisinifiles,superobject,
+uses LCLIntf, Windows,waptcommon,waptwinutils,tisinifiles,superobject,
     tiscommon,tisstrings,IniFiles,sha1;
 {$R *.lfm}
 
 { TVisWAPTServerPostConf }
 
-
-function GetWaptServerURL: String;
-begin
-  result := IniReadString(WaptIniFilename,'Global','wapt_server');
-end;
-
-function GetWaptRepoURL: Utf8String;
-begin
-  result := IniReadString(WaptIniFilename,'Global','repo_url');
-  if Result = '' then
-      Result:='https://wapt/wapt';
-  if result[length(result)] = '/' then
-    result := copy(result,1,length(result)-1);
-end;
-
 procedure TVisWAPTServerPostConf.FormCreate(Sender: TObject);
 begin
+  ReadWaptConfig(WaptBaseDir+'wapt-get.ini');
   PagesControl.ShowTabs:=False;
   PagesControl.ActivePageIndex:=0;
 end;
@@ -401,83 +387,94 @@ begin
   CurrentVisLoading := TVisLoading.Create(Self);
   with CurrentVisLoading do
   try
-    ExceptionOnStop:=True;
-    if GetServiceStatusByName('','WAPTService') in [ssRunning,ssPaused,ssPausePending,ssStartPending]  then
-    begin
-      ProgressTitle(rsWaptServiceStopping);
-      Run('cmd /C net stop waptservice');
-    end;
-    if GetServiceStatusByName('','WAPTServer') in [ssRunning,ssPaused,ssPausePending,ssStartPending] then
-    begin
-      ProgressTitle(rsWaptServiceStopping);
-      Run('cmd /C net stop waptserver');
-    end;
-
-    ini := TMemIniFile.Create(WaptIniFilename);
-    ini.SetStrings(EdWaptInifile.Lines);
-    if (ini.ReadString('options', 'server_uuid', '') = '') and (CreateGUID(GUID) = 0) then
-      ini.WriteString('options', 'server_uuid', Lowercase(Copy(GUIDToString(GUID), 2, Length(GUIDToString(GUID)) - 2)));
-    ini.UpdateFile;
-
-    ProgressTitle(rsUpdatingPackageIndex);
-    ProgressStep(1,8);
-    runwapt('{app}\wapt-get.exe update-packages "{app}\waptserver\repository\wapt"');
-
-    ProgressTitle(rsReplacingTIScertificate);
-    ProgressStep(2,8);
-    if FileExists(WaptBaseDir+'\ssl\tranquilit.crt') then
-      FileUtil.DeleteFileUTF8(WaptBaseDir+'\ssl\tranquilit.crt');
-    Fileutil.CopyFile(ChangeFileExt(EdPrivateKeyFN.Text,'.crt'),WaptBaseDir+'\ssl\'+ChangeFileExt(ExtractFileNameOnly(EdPrivateKeyFN.Text),'.crt'),True);
-
-    ProgressTitle(rsSettingServerPassword);
-    ProgressStep(3,8);
-
-    IniWriteString(WaptBaseDir+'\waptserver\waptserver.ini' ,'Options','wapt_password',sha1.SHA1Print(sha1.SHA1String(EdPwd1.Text)));
-
-    if CBOpenFirewall.Checked then
-    begin
-      ProgressTitle(rsOpeningFirewall);
-      ProgressStep(4,8);
-      OpenFirewall;
-    end;
-
-    ProgressTitle(rsRestartingWaptServer);
-    ProgressStep(5,8);
-    Run('cmd /C net start waptserver');
-
-    ProgressTitle(rsRestartingWaptService);
-    ProgressStep(6,8);
-    Run('cmd /C net start waptservice');
-
-    ProgressTitle(WAPTServerJsonGet('ping',[]).S['msg']);
-    ProgressTitle(WAPTLocalJsonGet('runstatus','','',5000).S['0.value']);
-
-    ProgressTitle(rsRegisteringHostOnServer);
-    ProgressStep(7,8);
-
-
-    ProgressTitle(WAPTLocalJsonGet('update.json?notify_server=1','','',5000).S['description']);
-
-    {retry := 0;
-    ProgressTitle(rsRegisteringHostOnServer);
-    while retry<4 do
     try
-      res := runwapt('{app}\wapt-get.exe -ldebug -D register');
-      break;
+      ExceptionOnStop:=True;
+      if GetServiceStatusByName('','WAPTService') in [ssRunning,ssPaused,ssPausePending,ssStartPending]  then
+      begin
+        ProgressTitle(rsWaptServiceStopping);
+        Run('cmd /C net stop waptservice');
+      end;
+      if GetServiceStatusByName('','WAPTServer') in [ssRunning,ssPaused,ssPausePending,ssStartPending] then
+      begin
+        ProgressTitle(rsWaptServiceStopping);
+        Run('cmd /C net stop waptserver');
+      end;
+
+      ini := TMemIniFile.Create(WaptIniFilename);
+      ini.SetStrings(EdWaptInifile.Lines);
+      if (ini.ReadString('options', 'server_uuid', '') = '') and (CreateGUID(GUID) = 0) then
+        ini.WriteString('options', 'server_uuid', Lowercase(Copy(GUIDToString(GUID), 2, Length(GUIDToString(GUID)) - 2)));
+      ini.UpdateFile;
+
+      ProgressTitle(rsUpdatingPackageIndex);
+      ProgressStep(1,8);
+      runwapt('{app}\wapt-get.exe update-packages "{app}\waptserver\repository\wapt"');
+
+      ProgressTitle(rsReplacingTIScertificate);
+      ProgressStep(2,8);
+      if FileExists(WaptBaseDir+'\ssl\tranquilit.crt') then
+        FileUtil.DeleteFileUTF8(WaptBaseDir+'\ssl\tranquilit.crt');
+      Fileutil.CopyFile(ChangeFileExt(EdPrivateKeyFN.Text,'.crt'),WaptBaseDir+'\ssl\'+ChangeFileExt(ExtractFileNameOnly(EdPrivateKeyFN.Text),'.crt'),True);
+
+      ProgressTitle(rsSettingServerPassword);
+      ProgressStep(3,8);
+
+      IniWriteString(WaptBaseDir+'\waptserver\waptserver.ini' ,'Options','wapt_password',sha1.SHA1Print(sha1.SHA1String(EdPwd1.Text)));
+
+      if CBOpenFirewall.Checked then
+      begin
+        ProgressTitle(rsOpeningFirewall);
+        ProgressStep(4,8);
+        OpenFirewall;
+      end;
+
+      ini.UpdateFile;
+
+      // reread config fir waptcommon
+      WaptCommon.ReadWaptConfig(WaptIniFilename);
+
+      ProgressTitle(rsRestartingWaptServer);
+      ProgressStep(5,8);
+      Run('cmd /C net start waptserver');
+
+      ProgressTitle(rsRestartingWaptService);
+      ProgressStep(6,8);
+      Run('cmd /C net start waptservice');
+
+      ProgressTitle(WAPTServerJsonGet('ping',[]).S['msg']);
+      ProgressTitle(WAPTLocalJsonGet('runstatus','','',5000).S['0.value']);
+
+      ProgressTitle(rsRegisteringHostOnServer);
+      ProgressStep(7,8);
+
+
+      ProgressTitle(WAPTLocalJsonGet('update.json?notify_server=1','','',5000).S['description']);
+
+      {retry := 0;
+      ProgressTitle(rsRegisteringHostOnServer);
+      while retry<4 do
+      try
+        res := runwapt('{app}\wapt-get.exe -ldebug -D register');
+        break;
+      except
+        ProgressTitle(Format(rsRetryRegisteringHostOnServer+' (error : '+res+')',[retry]));
+        Showmessage(res);
+        Sleep(2000);
+        inc(retry);
+      end;}
+
+      ProgressTitle(rsUpdatingLocalPackages);
+      ProgressStep(8,8);
+      //runwapt('{app}\wapt-get.exe -D update');
+      //ProgressTitle(WAPTLocalJsonGet('update.json?notify_server=1','','',5000).S['description']);
+
+      ActNext.Execute;
+
+
     except
-      ProgressTitle(Format(rsRetryRegisteringHostOnServer+' (error : '+res+')',[retry]));
-      Showmessage(res);
-      Sleep(2000);
-      inc(retry);
-    end;}
-
-    ProgressTitle(rsUpdatingLocalPackages);
-    ProgressStep(8,8);
-    //runwapt('{app}\wapt-get.exe -D update');
-    //ProgressTitle(WAPTLocalJsonGet('update.json?notify_server=1','','',5000).S['description']);
-
-    ActNext.Execute;
-
+      on E:Exception do
+        Dialogs.MessageDlg('Error','Error during post-config:'#13#10+E.Message,mtError,mbOKCancel,'');
+    end;
   finally
     ini.Free;
     FreeAndNil(CurrentVisLoading);

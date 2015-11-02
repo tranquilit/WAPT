@@ -10,6 +10,7 @@ uses
 
   Interfaces, // this includes the LCL widgetset
   Forms, pl_indy, uVisServerPostconf, uwaptserverres,
+  waptcommon,
   { you can add units after this }
   DefaultTranslator;
 
@@ -18,6 +19,7 @@ uses
 {$R languages.rc}
 
 begin
+  // we use wapt-get.ini global config
   RequireDerivedFormResource := True;
   Application.Initialize;
   Application.CreateForm(TVisWAPTServerPostConf, VisWAPTServerPostConf);

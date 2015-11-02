@@ -100,15 +100,12 @@ interface
 const
   waptwua_enabled : boolean = False;
 
-  wapt_config_filename : String = '';
-
   waptservice_port:integer = 8088;
   waptservice_sslport:integer = -1;
   waptserver_port:integer = 80;
   waptserver_sslport:integer = 443;
   zmq_port:integer = 5000;
 
-  CacheWaptServerUrl: AnsiString = 'None';
   WaptServerUser: AnsiString ='admin';
   WaptServerPassword: Ansistring ='';
   HttpProxy:AnsiString = '';
@@ -128,6 +125,9 @@ uses FileUtil, soutils, Variants,uwaptres,waptwinutils,tisinifiles,tislogging,
   IdHttp,IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,IdURI,
   gettext,IdStack,IdCompressorZLib;
 
+const
+  CacheWaptServerUrl: AnsiString = 'None';
+  wapt_config_filename : String = '';
 
 procedure IdConfigureProxy(http:TIdHTTP;ProxyUrl:String);
 var
@@ -429,7 +429,7 @@ var
   strresult : String;
 begin
   if GetWaptServerURL = '' then
-    raise Exception.CreateFmt(rsUndefWaptSrvInIni, [AppIniFilename]);
+    raise Exception.CreateFmt(rsUndefWaptSrvInIni, [WaptIniFilename]);
   if (StrLeft(action,1)<>'/') and (StrRight(GetWaptServerURL,1)<>'/') then
     action := '/'+action;
   if length(args)>0 then
@@ -443,7 +443,7 @@ var
   strresult : String;
 begin
   if GetWaptServerURL = '' then
-    raise Exception.CreateFmt(rsUndefWaptSrvInIni, [AppIniFilename]);
+    raise Exception.CreateFmt(rsUndefWaptSrvInIni, [WaptIniFilename]);
   if (StrLeft(action,1)<>'/') and (StrRight(GetWaptServerURL,1)<>'/') then
     action := '/'+action;
   if length(args)>0 then
@@ -458,7 +458,7 @@ var
   res:String;
 begin
   if GetWaptServerURL = '' then
-    raise Exception.CreateFmt(rsUndefWaptSrvInIni, [AppIniFilename]);
+    raise Exception.CreateFmt(rsUndefWaptSrvInIni, [WaptIniFilename]);
   if (StrLeft(action,1)<>'/') and (StrRight(GetWaptServerURL,1)<>'/') then
     action := '/'+action;
   if length(args)>0 then
@@ -537,7 +537,7 @@ var
   url,dnsdomain:AnsiString;
 
 begin
-  result := IniReadString(AppIniFilename,'Global','repo_url','');
+  result := IniReadString(WaptIniFilename,'Global','repo_url','');
   if (Result <> '') then
     exit;
 
@@ -639,9 +639,9 @@ begin
     Exit;
   end;
 
-  if IniHasKey(AppIniFilename,'Global','wapt_server') then
+  if IniHasKey(WaptIniFilename,'Global','wapt_server') then
   begin
-    result := IniReadString(AppIniFilename,'Global','wapt_server');
+    result := IniReadString(WaptIniFilename,'Global','wapt_server');
     if (Result <> '') then
     begin
       CacheWaptServerUrl := Result;
@@ -700,7 +700,7 @@ end;
 
 function GetWaptRepoURL: Utf8String;
 begin
-  result := IniReadString(AppIniFilename,'Global','repo_url');
+  result := IniReadString(WaptIniFilename,'Global','repo_url');
   if Result = '' then
       Result:='http://wapt/wapt';
   if result[length(result)] = '/' then
@@ -710,7 +710,7 @@ end;
 
 function GetWaptPrivateKeyPath: String;
 begin
-  result := IniReadString(AppIniFilename,'Global','private_key');
+  result := IniReadString(WaptIniFilename,'Global','private_key');
 end;
 
 function GetWaptLocalURL: String;
@@ -758,6 +758,9 @@ function ReadWaptConfig(inifile:String = ''): Boolean;
 var
   i: Integer;
 begin
+  // reset cache
+  CacheWaptServerUrl := 'None';
+
   if inifile='' then
     inifile:=WaptIniFilename;
 
@@ -804,7 +807,7 @@ end;
 
 function WaptDBPath: Utf8String;
 begin
-  Result := IniReadString(AppIniFilename,'Global','dbdir');
+  Result := IniReadString(WaptIniFilename,'Global','dbdir');
   if Result<>'' then
     result :=  AppendPathDelim(result)+'waptdb.sqlite'
   else
@@ -815,7 +818,7 @@ end;
 function WaptTemplatesRepo(inifilename:String=''): Utf8String;
 begin
   if inifilename='' then
-     inifilename:=AppIniFilename;
+     inifilename:=WaptIniFilename;
   Result := IniReadString(inifilename,'Global','templates_repo_url');
   if Result = '' then
       Result:='http://wapt.tranquil.it/wapt/';
@@ -826,7 +829,7 @@ end;
 function WaptUseLocalConnectionProxy(inifilename:String=''): Boolean;
 begin
   if inifilename='' then
-     inifilename:=AppIniFilename;
+     inifilename:=WaptIniFilename;
   Result := StrIsOneOf(IniReadString (inifilename,'Global','use_local_connection_proxy'),['True','true','1'] );
 end;
 
