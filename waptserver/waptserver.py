@@ -43,7 +43,6 @@ from werkzeug import secure_filename
 from functools import wraps
 import logging
 import ConfigParser
-import logging
 import codecs
 import zipfile
 import platform
