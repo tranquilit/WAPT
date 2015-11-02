@@ -92,6 +92,7 @@ except Exception:
     pass
 
 app = Flask(__name__,static_folder='./templates/static')
+app.config['CONFIG_FILE'] = os.path.join(wapt_root_dir,'waptserver','waptserver.ini')
 babel = Babel(app)
 
 ALLOWED_EXTENSIONS = set(['wapt'])
@@ -623,14 +624,17 @@ def reload_config():
 
 @app.route('/login',methods=['POST'])
 def login():
+    config_file = app.config['CONFIG_FILE']
+
     try:
         if request.method == 'POST':
             d= json.loads(request.data)
             if "username" in d and "password" in d:
                 if check_auth(d["username"], d["password"]):
                     if "newPass" in d:
-                        conf['wapt_password'] = hashlib.sha1(d["newPass"].encode('utf8')).hexdigest()
-                        rewrite_config_item(options.configfile, 'options', 'wapt_password', conf['wapt_password'])
+                        new_hash = hashlib.sha1(d["newPass"].encode('utf8')).hexdigest()
+                        rewrite_config_item(config_file, 'options', 'wapt_password', new_hash)
+                        conf['wapt_password'] = new_hash
                         reload_config()
                     return "True"
             return "False"
@@ -757,9 +761,12 @@ def get_ip_port(host_data,recheck=False,timeout=None):
 
 @app.route('/ping')
 def ping():
+    config_file = app.config['CONFIG_FILE']
+
     if conf['server_uuid'] == '':
-        conf['server_uuid'] = str(uuid.uuid1())
-        rewrite_config_item(options.configfile, 'options', 'server_uuid', conf['server_uuid'])
+        server_uuid = str(uuid.uuid1())
+        rewrite_config_item(config_file, 'options', 'server_uuid', server_uuid)
+        conf['server_uuid'] = server_uuid
         reload_config()
     return make_response(
         msg = _('WAPT Server running'), result = dict(
@@ -1928,6 +1935,7 @@ if __name__ == "__main__":
     parser.add_option("-w","--without-apache", dest="without_apache", default=False, action='store_true',help="Don't install Apache http server for wapt (service WAPTApache)")
 
     (options,args)=parser.parse_args()
+    app.config['CONFIG_FILE'] = options.configfile
 
     utils_set_devel_mode(options.devel)
 
