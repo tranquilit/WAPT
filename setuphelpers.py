@@ -96,6 +96,7 @@ __all__ = \
  'inifile_readstring',
  'inifile_writestring',
  'installed_softwares',
+ 'installed_windows_updates',
  'install_exe_if_needed',
  'install_msi_if_needed',
  'isdir',
@@ -228,6 +229,7 @@ import datetime
 import socket
 
 import _winreg
+import netifaces
 import platform
 import winshell
 import pythoncom
@@ -2154,9 +2156,7 @@ windomainname = win32api.GetDomainName
 
 def networking():
     """return a list of (iface,mac,{addr,broadcast,netmask})
-
     """
-    import netifaces
     ifaces = netifaces.interfaces()
     local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
 
@@ -3228,6 +3228,12 @@ def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefor
         # will try to add key in the caller's (setup.py) uninstallkey list
         if 'uninstallkey' in caller_globals and not key in caller_globals['uninstallkey']:
             caller_globals['uninstallkey'].append(key)
+
+
+def installed_windows_updates():
+    """return list of installed updates, indepently from WUA agent"""
+    return wmi_info(keys=['Win32_QuickFixEngineering'])['Win32_QuickFixEngineering']
+
 
 def local_desktops():
     """Return a list of all local user's desktops paths
