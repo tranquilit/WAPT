@@ -2526,7 +2526,7 @@ class Wapt(object):
         else:
             self.public_certs_dir = os.path.join(self.wapt_base_dir,'ssl')
         # get the list of certificates to use :
-        self.public_certs = glob.glob(os.path.join(self.public_certs_dir,'*.crt'))
+        self.public_certs = glob.glob(os.path.join(self.public_certs_dir,'*.crt')) + glob.glob(os.path.join(self.public_certs_dir,'*.cer'))
 
         if self.config.has_option('global','upload_cmd'):
             self.upload_cmd = self.config.get('global','upload_cmd')
