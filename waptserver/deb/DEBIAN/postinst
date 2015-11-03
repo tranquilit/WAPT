@@ -14,7 +14,7 @@ done
 for entry in /opt/wapt/*; do
     case $entry in
 	/opt/wapt/log)
-	    chown -R wapt:www-data "$entry"
+	    chown -R wapt:root "$entry"
 	    ;;
 	/opt/wapt/waptserver)
 	    for subentry in /opt/wapt/waptserver/*; do
