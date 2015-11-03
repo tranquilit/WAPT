@@ -7,7 +7,7 @@ chown wapt:root /var/log/waptserver.log
 chown wapt:root  /var/run/waptserver.pid
 
 # cleanup leftovers
-for cleanup_dir in rpm mongod spool uninstall_service.bat; do
+for cleanup_dir in rpm mongodb spool uninstall_service.bat; do
     rm -Rf /opt/wapt/"$cleanup_dir"
 done
 
