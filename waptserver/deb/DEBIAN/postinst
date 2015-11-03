@@ -35,9 +35,6 @@ for entry in /opt/wapt/*; do
 done
 
 
-#cp /opt/wapt/waptserver/scripts/waptserver-init /etc/init.d/waptserver
-#chmod +x /etc/init.d/waptserver
-
 update-rc.d waptserver defaults
 
 echo "Ensuring that enable-threads is present in waptserver.ini" >&2
