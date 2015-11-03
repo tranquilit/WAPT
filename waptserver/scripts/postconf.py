@@ -164,10 +164,11 @@ def main():
         print "canceling wapt postconfiguration"
         sys.exit(1)
 
-    shutil.copyfile('/opt/wapt/waptserver/waptserver.ini.template','/opt/wapt/waptserver/waptserver.ini')
+    shutil.copyfile('/opt/wapt/waptserver/waptserver.ini.template','/opt/wapt/conf/waptserver.ini')
+    os.symlink('/opt/wapt/conf/waptserver.ini','/opt/wapt/waptserver/waptserver.ini')
     waptserver_ini = iniparse.RawConfigParser()
 
-    waptserver_ini.readfp(file('/opt/wapt/waptserver/waptserver.ini', 'rU'))
+    waptserver_ini.readfp(file('/opt/wapt/conf/waptserver.ini', 'rU'))
 
     # no trailing slash
 
@@ -240,7 +241,7 @@ def main():
                 exit(1)
             else:
                 fqdn = reply
-            
+
             # cleanup of old naming convention for the wapt vhost definition
             if type_debian():
                 if os.path.exists('/etc/apache2/sites-enabled/wapt'):
