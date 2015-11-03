@@ -119,7 +119,7 @@ try:
     import wsus
     app.register_blueprint(wsus.wsus)
 except Exception as e:
-    logger.error(str(e))
+    logger.info(str(e))
     wsus = False
 
 
