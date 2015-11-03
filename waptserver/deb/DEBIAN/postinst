@@ -80,7 +80,7 @@ if os.path.exists('/opt/wapt/conf/waptserver.ini'):
         # due to broken /etc/init.d/waptserver script
         try:
             subprocess.check_output("pkill -INT -f '^/usr/bin/uwsgi-core.*wapt'",shell=True)
-        except CallProcessError as e:
+        except subprocess.CalledProcessError as e:
             print (e.returncode)
         subprocess.check_output('/etc/init.d/waptserver start',shell=True)
     else:
