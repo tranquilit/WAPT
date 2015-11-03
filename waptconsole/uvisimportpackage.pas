@@ -99,9 +99,14 @@ procedure TVisImportPackage.ActSearchExternalPackageExecute(Sender: TObject);
 var
   expr: UTF8String;
   packages: ISuperObject;
+  proxy:String;
 begin
-  expr := format('waptdevutils.update_external_repo("%s","%s")',
-    [WaptTemplatesRepo(AppIniFilename) , EdSearch1.Text]);
+  if waptcommon.UseProxyForTemplates then
+    proxy := '"'+waptcommon.HttpProxy+'"'
+  else
+    proxy := 'None';
+  expr := format('waptdevutils.update_external_repo("%s","%s",%s)',
+    [WaptTemplatesRepo(AppIniFilename) , EdSearch1.Text, proxy]);
   packages := DMPython.RunJSON(expr);
   GridExternalPackages.Data := packages;
 end;

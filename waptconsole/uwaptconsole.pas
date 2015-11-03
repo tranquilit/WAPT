@@ -2849,6 +2849,7 @@ begin
           inifile.WriteString('global', 'default_sources_root',
             eddefault_sources_root.Text);
           //inifile.WriteString('global','default_sources_url',eddefault_sources_url.text);
+
           Result := True;
         end;
       finally
@@ -2857,6 +2858,7 @@ begin
 
   finally
     inifile.Free;
+    waptcommon.ReadWaptConfig(AppIniFilename);
   end;
 end;
 

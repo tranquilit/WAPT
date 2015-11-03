@@ -150,13 +150,14 @@ def diff_computer_wapt_ad(wapt,wapt_server_user='admin',wapt_server_passwd=None)
     return result
 
 
-def update_external_repo(repourl,search_string):
+def update_external_repo(repourl,search_string,proxy=None):
     """Get a list of entries from external templates public repository matching search_string
     >>> firefox = update_tis_repo(r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini","tis-firefox-esr")
     >>> isinstance(firefox,list) and firefox[-1].package == 'tis-firefox-esr'
     True
     """
-    repo = WaptRepo(url=repourl)
+    proxies =  {'http':proxy,'https':proxy}
+    repo = WaptRepo(url=repourl,proxies=proxies)
     return repo.search(search_string)
 
 
