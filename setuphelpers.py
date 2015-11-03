@@ -2291,21 +2291,13 @@ def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_B
                     prop = cs2.wmi_property(k)
                     if prop:
                         na[-1][k] = prop.Value
-        else:
+        elif len(cs)>0:
             result[key] = {}
-            for k in cs[0].properties.keys():
-                prop = cs[0].wmi_property(k)
-                if prop:
-                    result[key][k] = prop.Value
-
-    """na = result['Win32_NetworkAdapter'] = []
-    for cs in wm.Win32_NetworkAdapter():
-        na.append({})
-        for k in cs.properties.keys():
-            prop = cs.wmi_property(k)
-            if prop:
-                na[-1][k] = prop.Value
-    """
+            if cs:
+                for k in cs[0].properties.keys():
+                    prop = cs[0].wmi_property(k)
+                    if prop:
+                        result[key][k] = prop.Value
     return result
 
 
