@@ -101,16 +101,14 @@ if os.path.exists("builddir"):
     shutil.rmtree("builddir")
 
 print >> sys.stderr, 'creating the package tree'
-os.makedirs("builddir")
-os.makedirs("builddir/DEBIAN")
-os.makedirs("builddir/opt")
-os.makedirs("builddir/opt/wapt")
-os.makedirs("builddir/opt/wapt/lib")
-os.makedirs("builddir/opt/wapt/lib/site-packages")
-os.makedirs("builddir/opt/wapt/waptserver")
+mkdir_p("builddir/DEBIAN")
+mkdir_p("builddir/opt/wapt/lib")
+mkdir_p("builddir/opt/wapt/conf")
+mkdir_p("builddir/opt/wapt/lib/site-packages")
+mkdir_p("builddir/opt/wapt/waptserver")
 
 print >> sys.stderr, 'copying the waptserver files'
-rsync(source_dir,'./builddir/opt/wapt/',excludes=['apache-win32', 'mongodb', 'postconf', 'repository', 'rpm'])
+rsync(source_dir,'./builddir/opt/wapt/',excludes=['apache-win32', 'mongodb', 'postconf', 'repository', 'rpm','uninstall-services.bat','deb'])
 for lib in ('requests','iniparse','dns','pefile.py','rocket','pymongo','bson','flask','werkzeug','jinja2','itsdangerous.py','markupsafe', 'dialog.py', 'babel', 'flask_babel', 'huey','wakeonlan'):
     rsync(makepath(wapt_source_dir,'lib','site-packages',lib),'./builddir/opt/wapt/lib/site-packages/')
 
@@ -118,6 +116,8 @@ print >> sys.stderr, 'copying control and postinst package metadata'
 copyfile('./DEBIAN/control','./builddir/DEBIAN/control')
 copyfile('./DEBIAN/postinst','./builddir/DEBIAN/postinst')
 copyfile('./DEBIAN/preinst','./builddir/DEBIAN/preinst')
+subprocess.check_output(r'find ./builddir/opt/wapt/ -type f -exec chmod 644 {} \;',shell=True)
+subprocess.check_output(r'find ./builddir/opt/wapt/ -type d -exec chmod 755 {} \;',shell=True)
 
 print >> sys.stderr, "copying the startup script /etc/init.d/waptserver"
 try:
