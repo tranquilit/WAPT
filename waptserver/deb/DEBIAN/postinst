@@ -11,7 +11,29 @@ for cleanup_dir in rpm mongodb spool uninstall_service.bat; do
     rm -Rf /opt/wapt/"$cleanup_dir"
 done
 
-chown wapt:www-data -R /opt/wapt/
+for entry in /opt/wapt/*; do
+    case $entry in
+	/opt/wapt/log)
+	    chown -R wapt:www-data "$entry"
+	    ;;
+	/opt/wapt/waptserver)
+	    for subentry in /opt/wapt/waptserver/*; do
+		case $subentry in
+		    /opt/wapt/waptserver/waptserver.ini)
+			chown wapt:root "$subentry"
+			;;
+		    *)
+			chown -R root:root "$subentry"
+			;;
+		esac
+	    done
+	    ;;
+	/opt/wapt/*)
+	    chown -R root:root "$entry"
+	    ;;
+    esac
+done
+
 
 #cp /opt/wapt/waptserver/scripts/waptserver-init /etc/init.d/waptserver
 #chmod +x /etc/init.d/waptserver
