@@ -42,7 +42,7 @@ def replaceAll(file,searchExp,replaceExp):
         sys.stdout.write(line)
 
 def rsync(src,dst,excludes=[]):
-    rsync_option = " --exclude '*.pyc' --exclude '.svn' --exclude 'apache-win32' --exclude 'deb' --exclude '.git' --exclude '.gitignore' -aP"
+    rsync_option = " --exclude '*.pyc' --exclude '*~' --exclude '.svn' --exclude 'deb' --exclude '.git' --exclude '.gitignore' -aP"
     if excludes:
         rsync_option = rsync_option + ' '.join(" --exclude '%s'" % x for x in excludes)
     rsync_source = src
@@ -108,10 +108,9 @@ os.makedirs("builddir/opt/wapt")
 os.makedirs("builddir/opt/wapt/lib")
 os.makedirs("builddir/opt/wapt/lib/site-packages")
 os.makedirs("builddir/opt/wapt/waptserver")
-os.makedirs("builddir/opt/wapt/waptserver/spool")
 
 print >> sys.stderr, 'copying the waptserver files'
-rsync(source_dir,'./builddir/opt/wapt/',excludes=['postconf','mongod.exe'])
+rsync(source_dir,'./builddir/opt/wapt/',excludes=['apache-win32', 'mongodb', 'postconf', 'repository', 'rpm'])
 for lib in ('requests','iniparse','dns','pefile.py','rocket','pymongo','bson','flask','werkzeug','jinja2','itsdangerous.py','markupsafe', 'dialog.py', 'babel', 'flask_babel', 'huey','wakeonlan'):
     rsync(makepath(wapt_source_dir,'lib','site-packages',lib),'./builddir/opt/wapt/lib/site-packages/')
 
