@@ -1874,7 +1874,11 @@ def make_mongod_config(wapt_root_dir):
     conf_file = os.path.join(conf_dir ,file_name)
     jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(conf_dir))
     template = jinja_env.get_template(file_name + '.j2')
-    template_variables = {'dbpath':os.path.join(conf_dir,'data'),'logpath':os.path.join(conf_dir,'log','mongodb.log')}
+    template_variables = {
+        'dbpath':os.path.join(conf_dir,'data'),
+        'logpath':os.path.join(conf_dir,'log','mongodb.log'),
+        'mongodb_port':int(conf['mongodb_port']),
+        }
     config_string = template.render(template_variables)
     dst_file = file(conf_file, 'wt')
     dst_file.write(config_string)
