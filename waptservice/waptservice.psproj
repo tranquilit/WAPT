@@ -91,12 +91,8 @@ FileName=C:\tranquilit\wapt\waptpackage.py
 ClassName=TProjectFileNode
 FileName=$[Project-Path]waptservice.py
 
-[Project\ChildNodes\Node0\ChildNodes\Node7]
-ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptwua.py
-
 [Project\ChildNodes\Node0\ChildNodes]
-Count=8
+Count=7
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode
