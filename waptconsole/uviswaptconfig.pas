@@ -5,9 +5,9 @@ unit uviswaptconfig;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms,
+  Classes, SysUtils, FileUtil, LSControls, Forms,
   Controls, Graphics, Dialogs, ButtonPanel,
-  StdCtrls, ExtCtrls,EditBtn, DefaultTranslator;
+  StdCtrls, ExtCtrls,EditBtn, DefaultTranslator, ComCtrls;
 
 type
 
@@ -20,9 +20,10 @@ type
     cbManual: TCheckBox;
     cbSendStats: TCheckBox;
     cbUseProxyForRepo: TCheckBox;
+    cbDebugWindow: TCheckBox;
     cbUseProxyForServer: TCheckBox;
-    cbAdvanced: TCheckBox;
     cbUseProxyForTemplate: TCheckBox;
+    cbLanguage: TComboBox;
     eddefault_package_prefix: TLabeledEdit;
     eddefault_sources_root: TDirectoryEdit;
     edhttp_proxy: TLabeledEdit;
@@ -32,8 +33,8 @@ type
     edServerAddress: TLabeledEdit;
     edtemplates_repo_url: TLabeledEdit;
     edwapt_server: TLabeledEdit;
-    ImgStatusRepo: TImage;
     ImageList1: TImageList;
+    ImgStatusRepo: TImage;
     ImgStatusServer: TImage;
     Label1: TLabel;
     Label2: TLabel;
@@ -45,14 +46,15 @@ type
     Label8: TLabel;
     labStatusRepo: TLabel;
     labStatusServer: TLabel;
-    panAdvanced: TPanel;
-    Panel1: TPanel;
+    PageControl1: TPageControl;
     panClient: TPanel;
+    pgBase: TTabSheet;
+    pgAdvanced: TTabSheet;
     Timer1: TTimer;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
-    procedure cbAdvancedClick(Sender: TObject);
     procedure cbManualClick(Sender: TObject);
+    procedure cbUseProxyForTemplateClick(Sender: TObject);
     procedure edrepo_urlExit(Sender: TObject);
     procedure edServerAddressChange(Sender: TObject);
     procedure edServerAddressEnter(Sender: TObject);
@@ -94,11 +96,6 @@ begin
   Timer1Timer(Timer1);
 end;
 
-procedure TVisWAPTConfig.cbAdvancedClick(Sender: TObject);
-begin
-  panAdvanced.Visible := cbAdvanced.Checked;
-end;
-
 procedure TVisWAPTConfig.cbManualClick(Sender: TObject);
 begin
   edrepo_url.Enabled:=cbManual.Checked;
@@ -117,6 +114,11 @@ begin
       edwapt_server.Text := GetWaptServerURL;
     end;
   end;
+end;
+
+procedure TVisWAPTConfig.cbUseProxyForTemplateClick(Sender: TObject);
+begin
+  edhttp_proxy.Enabled:=cbUseProxyForTemplate.Checked;
 end;
 
 procedure TVisWAPTConfig.edrepo_urlExit(Sender: TObject);
@@ -242,7 +244,6 @@ end;
 
 procedure TVisWAPTConfig.FormShow(Sender: TObject);
 begin
-  cbAdvancedClick(cbAdvanced);
   cbManualClick(cbManual);
   edrepo_urlExit(Sender);
 end;

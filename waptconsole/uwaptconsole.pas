@@ -57,8 +57,8 @@ type
     Label17: TLabel;
     Label18: TLabel;
     Label19: TLabel;
+    MenuItem17: TMenuItem;
     MenuItem74: TMenuItem;
-    MenuItem75: TMenuItem;
     MenuItem76: TMenuItem;
     MenuItem77: TMenuItem;
     PopupGridWSUSScan: TPopupMenu;
@@ -177,7 +177,6 @@ type
     MemoTaskLog: TMemo;
     MemoInstallOutput: TMemo;
     MemoGroupeDescription: TMemo;
-    MenuItem17: TMenuItem;
     MenuItem19: TMenuItem;
     MenuItem20: TMenuItem;
     MenuItem25: TMenuItem;
@@ -199,8 +198,6 @@ type
     MenuItem47: TMenuItem;
     MenuItem48: TMenuItem;
     MenuItem49: TMenuItem;
-    MenuItem50: TMenuItem;
-    MenuItem51: TMenuItem;
     MenuItem52: TMenuItem;
     MenuItem53: TMenuItem;
     MenuItem54: TMenuItem;
@@ -282,7 +279,6 @@ type
     MenuItem2: TMenuItem;
     MenuItem21: TMenuItem;
     MenuItem22: TMenuItem;
-    MenuItem23: TMenuItem;
     MenuItem24: TMenuItem;
     MenuItem26: TMenuItem;
     MenuItem27: TMenuItem;
@@ -694,7 +690,6 @@ begin
         ini.WriteDateTime('Global','last_usage_report',Now);
       end;
     end;
-    ini.WriteString('Global','language',DMPython.Language);
   finally
     ini.Free;
   end;
@@ -2797,6 +2792,7 @@ end;
 function TVisWaptGUI.EditIniFile: boolean;
 var
   inifile: TIniFile;
+  lang:String;
 begin
   Result := False;
   inifile := TIniFile.Create(AppIniFilename);
@@ -2827,6 +2823,18 @@ begin
         //eddefault_sources_root.Directory := inifile.ReadString('global','default_sources_root','');
         //eddefault_sources_url.text = inifile.ReadString('global','default_sources_url','https://srvdev/sources/%(packagename)s-wapt/trunk');
 
+        cbDebugWindow.Checked:=ActAdvancedMode.Checked;
+
+        lang := inifile.ReadString('Global','language','en');
+        if Language='en' then
+          cbLanguage.ItemIndex:=0
+        else if Language='fr' then
+          cbLanguage.ItemIndex:=1
+        else if Language='de' then
+          cbLanguage.ItemIndex:=2
+        else
+          cbLanguage.ItemIndex:=0;
+
         if ShowModal = mrOk then
         begin
           inifile.WriteString('global', 'repo_url', edrepo_url.Text);
@@ -2850,6 +2858,14 @@ begin
             eddefault_sources_root.Text);
           //inifile.WriteString('global','default_sources_url',eddefault_sources_url.text);
 
+          if cbLanguage.ItemIndex=0 then
+            inifile.WriteString('Global','language','en')
+          else if cbLanguage.ItemIndex=1 then
+            inifile.WriteString('Global','language','fr')
+          else if cbLanguage.ItemIndex=2 then
+            inifile.WriteString('Global','language','de')
+          else
+            inifile.WriteString('Global','language','');
           Result := True;
         end;
       finally

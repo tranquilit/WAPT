@@ -41,46 +41,49 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="13">
+    <RequiredPackages Count="14">
       <Item1>
-        <PackageName Value="pl_indy"/>
+        <PackageName Value="pl_lazsolutions"/>
       </Item1>
       <Item2>
-        <PackageName Value="MultiThreadProcsLaz"/>
+        <PackageName Value="pl_indy"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="MultiThreadProcsLaz"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_excontrols"/>
+        <PackageName Value="pltis_wapt"/>
       </Item4>
       <Item5>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pl_excontrols"/>
       </Item5>
       <Item6>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="pltis_utils"/>
       </Item6>
       <Item7>
-        <PackageName Value="pl_virtualtrees"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item7>
       <Item8>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pl_virtualtrees"/>
       </Item8>
       <Item9>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="pltis_superobject"/>
       </Item9>
       <Item10>
-        <PackageName Value="pl_virtualtreesextra"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item10>
       <Item11>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pl_virtualtreesextra"/>
       </Item11>
       <Item12>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="FCL"/>
       </Item12>
       <Item13>
-        <PackageName Value="LCL"/>
+        <PackageName Value="SynEdit"/>
       </Item13>
+      <Item14>
+        <PackageName Value="LCL"/>
+      </Item14>
     </RequiredPackages>
     <Units Count="23">
       <Unit0>
