@@ -1,5 +1,7 @@
 #!/bin/sh
 
+update-rc.d waptserver defaults
+
 touch  /var/log/waptserver.log
 touch  /var/run/waptserver.pid
 
@@ -33,9 +35,6 @@ for entry in /opt/wapt/*; do
 	    ;;
     esac
 done
-
-
-update-rc.d waptserver defaults
 
 echo "Ensuring that enable-threads is present in waptserver.ini" >&2
 tmpfile=$(mktemp)
