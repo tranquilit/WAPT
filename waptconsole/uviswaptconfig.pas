@@ -17,6 +17,7 @@ type
     Button1: TButton;
     Button2: TButton;
     ButtonPanel1: TButtonPanel;
+    cbManual: TCheckBox;
     cbSendStats: TCheckBox;
     cbUseProxyForRepo: TCheckBox;
     cbUseProxyForServer: TCheckBox;
@@ -31,7 +32,9 @@ type
     edServerAddress: TLabeledEdit;
     edtemplates_repo_url: TLabeledEdit;
     edwapt_server: TLabeledEdit;
+    ImgStatusRepo: TImage;
     ImageList1: TImageList;
+    ImgStatusServer: TImage;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -49,9 +52,12 @@ type
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure cbAdvancedClick(Sender: TObject);
+    procedure cbManualClick(Sender: TObject);
     procedure edrepo_urlExit(Sender: TObject);
     procedure edServerAddressChange(Sender: TObject);
     procedure edServerAddressEnter(Sender: TObject);
+    procedure edServerAddressExit(Sender: TObject);
+    procedure edServerAddressKeyPress(Sender: TObject; var Key: char);
     procedure FormShow(Sender: TObject);
     procedure HelpButtonClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
@@ -83,10 +89,9 @@ end;
 
 procedure TVisWAPTConfig.Button2Click(Sender: TObject);
 begin
-  if CheckServer(edServerAddress.Text) then
-  begin
-    Timer1Timer(Timer1);
-  end;
+  ImageList1.GetBitmap(2, ImgStatusRepo.Picture.Bitmap);
+  ImageList1.GetBitmap(2, ImgStatusServer.Picture.Bitmap);
+  Timer1Timer(Timer1);
 end;
 
 procedure TVisWAPTConfig.cbAdvancedClick(Sender: TObject);
@@ -94,11 +99,31 @@ begin
   panAdvanced.Visible := cbAdvanced.Checked;
 end;
 
+procedure TVisWAPTConfig.cbManualClick(Sender: TObject);
+begin
+  edrepo_url.Enabled:=cbManual.Checked;
+  edwapt_server.Enabled:=cbManual.Checked;
+
+  if not cbManual.Checked then
+  begin
+    if edServerAddress.Text <> '' then
+    begin
+      edrepo_url.Text := 'http://'+edServerAddress.Text+'/wapt';
+      edwapt_server.Text := 'https://'+edServerAddress.Text;
+    end
+    else
+    begin
+      edrepo_url.Text := GetMainWaptRepo;
+      edwapt_server.Text := GetWaptServerURL;
+    end;
+  end;
+end;
+
 procedure TVisWAPTConfig.edrepo_urlExit(Sender: TObject);
 var
   servername1,servername2:String;
 begin
-  with TIdURI.Create(edrepo_url.Text) do
+{  with TIdURI.Create(edrepo_url.Text) do
   try
     servername1:=Host;
   finally
@@ -119,7 +144,7 @@ begin
   begin
     edServerAddress.Text:='';
     edServerAddress.Font.Color := clInactiveCaptionText;
-  end;
+  end;}
 end;
 
 function TVisWAPTConfig.CheckServer(Address:String):Boolean;
@@ -127,38 +152,57 @@ var
   serverRes:ISuperObject;
   strRes,packages:String;
 begin
-  if address = '' then
-  begin
-    labStatusRepo.Caption:='';
-    labStatusRepo.Caption:='';
-    result := False;
-    Exit;
-  end;
+  ImageList1.GetBitmap(2, ImgStatusRepo.Picture.Bitmap);
+  ImageList1.GetBitmap(2, ImgStatusServer.Picture.Bitmap);
+  Application.ProcessMessages;
 
   try
     try
+      result :=True;
       Screen.Cursor:=crHourGlass;
       try
-        serverRes := SO(IdhttpGetString('https://'+address+'/ping',cbUseProxyForServer.Checked,200,60000,60000));
-        if serverRes<>Nil then
-          labStatusServer.Caption:= Format('Server access: %s. %s', [serverRes.S['success'],UTF8Encode(serverRes.S['msg'])])
+        if not cbManual.Checked then
+        if edServerAddress.Text <> '' then
+        begin
+          edrepo_url.Text := 'http://'+edServerAddress.Text+'/wapt';
+          edwapt_server.Text := 'https://'+edServerAddress.Text;
+        end
         else
-          raise Exception.CreateFmt(rsWaptServerError,['Bad answer'])
+        begin
+          edrepo_url.Text := GetMainWaptRepo;
+          edwapt_server.Text := GetWaptServerURL;
+        end;
+
+        serverRes := SO(IdhttpGetString(edwapt_server.Text+'/ping',cbUseProxyForServer.Checked,200,60000,60000));
+        if serverRes = Nil then
+          raise Exception.CreateFmt(rsWaptServerError,['Bad answer']);
+        if not serverRes.B['success'] then
+          raise Exception.CreateFmt(rsWaptServerError,[serverRes.S['msg']]);
+
+        labStatusServer.Caption:= Format('Server access: %s. %s', [serverRes.S['success'],UTF8Encode(serverRes.S['msg'])]);
+        ImageList1.GetBitmap(0, ImgStatusServer.Picture.Bitmap)
       except
         on E:Exception do
+        begin
+          ImageList1.GetBitmap(1, ImgStatusServer.Picture.Bitmap);
           labStatusServer.Caption:=Format('Server access error: %s',[e.Message]);
+        end;
       end;
 
       try
-        packages := IdHttpGetString('http://'+address+'/wapt/Packages',cbUseProxyForRepo.Checked,200,60000,60000);
-        if length(packages)>0 then
-          labStatusRepo.Caption:=Format('Repository access OK', [])
-        else
-          labStatusRepo.Caption:=Format('Repository access error: %s',['Packages file empty or not found']);
+        packages := IdHttpGetString(edrepo_url.Text+'/Packages',cbUseProxyForRepo.Checked,200,60000,60000);
+        if length(packages)<=0 then
+          Raise Exception.Create('Packages file empty or not found');
+        labStatusRepo.Caption:=Format('Repository access OK', []);
+        ImageList1.GetBitmap(0, ImgStatusRepo.Picture.Bitmap);
       except
         on E:Exception do
+        begin
+          ImageList1.GetBitmap(1, ImgStatusRepo.Picture.Bitmap);
           labStatusRepo.Caption:=Format('Repository access error: %s',[e.Message]);
+        end;
       end;
+
       result := (serverRes<>Nil) and (serverRes.B['success']) and (packages<>'');
     finally
       Screen.Cursor:=crDefault;
@@ -170,19 +214,36 @@ end;
 
 procedure TVisWAPTConfig.edServerAddressChange(Sender: TObject);
 begin
+  cbManual.Checked:=False;
   labStatusRepo.Caption := '';
   labStatusServer.Caption := '';
+  ImageList1.GetBitmap(2, ImgStatusRepo.Picture.Bitmap);
+  ImageList1.GetBitmap(2, ImgStatusServer.Picture.Bitmap);
+
 end;
 
 procedure TVisWAPTConfig.edServerAddressEnter(Sender: TObject);
 begin
-  if edServerAddress.Font.Color = clInactiveCaptionText then
-     edServerAddress.Clear;
+  ButtonPanel1.OKButton.Default:=False;
+end;
+
+procedure TVisWAPTConfig.edServerAddressExit(Sender: TObject);
+begin
+    ButtonPanel1.OKButton.Default:=True;
+
+end;
+
+procedure TVisWAPTConfig.edServerAddressKeyPress(Sender: TObject; var Key: char
+  );
+begin
+  if key=#13 then
+    Button2Click(sender);
 end;
 
 procedure TVisWAPTConfig.FormShow(Sender: TObject);
 begin
   cbAdvancedClick(cbAdvanced);
+  cbManualClick(cbManual);
   edrepo_urlExit(Sender);
 end;
 
@@ -197,8 +258,6 @@ begin
   if CheckServer(edServerAddress.Text) then
   begin
     edServerAddress.Font.Color :=clText ;
-    edrepo_url.Text := 'http://'+edServerAddress.Text+'/wapt';
-    edwapt_server.Text := 'https://'+edServerAddress.Text;
   end;
 end;
 
