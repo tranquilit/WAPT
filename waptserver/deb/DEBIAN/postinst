@@ -1,95 +1,101 @@
-#!/bin/sh
+#!/usr/bin/python
 
-update-rc.d waptserver defaults
-
-touch  /var/log/waptserver.log
-touch  /var/run/waptserver.pid
-
-chown wapt:root /var/log/waptserver.log
-chown wapt:root  /var/run/waptserver.pid
-
-# cleanup leftovers
-for cleanup_dir in rpm mongodb spool uninstall_service.bat; do
-    rm -Rf /opt/wapt/"$cleanup_dir"
-done
-
-for entry in /opt/wapt/*; do
-    case $entry in
-	/opt/wapt/log)
-	    chown -R wapt:root "$entry"
-	    ;;
-	/opt/wapt/waptserver)
-	    for subentry in /opt/wapt/waptserver/*; do
-		case $subentry in
-		    /opt/wapt/waptserver/waptserver.ini)
-			chown wapt:root "$subentry"
-			;;
-		    *)
-			chown -R root:root "$subentry"
-			;;
-		esac
-	    done
-	    ;;
-	/opt/wapt/*)
-	    chown -R root:root "$entry"
-	    ;;
-    esac
-done
-
-echo "Ensuring that enable-threads is present in waptserver.ini" >&2
-tmpfile=$(mktemp)
-cat > "$tmpfile" << 'EOF'
+import subprocess
 import os
+import shutil
 import sys
 import ConfigParser
+import time
 
-CFG_PATH = "/opt/wapt/waptserver/waptserver.ini"
+subprocess.check_output('update-rc.d waptserver defaults',shell=True)
+subprocess.check_output('touch  /var/log/waptserver.log',shell=True)
+subprocess.check_output('touch  /var/run/waptserver.pid',shell=True)
+subprocess.check_output('chown wapt:root /var/log/waptserver.log',shell=True)
+subprocess.check_output('chown wapt:root  /var/run/waptserver.pid',shell=True)
 
-if not os.path.exists(CFG_PATH):
-    print "No config file found at " + CFG_PATH
-    exit(0)
+# cleanup leftovers
 
-try:
-    cfg = ConfigParser.RawConfigParser()
-    cfg.read(CFG_PATH)
-    if not cfg.has_option("uwsgi", "enable-threads"):
-        cfg.set("uwsgi", "enable-threads", "true")
-        with open(CFG_PATH, 'wb') as out:
-            cfg.write(out)
-except Exception:
-    import traceback
-    print "Error when amending" + CFG_PATH
-    traceback.print_exc()
-    exit(0)
-EOF
-python "$tmpfile"
-rm -f "$tmpfile"
+for cleanup_dir in ('rpm','mongodb','spool','uninstall_service.bat'):
+    mypath = os.path.join('/opt/wapt/waptserver',cleanup_dir)
+    if os.path.exists(mypath):
+        shutil.rmtree(mypath)
 
-if [ -e "/opt/wapt/waptserver/waptserver.ini" ]; then
-  if ps aux | grep -q wapt; then
-    [ -f /etc/init.d/waptserver ] && /etc/init.d/waptserver stop
-    # XXX temporary: clean up leftover waptserver processes
-    # due to broken /etc/init.d/waptserver script
-    pkill -INT -f '^/usr/bin/uwsgi-core.*wapt'
-    [ -f /etc/init.d/waptserver ] && /etc/init.d/waptserver start
-  else
-    [ -f /etc/init.d/waptserver ] && /etc/init.d/waptserver start
-  fi
-else
-    /usr/bin/printf '\e[1;31m%-6s\e[m\n' "The installation of waptserver is finished!"
-    /usr/bin/printf '\e[1;31m%-6s\e[m\n' "For postconf please run: /usr/bin/python /opt/wapt/waptserver/scripts/postconf.py"
-fi
+
+subprocess.check_output('chown wapt:root /opt/wapt/log',shell=True)
+
+inifile = '/opt/wapt/waptserver/waptserver.ini'
+if os.path.exists(inifile) and not os.path.islink(inifile):
+    os.rename(inifile,'/opt/wapt/conf/waptserver.ini')
+    os.symlink('/opt/wapt/conf/waptserver.ini',inifile)
+subprocess.check_output('chown -R wapt:root /opt/wapt/conf',shell=True)
+subprocess.check_output('chmod 644 /opt/wapt/conf/waptserver.ini',shell=True)
+
+def cleanup_ini_file():
+    CFG_PATH = "/opt/wapt/waptserver/waptserver.ini"
+
+    if not os.path.exists(CFG_PATH):
+        print "No config file found at " + CFG_PATH
+        exit(0)
+
+    try:
+        cfg = ConfigParser.RawConfigParser()
+        cfg.read(CFG_PATH)
+        if not cfg.has_option("uwsgi", "enable-threads"):
+            cfg.set("uwsgi", "enable-threads", "true")
+            with open(CFG_PATH, 'wb') as out:
+                cfg.write(out)
+        if cfg.has_option("uwsgi","spooler"):
+            cfg.remove_option('uwsgi','spooler')
+    except Exception:
+        import traceback
+        print "Error when amending" + CFG_PATH
+        traceback.print_exc()
+        exit(0)
+
+cleanup_ini_file()
+
+
+def check_if_running():
+    import os
+    pids = [pid for pid in os.listdir('/proc') if pid.isdigit()]
+
+    for pid in pids:
+        try:
+            value =  open(os.path.join('/proc', pid, 'cmdline'), 'rb').read()
+            if 'waptserver' in  value:
+                return True
+                break
+
+        except IOError: # proc has already terminated
+            continue
+    return False
+
+
+# restart server if conf file is there and if it was already running
+if os.path.exists('/opt/wapt/conf/waptserver.ini'): 
+    if check_if_running()==True:
+        subprocess.check_output('/etc/init.d/waptserver stop',shell=True)
+        time.sleep(2)
+        # XXX temporary: clean up leftover waptserver processes
+        # due to broken /etc/init.d/waptserver script
+        try:
+            subprocess.check_output("pkill -INT -f '^/usr/bin/uwsgi-core.*wapt'",shell=True)
+        except CallProcessError as e:
+            print (e.returncode)
+        subprocess.check_output('/etc/init.d/waptserver start',shell=True)
+    else:
+        subprocess.check_output('/etc/init.d/waptserver start',shell=True)
+else:
+    print (""" '\e[1;31m%-6s\e[m\n' "The installation of waptserver is finished!" """)
+    print (""" '\e[1;31m%-6s\e[m\n' "For postconf please run: /usr/bin/python /opt/wapt/waptserver/scripts/postconf.py" """)
+
 
 # Backward compat
-agent=/var/www/wapt/waptagent.exe
-setup=/var/www/wapt/waptsetup.exe
-
-if [ -e "$setup" ] && ! [ -L "$setup" ]; then
-    echo "Moving regular file $setup to $setup.old for compatibility reasons." >&2
-    mv -f "$setup" "$setup".old
-fi
-
-echo "Creating symlink from $setup to $agent for compatibility reasons." >&2
-ln -sf "$agent" "$setup"
-
-exit 0
+agent='/var/www/wapt/waptagent.exe'
+setup='/var/www/wapt/waptsetup.exe'
+if os.path.exists(setup) and not os.path.islink(setup):
+    print ('Moving regular file %s to %s.old for compatibility reasons.'% (setup,setup,))
+    os.rename(setup,"%s.old" % setup)
+    print ("Creating symlink from %s to %s for compatibility reasons." % (setup,agent))
+    os.symlink(agent,setup)
+sys.exit(0)
