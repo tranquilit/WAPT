@@ -110,7 +110,7 @@ os.makedirs("builddir/opt/wapt/lib/site-packages")
 os.makedirs("builddir/opt/wapt/waptserver")
 
 print >> sys.stderr, 'copying the waptserver files'
-rsync(source_dir,'./builddir/opt/wapt/',excludes=['postconf','mongod.exe'])
+rsync(source_dir,'./builddir/opt/wapt/',excludes=['apache-win32', 'mongodb', 'postconf', 'repository', 'rpm'])
 for lib in ('requests','iniparse','dns','pefile.py','rocket','pymongo','bson','flask','werkzeug','jinja2','itsdangerous.py','markupsafe', 'dialog.py', 'babel', 'flask_babel', 'huey','wakeonlan'):
     rsync(makepath(wapt_source_dir,'lib','site-packages',lib),'./builddir/opt/wapt/lib/site-packages/')
 
