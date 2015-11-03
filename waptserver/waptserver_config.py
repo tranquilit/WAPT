@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="1.3.2"
+__version__="1.3.3"
 
 import os,sys
 try:
@@ -43,7 +43,7 @@ _defaults = {
     'clients_read_timeout': 5,
     'loglevel': 'warning',
     'mongodb_ip': "127.0.0.1",
-    'mongodb_port': 38999,
+    'mongodb_port': 27017,
     'secret_key': 'NOT DEFINED',
     'server_uuid': '',
     'wapt_folder': os.path.join(wapt_root_dir, 'waptserver','repository','wapt'),
