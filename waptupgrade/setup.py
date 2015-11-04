@@ -232,7 +232,7 @@ def install():
     import common
     installed_wapt = installed_softwares(uninstallkey='WAPT_is1')
     if installed_wapt:
-        wapt_version = Version(installed_wapt[0]['version'])
+        wapt_version = Version(installed_wapt[0]['version'].replace('WAPT ',''))
     else:
         wapt_version = Version('0.0.0-0')
     if wapt_version > Version(control.version):
