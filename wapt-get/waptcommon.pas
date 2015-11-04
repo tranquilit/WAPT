@@ -125,7 +125,7 @@ implementation
 uses FileUtil, soutils, Variants,uwaptres,waptwinutils,tisinifiles,tislogging,
   NetworkAdapterInfo, JwaWinsock2,
   IdHttp,IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,IdURI,
-  gettext,IdStack,IdCompressorZLib;
+  gettext,IdStack,IdCompressorZLib,sha1;
 
 const
   CacheWaptServerUrl: AnsiString = 'None';
@@ -1211,6 +1211,8 @@ begin
         raise Exception.CreateFmt(rsInnoSetupUnavailable, [inno_fn]);
     Run(format('"%s"  %s',[inno_fn,custom_iss]),'',3600000,'','','',OnProgress);
     Result := destination + '\' + outputname + '.exe';
+    // Create waptagent.sha1
+    StringToFile(wapt_base_dir + '\waptupgrade\waptagent.sha1',SHA1Print(SHA1File(Result,2 shl 20))+' waptagent.exe');
 end;
 
 

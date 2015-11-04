@@ -59,3 +59,4 @@ waptupgrade/patchs/
 /waptserver/apache-win32/conf/httpd.conf
 /waptserver/mongodb/mongod.cfg
 /profilemigration
+/waptupgrade/waptagent.sha1
