@@ -103,7 +103,7 @@ def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wa
 
     # create a sha1 file for waptupgrade package
     result = os.path.abspath(os.path.join(destination,os.path.basename(outputfile)))
-    with open(makepath(wapt.wapt_base_dir,'waptupgrade','waptagent.sha1','wb')) as f:
+    with open(makepath(wapt.wapt_base_dir,'waptupgrade','waptagent.sha1'),'wb') as f:
         f.write("%s %s\n" % (sha1_for_file(result),'waptagent.exe'))
     return result
 
