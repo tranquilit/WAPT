@@ -28,16 +28,19 @@ uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
-  Forms,Interfaces,
-  uDMWAPTTray, uwapttray, uwapttrayres,
+  Translations, Forms,Interfaces,
+  waptcommon,uDMWAPTTray, uwapttray, uwapttrayres,
   DefaultTranslator,
-  Translations, waptwinutils;
+  waptwinutils;
 
 {$R *.res}
 
 begin
   RequireDerivedFormResource := True;
   Application.Initialize;
+  ReadWaptConfig;
+  SetDefaultLang(Language);
+
   Application.CreateForm(TDMWaptTray, DMWaptTray);
   Application.Run;
 end.
