@@ -214,6 +214,8 @@ begin
   http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
   http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent;
 
+  http.Request.BasicAuthentication:=True;
+
   ssl := copy(fileURL, 1, length('https://')) = 'https://';
   if (ssl) then
   begin
