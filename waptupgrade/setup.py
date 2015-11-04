@@ -234,10 +234,10 @@ def install():
     if installed_wapt:
         wapt_version = Version(installed_wapt[0]['version'])
     else:
-        wapt_version = Version('0.0.0')
+        wapt_version = Version('0.0.0-0')
     if wapt_version > Version(control.version):
         print('Your current wapt (%s) is more recent than the upgrade package (%s). Skipping...'%(wapt_version,control.version))
-    elif wapt_version < Version(control.version.split('-')[0]):
+    elif wapt_version.members[0:3] < Version(control.version).members[0:3]:
         print('Your current wapt version (%s) is too old to be upgraded, a full waptagent.exe'%wapt_version)
         create_waptagent_install()
     else:
