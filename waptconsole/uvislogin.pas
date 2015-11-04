@@ -18,9 +18,9 @@ type
     edPassword: TEdit;
     edUser: TEdit;
     edWaptServerName: TEdit;
-    Label1: TLabel;
+    labServer: TLabel;
     laPassword: TLabel;
-    laPassword1: TLabel;
+    labUser: TLabel;
     procedure BitBtn1Click(Sender: TObject);
     procedure edPasswordKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);

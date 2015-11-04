@@ -27,11 +27,12 @@ object VisLogin: TVisLogin
     TabOrder = 3
   end
   object laPassword: TLabel
-    Left = 96
+    Left = 6
     Height = 13
     Top = 64
-    Width = 46
+    Width = 136
     Alignment = taRightJustify
+    AutoSize = False
     Caption = 'Password'
     ParentColor = False
   end
@@ -43,21 +44,23 @@ object VisLogin: TVisLogin
     TabOrder = 2
     Text = 'admin'
   end
-  object laPassword1: TLabel
-    Left = 120
+  object labUser: TLabel
+    Left = 8
     Height = 13
     Top = 37
-    Width = 22
+    Width = 133
     Alignment = taRightJustify
+    AutoSize = False
     Caption = 'User'
     ParentColor = False
   end
-  object Label1: TLabel
-    Left = 110
+  object labServer: TLabel
+    Left = 6
     Height = 13
     Top = 8
-    Width = 32
+    Width = 135
     Alignment = taRightJustify
+    AutoSize = False
     Caption = 'Server'
     ParentColor = False
   end
