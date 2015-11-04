@@ -3673,7 +3673,7 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Remove from inventory'
       Hint = 'Remove from inventory'
       ImageIndex = 9
-      OnExecute = actRefreshExecute
+      OnExecute = ActHostsDeleteExecute
       OnUpdate = ActHostsActionsUpdate
       ShortCut = 16430
     end

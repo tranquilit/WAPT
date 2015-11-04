@@ -2519,6 +2519,7 @@ begin
       0) = mrYes then
     begin
       uuids := Join(',',ExtractField(sel,'uuid'));
+      // delete host packages too...
       if Sender = ActHostsDeleteHostPackage then
         res := WAPTServerJsonGet('api/v1/hosts_delete?uuid=%s&delete_packages=1',[uuids])
       else

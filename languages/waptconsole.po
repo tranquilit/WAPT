@@ -1,26 +1,5 @@
-#: asynccalls.rsasynccallnotfinished
-msgid "The asynchronous call is not finished yet"
-msgstr ""
-
-#: asynccalls.rsasynccallunknownvarrectype
-msgid "Unknown TVarRec type %d"
-msgstr ""
-
-#: asynccalls.rsforgetwascalled
-msgid "IAsyncCall.Forget was called. The interface isn't connected to the asynchronous call anymore"
-msgstr ""
-
-#: asynccalls.rsleavemainthreadnestederror
-msgid "Unpaired call to AsyncCalls.LeaveMainThread()"
-msgstr ""
-
-#: asynccalls.rsleavemainthreadthreaderror
-msgid "AsyncCalls.LeaveMainThread() was called outside of the main thread"
-msgstr ""
-
-#: asynccalls.rsnovclsyncpossible
-msgid "Cannot synchronize with the main thread anymore. Don't call IAsyncCall.Forget for functions that access the VCL"
-msgstr ""
+msgid "Local directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projects"
+msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: tvisapropos.button1.caption
 msgid "Close"
@@ -491,16 +470,18 @@ msgstr ""
 msgid "edWaptServerName"
 msgstr ""
 
-#: tvislogin.label1.caption
-msgid "Connect to server :"
+#: tvislogin.labserver.caption
+msgctxt "TVISLOGIN.LABSERVER.CAPTION"
+msgid "Server"
+msgstr ""
+
+#: tvislogin.labuser.caption
+msgctxt "TVISLOGIN.LABUSER.CAPTION"
+msgid "User"
 msgstr ""
 
 #: tvislogin.lapassword.caption
-msgid "Server password :"
-msgstr ""
-
-#: tvislogin.lapassword1.caption
-msgid "Server user :"
+msgid "Password"
 msgstr ""
 
 #: tvisprivatekeyauth.caption
@@ -535,8 +516,18 @@ msgstr ""
 msgid "Locale WAPT configuration"
 msgstr ""
 
-#: tviswaptconfig.cbadvanced.caption
-msgid "Advanced settings"
+#: tviswaptconfig.cbdebugwindow.hint
+msgctxt "TVISWAPTCONFIG.CBDEBUGWINDOW.HINT"
+msgid "Activates proxy when accessing the main repository"
+msgstr ""
+
+#: tviswaptconfig.cblanguage.text
+msgctxt "TVISWAPTCONFIG.CBLANGUAGE.TEXT"
+msgid "English"
+msgstr ""
+
+#: tviswaptconfig.cbmanual.caption
+msgid "Manual overrride"
 msgstr ""
 
 #: tviswaptconfig.cbuseproxyforrepo.hint
@@ -555,7 +546,7 @@ msgid "Activate proxy when accessing the model repository"
 msgstr ""
 
 #: tviswaptconfig.eddefault_package_prefix.editlabel.caption
-msgid "Prefix for naming created WAPT packages"
+msgid "WAPT packages prefix"
 msgstr ""
 
 #: tviswaptconfig.eddefault_package_prefix.hint
@@ -595,7 +586,7 @@ msgid "E.g. : wapt.tranquilit.local"
 msgstr ""
 
 #: tviswaptconfig.edtemplates_repo_url.editlabel.caption
-msgid "URL to the package model repository "
+msgid "External packages repository "
 msgstr ""
 
 #: tviswaptconfig.edtemplates_repo_url.hint
@@ -619,11 +610,11 @@ msgid "Base directory for package development"
 msgstr ""
 
 #: tviswaptconfig.label2.caption
-msgid "Path to private key for signing packages"
+msgid "Path to private key"
 msgstr ""
 
 #: tviswaptconfig.label3.caption
-msgid "For package development :"
+msgid "Language"
 msgstr ""
 
 #: tviswaptconfig.label4.caption
@@ -638,19 +629,33 @@ msgstr ""
 
 #: tviswaptconfig.label6.caption
 msgctxt "tviswaptconfig.label6.caption"
-msgid "Activate proxy when accessing the model repository"
+msgid "Proxy for external repository"
 msgstr ""
 
 #: tviswaptconfig.label7.caption
-msgid "HTTP proxy settings"
+msgid "Show advanced informations"
 msgstr ""
 
 #: tviswaptconfig.label8.caption
 msgid "Send anonymous usage statistics to Tranquil IT"
 msgstr ""
 
-#: tviswaptconfig.panclient.caption
-msgid "panClient"
+#: tviswaptconfig.labstatusrepo.caption
+msgctxt "tviswaptconfig.labstatusrepo.caption"
+msgid "Status"
+msgstr ""
+
+#: tviswaptconfig.labstatusserver.caption
+msgctxt "TVISWAPTCONFIG.LABSTATUSSERVER.CAPTION"
+msgid "Status"
+msgstr ""
+
+#: tviswaptconfig.pgadvanced.caption
+msgid "Advanced"
+msgstr ""
+
+#: tviswaptconfig.pgbase.caption
+msgid "Base"
 msgstr ""
 
 #: tviswaptdeploy.actdeploywapt.caption
@@ -716,11 +721,6 @@ msgstr ""
 #: tviswaptgui.actaddpackagegroup.caption
 msgctxt "tviswaptgui.actaddpackagegroup.caption"
 msgid "Add package or bundle"
-msgstr ""
-
-#: tviswaptgui.actadvancedmode.caption
-msgctxt "tviswaptgui.actadvancedmode.caption"
-msgid "Advanced mode"
 msgstr ""
 
 #: tviswaptgui.actbuildupload.caption
@@ -939,7 +939,7 @@ msgstr ""
 
 #: tviswaptgui.actreloadconfig.caption
 msgctxt "tviswaptgui.actreloadconfig.caption"
-msgid "Reload wapt-get.ini"
+msgid "Reload preferences"
 msgstr ""
 
 #: tviswaptgui.actremoveconflicts.caption
@@ -1038,7 +1038,7 @@ msgstr ""
 
 #: tviswaptgui.actwaptlocalconfig.caption
 msgctxt "tviswaptgui.actwaptlocalconfig.caption"
-msgid "Local WAPT configuration"
+msgid "Preferences"
 msgstr ""
 
 #: tviswaptgui.actwsusdowloadwsusscan.caption
@@ -1283,6 +1283,7 @@ msgid "Model"
 msgstr ""
 
 #: tviswaptgui.label4.caption
+msgctxt "tviswaptgui.label4.caption"
 msgid "User"
 msgstr ""
 
@@ -1340,7 +1341,8 @@ msgid "&Tools"
 msgstr ""
 
 #: tviswaptgui.menuitem17.caption
-msgid "Language"
+msgctxt "tviswaptgui.menuitem17.caption"
+msgid "-"
 msgstr ""
 
 #: tviswaptgui.menuitem24.caption
