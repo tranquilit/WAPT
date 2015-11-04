@@ -19,7 +19,7 @@ object VisImportPackage: TVisImportPackage
     BevelOuter = bvNone
     ClientHeight = 31
     ClientWidth = 844
-    TabOrder = 0
+    TabOrder = 2
     object BitBtn2: TBitBtn
       Left = 763
       Height = 27
@@ -160,7 +160,7 @@ object VisImportPackage: TVisImportPackage
     BevelOuter = bvNone
     ClientHeight = 30
     ClientWidth = 844
-    TabOrder = 2
+    TabOrder = 0
     object EdSearch1: TEdit
       Left = 4
       Height = 21

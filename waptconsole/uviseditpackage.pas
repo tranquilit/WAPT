@@ -34,7 +34,6 @@ type
     ButCancel: TBitBtn;
     butInitWapt: TBitBtn;
     butSearchPackages1: TBitBtn;
-    Button3: TBitBtn;
     ButSave: TBitBtn;
     butBUApply: TBitBtn;
     cbShowLog: TCheckBox;

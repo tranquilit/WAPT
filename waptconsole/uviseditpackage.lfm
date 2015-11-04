@@ -1,7 +1,7 @@
 object VisEditPackage: TVisEditPackage
-  Left = 319
+  Left = 391
   Height = 623
-  Top = 135
+  Top = 134
   Width = 949
   Caption = 'Edit package'
   ClientHeight = 623
@@ -28,7 +28,7 @@ object VisEditPackage: TVisEditPackage
     ActivePage = pgDepends
     Align = alClient
     TabIndex = 0
-    TabOrder = 0
+    TabOrder = 1
     OnChange = PageControl1Change
     object pgDepends: TTabSheet
       Caption = 'Edit dependencies'
@@ -710,7 +710,7 @@ object VisEditPackage: TVisEditPackage
     Align = alBottom
     ClientHeight = 118
     ClientWidth = 949
-    TabOrder = 1
+    TabOrder = 4
     Visible = False
     object Panel7: TPanel
       Left = 1
@@ -787,19 +787,19 @@ object VisEditPackage: TVisEditPackage
     BevelOuter = bvNone
     ClientHeight = 50
     ClientWidth = 949
-    TabOrder = 3
+    TabOrder = 0
     object EdPackage: TLabeledEdit
-      Left = 104
+      Left = 56
       Height = 21
       Top = 2
-      Width = 216
+      Width = 264
       CharCase = ecLowerCase
       EditLabel.AnchorSideTop.Control = EdPackage
       EditLabel.AnchorSideTop.Side = asrCenter
       EditLabel.AnchorSideRight.Control = EdPackage
       EditLabel.AnchorSideBottom.Control = EdPackage
       EditLabel.AnchorSideBottom.Side = asrBottom
-      EditLabel.Left = 61
+      EditLabel.Left = 13
       EditLabel.Height = 13
       EditLabel.Top = 6
       EditLabel.Width = 40
@@ -810,16 +810,16 @@ object VisEditPackage: TVisEditPackage
       OnKeyPress = EdPackageKeyPress
     end
     object EdVersion: TLabeledEdit
-      Left = 52
+      Left = 56
       Height = 21
       Top = 24
-      Width = 80
+      Width = 76
       EditLabel.AnchorSideTop.Control = EdVersion
       EditLabel.AnchorSideTop.Side = asrCenter
       EditLabel.AnchorSideRight.Control = EdVersion
       EditLabel.AnchorSideBottom.Control = EdVersion
       EditLabel.AnchorSideBottom.Side = asrBottom
-      EditLabel.Left = 14
+      EditLabel.Left = 18
       EditLabel.Height = 13
       EditLabel.Top = 28
       EditLabel.Width = 35
@@ -827,7 +827,7 @@ object VisEditPackage: TVisEditPackage
       EditLabel.ParentColor = False
       LabelPosition = lpLeft
       ReadOnly = True
-      TabOrder = 1
+      TabOrder = 2
       Text = ' '
     end
     object Eddescription: TLabeledEdit
@@ -848,7 +848,7 @@ object VisEditPackage: TVisEditPackage
       EditLabel.Caption = 'Description'
       EditLabel.ParentColor = False
       LabelPosition = lpLeft
-      TabOrder = 2
+      TabOrder = 1
       Text = ' '
     end
     object EdSourceDir: TEdit
@@ -857,7 +857,7 @@ object VisEditPackage: TVisEditPackage
       Top = 24
       Width = 369
       Anchors = [akTop, akLeft, akRight]
-      TabOrder = 3
+      TabOrder = 4
       Text = ' '
       Visible = False
     end
@@ -869,14 +869,6 @@ object VisEditPackage: TVisEditPackage
       Caption = 'Source directory'
       ParentColor = False
       Visible = False
-    end
-    object Button3: TBitBtn
-      Left = -1276
-      Height = 25
-      Top = 10
-      Width = 88
-      Caption = 'Button3'
-      TabOrder = 4
     end
     object EdSection: TComboBox
       Left = 188
@@ -893,7 +885,7 @@ object VisEditPackage: TVisEditPackage
         'group'
       )
       OnChange = EdSectionChange
-      TabOrder = 5
+      TabOrder = 3
       Text = 'base'
       Visible = False
     end
@@ -914,7 +906,7 @@ object VisEditPackage: TVisEditPackage
       Anchors = [akRight, akBottom]
       Caption = 'Show debug'
       OnClick = cbShowLogClick
-      TabOrder = 6
+      TabOrder = 5
       Visible = False
     end
   end
@@ -927,7 +919,7 @@ object VisEditPackage: TVisEditPackage
     BevelOuter = bvNone
     ClientHeight = 33
     ClientWidth = 949
-    TabOrder = 4
+    TabOrder = 5
     object ButCancel: TBitBtn
       Left = 869
       Height = 26
@@ -1007,7 +999,7 @@ object VisEditPackage: TVisEditPackage
     BevelOuter = bvNone
     ClientHeight = 417
     ClientWidth = 290
-    TabOrder = 5
+    TabOrder = 2
     object Panel9: TPanel
       Left = 0
       Height = 44

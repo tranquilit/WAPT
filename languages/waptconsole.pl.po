@@ -1,3 +1,6 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
 #: tvisapropos.button1.caption
 msgid "Close"
 msgstr ""
@@ -275,10 +278,6 @@ msgstr ""
 
 #: tviseditpackage.butsave.hint
 msgid "Build and upload the package"
-msgstr ""
-
-#: tviseditpackage.button3.caption
-msgid "Button3"
 msgstr ""
 
 #: tviseditpackage.caption

@@ -67,7 +67,7 @@ object VisWaptGUI: TVisWaptGUI
           Width = 95
           Caption = 'Needs updating'
           OnClick = cbNeedUpgradeClick
-          TabOrder = 2
+          TabOrder = 9
         end
         object cbHasErrors: TCheckBox
           Left = 388
@@ -76,7 +76,7 @@ object VisWaptGUI: TVisWaptGUI
           Width = 70
           Caption = 'Has errors'
           OnClick = cbNeedUpgradeClick
-          TabOrder = 3
+          TabOrder = 2
         end
         object ButHostSearch: TBitBtn
           Left = 204
@@ -228,7 +228,7 @@ object VisWaptGUI: TVisWaptGUI
           OnDropDown = cbGroupsDropDown
           OnSelect = cbGroupsSelect
           Style = csDropDownList
-          TabOrder = 9
+          TabOrder = 3
         end
         object Label15: TLabel
           Left = 496
@@ -652,7 +652,7 @@ object VisWaptGUI: TVisWaptGUI
             Header.Style = hsFlatButtons
             Images = ImageList1
             PopupMenu = PopupHostPackages
-            TabOrder = 0
+            TabOrder = 1
             TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
             TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
             TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
@@ -673,7 +673,7 @@ object VisWaptGUI: TVisWaptGUI
             ClientHeight = 120
             ClientWidth = 564
             Constraints.MaxHeight = 120
-            TabOrder = 1
+            TabOrder = 0
             object Label1: TLabel
               Left = 7
               Height = 13
@@ -1945,7 +1945,7 @@ object VisWaptGUI: TVisWaptGUI
         Header.SortColumn = 1
         Header.Style = hsFlatButtons
         PopupMenu = PopupMenuGroups
-        TabOrder = 0
+        TabOrder = 1
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
@@ -1966,7 +1966,7 @@ object VisWaptGUI: TVisWaptGUI
         BevelOuter = bvNone
         ClientHeight = 30
         ClientWidth = 1269
-        TabOrder = 1
+        TabOrder = 0
         object butSearchGroups: TBitBtn
           Left = 156
           Height = 25
@@ -2009,14 +2009,15 @@ object VisWaptGUI: TVisWaptGUI
             000074757500646465009EA0A100B0B3B500B2B4B600A5A7A8007E7E7F00C5C6
             C8001D1D1D000000000000000000000000000000000000000000
           }
-          TabOrder = 0
+          TabOrder = 1
         end
         object EdSearchGroups: TEdit
           Left = 4
           Height = 21
           Top = 4
           Width = 136
-          TabOrder = 1
+          OnKeyPress = EdSearchGroupsKeyPress
+          TabOrder = 0
         end
         object btAddGroup: TBitBtn
           Left = 276
@@ -2061,6 +2062,50 @@ object VisWaptGUI: TVisWaptGUI
             0000000000000000000000000000000000000000000000000000
           }
           TabOrder = 2
+        end
+        object ButPackagesUpdate1: TBitBtn
+          Left = 468
+          Height = 25
+          Top = 2
+          Width = 224
+          Action = ActPackagesUpdate
+          Glyph.Data = {
+            36040000424D3604000000000000360000002800000010000000100000000100
+            2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF0039864000347E3A00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF004191499C3B8842D2FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF004EA3579066B06EFF61AA68FF3D8B44FF37833EFF327B
+            37FF2C7432EA276D2CB7236627001F612300FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF005BB4658473BD7CFF96D19FFF94CF9CFF8FCD96FF8ACA91FF85C7
+            8BFF7ABE81FF65AD6CFF4B9251FF246829B020632400FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF0060BC6C8A79C483FF9ED7A7FF9BD4A4FF97D29FFF92CF9AFF8DCC
+            95FF88CA90FF7AC282FF7EC485FF5DA463FF266B2AB022652500FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF0062BE6D937BC785FF77C281FF54AB5EFF4EA357FF499B
+            51FF63AC6BFF83C38BFF87C98FFF82C689FF509756FF276D2C00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF0063C06E9F5FBB6AD2FFFFFF00FFFFFF00FFFF
+            FF004B9E538D45964DE186C68EFF88C98FFF6FB376FF2E7633B745964D003F8E
+            460039864000347E3A002E76330067C6730064C27000FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF004DA1558347994FED419149F63B8842F835803CE84DA155E84799
+            4FF8419149F63B8842ED35803C83FFFFFF00FFFFFF00FFFFFF00FFFFFF001E5F
+            21001B5B1E0054AB5E004EA35700499B510043934B003D8B440054AB5EB780C3
+            89FF8DCC95FF83C48AFF3D8B44E137833E8DFFFFFF00FFFFFF00FFFFFF002366
+            27D21F61239FFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF005BB4650075BF
+            7EFF98D2A1FF94CF9CFF86C78DFF5EA765FF398640FF347E3AFF2E7633FF4990
+            4FFF458B4AFF20632493FFFFFF00FFFFFF00FFFFFF00FFFFFF0060BC6C005CB6
+            67B085C98EFF9BD4A4FF8FCE98FF92CF9AFF8DCC95FF88CA90FF83C68BFF7EC4
+            85FF79C17FFF478D4CFF2265258AFFFFFF00FFFFFF00FFFFFF00FFFFFF0062BE
+            6D005EB968B079C383FF89CA92FF94D09CFF95D19EFF90CF99FF8CCB94FF87C9
+            8FFF80C487FF4E9554FF276D2C84FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF0063C06E005FBB6A005BB465B756AD5FEA50A65AFF4B9E53FF45964DFF60A8
+            68FF5BA262FF347E3A90FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF004799
+            4FD24191499CFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF004EA3
+            5700499B5100FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
+          }
+          TabOrder = 3
         end
       end
     end
@@ -2388,7 +2433,7 @@ object VisWaptGUI: TVisWaptGUI
         Width = 296
         Action = ActWSUSDowloadWSUSScan
         Caption = 'Download Updates listing from Microsoft'
-        TabOrder = 0
+        TabOrder = 1
       end
       object BitBtn10: TBitBtn
         Left = 4
@@ -2397,7 +2442,7 @@ object VisWaptGUI: TVisWaptGUI
         Width = 296
         Action = ActWSUSRefreshCabHistory
         Caption = 'Refresh Updates listing retrieval history'
-        TabOrder = 1
+        TabOrder = 0
       end
       object GridWSUSScan: TSOGrid
         Left = 4
@@ -2520,7 +2565,7 @@ object VisWaptGUI: TVisWaptGUI
         Header.Style = hsFlatButtons
         Images = ImageList1
         PopupMenu = PopupGridWSUSScan
-        TabOrder = 2
+        TabOrder = 4
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
@@ -2533,7 +2578,7 @@ object VisWaptGUI: TVisWaptGUI
         Top = 18
         Width = 224
         Caption = 'Force download even if already up to date'
-        TabOrder = 3
+        TabOrder = 2
       end
       object GridWSUSAllowedClassifications: TSOGrid
         Left = 4
@@ -2564,7 +2609,7 @@ object VisWaptGUI: TVisWaptGUI
         Header.SortColumn = 1
         Header.Style = hsFlatButtons
         Images = ImageList1
-        TabOrder = 4
+        TabOrder = 5
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
@@ -2603,7 +2648,7 @@ object VisWaptGUI: TVisWaptGUI
         Width = 288
         Action = ActWUAAddAllowedClassification
         Anchors = [akLeft, akBottom]
-        TabOrder = 5
+        TabOrder = 8
       end
       object GridWSUSAllowedWindowsUpdates: TSOGrid
         Left = 300
@@ -2733,7 +2778,7 @@ object VisWaptGUI: TVisWaptGUI
         Width = 292
         Action = ActWUAAddAllowedUpdate
         Anchors = [akLeft, akBottom]
-        TabOrder = 7
+        TabOrder = 9
       end
       object BitBtn13: TBitBtn
         Left = 872
@@ -2742,7 +2787,7 @@ object VisWaptGUI: TVisWaptGUI
         Width = 300
         Action = ActWUAAddForbiddenUpdate
         Anchors = [akLeft, akBottom]
-        TabOrder = 8
+        TabOrder = 10
       end
       object GridWSUSForbiddenWindowsUpdates: TSOGrid
         Left = 868
@@ -2839,7 +2884,7 @@ object VisWaptGUI: TVisWaptGUI
         Header.Style = hsFlatButtons
         Images = ImageList1
         PopupMenu = PopupWUAUpdates
-        TabOrder = 9
+        TabOrder = 7
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
@@ -2889,7 +2934,7 @@ object VisWaptGUI: TVisWaptGUI
           FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
           FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
         }
-        TabOrder = 10
+        TabOrder = 3
       end
     end
     object pgSources: TTabSheet
@@ -3462,7 +3507,7 @@ object VisWaptGUI: TVisWaptGUI
     Align = alBottom
     ClientHeight = 118
     ClientWidth = 1277
-    TabOrder = 1
+    TabOrder = 2
     Visible = False
     object Panel7: TPanel
       Left = 1

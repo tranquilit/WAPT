@@ -33,7 +33,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Height = 13
     Hint = 'The certificate you just created (.crt key).'
     Top = 20
-    Width = 77
+    Width = 66
     Caption = 'Public key : '
     Font.Style = [fsBold]
     ParentColor = False
@@ -52,7 +52,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Height = 13
     Hint = 'Your WAPT repository address (http://wapt/wapt).'
     Top = 76
-    Width = 186
+    Width = 179
     Caption = 'Main WAPT repository address :'
     Font.Style = [fsBold]
     ParentColor = False
@@ -71,7 +71,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Height = 13
     Hint = 'Your company name.'
     Top = 127
-    Width = 65
+    Width = 68
     Caption = 'Organisation :'
     ParentColor = False
   end
@@ -115,11 +115,12 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Height = 13
     Hint = 'Where waptagent.exe will be saved.'
     Top = 48
-    Width = 194
+    Width = 147
     Caption = 'Save waptagent.exe as...  '
     Font.Style = [fsBold]
     ParentColor = False
     ParentFont = False
+    Visible = False
   end
   object fnWaptDirectory: TDirectoryEdit
     Left = 200
@@ -131,6 +132,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     NumGlyphs = 1
     MaxLength = 0
     TabOrder = 1
+    Visible = False
   end
   object edWaptServerUrl: TEdit
     Left = 200
@@ -145,7 +147,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Height = 13
     Hint = 'Your WAPT server address (http://wapt:8080).'
     Top = 104
-    Width = 152
+    Width = 127
     Caption = 'WAPT server address :'
     Font.Style = [fsBold]
     ParentColor = False

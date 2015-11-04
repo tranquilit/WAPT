@@ -47,6 +47,7 @@ type
     BitBtn15: TBitBtn;
     BitBtn9: TBitBtn;
     ButHostSearch1: TBitBtn;
+    ButPackagesUpdate1: TBitBtn;
     cbForcedWSUSscanDownload: TCheckBox;
     GridWSUSAllowedWindowsUpdates: TSOGrid;
     GridWSUSScan: TSOGrid;
@@ -418,6 +419,7 @@ type
     procedure cbNeedUpgradeClick(Sender: TObject);
     procedure CheckBox_errorChange(Sender: TObject);
     procedure EdRunKeyPress(Sender: TObject; var Key: char);
+    procedure EdSearchGroupsKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchHostKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure EdSoftwaresFilterChange(Sender: TObject);
@@ -633,6 +635,15 @@ procedure TVisWaptGUI.EdRunKeyPress(Sender: TObject; var Key: char);
 begin
   if Key = #13 then
     ActEvaluate.Execute;
+end;
+
+procedure TVisWaptGUI.EdSearchGroupsKeyPress(Sender: TObject; var Key: char);
+begin
+  if key=#13 then
+  begin
+    EdSearchGroups.SelectAll;
+    ActSearchGroups.Execute;
+  end;
 end;
 
 procedure TVisWaptGUI.EdSearchHostKeyPress(Sender: TObject; var Key: char);
@@ -1125,10 +1136,7 @@ begin
     end
     else
     if MainPages.ActivePage = pgPackages then
-    begin
-      ActPackagesUpdate.Execute;
-      ActSearchPackage.Execute;
-    end
+      ActSearchPackage.Execute
     else
     if MainPages.ActivePage = pgGroups then
       ActSearchGroups.Execute;
@@ -1295,7 +1303,7 @@ begin
               On E:Exception do
                 ShowMessage(rsWaptUpgradePackageBuildError+#13#10+E.Message);
             end;
-
+            ActPackagesUpdate.Execute;
             Finish;
             if FileExists(waptsetupPath) then
               try
@@ -1628,7 +1636,6 @@ begin
         ProgressTitle(rsUpdatingPackageList);
         ActPackagesUpdate.Execute;
         ProgressTitle(rsDisplaying);
-        ActSearchPackage.Execute;
       finally
         Free;
       end;
@@ -2071,7 +2078,6 @@ begin
             [soutils.Join(',', Sources)]));
           ModalResult := mrOk;
           ActPackagesUpdate.Execute;
-          ActSearchPackage.Execute;
         end
         else
           ShowMessage(rsFailedImport);
@@ -2088,7 +2094,6 @@ begin
     if ShowModal = mrOk then
     begin
       ActPackagesUpdate.Execute;
-      ActSearchPackage.Execute;
     end;
   end;
 end;

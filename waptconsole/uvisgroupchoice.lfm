@@ -30,7 +30,7 @@ object visGroupChoice: TvisGroupChoice
     CloseButton.Enabled = False
     CancelButton.Name = 'CancelButton'
     CancelButton.DefaultCaption = True
-    TabOrder = 0
+    TabOrder = 2
     DefaultButton = pbHelp
     ShowButtons = [pbOK, pbCancel]
   end
@@ -220,7 +220,7 @@ object visGroupChoice: TvisGroupChoice
     BevelOuter = bvNone
     ClientHeight = 50
     ClientWidth = 705
-    TabOrder = 2
+    TabOrder = 0
     object Label2: TLabel
       Left = 4
       Height = 13
@@ -237,7 +237,7 @@ object visGroupChoice: TvisGroupChoice
       Top = 20
       Width = 136
       OnKeyDown = EdSearchKeyDown
-      TabOrder = 0
+      TabOrder = 2
     end
     object butSearchGroups: TButton
       Left = 146
@@ -245,7 +245,7 @@ object visGroupChoice: TvisGroupChoice
       Top = 18
       Width = 84
       Action = ActSearch
-      TabOrder = 1
+      TabOrder = 3
     end
     object cbGroup: TCheckBox
       Left = 246
@@ -256,7 +256,7 @@ object visGroupChoice: TvisGroupChoice
       Checked = True
       OnClick = cbBaseClick
       State = cbChecked
-      TabOrder = 2
+      TabOrder = 4
     end
     object cbBase: TCheckBox
       Left = 246
@@ -265,7 +265,7 @@ object visGroupChoice: TvisGroupChoice
       Width = 64
       Caption = 'Software'
       OnClick = cbBaseClick
-      TabOrder = 3
+      TabOrder = 0
     end
     object cbrestricted: TCheckBox
       Left = 326
@@ -274,7 +274,7 @@ object visGroupChoice: TvisGroupChoice
       Width = 99
       Caption = 'Restricted install'
       OnClick = cbBaseClick
-      TabOrder = 4
+      TabOrder = 1
     end
   end
   object ActionList1: TActionList

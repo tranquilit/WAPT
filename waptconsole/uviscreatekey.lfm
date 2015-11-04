@@ -25,7 +25,7 @@ object VisCreateKey: TVisCreateKey
     Align = alBottom
     ClientHeight = 27
     ClientWidth = 432
-    TabOrder = 0
+    TabOrder = 1
     object BitBtn1: TBitBtn
       Left = 272
       Height = 23
@@ -59,13 +59,13 @@ object VisCreateKey: TVisCreateKey
     Align = alClient
     ClientHeight = 253
     ClientWidth = 432
-    TabOrder = 1
+    TabOrder = 0
     object Label9: TLabel
       Left = 12
       Height = 13
       Hint = 'E.g. ''tranquilit''. Please don''t use any special characters.'
       Top = 40
-      Width = 77
+      Width = 62
       Caption = 'Key name :'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clBlack
@@ -83,14 +83,14 @@ object VisCreateKey: TVisCreateKey
       Hint = 'e.g. : tranquilit'
       Top = 40
       Width = 176
-      TabOrder = 0
+      TabOrder = 1
     end
     object Label10: TLabel
       Left = 12
       Height = 13
       Hint = 'Main site country code'
       Top = 102
-      Width = 116
+      Width = 139
       Caption = 'Country (2 chars. E.g. : FR):'
       ParentColor = False
       ParentShowHint = False
@@ -100,7 +100,7 @@ object VisCreateKey: TVisCreateKey
       Left = 12
       Height = 13
       Top = 126
-      Width = 22
+      Width = 26
       Caption = 'City :'
       ParentColor = False
     end
@@ -118,7 +118,7 @@ object VisCreateKey: TVisCreateKey
       Height = 13
       Hint = 'E.g. : IT department.'
       Top = 174
-      Width = 39
+      Width = 42
       Caption = 'Service :'
       ParentColor = False
     end
@@ -127,7 +127,7 @@ object VisCreateKey: TVisCreateKey
       Height = 13
       Hint = 'WAPT server name. E.g. : srvwapt.tranquilit.local'
       Top = 198
-      Width = 111
+      Width = 70
       Caption = 'Server FQDN :'
       ParentColor = False
     end
@@ -145,7 +145,7 @@ object VisCreateKey: TVisCreateKey
       Height = 13
       Hint = 'Where to save the private key. This directory must be secure.'
       Top = 16
-      Width = 148
+      Width = 96
       Caption = 'Target directory:'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clBlack
@@ -163,7 +163,7 @@ object VisCreateKey: TVisCreateKey
       Top = 102
       Width = 32
       MaxLength = 2
-      TabOrder = 1
+      TabOrder = 3
       Text = 'FR'
     end
     object edLocality: TEdit
@@ -172,7 +172,7 @@ object VisCreateKey: TVisCreateKey
       Hint = 'E.g. : Nantes'
       Top = 126
       Width = 176
-      TabOrder = 2
+      TabOrder = 4
     end
     object edOrganization: TEdit
       Left = 176
@@ -180,7 +180,7 @@ object VisCreateKey: TVisCreateKey
       Hint = 'E.g. : Tranquil It Systems'
       Top = 150
       Width = 176
-      TabOrder = 3
+      TabOrder = 5
     end
     object edUnit: TEdit
       Left = 176
@@ -188,7 +188,7 @@ object VisCreateKey: TVisCreateKey
       Hint = 'E.g. : IT'
       Top = 174
       Width = 176
-      TabOrder = 4
+      TabOrder = 6
     end
     object edCommonName: TEdit
       Left = 176
@@ -196,7 +196,7 @@ object VisCreateKey: TVisCreateKey
       Hint = 'E.g. : srvwapt.tranquilit.local'
       Top = 198
       Width = 176
-      TabOrder = 5
+      TabOrder = 7
     end
     object edEmail: TEdit
       Left = 176
@@ -204,7 +204,7 @@ object VisCreateKey: TVisCreateKey
       Hint = 'E.g. : technique@tranquil-it-systems.fr'
       Top = 222
       Width = 176
-      TabOrder = 6
+      TabOrder = 8
     end
     object DirectoryCert: TDirectoryEdit
       Left = 176
@@ -216,7 +216,7 @@ object VisCreateKey: TVisCreateKey
       ButtonWidth = 23
       NumGlyphs = 1
       MaxLength = 0
-      TabOrder = 7
+      TabOrder = 0
     end
     object Shape1: TShape
       AnchorSideRight.Side = asrBottom
@@ -231,10 +231,10 @@ object VisCreateKey: TVisCreateKey
       Left = 114
       Height = 14
       Top = 78
-      Width = 203
+      Width = 97
       AutoSize = True
       Caption = 'Optional information'
-      TabOrder = 8
+      TabOrder = 2
     end
   end
 end

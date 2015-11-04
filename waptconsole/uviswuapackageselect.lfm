@@ -28,7 +28,7 @@ object VisWUAPackageSelect: TVisWUAPackageSelect
       Width = 104
       Caption = 'Show all products'
       OnClick = CBWUProductsShowAllClick
-      TabOrder = 0
+      TabOrder = 2
     end
     object Button1: TButton
       Left = 293
@@ -46,7 +46,7 @@ object VisWUAPackageSelect: TVisWUAPackageSelect
       Top = 5
       Width = 104
       Action = ActDefaultFilter
-      TabOrder = 2
+      TabOrder = 0
     end
   end
   object ButtonPanel1: TButtonPanel
@@ -63,7 +63,7 @@ object VisWUAPackageSelect: TVisWUAPackageSelect
     CloseButton.Enabled = False
     CancelButton.Name = 'CancelButton'
     CancelButton.DefaultCaption = True
-    TabOrder = 1
+    TabOrder = 6
     ShowButtons = [pbOK, pbCancel]
   end
   object Panel1: TPanel
@@ -75,7 +75,7 @@ object VisWUAPackageSelect: TVisWUAPackageSelect
     BevelOuter = bvNone
     ClientHeight = 167
     ClientWidth = 1057
-    TabOrder = 2
+    TabOrder = 1
     object GridWinClassifications: TSOGrid
       Left = 0
       Height = 148
@@ -140,7 +140,7 @@ object VisWUAPackageSelect: TVisWUAPackageSelect
       Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
       Header.SortColumn = 0
       Header.Style = hsFlatButtons
-      TabOrder = 1
+      TabOrder = 2
       TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
       TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
       TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
@@ -397,7 +397,7 @@ object VisWUAPackageSelect: TVisWUAPackageSelect
     Align = alRight
     ClientHeight = 240
     ClientWidth = 369
-    TabOrder = 4
+    TabOrder = 5
     object EdDescription: TMemo
       Left = 6
       Height = 161
