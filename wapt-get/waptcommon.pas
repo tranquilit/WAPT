@@ -778,6 +778,7 @@ begin
     if (waptservice_port<=0) and (waptservice_sslport<=0) then
       waptservice_port := 8088;
 
+    Language := '';
     // override lang setting
     for i := 1 to Paramcount - 1 do
       if (ParamStrUTF8(i) = '--LANG') or (ParamStrUTF8(i) = '-l') or

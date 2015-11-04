@@ -2820,11 +2820,11 @@ begin
         cbDebugWindow.Checked:= inifile.ReadBool('global','advanced_mode',False);
 
         lang := inifile.ReadString('Global','language','en');
-        if Language='en' then
+        if lang='en' then
           cbLanguage.ItemIndex:=0
-        else if Language='fr' then
+        else if lang='fr' then
           cbLanguage.ItemIndex:=1
-        else if Language='de' then
+        else if lang='de' then
           cbLanguage.ItemIndex:=2
         else
           cbLanguage.ItemIndex:=0;
@@ -2873,6 +2873,7 @@ begin
   finally
     inifile.Free;
     waptcommon.ReadWaptConfig(AppIniFilename);
+    DMPython.Language:=Language;
   end;
 end;
 

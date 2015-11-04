@@ -58,6 +58,7 @@ object VisWAPTConfig: TVisWAPTConfig
         EditLabel.AnchorSideTop.Control = eddefault_package_prefix
         EditLabel.AnchorSideTop.Side = asrCenter
         EditLabel.AnchorSideRight.Control = eddefault_package_prefix
+        EditLabel.AnchorSideBottom.Control = eddefault_package_prefix
         EditLabel.AnchorSideBottom.Side = asrBottom
         EditLabel.Left = 55
         EditLabel.Height = 13
@@ -101,6 +102,7 @@ object VisWAPTConfig: TVisWAPTConfig
         EditLabel.AnchorSideTop.Control = edtemplates_repo_url
         EditLabel.AnchorSideTop.Side = asrCenter
         EditLabel.AnchorSideRight.Control = edtemplates_repo_url
+        EditLabel.AnchorSideBottom.Control = edtemplates_repo_url
         EditLabel.AnchorSideBottom.Side = asrBottom
         EditLabel.Left = 18
         EditLabel.Height = 13
@@ -121,6 +123,7 @@ object VisWAPTConfig: TVisWAPTConfig
         EditLabel.AnchorSideTop.Control = edhttp_proxy
         EditLabel.AnchorSideTop.Side = asrCenter
         EditLabel.AnchorSideRight.Control = edhttp_proxy
+        EditLabel.AnchorSideBottom.Control = edhttp_proxy
         EditLabel.AnchorSideBottom.Side = asrBottom
         EditLabel.Left = 21
         EditLabel.Height = 13
@@ -135,7 +138,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Left = 164
         Height = 17
         Hint = 'Activate proxy when accessing the model repository'
-        Top = 234
+        Top = 232
         Width = 20
         Checked = True
         OnClick = cbUseProxyForTemplateClick
@@ -146,7 +149,7 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideRight.Control = cbUseProxyForTemplate
         Left = -106
         Height = 13
-        Top = 234
+        Top = 232
         Width = 267
         Alignment = taRightJustify
         Anchors = [akTop, akLeft, akRight]
@@ -163,6 +166,7 @@ object VisWAPTConfig: TVisWAPTConfig
         EditLabel.AnchorSideTop.Control = edServerAddress
         EditLabel.AnchorSideTop.Side = asrCenter
         EditLabel.AnchorSideRight.Control = edServerAddress
+        EditLabel.AnchorSideBottom.Control = edServerAddress
         EditLabel.AnchorSideBottom.Side = asrBottom
         EditLabel.Left = 16
         EditLabel.Height = 13
@@ -211,6 +215,7 @@ object VisWAPTConfig: TVisWAPTConfig
         EditLabel.AnchorSideTop.Control = edrepo_url
         EditLabel.AnchorSideTop.Side = asrCenter
         EditLabel.AnchorSideRight.Control = edrepo_url
+        EditLabel.AnchorSideBottom.Control = edrepo_url
         EditLabel.AnchorSideBottom.Side = asrBottom
         EditLabel.Left = 35
         EditLabel.Height = 13
@@ -232,6 +237,7 @@ object VisWAPTConfig: TVisWAPTConfig
         EditLabel.AnchorSideTop.Control = edwapt_server
         EditLabel.AnchorSideTop.Side = asrCenter
         EditLabel.AnchorSideRight.Control = edwapt_server
+        EditLabel.AnchorSideBottom.Control = edwapt_server
         EditLabel.AnchorSideBottom.Side = asrBottom
         EditLabel.Left = 57
         EditLabel.Height = 13
@@ -285,7 +291,7 @@ object VisWAPTConfig: TVisWAPTConfig
       object Label1: TLabel
         Left = 36
         Height = 13
-        Top = 42
+        Top = 44
         Width = 266
         Alignment = taRightJustify
         AutoSize = False
@@ -293,7 +299,7 @@ object VisWAPTConfig: TVisWAPTConfig
         ParentColor = False
       end
       object cbLanguage: TComboBox
-        Left = 308
+        Left = 307
         Height = 21
         Top = 18
         Width = 100
@@ -304,13 +310,14 @@ object VisWAPTConfig: TVisWAPTConfig
           'French'
           'German'
         )
+        Style = csDropDownList
         TabOrder = 0
         Text = 'English'
       end
       object Label3: TLabel
         Left = 252
         Height = 13
-        Top = 18
+        Top = 21
         Width = 47
         Alignment = taRightJustify
         Caption = 'Language'
