@@ -3614,7 +3614,7 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'packages'
       Caption = 'Edit package'
       ImageIndex = 18
-      OnExecute = ActPackageEdit
+      OnExecute = ActEditpackageExecute
       OnUpdate = ActEditpackageUpdate
     end
     object ActLocalhostUpgrade: TAction

@@ -62,6 +62,7 @@ resourcestring
 
   rsConfirmHostForgetsPackages = 'Are you sure you want to forget %s packages from host %s ?';
   rsForgetPackageError = 'Error while forgetting package %s: %s';
+  rsConfirmPackageEdit = 'Do you want to download and edit the package %s ?';
 
   rsPrivateKeyDoesntExist = 'Private key doesn''t exist : %s';
 

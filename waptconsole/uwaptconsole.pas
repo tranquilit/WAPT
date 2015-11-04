@@ -384,7 +384,7 @@ type
     procedure ActTriggerHostUpgradeExecute(Sender: TObject);
     procedure ActTriggerHostUpgradeUpdate(Sender: TObject);
     procedure ActHostWaptUpgradeExecute(Sender: TObject);
-    procedure ActPackageEdit(Sender: TObject);
+    procedure ActEditPackageExecute(Sender: TObject);
     procedure ActEditpackageUpdate(Sender: TObject);
     procedure ActEvaluateExecute(Sender: TObject);
     procedure ActExecCodeExecute(Sender: TObject);
@@ -1137,7 +1137,7 @@ begin
   end;
 end;
 
-procedure TVisWaptGUI.ActPackageEdit(Sender: TObject);
+procedure TVisWaptGUI.ActEditPackageExecute(Sender: TObject);
 var
   Selpackage,DevPath: string;
   res: ISuperObject;
@@ -3362,7 +3362,8 @@ end;
 procedure TVisWaptGUI.GridPackagesColumnDblClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
 begin
-  ActEditpackage.Execute;
+  if ActEditpackage.Enabled and (MessageDlg(rsConfirmCaption, Format(rsConfirmPackageEdit,[GridPackages.FocusedRow.S['package']]),mtConfirmation,mbYesNoCancel ,'') = mrYes) then
+    ActEditpackage.Execute;
 end;
 
 procedure TVisWaptGUI.PythonOutputSendData(Sender: TObject; const Data: ansistring);
