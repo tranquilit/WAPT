@@ -3122,6 +3122,18 @@ class Wapt(object):
                 # get uninstallkey from setup module (string or array of strings)
                 if hasattr(setup,'uninstallkey'):
                     new_uninstall_key = setup.uninstallkey
+                    # check that uninstallkey(s) are in registry
+                    if not self.dry_run:
+                        key_errors = []
+                        for key in new_uninstall_key:
+                            if not setuphelpers.uninstall_key_exists(uninstallkey=key):
+                                key_errors.append(key)
+                        if key_errors:
+                            if len(key_errors)>1:
+                                raise Exception(u'The uninstall keys: \n%s\n have not been found in system registry after softwares installation.' % ('\n'.join(key_errors),))
+                            else:
+                                raise Exception(u'The uninstall key: %s has not been found in system registry after software installation.' % (' '.join(key_errors),))
+
                 else:
                     new_uninstall = self.registry_uninstall_snapshot()
                     new_uninstall_key = [ k for k in new_uninstall if not k in previous_uninstall]

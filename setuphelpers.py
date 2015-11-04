@@ -174,6 +174,7 @@ __all__ = \
  'uninstall_cmd',
  'unregister_dll',
  'unregister_uninstall',
+ 'uninstall_key_exists',
  'unset_environ_variable',
  'user_appdata',
  'user_desktop',
@@ -2002,6 +2003,26 @@ def uninstall_cmd(guid):
             return get_fromkey("Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
         else:
             raise
+
+def uninstall_key_exists(uninstallkey):
+    """Check if the uninstalley is present in win32 / win54 registry
+    """
+    result = []
+    try:
+        with reg_openkey_noredir(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s" % uninstallkey.encode(locale.getpreferredencoding())) as key:
+            pass
+        return True
+    except:
+        return False
+
+    if platform.machine() == 'AMD64':
+        try:
+            with reg_openkey_noredir(HKEY_LOCAL_MACHINE,"Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s" % uninstallkey.encode(locale.getpreferredencoding())) as key:
+                pass
+            return True
+        except:
+            return False
+    return False
 
 
 def installed_softwares(keywords='',uninstallkey=None):
