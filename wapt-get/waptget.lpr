@@ -236,8 +236,6 @@ begin
 
   if (action = 'waptupgrade') then
   begin
-    if RepoURL='' then
-      RepoURL:=GetMainWaptRepo;
     Writeln(format(rsWaptGetUpgrade, [RepoURL]));
     UpdateApplication(RepoURL+'/waptagent.exe','waptagent.exe','/VERYSILENT','wapt-get.exe','');
     Terminate;
@@ -248,9 +246,7 @@ begin
   begin
     WriteLn(format(rsDNSserver, [Join(',',GetDNSServers)]));
     WriteLn(format(rsDNSdomain, [GetDNSDomain]));
-    repourl := GetMainWaptRepo;
     Writeln(utf8decode(format(rsMainRepoURL, [RepoURL])));
-
     Writeln(format(rsSRV, [DNSSRVQuery('_wapt._tcp.'+GetDNSDomain).AsJSon(True)]));
     Writeln(format(rsCNAME, [DNSCNAMEQuery('wapt.'+GetDNSDomain).AsJSon(True)]));
     Terminate;
