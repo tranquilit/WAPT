@@ -116,6 +116,8 @@ const
   Language:String = '';
   FallBackLanguage:String = '';
 
+  AdvancedMode:Boolean = False;
+
   WAPTServerMinVersion='1.3.3';
 
 implementation
@@ -801,6 +803,9 @@ begin
     UseProxyForRepo := IniReadBool(inifile,'global','use_http_proxy_for_repo',False);
     UseProxyForServer := IniReadBool(inifile,'global','use_http_proxy_for_server',False);
     UseProxyForTemplates := IniReadBool(inifile,'global','use_http_proxy_for_templates',False);
+
+    AdvancedMode := IniReadBool(inifile,'global','advanced_mode',False);
+
     Result := True
   end;
 end;

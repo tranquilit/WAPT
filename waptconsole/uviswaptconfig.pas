@@ -47,7 +47,6 @@ type
     labStatusRepo: TLabel;
     labStatusServer: TLabel;
     PageControl1: TPageControl;
-    panClient: TPanel;
     pgBase: TTabSheet;
     pgAdvanced: TTabSheet;
     Timer1: TTimer;
@@ -125,7 +124,7 @@ procedure TVisWAPTConfig.edrepo_urlExit(Sender: TObject);
 var
   servername1,servername2:String;
 begin
-{  with TIdURI.Create(edrepo_url.Text) do
+  with TIdURI.Create(edrepo_url.Text) do
   try
     servername1:=Host;
   finally
@@ -146,7 +145,7 @@ begin
   begin
     edServerAddress.Text:='';
     edServerAddress.Font.Color := clInactiveCaptionText;
-  end;}
+  end;
 end;
 
 function TVisWAPTConfig.CheckServer(Address:String):Boolean;
@@ -216,7 +215,7 @@ end;
 
 procedure TVisWAPTConfig.edServerAddressChange(Sender: TObject);
 begin
-  cbManual.Checked:=False;
+  //cbManual.Checked:=False;
   labStatusRepo.Caption := '';
   labStatusServer.Caption := '';
   ImageList1.GetBitmap(2, ImgStatusRepo.Picture.Bitmap);

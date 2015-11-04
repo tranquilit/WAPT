@@ -108,7 +108,6 @@ type
     ActHostsAddPackages: TAction;
     ActHostsDelete: TAction;
     ActDeletePackage: TAction;
-    ActAdvancedMode: TAction;
     ActChangePassword: TAction;
     ActGotoHost: TAction;
     ActHostWaptUpgrade: TAction;
@@ -330,7 +329,6 @@ type
     procedure ActAddADSGroupsExecute(Sender: TObject);
     procedure ActAddConflictsExecute(Sender: TObject);
     procedure ActAddPackageGroupExecute(Sender: TObject);
-    procedure ActAdvancedModeExecute(Sender: TObject);
     procedure ActCancelRunningTaskExecute(Sender: TObject);
     procedure ActChangePasswordExecute(Sender: TObject);
     procedure ActCleanCacheExecute(Sender: TObject);
@@ -1102,7 +1100,7 @@ procedure TVisWaptGUI.ActAddGroupExecute(Sender: TObject);
 begin
   if IniReadString(AppIniFilename,'Global','default_sources_root')<>'' then
   begin
-    CreateGroup('agroup', ActAdvancedMode.Checked);
+    CreateGroup('agroup', AdvancedMode);
     ActPackagesUpdate.Execute;
   end
   else
@@ -1482,13 +1480,6 @@ begin
 
     ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
   end;
-end;
-
-procedure TVisWaptGUI.ActAdvancedModeExecute(Sender: TObject);
-begin
-  ActAdvancedMode.Checked := not ActAdvancedMode.Checked;
-  pgSources.TabVisible := ActAdvancedMode.Checked;
-  PanDebug.Visible := ActAdvancedMode.Checked;
 end;
 
 procedure TVisWaptGUI.ActCancelRunningTaskExecute(Sender: TObject);
@@ -1939,7 +1930,7 @@ begin
   begin
     N := GridGroups.GetFirstSelected;
     Selpackage := GridGroups.GetCellStrValue(N, 'package');
-    if EditGroup(Selpackage, ActAdvancedMode.Checked) <> nil then
+    if EditGroup(Selpackage, AdvancedMode) <> nil then
       ActPackagesUpdate.Execute;
   end;
 end;
@@ -1954,7 +1945,7 @@ begin
     uuid := GridHosts.FocusedRow.S['uuid'];
     desc := GridHosts.FocusedRow.S['host.description'];
 
-    if EditHost(hostname, ActAdvancedMode.Checked, uuid,UTF8Encode(desc)) <> nil then
+    if EditHost(hostname, AdvancedMode, uuid,UTF8Encode(desc)) <> nil then
       ActSearchHost.Execute;
   end;
 end;
@@ -2708,6 +2699,9 @@ begin
   dmpython.WaptConfigFileName:='';
   waptcommon.ReadWaptConfig(AppIniFilename);
   dmpython.WaptConfigFileName:=AppIniFilename;
+  pgSources.TabVisible := AdvancedMode;
+  PanDebug.Visible := AdvancedMode;
+
 end;
 
 procedure TVisWaptGUI.ActTriggerHostsListeningExecute(Sender: TObject);
@@ -2823,7 +2817,7 @@ begin
         //eddefault_sources_root.Directory := inifile.ReadString('global','default_sources_root','');
         //eddefault_sources_url.text = inifile.ReadString('global','default_sources_url','https://srvdev/sources/%(packagename)s-wapt/trunk');
 
-        cbDebugWindow.Checked:=ActAdvancedMode.Checked;
+        cbDebugWindow.Checked:= inifile.ReadBool('global','advanced_mode',False);
 
         lang := inifile.ReadString('Global','language','en');
         if Language='en' then
@@ -2866,6 +2860,10 @@ begin
             inifile.WriteString('Global','language','de')
           else
             inifile.WriteString('Global','language','');
+
+          inifile.WriteBool('global', 'advanced_mode',
+            cbDebugWindow.Checked);
+
           Result := True;
         end;
       finally

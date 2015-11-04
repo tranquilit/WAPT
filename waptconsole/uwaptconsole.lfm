@@ -3685,10 +3685,6 @@ object VisWaptGUI: TVisWaptGUI
       OnUpdate = ActDeletePackageUpdate
       ShortCut = 46
     end
-    object ActAdvancedMode: TAction
-      Caption = 'Advanced mode'
-      OnExecute = ActAdvancedModeExecute
-    end
     object ActAddGroup: TAction
       Category = 'Bundles'
       Caption = 'New bundle'
