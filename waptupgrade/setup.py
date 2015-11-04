@@ -234,7 +234,7 @@ def install():
     if installed_wapt:
         wapt_version = Version(installed_wapt[0]['version'].replace('WAPT ',''))
     else:
-        wapt_version = Version('0.0.0-0')
+        error('WAPT current version can not be found in registry (key is "WAPT_is1"), aborting...')
     if wapt_version > Version(control.version):
         print('Your current wapt (%s) is more recent than the upgrade package (%s). Skipping...'%(wapt_version,control.version))
     elif wapt_version.members[0:3] < Version(control.version).members[0:3]:
