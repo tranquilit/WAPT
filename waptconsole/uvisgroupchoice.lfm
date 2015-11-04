@@ -209,6 +209,7 @@ object visGroupChoice: TvisGroupChoice
     TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toFullRowSelect]
     WantTabs = True
+    ZebraPaint = True
   end
   object Panel1: TPanel
     Left = 0
@@ -224,7 +225,7 @@ object visGroupChoice: TvisGroupChoice
       Left = 4
       Height = 13
       Top = 4
-      Width = 104
+      Width = 101
       Caption = 'Available packages : '
       ParentColor = False
     end
@@ -250,7 +251,7 @@ object visGroupChoice: TvisGroupChoice
       Left = 246
       Height = 17
       Top = 24
-      Width = 60
+      Width = 100
       Caption = 'Package bundles'
       Checked = True
       OnClick = cbBaseClick
@@ -261,7 +262,7 @@ object visGroupChoice: TvisGroupChoice
       Left = 246
       Height = 17
       Top = 8
-      Width = 59
+      Width = 64
       Caption = 'Software'
       OnClick = cbBaseClick
       TabOrder = 3
@@ -270,7 +271,7 @@ object visGroupChoice: TvisGroupChoice
       Left = 326
       Height = 17
       Top = 8
-      Width = 123
+      Width = 99
       Caption = 'Restricted install'
       OnClick = cbBaseClick
       TabOrder = 4

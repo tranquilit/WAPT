@@ -85,6 +85,7 @@ object VisEditPackage: TVisEditPackage
         WantTabs = True
         OnDragOver = GridDependsDragOver
         OnDragDrop = GridDependsDragDrop
+        ZebraPaint = True
       end
       object Splitter3: TSplitter
         Left = 646
@@ -98,12 +99,12 @@ object VisEditPackage: TVisEditPackage
     object pgConflicts: TTabSheet
       Caption = 'Blocked package'
       ClientHeight = 391
-      ClientWidth = 502
+      ClientWidth = 651
       object GridConflicts: TSOGrid
         Left = 0
         Height = 391
         Top = 0
-        Width = 502
+        Width = 651
         Align = alClient
         Color = clWhite
         Header.AutoSizeIndex = -1
@@ -149,6 +150,7 @@ object VisEditPackage: TVisEditPackage
         WantTabs = True
         OnDragOver = GridDependsDragOver
         OnDragDrop = GridConflictsDragDrop
+        ZebraPaint = True
       end
     end
     object pgDevelop: TTabSheet
@@ -1153,6 +1155,7 @@ object VisEditPackage: TVisEditPackage
       TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
       TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect]
       WantTabs = True
+      ZebraPaint = True
     end
     object Panel3: TPanel
       Left = 0

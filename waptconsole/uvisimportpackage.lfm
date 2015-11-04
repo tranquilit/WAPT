@@ -149,6 +149,7 @@ object VisImportPackage: TVisImportPackage
     TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
     WantTabs = True
     OnDblClick = ActPackageDuplicateExecute
+    ZebraPaint = True
   end
   object Panel8: TPanel
     Left = 0

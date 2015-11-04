@@ -447,6 +447,7 @@ object VisWaptGUI: TVisWaptGUI
         OnEditing = GridHostsEditing
         OnGetImageIndexEx = GridHostsGetImageIndexEx
         OnHeaderDblClick = GridHostsHeaderDblClick
+        ZebraPaint = True
       end
       object HostPages: TPageControl
         Left = 697
@@ -659,6 +660,7 @@ object VisWaptGUI: TVisWaptGUI
             WantTabs = True
             OnChange = GridHostPackagesChange
             OnGetImageIndexEx = GridHostPackagesGetImageIndexEx
+            ZebraPaint = True
           end
           object Panel9: TPanel
             AnchorSideBottom.Control = GridHostPackages
@@ -876,11 +878,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostInventory: TTabSheet
           Caption = 'Hardware inventory'
-          ClientHeight = 545
+          ClientHeight = 543
           ClientWidth = 564
           object GridhostInventory: TVirtualJSONInspector
             Left = 0
-            Height = 545
+            Height = 543
             Top = 0
             Width = 564
             PropertyDefs = <>
@@ -912,11 +914,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgSoftwares: TTabSheet
           Caption = 'Software inventory'
-          ClientHeight = 545
+          ClientHeight = 543
           ClientWidth = 564
           object GridHostSoftwares: TSOGrid
             Left = 0
-            Height = 515
+            Height = 513
             Top = 30
             Width = 564
             Align = alClient
@@ -991,6 +993,7 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
             TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect]
             WantTabs = True
+            ZebraPaint = True
           end
           object Panel12: TPanel
             Left = 0
@@ -1033,13 +1036,13 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostWUA: TTabSheet
           Caption = 'Windows updates'
-          ClientHeight = 545
+          ClientHeight = 543
           ClientWidth = 564
           object GridHostWinUpdates: TSOGrid
             AnchorSideTop.Control = Panel9
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 519
+            Height = 517
             Top = 26
             Width = 564
             OnGetText = GridHostWinUpdatesGetText
@@ -1122,6 +1125,7 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
             WantTabs = True
             OnGetImageIndexEx = GridHostWinUpdatesGetImageIndexEx
+            ZebraPaint = True
           end
           object cbWUACriticalOnly: TCheckBox
             Left = 7
@@ -1164,7 +1168,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgTasks: TTabSheet
           Caption = 'Tasks'
-          ClientHeight = 470
+          ClientHeight = 543
           ClientWidth = 564
           object HostTaskRunningProgress: TProgressBar
             Left = 4
@@ -1238,14 +1242,14 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 5
-            Top = 415
+            Top = 488
             Width = 564
             Align = alBottom
             ResizeAnchor = akBottom
           end
           object PageControl1: TPageControl
             Left = 0
-            Height = 313
+            Height = 386
             Top = 102
             Width = 564
             ActivePage = TabSheet1
@@ -1255,11 +1259,11 @@ object VisWaptGUI: TVisWaptGUI
             TabOrder = 3
             object TabSheet1: TTabSheet
               Caption = 'Pending'
-              ClientHeight = 287
+              ClientHeight = 360
               ClientWidth = 556
               object GridHostTasksPending: TSOGrid
                 Left = 0
-                Height = 285
+                Height = 358
                 Top = 2
                 Width = 556
                 Align = alClient
@@ -1385,15 +1389,16 @@ object VisWaptGUI: TVisWaptGUI
                 WantTabs = True
                 OnChange = GridHostTasksPendingChange
                 OnGetImageIndexEx = GridHostPackagesGetImageIndexEx
+                ZebraPaint = True
               end
             end
             object TabSheet2: TTabSheet
               Caption = 'Done'
-              ClientHeight = 187
+              ClientHeight = 360
               ClientWidth = 556
               object GridHostTasksDone: TSOGrid
                 Left = 0
-                Height = 185
+                Height = 358
                 Top = 2
                 Width = 556
                 Align = alClient
@@ -1518,15 +1523,16 @@ object VisWaptGUI: TVisWaptGUI
                 WantTabs = True
                 OnChange = GridHostTasksPendingChange
                 OnGetImageIndexEx = GridHostPackagesGetImageIndexEx
+                ZebraPaint = True
               end
             end
             object TabSheet3: TTabSheet
               Caption = 'Errors'
-              ClientHeight = 187
+              ClientHeight = 360
               ClientWidth = 556
               object GridHostTasksErrors: TSOGrid
                 Left = 0
-                Height = 185
+                Height = 358
                 Top = 2
                 Width = 556
                 Align = alClient
@@ -1650,13 +1656,14 @@ object VisWaptGUI: TVisWaptGUI
                 WantTabs = True
                 OnChange = GridHostTasksPendingChange
                 OnGetImageIndexEx = GridHostPackagesGetImageIndexEx
+                ZebraPaint = True
               end
             end
           end
           object Panel6: TPanel
             Left = 0
             Height = 50
-            Top = 420
+            Top = 493
             Width = 564
             Align = alBottom
             BevelOuter = bvNone
@@ -1948,6 +1955,7 @@ object VisWaptGUI: TVisWaptGUI
         OnPaintText = GridPackagesPaintText
         OnInitNode = GridGroupsInitNode
         OnMeasureItem = GridGroupsMeasureItem
+        ZebraPaint = True
       end
       object Panel11: TPanel
         Left = 0
@@ -2143,6 +2151,7 @@ object VisWaptGUI: TVisWaptGUI
         OnPaintText = GridPackagesPaintText
         OnInitNode = GridGroupsInitNode
         OnMeasureItem = GridGroupsMeasureItem
+        ZebraPaint = True
       end
       object Splitter3: TSplitter
         Left = 973

@@ -72,6 +72,7 @@ object VisHostsUpgrade: TVisHostsUpgrade
     OnGetImageIndexEx = ProgressGridGetImageIndexEx
     OnInitNode = ProgressGridInitNode
     OnMeasureItem = ProgressGridMeasureItem
+    ZebraPaint = True
   end
   object Panel4: TPanel
     Left = 0
