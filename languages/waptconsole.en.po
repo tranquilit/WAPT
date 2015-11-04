@@ -1,94 +1,3 @@
-msgid ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-20 12:23+0200\n"
-"PO-Revision-Date: 2015-02-20 12:23+0200\n"
-"Last-Translator: htouvet <htouvet@tranquil.it>\n"
-"Language-Team: TranquilITSystems\n"
-"Language: fr\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Virtaal 0.7.1\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Only required if a proxy is needed.\n"
-"Only required if a proxy is needed.\n"
-"Only required if a proxy is needed.\n"
-"Only required if a proxy is needed.\n"
-"Only required if a proxy is needed.\n"
-"Only required if a proxy is needed.\n"
-"Only required if a proxy is needed.\n"
-"Only required if a proxy is needed.\n"
-"Only required if a proxy is needed.\n"
-"Only required if a proxy is needed.\n"
-"Only required if a proxy is needed.\n"
-"Only required if a proxy is needed.\n"
-"Only required if a proxy is needed.\n"
-"Only required if a proxy is needed.\n"
-"Only required if a proxy is needed.\n"
-"Only required if a proxy is needed.\n"
-"Leave empty for auto DNS discovery\n"
-"Leave empty for auto DNS discovery\n"
-"Leave empty for auto DNS discovery\n"
-"Leave empty for auto DNS discovery\n"
-"Leave empty for auto DNS discovery\n"
-"Leave empty for auto DNS discovery\n"
-"Leave empty for auto DNS discovery\n"
-"Leave empty for auto DNS discovery\n"
-"Leave empty for auto DNS discovery\n"
-"Leave empty for auto DNS discovery\n"
-"Leave empty for auto DNS discovery\n"
-"Leave empty for auto DNS discovery\n"
-"Leave empty for auto DNS discovery\n"
-"Leave empty for auto DNS discovery\n"
-"Leave empty for auto DNS discovery\n"
-"Leave empty for auto DNS discovery\n"
-"Leave empty for auto DNS discovery\n"
-"Leave empty for auto DNS discovery\n"
-"Leave empty for auto DNS discovery\n"
-"Leave empty for auto DNS discovery\n"
-"Leave empty for auto DNS discovery\n"
-"Leave empty for auto DNS discovery\n"
-msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-20 12:23+0200\n"
-"PO-Revision-Date: 2015-02-20 12:23+0200\n"
-"Last-Translator: htouvet <htouvet@tranquil.it>\n"
-"Language-Team: TranquilITSystems\n"
-"Language: fr\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Virtaal 0.7.1\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-
-#: asynccalls.rsasynccallnotfinished
-msgid "The asynchronous call is not finished yet"
-msgstr ""
-
-#: asynccalls.rsasynccallunknownvarrectype
-msgid "Unknown TVarRec type %d"
-msgstr ""
-
-#: asynccalls.rsforgetwascalled
-msgid "IAsyncCall.Forget was called. The interface isn't connected to the asynchronous call anymore"
-msgstr ""
-
-#: asynccalls.rsleavemainthreadnestederror
-msgid "Unpaired call to AsyncCalls.LeaveMainThread()"
-msgstr ""
-
-#: asynccalls.rsleavemainthreadthreaderror
-msgid "AsyncCalls.LeaveMainThread() was called outside of the main thread"
-msgstr ""
-
-#: asynccalls.rsnovclsyncpossible
-msgid "Cannot synchronize with the main thread anymore. Don't call IAsyncCall.Forget for functions that access the VCL"
-msgstr ""
-
 #: tvisapropos.button1.caption
 msgid "Close"
 msgstr ""
@@ -558,16 +467,18 @@ msgstr ""
 msgid "edWaptServerName"
 msgstr ""
 
-#: tvislogin.label1.caption
-msgid "Connect to server :"
+#: tvislogin.labserver.caption
+msgctxt "tvislogin.labserver.caption"
+msgid "Server"
+msgstr ""
+
+#: tvislogin.labuser.caption
+msgctxt "tvislogin.labuser.caption"
+msgid "User"
 msgstr ""
 
 #: tvislogin.lapassword.caption
-msgid "Server password :"
-msgstr ""
-
-#: tvislogin.lapassword1.caption
-msgid "Server user :"
+msgid "Password"
 msgstr ""
 
 #: tvisprivatekeyauth.caption
@@ -602,8 +513,18 @@ msgstr ""
 msgid "Locale WAPT configuration"
 msgstr ""
 
-#: tviswaptconfig.cbadvanced.caption
-msgid "Advanced settings"
+#: tviswaptconfig.cbdebugwindow.hint
+msgctxt "tviswaptconfig.cbdebugwindow.hint"
+msgid "Activates proxy when accessing the main repository"
+msgstr ""
+
+#: tviswaptconfig.cblanguage.text
+msgctxt "tviswaptconfig.cblanguage.text"
+msgid "English"
+msgstr ""
+
+#: tviswaptconfig.cbmanual.caption
+msgid "Manual overrride"
 msgstr ""
 
 #: tviswaptconfig.cbuseproxyforrepo.hint
@@ -622,7 +543,7 @@ msgid "Activate proxy when accessing the model repository"
 msgstr ""
 
 #: tviswaptconfig.eddefault_package_prefix.editlabel.caption
-msgid "Prefix for naming created WAPT packages"
+msgid "WAPT packages prefix"
 msgstr ""
 
 #: tviswaptconfig.eddefault_package_prefix.hint
@@ -662,7 +583,7 @@ msgid "E.g. : wapt.tranquilit.local"
 msgstr ""
 
 #: tviswaptconfig.edtemplates_repo_url.editlabel.caption
-msgid "URL to the package model repository "
+msgid "External packages repository "
 msgstr ""
 
 #: tviswaptconfig.edtemplates_repo_url.hint
@@ -686,11 +607,11 @@ msgid "Base directory for package development"
 msgstr ""
 
 #: tviswaptconfig.label2.caption
-msgid "Path to private key for signing packages"
+msgid "Path to private key"
 msgstr ""
 
 #: tviswaptconfig.label3.caption
-msgid "For package development :"
+msgid "Language"
 msgstr ""
 
 #: tviswaptconfig.label4.caption
@@ -705,19 +626,33 @@ msgstr ""
 
 #: tviswaptconfig.label6.caption
 msgctxt "tviswaptconfig.label6.caption"
-msgid "Activate proxy when accessing the model repository"
+msgid "Proxy for external repository"
 msgstr ""
 
 #: tviswaptconfig.label7.caption
-msgid "HTTP proxy settings"
+msgid "Show advanced informations"
 msgstr ""
 
 #: tviswaptconfig.label8.caption
 msgid "Send anonymous usage statistics to Tranquil IT"
 msgstr ""
 
-#: tviswaptconfig.panclient.caption
-msgid "panClient"
+#: tviswaptconfig.labstatusrepo.caption
+msgctxt "tviswaptconfig.labstatusrepo.caption"
+msgid "Status"
+msgstr ""
+
+#: tviswaptconfig.labstatusserver.caption
+msgctxt "tviswaptconfig.labstatusserver.caption"
+msgid "Status"
+msgstr ""
+
+#: tviswaptconfig.pgadvanced.caption
+msgid "Advanced"
+msgstr ""
+
+#: tviswaptconfig.pgbase.caption
+msgid "Base"
 msgstr ""
 
 #: tviswaptdeploy.actdeploywapt.caption
@@ -783,11 +718,6 @@ msgstr ""
 #: tviswaptgui.actaddpackagegroup.caption
 msgctxt "tviswaptgui.actaddpackagegroup.caption"
 msgid "Add package or bundle"
-msgstr ""
-
-#: tviswaptgui.actadvancedmode.caption
-msgctxt "tviswaptgui.actadvancedmode.caption"
-msgid "Advanced mode"
 msgstr ""
 
 #: tviswaptgui.actbuildupload.caption
@@ -1006,7 +936,7 @@ msgstr ""
 
 #: tviswaptgui.actreloadconfig.caption
 msgctxt "tviswaptgui.actreloadconfig.caption"
-msgid "Reload wapt-get.ini"
+msgid "Reload preferences"
 msgstr ""
 
 #: tviswaptgui.actremoveconflicts.caption
@@ -1105,7 +1035,7 @@ msgstr ""
 
 #: tviswaptgui.actwaptlocalconfig.caption
 msgctxt "tviswaptgui.actwaptlocalconfig.caption"
-msgid "Local WAPT configuration"
+msgid "Preferences"
 msgstr ""
 
 #: tviswaptgui.actwsusdowloadwsusscan.caption
@@ -1350,6 +1280,7 @@ msgid "Model"
 msgstr ""
 
 #: tviswaptgui.label4.caption
+msgctxt "tviswaptgui.label4.caption"
 msgid "User"
 msgstr ""
 
@@ -1407,7 +1338,8 @@ msgid "&Tools"
 msgstr ""
 
 #: tviswaptgui.menuitem17.caption
-msgid "Language"
+msgctxt "tviswaptgui.menuitem17.caption"
+msgid "-"
 msgstr ""
 
 #: tviswaptgui.menuitem24.caption
@@ -2212,6 +2144,10 @@ msgctxt "uwaptconsoleres.rsconfirmimportcaption"
 msgid "Confirm import"
 msgstr ""
 
+#: uwaptconsoleres.rsconfirmpackageedit
+msgid "Do you want to download and edit the package %s ?"
+msgstr ""
+
 #: uwaptconsoleres.rsconfirmpackageinstall
 msgid "Are you sure you want to install/upgrade %s package(s) for the selected host(s) %s ?"
 msgstr ""
@@ -2635,6 +2571,10 @@ msgstr ""
 
 #: uwaptconsoleres.rstriggerhostsupgrade
 msgid "Trigger installed packages upgrade on the hosts"
+msgstr ""
+
+#: uwaptconsoleres.rstriggerwakeonlan
+msgid "Send a WakeOnlan packet to hosts"
 msgstr ""
 
 #: uwaptconsoleres.rstriggerwaptwua_download
