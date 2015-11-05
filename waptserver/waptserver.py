@@ -496,6 +496,7 @@ def upload_host():
 @requires_auth
 def upload_waptsetup():
     waptagent = os.path.join(conf['wapt_folder'], 'waptagent.exe')
+    waptsetup = os.path.join(conf['wapt_folder'], 'waptsetup-tis.exe')
 
     logger.debug("Entering upload_waptsetup")
     tmp_target = None
