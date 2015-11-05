@@ -355,6 +355,16 @@ def ssl_cert_cn(public_cert):
     crt = X509.load_cert(public_cert)
     return crt.get_subject().CN
 
+def ssl_cert_subject(public_cert):
+    if not os.path.isfile(public_cert):
+        raise Exception('Public certificate %s not found' % public_cert)
+    crt = X509.load_cert(public_cert)
+    subject = crt.get_subject()
+    result = {}
+    for key in subject.nid.keys():
+        result[key] = getattr(subject,key)
+    return result
+
 
 def ssl_verify_content(content,signature,public_certs):
     u"""Check that the signature matches the content, using the provided list of public keys
