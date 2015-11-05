@@ -1131,11 +1131,12 @@ function CreateSelfSignedCert(orgname,
         email:String
     ):String;
 var
-  opensslbin,opensslcfg,opensslcfg_fn,destpem,destcrt : String;
+  opensslbin,opensslcfg,opensslcfg_fn,destpem,destcrt,destp12 : String;
   params : ISuperObject;
 begin
     destpem := AppendPathDelim(destdir)+orgname+'.pem';
     destcrt := AppendPathDelim(destdir)+orgname+'.crt';
+    destp12 := AppendPathDelim(destdir)+orgname+'.p12';
     if not DirectoryExists(destdir) then
         mkdir(destdir);
     params := TSuperObject.Create;
@@ -1156,6 +1157,9 @@ begin
         result :=''
       else
         result := destpem;
+      // create a .pfx .p12 for ms signtool
+      if ExecuteProcess(opensslbin,'pkcs12 -export -in -inkey '+destpem+' -in '+destcrt+' -out '+destp12+' -name "'+commonname+'" -passout pass:',[]) <> 0 then
+        raise Exception.Create('Unable to create p12 file for signtool');
     finally
       SysUtils.DeleteFile(opensslcfg_fn);
     end;
@@ -1166,7 +1170,7 @@ function CreateWaptSetup(default_public_cert:String='';default_repo_url:String='
 var
   iss_template,custom_iss,source,target,outputname,junk : String;
   iss,new_iss,line : ISuperObject;
-  wapt_base_dir,inno_fn: String;
+  wapt_base_dir,inno_fn,p12keypath,signtool: String;
 
   function startswith(st:ISuperObject;subst:String):Boolean;
   begin
@@ -1214,8 +1218,13 @@ begin
     if not FileExists(inno_fn) then
         raise Exception.CreateFmt(rsInnoSetupUnavailable, [inno_fn]);
     Run(format('"%s"  %s',[inno_fn,custom_iss]),'',3600000,'','','',OnProgress);
-    Result := destination + '\' + outputname + '.exe';
+    Result := destination + outputname + '.exe';
     // Create waptagent.sha1
+    signtool := wapt_base_dir + 'utils\signtool.exe';
+    p12keyPath := ChangeFileExt(GetWaptPrivateKeyPath,'.p12');
+    if FileExists(signtool) and FileExists(p12keypath) then
+      Run(format('"%s" sign /f "%s" "%s"',[signtool,p12keypath,Result]),'',3600000,'','','',OnProgress);
+
     StringToFile(wapt_base_dir + '\waptupgrade\waptagent.sha1',SHA1Print(SHA1File(Result,2 shl 20))+' waptagent.exe');
 end;
 
