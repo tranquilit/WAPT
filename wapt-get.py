@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.2"
+__version__ = "1.3.3"
 
 import codecs
 import getpass
@@ -220,6 +220,28 @@ def wapt_sources_edit(wapt_sources_dir):
     else:
         os.startfile(wapt_sources_dir)
 
+def guess_package_root_dir(fn):
+    """return the root dir of package development dir given
+            control fn,
+            setup fn or
+            package directory
+    """
+    if os.path.isdir(fn):
+        if os.path.isfile(os.path.join(fn,'WAPT','control')):
+            return fn
+        elif os.path.isfile(os.path.join(fn,'control')):
+            return os.path.abspath(os.path.join(fn,'..'))
+        else:
+            return fn
+    elif os.path.isfile(fn):
+        if os.path.basename(fn) == 'control':
+            return os.path.abspath(os.path.join(os.path.dirname(fn),'..'))
+        elif os.path.basename(fn) == 'setup.py':
+            return os.path.abspath(os.path.dirname(fn))
+        else:
+            return fn
+    else:
+        return fn
 
 def main():
     jsonresult = {'output':[]}
@@ -303,6 +325,7 @@ def main():
                             raise Exception(u'Running wapt progresses (%s), please wait...' % (running_install,))
                         result = {u'install':[]}
                         for fn in args[1:]:
+                            fn = guess_package_root_dir(fn)
                             res = mywapt.install_wapt(fn,params_dict = params_dict)
                             result['install'].append((fn,res))
                 else:
@@ -424,6 +447,7 @@ def main():
                 for packagename in args[1:]:
                     print u"Removing %s ..." % (packagename,)
                     try:
+                        packagename = guess_package_root_dir(packagename)
                         result = mywapt.remove(packagename,force=options.force)
                         errors.extend(result['errors'])
                         removed.extend(result['removed'])
@@ -459,6 +483,7 @@ def main():
                 for packagename in packages_list:
                     try:
                         print u"Configuring %s ..." % (packagename,),
+                        packagename = guess_package_root_dir(packagename)
                         result.append(mywapt.session_setup(packagename,force=options.force))
                         print "Done"
                     except Exception,e:
@@ -479,6 +504,7 @@ def main():
 
                 for packagename in args[1:]:
                     print u"Uninstalling %s ..." % (packagename,),
+                    packagename = guess_package_root_dir(packagename)
                     print mywapt.uninstall(packagename,params_dict=params_dict)
                     print u"Uninstallation done"
 
@@ -684,6 +710,7 @@ def main():
                     sys.exit(1)
                 packages = []
                 for source_dir in [os.path.abspath(p) for p in args[1:]]:
+                    source_dir = guess_package_root_dir(source_dir)
                     if os.path.isdir(source_dir):
                         print('Building  %s' % source_dir)
                         result = mywapt.build_package(
@@ -777,6 +804,7 @@ def main():
                     print u"You must provide at least one source directory or package to sign"
                     sys.exit(1)
                 for waptfile in [os.path.abspath(p) for p in args[1:]]:
+                    waptfile = guess_package_root_dir(waptfile)
                     if os.path.isdir(waptfile) or os.path.isfile(waptfile):
                         print('Signing %s' % waptfile)
                         signature = mywapt.sign_package(
