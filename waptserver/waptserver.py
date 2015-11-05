@@ -111,10 +111,6 @@ ALLOWED_EXTENSIONS = set(['wapt'])
 # setup logging
 logger = logging.getLogger()
 
-waptagent = os.path.join(conf['wapt_folder'], 'waptagent.exe')
-waptsetup = os.path.join(conf['wapt_folder'], 'waptsetup-tis.exe')
-waptdeploy = os.path.join(conf['wapt_folder'], 'waptdeploy.exe')
-
 try:
     import wsus
     app.register_blueprint(wsus.wsus)
@@ -268,6 +264,10 @@ def get_timezone():
 
 @app.route('/')
 def index():
+
+    waptagent = os.path.join(conf['wapt_folder'], 'waptagent.exe')
+    waptsetup = os.path.join(conf['wapt_folder'], 'waptsetup-tis.exe')
+    waptdeploy = os.path.join(conf['wapt_folder'], 'waptdeploy.exe')
 
     agent_status = setup_status = deploy_status = mongodb_status = 'N/A'
     agent_style = setup_style = deploy_style = disk_space_style = 'style="color: red;"'
@@ -495,6 +495,8 @@ def upload_host():
 @app.route('/upload_waptsetup',methods=['POST'])
 @requires_auth
 def upload_waptsetup():
+    waptagent = os.path.join(conf['wapt_folder'], 'waptagent.exe')
+
     logger.debug("Entering upload_waptsetup")
     tmp_target = None
     try:

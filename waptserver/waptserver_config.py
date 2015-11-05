@@ -66,10 +66,10 @@ def load_config(cfgfile=_default_config_file):
     if os.path.exists(cfgfile):
         _config.read(cfgfile)
     else:
-        raise Exception(_("FATAL : couldn't open configuration file : {}.".format(options.configfile)))
+        raise Exception("FATAL : couldn't open configuration file : {}.".format(cfgfile))
 
     if not _config.has_section('options'):
-        raise Exception (_("FATAL, configuration file {} has no section [options]. Please check the waptserver documentation.").format(options.configfile))
+        raise Exception("FATAL, configuration file {} has no section [options]. Please check the waptserver documentation.".format(cfgfile))
 
     if _config.has_option('options', 'client_tasks_timeout'):
         conf['client_tasks_timeout'] = int(_config.get('options', 'client_tasks_timeout'))
