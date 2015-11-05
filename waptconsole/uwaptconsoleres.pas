@@ -73,6 +73,8 @@ resourcestring
   rsSuccessfullyImported = '%s successfully imported.';
   rsFailedImport = 'Error during import.';
 
+  rsWaptPackagePrefixMissing = 'You must first define the Package prefix in preferences';
+
   rsConfirmRmPackagesFromHost = 'Are you sure you want to remove %s package(s) from the selected host(s) %s ?';
   rsPackageRemoveError = 'Error while removing package %s: %s';
 

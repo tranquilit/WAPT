@@ -214,6 +214,8 @@ def duplicate_from_external_repo(waptconfigfile,package_filename):
     wapt.use_hostpackages = False
 
     prefix = wapt.config.get('global','default_package_prefix','test')
+    if not prefix:
+        error('You must specify a default package prefix in WAPT Console preferences')
 
     def rename_package(oldname,prefix):
         sp = oldname.split('-',1)
