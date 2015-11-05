@@ -207,6 +207,8 @@ def create_waptagent_install():
                     continue
                 tmp_bat = tempfile.NamedTemporaryFile(prefix='waptagent',suffix='.cmd',mode='wt',delete=False)
                 print('Create bat file %s' % tmp_bat)
+                # wait for remaining task to complete...
+                tmp_bat.write('wapt-get update\n')
                 tmp_bat.write('net stop waptservice\n')
                 tmp_bat.write('net stop waptmongodb\n')
                 tmp_bat.write('net stop waptserver\n')
@@ -216,6 +218,7 @@ def create_waptagent_install():
                 tmp_bat.write('taskkill /f /im:waptexit.exe\n')
                 tmp_bat.write('\n')
                 tmp_bat.write('"%s" /VERYSILENT\n'%waptagent_path)
+                tmp_bat.write('wapt-get register\n')
                 tmp_bat.write('del "%s"\n'%waptagent_path)
                 tmp_bat.write('del "%s"\n'%tmp_bat.name)
                 tmp_bat.close()
