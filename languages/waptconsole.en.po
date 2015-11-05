@@ -2675,6 +2675,10 @@ msgctxt "uwaptconsoleres.rswaptgetupgrade"
 msgid "WAPT-GET Upgrade using repository at %s"
 msgstr ""
 
+#: uwaptconsoleres.rswaptpackageprefixmissing
+msgid "You must first define the Package prefix in preferences"
+msgstr ""
+
 #: uwaptconsoleres.rswaptservererror
 msgid ""
 "Error on WAPT server:\n"
