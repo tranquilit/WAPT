@@ -123,6 +123,13 @@ begin
     exit;
   end;
 
+  if DefaultPackagePrefix='' then
+  begin
+    ShowMessage(rsWaptPackagePrefixMissing);
+    ActWAPTLocalConfig.Execute;
+    Exit;
+  end;
+
   listPackages := TSuperObject.create(stArray);
   for package in GridExternalPackages.SelectedRows do
     listPackages.AsArray.Add(package.S['package']+'(='+package.S['version']+')');

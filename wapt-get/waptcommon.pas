@@ -116,6 +116,8 @@ const
   Language:String = '';
   FallBackLanguage:String = '';
 
+  DefaultPackagePrefix:String = '';
+
   AdvancedMode:Boolean = False;
 
   WAPTServerMinVersion='1.3.3';
@@ -808,6 +810,8 @@ begin
     UseProxyForTemplates := IniReadBool(inifile,'global','use_http_proxy_for_templates',False);
 
     AdvancedMode := IniReadBool(inifile,'global','advanced_mode',False);
+
+    DefaultPackagePrefix := IniReadString(inifile,'global','default_package_prefix','');
 
     Result := True
   end;

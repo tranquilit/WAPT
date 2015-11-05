@@ -2043,6 +2043,13 @@ begin
     exit;
   end;
 
+  if DefaultPackagePrefix='' then
+  begin
+    ShowMessage(rsWaptPackagePrefixMissing);
+    ActWAPTLocalConfig.Execute;
+    Exit;
+  end;
+
   if OpenDialogWapt.Execute then
   begin
     if MessageDlg(rsConfirmImportCaption,
