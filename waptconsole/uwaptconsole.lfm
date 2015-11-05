@@ -1,10 +1,10 @@
 object VisWaptGUI: TVisWaptGUI
   Left = 378
-  Height = 850
+  Height = 843
   Top = 105
   Width = 1277
   Caption = 'WAPT console'
-  ClientHeight = 831
+  ClientHeight = 824
   ClientWidth = 1277
   Constraints.MinHeight = 600
   Constraints.MinWidth = 800
@@ -22,7 +22,7 @@ object VisWaptGUI: TVisWaptGUI
   LCLVersion = '1.3'
   object MainPages: TPageControl
     Left = 0
-    Height = 688
+    Height = 681
     Top = 0
     Width = 1277
     ActivePage = pgInventory
@@ -32,7 +32,7 @@ object VisWaptGUI: TVisWaptGUI
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
       Caption = 'Inventory'
-      ClientHeight = 662
+      ClientHeight = 655
       ClientWidth = 1269
       object Panel10: TPanel
         Left = 0
@@ -55,7 +55,7 @@ object VisWaptGUI: TVisWaptGUI
         object Label5: TLabel
           Left = 6
           Height = 13
-          Top = 5
+          Top = 7
           Width = 33
           Caption = 'Search'
           ParentColor = False
@@ -241,7 +241,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object GridHosts: TSOGrid
         Left = 0
-        Height = 569
+        Height = 562
         Top = 93
         Width = 692
         OnGetText = GridHostsGetText
@@ -451,7 +451,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object HostPages: TPageControl
         Left = 697
-        Height = 569
+        Height = 562
         Top = 93
         Width = 572
         ActivePage = pgPackages
@@ -462,13 +462,13 @@ object VisWaptGUI: TVisWaptGUI
         object pgPackages: TTabSheet
           AnchorSideTop.Side = asrBottom
           Caption = 'Overview'
-          ClientHeight = 543
+          ClientHeight = 536
           ClientWidth = 564
           object GridHostPackages: TSOGrid
             AnchorSideTop.Control = Panel9
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 331
+            Height = 324
             Top = 122
             Width = 564
             Align = alBottom
@@ -858,7 +858,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel5: TPanel
             Left = 0
             Height = 90
-            Top = 453
+            Top = 446
             Width = 564
             Align = alBottom
             BevelOuter = bvNone
@@ -1694,7 +1694,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object Splitter4: TSplitter
         Left = 692
-        Height = 569
+        Height = 562
         Top = 93
         Width = 5
         Align = alRight
@@ -1711,7 +1711,7 @@ object VisWaptGUI: TVisWaptGUI
         ShowCaptions = True
         TabOrder = 4
         object ToolButton1: TToolButton
-          Left = 225
+          Left = 222
           Top = 2
           Action = ActTriggerHostUpgrade
         end
@@ -1721,14 +1721,14 @@ object VisWaptGUI: TVisWaptGUI
           Action = ActEditHostPackage
         end
         object ToolButton4: TToolButton
-          Left = 302
+          Left = 299
           Top = 2
           Width = 10
           Caption = 'ToolButton4'
           Style = tbsSeparator
         end
         object ToolButton3: TToolButton
-          Left = 312
+          Left = 309
           Top = 2
           Action = actRefresh
         end
@@ -1738,14 +1738,14 @@ object VisWaptGUI: TVisWaptGUI
           Action = ActTriggerHostUpdate
         end
         object ToolButton6: TToolButton
-          Left = 358
+          Left = 355
           Top = 2
           Width = 10
           Caption = 'ToolButton6'
           Style = tbsSeparator
         end
         object ToolButton7: TToolButton
-          Left = 368
+          Left = 365
           Top = 2
           Action = ActTriggerHostsListening
         end
@@ -1871,14 +1871,14 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgGroups: TTabSheet
       Caption = 'Bundles'
-      ClientHeight = 662
+      ClientHeight = 655
       ClientWidth = 1269
       object GridGroups: TSOGrid
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Side = asrBottom
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 632
+        Height = 625
         Top = 30
         Width = 1269
         OnGetText = GridGroupsGetText
@@ -2110,12 +2110,12 @@ object VisWaptGUI: TVisWaptGUI
       end
     end
     object pgPrivateRepo: TTabSheet
-      Caption = 'Private repository'
-      ClientHeight = 662
+      Caption = 'Softwares repository'
+      ClientHeight = 655
       ClientWidth = 1269
       object GridPackages: TSOGrid
         Left = 0
-        Height = 632
+        Height = 625
         Top = 30
         Width = 973
         OnGetText = GridGroupsGetText
@@ -2200,7 +2200,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object Splitter3: TSplitter
         Left = 973
-        Height = 632
+        Height = 625
         Top = 30
         Width = 6
         Align = alRight
@@ -2403,28 +2403,124 @@ object VisWaptGUI: TVisWaptGUI
       end
       object Panel2: TPanel
         Left = 979
-        Height = 632
+        Height = 625
         Top = 30
         Width = 290
         Align = alRight
         Alignment = taRightJustify
         BevelOuter = bvNone
-        ClientHeight = 632
+        ClientHeight = 625
         ClientWidth = 290
         TabOrder = 2
         object MemoGroupeDescription: TMemo
           Left = 0
-          Height = 300
-          Top = 332
+          Height = 381
+          Top = 244
           Width = 290
-          Align = alBottom
+          Align = alClient
           TabOrder = 0
+        end
+        object Panel8: TPanel
+          Left = 0
+          Height = 244
+          Top = 0
+          Width = 290
+          Align = alTop
+          BevelOuter = bvNone
+          ClientHeight = 244
+          ClientWidth = 290
+          TabOrder = 1
+          object EdPackage: TLabeledEdit
+            Left = 81
+            Height = 21
+            Top = 4
+            Width = 200
+            CharCase = ecLowerCase
+            EditLabel.AnchorSideTop.Control = EdPackage
+            EditLabel.AnchorSideTop.Side = asrCenter
+            EditLabel.AnchorSideRight.Control = EdPackage
+            EditLabel.AnchorSideBottom.Control = EdPackage
+            EditLabel.AnchorSideBottom.Side = asrBottom
+            EditLabel.Left = 38
+            EditLabel.Height = 13
+            EditLabel.Top = 8
+            EditLabel.Width = 40
+            EditLabel.Caption = 'Package'
+            EditLabel.ParentColor = False
+            LabelPosition = lpLeft
+            TabOrder = 0
+          end
+          object EdVersion: TLabeledEdit
+            Left = 81
+            Height = 21
+            Top = 28
+            Width = 76
+            EditLabel.AnchorSideTop.Control = EdVersion
+            EditLabel.AnchorSideTop.Side = asrCenter
+            EditLabel.AnchorSideRight.Control = EdVersion
+            EditLabel.AnchorSideBottom.Control = EdVersion
+            EditLabel.AnchorSideBottom.Side = asrBottom
+            EditLabel.Left = 43
+            EditLabel.Height = 13
+            EditLabel.Top = 32
+            EditLabel.Width = 35
+            EditLabel.Caption = 'Version'
+            EditLabel.ParentColor = False
+            LabelPosition = lpLeft
+            ReadOnly = True
+            TabOrder = 1
+            Text = ' '
+          end
+          object Label20: TLabel
+            Left = 8
+            Height = 13
+            Top = 228
+            Width = 53
+            Anchors = [akLeft, akBottom]
+            Caption = 'Description'
+            ParentColor = False
+          end
+          object EdDepends: TMemo
+            Left = 81
+            Height = 80
+            Top = 52
+            Width = 192
+            ScrollBars = ssAutoVertical
+            TabOrder = 2
+          end
+          object EdConflicts: TMemo
+            Left = 81
+            Height = 80
+            Top = 140
+            Width = 192
+            ScrollBars = ssAutoVertical
+            TabOrder = 3
+          end
+          object Label21: TLabel
+            Left = 9
+            Height = 13
+            Top = 56
+            Width = 67
+            Alignment = taRightJustify
+            Caption = 'Dependencies'
+            ParentColor = False
+          end
+          object Label22: TLabel
+            Left = 9
+            Height = 13
+            Top = 148
+            Width = 67
+            Alignment = taRightJustify
+            AutoSize = False
+            Caption = 'Conflicts'
+            ParentColor = False
+          end
         end
       end
     end
     object pgWindowsUpdates: TTabSheet
       Caption = 'Windows Updates'
-      ClientHeight = 662
+      ClientHeight = 655
       ClientWidth = 1269
       object BitBtn9: TBitBtn
         Left = 316
@@ -2582,7 +2678,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object GridWSUSAllowedClassifications: TSOGrid
         Left = 4
-        Height = 378
+        Height = 371
         Top = 242
         Width = 288
         Align = alCustom
@@ -2644,7 +2740,7 @@ object VisWaptGUI: TVisWaptGUI
       object BitBtn11: TBitBtn
         Left = 4
         Height = 32
-        Top = 628
+        Top = 621
         Width = 288
         Action = ActWUAAddAllowedClassification
         Anchors = [akLeft, akBottom]
@@ -2652,7 +2748,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object GridWSUSAllowedWindowsUpdates: TSOGrid
         Left = 300
-        Height = 378
+        Height = 371
         Top = 242
         Width = 560
         Anchors = [akTop, akLeft, akBottom]
@@ -2774,7 +2870,7 @@ object VisWaptGUI: TVisWaptGUI
       object BitBtn15: TBitBtn
         Left = 304
         Height = 32
-        Top = 628
+        Top = 621
         Width = 292
         Action = ActWUAAddAllowedUpdate
         Anchors = [akLeft, akBottom]
@@ -2783,7 +2879,7 @@ object VisWaptGUI: TVisWaptGUI
       object BitBtn13: TBitBtn
         Left = 872
         Height = 32
-        Top = 628
+        Top = 621
         Width = 300
         Action = ActWUAAddForbiddenUpdate
         Anchors = [akLeft, akBottom]
@@ -2791,7 +2887,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object GridWSUSForbiddenWindowsUpdates: TSOGrid
         Left = 868
-        Height = 378
+        Height = 371
         Top = 242
         Width = 389
         Anchors = [akTop, akLeft, akRight, akBottom]
@@ -2939,12 +3035,12 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgSources: TTabSheet
       Caption = 'Sources'
-      ClientHeight = 662
+      ClientHeight = 655
       ClientWidth = 1269
       TabVisible = False
       inline testedit: TSynEdit
         Left = 0
-        Height = 628
+        Height = 621
         Top = 34
         Width = 1269
         Align = alClient
@@ -3502,7 +3598,7 @@ object VisWaptGUI: TVisWaptGUI
   object PanDebug: TPanel
     Left = 0
     Height = 118
-    Top = 693
+    Top = 686
     Width = 1277
     Align = alBottom
     ClientHeight = 118
@@ -3594,7 +3690,7 @@ object VisWaptGUI: TVisWaptGUI
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 688
+    Top = 681
     Width = 1277
     Align = alBottom
     ResizeAnchor = akBottom
@@ -3602,7 +3698,7 @@ object VisWaptGUI: TVisWaptGUI
   object plStatusBar1: TplStatusBar
     Left = 0
     Height = 20
-    Top = 811
+    Top = 804
     Width = 1277
     Panels = <    
       item
@@ -3692,20 +3788,16 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActCreateCertificate: TAction
       Category = 'Tools'
-      Caption = 'Generate self-signed certificate'
+      Caption = 'Build certificate'
       ImageIndex = 24
       OnExecute = ActCreateCertificateExecute
-    end
-    object ActCreateWaptSetupPy: TAction
-      Category = 'Tools'
-      Caption = 'Create custom WAPT installer (py)'
     end
     object ActEvaluateVar: TAction
       Caption = 'Evaluer Variant'
     end
     object ActSearchHost: TAction
       Category = 'hosts'
-      Caption = 'Search for host'
+      Caption = 'Search host'
       ImageIndex = 26
       OnExecute = ActSearchHostExecute
     end
@@ -3718,7 +3810,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActPackagesUpdate: TAction
       Category = 'Host'
-      Caption = 'Update available packages'
+      Caption = 'Refresh packages list'
       ImageIndex = 25
       OnExecute = ActPackagesUpdateExecute
     end
@@ -3847,7 +3939,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActImportFromRepo: TAction
       Category = 'packages'
-      Caption = 'Import from repository'
+      Caption = 'Import from internet'
       ImageIndex = 17
       OnExecute = ActImportFromRepoExecute
     end
@@ -3859,7 +3951,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActCreateWaptSetup: TAction
       Category = 'Tools'
-      Caption = 'Create custom WAPT installer'
+      Caption = 'Build WAPT Agent'
       ImageIndex = 35
       OnExecute = ActCreateWaptSetupExecute
     end
@@ -3909,7 +4001,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActTriggerHostUpdate: TAction
       Category = 'hosts'
-      Caption = 'Trigger hosts update'
+      Caption = 'Update hosts status'
       Hint = 'Trigger update of available packages on hosts.'
       ImageIndex = 37
       OnExecute = ActTriggerHostUpdateExecute

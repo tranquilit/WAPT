@@ -17,7 +17,6 @@ type
 
   TVisWaptGUI = class(TForm)
     ActCancelRunningTask: TAction;
-    ActCreateWaptSetupPy: TAction;
     ActForgetPackages: TAction;
     ActAddConflicts: TAction;
     ActHelp: TAction;
@@ -49,6 +48,8 @@ type
     ButHostSearch1: TBitBtn;
     ButPackagesUpdate1: TBitBtn;
     cbForcedWSUSscanDownload: TCheckBox;
+    EdPackage: TLabeledEdit;
+    EdVersion: TLabeledEdit;
     GridWSUSAllowedWindowsUpdates: TSOGrid;
     GridWSUSScan: TSOGrid;
     GridWSUSAllowedClassifications: TSOGrid;
@@ -58,10 +59,16 @@ type
     Label17: TLabel;
     Label18: TLabel;
     Label19: TLabel;
+    Label20: TLabel;
+    EdDepends: TMemo;
+    EdConflicts: TMemo;
+    Label21: TLabel;
+    Label22: TLabel;
     MenuItem17: TMenuItem;
     MenuItem74: TMenuItem;
     MenuItem76: TMenuItem;
     MenuItem77: TMenuItem;
+    Panel8: TPanel;
     PopupGridWSUSScan: TPopupMenu;
     MenuItem70: TMenuItem;
     MenuItem71: TMenuItem;
@@ -3368,7 +3375,11 @@ end;
 
 procedure TVisWaptGUI.GridPackagesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 begin
-  MemoGroupeDescription.Lines.Text := GridPackages.GetCellStrValue(Node, 'description');
+  MemoGroupeDescription.Lines.Text := GridPackages.FocusedRow.S['description'];
+  EdPackage.Text:=GridPackages.FocusedRow.S['package'];
+  EdVersion.Text:=GridPackages.FocusedRow.S['version'];
+  EdDepends.Lines.Text := StringReplace(GridPackages.FocusedRow.S['depends'],',',#13#10,[rfReplaceAll]);
+  EdConflicts.Lines.Text := StringReplace(GridPackages.FocusedRow.S['conflicts'],',',#13#10,[rfReplaceAll]);
 end;
 
 procedure TVisWaptGUI.GridPackagesColumnDblClick(Sender: TBaseVirtualTree;
@@ -3505,7 +3516,7 @@ begin
     CopyMenu(PopupMenuHosts, MenuItem24);
     if GridHosts.Data = nil then
       ActSearchHost.Execute;
-
+    EdSearchHost.SetFocus;
   finally
     Screen.Cursor:=crDefault;
   end
@@ -3514,12 +3525,14 @@ begin
     CopyMenu(PopupMenuPackages, MenuItem24);
     if GridPackages.Data = nil then
       ActSearchPackage.Execute;
+    EdSearch.SetFocus;
   end
   else if MainPages.ActivePage = pgGroups then
   begin
     CopyMenu(PopupMenuGroups, MenuItem24);
     if GridGroups.Data = nil then
       ActSearchGroups.Execute;
+    EdSearchGroups.SetFocus;
   end
   else if MainPages.ActivePage = pgWindowsUpdates then
   begin
