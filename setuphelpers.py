@@ -2013,7 +2013,7 @@ def uninstall_key_exists(uninstallkey):
             pass
         return True
     except:
-        return False
+        pass
 
     if platform.machine() == 'AMD64':
         try:
@@ -2021,7 +2021,7 @@ def uninstall_key_exists(uninstallkey):
                 pass
             return True
         except:
-            return False
+            pass
     return False
 
 
