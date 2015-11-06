@@ -68,6 +68,7 @@ type
     MenuItem74: TMenuItem;
     MenuItem76: TMenuItem;
     MenuItem77: TMenuItem;
+    Panel13: TPanel;
     Panel8: TPanel;
     PopupGridWSUSScan: TPopupMenu;
     MenuItem70: TMenuItem;
@@ -1981,7 +1982,7 @@ procedure TVisWaptGUI.ActForgetPackagesExecute(Sender: TObject);
 var
   uuid,sel, package, res, packages : ISuperObject;
 begin
-  if GridHostPackages.Focused and (GridHosts.FocusedRow) then
+  if GridHostPackages.Focused and (GridHosts.FocusedRow <> Nil) then
   begin
     sel := GridHostPackages.SelectedRows;
     if Dialogs.MessageDlg(

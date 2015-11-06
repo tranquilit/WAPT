@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 378
+  Left = 375
   Height = 843
-  Top = 105
+  Top = 154
   Width = 1277
   Caption = 'WAPT console'
   ClientHeight = 824
@@ -878,12 +878,12 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostInventory: TTabSheet
           Caption = 'Hardware inventory'
-          ClientHeight = 543
+          ClientHeight = 536
           ClientWidth = 564
           object GridhostInventory: TVirtualJSONInspector
             Left = 0
-            Height = 543
-            Top = 0
+            Height = 526
+            Top = 10
             Width = 564
             PropertyDefs = <>
             Align = alClient
@@ -910,6 +910,15 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toEditOnClick]
             TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
             TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toFullRowSelect, toMultiSelect]
+          end
+          object Panel13: TPanel
+            Left = 0
+            Height = 10
+            Top = 0
+            Width = 564
+            Align = alTop
+            BevelOuter = bvNone
+            TabOrder = 1
           end
         end
         object pgSoftwares: TTabSheet

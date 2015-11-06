@@ -977,7 +977,7 @@ msgstr ""
 
 #: tviswaptgui.acttriggerhostslistening.caption
 msgctxt "tviswaptgui.acttriggerhostslistening.caption"
-msgid "Trigger scan listening IP"
+msgid "Trigger hosts scan"
 msgstr ""
 
 #: tviswaptgui.acttriggerhostslistening.hint
