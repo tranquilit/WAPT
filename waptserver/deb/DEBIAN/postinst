@@ -25,8 +25,11 @@ subprocess.check_output('chown wapt:root /opt/wapt/log',shell=True)
 
 inifile = '/opt/wapt/waptserver/waptserver.ini'
 if os.path.exists(inifile) and not os.path.islink(inifile):
-    os.rename(inifile,'/opt/wapt/conf/waptserver.ini')
-    os.symlink('/opt/wapt/conf/waptserver.ini',inifile)
+    try:
+        os.rename(inifile, '/opt/wapt/conf/waptserver.ini')
+        os.symlink('../conf/waptserver.ini',inifile)
+    except Exception:
+        pass
 subprocess.check_output('chown -R wapt:root /opt/wapt/conf',shell=True)
 subprocess.check_output('chmod 644 /opt/wapt/conf/waptserver.ini',shell=True)
 
