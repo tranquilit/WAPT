@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+set -ex
 
 mkdir -p BUILD RPMS
 rpmbuild -bb --buildroot $PWD/builddir -v --clean waptserver.spec
