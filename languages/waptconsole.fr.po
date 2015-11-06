@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-04 16:03+0200\n"
-"PO-Revision-Date: 2015-11-05 14:21+0200\n"
+"PO-Revision-Date: 2015-11-06 09:20+0200\n"
 "Last-Translator: htouvet <htouvet@tranquil.it>\n"
 "Language-Team: TranquilITSystems\n"
 "Language: fr\n"
@@ -314,6 +314,7 @@ msgid " "
 msgstr ""
 
 #: tviseditpackage.edpackage.editlabel.caption
+msgctxt "tviseditpackage.edpackage.editlabel.caption"
 msgid "Package"
 msgstr "Paquet"
 
@@ -331,6 +332,7 @@ msgid " "
 msgstr ""
 
 #: tviseditpackage.edversion.editlabel.caption
+msgctxt "tviseditpackage.edversion.editlabel.caption"
 msgid "Version"
 msgstr "Version"
 
@@ -776,24 +778,23 @@ msgid "Remove all packages locall cached by WaptConsole"
 msgstr "Effacer les paquets mis en cache localement par WaptConsole"
 
 #: tviswaptgui.actcreatecertificate.caption
+#, fuzzy
+#| msgid "Generate self-signed certificate"
 msgctxt "tviswaptgui.actcreatecertificate.caption"
-msgid "Generate self-signed certificate"
-msgstr "Créer un certificat auto-signé"
+msgid "Build certificate"
+msgstr "Créer un certificat"
 
 #: tviswaptgui.actcreatewaptsetup.caption
+#, fuzzy
+#| msgid "Create custom WAPT installer"
 msgctxt "tviswaptgui.actcreatewaptsetup.caption"
-msgid "Create custom WAPT installer"
+msgid "Build WAPT Agent"
 msgstr "Créer un agent WAPT"
-
-#: tviswaptgui.actcreatewaptsetuppy.caption
-msgctxt "tviswaptgui.actcreatewaptsetuppy.caption"
-msgid "Create custom WAPT installer (py)"
-msgstr "Créer un installeur d'agent WAPT"
 
 #: tviswaptgui.actdeletegroup.caption
 msgctxt "tviswaptgui.actdeletegroup.caption"
 msgid "Delete bundle"
-msgstr "Supprimer un paquet"
+msgstr "Supprimer le groupe"
 
 #: tviswaptgui.actdeletepackage.caption
 msgctxt "tviswaptgui.actdeletepackage.caption"
@@ -838,7 +839,7 @@ msgstr "Evaluer"
 #: tviswaptgui.actevaluatevar.caption
 msgctxt "tviswaptgui.actevaluatevar.caption"
 msgid "Evaluer Variant"
-msgstr "Evaluer une variante"
+msgstr "Evaluer Variant"
 
 #: tviswaptgui.actexeccode.caption
 msgctxt "tviswaptgui.actexeccode.caption"
@@ -848,7 +849,7 @@ msgstr "Exécuter du code Python"
 #: tviswaptgui.actforgetpackages.caption
 msgctxt "tviswaptgui.actforgetpackages.caption"
 msgid "Forget packages"
-msgstr "Oublier des paquets"
+msgstr "Oublier les paquets"
 
 #: tviswaptgui.actfrench.caption
 msgctxt "tviswaptgui.actfrench.caption"
@@ -882,7 +883,7 @@ msgstr "Supprimer de l'inventaire"
 #: tviswaptgui.acthostsdeletehostpackage.caption
 msgctxt "tviswaptgui.acthostsdeletehostpackage.caption"
 msgid "Remove host configuration and inventory "
-msgstr "Supprimer la machine et son paquet de configuration"
+msgstr "Supprimer la machine et sa configuration"
 
 #: tviswaptgui.acthostwaptupgrade.caption
 msgctxt "tviswaptgui.acthostwaptupgrade.caption"
@@ -900,9 +901,11 @@ msgid "Import from file"
 msgstr "Importer depuis un fichier"
 
 #: tviswaptgui.actimportfromrepo.caption
+#, fuzzy
+#| msgid "Import from repository"
 msgctxt "tviswaptgui.actimportfromrepo.caption"
-msgid "Import from repository"
-msgstr "Importer depuis un dépôt"
+msgid "Import from internet"
+msgstr "Importer depuis internet"
 
 #: tviswaptgui.actlocalhostinstall.caption
 msgctxt "tviswaptgui.actlocalhostinstall.caption"
@@ -940,8 +943,10 @@ msgid "Forces remote uninstall of package"
 msgstr "Force la désinstallation à distance du paquet"
 
 #: tviswaptgui.actpackagesupdate.caption
+#, fuzzy
+#| msgid "Update available packages"
 msgctxt "tviswaptgui.actpackagesupdate.caption"
-msgid "Update available packages"
+msgid "Refresh packages list"
 msgstr "Actualiser les paquets disponibles"
 
 #: tviswaptgui.actquit.caption
@@ -997,8 +1002,10 @@ msgid "Search"
 msgstr "Rechercher"
 
 #: tviswaptgui.actsearchhost.caption
+#, fuzzy
+#| msgid "Search for host"
 msgctxt "tviswaptgui.actsearchhost.caption"
-msgid "Search for host"
+msgid "Search host"
 msgstr "Rechercher une machine"
 
 #: tviswaptgui.actsearchpackage.caption
@@ -1022,8 +1029,10 @@ msgid "Trigger scan of listening IP of registered hosts."
 msgstr "Scanner les IP en écoute des machines enregistrées"
 
 #: tviswaptgui.acttriggerhostupdate.caption
+#, fuzzy
+#| msgid "Trigger hosts update"
 msgctxt "tviswaptgui.acttriggerhostupdate.caption"
-msgid "Trigger hosts update"
+msgid "Update hosts status"
 msgstr "Lancer la mise à jour des paquets disponibles"
 
 #: tviswaptgui.acttriggerhostupdate.hint
@@ -1257,8 +1266,23 @@ msgctxt "tviswaptgui.cbwuapending.caption"
 msgid "Pending"
 msgstr "En attente"
 
+#: tviswaptgui.edpackage.editlabel.caption
+msgctxt "tviswaptgui.edpackage.editlabel.caption"
+msgid "Package"
+msgstr "Paquet"
+
 #: tviswaptgui.edrun.text
 msgid "mywapt.update()"
+msgstr ""
+
+#: tviswaptgui.edversion.editlabel.caption
+msgctxt "tviswaptgui.edversion.editlabel.caption"
+msgid "Version"
+msgstr "Version"
+
+#: tviswaptgui.edversion.text
+msgctxt "tviswaptgui.edversion.text"
+msgid " "
 msgstr ""
 
 #: tviswaptgui.hostrunningtask.editlabel.caption
@@ -1314,6 +1338,19 @@ msgstr "Mises à jour interdites"
 #: tviswaptgui.label2.caption
 msgid "Manufacturer"
 msgstr "Constructeur"
+
+#: tviswaptgui.label20.caption
+msgctxt "tviswaptgui.label20.caption"
+msgid "Description"
+msgstr "Description"
+
+#: tviswaptgui.label21.caption
+msgid "Dependencies"
+msgstr ""
+
+#: tviswaptgui.label22.caption
+msgid "Conflicts"
+msgstr ""
 
 #: tviswaptgui.label3.caption
 msgid "Model"
@@ -1518,7 +1555,9 @@ msgid "Overview"
 msgstr "Général"
 
 #: tviswaptgui.pgprivaterepo.caption
-msgid "Private repository"
+#, fuzzy
+#| msgid "Private repository"
+msgid "Softwares repository"
 msgstr "Dépôt privé"
 
 #: tviswaptgui.pgsoftwares.caption
@@ -2126,6 +2165,18 @@ msgid "wupanright"
 msgstr ""
 
 #: uwaptconsoleres.rsaddadsgroups
+#, fuzzy
+#| msgid ""
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -2190,6 +2241,14 @@ msgid "Are you sure you want to forget %s packages from host %s ?"
 msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 
 #: uwaptconsoleres.rsconfirmimport
+#, fuzzy
+#| msgid ""
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 msgctxt "uwaptconsoleres.rsconfirmimport"
 msgid ""
 "Are you sure you want to import\n"
@@ -2512,6 +2571,14 @@ msgid "Error while creating package : %s"
 msgstr "Erreur lors de la création du paquet : %s"
 
 #: uwaptconsoleres.rspackageduplicateconfirm
+#, fuzzy
+#| msgid ""
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -2641,7 +2708,7 @@ msgstr "Lancer l'installation des mises à jour sur les machines"
 
 #: uwaptconsoleres.rstriggerwakeonlan
 msgid "Send a WakeOnlan packet to hosts"
-msgstr "Envoyer un paquet WakeOnLan vers les machines\t"
+msgstr "Envoyer un paquet WakeOnLan vers les machines	"
 
 #: uwaptconsoleres.rstriggerwaptwua_download
 msgid "Trigger the download of missing Windows Updates"
@@ -2747,6 +2814,12 @@ msgid "You must first define the Package prefix in preferences"
 msgstr "Vous devez d'abord définir le préfixe des paquets dans les préférences"
 
 #: uwaptconsoleres.rswaptservererror
+#, fuzzy
+#| msgid ""
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -2755,6 +2828,14 @@ msgstr ""
 "%s\n"
 
 #: uwaptconsoleres.rswaptserveroldversion
+#, fuzzy
+#| msgid ""
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 msgid ""
 "Warning, the version of the server is too old.\n"
 "Current server version: %s\n"

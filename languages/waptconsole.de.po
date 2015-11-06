@@ -301,6 +301,7 @@ msgid " "
 msgstr ""
 
 #: tviseditpackage.edpackage.editlabel.caption
+msgctxt "tviseditpackage.edpackage.editlabel.caption"
 msgid "Package"
 msgstr "Packet"
 
@@ -318,6 +319,7 @@ msgid " "
 msgstr ""
 
 #: tviseditpackage.edversion.editlabel.caption
+msgctxt "tviseditpackage.edversion.editlabel.caption"
 msgid "Version"
 msgstr "Version"
 
@@ -761,19 +763,18 @@ msgid "Remove all packages locall cached by WaptConsole"
 msgstr "Alle lokalen Zwischengespeicherte Packete bei WaptCosole entfernen "
 
 #: tviswaptgui.actcreatecertificate.caption
+#, fuzzy
+#| msgid "Generate self-signed certificate"
 msgctxt "tviswaptgui.actcreatecertificate.caption"
-msgid "Generate self-signed certificate"
+msgid "Build certificate"
 msgstr "Selbst-signiertes Zertifikat erstellen "
 
 #: tviswaptgui.actcreatewaptsetup.caption
+#, fuzzy
+#| msgid "Create custom WAPT installer"
 msgctxt "tviswaptgui.actcreatewaptsetup.caption"
-msgid "Create custom WAPT installer"
+msgid "Build WAPT Agent"
 msgstr "kundenspezifische WAPT Installationsprogramm entwerfen "
-
-#: tviswaptgui.actcreatewaptsetuppy.caption
-msgctxt "tviswaptgui.actcreatewaptsetuppy.caption"
-msgid "Create custom WAPT installer (py)"
-msgstr " Benutzerdefinierten WAPT Installer (py) erstellen"
 
 #: tviswaptgui.actdeletegroup.caption
 msgctxt "tviswaptgui.actdeletegroup.caption"
@@ -885,8 +886,10 @@ msgid "Import from file"
 msgstr "Von der Datei importieren"
 
 #: tviswaptgui.actimportfromrepo.caption
+#, fuzzy
+#| msgid "Import from repository"
 msgctxt "tviswaptgui.actimportfromrepo.caption"
-msgid "Import from repository"
+msgid "Import from internet"
 msgstr "Von Repository importieren"
 
 #: tviswaptgui.actlocalhostinstall.caption
@@ -925,8 +928,10 @@ msgid "Forces remote uninstall of package"
 msgstr "Remote Deinstallation von dem Packet erzwingen"
 
 #: tviswaptgui.actpackagesupdate.caption
+#, fuzzy
+#| msgid "Update available packages"
 msgctxt "tviswaptgui.actpackagesupdate.caption"
-msgid "Update available packages"
+msgid "Refresh packages list"
 msgstr "Die Aktualisierung der Packete ist verfügbar"
 
 #: tviswaptgui.actquit.caption
@@ -982,8 +987,10 @@ msgid "Search"
 msgstr "Suche"
 
 #: tviswaptgui.actsearchhost.caption
+#, fuzzy
+#| msgid "Search for host"
 msgctxt "tviswaptgui.actsearchhost.caption"
-msgid "Search for host"
+msgid "Search host"
 msgstr "Suche nach einem Host "
 
 #: tviswaptgui.actsearchpackage.caption
@@ -1007,8 +1014,10 @@ msgid "Trigger scan of listening IP of registered hosts."
 msgstr " Scan von der Überwachungs-IP von dem registrierten Host einleiten"
 
 #: tviswaptgui.acttriggerhostupdate.caption
+#, fuzzy
+#| msgid "Trigger hosts update"
 msgctxt "tviswaptgui.acttriggerhostupdate.caption"
-msgid "Trigger hosts update"
+msgid "Update hosts status"
 msgstr "Host aktualisierung einleiten"
 
 #: tviswaptgui.acttriggerhostupdate.hint
@@ -1244,9 +1253,24 @@ msgctxt "TVISWAPTGUI.CBWUAPENDING.CAPTION"
 msgid "Pending"
 msgstr "Ausstehend"
 
+#: tviswaptgui.edpackage.editlabel.caption
+msgctxt "tviswaptgui.edpackage.editlabel.caption"
+msgid "Package"
+msgstr "Packet"
+
 #: tviswaptgui.edrun.text
 msgid "mywapt.update()"
 msgstr "mywapt.update()"
+
+#: tviswaptgui.edversion.editlabel.caption
+msgctxt "tviswaptgui.edversion.editlabel.caption"
+msgid "Version"
+msgstr "Version"
+
+#: tviswaptgui.edversion.text
+msgctxt "tviswaptgui.edversion.text"
+msgid " "
+msgstr ""
 
 #: tviswaptgui.hostrunningtask.editlabel.caption
 msgctxt "TVISWAPTGUI.HOSTRUNNINGTASK.EDITLABEL.CAPTION"
@@ -1302,6 +1326,19 @@ msgstr "Unzulässige Windows Updates"
 #: tviswaptgui.label2.caption
 msgid "Manufacturer"
 msgstr "Hersteller"
+
+#: tviswaptgui.label20.caption
+msgctxt "tviswaptgui.label20.caption"
+msgid "Description"
+msgstr "Beschreibung"
+
+#: tviswaptgui.label21.caption
+msgid "Dependencies"
+msgstr ""
+
+#: tviswaptgui.label22.caption
+msgid "Conflicts"
+msgstr ""
 
 #: tviswaptgui.label3.caption
 msgid "Model"
@@ -1498,7 +1535,9 @@ msgid "Overview"
 msgstr "Übersicht"
 
 #: tviswaptgui.pgprivaterepo.caption
-msgid "Private repository"
+#, fuzzy
+#| msgid "Private repository"
+msgid "Softwares repository"
 msgstr "Privater Aufbewahrungsort"
 
 #: tviswaptgui.pgsoftwares.caption
@@ -2125,6 +2164,16 @@ msgstr "wupanright"
 #| "if the package exists.\n"
 #| "\n"
 #| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -2191,6 +2240,12 @@ msgstr "Sind Sie sich sicher, dass Sie %s die Pakete vom Host %s vergessen wolle
 #: uwaptconsoleres.rsconfirmimport
 #, fuzzy
 #| msgid ""
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 #| "Are you sure you want to import\n"
 #| "%s\n"
 #| " to your repository ?\n"
@@ -2537,6 +2592,12 @@ msgstr "Fehler beim erstellen des Pakets"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
 #| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -2741,6 +2802,10 @@ msgstr "Anwendung: %s -h "
 #| "Wapt-get version: %s\n"
 #| "Waptconsole version : %s\n"
 #| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
 msgctxt "uwaptconsoleres.rsversion"
 msgid ""
 "Waptconsole version : %s\n"
@@ -2794,6 +2859,10 @@ msgstr ""
 #| "%s\n"
 #| "Error on WAPT server:\n"
 #| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -2804,6 +2873,12 @@ msgstr ""
 #: uwaptconsoleres.rswaptserveroldversion
 #, fuzzy
 #| msgid ""
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
 #| "Required server version: %s\n"

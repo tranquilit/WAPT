@@ -301,6 +301,7 @@ msgid " "
 msgstr ""
 
 #: tviseditpackage.edpackage.editlabel.caption
+msgctxt "tviseditpackage.edpackage.editlabel.caption"
 msgid "Package"
 msgstr ""
 
@@ -318,6 +319,7 @@ msgid " "
 msgstr ""
 
 #: tviseditpackage.edversion.editlabel.caption
+msgctxt "tviseditpackage.edversion.editlabel.caption"
 msgid "Version"
 msgstr ""
 
@@ -746,17 +748,12 @@ msgstr ""
 
 #: tviswaptgui.actcreatecertificate.caption
 msgctxt "tviswaptgui.actcreatecertificate.caption"
-msgid "Generate self-signed certificate"
+msgid "Build certificate"
 msgstr ""
 
 #: tviswaptgui.actcreatewaptsetup.caption
 msgctxt "tviswaptgui.actcreatewaptsetup.caption"
-msgid "Create custom WAPT installer"
-msgstr ""
-
-#: tviswaptgui.actcreatewaptsetuppy.caption
-msgctxt "tviswaptgui.actcreatewaptsetuppy.caption"
-msgid "Create custom WAPT installer (py)"
+msgid "Build WAPT Agent"
 msgstr ""
 
 #: tviswaptgui.actdeletegroup.caption
@@ -870,7 +867,7 @@ msgstr ""
 
 #: tviswaptgui.actimportfromrepo.caption
 msgctxt "tviswaptgui.actimportfromrepo.caption"
-msgid "Import from repository"
+msgid "Import from internet"
 msgstr ""
 
 #: tviswaptgui.actlocalhostinstall.caption
@@ -910,7 +907,7 @@ msgstr ""
 
 #: tviswaptgui.actpackagesupdate.caption
 msgctxt "tviswaptgui.actpackagesupdate.caption"
-msgid "Update available packages"
+msgid "Refresh packages list"
 msgstr ""
 
 #: tviswaptgui.actquit.caption
@@ -965,7 +962,7 @@ msgstr ""
 
 #: tviswaptgui.actsearchhost.caption
 msgctxt "tviswaptgui.actsearchhost.caption"
-msgid "Search for host"
+msgid "Search host"
 msgstr ""
 
 #: tviswaptgui.actsearchpackage.caption
@@ -990,7 +987,7 @@ msgstr ""
 
 #: tviswaptgui.acttriggerhostupdate.caption
 msgctxt "tviswaptgui.acttriggerhostupdate.caption"
-msgid "Trigger hosts update"
+msgid "Update hosts status"
 msgstr ""
 
 #: tviswaptgui.acttriggerhostupdate.hint
@@ -1216,8 +1213,23 @@ msgctxt "tviswaptgui.cbwuapending.caption"
 msgid "Pending"
 msgstr ""
 
+#: tviswaptgui.edpackage.editlabel.caption
+msgctxt "tviswaptgui.edpackage.editlabel.caption"
+msgid "Package"
+msgstr ""
+
 #: tviswaptgui.edrun.text
 msgid "mywapt.update()"
+msgstr ""
+
+#: tviswaptgui.edversion.editlabel.caption
+msgctxt "tviswaptgui.edversion.editlabel.caption"
+msgid "Version"
+msgstr ""
+
+#: tviswaptgui.edversion.text
+msgctxt "tviswaptgui.edversion.text"
+msgid " "
 msgstr ""
 
 #: tviswaptgui.hostrunningtask.editlabel.caption
@@ -1272,6 +1284,19 @@ msgstr ""
 
 #: tviswaptgui.label2.caption
 msgid "Manufacturer"
+msgstr ""
+
+#: tviswaptgui.label20.caption
+msgctxt "tviswaptgui.label20.caption"
+msgid "Description"
+msgstr ""
+
+#: tviswaptgui.label21.caption
+msgid "Dependencies"
+msgstr ""
+
+#: tviswaptgui.label22.caption
+msgid "Conflicts"
 msgstr ""
 
 #: tviswaptgui.label3.caption
@@ -1467,7 +1492,7 @@ msgid "Overview"
 msgstr ""
 
 #: tviswaptgui.pgprivaterepo.caption
-msgid "Private repository"
+msgid "Softwares repository"
 msgstr ""
 
 #: tviswaptgui.pgsoftwares.caption
