@@ -21,6 +21,7 @@ Requires:  httpd mod_ssl python-pymongo mongodb-server dialog uwsgi-plugin-pytho
 %description
 
 %install
+set -ex
 mkdir -p %{buildroot}/opt/wapt/waptserver
 mkdir -p %{buildroot}/opt/wapt/log
 mkdir -p %{buildroot}/opt/wapt/conf
