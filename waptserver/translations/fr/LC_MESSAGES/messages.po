@@ -165,7 +165,7 @@ msgstr "Serveur WAPT lancé"
 
 #: waptserver.py:1380
 msgid "Hosts listening IP discovery launched"
-msgstr "Tentative de prise de contact avec les hôtes en écoute"
+msgstr "Recherche des machines en écoute"
 
 #: waptserver.py:1425
 msgid "Nothing to upgrade."

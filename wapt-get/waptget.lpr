@@ -388,7 +388,7 @@ begin
 
       while (tasks.AsArray.Length > 0) and not (Terminated) and not check_thread.Finished do
       try
-        //if no message from service since more that 10 min, check if remaining tasks in queue...
+        //if no message from service since more that 1 min, check if remaining tasks in queue...
         if (now-lastMessageTime>1*1/24/60) and (remainingtasks.AsArray.Length=0) then
           raise Exception.create('Timeout waiting for events')
         else
