@@ -56,19 +56,11 @@ cleanup_ini_file()
 
 
 def check_if_running():
-    import os
-    pids = [pid for pid in os.listdir('/proc') if pid.isdigit()]
-
-    for pid in pids:
-        try:
-            value =  open(os.path.join('/proc', pid, 'cmdline'), 'rb').read()
-            if 'waptserver' in  value:
-                return True
-                break
-
-        except IOError: # proc has already terminated
-            continue
-    return False
+    try:
+        subprocess.check_output(['pgrep', '-f', 'waptserver'])
+        return True
+    except Exception:
+        return False
 
 
 # restart server if conf file is there and if it was already running
