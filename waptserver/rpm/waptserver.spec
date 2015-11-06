@@ -22,9 +22,9 @@ Requires:  httpd mod_ssl python-pymongo mongodb-server dialog uwsgi-plugin-pytho
 
 %install
 mkdir -p %{buildroot}/opt/wapt/waptserver
-mkdir -p %{buildroot}/opt/wapt/waptserver/log
-mkdir -p %{buildroot}/opt/wapt/waptserver/conf
-ln -s conf/waptserver.ini %{buildroot}/opt/wapt/waptserver/waptserver.ini
+mkdir -p %{buildroot}/opt/wapt/log
+mkdir -p %{buildroot}/opt/wapt/conf
+ln -sf ../conf/waptserver.ini %{buildroot}/opt/wapt/waptserver/waptserver.ini
 mkdir -p %{buildroot}/opt/wapt/waptserver/scripts
 mkdir -p %{buildroot}/etc/init.d/
 
