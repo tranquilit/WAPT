@@ -49,6 +49,7 @@ type
     ButPackagesUpdate1: TBitBtn;
     cbForcedWSUSscanDownload: TCheckBox;
     EdPackage: TLabeledEdit;
+    EdHardwareFilter: TEdit;
     EdVersion: TLabeledEdit;
     GridWSUSAllowedWindowsUpdates: TSOGrid;
     GridWSUSScan: TSOGrid;
@@ -64,11 +65,14 @@ type
     EdConflicts: TMemo;
     Label21: TLabel;
     Label22: TLabel;
+    Label23: TLabel;
+    LabErrorRegHardware: TLabel;
     MenuItem17: TMenuItem;
     MenuItem74: TMenuItem;
     MenuItem76: TMenuItem;
     MenuItem77: TMenuItem;
     Panel13: TPanel;
+    Panel14: TPanel;
     Panel8: TPanel;
     PopupGridWSUSScan: TPopupMenu;
     MenuItem70: TMenuItem;
@@ -426,6 +430,7 @@ type
     procedure CheckBoxMajChange(Sender: TObject);
     procedure cbNeedUpgradeClick(Sender: TObject);
     procedure CheckBox_errorChange(Sender: TObject);
+    procedure EdHardwareFilterChange(Sender: TObject);
     procedure EdRunKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchGroupsKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchHostKeyPress(Sender: TObject; var Key: char);
@@ -509,14 +514,16 @@ type
     procedure DoProgress(ASender: TObject);
     procedure FillcbGroups;
     function FilterSoftwares(softs: ISuperObject): ISuperObject;
+    function FilterHardware(data: ISuperObject): ISuperObject;
     function FilterHostWinUpdates(wua: ISuperObject): ISuperObject;
     function FilterWindowsUpdate(wua: ISuperObject): ISuperObject;
     function FilterWinProducts(products: ISuperObject): ISuperObject;
     { private declarations }
     procedure GridLoadData(grid: TSOGrid; jsondata: string);
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
+    function InventoryData(uuid: String): ISuperObject;
     procedure PythonOutputSendData(Sender: TObject; const Data: ansistring);
-    procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: string);
+    procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: ISuperObject);
     procedure UpdateHostPages(Sender: TObject);
   public
     { public declarations }
@@ -639,6 +646,23 @@ begin
   ActHostSearchPackage.Execute;
 end;
 
+procedure TVisWaptGUI.EdHardwareFilterChange(Sender: TObject);
+var
+  data : ISuperObject;
+begin
+  if (Gridhosts.FocusedRow <> nil) then
+  begin
+    data := Gridhosts.FocusedRow['_host_data'];
+    if data = Nil then
+    begin
+      data := InventoryData(GridHosts.FocusedRow.S['uuid']);
+      Gridhosts.FocusedRow['_host_data'] := data;
+    end;
+    TreeLoadData(GridhostInventory, FilterHardware(data));
+    GridhostInventory.FullExpand;
+  end;
+end;
+
 procedure TVisWaptGUI.EdRunKeyPress(Sender: TObject; var Key: char);
 begin
   if Key = #13 then
@@ -748,6 +772,61 @@ begin
   end;
 end;
 
+function TVisWaptGUI.FilterHardware(data: ISuperObject): ISuperObject;
+
+  function SelectedProps(item:ISuperObject):ISuperObject;
+  var
+    k,v: ISuperObject;
+    res, child,newchild:ISuperObject;
+  begin
+    if item.DataType = stArray then
+    begin
+      res := TSuperObject.Create(stArray);
+      for child in item do
+      begin
+        newchild := SelectedProps(child);
+        if newchild <> Nil then
+          res.AsArray.Add(newchild);
+      end;
+      if res.AsArray.Length=0 then
+        res := Nil;
+    end
+    else
+    if item.DataType = stObject then
+    begin
+      res := TSuperObject.Create(stObject);
+      for k in item.AsObject.GetNames do
+      begin
+        try
+          if ExecRegExpr('(?i)' +EdHardwareFilter.Text, k.AsString) then
+            res[k.AsString] := item[k.AsString]
+          else
+          begin
+            // we check if some items are matching
+            v := SelectedProps(item[k.AsString]);
+            if v<>Nil then
+              res[k.AsString] := v;
+          end;
+        except
+            on E: ERegExpr do begin LabErrorRegHardware.Caption :=  E.Message; end;
+        end;
+      end;
+      if res.AsObject.Count=0 then
+        res := Nil;
+    end
+    else
+      res := Nil;
+    Result := res;
+  end;
+
+begin
+  LabErrorRegHardware.Caption := '';
+  if (EdHardwareFilter.Text = '')then
+    Result := data
+  else
+    Result := SelectedProps(Data);
+end;
+
 function TVisWaptGUI.FilterHostWinUpdates(wua: ISuperObject): ISuperObject;
 var
   wupdate: ISuperObject;
@@ -821,6 +900,24 @@ begin
   end;}
 end;
 
+
+function TVisWaptGUI.InventoryData(uuid:String):ISuperObject;
+var
+  sores:ISuperObject;
+begin
+  try
+    sores := WAPTServerJsonGet('api/v1/hosts?columns=dmi&uuid=%s',[uuid]);
+    if (sores<>nil) and sores.B['success'] then
+    begin
+      if sores['result'].AsArray.Length>0 then
+        result := sores.A['result'][0]
+    end
+    else
+      result := nil;
+  except
+    result := nil;
+  end;
+end;
 
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
@@ -929,27 +1026,10 @@ begin
     end
     else if HostPages.ActivePage = pgHostInventory then
     begin
-      try
-        sores := WAPTServerJsonGet('api/v1/host_data?field=dmi&uuid=%s',[currhost]);
-        if sores.B['success'] then
-          dmi := sores['result']
-        else
-          dmi := nil;
-      except
-        dmi := nil;
-      end;
-      RowSO['dmi'] := dmi;
-      try
-        sores := WAPTServerJsonGet('api/v1/host_data?field=waptwua&uuid=%s',[currhost]);
-        if sores.B['success'] then
-          waptwua := sores['result']
-        else
-          waptwua := nil;
-      except
-        waptwua := nil;
-      end;
-      RowSO['waptwua'] := waptwua;
-      TreeLoadData(GridhostInventory, RowSO.AsJSon());
+      if GridHosts.FocusedRow <> Nil then
+        EdHardwareFilterChange(EdHardwareFilter)
+      else
+        GridhostInventory.Clear;
     end
     else if HostPages.ActivePage = pgTasks then
     begin
@@ -3239,23 +3319,23 @@ begin
     end;
 end;
 
-procedure TVisWaptGUI.TreeLoadData(tree: TVirtualJSONInspector; jsondata: string);
+procedure TVisWaptGUI.TreeLoadData(tree: TVirtualJSONInspector; jsondata: ISuperObject);
 var
   jsp: TJSONParser;
 
 begin
   tree.Clear;
-  if (jsondata <> '') then
-    try
-      tree.BeginUpdate;
-      jsp := TJSONParser.Create(jsondata);
-      if assigned(tree.RootData) then
-        tree.rootdata.Free;
-      tree.rootData := jsp.Parse;
-      jsp.Free;
-    finally
-      tree.EndUpdate;
-    end;
+  if (jsondata <> Nil) then
+  try
+    tree.BeginUpdate;
+    jsp := TJSONParser.Create(jsondata.AsJSon);
+    if assigned(tree.RootData) then
+      tree.rootdata.Free;
+    tree.rootData := jsp.Parse;
+    jsp.Free;
+  finally
+    tree.EndUpdate;
+  end;
 end;
 
 procedure TVisWaptGUI.GridHostsGetImageIndexEx(Sender: TBaseVirtualTree;

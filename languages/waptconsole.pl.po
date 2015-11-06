@@ -1,5 +1,14 @@
-msgid ""
+msgid "Local directory for saving package development projects"
 msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: tform1.buttonpanel1.helpbutton.caption
+msgctxt "tform1.buttonpanel1.helpbutton.caption"
+msgid "&Show config file"
+msgstr ""
+
+#: tform1.caption
+msgid "Form1"
+msgstr ""
 
 #: tvisapropos.button1.caption
 msgid "Close"
@@ -507,6 +516,7 @@ msgid "Check and set"
 msgstr ""
 
 #: tviswaptconfig.buttonpanel1.helpbutton.caption
+msgctxt "tviswaptconfig.buttonpanel1.helpbutton.caption"
 msgid "&Show config file"
 msgstr ""
 
@@ -1259,6 +1269,7 @@ msgid "Selected"
 msgstr ""
 
 #: tviswaptgui.label14.caption
+msgctxt "tviswaptgui.label14.caption"
 msgid "Filter : "
 msgstr ""
 
@@ -1297,6 +1308,11 @@ msgstr ""
 
 #: tviswaptgui.label22.caption
 msgid "Conflicts"
+msgstr ""
+
+#: tviswaptgui.label23.caption
+msgctxt "tviswaptgui.label23.caption"
+msgid "Filter : "
 msgstr ""
 
 #: tviswaptgui.label3.caption

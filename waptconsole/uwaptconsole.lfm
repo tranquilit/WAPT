@@ -316,39 +316,46 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'dmi.Chassis_Information.Serial_Number'
           end        
           item
-            MaxWidth = 400
             Position = 8
             Tag = 8
+            Text = 'Windows version'
+            Width = 111
+            PropertyName = 'host.windows_product_infos.version'
+          end        
+          item
+            MaxWidth = 400
+            Position = 9
+            Tag = 9
             Text = 'Last update'
             Width = 100
             PropertyName = 'last_query_date'
           end        
           item
             MaxWidth = 400
-            Position = 9
-            Tag = 9
+            Position = 10
+            Tag = 10
             Text = 'MAC address'
             Width = 100
             PropertyName = 'host.mac'
           end        
           item
-            Position = 10
-            Tag = 10
+            Position = 11
+            Tag = 11
             Text = 'Listening IP'
             Width = 75
             PropertyName = 'wapt.listening_address.address'
           end        
           item
             MaxWidth = 400
-            Position = 11
-            Tag = 11
+            Position = 12
+            Tag = 12
             Text = 'IP addresses'
             Width = 100
             PropertyName = 'host.connected_ips'
           end        
           item
-            Position = 12
-            Tag = 12
+            Position = 13
+            Tag = 13
             Text = 'WAPT version'
             Width = 80
             PropertyName = 'wapt.wapt-exe-version'
@@ -356,8 +363,8 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 13
-            Tag = 13
+            Position = 14
+            Tag = 14
             Text = 'uuid'
             Width = 100
             PropertyName = 'uuid'
@@ -365,8 +372,8 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 14
-            Tag = 14
+            Position = 15
+            Tag = 15
             Text = 'md5sum'
             Width = 100
             PropertyName = 'md5sum'
@@ -374,8 +381,8 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 15
-            Tag = 15
+            Position = 16
+            Tag = 16
             Text = 'purchase_order'
             Width = 100
             PropertyName = 'purchase_order'
@@ -383,8 +390,8 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 16
-            Tag = 16
+            Position = 17
+            Tag = 17
             Text = 'purchase_date'
             Width = 100
             PropertyName = 'purchase_date'
@@ -392,37 +399,37 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 17
-            Tag = 17
+            Position = 18
+            Tag = 18
             Text = 'attributes'
             Width = 100
             PropertyName = 'attributes'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 18
-            Tag = 18
+            Position = 19
+            Tag = 19
             Text = 'Domain controller'
             PropertyName = 'host.domain_controller'
           end        
           item
-            Position = 19
-            Tag = 19
+            Position = 20
+            Tag = 20
             Text = 'Groups'
             Width = 64
             PropertyName = 'depends'
           end        
           item
-            Position = 20
-            Tag = 20
+            Position = 21
+            Tag = 21
             Text = 'Domaine'
             Width = 80
             PropertyName = 'host.domain_name'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 21
-            Tag = 21
+            Position = 22
+            Tag = 22
             Text = 'Domain controller address'
             PropertyName = 'host.domain_controller_address'
           end>
@@ -454,9 +461,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 562
         Top = 93
         Width = 572
-        ActivePage = pgPackages
+        ActivePage = pgHostInventory
         Align = alRight
-        TabIndex = 0
+        TabIndex = 1
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -882,8 +889,8 @@ object VisWaptGUI: TVisWaptGUI
           ClientWidth = 564
           object GridhostInventory: TVirtualJSONInspector
             Left = 0
-            Height = 526
-            Top = 10
+            Height = 496
+            Top = 40
             Width = 564
             PropertyDefs = <>
             Align = alClient
@@ -920,14 +927,56 @@ object VisWaptGUI: TVisWaptGUI
             BevelOuter = bvNone
             TabOrder = 1
           end
+          object Panel14: TPanel
+            Left = 0
+            Height = 30
+            Top = 10
+            Width = 564
+            Align = alTop
+            BevelOuter = bvNone
+            ClientHeight = 30
+            ClientWidth = 564
+            TabOrder = 2
+            object EdHardwareFilter: TEdit
+              Left = 41
+              Height = 21
+              Top = 2
+              Width = 164
+              OnChange = EdHardwareFilterChange
+              TabOrder = 0
+            end
+            object Label23: TLabel
+              Left = 5
+              Height = 13
+              Top = 6
+              Width = 34
+              Caption = 'Filter : '
+              ParentColor = False
+            end
+            object LabErrorRegHardware: TLabel
+              Left = 215
+              Height = 1
+              Top = 5
+              Width = 1
+              Color = clDefault
+              Font.CharSet = ANSI_CHARSET
+              Font.Color = clRed
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Pitch = fpVariable
+              Font.Quality = fqDraft
+              ParentFont = False
+              Transparent = False
+            end
+          end
         end
         object pgSoftwares: TTabSheet
           Caption = 'Software inventory'
-          ClientHeight = 543
+          ClientHeight = 536
           ClientWidth = 564
           object GridHostSoftwares: TSOGrid
             Left = 0
-            Height = 513
+            Height = 506
             Top = 30
             Width = 564
             Align = alClient

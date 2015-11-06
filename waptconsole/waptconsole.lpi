@@ -85,7 +85,7 @@
         <PackageName Value="LCL"/>
       </Item14>
     </RequiredPackages>
-    <Units Count="23">
+    <Units Count="24">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -260,6 +260,13 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
       </Unit22>
+      <Unit23>
+        <Filename Value="uvispackagewizard.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uVisPackageWizard"/>
+      </Unit23>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

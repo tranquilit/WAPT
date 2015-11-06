@@ -138,7 +138,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Left = 164
         Height = 17
         Hint = 'Activate proxy when accessing the model repository'
-        Top = 232
+        Top = 231
         Width = 20
         Checked = True
         OnClick = cbUseProxyForTemplateClick
