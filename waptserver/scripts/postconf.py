@@ -42,6 +42,7 @@ import jinja2
 import socket
 import uuid
 import platform
+import re
 
 def type_debian():
     return platform.dist()[0] in ('debian','ubuntu')
@@ -71,8 +72,6 @@ try:
     postconf = dialog.Dialog(dialog="dialog")
 except dialog.UnableToRetrieveBackendVersion:
     postconf = dialog.Dialog(dialog="dialog", use_stdout=True)
-
-
 
 def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn):
     if wapt_folder.endswith('\\') or wapt_folder.endswith('/'):
@@ -163,6 +162,13 @@ def main():
     if postconf.yesno("Do you want to launch post configuration tool ?") != postconf.DIALOG_OK:
         print "canceling wapt postconfiguration"
         sys.exit(1)
+
+    if type_redhat():
+        if re.match('^SELinux status:.*enabled', subprocess.check_output('sestatus')):
+            postconf.msgbox("""You have SELinux enabled.
+		Either disable it or run the following command:
+		setsebool -P httpd_can_network_connect 1
+		"""
 
     shutil.copyfile('/opt/wapt/waptserver/waptserver.ini.template','/opt/wapt/conf/waptserver.ini')
     os.symlink('/opt/wapt/conf/waptserver.ini','/opt/wapt/waptserver/waptserver.ini')
