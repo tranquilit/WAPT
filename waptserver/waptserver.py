@@ -795,7 +795,7 @@ def trigger_reachable_discovery():
                 del(g.check_hosts_thread)
         g.check_hosts_thread = CheckHostsWaptService(timeout=conf['clients_connect_timeout'])
         g.check_hosts_thread.start()
-        message = _(u'Hosts listening IP discovery launched')
+        message = _(u'Hosts scan launched')
         result = dict(thread_ident = g.check_hosts_thread.ident )
 
     except Exception, e:

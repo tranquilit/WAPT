@@ -25,9 +25,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 681
     Top = 0
     Width = 1277
-    ActivePage = pgPrivateRepo
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -4017,7 +4017,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActTriggerHostsListening: TAction
       Category = 'hosts'
-      Caption = 'Trigger scan listening IP'
+      Caption = 'Trigger hosts scan'
       Hint = 'Trigger scan of listening IP of registered hosts.'
       ImageIndex = 36
       OnExecute = ActTriggerHostsListeningExecute
