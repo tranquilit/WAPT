@@ -22,20 +22,23 @@ Requires:  httpd mod_ssl python-pymongo mongodb-server dialog uwsgi-plugin-pytho
 
 %install
 mkdir -p %{buildroot}/opt/wapt/waptserver
+mkdir -p %{buildroot}/opt/wapt/waptserver/log
+mkdir -p %{buildroot}/opt/wapt/waptserver/conf
+ln -s conf/waptserver.ini %{buildroot}/opt/wapt/waptserver/waptserver.ini
 mkdir -p %{buildroot}/opt/wapt/waptserver/scripts
 mkdir -p %{buildroot}/etc/init.d/
+
 #rsync -aP --exclude 'scripts/waptserver-init-centos' --exclude '*.pyc' --exclude '.svn' --exclude 'apache-win32' --exclude 'deb' --exclude 'rpm' --exclude '.git' --exclude '.gitignore' -aP ../../../waptserver/ %{buildroot}/opt/wapt/waptserver
 #rsync -aP ../../../waptserver/scripts/waptserver-init-centos %{buildroot}/etc/init.d/waptserver
 #rsync -aP ../../../waptserver/scripts/postconf.py %{buildroot}/opt/wapt/waptserver/scripts/
 
 #for libname in  'requests iniparse dns pefile.py rocket pymongo bson flask werkzeug jinja2 itsdangerous.py markupsafe dialog.py babel flask_babel' ; do \
 #    rsync ../../../lib/site-packages/${i} lib),'./builddir/opt/wapt/lib/site-packages/')
-cd ..
-python  ./createrpm.py
 
+(cd .. && python ./createrpm.py)
 
 %files
-%defattr(-,wapt,apache)
+%defattr(-,root,root)
    /opt/wapt/waptserver
    /etc/logrotate.d/waptserver
    /opt/wapt/lib/
@@ -44,13 +47,11 @@ python  ./createrpm.py
    /etc/init.d/waptserver
    /opt/wapt/waptserver/scripts/postconf.py
 
-
-
 %pre
 getent passwd wapt >/dev/null || \
     useradd -r -g apache -d /opt/wapt -s /sbin/nologin \
     -c "Non privileged account for waptserver" wapt
-exit 0 
+exit 0
 
 
 %post
@@ -59,5 +60,5 @@ systemctl enable httpd
 chkconfig --add waptserver
 firewall-cmd --permanent --add-port=443/tcp
 firewall-cmd --permanent --add-port=80/tcp
-mkdir -p /opt/wapt/log
-chown wapt:apache /opt/wapt/log
+chown wapt:root /opt/wapt/conf
+chown wapt:root /opt/wapt/log
