@@ -56,6 +56,8 @@ exit 0
 
 
 %post
+set -x
+
 systemctl enable mongod
 systemctl enable httpd
 chkconfig --add waptserver
