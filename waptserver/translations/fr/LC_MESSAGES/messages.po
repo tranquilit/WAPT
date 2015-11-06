@@ -2,176 +2,131 @@
 # Copyright (C) 2015 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
 # Mael Cadorel <mcadorel@tranquil.it>, 2015.
-#
+# htouvet <htouvet@tranquil.it>, 2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-02-23 16:41+0100\n"
-"PO-Revision-Date: 2015-02-23 16:43+0100\n"
-"Last-Translator: Jeremie Courreges-Anglas <jca@tranquil.it>\n"
-"Language-Team: Technique TIS <technique@tranquil.it>\n"
+"POT-Creation-Date: 2015-11-06 11:39+0100\n"
+"PO-Revision-Date: 2015-11-06 11:47+0200\n"
+"Last-Translator: htouvet <htouvet@tranquil.it>\n"
+"Language: fr\n"
+"Language-Team: TranquilITSystems\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 0.9.6\n"
+"Generated-By: Babel 2.1.1\n"
 
-#: waptserver.py:108
-msgid "Invalid log level: {}"
-msgstr "Niveau de debug invalide : {}"
-
-#: waptserver.py:132
-msgid "FATAL : couldn't open configuration file : {}."
-msgstr "Erreur fatale. Impossible d'ouvrir le fichier : {}."
-
-#: waptserver.py:164
-msgid "No waptserver admin password set in wapt-get.ini configuration file."
-msgstr "Aucun mot de passe administrateur défini dans le fichier de configuration wapt-get.ini."
-
-#: waptserver.py:200
-msgid ""
-"FATAL, configuration file {} has no section [options]. Please check "
-"Waptserver documentation"
-msgstr "Erreur fatale. Le fichier de configuration {} n'a pas de section "
-"[options]. Veuillez vous référer à la documentation de WAPTserver."
-
-
-#: waptserver.py:215
-msgid "Folder missing : {}."
-msgstr "Répertoire manquant : {}."
-
-#: waptserver.py:220
-msgid "Folder missing : {}-host."
-msgstr "Répertoire manquant : {}-host."
-
-#: waptserver.py:225
-msgid "Folder missing : {}-group."
-msgstr "Répertoire manquant : {}-group."
-
-#: waptserver.py:276
+#: waptserver.py:151
 msgid "Could not connect to mongodb database: {}."
 msgstr "Impossible de se connecter à la base de données mongodb : {}."
 
-#: waptserver.py:289
+#: waptserver.py:164
 msgid "Could not get hosts collection from db: {}."
 msgstr "Impossible d'obtenir la liste des machines depuis la base de données : {}"
 
-#: waptserver.py:358
+#: waptserver.py:233
 msgid "You have to login with proper credentials"
 msgstr "Vous devez vous connecter avec les bons identifiants "
 
-#: waptserver.py:659 waptserver.py:695
-msgid "No host with uuid {}."
-msgstr "Aucun hôte avec cet uuid : {}."
-
-#: waptserver.py:728 waptserver.py:814
+#: waptserver.py:423 waptserver.py:512
 msgid "Problem during upload"
 msgstr "Problème au moment de l'upload"
 
-#: waptserver.py:738
+#: waptserver.py:433
 msgid "Not a valid wapt package"
 msgstr "Ce n'est pas un paquet WAPT valide"
 
-#: waptserver.py:741 waptserver.py:785
+#: waptserver.py:436 waptserver.py:480
 msgid "Wrong file type"
 msgstr "Mauvais type de fichier"
 
-#: waptserver.py:743 waptserver.py:839
+#: waptserver.py:438 waptserver.py:536
 msgid "Unsupported method"
 msgstr "Méthode non supportée"
 
-#: waptserver.py:750 waptserver.py:844
+#: waptserver.py:445 waptserver.py:541
 msgid "unexpected: {}"
 msgstr "inattendu : {}"
 
-#: waptserver.py:777
+#: waptserver.py:472
 msgid "File {} uploaded to {}"
 msgstr "Le fichier {} a été uploadé vers {}."
 
-#: waptserver.py:783
+#: waptserver.py:478
 msgid "No data received"
 msgstr "Aucune donnée reçue"
 
-#: waptserver.py:787
+#: waptserver.py:482
 msgid "No package file provided in request"
 msgstr "Aucun paquet dans la requête"
 
-#: waptserver.py:817
+#: waptserver.py:515
 msgid "{} uploaded"
 msgstr "{} uploadé"
 
-#: waptserver.py:837
+#: waptserver.py:534
 msgid "Wrong file name (version conflict?)"
 msgstr "Mauvais nom de fichier (conflit de version ?)"
 
-#: waptserver.py:874 waptserver.py:905 waptserver.py:937 waptserver.py:969
-#: waptserver.py:996 waptserver.py:1028 waptserver.py:1088
-msgid "The WAPT service port is not defined."
-msgstr "Le port du service WAPT n'est pas défini."
-
-#: waptserver.py:877 waptserver.py:908 waptserver.py:999 waptserver.py:1031
-#: waptserver.py:1091 waptserver.py:1401
-msgid "Couldn't connect to web service : {}."
-msgstr "Impossible de se connecter au service web : {}"
-
-#: waptserver.py:940 waptserver.py:972
-msgid "Couldn't connect to the host's WAPT service : {}."
-msgstr "Impossible de se connecter au service WAPT : {}"
-
-#: waptserver.py:1106
+#: waptserver.py:555
 msgid "Incorrect credentials."
 msgstr "Identifiants incorrects."
 
-#: waptserver.py:1108
+#: waptserver.py:557
 msgid "Couldn't access IPC$ share."
 msgstr "Impssible d'accéder au partage $IPC."
 
-#: waptserver.py:1134
+#: waptserver.py:580
 msgid "WAPT server must be run on Linux."
 msgstr "Le serveur WAPT doit être installé sous Linux."
 
-#: waptserver.py:1136
+#: waptserver.py:582
 msgid "smbclient installed on WAPT server."
 msgstr "smbclient installé sur le serveur WAPT."
 
-#: waptserver.py:1138
+#: waptserver.py:584
 msgid "winexe is not installed on WAPT server."
 msgstr "winexe n'est pas installé sur le serveur WAPT."
 
-#: waptserver.py:1143
+#: waptserver.py:589
 msgid "Credentials are missing."
 msgstr "Identifiants manquants."
 
-#: waptserver.py:1145
+#: waptserver.py:591
 msgid "There are no registered computers."
 msgstr "Il n'y a aucun ordinateur renseigné."
 
-#: waptserver.py:1164
+#: waptserver.py:610
 msgid "Unsupported HTTP method."
 msgstr "Méthode http non supportée."
 
-#: waptserver.py:1345
+#: waptserver.py:748
 msgid "Unknown uuid"
 msgstr "uuid inconnu"
 
-#: waptserver.py:1359
+#: waptserver.py:763
 msgid "No reachable IP for {}"
 msgstr "Aucune IP joignable pour {}"
 
-#: waptserver.py:1364
+#: waptserver.py:776
 msgid "WAPT Server running"
 msgstr "Serveur WAPT lancé"
 
-#: waptserver.py:1380
-msgid "Hosts listening IP discovery launched"
-msgstr "Recherche des machines en écoute"
+#: waptserver.py:798
+msgid "Hosts scan launched"
+msgstr "Scan des machines en cours"
 
-#: waptserver.py:1425
+#: waptserver.py:818
+msgid "Couldn't connect to web service : {}."
+msgstr "Impossible de se connecter au service web : {}"
+
+#: waptserver.py:844
 msgid "Nothing to upgrade."
 msgstr "Rien à mettre à jour."
 
-#: waptserver.py:1428
+#: waptserver.py:847
 msgid ""
 "Triggered {} task(s):\n"
 "{}"
@@ -179,23 +134,63 @@ msgstr ""
 "Lancé {} tâche(s):\n"
 "{}"
 
-#: waptserver.py:1435 waptserver.py:1468
+#: waptserver.py:854 waptserver.py:890 waptserver.py:950 waptserver.py:988
+#: waptserver.py:1025 waptserver.py:1063 waptserver.py:1107 waptserver.py:1156
+#: waptserver.py:1206
 msgid "The WAPT service is unreachable."
 msgstr "Le service WAPT est injoignable."
 
-#: waptserver.py:1461
+#: waptserver.py:883 waptserver.py:943 waptserver.py:981 waptserver.py:1018
+#: waptserver.py:1056
 msgid "Triggered task: {}"
 msgstr "Tâche lancée : {}"
 
-#: waptserver.py:1499
+#: waptserver.py:908
+msgid "Sending magic wakeonlan packets to {} for machine {}"
+msgstr "Envoi du WakeOnlan vers {} pour la machine {}"
+
+#: waptserver.py:910
+msgid "Wakeonlan packets sent to {} for machine {}"
+msgstr "WakeOnLan envoyé à {} pour la machine {}"
+
+#: waptserver.py:913
+msgid "No MAC address found for this host in database"
+msgstr "Pas d'adress MAC trouvée pour cette machine dans la base de données"
+
+#: waptserver.py:1100 waptserver.py:1149 waptserver.py:1199
+#, fuzzy
+msgid "Triggered tasks: {}"
+msgstr "Tâche lancée : {}"
+
+#: waptserver.py:1238 waptserver.py:1585
 msgid "The host reachability is not defined."
-msgstr ""
+msgstr "L'adresse IP/port du waptservice de cette machine ne sont pas connus"
+
+#: waptserver.py:1638
+msgid "Anomnymous usage statistics"
+msgstr "Statistiques anonymes"
+
+#: waptserver.py:1968
+msgid "Folder missing : {}."
+msgstr "Répertoire manquant : {}."
+
+#: waptserver.py:1973
+msgid "Folder missing : {}-host."
+msgstr "Répertoire manquant : {}-host."
+
+#: waptserver.py:1978
+msgid "Folder missing : {}-group."
+msgstr "Répertoire manquant : {}-group."
+
+#: waptserver_utils.py:188
+msgid "Invalid log level: {}"
+msgstr "Niveau de debug invalide : {}"
 
 #: templates/index.html:4
 msgid "WAPT SERVER Web Console"
 msgstr "Console Web du serveur WAPT"
 
-#: templates/index.html:49 templates/index.html:126 templates/index.html:189
+#: templates/index.html:49 templates/index.html:125 templates/index.html:191
 msgid "Tranquil IT Systems"
 msgstr ""
 
@@ -215,7 +210,7 @@ msgstr "Aller au contenu"
 msgid "Home"
 msgstr "Accueil"
 
-#: templates/index.html:61 templates/index.html:92
+#: templates/index.html:61 templates/index.html:91
 msgid "Private repository"
 msgstr "Dépôt privé"
 
@@ -247,47 +242,43 @@ msgstr "WAPTsetup (pour installer sur une machine d'administration)"
 msgid "WAPTDeploy (for setting up deployment GPO)"
 msgstr "WAPTDeploy (pour mettre en place le déploiement GPO)"
 
-#: templates/index.html:91
-msgid "Certificates"
-msgstr "Certificats"
-
-#: templates/index.html:93
+#: templates/index.html:92
 msgid "TIS repository"
 msgstr "Dépôt TIS"
 
-#: templates/index.html:103
+#: templates/index.html:102
 msgid "Help"
 msgstr "Aide"
 
-#: templates/index.html:109
+#: templates/index.html:108
 msgid "WAPT Wiki&nbsp;"
 msgstr "Wiki WAPT&nbsp;"
 
-#: templates/index.html:110
+#: templates/index.html:109
 msgid "mailing list archive"
 msgstr "Archive de la mailing list"
 
-#: templates/index.html:111
+#: templates/index.html:110
 msgid "Issue tracker (roundup)"
 msgstr "Gestionnaire de bugs (roundup)"
 
-#: templates/index.html:121
+#: templates/index.html:120
 msgid "Services"
 msgstr "Service :"
 
-#: templates/index.html:126
+#: templates/index.html:125
 msgid "Our solutions"
 msgstr "Nos solutions"
 
-#: templates/index.html:127
+#: templates/index.html:126
 msgid "WAPT providers"
 msgstr "Prestataires WAPT"
 
-#: templates/index.html:137
+#: templates/index.html:136
 msgid "WAPT server"
 msgstr "Serveur WAPT"
 
-#: templates/index.html:138
+#: templates/index.html:137
 msgid ""
 "\n"
 "WAPT server is managed through a WAPT console installed on a Windows "
@@ -302,7 +293,7 @@ msgstr ""
 "installée par défaut et peut être trouvé\n"
 "dans le menu 'Démarrer'."
 
-#: templates/index.html:144
+#: templates/index.html:143
 msgid ""
 "\n"
 "When installing the server on Linux, the <a href=\"/wapt/waptsetup-"
@@ -316,7 +307,7 @@ msgstr ""
 "d'administration et lancer la commande depuis le menu 'Démarrer/Tous les "
 "programmes'."
 
-#: templates/index.html:149
+#: templates/index.html:148
 msgid ""
 "\n"
 "To manually add a new host to the WAPT server, download the <a "
@@ -332,7 +323,7 @@ msgstr ""
 "les paramètres par défaut sont les bons. Une fois le client WAPT\n"
 "installé, vous le retrouverez dans votre console."
 
-#: templates/index.html:155
+#: templates/index.html:154
 msgid ""
 "\n"
 "For further information, be sure to check the documentation at <a "
@@ -345,24 +336,55 @@ msgstr ""
 "sur la\n"
 "mailing-list."
 
-
-#: templates/index.html:169
+#: templates/index.html:168
 msgid "What's new"
 msgstr ""
 
-#: templates/index.html:173
+#: templates/index.html:172
 msgid "WAPT Server version:"
 msgstr "Version WAPT Server :"
 
-#: templates/index.html:174
+#: templates/index.html:173
 msgid "WAPT Agent version:"
 msgstr "Version WAPT Agent :"
 
-#: templates/index.html:175
+#: templates/index.html:174
 msgid "WAPT Setup version:"
 msgstr "version WAPT Setup :"
 
-#: templates/index.html:176
+#: templates/index.html:175
 msgid "WAPT Deploy version:"
 msgstr "Version WAPT Deploy :"
+
+#: templates/index.html:176
+msgid "MongoDB status:"
+msgstr "Statut de MongoDB:"
+
+#: templates/index.html:177
+msgid "Disk space:"
+msgstr "Espace disque:"
+
+#~ msgid "FATAL : couldn't open configuration file : {}."
+#~ msgstr "Erreur fatale. Impossible d'ouvrir le fichier : {}."
+
+#~ msgid "No waptserver admin password set in wapt-get.ini configuration file."
+#~ msgstr ""
+
+#~ msgid ""
+#~ msgstr ""
+
+#~ msgid "No host with uuid {}."
+#~ msgstr "Aucun hôte avec cet uuid : {}."
+
+#~ msgid "The WAPT service port is not defined."
+#~ msgstr "Le port du service WAPT n'est pas défini."
+
+#~ msgid "Couldn't connect to the host's WAPT service : {}."
+#~ msgstr "Impossible de se connecter au service WAPT : {}"
+
+#~ msgid "Hosts listening IP discovery launched"
+#~ msgstr "Recherche des machines en écoute"
+
+#~ msgid "Certificates"
+#~ msgstr "Certificats"
 
