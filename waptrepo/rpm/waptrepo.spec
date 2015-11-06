@@ -3,8 +3,9 @@ Name:		tis-waptrepo
 Version:	1.2.3
 Release:	1%{?dist}
 Summary:	WAPT Repo
+BuildArch:	noarch
 
-Group:	        Development/Tools	
+Group:	        Development/Tools
 License:	GPL
 URL:		http://dev.tranquil.it
 Source0:	./waptrepo/
