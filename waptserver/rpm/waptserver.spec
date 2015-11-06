@@ -60,8 +60,14 @@ set -x
 
 systemctl enable mongod
 systemctl enable httpd
+
 chkconfig --add waptserver
+
 firewall-cmd --permanent --add-port=443/tcp
 firewall-cmd --permanent --add-port=80/tcp
-chown wapt:root /opt/wapt/conf
-chown wapt:root /opt/wapt/log
+
+chown -R wapt:root /opt/wapt/conf
+chmod 755 /opt/wapt/conf
+chmod 644 /opt/wapt/conf/waptserver.ini
+chown -R wapt:root /opt/wapt/log
+chmod 755 /opt/wapt/log
