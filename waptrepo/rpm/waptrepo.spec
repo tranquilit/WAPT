@@ -39,10 +39,12 @@ cd .. && python createrpm.py
 getent passwd wapt >/dev/null || \
     useradd -r -g apache -d /opt/wapt -s /sbin/nologin \
     -c "Non privileged account for waptserver" wapt
-exit 0 
+exit 0
 
 
 %post
 systemctl enable httpd
 firewall-cmd --permanent --add-port=443/tcp
 firewall-cmd --permanent --add-port=80/tcp
+python /opt/wapt/wapt-scanpackages.py
+exit 0
