@@ -1502,16 +1502,19 @@ var
   sores,taskresult: ISuperObject;
   currhost: ansistring;
 begin
-  currhost := GridHosts.FocusedRow.S['uuid'];
-
-  sores := WAPTServerJsonGet('api/v1/host_cancel_task?uuid=%s', [currhost]);
-  if sores.B['success'] then
+  if GridHosts.FocusedRow<>Nil then
   begin
-    taskresult := sores['result'];
-    ShowMessage(rsTaskCanceled)
-  end
-  else
-    ShowMessageFmt(rsFailedToCancel, [sores.S['msg']]);
+    currhost := GridHosts.FocusedRow.S['uuid'];
+
+    sores := WAPTServerJsonGet('api/v1/host_cancel_task?uuid=%s', [currhost]);
+    if sores.B['success'] then
+    begin
+      taskresult := sores['result'];
+      ShowMessage(rsTaskCanceled)
+    end
+    else
+      ShowMessageFmt(rsFailedToCancel, [sores.S['msg']]);
+  end;
 end;
 
 procedure TVisWaptGUI.ActChangePasswordExecute(Sender: TObject);
@@ -1978,7 +1981,7 @@ procedure TVisWaptGUI.ActForgetPackagesExecute(Sender: TObject);
 var
   uuid,sel, package, res, packages : ISuperObject;
 begin
-  if GridHostPackages.Focused then
+  if GridHostPackages.Focused and (GridHosts.FocusedRow) then
   begin
     sel := GridHostPackages.SelectedRows;
     if Dialogs.MessageDlg(
@@ -2164,7 +2167,7 @@ procedure TVisWaptGUI.ActPackageInstallExecute(Sender: TObject);
 var
   uuid,sel, package, res, packages : ISuperObject;
 begin
-  if GridHostPackages.Focused then
+  if GridHostPackages.Focused and (GridHosts.FocusedRow<>Nil) then
   begin
     sel := GridHostPackages.SelectedRows;
     if Dialogs.MessageDlg(
@@ -2200,7 +2203,7 @@ procedure TVisWaptGUI.ActPackageRemoveExecute(Sender: TObject);
 var
   uuid,sel, package, res, packages : ISuperObject;
 begin
-  if GridHostPackages.Focused then
+  if GridHostPackages.Focused and (GridHosts.FocusedRow<>Nil) then
   begin
     sel := GridHostPackages.SelectedRows;
     if Dialogs.MessageDlg(
@@ -3375,17 +3378,29 @@ end;
 
 procedure TVisWaptGUI.GridPackagesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 begin
-  MemoGroupeDescription.Lines.Text := GridPackages.FocusedRow.S['description'];
-  EdPackage.Text:=GridPackages.FocusedRow.S['package'];
-  EdVersion.Text:=GridPackages.FocusedRow.S['version'];
-  EdDepends.Lines.Text := StringReplace(GridPackages.FocusedRow.S['depends'],',',#13#10,[rfReplaceAll]);
-  EdConflicts.Lines.Text := StringReplace(GridPackages.FocusedRow.S['conflicts'],',',#13#10,[rfReplaceAll]);
+  if GridPackages.FocusedRow <> Nil then
+  begin
+    MemoGroupeDescription.Lines.Text := GridPackages.FocusedRow.S['description'];
+    EdPackage.Text:=GridPackages.FocusedRow.S['package'];
+    EdVersion.Text:=GridPackages.FocusedRow.S['version'];
+    EdDepends.Lines.Text := StringReplace(GridPackages.FocusedRow.S['depends'],',',#13#10,[rfReplaceAll]);
+    EdConflicts.Lines.Text := StringReplace(GridPackages.FocusedRow.S['conflicts'],',',#13#10,[rfReplaceAll]);
+  end
+  else
+  begin
+    MemoGroupeDescription.Lines.Text := '';
+    EdPackage.Text := '';
+    EdVersion.Text := '';
+    EdDepends.Lines.Text := '';
+    EdConflicts.Lines.Text := '';
+  end
+
 end;
 
 procedure TVisWaptGUI.GridPackagesColumnDblClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
 begin
-  if ActEditpackage.Enabled and (MessageDlg(rsConfirmCaption, Format(rsConfirmPackageEdit,[GridPackages.FocusedRow.S['package']]),mtConfirmation,mbYesNoCancel ,'') = mrYes) then
+  if ActEditpackage.Enabled and (GridPackages.FocusedRow<>Nil) and (MessageDlg(rsConfirmCaption, Format(rsConfirmPackageEdit,[GridPackages.FocusedRow.S['package']]),mtConfirmation,mbYesNoCancel ,'') = mrYes) then
     ActEditpackage.Execute;
 end;
 
