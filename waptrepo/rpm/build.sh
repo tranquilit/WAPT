@@ -1,9 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
-set -e
-
-for d in BUILD RPMS SOURCES SPECS SRPMS; do
-    mkdir -p buildroot/$d
-done
-
-rpmbuild -bb --buildroot $PWD/builddir -v --clean ./waptrepo.spec
+mkdir -p BUILD BUILDROOT RPMS
+rpmbuild -bb --buildroot $PWD/BUILDROOT -v --clean waptrepo.spec

@@ -1,6 +1,4 @@
 %define _topdir   .
-%define buildroot ./builddir
-Buildroot:      ./builddir
 Name:		tis-waptrepo
 Version:	1.2.3
 Release:	1%{?dist}
@@ -17,8 +15,7 @@ Requires:  httpd dialog pytz m2crypto python-passlib
 %description
 
 %install
-cd ..
-python  ./createrpm.py
+cd .. && python createrpm.py
 
 %files
 %defattr(-,wapt,apache)

@@ -68,66 +68,39 @@ if not wapt_version:
     print 'version "%s" incorrecte dans waptpackage.py' % (wapt_version,)
     sys.exit(1)
 
-# debian specific
-#control_file = './builddir/DEBIAN/control'
-
 new_umask = 022
 old_umask = os.umask(new_umask)
 if new_umask != old_umask:
     print >> sys.stderr, 'umask fixed (previous %03o, current %03o)' % (old_umask, new_umask)
- 
-# remove old debs
-#for filename in glob.glob("tis-waptrepo*.deb"):
-#    print "destruction de %s" % filename
-#    os.remove(filename)
-if os.path.exists("builddir"):
-    shutil.rmtree("builddir")
+
+if os.path.exists('BUILDROOT'):
+    shutil.rmtree('BUILDROOT')
 
 print u'creation de l\'arborescence'
-os.makedirs("builddir")
-#os.makedirs("builddir/DEBIAN")
-os.makedirs("builddir/opt")
-os.makedirs("builddir/opt/wapt")
-os.makedirs("builddir/opt/wapt/waptrepo/")
+os.makedirs("BUILDROOT")
+os.makedirs("BUILDROOT/opt")
+os.makedirs("BUILDROOT/opt/wapt")
+os.makedirs("BUILDROOT/opt/wapt/waptrepo/")
 
-version_file = open(os.path.join('./builddir/opt/wapt/waptrepo','VERSION'),'w')
+version_file = open(os.path.join('BUILDROOT/opt/wapt/waptrepo','VERSION'),'w')
 version_file.write(wapt_version)
 version_file.close()
 
 print 'copie des fichiers waptrepo'
-rsync(source_dir,'./builddir/opt/wapt/')
+rsync(source_dir,'BUILDROOT/opt/wapt/')
 copyfile(makepath(wapt_source_dir,'waptpackage.py'),
-         './builddir/opt/wapt/waptpackage.py')
+         'BUILDROOT/opt/wapt/waptpackage.py')
 copyfile(makepath(wapt_source_dir,'wapt-scanpackages.py'),
-         './builddir/opt/wapt/wapt-scanpackages.py')
+         'BUILDROOT/opt/wapt/wapt-scanpackages.py')
 
 if platform.dist()[0] in ('debian','ubuntu'):
-    os.makedirs('builddir/var/www/wapt')
-    os.makedirs('builddir/var/www/wapt-host')
-    os.makedirs('builddir/var/www/wapt-group')
+    os.makedirs('BUILDROOT/var/www/wapt')
+    os.makedirs('BUILDROOT/var/www/wapt-host')
+    os.makedirs('BUILDROOT/var/www/wapt-group')
 elif platform.dist()[0] in ('centos','redhat','ubuntu'):
-    os.makedirs('builddir/var/www/html/wapt')
-    os.makedirs('builddir/var/www/html/wapt-host')
-    os.makedirs('builddir/var/www/html/wapt-group')
+    os.makedirs('BUILDROOT/var/www/html/wapt')
+    os.makedirs('BUILDROOT/var/www/html/wapt-host')
+    os.makedirs('BUILDROOT/var/www/html/wapt-group')
 else:
     print "distrib not supported"
     sys.exit(1)
-
-
-#print 'copie des fichiers control et postinst'
-#copyfile('./DEBIAN/control','./builddir/DEBIAN/control')
-#copyfile('./DEBIAN/postinst','./builddir/DEBIAN/postinst')
-
-#print u'inscription de la version dans le fichier de control. new version: ' + wapt_version
-#replaceAll(control_file,'0.0.7',wapt_version)
-
-#print u'creation du paquet Deb'
-#os.chmod('./builddir/DEBIAN/postinst',
-#         stat.S_IRWXU
-#         | stat.S_IXGRP | stat.S_IRGRP
-#         | stat.S_IROTH | stat.S_IXOTH
-#         )
-#dpkg_command = 'dpkg-deb --build builddir tis-waptrepo.deb'
-#os.system(dpkg_command)
-#os.link('tis-waptrepo.deb', 'tis-waptrepo-{}.deb'.format(wapt_version))
-#shutil.rmtree("builddir")
