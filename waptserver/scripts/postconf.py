@@ -168,7 +168,6 @@ def main():
             subprocess.check_call(['setsebool', '-P', 'httpd_can_network_connect', '1'])
 
     shutil.copyfile('/opt/wapt/waptserver/waptserver.ini.template','/opt/wapt/conf/waptserver.ini')
-    #os.symlink('/opt/wapt/conf/waptserver.ini','/opt/wapt/waptserver/waptserver.ini')
     waptserver_ini = iniparse.RawConfigParser()
 
     waptserver_ini.readfp(file('/opt/wapt/conf/waptserver.ini', 'rU'))
