@@ -41,51 +41,57 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="14">
+    <RequiredPackages Count="16">
       <Item1>
-        <PackageName Value="pl_lazsolutions"/>
+        <PackageName Value="pl_luicontrols"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_indy"/>
+        <PackageName Value="pl_lclextensions"/>
       </Item2>
       <Item3>
-        <PackageName Value="MultiThreadProcsLaz"/>
+        <PackageName Value="pl_lazsolutions"/>
       </Item3>
       <Item4>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="pl_indy"/>
       </Item4>
       <Item5>
-        <PackageName Value="pl_excontrols"/>
+        <PackageName Value="MultiThreadProcsLaz"/>
       </Item5>
       <Item6>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pltis_wapt"/>
       </Item6>
       <Item7>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="pl_excontrols"/>
       </Item7>
       <Item8>
-        <PackageName Value="pl_virtualtrees"/>
+        <PackageName Value="pltis_utils"/>
       </Item8>
       <Item9>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item9>
       <Item10>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="pl_virtualtrees"/>
       </Item10>
       <Item11>
-        <PackageName Value="pl_virtualtreesextra"/>
+        <PackageName Value="pltis_superobject"/>
       </Item11>
       <Item12>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item12>
       <Item13>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="pl_virtualtreesextra"/>
       </Item13>
       <Item14>
-        <PackageName Value="LCL"/>
+        <PackageName Value="FCL"/>
       </Item14>
+      <Item15>
+        <PackageName Value="SynEdit"/>
+      </Item15>
+      <Item16>
+        <PackageName Value="LCL"/>
+      </Item16>
     </RequiredPackages>
-    <Units Count="24">
+    <Units Count="26">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -268,6 +274,16 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisPackageWizard"/>
       </Unit23>
+      <Unit24>
+        <Filename Value="virtualdataobject.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="VirtualDataObject"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="winoledataobject.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="WinOLEDataObject"/>
+      </Unit25>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

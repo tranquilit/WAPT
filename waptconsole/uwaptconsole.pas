@@ -725,7 +725,7 @@ begin
       try
         stats_report_url:=ini.ReadString('Global','usage_report_url',rsDefaultUsageStatsURL);
         stats := WAPTServerJsonGet('api/v1/usage_statistics',[])['result'];
-        IdHttpPostData(stats_report_url,stats.AsJSon,waptcommon.UseProxyForTemplates);
+        IdHttpPostData(stats_report_url,stats.AsJSon,waptcommon.UseProxyForTemplates,4000,60000,60000,'','','Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko');
         ini.WriteDateTime('Global','last_usage_report',Now);
       except
         ini.WriteDateTime('Global','last_usage_report',Now);
@@ -1341,6 +1341,20 @@ var
   ini: TIniFile;
   SORes: ISuperObject;
 begin
+    if (waptcommon.DefaultPackagePrefix = '') then
+  begin
+    ShowMessage(rsWaptPackagePrefixMissing);
+    ActWAPTLocalConfig.Execute;
+    exit;
+  end;
+
+  if not FileExists(GetWaptPrivateKeyPath) then
+  begin
+    ShowMessageFmt(rsPrivateKeyDoesntExist, [GetWaptPrivateKeyPath]);
+    exit;
+  end;
+
+
   with TVisCreateWaptSetup.Create(self) do
     try
       ini := TIniFile.Create(AppIniFilename);

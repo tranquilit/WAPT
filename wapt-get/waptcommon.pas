@@ -67,12 +67,12 @@ interface
   function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject): ISuperObject; //use global credentials and proxy settings
   function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString='';timeout:integer=1000):ISuperObject;
 
-  Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy:Boolean=False): boolean;
-  Function IdWget_Try(const fileURL: Utf8String;enableProxy:Boolean=False): boolean;
+  Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy:Boolean=False;userAgent:String=''): boolean;
+  Function IdWget_Try(const fileURL: Utf8String;enableProxy:Boolean=False;userAgent:String=''): boolean;
   function IdHttpGetString(const url: ansistring; enableProxy:Boolean= False;
-      ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';method:AnsiString='GET'):RawByteString;
+      ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';method:AnsiString='GET';userAGent:String=''):RawByteString;
   function IdHttpPostData(const url: Ansistring; const Data: RawByteString; enableProxy:Boolean= False;
-     ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString=''):RawByteString;
+     ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';userAgent:String=''):RawByteString;
 
   function GetReachableIP(IPS:ISuperObject;port:word):String;
 
@@ -202,7 +202,7 @@ begin
 end;
 
 function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver: TObject;
-  progressCallback: TProgressCallback; enableProxy: Boolean): boolean;
+  progressCallback: TProgressCallback; enableProxy: Boolean;userAgent:String=''): boolean;
 var
   http:TIdHTTP;
   OutputFile:TFileStream;
@@ -214,7 +214,11 @@ begin
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
   http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
-  http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent;
+
+  if userAgent='' then
+    http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent
+  else
+    http.Request.UserAgent:=userAgent;
 
   http.Request.BasicAuthentication:=True;
 
@@ -271,7 +275,7 @@ begin
   end;
 end;
 
-function IdWget_Try(const fileURL: Utf8String; enableProxy: Boolean): boolean;
+function IdWget_Try(const fileURL: Utf8String; enableProxy: Boolean;userAgent:String=''): boolean;
 var
   http:TIdHTTP;
   ssl: boolean;
@@ -281,7 +285,10 @@ begin
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
   http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
-  http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent;
+  if userAgent='' then
+    http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent
+  else
+    http.Request.UserAgent:=userAgent;
 
   ssl := copy(fileUrl, 1, length('https://')) = 'https://';
   if (ssl) then
@@ -314,7 +321,7 @@ end;
 
 
 function IdHttpGetString(const url: ansistring; enableProxy:Boolean= False;
-    ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';method:AnsiString='GET'):RawByteString;
+    ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';method:AnsiString='GET';userAGent:String=''):RawByteString;
 var
   http:TIdHTTP;
   ssl: boolean;
@@ -323,7 +330,10 @@ begin
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
   http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
-  http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent;
+  if userAgent='' then
+    http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent
+  else
+    http.Request.UserAgent:=userAgent;
 
   ssl := copy(url, 1, length('https://')) = 'https://';
   if (ssl) then
@@ -364,7 +374,7 @@ begin
 end;
 
 function IdHttpPostData(const url: Ansistring; const Data: RawByteString; enableProxy:Boolean= False;
-   ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString=''):RawByteString;
+   ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';userAgent:String=''):RawByteString;
 var
   http:TIdHTTP;
   DataStream:TStringStream;
@@ -376,7 +386,10 @@ begin
   http.HandleRedirects:=True;
   http.Compressor := TIdCompressorZLib.Create;
   http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
-  http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent;
+  if userAgent='' then
+    http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent
+  else
+    http.Request.UserAgent:=userAgent;
 
   ssl := copy(url, 1, length('https://')) = 'https://';
   if (ssl) then
