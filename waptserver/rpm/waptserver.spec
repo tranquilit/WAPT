@@ -53,7 +53,7 @@ mkdir -p %{buildroot}/etc/init.d/
    /etc/init.d/waptserver
    /opt/wapt/waptserver/scripts/postconf.py
 
-%attr(-,wapt,root,755)
+%attr(755,wapt,root,755)
    /opt/wapt/conf
    /opt/wapt/log
 
