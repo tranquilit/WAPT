@@ -267,9 +267,9 @@ def main():
         'Postconfiguration completed.',
         ]
 
-    enable_mongodb()
+    enable_mongod()
     enable_waptserver()
-    start_mongodb()
+    start_mongod()
     start_waptserver()
 
     reply = postconf.yesno("Do you want to configure apache?")
