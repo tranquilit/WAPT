@@ -46,5 +46,5 @@ exit 0
 systemctl enable httpd
 firewall-cmd --permanent --add-port=443/tcp
 firewall-cmd --permanent --add-port=80/tcp
-python /opt/wapt/wapt-scanpackages.py
+python /opt/wapt/wapt-scanpackages.py /var/www/html/wapt
 exit 0
