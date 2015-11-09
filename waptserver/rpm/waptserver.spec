@@ -46,6 +46,7 @@ mkdir -p %{buildroot}/etc/init.d/
 %defattr(644,root,root,755)
 
 /opt/wapt
+/opt/wapt/lib/*
 /etc/logrotate.d/waptserver
 
 %attr(755,root,root)
