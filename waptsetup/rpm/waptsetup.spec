@@ -17,9 +17,9 @@ Convenience package that ships with waptdeploy.exe and waptsetup.exe
 programs with the appropriate version for your waptserver.
 
 %install
-%{__mkdir_p} %{buildroot}/var/www/wapt
-%{__install} -m0755 %{SOURCE0} %{buildroot}/var/www/wapt/
-%{__install} -m0755 %{SOURCE1} %{buildroot}/var/www/wapt/
+%{__mkdir_p} %{buildroot}/var/www/html/wapt
+%{__install} -m0755 %{SOURCE0} %{buildroot}/var/www/html/wapt/
+%{__install} -m0755 %{SOURCE1} %{buildroot}/var/www/html/wapt/
 
 %files
-/var/www/wapt/*
+/var/www/wapt/html/*
