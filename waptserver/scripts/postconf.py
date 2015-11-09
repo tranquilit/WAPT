@@ -151,35 +151,35 @@ def enable_redhat_vhost():
 def enable_mongod():
     if type_redhat():
         subprocess.check_output(['systemctl', 'enable', 'mongod'])
-    else if type_debian():
+    elif type_debian():
         subprocess.check_output(['update-rc.d', 'mongodb', 'enable'])
 
 
 def start_mongod():
     if type_redhat():
         subprocess.check_output(['service', 'restart', 'mongod'])
-    else if type_debian():
+    elif type_debian():
         subprocess.check_output(['service', 'restart', 'mongodb'])
 
 
 def enable_apache():
     if type_redhat():
         subprocess.check_output(['systemctl', 'enable', 'httpd'])
-    else if type_debian():
+    elif type_debian():
         subprocess.check_output(['update-rc.d', 'apache2', 'enable'])
 
 
 def start_apache():
     if type_redhat():
         subprocess.check_output(['service', 'httpd', 'restart'])
-    else if type_debian():
+    elif type_debian():
         subprocess.check_output(['service', 'apache2', 'restart'])
 
 
 def enable_waptserver():
     if type_redhat():
         subprocess.check_output(['chkconfig', '--add', 'waptserver'])
-    else if type_debian():
+    elif type_debian():
         subprocess.check_output(['update-rc.d', 'waptserver', 'enable'])
 
 
