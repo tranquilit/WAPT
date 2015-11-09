@@ -51,7 +51,6 @@ mkdir -p %{buildroot}/etc/init.d/
 
 %defattr(755,root,root)
    /opt/wapt/waptserver
-   /opt/wapt/lib/
    /etc/init.d/waptserver
    /opt/wapt/waptserver/scripts/postconf.py
 
@@ -81,8 +80,17 @@ if [ -e "$old_ini" ] && ! [ -L "$old_ini" ]; then
     fi
 fi
 
+chown -R root:root /opt/wapt/lib
+find /opt/wapt/lib -type d -execdir chmod 755 {} +
+find /opt/wapt/lib -type f -execdir chmod 644 {} +
+
 chown -R wapt:root /opt/wapt/conf
 chmod 755 /opt/wapt/conf
 [ -e /opt/wapt/conf/waptserver.ini ] && chmod 644 /opt/wapt/conf/waptserver.ini
 chown -R wapt:root /opt/wapt/log
 chmod 755 /opt/wapt/log
+
+chown -R root:root /opt/wapt/waptserver
+find /opt/wapt/waptserver -type d -execdir chmod 755 {} +
+find /opt/wapt/waptserver -type f -execdir chmod 644 {} +
+chown 755 /opt/wapt/waptserver/scripts/postconf.py
