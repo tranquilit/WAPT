@@ -68,7 +68,13 @@ def main():
         sys.exit(1)
     res = update_packages(wapt_path)
     if res and platform.system() == 'Linux':
-        os.system('chown wapt:www-data "%s"'%res['packages_filename'])
+        try:
+            import grp, pwd
+            gid = pwd.getpwnam('wapt').pw_gid
+            wapt_group = grp.getgrgid(gid).gr_name
+        except:
+            wapt_group = 'www-data'
+        os.system('chown "wapt:%s" "%s"' % (wapt_group, res['packages_filename']))
 
 if __name__ == "__main__":
     main()
