@@ -6,7 +6,7 @@ rm -Rf rpmbuild
 mkdir -p rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
 
 cp waptdeploy.exe rpmbuild/SOURCES
-cp waptsetup.exe rpmbuild/SOURCES
+cp waptsetup-tis.exe rpmbuild/SOURCES
 
 cp waptsetup.spec rpmbuild/SPECS
 

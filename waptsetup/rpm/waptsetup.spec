@@ -7,7 +7,7 @@ BuildArch:	noarch
 Group:	        Development/Tools
 License:	GPL
 URL:		http://dev.tranquil.it
-Source0:	waptsetup.exe
+Source0:	waptsetup-tis.exe
 Source1:        waptdeploy.exe
 
 Requires:	httpd tis-waptrepo
