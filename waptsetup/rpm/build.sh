@@ -11,3 +11,6 @@ cp waptsetup-tis.exe rpmbuild/SOURCES
 cp waptsetup.spec rpmbuild/SPECS
 
 (cd rpmbuild && rpmbuild -bb -v --clean --define "_topdir $(pwd)" SPECS/waptsetup.spec)
+
+rm -f tis-waptsetup.rpm
+cp rpmbuild/RPMS/tis-waptsetup*.rpm tis-waptsetup.rpm
