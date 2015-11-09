@@ -41,10 +41,6 @@ getent passwd wapt >/dev/null || \
     -c "Non privileged account for waptserver" wapt
 exit 0
 
-
 %post
-systemctl enable httpd
-firewall-cmd --permanent --add-port=443/tcp
-firewall-cmd --permanent --add-port=80/tcp
 python /opt/wapt/wapt-scanpackages.py /var/www/html/wapt
 exit 0
