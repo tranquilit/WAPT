@@ -205,6 +205,7 @@ def main():
         if re.match('^SELinux status:.*enabled', subprocess.check_output('sestatus')):
             postconf.msgbox('SELinux detected, tweaking httpd permissions.')
             subprocess.check_call(['setsebool', '-P', 'httpd_can_network_connect', '1'])
+            postconf.msgbox('SELinux correctly configured for Apache reverse proxy')
 
     shutil.copyfile('/opt/wapt/waptserver/waptserver.ini.template','/opt/wapt/conf/waptserver.ini')
     waptserver_ini = iniparse.RawConfigParser()
