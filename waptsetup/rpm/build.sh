@@ -13,4 +13,4 @@ cp waptsetup.spec rpmbuild/SPECS
 (cd rpmbuild && rpmbuild -bb -v --clean --define "_topdir $(pwd)" SPECS/waptsetup.spec)
 
 rm -f tis-waptsetup.rpm
-cp rpmbuild/RPMS/tis-waptsetup*.rpm tis-waptsetup.rpm
+cp rpmbuild/RPMS/noarch/tis-waptsetup*.rpm tis-waptsetup.rpm
