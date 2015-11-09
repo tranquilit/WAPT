@@ -22,11 +22,15 @@ Requires:  httpd mod_ssl python-pymongo mongodb-server dialog uwsgi-plugin-pytho
 
 %install
 set -ex
-mkdir -p %{buildroot}/opt/wapt/waptserver
+
+mkdir -p %{buildroot}/opt/wapt
 mkdir -p %{buildroot}/opt/wapt/log
 mkdir -p %{buildroot}/opt/wapt/conf
-ln -sf ../conf/waptserver.ini %{buildroot}/opt/wapt/waptserver/waptserver.ini
+
+mkdir -p %{buildroot}/opt/wapt/waptserver
 mkdir -p %{buildroot}/opt/wapt/waptserver/scripts
+ln -sf ../conf/waptserver.ini %{buildroot}/opt/wapt/waptserver/waptserver.ini
+
 mkdir -p %{buildroot}/etc/init.d/
 
 #rsync -aP --exclude 'scripts/waptserver-init-centos' --exclude '*.pyc' --exclude '.svn' --exclude 'apache-win32' --exclude 'deb' --exclude 'rpm' --exclude '.git' --exclude '.gitignore' -aP ../../../waptserver/ %{buildroot}/opt/wapt/waptserver

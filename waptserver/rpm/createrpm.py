@@ -93,20 +93,9 @@ if not wapt_version:
 
 control_file = './builddir/DEBIAN/control'
 
-#for filename in glob.glob("tis-waptserver*.deb"):
-#    print >> sys.stderr, "Removing %s"%filename
-#    os.remove(filename)
-
 print >> sys.stderr, 'creating the package tree'
-os.makedirs("builddir")
-os.makedirs("builddir/opt")
-os.makedirs("builddir/opt/wapt")
-os.makedirs("builddir/opt/wapt/lib")
-os.makedirs("builddir/opt/wapt/lib/site-packages")
-os.makedirs("builddir/opt/wapt/waptserver")
-
-# debian specific
-#os.makedirs("builddir/DEBIAN")
+mkdir_p("builddir/opt/wapt/lib")
+mkdir_p("builddir/opt/wapt/lib/site-packages")
 
 print >> sys.stderr, 'copying the waptserver files'
 rsync(source_dir,'./builddir/opt/wapt/',excludes=['postconf','mongod.exe'])
