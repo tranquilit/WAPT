@@ -11,7 +11,7 @@ URL:		http://dev.tranquil.it
 Source0:	./waptrepo/
 Prefix:		/opt
 
-Requires:  httpd dialog pytz m2crypto python-passlib
+Requires:  httpd dialog pytz m2crypto python-passlib python-requests
 
 %description
 
