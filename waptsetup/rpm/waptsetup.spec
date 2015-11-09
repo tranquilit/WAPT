@@ -22,4 +22,4 @@ programs with the appropriate version for your waptserver.
 %{__install} -m0755 %{SOURCE1} %{buildroot}/var/www/html/wapt/
 
 %files
-/var/www/wapt/html/*
+/var/www/html/wapt/*
