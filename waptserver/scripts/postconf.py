@@ -101,9 +101,6 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn):
         dst_file = file('/etc/apache2/sites-available/wapt.conf', 'wt')
     elif type_redhat():
         dst_file = file('/etc/httpd/conf.d/wapt.conf', 'wt')
-    else:
-        print ('unsupported distrib')
-        sys.exit(1)
     dst_file.write(config_string)
     dst_file.close()
 
@@ -123,6 +120,7 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn):
                 # fill in the minimum amount of information needed; to be revisited
                 '-subj', '/C=/ST=/L=/O=/CN=' + fqdn + '/'
                 ], stderr=subprocess.STDOUT)
+
 
 def enable_debian_vhost():
     # the two following calls may fail on Debian Jessie
@@ -144,16 +142,56 @@ def enable_debian_vhost():
     void = subprocess.check_output(['a2ensite', 'wapt.conf'], stderr=subprocess.STDOUT)
     void = subprocess.check_output(['/etc/init.d/apache2', 'graceful'], stderr=subprocess.STDOUT)
 
-    reply = postconf.yesno("The Apache config has been reloaded. Do you want to force-restart Apache?")
-    if reply == postconf.DIALOG_OK:
-        void = subprocess.check_output(['/etc/init.d/apache2', 'restart'], stderr=subprocess.STDOUT)
 
 def enable_redhat_vhost():
     if os.path.exists('/etc/httpd/conf.d/ssl.conf'):
         subprocess.check_output('mv /etc/httpd/conf.d/ssl.conf /etc/httpd/conf.d/ssl.conf.disabled',shell=True)
-    reply = postconf.yesno("The Apache config has been reloaded. Do you want to force-restart Apache?")
-    if reply == postconf.DIALOG_OK:
-        void = subprocess.check_output('systemctl restart httpd', stderr=subprocess.STDOUT, shell=True)
+
+
+def enable_mongod():
+    if type_redhat():
+        subprocess.check_output(['systemctl', 'enable', 'mongod'])
+    else if type_debian():
+        subprocess.check_output(['update-rc.d', 'mongodb', 'enable'])
+
+
+def start_mongod():
+    if type_redhat():
+        subprocess.check_output(['service', 'restart', 'mongod'])
+    else if type_debian():
+        subprocess.check_output(['service', 'restart', 'mongodb'])
+
+
+def enable_apache():
+    if type_redhat():
+        subprocess.check_output(['systemctl', 'enable', 'httpd'])
+    else if type_debian():
+        subprocess.check_output(['update-rc.d', 'apache2', 'enable'])
+
+
+def start_apache():
+    if type_redhat():
+        subprocess.check_output(['service', 'httpd', 'restart'])
+    else if type_debian():
+        subprocess.check_output(['service', 'apache2', 'restart'])
+
+
+def enable_waptserver():
+    if type_redhat():
+        subprocess.check_output(['chkconfig', '--add', 'waptserver'])
+    else if type_debian():
+        subprocess.check_output(['update-rc.d', 'waptserver', 'enable'])
+
+
+def start_waptserver():
+    subprocess.check_output(['service', 'waptserver', 'restart'])
+
+
+def setup_firewall():
+    if type_redhat():
+        subprocess.check_output(['firewall-cmd', '--permanent', '--add-port=443/tcp'])
+        subprocess.check_output(['firewall-cmd', '--permanent', '--add-port=80/tcp'])
+        subprocess.check_output(['firewall-cmd', '--reload'])
 
 
 # main program
@@ -229,6 +267,11 @@ def main():
         'Postconfiguration completed.',
         ]
 
+    enable_mongodb()
+    enable_waptserver()
+    start_mongodb()
+    start_waptserver()
+
     reply = postconf.yesno("Do you want to configure apache?")
     if reply == postconf.DIALOG_OK:
         try:
@@ -259,15 +302,19 @@ def main():
                         pass
 
             make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn)
-            void = subprocess.check_output(['/etc/init.d/waptserver', 'start'], stderr=subprocess.STDOUT)
             final_msg.append('Please connect to https://' + fqdn + '/ to access the server.')
             if type_debian():
                 enable_debian_vhost()
             elif type_redhat():
                 enable_redhat_vhost()
-            else:
-                print "unsupported distrib"
-                sys.exit(1)
+
+            reply = postconf.yesno("The Apache config has been reloaded. Do you want to force-restart Apache?")
+            if reply == postconf.DIALOG_OK:
+                start_apache()
+
+            enable_apache()
+            start_apache()
+            setup_firewall()
 
         except subprocess.CalledProcessError as cpe:
             final_msg += [
@@ -286,7 +333,10 @@ def main():
     postconf.msgbox('\n'.join(final_msg), height=height, width=width)
 
 
-
-
 if __name__ == "__main__":
+
+    if not type_debian() and not type_redhat():
+        print "unsupported distrib"
+        sys.exit(1)
+
     main()
