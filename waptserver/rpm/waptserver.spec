@@ -49,13 +49,11 @@ mkdir -p %{buildroot}/etc/init.d/
 /opt/wapt/lib/*
 /etc/logrotate.d/waptserver
 
-%attr(755,root,root)
-   /etc/init.d/waptserver
-   /opt/wapt/waptserver/scripts/postconf.py
+%attr(755,root,root)/etc/init.d/waptserver
+%attr(755,root,root)/opt/wapt/waptserver/scripts/postconf.py
 
-%attr(755,wapt,root,755)
-   /opt/wapt/conf
-   /opt/wapt/log
+%attr(755,wapt,root)/opt/wapt/conf
+%attr(755,wapt,root)/opt/wapt/log
 
 %pre
 getent passwd wapt >/dev/null || \
