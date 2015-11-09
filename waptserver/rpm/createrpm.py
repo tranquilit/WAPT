@@ -97,9 +97,6 @@ control_file = './builddir/DEBIAN/control'
 #    print >> sys.stderr, "Removing %s"%filename
 #    os.remove(filename)
 
-if os.path.exists("builddir"):
-    shutil.rmtree("builddir")
-
 print >> sys.stderr, 'creating the package tree'
 os.makedirs("builddir")
 os.makedirs("builddir/opt")
