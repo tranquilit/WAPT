@@ -83,6 +83,6 @@ fi
 
 chown -R wapt:root /opt/wapt/conf
 chmod 755 /opt/wapt/conf
-chmod 644 /opt/wapt/conf/waptserver.ini
+[ -e /opt/wapt/conf/waptserver.ini ] && chmod 644 /opt/wapt/conf/waptserver.ini
 chown -R wapt:root /opt/wapt/log
 chmod 755 /opt/wapt/log
