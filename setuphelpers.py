@@ -1479,6 +1479,7 @@ def registry_readstring(root,path,keyname,default=''):
 
 def registry_set(root,path,keyname,value,type=None):
     """Set the value of a key in registry, taking in account value type
+    The path can be either with backslash or slash
 
     Args:
         root    : HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER ...
@@ -1486,7 +1487,11 @@ def registry_set(root,path,keyname,value,type=None):
                            or "software\\wow6432node\\microsoft\\windows\\currentversion"
         keyname : None for value of key or str for a specific value like 'CommonFilesDir'
         value   : value (integer or string type) to put in keyname
-    the path can be either with backslash or slash"""
+
+    Returns:
+
+
+    """
     path = path.replace(u'/',u'\\')
     with reg_openkey_noredir(root,path,sam=KEY_WRITE,create_if_missing=True) as key:
         if not type:
@@ -1543,7 +1548,15 @@ def registry_deletekey(root,path,keyname):
 
 
 def inifile_hasoption(inifilename,section,key):
-    """Read a string parameter from inifile
+    """Check if an option is present in section of the inifile
+
+    Args:
+        inifilename (str): Path to the ini file
+        section (str): section
+        key (str): value key to check
+
+    Returns:
+        boolean : True if the key exists
 
     >>> inifile_writestring('c:/tranquilit/wapt/tests/test.ini','global','version','1.1.2')
     >>> print inifile_hasoption('c:/tranquilit/wapt/tests/test.ini','global','version')
