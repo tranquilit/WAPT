@@ -157,9 +157,9 @@ def enable_mongod():
 
 def start_mongod():
     if type_redhat():
-        subprocess.check_output(['service', 'restart', 'mongod'])
+        subprocess.check_output(['service', 'mongod', 'restart'])
     elif type_debian():
-        subprocess.check_output(['service', 'restart', 'mongodb'])
+        subprocess.check_output(['service', 'mongodb', 'restart'])
 
 
 def enable_apache():
