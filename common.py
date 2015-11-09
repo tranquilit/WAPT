@@ -2189,22 +2189,27 @@ class WaptRepo(WaptRemoteRepo):
 
         # Check if updated
         if force or self.repo_url != last_url or self.need_update(last_modified):
+            old_packages = self._packages
+            old_packages_date = self._packages_date
             with waptdb:
                 try:
                     logger.debug(u'Read remote Packages index file %s' % self.packages_url)
+                    last_modified = self.packages_date
+
                     self._packages = None
                     self._packages_date = None
 
                     waptdb.purge_repo(self.name)
                     for package in self.packages:
                         waptdb.add_package_entry(package)
-                    last_modified = self.packages_date
                     logger.debug(u'Storing last-modified header for repo_url %s : %s' % (self.repo_url,self.packages_date))
                     waptdb.set_param('last-%s' % self.repo_url[:59],self.packages_date)
                     waptdb.set_param('last-url-%s' % self.name, self.repo_url)
                     return last_modified
                 except Exception as e:
                     logger.info(u'Unable to update repository status of %s, error %s'%(self._repo_url,e))
+                    self._packages = old_packages
+                    self._packages_date = old_packages_date
                     raise
         else:
             return waptdb.get_param('last-%s' % self.repo_url[:59])
