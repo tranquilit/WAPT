@@ -43,16 +43,18 @@ mkdir -p %{buildroot}/etc/init.d/
 (cd .. && python ./createrpm.py)
 
 %files
-/opt/wapt/conf
-/opt/wapt/log
+%defattr(644,root,root,755)
 
-%defattr(644,root,root)
+/opt/wapt
 /etc/logrotate.d/waptserver
 
-%defattr(755,root,root)
-   /opt/wapt/waptserver
+%attr(755,root,root)
    /etc/init.d/waptserver
    /opt/wapt/waptserver/scripts/postconf.py
+
+%attr(-,wapt,root,755)
+   /opt/wapt/conf
+   /opt/wapt/log
 
 %pre
 getent passwd wapt >/dev/null || \
@@ -80,18 +82,3 @@ if [ -e "$old_ini" ] && ! [ -L "$old_ini" ]; then
 	ln -s "$new_ini" "$old_ini"
     fi
 fi
-
-chown -R root:root /opt/wapt/lib
-find /opt/wapt/lib -type d -execdir chmod 755 {} +
-find /opt/wapt/lib -type f -execdir chmod 644 {} +
-
-chown -R wapt:root /opt/wapt/conf
-chmod 755 /opt/wapt/conf
-[ -e /opt/wapt/conf/waptserver.ini ] && chmod 644 /opt/wapt/conf/waptserver.ini
-chown -R wapt:root /opt/wapt/log
-chmod 755 /opt/wapt/log
-
-chown -R root:root /opt/wapt/waptserver
-find /opt/wapt/waptserver -type d -execdir chmod 755 {} +
-find /opt/wapt/waptserver -type f -execdir chmod 644 {} +
-chown 755 /opt/wapt/waptserver/scripts/postconf.py
