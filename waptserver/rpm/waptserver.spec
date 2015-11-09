@@ -39,12 +39,15 @@ mkdir -p %{buildroot}/etc/init.d/
 (cd .. && python ./createrpm.py)
 
 %files
-%defattr(-,root,root)
-   /opt/wapt/waptserver
-   /etc/logrotate.d/waptserver
-   /opt/wapt/lib/
+/opt/wapt/conf
+/opt/wapt/log
+
+%defattr(644,root,root)
+/etc/logrotate.d/waptserver
 
 %defattr(755,root,root)
+   /opt/wapt/waptserver
+   /opt/wapt/lib/
    /etc/init.d/waptserver
    /opt/wapt/waptserver/scripts/postconf.py
 
