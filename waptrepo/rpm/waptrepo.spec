@@ -19,10 +19,11 @@ Requires:  httpd dialog pytz m2crypto python-passlib python-requests
 cd .. && python createrpm.py
 
 %files
-%defattr(-,wapt,apache)
- /opt/wapt/waptrepo/VERSION
+
+%defattr(644,root,root,755)
+
+/opt/wapt/waptrepo/VERSION
  /opt/wapt/waptpackage.py
- /opt/wapt/wapt-scanpackages.py
  /opt/wapt/wapt-scanpackages.pyc
  /opt/wapt/wapt-scanpackages.pyo
  /opt/wapt/waptpackage.pyc
@@ -31,9 +32,7 @@ cd .. && python createrpm.py
  /var/www/html/wapt-host
  /var/www/html/wapt-group
 
-
-
-
+ %attr(755,root,root)/opt/wapt/wapt-scanpackages.py
 
 %pre
 getent passwd wapt >/dev/null || \
