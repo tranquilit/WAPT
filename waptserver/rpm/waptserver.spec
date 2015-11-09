@@ -61,19 +61,7 @@ getent passwd wapt >/dev/null || \
     -c "Non privileged account for waptserver" wapt
 exit 0
 
-
 %post
-set -x
-
-systemctl enable mongod
-systemctl enable httpd
-
-chkconfig --add waptserver
-
-firewall-cmd --permanent --add-port=443/tcp
-firewall-cmd --permanent --add-port=80/tcp
-firewall-cmd --reload
-
 old_ini='/opt/wapt/waptserver/waptserver.ini'
 new_ini='/opt/wapt/conf/waptserver.ini'
 if [ -e "$old_ini" ] && ! [ -L "$old_ini" ]; then
