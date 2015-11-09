@@ -102,8 +102,9 @@ if os.path.exists("builddir"):
 
 print >> sys.stderr, 'creating the package tree'
 mkdir_p("builddir/DEBIAN")
-mkdir_p("builddir/opt/wapt/lib")
 mkdir_p("builddir/opt/wapt/conf")
+mkdir_p("builddir/opt/wapt/lib")
+mkdir_p("builddir/opt/wapt/log")
 mkdir_p("builddir/opt/wapt/lib/site-packages")
 mkdir_p("builddir/opt/wapt/waptserver")
 
