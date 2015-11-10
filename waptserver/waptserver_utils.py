@@ -158,6 +158,7 @@ def get_disk_space(directory):
         stats = os.statvfs(directory)
         ret = (stats.f_bavail * stats.f_bsize, stats.f_blocks * stats.f_bsize)
     else:
+        pythoncom.CoInitializeEx(pythoncom.COINIT_MULTITHREADED)
         import wmi
 
         drive = os.path.splitdrive(os.path.abspath(directory))[0].lower()
