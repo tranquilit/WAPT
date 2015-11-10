@@ -23,14 +23,14 @@ cd .. && python createrpm.py
 %defattr(644,root,root,755)
 
 /opt/wapt/waptrepo/VERSION
- /opt/wapt/waptpackage.py
- /opt/wapt/wapt-scanpackages.pyc
- /opt/wapt/wapt-scanpackages.pyo
- /opt/wapt/waptpackage.pyc
- /opt/wapt/waptpackage.pyo
- /var/www/html/wapt
- /var/www/html/wapt-host
- /var/www/html/wapt-group
+/opt/wapt/waptpackage.py
+/opt/wapt/wapt-scanpackages.pyc
+/opt/wapt/wapt-scanpackages.pyo
+/opt/wapt/waptpackage.pyc
+/opt/wapt/waptpackage.pyo
+/var/www/html/wapt
+/var/www/html/wapt-host
+/var/www/html/wapt-group
 
 %attr(755,wapt,www-data)/var/www/html/wapt/
 %attr(755,wapt,www-data)/var/www/html/waptdev/
