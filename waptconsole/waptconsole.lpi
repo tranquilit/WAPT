@@ -91,7 +91,7 @@
         <PackageName Value="LCL"/>
       </Item16>
     </RequiredPackages>
-    <Units Count="26">
+    <Units Count="27">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -284,6 +284,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="WinOLEDataObject"/>
       </Unit25>
+      <Unit26>
+        <Filename Value="..\wapt-get\waptwinutils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="waptwinutils"/>
+      </Unit26>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

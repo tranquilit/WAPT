@@ -544,8 +544,8 @@ var
 implementation
 
 uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, tisstrings, soutils,
-  waptcommon, tiscommon, uVisCreateKey, uVisCreateWaptSetup, dmwaptpython,
-  uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
+  waptcommon, waptwinutils, tiscommon, uVisCreateKey, uVisCreateWaptSetup,
+  dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
   uvisgroupchoice, uviswaptdeploy, uvishostsupgrade, uVisAPropos,
   uVisImportPackage, uVisWUAGroup, uVisWAPTWUAProducts, uviswuapackageselect,
   uVisWUAClassificationsSelect, PythonEngine, Clipbrd, RegExpr, tisinifiles,
@@ -1305,6 +1305,12 @@ begin
                 end;
 
               ActReloadConfigExecute(self);
+
+              try
+                Run('cmd /C net stop waptservice');
+                Run('cmd /C net start waptservice');
+              except
+              end;
             end;
 
           except
