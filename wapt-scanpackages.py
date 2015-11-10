@@ -39,7 +39,7 @@ from optparse import OptionParser
 import logging
 
 logger = logging.getLogger()
-hdlr = logging.StreamHandler(sys.stdout)
+hdlr = logging.StreamHandler(sys.stderr)
 hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
 logger.addHandler(hdlr)
 logger.setLevel(logging.INFO)
@@ -54,15 +54,14 @@ Build a "Packages" file from all wapt file in the specified directory
 
 def main():
     if len(sys.argv) < 2:
-        sys.stderr.write('Usage: wapt-scanpackage <wapt_directory>\n')
+        logger.error('Usage: wapt-scanpackage <wapt_directory>')
         sys.exit(1)
     wapt_path = sys.argv[1]
-    print wapt_path
     if os.path.exists(wapt_path)==False:
-        print "Directory does not exists : %s " % wapt_path
+        logger.error("Directory does not exist: %s", wapt_path)
         sys.exit(1)
     if os.path.isdir(wapt_path)==False:
-        print "%s does not exists " % wapt_path
+        logger.error("%s is not a directory", wapt_path)
         sys.exit(1)
     res = update_packages(wapt_path)
     if res and os.name == 'posix':
