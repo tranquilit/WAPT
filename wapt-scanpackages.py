@@ -33,11 +33,8 @@ sys.path.insert(0,os.path.join(wapt_root_dir))
 sys.path.insert(0,os.path.join(wapt_root_dir,'lib'))
 sys.path.insert(0,os.path.join(wapt_root_dir,'lib','site-packages'))
 
-import platform
-
 from optparse import OptionParser
 import logging
-
 
 logger = logging.getLogger()
 hdlr = logging.StreamHandler(sys.stdout)
@@ -67,7 +64,7 @@ def main():
         print "%s does not exists " % wapt_path
         sys.exit(1)
     res = update_packages(wapt_path)
-    if res and platform.system() == 'Linux':
+    if res and os.name == 'posix':
         import pwd
         pwd_entry = pwd.getpwnam('wapt')
         uid, gid = pwd_entry.pw_uid, pwd_entry.pw_gid
