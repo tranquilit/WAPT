@@ -45,5 +45,6 @@ getent passwd wapt >/dev/null || \
 exit 0
 
 %post
+ln -sf /opt/wapt/wapt-scanpackages.py /usr/bin/wapt-scanpackages
 python /opt/wapt/wapt-scanpackages.py /var/www/html/wapt
 exit 0
